@@ -1,0 +1,25 @@
+# Created by .ignore support plugin (hsz.mobi)
+# Python bytecode
+*.py[co]
+
+# Editor temp files
+*~
+
+# Sphinx docs
+build
+
+#PyCharms project file
+/.idea/
+
+#temp_uploads for jqupload
+/temp_uploads/
+
+#Qdjango2 setting local file
+/qdjango2/base/settings/local_settings.py
+
+#Node modules
+/node_modules
+
+
+#Bower components
+/qdjango2/core/static/bower_components/

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+
+{% block custom_css_links_page %}
+<link rel="stylesheet" href="{% static "css/dropzone.css" %}">
+{% endblock %}
+
+{% block custom_js_links_page %}
+<script type="text/javascript" src="{% static "js/dropzone.js" %}"></script>
+{% endblock %}
+
+{% block main_content %}
+    <h2>Dropzone</h2>
+
+    <div>
+        <form action="/file-upload" class="dropzone" id="my-awesome-dropzone" enctype="multipart/form-data">
+            {% csrf_token %}
+        </form>
+
+    </div>
+
+    <div>
+    <button id="bt_test" data-slug-id="10" data-delete-url="/test/delete">TEST</button>
+    </div>
+
+{% endblock %}

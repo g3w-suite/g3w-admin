@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+{% load i18n %}
+
+{% block custom_css_links_page %}
+<link rel="stylesheet" href="{% static "ajaxuploader/css/fileuploader.css" %}">
+<link rel="stylesheet" href="{% static "bower_components/icheck/skins/all.css" %}">
+{% endblock %}
+
+{% block custom_js_links_page %}
+<script src="{% static "ajaxuploader/js/fileuploader.js" %}"></script>
+<script src="{% static "file_form/file_form.js" %}"></script>
+<script src="{% static "bower_components/icheck/icheck.min.js" %}"></script>
+<script>
+    $(function() {
+        initUploadFields($('#example-form'));
+        // start select2 plugin
+        $('.select2').select2();
+        //Flat red color scheme for iCheck
+        $('input[type="checkbox"], input[type="radio"]').iCheck({
+          checkboxClass: 'icheckbox_flat-green',
+          radioClass: 'iradio_flat-green'
+        });
+    });
+</script>
+{% endblock %}
+
+{% block main_content %}
+
+        <form action="#" method="post" id="example-form"  enctype="multipart/form-data">
+            {% crispy form %}
+            <div class="row">
+                <div class="col-md-12">
+                    <input class="btn btn-primary" type="submit" value="{%trans 'Save'%}" />
+                </div>
+            </div>
+
+
+
+        </form>
+        {% include 'django_file_form/upload_template.html' %}
+
+
+
+{% endblock %}

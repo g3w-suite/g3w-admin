@@ -1,0 +1,30 @@
+{
+  "name": "qdjango2",
+  "authors": [
+    "wlorenzetti <lorenzetti@gis3w.it>"
+  ],
+  "description": "A Qgis projects web app view",
+  "dependencies": {
+    "bootstrap": "~3.3.5",
+    "jquery": "~2.1.4",
+    "jquery-ui": "~1.11.4",
+    "jquery-slimscroll": "*",
+    "fastclick": "*",
+    "font-awesome": "*",
+    "ionicons": "*",
+    "icheck":"*",
+    "select2":"*",
+    "underscore":"*"
+  },
+  "main": "",
+  "moduleType": [],
+  "license": "MIT",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

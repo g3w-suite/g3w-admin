@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+
+
+{% block custom_css_links_page %}
+<link rel="stylesheet" href="{% static "ajaxuploader/css/fileuploader.css" %}">
+{% endblock %}
+
+{% block custom_js_links_page %}
+<script src="{% static "ajaxuploader/js/fileuploader.js" %}"></script>
+<script src="{% static "file_form/file_form.js" %}"></script>
+<script>
+   $(function() {
+       initUploadFields($('#example-form'));
+   });
+
+    $('#myModal').on('shown.bs.modal', function () {
+        var that = $(this);
+        that.find('.overlay').show();
+        that.find('.btn-primary').click(function(){
+            $.post('exampleajaxform',that.find('form').serialize(),function(res){
+                if($.inArray('html',this.dataTypes)) {
+                    that.find('.modal-body-content').html(res);
+                }
+            });
+        });
+      $('#myInput').focus();
+        $.get('/exampleajaxform',function(res){
+                that.find('.modal-body-content').html(res);
+                that.find('.overlay').hide(600);
+            }
+        );
+    })
+
+</script>
+{% endblock %}
+
+{% block main_content %}
+    <div class="row">
+        <div class="col col-md-4">
+            <div class="box box-primary">
+                <div class="box-header  with-border"> <h3 class="box-title">Esempio di django-file-form</h3></div>
+                <div class="box-body">
+                    <form id="example-form" method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        {{ form }}
+                    </form>
+                    {% include 'django_file_form/upload_template.html' %}
+                </div>
+            </div>
+
+        </div>
+        <div class="col col-md-4">
+            <div class="box box-primary">
+                <div class="box-header  with-border"> <h3 class="box-title">Esempio di form in modal</h3></div>
+                <div class="box-body">
+                    <button id="modalformbtn" class="btn btn-app" data-toggle="modal" data-target="#myModal"><i class="fa fa-edit"></i> Edit</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content overlay-wrapper">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+      </div>
+      <div class="modal-body">
+          <div class="modal-body-content">
+
+          </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+    <div class="overlay">
+          <i class="fa fa-refresh fa-spin "></i>
+      </div>
+  </div>
+</div>
+
+
+{% endblock %}

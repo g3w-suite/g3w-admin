@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+{% load guardian_tags %}
+{% load auth_extras %}
+{% load i18n %}
+
+{% block page_header %}
+    <h1>
+        {% trans 'Cartographic groups' %}
+        <small>Optional description</small>
+        <a href="{% url 'group-add' %}" class="btn btn btn-info"><i class="glyphicon glyphicon-plus"></i> {% trans 'New' %}</a>
+      </h1>
+{% endblock %}
+
+{% block main_content %}
+
+
+<div class="row">
+{% for object in object_list %}
+    <div class="col-md-3">
+     <div class="box box-widget widget-user">
+                <!-- Add the bg color to the header using any of the bg-* classes -->
+                <div class="widget-user-header bg-aqua-active col-sm-12" style="background: url('{{ MEDIA_URL }}{{ object.header_logo_img }}') center center;">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <h3 class="widget-user-username">{{ object.name }}</h3>
+                        <h5 class="widget-user-desc">{{ object.title }}</h5>
+                    </div>
+                </div>
+                </div>
+                <div class="box-footer">
+                  <div class="row">
+                    <div class="col-sm-6 col-xs-6">
+                      <div class="description-block">
+                        <h5 class="description-header">0</h5>
+                        <span class="description-text">{% trans 'Projects' %}</span>
+                      </div><!-- /.description-block -->
+                    </div><!-- /.col -->
+                    <div class="col-sm-2 col-xs-2">
+                      <div class="description-block">
+                         <div class="icon">
+                          <a href="#"><i class="ion ion-eye"></i></a>
+                        </div>
+                      </div><!-- /.description-block -->
+                    </div><!-- /.col -->
+                    <div class="col-sm-2 col-xs-2">
+                      <div class="description-block">
+                        <div class="icon">
+                          <a href="{% url 'group-update' object.slug %}"><i class="ion ion-edit"></i></a>
+                        </div>
+                      </div><!-- /.description-block -->
+                    </div><!-- /.col -->
+                    <div class="col-sm-2 col-xs-2">
+                      <div class="description-block">
+                        <div class="icon">
+                          <a href="#" data-obj-slug="{{ object.slug }}"><i class="ion ion-trash-b"></i></a>
+                        </div>
+                      </div><!-- /.description-block -->
+                    </div><!-- /.col -->
+                  </div><!-- /.row -->
+                </div>
+          </div><!-- /.widget-user -->
+    </div>
+
+{% endfor %}
+</div>
+
+
+
+
+
+
+
+{% endblock %}
