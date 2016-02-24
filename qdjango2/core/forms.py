@@ -59,7 +59,7 @@ class GroupForm(FileFormMixin,ModelForm):
                                         Div(
                                             css_class='box-body'
                                         ),
-                                        css_class='box box-solid bg-purple'
+                                        css_class='box box-solid bg-purple collapsed-box'
                                     ),
                                     css_class='col-md-6'
                                 ),
@@ -105,12 +105,13 @@ class GroupForm(FileFormMixin,ModelForm):
                                             'use_osm_maps',
                                             css_class='box-body'
                                         ),
-                                        css_class='box box-danger'
+                                        css_class='box box-danger collapsed-box'
                                     ),
                                     css_class='col-md-6'
                                 ),
                                 css_class='row'
                             ),
+
                             Div(
                                 Div(
                                     Div(
@@ -122,6 +123,9 @@ class GroupForm(FileFormMixin,ModelForm):
                                             Div(
                                                 'header_logo_img',
                                                 HTML("""{% if form.header_logo_img.value %}<img class="img-responsive img-thumbnail" src="{{ MEDIA_URL }}{{ form.header_logo_img.value }}">{% endif %}""", ),
+                                                'form_id',
+                                                'upload_url',
+                                                'delete_url',
                                                 css_class='col-md-6'
                                             ),
                                             Div(
@@ -135,6 +139,7 @@ class GroupForm(FileFormMixin,ModelForm):
                                     ),
                                     css_class='col-md-6'
                                 ),
+
                                 Div(
                                     Div(
                                         Div(
@@ -148,12 +153,9 @@ class GroupForm(FileFormMixin,ModelForm):
                                         Div(
                                             Field('header_terms_of_use_text',css_class='wys5'),
                                             'header_terms_of_use_link',
-                                            'form_id',
-                                            'upload_url',
-                                            'delete_url',
                                             css_class='box-body'
                                         ),
-                                        css_class='box box-default'
+                                        css_class='box box-default collapsed-box'
                                     ),
                                     css_class='col-md-6'
                                 ),

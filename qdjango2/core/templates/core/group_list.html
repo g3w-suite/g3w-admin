@@ -9,7 +9,6 @@
     <h1>
         {% trans 'Cartographic groups' %}
         <small>Optional description</small>
-        <a href="{% url 'group-add' %}" class="btn btn btn-info"><i class="glyphicon glyphicon-plus"></i> {% trans 'New' %}</a>
       </h1>
 {% endblock %}
 
@@ -18,12 +17,12 @@
 
 <div class="row">
 {% for object in object_list %}
-    <div class="col-md-3">
+    <div class="col-md-3 col-sm-6" id="group_{{ object.slug }}">
      <div class="box box-widget widget-user">
                 <!-- Add the bg color to the header using any of the bg-* classes -->
                 <div class="widget-user-header bg-aqua-active col-sm-12" style="background: url('{{ MEDIA_URL }}{{ object.header_logo_img }}') center center;">
                 <div class="row">
-                    <div class="col-sm-12">
+                    <div class="col-sm-12 widget-group-title">
                         <h3 class="widget-user-username">{{ object.name }}</h3>
                         <h5 class="widget-user-desc">{{ object.title }}</h5>
                     </div>
@@ -40,21 +39,21 @@
                     <div class="col-sm-2 col-xs-2">
                       <div class="description-block">
                          <div class="icon">
-                          <a href="#"><i class="ion ion-eye"></i></a>
+                          <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-detail-url="{% url 'group-detail' object.slug %}"><i class="ion ion-eye"></i></a>
                         </div>
                       </div><!-- /.description-block -->
                     </div><!-- /.col -->
                     <div class="col-sm-2 col-xs-2">
                       <div class="description-block">
                         <div class="icon">
-                          <a href="{% url 'group-update' object.slug %}"><i class="ion ion-edit"></i></a>
+                          <a href="{% url 'group-update' object.slug %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Edit' %}" ><i class="ion ion-edit"></i></a>
                         </div>
                       </div><!-- /.description-block -->
                     </div><!-- /.col -->
                     <div class="col-sm-2 col-xs-2">
                       <div class="description-block">
                         <div class="icon">
-                          <a href="#" data-obj-slug="{{ object.slug }}"><i class="ion ion-trash-b"></i></a>
+                          <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Delete' %}"  data-widget-type="deleteItem" data-delete-url="{% url 'group-delete' object.slug %}" data-item-selector="#group_{{ object.slug }}"><i class="ion ion-trash-b"></i></a>
                         </div>
                       </div><!-- /.description-block -->
                     </div><!-- /.col -->
@@ -62,8 +61,13 @@
                 </div>
           </div><!-- /.widget-user -->
     </div>
-
 {% endfor %}
+    <div class="col-md-2 col-sm-3" id="group_add">
+        <div class="box box-widget widget-group-add">
+            <a href="{% url 'group-add' %}"><i class="ion ion-plus-circled"></i></a>
+        </div>
+        </div>
+    </div>
 </div>
 
 

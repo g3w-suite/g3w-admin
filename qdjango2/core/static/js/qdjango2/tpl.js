@@ -17,7 +17,13 @@ _.extend(qdjango2.tpl, {
             closeButtonText: 'Close',
             confirmButton: true,
             confirmButtonText: 'Ok'
-       }
+        },
+
+        ajaxError: {
+            textStatus: '500',
+            errorMessage: '',
+            moreInfo: null
+        }
     },
 
     dialog : _.template('\
@@ -41,5 +47,12 @@ _.extend(qdjango2.tpl, {
           </div>\
         </div>\
       </div>\
-    </div>')
+    </div>'),
+
+    ajaxError: _.template('\
+    <h3><%= textStatus %></h3>\
+    <p><%= errorMessage %></p>\
+    <% if(moreInfo) { %>\
+        <p><%= moreInfo %></p>\
+    <% } %>')
 });

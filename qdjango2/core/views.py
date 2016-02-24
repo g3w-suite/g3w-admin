@@ -6,8 +6,12 @@ from django.views.generic import (
     FormView,
     CreateView,
     UpdateView,
-    ListView
+    ListView,
+    DetailView,
+    View,
 )
+from django.views.generic.detail import SingleObjectMixin
+from django.core.urlresolvers import reverse
 from .forms import ExampleForm, ExampleAjaxForm, GroupForm
 from .models import Group
 from django_file_form.uploader import FileFormUploader
@@ -54,16 +58,40 @@ class GroupListView(ListView):
     def get_queryset(self):
         return get_objects_for_user(self.request.user, 'core.view_group', Group).order_by('name')
 
+class GroupDetailView(DetailView):
+    """Detail view."""
+    model = Group
+    template_name = 'core/ajax/group_detail.html'
+
+
 class GroupCreateView(CreateView):
     """Create group view."""
     model = Group
     form_class = GroupForm
-    success_url = 'group-list'
+
+    def get_success_url(self):
+        return reverse('group-list')
 
 class GroupUpdateView(UpdateView):
     """Update view."""
     model = Group
     form_class = GroupForm
+
+    def get_success_url(self):
+        return reverse('group-list')
+
+
+class GroupDeleteView(SingleObjectMixin,View):
+
+    model = Group
+
+    def post(self,request, *args, **kwargs):
+        self.object = self.get_object()
+
+        # delete object
+        self.object.delete();
+
+        return JsonResponse({'status':'ok','message':'Object deleted!'})
 
 
 

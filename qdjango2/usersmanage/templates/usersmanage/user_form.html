@@ -14,7 +14,7 @@
 <script src="{% static "bower_components/icheck/icheck.min.js" %}"></script>
 <script>
     $(function() {
-        initUploadFields($('#group-form'));
+        initUploadFields($('#user-form'));
         // start select2 plugin
         $('.select2').select2();
         //Flat red color scheme for iCheck
@@ -27,8 +27,7 @@
 {% endblock %}
 
 {% block main_content %}
-
-        <form method="post" id="group-form"  enctype="multipart/form-data">
+        <form method="post" id="user-form"  enctype="multipart/form-data">
             {% if form.errors %}
                 <div class="row">
                     <div class="col-md-12">
@@ -45,9 +44,6 @@
                     <input class="btn btn-primary" type="submit" value="{%trans 'Save'%}" />
                 </div>
             </div>
-
-
-
         </form>
         {% include 'django_file_form/upload_template.html' %}
 

@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+{% load guardian_tags %}
+{% load auth_extras %}
+{% load i18n %}
+
+{% block page_header %}
+    <h1>
+        {% trans 'Users' %}
+        <small>Optional description</small>
+      </h1>
+{% endblock %}
+
+{% block main_content %}
+
+
+<div class="row">
+<div class="col-md-12 col-xs-12">
+    <div class="box">
+        <div class="box-header">
+            <h3 class="box-title">Users
+            <a href="{% url 'user-add' %}"><i class="ion ion-plus-circled"></i></a>
+            </h3>
+
+
+        </div>
+        <div class="box-body">
+            <table class="table table-hover table-striped">
+                <thead>
+                    <tr>
+                        <th style="width:120px">Actions</th>
+                        <th>Username</th>
+                        <th class="hidden-sm hidden-xs">Email</th>
+                        <th class="hidden-sm hidden-xs">First name</th>
+                        <th class="hidden-sm hidden-xs">Last name</th>
+                    </tr>
+                </thead>
+                {% for object in object_list %}
+                    <tr>
+                        <td>
+                            <span class="col-xs-4 icon">
+                                <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-detail-url="{% url 'user-detail' object.id %}"><i class="ion ion-eye"></i></a>
+                            </span>
+                            <span class="col-xs-4 icon">
+                                <a href="{% url 'user-update' object.id %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Edit' %}" ><i class="ion ion-edit"></i></a>
+                            </span>
+                            <span class="col-xs-4 icon">
+                                <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Delete' %}"  data-widget-type="deleteItem" data-delete-url="{% url 'user-add' %}" data-item-selector="#group_{{ object.slug }}"><i class="ion ion-trash-b"></i></a>
+                            </span>
+                        </td>
+                        <td>{{ object.username }}</td>
+                        <td class="hidden-sm hidden-xs">{{ object.email }}</td>
+                        <td class="hidden-sm hidden-xs">{{ object.first_name }}</td>
+                        <td class="hidden-sm hidden-xs">{{ object.last_name }}</td>
+                    </tr>
+
+                {% endfor %}
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+</div>
+
+
+
+
+
+
+
+{% endblock %}

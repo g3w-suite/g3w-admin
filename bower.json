@@ -9,12 +9,15 @@
     "jquery": "~2.1.4",
     "jquery-ui": "~1.11.4",
     "jquery-slimscroll": "*",
+    "jquery-cookie": "*",
+    "datatables":"*",
     "fastclick": "*",
     "font-awesome": "*",
     "ionicons": "*",
     "icheck":"*",
     "select2":"*",
-    "underscore":"*"
+    "underscore":"*",
+    "pace":"*"
   },
   "main": "",
   "moduleType": [],

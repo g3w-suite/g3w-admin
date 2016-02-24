@@ -22,6 +22,7 @@ from django.contrib.auth.decorators import login_required
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^',include('core.urls')),
+    url(r'^',include('usersmanage.urls')),
     url(r'^upload/', include('django_file_form.urls')),
 
     url(

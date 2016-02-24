@@ -19,4 +19,15 @@ _.extend(qdjango2.utils, {
         return params;
     },
 
+    buildAjaxErrorMessage: function(textStatus,errorMessage,moreInfo) {
+        return qdj2.tpl.ajaxError(_.extendOwn(qdj2.tpl.tplDefValues.ajaxError,{textStatus:textStatus, errorMessage:errorMessage, moreInfo:moreInfo}));
+    },
+
+    addCsfrtokenData: function(data) {
+        _.extend(data,{
+            csrfmiddlewaretoken: $.cookie('csrftoken')
+        });
+    }
+
+
 });

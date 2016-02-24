@@ -1,0 +1,51 @@
+{% load i18n %}
+{% load auth_extras %}
+<div class="row">
+  <div class="col-md-6">
+  <h3>{%trans 'Geografic component'%}</h3>
+    <ul class="list-unstyled">
+      <li><h4>{%trans 'Geographic coordinate system'%}</h4>
+      <li><strong>{%trans 'SRID'%}</strong>: {{ object.srid }}</li>
+      <li><strong>{%trans 'Units'%}</strong>: {{ object.units }}</li>
+      <li><h4>{%trans 'Principal map'%}</h4>
+      <li><strong>{%trans 'Max scale'%}</strong>: {{ object.max_scale }}</li>
+      <li><strong>{%trans 'Min scale'%}</strong>: {{ object.min_scale }}</li>
+      <li><h4>{%trans 'Overview Map'%}</h4>
+      <li><strong>{%trans 'Panoramic max scale'%}</strong>: {{ object.panoramic_max_scale }}</li>
+      <li><strong>{%trans 'Panoramic min scale'%}</strong>: {{ object.panoramic_min_scale }}</li>
+    </ul>
+    {%if user.is_superuser or user|has_group:"Editor Maps Groups" %}
+    	<h3>{%trans 'Users' %}:</h3>
+    	<ul class="list-unstyled">
+    	{% if user.is_superuser %}
+    		<li><strong>{%trans 'Editor user'%}</strong>: {{object.editor|safe}}</li>
+    	{% endif %}
+    	{% if user.is_superuser or user|has_group:"Editor Maps Groups" %}
+    		<li><strong>{%trans 'Viewer users'%}</strong>: {{object.viewers|safeseq|join:", "}}</li>
+    	{% endif %}
+
+    	</ul>
+    {% endif %}
+  </div>
+  <div class="col-md-6">
+  <h3>{%trans 'Interface component'%}</h3>
+    <ul class="list-unstyled">
+      <li><h4>{%trans 'Interface language'%}</h4>
+      <li><strong>{%trans 'Language'%}</strong>: {{ object.lang }}</li>
+      <li><h4>{%trans 'Associated logo'%}</h4>
+      <li><strong>{%trans 'HeaderLogoImg'%}</strong>:
+        {% if object.header_logo_img %}
+	<br />
+        <img style="height: 120px;" src="{{ MEDIA_URL }}{{ object.header_logo_img }}" />
+        {% else %}
+        Not set
+        {% endif %}
+      </li>
+      <li><strong>{%trans 'HeaderLogoHeight'%}</strong>: {{ object.header_logo_height }}</li>
+      <li><strong>{%trans 'HeaderLogoLink'%}</strong>: {{ object.header_logo_link }}</li>
+      <li><h4>{%trans 'Terms of use'%}</h4>
+      <li><strong>{%trans 'HeaderTermsOfUseText'%}</strong>:{{ object.header_terms_of_use_text }}</li>
+      <li><strong>{%trans 'HeaderTermsOfUseLink'%}</strong>: {{ object.header_terms_of_use_link }}</li>
+    </ul>
+  </div>
+</div>

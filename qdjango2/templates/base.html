@@ -12,6 +12,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <title>{{ SETTINGS.SITE_TITLE }}</title>
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <!-- Pace -->
+    <script src="{% static "bower_components/pace/pace.min.js" %}"></script>
     <!-- Bootstrap 3.3.5 -->
     <link rel="stylesheet" href="{% static "bower_components/bootstrap/dist/css/bootstrap.min.css" %}">
     <!-- Font Awesome -->
@@ -20,6 +22,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <link rel="stylesheet" href="{% static "bower_components/ionicons/css/ionicons.min.css" %}">
     <!-- Select2 -->
     <link rel="stylesheet" href="{% static "bower_components/select2/dist/css/select2.min.css" %}">
+    <!-- Pace -->
+    <link rel="stylesheet" href="{% static "bower_components/pace/themes/yellow/pace-theme-loading-bar.css" %}">
     <!-- Theme style -->
     <link rel="stylesheet" href="{% static "adminlte/css/AdminLTE.min.css" %}">
     <!-- AdminLTE Skins. We have chosen the skin-blue for this starter
@@ -94,6 +98,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
 
         {% sitetree_menu from "main" include "trunk" template "sitetree/sidebar.html" %}
+        {% sitetree_menu from "acl" include "trunk" template "sitetree/sidebar.html" %}
         {% sitetree_menu from "cdu" include "trunk" template "sitetree/sidebar.html" %}
           <!-- Sidebar Menu -->
             <!--
@@ -223,6 +228,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
     <!-- jQuery 2.1.4 -->
     <script src="{% static "bower_components/jquery/dist/jquery.min.js" %}"></script>
+    <!-- jquery-cookie -->
+    <script src="{% static "bower_components/jquery-cookie/jquery.cookie.js" %}"></script>
     <!-- Bootstrap 3.3.5 -->
     <script src="{% static "bower_components/bootstrap/dist/js/bootstrap.min.js" %}"></script>
     <!-- Underscore -->
@@ -247,6 +254,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
     {% block custom_js_links_page %}
     {% endblock %}
+
   </body>
 
 </html>
