@@ -15,11 +15,11 @@ build
 /temp_uploads/
 
 #Qdjango2 setting local file
-/qdjango2/base/settings/local_settings.py
+/g3wadmin/base/settings/local_settings.py
 
 #Node modules
 /node_modules
 
 
 #Bower components
-/qdjango2/core/static/bower_components/
+/g3wadmin/core/static/bower_components/

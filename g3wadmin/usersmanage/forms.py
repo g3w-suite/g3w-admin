@@ -1,3 +1,4 @@
+from django.conf import settings
 from django import forms
 from django.utils.translation import ugettext, ugettext_lazy as _
 from django.contrib.auth.forms import (
@@ -8,13 +9,60 @@ from django.contrib.auth import (
     password_validation,
 )
 from django.contrib.auth.models import User
-
 from django.forms import ModelChoiceField
 from django_file_form.forms import FileFormMixin, UploadedFileField
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout,Div,Field,HTML
 from usersmanage.models import Userdata, Department
 
+class UsersChoiceField(forms.ModelMultipleChoiceField):
+    def label_from_instance(self, obj):
+        return "%s %s (%s)" % (obj.first_name,obj.last_name,obj.username)
+
+class UserChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+        return "%s %s (%s)" % (obj.first_name,obj.last_name,obj.username)
+
+
+class Qdjango2ACLForm(forms.Form):
+    initial_own_users = list()
+    initial_editor_user = None
+    editor_user = UserChoiceField(label=_('Editor user'),queryset=User.objects.filter(groups__name='Editor Maps Groups').order_by('last_name'),required=False)
+    own_users = UsersChoiceField(label=_('Viewer users'),queryset=User.objects.filter(groups__name='Viewer Maps Groups').order_by('last_name'),required=False)
+
+    def _init_users(self,**kwargs):
+        if kwargs['initial'].has_key('own_users'):
+            self.initial_own_users = kwargs['initial']['own_users']
+        if kwargs['initial'].has_key('editor_user'):
+            self.initial_editor_user = kwargs['initial']['editor_user']
+
+    def _add_anonymou_user(self):
+        self.fields['own_users'].queryset=self.fields['own_users'].queryset | User.objects.filter(pk=settings.ANONYMOUS_USER_ID)
+
+    def _ACLPolicy(self):
+        editorToRemove = None
+        if self.request.user.is_superuser:
+            permission_user = self.cleaned_data['editor_user']
+            if (self.initial_editor_user and self.cleaned_data['editor_user'] and self.initial_editor_user != self.cleaned_data['editor_user'].id) or \
+                (self.initial_editor_user and not self.cleaned_data['editor_user']):
+                editorToRemove = User.objects.get(pk=self.initial_editor_user)
+
+        else:
+            permission_user = self.request.user
+
+        if permission_user:
+            self.instance.addPermissionsToEditor(permission_user)
+
+        if editorToRemove:
+            self.instance.removePermissionsToEditor(editorToRemove)
+
+        #add permission view_group to Viewer
+        # check per and change situation
+        current_users = map(lambda o: o.id, self.cleaned_data['own_users'])
+        toRemove = list(set(self.initial_own_users) - set(current_users))
+        toAdd = list(set(current_users)-set(self.initial_own_users))
+        self.instance.addPermissionsToViewers(toAdd)
+        self.instance.removePermissionsToViewers(toRemove)
 
 class Qdjango2UserForm(FileFormMixin,UserCreationForm):
 

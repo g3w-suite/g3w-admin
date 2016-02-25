@@ -32,8 +32,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
     -->
     <link rel="stylesheet" href="{% static "adminlte/css/skins/"%}{{ adminlte_skin }}.min.css">
 
-    <link rel="stylesheet" href="{% static "css/qdjango2.css"%}">
-
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -41,8 +39,15 @@ scratch. This page gets rid of all links and provides the needed markup only.
         <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 
+    <!-- Django-file-form: fieluploader -->
+    <link rel="stylesheet" href="{% static "ajaxuploader/css/fileuploader.css" %}">
+    <!-- icheck -->
+    <link rel="stylesheet" href="{% static "bower_components/icheck/skins/all.css" %}">
+
     {% block custom_css_links_page %}
     {% endblock %}
+
+    <link rel="stylesheet" href="{% static "css/qdjango2.css"%}">
   </head>
   <!--
   BODY TAG OPTIONS:
@@ -95,28 +100,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
         <!-- sidebar: style can be found in sidebar.less -->
         <section class="sidebar">
-
-
         {% sitetree_menu from "main" include "trunk" template "sitetree/sidebar.html" %}
-        {% sitetree_menu from "acl" include "trunk" template "sitetree/sidebar.html" %}
-        {% sitetree_menu from "cdu" include "trunk" template "sitetree/sidebar.html" %}
-          <!-- Sidebar Menu -->
-            <!--
-          <ul class="sidebar-menu">
-            <li class="header">MENU</li>
-            <li class="active"><a href="#"><i class="fa fa-link"></i> <span>Link</span></a></li>
-            <li><a href="#"><i class="fa fa-link"></i> <span>Another Link</span></a></li>
-            <li class="treeview">
-              <a href="#"><i class="fa fa-link"></i> <span>Multilevel</span> <i class="fa fa-angle-left pull-right"></i></a>
-              <ul class="treeview-menu">
-                <li><a href="#">Link in level 2</a></li>
-                <li><a href="#">Link in level 2</a></li>
-              </ul>
-            </li>
-          </ul>
-            -->
-        <!-- /.sidebar-menu -->
-
         </section>
         <!-- /.sidebar -->
       </aside>
@@ -133,10 +117,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
           {% endblock %}
 
           {% block breadcrumb %}
-          <ol class="breadcrumb">
-            <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
-            <li class="active">Here</li>
-          </ol>
+          {% sitetree_breadcrumbs from "main" template "sitetree/breadcrumbs_bootstrap3.html" %}
           {% endblock %}
         </section>
 
@@ -243,6 +224,13 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <!-- Slimscroll -->
     <script src="{% static "bower_components/jquery-slimscroll/jquery.slimscroll.min.js" %}"></script>
     {% endif %}
+
+    <!-- Django-file-form: fileuploader -->
+    <script src="{% static "ajaxuploader/js/fileuploader.js" %}"></script>
+    <!-- Django-file-form -->
+    <script src="{% static "file_form/file_form.js" %}"></script>
+    <!-- icheck -->
+    <script src="{% static "bower_components/icheck/icheck.min.js" %}"></script>
 
     <!-- Qdjango2 -->
     <script src="{% static "js/qdjango2/main.js" %}"></script>

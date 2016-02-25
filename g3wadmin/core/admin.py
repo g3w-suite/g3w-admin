@@ -4,7 +4,7 @@ from sitetree.admin import TreeItemAdmin,override_item_admin
 
 
 # And our custom tree item admin model.
-class Qdjango2TreeItemAdmin(TreeItemAdmin):
+class G3WTreeItemAdmin(TreeItemAdmin):
     # That will turn a tree item representation from the default variant
     # with collapsible groupings into a flat one.
     fieldsets = (
@@ -26,4 +26,8 @@ class Qdjango2TreeItemAdmin(TreeItemAdmin):
     )
 
 # Now we tell the SiteTree to replace generic representations with custom.
-override_item_admin(Qdjango2TreeItemAdmin)
+override_item_admin(G3WTreeItemAdmin)
+
+# Tweak admin site settings like title, header, 'View Site' URL, etc
+admin.site.site_title = 'G3W Admin Administration'
+admin.site.site_header = 'G3W Admin Administration'

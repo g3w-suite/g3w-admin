@@ -15,8 +15,8 @@ from django.core.urlresolvers import reverse
 from .forms import ExampleForm, ExampleAjaxForm, GroupForm
 from .models import Group
 from django_file_form.uploader import FileFormUploader
-#guardian
 from guardian.shortcuts import assign_perm, remove_perm ,get_objects_for_user
+from .mixins.views import G3WRequestViewMixin
 
 # Create your views here.
 
@@ -64,7 +64,7 @@ class GroupDetailView(DetailView):
     template_name = 'core/ajax/group_detail.html'
 
 
-class GroupCreateView(CreateView):
+class GroupCreateView(G3WRequestViewMixin,CreateView):
     """Create group view."""
     model = Group
     form_class = GroupForm

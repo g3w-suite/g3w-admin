@@ -1,6 +1,6 @@
 from sitetree.utils import get_tree_model, generate_id_for
 
-def qdjango2tree(alias, title='', items=None, **kwargs):
+def G3Wtree(alias, title='', items=None, **kwargs):
     """Dynamically creates and returns a sitetree.
     `items` - dynamic sitetree items objects created by `item` function.
     REPLACE SITETREE tree()  UTILS FUNCTION TO ADD CUSTOM FILED IN TREE CUSTOM MODEL.

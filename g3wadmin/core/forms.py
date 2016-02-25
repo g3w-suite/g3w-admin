@@ -7,6 +7,9 @@ from django_file_form.forms import FileFormMixin
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Div, Submit, HTML, Button, Row, Field
 from crispy_forms.bootstrap import AppendedText, PrependedText
+from usersmanage.utils import get_fields_by_user
+from usersmanage.forms import Qdjango2ACLForm
+from core.mixins.forms import G3WRequestFormMixin
 
 
 class ExampleForm(FileFormMixin,Form):
@@ -17,7 +20,7 @@ class ExampleAjaxForm(Form):
     testo = CharField(required=True)
 
 
-class GroupForm(FileFormMixin,ModelForm):
+class GroupForm(FileFormMixin, G3WRequestFormMixin, Qdjango2ACLForm, ModelForm):
     """Group form."""
     header_logo_img = UploadedFileField()
 
@@ -57,6 +60,7 @@ class GroupForm(FileFormMixin,ModelForm):
                                             css_class='box-header with-border'
                                         ),
                                         Div(
+                                            #*get_fields_by_user(self.request.user,self),
                                             css_class='box-body'
                                         ),
                                         css_class='box box-solid bg-purple collapsed-box'

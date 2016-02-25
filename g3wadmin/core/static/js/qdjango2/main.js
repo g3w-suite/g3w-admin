@@ -26,6 +26,15 @@ _.extend(qdjango2,{
         $('[data-widget-type="deleteItem"]').click(function(e){
             that.widget.deleteItem($(this));
         });
+
+        // start select2 plugin
+        $('.select2').select2();
+
+        //Flat red color scheme for iCheck
+        $('input[type="checkbox"], input[type="radio"]').iCheck({
+          checkboxClass: 'icheckbox_flat-green',
+          radioClass: 'iradio_flat-green'
+        });
     }
 });
 
