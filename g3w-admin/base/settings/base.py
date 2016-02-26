@@ -158,4 +158,4 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-SITE_TITLE = 'Qdjango2'
+SITE_TITLE = 'g3w-admin'
