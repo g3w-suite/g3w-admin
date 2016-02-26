@@ -13,7 +13,8 @@ from django.forms import ModelChoiceField
 from django_file_form.forms import FileFormMixin, UploadedFileField
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout,Div,Field,HTML
-from usersmanage.models import Userdata, Department
+from .models import Userdata, Department
+from core.mixins.forms import G3WRequestFormMixin
 
 class UsersChoiceField(forms.ModelMultipleChoiceField):
     def label_from_instance(self, obj):
@@ -24,7 +25,7 @@ class UserChoiceField(forms.ModelChoiceField):
         return "%s %s (%s)" % (obj.first_name,obj.last_name,obj.username)
 
 
-class Qdjango2ACLForm(forms.Form):
+class G3WACLForm(forms.Form):
     initial_own_users = list()
     initial_editor_user = None
     editor_user = UserChoiceField(label=_('Editor user'),queryset=User.objects.filter(groups__name='Editor Maps Groups').order_by('last_name'),required=False)
@@ -64,13 +65,13 @@ class Qdjango2ACLForm(forms.Form):
         self.instance.addPermissionsToViewers(toAdd)
         self.instance.removePermissionsToViewers(toRemove)
 
-class Qdjango2UserForm(FileFormMixin,UserCreationForm):
+class G3WUserForm(G3WRequestFormMixin,FileFormMixin,UserCreationForm):
 
     department = ModelChoiceField(queryset=Department.objects.all(), required=False)
     avatar = UploadedFileField()
 
     def __init__(self, *args, **kwargs):
-        super(Qdjango2UserForm, self).__init__(*args, **kwargs)
+        super(G3WUserForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper(self)
         self.helper.form_tag = False
         self.helper.layout = Layout(
@@ -188,7 +189,7 @@ class Qdjango2UserForm(FileFormMixin,UserCreationForm):
         )
 
 
-class Qdjango2UserUpdateForm(Qdjango2UserForm):
+class G3WUserUpdateForm(G3WUserForm):
 
     password1 = forms.CharField(label=_("Password"),
         widget=forms.PasswordInput,required=False)

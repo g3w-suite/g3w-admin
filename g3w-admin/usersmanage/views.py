@@ -7,6 +7,7 @@ from django.views.generic import (
     DetailView
 )
 from .forms import *
+from core.mixins.views import G3WRequestViewMixin
 
 
 # Create your views here.
@@ -16,16 +17,16 @@ class UserListView(ListView):
     template_name = 'usersmanage/user_list.html'
     model = User
 
-class UserCreateView(CreateView):
-    form_class = Qdjango2UserForm
+class UserCreateView(G3WRequestViewMixin, CreateView):
+    form_class = G3WUserForm
     model = User
     template_name = 'usersmanage/user_form.html'
 
     def get_success_url(self):
         return reverse('user-list')
 
-class UserUpdateView(UpdateView):
-    form_class = Qdjango2UserUpdateForm
+class UserUpdateView(G3WRequestViewMixin, UpdateView):
+    form_class = G3WUserUpdateForm
     model = User
     template_name = 'usersmanage/user_form.html'
 
