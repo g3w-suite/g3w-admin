@@ -1,5 +1,7 @@
 from django.conf import settings
 from django import forms
+from django.forms import Select
+from django.utils.datastructures import MultiValueDict
 from django.utils.translation import ugettext, ugettext_lazy as _
 from django.contrib.auth.forms import (
     UserCreationForm,
@@ -14,7 +16,7 @@ from django_file_form.forms import FileFormMixin, UploadedFileField
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout,Div,Field,HTML
 from .models import Userdata, Department
-from core.mixins.forms import G3WRequestFormMixin
+from core.mixins.forms import G3WRequestFormMixin, G3WFormMixin
 
 class UsersChoiceField(forms.ModelMultipleChoiceField):
     def label_from_instance(self, obj):
@@ -23,6 +25,16 @@ class UsersChoiceField(forms.ModelMultipleChoiceField):
 class UserChoiceField(forms.ModelChoiceField):
     def label_from_instance(self, obj):
         return "%s %s (%s)" % (obj.first_name,obj.last_name,obj.username)
+
+
+class G3WM2MSingleSelect(Select):
+    '''
+    Widget for m2m single select
+    '''
+    def value_from_datadict(self, data, files, name):
+        if isinstance(data, MultiValueDict):
+            return data.getlist(name)
+        return data.get(name, None)
 
 
 class G3WACLForm(forms.Form):
@@ -65,13 +77,21 @@ class G3WACLForm(forms.Form):
         self.instance.addPermissionsToViewers(toAdd)
         self.instance.removePermissionsToViewers(toRemove)
 
-class G3WUserForm(G3WRequestFormMixin,FileFormMixin,UserCreationForm):
+class G3WUserForm(G3WRequestFormMixin, G3WFormMixin,FileFormMixin,UserCreationForm):
 
     department = ModelChoiceField(queryset=Department.objects.all(), required=False)
-    avatar = UploadedFileField()
+    avatar = UploadedFileField(required=False)
 
     def __init__(self, *args, **kwargs):
         super(G3WUserForm, self).__init__(*args, **kwargs)
+
+        #filter fileds by role:
+        self.filterFieldsByRoles()
+
+        #check for groups in intials data
+        if 'groups' in self.initial and len(self.initial['groups']) > 0:
+            self.initial['groups'] = self.initial['groups'][0]
+
         self.helper = FormHelper(self)
         self.helper.form_tag = False
         self.helper.layout = Layout(
@@ -108,7 +128,7 @@ class G3WUserForm(G3WRequestFormMixin,FileFormMixin,UserCreationForm):
                         ),
                         css_class='box box-solid bg-teal-gradient'
                     ),
-                    css_class='col-md-6'
+                    css_class='col-md-6 {}'.format(self.checkFieldsVisible('is_superuser', 'is_staff', 'groups'))
                 ),
 
                 Div(
@@ -154,6 +174,15 @@ class G3WUserForm(G3WRequestFormMixin,FileFormMixin,UserCreationForm):
 
         )
 
+    def filterFieldsByRoles(self):
+        if self.request.user.is_superuser:
+            if not self.request.user.is_staff:
+                self.fields.pop('is_staff')
+        else:
+            self.fields.pop('groups')
+            self.fields.pop('is_superuser')
+            self.fields.pop('is_staff')
+
     def save(self, commit=True):
         user = super(UserCreationForm, self).save(commit=False)
         # if editor maps groups user add viewer maps groups group to the user saved
@@ -187,6 +216,9 @@ class G3WUserForm(G3WRequestFormMixin,FileFormMixin,UserCreationForm):
             'department',
             'avatar',
         )
+        widgets = {
+            'groups': G3WM2MSingleSelect
+        }
 
 
 class G3WUserUpdateForm(G3WUserForm):

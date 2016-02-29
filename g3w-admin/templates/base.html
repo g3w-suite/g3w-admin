@@ -1,5 +1,6 @@
 {% load staticfiles %}
 {% load sitetree %}
+{% load i18n %}
 <!DOCTYPE html>
 <!--
 This is a starter template page. Use this page to start your new project from
@@ -81,7 +82,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
           <!-- mini logo for sidebar mini 50x50 pixels -->
           <span class="logo-mini"><b>G</b>A</span>
           <!-- logo for regular state and mobile devices -->
-          <span class="logo-lg"><b>G3W-Admin</b></span>
+          <span class="logo-lg"><b>G3W-A</b>dmin</span>
         </a>
 
         <!-- Header Navbar -->
@@ -100,7 +101,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
         <!-- sidebar: style can be found in sidebar.less -->
         <section class="sidebar">
-        {% sitetree_menu from "main" include "trunk" template "sitetree/sidebar.html" %}
+        {% sitetree_menu from "core" include "trunk" template "sitetree/sidebar.html" %}
+        {% sitetree_menu from "acl" include "trunk" template "sitetree/sidebar.html" %}
         </section>
         <!-- /.sidebar -->
       </aside>
@@ -117,7 +119,11 @@ scratch. This page gets rid of all links and provides the needed markup only.
           {% endblock %}
 
           {% block breadcrumb %}
-          {% sitetree_breadcrumbs from "main" template "sitetree/breadcrumbs_bootstrap3.html" %}
+          <ol class="breadcrumb">
+            <li><i class="fa fa-dashboard"></i> <a href="{% url 'home' %}">{% trans 'Dashboard' %}</a></li>
+            {% sitetree_breadcrumbs from "core" template "sitetree/breadcrumbs_bootstrap3.html" %}
+            {% sitetree_breadcrumbs from "acl" template "sitetree/breadcrumbs_bootstrap3.html" %}
+          </ol>
           {% endblock %}
         </section>
 
@@ -238,6 +244,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <script src="{% static "js/g3wadmin/ui.js" %}"></script>
     <script src="{% static "js/g3wadmin/widget.js" %}"></script>
     <script src="{% static "js/g3wadmin/utils.js" %}"></script>
+    <script src="{% static "js/g3wadmin/forms.js" %}"></script>
     <script src="{% static "js/g3wadmin.js" %}"></script>
 
     {% block custom_js_links_page %}

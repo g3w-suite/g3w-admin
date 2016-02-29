@@ -10,11 +10,11 @@ from autoslug import AutoSlugField
 from sitetree.models import TreeItemBase, TreeBase
 
 
-class Qdjango2Tree(TreeBase):
+class G3W2Tree(TreeBase):
     module = models.CharField('Qdjango2 Module', max_length=50, null=True, blank=True)
 
 
-class Qdjango2TreeItem(TreeItemBase):
+class G3W2TreeItem(TreeItemBase):
     type_header = models.BooleanField('Tipo header', default=False, blank=True)
     icon_css_class = models.CharField('Icon css class', max_length=50,null=True, blank=True)
 

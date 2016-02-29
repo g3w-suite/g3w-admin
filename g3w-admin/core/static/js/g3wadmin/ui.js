@@ -9,7 +9,7 @@
 
 
 
-_.extend(qdjango2.ui, {
+_.extend(g3wadmin.ui, {
 
     modal:  function($modal){
 
@@ -44,7 +44,7 @@ _.extend(qdjango2.ui, {
     _buildModal: function (options) {
 
         //build the modal jquery object
-        var $modal = $(qdjango2.tpl.dialog(_.extendOwn(qdjango2.tpl.tplDefValues.dialog,options)));
+        var $modal = $(ga.tpl.dialog(_.extendOwn(ga.tpl.tplDefValues.dialog,options)));
         return new this.modal($modal);
     },
 
@@ -62,6 +62,8 @@ _.extend(qdjango2.ui, {
         }
         options.modalClass = 'modal-danger';
         return this._buildModal(options);
-    }
+    },
+
+
 
 });

@@ -30,10 +30,16 @@
                 </div>
                 <div class="box-footer">
                   <div class="row">
-                    <div class="col-sm-6 col-xs-6">
+                   <div class="col-sm-2 col-xs-2">
                       <div class="description-block">
-                        <h5 class="description-header">0</h5>
-                        <span class="description-text">{% trans 'Projects' %}</span>
+                         <div class="icon">
+                          <a href="#"><i class="ion ion-plus-circled"></i></a>
+                        </div>
+                      </div><!-- /.description-block -->
+                    </div><!-- /.col -->
+                    <div class="col-sm-4 col-xs-4">
+                      <div class="description-block projects-group">
+                        <h5 class="description-header"><a href="{% url 'project-list' object.slug %}">0 {% trans 'Projects' %}</a></h5>
                       </div><!-- /.description-block -->
                     </div><!-- /.col -->
                     <div class="col-sm-2 col-xs-2">

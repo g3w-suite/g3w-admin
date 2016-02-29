@@ -1,5 +1,4 @@
 from django.shortcuts import render
-from django.http import JsonResponse
 from django.template.response import SimpleTemplateResponse, RequestContext, HttpResponse
 from django.forms.fields import FileField
 from django.views.generic import (
@@ -8,6 +7,7 @@ from django.views.generic import (
     UpdateView,
     ListView,
     DetailView,
+    TemplateView,
     View,
 )
 from django.views.generic.detail import SingleObjectMixin
@@ -16,12 +16,7 @@ from .forms import ExampleForm, ExampleAjaxForm, GroupForm
 from .models import Group
 from django_file_form.uploader import FileFormUploader
 from guardian.shortcuts import assign_perm, remove_perm ,get_objects_for_user
-from .mixins.views import G3WRequestViewMixin
-
-# Create your views here.
-
-from sitetree.utils import item
-
+from .mixins.views import G3WRequestViewMixin, G3WAjaxDeleteViewMixin
 
 def uploadform(request):
     return SimpleTemplateResponse('test/ajaxupload.html',context=RequestContext(request))
@@ -52,19 +47,21 @@ class ExampleAjaxFormView(FormView):
     def form_valid(self, form):
         return JsonResponse({'saved':True})
 
+#for GROUPS
+#---------------------------------------------
 
 class GroupListView(ListView):
     """List group view."""
     def get_queryset(self):
         return get_objects_for_user(self.request.user, 'core.view_group', Group).order_by('name')
 
-class GroupDetailView(DetailView):
+class GroupDetailView(G3WRequestViewMixin, DetailView):
     """Detail view."""
     model = Group
     template_name = 'core/ajax/group_detail.html'
 
 
-class GroupCreateView(G3WRequestViewMixin,CreateView):
+class GroupCreateView(G3WRequestViewMixin, CreateView):
     """Create group view."""
     model = Group
     form_class = GroupForm
@@ -72,7 +69,7 @@ class GroupCreateView(G3WRequestViewMixin,CreateView):
     def get_success_url(self):
         return reverse('group-list')
 
-class GroupUpdateView(UpdateView):
+class GroupUpdateView(G3WRequestViewMixin, UpdateView):
     """Update view."""
     model = Group
     form_class = GroupForm
@@ -81,17 +78,19 @@ class GroupUpdateView(UpdateView):
         return reverse('group-list')
 
 
-class GroupDeleteView(SingleObjectMixin,View):
-
+class GroupDeleteView(G3WAjaxDeleteViewMixin,G3WRequestViewMixin, SingleObjectMixin,View):
+    '''
+    Delete group Ajax view
+    '''
     model = Group
 
-    def post(self,request, *args, **kwargs):
-        self.object = self.get_object()
+#for PROJECTS
+#---------------------------------------------
 
-        # delete object
-        self.object.delete();
+class ProjectListView(G3WRequestViewMixin,TemplateView):
 
-        return JsonResponse({'status':'ok','message':'Object deleted!'})
+    template_name = 'core/project_list.html'
+
 
 
 

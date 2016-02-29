@@ -1,21 +1,35 @@
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.views.generic import (
     ListView,
     CreateView,
     UpdateView,
-    DetailView
+    DetailView,
+    View
 )
+from django.views.generic.detail import SingleObjectMixin
 from .forms import *
-from core.mixins.views import G3WRequestViewMixin
+from core.mixins.views import G3WRequestViewMixin, G3WAjaxDeleteViewMixin
 
 
 # Create your views here.
 
-class UserListView(ListView):
+class UserListView(G3WRequestViewMixin,ListView):
     """List users view."""
     template_name = 'usersmanage/user_list.html'
-    model = User
+
+    def get_queryset(self):
+        queryset = User.objects.order_by('username')
+        if self.request.user.is_superuser:
+            queryset = queryset.exclude(pk=settings.ANONYMOUS_USER_ID)
+            if not self.request.user.is_staff:
+                queryset = queryset.exclude(is_staff=True)
+        else:
+            queryset = queryset.filter(groups__name='Viewer Maps Groups')
+
+        return queryset
+
 
 class UserCreateView(G3WRequestViewMixin, CreateView):
     form_class = G3WUserForm
@@ -40,6 +54,9 @@ class UserUpdateView(G3WRequestViewMixin, UpdateView):
 
     def get_success_url(self):
         return reverse('user-list')
+
+class UserAjaxDeleteView(G3WAjaxDeleteViewMixin,G3WRequestViewMixin, SingleObjectMixin,View):
+    model = User
 
 class UserDetailView(DetailView):
     """Detail view."""

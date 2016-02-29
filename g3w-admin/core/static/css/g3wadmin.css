@@ -2,6 +2,10 @@
     font-size: 30px;
 }
 
+.box-footer .projects-group {
+    text-align: left;
+}
+
 table span.icon {
     font-size: 20px;
 }

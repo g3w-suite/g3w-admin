@@ -132,8 +132,8 @@ ANONYMOUS_USER_ID = -1
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
-SITETREE_MODEL_TREE = 'core.Qdjango2Tree'
-SITETREE_MODEL_TREE_ITEM = 'core.Qdjango2TreeItem'
+SITETREE_MODEL_TREE = 'core.G3W2Tree'
+SITETREE_MODEL_TREE_ITEM = 'core.G3W2TreeItem'
 
 
 LOGIN_URL = 'login'

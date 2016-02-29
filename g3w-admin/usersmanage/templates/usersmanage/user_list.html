@@ -37,7 +37,7 @@
                     </tr>
                 </thead>
                 {% for object in object_list %}
-                    <tr>
+                    <tr id="user_{{ object.pk }}">
                         <td>
                             <span class="col-xs-4 icon">
                                 <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-detail-url="{% url 'user-detail' object.id %}"><i class="ion ion-eye"></i></a>
@@ -46,7 +46,7 @@
                                 <a href="{% url 'user-update' object.id %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Edit' %}" ><i class="ion ion-edit"></i></a>
                             </span>
                             <span class="col-xs-4 icon">
-                                <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Delete' %}"  data-widget-type="deleteItem" data-delete-url="{% url 'user-add' %}" data-item-selector="#group_{{ object.slug }}"><i class="ion ion-trash-b"></i></a>
+                                <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Delete' %}"  data-widget-type="deleteItem" data-delete-url="{% url 'user-delete' object.pk %}" data-item-selector="#user_{{ object.pk }}"><i class="ion ion-trash-b"></i></a>
                             </span>
                         </td>
                         <td>{{ object.username }}</td>

@@ -9,7 +9,7 @@ from crispy_forms.layout import Layout, Div, Submit, HTML, Button, Row, Field
 from crispy_forms.bootstrap import AppendedText, PrependedText
 from usersmanage.utils import get_fields_by_user
 from usersmanage.forms import G3WACLForm
-from core.mixins.forms import G3WRequestFormMixin
+from core.mixins.forms import *
 
 
 class ExampleForm(FileFormMixin,Form):
@@ -20,7 +20,9 @@ class ExampleAjaxForm(Form):
     testo = CharField(required=True)
 
 
-class GroupForm(FileFormMixin, G3WRequestFormMixin, G3WACLForm, ModelForm):
+
+
+class GroupForm(FileFormMixin, G3WFormMixin, G3WRequestFormMixin, G3WACLForm, ModelForm):
     """Group form."""
     header_logo_img = UploadedFileField()
 
@@ -60,10 +62,10 @@ class GroupForm(FileFormMixin, G3WRequestFormMixin, G3WACLForm, ModelForm):
                                             css_class='box-header with-border'
                                         ),
                                         Div(
-                                            #*get_fields_by_user(self.request.user,self),
+                                            *get_fields_by_user(self.request.user,self),
                                             css_class='box-body'
                                         ),
-                                        css_class='box box-solid bg-purple collapsed-box'
+                                        css_class='box box-solid bg-purple {}'.format(self.checkEmptyInitialsData(*get_fields_by_user(self.request.user,self)))
                                     ),
                                     css_class='col-md-6'
                                 ),
@@ -109,7 +111,7 @@ class GroupForm(FileFormMixin, G3WRequestFormMixin, G3WACLForm, ModelForm):
                                             'use_osm_maps',
                                             css_class='box-body'
                                         ),
-                                        css_class='box box-danger collapsed-box'
+                                        css_class='box box-danger {}'.format(self.checkEmptyInitialsData('use_commercial_maps','use_osm_maps'))
                                     ),
                                     css_class='col-md-6'
                                 ),
@@ -159,7 +161,7 @@ class GroupForm(FileFormMixin, G3WRequestFormMixin, G3WACLForm, ModelForm):
                                             'header_terms_of_use_link',
                                             css_class='box-body'
                                         ),
-                                        css_class='box box-default collapsed-box'
+                                        css_class='box box-default {}'.format(self.checkEmptyInitialsData('header_terms_of_use_text','header_terms_of_use_link'))
                                     ),
                                     css_class='col-md-6'
                                 ),

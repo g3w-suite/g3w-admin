@@ -6,12 +6,13 @@
  * Use of https://github.com/sinkswim/javascript-style-guide for javascript coding style.
  */
 
-window.qdjango2 = {};
+window.g3wadmin = {};
 
-_.extend(qdjango2,{
+_.extend(g3wadmin,{
     tpl: {}, // templates space
     widget: {}, //  widget space
     ui: {}, // UI
+    forms: {}, // forms related
     utils: {},
     bootstrap: function(){
 
@@ -35,11 +36,24 @@ _.extend(qdjango2,{
           checkboxClass: 'icheckbox_flat-green',
           radioClass: 'iradio_flat-green'
         });
+
+
+        /*
+        TODO: try to perfom this issue server side
+        //If form present che collapsed box
+        var $formsInContent = $('.content').find('form');
+        if ($formsInContent.length > 0) {
+
+            //check box to open
+            $formBoxes = $formsInContent.find('.collapsed-box > .box-body');
+            $.each($formBoxes, function(index, item){
+                that.forms.checkBoxToOpen($(item));
+            });
+        }
+        */
     }
 });
 
-
-
-window.qdj2 = qdjango2;
+window.ga = g3wadmin;
 
 

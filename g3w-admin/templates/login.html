@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load staticfiles %}
+{% load i18n %}
 {% block custom_css_links_page %}
 <!-- iCheck -->
 <link rel="stylesheet" href="{% static "bower_components/icheck/skins/square/blue.css" %}">
@@ -8,10 +9,15 @@
 {% block body_content %}
  <div class="login-box">
   <div class="login-logo">
-    <a href="{% url 'home' %}"><b>Qdjango</b>2</a>
+    <a href="{% url 'home' %}"><b>G3W-A</b>dmin</a>
   </div><!-- /.login-logo -->
   <div class="login-box-body">
-    <p class="login-box-msg">Sign in to start your session</p>
+    <p class="login-box-msg">{%  trans 'Sign in to start your session' %}</p>
+      {% if form.errors %}
+        {% for error in form.errors %}
+            {{ error }}
+        {% endfor %}
+      {% endif %}
     <form method="post">
       {% csrf_token %}
       <div class="form-group has-feedback">
@@ -24,7 +30,7 @@
       </div>
       <div class="row">
         <div class="col-xs-4">
-          <button type="submit" class="btn btn-primary btn-block btn-flat">Sign In</button>
+          <button type="submit" class="btn btn-primary btn-block btn-flat">{% trans 'Sign In' %}</button>
         </div><!-- /.col -->
       </div>
     </form>

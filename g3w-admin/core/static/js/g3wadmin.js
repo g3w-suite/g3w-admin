@@ -10,8 +10,8 @@ var $m;
 
 $(document).ready(function(){
     $('#bt_test').click(function(){
-        qdjango2.widget.deleteItem($(this));
+        ga.widget.deleteItem($(this));
     });
 
-    qdj2.bootstrap();
+    ga.bootstrap();
 });

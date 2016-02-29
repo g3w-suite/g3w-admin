@@ -6,7 +6,7 @@
  * Use of https://github.com/sinkswim/javascript-style-guide for javascript coding style.
  */
 
-_.extend(qdjango2.utils, {
+_.extend(g3wadmin.utils, {
 
     getDataAttrs: function($item, paramsToFind){
 
@@ -20,7 +20,7 @@ _.extend(qdjango2.utils, {
     },
 
     buildAjaxErrorMessage: function(textStatus,errorMessage,moreInfo) {
-        return qdj2.tpl.ajaxError(_.extendOwn(qdj2.tpl.tplDefValues.ajaxError,{textStatus:textStatus, errorMessage:errorMessage, moreInfo:moreInfo}));
+        return ga.tpl.ajaxError(_.extendOwn(ga.tpl.tplDefValues.ajaxError,{textStatus:textStatus, errorMessage:errorMessage, moreInfo:moreInfo}));
     },
 
     addCsfrtokenData: function(data) {

@@ -6,10 +6,10 @@
  * Use of https://github.com/sinkswim/javascript-style-guide for javascript coding style.
  */
 
-_.extend(qdjango2.widget, {
+_.extend(g3wadmin.widget, {
 
     /**
-     * Data-<param> DOM attributes to find in item (jaeury object) for deleteItem widget.
+     * Data-<param> DOM attributes to find in item (jqeury object) for deleteItem widget.
      */
     _deleteItemParams: [
         'delete-url',
@@ -17,7 +17,7 @@ _.extend(qdjango2.widget, {
     ],
 
     /**
-     * Data-<param> DOM attributes to find in item (jaeury object) for detailItem widget.
+     * Data-<param> DOM attributes to find in item (jqeury object) for detailItem widget.
      */
     _detailItemParams: [
         'detail-url',
@@ -31,13 +31,13 @@ _.extend(qdjango2.widget, {
 
         try {
             // search into $item attrs
-            var params = qdj2.utils.getDataAttrs($item, this._deleteItemParams);
+            var params = ga.utils.getDataAttrs($item, this._deleteItemParams);
             if (_.isUndefined(params['delete-url'])) {
                 throw new Error('Attribute data-delete-url not defined');
             }
 
             // open modal to confirm delete
-            var modal = qdj2.ui.buildDefaultModal({
+            var modal = ga.ui.buildDefaultModal({
                 modalTitle: 'Delete item',
                 modalBody: 'Are you sure to delete this Item?',
                 closeButtonText: 'No'
@@ -46,7 +46,7 @@ _.extend(qdjango2.widget, {
             //call ajax delete url
             var actionDelete = function () {
                 var data = {};
-                qdj2.utils.addCsfrtokenData(data);
+                ga.utils.addCsfrtokenData(data);
                 $.ajax({
                     method: 'post',
                     url: params['delete-url'],
@@ -59,7 +59,7 @@ _.extend(qdjango2.widget, {
                         modal.hide();
                     },
                     error: function (xhr, textStatus, errorMessage) {
-                        qdj2.widget.showError(qdj2.utils.buildAjaxErrorMessage(xhr.status, errorMessage));
+                        ga.widget.showError(ga.utils.buildAjaxErrorMessage(xhr.status, errorMessage));
                     }
 
 
@@ -82,7 +82,7 @@ _.extend(qdjango2.widget, {
 
         try {
 
-            var params = qdj2.utils.getDataAttrs($item, this._detailItemParams);
+            var params = ga.utils.getDataAttrs($item, this._detailItemParams);
             if (_.isUndefined(params['detail-url'])) {
                 throw new Error('Attribute data-detail-url not defined');
             }
@@ -94,7 +94,7 @@ _.extend(qdjango2.widget, {
                  success: function (res) {
 
                     // open modal to show detail data
-                    var modal = qdj2.ui.buildDefaultModal({
+                    var modal = ga.ui.buildDefaultModal({
                         modalTitle: 'Detail object',
                         modalBody: res,
                         closeButtonText: 'Close',
@@ -103,7 +103,7 @@ _.extend(qdjango2.widget, {
                     modal.show();
                  },
                  error: function (xhr, textStatus, errorMessage) {
-                     qdj2.widget.showError(qdj2.utils.buildAjaxErrorMessage(xhr.status, errorMessage));
+                     ga.widget.showError(ga.utils.buildAjaxErrorMessage(xhr.status, errorMessage));
                  }
              });
 
@@ -122,7 +122,7 @@ _.extend(qdjango2.widget, {
 
         // delete every modal opened
         $('.modal,.fade').remove();
-        var modal = qdj2.ui.buildDangerModal({modalTitle:'ERROR',modalBody:message});
+        var modal = ga.ui.buildDangerModal({modalTitle:'ERROR',modalBody:message});
         modal.show();
     }
 

@@ -6,7 +6,7 @@
  * Use of https://github.com/sinkswim/javascript-style-guide for javascript coding style.
  */
 
-_.extend(qdjango2.tpl, {
+_.extend(g3wadmin.tpl, {
 
     tplDefValues: {
         dialog :{
