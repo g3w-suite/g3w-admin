@@ -1,0 +1,3 @@
+{% with app|add:'-project-add' as listurl %}
+<h3 class="box-title"><a href="{% url listurl group.slug %}"><i class="ion ion-plus-circled"></i></a> {{ app }} Project</h3>
+{% endwith %}

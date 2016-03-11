@@ -1,6 +1,8 @@
+from django.forms import ModelForm
 
 
 class G3WRequestFormMixin(object):
+    """ Form Mixin to get Request object from instance """
 
     def __init__(self, *args, **kwargs):
 
@@ -8,9 +10,14 @@ class G3WRequestFormMixin(object):
         if 'request' in kwargs:
             self.request = kwargs['request']
             del(kwargs['request'])
+
+        #for not model form:
+        if not isinstance(self,ModelForm):
+            del(kwargs['instance'])
         super(G3WRequestFormMixin, self).__init__(*args, **kwargs)
 
 class G3WFormMixin(object):
+    """ Form mixin for crispy form layout element """
 
     def checkEmptyInitialsData(self,*fields):
 

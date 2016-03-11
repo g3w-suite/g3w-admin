@@ -17,10 +17,15 @@ _.extend(g3wadmin.widget, {
     ],
 
     /**
-     * Data-<param> DOM attributes to find in item (jqeury object) for detailItem widget.
+     * Data-<param> DOM attributes to find in item (jquery object) for detailItem widget.
      */
     _detailItemParams: [
         'detail-url',
+    ],
+
+    _loadHtmlItemParams :[
+        'html-url',
+        'target-selector'
     ],
 
     /**
@@ -112,6 +117,65 @@ _.extend(g3wadmin.widget, {
         }
 
 
+    },
+
+    /**
+     * load data from html-url and punt into target item
+     * @param $item
+     */
+    loadHtmlItem: function($item){
+        try {
+
+            var params = ga.utils.getDataAttrs($item, this._loadHtmlItemParams);
+            if (_.isUndefined(params['html-url'])) {
+                throw new Error('Attribute data-html-url not defined');
+            }
+
+            // ajax call to get deatail data
+             $.ajax({
+                 method: 'get',
+                 url: params['html-url'],
+                 success: function (res) {
+
+                    //punt re into target
+                     $(params['target-selector']).html(res);
+                 },
+                 error: function (xhr, textStatus, errorMessage) {
+                     ga.widget.showError(ga.utils.buildAjaxErrorMessage(xhr.status, errorMessage));
+                 }
+             });
+
+        } catch (e) {
+            this.showError(e.message);
+        }
+    },
+
+    addProjectGroup: function($item){
+
+        try {
+
+            var $bodyContent = $item.next('.add-links');
+            if ($bodyContent.length == 0) {
+                throw new Error('No add add links choices set');
+            }
+
+            // open modal to show list of add links
+            var modal = ga.ui.buildDefaultModal({
+                modalTitle: 'Add a project',
+                modalBody: $bodyContent.html(),
+                closeButtonText: 'No'
+            });
+
+            modal.show();
+
+        } catch (e) {
+            this.showError(e.message);
+        }
+
+    },
+
+    ajaxUpload: function($item){
+        initUploadFields($item);
     },
 
     /**

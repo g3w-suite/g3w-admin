@@ -25,6 +25,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <link rel="stylesheet" href="{% static "bower_components/select2/dist/css/select2.min.css" %}">
     <!-- Pace -->
     <link rel="stylesheet" href="{% static "bower_components/pace/themes/yellow/pace-theme-loading-bar.css" %}">
+    <!-- Bootstrap3-wysiwyg -->
+    <link rel="stylesheet" href="{% static "bower_components/bootstrap3-wysihtml5-bower/dist/bootstrap3-wysihtml5.min.css" %}">
     <!-- Theme style -->
     <link rel="stylesheet" href="{% static "adminlte/css/AdminLTE.min.css" %}">
     <!-- AdminLTE Skins. We have chosen the skin-blue for this starter
@@ -44,6 +46,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <link rel="stylesheet" href="{% static "ajaxuploader/css/fileuploader.css" %}">
     <!-- icheck -->
     <link rel="stylesheet" href="{% static "bower_components/icheck/skins/all.css" %}">
+
 
     {% block custom_css_links_page %}
     {% endblock %}
@@ -225,6 +228,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <script src="{% static "adminlte/js/app.min.js" %}"></script>
     <!-- Select2 -->
     <script src="{% static "bower_components/select2/dist/js/select2.full.min.js" %}"></script>
+    <!-- Bootstrap3-wysihtml5 -->
+    <script src="{% static "bower_components/bootstrap3-wysihtml5-bower/dist/bootstrap3-wysihtml5.all.min.js" %}"></script>
+
 
     {% if 'fixed' in adminlte_layout_option %}
     <!-- Slimscroll -->

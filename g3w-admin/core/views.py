@@ -1,5 +1,7 @@
+from django.conf import settings
 from django.shortcuts import render
 from django.template.response import SimpleTemplateResponse, RequestContext, HttpResponse
+from django.http import JsonResponse
 from django.forms.fields import FileField
 from django.views.generic import (
     FormView,
@@ -17,14 +19,14 @@ from .models import Group
 from django_file_form.uploader import FileFormUploader
 from guardian.shortcuts import assign_perm, remove_perm ,get_objects_for_user
 from .mixins.views import G3WRequestViewMixin, G3WAjaxDeleteViewMixin
+import json
 
 def uploadform(request):
     return SimpleTemplateResponse('test/ajaxupload.html',context=RequestContext(request))
 
 
 def fileupload(request):
-    print request
-    return HttpResponse('arrivato')
+    return HttpResponse(json.dumps({"file_url": 'test'}))
 
 
 class ExampleFormView(FormView):
@@ -49,6 +51,7 @@ class ExampleAjaxFormView(FormView):
 
 #for GROUPS
 #---------------------------------------------
+
 
 class GroupListView(ListView):
     """List group view."""
@@ -90,6 +93,13 @@ class GroupDeleteView(G3WAjaxDeleteViewMixin,G3WRequestViewMixin, SingleObjectMi
 class ProjectListView(G3WRequestViewMixin,TemplateView):
 
     template_name = 'core/project_list.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(ProjectListView, self).get_context_data(**kwargs)
+
+        #group object
+        context['group'] = Group.objects.get(slug=context['group_slug'])
+        return context
 
 
 

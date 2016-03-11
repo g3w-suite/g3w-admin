@@ -3,6 +3,11 @@ from .views import uploadform, fileupload, ExampleFormView, ExampleAjaxFormView
 from django.contrib.auth.decorators import login_required
 from .views import *
 
+from django.views.static import serve
+def protected_serve(request, path, document_root=None, show_indexes=False):
+    return serve(request, path, document_root, show_indexes)
+
+
 urlpatterns = [
     url(r'^$', uploadform, name='home'),
     url(r'^file-upload/$', fileupload),
@@ -20,4 +25,7 @@ urlpatterns = [
     #exmaple file form ajax
     url(r'^exampleform/$', ExampleFormView.as_view()),
     url(r'^exampleajaxform/$', ExampleAjaxFormView.as_view()),
+
+    #url(r'^{}(?P<path>.*)$'.format(settings.MEDIA_URL[1:] + 'logo_img/'), protected_serve, {'document_root': settings.MEDIA_ROOT+ 'logo_img/'}),
+
 ]

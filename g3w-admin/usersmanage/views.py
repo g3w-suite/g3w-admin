@@ -11,6 +11,8 @@ from django.views.generic import (
 from django.views.generic.detail import SingleObjectMixin
 from .forms import *
 from core.mixins.views import G3WRequestViewMixin, G3WAjaxDeleteViewMixin
+from django_file_form.forms import ExistingFile
+from pathlib import Path
 
 
 # Create your views here.
@@ -49,7 +51,9 @@ class UserUpdateView(G3WRequestViewMixin, UpdateView):
         kwargs['initial']['password'] = self.object.password
         if hasattr(self.object,'userdata'):
             kwargs['initial']['department'] = self.object.userdata.department
-            kwargs['initial']['avatar'] = self.object.userdata.avatar
+            if self.object.userdata.avatar:
+                name = Path(self.object.userdata.avatar.name).name
+                kwargs['initial']['avatar'] = ExistingFile(name)
         return kwargs
 
     def get_success_url(self):

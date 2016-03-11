@@ -3,9 +3,10 @@
   "authors": [
     "wlorenzetti <lorenzetti@gis3w.it>"
   ],
-  "description": "A Qgis projects web app view",
+  "description": "A Qgis and other type projects web app view",
   "dependencies": {
     "bootstrap": "~3.3.5",
+    "bootstrap3-wysihtml5-bower": "*",
     "jquery": "~2.1.4",
     "jquery-ui": "~1.11.4",
     "jquery-slimscroll": "*",

@@ -18,19 +18,20 @@ from crispy_forms.layout import Layout,Div,Field,HTML
 from .models import Userdata, Department
 from core.mixins.forms import G3WRequestFormMixin, G3WFormMixin
 
+
+
 class UsersChoiceField(forms.ModelMultipleChoiceField):
     def label_from_instance(self, obj):
-        return "%s %s (%s)" % (obj.first_name,obj.last_name,obj.username)
+        return '{} {} ({})'.format(obj.first_name,obj.last_name,obj.username)
 
 class UserChoiceField(forms.ModelChoiceField):
     def label_from_instance(self, obj):
-        return "%s %s (%s)" % (obj.first_name,obj.last_name,obj.username)
+        return '{} {} ({})'.format(obj.first_name,obj.last_name,obj.username)
 
 
 class G3WM2MSingleSelect(Select):
-    '''
-    Widget for m2m single select
-    '''
+    """ Widget for m2m single select """
+
     def value_from_datadict(self, data, files, name):
         if isinstance(data, MultiValueDict):
             return data.getlist(name)
@@ -38,6 +39,8 @@ class G3WM2MSingleSelect(Select):
 
 
 class G3WACLForm(forms.Form):
+    """ ACL Form class to work with group user type """
+
     initial_own_users = list()
     initial_editor_user = None
     editor_user = UserChoiceField(label=_('Editor user'),queryset=User.objects.filter(groups__name='Editor Maps Groups').order_by('last_name'),required=False)
@@ -193,7 +196,10 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin,FileFormMixin,UserCreationFo
             self.save_m2m()
             if hasattr(user,'userdata'):
                 user.userdata.department = self.cleaned_data['department']
-                user.userdata.avatar = self.cleaned_data['avatar']
+                if self.cleaned_data['avatar']:
+                    user.userdata.avatar = self.cleaned_data['avatar']
+                else:
+                    user.userdata.avatar = None
                 user.userdata.save()
             else:
                 Userdata(user=user, department=self.cleaned_data['department'],avatar=self.cleaned_data['avatar']).save()

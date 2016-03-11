@@ -7,7 +7,7 @@ from django_file_form.forms import FileFormMixin
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Div, Submit, HTML, Button, Row, Field
 from crispy_forms.bootstrap import AppendedText, PrependedText
-from usersmanage.utils import get_fields_by_user
+from usersmanage.utils import get_fields_by_user, crispyBoxACL
 from usersmanage.forms import G3WACLForm
 from core.mixins.forms import *
 
@@ -51,24 +51,7 @@ class GroupForm(FileFormMixin, G3WFormMixin, G3WRequestFormMixin, G3WACLForm, Mo
                                     css_class='col-md-6'
                                 ),
 
-                                Div(
-                                    Div(
-                                        Div(
-                                            HTML("<h3 class='box-title'><i class='fa fa-user'></i> {}</h3>".format(_('ACL Users'))),
-                                            Div(
-                                                HTML("<button class='btn btn-box-tool' data-widget='collapse'><i class='fa fa-minus'></i></button>"),
-                                                css_class='box-tools',
-                                            ),
-                                            css_class='box-header with-border'
-                                        ),
-                                        Div(
-                                            *get_fields_by_user(self.request.user,self),
-                                            css_class='box-body'
-                                        ),
-                                        css_class='box box-solid bg-purple {}'.format(self.checkEmptyInitialsData(*get_fields_by_user(self.request.user,self)))
-                                    ),
-                                    css_class='col-md-6'
-                                ),
+                                crispyBoxACL(self),
 
                                 Div(
                                     Div(

@@ -46,15 +46,20 @@ THIRD_PARTY_APPS = [
     'crispy_forms',
     'guardian',
     'sitetree',
+    'django_extensions',
+    'dropzone'
 ]
 
-QDJANGO_APPS = [
+G3WADMIN_APPS = [
     'base',
     'core',
     'usersmanage'
 ]
 
-INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + QDJANGO_APPS
+G3WADMIN_PROJECT_APPS = [
+    'qdjango',
+    'ogc'
+]
 
 
 
@@ -153,9 +158,42 @@ USE_L10N = True
 USE_TZ = True
 
 
+# FOR MEDIA
+
+MEDIA_ROOT = '/home/www/django-qgis-static/media/'
+MEDIA_URL = '/g3wadmin_media/'
+
+# For Data gis source
+DATASOURCE_PATH = ''
+
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
 STATIC_URL = '/static/'
 
 SITE_TITLE = 'g3w-admin'
+
+#LOGGING_CONFIG = None
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': '/tmp/debug.log',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}
+
+

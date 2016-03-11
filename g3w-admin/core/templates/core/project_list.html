@@ -19,7 +19,7 @@
     <div class="col-md-12 col-xs-12">
         <div class="box">
             <div class="box-header">
-                <h3 class="box-title">Group</h3>
+                <h3 class="box-title">Group {{ group.name }}</h3>
             </div>
             <div class="box-body">
                 Description group
@@ -29,113 +29,11 @@
 </div>
 
 <div class="row">
-    <div class="col-md-6 col-xs-6">
-        <div class="box">
-            <div class="box-header">
-                <h3 class="box-title">Qdjango Project</h3>
-                <span class="description">Qgis project type</span>
-            </div>
-            <div class="box-body">
-                <table class="table table-hover table-striped">
-                    <thead>
-                        <tr>
-                            <th style="width:120px">Actions</th>
-                            <th>Logo</th>
-                            <th>Title</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>
-                                <span class="col-xs-4 icon">
-                                    <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" ></i></a>
-                                </span>
-                                <span class="col-xs-4 icon">
-                                    <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Edit' %}" ><i class="ion ion-edit"></i></a>
-                                </span>
-                                <span class="col-xs-4 icon">
-                                    <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Delete' %}" ><i class="ion ion-trash-b"></i></a>
-                                </span>
-                            </td>
-                            <td>Logo</td>
-                            <td>Ttitolo</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+{% for app in SETTINGS.G3WADMIN_PROJECT_APPS %}
+    {% with app|add:'-project-list' as listurl %}
+    <div class="col-md-6 col-xs-6" id="{{ app }}_projects_list" data-widget-type="htmlItem" data-html-url="{% url listurl group.slug %}" data-target-selector="#{{ app }}_projects_list">
     </div>
-    <div class="col-md-6 col-xs-6">
-        <div class="box">
-            <div class="box-header">
-                <h3 class="box-title">Mapserver Project</h3>
-                <span class="description">Qgis project type</span>
-            </div>
-            <div class="box-body">
-                <table class="table table-hover table-striped">
-                    <thead>
-                        <tr>
-                            <th style="width:120px">Actions</th>
-                            <th>Logo</th>
-                            <th>Title</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>
-                                <span class="col-xs-4 icon">
-                                    <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" ></i></a>
-                                </span>
-                                <span class="col-xs-4 icon">
-                                    <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Edit' %}" ><i class="ion ion-edit"></i></a>
-                                </span>
-                                <span class="col-xs-4 icon">
-                                    <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Delete' %}" ><i class="ion ion-trash-b"></i></a>
-                                </span>
-                            </td>
-                            <td>Logo</td>
-                            <td>Ttitolo</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-6 col-xs-6">
-        <div class="box">
-            <div class="box-header">
-                <h3 class="box-title">Georserver Project</h3>
-                <span class="description">Qgis project type</span>
-            </div>
-            <div class="box-body">
-                <table class="table table-hover table-striped">
-                    <thead>
-                        <tr>
-                            <th style="width:120px">Actions</th>
-                            <th>Logo</th>
-                            <th>Title</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>
-                                <span class="col-xs-4 icon">
-                                    <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" ></i></a>
-                                </span>
-                                <span class="col-xs-4 icon">
-                                    <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Edit' %}" ><i class="ion ion-edit"></i></a>
-                                </span>
-                                <span class="col-xs-4 icon">
-                                    <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Delete' %}" ><i class="ion ion-trash-b"></i></a>
-                                </span>
-                            </td>
-                            <td>Logo</td>
-                            <td>Ttitolo</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
+    {% endwith %}
+{% endfor %}
 </div>
 {% endblock %}

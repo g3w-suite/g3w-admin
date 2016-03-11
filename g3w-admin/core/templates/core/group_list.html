@@ -4,6 +4,7 @@
 {% load guardian_tags %}
 {% load auth_extras %}
 {% load i18n %}
+{% load g3wadmin_tags %}
 
 {% block page_header %}
     <h1>
@@ -33,7 +34,12 @@
                    <div class="col-sm-2 col-xs-2">
                       <div class="description-block">
                          <div class="icon">
-                          <a href="#"><i class="ion ion-plus-circled"></i></a>
+                          <a href="#" data-widget-type="addProjectGroup"><i class="ion ion-plus-circled"></i></a>
+                          <div class="hidden add-links">
+                              {% for app in SETTINGS.G3WADMIN_PROJECT_APPS %}
+                                  {% g3wadmin_add_project app object %}
+                              {% endfor %}
+                          </div>
                         </div>
                       </div><!-- /.description-block -->
                     </div><!-- /.col -->

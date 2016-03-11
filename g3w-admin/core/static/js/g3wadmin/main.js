@@ -28,15 +28,32 @@ _.extend(g3wadmin,{
             that.widget.deleteItem($(this));
         });
 
+        // Load Html Widget
+        var $htmlLoads = $('[data-widget-type="htmlItem"]');
+        $.each($htmlLoads,function(){
+            that.widget.loadHtmlItem($(this));
+        });
+
+        // Add porjects modal Widget
+        $('[data-widget-type="addProjectGroup"]').click(function(e){
+            that.widget.addProjectGroup($(this));
+        });
+
+        // Ajax upload form
+        that.widget.ajaxUpload($('[data-widget-type="ajaxUpload"]'));
+
+
         // start select2 plugin
         $('.select2').select2();
+
+        // start bootstrap3-wysihtml5
+        $('.wys5').wysihtml5();
 
         //Flat red color scheme for iCheck
         $('input[type="checkbox"], input[type="radio"]').iCheck({
           checkboxClass: 'icheckbox_flat-green',
           radioClass: 'iradio_flat-green'
         });
-
 
         /*
         TODO: try to perfom this issue server side

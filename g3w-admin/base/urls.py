@@ -25,6 +25,7 @@ urlpatterns = [
     url(r'^',include('usersmanage.urls')),
     url(r'^upload/', include('django_file_form.urls')),
 
+
     url(
         r'^login/$',
         'django.contrib.auth.views.login',
@@ -37,6 +38,11 @@ urlpatterns = [
         {'next_page': settings.LOGOUT_NEXT_PAGE},
         name='logout'),
 ]
+
+#adding projects app
+for app in settings.G3WADMIN_PROJECT_APPS:
+    urlpatterns.append(url(r'^{}/'.format(app),include('{}.urls'.format(app))))
+
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
