@@ -38,7 +38,7 @@ class Project(TimeStampedModel):
 
     # General info
     title = models.CharField(_('Title'), max_length=255)
-    description = models.TextField(_('Description'), blank=True)
+    description = models.TextField(_('Description'), blank=True, null=True)
     slug = AutoSlugField(
         _('Slug'), populate_from='title', unique=True, always_update=True
         )
@@ -88,7 +88,7 @@ class Layer(models.Model):
         )
     is_active = models.BooleanField(_('Is active'), default=1)
     # Project
-    project = models.ForeignKey(Project, verbose_name=_('Project'))
+    project = models.ForeignKey(Project, verbose_name=_('Project'), on_delete=models.CASCADE)
     # Type and content
     layer_type = models.CharField(_('Type'), choices=TYPES, max_length=255)
     datasource = models.TextField(_('Datasource'))

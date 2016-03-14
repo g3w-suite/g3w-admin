@@ -1,4 +1,5 @@
 from django import forms
+from django.forms import ValidationError
 from django.utils.translation import ugettext, ugettext_lazy as _
 from crispy_forms.helper import FormHelper, Layout
 from crispy_forms.layout import Div, Field, HTML
@@ -11,62 +12,40 @@ from dropzone.forms import DropzoneInput
 from django.forms import TextInput
 
 
-
-
 from qgis.core import QgsProject, QgsApplication
 from PyQt4.QtCore import QFileInfo, QObject, SIGNAL
+from .utils.data import QgisProject, ProjectExists
+
 
 class QdjangoProjectFormMixin(object):
     """
     Mixin for project qdjango form, clean policy ofr qgisfile
     """
-
-    def error(self,msg):
-        print msg
-
-
     def clean_qgis_file(self):
         try:
-
-            #load here because at global level problem on loggin system
-            '''
             qgis_file = self.cleaned_data['qgis_file']
-            project  = QgsProject.instance()
-            #QObject.connect(project, SIGNAL("loadingLayer(QString)"), self.error)
-            #project.read(QFileInfo(qgis_file.file.path))
-            project.read(QFileInfo('/home/www/django-qgis-static/media/projects/cdu_cdu.qgs'))
-
-            print 'pippo'
-
-            '''
-            qgis_file = self.cleaned_data['qgis_file']
-            qgis_project_data = get_qgis_data(qgis_file)
-            qgis_project_title = qgis_project_data['title']
-            # Check group and project have same SRID and units
-            if hasattr(self, 'instance'):
-                group = self.instance.group
-            else:
-                group = self.group
-            is_group_compatible(group, qgis_project_data)
-
+            group = self.group
+            self.qgisProject = QgisProject(qgis_file,group=group)
+            if not self.instance:
+                self.qgisProject.registerValidator(ProjectExists)
+            self.qgisProject.clean()
         except Exception as e:
-            print e
-            #raise ValidationError(e)
-        '''
-        project_exists = Project.objects.filter(title=qgis_project_title).exists()
-        if not isinstance(self, ProjectUpdateForm) and project_exists:
-            raise ValidationError(_('A project with the same title already exists'))
-        self.qgis_project_data = qgis_project_data
-        '''
+            '''
+            if settings.DEBUG:
+                raise e
+            else:
+            '''
+            raise ValidationError(e)
         return qgis_file
 
-class QdjangocProjetForm(QdjangoProjectFormMixin, G3WFormMixin, G3WRequestFormMixin, G3WACLForm, FileFormMixin,forms.ModelForm):
+
+class QdjangoProjetForm(QdjangoProjectFormMixin, G3WFormMixin, G3WGroupFormMixin, G3WRequestFormMixin, G3WACLForm, FileFormMixin, forms.ModelForm):
 
     qgis_file = UploadedFileField(required=True)
-    thumbnail = UploadedFileField()
+    thumbnail = UploadedFileField(required=False)
 
     def __init__(self, *args, **kwargs):
-        super(QdjangocProjetForm, self).__init__(*args, **kwargs)
+        super(QdjangoProjetForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper(self)
         self.helper.form_tag = False
         self.helper.layout = Layout(

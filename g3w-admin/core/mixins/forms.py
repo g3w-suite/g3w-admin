@@ -16,6 +16,20 @@ class G3WRequestFormMixin(object):
             del(kwargs['instance'])
         super(G3WRequestFormMixin, self).__init__(*args, **kwargs)
 
+
+class G3WGroupFormMixin(object):
+    """ Form Mixin to get Group object from instance """
+
+    def __init__(self, *args, **kwargs):
+
+        #get request object from kwargs
+        if 'group' in kwargs:
+            self.group = kwargs['group']
+            del(kwargs['group'])
+
+        super(G3WGroupFormMixin, self).__init__(*args, **kwargs)
+
+
 class G3WFormMixin(object):
     """ Form mixin for crispy form layout element """
 
