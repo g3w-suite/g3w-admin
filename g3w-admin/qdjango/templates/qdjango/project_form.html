@@ -9,7 +9,6 @@
 {% endblock %}
 
 
-
 {% block custom_js_links_page %}
 <script type="text/javascript" src="{% static "js/dropzone/dropzone.js" %}"></script>
 <script src="{% static "js/dropzone/dropzone.django.js" %}"></script>
@@ -43,7 +42,14 @@
             {% crispy form %}
             <div class="row">
                 <div class="col-md-12">
-                    <input class="btn btn-primary" type="submit" value="{%trans 'Save'%}" />
+                    <button class="btn btn-lg btn-success" type="submit">
+                        <i class="fa fa-save"></i>
+                        {%trans 'Save'%}
+                    </button>
+                    <a class="btn btn-lg btn-default">
+                        <i class="fa fa-backward"></i>
+                        {%trans 'Redo/Back'%}
+                    </a>
                 </div>
             </div>
         </form>

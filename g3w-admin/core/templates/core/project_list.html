@@ -31,7 +31,7 @@
 <div class="row">
 {% for app in SETTINGS.G3WADMIN_PROJECT_APPS %}
     {% with app|add:'-project-list' as listurl %}
-    <div class="col-md-6 col-xs-6" id="{{ app }}_projects_list" data-widget-type="htmlItem" data-html-url="{% url listurl group.slug %}" data-target-selector="#{{ app }}_projects_list">
+    <div class="col-md-6 col-xs-12" id="{{ app }}_projects_list" data-widget-type="htmlItem" data-html-url="{% url listurl group.slug %}" data-target-selector="#{{ app }}_projects_list">
     </div>
     {% endwith %}
 {% endfor %}

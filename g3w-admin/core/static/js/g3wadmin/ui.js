@@ -64,6 +64,43 @@ _.extend(g3wadmin.ui, {
         return this._buildModal(options);
     },
 
+    initCrudDeleteWidget: function(context) {
+        if (!_.isUndefined(context)) {
+            var $widgetItem = $(context).find('[data-widget-type="deleteItem"]');
+        }
+        else {
+            var $widgetItem = $('[data-widget-type="deleteItem"]');
+        }
+        $widgetItem.click(function(e){
+            ga.widget.deleteItem($(this));
+        });
+    },
+
+    initCrudDetailWidget: function(context) {
+        if (!_.isUndefined(context)) {
+            var $widgetItem = $(context).find('[data-widget-type="detailItem"]');
+        }
+        else {
+            var $widgetItem = $('[data-widget-type="detailItem"]');
+        }
+        $widgetItem.click(function(e){
+            ga.widget.showDetailItem($(this));
+        });
+    },
+
+    initRadioCheckbox: function(context) {
+        if (!_.isUndefined(context)) {
+            var $widgetItem = $(context).find('input[type="checkbox"], input[type="radio"]');
+        }
+        else {
+            var $widgetItem = $('input[type="checkbox"], input[type="radio"]');
+        }
+        $widgetItem.iCheck({
+          checkboxClass: 'icheckbox_flat-green',
+          radioClass: 'iradio_flat-green'
+        });
+    }
+
 
 
 });

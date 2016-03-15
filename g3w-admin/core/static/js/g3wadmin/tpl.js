@@ -39,10 +39,10 @@ _.extend(g3wadmin.tpl, {
           </div>\
           <div class="modal-footer">\
             <% if(closeButton) { %>\
-            <button type="button" class="modal-button-close btn btn-default" data-dismiss="modal"><%= closeButtonText %></button>\
+            <button type="button" class="modal-button-close btn btn-default" data-dismiss="modal"><i class="fa fa-close"></i> <%= closeButtonText %></button>\
             <% } %>\
             <% if(confirmButton) { %>\
-            <button type="button" class="modal-button-confirm btn btn-primary"><%= confirmButtonText %></button>\
+            <button type="button" class="modal-button-confirm btn btn-success"><i class="fa fa-check"></i> <%= confirmButtonText %></button>\
             <% } %>\
           </div>\
         </div>\

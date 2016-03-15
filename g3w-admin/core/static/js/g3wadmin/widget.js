@@ -139,6 +139,15 @@ _.extend(g3wadmin.widget, {
 
                     //punt re into target
                      $(params['target-selector']).html(res);
+
+                 },
+                 complete: function(){
+                     var status = arguments[1];
+                     if (status == 'success') {
+                        ga.ui.initCrudDeleteWidget(params['target-selector']);
+                        ga.ui.initCrudDetailWidget(params['target-selector']);
+                        ga.ui.initRadioCheckbox(params['target-selector'])
+                     }
                  },
                  error: function (xhr, textStatus, errorMessage) {
                      ga.widget.showError(ga.utils.buildAjaxErrorMessage(xhr.status, errorMessage));
@@ -186,7 +195,7 @@ _.extend(g3wadmin.widget, {
 
         // delete every modal opened
         $('.modal,.fade').remove();
-        var modal = ga.ui.buildDangerModal({modalTitle:'ERROR',modalBody:message});
+        var modal = ga.ui.buildDangerModal({modalTitle:'ERROR', modalBody:message, confirmButton:false});
         modal.show();
     }
 

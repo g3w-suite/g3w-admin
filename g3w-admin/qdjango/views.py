@@ -15,15 +15,12 @@ from .models import Project
 from .forms import *
 
 
-class QdjangoProjectListView(G3WRequestViewMixin,ListView):
-    model = Project
+class QdjangoProjectListView(G3WRequestViewMixin, G3WGroupViewMixin, ListView):
+    template_name = 'qdjango/project_list.html'
 
-    def get_context_data(self, **kwargs):
-        context = super(QdjangoProjectListView,self).get_context_data(**kwargs)
+    def get_queryset(self):
+        return self.group.qdjango_project.all().order_by('title')
 
-        # add group object
-        context['group'] = Group.objects.get(slug=self.kwargs['group_slug'])
-        return context
 
 
 class OdjangoProjectCreateView(G3WGroupViewMixin, G3WRequestViewMixin, CreateView):
@@ -33,9 +30,29 @@ class OdjangoProjectCreateView(G3WGroupViewMixin, G3WRequestViewMixin, CreateVie
     form_class = QdjangoProjetForm
 
     def get_success_url(self):
-        return reverse('project-list',group_slug=self.request.kwargs['group_slug'])
+        return reverse('qdjango-project-list',group_slug=self.request.kwargs['group_slug'])
 
     def form_valid(self,form):
-
         form.qgisProject.save()
         return HttpResponseRedirect(self.group.get_absolute_url())
+
+class QdjangoProjectUpdateView(G3WGroupViewMixin, G3WRequestViewMixin, UpdateView):
+    """Update project view."""
+
+    model = Project
+    form_class = QdjangoProjetForm
+
+    def get_success_url(self):
+        return reverse('qdjango-project-list',group_slug=self.request.kwargs['group_slug'])
+
+    def form_valid(self,form):
+        form.qgisProject.save()
+        return HttpResponseRedirect(self.group.get_absolute_url())
+
+class QdjangoProjectDetailView(G3WRequestViewMixin, DetailView):
+    """Detail view."""
+    model = Project
+    template_name = 'qdjango/ajax/project_detail.html'
+
+class QdjangoProjectDeleteView(View):
+    pass

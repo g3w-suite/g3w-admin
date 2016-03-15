@@ -48,7 +48,7 @@ class Project(TimeStampedModel):
     thumbnail = models.ImageField(_('Thumbnail'), blank=True, null=True)
 
     # Group
-    group = models.ForeignKey(Group, related_name='qdjango_project_group', verbose_name=_('Group'))
+    group = models.ForeignKey(Group, related_name='qdjango_project', verbose_name=_('Group'))
 
 
     # Extent

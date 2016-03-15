@@ -213,7 +213,7 @@ class QgisProjectLayer(QgisData):
         if not created:
             self.instance.title = self.title
             self.instance.is_visible = self.isVisible
-            self.instance.layer_type = self.self.layerType
+            self.instance.layer_type = self.layerType
             self.instance.datasource = self.datasource
             self.instance.database_columns = columns
             self.instance.order = self.order
@@ -364,9 +364,6 @@ class QgisProject(QgisData):
 
     def _getDataLayers(self):
         layers = []
-
-        # Get legend tree
-        legendTree = self.qgisProjectTree.find('legend')
 
         # Get layer trees
         layerTrees = self.qgisProjectTree.xpath(self._regexXmlLayer)

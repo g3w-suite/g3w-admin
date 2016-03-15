@@ -14,7 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 from django.conf.urls import url,include
-from django.contrib import admin
+from django.contrib import admin, auth
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth.decorators import login_required
@@ -26,17 +26,8 @@ urlpatterns = [
     url(r'^upload/', include('django_file_form.urls')),
 
 
-    url(
-        r'^login/$',
-        'django.contrib.auth.views.login',
-        name='login',
-        kwargs={'template_name': 'login.html'},
-
-    ),
-    url(r'^logout/$',
-        'django.contrib.auth.views.logout',
-        {'next_page': settings.LOGOUT_NEXT_PAGE},
-        name='logout'),
+    url(r'^login/$', auth.views.login, name='login', kwargs={'template_name': 'login.html'}),
+    url(r'^logout/$', auth.views.logout, {'next_page': settings.LOGOUT_NEXT_PAGE}, name='logout'),
 ]
 
 #adding projects app

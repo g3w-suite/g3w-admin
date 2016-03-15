@@ -24,9 +24,11 @@ class QdjangoProjectFormMixin(object):
     def clean_qgis_file(self):
         try:
             qgis_file = self.cleaned_data['qgis_file']
-            group = self.group
-            self.qgisProject = QgisProject(qgis_file,group=group)
-            if not self.instance:
+            kwargs = {'group':self.group}
+            if self.instance.pk:
+                kwargs['instance'] = self.instance
+            self.qgisProject = QgisProject(qgis_file,**kwargs)
+            if not self.instance.pk:
                 self.qgisProject.registerValidator(ProjectExists)
             self.qgisProject.clean()
         except Exception as e:

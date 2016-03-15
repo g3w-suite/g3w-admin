@@ -1,0 +1,39 @@
+{% load i18n %}
+<div class="row">
+  <div class="col-md-6">
+    <ul class="list-unstyled">
+      <li>
+        <h4>{% trans 'Initial extent' %}</h4>
+      </li>
+    </ul>
+    {%if user.is_superuser %}
+    <h3>{%trans 'Users' %}:</h3>
+    <ul class="list-unstyled">
+    {% if user.is_superuser %}
+        <li><strong>{%trans 'Editor user'%}</strong>: {{object.editor|safe}}</li>
+    {% endif %}
+    {% if user.is_superuser %}
+        <li><strong>{%trans 'Viewer users'%}</strong>: {{object.viewers|safeseq|join:", "}}</li>
+    {% endif %}
+
+    </ul>
+        {% endif %}
+      </br>
+  </div>
+  <div class="col-md-6">
+    <ul class="list-unstyled">
+      <li>
+        <h4>{% trans 'Thumbnail' %}</h4>
+        {% if object.thumbnail %}
+        <a href="{{ MEDIA_URL }}{{ object.thumbnail }}"><img style="height: 120px;" src="{{ MEDIA_URL }}{{ object.thumbnail }}" /></a>
+        {% else %}
+        <img src="http://placehold.it/160x120" />
+        {% endif %}
+      </li>
+      <li>
+        <h4>{% trans 'Qgis project Version:' %}</h4>
+        <span>{{ object.qgis_version }}</span>
+      </li>
+    </ul>
+  </div>
+</div>

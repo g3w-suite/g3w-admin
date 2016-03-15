@@ -19,14 +19,10 @@ _.extend(g3wadmin,{
         var that = this;
         //Initialize widgets
         // Detail Widget
-        $('[data-widget-type="detailItem"]').click(function(e){
-            that.widget.showDetailItem($(this));
-        });
+        this.ui.initCrudDetailWidget();
 
         // Delete Widget
-        $('[data-widget-type="deleteItem"]').click(function(e){
-            that.widget.deleteItem($(this));
-        });
+        this.ui.initCrudDeleteWidget();
 
         // Load Html Widget
         var $htmlLoads = $('[data-widget-type="htmlItem"]');
@@ -34,7 +30,7 @@ _.extend(g3wadmin,{
             that.widget.loadHtmlItem($(this));
         });
 
-        // Add porjects modal Widget
+        // Add projects modal Widget
         $('[data-widget-type="addProjectGroup"]').click(function(e){
             that.widget.addProjectGroup($(this));
         });
@@ -50,10 +46,7 @@ _.extend(g3wadmin,{
         $('.wys5').wysihtml5();
 
         //Flat red color scheme for iCheck
-        $('input[type="checkbox"], input[type="radio"]').iCheck({
-          checkboxClass: 'icheckbox_flat-green',
-          radioClass: 'iradio_flat-green'
-        });
+        this.ui.initRadioCheckbox();
 
         /*
         TODO: try to perfom this issue server side
