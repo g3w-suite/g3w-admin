@@ -1,0 +1,27 @@
+{% load staticfiles %}
+{% load i18n %}
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>{{  }}</title>
+  <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+  <link rel="stylesheet" href="{% static "g3w-client/css/vendor.min.css" %}">
+  <link rel="stylesheet" href="{% static "g3w-client/css/app.min.css" %}">
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+  <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+  <![endif]-->
+</head>
+<body class="hold-transition skin-blue fixed">
+  <app></app>
+  <script src="{% static "g3w-client/js/vendor.min.js" %}"></script>
+  <script>
+    {{  }}
+  </script>
+  <script src="{% static "g3w-client/js/app.min.js" %}"></script>
+</body>
+</html>
