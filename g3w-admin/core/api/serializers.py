@@ -4,7 +4,6 @@ from rest_framework import serializers
 from core.models import Group
 
 
-
 class GroupSerializer(serializers.ModelSerializer):
 
     minscale = serializers.IntegerField(source='min_scale', read_only=True)
@@ -16,11 +15,13 @@ class GroupSerializer(serializers.ModelSerializer):
 
         # add projects to group
         ret['projects'] = []
+        self.projects = {}
 
         for g3wProjectApp in settings.G3WADMIN_PROJECT_APPS:
             Project = apps.get_app_config(g3wProjectApp).get_model('project')
             projects = Project.objects.all()
             for project in projects:
+                self.projects[g3wProjectApp+'-'+str(project.id)] = project
                 ret['projects'].append({
                     'id': project.id,
                     'title': project.title,

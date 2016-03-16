@@ -1,6 +1,6 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .serializers import GroupSerializer, Group
+from core.api.serializers import GroupSerializer, Group
 
 
 

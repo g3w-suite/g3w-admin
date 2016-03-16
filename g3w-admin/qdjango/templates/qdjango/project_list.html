@@ -10,7 +10,7 @@
             <thead>
                 <tr>
                     <th style="width:70px;">Panoramic</th>
-                    <th style="width:120px">Actions</th>
+                    <th style="width:140px">Actions</th>
                     <th>Logo</th>
                     <th>Title</th>
                 </tr>
@@ -22,13 +22,16 @@
                         <input type="radio" name="panoramic_map" />
                     </td>
                     <td>
-                        <span class="col-xs-4 icon">
+                        <span class="col-xs-3 icon">
+                            <a href="{% url 'group-project-map' group.slug 'qdjango' object.pk %}"><i class="ion ion-map"></i></a>
+                        </span>
+                        <span class="col-xs-3 icon">
                             <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-detail-url="{% url 'qdjango-project-detail' group.slug object.slug %}" ><i class="ion ion-eye"></i></a>
                         </span>
-                        <span class="col-xs-4 icon">
+                        <span class="col-xs-3 icon">
                             <a href="{% url 'qdjango-project-update' group.slug object.slug %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Edit' %}" ><i class="ion ion-edit"></i></a>
                         </span>
-                        <span class="col-xs-4 icon">
+                        <span class="col-xs-3 icon">
                             <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Delete' %}" data-widget-type="deleteItem" data-delete-url="{% url 'qdjango-project-delete' group.slug object.slug %}" data-item-selector="#qdjango_project_{{ object.slug }}" ><i class="ion ion-trash-b"></i></a>
                         </span>
                     </td>
