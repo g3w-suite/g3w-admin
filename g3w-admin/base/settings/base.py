@@ -47,7 +47,8 @@ THIRD_PARTY_APPS = [
     'guardian',
     'sitetree',
     'django_extensions',
-    'dropzone'
+    'dropzone',
+    'rest_framework',
 ]
 
 G3WADMIN_APPS = [

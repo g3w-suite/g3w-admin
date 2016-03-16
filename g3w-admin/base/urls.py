@@ -25,7 +25,6 @@ urlpatterns = [
     url(r'^',include('usersmanage.urls')),
     url(r'^upload/', include('django_file_form.urls')),
 
-
     url(r'^login/$', auth.views.login, name='login', kwargs={'template_name': 'login.html'}),
     url(r'^logout/$', auth.views.logout, {'next_page': settings.LOGOUT_NEXT_PAGE}, name='logout'),
 ]

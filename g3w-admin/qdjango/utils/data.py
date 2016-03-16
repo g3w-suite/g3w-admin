@@ -92,7 +92,11 @@ class QgisProjectLayer(QgisData):
         Get name tag content from xml
         :return: string
         """
-        return self.qgisProjectLayerTree.find('layername').text
+        try:
+            name = self.qgisProjectLayerTree.find('shortname').text
+        except:
+            name = self.qgisProjectLayerTree.find('layername').text
+        return name
 
     def _getDataLayerId(self):
         """
