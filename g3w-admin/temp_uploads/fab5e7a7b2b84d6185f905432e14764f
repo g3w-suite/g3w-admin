@@ -1,0 +1,379 @@
+2015-05-18 17:15:13 ERROR  : ERROR:  syntax error at or near "'SELECT id_tipo from grafici.grafici WHERE num_grafico = \\'"
+LINE 1: 'SELECT id_tipo from grafici.grafici WHERE num_grafico = \\'...
+        ^
+2015-05-18 17:15:22 ERROR  : ERROR:  syntax error at or near "\"
+LINE 1: ... id_tipo from grafici.grafici WHERE num_grafico = \\'7.14\\'...
+                                                             ^
+2015-05-18 17:15:30 ERROR  : ERROR:  unterminated quoted string at or near "'7.14;"
+LINE 1: ...LECT id_tipo from grafici.grafici WHERE num_grafico = '7.14;
+                                                                 ^
+2015-05-19 16:06:56 ERROR  : Schema node not found for object TABLE zone_allertamento_multi [owner: admin23]
+2015-05-19 16:07:00 ERROR  : Schema node not found for object SEQUENCE zone_allertamento_multi_gid_seq [owner: admin23]
+2015-05-19 16:07:01 ERROR  : Schema node not found for object SEQUENCE OWNED BY zone_allertamento_multi_gid_seq [owner: admin23]
+2015-05-19 16:07:03 ERROR  : Schema node not found for object DEFAULT gid [owner: admin23]
+2015-05-19 16:07:05 ERROR  : Schema node not found for object TABLE DATA zone_allertamento_multi [owner: admin23]
+2015-05-19 16:07:06 ERROR  : Schema node not found for object SEQUENCE SET zone_allertamento_multi_gid_seq [owner: admin23]
+2015-05-19 16:07:07 ERROR  : Schema node not found for object CONSTRAINT zone_allertamento_multi_pkey [owner: admin23]
+2015-05-29 14:56:07 ERROR  : ERROR:  syntax error at or near "17"
+LINE 1: ...torico_nogeom"."tempo_calcolo" BETWEEN 2015-05-17 17:05:02+0...
+                                                             ^
+2015-05-29 14:56:32 ERROR  : ERROR:  column "abru" does not exist
+LINE 1: ..._prob_zone_combinata_storico_nogeom"."cod_area" = Abru-A) OR...
+                                                             ^
+2015-05-29 14:58:40 ERROR  : ERROR:  syntax error at or near "order"
+LINE 1: ... susc_prob_zone_combinata_storico_nogeom limit 10 order by t...
+                                                             ^
+2015-05-29 15:08:06 ERROR  : ERROR:  column "susc_prob_zone_combinata_storico_nogeom.tempo_calcolo" must appear in the GROUP BY clause or be used in an aggregate function
+LINE 1: ... susc_prob_zone_combinata_storico_nogeom order by tempo_calc...
+                                                             ^
+2015-06-17 09:23:13 ERROR  : ERROR:  invalid input syntax for integer: "date +%s"
+LINE 1: ... VALUES ('624'::bigint, '7'::bigint, '1'::bigint, 'date +%s'...
+                                                             ^
+2015-06-17 09:23:33 ERROR  : ERROR:  invalid input syntax for integer: "date +%s"
+LINE 1: ... VALUES ('624'::bigint, '7'::bigint, '1'::bigint, 'date +%s'...
+                                                             ^
+2015-06-25 16:25:16 ERROR  : ERROR:  function x(geometry) does not exist
+LINE 1: select X(the_geom) from considerable_points;
+               ^
+HINT:  No function matches the given name and argument types. You might need to add explicit type casts.
+2015-06-25 16:25:46 ERROR  : ERROR:  Argument to X() must be a point
+2015-06-26 14:40:06 ERROR  : ERROR:  setval: value 0 is out of bounds for sequence "pois_gid_seq" (1..9223372036854775807)
+2015-06-26 15:36:44 ERROR  : ERROR:  invalid input syntax for integer: "albero monumentale"
+LINE 1: INSERT INTO public.pt_inter_pois(code) VALUES ('albero monum...
+                                                       ^
+2015-06-26 15:37:01 ERROR  : ERROR:  null value in column "description" violates not-null constraint
+DETAIL:  Failing row contains (3, null).
+2015-06-26 15:59:48 ERROR  : ERROR:  null value in column "description" violates not-null constraint
+DETAIL:  Failing row contains (3, null).
+2015-06-29 13:12:27 ERROR  : ERROR:  value too long for type character(1)
+2015-06-29 15:00:15 ERROR  : ERROR:  function updatgeometrysrid(unknown, unknown, integer) does not exist
+LINE 1: select UpdatGeometrySRID('pois','the_geom',3004);
+               ^
+HINT:  No function matches the given name and argument types. You might need to add explicit type casts.
+2015-07-01 13:09:31 ERROR  : ERROR:  relation "themes_id_seq" does not exist
+2015-07-01 13:11:04 ERROR  : ERROR:  null value in column "active" violates not-null constraint
+DETAIL:  Failing row contains (2, cosmo, null).
+2015-07-01 13:11:08 ERROR  : ERROR:  null value in column "active" violates not-null constraint
+DETAIL:  Failing row contains (2, cosmo, null).
+2015-07-01 13:11:09 ERROR  : ERROR:  null value in column "active" violates not-null constraint
+DETAIL:  Failing row contains (2, cosmo, null).
+2015-07-01 13:11:23 ERROR  : ERROR:  null value in column "active" violates not-null constraint
+DETAIL:  Failing row contains (2, cosmo, null).
+2015-07-01 13:11:29 ERROR  : ERROR:  null value in column "active" violates not-null constraint
+DETAIL:  Failing row contains (2, cosmo, null).
+2015-07-01 13:11:31 ERROR  : ERROR:  null value in column "active" violates not-null constraint
+DETAIL:  Failing row contains (2, cosmo, null).
+2015-07-01 13:11:38 ERROR  : ERROR:  null value in column "active" violates not-null constraint
+DETAIL:  Failing row contains (2, cosmo, null).
+2015-07-01 13:11:40 ERROR  : ERROR:  null value in column "active" violates not-null constraint
+DETAIL:  Failing row contains (2, cosmo, null).
+2015-07-01 13:11:46 ERROR  : ERROR:  null value in column "active" violates not-null constraint
+DETAIL:  Failing row contains (2, cosmo, null).
+2015-07-01 13:11:48 ERROR  : ERROR:  null value in column "active" violates not-null constraint
+DETAIL:  Failing row contains (2, cosmo, null).
+2015-07-02 15:24:07 ERROR  : ERROR:  relation "highliting_states_id_seq" does not exist
+2015-07-02 16:37:55 ERROR  : Error connecting to the server: FATAL:  password authentication failed for user "trail"
+FATAL:  password authentication failed for user "trail"
+
+2015-07-02 16:38:49 ERROR  : ERROR:  permission denied for relation highliting_pois
+2015-07-03 14:33:18 ERROR  : ERROR:  syntax error at or near "="
+LINE 1: select * from cognome = 'Nasuti';
+                              ^
+2015-07-03 14:33:27 ERROR  : ERROR:  syntax error at or near "="
+LINE 1: select * from user_datas cognome = 'Nasuti';
+                                         ^
+2015-07-03 14:49:53 ERROR  : ERROR:  relation "user_bringusers" does not exist
+LINE 1: select * from user_bringusers where user_id in(175,217);
+                      ^
+2015-07-03 14:52:42 ERROR  : ERROR:  operator does not exist: character varying ~= unknown
+LINE 3: select * from user_datas where cognome ~='martini';
+                                               ^
+HINT:  No operator matches the given name and argument type(s). You might need to add explicit type casts.
+2015-07-07 09:12:37 ERROR  : ERROR:  syntax error at or near ")"
+LINE 37: );
+         ^
+2015-07-07 09:12:57 ERROR  : ERROR:  relation "anonimous_highlitings_datas_id_seq" does not exist
+2015-07-07 09:13:33 ERROR  : ERROR:  must be member of role "iosegnalo"
+2015-07-07 09:16:25 ERROR  : ERROR:  relation "state_pois_id_seq" does not exist
+2015-07-07 09:16:38 ERROR  : ERROR:  relation "state_pois_id_seq" does not exist
+2015-07-07 09:16:59 ERROR  : ERROR:  relation "state_pois_id_seq" does not exist
+2015-07-07 09:17:15 ERROR  : ERROR:  relation "highliting_state_pois" does not exist
+2015-07-14 13:00:22 ERROR  : ERROR:  invalid input syntax for integer: "path_id"
+CONTEXT:  COPY heights_profile_paths, line 1, column path_id: "path_id"
+2015-07-14 13:00:31 ERROR  : Copy failed!
+
+2015-07-14 13:00:56 ERROR  : ERROR:  null value in column "slopdeg" violates not-null constraint
+DETAIL:  Failing row contains (863, 28, 2341398.96964, 4844936799, 5903.38012042, 194.280635961, 5964.67113555, null).
+CONTEXT:  COPY heights_profile_paths, line 432: "28,2341398.96964,4844936799,5903.38012042,194.280635961,5964.67113555,"
+2015-07-14 13:01:19 ERROR  : Copy failed!
+
+2015-07-14 13:01:32 ERROR  : ERROR:  invalid input syntax for type double precision: ""
+CONTEXT:  COPY heights_profile_paths, line 432, column slopdeg: ""
+2015-07-14 13:01:38 ERROR  : Copy failed!
+
+2015-07-14 13:02:33 ERROR  : ERROR:  invalid input syntax for type double precision: ""
+CONTEXT:  COPY heights_profile_paths, line 432, column slopdeg: ""
+2015-07-14 13:02:38 ERROR  : Copy failed!
+
+2015-07-15 17:46:53 ERROR  : ERROR:  Operation on two GEOMETRIES with different SRIDs
+2015-07-21 15:45:57 ERROR  : ERROR:  function box2d(integer, integer, integer, integer) does not exist
+LINE 1: select box2d(-180,-90,180,90);
+               ^
+HINT:  No function matches the given name and argument types. You might need to add explicit type casts.
+2015-07-21 15:48:48 ERROR  : ERROR:  function st_makebox2d(geometry, geometry, integer) does not exist
+LINE 1: select ST_SetSRID(ST_MakeBox2D(ST_POINT(-180,-90),ST_Point(1...
+                          ^
+HINT:  No function matches the given name and argument types. You might need to add explicit type casts.
+2015-07-21 15:50:46 ERROR  : ERROR:  transform: couldn't project point (-180 -90 0): tolerance condition error (-20)
+2015-07-21 15:56:05 ERROR  : ERROR:  transform: couldn't project point (-180 -90 0): tolerance condition error (-20)
+2015-07-22 17:30:08 ERROR  : ERROR:  syntax error at or near "using"
+LINE 1: ... (select * from paths where publish is TRUE) as p using uniq...
+                                                             ^
+2015-07-23 16:57:49 ERROR  : ERROR:  relation "state_highliting_pois" already exists
+2015-07-27 15:48:43 ERROR  : ERROR:  duplicate key value violates unique constraint "pkgrafici"
+DETAIL:  Key (id_graf)=(4) already exists.
+2015-08-12 11:36:09 ERROR  : ERROR:  missing FROM-clause entry for table "dp"
+LINE 1: select dp.path from (select ST_DumpPoints(the_geom) as dp fr...
+               ^
+2015-08-12 12:47:09 ERROR  : ERROR:  source database "padule_turisticgis" is being accessed by other users
+DETAIL:  There is 1 other session using the database.
+2015-08-12 12:47:26 ERROR  : ERROR:  source database "padule_turisticgis" is being accessed by other users
+DETAIL:  There is 1 other session using the database.
+2015-09-01 10:33:41 ERROR  : ERROR:  cannot drop table paths column reason because other objects depend on it
+DETAIL:  view search_datas depends on table paths column reason
+HINT:  Use DROP ... CASCADE to drop the dependent objects too.
+2015-09-01 10:34:47 ERROR  : ERROR:  cannot drop columns from view
+2015-09-01 10:35:29 ERROR  : ERROR:  cannot drop columns from view
+2015-09-04 12:09:48 ERROR  : ERROR:  insert or update on table "image_pois" violates foreign key constraint "fk_image_pois_pois"
+DETAIL:  Key (poi_id)=(1460) is not present in table "pois".
+2015-09-04 12:10:42 ERROR  : ERROR:  insert or update on table "image_pois" violates foreign key constraint "fk_image_pois_pois"
+DETAIL:  Key (poi_id)=(739) is not present in table "pois".
+2015-09-04 12:11:05 ERROR  : ERROR:  insert or update on table "image_pois" violates foreign key constraint "fk_image_pois_pois"
+DETAIL:  Key (poi_id)=(848) is not present in table "pois".
+2015-09-10 17:01:28 ERROR  : ERROR:  cannot truncate a table referenced in a foreign key constraint
+DETAIL:  Table "image_areas" references "areas".
+HINT:  Truncate table "image_areas" at the same time, or use TRUNCATE ... CASCADE.
+2015-09-10 17:24:06 ERROR  : ERROR:  syntax error at or near ","
+LINE 4: ALTER SEQUENCE itineraries_pois_id_seq,
+                                              ^
+2015-09-10 17:24:15 ERROR  : ERROR:  syntax error at or near ","
+LINE 4: ALTER SEQUENCE itineraries_pois_id_seq, image_paths_id_seq,
+                                              ^
+2015-09-10 17:25:22 ERROR  : ERROR:  syntax error at or near ";"
+LINE 4: ALTER SEQUENCE itineraries_pois_id_seq RESET;
+                                                    ^
+2015-09-11 11:58:28 ERROR  : ERROR:  relation "highliting_path_id_seq" does not exist
+2015-09-23 12:43:49 ERROR  : ERROR:  column "spiritual_value" referenced in foreign key constraint does not exist
+2015-09-23 12:44:41 ERROR  : ERROR:  column "spirtual_value" of relation "areas" already exists
+2015-09-23 15:27:59 ERROR  : ERROR:  syntax error at or near "table"
+LINE 2: alter table paths add highliting_class_element_id
+              ^
+2015-09-24 16:47:19 ERROR  : ERROR:  invalid reference to FROM-clause entry for table "typologies"
+LINE 1: ..." AS "typology" JOIN "sheet_types_typologies" ON ("typologie...
+                                                             ^
+HINT:  Perhaps you meant to reference the table alias "typology".
+2015-09-24 18:38:28 ERROR  : ERROR:  cannot drop table areas column plus_information because other objects depend on it
+DETAIL:  view search_datas depends on table areas column plus_information
+HINT:  Use DROP ... CASCADE to drop the dependent objects too.
+2015-09-24 18:40:31 ERROR  : ERROR:  cannot drop columns from view
+2015-09-25 08:23:08 ERROR  : ERROR:  column "address" of relation "pois" already exists
+2015-09-25 08:59:36 ERROR  : ERROR:  relation "image_accomodations" already exists
+2015-09-25 08:59:50 ERROR  : ERROR:  relation "typologies_accomodations" already exists
+2015-09-25 09:01:02 ERROR  : ERROR:  relation "url_accomodations" already exists
+2015-09-25 09:01:07 ERROR  : ERROR:  relation "video_accomodations" already exists
+2015-09-25 09:15:48 ERROR  : ERROR:  relation "pois_id_seq" does not exist
+2015-09-25 09:16:19 ERROR  : ERROR:  relation "paths_id_seq" does not exist
+2015-09-25 09:16:30 ERROR  : ERROR:  relation "video_paths_id_seq" does not exist
+2015-09-25 09:17:54 ERROR  : ERROR:  relation "typologies_path_id_seq" does not exist
+2015-09-25 09:18:50 ERROR  : ERROR:  relation "url_paths_id_seq" does not exist
+2015-10-02 12:20:46 ERROR  : ERROR:  column reference "id" is ambiguous
+LINE 1: ...) AS "hl_users" ON ("pois"."highliting_user_id" = "hl_users"...
+                                                             ^
+2015-10-07 12:34:16 ERROR  : ERROR:  null value in column "improvement_id" violates not-null constraint
+2015-10-07 12:35:52 ERROR  : ERROR:  null value in column "nota" violates not-null constraint
+2015-10-07 12:35:54 ERROR  : ERROR:  null value in column "nota" violates not-null constraint
+2015-10-07 12:37:50 ERROR  : ERROR:  null value in column "user_id" violates not-null constraint
+2015-10-09 11:01:47 ERROR  : ERROR:  cannot change name of view column "type" to "highliting_state_id"
+2015-10-12 15:51:50 ERROR  : ERROR:  syntax error at or near "16"
+LINE 1: ...torico_nogeom"."tempo_calcolo" BETWEEN 2015-05-16 16:05:02 A...
+                                                             ^
+2015-10-12 15:52:03 ERROR  : ERROR:  column "piem" does not exist
+LINE 1: ..._prob_zone_combinata_storico_nogeom"."cod_area" = Piem-A) OR...
+                                                             ^
+2015-10-12 15:54:42 ERROR  : ERROR:  missing FROM-clause entry for table "susc_prob_zone_combinata_storico_nogeom"
+LINE 1: SELECT "susc_prob_zone_combinata_storico_nogeom"."cod_area",...
+               ^
+2015-10-13 09:04:40 ERROR  : ERROR:  permission denied for relation geometry_columns
+2015-10-13 09:11:47 ERROR  : can't open file '/etc/postgresql/9.3/main/pg_hba.conf' (error 13: Permesso negato)
+2015-10-13 09:14:05 ERROR  : Error connecting to the server: fe_sendauth: no password supplied
+
+2015-10-13 09:20:27 ERROR  : FATAL:  terminating connection due to administrator command
+SSL connection has been closed unexpectedly
+2015-10-13 10:41:47 ERROR  : FATAL:  terminating connection due to administrator command
+SSL connection has been closed unexpectedly
+
+
+
+uwsgi -s /tmp/uwsgi_mapproxy.sock -M -i --uid www-data --gid www-data --plugin python --workers 6 --wsgi-file /www/qgis/client/mapproxy/config.py --daemonize
+2015-10-15 18:40:02 ERROR  : Error connecting to the server: FATAL:  password authentication failed for user "admin23"
+FATAL:  password authentication failed for user "admin23"
+
+2015-10-23 09:30:48 ERROR  : server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+2015-10-28 16:32:47 ERROR  : ERROR:  column "id" is of type integer but expression is of type timestamp with time zone
+LINE 2: insert into base_tempicalcolo select distinct(tempo_calcolo)...
+                                                      ^
+HINT:  You will need to rewrite or cast the expression.
+2015-10-29 09:04:39 ERROR  : ERROR:  null value in column "nota" violates not-null constraint
+2015-11-06 14:57:11 ERROR  : ERROR:  cannot drop columns from view
+2015-11-19 15:28:28 ERROR  : ERROR:  syntax error at or near "from"
+LINE 17: from points_interventions 
+         ^
+2015-11-19 15:28:35 ERROR  : ERROR:  relation "interventions" does not exist
+LINE 19: join interventions on (interventions.id = improvement_interv...
+              ^
+2015-11-19 15:28:57 ERROR  : ERROR:  column improvement_interventions.intervention_id does not exist
+LINE 19: join improvements on (improvements.id = improvement_interven...
+                                                 ^
+2015-11-19 15:29:13 ERROR  : ERROR:  missing FROM-clause entry for table "requests"
+LINE 20: join users on ( users.id = requests.user_id)
+                                    ^
+2015-11-19 15:29:25 ERROR  : ERROR:  missing FROM-clause entry for table "interventions"
+LINE 22: join entes on (entes.id = interventions.ente_id)
+                                   ^
+2015-11-19 15:29:35 ERROR  : ERROR:  column improvement_interventions.interventions_type_id does not exist
+LINE 23: ...n intervention_types on ( intervention_types.id = improvemen...
+                                                              ^
+2015-11-19 15:43:11 ERROR  : ERROR:  column improvements.user_id_presidente_zrc does not exist
+LINE 32: ... * from users) as presidenti on ( presidenti.id = improvemen...
+                                                              ^
+2015-11-30 12:08:47 ERROR  : ERROR:  syntax error at or near "UNION"
+LINE 36: UNION
+         ^
+2015-11-30 12:09:11 ERROR  : ERROR:  column accomodations.description does not exist
+LINE 39:     accomodations.description,
+             ^
+2015-12-01 16:40:28 ERROR  : ERROR:  Target vertex was not found.
+2015-12-01 16:45:41 ERROR  : ERROR:  Target vertex was not found.
+2015-12-01 16:50:07 ERROR  : ERROR:  function pgr_dijkstra(unknown, integer, integer) does not exist
+LINE 1: SELECT seq, id1 AS node, id2 AS edge, cost FROM pgr_dijkstra...
+                                                        ^
+HINT:  No function matches the given name and argument types. You might need to add explicit type casts.
+2015-12-01 16:55:02 ERROR  : ERROR:  Error, query must return columns 'x1', 'x2', 'y1' and 'y2'
+2015-12-01 16:55:15 ERROR  : ERROR:  Error, query must return columns 'x1', 'x2', 'y1' and 'y2'
+2015-12-01 16:56:11 ERROR  : ERROR:  function pgr_kdijkstracost(unknown, integer, integer, boolean, boolean) does not exist
+LINE 1: SELECT seq, id1 AS node, id2 AS edge, cost FROM pgr_kdijkstr...
+                                                        ^
+HINT:  No function matches the given name and argument types. You might need to add explicit type casts.
+2015-12-01 18:26:21 ERROR  : ERROR:  column "gid" does not exist
+LINE 2:                 SELECT gid AS id,
+                               ^
+QUERY:  
+                SELECT gid AS id,
+                         source::integer,
+                         target::integer,
+                         cost::double precision
+                        FROM edge_table
+2015-12-01 19:12:07 ERROR  : ERROR:  column "l" does not exist
+LINE 5:                          l::double precision as cost
+                                 ^
+QUERY:  
+                SELECT id,
+                         source::integer,
+                         target::integer,
+                         l::double precision as cost
+                        FROM paths_simple_noded
+2015-12-03 17:03:27 ERROR  : ERROR:  missing FROM-clause entry for table "points_prospects"
+LINE 33: where points_prospects.points_intervention_type_id = 2
+               ^
+2015-12-03 17:08:01 ERROR  : ERROR:  syntax error at or near "zrv_prov_pisa"
+LINE 34: join left zrv_prov_pisa on ( zrv_prov_pisa.gid = request_pro...
+                   ^
+2015-12-03 17:23:32 ERROR  : ERROR:  column request_prospects.stato_id does not exist
+LINE 39: join request_statos on (request_statos.id = request_prospect...
+                                                     ^
+2015-12-03 18:08:58 ERROR  : ERROR:  could not open file "/home/walter/danni_globale.csv" for writing: Permission denied
+2015-12-04 16:29:18 ERROR  : ERROR:  missing FROM-clause entry for table "requesta"
+LINE 3: requesta.data_perizia as data_sopralluogo,
+        ^
+2015-12-07 15:41:37 ERROR  : SSL SYSCALL error: EOF detected
+2015-12-07 15:59:09 ERROR  : ERROR:  function st_swithin(geometry, geometry, integer) does not exist
+LINE 1: ...entiero_test2 as l1 join sentiero_test2 as l2 on (st_swithin...
+                                                             ^
+HINT:  No function matches the given name and argument types. You might need to add explicit type casts.
+2015-12-07 15:59:18 ERROR  : ERROR:  missing FROM-clause entry for table "li"
+LINE 1: ...on (st_dwithin(l1.the_geom,l2.the_geom,10)) where li.id <> l...
+                                                             ^
+2015-12-07 16:03:12 ERROR  : ERROR:  syntax error at or near "from"
+LINE 1: select  from sentiero_test2 as l1 join sentiero_test2 as l2 ...
+                ^
+2015-12-14 16:12:13 ERROR  : ERROR:  cannot change name of view column "order_show_search" to "title"
+2015-12-14 16:14:58 ERROR  : ERROR:  syntax error at or near "0"
+LINE 22:     0 AS order_show_search
+             ^
+2015-12-14 16:15:10 ERROR  : ERROR:  syntax error at or near "0"
+LINE 22:     0 AS order_show_search
+             ^
+2015-12-15 16:41:11 ERROR  : ERROR:  could not open file "C:\tmp\no_headers_dati_per_comune.csv" for reading: File o directory non esistente
+2015-12-15 16:41:24 ERROR  : ERROR:  invalid input syntax for integer: "Terme	28001	14.8652709606	60.7783231494	24.35640589	19966	0.4169148303	6.1346039309	19.8224051113	28.4043532406	32.1944880611	13.0272348259	23221	0.4"
+CONTEXT:  COPY popolazione_comuni, line 1, column cod_istat: "Terme	28001	14.8652709606	60.7783231494	24.35640589	19966	0.4169148303	6.1346039309	19.8224051113	28..."
+2015-12-15 16:42:51 ERROR  : ERROR:  extra data after last expected column
+CONTEXT:  COPY popolazione_comuni, line 1: "Abano Terme	28001	14.8652709606	60.7783231494	24.35640589	19966	0.4169148303	6.1346039309	19.8224051..."
+2015-12-15 16:43:04 ERROR  : ERROR:  COPY delimiter must be a single one-byte character
+2015-12-15 16:43:12 ERROR  : ERROR:  extra data after last expected column
+CONTEXT:  COPY popolazione_comuni, line 1: "Abano Terme	28001	14.8652709606	60.7783231494	24.35640589	19966	0.4169148303	6.1346039309	19.8224051..."
+2015-12-15 16:48:37 ERROR  : ERROR:  extra data after last expected column
+CONTEXT:  COPY popolazione_comuni, line 1: "Abano Terme,28001,14.8652709606,60.7783231494,24.35640589,19966,0.4169148303,6.1346039309,19.8224051..."
+2015-12-15 16:59:59 ERROR  : ERROR:  null value in column "perc_tit_universitario" violates not-null constraint
+DETAIL:  Failing row contains (Abbadia Cerreto, 98001, 15.8249158249, 62.962962963, 21.2121212121, 297, 31.884057971, 28.9855072464, 28.9855072464, 4.7101449275, null, 15855, 0.41, 5.4347826087).
+CONTEXT:  COPY popolazione_comuni, line 2: "Abbadia Cerreto,98001,15.8249158249,62.962962963,21.2121212121,297,5.4347826087,31.884057971,28.9855..."
+2015-12-15 17:02:07 ERROR  : ERROR:  null value in column "perc_tit_universitario" violates not-null constraint
+DETAIL:  Failing row contains (Abbadia Cerreto, 98001, 15.8249158249, 62.962962963, 21.2121212121, 297, 31.884057971, 28.9855072464, 28.9855072464, 4.7101449275, null, 15855, 0.41, 5.4347826087).
+CONTEXT:  COPY popolazione_comuni, line 2: "Abbadia Cerreto,98001,15.8249158249,62.962962963,21.2121212121,297,5.4347826087,31.884057971,28.9855..."
+2015-12-15 17:17:07 ERROR  : ERROR:  syntax error at or near ")"
+LINE 14: ) 
+         ^
+2015-12-15 17:17:22 ERROR  : ERROR:  syntax error at or near "c"
+LINE 15: ...'/tmp/no_headers_Dati_per_provincia.csv' DELIMITER ',' CSV;c
+                                                                       ^
+2015-12-15 17:17:27 ERROR  : ERROR:  invalid byte sequence for encoding "UTF8": 0xe9 0x65 0x20
+CONTEXT:  COPY popolazione_province, line 4
+2015-12-15 17:27:34 ERROR  : ERROR:  invalid input syntax for type double precision: " "
+CONTEXT:  COPY popolazione_province, line 10, column sper_vita_0_femm_2011: " "
+2015-12-15 17:28:31 ERROR  : ERROR:  invalid input syntax for type double precision: "null"
+CONTEXT:  COPY popolazione_province, line 10, column sper_vita_0_femm_2011: "null"
+2015-12-15 17:29:23 ERROR  : ERROR:  invalid input syntax for type double precision: " "
+CONTEXT:  COPY popolazione_province, line 33, column sper_vita_0_femm_2011: " "
+2015-12-15 17:29:36 ERROR  : ERROR:  invalid byte sequence for encoding "UTF8": 0xec 0x2d 0x43
+CONTEXT:  COPY popolazione_province, line 37
+2015-12-15 17:29:52 ERROR  : ERROR:  invalid input syntax for type double precision: " "
+CONTEXT:  COPY popolazione_province, line 60, column sper_vita_0_femm_2011: " "
+2015-12-15 17:30:07 ERROR  : ERROR:  null value in column "cod_provincia" violates not-null constraint
+DETAIL:  Failing row contains (Parma, null, PR, 8, Emilia-Romagna, 3.12, 12.67, 4642, 84.7, 80.21, 7.117696, 16.717563).
+CONTEXT:  COPY popolazione_province, line 69: "Parma,,PR,8,Emilia-Romagna, 3.12,12.67, 4642, 84.7,80.21,7.117696,16.717563"
+2015-12-18 18:41:48 ERROR  : ERROR:  syntax error at or near "393"
+LINE 75: 393 19 9
+         ^
+2015-12-21 10:22:25 ERROR  : ERROR:  permission denied for relation evento_sessione
+2015-12-21 10:33:46 ERROR  : ERROR:  relation "tracce_evebto" does not exist
+LINE 1: select * from tracce_evebto where evento_sessione_id = 567;
+                      ^
+2015-12-24 09:53:45 ERROR  : ERROR:  relation "evento_session" does not exist
+LINE 1: select * from evento_session where sessione_id = 427;
+                      ^
+2015-12-28 10:55:51 ERROR  : ERROR:  column "sesione_id" does not exist
+LINE 1: select * from evento_sessione where sesione_id = 413;
+                                            ^
+2015-12-29 10:00:06 ERROR  : SSL SYSCALL error: EOF detected
+2015-12-30 15:19:16 ERROR  : SSL SYSCALL error: EOF detected
+2015-12-30 15:19:18 ERROR  : SSL SYSCALL error: EOF detected
+2016-01-14 15:00:35 ERROR  : ERROR:  null value in column "data_ins" violates not-null constraint
+DETAIL:  Failing row contains (138, admin01, 18c6d818ae35a3e8279b5330eda01498, lorenzetti@gis3w.it, null, null, null, null, null, null, f, null, f).
+2016-02-01 11:28:37 ERROR  : SSL SYSCALL error: EOF detected
+2016-02-03 14:46:57 ERROR  : ERROR:  relation "maillist_types_pkey" already exists
+2016-02-03 14:47:28 ERROR  : SSL SYSCALL error: EOF detected
+2016-02-03 14:48:36 ERROR  : ERROR:  relation "maillist_types_pkey" already exists
+2016-02-03 14:49:40 ERROR  : ERROR:  relation "maillists_id_seq" does not exist
+2016-02-03 14:49:50 ERROR  : ERROR:  relation "maillists_pkey" already exists
+2016-02-05 11:07:36 ERROR  : SSL SYSCALL error: EOF detected

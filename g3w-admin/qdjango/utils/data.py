@@ -209,6 +209,7 @@ class QgisProjectLayer(QgisData):
                 'title': self.title,
                 'is_visible': self.isVisible,
                 'layer_type': self.layerType,
+                'qgs_layer_id': self.layerId,
                 'database_columns': columns,
                 'datasource': self.datasource,
                 'order': self.order,
@@ -218,6 +219,7 @@ class QgisProjectLayer(QgisData):
             self.instance.title = self.title
             self.instance.is_visible = self.isVisible
             self.instance.layer_type = self.layerType
+            self.instance.qgs_layer_id = self.layerId
             self.instance.datasource = self.datasource
             self.instance.database_columns = columns
             self.instance.order = self.order
@@ -257,6 +259,15 @@ class ProjectExists(QgisProjectValidator):
             raise Exception(_('A project with the same title already exists'))
 
 
+class ProjectExists(QgisProjectValidator):
+    """
+    Check il project exixts in database
+    """
+    def clean(self):
+        if not self.qgisProject.title:
+            raise Exception(_('Title porject not empty'))
+
+
 
 class QgisProject(QgisData):
     """
@@ -268,6 +279,7 @@ class QgisProject(QgisData):
         'srid',
         'units',
         'initialExtent',
+        'layersTree',
         'layers',
         'qgisVersion'
         ]
@@ -366,6 +378,33 @@ class QgisProject(QgisData):
                 return False
         return True
 
+    def _getDataLayersTree(self):
+
+        #get root of layer-tree-group
+        layerTreeRoot = self.qgisProjectTree.find('layer-tree-group')
+
+        def buildLayerTreeNodeObject(layerTreeNode):
+            toRetLayers = []
+            for level, layerTreeSubNode in enumerate(layerTreeNode):
+                if level > 0:
+                    toRetLayer = {
+                        'name': layerTreeSubNode.attrib['name'],
+                        'expanded': True if layerTreeSubNode.attrib['expanded'] == '1' else False
+                    }
+                    if layerTreeSubNode.tag == 'layer-tree-layer':
+                        toRetLayer.update({
+                            'id': layerTreeSubNode.attrib['id']
+                        })
+
+                    if layerTreeSubNode.tag == 'layer-tree-group':
+                        toRetLayer.update({
+                            'nodes': buildLayerTreeNodeObject(layerTreeSubNode)
+                        })
+                    toRetLayers.append(toRetLayer)
+            return toRetLayers
+
+        return buildLayerTreeNodeObject(layerTreeRoot)
+
     def _getDataLayers(self):
         layers = []
 
@@ -412,7 +451,8 @@ class QgisProject(QgisData):
                     initial_extent=self.initialExtent,
                     thumbnail= thumbnail,
                     description=description,
-                    qgis_version=self.qgisVersion
+                    qgis_version=self.qgisVersion,
+                    layers_tree=self.layersTree
                 )
             else:
                 if instance:

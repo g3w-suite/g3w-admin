@@ -11,6 +11,6 @@ class TestApi(APIView):
         g = Group.objects.all()[0]
         gs = GroupSerializer(g)
 
-        print 'test'
+
 
         return Response(gs.data)
