@@ -1,9 +1,11 @@
 from django.conf.urls import url
 from django.contrib.auth.decorators import login_required
-from .views import *
-from api.views import *
-
 from django.views.static import serve
+
+from client.api.views import *
+from .views import *
+
+
 def protected_serve(request, path, document_root=None, show_indexes=False):
     return serve(request, path, document_root, show_indexes)
 
@@ -21,13 +23,6 @@ urlpatterns = [
 
     #project urls
     url(r'^groups/(?P<group_slug>[-_\w\d]+)/projects/$', login_required(ProjectListView.as_view()), name='project-list'),
-
-    #g3w-client bootstrap
-    #TODO: set view for url
-    url(r'^map/(?P<group_slug>[-_\w\d]+)/(?P<project_type>[-_\w\d]+)/(?P<project_id>[-_\w\d]+)/$', lambda x: x, name='group-project-map'),
-
-    #test djangorest framework
-    url(r'^api/test/$', TestApi.as_view()),
 
     #exmaple file form ajax
     url(r'^exampleform/$', ExampleFormView.as_view()),

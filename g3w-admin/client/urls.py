@@ -1,6 +1,15 @@
-try:
-    from django.conf.urls import *
-except ImportError:  # django < 1.4
-    from django.conf.urls.defaults import *
+from django.conf.urls import url
+from django.contrib.auth.decorators import login_required
+from .api.views import *
 
-# place app url patterns here
+urlpatterns = [
+
+    # g3w-client bootstrap
+    #TODO: set view for url
+    url(r'^map/(?P<group_slug>[-_\w\d]+)/(?P<project_type>[-_\w\d]+)/(?P<project_id>[-_\w\d]+)/$', lambda x: x, name='group-project-map'),
+
+    # api urls
+    #test djangorest framework
+    url(r'^api/test/$', TestApi.as_view()),
+    url(r'^api/config/(?P<group_slug>[-_\w\d]+)/(?P<project_type>[-_\w\d]+)/(?P<project_id>[-_\w\d]+)/$', TestApi.as_view(), name='group-project-map-config'),
+]

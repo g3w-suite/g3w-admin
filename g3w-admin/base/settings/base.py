@@ -54,6 +54,7 @@ THIRD_PARTY_APPS = [
 G3WADMIN_APPS = [
     'base',
     'core',
+    'client',
     'usersmanage'
 ]
 

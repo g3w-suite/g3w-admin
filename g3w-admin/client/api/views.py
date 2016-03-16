@@ -10,7 +10,8 @@ class TestApi(APIView):
 
         g = Group.objects.all()[0]
         gs = GroupSerializer(g)
-
-
-
         return Response(gs.data)
+
+
+class ClientConfigApiView(APIView):
+        pass

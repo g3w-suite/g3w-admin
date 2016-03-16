@@ -23,6 +23,7 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^',include('core.urls')),
     url(r'^',include('usersmanage.urls')),
+    url(r'^',include('client.urls')),
     url(r'^upload/', include('django_file_form.urls')),
 
     url(r'^login/$', auth.views.login, name='login', kwargs={'template_name': 'login.html'}),
@@ -32,7 +33,6 @@ urlpatterns = [
 #adding projects app
 for app in settings.G3WADMIN_PROJECT_APPS:
     urlpatterns.append(url(r'^{}/'.format(app),include('{}.urls'.format(app))))
-
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

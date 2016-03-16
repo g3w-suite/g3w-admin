@@ -22,8 +22,9 @@ class GroupSerializer(serializers.ModelSerializer):
             projects = Project.objects.all()
             for project in projects:
                 ret['projects'].append({
-                    'id': '{}-{}'.format(g3wProjectApp,project.id),
-                    'title': project.title
+                    'id': project.id,
+                    'title': project.title,
+                    'type': g3wProjectApp
                 })
 
         # add initproject and overviewproject
