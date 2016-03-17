@@ -72,6 +72,8 @@ class QgisProjectLayer(QgisData):
         'maxScale',
         'scaleBasedVisibility',
         'srid',
+        #'capabilities',
+        'editOptions',
         'datasource',
         'columns'
     ]
@@ -184,6 +186,20 @@ class QgisProjectLayer(QgisData):
 
         return int(srid)
 
+    def _getDataCapabilities(self):
+
+
+
+        return 1
+
+    def _getDataEditOptions(self):
+
+        editOptions = 0
+        for editOp, layerIds in self.qgisProject.wfstLayers.items():
+            if self.layerId in layerIds:
+                editOptions |= getattr(settings,editOp)
+
+        return None if editOptions == 0 else editOptions
 
     def _getDataDatasource(self):
         """
@@ -254,6 +270,7 @@ class QgisProjectLayer(QgisData):
                 'srid': self.srid,
                 'datasource': self.datasource,
                 'order': self.order,
+                'edit_options': self.editOptions
                 }
             )
         if not created:
@@ -268,6 +285,7 @@ class QgisProjectLayer(QgisData):
             self.instance.database_columns = columns
             self.instance.srid = self.srid
             self.instance.order = self.order
+            self.instance.edit_options = self.editOptions
         # Save self.instance
         self.instance.save()
 
@@ -324,6 +342,7 @@ class QgisProject(QgisData):
         'srid',
         'units',
         'initialExtent',
+        'wfstLayers',
         'layersTree',
         'layers',
         'qgisVersion'
@@ -465,6 +484,24 @@ class QgisProject(QgisData):
     def _getDataQgisVersion(self):
         return self.qgisProjectTree.getroot().attrib['version']
 
+    def _getDataWfstLayers(self):
+        wfstLayers = {
+            'INSERT': [],
+            'UPDATE': [],
+            'DELETE': []
+        }
+
+        wfstLayersTree = self.qgisProjectTree.xpath('properties/WFSTLayers')[0]
+
+        # collect layer_id for edito ps
+        for editOp in wfstLayers.keys():
+            editOpsLayerIdsTree = wfstLayersTree.xpath('{}/value'.format(editOp.lower().capitalize()))
+            for editOpsLayerIdTree in editOpsLayerIdsTree:
+                wfstLayers[editOp].append(editOpsLayerIdTree.text)
+
+        return wfstLayers
+
+
     def clean(self):
         for validator in self.validators:
             validator.clean()
@@ -563,6 +600,87 @@ class QgisProject(QgisData):
         # Update QGIS file
         with open(self.instance.qgis_file.path, 'w') as handler:
             tree.write(handler)
+
+
+class QgisProjectSettingsWMS(QgisData):
+
+    _dataToSet = [
+        'layers'
+    ]
+
+    _NS = {
+        'opengis': 'http://www.opengis.net/wms'
+    }
+
+    def __init__(self, project_settings, **kwargs):
+        self.qgisProjectSettingsFile = project_settings
+
+        # load data
+        self.loadProjectSettings()
+
+        # set data
+        self.setData()
+
+    def loadProjectSettings(self):
+        """
+        Load from 'string'  wms response request getProjectSettings
+        :return:
+        """
+        try:
+            self.qgisProjectSettingsTree = lxml.fromstring(self.qgisProjectSettingsFile)
+        except Exception as e:
+            raise Exception(_('The project settings is malformed: {}'.format(e.message)))
+
+    def _buildTagWithNS(self,tag):
+        return '{{{0}}}{1}'.format(self._NS['opengis'],'Name')
+
+    def _getBBOXLayer(self, layerTree):
+
+        bboxes = {}
+
+        bboxTrees = layerTree.xpath(
+            'opengis:BoundingBox',
+            namespaces=self._NS
+        )
+
+        for bboxTree in bboxTrees:
+            bboxes[bboxTree.attrib['CRS']] = {
+                'minx': float(bboxTree.attrib['minx']),
+                'miny': float(bboxTree.attrib['miny']),
+                'maxx': float(bboxTree.attrib['maxx']),
+                'maxy': float(bboxTree.attrib['maxy']),
+            }
+
+        return bboxes
+
+    def _getLayerTreeData(self, layerTree):
+
+        subLayerTrees = layerTree.xpath('opengis:Layer', namespaces=self._NS)
+        if subLayerTrees:
+            for subLayerTree in subLayerTrees:
+                self._getLayerTreeData(subLayerTree)
+        else:
+            name = layerTree.find(self._buildTagWithNS('Name')).text
+            dataLayer = {
+                'name': name,
+                'title': layerTree.find(self._buildTagWithNS('Title')).text,
+                'visible': bool(int(layerTree.attrib['visible'])),
+                'queryable': bool(int(layerTree.attrib['queryable'])),
+                'bboxes': self._getBBOXLayer(layerTree)
+            }
+            self._layersData[name] = dataLayer
+
+    def _getDataLayers(self):
+
+        self._layersData = {}
+
+        layersTree = self.qgisProjectSettingsTree.xpath(
+            'opengis:Capability',
+            namespaces=self._NS
+        )
+
+        self._getLayerTreeData(layersTree[0])
+        return self._layersData
 
 
 

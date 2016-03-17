@@ -115,6 +115,10 @@ class Layer(models.Model):
     # srid
     srid = models.IntegerField(_('Layer SRID'), blank=True, null=True)
 
+    #for capabilities and edit opsions
+    capabilities = models.IntegerField(_('Bitwise capabilities'), blank=True, null=True)
+    edit_options = models.IntegerField(_('Bitwise edit options'), blank=True, null=True)
+
     def __unicode__(self):
         return self.name
 
