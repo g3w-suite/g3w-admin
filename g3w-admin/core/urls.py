@@ -11,8 +11,7 @@ def protected_serve(request, path, document_root=None, show_indexes=False):
 
 
 urlpatterns = [
-    url(r'^$', uploadform, name='home'),
-    url(r'^file-upload/$', fileupload),
+    url(r'^$', login_required(DashboardView.as_view()), name='home'),
 
     #group urls
     url(r'^groups/$', login_required(GroupListView.as_view()), name='group-list'),
@@ -23,10 +22,6 @@ urlpatterns = [
 
     #project urls
     url(r'^groups/(?P<group_slug>[-_\w\d]+)/projects/$', login_required(ProjectListView.as_view()), name='project-list'),
-
-    #exmaple file form ajax
-    url(r'^exampleform/$', ExampleFormView.as_view()),
-    url(r'^exampleajaxform/$', ExampleAjaxFormView.as_view()),
 
     #url(r'^{}(?P<path>.*)$'.format(settings.MEDIA_URL[1:] + 'logo_img/'), protected_serve, {'document_root': settings.MEDIA_ROOT+ 'logo_img/'}),
 

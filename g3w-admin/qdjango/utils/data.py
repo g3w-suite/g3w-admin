@@ -68,6 +68,10 @@ class QgisProjectLayer(QgisData):
         'isVisible',
         'title',
         'layerType',
+        'minScale',
+        'maxScale',
+        'scaleBasedVisibility',
+        'srid',
         'datasource',
         'columns'
     ]
@@ -147,6 +151,39 @@ class QgisProjectLayer(QgisData):
             raise Exception(_('Missing or invalid type for layer')+' "%s"' % self.name)
         return layerType
 
+    def _getDataMinScale(self):
+        """
+        Get min_scale from layer attribute
+        :return: string
+        """
+        return int(float(self.qgisProjectLayerTree.attrib['maximumScale']))
+
+    def _getDataMaxScale(self):
+        """
+        Get min_scale from layer attribute
+        :return: string
+        """
+        return int(float(self.qgisProjectLayerTree.attrib['minimumScale']))
+
+    def _getDataScaleBasedVisibility(self):
+        """
+        Get scale based visibility property from layer attribute
+        :return: string
+        """
+        return bool(int(self.qgisProjectLayerTree.attrib['hasScaleBasedVisibilityFlag']))
+
+    def _getDataSrid(self):
+        """
+        Get srid property of layer
+        :return: string
+        """
+        try:
+            srid = self.qgisProjectLayerTree.xpath('srs/spatialrefsys/srid')[0].text
+        except:
+            srid = None
+
+        return int(srid)
+
 
     def _getDataDatasource(self):
         """
@@ -210,7 +247,11 @@ class QgisProjectLayer(QgisData):
                 'is_visible': self.isVisible,
                 'layer_type': self.layerType,
                 'qgs_layer_id': self.layerId,
+                'min_scale': self.minScale,
+                'max_scale': self.maxScale,
+                'scalebasedvisibility': self.scaleBasedVisibility,
                 'database_columns': columns,
+                'srid': self.srid,
                 'datasource': self.datasource,
                 'order': self.order,
                 }
@@ -220,8 +261,12 @@ class QgisProjectLayer(QgisData):
             self.instance.is_visible = self.isVisible
             self.instance.layer_type = self.layerType
             self.instance.qgs_layer_id = self.layerId
+            self.instance.min_scale = self.minScale
+            self.instance.max_scale = self.maxScale
+            self.instance.scalebasedvisibility = self.scaleBasedVisibility
             self.instance.datasource = self.datasource
             self.instance.database_columns = columns
+            self.instance.srid = self.srid
             self.instance.order = self.order
         # Save self.instance
         self.instance.save()

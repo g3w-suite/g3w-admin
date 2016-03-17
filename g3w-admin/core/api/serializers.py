@@ -28,9 +28,12 @@ class GroupSerializer(serializers.ModelSerializer):
                     'type': g3wProjectApp
                 })
 
+        # add baselayers
+        ret['baseLayers'] = []
+
         # add initproject and overviewproject
-        ret['initproject'] = ''
-        ret['overviewproject'] = ''
+        ret['initproject'] = None
+        ret['overviewproject'] = None
 
         return ret
 

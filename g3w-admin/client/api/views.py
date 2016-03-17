@@ -15,6 +15,9 @@ class TestApi(APIView):
 
 
 class ClientConfigApiView(APIView):
+    """
+    APIView to get data Project and layers
+    """
 
     def get(self, request, format=None, group_slug=None, project_type=None, project_id=None):
 

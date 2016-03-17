@@ -107,6 +107,14 @@ class Layer(models.Model):
     # Database columns (postgres layers need it)
     database_columns = models.TextField(_('Database columns'), blank=True)
 
+    # minscale and maxscale and scalebasedvisibility
+    min_scale = models.IntegerField(_('Layer Min Scale visibility'), blank=True, null=True)
+    max_scale = models.IntegerField(_('Layer Max Scale visibility'), blank=True, null=True)
+    scalebasedvisibility = models.BooleanField(_('Layer scale based visibility'), default=False)
+
+    # srid
+    srid = models.IntegerField(_('Layer SRID'), blank=True, null=True)
+
     def __unicode__(self):
         return self.name
 
