@@ -24,6 +24,7 @@ urlpatterns = [
     url(r'^',include('core.urls')),
     url(r'^',include('usersmanage.urls')),
     url(r'^',include('client.urls')),
+    url(r'^',include('OWS.urls')),
     url(r'^upload/', include('django_file_form.urls')),
 
     url(r'^login/$', auth.views.login, name='login', kwargs={'template_name': 'login.html'}),

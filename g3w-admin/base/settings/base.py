@@ -47,7 +47,6 @@ THIRD_PARTY_APPS = [
     'guardian',
     'sitetree',
     'django_extensions',
-    'dropzone',
     'rest_framework',
 ]
 
@@ -55,7 +54,8 @@ G3WADMIN_APPS = [
     'base',
     'core',
     'client',
-    'usersmanage'
+    'usersmanage',
+    'OWS'
 ]
 
 G3WADMIN_PROJECT_APPS = [

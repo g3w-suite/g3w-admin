@@ -24,7 +24,7 @@
                     </td>
                     <td>
                         <span class="col-xs-3 icon">
-                            <a href="{% url 'group-project-map' group.slug 'qdjango' object.pk %}"><i class="ion ion-map"></i></a>
+                            <a href="{% url 'group-project-map' group.slug 'qdjango' object.pk %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Show map' %}"><i class="ion ion-map"></i></a>
                         </span>
                         <span class="col-xs-3 icon">
                             <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-detail-url="{% url 'qdjango-project-detail' group.slug object.slug %}" ><i class="ion ion-eye"></i></a>

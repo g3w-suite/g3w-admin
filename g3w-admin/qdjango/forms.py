@@ -8,12 +8,6 @@ from usersmanage.forms import G3WACLForm
 from django_file_form.forms import FileFormMixin, UploadedFileField
 from .models import *
 from usersmanage.utils import get_fields_by_user, crispyBoxACL
-from dropzone.forms import DropzoneInput
-from django.forms import TextInput
-
-
-from qgis.core import QgsProject, QgsApplication
-from PyQt4.QtCore import QFileInfo, QObject, SIGNAL
 from .utils.data import QgisProject, ProjectExists
 
 
