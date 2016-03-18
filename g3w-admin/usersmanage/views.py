@@ -45,6 +45,7 @@ class UserUpdateView(G3WRequestViewMixin, UpdateView):
     form_class = G3WUserUpdateForm
     model = User
     template_name = 'usersmanage/user_form.html'
+    context_object_name = 'user2update'
 
     def get_form_kwargs(self):
         kwargs = super(UserUpdateView,self).get_form_kwargs()
@@ -55,6 +56,11 @@ class UserUpdateView(G3WRequestViewMixin, UpdateView):
                 name = Path(self.object.userdata.avatar.name).name
                 kwargs['initial']['avatar'] = ExistingFile(name)
         return kwargs
+
+
+    def get_context_data(self, **kwargs):
+        c = super(UserUpdateView,self).get_context_data(**kwargs)
+        return c
 
     def get_success_url(self):
         return reverse('user-list')

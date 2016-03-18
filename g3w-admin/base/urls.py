@@ -20,7 +20,7 @@ from django.conf.urls.static import static
 from django.contrib.auth.decorators import login_required
 
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
+    url(r'^django-admin/', admin.site.urls),
     url(r'^',include('core.urls')),
     url(r'^',include('usersmanage.urls')),
     url(r'^',include('client.urls')),
