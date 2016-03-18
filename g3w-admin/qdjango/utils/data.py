@@ -117,7 +117,7 @@ class QgisProjectLayer(QgisData):
         :return: string
         """
         try:
-            layer_title = self.qgisProjectLayerTree.find('title').text
+            layer_title = self.qgisProjectLayerTree.find('layername').text
         except:
             layer_title = ''
 

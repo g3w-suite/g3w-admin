@@ -14,9 +14,7 @@
   <div class="login-box-body">
     <p class="login-box-msg">{%  trans 'Sign in to start your session' %}</p>
       {% if form.errors %}
-        {% for error in form.errors %}
-            {{ error }}
-        {% endfor %}
+        {% trans 'Username and/or password uncorrect' %}
       {% endif %}
     <form method="post">
       {% csrf_token %}
