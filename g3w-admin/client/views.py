@@ -15,7 +15,7 @@ class ClientView(TemplateView):
 
         # group serializer
         group = get_object_or_404(Group, slug=kwargs['group_slug'])
-        groupSerializer = GroupSerializer(group,projectId=kwargs['project_id'])
+        groupSerializer = GroupSerializer(group,projectId=kwargs['project_id'], projectType=kwargs['project_type'])
 
         # add baseUrl property
         contextData['group_config'] = 'var initConfig ={{ "baseUrl":"{}", "group":{} }}'.format(reverse('ows', kwargs=kwargs), JSONRenderer().render(groupSerializer.data))

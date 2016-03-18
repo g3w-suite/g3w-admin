@@ -13,7 +13,9 @@ class GroupSerializer(serializers.ModelSerializer):
 
     def __init__(self,instance=None, data=empty, **kwargs):
         self.projectId = kwargs['projectId']
+        self.projectType = kwargs['projectType']
         del(kwargs['projectId'])
+        del(kwargs['projectType'])
         super(GroupSerializer, self).__init__(instance, data, **kwargs)
 
     def to_representation(self, instance):
@@ -38,7 +40,10 @@ class GroupSerializer(serializers.ModelSerializer):
         ret['baseLayers'] = []
 
         # add initproject and overviewproject
-        ret['initproject'] = int(self.projectId)
+        ret['initproject'] = {
+            'id':int(self.projectId),
+            'type': self.projectType
+        }
 
         # todo: set project id for overviewmap
         ret['overviewproject'] = None
