@@ -1,7 +1,7 @@
 from django.views.generic import TemplateView
 from django.shortcuts import get_object_or_404
 from django.http import Http404
-from django.apps import apps
+from django.core.urlresolvers import reverse
 from rest_framework.renderers import JSONRenderer
 from core.api.serializers import GroupSerializer, Group
 
@@ -15,8 +15,10 @@ class ClientView(TemplateView):
 
         # group serializer
         group = get_object_or_404(Group, slug=kwargs['group_slug'])
-        groupSerializer = GroupSerializer(group)
-        contextData['group_config'] = 'var config ={{ "baseUrl":"{}", "group":{} }}'.format('', JSONRenderer().render(groupSerializer.data))
+        groupSerializer = GroupSerializer(group,projectId=kwargs['project_id'])
+
+        # add baseUrl property
+        contextData['group_config'] = 'var config ={{ "baseUrl":"{}", "group":{} }}'.format(reverse('ows', kwargs=kwargs), JSONRenderer().render(groupSerializer.data))
 
         # project by type(app)
         if not '{}-{}'.format(kwargs['project_type'],kwargs['project_id']) in groupSerializer.projects.keys():
