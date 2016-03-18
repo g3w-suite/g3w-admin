@@ -4,6 +4,7 @@ from django.conf.global_settings import LANGUAGES
 from django.utils.translation import ugettext, ugettext_lazy as _
 from django.core.urlresolvers import reverse
 from django.db import models
+from django.apps import apps
 from model_utils.models import TimeStampedModel
 from model_utils import Choices
 from autoslug import AutoSlugField
@@ -71,4 +72,17 @@ class Group(TimeStampedModel):
 
     def get_absolute_url(self):
         return reverse('group-detail', kwargs={'slug': self.slug})
+
+    def getProjectsNumber(self):
+        """
+        Count total number of serveral type project
+        :return: integer
+        """
+        groupProjects = 0
+        for g3wProjectApp in settings.G3WADMIN_PROJECT_APPS:
+            Project = apps.get_app_config(g3wProjectApp).get_model('project')
+            groupProjects += len(Project.objects.filter(group=self))
+        return groupProjects
+
+
 

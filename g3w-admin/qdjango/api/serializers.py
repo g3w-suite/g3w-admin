@@ -6,8 +6,6 @@ from qdjango.models import Project, Layer
 from qgis.server import *
 from qdjango.utils.data import QgisProjectSettingsWMS
 
-import json
-
 
 class ProjectSerializer(serializers.ModelSerializer):
 
@@ -106,6 +104,15 @@ class LayerSerializer(serializers.ModelSerializer):
 
         # add bbox
         ret['bbox'] = self.qgisPorjectSettignsWMS.layers[instance.name]['bboxes']['EPSG:{}'.format(group.srid)]
+
+        # add capabilities
+        ret['capabilities'] = 0
+        if self.qgisPorjectSettignsWMS.layers[instance.name]['queryable']:
+            ret['capabilities'] |= settings.QUERYABLE
+        if instance.edit_options:
+            ret['capabilities'] |= settings.EDITABLE
+        if ret['capabilities'] == 0:
+            ret['capabilities'] = None
 
         # add metalayer
         # todo: add procedure for metalayer, caching etc.
