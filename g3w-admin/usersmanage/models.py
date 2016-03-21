@@ -15,4 +15,4 @@ class Department(models.Model):
 class Userdata(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     department = models.OneToOneField(Department, null=True, blank=True)
-    avatar = models.FileField(_('Avatar'), upload_to='user_avatar', null=True, blank=True)
+    avatar = models.ImageField(_('Avatar'), upload_to='user_avatar', null=True, blank=True)

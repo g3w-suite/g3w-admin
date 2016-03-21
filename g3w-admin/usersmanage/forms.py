@@ -1,6 +1,6 @@
 from django.conf import settings
 from django import forms
-from django.forms import Select
+from django.forms import Select, ValidationError
 from django.utils.datastructures import MultiValueDict
 from django.utils.translation import ugettext, ugettext_lazy as _
 from django.contrib.auth.forms import (
@@ -161,6 +161,7 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin,FileFormMixin,UserCreationFo
                         Div(
                             'department',
                             'avatar',
+                            HTML("""{% if form.avatar.value %}<img class="img-responsive img-thumbnail" src="{{ MEDIA_URL }}{{ form.avatar.value }}">{% endif %}""", ),
                             'form_id',
                             'upload_url',
                             'delete_url',
@@ -206,6 +207,22 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin,FileFormMixin,UserCreationFo
 
 
         return user
+
+    def clean_avatar(self):
+        """
+        Check if upalod file is a valid image by pillow
+        :return: File object Cleaned data
+        """
+        avatar = self.cleaned_data['avatar']
+
+        from PIL import Image
+
+        try:
+            image = Image.open(avatar)
+            image.verify()
+        except Exception:
+            raise ValidationError(_('Avatar is no a valid image'),code='image_invalid')
+        return avatar
 
 
     class Meta(UserCreationForm.Meta):

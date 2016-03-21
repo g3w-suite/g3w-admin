@@ -143,7 +143,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
       <footer class="main-footer">
         <!-- To the right -->
         <div class="pull-right hidden-xs">
-          Anything you want
+        {% block footer-right %}
+          <strong>G3W-Admin</strong>: administration GIS application.
+        {% endblock %}
         </div>
         <!-- Default to the left -->
         <strong>Copyright &copy; 2015 <a href="http://www.gis3w.it">GIS3W</a>.</strong> All rights reserved.

@@ -99,6 +99,13 @@ _.extend(g3wadmin.ui, {
           checkboxClass: 'icheckbox_flat-green',
           radioClass: 'iradio_flat-green'
         });
+    },
+
+    initBackHistory: function() {
+        $('[data-widget-type="backHistory"]').click(function(){
+            parent.history.back();
+            return false;
+        });
     }
 
 

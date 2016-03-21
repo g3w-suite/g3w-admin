@@ -48,6 +48,9 @@ _.extend(g3wadmin,{
         //Flat red color scheme for iCheck
         this.ui.initRadioCheckbox();
 
+        //Init button back history
+        this.ui.initBackHistory();
+
         /*
         TODO: try to perfom this issue server side
         //If form present che collapsed box

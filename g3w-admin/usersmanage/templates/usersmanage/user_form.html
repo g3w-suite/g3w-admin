@@ -3,6 +3,13 @@
 {% load crispy_forms_tags %}
 {% load i18n %}
 
+{% block page_header %}
+<h1>
+    {% trans 'System users' %}
+    <small>Stystem users list and property</small>
+</h1>
+{% endblock %}
+
 {% block main_content %}
         <form method="post" id="user-form" data-widget-type="ajaxUpload"  enctype="multipart/form-data">
             {% if form.errors %}
@@ -16,11 +23,7 @@
                 </div>
             {% endif %}
             {% crispy form %}
-            <div class="row">
-                <div class="col-md-12">
-                    <input class="btn btn-primary" type="submit" value="{%trans 'Save'%}" />
-                </div>
-            </div>
+            {% include 'core/include/form_buttons.html' %}
         </form>
         {% include 'core/django_file_form/upload_template.html' %}
 {% endblock %}

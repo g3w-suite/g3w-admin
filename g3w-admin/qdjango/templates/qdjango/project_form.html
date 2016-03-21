@@ -40,18 +40,7 @@
                 </div>
             {% endif %}
             {% crispy form %}
-            <div class="row">
-                <div class="col-md-12">
-                    <button class="btn btn-lg btn-success" type="submit">
-                        <i class="fa fa-save"></i>
-                        {%trans 'Save'%}
-                    </button>
-                    <a class="btn btn-lg btn-default">
-                        <i class="fa fa-undo"></i>
-                        {%trans 'Redo/Back'%}
-                    </a>
-                </div>
-            </div>
+            {% include 'core/include/form_buttons.html' %}
         </form>
         {% include 'core/django_file_form/upload_template.html' %}
 {% endblock %}

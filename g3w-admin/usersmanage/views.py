@@ -52,9 +52,12 @@ class UserUpdateView(G3WRequestViewMixin, UpdateView):
         kwargs['initial']['password'] = self.object.password
         if hasattr(self.object,'userdata'):
             kwargs['initial']['department'] = self.object.userdata.department
+            kwargs['initial']['avatar'] = self.object.userdata.avatar
+            '''
             if self.object.userdata.avatar:
                 name = Path(self.object.userdata.avatar.name).name
                 kwargs['initial']['avatar'] = ExistingFile(name)
+            '''
         return kwargs
 
 

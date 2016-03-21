@@ -14,29 +14,20 @@
 
 {% block main_content %}
 
-        <form method="post" id="group-form"  enctype="multipart/form-data">
-            {% if form.errors %}
-                <div class="row">
-                    <div class="col-md-12">
-                    <div class="alert alert-danger alert-dismissable">
-                        <h4><i class="icon fa fa-ban"></i> {% trans 'Alert' %}!</h4>
-                            {% trans 'Some errors on form. Check it and send again.' %}
-                      </div>
-                    </div>
-                </div>
-            {% endif %}
-            {% crispy form %}
-            <div class="row">
-                <div class="col-md-12">
-                    <input class="btn btn-primary" type="submit" value="{%trans 'Save'%}" />
-                </div>
+<form method="post" id="group-form"  enctype="multipart/form-data">
+    {% if form.errors %}
+        <div class="row">
+            <div class="col-md-12">
+            <div class="alert alert-danger alert-dismissable">
+                <h4><i class="icon fa fa-ban"></i> {% trans 'Alert' %}!</h4>
+                    {% trans 'Some errors on form. Check it and send again.' %}
+              </div>
             </div>
-
-
-
-        </form>
-        {% include 'core/django_file_form/upload_template.html' %}
-
-
+        </div>
+    {% endif %}
+    {% crispy form %}
+    {% include 'core/include/form_buttons.html' %}
+</form>
+{% include 'core/django_file_form/upload_template.html' %}
 
 {% endblock %}

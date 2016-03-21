@@ -111,7 +111,7 @@ class GroupForm(FileFormMixin, G3WFormMixin, G3WRequestFormMixin, G3WACLForm, Mo
                                         Div(
                                             Div(
                                                 'header_logo_img',
-                                                HTML("""{% if form.header_logo_img.value %}<img class="img-responsive img-thumbnail" src="{{ MEDIA_URL }}{{ form.header_logo_img.value }}">{% endif %}""", ),
+                                                HTML("""{% if form.header_logo_img.value %}<img class="507981" src="{{ MEDIA_URL }}{{ form.header_logo_img.value }}">{% endif %}""", ),
                                                 'form_id',
                                                 'upload_url',
                                                 'delete_url',
