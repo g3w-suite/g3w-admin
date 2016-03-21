@@ -33,7 +33,8 @@ class GroupSerializer(serializers.ModelSerializer):
                 ret['projects'].append({
                     'id': project.id,
                     'title': project.title,
-                    'type': g3wProjectApp
+                    'type': g3wProjectApp,
+                    'gid': "%s:%s" % (self.projectType,self.projectId)
                 })
 
         # add baselayers
@@ -42,7 +43,8 @@ class GroupSerializer(serializers.ModelSerializer):
         # add initproject and overviewproject
         ret['initproject'] = {
             'id':int(self.projectId),
-            'type': self.projectType
+            'type': self.projectType,
+            'gid': "%s:%s" % (self.projectType,self.projectId)
         }
 
         # todo: set project id for overviewmap
