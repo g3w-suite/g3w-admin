@@ -2,6 +2,7 @@ from django.conf.urls import url
 from django.contrib.auth.decorators import login_required
 from django.views.static import serve
 
+
 from client.api.views import *
 from .views import *
 
@@ -26,3 +27,4 @@ urlpatterns = [
     #url(r'^{}(?P<path>.*)$'.format(settings.MEDIA_URL[1:] + 'logo_img/'), protected_serve, {'document_root': settings.MEDIA_ROOT+ 'logo_img/'}),
 
 ]
+

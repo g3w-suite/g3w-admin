@@ -11,7 +11,8 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from core.mixins.views import *
 from core.models import Group
-from .models import Project
+from .models import Project, Layer
+from .mixins.views import *
 from .forms import *
 
 
@@ -56,3 +57,12 @@ class QdjangoProjectDetailView(G3WRequestViewMixin, DetailView):
 
 class QdjangoProjectDeleteView(View):
     pass
+
+# For layers
+class QdjangoLayersListView(G3WRequestViewMixin, G3WGroupViewMixin, QdjangoProjectViewMixin, ListView):
+    template_name = 'qdjango/layers_list.html'
+
+    def get_queryset(self):
+
+        # get project by project_slug
+        return Layer.objects.filter(project__slug=self.project_slug)

@@ -1,0 +1,247 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-03-22 14:27+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: qdjango/forms.py:52
+msgid "Qgis Project"
+msgstr ""
+
+#: qdjango/forms.py:73
+msgid "Descrition data"
+msgstr ""
+
+#: qdjango/models.py:34
+msgid "QGIS project file"
+msgstr ""
+
+#: qdjango/models.py:40 qdjango/models.py:86
+msgid "Title"
+msgstr ""
+
+#: qdjango/models.py:41 qdjango/models.py:88
+msgid "Description"
+msgstr ""
+
+#: qdjango/models.py:43 qdjango/models.py:90
+msgid "Slug"
+msgstr ""
+
+#: qdjango/models.py:45 qdjango/models.py:92
+msgid "Is active"
+msgstr ""
+
+#: qdjango/models.py:48 qdjango/templates/qdjango/ajax/project_detail.html:26
+msgid "Thumbnail"
+msgstr ""
+
+#: qdjango/models.py:51
+msgid "Group"
+msgstr ""
+
+#: qdjango/models.py:54 qdjango/templates/qdjango/ajax/project_detail.html:6
+msgid "Initial extent"
+msgstr ""
+
+#: qdjango/models.py:55
+msgid "Max extent"
+msgstr ""
+
+#: qdjango/models.py:58
+msgid "Is panoramic map"
+msgstr ""
+
+#: qdjango/models.py:61
+msgid "Qgis project version"
+msgstr ""
+
+#: qdjango/models.py:64
+msgid "Layers tree structure"
+msgstr ""
+
+#: qdjango/models.py:77
+msgid "Postgres"
+msgstr ""
+
+#: qdjango/models.py:78
+msgid "SpatiaLite"
+msgstr ""
+
+#: qdjango/models.py:79
+msgid "WFS"
+msgstr ""
+
+#: qdjango/models.py:80
+msgid "WMS"
+msgstr ""
+
+#: qdjango/models.py:81
+msgid "OGR"
+msgstr ""
+
+#: qdjango/models.py:82
+msgid "GDAL"
+msgstr ""
+
+#: qdjango/models.py:85
+msgid "Name"
+msgstr ""
+
+#: qdjango/models.py:87
+msgid "Qgis Layer Porject ID"
+msgstr ""
+
+#: qdjango/models.py:94
+msgid "Project"
+msgstr ""
+
+#: qdjango/models.py:96
+msgid "Type"
+msgstr ""
+
+#: qdjango/models.py:97
+msgid "Datasource"
+msgstr ""
+
+#: qdjango/models.py:98
+msgid "Is visible"
+msgstr ""
+
+#: qdjango/models.py:99
+msgid "Order"
+msgstr ""
+
+#: qdjango/models.py:102
+msgid "Associated data file"
+msgstr ""
+
+#: qdjango/models.py:108
+msgid "Database columns"
+msgstr ""
+
+#: qdjango/models.py:111
+msgid "Layer Min Scale visibility"
+msgstr ""
+
+#: qdjango/models.py:112
+msgid "Layer Max Scale visibility"
+msgstr ""
+
+#: qdjango/models.py:113
+msgid "Layer scale based visibility"
+msgstr ""
+
+#: qdjango/models.py:116
+msgid "Layer SRID"
+msgstr ""
+
+#: qdjango/models.py:119
+msgid "Bitwise capabilities"
+msgstr ""
+
+#: qdjango/models.py:120
+msgid "Bitwise edit options"
+msgstr ""
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:10
+msgid "Users"
+msgstr ""
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:13
+msgid "Editor user"
+msgstr ""
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:16
+msgid "Viewer users"
+msgstr ""
+
+#: qdjango/templates/qdjango/ajax/project_detail.html:34
+msgid "Qgis project Version:"
+msgstr ""
+
+#: qdjango/templates/qdjango/project_form.html:24
+msgid "New Qdjango project"
+msgstr ""
+
+#: qdjango/templates/qdjango/project_form.html:36
+msgid "Alert"
+msgstr ""
+
+#: qdjango/templates/qdjango/project_form.html:37
+msgid "Some errors on form. Check it and send again."
+msgstr ""
+
+#: qdjango/templates/qdjango/project_list.html:27
+msgid "Show map"
+msgstr ""
+
+#: qdjango/templates/qdjango/project_list.html:30
+msgid "Show detail"
+msgstr ""
+
+#: qdjango/templates/qdjango/project_list.html:33
+msgid "Edit"
+msgstr ""
+
+#: qdjango/templates/qdjango/project_list.html:36
+msgid "Delete"
+msgstr ""
+
+#: qdjango/utils/data.py:55
+msgid "{} \"{}\" {}:"
+msgstr ""
+
+#: qdjango/utils/data.py:153
+msgid "Missing or invalid type for layer"
+msgstr ""
+
+#: qdjango/utils/data.py:310
+msgid "Project and group SRID must be the same"
+msgstr ""
+
+#: qdjango/utils/data.py:312
+msgid "Project and group units must be the same"
+msgstr ""
+
+#: qdjango/utils/data.py:322
+msgid "A project with the same title already exists"
+msgstr ""
+
+#: qdjango/utils/data.py:331
+msgid "Title porject not empty"
+msgstr ""
+
+#: qdjango/utils/data.py:357
+msgid "Invalid Project Data "
+msgstr ""
+
+#: qdjango/utils/data.py:392
+msgid "The project file is malformed: {}"
+msgstr ""
+
+#: qdjango/utils/data.py:632
+msgid "The project settings is malformed: {}"
+msgstr ""
+
+#: qdjango/utils/structure.py:26
+msgid "Missing data file for layer"
+msgstr ""
+
+#: qdjango/utils/structure.py:27
+msgid "which should be located at"
+msgstr ""

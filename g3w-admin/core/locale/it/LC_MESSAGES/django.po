@@ -1,0 +1,285 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-03-22 14:27+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: core/admin.py:11
+msgid "Basic settings"
+msgstr ""
+
+#: core/admin.py:14
+msgid "Access settings"
+msgstr ""
+
+#: core/admin.py:18
+msgid "Display settings"
+msgstr ""
+
+#: core/admin.py:22
+msgid "Additional settings"
+msgstr ""
+
+#: core/forms.py:38
+msgid "General data"
+msgstr ""
+
+#: core/forms.py:59
+msgid "GEO data"
+msgstr "GEO dati"
+
+#: core/forms.py:85
+msgid "Third party maps"
+msgstr "Mappe terze parti"
+
+#: core/forms.py:108
+msgid "Logo/Picture"
+msgstr "Logo/Immagine"
+
+#: core/forms.py:135
+msgid "Copyright"
+msgstr ""
+
+#: core/models.py:26
+msgid "Meters"
+msgstr ""
+
+#: core/models.py:27
+msgid "Feet"
+msgstr ""
+
+#: core/models.py:28
+msgid "Degrees"
+msgstr ""
+
+#: core/models.py:31
+msgid "Name"
+msgstr ""
+
+#: core/models.py:32
+msgid "Title"
+msgstr ""
+
+#: core/models.py:33
+msgid "Description"
+msgstr ""
+
+#: core/models.py:35
+msgid "Slug"
+msgstr ""
+
+#: core/models.py:37
+msgid "Is active"
+msgstr ""
+
+#: core/models.py:39
+msgid "lang"
+msgstr ""
+
+#: core/models.py:41
+msgid "headerLogoImg"
+msgstr ""
+
+#: core/models.py:42
+msgid "headerLogoHeight"
+msgstr ""
+
+#: core/models.py:43
+msgid "headerLogoLink"
+msgstr ""
+
+#: core/models.py:45 core/templates/core/ajax/group_detail.html.py:11
+msgid "Max scale"
+msgstr ""
+
+#: core/models.py:46 core/templates/core/ajax/group_detail.html.py:12
+msgid "Min scale"
+msgstr ""
+
+#: core/models.py:48 core/templates/core/ajax/group_detail.html.py:14
+msgid "Panoramic max scale"
+msgstr ""
+
+#: core/models.py:49 core/templates/core/ajax/group_detail.html.py:15
+msgid "Panoramic min scale"
+msgstr ""
+
+#: core/models.py:51 core/templates/core/ajax/group_detail.html.py:9
+msgid "Units"
+msgstr ""
+
+#: core/models.py:53
+msgid "SRID/EPSG"
+msgstr ""
+
+#: core/models.py:55
+msgid "Use commercial maps"
+msgstr "Usa mapper commerciali: Bing (Areal, ..)"
+
+#: core/models.py:56
+msgid "Use OpenStreetMap base map"
+msgstr ""
+
+#: core/models.py:59
+msgid "headerTermsOfUseText"
+msgstr ""
+
+#: core/models.py:62
+msgid "headerTermsOfUseLink"
+msgstr ""
+
+#: core/templates/core/ajax/group_detail.html:5
+msgid "Geografic component"
+msgstr ""
+
+#: core/templates/core/ajax/group_detail.html:7
+msgid "Geographic coordinate system"
+msgstr ""
+
+#: core/templates/core/ajax/group_detail.html:8
+msgid "SRID"
+msgstr ""
+
+#: core/templates/core/ajax/group_detail.html:10
+msgid "Principal map"
+msgstr ""
+
+#: core/templates/core/ajax/group_detail.html:13
+msgid "Overview Map"
+msgstr ""
+
+#: core/templates/core/ajax/group_detail.html:18
+msgid "Users"
+msgstr ""
+
+#: core/templates/core/ajax/group_detail.html:21
+msgid "Editor user"
+msgstr ""
+
+#: core/templates/core/ajax/group_detail.html:24
+msgid "Viewer users"
+msgstr ""
+
+#: core/templates/core/ajax/group_detail.html:31
+msgid "Interface component"
+msgstr ""
+
+#: core/templates/core/ajax/group_detail.html:33
+msgid "Interface language"
+msgstr ""
+
+#: core/templates/core/ajax/group_detail.html:34
+msgid "Language"
+msgstr ""
+
+#: core/templates/core/ajax/group_detail.html:35
+msgid "Associated logo"
+msgstr ""
+
+#: core/templates/core/ajax/group_detail.html:36
+msgid "HeaderLogoImg"
+msgstr ""
+
+#: core/templates/core/ajax/group_detail.html:44
+msgid "HeaderLogoHeight"
+msgstr ""
+
+#: core/templates/core/ajax/group_detail.html:45
+msgid "HeaderLogoLink"
+msgstr ""
+
+#: core/templates/core/ajax/group_detail.html:46
+msgid "Terms of use"
+msgstr ""
+
+#: core/templates/core/ajax/group_detail.html:47
+msgid "HeaderTermsOfUseText"
+msgstr ""
+
+#: core/templates/core/ajax/group_detail.html:48
+msgid "HeaderTermsOfUseLink"
+msgstr ""
+
+#: core/templates/core/django_file_form/upload_template.html:5
+msgid "Drop files here to upload"
+msgstr ""
+
+#: core/templates/core/django_file_form/upload_template.html:8
+msgid "Click or Drag file to Upload"
+msgstr ""
+
+#: core/templates/core/django_file_form/upload_template.html:11
+msgid "Processing dropped files..."
+msgstr ""
+
+#: core/templates/core/django_file_form/upload_template.html:24
+msgid "Cancel"
+msgstr ""
+
+#: core/templates/core/django_file_form/upload_template.html:25
+msgid "Retry"
+msgstr ""
+
+#: core/templates/core/django_file_form/upload_template.html:26
+#: core/templates/core/group_list.html:80
+msgid "Delete"
+msgstr ""
+
+#: core/templates/core/group_form.html:22
+msgid "Alert"
+msgstr ""
+
+#: core/templates/core/group_form.html:23
+msgid "Some errors on form. Check it and send again."
+msgstr ""
+
+#: core/templates/core/group_list.html:11
+msgid "Cartographic groups"
+msgstr "Gruppi cartografici"
+
+#: core/templates/core/group_list.html:48
+msgid "Add new project"
+msgstr ""
+
+#: core/templates/core/group_list.html:60
+msgid "Group projects"
+msgstr ""
+
+#: core/templates/core/group_list.html:60
+#: core/templates/core/project_list.html:11
+msgid "Projects"
+msgstr ""
+
+#: core/templates/core/group_list.html:66
+msgid "Show detail"
+msgstr ""
+
+#: core/templates/core/group_list.html:73
+msgid "Edit"
+msgstr ""
+
+#: core/templates/core/include/form_buttons.html:6
+msgid "Save"
+msgstr ""
+
+#: core/templates/core/include/form_buttons.html:10
+msgid "Redo/Back"
+msgstr ""
+
+#: core/utils/forms.py:9
+msgid "{} is no a valid image"
+msgstr ""

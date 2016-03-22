@@ -18,6 +18,7 @@ from django.contrib import admin, auth
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth.decorators import login_required
+from django.conf.urls.i18n import i18n_patterns
 
 urlpatterns = [
     url(r'^django-admin/', admin.site.urls),
@@ -39,3 +40,8 @@ if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 
+urlpatterns = i18n_patterns(*urlpatterns)
+
+from sitetree.sitetreeapp import register_i18n_trees
+
+register_i18n_trees(['acl'])

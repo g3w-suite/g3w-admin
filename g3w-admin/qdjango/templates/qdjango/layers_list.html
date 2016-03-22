@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load g3wadmin_tags %}
+{% load svg_icon %}
+{% block page_header %}
+<h1>
+{% trans 'QGIS Project Layers' %}
+    <small></small>
+</h1>
+{% endblock %}
+
+{% block main_content %}
+
+<div class="row">
+    <div class="col-md-12 col-xs-12">
+        <div class="box">
+            <div class="box-header">
+                <h3 class="box-title">Project </h3>
+            </div>
+            <div class="box-body">
+                Description project
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="box">
+    <div class="box-header">
+        <span class="description">Layers</span>
+    </div>
+    <div class="box-body">
+        <table class="table table-hover table-striped">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for object in object_list %}
+                <tr id="qdjango_project_layer_{{ object.slug }}">
+                    <td>{{ object.name }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

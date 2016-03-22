@@ -1,0 +1,99 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-03-22 14:27+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: usersmanage/forms.py:46
+msgid "Editor user"
+msgstr ""
+
+#: usersmanage/forms.py:47
+msgid "Viewer users"
+msgstr ""
+
+#: usersmanage/forms.py:105
+msgid "Anagraphic"
+msgstr ""
+
+#: usersmanage/forms.py:123
+msgid "ACL/Roles"
+msgstr ""
+
+#: usersmanage/forms.py:140
+msgid "Login data"
+msgstr ""
+
+#: usersmanage/forms.py:158
+msgid "User data"
+msgstr ""
+
+#: usersmanage/forms.py:224
+msgid "Avatar is no a valid image"
+msgstr ""
+
+#: usersmanage/forms.py:249
+msgid "Password"
+msgstr ""
+
+#: usersmanage/forms.py:251
+msgid "Password confirmation"
+msgstr ""
+
+#: usersmanage/forms.py:253
+msgid "Enter the same password as above, for verification."
+msgstr ""
+
+#: usersmanage/models.py:18
+msgid "Avatar"
+msgstr ""
+
+#: usersmanage/templates/usersmanage/ajax/user_detail.html:5
+msgid "User"
+msgstr ""
+
+#: usersmanage/templates/usersmanage/user_form.html:8
+msgid "System users"
+msgstr ""
+
+#: usersmanage/templates/usersmanage/user_form.html:19
+msgid "Alert"
+msgstr ""
+
+#: usersmanage/templates/usersmanage/user_form.html:20
+msgid "Some errors on form. Check it and send again."
+msgstr ""
+
+#: usersmanage/templates/usersmanage/user_list.html:10
+msgid "Users"
+msgstr ""
+
+#: usersmanage/templates/usersmanage/user_list.html:41
+msgid "Show detail"
+msgstr ""
+
+#: usersmanage/templates/usersmanage/user_list.html:44
+msgid "Edit"
+msgstr ""
+
+#: usersmanage/templates/usersmanage/user_list.html:47
+msgid "Delete"
+msgstr ""
+
+#: usersmanage/utils.py:64
+msgid "ACL Users"
+msgstr ""
