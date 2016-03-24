@@ -1,6 +1,9 @@
 from django.views.generic import View
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
+from ModestMaps.Core import Coordinate
+from TileStache import getTile, parseConfigfile
+from TileStache.Core import KnownUnknown
 from django.http import HttpResponse
 from .proxy import Proxy
 
@@ -8,13 +11,12 @@ from .proxy import Proxy
 class OWSView(View):
 
     proxy = Proxy(None)
+    _OWSRequestHandler = 'OWSRequestHandler'
 
     @method_decorator(csrf_exempt)
     def dispatch(self, request, *args, **kwargs):
         # get url data
-        self.groupSlug = kwargs['group_slug']
         self.projectType = kwargs['project_type']
-        self.projectId = kwargs['project_id']
 
         # get handler request by project type
         self._getOWSRequestHandler()
@@ -24,8 +26,7 @@ class OWSView(View):
 
     def get(self, request, *args, **kwargs):
 
-        response = self.proxy.request(request,self.OWSRequestHandler, groupSlug = self.groupSlug, projectId = self.projectId)
-        return response
+        return self.proxy.request(request,self.OWSRequestHandler, **kwargs)
 
     def _getOWSRequestHandler(self):
         """
@@ -33,4 +34,9 @@ class OWSView(View):
         :return:
         """
         projectAppModule = __import__('{}.ows'.format(self.projectType))
-        self.OWSRequestHandler = projectAppModule.ows.OWSRequestHandler
+        self.OWSRequestHandler = getattr(projectAppModule.ows, self._OWSRequestHandler)
+
+
+class OWSTileView(OWSView):
+
+    _OWSRequestHandler = 'OWSTileRequestHandler'
