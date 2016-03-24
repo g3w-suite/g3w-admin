@@ -32,6 +32,10 @@ _.extend(g3wadmin.widget, {
         'ajax-url',
     ],
 
+    _setLayerCached : [
+        'ajax-url',
+    ],
+
     /**
      * Widget to delete a item from database by ajax call.
      * @param $item jquery object
@@ -207,6 +211,10 @@ _.extend(g3wadmin.widget, {
     // Specific widget for g3w-admin modules
     // -----------------------------------------------------
 
+    /**
+     * Set by ajax call project id and type for panoramic map
+     * @param $item
+     */
     setProjectPanoramic: function($item) {
 
         try {
@@ -218,9 +226,31 @@ _.extend(g3wadmin.widget, {
             $.ajax({
                 method: 'get',
                 url: params['ajax-url'],
-                success: function (res) {
-                    console.log('Project panaoramic set')
-                },
+                error: function (xhr, textStatus, errorMessage) {
+                    ga.widget.showError(ga.utils.buildAjaxErrorMessage(xhr.status, errorMessage));
+                }
+            });
+
+        } catch (e) {
+            this.showError(e.message);
+        }
+    },
+
+    /**
+     * Set data for caching layer by tilestache
+     * @param $item
+     */
+    setLayerCached: function($item) {
+
+        try {
+            var params = ga.utils.getDataAttrs($item, this._setLayerCached);
+            if (_.isUndefined(params['ajax-url'])) {
+                throw new Error('Attribute data-ajax-url not defined');
+            }
+
+            $.ajax({
+                method: 'get',
+                url: params['ajax-url'],
                 error: function (xhr, textStatus, errorMessage) {
                     ga.widget.showError(ga.utils.buildAjaxErrorMessage(xhr.status, errorMessage));
                 }

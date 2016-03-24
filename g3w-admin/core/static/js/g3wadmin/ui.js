@@ -100,6 +100,18 @@ _.extend(g3wadmin.ui, {
         });
     },
 
+    initSetLayerCached: function(context) {
+        if (!_.isUndefined(context)) {
+            var $widgetItem = $(context).find('[data-widget-type="setLayerCached"]');
+        }
+        else {
+            var $widgetItem = $('[data-widget-type="setLayerCached"]');
+        }
+        $widgetItem.on('ifChecked',function(e){
+            ga.widget.setLayerCached($(this));
+        });
+    },
+
     initRadioCheckbox: function(context) {
         if (!_.isUndefined(context)) {
             var $widgetItem = $(context).find('input[type="checkbox"], input[type="radio"]');

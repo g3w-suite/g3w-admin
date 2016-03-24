@@ -9,3 +9,4 @@ class QdjangoProjectViewMixin(object):
 
         self.project_slug = kwargs.get('project_slug')
         return super(QdjangoProjectViewMixin, self).dispatch(request, *args, **kwargs)
+

@@ -10,7 +10,8 @@ urlpatterns = [
     url(r'^(?P<group_slug>[-_\w\d]+)/projects/(?P<slug>[-_\w\d]+)/$', login_required(QdjangoProjectDetailView.as_view()), name='qdjango-project-detail'),
 
     # Layers urls
-    url(r'^(?P<group_slug>[-_\w\d]+)/projects/(?P<project_slug>[-_\w\d]+)/layers/$',login_required(QdjangoLayersListView.as_view()), name='qdjango-project-layers-list'),
+    url(r'^(?P<group_slug>[-_\w\d]+)/projects/(?P<project_slug>[-_\w\d]+)/layers/$', login_required(QdjangoLayersListView.as_view()), name='qdjango-project-layers-list'),
+    url(r'^jx/(?P<group_slug>[-_\w\d]+)/projects/(?P<project_slug>[-_\w\d]+)/layers/(?P<layer_id>[0-9]+)/cache/$', login_required(QdjangoLayerCacheView.as_view()), name='qdjango-project-layers-cache'),
 
 ]
 

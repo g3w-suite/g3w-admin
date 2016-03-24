@@ -1,32 +1,32 @@
 {% load staticfiles %}
 {% if object.layer_type = 'postgres' %}
-  <svg id="circle" height="32" width="32"
+  <svg id="circle" height="16" width="16"
      xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" >
-  <image x="0" y="0" height="32" width="32"  xlink:href="{% static 'svg/pg32.svg' %}" />
+  <image x="0" y="0" height="16" width="16"  xlink:href="{% static 'svg/pg32.svg' %}" />
   </svg>
 {% elif object.layer_type = 'spatialite' %}
-  <svg id="circle" height="32" width="32"
+  <svg id="circle" height="16" width="16"
      xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" >
-  <image x="0" y="0" height="32" width="32"  xlink:href="{% static 'svg/mIconSpatialite.svg' %}" />
+  <image x="0" y="0" height="16" width="16"  xlink:href="{% static 'svg/mIconSpatialite.svg' %}" />
   </svg>
 {% elif object.layer_type = 'ogr' %}
-  <svg id="circle" height="32" width="32"
+  <svg id="circle" height="16" width="16"
      xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" >
-  <image x="0" y="0" height="32" width="32"  xlink:href="{% static 'svg/mActionOgrLayer.svg' %}" />
+  <image x="0" y="0" height="16" width="16"  xlink:href="{% static 'svg/mActionOgrLayer.svg' %}" />
   </svg>
 {% elif object.layer_type = 'gdal' %}
-  <svg id="circle" height="32" width="32"
+  <svg id="circle" height="16" width="16"
      xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" >
-  <image x="0" y="0" height="32" width="32"  xlink:href="{% static 'svg/mIconRaster.svg' %}" />
+  <image x="0" y="0" height="16" width="16"  xlink:href="{% static 'svg/mIconRaster.svg' %}" />
   </svg>
 {% elif object.layer_type = 'wms' %}
-  <svg id="circle" height="32" width="32"
+  <svg id="circle" height="16" width="16"
      xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" >
-  <image x="0" y="0" height="32" width="32"  xlink:href="{% static 'svg/mIconWms.svg' %}" />
+  <image x="0" y="0" height="16" width="16"  xlink:href="{% static 'svg/mIconWms.svg' %}" />
   </svg>
 {% else %}
-  <svg id="circle" height="32" width="32"
+  <svg id="circle" height="16" width="16"
      xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" >
-  <image x="0" y="0" height="32" width="32"  xlink:href="{% static 'svg/mIconWfs.svg' %}" />
+  <image x="0" y="0" height="16" width="16"  xlink:href="{% static 'svg/mIconWfs.svg' %}" />
   </svg>
 {% endif %}

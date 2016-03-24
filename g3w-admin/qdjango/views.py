@@ -72,4 +72,25 @@ class QdjangoLayersListView(G3WRequestViewMixin, G3WGroupViewMixin, QdjangoProje
         # get project by project_slug
         return Layer.objects.filter(project__slug=self.project_slug)
 
+class QdjangoLayerCacheView(G3WGroupViewMixin, QdjangoProjectViewMixin, View):
+    """
+    To set cached layer settings
+    """
+    def get(self, *args, **kwargs):
+
+        # get layer to work
+        layer = Layer.objects.get(pk=kwargs['layer_id'])
+
+        # build tilestache layer configuration
+        tilestacheLayerConf = {
+            "provider": {
+                          "name": layer.name,
+                          "template": "http://www502.regione.toscana.it/wmsraster/com.rt.wms.RTmap/wms?map=wmspiapae&SERVICE=WMS&REQUEST=GetMap&VERSION=1.3.0&LAYERS=rt_piapae.carta_dei_caratteri_del_paesaggio.50k.ct.rt&STYLES=&FORMAT=image/png&TRANSPARENT=undefined&CRS=EPSG:3857&WIDTH=$width&HEIGHT=$height&bbox=$xmin,$ymin,$xmax,$ymax"
+                      },
+            "projection": "spherical mercator"
+        }
+
+
+
+
 
