@@ -28,6 +28,10 @@ _.extend(g3wadmin.widget, {
         'target-selector'
     ],
 
+    _setProjectPanoramic : [
+        'ajax-url',
+    ],
+
     /**
      * Widget to delete a item from database by ajax call.
      * @param $item jquery object
@@ -197,6 +201,39 @@ _.extend(g3wadmin.widget, {
         $('.modal,.fade').remove();
         var modal = ga.ui.buildDangerModal({modalTitle:'ERROR', modalBody:message, confirmButton:false});
         modal.show();
+    },
+
+    // -----------------------------------------------------
+    // Specific widget for g3w-admin modules
+    // -----------------------------------------------------
+
+    setProjectPanoramic: function($item) {
+
+        try {
+            var params = ga.utils.getDataAttrs($item, this._setProjectPanoramic);
+            if (_.isUndefined(params['ajax-url'])) {
+                throw new Error('Attribute data-ajax-url not defined');
+            }
+
+            $.ajax({
+                method: 'get',
+                url: params['ajax-url'],
+                success: function (res) {
+                    console.log('Project panaoramic set')
+                },
+                error: function (xhr, textStatus, errorMessage) {
+                    ga.widget.showError(ga.utils.buildAjaxErrorMessage(xhr.status, errorMessage));
+                }
+            });
+
+        } catch (e) {
+            this.showError(e.message);
+        }
+
+
+
+
+
     }
 
 });

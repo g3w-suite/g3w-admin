@@ -27,14 +27,14 @@ class GroupSerializer(serializers.ModelSerializer):
 
         for g3wProjectApp in settings.G3WADMIN_PROJECT_APPS:
             Project = apps.get_app_config(g3wProjectApp).get_model('project')
-            projects = Project.objects.all()
+            projects = Project.objects.filter(group=instance)
             for project in projects:
                 self.projects[g3wProjectApp+'-'+str(project.id)] = project
                 ret['projects'].append({
                     'id': project.id,
                     'title': project.title,
                     'type': g3wProjectApp,
-                    'gid': "%s:%s" % (self.projectType,self.projectId)
+                    'gid': "{}:{}".format(g3wProjectApp, project.id)
                 })
 
         # add baselayers
@@ -42,13 +42,22 @@ class GroupSerializer(serializers.ModelSerializer):
 
         # add initproject and overviewproject
         ret['initproject'] = {
-            'id':int(self.projectId),
+            'id': int(self.projectId),
             'type': self.projectType,
-            'gid': "%s:%s" % (self.projectType,self.projectId)
+            'gid': "{}:{}".format(self.projectType,self.projectId)
         }
 
-        # todo: set project id for overviewmap
-        ret['overviewproject'] = None
+        # add overviewproject is present
+        overviewproject = instance.project_panoramic.all()
+        if overviewproject:
+            overviewproject = overviewproject[0]
+            ret['overviewproject'] = {
+                'id': int(overviewproject.project_id),
+                'type': overviewproject.project_type,
+                'gid': "{}:{}".format(overviewproject.project_type,overviewproject.project_id)
+            }
+        else:
+            ret['overviewproject'] = None
 
         return ret
 

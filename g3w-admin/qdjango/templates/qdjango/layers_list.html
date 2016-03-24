@@ -33,12 +33,16 @@
             <thead>
                 <tr>
                     <th>Name</th>
+                    <th>Type</th>
                 </tr>
             </thead>
             <tbody>
                 {% for object in object_list %}
                 <tr id="qdjango_project_layer_{{ object.slug }}">
                     <td>{{ object.name }}</td>
+                    <td>
+                        {% include 'qdjango/include/layer_icon.html' %}
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>

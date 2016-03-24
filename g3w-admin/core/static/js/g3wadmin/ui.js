@@ -88,6 +88,18 @@ _.extend(g3wadmin.ui, {
         });
     },
 
+    initSetProjectPanoramicWidget: function(context) {
+        if (!_.isUndefined(context)) {
+            var $widgetItem = $(context).find('[data-widget-type="setProjectPanoramic"]');
+        }
+        else {
+            var $widgetItem = $('[data-widget-type="setProjectPanoramic"]');
+        }
+        $widgetItem.on('ifChecked',function(e){
+            ga.widget.setProjectPanoramic($(this));
+        });
+    },
+
     initRadioCheckbox: function(context) {
         if (!_.isUndefined(context)) {
             var $widgetItem = $(context).find('input[type="checkbox"], input[type="radio"]');

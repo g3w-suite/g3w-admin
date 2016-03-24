@@ -54,9 +54,6 @@ class Project(TimeStampedModel):
     initial_extent = models.CharField(_('Initial extent'), max_length=255)
     max_extent = models.CharField(_('Max extent'), max_length=255)
 
-    # Whether current project acts as a panoramic map within group
-    is_panoramic_map = models.BooleanField(_('Is panoramic map'), default=0)
-
     # Qgis version project
     qgis_version = models.CharField(_('Qgis project version'), max_length=255, default='')
 

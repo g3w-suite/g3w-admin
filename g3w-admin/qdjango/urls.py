@@ -5,9 +5,9 @@ from .views import *
 urlpatterns = [
     url(r'^(?P<group_slug>[-_\w\d]+)/projects/$', login_required(QdjangoProjectListView.as_view()), name='qdjango-project-list'),
     url(r'^(?P<group_slug>[-_\w\d]+)/project/add/$', login_required(OdjangoProjectCreateView.as_view()), name='qdjango-project-add'),
-    url(r'^(?P<group_slug>[-_\w\d]+)/projects/update/(?P<slug>[-_\w\d]+)/$',login_required(QdjangoProjectUpdateView.as_view()), name='qdjango-project-update'),
-    url(r'^(?P<group_slug>[-_\w\d]+)/projects/delete/(?P<slug>[-_\w\d]+)/$',login_required(QdjangoProjectDeleteView.as_view()), name='qdjango-project-delete'),
-    url(r'^(?P<group_slug>[-_\w\d]+)/projects/(?P<slug>[-_\w\d]+)/$',login_required(QdjangoProjectDetailView.as_view()), name='qdjango-project-detail'),
+    url(r'^(?P<group_slug>[-_\w\d]+)/projects/update/(?P<slug>[-_\w\d]+)/$', login_required(QdjangoProjectUpdateView.as_view()), name='qdjango-project-update'),
+    url(r'^(?P<group_slug>[-_\w\d]+)/projects/delete/(?P<slug>[-_\w\d]+)/$', login_required(QdjangoProjectDeleteView.as_view()), name='qdjango-project-delete'),
+    url(r'^(?P<group_slug>[-_\w\d]+)/projects/(?P<slug>[-_\w\d]+)/$', login_required(QdjangoProjectDetailView.as_view()), name='qdjango-project-detail'),
 
     # Layers urls
     url(r'^(?P<group_slug>[-_\w\d]+)/projects/(?P<project_slug>[-_\w\d]+)/layers/$',login_required(QdjangoLayersListView.as_view()), name='qdjango-project-layers-list'),

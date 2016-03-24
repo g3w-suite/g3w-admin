@@ -2,7 +2,7 @@ from django.http import HttpResponse
 from django.conf import settings
 from qgis.server import *
 from OWS.ows import OWSRequestHandlerBase
-from .models import Project
+from .models import Project, Layer
 from copy import copy
 from ModestMaps.Core import Coordinate
 from TileStache import getTile, Config, parseConfigfile
@@ -71,6 +71,9 @@ class OWSTileRequestHandler(OWSRequestHandlerBase):
         '''
 
         configDict = settings.TILESTACHE_CONFIG_BASE
+        configDict['layers'][self.layer_name] = Layer.objects.get(project_id=self.projectId, name=self.layer_name).tilestache_conf
+
+        '''
         configDict['layers']['rt'] = {
             "provider": {
                 "name": "url template",
@@ -78,6 +81,7 @@ class OWSTileRequestHandler(OWSRequestHandlerBase):
             },
             "projection": "spherical mercator"
         }
+        '''
         config = Config.buildConfiguration(configDict)
         layer = config.layers[self.layer_name]
         coord = Coordinate(int(self.tile_row), int(self.tile_column), int(self.tile_zoom))

@@ -9,9 +9,5 @@
 var $m;
 
 $(document).ready(function(){
-    $('#bt_test').click(function(){
-        ga.widget.deleteItem($(this));
-    });
-
     ga.bootstrap();
 });

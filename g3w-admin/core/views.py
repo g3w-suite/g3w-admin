@@ -15,7 +15,7 @@ from django.views.generic import (
 from django.views.generic.detail import SingleObjectMixin
 from django.core.urlresolvers import reverse
 from .forms import ExampleForm, ExampleAjaxForm, GroupForm
-from .models import Group
+from .models import Group, GroupProjectPanoramic
 from django_file_form.uploader import FileFormUploader
 from guardian.shortcuts import assign_perm, remove_perm ,get_objects_for_user
 from .mixins.views import G3WRequestViewMixin, G3WAjaxDeleteViewMixin
@@ -62,6 +62,28 @@ class GroupDeleteView(G3WAjaxDeleteViewMixin,G3WRequestViewMixin, SingleObjectMi
     Delete group Ajax view
     '''
     model = Group
+
+class GroupSetProjectPanoramicView(View):
+    '''
+    Set panoramic project for this group
+    '''
+    def get(self, *args, **kwargs):
+        # first remove current panoramic map
+        group = Group.objects.get(slug=kwargs['slug'])
+        groupProjectPanoramics = GroupProjectPanoramic.objects.filter(group_id=group.id)
+
+        # case exists
+        if groupProjectPanoramics:
+            groupProjectPanoramic = groupProjectPanoramics[0]
+            groupProjectPanoramic.project_type = kwargs['project_type']
+            groupProjectPanoramic.project_id = kwargs['project_id']
+
+        else:
+
+            # case new one
+            groupProjectPanoramic = GroupProjectPanoramic(group=group, project_type=kwargs['project_type'], project_id=kwargs['project_id'])
+        groupProjectPanoramic.save()
+        return JsonResponse({'Saved': 'ok'})
 
 #for PROJECTS
 #---------------------------------------------

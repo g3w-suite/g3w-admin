@@ -86,3 +86,8 @@ class Group(TimeStampedModel):
 
 
 
+class GroupProjectPanoramic(models.Model):
+
+    group = models.ForeignKey(Group, models.CASCADE, related_name='project_panoramic', verbose_name=_('Group'))
+    project_type = models.CharField(verbose_name=_('Project type'), max_length=255)
+    project_id = models.IntegerField(verbose_name=_('Project type id'))

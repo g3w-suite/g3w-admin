@@ -20,7 +20,7 @@
                 {% for object in object_list %}
                 <tr id="qdjango_project_{{ object.slug }}">
                     <td>
-                        <input type="radio" name="panoramic_map" />
+                        <input type="radio" name="panoramic_map" {% if object.id == projectPanoramic.0.project_id %} checked="checked" {% endif %} value="{{ object.id }}" data-widget-type="setProjectPanoramic" data-ajax-url="{% url 'group-set-project-panoramic' group.slug 'qdjango' object.id %}"/>
                     </td>
                     <td>
                         <span class="col-xs-2 icon">
@@ -47,5 +47,8 @@
                 {% endfor %}
             </tbody>
         </table>
+        <script>
+            ga.ui.initSetProjectPanoramicWidget();
+        </script>
     </div>
 </div>

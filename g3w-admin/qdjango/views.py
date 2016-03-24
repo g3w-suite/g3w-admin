@@ -8,7 +8,7 @@ from django.views.generic import (
     View,
 )
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from core.mixins.views import *
 from core.models import Group
 from .models import Project, Layer
@@ -21,6 +21,11 @@ class QdjangoProjectListView(G3WRequestViewMixin, G3WGroupViewMixin, ListView):
 
     def get_queryset(self):
         return self.group.qdjango_project.all().order_by('title')
+
+    def get_context_data(self, **kwargs):
+        context = super(QdjangoProjectListView, self).get_context_data(**kwargs)
+        context['projectPanoramic'] = self.group.project_panoramic.filter(project_type='qdjango')
+        return context
 
 
 
@@ -66,3 +71,5 @@ class QdjangoLayersListView(G3WRequestViewMixin, G3WGroupViewMixin, QdjangoProje
 
         # get project by project_slug
         return Layer.objects.filter(project__slug=self.project_slug)
+
+
