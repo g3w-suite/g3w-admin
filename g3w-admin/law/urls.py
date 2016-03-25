@@ -3,15 +3,21 @@ from django.contrib.auth.decorators import login_required
 from .views import *
 
 urlpatterns = [
+
     # LAW
-    url(r'^list/$', login_required(LawListView.as_view()), name='law-list')
+    url(r'^list/$', login_required(LawListView.as_view()), name='law-list'),
+    url(r'^add/$', login_required(LawAddView.as_view()), name='law-add'),
+    url(r'^update/(?P<slug>[-_\w\d]+)/$', login_required(LawUpdateView.as_view()), name='law-update'),
+    url(r'^delete/(?P<slug>[-_\w\d]+)/$', login_required(LawDeleteView.as_view()), name='law-delete'),
+    url(r'^(?P<slug>[-_\w\d]+)/$', login_required(LawDetailView.as_view()), name='law-detail'),
+
+    # ARTICLE
+    url(r'^(?P<law_slug>[-_\w\d]+)/article/$', login_required(ArticleListView.as_view()), name='law-article-list'),
 ]
 
 '''
- url(r'law/add/$', login_required(LawAddView.as_view()), name='law-add'),
  url(r'law/(?P<slug>[-_\w\d]+)/detail/$', login_required(LawDetailView.as_view()), name='law-detail'),
  url(r'law/(?P<slug>[-_\w\d]+)/update/$', login_required(LawUpdateView.as_view()), name='law-update'),
- url(r'law/(?P<slug>[-_\w\d]+)/delete/$', login_required(LawDeleteView.as_view()), name='law-delete'),
  url(r'law/(?P<slug>[-_\w\d]+)/newvariation/$', login_required(LawNewVariationView.as_view()),
      name='law-new-variation'),
  # ARTICLE

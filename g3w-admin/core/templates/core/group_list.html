@@ -86,12 +86,9 @@
           </div><!-- /.widget-user -->
     </div>
 {% endfor %}
-    <div class="col-md-2 col-sm-3" id="group_add">
-        <div class="box box-widget widget-group-add">
-            <a href="{% url 'group-add' %}"><i class="ion ion-plus-circled"></i></a>
-        </div>
-        </div>
-    </div>
+    {% with 'group-add' as object_add_url_name %}
+        {% include 'core/include/widget_add_box.html' %}
+    {% endwith %}
 </div>
 
 
