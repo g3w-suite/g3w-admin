@@ -240,7 +240,7 @@ _.extend(g3wadmin.widget, {
      * Set data for caching layer by tilestache
      * @param $item
      */
-    setLayerCached: function($item) {
+    setLayerCached: function($item,cached) {
 
         try {
             var params = ga.utils.getDataAttrs($item, this._setLayerCached);
@@ -248,9 +248,14 @@ _.extend(g3wadmin.widget, {
                 throw new Error('Attribute data-ajax-url not defined');
             }
 
+            var ajaxUrl = params['ajax-url']
+            if (!_.isUndefined(cached) && !cached) {
+                ajaxUrl += '?cached=0'
+            }
+
             $.ajax({
                 method: 'get',
-                url: params['ajax-url'],
+                url: ajaxUrl,
                 error: function (xhr, textStatus, errorMessage) {
                     ga.widget.showError(ga.utils.buildAjaxErrorMessage(xhr.status, errorMessage));
                 }

@@ -10,6 +10,7 @@ from django.views.generic import (
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, JsonResponse
 from core.mixins.views import *
+from django.core.urlresolvers import reverse
 from core.models import Group
 from .models import Project, Layer
 from .mixins.views import *
@@ -68,9 +69,14 @@ class QdjangoLayersListView(G3WRequestViewMixin, G3WGroupViewMixin, QdjangoProje
     template_name = 'qdjango/layers_list.html'
 
     def get_queryset(self):
-
         # get project by project_slug
         return Layer.objects.filter(project__slug=self.project_slug)
+
+    def get_context_data(self, **kwargs):
+        """Add current project_slug to context."""
+        context = super(QdjangoLayersListView, self).get_context_data(**kwargs)
+        context['project_slug'] = self.project_slug
+        return context
 
 class QdjangoLayerCacheView(G3WGroupViewMixin, QdjangoProjectViewMixin, View):
     """
@@ -81,14 +87,28 @@ class QdjangoLayerCacheView(G3WGroupViewMixin, QdjangoProjectViewMixin, View):
         # get layer to work
         layer = Layer.objects.get(pk=kwargs['layer_id'])
 
-        # build tilestache layer configuration
-        tilestacheLayerConf = {
-            "provider": {
-                          "name": layer.name,
-                          "template": "http://www502.regione.toscana.it/wmsraster/com.rt.wms.RTmap/wms?map=wmspiapae&SERVICE=WMS&REQUEST=GetMap&VERSION=1.3.0&LAYERS=rt_piapae.carta_dei_caratteri_del_paesaggio.50k.ct.rt&STYLES=&FORMAT=image/png&TRANSPARENT=undefined&CRS=EPSG:3857&WIDTH=$width&HEIGHT=$height&bbox=$xmin,$ymin,$xmax,$ymax"
-                      },
-            "projection": "spherical mercator"
-        }
+        if 'cached' in self.request.GET and not bool(int(self.request.GET['cached'])):
+            layer.tilestache_conf = None
+        else:
+            # build tilestache layer configuration
+            layer.tilestache_conf = {
+                "provider": {
+                              "name": layer.name,
+                              "template": "{}://{}{}?SERVICE=WMS&REQUEST=GetMap&VERSION=1.3.0&LAYERS={}&STYLES=&FORMAT=image/png&TRANSPARENT=undefined&CRS={}&WIDTH=$width&HEIGHT=$height&bbox=$xmin,$ymin,$xmax,$ymax".format(
+                                  self.request.META['wsgi.url_scheme'],
+                                  self.request.META['HTTP_HOST'],
+                                  reverse('ows', args=[kwargs['group_slug'], 'qdjango', layer.project.id]),
+                                  layer.name,
+                                  'EPSG:3857'
+                              )
+                          },
+                "projection": "spherical mercator"
+            }
+
+        # todo: build new tilestache project object for epsg: 3003, 3004 , etc.
+        layer.save()
+
+        return JsonResponse({'Saved':'ok'})
 
 
 

@@ -36,6 +36,10 @@ urlpatterns = [
 for app in settings.G3WADMIN_PROJECT_APPS:
     urlpatterns.append(url(r'^{}/'.format(app),include('{}.urls'.format(app))))
 
+# adding local_more_apps
+for app in settings.G3WADMIN_LOCAL_MORE_APPS:
+    urlpatterns.append(url(r'^{}/'.format(app), include('{}.urls'.format(app))))
+
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

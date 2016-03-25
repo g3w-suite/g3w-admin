@@ -10,9 +10,8 @@ sitetrees = (
       item('Dashboard', 'home', url_as_pattern=True, icon_css_class='fa fa-dashboard'),
       item('Cartographic groups', 'group-list', icon_css_class='fa fa-globe', children=[
           item('Add group', 'group-add', url_as_pattern=True, icon_css_class='fa fa-plus'),
-          item('Groups list', 'group-list', url_as_pattern=True, icon_css_class='fa fa-globe', alias='group-list', children= [
-              item('Groups list', 'group-list', url_as_pattern=True, icon_css_class='fa fa-globe', alias='group-list'),
-          ]),
+          item('Groups list', 'group-list', url_as_pattern=True, icon_css_class='fa fa-globe', alias='group-list', in_breadcrumbs=False),
+          item('Groups update {{ object.title}}', 'group-update object.slug', url_as_pattern=True, icon_css_class='fa fa-edit', alias='group-update'),
           item('Projects list {{ object.name }}', 'project-list object.slug', url_as_pattern=True, icon_css_class='fa fa-list', in_menu=False, alias='project-list')
       ]),
   ]),

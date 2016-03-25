@@ -109,6 +109,8 @@ _.extend(g3wadmin.ui, {
         }
         $widgetItem.on('ifChecked',function(e){
             ga.widget.setLayerCached($(this));
+        }).on('ifUnchecked', function(e){
+            ga.widget.setLayerCached($(this),false);
         });
     },
 

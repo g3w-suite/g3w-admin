@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+{% load i18n %}
+
+{% block page_header %}
+<h1>
+{% trans 'Laws list' %}
+    <small>List oh law package available</small>
+</h1>
+{% endblock %}
+
+
+{% block main_content %}
+
+<div class="box">
+    <div class="box-header">
+        <span class="description">Laws</span>
+    </div>
+    <div class="box-body">
+        <table class="table-hover table-striped">
+        <thead>
+            <tr>
+                <th data-sortable="true">{% trans 'Name'%}</th>
+                <th data-sortable="true">{% trans 'Description'%}</th>
+                <th data-sortable="true">{% trans 'Variation'%}</th>
+                <th data-sortable="true">{% trans 'Created'%}/{% trans 'Modified'%}</th>
+                <th data-sortable="true">{% trans 'Valid from'%}</th>
+                <th data-sortable="true">{% trans 'Valid to'%}</th>
+                {%if user.is_superuser %}
+                <th class="text-right">{% trans 'Admin' %}</th>
+                {% endif %}
+            </tr>
+        </thead>
+        </tbody>
+            {% for object in object_list %}
+                <tr>
+                    <td>{{ object.name }}</td>
+                    <td>{{ object.description | safe  }}</td>
+                    <td>{{ object.variation }}</td>
+                    <td><small>{{ object.modified }}</small></td>
+                    <td>{{ object.fromdate }}</td>
+                    <td>{{ object.todate }}</td>
+
+                </tr>
+            {% endfor %}
+        </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}
