@@ -41,11 +41,7 @@ class GroupSerializer(serializers.ModelSerializer):
         ret['baseLayers'] = []
 
         # add initproject and overviewproject
-        ret['initproject'] = {
-            'id': int(self.projectId),
-            'type': self.projectType,
-            'gid': "{}:{}".format(self.projectType,self.projectId)
-        }
+        ret['initproject'] = "{}:{}".format(self.projectType,self.projectId)
 
         # add overviewproject is present
         overviewproject = instance.project_panoramic.all()
