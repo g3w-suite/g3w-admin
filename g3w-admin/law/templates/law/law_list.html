@@ -12,41 +12,63 @@
 
 
 {% block main_content %}
+{% for object in object_list %}
+<div class="col-md-3 col-sm-6 connectedSortable">
+     <div class="box box-widget widget-user" id="law_{{ object.slug }}">
+        <!-- Add the bg color to the header using any of the bg-* classes -->
+        <div class="widget-user-header bg-teal-active col-sm-12">
+        <div class="row">
+            <div class="col-sm-12 widget-group-title">
+                <h3 class="widget-user-username">{{ object.name }}</h3>
+                <h5 class="widget-user-desc">{{ object.variation }}</h5>
+                <h5 class="widget-user-desc">{% trans 'Valid' %}: {{ object.fromdate }} - {{ object.todate }}</h5>
+            </div>
+        </div>
+        </div>
+        <div class="box-footer">
+          <div class="row">
+           <div class="col-sm-2 col-xs-2">
+              <div class="description-block">
+                 <div class="icon" data-toggle="tooltip" data-placement="top" title="{% trans 'Add new article' %}" >
+                  <a href="#" data-widget-type="addProjectGroup"><i class="ion ion-plus-circled"></i></a>
+                  <div class="hidden add-links">
 
-<div class="box">
-    <div class="box-header">
-        <span class="description">Laws</span>
-    </div>
-    <div class="box-body">
-        <table class="table-hover table-striped">
-        <thead>
-            <tr>
-                <th data-sortable="true">{% trans 'Name'%}</th>
-                <th data-sortable="true">{% trans 'Description'%}</th>
-                <th data-sortable="true">{% trans 'Variation'%}</th>
-                <th data-sortable="true">{% trans 'Created'%}/{% trans 'Modified'%}</th>
-                <th data-sortable="true">{% trans 'Valid from'%}</th>
-                <th data-sortable="true">{% trans 'Valid to'%}</th>
-                {%if user.is_superuser %}
-                <th class="text-right">{% trans 'Admin' %}</th>
-                {% endif %}
-            </tr>
-        </thead>
-        </tbody>
-            {% for object in object_list %}
-                <tr>
-                    <td>{{ object.name }}</td>
-                    <td>{{ object.description | safe  }}</td>
-                    <td>{{ object.variation }}</td>
-                    <td><small>{{ object.modified }}</small></td>
-                    <td>{{ object.fromdate }}</td>
-                    <td>{{ object.todate }}</td>
-
-                </tr>
-            {% endfor %}
-        </tbody>
-        </table>
-    </div>
+                  </div>
+                </div>
+              </div><!-- /.description-block -->
+            </div><!-- /.col -->
+            <div class="col-sm-4 col-xs-4">
+              <div class="description-block articles-law">
+                <h5 class="description-header"  data-toggle="tooltip" data-placement="top" title="{% trans 'Law articles' %}" ><a href="{% url 'law-article-list' object.slug %}"> {% trans 'Articles' %}</a></h5>
+              </div><!-- /.description-block -->
+            </div><!-- /.col -->
+            <div class="col-sm-2 col-xs-2">
+              <div class="description-block">
+                 <div class="icon">
+                  <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-detail-url="{% url 'law-detail' object.slug %}"><i class="ion ion-eye"></i></a>
+                </div>
+              </div><!-- /.description-block -->
+            </div><!-- /.col -->
+            <div class="col-sm-2 col-xs-2">
+              <div class="description-block">
+                <div class="icon">
+                  <a href="{% url 'law-update' object.slug %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Edit' %}" ><i class="ion ion-edit"></i></a>
+                </div>
+              </div><!-- /.description-block -->
+            </div><!-- /.col -->
+            <div class="col-sm-2 col-xs-2">
+              <div class="description-block">
+                <div class="icon">
+                  <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Delete' %}"  data-widget-type="deleteItem" data-delete-url="{% url 'law-delete' object.slug %}" data-item-selector="#law_{{ object.slug }}"><i class="ion ion-trash-b"></i></a>
+                </div>
+              </div><!-- /.description-block -->
+            </div><!-- /.col -->
+          </div><!-- /.row -->
+        </div>
+  </div><!-- /.widget-user -->
 </div>
-
+{% endfor %}
+    {% with 'law-add' as object_add_url_name %}
+        {% include 'core/include/widget_add_box.html' %}
+    {% endwith %}
 {% endblock %}

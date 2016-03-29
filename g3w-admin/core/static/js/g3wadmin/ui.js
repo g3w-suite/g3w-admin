@@ -44,7 +44,7 @@ _.extend(g3wadmin.ui, {
     _buildModal: function (options) {
 
         //build the modal jquery object
-        var $modal = $(ga.tpl.dialog(_.extendOwn(ga.tpl.tplDefValues.dialog,options)));
+        var $modal = $(ga.tpl.dialog(_.extendOwn(_.clone(ga.tpl.tplDefValues.dialog),options)));
         return new this.modal($modal);
     },
 

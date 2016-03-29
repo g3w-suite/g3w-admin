@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load g3wadmin_tags %}
+{% load svg_icon %}
+
+
+
+{% block page_header %}
+<h1>
+{% trans 'Law articles' %}
+    <small></small>
+</h1>
+{% endblock %}
+
+{% block main_content %}
+
+<div class="row">
+    <div class="col-md-12 col-xs-12">
+        <div class="box">
+            <div class="box-header">
+                <h3 class="box-title">Law </h3>
+            </div>
+            <div class="box-body">
+                Description law
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="box">
+    <div class="box-header">
+        <h3 class="box-title"><a href="#"><i class="ion ion-plus-circled"></i></a> Article</h3>
+        <span class="description">List of articles</span>
+    </div>
+    <div class="box-body">
+        <table class="table table-hover table-striped">
+            <thead>
+                <tr>
+                    <th>Action</th>
+                    <th>{%  trans 'Number' %}</th>
+                    <th>{%  trans 'Title' %}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for object in object_list %}
+                <tr id="law_article_{{ object.slug }}">
+                    <td></td>
+                    <td>{{ object.number }}</td>
+                    <td>{{ object.title }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
