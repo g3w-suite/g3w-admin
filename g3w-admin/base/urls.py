@@ -25,9 +25,7 @@ urlpatterns = [
     url(r'^',include('core.urls')),
     url(r'^',include('usersmanage.urls')),
     url(r'^',include('client.urls')),
-    url(r'^',include('OWS.urls')),
     url(r'^upload/', include('django_file_form.urls')),
-
     url(r'^login/$', auth.views.login, name='login', kwargs={'template_name': 'login.html'}),
     url(r'^logout/$', auth.views.logout, {'next_page': settings.LOGOUT_NEXT_PAGE}, name='logout'),
 ]
@@ -45,6 +43,8 @@ if settings.DEBUG:
 
 
 urlpatterns = i18n_patterns(*urlpatterns)
+
+urlpatterns += [url(r'^', include('OWS.urls'))]
 
 from sitetree.sitetreeapp import register_i18n_trees
 
