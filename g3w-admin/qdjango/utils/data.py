@@ -457,7 +457,8 @@ class QgisProject(QgisData):
                     }
                     if layerTreeSubNode.tag == 'layer-tree-layer':
                         toRetLayer.update({
-                            'id': layerTreeSubNode.attrib['id']
+                            'id': layerTreeSubNode.attrib['id'],
+                            'checked': True if layerTreeSubNode.attrib['id'] == 'Qt::Checked' else False
                         })
 
                     if layerTreeSubNode.tag == 'layer-tree-group':
