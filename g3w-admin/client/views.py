@@ -18,7 +18,7 @@ class ClientView(TemplateView):
         groupSerializer = GroupSerializer(group,projectId=kwargs['project_id'], projectType=kwargs['project_type'])
 
         # add baseUrl property
-        contextData['group_config'] = 'var initConfig ={{ "baseUrl":"{}", "group":{} }}'.format(reverse('ows', kwargs=kwargs), JSONRenderer().render(groupSerializer.data))
+        contextData['group_config'] = 'var initConfig ={{ "group":{} }}'.format(JSONRenderer().render(groupSerializer.data))
 
         # project by type(app)
         if not '{}-{}'.format(kwargs['project_type'],kwargs['project_id']) in groupSerializer.projects.keys():
