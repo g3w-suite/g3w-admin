@@ -25,3 +25,5 @@ class G3WLawViewMixin(object):
 
         self.law = get_object_or_404(Laws, slug=self.kwargs['law_slug'])
         return super(G3WLawViewMixin, self).dispatch(request, *args, **kwargs)
+
+

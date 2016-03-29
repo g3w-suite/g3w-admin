@@ -458,7 +458,7 @@ class QgisProject(QgisData):
                     if layerTreeSubNode.tag == 'layer-tree-layer':
                         toRetLayer.update({
                             'id': layerTreeSubNode.attrib['id'],
-                            'checked': True if layerTreeSubNode.attrib['id'] == 'Qt::Checked' else False
+                            'visible': True if layerTreeSubNode.attrib['checked'] == 'Qt::Checked' else False
                         })
 
                     if layerTreeSubNode.tag == 'layer-tree-group':
@@ -544,6 +544,7 @@ class QgisProject(QgisData):
                 self.instance.title = self.title
                 self.instance.qgis_version = self.qgisVersion
                 self.instance.initial_extent = self.initialExtent
+                self.instance.layers_tree = self.layersTree
 
                 if thumbnail:
                     self.instance.thumbnail = thumbnail

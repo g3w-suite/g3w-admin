@@ -9,7 +9,13 @@ sitetrees = (
       item('LAW', '#', type_header=True),
       item('Laws', '#', icon_css_class='fa fa-legal', children=[
           item('Add law', 'law-add', url_as_pattern=True, icon_css_class='fa fa-plus'),
-          item('Laws list', 'law-list', url_as_pattern=True, icon_css_class='fa fa-list')
+          item('Laws list', 'law-list', url_as_pattern=True, icon_css_class='fa fa-list'),
+          item('Articles list {{ law.slug }}', 'law-article-list law.slug', in_menu=False ,url_as_pattern=True, icon_css_class='fa fa-list',
+               children=[
+                item('Article add {{ law.slug }}', 'law-article-add law.slug', in_menu=False, url_as_pattern=True, icon_css_class='fa fa-plus'),
+                item('Article update {{ law.slug }} {{ object.slug }}', 'law-article-update law.slug object.slug', in_menu=False, url_as_pattern=True, icon_css_class='fa fa-plus'),
+          ])
       ])
   ]),
 )
+

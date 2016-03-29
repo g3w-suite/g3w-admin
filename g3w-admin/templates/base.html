@@ -127,6 +127,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
             <li><i class="fa fa-dashboard"></i> <a href="{% url 'home' %}">{% trans 'Dashboard' %}</a></li>
             {% sitetree_breadcrumbs from "core" template "sitetree/breadcrumbs_bootstrap3.html" %}
             {% sitetree_breadcrumbs from "acl" template "sitetree/breadcrumbs_bootstrap3.html" %}
+            {% sitetree_breadcrumbs from "law" template "sitetree/breadcrumbs_bootstrap3.html" %}
           </ol>
           {% endblock %}
         </section>

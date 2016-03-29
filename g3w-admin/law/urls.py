@@ -13,6 +13,9 @@ urlpatterns = [
 
     # ARTICLE
     url(r'^(?P<law_slug>[-_\w\d]+)/article/$', login_required(ArticleListView.as_view()), name='law-article-list'),
+    url(r'^(?P<law_slug>[-_\w\d]+)/article/add$', login_required(ArticleAddView.as_view()), name='law-article-add'),
+    url(r'^(?P<law_slug>[-_\w\d]+)/article/update/(?P<slug>[-_\w\d]+)/$', login_required(ArticleUpdateView.as_view()), name='law-article-update'),
+    url(r'^(?P<law_slug>[-_\w\d]+)/article/delete/(?P<slug>[-_\w\d]+)/$', login_required(ArticleDeleteView.as_view()), name='law-article-delete'),
 ]
 
 '''

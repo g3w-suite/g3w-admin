@@ -7,12 +7,10 @@ from django.views.generic import (
     TemplateView,
     View,
 )
-from django.core.urlresolvers import reverse
+from django.views.generic.detail import SingleObjectMixin
 from django.http import HttpResponseRedirect, JsonResponse
 from core.mixins.views import *
 from django.core.urlresolvers import reverse
-from core.models import Group
-from .models import Project, Layer
 from .mixins.views import *
 from .forms import *
 
@@ -61,8 +59,13 @@ class QdjangoProjectDetailView(G3WRequestViewMixin, DetailView):
     model = Project
     template_name = 'qdjango/ajax/project_detail.html'
 
-class QdjangoProjectDeleteView(View):
-    pass
+
+class QdjangoProjectDeleteView(G3WAjaxDeleteViewMixin, SingleObjectMixin, View):
+    '''
+    Delete Qdjango project Ajax view
+    '''
+    model = Project
+
 
 # For layers
 class QdjangoLayersListView(G3WRequestViewMixin, G3WGroupViewMixin, QdjangoProjectViewMixin, ListView):

@@ -8,7 +8,7 @@
 {% block page_header %}
 <h1>
 {% trans 'Law articles' %}
-    <small></small>
+    <small>{{ law.slug }}</small>
 </h1>
 {% endblock %}
 
@@ -29,23 +29,35 @@
 
 <div class="box">
     <div class="box-header">
-        <h3 class="box-title"><a href="#"><i class="ion ion-plus-circled"></i></a> Article</h3>
+        <h3 class="box-title"><a href="{% url 'law-article-add' law.slug %}"><i class="ion ion-plus-circled"></i></a> Article</h3>
         <span class="description">List of articles</span>
     </div>
     <div class="box-body">
         <table class="table table-hover table-striped">
             <thead>
                 <tr>
-                    <th>Action</th>
+                    <th style="width: 120px">Action</th>
                     <th>{%  trans 'Number' %}</th>
+                    <th>{%  trans 'Comma' %}</th>
                     <th>{%  trans 'Title' %}</th>
                 </tr>
             </thead>
             <tbody>
                 {% for object in object_list %}
                 <tr id="law_article_{{ object.slug }}">
-                    <td></td>
+                    <td>
+                        <span class="col-xs-2 icon">
+                            <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem"  ><i class="ion ion-eye"></i></a>
+                        </span>
+                        <span class="col-xs-2 icon">
+                            <a href="{% url 'law-article-update' law.slug object.slug %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Edit' %}" ><i class="ion ion-edit"></i></a>
+                        </span>
+                        <span class="col-xs-4 icon">
+                            <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Delete' %}" data-widget-type="deleteItem" data-delete-url="{% url 'law-article-delete' law.slug object.slug %}" data-item-selector="#law-article_{{ object.slug }}" ><i class="ion ion-trash-b"></i></a>
+                        </span>
+                    </td>
                     <td>{{ object.number }}</td>
+                    <td>{{ object.comma }}</td>
                     <td>{{ object.title }}</td>
                 </tr>
                 {% endfor %}

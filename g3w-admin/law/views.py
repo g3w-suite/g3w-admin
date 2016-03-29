@@ -9,7 +9,7 @@ from django.views.generic.detail import SingleObjectMixin
 from django.core.urlresolvers import reverse_lazy
 from core.mixins.views import *
 from .models import *
-from .forms import LawForm
+from .forms import LawForm, ArticleForm
 from .mixins.views import *
 
 
@@ -53,3 +53,28 @@ class LawDeleteView(G3WAjaxDeleteViewMixin, SingleObjectMixin,View):
 class ArticleListView(G3WLawViewMixin, ListView):
     template_name = 'law/article_list.html'
     model = Articles
+
+    def get_queryset(self):
+        return self.law.articles_set.all().order_by('number')
+
+
+class ArticleAddView(G3WLawViewMixin,CreateView):
+    form_class = ArticleForm
+    model = Articles
+    template_name = 'law/article_form.html'
+    law = None
+
+    def get_success_url(self):
+        reverse_lazy('law-article-list', kwargs={'law_slug': self.law.slug})
+
+
+class ArticleUpdateView(ArticleAddView, UpdateView):
+    pass
+
+
+class ArticleDeleteView(G3WAjaxDeleteViewMixin, SingleObjectMixin, View):
+    """
+    Delete law article Ajax view
+    """
+    model = Articles
+
