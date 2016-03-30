@@ -37,6 +37,7 @@ DJANGO_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.gis'
 ]
 
 THIRD_PARTY_APPS = [
@@ -48,6 +49,7 @@ THIRD_PARTY_APPS = [
     'sitetree',
     'django_extensions',
     'rest_framework',
+    'import_export'
 ]
 
 G3WADMIN_APPS = [
@@ -62,7 +64,6 @@ G3WADMIN_PROJECT_APPS = [
     'qdjango',
     'ogc'
 ]
-
 
 
 MIDDLEWARE_CLASSES = [

@@ -112,5 +112,7 @@ class ArticleForm(ModelForm):
         )
 
     def save(self, commit=True):
+
+        # add law instance per article
         self.instance.law = self.law
         return super(ArticleForm, self).save(commit)
