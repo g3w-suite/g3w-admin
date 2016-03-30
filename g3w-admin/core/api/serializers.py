@@ -38,7 +38,7 @@ class GroupSerializer(serializers.ModelSerializer):
                 })
 
         # add baselayers
-        ret['baseLayers'] = []
+        ret['baselayers'] = []
 
         # add initproject and overviewproject
         ret['initproject'] = "{}:{}".format(self.projectType,self.projectId)
