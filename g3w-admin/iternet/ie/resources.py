@@ -1,7 +1,7 @@
 from import_export import resources
-from iternet.models import Archi
+from iternet.models import ElementoStradale
 
-class ArchiResource(resources.ModelResource):
+class ElementoStradaleResource(resources.ModelResource):
     class Meta:
-        model = Archi
+        model = ElementoStradale
         import_id_fields = ('gid',)

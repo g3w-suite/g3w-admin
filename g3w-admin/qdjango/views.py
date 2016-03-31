@@ -27,7 +27,6 @@ class QdjangoProjectListView(G3WRequestViewMixin, G3WGroupViewMixin, ListView):
         return context
 
 
-
 class OdjangoProjectCreateView(G3WGroupViewMixin, G3WRequestViewMixin, CreateView):
     """Create group view."""
 
@@ -35,11 +34,12 @@ class OdjangoProjectCreateView(G3WGroupViewMixin, G3WRequestViewMixin, CreateVie
     form_class = QdjangoProjetForm
 
     def get_success_url(self):
-        return reverse('qdjango-project-list',group_slug=self.request.kwargs['group_slug'])
+        return reverse('project-list', kwargs={'group_slug': self.group.slug})
 
     def form_valid(self,form):
         form.qgisProject.save()
-        return HttpResponseRedirect(self.group.get_absolute_url())
+        return HttpResponseRedirect(self.get_success_url())
+
 
 class QdjangoProjectUpdateView(G3WGroupViewMixin, G3WRequestViewMixin, UpdateView):
     """Update project view."""
@@ -48,11 +48,12 @@ class QdjangoProjectUpdateView(G3WGroupViewMixin, G3WRequestViewMixin, UpdateVie
     form_class = QdjangoProjetForm
 
     def get_success_url(self):
-        return reverse('qdjango-project-list',group_slug=self.request.kwargs['group_slug'])
+        return reverse('project-list',kwargs={'group_slug':self.group.slug})
 
     def form_valid(self,form):
         form.qgisProject.save()
-        return HttpResponseRedirect(self.group.get_absolute_url())
+        return HttpResponseRedirect(self.get_success_url())
+
 
 class QdjangoProjectDetailView(G3WRequestViewMixin, DetailView):
     """Detail view."""
