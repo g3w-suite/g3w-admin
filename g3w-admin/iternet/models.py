@@ -12,19 +12,7 @@ from django.conf import settings
 from .mixins.models import *
 
 
-class Civici(models.Model):
-    cod_civ = models.CharField(primary_key=True, max_length=19)
-    cod_acc_in = models.CharField(max_length=19, blank=True, null=True)
-    num_civ = models.FloatField(blank=True, null=True)
-    esp_civ = models.CharField(max_length=9, blank=True, null=True)
-    cod_com = models.CharField(max_length=10, blank=True, null=True)
-    cod_top = models.CharField(max_length=18, blank=True, null=True)
-    cod_acc_es = models.CharField(max_length=19, blank=True, null=True)
 
-    class Meta:
-        db_table = 'civici'
-        verbose_name = 'Civico'
-        verbose_name_plural = 'Civici'
 
 
 
@@ -96,14 +84,14 @@ class LegCmpEle(LegIternetModelMixin, models.Model):
         verbose_name_plural = 'Legenda CMP_ELE tabella archi'
 
 
-class LegCodDug(LegIternetModelMixin, models.Model):
+class LegDug(LegIternetModelMixin, models.Model):
     id = models.CharField(primary_key=True, max_length=25)
     description = models.TextField(blank=True, null=True)
 
     class Meta:
         db_table = 'leg_cod_dug'
         verbose_name = 'Legenda COD_DUG tabella toponimo'
-        verbose_name_plural = 'Legenda COD_DUG tabella toponimo'
+        verbose_name_plural = 'Legenda DUG tabella toponimo'
 
 
 class LegCodSed(LegIternetModelMixin, models.Model):
@@ -186,23 +174,35 @@ class LegTipGst(LegIternetModelMixin, models.Model):
         verbose_name_plural = 'Legenda TIP_GST tabella archi'
 
 
-class Accessi(models.Model):
+class NumeroCivico(models.Model):
+    cod_civ = models.CharField(primary_key=True, max_length=19)
+    cod_acc_int = models.CharField(max_length=16, blank=True, null=True)
+    num_civ = models.FloatField(blank=True, null=True)
+    esp_civ = models.CharField(max_length=9, blank=True, null=True)
+    cod_com = models.CharField(max_length=10, blank=True, null=True)
+    cod_top = models.CharField(max_length=18, blank=True, null=True)
+    cod_acc_est = models.CharField(max_length=16, blank=True, null=True)
+
+    class Meta:
+        db_table = 'numero_civico'
+        verbose_name = 'Numero civico'
+        verbose_name_plural = 'Numeri civici'
+
+class Accesso(models.Model):
     gid = models.AutoField(primary_key=True)
-    cod_acc = models.CharField(max_length=27, blank=True, null=True)
+    cod_acc = models.CharField(max_length=16, blank=True, null=True)
     tip_acc = models.ForeignKey(LegTipAcc, db_column='tip_acc', null=True, blank=True)
     cod_ele = models.CharField(max_length=15, blank=True, null=True)
-    x = models.FloatField(blank=True, null=True)
-    y = models.FloatField(blank=True, null=True)
     pas_car = models.CharField(max_length=1, blank=True, null=True)
     the_geom = models.PointField(blank=True, null=True, srid=settings.ITERNET_DATA_SRID)  # This field type is a guess.
 
     class Meta:
-        db_table = 'accessi'
+        db_table = 'accesso'
         verbose_name = 'Accesso'
         verbose_name_plural = 'Accessi'
 
 
-class Archi(models.Model):
+class ElementoStradale(models.Model):
     gid = models.AutoField(primary_key=True)
     cod_ele = models.CharField(max_length=15, blank=True, null=True)
     nod_ini = models.CharField(max_length=15, blank=True, null=True)
@@ -219,47 +219,44 @@ class Archi(models.Model):
     cod_reg = models.CharField(max_length=29, blank=True, null=True)
     org = models.ForeignKey(LegOrg, db_column='org', null=True, blank=True)
     cls_lrg = models.ForeignKey(LegClsLrg, db_column='cls_lrg', null=True, blank=True)
-    cod_top = models.CharField(max_length=29, blank=True, null=True)
-    x = models.FloatField(blank=True, null=True)
-    y = models.FloatField(blank=True, null=True)
-    x_from = models.FloatField(blank=True, null=True)
-    y_from = models.FloatField(blank=True, null=True)
-    x_to = models.FloatField(blank=True, null=True)
-    y_to = models.FloatField(blank=True, null=True)
+    cod_top = models.CharField(max_length=15, blank=True, null=True)
+    cod_top2 = models.CharField(max_length=15, blank=True, null=True)
     the_geom = models.MultiLineStringField(blank=True, null=True,
                                            srid=settings.ITERNET_DATA_SRID)  # This field type is a guess.
 
     class Meta:
-        db_table = 'archi'
-        verbose_name = 'Arco'
-        verbose_name_plural = 'Archi'
+        db_table = 'elemento_stradale'
+        verbose_name = 'Elemento stradale'
+        verbose_name_plural = 'Elementi stradali'
+
+    def __unicode__(self):
+        return u'{}'.format(self.cod_ele)
 
 
-class Nodi(models.Model):
+class GiunzioneStradale(models.Model):
     gid = models.AutoField(primary_key=True)
     cod_gnz = models.CharField(max_length=15, blank=True, null=True)
     tip_gnz = models.ForeignKey(LegTipGnz, db_column='tip_gnz', null=True, blank=True)
     org = models.ForeignKey(LegOrg, db_column='org', null=True, blank=True)
-    x = models.FloatField(blank=True, null=True)
-    y = models.FloatField(blank=True, null=True)
     the_geom = models.PointField(blank=True, null=True,
                                  srid=settings.ITERNET_DATA_SRID)  # This field type is a guess.
 
     class Meta:
-        db_table = 'nodi'
-        verbose_name = 'Nodo'
-        verbose_name_plural = 'Nodi'
+        db_table = 'giunzione_stradale'
+        verbose_name = 'Giunzione stradale'
+        verbose_name_plural = 'Giunzioni stradali'
 
 
-class Toponimo(models.Model):
-    cod_top = models.CharField(primary_key=True, max_length=17)
+class ToponimoStradale(models.Model):
+    cod_top = models.CharField(primary_key=True, max_length=15)
+    cod_top2 = models.CharField(primary_key=True, max_length=15)
     den_uff = models.CharField(max_length=41, blank=True, null=True)
     cod_com = models.CharField(max_length=10, blank=True, null=True)
     cod_via = models.CharField(max_length=11, blank=True, null=True)
     den_senza = models.CharField(max_length=49, blank=True, null=True)
-    cod_dug = models.CharField(max_length=25, blank=True, null=True)
+    dug = models.ForeignKey(LegDug, db_column='dug', null=True, blank=True)
 
     class Meta:
-        db_table = 'toponimo'
+        db_table = 'toponimo_stradale'
         verbose_name = 'Toponimo'
         verbose_name_plural = 'Toponimi'

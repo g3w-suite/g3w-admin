@@ -22,6 +22,63 @@ from .mixins.views import G3WRequestViewMixin, G3WAjaxDeleteViewMixin
 import json
 
 
+class TestView(View):
+
+    def get(self, request, *args, **kwargs):
+
+        from qdjango.models import Layer
+        from core.editing.utils import LayerLock
+        l = Layer.objects.all()[0]
+
+        ll = LayerLock(layer=l, appName='qdjango')
+
+        lockedIds = ll.getFeatureLockedIds()
+
+        print lockedIds
+
+        res = ll.lockFeatures(lockedIds)
+        print res
+        return HttpResponse('ok')
+
+    '''
+    def get(self, request, *args, **kwargs):
+        from sqlalchemy import create_engine
+        from geoalchemy2 import Table as GEOTable
+        from sqlalchemy.engine.url import URL
+        from sqlalchemy.ext.declarative import declarative_base
+        from sqlalchemy.orm import sessionmaker
+        from sqlalchemy.schema import MetaData
+        from sqlalchemy.sql import select
+
+        url = URL(
+            'postgresql+psycopg2',
+            'postgres',
+            'postgres',
+            'localhost',
+            '5432',
+            'g3w_iternet'
+        )
+
+
+        Base = declarative_base()
+        engine = create_engine(url, echo=False)
+        conn = engine.connect()
+        Session = sessionmaker(bind=engine)
+        session = Session()
+        meta = MetaData(bind=engine)
+        gt = GEOTable(
+            'archi', meta, autoload=True, autoload_with=engine
+        )
+
+        s = select([gt,(gt.c.the_geom.ST_AsGeoJSON()).label('geojson')])
+        rows = conn.execute(s)
+
+        for row in rows:
+            print row
+        return HttpResponse('test')
+    '''
+
+
 class DashboardView(TemplateView):
     template_name = "index.html"
 

@@ -14,6 +14,8 @@ def protected_serve(request, path, document_root=None, show_indexes=False):
 urlpatterns = [
     url(r'^$', login_required(DashboardView.as_view()), name='home'),
 
+    url(r'^test/$', login_required(TestView.as_view()), name='test'),
+
     #group urls
     url(r'^groups/$', login_required(GroupListView.as_view()), name='group-list'),
     url(r'^groups/add/$', login_required(GroupCreateView.as_view()), name='group-add'),

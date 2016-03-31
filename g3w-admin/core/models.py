@@ -85,9 +85,20 @@ class Group(TimeStampedModel):
         return groupProjects
 
 
-
 class GroupProjectPanoramic(models.Model):
 
     group = models.ForeignKey(Group, models.CASCADE, related_name='project_panoramic', verbose_name=_('Group'))
     project_type = models.CharField(verbose_name=_('Project type'), max_length=255)
     project_id = models.IntegerField(verbose_name=_('Project type id'))
+
+
+class G3WEditingFeatureLock(models.Model):
+    """
+    Model to lock editing features models.
+    """
+    feature_id = models.CharField(max_length=255)
+    app_name = models.CharField(max_length=255)
+    layer_name = models.CharField(max_length=255)
+    layer_datasource = models.TextField(max_length=255)
+    feature_lock_id = models.CharField(max_length=32)
+    time_locked = models.DateTimeField(auto_now=True)

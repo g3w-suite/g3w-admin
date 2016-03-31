@@ -3,6 +3,7 @@ from import_export.admin import ImportExportModelAdmin
 from django.contrib.gis.admin import OSMGeoAdmin
 
 from .models import *
+from .ie.resources import *
 
 
 class LefIternetMixin(object):
@@ -24,9 +25,9 @@ class LegCmpEleAdmin(LefIternetMixin, ImportExportModelAdmin):
 admin.site.register(LegCmpEle, LegCmpEleAdmin)
 
 
-class LegCodDugAdmin(LefIternetMixin, ImportExportModelAdmin):
-    model = LegCodDug
-admin.site.register(LegCodDug, LegCodDugAdmin)
+class LegDugAdmin(LefIternetMixin, ImportExportModelAdmin):
+    model = LegDug
+admin.site.register(LegDug, LegDugAdmin)
 
 
 class LegCodSedAdmin(LefIternetMixin, ImportExportModelAdmin):
@@ -69,6 +70,11 @@ class LegTipGstAdmin(LefIternetMixin, ImportExportModelAdmin):
 admin.site.register(LegTipGst, LegTipGstAdmin)
 
 
+class ToponimoAdmin(ImportExportModelAdmin):
+    model = Toponimo
+admin.site.register(Toponimo, ToponimoAdmin)
+
+
 class AccessiGeoAdmin(OSMGeoAdmin):
     model = Accessi
 admin.site.register(Accessi, AccessiGeoAdmin)
@@ -76,6 +82,7 @@ admin.site.register(Accessi, AccessiGeoAdmin)
 
 class ArchiGeoAdmin(ImportExportModelAdmin, OSMGeoAdmin):
     model = Archi
+    resource_class = ArchiResource
 admin.site.register(Archi, ArchiGeoAdmin)
 
 

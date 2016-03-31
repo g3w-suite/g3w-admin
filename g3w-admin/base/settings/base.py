@@ -49,6 +49,7 @@ THIRD_PARTY_APPS = [
     'sitetree',
     'django_extensions',
     'rest_framework',
+    'rest_framework_gis',
     'import_export'
 ]
 
@@ -104,17 +105,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'base.wsgi.application'
-
-
-# Database
-# https://docs.djangoproject.com/en/1.9/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, '../../db.sqlite3'),
-    }
-}
 
 
 ATOMIC_REQUESTS = True
@@ -189,6 +179,10 @@ DATASOURCE_PATH = ''
 STATIC_URL = '/static/'
 
 SITE_TITLE = 'g3w-admin'
+
+# for qdjango module
+QDJANGO_SERVER_URL = 'http://localhost/cgi-bin/qgis_mapserv.fcgi'
+QDJANGO_SERVER_PORT = 80
 
 #LOGGING_CONFIG = None
 

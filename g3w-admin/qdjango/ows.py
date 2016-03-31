@@ -7,7 +7,18 @@ from copy import copy
 from ModestMaps.Core import Coordinate
 from TileStache import getTile, Config, parseConfigfile
 from TileStache.Core import KnownUnknown
+from httplib import HTTPConnection
+from urlparse import urlsplit
 
+# use of qgis server instance
+server = QgsServer()
+#server.init()
+
+QDJANGO_PROXY_REQUEST = 'proxy'
+QDJANGO_QGSSERVER_REQUEST = 'qgsserver'
+
+# set request mode
+qdjangoModeRequest = getattr(settings, 'QDJANGO_MODE_REQUEST', QDJANGO_QGSSERVER_REQUEST)
 
 class OWSRequestHandler(OWSRequestHandlerBase):
     """
@@ -25,24 +36,59 @@ class OWSRequestHandler(OWSRequestHandlerBase):
     def _getProjectInstance(self):
         self._projectInstance = Project.objects.get(pk=self.projectId)
 
+    @classmethod
+    def baseDoRequest(cls,q, request=None):
+
+        if qdjangoModeRequest == QDJANGO_PROXY_REQUEST:
+
+            # case http proxy
+            server_base = urlsplit(settings.QDJANGO_SERVER_URL).netloc
+            headers = {}
+            conn = HTTPConnection(server_base, settings.QDJANGO_SERVER_PORT)
+
+            url = '?'.join([settings.QDJANGO_SERVER_URL, q.urlencode()])
+            conn.request(request.method, url, request.body, headers)
+
+            result = conn.getresponse()
+
+            # If we get a redirect, let's add a useful message.
+            if result.status in (301, 302, 303, 307):
+                response = HttpResponse(('This proxy does not support redirects. The server in "%s" '
+                                         'asked for a redirect to "%s"' % ('localhost', result.getheader('Location'))),
+                                        status=result.status,
+                                        content_type=result.getheader("Content-Type", "text/plain")
+                                        )
+
+                response['Location'] = result.getheader('Location')
+            else:
+                response = HttpResponse(
+                    result.read(),
+                    status=result.status,
+                    content_type=result.getheader("Content-Type", "text/plain"))
+
+            return response
+
+        else:
+
+            # case qgisserver python binding
+            headers, body = server.handleRequest(q.urlencode())
+            response = HttpResponse(body)
+
+            # Parse headers
+            for header in headers.split('\n'):
+                if header:
+                    k, v = header.split(': ', 1)
+                    response[k] = v
+            return response
+
+
     def doRequest(self):
 
-        # use of qgis server instance
-        self.server = QgsServer()
-
         # Call init to create serverInterface
-        self.server.init()
         q = copy(self.request.GET)
         q['map'] = self._projectInstance.qgis_file.file.name
-        headers, body = self.server.handleRequest(q.urlencode())
-        response = HttpResponse(body)
 
-        # Parse headers
-        for header in headers.split('\n'):
-            if header:
-                k, v = header.split(': ', 1)
-                response[k] = v
-        return response
+        return self.baseDoRequest(q, self.request)
 
 
 class OWSTileRequestHandler(OWSRequestHandlerBase):
