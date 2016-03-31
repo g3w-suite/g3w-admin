@@ -25,14 +25,19 @@ class LegCmpEleAdmin(LefIternetMixin, ImportExportModelAdmin):
 admin.site.register(LegCmpEle, LegCmpEleAdmin)
 
 
-class LegDugAdmin(LefIternetMixin, ImportExportModelAdmin):
-    model = LegDug
-admin.site.register(LegDug, LegDugAdmin)
+class LegCodDugAdmin(LefIternetMixin, ImportExportModelAdmin):
+    model = LegCodDug
+admin.site.register(LegCodDug, LegCodDugAdmin)
 
 
 class LegCodSedAdmin(LefIternetMixin, ImportExportModelAdmin):
     model = LegCodSed
 admin.site.register(LegCodSed, LegCodSedAdmin)
+
+
+class LegCodClassificaAdmin(LefIternetMixin, ImportExportModelAdmin):
+    model = LegCodClassifica
+admin.site.register(LegCodClassifica, LegCodClassificaAdmin)
 
 
 class LegCodStaAdmin(LefIternetMixin, ImportExportModelAdmin):
@@ -70,25 +75,59 @@ class LegTipGstAdmin(LefIternetMixin, ImportExportModelAdmin):
 admin.site.register(LegTipGst, LegTipGstAdmin)
 
 
-class ToponimoAdmin(ImportExportModelAdmin):
-    model = Toponimo
-admin.site.register(Toponimo, ToponimoAdmin)
+class LegTipPavAdmin(LefIternetMixin, ImportExportModelAdmin):
+    model = LegTipPav
+admin.site.register(LegTipPav, LegTipPavAdmin)
 
 
-class AccessiGeoAdmin(OSMGeoAdmin):
-    model = Accessi
-admin.site.register(Accessi, AccessiGeoAdmin)
+class LegOneWayAdmin(LefIternetMixin, ImportExportModelAdmin):
+    model = LegOneWay
+admin.site.register(LegOneWay, LegOneWayAdmin)
 
 
-class ArchiGeoAdmin(ImportExportModelAdmin, OSMGeoAdmin):
-    model = Archi
-    resource_class = ArchiResource
-admin.site.register(Archi, ArchiGeoAdmin)
+class ToponimoStradaleAdmin(ImportExportModelAdmin):
+    model = ToponimoStradale
+admin.site.register(ToponimoStradale, ToponimoStradaleAdmin)
 
 
-class NodiGeoAdmin(OSMGeoAdmin):
-    model = Nodi
-admin.site.register(Nodi, NodiGeoAdmin)
+class CiviciInfoStradaleAdmin(ImportExportModelAdmin):
+    model = CiviciInfo
+admin.site.register(CiviciInfo, CiviciInfoStradaleAdmin)
+
+
+class ArchiInfoStradaleAdmin(ImportExportModelAdmin):
+    model = ArchiInfo
+admin.site.register(ArchiInfo, ArchiInfoStradaleAdmin)
+
+
+class ToponimiInfoStradaleAdmin(ImportExportModelAdmin):
+    model = ToponimiInfo
+admin.site.register(ToponimiInfo, ToponimiInfoStradaleAdmin)
+
+
+class AccessiInfoStradaleAdmin(ImportExportModelAdmin):
+    model = AccessiInfo
+admin.site.register(AccessiInfo, AccessiInfoStradaleAdmin)
+
+
+class NodiInfoStradaleAdmin(ImportExportModelAdmin):
+    model = NodiInfo
+admin.site.register(NodiInfo, NodiInfoStradaleAdmin)
+
+class AccessoGeoAdmin(OSMGeoAdmin):
+    model = Accesso
+admin.site.register(Accesso, AccessoGeoAdmin)
+
+
+class ElementoStradaleGeoAdmin(ImportExportModelAdmin, OSMGeoAdmin):
+    model = ElementoStradale
+    resource_class = ElementoStradaleResource
+admin.site.register(ElementoStradale, ElementoStradaleGeoAdmin)
+
+
+class GiunzioneStradaleGeoAdmin(OSMGeoAdmin):
+    model = GiunzioneStradale
+admin.site.register(GiunzioneStradale, GiunzioneStradaleGeoAdmin)
 
 
 

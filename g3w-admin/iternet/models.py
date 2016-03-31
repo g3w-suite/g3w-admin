@@ -9,19 +9,74 @@ from __future__ import unicode_literals
 
 from django.contrib.gis.db import models
 from django.conf import settings
+from model_utils import Choices
 from .mixins.models import *
 
 
 
+TIP_OPZ = Choices(
+    (u'U', u'aggiornato'),
+    (u'I', u'nuovo inserimento'),
+    (u'D', u'cancellato')
+)
+
+COD_GST = Choices(
+    (u'0',u'Stato'),
+    (u'09', u'Regione'),
+    (settings.ITERNET_CODE_PROVINCIA, u'Provincia'),
+    (settings.ITERNET_CODE_COMUNE, u'Comune'),
+    (u'999999', u'Privati/altro'),
+)
 
 
 
 class CiviciInfo(models.Model):
-    cod_civ = models.CharField(primary_key=True, max_length=19)
-    tip_opz = models.TextField(blank=True, null=True)
+    cod_civ = models.CharField(blank=True, null=True, max_length=16)
+    tip_opz = models.CharField(choices=TIP_OPZ, max_length=1, blank=True, null=True)
 
     class Meta:
         db_table = 'civici_info'
+        verbose_name = 'Civici info'
+        verbose_name_plural = 'Civici info'
+
+class ToponimiInfo(models.Model):
+    cod_top = models.CharField(max_length=15, blank=True, null=True)
+    tip_opz = models.CharField(choices=TIP_OPZ, max_length=1, blank=True, null=True)
+
+    class Meta:
+        db_table = 'toponimi_info'
+        verbose_name = 'Toponimi info'
+        verbose_name_plural = 'Toponimi info'
+
+
+class ArchiInfo(models.Model):
+    cod_ele = models.CharField(blank=True, null=True, max_length=15)
+    tip_opz = models.CharField(choices=TIP_OPZ, max_length=1, blank=True, null=True)
+
+    class Meta:
+        db_table = 'archi_info'
+        verbose_name = 'Archi info'
+        verbose_name_plural = 'Archi info'
+
+
+class AccessiInfo(models.Model):
+    cod_acc = models.CharField(blank=True, null=True, max_length=15)
+    tip_opz = models.CharField(choices=TIP_OPZ, max_length=1, blank=True, null=True)
+
+    class Meta:
+        db_table = 'accessi_info'
+        verbose_name = 'Accessi info'
+        verbose_name_plural = 'Accessi info'
+
+
+class NodiInfo(models.Model):
+    cod_gnz = models.CharField(blank=True, null=True, max_length=15)
+    tip_opz = models.CharField(choices=TIP_OPZ, max_length=1, blank=True, null=True)
+
+    class Meta:
+        db_table = 'nodi_info'
+        verbose_name = 'Accessi info'
+        verbose_name_plural = 'Accessi info'
 
 
 class ContrNc16223(models.Model):
@@ -84,14 +139,14 @@ class LegCmpEle(LegIternetModelMixin, models.Model):
         verbose_name_plural = 'Legenda CMP_ELE tabella archi'
 
 
-class LegDug(LegIternetModelMixin, models.Model):
+class LegCodDug(LegIternetModelMixin, models.Model):
     id = models.CharField(primary_key=True, max_length=25)
     description = models.TextField(blank=True, null=True)
 
     class Meta:
         db_table = 'leg_cod_dug'
-        verbose_name = 'Legenda COD_DUG tabella toponimo'
-        verbose_name_plural = 'Legenda DUG tabella toponimo'
+        verbose_name = 'Legenda COD_DUG tabella toponimo stradale'
+        verbose_name_plural = 'Legenda DUG tabella toponimo stradale'
 
 
 class LegCodSed(LegIternetModelMixin, models.Model):
@@ -174,14 +229,45 @@ class LegTipGst(LegIternetModelMixin, models.Model):
         verbose_name_plural = 'Legenda TIP_GST tabella archi'
 
 
+class LegTipPav(LegIternetModelMixin, models.Model):
+    id = models.CharField(primary_key=True, max_length=4)
+    description = models.TextField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'leg_tip_pav'
+        verbose_name = 'Legenda TIP_PAV tabella elemento stradale'
+        verbose_name_plural = 'Legenda TIP_PAV tabella elemento stradale'
+
+
+class LegOneWay(LegIternetModelMixin, models.Model):
+    id = models.CharField(primary_key=True, max_length=4)
+    description = models.TextField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'leg_one_way'
+        verbose_name = 'Legenda ONE_WAY tabella elemento stradale'
+        verbose_name_plural = 'Legenda ONE_WAY tabella elemento stradale'
+
+
+class LegCodClassifica(LegIternetModelMixin, models.Model):
+    id = models.CharField(primary_key=True, max_length=4)
+    description = models.TextField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'leg_cod_classifica'
+        verbose_name = 'Legenda COD_CLASSIFICA tabella numero civico'
+        verbose_name_plural = 'Legenda COD_CLASSIFICA tabella numero civico'
+
+
 class NumeroCivico(models.Model):
     cod_civ = models.CharField(primary_key=True, max_length=19)
     cod_acc_int = models.CharField(max_length=16, blank=True, null=True)
     num_civ = models.FloatField(blank=True, null=True)
-    esp_civ = models.CharField(max_length=9, blank=True, null=True)
-    cod_com = models.CharField(max_length=10, blank=True, null=True)
-    cod_top = models.CharField(max_length=18, blank=True, null=True)
+    esp_civ = models.CharField(max_length=5, blank=True, null=True)
+    cod_com = models.CharField(max_length=4, blank=True, null=True)
+    cod_top = models.CharField(max_length=15, blank=True, null=True)
     cod_acc_est = models.CharField(max_length=16, blank=True, null=True)
+    cod_classifica = models.ForeignKey(LegCodClassifica, db_column='cod_classifica', null=True, blank=True)
 
     class Meta:
         db_table = 'numero_civico'
@@ -212,7 +298,7 @@ class ElementoStradale(models.Model):
     tip_ele = models.ForeignKey(LegTipEle, db_column='tip_ele', null=True, blank=True)
     cls_tcn = models.ForeignKey(LegClsTcn, db_column='cls_tcn', null=True, blank=True)
     tip_gst = models.ForeignKey(LegTipGst, db_column='tip_gst', null=True, blank=True)
-    cod_gst = models.CharField(max_length=6, blank=True, null=True)
+    cod_gst = models.CharField(choices=COD_GST, max_length=6, blank=True, null=True)
     sot_pas = models.ForeignKey(LegSotPas, db_column='sot_pas', null=True, blank=True)
     lng = models.IntegerField(blank=True, null=True)
     cmp_ele = models.ForeignKey(LegCmpEle, db_column='cmp_ele', null=True, blank=True)
@@ -221,6 +307,8 @@ class ElementoStradale(models.Model):
     cls_lrg = models.ForeignKey(LegClsLrg, db_column='cls_lrg', null=True, blank=True)
     cod_top = models.CharField(max_length=15, blank=True, null=True)
     cod_top2 = models.CharField(max_length=15, blank=True, null=True)
+    tip_pav = models.ForeignKey(LegTipPav, db_column='tip_pav', null=True, blank=True)
+    one_way = models.ForeignKey(LegOneWay, db_column='one_way', null=True, blank=True)
     the_geom = models.MultiLineStringField(blank=True, null=True,
                                            srid=settings.ITERNET_DATA_SRID)  # This field type is a guess.
 
@@ -249,14 +337,12 @@ class GiunzioneStradale(models.Model):
 
 class ToponimoStradale(models.Model):
     cod_top = models.CharField(primary_key=True, max_length=15)
-    cod_top2 = models.CharField(primary_key=True, max_length=15)
     den_uff = models.CharField(max_length=41, blank=True, null=True)
     cod_com = models.CharField(max_length=10, blank=True, null=True)
     cod_via = models.CharField(max_length=11, blank=True, null=True)
-    den_senza = models.CharField(max_length=49, blank=True, null=True)
-    dug = models.ForeignKey(LegDug, db_column='dug', null=True, blank=True)
+    cod_dug = models.ForeignKey(LegCodDug, db_column='dug', null=True, blank=True)
 
     class Meta:
         db_table = 'toponimo_stradale'
-        verbose_name = 'Toponimo'
-        verbose_name_plural = 'Toponimi'
+        verbose_name = 'Toponimo stradale'
+        verbose_name_plural = 'Toponimi stradali'
