@@ -7,3 +7,63 @@
     <small>{% trans 'Report' %}</small>
     </h1>
 {% endblock %}
+
+{% block main_content %}
+    <div class="row">
+        <div class="col-md-4">
+            <div class="small-box bg-aqua">
+                <div class="inner">
+                  <h3>{{ n_accessi }}</h3>
+                  <p>Accessi</p>
+                </div>
+                <div class="icon">
+                  <i class="ion ion-location"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="small-box bg-green">
+                <div class="inner">
+                  <h3>{{ n_giunzioni_stradali }}</h3>
+                  <p>Giunzioni stradali</p>
+                </div>
+                <div class="icon">
+                  <i class="ion ion-location"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="small-box bg-yellow">
+                <div class="inner">
+                  <h3>{{ n_elementi_stradali }}</h3>
+                  <p>Elementi stradali</p>
+                </div>
+                <div class="icon">
+                  <i class="ion ion-network"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4 col-lg-3">
+            <div class="box box-default">
+                <div class="box-header with-border">
+                    <h3 class='box-title'><i class='fa fa-database'></i> {% trans 'Database connection' %} </h3>
+                    <div class="box-tools pull-right"><a data-toggle="tooltip" data-placement="top" title="{% trans 'Download QGIS connection XML file' %}" href="{% url 'iternet-download-qgispgconnection-file' %}" style="font-size:20px;"><i class="ion ion-android-download"></i></a></div>
+                </div>
+                <div class="box-body">
+                    <dl class="dl-horizontal">
+                        <dt>Host</dt>
+                        <dd>{{ db_connection.HOST }}</dd>
+                        <dt>Port</dt>
+                        <dd>{{ db_connection.PORT }}</dd>
+                        <dt>Database name</dt>
+                        <dd>{{ db_connection.NAME }}</dd>
+                        <dt>User</dt>
+                        <dd>{{ db_connection.USER }}</dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

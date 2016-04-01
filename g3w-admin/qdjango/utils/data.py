@@ -1,5 +1,6 @@
 from django.conf import settings
 from defusedxml import lxml
+from lxml import etree
 from django.utils.translation import ugettext, ugettext_lazy as _
 from core.utils.general import *
 from django.db import transaction
@@ -39,14 +40,14 @@ def makeDatasource(datasource,layerType):
 
 class QgisData(object):
 
-     _dataToSet = []
+    _dataToSet = []
 
-     _introMessageException = ''
+    _introMessageException = ''
 
 
-     def setData(self):
+    def setData(self):
         """
-        Set data project to self object
+        Set data to self object
         """
         for data in self._dataToSet:
             try:
@@ -54,6 +55,12 @@ class QgisData(object):
             except Exception as e:
                 raise Exception(_('{} "{}" {}:'.format(self._introMessageException,data,e.message)))
 
+
+    def asXML(self):
+        """
+        Return data to xml format
+        """
+        pass
 
 
 
@@ -685,7 +692,60 @@ class QgisProjectSettingsWMS(QgisData):
         return self._layersData
 
 
+class QgisPgConnection(object):
+    """
+    Postgis xml interchange file
+    """
+    _version = "1.0"
 
+    _params = {
+        'port':5432,
+        'saveUsername':'true',
+        'password':'',
+        'savePassword':'true',
+        'sslmode':1,
+        'service':'',
+        'username':'',
+        'host':'',
+        'database':'',
+        'name':'',
+        'estimatedMetadata':'false'
+    }
 
+    def __init__(self, **kwargs):
+
+        self._data = {}
+        for k,v in kwargs.items():
+            setattr(self,k,v)
+
+    def __setattr__(self, key, value):
+
+        if key in QgisPgConnection._params.keys():
+            self.__dict__['_data'][key] = value
+        else:
+            self.__dict__[key] = value
+
+    def __getattr__(self, key):
+
+        if key in QgisPgConnection._params.keys():
+            try:
+                return self.__dict__['_data'][key]
+            except:
+                return QgisPgConnection._params[key]
+
+        return self.__dict__[key]
+
+    def asXML(self):
+
+        qgsPgConnectionTree = etree.Element('qgsPgConnections', version=self._version)
+        postgisTree = etree.Element('postgis')
+        postgisTreeAttributes = postgisTree.attrib
+
+        for key in QgisPgConnection._params.keys():
+            postgisTreeAttributes[key] = str(getattr(self, key))
+
+        qgsPgConnectionTree.append(postgisTree)
+
+        return etree.tostring(qgsPgConnectionTree, doctype='<!DOCTYPE connections>')
 
 
