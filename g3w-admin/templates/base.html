@@ -106,7 +106,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
         <section class="sidebar">
         {% sitetree_menu from "core" include "trunk" template "sitetree/sidebar.html" %}
         {% sitetree_menu from "acl" include "trunk" template "sitetree/sidebar.html" %}
-        {% sitetree_menu from "law" include "trunk" template "sitetree/sidebar.html" %}
+        {% for module in SETTINGS.G3WADMIN_LOCAL_MORE_APPS %}
+        {% sitetree_menu from module include "trunk" template "sitetree/sidebar.html" %}
+        {% endfor %}
         </section>
         <!-- /.sidebar -->
       </aside>
@@ -127,7 +129,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
             <li><i class="fa fa-dashboard"></i> <a href="{% url 'home' %}">{% trans 'Dashboard' %}</a></li>
             {% sitetree_breadcrumbs from "core" template "sitetree/breadcrumbs_bootstrap3.html" %}
             {% sitetree_breadcrumbs from "acl" template "sitetree/breadcrumbs_bootstrap3.html" %}
-            {% sitetree_breadcrumbs from "law" template "sitetree/breadcrumbs_bootstrap3.html" %}
+            {% for module in SETTINGS.G3WADMIN_LOCAL_MORE_APPS %}
+            {% sitetree_breadcrumbs from module template "sitetree/breadcrumbs_bootstrap3.html" %}
+            {% endfor %}
           </ol>
           {% endblock %}
         </section>

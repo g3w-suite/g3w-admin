@@ -11,6 +11,7 @@ from django.contrib.gis.db import models
 from django.conf import settings
 from model_utils import Choices
 from .mixins.models import *
+from qdjango.models import Project
 
 
 
@@ -28,6 +29,13 @@ COD_GST = Choices(
     (u'999999', u'Privati/altro'),
 )
 
+
+# configuration tables, on default database (g3w-admin)
+class Config(models.Model):
+    """
+    Model for config iternet module
+    """
+    project = models.ForeignKey(Project, models.CASCADE)
 
 
 class CiviciInfo(models.Model):

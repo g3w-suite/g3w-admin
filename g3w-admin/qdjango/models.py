@@ -66,6 +66,9 @@ class Project(TimeStampedModel):
             ('view_project', 'Can view project'),
         )
 
+    def __unicode__(self):
+        return self.title
+
 
 class Layer(models.Model):
     """A QGIS layer."""

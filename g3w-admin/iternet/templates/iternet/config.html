@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load g3wadmin_tags %}
+{% load crispy_forms_tags %}
+
+{% block page_header %}
+    <h1>Iternet
+    <small>{% trans 'Configuration application' %}</small>
+    </h1>
+{% endblock %}
+
+{% block main_content %}
+    <form method="post">
+    {% crispy form %}
+    {% g3wadmin_add_button_form redo=False %}
+    </form>
+{% endblock %}
