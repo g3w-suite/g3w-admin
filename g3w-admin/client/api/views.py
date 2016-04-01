@@ -1,6 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
+from django.conf import settings
 from rest_framework.renderers import JSONRenderer
 from django.apps import apps
 from core.api.serializers import GroupSerializer, Group
@@ -41,7 +42,9 @@ class GroupConfigApiView(APIView):
     def get(self, request, format=None, group_slug=None, project_type=None, project_id=None):
         group = get_object_or_404(Group, slug=group_slug)
         groupSerializer = GroupSerializer(group,projectId=project_id, projectType=project_type)
-        initconfig = {'group':groupSerializer.data}
+        initconfig = {
+          "staticurl": settings.STATIC_URL+"g3w_client/",
+          "group":groupSerializer.data}
         
 
         return Response(initconfig)
