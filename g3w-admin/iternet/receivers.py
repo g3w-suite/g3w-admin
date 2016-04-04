@@ -26,6 +26,7 @@ def setInitConfigValue(sender, **kwargs):
     # check il project model and project type are right for iternet
     if kwargs['projectType'] == 'qdjango' and str(data.project.pk) == kwargs['project']:
         ret ={'iternet':{
+            'gid': "{}:{}".format(kwargs['projectType'],kwargs['project']),
             'layers': {
                 'nodi': {
                     'name': 'giunzione_stradale',
