@@ -39,7 +39,10 @@ class Config(models.Model):
 
     @staticmethod
     def getData():
-        return Config.objects.get()
+        try:
+            return Config.objects.all()[0]
+        except IndexError:
+            return None
 
 
 class CiviciInfo(models.Model):
