@@ -59,7 +59,7 @@ class ConfigView(FormView):
         return reverse('iternet-dashboard')
 
     def get_object(self):
-        self.object = Config.objects.get()
+        self.object = Config.getData()
 
     def get_form_kwargs(self):
         """
