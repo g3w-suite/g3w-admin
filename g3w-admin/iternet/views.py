@@ -36,11 +36,17 @@ class DashboardView(TemplateView):
         context['db_connection'] = iternet_connection
 
         # get report data from nodi accessi and elementi stradali
+        '''
         context['n_accessi'] = len(Accesso.objects.all())
         context['n_elementi_stradali'] = len(ElementoStradale.objects.all())
         context['n_giunzioni_stradali'] = len(GiunzioneStradale.objects.all())
-
+        '''
+        context['n_accessi'] = 'n'
+        context['n_elementi_stradali'] = 'n'
+        context['n_giunzioni_stradali'] = 'n'
         return context
+
+
 
 
 class ConfigView(FormView):
@@ -86,3 +92,4 @@ class DownloadQgisPgConnectionView(View):
         response = HttpResponse(qgisPgConnection.asXML(), content_type='text/xml')
         response['Content-Disposition'] = 'attachment; filename="g3w_iternet_qgis_connection.xml"'
         return response
+

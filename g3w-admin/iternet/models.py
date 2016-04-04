@@ -37,6 +37,10 @@ class Config(models.Model):
     """
     project = models.ForeignKey(Project, models.CASCADE)
 
+    @staticmethod
+    def getData():
+        return Config.objects.get()
+
 
 class CiviciInfo(models.Model):
     cod_civ = models.CharField(blank=True, null=True, max_length=16)

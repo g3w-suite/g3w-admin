@@ -3,6 +3,7 @@ from django.apps import apps
 from rest_framework import serializers
 from rest_framework.fields import empty
 from core.models import Group
+from core.signals import initconfig_plugin_start
 
 
 class GroupSerializer(serializers.ModelSerializer):
@@ -54,6 +55,14 @@ class GroupSerializer(serializers.ModelSerializer):
             }
         else:
             ret['overviewproject'] = None
+
+        ret['plugins'] = {}
+
+        # plugins/module data
+        dataPlugins = initconfig_plugin_start.send(sender=self,project=self.projectId, projectType=self.projectType)
+        for dataPlugin in dataPlugins:
+            if dataPlugin[1]:
+                ret['plugins'] = dict(ret['plugins'].items() + dataPlugin[1].items())
 
         return ret
 
