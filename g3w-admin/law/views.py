@@ -6,11 +6,13 @@ from django.views.generic import (
     View,
 )
 from django.views.generic.detail import SingleObjectMixin
+from django.http import HttpResponse, Http404
 from django.core.urlresolvers import reverse_lazy
 from core.mixins.views import *
 from .models import *
 from .forms import LawForm, ArticleForm
 from .mixins.views import *
+from .ie.resources import ArticlesResource
 
 
 
@@ -46,6 +48,24 @@ class LawDeleteView(G3WAjaxDeleteViewMixin, SingleObjectMixin,View):
     model = Laws
 
 
+class LawArticlesExportView(View):
+
+    def get(self, request, *args, **kwargs):
+
+        dataset = ArticlesResource(lawslug=kwargs['law_slug']).export()
+        mode = kwargs.get('mode','xls')
+        if mode == 'xls':
+            response = HttpResponse(dataset.xls, content_type='application/ms-excel')
+            response['Content-Disposition'] = 'attachment; filename=articles.xls'
+        elif mode == 'csv':
+            response = HttpResponse(dataset.csv, content_type='text/csv')
+            response['Content-Disposition'] = 'attachment; filename=articles.csv'
+        else:
+            raise Http404()
+
+        return response
+
+
 # ------------------------------------------
 # ARTICLES
 # ------------------------------------------
@@ -77,4 +97,9 @@ class ArticleDeleteView(G3WAjaxDeleteViewMixin, SingleObjectMixin, View):
     Delete law article Ajax view
     """
     model = Articles
+
+
+class ArticleDetailView(DetailView):
+    model = Articles
+    template_name = 'law/ajax/article_detail.html'
 

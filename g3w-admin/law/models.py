@@ -31,6 +31,9 @@ class Laws(TimeStampedModel):
             })
         return jsdata
 
+    def getArticlesNumber(self):
+        return len(self.articles_set.all())
+
 
 class Articles(models.Model):
     number = models.CharField(_('Article number'),max_length=255)

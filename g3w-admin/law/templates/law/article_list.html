@@ -27,10 +27,26 @@
     </div>
 </div>
 
+
+
 <div class="box">
     <div class="box-header">
         <h3 class="box-title"><a href="{% url 'law-article-add' law.slug %}"><i class="ion ion-plus-circled"></i></a> Article</h3>
         <span class="description">List of articles</span>
+        <div class="pull-right box-tools">
+            <div class="btn-group">
+              <button type="button" class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="glyphicon glyphicon-download"></i> {% trans 'Export' %} <span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu">
+                <li><a href="{% url 'law-article-export' law.slug %}">XLS</a></li>
+                <li><a href="{% url 'law-article-export-mode' law.slug 'csv' %}">CSV</a></li>
+              </ul>
+            </div>
+            <button type="button" class="btn btn-sm btn-default">
+              <i class="glyphicon glyphicon-upload"></i> {% trans 'Upload' %}
+            </button>
+        </div>
     </div>
     <div class="box-body">
         <table class="table table-hover table-striped">
@@ -47,7 +63,7 @@
                 <tr id="law_article_{{ object.slug }}">
                     <td>
                         <span class="col-xs-2 icon">
-                            <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem"  ><i class="ion ion-eye"></i></a>
+                            <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-detail-url="{% url 'law-article-detail' law.slug object.slug %}" ><i class="ion ion-eye"></i></a>
                         </span>
                         <span class="col-xs-2 icon">
                             <a href="{% url 'law-article-update' law.slug object.slug %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Edit' %}" ><i class="ion ion-edit"></i></a>

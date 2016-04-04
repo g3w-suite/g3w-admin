@@ -39,7 +39,7 @@
             </div><!-- /.col -->
             <div class="col-sm-4 col-xs-4">
               <div class="description-block articles-law">
-                <h5 class="description-header"  data-toggle="tooltip" data-placement="top" title="{% trans 'Law articles' %}" ><a href="{% url 'law-article-list' object.slug %}"> {% trans 'Articles' %}</a></h5>
+                <h5 class="description-header"  data-toggle="tooltip" data-placement="top" title="{% trans 'Law articles' %}" ><a href="{% url 'law-article-list' object.slug %}">{{ object.getArticlesNumber }} {% trans 'Articles' %}</a></h5>
               </div><!-- /.description-block -->
             </div><!-- /.col -->
             <div class="col-sm-2 col-xs-2">
