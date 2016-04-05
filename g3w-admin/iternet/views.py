@@ -20,6 +20,7 @@ class EditingApiView(APIView):
     """
 
     bbox_filter_field = 'the_geom'
+    bbox_filter_include_overlapping = True
 
     def get(self, request, format=None, layer_name=None):
 
