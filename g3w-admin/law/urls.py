@@ -10,6 +10,7 @@ urlpatterns = [
     url(r'^update/(?P<slug>[-_\w\d]+)/$', login_required(LawUpdateView.as_view()), name='law-update'),
     url(r'^delete/(?P<slug>[-_\w\d]+)/$', login_required(LawDeleteView.as_view()), name='law-delete'),
     url(r'^(?P<slug>[-_\w\d]+)/$', login_required(LawDetailView.as_view()), name='law-detail'),
+    url(r'^jx/add/newvariation/(?P<slug>[-_\w\d]+)/$', login_required(LawNewVariationView.as_view()), name='law-add-new-variation'),
 
     # ARTICLE
     url(r'^(?P<law_slug>[-_\w\d]+)/article/$', login_required(ArticleListView.as_view()), name='law-article-list'),

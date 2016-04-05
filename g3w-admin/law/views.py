@@ -3,14 +3,17 @@ from django.views.generic import (
     CreateView,
     UpdateView,
     DetailView,
+    FormView,
     View,
 )
 from django.views.generic.detail import SingleObjectMixin
 from django.http import HttpResponse, Http404
 from django.core.urlresolvers import reverse_lazy
+from django.db import transaction
+from copy import copy
 from core.mixins.views import *
 from .models import *
-from .forms import LawForm, ArticleForm
+from .forms import LawForm, ArticleForm, LawNewVariationForm
 from .mixins.views import *
 from .ie.resources import ArticlesResource
 
@@ -46,6 +49,35 @@ class LawDeleteView(G3WAjaxDeleteViewMixin, SingleObjectMixin,View):
     Delete law Ajax view
     """
     model = Laws
+
+
+class LawNewVariationView(AjaxableFormResponseMixin, FormView):
+
+    form_class = LawNewVariationForm
+    template_name = 'law/ajax/law_new_variation.html'
+    success_url = reverse_lazy('law-list')
+
+    def _get_law_object(self):
+        lawSlug = self.kwargs['slug']
+        return Laws.objects.get(slug=lawSlug)
+
+    @transaction.atomic
+    def form_valid(self, form):
+        # get law slug
+        newVariation = self.request.POST['variation']
+        parentLaw = self._get_law_object()
+        # create ne law row in db
+        childLaw = Laws(name=parentLaw.name, description=parentLaw.description, fromdate=parentLaw.fromdate,
+                        todate=parentLaw.todate, variation=newVariation)
+        childLaw.save()
+        # creates a copy of articles
+        parentArticles = parentLaw.articles_set.all()
+        for article in parentArticles:
+            childArticle = copy(article)
+            childArticle.id = None
+            childArticle.law = childLaw
+            childArticle.save()
+        return super(LawNewVariationView, self).form_valid(form)
 
 
 class LawArticlesExportView(View):

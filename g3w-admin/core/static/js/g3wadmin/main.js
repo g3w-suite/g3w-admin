@@ -51,6 +51,9 @@ _.extend(g3wadmin,{
         //Init button back history
         this.ui.initBackHistory();
 
+        //Init formWidget
+        this.ui.initAjaxFormWidget();
+
         /*
         TODO: try to perfom this issue server side
         //If form present che collapsed box

@@ -23,7 +23,9 @@ _.extend(g3wadmin.tpl, {
             textStatus: '500',
             errorMessage: '',
             moreInfo: null
-        }
+        },
+
+
     },
 
     dialog : _.template('\
@@ -54,5 +56,9 @@ _.extend(g3wadmin.tpl, {
     <p><%= errorMessage %></p>\
     <% if(moreInfo) { %>\
         <p><%= moreInfo %></p>\
-    <% } %>')
+    <% } %>'),
+
+    ajaxFormFieldError: _.template('\
+    <span id="<%= errorId %>" class="help-block"><strong><%= errorMessage %></strong></span>\
+    ')
 });

@@ -28,6 +28,10 @@ _.extend(g3wadmin.widget, {
         'target-selector'
     ],
 
+    _ajaxFormParams :[
+        'form-url',
+    ],
+
     _setProjectPanoramic : [
         'ajax-url',
     ],
@@ -156,6 +160,49 @@ _.extend(g3wadmin.widget, {
                         ga.ui.initCrudDetailWidget(params['target-selector']);
                         ga.ui.initRadioCheckbox(params['target-selector'])
                      }
+                 },
+                 error: function (xhr, textStatus, errorMessage) {
+                     ga.widget.showError(ga.utils.buildAjaxErrorMessage(xhr.status, errorMessage));
+                 }
+             });
+
+        } catch (e) {
+            this.showError(e.message);
+        }
+    },
+
+    /**
+     * ajax form from form-url and send data by ajax call
+     * @param $item
+     */
+    ajaxForm: function($item){
+        try {
+
+            var params = ga.utils.getDataAttrs($item, this._ajaxFormParams);
+            if (_.isUndefined(params['form-url'])) {
+                throw new Error('Attribute data-form-url not defined');
+            }
+
+            // ajax call to get deatail data
+             $.ajax({
+                 method: 'get',
+                 url: params['form-url'],
+                 success: function (res) {
+
+                    // open modal to show list of add links
+                    var modal = ga.ui.buildDefaultModal({
+                        modalTitle: 'Form title',
+                        modalBody: res,
+                    });
+
+                    modal.show();
+
+                    var form = new ga.forms.form(modal.$modal.find('form'));
+                    form.setAction(params['form-url']);
+
+                    // add form send data action
+                    modal.setConfirmButtonAction(form.sendData)
+
                  },
                  error: function (xhr, textStatus, errorMessage) {
                      ga.widget.showError(ga.utils.buildAjaxErrorMessage(xhr.status, errorMessage));

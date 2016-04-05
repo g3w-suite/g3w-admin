@@ -132,7 +132,19 @@ _.extend(g3wadmin.ui, {
             parent.history.back();
             return false;
         });
-    }
+    },
+
+    initAjaxFormWidget: function(context) {
+        if (!_.isUndefined(context)) {
+            var $widgetItem = $(context).find('[data-widget-type="ajaxForm"]');
+        }
+        else {
+            var $widgetItem = $('[data-widget-type="ajaxForm"]');
+        }
+         $widgetItem.click(function(e){
+            ga.widget.ajaxForm($(this));
+        });
+    },
 
 
 
