@@ -35,27 +35,22 @@ class EditingApiView(APIView):
         #http://localhost:8000/it/iternet/api/editing/elemento_stradale/?in_bbox=1627296.88291268446482718,4854554.72152963746339083,1628408.71542843640781939,4855197.11364984977990389
 
         features = []
+        featurecollection = {}
 
         if layer_name == 'elemento_stradale':
             layer = bboxFilter.filter_queryset(request, ElementoStradale.objects.all(), self)
-            for feature in layer:
-                layerSerializer = ElementoStradaleGeoSerializer(feature)
-                features.append(layerSerializer.data)
+            featurecollection = ElementoStradaleGeoSerializer(layer,many=True).data
 
         if layer_name == 'giunzione_stradale':
             layer = bboxFilter.filter_queryset(request, GiunzioneStradale.objects.all(), self)
-            for feature in layer:
-                layerSerializer = GiunzioneStradaleGeoSerializer(feature)
-                features.append(layerSerializer.data)
+            featurecollection = GiunzioneStradaleGeoSerializer(layer,many=True).data
 
         if layer_name == 'accesso':
             layer = bboxFilter.filter_queryset(request, Accesso.objects.all(), self)
-            for feature in layer:
-                layerSerializer = AccessoGeoSerializer(feature)
-                features.append(layerSerializer.data)
+            featurecollection = AccessoGeoSerializer(layer,many=True).data
 
 
-        return Response({'features':features})
+        return Response(featurecollection)
 
 
 class DashboardView(TemplateView):
