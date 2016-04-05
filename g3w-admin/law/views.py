@@ -64,11 +64,13 @@ class LawNewVariationView(AjaxableFormResponseMixin, FormView):
     @transaction.atomic
     def form_valid(self, form):
         # get law slug
-        newVariation = self.request.POST['variation']
+        newVariation = form.cleaned_data['variation']
+        newFromDate = form.cleaned_data['fromdate']
+        newToDate = form.cleaned_data['todate']
         parentLaw = self._get_law_object()
         # create ne law row in db
-        childLaw = Laws(name=parentLaw.name, description=parentLaw.description, fromdate=parentLaw.fromdate,
-                        todate=parentLaw.todate, variation=newVariation)
+        childLaw = Laws(name=parentLaw.name, description=parentLaw.description, fromdate=newFromDate,
+                        todate=newToDate, variation=newVariation)
         childLaw.save()
         # creates a copy of articles
         parentArticles = parentLaw.articles_set.all()

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-03-22 14:27+0000\n"
+"POT-Creation-Date: 2016-04-05 16:04+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -63,14 +63,10 @@ msgid "Max extent"
 msgstr ""
 
 #: qdjango/models.py:58
-msgid "Is panoramic map"
-msgstr ""
-
-#: qdjango/models.py:61
 msgid "Qgis project version"
 msgstr ""
 
-#: qdjango/models.py:64
+#: qdjango/models.py:61
 msgid "Layers tree structure"
 msgstr ""
 
@@ -98,7 +94,7 @@ msgstr ""
 msgid "GDAL"
 msgstr ""
 
-#: qdjango/models.py:85
+#: qdjango/models.py:85 qdjango/templates/qdjango/layers_list.html.py:44
 msgid "Name"
 msgstr ""
 
@@ -158,6 +154,10 @@ msgstr ""
 msgid "Bitwise edit options"
 msgstr ""
 
+#: qdjango/models.py:123
+msgid "Tilestache layer configurations paramenters"
+msgstr ""
+
 #: qdjango/templates/qdjango/ajax/project_detail.html:10
 msgid "Users"
 msgstr ""
@@ -174,15 +174,23 @@ msgstr ""
 msgid "Qgis project Version:"
 msgstr ""
 
-#: qdjango/templates/qdjango/project_form.html:24
+#: qdjango/templates/qdjango/layers_list.html:14
+msgid "QGIS Project Layers"
+msgstr ""
+
+#: qdjango/templates/qdjango/layers_list.html:43
+msgid "Cached"
+msgstr ""
+
+#: qdjango/templates/qdjango/project_form.html:25
 msgid "New Qdjango project"
 msgstr ""
 
-#: qdjango/templates/qdjango/project_form.html:36
+#: qdjango/templates/qdjango/project_form.html:37
 msgid "Alert"
 msgstr ""
 
-#: qdjango/templates/qdjango/project_form.html:37
+#: qdjango/templates/qdjango/project_form.html:38
 msgid "Some errors on form. Check it and send again."
 msgstr ""
 
@@ -191,50 +199,54 @@ msgid "Show map"
 msgstr ""
 
 #: qdjango/templates/qdjango/project_list.html:30
-msgid "Show detail"
+msgid "Layers"
 msgstr ""
 
 #: qdjango/templates/qdjango/project_list.html:33
-msgid "Edit"
+msgid "Show detail"
 msgstr ""
 
 #: qdjango/templates/qdjango/project_list.html:36
+msgid "Edit"
+msgstr ""
+
+#: qdjango/templates/qdjango/project_list.html:39
 msgid "Delete"
 msgstr ""
 
-#: qdjango/utils/data.py:55
+#: qdjango/utils/data.py:56
 msgid "{} \"{}\" {}:"
 msgstr ""
 
-#: qdjango/utils/data.py:153
+#: qdjango/utils/data.py:160
 msgid "Missing or invalid type for layer"
 msgstr ""
 
-#: qdjango/utils/data.py:310
+#: qdjango/utils/data.py:317
 msgid "Project and group SRID must be the same"
 msgstr ""
 
-#: qdjango/utils/data.py:312
+#: qdjango/utils/data.py:319
 msgid "Project and group units must be the same"
 msgstr ""
 
-#: qdjango/utils/data.py:322
+#: qdjango/utils/data.py:329
 msgid "A project with the same title already exists"
 msgstr ""
 
-#: qdjango/utils/data.py:331
+#: qdjango/utils/data.py:338
 msgid "Title porject not empty"
 msgstr ""
 
-#: qdjango/utils/data.py:357
+#: qdjango/utils/data.py:364
 msgid "Invalid Project Data "
 msgstr ""
 
-#: qdjango/utils/data.py:392
+#: qdjango/utils/data.py:399
 msgid "The project file is malformed: {}"
 msgstr ""
 
-#: qdjango/utils/data.py:632
+#: qdjango/utils/data.py:641
 msgid "The project settings is malformed: {}"
 msgstr ""
 

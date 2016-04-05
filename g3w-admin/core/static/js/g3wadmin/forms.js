@@ -44,6 +44,9 @@ _.extend(g3wadmin.forms, {
         var that = this;
         this.$form = $form;
 
+        /**
+         * Send dato form to action url
+         */
         this.sendData = function() {
             $.ajax({
                 method: 'post',
@@ -57,18 +60,27 @@ _.extend(g3wadmin.forms, {
                         } else {
                             that.showErrors();
                         }
-
                     } else {
-
+                        if(!_.isUndefined(that.successAction)) {
+                            that.successAction();
+                        }
                     }
                 },
                 error: function (xhr, textStatus, errorMessage) {
-                    // todo: send error to error div over the form
+                    ga.widget.showError(ga.utils.buildAjaxErrorMessage(xhr.status, errorMessage));
                     
                 }
             });
         };
 
+        this.setOnSuccesAction = function (func) {
+            this.successAction = func;
+        }
+
+        /**
+         * Show error message on form and fields.
+         * @param errors array of error message by key field
+         */
         this.showErrors = function(errors) {
 
             // first remove error class
@@ -90,11 +102,19 @@ _.extend(g3wadmin.forms, {
                 }
         };
 
+        /**
+         * Set action url form
+         * @param action string
+         */
         this.setAction = function(action) {
             this.$form.attr('action',action);
         };
 
 
+        /**
+         * Get data from form for post send
+         * @returns Object
+         */
         this.getData = function() {
 
             // refresh obejct form

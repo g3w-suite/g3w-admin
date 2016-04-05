@@ -112,9 +112,9 @@ _.extend(g3wadmin.widget, {
 
                     // open modal to show detail data
                     var modal = ga.ui.buildDefaultModal({
-                        modalTitle: 'Detail object',
+                        modalTitle: gettext('Detail object'),
                         modalBody: res,
-                        closeButtonText: 'Close',
+                        closeButtonText: gettext('Close'),
                         confirmButton: false
                     });
                     modal.show();
@@ -199,6 +199,13 @@ _.extend(g3wadmin.widget, {
 
                     var form = new ga.forms.form(modal.$modal.find('form'));
                     form.setAction(params['form-url']);
+                    form.setOnSuccesAction(function(){
+
+                        // close modal and reload page
+                        modal.hide();
+                        window.location.reload();
+                    })
+                     
 
                     // add form send data action
                     modal.setConfirmButtonAction(form.sendData)

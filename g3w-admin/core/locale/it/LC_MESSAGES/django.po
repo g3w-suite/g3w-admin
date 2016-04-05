@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-03-22 14:27+0000\n"
+"POT-Creation-Date: 2016-04-05 16:04+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -142,6 +142,18 @@ msgstr ""
 msgid "headerTermsOfUseLink"
 msgstr ""
 
+#: core/models.py:90
+msgid "Group"
+msgstr ""
+
+#: core/models.py:91
+msgid "Project type"
+msgstr ""
+
+#: core/models.py:92
+msgid "Project type id"
+msgstr ""
+
 #: core/templates/core/ajax/group_detail.html:5
 msgid "Geografic component"
 msgstr ""
@@ -239,11 +251,11 @@ msgstr ""
 msgid "Delete"
 msgstr ""
 
-#: core/templates/core/group_form.html:22
+#: core/templates/core/group_form.html:23
 msgid "Alert"
 msgstr ""
 
-#: core/templates/core/group_form.html:23
+#: core/templates/core/group_form.html:24
 msgid "Some errors on form. Check it and send again."
 msgstr ""
 
@@ -272,14 +284,17 @@ msgstr ""
 msgid "Edit"
 msgstr ""
 
-#: core/templates/core/include/form_buttons.html:6
+#: core/templates/core/include/form_buttons.html:7
 msgid "Save"
 msgstr ""
 
-#: core/templates/core/include/form_buttons.html:10
+#: core/templates/core/include/form_buttons.html:13
 msgid "Redo/Back"
 msgstr ""
 
 #: core/utils/forms.py:9
 msgid "{} is no a valid image"
 msgstr ""
+
+msgid "Close"
+msgstr "Chiudi"

@@ -45,6 +45,11 @@ _.extend(g3wadmin,{
         // start bootstrap3-wysihtml5
         $('.wys5').wysihtml5();
 
+        // start bootstrap-datepicker
+        $('.datepicker').datepicker({
+            language:CURRENT_LANGUAGE_CODE
+        });
+
         //Flat red color scheme for iCheck
         this.ui.initRadioCheckbox();
 

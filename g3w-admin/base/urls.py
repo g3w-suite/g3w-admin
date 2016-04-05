@@ -1,17 +1,5 @@
-"""qdjango2 URL Configuration
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/1.9/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  url(r'^$', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  url(r'^$', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.conf.urls import url, include
-    2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
+"""
+G3W-ADMIN URL Configuration
 """
 from django.conf.urls import url,include
 from django.contrib import admin, auth
@@ -19,6 +7,11 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth.decorators import login_required
 from django.conf.urls.i18n import i18n_patterns
+from django.views.i18n import javascript_catalog, json_catalog
+
+jsInfoDict = {
+    'packages': ('core','usermanage','client',),
+}
 
 urlpatterns = [
     url(r'^django-admin/', admin.site.urls),
@@ -28,6 +21,7 @@ urlpatterns = [
     url(r'^upload/', include('django_file_form.urls')),
     url(r'^login/$', auth.views.login, name='login', kwargs={'template_name': 'login.html'}),
     url(r'^logout/$', auth.views.logout, {'next_page': settings.LOGOUT_NEXT_PAGE}, name='logout'),
+    url(r'^jsi18n/$', javascript_catalog, jsInfoDict, name='javascript-catalog'),
 ]
 
 #adding projects app

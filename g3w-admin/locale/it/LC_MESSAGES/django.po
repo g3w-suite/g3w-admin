@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-03-22 14:27+0000\n"
+"POT-Creation-Date: 2016-04-05 16:04+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,7 +18,165 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: templates/base.html:126
+#: iternet/forms.py:21
+msgid "Data config"
+msgstr ""
+
+#: iternet/templates/iternet/config.html:8
+msgid "Configuration application"
+msgstr ""
+
+#: iternet/templates/iternet/dashboard.html:7
+msgid "Report"
+msgstr ""
+
+#: iternet/templates/iternet/dashboard.html:51
+msgid "Database connection"
+msgstr ""
+
+#: iternet/templates/iternet/dashboard.html:52
+msgid "Download QGIS connection XML file"
+msgstr ""
+
+#: law/forms.py:24 law/forms.py:40 law/forms.py:117
+msgid "General data"
+msgstr ""
+
+#: law/forms.py:63
+msgid "Date from from must be less than Date to"
+msgstr ""
+
+#: law/forms.py:64
+msgid "Date to must be more than Date from"
+msgstr ""
+
+#: law/forms.py:69 law/templates/law/law_list.html.py:62
+msgid "New variation"
+msgstr ""
+
+#: law/forms.py:70
+msgid "New date from"
+msgstr ""
+
+#: law/forms.py:71
+msgid "New date to"
+msgstr ""
+
+#: law/forms.py:94
+msgid "New date from from must be less than New date to"
+msgstr ""
+
+#: law/forms.py:95
+msgid "New date to must be more than New date from"
+msgstr ""
+
+#: law/models.py:7
+msgid "Law name"
+msgstr ""
+
+#: law/models.py:8
+msgid "Law description"
+msgstr ""
+
+#: law/models.py:9 law/templates/law/ajax/law_detail.html.py:5
+msgid "Variation"
+msgstr ""
+
+#: law/models.py:10
+msgid "Valid from"
+msgstr ""
+
+#: law/models.py:11
+msgid "Valid to"
+msgstr ""
+
+#: law/models.py:12 law/models.py:44
+msgid "Slug"
+msgstr ""
+
+#: law/models.py:39
+msgid "Article number"
+msgstr ""
+
+#: law/models.py:40 law/templates/law/ajax/article_detail.html.py:6
+#: law/templates/law/article_list.html:58
+msgid "Title"
+msgstr ""
+
+#: law/models.py:41
+msgid "Article comma number"
+msgstr ""
+
+#: law/models.py:42
+msgid "Article content"
+msgstr ""
+
+#: law/models.py:52
+msgid "Article"
+msgstr ""
+
+#: law/templates/law/ajax/article_detail.html:5
+#: law/templates/law/article_list.html:57
+msgid "Comma"
+msgstr ""
+
+#: law/templates/law/ajax/law_detail.html:6 law/templates/law/law_list.html:24
+msgid "Valid"
+msgstr ""
+
+#: law/templates/law/ajax/law_new_variation.html:7
+#: law/templates/law/article_form.html:17 law/templates/law/law_form.html:15
+msgid "Alert"
+msgstr ""
+
+#: law/templates/law/ajax/law_new_variation.html:8
+#: law/templates/law/article_form.html:18 law/templates/law/law_form.html:16
+msgid "Some errors on form. Check it and send again."
+msgstr ""
+
+#: law/templates/law/article_list.html:10 law/templates/law/law_list.html:42
+msgid "Law articles"
+msgstr ""
+
+#: law/templates/law/article_list.html:39
+msgid "Export"
+msgstr ""
+
+#: law/templates/law/article_list.html:47
+msgid "Upload"
+msgstr ""
+
+#: law/templates/law/article_list.html:56
+msgid "Number"
+msgstr ""
+
+#: law/templates/law/article_list.html:66 law/templates/law/law_list.html:48
+msgid "Show detail"
+msgstr ""
+
+#: law/templates/law/article_list.html:69 law/templates/law/law_list.html:55
+msgid "Edit"
+msgstr ""
+
+#: law/templates/law/article_list.html:72 law/templates/law/law_list.html:69
+msgid "Delete"
+msgstr ""
+
+#: law/templates/law/law_list.html:8
+#, fuzzy
+#| msgid "Users list"
+msgid "Laws list"
+msgstr "Lista utenti"
+
+#: law/templates/law/law_list.html:32
+msgid "Add new article"
+msgstr ""
+
+#: law/templates/law/law_list.html:42
+msgid "Articles"
+msgstr ""
+
+#: templates/base.html:132
 msgid "Dashboard"
 msgstr "Scrivania"
 
@@ -51,17 +209,14 @@ msgid "Sign In"
 msgstr "Accedi"
 
 # for sitetree
-msgid "Add group"
-msgstr "Aggiungi gruppo"
+#~ msgid "Add group"
+#~ msgstr "Aggiungi gruppo"
 
-msgid "Groups list"
-msgstr "Lista gruppi"
+#~ msgid "Groups list"
+#~ msgstr "Lista gruppi"
 
-msgid "Users"
-msgstr "Utenti"
+#~ msgid "Users"
+#~ msgstr "Utenti"
 
-msgid "Add user"
-msgstr "Aggiungi utente"
-
-msgid "Users list"
-msgstr "Lista utenti"
+#~ msgid "Add user"
+#~ msgstr "Aggiungi utente"

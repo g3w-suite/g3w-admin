@@ -42,8 +42,8 @@ class LawForm(ModelForm):
                                             ),
                                             Div(
                                                 'varation',
-                                                'fromdate',
-                                                'todate',
+                                                Field('fromdate', css_class='datepicker'),
+                                                Field('todate', css_class='datepicker'),
                                                 css_class='box-body',
                                             ),
                                             css_class='box box-success'
