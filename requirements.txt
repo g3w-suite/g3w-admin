@@ -8,6 +8,7 @@ django-model-utils==2.4
 django-sitetree==1.5.1
 djangorestframework==3.3.3
 djangorestframework-gis
+django-filter
 GDAL==1.11.0
 GeoAlchemy2==0.2.6
 lxml==3.3.3

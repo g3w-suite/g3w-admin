@@ -10,19 +10,45 @@ from .forms import ConfigForm
 from .api.serializers import ElementoStradaleGeoSerializer
 from qdjango.utils.data import QgisPgConnection
 
+from rest_framework_gis.filters import InBBoxFilter
+
 iternet_connection = copy.copy(settings.DATABASES[settings.ITERNET_DATABASE])
 
-class ElementoStradaleApiView(APIView):
+class EditingApiView(APIView):
     """
     APIView to get data Project and layers
     """
 
+    bbox_filter_field = 'the_geom'
+
     def get(self, request, format=None, layer_name=None):
 
-        archi = ElementoStradale.objects.all()
-        archiSerializer = ElementoStradaleGeoSerializer(archi[0])
+        if layer_name not in ['giunzione_stradale', 'elemento_stradale', 'accesso']:
+            raise Exception('Only one of this: guinzione_stradale, elemento_stradale, accesso')
 
-        return Response(archiSerializer.data)
+        bbox = request.GET.get('bbox', None)
+
+        # Instance bbox filter
+        bboxFilter = InBBoxFilter()
+
+        #   in_bbox=1627296.88291268446482718,4854554.72152963746339083,1628408.71542843640781939,4855197.11364984977990389
+
+        features = []
+
+        if layer_name == 'elemento_stradale':
+            layer = bboxFilter.filter_queryset(request, ElementoStradale.objects.all(), self)
+            for feature in layer:
+                layerSerializer = ElementoStradaleGeoSerializer(feature)
+                features.append(layerSerializer.data)
+
+        if layer_name == 'giunzione_stradale':
+            layer = bboxFilter.filter_queryset(request, ElementoStradale.objects.all(), self)
+            for feature in layer:
+                layerSerializer = ElementoStradaleGeoSerializer(feature)
+                features.append(layerSerializer.data)
+
+
+        return Response({'features':features})
 
 
 class DashboardView(TemplateView):

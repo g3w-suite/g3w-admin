@@ -8,3 +8,4 @@ class ElementoStradaleGeoSerializer(serializers.GeoFeatureModelSerializer):
     class Meta:
         model = ElementoStradale
         geo_field = 'the_geom'
+        auto_bbox = True

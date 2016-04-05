@@ -30,16 +30,16 @@ def setInitConfigValue(sender, **kwargs):
             'gid': "{}:{}".format(kwargs['projectType'],kwargs['project']),
             'layers': {
                 'nodi': {
-                    'name': 'giunzione_stradale',
-                    'id': layers['giunzione_stradale'].pk
+                    'name': layers['giunzione_stradale'].name,
+                    'id': layers['giunzione_stradale'].qgs_layer_id
                 },
                 'archi': {
-                    'name': layers['elemento_stradale'].title,
-                    'id': layers['elemento_stradale'].pk
+                    'name': layers['elemento_stradale'].name,
+                    'id': layers['elemento_stradale'].qgs_layer_id
                 },
                 'accessi': {
-                    'name': layers['accesso'].title,
-                    'id': layers['accesso'].pk
+                    'name': layers['accesso'].name,
+                    'id': layers['accesso'].qgs_layer_id
                 }
 
             },
