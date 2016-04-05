@@ -9,3 +9,17 @@ class ElementoStradaleGeoSerializer(serializers.GeoFeatureModelSerializer):
         model = ElementoStradale
         geo_field = 'the_geom'
         auto_bbox = True
+
+class GiunzioneStradaleGeoSerializer(serializers.GeoFeatureModelSerializer):
+
+    class Meta:
+        model = GiunzioneStradale
+        geo_field = 'the_geom'
+        auto_bbox = True
+
+class AccessoGeoSerializer(serializers.GeoFeatureModelSerializer):
+
+    class Meta:
+        model = Accesso
+        geo_field = 'the_geom'
+        auto_bbox = True

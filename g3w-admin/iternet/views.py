@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import ElementoStradale, Config, Accesso, ElementoStradale, GiunzioneStradale
 from .forms import ConfigForm
-from .api.serializers import ElementoStradaleGeoSerializer
+from .api.serializers import *
 from qdjango.utils.data import QgisPgConnection
 
 from rest_framework_gis.filters import InBBoxFilter
@@ -32,6 +32,7 @@ class EditingApiView(APIView):
         bboxFilter = InBBoxFilter()
 
         #   in_bbox=1627296.88291268446482718,4854554.72152963746339083,1628408.71542843640781939,4855197.11364984977990389
+        #http://localhost:8000/it/iternet/api/editing/elemento_stradale/?in_bbox=1627296.88291268446482718,4854554.72152963746339083,1628408.71542843640781939,4855197.11364984977990389
 
         features = []
 
@@ -42,9 +43,15 @@ class EditingApiView(APIView):
                 features.append(layerSerializer.data)
 
         if layer_name == 'giunzione_stradale':
-            layer = bboxFilter.filter_queryset(request, ElementoStradale.objects.all(), self)
+            layer = bboxFilter.filter_queryset(request, GiunzioneStradale.objects.all(), self)
             for feature in layer:
-                layerSerializer = ElementoStradaleGeoSerializer(feature)
+                layerSerializer = GiunzioneStradaleGeoSerializer(feature)
+                features.append(layerSerializer.data)
+
+        if layer_name == 'accesso':
+            layer = bboxFilter.filter_queryset(request, Accesso.objects.all(), self)
+            for feature in layer:
+                layerSerializer = AccessoGeoSerializer(feature)
                 features.append(layerSerializer.data)
 
 
