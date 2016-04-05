@@ -18,7 +18,7 @@ class ClientView(TemplateView):
         groupSerializer = GroupSerializer(group,projectId=kwargs['project_id'], projectType=kwargs['project_type'])
 
         # add baseUrl property
-        contextData['group_config'] = 'var initConfig ={{ "staticurl":"{}","group":{} }}'.format(settings.STATIC_URL+"g3w_client/",JSONRenderer().render(groupSerializer.data))
+        contextData['group_config'] = 'var initConfig ={{ "staticurl":"{}","group":{} }}'.format(settings.STATIC_URL+"g3w-client/",JSONRenderer().render(groupSerializer.data))
 
         # project by type(app)
         if not '{}-{}'.format(kwargs['project_type'],kwargs['project_id']) in groupSerializer.projects.keys():
