@@ -12,7 +12,7 @@ ITERNET_LAYERS = {
         'clientVar': 'giunzioni',  # variable name for client
         'geoSerializer': GiunzioneStradaleGeoSerializer
     },
-    'accessi': {
+    'accesso': {
         'model': Accesso,
         'clientVar': 'accessi',  # variable name for client
         'geoSerializer': AccessoGeoSerializer
