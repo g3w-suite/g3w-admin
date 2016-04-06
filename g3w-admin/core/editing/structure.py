@@ -2,19 +2,21 @@
 
 class VectorLayerStructure(object):
 
-    _type = 'GeoJSON'
+    _format = 'GeoJSON'
     _pkField = 'gid'
     _data = None
     _featureLocks = None
     _errors = None
+    _geomentryType = None
 
     def __init__(self, **kwargs):
 
-        self.type = kwargs.get('type', self._type)
+        self.format = kwargs.get('type', self._format)
         self.pkField = kwargs.get('pkField', self._pkField)
         self.data = kwargs.get('data', self._data)
         self.featureLocks = kwargs.get('featureLocks', self._featureLocks)
         self.errors = kwargs.get('errors', self._errors)
+        self.geometryType = kwargs.get('geomentryType', self._geomentryType)
 
     def setPkField(self, pkField):
         self._pkField = pkField
@@ -29,12 +31,14 @@ class VectorLayerStructure(object):
 
         return {
             'vector': {
-                'type': self.type,
+                'format': self.format,
                 'pk': self.pkField,
-                'data': self.data
+                'data': self.data,
+                'geometrytype': self.geometryType
             },
             'featurelocks': self.featureLocks,
             'errors': self.errors
         }
+
 
 

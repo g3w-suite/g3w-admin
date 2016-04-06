@@ -12,9 +12,12 @@ class LayerLock(object):
         if kwargs.get('user'):
             self.user = kwargs['user']
 
-    def getFeatureLockedIds(self):
+        self.initialFeatureLockedIds = []
+        self.getInitialUserFeatureLocked = []
+
+    def getInitialFeatureLockedIds(self):
         """
-        Check and return fatures id locked
+        Check and return initial features id locked
         """
 
         filters = {
@@ -23,20 +26,26 @@ class LayerLock(object):
             'layer_datasource':self.layerDatasource
         }
 
-        if getattr(self, 'user'):
-            filters['user'] = self.user
-
         featuresLocked = LockModel.objects.filter(**filters)
-
-        return [f.feature_id for f in featuresLocked]
+        for f in featuresLocked:
+            self.initialFeatureLockedIds.append(f.feature_id)
+            if getattr(self, 'user') and f.user == self.user:
+                self.getInitialUserFeatureLocked.append(f)
 
     def lockFeatures(self, featuresIds):
         """
         Lock features
         """
+
+        # first get initila features locked
+        self.getInitialFeatureLockedIds()
+
+        # find feature to lock
+        self.newFeatureToLockIds = list(set(featuresIds) - set(self.initialFeatureLockedIds))
+
         lockedFeature = []
         with transaction.atomic():
-            for fid in featuresIds:
+            for fid in self.newFeatureToLockIds:
                 featureLockId = hashlib.md5()
                 featureLockId.update(str(fid)+self.layerName+self.appName+self.layerDatasource)
                 featureLock = LockModel(
@@ -55,6 +64,15 @@ class LayerLock(object):
                     'featureid':fid,
                     'lockid':featureLock.feature_lock_id
                 })
+
+        if getattr(self, 'user') and len(self.getInitialUserFeatureLocked):
+            for f in self.getInitialUserFeatureLocked:
+                lockedFeature.append({
+                    'featureid': f.feature_id,
+                    'lockid': f.feature_lock_id
+                })
+
+
         return lockedFeature
 
     @classmethod
