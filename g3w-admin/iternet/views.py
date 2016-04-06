@@ -44,7 +44,7 @@ class EditingApiView(APIView):
 
         # get layer qdjango
         layer = Config.getData().project.layer_set.get(name=layer_name)
-
+        '''
         # lock features
         lock = LayerLock(
             appName='iternet',
@@ -56,12 +56,12 @@ class EditingApiView(APIView):
         featuresLocked = lock.getFeatureLockedIds()
         featuresToLock = list(set([str(f.gid) for f in featuresLayer]) - set(featuresLocked))
         newFeaturesLocked = lock.lockFeatures(featuresToLock)
-
+        '''
         # instance new vectolayer
         vectorLayer = VectorLayerStructure(
             data=featurecollection,
             pkField=ITERNET_LAYERS[layer_name]['model']._meta.pk.name,
-            featureLocks = newFeaturesLocked
+            featureLocks = []
         )
 
         return Response(vectorLayer.as_dict())
