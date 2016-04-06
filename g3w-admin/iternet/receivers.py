@@ -29,11 +29,11 @@ def setInitConfigValue(sender, **kwargs):
         ret ={'iternet':{
             'gid': "{}:{}".format(kwargs['projectType'],kwargs['project']),
             'layers': {
-                'nodi': {
+                'giunzioni': {
                     'name': layers['giunzione_stradale'].name,
                     'id': layers['giunzione_stradale'].qgs_layer_id
                 },
-                'archi': {
+                'strade': {
                     'name': layers['elemento_stradale'].name,
                     'id': layers['elemento_stradale'].qgs_layer_id
                 },
@@ -45,13 +45,13 @@ def setInitConfigValue(sender, **kwargs):
             },
             'baseurl': '/{}/{}'.format(iternetConfig.name,BASE_INTERNET_API_EDITING),
             'forms': {
-                'nodi': {
+                'giunzioni': {
                     'fields': [
                         editingFormField('tip_gnz',inputType='select', values=buidlKeyValue(LegTipGnz)),
                         editingFormField('org', inputType='select', values=buidlKeyValue(LegOrg))
                     ],
                 },
-                'archi': [
+                'strade': [
                     editingFormField('cod_sta', inputType='select', values=buidlKeyValue(LegCodSta)),
                     editingFormField('cod_sed', inputType='select', values=buidlKeyValue(LegCodSed)),
                     editingFormField('tip_ele', inputType='select', values=buidlKeyValue(LegTipEle)),
