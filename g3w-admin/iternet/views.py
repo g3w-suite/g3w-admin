@@ -7,10 +7,11 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import ElementoStradale, Config, Accesso, ElementoStradale, GiunzioneStradale
 from .forms import ConfigForm
-from .api.serializers import *
 from qdjango.utils.data import QgisPgConnection
-
 from rest_framework_gis.filters import InBBoxFilter
+from .configs import ITERNET_LAYERS
+from core.editing.structure import VectorLayerStructure
+from core.editing.utils import LayerLock
 
 iternet_connection = copy.copy(settings.DATABASES[settings.ITERNET_DATABASE])
 
@@ -24,10 +25,8 @@ class EditingApiView(APIView):
 
     def get(self, request, format=None, layer_name=None):
 
-        if layer_name not in ['giunzione_stradale', 'elemento_stradale', 'accesso']:
-            raise Exception('Only one of this: guinzione_stradale, elemento_stradale, accesso')
-
-        bbox = request.GET.get('bbox', None)
+        if layer_name not in ITERNET_LAYERS.keys():
+            raise Exception('Only one of this: {}'.format(', '.join(ITERNET_LAYERS.keys())))
 
         # Instance bbox filter
         bboxFilter = InBBoxFilter()
@@ -38,20 +37,34 @@ class EditingApiView(APIView):
         features = []
         featurecollection = {}
 
-        if layer_name == 'elemento_stradale':
-            layer = bboxFilter.filter_queryset(request, ElementoStradale.objects.all(), self)
-            featurecollection = ElementoStradaleGeoSerializer(layer,many=True).data
+        for iternetLayer, dataLayer in ITERNET_LAYERS.items():
+            if layer_name == iternetLayer:
+                featuresLayer = bboxFilter.filter_queryset(request, dataLayer['model'].objects.all(), self)
+                featurecollection = dataLayer['geoSerializer'](featuresLayer, many=True).data
 
-        if layer_name == 'giunzione_stradale':
-            layer = bboxFilter.filter_queryset(request, GiunzioneStradale.objects.all(), self)
-            featurecollection = GiunzioneStradaleGeoSerializer(layer,many=True).data
+        # get layer qdjango
+        layer = Config.getData().project.layer_set.get(name=layer_name)
 
-        if layer_name == 'accesso':
-            layer = bboxFilter.filter_queryset(request, Accesso.objects.all(), self)
-            featurecollection = AccessoGeoSerializer(layer,many=True).data
+        # lock features
+        lock = LayerLock(
+            appName='iternet',
+            layer=layer,
+            user=request.user
+        )
 
+        # get feature locked:
+        featuresLocked = lock.getFeatureLockedIds()
+        featuresToLock = list(set([str(f.gid) for f in featuresLayer]) - set(featuresLocked))
+        newFeaturesLocked = lock.lockFeatures(featuresToLock)
 
-        return Response(featurecollection)
+        # instance new vectolayer
+        vectorLayer = VectorLayerStructure(
+            data=featurecollection,
+            pkField=ITERNET_LAYERS[layer_name]['model']._meta.pk.name,
+            featureLocks = newFeaturesLocked
+        )
+
+        return Response(vectorLayer.as_dict())
 
 
 class DashboardView(TemplateView):

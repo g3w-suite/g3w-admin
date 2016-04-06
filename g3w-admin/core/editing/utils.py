@@ -5,21 +5,28 @@ import hashlib
 
 class LayerLock(object):
 
-    def __init__(self, layer, appName):
+    def __init__(self, layer, appName, **kwargs):
         self.layerName = layer.name
         self.layerDatasource = layer.datasource
         self.appName = appName
+        if kwargs.get('user'):
+            self.user = kwargs['user']
 
     def getFeatureLockedIds(self):
         """
         Check and return fatures id locked
         """
 
-        featuresLocked = LockModel.objects.filter(
-            layer_name=self.layerName,
-            app_name=self.appName,
-            layer_datasource=self.layerDatasource
-        )
+        filters = {
+            'layer_name':self.layerName,
+            'app_name':self.appName,
+            'layer_datasource':self.layerDatasource
+        }
+
+        if getattr(self, 'user'):
+            filters['user'] = self.user
+
+        featuresLocked = LockModel.objects.filter(**filters)
 
         return [f.feature_id for f in featuresLocked]
 
@@ -27,7 +34,7 @@ class LayerLock(object):
         """
         Lock features
         """
-        lockedFeature = {}
+        lockedFeature = []
         with transaction.atomic():
             for fid in featuresIds:
                 featureLockId = hashlib.md5()
@@ -39,8 +46,15 @@ class LayerLock(object):
                     layer_datasource=self.layerDatasource,
                     feature_lock_id=featureLockId.hexdigest()
                 )
+
+                if getattr(self, 'user'):
+                    featureLock.user = self.user
+
                 featureLock.save()
-                lockedFeature[fid] = featureLock.feature_lock_id
+                lockedFeature.append({
+                    'featureid':fid,
+                    'lockid':featureLock.feature_lock_id
+                })
         return lockedFeature
 
     @classmethod

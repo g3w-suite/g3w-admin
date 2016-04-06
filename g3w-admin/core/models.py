@@ -9,6 +9,7 @@ from model_utils.models import TimeStampedModel
 from model_utils import Choices
 from autoslug import AutoSlugField
 from sitetree.models import TreeItemBase, TreeBase
+from django.contrib.auth.models import User
 
 
 class G3W2Tree(TreeBase):
@@ -100,5 +101,6 @@ class G3WEditingFeatureLock(models.Model):
     app_name = models.CharField(max_length=255)
     layer_name = models.CharField(max_length=255)
     layer_datasource = models.TextField(max_length=255)
+    user = models.ForeignKey(User, null=True, blank=True)
     feature_lock_id = models.CharField(max_length=32)
     time_locked = models.DateTimeField(auto_now=True)
