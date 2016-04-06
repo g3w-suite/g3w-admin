@@ -10,7 +10,7 @@ from .forms import ConfigForm
 from qdjango.utils.data import QgisPgConnection
 from rest_framework_gis.filters import InBBoxFilter
 from .configs import ITERNET_LAYERS
-from core.editing.structure import VectorLayerStructure
+from core.editing.structure import APIVectorLayerStructure
 from core.editing.utils import LayerLock
 
 iternet_connection = copy.copy(settings.DATABASES[settings.ITERNET_DATABASE])
@@ -58,7 +58,7 @@ class EditingApiView(APIView):
             featuresLocked = lock.lockFeatures([str(f.gid) for f in featuresLayer])
 
         # instance new vectolayer
-        vectorLayer = VectorLayerStructure(
+        vectorLayer = APIVectorLayerStructure(
             data=featurecollection,
             pkField=ITERNET_LAYERS[layer_name]['model']._meta.pk.name,
             geomentryType=ITERNET_LAYERS[layer_name]['geometryType'],

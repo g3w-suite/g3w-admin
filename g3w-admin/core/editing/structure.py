@@ -1,6 +1,6 @@
 
 
-class VectorLayerStructure(object):
+class APIVectorLayerStructure(object):
 
     _format = 'GeoJSON'
     _pkField = 'gid'
