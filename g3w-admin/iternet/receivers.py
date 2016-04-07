@@ -49,24 +49,28 @@ def setInitConfigValue(sender, **kwargs):
                     'fields': [
                         editingFormField('tip_gnz',inputType='select', values=buidlKeyValue(LegTipGnz)),
                         editingFormField('org', inputType='select', values=buidlKeyValue(LegOrg))
-                    ],
+                    ]
                 },
-                'strade': [
-                    editingFormField('cod_sta', inputType='select', values=buidlKeyValue(LegCodSta)),
-                    editingFormField('cod_sed', inputType='select', values=buidlKeyValue(LegCodSed)),
-                    editingFormField('tip_ele', inputType='select', values=buidlKeyValue(LegTipEle)),
-                    editingFormField('cls_tcn', inputType='select', values=buidlKeyValue(LegClsTcn)),
-                    editingFormField('tip_gst', inputType='select', values=buidlKeyValue(LegTipGst)),
-                    editingFormField('sot_pas', inputType='select', values=buidlKeyValue(LegSotPas)),
-                    editingFormField('cmp_ele', inputType='select', values=buidlKeyValue(LegCmpEle)),
-                    editingFormField('org', inputType='select', values=buidlKeyValue(LegOrg)),
-                    editingFormField('cls_lrg', inputType='select', values=buidlKeyValue(LegClsLrg)),
-                    editingFormField('tip_pav', inputType='select', values=buidlKeyValue(LegTipPav)),
-                    editingFormField('one_way', inputType='select', values=buidlKeyValue(LegOneWay))
-                ],
-                'accessi': [
-                    editingFormField('tip_acc', inputType='select', values=buidlKeyValue(LegTipAcc))
-                ],
+                'strade': {
+                    'fields': [
+                        editingFormField('cod_sta', inputType='select', values=buidlKeyValue(LegCodSta)),
+                        editingFormField('cod_sed', inputType='select', values=buidlKeyValue(LegCodSed)),
+                        editingFormField('tip_ele', inputType='select', values=buidlKeyValue(LegTipEle)),
+                        editingFormField('cls_tcn', inputType='select', values=buidlKeyValue(LegClsTcn)),
+                        editingFormField('tip_gst', inputType='select', values=buidlKeyValue(LegTipGst)),
+                        editingFormField('sot_pas', inputType='select', values=buidlKeyValue(LegSotPas)),
+                        editingFormField('cmp_ele', inputType='select', values=buidlKeyValue(LegCmpEle)),
+                        editingFormField('org', inputType='select', values=buidlKeyValue(LegOrg)),
+                        editingFormField('cls_lrg', inputType='select', values=buidlKeyValue(LegClsLrg)),
+                        editingFormField('tip_pav', inputType='select', values=buidlKeyValue(LegTipPav)),
+                        editingFormField('one_way', inputType='select', values=buidlKeyValue(LegOneWay))
+                    ]
+                },
+                'accessi': {
+                    'fields': [
+                        editingFormField('tip_acc', inputType='select', values=buidlKeyValue(LegTipAcc))
+                    ]
+                },
             }
         }}
 
