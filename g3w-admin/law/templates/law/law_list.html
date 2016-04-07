@@ -45,7 +45,7 @@
             <div class="col-sm-1 col-xs-1">
               <div class="description-block">
                  <div class="icon">
-                  <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-detail-url="{% url 'law-detail' object.slug %}"><i class="ion ion-eye"></i></a>
+                  <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-modal-title="{% trans 'Law detail' %}" data-detail-url="{% url 'law-detail' object.slug %}"><i class="ion ion-eye"></i></a>
                 </div>
               </div><!-- /.description-block -->
             </div><!-- /.col -->
@@ -59,7 +59,7 @@
             <div class="col-sm-1 col-xs-1">
               <div class="description-block">
                 <div class="icon">
-                  <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'New variation' %}" data-widget-type="ajaxForm" data-form-url="{% url 'law-add-new-variation' object.slug %}" ><i class="ion ion-leaf"></i></a>
+                  <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'New variation' %}" data-widget-type="ajaxForm" data-modal-title="{% trans 'New variation for' %} {{ object.name }}" data-form-url="{% url 'law-add-new-variation' object.slug %}" ><i class="ion ion-leaf"></i></a>
                 </div>
               </div><!-- /.description-block -->
             </div><!-- /.col -->

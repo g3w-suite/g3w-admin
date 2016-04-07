@@ -60,5 +60,86 @@ _.extend(g3wadmin.tpl, {
 
     ajaxFormFieldError: _.template('\
     <span id="<%= errorId %>" class="help-block"><strong><%= errorMessage %></strong></span>\
-    ')
+    '),
+
+    ajaxFiler: _.template('\
+    <form action="<%= actionUrl %>" method="post" enctype="multipart/form-data">\
+        <input type="file" name="files[]" id="filer_input" multiple="multiple">\
+    </form>\
+    '),
+
+    ajaxFiler_changeInput: _.template('\
+    <div class="jFiler-input-dragDrop"><div class="jFiler-input-inner"><div class="jFiler-input-icon"><i class="icon-jfi-cloud-up-o"></i></div><div class="jFiler-input-text"><h3>Drag&Drop files here</h3> <span style="display:inline-block; margin: 15px 0">or</span></div><a class="jFiler-input-choose-btn blue">Browse Files</a></div></div>\
+    '),
+
+    ajaxFiler_box: _.template('\
+    <ul class="jFiler-items-list jFiler-items-grid"></ul>\
+    '),
+
+    ajaxFiler_item: _.template('\
+    <li class="jFiler-item">\
+        <div class="jFiler-item-container">\
+            <div class="jFiler-item-inner">\
+                <div class="jFiler-item-thumb">\
+                    <div class="jFiler-item-status"></div>\
+                    <div class="jFiler-item-info">\
+                        <span class="jFiler-item-title"><b title="{{fi-name}}">{{fi-name | limitTo: 25}}</b></span>\
+                        <span class="jFiler-item-others">{{fi-size2}}</span>\
+                    </div>\
+                    {{fi-image}}\
+                </div>\
+                <div class="jFiler-item-assets jFiler-row">\
+                    <ul class="list-inline pull-left">\
+                        <li>{{fi-progressBar}}</li>\
+                    </ul>\
+                    <ul class="list-inline pull-right">\
+                        <li><a class="icon-jfi-trash jFiler-item-trash-action"></a></li>\
+                    </ul>\
+                </div>\
+            </div>\
+        </div>\
+    </li>\
+    '),
+
+    ajaxFiler_itemAppend: _.template('\
+    <li class="jFiler-item">\
+        <div class="jFiler-item-container">\
+            <div class="jFiler-item-inner">\
+                <div class="jFiler-item-thumb">\
+                    <div class="jFiler-item-status"></div>\
+                    <div class="jFiler-item-info">\
+                        <span class="jFiler-item-title"><b title="{{fi-name}}">{{fi-name | limitTo: 25}}</b></span>\
+                        <span class="jFiler-item-others">{{fi-size2}}</span>\
+                    </div>\
+                    {{fi-image}}\
+                </div>\
+                <div class="jFiler-item-assets jFiler-row">\
+                    <ul class="list-inline pull-left">\
+                        <li><span class="jFiler-item-others">{{fi-icon}}</span></li>\
+                    </ul>\
+                    <ul class="list-inline pull-right">\
+                        <li><a class="icon-jfi-trash jFiler-item-trash-action"></a></li>\
+                    </ul>\
+                </div>\
+            </div>\
+        </div>\
+    </li>\
+    '),
+
+    ajaxFiler_progresBar: _.template('\
+    <div class="bar"></div>\
+    '),
+
+    ajaxFiler_successMsg: _.template('\
+    <div class="jFiler-item-others text-success"><i class="icon-jfi-check-circle"></i> Success</div>\
+    '),
+
+    ajaxFiler_errorMsg: _.template('\
+    <div class="jFiler-item-others text-error"><i class="icon-jfi-minus-circle"></i> Error</div>\
+    '),
+
+
+
+
+
 });

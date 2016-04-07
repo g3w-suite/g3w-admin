@@ -13,7 +13,8 @@ _.extend(g3wadmin.widget, {
      */
     _deleteItemParams: [
         'delete-url',
-        'item-selector'
+        'item-selector',
+        'modal-title'
     ],
 
     /**
@@ -21,6 +22,7 @@ _.extend(g3wadmin.widget, {
      */
     _detailItemParams: [
         'detail-url',
+        'modal-title'
     ],
 
     _loadHtmlItemParams :[
@@ -30,6 +32,13 @@ _.extend(g3wadmin.widget, {
 
     _ajaxFormParams :[
         'form-url',
+        'modal-title'
+    ],
+
+    _ajaxFilerParams :[
+        'action-url',
+        'modal-title',
+        'file-extensions'
     ],
 
     _setProjectPanoramic : [
@@ -112,7 +121,7 @@ _.extend(g3wadmin.widget, {
 
                     // open modal to show detail data
                     var modal = ga.ui.buildDefaultModal({
-                        modalTitle: gettext('Detail object'),
+                        modalTitle: ((_.isUndefined(params['modal-title']) ? gettext('Detail object') : params['modal-title'])),
                         modalBody: res,
                         closeButtonText: gettext('Close'),
                         confirmButton: false
@@ -191,7 +200,7 @@ _.extend(g3wadmin.widget, {
 
                     // open modal to show list of add links
                     var modal = ga.ui.buildDefaultModal({
-                        modalTitle: 'Form title',
+                        modalTitle: ((_.isUndefined(params['modal-title']) ? 'Form title' : params['modal-title'])),
                         modalBody: res,
                     });
 
@@ -210,11 +219,94 @@ _.extend(g3wadmin.widget, {
                     // add form send data action
                     modal.setConfirmButtonAction(form.sendData)
 
+                    // init form imput plugins
+                    ga.ui.initRadioCheckbox(modal.$modal);
+                    ga.ui.initBootstrapDatepicker(modal.$modal);
+                    ga.ui.initSelect2(modal.$modal);
                  },
                  error: function (xhr, textStatus, errorMessage) {
                      ga.widget.showError(ga.utils.buildAjaxErrorMessage(xhr.status, errorMessage));
                  }
              });
+
+        } catch (e) {
+            this.showError(e.message);
+        }
+    },
+
+    /**
+     * Create a modal form with jquery.filer plugin
+     * @param $item
+     */
+    ajaxFiler: function($item){
+        try {
+
+            var params = ga.utils.getDataAttrs($item, this._ajaxFilerParams);
+            if (_.isUndefined(params['action-url'])) {
+                throw new Error('Attribute data-action-url not defined');
+            }
+            
+            // open modal to show form filer
+            var modal = ga.ui.buildDefaultModal({
+                confirmButton: false,
+                modalTitle: ((_.isUndefined(params['modal-title']) ? 'Upload file' : params['modal-title'])),
+                modalBody: ga.tpl.ajaxFiler({actionUrl: params['action-url']})
+            });
+
+            modal.show();
+
+            // add crftoken
+            var data = {}
+            ga.utils.addCsfrtokenData(data)
+
+            // get extentions
+            extensions = _.isUndefined(params['file-extensions']) ? null : params['file-extensions'].split('|')
+            
+            $(modal.$modal.find('#filer_input')).filer({
+                changeInput: ga.tpl.ajaxFiler_changeInput(),
+                showThumbs: true,
+                limit: 1,
+                extensions: extensions,
+                theme: "dragdropbox",
+                templates: {
+                    box: ga.tpl.ajaxFiler_box(),
+                    item: ga.tpl.ajaxFiler_item(),
+                    itemAppend: ga.tpl.ajaxFiler_itemAppend(),
+                    progressBar: ga.tpl.ajaxFiler_progresBar(),
+                    itemAppendToEnd: false,
+                    removeConfirmation: true,
+                    _selectors: {
+                        list: '.jFiler-items-list',
+                        item: '.jFiler-item',
+                        progressBar: '.bar',
+                        remove: '.jFiler-item-trash-action'
+                    }
+                },
+                uploadFile: {
+                    url: params['action-url'],
+                    data: data,
+                    type: 'post',
+                    enctype: 'multipart/form-data',
+                    beforeSend: function(){},
+                    success: function(data, el){
+                        var parent = el.find(".jFiler-jProgressBar").parent();
+                        el.find(".jFiler-jProgressBar").fadeOut("slow", function(){
+                            $(ga.tpl.ajaxFiler_successMsg()).hide().appendTo(parent).fadeIn("slow");
+                        });
+
+                        el.after(data)
+                    },
+                    error: function(el){
+                        var parent = el.find(".jFiler-jProgressBar").parent();
+                        el.find(".jFiler-jProgressBar").fadeOut("slow", function(){
+                            $(ga.tpl.ajaxFiler_errorMsg()).hide().appendTo(parent).fadeIn("slow");
+                        });
+                    },
+                }
+            });
+
+            
+         
 
         } catch (e) {
             this.showError(e.message);

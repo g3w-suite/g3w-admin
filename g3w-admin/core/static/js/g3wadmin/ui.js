@@ -127,6 +127,28 @@ _.extend(g3wadmin.ui, {
         });
     },
 
+     initBootstrapDatepicker: function(context) {
+        if (!_.isUndefined(context)) {
+            var $widgetItem = $(context).find('.datepicker');
+        }
+        else {
+            var $widgetItem = $('.datepicker');
+        }
+        $widgetItem.datepicker({
+            language:CURRENT_LANGUAGE_CODE
+        });
+    },
+
+    initSelect2: function(context) {
+        if (!_.isUndefined(context)) {
+            var $widgetItem = $(context).find('.select2');
+        }
+        else {
+            var $widgetItem = $('.select2');
+        }
+        $widgetItem.select2();
+    },
+
     initBackHistory: function() {
         $('[data-widget-type="backHistory"]').click(function(){
             parent.history.back();
@@ -143,6 +165,18 @@ _.extend(g3wadmin.ui, {
         }
          $widgetItem.click(function(e){
             ga.widget.ajaxForm($(this));
+        });
+    },
+
+    initAjaxFilerWidget: function(context) {
+        if (!_.isUndefined(context)) {
+            var $widgetItem = $(context).find('[data-widget-type="ajaxFiler"]');
+        }
+        else {
+            var $widgetItem = $('[data-widget-type="ajaxFiler"]');
+        }
+         $widgetItem.click(function(e){
+            ga.widget.ajaxFiler($(this));
         });
     },
 

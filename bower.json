@@ -12,6 +12,7 @@
     "jquery-ui": "~1.11.4",
     "jquery-slimscroll": "*",
     "jquery-cookie": "*",
+    "jquery.filer": "*",
     "datatables":"*",
     "fastclick": "*",
     "font-awesome": "*",

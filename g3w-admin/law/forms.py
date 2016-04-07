@@ -1,7 +1,7 @@
 from django.forms import ModelForm, ValidationError, Form, CharField, DateField
 from django.utils.translation import ugettext_lazy as _
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Div, Submit, HTML, Button, Row, Field
+from crispy_forms.layout import Layout, Div, HTML, Row, Field
 from crispy_forms.bootstrap import AppendedText, PrependedText
 from .models import Laws, Articles
 
@@ -42,8 +42,8 @@ class LawForm(ModelForm):
                                             ),
                                             Div(
                                                 'varation',
-                                                Field('fromdate', css_class='datepicker'),
-                                                Field('todate', css_class='datepicker'),
+                                                PrependedText('fromdate', '<i class="fa fa-calendar"></i>', css_class='datepicker'),
+                                                PrependedText('todate', '<i class="fa fa-calendar"></i>', css_class='datepicker'),
                                                 css_class='box-body',
                                             ),
                                             css_class='box box-success'
@@ -78,8 +78,8 @@ class LawNewVariationForm(Form):
                                 Div(
                                     'variation',
                                     Row(
-                                        Div(Field('fromdate',css_class='datepicker'),css_class='col-md-6'),
-                                        Div(Field('todate',css_class='datepicker'),css_class='col-md-6'),
+                                        Div(PrependedText('fromdate', '<i class="fa fa-calendar"></i>', css_class='datepicker'),css_class='col-md-6'),
+                                        Div(PrependedText('todate', '<i class="fa fa-calendar"></i>', css_class='datepicker'),css_class='col-md-6'),
                                     ),
                                     css_class = 'col-md-12'
                                     )

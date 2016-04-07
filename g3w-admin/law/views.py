@@ -9,7 +9,9 @@ from django.views.generic import (
 from django.views.generic.detail import SingleObjectMixin
 from django.http import HttpResponse, Http404
 from django.core.urlresolvers import reverse_lazy
+from django.db.models import ObjectDoesNotExist, Q
 from django.db import transaction
+import tablib
 from copy import copy
 from core.mixins.views import *
 from .models import *
@@ -98,6 +100,46 @@ class LawArticlesExportView(View):
             raise Http404()
 
         return response
+
+
+class LawArticlesUploadView(G3WLawViewMixin, View):
+
+    def post(self, request, *args, **kwargs):
+
+        file = request.FILES['files[]'] if request.FILES else None
+
+        # try import data
+        dataset = tablib.Dataset()
+        if file.content_type == 'text/csv':
+            dataset.csv = file.read()
+        else:
+            dataset.xls = file.read()
+        dh = dataset.headers
+        idsToRest = []
+        with transaction.atomic():
+            for d in dataset:
+                # build data for model and filter
+                dataArticle = {
+                    'number': str(d[dh.index('number')]),
+                    'comma': str(d[dh.index('comma')]),
+                    'title': str(d[dh.index('title')]),
+                    'content': str(d[dh.index('content')]),
+                    'law': self.law
+                }
+                try:
+                    article = Articles.objects.get(**dataArticle)
+                except ObjectDoesNotExist:
+                    article = Articles(**dataArticle)
+                finally:
+                    article.content = str(d[dh.index('content')])
+                    article.save()
+                    idsToRest.append(article.pk)
+            # erase old
+            articlesToDelete = Articles.objects.filter(~Q(pk__in=idsToRest), law=self.law)
+            for article in articlesToDelete:
+                article.delete()
+
+        return HttpResponse('Articles list uploaded and updated')
 
 
 # ------------------------------------------

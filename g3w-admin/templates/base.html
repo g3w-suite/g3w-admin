@@ -30,6 +30,10 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <link rel="stylesheet" href="{% static "bower_components/bootstrap3-wysihtml5-bower/dist/bootstrap3-wysihtml5.min.css" %}">
     <!-- Bootstrap-datepicker -->
     <link rel="stylesheet" href="{% static "bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker3.min.css" %}">
+    <!-- Jquery.Filer -->
+    <link rel="stylesheet" href="{% static "bower_components/jquery.filer/css/jquery.filer.css" %}">
+    <!-- Jquery.Filer Theme -->
+    <link rel="stylesheet" href="{% static "bower_components/jquery.filer/css/themes/jquery.filer-dragdropbox-theme.css" %}">
     <!-- Theme style -->
     <link rel="stylesheet" href="{% static "adminlte/css/AdminLTE.min.css" %}">
     <!-- AdminLTE Skins. We have chosen the skin-blue for this starter
@@ -157,7 +161,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
         {% endblock %}
         </div>
         <!-- Default to the left -->
-        <strong>Copyright &copy; 2015 <a href="http://www.gis3w.it">GIS3W</a>.</strong> All rights reserved.
+        <strong>Copyright &copy; 2015 - {{ today.year }} <a href="http://www.gis3w.it">GIS3W</a>.</strong> All rights reserved.
       </footer>
 
       <!-- Control Sidebar -->
@@ -249,6 +253,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <script src="{% static "bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js" %}"></script>
     <!-- Bootstrap-datepicker-locals -->
     <script src="{% static "bower_components/bootstrap-datepicker/dist/locales/" %}bootstrap-datepicker.{{ lang }}.min.js"></script>
+    <!-- Jquery.Filer -->
+    <script src="{% static "bower_components/jquery.filer/js/jquery.filer.min.js" %}"></script>
 
 
     {% if 'fixed' in adminlte_layout_option %}
@@ -260,6 +266,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <script src="{% static "ajaxuploader/js/fileuploader.js" %}"></script>
     <!-- Django-file-form -->
     <script src="{% static "file_form/file_form.js" %}"></script>
+
     <!-- icheck -->
     <script src="{% static "bower_components/icheck/icheck.min.js" %}"></script>
 

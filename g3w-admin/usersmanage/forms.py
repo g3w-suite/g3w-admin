@@ -14,7 +14,8 @@ from django.contrib.auth.models import User
 from django.forms import ModelChoiceField
 from django_file_form.forms import FileFormMixin, UploadedFileField
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout,Div,Field,HTML
+from crispy_forms.layout import Layout,Div, HTML
+from crispy_forms.bootstrap import AppendedText, PrependedText
 from .models import Userdata, Department
 from core.mixins.forms import G3WRequestFormMixin, G3WFormMixin
 
@@ -141,9 +142,9 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin,FileFormMixin,UserCreationFo
                             css_class='box-header with-border'
                         ),
                         Div(
-                            'username',
-                            'password1',
-                            'password2',
+                            PrependedText('username', '<i class="fa fa-user"></i>'),
+                            PrependedText('password1', '<i class="fa fa-lock"></i>'),
+                            PrependedText('password2', '<i class="fa fa-lock"></i>'),
                             css_class='box-body',
 
                         ),

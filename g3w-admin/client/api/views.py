@@ -1,14 +1,18 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
 from django.conf import settings
 from rest_framework.renderers import JSONRenderer
 from django.apps import apps
 from core.api.serializers import GroupSerializer, Group
+from core.api.permissions import ProjectPermission
 
 
 
 class TestApi(APIView):
+
+
 
     def get(self, request, format=None):
 
@@ -21,6 +25,8 @@ class ClientConfigApiView(APIView):
     """
     APIView to get data Project and layers
     """
+
+    permission_classes = (ProjectPermission,)
 
     def get(self, request, format=None, group_slug=None, project_type=None, project_id=None):
 

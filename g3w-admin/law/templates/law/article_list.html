@@ -43,7 +43,7 @@
                 <li><a href="{% url 'law-article-export-mode' law.slug 'csv' %}">CSV</a></li>
               </ul>
             </div>
-            <button type="button" class="btn btn-sm btn-default">
+            <button type="button" class="btn btn-sm btn-default" data-widget-type="ajaxFiler" data-modal-title="{% trans 'Upload articles file' %}" data-action-url="{% url 'law-article-uload' law.slug %}" data-file-extensions="xls|csv">
               <i class="glyphicon glyphicon-upload"></i> {% trans 'Upload' %}
             </button>
         </div>
@@ -63,7 +63,7 @@
                 <tr id="law_article_{{ object.slug }}">
                     <td>
                         <span class="col-xs-2 icon">
-                            <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-detail-url="{% url 'law-article-detail' law.slug object.slug %}" ><i class="ion ion-eye"></i></a>
+                            <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-modal-title="{% trans 'Detail article' %}" data-detail-url="{% url 'law-article-detail' law.slug object.slug %}" ><i class="ion ion-eye"></i></a>
                         </span>
                         <span class="col-xs-2 icon">
                             <a href="{% url 'law-article-update' law.slug object.slug %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Edit' %}" ><i class="ion ion-edit"></i></a>

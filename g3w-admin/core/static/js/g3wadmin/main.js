@@ -39,25 +39,26 @@ _.extend(g3wadmin,{
         that.widget.ajaxUpload($('[data-widget-type="ajaxUpload"]'));
 
 
-        // start select2 plugin
-        $('.select2').select2();
-
         // start bootstrap3-wysihtml5
         $('.wys5').wysihtml5();
 
-        // start bootstrap-datepicker
-        $('.datepicker').datepicker({
-            language:CURRENT_LANGUAGE_CODE
-        });
-
         //Flat red color scheme for iCheck
         this.ui.initRadioCheckbox();
+
+        //Init bootstrap-datepicker
+        this.ui.initBootstrapDatepicker();
+
+        //Init select2 plugin
+        this.ui.initSelect2();
 
         //Init button back history
         this.ui.initBackHistory();
 
         //Init formWidget
         this.ui.initAjaxFormWidget();
+
+        //Init filerWidget
+        this.ui.initAjaxFilerWidget();
 
         /*
         TODO: try to perfom this issue server side
