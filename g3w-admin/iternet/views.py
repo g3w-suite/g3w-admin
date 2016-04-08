@@ -76,13 +76,13 @@ class EditingApiView(APIView):
         #   in_bbox=1627296.88291268446482718,4854554.72152963746339083,1628408.71542843640781939,4855197.11364984977990389
         #http://localhost:8000/it/iternet/api/editing/elemento_stradale/?in_bbox=1627296.88291268446482718,4854554.72152963746339083,1628408.71542843640781939,4855197.11364984977990389
 
-        features = []
-        featurecollection = {}
 
-        for iternetLayer, dataLayer in ITERNET_LAYERS.items():
-            if layer_name == iternetLayer:
-                featuresLayer = bboxFilter.filter_queryset(request, dataLayer['model'].objects.all(), self)
-                featurecollection = dataLayer['geoSerializer'](featuresLayer, many=True).data
+        if not configMode:
+            featurecollection = {}
+            for iternetLayer, dataLayer in ITERNET_LAYERS.items():
+                if layer_name == iternetLayer:
+                    featuresLayer = bboxFilter.filter_queryset(request, dataLayer['model'].objects.all(), self)
+                    featurecollection = dataLayer['geoSerializer'](featuresLayer, many=True).data
 
         # get layer qdjango
         layer = Config.getData().project.layer_set.get(name=layer_name)
