@@ -64,8 +64,8 @@ class EditingApiView(APIView):
             raise Exception('Only one of this: {}'.format(', '.join(ITERNET_LAYERS.keys())))
 
         # check is editing mode ad inputs
-        editingMode = request.GET.get('editing')
-        configMode = request.GET.get('config')
+        editingMode = 'editing' in request.GET
+        configMode = 'config' in request.GET
 
         if editingMode and configMode:
             raise Exception('config and editing get parameters not allowed')
