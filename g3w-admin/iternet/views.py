@@ -19,7 +19,7 @@ iternet_connection = copy.copy(settings.DATABASES[settings.ITERNET_DATABASE])
 
 
 def buidlKeyValue(legModel):
-    return [(l.id, l.description) for l in legModel.objects.all()]
+    return [{'key':l.id, 'value':l.description} for l in legModel.objects.all()]
 
 forms = {
     'giunzione_stradale': {
@@ -63,6 +63,13 @@ class EditingApiView(APIView):
         if layer_name not in ITERNET_LAYERS.keys():
             raise Exception('Only one of this: {}'.format(', '.join(ITERNET_LAYERS.keys())))
 
+        # check is editing mode ad inputs
+        editingMode = request.GET.get('editing')
+        configMode = request.GET.get('config')
+
+        if editingMode and configMode:
+            raise Exception('config and editing get parameters not allowed')
+
         # Instance bbox filter
         bboxFilter = InBBoxFilter()
 
@@ -82,7 +89,7 @@ class EditingApiView(APIView):
 
         # lock features
         featuresLocked = []
-        if request.GET.get('editing'):
+        if editingMode:
             lock = LayerLock(
                 appName='iternet',
                 layer=layer,
@@ -92,15 +99,22 @@ class EditingApiView(APIView):
             # get feature locked:
             featuresLocked = lock.lockFeatures([str(f.gid) for f in featuresLayer])
 
-        # instance new vectolayer
-        vectorLayer = APIVectorLayerStructure(
-            data=featurecollection,
-            pkField=ITERNET_LAYERS[layer_name]['model']._meta.pk.name,
-            geomentryType=ITERNET_LAYERS[layer_name]['geometryType'],
-            featureLocks=featuresLocked,
-            inputs= forms[layer_name]['fields']
-        )
+        if configMode:
+            vectorParams = {
+                'geomentryType': ITERNET_LAYERS[layer_name]['geometryType'],
+                'inputs': forms[layer_name]['fields'],
+                'pkField': ITERNET_LAYERS[layer_name]['model']._meta.pk.name
+            }
+        else:
+            vectorParams = {
+                'data': featurecollection,
+                'geomentryType': ITERNET_LAYERS[layer_name]['geometryType'],
+            }
 
+        vectorParams['featureLocks'] = featuresLocked
+
+        # instance new vectolayer
+        vectorLayer = APIVectorLayerStructure(**vectorParams)
         return Response(vectorLayer.as_dict())
 
 
