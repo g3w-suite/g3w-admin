@@ -324,7 +324,7 @@ class ElementoStradale(models.Model):
     cod_top2 = models.CharField(max_length=15, blank=True, null=True)
     tip_pav = models.ForeignKey(LegTipPav, db_column='tip_pav', null=True, blank=True)
     one_way = models.ForeignKey(LegOneWay, db_column='one_way', null=True, blank=True)
-    the_geom = models.MultiLineStringField(blank=True, null=True,
+    the_geom = models.LineStringField(blank=True, null=True,
                                            srid=settings.ITERNET_DATA_SRID)  # This field type is a guess.
 
     class Meta:

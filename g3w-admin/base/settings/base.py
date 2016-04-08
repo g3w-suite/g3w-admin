@@ -44,6 +44,7 @@ THIRD_PARTY_APPS = [
     'django_file_form',
     'django_file_form.ajaxuploader',
     'model_utils',
+    'formtools',
     'crispy_forms',
     'guardian',
     'sitetree',

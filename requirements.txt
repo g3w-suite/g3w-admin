@@ -1,5 +1,6 @@
 Django==1.9.4
 django-autoslug==1.9.3
+django-formtools
 django-crispy-forms==1.6.0
 django-extensions==1.6.1
 django-file-form==0.1.7

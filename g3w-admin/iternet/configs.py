@@ -6,7 +6,7 @@ ITERNET_LAYERS = {
         'model': ElementoStradale,
         'clientVar': 'strade', # variable name for client
         'geoSerializer': ElementoStradaleGeoSerializer,
-        'geometryType': 'MultiLineString'
+        'geometryType': 'LineString'
     },
     'giunzione_stradale': {
         'model': GiunzioneStradale,

@@ -7,7 +7,10 @@ sitetrees = (
   G3Wtree('cdu', title='Cdu', module='cdu', items=[
       # Then define items and their children with `item` function.
       item('CDU', '#', type_header=True),
-      item('Configs', 'cdu-config', url_as_pattern=True, icon_css_class='fa fa-cog'),
+      item('CDU Configs', '#', icon_css_class='fa fa-cog', children=[
+        item('Add config', 'cdu-config-add', url_as_pattern=True, icon_css_class='fa fa-plus'),
+        item('Configs list', 'cdu-config-list', url_as_pattern=True, icon_css_class='fa fa-list')
+      ]),
   ]),
 )
 

@@ -20,8 +20,6 @@ class ExampleAjaxForm(Form):
     testo = CharField(required=True)
 
 
-
-
 class GroupForm(FileFormMixin, G3WFormMixin, G3WRequestFormMixin, G3WACLForm, ModelForm):
     """Group form."""
     header_logo_img = UploadedFileField()

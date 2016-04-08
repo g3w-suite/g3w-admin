@@ -36,4 +36,6 @@ class IternetRouter(object):
             return False
         elif db == settings.ITERNET_DATABASE and app_label != 'iternet':
             return False
+        elif db == settings.ITERNET_DATABASE and app_label == 'iternet' and model_name == 'config':
+            return False
         return None
