@@ -12,8 +12,43 @@ from rest_framework_gis.filters import InBBoxFilter
 from .configs import ITERNET_LAYERS
 from core.editing.structure import APIVectorLayerStructure
 from core.editing.utils import LayerLock
+from .models import *
+from client.utils.editing import editingFormField
 
 iternet_connection = copy.copy(settings.DATABASES[settings.ITERNET_DATABASE])
+
+
+def buidlKeyValue(legModel):
+    return [(l.id, l.description) for l in legModel.objects.all()]
+
+forms = {
+    'giunzione_stradale': {
+        'fields': [
+            editingFormField('tip_gnz', inputType='select', values=buidlKeyValue(LegTipGnz)),
+            editingFormField('org', inputType='select', values=buidlKeyValue(LegOrg))
+        ]
+    },
+    'elemento_stradale': {
+        'fields': [
+            editingFormField('cod_sta', inputType='select', values=buidlKeyValue(LegCodSta)),
+            editingFormField('cod_sed', inputType='select', values=buidlKeyValue(LegCodSed)),
+            editingFormField('tip_ele', inputType='select', values=buidlKeyValue(LegTipEle)),
+            editingFormField('cls_tcn', inputType='select', values=buidlKeyValue(LegClsTcn)),
+            editingFormField('tip_gst', inputType='select', values=buidlKeyValue(LegTipGst)),
+            editingFormField('sot_pas', inputType='select', values=buidlKeyValue(LegSotPas)),
+            editingFormField('cmp_ele', inputType='select', values=buidlKeyValue(LegCmpEle)),
+            editingFormField('org', inputType='select', values=buidlKeyValue(LegOrg)),
+            editingFormField('cls_lrg', inputType='select', values=buidlKeyValue(LegClsLrg)),
+            editingFormField('tip_pav', inputType='select', values=buidlKeyValue(LegTipPav)),
+            editingFormField('one_way', inputType='select', values=buidlKeyValue(LegOneWay))
+        ]
+    },
+    'accesso': {
+        'fields': [
+            editingFormField('tip_acc', inputType='select', values=buidlKeyValue(LegTipAcc))
+        ]
+    }
+}
 
 class EditingApiView(APIView):
     """
@@ -62,7 +97,8 @@ class EditingApiView(APIView):
             data=featurecollection,
             pkField=ITERNET_LAYERS[layer_name]['model']._meta.pk.name,
             geomentryType=ITERNET_LAYERS[layer_name]['geometryType'],
-            featureLocks=featuresLocked
+            featureLocks=featuresLocked,
+            inputs= forms[layer_name]['fields']
         )
 
         return Response(vectorLayer.as_dict())

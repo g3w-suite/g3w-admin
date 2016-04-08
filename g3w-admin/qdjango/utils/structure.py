@@ -59,7 +59,8 @@ class QgisOGRLayerStructure(QgisLayerStructure):
         for i in range(layerDefinition.GetFieldCount()):
             self.columns.append({
                 'name':layerDefinition.GetFieldDefn(i).GetName(),
-                'type':layerDefinition.GetFieldDefn(i).GetFieldTypeName(layerDefinition.GetFieldDefn(i).GetType()).upper()
+                'type':layerDefinition.GetFieldDefn(i).GetFieldTypeName(layerDefinition.GetFieldDefn(i).GetType()).upper(),
+                'label': layerDefinition.GetFieldDefn(i).GetName()
             })
 
         dataSourceOgr.Destroy()
@@ -162,6 +163,6 @@ class QgisDBLayerStructure(QgisLayerStructure):
 
         for c in messages.columns:
             try:
-                self.columns.append({'name': c.name, 'type': str(c.type)})
+                self.columns.append({'name': c.name, 'type': str(c.type), 'label': c.name})
             except NotImplementedError:
                 pass

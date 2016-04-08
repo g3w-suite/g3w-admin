@@ -82,6 +82,7 @@ class QgisProjectLayer(QgisData):
         #'capabilities',
         'editOptions',
         'datasource',
+        'aliases',
         'columns'
     ]
 
@@ -221,6 +222,19 @@ class QgisProjectLayer(QgisData):
         else:
             return datasource
 
+    def _getDataAliases(self):
+        """
+        Get properties fields aliasies
+        :return: string
+        """
+
+        ret = {}
+        aliases = self.qgisProjectLayerTree.find('aliases')
+        if aliases:
+            for alias in aliases:
+                ret[alias.attrib['field']] = alias.attrib['name']
+        return ret
+
     def _getDataColumns(self):
         """
         Retrive data about columns for db table or ogr lyer type
@@ -234,11 +248,26 @@ class QgisProjectLayer(QgisData):
         if len(layerStructure.columns) > 0:
             layerStructure.columns += self._getLayerJoinedColumns()
 
+        # add aliases
+        if bool(self.aliases):
+            self._addAliesToColumns(layerStructure.columns)
+
         return layerStructure.columns
 
 
-    def _getLayerJoinedColumns(self):
+    def _addAliesToColumns(self,columns):
 
+        for column in columns:
+            if column['name'] in self.aliases:
+                column['label'] = self.aliases[column['name']]
+
+
+    def _getLayerJoinedColumns(self):
+        """
+        Add joined columns as qgis project
+        """
+
+        # todo: review for label and other compatibilities
         joined_columns = []
         try:
             joins = self.qgisProjectLayerTree.find('vectorjoins')
