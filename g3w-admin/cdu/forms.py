@@ -1,13 +1,24 @@
-from django.forms import ModelForm, Form, ChoiceField, MultipleChoiceField, CheckboxSelectMultiple
+from django.forms import ModelForm, Form, ChoiceField, MultipleChoiceField, CheckboxSelectMultiple, CharField
 from django.utils.translation import ugettext, ugettext_lazy as _
 from django_file_form.forms import FileFormMixin
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Div, Submit, HTML, Button, Row, Field
+from crispy_forms.layout import Layout, Div, HTML, Field
 from django_file_form.forms import UploadedFileField
 from usersmanage.utils import get_fields_by_user, crispyBoxACL
 from usersmanage.forms import G3WACLForm
 from core.mixins.forms import *
+from core.utils import unicode2ascii
 from .models import Configs, Layer
+import json
+
+class cduFormMixin(object):
+
+    def getChoicesFields(self,layer):
+        fields = []
+        database_columns = json.loads(layer.database_columns)
+        for f in database_columns:
+            fields.append((f['name'],"{} ({})".format(f['name'],f['type'])))
+        return fields
 
 
 class cduConfigInitForm(G3WFormMixin, G3WRequestFormMixin, G3WACLForm, ModelForm):
@@ -82,7 +93,7 @@ class cduConfigCatastoLayerForm(Form):
                     Div(
                         Div(
                             HTML("<h3 class='box-title'><i class='fa fa-file'></i> {}</h3>".format(
-                                _('CDU base settings'))),
+                                _('CDU layers choice'))),
                             css_class='box-header with-border'
                         ),
                         Div(
@@ -98,3 +109,175 @@ class cduConfigCatastoLayerForm(Form):
                 css_class='row'
             )
         )
+
+
+class cduCatastoLayerFieldsForm(Form, cduFormMixin):
+    """
+    Form for select catasto fields and set against alias layers
+    """
+    foglio = ChoiceField(label=_('Sheet'), choices=())
+    particella = ChoiceField(label=_('Parcel'), choices=())
+    plusFieldsCatasto = MultipleChoiceField(label=_('Plus fields'), choices=(), required=False)
+
+    def __init__(self, *args, **kwargs):
+        self.catastoLayerFormData = kwargs.get('catastoLayerFormData', None)
+        if self.catastoLayerFormData:
+            kwargs.pop('catastoLayerFormData')
+        super(cduCatastoLayerFieldsForm,self).__init__(*args, **kwargs)
+
+        # get fields of catasto
+        self._setFieldsCatasto()
+        self._setPlusFieldsCatasto();
+        self._setAliasLayers()
+
+        self.helper = FormHelper(self)
+        self.helper.form_tag = False
+        self.helper.layout = Layout(
+            Div(
+                Div(
+                    Div(
+                        Div(
+                            HTML("<h3 class='box-title'><i class='fa fa-file'></i> {}</h3>".format(
+                                _('CDU Catasto fields'))),
+                            css_class='box-header with-border'
+                        ),
+                        Div(
+                            Field('foglio', css_class='select2'),
+                            Field('particella', css_class='select2'),
+                            'plusFieldsCatasto',
+                            css_class='box-body',
+
+                        ),
+                        css_class='box box-success'
+                    ),
+                    css_class='col-md-12'
+                ),
+
+                Div(
+                    Div(
+                        Div(
+                            HTML("<h3 class='box-title'><i class='fa fa-file'></i> {}</h3>".format(
+                                _('CDU Against layers aliases'))),
+                            css_class='box-header with-border'
+                        ),
+                        Div(
+                            *self.fieldsAliasLayers,
+                            css_class='box-body'
+                        ),
+                        css_class='box box-success'
+                    ),
+                    css_class='col-md-12'
+                ),
+                css_class='row'
+            ),
+        )
+
+    def _setFieldsCatasto(self):
+        """
+        Get layers from project and builds select for 'particella' and 'foglio' field
+        """
+        self.catastoLayer = Layer.objects.get(pk=self.catastoLayerFormData['catastoLayer'])
+
+        # get fields for foglio and particelle from database_columns
+        self.fields['particella'].choices = self.fields['foglio'].choices = self.getChoicesFields(self.catastoLayer)
+
+    def _setPlusFieldsCatasto(self):
+        """
+        Set fields from catasto layer to use in template and results.
+        """
+        # get fields for PlusFields
+        self.fields['plusFieldsCatasto'].choices = self.getChoicesFields(self.catastoLayer)
+
+    def _setAliasLayers(self):
+        """
+        Set alias for catasto lasyer and other agaiint layers to show in results and template odt.
+        """
+        againstLayers = self.catastoLayerFormData['againstLayers']
+        layers = Layer.objects.filter(pk__in=againstLayers)
+        self.fieldsAliasLayers = []
+        for layer in layers:
+            fieldName = unicode2ascii(layer.name)
+            self.fieldsAliasLayers.append(fieldName)
+            self.fields[fieldName] = CharField(label=layer.name, max_length=200,required=False)
+
+
+class cduAgainstLayerFieldsForm(Form,cduFormMixin):
+    """
+    Form to select against fields to show in results
+    """
+    def __init__(self,*args,**kwargs):
+        self.catastoLayerFormData = kwargs.get('catastoLayerFormData',None)
+        if self.catastoLayerFormData:
+            kwargs.pop('catastoLayerFormData')
+        self.catastoLayerFieldsFormData = kwargs.get('catastoLayerFieldsFormData',None)
+        if self.catastoLayerFieldsFormData:
+            kwargs.pop('catastoLayerFieldsFormData')
+        super(cduAgainstLayerFieldsForm,self).__init__(*args,**kwargs)
+
+        # set fields of catasto
+        self._setAliasPlusFieldsCatasto()
+        self._setFieldsAgainstLayers()
+
+        self.helper = FormHelper(self)
+        self.helper.form_tag = False
+        self.helper.layout = Layout(
+            Div(
+                Div(
+                    Div(
+                        Div(
+                            HTML("<h3 class='box-title'><i class='fa fa-file'></i> {}</h3>".format(
+                                _('CDU Optional fields catasto aliases'))),
+                            css_class='box-header with-border'
+                        ),
+                        Div(
+                            *self.fieldsAliasPlusFieldsCatasto,
+                            css_class='box-body'
+                        ),
+                        css_class='box box-success'
+                    ),
+                    css_class='col-md-12'
+                ),
+
+                Div(
+                    Div(
+                        Div(
+                            HTML("<h3 class='box-title'><i class='fa fa-file'></i> {}</h3>".format(
+                                _('CDU Against layer fields to show in results'))),
+                            css_class='box-header with-border'
+                        ),
+                        Div(
+                            *self.fieldsFieldsAliasLayers,
+                            css_class='box-body'
+                        ),
+                        css_class='box box-success'
+                    ),
+                    css_class='col-md-12'
+                ),
+
+                css_class='row'
+            )
+        )
+
+
+
+    def _setFieldsAgainstLayers(self):
+        """
+        Set fields against layer choice.
+        """
+        againstLayers = self.catastoLayerFormData['againstLayers']
+        layers = Layer.objects.filter(pk__in=againstLayers)
+        self.fieldsFieldsAliasLayers = []
+        for layer in layers:
+            fieldName = unicode2ascii(layer.name)
+            self.fieldsFieldsAliasLayers.append(fieldName)
+            self.fields[fieldName] = MultipleChoiceField(label=layer.name,choices=self.getChoicesFields(layer))
+
+    def _setAliasPlusFieldsCatasto(self):
+        """
+        Set charfields for alias plus field catasto.
+        """
+        self.fieldsAliasPlusFieldsCatasto = []
+        for f in self.catastoLayerFieldsFormData['plusFieldsCatasto']:
+            fieldName = unicode2ascii('plusFieldsCatasto_{}'.format(f))
+            self.fields[fieldName] = CharField(label=f.capitalize,max_length=100)
+            self.fieldsAliasPlusFieldsCatasto.append(fieldName)

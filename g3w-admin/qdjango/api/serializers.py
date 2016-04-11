@@ -6,6 +6,7 @@ from qdjango.models import Project, Layer
 from qgis.server import *
 from qdjango.utils.data import QgisProjectSettingsWMS
 from qdjango.ows import OWSRequestHandler
+from client.utils.editing import mapLayerAttributes
 
 
 class ProjectSerializer(serializers.ModelSerializer):
@@ -92,7 +93,7 @@ class LayerSerializer(serializers.ModelSerializer):
         )
 
     def get_attributes(self, instance):
-        return eval(instance.database_columns)
+        return mapLayerAttributes(instance)
 
     def to_representation(self, instance):
         ret = super(LayerSerializer, self).to_representation(instance)

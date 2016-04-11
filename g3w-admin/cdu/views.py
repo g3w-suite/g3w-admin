@@ -23,7 +23,9 @@ class CduConfigWizardView(SessionWizardView):
     template_name = 'cdu/config_wizard.html'
     form_list = [
         cduConfigInitForm,
-        cduConfigCatastoLayerForm
+        cduConfigCatastoLayerForm,
+        cduCatastoLayerFieldsForm,
+        cduAgainstLayerFieldsForm
     ]
     file_storage = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'tmp_cdu_odt_file'))
 
@@ -32,5 +34,10 @@ class CduConfigWizardView(SessionWizardView):
             return {'request': self.request}
         elif step == '1':
             return {'project': self.get_cleaned_data_for_step('0')['project']}
+        elif step == '2' or step == '3':
+            toRet = {'catastoLayerFormData': self.get_cleaned_data_for_step('1')}
+            if step == '3':
+                toRet['catastoLayerFieldsFormData'] = self.get_cleaned_data_for_step('2')
+            return toRet
         else:
             return {}
