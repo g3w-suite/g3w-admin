@@ -8,6 +8,7 @@ from guardian.shortcuts import get_objects_for_user
 from collections import OrderedDict
 from .models import *
 from .forms import *
+from qdjango.models import *
 
 class CduConfigList(ListView):
 
@@ -72,6 +73,37 @@ class CduConfigWizardView(SessionWizardView):
         # get data for older step
         context['data_step'] = OrderedDict()
         for step in range(0, int(context['wizard']['steps'].current)):
-            context['data_step'][str(step)] = self.get_cleaned_data_for_step(str(step))
+            try:
+                stepContexData = getattr(self, '_getContextDataStep{}'.format(str(step)))()
+            except:
+                stepContexData = self.get_cleaned_data_for_step(str(step))
+            context['data_step'][str(step)] = stepContexData
 
         return context
+
+    def _getContextDataStep0(self):
+        rawData = self.get_cleaned_data_for_step('0')
+        return {
+            'title': rawData['title'],
+            'project': Project.objects.get(pk=rawData['project']),
+            'odtfile': rawData['odtfile']
+        }
+
+    def _getContextDataStep1(self):
+        rawData = self.get_cleaned_data_for_step('1')
+        return {
+            'catastoLayer': Layer.objects.get(pk=rawData['catastoLayer']),
+            'againstLayers': Layer.objects.filter(pk__in=rawData['againstLayers']),
+        }
+
+    def _getContextDataStep2(self):
+        rawData = self.get_cleaned_data_for_step('2')
+        angainstLayerAlias = {key: value for key, value in rawData.items() if key not in ['foglio','particella','plusFieldsCatasto']}
+        return {
+            'foglio': rawData['foglio'],
+            'particella': rawData['particella'],
+            'plusFieldsCatasto': rawData['plusFieldsCatasto'],
+            'angainstLayerAlias': angainstLayerAlias
+        }
+
+

@@ -2,11 +2,17 @@
 <div class="info-box">
     <span class="info-box-icon bg-gray">S{{ step }}</span>
     <div class="info-box-content">
-        <span class="info-box-text">{% trans 'Cadastre layer' %}: {{ data.catastoLayer }}</span>
-        <span class="info-box-text">{% trans 'Against layers' %}
-            {% for alayer in data.againstLayers %}
-                {{ alayer }}
-            {% endfor %}
-        </span>
+        <ul class="list-unstyled">
+            <li><strong>{% trans 'Sheet' %}</strong> {{ data.foglio }}</li>
+            <li><strong>{% trans 'Parcel' %}</strong> {{ data.particella }}</li>
+            {% if data.plusFieldsCatasto %}
+                <li><strong>{% trans 'Plus fields' %}</strong> {{ data.plusFieldsCatasto|join:"," }}</li>
+            {% endif %}
+            <li><strong>{% trans 'Alias against layers' %}</strong>
+                {% for key, value in data.angainstLayerAlias.items %}
+                    ({{ key }}) {{ value }}
+                {% endfor %}
+            </li>
+        </ul>
     </div><!-- /.info-box-content -->
 </div>

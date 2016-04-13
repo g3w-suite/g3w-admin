@@ -78,3 +78,13 @@ class LayerLock(object):
     @classmethod
     def unLockExpiredFeatures(cls):
         pass
+
+    @classmethod
+    def unLockFeature(cls, featureLockId):
+        LockModel.objects.get(feature_lock_id=featureLockId).delete()
+
+    @classmethod
+    def unLockFeatures(cls, featureLockIds):
+        featuresLocked = LockModel.objects.filter(feature_lock_id__in=featureLockIds)
+        for featureLock in featuresLocked:
+            featureLock.delete()

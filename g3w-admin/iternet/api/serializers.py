@@ -43,3 +43,19 @@ class AccessoGeoSerializer(IternetSerializerMixin, serializers.GeoFeatureModelSe
         geo_field = 'the_geom'
         auto_bbox = True
         id_field = Accesso._meta.pk.name
+
+
+# --------------------------------------------
+# no geo data
+# --------------------------------------------
+
+class ToponimoStradaleSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ToponimoStradale
+
+
+class NumenroCivicoSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = NumeroCivico

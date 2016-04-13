@@ -32,10 +32,15 @@
     </div>
     <div class="col-md-4">
     {% if wizard.steps.prev %}
-        <button class="btn btn-default" name="wizard_goto_step" type="submit" value="{{ wizard.steps.prev }}"><span class="glyphicon glyphicon-arrow-left"></span> {% trans "prev step" %}</button>
-        <button class="btn btn-default" name="wizard_goto_step" type="submit" value="{{ wizard.steps.first }}"><span class="glyphicon glyphicon-arrow-left"></span> {% trans "first step" %}</button>
+        <button class="btn btn-lg btn-default" name="wizard_goto_step" type="submit" value="{{ wizard.steps.first }}"><span class="fa fa-flag"></span> {% trans "First step" %}</button>
+        <button class="btn btn-lg btn-default" name="wizard_goto_step" type="submit" value="{{ wizard.steps.prev }}"><span class="fa fa-arrow-left"></span> {% trans "Prev step" %}</button>
     {% endif %}
-        <input class="btn btn-primary" type="submit" value="{% if wizard.steps.step1 ==  wizard.steps.count %}{% trans "submit" %}{% else %}{% trans "next step" %}{% endif %}"/>
+        {% if wizard.steps.step1 ==  wizard.steps.count %}
+            <button class="btn btn-lg btn-success" type="submit"><i class="fa fa-save"></i> {% trans "Save" %}</button>
+        {% else %}
+            <button class="btn btn-lg btn-primary" type="submit"><i class="fa fa-arrow-right"></i> {% trans "Next step" %}</button>
+        {% endif %}
+
     </div>
 </div>
 <div class="row">

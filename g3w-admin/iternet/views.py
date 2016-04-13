@@ -134,32 +134,48 @@ class EditingApiView(APIView):
         data = request.data
 
         # start transaction
-        with transaction.atomic():
-            for layerConfigName, layerConfigData in ITERNET_LAYERS.items():
-                clientVar = layerConfigData['clientVar']
-                if clientVar in data:
-                    model = layerConfigData['model']
+        try:
+            with transaction.atomic():
+                for layerConfigName, layerConfigData in ITERNET_LAYERS.items():
+                    clientVar = layerConfigData['clientVar']
+                    if clientVar in data:
+                        model = layerConfigData['model']
 
 
-                    # save insert
-                    for mode in ('add', 'update'):
-                        if mode in data[clientVar]:
-                            for GeoJSONFeature in data[clientVar][mode]:
-                                if mode == 'add':
-                                    serializer = layerConfigData['geoSerializer'](data=GeoJSONFeature)
-                                else:
-                                    feature = model.objects.get(pk=GeoJSONFeature['id'])
-                                    serializer = layerConfigData['geoSerializer'](feature, data=GeoJSONFeature)
-                                if serializer.is_valid():
-                                    dato = serializer.save()
-                                print 'test add update'
+                        # save insert
+                        for mode in ('add', 'update'):
+                            if mode in data[clientVar]:
+                                for GeoJSONFeature in data[clientVar][mode]:
+                                    if mode == 'add':
+                                        serializer = layerConfigData['geoSerializer'](data=GeoJSONFeature)
+                                    else:
+                                        feature = model.objects.get(pk=GeoJSONFeature['id'])
+                                        serializer = layerConfigData['geoSerializer'](feature, data=GeoJSONFeature)
+                                    if serializer.is_valid():
+                                        dato = serializer.save()
+                                    else:
+                                        raise ValidationError({
+                                            'result': False,
+                                            'errors': serializer.errors
+                                        })
 
-                    # save delete
-                    if 'delete' in data[clientVar]:
-                        features = model.objects.filter(pk__in=data[clientVar]['delete'])
-                        for feature in features:
-                            print 'test delete'
-                            #feature.delete()
+                        # save delete
+                        if 'delete' in data[clientVar]:
+                            features = model.objects.filter(pk__in=data[clientVar]['delete'])
+                            for feature in features:
+                                #feature.delete()
+                                pass
+
+                # now unlocked feature id
+                # get feature locked and erase from lock table
+                if 'lockids' in data:
+                    LayerLock.unLockFeatures(data['lockids'])
+
+        except IntegrityError as e:
+            return Response({
+                'result': False,
+                'errors': e.message
+            })
 
         return Response({"result": True})
 

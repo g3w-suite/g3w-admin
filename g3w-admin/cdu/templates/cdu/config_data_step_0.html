@@ -2,8 +2,10 @@
 <div class="info-box">
     <span class="info-box-icon bg-gray">S{{ step }}</span>
     <div class="info-box-content">
-        <span class="info-box-text">{% trans 'Title' %}: {{ data.title }}</span>
-        <span class="info-box-text">{% trans 'Project' %} {{ data.project }}</span>
-        <span class="info-box-text">{% trans 'Template' %} {{ data.odtfile }}</span>
+        <ul class="list-unstyled">
+            <li><strong>{% trans 'Title' %}</strong> {{ data.title }}</li>
+            <li><strong>{% trans 'Project' %}</strong> {{ data.project }}</li>
+            <li><strong>{% trans 'Template' %}</strong> {{ data.odtfile }}</li>
+        </ul>
     </div><!-- /.info-box-content -->
 </div>
