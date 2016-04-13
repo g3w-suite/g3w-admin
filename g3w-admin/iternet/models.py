@@ -21,13 +21,7 @@ TIP_OPZ = Choices(
     (u'D', u'cancellato')
 )
 
-COD_GST = Choices(
-    (u'0',u'Stato'),
-    (u'09', u'Regione'),
-    (settings.ITERNET_CODE_PROVINCIA, u'Provincia'),
-    (settings.ITERNET_CODE_COMUNE, u'Comune'),
-    (u'999999', u'Privati/altro'),
-)
+
 
 
 # configuration tables, on default database (g3w-admin)
@@ -313,7 +307,7 @@ class ElementoStradale(models.Model):
     tip_ele = models.ForeignKey(LegTipEle, db_column='tip_ele', null=True, blank=True)
     cls_tcn = models.ForeignKey(LegClsTcn, db_column='cls_tcn', null=True, blank=True)
     tip_gst = models.ForeignKey(LegTipGst, db_column='tip_gst', null=True, blank=True)
-    cod_gst = models.CharField(choices=COD_GST, max_length=6, blank=True, null=True)
+    cod_gst = models.CharField(max_length=6, blank=True, null=True)
     sot_pas = models.ForeignKey(LegSotPas, db_column='sot_pas', null=True, blank=True)
     lng = models.IntegerField(blank=True, null=True)
     cmp_ele = models.ForeignKey(LegCmpEle, db_column='cmp_ele', null=True, blank=True)

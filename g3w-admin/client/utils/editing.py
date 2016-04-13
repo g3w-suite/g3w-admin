@@ -57,7 +57,6 @@ FIELD_TYPES_MAPPING = {
 }
 
 
-
 def editingFormField(fieldName, fieldLabel=None, inputType=None, values=None):
     """
     Build editign form field for client.

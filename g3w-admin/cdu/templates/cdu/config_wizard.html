@@ -70,13 +70,11 @@
     {% include 'core/django_file_form/upload_template.html' %}
     </div>
     <div class="col-md-4">
-        <div class="info-box">
-            <span class="info-box-icon bg-gray"><i class="fa fa-gear"></i></span>
-            <div class="info-box-content">
-                <span class="info-box-text">CPU Traffic</span>
-                <span class="info-box-number">90<small>%</small></span>
-            </div><!-- /.info-box-content -->
-        </div>
+        {% for step, data in data_step.items %}
+            {% with 'cdu/config_data_step_'|add:step|add:'.html' as to_include%}
+            {% include to_include %}
+            {% endwith %}
+        {% endfor %}
     </div>
 </div>
 </form>

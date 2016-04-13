@@ -4,7 +4,21 @@ from rest_framework_gis import serializers
 from iternet.models import *
 
 
-class ElementoStradaleGeoSerializer(serializers.GeoFeatureModelSerializer):
+class IternetSerializerMixin(object):
+    """
+    Generic mixins for iternet geoserializer model
+    """
+    def create(self, validated_data):
+        instance = self.Meta.model(**validated_data)
+        return instance
+
+    def update(self, instance, validated_data):
+        for field, value in validated_data.items():
+            setattr(instance, field, value)
+        return instance
+
+
+class ElementoStradaleGeoSerializer(IternetSerializerMixin, serializers.GeoFeatureModelSerializer):
 
     class Meta:
         model = ElementoStradale
@@ -13,7 +27,7 @@ class ElementoStradaleGeoSerializer(serializers.GeoFeatureModelSerializer):
         id_field = ElementoStradale._meta.pk.name
 
 
-class GiunzioneStradaleGeoSerializer(serializers.GeoFeatureModelSerializer):
+class GiunzioneStradaleGeoSerializer(IternetSerializerMixin, serializers.GeoFeatureModelSerializer):
 
     class Meta:
         model = GiunzioneStradale
@@ -22,7 +36,7 @@ class GiunzioneStradaleGeoSerializer(serializers.GeoFeatureModelSerializer):
         id_field = GiunzioneStradale._meta.pk.name
 
 
-class AccessoGeoSerializer(serializers.GeoFeatureModelSerializer):
+class AccessoGeoSerializer(IternetSerializerMixin, serializers.GeoFeatureModelSerializer):
 
     class Meta:
         model = Accesso

@@ -281,3 +281,67 @@ class cduAgainstLayerFieldsForm(Form,cduFormMixin):
             fieldName = unicode2ascii('plusFieldsCatasto_{}'.format(f))
             self.fields[fieldName] = CharField(label=f.capitalize,max_length=100)
             self.fieldsAliasPlusFieldsCatasto.append(fieldName)
+
+
+class cduAgainstLayerFieldsAliasForm(Form, cduFormMixin):
+    """
+    Form to set Against fields alias values
+    """
+    def __init__(self,*args,**kwargs):
+        self.catastoLayerFieldsFormData = kwargs.get('catastoLayerFieldsFormData',None)
+        self.againstLayerFieldFormData = kwargs.get('againstLayerFieldFormData',None)
+        if self.catastoLayerFieldsFormData:
+            kwargs.pop('catastoLayerFieldsFormData')
+        if self.againstLayerFieldFormData:
+            kwargs.pop('againstLayerFieldFormData')
+        super(cduAgainstLayerFieldsAliasForm,self).__init__(*args,**kwargs)
+
+        self._setFieldsAliasFieldsLayers()
+
+        self.helper = FormHelper(self)
+        self.helper.form_tag = False
+
+        self._setLayout()
+
+    def _setLayout(self):
+        # build of singular Div cryspiform instance for every layers fild
+        args = []
+        for formDataKey, formField in self.fieldsByLayers.items():
+            args.append(
+                Div(
+                    Div(
+                        Div(
+                            HTML("<h3 class='box-title'><i class='fa fa-file'></i> {}</h3>".format(
+                                _('CDU Alias for against field <i>{}</i>'.format(self.againstLayerAlias[formDataKey])))),
+                            css_class='box-header with-border'
+                        ),
+                        Div(
+                            *formField,
+                            css_class='box-body'
+                        ),
+                        css_class='box box-success'
+                    ),
+                    css_class='col-md-12'
+                )
+            )
+
+        self.helper.layout = Layout(
+            Div(*args, css_class='row')
+        )
+
+    def _setFieldsAliasFieldsLayers(self):
+        """
+        Create character fields for against layer fields selected uin previus form.
+        """
+
+        self.fieldsByLayers = {}
+        self.againstLayerAlias = {}
+        for formDataKey, formDataValue in self.againstLayerFieldFormData.items():
+            if not formDataKey.startswith('plusFieldsCatasto'):
+                fields = []
+                for fieldName in formDataValue:
+                    fname = unicode2ascii(fieldName)
+                    fields.append(fname)
+                    self.fields[fieldName] = CharField(max_length=100)
+                self.fieldsByLayers[formDataKey] = fields
+                self.againstLayerAlias[formDataKey] = self.catastoLayerFieldsFormData[formDataKey]

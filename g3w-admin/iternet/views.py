@@ -1,10 +1,11 @@
 from django.views.generic import TemplateView, FormView, View
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
-from django.conf import settings
+from django.db import IntegrityError, transaction
 import copy
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.exceptions import ValidationError
 from .models import ElementoStradale, Config, Accesso, ElementoStradale, GiunzioneStradale
 from .forms import ConfigForm
 from qdjango.utils.data import QgisPgConnection
@@ -12,8 +13,10 @@ from rest_framework_gis.filters import InBBoxFilter
 from .configs import ITERNET_LAYERS
 from core.editing.structure import APIVectorLayerStructure
 from core.editing.utils import LayerLock
+from core.api.authentication import CsrfExemptSessionAuthentication
 from .models import *
 from client.utils.editing import editingFormField
+from .configs import ITERNET_LAYERS
 
 iternet_connection = copy.copy(settings.DATABASES[settings.ITERNET_DATABASE])
 
@@ -50,10 +53,16 @@ forms = {
     }
 }
 
+
 class EditingApiView(APIView):
     """
     APIView to get data Project and layers
     """
+
+    authentication_classes = (
+        CsrfExemptSessionAuthentication,
+    )
+
 
     bbox_filter_field = 'the_geom'
     bbox_filter_include_overlapping = True
@@ -116,6 +125,44 @@ class EditingApiView(APIView):
         # instance new vectolayer
         vectorLayer = APIVectorLayerStructure(**vectorParams)
         return Response(vectorLayer.as_dict())
+
+
+    def post(self, request, format=None):
+        """
+        Save data on database, clientsend data for every layer of iternet project.
+        """
+        data = request.data
+
+        # start transaction
+        with transaction.atomic():
+            for layerConfigName, layerConfigData in ITERNET_LAYERS.items():
+                clientVar = layerConfigData['clientVar']
+                if clientVar in data:
+                    model = layerConfigData['model']
+
+
+                    # save insert
+                    for mode in ('add', 'update'):
+                        if mode in data[clientVar]:
+                            for GeoJSONFeature in data[clientVar][mode]:
+                                if mode == 'add':
+                                    serializer = layerConfigData['geoSerializer'](data=GeoJSONFeature)
+                                else:
+                                    feature = model.objects.get(pk=GeoJSONFeature['id'])
+                                    serializer = layerConfigData['geoSerializer'](feature, data=GeoJSONFeature)
+                                if serializer.is_valid():
+                                    dato = serializer.save()
+                                print 'test add update'
+
+                    # save delete
+                    if 'delete' in data[clientVar]:
+                        features = model.objects.filter(pk__in=data[clientVar]['delete'])
+                        for feature in features:
+                            print 'test delete'
+                            #feature.delete()
+
+        return Response({"result": True})
+
 
 
 class DashboardView(TemplateView):

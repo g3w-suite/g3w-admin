@@ -1,0 +1,9 @@
+{% load i18n %}
+<div class="info-box">
+    <span class="info-box-icon bg-gray">S{{ step }}</span>
+    <div class="info-box-content">
+        <span class="info-box-text">{% trans 'Title' %}: {{ data.title }}</span>
+        <span class="info-box-text">{% trans 'Project' %} {{ data.project }}</span>
+        <span class="info-box-text">{% trans 'Template' %} {{ data.odtfile }}</span>
+    </div><!-- /.info-box-content -->
+</div>
