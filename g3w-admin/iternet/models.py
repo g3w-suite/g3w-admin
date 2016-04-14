@@ -23,7 +23,6 @@ TIP_OPZ = Choices(
 
 
 
-
 # configuration tables, on default database (g3w-admin)
 class Config(models.Model):
     """
@@ -84,8 +83,8 @@ class NodiInfo(models.Model):
 
     class Meta:
         db_table = 'nodi_info'
-        verbose_name = 'Accessi info'
-        verbose_name_plural = 'Accessi info'
+        verbose_name = 'Nodi info'
+        verbose_name_plural = 'Nodi info'
 
 
 class ContrNc16223(models.Model):

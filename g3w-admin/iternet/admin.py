@@ -114,6 +114,13 @@ class NodiInfoStradaleAdmin(ImportExportModelAdmin):
     model = NodiInfo
 admin.site.register(NodiInfo, NodiInfoStradaleAdmin)
 
+
+class NumeroCivicoAdmin(ImportExportModelAdmin):
+    model = NumeroCivico
+    resource_class = NumeroCivicoResource
+admin.site.register(NumeroCivico, NumeroCivicoAdmin)
+
+
 class AccessoGeoAdmin(OSMGeoAdmin):
     model = Accesso
 admin.site.register(Accesso, AccessoGeoAdmin)

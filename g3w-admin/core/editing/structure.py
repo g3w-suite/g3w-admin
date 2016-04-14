@@ -9,6 +9,7 @@ class APIVectorLayerStructure(object):
     _errors = None
     _geomentryType = None
     _inputs = None
+    _relations = None
 
     def __init__(self, **kwargs):
 
@@ -19,6 +20,7 @@ class APIVectorLayerStructure(object):
         self.errors = kwargs.get('errors', self._errors)
         self.geometryType = kwargs.get('geomentryType', self._geomentryType)
         self.inputs = kwargs.get('inputs', self._inputs)
+        self.relations = kwargs.get('relations', self._relations)
 
     def setPkField(self, pkField):
         self._pkField = pkField
@@ -32,6 +34,9 @@ class APIVectorLayerStructure(object):
     def setInputs(self, inputs):
         self.inputs = inputs
 
+    def setRealations(self, relations):
+        self.relations = relations
+
     def as_dict(self):
 
         return {
@@ -40,7 +45,8 @@ class APIVectorLayerStructure(object):
                 'pk': self.pkField,
                 'data': self.data,
                 'geometrytype': self.geometryType,
-                'inputs': self.inputs
+                'inputs': self.inputs,
+                'relations': self.relations
             },
             'featurelocks': self.featureLocks,
             'errors': self.errors

@@ -57,7 +57,7 @@ FIELD_TYPES_MAPPING = {
 }
 
 
-def editingFormField(fieldName, fieldLabel=None, inputType=None, values=None):
+def editingFormField(fieldName, fieldLabel=None, inputType=None, values=None, **kwargs):
     """
     Build editign form field for client.
     """
@@ -66,6 +66,12 @@ def editingFormField(fieldName, fieldLabel=None, inputType=None, values=None):
         'label': fieldLabel if fieldLabel else fieldName,
         'inputType': inputType if inputType else 'text',
     }
+
+    if 'default' in kwargs:
+        ret['default'] = kwargs['default']
+
+    if inputType == 'pick' and 'pickdata' in kwargs:
+        ret['pickdata'] = kwargs['pickdata']
 
     if values:
         ret['values'] = values

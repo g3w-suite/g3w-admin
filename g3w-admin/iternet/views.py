@@ -5,7 +5,7 @@ from django.db import IntegrityError, transaction
 import copy
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import ValidationError, APIException
 from .models import ElementoStradale, Config, Accesso, ElementoStradale, GiunzioneStradale
 from .forms import ConfigForm
 from qdjango.utils.data import QgisPgConnection
@@ -23,6 +23,13 @@ iternet_connection = copy.copy(settings.DATABASES[settings.ITERNET_DATABASE])
 
 def buidlKeyValue(legModel):
     return [{'key':l.id, 'value':l.description} for l in legModel.objects.all()]
+
+def getLayerIternetIdByName(layerName):
+    layers = Config.getData().project.layer_set.filter(name=layerName)
+    if len(layers) == 1:
+        return layers[0].pk
+    else:
+        return None
 
 forms = {
     'giunzione_stradale': {
@@ -53,6 +60,32 @@ forms = {
     }
 }
 
+relationForms = {
+    'accesso': {
+        'numero_civico': {
+            'fields': [
+                editingFormField('cod_sta'),
+                editingFormField('num_civ', inputType='integer'),
+                editingFormField('esp_civ'),
+                editingFormField('cod_top', inputType='pick', pickdata={
+                    'layerid': getLayerIternetIdByName('elemento_stradale'),
+                    'field': 'cod_top'
+                }),
+                editingFormField('cod_com', default=settings.ITERNET_CODE_COMUNE),
+                editingFormField('cod_acc_est', inputType='pick', pickdata={
+                    'layerid': getLayerIternetIdByName('accesso'),
+                    'field': 'cod_acc'
+                }),
+                editingFormField('cod_acc_int', inputType='pick', pickdata={
+                    'layerid': getLayerIternetIdByName('accesso'),
+                    'field': 'cod_acc'
+                }),
+                editingFormField('cod_classifica', inputType='select', values=buidlKeyValue(LegCodClassifica))
+            ]
+        }
+    }
+}
+
 
 class EditingApiView(APIView):
     """
@@ -70,14 +103,14 @@ class EditingApiView(APIView):
     def get(self, request, format=None, layer_name=None):
 
         if layer_name not in ITERNET_LAYERS.keys():
-            raise Exception('Only one of this: {}'.format(', '.join(ITERNET_LAYERS.keys())))
+            raise APIException('Only one of this: {}'.format(', '.join(ITERNET_LAYERS.keys())))
 
         # check is editing mode ad inputs
         editingMode = 'editing' in request.GET
         configMode = 'config' in request.GET
 
         if editingMode and configMode:
-            raise Exception('config and editing get parameters not allowed')
+            raise APIException('config and editing get parameters not allowed')
 
         # Instance bbox filter
         bboxFilter = InBBoxFilter()
@@ -121,6 +154,9 @@ class EditingApiView(APIView):
             }
 
         vectorParams['featureLocks'] = featuresLocked
+
+        if layer_name in relationForms:
+            vectorParams['relations'] = relationForms[layer_name]
 
         # instance new vectolayer
         vectorLayer = APIVectorLayerStructure(**vectorParams)
@@ -178,7 +214,6 @@ class EditingApiView(APIView):
             })
 
         return Response({"result": True})
-
 
 
 class DashboardView(TemplateView):
