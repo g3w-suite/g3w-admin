@@ -38,23 +38,6 @@ class GiunzioneStradaleGeoSerializer(IternetSerializerMixin, serializers.GeoFeat
 
 class AccessoGeoSerializer(IternetSerializerMixin, serializers.GeoFeatureModelSerializer):
 
-    def __init__(self, instance=None, data=empty, **kwargs):
-        self.relationsData = {
-            'numero_civico': []
-        }
-        super(AccessoGeoSerializer, self).__init__(instance, data, **kwargs)
-
-
-    def to_representation(self, instance):
-        ret = super(AccessoGeoSerializer, self).to_representation(instance)
-
-        # try to get relations
-        if 'accesso' in relationForms:
-            numeroCivico = NumeroCivico.objects.get(Q(cod_acc_est=instance.cod_acc) | Q(cod_acc_int=instance.cod_acc))
-            self.relationsData['numero_civico'].append({'featureid': instance.pk, 'data': NumeroCivicoSerializer(numeroCivico).data})
-
-        return ret
-
     class Meta:
         model = Accesso
         geo_field = 'the_geom'

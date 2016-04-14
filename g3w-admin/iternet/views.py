@@ -7,16 +7,15 @@ import copy
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError, APIException
-from .models import ElementoStradale, Config, Accesso, ElementoStradale, GiunzioneStradale
 from .forms import ConfigForm
 from qdjango.utils.data import QgisPgConnection
 from rest_framework_gis.filters import InBBoxFilter
-from .configs import ITERNET_LAYERS
 from core.editing.structure import APIVectorLayerStructure
 from core.editing.utils import LayerLock
 from core.api.authentication import CsrfExemptSessionAuthentication
 from .configs import ITERNET_LAYERS
 from .editing import *
+from .api.serializers import NumeroCivicoSerializer, ToponimoStradaleSerializer
 
 iternet_connection = copy.copy(settings.DATABASES[settings.ITERNET_DATABASE])
 
@@ -94,8 +93,6 @@ class EditingApiView(APIView):
                 'data': featurecollection,
                 'geomentryType': ITERNET_LAYERS[layer_name]['geometryType'],
             }
-            if layer_name in relationForms:
-                vectorParams['relationsdata'] = layerSerializer.child.relationsData
 
 
         vectorParams['featureLocks'] = featuresLocked
@@ -156,6 +153,29 @@ class EditingApiView(APIView):
             })
 
         return Response({"result": True})
+
+
+class NumeroCivicoApiView(APIView):
+    """
+    API get for numero_civico data.
+    """
+    def get(self, request):
+
+        # check for cod_acc
+        if 'cod_acc' not in request.GET or 'tip_acc' not in request.GET :
+            raise APIException('You have to set cod_acc and/or tip_acc get parameter')
+        cod_acc = request.GET['cod_acc']
+        tip_acc = request.GET['tip_acc']
+
+        # get numero civico
+        # case 'interno'
+        if tip_acc == '0501':
+            q = Q(cod_acc_int=cod_acc)
+        else:
+            q = Q(cod_acc_est=cod_acc)
+        numeriCivici = NumeroCivico.objects.filter(q)
+
+        return Response(NumeroCivicoSerializer(numeriCivici, many=True).data)
 
 
 class DashboardView(TemplateView):
