@@ -2,6 +2,7 @@ from django.views.generic import TemplateView, FormView, View
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django.db import IntegrityError, transaction
+from django.db.models import Q
 import copy
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -14,80 +15,10 @@ from .configs import ITERNET_LAYERS
 from core.editing.structure import APIVectorLayerStructure
 from core.editing.utils import LayerLock
 from core.api.authentication import CsrfExemptSessionAuthentication
-from .models import *
-from client.utils.editing import *
 from .configs import ITERNET_LAYERS
+from .editing import *
 
 iternet_connection = copy.copy(settings.DATABASES[settings.ITERNET_DATABASE])
-
-
-def buidlKeyValue(legModel):
-    return [{'key':l.id, 'value':l.description} for l in legModel.objects.all()]
-
-def getLayerIternetIdByName(layerName, object=False):
-    layers = Config.getData().project.layer_set.filter(name=layerName)
-    if len(layers) == 1:
-        if object:
-            return layers[0]
-        else:
-            return layers[0].pk
-    else:
-        return None
-
-forms = {
-    'giunzione_stradale': {
-        'fields': {
-            'tip_gnz': {'input': {'type': FORM_FIELD_TYPE_SELECT, 'options': {'values': buidlKeyValue(LegTipGnz)}}},
-            'org': {'input': {'type': FORM_FIELD_TYPE_SELECT, 'options': {'values': buidlKeyValue(LegOrg)}}}
-        }
-    },
-    'elemento_stradale': {
-        'fields': {
-            'cod_sta': {'input': {'type': FORM_FIELD_TYPE_SELECT, 'options': {'values': buidlKeyValue(LegCodSta)}}},
-            'cod_sed': {'input': {'type': FORM_FIELD_TYPE_SELECT, 'options': {'values': buidlKeyValue(LegCodSed)}}},
-            'tip_ele': {'input': {'type': FORM_FIELD_TYPE_SELECT, 'options': {'values': buidlKeyValue(LegTipEle)}}},
-            'cls_tcn': {'input': {'type': FORM_FIELD_TYPE_SELECT, 'options': {'values': buidlKeyValue(LegClsTcn)}}},
-            'tip_gst': {'input': {'type': FORM_FIELD_TYPE_SELECT, 'options': {'values': buidlKeyValue(LegTipGst)}}},
-            'sot_pas': {'input': {'type': FORM_FIELD_TYPE_SELECT, 'options': {'values': buidlKeyValue(LegSotPas)}}},
-            'cmp_ele': {'input': {'type': FORM_FIELD_TYPE_SELECT, 'options': {'values': buidlKeyValue(LegCmpEle)}}},
-            'org': {'input': {'type': FORM_FIELD_TYPE_SELECT, 'options': {'values': buidlKeyValue(LegOrg)}}},
-            'cls_lrg': {'input': {'type': FORM_FIELD_TYPE_SELECT, 'options': {'values': buidlKeyValue(LegClsLrg)}}},
-            'tip_pav': {'input': {'type': FORM_FIELD_TYPE_SELECT, 'options': {'values': buidlKeyValue(LegTipPav)}}},
-            'one_way': {'input': {'type': FORM_FIELD_TYPE_SELECT, 'options': {'values': buidlKeyValue(LegOneWay)}}}
-        }
-    },
-    'accesso': {
-        'fields': {
-            'tip_acc': {'input': {'type': FORM_FIELD_TYPE_SELECT, 'options': {'values': buidlKeyValue(LegTipAcc)}}}
-        }   
-    }
-}
-
-relationForms = {
-    'accesso': {
-        'numero_civico': {
-            'fields': [
-                editingFormField('cod_civ'),
-                editingFormField('num_civ', inputType=FORM_FIELD_TYPE_TEXT),
-                editingFormField('esp_civ'),
-                editingFormField('cod_top', inputType=FORM_FIELD_TYPE_LAYERPICKER, pickerdata={
-                    'layerid': getLayerIternetIdByName('elemento_stradale'),
-                    'field': 'cod_top'
-                }),
-                editingFormField('cod_com', default=settings.ITERNET_CODE_COMUNE),
-                editingFormField('cod_acc_est', inputType=FORM_FIELD_TYPE_LAYERPICKER, pickerdata={
-                    'layerid': getLayerIternetIdByName('accesso'),
-                    'field': 'cod_acc'
-                }),
-                editingFormField('cod_acc_int', inputType=FORM_FIELD_TYPE_LAYERPICKER, pickerdata={
-                    'layerid': getLayerIternetIdByName('accesso'),
-                    'field': 'cod_acc'
-                }),
-                editingFormField('cod_classifica', inputType=FORM_FIELD_TYPE_SELECT, values=buidlKeyValue(LegCodClassifica))
-            ]
-        }
-    }
-}
 
 
 class EditingApiView(APIView):
@@ -127,10 +58,11 @@ class EditingApiView(APIView):
             for iternetLayer, dataLayer in ITERNET_LAYERS.items():
                 if layer_name == iternetLayer:
                     featuresLayer = bboxFilter.filter_queryset(request, dataLayer['model'].objects.all(), self)
-                    featurecollection = dataLayer['geoSerializer'](featuresLayer, many=True).data
+                    layerSerializer = dataLayer['geoSerializer'](featuresLayer, many=True)
+                    featurecollection = layerSerializer.data
 
         # get layer qdjango
-        layer = Config.getData().project.layer_set.get(name=layer_name)
+        layer = getLayerIternetIdByName(layer_name, object=True)
 
         # lock features
         featuresLocked = []
@@ -148,7 +80,7 @@ class EditingApiView(APIView):
             vectorParams = {
                 'geomentryType': ITERNET_LAYERS[layer_name]['geometryType'],
                 'fields': mapLayerAttributes(
-                    getLayerIternetIdByName(layer_name, object=True),
+                    layer,
                     formField=True,
                     fields=forms[layer_name]['fields']
                 ),
@@ -162,10 +94,11 @@ class EditingApiView(APIView):
                 'data': featurecollection,
                 'geomentryType': ITERNET_LAYERS[layer_name]['geometryType'],
             }
+            if layer_name in relationForms:
+                vectorParams['relationsdata'] = layerSerializer.child.relationsData
+
 
         vectorParams['featureLocks'] = featuresLocked
-
-
 
         # instance new vectolayer
         vectorLayer = APIVectorLayerStructure(**vectorParams)

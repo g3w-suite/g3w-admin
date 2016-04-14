@@ -154,7 +154,7 @@ class LegCodDug(LegIternetModelMixin, models.Model):
     class Meta:
         db_table = 'leg_cod_dug'
         verbose_name = 'Legenda COD_DUG tabella toponimo stradale'
-        verbose_name_plural = 'Legenda DUG tabella toponimo stradale'
+        verbose_name_plural = 'Legenda COD_DUG tabella toponimo stradale'
 
 
 class LegCodSed(LegIternetModelMixin, models.Model):
@@ -345,10 +345,10 @@ class GiunzioneStradale(models.Model):
 
 class ToponimoStradale(models.Model):
     cod_top = models.CharField(primary_key=True, max_length=15)
-    den_uff = models.CharField(max_length=41, blank=True, null=True)
+    den_uff = models.CharField(max_length=100, blank=True, null=True)
     cod_com = models.CharField(max_length=10, blank=True, null=True)
     cod_via = models.CharField(max_length=11, blank=True, null=True)
-    cod_dug = models.ForeignKey(LegCodDug, db_column='dug', null=True, blank=True)
+    cod_dug = models.ForeignKey(LegCodDug, db_column='cod_dug', null=True, blank=True)
 
     class Meta:
         db_table = 'toponimo_stradale'

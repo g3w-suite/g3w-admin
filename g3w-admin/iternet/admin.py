@@ -87,6 +87,8 @@ admin.site.register(LegOneWay, LegOneWayAdmin)
 
 class ToponimoStradaleAdmin(ImportExportModelAdmin):
     model = ToponimoStradale
+    resource_class = ToponimoStradaleResource
+    list_display = ('cod_top', 'cod_dug', 'den_uff', 'cod_com', 'cod_via')
 admin.site.register(ToponimoStradale, ToponimoStradaleAdmin)
 
 
@@ -118,6 +120,7 @@ admin.site.register(NodiInfo, NodiInfoStradaleAdmin)
 class NumeroCivicoAdmin(ImportExportModelAdmin):
     model = NumeroCivico
     resource_class = NumeroCivicoResource
+    list_display = ('cod_civ', 'num_civ', 'esp_civ')
 admin.site.register(NumeroCivico, NumeroCivicoAdmin)
 
 
