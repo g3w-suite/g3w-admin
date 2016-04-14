@@ -15,7 +15,7 @@ from core.editing.structure import APIVectorLayerStructure
 from core.editing.utils import LayerLock
 from core.api.authentication import CsrfExemptSessionAuthentication
 from .models import *
-from client.utils.editing import editingFormField
+from client.utils.editing import *
 from .configs import ITERNET_LAYERS
 
 iternet_connection = copy.copy(settings.DATABASES[settings.ITERNET_DATABASE])
@@ -24,39 +24,42 @@ iternet_connection = copy.copy(settings.DATABASES[settings.ITERNET_DATABASE])
 def buidlKeyValue(legModel):
     return [{'key':l.id, 'value':l.description} for l in legModel.objects.all()]
 
-def getLayerIternetIdByName(layerName):
+def getLayerIternetIdByName(layerName, object=False):
     layers = Config.getData().project.layer_set.filter(name=layerName)
     if len(layers) == 1:
-        return layers[0].pk
+        if object:
+            return layers[0]
+        else:
+            return layers[0].pk
     else:
         return None
 
 forms = {
     'giunzione_stradale': {
-        'fields': [
-            editingFormField('tip_gnz', inputType='select', values=buidlKeyValue(LegTipGnz)),
-            editingFormField('org', inputType='select', values=buidlKeyValue(LegOrg))
-        ]
+        'fields': {
+            'tip_gnz': {'input': {'type': FORM_FIELD_TYPE_SELECT, 'options': {'values': buidlKeyValue(LegTipGnz)}}},
+            'org': {'input': {'type': FORM_FIELD_TYPE_SELECT, 'options': {'values': buidlKeyValue(LegOrg)}}}
+        }
     },
     'elemento_stradale': {
-        'fields': [
-            editingFormField('cod_sta', inputType='select', values=buidlKeyValue(LegCodSta)),
-            editingFormField('cod_sed', inputType='select', values=buidlKeyValue(LegCodSed)),
-            editingFormField('tip_ele', inputType='select', values=buidlKeyValue(LegTipEle)),
-            editingFormField('cls_tcn', inputType='select', values=buidlKeyValue(LegClsTcn)),
-            editingFormField('tip_gst', inputType='select', values=buidlKeyValue(LegTipGst)),
-            editingFormField('sot_pas', inputType='select', values=buidlKeyValue(LegSotPas)),
-            editingFormField('cmp_ele', inputType='select', values=buidlKeyValue(LegCmpEle)),
-            editingFormField('org', inputType='select', values=buidlKeyValue(LegOrg)),
-            editingFormField('cls_lrg', inputType='select', values=buidlKeyValue(LegClsLrg)),
-            editingFormField('tip_pav', inputType='select', values=buidlKeyValue(LegTipPav)),
-            editingFormField('one_way', inputType='select', values=buidlKeyValue(LegOneWay))
-        ]
+        'fields': {
+            'cod_sta': {'input': {'type': FORM_FIELD_TYPE_SELECT, 'options': {'values': buidlKeyValue(LegCodSta)}}},
+            'cod_sed': {'input': {'type': FORM_FIELD_TYPE_SELECT, 'options': {'values': buidlKeyValue(LegCodSed)}}},
+            'tip_ele': {'input': {'type': FORM_FIELD_TYPE_SELECT, 'options': {'values': buidlKeyValue(LegTipEle)}}},
+            'cls_tcn': {'input': {'type': FORM_FIELD_TYPE_SELECT, 'options': {'values': buidlKeyValue(LegClsTcn)}}},
+            'tip_gst': {'input': {'type': FORM_FIELD_TYPE_SELECT, 'options': {'values': buidlKeyValue(LegTipGst)}}},
+            'sot_pas': {'input': {'type': FORM_FIELD_TYPE_SELECT, 'options': {'values': buidlKeyValue(LegSotPas)}}},
+            'cmp_ele': {'input': {'type': FORM_FIELD_TYPE_SELECT, 'options': {'values': buidlKeyValue(LegCmpEle)}}},
+            'org': {'input': {'type': FORM_FIELD_TYPE_SELECT, 'options': {'values': buidlKeyValue(LegOrg)}}},
+            'cls_lrg': {'input': {'type': FORM_FIELD_TYPE_SELECT, 'options': {'values': buidlKeyValue(LegClsLrg)}}},
+            'tip_pav': {'input': {'type': FORM_FIELD_TYPE_SELECT, 'options': {'values': buidlKeyValue(LegTipPav)}}},
+            'one_way': {'input': {'type': FORM_FIELD_TYPE_SELECT, 'options': {'values': buidlKeyValue(LegOneWay)}}}
+        }
     },
     'accesso': {
-        'fields': [
-            editingFormField('tip_acc', inputType='select', values=buidlKeyValue(LegTipAcc))
-        ]
+        'fields': {
+            'tip_acc': {'input': {'type': FORM_FIELD_TYPE_SELECT, 'options': {'values': buidlKeyValue(LegTipAcc)}}}
+        }   
     }
 }
 
@@ -64,23 +67,23 @@ relationForms = {
     'accesso': {
         'numero_civico': {
             'fields': [
-                editingFormField('cod_sta'),
-                editingFormField('num_civ', inputType='integer'),
+                editingFormField('cod_civ'),
+                editingFormField('num_civ', inputType=FORM_FIELD_TYPE_TEXT),
                 editingFormField('esp_civ'),
-                editingFormField('cod_top', inputType='pick', pickdata={
+                editingFormField('cod_top', inputType=FORM_FIELD_TYPE_LAYERPICKER, pickerdata={
                     'layerid': getLayerIternetIdByName('elemento_stradale'),
                     'field': 'cod_top'
                 }),
                 editingFormField('cod_com', default=settings.ITERNET_CODE_COMUNE),
-                editingFormField('cod_acc_est', inputType='pick', pickdata={
+                editingFormField('cod_acc_est', inputType=FORM_FIELD_TYPE_LAYERPICKER, pickerdata={
                     'layerid': getLayerIternetIdByName('accesso'),
                     'field': 'cod_acc'
                 }),
-                editingFormField('cod_acc_int', inputType='pick', pickdata={
+                editingFormField('cod_acc_int', inputType=FORM_FIELD_TYPE_LAYERPICKER, pickerdata={
                     'layerid': getLayerIternetIdByName('accesso'),
                     'field': 'cod_acc'
                 }),
-                editingFormField('cod_classifica', inputType='select', values=buidlKeyValue(LegCodClassifica))
+                editingFormField('cod_classifica', inputType=FORM_FIELD_TYPE_SELECT, values=buidlKeyValue(LegCodClassifica))
             ]
         }
     }
@@ -144,9 +147,16 @@ class EditingApiView(APIView):
         if configMode:
             vectorParams = {
                 'geomentryType': ITERNET_LAYERS[layer_name]['geometryType'],
-                'inputs': forms[layer_name]['fields'],
+                'fields': mapLayerAttributes(
+                    getLayerIternetIdByName(layer_name, object=True),
+                    formField=True,
+                    fields=forms[layer_name]['fields']
+                ),
                 'pkField': ITERNET_LAYERS[layer_name]['model']._meta.pk.name
             }
+
+            if layer_name in relationForms:
+                vectorParams['relations'] = relationForms[layer_name]
         else:
             vectorParams = {
                 'data': featurecollection,
@@ -155,8 +165,7 @@ class EditingApiView(APIView):
 
         vectorParams['featureLocks'] = featuresLocked
 
-        if layer_name in relationForms:
-            vectorParams['relations'] = relationForms[layer_name]
+
 
         # instance new vectolayer
         vectorLayer = APIVectorLayerStructure(**vectorParams)
