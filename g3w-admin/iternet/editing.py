@@ -1,6 +1,7 @@
 from client.utils.editing import *
 from .models import *
 from .utils import getLayerIternetIdByName
+from django.core.urlresolvers import reverse
 
 def buidlKeyValue(legModel):
     return [{'key':l.id, 'value':l.description} for l in legModel.objects.all()]
@@ -37,6 +38,11 @@ forms = {
 relationForms = {
     'accesso': {
         'numero_civico': {
+            'fk': [
+                'cod_acc',
+                'tip_acc'
+            ],
+            'url': '/iternet/api/numero_civico/',
             'fields': [
                 editingFormField('cod_civ'),
                 editingFormField('num_civ', inputType=FORM_FIELD_TYPE_TEXT),
