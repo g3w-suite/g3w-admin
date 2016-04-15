@@ -51,6 +51,7 @@ class ConfigForm(ModelForm):
 
         # check for datasoruce
         # build layer data source model
+        '''
         for l, dl in ITERNET_LAYERS.items():
             # dbname='iternet_capannori' host=localhost port=5432 user='postgres' password='postgres' sslmode=disable key='gid' srid=3003 type=MultiPolygon table="public"."limite_comunale" (the_geom) sql=
             dataSourceString = "dbname='{}' host={} port={} user='{}' password='{}' sslmode=disable key='{}' srid={} type={} table=\"public\".\"{}\" (the_geom) sql=".format(
@@ -65,7 +66,8 @@ class ConfigForm(ModelForm):
                 dl['model']._meta.db_table
             )
             if layerNames[l].datasource != dataSourceString:
-                raise ValidationError(_('Project layer {} datasoruce no correct'.format(l)))
+                raise ValidationError(_('Project layer {} datasource no correct'.format(l)))
+        '''
 
 
 

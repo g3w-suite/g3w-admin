@@ -94,7 +94,7 @@ def editingFormField(fieldName, type=FIELD_TYPE_STRING, editable=True, required=
     """
     Build editign form field for client.
     """
-    ret = {
+    ret = OrderedDict({
         'name': fieldName,
         'type': type,
         'label': fieldLabel if fieldLabel else fieldName,
@@ -104,9 +104,7 @@ def editingFormField(fieldName, type=FIELD_TYPE_STRING, editable=True, required=
             'type': inputType if inputType else FORM_FIELD_TYPE_TEXT,
             'options': {}
         },
-    }
-
-    ret['input']['options']
+    })
 
     if 'default' in kwargs:
         ret['input']['options']['default'] = kwargs['default']

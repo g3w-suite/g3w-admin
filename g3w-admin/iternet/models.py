@@ -368,10 +368,12 @@ class ToponimoStradale(models.Model):
 
 class Comuni(models.Model):
     """
-    Model for Data Italian comuni. For provincia
+    Model for Data Italian comuni. For provinciasi leo ci lavoro e te lo rimanda come deve essere :)
+
     """
     cod_catastale = models.CharField(max_length=4, null=True)
     denominazione = models.CharField(max_length=255, null=True)
+    cod_istat = models.CharField(max_length=6, null=True)
 
     class Meta:
         verbose_name = 'Comune'

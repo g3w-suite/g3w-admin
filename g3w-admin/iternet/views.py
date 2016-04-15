@@ -51,6 +51,8 @@ class EditingApiView(APIView):
         #   in_bbox=1627296.88291268446482718,4854554.72152963746339083,1628408.71542843640781939,4855197.11364984977990389
         #http://localhost:8000/it/iternet/api/editing/elemento_stradale/?in_bbox=1627296.88291268446482718,4854554.72152963746339083,1628408.71542843640781939,4855197.11364984977990389
 
+        forms = getForms()
+        relationForms = getRelationForms()
 
         if not configMode:
             featurecollection = {}
@@ -176,6 +178,24 @@ class NumeroCivicoApiView(APIView):
         numeriCivici = NumeroCivico.objects.filter(q)
 
         return Response(NumeroCivicoSerializer(numeriCivici, many=True).data)
+
+
+class ToponimoStradaleApiView(APIView):
+    """
+    API get for toponimo_stradale data.
+    """
+
+    def get(self, request):
+
+        # check for cod_acc
+        if 'cod_top' not in request.GET:
+            raise APIException('You have to set cod_top parameter')
+        cod_top = request.GET['cod_top']
+
+        # get toponimo
+        toponimoStradale = ToponimoStradale.objects.filter(pk=cod_top)
+
+        return Response(ToponimoStradaleSerializer(toponimoStradale, many=True).data)
 
 
 class DashboardView(TemplateView):

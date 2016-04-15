@@ -83,7 +83,8 @@ class QgisProjectLayer(QgisData):
         'editOptions',
         'datasource',
         'aliases',
-        'columns'
+        'columns',
+        'geometrytype'
     ]
 
     _introMessageException = 'Missing or invalid layer data'
@@ -195,10 +196,15 @@ class QgisProjectLayer(QgisData):
         return int(srid)
 
     def _getDataCapabilities(self):
-
-
-
         return 1
+
+
+    def _getDataGeometrytype(self):
+        """
+        Get geometry from layer attribute
+        :return: string
+        """
+        return self.qgisProjectLayerTree.attrib['geometry']
 
     def _getDataEditOptions(self):
 
@@ -306,7 +312,8 @@ class QgisProjectLayer(QgisData):
                 'srid': self.srid,
                 'datasource': self.datasource,
                 'order': self.order,
-                'edit_options': self.editOptions
+                'edit_options': self.editOptions,
+                'geometrytype': self.geometrytype
                 }
             )
         if not created:
@@ -322,6 +329,7 @@ class QgisProjectLayer(QgisData):
             self.instance.srid = self.srid
             self.instance.order = self.order
             self.instance.edit_options = self.editOptions
+            self.instance.geometrytype = self.geometrytype
         # Save self.instance
         self.instance.save()
 

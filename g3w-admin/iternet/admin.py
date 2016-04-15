@@ -92,7 +92,7 @@ admin.site.register(LegPasCar, LegPasCarAdmin)
 
 class ComuniAdmin(ImportExportModelAdmin):
     model = Comuni
-    list_display = ('cod_catastale', 'denominazione')
+    list_display = ('cod_catastale', 'cod_istat', 'denominazione')
 admin.site.register(Comuni, ComuniAdmin)
 
 

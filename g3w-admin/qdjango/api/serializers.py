@@ -83,6 +83,7 @@ class LayerSerializer(serializers.ModelSerializer):
         fields = (
             'id',
             'name',
+            'geometrytype',
             'crs',
             'title',
             'attributes',
