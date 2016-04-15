@@ -90,7 +90,7 @@ FIELD_TYPES_MAPPING = {
 }
 
 
-def editingFormField(fieldName, type=FIELD_TYPE_STRING, editable=True, fieldLabel=None, inputType=None, values=None, **kwargs):
+def editingFormField(fieldName, type=FIELD_TYPE_STRING, editable=True, required=True, fieldLabel=None, inputType=None, values=None, **kwargs):
     """
     Build editign form field for client.
     """
@@ -99,17 +99,17 @@ def editingFormField(fieldName, type=FIELD_TYPE_STRING, editable=True, fieldLabe
         'type': type,
         'label': fieldLabel if fieldLabel else fieldName,
         'editable': editable,
+        'required': required,
         'input': {
             'type': inputType if inputType else FORM_FIELD_TYPE_TEXT,
             'options': {}
         },
     }
 
+    ret['input']['options']
+
     if 'default' in kwargs:
         ret['input']['options']['default'] = kwargs['default']
-
-    if 'required' in kwargs:
-        ret['required'] = kwargs['required']
 
     if inputType in (FORM_FIELD_TYPE_LAYERPICKER, ) and 'pickerdata' in kwargs:
         ret['input']['options'] = kwargs['pickerdata']

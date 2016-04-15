@@ -267,6 +267,16 @@ class LegCodClassifica(LegIternetModelMixin, models.Model):
         verbose_name_plural = 'Legenda COD_CLASSIFICA tabella numero civico'
 
 
+class LegPasCar(LegIternetModelMixin, models.Model):
+    id = models.CharField(primary_key=True, max_length=4)
+    description = models.TextField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'leg_pas_car'
+        verbose_name = 'Legenda PAS_CAR tabella accesso'
+        verbose_name_plural = 'Legenda PAS_CAR tabella accesso'
+
+
 class NumeroCivico(models.Model):
     cod_civ = models.CharField(primary_key=True, max_length=19)
     cod_acc_int = models.CharField(max_length=16, blank=True, null=True)
@@ -287,7 +297,7 @@ class Accesso(models.Model):
     cod_acc = models.CharField(max_length=16, blank=True, null=True)
     tip_acc = models.ForeignKey(LegTipAcc, db_column='tip_acc', null=True, blank=True)
     cod_ele = models.CharField(max_length=15, blank=True, null=True)
-    pas_car = models.CharField(max_length=1, blank=True, null=True)
+    pas_car = models.ForeignKey(LegPasCar, db_column='pas_car', blank=True, null=True)
     the_geom = models.PointField(blank=True, null=True, srid=settings.ITERNET_DATA_SRID)  # This field type is a guess.
 
     class Meta:

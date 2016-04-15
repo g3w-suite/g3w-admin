@@ -85,6 +85,11 @@ class LegOneWayAdmin(LefIternetMixin, ImportExportModelAdmin):
 admin.site.register(LegOneWay, LegOneWayAdmin)
 
 
+class LegPasCarAdmin(LefIternetMixin, ImportExportModelAdmin):
+    model = LegPasCar
+admin.site.register(LegPasCar, LegPasCarAdmin)
+
+
 class ToponimoStradaleAdmin(ImportExportModelAdmin):
     model = ToponimoStradale
     resource_class = ToponimoStradaleResource

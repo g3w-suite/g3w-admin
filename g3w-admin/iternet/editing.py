@@ -36,7 +36,8 @@ forms = {
                 'layerid': getLayerIternetIdByName('elemento_stradale'),
                 'field': 'cod_ele'
             }}},
-            'tip_acc': {'required': True, 'input': {'type': FORM_FIELD_TYPE_SELECT, 'options': {'values': buidlKeyValue(LegTipAcc)}}}
+            'tip_acc': {'required': True, 'input': {'type': FORM_FIELD_TYPE_SELECT, 'options': {'values': buidlKeyValue(LegTipAcc)}}},
+            'pas_car': {'required': True, 'input': {'type': FORM_FIELD_TYPE_SELECT, 'options': {'values': buidlKeyValue(LegPasCar)}}}
         }
     }
 }
