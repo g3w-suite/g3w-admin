@@ -30,7 +30,12 @@ forms = {
     },
     'accesso': {
         'fields': {
-            'tip_acc': {'input': {'type': FORM_FIELD_TYPE_SELECT, 'options': {'values': buidlKeyValue(LegTipAcc)}}}
+            'cod_acc': {'editable': False},
+            'cod_ele': {'required': True, 'input': {'type': FORM_FIELD_TYPE_LAYERPICKER, 'options': {
+                'layerid': getLayerIternetIdByName('elemento_stradale'),
+                'field': 'cod_ele'
+            }}},
+            'tip_acc': {'required': True, 'input': {'type': FORM_FIELD_TYPE_SELECT, 'options': {'values': buidlKeyValue(LegTipAcc)}}}
         }
     }
 }
@@ -44,24 +49,37 @@ relationForms = {
             ],
             'url': '/iternet/api/numero_civico/',
             'fields': [
-                editingFormField('cod_civ'),
-                editingFormField('num_civ', inputType=FORM_FIELD_TYPE_TEXT),
+                editingFormField('cod_civ', editable=False),
+                editingFormField('num_civ', inputType=FORM_FIELD_TYPE_TEXT, required=True),
                 editingFormField('esp_civ'),
-                editingFormField('cod_top', inputType=FORM_FIELD_TYPE_LAYERPICKER, pickerdata={
+                editingFormField('cod_top', required=True, inputType=FORM_FIELD_TYPE_LAYERPICKER, pickerdata={
                     'layerid': getLayerIternetIdByName('elemento_stradale'),
                     'field': 'cod_top'
                 }),
-                editingFormField('cod_com', default=settings.ITERNET_CODE_COMUNE),
-                editingFormField('cod_acc_est', inputType=FORM_FIELD_TYPE_LAYERPICKER, pickerdata={
+                editingFormField('cod_com', required=True, default=settings.ITERNET_CODE_COMUNE),
+                editingFormField('cod_acc_est', required=True, inputType=FORM_FIELD_TYPE_LAYERPICKER, pickerdata={
                     'layerid': getLayerIternetIdByName('accesso'),
                     'field': 'cod_acc'
                 }),
-                editingFormField('cod_acc_int', inputType=FORM_FIELD_TYPE_LAYERPICKER, pickerdata={
-                    'layerid': getLayerIternetIdByName('accesso'),
-                    'field': 'cod_acc'
-                }),
+                editingFormField('cod_acc_int', editable=False),
                 editingFormField('cod_classifica', inputType=FORM_FIELD_TYPE_SELECT, values=buidlKeyValue(LegCodClassifica))
             ]
+        }
+    },
+    'elemento_stradale': {
+        'toponimo_stradale': {
+            'fk': [
+                'cod_top'
+            ],
+            'url': '',
+            'fields': [
+                editingFormField('cod_top', editable=False),
+                editingFormField('cod_dug', inputType=FORM_FIELD_TYPE_SELECT, values=buidlKeyValue(LegCodDug)),
+                editingFormField('def_uff'),
+                editingFormField('cod_com'),
+                editingFormField('cod_via')
+            ]
+
         }
     }
 }

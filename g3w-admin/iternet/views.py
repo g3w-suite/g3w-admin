@@ -82,7 +82,7 @@ class EditingApiView(APIView):
                     layer,
                     formField=True,
                     fields=forms[layer_name]['fields']
-                ),
+                ).values(),
                 'pkField': ITERNET_LAYERS[layer_name]['model']._meta.pk.name
             }
 

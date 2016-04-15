@@ -108,6 +108,9 @@ def editingFormField(fieldName, type=FIELD_TYPE_STRING, editable=True, fieldLabe
     if 'default' in kwargs:
         ret['input']['options']['default'] = kwargs['default']
 
+    if 'required' in kwargs:
+        ret['required'] = kwargs['required']
+
     if inputType in (FORM_FIELD_TYPE_LAYERPICKER, ) and 'pickerdata' in kwargs:
         ret['input']['options']['pickerdata'] = kwargs['pickerdata']
 
