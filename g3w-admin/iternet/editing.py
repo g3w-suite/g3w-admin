@@ -4,7 +4,7 @@ from .utils import getLayerIternetIdByName
 from django.core.urlresolvers import reverse
 
 def buidlKeyValue(legModel):
-    return [{'key':l.id, 'value':l.description} for l in legModel.objects.all()]
+    return [{'key': l.id, 'value': l.description} for l in legModel.objects.all()]
 
 forms = {
     'giunzione_stradale': {
@@ -58,7 +58,7 @@ relationForms = {
                     'layerid': getLayerIternetIdByName('elemento_stradale'),
                     'field': 'cod_top'
                 }),
-                editingFormField('cod_com', required=True, default=settings.ITERNET_CODE_COMUNE),
+                editingFormField('cod_com', required=True, inputType=FORM_FIELD_TYPE_SELECT, values=[{'key': l.cod_catastale, 'value': l.denominazione} for l in Comuni.objects.all()], default=settings.ITERNET_CODE_COMUNE),
                 editingFormField('cod_acc_est', required=True, inputType=FORM_FIELD_TYPE_LAYERPICKER, pickerdata={
                     'layerid': getLayerIternetIdByName('accesso'),
                     'field': 'cod_acc'

@@ -356,7 +356,7 @@ class GiunzioneStradale(models.Model):
 class ToponimoStradale(models.Model):
     cod_top = models.CharField(primary_key=True, max_length=15)
     den_uff = models.CharField(max_length=100, blank=True, null=True)
-    cod_com = models.CharField(max_length=10, blank=True, null=True)
+    cod_com = models.CharField(max_length=4, blank=True, null=True)
     cod_via = models.CharField(max_length=11, blank=True, null=True)
     cod_dug = models.ForeignKey(LegCodDug, db_column='cod_dug', null=True, blank=True)
 
@@ -364,3 +364,16 @@ class ToponimoStradale(models.Model):
         db_table = 'toponimo_stradale'
         verbose_name = 'Toponimo stradale'
         verbose_name_plural = 'Toponimi stradali'
+
+
+class Comuni(models.Model):
+    """
+    Model for Data Italian comuni. For provincia
+    """
+    cod_catastale = models.CharField(max_length=4, null=True)
+    denominazione = models.CharField(max_length=255, null=True)
+
+    class Meta:
+        verbose_name = 'Comune'
+        verbose_name_plural = 'Comuni provinciali'
+

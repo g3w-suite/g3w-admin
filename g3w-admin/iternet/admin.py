@@ -90,6 +90,12 @@ class LegPasCarAdmin(LefIternetMixin, ImportExportModelAdmin):
 admin.site.register(LegPasCar, LegPasCarAdmin)
 
 
+class ComuniAdmin(ImportExportModelAdmin):
+    model = Comuni
+    list_display = ('cod_catastale', 'denominazione')
+admin.site.register(Comuni, ComuniAdmin)
+
+
 class ToponimoStradaleAdmin(ImportExportModelAdmin):
     model = ToponimoStradale
     resource_class = ToponimoStradaleResource
@@ -129,19 +135,23 @@ class NumeroCivicoAdmin(ImportExportModelAdmin):
 admin.site.register(NumeroCivico, NumeroCivicoAdmin)
 
 
-class AccessoGeoAdmin(OSMGeoAdmin):
+class AccessoGeoAdmin(ImportExportModelAdmin, OSMGeoAdmin):
     model = Accesso
+    resource_class = AccessoResource
+    list_display = ('cod_acc', 'cod_ele', 'tip_acc', 'pas_car')
 admin.site.register(Accesso, AccessoGeoAdmin)
 
 
 class ElementoStradaleGeoAdmin(ImportExportModelAdmin, OSMGeoAdmin):
     model = ElementoStradale
     resource_class = ElementoStradaleResource
+    list_display = ('cod_ele', 'tip_ele', 'cod_top')
 admin.site.register(ElementoStradale, ElementoStradaleGeoAdmin)
 
 
 class GiunzioneStradaleGeoAdmin(OSMGeoAdmin):
     model = GiunzioneStradale
+    list_display = ('cod_gnz', 'tip_gnz', 'org')
 admin.site.register(GiunzioneStradale, GiunzioneStradaleGeoAdmin)
 
 

@@ -1,5 +1,5 @@
 from import_export import resources
-from iternet.models import ElementoStradale, NumeroCivico, ToponimoStradale
+from iternet.models import *
 
 class ElementoStradaleResource(resources.ModelResource):
     class Meta:
@@ -17,3 +17,9 @@ class ToponimoStradaleResource(resources.ModelResource):
     class Meta:
         model = ToponimoStradale
         import_id_fields = ('cod_top',)
+
+
+class AccessoResource(resources.ModelResource):
+    class Meta:
+        model = Accesso
+        import_id_fields = ('cod_acc', )
