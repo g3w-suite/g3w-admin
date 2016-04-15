@@ -30,6 +30,7 @@ forms = {
     },
     'accesso': {
         'fields': {
+            'gid': {'editable': False},
             'cod_acc': {'editable': False},
             'cod_ele': {'required': True, 'input': {'type': FORM_FIELD_TYPE_LAYERPICKER, 'options': {
                 'layerid': getLayerIternetIdByName('elemento_stradale'),
