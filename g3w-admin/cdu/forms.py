@@ -220,8 +220,11 @@ class cduAgainstLayerFieldsForm(Form,cduFormMixin):
 
         self.helper = FormHelper(self)
         self.helper.form_tag = False
-        self.helper.layout = Layout(
-            Div(
+
+        layoutElements = []
+
+        if len(self.fieldsAliasPlusFieldsCatasto):
+            layoutElements.append(
                 Div(
                     Div(
                         Div(
@@ -236,24 +239,30 @@ class cduAgainstLayerFieldsForm(Form,cduFormMixin):
                         css_class='box box-success'
                     ),
                     css_class='col-md-12'
-                ),
+                )
+            )
 
+        layoutElements.append(
+            Div(
                 Div(
                     Div(
-                        Div(
-                            HTML("<h3 class='box-title'><i class='fa fa-file'></i> {}</h3>".format(
-                                _('CDU Against layer fields to show in results'))),
-                            css_class='box-header with-border'
-                        ),
-                        Div(
-                            *self.fieldsFieldsAliasLayers,
-                            css_class='box-body'
-                        ),
-                        css_class='box box-success'
+                        HTML("<h3 class='box-title'><i class='fa fa-file'></i> {}</h3>".format(
+                            _('CDU Against layer fields to show in results'))),
+                        css_class='box-header with-border'
                     ),
-                    css_class='col-md-12'
+                    Div(
+                        *self.fieldsFieldsAliasLayers,
+                        css_class='box-body'
+                    ),
+                    css_class='box box-success'
                 ),
+                css_class='col-md-12'
+            ),
+        )
 
+        self.helper.layout = Layout(
+            Div(
+                *layoutElements,
                 css_class='row'
             )
         )

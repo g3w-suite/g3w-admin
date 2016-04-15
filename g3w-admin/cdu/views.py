@@ -58,13 +58,16 @@ class CduConfigWizardView(SessionWizardView):
                 self.againstLayers = Layer.objects.filter(id__in=dataStep1['againstLayers'])
                 for l in self.againstLayers:
                     res[unicode2ascii(l.name)] = l.name.capitalize().replace('_', ' ')
-                return res
+            elif step == '3':
+                dataStep2 = self.get_cleaned_data_for_step('2')
+                for f in dataStep2['plusFieldsCatasto']:
+                    res['plusFieldsCatasto_{}'.format(f)] = f.capitalize().replace('_', ' ')
+            elif step == '4':
                 dataStep3 = self.get_cleaned_data_for_step('3')
                 for k, v in dataStep3.items():
                     for f in v:
-                        res[f] = f
-                return res
-
+                        res[f] = f.capitalize().replace('_', ' ')
+            return res
         return {}
 
     def get_context_data(self, form, **kwargs):
