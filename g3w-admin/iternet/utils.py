@@ -7,6 +7,6 @@ def getLayerIternetIdByName(layerName, object=False):
         if object:
             return layers[0]
         else:
-            return layers[0].pk
+            return layers[0].qgs_layer_id
     else:
         return None
