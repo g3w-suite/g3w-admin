@@ -8,7 +8,7 @@ class IntersectsBBoxFilter(InBBoxFilter):
         filter_field = getattr(view, 'bbox_filter_field', None)
         include_overlapping = getattr(view, 'bbox_filter_include_overlapping', False)
         if include_overlapping:
-            geoDjango_filter = 'overlaps'
+            geoDjango_filter = 'intersects'
         else:
             geoDjango_filter = 'contained'
 

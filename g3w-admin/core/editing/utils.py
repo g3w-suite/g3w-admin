@@ -95,3 +95,5 @@ class LayerLock(object):
         featuresLocked = LockModel.objects.filter(feature_lock_id__in=featureLockIds)
         for featureLock in featuresLocked:
             featureLock.delete()
+
+

@@ -21,6 +21,8 @@ from .api.serializers import NumeroCivicoSerializer, ToponimoStradaleSerializer
 iternet_connection = copy.copy(settings.DATABASES[settings.ITERNET_DATABASE])
 
 
+
+
 class EditingApiView(APIView):
     """
     APIView to get data Project and layers
@@ -30,14 +32,27 @@ class EditingApiView(APIView):
         CsrfExemptSessionAuthentication,
     )
 
-
     bbox_filter_field = 'the_geom'
     bbox_filter_include_overlapping = True
 
-    def get(self, request, format=None, layer_name=None):
+    def initial(self, request, *args, **kwargs):
+        super(EditingApiView, self).initial(request, *args, **kwargs)
 
-        if layer_name not in ITERNET_LAYERS.keys():
+        if kwargs['layer_name'] not in ITERNET_LAYERS.keys():
             raise APIException('Only one of this: {}'.format(', '.join(ITERNET_LAYERS.keys())))
+
+        # set layer model obejct to work
+        self.layer = getLayerIternetIdByName(kwargs['layer_name'], object=True)
+
+        # set lock object
+        self.lock = LayerLock(
+            appName='iternet',
+            layer=self.layer,
+            user=request.user,
+            sessionid=request.COOKIES[settings.SESSION_COOKIE_NAME]
+        )
+
+    def get(self, request, format=None, layer_name=None):
 
         # check is editing mode ad inputs
         editingMode = 'editing' in request.GET
@@ -63,27 +78,18 @@ class EditingApiView(APIView):
                     layerSerializer = dataLayer['geoSerializer'](featuresLayer, many=True)
                     featurecollection = layerSerializer.data
 
-        # get layer qdjango
-        layer = getLayerIternetIdByName(layer_name, object=True)
 
         # lock features
         featuresLocked = []
         if editingMode:
-            lock = LayerLock(
-                appName='iternet',
-                layer=layer,
-                user=request.user,
-                sessionid=request.COOKIES[settings.SESSION_COOKIE_NAME]
-            )
-
             # get feature locked:
-            featuresLocked = lock.lockFeatures([str(f.gid) for f in featuresLayer])
+            featuresLocked = self.lock.lockFeatures([str(f.gid) for f in featuresLayer])
 
         if configMode:
             vectorParams = {
                 'geomentryType': ITERNET_LAYERS[layer_name]['geometryType'],
                 'fields': mapLayerAttributes(
-                    layer,
+                    self.layer,
                     formField=True,
                     fields=forms[layer_name]['fields']
                 ).values(),
@@ -97,7 +103,6 @@ class EditingApiView(APIView):
                 'data': featurecollection,
                 'geomentryType': ITERNET_LAYERS[layer_name]['geometryType'],
             }
-
 
         vectorParams['featureLocks'] = featuresLocked
 
@@ -115,40 +120,50 @@ class EditingApiView(APIView):
         # start transaction
         try:
             with transaction.atomic():
-                for layerConfigName, layerConfigData in ITERNET_LAYERS.items():
-                    clientVar = layerConfigData['clientVar']
-                    if clientVar in data:
-                        model = layerConfigData['model']
+                layerConfigData = ITERNET_LAYERS['layer_name']
+                clientVar = layerConfigData['clientVar']
+                if clientVar in data:
+                    model = layerConfigData['model']
 
 
-                        # save insert
-                        for mode in ('added', 'updated'):
-                            if mode in data[clientVar]:
-                                for GeoJSONFeature in data[clientVar][mode]:
-                                    if mode == 'add':
-                                        serializer = layerConfigData['geoSerializer'](data=GeoJSONFeature)
-                                    else:
-                                        feature = model.objects.get(pk=GeoJSONFeature['id'])
-                                        serializer = layerConfigData['geoSerializer'](feature, data=GeoJSONFeature)
-                                    if serializer.is_valid():
-                                        dato = serializer.save()
-                                    else:
-                                        raise ValidationError({
-                                            'result': False,
-                                            'errors': serializer.errors
-                                        })
+                    # save insert
+                    for mode in ('added', 'updated'):
+                        if mode in data[clientVar]:
+                            for GeoJSONFeature in data[clientVar][mode]:
+                                if mode == 'added':
+                                    serializer = layerConfigData['geoSerializer'](data=GeoJSONFeature)
+                                else:
+                                    feature = model.objects.get(pk=GeoJSONFeature['id'])
+                                    serializer = layerConfigData['geoSerializer'](feature, data=GeoJSONFeature)
+                                if serializer.is_valid():
+                                    dato = serializer.save()
+                                else:
+                                    raise ValidationError({
+                                        'result': False,
+                                        'errors': serializer.errors
+                                    })
 
-                        # save delete
-                        if 'deleted' in data[clientVar]:
-                            features = model.objects.filter(pk__in=data[clientVar]['delete'])
-                            for feature in features:
-                                #feature.delete()
-                                pass
+                    # save delete
+                    if 'deleted' in data[clientVar]:
+                        features = model.objects.filter(pk__in=data[clientVar]['delete'])
+                        for feature in features:
+                            #feature.delete()
+                            pass
 
                 # now unlocked feature id
                 # get feature locked and erase from lock table
                 if 'lockids' in data:
                     LayerLock.unLockFeatures(data['lockids'])
+
+                # unllock features by user and sessionid
+                if 'unlock' in data and data['unlock']:
+                    lock = LayerLock(
+                        appName='iternet',
+                        layer=self.layer,
+                        user=request.user,
+                        sessionid=request.COOKIES[settings.SESSION_COOKIE_NAME]
+                    )
+
 
         except IntegrityError as e:
             return Response({

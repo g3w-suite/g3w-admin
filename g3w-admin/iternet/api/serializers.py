@@ -7,6 +7,8 @@ class IternetSerializerMixin(object):
     """
     Generic mixins for iternet geoserializer model
     """
+
+
     def create(self, validated_data):
         instance = self.Meta.model(**validated_data)
         return instance

@@ -1,5 +1,7 @@
 
 
+
+
 class APIVectorLayerStructure(object):
 
     _format = 'GeoJSON'
