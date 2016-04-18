@@ -24,19 +24,30 @@ urlpatterns = [
     url(r'^jsi18n/$', javascript_catalog, jsInfoDict, name='javascript-catalog'),
 ]
 
+apiUrlpatterns = []
+
 #adding projects app
 for app in settings.G3WADMIN_PROJECT_APPS:
     urlpatterns.append(url(r'^{}/'.format(app),include('{}.urls'.format(app))))
+    try:
+      apiUrlpatterns.append(url(r'^{}/'.format(app),include('{}.apiurls'.format(app))))
+    except:
+      pass
 
 # adding local_more_apps
 for app in settings.G3WADMIN_LOCAL_MORE_APPS:
     urlpatterns.append(url(r'^{}/'.format(app), include('{}.urls'.format(app))))
+    try:
+      apiUrlpatterns.append(url(r'^{}/'.format(app),include('{}.apiurls'.format(app))))
+    except:
+      pass
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
-
 urlpatterns = i18n_patterns(*urlpatterns)
+
+urlpatterns += apiUrlpatterns
 
 urlpatterns += [url(r'^', include('OWS.urls'))]
 
