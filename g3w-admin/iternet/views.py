@@ -9,13 +9,14 @@ from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError, APIException
 from .forms import ConfigForm
 from qdjango.utils.data import QgisPgConnection
-from rest_framework_gis.filters import InBBoxFilter
 from core.editing.structure import APIVectorLayerStructure
 from core.editing.utils import LayerLock
 from core.api.authentication import CsrfExemptSessionAuthentication
+from core.api.filters import IntersectsBBoxFilter
 from .configs import ITERNET_LAYERS
 from .editing import *
 from .api.serializers import NumeroCivicoSerializer, ToponimoStradaleSerializer
+
 
 iternet_connection = copy.copy(settings.DATABASES[settings.ITERNET_DATABASE])
 
@@ -46,7 +47,7 @@ class EditingApiView(APIView):
             raise APIException('config and editing get parameters not allowed')
 
         # Instance bbox filter
-        bboxFilter = InBBoxFilter()
+        bboxFilter = IntersectsBBoxFilter()
 
         #   in_bbox=1627296.88291268446482718,4854554.72152963746339083,1628408.71542843640781939,4855197.11364984977990389
         #http://localhost:8000/it/iternet/api/editing/elemento_stradale/?in_bbox=1627296.88291268446482718,4854554.72152963746339083,1628408.71542843640781939,4855197.11364984977990389
