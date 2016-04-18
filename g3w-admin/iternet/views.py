@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError, APIException
 from .forms import ConfigForm
 from qdjango.utils.data import QgisPgConnection
-from core.editing.structure import APIVectorLayerStructure
+from core.editing.structure import *
 from core.editing.utils import LayerLock
 from core.api.authentication import CsrfExemptSessionAuthentication
 from core.api.filters import IntersectsBBoxFilter
@@ -19,8 +19,6 @@ from .api.serializers import NumeroCivicoSerializer, ToponimoStradaleSerializer
 
 
 iternet_connection = copy.copy(settings.DATABASES[settings.ITERNET_DATABASE])
-
-
 
 
 class EditingApiView(APIView):
@@ -127,10 +125,10 @@ class EditingApiView(APIView):
 
 
                     # save insert
-                    for mode in ('added', 'updated'):
+                    for mode in (EDITING_POST_DATA_ADDED, EDITING_POST_DATA_UPDATED):
                         if mode in data[clientVar]:
                             for GeoJSONFeature in data[clientVar][mode]:
-                                if mode == 'added':
+                                if mode == EDITING_POST_DATA_ADDED:
                                     serializer = layerConfigData['geoSerializer'](data=GeoJSONFeature)
                                 else:
                                     feature = model.objects.get(pk=GeoJSONFeature['id'])
@@ -144,8 +142,8 @@ class EditingApiView(APIView):
                                     })
 
                     # save delete
-                    if 'deleted' in data[clientVar]:
-                        features = model.objects.filter(pk__in=data[clientVar]['delete'])
+                    if EDITING_POST_DATA_DELETED in data[clientVar]:
+                        features = model.objects.filter(pk__in=data[clientVar][EDITING_POST_DATA_DELETED])
                         for feature in features:
                             #feature.delete()
                             pass
