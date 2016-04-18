@@ -71,7 +71,8 @@ class EditingApiView(APIView):
             lock = LayerLock(
                 appName='iternet',
                 layer=layer,
-                user=request.user
+                user=request.user,
+                sessionid=request.COOKIES[settings.SESSION_COOKIE_NAME]
             )
 
             # get feature locked:
@@ -120,7 +121,7 @@ class EditingApiView(APIView):
 
 
                         # save insert
-                        for mode in ('add', 'update'):
+                        for mode in ('added', 'updated'):
                             if mode in data[clientVar]:
                                 for GeoJSONFeature in data[clientVar][mode]:
                                     if mode == 'add':
@@ -137,7 +138,7 @@ class EditingApiView(APIView):
                                         })
 
                         # save delete
-                        if 'delete' in data[clientVar]:
+                        if 'deleted' in data[clientVar]:
                             features = model.objects.filter(pk__in=data[clientVar]['delete'])
                             for feature in features:
                                 #feature.delete()

@@ -105,26 +105,31 @@ admin.site.register(ToponimoStradale, ToponimoStradaleAdmin)
 
 class CiviciInfoStradaleAdmin(ImportExportModelAdmin):
     model = CiviciInfo
+    list_display = ('cod_civ', 'tip_opz')
 admin.site.register(CiviciInfo, CiviciInfoStradaleAdmin)
 
 
 class ArchiInfoStradaleAdmin(ImportExportModelAdmin):
     model = ArchiInfo
+    list_display = ('cod_ele', 'tip_opz')
 admin.site.register(ArchiInfo, ArchiInfoStradaleAdmin)
 
 
 class ToponimiInfoStradaleAdmin(ImportExportModelAdmin):
     model = ToponimiInfo
+    list_display = ('cod_top', 'tip_opz')
 admin.site.register(ToponimiInfo, ToponimiInfoStradaleAdmin)
 
 
 class AccessiInfoStradaleAdmin(ImportExportModelAdmin):
     model = AccessiInfo
+    list_display = ('cod_acc', 'tip_opz')
 admin.site.register(AccessiInfo, AccessiInfoStradaleAdmin)
 
 
 class NodiInfoStradaleAdmin(ImportExportModelAdmin):
     model = NodiInfo
+    list_display = ('cod_gnz', 'tip_opz')
 admin.site.register(NodiInfo, NodiInfoStradaleAdmin)
 
 

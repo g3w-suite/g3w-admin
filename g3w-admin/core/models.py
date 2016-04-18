@@ -102,5 +102,6 @@ class G3WEditingFeatureLock(models.Model):
     layer_name = models.CharField(max_length=255)
     layer_datasource = models.TextField(max_length=255)
     user = models.ForeignKey(User, null=True, blank=True)
+    sessionid = models.CharField(max_length=255, null=True, blank=True)
     feature_lock_id = models.CharField(max_length=32)
     time_locked = models.DateTimeField(auto_now=True)

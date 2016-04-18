@@ -164,6 +164,9 @@ LANGUAGES = (
 )
 
 
+# for sessions
+SESSION_COOKIE_NAME = 'g3wadmin_sessionid'
+
 
 # FOR MEDIA
 

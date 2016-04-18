@@ -68,7 +68,7 @@ class ArchiInfo(models.Model):
 
 
 class AccessiInfo(models.Model):
-    cod_acc = models.CharField(blank=True, null=True, max_length=15)
+    cod_acc = models.CharField(blank=True, null=True, max_length=16)
     tip_opz = models.CharField(choices=TIP_OPZ, max_length=1, blank=True, null=True)
 
     class Meta:
@@ -292,6 +292,13 @@ class NumeroCivico(models.Model):
         verbose_name = 'Numero civico'
         verbose_name_plural = 'Numeri civici'
 
+    @classmethod
+    def metadataTableInfo(cls):
+        return {
+            'model': CiviciInfo,
+            'fk': 'cod_civ'
+        }
+
 class Accesso(models.Model):
     gid = models.AutoField(primary_key=True)
     cod_acc = models.CharField(max_length=16, blank=True, null=True)
@@ -304,6 +311,13 @@ class Accesso(models.Model):
         db_table = 'accesso'
         verbose_name = 'Accesso'
         verbose_name_plural = 'Accessi'
+
+    @classmethod
+    def metadataTableInfo(cls):
+        return {
+            'model': AccessiInfo,
+            'fk': 'cod_acc'
+        }
 
 
 class ElementoStradale(models.Model):
@@ -335,6 +349,13 @@ class ElementoStradale(models.Model):
         verbose_name = 'Elemento stradale'
         verbose_name_plural = 'Elementi stradali'
 
+    @classmethod
+    def metadataTableInfo(cls):
+        return {
+            'model': ArchiInfo,
+            'fk': 'cod_ele'
+        }
+
     def __unicode__(self):
         return u'{}'.format(self.cod_ele)
 
@@ -352,6 +373,13 @@ class GiunzioneStradale(models.Model):
         verbose_name = 'Giunzione stradale'
         verbose_name_plural = 'Giunzioni stradali'
 
+    @classmethod
+    def metadataTableInfo(cls):
+        return {
+            'model': NodiInfo,
+            'fk': 'cod_civ'
+        }
+
 
 class ToponimoStradale(models.Model):
     cod_top = models.CharField(primary_key=True, max_length=15)
@@ -364,6 +392,13 @@ class ToponimoStradale(models.Model):
         db_table = 'toponimo_stradale'
         verbose_name = 'Toponimo stradale'
         verbose_name_plural = 'Toponimi stradali'
+
+    @classmethod
+    def metadataTableInfo(cls):
+        return {
+            'model': ToponimiInfo,
+            'fk': 'cod_top'
+        }
 
 
 class Comuni(models.Model):

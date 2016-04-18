@@ -11,6 +11,8 @@ class LayerLock(object):
         self.appName = appName
         if kwargs.get('user'):
             self.user = kwargs['user']
+        if kwargs.get('sessionid'):
+            self.sessionid = kwargs['sessionid']
 
         self.initialFeatureLockedIds = []
         self.getInitialUserFeatureLocked = []
@@ -29,7 +31,7 @@ class LayerLock(object):
         featuresLocked = LockModel.objects.filter(**filters)
         for f in featuresLocked:
             self.initialFeatureLockedIds.append(f.feature_id)
-            if getattr(self, 'user') and f.user == self.user:
+            if getattr(self, 'user') and f.user == self.user and getattr(self, 'sessionid') and f.sessionid == self.sessionid:
                 self.getInitialUserFeatureLocked.append(f)
 
     def lockFeatures(self, featuresIds):
@@ -37,7 +39,7 @@ class LayerLock(object):
         Lock features
         """
 
-        # first get initila features locked
+        # first get initial features locked
         self.getInitialFeatureLockedIds()
 
         # find feature to lock
@@ -47,7 +49,10 @@ class LayerLock(object):
         with transaction.atomic():
             for fid in self.newFeatureToLockIds:
                 featureLockId = hashlib.md5()
-                featureLockId.update(str(fid)+self.layerName+self.appName+self.layerDatasource)
+                toCrypt = str(fid)+self.layerName+self.appName+self.layerDatasource
+                if getattr(self, 'sessionid'):
+                    toCrypt += self.sessionid
+                featureLockId.update(toCrypt)
                 featureLock = LockModel(
                     feature_id=fid,
                     layer_name=self.layerName,
@@ -58,6 +63,8 @@ class LayerLock(object):
 
                 if getattr(self, 'user'):
                     featureLock.user = self.user
+                if getattr(self, 'sessionid'):
+                    featureLock.sessionid = self.sessionid
 
                 featureLock.save()
                 lockedFeature.append({
