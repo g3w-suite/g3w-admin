@@ -168,8 +168,7 @@ class EditingApiView(APIView):
                 if EDITING_POST_DATA_DELETED in data:
                     features = model.objects.filter(pk__in=data[EDITING_POST_DATA_DELETED])
                     for feature in features:
-                        #feature.delete()
-                        pass
+                        layerConfigData['geoSerializer'].delete(feature)
 
                 # now unlocked feature id
                 # get feature locked and erase from lock table

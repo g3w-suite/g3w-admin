@@ -76,9 +76,9 @@ class AccessoGeoSerializer(IternetSerializerMixin, serializers.GeoFeatureModelSe
         if self.relationsAttributes:
             self.relationsAttributes['cod_civ'] = NumeroCivicoSerializer.Meta.model.getNewCodCiv()
 
-            if validated_data['tip_acc'] == '0101':
+            if validated_data['tip_acc'].pk == '0101':
                 self.relationsAttributes['cod_acc_est'] = instance.cod_acc
-            elif validated_data['tip_acc'] == '0501':
+            elif validated_data['tip_acc'].pk == '0501':
                 self.relationsAttributes['cod_acc_int'] = instance.cod_acc
 
             numeroCivicoSerializer = NumeroCivicoSerializer(data=self.relationsAttributes)
@@ -105,7 +105,23 @@ class AccessoGeoSerializer(IternetSerializerMixin, serializers.GeoFeatureModelSe
         return instance
 
 
+    @classmethod
+    def delete(cls, instance):
+        """
+        Classmethod to delete model instance and realtions
+        """
+        queryParams = None
+        if instance.tip_acc.pk == '0101':
+            queryParams = {'cod_acc_est': instance.cod_acc}
+        elif instance.tip_acc.pk == '0501':
+            queryParams = {'cod_acc_int': instance.cod_acc}
 
+        if queryParams:
+            numero_civico = NumeroCivico.objects.filter(**queryParams)
+            for nc in numero_civico:
+                nc.delete()
+
+        instance.delete()
 
     class Meta:
         model = Accesso

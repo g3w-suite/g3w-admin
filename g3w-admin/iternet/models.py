@@ -303,7 +303,7 @@ class NumeroCivico(models.Model):
             'RT',
             settings.ITERNET_CODE_ISTAT_COMUNE,
             str(getNextVlueFromPGSeq('numero_civico_cod_civ_seq', settings.ITERNET_DATABASE)).zfill(6),
-            'AC'
+            'CV'
         )
 
     @classmethod

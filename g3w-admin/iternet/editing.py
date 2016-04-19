@@ -1,3 +1,4 @@
+from django.core.urlresolvers import reverse
 from client.utils.editing import *
 from .models import *
 from .utils import getLayerIternetIdByName
@@ -70,7 +71,7 @@ def getRelationForms():
                     'cod_acc',
                     'tip_acc'
                 ],
-                'url': '/iternet/api/numero_civico/',
+                'url': reverse('iternet-api-civici'),
                 'fields': [
                     editingFormField('cod_civ', editable=False),
                     editingFormField('num_civ', inputType=FORM_FIELD_TYPE_TEXT, required=True),
@@ -94,7 +95,7 @@ def getRelationForms():
                 'fk': [
                     'cod_top'
                 ],
-                'url': '',
+                'url': reverse('iternet-api-toponimi'),
                 'fields': [
                     editingFormField('cod_top', editable=False),
                     editingFormField('cod_dug', inputType=FORM_FIELD_TYPE_SELECT, values=buidlKeyValue(LegCodDug)),
