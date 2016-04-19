@@ -12,6 +12,7 @@ from django.conf import settings
 from model_utils import Choices
 from .mixins.models import *
 from qdjango.models import Project
+from core.utils.db import getNextVlueFromPGSeq
 
 
 
@@ -20,7 +21,6 @@ TIP_OPZ = Choices(
     (u'I', u'nuovo inserimento'),
     (u'D', u'cancellato')
 )
-
 
 
 # configuration tables, on default database (g3w-admin)
@@ -293,6 +293,20 @@ class NumeroCivico(models.Model):
         verbose_name_plural = 'Numeri civici'
 
     @classmethod
+    def getNewCodCiv(cls):
+        """
+        Get new cod_civ last in table
+        """
+
+        # get new sequential value from postgres sequence
+        return "{}{}{}{}".format(
+            'RT',
+            settings.ITERNET_CODE_ISTAT_COMUNE,
+            str(getNextVlueFromPGSeq('numero_civico_cod_civ_seq', settings.ITERNET_DATABASE)).zfill(6),
+            'AC'
+        )
+
+    @classmethod
     def metadataTableInfo(cls):
         return {
             'model': CiviciInfo,
@@ -311,6 +325,20 @@ class Accesso(models.Model):
         db_table = 'accesso'
         verbose_name = 'Accesso'
         verbose_name_plural = 'Accessi'
+
+    @classmethod
+    def getNewCodAcc(cls):
+        """
+        Get new cod_acc last in table
+        """
+
+        # get new sequential value from postgres sequence
+        return "{}{}{}{}".format(
+            'RT',
+            settings.ITERNET_CODE_ISTAT_COMUNE,
+            str(getNextVlueFromPGSeq('accesso_cod_acc_seq', settings.ITERNET_DATABASE)).zfill(6),
+            'AC'
+        )
 
     @classmethod
     def metadataTableInfo(cls):

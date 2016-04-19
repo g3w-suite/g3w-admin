@@ -1,6 +1,6 @@
-EDITING_POST_DATA_ADDED = 'added'
-EDITING_POST_DATA_UPDATED = 'updated'
-EDITING_POST_DATA_DELETED = 'deleted'
+EDITING_POST_DATA_ADDED = 'add'
+EDITING_POST_DATA_UPDATED = 'update'
+EDITING_POST_DATA_DELETED = 'delete'
 
 class APIVectorLayerStructure(object):
 
