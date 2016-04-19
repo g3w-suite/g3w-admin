@@ -1,6 +1,6 @@
 from django.conf.urls import url
 from django.contrib.auth.decorators import login_required
-from .views import *
+from iternet.views import *
 
 BASE_INTERNET_API_EDITING = 'api/editing/'
 

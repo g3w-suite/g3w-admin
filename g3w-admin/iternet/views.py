@@ -123,7 +123,6 @@ class EditingApiView(APIView):
                 if clientVar in data:
                     model = layerConfigData['model']
 
-
                     # save insert
                     for mode in (EDITING_POST_DATA_ADDED, EDITING_POST_DATA_UPDATED):
                         if mode in data[clientVar]:
