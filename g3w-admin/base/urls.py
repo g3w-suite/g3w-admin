@@ -15,9 +15,10 @@ jsInfoDict = {
 
 urlpatterns = [
     url(r'^django-admin/', admin.site.urls),
-    url(r'^',include('core.urls')),
-    url(r'^',include('usersmanage.urls')),
-    url(r'^',include('client.urls')),
+    url(r'^', include('core.urls')),
+    url(r'^', include('usersmanage.urls')),
+    url(r'^', include('client.urls')),
+    url(r'^', include('client.apiurls')),
     url(r'^upload/', include('django_file_form.urls')),
     url(r'^login/$', auth.views.login, name='login', kwargs={'template_name': 'login.html'}),
     url(r'^logout/$', auth.views.logout, {'next_page': settings.LOGOUT_NEXT_PAGE}, name='logout'),
@@ -40,7 +41,7 @@ for app in settings.G3WADMIN_LOCAL_MORE_APPS:
     try:
       apiUrlpatterns.append(url(r'^{}/'.format(app),include('{}.apiurls'.format(app))))
     except:
-      pass
+        pass
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
