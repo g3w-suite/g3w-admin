@@ -55,6 +55,11 @@ class EditingApiView(APIView):
         # check is editing mode ad inputs
         editingMode = 'editing' in request.GET
         configMode = 'config' in request.GET
+        unLock = 'unlock' in request.GET
+
+        if unLock:
+            self.lock.unLockFeatureBySession()
+            return Response({'result':True})
 
         if editingMode and configMode:
             raise APIException('config and editing get parameters not allowed')
@@ -169,21 +174,6 @@ class EditingApiView(APIView):
                     features = model.objects.filter(pk__in=data[EDITING_POST_DATA_DELETED])
                     for feature in features:
                         layerConfigData['geoSerializer'].delete(feature)
-
-                # now unlocked feature id
-                # get feature locked and erase from lock table
-                if 'lockids' in data:
-                    LayerLock.unLockFeatures(data['lockids'])
-
-                # unllock features by user and sessionid
-                if 'unlock' in data and data['unlock']:
-                    lock = LayerLock(
-                        appName='iternet',
-                        layer=self.layer,
-                        user=request.user,
-                        sessionid=request.COOKIES[settings.SESSION_COOKIE_NAME]
-                    )
-
 
         except IntegrityError as e:
             return Response(results.update({

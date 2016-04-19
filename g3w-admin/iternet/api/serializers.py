@@ -111,7 +111,7 @@ class AccessoGeoSerializer(IternetSerializerMixin, serializers.GeoFeatureModelSe
         Classmethod to delete model instance and realtions
         """
         queryParams = None
-        if instance.tip_acc.pk == '0101':
+        if instance.tip_acc.pk in ('0101', '0102'):
             queryParams = {'cod_acc_est': instance.cod_acc}
         elif instance.tip_acc.pk == '0501':
             queryParams = {'cod_acc_int': instance.cod_acc}
@@ -119,7 +119,11 @@ class AccessoGeoSerializer(IternetSerializerMixin, serializers.GeoFeatureModelSe
         if queryParams:
             numero_civico = NumeroCivico.objects.filter(**queryParams)
             for nc in numero_civico:
+                if instance.tip_acc.pk == '0102':
+                    accesso0502 = Accesso.objects.filter(cod_acc=nc.cod_acc_int)
+                    accesso0502.delete()
                 nc.delete()
+
 
         instance.delete()
 

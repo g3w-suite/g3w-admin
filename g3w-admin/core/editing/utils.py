@@ -96,4 +96,10 @@ class LayerLock(object):
         for featureLock in featuresLocked:
             featureLock.delete()
 
+    def unLockFeatureBySession(self):
+
+        featuresToUnlock = LockModel.objects.filter(sessionid=self.sessionid)
+        for f in featuresToUnlock:
+            f.delete()
+
 
