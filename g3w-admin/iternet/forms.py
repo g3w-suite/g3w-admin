@@ -49,6 +49,11 @@ class ConfigForm(ModelForm):
         if layerNamesNotInProject:
             raise ValidationError(_('Project not correct: {} layers no in project'.format(', '.join(layerNamesNotInProject))))
 
+        # check for project SRID
+        if project.group.srid != settings.ITERNET_DATA_SRID:
+            raise ValidationError(
+                _('Project not correct: SRID must be {}'.format(settings.ITERNET_DATA_SRID)))
+
         # check for datasoruce
         # build layer data source model
         '''

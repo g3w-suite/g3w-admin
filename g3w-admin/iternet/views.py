@@ -245,6 +245,9 @@ class DashboardView(TemplateView):
         # set data iternet connection
         context['db_connection'] = iternet_connection
 
+        # set config_data
+        context['config_data'] = Config.getData()
+
         # get report data from nodi accessi and elementi stradali
         '''
         context['n_accessi'] = len(Accesso.objects.all())
