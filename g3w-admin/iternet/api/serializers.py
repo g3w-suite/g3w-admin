@@ -39,8 +39,45 @@ class NumeroCivicoSerializer(IternetSerializerMixin, serializers.ModelSerializer
 class ElementoStradaleGeoSerializer(IternetSerializerMixin, serializers.GeoFeatureModelSerializer):
 
     def create(self, validated_data):
-        validated_data['cod_ele'] = self.Meta.model.getNewCodele()
+        validated_data['cod_ele'] = self.Meta.model.getNewCodEle()
+
+        # before validation relations if present
+        if self.relationsAttributes:
+            self.relationsAttributes['cod_top'] = ToponimoStradaleSerializer.Meta.model.getNewCodTop()
+            toponimoStradaleSerializer = NumeroCivicoSerializer(data=self.relationsAttributes)
+
+            # validation relation:
+            toponimoStradaleSerializer.is_valid(raise_exception=True)
+            toponimoStradaleInstance = toponimoStradaleSerializer.save()
+            validated_data['cod_top'] = toponimoStradaleInstance.cod_top
+
         instance = super(ElementoStradaleGeoSerializer, self).create(validated_data)
+        return instance
+
+    def update(self, instance, validated_data):
+
+        instance = super(ElementoStradaleGeoSerializer, self).update(instance, validated_data)
+
+        # before validation relations if present
+        if self.relationsAttributes:
+            toponimoStradale = ToponimoStradale.objects.get(pk=self.relationsAttributes['cod_top'])
+            toponimoStradaleSerializer = ToponimoStradaleSerializer(toponimoStradale, data=self.relationsAttributes)
+
+            # validation relation:
+            toponimoStradaleSerializer.is_valid(raise_exception=True)
+            toponimoStradaleSerializer.save()
+
+        return instance
+
+    @classmethod
+    def delete(cls, instance):
+        """
+        Classmethod to delete model instance and realtions
+        """
+        toponimoStradale = ToponimoStradale.objects.filter(pk=instance.cod_top)
+        for ts in toponimoStradale:
+            ts.delete()
+        instance.delete()
 
     class Meta:
         model = ElementoStradale
@@ -49,6 +86,10 @@ class ElementoStradaleGeoSerializer(IternetSerializerMixin, serializers.GeoFeatu
 
 
 class GiunzioneStradaleGeoSerializer(IternetSerializerMixin, serializers.GeoFeatureModelSerializer):
+
+    def create(self, validated_data):
+        validated_data['cod_gnz'] = self.Meta.model.getNewCodGnz()
+        return super(GiunzioneStradaleGeoSerializer, self).create(validated_data)
 
     class Meta:
         model = GiunzioneStradale
@@ -120,7 +161,6 @@ class AccessoGeoSerializer(IternetSerializerMixin, serializers.GeoFeatureModelSe
                     accesso0502 = Accesso.objects.filter(cod_acc=nc.cod_acc_int)
                     accesso0502.delete()
                 nc.delete()
-
 
         instance.delete()
 

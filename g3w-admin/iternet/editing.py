@@ -5,7 +5,7 @@ from .utils import getLayerIternetIdByName
 
 
 def buidlKeyValue(legModel):
-    return [{'key': l.id, 'value': l.description} for l in legModel.objects.all()]
+    return [{'key': l.id, 'value': u'({}) {}'.format(l.id, l.description)} for l in legModel.objects.all()]
 
 
 def getForms():
@@ -14,9 +14,9 @@ def getForms():
         'giunzione_stradale': {
             'fields': {
                 'gid': {'editable': False},
-                'cod_gnz': {'editable': False},
-                'tip_gnz': {'input': {'type': FORM_FIELD_TYPE_SELECT, 'options': {'values': buidlKeyValue(LegTipGnz)}}},
-                'org': {'input': {'type': FORM_FIELD_TYPE_SELECT, 'options': {'values': buidlKeyValue(LegOrg)}}}
+                'cod_gnz': {'editable': False, 'label': 'Codice'},
+                'tip_gnz': {'label': 'Tipo', 'input': {'type': FORM_FIELD_TYPE_SELECT, 'options': {'values': buidlKeyValue(LegTipGnz)}}},
+                'org': {'label': 'Organizzazione', 'input': {'type': FORM_FIELD_TYPE_SELECT, 'options': {'values': buidlKeyValue(LegOrg)}}}
             }
         },
         'elemento_stradale': {
@@ -50,19 +50,22 @@ def getForms():
         'accesso': {
             'fields': {
                 'gid': {'editable': False},
-                'cod_acc': {'editable': False},
-                'cod_ele': {'required': True, 'input': {'type': FORM_FIELD_TYPE_LAYERPICKER, 'options': {
+                'cod_acc': {'editable': False, 'label': 'Codice'},
+                'cod_ele': {'required': True, 'label': 'Codice Elemento Stradale', 'input': {'type': FORM_FIELD_TYPE_LAYERPICKER, 'options': {
                     'layerid': getLayerIternetIdByName('elemento_stradale'),
                     'field': 'cod_ele'
                 }}},
-                'tip_acc': {'required': True, 'input': {'type': FORM_FIELD_TYPE_SELECT, 'options': {'values': buidlKeyValue(LegTipAcc)}}},
-                'pas_car': {'required': True, 'input': {'type': FORM_FIELD_TYPE_SELECT, 'options': {'values': buidlKeyValue(LegPasCar)}}}
+                'tip_acc': {'required': True, 'label': 'Tipo Accesso', 'input': {'type': FORM_FIELD_TYPE_SELECT, 'options': {'values': buidlKeyValue(LegTipAcc)}}},
+                'pas_car': {'required': True, 'label': 'Passo Carrabile', 'input': {'type': FORM_FIELD_TYPE_SELECT, 'options': {'values': buidlKeyValue(LegPasCar)}}}
             }
         }
     }
 
 
 def getRelationForms():
+
+    comuniList = [{'key': l.cod_catastale, 'value': '({}) {}'.format(l.cod_catastale, l.denominazione)} for l in
+                  Comuni.objects.all()]
 
     return  {
         'accesso': {
@@ -73,20 +76,26 @@ def getRelationForms():
                 ],
                 'url': reverse('iternet-api-civici'),
                 'fields': [
-                    editingFormField('cod_civ', editable=False),
-                    editingFormField('num_civ', inputType=FORM_FIELD_TYPE_TEXT, required=True),
-                    editingFormField('esp_civ'),
-                    editingFormField('cod_top', required=True, inputType=FORM_FIELD_TYPE_LAYERPICKER, pickerdata={
+                    editingFormField('cod_civ', fieldLabel='Codice', editable=False),
+                    editingFormField('num_civ', fieldLabel='Numero', inputType=FORM_FIELD_TYPE_TEXT, required=True),
+                    editingFormField('esp_civ', fieldLabel='Esponente'),
+                    editingFormField('cod_top', fieldLabel='Codice Toponimo',
+                                     required=True, inputType=FORM_FIELD_TYPE_LAYERPICKER, pickerdata={
                         'layerid': getLayerIternetIdByName('elemento_stradale'),
                         'field': 'cod_top'
                     }),
-                    editingFormField('cod_com', required=True, inputType=FORM_FIELD_TYPE_SELECT, values=[{'key': l.cod_catastale, 'value': l.denominazione} for l in Comuni.objects.all()], default=settings.ITERNET_CODE_COMUNE),
-                    editingFormField('cod_acc_est', required=True, inputType=FORM_FIELD_TYPE_LAYERPICKER, pickerdata={
+                    editingFormField('cod_com', fieldLabel='Comune',
+                                     required=True, inputType=FORM_FIELD_TYPE_SELECT, values=comuniList,
+                                     default=settings.ITERNET_CODE_COMUNE),
+                    editingFormField('cod_acc_est', fieldLabel='Codice Accesso Esterno',
+                                     required=True, inputType=FORM_FIELD_TYPE_LAYERPICKER, pickerdata={
                         'layerid': getLayerIternetIdByName('accesso'),
                         'field': 'cod_acc'
                     }),
-                    editingFormField('cod_acc_int', editable=False),
-                    editingFormField('cod_classifica', inputType=FORM_FIELD_TYPE_SELECT, values=buidlKeyValue(LegCodClassifica))
+                    editingFormField('cod_acc_int', fieldLabel='Codice Accesso Interno',
+                                     editable=False),
+                    editingFormField('cod_classifica', fieldLabel='Classifica',
+                                     inputType=FORM_FIELD_TYPE_SELECT, values=buidlKeyValue(LegCodClassifica))
                 ]
             }
         },
@@ -100,7 +109,8 @@ def getRelationForms():
                     editingFormField('cod_top', editable=False),
                     editingFormField('cod_dug', inputType=FORM_FIELD_TYPE_SELECT, values=buidlKeyValue(LegCodDug)),
                     editingFormField('def_uff'),
-                    editingFormField('cod_com'),
+                    editingFormField('cod_com', required=True, inputType=FORM_FIELD_TYPE_SELECT,
+                                     values=comuniList, default=settings.ITERNET_CODE_COMUNE),
                     editingFormField('cod_via')
                 ]
 

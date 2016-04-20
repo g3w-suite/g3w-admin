@@ -15,7 +15,6 @@ from qdjango.models import Project
 from core.utils.db import getNextVlueFromPGSeq
 
 
-
 TIP_OPZ = Choices(
     (u'U', u'aggiornato'),
     (u'I', u'nuovo inserimento'),
@@ -378,6 +377,20 @@ class ElementoStradale(models.Model):
         verbose_name_plural = 'Elementi stradali'
 
     @classmethod
+    def getNewCodEle(cls):
+        """
+        Get new cod_acc last in table
+        """
+
+        # get new sequential value from postgres sequence
+        return "{}{}{}{}".format(
+            'RT',
+            settings.ITERNET_CODE_ISTAT_COMUNE,
+            str(getNextVlueFromPGSeq('elemento_stradale_cod_ele_seq', settings.ITERNET_DATABASE)).zfill(5),
+            'ES'
+        )
+
+    @classmethod
     def metadataTableInfo(cls):
         return {
             'model': ArchiInfo,
@@ -402,6 +415,20 @@ class GiunzioneStradale(models.Model):
         verbose_name_plural = 'Giunzioni stradali'
 
     @classmethod
+    def getNewCodGnz(cls):
+        """
+        Get new cod_acc last in table
+        """
+
+        # get new sequential value from postgres sequence
+        return "{}{}{}{}".format(
+            'RT',
+            settings.ITERNET_CODE_ISTAT_COMUNE,
+            str(getNextVlueFromPGSeq('giunzione_stradale_cod_gnz_seq', settings.ITERNET_DATABASE)).zfill(5),
+            'GZ'
+        )
+
+    @classmethod
     def metadataTableInfo(cls):
         return {
             'model': NodiInfo,
@@ -420,6 +447,20 @@ class ToponimoStradale(models.Model):
         db_table = 'toponimo_stradale'
         verbose_name = 'Toponimo stradale'
         verbose_name_plural = 'Toponimi stradali'
+
+    @classmethod
+    def getNewCodTop(cls):
+        """
+        Get new cod_acc last in table
+        """
+
+        # get new sequential value from postgres sequence
+        return "{}{}{}{}".format(
+            'RT',
+            settings.ITERNET_CODE_ISTAT_COMUNE,
+            str(getNextVlueFromPGSeq('toponimo_stradale_cod_top_seq', settings.ITERNET_DATABASE)).zfill(5),
+            'TO'
+        )
 
     @classmethod
     def metadataTableInfo(cls):
