@@ -125,12 +125,12 @@ def mapLayerAttributes(layer, formField=False, **kwargs):
     layer_type = getattr(layer, 'layer_type')
     mappingData = FIELD_TYPES_MAPPING.get(layer_type, FIELD_TYPES_MAPPING['default'])
 
-    fields = eval(layer.database_columns)
+    fields = eval(layer.database_columns) if layer.database_columns else None
     fieldsMapped = deepcopy(fields)
 
     if formField:
         formFields = OrderedDict()
-    
+
     for field in fieldsMapped:
         originType = field['type'].lower()
         type = originType[:originType.find('(')] if originType.find('(') >= 0 else originType

@@ -76,6 +76,7 @@ class Layer(models.Model):
     TYPES = Choices(
         ('postgres', _('Postgres')),
         ('spatialite', _('SpatiaLite')),
+        ('raster', _('Raster')),
         ('wfs', _('WFS')),
         ('wms', _('WMS')),
         ('ogr', _('OGR')),
@@ -105,7 +106,7 @@ class Layer(models.Model):
         null=True
         )
     # Database columns (postgres layers need it)
-    database_columns = models.TextField(_('Database columns'), blank=True)
+    database_columns = models.TextField(_('Database columns'), blank=True, null=True)
 
     # minscale and maxscale and scalebasedvisibility
     min_scale = models.IntegerField(_('Layer Min Scale visibility'), blank=True, null=True)

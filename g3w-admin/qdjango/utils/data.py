@@ -204,7 +204,8 @@ class QgisProjectLayer(QgisData):
         Get geometry from layer attribute
         :return: string
         """
-        return self.qgisProjectLayerTree.attrib['geometry']
+
+        return self.qgisProjectLayerTree.attrib.get('geometry')
 
     def _getDataEditOptions(self):
 
@@ -250,6 +251,9 @@ class QgisProjectLayer(QgisData):
             layerStructure = QgisDBLayerStructure(self, layerType=self.layerType)
         elif self.layerType in [Layer.TYPES.ogr]:
             layerStructure = QgisOGRLayerStructure(self)
+        elif self.layerType in [Layer.TYPES.wms]:
+            return None
+
 
         if len(layerStructure.columns) > 0:
             layerStructure.columns += self._getLayerJoinedColumns()
@@ -295,7 +299,7 @@ class QgisProjectLayer(QgisData):
         :return:
         """
 
-        columns = json.dumps(self.columns)
+        columns = json.dumps(self.columns) if self.columns else None
 
         self.instance, created = Layer.objects.get_or_create(
             name=self.name,
@@ -396,7 +400,9 @@ class QgisProject(QgisData):
         IsGroupCompatibleValidator
     ]
 
-    _regexXmlLayer = 'projectlayers/maplayer[@geometry!="No geometry"]'
+    #_regexXmlLayer = 'projectlayers/maplayer[@geometry!="No geometry"]'
+
+    _regexXmlLayer = 'projectlayers/maplayer'
 
     _introMessageException = _('Invalid Project Data ')
 
@@ -523,7 +529,6 @@ class QgisProject(QgisData):
         for order,layerTree in enumerate(layerTrees):
             if self._checkLayerTypeCompatible(layerTree):
                 layers.append(QgisProjectLayer(layerTree, qgisProject=self, order=order))
-
         return layers
 
     def _getDataQgisVersion(self):

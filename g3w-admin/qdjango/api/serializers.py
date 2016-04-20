@@ -94,7 +94,7 @@ class LayerSerializer(serializers.ModelSerializer):
         )
 
     def get_attributes(self, instance):
-        return mapLayerAttributes(instance)
+        return mapLayerAttributes(instance) if instance.database_columns else []
 
     def to_representation(self, instance):
         ret = super(LayerSerializer, self).to_representation(instance)
