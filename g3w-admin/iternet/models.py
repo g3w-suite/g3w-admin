@@ -432,8 +432,9 @@ class GiunzioneStradale(models.Model):
     def metadataTableInfo(cls):
         return {
             'model': NodiInfo,
-            'fk': 'cod_civ'
+            'fk': 'cod_gnz'
         }
+
 
 
 class ToponimoStradale(models.Model):

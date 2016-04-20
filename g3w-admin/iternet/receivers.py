@@ -59,7 +59,7 @@ def postSaveMetadataInfo(sender, **kwargs):
 
     if 'created' in kwargs and kwargs['created']:
 
-        # add new accessi_info row
+        # add new row into metadata table 'info'
         ainfo = metadataTableInfo['model'](tip_opz='I', **filterData)
         ainfo.save()
     else:
