@@ -2,13 +2,6 @@ from rest_framework_gis import serializers
 from iternet.models import *
 
 
-# --------------------------------------------
-# no geo data
-# --------------------------------------------
-
-
-
-
 class IternetSerializerMixin(object):
     """
     Generic mixins for iternet geoserializer model
@@ -32,18 +25,22 @@ class IternetSerializerMixin(object):
 
 
 class ToponimoStradaleSerializer(IternetSerializerMixin, serializers.ModelSerializer):
+
     class Meta:
         model = ToponimoStradale
 
 
 class NumeroCivicoSerializer(IternetSerializerMixin, serializers.ModelSerializer):
 
-
     class Meta:
         model = NumeroCivico
 
 
 class ElementoStradaleGeoSerializer(IternetSerializerMixin, serializers.GeoFeatureModelSerializer):
+
+    def create(self, validated_data):
+        validated_data['cod_ele'] = self.Meta.model.getNewCodele()
+        instance = super(ElementoStradaleGeoSerializer, self).create(validated_data)
 
     class Meta:
         model = ElementoStradale
