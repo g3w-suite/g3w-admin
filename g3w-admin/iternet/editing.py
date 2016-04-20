@@ -22,29 +22,31 @@ def getForms():
         'elemento_stradale': {
             'fields': {
                 'gid': {'editable': False},
-                'cod_ele': {'editable': False},
-                'nod_ini': {'required': True, 'input': {'type': FORM_FIELD_TYPE_LAYERPICKER, 'options': {
+                'cod_ele': {'editable': False, 'label': 'Codice'},
+                'nod_ini': {'label': 'Codice Nodo Iniziale', 'required': True, 'input': {'type': FORM_FIELD_TYPE_LAYERPICKER, 'options': {
                     'layerid': getLayerIternetIdByName('giunzione_stradale'),
                     'field': 'cod_gnz'
                 }}},
-                'nod_fin': {'required': True, 'input': {'type': FORM_FIELD_TYPE_LAYERPICKER, 'options': {
+                'nod_fin': {'label': 'Codice Nodo Finale', 'required': True, 'input': {'type': FORM_FIELD_TYPE_LAYERPICKER, 'options': {
                     'layerid': getLayerIternetIdByName('giunzione_stradale'),
                     'field': 'cod_gnz'
                 }}},
-                'cod_sta': {'input': {'type': FORM_FIELD_TYPE_SELECT, 'options': {'values': buidlKeyValue(LegCodSta)}}},
-                'cod_sed': {'input': {'type': FORM_FIELD_TYPE_SELECT, 'options': {'values': buidlKeyValue(LegCodSed)}}},
-                'tip_ele': {'required': True, 'input': {'type': FORM_FIELD_TYPE_SELECT, 'options': {'values': buidlKeyValue(LegTipEle)}}},
-                'cls_tcn': {'required': True, 'input': {'type': FORM_FIELD_TYPE_SELECT, 'options': {'values': buidlKeyValue(LegClsTcn)}}},
-                'tip_gst': {'required': True, 'input': {'type': FORM_FIELD_TYPE_SELECT, 'options': {'values': buidlKeyValue(LegTipGst)}}},
-                'cod_gst': {'required': True},
-                'lng': {'required': True},
-                'cod_top': {'required': True},
-                'sot_pas': {'required': True, 'input': {'type': FORM_FIELD_TYPE_SELECT, 'options': {'values': buidlKeyValue(LegSotPas)}}},
-                'cmp_ele': {'input': {'type': FORM_FIELD_TYPE_SELECT, 'options': {'values': buidlKeyValue(LegCmpEle)}}},
-                'org': {'input': {'type': FORM_FIELD_TYPE_SELECT, 'options': {'values': buidlKeyValue(LegOrg)}}},
-                'cls_lrg': {'input': {'type': FORM_FIELD_TYPE_SELECT, 'options': {'values': buidlKeyValue(LegClsLrg)}}},
-                'tip_pav': {'input': {'type': FORM_FIELD_TYPE_SELECT, 'options': {'values': buidlKeyValue(LegTipPav)}}},
-                'one_way': {'input': {'type': FORM_FIELD_TYPE_SELECT, 'options': {'values': buidlKeyValue(LegOneWay)}}}
+                'cod_sta': {'label': 'Stato di Esercizio', 'input': {'type': FORM_FIELD_TYPE_SELECT, 'options': {'values': buidlKeyValue(LegCodSta)}}},
+                'cod_sed': {'label': 'Sede', 'input': {'type': FORM_FIELD_TYPE_SELECT, 'options': {'values': buidlKeyValue(LegCodSed)}}},
+                'tip_ele': {'label': 'Tipo', 'required': True, 'input': {'type': FORM_FIELD_TYPE_SELECT, 'options': {'values': buidlKeyValue(LegTipEle)}}},
+                'cls_tcn': {'label': 'Classe Tecnico Funzionale', 'required': True, 'input': {'type': FORM_FIELD_TYPE_SELECT, 'options': {'values': buidlKeyValue(LegClsTcn)}}},
+                'tip_gst': {'label': 'Tipo Gestione', 'required': True, 'input': {'type': FORM_FIELD_TYPE_SELECT, 'options': {'values': buidlKeyValue(LegTipGst)}}},
+                'cod_gst': {'label': 'Codice Gestione', 'required': True},
+                'lng': {'label': 'Lunghezza', 'required': True},
+                'cod_top': {'label': 'Codice Toponimo', 'required': True, 'editable': False},
+                'cod_top2': {'label': 'Codice Toponimo 2', 'required': False, 'editable': False},
+                'cod_reg': {'label': 'Codice Regionale', 'required': False },
+                'sot_pas': {'label': 'Sotto Passo', 'required': True, 'input': {'type': FORM_FIELD_TYPE_SELECT, 'options': {'values': buidlKeyValue(LegSotPas)}}},
+                'cmp_ele': {'label': 'Composizione', 'input': {'type': FORM_FIELD_TYPE_SELECT, 'options': {'values': buidlKeyValue(LegCmpEle)}}},
+                'org': {'label': 'Origine del dato', 'input': {'type': FORM_FIELD_TYPE_SELECT, 'options': {'values': buidlKeyValue(LegOrg)}}},
+                'cls_lrg': {'label': 'Classe di Larghezza', 'input': {'type': FORM_FIELD_TYPE_SELECT, 'options': {'values': buidlKeyValue(LegClsLrg)}}},
+                'tip_pav': {'label': 'Tipo Pavimentazione', 'input': {'type': FORM_FIELD_TYPE_SELECT, 'options': {'values': buidlKeyValue(LegTipPav)}}},
+                'one_way': {'label': 'Direzione del traffico', 'input': {'type': FORM_FIELD_TYPE_SELECT, 'options': {'values': buidlKeyValue(LegOneWay)}}}
             }
         },
         'accesso': {
@@ -106,12 +108,12 @@ def getRelationForms():
                 ],
                 'url': reverse('iternet-api-toponimi'),
                 'fields': [
-                    editingFormField('cod_top', editable=False),
-                    editingFormField('cod_dug', inputType=FORM_FIELD_TYPE_SELECT, values=buidlKeyValue(LegCodDug)),
-                    editingFormField('def_uff'),
-                    editingFormField('cod_com', required=True, inputType=FORM_FIELD_TYPE_SELECT,
+                    editingFormField('cod_top', fieldLabel='Codice', editable=False),
+                    editingFormField('cod_dug', fieldLabel='Tipo', inputType=FORM_FIELD_TYPE_SELECT, values=buidlKeyValue(LegCodDug)),
+                    editingFormField('den_uff', fieldLabel='Denominazione Ufficiale'),
+                    editingFormField('cod_com', fieldLabel='Comune', required=True, inputType=FORM_FIELD_TYPE_SELECT,
                                      values=comuniList, default=settings.ITERNET_CODE_COMUNE),
-                    editingFormField('cod_via')
+                    editingFormField('cod_via', fieldLabel='Codice Comunale')
                 ]
 
             }
