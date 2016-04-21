@@ -1,5 +1,6 @@
 from django.contrib import admin
 from import_export.admin import ImportExportModelAdmin
+from core.ie.admin import G3WImportExportModelAdmin
 from django.contrib.gis.admin import OSMGeoAdmin
 
 from .models import *
@@ -103,34 +104,39 @@ class ToponimoStradaleAdmin(ImportExportModelAdmin):
 admin.site.register(ToponimoStradale, ToponimoStradaleAdmin)
 
 
-class CiviciInfoStradaleAdmin(ImportExportModelAdmin):
+class CiviciInfoAdmin(G3WImportExportModelAdmin):
     model = CiviciInfo
     list_display = ('cod_civ', 'tip_opz')
-admin.site.register(CiviciInfo, CiviciInfoStradaleAdmin)
+    resource_class = CiviciInfoResource
+admin.site.register(CiviciInfo, CiviciInfoAdmin)
 
 
-class ArchiInfoStradaleAdmin(ImportExportModelAdmin):
+class ArchiInfoAdmin(ImportExportModelAdmin):
     model = ArchiInfo
     list_display = ('cod_ele', 'tip_opz')
-admin.site.register(ArchiInfo, ArchiInfoStradaleAdmin)
+    resource_class = ArchiInfoResource
+admin.site.register(ArchiInfo, ArchiInfoAdmin)
 
 
-class ToponimiInfoStradaleAdmin(ImportExportModelAdmin):
+class ToponimiInfoAdmin(ImportExportModelAdmin):
     model = ToponimiInfo
     list_display = ('cod_top', 'tip_opz')
-admin.site.register(ToponimiInfo, ToponimiInfoStradaleAdmin)
+    resource_class = ToponimiInfoResource
+admin.site.register(ToponimiInfo, ToponimiInfoAdmin)
 
 
-class AccessiInfoStradaleAdmin(ImportExportModelAdmin):
+class AccessiInfoAdmin(ImportExportModelAdmin):
     model = AccessiInfo
     list_display = ('cod_acc', 'tip_opz')
-admin.site.register(AccessiInfo, AccessiInfoStradaleAdmin)
+    resource_class = AccessiInfoResource
+admin.site.register(AccessiInfo, AccessiInfoAdmin)
 
 
-class NodiInfoStradaleAdmin(ImportExportModelAdmin):
+class NodiInfoAdmin(ImportExportModelAdmin):
     model = NodiInfo
     list_display = ('cod_gnz', 'tip_opz')
-admin.site.register(NodiInfo, NodiInfoStradaleAdmin)
+    resource_class = NodiInfoResource
+admin.site.register(NodiInfo, NodiInfoAdmin)
 
 
 class NumeroCivicoAdmin(ImportExportModelAdmin):

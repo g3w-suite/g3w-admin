@@ -23,11 +23,11 @@ def getForms():
             'fields': {
                 'gid': {'editable': False},
                 'cod_ele': {'editable': False, 'label': 'Codice'},
-                'nod_ini': {'label': 'Codice Nodo Iniziale', 'required': True, 'input': {'type': FORM_FIELD_TYPE_LAYERPICKER, 'options': {
+                'nod_ini': {'editable': False, 'label': 'Codice Nodo Iniziale', 'required': True, 'input': {'type': FORM_FIELD_TYPE_LAYERPICKER, 'options': {
                     'layerid': getLayerIternetIdByName('giunzione_stradale'),
                     'field': 'cod_gnz'
                 }}},
-                'nod_fin': {'label': 'Codice Nodo Finale', 'required': True, 'input': {'type': FORM_FIELD_TYPE_LAYERPICKER, 'options': {
+                'nod_fin': {'editable': False, 'label': 'Codice Nodo Finale', 'required': True, 'input': {'type': FORM_FIELD_TYPE_LAYERPICKER, 'options': {
                     'layerid': getLayerIternetIdByName('giunzione_stradale'),
                     'field': 'cod_gnz'
                 }}},

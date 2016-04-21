@@ -3,7 +3,6 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django.db import IntegrityError, transaction
 from django.db.models import Q
-import copy
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError, APIException
@@ -14,9 +13,13 @@ from core.editing.utils import LayerLock
 from core.api.authentication import CsrfExemptSessionAuthentication
 from core.api.filters import IntersectsBBoxFilter
 from core.api.views import G3WAPIView
+from core.geo.exports import ShpResponder
 from .configs import ITERNET_LAYERS
 from .editing import *
 from .api.serializers import NumeroCivicoSerializer, ToponimoStradaleSerializer
+from .ie.resources import AccessiInfoResource
+import copy
+from datetime import date
 
 iternet_connection = copy.copy(settings.DATABASES[settings.ITERNET_DATABASE])
 
@@ -312,3 +315,23 @@ class DownloadQgisPgConnectionView(View):
         response['Content-Disposition'] = 'attachment; filename="g3w_iternet_qgis_connection.xml"'
         return response
 
+
+class ExportShapefileView(View):
+
+    def get(self, request, **kwargs):
+
+        # validation layername:
+        if 'layer_name' not in kwargs or kwargs['layer_name'] not in ITERNET_LAYERS.keys():
+            raise Exception('Only one of this layer: {}'.format(', '.join(ITERNET_LAYERS.keys())))
+
+        layerName = kwargs['layer_name']
+        time = date.today()
+
+        # instance ShapResponder
+        zip = ShpResponder(ITERNET_LAYERS[layerName]['model'].objects.all(), file_name=u"{}_{}{}{}".format(layerName, time.day, time.month, time.year))
+
+        # add accessiinfo
+        r = AccessiInfoResource().export()
+        zip.addDbf({'stream': r, 'name': 'ACCESSI_INFO.dbf'})
+
+        return zip()
