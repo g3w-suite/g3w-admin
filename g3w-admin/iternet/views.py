@@ -162,12 +162,20 @@ class EditingApiView(APIView):
                                         try:
                                             insertIds
                                         except NameError:
-                                            insertIds = []
-
-                                        insertIds.append({
+                                            if layer_name:
+                                                insertIds = []
+                                            else:
+                                                insertIds = {
+                                                    ln: []
+                                                }
+                                        toRes = {
                                             'clientid': GeoJSONFeature['id'],
                                             'id': dato.pk
-                                        })
+                                        }
+                                        if layer_name:
+                                            insertIds.append(toRes)
+                                        else:
+                                            insertIds[ln].append(toRes)
 
                                 else:
                                     raise ValidationError(results.update({
