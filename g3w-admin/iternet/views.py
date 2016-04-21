@@ -36,19 +36,20 @@ class EditingApiView(APIView):
     def initial(self, request, *args, **kwargs):
         super(EditingApiView, self).initial(request, *args, **kwargs)
 
-        if kwargs['layer_name'] not in ITERNET_LAYERS.keys():
-            raise APIException('Only one of this: {}'.format(', '.join(ITERNET_LAYERS.keys())))
+        if request.method.lower() == 'get':
+            if kwargs['layer_name'] not in ITERNET_LAYERS.keys():
+                raise APIException('Only one of this: {}'.format(', '.join(ITERNET_LAYERS.keys())))
 
-        # set layer model obejct to work
-        self.layer = getLayerIternetIdByName(kwargs['layer_name'], object=True)
+            # set layer model obejct to work
+            self.layer = getLayerIternetIdByName(kwargs['layer_name'], object=True)
 
-        # set lock object
-        self.lock = LayerLock(
-            appName='iternet',
-            layer=self.layer,
-            user=request.user,
-            sessionid=request.COOKIES[settings.SESSION_COOKIE_NAME]
-        )
+            # set lock object
+            self.lock = LayerLock(
+                appName='iternet',
+                layer=self.layer,
+                user=request.user,
+                sessionid=request.COOKIES[settings.SESSION_COOKIE_NAME]
+            )
 
     def get(self, request, format=None, layer_name=None):
 
@@ -119,6 +120,7 @@ class EditingApiView(APIView):
         Save data on database, clientsend data for every layer of iternet project.
         """
         data = request.data
+        layers_names = [layer_name] if layer_name else ITERNET_LAYERS.keys()
 
         # result structure
         results = {
@@ -128,52 +130,56 @@ class EditingApiView(APIView):
         # start transaction
         try:
             with transaction.atomic(using=settings.ITERNET_DATABASE):
-                layerConfigData = ITERNET_LAYERS[layer_name]
-                clientVar = layerConfigData['clientVar']
-                model = layerConfigData['model']
+                for ln in layers_names:
+                    layerConfigData = ITERNET_LAYERS[ln]
+                    clientVar = layerConfigData['clientVar']
+                    model = layerConfigData['model']
 
-                # save insert
-                for mode in (EDITING_POST_DATA_ADDED, EDITING_POST_DATA_UPDATED):
-                    if mode in data:
-                        for GeoJSONFeature in data[mode]:
-                            if mode == EDITING_POST_DATA_ADDED:
-                                serializer = layerConfigData['geoSerializer'](data=GeoJSONFeature)
-                            else:
-                                feature = model.objects.get(pk=GeoJSONFeature['id'])
-                                serializer = layerConfigData['geoSerializer'](feature, data=GeoJSONFeature)
+                    # get subset post data
+                    subsetData = data if layer_name else data[ln]
 
-                            # check for realtionsAttributes
-                            if bool(data['relationsattributes']) and GeoJSONFeature['id'] in data['relationsattributes']:
-                                serializer.setRealtionsAttributes(
-                                    data['relationsattributes'][GeoJSONFeature['id']]
-                                )
-
-                            if serializer.is_valid():
-                                dato = serializer.save()
+                    # save insert
+                    for mode in (EDITING_POST_DATA_ADDED, EDITING_POST_DATA_UPDATED):
+                        if mode in subsetData:
+                            for GeoJSONFeature in subsetData[mode]:
                                 if mode == EDITING_POST_DATA_ADDED:
+                                    serializer = layerConfigData['geoSerializer'](data=GeoJSONFeature)
+                                else:
+                                    feature = model.objects.get(pk=GeoJSONFeature['id'])
+                                    serializer = layerConfigData['geoSerializer'](feature, data=GeoJSONFeature)
 
-                                    # add id insert to res
-                                    try:
-                                        insertIds
-                                    except NameError:
-                                        insertIds = []
+                                # check for realtionsAttributes
+                                if bool(subsetData['relationsattributes']) and GeoJSONFeature['id'] in subsetData['relationsattributes']:
+                                    serializer.setRealtionsAttributes(
+                                        subsetData['relationsattributes'][GeoJSONFeature['id']]
+                                    )
 
-                                    insertIds.append({
-                                        'clientid': GeoJSONFeature['id'],
-                                        'id': dato.pk
-                                    })
+                                if serializer.is_valid():
+                                    dato = serializer.save()
+                                    if mode == EDITING_POST_DATA_ADDED:
 
-                            else:
-                                raise ValidationError(results.update({
-                                    'result': False,
-                                    'errors': serializer.errors
-                                }))
+                                        # add id insert to res
+                                        try:
+                                            insertIds
+                                        except NameError:
+                                            insertIds = []
 
-                # save delete
-                if EDITING_POST_DATA_DELETED in data:
-                    features = model.objects.filter(pk__in=data[EDITING_POST_DATA_DELETED])
-                    for feature in features:
-                        layerConfigData['geoSerializer'].delete(feature)
+                                        insertIds.append({
+                                            'clientid': GeoJSONFeature['id'],
+                                            'id': dato.pk
+                                        })
+
+                                else:
+                                    raise ValidationError(results.update({
+                                        'result': False,
+                                        'errors': serializer.errors
+                                    }))
+
+                    # save delete
+                    if EDITING_POST_DATA_DELETED in subsetData:
+                        features = model.objects.filter(pk__in=subsetData[EDITING_POST_DATA_DELETED])
+                        for feature in features:
+                            layerConfigData['geoSerializer'].delete(feature)
 
         except IntegrityError as e:
             return Response(results.update({
