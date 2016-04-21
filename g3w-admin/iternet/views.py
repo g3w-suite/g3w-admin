@@ -13,15 +13,15 @@ from core.editing.structure import *
 from core.editing.utils import LayerLock
 from core.api.authentication import CsrfExemptSessionAuthentication
 from core.api.filters import IntersectsBBoxFilter
+from core.api.views import G3WAPIView
 from .configs import ITERNET_LAYERS
 from .editing import *
 from .api.serializers import NumeroCivicoSerializer, ToponimoStradaleSerializer
 
-
 iternet_connection = copy.copy(settings.DATABASES[settings.ITERNET_DATABASE])
 
 
-class EditingApiView(APIView):
+class EditingApiView(G3WAPIView):
     """
     APIView to get data Project and layers
     """
@@ -37,8 +37,8 @@ class EditingApiView(APIView):
         super(EditingApiView, self).initial(request, *args, **kwargs)
 
         if request.method.lower() == 'get':
-            if kwargs['layer_name'] not in ITERNET_LAYERS.keys():
-                raise APIException('Only one of this: {}'.format(', '.join(ITERNET_LAYERS.keys())))
+            if 'layer_name' not in kwargs or kwargs['layer_name'] not in ITERNET_LAYERS.keys():
+                raise APIException('Only one of this layer: {}'.format(', '.join(ITERNET_LAYERS.keys())))
 
             # set layer model obejct to work
             self.layer = getLayerIternetIdByName(kwargs['layer_name'], object=True)
@@ -60,7 +60,7 @@ class EditingApiView(APIView):
 
         if unLock:
             self.lock.unLockFeatureBySession()
-            return Response({'result':True})
+            return Response(self.results.results)
 
         if editingMode and configMode:
             raise APIException('config and editing get parameters not allowed')
@@ -117,15 +117,10 @@ class EditingApiView(APIView):
 
     def post(self, request, format=None, layer_name=None):
         """
-        Save data on database, clientsend data for every layer of iternet project.
+        Save data on database, client send data for every layer of iternet project.
         """
         data = request.data
         layers_names = [layer_name] if layer_name else ITERNET_LAYERS.keys()
-
-        # result structure
-        results = {
-            'result': True
-        }
 
         # start transaction
         try:
@@ -178,10 +173,7 @@ class EditingApiView(APIView):
                                             insertIds[ln].append(toRes)
 
                                 else:
-                                    raise ValidationError(results.update({
-                                        'result': False,
-                                        'errors': serializer.errors
-                                    }))
+                                    raise ValidationError(serializer.errors)
 
                     # save delete
                     if EDITING_POST_DATA_DELETED in subsetData:
@@ -190,13 +182,13 @@ class EditingApiView(APIView):
                             layerConfigData['geoSerializer'].delete(feature)
 
         except IntegrityError as e:
-            return Response(results.update({
+            return Response(self.results.update({
                 'result': False,
                 'errors': e.message
-            }))
+            }).results)
 
         try:
-            results.update({
+            self.results.update({
                 'response': {
                     'new': insertIds
                 }
@@ -205,7 +197,7 @@ class EditingApiView(APIView):
             pass
 
 
-        return Response(results)
+        return Response(self.results.results)
 
 
 class NumeroCivicoApiView(APIView):

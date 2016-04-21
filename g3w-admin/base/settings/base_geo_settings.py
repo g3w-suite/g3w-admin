@@ -7,8 +7,7 @@ INSERT = 1
 UPDATE = 2
 DELETE = 4
 
-
-#Tilestache config base
+# Tilestache config base
 TILESTACHE_CONFIG_BASE = {
   "cache": {
 	"name": "Disk",
