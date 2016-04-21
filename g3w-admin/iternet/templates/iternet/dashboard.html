@@ -72,9 +72,16 @@
                 </div>
                 <div class="box-body">
                     {% if config_data %}
-                        {{ config_data.project }} <a href="{% url 'group-project-map' config_data.project.group.slug 'qdjango' config_data.project.pk %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Show map' %}" target="_blank"><i class="ion ion-map"></i></a>
+                        <div class="row">
+                            <div class="col-xs-6">
+                                {{ config_data.project }}
+                            </div>
+                            <div class="col-xs-6">
+                            <a href="{% url 'group-project-map' config_data.project.group.slug 'qdjango' config_data.project.pk %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Show map' %}" target="_blank"><i class="ion ion-map"></i></a>
+                            </div>
+                        </div>
                     {% else %}
-                        <div class="callout callout-dangerno scusa sono ">
+                        <div class="callout callout-danger">
                             <h4>{% trans "Not yet 'Project' set!" %}</h4>
                             <p>{% trans 'Choose a project' %} <a href="{% url 'iternet-config' %}">{% trans 'HERE' %}</a></p>
                         </div>

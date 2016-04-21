@@ -74,10 +74,11 @@ class LayerLock(object):
 
         if getattr(self, 'user') and len(self.getInitialUserFeatureLocked):
             for f in self.getInitialUserFeatureLocked:
-                lockedFeature.append({
-                    'featureid': f.feature_id,
-                    'lockid': f.feature_lock_id
-                })
+                if f.feature_id in featuresIds:
+                    lockedFeature.append({
+                        'featureid': f.feature_id,
+                        'lockid': f.feature_lock_id
+                    })
 
 
         return lockedFeature
