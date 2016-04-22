@@ -1,4 +1,5 @@
 from .models import *
+from .ie.resources import *
 from .api.serializers import *
 
 ITERNET_LAYERS = {
@@ -7,21 +8,35 @@ ITERNET_LAYERS = {
         'clientVar': 'strade', # variable name for client
         'geoSerializer': ElementoStradaleGeoSerializer,
         'geometryType': 'LineString',
-        'metadatiInfo': [ArchiInfo, ToponimiInfo]
+        'relations': [
+            {'model': ToponimoStradale, 'resource': ToponimoStradaleResource, 'dbfFileName': 'toponimo_stradale.dbf'},
+        ],
+        'metadatiInfo': [
+            {'model': ArchiInfo, 'resource': ArchiInfoResource, 'dbfFileName': 'archi_info.dbf'},
+            {'model': ToponimiInfo, 'resource': ToponimiInfoResource, 'dbfFileName': 'toponimi_info.dbf'}
+        ]
     },
     'giunzione_stradale': {
         'model': GiunzioneStradale,
         'clientVar': 'giunzioni',  # variable name for client
         'geoSerializer': GiunzioneStradaleGeoSerializer,
         'geometryType': 'Point',
-        'metadatiInfo': [NodiInfo]
+        'metadatiInfo': [
+            {'model': NodiInfo, 'resource': NodiInfoResource, 'dbfFileName': 'nodi_info.dbf'}
+        ]
     },
     'accesso': {
         'model': Accesso,
         'clientVar': 'accessi',  # variable name for client
         'geoSerializer': AccessoGeoSerializer,
         'geometryType': 'Point',
-        'metadatiInfo': [AccessiInfo, CiviciInfo]
+        'relations': [
+            {'model': NumeroCivico, 'resource': NumeroCivicoResource, 'dbfFileName': 'numero_civico.dbf'},
+        ],
+        'metadatiInfo': [
+            {'model': AccessiInfo, 'resource': AccessiInfoResource, 'dbfFileName': 'accessi_info.dbf'},
+            {'model': CiviciInfo, 'resource': CiviciInfoResource, 'dbfFileName': 'civici_info.dbf'}
+        ]
     },
 
 }

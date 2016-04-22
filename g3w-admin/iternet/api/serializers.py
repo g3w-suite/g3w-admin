@@ -38,13 +38,17 @@ class NumeroCivicoSerializer(IternetSerializerMixin, serializers.ModelSerializer
 
 class ElementoStradaleGeoSerializer(IternetSerializerMixin, serializers.GeoFeatureModelSerializer):
 
+    def setRealtionsAttributes(self, relationsAttributes):
+        if 'toponimo_stradale' in relationsAttributes:
+            self.relationsAttributes = relationsAttributes['toponimo_stradale']
+
     def create(self, validated_data):
         validated_data['cod_ele'] = self.Meta.model.getNewCodEle()
 
         # before validation relations if present
         if self.relationsAttributes:
             self.relationsAttributes['cod_top'] = ToponimoStradaleSerializer.Meta.model.getNewCodTop()
-            toponimoStradaleSerializer = NumeroCivicoSerializer(data=self.relationsAttributes)
+            toponimoStradaleSerializer = ToponimoStradaleSerializer(data=self.relationsAttributes)
 
             # validation relation:
             toponimoStradaleSerializer.is_valid(raise_exception=True)

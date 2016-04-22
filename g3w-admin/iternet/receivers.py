@@ -69,10 +69,15 @@ def postSaveMetadataInfo(sender, **kwargs):
         # before check if present
         try:
             ainfo = metadataTableInfo['model'].objects.get(**filterData)
-            ainfo.tip_opz = 'U'
-            ainfo.save()
+
+            # check if last tip_opz = I
+            if ainfo.tip_opz == 'I' and tip_opz == 'D':
+                ainfo.delete()
+            else:
+                ainfo.tip_opz = tip_opz
+                ainfo.save()
         except ObjectDoesNotExist:
-            ainfo = metadataTableInfo['model'](tip_opz='U', **filterData)
+            ainfo = metadataTableInfo['model'](tip_opz=tip_opz, **filterData)
             ainfo.save()
 
 

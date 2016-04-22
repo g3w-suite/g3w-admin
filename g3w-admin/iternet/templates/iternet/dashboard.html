@@ -13,37 +13,37 @@
         <div class="col-md-4">
             <div class="small-box bg-aqua">
                 <div class="inner">
-                  <h3>{{ n_accessi }}</h3>
+                  <h3>{{ n_accesso }}</h3>
                   <p>Accessi</p>
                 </div>
                 <div class="icon">
                   <i class="ion ion-location"></i>
                 </div>
-                <a href="{% url 'iternet-export-shapefile' 'accesso' %}" class="small-box-footer">Scarica Shapefile <i class="fa fa-download"></i></a>
+                <a href="{% url 'iternet-export-shapefile' 'accesso' %}" class="small-box-footer">Scarica Datapack <i class="fa fa-download"></i></a>
             </div>
         </div>
         <div class="col-md-4">
             <div class="small-box bg-green">
                 <div class="inner">
-                  <h3>{{ n_giunzioni_stradali }}</h3>
+                  <h3>{{ n_giunzione_stradale }}</h3>
                   <p>Giunzioni stradali</p>
                 </div>
                 <div class="icon">
                   <i class="ion ion-location"></i>
                 </div>
-                <a href="{% url 'iternet-export-shapefile' 'giunzione_stradale' %}" class="small-box-footer">Scarica Shapefile <i class="fa fa-download"></i></a>
+                <a href="{% url 'iternet-export-shapefile' 'giunzione_stradale' %}" class="small-box-footer">Scarica Datapack <i class="fa fa-download"></i></a>
             </div>
         </div>
         <div class="col-md-4">
             <div class="small-box bg-yellow">
                 <div class="inner">
-                  <h3>{{ n_elementi_stradali }}</h3>
+                  <h3>{{ n_elemento_stradale }}</h3>
                   <p>Elementi stradali</p>
                 </div>
                 <div class="icon">
                   <i class="ion ion-network"></i>
                 </div>
-                <a href="{% url 'iternet-export-shapefile' 'elemento_stradale' %}" class="small-box-footer">Scarica Shapefile <i class="fa fa-download"></i></a>
+                <a href="{% url 'iternet-export-shapefile' 'elemento_stradale' %}" class="small-box-footer">Scarica Datapack <i class="fa fa-download"></i></a>
             </div>
         </div>
     </div>

@@ -1,7 +1,7 @@
 from django.views.generic import TemplateView, FormView, View
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
-from django.db import IntegrityError, transaction
+from django.db import IntegrityError, transaction, connections
 from django.db.models import Q
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -20,6 +20,13 @@ from .api.serializers import NumeroCivicoSerializer, ToponimoStradaleSerializer
 from .ie.resources import AccessiInfoResource
 import copy
 from datetime import date
+import tempfile
+import subprocess
+import zipfile
+try:
+    from cStringIO import StringIO
+except ImportError:
+    from StringIO import StringIO
 
 iternet_connection = copy.copy(settings.DATABASES[settings.ITERNET_DATABASE])
 
@@ -199,7 +206,6 @@ class EditingApiView(G3WAPIView):
         except :
             pass
 
-
         return Response(self.results.results)
 
 
@@ -258,18 +264,18 @@ class DashboardView(TemplateView):
         context['config_data'] = Config.getData()
 
         # get report data from nodi accessi and elementi stradali
-        '''
-        context['n_accessi'] = len(Accesso.objects.all())
-        context['n_elementi_stradali'] = len(ElementoStradale.objects.all())
-        context['n_giunzioni_stradali'] = len(GiunzioneStradale.objects.all())
-        '''
-        context['n_accessi'] = 'n'
-        context['n_elementi_stradali'] = 'n'
-        context['n_giunzioni_stradali'] = 'n'
+        cur = connections[settings.ITERNET_DATABASE].cursor()
+
+        for layerName, layerData in ITERNET_LAYERS.items():
+            tableName = layerData['model']._meta.db_table
+            cur.execute("ANALYZE {}".format(tableName))
+            cur.execute("SELECT reltuples AS approximate_row_count FROM pg_class WHERE relname = '{}'".format(
+                tableName))
+            context['n_{}'.format(tableName)] = int(cur.fetchone()[0])
+
+        cur.close()
+
         return context
-
-
-
 
 class ConfigView(FormView):
 
@@ -326,12 +332,86 @@ class ExportShapefileView(View):
 
         layerName = kwargs['layer_name']
         time = date.today()
+        try:
+            layer = Config.getData().project.layer_set.filter(name=layerName)[0]
+        except IndexError:
+            raise Exception('{} not present in to project'.format(layerName))
 
-        # instance ShapResponder
-        zip = ShpResponder(ITERNET_LAYERS[layerName]['model'].objects.all(), file_name=u"{}_{}{}{}".format(layerName, time.day, time.month, time.year))
+        # get db connection
+        datasourceDict = {}
+        datalist = layer.datasource.split(' ')
+        for item in datalist:
+            try:
+                key, value = item.split('=')
+                datasourceDict[key] = value.strip('\'')
+            except ValueError:
+                pass
 
-        # add accessiinfo
-        r = AccessiInfoResource().export()
-        zip.addDbf({'stream': r, 'name': 'ACCESSI_INFO.dbf'})
+        # create a tmp file
+        tmpShp = tempfile.NamedTemporaryFile(suffix='.shp', mode = 'w+b')
+        tmpShp.close()
 
-        return zip()
+        # build the ogr2ogr command
+        command = [
+            "ogr2ogr",
+            "-f", "ESRI Shapefile",
+            tmpShp.name,
+            "PG:host={} user={} password={} dbname={} port={}".format(
+                datasourceDict['host'],
+                datasourceDict['user'],
+                datasourceDict['password'],
+                datasourceDict['dbname'],
+                datasourceDict['port']
+            ),
+            str(datasourceDict['table'].replace('"',''))
+        ]
+        subprocess.check_call(command)
+
+        # create zip file
+        buffer = StringIO()
+        zip = zipfile.ZipFile(buffer, 'w', zipfile.ZIP_DEFLATED)
+        files = ['shp', 'shx', 'prj', 'dbf']
+        for item in files:
+            filename = '{}.{}'.format(tmpShp.name.replace('.shp', ''), item)
+            zip.write(filename, arcname='{}.{}'.format(layerName.replace('.shp', ''), item))
+
+        #zip.writestr(dbf_stream['name'], dbf_stream['stream'])
+
+        # add realtions:
+        try:
+            for relation in ITERNET_LAYERS[layerName]['relations']:
+                tmpDbf = tempfile.NamedTemporaryFile(suffix='.dbf', mode='w+b')
+                tmpDbf.close()
+
+                command[3] = tmpDbf.name
+                command[5] = relation['model']._meta.db_table
+
+                subprocess.check_call(command)
+                zip.write(tmpDbf.name, arcname=relation['dbfFileName'])
+        except:
+            pass
+
+
+        # add info metadata dfb
+        for info in ITERNET_LAYERS[layerName]['metadatiInfo']:
+            tmpInfo = tempfile.NamedTemporaryFile(suffix='.dbf', mode='w+b')
+            tmpInfo.close()
+
+            command[3] = tmpInfo.name
+            command[5] = info['model']._meta.db_table
+
+            subprocess.check_call(command)
+            zip.write(tmpInfo.name, arcname=info['dbfFileName'])
+
+        zip.close()
+        buffer.flush()
+        zip_stream = buffer.getvalue()
+        buffer.close()
+
+        response = HttpResponse()
+        response['Content-Disposition'] = 'attachment; filename={}.zip'.format(layerName.replace('.shp', ''))
+        response['Content-length'] = str(len(zip_stream))
+        response['Content-Type'] = 'application/zip'
+        response.write(zip_stream)
+
+        return response

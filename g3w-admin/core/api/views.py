@@ -11,11 +11,12 @@ class G3WAPIResults(object):
     """
     Class to manage results response G3W API
     """
-    results = {
+    _results = {
         'result': True
     }
 
     def __init__(self, **kwargs):
+        self.results = copy(self._results)
         self.results.update(kwargs)
 
     @property
@@ -38,7 +39,7 @@ class G3WAPIResults(object):
             'errors': errorsData
         })
 
-    def update(self, **kwargs):
+    def update(self, kwargs):
         self.results.update(kwargs)
         return self
 
@@ -92,4 +93,9 @@ class G3WAPIView(APIView):
     """
     Overload of rest framework APIView fro G3W-admin framework
     """
-    results =G3WAPIResults()
+
+    def dispatch(self, request, *args, **kwargs):
+
+        # instance G3WApiResults
+        self.results = G3WAPIResults()
+        return super(G3WAPIView, self).dispatch(request, *args, **kwargs)
