@@ -1,6 +1,7 @@
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from django.utils import six
+from django.utils.translation import ugettext, ugettext_lazy as _
 from rest_framework.views import APIView
 from rest_framework import exceptions, status
 from rest_framework.compat import set_rollback
@@ -30,13 +31,13 @@ class G3WAPIResults(object):
         })
 
     @property
-    def errors(self):
-        return self.results['errors']
+    def error(self):
+        return self.results['error']
 
-    @errors.setter
-    def errors(self, errorsData):
+    @error.setter
+    def error(self, errorData):
         self.results.update({
-            'errors': errorsData
+            'error': errorData
         })
 
     def update(self, kwargs):
@@ -66,21 +67,35 @@ def G3WExceptionHandler(exc, context):
         if getattr(exc, 'wait', None):
             headers['Retry-After'] = '%d' % exc.wait
 
-        data.errors = exc.detail
+        if isinstance(exc, exceptions.ValidationError):
+            data.error = {
+                'code': 'validation',
+                'message': _('Data are not correct or insufficent!')
 
+            }
+        else:
+            data.error = {
+                'code': 'servererror',
+                'message': _('A error server is occured!')
+            }
+
+        data.results['error']['data'] = exc.detail
+
+        set_rollback()
+        return Response(data.results, status=exc.status_code, headers=headers)
         set_rollback()
         return Response(data.results, status=exc.status_code, headers=headers)
 
     elif isinstance(exc, Http404):
-        msg = _('Not found.')
-        data.errros = six.text_type(msg)
+        msg = _('Not found')
+        data.error = six.text_type(msg)
 
         set_rollback()
         return Response(data.results, status=status.HTTP_404_NOT_FOUND)
 
     elif isinstance(exc, PermissionDenied):
-        msg = _('Permission denied.')
-        data. errors = six.text_type(msg)
+        msg = _('Permission denied')
+        data.error = six.text_type(msg)
 
         set_rollback()
         return Response(data.results, status=status.HTTP_403_FORBIDDEN)

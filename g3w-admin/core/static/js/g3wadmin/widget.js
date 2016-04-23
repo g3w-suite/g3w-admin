@@ -416,6 +416,13 @@ _.extend(g3wadmin.widget, {
         }
     },
 
+    /**
+     * Make download file by ajax call
+     * selector: ajaxDownload
+     * widget parameters:
+     *      data-ajax-url: url of file to download
+     * @param $item
+     */
     ajaxDownload: function($item) {
 
         try {
