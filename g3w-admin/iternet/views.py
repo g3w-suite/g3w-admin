@@ -183,7 +183,14 @@ class EditingApiView(G3WAPIView):
                                             insertIds[ln].append(toRes)
 
                                 else:
-                                    raise ValidationError(serializer.errors)
+                                    raise ValidationError({
+                                        mode: {
+                                            ln: {
+                                                'id': GeoJSONFeature['id'],
+                                                'fields': serializer.errors
+                                            }
+                                        }
+                                    })
 
                     # save delete
                     if EDITING_POST_DATA_DELETED in subsetData:

@@ -314,9 +314,9 @@ class NumeroCivico(models.Model):
 
 class Accesso(models.Model):
     gid = models.AutoField(primary_key=True)
-    cod_acc = models.CharField(max_length=16, blank=True, null=True)
+    cod_acc = models.CharField(max_length=16)
     tip_acc = models.ForeignKey(LegTipAcc, db_column='tip_acc', null=True, blank=True)
-    cod_ele = models.CharField(max_length=15, blank=True, null=True)
+    cod_ele = models.CharField(max_length=15)
     pas_car = models.ForeignKey(LegPasCar, db_column='pas_car', blank=True, null=True)
     the_geom = models.PointField(blank=True, null=True, srid=settings.ITERNET_DATA_SRID)  # This field type is a guess.
 

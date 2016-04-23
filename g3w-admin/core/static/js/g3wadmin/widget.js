@@ -49,6 +49,10 @@ _.extend(g3wadmin.widget, {
         'ajax-url',
     ],
 
+    _setAjaxDownload : [
+        'ajax-url',
+    ],
+
     /**
      * Widget to delete a item from database by ajax call.
      * @param $item jquery object
@@ -386,7 +390,7 @@ _.extend(g3wadmin.widget, {
      * Set data for caching layer by tilestache
      * @param $item
      */
-    setLayerCached: function($item,cached) {
+    setLayerCached: function($item, cached) {
 
         try {
             var params = ga.utils.getDataAttrs($item, this._setLayerCached);
@@ -410,11 +414,24 @@ _.extend(g3wadmin.widget, {
         } catch (e) {
             this.showError(e.message);
         }
+    },
 
+    ajaxDownload: function($item) {
 
+        try {
+            var params = ga.utils.getDataAttrs($item, this._setAjaxDownload);
+            if (_.isUndefined(params['ajax-url'])) {
+                throw new Error('Attribute data-ajax-url not defined');
+            }
 
+            $.fileDownload(params['ajax-url'])
+                .fail(function(){
+                    ga.widget.showError(ga.utils.buildAjaxErrorMessage(500, 'File download Failed!'));
+                });
 
-
+        } catch (e) {
+            this.showError(e.message);
+        }
     }
 
 });

@@ -60,6 +60,9 @@ _.extend(g3wadmin,{
         //Init filerWidget
         this.ui.initAjaxFilerWidget();
 
+        //Init ajaxDownload
+        this.ui.initAjaxDownload();
+
         /*
         TODO: try to perfom this issue server side
         //If form present che collapsed box

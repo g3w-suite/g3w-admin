@@ -180,6 +180,18 @@ _.extend(g3wadmin.ui, {
         });
     },
 
+    initAjaxDownload: function(context) {
+        if (!_.isUndefined(context)) {
+            var $widgetItem = $(context).find('[data-widget-type="ajaxDownload"]');
+        }
+        else {
+            var $widgetItem = $('[data-widget-type="ajaxDownload"]');
+        }
+         $widgetItem.click(function(e){
+            ga.widget.ajaxDownload($(this));
+        });
+    },
+
 
 
 });

@@ -13,6 +13,7 @@
     "jquery-slimscroll": "*",
     "jquery-cookie": "*",
     "jquery.filer": "*",
+    "jquery-file-download": "*",
     "datatables":"*",
     "fastclick": "*",
     "font-awesome": "*",
