@@ -2,7 +2,7 @@ from django.views.generic import TemplateView, FormView, View
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django.db import IntegrityError, transaction, connections
-from django.db.models import Q
+from django.db.models import Q, Model
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError, APIException
@@ -156,6 +156,7 @@ class EditingApiView(G3WAPIView):
                                 # check for realtionsAttributes
                                 if bool(subsetData['relationsattributes']) and GeoJSONFeature['id'] in subsetData['relationsattributes']:
                                     serializer.setRealtionsAttributes(
+                                        GeoJSONFeature['id'],
                                         subsetData['relationsattributes'][GeoJSONFeature['id']]
                                     )
 
@@ -177,6 +178,13 @@ class EditingApiView(G3WAPIView):
                                             'clientid': GeoJSONFeature['id'],
                                             'id': dato.pk
                                         }
+                                        if 'relations' in layerConfigData:
+                                            for fk in layerConfigData['relations'][0]['fk']:
+
+                                                # todo: better, now
+                                                valuefk = getattr(dato, fk)
+                                                toRes[fk] = valuefk.id if isinstance(valuefk, Model) else valuefk
+
                                         if layer_name:
                                             insertIds.append(toRes)
                                         else:

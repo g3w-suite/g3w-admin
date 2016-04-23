@@ -2,6 +2,7 @@ from django.core.urlresolvers import reverse
 from client.utils.editing import *
 from .models import *
 from .utils import getLayerIternetIdByName
+from configs import ITERNET_LAYERS
 
 
 def buidlKeyValue(legModel):
@@ -72,10 +73,7 @@ def getRelationForms():
     return  {
         'accesso': {
             'numero_civico': {
-                'fk': [
-                    'cod_acc',
-                    'tip_acc'
-                ],
+                'fk': ITERNET_LAYERS['accesso']['relations'][0]['fk'],
                 'url': reverse('iternet-api-civici'),
                 'fields': [
                     editingFormField('cod_civ', fieldLabel='Codice', editable=False),
@@ -103,9 +101,7 @@ def getRelationForms():
         },
         'elemento_stradale': {
             'toponimo_stradale': {
-                'fk': [
-                    'cod_top'
-                ],
+                'fk': ITERNET_LAYERS['elemento_stradale']['relations'][0]['fk'],
                 'url': reverse('iternet-api-toponimi'),
                 'fields': [
                     editingFormField('cod_top', fieldLabel='Codice', editable=False),

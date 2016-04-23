@@ -9,7 +9,7 @@ ITERNET_LAYERS = {
         'geoSerializer': ElementoStradaleGeoSerializer,
         'geometryType': 'LineString',
         'relations': [
-            {'model': ToponimoStradale, 'resource': ToponimoStradaleResource, 'dbfFileName': 'toponimo_stradale.dbf'},
+            {'model': ToponimoStradale, 'resource': ToponimoStradaleResource, 'dbfFileName': 'toponimo_stradale.dbf', 'fk': ['cod_top']},
         ],
         'metadatiInfo': [
             {'model': ArchiInfo, 'resource': ArchiInfoResource, 'dbfFileName': 'archi_info.dbf'},
@@ -31,7 +31,7 @@ ITERNET_LAYERS = {
         'geoSerializer': AccessoGeoSerializer,
         'geometryType': 'Point',
         'relations': [
-            {'model': NumeroCivico, 'resource': NumeroCivicoResource, 'dbfFileName': 'numero_civico.dbf'},
+            {'model': NumeroCivico, 'resource': NumeroCivicoResource, 'dbfFileName': 'numero_civico.dbf', 'fk': ['cod_acc', 'tip_acc']},
         ],
         'metadatiInfo': [
             {'model': AccessiInfo, 'resource': AccessiInfoResource, 'dbfFileName': 'accessi_info.dbf'},

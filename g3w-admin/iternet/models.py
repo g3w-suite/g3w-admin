@@ -279,10 +279,10 @@ class LegPasCar(LegIternetModelMixin, models.Model):
 class NumeroCivico(models.Model):
     cod_civ = models.CharField(primary_key=True, max_length=19)
     cod_acc_int = models.CharField(max_length=16, blank=True, null=True)
-    num_civ = models.FloatField(blank=True, null=True)
+    num_civ = models.FloatField()
     esp_civ = models.CharField(max_length=5, blank=True, null=True)
     cod_com = models.CharField(max_length=4, blank=True, null=True)
-    cod_top = models.CharField(max_length=15, blank=True, null=True)
+    cod_top = models.CharField(max_length=15)
     cod_acc_est = models.CharField(max_length=16, blank=True, null=True)
     cod_classifica = models.ForeignKey(LegCodClassifica, db_column='cod_classifica', null=True, blank=True)
 
@@ -314,7 +314,7 @@ class NumeroCivico(models.Model):
 
 class Accesso(models.Model):
     gid = models.AutoField(primary_key=True)
-    cod_acc = models.CharField(max_length=16)
+    cod_acc = models.CharField(max_length=16, blank=True, null=True)
     tip_acc = models.ForeignKey(LegTipAcc, db_column='tip_acc', null=True, blank=True)
     cod_ele = models.CharField(max_length=15)
     pas_car = models.ForeignKey(LegPasCar, db_column='pas_car', blank=True, null=True)
@@ -350,21 +350,21 @@ class Accesso(models.Model):
 class ElementoStradale(models.Model):
     gid = models.AutoField(primary_key=True)
     cod_ele = models.CharField(max_length=15, blank=True, null=True)
-    nod_ini = models.CharField(max_length=15, blank=True, null=True)
-    nod_fin = models.CharField(max_length=15, blank=True, null=True)
+    nod_ini = models.CharField(max_length=15)
+    nod_fin = models.CharField(max_length=15)
     cod_sta = models.ForeignKey(LegCodSta, db_column='cod_sta', null=True, blank=True)
     cod_sed = models.ForeignKey(LegCodSed, db_column='cod_sed', null=True, blank=True)
-    tip_ele = models.ForeignKey(LegTipEle, db_column='tip_ele', null=True, blank=True)
+    tip_ele = models.ForeignKey(LegTipEle, db_column='tip_ele')
     cls_tcn = models.ForeignKey(LegClsTcn, db_column='cls_tcn', null=True, blank=True)
-    tip_gst = models.ForeignKey(LegTipGst, db_column='tip_gst', null=True, blank=True)
-    cod_gst = models.CharField(max_length=6, blank=True, null=True)
-    sot_pas = models.ForeignKey(LegSotPas, db_column='sot_pas', null=True, blank=True)
-    lng = models.IntegerField(blank=True, null=True)
-    cmp_ele = models.ForeignKey(LegCmpEle, db_column='cmp_ele', null=True, blank=True)
+    tip_gst = models.ForeignKey(LegTipGst, db_column='tip_gst')
+    cod_gst = models.CharField(max_length=6)
+    sot_pas = models.ForeignKey(LegSotPas, db_column='sot_pas')
+    lng = models.IntegerField()
+    cmp_ele = models.ForeignKey(LegCmpEle, db_column='cmp_ele')
     cod_reg = models.CharField(max_length=29, blank=True, null=True)
     org = models.ForeignKey(LegOrg, db_column='org', null=True, blank=True)
     cls_lrg = models.ForeignKey(LegClsLrg, db_column='cls_lrg', null=True, blank=True)
-    cod_top = models.CharField(max_length=15, blank=True, null=True)
+    cod_top = models.CharField(max_length=15)
     cod_top2 = models.CharField(max_length=15, blank=True, null=True)
     tip_pav = models.ForeignKey(LegTipPav, db_column='tip_pav', null=True, blank=True)
     one_way = models.ForeignKey(LegOneWay, db_column='one_way', null=True, blank=True)
@@ -439,10 +439,10 @@ class GiunzioneStradale(models.Model):
 
 class ToponimoStradale(models.Model):
     cod_top = models.CharField(primary_key=True, max_length=15)
-    den_uff = models.CharField(max_length=100, blank=True, null=True)
-    cod_com = models.CharField(max_length=4, blank=True, null=True)
+    den_uff = models.CharField(max_length=100)
+    cod_com = models.CharField(max_length=4)
     cod_via = models.CharField(max_length=11, blank=True, null=True)
-    cod_dug = models.ForeignKey(LegCodDug, db_column='cod_dug', null=True, blank=True)
+    cod_dug = models.ForeignKey(LegCodDug, db_column='cod_dug')
 
     class Meta:
         db_table = 'toponimo_stradale'

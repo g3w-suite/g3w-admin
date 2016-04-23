@@ -1,5 +1,7 @@
 from rest_framework_gis import serializers
+from rest_framework.exceptions import ValidationError, APIException
 from iternet.models import *
+from core.editing.structure import *
 
 
 class IternetSerializerMixin(object):
@@ -9,7 +11,8 @@ class IternetSerializerMixin(object):
 
     relationsAttributes = None
 
-    def setRealtionsAttributes(self, relationsAttributes):
+    def setRealtionsAttributes(self, relationsAttributeId, relationsAttributes):
+        self.relationsAttributeId = relationsAttributeId
         self.relationsAttributes = relationsAttributes
 
     def create(self, validated_data):
@@ -38,9 +41,22 @@ class NumeroCivicoSerializer(IternetSerializerMixin, serializers.ModelSerializer
 
 class ElementoStradaleGeoSerializer(IternetSerializerMixin, serializers.GeoFeatureModelSerializer):
 
-    def setRealtionsAttributes(self, relationsAttributes):
+    def setRealtionsAttributes(self, relationsAttributeId, relationsAttributes):
         if 'toponimo_stradale' in relationsAttributes:
             self.relationsAttributes = relationsAttributes['toponimo_stradale']
+            self.relationsAttributeId = relationsAttributeId
+
+    def validationAttributes(self, serializer):
+
+        if not serializer.is_valid():
+            raise ValidationError({
+                'relationsattributes': {
+                    'elemento_stradale': {
+                        'id': self.relationsAttributeId,
+                        'fields': serializer.errors
+                    }
+                }
+            })
 
     def create(self, validated_data):
         validated_data['cod_ele'] = self.Meta.model.getNewCodEle()
@@ -51,7 +67,7 @@ class ElementoStradaleGeoSerializer(IternetSerializerMixin, serializers.GeoFeatu
             toponimoStradaleSerializer = ToponimoStradaleSerializer(data=self.relationsAttributes)
 
             # validation relation:
-            toponimoStradaleSerializer.is_valid(raise_exception=True)
+            self.validationAttributes(toponimoStradaleSerializer)
             toponimoStradaleInstance = toponimoStradaleSerializer.save()
             validated_data['cod_top'] = toponimoStradaleInstance.cod_top
 
@@ -68,7 +84,7 @@ class ElementoStradaleGeoSerializer(IternetSerializerMixin, serializers.GeoFeatu
             toponimoStradaleSerializer = ToponimoStradaleSerializer(toponimoStradale, data=self.relationsAttributes)
 
             # validation relation:
-            toponimoStradaleSerializer.is_valid(raise_exception=True)
+            self.validationAttributes(toponimoStradaleSerializer)
             toponimoStradaleSerializer.save()
 
         return instance
@@ -103,9 +119,23 @@ class GiunzioneStradaleGeoSerializer(IternetSerializerMixin, serializers.GeoFeat
 
 class AccessoGeoSerializer(IternetSerializerMixin, serializers.GeoFeatureModelSerializer):
 
-    def setRealtionsAttributes(self, relationsAttributes):
+    def setRealtionsAttributes(self, relationsAttributeId, relationsAttributes):
+
         if 'numero_civico' in relationsAttributes:
             self.relationsAttributes = relationsAttributes['numero_civico']
+            self.relationsAttributeId = relationsAttributeId
+
+    def validationAttributes(self, serializer):
+
+        if not serializer.is_valid():
+            raise ValidationError({
+                'relationsattributes': {
+                    'accesso': {
+                        'id': self.relationsAttributeId,
+                        'fields': serializer.errors
+                    }
+                }
+            })
 
     def create(self, validated_data):
 
@@ -115,7 +145,7 @@ class AccessoGeoSerializer(IternetSerializerMixin, serializers.GeoFeatureModelSe
         instance = super(AccessoGeoSerializer, self).create(validated_data)
 
         # before validation relations if present
-        if self.relationsAttributes:
+        if self.relationsAttributes and validated_data['tip_acc'].pk != '0102':
             self.relationsAttributes['cod_civ'] = NumeroCivicoSerializer.Meta.model.getNewCodCiv()
 
             if validated_data['tip_acc'].pk == '0101':
@@ -126,7 +156,7 @@ class AccessoGeoSerializer(IternetSerializerMixin, serializers.GeoFeatureModelSe
             numeroCivicoSerializer = NumeroCivicoSerializer(data=self.relationsAttributes)
 
             # validation relation:
-            numeroCivicoSerializer.is_valid(raise_exception=True)
+            self.validationAttributes(numeroCivicoSerializer)
             numeroCivicoSerializer.save()
 
         return instance
@@ -142,6 +172,10 @@ class AccessoGeoSerializer(IternetSerializerMixin, serializers.GeoFeatureModelSe
 
             # validation relation:
             numeroCivicoSerializer.is_valid(raise_exception=True)
+            numeroCivicoSerializer.save()
+
+            # validation relation:
+            self.validationAttributes(numeroCivicoSerializer)
             numeroCivicoSerializer.save()
 
         return instance
