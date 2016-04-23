@@ -14,4 +14,23 @@
     {% crispy form %}
     {% g3wadmin_add_button_form redo=False %}
     </form>
+    <script>
+        $('#div_id_1-catastoLayer').on('change', function(e){
+
+            that = this;
+            // first fivible every againslayer checkboxes:
+            $('#div_id_1-againstLayers').find('input:checkbox').each(function(index){
+
+                if (this.value == that.value) {
+                    $(this).iCheck('uncheck');
+                    $(this).hide();
+                } else {
+                    $(this).show();
+                }
+            });
+
+            // find checkbox to hide
+
+        });
+    </script>
 {% endblock %}

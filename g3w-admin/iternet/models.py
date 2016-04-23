@@ -364,7 +364,7 @@ class ElementoStradale(models.Model):
     cod_reg = models.CharField(max_length=29, blank=True, null=True)
     org = models.ForeignKey(LegOrg, db_column='org', null=True, blank=True)
     cls_lrg = models.ForeignKey(LegClsLrg, db_column='cls_lrg', null=True, blank=True)
-    cod_top = models.CharField(max_length=15)
+    cod_top = models.CharField(max_length=15, blank=True, null=True)
     cod_top2 = models.CharField(max_length=15, blank=True, null=True)
     tip_pav = models.ForeignKey(LegTipPav, db_column='tip_pav', null=True, blank=True)
     one_way = models.ForeignKey(LegOneWay, db_column='one_way', null=True, blank=True)
