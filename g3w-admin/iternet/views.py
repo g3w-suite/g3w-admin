@@ -192,8 +192,8 @@ class EditingApiView(G3WAPIView):
 
                                 else:
                                     raise ValidationError({
-                                        mode: {
-                                            ln: {
+                                        ln: {
+                                            mode: {
                                                 'id': GeoJSONFeature['id'],
                                                 'fields': serializer.errors
                                             }
