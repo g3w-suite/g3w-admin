@@ -141,7 +141,10 @@ class EditingApiView(G3WAPIView):
                     model = layerConfigData['model']
 
                     # get subset post data
-                    subsetData = data if layer_name else data[ln]
+                    try:
+                        subsetData = data if layer_name else data[ln]
+                    except KeyError:
+                        continue
 
                     # save insert
                     for mode in (EDITING_POST_DATA_ADDED, EDITING_POST_DATA_UPDATED):
