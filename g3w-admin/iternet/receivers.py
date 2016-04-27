@@ -1,11 +1,13 @@
-from core.signals import initconfig_plugin_start
+from core.signals import initconfig_plugin_start, pre_update_project, pre_delete_project
 from django.dispatch import receiver
 from django.db.models.signals import post_save, post_delete
 from django.core.exceptions import ObjectDoesNotExist
+from django.template import loader, Context
 from .models import *
 from .apps import iternetConfig
 from .urls import BASE_INTERNET_API_EDITING
 from .configs import ITERNET_LAYERS
+from qdjango.views import QdjangoProjectUpdateView, QdjangoProjectListView
 
 
 @receiver(initconfig_plugin_start)
@@ -94,3 +96,39 @@ post_save.connect(postSaveMetadataInfo, sender=GiunzioneStradale)
 post_delete.connect(postSaveMetadataInfo, sender=GiunzioneStradale)
 
 
+@receiver(pre_update_project)
+def checkProjectForUpdate(sender, **kwargs):
+    """
+    Check project is going to update.
+    """
+
+    if isinstance(sender, QdjangoProjectUpdateView):
+
+        # get config data
+        data = Config.getData()
+
+        if data and data.project == kwargs['project']:
+            msg = loader.get_template('iternet/messages/check_project_update.html')
+            return msg.render(Context(kwargs))
+
+
+@receiver(pre_delete_project)
+def checkProjectForDelete(sender, **kwargs):
+    """
+    Check project is going to delete.
+    """
+
+    if isinstance(sender, QdjangoProjectListView):
+
+        # get config data
+        data = Config.getData()
+        projects = kwargs['projects']
+
+        if data:
+            messages = []
+            for project in projects:
+                if project == data.project:
+                    msg = loader.get_template('iternet/messages/check_project_delete.html')
+                    messages.append({'project': project, 'message': msg.render(Context({'project': project}))})
+            if len(messages):
+                return messages

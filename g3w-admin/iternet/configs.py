@@ -8,6 +8,7 @@ ITERNET_LAYERS = {
         'clientVar': 'strade', # variable name for client
         'geoSerializer': ElementoStradaleGeoSerializer,
         'geometryType': 'LineString',
+        'toRet': ['cod_ele'],
         'relations': [
             {'model': ToponimoStradale, 'resource': ToponimoStradaleResource, 'dbfFileName': 'toponimo_stradale.dbf', 'fk': ['cod_top']},
         ],
@@ -21,6 +22,7 @@ ITERNET_LAYERS = {
         'clientVar': 'giunzioni',  # variable name for client
         'geoSerializer': GiunzioneStradaleGeoSerializer,
         'geometryType': 'Point',
+        'toRet': ['cod_gnz'],
         'metadatiInfo': [
             {'model': NodiInfo, 'resource': NodiInfoResource, 'dbfFileName': 'nodi_info.dbf'}
         ]

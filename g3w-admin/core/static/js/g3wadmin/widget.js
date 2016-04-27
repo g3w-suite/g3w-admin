@@ -66,10 +66,13 @@ _.extend(g3wadmin.widget, {
                 throw new Error('Attribute data-delete-url not defined');
             }
 
+            // check for pre-delete-message
+            var preMessage = $item.parent().find('.pre-delete-message').html();
+
             // open modal to confirm delete
             var modal = ga.ui.buildDefaultModal({
                 modalTitle: 'Delete item',
-                modalBody: 'Are you sure to delete this Item?',
+                modalBody: 'Are you sure to delete this Item?' + preMessage ,
                 closeButtonText: 'No'
             });
 
@@ -439,6 +442,25 @@ _.extend(g3wadmin.widget, {
         } catch (e) {
             this.showError(e.message);
         }
+    },
+
+    /**
+     * Show message on load page by modal
+     * @param $item
+     */
+    showMessageOnLoad: function($item) {
+
+        var modal = ga.ui.buildWarningModal({
+                modalTitle: 'Warnings!',
+                modalBody: $item.html(),
+                closeButtonText: 'Close',
+                confirmButton: false
+
+            });
+
+        modal.show();
     }
+
+
 
 });

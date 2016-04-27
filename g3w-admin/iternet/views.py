@@ -181,6 +181,11 @@ class EditingApiView(G3WAPIView):
                                             'clientid': GeoJSONFeature['id'],
                                             'id': dato.pk
                                         }
+                                        if 'toRet' in layerConfigData:
+                                            for f in layerConfigData['toRet']:
+                                                valuef = getattr(dato, f)
+                                                toRes[f] = valuef.id if isinstance(valuef, Model) else valuef
+
                                         if 'relations' in layerConfigData:
                                             for fk in layerConfigData['relations'][0]['fk']:
 

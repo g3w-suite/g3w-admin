@@ -10,6 +10,7 @@ from django.views.generic import (
 from django.views.generic.detail import SingleObjectMixin
 from django.http import HttpResponseRedirect, JsonResponse
 from core.mixins.views import *
+from core.signals import pre_update_project, pre_delete_project
 from django.core.urlresolvers import reverse
 from .mixins.views import *
 from .forms import *
@@ -24,6 +25,14 @@ class QdjangoProjectListView(G3WRequestViewMixin, G3WGroupViewMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super(QdjangoProjectListView, self).get_context_data(**kwargs)
         context['projectPanoramic'] = self.group.project_panoramic.filter(project_type='qdjango')
+
+        context['pre_delete_messages'] = {}
+        messages = pre_delete_project.send(self, projects=self.object_list)
+        for message in messages:
+            msg = message[1]
+            if msg:
+                for m in msg:
+                    context['pre_delete_messages'][m['project'].pk] = m['message']
         return context
 
 
@@ -49,6 +58,16 @@ class QdjangoProjectUpdateView(G3WGroupViewMixin, G3WRequestViewMixin, UpdateVie
 
     def get_success_url(self):
         return reverse('project-list',kwargs={'group_slug':self.group.slug})
+
+    def get_context_data(self, **kwargs):
+        context = super(QdjangoProjectUpdateView, self).get_context_data(**kwargs)
+        if self.request.method == 'GET':
+            context['pre_update_messages'] = []
+            messages = pre_update_project.send(self, project=self.object, projectType='qdjango')
+            for message in messages:
+                if message[1]:
+                    context['pre_update_messages'].append(message[1])
+        return context
 
     def form_valid(self,form):
         form.qgisProject.save()

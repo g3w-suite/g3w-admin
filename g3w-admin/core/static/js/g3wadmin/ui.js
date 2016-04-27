@@ -64,6 +64,14 @@ _.extend(g3wadmin.ui, {
         return this._buildModal(options);
     },
 
+    buildWarningModal: function(options) {
+        if (!_.isObject(options)){
+            options = {};
+        }
+        options.modalClass = 'modal-warning';
+        return this._buildModal(options);
+    },
+
     initCrudDeleteWidget: function(context) {
         if (!_.isUndefined(context)) {
             var $widgetItem = $(context).find('[data-widget-type="deleteItem"]');
@@ -190,6 +198,19 @@ _.extend(g3wadmin.ui, {
          $widgetItem.click(function(e){
             ga.widget.ajaxDownload($(this));
         });
+    },
+
+    showMessageOnLoad: function(context) {
+        if (!_.isUndefined(context)) {
+            var $widgetItem = $(context).find('[data-widget-type="showMessageOnLoad"]');
+        }
+        else {
+            var $widgetItem = $('[data-widget-type="showMessageOnLoad"]');
+        }
+            if ($widgetItem.length > 0){
+                ga.widget.showMessageOnLoad($widgetItem);
+            }
+
     },
 
 

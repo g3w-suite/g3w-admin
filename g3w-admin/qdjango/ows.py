@@ -9,6 +9,7 @@ from TileStache import getTile, Config, parseConfigfile
 from TileStache.Core import KnownUnknown
 from httplib import HTTPConnection
 from urlparse import urlsplit
+from .auth import QdjangoProjectAuthorizer
 
 # use of qgis server instance
 server = QgsServer()
@@ -36,8 +37,16 @@ class OWSRequestHandler(OWSRequestHandlerBase):
     def _getProjectInstance(self):
         self._projectInstance = Project.objects.get(pk=self.projectId)
 
+    @property
+    def authorizer(self):
+        return QdjangoProjectAuthorizer(request= self.request, project=self._projectInstance)
+
+    @property
+    def project(self):
+        return self._projectInstance
+
     @classmethod
-    def baseDoRequest(cls,q, request=None):
+    def baseDoRequest(cls, q, request=None):
 
         if qdjangoModeRequest == QDJANGO_PROXY_REQUEST:
 

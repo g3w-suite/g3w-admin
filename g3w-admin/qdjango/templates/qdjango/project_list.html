@@ -36,7 +36,12 @@
                             <a href="{% url 'qdjango-project-update' group.slug object.slug %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Edit' %}" ><i class="ion ion-edit"></i></a>
                         </span>
                         <span class="col-xs-4 icon">
-                            <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Delete' %}" data-widget-type="deleteItem" data-delete-url="{% url 'qdjango-project-delete' group.slug object.slug %}" data-item-selector="#qdjango_project_{{ object.slug }}" ><i class="ion ion-trash-b"></i></a>
+                            <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Delete' %}" data-widget-type="deleteItem" data-delete-url="{% url 'qdjango-project-delete' group.slug object.slug %}" data-item-selector="#qdjango_project_{{ object.slug }}"><i class="ion ion-trash-b"></i></a>
+                            {% if object.pk in pre_delete_messages %}
+                            <div class="hidden pre-delete-message">
+                                {{ pre_delete_messages|lookup:object.pk }}
+                            </div>
+                            {% endif %}
                         </span>
                     </td>
                     <td>

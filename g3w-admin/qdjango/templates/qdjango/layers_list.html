@@ -42,6 +42,7 @@
                     <th style="width: 40px">Type</th>
                     <th style="width: 40px">{%  trans 'Cached' %}</th>
                     <th>{%  trans 'Name' %}</th>
+                    <th>{%  trans 'Label' %}</th>
                 </tr>
             </thead>
             <tbody>
@@ -52,6 +53,7 @@
                     </td>
                     <td><input type="checkbox" {% if object.tilestache_conf %}checked="checked"{% endif %} data-widget-type="setLayerCached" data-ajax-url="{% url 'qdjango-project-layers-cache' group.slug object.project.slug object.id %}" /></td>
                     <td>{{ object.name }}</td>
+                    <td>{{ object.title }}</td>
                 </tr>
                 {% endfor %}
             </tbody>

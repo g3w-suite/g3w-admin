@@ -29,6 +29,14 @@
 
 {% block main_content %}
 
+        {% if pre_update_messages %}
+            <div class="hidden pre-update-messages" data-widget-type="showMessageOnLoad">
+                {% for message in pre_update_messages %}
+                    {{ message }}
+                {% endfor %}
+            </div>
+        {% endif %}
+
         <form method="post" id="project-qdjango-form" data-widget-type="ajaxUpload" enctype="multipart/form-data">
             {% if form.errors %}
                 <div class="row">

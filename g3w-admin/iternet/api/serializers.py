@@ -26,6 +26,13 @@ class IternetSerializerMixin(object):
         instance.save()
         return instance
 
+    @classmethod
+    def delete(cls, instance):
+        """
+        Classmethod to delete model instance
+        """
+        instance.delete()
+
 
 class ToponimoStradaleSerializer(IternetSerializerMixin, serializers.ModelSerializer):
 

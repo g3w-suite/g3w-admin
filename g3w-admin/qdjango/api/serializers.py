@@ -32,7 +32,7 @@ class ProjectSerializer(serializers.ModelSerializer):
         request.body = ''
         response = OWSRequestHandler.baseDoRequest(q, request)
 
-        qgisPorjectSettignsWMS = QgisProjectSettingsWMS(response.content)
+        qgisProjectSettignsWMS = QgisProjectSettingsWMS(response.content)
 
         extent = eval(instance.initial_extent)
         ret['extent'] = [
@@ -46,8 +46,9 @@ class ProjectSerializer(serializers.ModelSerializer):
         ret['layers'] = []
         layers = instance.layer_set.all()
         for layer in layers:
-            layerSerialized = LayerSerializer(layer,qgisPorjectSettignsWMS=qgisPorjectSettignsWMS)
-            ret['layers'].append(layerSerialized.data)
+            if layer.name in qgisProjectSettignsWMS.layers:
+                layerSerialized = LayerSerializer(layer,qgisProjectSettignsWMS=qgisProjectSettignsWMS)
+                ret['layers'].append(layerSerialized.data)
 
         # add search
         # todo: build a procedure, future
@@ -74,8 +75,8 @@ class LayerSerializer(serializers.ModelSerializer):
     editops = serializers.IntegerField(source='edit_options')
 
     def __init__(self,instance=None, data=empty, **kwargs):
-        self.qgisPorjectSettignsWMS = kwargs['qgisPorjectSettignsWMS']
-        del(kwargs['qgisPorjectSettignsWMS'])
+        self.qgisProjectSettignsWMS = kwargs['qgisProjectSettignsWMS']
+        del(kwargs['qgisProjectSettignsWMS'])
         super(LayerSerializer, self).__init__(instance, data, **kwargs)
 
     class Meta:
@@ -106,11 +107,11 @@ class LayerSerializer(serializers.ModelSerializer):
         ret['infourl'] = ''
 
         # add bbox
-        ret['bbox'] = self.qgisPorjectSettignsWMS.layers[instance.name]['bboxes']['EPSG:{}'.format(group.srid)]
+        ret['bbox'] = self.qgisProjectSettignsWMS.layers[instance.name]['bboxes']['EPSG:{}'.format(group.srid)]
 
         # add capabilities
         ret['capabilities'] = 0
-        if self.qgisPorjectSettignsWMS.layers[instance.name]['queryable']:
+        if self.qgisProjectSettignsWMS.layers[instance.name]['queryable']:
             ret['capabilities'] |= settings.QUERYABLE
         if instance.edit_options:
             ret['capabilities'] |= settings.EDITABLE

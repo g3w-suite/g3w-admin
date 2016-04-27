@@ -8,6 +8,7 @@ from django.http import HttpResponse
 from .proxy import Proxy
 
 
+
 class OWSView(View):
 
     proxy = Proxy(None)

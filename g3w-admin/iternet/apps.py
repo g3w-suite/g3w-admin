@@ -40,3 +40,4 @@ class iternetConfig(AppConfig):
 
         # add postmigrate receivers for table triggers
         post_migrate.connect(addTriggerTablesFunction, sender=self)
+

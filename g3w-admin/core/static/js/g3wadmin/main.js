@@ -63,6 +63,9 @@ _.extend(g3wadmin,{
         //Init ajaxDownload
         this.ui.initAjaxDownload();
 
+        //Init showMessageOnLoad
+        this.ui.showMessageOnLoad();
+
         /*
         TODO: try to perfom this issue server side
         //If form present che collapsed box

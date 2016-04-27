@@ -38,12 +38,21 @@ def makeDatasource(datasource,layerType):
     return newDatasource
 
 
+class QgisValidator(object):
+    """
+    Interface for Qgis object validators
+    """
+    def clean(self):
+        pass
+
+
 class QgisData(object):
 
     _dataToSet = []
 
     _introMessageException = ''
 
+    _defaultValidators = []
 
     def setData(self):
         """
@@ -55,6 +64,13 @@ class QgisData(object):
             except Exception as e:
                 raise Exception(_('{} "{}" {}:'.format(self._introMessageException,data,e.message)))
 
+    def registerValidator(self, validator):
+        """
+        Register a QgisProjectValidator object
+        :param validator: QgisProjectValidator
+        :return: None
+        """
+        self.validators.append(validator(self))
 
     def asXML(self):
         """
@@ -62,6 +78,29 @@ class QgisData(object):
         """
         pass
 
+
+class QgisProjectLayerValidator(QgisValidator):
+    """
+    A simple qgis project layer validator call clean method
+    """
+
+    def __init__(self, qgisProjectLayer):
+        self.qgisProjectLayer = qgisProjectLayer
+
+    def clean(self):
+        pass
+
+
+class DatasourceExists(QgisProjectLayerValidator):
+    """
+    Check if layer datasource exists on server
+    """
+    def clean(self):
+        if self.qgisProjectLayer.layerType in [Layer.TYPES.gdal, Layer.TYPES.raster]:
+            if not os.path.exists(self.qgisProjectLayer.datasource):
+                err = ugettext('Missing data file for layer {} '.format(self.qgisProjectLayer.name))
+                err += ugettext('which should be located at {}'.format(self.qgisProjectLayer.datasource))
+                raise Exception(err)
 
 
 class QgisProjectLayer(QgisData):
@@ -89,6 +128,10 @@ class QgisProjectLayer(QgisData):
 
     _introMessageException = 'Missing or invalid layer data'
 
+    _defaultValidators = [
+        DatasourceExists
+    ]
+
     def __init__(self, layerTree, **kwargs):
         self.qgisProjectLayerTree = layerTree
 
@@ -100,6 +143,11 @@ class QgisProjectLayer(QgisData):
 
         # set data value into this object
         self.setData()
+
+        # register default validator
+        self.validators = []
+        for validator in self._defaultValidators:
+            self.registerValidator(validator)
 
 
     def _getDataName(self):
@@ -251,7 +299,7 @@ class QgisProjectLayer(QgisData):
             layerStructure = QgisDBLayerStructure(self, layerType=self.layerType)
         elif self.layerType in [Layer.TYPES.ogr]:
             layerStructure = QgisOGRLayerStructure(self)
-        elif self.layerType in [Layer.TYPES.wms]:
+        elif self.layerType in [Layer.TYPES.wms, Layer.TYPES.gdal]:
             return None
 
 
@@ -290,6 +338,10 @@ class QgisProjectLayer(QgisData):
         except Exception,e:
             pass
         return joined_columns
+
+    def clean(self):
+        for validator in self.validators:
+            validator.clean()
 
     def save(self):
         """
@@ -338,7 +390,7 @@ class QgisProjectLayer(QgisData):
         self.instance.save()
 
 
-class QgisProjectValidator(object):
+class QgisProjectValidator(QgisValidator):
     """
     A simple qgis project validator call clean method
     """
@@ -362,7 +414,7 @@ class IsGroupCompatibleValidator(QgisProjectValidator):
 
 class ProjectExists(QgisProjectValidator):
     """
-    Check il project exixts in database
+    Check if project exists in database
     """
     def clean(self):
         from qdjango.models import Project
@@ -370,13 +422,13 @@ class ProjectExists(QgisProjectValidator):
             raise Exception(_('A project with the same title already exists'))
 
 
-class ProjectExists(QgisProjectValidator):
+class ProjectTitleExists(QgisProjectValidator):
     """
-    Check il project exixts in database
+    Check if project title exists
     """
     def clean(self):
         if not self.qgisProject.title:
-            raise Exception(_('Title porject not empty'))
+            raise Exception(_('Title project not empty'))
 
 
 
@@ -397,7 +449,8 @@ class QgisProject(QgisData):
         ]
 
     _defaultValidators = [
-        IsGroupCompatibleValidator
+        IsGroupCompatibleValidator,
+        ProjectTitleExists
     ]
 
     #_regexXmlLayer = 'projectlayers/maplayer[@geometry!="No geometry"]'
@@ -556,14 +609,8 @@ class QgisProject(QgisData):
         for validator in self.validators:
             validator.clean()
 
-
-    def registerValidator(self,validator):
-        """
-        Register a QgisProjectValidator object
-        :param validator: QgisProjectValidator
-        :return: None
-        """
-        self.validators.append(validator(self))
+        for layer in self.layers:
+            layer.clean()
 
     def save(self,instance=None, **kwargs):
         """

@@ -20,3 +20,8 @@ def g3wadmin_progress_bar_values(current, min=0, max=100):
     return {
         'position': int(int(current)/(max-min)*100)
     }
+
+
+@register.filter
+def lookup(d, key):
+    return d[key]
