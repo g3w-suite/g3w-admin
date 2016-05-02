@@ -20,7 +20,7 @@ class ProjectSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         ret = super(ProjectSerializer, self).to_representation(instance)
 
-        q = QueryDict('',mutable=True)
+        q = QueryDict('', mutable=True)
         q['map'] = instance.qgis_file.file.name
         q['SERVICE'] = 'WMS'
         q['VERSION'] = '1.3.0'
@@ -47,7 +47,7 @@ class ProjectSerializer(serializers.ModelSerializer):
         layers = instance.layer_set.all()
         for layer in layers:
             if layer.name in qgisProjectSettignsWMS.layers:
-                layerSerialized = LayerSerializer(layer,qgisProjectSettignsWMS=qgisProjectSettignsWMS)
+                layerSerialized = LayerSerializer(layer, qgisProjectSettignsWMS=qgisProjectSettignsWMS)
                 ret['layers'].append(layerSerialized.data)
 
         # add search
