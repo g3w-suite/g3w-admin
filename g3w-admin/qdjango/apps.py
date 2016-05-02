@@ -17,7 +17,7 @@ def GiveBaseGrant(sender, **kwargs):
     editor2Permission = editor2.permissions.all()
 
     permissionsToAdd = (
-        Permission.objects.get(codename='add_qdjango_project', content_type=ContentType.objects.get_for_model(Project)),
+        Permission.objects.get(codename='add_project', content_type=ContentType.objects.get_for_model(Project)),
     )
 
     for perm in permissionsToAdd:

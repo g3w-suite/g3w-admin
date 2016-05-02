@@ -32,7 +32,7 @@
                 <!-- Menu Footer-->
                 <li class="user-footer">
                     <div class="pull-left">
-                        <a href="#" class="btn btn-default btn-flat"><i class="fa fa-folder"></i> {% trans 'Profile' %}</a>
+                        <a href="{% url 'user-update' user.pk %}" class="btn btn-default btn-flat"><i class="fa fa-folder"></i> {% trans 'Profile' %}</a>
                     </div>
                     <div class="pull-right">
                         <a href="{% url 'logout' %}" class="btn btn-default btn-flat"><i class="fa fa-sign-out"></i> {% trans 'Sign out' %}</a>

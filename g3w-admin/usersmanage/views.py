@@ -1,5 +1,3 @@
-from django.conf import settings
-from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.views.generic import (
     ListView,
@@ -9,13 +7,14 @@ from django.views.generic import (
     View
 )
 from django.views.generic.detail import SingleObjectMixin
-from .forms import *
+from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import permission_required
+from guardian.shortcuts import assign_perm
+from guardian.decorators import permission_required_or_403
 from core.mixins.views import G3WRequestViewMixin, G3WAjaxDeleteViewMixin
-from django_file_form.forms import ExistingFile
-from pathlib import Path
+from .utils import getUserGroups
+from .forms import *
 
-
-# Create your views here.
 
 class UserListView(G3WRequestViewMixin,ListView):
     """List users view."""
@@ -28,8 +27,7 @@ class UserListView(G3WRequestViewMixin,ListView):
             if not self.request.user.is_staff:
                 queryset = queryset.exclude(is_staff=True)
         else:
-            queryset = queryset.filter(groups__name='Viewer Maps Groups')
-
+            queryset = queryset.filter(groups__name__in=(G3W_VIEWER1, G3W_VIEWER2))
         return queryset
 
 
@@ -38,7 +36,20 @@ class UserCreateView(G3WRequestViewMixin, CreateView):
     model = User
     template_name = 'usersmanage/user_form.html'
 
+    @method_decorator(permission_required('auth.add_user'))
+    def dispatch(self, *args, **kwargs):
+        return super(UserCreateView, self).dispatch(*args, **kwargs)
+
     def get_success_url(self):
+
+        # case editor level 1
+        if G3W_EDITOR1 in getUserGroups(self.request.user):
+            assign_perm('auth.change_user', self.request.user, self.object)
+            assign_perm('auth.delete_user', self.request.user, self.object)
+
+        # for himself for self update
+        assign_perm('auth.change_user', self.object, self.object)
+
         return reverse('user-list')
 
 class UserUpdateView(G3WRequestViewMixin, UpdateView):
@@ -46,6 +57,10 @@ class UserUpdateView(G3WRequestViewMixin, UpdateView):
     model = User
     template_name = 'usersmanage/user_form.html'
     context_object_name = 'user2update'
+
+    @method_decorator(permission_required_or_403('auth.change_user', (User, 'pk', 'pk')))
+    def dispatch(self, *args, **kwargs):
+        return super(UserUpdateView, self).dispatch(*args, **kwargs)
 
     def get_form_kwargs(self):
         kwargs = super(UserUpdateView,self).get_form_kwargs()

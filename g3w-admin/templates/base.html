@@ -34,6 +34,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <link rel="stylesheet" href="{% static "bower_components/jquery.filer/css/jquery.filer.css" %}">
     <!-- Jquery.Filer Theme -->
     <link rel="stylesheet" href="{% static "bower_components/jquery.filer/css/themes/jquery.filer-dragdropbox-theme.css" %}">
+    <!-- DataTables -->
+    <link rel="stylesheet" href="{% static "bower_components/datatables/media/css/dataTables.bootstrap.min.css" %}">
     <!-- Theme style -->
     <link rel="stylesheet" href="{% static "adminlte/css/AdminLTE.min.css" %}">
     <!-- AdminLTE Skins. We have chosen the skin-blue for this starter
@@ -257,6 +259,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <script src="{% static "bower_components/bootstrap-datepicker/dist/locales/" %}bootstrap-datepicker.{{ lang }}.min.js"></script>
     <!-- Jquery.Filer -->
     <script src="{% static "bower_components/jquery.filer/js/jquery.filer.min.js" %}"></script>
+    <!-- DataTables -->
+    <script src="{% static "bower_components/datatables/media/js/jquery.dataTables.min.js" %}"></script>
+    <script src="{% static "bower_components/datatables/media/js/dataTables.bootstrap.min.js" %}"></script>
 
 
     {% if 'fixed' in adminlte_layout_option %}

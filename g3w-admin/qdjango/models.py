@@ -63,10 +63,7 @@ class Project(TimeStampedModel):
     class Meta:
         unique_together = (('title', 'group'))
         permissions = (
-            ('view_qdjango_project', 'Can view qdjango project'),
-            ('add_qdjango_project', 'Can add qdjango project'),
-            ('change_qdjango_project', 'Can change qdjango project'),
-            ('delete_qdjango_project', 'Can delete qdjango project'),
+            ('view_project', 'Can view qdjango project'),
         )
 
     def __unicode__(self):
@@ -136,8 +133,5 @@ class Layer(models.Model):
         unique_together = (('name', 'project',),)
         ordering = ['order']
         permissions = (
-            ('view_qdjango_layer', 'Can view qdjango layer'),
-            ('add_qdjango_layer', 'Can add qdjango layer'),
-            ('change_qdjango_layer', 'Can change qdjango layer'),
-            ('delete_qdjango_layer', 'Can delete qdjango layer')
+            ('view_layer', 'Can view qdjango layer'),
         )

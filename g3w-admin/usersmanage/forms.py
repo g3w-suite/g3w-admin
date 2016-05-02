@@ -1,6 +1,6 @@
 from django.conf import settings
 from django import forms
-from django.forms import Select, ValidationError
+from django.forms import Select, ValidationError, ModelChoiceField
 from django.utils.datastructures import MultiValueDict
 from django.utils.translation import ugettext, ugettext_lazy as _
 from django.contrib.auth.forms import (
@@ -10,14 +10,15 @@ from django.contrib.auth.forms import (
 from django.contrib.auth import (
     password_validation,
 )
-from django.contrib.auth.models import User
-from django.forms import ModelChoiceField
+from django.contrib.auth.models import User, Group as AuthGroup
 from django_file_form.forms import FileFormMixin, UploadedFileField
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout,Div, HTML
 from crispy_forms.bootstrap import AppendedText, PrependedText
+from PIL import Image
 from .models import Userdata, Department
 from core.mixins.forms import G3WRequestFormMixin, G3WFormMixin
+from usersmanage.configs import *
 
 
 
@@ -44,8 +45,12 @@ class G3WACLForm(forms.Form):
 
     initial_own_users = list()
     initial_editor_user = None
-    editor_user = UserChoiceField(label=_('Editor user'),queryset=User.objects.filter(groups__name='Editor Maps Groups').order_by('last_name'),required=False)
-    own_users = UsersChoiceField(label=_('Viewer users'),queryset=User.objects.filter(groups__name='Viewer Maps Groups').order_by('last_name'),required=False)
+    editor_user = UserChoiceField(label=_('Editor user'),
+                                  queryset=User.objects.filter(groups__name__in=(G3W_EDITOR1, G3W_EDITOR2)).order_by('last_name'),
+                                  required=False)
+    own_users = UsersChoiceField(label=_('Viewer users'),
+                                 queryset=User.objects.filter(groups__name__in=(G3W_VIEWER1, G3W_VIEWER2)).order_by('last_name'),
+                                 required=False)
 
     def _init_users(self,**kwargs):
         if kwargs['initial'].has_key('own_users'):
@@ -81,10 +86,17 @@ class G3WACLForm(forms.Form):
         self.instance.addPermissionsToViewers(toAdd)
         self.instance.removePermissionsToViewers(toRemove)
 
-class G3WUserForm(G3WRequestFormMixin, G3WFormMixin,FileFormMixin,UserCreationForm):
+
+class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreationForm):
 
     department = ModelChoiceField(queryset=Department.objects.all(), required=False)
     avatar = UploadedFileField(required=False)
+    groups = ModelChoiceField(
+        queryset=AuthGroup.objects.all(),
+        required=False,
+        help_text=_('Select group for this user'),
+        label=_('Group')
+    )
 
     def __init__(self, *args, **kwargs):
         super(G3WUserForm, self).__init__(*args, **kwargs)
@@ -195,7 +207,11 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin,FileFormMixin,UserCreationFo
             if self.cleaned_data['password1']:
                 user.set_password(self.cleaned_data['password1'])
             user.save()
+
+            # for save groups
+            self.cleaned_data['groups'] = () if not self.cleaned_data['groups'] else (self.cleaned_data['groups'],)
             self.save_m2m()
+
             if hasattr(user,'userdata'):
                 user.userdata.department = self.cleaned_data['department']
                 if self.cleaned_data['avatar']:
@@ -215,14 +231,14 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin,FileFormMixin,UserCreationFo
         :return: File object Cleaned data
         """
         avatar = self.cleaned_data['avatar']
-
-        from PIL import Image
+        if avatar is None:
+            return avatar
 
         try:
             image = Image.open(avatar)
             image.verify()
         except Exception:
-            raise ValidationError(_('Avatar is no a valid image'),code='image_invalid')
+            raise ValidationError(_('Avatar is no a valid image'), code='image_invalid')
         return avatar
 
 
@@ -240,8 +256,9 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin,FileFormMixin,UserCreationFo
             'department',
             'avatar',
         )
+
         widgets = {
-            'groups': G3WM2MSingleSelect
+            #'groups': G3WM2MSingleSelect
         }
 
 

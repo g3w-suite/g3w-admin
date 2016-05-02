@@ -4,7 +4,10 @@ from crispy_forms.layout import Div,HTML
 from django.utils.translation import ugettext, ugettext_lazy as _
 
 
-#util functions for qdjango forms
+def getUserGroups(user):
+    return user.groups.values_list('name', flat=True)
+
+# util functions for qdjango forms
 def get_fields_by_user(user, form):
     fields = [
         'editor_user',

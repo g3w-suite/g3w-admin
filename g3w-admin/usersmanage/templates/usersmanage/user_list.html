@@ -12,6 +12,12 @@
       </h1>
 {% endblock %}
 
+{% block custom_js_links_page %}
+<script>
+$("#users_table").DataTable();
+</script>
+{% endblock %}
+
 {% block main_content %}
 
 
@@ -20,34 +26,67 @@
     <div class="box">
         <div class="box-header">
             <h3 class="box-title"><a href="{% url 'user-add' %}"><i class="ion ion-plus-circled"></i></a> Users</h3>
-
-
         </div>
         <div class="box-body">
-            <table class="table table-hover table-striped">
+            <table id="users_table" class="table table-hover table-striped">
                 <thead>
                     <tr>
                         <th style="width:120px">Actions</th>
                         <th>Username</th>
+                        {% if user.is_superuser %}
+                        <th>Group</th>
+                        <th>Superuser</th>
+                        {% endif %}
+                        {% if user.is_staff and user.is_superuser %}
+                        <th>Staff</th>
+                        {% endif %}
                         <th class="hidden-sm hidden-xs">Email</th>
                         <th class="hidden-sm hidden-xs">First name</th>
                         <th class="hidden-sm hidden-xs">Last name</th>
                     </tr>
                 </thead>
                 {% for object in object_list %}
+                    {% get_obj_perms user for object as "userObj_perms" %}
                     <tr id="user_{{ object.pk }}">
                         <td>
                             <span class="col-xs-4 icon">
                                 <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-detail-url="{% url 'user-detail' object.id %}"><i class="ion ion-eye"></i></a>
                             </span>
                             <span class="col-xs-4 icon">
+                                {% if "change_user" in userObj_perms %}
                                 <a href="{% url 'user-update' object.id %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Edit' %}" ><i class="ion ion-edit"></i></a>
+                                {% endif %}
                             </span>
                             <span class="col-xs-4 icon">
+                                {% if "delete_user" in userObj_perms %}
                                 <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Delete' %}"  data-widget-type="deleteItem" data-delete-url="{% url 'user-delete' object.pk %}" data-item-selector="#user_{{ object.pk }}"><i class="ion ion-trash-b"></i></a>
+                                {% endif %}
                             </span>
                         </td>
                         <td>{{ object.username }}</td>
+                        {% if user.is_superuser %}
+                        <td>
+                        {% for group in object.groups.all %}
+                            {% if group.name == G3W_EDITOR1 or group.name == G3W_EDITOR2 %}
+                                <span class="label label-danger">{{ group }}</span>
+                            {% else %}
+                                <span class="label label-success">{{ group }}</span>
+                            {% endif %}
+                        {% endfor %}
+                        </td>
+                        <td>
+                        {% if object.is_superuser %}
+                            <span class="fa fa-check-circle" style="color: orange"></span>
+                        {% endif %}
+                        </td>
+                        {% endif %}
+                        {% if user.is_staff and user.is_superuser %}
+                        <td>
+                        {% if object.is_staff %}
+                            <span class="fa fa-check-circle" style="color: orange"></span>
+                        {% endif %}
+                        </td>
+                        {% endif %}
                         <td class="hidden-sm hidden-xs">{{ object.email }}</td>
                         <td class="hidden-sm hidden-xs">{{ object.first_name }}</td>
                         <td class="hidden-sm hidden-xs">{{ object.last_name }}</td>
@@ -61,11 +100,4 @@
 </div>
 
 </div>
-
-
-
-
-
-
-
 {% endblock %}
