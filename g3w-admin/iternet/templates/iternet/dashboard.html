@@ -81,6 +81,7 @@
                             </div>
                             <div class="col-xs-6">
                             <a href="{% url 'group-project-map' config_data.project.group.slug 'qdjango' config_data.project.pk %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Show map' %}" target="_blank"><i class="ion ion-map"></i></a>
+                            <a href="{% url 'qdjango-project-update' config_data.project.group.slug 'qdjango' config_data.project.pk %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Show map' %}" target="_blank"><i class="ion ion-map"></i></a>
                             </div>
                         </div>
                     {% else %}

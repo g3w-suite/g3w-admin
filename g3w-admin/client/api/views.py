@@ -50,7 +50,18 @@ class GroupConfigApiView(APIView):
         groupSerializer = GroupSerializer(group,projectId=project_id, projectType=project_type)
         initconfig = {
           "staticurl": settings.STATIC_URL+"g3w_client/",
-          "group":groupSerializer.data}
+          "group": groupSerializer.data}
+
+        u = request.user
+        # add user login data
+        if not u.is_anonymous():
+           initconfig['user'] = {
+               'username': u.username,
+               'first_name': u.first_name,
+               'last_name': u.last_name,
+               'groups': [g.name for g in u.groups_set.all()]
+           }
+
         
 
         return Response(initconfig)
