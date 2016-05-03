@@ -12,6 +12,7 @@ from sitetree.models import TreeItemBase, TreeBase
 from django.contrib.auth.models import User
 from usersmanage.utils import setPermissionUserObject, getUserGroups
 from usersmanage.configs import *
+from .utils.structure import getProjectsByGroup
 
 
 class G3W2Tree(TreeBase):
@@ -94,19 +95,18 @@ class Group(TimeStampedModel):
 
         permissions = ['core.view_group']
         if G3W_EDITOR1 in getUserGroups(user):
-            permissions.update([
+            permissions += [
                 'core.change_group',
                 'core.delete_group'
-            ])
+            ]
 
         setPermissionUserObject(user, self, permissions=permissions)
 
         # adding permissions to projects
-        '''
-        projects = self.project_set.all()
-        for p in projects:
-            p.addPermissionsToEditor(user)
-        '''
+        appProjects = getProjectsByGroup(self)
+        for app, projects in appProjects.items():
+            for project in projects:
+                project.addPermissionsToEditor(user)
 
     def removePermissionsToEditor(self, user):
         """
@@ -118,6 +118,12 @@ class Group(TimeStampedModel):
             'core.delete_group',
             'core.view_group',
         ], mode='remove')
+
+        # adding permissions to projects
+        appProjects = getProjectsByGroup(self)
+        for app, projects in appProjects.items():
+            for project in projects:
+                project.removePermissionsToEditor(user)
 
 
 class GroupProjectPanoramic(models.Model):

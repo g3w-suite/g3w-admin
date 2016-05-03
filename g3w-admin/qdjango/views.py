@@ -1,17 +1,18 @@
 from django.views.generic import (
-    FormView,
     CreateView,
     UpdateView,
     ListView,
     DetailView,
-    TemplateView,
     View,
 )
 from django.views.generic.detail import SingleObjectMixin
-from django.http import HttpResponseRedirect, JsonResponse
+from django.http import HttpResponseRedirect
+from django.utils.decorators import method_decorator
+from guardian.decorators import permission_required
 from core.mixins.views import *
 from core.signals import pre_update_project, pre_delete_project
 from django.core.urlresolvers import reverse
+from usersmanage.mixins.views import G3WACLViewMixin
 from .mixins.views import *
 from .forms import *
 
@@ -50,11 +51,18 @@ class OdjangoProjectCreateView(G3WGroupViewMixin, G3WRequestViewMixin, CreateVie
         return HttpResponseRedirect(self.get_success_url())
 
 
-class QdjangoProjectUpdateView(G3WGroupViewMixin, G3WRequestViewMixin, UpdateView):
+class QdjangoProjectUpdateView(G3WGroupViewMixin, G3WRequestViewMixin, G3WACLViewMixin, UpdateView):
     """Update project view."""
 
     model = Project
     form_class = QdjangoProjetForm
+
+    editor_permission = 'change_project'
+    viewer_permission = 'view_project'
+
+    @method_decorator(permission_required('qdjango.change_project', (Project, 'slug', 'slug'), raise_exception=True))
+    def dispatch(self, *args, **kwargs):
+        return super(QdjangoProjectUpdateView, self).dispatch(*args, **kwargs)
 
     def get_success_url(self):
         return reverse('project-list',kwargs={'group_slug':self.group.slug})
@@ -79,12 +87,20 @@ class QdjangoProjectDetailView(G3WRequestViewMixin, DetailView):
     model = Project
     template_name = 'qdjango/ajax/project_detail.html'
 
+    @method_decorator(permission_required('qdjango.view_project', (Project, 'slug', 'slug'), raise_exception=True))
+    def dispatch(self, *args, **kwargs):
+        return super(QdjangoProjectDetailView, self).dispatch(*args, **kwargs)
+
 
 class QdjangoProjectDeleteView(G3WAjaxDeleteViewMixin, SingleObjectMixin, View):
     '''
     Delete Qdjango project Ajax view
     '''
     model = Project
+
+    @method_decorator(permission_required('qdjango.delete_project', (Project, 'slug', 'slug'), raise_exception=True))
+    def dispatch(self, *args, **kwargs):
+        return super(QdjangoProjectDeleteView, self).dispatch(*args, **kwargs)
 
 
 # For layers

@@ -7,6 +7,7 @@ from autoslug.utils import slugify
 from core.models import Group
 from .utils.storage import QgisFileOverwriteStorage
 from model_utils import Choices
+from usersmanage.utils import setPermissionUserObject
 import os
 
 
@@ -25,6 +26,7 @@ def get_thumbnail_path(instance, filename):
     ext = filename.split('.')[-1]
     filename = u'{}_{}.{}'.format(group_name, project_name, ext)
     return os.path.join('thumbnails', filename)
+
 
 class Project(TimeStampedModel):
     """A QGIS project."""
@@ -68,6 +70,32 @@ class Project(TimeStampedModel):
 
     def __unicode__(self):
         return self.title
+
+    def _permissionsToEditor(self, user, mode='add'):
+
+        setPermissionUserObject(user, self, permissions=[
+            'qdjango.change_project',
+            'qdjango.delete_project',
+            'qdjango.view_project'
+        ], mode=mode)
+
+        layerAction = 'addPermissionsToEditor' if mode=='add' else 'removePermissionsToEditor'
+        layers = self.layer_set.all()
+        for layer in layers:
+            getattr(layer, layerAction)(user)
+
+    def addPermissionsToEditor(self, user):
+        """
+        Give guardian permissions to Editor
+        """
+        self._permissionsToEditor(user, 'add')
+
+    def removePermissionsToEditor(self, user):
+        """
+        Remove guardian permissions to Editor
+        """
+        self._permissionsToEditor(user, 'remove')
+
 
 
 class Layer(models.Model):
@@ -135,3 +163,24 @@ class Layer(models.Model):
         permissions = (
             ('view_layer', 'Can view qdjango layer'),
         )
+
+    def _permissionsToEditor(self, user, mode='add'):
+        setPermissionUserObject(user, self, permissions=[
+            'qdjango.change_layer',
+            'qdjango.delete_layer',
+            'qdjango.view_layer'
+        ], mode=mode)
+
+        # todo: add widget permmissions
+
+    def addPermissionsToEditor(self, user):
+        """
+        Give guardian permissions to Editor
+        """
+        self._permissionsToEditor(user, 'add')
+
+    def removePermissionsToEditor(self, user):
+        """
+        Remove guardian permissions to Editor
+        """
+        self._permissionsToEditor(user, 'remove')

@@ -30,6 +30,7 @@
 
 <div class="row">
 {% for object in object_list %}
+    {% get_obj_perms user for object as "userObj_perms" %}
     <div class="col-md-3 col-sm-6 connectedSortable">
      <div class="box box-widget widget-user" id="group_{{ object.slug }}">
                 <!-- Add the bg color to the header using any of the bg-* classes -->
@@ -63,21 +64,27 @@
                     <div class="col-sm-2 col-xs-2">
                       <div class="description-block">
                          <div class="icon">
+                         {% if "view_group" in userObj_perms %}
                           <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-detail-url="{% url 'group-detail' object.slug %}"><i class="ion ion-eye"></i></a>
+                         {% endif %}
                         </div>
                       </div><!-- /.description-block -->
                     </div><!-- /.col -->
                     <div class="col-sm-2 col-xs-2">
                       <div class="description-block">
                         <div class="icon">
+                        {% if "change_group" in userObj_perms %}
                           <a href="{% url 'group-update' object.slug %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Edit' %}" ><i class="ion ion-edit"></i></a>
+                        {% endif %}
                         </div>
                       </div><!-- /.description-block -->
                     </div><!-- /.col -->
                     <div class="col-sm-2 col-xs-2">
                       <div class="description-block">
                         <div class="icon">
+                        {% if "delete_group" in userObj_perms %}
                           <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Delete' %}"  data-widget-type="deleteItem" data-delete-url="{% url 'group-delete' object.slug %}" data-item-selector="#group_{{ object.slug }}"><i class="ion ion-trash-b"></i></a>
+                        {% endif %}
                         </div>
                       </div><!-- /.description-block -->
                     </div><!-- /.col -->

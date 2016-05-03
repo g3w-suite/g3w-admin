@@ -11,9 +11,7 @@ from django.views.generic import (
 from django.views.generic.detail import SingleObjectMixin
 from django.core.urlresolvers import reverse
 from django.utils.decorators import method_decorator
-from django.contrib.auth.decorators import permission_required
-from guardian.shortcuts import assign_perm
-from guardian.decorators import permission_required_or_403
+from guardian.decorators import permission_required
 from usersmanage.mixins.views import G3WACLViewMixin
 from .forms import GroupForm
 from .models import Group, GroupProjectPanoramic
