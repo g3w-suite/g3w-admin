@@ -139,7 +139,7 @@ class GroupDeleteView(G3WAjaxDeleteViewMixin,G3WRequestViewMixin, SingleObjectMi
 
     @method_decorator(permission_required('core.delete_group', (Group, 'slug', 'slug'), raise_exception=True))
     def dispatch(self, *args, **kwargs):
-        return super(GroupUpdateView, self).dispatch(*args, **kwargs)
+        return super(GroupDeleteView, self).dispatch(*args, **kwargs)
 
 
 class GroupSetProjectPanoramicView(View):
