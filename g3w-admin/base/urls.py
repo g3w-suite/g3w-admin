@@ -18,14 +18,21 @@ urlpatterns = [
     url(r'^', include('core.urls')),
     url(r'^', include('usersmanage.urls')),
     url(r'^', include('client.urls')),
-    url(r'^', include('client.apiurls')),
     url(r'^upload/', include('django_file_form.urls')),
-    url(r'^login/$', auth.views.login, name='login', kwargs={'template_name': 'login.html'}),
+    url(r'^login/$', auth.views.login, name='login', kwargs={
+        'template_name': 'login.html',
+        'extra_context': {
+            'adminlte_skin': 'login-page',
+            'adminlte_layout_option': None
+        }
+    }),
     url(r'^logout/$', auth.views.logout, {'next_page': settings.LOGOUT_NEXT_PAGE}, name='logout'),
     url(r'^jsi18n/$', javascript_catalog, jsInfoDict, name='javascript-catalog'),
 ]
 
-apiUrlpatterns = []
+apiUrlpatterns = [
+    url(r'^', include('client.apiurls')),
+]
 
 #adding projects app
 for app in settings.G3WADMIN_PROJECT_APPS:

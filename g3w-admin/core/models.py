@@ -10,6 +10,8 @@ from model_utils import Choices
 from autoslug import AutoSlugField
 from sitetree.models import TreeItemBase, TreeBase
 from django.contrib.auth.models import User
+from usersmanage.utils import setPermissionUserObject, getUserGroups
+from usersmanage.configs import *
 
 
 class G3W2Tree(TreeBase):
@@ -66,7 +68,7 @@ class Group(TimeStampedModel):
     class Meta:
         permissions = (
             ('view_group', 'Can view group'),
-        )
+        ),
 
     def __unicode__(self):
         return self.name
@@ -84,6 +86,38 @@ class Group(TimeStampedModel):
             Project = apps.get_app_config(g3wProjectApp).get_model('project')
             groupProjects += len(Project.objects.filter(group=self))
         return groupProjects
+
+    def addPermissionsToEditor(self, user):
+        """
+        Give guardian permissions to Editor
+        """
+
+        permissions = ['core.view_group']
+        if G3W_EDITOR1 in getUserGroups(user):
+            permissions.update([
+                'core.change_group',
+                'core.delete_group'
+            ])
+
+        setPermissionUserObject(user, self, permissions=permissions)
+
+        # adding permissions to projects
+        '''
+        projects = self.project_set.all()
+        for p in projects:
+            p.addPermissionsToEditor(user)
+        '''
+
+    def removePermissionsToEditor(self, user):
+        """
+        Remove guardian permissions to Editor
+        """
+
+        setPermissionUserObject(user, self, permissions=[
+            'core.change_group',
+            'core.delete_group',
+            'core.view_group',
+        ], mode='remove')
 
 
 class GroupProjectPanoramic(models.Model):

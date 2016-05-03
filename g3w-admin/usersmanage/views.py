@@ -36,7 +36,7 @@ class UserCreateView(G3WRequestViewMixin, CreateView):
     model = User
     template_name = 'usersmanage/user_form.html'
 
-    @method_decorator(permission_required('auth.add_user'))
+    @method_decorator(permission_required('auth.add_user', raise_exception=True))
     def dispatch(self, *args, **kwargs):
         return super(UserCreateView, self).dispatch(*args, **kwargs)
 
@@ -51,6 +51,7 @@ class UserCreateView(G3WRequestViewMixin, CreateView):
         assign_perm('auth.change_user', self.object, self.object)
 
         return reverse('user-list')
+
 
 class UserUpdateView(G3WRequestViewMixin, UpdateView):
     form_class = G3WUserUpdateForm

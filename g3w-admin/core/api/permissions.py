@@ -15,5 +15,5 @@ class ProjectPermission(BasePermission):
 
         Project = apps.get_app_config(kwargs['project_type']).get_model('project')
         project = Project.objects.get(pk=kwargs['project_id'])
-        return request.user.has_perm('projects.view_project', project) and not get_anonymous_user().has_perm('projects.view_project', project)
+        return request.user.has_perm('{}.view_project'.format(kwargs['project_type']), project) and not get_anonymous_user().has_perm('{}.view_project'.format(kwargs['project_type']), project)
 

@@ -4,6 +4,7 @@ from django.forms.fields import CharField
 from django.utils.translation import ugettext, ugettext_lazy as _
 from core.models import Group
 from django_file_form.forms import FileFormMixin
+from django.contrib.auth.models import User
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Div, Submit, HTML, Button, Row, Field
 from crispy_forms.bootstrap import AppendedText, PrependedText
@@ -153,6 +154,10 @@ class GroupForm(FileFormMixin, G3WFormMixin, G3WRequestFormMixin, G3WACLForm, Mo
     class Meta:
         model = Group
         fields = '__all__'
+
+    def save(self, commit=True):
+        super(GroupForm, self).save()
+        self._ACLPolicy()
 
 
 

@@ -25,7 +25,7 @@ SECRET_KEY = 'y#-4cgqw2(zyt1uy_(l5sa(xq550*6$s#3y*r=v+6#wb6^3(4)'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost']
 
 
 # Application definition
@@ -130,6 +130,11 @@ AUTH_PASSWORD_VALIDATORS = [
 
 ANONYMOUS_USER_ID = -1
 
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'guardian.backends.ObjectPermissionBackend'
+)
+
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 SITETREE_MODEL_TREE = 'core.G3W2Tree'
@@ -198,7 +203,7 @@ LOGGING = {
     'disable_existing_loggers': False,
     'handlers': {
         'file': {
-            'level': 'DEBUG',
+            'level': 'ERROR',
             'class': 'logging.FileHandler',
             'filename': '/tmp/debug.log',
         },
@@ -206,7 +211,7 @@ LOGGING = {
     'loggers': {
         'django': {
             'handlers': ['file'],
-            'level': 'DEBUG',
+            'level': 'ERROR',
             'propagate': True,
         },
     },

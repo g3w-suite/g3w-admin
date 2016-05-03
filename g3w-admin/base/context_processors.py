@@ -27,11 +27,6 @@ def global_settings(request):
 
     g3wadmin_context['adminlte_layout_option'] = settings.ADMINLTE_LAYOUT_OPTION
 
-    # for login page remove skin a layout option
-    if resolve(request.path_info).url_name == 'login':
-        g3wadmin_context['adminlte_skin'] = 'login-page'
-        del(g3wadmin_context['adminlte_layout_option'])
-
     # add date current time
     g3wadmin_context['today'] = datetime.today()
 

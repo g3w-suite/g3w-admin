@@ -43,23 +43,28 @@ class G3WM2MSingleSelect(Select):
 class G3WACLForm(forms.Form):
     """ ACL Form class to work with group user type """
 
-    initial_own_users = list()
+    initial_viewer_users = []
     initial_editor_user = None
     editor_user = UserChoiceField(label=_('Editor user'),
                                   queryset=User.objects.filter(groups__name__in=(G3W_EDITOR1, G3W_EDITOR2)).order_by('last_name'),
                                   required=False)
-    own_users = UsersChoiceField(label=_('Viewer users'),
+    viewer_users = UsersChoiceField(label=_('Viewer users'),
                                  queryset=User.objects.filter(groups__name__in=(G3W_VIEWER1, G3W_VIEWER2)).order_by('last_name'),
                                  required=False)
 
+    def __init__(self, *args, **kwargs):
+        self._init_users(**kwargs)
+        super(G3WACLForm, self).__init__(*args, **kwargs)
+        self._add_anonymou_user()
+
     def _init_users(self,**kwargs):
-        if kwargs['initial'].has_key('own_users'):
-            self.initial_own_users = kwargs['initial']['own_users']
+        if kwargs['initial'].has_key('viewer_users'):
+            self.initial_viewer_users = kwargs['initial']['viewer_users']
         if kwargs['initial'].has_key('editor_user'):
             self.initial_editor_user = kwargs['initial']['editor_user']
 
     def _add_anonymou_user(self):
-        self.fields['own_users'].queryset=self.fields['own_users'].queryset | User.objects.filter(pk=settings.ANONYMOUS_USER_ID)
+        self.fields['viewer_users'].queryset = self.fields['viewer_users'].queryset | User.objects.filter(pk=settings.ANONYMOUS_USER_ID)
 
     def _ACLPolicy(self):
         editorToRemove = None
@@ -72,19 +77,21 @@ class G3WACLForm(forms.Form):
         else:
             permission_user = self.request.user
 
-        if permission_user:
+        if permission_user and hasattr(self.instance, 'addPermissionsToEditor'):
             self.instance.addPermissionsToEditor(permission_user)
 
-        if editorToRemove:
+        if editorToRemove and hasattr(self.instance, 'removePermissionsToEditor'):
             self.instance.removePermissionsToEditor(editorToRemove)
 
         #add permission view_group to Viewer
         # check per and change situation
-        current_users = map(lambda o: o.id, self.cleaned_data['own_users'])
-        toRemove = list(set(self.initial_own_users) - set(current_users))
-        toAdd = list(set(current_users)-set(self.initial_own_users))
-        self.instance.addPermissionsToViewers(toAdd)
-        self.instance.removePermissionsToViewers(toRemove)
+        currentViewerUsers = [o.id for o in self.cleaned_data['viewer_users']]
+        toRemove = list(set(self.initial_viewer_users) - set(currentViewerUsers))
+        toAdd = list(set(currentViewerUsers) - set(self.initial_viewer_users))
+        if hasattr(self.instance, 'addPermissionsToViewers'):
+            self.instance.addPermissionsToViewers(toAdd)
+        if hasattr(self.instance, 'removePermissionsToViewers'):
+            self.instance.removePermissionsToViewers(toRemove)
 
 
 class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreationForm):

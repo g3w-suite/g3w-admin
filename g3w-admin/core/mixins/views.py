@@ -1,6 +1,7 @@
 from django.http import JsonResponse
-from core.models import Group
 from django.shortcuts import get_object_or_404
+from core.models import Group
+
 
 class G3WRequestViewMixin(object):
     '''
@@ -13,6 +14,7 @@ class G3WRequestViewMixin(object):
         #get request object from view
         kwargs['request'] = self.request
         return kwargs
+
 
 
 class G3WGroupViewMixin(object):
