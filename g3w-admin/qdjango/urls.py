@@ -16,6 +16,7 @@ urlpatterns = [
 ]
 
 try:
+    # encaspulate in a try except procedure for migration
     from sitetree.sitetreeapp import register_dynamic_trees, compose_dynamic_tree
 
     #get qdjango sitetree and add items to core sitetree:
