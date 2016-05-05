@@ -15,11 +15,13 @@ urlpatterns = [
 
 ]
 
+try:
+    from sitetree.sitetreeapp import register_dynamic_trees, compose_dynamic_tree
 
-from sitetree.sitetreeapp import register_dynamic_trees, compose_dynamic_tree
-
-#get qdjango sitetree and add items to core sitetree:
-register_dynamic_trees(
-    compose_dynamic_tree('qdjango', target_tree_alias='core', parent_tree_item_alias='project-list'),
-    reset_cache=True
-)
+    #get qdjango sitetree and add items to core sitetree:
+    register_dynamic_trees(
+        compose_dynamic_tree('qdjango', target_tree_alias='core', parent_tree_item_alias='project-list'),
+        reset_cache=True
+    )
+except:
+    pass
