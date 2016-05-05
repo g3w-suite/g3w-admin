@@ -6,6 +6,7 @@
 {% block custom_js_links_page %}
 <script>
     ga.ui.initSetLayerCached();
+    $('#tree').treeview({data:{{ layers_tree|safe }}});
 </script>
 {% endblock %}
 
@@ -36,28 +37,49 @@
         <span class="description">Layers</span>
     </div>
     <div class="box-body">
-        <table class="table table-hover table-striped">
-            <thead>
-                <tr>
-                    <th style="width: 40px">Type</th>
-                    <th style="width: 40px">{%  trans 'Cached' %}</th>
-                    <th>{%  trans 'Name' %}</th>
-                    <th>{%  trans 'Label' %}</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for object in object_list %}
-                <tr id="qdjango_project_layer_{{ object.slug }}">
-                    <td>
-                        {% include 'qdjango/include/layer_icon.html' %}
-                    </td>
-                    <td><input type="checkbox" {% if object.tilestache_conf %}checked="checked"{% endif %} data-widget-type="setLayerCached" data-ajax-url="{% url 'qdjango-project-layers-cache' group.slug object.project.slug object.id %}" /></td>
-                    <td>{{ object.name }}</td>
-                    <td>{{ object.title }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <div class="nav-tabs-custom">
+            <ul class="nav nav-tabs">
+              <li class="active"><a href="#tab_layers_data" data-toggle="tab">{% trans 'Data' %}</a></li>
+              <li><a href="#tab_layers_structure" data-toggle="tab">{% trans 'Structure' %}</a></li>
+
+            </ul>
+            <div class="tab-content">
+              <div class="tab-pane active" id="tab_layers_data">
+                <table class="table table-hover table-striped">
+                    <thead>
+                        <tr>
+                            <th style="width: 40px">Type</th>
+                            <!--<th style="width: 40px">{%  trans 'Cached' %}</th>-->
+                            <th>{%  trans 'Name' %}</th>
+                            <th>{%  trans 'Label' %}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for object in object_list %}
+                        <tr id="qdjango_project_layer_{{ object.slug }}">
+                            <td>
+                                {% include 'qdjango/include/layer_icon.html' %}
+                            </td>
+                            <!--<td><input type="checkbox" {% if object.tilestache_conf %}checked="checked"{% endif %} data-widget-type="setLayerCached" data-ajax-url="{% url 'qdjango-project-layers-cache' group.slug object.project.slug object.id %}" /></td>-->
+                            <td>{{ object.name }}</td>
+                            <td>{{ object.title }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+              </div><!-- /.tab-pane -->
+              <div class="tab-pane" id="tab_layers_structure">
+                <div id="tree"></div>
+              </div><!-- /.tab-pane -->
+
+            </div><!-- /.tab-content -->
+          </div>
+
+
+
+
+
+
     </div>
 </div>
 {% endblock %}

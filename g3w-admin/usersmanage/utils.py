@@ -59,6 +59,10 @@ def setPermissionUserObject(user, object, permissions=[], mode='add'):
     """
     Assign or remove guardian permissions to user for object
     """
+
+    if not isinstance(permissions, list):
+        permissions = [permissions]
+
     for perm in permissions:
         if mode == 'add' and not user.has_perm(perm, object):
             assign_perm(perm, user, object)

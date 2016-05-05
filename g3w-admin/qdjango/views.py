@@ -15,6 +15,7 @@ from django.core.urlresolvers import reverse
 from usersmanage.mixins.views import G3WACLViewMixin
 from .mixins.views import *
 from .forms import *
+import json
 
 
 class QdjangoProjectListView(G3WRequestViewMixin, G3WGroupViewMixin, ListView):
@@ -114,7 +115,31 @@ class QdjangoLayersListView(G3WRequestViewMixin, G3WGroupViewMixin, QdjangoProje
     def get_context_data(self, **kwargs):
         """Add current project_slug to context."""
         context = super(QdjangoLayersListView, self).get_context_data(**kwargs)
+
+        # get project object
+        project = Project.objects.get(slug=self.project_slug)
+
+        # rebuild layers_tree for bootstrap tree view
+        qlayers = self.get_queryset()
+        layers = {l.qgs_layer_id:l for l in qlayers}
+
+        layersTree = eval(project.layers_tree)
+        layersTreeBoostrap = []
+
+        def buildLeaf(layer):
+            leaf = {}
+            leaf['text'] = layer['name']
+            if 'nodes' in layer:
+                leaf['nodes'] = []
+                for node in layer['nodes']:
+                    leaf['nodes'].append(buildLeaf(node))
+            return leaf
+
+        for l in layersTree:
+            layersTreeBoostrap.append(buildLeaf(l))
+
         context['project_slug'] = self.project_slug
+        context['layers_tree'] = layersTreeBoostrap
         return context
 
 class QdjangoLayerCacheView(G3WGroupViewMixin, QdjangoProjectViewMixin, View):

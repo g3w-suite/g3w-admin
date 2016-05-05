@@ -1,15 +1,32 @@
 from django.views.generic import TemplateView
 from django.shortcuts import get_object_or_404
-from django.http import Http404
+from django.http import Http404, HttpResponseForbidden
 from django.conf import settings
 from rest_framework.renderers import JSONRenderer
 from core.api.serializers import GroupSerializer, Group
-from django.contrib.auth.models import User
+from django.contrib.auth.views import redirect_to_login
+from django.apps import apps
+from django.core.exceptions import PermissionDenied
 from copy import deepcopy
+
 
 class ClientView(TemplateView):
 
     template_name = "client/index.html"
+
+    def dispatch(self, request, *args, **kwargs):
+
+        # che permissions
+        Project = apps.get_app_config(kwargs['project_type']).get_model('project')
+        if not request.user.has_perm("{}.view_project".format(kwargs['project_type']),
+                                     Project.objects.get(pk=kwargs['project_id'])):
+
+            # redirect to login if Anonymous user
+            if request.user.is_anonymous():
+                return redirect_to_login(request.get_full_path(), settings.LOGIN_URL, 'next')
+            else:
+                raise PermissionDenied()
+        return super(ClientView, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         contextData = super(ClientView,self).get_context_data(**kwargs)

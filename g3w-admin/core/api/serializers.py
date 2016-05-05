@@ -10,7 +10,7 @@ class GroupSerializer(serializers.ModelSerializer):
 
     minscale = serializers.IntegerField(source='min_scale', read_only=True)
     maxscale = serializers.IntegerField(source='max_scale', read_only=True)
-    crs = serializers.IntegerField(source='srid', read_only=True)
+    crs = serializers.IntegerField(read_only=True)
 
     def __init__(self,instance=None, data=empty, **kwargs):
         self.projectId = kwargs['projectId']
@@ -21,6 +21,9 @@ class GroupSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         ret = super(GroupSerializer, self).to_representation(instance)
+
+        # add crs:
+        ret['crs'] = int(str(self.instance.srid.srid))
 
         # add projects to group
         ret['projects'] = []

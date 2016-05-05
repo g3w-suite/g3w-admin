@@ -1,6 +1,8 @@
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
 from sitetree.admin import TreeItemAdmin,override_item_admin
+from .models import Group
+from guardian.admin import GuardedModelAdmin
 
 
 # And our custom tree item admin model.
@@ -27,6 +29,10 @@ class G3WTreeItemAdmin(TreeItemAdmin):
 
 # Now we tell the SiteTree to replace generic representations with custom.
 override_item_admin(G3WTreeItemAdmin)
+
+class GroupAdmin(GuardedModelAdmin):
+    model = Group
+admin.site.register(Group, GroupAdmin)
 
 # Tweak admin site settings like title, header, 'View Site' URL, etc
 admin.site.site_title = 'G3W Admin Administration'

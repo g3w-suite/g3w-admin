@@ -93,9 +93,11 @@
           </div><!-- /.widget-user -->
     </div>
 {% endfor %}
+    {% if perms.core.add_group %}
     {% with 'group-add' as object_add_url_name %}
         {% include 'core/include/widget_add_box.html' %}
     {% endwith %}
+    {% endif %}
 </div>
 
 

@@ -3,9 +3,11 @@ from django.db import models
 from model_utils.models import TimeStampedModel
 from autoslug import AutoSlugField
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.auth.models import User
 from autoslug.utils import slugify
 from core.models import Group
 from .utils.storage import QgisFileOverwriteStorage
+from .mixins.models import QdjangoACLModelMixins
 from model_utils import Choices
 from usersmanage.utils import setPermissionUserObject
 import os
@@ -28,7 +30,8 @@ def get_thumbnail_path(instance, filename):
     return os.path.join('thumbnails', filename)
 
 
-class Project(TimeStampedModel):
+
+class Project(QdjangoACLModelMixins, TimeStampedModel):
     """A QGIS project."""
 
     # Project file
@@ -84,21 +87,20 @@ class Project(TimeStampedModel):
         for layer in layers:
             getattr(layer, layerAction)(user)
 
-    def addPermissionsToEditor(self, user):
-        """
-        Give guardian permissions to Editor
-        """
-        self._permissionsToEditor(user, 'add')
+    def _permissionsToViewers(self, users_id, mode='add'):
 
-    def removePermissionsToEditor(self, user):
-        """
-        Remove guardian permissions to Editor
-        """
-        self._permissionsToEditor(user, 'remove')
+        for user_id in users_id:
+            setPermissionUserObject(User.objects.get(pk=user_id), self, permissions='qdjango.view_project', mode=mode)
+
+            layerAction = 'addPermissionsToViewers' if mode == 'add' else 'removePermissionsToViewers'
+            layers = self.layer_set.all()
+            for layer in layers:
+                getattr(layer, layerAction)(users_id)
+
+                # todo: add widget permissions
 
 
-
-class Layer(models.Model):
+class Layer(QdjangoACLModelMixins, models.Model):
     """A QGIS layer."""
 
     TYPES = Choices(
@@ -173,14 +175,12 @@ class Layer(models.Model):
 
         # todo: add widget permmissions
 
-    def addPermissionsToEditor(self, user):
-        """
-        Give guardian permissions to Editor
-        """
-        self._permissionsToEditor(user, 'add')
+    def _permissionsToViewers(self, users_id, mode='add'):
 
-    def removePermissionsToEditor(self, user):
-        """
-        Remove guardian permissions to Editor
-        """
-        self._permissionsToEditor(user, 'remove')
+        for user_id in users_id:
+            setPermissionUserObject(User.objects.get(pk=user_id), self, permissions='qdjango.view_layer', mode=mode)
+
+            # todo: add widget permissions
+
+
+

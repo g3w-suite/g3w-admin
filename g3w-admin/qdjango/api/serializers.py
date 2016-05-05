@@ -107,7 +107,7 @@ class LayerSerializer(serializers.ModelSerializer):
         ret['infourl'] = ''
 
         # add bbox
-        ret['bbox'] = self.qgisProjectSettignsWMS.layers[instance.name]['bboxes']['EPSG:{}'.format(group.srid)]
+        ret['bbox'] = self.qgisProjectSettignsWMS.layers[instance.name]['bboxes']['EPSG:{}'.format(group.srid.srid)]
 
         # add capabilities
         ret['capabilities'] = 0

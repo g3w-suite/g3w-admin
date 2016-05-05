@@ -13,6 +13,10 @@ from django.contrib.auth.models import User
 from usersmanage.utils import setPermissionUserObject, getUserGroups
 from usersmanage.configs import *
 from .utils.structure import getProjectsByGroup
+try:
+    from osgeo import osr
+except:
+    pass
 
 
 class G3W2Tree(TreeBase):
@@ -22,6 +26,29 @@ class G3W2Tree(TreeBase):
 class G3W2TreeItem(TreeItemBase):
     type_header = models.BooleanField('Tipo header', default=False, blank=True)
     icon_css_class = models.CharField('Icon css class', max_length=50,null=True, blank=True)
+
+
+class G3WSpatialRefSys(models.Model):
+    """
+    Clone of Postgis spatial_ref_sys for no geo database
+    """
+    srid = models.IntegerField(primary_key=True)
+    auth_name = models.CharField(max_length=256)
+    auth_srid = models.IntegerField()
+    srtext = models.CharField(max_length=2048)
+    proj4text = models.CharField(max_length=2048)
+
+    def __unicode__(self):
+        '''
+        try:
+            sref = osr.SpatialReference()
+            sref.ImportFromWkt(self.srtext)
+            return "{} - [{}] - {}".format(str(self.srid), sref.GetLinearUnitsName(), sref.GetAttrValue())
+        except Exception as e:
+        '''
+        return "{} {}".format(self.auth_name, str(self.srid))
+
+
 
 
 class Group(TimeStampedModel):
@@ -40,7 +67,7 @@ class Group(TimeStampedModel):
         )
     is_active = models.BooleanField(_('Is active'), default=1)
     # l10n
-    lang = models.CharField(_('lang'), max_length=20, choices=LANGUAGES)
+    lang = models.CharField(_('lang'), max_length=20, choices=LANGUAGES, default='it')
     # Company logo
     header_logo_img = models.FileField(_('headerLogoImg'), upload_to='logo_img')
     header_logo_height = models.IntegerField(_('headerLogoHeight'))
@@ -51,10 +78,8 @@ class Group(TimeStampedModel):
     # Panoramic max/min scale
     panoramic_max_scale = models.IntegerField(_('Panoramic max scale'))
     panoramic_min_scale = models.IntegerField(_('Panoramic min scale'))
-    # Unit of measure
-    units = models.CharField(_('Units'), choices=UNITS, max_length=255, default='meters')
     # Group SRID (a.k.a. EPSG)
-    srid = models.IntegerField(_('SRID/EPSG'))
+    srid = models.ForeignKey(G3WSpatialRefSys, db_column='srid')
     # use Google/Bing base maps
     use_commercial_maps = models.BooleanField(_('Use commercial maps'),default=False)
     use_osm_maps = models.BooleanField(_('Use OpenStreetMap base map'),default=False)
@@ -69,7 +94,7 @@ class Group(TimeStampedModel):
     class Meta:
         permissions = (
             ('view_group', 'Can view group'),
-        ),
+        )
 
     def __unicode__(self):
         return self.name
@@ -125,6 +150,34 @@ class Group(TimeStampedModel):
             for project in projects:
                 project.removePermissionsToEditor(user)
 
+    def addPermissionsToViewers(self, users_id):
+        """
+        Give guardian permissions to Viewers
+        """
+        appProjects = getProjectsByGroup(self)
+
+        for user_id in users_id:
+            setPermissionUserObject(User.objects.get(pk=user_id), self, permissions='core.view_group')
+
+            # adding permissions to projects
+            for app, projects in appProjects.items():
+                for project in projects:
+                    project.addPermissionsToViewers(users_id)
+
+    def removePermissionsToViewers(self, users_id):
+        """
+        Remove guardian permissions to Viewers
+        """
+        appProjects = getProjectsByGroup(self)
+
+        for user_id in users_id:
+            setPermissionUserObject(User.objects.get(pk=user_id), self, permissions='core.view_group', mode='remove')
+
+            # adding permissions to projects
+            for app, projects in appProjects.items():
+                for project in projects:
+                    project.removePermissionsToViewers(users_id)
+
 
 class GroupProjectPanoramic(models.Model):
 
@@ -145,3 +198,5 @@ class G3WEditingFeatureLock(models.Model):
     sessionid = models.CharField(max_length=255, null=True, blank=True)
     feature_lock_id = models.CharField(max_length=32)
     time_locked = models.DateTimeField(auto_now=True)
+
+

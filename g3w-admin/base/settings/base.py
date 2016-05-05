@@ -135,6 +135,8 @@ AUTHENTICATION_BACKENDS = (
     'guardian.backends.ObjectPermissionBackend'
 )
 
+GUARDIAN_RAISE_403 = True
+
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 SITETREE_MODEL_TREE = 'core.G3W2Tree'
