@@ -8,6 +8,7 @@ from usersmanage.utils import get_fields_by_user, crispyBoxACL
 from usersmanage.forms import G3WACLForm
 from core.mixins.forms import *
 from core.utils import unicode2ascii
+from usersmanage.configs import *
 from .models import Configs, Layer
 import json
 
@@ -27,11 +28,13 @@ class cduConfigInitForm(G3WFormMixin, G3WRequestFormMixin, G3WACLForm, ModelForm
     """
     #odtfile = UploadedFileField()
 
+    viewer_groups = (G3W_VIEWER1, )
+
     def __init__(self,*args,**kwargs):
         self._init_users(**kwargs)
         super(cduConfigInitForm,self).__init__(*args,**kwargs)
         # change ows_user field label
-        self.fields['own_users'].label = _('User users')
+        self.fields['viewer_users'].label = _('User users')
         self.helper = FormHelper(self)
         self.helper.form_tag = False
 
@@ -47,7 +50,7 @@ class cduConfigInitForm(G3WFormMixin, G3WRequestFormMixin, G3WACLForm, ModelForm
                         Div(
                             'title',
                             Field('description', css_class='wys5'),
-                            'project',
+                            Field('project', css_class='select2'),
                             'odtfile',
                             css_class='box-body',
 
