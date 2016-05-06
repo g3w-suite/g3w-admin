@@ -406,11 +406,8 @@ class IsGroupCompatibleValidator(QgisProjectValidator):
     Check il project is compatible with own group
     """
     def clean(self):
-        if self.qgisProject.group.srid != self.qgisProject.srid:
+        if self.qgisProject.group.srid.srid != self.qgisProject.srid:
             raise Exception(_('Project and group SRID must be the same'))
-        if self.qgisProject.group.units != self.qgisProject.units:
-            raise Exception(_('Project and group units must be the same'))
-
 
 class ProjectExists(QgisProjectValidator):
     """
