@@ -320,7 +320,7 @@ function _init() {
         //Enable sidebar push menu
         if ($(window).width() > (screenSizes.sm - 1)) {
           if ($("body").hasClass('sidebar-collapse')) {
-            $("body").removeClass('sidebar-collapse').trigger('expanded.pushMenu');
+              $("body").removeClass('sidebar-collapse').trigger('expanded.pushMenu');
           } else {
             $("body").addClass('sidebar-collapse').trigger('collapsed.pushMenu');
           }

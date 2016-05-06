@@ -213,6 +213,24 @@ _.extend(g3wadmin.ui, {
 
     },
 
+    initPushMenu: function(){
+
+        var $body = $("body");
+        var cookieOptions = {path: '/'};
+        // init event on pushMenu
+        $body
+            .on('collapsed.pushMenu', function(e) {
+
+                // set coockie on collapsed
+                $.cookie('g3wadmin_sidebar_status', 'collapsed', cookieOptions);
+            })
+            .on('expanded.pushMenu', function(e) {
+
+                // set coockie on exanded
+                $.cookie('g3wadmin_sidebar_status', 'expanded', cookieOptions);
+            })
+    }
+
 
 
 });

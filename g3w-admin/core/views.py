@@ -60,7 +60,7 @@ class GroupDetailView(G3WRequestViewMixin, DetailView):
     model = Group
     template_name = 'core/ajax/group_detail.html'
 
-    @method_decorator(permission_required('core.view_group', raise_exception=True))
+    @method_decorator(permission_required('core.view_group', (Group, 'slug', 'slug'), return_403=True))
     def dispatch(self, *args, **kwargs):
         return super(GroupDetailView, self).dispatch(*args, **kwargs)
 
@@ -70,7 +70,7 @@ class GroupCreateView(G3WRequestViewMixin, CreateView):
     model = Group
     form_class = GroupForm
 
-    @method_decorator(permission_required('core.add_group', raise_exception=True))
+    @method_decorator(permission_required('core.add_group', return_403=True))
     def dispatch(self, *args, **kwargs):
         return super(GroupCreateView, self).dispatch(*args, **kwargs)
 
@@ -100,7 +100,7 @@ class GroupDeleteView(G3WAjaxDeleteViewMixin,G3WRequestViewMixin, SingleObjectMi
     '''
     model = Group
 
-    @method_decorator(permission_required('core.delete_group', (Group, 'slug', 'slug'), raise_exception=True))
+    @method_decorator(permission_required('core.delete_group', (Group, 'slug', 'slug'), return_403=True))
     def dispatch(self, *args, **kwargs):
         return super(GroupDeleteView, self).dispatch(*args, **kwargs)
 

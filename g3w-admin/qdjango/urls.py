@@ -1,6 +1,9 @@
 from django.conf.urls import url
 from django.contrib.auth.decorators import login_required
+from base.urls import G3W_SITETREE_I18N_ALIAS
 from .views import *
+
+G3W_SITETREE_I18N_ALIAS.append('qdjango')
 
 urlpatterns = [
     url(r'^(?P<group_slug>[-_\w\d]+)/projects/$', login_required(QdjangoProjectListView.as_view()), name='qdjango-project-list'),
@@ -20,9 +23,17 @@ try:
     from sitetree.sitetreeapp import register_dynamic_trees, compose_dynamic_tree
 
     #get qdjango sitetree and add items to core sitetree:
+
     register_dynamic_trees(
-        compose_dynamic_tree('qdjango', target_tree_alias='core', parent_tree_item_alias='project-list'),
+        compose_dynamic_tree('qdjango', target_tree_alias='core', parent_tree_item_alias='project-list',
+                             include_trees=('qdjango',)),
         reset_cache=True
     )
+    register_dynamic_trees(
+        compose_dynamic_tree('qdjango', target_tree_alias='core_en', parent_tree_item_alias='project-list',
+                             include_trees=('qdjango_en',)),
+        reset_cache=True
+    )
+
 except:
     pass

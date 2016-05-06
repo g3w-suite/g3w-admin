@@ -19,6 +19,7 @@ from PIL import Image
 from .models import Userdata, Department
 from core.mixins.forms import G3WRequestFormMixin, G3WFormMixin
 from usersmanage.configs import *
+from .utils import getUserGroups
 
 
 
@@ -45,17 +46,27 @@ class G3WACLForm(forms.Form):
 
     initial_viewer_users = []
     initial_editor_user = None
-    editor_user = UserChoiceField(label=_('Editor user'),
-                                  queryset=User.objects.filter(groups__name__in=(G3W_EDITOR1, G3W_EDITOR2)).order_by('last_name'),
-                                  required=False)
-    viewer_users = UsersChoiceField(label=_('Viewer users'),
-                                 queryset=User.objects.filter(groups__name__in=(G3W_VIEWER1, G3W_VIEWER2)).order_by('last_name'),
-                                 required=False)
+    editor_groups = (G3W_EDITOR1, G3W_EDITOR2)
+    viewer_groups = (G3W_VIEWER1, G3W_VIEWER2)
+    editor_user = UserChoiceField(label=_('Editor user'), queryset=None, required=False)
+    viewer_users = UsersChoiceField(label=_('Viewer users'), queryset=None, required=False)
 
     def __init__(self, *args, **kwargs):
         self._init_users(**kwargs)
         super(G3WACLForm, self).__init__(*args, **kwargs)
+
+        # check for editor and viewers and edtir groups
+        self._setEditorUserQueryset()
+        self._setViewerUserQueryset()
         self._add_anonymou_user()
+
+    def _setEditorUserQueryset(self):
+        self.fields['editor_user'].queryset = User.objects.filter(groups__name__in=self.editor_groups)\
+            .order_by('last_name')
+
+    def _setViewerUserQueryset(self):
+        self.fields['viewer_users'].queryset = User.objects.filter(groups__name__in=self.viewer_groups)\
+            .order_by('last_name')
 
     def _init_users(self,**kwargs):
         if kwargs['initial'].has_key('viewer_users'):
@@ -122,7 +133,8 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
                 Div(
                     Div(
                         Div(
-                            HTML("<h3 class='box-title'><i class='fa fa-file'></i> {}</h3>".format(_('Anagraphic'))),
+                            HTML(
+                                "<h3 class='box-title'><i class='fa fa-file'></i> {}</h3>".format(_('Anagraphic'))),
                             css_class='box-header with-border'
                         ),
                         Div(
@@ -140,7 +152,8 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
                 Div(
                     Div(
                         Div(
-                            HTML("<h3 class='box-title'><i class='fa fa-users'></i> {}</h3>".format(_('ACL/Roles'))),
+                            HTML(
+                                "<h3 class='box-title'><i class='fa fa-users'></i> {}</h3>".format(_('ACL/Roles'))),
                             css_class='box-header with-border'
                         ),
                         Div(
@@ -153,11 +166,15 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
                     ),
                     css_class='col-md-6 {}'.format(self.checkFieldsVisible('is_superuser', 'is_staff', 'groups'))
                 ),
+                css_class='row'
+            ),
 
+            Div(
                 Div(
                     Div(
                         Div(
-                            HTML("<h3 class='box-title'><i class='fa fa-lock'></i> {}</h3>".format(_('Login data'))),
+                            HTML(
+                                "<h3 class='box-title'><i class='fa fa-lock'></i> {}</h3>".format(_('Login data'))),
                             css_class='box-header with-border'
                         ),
                         Div(
@@ -181,7 +198,8 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
                         Div(
                             'department',
                             'avatar',
-                            HTML("""{% if form.avatar.value %}<img class="img-responsive img-thumbnail" src="{{ MEDIA_URL }}{{ form.avatar.value }}">{% endif %}""", ),
+                            HTML(
+                                """{% if form.avatar.value %}<img class="img-responsive img-thumbnail" src="{{ MEDIA_URL }}{{ form.avatar.value }}">{% endif %}""", ),
                             'form_id',
                             'upload_url',
                             'delete_url',
@@ -192,10 +210,8 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
                     ),
                     css_class='col-md-6'
                 ),
-
                 css_class='row'
-            ),
-
+            )
         )
 
     def filterFieldsByRoles(self):
@@ -203,7 +219,9 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
             if not self.request.user.is_staff:
                 self.fields.pop('is_staff')
         else:
-            self.fields.pop('groups')
+            # other but only Editor level 1 can add user
+            self.fields['groups'].queryset = AuthGroup.objects.filter(name__in=[G3W_VIEWER1, G3W_VIEWER2])
+            self.fields['groups'].required = True
             self.fields.pop('is_superuser')
             self.fields.pop('is_staff')
 

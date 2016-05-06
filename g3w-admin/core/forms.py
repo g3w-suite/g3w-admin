@@ -11,6 +11,7 @@ from crispy_forms.bootstrap import AppendedText, PrependedText
 from usersmanage.utils import get_fields_by_user, crispyBoxACL
 from usersmanage.forms import G3WACLForm
 from core.mixins.forms import *
+from usersmanage.configs import *
 
 
 class ExampleForm(FileFormMixin,Form):

@@ -63,6 +63,9 @@ _.extend(g3wadmin,{
         //Init ajaxDownload
         this.ui.initAjaxDownload();
 
+        //Init PushMenu
+        this.ui.initPushMenu();
+
         //Init showMessageOnLoad
         this.ui.showMessageOnLoad();
 

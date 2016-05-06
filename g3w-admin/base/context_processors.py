@@ -30,5 +30,10 @@ def global_settings(request):
     # add date current time
     g3wadmin_context['today'] = datetime.today()
 
+    # add cookies:
+    g3wadmin_context['sidebar_status'] = 'sidebar-open'
+    if 'g3wadmin_sidebar_status' in request.COOKIES:
+        if request.COOKIES['g3wadmin_sidebar_status'] == 'collapsed':
+            g3wadmin_context['sidebar_status'] = 'sidebar-collapse'
 
     return g3wadmin_context

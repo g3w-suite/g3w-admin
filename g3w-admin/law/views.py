@@ -14,6 +14,9 @@ from django.db import transaction
 import tablib
 from copy import copy
 from core.mixins.views import *
+from django.utils.decorators import method_decorator
+from guardian.decorators import permission_required
+from core.mixins.views import G3WRequestViewMixin
 from .models import *
 from .forms import LawForm, ArticleForm, LawNewVariationForm
 from .mixins.views import *
@@ -26,7 +29,7 @@ class LawListView(ListView):
     model = Laws
 
 
-class LawAddView(CreateView):
+class LawAddView(G3WRequestViewMixin, CreateView):
     """
     Create view for law
     """
@@ -34,16 +37,29 @@ class LawAddView(CreateView):
     template_name = 'law/law_form.html'
     success_url = reverse_lazy('law-list')
 
-class LawUpdateView(UpdateView):
+    @method_decorator(permission_required('law.add_law', return_403=True))
+    def dispatch(self, *args, **kwargs):
+        return super(LawAddView, self).dispatch(*args, **kwargs)
+
+
+class LawUpdateView(G3WRequestViewMixin, UpdateView):
     model = Laws
     form_class = LawForm
     template_name = 'law/law_form.html'
     success_url = reverse_lazy('law-list')
 
+    @method_decorator(permission_required('law.change_law', (Laws, 'slug', 'slug'), return_403=True))
+    def dispatch(self, *args, **kwargs):
+        return super(LawUpdateView, self).dispatch(*args, **kwargs)
+
 
 class LawDetailView(DetailView):
     model = Laws
     template_name = 'law/ajax/law_detail.html'
+
+    @method_decorator(permission_required('law.view_law', (Laws, 'slug', 'slug'), raise_exception=True))
+    def dispatch(self, *args, **kwargs):
+        return super(LawDetailView, self).dispatch(*args, **kwargs)
 
 
 class LawDeleteView(G3WAjaxDeleteViewMixin, SingleObjectMixin,View):
@@ -52,6 +68,9 @@ class LawDeleteView(G3WAjaxDeleteViewMixin, SingleObjectMixin,View):
     """
     model = Laws
 
+    @method_decorator(permission_required('law.delete_law', (Laws, 'slug', 'slug'), raise_exception=True))
+    def dispatch(self, *args, **kwargs):
+        return super(LawDeleteView, self).dispatch(*args, **kwargs)
 
 class LawNewVariationView(AjaxableFormResponseMixin, FormView):
 

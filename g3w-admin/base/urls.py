@@ -9,6 +9,8 @@ from django.contrib.auth.decorators import login_required
 from django.conf.urls.i18n import i18n_patterns
 from django.views.i18n import javascript_catalog, json_catalog
 
+G3W_SITETREE_I18N_ALIAS = ['core', 'acl']
+
 jsInfoDict = {
     'packages': ('core','usermanage','client',),
 }
@@ -61,4 +63,4 @@ urlpatterns += [url(r'^', include('OWS.urls'))]
 
 from sitetree.sitetreeapp import register_i18n_trees
 
-register_i18n_trees(['acl'])
+register_i18n_trees(G3W_SITETREE_I18N_ALIAS)

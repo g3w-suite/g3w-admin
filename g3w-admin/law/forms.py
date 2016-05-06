@@ -3,10 +3,13 @@ from django.utils.translation import ugettext_lazy as _
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Div, HTML, Row, Field
 from crispy_forms.bootstrap import AppendedText, PrependedText
+from usersmanage.forms import G3WACLForm
+from usersmanage.utils import crispyBoxACL
+from core.mixins.forms import G3WRequestFormMixin, G3WFormMixin
 from .models import Laws, Articles
 
 
-class LawForm(ModelForm):
+class LawForm(G3WFormMixin, G3WRequestFormMixin, G3WACLForm, ModelForm):
     class Meta:
         model = Laws
         fields = '__all__'
@@ -33,6 +36,9 @@ class LawForm(ModelForm):
                                         ),
                                         css_class='col-md-6'
                                     ),
+
+                                    crispyBoxACL(self),
+
                                     Div(
                                         Div(
                                             Div(

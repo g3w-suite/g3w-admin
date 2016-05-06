@@ -6,18 +6,18 @@ from core.utils.general import getAuthPermissionContentType
 
 def GiveBaseGrant(sender, **kwargs):
 
-    if isinstance(sender, QdjangoConfig):
+    if isinstance(sender, LawConfig):
         AuthGroup, Permission, ContentType = getAuthPermissionContentType()
-        Project = apps.get_app_config('qdjango').get_model('project')
-        Layer = apps.get_app_config('qdjango').get_model('layer')
+        Laws = apps.get_app_config('law').get_model('Laws')
 
         editor1 = AuthGroup.objects.get(name=G3W_EDITOR1)
         editor1Permission = editor1.permissions.all()
         editor2 = AuthGroup.objects.get(name=G3W_EDITOR2)
         editor2Permission = editor2.permissions.all()
 
+        lawContentType = ContentType.objects.get_for_model(Laws)
         permissionsToAdd = (
-            Permission.objects.get(codename='add_project', content_type=ContentType.objects.get_for_model(Project)),
+            Permission.objects.get(codename='view_laws', content_type=lawContentType),
         )
 
         for perm in permissionsToAdd:
@@ -26,10 +26,19 @@ def GiveBaseGrant(sender, **kwargs):
             if perm not in editor2Permission:
                 editor2.permissions.add(perm)
 
+        # only to editor1
+        permissionsToAdd = (
+            Permission.objects.get(codename='add_laws', content_type=lawContentType),
+        )
 
-class QdjangoConfig(AppConfig):
-    name = 'qdjango'
-    verbose_name = 'Qgis project managment'
+        for perm in permissionsToAdd:
+            if perm not in editor1Permission:
+                editor1.permissions.add(perm)
+
+
+class LawConfig(AppConfig):
+    name = 'law'
+    verbose_name = 'Law project managment'
 
     def ready(self):
         post_migrate.connect(GiveBaseGrant, sender=self)
