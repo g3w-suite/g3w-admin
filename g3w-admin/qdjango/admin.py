@@ -11,3 +11,8 @@ admin.site.register(Project, ProjectAdmin)
 class LayerAdmin(GuardedModelAdmin):
     model = Layer
 admin.site.register(Layer, LayerAdmin)
+
+
+class WidgetAdmin(GuardedModelAdmin):
+    model = Widget
+admin.site.register(Widget, WidgetAdmin)

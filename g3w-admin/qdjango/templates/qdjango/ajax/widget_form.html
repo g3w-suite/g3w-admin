@@ -1,0 +1,30 @@
+{% load crispy_forms_tags %}
+<div class="row">
+	<div class="col-md-3 leftCol">
+		<form id='widget_form' enctype="multipart/form-data" role="form" action="." method="post">
+		  {% csrf_token %}
+		  {{ form|crispy }}
+		  {# form.as_p #}
+		</form>
+	</div>
+	<div class="col-md-9 rightCol"></div>
+</div>
+<script>
+    ga.Qdjango.localVars['update'] = false;
+    ga.Qdjango.localVars['layer_type'] = '{{ layer.layer_type }}';
+	ga.Qdjango.localVars['layer_columns'] = {{ layer.database_columns | safe }};
+	ga.Qdjango.localVars['layer_name'] = "{{ layer.name }}";
+    {%  if lawlist %}
+    ga.Qdjango.localVars['laws_list'] = {{ lawlist | safe }};
+    {% endif %}
+	{% if object.pk %}
+	ga.Qdjango.localVars['update'] = true;
+	ga.Qdjango.localVars['widget'] = {
+		name : '{{ object.name }}',
+		widget_type : '{{ object.widget_type }}',
+		body : {{ object.body | safe }}
+	}
+	{% endif %}
+
+    ga.Qdjango.widgetEditor.init();
+</script>

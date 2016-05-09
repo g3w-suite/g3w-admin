@@ -13,6 +13,7 @@ _.extend(g3wadmin.tpl, {
             modalTitle: 'Titolo',
             modalBody: 'Contenuto',
             modalClass: '',
+            modalSize: '',
             closeButton: true,
             closeButtonText: 'Close',
             confirmButton: true,
@@ -30,7 +31,7 @@ _.extend(g3wadmin.tpl, {
 
     dialog : _.template('\
     <div class="modal fade" tabindex="-1" role="dialog">\
-        <div class="modal-dialog <%= modalClass %>">\
+        <div class="modal-dialog <%= modalClass %> <%= modalSize %>">\
         <div class="modal-content">\
           <div class="modal-header">\
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>\

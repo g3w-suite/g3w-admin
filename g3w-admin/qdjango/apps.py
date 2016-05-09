@@ -2,6 +2,19 @@ from django.apps import AppConfig, apps
 from django.db.models.signals import post_migrate
 from usersmanage.configs import *
 from core.utils.general import getAuthPermissionContentType
+from qgis.core import *
+
+'''
+QgsApplication.setPrefixPath("/path/to/qgis/installation", True)
+
+# create a reference to the QgsApplication
+# setting the second argument to True enables the GUI, which we need to do
+# since this is a custom application
+QGS_APPLICATION = QgsApplication([], True)
+
+# load providers
+QGS_APPLICATION.initQgis()
+'''
 
 
 def GiveBaseGrant(sender, **kwargs):
@@ -33,3 +46,5 @@ class QdjangoConfig(AppConfig):
 
     def ready(self):
         post_migrate.connect(GiveBaseGrant, sender=self)
+
+

@@ -10,6 +10,7 @@ from .utils.storage import QgisFileOverwriteStorage
 from .mixins.models import QdjangoACLModelMixins
 from model_utils import Choices
 from usersmanage.utils import setPermissionUserObject
+from core.configs import *
 import os
 
 
@@ -66,6 +67,8 @@ class Project(QdjangoACLModelMixins, TimeStampedModel):
     layers_tree = models.TextField(_('Layers tree structure'), blank=True, null=True)
 
     class Meta:
+        verbose_name = _('Project')
+        verbose_name_plural = _('Projects')
         unique_together = (('title', 'group'))
         permissions = (
             ('view_project', 'Can view qdjango project'),
@@ -160,6 +163,8 @@ class Layer(QdjangoACLModelMixins, models.Model):
         return self.name
 
     class Meta:
+        verbose_name = _('Layer')
+        verbose_name_plural = _('Layers')
         unique_together = (('name', 'project',),)
         ordering = ['order']
         permissions = (
@@ -183,4 +188,28 @@ class Layer(QdjangoACLModelMixins, models.Model):
             # todo: add widget permissions
 
 
+class Widget(models.Model):
+    """
+    Widget data for project module Qdjango
+    """
+
+    TYPES = Choices(
+        *((w['value'], w['name']) for w in WIDGET_TYPES.values())
+    )
+    name = models.CharField(_('Name'), max_length=255)
+    body = models.TextField(_('Body'))
+    datasource = models.TextField(_('datasource'))
+    widget_type = models.CharField(_('Type'), choices=TYPES, max_length=255)
+    slug = AutoSlugField(
+        _('Slug'), populate_from='name', unique=True, always_update=True
+    )
+    layers = models.ManyToManyField(Layer)
+
+    def __unicode__(self):
+        return self.name
+
+    class Meta:
+        permissions = (
+            ('view_widget', 'Can view widget'),
+        )
 

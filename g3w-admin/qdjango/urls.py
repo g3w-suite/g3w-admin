@@ -3,6 +3,8 @@ from django.contrib.auth.decorators import login_required
 from base.urls import G3W_SITETREE_I18N_ALIAS
 from .views import *
 
+
+
 G3W_SITETREE_I18N_ALIAS.append('qdjango')
 
 urlpatterns = [
@@ -15,6 +17,12 @@ urlpatterns = [
     # Layers urls
     url(r'^(?P<group_slug>[-_\w\d]+)/projects/(?P<project_slug>[-_\w\d]+)/layers/$', login_required(QdjangoLayersListView.as_view()), name='qdjango-project-layers-list'),
     url(r'^jx/(?P<group_slug>[-_\w\d]+)/projects/(?P<project_slug>[-_\w\d]+)/layers/(?P<layer_id>[0-9]+)/cache/$', login_required(QdjangoLayerCacheView.as_view()), name='qdjango-project-layers-cache'),
+    url(r'^(?P<group_slug>[-_\w\d]+)/projects/(?P<project_slug>[-_\w\d]+)/layers/(?P<slug>[-_\w\d]+)/widgets/$',
+        login_required(QdjangoLayerWidgetsView.as_view()), name='qdjango-project-layer-widgets'),
+
+    # Widget urls
+    url(r'^(?P<group_slug>[-_\w\d]+)/projects/(?P<project_slug>[-_\w\d]+)/layers/(?P<slug>[-_\w\d]+)/widgets/add/$',
+        login_required(QdjangoLayerWidgetCreateView.as_view()), name='qdjango-project-layer-widget-add'),
 
 ]
 

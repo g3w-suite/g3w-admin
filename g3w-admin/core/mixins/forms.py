@@ -12,7 +12,7 @@ class G3WRequestFormMixin(object):
             del(kwargs['request'])
 
         #for not model form:
-        if not isinstance(self,ModelForm):
+        if not isinstance(self, ModelForm):
             del(kwargs['instance'])
         super(G3WRequestFormMixin, self).__init__(*args, **kwargs)
 

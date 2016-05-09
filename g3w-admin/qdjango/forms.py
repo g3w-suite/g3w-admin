@@ -102,3 +102,16 @@ class QdjangoProjetForm(QdjangoProjectFormMixin, G3WFormMixin, G3WGroupFormMixin
             )
         }
         '''
+
+
+class QdjangoWidgetForm(QdjangoProjectFormMixin, G3WFormMixin, G3WGroupFormMixin, G3WRequestFormMixin, forms.ModelForm):
+    """
+    Form object for Qdjango widget model.
+    """
+    class Meta:
+        model = Widget
+        fields = (
+            'name',
+            'widget_type',
+            'body'
+        )

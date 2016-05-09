@@ -229,7 +229,37 @@ _.extend(g3wadmin.ui, {
                 // set coockie on exanded
                 $.cookie('g3wadmin_sidebar_status', 'expanded', cookieOptions);
             })
+    },
+
+    /**
+     * Init datatable jquery object
+     * @param options
+     */
+    initDataTable: function(context, options){
+
+        //
+        if (_.isObject(context)){
+            options = context;
+            context = undefined;
+        }
+
+        if (!_.isUndefined(context)) {
+            var $widgetItem = $(context).find('[data-widget-type="dataTable"]');
+        }
+        else {
+            var $widgetItem = $('[data-widget-type="dataTable"]');
+        }
+
+        var $dataTable = $widgetItem.DataTable(options);
+
+        // add widgect for details
+        $widgetItem.find('[data-widget-type="detailItemDataTable"]').click(function(e){
+            ga.widget.showDetailItemDataTable($dataTable, $(this));
+        });
     }
+
+
+
 
 
 

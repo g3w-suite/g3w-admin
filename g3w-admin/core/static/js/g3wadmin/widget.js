@@ -25,6 +25,10 @@ _.extend(g3wadmin.widget, {
         'modal-title'
     ],
 
+    _detailItemDataTableParams: [
+        'detail-url',
+    ],
+
     _loadHtmlItemParams :[
         'html-url',
         'target-selector'
@@ -32,7 +36,8 @@ _.extend(g3wadmin.widget, {
 
     _ajaxFormParams :[
         'form-url',
-        'modal-title'
+        'modal-title',
+        'modal-size'
     ],
 
     _ajaxFilerParams :[
@@ -148,6 +153,59 @@ _.extend(g3wadmin.widget, {
     },
 
     /**
+     * Widget to show deatilitem for dataTable, under the row
+     * @param $item
+     */
+    showDetailItemDataTable: function($dataTable, $item){
+
+        try {
+
+            var params = ga.utils.getDataAttrs($item, this._detailItemParams);
+            if (_.isUndefined(params['detail-url'])) {
+                throw new Error('Attribute data-detail-url not defined');
+            }
+
+            var tr = $item.closest('tr');
+            var row = $dataTable.row( tr );
+            var idx = $.inArray( tr.attr('id'), [] );
+
+            if ( row.child.isShown() ) {
+                tr.removeClass( 'details' );
+                row.child.hide();
+            } else {
+                tr.addClass( 'details' );
+                row.child('').show();
+
+                // ajax call to get deatail data
+                $.ajax({
+                     method: 'get',
+                     url: params['detail-url'],
+                     success: function (res) {
+                        row.child(res).show();
+                     },
+                     complete: function(){
+                         var status = arguments[1];
+                         if (status == 'success') {
+                            ga.ui.initAjaxFormWidget(row.child());
+                         }
+                     },
+                     error: function (xhr, textStatus, errorMessage) {
+                         ga.widget.showError(ga.utils.buildAjaxErrorMessage(xhr.status, errorMessage));
+                     }
+                });
+            }
+
+
+
+
+        } catch (e) {
+            this.showError(e.message);
+        }
+
+
+    },
+
+    /**
      * load data from html-url and punt into target item
      * @param $item
      */
@@ -209,6 +267,7 @@ _.extend(g3wadmin.widget, {
                     var modal = ga.ui.buildDefaultModal({
                         modalTitle: ((_.isUndefined(params['modal-title']) ? 'Form title' : params['modal-title'])),
                         modalBody: res,
+                        modalSize: (_.isUndefined(params['modal-size']) ? '' : params['modal-size'])
                     });
 
                     modal.show();
@@ -226,10 +285,11 @@ _.extend(g3wadmin.widget, {
                     // add form send data action
                     modal.setConfirmButtonAction(form.sendData)
 
-                    // init form imput plugins
+                    // init form input plugins
                     ga.ui.initRadioCheckbox(modal.$modal);
                     ga.ui.initBootstrapDatepicker(modal.$modal);
                     ga.ui.initSelect2(modal.$modal);
+                     
                  },
                  error: function (xhr, textStatus, errorMessage) {
                      ga.widget.showError(ga.utils.buildAjaxErrorMessage(xhr.status, errorMessage));

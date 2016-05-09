@@ -68,6 +68,7 @@ _.extend(g3wadmin,{
 
         //Init showMessageOnLoad
         this.ui.showMessageOnLoad();
+        
 
         /*
         TODO: try to perfom this issue server side

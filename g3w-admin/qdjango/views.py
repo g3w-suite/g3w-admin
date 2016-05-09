@@ -3,6 +3,7 @@ from django.views.generic import (
     UpdateView,
     ListView,
     DetailView,
+    TemplateView,
     View,
 )
 from django.views.generic.detail import SingleObjectMixin
@@ -15,7 +16,6 @@ from django.core.urlresolvers import reverse
 from usersmanage.mixins.views import G3WACLViewMixin
 from .mixins.views import *
 from .forms import *
-import json
 
 
 class QdjangoProjectListView(G3WRequestViewMixin, G3WGroupViewMixin, ListView):
@@ -142,6 +142,7 @@ class QdjangoLayersListView(G3WRequestViewMixin, G3WGroupViewMixin, QdjangoProje
         context['layers_tree'] = layersTreeBoostrap
         return context
 
+
 class QdjangoLayerCacheView(G3WGroupViewMixin, QdjangoProjectViewMixin, View):
     """
     To set cached layer settings
@@ -173,6 +174,23 @@ class QdjangoLayerCacheView(G3WGroupViewMixin, QdjangoProjectViewMixin, View):
         layer.save()
 
         return JsonResponse({'Saved':'ok'})
+
+
+class QdjangoLayerWidgetsView(G3WGroupViewMixin, QdjangoProjectViewMixin, DetailView):
+
+    model = Layer
+    template_name = 'qdjango/ajax/layer_widgets.html'
+
+
+class QdjangoLayerWidgetCreateView(G3WRequestViewMixin, G3WGroupViewMixin, QdjangoProjectViewMixin, QdjangoLayertViewMixin, CreateView):
+
+    form_class = QdjangoWidgetForm
+    template_name = 'qdjango/ajax/widget_form.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(QdjangoLayerWidgetCreateView, self).get_context_data()
+        context['layer'] = Layer.objects.get(slug=self.layer_slug)
+        return context
 
 
 
