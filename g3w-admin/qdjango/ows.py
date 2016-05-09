@@ -1,6 +1,9 @@
 from django.http import HttpResponse
 from django.conf import settings
-from qgis.server import *
+try:
+    from qgis.server import *
+except:
+    pass
 from OWS.ows import OWSRequestHandlerBase
 from .models import Project, Layer
 from copy import copy
@@ -11,9 +14,12 @@ from httplib import HTTPConnection
 from urlparse import urlsplit
 from .auth import QdjangoProjectAuthorizer
 
-# use of qgis server instance
-server = QgsServer()
-#server.init()
+try:
+    # use of qgis server instance
+    server = QgsServer()
+    #server.init()
+except:
+    pass
 
 QDJANGO_PROXY_REQUEST = 'proxy'
 QDJANGO_QGSSERVER_REQUEST = 'qgsserver'
