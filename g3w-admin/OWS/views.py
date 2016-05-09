@@ -1,10 +1,6 @@
 from django.views.generic import View
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
-from ModestMaps.Core import Coordinate
-from TileStache import getTile, parseConfigfile
-from TileStache.Core import KnownUnknown
-from django.http import HttpResponse
 from .proxy import Proxy
 
 
