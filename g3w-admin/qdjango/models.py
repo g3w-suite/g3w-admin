@@ -171,6 +171,13 @@ class Layer(QdjangoACLModelMixins, models.Model):
             ('view_layer', 'Can view qdjango layer'),
         )
 
+    def getWidgetsNumber(self):
+        """
+        Count widgets for self layer
+        :return: integer
+        """
+        return len(self.widget_set.all())
+
     def _permissionsToEditor(self, user, mode='add'):
         setPermissionUserObject(user, self, permissions=[
             'qdjango.change_layer',

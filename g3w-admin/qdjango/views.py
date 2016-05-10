@@ -140,6 +140,11 @@ class QdjangoLayersListView(G3WRequestViewMixin, G3WGroupViewMixin, QdjangoProje
 
         context['project_slug'] = self.project_slug
         context['layers_tree'] = layersTreeBoostrap
+        context['type_layer_for_widget'] = (
+            'postgres',
+            'spatialite',
+            'ogr'
+        )
         return context
 
 
@@ -182,7 +187,7 @@ class QdjangoLayerWidgetsView(G3WGroupViewMixin, QdjangoProjectViewMixin, Detail
     template_name = 'qdjango/ajax/layer_widgets.html'
 
 
-class QdjangoLayerWidgetCreateView(G3WRequestViewMixin, G3WGroupViewMixin, QdjangoProjectViewMixin, QdjangoLayertViewMixin, CreateView):
+class QdjangoLayerWidgetCreateView(G3WRequestViewMixin, G3WGroupViewMixin, QdjangoProjectViewMixin, QdjangoLayertViewMixin, AjaxableFormResponseMixin, CreateView):
 
     form_class = QdjangoWidgetForm
     template_name = 'qdjango/ajax/widget_form.html'

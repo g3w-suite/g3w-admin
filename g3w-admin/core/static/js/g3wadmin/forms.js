@@ -44,10 +44,25 @@ _.extend(g3wadmin.forms, {
         var that = this;
         this.$form = $form;
 
+        var customEvents = [
+            'preSendForm',
+            'postSendForm'
+        ]
+
+        /**
+         * Wrop jeyr on method on ga.form.form object
+         * @param event
+         * @param target
+         */
+        this.on = function(event, target){
+            that.$form.on(event, target);
+        }
+
         /**
          * Send dato form to action url
          */
         this.sendData = function() {
+            that.$form.trigger('preSendForm');
             $.ajax({
                 method: 'post',
                 data: that.getData(),
@@ -65,6 +80,9 @@ _.extend(g3wadmin.forms, {
                             that.successAction();
                         }
                     }
+                },
+                complete: function(jqXHR, textStatus){
+                    that.$form.trigger('postSendForm');
                 },
                 error: function (xhr, textStatus, errorMessage) {
                     ga.widget.showError(ga.utils.buildAjaxErrorMessage(xhr.status, errorMessage));

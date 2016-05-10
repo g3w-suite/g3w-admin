@@ -60,9 +60,14 @@
                         {% for object in object_list %}
                         <tr id="qdjango_project_layer_{{ object.slug }}">
                             <td>
+                                {% if object.layer_type in type_layer_for_widget %}
                                 <span class="col-xs-2 icon">
-                                    <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Widgects list' %}" data-widget-type="detailItemDataTable" data-detail-url="{% url 'qdjango-project-layer-widgets' group.slug object.project.slug object.slug %}" ><i class="ion ion-gear-b"></i></a>
+                                    <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Widgets list' %}" data-widget-type="detailItemDataTable" data-detail-url="{% url 'qdjango-project-layer-widgets' group.slug object.project.slug object.slug %}" ><i class="ion ion-gear-b"></i></a>
                                 </span>
+                                <span class="label label-info col-xs-2">
+                                    {{ object.getWidgetsNumber }}
+                                </span>
+                                {% endif %}
                             </td>
                             <td>
                                 {% include 'qdjango/include/layer_icon.html' %}

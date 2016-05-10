@@ -581,12 +581,13 @@ ga.Qdjango.widgetEditor = {
 			}
 		}
 		this.form = $("#widget_form");
+		ga.currentForm.on('preSendForm', that.onFormSubmit);
+		/*
 		var button = this.form.find("button.confirm");
 		this.form.find("button.confirm").click(function(){ 
 			that.onFormSubmit(); 
 		});
+		*/
 		$("#id_widget_type").change(function(){ that.onWidgetTypeChange($(this)); });
 	}
 };
-
-$(document).ready(function(){ ga.Qdjango.widgetEditor.init(); });

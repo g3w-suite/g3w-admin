@@ -264,7 +264,7 @@ _.extend(g3wadmin.widget, {
                  success: function (res) {
 
                     // open modal to show list of add links
-                    var modal = ga.ui.buildDefaultModal({
+                    var modal = ga.currentModal = ga.ui.buildDefaultModal({
                         modalTitle: ((_.isUndefined(params['modal-title']) ? 'Form title' : params['modal-title'])),
                         modalBody: res,
                         modalSize: (_.isUndefined(params['modal-size']) ? '' : params['modal-size'])
@@ -272,13 +272,13 @@ _.extend(g3wadmin.widget, {
 
                     modal.show();
 
-                    var form = new ga.forms.form(modal.$modal.find('form'));
+                    var form = ga.currentForm = new ga.forms.form(modal.$modal.find('form'));
                     form.setAction(params['form-url']);
                     form.setOnSuccesAction(function(){
 
                         // close modal and reload page
                         modal.hide();
-                        window.location.reload();
+                        //window.location.reload();
                     })
                      
 

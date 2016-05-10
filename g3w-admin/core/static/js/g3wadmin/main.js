@@ -14,6 +14,9 @@ _.extend(g3wadmin,{
     ui: {}, // UI
     forms: {}, // forms related
     utils: {},
+    currentModal: null,
+    currentForm: null,
+    
     bootstrap: function(){
 
         var that = this;
