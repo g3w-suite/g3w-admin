@@ -24,6 +24,7 @@ class GroupSerializer(serializers.ModelSerializer):
 
         # add crs:
         ret['crs'] = int(str(self.instance.srid.srid))
+        ret['proj4'] = self.instance.srid.proj4text
 
         # add projects to group
         ret['projects'] = []
