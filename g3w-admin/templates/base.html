@@ -14,6 +14,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <title>{{ SETTINGS.SITE_TITLE }}</title>
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    {% if SETTINGS.DEBUG %}
+    <!-- build:css css/vendor.min.css -->
     <!-- Pace -->
     <script src="{% static "bower_components/pace/pace.min.js" %}"></script>
     <!-- Bootstrap 3.3.5 -->
@@ -36,6 +38,12 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <link rel="stylesheet" href="{% static "bower_components/jquery.filer/css/themes/jquery.filer-dragdropbox-theme.css" %}">
     <!-- DataTables -->
     <link rel="stylesheet" href="{% static "bower_components/datatables/media/css/dataTables.bootstrap.min.css" %}">
+    <!-- icheck -->
+    <link rel="stylesheet" href="{% static "bower_components/icheck/skins/flat/green.css" %}">
+    <!-- endbuild -->
+    {% else %}
+    <link rel="stylesheet" href="{% static "dist/css/vendor.min.css"%}">
+    {% endif %}
     <!-- Theme style -->
     <link rel="stylesheet" href="{% static "adminlte/css/AdminLTE.min.css" %}">
     <!-- AdminLTE Skins. We have chosen the skin-blue for this starter
@@ -53,14 +61,17 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
     <!-- Django-file-form: fieluploader -->
     <link rel="stylesheet" href="{% static "ajaxuploader/css/fileuploader.css" %}">
-    <!-- icheck -->
-    <link rel="stylesheet" href="{% static "bower_components/icheck/skins/all.css" %}">
 
 
     {% block custom_css_links_page %}
     {% endblock %}
-
+    {% if SETTINGS.DEBUG %}
+    <!-- build:css css/g3wadmin.min.css -->
     <link rel="stylesheet" href="{% static "css/g3wadmin.css"%}">
+    <!-- endbuild -->
+    {% else %}
+    <link rel="stylesheet" href="{% static "dist/css/g3wadmin.min.css"%}">
+    {% endif %}
   </head>
   <!--
   BODY TAG OPTIONS:
@@ -235,6 +246,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <script>
         var CURRENT_LANGUAGE_CODE = '{{ lang }}';
     </script>
+    {% if SETTINGS.DEBUG %}
+    <!-- build:js js/vendor.min.js -->
     <!-- jQuery 2.1.4 -->
     <script src="{% static "bower_components/jquery/dist/jquery.min.js" %}"></script>
     <!-- jQuery-ui 1.11.4 -->
@@ -264,22 +277,25 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <script src="{% static "bower_components/datatables/media/js/dataTables.bootstrap.min.js" %}"></script>
     <!-- Bootstrap Tree View -->
     <script src="{% static "bower_components/bootstrap-treeview/dist/bootstrap-treeview.min.js" %}"></script>
-
-
+    <!-- icheck -->
+    <script src="{% static "bower_components/icheck/icheck.min.js" %}"></script>
+    {% else %}
+    <script src="{% static "dist/js/vendor.min.js" %}"></script>
+    {% endif %}
     {% if 'fixed' in adminlte_layout_option %}
     <!-- Slimscroll -->
     <script src="{% static "bower_components/jquery-slimscroll/jquery.slimscroll.min.js" %}"></script>
     {% endif %}
+    <!-- endbuild -->
 
     <!-- Django-file-form: fileuploader -->
     <script src="{% static "ajaxuploader/js/fileuploader.js" %}"></script>
     <!-- Django-file-form -->
     <script src="{% static "file_form/file_form.js" %}"></script>
 
-    <!-- icheck -->
-    <script src="{% static "bower_components/icheck/icheck.min.js" %}"></script>
-
     <!-- g3w-admin -->
+    {% if SETTINGS.DEBUG %}
+    <!-- build:js  js/g3wadmin.min.js -->
     <script src="{% static "js/g3wadmin/main.js" %}"></script>
     <script src="{% static "js/g3wadmin/tpl.js" %}"></script>
     <script src="{% static "js/g3wadmin/ui.js" %}"></script>
@@ -287,6 +303,10 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <script src="{% static "js/g3wadmin/utils.js" %}"></script>
     <script src="{% static "js/g3wadmin/forms.js" %}"></script>
     <script src="{% static "js/g3wadmin.js" %}"></script>
+    <!-- endbuild -->
+    {% else %}
+    <script src="{% static "dist/js/g3wadmin.min.js" %}"></script>
+    {% endif %}
 
     <!-- qdjango-widgets -->
     <script src="{% static "qdjango/js/widget.js" %}"></script>

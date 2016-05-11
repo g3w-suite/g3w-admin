@@ -1,3 +1,8 @@
+/**
+ * Created by Francesco Bellina on 2014
+ * Modificated by Walter Lorenzetti on 2016
+ */
+
 ga.Qdjango = {};
 ga.Qdjango.localVars = {};
 
@@ -117,7 +122,6 @@ ga.Qdjango.widgetEditor = {
 				return;
 		}
 		$('#id_body').val(JSON.stringify(obj));
-		this.form.submit();
 	},
 	
 	generateGeneralParams: function(values)
@@ -137,35 +141,36 @@ ga.Qdjango.widgetEditor = {
 		var tiVa = (that.isset(values) && that.isset(values.title))? values.title : "";
 		var title = $('<input class="form-control" type="text" name="title" id="title" value="'+tiVa+'">');
 									
-		var div = $('<div class="bloccoGenerale">\
-						<div class="alert bg-danger row" style="margin-top: 20px">\
-							<div class="row">\
-								<div class="col-md-5">\
-									<div class="row">\
-										<div class="col-md-12"><span class="label label-warning">Titolo Ricerca</span></div>\
-									</div>\
-									<div class="row">\
-										<div class="form-group col-md-12 title"></div>\
-									</div>\
+		var div = $('<div class="bloccoGenerale box box-danger">\
+						<div class="box-header with-border">\
+						<h3 class="box-title">Configurazione generale delle ricerca e risultati</h3>\
+						</div>\
+						<div class="box-body">\
+							<div class="col-md-5">\
+								<div class="row">\
+									<div class="col-md-12"><span class="label label-warning">Titolo Ricerca</span></div>\
 								</div>\
-								<div class="col-md-7 resultFields">\
-									<div class="row labels">\
-										<div class="col-md-6"><span class="label label-warning">Campo Risultato</span></div>\
-										<div class="col-md-6"><span class="label label-warning">Alias Risultato</span></div>\
-									</div>\
-									<div class="row">\
-										<div class="col-md-6 fieldSelect"></div>\
-										<div class="col-md-5 textInput"></div>\
-										<div class="col-md-1"></div>\
-									</div>\
-									<div class="row">\
-										<div class="col-md-6 fieldSelect"></div>\
-										<div class="col-md-5 textInput"></div>\
-										<div class="col-md-1"><button type="button" class="btn btn-warning add"><i class="glyphicon glyphicon-plus"></i></button></div>\
-									</div>\
+								<div class="row">\
+									<div class="form-group col-md-12 title"></div>\
 								</div>\
 							</div>\
-						</div>\
+							<div class="col-md-7 resultFields">\
+								<div class="row labels">\
+									<div class="col-md-6"><span class="label label-warning">Campo Risultato</span></div>\
+									<div class="col-md-6"><span class="label label-warning">Alias Risultato</span></div>\
+								</div>\
+								<div class="row">\
+									<div class="col-md-6 fieldSelect"></div>\
+									<div class="col-md-5 textInput"></div>\
+									<div class="col-md-1"></div>\
+								</div>\
+								<div class="row">\
+									<div class="col-md-6 fieldSelect"></div>\
+									<div class="col-md-5 textInput"></div>\
+									<div class="col-md-1"><button type="button" class="btn btn-warning add"><i class="glyphicon glyphicon-plus"></i></button></div>\
+								</div>\
+							</div>\
+						<\div>\
 					</div>');
 					
 		var onAddAction = function(btn, values)
@@ -581,7 +586,9 @@ ga.Qdjango.widgetEditor = {
 			}
 		}
 		this.form = $("#widget_form");
-		ga.currentForm.on('preSendForm', that.onFormSubmit);
+		ga.currentForm.on('preSendForm', function(){
+			$.proxy(that.onFormSubmit, that)();
+		});
 		/*
 		var button = this.form.find("button.confirm");
 		this.form.find("button.confirm").click(function(){ 

@@ -181,20 +181,62 @@ class QdjangoLayerCacheView(G3WGroupViewMixin, QdjangoProjectViewMixin, View):
         return JsonResponse({'Saved':'ok'})
 
 
-class QdjangoLayerWidgetsView(G3WGroupViewMixin, QdjangoProjectViewMixin, DetailView):
+class QdjangoLayerWidgetsView(G3WGroupViewMixin, QdjangoProjectViewMixin, QdjangoLayerViewMixin, ListView):
 
-    model = Layer
+    model = Widget
     template_name = 'qdjango/ajax/layer_widgets.html'
 
+    def get_queryset(self):
+        return Widget.objects.filter(layers__slug=self.layer_slug)
 
-class QdjangoLayerWidgetCreateView(G3WRequestViewMixin, G3WGroupViewMixin, QdjangoProjectViewMixin, QdjangoLayertViewMixin, AjaxableFormResponseMixin, CreateView):
+
+class QdjangoLayerWidgetCreateView(G3WRequestViewMixin, G3WGroupViewMixin, QdjangoProjectViewMixin, QdjangoLayerViewMixin, AjaxableFormResponseMixin, CreateView):
 
     form_class = QdjangoWidgetForm
     template_name = 'qdjango/ajax/widget_form.html'
 
     def get_context_data(self, **kwargs):
         context = super(QdjangoLayerWidgetCreateView, self).get_context_data()
-        context['layer'] = Layer.objects.get(slug=self.layer_slug)
+        context['layer'] = self.layer
+        return context
+
+    def get_success_url(self):
+        return None
+
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+        self.object.datasource = self.layer.datasource
+
+        # to assign permissions the widget must be committed to DB
+        ret = super(QdjangoLayerWidgetCreateView, self).form_valid(form)
+
+        # add layer
+        self.object.layers.add(self.layer)
+
+        '''
+        if not self.request.user.is_superuser:
+            self.object.addPermissionsToEditor(self.request.user)
+        else:
+            editor_users = get_users_for_object(self.layer, 'change_layer', 'Editor Maps Groups')
+            if editor_users:
+                self.object.addPermissionsToEditor(editor_users[0])
+
+        viewers = map(lambda o: o.id, get_users_for_object(self.layer, 'view_layer', 'Viewer Maps Groups'))
+        self.object.addPermissionsToViewers(viewers)
+        '''
+
+        return ret
+
+
+class QdjangoLayerWidgetUpdateView(G3WRequestViewMixin, G3WGroupViewMixin, QdjangoProjectViewMixin, QdjangoLayerViewMixin, AjaxableFormResponseMixin, UpdateView):
+
+    form_class = QdjangoWidgetForm
+    model = Widget
+    template_name = 'qdjango/ajax/widget_form.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(QdjangoLayerWidgetUpdateView, self).get_context_data()
+        context['layer'] = self.layer
         return context
 
 

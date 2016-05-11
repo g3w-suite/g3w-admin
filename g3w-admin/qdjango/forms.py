@@ -1,5 +1,5 @@
 from django import forms
-from django.forms import ValidationError
+from django.forms import ValidationError, widgets
 from django.utils.translation import ugettext, ugettext_lazy as _
 from crispy_forms.helper import FormHelper, Layout
 from crispy_forms.layout import Div, Field, HTML
@@ -108,10 +108,34 @@ class QdjangoWidgetForm(QdjangoProjectFormMixin, G3WFormMixin, G3WGroupFormMixin
     """
     Form object for Qdjango widget model.
     """
+
+    def __init__(self, *args, **kwargs):
+        super(QdjangoWidgetForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper(self)
+        self.helper.form_tag = False
+        self.helper.layout = Layout(
+            Div(
+                Div(
+                    'widget_type',
+                    css_class='col-md-4'
+                ),
+                Div(
+                    'name',
+                    css_class='col-md-8'
+                ),
+                css_class='row'
+            ),
+            'body'
+        )
+
+
     class Meta:
         model = Widget
         fields = (
-            'name',
             'widget_type',
+            'name',
             'body'
         )
+        widgets = {
+            'body': widgets.HiddenInput
+        }

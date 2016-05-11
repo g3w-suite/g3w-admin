@@ -1,13 +1,13 @@
 {% load crispy_forms_tags %}
 <div class="row">
-	<div class="col-md-3 leftCol">
-		<form id='widget_form' enctype="multipart/form-data" role="form" action="." method="post">
-		  {% csrf_token %}
-		  {{ form|crispy }}
-		  {# form.as_p #}
-		</form>
-	</div>
-	<div class="col-md-9 rightCol"></div>
+    <div class="col-md-12">
+        <form id='widget_form' enctype="multipart/form-data" role="form" action="." method="post">
+          {% crispy form %}
+        </form>
+        <div class="row">
+            <div class="col-md-12 rightCol"></div>
+        </div>
+    </div>
 </div>
 <script>
     ga.Qdjango.localVars['update'] = false;

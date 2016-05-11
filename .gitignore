@@ -25,3 +25,6 @@ build
 
 #Coverage html test result reports
 /g3w-admin/htmlcov/
+
+# gulp dist directory
+/dist/
