@@ -1,6 +1,6 @@
 from django.conf import settings
 from guardian.shortcuts import get_users_with_perms, assign_perm, remove_perm
-from crispy_forms.layout import Div,HTML
+from crispy_forms.layout import Div, HTML, Field
 from django.utils.translation import ugettext, ugettext_lazy as _
 
 
@@ -17,7 +17,12 @@ def get_fields_by_user(user, form):
         del(form.fields['editor_user'])
         if 'editor_user' in fields:
             del(fields[fields.index('editor_user')])
-    return fields
+
+    toRet = []
+    for field in fields:
+        params = {'css_class': 'select2 col-md-12', 'multiple': 'multiple', 'style': 'width:100%;'} if field == 'viewer_users' else {}
+        toRet.append(Field(field, **params))
+    return toRet
 
 
 def get_users_for_object(object, permission, group = None, with_anonymous = False):

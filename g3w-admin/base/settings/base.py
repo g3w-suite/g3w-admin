@@ -198,7 +198,7 @@ SITE_TITLE = 'g3w-admin'
 QDJANGO_SERVER_URL = 'http://localhost/cgi-bin/qgis_mapserv.fcgi'
 QDJANGO_SERVER_PORT = 80
 
-#LOGGING_CONFIG = None
+# LOGGING_CONFIG = None
 
 LOGGING = {
     'version': 1,

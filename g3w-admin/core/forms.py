@@ -41,8 +41,8 @@ class GroupForm(FileFormMixin, G3WFormMixin, G3WRequestFormMixin, G3WACLForm, Mo
                                         Div(
                                             'name',
                                             'title',
-                                            Field('description', css_class='wys5'),
-                                            Field('lang', css_class='select2'),
+                                            Field('description', css_class='wys5', style="width:100%;"),
+                                            Field('lang', css_class='select2', style="width:100%;"),
                                             css_class='box-body',
 
                                         ),
@@ -62,7 +62,7 @@ class GroupForm(FileFormMixin, G3WFormMixin, G3WRequestFormMixin, G3WACLForm, Mo
                                         Div(
                                             Div(
                                                 Div(
-                                                    Field('srid', css_class='select2'),
+                                                    Field('srid', css_class='select2', style="width:100%;"),
                                                     css_class='col-md-12'
                                                 ),
                                                 css_class='row'

@@ -5,12 +5,13 @@ from django.conf.urls import url,include
 from django.contrib import admin, auth
 from django.conf import settings
 from django.conf.urls.static import static
-from django.contrib.auth.decorators import login_required
 from django.conf.urls.i18n import i18n_patterns
 from django.views.i18n import javascript_catalog, json_catalog
 from qgis.core import *
 
 
+# if frontend is set
+base = BASE_ADMIN_URLPATH = 'admin/' if hasattr(settings, 'FRONTEND') and settings.FRONTEND else ''
 
 G3W_SITETREE_I18N_ALIAS = ['core', 'acl']
 
@@ -20,10 +21,10 @@ jsInfoDict = {
 
 urlpatterns = [
     url(r'^django-admin/', admin.site.urls),
-    url(r'^', include('core.urls')),
-    url(r'^', include('usersmanage.urls')),
-    url(r'^', include('client.urls')),
+    url(r'^{}'.format(BASE_ADMIN_URLPATH), include('core.urls')),
+    url(r'^{}'.format(BASE_ADMIN_URLPATH), include('usersmanage.urls')),
     url(r'^upload/', include('django_file_form.urls')),
+    url(r'^', include('client.urls')),
     url(r'^login/$', auth.views.login, name='login', kwargs={
         'template_name': 'login.html',
         'extra_context': {
@@ -31,7 +32,7 @@ urlpatterns = [
             'adminlte_layout_option': None
         }
     }),
-    url(r'^logout/$', auth.views.logout, {'next_page': settings.LOGOUT_NEXT_PAGE}, name='logout'),
+    url(r'^logout/$', auth.views.logout, {'next_page': settings.LOGOUT_NEXT_PAGE + '{}'.format(BASE_ADMIN_URLPATH)}, name='logout'),
     url(r'^jsi18n/$', javascript_catalog, jsInfoDict, name='javascript-catalog'),
 ]
 
@@ -40,8 +41,10 @@ apiUrlpatterns = [
 ]
 
 #adding projects app
+if BASE_ADMIN_URLPATH:
+    base = BASE_ADMIN_URLPATH[0:-1]
 for app in settings.G3WADMIN_PROJECT_APPS:
-    urlpatterns.append(url(r'^{}/'.format(app),include('{}.urls'.format(app))))
+    urlpatterns.append(url(r'^{}{}/'.format(base, app),include('{}.urls'.format(app))))
     try:
       apiUrlpatterns.append(url(r'^{}/'.format(app),include('{}.apiurls'.format(app))))
     except:
@@ -49,7 +52,7 @@ for app in settings.G3WADMIN_PROJECT_APPS:
 
 # adding local_more_apps
 for app in settings.G3WADMIN_LOCAL_MORE_APPS:
-    urlpatterns.append(url(r'^{}/'.format(app), include('{}.urls'.format(app))))
+    urlpatterns.append(url(r'^{}{}/'.format(base, app), include('{}.urls'.format(app))))
     try:
       apiUrlpatterns.append(url(r'^{}/'.format(app),include('{}.apiurls'.format(app))))
     except:

@@ -1,4 +1,5 @@
 from django.forms import ModelForm
+from crispy_forms.layout import Field
 
 
 class G3WRequestFormMixin(object):
@@ -33,19 +34,20 @@ class G3WGroupFormMixin(object):
 class G3WFormMixin(object):
     """ Form mixin for crispy form layout element """
 
-    def checkEmptyInitialsData(self,*fields):
+    def checkEmptyInitialsData(self, *fields):
 
-        if not hasattr(self,'initial') or len(self.initial.items()) == 0:
+        if not hasattr(self, 'initial') or len(self.initial.items()) == 0:
             return 'collapsed-box'
         collapsed = True
 
         for field in fields:
-            if field in self.initial and (not self.initial[field] or self.initial[field] != ''):
+            f = field.fields[0] if isinstance(field, Field) else field
+            if f in self.initial and (not self.initial[f] or self.initial[f] != ''):
                 collapsed = False
 
         return 'collapsed-box' if collapsed else ''
 
-    def checkFieldsVisible(self,*fields):
+    def checkFieldsVisible(self, *fields):
 
         visible = True
 

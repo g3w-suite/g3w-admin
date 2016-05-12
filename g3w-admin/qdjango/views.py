@@ -187,7 +187,7 @@ class QdjangoLayerWidgetsView(G3WGroupViewMixin, QdjangoProjectViewMixin, Qdjang
     template_name = 'qdjango/ajax/layer_widgets.html'
 
     def get_queryset(self):
-        return Widget.objects.filter(layers__slug=self.layer_slug)
+        return Widget.objects.filter(datasource=self.layer.datasource)
 
 
 class QdjangoLayerWidgetCreateView(G3WRequestViewMixin, G3WGroupViewMixin, QdjangoProjectViewMixin, QdjangoLayerViewMixin, AjaxableFormResponseMixin, CreateView):
