@@ -29,32 +29,36 @@ _.extend(g3wadmin.widget, {
         'detail-url',
     ],
 
-    _loadHtmlItemParams :[
+    _loadHtmlItemParams: [
         'html-url',
         'target-selector'
     ],
 
-    _ajaxFormParams :[
+    _ajaxFormParams: [
         'form-url',
         'modal-title',
         'modal-size'
     ],
 
-    _ajaxFilerParams :[
+    _ajaxFilerParams: [
         'action-url',
         'modal-title',
         'file-extensions'
     ],
 
-    _setProjectPanoramic : [
+    _setProjectPanoramic: [
         'ajax-url',
     ],
 
-    _setLayerCached : [
+    _linkWidget2Layer: [
         'ajax-url',
     ],
 
-    _setAjaxDownload : [
+    _setLayerCached: [
+        'ajax-url',
+    ],
+
+    _setAjaxDownload: [
         'ajax-url',
     ],
 
@@ -187,6 +191,7 @@ _.extend(g3wadmin.widget, {
                          var status = arguments[1];
                          if (status == 'success') {
                             ga.ui.initAjaxFormWidget(row.child());
+                            ga.ui.initRadioCheckbox(row.child());
                          }
                      },
                      error: function (xhr, textStatus, errorMessage) {
@@ -439,6 +444,31 @@ _.extend(g3wadmin.widget, {
             $.ajax({
                 method: 'get',
                 url: params['ajax-url'],
+                error: function (xhr, textStatus, errorMessage) {
+                    ga.widget.showError(ga.utils.buildAjaxErrorMessage(xhr.status, errorMessage));
+                }
+            });
+
+        } catch (e) {
+            this.showError(e.message);
+        }
+    },
+
+    linkWidget2Layer: function($item) {
+
+        try {
+            var params = ga.utils.getDataAttrs($item, this._linkWidget2Layer);
+            if (_.isUndefined(params['ajax-url'])) {
+                throw new Error('Attribute data-ajax-url not defined');
+            }
+
+
+            $.ajax({
+                method: 'get',
+                url: params['ajax-url'],
+                success: function(res){
+
+                },
                 error: function (xhr, textStatus, errorMessage) {
                     ga.widget.showError(ga.utils.buildAjaxErrorMessage(xhr.status, errorMessage));
                 }

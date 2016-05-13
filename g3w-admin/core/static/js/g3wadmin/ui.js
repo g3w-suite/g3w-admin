@@ -108,6 +108,19 @@ _.extend(g3wadmin.ui, {
         });
     },
 
+    initLinkWidget2Layer: function(context) {
+        if (!_.isUndefined(context)) {
+            var $widgetItem = $(context).find('[data-widget-type="linkWidget2Layer"]');
+        }
+        else {
+            var $widgetItem = $('[data-widget-type="linkWidget2Layer"]');
+        }
+        console.log($widgetItem);
+        $widgetItem.on('ifChanged',function(e){
+            ga.widget.linkWidget2Layer($(this));
+        });
+    },
+
     initSetLayerCached: function(context) {
         if (!_.isUndefined(context)) {
             var $widgetItem = $(context).find('[data-widget-type="setLayerCached"]');

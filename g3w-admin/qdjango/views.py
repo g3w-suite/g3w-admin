@@ -240,6 +240,22 @@ class QdjangoLayerWidgetUpdateView(G3WRequestViewMixin, G3WGroupViewMixin, Qdjan
         return context
 
 
+class QdjangoLinkWidget2LayerView(G3WRequestViewMixin, G3WGroupViewMixin, QdjangoProjectViewMixin, QdjangoLayerViewMixin, View):
 
+    def get(self, *args, **kwargs):
+        self.widget = get_object_or_404(Widget, slug=kwargs['slug'])
+        try:
+            self.linkUnlinkWidget(link=(not 'unlink' in kwargs))
+            return JsonResponse({'status': 'ok'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'errors_form': e.message})
+
+    def linkUnlinkWidget(self, link=True):
+        if self.layer.datasource != self.widget.datasource:
+            raise Exception('Datasource of widget is different from layer datasource')
+        if link:
+            self.widget.layers.add(self.layer)
+        else:
+            self.widget.layers.remove(self.layer)
 
 
