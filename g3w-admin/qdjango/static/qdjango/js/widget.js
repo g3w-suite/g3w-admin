@@ -589,6 +589,9 @@ ga.Qdjango.widgetEditor = {
 		ga.currentForm.on('preSendForm', function(){
 			$.proxy(that.onFormSubmit, that)();
 		});
+		ga.currentForm.setOnSuccesAction(function(){
+			ga.currentModal.hide();
+		});
 		/*
 		var button = this.form.find("button.confirm");
 		this.form.find("button.confirm").click(function(){ 

@@ -129,6 +129,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
         {% for module in SETTINGS.G3WADMIN_LOCAL_MORE_APPS %}
         {% sitetree_menu from module include "trunk" template "sitetree/sidebar.html" %}
         {% endfor %}
+        {% for module in SETTINGS.G3WADMIN_PROJECT_APPS %}
+        {% sitetree_menu from module include "trunk" template "sitetree/sidebar.html" %}
+        {% endfor %}
         </section>
         <!-- /.sidebar -->
       </aside>

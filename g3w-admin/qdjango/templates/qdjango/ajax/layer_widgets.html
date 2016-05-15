@@ -3,7 +3,6 @@
 <div id="layer_widgets_{{ layer.id }}" style="margin-left:40px;">
     <a href="#" data-widget-type="ajaxForm" data-form-url="{% url 'qdjango-project-layer-widget-add' group.slug project.slug layer.slug %}" data-modal-size="modal-lg"><i class="ion ion-plus-circled"></i> {% trans 'Add new widget' %}</a>
     <table class="table">
-    {% for object in object_list %}
         <thead>
             <tr>
                 <th>{% trans 'Name' %}</th>
@@ -12,6 +11,7 @@
             </tr>
         </thead>
         <tbody>
+        {% for object in object_list %}
             <tr>
                 <td>
                     <a href="#" data-widget-type="ajaxForm" data-form-url="{% url 'qdjango-project-layer-widget-update' group.slug project.slug layer.slug object.slug %}" data-modal-size="modal-lg">{{ object.name }}</a>
@@ -21,9 +21,9 @@
                     <input type="checkbox" name="panoramic_map" {% if object|widget_linked_layer:layer  %} checked="checked" {% endif %} value="{{ object.id }}" data-widget-type="linkWidget2Layer" data-ajax-url="{% url 'qdjango-project-layer-widget-link' group.slug project.slug layer.slug object.slug %}"/>
                 </td>
             </tr>
+        {% endfor %}
         </tbody>
-    {% endfor %}
-    </table>
+        </table>
     <script>
         ga.ui.initLinkWidget2Layer("#layer_widgets_{{ layer.id }}");
     </script>

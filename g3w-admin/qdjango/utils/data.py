@@ -335,7 +335,7 @@ class QgisProjectLayer(QgisData):
                 # prendo l'elemento parent di un tag "id" dove il testo corrisponde al nome del layer
                 joined_layer = self.qgisProjectLayerTree.getroottree().xpath('//id[text()="'+join_id+'"]/..')[0]
                 joined_columns += []
-        except Exception,e:
+        except Exception as e:
             pass
         return joined_columns
 

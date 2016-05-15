@@ -245,7 +245,7 @@ class QdjangoLinkWidget2LayerView(G3WRequestViewMixin, G3WGroupViewMixin, Qdjang
     def get(self, *args, **kwargs):
         self.widget = get_object_or_404(Widget, slug=kwargs['slug'])
         try:
-            self.linkUnlinkWidget(link=(not 'unlink' in kwargs))
+            self.linkUnlinkWidget(link=(not 'unlink' in self.request.GET))
             return JsonResponse({'status': 'ok'})
         except Exception as e:
             return JsonResponse({'status': 'error', 'errors_form': e.message})

@@ -36,6 +36,29 @@ class Project(TimeStampedModel):
         )
 
 
+class Store(models.Model):
+
+    STORE_TYPES = Choices(
+        ('wms', _('WMS')),
+        ('wmst'), _('WMST'),
+        ('wfs', _('WFS')),
+    )
+
+    name = models.CharField(_('Name'), max_length=255)
+    description = models.TextField(_('Description'), blank=True)
+    type = models.CharField(_('OGC Type'), choices=STORE_TYPES, max_length=20)
+    url = models.URLField(_('URL'))
+    username = models.URLField(_('Username'), max_length=255, null=True, blank=True)
+    password = models.CharField(_('Passaword'), max_length=255, null=True, blank=True)
+    slug = AutoSlugField(
+        _('Slug'), populate_from='name', unique=True, always_update=True
+    )
+
+    class Meta:
+        permissions = (
+            ('view_ogc_store', 'Can view OGC store'),
+        )
+
 class Layer(models.Model):
     """A OGC layer."""
 

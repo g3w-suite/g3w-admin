@@ -4,6 +4,7 @@ from rest_framework import serializers
 from rest_framework.fields import empty
 from core.models import Group
 from core.signals import initconfig_plugin_start
+from copy import copy
 
 
 class GroupSerializer(serializers.ModelSerializer):
@@ -66,8 +67,8 @@ class GroupSerializer(serializers.ModelSerializer):
         dataPlugins = initconfig_plugin_start.send(sender=self, project=self.projectId, projectType=self.projectType)
         for dataPlugin in dataPlugins:
             if dataPlugin[1]:
-                ret['plugins'] = dict(ret['plugins'].items() + dataPlugin[1].items())
-
+                ret['plugins'] = copy(ret['plugins'])
+                ret['plugins'].update(dataPlugin[1])
         return ret
 
     class Meta:

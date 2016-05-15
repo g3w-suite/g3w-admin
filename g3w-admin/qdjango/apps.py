@@ -2,7 +2,10 @@ from django.apps import AppConfig, apps
 from django.db.models.signals import post_migrate
 from usersmanage.configs import *
 from core.utils.general import getAuthPermissionContentType
-from qgis.core import *
+try:
+    from qgis.core import *
+except:
+    pass
 
 '''
 QgsApplication.setPrefixPath("/path/to/qgis/installation", True)

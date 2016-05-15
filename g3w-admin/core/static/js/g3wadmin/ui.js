@@ -115,9 +115,11 @@ _.extend(g3wadmin.ui, {
         else {
             var $widgetItem = $('[data-widget-type="linkWidget2Layer"]');
         }
-        console.log($widgetItem);
-        $widgetItem.on('ifChanged',function(e){
+
+        $widgetItem.on('ifChecked',function(e){
             ga.widget.linkWidget2Layer($(this));
+        }).on('ifUnchecked', function(e){
+            ga.widget.linkWidget2Layer($(this), false);
         });
     },
 
@@ -131,7 +133,7 @@ _.extend(g3wadmin.ui, {
         $widgetItem.on('ifChecked',function(e){
             ga.widget.setLayerCached($(this));
         }).on('ifUnchecked', function(e){
-            ga.widget.setLayerCached($(this),false);
+            ga.widget.setLayerCached($(this), false);
         });
     },
 

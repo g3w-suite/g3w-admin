@@ -15,7 +15,10 @@ from django.contrib.gis.gdal import check_err, OGRGeomType
 try:
     from cStringIO import StringIO
 except ImportError:
-    from StringIO import StringIO
+    try:
+        from io import StringIO
+    except:
+        from StringIO import StringIO
 
 try:
     # a mysterious bug with ctypes and python26 causes crashes
@@ -283,7 +286,7 @@ class ShpResponder(object):
                 value = getattr(item,field.name)
                 try:
                     string_value = str(value)
-                except UnicodeEncodeError, E:
+                except UnicodeEncodeError as e:
                     # pass for now....
                     # http://trac.osgeo.org/gdal/ticket/882
                     string_value = ''

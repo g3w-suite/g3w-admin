@@ -2,7 +2,7 @@ from django.core.urlresolvers import reverse
 from client.utils.editing import *
 from .models import *
 from .utils import getLayerIternetIdByName
-from configs import ITERNET_LAYERS
+from .configs import ITERNET_LAYERS
 
 
 def buidlKeyValue(legModel):

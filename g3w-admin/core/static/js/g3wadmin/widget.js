@@ -283,7 +283,7 @@ _.extend(g3wadmin.widget, {
 
                         // close modal and reload page
                         modal.hide();
-                        //window.location.reload();
+                        window.location.reload();
                     })
                      
 
@@ -454,7 +454,7 @@ _.extend(g3wadmin.widget, {
         }
     },
 
-    linkWidget2Layer: function($item) {
+    linkWidget2Layer: function($item, linked) {
 
         try {
             var params = ga.utils.getDataAttrs($item, this._linkWidget2Layer);
@@ -462,10 +462,15 @@ _.extend(g3wadmin.widget, {
                 throw new Error('Attribute data-ajax-url not defined');
             }
 
+            var data = {};
+            if (!_.isUndefined(linked) && !linked) {
+                data['unlink'] = 'unlink';
+            }
 
             $.ajax({
                 method: 'get',
                 url: params['ajax-url'],
+                data: data,
                 success: function(res){
 
                 },
@@ -473,6 +478,7 @@ _.extend(g3wadmin.widget, {
                     ga.widget.showError(ga.utils.buildAjaxErrorMessage(xhr.status, errorMessage));
                 }
             });
+
 
         } catch (e) {
             this.showError(e.message);

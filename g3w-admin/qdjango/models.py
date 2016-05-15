@@ -176,7 +176,7 @@ class Layer(QdjangoACLModelMixins, models.Model):
         Count widgets for self layer
         :return: integer
         """
-        return len(self.widget_set.all())
+        return len(Widget.objects.filter(datasource=self.datasource))
 
     def _permissionsToEditor(self, user, mode='add'):
         setPermissionUserObject(user, self, permissions=[

@@ -7,7 +7,10 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.conf.urls.i18n import i18n_patterns
 from django.views.i18n import javascript_catalog, json_catalog
-from qgis.core import *
+try:
+    from qgis.core import *
+except:
+    pass
 
 
 # if frontend is set

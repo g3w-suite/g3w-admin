@@ -1,0 +1,9 @@
+{% load i18n %}
+<div class="row">
+    <div class="col-md-12">
+    <h3>{{ object.name }}</h3>
+    {% if object.url  %}{% trans 'URL' %}: {{ object.url }}{% endif %}
+    {% if object.description  %}{% trans 'Description' %}: {{ object.desription }}{% endif %}
+    {{ capabilities }}
+    </div>
+</div>

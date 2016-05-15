@@ -18,7 +18,7 @@ def GiveBaseGrant(sender, **kwargs):
         for gname in (G3W_VIEWER2, G3W_VIEWER1, G3W_EDITOR2, G3W_EDITOR1):
             agroup, created = AuthGroup.objects.get_or_create(name=gname)
             if not created:
-                print "{} already in database".format(gname)
+                print ("{} already in database".format(gname))
 
         # give permissions to Editor Level 1
         editorPermission = agroup.permissions.all()

@@ -3,7 +3,10 @@ from django.conf import settings
 from rest_framework import serializers
 from rest_framework.fields import empty
 from qdjango.models import Project, Layer
-from qgis.server import *
+try:
+    from qgis.server import *
+except:
+    pass
 from qdjango.utils.data import QgisProjectSettingsWMS
 from qdjango.ows import OWSRequestHandler
 from client.utils.editing import mapLayerAttributes

@@ -26,7 +26,10 @@ import zipfile
 try:
     from cStringIO import StringIO
 except ImportError:
-    from StringIO import StringIO
+    try:
+        from io import StringIO
+    except:
+        from StringIO import StringIO
 
 iternet_connection = copy.copy(settings.DATABASES[settings.ITERNET_DATABASE])
 

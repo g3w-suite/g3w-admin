@@ -1,17 +1,31 @@
 from django.http import HttpResponse
 from django.conf import settings
+
 try:
     from qgis.server import *
 except:
     pass
+
 from OWS.ows import OWSRequestHandlerBase
 from .models import Project, Layer
 from copy import copy
-from ModestMaps.Core import Coordinate
-from TileStache import getTile, Config, parseConfigfile
-from TileStache.Core import KnownUnknown
-from httplib import HTTPConnection
-from urlparse import urlsplit
+
+try:
+    from ModestMaps.Core import Coordinate
+    from TileStache import getTile, Config, parseConfigfile
+except:
+    pass
+
+try:
+
+    # python 2
+    from httplib import HTTPConnection
+    from urlparse import urlsplit
+except:
+
+    #python 3
+    from http.client import HTTPConnection
+    from urllib.parse import urlsplit
 from .auth import QdjangoProjectAuthorizer
 
 try:

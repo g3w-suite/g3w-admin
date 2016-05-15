@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load g3wadmin_tags %}
+{% load svg_icon %}
+
+
+
+{% block page_header %}
+<h1>
+{% trans 'OGC Stores list' %}
+</h1>
+{% endblock %}
+
+{% block main_content %}
+
+
+
+<div class="box">
+    <div class="box-header">
+        <h3 class="box-title"><a href="{% url 'ogc-store-add' %}"><i class="ion ion-plus-circled"></i></a> {% trans 'Store' %}</h3>
+        <span class="description">List of stores</span>
+    </div>
+    <div class="box-body">
+        <table class="table table-hover table-striped">
+            <thead>
+                <tr>
+                    <th style="width: 120px">Action</th>
+                    <th>{%  trans 'Name' %}</th>
+                    <th>{%  trans 'Url' %}</th>
+                    <th>{%  trans 'Options' %}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for object in object_list %}
+                <tr id="ogc_store_{{ object.slug }}">
+                    <td>
+                        <span class="col-xs-2 icon">
+                            <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-modal-title="{% trans 'Detail store' %}" data-detail-url="{% url 'ogc-store-detail' object.slug %}" ><i class="ion ion-eye"></i></a>
+                        </span>
+                        <span class="col-xs-2 icon">
+                            <a href="{% url 'ogc-store-update' object.slug %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Edit' %}" ><i class="ion ion-edit"></i></a>
+                        </span>
+                        <span class="col-xs-4 icon">
+                            <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Delete' %}" data-widget-type="deleteItem" data-delete-url="{% url 'ogc-store-delete' object.slug %}" data-item-selector="#ogc_store_{{ object.slug }}" ><i class="ion ion-trash-b"></i></a>
+                        </span>
+                    </td>
+                    <td>{{ object.name }}</td>
+                    <td>{{ object.url }}</td>
+                    <td></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

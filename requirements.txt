@@ -15,6 +15,8 @@ GDAL==1.11.0
 GeoAlchemy2==0.2.6
 lxml==3.3.3
 psycopg2==2.6.1
+pillow
+
 defusedxml==0.4.1
 SQLAlchemy==1.0.12
 django-import-export
