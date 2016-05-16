@@ -1,5 +1,5 @@
 from django.views.generic import TemplateView, FormView, View
-from django.core.urlresolvers import reverse
+from django.utils import six
 from django.http import HttpResponse
 from django.db import IntegrityError, transaction, connections
 from django.db.models import Q, Model
@@ -13,23 +13,13 @@ from core.editing.utils import LayerLock
 from core.api.authentication import CsrfExemptSessionAuthentication
 from core.api.filters import IntersectsBBoxFilter
 from core.api.views import G3WAPIView
-from core.geo.exports import ShpResponder
-from .configs import ITERNET_LAYERS
 from .editing import *
 from .api.serializers import NumeroCivicoSerializer, ToponimoStradaleSerializer
-from .ie.resources import AccessiInfoResource
 import copy
 from datetime import date
 import tempfile
 import subprocess
 import zipfile
-try:
-    from cStringIO import StringIO
-except ImportError:
-    try:
-        from io import StringIO
-    except:
-        from StringIO import StringIO
 
 iternet_connection = copy.copy(settings.DATABASES[settings.ITERNET_DATABASE])
 
@@ -394,7 +384,7 @@ class ExportShapefileView(View):
         subprocess.check_call(command)
 
         # create zip file
-        buffer = StringIO()
+        buffer = six.BytesIO()
         zip = zipfile.ZipFile(buffer, 'w', zipfile.ZIP_DEFLATED)
         files = ['shp', 'shx', 'prj', 'dbf']
         for item in files:

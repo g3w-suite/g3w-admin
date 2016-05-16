@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 from django.db import models
 from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
@@ -14,7 +15,7 @@ def getOdtfilePath(instance, filename):
     """
     cduTitle = slugify(unicode(instance.title))
     namefile, ext = filename.split('.')
-    filename = u'{}_{}.{}'.format(cduTitle, namefile, ext)
+    filename = b'{}_{}.{}'.format(cduTitle, namefile, ext)
     return os.path.join('cdu_odt_file', filename)
 
 

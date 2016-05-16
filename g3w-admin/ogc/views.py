@@ -10,9 +10,9 @@ from django.views.generic import (
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.views.generic.detail import SingleObjectMixin
 from core.mixins.views import G3WRequestViewMixin, G3WAjaxDeleteViewMixin
-from core.models import Group
-from .models import *
 from .forms import *
+from django.http.request import QueryDict
+from core.utils.request import makeRequest
 
 class OgcProjectListView(G3WRequestViewMixin,ListView):
     model = Project
@@ -46,10 +46,6 @@ class OgcStoreDetailView(G3WRequestViewMixin, DetailView):
         context = super(OgcStoreDetailView, self).get_context_data(**kwargs)
 
         # try to get GetCapabilities
-        from django.http.request import QueryDict
-        from core.utils.request import makeRequest
-        from urlparse import urlsplit
-        from httplib import HTTPConnection
         q = QueryDict('', mutable=True)
         q['SERVICE'] = 'WMS'
         q['VERSION'] = '1.3.0'

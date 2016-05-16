@@ -1,3 +1,4 @@
+from django.utils import six
 from django.views.generic import TemplateView
 from django.shortcuts import get_object_or_404
 from django.http import Http404, HttpResponseForbidden
@@ -47,8 +48,12 @@ class ClientView(TemplateView):
                 'groups': [g.name for g in u.groups.all()]
             }
 
+        serializedGroup = JSONRenderer().render(groupData)
+        if six.PY3:
+            serializedGroup = str(serializedGroup, 'utf-8')
+
         # add baseUrl property
-        contextData['group_config'] = 'var initConfig ={{ "staticurl":"{}","group":{} }}'.format(settings.STATIC_URL+"g3w-client/",JSONRenderer().render(groupData))
+        contextData['group_config'] = 'var initConfig ={{ "staticurl":"{}","group":{} }}'.format(settings.STATIC_URL+"g3w-client/", serializedGroup)
 
         # project by type(app)
         if not '{}-{}'.format(kwargs['project_type'],kwargs['project_id']) in groupSerializer.projects.keys():
