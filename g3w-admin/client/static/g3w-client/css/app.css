@@ -5201,6 +5201,30 @@ fieldset[disabled] .btn-yahoo.active {
     white-space: normal!important;
   }
 }
+.sidebar-aside-toggle {
+  position: absolute;
+  left: 350px;
+  top: 50px;
+  background-color: #3c8dbc;
+  color: white;
+  background-image: none;
+  padding: 12.5px;
+  font-family: fontAwesome;
+}
+.sidebar-aside-toggle:before {
+  content: "\f0c9";
+}
+.sidebar-aside-toggle:focus,
+.sidebar-aside-toggle:hover {
+  color: #fff;
+}
+.sidebar-aside-toggle .icon-bar {
+  display: none;
+}
+.navbar-form {
+  padding-top: 0px;
+  padding-bottom: 0 px;
+}
 .sidebar .g3w-sidebarpanel {
   padding: 10px 10px 10px 10px;
 }
