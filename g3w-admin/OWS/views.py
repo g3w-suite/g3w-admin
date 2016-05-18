@@ -22,7 +22,6 @@ class OWSView(View):
 
 
     def get(self, request, *args, **kwargs):
-
         return self.proxy.request(request,self.OWSRequestHandler, **kwargs)
 
     def _getOWSRequestHandler(self):

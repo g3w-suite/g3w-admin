@@ -30,8 +30,9 @@ from .auth import QdjangoProjectAuthorizer
 
 try:
     # use of qgis server instance
-    server = QgsServer()
+    #server = QgsServer()
     #server.init()
+    pass
 except:
     pass
 
@@ -49,10 +50,11 @@ class OWSRequestHandler(OWSRequestHandlerBase):
     def __init__(self, request, **kwargs):
 
         self.request = request
-        self.groupSlug = kwargs['group_slug']
-        self.projectId = kwargs['project_id']
+        self.groupSlug = kwargs.get('group_slug', None)
+        self.projectId = kwargs.get('project_id', None)
 
-        self._getProjectInstance()
+        if self.projectId:
+            self._getProjectInstance()
 
     def _getProjectInstance(self):
         self._projectInstance = Project.objects.get(pk=self.projectId)
@@ -65,7 +67,6 @@ class OWSRequestHandler(OWSRequestHandlerBase):
     def project(self):
         return self._projectInstance
 
-    @classmethod
     def baseDoRequest(cls, q, request=None):
 
         if qdjangoModeRequest == QDJANGO_PROXY_REQUEST:
@@ -77,8 +78,15 @@ class OWSRequestHandler(OWSRequestHandlerBase):
 
             url = '?'.join([settings.QDJANGO_SERVER_URL, q.urlencode()])
             conn.request(request.method, url, request.body, headers)
+            try:
+                #print request.GET
+                pass
+            except:
+                pass
+
 
             result = conn.getresponse()
+
 
             # If we get a redirect, let's add a useful message.
             if result.status in (301, 302, 303, 307):
@@ -95,11 +103,13 @@ class OWSRequestHandler(OWSRequestHandlerBase):
                     status=result.status,
                     content_type=result.getheader("Content-Type", "text/plain"))
 
+            conn.close()
             return response
 
         else:
 
             # case qgisserver python binding
+            server = QgsServer()
             headers, body = server.handleRequest(q.urlencode())
             response = HttpResponse(body)
 
@@ -114,9 +124,8 @@ class OWSRequestHandler(OWSRequestHandlerBase):
     def doRequest(self):
 
         # Call init to create serverInterface
-        q = copy(self.request.GET)
+        q = self.request.GET.copy()
         q['map'] = self._projectInstance.qgis_file.file.name
-
         return self.baseDoRequest(q, self.request)
 
 

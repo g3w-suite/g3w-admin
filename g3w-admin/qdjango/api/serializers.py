@@ -11,6 +11,7 @@ from qdjango.utils.data import QgisProjectSettingsWMS
 from qdjango.ows import OWSRequestHandler
 from client.utils.editing import mapLayerAttributes
 from qdjango.utils.structure import QdjangoMetaLayer
+from core.utils.request import makeRequest
 
 
 
@@ -35,7 +36,7 @@ class ProjectSerializer(serializers.ModelSerializer):
         request = Object()
         request.method = 'GET'
         request.body = ''
-        response = OWSRequestHandler.baseDoRequest(q, request)
+        response = OWSRequestHandler(None).baseDoRequest(q, request=request)
 
         qgisProjectSettignsWMS = QgisProjectSettingsWMS(response.content)
 

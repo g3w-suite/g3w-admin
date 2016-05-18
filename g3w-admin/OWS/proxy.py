@@ -8,13 +8,13 @@ class Proxy(object):
 
     def request(self,request, OWSRequestHandler, **kwargs):
         # authorizer = self.authorizer_class()
-        self.OWSRequestHandler = OWSRequestHandler(request, **kwargs)
-
+        #self.OWSRequestHandler = OWSRequestHandler(request, **kwargs)
+        OWSrh = OWSRequestHandler(request, **kwargs)
         try:
             """
             First try to perfom request by OWS module handler
             """
-            self.authorizer = self.OWSRequestHandler.authorizer
+            self.authorizer = OWSrh.authorizer
             self.authorizer.auth_request()
         except AuthForbiddenRequest:
             raise AuthForbiddenRequest()
@@ -32,15 +32,5 @@ class Proxy(object):
                                 status=400,
                                 content_type="text/plain")
         else:
-            # request = authorizer.filter_request(request)
-            _response = self._proxyRequest(request, **kwargs)
-            #response = authorizer.filter_response(_response)
+            _response = OWSrh.doRequest()
             return _response
-
-    def _proxyRequest(self,request, **kwargs):
-        """
-        Handle request by specific project type
-        :param request:
-        :return: Django Response object
-        """
-        return self.OWSRequestHandler.doRequest()
