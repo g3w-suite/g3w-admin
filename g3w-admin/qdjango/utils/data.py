@@ -105,7 +105,7 @@ class DatasourceExists(QgisProjectLayerValidator):
 
 class QgisProjectLayer(QgisData):
     """
-    Qgisdata obejct for layer project: a layer xml wrapper
+    Qgisdata object for layer project: a layer xml wrapper
     """
 
     _dataToSet = [

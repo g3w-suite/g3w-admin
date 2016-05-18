@@ -13,6 +13,7 @@ from core.mixins.views import G3WRequestViewMixin, G3WAjaxDeleteViewMixin
 from .forms import *
 from django.http.request import QueryDict
 from core.utils.request import makeRequest
+from owslib.wms import WebMapService
 
 class OgcProjectListView(G3WRequestViewMixin,ListView):
     model = Project
@@ -51,9 +52,10 @@ class OgcStoreDetailView(G3WRequestViewMixin, DetailView):
         q['VERSION'] = '1.3.0'
         q['REQUEST'] = 'GetCapabilities'
 
-        result = makeRequest(self.object.url, q=q)
+        #result = makeRequest(self.object.url, q=q)
+        #context['capabilities'] = result.read()
 
-        context['capabilities'] = result.read()
+        context['wms'] = WebMapService(self.object.url, version='1.3.0')
         return context
 
 

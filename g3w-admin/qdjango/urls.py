@@ -13,6 +13,8 @@ urlpatterns = [
     url(r'^(?P<group_slug>[-_\w\d]+)/projects/update/(?P<slug>[-_\w\d]+)/$', login_required(QdjangoProjectUpdateView.as_view()), name='qdjango-project-update'),
     url(r'^(?P<group_slug>[-_\w\d]+)/projects/delete/(?P<slug>[-_\w\d]+)/$', login_required(QdjangoProjectDeleteView.as_view()), name='qdjango-project-delete'),
     url(r'^(?P<group_slug>[-_\w\d]+)/projects/(?P<slug>[-_\w\d]+)/$', login_required(QdjangoProjectDetailView.as_view()), name='qdjango-project-detail'),
+    url(r'^(?P<group_slug>[-_\w\d]+)/projects/download/(?P<slug>[-_\w\d]+)/$',
+        login_required(QdjangoProjectDownloadView.as_view(model=Project, file_field='qgis_file')), name='qdjango-project-download'),
 
     # Layers urls
     url(r'^(?P<group_slug>[-_\w\d]+)/projects/(?P<project_slug>[-_\w\d]+)/layers/$', login_required(QdjangoLayersListView.as_view()), name='qdjango-project-layers-list'),

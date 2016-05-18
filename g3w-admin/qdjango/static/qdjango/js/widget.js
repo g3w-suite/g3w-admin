@@ -148,7 +148,7 @@ ga.Qdjango.widgetEditor = {
 						<div class="box-body">\
 							<div class="col-md-5">\
 								<div class="row">\
-									<div class="col-md-12"><span class="label label-warning">Titolo Ricerca</span></div>\
+									<div class="col-md-12"><span class="label label-default">Titolo Ricerca</span></div>\
 								</div>\
 								<div class="row">\
 									<div class="form-group col-md-12 title"></div>\
@@ -156,8 +156,8 @@ ga.Qdjango.widgetEditor = {
 							</div>\
 							<div class="col-md-7 resultFields">\
 								<div class="row labels">\
-									<div class="col-md-6"><span class="label label-warning">Campo Risultato</span></div>\
-									<div class="col-md-6"><span class="label label-warning">Alias Risultato</span></div>\
+									<div class="col-md-6"><span class="label label-default">Campo Risultato</span></div>\
+									<div class="col-md-6"><span class="label label-default">Alias Risultato</span></div>\
 								</div>\
 								<div class="row">\
 									<div class="col-md-6 fieldSelect"></div>\
@@ -167,7 +167,7 @@ ga.Qdjango.widgetEditor = {
 								<div class="row">\
 									<div class="col-md-6 fieldSelect"></div>\
 									<div class="col-md-5 textInput"></div>\
-									<div class="col-md-1"><button type="button" class="btn btn-warning add"><i class="glyphicon glyphicon-plus"></i></button></div>\
+									<div class="col-md-1" style="padding-left:0px;"><button type="button" class="btn btn-default add"><i class="glyphicon glyphicon-plus"></i></button></div>\
 								</div>\
 							</div>\
 						<\div>\
@@ -189,7 +189,7 @@ ga.Qdjango.widgetEditor = {
 			var newRow = 	$(	'<div class="row">\
 									<div class="col-md-6 fieldSelect"></div>\
 									<div class="col-md-5 textInput"></div>\
-									<div class="col-md-1"></div>\
+									<div class="col-md-1" style="padding-left:0px;"></div>\
 								</div>');
 			lastRow.find(".fieldSelect").append(fieldSelect);
 			lastRow.find(".textInput").append(textInput);
@@ -254,37 +254,41 @@ ga.Qdjango.widgetEditor = {
 			cmpOperatorSelect.val($('<div/>').html(values.filterOp).text());
 									
 		var div = $('<div class="blocco" style="display: none">\
-						<div class="alert bg-success row" style="margin-top: 20px">\
-							<div class="row">\
-								<button type="button" class="close">&times;</button>\
+					<div class="box box-success" >\
+							<div class="box-header with-border">\
+							<h3 class="box-title">Impostazioni campo di ricerca</h3>\
+							<div class="box-tools pull-right">\
+                    			<button class="btn btn-box-tool close"><i class="fa fa-times"></i></button>\
+                  			</div>\
 							</div>\
-							<div class="row">\
-								<div class="col-md-3"><span class="label label-success">Campo</span></div>\
-								<div class="col-md-3"><span class="label label-success">Alias</span></div>\
-								<div class="col-md-3"><span class="label label-success">Descrizione</span></div>\
-								<div class="col-md-3"><span class="label label-success">Operatore comparazione</span></div>\
+							<div class="box-body">\
+								<div class="row">\
+									<div class="col-md-3"><span class="label label-default">Campo</span></div>\
+									<div class="col-md-3"><span class="label label-default">Alias</span></div>\
+									<div class="col-md-3"><span class="label label-default">Descrizione</span></div>\
+									<div class="col-md-3"><span class="label label-default">Operatore comparazione</span></div>\
+								</div>\
+								<div class="row">\
+									<div class="col-md-3 fieldSelect"></div>\
+									<div class="col-md-3 textInput"></div>\
+									<div class="col-md-3 descriptionInput"></div>\
+									<div class="col-md-3 cmpOperatorSelect"></div>\
+								</div>\
 							</div>\
-							<div class="row">\
-								<div class="col-md-3 fieldSelect"></div>\
-								<div class="col-md-3 textInput"></div>\
-								<div class="col-md-3 descriptionInput"></div>\
-								<div class="col-md-3 cmpOperatorSelect"></div>\
-							</div>\
-						</div>\
-						<div class="row text-center">\
-							<select class="form-control logic_operator" name="logic_operator" class="logic_operator" style="width: 100px; display: none">\
+					</div>\
+						<div class="row" style="margin-bottom:20px;">\
+						<div class="col-md-offset-4 col-md-4">\
+							<select class="form-control logic_operator" name="logic_operator" class="logic_operator" style="display: none">\
 								<option value="and">AND</option>\
 							</select>\
+						</div>\
 						</div>\
 					</div>');
 		
 		div.find(".close").click(function(){
 			var blocco = $(this).parents(".blocco").first();
 			blocco.find(".logic_operator").fadeOut(that.fadeNumber, function(){ $(this).remove(); });
-			$(this).parents(".alert").first().fadeOut(that.fadeNumber, function(){ 
-				$(this).alert('close');
-				blocco.remove();
-			});
+			blocco.remove();
 			$(".logic_operator").last().fadeOut(that.fadeNumber);
 		});
 		div.find(".fieldSelect").append(fieldSelect);

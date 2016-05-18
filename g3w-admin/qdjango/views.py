@@ -13,9 +13,19 @@ from guardian.decorators import permission_required
 from core.mixins.views import *
 from core.signals import pre_update_project, pre_delete_project
 from django.core.urlresolvers import reverse
+from django_downloadview import ObjectDownloadView
 from usersmanage.mixins.views import G3WACLViewMixin
 from .mixins.views import *
 from .forms import *
+
+
+class QdjangoProjectDownloadView(ObjectDownloadView):
+    """
+    Download Qgis project File
+    """
+    @method_decorator(permission_required('qdjango.change_project', (Project, 'slug', 'slug'), raise_exception=True))
+    def dispatch(self, *args, **kwargs):
+        return super(QdjangoProjectDownloadView, self).dispatch(*args, **kwargs)
 
 
 class QdjangoProjectListView(G3WRequestViewMixin, G3WGroupViewMixin, ListView):
@@ -238,6 +248,9 @@ class QdjangoLayerWidgetUpdateView(G3WRequestViewMixin, G3WGroupViewMixin, Qdjan
         context = super(QdjangoLayerWidgetUpdateView, self).get_context_data()
         context['layer'] = self.layer
         return context
+
+    def get_success_url(self):
+        return None
 
 
 class QdjangoLinkWidget2LayerView(G3WRequestViewMixin, G3WGroupViewMixin, QdjangoProjectViewMixin, QdjangoLayerViewMixin, View):

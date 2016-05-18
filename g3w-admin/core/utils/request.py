@@ -8,7 +8,7 @@ except:
 from django.http.request import QueryDict
 
 
-def makeRequest(url, body='', q=None, method='GET', port=80, headers=None):
+def makeRequest(url, body='', q=None, method='GET', port=80, headers=None, **kwargs):
 
     if not headers:
         headers = {}

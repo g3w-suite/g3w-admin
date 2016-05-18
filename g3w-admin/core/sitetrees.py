@@ -12,11 +12,12 @@ sitetrees = (
             item('Aggiungi gruppo', 'group-add', url_as_pattern=True, icon_css_class='fa fa-plus',
                  access_by_perms=['core.add_group']),
             item('Lista gruppi', 'group-list', url_as_pattern=True, icon_css_class='fa fa-globe', alias='group-list',
-                 in_breadcrumbs=False),
+                 in_breadcrumbs=True),
             item('Agg. gruppo {{ object.title}}', 'group-update object.slug', url_as_pattern=True,
                  icon_css_class='fa fa-edit', in_menu=False, alias='group-update'),
             item('Lista progetti {{ object.name }}', 'project-list object.slug', url_as_pattern=True,
-                 icon_css_class='fa fa-list', in_menu=False, alias='project-list')
+                 icon_css_class='fa fa-list', in_menu=False, in_breadcrumbs=True, alias='project-list')
+
         ]),
     ]),
 

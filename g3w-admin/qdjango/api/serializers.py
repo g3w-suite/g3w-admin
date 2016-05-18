@@ -10,6 +10,8 @@ except:
 from qdjango.utils.data import QgisProjectSettingsWMS
 from qdjango.ows import OWSRequestHandler
 from client.utils.editing import mapLayerAttributes
+from qdjango.utils.structure import QdjangoMetaLayer
+
 
 
 class ProjectSerializer(serializers.ModelSerializer):
@@ -47,12 +49,32 @@ class ProjectSerializer(serializers.ModelSerializer):
 
         # add layers data
         ret['layers'] = []
-        layers = instance.layer_set.all()
+        layers = {l.qgs_layer_id: l for l in instance.layer_set.all()}
+
+        metaLayer = QdjangoMetaLayer()
+        layersTree = self.get_layerstree(instance)
+
+        def readLeaf(layer):
+
+            if 'nodes' in layer:
+                for node in layer['nodes']:
+                    readLeaf(node)
+            else:
+                if layers[layer['id']].name in qgisProjectSettignsWMS.layers:
+                    layerSerializedData = LayerSerializer(layers[layer['id']], qgisProjectSettignsWMS=qgisProjectSettignsWMS).data
+                    layerSerializedData['metalayer'] = metaLayer.getCurrentByLayer(layerSerializedData)
+                    ret['layers'].append(layerSerializedData)
+
+        for l in layersTree:
+            readLeaf(l)
+
+        # follow layertree 2 flat style for metalayer
+        '''
         for layer in layers:
             if layer.name in qgisProjectSettignsWMS.layers:
                 layerSerialized = LayerSerializer(layer, qgisProjectSettignsWMS=qgisProjectSettignsWMS)
                 ret['layers'].append(layerSerialized.data)
-
+        '''
         # add search
         # todo: build a procedure, future
         ret['search'] = {}
@@ -88,6 +110,7 @@ class LayerSerializer(serializers.ModelSerializer):
             'id',
             'name',
             'geometrytype',
+            'layer_type',
             'crs',
             'title',
             'attributes',
@@ -122,8 +145,10 @@ class LayerSerializer(serializers.ModelSerializer):
         if ret['capabilities'] == 0:
             ret['capabilities'] = None
 
-        # add metalayer
-        # todo: add procedure for metalayer, caching etc.
-        ret ['metalayer'] = 1
+        # add options for wms layer
+        if instance.layer_type == 'wms':
+            ret['options'] = QueryDict(instance.datasource)
+
+
 
         return ret

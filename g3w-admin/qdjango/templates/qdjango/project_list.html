@@ -46,13 +46,18 @@
                         </span>
                         {% endif %}
                         {% if "delete_project" in userObj_perms %}
-                        <span class="col-xs-4 icon">
+                        <span class="col-xs-2 icon">
                             <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Delete' %}" data-widget-type="deleteItem" data-delete-url="{% url 'qdjango-project-delete' group.slug object.slug %}" data-item-selector="#qdjango_project_{{ object.slug }}"><i class="ion ion-trash-b"></i></a>
                             {% if object.pk in pre_delete_messages %}
                             <div class="hidden pre-delete-message">
                                 {{ pre_delete_messages|lookup:object.pk }}
                             </div>
                             {% endif %}
+                        </span>
+                        {% endif %}
+                        {% if "change_project" in userObj_perms %}
+                        <span class="col-xs-2 icon">
+                            <a href="{% url 'qdjango-project-download' group.slug object.slug %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Donwload' %}" ><i class="ion ion-android-download"></i></a>
                         </span>
                         {% endif %}
                     </td>

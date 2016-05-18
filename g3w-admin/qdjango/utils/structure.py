@@ -12,6 +12,36 @@ except ImportError:
     pass
 
 from qdjango.models import Layer
+from core.utils.projects import CoreMetaLayer
+
+
+class QdjangoMetaLayer(CoreMetaLayer):
+
+    layerTypesSingleLayer = (
+        'wms',
+    )
+
+    def getCurrentByLayer(self, layer):
+        """
+        Get current metalayer value by qdjango layer type
+        """
+        # todo:: policy for wms layer with authenthications
+        self.countLayer += 1
+        if isinstance(layer, dict):
+            layerType = layer['layer_type']
+        else:
+            layerType = layer.layer_type
+
+        if layerType in self.layerTypesSingleLayer:
+            if self.countLayer > 1:
+                self.increment()
+            self.toIncrement = True
+        elif self.toIncrement:
+            self.increment()
+            self.toIncrement = False
+
+        return self.current
+
 
 
 class QgisLayerStructure(object):

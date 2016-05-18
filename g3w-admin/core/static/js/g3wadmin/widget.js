@@ -134,7 +134,6 @@ _.extend(g3wadmin.widget, {
                  method: 'get',
                  url: params['detail-url'],
                  success: function (res) {
-
                     // open modal to show detail data
                     var modal = ga.ui.buildDefaultModal({
                         modalTitle: ((_.isUndefined(params['modal-title']) ? gettext('Detail object') : params['modal-title'])),
