@@ -145,6 +145,7 @@ class LayerSerializer(serializers.ModelSerializer):
         if ret['capabilities'] == 0:
             ret['capabilities'] = None
 
+        ret['options'] = None
         # add options for wms layer
         if instance.layer_type == 'wms':
             ret['options'] = QueryDict(instance.datasource)
