@@ -25,14 +25,17 @@ class QdjangoMetaLayer(CoreMetaLayer):
         """
         Get current metalayer value by qdjango layer type
         """
-        # todo:: policy for wms layer with authenthications
+
         self.countLayer += 1
         if isinstance(layer, dict):
             layerType = layer['layer_type']
+            options = layer['options']
         else:
+
+            # todo: manage options for layer object model
             layerType = layer.layer_type
 
-        if layerType in self.layerTypesSingleLayer:
+        if layerType in self.layerTypesSingleLayer and options is not None:
             if self.countLayer > 1:
                 self.increment()
             self.toIncrement = True
@@ -41,7 +44,6 @@ class QdjangoMetaLayer(CoreMetaLayer):
             self.toIncrement = False
 
         return self.current
-
 
 
 class QgisLayerStructure(object):

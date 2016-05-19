@@ -55,7 +55,7 @@ class OgcStoreDetailView(G3WRequestViewMixin, DetailView):
         #result = makeRequest(self.object.url, q=q)
         #context['capabilities'] = result.read()
 
-        context['wms'] = WebMapService(self.object.url, version='1.3.0')
+        context['wms'] = WebMapService(self.object.url)
         return context
 
 

@@ -8,14 +8,13 @@ class Proxy(object):
 
     def request(self,request, OWSRequestHandler, **kwargs):
         # authorizer = self.authorizer_class()
-        #self.OWSRequestHandler = OWSRequestHandler(request, **kwargs)
         OWSrh = OWSRequestHandler(request, **kwargs)
         try:
             """
             First try to perfom request by OWS module handler
             """
-            self.authorizer = OWSrh.authorizer
-            self.authorizer.auth_request()
+            authorizer = OWSrh.authorizer
+            authorizer.auth_request()
         except AuthForbiddenRequest:
             raise AuthForbiddenRequest()
         except:
@@ -23,8 +22,8 @@ class Proxy(object):
                 """
                 Second try to perfom proxy authorizer base
                 """
-                self.authorizer = self.authorizer_class()
-                self.authorizer.auth_request(request)
+                authorizer = self.authorizer_class()
+                authorizer.auth_request(request)
             except AuthForbiddenRequest:
                 raise AuthForbiddenRequest
             except:

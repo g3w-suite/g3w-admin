@@ -147,10 +147,13 @@ class LayerSerializer(serializers.ModelSerializer):
             ret['capabilities'] = None
 
         ret['options'] = None
+
         # add options for wms layer
         if instance.layer_type == 'wms':
             ret['options'] = QueryDict(instance.datasource)
 
-
+            #if username and password set options to None
+            if 'username' in ret['options'] and 'password' in ret['options']:
+                ret['options']= None
 
         return ret
