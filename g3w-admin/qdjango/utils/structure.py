@@ -28,7 +28,7 @@ class QdjangoMetaLayer(CoreMetaLayer):
 
         self.countLayer += 1
         if isinstance(layer, dict):
-            layerType = layer['layer_type']
+            layerType = layer['layer_type'] if 'layer_type' in layer else layer['layertype']
             options = layer['options']
         else:
 

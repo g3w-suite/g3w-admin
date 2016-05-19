@@ -159,7 +159,7 @@ _.extend(g3wadmin.widget, {
      * Widget to show deatilitem for dataTable, under the row
      * @param $item
      */
-    showDetailItemDataTable: function($dataTable, $item){
+    showDetailItemDataTable: function($dataTable, $item , refresh){
 
         try {
 
@@ -168,18 +168,13 @@ _.extend(g3wadmin.widget, {
                 throw new Error('Attribute data-detail-url not defined');
             }
 
+            refresh = _.isUndefined(refresh) ? false : true;
+
             var tr = $item.closest('tr');
-            var row = $dataTable.row( tr );
+            var row = $dataTable.row(tr);
             var idx = $.inArray( tr.attr('id'), [] );
 
-            if ( row.child.isShown() ) {
-                tr.removeClass( 'details' );
-                row.child.hide();
-            } else {
-                tr.addClass( 'details' );
-                row.child('').show();
-
-                // ajax call to get deatail data
+            var getDetail = function(){
                 $.ajax({
                      method: 'get',
                      url: params['detail-url'],
@@ -189,7 +184,6 @@ _.extend(g3wadmin.widget, {
                      complete: function(){
                          var status = arguments[1];
                          if (status == 'success') {
-                            ga.ui.initAjaxFormWidget(row.child());
                             ga.ui.initRadioCheckbox(row.child());
                          }
                      },
@@ -199,8 +193,19 @@ _.extend(g3wadmin.widget, {
                 });
             }
 
+            if (refresh){
+                getDetail();
+            } else {
+                if ( row.child.isShown() ) {
+                    tr.removeClass( 'details' );
+                    row.child.hide();
+                } else {
+                    tr.addClass( 'details' );
 
-
+                    // ajax call to get deatail data
+                    getDetail();
+                }
+            }
 
         } catch (e) {
             this.showError(e.message);
@@ -234,8 +239,6 @@ _.extend(g3wadmin.widget, {
                  complete: function(){
                      var status = arguments[1];
                      if (status == 'success') {
-                        ga.ui.initCrudDeleteWidget(params['target-selector']);
-                        ga.ui.initCrudDetailWidget(params['target-selector']);
                         ga.ui.initRadioCheckbox(params['target-selector'])
                      }
                  },
@@ -274,6 +277,7 @@ _.extend(g3wadmin.widget, {
                         modalSize: (_.isUndefined(params['modal-size']) ? '' : params['modal-size'])
                     });
 
+                    modal.data.$evoker = $item;
                     modal.show();
 
                     var form = ga.currentForm = new ga.forms.form(modal.$modal.find('form'));
@@ -331,7 +335,7 @@ _.extend(g3wadmin.widget, {
             ga.utils.addCsfrtokenData(data)
 
             // get extentions
-            extensions = _.isUndefined(params['file-extensions']) ? null : params['file-extensions'].split('|')
+            var extensions = _.isUndefined(params['file-extensions']) ? null : params['file-extensions'].split('|')
             
             $(modal.$modal.find('#filer_input')).filer({
                 changeInput: ga.tpl.ajaxFiler_changeInput(),

@@ -71,6 +71,9 @@ _.extend(g3wadmin,{
 
         //Init showMessageOnLoad
         this.ui.showMessageOnLoad();
+
+        //  INIT SetProjectPanoramicWidget
+        this.ui.initSetProjectPanoramicWidget();
         
 
         /*

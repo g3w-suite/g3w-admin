@@ -27,6 +27,8 @@ urlpatterns = [
         login_required(QdjangoLayerWidgetCreateView.as_view()), name='qdjango-project-layer-widget-add'),
     url(r'^(?P<group_slug>[-_\w\d]+)/projects/(?P<project_slug>[-_\w\d]+)/layer/(?P<layer_slug>[-_\w\d]+)/widgets/update/(?P<slug>[-_\w\d]+)$',
         login_required(QdjangoLayerWidgetUpdateView.as_view()), name='qdjango-project-layer-widget-update'),
+    url(r'^(?P<group_slug>[-_\w\d]+)/projects/(?P<project_slug>[-_\w\d]+)/layer/(?P<layer_slug>[-_\w\d]+)/widgets/delete/(?P<slug>[-_\w\d]+)$',
+        login_required(QdjangoLayerWidgetDeleteView.as_view()), name='qdjango-project-layer-widget-delete'),
     url(r'^(?P<group_slug>[-_\w\d]+)/projects/(?P<project_slug>[-_\w\d]+)/layer/(?P<layer_slug>[-_\w\d]+)/widgets/link/(?P<slug>[-_\w\d]+)$',
         login_required(QdjangoLinkWidget2LayerView.as_view()), name='qdjango-project-layer-widget-link'),
 

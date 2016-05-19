@@ -15,6 +15,8 @@ _.extend(g3wadmin.ui, {
 
         this.$modal = $modal;
 
+        this.data = new Object();
+
         // on hidden model destroy dom
         this.$modal.on('hidden.bs.modal',function(e){
             $(this).remove();
@@ -72,67 +74,36 @@ _.extend(g3wadmin.ui, {
         return this._buildModal(options);
     },
 
-    initCrudDeleteWidget: function(context) {
-        if (!_.isUndefined(context)) {
-            var $widgetItem = $(context).find('[data-widget-type="deleteItem"]');
-        }
-        else {
-            var $widgetItem = $('[data-widget-type="deleteItem"]');
-        }
-        $widgetItem.click(function(e){
+    initCrudDeleteWidget: function() {
+        $(document).on('click', '[data-widget-type="deleteItem"]', function(e){
             ga.widget.deleteItem($(this));
         });
     },
 
-    initCrudDetailWidget: function(context) {
-        if (!_.isUndefined(context)) {
-            var $widgetItem = $(context).find('[data-widget-type="detailItem"]');
-        }
-        else {
-            var $widgetItem = $('[data-widget-type="detailItem"]');
-        }
-        $widgetItem.click(function(e){
+    initCrudDetailWidget: function() {
+        $(document).on('click', '[data-widget-type="detailItem"]', function(e){
             ga.widget.showDetailItem($(this));
         });
     },
 
-    initSetProjectPanoramicWidget: function(context) {
-        if (!_.isUndefined(context)) {
-            var $widgetItem = $(context).find('[data-widget-type="setProjectPanoramic"]');
-        }
-        else {
-            var $widgetItem = $('[data-widget-type="setProjectPanoramic"]');
-        }
-        $widgetItem.on('ifChecked',function(e){
+    initSetProjectPanoramicWidget: function() {
+        $(document).on('ifChecked', '[data-widget-type="setProjectPanoramic"]', function(e){
             ga.widget.setProjectPanoramic($(this));
         });
     },
 
-    initLinkWidget2Layer: function(context) {
-        if (!_.isUndefined(context)) {
-            var $widgetItem = $(context).find('[data-widget-type="linkWidget2Layer"]');
-        }
-        else {
-            var $widgetItem = $('[data-widget-type="linkWidget2Layer"]');
-        }
-
-        $widgetItem.on('ifChecked',function(e){
+    initLinkWidget2Layer: function() {
+        $(document).on('ifChecked', '[data-widget-type="linkWidget2Layer"]', function(e){
             ga.widget.linkWidget2Layer($(this));
-        }).on('ifUnchecked', function(e){
+        }).on('ifUnchecked', '[data-widget-type="linkWidget2Layer"]', function(e){
             ga.widget.linkWidget2Layer($(this), false);
         });
     },
 
-    initSetLayerCached: function(context) {
-        if (!_.isUndefined(context)) {
-            var $widgetItem = $(context).find('[data-widget-type="setLayerCached"]');
-        }
-        else {
-            var $widgetItem = $('[data-widget-type="setLayerCached"]');
-        }
-        $widgetItem.on('ifChecked',function(e){
+    initSetLayerCached: function() {
+        $(document).on('ifChecked', '[data-widget-type="setLayerCached"]', function(e){
             ga.widget.setLayerCached($(this));
-        }).on('ifUnchecked', function(e){
+        }).on('ifUnchecked', '[data-widget-type="setLayerCached"]', function(e){
             ga.widget.setLayerCached($(this), false);
         });
     },
@@ -179,38 +150,20 @@ _.extend(g3wadmin.ui, {
         });
     },
 
-    initAjaxFormWidget: function(context) {
-        if (!_.isUndefined(context)) {
-            var $widgetItem = $(context).find('[data-widget-type="ajaxForm"]');
-        }
-        else {
-            var $widgetItem = $('[data-widget-type="ajaxForm"]');
-        }
-         $widgetItem.click(function(e){
+    initAjaxFormWidget: function() {
+        $(document).on('click', '[data-widget-type="ajaxForm"]', function(e){
             ga.widget.ajaxForm($(this));
         });
     },
 
-    initAjaxFilerWidget: function(context) {
-        if (!_.isUndefined(context)) {
-            var $widgetItem = $(context).find('[data-widget-type="ajaxFiler"]');
-        }
-        else {
-            var $widgetItem = $('[data-widget-type="ajaxFiler"]');
-        }
-         $widgetItem.click(function(e){
+    initAjaxFilerWidget: function() {
+         $(document).on('click', '[data-widget-type="ajaxFiler"]', function(e){
             ga.widget.ajaxFiler($(this));
         });
     },
 
-    initAjaxDownload: function(context) {
-        if (!_.isUndefined(context)) {
-            var $widgetItem = $(context).find('[data-widget-type="ajaxDownload"]');
-        }
-        else {
-            var $widgetItem = $('[data-widget-type="ajaxDownload"]');
-        }
-         $widgetItem.click(function(e){
+    initAjaxDownload: function() {
+         $(document).on('click', '[data-widget-type="ajaxDownload"]', function(e){
             ga.widget.ajaxDownload($(this));
         });
     },

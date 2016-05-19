@@ -2,7 +2,7 @@ from django.http.request import QueryDict
 from django.conf import settings
 from rest_framework import serializers
 from rest_framework.fields import empty
-from qdjango.models import Project, Layer
+from qdjango.models import Project, Layer, Widget
 try:
     from qgis.server import *
 except:
@@ -11,8 +11,7 @@ from qdjango.utils.data import QgisProjectSettingsWMS
 from qdjango.ows import OWSRequestHandler
 from client.utils.editing import mapLayerAttributes
 from qdjango.utils.structure import QdjangoMetaLayer
-from core.utils.request import makeRequest
-
+import json
 
 
 class ProjectSerializer(serializers.ModelSerializer):
@@ -48,8 +47,9 @@ class ProjectSerializer(serializers.ModelSerializer):
             float(extent['ymax'])
         ]
 
-        # add layers data
+        # add layers data, widgets
         ret['layers'] = []
+        ret['widgets'] = []
         layers = {l.qgs_layer_id: l for l in instance.layer_set.all()}
 
         metaLayer = QdjangoMetaLayer()
@@ -66,17 +66,19 @@ class ProjectSerializer(serializers.ModelSerializer):
                     layerSerializedData['metalayer'] = metaLayer.getCurrentByLayer(layerSerializedData)
                     ret['layers'].append(layerSerializedData)
 
+                    # get widgects for layer
+                    widgets  = layers[layer['id']].widget_set.all()
+                    for widget in widgets:
+                        widgetSerializzerData = WidgetSerializer(widget).data
+                        widgetSerializzerData['layerid'] = layer['id']
+                        ret['widgets'].append(widgetSerializzerData)
+
         for l in layersTree:
             readLeaf(l)
 
-        # follow layertree 2 flat style for metalayer
-        '''
-        for layer in layers:
-            if layer.name in qgisProjectSettignsWMS.layers:
-                layerSerialized = LayerSerializer(layer, qgisProjectSettignsWMS=qgisProjectSettignsWMS)
-                ret['layers'].append(layerSerialized.data)
-        '''
-        # add search
+
+        # add widgets
+
         # todo: build a procedure, future
         ret['search'] = {}
 
@@ -111,7 +113,6 @@ class LayerSerializer(serializers.ModelSerializer):
             'id',
             'name',
             'geometrytype',
-            'layer_type',
             'crs',
             'title',
             'attributes',
@@ -130,6 +131,7 @@ class LayerSerializer(serializers.ModelSerializer):
 
         # add infoformat and infourl
         # todo: add a procedure to get this
+        ret['layertype'] = instance.layer_type
         ret['infoformat'] = ''
         ret['infourl'] = ''
 
@@ -157,3 +159,22 @@ class LayerSerializer(serializers.ModelSerializer):
                 ret['options']= None
 
         return ret
+
+
+class WidgetSerializer(serializers.ModelSerializer):
+    """
+    Serializzer for Qdjango Widget
+    """
+    def to_representation(self, instance):
+        ret = super(WidgetSerializer, self).to_representation(instance)
+        ret['type'] = instance.widget_type
+
+        ret['body'] = json.loads(instance.body)
+        return ret
+
+    class Meta:
+        model = Widget
+        fields = (
+            'id',
+            'name',
+        )

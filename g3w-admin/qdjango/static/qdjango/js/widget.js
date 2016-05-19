@@ -320,23 +320,30 @@ ga.Qdjango.widgetEditor = {
 		var imWiVa = (that.isset(values) && that.isset(values.img_width))? values.img_width : "";
 		var imHeVa = (that.isset(values) && that.isset(values.img_height))? values.img_height : "";
 									
-		var div = $('<div class="alert bg-success row blocco" style="margin-top: 30px; display: none">\
-						<div class="row">\
-							<button type="button" class="close">&times;</button>\
-						</div>\
-						<div class="row">\
-							<div class="col-md-4"><span class="label label-success">Testo</span></div>\
-							<div class="col-md-4"><span class="label label-success">Campo</span></div>\
-							<div class="col-md-1"><span class="label label-success">Immagine</span></div>\
-							<div class="col-md-3 imgSizeLabel" style="display:none"><span class="label label-success">Dimensioni</span></div>\
-						</div>\
-						<div class="row">\
-							<div class="col-md-4 textInput"></div>\
-							<div class="col-md-4 fieldSelect"></div>\
-							<div class="col-md-1 bImage"></div>\
-							<div class="col-md-3 imgSize" style="display: none">\
-								<input class="form-control col-md-1"  type="text" class="img_width" placeholder="width" value="'+imWiVa+'">\
-								<input class="form-control col-md-1" type="text" class="img_height" placeholder="height" value="'+imHeVa+'">\
+		var div = $('<div class="blocco" style="margin-top: 30px; display: none">\
+						<div class="box box-success" >\
+							<div class="box-header with-border">\
+								<div class="box-tools pull-right">\
+									<button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>\
+								</div>\
+								<h3 class="box-title">Campo da mostrare per tooltip</h3>\
+							</div>\
+							<div class="box-body">\
+								<div class="row">\
+									<div class="col-md-4"><span class="label label-success">Testo</span></div>\
+									<div class="col-md-4"><span class="label label-success">Campo</span></div>\
+									<div class="col-md-1"><span class="label label-success">Immagine</span></div>\
+									<div class="col-md-3 imgSizeLabel" style="display:none"><span class="label label-success">Dimensioni</span></div>\
+								</div>\
+								<div class="row">\
+									<div class="col-md-4 textInput"></div>\
+									<div class="col-md-4 fieldSelect"></div>\
+									<div class="col-md-1 bImage"></div>\
+									<div class="col-md-3 imgSize" style="display: none">\
+										<input class="form-control col-md-1"  type="text" class="img_width" placeholder="width" value="'+imWiVa+'">\
+										<input class="form-control col-md-1" type="text" class="img_height" placeholder="height" value="'+imHeVa+'">\
+									</div>\
+								</div>\
 							</div>\
 						</div>\
 					</div>');		
@@ -404,17 +411,24 @@ ga.Qdjango.widgetEditor = {
 			lawSelect.append(option);
 		});
 
-		var div = $('<div class="alert bg-success row blocco" style="margin-top: 30px; display: none">\
-						<div class="row">\
-							<div class="col-md-5"><span class="label label-success">Campo</span></div>\
-							<div class="col-md-2"><span class="label label-success">Delimiter</span></div>\
-							<div class="col-md-5"><span class="label label-success">Law</span></div>\
+		var div = $('<div class="blocco" style="margin-top: 30px; display: none">\
+					<div class="box box-success" >\
+						<div class="box-header with-border">\
+							<h3 class="box-title">Selezione campo contenente riferimento normativa</h3>\
 						</div>\
-						<div class="row">\
-							<div class="col-md-5 fieldSelect"></div>\
-							<div class="col-md-2 delimiterSelect"></div>\
-							<div class="col-md-5 lawSelect"></div>\
+						<div class="box-body">\
+							<div class="row">\
+								<div class="col-md-5"><span class="label label-success">Campo</span></div>\
+								<div class="col-md-2"><span class="label label-success">Delimiter</span></div>\
+								<div class="col-md-5"><span class="label label-success">Law</span></div>\
+							</div>\
+							<div class="row">\
+								<div class="col-md-5 fieldSelect"></div>\
+								<div class="col-md-2 delimiterSelect"></div>\
+								<div class="col-md-5 lawSelect"></div>\
+							</div>\
 						</div>\
+					</div>\
 					</div>');
 
 
@@ -595,6 +609,14 @@ ga.Qdjango.widgetEditor = {
 		});
 		ga.currentForm.setOnSuccesAction(function(){
 			ga.currentModal.hide();
+
+			// get datatable row
+			var $item = ga.currentModal.data.$evoker.parents('tr').prev().find('[data-widget-type="detailItemDataTable"]');
+			var $dataTable = $item.parents('[data-widget-type="dataTable"]').DataTable();
+			ga.widget.showDetailItemDataTable($dataTable, $item, true);
+
+			// get row and update widject counter
+			$item.parent().next().html($item.parents('tr').next().find('tr').length - 1);
 		});
 		/*
 		var button = this.form.find("button.confirm");

@@ -253,6 +253,17 @@ class QdjangoLayerWidgetUpdateView(G3WRequestViewMixin, G3WGroupViewMixin, Qdjan
         return None
 
 
+class QdjangoLayerWidgetDeleteView(G3WAjaxDeleteViewMixin, SingleObjectMixin, View):
+    '''
+    Delete Qdjango project layer widget Ajax view
+    '''
+    model = Widget
+
+    @method_decorator(permission_required('qdjango.delete_widget', (Widget, 'slug', 'slug'), raise_exception=True))
+    def dispatch(self, *args, **kwargs):
+        return super(QdjangoLayerWidgetDeleteView, self).dispatch(*args, **kwargs)
+
+
 class QdjangoLinkWidget2LayerView(G3WRequestViewMixin, G3WGroupViewMixin, QdjangoProjectViewMixin, QdjangoLayerViewMixin, View):
 
     def get(self, *args, **kwargs):
