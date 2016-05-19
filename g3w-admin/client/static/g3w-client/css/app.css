@@ -5201,6 +5201,16 @@ fieldset[disabled] .btn-yahoo.active {
     white-space: normal!important;
   }
 }
+@media (max-width: 767px) {
+  .sidebar-open .content-wrapper,
+  .sidebar-open .right-side,
+  .sidebar-open .main-footer {
+    -webkit-transform: translate(300px, 0);
+    -ms-transform: translate(300px, 0);
+    -o-transform: translate(300px, 0);
+    transform: translate(300px, 0);
+  }
+}
 .sidebar-aside-toggle {
   position: absolute;
   left: 350px;
@@ -5218,18 +5228,39 @@ fieldset[disabled] .btn-yahoo.active {
 .sidebar-aside-toggle:hover {
   color: #fff;
 }
+@media (max-width: 767px) {
+  .sidebar-aside-toggle {
+    left: 300px;
+  }
+}
 .sidebar-aside-toggle .icon-bar {
   display: none;
 }
 .navbar-form {
   padding-top: 0px;
   padding-bottom: 0 px;
+  margin-bottom: 0px;
 }
 .sidebar .g3w-sidebarpanel {
   padding: 10px 10px 10px 10px;
 }
 .sidebar .treeview-label {
   font-size: 1.1em;
+}
+@media (max-width: 767px) {
+  .main-sidebar,
+  .left-side {
+    width: 300px;
+  }
+}
+@media (max-width: 767px) {
+  .main-sidebar,
+  .left-side {
+    -webkit-transform: translate(-300px, 0);
+    -ms-transform: translate(-300px, 0);
+    -o-transform: translate(-300px, 0);
+    transform: translate(-300px, 0);
+  }
 }
 .control-sidebar {
   overflow-y: auto;
