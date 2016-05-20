@@ -55,7 +55,15 @@ class OgcStoreDetailView(G3WRequestViewMixin, DetailView):
         #result = makeRequest(self.object.url, q=q)
         #context['capabilities'] = result.read()
 
-        context['wms'] = WebMapService(self.object.url)
+        if self.object.username and self.object.password:
+            kwargs = {
+                'username': self.object.username,
+                'password': self.object.password,
+            }
+        else:
+            kwargs = {}
+
+        context['wms'] = WebMapService(self.object.url, **kwargs)
         return context
 
 

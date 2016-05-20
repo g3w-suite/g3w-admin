@@ -48,7 +48,7 @@ class Store(models.Model):
     description = models.TextField(_('Description'), blank=True)
     type = models.CharField(_('OGC Type'), choices=STORE_TYPES, max_length=20)
     url = models.URLField(_('URL'))
-    username = models.URLField(_('Username'), max_length=255, null=True, blank=True)
+    username = models.CharField(_('Username'), max_length=255, null=True, blank=True)
     password = models.CharField(_('Passaword'), max_length=255, null=True, blank=True)
     slug = AutoSlugField(
         _('Slug'), populate_from='name', unique=True, always_update=True

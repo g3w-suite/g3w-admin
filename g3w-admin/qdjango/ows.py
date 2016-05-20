@@ -69,7 +69,7 @@ class OWSRequestHandler(OWSRequestHandlerBase):
 
     def baseDoRequest(cls, q, request=None):
 
-        if qdjangoModeRequest == QDJANGO_PROXY_REQUEST:
+        if qdjangoModeRequest == QDJANGO_PROXY_REQUEST or q['REQUEST'] == 'GetLegendGraphic':
 
             # case http proxy
             server_base = urlsplit(settings.QDJANGO_SERVER_URL).netloc
