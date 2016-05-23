@@ -4,3 +4,6 @@
 [submodule "g3w-admin/law"]
 	path = g3w-admin/law
 	url = https://wlorenzetti@bitbucket.org/gis3w/g3w-admin-law.git
+[submodule "g3w-admin/cdu"]
+	path = g3w-admin/cdu
+	url = https://wlorenzetti@bitbucket.org/gis3w/g3w-admin-cdu.git
