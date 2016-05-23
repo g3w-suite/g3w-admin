@@ -155,7 +155,7 @@ class LayerSerializer(serializers.ModelSerializer):
         if instance.layer_type == 'wms':
             datasourceWMS = QueryDict(instance.datasource)
             if 'username' not in ret['source'] or 'password' not in ret['source']:
-                ret['source'].update(datasourceWMS)
+                ret['source'].update(datasourceWMS.dict())
 
         return ret
 
