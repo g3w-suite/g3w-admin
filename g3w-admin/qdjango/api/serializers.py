@@ -131,7 +131,6 @@ class LayerSerializer(serializers.ModelSerializer):
 
         # add infoformat and infourl
         # todo: add a procedure to get this
-        ret['layertype'] = instance.layer_type
         ret['infoformat'] = ''
         ret['infourl'] = ''
 
@@ -148,15 +147,15 @@ class LayerSerializer(serializers.ModelSerializer):
         if ret['capabilities'] == 0:
             ret['capabilities'] = None
 
-        ret['options'] = None
+        ret['source'] = {
+            'type': instance.layer_type
+        }
 
         # add options for wms layer
         if instance.layer_type == 'wms':
-            ret['options'] = QueryDict(instance.datasource)
-
-            #if username and password set options to None
-            if 'username' in ret['options'] and 'password' in ret['options']:
-                ret['options']= None
+            datasourceWMS = QueryDict(instance.datasource)
+            if 'username' not in ret['source'] or 'password' not in ret['source']:
+                ret['source'].update(datasourceWMS)
 
         return ret
 

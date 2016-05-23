@@ -27,15 +27,9 @@ class QdjangoMetaLayer(CoreMetaLayer):
         """
 
         self.countLayer += 1
-        if isinstance(layer, dict):
-            layerType = layer['layer_type'] if 'layer_type' in layer else layer['layertype']
-            options = layer['options']
-        else:
+        layerType = layer['source']['type']
 
-            # todo: manage options for layer object model
-            layerType = layer.layer_type
-
-        if layerType in self.layerTypesSingleLayer and options is not None:
+        if layerType in self.layerTypesSingleLayer and 'url' in layer['source']:
             if self.countLayer > 1:
                 self.increment()
             self.toIncrement = True
