@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load g3wadmin_tags %}
+{% load crispy_forms_tags %}
+{% load i18n %}
+
+{% block custom_js_links_page %}
+<script>
+/*
+    $(function() {
+        initUploadFields($('#cdu-config-form'),{
+            upload_url: '{% url 'file_form_handle_upload' %}',
+            delete_url: '{% url 'file_form_handle_delete_no_args' %}',
+        });
+    });
+*/
+</script>
+{% endblock %}
+
+
+
+{% block main_content %}
+<form method="post" id="cdu-config-form" enctype="multipart/form-data">
+<div class="row">
+    <div class="col-md-8">
+        <div class="progress active">
+            {% g3wadmin_progress_bar_values wizard.steps.step1 0 wizard.steps.count as pb %}
+            <div class="progress-bar progress-bar-success progress-bar-striped" role="progressbar" aria-valuenow="{{ pb.position }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ pb.position }}%">
+            <span>Step {{ wizard.steps.step1 }} </span>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+    {% if wizard.steps.prev %}
+        <button class="btn btn-lg btn-default" name="wizard_goto_step" type="submit" value="{{ wizard.steps.first }}"><span class="fa fa-flag"></span> {% trans "First step" %}</button>
+        <button class="btn btn-lg btn-default" name="wizard_goto_step" type="submit" value="{{ wizard.steps.prev }}"><span class="fa fa-arrow-left"></span> {% trans "Prev step" %}</button>
+    {% endif %}
+        {% if wizard.steps.step1 ==  wizard.steps.count %}
+            <button class="btn btn-lg btn-success" type="submit"><i class="fa fa-save"></i> {% trans "Save" %}</button>
+        {% else %}
+            <button class="btn btn-lg btn-primary" type="submit"><i class="fa fa-arrow-right"></i> {% trans "Next step" %}</button>
+        {% endif %}
+
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <h2>{% trans 'Step' %} {{ wizard.steps.step1 }} {% trans 'of' %} {{ wizard.steps.count }}</h2>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+
+        {% if form.errors %}
+            <div class="row">
+                <div class="col-md-12">
+                <div class="alert alert-danger alert-dismissable">
+                    <h4><i class="icon fa fa-ban"></i> {% trans 'Alert' %}!</h4>
+                        {% trans 'Some errors on form. Check it and send again.' %}
+                  </div>
+                </div>
+            </div>
+        {% endif %}
+        {{ wizard.management_form }}
+        {% if wizard.form.forms %}
+            {{ wizard.form.management_form }}
+            {% for form in wizard.form.forms %}
+                {% crispy form %}
+            {% endfor %}
+        {% else %}
+            {% crispy wizard.form %}
+        {% endif %}
+
+    {% include 'core/django_file_form/upload_template.html' %}
+    </div>
+    <div class="col-md-4">
+        {% for step, data in data_step.items %}
+            {% with 'cdu/config_data_step_'|add:step|add:'.html' as to_include%}
+            {% include to_include %}
+            {% endwith %}
+        {% endfor %}
+    </div>
+</div>
+</form>
+{% endblock %}

@@ -1,0 +1,12 @@
+# Created by .ignore support plugin (hsz.mobi)
+# Python bytecode
+*.py[co]
+
+# Editor temp files
+*~
+
+# Sphinx docs
+build
+
+#PyCharms project file
+/.idea/
