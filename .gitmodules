@@ -7,3 +7,6 @@
 [submodule "g3w-admin/cdu"]
 	path = g3w-admin/cdu
 	url = https://wlorenzetti@bitbucket.org/gis3w/g3w-admin-cdu.git
+[submodule "g3w-admin/iternet"]
+	path = g3w-admin/iternet
+	url = https://wlorenzetti@bitbucket.org/gis3w/g3w-admin-iternet.git
