@@ -5451,6 +5451,14 @@ fieldset[disabled] .btn-yahoo.active {
     transform: rotate(360deg);
   }
 }
+.bottombar {
+  position: absolute;
+  width: 100%;
+  bottom: 0px;
+  left: 0px;
+  min-height: 200px;
+  background-color: yellow;
+}
 .control-sidebar {
   overflow-y: auto;
   overflow-x: hidden;
