@@ -84,7 +84,7 @@ class GroupForm(FileFormMixin, G3WFormMixin, G3WRequestFormMixin, G3WACLForm, Mo
                                 Div(
                                     Div(
                                         Div(
-                                            HTML("<h3 class='box-title'><i class='fa fa-map'></i> {}</h3>".format(_('Third party maps'))),
+                                            HTML("<h3 class='box-title'><i class='fa fa-map'></i> {}</h3>".format(_('Base Layers'))),
                                             Div(
                                                 HTML("<button class='btn btn-box-tool' data-widget='collapse'><i class='fa fa-minus'></i></button>"),
                                                 css_class='box-tools',
@@ -92,8 +92,7 @@ class GroupForm(FileFormMixin, G3WFormMixin, G3WRequestFormMixin, G3WACLForm, Mo
                                             css_class='box-header with-border'
                                         ),
                                         Div(
-                                            'use_commercial_maps',
-                                            'use_osm_maps',
+                                            Field('baselayers', **{'css_class': 'select2 col-md-12', 'multiple': 'multiple', 'style': 'width:100%;'}),
                                             css_class='box-body'
                                         ),
                                         css_class='box box-danger {}'.format(self.checkEmptyInitialsData('use_commercial_maps','use_osm_maps'))

@@ -7,6 +7,22 @@ from core.signals import initconfig_plugin_start
 from copy import copy
 
 
+class BaseLayerSerializer(serializers.ModelSerializer):
+
+    def to_representation(self, instance):
+        ret = super(BaseLayerSerializer, self).to_representation(instance)
+        ret.update(eval(instance.property))
+        return ret
+
+    class Meta:
+        model = Group
+        fields = (
+            'id',
+            'name',
+            'title',
+        )
+
+
 class GroupSerializer(serializers.ModelSerializer):
 
     minscale = serializers.IntegerField(source='min_scale', read_only=True)
@@ -43,8 +59,12 @@ class GroupSerializer(serializers.ModelSerializer):
                     'gid': "{}:{}".format(g3wProjectApp, project.id)
                 })
 
-        # add baselayers
+        # baselayers
         ret['baselayers'] = []
+        baselayers = instance.baselayers.all()
+        for baselayer in baselayers:
+            ret['baselayers'].append(BaseLayerSerializer(baselayer).data)
+
 
         # add initproject and overviewproject
         ret['initproject'] = "{}:{}".format(self.projectType,self.projectId)
