@@ -5626,6 +5626,9 @@ Licensed under MIT
 .catalog .tree {
   color: #ffffff;
 }
+.catalog .baselayers .radio {
+  margin: 0px;
+}
 .g3w-tools {
   padding-top: 10px;
 }
@@ -5658,6 +5661,87 @@ Licensed under MIT
 .g3w-tools ul > li .tool-box span {
   cursor: pointer;
 }
+@font-face {
+  font-family: 'icomoon';
+  src: url('../fonts/icomoon.eot?fhfhx9');
+  src: url('../fonts/icomoon.eot?fhfhx9#iefix') format('embedded-opentype'), url('../fonts/icomoon.ttf?fhfhx9') format('truetype'), url('../fonts/icomoon.woff?fhfhx9') format('woff'), url('../fonts/icomoon.svg?fhfhx9#icomoon') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+.ol-overlaycontainer-stopevent {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+}
+.ol-control {
+  background-color: transparent;
+  border-radius: 0px;
+  position: relative;
+  padding: 0px;
+  float: left;
+}
+.ol-control button {
+  display: block;
+  margin: 0px;
+  margin-left: 2px;
+  padding: 2px 6px;
+  color: #fff;
+  text-decoration: none;
+  text-align: center;
+  height: auto;
+  width: auto;
+  line-height: 1.42857143;
+  background-color: #3c8dbc;
+  border: none;
+  border-radius: 0px;
+  font-size: 25px;
+  font-family: icomoon;
+  font-weight: 300;
+  float: left;
+  left: 0px;
+}
+.ol-control button:hover {
+  text-decoration: none;
+  background-color: #23536f;
+}
+.ol-control button:focus {
+  text-decoration: none;
+  background-color: #3c8dbc;
+  outline: none;
+}
+.ol-control button:focus:hover {
+  background-color: #23536f;
+}
+.ol-control:hover {
+  background-color: transparent;
+}
+.ol-zoom {
+  top: 0px;
+  left: 0px;
+  float: left;
+}
+.ol-zoom .ol-zoom-in {
+  border-radius: 0;
+}
+.ol-zoom .ol-zoom-out {
+  border-radius: 0;
+}
+.ol-zoom-extent {
+  float: left;
+  position: relative;
+  top: 0px;
+  left: 0px;
+}
+.ol-rotate {
+  top: 0px;
+  left: 0px;
+}
+.ol-hidden {
+  display: none;
+}
+.g3w-ol-toggled {
+  background-color: #23536f !important;
+}
 .toast-top-center {
   top: 60px;
 }
@@ -5686,4 +5770,8 @@ Licensed under MIT
 .g3w-iternet-editing-panel .message {
   margin-top: 10px;
   font-size: 1.1em;
+}
+.ol-overlaycontainer-stopevent {
+  top: 6px;
+  left: 42px;
 }
