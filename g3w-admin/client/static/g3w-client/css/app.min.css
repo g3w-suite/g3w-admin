@@ -5460,13 +5460,14 @@ fieldset[disabled] .btn-yahoo.active {
   background-color: yellow;
 }
 .control-sidebar {
-  overflow-y: auto;
-  overflow-x: hidden;
-  background-color: #d6dfe3;
   border: 0px !important;
 }
 .control-sidebar .g3w-sidebarpanel {
+  background: #f9fafc;
+  border-left: 1px solid #d2d6de;
   padding: 10px 10px 10px 10px;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 .control-sidebar .g3w-sidebarpanel .g3w-floatbarpanel-name {
   font-weight: bold;
@@ -5482,9 +5483,6 @@ fieldset[disabled] .btn-yahoo.active {
   margin-top: 20px;
   padding-top: 5px;
 }
-.control-sidebar-bg {
-  background-color: #d6dfe3 !important;
-}
 .control-sidebar-bg-shadow {
   -webkit-box-shadow: -1px 0px 15px rgba(0, 0, 0, 0.7);
   -moz-box-shadow: -1px 0px 15px rgba(0, 0, 0, 0.7);
@@ -5498,6 +5496,34 @@ fieldset[disabled] .btn-yahoo.active {
 .expand-enter,
 .expand-leave {
   opacity: 0;
+}
+.control-sidebar .floatbar-aside-toggle {
+  position: absolute;
+  right: 350px;
+  top: 50px;
+  background-color: #3c8dbc;
+  color: white;
+  background-image: none;
+  padding: 12.5px;
+  font-family: fontAwesome;
+}
+.control-sidebar .floatbar-aside-toggle:before {
+  content: "\f100";
+}
+.control-sidebar .floatbar-aside-toggle:focus,
+.control-sidebar .floatbar-aside-toggle:hover {
+  color: #fff;
+}
+@media (max-width: 767px) {
+  .control-sidebar .floatbar-aside-toggle {
+    left: 300px;
+  }
+}
+.control-sidebar .floatbar-aside-toggle .icon-bar {
+  display: none;
+}
+.control-sidebar.control-sidebar-open .floatbar-aside-toggle:before {
+  content: "\f101";
 }
 /***
 Bootstrap Line Tabs by @keenthemes
