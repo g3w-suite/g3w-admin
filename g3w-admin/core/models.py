@@ -59,12 +59,11 @@ class BaseLayer(models.Model):
     property = models.TextField()
 
     def __unicode__(self):
-        return "{}".format(self.name)
+        return "{} ({})".format(self.title, self.name)
 
     class Meta:
         verbose_name = 'Base Layer'
         verbose_name_plural = 'Base Layers'
-
 
 
 class Group(TimeStampedModel):
@@ -98,7 +97,7 @@ class Group(TimeStampedModel):
     srid = models.ForeignKey(G3WSpatialRefSys, db_column='srid')
 
     # baselayers
-    baselayers = models.ManyToManyField(BaseLayer)
+    baselayers = models.ManyToManyField(BaseLayer, blank=True, null=True)
 
     # Company TOS
     header_terms_of_use_text = models.TextField(

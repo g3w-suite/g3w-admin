@@ -51,7 +51,9 @@ THIRD_PARTY_APPS = [
     'django_extensions',
     'rest_framework',
     'rest_framework_gis',
-    'import_export'
+    'import_export',
+    # 'debug_toolbar',
+    # 'debug_panel',
 ]
 
 G3WADMIN_APPS = [
@@ -78,6 +80,7 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # 'debug_panel.middleware.DebugPanelMiddleware'
 ]
 
 ROOT_URLCONF = 'base.urls'

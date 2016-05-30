@@ -5,7 +5,7 @@ from autoslug import AutoSlugField
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from autoslug.utils import slugify
-from core.models import Group
+from core.models import Group, BaseLayer
 from .utils.storage import QgisFileOverwriteStorage
 from .mixins.models import QdjangoACLModelMixins
 from model_utils import Choices
@@ -22,6 +22,7 @@ def get_project_file_path(instance, filename):
     filename = u'{}_{}.qgs'.format(group_name, project_name)
     return os.path.join('projects', filename)
 
+
 def get_thumbnail_path(instance, filename):
     """Custom name for uploaded thumbnails."""
     group_name = slugify(unicode(instance.group.name))
@@ -29,7 +30,6 @@ def get_thumbnail_path(instance, filename):
     ext = filename.split('.')[-1]
     filename = u'{}_{}.{}'.format(group_name, project_name, ext)
     return os.path.join('thumbnails', filename)
-
 
 
 class Project(QdjangoACLModelMixins, TimeStampedModel):
@@ -65,6 +65,9 @@ class Project(QdjangoACLModelMixins, TimeStampedModel):
 
     # LayersTree project structure
     layers_tree = models.TextField(_('Layers tree structure'), blank=True, null=True)
+
+    # BaseLayer
+    baselayer = models.ForeignKey(BaseLayer, verbose_name=_('Base Layer'), null=True, blank=True)
 
     class Meta:
         verbose_name = _('Project')

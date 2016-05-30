@@ -31,6 +31,19 @@ class G3WGroupFormMixin(object):
         super(G3WGroupFormMixin, self).__init__(*args, **kwargs)
 
 
+class G3WGroupBaseLayerFormMixin(object):
+    """ Form Mixin to set queryset and initial value for baselayer field project model  """
+
+    def __init__(self, *args, **kwargs):
+        super(G3WGroupBaseLayerFormMixin, self).__init__(*args, **kwargs)
+
+        # set baselayer queryset
+        groupBaseLayers = self.group.baselayers.all()
+        self.fields['baselayer'].queryset = groupBaseLayers
+        if groupBaseLayers.count() > 0:
+            self.fields['baselayer'].initial = groupBaseLayers[0].pk
+
+
 class G3WFormMixin(object):
     """ Form mixin for crispy form layout element """
 

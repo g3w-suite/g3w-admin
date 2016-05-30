@@ -35,13 +35,14 @@ class QdjangoProjectFormMixin(object):
         return qgis_file
 
 
-class QdjangoProjetForm(QdjangoProjectFormMixin, G3WFormMixin, G3WGroupFormMixin, G3WRequestFormMixin, G3WACLForm, FileFormMixin, forms.ModelForm):
+class QdjangoProjetForm(QdjangoProjectFormMixin, G3WFormMixin, G3WGroupFormMixin, G3WGroupBaseLayerFormMixin, G3WRequestFormMixin, G3WACLForm, FileFormMixin, forms.ModelForm):
 
     qgis_file = UploadedFileField(required=True)
     thumbnail = UploadedFileField(required=False)
 
     def __init__(self, *args, **kwargs):
         super(QdjangoProjetForm, self).__init__(*args, **kwargs)
+
         self.helper = FormHelper(self)
         self.helper.form_tag = False
         self.helper.layout = Layout(
@@ -70,6 +71,23 @@ class QdjangoProjetForm(QdjangoProjectFormMixin, G3WFormMixin, G3WGroupFormMixin
                                 Div(
                                     Div(
                                         Div(
+                                            HTML("<h3 class='box-title'><i class='fa fa-map'></i> {}</h3>".format(
+                                                _('Deafault base layer'))),
+                                            css_class='box-header with-border'
+                                        ),
+                                        Div(
+                                            'baselayer',
+                                            css_class='box-body',
+
+                                        ),
+                                        css_class='box box-success'
+                                    ),
+                                    css_class='col-md-6'
+                                ),
+
+                                Div(
+                                    Div(
+                                        Div(
                                             HTML("<h3 class='box-title'><i class='fa fa-file'></i> {}</h3>".format(_('Descrition data'))),
                                             css_class='box-header with-border'
                                         ),
@@ -83,6 +101,8 @@ class QdjangoProjetForm(QdjangoProjectFormMixin, G3WFormMixin, G3WGroupFormMixin
                                     ),
                                     css_class='col-md-12'
                                 ),
+
+
                                 css_class='row'
                             )
         )
@@ -92,16 +112,19 @@ class QdjangoProjetForm(QdjangoProjectFormMixin, G3WFormMixin, G3WGroupFormMixin
         fields = (
             'qgis_file',
             'description',
-            'thumbnail'
+            'thumbnail',
+            'baselayer'
         )
-        '''
+
         widgets = {
+            '''
             'qgis_file': DropzoneInput(dropzone_config={
                 'url': '/file-upload/',
                 'maxFiles':1}
             )
+            '''
         }
-        '''
+
 
 
 class QdjangoWidgetForm(QdjangoProjectFormMixin, G3WFormMixin, G3WGroupFormMixin, G3WRequestFormMixin, forms.ModelForm):

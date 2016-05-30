@@ -76,11 +76,8 @@ class ProjectSerializer(serializers.ModelSerializer):
         for l in layersTree:
             readLeaf(l)
 
-
         # add widgets
-
-        # todo: build a procedure, future
-        ret['search'] = {}
+        ret['baselayer'] = instance.baselayer.name
 
         return ret
 
