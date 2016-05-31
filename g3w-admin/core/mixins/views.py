@@ -16,7 +16,6 @@ class G3WRequestViewMixin(object):
         return kwargs
 
 
-
 class G3WGroupViewMixin(object):
     '''
     Mixins for Class FormView for get group slug object for get

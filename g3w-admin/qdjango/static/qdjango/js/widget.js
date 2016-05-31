@@ -59,33 +59,34 @@ ga.Qdjango.widgetEditor = {
 				obj = {
 					title: $(".rightCol").find("#title").val(), // TITOLO CAMPO DI RICERCA
 					query: 'simpleWmsSearch', // MI SEMBRA CHE NON SERCA
-					useWmsRequest: true, // SEMPRE A TRUE
-					queryLayer: this.layer, // NOME DEL LAYER (VIENE GENERATO DA DJANGO)
-					formItems: [],
-					gridColumns: [
+					usewmsrequest: true, // SEMPRE A TRUE
+					fields: [],
+					results: [
 						 // COLONNE RISULTATI {"INTESTAZIONE COLONNA", "CAMPO DB DA VISUALIZZARE", "NON LO SO :)"}
 					],
-					selectionLayer: this.layer, // NOME DEL LAYER SU CUI ESEGUIRE LA SELEZIONE IN BASE AI RISULTATI (VIENE GENERATO DA DJANGO)
-					selectionZoom: 0, // SELEZIONARE IL RISULTATO? (0,1)
-					doZoomToExtent: true // ZOOMA AL RISULTATO? (TRUE,FALSE)
+					selectionlayer: this.layer, // NOME DEL LAYER SU CUI ESEGUIRE LA SELEZIONE IN BASE AI RISULTATI (VIENE GENERATO DA DJANGO)
+					selectionzoom: 0, // SELEZIONARE IL RISULTATO? (0,1)
+					dozoomtoextent: true // ZOOMA AL RISULTATO? (TRUE,FALSE)
 				};
 				$.each($(".rightCol").find(".blocco"), function(i,v)
 				{
 					v = $(v);
-					obj.formItems.push({
-						xtype: that.getType(v.find(".fieldSelect").find("select").find("option:selected").data().type), // TIPO DI CAMPO //
+					obj.fields.push({
 						name: v.find(".fieldSelect").find("select").val(), // NOME DEL CAMPO DB
-						fieldLabel: v.find(".textInput").find("input").val(), // ETICHETTA DEL CAMPO DI RICERCA
-						allowBlank: true, // SE PUO' ESSERE VUOTO // mettere a true
-						blankText: v.find(".descriptionInput").find("input").val(), // TESTO INIZIALE NEL CAMPO
-						filterOp: v.find(".cmpOperatorSelect").find("select").val() // OPERATORE DI CONFRONTO (=,&lt;,&gt;,=&lt;,&gt;=,&lt;&gt;)
+						label: v.find(".textInput").find("input").val(), // ETICHETTA DEL CAMPO DI RICERCA
+						blanktext: v.find(".descriptionInput").find("input").val(), // TESTO INIZIALE NEL CAMPO
+						filterop: v.find(".cmpOperatorSelect").find("select").val(), // OPERATORE DI CONFRONTO (=,&lt;,&gt;,=&lt;,&gt;=,&lt;&gt;)
+						input: {
+							type: that.getType(v.find(".fieldSelect").find("select").find("option:selected").data().type), // TIPO DI CAMPO //
+							options: {}
+						},
 					});
 				});
 				$.each($(".rightCol").find(".bloccoGenerale").find(".resultFields").find(".row"), function(i,v){
 					v = $(v);
 					if (v.hasClass("labels") || !that.isset(v.find(".fieldSelect").find("select").val()))
 						return true;
-					obj.gridColumns.push({header: v.find(".textInput").find("input").val(), dataIndex: v.find(".fieldSelect").find("select").val(), menuDisabled: 'true'});
+					obj.results.push({header: v.find(".textInput").find("input").val(), name: v.find(".fieldSelect").find("select").val()});
 				});
 				break;
 			case "tooltip":
@@ -130,12 +131,12 @@ ga.Qdjango.widgetEditor = {
 		var fieldSelect = $('<select class="form-control" name="resultfield"></select>');
 		$.each(this.layerColumns, function(i,v)
 		{
-			var selected = (that.isset(values) && that.isset(values.gridColumns) && values.gridColumns.length>0 && values.gridColumns[0].dataIndex === v.name)? "selected" : "";
+			var selected = (that.isset(values) && that.isset(values.results) && values.results.length>0 && values.results[0].name === v.name)? "selected" : "";
 			var option = $('<option value="'+v.name+'" '+selected+'>'+v.name+'</option>');
 			fieldSelect.append(option);
 		});
 		
-		var alInVa = (that.isset(values) && that.isset(values.gridColumns) && values.gridColumns.length>0 && that.isset(values.gridColumns[0].header))? values.gridColumns[0].header : "";
+		var alInVa = (that.isset(values) && that.isset(values.results) && values.results.length>0 && that.isset(values.results[0].header))? values.results[0].header : "";
 		var textInput = $('<input class="form-control" type="text" name="resultfield_text" value="'+alInVa+'">');
 		
 		var tiVa = (that.isset(values) && that.isset(values.title))? values.title : "";
@@ -208,9 +209,9 @@ ga.Qdjango.widgetEditor = {
 		div.find(".textInput").first().append(textInput);
 		$(".rightCol").append(div);
 		
-		if (that.isset(values) && that.isset(values.gridColumns) && values.gridColumns.length>1)
+		if (that.isset(values) && that.isset(values.results) && values.results.length>1)
 		{
-			$.each(values.gridColumns, function(i,v){
+			$.each(values.results, function(i,v){
 				if (i === 0)
 					return true;
 				onAddAction(div.find("button.add"), v);
@@ -232,7 +233,7 @@ ga.Qdjango.widgetEditor = {
 			fieldSelect.append(option);
 		});
 		
-		var fiLaVa = (that.isset(values) && that.isset(values.fieldLabel))? values.fieldLabel : "";
+		var fiLaVa = (that.isset(values) && that.isset(values.label))? values.label : "";
 		var textInput = $('<input class="form-control" type="text" name="searchfield_text" value="'+fiLaVa+'" >');
 		
 		var blTeVa = (that.isset(values) && that.isset(values.blankText))? values.blankText : "";
@@ -549,10 +550,10 @@ ga.Qdjango.widgetEditor = {
 				break;
 			case "search":
 				this.generateGeneralParams(this.widget.body);
-				$.each(this.widget.body.formItems, function(i)
+				$.each(this.widget.body.fields, function(i)
 				{
 					that.generateSearchRow(this);
-					if (i < that.widget.body.formItems.length-1)
+					if (i < that.widget.body.fields.length-1)
 						$(".rightCol").find(".logic_operator").last().fadeIn(that.fadeNumber);
 				});
 				this.onAddCallback = function(){ $(".rightCol").find(".logic_operator").last().fadeIn(that.fadeNumber); that.generateSearchRow(); };

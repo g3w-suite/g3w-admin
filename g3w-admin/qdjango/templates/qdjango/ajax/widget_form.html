@@ -13,7 +13,7 @@
     ga.Qdjango.localVars['update'] = false;
     ga.Qdjango.localVars['layer_type'] = '{{ layer.layer_type }}';
 	ga.Qdjango.localVars['layer_columns'] = {{ layer.database_columns | safe }};
-	ga.Qdjango.localVars['layer_name'] = "{{ layer.name }}";
+	ga.Qdjango.localVars['layer_name'] = "{{ layer.qgs_layer_id }}";
     {%  if lawlist %}
     ga.Qdjango.localVars['laws_list'] = {{ lawlist | safe }};
     {% endif %}

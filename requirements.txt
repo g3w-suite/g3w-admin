@@ -11,6 +11,8 @@ djangorestframework==3.3.3
 djangorestframework-gis
 django-filter
 django-downloadview
+django-debug-toolbar
+django-debug-panel
 shapely
 GDAL==1.11.0
 GeoAlchemy2==0.2.6

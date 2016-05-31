@@ -4,6 +4,7 @@ from django.utils.translation import ugettext, ugettext_lazy as _
 from crispy_forms.helper import FormHelper, Layout
 from crispy_forms.layout import Div, Field, HTML
 from core.mixins.forms import *
+from core.utils.forms import crispyBoxBaseLayer
 from usersmanage.forms import G3WACLForm
 from django_file_form.forms import FileFormMixin, UploadedFileField
 from .models import *
@@ -18,7 +19,7 @@ class QdjangoProjectFormMixin(object):
     def clean_qgis_file(self):
         try:
             qgis_file = self.cleaned_data['qgis_file']
-            kwargs = {'group':self.group}
+            kwargs = {'group': self.group}
             if self.instance.pk:
                 kwargs['instance'] = self.instance
             self.qgisProject = QgisProject(qgis_file,**kwargs)
@@ -67,23 +68,7 @@ class QdjangoProjetForm(QdjangoProjectFormMixin, G3WFormMixin, G3WGroupFormMixin
                                 ),
 
                                 crispyBoxACL(self),
-
-                                Div(
-                                    Div(
-                                        Div(
-                                            HTML("<h3 class='box-title'><i class='fa fa-map'></i> {}</h3>".format(
-                                                _('Deafault base layer'))),
-                                            css_class='box-header with-border'
-                                        ),
-                                        Div(
-                                            'baselayer',
-                                            css_class='box-body',
-
-                                        ),
-                                        css_class='box box-success'
-                                    ),
-                                    css_class='col-md-6'
-                                ),
+                                crispyBoxBaseLayer(self),
 
                                 Div(
                                     Div(

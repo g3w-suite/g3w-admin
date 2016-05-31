@@ -9,17 +9,6 @@
 <link rel="stylesheet" href="{% static "css/dropzone.css" %}">
 {% endblock %}
 
-
-{% block custom_js_links_page %}
-<script type="text/javascript" src="{% static "js/dropzone/dropzone.js" %}"></script>
-<script src="{% static "js/dropzone/dropzone.django.js" %}"></script>
-<script>
-    $(function() {
-        //initUploadFields($('#project-form'));
-    });
-</script>
-{% endblock %}
-
 {% block page_header %}
 <h1>
 {% trans 'New Qdjango project' %}

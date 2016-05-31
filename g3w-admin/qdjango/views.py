@@ -54,6 +54,10 @@ class OdjangoProjectCreateView(G3WGroupViewMixin, G3WRequestViewMixin, CreateVie
     model = Project
     form_class = QdjangoProjetForm
 
+    @method_decorator(permission_required('qdjango.add_project', return_403=True))
+    def dispatch(self, *args, **kwargs):
+        return super(OdjangoProjectCreateView, self).dispatch(*args, **kwargs)
+
     def get_success_url(self):
         return reverse('project-list', kwargs={'group_slug': self.group.slug})
 
