@@ -71,3 +71,7 @@ table span.icon {
 .select2 {
     color: black;
 }
+
+.modalMap {
+    height:400px;
+}

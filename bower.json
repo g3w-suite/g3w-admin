@@ -22,7 +22,9 @@
     "icheck":"*",
     "select2":"*",
     "underscore":"*",
-    "pace":"*"
+    "pace":"*",
+    "leaflet":"*",
+    "leaflet-draw":"*"
   },
   "main": "",
   "moduleType": [],

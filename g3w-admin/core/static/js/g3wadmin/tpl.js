@@ -139,8 +139,7 @@ _.extend(g3wadmin.tpl, {
     <div class="jFiler-item-others text-error"><i class="icon-jfi-minus-circle"></i> Error</div>\
     '),
 
-
-
-
-
+    mapContainer: _.template('\
+    <div id="modalMap" class="modalMap"></div>\
+    ')
 });

@@ -73,6 +73,72 @@ _.extend(g3wadmin.ui, {
         options.modalClass = 'modal-warning';
         return this._buildModal(options);
     },
+    
+    mapModal: function(options) {
+        if (!_.isObject(options)){
+            options = {};
+        }
+        _.extend(options, {modalBody: ga.tpl.mapContainer()});
+        var modal = this._buildModal(options);
+
+        // set geo data
+        var extent = options['extent'];
+        modal.map = {};
+        modal.$modal.on('shown.bs.modal',function(e){
+             modal.map = L.map($(this).find('#modalMap')[0], {
+                center: [0, 0],
+                zoom: 1
+            });
+            L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png?{foo}', {foo: 'bar'}).addTo(modal.map);
+            modal.drawnItems = new L.FeatureGroup();
+            if (_.has(options, 'bboxLayer')) {
+                var bboxCoords = options['bboxLayer'].split(',');
+                var bounds = [[bboxCoords[1],bboxCoords[0]], [bboxCoords[3], bboxCoords[2]]];
+                modal.drawnLayer = L.rectangle(bounds);
+                modal.drawnLayer.editing.enable();
+                modal.drawnItems.addLayer(modal.drawnLayer);
+                modal.map.fitBounds(bounds);
+            } else {
+                modal.drawnLayer = {};
+            }
+
+            modal.map.addLayer(modal.drawnItems);
+
+            // Initialise the draw control and pass it the FeatureGroup of editable layers
+            var drawControl = new L.Control.Draw({
+                draw:{
+                    polyline: false,
+                    polygon: false,
+                    circle: false,
+                    marker: false,
+                },
+                edit: {
+                    featureGroup: modal.drawnItems,
+                    edit: false,
+                    remove: false
+                }
+            });
+            modal.map.addControl(drawControl);
+
+            modal.map.on('draw:drawstart', function (e) {
+                modal.drawnItems.clearLayers();
+            });
+
+            modal.map.on('draw:created', function (e) {
+                var type = e.layerType
+                modal.drawnLayer = e.layer;
+
+                // Do whatever else you need to. (save to db, add to map etc)
+                modal.drawnLayer.editing.enable();
+                modal.drawnItems.addLayer(modal.drawnLayer);
+
+                // set in editing mode
+
+            });
+        });
+        return modal;
+        
+    },
 
     initCrudDeleteWidget: function() {
         $(document).on('click', '[data-widget-type="deleteItem"]', function(e){
@@ -121,7 +187,7 @@ _.extend(g3wadmin.ui, {
         });
     },
 
-     initBootstrapDatepicker: function(context) {
+    initBootstrapDatepicker: function(context) {
         if (!_.isUndefined(context)) {
             var $widgetItem = $(context).find('.datepicker');
         }
@@ -165,6 +231,12 @@ _.extend(g3wadmin.ui, {
     initAjaxDownload: function() {
          $(document).on('click', '[data-widget-type="ajaxDownload"]', function(e){
             ga.widget.ajaxDownload($(this));
+        });
+    },
+
+    initMapSetExtent: function() {
+         $(document).on('click', '[data-widget-type="mapSetExtent"]', function(e){
+            ga.widget.mapSetExtent($(this));
         });
     },
 

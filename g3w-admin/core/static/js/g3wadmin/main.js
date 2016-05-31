@@ -74,6 +74,9 @@ _.extend(g3wadmin,{
 
         //  INIT SetProjectPanoramicWidget
         this.ui.initSetProjectPanoramicWidget();
+
+        // INIT initMapSetExtent
+        this.ui.initMapSetExtent();
         
 
         /*

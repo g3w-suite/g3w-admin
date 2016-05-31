@@ -558,6 +558,21 @@ _.extend(g3wadmin.widget, {
             });
 
         modal.show();
+    },
+
+    /**
+     * Widget map to get and set extent
+     * @param $item
+     */
+    mapSetExtent: function($item) {
+        var $input = $item.parents('.input-group').find('input');
+        var modal = ga.ui.mapModal({bboxLayer: $input.val()});
+        modal.setConfirmButtonAction(function(e){
+            $input.val(modal.drawnLayer.getBounds().toBBoxString());
+            modal.hide();
+        });
+        modal.show();
+
     }
 
 

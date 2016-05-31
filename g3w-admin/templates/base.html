@@ -40,7 +40,11 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <link rel="stylesheet" href="{% static "bower_components/datatables/media/css/dataTables.bootstrap.min.css" %}">
     <!-- icheck -->
     <link rel="stylesheet" href="{% static "bower_components/icheck/skins/flat/green.css" %}">
+    <!-- Leaflet -->
+    <link rel="stylesheet" href="{% static "bower_components/leaflet/dist/leaflet.css" %}">
+    <link rel="stylesheet" href="{% static "bower_components/leaflet-draw/dist/leaflet.draw.css" %}">
     <!-- endbuild -->
+
     {% else %}
     <link rel="stylesheet" href="{% static "dist/css/vendor.min.css"%}">
     {% endif %}
@@ -282,6 +286,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <script src="{% static "bower_components/bootstrap-treeview/dist/bootstrap-treeview.min.js" %}"></script>
     <!-- icheck -->
     <script src="{% static "bower_components/icheck/icheck.min.js" %}"></script>
+    <!-- Leaflet -->
+    <script src="{% static "bower_components/leaflet/dist/leaflet.js" %}"></script>
+    <script src="{% static "bower_components/leaflet-draw/dist/leaflet.draw.js" %}"></script>
     {% else %}
     <script src="{% static "dist/js/vendor.min.js" %}"></script>
     {% endif %}
@@ -290,6 +297,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <script src="{% static "bower_components/jquery-slimscroll/jquery.slimscroll.min.js" %}"></script>
     {% endif %}
     <!-- endbuild -->
+
+
 
     <!-- Django-file-form: fileuploader -->
     <script src="{% static "ajaxuploader/js/fileuploader.js" %}"></script>
