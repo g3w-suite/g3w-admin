@@ -5504,7 +5504,9 @@ fieldset[disabled] .btn-yahoo.active {
   background-color: #3c8dbc;
   color: white;
   background-image: none;
-  padding: 12.5px;
+  font-size: 20px;
+  line-height: 20px;
+  padding: 12.5px 15px 12.5px 17px;
   font-family: fontAwesome;
 }
 .control-sidebar .floatbar-aside-toggle:before {
@@ -5651,6 +5653,10 @@ Licensed under MIT
 }
 .catalog .tree {
   color: #ffffff;
+}
+.catalog .tree .disabled {
+  color: #999999;
+  cursor: not-allowed;
 }
 .catalog .baselayers .radio {
   margin: 0px;
