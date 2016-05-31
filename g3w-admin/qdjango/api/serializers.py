@@ -77,7 +77,7 @@ class ProjectSerializer(serializers.ModelSerializer):
             readLeaf(l)
 
         # add widgets
-        ret['baselayer'] = instance.baselayer.name
+        ret['baselayer'] = instance.baselayer.name if instance.baselayer else None
 
         return ret
 
