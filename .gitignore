@@ -29,4 +29,7 @@ build
 # gulp dist directory
 /dist/
 
-
+/g3w-admin/ogc/
+/g3w-admin/iternet/
+/g3w-admin/cdu/
+/g3w-admin/law/
