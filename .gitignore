@@ -28,3 +28,5 @@ build
 
 # gulp dist directory
 /dist/
+
+/g3w-admin/ogc/

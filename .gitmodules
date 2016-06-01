@@ -7,3 +7,6 @@
 [submodule "g3w-admin/iternet"]
 	path = g3w-admin/iternet
 	url = https://bitbucket.org/gis3w/g3w-admin-iternet.git
+[submodule "g3w-admin/ogc"]
+	path = g3w-admin/ogc
+	url = https://bitbucket.org/gis3w/g3w-admin-ogc.git
