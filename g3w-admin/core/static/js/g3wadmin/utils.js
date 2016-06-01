@@ -27,6 +27,22 @@ _.extend(g3wadmin.utils, {
         _.extend(data,{
             csrfmiddlewaretoken: $.cookie('csrftoken')
         });
+    },
+
+    transformBBoxToWGS84: function(crs, bbox) {
+        var coords = bbox.split(',');
+        var so = proj4(crs).inverse([coords[0],coords[1]]);
+        var ne = proj4(crs).inverse([coords[2],coords[3]]);
+
+        return [so[0], so[1], ne[0], ne[1]].join();
+    },
+
+    transformBBoxFromWGS84: function(crs, bbox) {
+        var coords = bbox.split(',');
+        var so = proj4(crs).forward([coords[0],coords[1]]);
+        var ne = proj4(crs).forward([coords[2],coords[3]]);
+
+        return [so[0], so[1], ne[0], ne[1]].join();
     }
 
 

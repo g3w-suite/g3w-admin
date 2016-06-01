@@ -24,7 +24,8 @@
     "underscore":"*",
     "pace":"*",
     "leaflet":"*",
-    "leaflet-draw":"*"
+    "leaflet-draw":"*",
+    "proj4": "*"
   },
   "main": "",
   "moduleType": [],

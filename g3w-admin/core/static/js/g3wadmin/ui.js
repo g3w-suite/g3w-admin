@@ -91,7 +91,7 @@ _.extend(g3wadmin.ui, {
             });
             L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png?{foo}', {foo: 'bar'}).addTo(modal.map);
             modal.drawnItems = new L.FeatureGroup();
-            if (_.has(options, 'bboxLayer')) {
+            if (_.has(options, 'bboxLayer') && !_.isNull(options['bboxLayer'])) {
                 var bboxCoords = options['bboxLayer'].split(',');
                 var bounds = [[bboxCoords[1],bboxCoords[0]], [bboxCoords[3], bboxCoords[2]]];
                 modal.drawnLayer = L.rectangle(bounds);

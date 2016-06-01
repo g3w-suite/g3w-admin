@@ -62,6 +62,10 @@ _.extend(g3wadmin.widget, {
         'ajax-url',
     ],
 
+    _mapSetExtent: [
+        'crs',
+    ],
+
     /**
      * Widget to delete a item from database by ajax call.
      * @param $item jquery object
@@ -565,13 +569,28 @@ _.extend(g3wadmin.widget, {
      * @param $item
      */
     mapSetExtent: function($item) {
-        var $input = $item.parents('.input-group').find('input');
-        var modal = ga.ui.mapModal({bboxLayer: $input.val()});
-        modal.setConfirmButtonAction(function(e){
-            $input.val(modal.drawnLayer.getBounds().toBBoxString());
-            modal.hide();
-        });
+        try {
+            var params = ga.utils.getDataAttrs($item, this._mapSetExtent);
+            if (_.isUndefined(params['crs'])) {
+                throw new Error('Attribute data-crs not defined');
+            }
+
+            var $input = $item.parents('.input-group').find('input');
+            var bboxLayer = null;
+            if ($input.val()) {
+                bboxLayer = ga.utils.transformBBoxToWGS84(params['crs'], $input.val());
+            }
+
+            var modal = ga.ui.mapModal({bboxLayer: bboxLayer});
+            modal.setConfirmButtonAction(function(e){
+                $input.val(ga.utils.transformBBoxFromWGS84(params['crs'], modal.drawnLayer.getBounds().toBBoxString()));
+                modal.hide();
+            });
         modal.show();
+        } catch (e) {
+            this.showError(e.message);
+        }
+
 
     }
 
