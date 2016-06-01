@@ -29,8 +29,4 @@ build
 # gulp dist directory
 /dist/
 
-# submodule directory
-/g3w-admin/ogc/
-/g3w-admin/cdu/
-/g3w-admin/law/
-/g3w-admin/iternet/
+
