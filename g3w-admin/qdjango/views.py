@@ -48,7 +48,7 @@ class QdjangoProjectListView(G3WRequestViewMixin, G3WGroupViewMixin, ListView):
         return context
 
 
-class OdjangoProjectCreateView(G3WGroupViewMixin, G3WRequestViewMixin, CreateView):
+class OdjangoProjectCreateView(QdjangoProjectCUViewMixin, G3WGroupViewMixin, G3WRequestViewMixin, CreateView):
     """Create group view."""
 
     model = Project
@@ -58,15 +58,8 @@ class OdjangoProjectCreateView(G3WGroupViewMixin, G3WRequestViewMixin, CreateVie
     def dispatch(self, *args, **kwargs):
         return super(OdjangoProjectCreateView, self).dispatch(*args, **kwargs)
 
-    def get_success_url(self):
-        return reverse('project-list', kwargs={'group_slug': self.group.slug})
 
-    def form_valid(self,form):
-        form.qgisProject.save()
-        return HttpResponseRedirect(self.get_success_url())
-
-
-class QdjangoProjectUpdateView(G3WGroupViewMixin, G3WRequestViewMixin, G3WACLViewMixin, UpdateView):
+class QdjangoProjectUpdateView(QdjangoProjectCUViewMixin, G3WGroupViewMixin, G3WRequestViewMixin, G3WACLViewMixin, UpdateView):
     """Update project view."""
 
     model = Project
@@ -79,9 +72,6 @@ class QdjangoProjectUpdateView(G3WGroupViewMixin, G3WRequestViewMixin, G3WACLVie
     def dispatch(self, *args, **kwargs):
         return super(QdjangoProjectUpdateView, self).dispatch(*args, **kwargs)
 
-    def get_success_url(self):
-        return reverse('project-list',kwargs={'group_slug':self.group.slug})
-
     def get_context_data(self, **kwargs):
         context = super(QdjangoProjectUpdateView, self).get_context_data(**kwargs)
         if self.request.method == 'GET':
@@ -92,13 +82,10 @@ class QdjangoProjectUpdateView(G3WGroupViewMixin, G3WRequestViewMixin, G3WACLVie
                     context['pre_update_messages'].append(message[1])
         return context
 
-    def form_valid(self,form):
-        form.qgisProject.save()
-        return HttpResponseRedirect(self.get_success_url())
-
 
 class QdjangoProjectDetailView(G3WRequestViewMixin, DetailView):
     """Detail view."""
+
     model = Project
     template_name = 'qdjango/ajax/project_detail.html'
 
@@ -121,6 +108,11 @@ class QdjangoProjectDeleteView(G3WAjaxDeleteViewMixin, SingleObjectMixin, View):
 # For layers
 class QdjangoLayersListView(G3WRequestViewMixin, G3WGroupViewMixin, QdjangoProjectViewMixin, ListView):
     template_name = 'qdjango/layers_list.html'
+
+    @method_decorator(permission_required('qdjango.view_project', (Project, 'slug', 'project_slug'),
+                                          raise_exception=True))
+    def dispatch(self, *args, **kwargs):
+        return super(QdjangoLayersListView, self).dispatch(*args, **kwargs)
 
     def get_queryset(self):
         # get project by project_slug
@@ -199,6 +191,11 @@ class QdjangoLayerWidgetsView(G3WGroupViewMixin, QdjangoProjectViewMixin, Qdjang
 
     model = Widget
     template_name = 'qdjango/ajax/layer_widgets.html'
+
+    @method_decorator(permission_required('qdjango.view_project', (Project, 'slug', 'project_slug'),
+                                          raise_exception=True))
+    def dispatch(self, *args, **kwargs):
+        return super(QdjangoLayerWidgetsView, self).dispatch(*args, **kwargs)
 
     def get_queryset(self):
         return Widget.objects.filter(datasource=self.layer.datasource)

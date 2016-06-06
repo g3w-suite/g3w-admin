@@ -55,7 +55,7 @@ class G3WFormMixin(object):
 
         for field in fields:
             f = field.fields[0] if isinstance(field, Field) else field
-            if f in self.initial and (not self.initial[f] or self.initial[f] != ''):
+            if f in self.initial and bool(self.initial[f]):
                 collapsed = False
 
         return 'collapsed-box' if collapsed else ''

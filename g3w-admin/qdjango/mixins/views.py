@@ -1,11 +1,29 @@
 from django.shortcuts import get_object_or_404
+from django.http import HttpResponseRedirect
+from django.core.urlresolvers import reverse
 from qdjango.models import Project, Layer
 
 
+class QdjangoProjectCUViewMixin(object):
+    """
+    Mixin For class Create-Update project view for common method and actions.
+    """
+
+    def get_success_url(self):
+        return reverse('project-list', kwargs={'group_slug': self.group.slug})
+
+    def form_valid(self, form):
+        form.qgisProject.save()
+        if not form.instance.pk:
+            form.instance = form.qgisProject.instance
+        form._ACLPolicy()
+        return HttpResponseRedirect(self.get_success_url())
+
+
 class QdjangoProjectViewMixin(object):
-    '''
+    """
     Mixins for Class View for get group slug and r object for get
-    '''
+    """
 
     def dispatch(self, request, *args, **kwargs):
         """Populate group attribute."""

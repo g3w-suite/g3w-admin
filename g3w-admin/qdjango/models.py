@@ -9,7 +9,8 @@ from core.models import Group, BaseLayer
 from .utils.storage import QgisFileOverwriteStorage
 from .mixins.models import QdjangoACLModelMixins
 from model_utils import Choices
-from usersmanage.utils import setPermissionUserObject
+from usersmanage.utils import setPermissionUserObject, getUserGroups
+from usersmanage.configs import *
 from core.configs import *
 import os
 
@@ -88,7 +89,7 @@ class Project(QdjangoACLModelMixins, TimeStampedModel):
             'qdjango.view_project'
         ], mode=mode)
 
-        layerAction = 'addPermissionsToEditor' if mode=='add' else 'removePermissionsToEditor'
+        layerAction = 'addPermissionsToEditor' if mode == 'add' else 'removePermissionsToEditor'
         layers = self.layer_set.all()
         for layer in layers:
             getattr(layer, layerAction)(user)
@@ -102,8 +103,6 @@ class Project(QdjangoACLModelMixins, TimeStampedModel):
             layers = self.layer_set.all()
             for layer in layers:
                 getattr(layer, layerAction)(users_id)
-
-                # todo: add widget permissions
 
 
 class Layer(QdjangoACLModelMixins, models.Model):
@@ -198,7 +197,7 @@ class Layer(QdjangoACLModelMixins, models.Model):
             # todo: add widget permissions
 
 
-class Widget(models.Model):
+class Widget(QdjangoACLModelMixins, models.Model):
     """
     Widget data for project module Qdjango
     """
@@ -223,3 +222,20 @@ class Widget(models.Model):
             ('view_widget', 'Can view widget'),
         )
 
+    def _permissionsToEditor(self, user, mode='add'):
+        permissions = [
+            'qdjango.view_widget'
+        ]
+
+        if G3W_EDITOR1 in getUserGroups(user):
+            permissions += [
+                'qdjango.change_widget',
+                'qdjango.delete_widget'
+            ]
+
+        setPermissionUserObject(user, self, permissions=permissions, mode=mode)
+
+    def _permissionsToViewers(self, users_id, mode='add'):
+
+        for user_id in users_id:
+            setPermissionUserObject(User.objects.get(pk=user_id), self, permissions='qdjango.view_widget', mode=mode)

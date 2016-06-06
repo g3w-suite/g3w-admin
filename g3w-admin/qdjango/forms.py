@@ -22,7 +22,7 @@ class QdjangoProjectFormMixin(object):
             kwargs = {'group': self.group}
             if self.instance.pk:
                 kwargs['instance'] = self.instance
-            self.qgisProject = QgisProject(qgis_file,**kwargs)
+            self.qgisProject = QgisProject(qgis_file, **kwargs)
             if not self.instance.pk:
                 self.qgisProject.registerValidator(ProjectExists)
             self.qgisProject.clean()
@@ -36,7 +36,8 @@ class QdjangoProjectFormMixin(object):
         return qgis_file
 
 
-class QdjangoProjetForm(QdjangoProjectFormMixin, G3WFormMixin, G3WGroupFormMixin, G3WGroupBaseLayerFormMixin, G3WRequestFormMixin, G3WACLForm, FileFormMixin, forms.ModelForm):
+class QdjangoProjetForm(QdjangoProjectFormMixin, G3WFormMixin, G3WGroupFormMixin, G3WGroupBaseLayerFormMixin,
+                        G3WRequestFormMixin, G3WACLForm, FileFormMixin, forms.ModelForm):
 
     qgis_file = UploadedFileField(required=True)
     thumbnail = UploadedFileField(required=False)
@@ -51,7 +52,8 @@ class QdjangoProjetForm(QdjangoProjectFormMixin, G3WFormMixin, G3WGroupFormMixin
                                 Div(
                                     Div(
                                         Div(
-                                            HTML("<h3 class='box-title'><i class='ion ion-map'></i> {}</h3>".format(_('Qgis Project'))),
+                                            HTML("<h3 class='box-title'><i class='ion ion-map'></i> {}</h3>"
+                                                 .format(_('Qgis Project'))),
                                             css_class='box-header with-border'
                                         ),
                                         Div(
@@ -73,7 +75,8 @@ class QdjangoProjetForm(QdjangoProjectFormMixin, G3WFormMixin, G3WGroupFormMixin
                                 Div(
                                     Div(
                                         Div(
-                                            HTML("<h3 class='box-title'><i class='fa fa-file'></i> {}</h3>".format(_('Descrition data'))),
+                                            HTML("<h3 class='box-title'><i class='fa fa-file'></i> {}</h3>"
+                                                 .format(_('Descrition data'))),
                                             css_class='box-header with-border'
                                         ),
                                         Div(
@@ -111,7 +114,6 @@ class QdjangoProjetForm(QdjangoProjectFormMixin, G3WFormMixin, G3WGroupFormMixin
         }
 
 
-
 class QdjangoWidgetForm(QdjangoProjectFormMixin, G3WFormMixin, G3WGroupFormMixin, G3WRequestFormMixin, forms.ModelForm):
     """
     Form object for Qdjango widget model.
@@ -147,3 +149,4 @@ class QdjangoWidgetForm(QdjangoProjectFormMixin, G3WFormMixin, G3WGroupFormMixin
         widgets = {
             'body': widgets.HiddenInput
         }
+

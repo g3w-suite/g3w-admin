@@ -109,6 +109,12 @@ class GroupSetProjectPanoramicView(View):
     '''
     Set panoramic project for this group
     '''
+
+    # only user with change_group for this group can change overview map.
+    @method_decorator(permission_required('core.change_group', (Group, 'slug', 'slug'), return_403=True))
+    def dispatch(self, *args, **kwargs):
+        return super(GroupSetProjectPanoramicView, self).dispatch(*args, **kwargs)
+
     def get(self, *args, **kwargs):
         # first remove current panoramic map
         group = Group.objects.get(slug=kwargs['slug'])

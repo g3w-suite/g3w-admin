@@ -609,7 +609,7 @@ class QgisProject(QgisData):
         for layer in self.layers:
             layer.clean()
 
-    def save(self,instance=None, **kwargs):
+    def save(self, instance=None, **kwargs):
         """
         Save or update  qgisporject and layers into db
         :param instance: Project instance

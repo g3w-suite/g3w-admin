@@ -95,7 +95,7 @@ class GroupForm(FileFormMixin, G3WFormMixin, G3WRequestFormMixin, G3WACLForm, Mo
                                             Field('baselayers', **{'css_class': 'select2 col-md-12', 'multiple': 'multiple', 'style': 'width:100%;'}),
                                             css_class='box-body'
                                         ),
-                                        css_class='box box-danger {}'.format(self.checkEmptyInitialsData('use_commercial_maps','use_osm_maps'))
+                                        css_class='box box-danger {}'.format(self.checkEmptyInitialsData('baselayers'))
                                     ),
                                     css_class='col-md-6'
                                 ),

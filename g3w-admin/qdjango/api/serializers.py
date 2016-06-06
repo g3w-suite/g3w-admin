@@ -52,6 +52,7 @@ class ProjectSerializer(serializers.ModelSerializer):
         ret['widgets'] = []
         layers = {l.qgs_layer_id: l for l in instance.layer_set.all()}
 
+        # for client map like multilayer
         metaLayer = QdjangoMetaLayer()
         layersTree = self.get_layerstree(instance)
 
@@ -63,7 +64,7 @@ class ProjectSerializer(serializers.ModelSerializer):
             else:
                 if layers[layer['id']].name in qgisProjectSettignsWMS.layers:
                     layerSerializedData = LayerSerializer(layers[layer['id']], qgisProjectSettignsWMS=qgisProjectSettignsWMS).data
-                    layerSerializedData['metalayer'] = metaLayer.getCurrentByLayer(layerSerializedData)
+                    layerSerializedData['multilayer'] = metaLayer.getCurrentByLayer(layerSerializedData)
                     ret['layers'].append(layerSerializedData)
 
                     # get widgects for layer
