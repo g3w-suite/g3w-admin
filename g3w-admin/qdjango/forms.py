@@ -113,6 +113,9 @@ class QdjangoProjetForm(QdjangoProjectFormMixin, G3WFormMixin, G3WGroupFormMixin
             '''
         }
 
+    def save(self, commit=True):
+        self._ACLPolicy()
+
 
 class QdjangoWidgetForm(QdjangoProjectFormMixin, G3WFormMixin, G3WGroupFormMixin, G3WRequestFormMixin, forms.ModelForm):
     """

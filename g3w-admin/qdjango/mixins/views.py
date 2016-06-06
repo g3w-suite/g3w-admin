@@ -16,7 +16,7 @@ class QdjangoProjectCUViewMixin(object):
         form.qgisProject.save()
         if not form.instance.pk:
             form.instance = form.qgisProject.instance
-        form._ACLPolicy()
+        form.save()
         return HttpResponseRedirect(self.get_success_url())
 
 

@@ -1,9 +1,9 @@
 {
-  "name": "qdjango2",
+  "name": "G3W-Admin",
   "authors": [
     "wlorenzetti <lorenzetti@gis3w.it>"
   ],
-  "description": "A Qgis and other type projects web app view",
+  "description": "A webgis managment",
   "dependencies": {
     "bootstrap": "~3.3.5",
     "bootstrap3-wysihtml5-bower": "*",
@@ -25,7 +25,8 @@
     "pace":"*",
     "leaflet":"*",
     "leaflet-draw":"*",
-    "proj4": "*"
+    "proj4": "*",
+    "jstree": "*"
   },
   "main": "",
   "moduleType": [],
