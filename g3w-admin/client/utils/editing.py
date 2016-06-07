@@ -90,7 +90,7 @@ FIELD_TYPES_MAPPING = {
 }
 
 
-def editingFormField(fieldName, type=FIELD_TYPE_STRING, editable=True, required=True, fieldLabel=None, inputType=None, values=None, **kwargs):
+def editingFormField(fieldName, type=FIELD_TYPE_STRING, editable=True, required=True, validate={}, fieldLabel=None, inputType=None, values=None, **kwargs):
     """
     Build editign form field for client.
     """
@@ -100,6 +100,7 @@ def editingFormField(fieldName, type=FIELD_TYPE_STRING, editable=True, required=
         'label': fieldLabel if fieldLabel else fieldName,
         'editable': editable,
         'required': required,
+        'validate': validate,
         'input': {
             'type': inputType if inputType else FORM_FIELD_TYPE_TEXT,
             'options': {}
