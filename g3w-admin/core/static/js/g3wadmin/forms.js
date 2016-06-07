@@ -135,6 +135,8 @@ _.extend(g3wadmin.forms, {
          */
         this.getData = function() {
 
+            return this.$form.serialize();
+            /*
             // refresh obejct form
             var dataArray = this.$form.serializeArray();
             var dataToRet = {};
@@ -146,6 +148,7 @@ _.extend(g3wadmin.forms, {
             }
 
             return dataToRet;
+            */
         };
     }
 

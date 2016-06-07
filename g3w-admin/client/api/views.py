@@ -39,7 +39,8 @@ class ClientConfigApiView(APIView):
         ps = projectSerializer(project)
 
         return Response(ps.data)
-        
+
+
 class GroupConfigApiView(APIView):
     """
     APIView to get data Project and layers
