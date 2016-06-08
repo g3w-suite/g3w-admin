@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 from autoslug.utils import slugify
 from core.models import Group, BaseLayer
 from .utils.storage import QgisFileOverwriteStorage
-from .mixins.models import QdjangoACLModelMixins
+from core.mixins.models import G3WACLModelMixins
 from model_utils import Choices
 from usersmanage.utils import setPermissionUserObject, getUserGroups
 from usersmanage.configs import *
@@ -33,7 +33,7 @@ def get_thumbnail_path(instance, filename):
     return os.path.join('thumbnails', filename)
 
 
-class Project(QdjangoACLModelMixins, TimeStampedModel):
+class Project(G3WACLModelMixins, TimeStampedModel):
     """A QGIS project."""
 
     # Project file
@@ -105,7 +105,7 @@ class Project(QdjangoACLModelMixins, TimeStampedModel):
                 getattr(layer, layerAction)(users_id)
 
 
-class Layer(QdjangoACLModelMixins, models.Model):
+class Layer(G3WACLModelMixins, models.Model):
     """A QGIS layer."""
 
     TYPES = Choices(
@@ -197,7 +197,7 @@ class Layer(QdjangoACLModelMixins, models.Model):
             # todo: add widget permissions
 
 
-class Widget(QdjangoACLModelMixins, models.Model):
+class Widget(G3WACLModelMixins, models.Model):
     """
     Widget data for project module Qdjango
     """

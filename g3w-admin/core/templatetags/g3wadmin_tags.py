@@ -20,6 +20,7 @@ def g3wadmin_add_layer(app, group):
 def g3wadmin_add_button_form(save=True, redo=True):
     return {'save': save, 'redo': redo}
 
+
 @register.simple_tag()
 def g3wadmin_progress_bar_values(current, min=0, max=100):
     return {
