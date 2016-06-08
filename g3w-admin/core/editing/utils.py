@@ -58,7 +58,6 @@ class LayerLock(object):
                 layer_name=self.layerName,
                 app_name=self.appName,
                 layer_datasource=self.layerDatasource,
-                #feature_lock_id=featureLockId.hexdigest()
                 feature_lock_id=featureLockId.hexdigest()
             )
             
@@ -69,7 +68,6 @@ class LayerLock(object):
                 featureLock.sessionid = self.sessionid
             
             lockModels.append(featureLock)
-            #featureLock.save()
             
         
         LockModel.objects.bulk_create(lockModels)
