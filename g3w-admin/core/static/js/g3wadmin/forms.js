@@ -8,6 +8,9 @@
 
 _.extend(g3wadmin.forms, {
 
+    INSERT_STATE: 0,
+    INSERT_UPDATE: 1,
+    
     checkItemsEmpty: function($item) {
 
         $formElements = $item.find(':input');

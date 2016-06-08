@@ -43,6 +43,23 @@ _.extend(g3wadmin.utils, {
         var ne = proj4(crs).forward([coords[2],coords[3]]);
 
         return [so[0], so[1], ne[0], ne[1]].join();
+    },
+
+    /**
+     * Fill at runtime textare with wysihtml5 pluign
+     * @param selector
+     * @param content
+     */
+    setEditorWys5Content: function(selector, content){
+        if (selector instanceof jQuery) {
+            $selector = selector;
+        } else {
+            $selector = $(selector);
+        }
+
+        var editorObj = $selector.data('wysihtml5');
+        var editor = editorObj.editor;
+        editor.setValue(content);
     }
 
 
