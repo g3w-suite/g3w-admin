@@ -60,7 +60,6 @@ class LayerLock(object):
                 layer_datasource=self.layerDatasource,
                 feature_lock_id=featureLockId.hexdigest()
             )
-            
 
             if getattr(self, 'user'):
                 featureLock.user = self.user
@@ -68,19 +67,16 @@ class LayerLock(object):
                 featureLock.sessionid = self.sessionid
             
             lockModels.append(featureLock)
-            
-        
+
         LockModel.objects.bulk_create(lockModels)
 
         locks = LockModel.objects.filter(feature_lock_id__in=potentialLockIds)
         lockedFeatures = []
         for lock in locks:
           lockedFeatures.append({
-              'featureid': f.feature_id,
-              'lockid': f.feature_lock_id
+              'featureid': lock.feature_id,
+              'lockid': lock.feature_lock_id
           })
-          
-        
 
         if getattr(self, 'user') and len(self.getInitialUserFeatureLocked):
             for f in self.getInitialUserFeatureLocked:
@@ -89,7 +85,6 @@ class LayerLock(object):
                         'featureid': f.feature_id,
                         'lockid': f.feature_lock_id
                     })
-
 
         return lockedFeatures
 
