@@ -14,10 +14,10 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <title>{{ SETTINGS.SITE_TITLE }}</title>
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-    {% if SETTINGS.DEBUG %}
-    <!-- build:css css/vendor.min.css -->
     <!-- Pace -->
     <script src="{% static "bower_components/pace/pace.min.js" %}"></script>
+    {% if SETTINGS.DEBUG %}
+    <!-- build:css css/vendor.min.css -->
     <!-- Bootstrap 3.3.5 -->
     <link rel="stylesheet" href="{% static "bower_components/bootstrap/dist/css/bootstrap.min.css" %}">
     <!-- Font Awesome -->
@@ -48,12 +48,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
     {% else %}
     <link rel="stylesheet" href="{% static "dist/css/vendor.min.css"%}">
     {% endif %}
-    <!-- Theme style -->
+
     <link rel="stylesheet" href="{% static "adminlte/css/AdminLTE.min.css" %}">
-    <!-- AdminLTE Skins. We have chosen the skin-blue for this starter
-          page. However, you can choose any other skin. Make sure you
-          apply the skin class to the body tag so the changes take effect.
-    -->
+    <!-- Theme style -->
     <link rel="stylesheet" href="{% static "adminlte/css/skins/"%}{{ adminlte_skin }}.min.css">
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -254,7 +251,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
         var CURRENT_LANGUAGE_CODE = '{{ lang }}';
     </script>
     {% if SETTINGS.DEBUG %}
-    <!-- build:js js/vendor.js -->
+    <!-- build:js js/vendor.min.js -->
     <!-- jQuery 2.1.4 -->
     <script src="{% static "bower_components/jquery/dist/jquery.min.js" %}"></script>
     <!-- jQuery-ui 1.11.4 -->
@@ -267,8 +264,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <script src="{% static "bower_components/bootstrap/dist/js/bootstrap.min.js" %}"></script>
     <!-- Underscore -->
     <script src="{% static "bower_components/underscore/underscore-min.js" %}"></script>
-    <!-- AdminLTE App -->
-    <script src="{% static "adminlte/js/app.min.js" %}"></script>
     <!-- Select2 -->
     <script src="{% static "bower_components/select2/dist/js/select2.full.min.js" %}"></script>
     <!-- Bootstrap3-wysihtml5 -->
@@ -294,12 +289,11 @@ scratch. This page gets rid of all links and provides the needed markup only.
     {% else %}
     <script src="{% static "dist/js/vendor.min.js" %}"></script>
     {% endif %}
-    {% if 'fixed' in adminlte_layout_option %}
-    <!-- Slimscroll -->
-    <script src="{% static "bower_components/jquery-slimscroll/jquery.slimscroll.min.js" %}"></script>
-    {% endif %}
+
     <!-- endbuild -->
 
+    <!-- AdminLTE App -->
+    <script src="{% static "adminlte/js/app.min.js" %}"></script>
 
 
     <!-- Django-file-form: fileuploader -->
@@ -323,7 +317,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     {% endif %}
 
     <!-- qdjango-widgets -->
-    <script src="{% static "qdjango/js/widget.js" %}"></script>
+
 
     <!-- g3wadmin javascript catalog -->
     <script src="{% url 'javascript-catalog' %}"></script>

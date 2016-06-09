@@ -14,11 +14,11 @@ gulp.task('deploy', function () {
         .pipe(useref({ searchPath: [
             'g3w-admin/core/static',
         ] }))
-        .pipe(gulpif('*.js', uglify()))
-        .pipe(gulpif('*.css', cleanCss({
-            root: 'g3w-admin/core/static/bower_components/icheck/skins',
-            rebase: false
-        })))
+        //.pipe(gulpif('*.js', uglify()))
+        //.pipe(gulpif('*.css', cleanCss({
+        //    root: 'g3w-admin/core/static/bower_components/icheck/skins',
+        //    rebase: false
+        //})))
         .pipe(gulp.dest('g3w-admin/core/static/dist'));
 });
 
