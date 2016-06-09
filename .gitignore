@@ -29,6 +29,9 @@ build
 # gulp dist directory
 /dist/
 
+# coverage
+/g3w-admin/.coverage
+
 # submodule
 /g3w-admin/ogc/
 /g3w-admin/iternet/
