@@ -1,5 +1,8 @@
+from django.forms.models import fields_for_model
+from django.forms import fields
 from copy import deepcopy
 from collections import OrderedDict
+
 
 # data field type
 FIELD_TYPE_INTEGER = 'integer'
@@ -85,7 +88,8 @@ FIELD_TYPES_MAPPING = {
 
         # date and datetime
         'string': FIELD_TYPE_DATETIME
-    }   
+    },
+
 
 }
 
@@ -154,6 +158,10 @@ def mapLayerAttributes(layer, formField=False, **kwargs):
     else:
         return fieldsMapped
 
+
+def mapLayerAttributesFromModel(model, formField=False, **kwargs):
+
+    pass
 
 
 
