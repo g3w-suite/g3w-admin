@@ -1,5 +1,4 @@
-from django.forms.models import fields_for_model
-from django.forms import fields
+from django.db.models.fields import *
 from copy import deepcopy
 from collections import OrderedDict
 
@@ -90,7 +89,14 @@ FIELD_TYPES_MAPPING = {
         'string': FIELD_TYPE_DATETIME
     },
 
-
+    'djangoModel': {
+        CharField: FIELD_TYPE_STRING,
+        BooleanField: FIELD_TYPE_BOOLEAN,
+        TextField: FIELD_TYPE_STRING,
+        URLField: FIELD_TYPE_STRING,
+        IntegerField: FIELD_TYPE_INTEGER,
+        FloatField: FIELD_TYPE_FLOAT
+    }
 }
 
 
@@ -160,8 +166,28 @@ def mapLayerAttributes(layer, formField=False, **kwargs):
 
 
 def mapLayerAttributesFromModel(model, formField=False, **kwargs):
+    """
+    map model simple e direct field to Attributes for client editing system
+    only concrete field not virtual filed and many2many
+    """
+    fieldsToExlude = kwargs['fieldsToExlude'] if 'fieldsToExlude' in kwargs else []
 
-    pass
+    toRes = OrderedDict()
+    fields = model._meta.concrete_fields
+    for field in fields:
+        if not isinstance(field, AutoField) and field.name not in fieldsToExlude:
+            fieldType = FIELD_TYPES_MAPPING['djangoModel'][type(field)]
+            toRes[field.name] = {
+                'editable': True,
+                'required': not field.blank,
+                'label': field.attname,
+                'type': fieldType,
+                'input': {
+                    'type': FORM_FIELDS_MAPPING[fieldType],
+                    'options': {}
+                }
+            }
+    return toRes
 
 
 
