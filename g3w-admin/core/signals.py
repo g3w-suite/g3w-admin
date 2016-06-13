@@ -10,6 +10,9 @@ post_create_maplayerattributes = django.dispatch.Signal(providing_args=["layer"]
 post_save_maplayer = django.dispatch.Signal(providing_args=["layer", "mode", "data"])
 
 # signal to add extra maplayers attribute: i.e. iternet
+pre_delete_maplayer = django.dispatch.Signal(providing_args=["layer", "data"])
+
+# signal to add extra maplayers attribute: i.e. iternet
 post_serialize_maplayer = django.dispatch.Signal(providing_args=["layer", "data"])
 
 # signals pre update project
