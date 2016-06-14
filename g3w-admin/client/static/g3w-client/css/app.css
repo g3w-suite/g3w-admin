@@ -5315,85 +5315,31 @@ fieldset[disabled] .btn-yahoo.active {
     transform: rotate(360deg);
   }
 }
-@media (max-width: 767px) {
-  .sidebar-open .content-wrapper,
-  .sidebar-open .right-side,
-  .sidebar-open .main-footer {
-    -webkit-transform: translate(300px, 0);
-    -ms-transform: translate(300px, 0);
-    -o-transform: translate(300px, 0);
-    transform: translate(300px, 0);
-  }
-}
-.sidebar-aside-toggle {
-  position: absolute;
-  left: 400px;
-  top: 50px;
-  background-color: #3c8dbc;
-  color: white;
-  background-image: none;
-  padding: 12.5px;
-  font-family: fontAwesome;
-}
-.sidebar-aside-toggle:before {
-  content: "\f0c9";
-}
-.sidebar-aside-toggle:focus,
-.sidebar-aside-toggle:hover {
-  color: #fff;
-}
-@media (max-width: 767px) {
-  .sidebar-aside-toggle {
-    left: 300px;
-  }
-}
-.sidebar-aside-toggle .icon-bar {
-  display: none;
-}
-.navbar-form {
-  padding-top: 0px;
-  padding-bottom: 0 px;
-  margin-bottom: 0px;
-}
-.sidebar .g3w-sidebarpanel {
-  padding: 10px 10px 10px 10px;
-}
-.sidebar .treeview-label {
-  font-size: 1.1em;
-}
-@media (max-width: 767px) {
-  .main-sidebar,
-  .left-side {
-    width: 300px;
-  }
-}
-@media (max-width: 767px) {
-  .main-sidebar,
-  .left-side {
-    -webkit-transform: translate(-300px, 0);
-    -ms-transform: translate(-300px, 0);
-    -o-transform: translate(-300px, 0);
-    transform: translate(-300px, 0);
-  }
-}
-.mapspinner-wrapper {
-  position: absolute;
+.spinner-wrapper {
   top: 0px;
   right: 0px;
   padding: .5em;
+  color: #3c8dbc;
+  background-color: white;
+}
+.spinner-wrapper.blue {
   color: white;
   background-color: #3c8dbc;
 }
-.mapspinner-wrapper .spinner {
+.spinner-wrapper .spinner {
   width: 25px;
   height: 25px;
   -webkit-animation: circle infinite .75s linear;
   -moz-animation: circle infinite .75s linear;
   -o-animation: circle infinite .75s linear;
   animation: circle infinite .75s linear;
-  border: 2px solid #fff;
+  border: 2px solid #3c8dbc;
   border-top-color: transparent;
   border-radius: 100%;
+}
+.spinner-wrapper .spinner.blue {
+  border: 2px solid #fff;
+  border-top-color: transparent;
 }
 @-webkit-keyframes circle {
   0% {
@@ -5449,6 +5395,68 @@ fieldset[disabled] .btn-yahoo.active {
     -ms-transform: rotate(360deg);
     -o-transform: rotate(360deg);
     transform: rotate(360deg);
+  }
+}
+@media (max-width: 767px) {
+  .sidebar-open .content-wrapper,
+  .sidebar-open .right-side,
+  .sidebar-open .main-footer {
+    -webkit-transform: translate(300px, 0);
+    -ms-transform: translate(300px, 0);
+    -o-transform: translate(300px, 0);
+    transform: translate(300px, 0);
+  }
+}
+.sidebar-aside-toggle {
+  position: absolute;
+  left: 400px;
+  top: 50px;
+  background-color: #3c8dbc;
+  color: white;
+  border-bottom: 1px solid #3c8dbc;
+  background-image: none;
+  padding: 12.5px;
+  font-family: fontAwesome;
+}
+.sidebar-aside-toggle:before {
+  content: "\f0c9";
+}
+.sidebar-aside-toggle:focus,
+.sidebar-aside-toggle:hover {
+  color: #fff;
+}
+@media (max-width: 767px) {
+  .sidebar-aside-toggle {
+    left: 300px;
+  }
+}
+.sidebar-aside-toggle .icon-bar {
+  display: none;
+}
+.navbar-form {
+  padding-top: 0px;
+  padding-bottom: 0 px;
+  margin-bottom: 0px;
+}
+.sidebar .g3w-sidebarpanel {
+  padding: 10px 10px 10px 10px;
+}
+.sidebar .treeview-label {
+  font-size: 1.1em;
+}
+@media (max-width: 767px) {
+  .main-sidebar,
+  .left-side {
+    width: 300px;
+  }
+}
+@media (max-width: 767px) {
+  .main-sidebar,
+  .left-side {
+    -webkit-transform: translate(-300px, 0);
+    -ms-transform: translate(-300px, 0);
+    -o-transform: translate(-300px, 0);
+    transform: translate(-300px, 0);
   }
 }
 .bottombar {
@@ -5758,7 +5766,7 @@ Licensed under MIT
 }
 .ol-control button:hover {
   text-decoration: none;
-  background-color: #23536f;
+  background-color: #3c8dbc;
 }
 .ol-control button:focus {
   text-decoration: none;
@@ -5766,18 +5774,7 @@ Licensed under MIT
   outline: none;
 }
 .ol-control button:focus:hover {
-  background-color: #23536f;
-}
-@media screen and (max-width: 768px) {
-  .ol-control button:hover {
-    background-color: #3c8dbc;
-  }
-  .ol-control button:focus {
-    background-color: #3c8dbc;
-  }
-  .ol-control button:focus:hover {
-    background-color: #3c8dbc;
-  }
+  background-color: #3c8dbc;
 }
 .ol-control:hover {
   background-color: transparent;
