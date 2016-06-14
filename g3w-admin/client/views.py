@@ -8,6 +8,7 @@ from core.api.serializers import GroupSerializer, Group
 from django.contrib.auth.views import redirect_to_login
 from django.apps import apps
 from django.core.exceptions import PermissionDenied
+
 from copy import deepcopy
 
 
@@ -17,7 +18,7 @@ class ClientView(TemplateView):
 
     def dispatch(self, request, *args, **kwargs):
 
-        # che permissions
+        # check permissions
         Project = apps.get_app_config(kwargs['project_type']).get_model('project')
         if not request.user.has_perm("{}.view_project".format(kwargs['project_type']),
                                      Project.objects.get(pk=kwargs['project_id'])):
@@ -34,7 +35,7 @@ class ClientView(TemplateView):
 
         # group serializer
         group = get_object_or_404(Group, slug=kwargs['group_slug'])
-        groupSerializer = GroupSerializer(group,projectId=kwargs['project_id'], projectType=kwargs['project_type'])
+        groupSerializer = GroupSerializer(group, projectId=kwargs['project_id'], projectType=kwargs['project_type'], request=self.request)
 
         groupData = deepcopy(groupSerializer.data)
 

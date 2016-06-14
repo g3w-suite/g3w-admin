@@ -11,7 +11,8 @@ class QdjangoProjectAuthorizer(object):
     def auth_request(self, **kwargs):
 
         # todo: impleent acl property name
-        if self.request.user.has_perm('projects.view_project',self.project) or get_anonymous_user().has_perm('projects.view_project',self.project):
+        if self.request.user.has_perm('qdjango.view_project', self.project) or\
+                get_anonymous_user().has_perm('qdjango.view_project',self.project):
             return True
         else:
             raise AuthForbiddenRequest()

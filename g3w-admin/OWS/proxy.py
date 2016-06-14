@@ -17,7 +17,7 @@ class Proxy(object):
             authorizer.auth_request()
         except AuthForbiddenRequest:
             raise AuthForbiddenRequest()
-        except:
+        except Exception as e:
             try:
                 """
                 Second try to perfom proxy authorizer base

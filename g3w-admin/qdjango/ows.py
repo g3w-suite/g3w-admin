@@ -42,6 +42,7 @@ QDJANGO_QGSSERVER_REQUEST = 'qgsserver'
 # set request mode
 qdjangoModeRequest = getattr(settings, 'QDJANGO_MODE_REQUEST', QDJANGO_QGSSERVER_REQUEST)
 
+
 class OWSRequestHandler(OWSRequestHandlerBase):
     """
     Handler for ows request for module qdjango

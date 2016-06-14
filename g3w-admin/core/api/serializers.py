@@ -4,6 +4,7 @@ from rest_framework import serializers
 from rest_framework.fields import empty
 from core.models import Group
 from core.signals import initconfig_plugin_start
+from core.mixins.api.serializers import G3WRequestSerializer
 from copy import copy
 
 
@@ -23,7 +24,7 @@ class BaseLayerSerializer(serializers.ModelSerializer):
         )
 
 
-class GroupSerializer(serializers.ModelSerializer):
+class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
     minscale = serializers.IntegerField(source='min_scale', read_only=True)
     maxscale = serializers.IntegerField(source='max_scale', read_only=True)
