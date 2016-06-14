@@ -100,7 +100,7 @@ FIELD_TYPES_MAPPING = {
 }
 
 
-def editingFormField(fieldName, type=FIELD_TYPE_STRING, editable=True, required=True, validate={}, fieldLabel=None, inputType=None, values=None, **kwargs):
+def editingFormField(fieldName, type=FIELD_TYPE_STRING, editable=True, required=True, fieldLabel=None, inputType=None, values=None, **kwargs):
     """
     Build editign form field for client.
     """
@@ -109,8 +109,9 @@ def editingFormField(fieldName, type=FIELD_TYPE_STRING, editable=True, required=
         'type': type,
         'label': fieldLabel if fieldLabel else fieldName,
         'editable': editable,
-        'required': required,
-        'validate': validate,
+        'validate': {
+            'required': required
+        },
         'input': {
             'type': inputType if inputType else FORM_FIELD_TYPE_TEXT,
             'options': {}
@@ -151,8 +152,8 @@ def mapLayerAttributes(layer, formField=False, **kwargs):
                 formFields[field['name']] = editingFormField(
                     field['name'],
                     type=field['type'],
-                    fieldLabel= field['label'],
-                    inputType= FORM_FIELDS_MAPPING[field['type']]
+                    fieldLabel=field['label'],
+                    inputType=FORM_FIELDS_MAPPING[field['type']]
                 )
 
                 if 'fields' in kwargs and field['name'] in kwargs['fields']:
@@ -177,16 +178,13 @@ def mapLayerAttributesFromModel(model, formField=False, **kwargs):
     for field in fields:
         if not isinstance(field, AutoField) and field.name not in fieldsToExlude:
             fieldType = FIELD_TYPES_MAPPING['djangoModel'][type(field)]
-            toRes[field.name] = {
-                'editable': True,
-                'required': not field.blank,
-                'label': field.attname,
-                'type': fieldType,
-                'input': {
-                    'type': FORM_FIELDS_MAPPING[fieldType],
-                    'options': {}
-                }
-            }
+            toRes[field.name] = editingFormField(
+                field.name,
+                required=not field.blank,
+                fieldLabel=field.attname,
+                type=fieldType,
+                inputType=FORM_FIELDS_MAPPING[fieldType]
+            )
     return toRes
 
 

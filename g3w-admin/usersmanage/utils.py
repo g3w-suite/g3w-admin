@@ -8,7 +8,7 @@ def getUserGroups(user):
     return user.groups.values_list('name', flat=True)
 
 
-def get_fields_by_user(user, form):
+def get_fields_by_user(user, form, **kwargs):
     fields = [
         'editor_user',
         'viewer_users'
@@ -17,6 +17,13 @@ def get_fields_by_user(user, form):
         del(form.fields['editor_user'])
         if 'editor_user' in fields:
             del(fields[fields.index('editor_user')])
+    else:
+
+        # if not required edit_user
+        if 'editor_field_required' in kwargs and not kwargs['editor_field_required']:
+            del (form.fields['editor_user'])
+            if 'editor_user' in fields:
+                del (fields[fields.index('editor_user')])
 
     toRet = []
     for field in fields:
@@ -84,7 +91,7 @@ def crispyBoxACL(form, **kwargs):
 
     bgColorCssClass = kwargs.get('bgColorCssClass', 'bg-purple')
     boxCssClass = kwargs.get('boxCssClass', 'col-md-6')
-    userFields = get_fields_by_user(form.request.user, form)
+    userFields = get_fields_by_user(form.request.user, form, **kwargs)
 
     return Div(
                 Div(
