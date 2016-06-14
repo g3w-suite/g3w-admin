@@ -109,14 +109,15 @@ def editingFormField(fieldName, type=FIELD_TYPE_STRING, editable=True, required=
         'type': type,
         'label': fieldLabel if fieldLabel else fieldName,
         'editable': editable,
-        'validate': {
-            'required': required
-        },
+        'validate': {},
         'input': {
             'type': inputType if inputType else FORM_FIELD_TYPE_TEXT,
             'options': {}
         },
     })
+
+    if required:
+        ret['validate']['required'] = True;
 
     if 'default' in kwargs:
         ret['input']['options']['default'] = kwargs['default']
