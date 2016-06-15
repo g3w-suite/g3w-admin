@@ -20,3 +20,12 @@ pre_update_project = django.dispatch.Signal(providing_args=["projectType", "proj
 
 # signals pre delet project
 pre_delete_project = django.dispatch.Signal(providing_args=["projectType", "project", "projects"])
+
+# signal to load widgets for project
+load_project_widgets = django.dispatch.Signal(providing_args=["app_name", "project"])
+
+# signal to load specific css from module and submodules
+load_css_modules = django.dispatch.Signal()
+
+# signal to load specific js file from module and submodules
+load_js_modules = django.dispatch.Signal()

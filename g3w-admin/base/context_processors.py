@@ -2,6 +2,8 @@ from django.conf import settings
 from django.core.urlresolvers import resolve
 from datetime import datetime
 from usersmanage.configs import *
+from core.signals import load_css_modules
+
 
 def global_settings(request):
     g3wadmin_context = {}
@@ -36,4 +38,6 @@ def global_settings(request):
         if request.COOKIES['g3wadmin_sidebar_status'] == 'collapsed':
             g3wadmin_context['sidebar_status'] = 'sidebar-collapse'
 
+    # add specific css modules and submodules
+    g3wadmin_context['css_modules'] = load_css_modules.send(request)
     return g3wadmin_context
