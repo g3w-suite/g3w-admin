@@ -17,6 +17,7 @@ from .forms import GroupForm
 from .models import Group, GroupProjectPanoramic
 from guardian.shortcuts import get_objects_for_user
 from .mixins.views import G3WRequestViewMixin, G3WAjaxDeleteViewMixin
+from .utils.decorators import check_madd
 
 
 
@@ -71,6 +72,7 @@ class GroupCreateView(G3WRequestViewMixin, CreateView):
     form_class = GroupForm
 
     @method_decorator(permission_required('core.add_group', return_403=True))
+    @method_decorator(check_madd('MGC:kTccysDKRCPgT5M5y6sv-OSWlck', Group))
     def dispatch(self, *args, **kwargs):
         return super(GroupCreateView, self).dispatch(*args, **kwargs)
 

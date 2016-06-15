@@ -12,7 +12,7 @@ from django.utils.decorators import method_decorator
 from guardian.decorators import permission_required
 from core.mixins.views import *
 from core.signals import pre_update_project, pre_delete_project
-from django.core.urlresolvers import reverse
+from core.utils.decorators import check_madd
 from django_downloadview import ObjectDownloadView
 from usersmanage.mixins.views import G3WACLViewMixin
 from .mixins.views import *
@@ -55,6 +55,7 @@ class OdjangoProjectCreateView(QdjangoProjectCUViewMixin, G3WGroupViewMixin, G3W
     form_class = QdjangoProjetForm
 
     @method_decorator(permission_required('qdjango.add_project', return_403=True))
+    @method_decorator(check_madd('MPC:XYamtBJA_JgFGmFvEa9x193rnLg', Project))
     def dispatch(self, *args, **kwargs):
         return super(OdjangoProjectCreateView, self).dispatch(*args, **kwargs)
 

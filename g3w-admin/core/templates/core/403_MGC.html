@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{%  block page_header %}
+<h1>
+403
+<small>{% trans "error page" %}</small>
+</h1>
+{% endblock %}
+
+{% block main_content %}
+<div class="error-page">
+<h2 class="headline text-yellow"> 403</h2>
+<div class="error-content">
+    <h3><i class="fa fa-warning text-yellow"></i> {% trans 'Access denied' %}!!</h3>
+    <h4>
+    {% trans "You can't add new Group" %}.
+    </h4>
+</div><!-- /.error-content -->
+</div><!-- /.error-page -->
+{% endblock %}

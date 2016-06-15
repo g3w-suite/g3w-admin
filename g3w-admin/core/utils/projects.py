@@ -1,3 +1,16 @@
+from core.models import Group
+
+def countAllProjects():
+    """
+    Count oll projects in the systems
+    """
+
+    numProjects = 0
+    groups = Group.objects.all()
+    for group in groups:
+        numProjects += group.getProjectsNumber()
+
+    return numProjects
 
 
 class CoreMetaLayer(object):

@@ -224,3 +224,5 @@ LOGGING = {
 }
 
 
+MGC = '-99:dodfEz3K2rziGayGnw_FyOuWdCM'
+MPC = '-99:dodfEz3K2rziGayGnw_FyOuWdCM'
