@@ -3,6 +3,7 @@ from rest_framework.permissions import BasePermission
 from guardian.utils import get_anonymous_user
 from django.core.urlresolvers import resolve
 
+
 class ProjectPermission(BasePermission):
     """
     Allows access only to users have permission on project
