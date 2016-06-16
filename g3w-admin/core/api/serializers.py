@@ -30,7 +30,7 @@ class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
     maxscale = serializers.IntegerField(source='max_scale', read_only=True)
     crs = serializers.IntegerField(read_only=True)
 
-    def __init__(self,instance=None, data=empty, **kwargs):
+    def __init__(self, instance=None, data=empty, **kwargs):
         self.projectId = kwargs['projectId']
         self.projectType = kwargs['projectType']
         del(kwargs['projectId'])
