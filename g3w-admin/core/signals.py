@@ -24,8 +24,12 @@ pre_delete_project = django.dispatch.Signal(providing_args=["projectType", "proj
 # signal to load widgets for project
 load_project_widgets = django.dispatch.Signal(providing_args=["app_name", "project"])
 
+# signal send to perform search by specific module
+perform_client_search = django.dispatch.Signal(providing_args=["app_name", "project_id", "widget_id"])
+
 # signal to load specific css from module and submodules
 load_css_modules = django.dispatch.Signal()
 
 # signal to load specific js file from module and submodules
 load_js_modules = django.dispatch.Signal()
+

@@ -3,8 +3,10 @@
 {% load g3wadmin_tags %}
 {% load guardian_tags %}
 {% load svg_icon %}
+{% load staticfiles %}
 
 {% block custom_js_links_page %}
+<script src="{% static "qdjango/js/widget.js" %}"></script>
 <script>
     ga.ui.initSetLayerCached();
     $('#tree').treeview({data:{{ layers_tree|safe }}});

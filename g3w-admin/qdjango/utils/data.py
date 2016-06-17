@@ -2,9 +2,9 @@ from django.conf import settings
 from defusedxml import lxml
 from lxml import etree
 from django.utils.translation import ugettext, ugettext_lazy as _
-from core.utils.general import *
 from django.db import transaction
 from qdjango.models import Project
+from core.utils.data import XmlData
 from .structure import *
 import os, re
 import json
@@ -46,39 +46,6 @@ class QgisValidator(object):
         pass
 
 
-class QgisData(object):
-
-    _dataToSet = []
-
-    _introMessageException = ''
-
-    _defaultValidators = []
-
-    def setData(self):
-        """
-        Set data to self object
-        """
-        for data in self._dataToSet:
-            try:
-                setattr(self,data,getattr(self,'_getData{}'.format(ucfirst(data)))())
-            except Exception as e:
-                raise Exception(_('{} "{}" {}:'.format(self._introMessageException,data,e.message)))
-
-    def registerValidator(self, validator):
-        """
-        Register a QgisProjectValidator object
-        :param validator: QgisProjectValidator
-        :return: None
-        """
-        self.validators.append(validator(self))
-
-    def asXML(self):
-        """
-        Return data to xml format
-        """
-        pass
-
-
 class QgisProjectLayerValidator(QgisValidator):
     """
     A simple qgis project layer validator call clean method
@@ -103,7 +70,7 @@ class DatasourceExists(QgisProjectLayerValidator):
                 raise Exception(err)
 
 
-class QgisProjectLayer(QgisData):
+class QgisProjectLayer(XmlData):
     """
     Qgisdata object for layer project: a layer xml wrapper
     """
@@ -429,7 +396,7 @@ class ProjectTitleExists(QgisProjectValidator):
 
 
 
-class QgisProject(QgisData):
+class QgisProject(XmlData):
     """
     A qgis xml project file wrapper
     """
@@ -697,7 +664,7 @@ class QgisProject(QgisData):
             tree.write(handler)
 
 
-class QgisProjectSettingsWMS(QgisData):
+class QgisProjectSettingsWMS(XmlData):
 
     _dataToSet = [
         'layers'

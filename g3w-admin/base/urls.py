@@ -19,7 +19,7 @@ base = BASE_ADMIN_URLPATH = 'admin/' if hasattr(settings, 'FRONTEND') and settin
 G3W_SITETREE_I18N_ALIAS = ['core', 'acl']
 
 jsInfoDict = {
-    'packages': ('core','usermanage','client',),
+    'packages': ('core', 'usermanage', 'client',),
 }
 
 urlpatterns = [

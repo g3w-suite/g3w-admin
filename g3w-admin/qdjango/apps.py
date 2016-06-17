@@ -50,4 +50,7 @@ class QdjangoConfig(AppConfig):
     def ready(self):
         post_migrate.connect(GiveBaseGrant, sender=self)
 
+        # import signals receivers
+        import qdjango.receivers
+
 

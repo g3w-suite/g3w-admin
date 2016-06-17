@@ -1,24 +1,10 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
 from django.conf import settings
-from rest_framework.renderers import JSONRenderer
-from django.apps import apps
 from core.api.serializers import GroupSerializer, Group
 from core.api.permissions import ProjectPermission
-
-
-
-class TestApi(APIView):
-
-
-
-    def get(self, request, format=None):
-
-        g = Group.objects.all()[0]
-        gs = GroupSerializer(g)
-        return Response(gs.data)
+from core.signals import perform_client_search
 
 
 class ClientConfigApiView(APIView):
@@ -41,10 +27,33 @@ class ClientConfigApiView(APIView):
         return Response(ps.data)
 
 
+class ClientSearchApiView(APIView):
+    """
+    APIView to perform a search on a project layer
+    """
+
+    permission_classes = (ProjectPermission,)
+
+    def get(self, request, format=None, group_slug=None, project_type=None, project_id=None, widget_id=None):
+
+        resSearch = perform_client_search.send(request, app_name=project_type, project_id=project_id,
+                                               widget_id=widget_id)
+
+        # build response from modules
+        response = []
+        for res in resSearch:
+            res = res[1]
+            response.append(res.asJSON())
+        return Response(response)
+
+
+
 class GroupConfigApiView(APIView):
     """
     APIView to get data Project and layers
     """
+
+    permission_classes = (ProjectPermission,)
 
     def get(self, request, format=None, group_slug=None, project_type=None, project_id=None):
         group = get_object_or_404(Group, slug=group_slug)

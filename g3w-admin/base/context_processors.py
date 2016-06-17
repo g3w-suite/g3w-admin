@@ -1,8 +1,7 @@
 from django.conf import settings
-from django.core.urlresolvers import resolve
 from datetime import datetime
 from usersmanage.configs import *
-from core.signals import load_css_modules
+from core.signals import load_css_modules, load_js_modules
 
 
 def global_settings(request):
@@ -40,4 +39,5 @@ def global_settings(request):
 
     # add specific css modules and submodules
     g3wadmin_context['css_modules'] = load_css_modules.send(request)
+    g3wadmin_context['js_modules'] = load_js_modules.send(request)
     return g3wadmin_context
