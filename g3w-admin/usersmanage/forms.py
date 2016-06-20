@@ -22,14 +22,26 @@ from usersmanage.configs import *
 from .utils import getUserGroups
 
 
+def label_users(obj):
+    return '{} {} ({})'.format(obj.first_name,obj.last_name,obj.username)
+
+
+def label_viewer_users(obj):
+    return '{} {} ({})'.format(obj.first_name,obj.last_name,obj.username)
+
+
+def label_user(obj):
+    return '{} {} ({})'.format(obj.first_name,obj.last_name,obj.username)
+
 
 class UsersChoiceField(forms.ModelMultipleChoiceField):
     def label_from_instance(self, obj):
-        return '{} {} ({})'.format(obj.first_name,obj.last_name,obj.username)
+        return label_users(obj)
+
 
 class UserChoiceField(forms.ModelChoiceField):
     def label_from_instance(self, obj):
-        return '{} {} ({})'.format(obj.first_name,obj.last_name,obj.username)
+        return label_user(obj)
 
 
 class G3WM2MSingleSelect(Select):
@@ -41,7 +53,7 @@ class G3WM2MSingleSelect(Select):
         return data.get(name, None)
 
 
-class G3WACLForm(forms.Form):
+class   G3WACLForm(forms.Form):
     """ ACL Form class to work with group user type """
 
     initial_viewer_users = []
@@ -241,7 +253,7 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
             self.cleaned_data['groups'] = () if not self.cleaned_data['groups'] else (self.cleaned_data['groups'],)
             self.save_m2m()
 
-            if hasattr(user,'userdata'):
+            if hasattr(user, 'userdata'):
                 user.userdata.department = self.cleaned_data['department']
                 if self.cleaned_data['avatar']:
                     user.userdata.avatar = self.cleaned_data['avatar']
