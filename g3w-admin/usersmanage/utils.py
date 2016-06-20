@@ -1,5 +1,8 @@
 from django.conf import settings
+from django.contrib.auth.models import Permission
+from django.contrib.contenttypes.models import ContentType
 from guardian.shortcuts import get_users_with_perms, assign_perm, remove_perm
+from guardian.models import UserObjectPermission
 from crispy_forms.layout import Div, HTML, Field
 from django.utils.translation import ugettext, ugettext_lazy as _
 
@@ -80,6 +83,19 @@ def setPermissionUserObject(user, object, permissions=[], mode='add'):
             assign_perm(perm, user, object)
         elif mode == 'remove' and user.has_perm(perm, object):
             remove_perm(perm, user, object)
+
+
+def get_objects_by_perm(obj, perm):
+    """
+    Get every object by perm
+    """
+    ctype = ContentType.objects.get_for_model(obj)
+    Perm = Permission.objects.get(codename=perm, content_type=ctype)
+
+    uobjects = UserObjectPermission.objects.filter(content_type=ctype, permission=Perm)
+
+    return [uobject for uobject in uobjects]
+
 
 
 def crispyBoxACL(form, **kwargs):
