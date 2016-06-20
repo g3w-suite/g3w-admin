@@ -40,12 +40,9 @@ class ClientSearchApiView(APIView):
                                                widget_id=widget_id)
 
         # build response from modules
-        response = []
-        for res in resSearch:
-            res = res[1]
-            response.append(res.asJSON())
+        # todo:: to build response
+        response = [res[1].asJSON() for res in resSearch]
         return Response(response)
-
 
 
 class GroupConfigApiView(APIView):

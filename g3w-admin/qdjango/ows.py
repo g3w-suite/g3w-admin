@@ -79,15 +79,8 @@ class OWSRequestHandler(OWSRequestHandlerBase):
 
             url = '?'.join([settings.QDJANGO_SERVER_URL, q.urlencode()])
             conn.request(request.method, url, request.body, headers)
-            try:
-                #print request.GET
-                pass
-            except:
-                pass
-
 
             result = conn.getresponse()
-
 
             # If we get a redirect, let's add a useful message.
             if result.status in (301, 302, 303, 307):

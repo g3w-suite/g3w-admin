@@ -48,6 +48,7 @@ class G3WACLForm(forms.Form):
     initial_editor_user = None
     editor_groups = (G3W_EDITOR1, G3W_EDITOR2)
     viewer_groups = (G3W_VIEWER1, G3W_VIEWER2)
+    add_anonynous = True
     editor_user = UserChoiceField(label=_('Editor user'), queryset=None, required=False)
     viewer_users = UsersChoiceField(label=_('Viewer users'), queryset=None, required=False)
 
@@ -75,7 +76,8 @@ class G3WACLForm(forms.Form):
             self.initial_editor_user = kwargs['initial']['editor_user']
 
     def _add_anonymou_user(self):
-        self.fields['viewer_users'].queryset = self.fields['viewer_users'].queryset | User.objects.filter(pk=settings.ANONYMOUS_USER_ID)
+        if self.add_anonynous:
+            self.fields['viewer_users'].queryset = self.fields['viewer_users'].queryset | User.objects.filter(pk=settings.ANONYMOUS_USER_ID)
 
     def _ACLPolicy(self):
 

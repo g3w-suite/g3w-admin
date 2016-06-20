@@ -202,10 +202,15 @@ class QdjangoLayerWidgetsView(G3WGroupViewMixin, QdjangoProjectViewMixin, Qdjang
         return Widget.objects.filter(datasource=self.layer.datasource)
 
 
-class QdjangoLayerWidgetCreateView(G3WRequestViewMixin, G3WGroupViewMixin, QdjangoProjectViewMixin, QdjangoLayerViewMixin, AjaxableFormResponseMixin, CreateView):
+class QdjangoLayerWidgetCreateView(G3WRequestViewMixin, G3WGroupViewMixin, QdjangoProjectViewMixin,
+                                   QdjangoLayerViewMixin, AjaxableFormResponseMixin, CreateView):
 
     form_class = QdjangoWidgetForm
     template_name = 'qdjango/ajax/widget_form.html'
+
+    @method_decorator(permission_required('qdjango.add_widget', return_403=True))
+    def dispatch(self, *args, **kwargs):
+        return super(QdjangoLayerWidgetCreateView, self).dispatch(*args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super(QdjangoLayerWidgetCreateView, self).get_context_data()
@@ -245,6 +250,10 @@ class QdjangoLayerWidgetUpdateView(G3WRequestViewMixin, G3WGroupViewMixin, Qdjan
     form_class = QdjangoWidgetForm
     model = Widget
     template_name = 'qdjango/ajax/widget_form.html'
+
+    @method_decorator(permission_required('qdjango.change_widget', (Widget, 'slug', 'slug'), raise_exception=True))
+    def dispatch(self, *args, **kwargs):
+        return super(QdjangoLayerWidgetUpdateView, self).dispatch(*args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super(QdjangoLayerWidgetUpdateView, self).get_context_data()
