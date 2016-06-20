@@ -8,7 +8,23 @@ from django.utils.translation import ugettext, ugettext_lazy as _
 
 
 def getUserGroups(user):
+    """
+    Return un array of user's groups.
+    """
     return user.groups.values_list('name', flat=True)
+
+
+def userHasGroups(user, groupsToFind, strict=False):
+    """
+    check if Grouds to find are in user groups.
+    """
+    userGroups = getUserGroups(user)
+    groupsIntersect = list(set.intersection(set(userGroups), set(groupsToFind)))
+
+    if strict:
+        return groupsIntersect == groupsIntersect
+    else:
+        return len(groupsIntersect) > 0
 
 
 def get_fields_by_user(user, form, **kwargs):
