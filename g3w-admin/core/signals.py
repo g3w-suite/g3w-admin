@@ -15,11 +15,17 @@ pre_delete_maplayer = django.dispatch.Signal(providing_args=["layer", "data"])
 # signal to add extra maplayers attribute: i.e. iternet
 post_serialize_maplayer = django.dispatch.Signal(providing_args=["layer", "data"])
 
+# signal after add/update map group
+after_update_group = django.dispatch.Signal(providing_args=["group"])
+
 # signals pre update project
 pre_update_project = django.dispatch.Signal(providing_args=["projectType", "project"])
 
 # signals pre delet project
 pre_delete_project = django.dispatch.Signal(providing_args=["projectType", "project", "projects"])
+
+# signal after add/update project
+after_update_project = django.dispatch.Signal(providing_args=["app_name", "project"])
 
 # signal to load widgets for project
 load_project_widgets = django.dispatch.Signal(providing_args=["app_name", "project"])

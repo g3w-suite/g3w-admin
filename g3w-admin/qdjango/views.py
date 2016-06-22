@@ -11,7 +11,7 @@ from django.http import HttpResponseRedirect
 from django.utils.decorators import method_decorator
 from guardian.decorators import permission_required
 from core.mixins.views import *
-from core.signals import pre_update_project, pre_delete_project
+from core.signals import pre_update_project, pre_delete_project, after_update_project
 from core.utils.decorators import check_madd
 from django_downloadview import ObjectDownloadView
 from usersmanage.mixins.views import G3WACLViewMixin
@@ -82,6 +82,13 @@ class QdjangoProjectUpdateView(QdjangoProjectCUViewMixin, G3WGroupViewMixin, G3W
                 if message[1]:
                     context['pre_update_messages'].append(message[1])
         return context
+
+    def form_valid(self, form):
+        res = super(QdjangoProjectUpdateView, self).form_valid(form)
+
+        # send project update signal
+        after_update_project.send(self, app_name='qdjango', project=form.instance)
+        return res
 
 
 class QdjangoProjectDetailView(G3WRequestViewMixin, DetailView):

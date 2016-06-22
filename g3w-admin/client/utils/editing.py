@@ -1,4 +1,5 @@
 from django.db.models.fields import *
+from django.db.models.fields.files import *
 from copy import deepcopy
 from collections import OrderedDict
 
@@ -11,6 +12,8 @@ FIELD_TYPE_BOOLEAN = 'boolean'
 FIELD_TYPE_DATE = 'date'
 FIELD_TYPE_TIME = 'time'
 FIELD_TYPE_DATETIME = 'datetime'
+FIELD_TYPE_IMAGE = 'file'
+FIELD_TYPE_FILE = 'file'
 
 
 # form field type
@@ -22,6 +25,8 @@ FORM_FIELD_TYPE_COORDSPICKER = 'coordspicker'
 FORM_FIELD_TYPE_BOXPICKER = 'boxspicker'
 FORM_FIELD_TYPE_LAYERPICKER = 'layerpicker'
 FORM_FIELD_TYPE_FIELDDEPEND = 'fielddepend'
+FORM_FIELD_TYPE_IMAGE = 'image'
+FORM_FIELD_TYPE_FILE = 'file'
 
 # mapping between form fields and fields data types
 FORM_FIELDS_MAPPING = {
@@ -31,7 +36,9 @@ FORM_FIELDS_MAPPING = {
     FIELD_TYPE_BOOLEAN: FORM_FIELD_TYPE_CHECK,
     FIELD_TYPE_DATE: FORM_FIELD_TYPE_TEXT,
     FIELD_TYPE_TIME: FORM_FIELD_TYPE_TEXT,
-    FIELD_TYPE_DATETIME: FORM_FIELD_TYPE_TEXT
+    FIELD_TYPE_DATETIME: FORM_FIELD_TYPE_TEXT,
+    FIELD_TYPE_IMAGE: FORM_FIELD_TYPE_IMAGE,
+    FIELD_TYPE_FILE: FORM_FIELD_TYPE_FILE,
 }
 
 
@@ -95,7 +102,9 @@ FIELD_TYPES_MAPPING = {
         TextField: FIELD_TYPE_STRING,
         URLField: FIELD_TYPE_STRING,
         IntegerField: FIELD_TYPE_INTEGER,
-        FloatField: FIELD_TYPE_FLOAT
+        FloatField: FIELD_TYPE_FLOAT,
+        ImageField: FIELD_TYPE_IMAGE,
+        FileField: FIELD_TYPE_FILE
     }
 }
 

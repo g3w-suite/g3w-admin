@@ -1,4 +1,5 @@
 from django.http import JsonResponse
+from django.apps import apps
 from django.shortcuts import get_object_or_404
 from core.models import Group
 
@@ -40,6 +41,39 @@ class G3WGroupViewMixin(object):
 
         self.group = get_object_or_404(Group, slug=self.kwargs['group_slug'])
         return super(G3WGroupViewMixin, self).dispatch(request, *args, **kwargs)
+
+
+class G3WProjectViewMixin(object):
+    """
+    Mixins for Class View for get group slug and r object for get
+    """
+
+    projectModel = None
+
+    def dispatch(self, request, *args, **kwargs):
+        """Populate group attribute."""
+
+        if not self.projectModel:
+            self.app_name = kwargs['project_type']
+            self.projectModel = apps.get_app_config(self.app_name).get_model('project')
+
+        self.project_slug = kwargs.get('project_slug')
+        self.project = get_object_or_404(self.projectModel, slug=self.project_slug)
+        return super(G3WProjectViewMixin, self).dispatch(request, *args, **kwargs)
+
+    def get_form_kwargs(self):
+        kwargs = super(G3WProjectViewMixin, self).get_form_kwargs()
+
+        kwargs['project'] = self.project
+
+        return kwargs
+
+    def get_context_data(self, **kwargs):
+        """Add current project to context."""
+
+        context = super(G3WProjectViewMixin, self).get_context_data(**kwargs)
+        context['project'] = self.project
+        return context
 
 
 class G3WAjaxDeleteViewMixin(object):

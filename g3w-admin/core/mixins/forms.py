@@ -32,6 +32,18 @@ class G3WGroupFormMixin(object):
         super(G3WGroupFormMixin, self).__init__(*args, **kwargs)
 
 
+class G3WProjectFormMixin(object):
+    """ Form Mixin to get Project object from instance """
+
+    def __init__(self, *args, **kwargs):
+        # get request object from kwargs
+        if 'project' in kwargs:
+            self.project = kwargs['project']
+            del (kwargs['project'])
+
+        super(G3WProjectFormMixin, self).__init__(*args, **kwargs)
+
+
 class G3WGroupBaseLayerFormMixin(object):
     """ Form Mixin to set queryset and initial value for baselayer field project model  """
 

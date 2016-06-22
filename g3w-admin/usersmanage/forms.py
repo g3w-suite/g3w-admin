@@ -22,6 +22,7 @@ from usersmanage.configs import *
 from .utils import getUserGroups
 
 
+
 def label_users(obj):
     return '{} {} ({})'.format(obj.first_name,obj.last_name,obj.username)
 

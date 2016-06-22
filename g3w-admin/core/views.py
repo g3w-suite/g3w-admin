@@ -12,12 +12,13 @@ from django.views.generic.detail import SingleObjectMixin
 from django.core.urlresolvers import reverse
 from django.utils.decorators import method_decorator
 from guardian.decorators import permission_required
+from guardian.shortcuts import get_objects_for_user
 from usersmanage.mixins.views import G3WACLViewMixin
 from .forms import GroupForm
 from .models import Group, GroupProjectPanoramic
-from guardian.shortcuts import get_objects_for_user
 from .mixins.views import G3WRequestViewMixin, G3WAjaxDeleteViewMixin
 from .utils.decorators import check_madd
+from .signals import after_update_group
 
 
 
@@ -91,6 +92,13 @@ class GroupUpdateView(G3WRequestViewMixin, G3WACLViewMixin, UpdateView):
     @method_decorator(permission_required('core.change_group', (Group, 'slug', 'slug'), return_403=True))
     def dispatch(self, *args, **kwargs):
         return super(GroupUpdateView, self).dispatch(*args, **kwargs)
+
+    def form_valid(self, form):
+        res = super(GroupUpdateView, self).form_valid(form)
+
+        # send after_save
+        after_update_group.send(self, group=form.instance)
+        return res
 
     def get_success_url(self):
         return reverse('group-list')
