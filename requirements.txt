@@ -14,6 +14,7 @@ django-downloadview
 django-debug-toolbar
 django-debug-panel
 django-mptt
+pathlib
 shapely
 GDAL==1.11.0
 GeoAlchemy2==0.2.6
