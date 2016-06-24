@@ -65,10 +65,11 @@ G3WADMIN_APPS = [
     'OWS'
 ]
 
-G3WADMIN_PROJECT_APPS = [
-    'qdjango',
-    'ogc'
+G3WADMIN_PROJECT_APPS_BASE = [
+    'qdjango'
 ]
+
+G3WADMIN_PROJECT_APPS = []
 
 
 MIDDLEWARE_CLASSES = [
