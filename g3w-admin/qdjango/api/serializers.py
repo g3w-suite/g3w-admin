@@ -77,7 +77,7 @@ class ProjectSerializer(serializers.ModelSerializer):
         for l in layersTree:
             readLeaf(l)
 
-        # add widgets
+        # add baselayer default
         ret['baselayer'] = instance.baselayer.name if instance.baselayer else None
 
         return ret
