@@ -1,5 +1,10 @@
 from django.utils.translation import ugettext_lazy as _
 
+MSTYPES_QGIS = 'QGIS'
+MSTYPES_OGC = 'OGC'
+MSTYPES_MAPSERVER = 'Mapserver'
+MSTYPES_GEOSERVER = 'Geoserver'
+
 WIDGET_TYPES = {
     'search': {
         'name': _('Search'),

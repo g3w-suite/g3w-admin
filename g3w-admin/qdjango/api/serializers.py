@@ -10,6 +10,7 @@ except:
 from qdjango.utils.data import QgisProjectSettingsWMS
 from qdjango.ows import OWSRequestHandler
 from client.utils.editing import mapLayerAttributes
+from core.configs import *
 from qdjango.utils.structure import QdjangoMetaLayer
 import json
 
@@ -99,6 +100,7 @@ class LayerSerializer(serializers.ModelSerializer):
     maxscale = serializers.IntegerField(source='max_scale')
     crs = serializers.IntegerField(source='srid')
     editops = serializers.IntegerField(source='edit_options')
+    servertype = serializers.SerializerMethodField()
 
     def __init__(self,instance=None, data=empty, **kwargs):
         self.qgisProjectSettignsWMS = kwargs['qgisProjectSettignsWMS']
@@ -117,8 +119,12 @@ class LayerSerializer(serializers.ModelSerializer):
             'scalebasedvisibility',
             'minscale',
             'maxscale',
-            'editops'
+            'editops',
+            'servertype'
         )
+
+    def get_servertype(self, instance):
+        return MSTYPES_QGIS
 
     def get_attributes(self, instance):
         return mapLayerAttributes(instance) if instance.database_columns else []
@@ -154,6 +160,7 @@ class LayerSerializer(serializers.ModelSerializer):
             datasourceWMS = QueryDict(instance.datasource)
             if 'username' not in ret['source'] or 'password' not in ret['source']:
                 ret['source'].update(datasourceWMS.dict())
+                ret['servertype'] = MSTYPES_OGC
 
         return ret
 
