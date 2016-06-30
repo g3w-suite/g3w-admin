@@ -50,7 +50,8 @@ class ProjectSerializer(serializers.ModelSerializer):
 
         # add layers data, widgets
         ret['layers'] = []
-        ret['widgets'] = []
+        ret['search'] = []
+        ret['widget'] = []
         layers = {l.qgs_layer_id: l for l in instance.layer_set.all()}
 
         # for client map like multilayer
@@ -72,8 +73,12 @@ class ProjectSerializer(serializers.ModelSerializer):
                     widgets  = layers[layer['id']].widget_set.all()
                     for widget in widgets:
                         widgetSerializzerData = WidgetSerializer(widget).data
-                        widgetSerializzerData['layerid'] = layer['id']
-                        ret['widgets'].append(widgetSerializzerData)
+                        widgetSerializzerData['options']['layerid'] = layer['id']
+                        if widgetSerializzerData['type'] == 'search':
+                            widgetSerializzerData['options']['querylayerid'] = layer['id']
+                            ret['search'].append(widgetSerializzerData)
+                        else:
+                            ret['widget'].append(widgetSerializzerData)
 
         for l in layersTree:
             readLeaf(l)
@@ -173,7 +178,26 @@ class WidgetSerializer(serializers.ModelSerializer):
         ret = super(WidgetSerializer, self).to_representation(instance)
         ret['type'] = instance.widget_type
 
-        ret['body'] = json.loads(instance.body)
+        body = json.loads(instance.body)
+        ret['options'] = {
+            'queryurl': None,
+            'title': body['title'],
+            'results': body['results'],
+            'filter': {
+                'AND':[]
+            },
+            'dozoomtoextent': body['dozoomtoextent'],
+            #'zoom': body['zoom'],
+        }
+        for field in body['fields']:
+            input = field['input']
+            input['options']['blanktext'] = field['blanktext']
+            ret['options']['filter']['AND'].append({
+                'op': field['filterop'],
+                'attribute': field['name'],
+                'label': field['label'],
+                'input': input
+            })
         return ret
 
     class Meta:

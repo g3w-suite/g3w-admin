@@ -240,12 +240,12 @@ ga.Qdjango.widgetEditor = {
 		var descriptionInput = $('<input class="form-control" type="text" name="searchfield_description" value="'+blTeVa+'" >');
 		
 		var cmpOperatorSelect = $('<select class="form-control" name="comparison_operator">\
-										<option value="=">=</option>\
-										<option value="&gt;">&gt;</option>\
-										<option value="&lt;">&lt;</option>\
-										<option value="&lt;&gt;">&lt;&gt;</option>\
-										<option value="&gt;=">&gt;=</option>\
-										<option value="&lt;=">&lt;=</option>\
+										<option value="eq">=</option>\
+										<option value="gt">&gt;</option>\
+										<option value="lt">&lt;</option>\
+										<option value="ltgt">&lt;&gt;</option>\
+										<option value="gte">&gt;=</option>\
+										<option value="lte=">&lt;=</option>\
 										<option value="LIKE">LIKE</option>\
 									</select>');
 		if (this.layer_type != 'spatialite'){
