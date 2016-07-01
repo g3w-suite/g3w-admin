@@ -178,26 +178,29 @@ class WidgetSerializer(serializers.ModelSerializer):
         ret = super(WidgetSerializer, self).to_representation(instance)
         ret['type'] = instance.widget_type
 
-        body = json.loads(instance.body)
-        ret['options'] = {
-            'queryurl': None,
-            'title': body['title'],
-            'results': body['results'],
-            'filter': {
-                'AND':[]
-            },
-            'dozoomtoextent': body['dozoomtoextent'],
-            #'zoom': body['zoom'],
-        }
-        for field in body['fields']:
-            input = field['input']
-            input['options']['blanktext'] = field['blanktext']
-            ret['options']['filter']['AND'].append({
-                'op': field['filterop'],
-                'attribute': field['name'],
-                'label': field['label'],
-                'input': input
-            })
+        if ret['type'] == 'search':
+            body = json.loads(instance.body)
+            ret['options'] = {
+                'queryurl': None,
+                'title': body['title'],
+                'results': body['results'],
+                'filter': {
+                    'AND':[]
+                },
+                'dozoomtoextent': body['dozoomtoextent'],
+                #'zoom': body['zoom'],
+            }
+            for field in body['fields']:
+                input = field['input']
+                input['options']['blanktext'] = field['blanktext']
+                ret['options']['filter']['AND'].append({
+                    'op': field['filterop'],
+                    'attribute': field['name'],
+                    'label': field['label'],
+                    'input': input
+                })
+        else:
+            ret['body'] = json.loads(instance.body)
         return ret
 
     class Meta:
