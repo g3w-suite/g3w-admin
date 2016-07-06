@@ -376,9 +376,12 @@ _.extend(g3wadmin.widget, {
                         el.after(data)
                     },
                     error: function(el){
+                        console.log(arguments);
                         var parent = el.find(".jFiler-jProgressBar").parent();
                         el.find(".jFiler-jProgressBar").fadeOut("slow", function(){
                             $(ga.tpl.ajaxFiler_errorMsg()).hide().appendTo(parent).fadeIn("slow");
+                            modal.hide()
+                            ga.widget.showError(ga.utils.buildAjaxErrorMessage(500, errorMessage));
                         });
                     },
                 }
