@@ -81,7 +81,7 @@ class G3WAjaxDeleteViewMixin(object):
     Mixin for FormClass view for to delete object by ajax call
     '''
 
-    def post(self,request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         self.object = self.get_object()
 
         # delete object
