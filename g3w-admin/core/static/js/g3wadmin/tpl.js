@@ -26,6 +26,12 @@ _.extend(g3wadmin.tpl, {
             moreInfo: null
         },
 
+        pageAlert: {
+            status: 'success',
+            title: 'OK',
+            body: ''
+        },
+
 
     },
 
@@ -141,5 +147,13 @@ _.extend(g3wadmin.tpl, {
 
     mapContainer: _.template('\
     <div id="modalMap" class="modalMap"></div>\
+    '),
+    
+    pageAlert: _.template('\
+    <div class="alert alert-<%= status %> alert-dismissable">\
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>\
+        <h4><i class="icon fa fa-check"></i> <%= title %>!</h4>\
+        <p class="body-alert"><%= body %></p>\
+    </div>\
     ')
 });

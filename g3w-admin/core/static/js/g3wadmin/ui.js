@@ -73,6 +73,27 @@ _.extend(g3wadmin.ui, {
         options.modalClass = 'modal-warning';
         return this._buildModal(options);
     },
+
+    pageAlert:  function($pageAlert){
+
+        this.$pageAlert = $pageAlert;
+
+        this.setBody = function(bodyContent){
+            this.$pageAlert.find('.body-alert').html(bodyContent);
+        }
+        
+        this.show = function($before) {
+            $before.after(this.$pageAlert);
+        }
+    },
+
+    buildPageAlert: function (options) {
+        if (!_.isObject(options)){
+            options = {};
+        }
+        var $modal = $(ga.tpl.pageAlert(_.extendOwn(_.clone(ga.tpl.tplDefValues.pageAlert),options)));
+        return new this.pageAlert($modal);
+    },
     
     mapModal: function(options) {
         if (!_.isObject(options)){
