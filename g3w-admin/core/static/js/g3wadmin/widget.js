@@ -376,12 +376,16 @@ _.extend(g3wadmin.widget, {
                         el.after(data)
                     },
                     error: function(el){
-                        console.log(arguments);
+                        var errMsg = arguments[6].responseText;
                         var parent = el.find(".jFiler-jProgressBar").parent();
                         el.find(".jFiler-jProgressBar").fadeOut("slow", function(){
                             $(ga.tpl.ajaxFiler_errorMsg()).hide().appendTo(parent).fadeIn("slow");
-                            modal.hide()
-                            ga.widget.showError(ga.utils.buildAjaxErrorMessage(500, errorMessage));
+                            //modal.hide()
+                            //ga.widget.showError(ga.utils.buildAjaxErrorMessage(500, errorMessage));
+                            var $errMsg = $('<div class="callout callout-danger"></div>');
+                            $errMsg.append($('<h4>ERROR</h4>'));
+                            $errMsg.append($('<p></p>').html(errMsg));
+                            el.after($errMsg);
                         });
                     },
                 }
