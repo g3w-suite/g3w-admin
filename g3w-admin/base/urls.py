@@ -47,9 +47,9 @@ apiUrlpatterns = [
 if BASE_ADMIN_URLPATH:
     base = BASE_ADMIN_URLPATH[0:-1]
 for app in settings.G3WADMIN_PROJECT_APPS:
-    urlpatterns.append(url(r'^{}{}/'.format(base, app),include('{}.urls'.format(app))))
+    urlpatterns.append(url(r'^{}{}/'.format(base, app), include('{}.urls'.format(app))))
     try:
-      apiUrlpatterns.append(url(r'^{}/'.format(app),include('{}.apiurls'.format(app))))
+      apiUrlpatterns.append(url(r'^{}/'.format(app), include('{}.apiurls'.format(app))))
     except:
       pass
 
@@ -57,8 +57,8 @@ for app in settings.G3WADMIN_PROJECT_APPS:
 for app in settings.G3WADMIN_LOCAL_MORE_APPS:
     urlpatterns.append(url(r'^{}{}/'.format(base, app), include('{}.urls'.format(app))))
     try:
-      apiUrlpatterns.append(url(r'^{}/'.format(app),include('{}.apiurls'.format(app))))
-    except:
+      apiUrlpatterns.append(url(r'^{}/'.format(app), include('{}.apiurls'.format(app))))
+    except Exception as e:
         pass
 
 if settings.DEBUG:
