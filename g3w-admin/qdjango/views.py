@@ -252,7 +252,8 @@ class QdjangoLayerWidgetCreateView(G3WRequestViewMixin, G3WGroupViewMixin, Qdjan
         return ret
 
 
-class QdjangoLayerWidgetUpdateView(G3WRequestViewMixin, G3WGroupViewMixin, QdjangoProjectViewMixin, QdjangoLayerViewMixin, AjaxableFormResponseMixin, UpdateView):
+class QdjangoLayerWidgetUpdateView(G3WRequestViewMixin, G3WGroupViewMixin, QdjangoProjectViewMixin,
+                                   QdjangoLayerViewMixin, AjaxableFormResponseMixin, UpdateView):
 
     form_class = QdjangoWidgetForm
     model = Widget

@@ -236,7 +236,7 @@ ga.Qdjango.widgetEditor = {
 		var fiLaVa = (that.isset(values) && that.isset(values.label))? values.label : "";
 		var textInput = $('<input class="form-control" type="text" name="searchfield_text" value="'+fiLaVa+'" >');
 		
-		var blTeVa = (that.isset(values) && that.isset(values.blankText))? values.blankText : "";
+		var blTeVa = (that.isset(values) && that.isset(values.blanktext))? values.blanktext : "";
 		var descriptionInput = $('<input class="form-control" type="text" name="searchfield_description" value="'+blTeVa+'" >');
 		
 		var cmpOperatorSelect = $('<select class="form-control" name="comparison_operator">\
@@ -251,8 +251,8 @@ ga.Qdjango.widgetEditor = {
 		if (this.layer_type != 'spatialite'){
 			cmpOperatorSelect.append('<option value="ILIKE">ILIKE</option>')
 		}
-		if (that.isset(values) && that.isset(values.filterOp))
-			cmpOperatorSelect.val($('<div/>').html(values.filterOp).text());
+		if (that.isset(values) && that.isset(values.filterop))
+			cmpOperatorSelect.val($('<div/>').html(values.filterop).text());
 									
 		var div = $('<div class="blocco" style="display: none">\
 					<div class="box box-success" >\
