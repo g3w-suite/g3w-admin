@@ -104,7 +104,8 @@ FIELD_TYPES_MAPPING = {
         IntegerField: FIELD_TYPE_INTEGER,
         FloatField: FIELD_TYPE_FLOAT,
         ImageField: FIELD_TYPE_IMAGE,
-        FileField: FIELD_TYPE_FILE
+        FileField: FIELD_TYPE_FILE,
+        DecimalField: FIELD_TYPE_FLOAT
     }
 }
 
@@ -179,7 +180,7 @@ def mapLayerAttributes(layer, formField=False, **kwargs):
 def mapLayerAttributesFromModel(model, formField=False, **kwargs):
     """
     map model simple e direct field to Attributes for client editing system
-    only concrete field not virtual filed and many2many
+    only concrete field not virtual field and many2many
     """
     fieldsToExlude = kwargs['fieldsToExlude'] if 'fieldsToExlude' in kwargs else []
 
