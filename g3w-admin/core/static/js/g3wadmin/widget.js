@@ -43,7 +43,8 @@ _.extend(g3wadmin.widget, {
     _ajaxFilerParams: [
         'action-url',
         'modal-title',
-        'file-extensions'
+        'file-extensions',
+        'item-plus-form' // #selector to DOM contains addtitional form inputs.
     ],
 
     _setProjectPanoramic: [
@@ -324,19 +325,26 @@ _.extend(g3wadmin.widget, {
             if (_.isUndefined(params['action-url'])) {
                 throw new Error('Attribute data-action-url not defined');
             }
+
+            var templateOptions = {actionUrl: params['action-url'], plusFormInputs: ''};
+
+            if (!_.isUndefined(params['item-plus-form'])) {
+                var $itemFormPlus = $('#'+params['item-plus-form']);
+                templateOptions['plusFormInputs'] = '<div id="plus_filer_input">' + $itemFormPlus.html()+ '</div>'
+            }
             
             // open modal to show form filer
             var modal = ga.ui.buildDefaultModal({
                 confirmButton: false,
                 modalTitle: ((_.isUndefined(params['modal-title']) ? 'Upload file' : params['modal-title'])),
-                modalBody: ga.tpl.ajaxFiler({actionUrl: params['action-url']})
+                modalBody: ga.tpl.ajaxFiler(templateOptions)
             });
 
             modal.show();
 
             // add crftoken
             var data = {}
-            ga.utils.addCsfrtokenData(data)
+            ga.utils.addCsfrtokenData(data);
 
             // get extentions
             var extensions = _.isUndefined(params['file-extensions']) ? null : params['file-extensions'].split('|')
@@ -366,7 +374,17 @@ _.extend(g3wadmin.widget, {
                     data: data,
                     type: 'post',
                     enctype: 'multipart/form-data',
-                    beforeSend: function(){},
+                    beforeSend: function() {
+                        var upload = arguments[7]
+                        if (!_.isUndefined(params['item-plus-form'])) {
+                            var inputs = $('#plus_filer_input').find(':input').serializeArray();
+                            for (idx in inputs) {
+                                var d = inputs[idx];
+                                upload.data.append(d['name'], d['value']);
+                            }
+                        }
+
+                    },
                     success: function(data, el){
                         var parent = el.find(".jFiler-jProgressBar").parent();
                         el.find(".jFiler-jProgressBar").fadeOut("slow", function(){

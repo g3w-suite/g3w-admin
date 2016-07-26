@@ -22,3 +22,26 @@ class G3WGeometryField(GeometryField):
             return GEOSGeometry(value)
         except (ValueError, GEOSException, OGRException, TypeError):
             raise ValidationError(_('Invalid format: string or unicode input unrecognized as GeoJSON, WKT EWKT or HEXEWKB.'))
+
+
+class G3WGeoSerializerMixin(object):
+    """
+    Generic mixins for iternet geoserializer model
+    """
+
+    relationsAttributes = None
+
+    def setRealtionsAttributes(self, relationsAttributeId, relationsAttributes):
+        self.relationsAttributeId = relationsAttributeId
+        self.relationsAttributes = relationsAttributes
+
+    def create(self, validated_data):
+        instance = self.Meta.model(**validated_data)
+        instance.save()
+        return instance
+
+    def update(self, instance, validated_data):
+        for field, value in validated_data.items():
+            setattr(instance, field, value)
+        instance.save()
+        return instance

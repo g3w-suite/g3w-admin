@@ -71,6 +71,7 @@ _.extend(g3wadmin.tpl, {
 
     ajaxFiler: _.template('\
     <form action="<%= actionUrl %>" method="post" enctype="multipart/form-data">\
+        <%= plusFormInputs %>\
         <input type="file" name="files[]" id="filer_input" multiple="multiple">\
     </form>\
     '),
