@@ -40,6 +40,9 @@ class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
     def to_representation(self, instance):
         ret = super(GroupSerializer, self).to_representation(instance)
 
+        # add header_logo
+        ret['header_logo_img'] = instance.header_logo_img.name
+
         # add crs:
         ret['crs'] = int(str(self.instance.srid.srid))
         ret['proj4'] = self.instance.srid.proj4text
@@ -101,6 +104,6 @@ class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
             'maxscale',
             'crs',
             'background_color',
-            'header_logo_link'
+            'header_logo_link',
         )
 
