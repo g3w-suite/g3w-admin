@@ -340,6 +340,11 @@ _.extend(g3wadmin.widget, {
                 modalBody: ga.tpl.ajaxFiler(templateOptions)
             });
 
+            modal.setCloseButtonAction(function(e){
+                modal.hide();
+                window.location.reload();
+            });
+
             modal.show();
 
             // add crftoken

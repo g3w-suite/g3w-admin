@@ -51,6 +51,9 @@ _.extend(g3wadmin,{
         //Init bootstrap-datepicker
         this.ui.initBootstrapDatepicker();
 
+        //Init bootstrap-datepicker
+        this.ui.initBootstrapColorpicker();
+        
         //Init select2 plugin
         this.ui.initSelect2();
 

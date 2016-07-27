@@ -5,6 +5,13 @@
 {% load i18n %}
 
 
+{% block page_header %}
+<h1>
+    {% trans 'Group' %}
+    <small>{{ form.instance.name }}</small>
+</h1>
+{% endblock %}
+
 {% block custom_js_links_page %}
 <script>
     $(function() {

@@ -82,7 +82,6 @@ class Group(TimeStampedModel):
 
     # Company logo
     header_logo_img = models.FileField(_('headerLogoImg'), upload_to='logo_img')
-    header_logo_height = models.IntegerField(_('headerLogoHeight'))
     header_logo_link = models.URLField(_('headerLogoLink'), blank=True, null=True)
 
     # Max/min scale
@@ -98,6 +97,9 @@ class Group(TimeStampedModel):
 
     # baselayers
     baselayers = models.ManyToManyField(BaseLayer, blank=True, null=True)
+
+    # background color map default
+    background_color = models.CharField(max_length=7, default='#ffffff', blank=True)
 
     # Company TOS
     header_terms_of_use_text = models.TextField(

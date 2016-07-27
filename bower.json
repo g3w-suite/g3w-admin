@@ -8,6 +8,7 @@
     "bootstrap": "~3.3.5",
     "bootstrap3-wysihtml5-bower": "*",
     "bootstrap-datepicker": "*",
+    "bootstrap-colorpicker": "*",
     "bootstrap-treeview": "*",
     "jquery": "~2.1.4",
     "jquery-ui": "~1.11.4",

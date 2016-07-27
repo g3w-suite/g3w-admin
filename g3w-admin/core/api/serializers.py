@@ -99,6 +99,8 @@ class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
             'name',
             'minscale',
             'maxscale',
-            'crs'
+            'crs',
+            'background_color',
+            'header_logo_link'
         )
 

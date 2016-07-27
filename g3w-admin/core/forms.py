@@ -68,10 +68,10 @@ class GroupForm(FileFormMixin, G3WFormMixin, G3WRequestFormMixin, G3WACLForm, Mo
                                                 css_class='row'
                                             ),
                                             Div(
-                                                Div(PrependedText('max_scale','1:'),css_class='col-md-6'),
-                                                Div(PrependedText('panoramic_max_scale','1:'),css_class='col-md-6'),
-                                                Div(PrependedText('min_scale','1:'),css_class='col-md-6'),
-                                                Div(PrependedText('panoramic_min_scale','1:'),css_class='col-md-6'),
+                                                Div(PrependedText('max_scale','1:'), css_class='col-md-6'),
+                                                Div(PrependedText('panoramic_max_scale','1:'), css_class='col-md-6'),
+                                                Div(PrependedText('min_scale','1:'), css_class='col-md-6'),
+                                                Div(PrependedText('panoramic_min_scale','1:'), css_class='col-md-6'),
                                                 css_class='row'
                                             ),
                                             css_class='box-body'
@@ -84,7 +84,7 @@ class GroupForm(FileFormMixin, G3WFormMixin, G3WRequestFormMixin, G3WACLForm, Mo
                                 Div(
                                     Div(
                                         Div(
-                                            HTML("<h3 class='box-title'><i class='fa fa-map'></i> {}</h3>".format(_('Base Layers'))),
+                                            HTML("<h3 class='box-title'><i class='fa fa-map'></i> {}</h3>".format(_('Base Layers and Map default features'))),
                                             Div(
                                                 HTML("<button class='btn btn-box-tool' data-widget='collapse'><i class='fa fa-minus'></i></button>"),
                                                 css_class='box-tools',
@@ -93,6 +93,7 @@ class GroupForm(FileFormMixin, G3WFormMixin, G3WRequestFormMixin, G3WACLForm, Mo
                                         ),
                                         Div(
                                             Field('baselayers', **{'css_class': 'select2 col-md-12', 'multiple': 'multiple', 'style': 'width:100%;'}),
+                                            AppendedText('background_color', '<i></i>', css_class='colorpicker'),
                                             css_class='box-body'
                                         ),
                                         css_class='box box-danger {}'.format(self.checkEmptyInitialsData('baselayers'))
@@ -112,14 +113,14 @@ class GroupForm(FileFormMixin, G3WFormMixin, G3WRequestFormMixin, G3WACLForm, Mo
                                         Div(
                                             Div(
                                                 'header_logo_img',
-                                                HTML("""{% if form.header_logo_img.value %}<img class="507981" src="{{ MEDIA_URL }}{{ form.header_logo_img.value }}">{% endif %}""", ),
+                                                HTML("""{% if form.header_logo_img.value %}<img class="img-responsive img-thumbnail" src="{{ MEDIA_URL }}{{ form.header_logo_img.value }}">{% endif %}""", ),
                                                 'form_id',
                                                 'upload_url',
                                                 'delete_url',
                                                 css_class='col-md-6'
                                             ),
                                             Div(
-                                                AppendedText('header_logo_height','px'),
+                                                #AppendedText('header_logo_height','px'),
                                                 PrependedText('header_logo_link','http://'),
                                                 css_class='col-md-6'
                                             ),

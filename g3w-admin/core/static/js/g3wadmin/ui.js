@@ -41,6 +41,10 @@ _.extend(g3wadmin.ui, {
         this.setConfirmButtonAction = function (action) {
             this.$modal.find('.modal-button-confirm').click(action);
         }
+
+        this.setCloseButtonAction = function (action) {
+            this.$modal.find('.modal-button-close').click(action);
+        }
     },
 
     _buildModal: function (options) {
@@ -218,6 +222,16 @@ _.extend(g3wadmin.ui, {
         $widgetItem.datepicker({
             language:CURRENT_LANGUAGE_CODE
         });
+    },
+
+    initBootstrapColorpicker: function(context) {
+        if (!_.isUndefined(context)) {
+            var $widgetItem = $(context).find('.colorpicker');
+        }
+        else {
+            var $widgetItem = $('.colorpicker');
+        }
+        $widgetItem.parent().addClass('colorpicker-component').colorpicker();
     },
 
     initSelect2: function(context) {
