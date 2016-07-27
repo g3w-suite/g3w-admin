@@ -10,6 +10,10 @@ class CoreConfig(AppConfig):
         """
         update Django Rest Framework serializer mappings
         """
+
+        # import signal handlers
+        import core.receivers
+
         from django.contrib.gis.db import models
         from rest_framework.serializers import ModelSerializer
         from .editing.serializers import G3WGeometryField as GeometryField

@@ -114,6 +114,16 @@ class GroupDeleteView(G3WAjaxDeleteViewMixin,G3WRequestViewMixin, SingleObjectMi
     def dispatch(self, *args, **kwargs):
         return super(GroupDeleteView, self).dispatch(*args, **kwargs)
 
+    def post(self, request, *args, **kwargs):
+
+        res = super(GroupDeleteView, self).post(request, *args, **kwargs)
+        # delete ovwerviewmap if is set
+        try:
+            group_project_panoramics = GroupProjectPanoramic.objects.get(group=self.object)
+            group_project_panoramics.delete()
+        except Exception:
+            pass
+        return res
 
 class GroupSetProjectPanoramicView(View):
     '''

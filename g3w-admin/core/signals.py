@@ -21,8 +21,11 @@ after_update_group = django.dispatch.Signal(providing_args=["group"])
 # signals pre update project
 pre_update_project = django.dispatch.Signal(providing_args=["projectType", "project"])
 
-# signals pre delet project
+# signals pre delete project
 pre_delete_project = django.dispatch.Signal(providing_args=["projectType", "project", "projects"])
+
+# signal post project delete
+post_delete_project = django.dispatch.Signal(providing_args=["projectType", "project", "projects"])
 
 # signal after add/update project
 after_update_project = django.dispatch.Signal(providing_args=["app_name", "project"])
@@ -38,4 +41,6 @@ load_css_modules = django.dispatch.Signal()
 
 # signal to load specific js file from module and submodules
 load_js_modules = django.dispatch.Signal()
+
+
 

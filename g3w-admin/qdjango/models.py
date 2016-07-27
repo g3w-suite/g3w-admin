@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from django.db.models.signals import post_delete
 from model_utils.models import TimeStampedModel
 from autoslug import AutoSlugField
 from django.utils.translation import ugettext_lazy as _
@@ -12,6 +13,7 @@ from model_utils import Choices
 from usersmanage.utils import setPermissionUserObject, getUserGroups
 from usersmanage.configs import *
 from core.configs import *
+from core.receivers import check_overviewmap_project
 import os
 
 
@@ -103,6 +105,9 @@ class Project(G3WACLModelMixins, TimeStampedModel):
             layers = self.layer_set.all()
             for layer in layers:
                 getattr(layer, layerAction)(users_id)
+
+
+post_delete.connect(check_overviewmap_project, sender=Project)
 
 
 class Layer(G3WACLModelMixins, models.Model):
