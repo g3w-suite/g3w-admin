@@ -105,5 +105,7 @@ class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
             'crs',
             'background_color',
             'header_logo_link',
+            'header_terms_of_use_text',
+            'header_terms_of_use_link'
         )
 
