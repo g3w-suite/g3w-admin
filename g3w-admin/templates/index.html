@@ -1,1 +1,26 @@
 {% extends "base.html" %}
+{% load i18n %}
+
+{% block page_header %}
+<h1>
+    {% trans 'Dashboard' %}
+    <small>{% trans 'Current situation' %}</small>
+</h1>
+{% endblock%}
+
+{% block main_content %}
+<div class="row">
+    <div class="col-md-4">
+        <div class="small-box bg-aqua">
+            <div class="inner">
+              <h3>{{ n_groups }}</h3>
+              <p>{% trans 'Groups' %}</p>
+            </div>
+            <div class="icon">
+                <i class="fa fa-globe"></i>
+            </div>
+            <a href="{% url 'group-list' %}" class="small-box-footer">{% trans 'Show' %} <i class="fa fa-arrow-circle-right"></i></a>
+        </div>
+    </div>
+</div>
+{% endblock %}

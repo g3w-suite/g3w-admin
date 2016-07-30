@@ -44,8 +44,19 @@ class TestView(View):
         request.body = ''
         response = OWSRequestHandler.baseDoRequest(q, request)
         return response
+
+
 class DashboardView(TemplateView):
     template_name = "index.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(DashboardView, self).get_context_data(**kwargs)
+
+        # add number groups
+        groups = get_objects_for_user(self.request.user, 'core.view_group', Group)
+        context['n_groups'] = len(groups)
+
+        return context
 
 #for GROUPS
 #---------------------------------------------
@@ -92,7 +103,12 @@ class GroupUpdateView(G3WRequestViewMixin, G3WACLViewMixin, UpdateView):
     @method_decorator(permission_required('core.change_group', (Group, 'slug', 'slug'), return_403=True))
     def dispatch(self, *args, **kwargs):
         return super(GroupUpdateView, self).dispatch(*args, **kwargs)
-
+    '''
+    def get_context_data(self, **kwargs):
+        context = super(GroupUpdateView, self).get_context_data(**kwargs)
+        context['add_project_title'] = 'Add project'
+        return context
+    '''
     def form_valid(self, form):
         res = super(GroupUpdateView, self).form_valid(form)
 

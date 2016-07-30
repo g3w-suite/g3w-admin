@@ -2,6 +2,7 @@
 {% load staticfiles %}
 {% load g3wadmin_tags %}
 {% load crispy_forms_tags %}
+{% load guardian_tags %}
 {% load i18n %}
 
 
@@ -21,6 +22,24 @@
 {% endblock %}
 
 {% block main_content %}
+
+{% if object %}
+    {% get_obj_perms user for object as "userObj_perms" %}
+    <div class="row">
+    <div class="col-md-12 col-xs-12">
+        <div class="box">
+            <div class="box-header">
+                <h3 class="box-title">
+                    {% include 'core/include/add_project.html' %}
+                    <a href="{% url 'project-list' object.slug %}">{{ object.getProjectsNumber }} {% trans 'Projects' %}</a>
+                </h3>
+            </div>
+            <div class="box-body">
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
 
 <form method="post" id="group-form"  enctype="multipart/form-data">
     {% if form.errors %}
