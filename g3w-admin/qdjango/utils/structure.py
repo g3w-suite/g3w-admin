@@ -15,6 +15,22 @@ from qdjango.models import Layer
 from core.utils.projects import CoreMetaLayer
 
 
+def datasource2dict(datasource):
+    """
+    Read datasource string e put data in a python dict
+    """
+
+    datasourceDict = {}
+    datalist = datasource.split(' ')
+    for item in datalist:
+        try:
+            key, value = item.split('=')
+            datasourceDict[key] = value.strip('\'')
+        except ValueError:
+            pass
+    return datasourceDict
+
+
 class QdjangoMetaLayer(CoreMetaLayer):
 
     layerTypesSingleLayer = (
@@ -104,7 +120,7 @@ class QgisDBLayerStructure(QgisLayerStructure):
         if not self.layerType in self._dbTypes.keys():
             raise Exception('Database Layer Type not available in qdjango module: {}'.format(self.layerType))
 
-        self.datasource2dict()
+        self._datasource2dict()
 
         # check datasource
         self._cleanDataSource()
@@ -119,15 +135,17 @@ class QgisDBLayerStructure(QgisLayerStructure):
         """
         Chheck il spatilite fiel exists
         """
-        if self.layerType ==  Layer.TYPES.spatialite:
+        if self.layerType == Layer.TYPES.spatialite:
             if not os.path.exists(self.datasourceDict['dbname']):
                 raise Exception(self._errDatasourceNotFound.format(self.layer.name,self.datasource))
 
 
-    def datasource2dict(self):
+    def _datasource2dict(self):
         """
         Read datasource string e put data in a python dict
         """
+
+        self.datasourceDict = datasource2dict(self.datasource)
 
         datalist = self.datasource.split(' ')
         for item in datalist:
