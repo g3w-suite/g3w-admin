@@ -166,10 +166,8 @@ def mapLayerAttributes(layer, formField=False, **kwargs):
                     fieldLabel=field['label'],
                     inputType=FORM_FIELDS_MAPPING[field['type']]
                 )
-
                 if 'fields' in kwargs and field['name'] in kwargs['fields']:
                     formFields[field['name']].update(kwargs['fields'][field['name']])
-
 
     if formField:
         return formFields
