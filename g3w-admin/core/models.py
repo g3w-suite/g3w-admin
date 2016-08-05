@@ -218,8 +218,3 @@ class G3WEditingFeatureLock(models.Model):
     time_locked = models.DateTimeField(auto_now=True)
 
 
-
-
-
-
-
