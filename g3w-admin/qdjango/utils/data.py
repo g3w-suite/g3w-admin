@@ -478,11 +478,24 @@ class QgisProject(XmlData):
         Get start extention project from xml
         :return: dict
         """
+        wmsExtent = self.qgisProjectTree.find('properties/WMSExtent')
+        if wmsExtent is not None:
+          coordsEls = wmsExtent.getchildren()
+          xmin = coordsEls[0].text
+          ymin = coordsEls[1].text
+          xmax = coordsEls[2].text
+          ymax = coordsEls[3].text
+        else:
+          xmin = self.qgisProjectTree.find('mapcanvas/extent/xmin').text
+          ymin = self.qgisProjectTree.find('mapcanvas/extent/ymin').text
+          xmax = self.qgisProjectTree.find('mapcanvas/extent/xmax').text
+          ymax = self.qgisProjectTree.find('mapcanvas/extent/ymax').text
+        
         return {
-            'xmin': self.qgisProjectTree.find('mapcanvas/extent/xmin').text,
-            'ymin': self.qgisProjectTree.find('mapcanvas/extent/ymin').text,
-            'xmax': self.qgisProjectTree.find('mapcanvas/extent/xmax').text,
-            'ymax': self.qgisProjectTree.find('mapcanvas/extent/ymax').text
+            'xmin': xmin,
+            'ymin': ymin,
+            'xmax': xmax,
+            'ymax': ymax
         }
 
     def _getDataSrid(self):
