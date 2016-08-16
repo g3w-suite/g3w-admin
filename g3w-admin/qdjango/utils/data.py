@@ -10,7 +10,7 @@ import os, re
 import json
 
 
-def makeDatasource(datasource,layerType):
+def makeDatasource(datasource, layerType):
     """
     Rebuild datasource on qgjango/g3w-admin settings
     :param datasource:
@@ -76,7 +76,6 @@ class QgisProjectLayer(XmlData):
     """
 
     _dataToSet = [
-        'name',
         'layerId',
         'isVisible',
         'title',
@@ -88,6 +87,7 @@ class QgisProjectLayer(XmlData):
         #'capabilities',
         'editOptions',
         'datasource',
+        'name',
         'aliases',
         'columns',
         'geometrytype'
@@ -119,13 +119,20 @@ class QgisProjectLayer(XmlData):
 
     def _getDataName(self):
         """
-        Get name tag content from xml
+        Get name form datasource
         :return: string
         """
-        try:
-            name = self.qgisProjectLayerTree.find('shortname').text
-        except:
-            name = self.qgisProjectLayerTree.find('layername').text
+
+        if self.layerType == Layer.TYPES.ogr or self.layerType == Layer.TYPES.gdal:
+            name = os.path.splitext(os.path.basename(self.datasource))[0]
+        elif self.layerType == Layer.TYPES.postgres or self.layerType == Layer.TYPES.spatialite:
+            dts = datasource2dict(self.datasource)
+            name = dts['table'].split('.')[-1].replace("\"", "")
+        else:
+            try:
+                name = self.qgisProjectLayerTree.find('shortname').text
+            except:
+                name = self.qgisProjectLayerTree.find('layername').text
         return name
 
     def _getDataLayerId(self):
@@ -237,7 +244,7 @@ class QgisProjectLayer(XmlData):
         :return: string
         """
         datasource = self.qgisProjectLayerTree.find('datasource').text
-        serverDatasource = makeDatasource(datasource,self.layerType)
+        serverDatasource = makeDatasource(datasource, self.layerType)
 
         if serverDatasource is not None:
             return serverDatasource
@@ -706,8 +713,8 @@ class QgisProjectSettingsWMS(XmlData):
         except Exception as e:
             raise Exception(_('The project settings is malformed: {}'.format(e.message)))
 
-    def _buildTagWithNS(self,tag):
-        return '{{{0}}}{1}'.format(self._NS['opengis'],'Name')
+    def _buildTagWithNS(self, tag):
+        return '{{{0}}}{1}'.format(self._NS['opengis'], tag)
 
     def _getBBOXLayer(self, layerTree):
 
@@ -736,14 +743,15 @@ class QgisProjectSettingsWMS(XmlData):
                 self._getLayerTreeData(subLayerTree)
         else:
             name = layerTree.find(self._buildTagWithNS('Name')).text
+            title = layerTree.find(self._buildTagWithNS('Title')).text
             dataLayer = {
                 'name': name,
-                'title': layerTree.find(self._buildTagWithNS('Title')).text,
+                'title': title,
                 'visible': bool(int(layerTree.attrib['visible'])),
                 'queryable': bool(int(layerTree.attrib['queryable'])),
                 'bboxes': self._getBBOXLayer(layerTree)
             }
-            self._layersData[name] = dataLayer
+            self._layersData[title] = dataLayer
 
     def _getDataLayers(self):
 
