@@ -173,7 +173,7 @@ class Layer(G3WACLModelMixins, models.Model):
     class Meta:
         verbose_name = _('Layer')
         verbose_name_plural = _('Layers')
-        unique_together = (('name', 'project',),)
+        unique_together = (('name', 'project', 'qgs_layer_id'),)
         ordering = ['order']
         permissions = (
             ('view_layer', 'Can view qdjango layer'),
