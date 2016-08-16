@@ -335,6 +335,7 @@ class QgisProjectLayer(XmlData):
 
         self.instance, created = Layer.objects.get_or_create(
             name=self.name,
+            qgs_layer_id=self.layerId,
             project=self.qgisProject.instance,
             defaults={
                 'origname': self.origname,
