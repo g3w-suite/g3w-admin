@@ -5446,7 +5446,7 @@ fieldset[disabled] .btn-yahoo.active {
     transform: translate(300px, 0);
   }
 }
-.btn-noround {
+.btn {
   border-radius: 0px;
 }
 .sidebar-aside-toggle {
@@ -5931,17 +5931,54 @@ Licensed under MIT
   font-size: 1.1em;
   margin-bottom: 0px;
 }
+.queryresults-container tr.attributes-preview {
+  cursor: pointer;
+}
+.queryresults-container tr.attributes-preview:hover td {
+  background-color: #e6e6e6;
+}
+.queryresults-container .table-striped > tbody > tr:nth-of-type(odd) {
+  background-color: #f3f3f3;
+}
 .queryresults-container .viewer-container {
   top: 50px;
 }
+.queryresults-container .queryresults-featurebox td {
+  padding: 0px;
+}
+.queryresults-container .queryresults-featurebox .action-buttons-container {
+  background-color: #3c8dbc;
+  line-height: 1.42857143;
+  margin-top: 8px;
+}
+.queryresults-container .queryresults-featurebox .action-buttons-container .action-button {
+  display: inline-block;
+  height: 50%;
+  width: 40px;
+  text-align: center;
+  border-right: 2px solid white;
+  padding: 8px;
+  cursor: pointer;
+}
+.queryresults-container .queryresults-featurebox .action-buttons-container .action-button:hover {
+  background-color: #23536f;
+}
+.queryresults-container .queryresults-featurebox .action-buttons-container .action-button-icon {
+  padding-top: 2px;
+  color: white;
+  font-weight: bold;
+  font-size: 1.2em;
+}
+.queryresults-container .queryresults-featurebox table {
+  width: 100%;
+  margin-top: 6px;
+}
 .queryresults-container .queryresults-featurebox .attr-label {
-  min-width: 80px;
+  width: 100px;
+  max-width: 150px;
 }
 .queryresults-container .queryresults-featurebox .attr-value {
   font-weight: bold;
-}
-.table-striped > tbody > tr:nth-of-type(odd) {
-  background-color: #f3f3f3;
 }
 .toast-top-center {
   top: 60px;
