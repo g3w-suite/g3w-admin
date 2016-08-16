@@ -27,7 +27,8 @@
     "leaflet":"*",
     "leaflet-draw":"*",
     "proj4": "*",
-    "jstree": "3.3.1"
+    "jstree": "3.3.1",
+    "jstree-bootstrap-theme": "*"
   },
   "main": "",
   "moduleType": [],
