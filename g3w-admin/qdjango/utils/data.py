@@ -88,6 +88,7 @@ class QgisProjectLayer(XmlData):
         'editOptions',
         'datasource',
         'name',
+        'origname',
         'aliases',
         'columns',
         'geometrytype'
@@ -123,16 +124,21 @@ class QgisProjectLayer(XmlData):
         :return: string
         """
 
+        try:
+            name = self.qgisProjectLayerTree.find('shortname').text
+        except:
+            name = self.qgisProjectLayerTree.find('layername').text
+        return name
+
+    def _getDataOrigname(self):
         if self.layerType == Layer.TYPES.ogr or self.layerType == Layer.TYPES.gdal:
             name = os.path.splitext(os.path.basename(self.datasource))[0]
         elif self.layerType == Layer.TYPES.postgres or self.layerType == Layer.TYPES.spatialite:
             dts = datasource2dict(self.datasource)
             name = dts['table'].split('.')[-1].replace("\"", "")
         else:
-            try:
-                name = self.qgisProjectLayerTree.find('shortname').text
-            except:
-                name = self.qgisProjectLayerTree.find('layername').text
+            name = self.qgisProjectLayerTree.find('layername').text
+
         return name
 
     def _getDataLayerId(self):
@@ -331,6 +337,7 @@ class QgisProjectLayer(XmlData):
             name=self.name,
             project=self.qgisProject.instance,
             defaults={
+                'origname': self.origname,
                 'title': self.title,
                 'is_visible': self.isVisible,
                 'layer_type': self.layerType,
@@ -347,6 +354,7 @@ class QgisProjectLayer(XmlData):
                 }
             )
         if not created:
+            self.instance.origname = self.origname
             self.instance.title = self.title
             self.instance.is_visible = self.isVisible
             self.instance.layer_type = self.layerType
@@ -751,7 +759,7 @@ class QgisProjectSettingsWMS(XmlData):
                 'queryable': bool(int(layerTree.attrib['queryable'])),
                 'bboxes': self._getBBOXLayer(layerTree)
             }
-            self._layersData[title] = dataLayer
+            self._layersData[name] = dataLayer
 
     def _getDataLayers(self):
 

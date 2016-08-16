@@ -64,7 +64,7 @@ class ProjectSerializer(serializers.ModelSerializer):
                 for node in layer['nodes']:
                     readLeaf(node)
             else:
-                if layers[layer['id']].title in qgisProjectSettignsWMS.layers:
+                if layers[layer['id']].name in qgisProjectSettignsWMS.layers:
                     layerSerializedData = LayerSerializer(layers[layer['id']], qgisProjectSettignsWMS=qgisProjectSettignsWMS).data
                     layerSerializedData['multilayer'] = metaLayer.getCurrentByLayer(layerSerializedData)
                     ret['layers'].append(layerSerializedData)
@@ -117,6 +117,7 @@ class LayerSerializer(serializers.ModelSerializer):
         fields = (
             'id',
             'name',
+            'origname',
             'geometrytype',
             'crs',
             'title',
@@ -137,8 +138,6 @@ class LayerSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         ret = super(LayerSerializer, self).to_representation(instance)
 
-        # rewrite name with title form wms calls
-        ret['name'] = ret['title']
         group = instance.project.group
 
         # add infoformat and infourl
@@ -148,11 +147,11 @@ class LayerSerializer(serializers.ModelSerializer):
 
         # add bbox
         if instance.geometrytype != 'No geometry':
-            ret['bbox'] = self.qgisProjectSettignsWMS.layers[instance.title]['bboxes']['EPSG:{}'.format(group.srid.srid)]
+            ret['bbox'] = self.qgisProjectSettignsWMS.layers[instance.name]['bboxes']['EPSG:{}'.format(group.srid.srid)]
 
         # add capabilities
         ret['capabilities'] = 0
-        if self.qgisProjectSettignsWMS.layers[instance.title]['queryable']:
+        if self.qgisProjectSettignsWMS.layers[instance.name]['queryable']:
             ret['capabilities'] |= settings.QUERYABLE
         if instance.edit_options:
             ret['capabilities'] |= settings.EDITABLE
