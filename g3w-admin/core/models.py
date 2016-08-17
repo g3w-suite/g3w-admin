@@ -82,7 +82,8 @@ class Group(TimeStampedModel):
 
     # Company logo
     header_logo_img = models.FileField(_('headerLogoImg'), upload_to='logo_img')
-    header_logo_link = models.URLField(_('headerLogoLink'), blank=True, null=True)
+    header_logo_link = models.URLField(_('headerLogoLink'), blank=True, null=True,
+                                       help_text=_('Enter link with http:// or https//'))
 
     # Max/min scale
     max_scale = models.IntegerField(_('Max scale'))

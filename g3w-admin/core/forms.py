@@ -121,7 +121,7 @@ class GroupForm(FileFormMixin, G3WFormMixin, G3WRequestFormMixin, G3WACLForm, Mo
                                             ),
                                             Div(
                                                 #AppendedText('header_logo_height','px'),
-                                                PrependedText('header_logo_link','http://'),
+                                                'header_logo_link',
                                                 css_class='col-md-6'
                                             ),
                                             css_class='box-body'

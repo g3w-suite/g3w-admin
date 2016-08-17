@@ -190,7 +190,7 @@ def mapLayerAttributesFromModel(model, formField=False, **kwargs):
             toRes[field.name] = editingFormField(
                 field.name,
                 required=not field.blank,
-                fieldLabel=field.attname,
+                fieldLabel=field.verbose_name if field.verbose_name else field.attname,
                 type=fieldType,
                 inputType=FORM_FIELDS_MAPPING[fieldType]
             )
