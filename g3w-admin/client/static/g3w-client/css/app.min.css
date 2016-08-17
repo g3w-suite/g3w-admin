@@ -5480,13 +5480,16 @@ fieldset[disabled] .btn-yahoo.active {
   padding-bottom: 0 px;
   margin-bottom: 0px;
 }
-.g3w-logo {
-  height: 50px;
-  line-height: 50px;
-  padding: 0px 10px 0px 10px;
+.logo-wrapper {
+  display: inline-block;
+  padding-top: 3px;
+  font-size: 2em;
+  font-weight: bold;
+  color: white;
 }
-.g3w-logo img {
+.logo-wrapper img {
   height: 40px;
+  margin: 0px 10px 0px 5px;
 }
 .title-box {
   line-height: 50px;
@@ -5499,6 +5502,12 @@ fieldset[disabled] .btn-yahoo.active {
 }
 .sidebar .g3w-sidebarpanel {
   padding: 10px 15px 10px 15px;
+}
+.sidebar .g3w-sidebarpanel-placeholder {
+  margin-top: 10px;
+}
+.sidebar .g3w-sidebarpanel-placeholder h3 {
+  margin-top: 0px;
 }
 .sidebar .treeview-label {
   font-size: 1.1em;
@@ -5766,7 +5775,7 @@ Licensed under MIT
   background-color: #4b646f;
 }
 .g3w-tools {
-  padding-top: 10px;
+  padding: 10px 0px 10px 0px;
 }
 .g3w-tools ul {
   padding-left: 0px;
