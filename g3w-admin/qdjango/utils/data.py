@@ -69,7 +69,6 @@ class DatasourceExists(QgisProjectLayerValidator):
                 err += ugettext('which should be located at {}'.format(self.qgisProjectLayer.datasource))
                 raise Exception(err)
 
-
 class QgisProjectLayer(XmlData):
     """
     Qgisdata object for layer project: a layer xml wrapper
@@ -392,6 +391,7 @@ class IsGroupCompatibleValidator(QgisProjectValidator):
         if self.qgisProject.group.srid.srid != self.qgisProject.srid:
             raise Exception(_('Project and group SRID must be the same'))
 
+
 class ProjectExists(QgisProjectValidator):
     """
     Check if project exists in database
@@ -410,6 +410,17 @@ class ProjectTitleExists(QgisProjectValidator):
         if not self.qgisProject.title:
             raise Exception(_('Title project not empty'))
 
+
+class UniqueLayername(QgisProjectValidator):
+    """
+    Check if laeryname is unique inside a project
+    """
+    def clean(self):
+        layers = []
+        for layer in self.qgisProject.layers:
+            if layer.name in layers:
+                raise Exception(_('More than one layer with same name/shortname: {}'.format(layer.name)))
+            layers.append(layer.name)
 
 
 class QgisProject(XmlData):
@@ -430,7 +441,8 @@ class QgisProject(XmlData):
 
     _defaultValidators = [
         IsGroupCompatibleValidator,
-        ProjectTitleExists
+        ProjectTitleExists,
+        UniqueLayername
     ]
 
     #_regexXmlLayer = 'projectlayers/maplayer[@geometry!="No geometry"]'
