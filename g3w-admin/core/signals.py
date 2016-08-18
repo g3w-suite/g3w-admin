@@ -18,6 +18,9 @@ post_serialize_maplayer = django.dispatch.Signal(providing_args=["layer", "data"
 # signal after add/update map group
 after_update_group = django.dispatch.Signal(providing_args=["group"])
 
+# signal after layer serialized data on /api/config/
+after_serialized_project_layer = django.dispatch.Signal(providing_args=["layer"])
+
 # signals pre update project
 pre_update_project = django.dispatch.Signal(providing_args=["projectType", "project"])
 

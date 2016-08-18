@@ -11,6 +11,7 @@ from qdjango.utils.data import QgisProjectSettingsWMS
 from qdjango.ows import OWSRequestHandler
 from client.utils.editing import mapLayerAttributes
 from core.configs import *
+from core.signals import after_serialized_project_layer
 from qdjango.utils.structure import QdjangoMetaLayer
 import json
 
@@ -65,8 +66,13 @@ class ProjectSerializer(serializers.ModelSerializer):
                     readLeaf(node)
             else:
                 if layers[layer['id']].name in qgisProjectSettignsWMS.layers:
-                    layerSerializedData = LayerSerializer(layers[layer['id']], qgisProjectSettignsWMS=qgisProjectSettignsWMS).data
+                    layerSerialized = LayerSerializer(layers[layer['id']],
+                                                          qgisProjectSettignsWMS=qgisProjectSettignsWMS)
+                    # alter layer serialized data from plugin
+                    layerSerializedData = after_serialized_project_layer.send(layerSerialized,
+                                                                              layer=layers[layer['id']])[0][1]
                     layerSerializedData['multilayer'] = metaLayer.getCurrentByLayer(layerSerializedData)
+
                     ret['layers'].append(layerSerializedData)
 
                     # get widgects for layer
@@ -141,7 +147,6 @@ class LayerSerializer(serializers.ModelSerializer):
         group = instance.project.group
 
         # add infoformat and infourl
-        # todo: add a procedure to get this
         ret['infoformat'] = ''
         ret['infourl'] = ''
 
@@ -168,6 +173,7 @@ class LayerSerializer(serializers.ModelSerializer):
             if 'username' not in ret['source'] or 'password' not in ret['source']:
                 ret['source'].update(datasourceWMS.dict())
                 ret['servertype'] = MSTYPES_OGC
+
 
         return ret
 

@@ -4,6 +4,13 @@ from django.db.models import Q
 
 class IntersectsBBoxFilter(InBBoxFilter):
 
+    def __init__(self, **kwargs):
+
+        # change default bbox_param for different call like WMS GetFeatureInfo
+        if 'bbox_param' in kwargs:
+            self.bbox_param = kwargs['bbox_param']
+        super(IntersectsBBoxFilter, self).__init__()
+
     def filter_queryset(self, request, queryset, view):
         filter_field = getattr(view, 'bbox_filter_field', None)
         include_overlapping = getattr(view, 'bbox_filter_include_overlapping', False)
@@ -17,5 +24,5 @@ class IntersectsBBoxFilter(InBBoxFilter):
 
         bbox = self.get_filter_bbox(request)
         if not bbox:
-            return queryset
+            return None #queryset
         return queryset.filter(Q(**{'%s__%s' % (filter_field, geoDjango_filter): bbox}))
