@@ -2,14 +2,16 @@ from rest_framework_gis.filters import InBBoxFilter
 from django.db.models import Q
 
 
-class IntersectsBBoxFilter(InBBoxFilter):
+class InsideBBoxFilter(InBBoxFilter):
 
     def __init__(self, **kwargs):
-
         # change default bbox_param for different call like WMS GetFeatureInfo
         if 'bbox_param' in kwargs:
             self.bbox_param = kwargs['bbox_param']
-        super(IntersectsBBoxFilter, self).__init__()
+        super(InsideBBoxFilter, self).__init__()
+
+
+class IntersectsBBoxFilter(InsideBBoxFilter):
 
     def filter_queryset(self, request, queryset, view):
         filter_field = getattr(view, 'bbox_filter_field', None)
