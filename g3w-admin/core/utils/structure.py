@@ -1,9 +1,14 @@
 from django.db.models.fields import *
 from django.db.models.fields.files import *
+from django.db.models.fields.related import *
 from django.conf import settings
 from django.apps import apps
 from copy import deepcopy
 from collections import OrderedDict
+
+# relations data type
+RELATIONS_ONE_TO_ONE = 'ONE'
+RELATIONS_ONE_TO_MANY = 'MANY'
 
 # data field type
 FIELD_TYPE_INTEGER = 'integer'
@@ -106,7 +111,8 @@ FIELD_TYPES_MAPPING = {
         FloatField: FIELD_TYPE_FLOAT,
         ImageField: FIELD_TYPE_IMAGE,
         FileField: FIELD_TYPE_FILE,
-        DecimalField: FIELD_TYPE_FLOAT
+        DecimalField: FIELD_TYPE_FLOAT,
+        ForeignKey: FIELD_TYPE_INTEGER # is not correct
     }
 }
 

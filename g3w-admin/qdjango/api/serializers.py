@@ -68,9 +68,14 @@ class ProjectSerializer(serializers.ModelSerializer):
                                 layers[layer['id']].geometrytype != 'No geometry':
                     layerSerialized = LayerSerializer(layers[layer['id']],
                                                           qgisProjectSettignsWMS=qgisProjectSettignsWMS)
+                    layerSerializedData = layerSerialized.data
+
                     # alter layer serialized data from plugin
-                    layerSerializedData = after_serialized_project_layer.send(layerSerialized,
-                                                                              layer=layers[layer['id']])[0][1]
+                    # send layerseralized original and came back only key->value changed
+
+                    for singnal_receiver, data in after_serialized_project_layer.send(layerSerialized,
+                                                                              layer=layers[layer['id']]):
+                        layerSerializedData.update(data)
                     layerSerializedData['multilayer'] = metaLayer.getCurrentByLayer(layerSerializedData)
 
                     ret['layers'].append(layerSerializedData)

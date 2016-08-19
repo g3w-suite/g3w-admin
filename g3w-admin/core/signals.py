@@ -19,6 +19,7 @@ post_serialize_maplayer = django.dispatch.Signal(providing_args=["layer", "data"
 after_update_group = django.dispatch.Signal(providing_args=["group"])
 
 # signal after layer serialized data on /api/config/
+# send layer seralized original object and came back only dict data changed
 after_serialized_project_layer = django.dispatch.Signal(providing_args=["layer"])
 
 # signals pre update project
