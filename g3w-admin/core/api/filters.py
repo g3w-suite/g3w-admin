@@ -28,3 +28,10 @@ class IntersectsBBoxFilter(InsideBBoxFilter):
         if not bbox:
             return None #queryset
         return queryset.filter(Q(**{'%s__%s' % (filter_field, geoDjango_filter): bbox}))
+
+
+class CentroidBBoxFilter(IntersectsBBoxFilter):
+
+    def get_filter_bbox(self, request):
+        polygon = super(CentroidBBoxFilter, self).get_filter_bbox(request)
+        return polygon.centroid.buffer(10)
