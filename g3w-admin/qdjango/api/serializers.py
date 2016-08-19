@@ -9,7 +9,7 @@ except:
     pass
 from qdjango.utils.data import QgisProjectSettingsWMS
 from qdjango.ows import OWSRequestHandler
-from client.utils.editing import mapLayerAttributes
+from core.utils.structure import mapLayerAttributes
 from core.configs import *
 from core.signals import after_serialized_project_layer
 from qdjango.utils.structure import QdjangoMetaLayer

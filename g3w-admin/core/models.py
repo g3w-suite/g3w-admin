@@ -205,17 +205,3 @@ class GroupProjectPanoramic(models.Model):
     project_id = models.IntegerField(verbose_name=_('Project type id'))
 
 
-class G3WEditingFeatureLock(models.Model):
-    """
-    Model to lock editing features models.
-    """
-    feature_id = models.CharField(max_length=255)
-    app_name = models.CharField(max_length=255)
-    layer_name = models.CharField(max_length=255)
-    layer_datasource = models.TextField(max_length=255)
-    user = models.ForeignKey(User, null=True, blank=True)
-    sessionid = models.CharField(max_length=255, null=True, blank=True)
-    feature_lock_id = models.CharField(max_length=32, db_index=True)
-    time_locked = models.DateTimeField(auto_now=True)
-
-
