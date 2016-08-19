@@ -87,9 +87,9 @@ class ProjectSerializer(serializers.ModelSerializer):
                             ret['widget'].append(widgetSerializzerData)
                 else:
 
-                    # keep for remove after
+                    # keep layer for remove after
                     to_remove_from_layerstree.append((container, layer))
-                    #container.remove(layer)
+
 
         for l in ret['layerstree']:
             readLeaf(l, ret['layerstree'])
