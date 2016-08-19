@@ -57,15 +57,15 @@ class ProjectSerializer(serializers.ModelSerializer):
 
         # for client map like multilayer
         metaLayer = QdjangoMetaLayer()
-        layersTree = self.get_layerstree(instance)
+        to_remove_from_layerstree = []
 
-        def readLeaf(layer):
-
+        def readLeaf(layer, container):
             if 'nodes' in layer:
                 for node in layer['nodes']:
-                    readLeaf(node)
+                    readLeaf(node, layer['nodes'])
             else:
-                if layers[layer['id']].name in qgisProjectSettignsWMS.layers:
+                if layers[layer['id']].name in qgisProjectSettignsWMS.layers and \
+                                layers[layer['id']].geometrytype != 'No geometry':
                     layerSerialized = LayerSerializer(layers[layer['id']],
                                                           qgisProjectSettignsWMS=qgisProjectSettignsWMS)
                     # alter layer serialized data from plugin
@@ -85,9 +85,18 @@ class ProjectSerializer(serializers.ModelSerializer):
                             ret['search'].append(widgetSerializzerData)
                         else:
                             ret['widget'].append(widgetSerializzerData)
+                else:
 
-        for l in layersTree:
-            readLeaf(l)
+                    # keep for remove after
+                    to_remove_from_layerstree.append((container, layer))
+                    #container.remove(layer)
+
+        for l in ret['layerstree']:
+            readLeaf(l, ret['layerstree'])
+
+        # remove layers from layerstree
+        for to_remove in to_remove_from_layerstree:
+            to_remove[0].remove(to_remove[1])
 
         # add baselayer default
         ret['baselayer'] = instance.baselayer.name if instance.baselayer else None
