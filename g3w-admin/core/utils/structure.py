@@ -14,6 +14,7 @@ RELATIONS_ONE_TO_MANY = 'MANY'
 FIELD_TYPE_INTEGER = 'integer'
 FIELD_TYPE_FLOAT = 'float'
 FIELD_TYPE_STRING = 'string'
+FIELD_TYPE_TEXT = 'text'
 FIELD_TYPE_BOOLEAN = 'boolean'
 FIELD_TYPE_DATE = 'date'
 FIELD_TYPE_TIME = 'time'
@@ -24,6 +25,7 @@ FIELD_TYPE_FILE = 'file'
 
 # form field type
 FORM_FIELD_TYPE_TEXT = 'text'
+FORM_FIELD_TYPE_TEXTAREA = 'textarea'
 FORM_FIELD_TYPE_SELECT = 'select'
 FORM_FIELD_TYPE_CHECK = 'check'
 FORM_FIELD_TYPE_RADIO = 'radio'
@@ -39,6 +41,7 @@ FORM_FIELDS_MAPPING = {
     FIELD_TYPE_INTEGER: FORM_FIELD_TYPE_TEXT,
     FIELD_TYPE_FLOAT: FORM_FIELD_TYPE_TEXT,
     FIELD_TYPE_STRING: FORM_FIELD_TYPE_TEXT,
+    FIELD_TYPE_TEXT: FORM_FIELD_TYPE_TEXTAREA,
     FIELD_TYPE_BOOLEAN: FORM_FIELD_TYPE_CHECK,
     FIELD_TYPE_DATE: FORM_FIELD_TYPE_TEXT,
     FIELD_TYPE_TIME: FORM_FIELD_TYPE_TEXT,
@@ -67,7 +70,7 @@ FIELD_TYPES_MAPPING = {
         'varchar': FIELD_TYPE_STRING,
         'character': FIELD_TYPE_STRING,
         'char': FIELD_TYPE_STRING,
-        'text': FIELD_TYPE_STRING,
+        'text': FIELD_TYPE_TEXT,
 
         # date and datetime
         'timestamp': FIELD_TYPE_DATETIME,
@@ -112,6 +115,7 @@ FIELD_TYPES_MAPPING = {
         ImageField: FIELD_TYPE_IMAGE,
         FileField: FIELD_TYPE_FILE,
         DecimalField: FIELD_TYPE_FLOAT,
+        TextField: FIELD_TYPE_TEXT,
         ForeignKey: FIELD_TYPE_INTEGER # is not correct
     }
 }
