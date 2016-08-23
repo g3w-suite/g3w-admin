@@ -92,7 +92,11 @@ class GroupForm(FileFormMixin, G3WFormMixin, G3WRequestFormMixin, G3WACLForm, Mo
                                             css_class='box-header with-border'
                                         ),
                                         Div(
-                                            Field('baselayers', **{'css_class': 'select2 col-md-12', 'multiple': 'multiple', 'style': 'width:100%;'}),
+                                            Field('mapcontrols',
+                                                  **{'css_class': 'select2 col-md-12', 'multiple': 'multiple',
+                                                     'style': 'width:100%;'}),
+                                            Field('baselayers', **{'css_class': 'select2 col-md-12',
+                                                                   'multiple': 'multiple', 'style': 'width:100%;'}),
                                             AppendedText('background_color', '<i></i>', css_class='colorpicker'),
                                             css_class='box-body'
                                         ),

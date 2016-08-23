@@ -66,6 +66,21 @@ class BaseLayer(models.Model):
         verbose_name_plural = 'Base Layers'
 
 
+class MapControl(models.Model):
+    """
+    Model for Map Controls: zoom, query, etc..
+    """
+    name = models.CharField(max_length=255)
+    description = models.TextField(null=True, blank=True)
+
+    def __unicode__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = _('Map control')
+        verbose_name_plural = _('Map controls')
+
+
 class Group(TimeStampedModel):
     """A group of projects."""
     # General info
@@ -97,7 +112,10 @@ class Group(TimeStampedModel):
     srid = models.ForeignKey(G3WSpatialRefSys, db_column='srid')
 
     # baselayers
-    baselayers = models.ManyToManyField(BaseLayer, blank=True, null=True)
+    baselayers = models.ManyToManyField(BaseLayer, blank=True)
+
+    # mapcontrols
+    mapcontrols = models.ManyToManyField(MapControl)
 
     # background color map default
     background_color = models.CharField(max_length=7, default='#ffffff', blank=True)

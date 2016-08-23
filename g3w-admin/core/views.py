@@ -15,7 +15,7 @@ from guardian.decorators import permission_required
 from guardian.shortcuts import get_objects_for_user
 from usersmanage.mixins.views import G3WACLViewMixin
 from .forms import GroupForm
-from .models import Group, GroupProjectPanoramic
+from .models import Group, GroupProjectPanoramic, MapControl
 from .mixins.views import G3WRequestViewMixin, G3WAjaxDeleteViewMixin
 from .utils.decorators import check_madd
 from .signals import after_update_group
@@ -87,6 +87,9 @@ class GroupCreateView(G3WRequestViewMixin, CreateView):
     @method_decorator(check_madd('MGC:kTccysDKRCPgT5M5y6sv-OSWlck', Group))
     def dispatch(self, *args, **kwargs):
         return super(GroupCreateView, self).dispatch(*args, **kwargs)
+
+    def get_initial(self):
+        return {'mapcontrols': MapControl.objects.all()}
 
     def get_success_url(self):
         return reverse('group-list')
