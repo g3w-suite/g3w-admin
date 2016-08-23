@@ -5813,12 +5813,14 @@ Licensed under MIT
   font-weight: normal;
   font-style: normal;
 }
-.ol-control {
+.ol-control,
+.ol-custom-overviewmap {
   background-color: transparent;
   border-radius: 0px;
   padding: 0px;
 }
-.ol-control button {
+.ol-control button,
+.ol-custom-overviewmap button {
   display: block;
   margin: 0px;
   margin-left: 2px;
@@ -5837,17 +5839,38 @@ Licensed under MIT
   font-weight: 300;
   float: left;
 }
-.ol-control button:hover {
+.ol-control button:hover,
+.ol-custom-overviewmap button:hover {
   text-decoration: none;
   background-color: #3c8dbc;
 }
-.ol-control button:focus {
+.ol-control button:focus,
+.ol-custom-overviewmap button:focus {
   text-decoration: none;
   background-color: #3c8dbc;
   outline: none;
 }
-.ol-control button:focus:hover {
+.ol-control button:focus:hover,
+.ol-custom-overviewmap button:focus:hover {
   background-color: #3c8dbc;
+}
+.ol-overviewmap button {
+  display: inline-block;
+}
+.ol-custom-overviewmap:not(.ol-collapsed) {
+  border: 1px solid black;
+}
+.ol-custom-overviewmap:not(.ol-collapsed) button {
+  left: -1px;
+  bottom: 0px;
+}
+.ol-custom-overviewmap .ol-overviewmap-map {
+  border: none;
+  height: 200px;
+  width: 300px;
+}
+.ol-custom-overviewmap .ol-overviewmap-box {
+  border: 2px solid #3c8dbc;
 }
 .ol-control:hover {
   background-color: transparent;
@@ -5858,15 +5881,15 @@ Licensed under MIT
 }
 .ol-control-bl {
   bottom: 7px;
-  left: 43px;
+  left: 7px;
 }
 .ol-control-tr {
   top: 7px;
-  right: 43px;
+  right: 7px;
 }
 .ol-control-br {
   bottom: 7px;
-  right: 43px;
+  right: 7px;
 }
 .ol-zoom .ol-zoom-in {
   border-radius: 0;
