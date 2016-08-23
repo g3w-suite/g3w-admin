@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
 from sitetree.admin import TreeItemAdmin,override_item_admin
-from .models import Group, BaseLayer
+from .models import Group, BaseLayer, MapControl
 from guardian.admin import GuardedModelAdmin
 
 
@@ -39,6 +39,11 @@ admin.site.register(Group, GroupAdmin)
 class BaseLayerAdmin(GuardedModelAdmin):
     model = BaseLayer
 admin.site.register(BaseLayer, BaseLayerAdmin)
+
+
+class MapControlAdmin(GuardedModelAdmin):
+    model = MapControl
+admin.site.register(MapControl, MapControlAdmin)
 
 # Tweak admin site settings like title, header, 'View Site' URL, etc
 admin.site.site_title = 'G3W Admin Administration'

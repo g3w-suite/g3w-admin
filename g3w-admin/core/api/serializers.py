@@ -47,6 +47,9 @@ class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         ret['crs'] = int(str(self.instance.srid.srid))
         ret['proj4'] = self.instance.srid.proj4text
 
+        # map controls
+        ret['mapcontrols'] = [mapcontrol.name for mapcontrol in instance.mapcontrols.all()]
+
         # add projects to group
         ret['projects'] = []
         self.projects = {}
