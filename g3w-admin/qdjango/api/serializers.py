@@ -12,6 +12,7 @@ from qdjango.ows import OWSRequestHandler
 from core.utils.structure import mapLayerAttributes
 from core.configs import *
 from core.signals import after_serialized_project_layer
+from core.api.serializers import update_layerserializer_data
 from qdjango.utils.structure import QdjangoMetaLayer
 import json
 
@@ -75,7 +76,7 @@ class ProjectSerializer(serializers.ModelSerializer):
 
                     for singnal_receiver, data in after_serialized_project_layer.send(layerSerialized,
                                                                               layer=layers[layer['id']]):
-                        layerSerializedData.update(data)
+                        update_layerserializer_data(layerSerializedData, data)
                     layerSerializedData['multilayer'] = metaLayer.getCurrentByLayer(layerSerializedData)
 
                     ret['layers'].append(layerSerializedData)

@@ -8,6 +8,18 @@ from core.mixins.api.serializers import G3WRequestSerializer
 from copy import copy
 
 
+def update_layerserializer_data(layerserializer_data, data):
+
+    # switch for operation_type:
+    if data['operation_type'] == 'update':
+        layerserializer_data.update(data['values'])
+    elif data['operation_type'] == 'append':
+        for value in data['values']:
+
+            # todo: manage append_path with pipe
+            layerserializer_data[data['append_path']].append(value)
+
+
 class BaseLayerSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
