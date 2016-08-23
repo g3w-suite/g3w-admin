@@ -120,7 +120,6 @@ class ProjectSerializer(serializers.ModelSerializer):
 class LayerSerializer(serializers.ModelSerializer):
 
     id = serializers.CharField(source='qgs_layer_id')
-    attributes = serializers.SerializerMethodField()
     minscale = serializers.IntegerField(source='min_scale')
     maxscale = serializers.IntegerField(source='max_scale')
     crs = serializers.IntegerField(source='srid')
@@ -141,7 +140,6 @@ class LayerSerializer(serializers.ModelSerializer):
             'geometrytype',
             'crs',
             'title',
-            'attributes',
             'scalebasedvisibility',
             'minscale',
             'maxscale',
@@ -159,6 +157,9 @@ class LayerSerializer(serializers.ModelSerializer):
         ret = super(LayerSerializer, self).to_representation(instance)
 
         group = instance.project.group
+
+        # add attributes/fields
+        ret['fields'] = self.get_attributes(instance)
 
         # add infoformat and infourl
         ret['infoformat'] = ''
