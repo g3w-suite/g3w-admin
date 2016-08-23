@@ -10,6 +10,9 @@ from collections import OrderedDict
 RELATIONS_ONE_TO_ONE = 'ONE'
 RELATIONS_ONE_TO_MANY = 'MANY'
 
+# namespace to add 'private' properties to geojson data
+RELATIONS_NAMESPACE = 'g3w_'
+
 # data field type
 FIELD_TYPE_INTEGER = 'integer'
 FIELD_TYPE_FLOAT = 'float'
