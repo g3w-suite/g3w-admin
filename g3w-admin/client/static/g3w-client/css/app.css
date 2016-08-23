@@ -5813,17 +5813,10 @@ Licensed under MIT
   font-weight: normal;
   font-style: normal;
 }
-.ol-overlaycontainer-stopevent {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-}
 .ol-control {
   background-color: transparent;
   border-radius: 0px;
-  position: relative;
   padding: 0px;
-  float: left;
 }
 .ol-control button {
   display: block;
@@ -5833,8 +5826,8 @@ Licensed under MIT
   color: #fff;
   text-decoration: none;
   text-align: center;
-  height: auto;
-  width: auto;
+  height: 39px;
+  width: 39px;
   line-height: 1.42857143;
   background-color: #3c8dbc;
   border: none;
@@ -5843,7 +5836,6 @@ Licensed under MIT
   font-family: icomoon;
   font-weight: 300;
   float: left;
-  left: 0px;
 }
 .ol-control button:hover {
   text-decoration: none;
@@ -5860,16 +5852,31 @@ Licensed under MIT
 .ol-control:hover {
   background-color: transparent;
 }
-.ol-zoom {
-  top: 0px;
-  left: 0px;
-  float: left;
+.ol-control-tl {
+  top: 7px;
+  left: 43px;
+}
+.ol-control-bl {
+  bottom: 7px;
+  left: 43px;
+}
+.ol-control-tr {
+  top: 7px;
+  right: 43px;
+}
+.ol-control-br {
+  bottom: 7px;
+  right: 43px;
 }
 .ol-zoom .ol-zoom-in {
   border-radius: 0;
 }
 .ol-zoom .ol-zoom-out {
   border-radius: 0;
+}
+.ol-scale-line {
+  background: #3c8dbc;
+  left: auto;
 }
 .ol-zoom-extent {
   float: left;
