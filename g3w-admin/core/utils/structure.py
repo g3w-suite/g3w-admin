@@ -124,7 +124,7 @@ FIELD_TYPES_MAPPING = {
 }
 
 
-def editingFormField(fieldName, type=FIELD_TYPE_STRING, editable=True, required=False, validate={},
+def editingFormField(fieldName, type=FIELD_TYPE_STRING, editable=True, required=False, validate=None,
                      fieldLabel=None, inputType=None, values=None, **kwargs):
     """
     Build editign form field for client.
@@ -134,7 +134,7 @@ def editingFormField(fieldName, type=FIELD_TYPE_STRING, editable=True, required=
         'type': type,
         'label': fieldLabel if fieldLabel else fieldName,
         'editable': editable,
-        'validate': validate,
+        'validate': {} if not validate else validate,
         'input': {
             'type': inputType if inputType else FORM_FIELD_TYPE_TEXT,
             'options': {}
@@ -181,6 +181,8 @@ def mapLayerAttributes(layer, formField=False, **kwargs):
                     fieldLabel=field['label'],
                     inputType=FORM_FIELDS_MAPPING[field['type']]
                 )
+
+                # update with fields configs data
                 if 'fields' in kwargs and field['name'] in kwargs['fields']:
                     formFields[field['name']].update(kwargs['fields'][field['name']])
 
