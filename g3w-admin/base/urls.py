@@ -43,6 +43,9 @@ apiUrlpatterns = [
     url(r'^', include('client.apiurls')),
 ]
 
+if BASE_ADMIN_URLPATH == 'admin/':
+    urlpatterns.append(url(r'^', include('{}.urls'.format(settings.FRONTEND_APP))))
+
 #adding projects app
 if BASE_ADMIN_URLPATH:
     base = BASE_ADMIN_URLPATH[0:-1]

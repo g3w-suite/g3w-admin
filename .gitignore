@@ -42,4 +42,5 @@ build
 /g3w-admin/cadastre/
 /g3w-admin/cadastre_camaiore/
 /g3w-admin/editing/
+/g3w-admin/frontend/
 .gitmodules
