@@ -5202,6 +5202,9 @@ fieldset[disabled] .btn-yahoo.active {
     white-space: normal!important;
   }
 }
+.color-light-blue {
+  color: #3c8dbc;
+}
 /* Absolute Center Spinner */
 .loading {
   position: fixed;
@@ -5449,6 +5452,13 @@ fieldset[disabled] .btn-yahoo.active {
 .btn {
   border-radius: 0px;
 }
+.btn-circle-medium {
+  width: 36px;
+  height: 36px;
+  border-radius: 18px;
+  padding: 0px;
+  font-size: 1.2em;
+}
 .sidebar-aside-toggle {
   position: absolute;
   left: 350px;
@@ -5527,12 +5537,48 @@ fieldset[disabled] .btn-yahoo.active {
     transform: translate(-300px, 0);
   }
 }
-.g3w-view.one {
-  display: inline-block;
+.main-sidebar .quick-actions-menu,
+.left-side .quick-actions-menu {
+  height: 46px;
+  width: 100%;
+  line-height: 46px;
+  background-color: light-grey;
+  text-align: center;
 }
-.g3w-view.two {
+.main-sidebar .quick-actions-menu .btn,
+.left-side .quick-actions-menu .btn {
+  background-color: #222d32;
+  border: 2px solid #888888;
+  color: white;
+  margin: 0px 10px 0px 10px;
+  vertical-align: middle;
+}
+.main-sidebar .quick-actions-menu .btn:hover,
+.left-side .quick-actions-menu .btn:hover {
+  color: white;
+  border-color: #3c8dbc;
+  background-color: #222d32;
+}
+.g3w-viewport {
+  overflow: hidden;
+}
+.g3w-viewport .g3w-view.one {
+  display: inline-block;
+  height: 0px;
+  width: 0px;
+  -webkit-transition: width 0.3s;
+  transition: width 0.3s;
+  overflow: hidden;
+}
+.g3w-viewport .g3w-view.two {
   float: right;
-  border-left: 1px solid #4b646f;
+  height: 0px;
+  width: 0px;
+  -webkit-transition: width 0.3s;
+  transition: width 0.3s;
+}
+.g3w-viewport .g3w-view.two.split-h {
+  border-left: 2px solid #3c8dbc;
 }
 .bottombar {
   position: absolute;
