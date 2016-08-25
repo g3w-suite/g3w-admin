@@ -5580,6 +5580,9 @@ fieldset[disabled] .btn-yahoo.active {
 .g3w-viewport .g3w-view.two.split-h {
   border-left: 2px solid #3c8dbc;
 }
+.g3w-viewport .g3w-view.two.split-v {
+  border-top: 2px solid #3c8dbc;
+}
 .bottombar {
   position: absolute;
   width: 100%;
