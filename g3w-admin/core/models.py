@@ -139,6 +139,17 @@ class Group(TimeStampedModel):
     def get_absolute_url(self):
         return reverse('group-detail', kwargs={'slug': self.slug})
 
+    def getProjects(self):
+        """
+        Get every type projects for group
+        """
+        groupProjects = []
+        for g3wProjectApp in settings.G3WADMIN_PROJECT_APPS:
+            Project = apps.get_app_config(g3wProjectApp).get_model('project')
+            projects = Project.objects.filter(group=self)
+            groupProjects += [project for project in projects]
+        return groupProjects
+
     def getProjectsNumber(self):
         """
         Count total number of serveral type project
