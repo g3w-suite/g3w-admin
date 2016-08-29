@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 from autoslug.utils import slugify
 from core.models import Group, BaseLayer
 from .utils.storage import QgisFileOverwriteStorage
-from core.mixins.models import G3WACLModelMixins
+from core.mixins.models import G3WACLModelMixins, G3WProjectMixins
 from model_utils import Choices
 from usersmanage.utils import setPermissionUserObject, getUserGroups
 from usersmanage.configs import *
@@ -35,7 +35,7 @@ def get_thumbnail_path(instance, filename):
     return os.path.join('thumbnails', filename)
 
 
-class Project(G3WACLModelMixins, TimeStampedModel):
+class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
     """A QGIS project."""
 
     # Project file

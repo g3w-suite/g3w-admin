@@ -1,4 +1,10 @@
 
+class G3WProjectMixins(object):
+
+    def get_type(self):
+        return self._meta.app_label
+
+
 class G3WACLModelMixins(object):
 
     def addPermissionsToEditor(self, user):

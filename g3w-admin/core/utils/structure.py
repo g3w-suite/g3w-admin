@@ -119,7 +119,8 @@ FIELD_TYPES_MAPPING = {
         FileField: FIELD_TYPE_FILE,
         DecimalField: FIELD_TYPE_FLOAT,
         TextField: FIELD_TYPE_TEXT,
-        ForeignKey: FIELD_TYPE_INTEGER # is not correct
+        ForeignKey: FIELD_TYPE_INTEGER, # is not correct
+        AutoField: FIELD_TYPE_INTEGER
     }
 }
 
@@ -202,7 +203,8 @@ def mapLayerAttributesFromModel(model, formField=False, **kwargs):
     toRes = OrderedDict()
     fields = model._meta.concrete_fields
     for field in fields:
-        if not isinstance(field, AutoField) and field.name not in fieldsToExlude:
+        #not isinstance(field, AutoField) and
+        if field.name not in fieldsToExlude:
             fieldType = FIELD_TYPES_MAPPING['djangoModel'][type(field)]
             toRes[field.name] = editingFormField(
                 field.name,

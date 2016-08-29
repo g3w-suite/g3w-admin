@@ -58,7 +58,10 @@ for app in settings.G3WADMIN_PROJECT_APPS:
 
 # adding local_more_apps
 for app in settings.G3WADMIN_LOCAL_MORE_APPS:
-    urlpatterns.append(url(r'^{}{}/'.format(BASE_ADMIN_URLPATH, app), include('{}.urls'.format(app))))
+    if app == settings.FRONTEND_APP:
+        urlpatterns.append(url(r'^{}/'.format(app), include('{}.urls'.format(app))))
+    else:
+        urlpatterns.append(url(r'^{}{}/'.format(BASE_ADMIN_URLPATH, app), include('{}.urls'.format(app))))
     try:
       apiUrlpatterns.append(url(r'^{}/'.format(app), include('{}.apiurls'.format(app))))
     except Exception as e:
