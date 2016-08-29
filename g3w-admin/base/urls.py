@@ -47,10 +47,10 @@ if BASE_ADMIN_URLPATH == 'admin/':
     urlpatterns.append(url(r'^', include('{}.urls'.format(settings.FRONTEND_APP))))
 
 #adding projects app
-if BASE_ADMIN_URLPATH:
-    base = BASE_ADMIN_URLPATH[0:-1]
+#if BASE_ADMIN_URLPATH:
+    #base = BASE_ADMIN_URLPATH[0:-1]
 for app in settings.G3WADMIN_PROJECT_APPS:
-    urlpatterns.append(url(r'^{}{}/'.format(base, app), include('{}.urls'.format(app))))
+    urlpatterns.append(url(r'^{}{}/'.format(BASE_ADMIN_URLPATH, app), include('{}.urls'.format(app))))
     try:
       apiUrlpatterns.append(url(r'^{}/'.format(app), include('{}.apiurls'.format(app))))
     except:
@@ -58,7 +58,7 @@ for app in settings.G3WADMIN_PROJECT_APPS:
 
 # adding local_more_apps
 for app in settings.G3WADMIN_LOCAL_MORE_APPS:
-    urlpatterns.append(url(r'^{}{}/'.format(base, app), include('{}.urls'.format(app))))
+    urlpatterns.append(url(r'^{}{}/'.format(BASE_ADMIN_URLPATH, app), include('{}.urls'.format(app))))
     try:
       apiUrlpatterns.append(url(r'^{}/'.format(app), include('{}.apiurls'.format(app))))
     except Exception as e:
