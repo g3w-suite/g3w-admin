@@ -5459,6 +5459,13 @@ fieldset[disabled] .btn-yahoo.active {
   padding: 0px;
   font-size: 1.2em;
 }
+.box-header {
+  cursor: pointer;
+}
+.box-title.fa-plus:before,
+.box-title.fa-minus:before {
+  content: "";
+}
 .sidebar-aside-toggle {
   position: absolute;
   left: 350px;
@@ -5603,17 +5610,6 @@ fieldset[disabled] .btn-yahoo.active {
 }
 .control-sidebar .g3w-sidebarpanel .g3w-floatbarpanel-name {
   font-weight: bold;
-}
-.g3w-form button {
-  margin: 0px 5px 0px 5px;
-}
-.g3w-form .g3w-relationname {
-  text-align: center;
-  border-top: 1px solid #b5bbc8;
-  margin-bottom: 10px;
-  font-weight: bold;
-  margin-top: 20px;
-  padding-top: 5px;
 }
 .control-sidebar-bg-shadow {
   -webkit-box-shadow: -1px 0px 15px rgba(0, 0, 0, 0.7);
@@ -6070,6 +6066,53 @@ Licensed under MIT
 }
 .queryresults-container .queryresults-featurebox .attr-value {
   font-weight: bold;
+}
+.g3w-form button {
+  margin: 0px 5px 0px 5px;
+}
+.g3w-form .g3w-relationname {
+  color: #3c8dbc;
+  font-size: 1.2em;
+  border-top: 1px solid #b5bbc8;
+  font-weight: bold;
+  margin-top: 20px;
+  padding: 10px;
+}
+.g3w-form .btn-add {
+  background-color: white;
+  color: #3c8dbc;
+  font-size: 1.8em;
+  right: 18px;
+  margin-top: 8px;
+  cursor: pointer;
+}
+.g3w-form .link {
+  color: #3c8dbc;
+  cursor: pointer;
+}
+.g3w-form .link.dashboardlink {
+  font-weight: bold;
+  text-decoration: underline;
+}
+.g3w-form .link.morelink {
+  font-weight: bold;
+  text-decoration: none;
+}
+.g3w-form .link.trash {
+  color: red;
+  margin-right: 5px;
+}
+.g3w-form tr.attributes-preview {
+  cursor: pointer;
+}
+.g3w-form tr.attributes-preview:hover td {
+  background-color: #e6e6e6;
+}
+.g3w-form .showhide-transition {
+  transition: all .3s ease;
+}
+.g3w-form .showhide-leave {
+  opacity: 0;
 }
 .toast-top-center {
   top: 60px;
