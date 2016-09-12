@@ -5453,9 +5453,9 @@ fieldset[disabled] .btn-yahoo.active {
   border-radius: 0px;
 }
 .btn-circle-medium {
-  width: 36px;
-  height: 36px;
-  border-radius: 18px;
+  width: 30px;
+  height: 30px;
+  border-radius: 15px;
   padding: 0px;
   font-size: 1.2em;
 }
@@ -5465,6 +5465,25 @@ fieldset[disabled] .btn-yahoo.active {
 .box-title.fa-plus:before,
 .box-title.fa-minus:before {
   content: "";
+}
+.quick-actions-menu {
+  overflow: hidden;
+  height: 40px;
+  width: 100%;
+  line-height: 40px;
+  text-align: center;
+}
+.quick-actions-menu .btn {
+  color: #888888;
+  background-color: transparent;
+  border: 1px solid #888888;
+  margin: -5px 5px 0px 5px;
+  vertical-align: middle;
+}
+.quick-actions-menu .btn:hover {
+  color: #888888;
+  border-color: #3c8dbc;
+  background-color: transparent;
 }
 .sidebar-aside-toggle {
   position: absolute;
@@ -5544,27 +5563,17 @@ fieldset[disabled] .btn-yahoo.active {
     transform: translate(-300px, 0);
   }
 }
-.main-sidebar .quick-actions-menu,
-.left-side .quick-actions-menu {
-  height: 46px;
-  width: 100%;
-  line-height: 46px;
-  background-color: light-grey;
-  text-align: center;
-}
 .main-sidebar .quick-actions-menu .btn,
 .left-side .quick-actions-menu .btn {
+  color: #bbbbbb;
   background-color: #222d32;
   border: 2px solid #888888;
-  color: white;
-  margin: 0px 10px 0px 10px;
-  vertical-align: middle;
 }
 .main-sidebar .quick-actions-menu .btn:hover,
 .left-side .quick-actions-menu .btn:hover {
-  color: white;
-  border-color: #3c8dbc;
+  color: #bbbbbb;
   background-color: #222d32;
+  border: 2px solid #888888;
 }
 .g3w-viewport {
   overflow: hidden;
@@ -5604,7 +5613,7 @@ fieldset[disabled] .btn-yahoo.active {
 .control-sidebar .g3w-sidebarpanel {
   background: #f9fafc;
   border-left: 1px solid #d2d6de;
-  padding: 10px 10px 10px 10px;
+  padding: 0px 10px 10px 10px;
   overflow-y: auto;
   overflow-x: hidden;
 }
