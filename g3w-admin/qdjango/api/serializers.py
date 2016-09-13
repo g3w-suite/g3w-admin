@@ -43,12 +43,23 @@ class ProjectSerializer(serializers.ModelSerializer):
         qgisProjectSettignsWMS = QgisProjectSettingsWMS(response.content)
 
         extent = eval(instance.initial_extent)
-        ret['extent'] = [
+        ret['initextent'] = [
             float(extent['xmin']),
             float(extent['ymin']),
             float(extent['xmax']),
             float(extent['ymax'])
         ]
+
+        if instance.max_extent:
+            max_extent = eval(instance.max_extent)
+            ret['extent'] = [
+                float(max_extent['xmin']),
+                float(max_extent['ymin']),
+                float(max_extent['xmax']),
+                float(max_extent['ymax'])
+            ]
+        else:
+            ret['extent'] = ret['initextent']
 
         # add layers data, widgets
         ret['layers'] = []

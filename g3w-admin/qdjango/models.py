@@ -61,7 +61,7 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
 
     # Extent
     initial_extent = models.CharField(_('Initial extent'), max_length=255)
-    max_extent = models.CharField(_('Max extent'), max_length=255)
+    max_extent = models.CharField(_('Max extent'), max_length=255, null=True, blank=True)
 
     # Qgis version project
     qgis_version = models.CharField(_('Qgis project version'), max_length=255, default='')

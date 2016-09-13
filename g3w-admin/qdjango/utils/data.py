@@ -433,6 +433,7 @@ class QgisProject(XmlData):
         'srid',
         'units',
         'initialExtent',
+        'maxExtent',
         'wfstLayers',
         'layersTree',
         'layers',
@@ -506,25 +507,35 @@ class QgisProject(XmlData):
         Get start extention project from xml
         :return: dict
         """
+        return {
+            'xmin': self.qgisProjectTree.find('mapcanvas/extent/xmin').text,
+            'ymin': self.qgisProjectTree.find('mapcanvas/extent/ymin').text,
+            'xmax': self.qgisProjectTree.find('mapcanvas/extent/xmax').text,
+            'ymax': self.qgisProjectTree.find('mapcanvas/extent/ymax').text
+        }
+
+    def _getDataMaxExtent(self):
+        """
+        Get max extention project from xml wms extent
+        :return: dict
+        """
         wmsExtent = self.qgisProjectTree.find('properties/WMSExtent')
         if wmsExtent is not None:
-          coordsEls = wmsExtent.getchildren()
-          xmin = coordsEls[0].text
-          ymin = coordsEls[1].text
-          xmax = coordsEls[2].text
-          ymax = coordsEls[3].text
+            coordsEls = wmsExtent.getchildren()
+            xmin = coordsEls[0].text
+            ymin = coordsEls[1].text
+            xmax = coordsEls[2].text
+            ymax = coordsEls[3].text
+
+            return {
+                'xmin': xmin,
+                'ymin': ymin,
+                'xmax': xmax,
+                'ymax': ymax
+            }
         else:
-          xmin = self.qgisProjectTree.find('mapcanvas/extent/xmin').text
-          ymin = self.qgisProjectTree.find('mapcanvas/extent/ymin').text
-          xmax = self.qgisProjectTree.find('mapcanvas/extent/xmax').text
-          ymax = self.qgisProjectTree.find('mapcanvas/extent/ymax').text
-        
-        return {
-            'xmin': xmin,
-            'ymin': ymin,
-            'xmax': xmax,
-            'ymax': ymax
-        }
+            return None
+
 
     def _getDataSrid(self):
         """
@@ -633,6 +644,7 @@ class QgisProject(XmlData):
                     group=self.group,
                     title=self.title,
                     initial_extent=self.initialExtent,
+                    max_extent=self.maxExtent,
                     thumbnail= thumbnail,
                     description=description,
                     qgis_version=self.qgisVersion,
@@ -645,6 +657,7 @@ class QgisProject(XmlData):
                 self.instance.title = self.title
                 self.instance.qgis_version = self.qgisVersion
                 self.instance.initial_extent = self.initialExtent
+                self.instance.max_extent = self.maxExtent
                 self.instance.layers_tree = self.layersTree
 
                 if thumbnail:

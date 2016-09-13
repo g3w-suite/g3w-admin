@@ -15,13 +15,17 @@ from copy import deepcopy
 class ClientView(TemplateView):
 
     template_name = "client/index.html"
+    project = None
 
     def dispatch(self, request, *args, **kwargs):
 
         # check permissions
         Project = apps.get_app_config(kwargs['project_type']).get_model('project')
-        if not request.user.has_perm("{}.view_project".format(kwargs['project_type']),
-                                     Project.objects.get(pk=kwargs['project_id'])):
+
+        # get project model object
+        self.project = Project.objects.get(pk=kwargs['project_id']) if 'project_id' in kwargs else \
+            Project.objects.get(slug=kwargs['project_slug'])
+        if not request.user.has_perm("{}.view_project".format(kwargs['project_type']), self.project):
 
             # redirect to login if Anonymous user
             if request.user.is_anonymous():
@@ -31,11 +35,12 @@ class ClientView(TemplateView):
         return super(ClientView, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
-        contextData = super(ClientView,self).get_context_data(**kwargs)
+        contextData = super(ClientView, self).get_context_data(**kwargs)
 
         # group serializer
         group = get_object_or_404(Group, slug=kwargs['group_slug'])
-        groupSerializer = GroupSerializer(group, projectId=kwargs['project_id'], projectType=kwargs['project_type'], request=self.request)
+        groupSerializer = GroupSerializer(group, projectId=self.project.pk, projectType=kwargs['project_type'],
+                                          request=self.request)
 
         groupData = deepcopy(groupSerializer.data)
 
@@ -58,7 +63,7 @@ class ClientView(TemplateView):
             settings.STATIC_URL+"g3w-client/", settings.MEDIA_URL, serializedGroup)
 
         # project by type(app)
-        if not '{}-{}'.format(kwargs['project_type'],kwargs['project_id']) in groupSerializer.projects.keys():
+        if not '{}-{}'.format(kwargs['project_type'], self.project.pk) in groupSerializer.projects.keys():
             raise Http404('No project type and/or project id present in group')
 
         # page title
