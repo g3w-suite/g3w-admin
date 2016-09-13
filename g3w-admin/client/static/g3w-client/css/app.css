@@ -6123,6 +6123,9 @@ Licensed under MIT
 .g3w-form .showhide-leave {
   opacity: 0;
 }
+.g3w-form .form-control.picklayerinput {
+  cursor: pointer;
+}
 .toast-top-center {
   top: 60px;
 }
