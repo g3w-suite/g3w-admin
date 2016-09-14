@@ -39,7 +39,7 @@ class ClientView(TemplateView):
 
         # group serializer
         group = get_object_or_404(Group, slug=kwargs['group_slug'])
-        groupSerializer = GroupSerializer(group, projectId=self.project.pk, projectType=kwargs['project_type'],
+        groupSerializer = GroupSerializer(group, projectId=str(self.project.pk), projectType=kwargs['project_type'],
                                           request=self.request)
 
         groupData = deepcopy(groupSerializer.data)
