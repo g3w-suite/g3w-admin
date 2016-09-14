@@ -1702,6 +1702,7 @@ var ApplicationTemplate = function(templateConfig, ApplicationService) {
 
     toastr.options.positionClass = 'toast-top-center';
     toastr.options.preventDuplicates = true;
+    toastr.options.timeOut = 2000;
     // proxy della libreria toastr
     GUI.notify = toastr;
     // proxy della libreria bootbox
@@ -2922,26 +2923,6 @@ proto.collectRelations = function() {
 };
 // viene chamato quando si preme ad esempio Salva sul Form degli
 // attributi di una
-proto.setFieldsWithValues = function(feature, fields, relations) {
-  var attributes = {};
-  _.forEach(fields,function(field) {
-    attributes[field.name] = field.value;
-  });
-  var relationsAttributes = null;
-  if (relations) {
-    var relationsAttributes = {};
-    _.forEach(relations,function(relation) {
-      var attributes = {};
-      _.forEach(relation.fields,function(field) {
-        attributes[field.name] = field.value;
-      });
-      relationsAttributes[relation.name] = attributes;
-    });
-  }
-  feature.setProperties(attributes);
-  this._editBuffer.updateFields(feature, relationsAttributes);
-};
-
 proto.setFieldsWithValues = function(feature,fields,relations){
   var attributes = {};
   _.forEach(fields,function(field){
@@ -2950,6 +2931,9 @@ proto.setFieldsWithValues = function(feature,fields,relations){
 
   feature.setProperties(attributes);
   this._editBuffer.updateFields(feature,relations);
+  if (relations) {
+    this._vectorLayer.setRelationsData(feature.getId(),relations);
+  }
 };
 //funzione che in base alla feature passata recupera le relazioni associata ad essa
 proto.getRelationsWithValues = function(feature) {
@@ -2971,7 +2955,7 @@ proto.getRelationsWithValues = function(feature) {
       }
       // altrimenti prendo i fields vuoti
       else {
-        fieldsPromise = this._vectorLayer.getRelationsWithValues();
+        fieldsPromise = this._vectorLayer.getRelationsWithValues(fid);
       }
     }
     // se invece è una feature già presente e quindi non nuova
@@ -3766,6 +3750,7 @@ proto.stop = function(){
 };
 
 proto._cleanUp = function(){
+  this.steps.completed();
   this._origFeature = null;
   this._origGeometry = null;
   this._newFeatures = [];
@@ -3853,7 +3838,7 @@ proto._cut = function(geometry,cutCoordinate){
       closestIndex = index;
     }
     index += 1;
-  })
+  });
   
   var coordinates = geometry.getCoordinates();
   // prendo la prima porzione di coordinate
@@ -5406,7 +5391,7 @@ proto.getRelationsWithValues = function(fid) {
   // altrimenti creo un cloe dell'attributo relations
   var relations = _.cloneDeep(this._relations);
   // -- DA CAPIRE MEGLIO --
-  if (!fid || !this.getFeatureById(fid)) {
+  if (!fid && !this.getFeatureById(fid)) {
     _.forEach(relations, function(relation) {
       relation.elements = [];
     });
@@ -5509,14 +5494,9 @@ proto.getRelationsFksWithValuesForFeature = function(feature){
   return fks;
 };
 
-// ancora mai usato, perché in generale i dati delle relazioni vengono caricati in modo lazy su richieste per la singola feature
-proto.setRelationsData = function (relationsData) {
-  var self = this;
-  _.forEach(this._relations,function(relation){
-    // popolare gli elementi delle relazioni
-    self._relationsDataLoaded = true;
-  });
-}
+proto.setRelationsData = function (fid,relationsData) {
+  this._relationsDataLoaded[fid] = relationsData;
+};
 
 proto.setStyle = function(style){
   this._olLayer.setStyle(style);
@@ -5530,8 +5510,10 @@ proto.getSource = function(){
   return this._olLayer.getSource();
 };
 
-proto.getFeatureById = function(id){
-  return this._olLayer.getSource().getFeatureById(id);
+proto.getFeatureById = function(fid){
+  if (fid) {
+    return this._olLayer.getSource().getFeatureById(fid);
+  }
 };
 
 proto.clear = function(){
@@ -9357,7 +9339,7 @@ module.exports = {
 };
 
 },{"./formpanel.html":75,"core/clipboardservice":20,"core/query/queryservice":49,"core/utils/utils":52,"g3w-ol3/src/interactions/pickcoordinatesinteraction":61,"gui/gui":76,"gui/panel":83}],75:[function(require,module,exports){
-module.exports = "<div>\n    <div class=\"quick-actions-menu\">\n        <div class=\"pull-right\">\n            <button class=\"btn btn-default btn-circle-medium glyphicon glyphicon-screenshot\" data-placement=\"bottom\" @click=\"pickLayerToClipBoard\"  data-i18n=\"[title]copy_form_data_from_feature\"></button>\n            <button class=\"btn btn-default btn-circle-medium glyphicon glyphicon-copy\" data-placement=\"bottom\" @click=\"copyToClipBoard\"  data-i18n=\"[title]copy_form_data\"></button>\n            <button class=\"btn btn-default btn-circle-medium glyphicon glyphicon-paste\" data-placement=\"bottom\" @click=\"pasteClipBoardToForm\" v-disabled=\"!state.canpaste\"> data-i18n=\"[title]paste_form_data\"></button>\n        </div>\n    </div>\n    <div>\n        <validator name=\"validation\">\n            <form novalidate class=\"form-horizontal g3w-form\">\n                <div class=\"box box-primary\">\n                    <div class=\"box-header with-border\">\n                        <h3 class=\"box-title\">Attributi elemento</h3>\n                        <div class=\"box-tools pull-right\">\n                        </div>\n                    </div>\n                    <div class=\"box-body\">\n                        <template v-for=\"field in state.fields\">\n                            <div v-if=\"isVisible(field)\" class=\"form-group has-feedback\">\n                                <label :for=\"field.name\" class=\"col-sm-4 control-label\">{{ field.label }}<span v-if=\"field.validate && field.validate.required\">*</span></label>\n                                <div class=\"col-sm-8\">\n                                    <input v-if=\"isSimple(field)\" :field=\"field.name\" v-validate=\"field.validate\" v-disabled=\"!isEditable(field)\" class=\"form-control\" v-model=\"field.value\" :id=\"field.name\" :placeholder=\"field.input.label\">\n                                    <textarea v-if=\"isTextarea(field)\" :field=\"field.name\" v-validate=\"field.validate\" v-disabled=\"!isEditable(field)\" class=\"form-control\" v-model=\"field.value\" :id=\"field.name\" :placeholder=\"field.input.label\">\n                                    </textarea>\n                                    <select v-if=\"isSelect(field)\" :field=\"field.name\" v-validate=\"field.validate\" v-disabled=\"!isEditable(field)\" class=\"form-control\" v-model=\"field.value\" :id=\"field.name\" :placeholder=\"field.input.label\">\n                                        <option v-for=\"value in field.input.options.values\" value=\"{{ value.key }}\">{{ value.value }}</option>\n                                    </select>\n                                    <div v-if=\"isLayerPicker(field)\">\n                                        <input class=\"form-control picklayerinput\" @click=\"pickLayer(field)\" :field=\"field.name\" v-validate=\"field.validate\" v-disabled=\"!isEditable(field)\" onfocus=\"blur()\" data-toggle=\"tooltip\" title=\"Ottieni il dato da un elemento del layer '{{ layerPickerPlaceHolder(field) }}'\" v-model=\"field.value\" :id=\"field.name\" :placeholder=\"'['+layerPickerPlaceHolder(field)+']'\">\n                                        <i class=\"glyphicon glyphicon-screenshot form-control-feedback\"></i>\n                                    </div>\n                                </div>\n                            </div>\n                        </template>\n                    </div>\n                </div>\n                <div v-for=\"relation in state.relations\" style=\"margin-top:10px\">\n                    <div v-if=\"showRelation(relation)\" transition=\"expand\">\n                        <div class=\"box box-default\">\n                            <div class=\"box-header with-border\">\n                                <h3 class=\"box-title\">{{ relation | relationplural }}</h3>\n                            </div>\n                            <div class=\"box-body\">\n                                <table v-if=\"relation.elements.length\" class=\"table table-striped\">\n                                    <thead>\n                                    <tr>\n                                        <th v-for=\"field in fieldsSubset(relation.fields)\">{{field.label}}</th>\n                                    </tr>\n                                    </thead>\n                                    <tbody>\n                                    <template v-for=\"element in visibleElements(relation)\">\n                                        <tr class=\"attributes-preview\" @click=\"toggleElementBox(relation,element)\">\n                                            <td v-for=\"relfield in fieldsSubset(element.fields)\">\n                                                <span>{{relfield.value}}</span>\n                                            </td>\n                                            <td>\n                                                <i v-if=\"isRelationElementDeletable(relation,element)\" class=\"glyphicon glyphicon glyphicon-trash link trash\" @click.stop.prevent=\"removeRelationElement(relation,element)\"></i>\n                                                <i class=\"glyphicon glyphicon-option-horizontal link morelink\"></i>\n                                            </td>\n                                        </tr>\n                                        <tr v-show=\"!collapseElementBox(relation,element)\" class=\"queryresults-featurebox\">\n                                            <td :colspan=\"fieldsSubsetLength(element.fields)+1\">\n                                                <template v-for=\"field in element.fields\">\n                                                    <div v-if=\"isVisible(field)\" class=\"form-group has-feedback\">\n                                                        <label :for=\"field.name\" class=\"col-sm-4 control-label\">{{ field.label }}<span v-if=\"field.validate && field.validate.required\">*</span></label>\n                                                        <div class=\"col-sm-8\">\n                                                            <input v-if=\"isSimple(field)\" :field=\"field.name\" v-validate=\"field.validate\" v-disabled=\"!isEditable(field)\" class=\"form-control\" v-model=\"field.value\" :id=\"field.name\" :placeholder=\"field.input.label\">\n                                                            <textarea v-if=\"isTextarea(field)\" :field=\"field.name\" v-validate=\"field.validate\" v-disabled=\"!isEditable(field)\" class=\"form-control\" v-model=\"field.value\" :id=\"field.name\" :placeholder=\"field.input.label\"></textarea>\n                                                            <select v-if=\"isSelect(field)\" :field=\"field.name\" v-validate=\"field.validate\" v-disabled=\"!isEditable(field)\" class=\"form-control\" v-model=\"field.value\" :id=\"field.name\" :placeholder=\"field.input.label\">\n                                                                <option v-for=\"value in field.input.options.values\" value=\"{{ value.key }}\">{{ value.value }}</option>\n                                                            </select>\n                                                            <div v-if=\"isLayerPicker(field)\">\n                                                                <input class=\"form-control\" @click=\"pickLayer(field)\" :field=\"field.name\" v-validate=\"field.validate\" v-disabled=\"!isEditable(field)\" onfocus=\"blur()\" data-toggle=\"tooltip\" title=\"Ottieni il dato da un elemento del layer '{{ layerPickerPlaceHolder(field) }}'\" v-model=\"field.value\" :id=\"field.name\" :placeholder=\"'['+layerPickerPlaceHolder(field)+']'\">\n                                                                <i class=\"glyphicon glyphicon-screenshot form-control-feedback\"></i>\n                                                            </div>\n                                                        </div>\n                                                    </div>\n                                                </template>\n                                            </td>\n                                        </tr>\n                                    </template>\n                                    </tbody>\n                                </table>\n                                <div v-if=\"canAddRelationElements(relation)\" class=\"row\" style=\"margin:0px\"><i class=\"glyphicon glyphicon-plus-sign pull-right btn-add\" @click=\"addRelationElement(relation)\"></i></div>\n                            </div>\n                        </div>\n                    </div>\n                </div>\n                <div class=\"form-group\">\n                    <div class=\"col-sm-offset-4 col-sm-8\">\n                        <div v-if=\"hasFieldsRequired\" style=\"margin-bottom:10px\">\n                            <span>* Campi richiesti</span>\n                        </div>\n                        <span v-for=\"button in buttons\">\n                <button class=\"btn \" :class=\"[button.class]\" @click.stop.prevent=\"exec(button.cbk)\" v-disabled=\"!btnEnabled(button)\">{{ button.title }}</button>\n              </span>\n                    </div>\n                </div>\n            </form>\n        </validator>\n    </div>\n</div>\n";
+module.exports = "<div>\n    <div class=\"quick-actions-menu\">\n        <div class=\"pull-right\">\n            <button class=\"btn btn-default glyphicon glyphicon-screenshot\" data-placement=\"bottom\" @click=\"pickLayerToClipBoard\"  data-i18n=\"[title]copy_form_data_from_feature\"></button>\n            <button class=\"btn btn-default glyphicon glyphicon-copy\" data-placement=\"bottom\" @click=\"copyToClipBoard\"  data-i18n=\"[title]copy_form_data\"></button>\n            <button class=\"btn btn-default glyphicon glyphicon-paste\" data-placement=\"bottom\" @click=\"pasteClipBoardToForm\" v-disabled=\"!state.canpaste\" data-i18n=\"[title]paste_form_data\"></button>\n        </div>\n    </div>\n    <div>\n        <validator name=\"validation\">\n            <form novalidate class=\"form-horizontal g3w-form\">\n                <div class=\"box box-primary\">\n                    <div class=\"box-header with-border\">\n                        <h3 class=\"box-title\">Attributi elemento</h3>\n                        <div class=\"box-tools pull-right\">\n                        </div>\n                    </div>\n                    <div class=\"box-body\">\n                        <template v-for=\"field in state.fields\">\n                            <div v-if=\"isVisible(field)\" class=\"form-group has-feedback\">\n                                <label :for=\"field.name\" class=\"col-sm-4 control-label\">{{ field.label }}<span v-if=\"field.validate && field.validate.required\">*</span></label>\n                                <div class=\"col-sm-8\">\n                                    <input v-if=\"isSimple(field)\" :field=\"field.name\" v-validate=\"field.validate\" v-disabled=\"!isEditable(field)\" class=\"form-control\" v-model=\"field.value\" :id=\"field.name\" :placeholder=\"field.input.label\">\n                                    <textarea v-if=\"isTextarea(field)\" :field=\"field.name\" v-validate=\"field.validate\" v-disabled=\"!isEditable(field)\" class=\"form-control\" v-model=\"field.value\" :id=\"field.name\" :placeholder=\"field.input.label\">\n                                    </textarea>\n                                    <select v-if=\"isSelect(field)\" :field=\"field.name\" v-validate=\"field.validate\" v-disabled=\"!isEditable(field)\" class=\"form-control\" v-model=\"field.value\" :id=\"field.name\" :placeholder=\"field.input.label\">\n                                        <option v-for=\"value in field.input.options.values\" value=\"{{ value.key }}\">{{ value.value }}</option>\n                                    </select>\n                                    <div v-if=\"isLayerPicker(field)\">\n                                        <input class=\"form-control picklayerinput\" @click=\"pickLayer(field)\" :field=\"field.name\" v-validate=\"field.validate\" v-disabled=\"!isEditable(field)\" onfocus=\"blur()\" data-toggle=\"tooltip\" title=\"Ottieni il dato da un elemento del layer '{{ layerPickerPlaceHolder(field) }}'\" v-model=\"field.value\" :id=\"field.name\" :placeholder=\"'['+layerPickerPlaceHolder(field)+']'\">\n                                        <i class=\"glyphicon glyphicon-screenshot form-control-feedback\"></i>\n                                    </div>\n                                </div>\n                            </div>\n                        </template>\n                    </div>\n                </div>\n                <div v-for=\"relation in state.relations\" style=\"margin-top:10px\">\n                    <div v-if=\"showRelation(relation)\" transition=\"expand\">\n                        <div class=\"box box-default\">\n                            <div class=\"box-header with-border\">\n                                <h3 class=\"box-title\">{{ relation | relationplural }}</h3>\n                            </div>\n                            <div class=\"box-body\">\n                                <table v-if=\"relation.elements.length\" class=\"table table-striped\">\n                                    <thead>\n                                    <tr>\n                                        <th v-for=\"field in fieldsSubset(relation.fields)\">{{field.label}}</th>\n                                    </tr>\n                                    </thead>\n                                    <tbody>\n                                    <template v-for=\"element in visibleElements(relation)\">\n                                        <tr class=\"attributes-preview\" @click=\"toggleElementBox(relation,element)\">\n                                            <td v-for=\"relfield in fieldsSubset(element.fields)\">\n                                                <span>{{relfield.value}}</span>\n                                            </td>\n                                            <td>\n                                                <i v-if=\"isRelationElementDeletable(relation,element)\" class=\"glyphicon glyphicon glyphicon-trash link trash\" @click.stop.prevent=\"removeRelationElement(relation,element)\"></i>\n                                                <i class=\"glyphicon glyphicon-option-horizontal link morelink\"></i>\n                                            </td>\n                                        </tr>\n                                        <tr v-show=\"!collapseElementBox(relation,element)\" class=\"queryresults-featurebox\">\n                                            <td :colspan=\"fieldsSubsetLength(element.fields)+1\">\n                                                <template v-for=\"field in element.fields\">\n                                                    <div v-if=\"isVisible(field)\" class=\"form-group has-feedback\">\n                                                        <label :for=\"field.name\" class=\"col-sm-4 control-label\">{{ field.label }}<span v-if=\"field.validate && field.validate.required\">*</span></label>\n                                                        <div class=\"col-sm-8\">\n                                                            <input v-if=\"isSimple(field)\" :field=\"field.name\" v-validate=\"field.validate\" v-disabled=\"!isEditable(field)\" class=\"form-control\" v-model=\"field.value\" :id=\"field.name\" :placeholder=\"field.input.label\">\n                                                            <textarea v-if=\"isTextarea(field)\" :field=\"field.name\" v-validate=\"field.validate\" v-disabled=\"!isEditable(field)\" class=\"form-control\" v-model=\"field.value\" :id=\"field.name\" :placeholder=\"field.input.label\"></textarea>\n                                                            <select v-if=\"isSelect(field)\" :field=\"field.name\" v-validate=\"field.validate\" v-disabled=\"!isEditable(field)\" class=\"form-control\" v-model=\"field.value\" :id=\"field.name\" :placeholder=\"field.input.label\">\n                                                                <option v-for=\"value in field.input.options.values\" value=\"{{ value.key }}\">{{ value.value }}</option>\n                                                            </select>\n                                                            <div v-if=\"isLayerPicker(field)\">\n                                                                <input class=\"form-control picklayerinput\" @click=\"pickLayer(field)\" :field=\"field.name\" v-validate=\"field.validate\" v-disabled=\"!isEditable(field)\" onfocus=\"blur()\" data-toggle=\"tooltip\" title=\"Ottieni il dato da un elemento del layer '{{ layerPickerPlaceHolder(field) }}'\" v-model=\"field.value\" :id=\"field.name\" :placeholder=\"'['+layerPickerPlaceHolder(field)+']'\">\n                                                                <i class=\"glyphicon glyphicon-screenshot form-control-feedback\"></i>\n                                                            </div>\n                                                        </div>\n                                                    </div>\n                                                </template>\n                                            </td>\n                                        </tr>\n                                    </template>\n                                    </tbody>\n                                </table>\n                                <div v-if=\"canAddRelationElements(relation)\" class=\"row\" style=\"margin:0px\"><i class=\"glyphicon glyphicon-plus-sign pull-right btn-add\" @click=\"addRelationElement(relation)\"></i></div>\n                            </div>\n                        </div>\n                    </div>\n                </div>\n                <div class=\"form-group\">\n                    <div class=\"col-sm-offset-4 col-sm-8\">\n                        <div v-if=\"hasFieldsRequired\" style=\"margin-bottom:10px\">\n                            <span>* Campi richiesti</span>\n                        </div>\n                        <span v-for=\"button in buttons\">\n                <button class=\"btn \" :class=\"[button.class]\" @click.stop.prevent=\"exec(button.cbk)\" v-disabled=\"!btnEnabled(button)\">{{ button.title }}</button>\n              </span>\n                    </div>\n                </div>\n            </form>\n        </validator>\n    </div>\n</div>\n";
 
 },{}],76:[function(require,module,exports){
 var noop = require('core/utils/utils').noop;
@@ -10122,7 +10104,7 @@ proto.highlightGeometry = function(geometryObj,options){
 };
 
 proto.refreshMap = function(){
-  _.forEach(this.mapLayers,function(wmsLayer){
+  _.forEach(this._mapLayers,function(wmsLayer){
     wmsLayer.getOLLayer().getSource().updateParams({"time": Date.now()});
   })
 };

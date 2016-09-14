@@ -5474,10 +5474,12 @@ fieldset[disabled] .btn-yahoo.active {
   text-align: center;
 }
 .quick-actions-menu .btn {
+  font-size: 1.5em;
   color: #888888;
   background-color: transparent;
-  border: 1px solid #888888;
-  margin: -5px 5px 0px 5px;
+  border: 0px;
+  margin: -5px 0px 0px 0px;
+  padding: 6px 10px;
   vertical-align: middle;
 }
 .quick-actions-menu .btn:hover {
