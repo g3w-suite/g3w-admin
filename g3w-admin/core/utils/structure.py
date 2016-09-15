@@ -193,7 +193,7 @@ def mapLayerAttributes(layer, formField=False, **kwargs):
         return fieldsMapped
 
 
-def mapLayerAttributesFromModel(model, formField=False, **kwargs):
+def mapLayerAttributesFromModel(model, **kwargs):
     """
     map model simple e direct field to Attributes for client editing system
     only concrete field not virtual field and many2many
@@ -214,6 +214,10 @@ def mapLayerAttributesFromModel(model, formField=False, **kwargs):
                 inputType=FORM_FIELDS_MAPPING[fieldType],
                 editable=not field==model._meta.pk
             )
+
+            # update with fields configs data
+            if 'fields' in kwargs and field.name in kwargs['fields']:
+                toRes[field.name].update(kwargs['fields'][field.name])
     return toRes
 
 

@@ -8,20 +8,33 @@ from core.mixins.api.serializers import G3WRequestSerializer
 from copy import copy
 
 
-def update_layerserializer_data(layerserializer_data, data):
-
+def update_serializer_data(serializer_data, data):
+    """
+    update layerserializer data by type: update or append
+    """
     # switch for operation_type:
     if data['operation_type'] == 'update':
-        layerserializer_data.update(data['values'])
+        to_update = serializer_data[data['update_path']] if 'update_path' in data else serializer_data
+        to_update.update(data['values'])
     elif data['operation_type'] == 'append':
-        for value in data['values']:
-
-            # todo: manage append_path with pipe
-            layerserializer_data[data['append_path']].append(value)
+        if 'append_path' in data:
+            if isinstance(data['append_path'], list):
+                to_append = None
+                for step in data['append_path']:
+                    if not to_append:
+                        to_append = serializer_data[step]
+                    else:
+                        to_append = to_append[step]
+            else:
+                to_append = serializer_data[data['append_path']]
+            for value in data['values']:
+                to_append.append(value)
 
 
 class BaseLayerSerializer(serializers.ModelSerializer):
-
+    """
+    Serializer Class base for layer project
+    """
     def to_representation(self, instance):
         ret = super(BaseLayerSerializer, self).to_representation(instance)
         ret.update(eval(instance.property))
@@ -37,7 +50,9 @@ class BaseLayerSerializer(serializers.ModelSerializer):
 
 
 class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
-
+    """
+    Serializer for Project Group
+    """
     minscale = serializers.IntegerField(source='min_scale', read_only=True)
     maxscale = serializers.IntegerField(source='max_scale', read_only=True)
     crs = serializers.IntegerField(read_only=True)

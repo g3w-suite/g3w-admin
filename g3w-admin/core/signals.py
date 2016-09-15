@@ -18,6 +18,9 @@ post_serialize_maplayer = django.dispatch.Signal(providing_args=["layer", "data"
 # signal after add/update map group
 after_update_group = django.dispatch.Signal(providing_args=["group"])
 
+# signal after project serialization
+post_serialize_project = django.dispatch.Signal(providing_args=["app_name"])
+
 # signal after layer serialized data on /api/config/
 # send layer seralized original object and came back only dict data changed
 after_serialized_project_layer = django.dispatch.Signal(providing_args=["layer"])
@@ -36,6 +39,7 @@ after_update_project = django.dispatch.Signal(providing_args=["app_name", "proje
 
 # signal to load widgets for project
 load_project_widgets = django.dispatch.Signal(providing_args=["app_name", "project"])
+
 
 # signal send to perform search by specific module
 perform_client_search = django.dispatch.Signal(providing_args=["app_name", "project_id", "widget_id"])
