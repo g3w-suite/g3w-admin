@@ -32,6 +32,11 @@ class IntersectsBBoxFilter(InsideBBoxFilter):
 
 class CentroidBBoxFilter(IntersectsBBoxFilter):
 
+    def __init__(self, **kwargs):
+
+        self.tolerance = kwargs['tolerance'] if 'tolerance' in kwargs else 10
+        super(CentroidBBoxFilter, self).__init__(**kwargs)
+
     def get_filter_bbox(self, request):
         polygon = super(CentroidBBoxFilter, self).get_filter_bbox(request)
-        return polygon.centroid.buffer(10)
+        return polygon.centroid.buffer(self.tolerance)
