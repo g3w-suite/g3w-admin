@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
+from ordered_model.admin import OrderedModelAdmin
 from sitetree.admin import TreeItemAdmin,override_item_admin
 from .models import Group, BaseLayer, MapControl
 from guardian.admin import GuardedModelAdmin
@@ -41,8 +42,9 @@ class BaseLayerAdmin(GuardedModelAdmin):
 admin.site.register(BaseLayer, BaseLayerAdmin)
 
 
-class MapControlAdmin(GuardedModelAdmin):
+class MapControlAdmin(OrderedModelAdmin):
     model = MapControl
+    list_display = ('name', 'move_up_down_links')
 admin.site.register(MapControl, MapControlAdmin)
 
 # Tweak admin site settings like title, header, 'View Site' URL, etc

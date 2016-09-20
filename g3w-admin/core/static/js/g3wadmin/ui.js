@@ -325,12 +325,15 @@ _.extend(g3wadmin.ui, {
             var $widgetItem = $('[data-widget-type="dataTable"]');
         }
 
-        var $dataTable = $widgetItem.DataTable(options);
-
         // add widgect for details
-        $widgetItem.find('[data-widget-type="detailItemDataTable"]').click(function(e){
+        // before init datatable because it will work only on first page
+        $widgetItem.find('[data-widget-type="detailItemDataTable"]').on('click', function(e){
             ga.widget.showDetailItemDataTable($dataTable, $(this));
         });
+
+        var $dataTable = $widgetItem.DataTable(options);
+
+
     }
 
 
