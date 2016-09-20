@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
 from ordered_model.admin import OrderedModelAdmin
 from sitetree.admin import TreeItemAdmin,override_item_admin
+from .ie.admin import G3WImportExportModelAdmin
 from .models import Group, BaseLayer, MapControl
 from guardian.admin import GuardedModelAdmin
 
@@ -42,7 +43,7 @@ class BaseLayerAdmin(GuardedModelAdmin):
 admin.site.register(BaseLayer, BaseLayerAdmin)
 
 
-class MapControlAdmin(OrderedModelAdmin):
+class MapControlAdmin(OrderedModelAdmin, G3WImportExportModelAdmin):
     model = MapControl
     list_display = ('name', 'move_up_down_links')
 admin.site.register(MapControl, MapControlAdmin)
