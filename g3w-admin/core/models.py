@@ -5,6 +5,7 @@ from django.utils.translation import ugettext, ugettext_lazy as _
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.apps import apps
+from ordered_model.models import OrderedModel
 from model_utils.models import TimeStampedModel
 from model_utils import Choices
 from autoslug import AutoSlugField
@@ -66,7 +67,7 @@ class BaseLayer(models.Model):
         verbose_name_plural = 'Base Layers'
 
 
-class MapControl(models.Model):
+class MapControl(OrderedModel):
     """
     Model for Map Controls: zoom, query, etc..
     """
@@ -76,7 +77,7 @@ class MapControl(models.Model):
     def __unicode__(self):
         return self.name
 
-    class Meta:
+    class Meta(OrderedModel.Meta):
         verbose_name = _('Map control')
         verbose_name_plural = _('Map controls')
 

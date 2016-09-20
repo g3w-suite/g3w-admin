@@ -52,7 +52,8 @@ THIRD_PARTY_APPS = [
     'rest_framework',
     'rest_framework_gis',
     'import_export',
-    'mptt'
+    'mptt',
+    'ordered_model'
     # 'debug_toolbar',
     # 'debug_panel',
 ]
