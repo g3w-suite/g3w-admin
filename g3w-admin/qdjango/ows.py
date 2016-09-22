@@ -79,7 +79,7 @@ class OWSRequestHandler(OWSRequestHandlerBase):
 
                 # get layer by name
                 layerToFilter = q['QUERY_LAYER'] if 'QUERY_LAYER' in q else q['QUERY_LAYERS']
-                layer = cls._projectInstance.layer_set.get(origname=layerToFilter)
+                layer = cls._projectInstance.layer_set.get(name=layerToFilter)
 
                 # get ogc server url
                 layer_source = QueryDict(layer.datasource)
