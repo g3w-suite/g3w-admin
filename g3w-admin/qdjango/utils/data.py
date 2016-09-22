@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.http.request import QueryDict
 from defusedxml import lxml
 from lxml import etree
 from django.utils.translation import ugettext, ugettext_lazy as _
@@ -135,6 +136,9 @@ class QgisProjectLayer(XmlData):
         elif self.layerType == Layer.TYPES.postgres or self.layerType == Layer.TYPES.spatialite:
             dts = datasource2dict(self.datasource)
             name = dts['table'].split('.')[-1].replace("\"", "")
+        elif self.layerType ==Layer.TYPES.wms:
+            dts = QueryDict(self.datasource)
+            name = dts['layers']
         else:
             name = self.qgisProjectLayerTree.find('layername').text
 

@@ -1,5 +1,6 @@
 from django.http import HttpResponse
 from django.conf import settings
+from django.http.request import QueryDict
 
 try:
     from qgis.server import *
@@ -70,16 +71,46 @@ class OWSRequestHandler(OWSRequestHandlerBase):
 
     def baseDoRequest(cls, q, request=None):
 
-        if qdjangoModeRequest == QDJANGO_PROXY_REQUEST or q['REQUEST'] == 'GetLegendGraphic':
+        ows_request = q['REQUEST'].upper()
+        if qdjangoModeRequest == QDJANGO_PROXY_REQUEST or ows_request == 'GETLEGENDGRAPHIC':
 
-            # case http proxy
-            server_base = urlsplit(settings.QDJANGO_SERVER_URL).netloc
-            headers = {}
-            conn = HTTPConnection(server_base, settings.QDJANGO_SERVER_PORT)
+            # try to get getfeatureinfo on wms layer
+            if ows_request == 'GETFEATUREINFO' and 'SOURCE' in q and q['SOURCE'].upper() == 'WMS':
 
-            url = '?'.join([settings.QDJANGO_SERVER_URL, q.urlencode()])
+                # get layer by name
+                layerToFilter = q['QUERY_LAYER'] if 'QUERY_LAYER' in q else q['QUERY_LAYERS']
+                layer = cls._projectInstance.layer_set.get(origname=layerToFilter)
+
+                # get ogc server url
+                layer_source = QueryDict(layer.datasource)
+                urldata = urlsplit(layer_source['url'])
+                server_base = urlsplit(layer_source['url']).netloc
+                headers = {}
+                conn = HTTPConnection(server_base, 80)
+
+                # copy q to manage it
+                new_q = copy(q)
+
+                # change layer with wms origname layer
+                if 'LAYER' in new_q:
+                    del(q['LAYER'])
+                if 'LAYERS' in new_q:
+                    del(new_q['LAYERS'])
+                del(new_q['SOURCE'])
+                new_q['LAYERS'] = layer_source['layers']
+                new_q['QUERY_LAYERS'] = layer_source['layers']
+
+                url = '?'.join([urldata.path, '&'.join([urldata.query, new_q.urlencode()])])
+            else:
+
+                # case http proxy
+                server_base = urlsplit(settings.QDJANGO_SERVER_URL).netloc
+                headers = {}
+                conn = HTTPConnection(server_base, settings.QDJANGO_SERVER_PORT)
+
+                url = '?'.join([settings.QDJANGO_SERVER_URL, q.urlencode()])
+
             conn.request(request.method, url, request.body, headers)
-
             result = conn.getresponse()
 
             # If we get a redirect, let's add a useful message.
