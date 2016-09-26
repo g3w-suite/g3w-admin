@@ -1,2 +1,2 @@
 {% load static %}
-<svg role="img" title="{{ title }}"><use xlink:href="{% static sprite %}#{{ idicon }}"></use></svg>
+<svg {% if width and height %}style="width:{{ width }}; height:{{ height }}"{% endif %} role="img" title="{{ title }}"><use xlink:href="{% static sprite %}#{{ idicon }}"></use></svg>
