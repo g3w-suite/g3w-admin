@@ -187,6 +187,11 @@ def mapLayerAttributes(layer, formField=False, **kwargs):
                 if 'fields' in kwargs and field['name'] in kwargs['fields']:
                     formFields[field['name']].update(kwargs['fields'][field['name']])
 
+    # reorder if is set in kwargs
+    if 'order' in kwargs:
+        formFields = OrderedDict(
+            (lname, formFields[lname]) for lname in kwargs['order'])
+
     if formField:
         return formFields
     else:
