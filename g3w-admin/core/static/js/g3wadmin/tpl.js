@@ -134,6 +134,12 @@ _.extend(g3wadmin.tpl, {
     </li>\
     '),
 
+    loading_box: _.template('\
+        <div class="overlay">\
+            <i class="fa fa-refresh fa-spin"></i>\
+        </div>\
+        '),
+
     ajaxFiler_progresBar: _.template('\
     <div class="bar"></div>\
     '),
