@@ -54,6 +54,6 @@ def g3wadmin_project_widgets(project, app_name):
 @register.filter
 def lookup(d, key):
     """
-    Template fielte to get value from dict by key
+    Template filter to get value from dict by key
     """
     return d[key]

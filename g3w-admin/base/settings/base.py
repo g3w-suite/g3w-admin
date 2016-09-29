@@ -184,7 +184,8 @@ SESSION_COOKIE_NAME = 'g3wadmin_sessionid'
 REST_FRAMEWORK = {
     'EXCEPTION_HANDLER': 'core.api.views.G3WExceptionHandler',
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 100
+    'PAGE_SIZE': 100,
+    'UNICODE_JSON': False
 }
 
 # FOR MEDIA
