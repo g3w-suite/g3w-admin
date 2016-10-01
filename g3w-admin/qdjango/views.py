@@ -10,6 +10,7 @@ from django.views.generic.detail import SingleObjectMixin
 from django.http import HttpResponseRedirect
 from django.utils.decorators import method_decorator
 from guardian.decorators import permission_required
+from guardian.shortcuts import get_objects_for_user
 from core.mixins.views import *
 from core.signals import pre_update_project, pre_delete_project, after_update_project
 from core.utils.decorators import check_madd
@@ -32,7 +33,9 @@ class QdjangoProjectListView(G3WRequestViewMixin, G3WGroupViewMixin, ListView):
     template_name = 'qdjango/project_list.html'
 
     def get_queryset(self):
-        return self.group.qdjango_project.all().order_by('title')
+        return get_objects_for_user(self.request.user, 'qdjango.view_project', Project)\
+            .filter(group=self.group).order_by('title')
+        #return self.group.qdjango_project.all().order_by('title')
 
     def get_context_data(self, **kwargs):
         context = super(QdjangoProjectListView, self).get_context_data(**kwargs)
@@ -117,7 +120,7 @@ class QdjangoProjectDeleteView(G3WAjaxDeleteViewMixin, SingleObjectMixin, View):
 class QdjangoLayersListView(G3WRequestViewMixin, G3WGroupViewMixin, QdjangoProjectViewMixin, ListView):
     template_name = 'qdjango/layers_list.html'
 
-    @method_decorator(permission_required('qdjango.view_project', (Project, 'slug', 'project_slug'),
+    @method_decorator(permission_required('qdjango.change_project', (Project, 'slug', 'project_slug'),
                                           raise_exception=True))
     def dispatch(self, *args, **kwargs):
         return super(QdjangoLayersListView, self).dispatch(*args, **kwargs)

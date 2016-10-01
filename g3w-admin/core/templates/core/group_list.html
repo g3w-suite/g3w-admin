@@ -46,9 +46,11 @@
                   <div class="row">
                    <div class="col-sm-2 col-xs-2">
                       <div class="description-block">
+                        {% if "change_group" in userObj_perms %}
                          <div class="icon" data-toggle="tooltip" data-placement="top" title="{% trans 'Add new project' %}" >
                           {% include 'core/include/add_project.html' %}
                         </div>
+                        {% endif %}
                       </div><!-- /.description-block -->
                     </div><!-- /.col -->
                     <div class="col-sm-4 col-xs-4">

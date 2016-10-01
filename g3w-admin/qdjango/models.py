@@ -91,6 +91,12 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
             'qdjango.view_project'
         ], mode=mode)
 
+        # if editor not has permission on group give permission only view on parent gorup group
+        if not user.has_perm('core.view_group', self.group):
+            setPermissionUserObject(user, self.group, permissions=[
+                'core.view_group'
+            ], mode=mode)
+
         layerAction = 'addPermissionsToEditor' if mode == 'add' else 'removePermissionsToEditor'
         layers = self.layer_set.all()
         for layer in layers:
@@ -99,7 +105,14 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
     def _permissionsToViewers(self, users_id, mode='add'):
 
         for user_id in users_id:
-            setPermissionUserObject(User.objects.get(pk=user_id), self, permissions='qdjango.view_project', mode=mode)
+            user = User.objects.get(pk=user_id)
+            setPermissionUserObject(user, self, permissions='qdjango.view_project', mode=mode)
+
+            # if viewer not has permission on group give permission only view on parent gorup group
+            if not user.has_perm('core.view_group', self.group):
+                setPermissionUserObject(user, self.group, permissions=[
+                    'core.view_group'
+                ], mode=mode)
 
             layerAction = 'addPermissionsToViewers' if mode == 'add' else 'removePermissionsToViewers'
             layers = self.layer_set.all()

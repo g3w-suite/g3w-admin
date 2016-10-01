@@ -42,13 +42,18 @@ def g3wadmin_progress_bar_values(current, min=0, max=100):
 
 
 @register.simple_tag()
-def g3wadmin_project_widgets(project, app_name):
+def g3wadmin_project_widgets(project, app_name, user):
     """
     Template tag to get project specific widgets
     """
-    widgets = load_project_widgets.send(None, project=project, app_name=app_name)
+    widgets = load_project_widgets.send(user, project=project, app_name=app_name)
 
-    return [widget[1] for widget in widgets]
+    template_widgets = []
+    for widget in widgets:
+        if widgets and widget[1]:
+            template_widgets.append(widget[1])
+
+    return template_widgets
 
 
 @register.filter
