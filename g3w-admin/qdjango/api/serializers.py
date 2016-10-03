@@ -61,6 +61,9 @@ class ProjectSerializer(serializers.ModelSerializer):
         else:
             ret['extent'] = ret['initextent']
 
+        # add print capabilities:
+        ret['print'] = qgisProjectSettignsWMS.composerTemplates
+
         # add layers data, widgets
         ret['layers'] = []
         ret['search'] = []

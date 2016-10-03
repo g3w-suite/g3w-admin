@@ -438,10 +438,11 @@ class QgisProject(XmlData):
         'units',
         'initialExtent',
         'maxExtent',
+        'wfsLayers',
         'wfstLayers',
         'layersTree',
         'layers',
-        'qgisVersion'
+        'qgisVersion',
         ]
 
     _defaultValidators = [
@@ -607,6 +608,18 @@ class QgisProject(XmlData):
     def _getDataQgisVersion(self):
         return self.qgisProjectTree.getroot().attrib['version']
 
+    def _getDataWfsLayers(self):
+        """
+        Return a array of wfslayers
+        """
+
+        wfsLayersTree = self.qgisProjectTree.xpath('properties/WFSLayers/value')
+        wfsLayers = []
+        for wfsLayer in wfsLayersTree:
+            wfsLayers.append(wfsLayer.text)
+
+        return wfsLayers
+
     def _getDataWfstLayers(self):
         wfstLayers = {
             'INSERT': [],
@@ -725,7 +738,8 @@ class QgisProject(XmlData):
 class QgisProjectSettingsWMS(XmlData):
 
     _dataToSet = [
-        'layers'
+        'layers',
+        'composerTemplates'
     ]
 
     _NS = {
@@ -802,6 +816,26 @@ class QgisProjectSettingsWMS(XmlData):
 
         self._getLayerTreeData(layersTree[0])
         return self._layersData
+
+    def _getDataComposerTemplates(self):
+
+        self._composerTemplatesData = []
+
+        composerTemplates= self.qgisProjectSettingsTree.xpath(
+            'opengis:Capability/opengis:ComposerTemplates/opengis:ComposerTemplate',
+            namespaces=self._NS
+        )
+
+        for composerTemplate in composerTemplates:
+            self._composerTemplatesData.append({
+                'name': composerTemplate.attrib['name'],
+                'map': {
+                    'w': composerTemplate.attrib['width'],
+                    'h': composerTemplate.attrib['height']
+                }
+            })
+
+        return self._composerTemplatesData
 
 
 class QgisPgConnection(object):
