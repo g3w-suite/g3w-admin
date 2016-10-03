@@ -85,6 +85,7 @@ class QgisProjectLayer(XmlData):
         'scaleBasedVisibility',
         'srid',
         #'capabilities',
+        'wfsCapabilities',
         'editOptions',
         'datasource',
         'name',
@@ -243,9 +244,18 @@ class QgisProjectLayer(XmlData):
         editOptions = 0
         for editOp, layerIds in self.qgisProject.wfstLayers.items():
             if self.layerId in layerIds:
-                editOptions |= getattr(settings,editOp)
+                editOptions |= getattr(settings, editOp)
 
         return None if editOptions == 0 else editOptions
+
+    def _getDataWfsCapabilities(self):
+
+        wfsCapabilities = 0
+        for wfslayer in self.qgisProject.wfsLayers:
+            if self.layerId in wfslayer:
+                wfsCapabilities = settings.QUERYABLE
+
+        return None if wfsCapabilities == 0 else wfsCapabilities
 
     def _getDataDatasource(self):
         """
@@ -354,6 +364,7 @@ class QgisProjectLayer(XmlData):
                 'datasource': self.datasource,
                 'order': self.order,
                 'edit_options': self.editOptions,
+                'wfscapabilities': self.wfsCapabilities,
                 'geometrytype': self.geometrytype
                 }
             )
@@ -371,6 +382,7 @@ class QgisProjectLayer(XmlData):
             self.instance.srid = self.srid
             self.instance.order = self.order
             self.instance.edit_options = self.editOptions
+            self.instance.wfscapabilities = self.wfsCapabilities
             self.instance.geometrytype = self.geometrytype
         # Save self.instance
         self.instance.save()

@@ -158,7 +158,8 @@ class LayerSerializer(serializers.ModelSerializer):
             'minscale',
             'maxscale',
             'editops',
-            'servertype'
+            'servertype',
+            'wfscapabilities'
         )
 
     def get_servertype(self, instance):

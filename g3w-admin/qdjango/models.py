@@ -173,6 +173,7 @@ class Layer(G3WACLModelMixins, models.Model):
     #for capabilities and edit opsions
     capabilities = models.IntegerField(_('Bitwise capabilities'), blank=True, null=True)
     edit_options = models.IntegerField(_('Bitwise edit options'), blank=True, null=True)
+    wfscapabilities = models.IntegerField(_('Bitwise wfs options'), blank=True, null=True)
 
     #geometryType
     geometrytype = models.CharField(_('Geometry type'), max_length=255, blank=True, null=True)
