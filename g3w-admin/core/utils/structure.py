@@ -3,6 +3,7 @@ from django.db.models.fields.files import *
 from django.db.models.fields.related import *
 from django.conf import settings
 from django.apps import apps
+from django.core.urlresolvers import reverse
 from copy import deepcopy
 from collections import OrderedDict
 
@@ -183,6 +184,13 @@ def mapLayerAttributes(layer, formField=False, **kwargs):
                     inputType=FORM_FIELDS_MAPPING[field['type']]
                 )
 
+                # add upload url to image type if module is set
+                if 'editing' in settings.G3WADMIN_LOCAL_MORE_APPS:
+                    if field['type'] == FIELD_TYPE_IMAGE:
+                        formFields[field['name']].update({
+                            'uploadurl': reverse('editing-upload')
+                        })
+
                 # update with fields configs data
                 if 'fields' in kwargs and field['name'] in kwargs['fields']:
                     formFields[field['name']].update(kwargs['fields'][field['name']])
@@ -219,6 +227,13 @@ def mapLayerAttributesFromModel(model, **kwargs):
                 inputType=FORM_FIELDS_MAPPING[fieldType],
                 editable=not field==model._meta.pk
             )
+
+            # add upload url to image type if module is set
+            if 'editing' in settings.G3WADMIN_LOCAL_MORE_APPS:
+                if fieldType == FIELD_TYPE_IMAGE:
+                    toRes[field.name].update({
+                        'uploadurl': reverse('editing-upload')
+                    })
 
             # update with fields configs data
             if 'fields' in kwargs and field.name in kwargs['fields']:
