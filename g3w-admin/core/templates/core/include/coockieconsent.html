@@ -1,0 +1,15 @@
+{% load i18n %}
+<script>
+    window.cookieconsent.initialise({
+        "palette":{
+            "popup":{"background":"#3c404d","text":"#d6d6d6"},
+            "button":{"background":"#8bed4f"}
+        },
+        "showLink":false,
+        "position":"top",
+        "content":{
+            "message":"{% trans 'This website uses cookies to ensure you get the best experience on our website' %}.",
+            "dismiss":"{% trans 'Got it'%}!"
+        }
+    });
+</script>

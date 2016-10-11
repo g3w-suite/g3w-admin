@@ -28,7 +28,8 @@
     "leaflet-draw":"*",
     "proj4": "*",
     "jstree": "3.3.1",
-    "jstree-bootstrap-theme": "*"
+    "jstree-bootstrap-theme": "*",
+    "cookieconsent": "*"
   },
   "main": "",
   "moduleType": [],

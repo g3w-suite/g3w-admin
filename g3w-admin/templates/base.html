@@ -78,6 +78,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     {% else %}
     <link rel="stylesheet" href="{% static "dist/css/g3wadmin.min.css"%}">
     {% endif %}
+    <link rel="stylesheet" type="text/css" href="{% static 'bower_components/cookieconsent/build/cookieconsent.min.css' %}" />
   </head>
   <!--
   BODY TAG OPTIONS:
@@ -264,6 +265,10 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
     <!-- g3wadmin javascript catalog -->
     <script src="{% url 'javascript-catalog' %}"></script>
+
+    <!-- coockieconset -->
+    <script type="text/javascript" src="{% static 'bower_components/cookieconsent/build/cookieconsent.min.js' %}"></script>
+    {% include 'core/include/coockieconsent.html' %}
 
     {% block custom_js_links_page %}
     {% endblock %}

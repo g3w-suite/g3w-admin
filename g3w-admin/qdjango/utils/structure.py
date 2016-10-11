@@ -15,6 +15,19 @@ from qdjango.models import Layer
 from core.utils.projects import CoreMetaLayer
 
 
+def get_schema_table(datasource_table):
+    if datasource_table.find('.') != -1:
+        schema, table = datasource_table.split('.')
+    else:
+        schema = 'public'
+        table = datasource_table
+
+    table = table.strip('"')
+    schema = schema.strip('"')
+
+    return schema, table
+
+
 def datasource2dict(datasource):
     """
     Read datasource string e put data in a python dict
@@ -159,14 +172,8 @@ class QgisDBLayerStructure(QgisLayerStructure):
         """
         Get and set in self sttributes value of table and schema
         """
-        if self.datasourceDict['table'].find('.')!=-1:
-            self.schema, self.table = self.datasourceDict['table'].split('.')
-        else:
-            self.schema = 'public'
-            self.table = self.datasourceDict['table']
 
-        self.table = self.table.strip('"')
-        self.schema = self.schema.strip('"')
+        self.schema, self.table = get_schema_table(self.datasourceDict['table'])
 
     def getDriver_postgres(self):
         """
