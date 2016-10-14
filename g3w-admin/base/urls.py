@@ -62,7 +62,12 @@ for app in settings.G3WADMIN_LOCAL_MORE_APPS:
     if app == settings.FRONTEND_APP:
         urlpatterns.append(url(r'^{}/'.format(app), include('{}.urls'.format(app))))
     else:
-        urlpatterns.append(url(r'^{}{}/'.format(BASE_ADMIN_URLPATH, app), include('{}.urls'.format(app))))
+        app_urls = (urlconf_module, app_name, namespace) = include('{}.urls'.format(app))
+        try:
+            base_url_app = urlconf_module.BASE_URLS
+        except:
+            base_url_app = app
+        urlpatterns.append(url(r'^{}{}/'.format(BASE_ADMIN_URLPATH, base_url_app), app_urls))
     try:
       apiUrlpatterns.append(url(r'^{}/'.format(app), include('{}.apiurls'.format(app))))
     except Exception as e:
