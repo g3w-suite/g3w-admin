@@ -110,7 +110,7 @@ class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
             ret['overviewproject'] = {
                 'id': int(overviewproject.project_id),
                 'type': overviewproject.project_type,
-                'gid': "{}:{}".format(overviewproject.project_type,overviewproject.project_id)
+                'gid': "{}:{}".format(overviewproject.project_type, overviewproject.project_id)
             }
         else:
             ret['overviewproject'] = None
