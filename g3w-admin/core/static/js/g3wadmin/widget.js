@@ -399,7 +399,11 @@ _.extend(g3wadmin.widget, {
                         el.after(data)
                     },
                     error: function(el){
-                        var errMsg = arguments[6].responseText;
+                        if (_.isUndefined(arguments[6].responseJSON)) {
+                            var errMsg = arguments[6].responseText;
+                        } else {
+                            var errMsg = arguments[6].responseJSON.errors;
+                        }
                         var parent = el.find(".jFiler-jProgressBar").parent();
                         el.find(".jFiler-jProgressBar").fadeOut("slow", function(){
                             $(ga.tpl.ajaxFiler_errorMsg()).hide().appendTo(parent).fadeIn("slow");
