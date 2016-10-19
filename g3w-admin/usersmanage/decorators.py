@@ -9,9 +9,9 @@ def user_passes_test_or_403(test_func):
         403 forbidden.
         """
 
-    def decorator(view_func):
+    def decorator(view_func, **view_func_kwargs):
         def _wrapped_view(request, *args, **kwargs):
-            if not test_func(request.user):
+            if not test_func(request.user, **view_func_kwargs):
                 template_name = '403.html'
                 response = render_to_response(template_name, {}, RequestContext(request))
                 response.status_code = 403
