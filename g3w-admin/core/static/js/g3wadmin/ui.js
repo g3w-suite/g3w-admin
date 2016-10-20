@@ -259,7 +259,12 @@ _.extend(g3wadmin.ui, {
 
     initAjaxFilerWidget: function() {
          $(document).on('click', '[data-widget-type="ajaxFiler"]', function(e){
-            ga.widget.ajaxFiler($(this));
+             // if disabled do not nothing
+             e.preventDefault();
+            if (!$(this).hasClass('disabled')) {
+                ga.widget.ajaxFiler($(this));
+            }
+
         });
     },
 

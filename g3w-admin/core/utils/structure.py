@@ -168,6 +168,14 @@ def mapLayerAttributes(layer, formField=False, **kwargs):
     fields = eval(layer.database_columns) if layer.database_columns else None
     fieldsMapped = deepcopy(fields)
 
+    # exlude if set:
+    if 'exlude' in kwargs:
+        _fieldsMapped = []
+        for field in fieldsMapped:
+            if field['name'] not in kwargs['exlude']:
+                _fieldsMapped.append(field)
+        fieldsMapped = _fieldsMapped
+
     if formField:
         formFields = OrderedDict()
 
@@ -215,6 +223,15 @@ def mapLayerAttributesFromModel(model, **kwargs):
 
     toRes = OrderedDict()
     fields = model._meta.concrete_fields
+
+    # exlude if set:
+    if 'exlude' in kwargs:
+        _fieldsMapped = []
+        for field in fields:
+            if field.name not in kwargs['exlude']:
+                _fieldsMapped.append(field)
+        fields = _fieldsMapped
+
     for field in fields:
         #not isinstance(field, AutoField) and
         if field.name not in fieldsToExlude:
