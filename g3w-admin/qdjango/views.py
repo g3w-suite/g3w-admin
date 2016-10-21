@@ -63,7 +63,8 @@ class OdjangoProjectCreateView(QdjangoProjectCUViewMixin, G3WGroupViewMixin, G3W
         return super(OdjangoProjectCreateView, self).dispatch(*args, **kwargs)
 
 
-class QdjangoProjectUpdateView(QdjangoProjectCUViewMixin, G3WGroupViewMixin, G3WRequestViewMixin, G3WACLViewMixin, UpdateView):
+class QdjangoProjectUpdateView(QdjangoProjectCUViewMixin, G3WGroupViewMixin, G3WRequestViewMixin, G3WACLViewMixin,
+                               UpdateView):
     """Update project view."""
 
     model = Project

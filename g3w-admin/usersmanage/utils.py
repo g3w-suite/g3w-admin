@@ -1,10 +1,27 @@
 from django.conf import settings
-from django.contrib.auth.models import Permission
+from django.contrib.auth.models import Permission, User
 from django.contrib.contenttypes.models import ContentType
 from guardian.shortcuts import get_users_with_perms, assign_perm, remove_perm
 from guardian.models import UserObjectPermission
 from crispy_forms.layout import Div, HTML, Field
 from django.utils.translation import ugettext, ugettext_lazy as _
+from django.contrib.sessions.models import Session
+from django.utils import timezone
+
+
+def get_all_logged_in_users():
+    # Query all non-expired sessions
+    # use timezone.now() instead of datetime.now() in latest versions of Django
+    sessions = Session.objects.filter(expire_date__gte=timezone.now())
+    uid_list = []
+
+    # Build a list of user ids from that query
+    for session in sessions:
+        data = session.get_decoded()
+        uid_list.append(data.get('_auth_user_id', None))
+
+    # Query all logged in users based on id list
+    return User.objects.filter(id__in=uid_list)
 
 
 def getUserGroups(user):
