@@ -62,7 +62,7 @@ class GroupConfigApiView(APIView):
         groupSerializer = GroupSerializer(group, projectId=project_id, projectType=project_type, request=self.request)
         initconfig = {
           "staticurl": settings.STATIC_URL,
-          "staticurl_client": settings.STATIC_URL + "g3w_client/",
+          "client": settings.STATIC_URL + "g3w_client/",
           "mediaurl": settings.MEDIA_URL,
           "group": groupSerializer.data}
 

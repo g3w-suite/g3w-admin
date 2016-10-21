@@ -59,7 +59,7 @@ class ClientView(TemplateView):
             serializedGroup = str(serializedGroup, 'utf-8')
 
         # add baseUrl property
-        contextData['group_config'] = 'var initConfig ={{ "staticurl":"{}", "staticurl_client":"{}", "mediaurl":"{}","group":{} }}'.format(
+        contextData['group_config'] = 'var initConfig ={{ "staticurl":"{}", "client":"{}", "mediaurl":"{}","group":{} }}'.format(
             settings.STATIC_URL, settings.STATIC_URL+"g3w-client/", settings.MEDIA_URL, serializedGroup)
 
         # project by type(app)
