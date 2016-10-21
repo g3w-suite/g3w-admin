@@ -60,7 +60,7 @@ class ClientView(TemplateView):
 
         # add baseUrl property
         contextData['group_config'] = 'var initConfig ={{ "staticurl":"{}", "client":"{}", "mediaurl":"{}","group":{} }}'.format(
-            settings.STATIC_URL, settings.STATIC_URL+"g3w-client/", settings.MEDIA_URL, serializedGroup)
+            settings.STATIC_URL, "g3w-client/", settings.MEDIA_URL, serializedGroup)
 
         # project by type(app)
         if not '{}-{}'.format(kwargs['project_type'], self.project.pk) in groupSerializer.projects.keys():
