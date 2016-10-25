@@ -29,7 +29,8 @@
     "proj4": "*",
     "jstree": "3.3.1",
     "jstree-bootstrap-theme": "*",
-    "cookieconsent": "*"
+    "cookieconsent": "*",
+    "bootswatch-dist#flatly": "*"
   },
   "main": "",
   "moduleType": [],
