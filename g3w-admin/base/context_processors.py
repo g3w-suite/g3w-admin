@@ -38,6 +38,8 @@ def global_settings(request):
             g3wadmin_context['sidebar_status'] = 'sidebar-collapse'
 
     # add specific css modules and submodules
-    g3wadmin_context['css_modules'] = load_css_modules.send(request)
-    g3wadmin_context['js_modules'] = load_js_modules.send(request)
+    css_modules = load_css_modules.send(request)
+    g3wadmin_context['css_modules'] = [css[1] for css in css_modules]
+    js_modules = load_js_modules.send(request)
+    g3wadmin_context['js_modules'] = [js[1] for js in js_modules]
     return g3wadmin_context

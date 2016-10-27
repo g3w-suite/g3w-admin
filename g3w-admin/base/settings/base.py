@@ -234,3 +234,5 @@ MPC = '-99:dodfEz3K2rziGayGnw_FyOuWdCM'
 
 FRONTEND = False
 FRONTEND_APP = 'frontend'
+
+SENTRY = False
