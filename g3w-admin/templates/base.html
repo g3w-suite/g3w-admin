@@ -79,6 +79,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <link rel="stylesheet" href="{% static "dist/css/g3wadmin.min.css"%}">
     {% endif %}
     <link rel="stylesheet" type="text/css" href="{% static 'bower_components/cookieconsent/build/cookieconsent.min.css' %}" />
+    {% for css in css_modules %}
+    <link rel="stylesheet" type="text/css" href="{% static css %}" />
+    {% endfor %}
   </head>
   <!--
   BODY TAG OPTIONS:

@@ -8,6 +8,7 @@ from django.views.generic import (
     TemplateView,
     View,
 )
+from core.signals import load_dashboard_widgets
 from django.views.generic.detail import SingleObjectMixin
 from django.core.urlresolvers import reverse
 from django.utils.decorators import method_decorator
@@ -19,8 +20,6 @@ from .models import Group, GroupProjectPanoramic, MapControl
 from .mixins.views import G3WRequestViewMixin, G3WAjaxDeleteViewMixin
 from .utils.decorators import check_madd
 from .signals import after_update_group
-
-
 
 class TestView(View):
 
@@ -51,16 +50,19 @@ class DashboardView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(DashboardView, self).get_context_data(**kwargs)
-
         # add number groups
         groups = get_objects_for_user(self.request.user, 'core.view_group', Group)
         context['n_groups'] = len(groups)
+        context['widgets'] = []
+
+        dashboard_widgets = load_dashboard_widgets.send(self)
+        for widget in dashboard_widgets:
+            context['widgets'].append(widget[1])
 
         return context
 
 #for GROUPS
 #---------------------------------------------
-
 
 class GroupListView(ListView):
     """List group view."""
