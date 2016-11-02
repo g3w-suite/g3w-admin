@@ -30,7 +30,7 @@
     "jstree": "3.3.1",
     "jstree-bootstrap-theme": "*",
     "cookieconsent": "*",
-    "bootswatch-dist#flatly": "*"
+    "bootswatch-dist": "flatly"
   },
   "main": "",
   "moduleType": [],
