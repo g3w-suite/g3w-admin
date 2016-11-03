@@ -23,7 +23,7 @@ FIELD_TYPE_BOOLEAN = 'boolean'
 FIELD_TYPE_DATE = 'date'
 FIELD_TYPE_TIME = 'time'
 FIELD_TYPE_DATETIME = 'datetime'
-FIELD_TYPE_IMAGE = 'file'
+FIELD_TYPE_IMAGE = 'image'
 FIELD_TYPE_FILE = 'file'
 
 
