@@ -204,7 +204,6 @@ class LayerSerializer(serializers.ModelSerializer):
                 ret['source'].update(datasourceWMS.dict())
                 ret['servertype'] = MSTYPES_OGC
 
-
         return ret
 
 

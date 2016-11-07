@@ -205,8 +205,11 @@ def mapLayerAttributes(layer, formField=False, **kwargs):
 
     # reorder if is set in kwargs
     if 'order' in kwargs:
-        formFields = OrderedDict(
-            (lname, formFields[lname]) for lname in kwargs['order'])
+        orederedFormFields = OrderedDict()
+        for lname in kwargs['order']:
+            if lname in formFields:
+                orederedFormFields[lname] = formFields[lname]
+        formFields = orederedFormFields
 
     if formField:
         return formFields
