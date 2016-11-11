@@ -4,6 +4,7 @@ from django.db.models.fields.related import *
 from django.conf import settings
 from django.apps import apps
 from django.core.urlresolvers import reverse
+from django.utils.translation import ugettext, ugettext_lazy as _
 from copy import deepcopy
 from collections import OrderedDict
 
@@ -203,7 +204,7 @@ def mapLayerAttributes(layer, formField=False, **kwargs):
 
                     if field['type'] == FIELD_TYPE_BOOLEAN:
                         formFields[field['name']]['input']['options'].update({
-                             'values': [{'key': 'Yes', 'value': 1}, {'key': 'No', 'value': 0}]
+                             'values': [{'key': _('Yes'), 'value': 1}, {'key': 'No', 'value': 0}]
                         })
 
                 # update with fields configs data
@@ -263,7 +264,7 @@ def mapLayerAttributesFromModel(model, **kwargs):
                     })
                 if field['type'] == FIELD_TYPE_BOOLEAN:
                     toRes[field.name]['input']['options'].update({
-                        'values': [{'key': 'Yes', 'value': 1}, {'key': 'No', 'value': 0}]
+                        'values': [{'key': _('Yes'), 'value': 1}, {'key': 'No', 'value': 0}]
                     })
 
             # update with fields configs data
