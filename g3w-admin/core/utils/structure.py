@@ -46,7 +46,7 @@ FORM_FIELDS_MAPPING = {
     FIELD_TYPE_FLOAT: FORM_FIELD_TYPE_TEXT,
     FIELD_TYPE_STRING: FORM_FIELD_TYPE_TEXT,
     FIELD_TYPE_TEXT: FORM_FIELD_TYPE_TEXTAREA,
-    FIELD_TYPE_BOOLEAN: FORM_FIELD_TYPE_CHECK,
+    FIELD_TYPE_BOOLEAN: FORM_FIELD_TYPE_RADIO,
     FIELD_TYPE_DATE: FORM_FIELD_TYPE_TEXT,
     FIELD_TYPE_TIME: FORM_FIELD_TYPE_TEXT,
     FIELD_TYPE_DATETIME: FORM_FIELD_TYPE_TEXT,
@@ -69,6 +69,7 @@ FIELD_TYPES_MAPPING = {
         'serial': FIELD_TYPE_INTEGER,
         'smallserial': FIELD_TYPE_FLOAT,
         'bigserial': FIELD_TYPE_FLOAT,
+        'boolean': FIELD_TYPE_BOOLEAN,
 
         # character types:
         'varchar': FIELD_TYPE_STRING,
@@ -121,7 +122,8 @@ FIELD_TYPES_MAPPING = {
         DecimalField: FIELD_TYPE_FLOAT,
         TextField: FIELD_TYPE_TEXT,
         ForeignKey: FIELD_TYPE_INTEGER, # is not correct
-        AutoField: FIELD_TYPE_INTEGER
+        AutoField: FIELD_TYPE_INTEGER,
+        NullBooleanField: FIELD_TYPE_BOOLEAN
     }
 }
 
@@ -199,6 +201,11 @@ def mapLayerAttributes(layer, formField=False, **kwargs):
                             'uploadurl': reverse('editing-upload')
                         })
 
+                    if field['type'] == FIELD_TYPE_BOOLEAN:
+                        formFields[field['name']]['input']['options'].update({
+                             'values': [{'key': 'Yes', 'value': 1}, {'key': 'No', 'value': 0}]
+                        })
+
                 # update with fields configs data
                 if 'fields' in kwargs and field['name'] in kwargs['fields']:
                     formFields[field['name']].update(kwargs['fields'][field['name']])
@@ -253,6 +260,10 @@ def mapLayerAttributesFromModel(model, **kwargs):
                 if fieldType == FIELD_TYPE_IMAGE:
                     toRes[field.name].update({
                         'uploadurl': reverse('editing-upload')
+                    })
+                if field['type'] == FIELD_TYPE_BOOLEAN:
+                    toRes[field.name]['input']['options'].update({
+                        'values': [{'key': 'Yes', 'value': 1}, {'key': 'No', 'value': 0}]
                     })
 
             # update with fields configs data

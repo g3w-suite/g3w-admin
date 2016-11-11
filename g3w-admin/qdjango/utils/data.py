@@ -288,7 +288,7 @@ class QgisProjectLayer(XmlData):
         Retrive data about columns for db table or ogr lyer type
         :return:
         """
-        if self.layerType in [Layer.TYPES.postgres,Layer.TYPES.spatialite]:
+        if self.layerType in [Layer.TYPES.postgres, Layer.TYPES.spatialite]:
             layerStructure = QgisDBLayerStructure(self, layerType=self.layerType)
         elif self.layerType in [Layer.TYPES.ogr]:
             layerStructure = QgisOGRLayerStructure(self)
