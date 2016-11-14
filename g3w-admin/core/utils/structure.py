@@ -262,7 +262,7 @@ def mapLayerAttributesFromModel(model, **kwargs):
                     toRes[field.name].update({
                         'uploadurl': reverse('editing-upload')
                     })
-                if field['type'] == FIELD_TYPE_BOOLEAN:
+                if fieldType == FIELD_TYPE_BOOLEAN:
                     toRes[field.name]['input']['options'].update({
                         'values': [{'key': _('Yes'), 'value': 1}, {'key': 'No', 'value': 0}]
                     })
