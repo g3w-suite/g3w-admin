@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-04-05 16:04+0000\n"
+"POT-Creation-Date: 2016-11-15 17:18+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,20 +18,48 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: core/admin.py:11
+#: core/admin.py:15
 msgid "Basic settings"
 msgstr ""
 
-#: core/admin.py:14
+#: core/admin.py:18
 msgid "Access settings"
 msgstr ""
 
-#: core/admin.py:18
+#: core/admin.py:22
 msgid "Display settings"
 msgstr ""
 
-#: core/admin.py:22
+#: core/admin.py:26
 msgid "Additional settings"
+msgstr ""
+
+#: core/api/views.py:73
+msgid "Data are not correct or insufficent!"
+msgstr ""
+
+#: core/api/views.py:79
+msgid "A error server is occured!"
+msgstr ""
+
+#: core/api/views.py:90
+msgid "Not found"
+msgstr ""
+
+#: core/api/views.py:97
+msgid "Permission denied"
+msgstr ""
+
+#: core/configs.py:10
+msgid "Search"
+msgstr ""
+
+#: core/configs.py:15
+msgid "Tooltip"
+msgstr ""
+
+#: core/configs.py:20
+msgid "Law"
 msgstr ""
 
 #: core/forms.py:38
@@ -42,116 +70,96 @@ msgstr ""
 msgid "GEO data"
 msgstr "GEO dati"
 
-#: core/forms.py:85
-msgid "Third party maps"
-msgstr "Mappe terze parti"
+#: core/forms.py:80
+msgid "Base Layers and Map default features"
+msgstr ""
 
-#: core/forms.py:108
+#: core/forms.py:107
 msgid "Logo/Picture"
 msgstr "Logo/Immagine"
 
-#: core/forms.py:135
+#: core/forms.py:134
 msgid "Copyright"
 msgstr ""
 
-#: core/models.py:26
-msgid "Meters"
+#: core/models.py:81
+msgid "Map control"
 msgstr ""
 
-#: core/models.py:27
-msgid "Feet"
+#: core/models.py:82
+msgid "Map controls"
 msgstr ""
 
-#: core/models.py:28
-msgid "Degrees"
-msgstr ""
-
-#: core/models.py:31
+#: core/models.py:88
 msgid "Name"
 msgstr ""
 
-#: core/models.py:32
+#: core/models.py:89
 msgid "Title"
 msgstr ""
 
-#: core/models.py:33
+#: core/models.py:90
 msgid "Description"
 msgstr ""
 
-#: core/models.py:35
+#: core/models.py:92
 msgid "Slug"
 msgstr ""
 
-#: core/models.py:37
+#: core/models.py:94
 msgid "Is active"
 msgstr ""
 
-#: core/models.py:39
+#: core/models.py:97
 msgid "lang"
 msgstr ""
 
-#: core/models.py:41
+#: core/models.py:100
 msgid "headerLogoImg"
 msgstr ""
 
-#: core/models.py:42
-msgid "headerLogoHeight"
-msgstr ""
-
-#: core/models.py:43
+#: core/models.py:101
 msgid "headerLogoLink"
 msgstr ""
 
-#: core/models.py:45 core/templates/core/ajax/group_detail.html.py:11
-msgid "Max scale"
+#: core/models.py:102
+msgid "Enter link with http:// or https//"
 msgstr ""
 
-#: core/models.py:46 core/templates/core/ajax/group_detail.html.py:12
-msgid "Min scale"
-msgstr ""
-
-#: core/models.py:48 core/templates/core/ajax/group_detail.html.py:14
-msgid "Panoramic max scale"
-msgstr ""
-
-#: core/models.py:49 core/templates/core/ajax/group_detail.html.py:15
-msgid "Panoramic min scale"
-msgstr ""
-
-#: core/models.py:51 core/templates/core/ajax/group_detail.html.py:9
-msgid "Units"
-msgstr ""
-
-#: core/models.py:53
-msgid "SRID/EPSG"
-msgstr ""
-
-#: core/models.py:55
-msgid "Use commercial maps"
-msgstr "Usa mapper commerciali: Bing (Areal, ..)"
-
-#: core/models.py:56
-msgid "Use OpenStreetMap base map"
-msgstr ""
-
-#: core/models.py:59
+#: core/models.py:118
 msgid "headerTermsOfUseText"
 msgstr ""
 
-#: core/models.py:62
+#: core/models.py:121
 msgid "headerTermsOfUseLink"
 msgstr ""
 
-#: core/models.py:90
+#: core/models.py:225 core/templates/core/group_form.html:11
 msgid "Group"
 msgstr ""
 
-#: core/models.py:91
+#: core/models.py:226
 msgid "Project type"
 msgstr ""
 
-#: core/models.py:92
+#: core/models.py:227
 msgid "Project type id"
+msgstr ""
+
+#: core/templates/core/403_MGC.html:7 core/templates/core/403_MPC.html:7
+msgid "error page"
+msgstr ""
+
+#: core/templates/core/403_MGC.html:15 core/templates/core/403_MPC.html:15
+msgid "Access denied"
+msgstr ""
+
+#: core/templates/core/403_MGC.html:17
+msgid "You can't add new Group"
+msgstr ""
+
+#: core/templates/core/403_MPC.html:17
+msgid "You can't add new Project"
 msgstr ""
 
 #: core/templates/core/ajax/group_detail.html:5
@@ -166,12 +174,32 @@ msgstr ""
 msgid "SRID"
 msgstr ""
 
+#: core/templates/core/ajax/group_detail.html:9
+msgid "Units"
+msgstr ""
+
 #: core/templates/core/ajax/group_detail.html:10
 msgid "Principal map"
 msgstr ""
 
+#: core/templates/core/ajax/group_detail.html:11
+msgid "Max scale"
+msgstr ""
+
+#: core/templates/core/ajax/group_detail.html:12
+msgid "Min scale"
+msgstr ""
+
 #: core/templates/core/ajax/group_detail.html:13
 msgid "Overview Map"
+msgstr ""
+
+#: core/templates/core/ajax/group_detail.html:14
+msgid "Panoramic max scale"
+msgstr ""
+
+#: core/templates/core/ajax/group_detail.html:15
+msgid "Panoramic min scale"
 msgstr ""
 
 #: core/templates/core/ajax/group_detail.html:18
@@ -247,15 +275,22 @@ msgid "Retry"
 msgstr ""
 
 #: core/templates/core/django_file_form/upload_template.html:26
-#: core/templates/core/group_list.html:80
+#: core/templates/core/group_list.html:83
+#: core/templates/core/project_list.html:31
 msgid "Delete"
 msgstr ""
 
-#: core/templates/core/group_form.html:23
+#: core/templates/core/group_form.html:34
+#: core/templates/core/group_list.html:58
+#: core/templates/core/project_list.html:11
+msgid "Projects"
+msgstr ""
+
+#: core/templates/core/group_form.html:49
 msgid "Alert"
 msgstr ""
 
-#: core/templates/core/group_form.html:24
+#: core/templates/core/group_form.html:50
 msgid "Some errors on form. Check it and send again."
 msgstr ""
 
@@ -263,25 +298,36 @@ msgstr ""
 msgid "Cartographic groups"
 msgstr "Gruppi cartografici"
 
-#: core/templates/core/group_list.html:48
+#: core/templates/core/group_list.html:50
 msgid "Add new project"
 msgstr ""
 
-#: core/templates/core/group_list.html:60
+#: core/templates/core/group_list.html:58
 msgid "Group projects"
 msgstr ""
 
-#: core/templates/core/group_list.html:60
-#: core/templates/core/project_list.html:11
-msgid "Projects"
-msgstr ""
-
-#: core/templates/core/group_list.html:66
+#: core/templates/core/group_list.html:65
+#: core/templates/core/project_list.html:25
 msgid "Show detail"
 msgstr ""
 
-#: core/templates/core/group_list.html:73
+#: core/templates/core/group_list.html:74
+#: core/templates/core/project_list.html:28
 msgid "Edit"
+msgstr ""
+
+#: core/templates/core/include/add_project.html:5
+msgid "Select project type do add:"
+msgstr ""
+
+#: core/templates/core/include/coockieconsent.html:11
+msgid ""
+"This website uses cookies to ensure you get the best experience on our "
+"website"
+msgstr ""
+
+#: core/templates/core/include/coockieconsent.html:12
+msgid "Got it"
 msgstr ""
 
 #: core/templates/core/include/form_buttons.html:7
@@ -292,9 +338,35 @@ msgstr ""
 msgid "Redo/Back"
 msgstr ""
 
-#: core/utils/forms.py:9
+#: core/templates/core/tags/add_layer.html:3
+msgid "Layer"
+msgstr ""
+
+#: core/templates/core/tags/add_project.html:3
+msgid "Project"
+msgstr ""
+
+#: core/utils/data.py:21
+msgid "{} \"{}\" {}:"
+msgstr ""
+
+#: core/utils/forms.py:11
 msgid "{} is no a valid image"
 msgstr ""
 
-msgid "Close"
-msgstr "Chiudi"
+#: core/utils/forms.py:28
+msgid "Default base layer"
+msgstr ""
+
+#: core/utils/structure.py:207 core/utils/structure.py:267
+msgid "Yes"
+msgstr ""
+
+#~ msgid "Third party maps"
+#~ msgstr "Mappe terze parti"
+
+#~ msgid "Use commercial maps"
+#~ msgstr "Usa mapper commerciali: Bing (Areal, ..)"
+
+#~ msgid "Close"
+#~ msgstr "Chiudi"

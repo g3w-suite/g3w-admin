@@ -101,14 +101,6 @@ class Group(TimeStampedModel):
     header_logo_link = models.URLField(_('headerLogoLink'), blank=True, null=True,
                                        help_text=_('Enter link with http:// or https//'))
 
-    # Max/min scale
-    max_scale = models.IntegerField(_('Max scale'))
-    min_scale = models.IntegerField(_('Min scale'))
-
-    # Panoramic max/min scale
-    panoramic_max_scale = models.IntegerField(_('Panoramic max scale'))
-    panoramic_min_scale = models.IntegerField(_('Panoramic min scale'))
-
     # Group SRID (a.k.a. EPSG)
     srid = models.ForeignKey(G3WSpatialRefSys, db_column='srid')
 

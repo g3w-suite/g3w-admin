@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-04-05 16:04+0000\n"
+"POT-Creation-Date: 2016-11-15 17:18+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,165 +18,413 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: iternet/forms.py:21
+#: cadastre/forms.py:29 iternet/forms.py:32
 msgid "Data config"
 msgstr ""
 
-#: iternet/templates/iternet/config.html:8
+#: cadastre/forms.py:55 iternet/forms.py:68
+msgid "Project not correct: {} layers no in project"
+msgstr ""
+
+#: cadastre/templates/cadastre/config.html:34
+#: iternet/templates/iternet/config.html:34
 msgid "Configuration application"
 msgstr ""
 
+#: cadastre/templates/cadastre/dashboard.html:7
 #: iternet/templates/iternet/dashboard.html:7
 msgid "Report"
 msgstr ""
 
-#: iternet/templates/iternet/dashboard.html:51
-msgid "Database connection"
+#: cadastre/templates/cadastre/dashboard.html:34
+#: iternet/templates/iternet/dashboard.html:76
+msgid "Qdjango Project"
 msgstr ""
 
-#: iternet/templates/iternet/dashboard.html:52
-msgid "Download QGIS connection XML file"
+#: cadastre/templates/cadastre/dashboard.html:47
+#: iternet/templates/iternet/dashboard.html:91
+msgid "Not yet 'Project' set!"
 msgstr ""
 
-#: law/forms.py:24 law/forms.py:40 law/forms.py:117
-msgid "General data"
+#: cadastre/templates/cadastre/dashboard.html:48
+#: iternet/templates/iternet/dashboard.html:92
+msgid "Choose a project"
 msgstr ""
 
-#: law/forms.py:63
-msgid "Date from from must be less than Date to"
+#: cadastre/templates/cadastre/dashboard.html:48
+#: iternet/templates/iternet/dashboard.html:92
+msgid "HERE"
 msgstr ""
 
-#: law/forms.py:64
-msgid "Date to must be more than Date from"
+#: cadastre/templates/cadastre/include/action_loaddata.html:6
+msgid "Revoke task"
 msgstr ""
 
-#: law/forms.py:69 law/templates/law/law_list.html.py:62
-msgid "New variation"
+#: cadastre/templates/cadastre/include/action_loaddata.html:11
+msgid "Show problems"
 msgstr ""
 
-#: law/forms.py:70
-msgid "New date from"
+#: cadastre/templates/cadastre/include/action_loaddata.html:16
+msgid "Clear Db by Task id"
 msgstr ""
 
-#: law/forms.py:71
-msgid "New date to"
+#: cadastre/templates/cadastre/loaddata.html:73
+#: cadastre/templates/cadastre/loaddata.html:116
+#: cadastre_camaiore/templates/cadastre/loaddatacivici.html:45
+msgid "STATO"
 msgstr ""
 
-#: law/forms.py:94
-msgid "New date from from must be less than New date to"
+#: cadastre/templates/cadastre/loaddata.html:74
+#: cadastre/templates/cadastre/loaddata.html:117
+#: cadastre_camaiore/templates/cadastre/loaddatacivici.html:46
+msgid "File"
 msgstr ""
 
-#: law/forms.py:95
-msgid "New date to must be more than New date from"
+#: cadastre/templates/cadastre/loaddata.html:75
+msgid "Tipo fornitura"
 msgstr ""
 
-#: law/models.py:7
-msgid "Law name"
+#: cadastre/templates/cadastre/loaddata.html:76
+msgid "Descrizione"
 msgstr ""
 
-#: law/models.py:8
-msgid "Law description"
+#: cadastre/templates/cadastre/loaddata.html:77
+msgid "Aggiornamento"
 msgstr ""
 
-#: law/models.py:9 law/templates/law/ajax/law_detail.html.py:5
-msgid "Variation"
+#: cadastre/templates/cadastre/loaddata.html:78
+#: cadastre/templates/cadastre/loaddata.html:119
+#: cadastre_camaiore/templates/cadastre/loaddatacivici.html:52
+msgid "Data caricamento"
 msgstr ""
 
-#: law/models.py:10
-msgid "Valid from"
-msgstr ""
-
-#: law/models.py:11
-msgid "Valid to"
-msgstr ""
-
-#: law/models.py:12 law/models.py:44
-msgid "Slug"
-msgstr ""
-
-#: law/models.py:39
-msgid "Article number"
-msgstr ""
-
-#: law/models.py:40 law/templates/law/ajax/article_detail.html.py:6
-#: law/templates/law/article_list.html:58
-msgid "Title"
-msgstr ""
-
-#: law/models.py:41
-msgid "Article comma number"
-msgstr ""
-
-#: law/models.py:42
-msgid "Article content"
-msgstr ""
-
-#: law/models.py:52
-msgid "Article"
-msgstr ""
-
-#: law/templates/law/ajax/article_detail.html:5
-#: law/templates/law/article_list.html:57
-msgid "Comma"
-msgstr ""
-
-#: law/templates/law/ajax/law_detail.html:6 law/templates/law/law_list.html:24
-msgid "Valid"
-msgstr ""
-
-#: law/templates/law/ajax/law_new_variation.html:7
-#: law/templates/law/article_form.html:17 law/templates/law/law_form.html:15
-msgid "Alert"
-msgstr ""
-
-#: law/templates/law/ajax/law_new_variation.html:8
-#: law/templates/law/article_form.html:18 law/templates/law/law_form.html:16
-msgid "Some errors on form. Check it and send again."
-msgstr ""
-
-#: law/templates/law/article_list.html:10 law/templates/law/law_list.html:42
-msgid "Law articles"
-msgstr ""
-
-#: law/templates/law/article_list.html:39
-msgid "Export"
-msgstr ""
-
-#: law/templates/law/article_list.html:47
-msgid "Upload"
-msgstr ""
-
-#: law/templates/law/article_list.html:56
-msgid "Number"
-msgstr ""
-
-#: law/templates/law/article_list.html:66 law/templates/law/law_list.html:48
-msgid "Show detail"
-msgstr ""
-
-#: law/templates/law/article_list.html:69 law/templates/law/law_list.html:55
-msgid "Edit"
-msgstr ""
-
-#: law/templates/law/article_list.html:72 law/templates/law/law_list.html:69
+#: cadastre/templates/cadastre/loaddata.html:88
+#: cadastre/templates/cadastre/loaddata.html:131
+#: cadastre_camaiore/templates/cadastre/loaddatacivici.html:62
+#: cdu/templates/cdu/config_list.html:45
 msgid "Delete"
 msgstr ""
 
-#: law/templates/law/law_list.html:8
+#: cadastre/templates/cadastre/loaddata.html:118
+msgid "Data elaborazione"
+msgstr ""
+
+#: cadastre/templates/cadastre/loaddata.html:120
+msgid "N DOCFA"
+msgstr ""
+
+#: cadastre/templates/cadastre/loaddata.html:121
+msgid "N planimterie"
+msgstr ""
+
+#: cadastre/templates/cadastre/messages/check_project_delete.html:3
+#: cadastre/templates/cadastre/messages/check_project_update.html:3
+#: iternet/templates/iternet/messages/check_project_delete.html:3
+#: iternet/templates/iternet/messages/check_project_update.html:3
+msgid "is project for "
+msgstr ""
+
+#: cadastre/templates/cadastre/messages/check_project_delete.html:3
+#: cadastre/templates/cadastre/messages/check_project_update.html:3
+msgid "Cadastre plugin"
+msgstr ""
+
+#: cadastre/templates/cadastre/messages/check_project_delete.html:3
+#: iternet/templates/iternet/messages/check_project_delete.html:3
+msgid "make attention on delete it."
+msgstr ""
+
+#: cadastre/templates/cadastre/messages/check_project_update.html:3
+msgid ""
+"make attention on update it. Update could break right working on cadastre "
+"module"
+msgstr ""
+
+#: cadastre_camaiore/templates/cadastre/loaddatacivici.html:47
+msgid "N civici"
+msgstr ""
+
+#: cadastre_camaiore/templates/cadastre/loaddatacivici.html:48
+msgid "N foto"
+msgstr ""
+
+#: cadastre_camaiore/templates/cadastre/loaddatacivici.html:49
+msgid "N civici salvati"
+msgstr ""
+
+#: cadastre_camaiore/templates/cadastre/loaddatacivici.html:50
+msgid "N civici da verificare"
+msgstr ""
+
+#: cadastre_camaiore/templates/cadastre/loaddatacivici.html:51
+msgid "N civici scartati"
+msgstr ""
+
+#: cdu/forms.py:37
+#, fuzzy
+#| msgid "Users"
+msgid "User users"
+msgstr "Utenti"
+
+#: cdu/forms.py:47
+msgid "CDU base settings"
+msgstr ""
+
+#: cdu/forms.py:76 cdu/templates/cdu/config_data_step_1.html:6
+#: cdu/templates/cdu/config_data_step_3.html:5
+msgid "Cadastre layer"
+msgstr ""
+
+#: cdu/forms.py:99
+msgid "CDU layers choice"
+msgstr ""
+
+#: cdu/forms.py:121 cdu/templates/cdu/config_data_step_2.html:6
+msgid "Sheet"
+msgstr ""
+
+#: cdu/forms.py:122 cdu/templates/cdu/config_data_step_2.html:7
+msgid "Parcel"
+msgstr ""
+
+#: cdu/forms.py:123 cdu/templates/cdu/config_data_step_2.html:9
+msgid "Plus fields"
+msgstr ""
+
+#: cdu/forms.py:144
+msgid "CDU Catasto fields"
+msgstr ""
+
+#: cdu/forms.py:163
+msgid "CDU Against layers aliases"
+msgstr ""
+
+#: cdu/forms.py:235
+msgid "CDU Optional fields catasto aliases"
+msgstr ""
+
+#: cdu/forms.py:253
+msgid "CDU Against layer fields to show in results"
+msgstr ""
+
+#: cdu/forms.py:327
+msgid "CDU Alias for against field <i>{}</i>"
+msgstr ""
+
+#: cdu/models.py:23 cdu/templates/cdu/config_data_step_0.html:6
+msgid "Title"
+msgstr ""
+
+#: cdu/models.py:24
+msgid "Description"
+msgstr ""
+
+#: cdu/models.py:26
+msgid "ODT Template file"
+msgstr ""
+
+#: cdu/models.py:27
+msgid "Slug"
+msgstr ""
+
+#: cdu/templates/cdu/config_data_step_0.html:7
+msgid "Project"
+msgstr ""
+
+#: cdu/templates/cdu/config_data_step_0.html:8
+msgid "Template"
+msgstr ""
+
+#: cdu/templates/cdu/config_data_step_1.html:7
+#: cdu/templates/cdu/config_data_step_3.html:6
+msgid "Against layers"
+msgstr ""
+
+#: cdu/templates/cdu/config_data_step_2.html:11
+msgid "Alias against layers"
+msgstr ""
+
+#: cdu/templates/cdu/config_list.html:8
 #, fuzzy
 #| msgid "Users list"
 msgid "Laws list"
 msgstr "Lista utenti"
 
-#: law/templates/law/law_list.html:32
-msgid "Add new article"
+#: cdu/templates/cdu/config_list.html:9
+msgid "List of CDU configs available"
 msgstr ""
 
-#: law/templates/law/law_list.html:42
-msgid "Articles"
+#: cdu/templates/cdu/config_list.html:31
+msgid "Show detail"
 msgstr ""
 
-#: templates/base.html:132
+#: cdu/templates/cdu/config_list.html:31
+msgid "CDU Config detail"
+msgstr ""
+
+#: cdu/templates/cdu/config_list.html:38
+msgid "Edit"
+msgstr ""
+
+#: cdu/templates/cdu/config_wizard.html:35
+msgid "First step"
+msgstr ""
+
+#: cdu/templates/cdu/config_wizard.html:36
+msgid "Prev step"
+msgstr ""
+
+#: cdu/templates/cdu/config_wizard.html:39
+msgid "Save"
+msgstr ""
+
+#: cdu/templates/cdu/config_wizard.html:41
+msgid "Next step"
+msgstr ""
+
+#: cdu/templates/cdu/config_wizard.html:48
+msgid "Step"
+msgstr ""
+
+#: cdu/templates/cdu/config_wizard.html:48
+msgid "of"
+msgstr ""
+
+#: cdu/templates/cdu/config_wizard.html:59
+msgid "Alert"
+msgstr ""
+
+#: cdu/templates/cdu/config_wizard.html:60
+msgid "Some errors on form. Check it and send again."
+msgstr ""
+
+#: editing/api/serializers.py:25
+msgid ""
+"Invalid format: string or unicode input unrecognized as GeoJSON, WKT EWKT or "
+"HEXEWKB."
+msgstr ""
+
+#: frontend/templates/frontend/index.html:62
+#: frontend/templates/frontend/index.html:112
+msgid "About It"
+msgstr ""
+
+#: frontend/templates/frontend/index.html:72
+#: frontend/templates/frontend/index.html:138
+msgid "Maps"
+msgstr ""
+
+#: frontend/templates/frontend/index.html:82
+#: frontend/templates/frontend/index.html:216
+msgid "Admin"
+msgstr ""
+
+#: frontend/templates/frontend/index.html:82
+#: frontend/templates/frontend/index.html:216
+#: frontend/templates/frontend/index.html:245
+msgid "Login"
+msgstr ""
+
+#: frontend/templates/frontend/index.html:101
+msgid "Adminstration"
+msgstr ""
+
+#: frontend/templates/frontend/index.html:113
+msgid "G3W-SUITE is a geo suite administration system"
+msgstr ""
+
+#: frontend/templates/frontend/index.html:139
+msgid "Group maps on db"
+msgstr ""
+
+#: frontend/templates/frontend/index.html:175
+#: frontend/templates/frontend/index.html:176
+#, fuzzy
+#| msgid "Groups list"
+msgid "Group maps"
+msgstr "Lista gruppi"
+
+#: frontend/templates/frontend/index.html:196
+#: iternet/templates/iternet/dashboard.html:85
+#: iternet/templates/iternet/dashboard.html:86
+msgid "Show map"
+msgstr ""
+
+#: frontend/templates/frontend/index.html:219
+msgid "Access to backeng administration stystem or logout"
+msgstr ""
+
+#: frontend/templates/frontend/index.html:221
+msgid "Login to go backend administration system"
+msgstr ""
+
+#: frontend/templates/frontend/index.html:233
+msgid "Backend"
+msgstr ""
+
+#: frontend/templates/frontend/index.html:236
+msgid "Logout"
+msgstr ""
+
+#: htmlcov/_home_walter_envs_qdjango2_dev_lib_python2_7_site-packages_django_template_defaulttags_py.html:3184
+#, python-format
+msgid "The width is: %(width)s"
+msgstr ""
+
+#: htmlcov/_home_walter_envs_qdjango2_dev_lib_python2_7_site-packages_django_views_static_py.html:308
+#: htmlcov/_home_walter_envs_qdjango2_dev_lib_python2_7_site-packages_django_views_static_py.html:311
+#, python-format
+msgid "Index of %(directory)s"
+msgstr ""
+
+#: iternet/forms.py:73
+msgid "Project not correct: SRID must be {}"
+msgstr ""
+
+#: iternet/templates/iternet/checkdata.html:19
+msgid "Check data"
+msgstr ""
+
+#: iternet/templates/iternet/dashboard.html:54
+msgid "Database connection"
+msgstr ""
+
+#: iternet/templates/iternet/dashboard.html:56
+msgid "Download QGIS connection XML file"
+msgstr ""
+
+#: iternet/templates/iternet/messages/check_project_delete.html:3
+#: iternet/templates/iternet/messages/check_project_update.html:3
+msgid "Iternet plugin"
+msgstr ""
+
+#: iternet/templates/iternet/messages/check_project_update.html:3
+msgid ""
+"make attention on update it. Update could break right working on iternet "
+"module"
+msgstr ""
+
+#: templates/403.html:7 templates/404.html:7
+msgid "error page"
+msgstr ""
+
+#: templates/403.html:15
+msgid "Access denied"
+msgstr ""
+
+#: templates/403.html:17
+msgid "You don't have grant to access this section"
+msgstr ""
+
+#: templates/404.html:15
+msgid "Oops! Page not found."
+msgstr ""
+
+#: templates/404.html:17
+msgid "We could not find the page you were looking for."
+msgstr ""
+
+#: templates/base.html:163 templates/index.html:6
 msgid "Dashboard"
 msgstr "Scrivania"
 
@@ -196,6 +444,24 @@ msgstr ""
 msgid "Sign out"
 msgstr "Esci"
 
+#: templates/index.html:7
+msgid "Current situation"
+msgstr ""
+
+#: templates/index.html:17
+#, fuzzy
+#| msgid "Groups list"
+msgid "Groups"
+msgstr "Lista gruppi"
+
+#: templates/index.html:22
+msgid "Show"
+msgstr ""
+
+#: templates/index.html:27
+msgid "Module widgets"
+msgstr ""
+
 #: templates/login.html:15
 msgid "Sign in to start your session"
 msgstr ""
@@ -208,15 +474,14 @@ msgstr ""
 msgid "Sign In"
 msgstr "Accedi"
 
+#, fuzzy
+#~| msgid "Users list"
+#~ msgid "Laws"
+#~ msgstr "Lista utenti"
+
 # for sitetree
 #~ msgid "Add group"
 #~ msgstr "Aggiungi gruppo"
-
-#~ msgid "Groups list"
-#~ msgstr "Lista gruppi"
-
-#~ msgid "Users"
-#~ msgstr "Utenti"
 
 #~ msgid "Add user"
 #~ msgstr "Aggiungi utente"

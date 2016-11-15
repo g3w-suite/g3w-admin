@@ -277,7 +277,7 @@ _.extend(g3wadmin.widget, {
 
                     // open modal to show list of add links
                     var modal = ga.currentModal = ga.ui.buildDefaultModal({
-                        modalTitle: ((_.isUndefined(params['modal-title']) ? 'Form title' : params['modal-title'])),
+                        modalTitle: ((_.isUndefined(params['modal-title']) ? gettext('Form title') : params['modal-title'])),
                         modalBody: res,
                         modalSize: (_.isUndefined(params['modal-size']) ? '' : params['modal-size'])
                     });
@@ -336,7 +336,7 @@ _.extend(g3wadmin.widget, {
             // open modal to show form filer
             var modal = ga.ui.buildDefaultModal({
                 confirmButton: false,
-                modalTitle: ((_.isUndefined(params['modal-title']) ? 'Upload file' : params['modal-title'])),
+                modalTitle: ((_.isUndefined(params['modal-title']) ? gettext('Upload file') : params['modal-title'])),
                 modalBody: ga.tpl.ajaxFiler(templateOptions)
             });
 
@@ -355,11 +355,28 @@ _.extend(g3wadmin.widget, {
             var extensions = _.isUndefined(params['file-extensions']) ? null : params['file-extensions'].split('|')
             
             $(modal.$modal.find('#filer_input')).filer({
-                changeInput: ga.tpl.ajaxFiler_changeInput(),
+                changeInput: ga.tpl.ajaxFiler_changeInput({
+                    drag_drop_message: gettext('Drag&Drop files here'),
+                    browse_button: gettext('Browse Files')
+                }),
                 showThumbs: true,
                 limit: 1,
                 extensions: extensions,
                 theme: "dragdropbox",
+                captions: {
+                    button: "Choose Files",
+                    feedback: "Choose files To Upload",
+                    feedback2: "files were chosen",
+                    drop: "Drop file here to Upload",
+                    removeConfirmation: "Are you sure you want to remove this file?",
+                    errors: {
+                        filesLimit: "Only {{fi-limit}} files are allowed to be uploaded.",
+                        filesType: "Only Images are allowed to be uploaded.",
+                        filesSize: "{{fi-name}} is too large! Please upload file up to {{fi-fileMaxSize}} MB.",
+                        filesSizeAll: "Files you've choosed are too large! Please upload files up to {{fi-maxSize}} MB.",
+                        folderUpload: "You are not allowed to upload folders."
+                    }
+                },
                 templates: {
                     box: ga.tpl.ajaxFiler_box(),
                     item: ga.tpl.ajaxFiler_item(),
@@ -410,7 +427,7 @@ _.extend(g3wadmin.widget, {
                             //modal.hide()
                             //ga.widget.showError(ga.utils.buildAjaxErrorMessage(500, errorMessage));
                             var $errMsg = $('<div class="callout callout-danger"></div>');
-                            $errMsg.append($('<h4>ERROR</h4>'));
+                            $errMsg.append($('<h4>'+gettext('ERROR')+'</h4>'));
                             $errMsg.append($('<p></p>').html(errMsg));
                             el.after($errMsg);
                         });

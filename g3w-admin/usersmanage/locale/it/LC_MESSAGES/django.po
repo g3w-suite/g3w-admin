@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-04-05 16:04+0000\n"
+"POT-Creation-Date: 2016-11-15 17:18+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,43 +18,51 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: usersmanage/forms.py:46
+#: usersmanage/forms.py:64
 msgid "Editor user"
 msgstr ""
 
-#: usersmanage/forms.py:47
+#: usersmanage/forms.py:65
 msgid "Viewer users"
 msgstr ""
 
-#: usersmanage/forms.py:105
+#: usersmanage/forms.py:131
+msgid "Select group for this user"
+msgstr ""
+
+#: usersmanage/forms.py:132
+msgid "Group"
+msgstr ""
+
+#: usersmanage/forms.py:153
 msgid "Anagraphic"
 msgstr ""
 
-#: usersmanage/forms.py:123
+#: usersmanage/forms.py:172
 msgid "ACL/Roles"
 msgstr ""
 
-#: usersmanage/forms.py:140
+#: usersmanage/forms.py:193
 msgid "Login data"
 msgstr ""
 
-#: usersmanage/forms.py:158
+#: usersmanage/forms.py:211
 msgid "User data"
 msgstr ""
 
-#: usersmanage/forms.py:224
+#: usersmanage/forms.py:282
 msgid "Avatar is no a valid image"
 msgstr ""
 
-#: usersmanage/forms.py:249
+#: usersmanage/forms.py:308
 msgid "Password"
 msgstr ""
 
-#: usersmanage/forms.py:251
+#: usersmanage/forms.py:310
 msgid "Password confirmation"
 msgstr ""
 
-#: usersmanage/forms.py:253
+#: usersmanage/forms.py:312
 msgid "Enter the same password as above, for verification."
 msgstr ""
 
@@ -66,15 +74,15 @@ msgstr ""
 msgid "User"
 msgstr ""
 
-#: usersmanage/templates/usersmanage/user_form.html:8
+#: usersmanage/templates/usersmanage/user_form.html:9
 msgid "System users"
 msgstr ""
 
-#: usersmanage/templates/usersmanage/user_form.html:19
+#: usersmanage/templates/usersmanage/user_form.html:20
 msgid "Alert"
 msgstr ""
 
-#: usersmanage/templates/usersmanage/user_form.html:20
+#: usersmanage/templates/usersmanage/user_form.html:21
 msgid "Some errors on form. Check it and send again."
 msgstr ""
 
@@ -82,18 +90,18 @@ msgstr ""
 msgid "Users"
 msgstr ""
 
-#: usersmanage/templates/usersmanage/user_list.html:41
+#: usersmanage/templates/usersmanage/user_list.html:53
 msgid "Show detail"
 msgstr ""
 
-#: usersmanage/templates/usersmanage/user_list.html:44
+#: usersmanage/templates/usersmanage/user_list.html:57
 msgid "Edit"
 msgstr ""
 
-#: usersmanage/templates/usersmanage/user_list.html:47
+#: usersmanage/templates/usersmanage/user_list.html:62
 msgid "Delete"
 msgstr ""
 
-#: usersmanage/utils.py:64
+#: usersmanage/utils.py:148
 msgid "ACL Users"
 msgstr ""
