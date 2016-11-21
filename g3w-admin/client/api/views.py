@@ -74,9 +74,9 @@ class GroupConfigApiView(APIView):
                'username': u.username,
                'first_name': u.first_name,
                'last_name': u.last_name,
-               'groups': [g.name for g in u.groups.all()]
+               'groups': [g.name for g in u.groups.all()],
+               'logout_url': reverse('logout')
            }
 
-           initconfig['logout_url'] = reverse('logout')
 
         return Response(initconfig)
