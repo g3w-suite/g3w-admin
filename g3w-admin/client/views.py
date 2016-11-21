@@ -48,21 +48,22 @@ class ClientView(TemplateView):
         # add user login data
         u = self.request.user
         if not u.is_anonymous():
-            groupData['user'] = {
+            user_data = JSONRenderer().render({
                 'username': u.username,
                 'first_name': u.first_name,
                 'last_name': u.last_name,
                 'groups': [g.name for g in u.groups.all()],
                 'logout_url': reverse('logout')
-            }
+            })
 
         serializedGroup = JSONRenderer().render(groupData)
         if six.PY3:
             serializedGroup = str(serializedGroup, 'utf-8')
 
         # add baseUrl property
-        contextData['group_config'] = 'var initConfig ={{ "staticurl":"{}", "client":"{}", "mediaurl":"{}","group":{} }}'.format(
-            settings.STATIC_URL, "g3w-client/", settings.MEDIA_URL, serializedGroup)
+        contextData['group_config'] = 'var initConfig ={{ "staticurl":"{}", "client":"{}", ' \
+                                      '"mediaurl":"{}", "user":{}, "group":{} }}'.format(
+            settings.STATIC_URL, "g3w-client/", settings.MEDIA_URL, user_data, serializedGroup)
 
         # project by type(app)
         if not '{}-{}'.format(kwargs['project_type'], self.project.pk) in groupSerializer.projects.keys():
