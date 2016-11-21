@@ -3,6 +3,7 @@ from django.views.generic import TemplateView
 from django.shortcuts import get_object_or_404
 from django.http import Http404, HttpResponseForbidden
 from django.conf import settings
+from django.core.urlresolvers import reverse
 from rest_framework.renderers import JSONRenderer
 from core.api.serializers import GroupSerializer, Group
 from django.contrib.auth.views import redirect_to_login
@@ -53,6 +54,8 @@ class ClientView(TemplateView):
                 'last_name': u.last_name,
                 'groups': [g.name for g in u.groups.all()]
             }
+
+            groupData['logout_url'] = reverse('logout')
 
         serializedGroup = JSONRenderer().render(groupData)
         if six.PY3:

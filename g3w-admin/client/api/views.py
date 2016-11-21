@@ -2,6 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from django.conf import settings
+from django.core.urlresolvers import reverse
 from core.api.serializers import GroupSerializer, Group, update_serializer_data
 from core.api.permissions import ProjectPermission
 from core.signals import perform_client_search, post_serialize_project
@@ -76,6 +77,6 @@ class GroupConfigApiView(APIView):
                'groups': [g.name for g in u.groups.all()]
            }
 
-        
+           initconfig['logout_url'] = reverse('logout')
 
         return Response(initconfig)
