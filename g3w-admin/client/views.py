@@ -56,8 +56,6 @@ class ClientView(TemplateView):
                 'logout_url': reverse('logout')
             }
 
-            groupData['logout_url'] = reverse('logout')
-
         serializedGroup = JSONRenderer().render(groupData)
         if six.PY3:
             serializedGroup = str(serializedGroup, 'utf-8')
