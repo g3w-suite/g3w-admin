@@ -67,13 +67,6 @@ class GroupForm(FileFormMixin, G3WFormMixin, G3WRequestFormMixin, G3WACLForm, Mo
                                                 ),
                                                 css_class='row'
                                             ),
-                                            Div(
-                                                Div(PrependedText('max_scale','1:'), css_class='col-md-6'),
-                                                Div(PrependedText('panoramic_max_scale','1:'), css_class='col-md-6'),
-                                                Div(PrependedText('min_scale','1:'), css_class='col-md-6'),
-                                                Div(PrependedText('panoramic_min_scale','1:'), css_class='col-md-6'),
-                                                css_class='row'
-                                            ),
                                             css_class='box-body'
                                         ),
                                         css_class='box box-danger'

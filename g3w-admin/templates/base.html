@@ -252,6 +252,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <!-- Django-file-form -->
     <script src="{% static "file_form/file_form.js" %}"></script>
 
+    <!-- g3wadmin javascript catalog -->
+    <script src="{% url 'javascript-catalog' %}"></script>
+
     <!-- g3w-admin -->
     {% if SETTINGS.DEBUG %}
     <!-- build:js  js/g3wadmin.min.js -->
@@ -267,8 +270,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <script src="{% static "dist/js/g3wadmin.min.js" %}"></script>
     {% endif %}
 
-    <!-- g3wadmin javascript catalog -->
-    <script src="{% url 'javascript-catalog' %}"></script>
+
 
     <!-- coockieconset -->
     <script type="text/javascript" src="{% static 'bower_components/cookieconsent/build/cookieconsent.min.js' %}"></script>

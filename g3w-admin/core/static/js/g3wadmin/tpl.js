@@ -10,12 +10,12 @@ _.extend(g3wadmin.tpl, {
 
     tplDefValues: {
         dialog :{
-            modalTitle: 'Titolo',
-            modalBody: 'Contenuto',
+            modalTitle: gettext('Title'),
+            modalBody: gettext('Content'),
             modalClass: '',
             modalSize: '',
             closeButton: true,
-            closeButtonText: 'Close',
+            closeButtonText: gettext('Close'),
             confirmButton: true,
             confirmButtonText: 'Ok'
         },
@@ -77,7 +77,7 @@ _.extend(g3wadmin.tpl, {
     '),
 
     ajaxFiler_changeInput: _.template('\
-    <div class="jFiler-input-dragDrop"><div class="jFiler-input-inner"><div class="jFiler-input-icon"><i class="icon-jfi-cloud-up-o"></i></div><div class="jFiler-input-text"><h3>Drag&Drop files here</h3> <span style="display:inline-block; margin: 15px 0">or</span></div><a class="jFiler-input-choose-btn blue">Browse Files</a></div></div>\
+    <div class="jFiler-input-dragDrop"><div class="jFiler-input-inner"><div class="jFiler-input-icon"><i class="icon-jfi-cloud-up-o"></i></div><div class="jFiler-input-text"><h3><%= drag_drop_message %></h3> <span style="display:inline-block; margin: 15px 0">or</span></div><a class="jFiler-input-choose-btn blue"><%= browse_button %></a></div></div>\
     '),
 
     ajaxFiler_box: _.template('\
