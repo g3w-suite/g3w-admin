@@ -53,7 +53,8 @@ class ClientView(TemplateView):
                 'first_name': u.first_name,
                 'last_name': u.last_name,
                 'groups': [g.name for g in u.groups.all()],
-                'logout_url': reverse('logout')
+                'logout_url': reverse('logout'),
+                'admin_url': reverse('home')
             })
 
         serializedGroup = JSONRenderer().render(groupData)
