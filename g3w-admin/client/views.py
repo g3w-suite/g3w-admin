@@ -56,6 +56,8 @@ class ClientView(TemplateView):
                 'logout_url': reverse('logout'),
                 'admin_url': reverse('home')
             })
+        else:
+            user_data = '{}'
 
         serializedGroup = JSONRenderer().render(groupData)
         if six.PY3:

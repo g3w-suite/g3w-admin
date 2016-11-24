@@ -78,6 +78,8 @@ class GroupConfigApiView(APIView):
                'logout_url': reverse('logout'),
                'admin_url': reverse('home')
            }
+        else:
+            initconfig['user'] = {}
 
 
         return Response(initconfig)

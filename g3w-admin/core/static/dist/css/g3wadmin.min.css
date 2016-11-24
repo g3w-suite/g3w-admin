@@ -20,6 +20,10 @@ table span.icon {
     color:#f28a7e;
 }
 
+.icon .ion-android-upload {
+    color:#605ca8;
+}
+
 .widget-group-add{
     height: 192px;
     text-align: center;
@@ -74,4 +78,13 @@ table span.icon {
 
 .modalMap {
     height:400px;
+}
+
+.dashboard-box-footer-icon {
+    font-size: 24px;
+}
+
+
+.dashboard-box-footer-text {
+    font-size: 14px;
 }
