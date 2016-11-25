@@ -20,6 +20,7 @@ class OverwriteStorage(FileSystemStorage):
             os.remove(os.path.join(settings.MEDIA_ROOT, name))
         return name
 
+
 class QgisFileOverwriteStorage(OverwriteStorage):
 
     def url(self, name):
