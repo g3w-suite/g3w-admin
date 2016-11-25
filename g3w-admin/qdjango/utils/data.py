@@ -127,6 +127,8 @@ class QgisProjectLayer(XmlData):
 
         try:
             name = self.qgisProjectLayerTree.find('shortname').text
+            if not name:
+                raise Exception
         except:
             name = self.qgisProjectLayerTree.find('layername').text
         return name
