@@ -71,7 +71,10 @@ class OWSRequestHandler(OWSRequestHandlerBase):
 
     def baseDoRequest(cls, q, request=None):
 
-        ows_request = q['REQUEST'].upper()
+        if request.method == 'GET':
+            ows_request = q['REQUEST'].upper()
+        else:
+            ows_request = request.POST['REQUEST'][0].upper()
         if qdjangoModeRequest == QDJANGO_PROXY_REQUEST or ows_request == 'GETLEGENDGRAPHIC':
 
             # try to get getfeatureinfo on wms layer
@@ -148,7 +151,6 @@ class OWSRequestHandler(OWSRequestHandlerBase):
 
     def doRequest(self):
 
-        # Call init to create serverInterface
         q = self.request.GET.copy()
         q['map'] = self._projectInstance.qgis_file.file.name
         return self.baseDoRequest(q, self.request)

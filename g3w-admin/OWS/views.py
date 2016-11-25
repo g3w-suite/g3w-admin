@@ -21,10 +21,10 @@ class OWSView(View):
         return super(OWSView, self).dispatch(request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
-        return self.proxy.request(request,self.OWSRequestHandler, **kwargs)
+        return self.proxy.request(request, self.OWSRequestHandler, **kwargs)
 
     def post(self, request, *args, **kwargs):
-        return self.proxy.request(request, self.OWSRequestHandler, **kwargs)
+            return self.proxy.request(request, self.OWSRequestHandler, **kwargs)
 
     def _getOWSRequestHandler(self):
         """
