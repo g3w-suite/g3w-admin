@@ -9,6 +9,13 @@ class G3WRequestViewMixin(object):
     Mixins for Class FormView for get request object for get
     '''
 
+    def dispatch(self, request, *args, **kwargs):
+
+        # set in session
+        if request.META['HTTP_REFERER'] and request.method == 'GET':
+            request.session['http_referer'] = request.META['HTTP_REFERER']
+        return super(G3WRequestViewMixin, self).dispatch(request, *args, **kwargs)
+
     def get_form_kwargs(self):
         kwargs = super(G3WRequestViewMixin,self).get_form_kwargs()
 

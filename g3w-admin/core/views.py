@@ -108,12 +108,7 @@ class GroupUpdateView(G3WRequestViewMixin, G3WACLViewMixin, UpdateView):
     @method_decorator(permission_required('core.change_group', (Group, 'slug', 'slug'), return_403=True))
     def dispatch(self, request, *args, **kwargs):
         return super(GroupUpdateView, self).dispatch(request, *args, **kwargs)
-    '''
-    def get_context_data(self, **kwargs):
-        context = super(GroupUpdateView, self).get_context_data(**kwargs)
-        context['add_project_title'] = 'Add project'
-        return context
-    '''
+
     def form_valid(self, form):
         res = super(GroupUpdateView, self).form_valid(form)
 
@@ -122,6 +117,8 @@ class GroupUpdateView(G3WRequestViewMixin, G3WACLViewMixin, UpdateView):
         return res
 
     def get_success_url(self):
+        if self.request.session.get('http_referer', False):
+            return self.request.session['http_referer']
         return reverse('group-list')
 
 
