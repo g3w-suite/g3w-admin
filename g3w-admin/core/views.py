@@ -106,8 +106,8 @@ class GroupUpdateView(G3WRequestViewMixin, G3WACLViewMixin, UpdateView):
     viewer_permission = 'view_group'
 
     @method_decorator(permission_required('core.change_group', (Group, 'slug', 'slug'), return_403=True))
-    def dispatch(self, *args, **kwargs):
-        return super(GroupUpdateView, self).dispatch(*args, **kwargs)
+    def dispatch(self, request, *args, **kwargs):
+        return super(GroupUpdateView, self).dispatch(request, *args, **kwargs)
     '''
     def get_context_data(self, **kwargs):
         context = super(GroupUpdateView, self).get_context_data(**kwargs)
