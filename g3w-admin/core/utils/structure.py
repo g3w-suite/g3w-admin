@@ -98,6 +98,13 @@ FIELD_TYPES_MAPPING = {
         'string': FIELD_TYPE_DATETIME
     },
 
+    'spatialite': {
+        'integer': FIELD_TYPE_INTEGER,
+        'text': FIELD_TYPE_TEXT,
+        'real': FIELD_TYPE_FLOAT,
+        'numeric': FIELD_TYPE_FLOAT,
+    },
+
     'default': {
 
         # numeric:

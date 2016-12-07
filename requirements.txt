@@ -18,13 +18,13 @@ django-ordered-model
 pathlib
 shapely
 GDAL==1.11.0
-GeoAlchemy2==0.2.6
+GeoAlchemy2
 lxml==3.3.3
 psycopg2==2.6.1
 pillow
 owslib
 defusedxml==0.4.1
-SQLAlchemy==1.0.12
+SQLAlchemy
 django-import-export
 coverage
 

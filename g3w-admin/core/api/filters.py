@@ -26,7 +26,7 @@ class IntersectsBBoxFilter(InsideBBoxFilter):
 
         bbox = self.get_filter_bbox(request)
         if not bbox:
-            return None #queryset
+            return queryset
         return queryset.filter(Q(**{'%s__%s' % (filter_field, geoDjango_filter): bbox}))
 
 
