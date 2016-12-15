@@ -5,7 +5,7 @@ class DataUserMixin(object):
 
     def getEditorUser(self,flat=False):
         perm = 'change_%s'%(self.__class__.__name__.lower(),)
-        editor_user = get_users_for_object(self,perm,'Editor Maps Groups')
+        editor_user = get_users_for_object(self, perm, 'Editor Maps Groups')
         if editor_user:
             editor = editor_user[0]
             if flat:

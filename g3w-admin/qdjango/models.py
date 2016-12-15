@@ -10,7 +10,7 @@ from core.models import Group, BaseLayer
 from .utils.storage import QgisFileOverwriteStorage
 from core.mixins.models import G3WACLModelMixins, G3WProjectMixins
 from model_utils import Choices
-from usersmanage.utils import setPermissionUserObject, getUserGroups
+from usersmanage.utils import setPermissionUserObject, getUserGroups, get_users_for_object
 from usersmanage.configs import *
 from core.configs import *
 from core.receivers import check_overviewmap_project
@@ -118,6 +118,15 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
             layers = self.layer_set.all()
             for layer in layers:
                 getattr(layer, layerAction)(users_id)
+
+    def __getattr__(self, attr):
+        if attr == 'viewers':
+            return get_users_for_object(self, 'view_project', [G3W_VIEWER1, G3W_VIEWER2], with_anonymous=True)
+        elif attr == 'editor':
+            editors = get_users_for_object(self, ['change_project', 'view_project'], [G3W_EDITOR2, G3W_EDITOR1])
+            if len(editors) > 0:
+                return editors[0]
+        return super(Project, self).__getattr__(attr)
 
 
 post_delete.connect(check_overviewmap_project, sender=Project)

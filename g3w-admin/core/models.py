@@ -11,7 +11,7 @@ from model_utils import Choices
 from autoslug import AutoSlugField
 from sitetree.models import TreeItemBase, TreeBase
 from django.contrib.auth.models import User
-from usersmanage.utils import setPermissionUserObject, getUserGroups
+from usersmanage.utils import setPermissionUserObject, getUserGroups, get_users_for_object
 from usersmanage.configs import *
 from .utils.structure import getProjectsByGroup
 try:
@@ -218,6 +218,16 @@ class Group(TimeStampedModel):
             for app, projects in appProjects.items():
                 for project in projects:
                     project.removePermissionsToViewers(users_id)
+
+    def __getattr__(self, attr):
+        if attr == 'viewers':
+            return get_users_for_object(self, 'view_group', [G3W_VIEWER1, G3W_VIEWER2], with_anonymous=True)
+        elif attr == 'editor':
+            editors = get_users_for_object(self, ['change_group', 'view_group'], [G3W_EDITOR2, G3W_EDITOR1])
+            if len(editors) > 0:
+                return editors[0]
+        return super(Group, self).__getattr__(attr)
+
 
 
 class GroupProjectPanoramic(models.Model):
