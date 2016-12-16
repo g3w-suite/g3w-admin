@@ -2,7 +2,7 @@ from django_file_form.forms import FileFormMixin, UploadedFileField, UploadWidge
 from django.forms import Form, ModelForm
 from django.forms.fields import CharField
 from django.utils.translation import ugettext, ugettext_lazy as _
-from core.models import Group
+from core.models import Group, GeneralSuiteData
 from django_file_form.forms import FileFormMixin
 from django.contrib.auth.models import User
 from crispy_forms.helper import FormHelper
@@ -159,6 +159,112 @@ class GroupForm(FileFormMixin, G3WFormMixin, G3WRequestFormMixin, G3WACLForm, Mo
         super(GroupForm, self).save()
         self._ACLPolicy()
 
+
+class GeneralSuiteDataForm(FileFormMixin, ModelForm):
+    """General suite data form."""
+    suite_logo = UploadedFileField(required=False)
+
+    def __init__(self, *args, **kwargs):
+        super(GeneralSuiteDataForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper(self)
+        self.helper.form_tag = False
+        self.helper.layout = Layout(
+            Div(
+                Div(
+                    Div(
+                        Div(
+                            HTML("<h3 class='box-title'><i class='fa fa-file'></i> {}</h3>".format(_('Frontend home data'))),
+                            css_class='box-header with-border'
+                        ),
+                        Div(
+                            'title',
+                            'sub_title',
+                            Field('home_description', css_class='wys5', style="width:100%;"),
+                            'suite_logo',
+                            css_class='box-body',
+
+                        ),
+                        css_class='box box-default'
+                    ),
+                    css_class='col-md-6'
+                ),
+                Div(
+                    Div(
+                        Div(
+                            HTML("<h3 class='box-title'><i class='fa fa-user'></i> {}</h3>".format(
+                                _('Frontend about data'))),
+                            css_class='box-header with-border'
+                        ),
+                        Div(
+                            'about_name',
+                            'about_tel',
+                            'about_email',
+                            'about_address',
+                            Field('about_description', css_class='wys5', style="width:100%;"),
+                            css_class='box-body',
+
+                        ),
+                        css_class='box box-default'
+                    ),
+                    css_class='col-md-6'
+                ),
+                Div(
+                    Div(
+                        Div(
+                            HTML("<h3 class='box-title'><i class='fa fa-user'></i> {}</h3>".format(
+                                _('Frontend groups map data'))),
+                            css_class='box-header with-border'
+                        ),
+                        Div(
+                            Field('groups_map_description', css_class='wys5', style="width:100%;"),
+                            css_class='box-body',
+                        ),
+                        css_class='box box-default'
+                    ),
+                    css_class='col-md-6'
+                ),
+                Div(
+                    Div(
+                        Div(
+                            HTML("<h3 class='box-title'><i class='fa fa-user'></i> {}</h3>".format(
+                                _('Frontend login data'))),
+                            css_class='box-header with-border'
+                        ),
+                        Div(
+                            Field('login_description', css_class='wys5', style="width:100%;"),
+                            css_class='box-body',
+
+                        ),
+                        css_class='box box-default'
+                    ),
+                    css_class='col-md-6'
+                ),
+
+                Div(
+                    Div(
+                        Div(
+                            HTML("<h3 class='box-title'><i class='fa fa-user'></i> {}</h3>".format(
+                                _('Frontend social data'))),
+                            css_class='box-header with-border'
+                        ),
+                        Div(
+                            'facebook_url',
+                            'twitter_url',
+                            'googleplus_url',
+                            css_class='box-body',
+
+                        ),
+                        css_class='box box-default'
+                    ),
+                    css_class='col-md-6'
+                ),
+                css_class='row'
+            )
+        )
+
+    class Meta:
+        model = GeneralSuiteData
+        fields = '__all__'
 
 
 

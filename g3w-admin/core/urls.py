@@ -1,6 +1,7 @@
 from django.conf.urls import url
 from django.contrib.auth.decorators import login_required
 from django.views.static import serve
+from django.conf import settings
 from sitetree.sitetreeapp import register_i18n_trees
 
 from client.api.views import *
@@ -30,3 +31,10 @@ urlpatterns = [
     #url(r'^{}(?P<path>.*)$'.format(settings.MEDIA_URL[1:] + 'logo_img/'), protected_serve, {'document_root': settings.MEDIA_ROOT+ 'logo_img/'}),
 
 ]
+
+# add url for General suite data managment
+if settings.FRONTEND:
+    urlpatterns.append(
+        url(r'^generalsuitedata/$', login_required(GeneralSuiteDataUpdateView.as_view()),
+            name='project-list'),
+    )

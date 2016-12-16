@@ -15,8 +15,8 @@ from django.utils.decorators import method_decorator
 from guardian.decorators import permission_required
 from guardian.shortcuts import get_objects_for_user
 from usersmanage.mixins.views import G3WACLViewMixin
-from .forms import GroupForm
-from .models import Group, GroupProjectPanoramic, MapControl
+from .forms import GroupForm, GeneralSuiteDataForm
+from .models import Group, GroupProjectPanoramic, MapControl, GeneralSuiteData
 from .mixins.views import G3WRequestViewMixin, G3WAjaxDeleteViewMixin
 from .utils.decorators import check_madd
 from .signals import after_update_group
@@ -185,6 +185,22 @@ class ProjectListView(G3WRequestViewMixin,TemplateView):
         context['group'] = Group.objects.get(slug=context['group_slug'])
         return context
 
+
+# for project general data
+
+class GeneralSuiteDataUpdateView(UpdateView):
+    """Create group view."""
+    model = GeneralSuiteData
+    form_class = GeneralSuiteDataForm
+
+    def dispatch(self, *args, **kwargs):
+        return super(GeneralSuiteDataUpdateView, self).dispatch(*args, **kwargs)
+
+    def get_object(self, queryset=None):
+        return self.model.objects.get()
+
+    def get_success_url(self):
+        return reverse('home')
 
 
 

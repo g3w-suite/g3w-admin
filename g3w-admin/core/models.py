@@ -237,3 +237,23 @@ class GroupProjectPanoramic(models.Model):
     project_id = models.IntegerField(verbose_name=_('Project type id'))
 
 
+class GeneralSuiteData(models.Model):
+    """
+    Model for general data, to use on frontend
+    """
+    title = models.CharField(_('Title'), max_length=255)
+    sub_title = models.CharField(_('Subtitle'), max_length=255, null=True, blank=True)
+    home_description = models.TextField(_('Home description'), null=True, blank=True)
+    about_description = models.TextField(_('About description'), null=True, blank=True)
+    about_name = models.CharField(_('About name'), max_length=255)
+    about_tel = models.CharField(_('About name'), max_length=255, null=True, blank=True)
+    about_email = models.EmailField(_('About email'), null=True, blank=True)
+    about_address = models.CharField(_('About address'), max_length=255, null=True, blank=True)
+    groups_map_description = models.TextField(_('Groups map description'), null=True, blank=True)
+    login_description = models.TextField(_('Login description'), null=True, blank=True)
+    suite_logo = models.ImageField(_('Suite logo'), null=True, blank=True)
+
+    facebook_url = models.URLField(_('Facebook link'), null=True, blank=True)
+    twitter_url = models.URLField(_('Twitter link'), null=True, blank=True)
+    googleplus_url = models.URLField(_('Google+ link'), null=True, blank=True)
+
