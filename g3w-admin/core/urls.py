@@ -36,5 +36,5 @@ urlpatterns = [
 if settings.FRONTEND:
     urlpatterns.append(
         url(r'^generalsuitedata/$', login_required(GeneralSuiteDataUpdateView.as_view()),
-            name='project-list'),
+            name='generaldata-update'),
     )

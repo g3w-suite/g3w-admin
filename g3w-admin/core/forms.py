@@ -181,6 +181,11 @@ class GeneralSuiteDataForm(FileFormMixin, ModelForm):
                             'sub_title',
                             Field('home_description', css_class='wys5', style="width:100%;"),
                             'suite_logo',
+                            'form_id',
+                            'upload_url',
+                            'delete_url',
+                            HTML(
+                                """{% if form.suite_logo.value %}<img class="img-responsive img-thumbnail" src="{{ MEDIA_URL }}{{ form.suite_logo.value }}">{% endif %}""", ),
                             css_class='box-body',
 
                         ),
@@ -196,6 +201,7 @@ class GeneralSuiteDataForm(FileFormMixin, ModelForm):
                             css_class='box-header with-border'
                         ),
                         Div(
+                            'about_title',
                             'about_name',
                             'about_tel',
                             'about_email',
@@ -216,6 +222,7 @@ class GeneralSuiteDataForm(FileFormMixin, ModelForm):
                             css_class='box-header with-border'
                         ),
                         Div(
+                            'groups_title',
                             Field('groups_map_description', css_class='wys5', style="width:100%;"),
                             css_class='box-body',
                         ),
@@ -248,9 +255,9 @@ class GeneralSuiteDataForm(FileFormMixin, ModelForm):
                             css_class='box-header with-border'
                         ),
                         Div(
-                            'facebook_url',
-                            'twitter_url',
-                            'googleplus_url',
+                            PrependedText('facebook_url', '<i class="fa fa-facebook"></i>'),
+                            PrependedText('twitter_url', '<i class="fa fa-twitter"></i>'),
+                            PrependedText('googleplus_url', '<i class="fa fa-google-plus"></i>'),
                             css_class='box-body',
 
                         ),

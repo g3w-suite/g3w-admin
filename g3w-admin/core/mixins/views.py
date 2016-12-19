@@ -17,7 +17,7 @@ class G3WRequestViewMixin(object):
         return super(G3WRequestViewMixin, self).dispatch(request, *args, **kwargs)
 
     def get_form_kwargs(self):
-        kwargs = super(G3WRequestViewMixin,self).get_form_kwargs()
+        kwargs = super(G3WRequestViewMixin, self).get_form_kwargs()
 
         #get request object from view
         kwargs['request'] = self.request

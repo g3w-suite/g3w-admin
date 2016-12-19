@@ -40,6 +40,12 @@
                 </li>
             </ul>
         </li>
+        {% if user.is_superuser %}
+        <!-- Control Sidebar Toggle Button -->
+        <li>
+        <a href="#" data-toggle="control-sidebar"><i class="fa fa-gears"></i></a>
+        </li>
+        {% endif %}
         {% endif %}
     </ul>
 </div>
