@@ -12,7 +12,7 @@ class G3WRequestViewMixin(object):
     def dispatch(self, request, *args, **kwargs):
 
         # set in session
-        if request.META['HTTP_REFERER'] and request.method == 'GET':
+        if request.META.get('HTTP_REFERER',None) and request.method == 'GET':
             request.session['http_referer'] = request.META['HTTP_REFERER']
         return super(G3WRequestViewMixin, self).dispatch(request, *args, **kwargs)
 
