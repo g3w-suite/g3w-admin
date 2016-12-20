@@ -839,15 +839,17 @@ class QgisProjectSettingsWMS(XmlData):
             'opengis:Capability/opengis:ComposerTemplates/opengis:ComposerTemplate',
             namespaces=self._NS
         )
-
+        
+        _composerTemplateData = {}
         for composerTemplate in composerTemplates:
-            self._composerTemplatesData.append({
-                'name': composerTemplate.attrib['name'],
-                'map': {
-                    'w': composerTemplate.attrib['width'],
-                    'h': composerTemplate.attrib['height']
-                }
-            })
+            _composerTemplateData['name'] = composerTemplate.attrib['name']
+            for composerMap in composerTemplate.findall("opengis:ComposerMap",namespaces=self._NS):
+              _composerTemplateData['map'] = {
+                  'name': composerMap.attrib['name'],
+                  'w': int(composerMap.attrib['width']),
+                  'h': int(composerMap.attrib['height'])
+              }
+            self._composerTemplatesData.append(_composerTemplateData)
 
         return self._composerTemplatesData
 
