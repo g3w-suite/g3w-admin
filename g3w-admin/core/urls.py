@@ -28,13 +28,9 @@ urlpatterns = [
     #project urls
     url(r'^groups/(?P<group_slug>[-_\w\d]+)/projects/$', login_required(ProjectListView.as_view()), name='project-list'),
 
+    url(r'^generalsuitedata/$', login_required(GeneralSuiteDataUpdateView.as_view()), name='generaldata-update'),
+
     #url(r'^{}(?P<path>.*)$'.format(settings.MEDIA_URL[1:] + 'logo_img/'), protected_serve, {'document_root': settings.MEDIA_ROOT+ 'logo_img/'}),
 
 ]
 
-# add url for General suite data managment
-if settings.FRONTEND:
-    urlpatterns.append(
-        url(r'^generalsuitedata/$', login_required(GeneralSuiteDataUpdateView.as_view()),
-            name='generaldata-update'),
-    )
