@@ -26,6 +26,7 @@ def GiveBaseGrant(sender, **kwargs):
         AuthGroup, Permission, ContentType = getAuthPermissionContentType()
         Project = apps.get_app_config('qdjango').get_model('project')
         Layer = apps.get_app_config('qdjango').get_model('layer')
+        Widget = apps.get_app_config('qdjango').get_model('widget')
 
         editor1 = AuthGroup.objects.get(name=G3W_EDITOR1)
         editor1Permission = editor1.permissions.all()
@@ -41,6 +42,15 @@ def GiveBaseGrant(sender, **kwargs):
                 editor1.permissions.add(perm)
             if perm not in editor2Permission:
                 editor2.permissions.add(perm)
+
+        # for editor1
+        permissionsToAdd = (
+            Permission.objects.get(codename='add_widget', content_type=ContentType.objects.get_for_model(Widget)),
+        )
+
+        for perm in permissionsToAdd:
+            if perm not in editor1Permission:
+                editor1.permissions.add(perm)
 
 
 class QdjangoConfig(AppConfig):

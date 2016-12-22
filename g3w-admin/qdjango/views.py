@@ -268,7 +268,7 @@ class QdjangoLayerWidgetUpdateView(G3WRequestViewMixin, G3WGroupViewMixin, Qdjan
     model = Widget
     template_name = 'qdjango/ajax/widget_form.html'
 
-    @method_decorator(permission_required('qdjango.change_widget', (Widget, 'slug', 'slug'), raise_exception=True))
+    #@method_decorator(permission_required('qdjango.change_widget', (Widget, 'slug', 'slug'), raise_exception=True))
     def dispatch(self, *args, **kwargs):
         return super(QdjangoLayerWidgetUpdateView, self).dispatch(*args, **kwargs)
 
@@ -290,7 +290,7 @@ class QdjangoLayerWidgetDeleteView(G3WAjaxDeleteViewMixin, SingleObjectMixin, Vi
     '''
     model = Widget
 
-    @method_decorator(permission_required('qdjango.delete_widget', (Widget, 'slug', 'slug'), raise_exception=True))
+    #@method_decorator(permission_required('qdjango.delete_widget', (Widget, 'slug', 'slug'), raise_exception=True))
     def dispatch(self, *args, **kwargs):
         return super(QdjangoLayerWidgetDeleteView, self).dispatch(*args, **kwargs)
 
