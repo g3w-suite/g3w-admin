@@ -8,7 +8,6 @@
 {% block page_header %}
     <h1>
         {% trans 'Users' %}
-        <small>Optional description</small>
       </h1>
 {% endblock %}
 
@@ -25,24 +24,24 @@ $("#users_table").DataTable();
 <div class="col-md-12 col-xs-12">
     <div class="box">
         <div class="box-header">
-            <h3 class="box-title"><a href="{% url 'user-add' %}"><i class="ion ion-plus-circled"></i></a> Users</h3>
+            <h3 class="box-title"><a href="{% url 'user-add' %}"><i class="ion ion-plus-circled"></i></a> {% trans 'Users' %}</h3>
         </div>
         <div class="box-body">
             <table id="users_table" class="table table-hover table-striped">
                 <thead>
                     <tr>
-                        <th style="width:120px">Actions</th>
-                        <th>Username</th>
+                        <th style="width:120px">{% trans 'Actions' %}</th>
+                        <th>{% trans 'Username' %}</th>
                         {% if user.is_superuser %}
-                        <th>Group</th>
-                        <th>Superuser</th>
+                        <th>{% trans 'Group' %}</th>
+                        <th>{% trans 'Superuser' %}</th>
                         {% endif %}
                         {% if user.is_staff and user.is_superuser %}
-                        <th>Staff</th>
+                        <th>{% trans 'Staff' %}</th>
                         {% endif %}
                         <th class="hidden-sm hidden-xs">Email</th>
-                        <th class="hidden-sm hidden-xs">First name</th>
-                        <th class="hidden-sm hidden-xs">Last name</th>
+                        <th class="hidden-sm hidden-xs">{% trans 'First name' %}</th>
+                        <th class="hidden-sm hidden-xs">{% trans 'Last name' %}</th>
                     </tr>
                 </thead>
                 {% for object in object_list %}

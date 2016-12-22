@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-11-15 17:18+0000\n"
+"POT-Creation-Date: 2016-12-22 15:55+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -56,6 +56,10 @@ msgstr ""
 msgid "HERE"
 msgstr ""
 
+#: cadastre/templates/cadastre/dashboard.html:56 templates/index.html:27
+msgid "Module widgets"
+msgstr ""
+
 #: cadastre/templates/cadastre/include/action_loaddata.html:6
 msgid "Revoke task"
 msgstr ""
@@ -69,51 +73,55 @@ msgid "Clear Db by Task id"
 msgstr ""
 
 #: cadastre/templates/cadastre/loaddata.html:73
-#: cadastre/templates/cadastre/loaddata.html:116
+#: cadastre/templates/cadastre/loaddata.html:122
 #: cadastre_camaiore/templates/cadastre/loaddatacivici.html:45
 msgid "STATO"
 msgstr ""
 
 #: cadastre/templates/cadastre/loaddata.html:74
-#: cadastre/templates/cadastre/loaddata.html:117
+#: cadastre/templates/cadastre/loaddata.html:123
 #: cadastre_camaiore/templates/cadastre/loaddatacivici.html:46
 msgid "File"
 msgstr ""
 
-#: cadastre/templates/cadastre/loaddata.html:75
-msgid "Tipo fornitura"
-msgstr ""
-
 #: cadastre/templates/cadastre/loaddata.html:76
-msgid "Descrizione"
-msgstr ""
-
-#: cadastre/templates/cadastre/loaddata.html:77
-msgid "Aggiornamento"
+msgid "TASk ID"
 msgstr ""
 
 #: cadastre/templates/cadastre/loaddata.html:78
-#: cadastre/templates/cadastre/loaddata.html:119
+msgid "Tipo fornitura"
+msgstr ""
+
+#: cadastre/templates/cadastre/loaddata.html:79
+msgid "Descrizione"
+msgstr ""
+
+#: cadastre/templates/cadastre/loaddata.html:80
+msgid "Aggiornamento"
+msgstr ""
+
+#: cadastre/templates/cadastre/loaddata.html:81
+#: cadastre/templates/cadastre/loaddata.html:125
 #: cadastre_camaiore/templates/cadastre/loaddatacivici.html:52
 msgid "Data caricamento"
 msgstr ""
 
-#: cadastre/templates/cadastre/loaddata.html:88
-#: cadastre/templates/cadastre/loaddata.html:131
+#: cadastre/templates/cadastre/loaddata.html:91
+#: cadastre/templates/cadastre/loaddata.html:137
 #: cadastre_camaiore/templates/cadastre/loaddatacivici.html:62
 #: cdu/templates/cdu/config_list.html:45
 msgid "Delete"
 msgstr ""
 
-#: cadastre/templates/cadastre/loaddata.html:118
+#: cadastre/templates/cadastre/loaddata.html:124
 msgid "Data elaborazione"
 msgstr ""
 
-#: cadastre/templates/cadastre/loaddata.html:120
+#: cadastre/templates/cadastre/loaddata.html:126
 msgid "N DOCFA"
 msgstr ""
 
-#: cadastre/templates/cadastre/loaddata.html:121
+#: cadastre/templates/cadastre/loaddata.html:127
 msgid "N planimterie"
 msgstr ""
 
@@ -298,73 +306,65 @@ msgstr ""
 msgid "Some errors on form. Check it and send again."
 msgstr ""
 
-#: editing/api/serializers.py:25
+#: editing/api/serializers.py:26
 msgid ""
 "Invalid format: string or unicode input unrecognized as GeoJSON, WKT EWKT or "
 "HEXEWKB."
 msgstr ""
 
-#: frontend/templates/frontend/index.html:62
-#: frontend/templates/frontend/index.html:112
+#: frontend/templates/frontend/index.html:61
+#: frontend/templates/frontend/index.html:111
 msgid "About It"
-msgstr ""
+msgstr "Cos'è"
 
-#: frontend/templates/frontend/index.html:72
-#: frontend/templates/frontend/index.html:138
+#: frontend/templates/frontend/index.html:71
+#: frontend/templates/frontend/index.html:142
 msgid "Maps"
-msgstr ""
+msgstr "Mappe"
 
-#: frontend/templates/frontend/index.html:82
-#: frontend/templates/frontend/index.html:216
+#: frontend/templates/frontend/index.html:81
+#: frontend/templates/frontend/index.html:220
 msgid "Admin"
-msgstr ""
+msgstr "Amministrazione"
 
-#: frontend/templates/frontend/index.html:82
-#: frontend/templates/frontend/index.html:216
-#: frontend/templates/frontend/index.html:245
+#: frontend/templates/frontend/index.html:81
+#: frontend/templates/frontend/index.html:220
+#: frontend/templates/frontend/index.html:249
 msgid "Login"
-msgstr ""
+msgstr "Accesso"
 
-#: frontend/templates/frontend/index.html:101
+#: frontend/templates/frontend/index.html:100
 msgid "Adminstration"
-msgstr ""
+msgstr "Amministrazione"
 
-#: frontend/templates/frontend/index.html:113
-msgid "G3W-SUITE is a geo suite administration system"
-msgstr ""
-
-#: frontend/templates/frontend/index.html:139
-msgid "Group maps on db"
-msgstr ""
-
-#: frontend/templates/frontend/index.html:175
-#: frontend/templates/frontend/index.html:176
+#: frontend/templates/frontend/index.html:179
+#: frontend/templates/frontend/index.html:180
 #, fuzzy
 #| msgid "Groups list"
 msgid "Group maps"
 msgstr "Lista gruppi"
 
-#: frontend/templates/frontend/index.html:196
+#: frontend/templates/frontend/index.html:200
 #: iternet/templates/iternet/dashboard.html:85
 #: iternet/templates/iternet/dashboard.html:86
 msgid "Show map"
-msgstr ""
+msgstr "Mostra mappa"
 
-#: frontend/templates/frontend/index.html:219
+#: frontend/templates/frontend/index.html:223
 msgid "Access to backeng administration stystem or logout"
-msgstr ""
+msgstr "Accedi al backed di amministrazione o esci"
 
-#: frontend/templates/frontend/index.html:221
+#: frontend/templates/frontend/index.html:225
 msgid "Login to go backend administration system"
-msgstr ""
+msgstr "Accesso al sistema di amministrazione"
 
-#: frontend/templates/frontend/index.html:233
+#: frontend/templates/frontend/index.html:237
 msgid "Backend"
 msgstr ""
 
-#: frontend/templates/frontend/index.html:236
+#: frontend/templates/frontend/index.html:240
 msgid "Logout"
-msgstr ""
+msgstr "Esci"
 
 #: htmlcov/_home_walter_envs_qdjango2_dev_lib_python2_7_site-packages_django_template_defaulttags_py.html:3184
 #, python-format
@@ -406,23 +406,23 @@ msgstr ""
 
 #: templates/403.html:7 templates/404.html:7
 msgid "error page"
-msgstr ""
+msgstr "Pagina di errore"
 
 #: templates/403.html:15
 msgid "Access denied"
-msgstr ""
+msgstr "Accesso negato"
 
 #: templates/403.html:17
 msgid "You don't have grant to access this section"
-msgstr ""
+msgstr "Non hai i privilegi per accedere questa sezione"
 
 #: templates/404.html:15
 msgid "Oops! Page not found."
-msgstr ""
+msgstr "Opps! Pagina non trovata"
 
 #: templates/404.html:17
 msgid "We could not find the page you were looking for."
-msgstr ""
+msgstr "Non abbiamo trovato la pagina che stavi cercando"
 
 #: templates/base.html:163 templates/index.html:6
 msgid "Dashboard"
@@ -430,23 +430,35 @@ msgstr "Scrivania"
 
 #: templates/include/navbar_right_menu.html:27
 msgid "Registered on"
-msgstr ""
+msgstr "Registrato il"
 
 #: templates/include/navbar_right_menu.html:28
 msgid "Last login"
-msgstr ""
+msgstr "Ultimo accesso"
 
 #: templates/include/navbar_right_menu.html:35
 msgid "Profile"
-msgstr ""
+msgstr "Profilo"
 
 #: templates/include/navbar_right_menu.html:38
 msgid "Sign out"
 msgstr "Esci"
 
+#: templates/include/sidebar_right.html:8
+msgid "Configurations"
+msgstr "Configurazioni"
+
+#: templates/include/sidebar_right.html:14
+msgid "Edit general data"
+msgstr "Modifica i dati generali"
+
+#: templates/include/sidebar_right.html:15
+msgid "Frontend data and other"
+msgstr "Dati del frontend e altro"
+
 #: templates/index.html:7
 msgid "Current situation"
-msgstr ""
+msgstr "Situazione attuale"
 
 #: templates/index.html:17
 #, fuzzy
@@ -456,19 +468,15 @@ msgstr "Lista gruppi"
 
 #: templates/index.html:22
 msgid "Show"
-msgstr ""
-
-#: templates/index.html:27
-msgid "Module widgets"
-msgstr ""
+msgstr "Mostra"
 
 #: templates/login.html:15
 msgid "Sign in to start your session"
-msgstr ""
+msgstr "Accedi per iniziare la tua sessione di lavoro"
 
 #: templates/login.html:17
 msgid "Username and/or password uncorrect"
-msgstr ""
+msgstr "Username e/o password non corretti"
 
 #: templates/login.html:31
 msgid "Sign In"
