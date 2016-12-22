@@ -99,8 +99,8 @@ class ProjectSerializer(serializers.ModelSerializer):
                     widgets  = layers[layer['id']].widget_set.all()
                     for widget in widgets:
                         widgetSerializzerData = WidgetSerializer(widget).data
-                        widgetSerializzerData['options']['layerid'] = layer['id']
                         if widgetSerializzerData['type'] == 'search':
+                            widgetSerializzerData['options']['layerid'] = layer['id']
                             widgetSerializzerData['options']['querylayerid'] = layer['id']
                             ret['search'].append(widgetSerializzerData)
                         else:

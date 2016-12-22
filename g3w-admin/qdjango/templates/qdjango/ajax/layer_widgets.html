@@ -25,7 +25,7 @@
                 <td>{{ object.name }}</td>
                 <td>{{ object.widget_type }}</td>
                 <td>
-                    <input type="checkbox" name="panoramic_map" {% if object|widget_linked_layer:layer  %} checked="checked" {% endif %} value="{{ object.id }}" data-widget-type="linkWidget2Layer" data-ajax-url="{% url 'qdjango-project-layer-widget-link' group.slug project.slug layer.slug object.slug %}"/>
+                    <input type="checkbox" {% if object|widget_linked_layer:layer  %} checked="checked" {% endif %} value="{{ object.id }}" data-widget-type="linkWidget2Layer" data-ajax-url="{% url 'qdjango-project-layer-widget-link' group.slug project.slug layer.slug object.slug %}"/>
                 </td>
             </tr>
         {% endfor %}

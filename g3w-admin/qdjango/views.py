@@ -16,6 +16,7 @@ from core.signals import pre_update_project, pre_delete_project, after_update_pr
 from core.utils.decorators import check_madd
 from django_downloadview import ObjectDownloadView
 from usersmanage.mixins.views import G3WACLViewMixin
+from .signals import load_qdjango_widgets_data
 from .mixins.views import *
 from .forms import *
 
@@ -139,7 +140,7 @@ class QdjangoLayersListView(G3WRequestViewMixin, G3WGroupViewMixin, QdjangoProje
 
         # rebuild layers_tree for bootstrap tree view
         qlayers = self.get_queryset()
-        layers = {l.qgs_layer_id:l for l in qlayers}
+        layers = {l.qgs_layer_id: l for l in qlayers}
 
         layersTree = eval(project.layers_tree)
         layersTreeBoostrap = []
@@ -226,6 +227,10 @@ class QdjangoLayerWidgetCreateView(G3WRequestViewMixin, G3WGroupViewMixin, Qdjan
     def get_context_data(self, **kwargs):
         context = super(QdjangoLayerWidgetCreateView, self).get_context_data()
         context['layer'] = self.layer
+
+        # todo: da rifare meglio la struttura dei widget
+        load_qdjango_widgets_data.send(self, context=context)
+
         return context
 
     def get_success_url(self):
@@ -270,6 +275,9 @@ class QdjangoLayerWidgetUpdateView(G3WRequestViewMixin, G3WGroupViewMixin, Qdjan
     def get_context_data(self, **kwargs):
         context = super(QdjangoLayerWidgetUpdateView, self).get_context_data()
         context['layer'] = self.layer
+
+        load_qdjango_widgets_data.send(self, context=context)
+
         return context
 
     def get_success_url(self):
