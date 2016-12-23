@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-11-15 17:18+0000\n"
+"POT-Creation-Date: 2016-12-22 15:54+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,51 +20,47 @@ msgstr ""
 
 #: core/admin.py:15
 msgid "Basic settings"
-msgstr ""
+msgstr "Configurazioni di base"
 
 #: core/admin.py:18
 msgid "Access settings"
-msgstr ""
+msgstr "Accesso configurazioni"
 
 #: core/admin.py:22
 msgid "Display settings"
-msgstr ""
+msgstr "Mostra le configurazioni"
 
 #: core/admin.py:26
 msgid "Additional settings"
-msgstr ""
+msgstr "Configurazioni accessorie"
 
 #: core/api/views.py:73
 msgid "Data are not correct or insufficent!"
-msgstr ""
+msgstr "I dati non sono corretti o insufficenti"
 
 #: core/api/views.py:79
 msgid "A error server is occured!"
-msgstr ""
+msgstr "Si è verificato un errore server!"
 
 #: core/api/views.py:90
 msgid "Not found"
-msgstr ""
+msgstr "Non trovato"
 
 #: core/api/views.py:97
 msgid "Permission denied"
-msgstr ""
+msgstr "Permesso negato"
 
-#: core/configs.py:10
+#: core/configs.py:11
 msgid "Search"
-msgstr ""
+msgstr "Ricerca"
 
-#: core/configs.py:15
-msgid "Tooltip"
-msgstr ""
-
-#: core/configs.py:20
+#: core/configs.py:28
 msgid "Law"
-msgstr ""
+msgstr "Normativa"
 
 #: core/forms.py:38
 msgid "General data"
-msgstr ""
+msgstr "Dati generali"
 
 #: core/forms.py:59
 msgid "GEO data"
@@ -72,7 +68,7 @@ msgstr "GEO dati"
 
 #: core/forms.py:80
 msgid "Base Layers and Map default features"
-msgstr ""
+msgstr "Layers di base e caratteristiche di default della mappa"
 
 #: core/forms.py:107
 msgid "Logo/Picture"
@@ -82,25 +78,45 @@ msgstr "Logo/Immagine"
 msgid "Copyright"
 msgstr ""
 
+#: core/forms.py:176
+msgid "Frontend home data"
+msgstr "Dati home"
+
+#: core/forms.py:200
+msgid "Frontend about data"
+msgstr "Dati chi siamo"
+
+#: core/forms.py:221
+msgid "Frontend groups map data"
+msgstr "Dati gruppi di mappa del frontend"
+
+#: core/forms.py:237
+msgid "Frontend login data"
+msgstr "Dati login frontend"
+
+#: core/forms.py:254
+msgid "Frontend social data"
+msgstr "Dati social media"
+
 #: core/models.py:81
 msgid "Map control"
-msgstr ""
+msgstr "Controllo di mappa"
 
 #: core/models.py:82
 msgid "Map controls"
-msgstr ""
+msgstr "Cantrolli di mappa"
 
 #: core/models.py:88
 msgid "Name"
-msgstr ""
+msgstr "Nome"
 
-#: core/models.py:89
+#: core/models.py:89 core/models.py:244
 msgid "Title"
-msgstr ""
+msgstr "Titolo"
 
 #: core/models.py:90
 msgid "Description"
-msgstr ""
+msgstr "Descrizione"
 
 #: core/models.py:92
 msgid "Slug"
@@ -108,67 +124,127 @@ msgstr ""
 
 #: core/models.py:94
 msgid "Is active"
-msgstr ""
+msgstr "Attivo"
 
 #: core/models.py:97
 msgid "lang"
-msgstr ""
+msgstr "Lunguaggio"
 
 #: core/models.py:100
-msgid "headerLogoImg"
-msgstr ""
+msgid "Logo image"
+msgstr "Immagine logo"
 
 #: core/models.py:101
-msgid "headerLogoLink"
-msgstr ""
+msgid "Logo link"
+msgstr "Link logo"
 
 #: core/models.py:102
 msgid "Enter link with http:// or https//"
-msgstr ""
+msgstr "Il link deve contenere http:// or https//"
 
 #: core/models.py:118
-msgid "headerTermsOfUseText"
-msgstr ""
+msgid "Terms of use text"
+msgstr "Termi di utilizzo"
 
 #: core/models.py:121
-msgid "headerTermsOfUseLink"
-msgstr ""
+msgid "Terms of use link"
+msgstr "Link termini di utilizzo"
 
-#: core/models.py:225 core/templates/core/group_form.html:11
+#: core/models.py:235 core/templates/core/group_form.html:11
 msgid "Group"
-msgstr ""
+msgstr "Gruppo"
 
-#: core/models.py:226
+#: core/models.py:236
 msgid "Project type"
+msgstr "Tipo di progetto"
+
+#: core/models.py:237
+msgid "Project type id"
+msgstr "Id tipo di progetto"
+
+#: core/models.py:245
+msgid "Subtitle"
+msgstr "Sottotitolo"
+
+#: core/models.py:246
+msgid "Home description"
+msgstr "Descrizione home"
+
+#: core/models.py:247
+msgid "About title"
+msgstr "Titolo sezione 'Il progetto'"
+
+#: core/models.py:248
+msgid "About description"
+msgstr "Descrizione pagina 'Il progetto'"
+
+#: core/models.py:249
+msgid "About name"
+msgstr "Nome del progetto"
+
+#: core/models.py:250
+msgid "About phone"
+msgstr "Telefono del progetto"
+
+#: core/models.py:251
+msgid "About email"
+msgstr "Email del progetto"
+
+#: core/models.py:252
+msgid "About address"
+msgstr "Indirizzo del progetto"
+
+#: core/models.py:253
+msgid "Groups title"
+msgstr "Titolo pagina gruppi cartografici"
+
+#: core/models.py:254
+msgid "Groups map description"
+msgstr "Descrizione pagina gruppi cartografici"
+
+#: core/models.py:255
+msgid "Login description"
+msgstr "Descrizione pagina di login"
+
+#: core/models.py:256
+msgid "Suite logo"
+msgstr "Logo del progetto"
+
+#: core/models.py:258
+msgid "Facebook link"
 msgstr ""
 
-#: core/models.py:227
-msgid "Project type id"
+#: core/models.py:259
+msgid "Twitter link"
+msgstr ""
+
+#: core/models.py:260
+msgid "Google+ link"
 msgstr ""
 
 #: core/templates/core/403_MGC.html:7 core/templates/core/403_MPC.html:7
 msgid "error page"
-msgstr ""
+msgstr "Pagine di errore"
 
 #: core/templates/core/403_MGC.html:15 core/templates/core/403_MPC.html:15
 msgid "Access denied"
-msgstr ""
+msgstr "Accesso negato"
 
 #: core/templates/core/403_MGC.html:17
 msgid "You can't add new Group"
-msgstr ""
+msgstr "Non puoi aggiungere un nuovo gruppo"
 
 #: core/templates/core/403_MPC.html:17
 msgid "You can't add new Project"
-msgstr ""
+msgstr "Non puoi aggiungere un nuovo progetto"
 
 #: core/templates/core/ajax/group_detail.html:5
 msgid "Geografic component"
-msgstr ""
+msgstr "Componente geografica"
 
 #: core/templates/core/ajax/group_detail.html:7
 msgid "Geographic coordinate system"
-msgstr ""
+msgstr "Sistema di coordinate geografiche"
 
 #: core/templates/core/ajax/group_detail.html:8
 msgid "SRID"
@@ -176,23 +252,23 @@ msgstr ""
 
 #: core/templates/core/ajax/group_detail.html:9
 msgid "Units"
-msgstr ""
+msgstr "Unità"
 
 #: core/templates/core/ajax/group_detail.html:10
 msgid "Principal map"
-msgstr ""
+msgstr "Mappa principale"
 
 #: core/templates/core/ajax/group_detail.html:11
 msgid "Max scale"
-msgstr ""
+msgstr "Massima scala"
 
 #: core/templates/core/ajax/group_detail.html:12
 msgid "Min scale"
-msgstr ""
+msgstr "Minima scala"
 
 #: core/templates/core/ajax/group_detail.html:13
 msgid "Overview Map"
-msgstr ""
+msgstr "Mappa di riferimento"
 
 #: core/templates/core/ajax/group_detail.html:14
 msgid "Panoramic max scale"
@@ -204,31 +280,31 @@ msgstr ""
 
 #: core/templates/core/ajax/group_detail.html:18
 msgid "Users"
-msgstr ""
+msgstr "Utenti"
 
 #: core/templates/core/ajax/group_detail.html:21
 msgid "Editor user"
-msgstr ""
+msgstr "Utente Editor"
 
 #: core/templates/core/ajax/group_detail.html:24
 msgid "Viewer users"
-msgstr ""
+msgstr "Utenti Viewers"
 
 #: core/templates/core/ajax/group_detail.html:31
 msgid "Interface component"
-msgstr ""
+msgstr "Componente di interfaccia"
 
 #: core/templates/core/ajax/group_detail.html:33
 msgid "Interface language"
-msgstr ""
+msgstr "Lingua interfaccia"
 
 #: core/templates/core/ajax/group_detail.html:34
 msgid "Language"
-msgstr ""
+msgstr "Lingua"
 
 #: core/templates/core/ajax/group_detail.html:35
 msgid "Associated logo"
-msgstr ""
+msgstr "Logo associato"
 
 #: core/templates/core/ajax/group_detail.html:36
 msgid "HeaderLogoImg"
@@ -244,7 +320,7 @@ msgstr ""
 
 #: core/templates/core/ajax/group_detail.html:46
 msgid "Terms of use"
-msgstr ""
+msgstr "Condizioni di utilizzo"
 
 #: core/templates/core/ajax/group_detail.html:47
 msgid "HeaderTermsOfUseText"
@@ -256,43 +332,49 @@ msgstr ""
 
 #: core/templates/core/django_file_form/upload_template.html:5
 msgid "Drop files here to upload"
-msgstr ""
+msgstr "Rilascia i files qui per caricarli"
 
 #: core/templates/core/django_file_form/upload_template.html:8
 msgid "Click or Drag file to Upload"
-msgstr ""
+msgstr "Clicca o trascina i file per caricarlo"
 
 #: core/templates/core/django_file_form/upload_template.html:11
 msgid "Processing dropped files..."
-msgstr ""
+msgstr "Processamento dei file inviati..."
 
 #: core/templates/core/django_file_form/upload_template.html:24
 msgid "Cancel"
-msgstr ""
+msgstr "Annulla"
 
 #: core/templates/core/django_file_form/upload_template.html:25
 msgid "Retry"
-msgstr ""
+msgstr "Riprova"
 
 #: core/templates/core/django_file_form/upload_template.html:26
 #: core/templates/core/group_list.html:83
 #: core/templates/core/project_list.html:31
 msgid "Delete"
-msgstr ""
+msgstr "Elimina"
+
+#: core/templates/core/generalsuitedata_form.html:11
+msgid "General suite data"
+msgstr "Dati generali della suite"
+
+#: core/templates/core/generalsuitedata_form.html:32
+#: core/templates/core/group_form.html:49
+msgid "Alert"
+msgstr "Attenzione"
+
+#: core/templates/core/generalsuitedata_form.html:33
+#: core/templates/core/group_form.html:50
+msgid "Some errors on form. Check it and send again."
+msgstr "Si sono verificati alcuni errori sul form. Controlla e reinvia."
 
 #: core/templates/core/group_form.html:34
 #: core/templates/core/group_list.html:58
 #: core/templates/core/project_list.html:11
 msgid "Projects"
-msgstr ""
-
-#: core/templates/core/group_form.html:49
-msgid "Alert"
-msgstr ""
-
-#: core/templates/core/group_form.html:50
-msgid "Some errors on form. Check it and send again."
-msgstr ""
+msgstr "Progetti"
 
 #: core/templates/core/group_list.html:11
 msgid "Cartographic groups"
@@ -300,43 +382,45 @@ msgstr "Gruppi cartografici"
 
 #: core/templates/core/group_list.html:50
 msgid "Add new project"
-msgstr ""
+msgstr "Aggiungi un nuovo progetto"
 
 #: core/templates/core/group_list.html:58
 msgid "Group projects"
-msgstr ""
+msgstr "Progetti del gruppo"
 
 #: core/templates/core/group_list.html:65
 #: core/templates/core/project_list.html:25
 msgid "Show detail"
-msgstr ""
+msgstr "Mostra i dettagli"
 
 #: core/templates/core/group_list.html:74
 #: core/templates/core/project_list.html:28
 msgid "Edit"
-msgstr ""
+msgstr "Modifica"
 
 #: core/templates/core/include/add_project.html:5
 msgid "Select project type do add:"
-msgstr ""
+msgstr "Selezione il tipo di progetto da aggiungere:"
 
 #: core/templates/core/include/coockieconsent.html:11
 msgid ""
 "This website uses cookies to ensure you get the best experience on our "
 "website"
 msgstr ""
+"Questo sito utilizza i coockie per garantire una buona usabilità "
+"all'utilizzatore finale"
 
 #: core/templates/core/include/coockieconsent.html:12
 msgid "Got it"
-msgstr ""
+msgstr "Capito"
 
 #: core/templates/core/include/form_buttons.html:7
 msgid "Save"
-msgstr ""
+msgstr "Salva"
 
 #: core/templates/core/include/form_buttons.html:13
 msgid "Redo/Back"
-msgstr ""
+msgstr "Annula/indietro"
 
 #: core/templates/core/tags/add_layer.html:3
 msgid "Layer"
@@ -344,7 +428,7 @@ msgstr ""
 
 #: core/templates/core/tags/add_project.html:3
 msgid "Project"
-msgstr ""
+msgstr "Progetto"
 
 #: core/utils/data.py:21
 msgid "{} \"{}\" {}:"
@@ -352,15 +436,15 @@ msgstr ""
 
 #: core/utils/forms.py:11
 msgid "{} is no a valid image"
-msgstr ""
+msgstr "{} non è una immagine valida"
 
 #: core/utils/forms.py:28
 msgid "Default base layer"
-msgstr ""
+msgstr "Layer base di default"
 
-#: core/utils/structure.py:207 core/utils/structure.py:267
+#: core/utils/structure.py:214 core/utils/structure.py:274
 msgid "Yes"
-msgstr ""
+msgstr "Si"
 
 #~ msgid "Third party maps"
 #~ msgstr "Mappe terze parti"

@@ -97,8 +97,8 @@ class Group(TimeStampedModel):
     lang = models.CharField(_('lang'), max_length=20, choices=LANGUAGES, default='it')
 
     # Company logo
-    header_logo_img = models.FileField(_('headerLogoImg'), upload_to='logo_img')
-    header_logo_link = models.URLField(_('headerLogoLink'), blank=True, null=True,
+    header_logo_img = models.FileField(_('Logo image'), upload_to='logo_img')
+    header_logo_link = models.URLField(_('Logo link'), blank=True, null=True,
                                        help_text=_('Enter link with http:// or https//'))
 
     # Group SRID (a.k.a. EPSG)
@@ -115,10 +115,10 @@ class Group(TimeStampedModel):
 
     # Company TOS
     header_terms_of_use_text = models.TextField(
-        _('headerTermsOfUseText'), blank=True
+        _('Terms of use text'), blank=True
         )
     header_terms_of_use_link = models.URLField(
-        _('headerTermsOfUseLink'), blank=True
+        _('Terms of use link'), blank=True
         )
 
     class Meta:

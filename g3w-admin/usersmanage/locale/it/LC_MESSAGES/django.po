@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-11-15 17:18+0000\n"
+"POT-Creation-Date: 2016-12-22 15:55+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,39 +20,40 @@ msgstr ""
 
 #: usersmanage/forms.py:64
 msgid "Editor user"
-msgstr ""
+msgstr "Utente editor"
 
 #: usersmanage/forms.py:65
 msgid "Viewer users"
-msgstr ""
+msgstr "Utenti viewers"
 
 #: usersmanage/forms.py:131
 msgid "Select group for this user"
-msgstr ""
+msgstr "Sleziona un gruppo per questo utente"
 
 #: usersmanage/forms.py:132
+#: usersmanage/templates/usersmanage/user_list.html:36
 msgid "Group"
-msgstr ""
+msgstr "Gruppo"
 
 #: usersmanage/forms.py:153
 msgid "Anagraphic"
-msgstr ""
+msgstr "Anagrafica"
 
 #: usersmanage/forms.py:172
 msgid "ACL/Roles"
-msgstr ""
+msgstr "ACL/Ruoli"
 
 #: usersmanage/forms.py:193
 msgid "Login data"
-msgstr ""
+msgstr "Dati di accesso"
 
 #: usersmanage/forms.py:211
 msgid "User data"
-msgstr ""
+msgstr "Dati utente"
 
 #: usersmanage/forms.py:282
 msgid "Avatar is no a valid image"
-msgstr ""
+msgstr "Questo avatar non è una immagine"
 
 #: usersmanage/forms.py:308
 msgid "Password"
@@ -60,11 +61,11 @@ msgstr ""
 
 #: usersmanage/forms.py:310
 msgid "Password confirmation"
-msgstr ""
+msgstr "Conferma password"
 
 #: usersmanage/forms.py:312
 msgid "Enter the same password as above, for verification."
-msgstr ""
+msgstr "Inserisci la stessa passoword indicata sopra per verifica"
 
 #: usersmanage/models.py:18
 msgid "Avatar"
@@ -72,36 +73,63 @@ msgstr ""
 
 #: usersmanage/templates/usersmanage/ajax/user_detail.html:5
 msgid "User"
-msgstr ""
+msgstr "Utente"
 
 #: usersmanage/templates/usersmanage/user_form.html:9
 msgid "System users"
-msgstr ""
+msgstr "Utenti di sistema"
 
 #: usersmanage/templates/usersmanage/user_form.html:20
 msgid "Alert"
-msgstr ""
+msgstr "Attenzione"
 
 #: usersmanage/templates/usersmanage/user_form.html:21
 msgid "Some errors on form. Check it and send again."
-msgstr ""
+msgstr "Si sono verificati alcuni errori. Controlla e reinvia."
 
 #: usersmanage/templates/usersmanage/user_list.html:10
+#: usersmanage/templates/usersmanage/user_list.html:27
 msgid "Users"
+msgstr "Utenti"
+
+#: usersmanage/templates/usersmanage/user_list.html:33
+msgid "Actions"
+msgstr "Azioni"
+
+#: usersmanage/templates/usersmanage/user_list.html:34
+#, fuzzy
+#| msgid "User"
+msgid "Username"
+msgstr "Utente"
+
+#: usersmanage/templates/usersmanage/user_list.html:37
+msgid "Superuser"
+msgstr "Super utente"
+
+#: usersmanage/templates/usersmanage/user_list.html:40
+msgid "Staff"
 msgstr ""
 
-#: usersmanage/templates/usersmanage/user_list.html:53
+#: usersmanage/templates/usersmanage/user_list.html:43
+msgid "First name"
+msgstr "Nome"
+
+#: usersmanage/templates/usersmanage/user_list.html:44
+msgid "Last name"
+msgstr "Cognome"
+
+#: usersmanage/templates/usersmanage/user_list.html:52
 msgid "Show detail"
-msgstr ""
+msgstr "Mostra i dettagli"
 
-#: usersmanage/templates/usersmanage/user_list.html:57
+#: usersmanage/templates/usersmanage/user_list.html:56
 msgid "Edit"
-msgstr ""
+msgstr "Modifica"
 
-#: usersmanage/templates/usersmanage/user_list.html:62
+#: usersmanage/templates/usersmanage/user_list.html:61
 msgid "Delete"
-msgstr ""
+msgstr "Elimina"
 
 #: usersmanage/utils.py:148
 msgid "ACL Users"
-msgstr ""
+msgstr "ACL Utenti"
