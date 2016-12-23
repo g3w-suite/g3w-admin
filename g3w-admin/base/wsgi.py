@@ -1,3 +1,4 @@
+from __future__ import absolute_import, unicode_literals
 """
 WSGI config for qdjango2 project.
 
@@ -14,7 +15,7 @@ from sys import path
 SITE_ROOT = dirname(dirname(abspath(__file__)))
 path.append(SITE_ROOT)
 """
-from __future__ import absolute_import, unicode_literals
+
 import os
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "base.settings")
