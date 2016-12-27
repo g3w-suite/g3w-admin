@@ -9,6 +9,7 @@ except:
     pass
 from qdjango.utils.data import QgisProjectSettingsWMS
 from qdjango.ows import OWSRequestHandler
+from qdjango.signals import load_qdjango_widget_layer
 from core.utils.structure import mapLayerAttributes
 from core.configs import *
 from core.signals import after_serialized_project_layer
@@ -104,7 +105,7 @@ class ProjectSerializer(serializers.ModelSerializer):
                             widgetSerializzerData['options']['querylayerid'] = layer['id']
                             ret['search'].append(widgetSerializzerData)
                         else:
-                            ret['widget'].append(widgetSerializzerData)
+                            load_qdjango_widget_layer.send(self, layer=layer, ret=ret, widget=widget)
                 else:
 
                     # keep layer for remove after
