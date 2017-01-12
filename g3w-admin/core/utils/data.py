@@ -16,7 +16,7 @@ class XmlData(object):
         """
         for data in self._dataToSet:
             try:
-                setattr(self,data,getattr(self,'_getData{}'.format(ucfirst(data)))())
+                setattr(self, data, getattr(self, '_getData{}'.format(ucfirst(data)))())
             except Exception as e:
                 raise Exception(_('{} "{}" {}:'.format(self._introMessageException,data,e.message)))
 
