@@ -191,6 +191,8 @@ class LayerSerializer(serializers.ModelSerializer):
             ret['capabilities'] |= settings.QUERYABLE
         if instance.edit_options:
             ret['capabilities'] |= settings.EDITABLE
+        #if instance.wfscapabilities:
+            #ret['capabilities'] |= settings.WFS
         if ret['capabilities'] == 0:
             ret['capabilities'] = None
 

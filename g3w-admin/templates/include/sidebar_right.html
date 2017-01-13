@@ -16,6 +16,17 @@
           </div>
         </a>
       </li>
+    {% if user.is_staff %}
+        <li>
+        <a href="{% url 'admin:index' %}">
+          <i class="menu-icon fa fa-cogs bg-purple"></i>
+          <div class="menu-info">
+            <h4 class="control-sidebar-subheading">{% trans 'Django administration' %}</h4>
+            <p>{% trans 'Go to staff administration section' %}...</p>
+          </div>
+        </a>
+      </li>
+    {% endif %}
     </ul>
   </div>
 </div>
