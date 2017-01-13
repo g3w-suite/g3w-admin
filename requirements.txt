@@ -17,7 +17,7 @@ django-mptt
 django-ordered-model
 pathlib
 shapely
-GDAL==1.11.0
+#GDAL==1.11.0
 GeoAlchemy2
 lxml==3.3.3
 psycopg2==2.6.1
