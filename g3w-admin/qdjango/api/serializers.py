@@ -119,7 +119,7 @@ class ProjectSerializer(serializers.ModelSerializer):
             to_remove[0].remove(to_remove[1])
 
         # add baselayer default
-        ret['baselayer'] = instance.baselayer.name if instance.baselayer else None
+        ret['initbaselayer'] = instance.baselayer.id if instance.baselayer else None
 
         return ret
 
