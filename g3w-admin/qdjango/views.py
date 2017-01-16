@@ -19,6 +19,7 @@ from usersmanage.mixins.views import G3WACLViewMixin
 from .signals import load_qdjango_widgets_data
 from .mixins.views import *
 from .forms import *
+import json
 
 
 class QdjangoProjectDownloadView(ObjectDownloadView):
@@ -158,7 +159,7 @@ class QdjangoLayersListView(G3WRequestViewMixin, G3WGroupViewMixin, QdjangoProje
             layersTreeBoostrap.append(buildLeaf(l))
 
         context['project_slug'] = self.project_slug
-        context['layers_tree'] = layersTreeBoostrap
+        context['layers_tree'] = json.dumps(layersTreeBoostrap)
         context['type_layer_for_widget'] = (
             'postgres',
             'spatialite',

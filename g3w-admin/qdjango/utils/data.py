@@ -70,6 +70,28 @@ class DatasourceExists(QgisProjectLayerValidator):
                 err += ugettext('which should be located at {}'.format(self.qgisProjectLayer.datasource))
                 raise Exception(err)
 
+
+class ColoumnName(QgisProjectLayerValidator):
+    """
+    Check coloumn data name: no whitespace, no special charts.
+    """
+    def clean(self):
+        if self.qgisProjectLayer.layerType in [Layer.TYPES.ogr, Layer.TYPES.postgres, Layer.TYPES.spatialite]:
+            columns_err = []
+            for column in self.qgisProjectLayer.columns:
+                # search
+                rex = '[^A-Za-z0-9]+'
+                #rex = '[;:,%@$^&*!#()\[\]\{\}\\n\\r\\s]+'
+                if re.search(rex, column['name']):
+                    columns_err.append(column['name'])
+            if columns_err:
+                err = ugettext('The follow fields name of layer {} contains '
+                               'white spaces and/or special characters: {}')\
+                    .format(self.qgisProjectLayer.name, ', '.join(columns_err))
+                err += ugettext('Please use \'Alias\' fields in QGIS project')
+                raise Exception(err)
+
+
 class QgisProjectLayer(XmlData):
     """
     Qgisdata object for layer project: a layer xml wrapper
@@ -98,7 +120,8 @@ class QgisProjectLayer(XmlData):
     _introMessageException = 'Missing or invalid layer data'
 
     _defaultValidators = [
-        DatasourceExists
+        DatasourceExists,
+        ColoumnName
     ]
 
     def __init__(self, layerTree, **kwargs):

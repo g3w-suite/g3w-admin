@@ -5,7 +5,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.schema import MetaData
 from django.utils.translation import ugettext_lazy as _
-import os
+import os, re
 try:
     from osgeo import ogr
 except ImportError:
@@ -84,6 +84,24 @@ class QgisLayerStructure(object):
     def getTableColumns(self):
         pass
 
+    '''
+    def clearColoumn(self, coloumn_name):
+        """
+        Get coloumn name and remove special charpter like , ; : ecc.
+        Sub blankspace with underscore
+        :param coloumn_name:
+        :return:
+        """
+
+        # remove
+        coloumn_name = re.sub('[;:,%@$^&*!#()\[\]\{\}\\n\\r]+', '', coloumn_name)
+
+        # replace whitespaces
+        coloumn_name = re.sub('\s', '_', coloumn_name)
+
+        return coloumn_name
+    '''
+
 
 class QgisOGRLayerStructure(QgisLayerStructure):
 
@@ -113,8 +131,8 @@ class QgisOGRLayerStructure(QgisLayerStructure):
 
         for i in range(layerDefinition.GetFieldCount()):
             self.columns.append({
-                'name':layerDefinition.GetFieldDefn(i).GetName(),
-                'type':layerDefinition.GetFieldDefn(i).GetFieldTypeName(layerDefinition.GetFieldDefn(i).GetType()).upper(),
+                'name': layerDefinition.GetFieldDefn(i).GetName(),
+                'type': layerDefinition.GetFieldDefn(i).GetFieldTypeName(layerDefinition.GetFieldDefn(i).GetType()).upper(),
                 'label': layerDefinition.GetFieldDefn(i).GetName()
             })
 
