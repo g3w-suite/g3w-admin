@@ -80,8 +80,8 @@ class ColoumnName(QgisProjectLayerValidator):
             columns_err = []
             for column in self.qgisProjectLayer.columns:
                 # search
-                rex = '[^A-Za-z0-9]+'
-                #rex = '[;:,%@$^&*!#()\[\]\{\}\\n\\r\\s]+'
+                #rex = '[^A-Za-z0-9]+'
+                rex = '[;:,%@$^&*!#()\[\]\{\}\\n\\r\\s]+'
                 if re.search(rex, column['name']):
                     columns_err.append(column['name'])
             if columns_err:
