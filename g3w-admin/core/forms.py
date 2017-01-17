@@ -93,7 +93,7 @@ class GroupForm(FileFormMixin, G3WFormMixin, G3WRequestFormMixin, G3WACLForm, Mo
                                             AppendedText('background_color', '<i></i>', css_class='colorpicker'),
                                             css_class='box-body'
                                         ),
-                                        css_class='box box-danger {}'.format(self.checkEmptyInitialsData('baselayers'))
+                                        css_class='box box-danger'
                                     ),
                                     css_class='col-md-6'
                                 ),
