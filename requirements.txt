@@ -1,13 +1,13 @@
-Django==1.9.6
-django-autoslug==1.9.3
+Django==1.9.12
+django-autoslug
 django-formtools
-django-crispy-forms==1.6.0
-django-extensions==1.6.1
-django-file-form==0.1.7
-django-guardian==1.4.1
-django-model-utils==2.4
-django-sitetree==1.5.1
-djangorestframework==3.3.3
+django-crispy-forms
+django-extensions
+django-file-form
+django-guardian
+django-model-utils
+django-sitetree
+djangorestframework
 djangorestframework-gis
 django-filter
 django-downloadview
@@ -17,16 +17,17 @@ django-mptt
 django-ordered-model
 pathlib
 shapely
-#GDAL==1.11.0
 GeoAlchemy2
-lxml==3.3.3
-psycopg2==2.6.1
+lxml
+psycopg2
 pillow
 owslib
-defusedxml==0.4.1
+defusedxml
 SQLAlchemy
 django-import-export
 coverage
+
+# GDAL by hand
 
 
 
