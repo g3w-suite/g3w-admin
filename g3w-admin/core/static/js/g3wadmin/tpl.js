@@ -15,6 +15,7 @@ _.extend(g3wadmin.tpl, {
             modalClass: '',
             modalSize: '',
             closeButton: true,
+            closeX: true,
             closeButtonText: gettext('Close'),
             confirmButton: true,
             confirmButtonText: 'Ok'
@@ -40,7 +41,9 @@ _.extend(g3wadmin.tpl, {
         <div class="modal-dialog <%= modalClass %> <%= modalSize %>">\
         <div class="modal-content">\
           <div class="modal-header">\
+            <% if(closeX) { %>\
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>\
+            <% } %>\
             <h4 class="modal-title"><%= modalTitle %></h4>\
           </div>\
           <div class="modal-body">\

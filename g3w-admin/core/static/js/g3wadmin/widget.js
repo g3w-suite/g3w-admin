@@ -336,13 +336,24 @@ _.extend(g3wadmin.widget, {
             // open modal to show form filer
             var modal = ga.ui.buildDefaultModal({
                 confirmButton: false,
+                closeX: false,
+                backdrop: 'static',
                 modalTitle: ((_.isUndefined(params['modal-title']) ? gettext('Upload file') : params['modal-title'])),
                 modalBody: ga.tpl.ajaxFiler(templateOptions)
             });
 
+            var filerDom = $(modal.$modal.find('#filer_input'));
+
             modal.setCloseButtonAction(function(e){
                 modal.hide();
-                window.location.reload();
+                var jFiler = filerDom.prop('jFiler');
+                if (!_.isNull(jFiler.current_file)) {
+                    if (jFiler.current_file.uploaded) {
+                        window.location.reload();
+                    }
+
+                }
+
             });
 
             modal.show();
@@ -354,7 +365,7 @@ _.extend(g3wadmin.widget, {
             // get extentions
             var extensions = _.isUndefined(params['file-extensions']) ? null : params['file-extensions'].split('|')
             
-            $(modal.$modal.find('#filer_input')).filer({
+            filerDom.filer({
                 changeInput: ga.tpl.ajaxFiler_changeInput({
                     drag_drop_message: gettext('Drag&Drop files here'),
                     browse_button: gettext('Browse Files')
@@ -404,6 +415,7 @@ _.extend(g3wadmin.widget, {
                                 var d = inputs[idx];
                                 upload.data.append(d['name'], d['value']);
                             }
+                            modal.toggleStateButton('close');
                         }
 
                     },
@@ -414,6 +426,7 @@ _.extend(g3wadmin.widget, {
                         });
 
                         el.after(data)
+                        modal.toggleStateButton('close');
                     },
                     error: function(el){
                         if (_.isUndefined(arguments[6].responseJSON)) {
@@ -431,6 +444,7 @@ _.extend(g3wadmin.widget, {
                             $errMsg.append($('<p></p>').html(errMsg));
                             el.after($errMsg);
                         });
+                        modal.toggleStateButton('close');
                     },
                 }
             });

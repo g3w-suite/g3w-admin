@@ -11,9 +11,11 @@
 
 _.extend(g3wadmin.ui, {
 
-    modal:  function($modal){
+    modal:  function($modal, options){
 
         this.$modal = $modal;
+
+        this.options = options;
 
         this.data = new Object();
 
@@ -23,7 +25,16 @@ _.extend(g3wadmin.ui, {
         });
 
         this.show = function (){
-            this.$modal.modal('show');
+
+            var backdrop = true;
+            if (_.isObject(this.options) && !_.isUndefined(this.options['backdrop'])) {
+                var backdrop = this.options['backdrop']
+            }
+
+            this.$modal.modal({
+                'show': true,
+                'backdrop': backdrop
+            });
         }
 
         this.hide = function (){
@@ -45,13 +56,22 @@ _.extend(g3wadmin.ui, {
         this.setCloseButtonAction = function (action) {
             this.$modal.find('.modal-button-close').click(action);
         }
+
+        this.toggleStateButton = function(button_type) {
+            var btn = this.$modal.find('.modal-button-'+button_type);
+            if (btn.is(':disabled')) {
+                btn.prop('disabled', false);
+            } else {
+                btn.prop('disabled', true);
+            }
+        }
     },
 
     _buildModal: function (options) {
 
         //build the modal jquery object
         var $modal = $(ga.tpl.dialog(_.extendOwn(_.clone(ga.tpl.tplDefValues.dialog),options)));
-        return new this.modal($modal);
+        return new this.modal($modal, options);
     },
 
     buildDefaultModal: function (options) {
