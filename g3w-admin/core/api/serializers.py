@@ -126,7 +126,7 @@ class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         return ret
 
     class Meta:
-        model= Group
+        model = Group
         fields = (
             'id',
             'name',
