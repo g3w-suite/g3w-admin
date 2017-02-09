@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
 from ordered_model.admin import OrderedModelAdmin
-from sitetree.admin import TreeItemAdmin,override_item_admin
+from sitetree.admin import TreeItemAdmin, override_item_admin
 from .ie.admin import G3WImportExportModelAdmin
 from .models import Group, BaseLayer, MapControl
 from guardian.admin import GuardedModelAdmin

@@ -60,6 +60,24 @@ _.extend(g3wadmin.utils, {
         var editorObj = $selector.data('wysihtml5');
         var editor = editorObj.editor;
         editor.setValue(content);
+    },
+
+    /**
+     * Prevent and disabled browser back button
+     */
+    preventBackButtonBrowser: function(){
+
+        // for Firefox
+        window.location.hash="no-back-button";
+
+        //again because google chrome don't insert first hash into history
+        window.location.hash="Again-No-back-button";
+        window.onhashchange=function(){window.location.hash="no-back-button";}
+
+        // for Chrome/Chromium
+        $(window).on('beforeunload', function(){
+          return false;
+        });
     }
 
 
