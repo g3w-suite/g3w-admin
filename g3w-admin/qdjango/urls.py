@@ -8,17 +8,29 @@ from .views import *
 G3W_SITETREE_I18N_ALIAS.append('qdjango')
 
 urlpatterns = [
-    url(r'^(?P<group_slug>[-_\w\d]+)/projects/$', login_required(QdjangoProjectListView.as_view()), name='qdjango-project-list'),
-    url(r'^(?P<group_slug>[-_\w\d]+)/project/add/$', login_required(OdjangoProjectCreateView.as_view()), name='qdjango-project-add'),
-    url(r'^(?P<group_slug>[-_\w\d]+)/projects/update/(?P<slug>[-_\w\d]+)/$', login_required(QdjangoProjectUpdateView.as_view()), name='qdjango-project-update'),
-    url(r'^(?P<group_slug>[-_\w\d]+)/projects/delete/(?P<slug>[-_\w\d]+)/$', login_required(QdjangoProjectDeleteView.as_view()), name='qdjango-project-delete'),
-    url(r'^(?P<group_slug>[-_\w\d]+)/projects/(?P<slug>[-_\w\d]+)/$', login_required(QdjangoProjectDetailView.as_view()), name='qdjango-project-detail'),
+    url(r'^(?P<group_slug>[-_\w\d]+)/projects/$', login_required(QdjangoProjectListView.as_view()),
+        name='qdjango-project-list'),
+    url(r'^(?P<group_slug>[-_\w\d]+)/project/add/$', login_required(OdjangoProjectCreateView.as_view()),
+        name='qdjango-project-add'),
+    url(r'^(?P<group_slug>[-_\w\d]+)/projects/update/(?P<slug>[-_\w\d]+)/$',
+        login_required(QdjangoProjectUpdateView.as_view()), name='qdjango-project-update'),
+    url(r'^(?P<group_slug>[-_\w\d]+)/projects/delete/(?P<slug>[-_\w\d]+)/$',
+        login_required(QdjangoProjectDeleteView.as_view()), name='qdjango-project-delete'),
+    url(r'^(?P<group_slug>[-_\w\d]+)/projects/(?P<slug>[-_\w\d]+)/$',
+        login_required(QdjangoProjectDetailView.as_view()), name='qdjango-project-detail'),
     url(r'^(?P<group_slug>[-_\w\d]+)/projects/download/(?P<slug>[-_\w\d]+)/$',
-        login_required(QdjangoProjectDownloadView.as_view(model=Project, file_field='qgis_file')), name='qdjango-project-download'),
+        login_required(QdjangoProjectDownloadView.as_view(model=Project, file_field='qgis_file')),
+        name='qdjango-project-download'),
+
+    # for ajaxFiler
+    url(r'^(?P<group_slug>[-_\w\d]+)/projects/fast/update/(?P<slug>[-_\w\d]+)/$',
+        login_required(QdjangoProjectFastUpdateView.as_view()), name='qdjango-project-fast-update'),
 
     # Layers urls
-    url(r'^(?P<group_slug>[-_\w\d]+)/projects/(?P<project_slug>[-_\w\d]+)/layers/$', login_required(QdjangoLayersListView.as_view()), name='qdjango-project-layers-list'),
-    url(r'^jx/(?P<group_slug>[-_\w\d]+)/projects/(?P<project_slug>[-_\w\d]+)/layers/(?P<layer_id>[0-9]+)/cache/$', login_required(QdjangoLayerCacheView.as_view()), name='qdjango-project-layers-cache'),
+    url(r'^(?P<group_slug>[-_\w\d]+)/projects/(?P<project_slug>[-_\w\d]+)/layers/$',
+        login_required(QdjangoLayersListView.as_view()), name='qdjango-project-layers-list'),
+    url(r'^jx/(?P<group_slug>[-_\w\d]+)/projects/(?P<project_slug>[-_\w\d]+)/layers/(?P<layer_id>[0-9]+)/cache/$',
+        login_required(QdjangoLayerCacheView.as_view()), name='qdjango-project-layers-cache'),
     url(r'^(?P<group_slug>[-_\w\d]+)/projects/(?P<project_slug>[-_\w\d]+)/layer/(?P<layer_slug>[-_\w\d]+)/widgets/$',
         login_required(QdjangoLayerWidgetsView.as_view()), name='qdjango-project-layer-widgets'),
 

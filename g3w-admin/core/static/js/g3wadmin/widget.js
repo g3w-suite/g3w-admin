@@ -426,7 +426,9 @@ _.extend(g3wadmin.widget, {
                         });
 
                         el.after(data)
-                        modal.toggleStateButton('close');
+                        if (!_.isUndefined(params['item-plus-form'])) {
+                            modal.toggleStateButton('close');
+                        }
                     },
                     error: function(el){
                         if (_.isUndefined(arguments[6].responseJSON)) {
@@ -444,7 +446,9 @@ _.extend(g3wadmin.widget, {
                             $errMsg.append($('<p></p>').html(errMsg));
                             el.after($errMsg);
                         });
-                        modal.toggleStateButton('close');
+                        if (!_.isUndefined(params['item-plus-form'])) {
+                            modal.toggleStateButton('close');
+                        }
                     },
                 }
             });
