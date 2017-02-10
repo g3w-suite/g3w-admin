@@ -68,10 +68,11 @@
                         </span>
                         <!--
                         TODO: direct project upload on update
+                        -->
                         <span class="col-xs-2 icon">
-                            <a href="{% url 'qdjango-project-download' group.slug object.slug %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Donwload' %}" ><i class="ion ion-android-upload"></i></a>
+                            <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Upload' %}" data-widget-type="ajaxFiler" data-modal-title="{% trans 'Upload qgis project file' %}" data-action-url="{% url 'qdjango-project-fast-update' group.slug object.slug %}"  ><i class="ion ion-android-upload"></i></a>
                         </span>
-                         -->
+
                         {% endif %}
                     </td>
                     <td>

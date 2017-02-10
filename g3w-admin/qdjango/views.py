@@ -7,7 +7,7 @@ from django.views.generic import (
     View,
 )
 from django.views.generic.detail import SingleObjectMixin
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.utils.decorators import method_decorator
 from guardian.decorators import permission_required
 from guardian.shortcuts import get_objects_for_user
@@ -95,6 +95,32 @@ class QdjangoProjectUpdateView(QdjangoProjectCUViewMixin, G3WGroupViewMixin, G3W
         # send project update signal
         after_update_project.send(self, app_name='qdjango', project=form.instance)
         return res
+
+
+class QdjangoProjectFastUpdateView(QdjangoProjectCUViewMixin, G3WGroupViewMixin, G3WRequestViewMixin, View):
+    """
+    View fro fast chanbge project by ajaxfiler
+    """
+
+    @method_decorator(permission_required('qdjango.change_project', (Project, 'slug', 'slug'), raise_exception=True))
+    def dispatch(self, *args, **kwargs):
+        return super(QdjangoProjectFastUpdateView, self).dispatch(*args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+
+        qgis_file = request.FILES['files[]'] if request.FILES else None
+        qgskwargs = dict()
+        qgskwargs['instance'] = Project.objects.get(slug=kwargs['slug'])
+        qgskwargs['group'] = self.group
+        qgis_project = QgisProject(qgis_file, **qgskwargs)
+        try:
+            qgis_project.clean()
+        except Exception as e:
+            raise ValidationError(e)
+
+        qgis_project.save()
+
+        return HttpResponse('Qgis project uploaded and updated')
 
 
 class QdjangoProjectDetailView(G3WRequestViewMixin, DetailView):
