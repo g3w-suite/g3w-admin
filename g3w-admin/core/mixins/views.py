@@ -89,12 +89,13 @@ class G3WAjaxDeleteViewMixin(object):
     '''
 
     def post(self, request, *args, **kwargs):
-        self.object = self.get_object()
+        if not self.object:
+            self.object = self.get_object()
 
         # delete object
         self.object.delete();
 
-        return JsonResponse({'status':'ok','message':'Object deleted!'})
+        return JsonResponse({'status': 'ok', 'message': 'Object deleted!'})
 
 
 class AjaxableFormResponseMixin(object):

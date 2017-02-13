@@ -28,6 +28,9 @@ after_serialized_project_layer = django.dispatch.Signal(providing_args=["layer"]
 # signals pre update project
 pre_update_project = django.dispatch.Signal(providing_args=["projectType", "project"])
 
+# signals before delete project
+before_delete_project = django.dispatch.Signal(providing_args=["app_name", "project"])
+
 # signals pre delete project
 pre_delete_project = django.dispatch.Signal(providing_args=["projectType", "project", "projects"])
 

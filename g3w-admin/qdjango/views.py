@@ -12,7 +12,7 @@ from django.utils.decorators import method_decorator
 from guardian.decorators import permission_required
 from guardian.shortcuts import get_objects_for_user
 from core.mixins.views import *
-from core.signals import pre_update_project, pre_delete_project, after_update_project
+from core.signals import pre_update_project, pre_delete_project, after_update_project, before_delete_project
 from core.utils.decorators import check_madd
 from django_downloadview import ObjectDownloadView
 from usersmanage.mixins.views import G3WACLViewMixin
@@ -143,6 +143,15 @@ class QdjangoProjectDeleteView(G3WAjaxDeleteViewMixin, SingleObjectMixin, View):
     @method_decorator(permission_required('qdjango.delete_project', (Project, 'slug', 'slug'), raise_exception=True))
     def dispatch(self, *args, **kwargs):
         return super(QdjangoProjectDeleteView, self).dispatch(*args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+
+        # send before project delete signal
+        self.object = self.get_object()
+        before_delete_project.send(self, app_name='qdjango', project=self.object)
+
+        return super(QdjangoProjectDeleteView, self).post(request, *args, **kwargs)
+
 
 
 # For layers
