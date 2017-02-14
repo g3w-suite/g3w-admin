@@ -121,6 +121,16 @@ class ProjectSerializer(serializers.ModelSerializer):
         # add baselayer default
         ret['initbaselayer'] = instance.baselayer.id if instance.baselayer else None
 
+        # add relations if exists and if layers relations are postgres or sqlite layer
+        if instance.relations:
+            relations = eval(instance.relations)
+            ret['relations'] = []
+            for relation in relations:
+
+                # check layer type
+                if layers[relation['referencingLayer']].layer_type in ('postgres', 'spatiallite'):
+                    ret['relations'].append(relation)
+
         return ret
 
     class Meta:

@@ -70,7 +70,10 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
     layers_tree = models.TextField(_('Layers tree structure'), blank=True, null=True)
 
     # BaseLayer
-    baselayer = models.ForeignKey(BaseLayer, verbose_name=_('Base Layer'), related_name='qdjango_project_baselayer', null=True, blank=True)
+    baselayer = models.ForeignKey(BaseLayer, verbose_name=_('Base Layer'), related_name='qdjango_project_baselayer',
+                                  null=True, blank=True)
+    # possible layer relations
+    relations = models.TextField(_('Layer relations'), blank=True, null=True)
 
     class Meta:
         verbose_name = _('Project')
