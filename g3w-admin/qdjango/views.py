@@ -189,6 +189,7 @@ class QdjangoProjectRelationsApiView(APIView):
                 relation_id if relation_id.isnumeric() else "'{}'".format(relation_id)))
             rows = dictfetchall(cursor)
 
+        # remove new db connection
         del connections.databases[using]
 
         return Response(rows)
