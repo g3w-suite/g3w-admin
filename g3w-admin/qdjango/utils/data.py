@@ -479,6 +479,7 @@ class QgisProject(XmlData):
         'wfstLayers',
         'layersTree',
         'layers',
+        'layerRelations',
         'qgisVersion',
         ]
 
@@ -637,12 +638,35 @@ class QgisProject(XmlData):
         # Get layer trees
         layerTrees = self.qgisProjectTree.xpath(self._regexXmlLayer)
 
-        for order,layerTree in enumerate(layerTrees):
+        for order, layerTree in enumerate(layerTrees):
             if self._checkLayerTypeCompatible(layerTree):
                 layers.append(QgisProjectLayer(layerTree, qgisProject=self, order=order))
         return layers
 
+    def _getDataLayerRelations(self):
+        """
+        Get relations layer section into project
+        :param layerTree:
+        :return:
+        """
+        # get root of layer-tree-group
+        layerRelationsRoot = self.qgisProjectTree.find('relations')
+        layer_realtions = []
+        for order, layer_relation in enumerate(layerRelationsRoot):
+            attrib = dict(layer_relation.attrib)
+
+            # add fieldRef
+            field_ref = layer_relation.find('fieldRef')
+            attrib['fieldRef'] = field_ref.attrib
+            layer_realtions.append(attrib)
+
+        return layer_realtions if layer_realtions else None
+
     def _getDataQgisVersion(self):
+        """
+        Get Qgisversion project
+        :return:
+        """
         return self.qgisProjectTree.getroot().attrib['version']
 
     def _getDataWfsLayers(self):
@@ -689,7 +713,7 @@ class QgisProject(XmlData):
         """
 
         thumbnail = kwargs.get('thumbnail')
-        description = kwargs.get('description','')
+        description = kwargs.get('description', '')
 
         with transaction.atomic():
             if not instance and not self.instance:
@@ -702,7 +726,8 @@ class QgisProject(XmlData):
                     thumbnail= thumbnail,
                     description=description,
                     qgis_version=self.qgisVersion,
-                    layers_tree=self.layersTree
+                    layers_tree=self.layersTree,
+                    relations=self.layerRelations
                 )
             else:
                 if instance:
@@ -713,11 +738,13 @@ class QgisProject(XmlData):
                 self.instance.initial_extent = self.initialExtent
                 self.instance.max_extent = self.maxExtent
                 self.instance.layers_tree = self.layersTree
+                self.instance.relations = self.layerRelations
 
                 if thumbnail:
                     self.instance.thumbnail = thumbnail
                 if description:
                     self.instance.description = description
+
 
                 self.instance.save()
 
@@ -853,6 +880,7 @@ class QgisProjectSettingsWMS(XmlData):
 
         self._getLayerTreeData(layersTree[0])
         return self._layersData
+
 
     def _getDataComposerTemplates(self):
 

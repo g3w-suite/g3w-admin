@@ -15,6 +15,8 @@ from core.mixins.views import *
 from core.signals import pre_update_project, pre_delete_project, after_update_project, before_delete_project
 from core.utils.decorators import check_madd
 from django_downloadview import ObjectDownloadView
+from rest_framework.views import APIView
+from rest_framework.response import Response
 from usersmanage.mixins.views import G3WACLViewMixin
 from .signals import load_qdjango_widgets_data
 from .mixins.views import *
@@ -152,6 +154,15 @@ class QdjangoProjectDeleteView(G3WAjaxDeleteViewMixin, SingleObjectMixin, View):
 
         return super(QdjangoProjectDeleteView, self).post(request, *args, **kwargs)
 
+
+class QdjangoProjectRelationsApiView(APIView):
+    """
+    Return list of relations rows
+    """
+
+    def get(self, request, format=None, group_slug=None, slug=None, relation_name=None, relation_id=None):
+
+        return Response([])
 
 
 # For layers
@@ -348,5 +359,4 @@ class QdjangoLinkWidget2LayerView(G3WRequestViewMixin, G3WGroupViewMixin, Qdjang
             self.widget.layers.add(self.layer)
         else:
             self.widget.layers.remove(self.layer)
-
 
