@@ -9,6 +9,7 @@ from django.views.generic import (
 from django.views.generic.detail import SingleObjectMixin
 from django.http import HttpResponseRedirect, HttpResponse
 from django.utils.decorators import method_decorator
+from django.db import connections
 from guardian.decorators import permission_required
 from guardian.shortcuts import get_objects_for_user
 from core.mixins.views import *
@@ -155,14 +156,42 @@ class QdjangoProjectDeleteView(G3WAjaxDeleteViewMixin, SingleObjectMixin, View):
         return super(QdjangoProjectDeleteView, self).post(request, *args, **kwargs)
 
 
+from core.utils.db import build_dango_connection_name, build_django_connection, dictfetchall
+from qdjango.utils.structure import datasource2dict
+
 class QdjangoProjectRelationsApiView(APIView):
     """
     Return list of relations rows
     """
 
-    def get(self, request, format=None, group_slug=None, slug=None, relation_name=None, relation_id=None):
+    def get(self, request, format=None, group_slug=None, project_id=None, relation_name=None, relation_id=None):
 
-        return Response([])
+        # get Project model object:
+        project = Project.objects.get(pk=project_id)
+        relations = {r['name']: r for r in eval(project.relations)}
+
+        relation = relations[relation_name]
+
+        # get layer for query:
+        referenced_layer = Layer.objects.get(qgs_layer_id=relation['referencedLayer'], project=project)
+
+        # build using connection name
+        datasource = datasource2dict(referenced_layer.datasource)
+        using = build_dango_connection_name(referenced_layer.datasource)
+        connections.databases[using] = build_django_connection(datasource)
+
+        # exec raw query
+        # todo: better
+        with connections[using].cursor() as cursor:
+            cursor.execute("SELECT * FROM {} WHERE {} = {}".format(
+                datasource['table'],
+                relation['fieldRef']['referencedField'],
+                relation_id if relation_id.isnumeric() else "'{}'".format(relation_id)))
+            rows = dictfetchall(cursor)
+
+        del connections.databases[using]
+
+        return Response(rows)
 
 
 # For layers
