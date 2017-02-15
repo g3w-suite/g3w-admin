@@ -5,7 +5,7 @@
 
 {% block page_header %}
 <h1>
-{% trans 'Laws list' %}
+{% trans 'CDU configs list' %}
     <small>{% trans 'List of CDU configs available' %}</small>
 </h1>
 {% endblock %}
@@ -51,7 +51,7 @@
   </div><!-- /.widget-user -->
 </div>
 {% endfor %}
-    {% with 'cdu-config-list' as object_add_url_name %}
+    {% with 'cdu-config-add' as object_add_url_name %}
         {% include 'core/include/widget_add_box.html' %}
     {% endwith %}
 {% endblock %}

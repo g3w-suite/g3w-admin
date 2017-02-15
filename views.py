@@ -6,7 +6,7 @@ from django.views.generic import (
 from formtools.wizard.views import SessionWizardView
 from guardian.shortcuts import get_objects_for_user
 from collections import OrderedDict
-from .models import *
+from .models import Configs, Layers as CDULayers
 from .forms import *
 from qdjango.models import *
 
@@ -101,12 +101,100 @@ class CduConfigWizardView(SessionWizardView):
 
     def _getContextDataStep2(self):
         rawData = self.get_cleaned_data_for_step('2')
-        angainstLayerAlias = {key: value for key, value in rawData.items() if key not in ['foglio','particella','plusFieldsCatasto']}
+        angainstLayerAlias = {key: value for key, value in rawData.items() if key not in ['foglio',
+                                                                                          'particella',
+                                                                                          'plusFieldsCatasto']}
         return {
             'foglio': rawData['foglio'],
             'particella': rawData['particella'],
             'plusFieldsCatasto': rawData['plusFieldsCatasto'],
             'angainstLayerAlias': angainstLayerAlias
         }
+
+    def _create_update_or_delete_cdulayers(self, layers_data):
+
+        for layer_data in layers_data:
+            CDUlayer, created = CDULayers.objects.get_or_create(
+                layer=layer_data['layer'],
+                config=layer_data['config'],
+                defaults=layer_data['defaults']
+                )
+            if not created:
+                CDUlayer.alias = layer_data['defaults'].get('alias', None)
+                CDUlayer.fields = layer_data['defaults']['fields']
+                CDUlayer.catasto = layer_data['defaults'].get('catasto', False)
+
+            # Save layer
+            CDUlayer.save()
+
+
+        # erase old layer
+        #layer_data['config'].layers_set.exclude(pk__in=[layer_data['layer'].pk for layer_data in layers_data]).delete()
+
+    def _serializeCatastoLayerFields(self,form_list):
+        return {
+            'foglio': form_list[2].cleaned_data['foglio'],
+            'particella': form_list[2].cleaned_data['particella'],
+            'plusFieldsCatasto': self._serializePlusFieldsCatastoFields(form_list)}
+
+    def _serializeAgainstLayerFields(self, form_list, layer):
+        aliasFields = form_list[4].fieldsByLayers[unicode2ascii(layer.name)]
+        toSerialize = []
+        for field in aliasFields:
+            toSerialize.append({'name': field, 'alias': form_list[4].cleaned_data[unicode2ascii(field)]})
+        return toSerialize
+
+    def _serializePlusFieldsCatastoFields(self,form_list):
+        plusFieldsCatastoFields = form_list[2].cleaned_data['plusFieldsCatasto']
+        toSerialize = []
+        for field in plusFieldsCatastoFields:
+            aliasPlusFieldsCatastoFieldName = unicode2ascii('plusFieldsCatasto_{}'.format(field))
+            toSerialize.append({'name':field,'alias':form_list[3].cleaned_data[aliasPlusFieldsCatastoFieldName]})
+        return toSerialize
+
+    def _prepairAgainstLayersData(self,form_list, cduConfig):
+        res = []
+        for lid in form_list[1].cleaned_data['againstLayers']:
+            layer = Layer.objects.get(pk=lid)
+            res.append({
+                'config': cduConfig,
+                'layer': layer,
+                'defaults': {
+                    'fields': self._serializeAgainstLayerFields(form_list, layer),
+                    'alias': form_list[2].cleaned_data[unicode2ascii(layer.name)]
+                }
+            })
+        return res
+
+
+    def done(self, form_list, form_dict, **kwargs):
+        """
+        Wizard end star save data on db
+        :param form_list:
+        :param form_dict:
+        :param kwargs:
+        :return:
+        """
+        # build data for to save results
+        cdu_config = form_list[0].save()
+
+        # configure data for Layers table
+        layers_data = list()
+
+        # build catasto layer data
+        layers_data.append({
+            'config': cdu_config,
+            'layer': Layer.objects.get(pk=form_list[1].cleaned_data['catastoLayer']),
+            'defaults': {
+                'fields': self._serializeCatastoLayerFields(form_list),
+                'catasto': True
+            }
+        })
+
+        #build against layers_data
+        layers_data += self._prepairAgainstLayersData(form_list, cdu_config)
+        self._create_update_or_delete_cdulayers(layers_data)
+
+        return HttpResponseRedirect(reverse_lazy('cdu-config-list'))
 
 
