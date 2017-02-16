@@ -131,7 +131,7 @@ class CduConfigWizardView(SessionWizardView):
         # erase old layer
         #layer_data['config'].layers_set.exclude(pk__in=[layer_data['layer'].pk for layer_data in layers_data]).delete()
 
-    def _serializeCatastoLayerFields(self,form_list):
+    def _serializeCatastoLayerFields(self, form_list):
         return {
             'foglio': form_list[2].cleaned_data['foglio'],
             'particella': form_list[2].cleaned_data['particella'],
