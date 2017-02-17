@@ -356,6 +356,8 @@ _.extend(g3wadmin.widget, {
 
             });
 
+            // ga.utils.preventBackButtonBrowser();
+
             modal.show();
 
             // add crftoken

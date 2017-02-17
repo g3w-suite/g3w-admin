@@ -65,19 +65,26 @@ _.extend(g3wadmin.utils, {
     /**
      * Prevent and disabled browser back button
      */
-    preventBackButtonBrowser: function(){
+    preventBackButtonBrowser: function(active){
 
-        // for Firefox
-        window.location.hash="no-back-button";
+        if (_.isUndefined(active)) {
+            active = true;
+        }
 
-        //again because google chrome don't insert first hash into history
-        window.location.hash="Again-No-back-button";
-        window.onhashchange=function(){window.location.hash="no-back-button";}
+        if (active) {
+            // for Firefox
+            window.location.hash="no-back-button";
 
-        // for Chrome/Chromium
-        $(window).on('beforeunload', function(){
-          return false;
-        });
+            //again because google chrome don't insert first hash into history
+            window.location.hash="Again-No-back-button";
+            window.onhashchange=function(){window.location.hash="no-back-button";}
+
+            // for Chrome/Chromium
+            $(window).on('beforeunload', function(){
+              return false;
+            });
+        }
+
     }
 
 
