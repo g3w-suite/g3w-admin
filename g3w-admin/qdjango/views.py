@@ -159,18 +159,19 @@ class QdjangoProjectDeleteView(G3WAjaxDeleteViewMixin, SingleObjectMixin, View):
 from core.utils.db import build_dango_connection_name, build_django_connection, dictfetchall
 from qdjango.utils.structure import datasource2dict
 
+
 class QdjangoProjectRelationsApiView(APIView):
     """
     Return list of relations rows
     """
 
-    def get(self, request, format=None, group_slug=None, project_id=None, relation_name=None, relation_id=None):
+    def get(self, request, format=None, group_slug=None, project_id=None, relation_id=None, relation_field_value=None):
 
         # get Project model object:
         project = Project.objects.get(pk=project_id)
-        relations = {r['name']: r for r in eval(project.relations)}
+        relations = {r['id']: r for r in eval(project.relations)}
 
-        relation = relations[relation_name]
+        relation = relations[relation_id]
 
         # get layer for query:
         referencing_layer = Layer.objects.get(qgs_layer_id=relation['referencingLayer'], project=project)
@@ -190,7 +191,7 @@ class QdjangoProjectRelationsApiView(APIView):
             cursor.execute("SELECT * FROM {} WHERE {} = '{}'".format(
                 datasource['table'],
                 relation['fieldRef']['referencingField'],
-                relation_id))
+                relation_field_value))
             rows = dictfetchall(cursor)
 
         # remove new db connection
