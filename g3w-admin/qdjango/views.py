@@ -175,6 +175,10 @@ class QdjangoProjectRelationsApiView(APIView):
         # get layer for query:
         referenced_layer = Layer.objects.get(qgs_layer_id=relation['referencedLayer'], project=project)
 
+        # database columns referenced_layer
+        db_columns_referenced_layer = eval(referenced_layer.database_columns) \
+            if referenced_layer.database_columns else None
+
         # build using connection name
         datasource = datasource2dict(referenced_layer.datasource)
         using = build_dango_connection_name(referenced_layer.datasource)
@@ -183,10 +187,10 @@ class QdjangoProjectRelationsApiView(APIView):
         # exec raw query
         # todo: better
         with connections[using].cursor() as cursor:
-            cursor.execute("SELECT * FROM {} WHERE {} = {}".format(
+            cursor.execute("SELECT * FROM {} WHERE {} = '{}'".format(
                 datasource['table'],
                 relation['fieldRef']['referencedField'],
-                relation_id if relation_id.isnumeric() else "'{}'".format(relation_id)))
+                relation_id))
             rows = dictfetchall(cursor)
 
         # remove new db connection
