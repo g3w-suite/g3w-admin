@@ -173,15 +173,15 @@ class QdjangoProjectRelationsApiView(APIView):
         relation = relations[relation_name]
 
         # get layer for query:
-        referenced_layer = Layer.objects.get(qgs_layer_id=relation['referencedLayer'], project=project)
+        referencing_layer = Layer.objects.get(qgs_layer_id=relation['referencingLayer'], project=project)
 
-        # database columns referenced_layer
-        db_columns_referenced_layer = eval(referenced_layer.database_columns) \
-            if referenced_layer.database_columns else None
+        # database columns referencing_layer
+        db_columns_referencing_layer = eval(referencing_layer.database_columns) \
+            if referencing_layer.database_columns else None
 
         # build using connection name
-        datasource = datasource2dict(referenced_layer.datasource)
-        using = build_dango_connection_name(referenced_layer.datasource)
+        datasource = datasource2dict(referencing_layer.datasource)
+        using = build_dango_connection_name(referencing_layer.datasource)
         connections.databases[using] = build_django_connection(datasource)
 
         # exec raw query
@@ -189,7 +189,7 @@ class QdjangoProjectRelationsApiView(APIView):
         with connections[using].cursor() as cursor:
             cursor.execute("SELECT * FROM {} WHERE {} = '{}'".format(
                 datasource['table'],
-                relation['fieldRef']['referencedField'],
+                relation['fieldRef']['referencingField'],
                 relation_id))
             rows = dictfetchall(cursor)
 
