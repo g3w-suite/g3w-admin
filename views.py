@@ -1,14 +1,16 @@
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
+from django.http.response import HttpResponseForbidden, HttpResponseRedirect
 from django.views.generic import (
     ListView,
 )
+from qdjango.models import *
 from formtools.wizard.views import SessionWizardView
 from guardian.shortcuts import get_objects_for_user
 from collections import OrderedDict
+from core.api.views import G3WAPIView
 from .models import Configs, Layers as CDULayers
 from .forms import *
-from qdjango.models import *
 
 class CduConfigList(ListView):
 
@@ -32,6 +34,16 @@ class CduConfigWizardView(SessionWizardView):
     ]
     file_storage = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'tmp_cdu_odt_file'))
 
+    def dispatch(self, request, *args, **kwargs):
+        if 'slug' in kwargs:
+            self.currentCduConfig = Configs.objects.get(slug=kwargs['slug'])
+            if not request.user.has_perm('cdu.change_configs', self.currentCduConfig):
+                return HttpResponseForbidden()
+        else:
+            if not request.user.has_perm('cdu.add_configs'):
+                return HttpResponseForbidden()
+        return super(CduConfigWizardView, self).dispatch(request, *args, **kwargs)
+
     def get_form_kwargs(self, step=None):
         if step == '0':
             return {'request': self.request}
@@ -43,13 +55,62 @@ class CduConfigWizardView(SessionWizardView):
                 toRet['catastoLayerFieldsFormData'] = self.get_cleaned_data_for_step('2')
             return toRet
         if step == '4':
-            return {'againstLayerFieldFormData': self.get_cleaned_data_for_step('3'), 'catastoLayerFieldsFormData': self.get_cleaned_data_for_step('2')}
+            return {'againstLayerFieldFormData': self.get_cleaned_data_for_step('3'),
+                    'catastoLayerFieldsFormData': self.get_cleaned_data_for_step('2')}
         else:
             return {}
 
     def get_form_initial(self, step):
         if 'slug' in self.kwargs:
-            pass
+            if step == '0':
+                kwargs = dict()
+                kwargs['own_users'] = map(lambda o: o.id, get_users_for_object(self.currentCduConfig,
+                                                                               'view_configs', 'Viewer Maps Groups'))
+                if self.request.user.is_superuser:
+                    editor_users = map(lambda o: o.id, get_users_for_object(self.currentCduConfig,
+                                                                            'view_configs', 'Editor Maps Groups'))
+                    if editor_users:
+                        kwargs['editor_user'] = editor_users[0]
+                return kwargs
+
+            elif step == '1':
+
+                # get layers
+                self.layerCatasto = self.currentCduConfig.layer_catasto()
+                self.againstLayers = self.currentCduConfig.layers_against()
+                return {
+                    'catastoLayer': self.layerCatasto.layer.pk if self.layerCatasto is not None else None,
+                    'againstLayers': [l.layer.pk for l in self.againstLayers]
+                }
+            elif step == '2':
+                res = {
+                    'foglio': self.layerCatasto.getFieldFoglio(),
+                    'particella': self.layerCatasto.getFieldParticella(),
+                    'plusFieldsCatasto': [pf['name'] for pf in self.layerCatasto.getPlusFieldsCatasto()]
+                }
+                #add alias
+                for l in self.againstLayers:
+                    res[unicode2ascii(l.layer.name)] = l.alias
+                return res
+            elif step == '3':
+                res = {}
+                #add alias
+                for l in self.againstLayers:
+                    fields = l.getLayerFieldsData()
+                    res[unicode2ascii(l.layer.name)] = [f['name'] for f in fields]
+                #add alias for plusFieldsCatasto:
+                plusFieldsCatasto = self.layerCatasto.getPlusFieldsCatasto()
+                for pf in plusFieldsCatasto:
+                    res[unicode2ascii('plusFieldsCatasto_{}'.format(pf['name']))] = pf['alias']
+                return res
+            elif step == '4':
+                res = {}
+                #add alias
+                for l in self.againstLayers:
+                    fields = l.getLayerFieldsData()
+                    for f in fields:
+                        res[unicode2ascii(f['name'])] = f['alias']
+                return res
         else:
             res = {}
             # case insert
@@ -69,6 +130,11 @@ class CduConfigWizardView(SessionWizardView):
                         res[f] = f.capitalize().replace('_', ' ')
             return res
         return {}
+
+    def get_form_instance(self, step):
+        if 'slug' in self.kwargs:
+            if step == '0':
+                return self.currentCduConfig
 
     def get_context_data(self, form, **kwargs):
         context = super(CduConfigWizardView, self).get_context_data(form=form, **kwargs)
@@ -198,3 +264,7 @@ class CduConfigWizardView(SessionWizardView):
         return HttpResponseRedirect(reverse_lazy('cdu-config-list'))
 
 
+class CalculateApiView(G3WAPIView):
+
+    def post(self):
+        pass

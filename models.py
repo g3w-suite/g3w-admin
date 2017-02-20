@@ -33,7 +33,10 @@ class Configs(TimeStampedModel):
         """
         Return from layers layer with catasto property is true
         """
-        return self.layers_set.filter(catasto=True)[0]
+        try:
+            return self.layers_set.filter(catasto=True)[0]
+        except:
+            return None
 
     def layers_against(self):
         """
@@ -68,4 +71,4 @@ class Layers(models.Model):
             return []
 
     def getLayerFieldsData(self):
-        return json.loads(self.fields)
+        return eval(self.fields)
