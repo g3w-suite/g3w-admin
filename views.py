@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
+from django.core.urlresolvers import reverse
 from django.http.response import HttpResponseForbidden, HttpResponseRedirect
 from django.views.generic import (
     ListView,
@@ -261,7 +262,7 @@ class CduConfigWizardView(SessionWizardView):
         layers_data += self._prepairAgainstLayersData(form_list, cdu_config)
         self._create_update_or_delete_cdulayers(layers_data)
 
-        return HttpResponseRedirect(reverse_lazy('cdu-config-list'))
+        return HttpResponseRedirect(reverse('cdu-config-list'))
 
 
 class CalculateApiView(G3WAPIView):
