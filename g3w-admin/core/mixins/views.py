@@ -89,7 +89,8 @@ class G3WAjaxDeleteViewMixin(object):
     '''
 
     def post(self, request, *args, **kwargs):
-        if not self.object:
+
+        if not hasattr(self, 'object'):
             self.object = self.get_object()
 
         # delete object

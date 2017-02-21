@@ -122,7 +122,7 @@ class GroupUpdateView(G3WRequestViewMixin, G3WACLViewMixin, UpdateView):
         return reverse('group-list')
 
 
-class GroupDeleteView(G3WAjaxDeleteViewMixin, G3WRequestViewMixin, SingleObjectMixin,View):
+class GroupDeleteView(G3WAjaxDeleteViewMixin, G3WRequestViewMixin, SingleObjectMixin, View):
     '''
     Delete group Ajax view
     '''
