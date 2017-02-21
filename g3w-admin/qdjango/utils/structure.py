@@ -106,7 +106,7 @@ class QgisLayerStructure(object):
 class QgisOGRLayerStructure(QgisLayerStructure):
 
     def __init__(self, layer, **kwargs):
-        super(QgisOGRLayerStructure, self).__init__(layer,**kwargs)
+        super(QgisOGRLayerStructure, self).__init__(layer, **kwargs)
 
         # check datasource
         self._cleanDataSource()
