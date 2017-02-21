@@ -16,6 +16,7 @@ from guardian.shortcuts import get_objects_for_user
 from collections import OrderedDict
 from core.api.views import G3WAPIView
 from core.mixins.views import G3WRequestViewMixin, G3WAjaxDeleteViewMixin
+from .utils.calculate import Calculate
 from .models import Configs, Layers as CDULayers
 from .forms import *
 
@@ -291,7 +292,12 @@ class CduConfigDeleteView(G3WAjaxDeleteViewMixin, G3WRequestViewMixin, SingleObj
         return super(CduConfigDeleteView, self).dispatch(*args, **kwargs)
 
 
-class CalculateApiView(G3WAPIView):
+
+class CduCalculateApiView(G3WAPIView):
+
+    def get(self, request, **kwargs):
+
+       pass
 
     def post(self):
         pass

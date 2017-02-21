@@ -1,4 +1,5 @@
 from django.dispatch import receiver
+from django.core.urlresolvers import reverse
 from core.signals import initconfig_plugin_start
 from .models import Configs
 
@@ -32,7 +33,9 @@ def set_init_config_value(sender, **kwargs):
         layer_catasto = config.layer_catasto()
 
         config_ret = {
+                'id': config.id,
                 'name': config.title,
+                'api': reverse('cdu-api-calculate-id', kwargs={'id': config.pk}),
                 'layerCatasto': layer_catasto.layer.qgs_layer_id,
                 'search': {
                     'id': config.title,
