@@ -52,7 +52,7 @@ class Configs(TimeStampedModel):
 
 
 class Layers(models.Model):
-    config = models.ForeignKey(Configs)
+    config = models.ForeignKey(Configs, models.CASCADE)
     layer = models.ForeignKey(Layer, models.CASCADE)
     alias = models.CharField(blank=True, max_length=300, null=True)
     fields = models.TextField()

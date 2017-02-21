@@ -4,12 +4,18 @@ from django.core.urlresolvers import reverse
 from django.http.response import HttpResponseForbidden, HttpResponseRedirect
 from django.views.generic import (
     ListView,
+    DetailView,
+    View
 )
+from django.views.generic.detail import SingleObjectMixin
 from qdjango.models import *
+from django.utils.decorators import method_decorator
 from formtools.wizard.views import SessionWizardView
+from guardian.decorators import permission_required
 from guardian.shortcuts import get_objects_for_user
 from collections import OrderedDict
 from core.api.views import G3WAPIView
+from core.mixins.views import G3WRequestViewMixin, G3WAjaxDeleteViewMixin
 from .models import Configs, Layers as CDULayers
 from .forms import *
 
@@ -18,7 +24,7 @@ class CduConfigList(ListView):
     template_name = 'cdu/config_list.html'
 
     def get_queryset(self):
-        return get_objects_for_user(self.request.user,'cdu.view_configs', Configs).order_by('title')
+        return get_objects_for_user(self.request.user, 'cdu.view_configs', Configs).order_by('title')
 
 
 class CduConfigWizardView(SessionWizardView):
@@ -263,6 +269,26 @@ class CduConfigWizardView(SessionWizardView):
         self._create_update_or_delete_cdulayers(layers_data)
 
         return HttpResponseRedirect(reverse('cdu-config-list'))
+
+
+class CduConfigDetailView(DetailView):
+    model = Configs
+    template_name = 'cdu/config_detail.html'
+
+    @method_decorator(permission_required('cud.view_configs', (Configs, 'slug', 'slug'), return_403=True))
+    def dispatch(self, *args, **kwargs):
+        return super(CduConfigDetailView, self).dispatch(*args, **kwargs)
+
+
+class CduConfigDeleteView(G3WAjaxDeleteViewMixin, G3WRequestViewMixin, SingleObjectMixin, View):
+    '''
+    Delete group Ajax view
+    '''
+    model = Configs
+
+    @method_decorator(permission_required('cud.delete_configs', (Configs, 'slug', 'slug'), return_403=True))
+    def dispatch(self, *args, **kwargs):
+        return super(CduConfigDeleteView, self).dispatch(*args, **kwargs)
 
 
 class CalculateApiView(G3WAPIView):

@@ -28,7 +28,7 @@
             <div class="col-sm-1 col-xs-1">
               <div class="description-block">
                  <div class="icon">
-                  <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-modal-title="{% trans 'CDU Config detail' %}" data-detail-url="#"><i class="ion ion-eye"></i></a>
+                  <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-modal-title="{% trans 'CDU Config detail' %}" data-detail-url="{%  url 'cdu-config-detail' object.slug %}"><i class="ion ion-eye"></i></a>
                 </div>
               </div><!-- /.description-block -->
             </div><!-- /.col -->
@@ -42,7 +42,14 @@
             <div class="col-sm-1 col-xs-1">
               <div class="description-block">
                 <div class="icon">
-                  <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Delete' %}"  data-widget-type="deleteItem" data-delete-url="#" data-item-selector="#cdu_config_{{ object.slug }}"><i class="ion ion-trash-b"></i></a>
+                  <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Delete' %}"  data-widget-type="deleteItem" data-delete-url="{% url 'cdu-config-delete' object.slug %}" data-item-selector="#cdu_config_{{ object.slug }}"><i class="ion ion-trash-b"></i></a>
+                </div>
+              </div><!-- /.description-block -->
+            </div><!-- /.col -->
+            <div class="col-sm-1 col-xs-1">
+              <div class="description-block">
+                <div class="icon">
+                  <a href="{% url 'group-project-slug-map' object.project.group.slug 'qdjango' object.project.slug %}" target="_blank" data-toggle="tooltip" data-placement="top" title="{% trans 'Show map' %}" ><i class="ion ion-map"></i></a>
                 </div>
               </div><!-- /.description-block -->
             </div><!-- /.col -->
