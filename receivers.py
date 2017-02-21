@@ -35,29 +35,41 @@ def set_init_config_value(sender, **kwargs):
                 'name': config.title,
                 'layerCatasto': layer_catasto.layer.qgs_layer_id,
                 'search': {
-                    'filter': {
-                        'AND': [
-                            {
-                                'attribute': layer_catasto.getFieldFoglio(),
-                                'input': {
-                                    'type': 'textField',
-                                    'options': {
-                                        'blanktext': ''
+                    'id': config.title,
+                    'name': 'Ricerca per foglio e particella catastali',
+                    'options': {
+                        'layerid': layer_catasto.layer.qgs_layer_id,
+                        'querylayerid': layer_catasto.layer.qgs_layer_id,
+                        'queryurl': None,
+                        'filter': {
+                            'AND': [
+                                {
+                                    'attribute': layer_catasto.getFieldFoglio(),
+                                    'op': 'eq',
+                                    'label': 'Foglio',
+                                    'input': {
+                                        'type': 'textfield',
+                                        'options': {
+                                            'blanktext': ''
+                                        }
+                                    }
+                                },
+                                {
+                                    'attribute': layer_catasto.getFieldParticella(),
+                                    'op': 'eq',
+                                    'label': 'Numero',
+                                    'input': {
+                                        'type': 'textfield',
+                                        'options': {
+                                            'blanktext': ''
+                                        }
                                     }
                                 }
-                            },
-                            {
-                                'attribute': layer_catasto.getFieldParticella(),
-                                'input': {
-                                    'type': 'textField',
-                                    'options': {
-                                        'blanktext': ''
-                                    }
-                                }
-                            }
-                        ]
+                            ]
 
-                    }
+                        }
+                    },
+
                 },
                 'results': {
                     'layers': []
