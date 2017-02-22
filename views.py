@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from django.core.urlresolvers import reverse
-from django.http.response import HttpResponseForbidden, HttpResponseRedirect
+from django.http.response import HttpResponseForbidden, HttpResponseRedirect, JsonResponse
 from django.views.generic import (
     ListView,
     DetailView,
@@ -189,6 +189,7 @@ class CduConfigWizardView(SessionWizardView):
 
     def _create_update_or_delete_cdulayers(self, layers_data):
 
+        CDULayers_id_saved = list()
         for layer_data in layers_data:
             CDUlayer, created = CDULayers.objects.get_or_create(
                 layer=layer_data['layer'],
@@ -200,12 +201,13 @@ class CduConfigWizardView(SessionWizardView):
                 CDUlayer.fields = layer_data['defaults']['fields']
                 CDUlayer.catasto = layer_data['defaults'].get('catasto', False)
 
-            # Save layer
-            CDUlayer.save()
+                # Save layer
+                CDUlayer.save()
 
+            CDULayers_id_saved.append(CDUlayer.pk)
 
         # erase old layer
-        #layer_data['config'].layers_set.exclude(pk__in=[layer_data['layer'].pk for layer_data in layers_data]).delete()
+        layer_data['config'].layers_set.exclude(pk__in=CDULayers_id_saved).delete()
 
     def _serializeCatastoLayerFields(self, form_list):
         return {
@@ -310,4 +312,4 @@ class CduCalculateApiView(G3WAPIView):
         o_cdu.calculate()
 
 
-        return ''
+        return JsonResponse(o_cdu.results)
