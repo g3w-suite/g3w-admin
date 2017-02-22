@@ -1,8 +1,7 @@
 from qdjango.utils.data import makeDatasource
 from qdjango.models import Layer as QdjangoLayer
 from qdjango.utils.structure import datasource2dict, get_schema_table
-import ogr
-import json
+import ogr, json, hashlib
 
 
 class GDALOGRLayer(object):
@@ -49,6 +48,9 @@ class GDALOGRLayer(object):
 
     def __iter__(self):
         return self._ogr_layer
+
+    def reset(self):
+        self._ogr_layer.ResetReading()
 
     def destroy(self):
         self._ogr_layer.Destroy()
@@ -124,6 +126,18 @@ class CDU(object):
         Make intersection of particelle in against layer features adn put results in results property
         :return:
         """
+
+        def build_field_res_dict(field, feature, layer):
+
+            # get field value
+            value = feature.GetFID() if field['name'] == layer.GetFIDColumn() else getattr(feature, field['name'])
+
+            return {
+                'name': field['name'],
+                'alias': field['alias'],
+                'value': value
+            }
+
         # make intersects on againsta layer for every feature in particelle
         for feature_particella in self._ogr_layer_particelle:
 
@@ -144,11 +158,8 @@ class CDU(object):
             plus_fields_catasto = self._cdu_layer_catasto.getPlusFieldsCatasto()
             res_plus_field_catasto = list()
             for field in plus_fields_catasto:
-                res_plus_field_catasto.append({
-                    'name': field['name'],
-                    'alias': field['alias'],
-                    'value': getattr(feature_particella, field['name'])
-                })
+                res_plus_field_catasto.append(build_field_res_dict(field, feature_particella,
+                                                                  self._layer_catasto.get_ogr_layer()))
 
             self.results[key_particella]['fields'] = res_plus_field_catasto
 
@@ -162,6 +173,7 @@ class CDU(object):
                 cdu_against_layer = against_layer.get_cdu_layer()
                 cdu_against_layer_fields = cdu_against_layer.getLayerFieldsData()
 
+                against_layer.reset()
                 for feature_against in against_layer:
 
                     # get geeomtry for check
@@ -189,16 +201,20 @@ class CDU(object):
 
                         # add fields data
                         for field in cdu_against_layer_fields:
-                            res_field = {
-                                'name': field['name'],
-                                'alias': field['alias'],
-                                'value': getattr(feature_against, field['name'])
-                            }
-                            res['fields'].append(res_field)
+                            res['fields'].append(build_field_res_dict(field, feature_against,
+                                                                      against_layer.get_ogr_layer()))
 
                         results_against.append(res)
 
-                self.results[key_particella]['results'] = results_against
+            self.results[key_particella]['results'] = results_against
+
+    def save_in_session(self, request):
+        """
+        Get results and punt into request sessions
+        :param request:
+        :return:
+        """
+        request.session["CDU_".format(self.config.pk)] = self.results
 
 
     def destroy(self):
