@@ -2,6 +2,7 @@ from qdjango.utils.data import makeDatasource
 from qdjango.models import Layer as QdjangoLayer
 from qdjango.utils.structure import datasource2dict, get_schema_table
 import ogr
+import json
 
 
 class GDALOGRLayer(object):
@@ -50,7 +51,7 @@ class GDALOGRLayer(object):
         self.GDALOGR_against_layer.Destroy()
 
 
-class Calculate(object):
+class CDU(object):
 
     def __init__(self, config=None):
 
@@ -65,6 +66,9 @@ class Calculate(object):
         for against_layer in self.config.layers_against():
             self.add_against_layer(against_layer)
 
+    def _get_foglio_numero_from_feature(self):
+        pass
+
     def add_against_layer(self, against_layer=None):
 
         if against_layer:
@@ -75,7 +79,34 @@ class Calculate(object):
         if particelle:
             self._particelle = particelle
 
-    def intersects(self):
+            # create ogr vector  laeyr for particelle
+            self._ogr_layer_particelle_source = ogr.Open(json.dumps(self._particelle))
+            self._ogr_layer_particelle = self._ogr_layer_particelle_source.GetLayer()
 
-        # create GDAL/OGR object
-        pass
+    def calculate(self):
+
+        # make intersects on againsta layer for every feature in particelle
+        for feature_particella in self._ogr_layer_particelle:
+
+            # get geometry from feature_particella
+            geometry_particella = feature_particella.GetGeometryRef()
+
+            # for every against_layer for every feature in against_layer
+            for against_layer in self._against_layers:
+                for feature_against in against_layer:
+
+                    # get geeomtry for check
+                    geometry_against = feature_against.GetGeometryRef()
+
+
+        return True
+
+    def destroy(self):
+
+        self._layer_catasto.destroy()
+        for against_layer in self._against_layers:
+            against_layer.destroy()
+
+        self._ogr_layer_particelle.Destroy()
+
+

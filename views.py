@@ -15,8 +15,10 @@ from guardian.decorators import permission_required
 from guardian.shortcuts import get_objects_for_user
 from collections import OrderedDict
 from core.api.views import G3WAPIView
+from core.api.authentication import CsrfExemptSessionAuthentication
 from core.mixins.views import G3WRequestViewMixin, G3WAjaxDeleteViewMixin
-from .utils.calculate import Calculate
+import json
+from .utils.cdu import CDU
 from .models import Configs, Layers as CDULayers
 from .forms import *
 
@@ -292,12 +294,20 @@ class CduConfigDeleteView(G3WAjaxDeleteViewMixin, G3WRequestViewMixin, SingleObj
         return super(CduConfigDeleteView, self).dispatch(*args, **kwargs)
 
 
-
 class CduCalculateApiView(G3WAPIView):
 
-    def get(self, request, **kwargs):
+    authentication_classes = (
+        CsrfExemptSessionAuthentication,
+    )
 
-       pass
+    def post(self, request, **kwargs):
 
-    def post(self):
-        pass
+        features = json.loads(request.POST['features'])
+        config = Configs.objects.get(pk=kwargs['id'])
+
+        o_cdu = CDU(config)
+        o_cdu.add_particelle(features)
+        o_cdu.calculate()
+
+
+        return ''
