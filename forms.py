@@ -12,13 +12,19 @@ from usersmanage.configs import *
 from .models import Configs, Layer
 import json
 
+
+
 class cduFormMixin(object):
 
-    def getChoicesFields(self,layer):
+    def getChoicesFields(self, layer):
         fields = []
         database_columns = json.loads(layer.database_columns)
+        datasource = layer.datasource
         for f in database_columns:
-            fields.append((f['name'],"{} ({})".format(f['name'],f['type'])))
+
+            # exclude geom fields
+            if datasource.find("({})".format(f['name'])) == -1:
+                fields.append((f['name'], "{} ({})".format(f['name'], f['type'])))
         return fields
 
 
@@ -270,8 +276,6 @@ class cduAgainstLayerFieldsForm(Form,cduFormMixin):
             )
         )
 
-
-
     def _setFieldsAgainstLayers(self):
         """
         Set fields against layer choice.
@@ -282,7 +286,7 @@ class cduAgainstLayerFieldsForm(Form,cduFormMixin):
         for layer in layers:
             fieldName = unicode2ascii(layer.name)
             self.fieldsFieldsAliasLayers.append(fieldName)
-            self.fields[fieldName] = MultipleChoiceField(label=layer.name,choices=self.getChoicesFields(layer))
+            self.fields[fieldName] = MultipleChoiceField(label=layer.name, choices=self.getChoicesFields(layer))
 
     def _setAliasPlusFieldsCatasto(self):
         """

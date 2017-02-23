@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from django.core.urlresolvers import reverse
+from django.db import transaction
 from django.http.response import HttpResponseForbidden, HttpResponseRedirect, JsonResponse
 from django.views.generic import (
     ListView,
@@ -244,7 +245,6 @@ class CduConfigWizardView(SessionWizardView):
             })
         return res
 
-
     def done(self, form_list, form_dict, **kwargs):
         """
         Wizard end star save data on db
@@ -254,24 +254,25 @@ class CduConfigWizardView(SessionWizardView):
         :return:
         """
         # build data for to save results
-        cdu_config = form_list[0].save()
+        with transaction.atomic():
+            cdu_config = form_list[0].save()
 
-        # configure data for Layers table
-        layers_data = list()
+            # configure data for Layers table
+            layers_data = list()
 
-        # build catasto layer data
-        layers_data.append({
-            'config': cdu_config,
-            'layer': Layer.objects.get(pk=form_list[1].cleaned_data['catastoLayer']),
-            'defaults': {
-                'fields': self._serializeCatastoLayerFields(form_list),
-                'catasto': True
-            }
-        })
+            # build catasto layer data
+            layers_data.append({
+                'config': cdu_config,
+                'layer': Layer.objects.get(pk=form_list[1].cleaned_data['catastoLayer']),
+                'defaults': {
+                    'fields': self._serializeCatastoLayerFields(form_list),
+                    'catasto': True
+                }
+            })
 
-        #build against layers_data
-        layers_data += self._prepairAgainstLayersData(form_list, cdu_config)
-        self._create_update_or_delete_cdulayers(layers_data)
+            #build against layers_data
+            layers_data += self._prepairAgainstLayersData(form_list, cdu_config)
+            self._create_update_or_delete_cdulayers(layers_data)
 
         return HttpResponseRedirect(reverse('cdu-config-list'))
 
@@ -310,6 +311,8 @@ class CduCalculateApiView(G3WAPIView):
         o_cdu = CDU(config)
         o_cdu.add_particelle(features)
         o_cdu.calculate()
+        o_cdu.save_in_session(request)
+
 
 
         return JsonResponse(o_cdu.results)
