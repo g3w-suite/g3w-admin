@@ -139,6 +139,8 @@ class CDU(object):
             }
 
         # make intersects on againsta layer for every feature in particelle
+        # for id results
+        id_result = 0
         for feature_particella in self._ogr_layer_particelle:
 
             # get geometry from feature_particella
@@ -153,6 +155,9 @@ class CDU(object):
                     [self._field_foglio, self._field_numero],
                     self._get_foglio_numero_from_feature(feature_particella)
                 ))
+
+                # add area:
+                self.results[key_particella]['area'] = geometry_particella.GetArea()
 
             # add cadastre plus fields results
             plus_fields_catasto = self._cdu_layer_catasto.getPlusFieldsCatasto()
@@ -186,11 +191,13 @@ class CDU(object):
                         geometry_against_intersection = geometry_against.Intersection(geometry_particella)
                         geometry_against_intersection_area = geometry_against_intersection.GetArea()
                         geometry_against_intersection_area_perc = geometry_against_intersection_area / \
-                                                                   geometry_against.GetArea() * 100 \
+                                                                   geometry_particella.GetArea() * 100 \
                             if geometry_against_intersection_area else None
 
                         # make sub results dict
                         res = {
+                            'id': id_result,
+                            'layer_id': cdu_against_layer.layer.qgs_layer_id,
                             'name': cdu_against_layer.layer.name,
                             'alias': cdu_against_layer.alias,
                             'geometry': json.loads(geometry_against_intersection.ExportToJson()),
@@ -205,6 +212,9 @@ class CDU(object):
                                                                       against_layer.get_ogr_layer()))
 
                         results_against.append(res)
+
+                        # ne id_result
+                        id_result += 1
 
             self.results[key_particella]['results'] = results_against
 
