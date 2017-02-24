@@ -36,6 +36,7 @@ def set_init_config_value(sender, **kwargs):
                 'id': config.id,
                 'name': config.title,
                 'api': reverse('cdu-api-calculate-id', kwargs={'id': config.pk}),
+                'docurl': reverse('cdu-config-createdoc', kwargs={'id': config.pk}),
                 'layerCatasto': layer_catasto.layer.qgs_layer_id,
                 'search': {
                     'id': config.title,

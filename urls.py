@@ -11,4 +11,8 @@ urlpatterns = [
         name='cdu-config-update'),
     url(r'config/delete/(?P<slug>[-_\w\d]+)/$', login_required(CduConfigDeleteView.as_view()),
         name='cdu-config-delete'),
+
+    # create odt file
+    url(r'createdoc/(?P<id>[0-9]+)/$', login_required(CduCreatedocView.as_view()),
+        name='cdu-config-createdoc'),
 ]

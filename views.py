@@ -19,9 +19,11 @@ from core.api.views import G3WAPIView
 from core.api.authentication import CsrfExemptSessionAuthentication
 from core.mixins.views import G3WRequestViewMixin, G3WAjaxDeleteViewMixin
 import json
+from .api.permissions import MakeCDUPermission
 from .utils.cdu import CDU
 from .models import Configs, Layers as CDULayers
 from .forms import *
+
 
 class CduConfigList(ListView):
 
@@ -303,6 +305,10 @@ class CduCalculateApiView(G3WAPIView):
         CsrfExemptSessionAuthentication,
     )
 
+    permission_classes = (
+        MakeCDUPermission,
+    )
+
     def post(self, request, **kwargs):
 
         features = json.loads(request.POST['features'])
@@ -316,3 +322,7 @@ class CduCalculateApiView(G3WAPIView):
 
 
         return JsonResponse(o_cdu.results)
+
+
+class CduCreatedocView(View):
+    pass
