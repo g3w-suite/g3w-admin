@@ -201,8 +201,10 @@ class CDU(object):
                             'name': cdu_against_layer.layer.name,
                             'alias': cdu_against_layer.alias,
                             'geometry': json.loads(geometry_against_intersection.ExportToJson()),
-                            'area': geometry_against_intersection_area,
-                            'perc': geometry_against_intersection_area_perc,
+                            'area': round(geometry_against_intersection_area, 2)
+                            if geometry_against_intersection_area else None,
+                            'perc': round(geometry_against_intersection_area_perc, 2)
+                            if geometry_against_intersection_area_perc else None,
                             'fields': list()
                         }
 
