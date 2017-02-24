@@ -1,7 +1,26 @@
 from django.dispatch import receiver
 from django.core.urlresolvers import reverse
-from core.signals import initconfig_plugin_start
+from django.template import loader, Context, RequestContext
+from guardian.shortcuts import get_objects_for_user
+from core.signals import initconfig_plugin_start, load_dashboard_widgets
+from core.views import DashboardView
 from .models import Configs
+
+
+@receiver(load_dashboard_widgets)
+def dashboard_widget(sender, **kwargs):
+
+    if isinstance(sender, DashboardView):
+
+        data = get_objects_for_user(sender.request.user, 'cdu.view_configs', Configs).order_by('title')
+
+        if len(data) > 0:
+            context = RequestContext(request=sender.request, dict_={
+                'data': data
+            })
+
+            widget = loader.get_template('cdu/widgets/dashboard.html')
+            return widget.render(context)
 
 
 @receiver(initconfig_plugin_start)
