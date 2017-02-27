@@ -147,7 +147,7 @@ ga.Qdjango.widgetEditor = {
 						<h3 class="box-title">Configurazione generale delle ricerca e risultati</h3>\
 						</div>\
 						<div class="box-body">\
-							<div class="col-md-5">\
+							<div class="col-md-12">\
 								<div class="row">\
 									<div class="col-md-12"><span class="label label-default">Titolo Ricerca</span></div>\
 								</div>\
@@ -155,6 +155,7 @@ ga.Qdjango.widgetEditor = {
 									<div class="form-group col-md-12 title"></div>\
 								</div>\
 							</div>\
+							<!--\
 							<div class="col-md-7 resultFields">\
 								<div class="row labels">\
 									<div class="col-md-6"><span class="label label-default">Campo Risultato</span></div>\
@@ -171,6 +172,7 @@ ga.Qdjango.widgetEditor = {
 									<div class="col-md-1" style="padding-left:0px;"><button type="button" class="btn btn-default add"><i class="glyphicon glyphicon-plus"></i></button></div>\
 								</div>\
 							</div>\
+							-->\
 						<\div>\
 					</div>');
 					
