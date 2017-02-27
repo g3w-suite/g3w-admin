@@ -271,6 +271,10 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <script src="{% static "dist/js/g3wadmin.min.js" %}"></script>
     {% endif %}
 
+    {% for js_module in js_modules %}
+    <script src="{% static js_module %}"></script>
+    {% endfor %}
+
 
 
     <!-- coockieconset -->
