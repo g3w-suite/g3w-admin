@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-12-22 15:55+0000\n"
+"POT-Creation-Date: 2017-02-28 14:23+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -56,7 +56,7 @@ msgstr ""
 msgid "HERE"
 msgstr ""
 
-#: cadastre/templates/cadastre/dashboard.html:56 templates/index.html:27
+#: cadastre/templates/cadastre/dashboard.html:56 templates/index.html:28
 msgid "Module widgets"
 msgstr ""
 
@@ -68,60 +68,67 @@ msgstr ""
 msgid "Show problems"
 msgstr ""
 
-#: cadastre/templates/cadastre/include/action_loaddata.html:16
-msgid "Clear Db by Task id"
-msgstr ""
+#: cadastre/templates/cadastre/include/action_loaddata.html:15
+#, fuzzy
+#| msgid "Show"
+msgid "Show info"
+msgstr "Mostra"
 
-#: cadastre/templates/cadastre/loaddata.html:73
-#: cadastre/templates/cadastre/loaddata.html:122
-#: cadastre_camaiore/templates/cadastre/loaddatacivici.html:45
+#: cadastre/templates/cadastre/loaddata.html:76
+#: cadastre/templates/cadastre/loaddata.html:134
+#: cadastre_camaiore/templates/cadastre/loaddatacivici.html:57
 msgid "STATO"
 msgstr ""
 
-#: cadastre/templates/cadastre/loaddata.html:74
-#: cadastre/templates/cadastre/loaddata.html:123
-#: cadastre_camaiore/templates/cadastre/loaddatacivici.html:46
+#: cadastre/templates/cadastre/loaddata.html:78
+#: cadastre/templates/cadastre/loaddata.html:135
+#: cadastre_camaiore/templates/cadastre/loaddatacivici.html:58
 msgid "File"
 msgstr ""
 
-#: cadastre/templates/cadastre/loaddata.html:76
+#: cadastre/templates/cadastre/loaddata.html:80
 msgid "TASk ID"
 msgstr ""
 
-#: cadastre/templates/cadastre/loaddata.html:78
+#: cadastre/templates/cadastre/loaddata.html:83
 msgid "Tipo fornitura"
 msgstr ""
 
-#: cadastre/templates/cadastre/loaddata.html:79
+#: cadastre/templates/cadastre/loaddata.html:84
 msgid "Descrizione"
 msgstr ""
 
-#: cadastre/templates/cadastre/loaddata.html:80
+#: cadastre/templates/cadastre/loaddata.html:85
 msgid "Aggiornamento"
 msgstr ""
 
-#: cadastre/templates/cadastre/loaddata.html:81
-#: cadastre/templates/cadastre/loaddata.html:125
-#: cadastre_camaiore/templates/cadastre/loaddatacivici.html:52
+#: cadastre/templates/cadastre/loaddata.html:86
+#: cadastre/templates/cadastre/loaddata.html:137
+#: cadastre_camaiore/templates/cadastre/loaddatacivici.html:64
 msgid "Data caricamento"
 msgstr ""
 
-#: cadastre/templates/cadastre/loaddata.html:91
-#: cadastre/templates/cadastre/loaddata.html:137
-#: cadastre_camaiore/templates/cadastre/loaddatacivici.html:62
-#: cdu/templates/cdu/config_list.html:45
+#: cadastre/templates/cadastre/loaddata.html:96
+#: cadastre/templates/cadastre/loaddata.html:149
+#: cadastre_camaiore/templates/cadastre/loaddatacivici.html:74
 msgid "Delete"
 msgstr ""
 
-#: cadastre/templates/cadastre/loaddata.html:124
+#: cadastre/templates/cadastre/loaddata.html:102
+#: cadastre/templates/cadastre/loaddata.html:155
+#: cadastre_camaiore/templates/cadastre/loaddatacivici.html:80
+msgid "Clear Db by Task id"
+msgstr ""
+
+#: cadastre/templates/cadastre/loaddata.html:136
 msgid "Data elaborazione"
 msgstr ""
 
-#: cadastre/templates/cadastre/loaddata.html:126
+#: cadastre/templates/cadastre/loaddata.html:138
 msgid "N DOCFA"
 msgstr ""
 
-#: cadastre/templates/cadastre/loaddata.html:127
+#: cadastre/templates/cadastre/loaddata.html:139
 msgid "N planimterie"
 msgstr ""
 
@@ -148,162 +155,29 @@ msgid ""
 "module"
 msgstr ""
 
-#: cadastre_camaiore/templates/cadastre/loaddatacivici.html:47
+#: cadastre_camaiore/templates/cadastre/check_censuario_update.html:61
+#: cadastre_camaiore/templates/cadastre/civici_rejected_detail.html:11
+msgid "Export"
+msgstr ""
+
+#: cadastre_camaiore/templates/cadastre/loaddatacivici.html:59
 msgid "N civici"
 msgstr ""
 
-#: cadastre_camaiore/templates/cadastre/loaddatacivici.html:48
+#: cadastre_camaiore/templates/cadastre/loaddatacivici.html:60
 msgid "N foto"
 msgstr ""
 
-#: cadastre_camaiore/templates/cadastre/loaddatacivici.html:49
+#: cadastre_camaiore/templates/cadastre/loaddatacivici.html:61
 msgid "N civici salvati"
 msgstr ""
 
-#: cadastre_camaiore/templates/cadastre/loaddatacivici.html:50
+#: cadastre_camaiore/templates/cadastre/loaddatacivici.html:62
 msgid "N civici da verificare"
 msgstr ""
 
-#: cadastre_camaiore/templates/cadastre/loaddatacivici.html:51
+#: cadastre_camaiore/templates/cadastre/loaddatacivici.html:63
 msgid "N civici scartati"
-msgstr ""
-
-#: cdu/forms.py:37
-#, fuzzy
-#| msgid "Users"
-msgid "User users"
-msgstr "Utenti"
-
-#: cdu/forms.py:47
-msgid "CDU base settings"
-msgstr ""
-
-#: cdu/forms.py:76 cdu/templates/cdu/config_data_step_1.html:6
-#: cdu/templates/cdu/config_data_step_3.html:5
-msgid "Cadastre layer"
-msgstr ""
-
-#: cdu/forms.py:99
-msgid "CDU layers choice"
-msgstr ""
-
-#: cdu/forms.py:121 cdu/templates/cdu/config_data_step_2.html:6
-msgid "Sheet"
-msgstr ""
-
-#: cdu/forms.py:122 cdu/templates/cdu/config_data_step_2.html:7
-msgid "Parcel"
-msgstr ""
-
-#: cdu/forms.py:123 cdu/templates/cdu/config_data_step_2.html:9
-msgid "Plus fields"
-msgstr ""
-
-#: cdu/forms.py:144
-msgid "CDU Catasto fields"
-msgstr ""
-
-#: cdu/forms.py:163
-msgid "CDU Against layers aliases"
-msgstr ""
-
-#: cdu/forms.py:235
-msgid "CDU Optional fields catasto aliases"
-msgstr ""
-
-#: cdu/forms.py:253
-msgid "CDU Against layer fields to show in results"
-msgstr ""
-
-#: cdu/forms.py:327
-msgid "CDU Alias for against field <i>{}</i>"
-msgstr ""
-
-#: cdu/models.py:23 cdu/templates/cdu/config_data_step_0.html:6
-msgid "Title"
-msgstr ""
-
-#: cdu/models.py:24
-msgid "Description"
-msgstr ""
-
-#: cdu/models.py:26
-msgid "ODT Template file"
-msgstr ""
-
-#: cdu/models.py:27
-msgid "Slug"
-msgstr ""
-
-#: cdu/templates/cdu/config_data_step_0.html:7
-msgid "Project"
-msgstr ""
-
-#: cdu/templates/cdu/config_data_step_0.html:8
-msgid "Template"
-msgstr ""
-
-#: cdu/templates/cdu/config_data_step_1.html:7
-#: cdu/templates/cdu/config_data_step_3.html:6
-msgid "Against layers"
-msgstr ""
-
-#: cdu/templates/cdu/config_data_step_2.html:11
-msgid "Alias against layers"
-msgstr ""
-
-#: cdu/templates/cdu/config_list.html:8
-#, fuzzy
-#| msgid "Users list"
-msgid "Laws list"
-msgstr "Lista utenti"
-
-#: cdu/templates/cdu/config_list.html:9
-msgid "List of CDU configs available"
-msgstr ""
-
-#: cdu/templates/cdu/config_list.html:31
-msgid "Show detail"
-msgstr ""
-
-#: cdu/templates/cdu/config_list.html:31
-msgid "CDU Config detail"
-msgstr ""
-
-#: cdu/templates/cdu/config_list.html:38
-msgid "Edit"
-msgstr ""
-
-#: cdu/templates/cdu/config_wizard.html:35
-msgid "First step"
-msgstr ""
-
-#: cdu/templates/cdu/config_wizard.html:36
-msgid "Prev step"
-msgstr ""
-
-#: cdu/templates/cdu/config_wizard.html:39
-msgid "Save"
-msgstr ""
-
-#: cdu/templates/cdu/config_wizard.html:41
-msgid "Next step"
-msgstr ""
-
-#: cdu/templates/cdu/config_wizard.html:48
-msgid "Step"
-msgstr ""
-
-#: cdu/templates/cdu/config_wizard.html:48
-msgid "of"
-msgstr ""
-
-#: cdu/templates/cdu/config_wizard.html:59
-msgid "Alert"
-msgstr ""
-
-#: cdu/templates/cdu/config_wizard.html:60
-msgid "Some errors on form. Check it and send again."
 msgstr ""
 
 #: editing/api/serializers.py:26
@@ -323,13 +197,13 @@ msgid "Maps"
 msgstr "Mappe"
 
 #: frontend/templates/frontend/index.html:81
-#: frontend/templates/frontend/index.html:220
+#: frontend/templates/frontend/index.html:231
 msgid "Admin"
 msgstr "Amministrazione"
 
 #: frontend/templates/frontend/index.html:81
-#: frontend/templates/frontend/index.html:220
-#: frontend/templates/frontend/index.html:249
+#: frontend/templates/frontend/index.html:231
+#: frontend/templates/frontend/index.html:260
 msgid "Login"
 msgstr "Accesso"
 
@@ -344,25 +218,25 @@ msgstr "Amministrazione"
 msgid "Group maps"
 msgstr "Lista gruppi"
 
-#: frontend/templates/frontend/index.html:200
+#: frontend/templates/frontend/index.html:211
 #: iternet/templates/iternet/dashboard.html:85
 #: iternet/templates/iternet/dashboard.html:86
 msgid "Show map"
 msgstr "Mostra mappa"
 
-#: frontend/templates/frontend/index.html:223
+#: frontend/templates/frontend/index.html:234
 msgid "Access to backeng administration stystem or logout"
 msgstr "Accedi al backed di amministrazione o esci"
 
-#: frontend/templates/frontend/index.html:225
+#: frontend/templates/frontend/index.html:236
 msgid "Login to go backend administration system"
 msgstr "Accesso al sistema di amministrazione"
 
-#: frontend/templates/frontend/index.html:237
+#: frontend/templates/frontend/index.html:248
 msgid "Backend"
 msgstr ""
 
-#: frontend/templates/frontend/index.html:240
+#: frontend/templates/frontend/index.html:251
 msgid "Logout"
 msgstr "Esci"
 
@@ -456,6 +330,18 @@ msgstr "Modifica i dati generali"
 msgid "Frontend data and other"
 msgstr "Dati del frontend e altro"
 
+#: templates/include/sidebar_right.html:24
+#, fuzzy
+#| msgid "Adminstration"
+msgid "Django administration"
+msgstr "Amministrazione"
+
+#: templates/include/sidebar_right.html:25
+#, fuzzy
+#| msgid "Login to go backend administration system"
+msgid "Go to staff administration section"
+msgstr "Accesso al sistema di amministrazione"
+
 #: templates/index.html:7
 msgid "Current situation"
 msgstr "Situazione attuale"
@@ -483,6 +369,46 @@ msgid "Sign In"
 msgstr "Accedi"
 
 #, fuzzy
+#~| msgid "Users"
+#~ msgid "User users"
+#~ msgstr "Utenti"
+
+#, fuzzy
+#~| msgid "Users"
+#~ msgid "Users"
+#~ msgstr "Utenti"
+
+#, fuzzy
+#~| msgid "Add user"
+#~ msgid "Editor user"
+#~ msgstr "Aggiungi utente"
+
+#, fuzzy
+#~| msgid "Users"
+#~ msgid "Viewer users"
+#~ msgstr "Utenti"
+
+#, fuzzy
+#~| msgid "Adminstration"
+#~ msgid "CDU module administration"
+#~ msgstr "Amministrazione"
+
+#, fuzzy
+#~| msgid "Profile"
+#~ msgid "Profiles"
+#~ msgstr "Profilo"
+
+#, fuzzy
+#~| msgid "Profile"
+#~ msgid "New profile"
+#~ msgstr "Profilo"
+
+#, fuzzy
+#~| msgid "Users list"
+#~ msgid "Laws list"
+#~ msgstr "Lista utenti"
+
+#, fuzzy
 #~| msgid "Users list"
 #~ msgid "Laws"
 #~ msgstr "Lista utenti"
@@ -490,6 +416,3 @@ msgstr "Accedi"
 # for sitetree
 #~ msgid "Add group"
 #~ msgstr "Aggiungi gruppo"
-
-#~ msgid "Add user"
-#~ msgstr "Aggiungi utente"
