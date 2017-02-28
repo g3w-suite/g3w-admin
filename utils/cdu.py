@@ -1,7 +1,10 @@
+from django.conf import settings
+from django.http.response import HttpResponse
+from qdjango.utils.structure import datasource2dict, get_schema_table
 from qdjango.utils.data import makeDatasource
 from qdjango.models import Layer as QdjangoLayer
-from qdjango.utils.structure import datasource2dict, get_schema_table
-import ogr, json, hashlib
+from py3o.template import Template
+import ogr, json, hashlib, time, os
 
 
 class GDALOGRLayer(object):
@@ -220,14 +223,28 @@ class CDU(object):
 
             self.results[key_particella]['results'] = results_against
 
+    def _get_session_key(self):
+        """
+        Create ande return key session to store and retrive results data.
+        :return:
+        """
+        return "CDU_".format(self.config.pk)
+
     def save_in_session(self, request):
         """
         Get results and punt into request sessions
         :param request:
         :return:
         """
-        request.session["CDU_".format(self.config.pk)] = self.results
+        request.session[self._get_session_key()] = self.results
 
+    def get_from_session(self, request):
+        """
+        Retrive results data from session
+        :param request:
+        :return:
+        """
+        return request.session[self._get_session_key()]
 
     def destroy(self):
         """
@@ -241,3 +258,67 @@ class CDU(object):
         self._ogr_layer_particelle.Destroy()
 
 
+class ODTTplItem(object):
+    """
+    py3o template object
+    """
+    def __init__(self, data=None):
+
+        if data:
+            for k, v in data.items():
+                if k not in ('geometry',):
+                    if isinstance(v, dict):
+                        setattr(self, k, ODTTplItem(v))
+                    elif isinstance(v, list):
+                        litem = list()
+                        for i in v:
+                            litem.append(ODTTplItem(i))
+                        setattr(self, k, litem)
+                    else:
+                        setattr(self, k, v)
+
+
+class ODT(object):
+    """
+    Wrapper fro py0.template object
+    """
+
+    out_filename = "cdu_{}.odt"
+
+    def __init__(self, config=None, results=None):
+
+        self.config = config
+        self.results = results
+
+        self._create_odt_outfile()
+        self.o_template = self._init_o_template()
+
+    def _init_o_template(self):
+
+        return Template(self.config.odtfile.path, self.out_file)
+
+    def _create_odt_outfile(self):
+
+        self.out_file = settings.MEDIA_ROOT + self.out_filename.format(time.time())
+
+    def write_document(self):
+        """
+        Create Tpl object item and write it into o_template
+        :return:
+        """
+
+        tpl_res_items = list()
+        for keyres, res in self.results.items():
+            tpl_res_items.append(ODTTplItem(res))
+
+        self.o_template.render({'items': tpl_res_items, 'lawItems':[]})
+
+    def response(self):
+
+        f = open(self.out_file)
+        response = HttpResponse(f.read(), content_type="application/vnd.oasis.opendocument.text")
+        f.close()
+        os.remove(self.out_file)
+        response['Content-Disposition'] = 'attachment; filename="{}"'.format(self.out_filename)
+
+        return response

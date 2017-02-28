@@ -6,9 +6,10 @@ from django.http.response import HttpResponseForbidden, HttpResponseRedirect, Js
 from django.views.generic import (
     ListView,
     DetailView,
-    View
+    View,
 )
 from django.views.generic.detail import SingleObjectMixin
+from django.views.decorators.csrf import csrf_exempt
 from qdjango.models import *
 from django.utils.decorators import method_decorator
 from formtools.wizard.views import SessionWizardView
@@ -20,7 +21,7 @@ from core.api.authentication import CsrfExemptSessionAuthentication
 from core.mixins.views import G3WRequestViewMixin, G3WAjaxDeleteViewMixin
 import json
 from .api.permissions import MakeCDUPermission
-from .utils.cdu import CDU
+from .utils.cdu import CDU, ODT
 from .models import Configs, Layers as CDULayers
 from .forms import *
 
@@ -325,4 +326,34 @@ class CduCalculateApiView(G3WAPIView):
 
 
 class CduCreatedocView(View):
-    pass
+    """
+    Create odt document with calculation results.
+    """
+
+    @method_decorator(permission_required('cud.make_cdu', (Configs, 'pk', 'id'), return_403=True))
+    @method_decorator(csrf_exempt)
+    def dispatch(self, *args, **kwargs):
+        return super(CduCreatedocView, self).dispatch(*args, **kwargs)
+
+    def post(self, request, **kwargs):
+
+        # get cd config object
+        config = Configs.objects.get(pk=kwargs['id'])
+
+        o_cdu = CDU(config)
+        results = o_cdu.get_from_session(request)
+
+        # get selected rows
+        selected_results_ids = request.POST['id'].split(';')
+
+        odt = ODT(config, results)
+
+        odt.write_document()
+
+        return odt.response()
+
+
+        return ''
+
+
+

@@ -2,9 +2,15 @@ from django.dispatch import receiver
 from django.core.urlresolvers import reverse
 from django.template import loader, Context, RequestContext
 from guardian.shortcuts import get_objects_for_user
-from core.signals import initconfig_plugin_start, load_dashboard_widgets
+from core.signals import initconfig_plugin_start, load_dashboard_widgets, load_js_modules
 from core.views import DashboardView
 from .models import Configs
+
+
+@receiver(load_js_modules)
+def get_js_modules(sender, **kwargs):
+
+    return 'cdu/js/widget.js'
 
 
 @receiver(load_dashboard_widgets)

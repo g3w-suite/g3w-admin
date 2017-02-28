@@ -42,7 +42,7 @@
             {% if data|length > 0 %}
             <div class="col-xs-3 text-center" style="border-right: 1px solid #f4f4f4;">
                 <div class="dashboard-box-footer-icon">
-                    <a href="#">
+                    <a href="#" data-widget-type="makeCduList" data-html-list-id="#make_cdu_list">
                         <i class="fa fa-map"></i><br>
                         <span class="dashboard-box-footer-text">{% trans 'Make CDU' %}</span>
                     </a>
@@ -52,4 +52,12 @@
         </div><!-- /.row -->
     </div>
 </div>
+</div>
+
+<div id="make_cdu_list" class="unvisible">
+    <ul class="list-unstyled">
+    {% for object in data %}
+        <li><h4> {{ object.title }} <a href="{% url 'group-project-map' object.project.group.slug 'qdjango' object.project.pk %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Show map' %}" target="_blank"><i class="fa fa-map"></i> {% trans 'Make CDU' %}</a></h4></li>
+    {% endfor %}
+    </ul>
 </div>
