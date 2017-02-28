@@ -2,9 +2,12 @@ from __future__ import unicode_literals
 from django.db import models
 from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.auth.models import User
 from model_utils.models import TimeStampedModel
 from autoslug import AutoSlugField
 from qdjango.models import Project, Layer
+from usersmanage.utils import getUserGroups, setPermissionUserObject
+from usersmanage.configs import *
 import os
 import json
 
@@ -49,6 +52,51 @@ class Configs(TimeStampedModel):
             ('make_cdu', 'Can make CDU analisys'),
             ('view_configs', 'Can view configs')
         )
+
+    def addPermissionsToEditor(self, user):
+        """
+        Give guardian permissions to Editor
+        """
+
+        permissions = ['cdu.view_configs', 'cdu.make_cdu']
+        if G3W_EDITOR1 in getUserGroups(user):
+            permissions += [
+                'cdu.change_configs',
+                'cdu.delete_configs'
+            ]
+
+        setPermissionUserObject(user, self, permissions=permissions)
+
+    def removePermissionsToEditor(self, user):
+        """
+        Remove guardian permissions to Editor
+        """
+
+        setPermissionUserObject(user, self, permissions=[
+            'cdu.change_configs',
+            'cdu.delete_configs',
+            'cdu.view_configs',
+            'cdu.make_cdu'
+        ], mode='remove')
+        
+    
+    def addPermissionsToViewers(self, users_id):
+        """
+        Give guardian permissions to Viewers
+        """
+
+        for user_id in users_id:
+            setPermissionUserObject(User.objects.get(pk=user_id), self,
+                                    permissions=['cdu.view_configs', 'cdu.make_cdu'])
+
+    def removePermissionsToViewers(self, users_id):
+        """
+        Remove guardian permissions to Viewers
+        """
+
+        for user_id in users_id:
+            setPermissionUserObject(User.objects.get(pk=user_id), self,
+                                    permissions=['cdu.view_configs', 'cdu.make_cdu'], mode='remove')
 
 
 class Layers(models.Model):

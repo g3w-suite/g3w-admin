@@ -19,11 +19,13 @@ from collections import OrderedDict
 from core.api.views import G3WAPIView
 from core.api.authentication import CsrfExemptSessionAuthentication
 from core.mixins.views import G3WRequestViewMixin, G3WAjaxDeleteViewMixin
-import json
+from usersmanage.mixins.views import G3WACLViewMixin
 from .api.permissions import MakeCDUPermission
 from .utils.cdu import CDU, ODT
 from .models import Configs, Layers as CDULayers
 from .forms import *
+
+import json
 
 
 class CduConfigList(ListView):
@@ -47,6 +49,9 @@ class CduConfigWizardView(SessionWizardView):
         cduAgainstLayerFieldsAliasForm
     ]
     file_storage = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'tmp_cdu_odt_file'))
+
+    editor_permission = ['change_configs', 'view_configs']
+    viewer_permission = 'view_configs'
 
     def dispatch(self, request, *args, **kwargs):
         if 'slug' in kwargs:
@@ -77,14 +82,19 @@ class CduConfigWizardView(SessionWizardView):
     def get_form_initial(self, step):
         if 'slug' in self.kwargs:
             if step == '0':
+
                 kwargs = dict()
-                kwargs['own_users'] = map(lambda o: o.id, get_users_for_object(self.currentCduConfig,
-                                                                               'view_configs', 'Viewer Maps Groups'))
+                # get viewer users
+                viewers = get_users_for_object(self.currentCduConfig, self.viewer_permission,
+                                               [G3W_VIEWER1, G3W_VIEWER2])
+                kwargs['viewer_users'] = [o.id for o in viewers]
+
+                # get editor users
                 if self.request.user.is_superuser:
-                    editor_users = map(lambda o: o.id, get_users_for_object(self.currentCduConfig,
-                                                                            'view_configs', 'Editor Maps Groups'))
+                    editor_users = get_users_for_object(self.currentCduConfig, self.editor_permission,
+                                                        [G3W_EDITOR2, G3W_EDITOR1])
                     if editor_users:
-                        kwargs['editor_user'] = editor_users[0]
+                        kwargs['editor_user'] = editor_users[0].id
                 return kwargs
 
             elif step == '1':
@@ -287,6 +297,10 @@ class CduConfigDetailView(DetailView):
     @method_decorator(permission_required('cud.view_configs', (Configs, 'slug', 'slug'), return_403=True))
     def dispatch(self, *args, **kwargs):
         return super(CduConfigDetailView, self).dispatch(*args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(CduConfigDetailView, self).get_context_data(**kwargs)
+        return context
 
 
 class CduConfigDeleteView(G3WAjaxDeleteViewMixin, G3WRequestViewMixin, SingleObjectMixin, View):

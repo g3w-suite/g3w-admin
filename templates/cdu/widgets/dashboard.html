@@ -21,14 +21,17 @@
     </div><!-- /.box-body-->
     <div class="box-footer no-border">
         <div class="row">
+            {% if perms.cdu.change_configs %}
             <div class="col-xs-3 text-center" style="border-right: 1px solid #f4f4f4;">
                 <div class="dashboard-box-footer-icon">
+
                     <a href="{% url 'cdu-config-list'  %}">
                         <i class="fa fa-list"></i><br>
                         <span class="dashboard-box-footer-text">{% trans 'Profiles' %}</span>
                     </a>
                 </div>
             </div><!-- ./col -->
+            {% endif %}
             {% if perms.cdu.add_configs %}
             <div class="col-xs-3 text-center" style="border-right: 1px solid #f4f4f4;">
                 <div class="dashboard-box-footer-icon">
@@ -54,10 +57,13 @@
 </div>
 </div>
 
-<div id="make_cdu_list" class="unvisible">
+<div id="make_cdu_list" class="hidden">
     <ul class="list-unstyled">
     {% for object in data %}
+        {% get_obj_perms user for object as "userObj_perms" %}
+        {% if "make_cdu" in userObj_perms %}
         <li><h4> {{ object.title }} <a href="{% url 'group-project-map' object.project.group.slug 'qdjango' object.project.pk %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Show map' %}" target="_blank"><i class="fa fa-map"></i> {% trans 'Make CDU' %}</a></h4></li>
+        {% endif %}
     {% endfor %}
     </ul>
 </div>

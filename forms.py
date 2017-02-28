@@ -73,6 +73,11 @@ class cduConfigInitForm(G3WFormMixin, G3WRequestFormMixin, G3WACLForm, ModelForm
         model = Configs
         fields = '__all__'
 
+    def save(self, commit=True):
+        instance = super(cduConfigInitForm, self).save(commit=commit)
+        self._ACLPolicy()
+        return instance
+
 
 class cduConfigCatastoLayerForm(Form):
     """

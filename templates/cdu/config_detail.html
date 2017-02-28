@@ -1,0 +1,42 @@
+{% load i18n %}
+<div class="row">
+  <div class="col-md-12">
+    <ul class="list-unstyled">
+        <li><strong>{% trans 'Title' %}</strong>: {{ object.title }}</li>
+        <li><strong>{% trans 'Description' %}</strong>: {{ object.description }}</li>
+        <li>
+            <strong>{% trans 'Project' %}</strong>:
+            {{ object.project }}
+        </li>
+        <li><strong>{% trans 'ODT template' %}</strong>: {{ object.odtfile }}</li>
+    </ul>
+
+    {%if user.is_superuser %}
+    <h4>{%trans 'Users' %}:</h4>
+    <ul class="list-unstyled">
+    {% if user.is_superuser %}
+        <li><strong>{%trans 'Editor user'%}</strong>: {{object.editor|safe}}</li>
+    {% endif %}
+    {% if user.is_superuser %}
+        <li><strong>{%trans 'Viewer users'%}</strong>: {{object.viewers|safeseq|join:", "}}</li>
+    {% endif %}
+
+    </ul>
+    {% endif %}
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-6">
+    <h4>Data</h4>
+    <ul class="list-unstyled">
+        <li><strong>{% trans 'Cadastre layer' %}</strong>: {{ object.layer_catasto.layer.name }}</li>
+        <li><strong>{% trans 'Against layers' %}</strong>:
+            <ul>
+            {% for l in object.layers_against %}
+                <li>{{ l.layer.name }}</li>
+            {% endfor %}
+            </ul>
+        </li>
+    </ul>
+  </div>
+</div>

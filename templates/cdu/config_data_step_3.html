@@ -1,10 +1,28 @@
 {% load i18n %}
+{% load cdu_tags %}
 <div class="info-box">
-    <span class="info-box-icon bg-gray">S{{ step }}</span>
+    <span class="info-box-icon bg-gray">S4</span>
     <div class="info-box-content">
-        <span class="info-box-text">{% trans 'Cadastre layer' %}: {{ data.catastoLayer }}</span>
-        <span class="info-box-text">{% trans 'Against layers' %}
-
-        </span>
+        <ul class="list-unstyled">
+            <li><strong>{% trans 'Alias cadastre plus fields' %}</strong>
+                {% for key, value in data.items %}
+                    {% if key|isplusfieldcatasto %}
+                        {{ value }}
+                    {%  endif %}
+                {% endfor %}
+            </li>
+            <li><strong>{% trans 'Against layers fields' %}</strong>
+                <ul>
+                {% for key, value in data.items %}
+                    {% if not key|isplusfieldcatasto %}
+                        <li>
+                        {{ key }}:
+                        {{ value|join:',' }}
+                        </li>
+                    {%  endif %}
+                {% endfor %}
+                </ul>
+            </li>
+        </ul>
     </div><!-- /.info-box-content -->
 </div>
