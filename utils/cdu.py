@@ -299,7 +299,8 @@ class ODT(object):
 
     def _create_odt_outfile(self):
 
-        self.out_file = settings.MEDIA_ROOT + self.out_filename.format(time.time())
+        self.out_filename_built = self.out_filename.format(time.time())
+        self.out_file = settings.MEDIA_ROOT + self.out_filename_built
 
     def write_document(self):
         """
@@ -311,14 +312,14 @@ class ODT(object):
         for keyres, res in self.results.items():
             tpl_res_items.append(ODTTplItem(res))
 
-        self.o_template.render({'items': tpl_res_items, 'lawItems':[]})
+        self.o_template.render({'items': tpl_res_items, 'lawItems': []})
 
     def response(self):
 
         f = open(self.out_file)
         response = HttpResponse(f.read(), content_type="application/vnd.oasis.opendocument.text")
         f.close()
-        #os.remove(self.out_file)
-        response['Content-Disposition'] = 'attachment; filename="{}"'.format(self.out_filename)
+        os.remove(self.out_file)
+        response['Content-Disposition'] = 'attachment; filename="{}"'.format(self.out_filename_built)
 
         return response
