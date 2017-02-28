@@ -53,7 +53,7 @@ class G3WM2MSingleSelect(Select):
         return data.get(name, None)
 
 
-class   G3WACLForm(forms.Form):
+class G3WACLForm(forms.Form):
     """ ACL Form class to work with group user type """
 
     initial_viewer_users = []
