@@ -349,7 +349,7 @@ class CduCreatedocView(View):
     def dispatch(self, *args, **kwargs):
         return super(CduCreatedocView, self).dispatch(*args, **kwargs)
 
-    def post(self, request, **kwargs):
+    def get(self, request, **kwargs):
 
         # get cd config object
         config = Configs.objects.get(pk=kwargs['id'])
@@ -358,7 +358,7 @@ class CduCreatedocView(View):
         results = o_cdu.get_from_session(request)
 
         # get selected rows
-        selected_results_ids = request.POST['id'].split(';')
+        selected_results_ids = request.GET['id'].split(';')
 
         odt = ODT(config, results)
 
@@ -366,8 +366,6 @@ class CduCreatedocView(View):
 
         return odt.response()
 
-
-        return ''
 
 
 

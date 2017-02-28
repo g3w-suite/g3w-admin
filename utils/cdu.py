@@ -318,7 +318,7 @@ class ODT(object):
         f = open(self.out_file)
         response = HttpResponse(f.read(), content_type="application/vnd.oasis.opendocument.text")
         f.close()
-        os.remove(self.out_file)
+        #os.remove(self.out_file)
         response['Content-Disposition'] = 'attachment; filename="{}"'.format(self.out_filename)
 
         return response
