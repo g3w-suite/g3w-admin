@@ -59,11 +59,13 @@
 
 <div id="make_cdu_list" class="hidden">
     <ul class="list-unstyled">
+    {% if data|length %}
     {% for object in data %}
         {% get_obj_perms user for object as "userObj_perms" %}
         {% if "make_cdu" in userObj_perms %}
         <li><h4> {{ object.title }} <a href="{% url 'group-project-map' object.project.group.slug 'qdjango' object.project.pk %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Show map' %}" target="_blank"><i class="fa fa-map"></i> {% trans 'Make CDU' %}</a></h4></li>
         {% endif %}
     {% endfor %}
+    {% endif %}
     </ul>
 </div>
