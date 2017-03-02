@@ -1,6 +1,7 @@
 import django.dispatch
 
 # signal for start plugin: i.e. iternet
+# data plugin to config api client from modules
 initconfig_plugin_start = django.dispatch.Signal(providing_args=["projectType", "project"])
 
 # signal to add extra maplayers attribute: i.e. iternet

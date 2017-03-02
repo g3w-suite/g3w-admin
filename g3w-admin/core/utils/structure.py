@@ -211,7 +211,7 @@ def mapLayerAttributes(layer, formField=False, **kwargs):
 
                     if field['type'] == FIELD_TYPE_BOOLEAN:
                         formFields[field['name']]['input']['options'].update({
-                             'values': [{'key': _('Yes'), 'value': 1}, {'key': 'No', 'value': 0}]
+                             'values': [{'key': _('Yes'), 'value': True}, {'key': 'No', 'value': False}]
                         })
 
                 # update with fields configs data
@@ -271,7 +271,7 @@ def mapLayerAttributesFromModel(model, **kwargs):
                     })
                 if fieldType == FIELD_TYPE_BOOLEAN:
                     toRes[field.name]['input']['options'].update({
-                        'values': [{'key': _('Yes'), 'value': 1}, {'key': 'No', 'value': 0}]
+                        'values': [{'key': _('Yes'), 'value': True}, {'key': 'No', 'value': False}]
                     })
 
             # update with fields configs data
