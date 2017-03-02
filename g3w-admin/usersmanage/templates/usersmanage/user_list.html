@@ -24,7 +24,9 @@ $("#users_table").DataTable();
 <div class="col-md-12 col-xs-12">
     <div class="box">
         <div class="box-header">
+            {% if perms.auth.add_user %}
             <h3 class="box-title"><a href="{% url 'user-add' %}"><i class="ion ion-plus-circled"></i></a> {% trans 'Users' %}</h3>
+            {% endif %}
         </div>
         <div class="box-body">
             <table id="users_table" class="table table-hover table-striped">

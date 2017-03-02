@@ -55,7 +55,7 @@
                     </div><!-- /.col -->
                     <div class="col-sm-4 col-xs-4">
                       <div class="description-block projects-group">
-                        <h5 class="description-header"  data-toggle="tooltip" data-placement="top" title="{% trans 'Group projects' %}" ><a href="{% url 'project-list' object.slug %}">{{ object.getProjectsNumber }} {% trans 'Projects' %}</a></h5>
+                        <h5 class="description-header"  data-toggle="tooltip" data-placement="top" title="{% trans 'Group projects' %}" ><a href="{% url 'project-list' object.slug %}">{% g3wadmin_get_projects_number object user %} {% trans 'Projects' %}</a></h5>
                       </div><!-- /.description-block -->
                     </div><!-- /.col -->
                     <div class="col-sm-2 col-xs-2">

@@ -5,6 +5,7 @@ from django.utils.translation import ugettext, ugettext_lazy as _
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.apps import apps
+from guardian.shortcuts import get_objects_for_user
 from ordered_model.models import OrderedModel
 from model_utils.models import TimeStampedModel
 from model_utils import Choices
@@ -143,7 +144,7 @@ class Group(TimeStampedModel):
             groupProjects += [project for project in projects]
         return groupProjects
 
-    def getProjectsNumber(self):
+    def getProjectsNumber(self, user=None):
         """
         Count total number of serveral type project
         :return: integer
@@ -151,7 +152,11 @@ class Group(TimeStampedModel):
         groupProjects = 0
         for g3wProjectApp in settings.G3WADMIN_PROJECT_APPS:
             Project = apps.get_app_config(g3wProjectApp).get_model('project')
-            groupProjects += len(Project.objects.filter(group=self))
+            if user:
+                groupProjects +=len(get_objects_for_user(user, '{}.view_project'.format(g3wProjectApp), Project) \
+                    .filter(group=self))
+            else:
+                groupProjects += len(Project.objects.filter(group=self))
         return groupProjects
 
     def addPermissionsToEditor(self, user):

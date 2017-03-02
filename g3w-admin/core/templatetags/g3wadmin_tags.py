@@ -62,3 +62,11 @@ def lookup(d, key):
     Template filter to get value from dict by key
     """
     return d[key]
+
+
+@register.simple_tag()
+def g3wadmin_get_projects_number(group, user):
+    """
+    Template tag to get projets number for group by user
+    """
+    return group.getProjectsNumber(user)
