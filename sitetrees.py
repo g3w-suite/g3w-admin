@@ -8,7 +8,8 @@ sitetrees = (
       # Then define items and their children with `item` function.
       item('CDU', '#', type_header=True),
       item('Profili CDU', '#', icon_css_class='fa fa-cog', children=[
-        item('Aggiungi profilo', 'cdu-config-add', url_as_pattern=True, icon_css_class='fa fa-plus'),
+        item('Aggiungi profilo', 'cdu-config-add', url_as_pattern=True, icon_css_class='fa fa-plus',
+             access_by_perms=['cdu.add_configs']),
         item('Lista profili', 'cdu-config-list', url_as_pattern=True, icon_css_class='fa fa-list')
       ]),
     ]),
@@ -17,7 +18,8 @@ sitetrees = (
         # Then define items and their children with `item` function.
         item('CDU', '#', type_header=True),
         item('CDU Configs', '#', icon_css_class='fa fa-cog', children=[
-            item('Add config', 'cdu-config-add', url_as_pattern=True, icon_css_class='fa fa-plus'),
+            item('Add config', 'cdu-config-add', url_as_pattern=True, icon_css_class='fa fa-plus',
+                 access_by_perms=['cdu.add_configs']),
             item('Configs list', 'cdu-config-list', url_as_pattern=True, icon_css_class='fa fa-list')
         ]),
     ]),
