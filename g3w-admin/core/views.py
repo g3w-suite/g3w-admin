@@ -57,7 +57,8 @@ class DashboardView(TemplateView):
 
         dashboard_widgets = load_dashboard_widgets.send(self)
         for widget in dashboard_widgets:
-            context['widgets'].append(widget[1])
+            if widget[1]:
+                context['widgets'].append(widget[1])
 
         return context
 

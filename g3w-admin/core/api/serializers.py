@@ -89,6 +89,8 @@ class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
                 ret['projects'].append({
                     'id': project.id,
                     'title': project.title,
+                    'description': project.description,
+                    'thumbnail': project.thumbnail.name,
                     'type': g3wProjectApp,
                     'gid': "{}:{}".format(g3wProjectApp, project.id)
                 })
