@@ -93,22 +93,21 @@ class G3WACLForm(forms.Form):
 
     def _ACLPolicy(self):
 
-        if 'editor_user' in self.cleaned_data:
-            editorToRemove = None
-            if self.request.user.is_superuser:
-                permission_user = self.cleaned_data['editor_user']
-                if (self.initial_editor_user and self.cleaned_data['editor_user'] and self.initial_editor_user != self.cleaned_data['editor_user'].id) or \
-                    (self.initial_editor_user and not self.cleaned_data['editor_user']):
-                    editorToRemove = User.objects.get(pk=self.initial_editor_user)
+        editorToRemove = None
+        if self.request.user.is_superuser:
+            permission_user = self.cleaned_data['editor_user']
+            if (self.initial_editor_user and self.cleaned_data['editor_user'] and self.initial_editor_user != self.cleaned_data['editor_user'].id) or \
+                (self.initial_editor_user and not self.cleaned_data['editor_user']):
+                editorToRemove = User.objects.get(pk=self.initial_editor_user)
 
-            else:
-                permission_user = self.request.user
+        else:
+            permission_user = self.request.user
 
-            if permission_user and hasattr(self.instance, 'addPermissionsToEditor'):
-                self.instance.addPermissionsToEditor(permission_user)
+        if permission_user and hasattr(self.instance, 'addPermissionsToEditor'):
+            self.instance.addPermissionsToEditor(permission_user)
 
-            if editorToRemove and hasattr(self.instance, 'removePermissionsToEditor'):
-                self.instance.removePermissionsToEditor(editorToRemove)
+        if editorToRemove and hasattr(self.instance, 'removePermissionsToEditor'):
+            self.instance.removePermissionsToEditor(editorToRemove)
 
         #add permission view_group to Viewer
         # check per and change situation

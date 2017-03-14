@@ -228,7 +228,7 @@ class Group(TimeStampedModel):
         if attr == 'viewers':
             return get_users_for_object(self, 'view_group', [G3W_VIEWER1, G3W_VIEWER2], with_anonymous=True)
         elif attr == 'editor':
-            editors = get_users_for_object(self, ['change_group', 'view_group'], [G3W_EDITOR2, G3W_EDITOR1])
+            editors = get_users_for_object(self, 'change_group', [G3W_EDITOR2, G3W_EDITOR1])
             if len(editors) > 0:
                 return editors[0]
         return super(Group, self).__getattr__(attr)
