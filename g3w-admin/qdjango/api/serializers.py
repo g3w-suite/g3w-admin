@@ -43,7 +43,7 @@ class ProjectSerializer(serializers.ModelSerializer):
 
         qgisProjectSettignsWMS = QgisProjectSettingsWMS(response.content)
 
-        extent = eval(instance.initial_extent)
+        extent = eval(instance.max_extent)
         ret['initextent'] = [
             float(extent['xmin']),
             float(extent['ymin']),
