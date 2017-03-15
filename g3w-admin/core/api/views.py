@@ -9,7 +9,10 @@ from rest_framework.response import Response
 from rest_framework.exceptions import APIException
 from core.api.filters import CentroidBBoxFilter
 from core.signals import post_serialize_maplayer
-from editing.utils.structure import APIVectorLayerStructure
+try:
+    from editing.utils.structure import APIVectorLayerStructure
+except:
+    pass
 from copy import copy
 import re
 
