@@ -1,3 +1,9 @@
+
+Copyright (c) 2016-2017, GIS3W di Lorenzetti Walter & c. S.A.S.
+All rights reserved.
+
+-----------------------------------------------------------------------
+
                    GNU LESSER GENERAL PUBLIC LICENSE
                        Version 3, 29 June 2007
 
