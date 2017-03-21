@@ -1,7 +1,7 @@
 from .base import *
 from .base_layout_settings import *
 from .base_geo_settings import *
-from .local_settings_docker import *
+from .local_settings import *
 
 G3WADMIN_PROJECT_APPS = G3WADMIN_PROJECT_APPS + G3WADMIN_PROJECT_APPS_BASE
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + G3WADMIN_APPS + G3WADMIN_PROJECT_APPS
