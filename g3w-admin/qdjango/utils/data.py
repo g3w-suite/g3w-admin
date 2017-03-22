@@ -507,6 +507,9 @@ class QgisProject(XmlData):
         if 'group' in kwargs:
             self.group = kwargs['group']
 
+        for k in ['thumbnail', 'description', 'baselayer']:
+            setattr(self, k, kwargs[k] if k in kwargs else None)
+
 
         # try to load xml project file
         self.loadProject()
@@ -712,19 +715,22 @@ class QgisProject(XmlData):
         :param instance: Project instance
         """
 
-        thumbnail = kwargs.get('thumbnail')
-        description = kwargs.get('description', '')
-
         with transaction.atomic():
             if not instance and not self.instance:
+
+                thumbnail = kwargs.get('thumbnail')
+                description = kwargs.get('description')
+                baselayer = kwargs.get('baselayer')
+
                 self.instance = Project.objects.create(
                     qgis_file=self.qgisProjectFile,
                     group=self.group,
                     title=self.title,
                     initial_extent=self.initialExtent,
                     max_extent=self.maxExtent,
-                    thumbnail= thumbnail,
+                    thumbnail=thumbnail,
                     description=description,
+                    baselayer=baselayer,
                     qgis_version=self.qgisVersion,
                     layers_tree=self.layersTree,
                     relations=self.layerRelations
@@ -739,12 +745,6 @@ class QgisProject(XmlData):
                 self.instance.max_extent = self.maxExtent
                 self.instance.layers_tree = self.layersTree
                 self.instance.relations = self.layerRelations
-
-                if thumbnail:
-                    self.instance.thumbnail = thumbnail
-                if description:
-                    self.instance.description = description
-
 
                 self.instance.save()
 
