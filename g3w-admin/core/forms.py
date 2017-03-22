@@ -1,4 +1,4 @@
-from django_file_form.forms import FileFormMixin, UploadedFileField, UploadWidget
+from django_file_form.forms import FileFormMixin, UploadedFileField
 from django.forms import Form, ModelForm
 from django.forms.fields import CharField
 from django.utils.translation import ugettext, ugettext_lazy as _
