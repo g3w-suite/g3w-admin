@@ -4,7 +4,7 @@ G3WADMIN_PROJECT_APPS = [
     'ogc'
 ]
 
-G3WADMIN_LOCAL_MORE_APPS = os.environ.get('G3WSUITE_MORE_APPS', 'fronted').split(',')
+G3WADMIN_LOCAL_MORE_APPS = os.environ.get('G3WSUITE_MORE_APPS', 'frontend').split(',')
 
 DATABASES = {
     'default': {
