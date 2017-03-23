@@ -241,6 +241,7 @@ class QdjangoLayersListView(G3WRequestViewMixin, G3WGroupViewMixin, QdjangoProje
 
         context['project_slug'] = self.project_slug
         context['layers_tree'] = json.dumps(layersTreeBoostrap)
+
         context['type_layer_for_widget'] = (
             'postgres',
             'spatialite',

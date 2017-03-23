@@ -64,7 +64,7 @@ class DatasourceExists(QgisProjectLayerValidator):
     Check if layer datasource exists on server
     """
     def clean(self):
-        if self.qgisProjectLayer.layerType in [Layer.TYPES.gdal, Layer.TYPES.raster]:
+        if self.qgisProjectLayer.layerType in [Layer.TYPES.gdal, Layer.TYPES.ogr, Layer.TYPES.raster]:
             if not os.path.exists(self.qgisProjectLayer.datasource):
                 err = ugettext('Missing data file for layer {} '.format(self.qgisProjectLayer.name))
                 err += ugettext('which should be located at {}'.format(self.qgisProjectLayer.datasource))

@@ -1,7 +1,7 @@
 from __future__ import division
 from django import template
 from django.conf.urls.static import static
-from core.signals import load_project_widgets
+from core.signals import load_project_widgets, load_layer_actions
 
 
 register = template.Library()
@@ -54,6 +54,21 @@ def g3wadmin_project_widgets(project, app_name, user):
             template_widgets.append(widget[1])
 
     return template_widgets
+
+
+@register.simple_tag()
+def g3wadmin_layer_actions(layer, app_name, user):
+    """
+    Template tag to get project specific widgets
+    """
+    actions = load_layer_actions.send(user, layer=layer, app_name=app_name)
+
+    template_actions = []
+    for action in actions:
+        if actions and action[1]:
+            template_actions.append(action[1])
+
+    return template_actions
 
 
 @register.filter

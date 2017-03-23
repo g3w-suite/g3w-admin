@@ -44,6 +44,9 @@ after_update_project = django.dispatch.Signal(providing_args=["app_name", "proje
 # signal to load widgets for project
 load_project_widgets = django.dispatch.Signal(providing_args=["app_name", "project"])
 
+# signal to load actions for layer
+load_layer_actions = django.dispatch.Signal(providing_args=["app_name", "layer"])
+
 # signal send to perform search by specific module
 perform_client_search = django.dispatch.Signal(providing_args=["app_name", "project_id", "widget_id"])
 
