@@ -253,30 +253,31 @@ def mapLayerAttributesFromModel(model, **kwargs):
     for field in fields:
         #not isinstance(field, AutoField) and
         if field.name not in fieldsToExlude:
-            fieldType = FIELD_TYPES_MAPPING['djangoModel'][type(field)]
-            toRes[field.name] = editingFormField(
-                field.name,
-                required=not field.blank,
-                fieldLabel=field.verbose_name if field.verbose_name else field.attname,
-                type=fieldType,
-                inputType=FORM_FIELDS_MAPPING[fieldType],
-                editable=not field==model._meta.pk
-            )
+            if type(field) in FIELD_TYPES_MAPPING['djangoModel']:
+                fieldType = FIELD_TYPES_MAPPING['djangoModel'][type(field)]
+                toRes[field.name] = editingFormField(
+                    field.name,
+                    required=not field.blank,
+                    fieldLabel=field.verbose_name if field.verbose_name else field.attname,
+                    type=fieldType,
+                    inputType=FORM_FIELDS_MAPPING[fieldType],
+                    editable=not field==model._meta.pk
+                )
 
-            # add upload url to image type if module is set
-            if 'editing' in settings.G3WADMIN_LOCAL_MORE_APPS:
-                if fieldType == FIELD_TYPE_IMAGE:
-                    toRes[field.name].update({
-                        'uploadurl': reverse('editing-upload')
-                    })
-                if fieldType == FIELD_TYPE_BOOLEAN:
-                    toRes[field.name]['input']['options'].update({
-                        'values': [{'key': _('Yes'), 'value': True}, {'key': 'No', 'value': False}]
-                    })
+                # add upload url to image type if module is set
+                if 'editing' in settings.G3WADMIN_LOCAL_MORE_APPS:
+                    if fieldType == FIELD_TYPE_IMAGE:
+                        toRes[field.name].update({
+                            'uploadurl': reverse('editing-upload')
+                        })
+                    if fieldType == FIELD_TYPE_BOOLEAN:
+                        toRes[field.name]['input']['options'].update({
+                            'values': [{'key': _('Yes'), 'value': True}, {'key': 'No', 'value': False}]
+                        })
 
-            # update with fields configs data
-            if 'fields' in kwargs and field.name in kwargs['fields']:
-                toRes[field.name].update(kwargs['fields'][field.name])
+                # update with fields configs data
+                if 'fields' in kwargs and field.name in kwargs['fields']:
+                    toRes[field.name].update(kwargs['fields'][field.name])
     return toRes
 
 
