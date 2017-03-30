@@ -25,6 +25,12 @@ class IntersectsBBoxFilter(InsideBBoxFilter):
             return queryset
 
         bbox = self.get_filter_bbox(request)
+
+        # to reproject
+        if view.reproject:
+            bbox.srid = view.layer.project.group.srid.auth_srid
+            bbox.transform(view.layer.srid)
+
         if not bbox:
             return queryset
         return queryset.filter(Q(**{'%s__%s' % (filter_field, geoDjango_filter): bbox}))
