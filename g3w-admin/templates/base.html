@@ -210,6 +210,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <script src="{% static "bower_components/jquery-file-download/src/Scripts/jquery.fileDownload.js" %}"></script>
     <!-- Bootstrap 3.3.5 -->
     <script src="{% static "bower_components/bootstrap/dist/js/bootstrap.min.js" %}"></script>
+    <!-- Bootstrap-colorpicker -->
+    <script src="{% static "bower_components/bootstrap-colorpicker/dist/js/bootstrap-colorpicker.min.js" %}"></script>
     <!-- Underscore -->
     <script src="{% static "bower_components/underscore/underscore-min.js" %}"></script>
     <!-- Select2 -->
@@ -220,8 +222,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <script src="{% static "bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js" %}"></script>
     <!-- Bootstrap-datepicker-locals -->
     <script src="{% static "bower_components/bootstrap-datepicker/dist/locales/" %}bootstrap-datepicker.{{ lang }}.min.js"></script>
-    <!-- Bootstrap-colorpicker -->
-    <script src="{% static "bower_components/bootstrap-colorpicker/dist/js/bootstrap-colorpicker.min.js" %}"></script>
     <!-- Jquery.Filer -->
     <script src="{% static "bower_components/jquery.filer/js/jquery.filer.min.js" %}"></script>
     <!-- DataTables -->
@@ -238,11 +238,10 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <script src="{% static "bower_components/proj4/dist/proj4.js" %}"></script>
     <!-- jsTree -->
     <script src="{% static "bower_components/jstree/dist/jstree.min.js" %}"></script>
+    <!-- endbuild -->
     {% else %}
     <script src="{% static "dist/js/vendor.min.js" %}"></script>
     {% endif %}
-
-    <!-- endbuild -->
 
     <!-- AdminLTE App -->
     <script src="{% static "adminlte/js/app.min.js" %}"></script>

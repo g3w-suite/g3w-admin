@@ -195,6 +195,9 @@ MEDIA_URL = '/g3wadmin_media/'
 # For Data gis source
 DATASOURCE_PATH = ''
 
+# for django-file-form
+MUST_LOGIN = True
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/

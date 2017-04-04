@@ -7,18 +7,18 @@ var gulp = require('gulp'),
     flatten = require('gulp-flatten'),
     del = require('del');
 
-gulp.task('deploy', function () {
+gulp.task('build', function () {
     return gulp.src('g3w-admin/templates/base.html')
         .pipe(replace(/"{% static /g,''))
         .pipe(replace(/ %}"/g,''))
         .pipe(useref({ searchPath: [
             'g3w-admin/core/static',
-        ] }))
-        //.pipe(gulpif('*.js', uglify()))
-        //.pipe(gulpif('*.css', cleanCss({
-        //    root: 'g3w-admin/core/static/bower_components/icheck/skins',
-        //    rebase: false
-        //})))
+        ]}))
+        .pipe(gulpif('*.js', uglify()))
+        .pipe(gulpif('*.css', cleanCss({
+            root: 'g3w-admin/core/static/bower_components/icheck/skins',
+            rebase: false
+        })))
         .pipe(gulp.dest('g3w-admin/core/static/dist'));
 });
 
@@ -34,7 +34,7 @@ gulp.task('fonts', function () {
     .pipe(gulp.dest('g3w-admin/core/static/dist/fonts/'))
 });
 
-gulp.task('default', ['deploy', 'icheck_png', 'fonts'], function(){
+gulp.task('default', ['build', 'icheck_png', 'fonts'], function(){
     return del([
       'g3w-admin/core/static/dist/base.html'
     ]);

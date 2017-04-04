@@ -663,7 +663,28 @@ _.extend(g3wadmin.widget, {
         }
 
 
+    },
+
+    /**
+     * Widgetc to build and bind envent for django-file-form field objects
+     * @param $item
+     */
+    initUploadFormField: function($item) {
+        initUploadFields($item);
+
+        var $uploader = $item.find(".file-uploader-container");
+        $uploader.on('complete', function(e, id, name, resJSON, xhr){
+            var $thumb = $(this).parents('#div_id_header_logo_img').next();
+            $thumb.attr('src', resJSON.path);
+            if ($thumb.is(':hidden'))
+                $thumb.show();
+        }).on('deleteComplete', function(e, id, name, xhr){
+            var $thumb = $(this).parents('#div_id_header_logo_img').next();
+            $thumb.hide();
+        });
     }
+
+
 
 
 

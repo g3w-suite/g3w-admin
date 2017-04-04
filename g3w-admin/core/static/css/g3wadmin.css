@@ -79,3 +79,7 @@ table span.icon {
 .modalMap {
     height:400px;
 }
+
+h5 small {
+    color:#fff;
+}
