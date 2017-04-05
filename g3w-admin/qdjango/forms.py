@@ -75,8 +75,12 @@ class QdjangoProjetForm(QdjangoProjectFormMixin, G3WFormMixin, G3WGroupFormMixin
                                             css_class='box-header with-border'
                                         ),
                                         Div(
-                                            Field('description',css_class='wys5'),
+                                            Field('description', css_class='wys5'),
                                             'thumbnail',
+                                            HTML("""<img
+                                            {% if not form.thumbnail.value %}style="display:none;"{% endif %}
+                                            class="img-responsive img-thumbnail"
+                                            src="{{ MEDIA_URL }}{{ form.thumbnail.value }}">""", ),
                                             css_class='box-body',
 
                                         ),

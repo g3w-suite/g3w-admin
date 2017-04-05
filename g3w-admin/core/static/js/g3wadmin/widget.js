@@ -487,8 +487,24 @@ _.extend(g3wadmin.widget, {
 
     },
 
+    /**
+     * Widget for form with django-file-form
+     * @param $item
+     */
     ajaxUpload: function($item){
         initUploadFields($item);
+
+        var $uploader = $item.find(".file-uploader-container");
+        var $thumb = $uploader.parents().find('.img-thumbnail');
+        if ($thumb.length > 0) {
+            $uploader.on('complete', function(e, id, name, resJSON, xhr){
+            $thumb.attr('src', resJSON.path);
+            if ($thumb.is(':hidden'))
+                $thumb.show();
+            }).on('deleteComplete', function(e, id, name, xhr){
+                $thumb.hide();
+            });
+        }
     },
 
     /**
@@ -665,24 +681,6 @@ _.extend(g3wadmin.widget, {
 
     },
 
-    /**
-     * Widgetc to build and bind envent for django-file-form field objects
-     * @param $item
-     */
-    initUploadFormField: function($item) {
-        initUploadFields($item);
-
-        var $uploader = $item.find(".file-uploader-container");
-        $uploader.on('complete', function(e, id, name, resJSON, xhr){
-            var $thumb = $(this).parents('#div_id_header_logo_img').next();
-            $thumb.attr('src', resJSON.path);
-            if ($thumb.is(':hidden'))
-                $thumb.show();
-        }).on('deleteComplete', function(e, id, name, xhr){
-            var $thumb = $(this).parents('#div_id_header_logo_img').next();
-            $thumb.hide();
-        });
-    }
 
 
 

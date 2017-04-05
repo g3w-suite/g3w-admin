@@ -72,6 +72,19 @@ table span.icon {
     font-size: 12px;
 }
 
+.qq-upload-button-selector {
+    width: 100%;
+    height: 120px;
+    border: 2px dashed #3c8dbc;
+    padding-top: 50px;
+    color: #3c8dbc;
+    text-align: center;
+}
+
+.qq-upload-button-selector:hover {
+    background-color: #ecf0f5;
+}
+
 .select2 {
     color: black;
 }

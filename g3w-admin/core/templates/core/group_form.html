@@ -13,13 +13,7 @@
 </h1>
 {% endblock %}
 
-{% block custom_js_links_page %}
-<script>
-    $(function() {
-        ga.widget.initUploadFormField($('#group-form'));
-    });
-</script>
-{% endblock %}
+
 
 {% block main_content %}
 
@@ -41,7 +35,7 @@
 </div>
 {% endif %}
 
-<form method="post" id="group-form"  enctype="multipart/form-data">
+<form method="post" id="group-form" data-widget-type="ajaxUpload"  enctype="multipart/form-data">
     {% if form.errors %}
         <div class="row">
             <div class="col-md-12">

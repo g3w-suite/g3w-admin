@@ -97,6 +97,13 @@ class GroupCreateView(G3WRequestViewMixin, CreateView):
     def get_success_url(self):
         return reverse('group-list')
 
+    def form_valid(self, form):
+        res = super(GroupCreateView, self).form_valid(form)
+
+        # delete tempory file form files
+        form.delete_temporary_files()
+        return res
+
 
 class GroupUpdateView(G3WRequestViewMixin, G3WACLViewMixin, UpdateView):
     """Update view."""
@@ -115,6 +122,9 @@ class GroupUpdateView(G3WRequestViewMixin, G3WACLViewMixin, UpdateView):
 
         # send after_save
         after_update_group.send(self, group=form.instance)
+
+        # delete tempory file form files
+        form.delete_temporary_files()
         return res
 
     def get_success_url(self):
