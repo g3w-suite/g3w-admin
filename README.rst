@@ -12,7 +12,7 @@ Add like git submodule from main g3w-admin directory
 
 ::
 
-     git submodule add -f https://<user>@bitbucket.org/gis3w/g3w-admin-cdu.git
+     git submodule add -f https://<user>@bitbucket.org/gis3w/g3w-admin-cdu.git g3w-admin/cdu
 
 
 Add 'cdu' module to G3W_LOCAL_MORE_APPS config value inside local_settings.py:
