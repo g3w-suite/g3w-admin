@@ -492,7 +492,7 @@ _.extend(g3wadmin.widget, {
      * @param $item
      */
     ajaxUpload: function($item){
-        initUploadFields($item);
+        initUploadFields($item, {delete_url: null});
 
         var $uploader = $item.find(".file-uploader-container");
         var $thumb = $uploader.parents().find('.img-thumbnail');
