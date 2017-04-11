@@ -10,6 +10,8 @@ from django.views.generic.detail import SingleObjectMixin
 from django.http import HttpResponseRedirect, HttpResponse
 from django.utils.decorators import method_decorator
 from django.db import connections
+from django.conf import settings
+from django.core.cache import cache
 from guardian.decorators import permission_required
 from guardian.shortcuts import get_objects_for_user
 from core.mixins.views import *
@@ -97,6 +99,9 @@ class QdjangoProjectUpdateView(QdjangoProjectCUViewMixin, G3WGroupViewMixin, G3W
 
         # send project update signal
         after_update_project.send(self, app_name='qdjango', project=form.instance)
+
+        # clear cache
+        cache.delete(settings.QDJANGO_PRJ_CACHE_KEY.format(form.instance.pk))
         return res
 
 
@@ -152,6 +157,9 @@ class QdjangoProjectDeleteView(G3WAjaxDeleteViewMixin, SingleObjectMixin, View):
         # send before project delete signal
         self.object = self.get_object()
         before_delete_project.send(self, app_name='qdjango', project=self.object)
+
+        # clear cache
+        cache.delete(settings.QDJANGO_PRJ_CACHE_KEY.format(self.object.pk))
 
         return super(QdjangoProjectDeleteView, self).post(request, *args, **kwargs)
 
