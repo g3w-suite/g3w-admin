@@ -1,5 +1,6 @@
 from django.http.request import QueryDict
 from django.conf import settings
+from django.core.cache import cache
 from rest_framework import serializers
 from rest_framework.fields import empty
 from qdjango.models import Project, Layer, Widget
@@ -29,17 +30,25 @@ class ProjectSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         ret = super(ProjectSerializer, self).to_representation(instance)
 
-        q = QueryDict('', mutable=True)
-        q['map'] = instance.qgis_file.file.name
-        q['SERVICE'] = 'WMS'
-        q['VERSION'] = '1.3.0'
-        q['REQUEST'] = 'GetProjectSettings'
-        class Object(object):
-            pass
-        request = Object()
-        request.method = 'GET'
-        request.body = ''
-        response = OWSRequestHandler(None).baseDoRequest(q, request=request)
+
+        # try to find cached projectsettings
+        response = cache.get(settings.QDJANGO_PRJ_CACHE_KEY.format(instance.pk))
+
+        if not response:
+            q = QueryDict('', mutable=True)
+            q['map'] = instance.qgis_file.file.name
+            q['SERVICE'] = 'WMS'
+            q['VERSION'] = '1.3.0'
+            q['REQUEST'] = 'GetProjectSettings'
+            class Object(object):
+                pass
+            request = Object()
+            request.method = 'GET'
+            request.body = ''
+            response = OWSRequestHandler(None).baseDoRequest(q, request=request)
+
+            # caching projectsettings
+            cache.set(settings.QDJANGO_PRJ_CACHE_KEY.format(instance.pk), response, 365*24*3600)
 
         qgisProjectSettignsWMS = QgisProjectSettingsWMS(response.content)
 

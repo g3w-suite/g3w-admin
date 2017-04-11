@@ -209,6 +209,7 @@ SITE_TITLE = 'g3w-admin'
 # for qdjango module
 QDJANGO_SERVER_URL = 'http://localhost/cgi-bin/qgis_mapserv.fcgi'
 QDJANGO_SERVER_PORT = 80
+QDJANGO_PRJ_CACHE_KEY = 'qdjango_prj_{}'
 
 # LOGGING_CONFIG = None
 
