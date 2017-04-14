@@ -32,23 +32,23 @@ class ProjectSerializer(serializers.ModelSerializer):
 
 
         # try to find cached projectsettings
-        #response = cache.get(settings.QDJANGO_PRJ_CACHE_KEY.format(instance.pk))
+        response = cache.get(settings.QDJANGO_PRJ_CACHE_KEY.format(instance.pk))
 
-        #if not response:
-        q = QueryDict('', mutable=True)
-        q['map'] = instance.qgis_file.file.name
-        q['SERVICE'] = 'WMS'
-        q['VERSION'] = '1.3.0'
-        q['REQUEST'] = 'GetProjectSettings'
-        class Object(object):
-            pass
-        request = Object()
-        request.method = 'GET'
-        request.body = ''
-        response = OWSRequestHandler(None).baseDoRequest(q, request=request)
+        if not response:
+            q = QueryDict('', mutable=True)
+            q['map'] = instance.qgis_file.file.name
+            q['SERVICE'] = 'WMS'
+            q['VERSION'] = '1.3.0'
+            q['REQUEST'] = 'GetProjectSettings'
+            class Object(object):
+                pass
+            request = Object()
+            request.method = 'GET'
+            request.body = ''
+            response = OWSRequestHandler(None).baseDoRequest(q, request=request)
 
             # caching projectsettings
-            #cache.set('qdjango_prj_{}'.format(instance.pk), response, 365*24*3600)
+            cache.set('qdjango_prj_{}'.format(instance.pk), response, 365*24*3600)
 
         qgisProjectSettignsWMS = QgisProjectSettingsWMS(response.content)
 
