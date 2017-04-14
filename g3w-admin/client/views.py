@@ -21,7 +21,8 @@ class ClientView(TemplateView):
     def dispatch(self, request, *args, **kwargs):
 
         # check permissions
-        Project = apps.get_app_config(kwargs['project_type']).get_model('project')
+        project_app = apps.get_app_config(kwargs['project_type'])
+        Project = project_app.get_model('project')
 
         # get project model object
         self.project = Project.objects.get(pk=kwargs['project_id']) if 'project_id' in kwargs else \

@@ -101,7 +101,7 @@ class QdjangoProjectUpdateView(QdjangoProjectCUViewMixin, G3WGroupViewMixin, G3W
         after_update_project.send(self, app_name='qdjango', project=form.instance)
 
         # clear cache
-        cache.delete(settings.QDJANGO_PRJ_CACHE_KEY.format(form.instance.pk))
+        #cache.delete(settings.QDJANGO_PRJ_CACHE_KEY.format(form.instance.pk))
         return res
 
 
@@ -159,7 +159,7 @@ class QdjangoProjectDeleteView(G3WAjaxDeleteViewMixin, SingleObjectMixin, View):
         before_delete_project.send(self, app_name='qdjango', project=self.object)
 
         # clear cache
-        cache.delete(settings.QDJANGO_PRJ_CACHE_KEY.format(self.object.pk))
+        #cache.delete(settings.QDJANGO_PRJ_CACHE_KEY.format(self.object.pk))
 
         return super(QdjangoProjectDeleteView, self).post(request, *args, **kwargs)
 
