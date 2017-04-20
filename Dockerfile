@@ -25,10 +25,15 @@ RUN git clone https://wlorenzetti:kotegaeshi7890@bitbucket.org/gis3w/g3w-admin.g
 WORKDIR /home/apps/g3w-suite/g3w-admin
 RUN pip install -r requirements.txt
 
-# instal python-gdal
+# install python-gdal
 ENV CPLUS_INCLUDE_PATH=/usr/include/gdal
 ENV C_INCLUDE_PATH=/usr/include/gdal
 
 RUN pip install GDAL
+
+# install bower
+RUN apt-get install -y nodejs-legacy npm
+RUN npm install -g bower
+RUN bower --allow-root install
 
 
