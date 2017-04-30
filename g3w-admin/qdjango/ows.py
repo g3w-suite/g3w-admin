@@ -88,8 +88,18 @@ class OWSRequestHandler(OWSRequestHandlerBase):
                 layer_source = QueryDict(layer.datasource)
                 urldata = urlsplit(layer_source['url'])
                 server_base = urlsplit(layer_source['url']).netloc
+                server_base_port = 80
                 headers = {}
-                conn = HTTPConnection(server_base, 80)
+
+                # try to add proxy server if isset
+                if settings.PROXY_SERVER:
+                    server_base = settings.PROXY_SERVER_URL
+                    server_base_port = settings.PROXY_SERVER_PORT
+
+                conn = HTTPConnection(server_base, server_base_port)
+
+                if settings.PROXY_SERVER:
+                    conn.set_tunnel(urlsplit(layer_source['url']).netloc, 80)
 
                 # copy q to manage it
                 new_q = copy(q)
@@ -112,6 +122,8 @@ class OWSRequestHandler(OWSRequestHandlerBase):
                 conn = HTTPConnection(server_base, settings.QDJANGO_SERVER_PORT)
 
                 url = '?'.join([settings.QDJANGO_SERVER_URL, q.urlencode()])
+
+
 
             conn.request(request.method, url, request.body, headers)
             result = conn.getresponse()

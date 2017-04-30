@@ -495,16 +495,16 @@ _.extend(g3wadmin.widget, {
         initUploadFields($item, {delete_url: null});
 
         var $uploader = $item.find(".file-uploader-container");
-        var $thumb = $uploader.parents().find('.img-thumbnail');
-        if ($thumb.length > 0) {
-            $uploader.on('complete', function(e, id, name, resJSON, xhr){
+        $uploader.on('complete', function(e, id, name, resJSON, xhr){
+            var $thumb = $(this).parents('.box-body').find('.img-thumbnail');
             $thumb.attr('src', resJSON.path);
             if ($thumb.is(':hidden'))
                 $thumb.show();
-            }).on('deleteComplete', function(e, id, name, xhr){
-                $thumb.hide();
-            });
-        }
+        }).on('deleteComplete', function(e, id, name, xhr){
+            var $thumb = $(this).parents('.box-body').find('.img-thumbnail');
+            $thumb.hide();
+        });
+
     },
 
     /**
