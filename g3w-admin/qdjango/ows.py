@@ -90,13 +90,17 @@ class OWSRequestHandler(OWSRequestHandlerBase):
                 server_base = urlsplit(layer_source['url']).netloc
                 server_base_port = 80
                 headers = {}
+                source_address = None
 
                 # try to add proxy server if isset
                 if settings.PROXY_SERVER:
                     server_base = settings.PROXY_SERVER_URL
                     server_base_port = settings.PROXY_SERVER_PORT
 
-                conn = HTTPConnection(server_base, server_base_port)
+                    if 'PROXY_CLIENT_SENDER_IP' in settings:
+                        source_address = settings.PROXY_CLIENT_SENDER_IP
+
+                conn = HTTPConnection(server_base, server_base_port, source_address=source_address)
 
                 if settings.PROXY_SERVER:
                     conn.set_tunnel(urlsplit(layer_source['url']).netloc, 80)
