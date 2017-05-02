@@ -97,7 +97,7 @@ class OWSRequestHandler(OWSRequestHandlerBase):
                     server_base = settings.PROXY_SERVER_URL
                     server_base_port = settings.PROXY_SERVER_PORT
 
-                    if 'PROXY_CLIENT_SENDER_IP' in settings:
+                    if hasattr(settings, 'PROXY_CLIENT_SENDER_IP'):
                         source_address = settings.PROXY_CLIENT_SENDER_IP
 
                 conn = HTTPConnection(server_base, server_base_port, source_address=source_address)
