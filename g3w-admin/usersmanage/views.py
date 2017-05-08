@@ -9,14 +9,14 @@ from django.views.generic import (
 from django.views.generic.detail import SingleObjectMixin
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import permission_required
-from guardian.shortcuts import assign_perm
+from guardian.shortcuts import assign_perm, get_objects_for_user
 from guardian.decorators import permission_required_or_403
 from core.mixins.views import G3WRequestViewMixin, G3WAjaxDeleteViewMixin
 from .utils import getUserGroups
 from .forms import *
 
 
-class UserListView(G3WRequestViewMixin,ListView):
+class UserListView(G3WRequestViewMixin, ListView):
     """List users view."""
     template_name = 'usersmanage/user_list.html'
 
@@ -27,7 +27,9 @@ class UserListView(G3WRequestViewMixin,ListView):
             if not self.request.user.is_staff:
                 queryset = queryset.exclude(is_staff=True)
         else:
-            queryset = queryset.filter(groups__name__in=(G3W_VIEWER1, G3W_VIEWER2))
+
+            queryset = get_objects_for_user(self.request.user, 'auth.change_user', User).order_by('username')
+            #queryset = queryset.filter(groups__name__in=(G3W_VIEWER1, G3W_VIEWER2))
         return queryset
 
 

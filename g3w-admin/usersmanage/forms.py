@@ -19,7 +19,7 @@ from PIL import Image
 from .models import Userdata, Department
 from core.mixins.forms import G3WRequestFormMixin, G3WFormMixin
 from usersmanage.configs import *
-from .utils import getUserGroups
+from .utils import getUserGroups, userHasGroups
 
 
 def label_users(obj):
@@ -234,12 +234,17 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
         if self.request.user.is_superuser:
             if not self.request.user.is_staff:
                 self.fields.pop('is_staff')
-        else:
+        elif G3W_EDITOR1 in getUserGroups(self.request.user):
             # other but only Editor level 1 can add user
             self.fields['groups'].queryset = AuthGroup.objects.filter(name__in=[G3W_VIEWER1, G3W_VIEWER2])
             self.fields['groups'].required = True
             self.fields.pop('is_superuser')
             self.fields.pop('is_staff')
+        elif userHasGroups(self.request.user, [G3W_VIEWER1, G3W_VIEWER2]):
+            self.fields.pop('is_superuser')
+            self.fields.pop('is_staff')
+            self.fields.pop('groups')
+            self.fields.pop('department')
 
     def save(self, commit=True):
         user = super(UserCreationForm, self).save(commit=False)
@@ -250,11 +255,15 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
             user.save()
 
             # for save groups
-            self.cleaned_data['groups'] = () if not self.cleaned_data['groups'] else (self.cleaned_data['groups'],)
+            if 'groups' not in self.cleaned_data:
+                self.cleaned_data['groups'] = self.request.user.groups.all()
+            else:
+                self.cleaned_data['groups'] = (self.cleaned_data['groups'],)
             self.save_m2m()
 
             if hasattr(user, 'userdata'):
-                user.userdata.department = self.cleaned_data['department']
+                if 'department' in self.cleaned_data:
+                    user.userdata.department = self.cleaned_data['department']
                 if self.cleaned_data['avatar']:
                     user.userdata.avatar = self.cleaned_data['avatar']
                 else:
