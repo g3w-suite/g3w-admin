@@ -492,7 +492,7 @@ _.extend(g3wadmin.widget, {
      * @param $item
      */
     ajaxUpload: function($item){
-        initUploadFields($item, {delete_url: null});
+        initUploadFields($item);
 
         var $uploader = $item.find(".file-uploader-container");
         $uploader.on('complete', function(e, id, name, resJSON, xhr){

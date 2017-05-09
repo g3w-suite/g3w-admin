@@ -13,18 +13,10 @@
 </h1>
 {% endblock %}
 
-{% block custom_js_links_page %}
-<script>
-    $(function() {
-        initUploadFields($('#generalsuitedata-form'));
-    });
-</script>
-{% endblock %}
-
 {% block main_content %}
 
 
-<form method="post" id="generalsuitedata-form"  enctype="multipart/form-data">
+<form method="post" id="generalsuitedata-form" data-widget-type="ajaxUpload"   enctype="multipart/form-data">
     {% if form.errors %}
         <div class="row">
             <div class="col-md-12">
