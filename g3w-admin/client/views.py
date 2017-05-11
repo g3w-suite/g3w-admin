@@ -12,9 +12,6 @@ from django.core.exceptions import PermissionDenied
 
 from copy import deepcopy
 
-
-from tracking_analyzer.models import Tracker
-
 class ClientView(TemplateView):
 
     template_name = "client/index.html"
@@ -36,7 +33,7 @@ class ClientView(TemplateView):
                 return redirect_to_login(request.get_full_path(), settings.LOGIN_URL, 'next')
             else:
                 raise PermissionDenied()
-        Tracker.objects.create_from_request(request, self.project)
+
         return super(ClientView, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):

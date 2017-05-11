@@ -85,7 +85,7 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django_user_agents.middleware.UserAgentMiddleware',
+    #'django_user_agents.middleware.UserAgentMiddleware',
     # 'debug_panel.middleware.DebugPanelMiddleware'
 ]
 
