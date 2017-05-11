@@ -258,7 +258,10 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
             if 'groups' not in self.cleaned_data:
                 self.cleaned_data['groups'] = self.request.user.groups.all()
             else:
-                self.cleaned_data['groups'] = (self.cleaned_data['groups'],)
+                if self.cleaned_data['groups']:
+                    self.cleaned_data['groups'] = (self.cleaned_data['groups'],)
+                else:
+                    self.cleaned_data['groups'] = []
             self.save_m2m()
 
             if hasattr(user, 'userdata'):

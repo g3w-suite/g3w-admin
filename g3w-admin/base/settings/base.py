@@ -53,7 +53,9 @@ THIRD_PARTY_APPS = [
     'rest_framework_gis',
     'import_export',
     'mptt',
-    'ordered_model'
+    'ordered_model',
+    #'django_user_agents',
+    #'tracking_analyzer'
     # 'debug_toolbar',
     # 'debug_panel',
 ]
@@ -83,6 +85,7 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django_user_agents.middleware.UserAgentMiddleware',
     # 'debug_panel.middleware.DebugPanelMiddleware'
 ]
 
