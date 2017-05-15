@@ -141,7 +141,7 @@ class ProjectSerializer(serializers.ModelSerializer):
             for relation in relations:
 
                 # check layer type
-                if layers[relation['referencingLayer']].layer_type in ('postgres', 'spatiallite'):
+                if layers[relation['referencingLayer']].layer_type in ('postgres', 'spatialite'):
                     ret['relations'].append(relation)
 
         return ret
