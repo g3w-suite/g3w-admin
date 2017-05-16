@@ -191,7 +191,7 @@ class QdjangoProjectRelationsApiView(APIView):
         # build using connection name
         datasource = datasource2dict(referencing_layer.datasource)
         using = build_dango_connection_name(referencing_layer.datasource)
-        connections.databases[using] = build_django_connection(datasource)
+        connections.databases[using] = build_django_connection(datasource, layer_type=referencing_layer.layer_type)
 
         # exec raw query
         # todo: better
