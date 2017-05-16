@@ -202,10 +202,18 @@ class QdjangoProjectRelationsApiView(APIView):
                 relation_field_value))
             rows = dictfetchall(cursor)
 
+        rowss = []
+        for r in rows:
+            rn = r.copy()
+            for f in r.keys():
+                if type(r[f]) == buffer:
+                    del(rn[f])
+            rowss.append(rn)
+
         # remove new db connection
         del connections.databases[using]
 
-        return Response(rows)
+        return Response(rowss)
 
 
 # For layers
