@@ -12,7 +12,7 @@ def getNextVlueFromPGSeq(PGSeqName, connection='default'):
     return res[0]
 
 
-def build_django_connection(datasource, layer_type='postgres'):
+def build_django_connection(datasource, layer_type='postgres', schema='public'):
     """
     Build django cdict connection with datasource values
     :param datasource: dict
@@ -28,6 +28,9 @@ def build_django_connection(datasource, layer_type='postgres'):
             'PASSWORD': datasource['password'],
             'HOST': datasource['host'],
             'PORT': datasource['port'],
+            'OPTIONS': {
+                'options': '-c search_path={}'.format(schema)
+            }
         }
     else:
         return {
