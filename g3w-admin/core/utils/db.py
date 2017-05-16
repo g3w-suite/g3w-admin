@@ -33,7 +33,7 @@ def build_django_connection(datasource, layer_type='postgres', schema=None):
         if schema and schema != 'public':
             conn.update({
                 'OPTIONS': {
-                    'options': '-c search_path={}'.format(schema)
+                    'options': '-c search_path={},public'.format(schema)
                 }
             })
 
