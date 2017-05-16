@@ -12,7 +12,7 @@ def getNextVlueFromPGSeq(PGSeqName, connection='default'):
     return res[0]
 
 
-def build_django_connection(datasource, layer_type='postgres', schema='public'):
+def build_django_connection(datasource, layer_type='postgres', schema=None):
     """
     Build django cdict connection with datasource values
     :param datasource: dict
@@ -21,17 +21,23 @@ def build_django_connection(datasource, layer_type='postgres', schema='public'):
     """
 
     if layer_type == 'postgres':
-        return {
+        conn = {
             'ENGINE': 'django.contrib.gis.db.backends.postgis',
             'NAME': datasource['dbname'],
             'USER': datasource['user'],
             'PASSWORD': datasource['password'],
             'HOST': datasource['host'],
             'PORT': datasource['port'],
-            'OPTIONS': {
-                'options': '-c search_path={}'.format(schema)
-            }
         }
+
+        if schema and schema != 'public':
+            conn.update({
+                'OPTIONS': {
+                    'options': '-c search_path=public, {}'.format(schema)
+                }
+            })
+
+        return conn
     else:
         return {
             'ENGINE': 'django.contrib.gis.db.backends.spatialite',
