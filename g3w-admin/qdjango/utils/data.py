@@ -616,10 +616,31 @@ class QgisProject(XmlData):
             toRetLayers = []
             for level, layerTreeSubNode in enumerate(layerTreeNode):
                 if level > 0:
+
+
+
                     toRetLayer = {
                         'name': layerTreeSubNode.attrib['name'],
                         'expanded': True if layerTreeSubNode.attrib['expanded'] == '1' else False
                     }
+
+                    if layerTreeSubNode.tag == 'layer-tree-group':
+
+                        mutually_exclusive = False
+                        if 'mutually-exclusive' in layerTreeSubNode.attrib and \
+                                        layerTreeSubNode.attrib['mutually-exclusive'] == '1':
+                            mutually_exclusive = True
+
+                        mutually_exclusive_child = False
+                        if 'mutually-exclusive-child' in layerTreeSubNode.attrib and \
+                                        layerTreeSubNode.attrib['mutually-exclusive-child'] == '1':
+                            mutually_exclusive_child = True
+
+                        toRetLayer.update({
+                            'mutually-exclusive': mutually_exclusive,
+                            'mutually-exclusive-child': mutually_exclusive_child
+                        })
+
                     if layerTreeSubNode.tag == 'layer-tree-layer':
                         toRetLayer.update({
                             'id': layerTreeSubNode.attrib['id'],
