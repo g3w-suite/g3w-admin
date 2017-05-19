@@ -20,13 +20,8 @@ def dashboard_widget(sender, **kwargs):
 
         data = get_objects_for_user(sender.request.user, 'cdu.view_configs', Configs).order_by('title')
 
-
-        context = RequestContext(request=sender.request, dict_={
-            'data': data
-        })
-
         widget = loader.get_template('cdu/widgets/dashboard.html')
-        return widget.render(context)
+        return widget.render(context={'data': data}, request=sender.request)
 
 
 @receiver(initconfig_plugin_start)
