@@ -6,7 +6,7 @@ from autoslug import AutoSlugField
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from autoslug.utils import slugify
-from core.models import Group, BaseLayer
+from core.models import Group, BaseLayer, GroupProjectPanoramic
 from .utils.storage import QgisFileOverwriteStorage
 from core.mixins.models import G3WACLModelMixins, G3WProjectMixins
 from model_utils import Choices
