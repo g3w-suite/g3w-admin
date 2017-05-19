@@ -7,7 +7,7 @@ from django.shortcuts import get_object_or_404
 from django.apps import apps
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from guardian.exceptions import GuardianError
-from guardian.utils import get_403_or_None
+from guardian.utils import get_40x_or_None
 from .projects import countAllProjects
 
 globalSigner = Signer()
@@ -108,7 +108,7 @@ def project_type_permission_required(perm, lookup_variables=None, **kwargs):
             # ad app to perm
             perms = [project_type + "." + perm]
 
-            response = get_403_or_None(request, perms=perms, obj=obj,
+            response = get_40x_or_None(request, perms=perms, obj=obj,
                 login_url=login_url, redirect_field_name=redirect_field_name,
                 return_403=return_403, accept_global_perms=accept_global_perms)
             if response:

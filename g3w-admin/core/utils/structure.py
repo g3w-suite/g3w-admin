@@ -17,6 +17,7 @@ RELATIONS_NAMESPACE = 'g3w_'
 
 # data field type
 FIELD_TYPE_INTEGER = 'integer'
+FIELD_TYPE_BIGINTEGER = 'integer'
 FIELD_TYPE_FLOAT = 'float'
 FIELD_TYPE_STRING = 'string'
 FIELD_TYPE_TEXT = 'text'
@@ -44,6 +45,7 @@ FORM_FIELD_TYPE_FILE = 'file'
 # mapping between form fields and fields data types
 FORM_FIELDS_MAPPING = {
     FIELD_TYPE_INTEGER: FORM_FIELD_TYPE_TEXT,
+    FIELD_TYPE_BIGINTEGER: FORM_FIELD_TYPE_TEXT,
     FIELD_TYPE_FLOAT: FORM_FIELD_TYPE_TEXT,
     FIELD_TYPE_STRING: FORM_FIELD_TYPE_TEXT,
     FIELD_TYPE_TEXT: FORM_FIELD_TYPE_TEXTAREA,
@@ -124,6 +126,7 @@ FIELD_TYPES_MAPPING = {
         TextField: FIELD_TYPE_STRING,
         URLField: FIELD_TYPE_STRING,
         IntegerField: FIELD_TYPE_INTEGER,
+        BigIntegerField: FIELD_TYPE_BIGINTEGER,
         FloatField: FIELD_TYPE_FLOAT,
         ImageField: FIELD_TYPE_IMAGE,
         FileField: FIELD_TYPE_FILE,
@@ -131,6 +134,7 @@ FIELD_TYPES_MAPPING = {
         TextField: FIELD_TYPE_TEXT,
         ForeignKey: FIELD_TYPE_INTEGER, # is not correct
         AutoField: FIELD_TYPE_INTEGER,
+        #BigAutoField: FIELD_TYPE_BIGINTEGER,
         NullBooleanField: FIELD_TYPE_BOOLEAN
     }
 }
@@ -261,7 +265,7 @@ def mapLayerAttributesFromModel(model, **kwargs):
                     fieldLabel=field.verbose_name if field.verbose_name else field.attname,
                     type=fieldType,
                     inputType=FORM_FIELDS_MAPPING[fieldType],
-                    editable=not field==model._meta.pk
+                    editable=not (field==model._meta.pk and type(field) in (AutoField,))
                 )
 
                 # add upload url to image type if module is set

@@ -206,7 +206,7 @@ class QdjangoProjectRelationsApiView(APIView):
         for r in rows:
             rn = r.copy()
             for f in r.keys():
-                if type(r[f]) == buffer:
+                if type(r[f]) == buffer or f in ['the_geom', 'geom']:
                     del(rn[f])
             rowss.append(rn)
 

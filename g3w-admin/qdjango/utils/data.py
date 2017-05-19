@@ -774,9 +774,9 @@ class QgisProject(XmlData):
                 layer.save()
 
             # Pre-existing layers that have not been updated must be dropped
-            newLayerNameList = [layer.name for layer in self.layers]
+            newLayerNameList = [(layer.name, layer.datasource) for layer in self.layers]
             for layer in self.instance.layer_set.all():
-                if layer.name not in newLayerNameList:
+                if (layer.name, layer.datasource) not in newLayerNameList:
                     layer.delete()
 
             # Update qgis file datasource for SpatiaLite and OGR layers

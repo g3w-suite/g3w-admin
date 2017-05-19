@@ -271,3 +271,9 @@ class Widget(G3WACLModelMixins, models.Model):
 
         for user_id in users_id:
             setPermissionUserObject(User.objects.get(pk=user_id), self, permissions='qdjango.view_widget', mode=mode)
+
+
+    @staticmethod
+    def get_by_type(type='search'):
+        return Widget.objects.filter(widget_type=type)
+
