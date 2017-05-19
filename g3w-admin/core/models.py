@@ -133,6 +133,14 @@ class Group(TimeStampedModel):
     def get_absolute_url(self):
         return reverse('group-detail', kwargs={'slug': self.slug})
 
+    def get_panoramic_project(self):
+        try:
+            group_pano_project = GroupProjectPanoramic.objects.get(group=self)
+            Project = apps.get_app_config(group_pano_project.project_type).get_model('project')
+            return Project.objects.get(pk=group_pano_project.project_id)
+        except:
+            return None
+
     def getProjects(self):
         """
         Get every type projects for group
@@ -141,7 +149,7 @@ class Group(TimeStampedModel):
         for g3wProjectApp in settings.G3WADMIN_PROJECT_APPS:
             Project = apps.get_app_config(g3wProjectApp).get_model('project')
             projects = Project.objects.filter(group=self)
-            groupProjects += [project for project in projects]
+            groupProjects += [(g3wProjectApp, project) for project in projects]
         return groupProjects
 
     def getProjectsNumber(self, user=None):
@@ -232,7 +240,6 @@ class Group(TimeStampedModel):
             if len(editors) > 0:
                 return editors[0]
         return super(Group, self).__getattr__(attr)
-
 
 
 class GroupProjectPanoramic(models.Model):

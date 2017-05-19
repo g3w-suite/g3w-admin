@@ -2,6 +2,7 @@ from __future__ import division
 from django import template
 from django.conf.urls.static import static
 from core.signals import load_project_widgets, load_layer_actions
+from core.models import GroupProjectPanoramic
 
 
 register = template.Library()
