@@ -193,6 +193,9 @@ class Layer(G3WACLModelMixins, models.Model):
     # Tilestache confgiguration paramenters for layer
     tilestache_conf = models.TextField(_('Tilestache layer configurations paramenters'), blank=True, null=True)
 
+    exclude_attribute_wms = models.TextField(_('Attributes excluded from wms'), blank=True, null=True)
+    exclude_attribute_wfs = models.TextField(_('Attributes excluded from wfs'), blank=True, null=True)
+
     def __unicode__(self):
         return self.name
 
@@ -204,6 +207,9 @@ class Layer(G3WACLModelMixins, models.Model):
         permissions = (
             ('view_layer', 'Can view qdjango layer'),
         )
+
+    def database_columns_by_name(self):
+        return {db_col['name']: db_col for db_col in eval(self.database_columns)}
 
     def getWidgetsNumber(self):
         """

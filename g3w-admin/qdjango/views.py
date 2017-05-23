@@ -185,8 +185,10 @@ class QdjangoProjectRelationsApiView(APIView):
         referencing_layer = Layer.objects.get(qgs_layer_id=relation['referencingLayer'], project=project)
 
         # database columns referencing_layer
-        db_columns_referencing_layer = eval(referencing_layer.database_columns) \
+        db_columns_referencing_layer = referencing_layer.database_columns_by_name() \
             if referencing_layer.database_columns else None
+
+        exclude_columns = eval(referencing_layer.exclude_attribute_wms)
 
         # build using connection name
         datasource = datasource2dict(referencing_layer.datasource)
@@ -202,13 +204,22 @@ class QdjangoProjectRelationsApiView(APIView):
                 relation_field_value))
             rows = dictfetchall(cursor)
 
+
+
         rowss = []
         for r in rows:
             rn = r.copy()
+            new_rn = {}
             for f in r.keys():
                 if type(r[f]) == buffer or f in ['the_geom', 'geom']:
-                    del(rn[f])
-            rowss.append(rn)
+                    continue
+                elif exclude_columns and f in exclude_columns:
+                    continue
+                if db_columns_referencing_layer:
+                    new_rn[db_columns_referencing_layer[f]['label']] = rn[f]
+                else:
+                    new_rn[f] = rn[f]
+            rowss.append(new_rn)
 
         # remove new db connection
         del connections.databases[using]

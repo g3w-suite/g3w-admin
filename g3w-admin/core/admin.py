@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.admin import ModelAdmin
 from ordered_model.admin import OrderedModelAdmin
 from sitetree.admin import TreeItemAdmin, override_item_admin
 from .ie.admin import G3WImportExportModelAdmin
@@ -47,6 +48,7 @@ class MapControlAdmin(OrderedModelAdmin, G3WImportExportModelAdmin):
     model = MapControl
     list_display = ('name', 'move_up_down_links')
 admin.site.register(MapControl, MapControlAdmin)
+
 
 # Tweak admin site settings like title, header, 'View Site' URL, etc
 admin.site.site_title = 'G3W Admin Administration'

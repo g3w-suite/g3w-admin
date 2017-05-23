@@ -30,7 +30,5 @@ urlpatterns = [
 
     url(r'^generalsuitedata/$', login_required(GeneralSuiteDataUpdateView.as_view()), name='generaldata-update'),
 
-    #url(r'^{}(?P<path>.*)$'.format(settings.MEDIA_URL[1:] + 'logo_img/'), protected_serve, {'document_root': settings.MEDIA_ROOT+ 'logo_img/'}),
-
 ]
 

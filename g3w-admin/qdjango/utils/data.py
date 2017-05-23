@@ -114,6 +114,8 @@ class QgisProjectLayer(XmlData):
         'origname',
         'aliases',
         'columns',
+        'excludeAttributesWMS',
+        'excludeAttributesWFS',
         'geometrytype'
     ]
 
@@ -357,6 +359,34 @@ class QgisProjectLayer(XmlData):
             pass
         return joined_columns
 
+    def _getDataExcludeAttributesWMS(self):
+        """
+        Get attribute to exlude from WMS info and relations 
+        """
+
+        excluded_columns = []
+        try:
+            attributes = self.qgisProjectLayerTree.find('excludeAttributesWMS')
+            for attribute in attributes:
+                excluded_columns.append(attribute.text)
+        except Exception as e:
+            pass
+        return excluded_columns if excluded_columns else None
+
+    def _getDataExcludeAttributesWFS(self):
+        """
+        Get attribute to exlude from WMS info and relations 
+        """
+
+        excluded_columns = []
+        try:
+            attributes = self.qgisProjectLayerTree.find('excludeAttributesWFS')
+            for attribute in attributes:
+                excluded_columns.append(attribute.text)
+        except Exception as e:
+            pass
+        return excluded_columns if excluded_columns else None
+
     def clean(self):
         for validator in self.validators:
             validator.clean()
@@ -370,6 +400,8 @@ class QgisProjectLayer(XmlData):
         """
 
         columns = json.dumps(self.columns) if self.columns else None
+        excludeAttributesWMS = json.dumps(self.excludeAttributesWMS) if self.excludeAttributesWMS else None
+        excludeAttributesWFS = json.dumps(self.excludeAttributesWFS) if self.excludeAttributesWFS else None
 
         self.instance, created = Layer.objects.get_or_create(
             name=self.name,
@@ -390,6 +422,8 @@ class QgisProjectLayer(XmlData):
                 'order': self.order,
                 'edit_options': self.editOptions,
                 'wfscapabilities': self.wfsCapabilities,
+                'exclude_attribute_wms': excludeAttributesWMS,
+                'exclude_attribute_wfs': excludeAttributesWFS,
                 'geometrytype': self.geometrytype
                 }
             )
@@ -408,6 +442,8 @@ class QgisProjectLayer(XmlData):
             self.instance.order = self.order
             self.instance.edit_options = self.editOptions
             self.instance.wfscapabilities = self.wfsCapabilities
+            self.instance.exclude_attribute_wms = excludeAttributesWMS
+            self.instance.exclude_attribute_wfs = excludeAttributesWFS
             self.instance.geometrytype = self.geometrytype
         # Save self.instance
         self.instance.save()
