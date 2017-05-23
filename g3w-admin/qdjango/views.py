@@ -188,7 +188,8 @@ class QdjangoProjectRelationsApiView(APIView):
         db_columns_referencing_layer = referencing_layer.database_columns_by_name() \
             if referencing_layer.database_columns else None
 
-        exclude_columns = eval(referencing_layer.exclude_attribute_wms)
+        exclude_columns = eval(referencing_layer.exclude_attribute_wms) \
+            if referencing_layer.exclude_attribute_wms else None
 
         # build using connection name
         datasource = datasource2dict(referencing_layer.datasource)
@@ -203,7 +204,6 @@ class QdjangoProjectRelationsApiView(APIView):
                 relation['fieldRef']['referencingField'],
                 relation_field_value))
             rows = dictfetchall(cursor)
-
 
 
         rowss = []
