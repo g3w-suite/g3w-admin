@@ -25,7 +25,7 @@ from .signals import load_qdjango_widgets_data
 from .mixins.views import *
 from .forms import *
 import json
-
+from collections import OrderedDict
 
 class QdjangoProjectDownloadView(ObjectDownloadView):
     """
@@ -209,7 +209,7 @@ class QdjangoProjectRelationsApiView(APIView):
         rowss = []
         for r in rows:
             rn = r.copy()
-            new_rn = {}
+            new_rn = OrderedDict()
             for f in r.keys():
                 if type(r[f]) == buffer or f in ['the_geom', 'geom']:
                     continue

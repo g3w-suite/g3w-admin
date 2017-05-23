@@ -1,5 +1,6 @@
 from django.db import connections
 import hashlib
+from collections import OrderedDict
 
 def getNextVlueFromPGSeq(PGSeqName, connection='default'):
     """
@@ -63,7 +64,11 @@ def dictfetchall(cursor):
     :return:
     """
     columns = [col[0] for col in cursor.description]
-    return [
-        dict(zip(columns, row))
-        for row in cursor.fetchall()
-    ]
+    res = []
+    for row in cursor.fetchall():
+        drow = OrderedDict()
+        for c in zip(columns, row):
+            drow[c[0]] = c[1]
+        res.append(drow)
+
+    return res
