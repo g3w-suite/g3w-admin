@@ -248,3 +248,5 @@ FRONTEND = False
 FRONTEND_APP = 'frontend'
 
 SENTRY = False
+
+SITE_PREFIX_URL = None
