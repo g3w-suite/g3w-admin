@@ -205,7 +205,6 @@ class QdjangoProjectRelationsApiView(APIView):
                 relation_field_value))
             rows = dictfetchall(cursor)
 
-
         rowss = []
         for r in rows:
             rn = r.copy()
