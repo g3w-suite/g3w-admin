@@ -16,8 +16,10 @@ gulp.task('build', function () {
         ]}))
         .pipe(gulpif('*.js', uglify()))
         .pipe(gulpif('*.css', cleanCss({
-            root: 'g3w-admin/core/static/bower_components/icheck/skins',
-            rebase: false
+            //root: 'g3w-admin/core/static/bower_components/icheck/skins',
+            //rebase: false,
+            keepSpecialComments: 0,
+            inline: ['none']
         })))
         .pipe(gulp.dest('g3w-admin/core/static/dist'));
 });

@@ -4,7 +4,8 @@ MAINTAINER Walter Lorenzetti<lorenzetti@gis3w.it>
 RUN  apt-get update && apt-get install -y \
 	git \
 	python-pip \
-	software-properties-common
+	software-properties-common\
+	xvfb
 
 RUN add-apt-repository ppa:ubuntugis/ubuntugis-unstable
 RUN apt-get update && apt-get dist-upgrade -y && apt-get install -y \
@@ -17,6 +18,7 @@ RUN mkdir /home/apps
 RUN mkdir /home/apps/g3w-suite
 RUN mkdir /home/apps/g3w-suite/www/
 RUN mkdir /home/apps/g3w-suite/www/media
+RUN mkdir /home/apps/g3w-suite/www/media/data
 RUN mkdir /home/apps/g3w-suite/www/static
 WORKDIR /home/apps/g3w-suite
 
