@@ -20,10 +20,13 @@ urlpatterns = [
     #group urls
     url(r'^groups/$', login_required(GroupListView.as_view()), name='group-list'),
     url(r'^groups/add/$', login_required(GroupCreateView.as_view()), name='group-add'),
-    url(r'^groups/update/(?P<slug>[-_\w\d]+)/$',login_required(GroupUpdateView.as_view()), name='group-update'),
-    url(r'^groups/delete/(?P<slug>[-_\w\d]+)/$',login_required(GroupDeleteView.as_view()), name='group-delete'),
+    url(r'^groups/update/(?P<slug>[-_\w\d]+)/$', login_required(GroupUpdateView.as_view()), name='group-update'),
+    url(r'^groups/delete/(?P<slug>[-_\w\d]+)/$', login_required(GroupDeleteView.as_view()), name='group-delete'),
     url(r'^groups/(?P<slug>[-_\w\d]+)/$',login_required(GroupDetailView.as_view()), name='group-detail'),
-    url(r'^jx/groups/(?P<slug>[-_\w\d]+)/setpanoramic/(?P<project_type>[-_\w\d]+)/(?P<project_id>[0-9]+)/$', login_required(GroupSetProjectPanoramicView.as_view()), name='group-set-project-panoramic'),
+    url(r'^jx/groups/(?P<slug>[-_\w\d]+)/setpanoramic/(?P<project_type>[-_\w\d]+)/(?P<project_id>[0-9]+)/$',
+        login_required(GroupSetProjectPanoramicView.as_view()), name='group-set-project-panoramic'),
+    url(r'^jx/groups/(?P<slug>[-_\w\d]+)/setpanoramic/(?P<project_type>[-_\w\d]+)/(?P<project_id>[-_\w\d]+)/$',
+        login_required(GroupSetProjectPanoramicView.as_view()), name='group-set-project-panoramic'),
 
     #project urls
     url(r'^groups/(?P<group_slug>[-_\w\d]+)/projects/$', login_required(ProjectListView.as_view()), name='project-list'),

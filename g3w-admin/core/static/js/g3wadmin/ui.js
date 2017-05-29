@@ -198,9 +198,10 @@ _.extend(g3wadmin.ui, {
     },
 
     initSetProjectPanoramicWidget: function() {
-        $(document).on('ifChecked', '[data-widget-type="setProjectPanoramic"]', function(e){
-            ga.widget.setProjectPanoramic($(this));
+        $(document).on('ifClicked', '[data-widget-type="setProjectPanoramic"]', function(e){
+            ga.widget.setProjectPanoramic($(this), e);
         });
+
     },
 
     initLinkWidget2Layer: function() {

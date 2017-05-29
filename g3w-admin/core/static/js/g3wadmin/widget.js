@@ -527,7 +527,7 @@ _.extend(g3wadmin.widget, {
      * Set by ajax call project id and type for panoramic map
      * @param $item
      */
-    setProjectPanoramic: function($item) {
+    setProjectPanoramic: function($item, e) {
 
         try {
             var params = ga.utils.getDataAttrs($item, this._setProjectPanoramic);
@@ -535,9 +535,21 @@ _.extend(g3wadmin.widget, {
                 throw new Error('Attribute data-ajax-url not defined');
             }
 
+            if ($item.prop('checked')){
+                var url_data=params['ajax-url'].split("/");
+                url_data[url_data.length -2] = 'reset';
+                var url = url_data.join("/");
+
+                // uncheck radio
+                $item.iCheck('uncheck');
+
+            } else {
+                var url = params['ajax-url'];
+            }
+
             $.ajax({
                 method: 'get',
-                url: params['ajax-url'],
+                url: url,
                 error: function (xhr, textStatus, errorMessage) {
                     ga.widget.showError(ga.utils.buildAjaxErrorMessage(xhr.status, errorMessage));
                 }

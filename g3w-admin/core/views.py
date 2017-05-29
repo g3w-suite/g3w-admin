@@ -171,6 +171,10 @@ class GroupSetProjectPanoramicView(View):
 
         # case exists
         if groupProjectPanoramics:
+            if kwargs['project_id'] == 'reset':
+                groupProjectPanoramics.delete()
+                return JsonResponse({'Saved': 'ok'})
+
             groupProjectPanoramic = groupProjectPanoramics[0]
             groupProjectPanoramic.project_type = kwargs['project_type']
             groupProjectPanoramic.project_id = kwargs['project_id']
@@ -178,7 +182,8 @@ class GroupSetProjectPanoramicView(View):
         else:
 
             # case new one
-            groupProjectPanoramic = GroupProjectPanoramic(group=group, project_type=kwargs['project_type'], project_id=kwargs['project_id'])
+            groupProjectPanoramic = GroupProjectPanoramic(group=group, project_type=kwargs['project_type'],
+                                                          project_id=kwargs['project_id'])
         groupProjectPanoramic.save()
         return JsonResponse({'Saved': 'ok'})
 
