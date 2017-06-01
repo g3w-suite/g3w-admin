@@ -82,18 +82,31 @@ for app in settings.G3WADMIN_LOCAL_MORE_APPS:
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
+if settings.SITE_PREFIX_URL:
+    urlpatterns = [
+        url(r'^{}'.format(settings.SITE_PREFIX_URL), include(urlpatterns))
+    ]
+
 urlpatterns = i18n_patterns(*urlpatterns)
+
+if settings.SITE_PREFIX_URL:
+    apiUrlpatterns = [
+        url(r'^{}'.format(settings.SITE_PREFIX_URL), include(apiUrlpatterns))
+    ]
 
 urlpatterns += apiUrlpatterns
 
-urlpatterns += [url(r'^', include('OWS.urls'))]
+urlows = [url(r'^', include('OWS.urls'))]
+
+if settings.SITE_PREFIX_URL:
+    urlows = [
+        url(r'^{}'.format(settings.SITE_PREFIX_URL), include(urlows))
+    ]
+
+urlpatterns += urlows
 
 from sitetree.sitetreeapp import register_i18n_trees
 
 register_i18n_trees(G3W_SITETREE_I18N_ALIAS)
 
-if settings.SITE_PREFIX_URL:
-    urlpatterns = [
-        url(r'^{}'.format(settings.SITE_PREFIX_URL), include(urlpatterns))
-    ]
 
