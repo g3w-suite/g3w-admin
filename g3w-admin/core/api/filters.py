@@ -30,6 +30,9 @@ class IntersectsBBoxFilter(InsideBBoxFilter):
         if hasattr(view, 'reproject') and view.reproject:
             bbox.srid = view.layer.project.group.srid.auth_srid
             bbox.transform(view.layer.srid)
+        else:
+            bbox.srid = view.layer.srid
+            bbox.transform(view.layer.srid)
 
         if not bbox:
             return queryset
