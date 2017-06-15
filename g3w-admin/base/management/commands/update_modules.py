@@ -1,4 +1,4 @@
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 from django.apps import apps
 from django.conf import settings
 import git
@@ -13,6 +13,12 @@ class Command(BaseCommand):
         base_git_repo_path = os.chdir(os.getcwd() + '/../')
         base_git_repo_path = os.getcwd()
         repo = git.Repo(base_git_repo_path)
+
+        config = repo.config_reader()
+
+
+
+        '''
         repo.remotes.origin.pull()
         self.stdout.write(self.style.SUCCESS('UPDATE BASE DONE'))
         g3wsuite_apps = settings.G3WADMIN_PROJECT_APPS + settings.G3WADMIN_LOCAL_MORE_APPS
@@ -24,4 +30,4 @@ class Command(BaseCommand):
             print repo.config_reader()
             repo.remotes.origin.pull()
             self.stdout.write(self.style.SUCCESS('UPDATE {} DONE'.format(g3wsuite_app)))
-
+        '''
