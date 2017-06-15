@@ -1,0 +1,45 @@
+FROM ubuntu:16.04
+MAINTAINER Walter Lorenzetti<lorenzetti@gis3w.it>
+
+RUN  apt-get update && apt-get install -y \
+	git \
+	python-pip \
+	software-properties-common \
+	xvfb \
+	supervisor \
+	nginx \
+	fcgiwrap
+
+
+RUN add-apt-repository ppa:ubuntugis/ubuntugis-unstable
+COPY apt-qgis.list /etc/apt/sources.list.d/
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-key 073D307A618E5811
+RUN apt-get update && apt-get dist-upgrade -y && apt-get install -y \
+    libxml2-dev \
+    libxslt-dev \
+    postgresql-server-dev-all \
+    libgdal-dev \
+    qgis-server
+
+RUN mkdir /home/g3wsuite
+RUN mkdir /home/g3wsuite/static
+
+RUN mkdir /home/g3wsuite-data
+RUN mkdir /home/g3wsuite-data/cache
+RUN mkdir /home/g3wsuite-data/log
+RUN mkdir /home/g3wsuite-data/media
+
+COPY requirements.txt /home/g3wsuite/
+WORKDIR /home/g3wsuite
+RUN pip install -r requirements.txt
+
+# install python-gdal
+ENV CPLUS_INCLUDE_PATH=/usr/include/gdal
+ENV C_INCLUDE_PATH=/usr/include/gdal
+
+RUN pip install GDAL==2.1.0
+
+
+
+
+

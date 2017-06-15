@@ -1,0 +1,34 @@
+FROM gis3w/timon-app-base:latest
+MAINTAINER Walter Lorenzetti<lorenzetti@gis3w.it>
+
+
+WORKDIR /home/timon/timon-server/docker
+RUN echo "daemon off;" >> /etc/nginx/nginx.conf
+COPY uwsgi.ini /home/g3wsuite/
+COPY uwsgi_params /home/g3wsuite/
+COPY supervisor-app.conf /etc/supervisor/conf.d/
+COPY entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/entrypoint.sh
+COPY nginx-app.conf.tpl /home/g3wsuite/
+COPY local_settings.py /home/g3wsuite/g3w-admin/g3w-admin/base/settings/
+
+ENV G3WSUITE_DEBUG='False'
+ENV G3WSUITE_DATABASE_NAME='g3w_admin'
+ENV G3WSUITE_DATABASE_HOST='192.168.0.104'
+ENV G3WSUITE_DATABASE_USER='postgres'
+ENV G3WSUITE_DATABASE_PASSWORD='postgres'
+ENV G3WSUITE_DATABASE_PORT='5432'
+
+ENV G3WSUITE_FRONTEND='True'
+
+
+
+WORKDIR /home/timon/timon-server/
+
+EXPOSE 80
+ENTRYPOINT ["entrypoint.sh"]
+CMD ["supervisord", "-n"]
+
+
+
+
