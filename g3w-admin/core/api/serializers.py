@@ -107,7 +107,7 @@ class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
 
         # add initproject and overviewproject
-        ret['initproject'] = "{}:{}".format(self.projectType,self.projectId)
+        ret['initproject'] = "{}:{}".format(self.projectType, self.projectId)
 
         # add overviewproject is present
         overviewproject = instance.project_panoramic.all()

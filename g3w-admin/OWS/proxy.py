@@ -6,15 +6,19 @@ class Proxy(object):
     def __init__(self, authorizer_class = None, **kwargs):
         self.authorizer_class = authorizer_class
 
-    def request(self,request, OWSRequestHandler, **kwargs):
+    def request(self, request, OWSRequestHandler, **kwargs):
         # authorizer = self.authorizer_class()
         OWSrh = OWSRequestHandler(request, **kwargs)
         try:
             """
             First try to perfom request by OWS module handler
             """
-            authorizer = OWSrh.authorizer
-            authorizer.auth_request()
+            #try to che caller
+            if request.META['REMOTE_ADDR'] == '127.0.0.1' and 'Python' in request.META['HTTP_USER_AGENT']:
+                pass
+            else:
+                authorizer = OWSrh.authorizer
+                authorizer.auth_request()
         except AuthForbiddenRequest:
             raise AuthForbiddenRequest()
         except Exception as e:
