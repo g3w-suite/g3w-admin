@@ -21,6 +21,7 @@ from .mixins.views import G3WRequestViewMixin, G3WAjaxDeleteViewMixin
 from .utils.decorators import check_madd
 from .signals import after_update_group
 
+
 class TestView(View):
 
     def get(self, request, *args, **kwargs):
