@@ -1,5 +1,6 @@
 {% load staticfiles %}
 {% load i18n %}
+{% load g3wadmin_tags %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -7,8 +8,12 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>{{ page_title }}</title>
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-  <link rel="stylesheet" href="{% static "g3w-client/css/vendor.min.css" %}">
-  <link rel="stylesheet" href="{% static "g3w-client/css/app.min.css" %}">
+  {% with client_default|add:"/css/vendor.min.css" as vendor_css %}
+    <link rel="stylesheet" href="{% static vendor_css %}">
+  {% endwith %}
+  {% with client_default|add:"/css/app.min.css" as app_css %}
+    <link rel="stylesheet" href="{% static app_css %}">
+  {% endwith %}
   <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
   <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
   <!--[if lt IE 9]>
@@ -20,11 +25,17 @@
   <div id="app">
     <app></app>
   </div>
-  <script src="{% static "g3w-client/js/sdk.ext.min.js" %}"></script>
-  <script src="{% static "g3w-client/js/template.ext.min.js" %}"></script>
+  {% with client_default|add:"/js/sdk.ext.min.js" as sdk_js %}
+    <script src="{% static sdk_js %}"></script>
+  {% endwith %}
+  {% with client_default|add:"/js/template.ext.min.js" as template_js %}
+    <script src="{% static template_js %}"></script>
+  {% endwith %}
   <script>
     {{ group_config|safe }}
   </script>
-  <script src="{% static "g3w-client/js/app.min.js" %}"></script>
+  {% with client_default|add:"/js/app.min.js" as app_js %}
+    <script src="{% static app_js %}"></script>
+  {% endwith %}
 </body>
 </html>

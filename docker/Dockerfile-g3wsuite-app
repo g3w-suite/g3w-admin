@@ -1,8 +1,8 @@
-FROM gis3w/timon-app-base:latest
+FROM gis3w/g3wsuite-app-base:latest
 MAINTAINER Walter Lorenzetti<lorenzetti@gis3w.it>
 
 
-WORKDIR /home/timon/timon-server/docker
+WORKDIR /home/g3wsuite/g3w-admin/docker
 RUN echo "daemon off;" >> /etc/nginx/nginx.conf
 COPY uwsgi.ini /home/g3wsuite/
 COPY uwsgi_params /home/g3wsuite/

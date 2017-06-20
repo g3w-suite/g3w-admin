@@ -14,7 +14,7 @@ from copy import deepcopy
 
 class ClientView(TemplateView):
 
-    template_name = "client/index.html"
+    template_name = "{}/index.html".format(settings.CLIENT_DEFAULT)
     project = None
 
     def dispatch(self, request, *args, **kwargs):
@@ -46,6 +46,13 @@ class ClientView(TemplateView):
 
         groupData = deepcopy(groupSerializer.data)
 
+        # choose client by querystring paramenters
+        if 'client' in self.request.GET and self.request.GET['client'] in settings.CLIENTS_AVAILABLE:
+            contextData['client_default'] = self.request.GET['client']
+        else:
+            contextData['client_default'] = settings.CLIENT_DEFAULT
+
+
         # add user login data
         u = self.request.user
         if not u.is_anonymous():
@@ -67,7 +74,7 @@ class ClientView(TemplateView):
         # add baseUrl property
         contextData['group_config'] = 'var initConfig ={{ "staticurl":"{}", "client":"{}", ' \
                                       '"mediaurl":"{}", "user":{}, "group":{} }}'.format(
-            settings.STATIC_URL, "g3w-client/", settings.MEDIA_URL, user_data, serializedGroup)
+            settings.STATIC_URL, "{}/".format(settings.CLIENT_DEFAULT), settings.MEDIA_URL, user_data, serializedGroup)
 
         # project by type(app)
         if not '{}-{}'.format(kwargs['project_type'], self.project.pk) in groupSerializer.projects.keys():

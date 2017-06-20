@@ -13,7 +13,7 @@ RUN ./install-modules.sh
 # install bower
 RUN apt-get install -y nodejs-legacy npm
 RUN npm install -g bower
-RUN bower --allow-root install
+RUN bower --allow-root install --force-latest
 
 
 
