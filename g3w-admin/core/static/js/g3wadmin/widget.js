@@ -390,6 +390,11 @@ _.extend(g3wadmin.widget, {
                         folderUpload: "You are not allowed to upload folders."
                     }
                 },
+                dragDrop: {
+                    dragEnter: null,
+                    dragLeave: null,
+                    drop: null,
+                },
                 templates: {
                     box: ga.tpl.ajaxFiler_box(),
                     item: ga.tpl.ajaxFiler_item(),
