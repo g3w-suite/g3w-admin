@@ -4,6 +4,7 @@ declare -A repo
 
 repo["frontend"]="g3w-admin-frontend.git"
 repo["editing"]="g3w-admin-editing.git"
+repo["caching"]="g3w-admin-caching.git"
 repo["ogc"]="g3w-admin-ogc.git"
 repo["notes"]="g3w-admin-notes.git"
 repo["cdu"]="g3w-admin-cdu.git"
