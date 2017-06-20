@@ -5,7 +5,7 @@
   ],
   "description": "A webgis managment",
   "dependencies": {
-    "bootstrap": "~3.3.5",
+    "bootstrap": "3.3.7",
     "bootstrap3-wysihtml5-bower": "*",
     "bootstrap-datepicker": "*",
     "bootstrap-colorpicker": "*",
@@ -27,7 +27,7 @@
     "leaflet":"*",
     "leaflet-draw":"*",
     "proj4": "*",
-    "jstree": "3.3.1",
+    "jstree": "3.3.4",
     "jstree-bootstrap-theme": "*",
     "cookieconsent": "*",
     "bootswatch-dist": "flatly"
