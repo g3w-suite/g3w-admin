@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-28 14:22+0000\n"
+"POT-Creation-Date: 2017-06-21 08:59+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,35 +18,35 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: core/admin.py:15
+#: core/admin.py:16
 msgid "Basic settings"
 msgstr "Configurazioni di base"
 
-#: core/admin.py:18
+#: core/admin.py:19
 msgid "Access settings"
 msgstr "Accesso configurazioni"
 
-#: core/admin.py:22
+#: core/admin.py:23
 msgid "Display settings"
 msgstr "Mostra le configurazioni"
 
-#: core/admin.py:26
+#: core/admin.py:27
 msgid "Additional settings"
 msgstr "Configurazioni accessorie"
 
-#: core/api/views.py:73
+#: core/api/views.py:82
 msgid "Data are not correct or insufficent!"
 msgstr "I dati non sono corretti o insufficenti"
 
-#: core/api/views.py:79
+#: core/api/views.py:88
 msgid "A error server is occured!"
 msgstr "Si è verificato un errore server!"
 
-#: core/api/views.py:90
+#: core/api/views.py:99
 msgid "Not found"
 msgstr "Non trovato"
 
-#: core/api/views.py:97
+#: core/api/views.py:106
 msgid "Permission denied"
 msgstr "Permesso negato"
 
@@ -98,127 +98,127 @@ msgstr "Dati login frontend"
 msgid "Frontend social data"
 msgstr "Dati social media"
 
-#: core/models.py:81
+#: core/models.py:82
 msgid "Map control"
 msgstr "Controllo di mappa"
 
-#: core/models.py:82
+#: core/models.py:83
 msgid "Map controls"
 msgstr "Cantrolli di mappa"
 
-#: core/models.py:88
+#: core/models.py:89
 msgid "Name"
 msgstr "Nome"
 
-#: core/models.py:89 core/models.py:244
+#: core/models.py:90 core/models.py:256
 msgid "Title"
 msgstr "Titolo"
 
-#: core/models.py:90
+#: core/models.py:91
 msgid "Description"
 msgstr "Descrizione"
 
-#: core/models.py:92
+#: core/models.py:93
 msgid "Slug"
 msgstr ""
 
-#: core/models.py:94
+#: core/models.py:95
 msgid "Is active"
 msgstr "Attivo"
 
-#: core/models.py:97
+#: core/models.py:98
 msgid "lang"
 msgstr "Lunguaggio"
 
-#: core/models.py:100
+#: core/models.py:101
 msgid "Logo image"
 msgstr "Immagine logo"
 
-#: core/models.py:101
+#: core/models.py:102
 msgid "Logo link"
 msgstr "Link logo"
 
-#: core/models.py:102
+#: core/models.py:103
 msgid "Enter link with http:// or https//"
 msgstr "Il link deve contenere http:// or https//"
 
-#: core/models.py:118
+#: core/models.py:119
 msgid "Terms of use text"
 msgstr "Termi di utilizzo"
 
-#: core/models.py:121
+#: core/models.py:122
 msgid "Terms of use link"
 msgstr "Link termini di utilizzo"
 
-#: core/models.py:235 core/templates/core/group_form.html:11
+#: core/models.py:247 core/templates/core/group_form.html:11
 msgid "Group"
 msgstr "Gruppo"
 
-#: core/models.py:236
+#: core/models.py:248
 msgid "Project type"
 msgstr "Tipo di progetto"
 
-#: core/models.py:237
+#: core/models.py:249
 msgid "Project type id"
 msgstr "Id tipo di progetto"
 
-#: core/models.py:245
+#: core/models.py:257
 msgid "Subtitle"
 msgstr "Sottotitolo"
 
-#: core/models.py:246
+#: core/models.py:258
 msgid "Home description"
 msgstr "Descrizione home"
 
-#: core/models.py:247
+#: core/models.py:259
 msgid "About title"
 msgstr "Titolo sezione 'Il progetto'"
 
-#: core/models.py:248
+#: core/models.py:260
 msgid "About description"
 msgstr "Descrizione pagina 'Il progetto'"
 
-#: core/models.py:249
+#: core/models.py:261
 msgid "About name"
 msgstr "Nome del progetto"
 
-#: core/models.py:250
+#: core/models.py:262
 msgid "About phone"
 msgstr "Telefono del progetto"
 
-#: core/models.py:251
+#: core/models.py:263
 msgid "About email"
 msgstr "Email del progetto"
 
-#: core/models.py:252
+#: core/models.py:264
 msgid "About address"
 msgstr "Indirizzo del progetto"
 
-#: core/models.py:253
+#: core/models.py:265
 msgid "Groups title"
 msgstr "Titolo pagina gruppi cartografici"
 
-#: core/models.py:254
+#: core/models.py:266
 msgid "Groups map description"
 msgstr "Descrizione pagina gruppi cartografici"
 
-#: core/models.py:255
+#: core/models.py:267
 msgid "Login description"
 msgstr "Descrizione pagina di login"
 
-#: core/models.py:256
+#: core/models.py:268
 msgid "Suite logo"
 msgstr "Logo del progetto"
 
-#: core/models.py:258
+#: core/models.py:270
 msgid "Facebook link"
 msgstr ""
 
-#: core/models.py:259
+#: core/models.py:271
 msgid "Twitter link"
 msgstr ""
 
-#: core/models.py:260
+#: core/models.py:272
 msgid "Google+ link"
 msgstr ""
 
@@ -360,17 +360,17 @@ msgstr "Elimina"
 msgid "General suite data"
 msgstr "Dati generali della suite"
 
-#: core/templates/core/generalsuitedata_form.html:32
-#: core/templates/core/group_form.html:49
+#: core/templates/core/generalsuitedata_form.html:24
+#: core/templates/core/group_form.html:43
 msgid "Alert"
 msgstr "Attenzione"
 
-#: core/templates/core/generalsuitedata_form.html:33
-#: core/templates/core/group_form.html:50
+#: core/templates/core/generalsuitedata_form.html:25
+#: core/templates/core/group_form.html:44
 msgid "Some errors on form. Check it and send again."
 msgstr "Si sono verificati alcuni errori sul form. Controlla e reinvia."
 
-#: core/templates/core/group_form.html:34
+#: core/templates/core/group_form.html:28
 #: core/templates/core/group_list.html:58
 #: core/templates/core/project_list.html:11
 msgid "Projects"
@@ -442,7 +442,7 @@ msgstr "{} non è una immagine valida"
 msgid "Default base layer"
 msgstr "Layer base di default"
 
-#: core/utils/structure.py:214 core/utils/structure.py:274
+#: core/utils/structure.py:218 core/utils/structure.py:279
 msgid "Yes"
 msgstr "Si"
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-28 14:22+0000\n"
+"POT-Creation-Date: 2017-06-21 08:59+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -39,7 +39,7 @@ msgstr "Titolo"
 msgid "Description"
 msgstr "Descrizione"
 
-#: qdjango/models.py:52 qdjango/models.py:157 qdjango/models.py:245
+#: qdjango/models.py:52 qdjango/models.py:157 qdjango/models.py:251
 msgid "Slug"
 msgstr "Slug"
 
@@ -115,7 +115,7 @@ msgstr ""
 msgid "GDAL"
 msgstr ""
 
-#: qdjango/models.py:151 qdjango/models.py:240
+#: qdjango/models.py:151 qdjango/models.py:246
 #: qdjango/templates/qdjango/ajax/layer_widgets.html:9
 #: qdjango/templates/qdjango/layers_list.html:68
 msgid "Name"
@@ -129,7 +129,7 @@ msgstr "Nome originale"
 msgid "Qgis Layer Porject ID"
 msgstr "ID Layer progetto QGIS"
 
-#: qdjango/models.py:163 qdjango/models.py:243
+#: qdjango/models.py:163 qdjango/models.py:249
 #: qdjango/templates/qdjango/ajax/layer_widgets.html:10
 msgid "Type"
 msgstr "Tipo"
@@ -190,19 +190,27 @@ msgstr "Tipo di geometria"
 msgid "Tilestache layer configurations paramenters"
 msgstr "Parametri di configurazione Tilestache"
 
-#: qdjango/models.py:200
+#: qdjango/models.py:196
+msgid "Attributes excluded from wms"
+msgstr ""
+
+#: qdjango/models.py:197
+msgid "Attributes excluded from wfs"
+msgstr ""
+
+#: qdjango/models.py:203
 msgid "Layer"
 msgstr ""
 
-#: qdjango/models.py:201 qdjango/templates/qdjango/project_list.html:42
+#: qdjango/models.py:204 qdjango/templates/qdjango/project_list.html:42
 msgid "Layers"
 msgstr ""
 
-#: qdjango/models.py:241
+#: qdjango/models.py:247
 msgid "Body"
 msgstr "Corpo"
 
-#: qdjango/models.py:242
+#: qdjango/models.py:248
 msgid "datasource"
 msgstr "Sorgente dati"
 
@@ -275,7 +283,7 @@ msgstr ""
 msgid "Label"
 msgstr "Etichetta"
 
-#: qdjango/templates/qdjango/layers_list.html:78
+#: qdjango/templates/qdjango/layers_list.html:83
 msgid "Widgets list"
 msgstr "Lista dei widget"
 
@@ -335,35 +343,35 @@ msgstr ""
 msgid "Please use 'Alias' fields in QGIS project"
 msgstr ""
 
-#: qdjango/utils/data.py:219
+#: qdjango/utils/data.py:221
 msgid "Missing or invalid type for layer"
 msgstr "Mancante o tipo di layer non valido"
 
-#: qdjango/utils/data.py:433
+#: qdjango/utils/data.py:469
 msgid "Project and group SRID must be the same"
 msgstr "Il progetto e il lo SRID del gruppo devono essere identici"
 
-#: qdjango/utils/data.py:443
+#: qdjango/utils/data.py:479
 msgid "A project with the same title already exists"
 msgstr "Un progetto con lo stesso titolo è presente nel sistema"
 
-#: qdjango/utils/data.py:452
+#: qdjango/utils/data.py:488
 msgid "Title project not empty"
 msgstr "Il titolo del progetto non deve essere vuoto"
 
-#: qdjango/utils/data.py:463
+#: qdjango/utils/data.py:499
 msgid "More than one layer with same name/shortname: {}"
 msgstr "Più di un layer con lo stesso name/shortname :{}"
 
-#: qdjango/utils/data.py:496
+#: qdjango/utils/data.py:532
 msgid "Invalid Project Data "
 msgstr "Dati del progetto non validi "
 
-#: qdjango/utils/data.py:531
+#: qdjango/utils/data.py:570
 msgid "The project file is malformed: {}"
 msgstr "Il file del progetto non è corretto: {}"
 
-#: qdjango/utils/data.py:830
+#: qdjango/utils/data.py:887
 msgid "The project settings is malformed: {}"
 msgstr "I settaggi del progetto non sono corretti: {}"
 

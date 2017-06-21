@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-28 14:23+0000\n"
+"POT-Creation-Date: 2017-06-21 08:59+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -180,63 +180,96 @@ msgstr ""
 msgid "N civici scartati"
 msgstr ""
 
-#: editing/api/serializers.py:26
+#: editing/api/serializers.py:28
 msgid ""
 "Invalid format: string or unicode input unrecognized as GeoJSON, WKT EWKT or "
 "HEXEWKB."
 msgstr ""
 
-#: frontend/templates/frontend/index.html:61
-#: frontend/templates/frontend/index.html:111
+#: editing/forms.py:14
+msgid "Active"
+msgstr ""
+
+#: editing/forms.py:15
+#, fuzzy
+#| msgid "Users"
+msgid "Viewers"
+msgstr "Utenti"
+
+#: editing/forms.py:30
+msgid "Check on uncheck to attive/desctive editing layer capabilities:"
+msgstr ""
+
+#: editing/forms.py:32
+msgid "Select viewers with 'view permission' on project that can edit layer:"
+msgstr ""
+
+#: editing/templates/editing/editing_layer_active_form.html:7
+msgid "Alert"
+msgstr ""
+
+#: editing/templates/editing/editing_layer_active_form.html:8
+msgid "Some errors on form. Check it and send again."
+msgstr ""
+
+#: editing/templates/editing/layer_action.html:5
+msgid "Editing layer"
+msgstr ""
+
+#: editing/templates/editing/layer_action.html:7
+msgid "Activation layer_editing"
+msgstr ""
+
+#: frontend/templates/frontend/index.html:84
+#: frontend/templates/frontend/index.html:134
 msgid "About It"
 msgstr "Cos'è"
 
-#: frontend/templates/frontend/index.html:71
-#: frontend/templates/frontend/index.html:142
+#: frontend/templates/frontend/index.html:94
+#: frontend/templates/frontend/index.html:165
 msgid "Maps"
 msgstr "Mappe"
 
-#: frontend/templates/frontend/index.html:81
-#: frontend/templates/frontend/index.html:231
+#: frontend/templates/frontend/index.html:104
+#: frontend/templates/frontend/index.html:268
 msgid "Admin"
 msgstr "Amministrazione"
 
-#: frontend/templates/frontend/index.html:81
-#: frontend/templates/frontend/index.html:231
-#: frontend/templates/frontend/index.html:260
+#: frontend/templates/frontend/index.html:104
+#: frontend/templates/frontend/index.html:268
+#: frontend/templates/frontend/index.html:297
 msgid "Login"
 msgstr "Accesso"
 
-#: frontend/templates/frontend/index.html:100
+#: frontend/templates/frontend/index.html:123
 msgid "Adminstration"
 msgstr "Amministrazione"
 
-#: frontend/templates/frontend/index.html:179
-#: frontend/templates/frontend/index.html:180
+#: frontend/templates/frontend/index.html:202
 #, fuzzy
 #| msgid "Groups list"
 msgid "Group maps"
 msgstr "Lista gruppi"
 
-#: frontend/templates/frontend/index.html:211
+#: frontend/templates/frontend/index.html:232
 #: iternet/templates/iternet/dashboard.html:85
 #: iternet/templates/iternet/dashboard.html:86
 msgid "Show map"
 msgstr "Mostra mappa"
 
-#: frontend/templates/frontend/index.html:234
+#: frontend/templates/frontend/index.html:271
 msgid "Access to backeng administration stystem or logout"
 msgstr "Accedi al backed di amministrazione o esci"
 
-#: frontend/templates/frontend/index.html:236
+#: frontend/templates/frontend/index.html:273
 msgid "Login to go backend administration system"
 msgstr "Accesso al sistema di amministrazione"
 
-#: frontend/templates/frontend/index.html:248
+#: frontend/templates/frontend/index.html:285
 msgid "Backend"
 msgstr ""
 
-#: frontend/templates/frontend/index.html:251
+#: frontend/templates/frontend/index.html:288
 msgid "Logout"
 msgstr "Esci"
 
@@ -298,23 +331,27 @@ msgstr "Opps! Pagina non trovata"
 msgid "We could not find the page you were looking for."
 msgstr "Non abbiamo trovato la pagina che stavi cercando"
 
-#: templates/base.html:163 templates/index.html:6
+#: templates/base.html:164 templates/index.html:6
 msgid "Dashboard"
 msgstr "Scrivania"
 
-#: templates/include/navbar_right_menu.html:27
+#: templates/include/navbar_right_menu.html:7
+msgid "Frontend"
+msgstr ""
+
+#: templates/include/navbar_right_menu.html:32
 msgid "Registered on"
 msgstr "Registrato il"
 
-#: templates/include/navbar_right_menu.html:28
+#: templates/include/navbar_right_menu.html:33
 msgid "Last login"
 msgstr "Ultimo accesso"
 
-#: templates/include/navbar_right_menu.html:35
+#: templates/include/navbar_right_menu.html:40
 msgid "Profile"
 msgstr "Profilo"
 
-#: templates/include/navbar_right_menu.html:38
+#: templates/include/navbar_right_menu.html:43
 msgid "Sign out"
 msgstr "Esci"
 
@@ -382,11 +419,6 @@ msgstr "Accedi"
 #~| msgid "Add user"
 #~ msgid "Editor user"
 #~ msgstr "Aggiungi utente"
-
-#, fuzzy
-#~| msgid "Users"
-#~ msgid "Viewer users"
-#~ msgstr "Utenti"
 
 #, fuzzy
 #~| msgid "Adminstration"
