@@ -58,7 +58,7 @@ class QdjangoMetaLayer(CoreMetaLayer):
         self.countLayer += 1
         layerType = layer['source']['type']
 
-        if layerType in self.layerTypesSingleLayer and 'url' in layer['source']:
+        if layerType in self.layerTypesSingleLayer and 'url' in layer['source'] or 'cache_url' in layer:
             if self.countLayer > 1:
                 self.increment()
             self.toIncrement = True
