@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-28 14:23+0000\n"
+"POT-Creation-Date: 2017-06-21 08:59+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -151,7 +151,7 @@ msgid "Delete"
 msgstr "Elimina"
 
 #: cdu/templates/cdu/config_list.html:61
-#: cdu/templates/cdu/widgets/dashboard.html:65
+#: cdu/templates/cdu/widgets/dashboard.html:66
 msgid "Show map"
 msgstr "Mostra mappa"
 
@@ -200,6 +200,6 @@ msgid "New profile"
 msgstr "Nuovo profilo"
 
 #: cdu/templates/cdu/widgets/dashboard.html:50
-#: cdu/templates/cdu/widgets/dashboard.html:65
+#: cdu/templates/cdu/widgets/dashboard.html:66
 msgid "Make CDU"
 msgstr "Genera CDU"
