@@ -27,7 +27,7 @@
     <div class="col-md-12 col-xs-12">
         <div class="box">
             <div class="box-header">
-                <h3 class="box-title">Project {{ project.title }}
+                <h3 class="box-title">{% trans 'Project' %} {{ project.title }}
                 {% if "view_project" in userPrj_perms %}
                 <a href="{% url 'group-project-map' group.slug 'qdjango' project.pk %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Show map' %}" target="_blank"><i class="ion ion-map"></i></a>
                 {% endif %}
@@ -48,13 +48,13 @@
 
 <div class="box">
     <div class="box-header">
-        <span class="description">Layers</span>
+        <span class="description">{% trans 'Layers list' %}</span>
     </div>
     <div class="box-body">
         <div class="nav-tabs-custom">
             <ul class="nav nav-tabs">
-              <li class="active"><a href="#tab_layers_data" data-toggle="tab">{% trans 'Data' %}</a></li>
-              <li><a href="#tab_layers_structure" data-toggle="tab">{% trans 'Structure' %}</a></li>
+              <li class="active"><a href="#tab_layers_data" data-toggle="tab"><i class="fa fa-file"></i> {% trans 'Data' %}</a></li>
+              <li><a href="#tab_layers_structure" data-toggle="tab"><i class="fa fa-list-alt"></i> {% trans 'Structure' %}</a></li>
 
             </ul>
             <div class="tab-content">
