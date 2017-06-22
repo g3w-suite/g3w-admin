@@ -166,6 +166,7 @@ class QdjangoProjectDeleteView(G3WAjaxDeleteViewMixin, SingleObjectMixin, View):
 
 from core.utils.db import build_dango_connection_name, build_django_connection, dictfetchall
 from qdjango.utils.structure import datasource2dict
+from .api.permissions import ProjectRelationPermission
 
 
 class QdjangoProjectRelationsApiView(APIView):
@@ -173,7 +174,9 @@ class QdjangoProjectRelationsApiView(APIView):
     Return list of relations rows
     """
 
-    authentication_classes = []
+    permission_classes = [
+        ProjectRelationPermission
+    ]
 
     def get(self, request, format=None, group_slug=None, project_id=None, relation_id=None, relation_field_value=None):
 
