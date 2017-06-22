@@ -173,7 +173,7 @@ class QdjangoProjectRelationsApiView(APIView):
     Return list of relations rows
     """
 
-    authentication_classes = None
+    authentication_classes = []
 
     def get(self, request, format=None, group_slug=None, project_id=None, relation_id=None, relation_field_value=None):
 
