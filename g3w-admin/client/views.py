@@ -1,5 +1,6 @@
 from django.utils import six
 from django.views.generic import TemplateView
+from django.template import loader
 from django.shortcuts import get_object_or_404
 from django.http import Http404, HttpResponseForbidden
 from django.conf import settings
@@ -47,11 +48,7 @@ class ClientView(TemplateView):
         groupData = deepcopy(groupSerializer.data)
 
         # choose client by querystring paramenters
-        if 'client' in self.request.GET and self.request.GET['client'] in settings.CLIENTS_AVAILABLE:
-            contextData['client_default'] = self.request.GET['client']
-        else:
-            contextData['client_default'] = settings.CLIENT_DEFAULT
-
+        contextData['client_default'] = self.get_client_name()
 
         # add user login data
         u = self.request.user
@@ -85,7 +82,17 @@ class ClientView(TemplateView):
         contextData['page_title'] = 'g3w-client'
 
         return contextData
-
-
-
+        
+    def get_template_names(self):
+        return '{}/index.html'.format(self.get_client_name())
+        
+    def get_client_name(self):
+        if 'client' in self.request.GET and self.request.GET['client'] in settings.CLIENTS_AVAILABLE:
+            client = self.request.GET['client']
+            try:
+                loader.get_template('{}/index.html'.format(client))
+                return client
+            except:
+                return settings.CLIENT_DEFAULT
+        return settings.CLIENT_DEFAULT
 
