@@ -58,6 +58,7 @@ class ClientView(TemplateView):
                 'first_name': u.first_name,
                 'last_name': u.last_name,
                 'groups': [g.name for g in u.groups.all()],
+                'base_url': "/{}".format(settings.SITE_PREFIX_URL if settings.SITE_PREFIX_URL else ''),
                 'logout_url': reverse('logout'),
                 'admin_url': reverse('home')
             })
