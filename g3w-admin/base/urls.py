@@ -91,12 +91,12 @@ if settings.SITE_PREFIX_URL:
 
 urlpatterns = i18n_patterns(*urlpatterns)
 
-'''
+
 if settings.SITE_PREFIX_URL:
     apiUrlpatterns = [
         url(r'^{}'.format(settings.SITE_PREFIX_URL), include(apiUrlpatterns))
     ]
-'''
+
 
 urlpatterns += apiUrlpatterns
 
