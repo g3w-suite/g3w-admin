@@ -70,7 +70,7 @@ class ClientView(TemplateView):
 
         # add baseUrl property
         contextData['group_config'] = 'var initConfig ={{ "staticurl":"{}", "client":"{}", ' \
-                                      '"mediaurl":"{}", "user":{}, "group":{}, "base_url":{} }}'.format(
+                                      '"mediaurl":"{}", "user":{}, "group":{}, "baseurl":{} }}'.format(
             settings.STATIC_URL, "{}/".format(settings.CLIENT_DEFAULT), settings.MEDIA_URL, user_data, serializedGroup,
             "/{}".format(settings.SITE_PREFIX_URL if settings.SITE_PREFIX_URL else ''))
 
