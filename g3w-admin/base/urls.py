@@ -36,7 +36,7 @@ urlpatterns = [
             'adminlte_layout_option': None
         }
     }),
-    url(r'^logout/$', auth.views.logout, {'next_page': settings.LOGOUT_NEXT_PAGE + '{}'.format(BASE_ADMIN_URLPATH)},
+    url(r'^logout/$', auth.views.logout, {'next_page': 'home'},
         name='logout'),
     url(r'^jsi18n/$', javascript_catalog, jsInfoDict, name='javascript-catalog'),
 ]

@@ -215,6 +215,7 @@ SITE_TITLE = 'g3w-admin'
 QDJANGO_SERVER_URL = 'http://localhost/cgi-bin/qgis_mapserv.fcgi'
 QDJANGO_SERVER_PORT = 80
 QDJANGO_PRJ_CACHE_KEY = 'qdjango_prj_{}'
+QDJANGO_MODE_REQUEST = 'proxy'  #'qgsserver'
 
 # data for proxy server
 PROXY_SERVER = False
