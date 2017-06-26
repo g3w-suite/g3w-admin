@@ -12,7 +12,7 @@ class ProjectPermission(BasePermission):
     def has_permission(self, request, view):
 
         # get model by type
-        func, args, kwargs = resolve(request.get_full_path())
+        func, args, kwargs = request.resolver_match
 
         Project = apps.get_app_config(kwargs['project_type']).get_model('project')
         project = Project.objects.get(pk=kwargs['project_id'])
