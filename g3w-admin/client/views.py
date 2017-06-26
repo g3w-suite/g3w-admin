@@ -10,8 +10,8 @@ from core.api.serializers import GroupSerializer, Group
 from django.contrib.auth.views import redirect_to_login
 from django.apps import apps
 from django.core.exceptions import PermissionDenied
-
 from copy import deepcopy
+
 
 class ClientView(TemplateView):
 
