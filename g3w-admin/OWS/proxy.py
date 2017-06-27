@@ -13,8 +13,6 @@ class Proxy(object):
             """
             First try to perfom request by OWS module handler
             """
-            print request.META['REMOTE_ADDR']
-            print request.META['HTTP_USER_AGENT']
             #try to che caller
             if request.META['REMOTE_ADDR'] == '127.0.0.1' and 'Python' in request.META['HTTP_USER_AGENT']:
                 pass
