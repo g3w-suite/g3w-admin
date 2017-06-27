@@ -1,6 +1,10 @@
 from django.http import HttpResponse
 from .auth import AuthForbiddenRequest
 
+import logging
+
+logger = logging.getLogger('g3wadmin.debug')
+
 
 class Proxy(object):
     def __init__(self, authorizer_class = None, **kwargs):
@@ -14,6 +18,8 @@ class Proxy(object):
             First try to perfom request by OWS module handler
             """
             #try to che caller
+            logger.debug(request.META['REMOTE_ADDR'])
+            logger.debug(request.META['HTTP_USER_AGENT'])
             if request.META['REMOTE_ADDR'] == '127.0.0.1' and 'Python' in request.META['HTTP_USER_AGENT']:
                 pass
             else:
