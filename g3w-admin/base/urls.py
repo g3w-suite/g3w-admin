@@ -36,7 +36,7 @@ urlpatterns = [
             'adminlte_layout_option': None
         }
     }),
-    url(r'^logout/$', auth.views.logout, {'next_page': 'home'},
+    url(r'^logout/$', auth.views.logout, {'next_page': settings.LOGOUT_NEXT_PAGE + '{}'.format(BASE_ADMIN_URLPATH)},
         name='logout'),
     url(r'^jsi18n/$', javascript_catalog, jsInfoDict, name='javascript-catalog'),
 ]
@@ -81,13 +81,6 @@ for app in settings.G3WADMIN_LOCAL_MORE_APPS:
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
-'''
-if settings.SITE_PREFIX_URL:
-    urlpatterns = [
-        url(r'^{}'.format(settings.SITE_PREFIX_URL), include(urlpatterns))
-    ]
-'''
 
 urlpatterns = i18n_patterns(*urlpatterns)
 
