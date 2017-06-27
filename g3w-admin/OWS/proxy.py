@@ -1,11 +1,6 @@
 from django.http import HttpResponse
 from .auth import AuthForbiddenRequest
 
-# import the logging library
-import logging
-
-# Get an instance of a logger
-logger = logging.getLogger(__name__)
 
 class Proxy(object):
     def __init__(self, authorizer_class = None, **kwargs):
@@ -18,8 +13,8 @@ class Proxy(object):
             """
             First try to perfom request by OWS module handler
             """
-            logger.error(request.META['REMOTE_ADDR'])
-            logger.error(request.META['HTTP_USER_AGENT'])
+            print request.META['REMOTE_ADDR']
+            print request.META['HTTP_USER_AGENT']
             #try to che caller
             if request.META['REMOTE_ADDR'] == '127.0.0.1' and 'Python' in request.META['HTTP_USER_AGENT']:
                 pass
