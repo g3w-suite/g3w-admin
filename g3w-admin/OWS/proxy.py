@@ -20,11 +20,12 @@ class Proxy(object):
             """
             First try to perfom request by OWS module handler
             """
-            #try to che caller
+            # try to che caller
             logger.debug(request.META['REMOTE_ADDR'])
             logger.debug(request.META['HTTP_USER_AGENT'])
             logger.debug(request.META)
-            if (request.META['REMOTE_ADDR'] in ips or request.META['REMOTE_ADDR'] == '127.0.0.1') and 'Python' in request.META['HTTP_USER_AGENT']:
+            if (request.META['REMOTE_ADDR'] in ips or request.META['REMOTE_ADDR'] == '127.0.0.1') \
+                    and 'Python' in request.META['HTTP_USER_AGENT']:
                 pass
             else:
                 authorizer = OWSrh.authorizer
