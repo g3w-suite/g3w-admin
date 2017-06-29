@@ -23,8 +23,9 @@ class Proxy(object):
             # try to che caller
             logger.debug(request.META['REMOTE_ADDR'])
             logger.debug(request.META['HTTP_USER_AGENT'])
+            logger.debug(ips)
             logger.debug(request.META)
-            if (request.META['REMOTE_ADDR'] in ips or request.META['REMOTE_ADDR'] == '127.0.0.1') \
+            if (request.META['REMOTE_ADDR'] in ips or request.META['REMOTE_ADDR'] in ['127.0.0.1', '::1']) \
                     and 'Python' in request.META['HTTP_USER_AGENT']:
                 pass
             else:

@@ -21,9 +21,10 @@ class UserListView(G3WRequestViewMixin, ListView):
     template_name = 'usersmanage/user_list.html'
 
     def get_queryset(self):
+        anonymous_user = get_user_model().get_anonymous()
         queryset = User.objects.order_by('username')
         if self.request.user.is_superuser:
-            queryset = queryset.exclude(pk=settings.ANONYMOUS_USER_ID)
+            queryset = queryset.exclude(pk=anonymous_user.pk)
             if not self.request.user.is_staff:
                 queryset = queryset.exclude(is_staff=True)
         else:

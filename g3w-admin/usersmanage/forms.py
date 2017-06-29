@@ -12,6 +12,7 @@ from django.contrib.auth import (
 )
 from django.contrib.auth.models import User, Group as AuthGroup
 from django_file_form.forms import FileFormMixin, UploadedFileField
+from guardian.compat import get_user_model
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout,Div, HTML
 from crispy_forms.bootstrap import AppendedText, PrependedText
@@ -23,15 +24,15 @@ from .utils import getUserGroups, userHasGroups
 
 
 def label_users(obj):
-    return '{} {} ({})'.format(obj.first_name,obj.last_name,obj.username)
+    return '{} {} ({})'.format(obj.first_name,obj.last_name, obj.username)
 
 
 def label_viewer_users(obj):
-    return '{} {} ({})'.format(obj.first_name,obj.last_name,obj.username)
+    return '{} {} ({})'.format(obj.first_name,obj.last_name, obj.username)
 
 
 def label_user(obj):
-    return '{} {} ({})'.format(obj.first_name,obj.last_name,obj.username)
+    return '{} {} ({})'.format(obj.first_name,obj.last_name, obj.username)
 
 
 class UsersChoiceField(forms.ModelMultipleChoiceField):
@@ -89,7 +90,9 @@ class G3WACLForm(forms.Form):
 
     def _add_anonymou_user(self):
         if self.add_anonynous:
-            self.fields['viewer_users'].queryset = self.fields['viewer_users'].queryset | User.objects.filter(pk=settings.ANONYMOUS_USER_ID)
+            GuardianUser = get_user_model()
+            self.fields['viewer_users'].queryset = self.fields['viewer_users'].queryset | \
+                                                   User.objects.filter(pk=GuardianUser.get_anonymous().pk)
 
     def _ACLPolicy(self):
 
@@ -97,7 +100,8 @@ class G3WACLForm(forms.Form):
         if 'editor_user' in self.cleaned_data:
             if self.request.user.is_superuser:
                 permission_user = self.cleaned_data['editor_user']
-                if (self.initial_editor_user and self.cleaned_data['editor_user'] and self.initial_editor_user != self.cleaned_data['editor_user'].id) or \
+                if (self.initial_editor_user and self.cleaned_data['editor_user'] and
+                            self.initial_editor_user != self.cleaned_data['editor_user'].id) or \
                     (self.initial_editor_user and not self.cleaned_data['editor_user']):
                     editorToRemove = User.objects.get(pk=self.initial_editor_user)
 

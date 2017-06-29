@@ -3,6 +3,7 @@ from django.contrib.auth.models import Permission, User
 from django.contrib.contenttypes.models import ContentType
 from guardian.shortcuts import get_users_with_perms, assign_perm, remove_perm
 from guardian.models import UserObjectPermission
+from guardian.compat import get_user_model
 from crispy_forms.layout import Div, HTML, Field
 from django.utils.translation import ugettext, ugettext_lazy as _
 from django.contrib.sessions.models import Session
@@ -76,6 +77,9 @@ def get_users_for_object(object, permission, group = None, with_anonymous = Fals
     :param group: group name for filter
     :param with_anonimous: add anonimous user to return value if it has permission on object, if group is set
     """
+
+    anonymous_user = get_user_model().get_anonymous()
+
     anyperm = get_users_with_perms(object, attach_perms=True)
     if not isinstance(permission, list):
         permission = [permission]
@@ -92,7 +96,7 @@ def get_users_for_object(object, permission, group = None, with_anonymous = Fals
                     result.append(user)
             else:
                 result.append(user)
-            if user.pk == settings.ANONYMOUS_USER_ID:
+            if user.pk == anonymous_user.pk:
                 result.append(user)
                 
     return result
