@@ -10,7 +10,7 @@ class OverwriteStorage(FileSystemStorage):
     See http://djangosnippets.org/snippets/976/
     """
 
-    def get_available_name(self, name):
+    def get_available_name(self, name, max_length=None):
         """Return a filename for new content to be written to.
 
         If file already exist, overwrite it.

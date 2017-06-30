@@ -135,6 +135,11 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
 post_delete.connect(check_overviewmap_project, sender=Project)
 
 
+def get_layer_data_file_path(instance, filename):
+    """Custom name for uploaded project files."""
+
+    return settings.DATASOURCE_PATH
+
 class Layer(G3WACLModelMixins, models.Model):
     """A QGIS layer."""
 
@@ -167,7 +172,7 @@ class Layer(G3WACLModelMixins, models.Model):
     # Optional data file (non-postgres layers need it)
     data_file = models.FileField(
         _('Associated data file'),
-        upload_to=settings.DATASOURCE_PATH,
+        upload_to=get_layer_data_file_path,
         blank=True,
         null=True
         )
