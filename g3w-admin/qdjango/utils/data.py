@@ -500,6 +500,34 @@ class UniqueLayername(QgisProjectValidator):
             layers.append(layer.name)
 
 
+class CheckMaxExtent(QgisProjectValidator):
+    """
+    Check il WMSExtent is correct
+    """
+    def clean(self):
+        max_extent = self.qgisProject.maxExtent
+        if max_extent:
+
+            # check is a cordinate il None or empty
+            wrong_coord = list()
+            for coord, value in max_extent.items():
+                if not value:
+                    wrong_coord.append(coord)
+
+            if len(wrong_coord) > 0:
+                raise Exception(_('Check WMS start extent project property: {} didn\'t set'.format(','.join(wrong_coord))))
+
+            # check calue are correct inside angles coordinates
+            err_msg_x = err_msg_y = ''
+            if max_extent['xmax'] < max_extent['xmin']:
+                err_msg_x = _('xmax smaller then xmin ')
+            if max_extent['ymax'] < max_extent['ymin']:
+                err_msg_y = _('ymax smaller then ymin ')
+
+            if err_msg_x or err_msg_y:
+                raise Exception('Check WMS start extent project property: {}{}'.format(err_msg_x, err_msg_y))
+
+
 class QgisProject(XmlData):
     """
     A qgis xml project file wrapper
@@ -522,7 +550,8 @@ class QgisProject(XmlData):
     _defaultValidators = [
         IsGroupCompatibleValidator,
         ProjectTitleExists,
-        UniqueLayername
+        UniqueLayername,
+        CheckMaxExtent
     ]
 
     #_regexXmlLayer = 'projectlayers/maplayer[@geometry!="No geometry"]'
