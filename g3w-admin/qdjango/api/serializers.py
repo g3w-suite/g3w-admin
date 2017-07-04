@@ -228,7 +228,8 @@ class LayerSerializer(serializers.ModelSerializer):
             datasourceWMS = QueryDict(instance.datasource)
             if 'username' not in ret['source'] or 'password' not in ret['source']:
                 ret['source'].update(datasourceWMS.dict())
-                ret['servertype'] = MSTYPES_OGC
+                ret['source']['external'] = True
+                #ret['servertype'] = MSTYPES_OGC
 
         return ret
 
