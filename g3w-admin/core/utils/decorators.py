@@ -106,7 +106,7 @@ def project_type_permission_required(perm, lookup_variables=None, **kwargs):
                 obj = get_object_or_404(model, **lookup_dict)
 
             # ad app to perm
-            perms = [project_type + "." + perm]
+            perms = [project_type_value + "." + perm]
 
             response = get_40x_or_None(request, perms=perms, obj=obj,
                 login_url=login_url, redirect_field_name=redirect_field_name,
