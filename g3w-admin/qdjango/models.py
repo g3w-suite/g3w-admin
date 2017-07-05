@@ -153,6 +153,7 @@ class Layer(G3WACLModelMixins, models.Model):
         ('gdal', _('GDAL')),
         ('delimitedtext', _('CSV'))
         )
+
     # General info
     name = models.CharField(_('Name'), max_length=255)
     title = models.CharField(_('Title'), max_length=255, blank=True)
