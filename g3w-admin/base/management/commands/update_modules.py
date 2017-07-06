@@ -23,6 +23,7 @@ class Command(BaseCommand):
         for g3wsuite_app in g3wsuite_apps:
             module_git_repo_path = os.chdir(base_git_repo_path + '/g3w-admin/{}'.format(g3wsuite_app))
             module_git_repo_path = os.getcwd()
+            print module_git_repo_path
             repo = git.Repo(module_git_repo_path)
             print repo.config_reader()
             repo.remotes.origin.pull()
