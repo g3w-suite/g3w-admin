@@ -16,9 +16,6 @@ class Command(BaseCommand):
 
         config = repo.config_reader()
 
-
-
-        '''
         repo.remotes.origin.pull()
         self.stdout.write(self.style.SUCCESS('UPDATE BASE DONE'))
         g3wsuite_apps = settings.G3WADMIN_PROJECT_APPS + settings.G3WADMIN_LOCAL_MORE_APPS
@@ -30,4 +27,4 @@ class Command(BaseCommand):
             print repo.config_reader()
             repo.remotes.origin.pull()
             self.stdout.write(self.style.SUCCESS('UPDATE {} DONE'.format(g3wsuite_app)))
-        '''
+
