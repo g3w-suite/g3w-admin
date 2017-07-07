@@ -203,10 +203,26 @@ class QdjangoProjectRelationsApiView(APIView):
 
         # exec raw query
         # todo: better
+
+        # BUILD DATA QUERY
+        # check if relation_field_value is null
+        if relation_field_value.upper() == 'NULL':
+            relation_field_value = 'null'
+        else:
+            relation_field_value = '{}'.format(relation_field_value)
+
+        # check if there is a schema
+        schema_table = datasource['table'].split('.')
+        if len(schema_table) > 1:
+            referencing_field = '{}."{}"'.format(schema_table[1], relation['fieldRef']['referencingField'])
+        else:
+            referencing_field = '"{}"'.format(relation['fieldRef']['referencingField'])
+
         with connections[using].cursor() as cursor:
-            cursor.execute("SELECT * FROM {} WHERE {} = '{}'".format(
+            cursor.execute("SELECT * FROM {} WHERE {} {} {}".format(
                 datasource['table'],
-                relation['fieldRef']['referencingField'],
+                referencing_field,
+                '=' if relation_field_value != 'null' else 'IS',
                 relation_field_value))
             rows = dictfetchall(cursor)
 

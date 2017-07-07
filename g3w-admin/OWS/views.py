@@ -1,22 +1,32 @@
+from django.conf import settings
 from django.views.generic import View
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from .proxy import Proxy
 
+OWSREQUESTHANDLER_CLASS_DEFAULT = 'OWSRequestHandler'
+OWSREQUESTHANDLER_CLASSES = dict()
+
+for app_name in settings.G3WADMIN_PROJECT_APPS:
+    try:
+        projectAppModule = __import__('{}.ows'.format(app_name))
+        OWSREQUESTHANDLER_CLASSES[app_name] = getattr(projectAppModule.ows, OWSREQUESTHANDLER_CLASS_DEFAULT)
+    except:
+        continue
 
 
 class OWSView(View):
 
     proxy = Proxy(None)
-    _OWSRequestHandler = 'OWSRequestHandler'
+    _OWSRequestHandler = OWSREQUESTHANDLER_CLASS_DEFAULT
 
     @method_decorator(csrf_exempt)
     def dispatch(self, request, *args, **kwargs):
         # get url data
-        self.projectType = kwargs['project_type']
+        projectType = kwargs['project_type']
 
         # get handler request by project type
-        self._getOWSRequestHandler()
+        self.OWSRequestHandler = OWSREQUESTHANDLER_CLASSES[projectType]
 
         return super(OWSView, self).dispatch(request, *args, **kwargs)
 
@@ -25,16 +35,3 @@ class OWSView(View):
 
     def post(self, request, *args, **kwargs):
             return self.proxy.request(request, self.OWSRequestHandler, **kwargs)
-
-    def _getOWSRequestHandler(self):
-        """
-        Get handler by projectType
-        :return:
-        """
-        projectAppModule = __import__('{}.ows'.format(self.projectType))
-        self.OWSRequestHandler = getattr(projectAppModule.ows, self._OWSRequestHandler)
-
-
-class OWSTileView(OWSView):
-
-    _OWSRequestHandler = 'OWSTileRequestHandler'
