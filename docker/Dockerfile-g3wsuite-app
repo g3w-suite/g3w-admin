@@ -13,13 +13,21 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 COPY nginx.conf.tpl /home/g3wsuite/
 COPY local_settings.py /home/g3wsuite/g3w-admin/g3w-admin/base/settings/
 
+USER postgres
+
+RUN /etc/init.d/postgresql start &&\
+    psql --command "CREATE USER g3wsuite WITH SUPERUSER PASSWORD 'g3wsuite';" &&\
+    createdb -O g3wsuite g3wsuite &&\
+    psql -d g3wsuite -c "CREATE EXTENSION POSTGIS;"
+
+USER root
 
 ENV BASEURL=''
 ENV G3WSUITE_DEBUG='False'
-ENV G3WSUITE_DATABASE_NAME='g3w_admin'
+ENV G3WSUITE_DATABASE_NAME='g3wsuite'
 ENV G3WSUITE_DATABASE_HOST='localhost'
-ENV G3WSUITE_DATABASE_USER='postgres'
-ENV G3WSUITE_DATABASE_PASSWORD='postgres'
+ENV G3WSUITE_DATABASE_USER='g3wsuite'
+ENV G3WSUITE_DATABASE_PASSWORD='g3wsuite'
 ENV G3WSUITE_DATABASE_PORT='5432'
 
 ENV G3WSUITE_FRONTEND='True'
