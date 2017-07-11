@@ -14,6 +14,7 @@ COPY nginx.conf.tpl /home/g3wsuite/
 COPY local_settings.py /home/g3wsuite/g3w-admin/g3w-admin/base/settings/
 
 
+ENV BASEURL=''
 ENV G3WSUITE_DEBUG='False'
 ENV G3WSUITE_DATABASE_NAME='g3w_admin'
 ENV G3WSUITE_DATABASE_HOST='localhost'

@@ -2,7 +2,8 @@ import os
 import random
 from distutils.util import strtobool
 
-G3WADMIN_PROJECT_APPS = os.environ.get('G3WSUITE_PROJECT_APPS', '').split(',')
+if os.environ.get('G3WSUITE_PROJECT_APPS'):
+    G3WADMIN_PROJECT_APPS = os.environ.get('G3WSUITE_PROJECT_APPS').split(',')
 
 G3WADMIN_LOCAL_MORE_APPS = os.environ.get('G3WSUITE_MORE_APPS', 'frontend').split(',')
 
