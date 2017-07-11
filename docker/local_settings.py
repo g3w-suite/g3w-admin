@@ -49,7 +49,7 @@ SITE_PREFIX_URL = os.environ.get('BASEURL', None)
 
 STATIC_URL = '{}/static/'.format('/' + SITE_PREFIX_URL if SITE_PREFIX_URL else '')
 STATIC_ROOT = '/home/g3wsuite/static/'
-MEDIA_ROOT = '/home/g3wsuite-data/media/'
+MEDIA_ROOT = '/home/g3wsuite/media/'
 MEDIA_URL = '{}/media/'.format('/' + SITE_PREFIX_URL if SITE_PREFIX_URL else '')
 
 DATASOURCE_PATH = '/home/g3wsuite/data/'
