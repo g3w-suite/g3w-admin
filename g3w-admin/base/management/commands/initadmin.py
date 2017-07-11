@@ -7,7 +7,7 @@ import os
 class Command(BaseCommand):
 
     def handle(self, *args, **options):
-        if User.objects.count() > 1:
+        if User.objects.count() == 1:
             username = os.environ.get('G3WSUITE_ADMIN_USERNAME', 'admin01'),
             password = os.environ.get('G3WSUITE_ADMIN_PASSWORD', 'kote@25#t'),
             email = os.environ.get('G3WSUITE_ADMIN_EMAIL', 'lorenzetti@gis3w.it'),
