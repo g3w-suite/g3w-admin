@@ -14,5 +14,16 @@ repo["iternet"]="g3w-admin-iternet.git"
 
 for key in ${!repo[@]}; do
     git submodule add -f https://wlorenzetti:kotegaeshi7890@bitbucket.org/gis3w/${repo[${key}]} g3w-admin/${key}
+    if [ -e g3w-admin/${key}/packages.txt ]
+    then
+        cat g3w-admin/${key}/packages.txt | xargs apt-get install -y
+    fi
+    if [ -e g3w-admin/${key}/requirements.txt ]
+    then
+        pip install g3w-admin/${key}/requirements.txt
+    fi
 done
+
+# packege to installa for modules
+
 

@@ -1,7 +1,9 @@
 FROM ubuntu:16.04
 MAINTAINER Walter Lorenzetti<lorenzetti@gis3w.it>
 
-RUN  apt-get update && apt-get install -y \
+RUN  apt-get update && apt-get dist-upgrade -y
+
+RUN  apt-get install -y \
 	git \
 	python-pip \
 	software-properties-common \
@@ -22,12 +24,12 @@ RUN apt-get update && apt-get dist-upgrade -y && apt-get install -y \
     qgis-server
 
 RUN mkdir /home/g3wsuite
-RUN mkdir /home/g3wsuite/static
+RUN mkdir /home/g3wsuite/www
+RUN mkdir /home/g3wsuite/www/static
+RUN mkdir /home/g3wsuite/www/media
+RUN mkdir /home/g3wsuite/cache
+RUN mkdir /home/g3wsuite/log
 
-RUN mkdir /home/g3wsuite-data
-RUN mkdir /home/g3wsuite-data/cache
-RUN mkdir /home/g3wsuite-data/log
-RUN mkdir /home/g3wsuite-data/media
 
 COPY requirements.txt /home/g3wsuite/
 WORKDIR /home/g3wsuite
@@ -37,7 +39,7 @@ RUN pip install -r requirements.txt
 ENV CPLUS_INCLUDE_PATH=/usr/include/gdal
 ENV C_INCLUDE_PATH=/usr/include/gdal
 
-RUN pip install GDAL==2.1.0
+RUN pip install GDAL==2.1.3
 
 
 

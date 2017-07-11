@@ -89,13 +89,13 @@ LOGGING = {
         'file': {
             'level': 'ERROR',
             'class': 'logging.FileHandler',
-            'filename': '/home/g3wsuite-data/log/error.log',
+            'filename': '/home/g3wsuite/log/error.log',
             'formatter': 'verbose'
         },
         'file_debug': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': '/home/g3wsuite-data/log/debug.log',
+            'filename': '/home/g3wsuite/log/debug.log',
             'formatter': 'verbose'
         },
     },

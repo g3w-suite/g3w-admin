@@ -20,7 +20,7 @@ server {
 
     # Django media
     location /media  {
-        alias /home/g3wsuite-data/media;  # your Django project's media files - amend as required
+        alias /home/g3wsuite/media;  # your Django project's media files - amend as required
     }
 
     location /static {

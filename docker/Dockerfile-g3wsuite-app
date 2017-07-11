@@ -14,14 +14,12 @@ COPY local_settings.py /home/g3wsuite/g3w-admin/g3w-admin/base/settings/
 
 ENV G3WSUITE_DEBUG='False'
 ENV G3WSUITE_DATABASE_NAME='g3w_admin'
-ENV G3WSUITE_DATABASE_HOST='192.168.0.104'
+ENV G3WSUITE_DATABASE_HOST='localhost'
 ENV G3WSUITE_DATABASE_USER='postgres'
 ENV G3WSUITE_DATABASE_PASSWORD='postgres'
 ENV G3WSUITE_DATABASE_PORT='5432'
 
 ENV G3WSUITE_FRONTEND='True'
-
-
 
 WORKDIR /home/timon/timon-server/
 
