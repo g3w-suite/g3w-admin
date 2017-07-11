@@ -51,6 +51,8 @@ STATIC_ROOT = '/home/g3wsuite/static/'
 MEDIA_ROOT = '/home/g3wsuite-data/media/'
 MEDIA_URL = '{}/media/'.format('/' + SITE_PREFIX_URL if SITE_PREFIX_URL else '')
 
+DATASOURCE_PATH = '/home/g3wsuite/data/'
+
 
 if 'caching' in G3WADMIN_LOCAL_MORE_APPS:
     TILESTACHE_CACHE_TYPE = os.environ.get('G3WSUITE_TILESTACHE_CACHE_TYPE', 'Disk')
@@ -62,6 +64,7 @@ if 'caching' in G3WADMIN_LOCAL_MORE_APPS:
 SESSION_COOKIE_NAME = 'g3wsuite_sessionid{}{}'.format('_' + SITE_PREFIX_URL if SITE_PREFIX_URL else '',
 												  random.randint(1, 123456))
 
+CLIENT_DEFAULT = 'client'
 
 LOGGING = {
     'version': 1,
