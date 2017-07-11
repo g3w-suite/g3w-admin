@@ -20,7 +20,7 @@ for key in ${!repo[@]}; do
     fi
     if [ -e g3w-admin/${key}/requirements.txt ]
     then
-        pip install g3w-admin/${key}/requirements.txt
+        pip install -r g3w-admin/${key}/requirements.txt
     fi
 done
 
