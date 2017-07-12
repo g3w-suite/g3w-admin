@@ -35,6 +35,7 @@ ENV G3WSUITE_FRONTEND='True'
 WORKDIR /home/g3wsuite/g3w-admin
 
 EXPOSE 80
+EXPOSE 5432
 ENTRYPOINT ["entrypoint.sh"]
 CMD ["supervisord", "-n"]
 
