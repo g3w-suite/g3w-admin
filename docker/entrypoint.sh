@@ -7,6 +7,8 @@ sed -e "s/{{BASEURL}}/$BASEURL/g" /home/g3wsuite/nginx.conf.tpl > /etc/nginx/sit
 
 /bin/sleep 10
 
+spawn-fcgi -s /var/run/fcgiwrap.socket -u www-data -U www-data /usr/sbin/fcgiwrap
+
 python /home/g3wsuite/g3w-admin/g3w-admin/manage.py migrate
 python /home/g3wsuite/g3w-admin/g3w-admin/manage.py collectstatic --noinput
 python /home/g3wsuite/g3w-admin/g3w-admin/manage.py loaddata BaseLayer.json
