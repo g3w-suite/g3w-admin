@@ -54,7 +54,6 @@ class G3WAPIResults(object):
         return self
 
 
-
 def G3WExceptionHandler(exc, context):
     """
     Returns the response that should be used for any given exception.
