@@ -357,10 +357,19 @@ _.extend(g3wadmin.ui, {
             ga.widget.showDetailItemDataTable($dataTable, $(this));
         });
 
+        if (!options) {
+            options = {};
+        }
+
+        if (CURRENT_LANGUAGE_CODE != 'en') {
+            options['language'] = DATATABLE_LANGS[CURRENT_LANGUAGE_CODE]
+        }
+
         var $dataTable = $widgetItem.DataTable(options);
 
 
     }
+
 
 
 

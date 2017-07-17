@@ -13,7 +13,7 @@
 
 {% block custom_js_links_page %}
 <script>
-$("#users_table").DataTable();
+ga.ui.initDataTable();
 </script>
 {% endblock %}
 
@@ -29,7 +29,7 @@ $("#users_table").DataTable();
             {% endif %}
         </div>
         <div class="box-body">
-            <table id="users_table" class="table table-hover table-striped">
+            <table id="users_table" class="table table-hover table-striped" data-widget-type="dataTable">
                 <thead>
                     <tr>
                         <th style="width:120px">{% trans 'Actions' %}</th>
