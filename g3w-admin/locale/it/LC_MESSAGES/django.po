@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-06-21 08:59+0000\n"
+"POT-Creation-Date: 2017-07-18 15:57+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,168 +17,6 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-
-#: cadastre/forms.py:29 iternet/forms.py:32
-msgid "Data config"
-msgstr ""
-
-#: cadastre/forms.py:55 iternet/forms.py:68
-msgid "Project not correct: {} layers no in project"
-msgstr ""
-
-#: cadastre/templates/cadastre/config.html:34
-#: iternet/templates/iternet/config.html:34
-msgid "Configuration application"
-msgstr ""
-
-#: cadastre/templates/cadastre/dashboard.html:7
-#: iternet/templates/iternet/dashboard.html:7
-msgid "Report"
-msgstr ""
-
-#: cadastre/templates/cadastre/dashboard.html:34
-#: iternet/templates/iternet/dashboard.html:76
-msgid "Qdjango Project"
-msgstr ""
-
-#: cadastre/templates/cadastre/dashboard.html:47
-#: iternet/templates/iternet/dashboard.html:91
-msgid "Not yet 'Project' set!"
-msgstr ""
-
-#: cadastre/templates/cadastre/dashboard.html:48
-#: iternet/templates/iternet/dashboard.html:92
-msgid "Choose a project"
-msgstr ""
-
-#: cadastre/templates/cadastre/dashboard.html:48
-#: iternet/templates/iternet/dashboard.html:92
-msgid "HERE"
-msgstr ""
-
-#: cadastre/templates/cadastre/dashboard.html:56 templates/index.html:28
-msgid "Module widgets"
-msgstr ""
-
-#: cadastre/templates/cadastre/include/action_loaddata.html:6
-msgid "Revoke task"
-msgstr ""
-
-#: cadastre/templates/cadastre/include/action_loaddata.html:11
-msgid "Show problems"
-msgstr ""
-
-#: cadastre/templates/cadastre/include/action_loaddata.html:15
-#, fuzzy
-#| msgid "Show"
-msgid "Show info"
-msgstr "Mostra"
-
-#: cadastre/templates/cadastre/loaddata.html:76
-#: cadastre/templates/cadastre/loaddata.html:134
-#: cadastre_camaiore/templates/cadastre/loaddatacivici.html:57
-msgid "STATO"
-msgstr ""
-
-#: cadastre/templates/cadastre/loaddata.html:78
-#: cadastre/templates/cadastre/loaddata.html:135
-#: cadastre_camaiore/templates/cadastre/loaddatacivici.html:58
-msgid "File"
-msgstr ""
-
-#: cadastre/templates/cadastre/loaddata.html:80
-msgid "TASk ID"
-msgstr ""
-
-#: cadastre/templates/cadastre/loaddata.html:83
-msgid "Tipo fornitura"
-msgstr ""
-
-#: cadastre/templates/cadastre/loaddata.html:84
-msgid "Descrizione"
-msgstr ""
-
-#: cadastre/templates/cadastre/loaddata.html:85
-msgid "Aggiornamento"
-msgstr ""
-
-#: cadastre/templates/cadastre/loaddata.html:86
-#: cadastre/templates/cadastre/loaddata.html:137
-#: cadastre_camaiore/templates/cadastre/loaddatacivici.html:64
-msgid "Data caricamento"
-msgstr ""
-
-#: cadastre/templates/cadastre/loaddata.html:96
-#: cadastre/templates/cadastre/loaddata.html:149
-#: cadastre_camaiore/templates/cadastre/loaddatacivici.html:74
-msgid "Delete"
-msgstr ""
-
-#: cadastre/templates/cadastre/loaddata.html:102
-#: cadastre/templates/cadastre/loaddata.html:155
-#: cadastre_camaiore/templates/cadastre/loaddatacivici.html:80
-msgid "Clear Db by Task id"
-msgstr ""
-
-#: cadastre/templates/cadastre/loaddata.html:136
-msgid "Data elaborazione"
-msgstr ""
-
-#: cadastre/templates/cadastre/loaddata.html:138
-msgid "N DOCFA"
-msgstr ""
-
-#: cadastre/templates/cadastre/loaddata.html:139
-msgid "N planimterie"
-msgstr ""
-
-#: cadastre/templates/cadastre/messages/check_project_delete.html:3
-#: cadastre/templates/cadastre/messages/check_project_update.html:3
-#: iternet/templates/iternet/messages/check_project_delete.html:3
-#: iternet/templates/iternet/messages/check_project_update.html:3
-msgid "is project for "
-msgstr ""
-
-#: cadastre/templates/cadastre/messages/check_project_delete.html:3
-#: cadastre/templates/cadastre/messages/check_project_update.html:3
-msgid "Cadastre plugin"
-msgstr ""
-
-#: cadastre/templates/cadastre/messages/check_project_delete.html:3
-#: iternet/templates/iternet/messages/check_project_delete.html:3
-msgid "make attention on delete it."
-msgstr ""
-
-#: cadastre/templates/cadastre/messages/check_project_update.html:3
-msgid ""
-"make attention on update it. Update could break right working on cadastre "
-"module"
-msgstr ""
-
-#: cadastre_camaiore/templates/cadastre/check_censuario_update.html:61
-#: cadastre_camaiore/templates/cadastre/civici_rejected_detail.html:11
-msgid "Export"
-msgstr ""
-
-#: cadastre_camaiore/templates/cadastre/loaddatacivici.html:59
-msgid "N civici"
-msgstr ""
-
-#: cadastre_camaiore/templates/cadastre/loaddatacivici.html:60
-msgid "N foto"
-msgstr ""
-
-#: cadastre_camaiore/templates/cadastre/loaddatacivici.html:61
-msgid "N civici salvati"
-msgstr ""
-
-#: cadastre_camaiore/templates/cadastre/loaddatacivici.html:62
-msgid "N civici da verificare"
-msgstr ""
-
-#: cadastre_camaiore/templates/cadastre/loaddatacivici.html:63
-msgid "N civici scartati"
-msgstr ""
 
 #: editing/api/serializers.py:28
 msgid ""
@@ -252,8 +90,6 @@ msgid "Group maps"
 msgstr "Lista gruppi"
 
 #: frontend/templates/frontend/index.html:232
-#: iternet/templates/iternet/dashboard.html:85
-#: iternet/templates/iternet/dashboard.html:86
 msgid "Show map"
 msgstr "Mostra mappa"
 
@@ -272,44 +108,6 @@ msgstr ""
 #: frontend/templates/frontend/index.html:288
 msgid "Logout"
 msgstr "Esci"
-
-#: htmlcov/_home_walter_envs_qdjango2_dev_lib_python2_7_site-packages_django_template_defaulttags_py.html:3184
-#, python-format
-msgid "The width is: %(width)s"
-msgstr ""
-
-#: htmlcov/_home_walter_envs_qdjango2_dev_lib_python2_7_site-packages_django_views_static_py.html:308
-#: htmlcov/_home_walter_envs_qdjango2_dev_lib_python2_7_site-packages_django_views_static_py.html:311
-#, python-format
-msgid "Index of %(directory)s"
-msgstr ""
-
-#: iternet/forms.py:73
-msgid "Project not correct: SRID must be {}"
-msgstr ""
-
-#: iternet/templates/iternet/checkdata.html:19
-msgid "Check data"
-msgstr ""
-
-#: iternet/templates/iternet/dashboard.html:54
-msgid "Database connection"
-msgstr ""
-
-#: iternet/templates/iternet/dashboard.html:56
-msgid "Download QGIS connection XML file"
-msgstr ""
-
-#: iternet/templates/iternet/messages/check_project_delete.html:3
-#: iternet/templates/iternet/messages/check_project_update.html:3
-msgid "Iternet plugin"
-msgstr ""
-
-#: iternet/templates/iternet/messages/check_project_update.html:3
-msgid ""
-"make attention on update it. Update could break right working on iternet "
-"module"
-msgstr ""
 
 #: templates/403.html:7 templates/404.html:7
 msgid "error page"
@@ -393,6 +191,10 @@ msgstr "Lista gruppi"
 msgid "Show"
 msgstr "Mostra"
 
+#: templates/index.html:28
+msgid "Module widgets"
+msgstr ""
+
 #: templates/login.html:15
 msgid "Sign in to start your session"
 msgstr "Accedi per iniziare la tua sessione di lavoro"
@@ -404,6 +206,41 @@ msgstr "Username e/o password non corretti"
 #: templates/login.html:31
 msgid "Sign In"
 msgstr "Accedi"
+
+#, fuzzy
+#~| msgid "Configurations"
+#~ msgid "Configs"
+#~ msgstr "Configurazioni"
+
+#, fuzzy
+#~| msgid "Groups list"
+#~ msgid "Group"
+#~ msgstr "Lista gruppi"
+
+#, fuzzy
+#~| msgid "Users"
+#~ msgid "Viewer users"
+#~ msgstr "Utenti"
+
+#, fuzzy
+#~| msgid "Show"
+#~ msgid "Show info"
+#~ msgstr "Mostra"
+
+#, fuzzy
+#~| msgid "Adminstration"
+#~ msgid "Registration date"
+#~ msgstr "Amministrazione"
+
+#, fuzzy
+#~| msgid "Edit general data"
+#~ msgid "Censual data"
+#~ msgstr "Modifica i dati generali"
+
+#, fuzzy
+#~| msgid "Configurations"
+#~ msgid "Config"
+#~ msgstr "Configurazioni"
 
 #, fuzzy
 #~| msgid "Users"

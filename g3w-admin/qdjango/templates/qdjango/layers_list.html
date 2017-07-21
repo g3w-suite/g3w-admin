@@ -8,9 +8,7 @@
 {% block custom_js_links_page %}
 <script src="{% static "qdjango/js/widget.js" %}"></script>
 <script>
-    ga.ui.initSetLayerCached();
     $('#tree').treeview({data:{{ layers_tree|safe }}});
-    ga.ui.initDataTable();
 </script>
 {% endblock %}
 

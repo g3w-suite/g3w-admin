@@ -80,7 +80,9 @@ _.extend(g3wadmin,{
 
         // INIT initMapSetExtent
         this.ui.initMapSetExtent();
-        
+
+        // INIT Datatable
+        this.ui.initDataTable();
 
         /*
         TODO: try to perfom this issue server side

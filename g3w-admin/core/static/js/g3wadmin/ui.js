@@ -212,14 +212,6 @@ _.extend(g3wadmin.ui, {
         });
     },
 
-    initSetLayerCached: function() {
-        $(document).on('ifChecked', '[data-widget-type="setLayerCached"]', function(e){
-            ga.widget.setLayerCached($(this));
-        }).on('ifUnchecked', '[data-widget-type="setLayerCached"]', function(e){
-            ga.widget.setLayerCached($(this), false);
-        });
-    },
-
     initRadioCheckbox: function(context) {
         if (!_.isUndefined(context)) {
             var $widgetItem = $(context).find('input[type="checkbox"], input[type="radio"]');
@@ -358,7 +350,9 @@ _.extend(g3wadmin.ui, {
         });
 
         if (!options) {
-            options = {};
+            options = {
+                stateSave: true
+            };
         }
 
         if (CURRENT_LANGUAGE_CODE != 'en') {

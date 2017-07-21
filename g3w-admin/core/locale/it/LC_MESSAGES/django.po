@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-06-21 08:59+0000\n"
+"POT-Creation-Date: 2017-07-18 15:57+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -34,19 +34,19 @@ msgstr "Mostra le configurazioni"
 msgid "Additional settings"
 msgstr "Configurazioni accessorie"
 
-#: core/api/views.py:82
+#: core/api/views.py:81
 msgid "Data are not correct or insufficent!"
 msgstr "I dati non sono corretti o insufficenti"
 
-#: core/api/views.py:88
+#: core/api/views.py:87
 msgid "A error server is occured!"
 msgstr "Si è verificato un errore server!"
 
-#: core/api/views.py:99
+#: core/api/views.py:98
 msgid "Not found"
 msgstr "Non trovato"
 
-#: core/api/views.py:106
+#: core/api/views.py:105
 msgid "Permission denied"
 msgstr "Permesso negato"
 
