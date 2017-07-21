@@ -1,6 +1,7 @@
 # Layer capabilities, for bitwise operations
 QUERYABLE = 1
-EDITABLE = 2
+FILTRABLE = 2
+EDITABLE = 4
 WFS = 4
 
 # Layer edit options, , for bitwise operations

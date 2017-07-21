@@ -140,6 +140,7 @@ def get_layer_data_file_path(instance, filename):
 
     return settings.DATASOURCE_PATH
 
+
 class Layer(G3WACLModelMixins, models.Model):
     """A QGIS layer."""
 
@@ -196,9 +197,6 @@ class Layer(G3WACLModelMixins, models.Model):
 
     #geometryType
     geometrytype = models.CharField(_('Geometry type'), max_length=255, blank=True, null=True)
-
-    # Tilestache confgiguration paramenters for layer
-    tilestache_conf = models.TextField(_('Tilestache layer configurations paramenters'), blank=True, null=True)
 
     exclude_attribute_wms = models.TextField(_('Attributes excluded from wms'), blank=True, null=True)
     exclude_attribute_wfs = models.TextField(_('Attributes excluded from wfs'), blank=True, null=True)

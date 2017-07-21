@@ -62,7 +62,8 @@
                         <tr>
                             <th style="width:120px">Actions</th>
                             <th style="width: 40px">Type</th>
-                            <!--<th style="width: 40px">{%  trans 'Cached' %}</th>-->
+                            <th style="width: 40px">WFS</th>
+                            <th>{% trans 'Queryable' %}</th>
                             <th>{%  trans 'Name' %}</th>
                             <th>{%  trans 'Label' %}</th>
                         </tr>
@@ -87,6 +88,12 @@
                             </td>
                             <td>
                                 {% include 'qdjango/include/layer_icon.html' %}
+                            </td>
+
+                            <td>
+                                {% if object.wfscapabilities %}
+                                <span class="fa fa-check-circle" style="color: orange"></span>
+                                {% endif %}
                             </td>
                             <td>{{ object.name }}</td>
                             <td>{{ object.title }}</td>

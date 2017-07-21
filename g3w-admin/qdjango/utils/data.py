@@ -7,8 +7,13 @@ from django.db import transaction
 from qdjango.models import Project
 from core.utils.data import XmlData
 from .structure import *
-import os, re
+import os
+import re
 import json
+
+
+# constant per qgis layers
+QGIS_LAYER_TYPE_NO_GEOM = 'No geometry'
 
 
 def makeDatasource(datasource, layerType):
@@ -1002,24 +1007,24 @@ class QgisPgConnection(object):
     _version = "1.0"
 
     _params = {
-        'port':5432,
-        'saveUsername':'true',
-        'password':'',
-        'savePassword':'true',
-        'sslmode':1,
-        'service':'',
-        'username':'',
-        'host':'',
-        'database':'',
-        'name':'',
-        'estimatedMetadata':'false'
+        'port': 5432,
+        'saveUsername': 'true',
+        'password': '',
+        'savePassword': 'true',
+        'sslmode': 1,
+        'service': '',
+        'username': '',
+        'host': '',
+        'database': '',
+        'name': '',
+        'estimatedMetadata': 'false'
     }
 
     def __init__(self, **kwargs):
 
         self._data = {}
         for k,v in kwargs.items():
-            setattr(self,k,v)
+            setattr(self, k, v)
 
     def __setattr__(self, key, value):
 
