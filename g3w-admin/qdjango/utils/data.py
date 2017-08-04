@@ -990,7 +990,9 @@ class QgisProjectSettingsWMS(XmlData):
               _composerMaps.append({
                   'name': composerMap.attrib['name'],
                   'w': float(composerMap.attrib['width']),
-                  'h': float(composerMap.attrib['height'])
+                  'h': float(composerMap.attrib['height']),
+                  'pw': float(composerMap.attrib['paperWidth']),
+                  'ph': float(composerMap.attrib['paperHeight'])
               })
             self._composerTemplatesData.append({
               'name': composerTemplate.attrib['name'],
