@@ -29,12 +29,18 @@ ga.Qdjango.widgetEditor = {
 	
 	getType: function(str)
 	{
-		if (str.indexOf("VARCHAR") !== -1 || str.indexOf("STRING") !== -1 || str.indexOf("TEXT") !== -1)
+		if (str.indexOf("VARCHAR") !== -1 ||
+			str.indexOf("STRING") !== -1 ||
+			str.indexOf("TEXT") !== -1)
 			return "textfield";
-		if (str.indexOf("NUMERIC") !== -1 || str.indexOf("DOUBLE PRECISION") !== -1 || str.indexOf("INTEGER") !== -1 || str.indexOf("REAL") !== -1)
+		if (str.indexOf("NUMERIC") !== -1 ||
+			str.indexOf("DOUBLE PRECISION") !== -1 ||
+			str.indexOf("INTEGER") !== -1 ||
+			str.indexOf("BIGINT") !== -1 ||
+			str.indexOf("REAL") !== -1)
 			return "numberfield";
 	},
-	
+
 	onFormSubmit: function()
 	{
 		var that = this;
