@@ -81,7 +81,7 @@ class OWSRequestHandler(OWSRequestHandlerBase):
             if ows_request == 'GETFEATUREINFO' and 'SOURCE' in q and q['SOURCE'].upper() == 'WMS':
 
                 # get layer by name
-                layerToFilter = q['QUERY_LAYER'] if 'QUERY_LAYER' in q else q['QUERY_LAYERS']
+                layerToFilter = q['QUERY_LAYER'] if 'QUERY_LAYER' in q else q['QUERY_LAYERS'].split(',')[0]
                 layer = cls._projectInstance.layer_set.get(name=layerToFilter)
 
                 # get ogc server url
