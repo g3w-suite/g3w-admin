@@ -107,7 +107,7 @@ class ProjectSerializer(serializers.ModelSerializer):
         ret['initextent'], ret['extent'] = self.get_map_extent(instance)
 
         # add print capabilities only if SR not in degree:
-        if instance.group.srid != 4326:
+        if instance.group.srid_id != 4326:
             ret['print'] = qgis_projectsettings_wms.composerTemplates
         else:
             ret['print'] = []
