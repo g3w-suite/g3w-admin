@@ -106,8 +106,11 @@ class ProjectSerializer(serializers.ModelSerializer):
         # set init and map extent
         ret['initextent'], ret['extent'] = self.get_map_extent(instance)
 
-        # add print capabilities:
-        ret['print'] = qgis_projectsettings_wms.composerTemplates
+        # add print capabilities only if SR not in degree:
+        if instance.group.srid != 4326:
+            ret['print'] = qgis_projectsettings_wms.composerTemplates
+        else:
+            ret['print'] = []
 
         # add layers data, widgets
         # init proprties
