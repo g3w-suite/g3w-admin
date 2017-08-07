@@ -75,8 +75,11 @@ class ProjectSerializer(serializers.ModelSerializer):
         else:
             ret['extent'] = ret['initextent']
 
-        # add print capabilities:
-        ret['print'] = qgisProjectSettignsWMS.composerTemplates
+        # add print capabilities only if SR not in degree:
+        if instance.group.srid_id != 4326:
+            ret['print'] = qgisProjectSettignsWMS.composerTemplates
+        else:
+            ret['print'] = []
 
         # add layers data, widgets
         ret['layers'] = []
