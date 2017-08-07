@@ -511,7 +511,12 @@ class CheckMaxExtent(QgisProjectValidator):
     """
     def clean(self):
         max_extent = self.qgisProject.maxExtent
+
         if max_extent:
+
+            # cast coord to float
+            for c in ['xmin', 'xmax', 'ymin', 'ymax']:
+                max_extent[c] = float(max_extent[c])
 
             # check is a cordinate il None or empty
             wrong_coord = list()
