@@ -26,6 +26,7 @@ defusedxml
 SQLAlchemy
 django-import-export
 coverage
+urllib3
 
 # GDAL by hand
 

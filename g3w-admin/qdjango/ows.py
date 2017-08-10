@@ -22,6 +22,7 @@ try:
     # python 2
     from httplib import HTTPConnection
     from urlparse import urlsplit
+    import urllib3
 except:
 
     #python 3
@@ -71,6 +72,9 @@ class OWSRequestHandler(OWSRequestHandlerBase):
 
     def baseDoRequest(cls, q, request=None):
 
+        # http urllib3 manager
+        http = None
+
         if request.method == 'GET':
             ows_request = q['REQUEST'].upper()
         else:
@@ -87,67 +91,46 @@ class OWSRequestHandler(OWSRequestHandlerBase):
                 # get ogc server url
                 layer_source = QueryDict(layer.datasource)
                 urldata = urlsplit(layer_source['url'])
-                server_base = urlsplit(layer_source['url']).netloc
-                server_base_port = 80
-                headers = {}
-                source_address = None
+                base_url = '{}://{}{}'.format(urldata.scheme, urldata.netloc, urldata.path)
 
                 # try to add proxy server if isset
                 if settings.PROXY_SERVER:
-                    server_base = settings.PROXY_SERVER_URL
-                    server_base_port = settings.PROXY_SERVER_PORT
-
-                    if hasattr(settings, 'PROXY_CLIENT_SENDER_IP'):
-                        source_address = settings.PROXY_CLIENT_SENDER_IP
-
-                conn = HTTPConnection(server_base, server_base_port, source_address=source_address)
-
-                if settings.PROXY_SERVER:
-                    conn.set_tunnel(urlsplit(layer_source['url']).netloc, 80)
+                    http = urllib3.ProxyManager(settings.PROXY_SERVER_URL)
 
                 # copy q to manage it
                 new_q = copy(q)
 
                 # change layer with wms origname layer
                 if 'LAYER' in new_q:
-                    del(q['LAYER'])
+                    del (q['LAYER'])
                 if 'LAYERS' in new_q:
-                    del(new_q['LAYERS'])
-                del(new_q['SOURCE'])
+                    del (new_q['LAYERS'])
+                del (new_q['SOURCE'])
                 new_q['LAYERS'] = layer_source['layers']
                 new_q['QUERY_LAYERS'] = layer_source['layers']
 
-                url = '?'.join([urldata.path, '&'.join([urldata.query, new_q.urlencode()])])
+                url = '?'.join([base_url, '&'.join([urldata.query, new_q.urlencode()])])
             else:
-
-                # case http proxy
-                server_base = urlsplit(settings.QDJANGO_SERVER_URL).netloc
-                headers = {}
-                conn = HTTPConnection(server_base, settings.QDJANGO_SERVER_PORT)
-
                 url = '?'.join([settings.QDJANGO_SERVER_URL, q.urlencode()])
 
+            if not http:
+                http = urllib3.PoolManager()
 
-
-            conn.request(request.method, url, request.body, headers)
-            result = conn.getresponse()
+            result = http.request(request.method, url)
 
             # If we get a redirect, let's add a useful message.
             if result.status in (301, 302, 303, 307):
                 response = HttpResponse(('This proxy does not support redirects. The server in "%s" '
                                          'asked for a redirect to "%s"' % ('localhost', result.getheader('Location'))),
                                         status=result.status,
-                                        content_type=result.getheader("Content-Type", "text/plain")
-                                        )
+                                        content_type=result.headers["Content-Type"])
 
                 response['Location'] = result.getheader('Location')
             else:
                 response = HttpResponse(
-                    result.read(),
+                    result.data,
                     status=result.status,
-                    content_type=result.getheader("Content-Type", "text/plain"))
-
-            conn.close()
+                    content_type=result.headers["Content-Type"])
             return response
 
         else:
