@@ -79,14 +79,23 @@ class OWSRequestHandler(OWSRequestHandlerBase):
             ows_request = q['REQUEST'].upper()
         else:
             ows_request = request.POST['REQUEST'][0].upper()
+
         if qdjangoModeRequest == QDJANGO_PROXY_REQUEST or ows_request == 'GETLEGENDGRAPHIC':
 
             # try to get getfeatureinfo on wms layer
             if ows_request == 'GETFEATUREINFO' and 'SOURCE' in q and q['SOURCE'].upper() == 'WMS':
 
                 # get layer by name
-                layerToFilter = q['QUERY_LAYER'] if 'QUERY_LAYER' in q else q['QUERY_LAYERS'].split(',')[0]
-                layer = cls._projectInstance.layer_set.get(name=layerToFilter)
+                layers_to_filter = q['QUERY_LAYER'] if 'QUERY_LAYER' in q else q['QUERY_LAYERS'].split(',')
+
+                # get layers to query
+                layers_to_query = []
+                for ltf in layers_to_filter:
+                    layer = cls._projectInstance.layer_set.get(name=ltf)
+                    layer_source = QueryDict(layer.datasource)
+                    layers_to_query.append(layer_source['layers'])
+
+                layers_to_query = ','.join(layers_to_query)
 
                 # get ogc server url
                 layer_source = QueryDict(layer.datasource)
@@ -106,8 +115,8 @@ class OWSRequestHandler(OWSRequestHandlerBase):
                 if 'LAYERS' in new_q:
                     del (new_q['LAYERS'])
                 del (new_q['SOURCE'])
-                new_q['LAYERS'] = layer_source['layers']
-                new_q['QUERY_LAYERS'] = layer_source['layers']
+                new_q['LAYERS'] = layers_to_query
+                new_q['QUERY_LAYERS'] = layers_to_query
 
                 url = '?'.join([base_url, '&'.join([urldata.query, new_q.urlencode()])])
             else:
