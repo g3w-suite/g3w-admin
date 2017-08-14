@@ -1,7 +1,12 @@
 from django.conf import settings
 from django.apps import apps
+from django.contrib.gis.geos import GEOSGeometry, GEOSException
+from django.contrib.gis.gdal import OGRException
+from django.core.exceptions import ValidationError
 from rest_framework import serializers
 from rest_framework.fields import empty
+from rest_framework_gis.fields import GeometryField
+from shapely import wkt, geometry
 from core.models import Group
 from core.signals import initconfig_plugin_start
 from core.mixins.api.serializers import G3WRequestSerializer
@@ -145,3 +150,56 @@ class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
             'header_terms_of_use_link'
         )
 
+
+class G3WGeometryField(GeometryField):
+    """
+    A field to handle GeoDjango Geometry fields
+    """
+
+    def to_internal_value(self, value):
+        if value == '' or value is None:
+            return value
+        if isinstance(value, GEOSGeometry):
+            # value already has the correct representation
+            return value
+        if isinstance(value, dict):
+            value = wkt.dumps(geometry.shape(value))
+        try:
+            return GEOSGeometry(value)
+        except (ValueError, GEOSException, OGRException, TypeError):
+            raise ValidationError(_('Invalid format: string or unicode input unrecognized as GeoJSON, WKT EWKT or HEXEWKB.'))
+
+
+class G3WGeoSerializerMixin(object):
+    """
+    Generic mixins for geoserializer model
+    """
+
+    relationsAttributes = None
+    using_db = None
+
+    def setRealtionsAttributes(self, relationsAttributeId, relationsAttributes):
+        self.relationsAttributeId = relationsAttributeId
+        self.relationsAttributes = relationsAttributes
+
+    def _get_meta_using(self):
+        return self.Meta.using if hasattr(self.Meta, 'using') else None
+
+    def create(self, validated_data):
+        instance = self.Meta.model(**validated_data)
+        instance.save(using=self._get_meta_using())
+        return instance
+
+    def update(self, instance, validated_data):
+        using = self.Meta.using if hasattr(self.Meta, 'using') else None
+        for field, value in validated_data.items():
+            setattr(instance, field, value)
+        instance.save(using=self._get_meta_using())
+        return instance
+
+    @classmethod
+    def delete(cls, instance):
+        """
+        Classmethod to delete model instance
+        """
+        instance.delete()

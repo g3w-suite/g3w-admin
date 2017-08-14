@@ -185,7 +185,7 @@ SESSION_COOKIE_NAME = 'g3wadmin_sessionid'
 
 # FOR rest_framework
 REST_FRAMEWORK = {
-    'EXCEPTION_HANDLER': 'core.api.views.G3WExceptionHandler',
+    'EXCEPTION_HANDLER': 'core.api.base.views.G3WExceptionHandler',
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 100,
     'UNICODE_JSON': False
@@ -211,7 +211,6 @@ SITE_TITLE = 'g3w-admin'
 
 # for qdjango module
 QDJANGO_SERVER_URL = 'http://localhost/cgi-bin/qgis_mapserv.fcgi'
-QDJANGO_SERVER_PORT = 80
 QDJANGO_PRJ_CACHE_KEY = 'qdjango_prj_{}'
 QDJANGO_MODE_REQUEST = 'proxy'  #'qgsserver'
 

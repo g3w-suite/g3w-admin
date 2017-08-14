@@ -1,6 +1,12 @@
 from django.db.models.fields import *
 from django.db.models.fields.files import *
 from django.db.models.fields.related import *
+import django.contrib.gis.db.models as geomodels
+from sqlalchemy.sql import sqltypes as SQLTYPE
+
+# specific fro dialectics
+from sqlalchemy.dialects.postgresql import base as SQLPOSTGRESTYPE
+import geoalchemy2.types as geotypes
 from django.conf import settings
 from django.apps import apps
 from django.core.urlresolvers import reverse
@@ -55,6 +61,27 @@ FORM_FIELDS_MAPPING = {
     FIELD_TYPE_DATETIME: FORM_FIELD_TYPE_TEXT,
     FIELD_TYPE_IMAGE: FORM_FIELD_TYPE_IMAGE,
     FIELD_TYPE_FILE: FORM_FIELD_TYPE_FILE,
+}
+
+MAPPING_GEOALCHEMY_DJANGO_FIELDS = {
+    SQLTYPE.INTEGER: IntegerField,
+    SQLTYPE.BIGINT: BigIntegerField,
+    SQLTYPE.FLOAT: FloatField,
+    SQLTYPE.VARCHAR: CharField,
+    SQLTYPE.TEXT: TextField,
+    SQLTYPE.SMALLINT: SmallIntegerField,
+    SQLTYPE.BOOLEAN: BooleanField,
+    SQLTYPE.DATE: DateField,
+    SQLTYPE.DATETIME: DateTimeField,
+    SQLTYPE.REAL: FloatField,
+    SQLTYPE.CHAR: CharField,
+    SQLTYPE.NUMERIC: DecimalField,
+
+    # specific for postgres
+    SQLPOSTGRESTYPE.DOUBLE_PRECISION: FloatField,
+    geotypes.Geometry: geomodels.GeometryField,
+    'geotype': geomodels.GeometryField,
+    'autoincrement': AutoField
 }
 
 

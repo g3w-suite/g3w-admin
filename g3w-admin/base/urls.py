@@ -43,6 +43,7 @@ urlpatterns = [
 
 apiUrlpatterns = [
     url(r'^', include('client.apiurls')),
+    url(r'^', include('core.apiurls'))
 ]
 
 if BASE_ADMIN_URLPATH == 'admin/':
@@ -84,23 +85,9 @@ if settings.DEBUG:
 
 urlpatterns = i18n_patterns(*urlpatterns)
 
-'''
-if settings.SITE_PREFIX_URL:
-    apiUrlpatterns = [
-        url(r'^{}/'.format(settings.SITE_PREFIX_URL), include(apiUrlpatterns))
-    ]
-'''
-
 urlpatterns += apiUrlpatterns
 
 urlows = [url(r'^', include('OWS.urls'))]
-
-'''
-if settings.SITE_PREFIX_URL:
-    urlows = [
-        url(r'^{}'.format(settings.SITE_PREFIX_URL), include(urlows))
-    ]
-'''
 
 urlpatterns += urlows
 
