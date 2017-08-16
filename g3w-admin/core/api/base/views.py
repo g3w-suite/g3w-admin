@@ -179,7 +179,7 @@ class BaseVectorOnModelApiView(G3WAPIView):
         MODE_DATA
     ]
 
-    def _get_forms(self):
+    def get_forms(self):
         """
         Method to implement in child class to get form structure if exists
         """
@@ -194,21 +194,35 @@ class BaseVectorOnModelApiView(G3WAPIView):
         """
         pass
 
-    def set_mode_call(self, request):
+    def set_app_name(self, request, **kwargs):
 
-        mode = set(self.modes_call_available) & set(request.GET)
+        if not self.app_name:
+            self.app_name = kwargs['project_type']
+
+    def set_mode_call(self, request, **kwargs):
+        """
+        Get mode_call status from url parameters
+        :param request:
+        :param kwargs:
+        :return:
+        """
+        mode = set(self.modes_call_available) & set([kwargs['mode_call']])
         if len(mode) == 1:
             self.mode_call = list(mode)[0]
         elif len(mode) > 1:
             raise APIException('Only one of this mode: {}'.format(', '.join(self.modes_call_available)))
 
-    def _get_layer_by_name(self, layer_name):
+    def get_layer_by_name(self, layer_name):
         """
         Method to implement in child class to get layer model object
         """
         return None
 
     def get_queryset(self):
+        """
+        Return query set for layer data
+        :return:
+        """
         if 'using' in self.metadata_layer:
             return self.metadata_layer['model'].objects.using(self.metadata_layer['using']).all()
         else:
@@ -240,7 +254,9 @@ class BaseVectorOnModelApiView(G3WAPIView):
     def initial(self, request, *args, **kwargs):
         super(BaseVectorOnModelApiView, self).initial(request, *args, **kwargs)
 
-        self.set_mode_call(request)
+        self.set_app_name(request, **kwargs)
+
+        self.set_mode_call(request, **kwargs)
 
         self.get_metadata_layer(request, **kwargs)
 
@@ -253,7 +269,7 @@ class BaseVectorOnModelApiView(G3WAPIView):
         :return: Vector params
         """
 
-        forms = self._get_forms()
+        forms = self.get_forms()
 
         # add forms data if exist
         kwargs = {'fields': forms[self.layer_name]['fields']} if forms and forms.get(self.layer_name) else {}
@@ -310,9 +326,6 @@ class BaseVectorOnModelApiView(G3WAPIView):
         else:
             featurecollection = layer_serializer.data
 
-        # get feature locked:
-        #features_locked = self.lock.lockFeatures([str(f.pk) for f in features_layer])
-
         # reproject if necessary
         if self.reproject:
             self.reproject_featurecollection(featurecollection)
@@ -327,14 +340,7 @@ class BaseVectorOnModelApiView(G3WAPIView):
         # check if data to reproject
         self.reproject = not self.layer.project.group.srid.auth_srid == self.layer.srid
 
-    def get(self, request, format=None, layer_name=None, **kwargs):
-
-        # set layer model object to work
-        if not hasattr(self, 'layer'):
-            self.layer = self._get_layer_by_name(layer_name)
-
-        # set reprojecting status
-        self.set_reprojecting_status()
+    def get_response_data(self, request):
 
         vector_params = {}
 
@@ -343,8 +349,19 @@ class BaseVectorOnModelApiView(G3WAPIView):
         elif self.mode_call == MODE_DATA:
             vector_params = self.response_data_mode(request)
 
+        return vector_params
+
+    def get(self, request, mode_call=None, format=None, layer_name=None, **kwargs):
+
+        # set layer model object to work
+        if not hasattr(self, 'layer'):
+            self.layer = self._get_layer_by_name(layer_name)
+
+        # set reprojecting status
+        self.set_reprojecting_status()
+
         # response a APIVectorLayer
-        return Response(APIVectorLayerStructure(**vector_params).as_dict())
+        return Response(APIVectorLayerStructure(**self.get_response_data(request)).as_dict())
 
 
 

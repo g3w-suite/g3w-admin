@@ -5,11 +5,9 @@ from .api.serializers import QGISLayerSerializer
 from .models import Layer
 
 
-class LayerVectorView(BaseVectorOnModelApiView):
+class QGISLayerVectorViewMixin(object):
 
-    mapping_layer_attributes_function = mapLayerAttributesFromModel
-
-    def _get_layer_by_params(self, params):
+    def get_layer_by_params(self, params):
 
         layer_id = params['layer_name']
         project_id = params['project_id']
@@ -23,7 +21,7 @@ class LayerVectorView(BaseVectorOnModelApiView):
 
     def get_metadata_layer(self, request, **kwargs):
 
-        self.layer = self._get_layer_by_params(kwargs)
+        self.layer = self.get_layer_by_params(kwargs)
 
         geomodel, self.database_to_use, geometrytype = create_geomodel_from_qdjango_layer(self.layer)
 
@@ -37,3 +35,10 @@ class LayerVectorView(BaseVectorOnModelApiView):
             'geometryType': geometrytype,
             'clientVar': self.layer.origname,
         }
+
+
+class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
+
+    mapping_layer_attributes_function = mapLayerAttributesFromModel
+
+
