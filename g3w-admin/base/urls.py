@@ -55,7 +55,7 @@ if BASE_ADMIN_URLPATH == 'admin/':
 for app in settings.G3WADMIN_PROJECT_APPS:
     urlpatterns.append(url(r'^{}{}/'.format(BASE_ADMIN_URLPATH, app), include('{}.urls'.format(app))))
     try:
-      apiUrlpatterns.append(url(r'^{}/'.format(app), include('{}.apiurls'.format(app))))
+        apiUrlpatterns.append(url(r'^{}/'.format(app), include('{}.apiurls'.format(app))))
     except Exception as e:
       pass
 
