@@ -19,9 +19,20 @@ class QGISLayerVectorViewMixin(object):
 
         return {'model': self.metadata_layer['model'], 'using': self.database_to_use}
 
-    def get_metadata_layer(self, request, **kwargs):
+    def set_relations(self):
+
+        self.relations = {r['id']: r for r in eval(self.layer.project.relations)}
+
+    def set_metadata_relations(self, request, **kwargs):
+        pass
+
+
+    def set_metadata_layer(self, request, **kwargs):
 
         self.layer = self.get_layer_by_params(kwargs)
+
+        # set layer_name
+        self.layer_name = self.layer.origname
 
         geomodel, self.database_to_use, geometrytype = create_geomodel_from_qdjango_layer(self.layer)
 
@@ -35,6 +46,7 @@ class QGISLayerVectorViewMixin(object):
             'geometryType': geometrytype,
             'clientVar': self.layer.origname,
         }
+
 
 
 class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):

@@ -148,7 +148,13 @@ class BaseVectorOnModelApiView(G3WAPIView):
     layer_name = None
 
     # Metadata layer to user
-    metadata_layer = {}
+    metadata_layer = dict()
+
+    # Ralations propeties
+    relations = dict()
+
+    # Relations metadata
+    matadata_relations = dict()
 
     # State parameter toknown if reproject or not the data
     reproject = False
@@ -162,7 +168,7 @@ class BaseVectorOnModelApiView(G3WAPIView):
     bbox_filter_include_overlapping = True
 
     # sepcific fileds data for media fifileds like picture/movies
-    media_properties = {}
+    media_properties = dict()
 
     # Database keyname to use if different from default settings
     database_to_use = None
@@ -228,6 +234,20 @@ class BaseVectorOnModelApiView(G3WAPIView):
         else:
             return self.metadata_layer['model'].objects.all()
 
+    def set_relations(self):
+        """
+        Method to implenet to set layer relations
+        :return:
+        """
+        pass
+
+    def set_filters(self):
+        """
+        Set filters data from GET/POST params
+        :return:
+        """
+        self.set_geo_filter()
+
     def set_geo_filter(self):
 
         # Instance bbox filter
@@ -236,20 +256,52 @@ class BaseVectorOnModelApiView(G3WAPIView):
     def get_geoserializer_kwargs(self):
         """
         To implente un sub class
-        :return:
+        :return: Dict for serializers params
         """
         return {}
 
-    def reproject_featurecollection(self, featurecollection):
+    def set_metadata_layer(self, request, **kwargs):
+        """
+        set metadata_layer properties
+        :param request: API Request object
+        :param kwargs:
+        """
+        pass
+
+    def set_metadata_relations(self, request, **kwargs):
+        """
+        set metadata_relations properties
+        :param request: API Request object
+        :param kwargs:
+        """
+
+    def reproject_feature(self, feature, to_layer=False):
+        """
+        Reproject single geomtry feature
+        :param feature: Feature object
+        :param to_layer: Reprojecting versus
+        :return:
+        """
+
+        if to_layer:
+            from_srid = self.layer.project.group.srid.auth_srid
+            to_srid = self.layer.srid
+        else:
+            from_srid = self.layer.srid
+            to_srid = self.layer.project.group.srid.auth_srid
+
+        geometry = GEOSGeometry(json.dumps(feature['geometry']), srid=int(from_srid))
+        geometry.transform(to_srid)
+        feature['geometry'] = json.loads(geometry.json)
+
+    def reproject_featurecollection(self, featurecollection, to_layer=False):
         """
         Reproject features
         :param featurecollection:
         :return:
         """
         for feature in featurecollection['features']:
-            geometry = GEOSGeometry(json.dumps(feature['geometry']), srid=int(self.layer.srid))
-            geometry.transform(self.layer.project.group.srid.auth_srid)
-            feature['geometry'] = json.loads(geometry.json)
+            self.reproject_feature(feature, to_layer)
 
     def initial(self, request, *args, **kwargs):
         super(BaseVectorOnModelApiView, self).initial(request, *args, **kwargs)
@@ -258,7 +310,9 @@ class BaseVectorOnModelApiView(G3WAPIView):
 
         self.set_mode_call(request, **kwargs)
 
-        self.get_metadata_layer(request, **kwargs)
+        self.set_metadata_layer(request, **kwargs)
+
+        self.set_metadata_relations(request, **kwargs)
 
 
     def response_config_mode(self, request):
@@ -306,9 +360,14 @@ class BaseVectorOnModelApiView(G3WAPIView):
         return vector_params
 
     def response_data_mode(self, request):
-
+        """
+        Query layer and return data
+        :param request: DjangoREST API request object
+        :return: responce dict data
+        """
         # Instance geo filtering
-        self.set_geo_filter()
+        #self.set_geo_filter()
+        self.set_filters()
 
         # apply bbox filter
         self.features_layer = self.get_queryset()
@@ -336,12 +395,19 @@ class BaseVectorOnModelApiView(G3WAPIView):
         }
 
     def set_reprojecting_status(self):
-
+        """
+        Check if data have to reproject
+        :return:
+        """
         # check if data to reproject
         self.reproject = not self.layer.project.group.srid.auth_srid == self.layer.srid
 
     def get_response_data(self, request):
-
+        """
+        Choose method for Response by mode_call param
+        :param request:
+        :return:
+        """
         vector_params = {}
 
         if self.mode_call == MODE_CONFIG:
@@ -351,11 +417,11 @@ class BaseVectorOnModelApiView(G3WAPIView):
 
         return vector_params
 
-    def get(self, request, mode_call=None, format=None, layer_name=None, **kwargs):
+    def get_response(self, request, mode_call=None, project_type=None, layer_id=None, **kwargs):
 
         # set layer model object to work
         if not hasattr(self, 'layer'):
-            self.layer = self._get_layer_by_name(layer_name)
+            self.layer = self.get_layer_by_name(layer_id)
 
         # set reprojecting status
         self.set_reprojecting_status()
@@ -363,6 +429,13 @@ class BaseVectorOnModelApiView(G3WAPIView):
         # response a APIVectorLayer
         return Response(APIVectorLayerStructure(**self.get_response_data(request)).as_dict())
 
+    def get(self, request, mode_call=None, project_type=None, layer_id=None, **kwargs):
+
+        return self.get_response(request, mode_call=mode_call, project_type=project_type, layer_id=layer_id, **kwargs)
+
+    def post(self, request, mode_call=None, project_type=None, layer_id=None, **kwargs):
+
+        return self.get_response(request, mode_call=mode_call, project_type=project_type, layer_id=layer_id, **kwargs)
 
 
 
