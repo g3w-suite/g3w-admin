@@ -85,7 +85,7 @@ def create_geomodel_from_qdjango_layer(layer, app_label='core'):
 
     if layer.layer_type == 'postgres':
         datasource = datasource2dict(layer.datasource)
-        geometrytype = datasource['type']
+        geometrytype = datasource.get('type', None)
     else:
         geometrytype = layer.geometrytype
 

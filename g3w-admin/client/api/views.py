@@ -66,6 +66,7 @@ class GroupConfigApiView(APIView):
           "client": "g3w-client/",
           "mediaurl": settings.MEDIA_URL,
           "baseurl": "/{}".format(settings.SITE_PREFIX_URL if settings.SITE_PREFIX_URL else ''),
+          "vectorurl": settings.VECTOR_URL,
           "group": groupSerializer.data}
 
         u = request.user
