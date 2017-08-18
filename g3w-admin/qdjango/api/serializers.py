@@ -231,10 +231,11 @@ class LayerSerializer(serializers.ModelSerializer):
             capabilities |= settings.QUERYABLE
         if instance.wfscapabilities:
             capabilities |= settings.FILTRABLE
-        '''
-        if instance.edit_options:
-            capabilities |= settings.EDITABLE
-        '''
+
+        # ----------------------------------
+        # add editable capability by signal
+        # ----------------------------------
+        
         if capabilities == 0:
             capabilities = None
 
