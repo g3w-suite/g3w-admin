@@ -1,7 +1,7 @@
 from core.api.base.views import BaseVectorOnModelApiView
 from core.utils.structure import mapLayerAttributesFromModel
 from core.utils.models import create_geomodel_from_qdjango_layer, get_geometry_column
-from .api.serializers import QGISLayerSerializer
+from .api.serializers import QGISLayerSerializer, QGISGeoLayerSerializer
 from .models import Layer
 
 
@@ -34,7 +34,7 @@ class QGISLayerVectorViewMixin(object):
 
             self.metadata_relations[relation['referencingLayer']] = {
                 'model': geomodel,
-                'serializer': QGISLayerSerializer,
+                'serializer': QGISGeoLayerSerializer if geometrytype else QGISLayerSerializer,
                 'geometryType': geometrytype,
                 'clientVar': relation_layer.origname,
                 'relation_id': idr
@@ -55,7 +55,7 @@ class QGISLayerVectorViewMixin(object):
         # create model and add to editing_layers
         self.metadata_layer = {
             'model': geomodel,
-            'geoSerializer': QGISLayerSerializer,
+            'geoSerializer': QGISGeoLayerSerializer,
             'geometryType': geometrytype,
             'clientVar': self.layer.origname,
         }

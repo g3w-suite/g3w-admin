@@ -170,17 +170,24 @@ class G3WGeometryField(GeometryField):
             raise ValidationError(_('Invalid format: string or unicode input unrecognized as GeoJSON, WKT EWKT or HEXEWKB.'))
 
 
-class G3WGeoSerializerMixin(object):
+class G3WSerializerMixin(object):
     """
-    Generic mixins for geoserializer model
+    Generic mixins for serializer model
     """
 
     relationsAttributes = None
     using_db = None
 
-    def setRealtionsAttributes(self, relationsAttributeId, relationsAttributes):
-        self.relationsAttributeId = relationsAttributeId
-        self.relationsAttributes = relationsAttributes
+    def set_meta(self, **kwargs):
+        """
+        Set meta properties for dinamical model
+        :param kwargs: ditc params
+        """
+        self.Meta = self.Meta()
+        self.Meta.model = kwargs['model']
+        del (kwargs['model'])
+        self.Meta.using = kwargs['using']
+        del (kwargs['using'])
 
     def _get_meta_using(self):
         return self.Meta.using if hasattr(self.Meta, 'using') else None

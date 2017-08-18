@@ -15,7 +15,7 @@ from qdjango.signals import load_qdjango_widget_layer
 from core.utils.structure import mapLayerAttributes
 from core.configs import *
 from core.signals import after_serialized_project_layer
-from core.api.serializers import update_serializer_data, G3WGeoSerializerMixin
+from core.api.serializers import update_serializer_data, G3WSerializerMixin
 from core.utils.models import get_geometry_column
 from qdjango.utils.structure import QdjangoMetaLayer
 import json
@@ -130,8 +130,12 @@ class ProjectSerializer(serializers.ModelSerializer):
                 for node in layer['nodes']:
                     readLeaf(node, layer['nodes'])
             else:
-                if layers[layer['id']].name in qgis_projectsettings_wms.layers and \
-                                layers[layer['id']].geometrytype != QGIS_LAYER_TYPE_NO_GEOM:
+                if layers[layer['id']].name in qgis_projectsettings_wms.layers:
+
+                    # remove from tree layer without geometry
+                    if layers[layer['id']].geometrytype == QGIS_LAYER_TYPE_NO_GEOM:
+                        to_remove_from_layerstree.append((container, layer))
+
                     layer_serialized = LayerSerializer(layers[layer['id']],
                                                       qgis_projectsettings_wms=qgis_projectsettings_wms)
                     layer_serialized_data = layer_serialized.data
@@ -235,7 +239,7 @@ class LayerSerializer(serializers.ModelSerializer):
         # ----------------------------------
         # add editable capability by signal
         # ----------------------------------
-        
+
         if capabilities == 0:
             capabilities = None
 
@@ -316,24 +320,36 @@ class WidgetSerializer(serializers.ModelSerializer):
         )
 
 
-class QGISLayerSerializer(G3WGeoSerializerMixin, geo_serializers.GeoFeatureModelSerializer):
+class QGISLayerSerializer(G3WSerializerMixin, serializers.ModelSerializer):
+    """
+    Generic layer serializer for postgres/Postgis or sqlite/spatialite NO GEOGRAFIC
+    """
+    def __init__(self, *args, **kwargs):
+
+        # to avoid model interrelations on parallel api call
+        self.set_meta(**kwargs)
+
+        super(QGISLayerSerializer, self).__init__(*args, **kwargs)
+
+    class Meta:
+        model = None
+        exclude = []
+
+
+class QGISGeoLayerSerializer(G3WSerializerMixin, geo_serializers.GeoFeatureModelSerializer):
     """
     Generic layer serializer for postgis or spatialite
     """
     def __init__(self, *args, **kwargs):
 
         # to avoid model interrelations on parallel api call
-        self.Meta = self.Meta()
-        self.Meta.model = kwargs['model']
-        del(kwargs['model'])
-        self.Meta.using = kwargs['using']
-        del (kwargs['using'])
+        self.set_meta(**kwargs)
 
         # set geometry column
         geometryfield = get_geometry_column(self.Meta.model)
         self.Meta.geo_field = geometryfield.name
 
-        super(QGISLayerSerializer, self).__init__(*args, **kwargs)
+        super(QGISGeoLayerSerializer, self).__init__(*args, **kwargs)
 
     class Meta:
         model = None
