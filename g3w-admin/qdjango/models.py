@@ -201,6 +201,9 @@ class Layer(G3WACLModelMixins, models.Model):
     exclude_attribute_wms = models.TextField(_('Attributes excluded from wms'), blank=True, null=True)
     exclude_attribute_wfs = models.TextField(_('Attributes excluded from wfs'), blank=True, null=True)
 
+    # possible layer relations
+    vectorjoins = models.TextField(_('Layer relations'), blank=True, null=True)
+
     def __unicode__(self):
         return self.name
 

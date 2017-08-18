@@ -121,7 +121,8 @@ class QgisProjectLayer(XmlData):
         'columns',
         'excludeAttributesWMS',
         'excludeAttributesWFS',
-        'geometrytype'
+        'geometrytype',
+        'vectorjoins'
     ]
 
     _introMessageException = 'Missing or invalid layer data'
@@ -258,6 +259,19 @@ class QgisProjectLayer(XmlData):
             srid = None
 
         return int(srid)
+
+    def _getDataVectorjoins(self):
+        """
+        Get relations layer section into project
+        :param layerTree:
+        :return:
+        """
+        # get root of layer-tree-group
+        vectorjoinsRoot = self.qgisProjectLayerTree.find('vectorjoins')
+        vectorjoins = []
+        for order, join in enumerate(vectorjoinsRoot):
+            vectorjoins.append(dict(join.attrib))
+        return vectorjoins if vectorjoins else None
 
     def _getDataCapabilities(self):
         return 1
@@ -429,7 +443,8 @@ class QgisProjectLayer(XmlData):
                 'wfscapabilities': self.wfsCapabilities,
                 'exclude_attribute_wms': excludeAttributesWMS,
                 'exclude_attribute_wfs': excludeAttributesWFS,
-                'geometrytype': self.geometrytype
+                'geometrytype': self.geometrytype,
+                'vectorjoins': self.vectorjoins
                 }
             )
         if not created:
@@ -450,6 +465,7 @@ class QgisProjectLayer(XmlData):
             self.instance.exclude_attribute_wms = excludeAttributesWMS
             self.instance.exclude_attribute_wfs = excludeAttributesWFS
             self.instance.geometrytype = self.geometrytype
+            self.instance.vectorjoins = self.vectorjoins
         # Save self.instance
         self.instance.save()
 

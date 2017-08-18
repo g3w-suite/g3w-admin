@@ -17,6 +17,7 @@ from core.configs import *
 from core.signals import after_serialized_project_layer
 from core.api.serializers import update_serializer_data, G3WSerializerMixin
 from core.utils.models import get_geometry_column
+from core.utils.structure import RELATIONS_ONE_TO_MANY, RELATIONS_ONE_TO_ONE
 from qdjango.utils.structure import QdjangoMetaLayer
 import json
 
@@ -97,7 +98,27 @@ class ProjectSerializer(serializers.ModelSerializer):
 
             # check layer type
             if layers[relation['referencingLayer']].layer_type in ('postgres', 'spatialite'):
+                relation['type'] = RELATIONS_ONE_TO_MANY
                 map_relations.append(relation)
+        return map_relations
+
+    def get_map_layers_relations_from_vectorjoins(self, layer_id, vectorjoins, layers):
+        joins = eval(vectorjoins)
+        map_relations = []
+        for n, join in enumerate(joins):
+            if layers[join['joinLayerId']].layer_type in (('postgres', 'spatialite')):
+                name = '{}_vectorjoin_{}'.format(layer_id, n)
+                map_relations.append({
+                    'type': RELATIONS_ONE_TO_ONE,
+                    'id': name,
+                    'name': name,
+                    'referencedLayer': layer_id,
+                    'referencingLayer': join['joinLayerId'],
+                    'fieldRef': {
+                        'referencedField': join['targetFieldName'],
+                        'referencingField': join['joinFieldName']
+                    }
+                })
         return map_relations
 
     def to_representation(self, instance):
@@ -119,6 +140,7 @@ class ProjectSerializer(serializers.ModelSerializer):
         ret['layers'] = []
         ret['search'] = []
         ret['widget'] = []
+        ret['relations'] = []
         layers = {l.qgs_layer_id: l for l in instance.layer_set.all()}
 
         # for client map like multilayer
@@ -147,6 +169,15 @@ class ProjectSerializer(serializers.ModelSerializer):
                                                                               layer=layers[layer['id']]):
                         update_serializer_data(layer_serialized_data, data)
                     layer_serialized_data['multilayer'] = meta_layer.getCurrentByLayer(layer_serialized_data)
+
+                    # check for vectorjoins and add to project relations
+                    if layer_serialized_data['vectorjoins']:
+                        ret['relations'] += self.get_map_layers_relations_from_vectorjoins(
+                            layer['id'],
+                            layer_serialized_data['vectorjoins'],
+                            layers
+                        )
+                    del(layer_serialized_data['vectorjoins'])
 
                     ret['layers'].append(layer_serialized_data)
 
@@ -177,7 +208,7 @@ class ProjectSerializer(serializers.ModelSerializer):
 
         # add relations if exists and if layers relations are postgres or sqlite layer
         if instance.relations:
-            ret['relations'] = self.get_map_layers_relations(instance, layers)
+            ret['relations'] += self.get_map_layers_relations(instance, layers)
 
         return ret
 
@@ -215,7 +246,8 @@ class LayerSerializer(serializers.ModelSerializer):
             'scalebasedvisibility',
             'minscale',
             'maxscale',
-            'servertype'
+            'servertype',
+            'vectorjoins'
         )
 
     def get_servertype(self, instance):
