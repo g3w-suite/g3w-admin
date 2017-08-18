@@ -72,8 +72,8 @@ class ClientView(TemplateView):
         contextData['group_config'] = 'var initConfig ={{ "staticurl":"{}", "client":"{}", ' \
                                       '"mediaurl":"{}", "user":{}, "group":{}, "baseurl":"{}", "vectorurl":"{}" }}'\
             .format(settings.STATIC_URL, "{}/".format(settings.CLIENT_DEFAULT), settings.MEDIA_URL, user_data,
-                    serializedGroup, "/{}".format(settings.SITE_PREFIX_URL if settings.SITE_PREFIX_URL else '',
-                                                  settings.VECTOR_URL))
+                    serializedGroup, "/{}".format(settings.SITE_PREFIX_URL if settings.SITE_PREFIX_URL else ''),
+                                                  settings.VECTOR_URL)
 
         # project by type(app)
         if not '{}-{}'.format(kwargs['project_type'], self.project.pk) in groupSerializer.projects.keys():
