@@ -392,6 +392,7 @@ class BaseVectorOnModelApiView(G3WAPIView):
         return {
             'data': featurecollection,
             'geomentryType': self.metadata_layer['geometryType'],
+            'pkField': self.metadata_layer['model']._meta.pk.name
         }
 
     def set_reprojecting_status(self):
