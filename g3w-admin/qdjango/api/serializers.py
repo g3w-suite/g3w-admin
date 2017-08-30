@@ -375,7 +375,7 @@ class QGISGeoLayerSerializer(G3WSerializerMixin, geo_serializers.GeoFeatureModel
     def __init__(self, *args, **kwargs):
 
         # to avoid model interrelations on parallel api call
-        self.set_meta(**kwargs)
+        self.set_meta(kwargs)
 
         # set geometry column
         geometryfield = get_geometry_column(self.Meta.model)

@@ -178,7 +178,7 @@ class G3WSerializerMixin(object):
     relationsAttributes = None
     using_db = None
 
-    def set_meta(self, **kwargs):
+    def set_meta(self, kwargs):
         """
         Set meta properties for dinamical model
         :param kwargs: ditc params
@@ -188,6 +188,8 @@ class G3WSerializerMixin(object):
         del (kwargs['model'])
         self.Meta.using = kwargs['using']
         del (kwargs['using'])
+
+        return kwargs
 
     def _get_meta_using(self):
         return self.Meta.using if hasattr(self.Meta, 'using') else None
