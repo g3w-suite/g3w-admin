@@ -204,6 +204,9 @@ class Layer(G3WACLModelMixins, models.Model):
     # possible layer relations
     vectorjoins = models.TextField(_('Layer relations'), blank=True, null=True)
 
+    # editing widgets
+    edittypes = models.TextField(_('Columns layer widgets'), blank=True, null=True)
+
     def __unicode__(self):
         return self.name
 

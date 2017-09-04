@@ -33,6 +33,11 @@ def makeDatasource(datasource, layerType):
     if layerType == Layer.TYPES.ogr or layerType == Layer.TYPES.gdal:
         newDatasource = re.sub(r'(.*?)%s(.*)' % folder, r'%s\2' % basePath, datasource) # ``?`` means ungreedy
 
+    if layerType == Layer.TYPES.delimitedtext:
+        oldPath = re.sub(r"(.*)file:(.*?)", r"\2", datasource)
+        newPath = re.sub(r'(.*?)%s(.*)' % folder, r'%s\2' % basePath, oldPath)
+        newDatasource = datasource.replace(oldPath, newPath)
+
     # SpatiaLite example datasource:
     # Original: <datasource>dbname='//SIT-SERVER/sit/charts/Carte stradali\\naturalearth_110m_physical.sqlite' table="ne_110m_glaciated_areas" (geom) sql=</datasource>
     # Modified: <datasource>dbname='/home/sit/charts/Carte stradali\\naturalearth_110m_physical.sqlite' table="ne_110m_glaciated_areas" (geom) sql=</datasource>
@@ -122,7 +127,8 @@ class QgisProjectLayer(XmlData):
         'excludeAttributesWMS',
         'excludeAttributesWFS',
         'geometrytype',
-        'vectorjoins'
+        'vectorjoins',
+        'editTypes'
     ]
 
     _introMessageException = 'Missing or invalid layer data'
@@ -338,6 +344,8 @@ class QgisProjectLayer(XmlData):
             layerStructure = QgisDBLayerStructure(self, layerType=self.layerType)
         elif self.layerType in [Layer.TYPES.ogr]:
             layerStructure = QgisOGRLayerStructure(self)
+        elif self.layerType in [Layer.TYPES.delimitedtext]:
+            layerStructure = QgisCSVLayerStructure(self)
         elif self.layerType in [Layer.TYPES.wms, Layer.TYPES.gdal]:
             return None
 
@@ -406,6 +414,33 @@ class QgisProjectLayer(XmlData):
             pass
         return excluded_columns if excluded_columns else None
 
+    def _getDataEditTypes(self):
+        """
+        Get edtitypes for editing widget
+        :return: dict
+        """
+        edittype_columns = dict()
+        edittypes = self.qgisProjectLayerTree.find('edittypes')
+
+        for edittype in edittypes:
+            data = {
+                'widgetv2type': edittype.attrib['widgetv2type'],
+                'values': list()
+            }
+
+            widgetv2config = edittype.find('widgetv2config')
+
+            # update with attributes
+            data.update(widgetv2config.attrib)
+
+            # check for values
+            for value in widgetv2config:
+                data['values'].append(value.attrib)
+
+            edittype_columns[edittype.attrib['name']] = data
+
+        return edittype_columns
+
     def clean(self):
         for validator in self.validators:
             validator.clean()
@@ -444,7 +479,8 @@ class QgisProjectLayer(XmlData):
                 'exclude_attribute_wms': excludeAttributesWMS,
                 'exclude_attribute_wfs': excludeAttributesWFS,
                 'geometrytype': self.geometrytype,
-                'vectorjoins': self.vectorjoins
+                'vectorjoins': self.vectorjoins,
+                'edittypes': self.editTypes
                 }
             )
         if not created:
@@ -466,6 +502,8 @@ class QgisProjectLayer(XmlData):
             self.instance.exclude_attribute_wfs = excludeAttributesWFS
             self.instance.geometrytype = self.geometrytype
             self.instance.vectorjoins = self.vectorjoins
+            self.instance.edittypes = self.editTypes
+
         # Save self.instance
         self.instance.save()
 
