@@ -48,6 +48,7 @@ FORM_FIELD_TYPE_FIELDDEPEND = 'fielddepend'
 FORM_FIELD_TYPE_IMAGE = 'image'
 FORM_FIELD_TYPE_FILE = 'file'
 
+
 # mapping between form fields and fields data types
 FORM_FIELDS_MAPPING = {
     FIELD_TYPE_INTEGER: FORM_FIELD_TYPE_TEXT,
@@ -76,6 +77,7 @@ MAPPING_GEOALCHEMY_DJANGO_FIELDS = {
     SQLTYPE.REAL: FloatField,
     SQLTYPE.CHAR: CharField,
     SQLTYPE.NUMERIC: DecimalField,
+    SQLTYPE.BLOB: BinaryField,
 
     # specific for postgres
     SQLPOSTGRESTYPE.DOUBLE_PRECISION: FloatField,
