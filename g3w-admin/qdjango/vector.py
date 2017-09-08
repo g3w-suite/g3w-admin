@@ -1,14 +1,10 @@
 from core.api.base.views import BaseVectorOnModelApiView
 from core.utils.structure import mapLayerAttributesFromModel
 from core.utils.models import create_geomodel_from_qdjango_layer, get_geometry_column
+from .utils.edittype import MAPPING_EDITTYPE_QGISEDITTYPE
 from .api.serializers import QGISLayerSerializer, QGISGeoLayerSerializer
 from .models import Layer
 
-# add form impout type based on qgis edittypes
-FORM_FIELD_TYPE_QGIS_CHECK = 'check'
-FORM_FIELD_TYPE_QGIS_DATETIME = 'datetime'
-FORM_FIELD_TYPE_QGIS_RANGE = 'range'
-FORM_FIELD_TYPE_QGIS_UNIQUE_VALUE = 'unique_value'
 
 class QGISLayerVectorViewMixin(object):
 
@@ -79,13 +75,22 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
 
         if hasattr(self.layer, 'edittypes') and self.layer.edittypes:
 
-            fields = dict()
+            fields = {
+                self.layer_name: {
+                    'fields': {}
+                }
+            }
 
             # reduild edittypes
             edittypes = eval(self.layer.edittypes)
+            allow_edittypes = MAPPING_EDITTYPE_QGISEDITTYPE.keys()
 
-            for edittype in edittypes:
-                pass
+            for field, data in edittypes.items():
+                if data['widgetv2type'] in allow_edittypes:
+
+                    # instance of QgisEditType
+                    qet = MAPPING_EDITTYPE_QGISEDITTYPE[data['widgetv2type']](**data)
+                    fields[self.layer_name]['fields'][field] = qet.input_form
 
         return fields
 

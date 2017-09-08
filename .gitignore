@@ -8,28 +8,29 @@
 # Sphinx docs
 build
 
-#PyCharms project file
+# PyCharms project file
 /.idea/
 
-#temp_uploads for jqupload
+# temp_uploads for jqupload
 /temp_uploads/
 
-#Qdjango2 setting local file
+# Django setting local file
 /g3w-admin/base/settings/local_settings.py
+/g3w-admin/base/settings/local_ldap_settings.py
 
-#Node modules
+# Node modules
 /node_modules
 
-#Bower components
+# Bower components
 /g3w-admin/core/static/bower_components/
 
-#Coverage html test result reports
+# Coverage html test result reports
 /g3w-admin/htmlcov/
 
-# gulp dist directory
+# Gulp dist directory
 /dist/
 
-# coverage
+# Coverage
 /g3w-admin/.coverage
 
 # submodule

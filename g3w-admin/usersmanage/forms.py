@@ -17,7 +17,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout,Div, HTML
 from crispy_forms.bootstrap import AppendedText, PrependedText
 from PIL import Image
-from .models import Userdata, Department
+from .models import Userdata, Department, Userbackend
 from core.mixins.forms import G3WRequestFormMixin, G3WFormMixin
 from usersmanage.configs import *
 from .utils import getUserGroups, userHasGroups
@@ -279,6 +279,12 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
             else:
                 Userdata(user=user, department=self.cleaned_data['department'],avatar=self.cleaned_data['avatar']).save()
 
+            # add backend
+            if hasattr(user, 'userbackend'):
+                user.userbackend.backend = Userbackend.TYPES['g3wsuite']
+                user.userbackend.save()
+            else:
+                Userbackend(user=user, backend=Userbackend.TYPES['g3wsuite']).save()
 
         return user
 
