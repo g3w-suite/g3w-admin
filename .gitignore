@@ -45,4 +45,5 @@ build
 /g3w-admin/editing/
 /g3w-admin/frontend/
 /g3w-admin/caching/
+/g3w-admin/authldap/
 .gitmodules
