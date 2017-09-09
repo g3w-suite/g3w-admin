@@ -50,12 +50,16 @@
                             </span>
                             <span class="col-xs-4 icon">
                                 {% if "change_user" in userObj_perms %}
+                                {% if object.userbackend.backend|lower == 'g3wsuite' or user.is_superuser and user.is_staff %}
                                 <a href="{% url 'user-update' object.id %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Edit' %}" ><i class="ion ion-edit"></i></a>
+                                {% endif %}
                                 {% endif %}
                             </span>
                             <span class="col-xs-4 icon">
                                 {% if "delete_user" in userObj_perms %}
+                                {% if object.userbackend.backend|lower == 'g3wsuite' or user.is_superuser and user.is_staff %}
                                 <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Delete' %}"  data-widget-type="deleteItem" data-delete-url="{% url 'user-delete' object.pk %}" data-item-selector="#user_{{ object.pk }}"><i class="ion ion-trash-b"></i></a>
+                                {% endif %}
                                 {% endif %}
                             </span>
                         </td>

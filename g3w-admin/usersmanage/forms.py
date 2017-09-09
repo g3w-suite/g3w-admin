@@ -1,6 +1,6 @@
 from django.conf import settings
 from django import forms
-from django.forms import Select, ValidationError, ModelChoiceField
+from django.forms import Select, ValidationError, ModelChoiceField, ChoiceField
 from django.utils.datastructures import MultiValueDict
 from django.utils.translation import ugettext, ugettext_lazy as _
 from django.contrib.auth.forms import (
@@ -12,12 +12,13 @@ from django.contrib.auth import (
 )
 from django.contrib.auth.models import User, Group as AuthGroup
 from django_file_form.forms import FileFormMixin, UploadedFileField
+from django.utils.functional import lazy
 from guardian.compat import get_user_model
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout,Div, HTML
 from crispy_forms.bootstrap import AppendedText, PrependedText
 from PIL import Image
-from .models import Userdata, Department, Userbackend
+from .models import Userdata, Department, Userbackend, USER_BACKEND_TYPES
 from core.mixins.forms import G3WRequestFormMixin, G3WFormMixin
 from usersmanage.configs import *
 from .utils import getUserGroups, userHasGroups
@@ -128,6 +129,7 @@ class G3WACLForm(forms.Form):
 class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreationForm):
 
     department = ModelChoiceField(queryset=Department.objects.all(), required=False)
+    backend = ChoiceField(choices=(), required=True)
     avatar = UploadedFileField(required=False)
     groups = ModelChoiceField(
         queryset=AuthGroup.objects.all(),
@@ -142,13 +144,16 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
         #filter fileds by role:
         self.filterFieldsByRoles()
 
+        self.fields['backend'].choices = USER_BACKEND_TYPES
+
         #check for groups in intials data
         if 'groups' in self.initial and len(self.initial['groups']) > 0:
             self.initial['groups'] = self.initial['groups'][0]
 
         self.helper = FormHelper(self)
         self.helper.form_tag = False
-        self.helper.layout = Layout(
+
+        args =[
             Div(
                 Div(
                     Div(
@@ -232,7 +237,30 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
                 ),
                 css_class='row'
             )
-        )
+        ]
+
+        # add backed if user id admin01
+        if self.request.user.is_superuser and self.request.user.is_staff:
+            args.append(Div(
+                Div(
+                    Div(
+                        Div(
+                            HTML("<h3 class='box-title'><i class='fa fa-gear'></i> {}</h3>".format(_('User backend'))),
+                            css_class='box-header with-border'
+                        ),
+                        Div(
+                            'backend',
+                            css_class='box-body',
+
+                        ),
+                        css_class='box box-default'
+                    ),
+                    css_class='col-md-6'
+                ),
+                css_class='row'
+            ))
+
+        self.helper.layout = Layout(*args)
 
     def filterFieldsByRoles(self):
         if self.request.user.is_superuser:
@@ -281,10 +309,10 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
 
             # add backend
             if hasattr(user, 'userbackend'):
-                user.userbackend.backend = Userbackend.TYPES['g3wsuite']
+                user.userbackend.backend = self.cleaned_data['backend']
                 user.userbackend.save()
             else:
-                Userbackend(user=user, backend=Userbackend.TYPES['g3wsuite']).save()
+                Userbackend(user=user, backend=self.cleaned_data['backend']).save()
 
         return user
 

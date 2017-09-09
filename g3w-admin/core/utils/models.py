@@ -4,6 +4,7 @@ from django.db import connections
 from django.contrib.gis.db.models import GeometryField
 from django.apps import apps as g3wsuite_apps
 from qdjango.utils.structure import datasource2dict, get_schema_table
+from model_utils import Choices
 from sqlalchemy import create_engine, MetaData
 from geoalchemy2 import Table as GEOTable
 import geoalchemy2.types as geotypes
@@ -11,6 +12,7 @@ from sqlalchemy.dialects.postgresql import base as PGD
 from osgeo import ogr
 from core.utils.db import build_django_connection, build_dango_connection_name
 from .structure import MAPPING_GEOALCHEMY_DJANGO_FIELDS
+
 
 
 def get_geometry_column(geomodel):
@@ -203,3 +205,9 @@ def create_geomodel_from_qdjango_layer(layer, app_label='core'):
                                  options={'db_table': table})
 
     return geo_model, using, geometrytype
+
+
+class G3WChoices(Choices):
+
+    def __setitem__(self, key, value):
+        self._store((key, key, value), self._triples, self._doubles)
