@@ -1,9 +1,71 @@
 # from http://www.abidibo.net/blog/2014/05/22/check-if-user-belongs-group-django-templates/
 from django import template
-from django.contrib.auth.models import Group 
+from django.contrib.auth.models import Group
+from guardian.utils import get_user_model
+from guardian.exceptions import NotUserNorGroup
+from usersmanage.models import USER_BACKEND_DEFAULT
+from core.signals import pre_show_user_data
 
-register = template.Library() 
+register = template.Library()
+
+
 @register.filter(name='has_group') 
 def has_group(user, group_name): 
     group = Group.objects.get(name=group_name) 
     return True if group in user.groups.all() else False
+
+
+class ObjectPermissionsNode(template.Node):
+
+    def __init__(self, for_whom, obj, context_var):
+        self.for_whom = template.Variable(for_whom)
+        self.obj = template.Variable(obj)
+        self.context_var = context_var
+
+    def render(self, context):
+        for_whom = self.for_whom.resolve(context)
+        if isinstance(for_whom, get_user_model()):
+            self.user = for_whom
+        else:
+            raise NotUserNorGroup("User or Group instance required (got %s)"
+                                  % for_whom.__class__)
+
+        obj = self.obj.resolve(context)
+
+        perms = [
+            'add_user',
+            'change_user',
+            'delete_user'
+        ]
+        if obj.userbackend.backend.lower() != USER_BACKEND_DEFAULT:
+            raw_perms = pre_show_user_data.send(obj, user=self.user)
+            other_perms = set()
+            for receiver, perms in raw_perms:
+                if perms:
+                    other_perms.update(set(perms))
+            perms = list(other_perms)
+        context[self.context_var] = perms
+        return ''
+
+
+@register.tag
+def get_user_perms_by_userbackend(parser, token):
+    """
+    Check editing permission for user by backend
+    :param user:
+    :return:
+    """
+    bits = token.split_contents()
+    format = '{% get_user_perms_by_userbackend for obj as "context_var" %}'
+    if len(bits) != 6 or bits[2] != 'for' or bits[4] != 'as':
+        raise template.TemplateSyntaxError("get_user_perms_by_userbackend tag should be in "
+                
+                                           "format: %s" % format)
+    for_whom = bits[1]
+    obj = bits[3]
+    context_var = bits[5]
+    if context_var[0] != context_var[-1] or context_var[0] not in ('"', "'"):
+        raise template.TemplateSyntaxError("get_obj_perms tag's context_var "
+                                           "argument should be in quotes")
+    context_var = context_var[1:-1]
+    return ObjectPermissionsNode(for_whom, obj, context_var)

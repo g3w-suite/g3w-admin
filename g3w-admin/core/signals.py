@@ -59,5 +59,8 @@ load_js_modules = django.dispatch.Signal()
 # signal to load widget into dashboard
 load_dashboard_widgets = django.dispatch.Signal(providing_args=["app_name"])
 
+# signal send before to show user_data, return permissions by backend
+pre_show_user_data = django.dispatch.Signal(providing_args=["user"])
+
 
 

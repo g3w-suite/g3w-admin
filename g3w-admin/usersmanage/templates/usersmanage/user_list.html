@@ -43,23 +43,20 @@
                 </thead>
                 {% for object in object_list %}
                     {% get_obj_perms user for object as "userObj_perms" %}
+                    {% get_user_perms_by_userbackend user for object as "userObj_perms_by_backend" %}
                     <tr id="user_{{ object.pk }}">
                         <td>
                             <span class="col-xs-4 icon">
                                 <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-detail-url="{% url 'user-detail' object.id %}"><i class="ion ion-eye"></i></a>
                             </span>
                             <span class="col-xs-4 icon">
-                                {% if "change_user" in userObj_perms %}
-                                {% if object.userbackend.backend|lower == 'g3wsuite' or user.is_superuser and user.is_staff %}
+                                {% if "change_user" in userObj_perms and "change_user" in userObj_perms_by_backend %}
                                 <a href="{% url 'user-update' object.id %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Edit' %}" ><i class="ion ion-edit"></i></a>
-                                {% endif %}
                                 {% endif %}
                             </span>
                             <span class="col-xs-4 icon">
-                                {% if "delete_user" in userObj_perms %}
-                                {% if object.userbackend.backend|lower == 'g3wsuite' or user.is_superuser and user.is_staff %}
+                                {% if "delete_user" in userObj_perms and "delete_user" in userObj_perms_by_backend %}
                                 <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Delete' %}"  data-widget-type="deleteItem" data-delete-url="{% url 'user-delete' object.pk %}" data-item-selector="#user_{{ object.pk }}"><i class="ion ion-trash-b"></i></a>
-                                {% endif %}
                                 {% endif %}
                             </span>
                         </td>

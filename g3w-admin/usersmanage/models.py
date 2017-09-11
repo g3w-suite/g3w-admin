@@ -18,8 +18,9 @@ class Userdata(models.Model):
     department = models.OneToOneField(Department, null=True, blank=True)
     avatar = models.ImageField(_('Avatar'), upload_to='user_avatar', null=True, blank=True)
 
+USER_BACKEND_DEFAULT = 'g3wsuite'
 USER_BACKEND_TYPES = G3WChoices(
-        ('g3wsuite', 'G3WSUITE'),
+        (USER_BACKEND_DEFAULT, 'G3WSUITE'),
     )
 
 
