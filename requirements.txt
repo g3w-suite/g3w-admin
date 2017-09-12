@@ -9,7 +9,7 @@ django-model-utils
 django-sitetree
 djangorestframework
 djangorestframework-gis
-django-filter
+django-filter>=1.0.4
 django-downloadview
 django-debug-toolbar
 django-debug-panel

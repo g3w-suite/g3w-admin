@@ -12,6 +12,7 @@ from django.contrib.auth.decorators import permission_required
 from guardian.shortcuts import assign_perm, get_objects_for_user
 from guardian.decorators import permission_required_or_403
 from core.mixins.views import G3WRequestViewMixin, G3WAjaxDeleteViewMixin
+from .decorators import permission_required_by_backend_or_403
 from .utils import getUserGroups
 from .forms import *
 
@@ -63,6 +64,7 @@ class UserUpdateView(G3WRequestViewMixin, UpdateView):
     context_object_name = 'user2update'
 
     @method_decorator(permission_required_or_403('auth.change_user', (User, 'pk', 'pk')))
+    @method_decorator(permission_required_by_backend_or_403('change_user', (User, 'pk', 'pk')))
     def dispatch(self, *args, **kwargs):
         return super(UserUpdateView, self).dispatch(*args, **kwargs)
 

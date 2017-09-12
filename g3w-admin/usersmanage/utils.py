@@ -8,7 +8,8 @@ from crispy_forms.layout import Div, HTML, Field
 from django.utils.translation import ugettext, ugettext_lazy as _
 from django.contrib.sessions.models import Session
 from django.utils import timezone
-
+from .configs import USER_BACKEND_DEFAULT
+from core.signals import pre_show_user_data
 
 def get_all_logged_in_users():
     # Query all non-expired sessions
@@ -165,3 +166,25 @@ def crispyBoxACL(form, **kwargs):
                 css_class='{}'.format(boxCssClass)
             )
 
+
+def get_perms_by_user_backend(user, obj):
+    """
+    Get permission on user object, by backend value
+    :param user:
+    :param obj:
+    :return:
+    """
+    perms = [
+        'add_user',
+        'change_user',
+        'delete_user'
+    ]
+    if obj.userbackend.backend.lower() != USER_BACKEND_DEFAULT:
+        raw_perms = pre_show_user_data.send(obj, user=user)
+        other_perms = set()
+        for receiver, perms in raw_perms:
+            if perms:
+                other_perms.update(set(perms))
+        perms = list(other_perms)
+
+    return perms

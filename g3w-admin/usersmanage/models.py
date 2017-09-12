@@ -3,6 +3,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from django.db import models
 from core.utils.models import G3WChoices
+from .configs import USER_BACKEND_DEFAULT
 
 
 class Department(models.Model):
@@ -18,7 +19,7 @@ class Userdata(models.Model):
     department = models.OneToOneField(Department, null=True, blank=True)
     avatar = models.ImageField(_('Avatar'), upload_to='user_avatar', null=True, blank=True)
 
-USER_BACKEND_DEFAULT = 'g3wsuite'
+
 USER_BACKEND_TYPES = G3WChoices(
         (USER_BACKEND_DEFAULT, 'G3WSUITE'),
     )

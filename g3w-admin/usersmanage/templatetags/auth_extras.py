@@ -3,8 +3,7 @@ from django import template
 from django.contrib.auth.models import Group
 from guardian.utils import get_user_model
 from guardian.exceptions import NotUserNorGroup
-from usersmanage.models import USER_BACKEND_DEFAULT
-from core.signals import pre_show_user_data
+from usersmanage.utils import get_perms_by_user_backend
 
 register = template.Library()
 
@@ -32,19 +31,10 @@ class ObjectPermissionsNode(template.Node):
 
         obj = self.obj.resolve(context)
 
-        perms = [
-            'add_user',
-            'change_user',
-            'delete_user'
-        ]
-        if obj.userbackend.backend.lower() != USER_BACKEND_DEFAULT:
-            raw_perms = pre_show_user_data.send(obj, user=self.user)
-            other_perms = set()
-            for receiver, perms in raw_perms:
-                if perms:
-                    other_perms.update(set(perms))
-            perms = list(other_perms)
+        perms = get_perms_by_user_backend(self.user, obj)
+
         context[self.context_var] = perms
+
         return ''
 
 
