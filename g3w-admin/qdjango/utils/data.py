@@ -337,7 +337,7 @@ class QgisProjectLayer(XmlData):
 
         for column in columns:
             if column['name'] in self.aliases:
-                column['label'] = self.aliases[column['name']]
+                column['label'] = self.aliases[column['name']] if self.aliases[column['name']] != "" else column['name']
 
 
     def _getLayerJoinedColumns(self):
