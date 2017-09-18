@@ -1,12 +1,13 @@
 from django.utils.translation import ugettext, ugettext_lazy as _
 from .general import ucfirst
+import re
 
 
 class XmlData(object):
 
     _dataToSet = []
 
-    _introMessageException = ''
+    _exceptionclass = Exception
 
     _defaultValidators = []
 
@@ -18,7 +19,7 @@ class XmlData(object):
             try:
                 setattr(self, data, getattr(self, '_getData{}'.format(ucfirst(data)))())
             except Exception as e:
-                raise Exception(_('{} "{}" {}:'.format(self._introMessageException,data,e.message)))
+                raise self._exceptionclass(_('[Loading error] "{}" {}:'.format(data, e.message)))
 
     def registerValidator(self, validator):
         """
@@ -39,3 +40,17 @@ class XmlData(object):
         Return data to json format
         """
         pass
+
+
+def isXML(string):
+    """
+    Check is string si a XML
+    Derived from https://codereview.stackexchange.com/a/137948
+    """
+
+    # Remove tabs, spaces, and new lines when reading
+    data = re.sub(r'\s+', '', string)
+    if re.match(r'^<.+>$', data):
+        return True
+    else:
+        return False

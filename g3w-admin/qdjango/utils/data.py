@@ -2,11 +2,20 @@ from django.conf import settings
 from django.http.request import QueryDict
 from defusedxml import lxml
 from lxml import etree
-from django.utils.translation import ugettext, ugettext_lazy as _
+from django.utils.translation import ugettext_lazy as _
 from django.db import transaction
 from qdjango.models import Project
-from core.utils.data import XmlData
+from core.utils.data import XmlData, isXML
 from .structure import *
+from .validators import (
+    DatasourceExists,
+    ColoumnName,
+    IsGroupCompatibleValidator,
+    ProjectTitleExists,
+    UniqueLayername,
+    CheckMaxExtent
+)
+from .exceptions import QgisProjectException, QgisProjectLayerException
 import os
 import re
 import json
@@ -49,59 +58,6 @@ def makeDatasource(datasource, layerType):
     return newDatasource
 
 
-class QgisValidator(object):
-    """
-    Interface for Qgis object validators
-    """
-    def clean(self):
-        pass
-
-
-class QgisProjectLayerValidator(QgisValidator):
-    """
-    A simple qgis project layer validator call clean method
-    """
-
-    def __init__(self, qgisProjectLayer):
-        self.qgisProjectLayer = qgisProjectLayer
-
-    def clean(self):
-        pass
-
-
-class DatasourceExists(QgisProjectLayerValidator):
-    """
-    Check if layer datasource exists on server
-    """
-    def clean(self):
-        if self.qgisProjectLayer.layerType in [Layer.TYPES.gdal, Layer.TYPES.ogr, Layer.TYPES.raster]:
-            if not os.path.exists(self.qgisProjectLayer.datasource):
-                err = ugettext('Missing data file for layer {} '.format(self.qgisProjectLayer.name))
-                err += ugettext('which should be located at {}'.format(self.qgisProjectLayer.datasource))
-                raise Exception(err)
-
-
-class ColoumnName(QgisProjectLayerValidator):
-    """
-    Check coloumn data name: no whitespace, no special charts.
-    """
-    def clean(self):
-        if self.qgisProjectLayer.layerType in [Layer.TYPES.ogr, Layer.TYPES.postgres, Layer.TYPES.spatialite]:
-            columns_err = []
-            for column in self.qgisProjectLayer.columns:
-                # search
-                #rex = '[^A-Za-z0-9]+'
-                rex = '[;:,%@$^&*!#()\[\]\{\}\\n\\r\\s]+'
-                if re.search(rex, column['name']):
-                    columns_err.append(column['name'])
-            if columns_err:
-                err = ugettext('The follow fields name of layer {} contains '
-                               'white spaces and/or special characters: {}')\
-                    .format(self.qgisProjectLayer.name, ', '.join(columns_err))
-                err += ugettext('Please use \'Alias\' fields in QGIS project')
-                raise Exception(err)
-
-
 class QgisProjectLayer(XmlData):
     """
     Qgisdata object for layer project: a layer xml wrapper
@@ -111,6 +67,7 @@ class QgisProjectLayer(XmlData):
         'layerId',
         'isVisible',
         'title',
+        'name',
         'layerType',
         'minScale',
         'maxScale',
@@ -120,7 +77,6 @@ class QgisProjectLayer(XmlData):
         'wfsCapabilities',
         'editOptions',
         'datasource',
-        'name',
         'origname',
         'aliases',
         'columns',
@@ -131,7 +87,7 @@ class QgisProjectLayer(XmlData):
         'editTypes'
     ]
 
-    _introMessageException = 'Missing or invalid layer data'
+    _exceptionclass = QgisProjectLayerException
 
     _defaultValidators = [
         DatasourceExists,
@@ -171,8 +127,13 @@ class QgisProjectLayer(XmlData):
         return name
 
     def _getDataOrigname(self):
-        if self.layerType == Layer.TYPES.ogr or self.layerType == Layer.TYPES.gdal:
+        if self.layerType == Layer.TYPES.ogr:
             name = os.path.splitext(os.path.basename(self.datasource))[0]
+        elif self.layerType == Layer.TYPES.gdal:
+            if isXML(self.datasource):
+                name = self.name
+            else:
+                name = os.path.splitext(os.path.basename(self.datasource))[0]
         elif self.layerType == Layer.TYPES.postgres or self.layerType == Layer.TYPES.spatialite:
             dts = datasource2dict(self.datasource)
             name = dts['table'].split('.')[-1].replace("\"", "")
@@ -228,10 +189,10 @@ class QgisProjectLayer(XmlData):
         :return: string
         """
         availableTypes = [item[0] for item in Layer.TYPES]
-        layerType = self.qgisProjectLayerTree.find('provider').text
-        if not layerType in availableTypes:
-            raise Exception(_('Missing or invalid type for layer')+' "%s"' % self.name)
-        return layerType
+        layer_type = self.qgisProjectLayerTree.find('provider').text
+        if not layer_type in availableTypes:
+            raise Exception(_('Missing or invalid type for layer')+' "%s"' % layer_type)
+        return layer_type
 
     def _getDataMinScale(self):
         """
@@ -274,10 +235,11 @@ class QgisProjectLayer(XmlData):
         """
         # get root of layer-tree-group
         vectorjoinsRoot = self.qgisProjectLayerTree.find('vectorjoins')
-        vectorjoins = []
-        for order, join in enumerate(vectorjoinsRoot):
-            vectorjoins.append(dict(join.attrib))
-        return vectorjoins if vectorjoins else None
+        if vectorjoinsRoot:
+            vectorjoins = []
+            for order, join in enumerate(vectorjoinsRoot):
+                vectorjoins.append(dict(join.attrib))
+        return vectorjoins if vectorjoinsRoot else None
 
     def _getDataCapabilities(self):
         return 1
@@ -364,7 +326,7 @@ class QgisProjectLayer(XmlData):
 
         for column in columns:
             if column['name'] in self.aliases:
-                column['label'] = self.aliases[column['name']]
+                column['label'] = self.aliases[column['name']] if self.aliases[column['name']] != "" else column['name']
 
 
     def _getLayerJoinedColumns(self):
@@ -388,7 +350,7 @@ class QgisProjectLayer(XmlData):
 
     def _getDataExcludeAttributesWMS(self):
         """
-        Get attribute to exlude from WMS info and relations 
+        Get attribute to exlude from WMS info and relations
         """
 
         excluded_columns = []
@@ -402,7 +364,7 @@ class QgisProjectLayer(XmlData):
 
     def _getDataExcludeAttributesWFS(self):
         """
-        Get attribute to exlude from WMS info and relations 
+        Get attribute to exlude from WMS info and relations
         """
 
         excluded_columns = []
@@ -422,22 +384,23 @@ class QgisProjectLayer(XmlData):
         edittype_columns = dict()
         edittypes = self.qgisProjectLayerTree.find('edittypes')
 
-        for edittype in edittypes:
-            data = {
-                'widgetv2type': edittype.attrib['widgetv2type'],
-                'values': list()
-            }
+        if edittypes:
+            for edittype in edittypes:
+                data = {
+                    'widgetv2type': edittype.attrib['widgetv2type'],
+                    'values': list()
+                }
 
-            widgetv2config = edittype.find('widgetv2config')
+                widgetv2config = edittype.find('widgetv2config')
 
-            # update with attributes
-            data.update(widgetv2config.attrib)
+                # update with attributes
+                data.update(widgetv2config.attrib)
 
-            # check for values
-            for value in widgetv2config:
-                data['values'].append(value.attrib)
+                # check for values
+                for value in widgetv2config:
+                    data['values'].append(value.attrib)
 
-            edittype_columns[edittype.attrib['name']] = data
+                edittype_columns[edittype.attrib['name']] = data
 
         return edittype_columns
 
@@ -508,90 +471,6 @@ class QgisProjectLayer(XmlData):
         self.instance.save()
 
 
-class QgisProjectValidator(QgisValidator):
-    """
-    A simple qgis project validator call clean method
-    """
-    def __init__(self, qgisProject):
-        self.qgisProject = qgisProject
-
-    def clean(self):
-       pass
-
-
-class IsGroupCompatibleValidator(QgisProjectValidator):
-    """
-    Check il project is compatible with own group
-    """
-    def clean(self):
-        if self.qgisProject.group.srid.srid != self.qgisProject.srid:
-            raise Exception(_('Project and group SRID must be the same'))
-
-
-class ProjectExists(QgisProjectValidator):
-    """
-    Check if project exists in database
-    """
-    def clean(self):
-        from qdjango.models import Project
-        if Project.objects.filter(title=self.qgisProject.title).exists():
-            raise Exception(_('A project with the same title already exists'))
-
-
-class ProjectTitleExists(QgisProjectValidator):
-    """
-    Check if project title exists
-    """
-    def clean(self):
-        if not self.qgisProject.title:
-            raise Exception(_('Title project not empty'))
-
-
-class UniqueLayername(QgisProjectValidator):
-    """
-    Check if laeryname is unique inside a project
-    """
-    def clean(self):
-        layers = []
-        for layer in self.qgisProject.layers:
-            if layer.name in layers:
-                raise Exception(_('More than one layer with same name/shortname: {}'.format(layer.name)))
-            layers.append(layer.name)
-
-
-class CheckMaxExtent(QgisProjectValidator):
-    """
-    Check il WMSExtent is correct
-    """
-    def clean(self):
-        max_extent = self.qgisProject.maxExtent
-
-        if max_extent:
-
-            # cast coord to float
-            for c in ['xmin', 'xmax', 'ymin', 'ymax']:
-                max_extent[c] = float(max_extent[c])
-
-            # check is a cordinate il None or empty
-            wrong_coord = list()
-            for coord, value in max_extent.items():
-                if not value:
-                    wrong_coord.append(coord)
-
-            if len(wrong_coord) > 0:
-                raise Exception(_('Check WMS start extent project property: {} didn\'t set'.format(','.join(wrong_coord))))
-
-            # check calue are correct inside angles coordinates
-            err_msg_x = err_msg_y = ''
-            if max_extent['xmax'] < max_extent['xmin']:
-                err_msg_x = _('xmax smaller then xmin ')
-            if max_extent['ymax'] < max_extent['ymin']:
-                err_msg_y = _('ymax smaller then ymin ')
-
-            if err_msg_x or err_msg_y:
-                raise Exception('Check WMS start extent project property: {}{}'.format(err_msg_x, err_msg_y))
-
-
 class QgisProject(XmlData):
     """
     A qgis xml project file wrapper
@@ -622,7 +501,8 @@ class QgisProject(XmlData):
 
     _regexXmlLayer = 'projectlayers/maplayer'
 
-    _introMessageException = _('Invalid Project Data ')
+    _exceptionclass = QgisProjectException
+
 
     def __init__(self, qgis_file, **kwargs):
         self.qgisProjectFile = qgis_file
@@ -660,7 +540,7 @@ class QgisProject(XmlData):
             self.qgisProjectFile.file.seek(0)
             self.qgisProjectTree = lxml.parse(self.qgisProjectFile, forbid_entities=False)
         except Exception as e:
-            raise Exception(_('The project file is malformed: {}'.format(e.message)))
+            raise QgisProjectException(_('The project file is malformed: {}'.format(e.message)), project=self)
 
 
     def _getDataName(self):

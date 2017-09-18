@@ -231,7 +231,7 @@ def mapLayerAttributes(layer, formField=False, **kwargs):
                 formFields[field['name']] = editingFormField(
                     field['name'],
                     type=field['type'],
-                    fieldLabel=field['label'],
+                    fieldLabel=field['label'] if field['label'] != '' else field['name'],
                     inputType=FORM_FIELDS_MAPPING[field['type']]
                 )
 
