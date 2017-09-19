@@ -270,4 +270,8 @@ class GeneralSuiteData(models.Model):
     facebook_url = models.URLField(_('Facebook link'), null=True, blank=True)
     twitter_url = models.URLField(_('Twitter link'), null=True, blank=True)
     googleplus_url = models.URLField(_('Google+ link'), null=True, blank=True)
+    youtube_url = models.URLField(_('Youtube link'), null=True, blank=True)
+    instagram_url = models.URLField(_('Instagram link'), null=True, blank=True)
+    flickr_url = models.URLField(_('Flickr link'), null=True, blank=True)
+    tripadvisor_url = models.URLField(_('Tripadvisor link'), null=True, blank=True)
 

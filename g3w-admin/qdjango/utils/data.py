@@ -87,8 +87,6 @@ class QgisProjectLayer(XmlData):
         'editTypes'
     ]
 
-    _exceptionclass = QgisProjectLayerException
-
     _defaultValidators = [
         DatasourceExists,
         ColoumnName
@@ -500,9 +498,6 @@ class QgisProject(XmlData):
     #_regexXmlLayer = 'projectlayers/maplayer[@geometry!="No geometry"]'
 
     _regexXmlLayer = 'projectlayers/maplayer'
-
-    _exceptionclass = QgisProjectException
-
 
     def __init__(self, qgis_file, **kwargs):
         self.qgisProjectFile = qgis_file

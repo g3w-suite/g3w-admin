@@ -3,11 +3,23 @@ from .general import ucfirst
 import re
 
 
+class XmlDataException(Exception):
+
+    def __init__(self, *args, **kwargs):
+        self.pre_message = kwargs['pre_message'] if 'pre_message' in kwargs else None
+        super(XmlDataException, self).__init__(*args, **kwargs)
+
+    def __unicode__(self):
+        return u'{}: {}'.format(self.pre_message, self.message)
+
+
 class XmlData(object):
 
     _dataToSet = []
 
-    _exceptionclass = Exception
+    _exceptionclass = XmlDataException
+
+    _pre_exception_message = ''
 
     _defaultValidators = []
 
@@ -19,12 +31,13 @@ class XmlData(object):
             try:
                 setattr(self, data, getattr(self, '_getData{}'.format(ucfirst(data)))())
             except Exception as e:
-                raise self._exceptionclass(_('[Loading error] "{}" {}:'.format(data, e.message)))
+                raise self._exceptionclass(e.message,
+                                           _('[Loading {} error] (Data: {})').format(self._pre_exception_message, data))
 
     def registerValidator(self, validator):
         """
-        Register a QgisProjectValidator object
-        :param validator: QgisProjectValidator
+        Register a Validator object
+        :param validator: Validator
         :return: None
         """
         self.validators.append(validator(self))

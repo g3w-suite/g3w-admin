@@ -258,6 +258,10 @@ class GeneralSuiteDataForm(FileFormMixin, ModelForm):
                             PrependedText('facebook_url', '<i class="fa fa-facebook"></i>'),
                             PrependedText('twitter_url', '<i class="fa fa-twitter"></i>'),
                             PrependedText('googleplus_url', '<i class="fa fa-google-plus"></i>'),
+                            PrependedText('youtube_url', '<i class="fa fa-youtube"></i>'),
+                            PrependedText('instagram_url', '<i class="fa fa-instagram"></i>'),
+                            PrependedText('flickr_url', '<i class="fa fa-flickr"></i>'),
+                            PrependedText('tripadvisor_url', '<i class="fa fa-tripadvisor"></i>'),
                             css_class='box-body',
 
                         ),
