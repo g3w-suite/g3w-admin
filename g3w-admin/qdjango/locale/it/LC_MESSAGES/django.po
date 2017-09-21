@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-06-21 08:59+0000\n"
+"POT-Creation-Date: 2017-09-19 14:34+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -80,6 +80,7 @@ msgid "Layer relations"
 msgstr ""
 
 #: qdjango/models.py:79 qdjango/models.py:161
+#: qdjango/templates/qdjango/layers_list.html:30
 msgid "Project"
 msgstr "Progetto"
 
@@ -267,6 +268,12 @@ msgstr "Mostra dettagli"
 msgid "Edit"
 msgstr "Modifica"
 
+#: qdjango/templates/qdjango/layers_list.html:51
+#, fuzzy
+#| msgid "Widgets list"
+msgid "Layers list"
+msgstr "Lista dei widget"
+
 #: qdjango/templates/qdjango/layers_list.html:56
 msgid "Data"
 msgstr "Dati"
@@ -363,15 +370,27 @@ msgstr "Il titolo del progetto non deve essere vuoto"
 msgid "More than one layer with same name/shortname: {}"
 msgstr "Più di un layer con lo stesso name/shortname :{}"
 
-#: qdjango/utils/data.py:532
+#: qdjango/utils/data.py:518
+msgid "Check WMS start extent project property: {} didn't set"
+msgstr ""
+
+#: qdjango/utils/data.py:523
+msgid "xmax smaller then xmin "
+msgstr ""
+
+#: qdjango/utils/data.py:525
+msgid "ymax smaller then ymin "
+msgstr ""
+
+#: qdjango/utils/data.py:561
 msgid "Invalid Project Data "
 msgstr "Dati del progetto non validi "
 
-#: qdjango/utils/data.py:570
+#: qdjango/utils/data.py:599
 msgid "The project file is malformed: {}"
 msgstr "Il file del progetto non è corretto: {}"
 
-#: qdjango/utils/data.py:887
+#: qdjango/utils/data.py:916
 msgid "The project settings is malformed: {}"
 msgstr "I settaggi del progetto non sono corretti: {}"
 

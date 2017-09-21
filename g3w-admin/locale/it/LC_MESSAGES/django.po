@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-06-21 08:59+0000\n"
+"POT-Creation-Date: 2017-09-19 14:35+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -104,19 +104,19 @@ msgstr ""
 
 #: cadastre/templates/cadastre/loaddata.html:86
 #: cadastre/templates/cadastre/loaddata.html:137
-#: cadastre_camaiore/templates/cadastre/loaddatacivici.html:64
+#: cadastre_camaiore/templates/cadastre/loaddatacivici.html:65
 msgid "Data caricamento"
 msgstr ""
 
 #: cadastre/templates/cadastre/loaddata.html:96
 #: cadastre/templates/cadastre/loaddata.html:149
-#: cadastre_camaiore/templates/cadastre/loaddatacivici.html:74
+#: cadastre_camaiore/templates/cadastre/loaddatacivici.html:75
 msgid "Delete"
 msgstr ""
 
 #: cadastre/templates/cadastre/loaddata.html:102
 #: cadastre/templates/cadastre/loaddata.html:155
-#: cadastre_camaiore/templates/cadastre/loaddatacivici.html:80
+#: cadastre_camaiore/templates/cadastre/loaddatacivici.html:81
 msgid "Clear Db by Task id"
 msgstr ""
 
@@ -180,6 +180,10 @@ msgstr ""
 msgid "N civici scartati"
 msgstr ""
 
+#: cadastre_camaiore/templates/cadastre/loaddatacivici.html:64
+msgid "N civici duplicati"
+msgstr ""
+
 #: editing/api/serializers.py:28
 msgid ""
 "Invalid format: string or unicode input unrecognized as GeoJSON, WKT EWKT or "
@@ -220,59 +224,6 @@ msgstr ""
 msgid "Activation layer_editing"
 msgstr ""
 
-#: frontend/templates/frontend/index.html:84
-#: frontend/templates/frontend/index.html:134
-msgid "About It"
-msgstr "Cos'è"
-
-#: frontend/templates/frontend/index.html:94
-#: frontend/templates/frontend/index.html:165
-msgid "Maps"
-msgstr "Mappe"
-
-#: frontend/templates/frontend/index.html:104
-#: frontend/templates/frontend/index.html:268
-msgid "Admin"
-msgstr "Amministrazione"
-
-#: frontend/templates/frontend/index.html:104
-#: frontend/templates/frontend/index.html:268
-#: frontend/templates/frontend/index.html:297
-msgid "Login"
-msgstr "Accesso"
-
-#: frontend/templates/frontend/index.html:123
-msgid "Adminstration"
-msgstr "Amministrazione"
-
-#: frontend/templates/frontend/index.html:202
-#, fuzzy
-#| msgid "Groups list"
-msgid "Group maps"
-msgstr "Lista gruppi"
-
-#: frontend/templates/frontend/index.html:232
-#: iternet/templates/iternet/dashboard.html:85
-#: iternet/templates/iternet/dashboard.html:86
-msgid "Show map"
-msgstr "Mostra mappa"
-
-#: frontend/templates/frontend/index.html:271
-msgid "Access to backeng administration stystem or logout"
-msgstr "Accedi al backed di amministrazione o esci"
-
-#: frontend/templates/frontend/index.html:273
-msgid "Login to go backend administration system"
-msgstr "Accesso al sistema di amministrazione"
-
-#: frontend/templates/frontend/index.html:285
-msgid "Backend"
-msgstr ""
-
-#: frontend/templates/frontend/index.html:288
-msgid "Logout"
-msgstr "Esci"
-
 #: htmlcov/_home_walter_envs_qdjango2_dev_lib_python2_7_site-packages_django_template_defaulttags_py.html:3184
 #, python-format
 msgid "The width is: %(width)s"
@@ -299,6 +250,11 @@ msgstr ""
 #: iternet/templates/iternet/dashboard.html:56
 msgid "Download QGIS connection XML file"
 msgstr ""
+
+#: iternet/templates/iternet/dashboard.html:85
+#: iternet/templates/iternet/dashboard.html:86
+msgid "Show map"
+msgstr "Mostra mappa"
 
 #: iternet/templates/iternet/messages/check_project_delete.html:3
 #: iternet/templates/iternet/messages/check_project_update.html:3
@@ -404,6 +360,35 @@ msgstr "Username e/o password non corretti"
 #: templates/login.html:31
 msgid "Sign In"
 msgstr "Accedi"
+
+#~ msgid "About It"
+#~ msgstr "Cos'è"
+
+#~ msgid "Maps"
+#~ msgstr "Mappe"
+
+#~ msgid "Admin"
+#~ msgstr "Amministrazione"
+
+#~ msgid "Login"
+#~ msgstr "Accesso"
+
+#~ msgid "Adminstration"
+#~ msgstr "Amministrazione"
+
+#, fuzzy
+#~| msgid "Groups list"
+#~ msgid "Group maps"
+#~ msgstr "Lista gruppi"
+
+#~ msgid "Access to backeng administration stystem or logout"
+#~ msgstr "Accedi al backed di amministrazione o esci"
+
+#~ msgid "Login to go backend administration system"
+#~ msgstr "Accesso al sistema di amministrazione"
+
+#~ msgid "Logout"
+#~ msgstr "Esci"
 
 #, fuzzy
 #~| msgid "Users"
