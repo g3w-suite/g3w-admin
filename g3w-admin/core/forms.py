@@ -8,10 +8,11 @@ from django.contrib.auth.models import User
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Div, Submit, HTML, Button, Row, Field
 from crispy_forms.bootstrap import AppendedText, PrependedText
-from usersmanage.utils import get_fields_by_user, crispyBoxACL
+from usersmanage.utils import get_fields_by_user, crispyBoxACL, userHasGroups
 from usersmanage.forms import G3WACLForm
 from core.mixins.forms import *
 from usersmanage.configs import *
+
 
 
 class ExampleForm(FileFormMixin,Form):
@@ -158,6 +159,10 @@ class GroupForm(FileFormMixin, G3WFormMixin, G3WRequestFormMixin, G3WACLForm, Mo
     def save(self, commit=True):
         super(GroupForm, self).save()
         self._ACLPolicy()
+
+        # add permission to editor1 if current user is editor1
+        if userHasGroups(self.request.user, [G3W_EDITOR1]):
+            self.instance.addPermissionsToEditor(self.request.user)
 
 
 class GeneralSuiteDataForm(FileFormMixin, ModelForm):

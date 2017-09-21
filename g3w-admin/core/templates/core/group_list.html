@@ -15,6 +15,28 @@
 
 {% block custom_js_links_page %}
 <script>
+    $("#groups_list").sortable({
+        update: function(e, ui){
+            new_order = $(e.target).sortable("toArray");
+
+            // get current id of group moved
+            var gid = ui.item.attr('id').substring(6)
+            var url = _.template("/jx/groups/<%= gid %>/setorder/")({gid: gid});
+            var data = {
+                new_order: new_order
+            }
+            ga.utils.addCsfrtokenData(data);
+
+            $.post(url, data, function(res){
+                console.log(res);
+            });
+
+        },
+        //placeholder: "sort-highlight",
+        //forcePlaceholderSize: true,
+        //zIndex: 999999
+    });
+    $("#groups_list").disableSelection();
     $(".connectedSortable").sortable({
         placeholder: "sort-highlight",
         connectWith: ".connectedSortable",
@@ -28,10 +50,10 @@
 {% block main_content %}
 
 
-<div class="row">
+<div id="groups_list" class="row">
 {% for object in object_list %}
     {% get_obj_perms user for object as "userObj_perms" %}
-    <div class="col-md-3 col-sm-6 connectedSortable">
+    <div class="col-md-3 col-sm-6" id="group_{{ object.pk }}">
      <div class="box box-widget widget-user" id="group_{{ object.slug }}">
                 <!-- Add the bg color to the header using any of the bg-* classes -->
                 <div class="widget-user-header bg-aqua-active col-sm-12" style="background: url('{{ MEDIA_URL }}{{ object.header_logo_img }}') center center;">
@@ -90,10 +112,13 @@
           </div><!-- /.widget-user -->
     </div>
 {% endfor %}
-    {% if perms.core.add_group %}
-    {% with 'group-add' as object_add_url_name %}
-        {% include 'core/include/widget_add_box.html' %}
-    {% endwith %}
-    {% endif %}
 </div>
+{% if perms.core.add_group %}
+<div class="row">
+{% with 'group-add' as object_add_url_name %}
+    {% include 'core/include/widget_add_box.html' %}
+{% endwith %}
+</div>
+{% endif %}
+
 {% endblock %}

@@ -83,7 +83,7 @@ class MapControl(OrderedModel):
         verbose_name_plural = _('Map controls')
 
 
-class Group(TimeStampedModel):
+class Group(TimeStampedModel, OrderedModel):
     """A group of projects."""
     # General info
     name = models.CharField(_('Name'), max_length=255, unique=True)

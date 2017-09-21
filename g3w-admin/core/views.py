@@ -15,6 +15,7 @@ from django.utils.decorators import method_decorator
 from guardian.decorators import permission_required
 from guardian.shortcuts import get_objects_for_user
 from usersmanage.mixins.views import G3WACLViewMixin
+from usersmanage.decorators import user_passes_test_or_403
 from .forms import GroupForm, GeneralSuiteDataForm
 from .models import Group, GroupProjectPanoramic, MapControl, GeneralSuiteData
 from .mixins.views import G3WRequestViewMixin, G3WAjaxDeleteViewMixin
@@ -69,7 +70,7 @@ class DashboardView(TemplateView):
 class GroupListView(ListView):
     """List group view."""
     def get_queryset(self):
-        return get_objects_for_user(self.request.user, 'core.view_group', Group).order_by('name')
+        return get_objects_for_user(self.request.user, 'core.view_group', Group).order_by('order')
 
 
 class GroupDetailView(G3WRequestViewMixin, DetailView):
@@ -187,6 +188,28 @@ class GroupSetProjectPanoramicView(View):
                                                           project_id=kwargs['project_id'])
         groupProjectPanoramic.save()
         return JsonResponse({'Saved': 'ok'})
+
+
+class GroupSetOrderView(View):
+        '''
+        Set order view list groups
+        '''
+
+        # only user with change_group for this group can change overview map.
+        #@method_decorator(permission_required('core.change_group', (Group, 'id', 'group_id'), return_403=True))
+        @method_decorator(user_passes_test_or_403(lambda u: u.is_superuser))
+        def dispatch(self, *args, **kwargs):
+            return super(GroupSetOrderView, self).dispatch(*args, **kwargs)
+
+        def post(self, *args, **kwargs):
+
+            # get new order save value for group
+            new_order = self.request.POST.getlist('new_order[]')
+            for oindex, gid in enumerate(new_order):
+                Group.objects.get(pk=gid[6:]).to(oindex + 1)
+
+            return JsonResponse({'Saved': 'ok'})
+
 
 #for PROJECTS
 #---------------------------------------------
