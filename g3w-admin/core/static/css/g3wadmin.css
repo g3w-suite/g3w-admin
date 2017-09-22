@@ -96,3 +96,10 @@ table span.icon {
 h5 small {
     color:#fff;
 }
+
+.sort-highlight-group {
+    background: #f4f4f4;
+    border: 1px dashed #ddd;
+    margin-bottom: 10px;
+    height: 192px;
+}

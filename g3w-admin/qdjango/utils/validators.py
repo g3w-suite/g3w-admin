@@ -51,7 +51,7 @@ class ProjectTitleExists(QgisProjectValidator):
     """
     def clean(self):
         if not self.qgisProject.title:
-            raise QgisProjectException(_('Title project not empty'), project=self.qgisProject)
+            raise QgisProjectException(_('Title project not empty'))
 
 
 class UniqueLayername(QgisProjectValidator):
@@ -122,7 +122,7 @@ class DatasourceExists(QgisProjectLayerValidator):
                 if not os.path.exists(self.qgisProjectLayer.datasource):
                     err = ugettext('Missing data file for layer {} '.format(self.qgisProjectLayer.name))
                     err += ugettext('which should be located at {}'.format(self.qgisProjectLayer.datasource))
-                    raise Exception(err)
+                    raise QgisProjectLayerException(err)
 
 
 class ColoumnName(QgisProjectLayerValidator):
@@ -143,4 +143,4 @@ class ColoumnName(QgisProjectLayerValidator):
                                'white spaces and/or special characters: {}')\
                     .format(self.qgisProjectLayer.name, ', '.join(columns_err))
                 err += ugettext('Please use \'Alias\' fields in QGIS project')
-                raise Exception(err)
+                raise QgisProjectLayerException(err)

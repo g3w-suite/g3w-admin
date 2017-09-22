@@ -1,4 +1,4 @@
 {% load i18n %}
 {% with app|add:'-project-add' as listurl %}
-<h3 class="box-title"><a href="{% url listurl group.slug %}"><i class="ion ion-plus-circled"></i> {% trans 'Project' %} {{ app }}</a></h3>
+<h3 class="box-title"><a href="{% url listurl group.slug %}"><i class="ion ion-plus-circled"></i> {% trans 'Project' %} {{ alias }}</a></h3>
 {% endwith %}

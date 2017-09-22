@@ -87,6 +87,8 @@ class QgisProjectLayer(XmlData):
         'editTypes'
     ]
 
+    _pre_exception_message = 'Layer'
+
     _defaultValidators = [
         DatasourceExists,
         ColoumnName
@@ -180,6 +182,9 @@ class QgisProjectLayer(XmlData):
                     return True
                 else:
                     return False
+
+        # layer not in legend: return false for default
+        return False
 
     def _getDataLayerType(self):
         """
@@ -495,6 +500,8 @@ class QgisProject(XmlData):
         CheckMaxExtent
     ]
 
+    _pre_exception_message = 'Project'
+
     #_regexXmlLayer = 'projectlayers/maplayer[@geometry!="No geometry"]'
 
     _regexXmlLayer = 'projectlayers/maplayer'
@@ -535,7 +542,7 @@ class QgisProject(XmlData):
             self.qgisProjectFile.file.seek(0)
             self.qgisProjectTree = lxml.parse(self.qgisProjectFile, forbid_entities=False)
         except Exception as e:
-            raise QgisProjectException(_('The project file is malformed: {}'.format(e.message)), project=self)
+            raise QgisProjectException(_('The project file is malformed: {}').format(e.message))
 
 
     def _getDataName(self):
@@ -774,8 +781,9 @@ class QgisProject(XmlData):
                 self.instance.save()
 
             # Create or update layers
-            for layer in self.layers:
-                layer.save()
+            for l in self.layers:
+                print l
+                l.save()
 
             # Pre-existing layers that have not been updated must be dropped
             newLayerNameList = [(layer.name, layer.datasource) for layer in self.layers]

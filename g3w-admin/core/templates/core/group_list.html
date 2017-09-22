@@ -17,6 +17,7 @@
 {% if user.is_superuser %}
 <script>
     $("#groups_list").sortable({
+        placeholder: "col-md-3 col-sm-6 sort-highlight-group",
         handle: ".handle",
         update: function(e, ui){
             new_order = $(e.target).sortable("toArray");

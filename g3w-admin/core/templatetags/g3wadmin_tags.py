@@ -1,5 +1,6 @@
 from __future__ import division
 from django import template
+from django.apps import apps
 from django.conf.urls.static import static
 from core.signals import load_project_widgets, load_layer_actions
 from core.models import GroupProjectPanoramic
@@ -13,7 +14,11 @@ def g3wadmin_add_project(app, group):
     """
     Template tag to build add project button
     """
-    return {'app': app, 'group': group}
+
+    oapp = apps.get_app_config(app)
+    app_name = oapp.alias if hasattr(oapp, 'alias') else app
+
+    return {'app': app, 'alias': app_name, 'group': group}
 
 
 @register.inclusion_tag('core/tags/add_layer.html')
