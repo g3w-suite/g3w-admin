@@ -207,6 +207,7 @@ class QgisProjectLayer(XmlData):
         Get if is visible form xml
         :return: string
         """
+        logger.debug('-IS VISIBLE')
         legendTrees = self.qgisProject.qgisProjectTree.find('legend')
         legends = legendTrees.iterdescendants(tag='legendlayerfile')
 
@@ -223,6 +224,7 @@ class QgisProjectLayer(XmlData):
         Get name tag content from xml
         :return: string
         """
+        logger.debug('-LAYERTYPE')
         availableTypes = [item[0] for item in Layer.TYPES]
         layerType = self.qgisProjectLayerTree.find('provider').text
         if not layerType in availableTypes:
@@ -234,6 +236,7 @@ class QgisProjectLayer(XmlData):
         Get min_scale from layer attribute
         :return: string
         """
+        logger.debug('-MINSCALE')
         return int(float(self.qgisProjectLayerTree.attrib['maximumScale']))
 
     def _getDataMaxScale(self):
@@ -241,6 +244,7 @@ class QgisProjectLayer(XmlData):
         Get min_scale from layer attribute
         :return: string
         """
+        logger.debug('-MAXSCALE')
         return int(float(self.qgisProjectLayerTree.attrib['minimumScale']))
 
     def _getDataScaleBasedVisibility(self):
@@ -255,6 +259,7 @@ class QgisProjectLayer(XmlData):
         Get srid property of layer
         :return: string
         """
+        logger.debug('-SRID')
         try:
             srid = self.qgisProjectLayerTree.xpath('srs/spatialrefsys/srid')[0].text
         except:
@@ -271,11 +276,12 @@ class QgisProjectLayer(XmlData):
         Get geometry from layer attribute
         :return: string
         """
-
+        logger.debug('-GEOMETRYTYPE')
         return self.qgisProjectLayerTree.attrib.get('geometry')
 
     def _getDataEditOptions(self):
 
+        logger.debug('-EDITOPTIONS')
         editOptions = 0
         for editOp, layerIds in self.qgisProject.wfstLayers.items():
             if self.layerId in layerIds:
@@ -285,6 +291,7 @@ class QgisProjectLayer(XmlData):
 
     def _getDataWfsCapabilities(self):
 
+        logger.debug('-WFSCAPABILITIES')
         wfsCapabilities = 0
         for wfslayer in self.qgisProject.wfsLayers:
             if self.layerId in wfslayer:
@@ -297,6 +304,7 @@ class QgisProjectLayer(XmlData):
         Get name tag content from xml
         :return: string
         """
+        logger.debug('-DATASOURCE')
         datasource = self.qgisProjectLayerTree.find('datasource').text
         serverDatasource = makeDatasource(datasource, self.layerType)
 
@@ -310,7 +318,7 @@ class QgisProjectLayer(XmlData):
         Get properties fields aliasies
         :return: string
         """
-
+        logger.debug('-ALIASIES')
         ret = {}
         aliases = self.qgisProjectLayerTree.find('aliases')
         if aliases:
@@ -323,6 +331,7 @@ class QgisProjectLayer(XmlData):
         Retrive data about columns for db table or ogr lyer type
         :return:
         """
+        logger.debug('-COLUMNS')
         if self.layerType in [Layer.TYPES.postgres, Layer.TYPES.spatialite]:
             layerStructure = QgisDBLayerStructure(self, layerType=self.layerType)
         elif self.layerType in [Layer.TYPES.ogr]:
@@ -371,7 +380,7 @@ class QgisProjectLayer(XmlData):
         """
         Get attribute to exlude from WMS info and relations 
         """
-
+        logger.debug('-EXCLUDEATRIBUTEWMS')
         excluded_columns = []
         try:
             attributes = self.qgisProjectLayerTree.find('excludeAttributesWMS')
@@ -385,7 +394,7 @@ class QgisProjectLayer(XmlData):
         """
         Get attribute to exlude from WMS info and relations 
         """
-
+        logger.debug('EXCLUDEATRIBUTEWFS')
         excluded_columns = []
         try:
             attributes = self.qgisProjectLayerTree.find('excludeAttributesWFS')
