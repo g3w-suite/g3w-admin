@@ -745,6 +745,7 @@ class QgisProject(XmlData):
         layerTrees = self.qgisProjectTree.xpath(self._regexXmlLayer)
 
         for order, layerTree in enumerate(layerTrees):
+            logger.debug('LOADING LAYER-----')
             logger.debug('Project Layer: ' + unicode(layerTree))
             if self._checkLayerTypeCompatible(layerTree):
 
