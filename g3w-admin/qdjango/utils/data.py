@@ -10,6 +10,9 @@ from core.utils.data import XmlData
 from .structure import *
 import os, re
 import json
+import logging
+
+logger = logging.getLogger('g3wadmin.debug')
 
 
 def makeDatasource(datasource, layerType):
@@ -178,7 +181,10 @@ class QgisProjectLayer(XmlData):
         Get name tag content from xml
         :return: string
         """
-        return self.qgisProjectLayerTree.find('id').text
+        logger.debug('RECUPERO ID LAYER')
+        layer_id = self.qgisProjectLayerTree.find('id').text
+        logger.debug(layer_id)
+        return layer_id
 
     def _getDataTitle(self):
         """
