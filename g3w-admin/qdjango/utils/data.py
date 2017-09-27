@@ -207,7 +207,6 @@ class QgisProjectLayer(XmlData):
         Get if is visible form xml
         :return: string
         """
-        logger.debug('-IS VISIBLE')
         legendTrees = self.qgisProject.qgisProjectTree.find('legend')
         legends = legendTrees.iterdescendants(tag='legendlayerfile')
 
@@ -224,7 +223,6 @@ class QgisProjectLayer(XmlData):
         Get name tag content from xml
         :return: string
         """
-        logger.debug('-LAYERTYPE')
         availableTypes = [item[0] for item in Layer.TYPES]
         layerType = self.qgisProjectLayerTree.find('provider').text
         if not layerType in availableTypes:
@@ -236,7 +234,6 @@ class QgisProjectLayer(XmlData):
         Get min_scale from layer attribute
         :return: string
         """
-        logger.debug('-MINSCALE')
         return int(float(self.qgisProjectLayerTree.attrib['maximumScale']))
 
     def _getDataMaxScale(self):
@@ -244,7 +241,6 @@ class QgisProjectLayer(XmlData):
         Get min_scale from layer attribute
         :return: string
         """
-        logger.debug('-MAXSCALE')
         return int(float(self.qgisProjectLayerTree.attrib['minimumScale']))
 
     def _getDataScaleBasedVisibility(self):
@@ -259,7 +255,6 @@ class QgisProjectLayer(XmlData):
         Get srid property of layer
         :return: string
         """
-        logger.debug('-SRID')
         try:
             srid = self.qgisProjectLayerTree.xpath('srs/spatialrefsys/srid')[0].text
         except:
@@ -276,12 +271,10 @@ class QgisProjectLayer(XmlData):
         Get geometry from layer attribute
         :return: string
         """
-        logger.debug('-GEOMETRYTYPE')
         return self.qgisProjectLayerTree.attrib.get('geometry')
 
     def _getDataEditOptions(self):
 
-        logger.debug('-EDITOPTIONS')
         editOptions = 0
         for editOp, layerIds in self.qgisProject.wfstLayers.items():
             if self.layerId in layerIds:
@@ -291,7 +284,6 @@ class QgisProjectLayer(XmlData):
 
     def _getDataWfsCapabilities(self):
 
-        logger.debug('-WFSCAPABILITIES')
         wfsCapabilities = 0
         for wfslayer in self.qgisProject.wfsLayers:
             if self.layerId in wfslayer:
@@ -611,7 +603,7 @@ class QgisProject(XmlData):
 
             # we have to rewind the underlying file in case it has been already parsed
             self.qgisProjectFile.file.seek(0)
-            self.qgisProjectTree = lxml.parse(self.qgisProjectFile, forbid_entities=False)
+            self.qgisProjectTree = lxml.parse(self.qgisProjectFile, forbid_entities=False, encoding='UTF-8')
         except Exception as e:
             raise Exception(_('The project file is malformed: {}'.format(e.message)))
 
@@ -745,8 +737,6 @@ class QgisProject(XmlData):
         layerTrees = self.qgisProjectTree.xpath(self._regexXmlLayer)
 
         for order, layerTree in enumerate(layerTrees):
-            logger.debug('LOADING LAYER-----')
-            logger.debug('Project Layer: ' + unicode(layerTree))
             if self._checkLayerTypeCompatible(layerTree):
 
                 layers.append(QgisProjectLayer(layerTree, qgisProject=self, order=order))
