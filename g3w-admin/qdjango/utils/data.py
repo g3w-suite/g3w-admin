@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 from django.conf import settings
 from django.http.request import QueryDict
 from defusedxml import lxml
@@ -209,6 +210,7 @@ class QgisProjectLayer(XmlData):
                     return True
                 else:
                     return False
+        return False
 
     def _getDataLayerType(self):
         """
