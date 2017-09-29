@@ -78,7 +78,6 @@ def create_geomodel_from_qdjango_layer(layer, app_label='core'):
     """
     datasource = datasource2dict(layer.datasource)
 
-
     if layer.layer_type not in ('postgres', 'spatialite'):
         raise Exception('Layer type, {},must be one of \'postgresql\' or \'spatialite\''.format(layer.layer_type))
     layer_type = 'postgis' if layer.layer_type == 'postgres' else 'spatialite'
@@ -118,9 +117,9 @@ def create_geomodel_from_qdjango_layer(layer, app_label='core'):
             daLayer = splite.GetLayerByName(str(table))
 
             # get geometry columns e type
-            geometry_column = daLayer.GetGeometryColumn()
-            geometry_srid = int(daLayer.GetSpatialRef().GetAuthorityCode(None))
-
+            geometry_column = daLayer.GetGeometryColumn() if daLayer.GetGeometryColumn() else None
+            if geometry_column:
+                geometry_srid = int(daLayer.GetSpatialRef().GetAuthorityCode(None))
 
             engine = create_engine('sqlite:///{}'.format(
                 datasource['dbname']
