@@ -224,16 +224,6 @@ class BaseVectorOnModelApiView(G3WAPIView):
         """
         return None
 
-    def get_queryset(self):
-        """
-        Return query set for layer data
-        :return:
-        """
-        if 'using' in self.metadata_layer:
-            return self.metadata_layer['model'].objects.using(self.metadata_layer['using']).all()
-        else:
-            return self.metadata_layer['model'].objects.all()
-
     def set_relations(self):
         """
         Method to implenet to set layer relations
@@ -328,14 +318,14 @@ class BaseVectorOnModelApiView(G3WAPIView):
         # add forms data if exist
         kwargs = {'fields': forms[self.layer_name]['fields']} if forms and forms.get(self.layer_name) else {}
 
-        if self.metadata_layer.get('fields_to_exlude'):
-            kwargs['exlude'] = self.metadata_layer['fields_to_exlude']
-        if self.metadata_layer.get('order'):
-            kwargs['order'] = self.metadata_layer['order']
+        if hasattr(self.metadata_layer, 'fields_to_exlude'):
+            kwargs['exlude'] = self.metadata_layer.fields_to_exlude
+        if hasattr(self.metadata_layer, 'order'):
+            kwargs['order'] = self.metadata_layer.order
 
         if self.mapping_layer_attributes_function.im_func == mapLayerAttributesFromModel:
             fields = self.mapping_layer_attributes_function.im_func(
-                self.metadata_layer['model'],
+                self.metadata_layer.model,
                 **kwargs
             ).values()
         else:
@@ -346,9 +336,9 @@ class BaseVectorOnModelApiView(G3WAPIView):
             ).values()
 
         vector_params = {
-            'geomentryType': self.metadata_layer['geometryType'],
+            'geomentryType': self.metadata_layer.geometry_type,
             'fields': fields,
-            'pkField': self.metadata_layer['model']._meta.pk.name
+            'pkField': self.metadata_layer.model._meta.pk.name
         }
 
         # post_create_maplayerattributes signal
@@ -370,12 +360,12 @@ class BaseVectorOnModelApiView(G3WAPIView):
         self.set_filters()
 
         # apply bbox filter
-        self.features_layer = self.get_queryset()
+        self.features_layer = self.metadata_layer.get_queryset()
         if self.bbox_filter:
             self.features_layer = self.bbox_filter.filter_queryset(request, self.features_layer, self)
 
         # instance of geoserializer
-        layer_serializer = self.metadata_layer['geoSerializer'](self.features_layer, many=True,
+        layer_serializer = self.metadata_layer.serializer(self.features_layer, many=True,
                                                                 **self.get_geoserializer_kwargs())
 
         # add extra fields data by signals and receivers
@@ -391,8 +381,8 @@ class BaseVectorOnModelApiView(G3WAPIView):
 
         return {
             'data': featurecollection,
-            'geomentryType': self.metadata_layer['geometryType'],
-            'pkField': self.metadata_layer['model']._meta.pk.name
+            'geomentryType': self.metadata_layer.geometry_type,
+            'pkField': self.metadata_layer.model._meta.pk.name
         }
 
     def set_reprojecting_status(self):
