@@ -27,21 +27,27 @@ class QGISLayerVectorViewMixin(object):
 
     def set_metadata_relations(self, request, **kwargs):
 
+        # init relations
+        self.set_relations()
+
         for idr, relation in self.relations.items():
 
-            # get relation layer object
-            relation_layer = Layer.objects.get(qgs_layer_id=relation['referencingLayer'], project=self.layer.project)
+            # check if in relation there is referencedLayer == self layer
+            if relation['referencedLayer'] == self.layer.qgs_layer_id:
+                # get relation layer object
+                relation_layer = Layer.objects.get(qgs_layer_id=relation['referencingLayer'], project=self.layer.project)
 
-            geomodel, database_to_use, geometrytype = create_geomodel_from_qdjango_layer(relation_layer)
+                geomodel, database_to_use, geometrytype = create_geomodel_from_qdjango_layer(relation_layer)
 
-            self.metadata_relations[relation['referencingLayer']] = MetadataVectorLayer(
-                geomodel,
-                QGISGeoLayerSerializer if geometrytype else QGISLayerSerializer,
-                geometrytype,
-                relation_layer.origname,
-                idr,
-                using=database_to_use
-            )
+                self.metadata_relations[relation['referencingLayer']] = MetadataVectorLayer(
+                    geomodel,
+                    QGISGeoLayerSerializer if geometrytype else QGISLayerSerializer,
+                    geometrytype,
+                    relation_layer.origname,
+                    idr,
+                    using=database_to_use,
+                    layer=relation_layer
+                )
 
     def set_metadata_layer(self, request, **kwargs):
 

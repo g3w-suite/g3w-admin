@@ -154,7 +154,7 @@ class BaseVectorOnModelApiView(G3WAPIView):
     relations = dict()
 
     # Relations metadata
-    matadata_relations = dict()
+    metadata_relations = dict()
 
     # State parameter toknown if reproject or not the data
     reproject = False
