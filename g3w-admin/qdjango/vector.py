@@ -1,4 +1,5 @@
 from core.api.base.views import BaseVectorOnModelApiView
+from core.api.base.vector import MetadataVectorLayer
 from core.utils.structure import mapLayerAttributesFromModel
 from core.utils.models import create_geomodel_from_qdjango_layer, get_geometry_column
 from .utils.edittype import MAPPING_EDITTYPE_QGISEDITTYPE
@@ -18,7 +19,7 @@ class QGISLayerVectorViewMixin(object):
 
     def get_geoserializer_kwargs(self):
 
-        return {'model': self.metadata_layer['model'], 'using': self.database_to_use}
+        return {'model': self.metadata_layer.model, 'using': self.database_to_use}
 
     def set_relations(self):
 
@@ -33,13 +34,14 @@ class QGISLayerVectorViewMixin(object):
 
             geomodel, database_to_use, geometrytype = create_geomodel_from_qdjango_layer(relation_layer)
 
-            self.metadata_relations[relation['referencingLayer']] = {
-                'model': geomodel,
-                'serializer': QGISGeoLayerSerializer if geometrytype else QGISLayerSerializer,
-                'geometryType': geometrytype,
-                'clientVar': relation_layer.origname,
-                'relation_id': idr
-            }
+            self.metadata_relations[relation['referencingLayer']] = MetadataVectorLayer(
+                geomodel,
+                QGISGeoLayerSerializer if geometrytype else QGISLayerSerializer,
+                geometrytype,
+                relation_layer.origname,
+                idr,
+                using=database_to_use
+            )
 
     def set_metadata_layer(self, request, **kwargs):
 
@@ -54,12 +56,13 @@ class QGISLayerVectorViewMixin(object):
         self.bbox_filter_field = get_geometry_column(geomodel).name
 
         # create model and add to editing_layers
-        self.metadata_layer = {
-            'model': geomodel,
-            'geoSerializer': QGISGeoLayerSerializer,
-            'geometryType': geometrytype,
-            'clientVar': self.layer.origname,
-        }
+        self.metadata_layer = MetadataVectorLayer(
+            geomodel,
+            QGISGeoLayerSerializer,
+            geometrytype,
+            self.layer.origname
+        )
+
 
 
 class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
