@@ -189,7 +189,10 @@ def create_geomodel_from_qdjango_layer(layer, app_label='core'):
                     dj_model_field_type = MAPPING_GEOALCHEMY_DJANGO_FIELDS[type(column.type)]
                 django_model_fields[column.name] = dj_model_field_type(**kwargs)
 
-    using = build_dango_connection_name(layer.datasource)
+    if layer_type == 'spatialite':
+        using = build_dango_connection_name(datasource['dbname'])
+    else:
+        using = build_dango_connection_name(layer.datasource)
 
     if using not in connections.databases:
 
