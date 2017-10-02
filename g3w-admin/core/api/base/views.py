@@ -14,10 +14,7 @@ from core.signals import post_create_maplayerattributes, post_serialize_maplayer
 from core.utils.structure import mapLayerAttributes, mapLayerAttributesFromModel
 from core.api.authentication import CsrfExemptSessionAuthentication
 
-try:
-    from editing.utils.structure import APIVectorLayerStructure
-except:
-    pass
+from core.utils.structure import APIVectorLayerStructure
 from copy import copy
 import json
 
@@ -140,24 +137,6 @@ class BaseVectorOnModelApiView(G3WAPIView):
     authentication_classes = (
         CsrfExemptSessionAuthentication,
     )
-
-    # Object/DjangoModel layerto use
-    layer = None
-
-    # Alphanumeric layer identification
-    layer_name = None
-
-    # Metadata layer to user
-    metadata_layer = dict()
-
-    # Ralations propeties
-    relations = dict()
-
-    # Relations metadata
-    metadata_relations = dict()
-
-    # State parameter toknown if reproject or not the data
-    reproject = False
 
     # Parameter for locking features data into db
     app_name = None
@@ -302,8 +281,8 @@ class BaseVectorOnModelApiView(G3WAPIView):
 
         self.set_metadata_layer(request, **kwargs)
 
+        self.metadata_relations = dict()
         self.set_metadata_relations(request, **kwargs)
-
 
     def response_config_mode(self, request):
         """
@@ -347,7 +326,7 @@ class BaseVectorOnModelApiView(G3WAPIView):
             if extra_field[1]:
                 vector_params['fields'] = vector_params['fields'] + extra_field[1]
 
-        return vector_params
+        self.results.update(APIVectorLayerStructure(**vector_params).as_dict())
 
     def response_data_mode(self, request):
         """
@@ -379,11 +358,11 @@ class BaseVectorOnModelApiView(G3WAPIView):
         if self.reproject:
             self.reproject_featurecollection(featurecollection)
 
-        return {
+        self.results.update(APIVectorLayerStructure(**{
             'data': featurecollection,
             'geomentryType': self.metadata_layer.geometry_type,
             'pkField': self.metadata_layer.model._meta.pk.name
-        }
+        }).as_dict())
 
     def set_reprojecting_status(self):
         """
@@ -401,12 +380,10 @@ class BaseVectorOnModelApiView(G3WAPIView):
         """
         vector_params = {}
 
-        if self.mode_call == MODE_CONFIG:
-            vector_params = self.response_config_mode(request)
-        elif self.mode_call == MODE_DATA:
-            vector_params = self.response_data_mode(request)
-
-        return vector_params
+        # todo: make error message for mode call not in mode_call_avalilable
+        if self.mode_call in self.modes_call_available:
+            method = getattr(self, 'response_{}_mode'.format(self.mode_call))
+            method(request)
 
     def get_response(self, request, mode_call=None, project_type=None, layer_id=None, **kwargs):
 
@@ -417,8 +394,11 @@ class BaseVectorOnModelApiView(G3WAPIView):
         # set reprojecting status
         self.set_reprojecting_status()
 
+        # get results
+        self.get_response_data(request)
+
         # response a APIVectorLayer
-        return Response(APIVectorLayerStructure(**self.get_response_data(request)).as_dict())
+        return Response(self.results.results)
 
     def get(self, request, mode_call=None, project_type=None, layer_id=None, **kwargs):
 

@@ -323,3 +323,51 @@ def getProjectsByGroup(group):
         Project = apps.get_app_config(g3wProjectApp).get_model('project')
         ret[g3wProjectApp] = Project.objects.filter(group=group)
     return ret
+
+
+class APIVectorLayerStructure(object):
+    """
+    Structure for API Vector Layer response.
+    """
+    _format = 'GeoJSON'
+    _pkField = 'gid'
+    _data = None
+    _featureLocks = None
+    _geomentryType = None
+    _fields = None
+
+    def __init__(self, **kwargs):
+
+        self.format = kwargs.get('type', self._format)
+        self.pkField = kwargs.get('pkField', self._pkField)
+        self.data = kwargs.get('data', self._data)
+        self.featureLocks = kwargs.get('featureLocks', self._featureLocks)
+        self.geometryType = kwargs.get('geomentryType', self._geomentryType)
+        self.fields = kwargs.get('fields', self._fields)
+
+    def setPkField(self, pkField):
+        self._pkField = pkField
+
+    def setData(self, data):
+        self._data = data
+
+    def setFeatureLocks(self, featuresLock):
+        self.featureLocks = featuresLock
+
+    def setFields(self, fields):
+        self.fields = fields
+
+    def as_dict(self):
+
+        res = {
+            'vector': {
+                'format': self.format,
+                'pk': self.pkField,
+                'data': self.data,
+                'geometrytype': self.geometryType,
+                'fields': self.fields,
+            },
+            'featurelocks': self.featureLocks,
+        }
+
+        return res

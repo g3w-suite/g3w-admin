@@ -23,7 +23,26 @@ class QGISLayerVectorViewMixin(object):
 
     def set_relations(self):
 
+        # get relations on project
         self.relations = {r['id']: r for r in eval(self.layer.project.relations)}
+
+        # get relations on layer
+        if self.layer.vectorjoins:
+            joins = eval(self.layer.vectorjoins)
+            for n, join in enumerate(joins):
+                if Layer.objects.get(qgs_layer_id=join['joinLayerId']).layer_type in (('postgres', 'spatialite')):
+                    name = '{}_vectorjoin_{}'.format(self.layer.qgs_layer_id, n)
+                    self.relations[name] = {
+                        'id': name,
+                        'name': name,
+                        'referencedLayer': self.layer.qgs_layer_id,
+                        'referencingLayer': join['joinLayerId'],
+                        'fieldRef': {
+                            'referencedField': join['targetFieldName'],
+                            'referencingField': join['joinFieldName']
+                        }
+                    }
+
 
     def set_metadata_relations(self, request, **kwargs):
 
