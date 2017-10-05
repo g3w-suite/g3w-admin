@@ -1,13 +1,32 @@
-from core.api.base.views import BaseVectorOnModelApiView
+from core.api.base.views import BaseVectorOnModelApiView, IntersectsBBoxFilter
 from core.api.base.vector import MetadataVectorLayer
 from core.utils.structure import mapLayerAttributesFromModel
 from core.utils.models import create_geomodel_from_qdjango_layer, get_geometry_column
 from .utils.edittype import MAPPING_EDITTYPE_QGISEDITTYPE
+from .utils.data import QGIS_LAYER_TYPE_NO_GEOM
 from .api.serializers import QGISLayerSerializer, QGISGeoLayerSerializer
 from .models import Layer
 
 
 class QGISLayerVectorViewMixin(object):
+
+    def set_reprojecting_status(self):
+        """
+        Check if data have to reproject
+        :return:
+        """
+        # check if data to reproject
+        if self.metadata_layer.geometry_type != QGIS_LAYER_TYPE_NO_GEOM:
+            self.reproject = not self.layer.project.group.srid.auth_srid == self.layer.srid
+        else:
+            self.reproject = False
+
+    def set_geo_filter(self):
+
+        def set_geo_filter(self):
+            # Instance bbox filter
+            self.bbox_filter = IntersectsBBoxFilter() if self.metadata_layer.geometry_type != QGIS_LAYER_TYPE_NO_GEOM \
+                else None
 
     def get_layer_by_params(self, params):
 
@@ -58,9 +77,14 @@ class QGISLayerVectorViewMixin(object):
 
                 geomodel, database_to_use, geometrytype = create_geomodel_from_qdjango_layer(relation_layer)
 
+                if geometrytype and geometrytype != QGIS_LAYER_TYPE_NO_GEOM:
+                    serializer = QGISGeoLayerSerializer
+                else:
+                    serializer = QGISLayerSerializer
+
                 self.metadata_relations[relation['referencingLayer']] = MetadataVectorLayer(
                     geomodel,
-                    QGISGeoLayerSerializer if geometrytype else QGISLayerSerializer,
+                    serializer,
                     geometrytype,
                     relation_layer.origname,
                     idr,
@@ -78,16 +102,19 @@ class QGISLayerVectorViewMixin(object):
         geomodel, self.database_to_use, geometrytype = create_geomodel_from_qdjango_layer(self.layer)
 
         # set bbox_filter_field with geomentry model field
-        self.bbox_filter_field = get_geometry_column(geomodel).name
+        if geometrytype != QGIS_LAYER_TYPE_NO_GEOM:
+            serializer = QGISGeoLayerSerializer
+            self.bbox_filter_field = get_geometry_column(geomodel).name
+        else:
+            serializer = QGISLayerSerializer
 
         # create model and add to editing_layers
         self.metadata_layer = MetadataVectorLayer(
             geomodel,
-            QGISGeoLayerSerializer,
+            serializer,
             geometrytype,
             self.layer.origname
         )
-
 
 
 class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):

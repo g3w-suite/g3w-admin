@@ -359,7 +359,7 @@ class QGISLayerSerializer(G3WSerializerMixin, serializers.ModelSerializer):
     def __init__(self, *args, **kwargs):
 
         # to avoid model interrelations on parallel api call
-        self.set_meta(**kwargs)
+        self.set_meta(kwargs)
 
         super(QGISLayerSerializer, self).__init__(*args, **kwargs)
 

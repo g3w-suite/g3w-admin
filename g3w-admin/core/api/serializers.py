@@ -189,8 +189,6 @@ class G3WSerializerMixin(object):
         self.Meta.using = kwargs['using']
         del (kwargs['using'])
 
-        return kwargs
-
     def _get_meta_using(self):
         return self.Meta.using if hasattr(self.Meta, 'using') else None
 
