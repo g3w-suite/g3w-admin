@@ -149,7 +149,7 @@ class QgisDBLayerStructure(QgisLayerStructure):
     }
 
     def __init__(self, layer, **kwargs):
-        super(QgisDBLayerStructure, self).__init__(layer,**kwargs)
+        super(QgisDBLayerStructure, self).__init__(layer, **kwargs)
 
         if not self.layerType in self._dbTypes.keys():
             raise Exception('Database Layer Type not available in qdjango module: {}'.format(self.layerType))

@@ -361,6 +361,10 @@ class QGISLayerSerializer(G3WSerializerMixin, serializers.ModelSerializer):
         # to avoid model interrelations on parallel api call
         self.set_meta(kwargs)
 
+        # get only properties fi geojson data
+        if 'geometry' in kwargs['data']:
+            kwargs['data'] = kwargs['data']['properties']
+
         super(QGISLayerSerializer, self).__init__(*args, **kwargs)
 
     class Meta:
