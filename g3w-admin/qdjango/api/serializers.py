@@ -362,7 +362,7 @@ class QGISLayerSerializer(G3WSerializerMixin, serializers.ModelSerializer):
         self.set_meta(kwargs)
 
         # get only properties fi geojson data
-        if 'geometry' in kwargs['data']:
+        if 'data' in kwargs and 'geometry' in kwargs['data']:
             kwargs['data'] = kwargs['data']['properties']
 
         super(QGISLayerSerializer, self).__init__(*args, **kwargs)
