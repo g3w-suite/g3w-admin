@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Div, Submit, HTML, Button, Row, Field
 from crispy_forms.bootstrap import AppendedText, PrependedText
-from usersmanage.utils import get_fields_by_user, crispyBoxACL
+from usersmanage.utils import get_fields_by_user, crispyBoxACL, userHasGroups
 from usersmanage.forms import G3WACLForm
 from core.mixins.forms import *
 from usersmanage.configs import *
@@ -159,6 +159,10 @@ class GroupForm(FileFormMixin, G3WFormMixin, G3WRequestFormMixin, G3WACLForm, Mo
         super(GroupForm, self).save()
         self._ACLPolicy()
 
+        # add permission to editor1 if current user is editor1
+        if userHasGroups(self.request.user, [G3W_EDITOR1]):
+            self.instance.addPermissionsToEditor(self.request.user)
+
 
 class GeneralSuiteDataForm(FileFormMixin, ModelForm):
     """General suite data form."""
@@ -258,6 +262,10 @@ class GeneralSuiteDataForm(FileFormMixin, ModelForm):
                             PrependedText('facebook_url', '<i class="fa fa-facebook"></i>'),
                             PrependedText('twitter_url', '<i class="fa fa-twitter"></i>'),
                             PrependedText('googleplus_url', '<i class="fa fa-google-plus"></i>'),
+                            PrependedText('youtube_url', '<i class="fa fa-youtube"></i>'),
+                            PrependedText('instagram_url', '<i class="fa fa-instagram"></i>'),
+                            PrependedText('flickr_url', '<i class="fa fa-flickr"></i>'),
+                            PrependedText('tripadvisor_url', '<i class="fa fa-tripadvisor"></i>'),
                             css_class='box-body',
 
                         ),

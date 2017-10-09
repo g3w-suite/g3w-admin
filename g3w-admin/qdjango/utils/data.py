@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 from django.conf import settings
 from django.http.request import QueryDict
 from defusedxml import lxml
@@ -9,6 +10,9 @@ from core.utils.data import XmlData
 from .structure import *
 import os, re
 import json
+import logging
+
+logger = logging.getLogger('g3wadmin.debug')
 
 
 def makeDatasource(datasource, layerType):
@@ -177,7 +181,10 @@ class QgisProjectLayer(XmlData):
         Get name tag content from xml
         :return: string
         """
-        return self.qgisProjectLayerTree.find('id').text
+        logger.debug('RECUPERO ID LAYER')
+        layer_id = self.qgisProjectLayerTree.find('id').text
+        logger.debug(layer_id)
+        return layer_id
 
     def _getDataTitle(self):
         """
@@ -209,6 +216,7 @@ class QgisProjectLayer(XmlData):
                     return True
                 else:
                     return False
+        return False
 
     def _getDataLayerType(self):
         """
@@ -263,7 +271,6 @@ class QgisProjectLayer(XmlData):
         Get geometry from layer attribute
         :return: string
         """
-
         return self.qgisProjectLayerTree.attrib.get('geometry')
 
     def _getDataEditOptions(self):
@@ -289,6 +296,7 @@ class QgisProjectLayer(XmlData):
         Get name tag content from xml
         :return: string
         """
+        logger.debug('-DATASOURCE')
         datasource = self.qgisProjectLayerTree.find('datasource').text
         serverDatasource = makeDatasource(datasource, self.layerType)
 
@@ -302,7 +310,7 @@ class QgisProjectLayer(XmlData):
         Get properties fields aliasies
         :return: string
         """
-
+        logger.debug('-ALIASIES')
         ret = {}
         aliases = self.qgisProjectLayerTree.find('aliases')
         if aliases:
@@ -315,6 +323,7 @@ class QgisProjectLayer(XmlData):
         Retrive data about columns for db table or ogr lyer type
         :return:
         """
+        logger.debug('-COLUMNS')
         if self.layerType in [Layer.TYPES.postgres, Layer.TYPES.spatialite]:
             layerStructure = QgisDBLayerStructure(self, layerType=self.layerType)
         elif self.layerType in [Layer.TYPES.ogr]:
@@ -363,7 +372,7 @@ class QgisProjectLayer(XmlData):
         """
         Get attribute to exlude from WMS info and relations 
         """
-
+        logger.debug('-EXCLUDEATRIBUTEWMS')
         excluded_columns = []
         try:
             attributes = self.qgisProjectLayerTree.find('excludeAttributesWMS')
@@ -377,7 +386,7 @@ class QgisProjectLayer(XmlData):
         """
         Get attribute to exlude from WMS info and relations 
         """
-
+        logger.debug('EXCLUDEATRIBUTEWFS')
         excluded_columns = []
         try:
             attributes = self.qgisProjectLayerTree.find('excludeAttributesWFS')

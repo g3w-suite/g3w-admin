@@ -148,7 +148,7 @@ class Group(TimeStampedModel):
         groupProjects = []
         for g3wProjectApp in settings.G3WADMIN_PROJECT_APPS:
             Project = apps.get_app_config(g3wProjectApp).get_model('project')
-            projects = Project.objects.filter(group=self)
+            projects = Project.objects.filter(group=self).order_by('title')
             groupProjects += [(g3wProjectApp, project) for project in projects]
         return groupProjects
 
@@ -270,4 +270,7 @@ class GeneralSuiteData(models.Model):
     facebook_url = models.URLField(_('Facebook link'), null=True, blank=True)
     twitter_url = models.URLField(_('Twitter link'), null=True, blank=True)
     googleplus_url = models.URLField(_('Google+ link'), null=True, blank=True)
-
+    youtube_url = models.URLField(_('Youtube link'), null=True, blank=True)
+    instagram_url = models.URLField(_('Instagram link'), null=True, blank=True)
+    flickr_url = models.URLField(_('Flickr link'), null=True, blank=True)
+    tripadvisor_url = models.URLField(_('Tripadvisor link'), null=True, blank=True)

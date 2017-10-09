@@ -8,7 +8,7 @@ from core.utils.forms import crispyBoxBaseLayer
 from usersmanage.forms import G3WACLForm
 from django_file_form.forms import FileFormMixin, UploadedFileField
 from .models import *
-from usersmanage.utils import get_fields_by_user, crispyBoxACL
+from usersmanage.utils import get_fields_by_user, crispyBoxACL, userHasGroups
 from .utils.data import QgisProject, ProjectExists
 
 
@@ -114,6 +114,10 @@ class QdjangoProjetForm(QdjangoProjectFormMixin, G3WFormMixin, G3WGroupFormMixin
 
     def save(self, commit=True):
         self._ACLPolicy()
+
+        # add permission to editor1 if current user is editor1
+        if userHasGroups(self.request.user, [G3W_EDITOR1]):
+            self.instance.addPermissionsToEditor(self.request.user)
 
 
 class QdjangoWidgetForm(QdjangoProjectFormMixin, G3WFormMixin, G3WGroupFormMixin, G3WRequestFormMixin, forms.ModelForm):

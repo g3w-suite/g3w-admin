@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-06-21 08:59+0000\n"
+"POT-Creation-Date: 2017-09-19 14:35+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,51 +18,51 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: usersmanage/forms.py:64
+#: usersmanage/forms.py:65
 msgid "Editor user"
 msgstr "Utente editor"
 
-#: usersmanage/forms.py:65
+#: usersmanage/forms.py:66
 msgid "Viewer users"
 msgstr "Utenti viewers"
 
-#: usersmanage/forms.py:131
+#: usersmanage/forms.py:135
 msgid "Select group for this user"
 msgstr "Sleziona un gruppo per questo utente"
 
-#: usersmanage/forms.py:132 usersmanage/templates/usersmanage/user_list.html:38
+#: usersmanage/forms.py:136 usersmanage/templates/usersmanage/user_list.html:38
 msgid "Group"
 msgstr "Gruppo"
 
-#: usersmanage/forms.py:153
+#: usersmanage/forms.py:157
 msgid "Anagraphic"
 msgstr "Anagrafica"
 
-#: usersmanage/forms.py:172
+#: usersmanage/forms.py:176
 msgid "ACL/Roles"
 msgstr "ACL/Ruoli"
 
-#: usersmanage/forms.py:193
+#: usersmanage/forms.py:197
 msgid "Login data"
 msgstr "Dati di accesso"
 
-#: usersmanage/forms.py:211
+#: usersmanage/forms.py:215
 msgid "User data"
 msgstr "Dati utente"
 
-#: usersmanage/forms.py:294
+#: usersmanage/forms.py:298
 msgid "Avatar is no a valid image"
 msgstr "Questo avatar non è una immagine"
 
-#: usersmanage/forms.py:320
+#: usersmanage/forms.py:324
 msgid "Password"
 msgstr ""
 
-#: usersmanage/forms.py:322
+#: usersmanage/forms.py:326
 msgid "Password confirmation"
 msgstr "Conferma password"
 
-#: usersmanage/forms.py:324
+#: usersmanage/forms.py:328
 msgid "Enter the same password as above, for verification."
 msgstr "Inserisci la stessa passoword indicata sopra per verifica"
 
@@ -129,6 +129,6 @@ msgstr "Modifica"
 msgid "Delete"
 msgstr "Elimina"
 
-#: usersmanage/utils.py:148
+#: usersmanage/utils.py:152
 msgid "ACL Users"
 msgstr "ACL Utenti"
