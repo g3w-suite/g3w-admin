@@ -148,7 +148,7 @@ class Group(TimeStampedModel, OrderedModel):
         groupProjects = []
         for g3wProjectApp in settings.G3WADMIN_PROJECT_APPS:
             Project = apps.get_app_config(g3wProjectApp).get_model('project')
-            projects = Project.objects.filter(group=self)
+            projects = Project.objects.filter(group=self).order_by('title')
             groupProjects += [(g3wProjectApp, project) for project in projects]
         return groupProjects
 

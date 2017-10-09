@@ -7,6 +7,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.conf.urls.i18n import i18n_patterns
 from django.views.i18n import javascript_catalog, json_catalog
+from ajax_select import urls as ajax_select_urls
 try:
     from qgis.core import *
 except:
@@ -39,6 +40,7 @@ urlpatterns = [
     url(r'^logout/$', auth.views.logout, {'next_page': settings.LOGOUT_NEXT_PAGE + '{}'.format(BASE_ADMIN_URLPATH)},
         name='logout'),
     url(r'^jsi18n/$', javascript_catalog, jsInfoDict, name='javascript-catalog'),
+    url(r'^ajax_select/', include(ajax_select_urls)),
 ]
 
 apiUrlpatterns = [
