@@ -603,8 +603,7 @@ class QgisProject(XmlData):
 
             # we have to rewind the underlying file in case it has been already parsed
             self.qgisProjectFile.file.seek(0)
-            parser = etree.XMLParser(encoding='UTF-8')
-            self.qgisProjectTree = lxml.parse(self.qgisProjectFile, parser=parser, forbid_entities=False)
+            self.qgisProjectTree = lxml.parse(self.qgisProjectFile, forbid_entities=False)
         except Exception as e:
             raise Exception(_('The project file is malformed: {}'.format(e.message)))
 
@@ -739,7 +738,6 @@ class QgisProject(XmlData):
 
         for order, layerTree in enumerate(layerTrees):
             if self._checkLayerTypeCompatible(layerTree):
-
                 layers.append(QgisProjectLayer(layerTree, qgisProject=self, order=order))
         return layers
 
