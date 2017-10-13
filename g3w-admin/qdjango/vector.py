@@ -62,7 +62,6 @@ class QGISLayerVectorViewMixin(object):
                         }
                     }
 
-
     def set_metadata_relations(self, request, **kwargs):
 
         # init relations
@@ -73,7 +72,8 @@ class QGISLayerVectorViewMixin(object):
             # check if in relation there is referencedLayer == self layer
             if relation['referencedLayer'] == self.layer.qgs_layer_id:
                 # get relation layer object
-                relation_layer = Layer.objects.get(qgs_layer_id=relation['referencingLayer'], project=self.layer.project)
+                relation_layer = Layer.objects.get(qgs_layer_id=relation['referencingLayer'],
+                                                   project=self.layer.project)
 
                 geomodel, database_to_use, geometrytype = create_geomodel_from_qdjango_layer(relation_layer)
 

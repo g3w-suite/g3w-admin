@@ -84,17 +84,19 @@ def create_geomodel_from_qdjango_layer(layer, app_label='core'):
 
     schema, table = get_schema_table(datasource['table'])
 
+    model_table_name = '{}.{}'.format(schema, table)
+
     if layer.layer_type == 'postgres':
         datasource = datasource2dict(layer.datasource)
         geometrytype = datasource.get('type', None)
     else:
         geometrytype = layer.geometrytype
 
-    if table not in g3wsuite_apps.all_models[app_label]:
+    if model_table_name not in g3wsuite_apps.all_models[app_label]:
         to_create_model = True
     else:
         to_create_model = False
-        geo_model = g3wsuite_apps.all_models[app_label][table]
+        geo_model = g3wsuite_apps.all_models[app_label][model_table_name]
 
     if to_create_model:
         if layer_type == 'postgis':
@@ -202,7 +204,7 @@ def create_geomodel_from_qdjango_layer(layer, app_label='core'):
             connections.databases[using] = build_django_connection(datasource, layer_type='spatialite')
 
     if to_create_model:
-        geo_model = create_model('{}.{}'.format(schema, table), django_model_fields, app_label=app_label,
+        geo_model = create_model(model_table_name, django_model_fields, app_label=app_label,
                                  module='{}.models'.format(app_label), db=using,
                                  options={'db_table': table})
 
