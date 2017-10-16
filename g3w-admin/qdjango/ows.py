@@ -127,20 +127,22 @@ class OWSRequestHandler(OWSRequestHandlerBase):
                 http = urllib3.PoolManager()
 
             result = http.request(request.method, url)
+            content_type = result.headers["Content-Type"] \
+                if 'Content-Type' in result.headers else result.headers["content-type"]
 
             # If we get a redirect, let's add a useful message.
             if result.status in (301, 302, 303, 307):
                 response = HttpResponse(('This proxy does not support redirects. The server in "%s" '
                                          'asked for a redirect to "%s"' % ('localhost', result.getheader('Location'))),
                                         status=result.status,
-                                        content_type=result.headers["Content-Type"])
+                                        content_type=content_type)
 
                 response['Location'] = result.getheader('Location')
             else:
                 response = HttpResponse(
                     result.data,
                     status=result.status,
-                    content_type=result.headers["Content-Type"])
+                    content_type=content_type)
             return response
 
         else:
