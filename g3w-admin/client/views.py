@@ -34,7 +34,7 @@ class ClientView(TemplateView):
         anonymous_user = get_user_model().get_anonymous()
 
         #if not request.user.has_perm("{}.view_project".format(kwargs['project_type']), self.project):
-        if request.user not in grant_users and anonymous_user not in grant_users:
+        if request.user not in grant_users and anonymous_user not in grant_users and not request.user.is_superuser:
 
             # redirect to login if Anonymous user
             if request.user.is_anonymous():
