@@ -285,10 +285,11 @@ class ODT(object):
 
     out_filename = "cdu_{}.odt"
 
-    def __init__(self, config=None, results=None):
+    def __init__(self, config=None, results=None, result_ids_to_show=None):
 
         self.config = config
         self.results = results
+        self.result_ids_to_show = result_ids_to_show
 
         self._create_odt_outfile()
         self.o_template = self._init_o_template()
@@ -310,7 +311,11 @@ class ODT(object):
 
         tpl_res_items = list()
         for keyres, res in self.results.items():
-            tpl_res_items.append(ODTTplItem(res))
+            if self.result_ids_to_show:
+                if res['id'] in self.result_ids_to_show:
+                    tpl_res_items.append(ODTTplItem(res))
+            else:
+                tpl_res_items.append(ODTTplItem(res))
 
         self.o_template.render({'items': tpl_res_items, 'lawItems': []})
 

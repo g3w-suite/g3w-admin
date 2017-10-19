@@ -360,7 +360,7 @@ class CduCreatedocView(View):
         # get selected rows
         selected_results_ids = request.POST['id'].split(',')
 
-        odt = ODT(config, results)
+        odt = ODT(config, results, result_ids_to_show=selected_results_ids)
 
         odt.write_document()
 
