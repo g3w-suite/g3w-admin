@@ -312,10 +312,13 @@ class ODT(object):
         tpl_res_items = list()
         for keyres, res in self.results.items():
             if self.result_ids_to_show:
-                if res['id'] in self.result_ids_to_show:
-                    tpl_res_items.append(ODTTplItem(res))
-            else:
-                tpl_res_items.append(ODTTplItem(res))
+                to_show = list()
+                for rdata in res['results']:
+                    if rdata['id'] in self.result_ids_to_show:
+                        to_show.append(rdata)
+                res['results'] = to_show
+
+            tpl_res_items.append(ODTTplItem(res))
 
         self.o_template.render({'items': tpl_res_items, 'lawItems': []})
 
