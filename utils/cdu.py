@@ -314,7 +314,7 @@ class ODT(object):
             if self.result_ids_to_show:
                 to_show = list()
                 for rdata in res['results']:
-                    if str(rdata['pk']) in self.result_ids_to_show:
+                    if str(rdata['id']) in self.result_ids_to_show:
                         to_show.append(rdata)
                 res['results'] = to_show
 
