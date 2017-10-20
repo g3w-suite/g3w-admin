@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from django.conf import settings
 from django.core.urlresolvers import reverse
+from django.utils.translation import get_language
 from core.api.serializers import GroupSerializer, Group, update_serializer_data
 from core.api.permissions import ProjectPermission
 from core.signals import perform_client_search, post_serialize_project
@@ -70,18 +71,18 @@ class GroupConfigApiView(APIView):
           "group": groupSerializer.data}
 
         u = request.user
+
         # add user login data
+        initconfig['user'] = {'i18n': get_language()}
         if not u.is_anonymous():
-           initconfig['user'] = {
-               'username': u.username,
-               'first_name': u.first_name,
-               'last_name': u.last_name,
-               'groups': [g.name for g in u.groups.all()],
-               'logout_url': reverse('logout'),
-               'admin_url': reverse('home')
-           }
-        else:
-            initconfig['user'] = {}
+            initconfig['user'].update({
+                'username': u.username,
+                'first_name': u.first_name,
+                'last_name': u.last_name,
+                'groups': [g.name for g in u.groups.all()],
+                'logout_url': reverse('logout'),
+                'admin_url': reverse('home')
+            })
 
 
         return Response(initconfig)
