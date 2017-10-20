@@ -84,7 +84,7 @@ def create_geomodel_from_qdjango_layer(layer, app_label='core'):
 
     schema, table = get_schema_table(datasource['table'])
 
-    model_table_name = '{}.{}'.format(schema, table)
+    model_table_name = '{}.{}_{}'.format(schema, table, layer.project.pk)
 
     if layer.layer_type == 'postgres':
         datasource = datasource2dict(layer.datasource)

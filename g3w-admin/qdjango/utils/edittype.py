@@ -1,10 +1,10 @@
 import re
 from core.utils.structure import FORM_FIELD_TYPE_CHECK, FORM_FIELD_TYPE_SELECT
 
-# add form impout type based on qgis edittypes
+# add form input type based on qgis edittypes
 FORM_FIELD_TYPE_QGIS_DATETIME = 'datetimepicker'
 FORM_FIELD_TYPE_QGIS_RANGE = 'range'
-FORM_FIELD_TYPE_QGIS_UNIQUE_VALUE = 'unique_value'
+FORM_FIELD_TYPE_QGIS_UNIQUE_VALUE = 'unique'
 
 
 class QgisEditType(object):
@@ -113,10 +113,28 @@ class QgisEditTypeValueMap(QgisEditType):
         }
 
 
+class QgisEditTypeUniqueValue(QgisEditType):
+    """
+    Class to read unique_value edittype.
+    """
+
+    field_type = FORM_FIELD_TYPE_QGIS_UNIQUE_VALUE
+
+    @property
+    def input_form(self):
+
+        return {
+            'input': {
+                'type': self.field_type
+            }
+        }
+
+
 MAPPING_EDITTYPE_QGISEDITTYPE = {
     'CheckBox': QgisEditTypeCheckBox,
     'DateTime': QgisEditTypeDateTime,
     'Range': QgisEditTypeRange,
-    'ValueMap': QgisEditTypeValueMap
+    'ValueMap': QgisEditTypeValueMap,
+    'UniqueValues': QgisEditTypeUniqueValue
 }
 

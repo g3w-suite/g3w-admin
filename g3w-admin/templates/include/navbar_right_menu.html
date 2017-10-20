@@ -2,6 +2,14 @@
 {% load staticfiles %}
 <div class="navbar-custom-menu">
     <ul class="nav navbar-nav">
+
+        <li>
+            <div class="has-feedback" style="margin-top:10px;">
+                <input type="text" class="form-control input-sm" style="width: 245px; padding-right: 24px;" placeholder="Search">
+                <span class="glyphicon glyphicon-search form-control-feedback"></span>
+            </div>
+        </li>
+
         {% if SETTINGS.FRONTEND %}
             <li>
                 <a href="/"><i class="fa fa-home"></i> {% trans 'Frontend' %}</a>

@@ -3,7 +3,7 @@ from django.apps import apps
 from django.contrib.gis.geos import GEOSGeometry, GEOSException
 from django.contrib.gis.gdal import OGRException
 from django.core.exceptions import ValidationError
-from guardian.shortcuts import get_objects_for_user
+from guardian.shortcuts import get_objects_for_user, get_user_model
 from rest_framework import serializers
 from rest_framework.fields import empty
 from rest_framework_gis.fields import GeometryField
@@ -87,10 +87,15 @@ class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         ret['projects'] = []
         self.projects = {}
 
+        anonymous_user = get_user_model().get_anonymous()
+
         for g3wProjectApp in settings.G3WADMIN_PROJECT_APPS:
             Project = apps.get_app_config(g3wProjectApp).get_model('project')
             projects = get_objects_for_user(self.request.user, '{}.view_project'.format(g3wProjectApp), Project) \
                 .filter(group=instance)
+            projects_anonymous = get_objects_for_user(anonymous_user, '{}.view_project'.format(g3wProjectApp),
+                                                      Project).filter(group=instance)
+            projects = list(set(projects) | set(projects_anonymous))
             for project in projects:
                 self.projects[g3wProjectApp+'-'+str(project.id)] = project
 

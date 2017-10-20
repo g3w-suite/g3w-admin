@@ -860,7 +860,8 @@ class QgisProjectSettingsWMS(XmlData):
         try:
             self.qgisProjectSettingsTree = lxml.fromstring(self.qgisProjectSettingsFile)
         except Exception as e:
-            raise Exception(_('The project settings is malformed: {}'.format(e.message)))
+            raise Exception(
+                _('The project settings is malformed: {} ----- {}'.format(e.message, self.qgisProjectSettingsFile)))
 
     def _buildTagWithNS(self, tag):
         return '{{{0}}}{1}'.format(self._NS['opengis'], tag)

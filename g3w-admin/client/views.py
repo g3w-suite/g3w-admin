@@ -1,15 +1,17 @@
 from django.utils import six
+from django.utils.translation import get_language
 from django.views.generic import TemplateView
 from django.template import loader
 from django.shortcuts import get_object_or_404
 from django.http import Http404, HttpResponseForbidden
 from django.conf import settings
 from django.core.urlresolvers import reverse
-from rest_framework.renderers import JSONRenderer
-from core.api.serializers import GroupSerializer, Group
 from django.contrib.auth.views import redirect_to_login
 from django.apps import apps
 from django.core.exceptions import PermissionDenied
+from rest_framework.renderers import JSONRenderer
+from core.api.serializers import GroupSerializer, Group
+from usersmanage.utils import get_users_for_object, get_user_model
 from copy import deepcopy
 
 
@@ -27,7 +29,12 @@ class ClientView(TemplateView):
         # get project model object
         self.project = Project.objects.get(pk=kwargs['project_id']) if 'project_id' in kwargs else \
             Project.objects.get(slug=kwargs['project_slug'])
-        if not request.user.has_perm("{}.view_project".format(kwargs['project_type']), self.project):
+
+        grant_users = get_users_for_object(self.project, "view_project")
+
+        anonymous_user = get_user_model().get_anonymous()
+
+        if request.user not in grant_users and anonymous_user not in grant_users and not request.user.is_superuser:
 
             # redirect to login if Anonymous user
             if request.user.is_anonymous():
@@ -52,8 +59,9 @@ class ClientView(TemplateView):
 
         # add user login data
         u = self.request.user
+        user_data = {'i18n': get_language()}
         if not u.is_anonymous():
-            user_data = JSONRenderer().render({
+            user_data.update({
                 'username': u.username,
                 'first_name': u.first_name,
                 'last_name': u.last_name,
@@ -61,8 +69,7 @@ class ClientView(TemplateView):
                 'logout_url': reverse('logout'),
                 'admin_url': reverse('home')
             })
-        else:
-            user_data = '{}'
+        user_data = JSONRenderer().render(user_data)
 
         serializedGroup = JSONRenderer().render(groupData)
         if six.PY3:
