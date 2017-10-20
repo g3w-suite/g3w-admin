@@ -49,7 +49,8 @@ class QGISLayerVectorViewMixin(object):
         if self.layer.vectorjoins:
             joins = eval(self.layer.vectorjoins)
             for n, join in enumerate(joins):
-                if Layer.objects.get(qgs_layer_id=join['joinLayerId']).layer_type in (('postgres', 'spatialite')):
+                if Layer.objects.get(qgs_layer_id=join['joinLayerId'], project=self.layer.project).layer_type \
+                        in (('postgres', 'spatialite')):
                     name = '{}_vectorjoin_{}'.format(self.layer.qgs_layer_id, n)
                     self.relations[name] = {
                         'id': name,
@@ -89,7 +90,9 @@ class QGISLayerVectorViewMixin(object):
                     relation_layer.origname,
                     idr,
                     using=database_to_use,
-                    layer=relation_layer
+                    layer=relation_layer,
+                    referencing_field=relation['fieldRef']['referencingField'],
+                    referenced_field_is_pk=self.layer._meta.pk.name==relation['fieldRef']['referencedField']
                 )
 
     def set_metadata_layer(self, request, **kwargs):
