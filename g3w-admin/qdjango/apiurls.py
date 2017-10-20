@@ -7,4 +7,5 @@ urlpatterns = [
         QdjangoProjectRelationsApiView.as_view(),
         name='qdjango-api-project-relations'),
 
+
 ]

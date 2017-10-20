@@ -397,6 +397,7 @@ class BaseVectorOnModelApiView(G3WAPIView):
         # get results
         self.get_response_data(request)
 
+
         # response a APIVectorLayer
         return Response(self.results.results)
 
