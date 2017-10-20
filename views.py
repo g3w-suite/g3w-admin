@@ -16,7 +16,7 @@ from formtools.wizard.views import SessionWizardView
 from guardian.decorators import permission_required
 from guardian.shortcuts import get_objects_for_user
 from collections import OrderedDict
-from core.api.views import G3WAPIView
+from core.api.base.views import G3WAPIView
 from core.api.authentication import CsrfExemptSessionAuthentication
 from core.mixins.views import G3WRequestViewMixin, G3WAjaxDeleteViewMixin
 from usersmanage.mixins.views import G3WACLViewMixin
