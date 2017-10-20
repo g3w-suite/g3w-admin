@@ -127,6 +127,7 @@ class QgisEditTypeUniqueValue(QgisEditType):
             'input': {
                 'type': self.field_type,
                 'options': {
+                    'values': list(),
                     'editable': True if self.fieldEditable == '1' else False
                 }
             }
