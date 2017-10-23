@@ -96,7 +96,8 @@ class QGISLayerVectorViewMixin(object):
                     using=database_to_use,
                     layer=relation_layer,
                     referencing_field=relation['fieldRef']['referencingField'],
-                    referenced_field_is_pk=self.layer._meta.pk.name==relation['fieldRef']['referencedField']
+                    referenced_field_is_pk=
+                    self.metadata_layer.model._meta.pk.name==relation['fieldRef']['referencedField']
                 )
 
     def set_metadata_layer(self, request, **kwargs):
@@ -187,14 +188,22 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         res = dict()
         for field in fields:
 
+            # check if field is nullable
+            nullable = False
+
+            for ofield in self.metadata_layer.model._meta.fields:
+                if ofield.column == field and ofield.null and ofield.blank:
+                    nullable = True
+
             if self.layer.layer_type == 'spatialite':
 
                 # query raw
                 with connections[self.database_to_use].cursor() as cursor:
                     cursor.execute(
-                        'select distinct {0} from {1} where {0} is not null'.format(
+                        'select distinct {0} from {1} {2}'.format(
                             field,
-                            self.metadata_layer.model._meta.db_table
+                            self.metadata_layer.model._meta.db_table,
+                            '' if nullable else 'where {} is not null'.format(field)
                         ))
                     raws = cursor.fetchall()
                     field_values = [r[0] for r in raws]

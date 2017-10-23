@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.views.decorators.csrf import csrf_exempt
 
 LAYERVECTORVIEW_CLASS_DEFAULT = 'LayerVectorView'
 LAYERVECTORVIEW_CLASSES = dict()
@@ -10,7 +11,7 @@ for app_name in settings.G3WADMIN_PROJECT_APPS:
     except:
         continue
 
-
+@csrf_exempt  # put exempt here because as_view method is outside url bootstrap declaration
 def layer_vector_view(request, project_type, project_id, layer_name, *args, **kwargs):
 
     # instance module vector view
