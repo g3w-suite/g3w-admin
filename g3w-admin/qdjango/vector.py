@@ -27,10 +27,9 @@ class QGISLayerVectorViewMixin(object):
 
     def set_geo_filter(self):
 
-        def set_geo_filter(self):
-            # Instance bbox filter
-            self.bbox_filter = IntersectsBBoxFilter() if self.metadata_layer.geometry_type != QGIS_LAYER_TYPE_NO_GEOM \
-                else None
+        # Instance bbox filter
+        self.bbox_filter = IntersectsBBoxFilter() if self.metadata_layer.geometry_type != QGIS_LAYER_TYPE_NO_GEOM \
+            else None
 
     def get_layer_by_params(self, params):
 
@@ -47,7 +46,8 @@ class QGISLayerVectorViewMixin(object):
     def set_relations(self):
 
         # get relations on project
-        self.relations = {r['id']: r for r in eval(self.layer.project.relations)}
+        self.relations = {} if not self.layer.project.relations else \
+            {r['id']: r for r in eval(self.layer.project.relations)}
 
         # get relations on layer
         if self.layer.vectorjoins:

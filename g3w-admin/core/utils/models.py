@@ -11,7 +11,7 @@ import geoalchemy2.types as geotypes
 from sqlalchemy.dialects.postgresql import base as PGD
 from osgeo import ogr
 from core.utils.db import build_django_connection, build_dango_connection_name
-from .structure import MAPPING_GEOALCHEMY_DJANGO_FIELDS
+from .structure import MAPPING_GEOALCHEMY_DJANGO_FIELDS, BooleanField, NullBooleanField
 
 
 
@@ -150,6 +150,11 @@ def create_geomodel_from_qdjango_layer(layer, app_label='core'):
                 if column.nullable:
                     kwargs['null'] = True
                     kwargs['blank'] = True
+
+                    # special case for BoolenaField
+                    if dj_model_field_type == BooleanField:
+                        dj_model_field_type = NullBooleanField
+
                 else:
                     kwargs['blank'] = False
                     kwargs['null'] = False
