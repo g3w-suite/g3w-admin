@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from model_utils.models import TimeStampedModel
 from autoslug import AutoSlugField
 from qdjango.models import Project, Layer
+from usersmanage.models import User
 from usersmanage.utils import getUserGroups, setPermissionUserObject
 from usersmanage.configs import *
 import os
@@ -120,3 +121,14 @@ class Layers(models.Model):
 
     def getLayerFieldsData(self):
         return eval(self.fields)
+
+
+class CDUResult(TimeStampedModel):
+    """
+    Store CDU search and calculations results
+    """
+
+    config = models.ForeignKey(Configs, models.CASCADE)
+    title = models.CharField(max_length=255)
+    result = models.TextField()
+    user = models.ForeignKey(User)

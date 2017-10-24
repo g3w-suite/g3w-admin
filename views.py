@@ -22,7 +22,7 @@ from core.mixins.views import G3WRequestViewMixin, G3WAjaxDeleteViewMixin
 from usersmanage.mixins.views import G3WACLViewMixin
 from .api.permissions import MakeCDUPermission
 from .utils.cdu import CDU, ODT
-from .models import Configs, Layers as CDULayers
+from .models import Configs, Layers as CDULayers, CDUResult
 from .forms import *
 
 import json
@@ -315,6 +315,9 @@ class CduConfigDeleteView(G3WAjaxDeleteViewMixin, G3WRequestViewMixin, SingleObj
 
 
 class CduCalculateApiView(G3WAPIView):
+    """
+    Make calculation
+    """
 
     authentication_classes = (
         CsrfExemptSessionAuthentication,
@@ -334,7 +337,43 @@ class CduCalculateApiView(G3WAPIView):
         o_cdu.calculate()
         o_cdu.save_in_session(request)
 
+        return JsonResponse(o_cdu.results)
 
+
+class CduSaveApiView(G3WAPIView):
+    """
+    Save calculation results
+    """
+
+    authentication_classes = (
+        CsrfExemptSessionAuthentication,
+    )
+
+    permission_classes = (
+        MakeCDUPermission,
+    )
+
+    def post(self, request, **kwargs):
+
+        # get cd config object
+        config = Configs.objects.get(pk=kwargs['id'])
+
+        # get title
+        title = request.POST['title']
+
+        o_cdu = CDU(config)
+        results = o_cdu.get_from_session(request)
+
+        # save or replace in db
+        created, cduresult = CDUResult.objects.update_or_create({
+            'config': config,
+            'title': title,
+            'result': results,
+            'user': request.user
+        }, {
+            'title': title,
+            'user': request.user
+        })
 
         return JsonResponse(o_cdu.results)
 
