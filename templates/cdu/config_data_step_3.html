@@ -1,0 +1,28 @@
+{% load i18n %}
+{% load cdu_tags %}
+<div class="info-box">
+    <span class="info-box-icon bg-gray">S4</span>
+    <div class="info-box-content">
+        <ul class="list-unstyled">
+            <li><strong>{% trans 'Alias cadastre plus fields' %}</strong>
+                {% for key, value in data.items %}
+                    {% if key|isplusfieldcatasto %}
+                        {{ value }}
+                    {%  endif %}
+                {% endfor %}
+            </li>
+            <li><strong>{% trans 'Against layers fields' %}</strong>
+                <ul>
+                {% for key, value in data.items %}
+                    {% if not key|isplusfieldcatasto %}
+                        <li>
+                        {{ key }}:
+                        {{ value|join:',' }}
+                        </li>
+                    {%  endif %}
+                {% endfor %}
+                </ul>
+            </li>
+        </ul>
+    </div><!-- /.info-box-content -->
+</div>

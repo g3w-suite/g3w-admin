@@ -1,0 +1,11 @@
+{% load i18n %}
+<div class="info-box">
+    <span class="info-box-icon bg-gray">S1</span>
+    <div class="info-box-content">
+        <ul class="list-unstyled">
+            <li><strong>{% trans 'Title' %}</strong> {{ data.title }}</li>
+            <li><strong>{% trans 'Project' %}</strong> {{ data.project }}</li>
+            <li><strong>{% trans 'Template' %}</strong> {{ data.odtfile }}</li>
+        </ul>
+    </div><!-- /.info-box-content -->
+</div>

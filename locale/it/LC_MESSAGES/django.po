@@ -1,0 +1,205 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-09-19 14:35+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: cdu/forms.py:43
+msgid "User users"
+msgstr "Utenti viewers"
+
+#: cdu/forms.py:53
+msgid "CDU base settings"
+msgstr "CDU paramentri base"
+
+#: cdu/forms.py:87 cdu/templates/cdu/config_data_step_1.html:6
+#: cdu/templates/cdu/config_detail.html:32
+msgid "Cadastre layer"
+msgstr "Layer catasto"
+
+#: cdu/forms.py:110
+msgid "CDU layers choice"
+msgstr "CDU selezione layer"
+
+#: cdu/forms.py:132 cdu/templates/cdu/config_data_step_2.html:6
+msgid "Sheet"
+msgstr "Foglio"
+
+#: cdu/forms.py:133 cdu/templates/cdu/config_data_step_2.html:7
+msgid "Parcel"
+msgstr "Numero"
+
+#: cdu/forms.py:134 cdu/templates/cdu/config_data_step_2.html:9
+msgid "Plus fields"
+msgstr "Campi aggiuntivi"
+
+#: cdu/forms.py:155
+msgid "CDU Catasto fields"
+msgstr "CDU campi layer catasto"
+
+#: cdu/forms.py:174
+msgid "CDU Against layers aliases"
+msgstr "CDU Alias layer di confronto"
+
+#: cdu/forms.py:246
+msgid "CDU Optional fields catasto aliases"
+msgstr "CDU Alias campi aggiuntivi layer catasto"
+
+#: cdu/forms.py:264
+msgid "CDU Against layer fields to show in results"
+msgstr "CDU Campi layer di confronto da mostrare nei risultati"
+
+#: cdu/forms.py:336
+msgid "CDU Alias for against field <i>{}</i>"
+msgstr "CDU Alias per il campo del layer di confronto <i>{}</i>"
+
+#: cdu/models.py:26 cdu/templates/cdu/config_data_step_0.html:6
+#: cdu/templates/cdu/config_detail.html:5
+msgid "Title"
+msgstr "Titolo"
+
+#: cdu/models.py:27 cdu/templates/cdu/config_detail.html:6
+msgid "Description"
+msgstr "Descrizione"
+
+#: cdu/models.py:29
+msgid "ODT Template file"
+msgstr "File modello ODT"
+
+#: cdu/models.py:30
+msgid "Slug"
+msgstr "Slug"
+
+#: cdu/templates/cdu/config_data_step_0.html:7
+#: cdu/templates/cdu/config_detail.html:8
+msgid "Project"
+msgstr "Progetto Qdjango"
+
+#: cdu/templates/cdu/config_data_step_0.html:8
+msgid "Template"
+msgstr ""
+
+#: cdu/templates/cdu/config_data_step_1.html:7
+#: cdu/templates/cdu/config_detail.html:33
+msgid "Against layers"
+msgstr "Layer di confronto"
+
+#: cdu/templates/cdu/config_data_step_2.html:11
+msgid "Alias against layers"
+msgstr "Alias layer di confronto"
+
+#: cdu/templates/cdu/config_data_step_3.html:7
+msgid "Alias cadastre plus fields"
+msgstr "Alias campi aggiuntivi layer catasto"
+
+#: cdu/templates/cdu/config_data_step_3.html:14
+msgid "Against layers fields"
+msgstr "Campi layer di confronto"
+
+#: cdu/templates/cdu/config_detail.html:11
+msgid "ODT template"
+msgstr "Modello ODT"
+
+#: cdu/templates/cdu/config_detail.html:15
+msgid "Users"
+msgstr "Utenti"
+
+#: cdu/templates/cdu/config_detail.html:18
+msgid "Editor user"
+msgstr "Utenti Editor"
+
+#: cdu/templates/cdu/config_detail.html:21
+msgid "Viewer users"
+msgstr "Utenti Viewer"
+
+#: cdu/templates/cdu/config_list.html:9
+msgid "CDU configs list"
+msgstr "Lista dei profili CDU"
+
+#: cdu/templates/cdu/config_list.html:10
+msgid "List of CDU configs available"
+msgstr "Lista dei profici CDU disponibili"
+
+#: cdu/templates/cdu/config_list.html:34
+msgid "Show detail"
+msgstr "Mostra dettagli"
+
+#: cdu/templates/cdu/config_list.html:34
+msgid "CDU Config detail"
+msgstr "Dettaglio profilo CDU"
+
+#: cdu/templates/cdu/config_list.html:43
+msgid "Edit"
+msgstr "Modifica"
+
+#: cdu/templates/cdu/config_list.html:52
+msgid "Delete"
+msgstr "Elimina"
+
+#: cdu/templates/cdu/config_list.html:61
+#: cdu/templates/cdu/widgets/dashboard.html:66
+msgid "Show map"
+msgstr "Mostra mappa"
+
+#: cdu/templates/cdu/config_wizard.html:35
+msgid "First step"
+msgstr "Primo step"
+
+#: cdu/templates/cdu/config_wizard.html:36
+msgid "Prev step"
+msgstr "Step precedente"
+
+#: cdu/templates/cdu/config_wizard.html:39
+msgid "Save"
+msgstr "Salva"
+
+#: cdu/templates/cdu/config_wizard.html:41
+msgid "Next step"
+msgstr "Step successivo"
+
+#: cdu/templates/cdu/config_wizard.html:48
+msgid "Step"
+msgstr ""
+
+#: cdu/templates/cdu/config_wizard.html:48
+msgid "of"
+msgstr ""
+
+#: cdu/templates/cdu/config_wizard.html:59
+msgid "Alert"
+msgstr "Attenzione"
+
+#: cdu/templates/cdu/config_wizard.html:60
+msgid "Some errors on form. Check it and send again."
+msgstr "Si sono verificati alcuni errori. Controlla reinvia i dati"
+
+#: cdu/templates/cdu/widgets/dashboard.html:19
+msgid "CDU module administration"
+msgstr "Modulo amministrazione CDU"
+
+#: cdu/templates/cdu/widgets/dashboard.html:30
+msgid "Profiles"
+msgstr "Profili"
+
+#: cdu/templates/cdu/widgets/dashboard.html:40
+msgid "New profile"
+msgstr "Nuovo profilo"
+
+#: cdu/templates/cdu/widgets/dashboard.html:50
+#: cdu/templates/cdu/widgets/dashboard.html:66
+msgid "Make CDU"
+msgstr "Genera CDU"

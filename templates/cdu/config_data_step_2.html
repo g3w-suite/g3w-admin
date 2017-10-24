@@ -1,0 +1,18 @@
+{% load i18n %}
+<div class="info-box">
+    <span class="info-box-icon bg-gray">S3</span>
+    <div class="info-box-content">
+        <ul class="list-unstyled">
+            <li><strong>{% trans 'Sheet' %}</strong> {{ data.foglio }}</li>
+            <li><strong>{% trans 'Parcel' %}</strong> {{ data.particella }}</li>
+            {% if data.plusFieldsCatasto %}
+                <li><strong>{% trans 'Plus fields' %}</strong> {{ data.plusFieldsCatasto|join:"," }}</li>
+            {% endif %}
+            <li><strong>{% trans 'Alias against layers' %}</strong>
+                {% for key, value in data.angainstLayerAlias.items %}
+                    ({{ key }}) {{ value }}
+                {% endfor %}
+            </li>
+        </ul>
+    </div><!-- /.info-box-content -->
+</div>

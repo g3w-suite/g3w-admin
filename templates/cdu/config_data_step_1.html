@@ -1,0 +1,10 @@
+{% load i18n %}
+<div class="info-box">
+    <span class="info-box-icon bg-gray">S2</span>
+    <div class="info-box-content">
+        <ul class="list-unstyled">
+            <li><strong>{% trans 'Cadastre layer' %}</strong> {{ data.catastoLayer.name }}<li>
+            <li><strong>{% trans 'Against layers' %}</strong> {{ data.againstLayers|join:"," }}</li>
+        </ul>
+    </div><!-- /.info-box-content -->
+</div>

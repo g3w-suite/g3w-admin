@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+{% load guardian_tags %}
+{% load i18n %}
+
+{% block page_header %}
+<h1>
+{% trans 'CDU configs list' %}
+    <small>{% trans 'List of CDU configs available' %}</small>
+</h1>
+{% endblock %}
+
+
+{% block main_content %}
+{% for object in object_list %}
+{% get_obj_perms user for object as "userObj_perms" %}
+<div class="col-md-3 col-sm-6 connectedSortable">
+     <div class="box box-widget widget-user" id="cdu_config_{{ object.slug }}">
+        <!-- Add the bg color to the header using any of the bg-* classes -->
+        <div class="widget-user-header bg-teal-active col-sm-12">
+        <div class="row">
+            <div class="col-sm-12 widget-group-title">
+                <h3 class="widget-user-username">{{ object.title }}</h3>
+            </div>
+        </div>
+        </div>
+        <div class="box-footer">
+          <div class="row">
+            <div class="col-sm-2 col-xs-2">
+              <div class="description-block">
+                {% if "view_configs" in userObj_perms %}
+                 <div class="icon">
+                  <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-modal-title="{% trans 'CDU Config detail' %}" data-detail-url="{%  url 'cdu-config-detail' object.slug %}"><i class="ion ion-eye"></i></a>
+                </div>
+                {% endif %}
+              </div><!-- /.description-block -->
+            </div><!-- /.col -->
+            <div class="col-sm-2 col-xs-2">
+              <div class="description-block">
+                {% if "change_configs" in userObj_perms %}
+                <div class="icon">
+                  <a href="{% url 'cdu-config-update' object.slug %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Edit' %}" ><i class="ion ion-edit"></i></a>
+                </div>
+                {% endif %}
+              </div><!-- /.description-block -->
+            </div><!-- /.col -->
+            <div class="col-sm-2 col-xs-2">
+              <div class="description-block">
+                {% if "delete_configs" in userObj_perms %}
+                <div class="icon">
+                  <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Delete' %}"  data-widget-type="deleteItem" data-delete-url="{% url 'cdu-config-delete' object.slug %}" data-item-selector="#cdu_config_{{ object.slug }}"><i class="ion ion-trash-b"></i></a>
+                </div>
+                {% endif %}
+              </div><!-- /.description-block -->
+            </div><!-- /.col -->
+            <div class="col-sm-2 col-xs-2">
+              <div class="description-block">
+                {% if "make_cdu" in userObj_perms %}
+                <div class="icon">
+                  <a href="{% url 'group-project-slug-map' object.project.group.slug 'qdjango' object.project.slug %}" target="_blank" data-toggle="tooltip" data-placement="top" title="{% trans 'Show map' %}" ><i class="ion ion-map"></i></a>
+                </div>
+                {% endif %}
+              </div><!-- /.description-block -->
+            </div><!-- /.col -->
+          </div><!-- /.row -->
+        </div>
+  </div><!-- /.widget-user -->
+</div>
+{% endfor %}
+    {% if perms.cdu.add_configs %}
+    {% with 'cdu-config-add' as object_add_url_name %}
+        {% include 'core/include/widget_add_box.html' %}
+    {% endwith %}
+    {% endif %}
+{% endblock %}
