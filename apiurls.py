@@ -1,6 +1,6 @@
 from django.conf.urls import url
 from django.contrib.auth.decorators import login_required
-from .views import CduCalculateApiView
+from .views import CduCalculateApiView, CduSaveApiView
 
 
 urlpatterns = [
