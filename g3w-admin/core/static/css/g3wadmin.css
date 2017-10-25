@@ -103,3 +103,7 @@ h5 small {
     margin-bottom: 10px;
     height: 192px;
 }
+
+.widget-user .widget-user-username {
+    font-weight: 400;
+}
