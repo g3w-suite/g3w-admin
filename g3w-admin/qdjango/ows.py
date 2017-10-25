@@ -125,7 +125,7 @@ class OWSRequestHandler(OWSRequestHandlerBase):
             if not http:
                 http = urllib3.PoolManager()
 
-            result = http.request(request.method, url)
+            result = http.request(request.method, url, body=request.body)
 
             # If we get a redirect, let's add a useful message.
             if result.status in (301, 302, 303, 307):
