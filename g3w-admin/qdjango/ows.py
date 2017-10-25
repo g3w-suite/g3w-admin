@@ -126,7 +126,7 @@ class OWSRequestHandler(OWSRequestHandlerBase):
             if not http:
                 http = urllib3.PoolManager()
 
-            result = http.request(request.method, url)
+            result = http.request(request.method, url, body=request.body)
             content_type = result.headers["Content-Type"] \
                 if 'Content-Type' in result.headers else result.headers["content-type"]
 
