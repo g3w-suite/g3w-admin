@@ -16,8 +16,8 @@ from guardian.decorators import permission_required
 from guardian.shortcuts import get_objects_for_user
 from usersmanage.mixins.views import G3WACLViewMixin
 from usersmanage.decorators import user_passes_test_or_403
-from .forms import GroupForm, GeneralSuiteDataForm
-from .models import Group, GroupProjectPanoramic, MapControl, GeneralSuiteData
+from .forms import GroupForm, GeneralSuiteDataForm, MacroGroupForm
+from .models import Group, GroupProjectPanoramic, MapControl, GeneralSuiteData, MacroGroup
 from .mixins.views import G3WRequestViewMixin, G3WAjaxDeleteViewMixin
 from .utils.decorators import check_madd
 from .signals import after_update_group
@@ -64,8 +64,9 @@ class DashboardView(TemplateView):
 
         return context
 
-#for GROUPS
-#---------------------------------------------
+# for GROUPS
+# ---------------------------------------------
+
 
 class GroupListView(ListView):
     """List group view."""
@@ -211,8 +212,8 @@ class GroupSetOrderView(View):
             return JsonResponse({'Saved': 'ok'})
 
 
-#for PROJECTS
-#---------------------------------------------
+# for PROJECTS
+# ---------------------------------------------
 
 class ProjectListView(G3WRequestViewMixin,TemplateView):
 
@@ -243,7 +244,80 @@ class GeneralSuiteDataUpdateView(UpdateView):
         return reverse('home')
 
 
+# for MACROGROUPS
+# ---------------------------------------------
+
+class MacroGroupListView(ListView):
+    """
+    List macrogroup view
+    """
+
+    model = MacroGroup
+
+    @method_decorator(user_passes_test_or_403(lambda u: u.is_superuser))
+    def dispatch(self, request, *args, **kwargs):
+        return super(MacroGroupListView, self).dispatch(request, *args, **kwargs)
 
 
+class MacroGroupCreateView(CreateView):
+    """
+    Create macrogroup view
+    """
+
+    model = MacroGroup
+    form_class = MacroGroupForm
+
+    @method_decorator(user_passes_test_or_403(lambda u: u.is_superuser))
+    def dispatch(self, *args, **kwargs):
+        return super(MacroGroupCreateView, self).dispatch(*args, **kwargs)
+
+    #def get_initial(self):
+        #return {'mapcontrols': MapControl.objects.all()}
+
+    def get_success_url(self):
+        return reverse('macrogroup-list')
+
+    def form_valid(self, form):
+        res = super(MacroGroupCreateView, self).form_valid(form)
+
+        # delete tempory file form files
+        form.delete_temporary_files()
+        return res
+
+
+class MacroGroupUpdateView(UpdateView):
+    """
+    Update view
+    """
+
+    model = MacroGroup
+    form_class = MacroGroupForm
+
+    @method_decorator(user_passes_test_or_403(lambda u: u.is_superuser))
+    def dispatch(self, request, *args, **kwargs):
+        return super(MacroGroupUpdateView, self).dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        res = super(MacroGroupUpdateView, self).form_valid(form)
+
+        # delete tempory file form files
+        form.delete_temporary_files()
+        return res
+
+    def get_success_url(self):
+        if self.request.session.get('http_referer', False):
+            return self.request.session['http_referer']
+        return reverse('macrogroup-list')
+
+
+class MacroGroupDeleteView(G3WAjaxDeleteViewMixin, SingleObjectMixin, View):
+    '''
+    Delete macrogroup Ajax view
+    '''
+    model = Group
+
+    @method_decorator(user_passes_test_or_403(lambda u: u.is_superuser))
+    def dispatch(self, *args, **kwargs):
+        return super(MacroGroupDeleteView, self).dispatch(*args, **kwargs)
 
 

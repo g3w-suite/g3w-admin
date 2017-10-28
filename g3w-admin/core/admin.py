@@ -4,7 +4,7 @@ from django.contrib.admin import ModelAdmin
 from ordered_model.admin import OrderedModelAdmin
 from sitetree.admin import TreeItemAdmin, override_item_admin
 from .ie.admin import G3WImportExportModelAdmin
-from .models import Group, BaseLayer, MapControl
+from .models import Group, BaseLayer, MapControl, MacroGroup
 from guardian.admin import GuardedModelAdmin
 
 
@@ -37,6 +37,11 @@ override_item_admin(G3WTreeItemAdmin)
 class GroupAdmin(GuardedModelAdmin):
     model = Group
 admin.site.register(Group, GroupAdmin)
+
+
+class MacroGroupAdmin(OrderedModelAdmin):
+    model = MacroGroup
+admin.site.register(MacroGroup, MacroGroupAdmin)
 
 
 class BaseLayerAdmin(GuardedModelAdmin):

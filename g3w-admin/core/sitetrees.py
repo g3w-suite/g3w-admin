@@ -16,8 +16,14 @@ sitetrees = (
             item('Agg. gruppo {{ object.title}}', 'group-update object.slug', url_as_pattern=True,
                  icon_css_class='fa fa-edit', in_menu=False, alias='group-update'),
             item('Lista progetti {{ group.name }}', 'project-list group.slug', url_as_pattern=True,
-                 icon_css_class='fa fa-list', in_menu=False, in_breadcrumbs=True, alias='project-list')
-
+                 icon_css_class='fa fa-list', in_menu=False, in_breadcrumbs=True, alias='project-list'),
+        ]),
+        item('Macro Gruppi cartografici', 'macrogroup-list', access_by_perms=['core.add_macrogroup'],
+             icon_css_class='fa fa-globe', children=[
+            item('Aggiungi MACRO gruppo', 'macrogroup-add', url_as_pattern=True, icon_css_class='fa fa-plus',
+                 access_by_perms=['core.add_macrogroup']),
+            item('Lista MACRO gruppi', 'macrogroup-list', url_as_pattern=True, icon_css_class='fa fa-globe',
+                 alias='macrogroup-list', in_breadcrumbs=True),
         ]),
     ]),
 

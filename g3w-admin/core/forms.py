@@ -2,7 +2,7 @@ from django_file_form.forms import FileFormMixin, UploadedFileField
 from django.forms import Form, ModelForm
 from django.forms.fields import CharField
 from django.utils.translation import ugettext, ugettext_lazy as _
-from core.models import Group, GeneralSuiteData
+from core.models import Group, GeneralSuiteData, MacroGroup
 from django_file_form.forms import FileFormMixin
 from django.contrib.auth.models import User
 from crispy_forms.helper import FormHelper
@@ -283,7 +283,43 @@ class GeneralSuiteDataForm(FileFormMixin, ModelForm):
         fields = '__all__'
 
 
+class MacroGroupForm(FileFormMixin, G3WFormMixin, ModelForm):
+    """MacroGroup form."""
+    logo_img = UploadedFileField()
 
+    def __init__(self, *args, **kwargs):
+        super(MacroGroupForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper(self)
+        self.helper.form_tag = False
+        self.helper.layout = Layout(
+                            Div(
+                                Div(
+                                    Div(
+                                        Div(
+                                            HTML("<h3 class='box-title'><i class='fa fa-file'></i> {}</h3>".format(_('General data'))),
+                                            css_class='box-header with-border'
+                                        ),
+                                        Div(
+                                            'title',
+                                            Field('description', css_class='wys5', style="width:100%;"),
+                                            'logo_img',
+                                            HTML(
+                                                """<img {% if not form.logo_img.value %}style="display:none;"{% endif %} class="img-responsive img-thumbnail" src="{{ MEDIA_URL }}{{ form.logo_img.value }}">""", ),
+                                            'form_id',
+                                            'upload_url',
+                                            'delete_url',
+                                            css_class='box-body'
+                                        ),
+                                        css_class='box box-success'
+                                    ),
+                                    css_class='col-md-12'
+                                ),
+                                css_class='row'
+                            )
+                        )
 
+    class Meta:
+        model = MacroGroup
+        fields = '__all__'
 
 

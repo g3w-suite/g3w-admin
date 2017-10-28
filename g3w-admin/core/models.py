@@ -275,3 +275,20 @@ class GeneralSuiteData(models.Model):
     flickr_url = models.URLField(_('Flickr link'), null=True, blank=True)
     tripadvisor_url = models.URLField(_('Tripadvisor link'), null=True, blank=True)
 
+
+class MacroGroup(TimeStampedModel, OrderedModel):
+    """
+    Model for Macro groups, no ACL
+    """
+
+    title = models.CharField(_('Title'), max_length=255)
+    description = models.TextField(_('Description'), blank=True)
+    logo_img = models.FileField(_('Logo image'), upload_to='macrogroup/logo_img')
+    logo_link = models.URLField(_('Logo link'), blank=True, null=True,
+                                       help_text=_('Enter link with http:// or https//'))
+
+    groups = models.ManyToManyField(Group, blank=True)
+
+    slug = AutoSlugField(
+        _('Slug'), populate_from='title', unique=True, always_update=True
+    )
