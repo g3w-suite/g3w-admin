@@ -1,0 +1,13 @@
+{% load i18n %}
+{% load auth_extras %}
+<div class="row">
+  <div class="col-md-12">
+  <h3>{%trans 'Data'%}</h3>
+    <ul class="list-unstyled">
+      <li><h4>{%trans 'Title'%}</h4>
+      <li>{{ object.title }}</li>
+      <li><h4>{%trans 'Description'%}</h4>
+      <li>{{ object.description|safe }}</li>
+    </ul>
+  </div>
+</div>

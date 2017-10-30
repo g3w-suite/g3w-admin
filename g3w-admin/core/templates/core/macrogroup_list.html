@@ -25,13 +25,16 @@
                 <thead>
                     <tr>
                         <th style="width:120px">Actions</th>
-                        <th style="width: 40px">{% trans 'Title' %}</th>
+                        <th>{% trans 'Title' %}</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for object in object_list %}
                     <tr id="macrogroup_{{ object.pk }}">
                         <td>
+                            <span class="col-xs-2 icon">
+                                <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-detail-url="{% url 'macrogroup-detail' object.slug %}"><i class="ion ion-eye"></i></a>
+                            </span>
                             <span class="col-xs-2 icon">
                                 <a href="{% url 'macrogroup-update' object.slug %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Edit' %}" ><i class="ion ion-edit"></i></a>
                             </span>

@@ -321,3 +321,13 @@ class MacroGroupDeleteView(G3WAjaxDeleteViewMixin, SingleObjectMixin, View):
         return super(MacroGroupDeleteView, self).dispatch(*args, **kwargs)
 
 
+class MacroGroupDetailView(G3WRequestViewMixin, DetailView):
+    """
+    Macrogroup Detail view.
+    """
+    model = MacroGroup
+    template_name = 'core/ajax/macrogroup_detail.html'
+
+    @method_decorator(user_passes_test_or_403(lambda u: u.is_superuser))
+    def dispatch(self, *args, **kwargs):
+        return super(MacroGroupDetailView, self).dispatch(*args, **kwargs)
