@@ -209,7 +209,11 @@ class QdjangoProjectRelationsApiView(APIView):
         if relation_field_value.upper() == 'NULL':
             relation_field_value = 'null'
         else:
-            relation_field_value = '{}'.format(relation_field_value)
+            if relation_field_value.isnumeric():
+                relation_field_value = "{}".format(relation_field_value)
+            else:
+                relation_field_value = "'{}'".format(relation_field_value)
+
 
         # check if there is a schema
         schema_table = datasource['table'].split('.')
