@@ -83,6 +83,25 @@ class MapControl(OrderedModel):
         verbose_name_plural = _('Map controls')
 
 
+class MacroGroup(TimeStampedModel, OrderedModel):
+    """
+    Model for Macro groups, no ACL
+    """
+
+    title = models.CharField(_('Title'), max_length=255)
+    description = models.TextField(_('Description'), blank=True)
+    logo_img = models.FileField(_('Logo image'), upload_to='macrogroup/logo_img')
+    logo_link = models.URLField(_('Logo link'), blank=True, null=True,
+                                       help_text=_('Enter link with http:// or https//'))
+
+    slug = AutoSlugField(
+        _('Slug'), populate_from='title', unique=True, always_update=True
+    )
+
+    def __unicode__(self):
+        return self.title
+
+
 class Group(TimeStampedModel, OrderedModel):
     """A group of projects."""
     # General info
@@ -121,6 +140,8 @@ class Group(TimeStampedModel, OrderedModel):
     header_terms_of_use_link = models.URLField(
         _('Terms of use link'), blank=True
         )
+
+    macrogroups = models.ManyToManyField(MacroGroup, blank=True)
 
     class Meta:
         permissions = (
@@ -276,19 +297,3 @@ class GeneralSuiteData(models.Model):
     tripadvisor_url = models.URLField(_('Tripadvisor link'), null=True, blank=True)
 
 
-class MacroGroup(TimeStampedModel, OrderedModel):
-    """
-    Model for Macro groups, no ACL
-    """
-
-    title = models.CharField(_('Title'), max_length=255)
-    description = models.TextField(_('Description'), blank=True)
-    logo_img = models.FileField(_('Logo image'), upload_to='macrogroup/logo_img')
-    logo_link = models.URLField(_('Logo link'), blank=True, null=True,
-                                       help_text=_('Enter link with http:// or https//'))
-
-    groups = models.ManyToManyField(Group, blank=True)
-
-    slug = AutoSlugField(
-        _('Slug'), populate_from='title', unique=True, always_update=True
-    )

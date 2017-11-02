@@ -135,7 +135,6 @@ def get_objects_by_perm(obj, perm):
     return [uobject for uobject in uobjects]
 
 
-
 def crispyBoxACL(form, **kwargs):
     """
     Build a Crispy object layout element (div) for on AdminLTE2 box structure.

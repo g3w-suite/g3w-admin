@@ -1,6 +1,7 @@
 from django_file_form.forms import FileFormMixin, UploadedFileField
 from django.forms import Form, ModelForm
 from django.forms.fields import CharField
+from django.forms.models import ModelMultipleChoiceField
 from django.utils.translation import ugettext, ugettext_lazy as _
 from core.models import Group, GeneralSuiteData, MacroGroup
 from django_file_form.forms import FileFormMixin
@@ -8,6 +9,7 @@ from django.contrib.auth.models import User
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Div, Submit, HTML, Button, Row, Field
 from crispy_forms.bootstrap import AppendedText, PrependedText
+from .utils.forms import crispyBoxMacroGroups
 from usersmanage.utils import get_fields_by_user, crispyBoxACL, userHasGroups
 from usersmanage.forms import G3WACLForm
 from core.mixins.forms import *
@@ -53,6 +55,8 @@ class GroupForm(FileFormMixin, G3WFormMixin, G3WRequestFormMixin, G3WACLForm, Mo
                                 ),
 
                                 crispyBoxACL(self),
+
+                                crispyBoxMacroGroups(self),
 
                                 Div(
                                     Div(
