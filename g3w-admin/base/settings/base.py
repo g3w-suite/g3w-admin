@@ -37,7 +37,8 @@ DJANGO_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.gis'
+    'django.contrib.gis',
+    'django.contrib.sites'
 ]
 
 THIRD_PARTY_APPS = [
@@ -86,6 +87,7 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.contrib.sites.middleware.CurrentSiteMiddleware'
     #'django_user_agents.middleware.UserAgentMiddleware',
     # 'debug_panel.middleware.DebugPanelMiddleware'
 ]
@@ -255,3 +257,5 @@ SITE_PREFIX_URL = None
 # CLIENT SETTINGS
 CLIENTS_AVAILABLE = []
 CLIENT_DEFAULT = 'client'
+
+SITE_ID = 1

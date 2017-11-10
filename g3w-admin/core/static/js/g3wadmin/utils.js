@@ -30,7 +30,12 @@ _.extend(g3wadmin.utils, {
     },
 
     transformBBoxToWGS84: function(crs, bbox) {
-        var coords = bbox.split(',');
+        if (_.isArray(bbox)) {
+            var coords = bbox;
+        } else {
+            var coords = bbox.split(',');
+        }
+
         var so = proj4(crs).inverse([coords[0],coords[1]]);
         var ne = proj4(crs).inverse([coords[2],coords[3]]);
 
@@ -38,7 +43,13 @@ _.extend(g3wadmin.utils, {
     },
 
     transformBBoxFromWGS84: function(crs, bbox) {
-        var coords = bbox.split(',');
+
+        if (_.isArray(bbox)) {
+            var coords = bbox;
+        } else {
+            var coords = bbox.split(',');
+        }
+
         var so = proj4(crs).forward([coords[0],coords[1]]);
         var ne = proj4(crs).forward([coords[2],coords[3]]);
 

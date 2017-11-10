@@ -687,7 +687,9 @@ _.extend(g3wadmin.widget, {
 
             var modal = ga.ui.mapModal({bboxLayer: bboxLayer});
             modal.setConfirmButtonAction(function(e){
-                $input.val(ga.utils.transformBBoxFromWGS84(params['crs'], modal.drawnLayer.getBounds().toBBoxString()));
+                var bounds = modal.drawnLayer.getBounds();
+                var bbox = [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()];
+                $input.val(ga.utils.transformBBoxFromWGS84(params['crs'], bbox));
                 modal.hide();
             });
         modal.show();
