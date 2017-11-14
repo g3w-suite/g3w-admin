@@ -64,7 +64,8 @@ for app in settings.G3WADMIN_PROJECT_APPS:
 # adding local_more_apps
 for app in settings.G3WADMIN_LOCAL_MORE_APPS:
     if app == settings.FRONTEND_APP:
-        urlpatterns.append(url(r'^{}/'.format(app), include('{}.urls'.format(app))))
+        pass
+        #urlpatterns.append(url(r'^{}/'.format(app), include('{}.urls'.format(app))))
     else:
         app_urls = (urlconf_module, app_name, namespace) = include('{}.urls'.format(app))
         try:

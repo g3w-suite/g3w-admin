@@ -52,6 +52,7 @@ THIRD_PARTY_APPS = [
     'django_extensions',
     'rest_framework',
     'rest_framework_gis',
+    'rest_framework.authtoken',
     'import_export',
     'mptt',
     'ordered_model',
