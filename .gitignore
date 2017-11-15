@@ -47,4 +47,5 @@ build
 /g3w-admin/caching/
 /g3w-admin/authldap/
 /g3w-admin/stress/
+/g3w-admin/stress_admin/
 .gitmodules
