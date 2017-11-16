@@ -46,6 +46,12 @@ ga.Qdjango.widgetEditor = {
 		var that = this;
 		var obj = {};
 		var widget_type = this.widget ? this.widget.widget_type : $("#id_widget_type").val();
+
+		// check is widget-ytpe is changed from loading data
+		if ($("#id_widget_type").val() != widget_type) {
+			widget_type = $("#id_widget_type").val()
+		}
+
 		switch( widget_type )
 		{
 			case "hyperlink":
@@ -542,9 +548,6 @@ ga.Qdjango.widgetEditor = {
 	showStoredValues: function()
 	{
 		var that = this;
-		//$("#id_name").val(this.widget.name);
-		//$("#id_widget_type").val(this.widget.widget_type);
-		//$("#id_body").val(JSON.stringify(this.widget.body));
 		$(".rightCol").empty();
 		
 		switch(this.widget.widget_type)

@@ -34,6 +34,9 @@ _.extend(g3wadmin.utils, {
             var coords = bbox;
         } else {
             var coords = bbox.split(',');
+            for (var i=0; i<4; i++) {
+                coords[i] = parseFloat(coords[i]);
+            }
         }
 
         var so = proj4(crs).inverse([coords[0],coords[1]]);
@@ -48,6 +51,9 @@ _.extend(g3wadmin.utils, {
             var coords = bbox;
         } else {
             var coords = bbox.split(',');
+            for (var i=0; i<4; i++) {
+                coords[i] = parseFloat(coords[i]);
+            }
         }
 
         var so = proj4(crs).forward([coords[0],coords[1]]);

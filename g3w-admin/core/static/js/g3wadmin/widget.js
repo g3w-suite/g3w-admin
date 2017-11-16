@@ -682,6 +682,7 @@ _.extend(g3wadmin.widget, {
             var $input = $item.parents('.input-group').find('input');
             var bboxLayer = null;
             if ($input.val()) {
+
                 bboxLayer = ga.utils.transformBBoxToWGS84(params['crs'], $input.val());
             }
 
