@@ -3,8 +3,6 @@ from django.contrib.auth.decorators import login_required
 from base.urls import G3W_SITETREE_I18N_ALIAS
 from .views import *
 
-
-
 G3W_SITETREE_I18N_ALIAS.append('qdjango')
 
 urlpatterns = [
