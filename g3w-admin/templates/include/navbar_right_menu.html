@@ -3,16 +3,27 @@
 <div class="navbar-custom-menu">
     <ul class="nav navbar-nav">
 
-        <li>
-            <div class="has-feedback" style="margin-top:10px;">
-                <input type="text" class="form-control input-sm" style="width: 245px; padding-right: 24px;" placeholder="Search">
+        <!--<li>
+            <div class="has-feedback" style="margin-top:10px; color: #fff;">
+                <input type="text" class="form-control input-sm"
+                       style="width: 245px; padding-right: 24px; border: none; border-bottom: 2px solid #fff;
+                       color: #fff;
+                       background: transparent;"
+                       placeholder="Search">
                 <span class="glyphicon glyphicon-search form-control-feedback"></span>
             </div>
+        </li>-->
+        {% for item in navbar_items %}
+        <li>
+            {{ item }}
         </li>
-
+        {% endfor %}
         {% if SETTINGS.FRONTEND %}
             <li>
-                <a href="/"><i class="fa fa-home"></i> {% trans 'Frontend' %}</a>
+                <a href="/">
+                    <i class="fa fa-home"></i>
+                    <span class="hidden-xs">{% trans 'Frontend' %}</span>
+                </a>
             </li>
         {% endif %}
         {% if user.is_authenticated %}
@@ -20,12 +31,7 @@
         <li class="dropdown user user-menu">
             <!-- Menu Toggle Button -->
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                <!-- The user image in the navbar-->
-                {% if user.image %}
-                <img src="dist/img/user2-160x160.jpg" class="user-image" alt="User Image">
-                {% else %}
                 <i class="fa fa-user"></i>
-                {% endif %}
                 <!-- hidden-xs hides the username on small devices so only the image appears. -->
                 <span class="hidden-xs">{{ user }}</span>
             </a>

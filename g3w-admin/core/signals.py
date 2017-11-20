@@ -62,5 +62,8 @@ load_dashboard_widgets = django.dispatch.Signal(providing_args=["app_name"])
 # signal send before to show user_data, return permissions by backend
 pre_show_user_data = django.dispatch.Signal(providing_args=["user"])
 
+# signal send to load main navbar items
+load_navbar_items = django.dispatch.Signal()
+
 
 

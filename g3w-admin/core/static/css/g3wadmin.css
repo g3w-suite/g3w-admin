@@ -7,9 +7,12 @@
 }
 
 table span.icon {
-    font-size: 20px;
+    font-size: 22px;
 }
 
+table span.iconmap {
+    font-size: 30px;
+}
 .icon .ion-trash-b,
 .qq-upload-delete .ion-trash-b,
 .qq-upload-cancel .ion-close {
