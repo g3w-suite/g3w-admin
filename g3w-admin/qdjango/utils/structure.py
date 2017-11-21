@@ -14,6 +14,7 @@ except ImportError:
 from qdjango.models import Layer
 from urlparse import urlsplit, parse_qs
 from core.utils.projects import CoreMetaLayer
+from .exceptions import QgisProjectLayerException
 
 
 def get_schema_table(datasource_table):
@@ -119,8 +120,8 @@ class QgisOGRLayerStructure(QgisLayerStructure):
         """
         Check if ogr data layer exisists
         """
-        if not os.path.exists(self.datasource.split('|')[0]):
-            raise Exception(self._errDatasourceNotFound.format(self.layer.name, self.datasource))
+        if not os.path.exists(self.datasource):
+            raise QgisProjectLayerException(self._errDatasourceNotFound.format(self.layer.name, self.datasource))
 
     def getTableColumns(self):
         """
@@ -171,7 +172,7 @@ class QgisDBLayerStructure(QgisLayerStructure):
         """
         if self.layerType == Layer.TYPES.spatialite:
             if not os.path.exists(self.datasourceDict['dbname']):
-                raise Exception(self._errDatasourceNotFound.format(self.layer.name,self.datasource))
+                raise QgisProjectLayerException(self._errDatasourceNotFound.format(self.layer.name,self.datasource))
 
 
     def _datasource2dict(self):
@@ -264,7 +265,7 @@ class QgisCSVLayerStructure(QgisLayerStructure):
         Check if ogr data layer exisists
         """
         if not os.path.exists(self.datasourceDict['file']):
-            raise Exception(self._errDatasourceNotFound.format(self.layer.name, self.datasourceDict['file']))
+            raise QgisProjectLayerException(self._errDatasourceNotFound.format(self.layer.name, self.datasourceDict['file']))
 
     def getTableColumns(self):
         """
