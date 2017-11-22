@@ -31,6 +31,7 @@ def makeDatasource(datasource, layerType):
     # Modified: <datasource>/home/sit/charts\definitivo\d262120.shp</datasource>
     if layerType == Layer.TYPES.ogr or layerType == Layer.TYPES.gdal:
         newDatasource = re.sub(r'(.*?)%s(.*)' % folder, r'%s\2' % basePath, datasource) # ``?`` means ungreedy
+        newDatasource = newDatasource.split('|')[0]
 
     # SpatiaLite example datasource:
     # Original: <datasource>dbname='//SIT-SERVER/sit/charts/Carte stradali\\naturalearth_110m_physical.sqlite' table="ne_110m_glaciated_areas" (geom) sql=</datasource>
