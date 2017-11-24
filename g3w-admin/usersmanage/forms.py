@@ -24,6 +24,7 @@ from usersmanage.configs import *
 from .utils import getUserGroups, userHasGroups
 
 
+
 def label_users(obj):
     return '{} {} ({})'.format(obj.first_name,obj.last_name, obj.username)
 
@@ -304,11 +305,12 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
                 Userdata(user=user, department=self.cleaned_data['department'],avatar=self.cleaned_data['avatar']).save()
 
             # add backend
-            if hasattr(user, 'userbackend'):
-                user.userbackend.backend = self.cleaned_data['backend']
-                user.userbackend.save()
-            else:
-                Userbackend(user=user, backend=self.cleaned_data['backend']).save()
+            if 'backend' in self.cleaned_data:
+                if hasattr(user, 'userbackend'):
+                    user.userbackend.backend = self.cleaned_data['backend']
+                    user.userbackend.save()
+                else:
+                    Userbackend(user=user, backend=self.cleaned_data['backend']).save()
 
         return user
 
@@ -352,10 +354,10 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
 class G3WUserUpdateForm(G3WUserForm):
 
     password1 = forms.CharField(label=_("Password"),
-        widget=forms.PasswordInput,required=False)
+                                widget=forms.PasswordInput, required=False)
     password2 = forms.CharField(label=_("Password confirmation"),
-        widget=forms.PasswordInput,required=False,
-        help_text=_("Enter the same password as above, for verification."))
+                                widget=forms.PasswordInput, required=False,
+                                help_text=_("Enter the same password as above, for verification."))
 
     password = ReadOnlyPasswordHashField()
 
