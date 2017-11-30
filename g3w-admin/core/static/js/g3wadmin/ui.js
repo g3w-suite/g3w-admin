@@ -362,6 +362,11 @@ _.extend(g3wadmin.ui, {
         var $dataTable = $widgetItem.DataTable(options);
 
 
+    },
+
+    closeMessages: function(){
+        var $alerts = $('#page_user_messages').find('.alert');
+        $alerts.delay(4000).slideUp(500);
     }
 
 

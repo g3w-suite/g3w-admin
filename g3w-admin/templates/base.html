@@ -175,6 +175,20 @@ scratch. This page gets rid of all links and provides the needed markup only.
         <!-- Main content --> 
         <section class="content">
 
+        {% if messages %}
+          <div id="page_user_messages" class="row">
+            <div class="col-md-12">
+            {% for message in messages %}
+                <div class="alert alert-{% if message.tags %}{{ message.tags|lower }}{% else %}default{% endif %} alert-dismissible">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <h4><i class="icon fa fa-check"></i> Ok!</h4>
+                    {{ message }}
+                </div>
+            {% endfor %}
+            </div>
+          </div>
+        {% endif %}
+
           {% block main_content %}
           {% endblock %}
 
