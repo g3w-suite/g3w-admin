@@ -40,6 +40,10 @@ _.extend(g3wadmin.widget, {
         'modal-size'
     ],
 
+    _ajaxUploadParams: [
+        'validation-data-item-selector'
+    ],
+
     _ajaxFilerParams: [
         'action-url',
         'modal-title',
@@ -497,7 +501,18 @@ _.extend(g3wadmin.widget, {
      * @param $item
      */
     ajaxUpload: function($item){
-        initUploadFields($item);
+
+        var params = ga.utils.getDataAttrs($item, this._ajaxUploadParams);
+
+        var options = {}
+
+        // get validation option if is set
+        if ('ajaxUploadValidation' in window) {
+            options['validation'] = window.ajaxUploadValidation;
+        }
+
+
+        initUploadFields($item, options);
 
         var $uploader = $item.find(".file-uploader-container");
         $uploader.on('complete', function(e, id, name, resJSON, xhr){
