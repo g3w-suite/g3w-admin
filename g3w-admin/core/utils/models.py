@@ -86,11 +86,13 @@ def create_geomodel_from_qdjango_layer(layer, app_label='core'):
 
     model_table_name = '{}.{}_{}'.format(schema, table, layer.project.pk)
 
+    '''
     if layer.layer_type == 'postgres':
         datasource = datasource2dict(layer.datasource)
         geometrytype = datasource.get('type', None)
     else:
-        geometrytype = layer.geometrytype
+    '''
+    geometrytype = layer.geometrytype
 
     if model_table_name not in g3wsuite_apps.all_models[app_label]:
         to_create_model = True
