@@ -92,7 +92,7 @@ class OWSRequestHandler(OWSRequestHandlerBase):
                 # get layers to query
                 layers_to_query = []
                 for ltf in layers_to_filter:
-                    layer = cls._projectInstance.layer_set.get(Q(name=ltf) | Q(origname=ltf))
+                    layer = cls._projectInstance.layer_set.filter(Q(name=ltf) | Q(origname=ltf))[0]
                     layer_source = QueryDict(layer.datasource)
                     layers_to_query.append(layer_source['layers'])
 
