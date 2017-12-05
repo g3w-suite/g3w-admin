@@ -11,6 +11,7 @@ import geoalchemy2.types as geotypes
 from sqlalchemy.dialects.postgresql import base as PGD
 from osgeo import ogr
 from core.utils.db import build_django_connection, build_dango_connection_name
+from core.utils.geo import camel_geometry_type
 from .structure import MAPPING_GEOALCHEMY_DJANGO_FIELDS, BooleanField, NullBooleanField
 
 
@@ -86,13 +87,11 @@ def create_geomodel_from_qdjango_layer(layer, app_label='core'):
 
     model_table_name = '{}.{}_{}'.format(schema, table, layer.project.pk)
 
-    '''
     if layer.layer_type == 'postgres':
         datasource = datasource2dict(layer.datasource)
         geometrytype = datasource.get('type', None)
     else:
-    '''
-    geometrytype = layer.geometrytype
+        geometrytype = layer.geometrytype
 
     if model_table_name not in g3wsuite_apps.all_models[app_label]:
         to_create_model = True
@@ -165,6 +164,10 @@ def create_geomodel_from_qdjango_layer(layer, app_label='core'):
                     if srid == -1 and srid != layer.srid:
                         srid = layer.srid
                     kwargs['srid'] = srid
+
+                    # if geometrytype is not set get from here:
+                    if not geometrytype:
+                        geometrytype = camel_geometry_type(column.type.geometry_type)
                 if type(column.type) == PGD.VARCHAR:
                     if column.type.length:
                         kwargs['max_length'] = column.type.length
