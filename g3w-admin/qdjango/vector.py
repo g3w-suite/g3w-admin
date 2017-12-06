@@ -109,6 +109,9 @@ class QGISLayerVectorViewMixin(object):
 
         geomodel, self.database_to_use, geometrytype = create_geomodel_from_qdjango_layer(self.layer)
 
+        if geometrytype is None:
+            geometrytype = QGIS_LAYER_TYPE_NO_GEOM
+
         # set bbox_filter_field with geomentry model field
         if geometrytype != QGIS_LAYER_TYPE_NO_GEOM:
             serializer = QGISGeoLayerSerializer
