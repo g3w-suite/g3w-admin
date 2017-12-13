@@ -209,10 +209,19 @@ class QdjangoProjectRelationsApiView(APIView):
         if relation_field_value.upper() == 'NULL':
             relation_field_value = 'null'
         else:
-            if relation_field_value.isnumeric():
-                relation_field_value = "{}".format(relation_field_value)
+            if db_columns_referencing_layer \
+                    and relation['fieldRef']['referencingField'] in db_columns_referencing_layer:
+                db_column_referencing_field = db_columns_referencing_layer[relation['fieldRef']['referencingField']]
+                if db_column_referencing_field['type'] in (
+                        'INTEGER', 'BIGINT', 'SMALLINT', 'NUMERIC', 'REAL', 'INTEGER64', 'DOUBLE'):
+                    relation_field_value = "{}".format(relation_field_value)
+                else:
+                    relation_field_value = "'{}'".format(relation_field_value)
             else:
-                relation_field_value = "'{}'".format(relation_field_value)
+                if relation_field_value.isnumeric():
+                    relation_field_value = "{}".format(relation_field_value)
+                else:
+                    relation_field_value = "'{}'".format(relation_field_value)
 
         # check if there is a schema
         schema_table = datasource['table'].split('.')

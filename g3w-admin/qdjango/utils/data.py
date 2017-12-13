@@ -21,6 +21,7 @@ import re
 import json
 
 
+
 # constant per qgis layers
 QGIS_LAYER_TYPE_NO_GEOM = 'No geometry'
 
@@ -203,14 +204,22 @@ class QgisProjectLayer(XmlData):
         Get min_scale from layer attribute
         :return: string
         """
-        return int(float(self.qgisProjectLayerTree.attrib['maximumScale']))
+        maximumScale = self.qgisProjectLayerTree.attrib['maximumScale']
+        if maximumScale == 'inf':
+            # return 2**31-1
+            return 0
+        return int(float(maximumScale))
 
     def _getDataMaxScale(self):
         """
         Get min_scale from layer attribute
         :return: string
         """
-        return int(float(self.qgisProjectLayerTree.attrib['minimumScale']))
+        minimunScale = self.qgisProjectLayerTree.attrib['minimumScale']
+        if minimunScale == 'inf':
+            #return 2**31-1
+            return 0
+        return int(float(minimunScale))
 
     def _getDataScaleBasedVisibility(self):
         """
