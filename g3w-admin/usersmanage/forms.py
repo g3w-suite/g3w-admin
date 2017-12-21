@@ -82,7 +82,7 @@ class G3WACLForm(forms.Form):
         self.fields['viewer_users'].queryset = User.objects.filter(groups__name__in=self.viewer_groups)\
             .order_by('last_name')
 
-    def _init_users(self,**kwargs):
+    def _init_users(self, **kwargs):
         if kwargs['initial'].has_key('viewer_users'):
             self.initial_viewer_users = kwargs['initial']['viewer_users']
         if kwargs['initial'].has_key('editor_user'):
