@@ -248,11 +248,11 @@ class QgisProjectLayer(XmlData):
         """
         # get root of layer-tree-group
         vectorjoinsRoot = self.qgisProjectLayerTree.find('vectorjoins')
-        if vectorjoinsRoot:
+        if vectorjoinsRoot is not None:
             vectorjoins = []
             for order, join in enumerate(vectorjoinsRoot):
                 vectorjoins.append(dict(join.attrib))
-        return vectorjoins if vectorjoinsRoot else None
+        return vectorjoins if vectorjoinsRoot is not None else None
 
     def _getDataCapabilities(self):
         return 1
@@ -305,7 +305,7 @@ class QgisProjectLayer(XmlData):
 
         ret = {}
         aliases = self.qgisProjectLayerTree.find('aliases')
-        if aliases:
+        if aliases is not None:
             for alias in aliases:
                 ret[alias.attrib['field']] = alias.attrib['name']
         return ret
@@ -397,7 +397,7 @@ class QgisProjectLayer(XmlData):
         edittype_columns = dict()
         edittypes = self.qgisProjectLayerTree.find('edittypes')
 
-        if edittypes:
+        if edittypes is not None:
             for edittype in edittypes:
                 data = {
                     'widgetv2type': edittype.attrib['widgetv2type'],
