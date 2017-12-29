@@ -93,11 +93,9 @@ def create_geomodel_from_qdjango_layer(layer, app_label='core'):
     else:
         geometrytype = layer.geometrytype
 
-    if model_table_name not in g3wsuite_apps.all_models[app_label]:
-        to_create_model = True
-    else:
-        to_create_model = False
-        geo_model = g3wsuite_apps.all_models[app_label][model_table_name]
+    to_create_model = True
+    if model_table_name in g3wsuite_apps.all_models[app_label]:
+        del(g3wsuite_apps.all_models[app_label][model_table_name])
 
     if to_create_model:
         if layer_type == 'postgis':

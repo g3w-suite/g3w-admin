@@ -90,8 +90,7 @@ class ClientView(TemplateView):
             raise Http404('No project type and/or project id present in group')
 
         # page title
-        # todo: set page title by project name??
-        contextData['page_title'] = 'g3w-client'
+        contextData['page_title'] = 'g3w-client | {}'.format(self.project.title)
 
         return contextData
         
