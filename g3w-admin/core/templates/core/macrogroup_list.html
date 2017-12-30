@@ -26,6 +26,7 @@
                     <tr>
                         <th style="width:120px">Actions</th>
                         <th>{% trans 'Title' %}</th>
+                        <th>{% trans 'Groups' %}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -43,6 +44,11 @@
                             </span>
                         </td>
                         <td>{{ object.title }}</td>
+                        <td>
+                            {% for group in object.group_set.all %}
+                            <a href="{% url 'group-update' group.slug %}">{{ group }}</a> {% if not forloop.last %} | {% endif %}
+                            {% endfor %}
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
