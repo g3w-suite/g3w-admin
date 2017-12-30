@@ -339,7 +339,22 @@ class QdjangoLayerCacheView(G3WGroupViewMixin, QdjangoProjectViewMixin, View):
         # todo: build new tilestache project object for epsg: 3003, 3004 , etc.
         layer.save()
 
-        return JsonResponse({'Saved':'ok'})
+        return JsonResponse({'Saved': 'ok'})
+
+
+class QdjangoLayerDataView(G3WGroupViewMixin, QdjangoProjectViewMixin, View):
+
+    @method_decorator(permission_required('qdjango.change_project', (Project, 'slug', 'project_slug'),
+                                          raise_exception=True))
+    def dispatch(self, *args, **kwargs):
+        return super(QdjangoLayerDataView, self).dispatch(*args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+
+        layer = Layer.objects.get(pk=kwargs['layer_id'])
+        layer.exclude_from_legend = int(request.POST['exclude_from_legend'])
+        layer.save()
+        return JsonResponse({'Saved': 'ok'})
 
 
 class QdjangoLayerWidgetsView(G3WGroupViewMixin, QdjangoProjectViewMixin, QdjangoLayerViewMixin, ListView):

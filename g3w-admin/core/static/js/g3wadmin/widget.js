@@ -63,6 +63,10 @@ _.extend(g3wadmin.widget, {
         'ajax-url',
     ],
 
+    _setLayerData: [
+        'ajax-url',
+    ],
+
     _setAjaxDownload: [
         'ajax-url',
     ],
@@ -631,6 +635,34 @@ _.extend(g3wadmin.widget, {
             $.ajax({
                 method: 'get',
                 url: ajaxUrl,
+                error: function (xhr, textStatus, errorMessage) {
+                    ga.widget.showError(ga.utils.buildAjaxErrorMessage(xhr.status, errorMessage));
+                }
+            });
+
+        } catch (e) {
+            this.showError(e.message);
+        }
+    },
+
+    /**
+     * Set layer data by post ajax
+     * @param $item
+     */
+    setLayerData: function($item, data) {
+
+        try {
+            var params = ga.utils.getDataAttrs($item, this._setLayerData);
+            if (_.isUndefined(params['ajax-url'])) {
+                throw new Error('Attribute data-ajax-url not defined');
+            }
+
+            ga.utils.addCsfrtokenData(data);
+
+            $.ajax({
+                method: 'post',
+                data: data,
+                url: params['ajax-url'],
                 error: function (xhr, textStatus, errorMessage) {
                     ga.widget.showError(ga.utils.buildAjaxErrorMessage(xhr.status, errorMessage));
                 }

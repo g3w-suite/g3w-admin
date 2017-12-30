@@ -207,6 +207,9 @@ class Layer(G3WACLModelMixins, models.Model):
     # editing widgets
     edittypes = models.TextField(_('Columns layer widgets'), blank=True, null=True)
 
+    # exclude from legend
+    exclude_from_legend = models.BooleanField(_('Exclude to legend'), default=False, blank=True)
+
     def __unicode__(self):
         return self.name
 

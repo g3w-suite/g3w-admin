@@ -364,6 +364,20 @@ _.extend(g3wadmin.ui, {
 
     },
 
+    initNolegendLayerCheckBox: function(){
+        $(document).on('ifChanged', '[data-widget-type="noLegendLayer"]', function(e){
+
+            var $item = $(this);
+            // build value
+            var data = {
+                exclude_from_legend: e.target.checked ? 1 : 0
+            }
+
+            ga.widget.setLayerData($item, data);
+
+        });
+    },
+
     closeMessages: function(){
         var $alerts = $('#page_user_messages').find('.alert');
         $alerts.delay(4000).slideUp(500);
