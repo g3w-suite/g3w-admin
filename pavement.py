@@ -1,0 +1,113 @@
+# -*- coding: utf-8 -*-
+#########################################################################
+#
+# Copyright (C) 2018 GIS3W
+#
+#########################################################################
+
+import os
+import time
+from paver.easy import task, options, cmdopts, needs
+from paver.easy import path, sh, info, call_task
+from paver.easy import BuildFailure
+
+BASE_PATH = 'g3w-admin'
+
+
+# take from geonode pavement.py: https://github.com/GeoNode/geonode/blob/master/pavement.py
+def kill(arg1, arg2):
+    """Stops a process that contains arg1 and is filtered by arg2
+    """
+    from subprocess import Popen, PIPE
+
+    # Wait until ready
+    t0 = time.time()
+    # Wait no more than these many seconds
+    time_out = 30
+    running = True
+
+    while running and time.time() - t0 < time_out:
+        if os.name == 'nt':
+            p = Popen('tasklist | find "%s"' % arg1, shell=True,
+                      stdin=PIPE, stdout=PIPE, stderr=PIPE, close_fds=False)
+        else:
+            p = Popen('ps aux | grep %s' % arg1, shell=True,
+                      stdin=PIPE, stdout=PIPE, stderr=PIPE, close_fds=True)
+
+        lines = p.stdout.readlines()
+
+        running = False
+        for line in lines:
+            # this kills all java.exe and python including self in windows
+            if ('%s' % arg2 in line) or (os.name == 'nt' and '%s' % arg1 in line):
+                running = True
+
+                # Get pid
+                fields = line.strip().split()
+
+                info('Stopping %s (process number %s)' % (arg1, fields[1]))
+                if os.name == 'nt':
+                    kill = 'taskkill /F /PID "%s"' % fields[1]
+                else:
+                    kill = 'kill -9 %s 2> /dev/null' % fields[1]
+                os.system(kill)
+
+        # Give it a little more time
+        time.sleep(1)
+    else:
+        pass
+
+    if running:
+        raise Exception('Could not stop %s: '
+                        'Running processes are\n%s'
+                        % (arg1, '\n'.join([l.strip() for l in lines])))
+
+
+@task
+@needs([
+    'install_bower_components',
+    'sync'
+])
+def install():
+    """
+    Install G3W-SUITE
+    """
+    info('G3W-SUITE installed with success')
+
+
+@task
+def install_bower_components():
+    info("Installing Bower components...")
+    sh('bower install')
+    info("Bower components installed.")
+
+
+@task
+def sync():
+    """
+    Run migrate for every modules
+    """
+    sh("python {}/manage.py migrate --noinput".format(BASE_PATH))
+
+
+@task
+@cmdopts([
+    ('bind=', 'b', 'Bind server to provided IP address and port number.'),
+    ('foreground', 'f', 'Do not run in background but in foreground')
+])
+def start():
+    """
+    Start G3W-SUITE
+    """
+    bind = options.get('bind', '')
+    foreground = '' if options.get('foreground', False) else '&'
+    sh('python {}/manage.py runserver {} {}'.format(BASE_PATH, bind, foreground))
+    info("G3W-SUITE is now available.")
+
+
+@task
+def stop():
+    """
+    Stop the GeoNode Django application
+    """
+    kill('python', 'runserver')
