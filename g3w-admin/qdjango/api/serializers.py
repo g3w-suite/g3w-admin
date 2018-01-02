@@ -222,7 +222,8 @@ class ProjectSerializer(serializers.ModelSerializer):
         fields =(
             'id',
             'name',
-            'layerstree'
+            'layerstree',
+            'thumbnail'
         )
 
 
