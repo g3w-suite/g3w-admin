@@ -2,3 +2,9 @@
  * Skin: Blue
  * ----------
  */
+.skin-blue .g3w-tooltip + .tooltip > .tooltip-inner {
+  background-color: #3c8dbc;
+}
+.skin-blue .g3w-tooltip + .tooltip > .tooltip-arrow {
+  border-bottom-color: #3c8dbc;
+}
