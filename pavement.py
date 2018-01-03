@@ -13,6 +13,13 @@ from paver.easy import BuildFailure
 
 BASE_PATH = 'g3w-admin'
 
+FIXTURES = [
+    'BaseLayer.json',
+    'G3WGeneralDataSuite.json',
+    'G3WMapControls.json',
+    'G3WSpatialRefSys.json'
+]
+
 
 # take from geonode pavement.py: https://github.com/GeoNode/geonode/blob/master/pavement.py
 def kill(arg1, arg2):
@@ -88,6 +95,13 @@ def sync():
     Run migrate for every modules
     """
     sh("python {}/manage.py migrate --noinput".format(BASE_PATH))
+
+    # load fixture
+    for fixture in FIXTURES:
+        sh("python {}/manage.py loaddata {}".format(BASE_PATH, fixture))
+
+    # sync menu tree items
+    sh("python {}/manage.py sitetree_resync_apps".format(BASE_PATH))
 
 
 @task
