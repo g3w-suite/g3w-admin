@@ -16,6 +16,13 @@ ga.Qdjango.widgetEditor = {
 	onAddCallback: null,
 	widget: null,
 	delimiterItems: ['.',',',';','|'],
+	widget: [
+		{
+			'type': 'unique_value_select',
+			'label': 'Unique value select',
+			'options': null
+		}
+	],
 	
 	isset: function(o)
 	{
@@ -262,6 +269,14 @@ ga.Qdjango.widgetEditor = {
 										<option value="lte=">&lt;=</option>\
 										<option value="LIKE">LIKE</option>\
 									</select>');
+
+		var widgetSelect = $('<select class="form-control" name="widget_type">\
+							  <option value="">...</option>\
+							  </select>');
+
+		// add widget types
+
+
 		if (this.layer_type != 'spatialite'){
 			cmpOperatorSelect.append('<option value="ILIKE">ILIKE</option>')
 		}
@@ -279,15 +294,17 @@ ga.Qdjango.widgetEditor = {
 							<div class="box-body">\
 								<div class="row">\
 									<div class="col-md-3"><span class="label label-default">Campo</span></div>\
+									<div class="col-md-2"><span class="label label-default">Widget</span></div>\
 									<div class="col-md-3"><span class="label label-default">Alias</span></div>\
 									<div class="col-md-3"><span class="label label-default">Descrizione</span></div>\
-									<div class="col-md-3"><span class="label label-default">Operatore comparazione</span></div>\
+									<div class="col-md-1"><span class="label label-default">Operatore comparazione</span></div>\
 								</div>\
 								<div class="row">\
 									<div class="col-md-3 fieldSelect"></div>\
+									<div class="col-md-2 widgetType"></div>\
 									<div class="col-md-3 textInput"></div>\
 									<div class="col-md-3 descriptionInput"></div>\
-									<div class="col-md-3 cmpOperatorSelect"></div>\
+									<div class="col-md-1 cmpOperatorSelect"></div>\
 								</div>\
 							</div>\
 					</div>\
@@ -310,6 +327,7 @@ ga.Qdjango.widgetEditor = {
 		div.find(".textInput").append(textInput);
 		div.find(".descriptionInput").append(descriptionInput);
 		div.find(".cmpOperatorSelect").append(cmpOperatorSelect);
+		div.find(".widgetType").append(widgetSelect);
 		
 		$(".rightCol").append(div);
 		div.fadeIn(this.fadeNumber);
