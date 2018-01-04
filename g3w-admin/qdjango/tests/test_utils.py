@@ -86,16 +86,36 @@ class QgisProjectTest(TestCase):
         # check lyers in project
         self.assertEqual(len(self.project.layers), 4)
 
-        '''
-        srid',
-        'units',
-        'initialExtent',
-        'maxExtent',
-        'wfsLayers',
-        'wfstLayers',
-        'layersTree',
-        'layers',
-        'layerRelations',
-        '''
+        for layer in self.project.layers:
+            if layer.layerId == 'countries_simpl20171228095706310':
+                self.assertEqual(layer.title, u'countries_simpl')
+                self.assertEqual(layer.name, u'countries_simpl')
+                self.assertEqual(layer.layerType, u'ogr')
+                self.assertEqual(layer.minScale, 1000000)
+                self.assertEqual(layer.maxScale, 0)
+
+"""                
+'isVisible',
+'title',
+'name',
+'layerType',
+'minScale',
+'maxScale',
+'scaleBasedVisibility',
+'srid',
+# 'capabilities',
+'wfsCapabilities',
+'editOptions',
+'datasource',
+'origname',
+'aliases',
+'columns',
+'excludeAttributesWMS',
+'excludeAttributesWFS',
+'geometrytype',
+'vectorjoins',
+                'editTypes'
+"""
+
 
 
