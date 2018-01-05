@@ -15,7 +15,7 @@ ga.Qdjango.widgetEditor = {
 	form: null,
 	onAddCallback: null,
 	widget: null,
-	delimiterItems: ['.',',',';','|'],
+	delimiterItems: ['.',',',';'],
 	widget: [
 		{
 			'type': 'unique_value_select',
