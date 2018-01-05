@@ -231,7 +231,7 @@ class QdjangoProjectRelationsApiView(APIView):
             referencing_field = '"{}"'.format(relation['fieldRef']['referencingField'])
 
         with connections[using].cursor() as cursor:
-            cursor.execute("SELECT * FROM {} WHERE {} {} '{}'".format(
+            cursor.execute("SELECT * FROM {} WHERE {} {} {}".format(
                 datasource['table'],
                 referencing_field,
                 '=' if relation_field_value != 'null' else 'IS',
