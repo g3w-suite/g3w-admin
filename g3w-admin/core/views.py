@@ -314,7 +314,7 @@ class MacroGroupDeleteView(G3WAjaxDeleteViewMixin, SingleObjectMixin, View):
     '''
     Delete macrogroup Ajax view
     '''
-    model = Group
+    model = MacroGroup
 
     @method_decorator(user_passes_test_or_403(lambda u: u.is_superuser))
     def dispatch(self, *args, **kwargs):
