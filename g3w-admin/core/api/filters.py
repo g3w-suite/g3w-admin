@@ -46,13 +46,14 @@ class IntersectsBBoxFilter(InsideBBoxFilter):
         bbox = self.get_filter_bbox(request)
 
         # to reproject
-        if hasattr(view, 'reproject') and view.reproject:
-            bbox.srid = view.layer.project.group.srid.auth_srid
-            bbox.transform(view.layer.srid)
-        else:
-            if hasattr(view, 'layer'):
-                bbox.srid = view.layer.srid
+        if bbox:
+            if hasattr(view, 'reproject') and view.reproject:
+                bbox.srid = view.layer.project.group.srid.auth_srid
                 bbox.transform(view.layer.srid)
+            else:
+                if hasattr(view, 'layer'):
+                    bbox.srid = view.layer.srid
+                    bbox.transform(view.layer.srid)
 
         if not bbox:
             return queryset
