@@ -156,8 +156,8 @@ class ProjectSerializer(serializers.ModelSerializer):
                 if layers[layer['id']].name in qgis_projectsettings_wms.layers:
 
                     # remove from tree layer without geometry
-                    if layers[layer['id']].geometrytype == QGIS_LAYER_TYPE_NO_GEOM:
-                        to_remove_from_layerstree.append((container, layer))
+                    #if layers[layer['id']].geometrytype == QGIS_LAYER_TYPE_NO_GEOM:
+                        #to_remove_from_layerstree.append((container, layer))
 
                     layer_serialized = LayerSerializer(layers[layer['id']],
                                                       qgis_projectsettings_wms=qgis_projectsettings_wms)
