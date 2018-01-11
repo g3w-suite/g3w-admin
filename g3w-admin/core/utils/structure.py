@@ -14,6 +14,18 @@ from django.utils.translation import ugettext, ugettext_lazy as _
 from copy import deepcopy
 from collections import OrderedDict
 
+# Mapping OGRwkbGeometryType
+MAPPING_OGRWKBGTYPE = {
+    0: 'No Geometry',
+    1: 'Point',
+    2: 'LineString',
+    3: 'Polygon',
+    4: 'MultiPoint',
+    5: 'MultiLineString',
+    6: 'MultiPolygon',
+    7: 'Geometry'
+}
+
 # relations data type
 RELATIONS_ONE_TO_ONE = 'ONE'
 RELATIONS_ONE_TO_MANY = 'MANY'

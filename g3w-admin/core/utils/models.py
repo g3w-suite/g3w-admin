@@ -12,7 +12,7 @@ from sqlalchemy.dialects.postgresql import base as PGD
 from osgeo import ogr
 from core.utils.db import build_django_connection, build_dango_connection_name
 from core.utils.geo import camel_geometry_type
-from .structure import MAPPING_GEOALCHEMY_DJANGO_FIELDS, BooleanField, NullBooleanField
+from .structure import MAPPING_GEOALCHEMY_DJANGO_FIELDS, MAPPING_OGRWKBGTYPE, BooleanField, NullBooleanField
 
 
 
@@ -91,7 +91,7 @@ def create_geomodel_from_qdjango_layer(layer, app_label='core'):
         datasource = datasource2dict(layer.datasource)
         geometrytype = datasource.get('type', None)
     else:
-        geometrytype = layer.geometrytype
+        geometrytype = None
 
     to_create_model = True
     if model_table_name in g3wsuite_apps.all_models[app_label]:
@@ -121,6 +121,9 @@ def create_geomodel_from_qdjango_layer(layer, app_label='core'):
             geometry_column = daLayer.GetGeometryColumn() if daLayer.GetGeometryColumn() else None
             if geometry_column:
                 geometry_srid = int(daLayer.GetSpatialRef().GetAuthorityCode(None))
+
+                # get geometrytype
+                geometrytype = MAPPING_OGRWKBGTYPE[daLayer.GetGeomType()]
 
             engine = create_engine('sqlite:///{}'.format(
                 datasource['dbname']
