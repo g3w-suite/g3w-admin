@@ -77,6 +77,27 @@ def create_geomodel_from_qdjango_layer(layer, app_label='core'):
     """
     Create dynamic django geo model
     """
+
+    CREATOR_CALSSES = {
+        'postgres': PostgisCreateGeomodel,
+        'spatialite': SpatialiteCreateGeomodel
+    }
+
+    datasource = datasource2dict(layer.datasource)
+
+    if layer.layer_type not in CREATOR_CALSSES.keys():
+        raise Exception('Layer type, {},must be one of {}'.format(layer.layer_type, ' or '.join(CREATOR_CALSSES.keys())))
+
+    creator = CREATOR_CALSSES[layer.layer_type](layer, datasource, app_label)
+
+    return creator.geo_model, creator.using, creator.geometry_type
+
+
+'''
+def create_geomodel_from_qdjango_layer(layer, app_label='core'):
+    """
+    Create dynamic django geo model
+    """
     datasource = datasource2dict(layer.datasource)
 
     if layer.layer_type not in ('postgres', 'spatialite'):
@@ -220,9 +241,211 @@ def create_geomodel_from_qdjango_layer(layer, app_label='core'):
                                  options={'db_table': table})
 
     return geo_model, using, geometrytype
-
+'''
 
 class G3WChoices(Choices):
 
     def __setitem__(self, key, value):
         self._store((key, key, value), self._triples, self._doubles)
+
+
+# CLASES FOR BUILD MODEL AT RUNTIME
+class CreateGeomodel(object):
+
+    def __init__(self, layer, datasource, app_label='core'):
+
+        self.app_label = app_label
+        self.layer = layer
+        self.datasource = datasource
+        self.django_model_fields = dict()
+
+        self.get_data_from_ds()
+        self.get_geometry_type()
+        self.get_fields()
+        self.build_connection()
+        self.create_model()
+
+    def get_geometry_type(self):
+        self.geometry_type = None
+
+    def get_data_from_ds(self):
+
+        self.schema, self.table = get_schema_table(self.datasource['table'])
+        self.model_table_name = '{}.{}_{}'.format(self.schema, self.table, self.layer.project.pk)
+
+        if self.model_table_name in g3wsuite_apps.all_models[self.app_label]:
+            del (g3wsuite_apps.all_models[self.app_label][self.model_table_name])
+
+    def get_fields(self):
+
+        # instance Geoalchemy
+        return self.create_geotable()
+
+        # add for specific layer type
+        # ....
+
+    def create_engine(self):
+        pass
+
+    def create_geotable(self):
+
+        engine, geotable_kwargs = self.create_engine()
+
+        meta = MetaData(bind=engine)
+        return GEOTable(
+                    self.table, meta, autoload=True, autoload_with=engine, **geotable_kwargs
+                )
+
+    def build_connection(self):
+        pass
+
+    def create_model(self):
+
+        self.geo_model = create_model(self.model_table_name, self.django_model_fields, app_label=self.app_label,
+                                 module='{}.models'.format(self.app_label), db=self.using,
+                                 options={'db_table': self.table})
+
+
+class PostgisCreateGeomodel(CreateGeomodel):
+
+    layer_type = 'postgis'
+
+    def get_geometry_type(self):
+        self.geometry_type = self.datasource.get('type', None)
+
+    def create_engine(self):
+        engine = create_engine('postgresql://{}:{}@{}:{}/{}'.format(
+            self.datasource['user'],
+            self.datasource['password'],
+            self.datasource['host'],
+            self.datasource['port'],
+            self.datasource['dbname']
+        ), echo=False)
+
+        geotable_kwargs = {
+            'schema': self.schema
+        }
+
+        return engine, geotable_kwargs
+
+    def get_fields(self):
+
+        geotable = super(PostgisCreateGeomodel, self).get_fields()
+
+        for column in geotable.columns:
+
+            if column.autoincrement:
+                dj_model_field_type = MAPPING_GEOALCHEMY_DJANGO_FIELDS['autoincrement']
+            else:
+                dj_model_field_type = MAPPING_GEOALCHEMY_DJANGO_FIELDS[type(column.type)]
+
+            kwargs = {}
+
+            if column.primary_key:
+                kwargs['primary_key'] = True
+
+            if column.unique:
+                kwargs['unique'] = True
+
+            if column.nullable:
+                kwargs['null'] = True
+                kwargs['blank'] = True
+
+                # special case for BoolenaField
+                if dj_model_field_type == BooleanField:
+                    dj_model_field_type = NullBooleanField
+            else:
+                kwargs['blank'] = False
+                kwargs['null'] = False
+
+            if type(column.type) == geotypes.Geometry:
+                srid = column.type.srid
+                if srid == -1 and srid != self.layer.srid:
+                    srid = self.layer.srid
+                kwargs['srid'] = srid
+
+                # if geometry_type is not set get from here:
+                if not self.geometry_type:
+                    self.geometry_type = camel_geometry_type(column.type.geometry_type)
+
+            if type(column.type) == PGD.VARCHAR:
+                if column.type.length:
+                    kwargs['max_length'] = column.type.length
+                else:
+                    kwargs['max_length'] = 255
+            elif type(column.type) == PGD.NUMERIC:
+                kwargs['max_digits'] = column.type.precision if column.type.precision else 65535
+                kwargs['decimal_places'] = column.type.scale if column.type.scale else 65535
+
+            self.django_model_fields[column.name] = dj_model_field_type(**kwargs)
+
+    def build_connection(self):
+
+        self.using = build_dango_connection_name(self.layer.datasource)
+
+        if self.using not in connections.databases:
+            connections.databases[self.using] = build_django_connection(self.datasource, schema=self.schema)
+
+
+class SpatialiteCreateGeomodel(CreateGeomodel):
+
+    layer_type = 'spatialite'
+
+    def create_engine(self):
+
+        # try with ogr
+        splite = ogr.Open(self.datasource['dbname'])
+        daLayer = splite.GetLayerByName(str(self.table))
+
+        # get geometry columns e type
+        self.geometry_column = daLayer.GetGeometryColumn() if daLayer.GetGeometryColumn() else None
+        if self.geometry_column:
+            self.geometry_srid = int(daLayer.GetSpatialRef().GetAuthorityCode(None))
+
+            # get geometry type
+            self.geometry_type = MAPPING_OGRWKBGTYPE[daLayer.GetGeomType()]
+
+        engine = create_engine('sqlite:///{}'.format(
+            self.datasource['dbname']
+        ), echo=False)
+
+        geotable_kwargs = {}
+
+        return engine, geotable_kwargs
+
+    def get_fields(self):
+
+        geotable = super(SpatialiteCreateGeomodel, self).get_fields()
+
+        for column in geotable.columns:
+
+            kwargs = {}
+
+            if column.primary_key:
+                dj_model_field_type = MAPPING_GEOALCHEMY_DJANGO_FIELDS['autoincrement']
+                kwargs['primary_key'] = True
+            else:
+                dj_model_field_type = MAPPING_GEOALCHEMY_DJANGO_FIELDS[type(column.type)]
+
+            if column.unique:
+                kwargs['unique'] = True
+
+            if column.nullable:
+                kwargs['null'] = True
+                kwargs['blank'] = True
+            else:
+                kwargs['blank'] = False
+
+            if column.name == self.geometry_column:
+                kwargs['srid'] = self.geometry_srid
+                dj_model_field_type = MAPPING_GEOALCHEMY_DJANGO_FIELDS['geotype']
+            else:
+                dj_model_field_type = MAPPING_GEOALCHEMY_DJANGO_FIELDS[type(column.type)]
+
+            self.django_model_fields[column.name] = dj_model_field_type(**kwargs)
+
+    def build_connection(self):
+        self.using = build_dango_connection_name(self.datasource['dbname'])
+
+        if self.using not in connections.databases:
+            connections.databases[self.using] = build_django_connection(self.datasource, layer_type=self.layer_type)
