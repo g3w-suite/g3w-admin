@@ -907,10 +907,13 @@ class QgisProjectSettingsWMS(XmlData):
             dataLayer = {
                 'name': name,
                 'title': title,
-                'visible': bool(int(layerTree.attrib['visible'])),
                 'queryable': bool(int(layerTree.attrib['queryable'])),
                 'bboxes': self._getBBOXLayer(layerTree)
             }
+
+            if 'visible' in layerTree.attrib:
+                dataLayer['visible'] = bool(int(layerTree.attrib['visible']))
+
             self._layersData[name] = dataLayer
 
     def _getDataLayers(self):
