@@ -27,7 +27,7 @@ class ClientConfigApiView(APIView):
 
         # signal after serialization project
         ps_data = ps.data
-        for singnal_receiver, data in post_serialize_project.send(ps, app_name=project_type):
+        for singnal_receiver, data in post_serialize_project.send(ps, app_name=project_type, request=self.request):
             update_serializer_data(ps_data, data)
 
         return Response(ps.data)
