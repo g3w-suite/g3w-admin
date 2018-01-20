@@ -9,6 +9,7 @@ from sqlalchemy import create_engine, MetaData
 from geoalchemy2 import Table as GEOTable
 import geoalchemy2.types as geotypes
 from sqlalchemy.dialects.postgresql import base as PGD
+from sqlalchemy.dialects.sqlite import base as SLD
 from osgeo import ogr
 from core.utils.db import build_django_connection, build_dango_connection_name
 from core.utils.geo import camel_geometry_type
@@ -411,6 +412,13 @@ class SpatialiteCreateGeomodel(CreateGeomodel):
 
         geotable_kwargs = {}
 
+        # check if table as autoincrement column
+        # from https://stopbyte.com/t/how-to-check-if-a-column-is-autoincrement-primary-key-or-not-in-sqlite/174/2
+        q = 'SELECT "is-autoincrement" FROM sqlite_master WHERE tbl_name="{}" AND sql LIKE "%AUTOINCREMENT%"'\
+            .format(self.table)
+
+        self.autoincrement = True if len(engine.execute(q).fetchall()) > 0 else False
+
         return engine, geotable_kwargs
 
     def get_fields(self):
@@ -422,8 +430,18 @@ class SpatialiteCreateGeomodel(CreateGeomodel):
             kwargs = {}
 
             if column.primary_key:
-                dj_model_field_type = MAPPING_GEOALCHEMY_DJANGO_FIELDS['autoincrement']
                 kwargs['primary_key'] = True
+
+                # check fo autoincremente
+                if self.autoincrement:
+                    dj_model_field_type = MAPPING_GEOALCHEMY_DJANGO_FIELDS['autoincrement']
+                else:
+                    dj_model_field_type = MAPPING_GEOALCHEMY_DJANGO_FIELDS[type(column.type)]
+
+            elif column.name == self.geometry_column:
+                kwargs['srid'] = self.geometry_srid
+                dj_model_field_type = MAPPING_GEOALCHEMY_DJANGO_FIELDS['geotype']
+
             else:
                 dj_model_field_type = MAPPING_GEOALCHEMY_DJANGO_FIELDS[type(column.type)]
 
@@ -436,11 +454,11 @@ class SpatialiteCreateGeomodel(CreateGeomodel):
             else:
                 kwargs['blank'] = False
 
-            if column.name == self.geometry_column:
-                kwargs['srid'] = self.geometry_srid
-                dj_model_field_type = MAPPING_GEOALCHEMY_DJANGO_FIELDS['geotype']
-            else:
-                dj_model_field_type = MAPPING_GEOALCHEMY_DJANGO_FIELDS[type(column.type)]
+            if type(column.type) == SLD.VARCHAR:
+                if column.type.length:
+                    kwargs['max_length'] = column.type.length
+                else:
+                    kwargs['max_length'] = 255
 
             self.django_model_fields[column.name] = dj_model_field_type(**kwargs)
 

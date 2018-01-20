@@ -11,8 +11,12 @@
 
 {% block page_header %}
 <h1>
+{% if form.instance.title %}
+{% trans 'QGIS project' %}{{ form.instance.title }}
+{% else %}
 {% trans 'New QGIS project' %}
     <small>{% trans 'Create a new QGIS project for current group' %}</small>
+{% endif %}
 </h1>
 {% endblock %}
 
