@@ -178,7 +178,7 @@ def get_perms_by_user_backend(user, obj):
         'change_user',
         'delete_user'
     ]
-    if obj.userbackend.backend.lower() != USER_BACKEND_DEFAULT:
+    if not obj.is_superuser and obj.userbackend.backend.lower() != USER_BACKEND_DEFAULT:
         raw_perms = pre_show_user_data.send(obj, user=user)
         other_perms = set()
         for receiver, perms in raw_perms:
