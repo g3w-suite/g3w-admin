@@ -73,6 +73,7 @@ def kill(arg1, arg2):
 @task
 @needs([
     'install_bower_components',
+    'requirements',
     'sync'
 ])
 def install():
@@ -87,6 +88,13 @@ def install_bower_components():
     info("Installing Bower components...")
     sh('bower install')
     info("Bower components installed.")
+
+
+@task
+def requirements():
+    info("Installing Python modules...")
+    sh('pip install -r requirements.txt')
+    info("Python modules installed.")
 
 
 @task
