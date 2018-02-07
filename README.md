@@ -4,7 +4,7 @@ G3W-ADMIN admin server module for G3W-SUITE.
 
 The following instructions are for a Ubuntu 16.04 LTS.
 
-## Installation of node.js e Bower
+## Installation of node.js and Bower
 G3W-ADMIN use javacript package manager [**bower**](https://bower.io/)
 
 Bower works on [**Node.js**](https://nodejs.org/it/)
@@ -70,7 +70,7 @@ pip install GDAL==<installed_version or closest>
 
 ### With paver commands
 
-G3W-ADMIN has a series of paver commands to administrate the suite.
+G3W-ADMIN has a series of [paver](http://pythonhosted.org/Paver/) commands to administrate the suite.
 After prepared environment if sufficient invoce paver *install* task
 
 ```bash
