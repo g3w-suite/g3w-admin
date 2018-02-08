@@ -15,6 +15,7 @@ django-debug-toolbar
 django-debug-panel
 django-mptt
 django-ordered-model
+django-ajax-select
 pathlib
 shapely
 GeoAlchemy2
