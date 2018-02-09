@@ -19,6 +19,7 @@ from core.api.serializers import update_serializer_data, G3WSerializerMixin
 from core.utils.models import get_geometry_column
 from core.utils.structure import RELATIONS_ONE_TO_MANY, RELATIONS_ONE_TO_ONE
 from qdjango.utils.structure import QdjangoMetaLayer
+from .utils import serialize_vectorjoin
 import json
 
 
@@ -107,18 +108,7 @@ class ProjectSerializer(serializers.ModelSerializer):
         map_relations = []
         for n, join in enumerate(joins):
             if layers[join['joinLayerId']].layer_type in (('postgres', 'spatialite')):
-                name = '{}_vectorjoin_{}'.format(layer_id, n)
-                map_relations.append({
-                    'type': RELATIONS_ONE_TO_ONE,
-                    'id': name,
-                    'name': name,
-                    'referencedLayer': layer_id,
-                    'referencingLayer': join['joinLayerId'],
-                    'fieldRef': {
-                        'referencedField': join['targetFieldName'],
-                        'referencingField': join['joinFieldName']
-                    }
-                })
+                map_relations.append(serialize_vectorjoin(layer_id, n, join))
         return map_relations
 
     def to_representation(self, instance):

@@ -24,6 +24,7 @@ from usersmanage.mixins.views import G3WACLViewMixin
 from .signals import load_qdjango_widgets_data
 from .mixins.views import *
 from .forms import *
+from .api.utils import serialize_vectorjoin
 import json
 from collections import OrderedDict
 
@@ -182,9 +183,21 @@ class QdjangoProjectRelationsApiView(APIView):
 
         # get Project model object:
         project = Project.objects.get(pk=project_id)
-        relations = {r['id']: r for r in eval(project.relations)}
 
-        relation = relations[relation_id]
+        # ty to get project relations and if fail layer relations
+        try:
+            relations = {r['id']: r for r in eval(project.relations)}
+            relation = relations[relation_id]
+        except Exception as e:
+
+            # try to get layer relations
+            layer_id = relation_id.split('_vectorjoin_')[0]
+            layer = project.layer_set.filter(qgs_layer_id=layer_id)[0]
+            joins = eval(layer.vectorjoins)
+            for n, join in enumerate(joins):
+                serialized_relation = serialize_vectorjoin(layer.qgs_layer_id, n, join)
+                if serialized_relation['id'] == relation_id:
+                    relation = serialized_relation
 
         # get layer for query:
         referencing_layer = Layer.objects.get(qgs_layer_id=relation['referencingLayer'], project=project)
