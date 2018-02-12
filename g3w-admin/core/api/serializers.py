@@ -101,12 +101,12 @@ class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
                 # project thumbnail
                 project_thumb = project.thumbnail.name if bool(project.thumbnail.name) \
-                    else '{}g3w-client/images/FakeProjectThumb.png'.format(settings.STATIC_URL)
+                    else '{}client/images/FakeProjectThumb.png'.format(settings.STATIC_URL)
                 ret['projects'].append({
                     'id': project.id,
                     'title': project.title,
                     'description': project.description,
-                    'thumbnail': project_thumb  ,
+                    'thumbnail': project_thumb,
                     'type': g3wProjectApp,
                     'gid': "{}:{}".format(g3wProjectApp, project.id)
                 })
