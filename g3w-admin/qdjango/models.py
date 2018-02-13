@@ -135,6 +135,12 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
 post_delete.connect(check_overviewmap_project, sender=Project)
 
 
+def get_layer_data_file_path(instance, filename):
+    """Custom name for uploaded project files."""
+
+    return settings.DATASOURCE_PATH
+
+
 class Layer(G3WACLModelMixins, models.Model):
     """A QGIS layer."""
 
@@ -146,7 +152,9 @@ class Layer(G3WACLModelMixins, models.Model):
         ('wms', _('WMS')),
         ('ogr', _('OGR')),
         ('gdal', _('GDAL')),
+        ('delimitedtext', _('CSV'))
         )
+
     # General info
     name = models.CharField(_('Name'), max_length=255)
     title = models.CharField(_('Title'), max_length=255, blank=True)
@@ -167,7 +175,7 @@ class Layer(G3WACLModelMixins, models.Model):
     # Optional data file (non-postgres layers need it)
     data_file = models.FileField(
         _('Associated data file'),
-        upload_to=settings.DATASOURCE_PATH,
+        upload_to=get_layer_data_file_path,
         blank=True,
         null=True
         )
@@ -190,11 +198,17 @@ class Layer(G3WACLModelMixins, models.Model):
     #geometryType
     geometrytype = models.CharField(_('Geometry type'), max_length=255, blank=True, null=True)
 
-    # Tilestache confgiguration paramenters for layer
-    tilestache_conf = models.TextField(_('Tilestache layer configurations paramenters'), blank=True, null=True)
-
     exclude_attribute_wms = models.TextField(_('Attributes excluded from wms'), blank=True, null=True)
     exclude_attribute_wfs = models.TextField(_('Attributes excluded from wfs'), blank=True, null=True)
+
+    # possible layer relations
+    vectorjoins = models.TextField(_('Layer relations'), blank=True, null=True)
+
+    # editing widgets
+    edittypes = models.TextField(_('Columns layer widgets'), blank=True, null=True)
+
+    # exclude from legend
+    exclude_from_legend = models.BooleanField(_('Exclude to legend'), default=False, blank=True)
 
     def __unicode__(self):
         return self.name

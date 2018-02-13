@@ -1,6 +1,6 @@
 from django.conf import settings
 from django import forms
-from django.forms import Select, ValidationError, ModelChoiceField
+from django.forms import Select, ValidationError, ModelChoiceField, ChoiceField
 from django.utils.datastructures import MultiValueDict
 from django.utils.translation import ugettext, ugettext_lazy as _
 from django.contrib.auth.forms import (
@@ -12,15 +12,17 @@ from django.contrib.auth import (
 )
 from django.contrib.auth.models import User, Group as AuthGroup
 from django_file_form.forms import FileFormMixin, UploadedFileField
+from django.utils.functional import lazy
 from guardian.compat import get_user_model
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout,Div, HTML
 from crispy_forms.bootstrap import AppendedText, PrependedText
 from PIL import Image
-from .models import Userdata, Department
+from .models import Userdata, Department, Userbackend, USER_BACKEND_TYPES
 from core.mixins.forms import G3WRequestFormMixin, G3WFormMixin
 from usersmanage.configs import *
 from .utils import getUserGroups, userHasGroups
+
 
 
 def label_users(obj):
@@ -97,16 +99,12 @@ class G3WACLForm(forms.Form):
     def _ACLPolicy(self):
 
         editorToRemove = None
-        if 'editor_user' in self.cleaned_data:
-            if self.request.user.is_superuser:
-                permission_user = self.cleaned_data['editor_user']
-                if (self.initial_editor_user and self.cleaned_data['editor_user'] and
-                            self.initial_editor_user != self.cleaned_data['editor_user'].id) or \
-                    (self.initial_editor_user and not self.cleaned_data['editor_user']):
-                    editorToRemove = User.objects.get(pk=self.initial_editor_user)
-
-            else:
-                permission_user = self.request.user
+        if 'editor_user' in self.cleaned_data and self.request.user.is_superuser:
+            permission_user = self.cleaned_data['editor_user']
+            if (self.initial_editor_user and self.cleaned_data['editor_user'] and
+                        self.initial_editor_user != self.cleaned_data['editor_user'].id) or \
+                (self.initial_editor_user and not self.cleaned_data['editor_user']):
+                editorToRemove = User.objects.get(pk=self.initial_editor_user)
 
             if permission_user and hasattr(self.instance, 'addPermissionsToEditor'):
                 self.instance.addPermissionsToEditor(permission_user)
@@ -128,6 +126,7 @@ class G3WACLForm(forms.Form):
 class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreationForm):
 
     department = ModelChoiceField(queryset=Department.objects.all(), required=False)
+    backend = ChoiceField(choices=(), required=True)
     avatar = UploadedFileField(required=False)
     groups = ModelChoiceField(
         queryset=AuthGroup.objects.all(),
@@ -142,13 +141,16 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
         #filter fileds by role:
         self.filterFieldsByRoles()
 
+        self.fields['backend'].choices = USER_BACKEND_TYPES
+
         #check for groups in intials data
         if 'groups' in self.initial and len(self.initial['groups']) > 0:
             self.initial['groups'] = self.initial['groups'][0]
 
         self.helper = FormHelper(self)
         self.helper.form_tag = False
-        self.helper.layout = Layout(
+
+        args =[
             Div(
                 Div(
                     Div(
@@ -232,7 +234,30 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
                 ),
                 css_class='row'
             )
-        )
+        ]
+
+        # add backed if user id admin01
+        if self.request.user.is_superuser and self.request.user.is_staff:
+            args.append(Div(
+                Div(
+                    Div(
+                        Div(
+                            HTML("<h3 class='box-title'><i class='fa fa-gear'></i> {}</h3>".format(_('User backend'))),
+                            css_class='box-header with-border'
+                        ),
+                        Div(
+                            'backend',
+                            css_class='box-body',
+
+                        ),
+                        css_class='box box-default'
+                    ),
+                    css_class='col-md-6'
+                ),
+                css_class='row'
+            ))
+
+        self.helper.layout = Layout(*args)
 
     def filterFieldsByRoles(self):
         if self.request.user.is_superuser:
@@ -279,6 +304,13 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
             else:
                 Userdata(user=user, department=self.cleaned_data['department'],avatar=self.cleaned_data['avatar']).save()
 
+            # add backend
+            if 'backend' in self.cleaned_data:
+                if hasattr(user, 'userbackend'):
+                    user.userbackend.backend = self.cleaned_data['backend']
+                    user.userbackend.save()
+                else:
+                    Userbackend(user=user, backend=self.cleaned_data['backend']).save()
 
         return user
 
@@ -322,10 +354,10 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
 class G3WUserUpdateForm(G3WUserForm):
 
     password1 = forms.CharField(label=_("Password"),
-        widget=forms.PasswordInput,required=False)
+                                widget=forms.PasswordInput, required=False)
     password2 = forms.CharField(label=_("Password confirmation"),
-        widget=forms.PasswordInput,required=False,
-        help_text=_("Enter the same password as above, for verification."))
+                                widget=forms.PasswordInput, required=False,
+                                help_text=_("Enter the same password as above, for verification."))
 
     password = ReadOnlyPasswordHashField()
 

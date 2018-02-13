@@ -1,4 +1,5 @@
 from django.utils import six
+from django.utils.translation import get_language
 from django.views.generic import TemplateView
 from django.template import loader
 from django.shortcuts import get_object_or_404
@@ -33,7 +34,6 @@ class ClientView(TemplateView):
 
         anonymous_user = get_user_model().get_anonymous()
 
-        #if not request.user.has_perm("{}.view_project".format(kwargs['project_type']), self.project):
         if request.user not in grant_users and anonymous_user not in grant_users and not request.user.is_superuser:
 
             # redirect to login if Anonymous user
@@ -48,7 +48,10 @@ class ClientView(TemplateView):
         contextData = super(ClientView, self).get_context_data(**kwargs)
 
         # group serializer
-        group = get_object_or_404(Group, slug=kwargs['group_slug'])
+        try:
+            group = self.project.group
+        except:
+            group = get_object_or_404(Group, slug=kwargs['group_slug'])
         groupSerializer = GroupSerializer(group, projectId=str(self.project.pk), projectType=kwargs['project_type'],
                                           request=self.request)
 
@@ -59,8 +62,9 @@ class ClientView(TemplateView):
 
         # add user login data
         u = self.request.user
+        user_data = {'i18n': get_language()}
         if not u.is_anonymous():
-            user_data = JSONRenderer().render({
+            user_data.update({
                 'username': u.username,
                 'first_name': u.first_name,
                 'last_name': u.last_name,
@@ -68,8 +72,7 @@ class ClientView(TemplateView):
                 'logout_url': reverse('logout'),
                 'admin_url': reverse('home')
             })
-        else:
-            user_data = '{}'
+        user_data = JSONRenderer().render(user_data)
 
         serializedGroup = JSONRenderer().render(groupData)
         if six.PY3:
@@ -77,17 +80,17 @@ class ClientView(TemplateView):
 
         # add baseUrl property
         contextData['group_config'] = 'var initConfig ={{ "staticurl":"{}", "client":"{}", ' \
-                                      '"mediaurl":"{}", "user":{}, "group":{}, "baseurl":"{}" }}'.format(
-            settings.STATIC_URL, "{}/".format(settings.CLIENT_DEFAULT), settings.MEDIA_URL, user_data, serializedGroup,
-            "/{}".format(settings.SITE_PREFIX_URL if settings.SITE_PREFIX_URL else ''))
+                                      '"mediaurl":"{}", "user":{}, "group":{}, "baseurl":"{}", "vectorurl":"{}" }}'\
+            .format(settings.STATIC_URL, "{}/".format(settings.CLIENT_DEFAULT), settings.MEDIA_URL, user_data,
+                    serializedGroup, "/{}".format(settings.SITE_PREFIX_URL if settings.SITE_PREFIX_URL else ''),
+                                                  settings.VECTOR_URL)
 
         # project by type(app)
         if not '{}-{}'.format(kwargs['project_type'], self.project.pk) in groupSerializer.projects.keys():
             raise Http404('No project type and/or project id present in group')
 
         # page title
-        # todo: set page title by project name??
-        contextData['page_title'] = 'g3w-client'
+        contextData['page_title'] = 'g3w-client | {}'.format(self.project.title)
 
         return contextData
         

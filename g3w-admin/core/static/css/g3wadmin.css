@@ -7,9 +7,12 @@
 }
 
 table span.icon {
-    font-size: 20px;
+    font-size: 22px;
 }
 
+table span.iconmap {
+    font-size: 30px;
+}
 .icon .ion-trash-b,
 .qq-upload-delete .ion-trash-b,
 .qq-upload-cancel .ion-close {
@@ -95,4 +98,15 @@ table span.icon {
 
 h5 small {
     color:#fff;
+}
+
+.sort-highlight-group {
+    background: #f4f4f4;
+    border: 1px dashed #ddd;
+    margin-bottom: 10px;
+    height: 192px;
+}
+
+.widget-user .widget-user-username {
+    font-weight: 400;
 }

@@ -1,2 +1,5 @@
 ADMINLTE_SKIN_DEFAULT = 'skin-yellow'
 ADMINLTE_LAYOUT_OPTION = 'sidebar-mini'
+G3WSUITE_MAIN_LOGO = 'img/g3wsuite_logo.png'
+G3WSUITE_RID_LOGO = 'img/g3wsuite_logo_rid.png'
+G3WSUITE_LOGIN_LOGO = 'img/g3wsuite_logo_h48.png'

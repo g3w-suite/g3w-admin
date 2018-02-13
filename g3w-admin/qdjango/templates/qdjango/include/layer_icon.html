@@ -24,6 +24,11 @@
      xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" >
   <image x="0" y="0" height="100%" width="100%"  xlink:href="{% static 'svg/mIconWms.svg' %}" />
   </svg>
+{% elif object.layer_type == 'delimitedtext' %}
+  <svg id="circle" height="16" width="16" vviewBox="0 0 32 32"
+     xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" >
+  <image x="0" y="0" height="100%" width="100%"  xlink:href="{% static 'svg/mIconTableLayer.svg' %}" />
+  </svg>
 {% else %}
   <svg id="circle" height="16" width="16" viewBox="0 0 32 32"
      xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" >

@@ -1,12 +1,30 @@
 from django.db.models.fields import *
 from django.db.models.fields.files import *
 from django.db.models.fields.related import *
+import django.contrib.gis.db.models as geomodels
+from sqlalchemy.sql import sqltypes as SQLTYPE
+
+# specific fro dialectics
+from sqlalchemy.dialects.postgresql import base as SQLPOSTGRESTYPE
+import geoalchemy2.types as geotypes
 from django.conf import settings
 from django.apps import apps
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext, ugettext_lazy as _
 from copy import deepcopy
 from collections import OrderedDict
+
+# Mapping OGRwkbGeometryType
+MAPPING_OGRWKBGTYPE = {
+    0: 'No Geometry',
+    1: 'Point',
+    2: 'LineString',
+    3: 'Polygon',
+    4: 'MultiPoint',
+    5: 'MultiLineString',
+    6: 'MultiPolygon',
+    7: 'Geometry'
+}
 
 # relations data type
 RELATIONS_ONE_TO_ONE = 'ONE'
@@ -42,6 +60,7 @@ FORM_FIELD_TYPE_FIELDDEPEND = 'fielddepend'
 FORM_FIELD_TYPE_IMAGE = 'image'
 FORM_FIELD_TYPE_FILE = 'file'
 
+
 # mapping between form fields and fields data types
 FORM_FIELDS_MAPPING = {
     FIELD_TYPE_INTEGER: FORM_FIELD_TYPE_TEXT,
@@ -55,6 +74,28 @@ FORM_FIELDS_MAPPING = {
     FIELD_TYPE_DATETIME: FORM_FIELD_TYPE_TEXT,
     FIELD_TYPE_IMAGE: FORM_FIELD_TYPE_IMAGE,
     FIELD_TYPE_FILE: FORM_FIELD_TYPE_FILE,
+}
+
+MAPPING_GEOALCHEMY_DJANGO_FIELDS = {
+    SQLTYPE.INTEGER: IntegerField,
+    SQLTYPE.BIGINT: BigIntegerField,
+    SQLTYPE.FLOAT: FloatField,
+    SQLTYPE.VARCHAR: CharField,
+    SQLTYPE.TEXT: TextField,
+    SQLTYPE.SMALLINT: SmallIntegerField,
+    SQLTYPE.BOOLEAN: BooleanField,
+    SQLTYPE.DATE: DateField,
+    SQLTYPE.DATETIME: DateTimeField,
+    SQLTYPE.REAL: FloatField,
+    SQLTYPE.CHAR: CharField,
+    SQLTYPE.NUMERIC: DecimalField,
+    SQLTYPE.BLOB: BinaryField,
+
+    # specific for postgres
+    SQLPOSTGRESTYPE.DOUBLE_PRECISION: FloatField,
+    geotypes.Geometry: geomodels.GeometryField,
+    'geotype': geomodels.GeometryField,
+    'autoincrement': AutoField
 }
 
 
@@ -294,3 +335,51 @@ def getProjectsByGroup(group):
         Project = apps.get_app_config(g3wProjectApp).get_model('project')
         ret[g3wProjectApp] = Project.objects.filter(group=group)
     return ret
+
+
+class APIVectorLayerStructure(object):
+    """
+    Structure for API Vector Layer response.
+    """
+    _format = 'GeoJSON'
+    _pkField = 'gid'
+    _data = None
+    _featureLocks = None
+    _geomentryType = None
+    _fields = None
+
+    def __init__(self, **kwargs):
+
+        self.format = kwargs.get('type', self._format)
+        self.pkField = kwargs.get('pkField', self._pkField)
+        self.data = kwargs.get('data', self._data)
+        self.featureLocks = kwargs.get('featureLocks', self._featureLocks)
+        self.geometryType = kwargs.get('geomentryType', self._geomentryType)
+        self.fields = kwargs.get('fields', self._fields)
+
+    def setPkField(self, pkField):
+        self._pkField = pkField
+
+    def setData(self, data):
+        self._data = data
+
+    def setFeatureLocks(self, featuresLock):
+        self.featureLocks = featuresLock
+
+    def setFields(self, fields):
+        self.fields = fields
+
+    def as_dict(self):
+
+        res = {
+            'vector': {
+                'format': self.format,
+                'pk': self.pkField,
+                'data': self.data,
+                'geometrytype': self.geometryType,
+                'fields': self.fields,
+            },
+            'featurelocks': self.featureLocks,
+        }
+
+        return res

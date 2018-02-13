@@ -21,7 +21,7 @@ except:
 try:
 
     # python 2
-    from httplib import HTTPConnection
+    from httplib import HTTPConnection, HTTPSConnection
     from urlparse import urlsplit
     import urllib3
 except:
@@ -80,7 +80,6 @@ class OWSRequestHandler(OWSRequestHandlerBase):
             ows_request = q['REQUEST'].upper()
         else:
             ows_request = request.POST['REQUEST'][0].upper()
-
         if qdjangoModeRequest == QDJANGO_PROXY_REQUEST or ows_request == 'GETLEGENDGRAPHIC':
 
             # try to get getfeatureinfo on wms layer
@@ -127,22 +126,20 @@ class OWSRequestHandler(OWSRequestHandlerBase):
                 http = urllib3.PoolManager()
 
             result = http.request(request.method, url, body=request.body)
-            content_type = result.headers["Content-Type"] \
-                if 'Content-Type' in result.headers else result.headers["content-type"]
 
             # If we get a redirect, let's add a useful message.
             if result.status in (301, 302, 303, 307):
                 response = HttpResponse(('This proxy does not support redirects. The server in "%s" '
                                          'asked for a redirect to "%s"' % ('localhost', result.getheader('Location'))),
                                         status=result.status,
-                                        content_type=content_type)
+                                        content_type=result.headers["Content-Type"])
 
                 response['Location'] = result.getheader('Location')
             else:
                 response = HttpResponse(
                     result.data,
                     status=result.status,
-                    content_type=content_type)
+                    content_type=result.headers["Content-Type"])
             return response
 
         else:

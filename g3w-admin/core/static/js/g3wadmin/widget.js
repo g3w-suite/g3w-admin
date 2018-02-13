@@ -40,6 +40,10 @@ _.extend(g3wadmin.widget, {
         'modal-size'
     ],
 
+    _ajaxUploadParams: [
+        'validation-data-item-selector'
+    ],
+
     _ajaxFilerParams: [
         'action-url',
         'modal-title',
@@ -56,6 +60,10 @@ _.extend(g3wadmin.widget, {
     ],
 
     _setLayerCached: [
+        'ajax-url',
+    ],
+
+    _setLayerData: [
         'ajax-url',
     ],
 
@@ -497,7 +505,18 @@ _.extend(g3wadmin.widget, {
      * @param $item
      */
     ajaxUpload: function($item){
-        initUploadFields($item);
+
+        var params = ga.utils.getDataAttrs($item, this._ajaxUploadParams);
+
+        var options = {}
+
+        // get validation option if is set
+        if ('ajaxUploadValidation' in window) {
+            options['validation'] = window.ajaxUploadValidation;
+        }
+
+
+        initUploadFields($item, options);
 
         var $uploader = $item.find(".file-uploader-container");
         $uploader.on('complete', function(e, id, name, resJSON, xhr){
@@ -627,6 +646,34 @@ _.extend(g3wadmin.widget, {
     },
 
     /**
+     * Set layer data by post ajax
+     * @param $item
+     */
+    setLayerData: function($item, data) {
+
+        try {
+            var params = ga.utils.getDataAttrs($item, this._setLayerData);
+            if (_.isUndefined(params['ajax-url'])) {
+                throw new Error('Attribute data-ajax-url not defined');
+            }
+
+            ga.utils.addCsfrtokenData(data);
+
+            $.ajax({
+                method: 'post',
+                data: data,
+                url: params['ajax-url'],
+                error: function (xhr, textStatus, errorMessage) {
+                    ga.widget.showError(ga.utils.buildAjaxErrorMessage(xhr.status, errorMessage));
+                }
+            });
+
+        } catch (e) {
+            this.showError(e.message);
+        }
+    },
+
+    /**
      * Make download file by ajax call
      * selector: ajaxDownload
      * widget parameters:
@@ -682,12 +729,15 @@ _.extend(g3wadmin.widget, {
             var $input = $item.parents('.input-group').find('input');
             var bboxLayer = null;
             if ($input.val()) {
+
                 bboxLayer = ga.utils.transformBBoxToWGS84(params['crs'], $input.val());
             }
 
             var modal = ga.ui.mapModal({bboxLayer: bboxLayer});
             modal.setConfirmButtonAction(function(e){
-                $input.val(ga.utils.transformBBoxFromWGS84(params['crs'], modal.drawnLayer.getBounds().toBBoxString()));
+                var bounds = modal.drawnLayer.getBounds();
+                var bbox = [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()];
+                $input.val(ga.utils.transformBBoxFromWGS84(params['crs'], bbox));
                 modal.hide();
             });
         modal.show();

@@ -15,7 +15,14 @@ ga.Qdjango.widgetEditor = {
 	form: null,
 	onAddCallback: null,
 	widget: null,
-	delimiterItems: ['.',',',';','|'],
+	delimiterItems: ['.',',',';'],
+	/*widget: [
+		{
+			'type': 'unique_value_select',
+			'label': 'Unique value select',
+			'options': null
+		}
+	],*/
 	
 	isset: function(o)
 	{
@@ -40,12 +47,18 @@ ga.Qdjango.widgetEditor = {
 			str.indexOf("REAL") !== -1)
 			return "numberfield";
 	},
-	
+
 	onFormSubmit: function()
 	{
 		var that = this;
 		var obj = {};
 		var widget_type = this.widget ? this.widget.widget_type : $("#id_widget_type").val();
+
+		// check is widget-ytpe is changed from loading data
+		if ($("#id_widget_type").val() != widget_type) {
+			widget_type = $("#id_widget_type").val()
+		}
+
 		switch( widget_type )
 		{
 			case "hyperlink":
@@ -256,12 +269,20 @@ ga.Qdjango.widgetEditor = {
 										<option value="lte=">&lt;=</option>\
 										<option value="LIKE">LIKE</option>\
 									</select>');
+
+		var widgetSelect = $('<select class="form-control" name="widget_type">\
+							  <option value="">...</option>\
+							  </select>');
+
+		// add widget types
+
+
 		if (this.layer_type != 'spatialite'){
 			cmpOperatorSelect.append('<option value="ILIKE">ILIKE</option>')
 		}
 		if (that.isset(values) && that.isset(values.filterop))
 			cmpOperatorSelect.val($('<div/>').html(values.filterop).text());
-									
+
 		var div = $('<div class="blocco" style="display: none">\
 					<div class="box box-success" >\
 							<div class="box-header with-border">\
@@ -273,15 +294,17 @@ ga.Qdjango.widgetEditor = {
 							<div class="box-body">\
 								<div class="row">\
 									<div class="col-md-3"><span class="label label-default">Campo</span></div>\
+									<!--<div class="col-md-2"><span class="label label-default">Widget</span></div>-->\
 									<div class="col-md-3"><span class="label label-default">Alias</span></div>\
 									<div class="col-md-3"><span class="label label-default">Descrizione</span></div>\
-									<div class="col-md-3"><span class="label label-default">Operatore comparazione</span></div>\
+									<div class="col-md-1"><span class="label label-default">Operatore comparazione</span></div>\
 								</div>\
 								<div class="row">\
 									<div class="col-md-3 fieldSelect"></div>\
+									<!--<div class="col-md-2 widgetType"></div>-->\
 									<div class="col-md-3 textInput"></div>\
 									<div class="col-md-3 descriptionInput"></div>\
-									<div class="col-md-3 cmpOperatorSelect"></div>\
+									<div class="col-md-1 cmpOperatorSelect"></div>\
 								</div>\
 							</div>\
 					</div>\
@@ -304,6 +327,7 @@ ga.Qdjango.widgetEditor = {
 		div.find(".textInput").append(textInput);
 		div.find(".descriptionInput").append(descriptionInput);
 		div.find(".cmpOperatorSelect").append(cmpOperatorSelect);
+		//div.find(".widgetType").append(widgetSelect);
 		
 		$(".rightCol").append(div);
 		div.fadeIn(this.fadeNumber);
@@ -542,9 +566,6 @@ ga.Qdjango.widgetEditor = {
 	showStoredValues: function()
 	{
 		var that = this;
-		//$("#id_name").val(this.widget.name);
-		//$("#id_widget_type").val(this.widget.widget_type);
-		//$("#id_body").val(JSON.stringify(this.widget.body));
 		$(".rightCol").empty();
 		
 		switch(this.widget.widget_type)

@@ -40,32 +40,14 @@
 </div>
 
 <div class="row">
+{% with SETTINGS.G3WADMIN_PROJECT_APPS|length as n_apps  %}
 {% for app in SETTINGS.G3WADMIN_PROJECT_APPS %}
     {% with app|add:'-project-list' as listurl %}
-    <div class="col-md-6 col-xs-12" id="{{ app }}_projects_list" data-widget-type="htmlItem" data-html-url="{% url listurl group.slug %}" data-target-selector="#{{ app }}_projects_list">
+    <div class="{% if n_apps > 1 %}col-md-6{% else %}col-md-12{% endif %} col-xs-12" id="{{ app }}_projects_list" data-widget-type="htmlItem" data-html-url="{% url listurl group.slug %}" data-target-selector="#{{ app }}_projects_list">
+    {% include 'core/include/project_list_place_holder.html' %}
     </div>
     {% endwith %}
 {% endfor %}
-<!--
-<div class="pholder-wrapper col-md-6 col-xs-12">
-        <div class="pholder-item">
-            <div class="animated-background">
-                <div class="background-masker header-top"></div>
-                <div class="background-masker header-left"></div>
-                <div class="background-masker header-right"></div>
-                <div class="background-masker header-bottom"></div>
-                <div class="background-masker subheader-left"></div>
-                <div class="background-masker subheader-right"></div>
-                <div class="background-masker subheader-bottom"></div>
-                <div class="background-masker content-top"></div>
-                <div class="background-masker content-first-end"></div>
-                <div class="background-masker content-second-line"></div>
-                <div class="background-masker content-second-end"></div>
-                <div class="background-masker content-third-line"></div>
-                <div class="background-masker content-third-end"></div>
-            </div>
-        </div>
-    </div>
+{% endwith %}
 </div>
--->
 {% endblock %}

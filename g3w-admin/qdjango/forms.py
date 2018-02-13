@@ -9,7 +9,8 @@ from usersmanage.forms import G3WACLForm
 from django_file_form.forms import FileFormMixin, UploadedFileField
 from .models import *
 from usersmanage.utils import get_fields_by_user, crispyBoxACL, userHasGroups
-from .utils.data import QgisProject, ProjectExists
+from .utils.data import QgisProject
+from .utils.validators import ProjectExists
 
 
 class QdjangoProjectFormMixin(object):

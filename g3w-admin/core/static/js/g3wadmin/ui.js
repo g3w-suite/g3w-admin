@@ -212,14 +212,6 @@ _.extend(g3wadmin.ui, {
         });
     },
 
-    initSetLayerCached: function() {
-        $(document).on('ifChecked', '[data-widget-type="setLayerCached"]', function(e){
-            ga.widget.setLayerCached($(this));
-        }).on('ifUnchecked', '[data-widget-type="setLayerCached"]', function(e){
-            ga.widget.setLayerCached($(this), false);
-        });
-    },
-
     initRadioCheckbox: function(context) {
         if (!_.isUndefined(context)) {
             var $widgetItem = $(context).find('input[type="checkbox"], input[type="radio"]');
@@ -357,10 +349,40 @@ _.extend(g3wadmin.ui, {
             ga.widget.showDetailItemDataTable($dataTable, $(this));
         });
 
+        if (!options) {
+            options = {
+                stateSave: true
+            };
+        }
+
+        if (CURRENT_LANGUAGE_CODE != 'en') {
+            options['language'] = DATATABLE_LANGS[CURRENT_LANGUAGE_CODE]
+        }
+
         var $dataTable = $widgetItem.DataTable(options);
 
 
+    },
+
+    initNolegendLayerCheckBox: function(){
+        $(document).on('ifChanged', '[data-widget-type="noLegendLayer"]', function(e){
+
+            var $item = $(this);
+            // build value
+            var data = {
+                exclude_from_legend: e.target.checked ? 1 : 0
+            }
+
+            ga.widget.setLayerData($item, data);
+
+        });
+    },
+
+    closeMessages: function(){
+        var $alerts = $('#page_user_messages').find('.alert');
+        $alerts.delay(4000).slideUp(500);
     }
+
 
 
 

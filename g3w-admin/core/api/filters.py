@@ -1,4 +1,6 @@
+from django.contrib.gis.geos import Polygon
 from rest_framework_gis.filters import InBBoxFilter
+from rest_framework.exceptions import ParseError
 from django.db.models import Q
 
 
@@ -12,6 +14,23 @@ class InsideBBoxFilter(InBBoxFilter):
 
 
 class IntersectsBBoxFilter(InsideBBoxFilter):
+
+    def get_filter_bbox(self, request):
+        if request.method == 'POST':
+            request_data = request.data
+        else:
+            request_data = request.query_params
+        bbox_string = request_data.get(self.bbox_param, None)
+        if not bbox_string:
+            return None
+
+        try:
+            p1x, p1y, p2x, p2y = (float(n) for n in bbox_string.split(','))
+        except ValueError:
+            raise ParseError('Invalid bbox string supplied for parameter {0}'.format(self.bbox_param))
+
+        x = Polygon.from_bbox((p1x, p1y, p2x, p2y))
+        return x
 
     def filter_queryset(self, request, queryset, view):
         filter_field = getattr(view, 'bbox_filter_field', None)
@@ -27,13 +46,14 @@ class IntersectsBBoxFilter(InsideBBoxFilter):
         bbox = self.get_filter_bbox(request)
 
         # to reproject
-        if hasattr(view, 'reproject') and view.reproject:
-            bbox.srid = view.layer.project.group.srid.auth_srid
-            bbox.transform(view.layer.srid)
-        else:
-            if hasattr(view, 'layer'):
-                bbox.srid = view.layer.srid
+        if bbox:
+            if hasattr(view, 'reproject') and view.reproject:
+                bbox.srid = view.layer.project.group.srid.auth_srid
                 bbox.transform(view.layer.srid)
+            else:
+                if hasattr(view, 'layer'):
+                    bbox.srid = view.layer.srid
+                    bbox.transform(view.layer.srid)
 
         if not bbox:
             return queryset

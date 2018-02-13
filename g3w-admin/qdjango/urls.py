@@ -3,8 +3,6 @@ from django.contrib.auth.decorators import login_required
 from base.urls import G3W_SITETREE_I18N_ALIAS
 from .views import *
 
-
-
 G3W_SITETREE_I18N_ALIAS.append('qdjango')
 
 urlpatterns = [
@@ -33,6 +31,10 @@ urlpatterns = [
         login_required(QdjangoLayerCacheView.as_view()), name='qdjango-project-layers-cache'),
     url(r'^(?P<group_slug>[-_\w\d]+)/projects/(?P<project_slug>[-_\w\d]+)/layer/(?P<layer_slug>[-_\w\d]+)/widgets/$',
         login_required(QdjangoLayerWidgetsView.as_view()), name='qdjango-project-layer-widgets'),
+
+    # for data layer by ajax
+    url(r'^jx/(?P<group_slug>[-_\w\d]+)/projects/(?P<project_slug>[-_\w\d]+)/layers/(?P<layer_id>[0-9]+)/data/$',
+        login_required(QdjangoLayerDataView.as_view()), name='qdjango-project-layers-data-editing'),
 
     # Widget urls
     url(r'^(?P<group_slug>[-_\w\d]+)/projects/(?P<project_slug>[-_\w\d]+)/layer/(?P<layer_slug>[-_\w\d]+)/widgets/add/$',

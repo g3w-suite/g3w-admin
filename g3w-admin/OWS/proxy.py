@@ -5,9 +5,6 @@ import logging
 
 logger = logging.getLogger('g3wadmin.debug')
 
-from subprocess import check_output
-ips = check_output(['hostname', '--all-ip-addresses'])
-
 
 class Proxy(object):
     def __init__(self, authorizer_class = None, **kwargs):
@@ -20,17 +17,8 @@ class Proxy(object):
             """
             First try to perfom request by OWS module handler
             """
-            # try to che caller
-            logger.debug(request.META['REMOTE_ADDR'])
-            logger.debug(request.META['HTTP_USER_AGENT'])
-            logger.debug(ips)
-            logger.debug(request.META)
-            if (request.META['REMOTE_ADDR'] in ips or request.META['REMOTE_ADDR'] in ['127.0.0.1', '::1']) \
-                    and 'Python' in request.META['HTTP_USER_AGENT']:
-                pass
-            else:
-                authorizer = OWSrh.authorizer
-                authorizer.auth_request()
+            authorizer = OWSrh.authorizer
+            authorizer.auth_request()
         except AuthForbiddenRequest:
             raise AuthForbiddenRequest()
         except Exception as e:

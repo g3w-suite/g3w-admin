@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-09-19 14:35+0000\n"
+"POT-Creation-Date: 2017-07-18 15:57+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -30,7 +30,7 @@ msgstr "Utenti viewers"
 msgid "Select group for this user"
 msgstr "Sleziona un gruppo per questo utente"
 
-#: usersmanage/forms.py:136 usersmanage/templates/usersmanage/user_list.html:38
+#: usersmanage/forms.py:136 usersmanage/templates/usersmanage/user_list.html:30
 msgid "Group"
 msgstr "Gruppo"
 
@@ -87,45 +87,45 @@ msgid "Some errors on form. Check it and send again."
 msgstr "Si sono verificati alcuni errori. Controlla e reinvia."
 
 #: usersmanage/templates/usersmanage/user_list.html:10
-#: usersmanage/templates/usersmanage/user_list.html:28
+#: usersmanage/templates/usersmanage/user_list.html:20
 msgid "Users"
 msgstr "Utenti"
 
-#: usersmanage/templates/usersmanage/user_list.html:35
+#: usersmanage/templates/usersmanage/user_list.html:27
 msgid "Actions"
 msgstr "Azioni"
 
-#: usersmanage/templates/usersmanage/user_list.html:36
+#: usersmanage/templates/usersmanage/user_list.html:28
 #, fuzzy
 #| msgid "User"
 msgid "Username"
 msgstr "Utente"
 
-#: usersmanage/templates/usersmanage/user_list.html:39
+#: usersmanage/templates/usersmanage/user_list.html:31
 msgid "Superuser"
 msgstr "Super utente"
 
-#: usersmanage/templates/usersmanage/user_list.html:42
+#: usersmanage/templates/usersmanage/user_list.html:34
 msgid "Staff"
 msgstr ""
 
-#: usersmanage/templates/usersmanage/user_list.html:45
+#: usersmanage/templates/usersmanage/user_list.html:37
 msgid "First name"
 msgstr "Nome"
 
-#: usersmanage/templates/usersmanage/user_list.html:46
+#: usersmanage/templates/usersmanage/user_list.html:38
 msgid "Last name"
 msgstr "Cognome"
 
-#: usersmanage/templates/usersmanage/user_list.html:54
+#: usersmanage/templates/usersmanage/user_list.html:46
 msgid "Show detail"
 msgstr "Mostra i dettagli"
 
-#: usersmanage/templates/usersmanage/user_list.html:58
+#: usersmanage/templates/usersmanage/user_list.html:50
 msgid "Edit"
 msgstr "Modifica"
 
-#: usersmanage/templates/usersmanage/user_list.html:63
+#: usersmanage/templates/usersmanage/user_list.html:55
 msgid "Delete"
 msgstr "Elimina"
 

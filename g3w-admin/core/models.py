@@ -83,7 +83,26 @@ class MapControl(OrderedModel):
         verbose_name_plural = _('Map controls')
 
 
-class Group(TimeStampedModel):
+class MacroGroup(TimeStampedModel, OrderedModel):
+    """
+    Model for Macro groups, no ACL
+    """
+
+    title = models.CharField(_('Title'), max_length=255)
+    description = models.TextField(_('Description'), blank=True)
+    logo_img = models.FileField(_('Logo image'), upload_to='macrogroup/logo_img')
+    logo_link = models.URLField(_('Logo link'), blank=True, null=True,
+                                       help_text=_('Enter link with http:// or https//'))
+
+    slug = AutoSlugField(
+        _('Slug'), populate_from='title', unique=True, always_update=True
+    )
+
+    def __unicode__(self):
+        return self.title
+
+
+class Group(TimeStampedModel, OrderedModel):
     """A group of projects."""
     # General info
     name = models.CharField(_('Name'), max_length=255, unique=True)
@@ -121,6 +140,8 @@ class Group(TimeStampedModel):
     header_terms_of_use_link = models.URLField(
         _('Terms of use link'), blank=True
         )
+
+    macrogroups = models.ManyToManyField(MacroGroup, blank=True)
 
     class Meta:
         permissions = (
@@ -266,6 +287,7 @@ class GeneralSuiteData(models.Model):
     groups_map_description = models.TextField(_('Groups map description'), null=True, blank=True)
     login_description = models.TextField(_('Login description'), null=True, blank=True)
     suite_logo = models.ImageField(_('Suite logo'), null=True, blank=True)
+    url_suite_logo = models.URLField(_('Suite logo URL'), null=True, blank=True)
 
     facebook_url = models.URLField(_('Facebook link'), null=True, blank=True)
     twitter_url = models.URLField(_('Twitter link'), null=True, blank=True)
@@ -274,3 +296,5 @@ class GeneralSuiteData(models.Model):
     instagram_url = models.URLField(_('Instagram link'), null=True, blank=True)
     flickr_url = models.URLField(_('Flickr link'), null=True, blank=True)
     tripadvisor_url = models.URLField(_('Tripadvisor link'), null=True, blank=True)
+
+

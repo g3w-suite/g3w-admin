@@ -24,6 +24,7 @@ from usersmanage.mixins.views import G3WACLViewMixin
 from .signals import load_qdjango_widgets_data
 from .mixins.views import *
 from .forms import *
+from .api.utils import serialize_vectorjoin
 import json
 from collections import OrderedDict
 
@@ -182,9 +183,21 @@ class QdjangoProjectRelationsApiView(APIView):
 
         # get Project model object:
         project = Project.objects.get(pk=project_id)
-        relations = {r['id']: r for r in eval(project.relations)}
 
-        relation = relations[relation_id]
+        # ty to get project relations and if fail layer relations
+        try:
+            relations = {r['id']: r for r in eval(project.relations)}
+            relation = relations[relation_id]
+        except Exception as e:
+
+            # try to get layer relations
+            layer_id = relation_id.split('_vectorjoin_')[0]
+            layer = project.layer_set.filter(qgs_layer_id=layer_id)[0]
+            joins = eval(layer.vectorjoins)
+            for n, join in enumerate(joins):
+                serialized_relation = serialize_vectorjoin(layer.qgs_layer_id, n, join)
+                if serialized_relation['id'] == relation_id:
+                    relation = serialized_relation
 
         # get layer for query:
         referencing_layer = Layer.objects.get(qgs_layer_id=relation['referencingLayer'], project=project)
@@ -222,7 +235,6 @@ class QdjangoProjectRelationsApiView(APIView):
                     relation_field_value = "{}".format(relation_field_value)
                 else:
                     relation_field_value = "'{}'".format(relation_field_value)
-
 
         # check if there is a schema
         schema_table = datasource['table'].split('.')
@@ -340,7 +352,22 @@ class QdjangoLayerCacheView(G3WGroupViewMixin, QdjangoProjectViewMixin, View):
         # todo: build new tilestache project object for epsg: 3003, 3004 , etc.
         layer.save()
 
-        return JsonResponse({'Saved':'ok'})
+        return JsonResponse({'Saved': 'ok'})
+
+
+class QdjangoLayerDataView(G3WGroupViewMixin, QdjangoProjectViewMixin, View):
+
+    @method_decorator(permission_required('qdjango.change_project', (Project, 'slug', 'project_slug'),
+                                          raise_exception=True))
+    def dispatch(self, *args, **kwargs):
+        return super(QdjangoLayerDataView, self).dispatch(*args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+
+        layer = Layer.objects.get(pk=kwargs['layer_id'])
+        layer.exclude_from_legend = int(request.POST['exclude_from_legend'])
+        layer.save()
+        return JsonResponse({'Saved': 'ok'})
 
 
 class QdjangoLayerWidgetsView(G3WGroupViewMixin, QdjangoProjectViewMixin, QdjangoLayerViewMixin, ListView):

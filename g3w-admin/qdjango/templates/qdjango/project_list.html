@@ -10,6 +10,7 @@
         <h4 class="description">{% trans 'Qgis project type' %}</h4>
     </div>
     <div class="box-body">
+        {% if object_list|length > 0 %}
         <table class="table table-hover table-striped">
             <thead>
                 <tr>
@@ -77,9 +78,9 @@
                     </td>
                     <td>
                         {% if object.thumbnail  %}
-                        <img style="height:60px;" class="img-responsive img-thumbnail" src="{{ MEDIA_URL }}{{ object.thumbnail }}" />
+                        <img style="height:60px;" class="img-responsive" src="{{ MEDIA_URL }}{{ object.thumbnail }}" />
                         {% else %}
-                        <img style="height:60px;" class="img-responsive img-thumbnail" src="http://placehold.it/80x60" />
+                        <img style="height:60px;" class="img-responsive" src="http://placehold.it/80x60" />
                         {% endif %}
                     </td>
                     <td>{{ object.title }}</td>
@@ -93,5 +94,8 @@
                 {% endfor %}
             </tbody>
         </table>
+        {% else %}
+        {% trans 'No projects available.' %}
+        {% endif %}
     </div>
 </div>

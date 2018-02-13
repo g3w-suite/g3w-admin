@@ -80,7 +80,12 @@ _.extend(g3wadmin,{
 
         // INIT initMapSetExtent
         this.ui.initMapSetExtent();
-        
+
+        // INIT Datatable
+        this.ui.initDataTable();
+
+        // close every messages on top page
+        this.ui.closeMessages();
 
         /*
         TODO: try to perfom this issue server side

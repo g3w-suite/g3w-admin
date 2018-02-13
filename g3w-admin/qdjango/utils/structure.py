@@ -12,7 +12,9 @@ except ImportError:
     pass
 
 from qdjango.models import Layer
+from urlparse import urlsplit, parse_qs
 from core.utils.projects import CoreMetaLayer
+from .exceptions import QgisProjectLayerException
 
 
 def get_schema_table(datasource_table):
@@ -119,7 +121,7 @@ class QgisOGRLayerStructure(QgisLayerStructure):
         Check if ogr data layer exisists
         """
         if not os.path.exists(self.datasource):
-            raise Exception(self._errDatasourceNotFound.format(self.layer.name, self.datasource))
+            raise QgisProjectLayerException(self._errDatasourceNotFound.format(self.layer.name, self.datasource))
 
     def getTableColumns(self):
         """
@@ -132,11 +134,13 @@ class QgisOGRLayerStructure(QgisLayerStructure):
         for i in range(layerDefinition.GetFieldCount()):
             self.columns.append({
                 'name': layerDefinition.GetFieldDefn(i).GetName(),
-                'type': layerDefinition.GetFieldDefn(i).GetFieldTypeName(layerDefinition.GetFieldDefn(i).GetType()).upper(),
+                'type': layerDefinition.GetFieldDefn(i).GetFieldTypeName(layerDefinition.GetFieldDefn(i).GetType())
+                    .upper(),
                 'label': layerDefinition.GetFieldDefn(i).GetName()
             })
 
         dataSourceOgr.Destroy()
+
 
 class QgisDBLayerStructure(QgisLayerStructure):
 
@@ -146,7 +150,7 @@ class QgisDBLayerStructure(QgisLayerStructure):
     }
 
     def __init__(self, layer, **kwargs):
-        super(QgisDBLayerStructure, self).__init__(layer,**kwargs)
+        super(QgisDBLayerStructure, self).__init__(layer, **kwargs)
 
         if not self.layerType in self._dbTypes.keys():
             raise Exception('Database Layer Type not available in qdjango module: {}'.format(self.layerType))
@@ -168,7 +172,7 @@ class QgisDBLayerStructure(QgisLayerStructure):
         """
         if self.layerType == Layer.TYPES.spatialite:
             if not os.path.exists(self.datasourceDict['dbname']):
-                raise Exception(self._errDatasourceNotFound.format(self.layer.name,self.datasource))
+                raise QgisProjectLayerException(self._errDatasourceNotFound.format(self.layer.name,self.datasource))
 
 
     def _datasource2dict(self):
@@ -178,13 +182,6 @@ class QgisDBLayerStructure(QgisLayerStructure):
 
         self.datasourceDict = datasource2dict(self.datasource)
 
-        datalist = self.datasource.split(' ')
-        for item in datalist:
-            try:
-                key, value = item.split('=')
-                self.datasourceDict[key] = value.strip('\'')
-            except ValueError:
-                pass
 
     def getSchemaTable(self):
         """
@@ -235,3 +232,55 @@ class QgisDBLayerStructure(QgisLayerStructure):
                 self.columns.append({'name': c.name, 'type': str(c.type), 'label': c.name})
             except NotImplementedError:
                 pass
+
+
+class QgisCSVLayerStructure(QgisLayerStructure):
+
+    def __init__(self, layer, **kwargs):
+        super(QgisCSVLayerStructure, self).__init__(layer, **kwargs)
+
+        self._datasource2dict()
+
+        # check datasource
+        self._cleanDataSource()
+
+        # get table columns
+        self.getTableColumns()
+
+    def _datasource2dict(self):
+        """
+        Read datasource string e put data in a python dict
+        """
+
+        self.datasourceDict = {}
+        file = re.sub(r"(.*)file:(.*?)", r"\2", self.datasource)
+        urldata = urlsplit(file)
+
+        self.datasourceDict['file'] = urldata.path
+        self.datasourceDict.update(parse_qs(urldata.query))
+
+
+    def _cleanDataSource(self):
+        """
+        Check if ogr data layer exisists
+        """
+        if not os.path.exists(self.datasourceDict['file']):
+            raise QgisProjectLayerException(self._errDatasourceNotFound.format(self.layer.name, self.datasourceDict['file']))
+
+    def getTableColumns(self):
+        """
+        Get table column info from ogr layer by gdal python lib
+        """
+        dataSourceOgr = ogr.Open(self.datasourceDict['file'])
+        daLayer = dataSourceOgr.GetLayer(0)
+        layerDefinition = daLayer.GetLayerDefn()
+
+        for i in range(layerDefinition.GetFieldCount()):
+            self.columns.append({
+                'name': layerDefinition.GetFieldDefn(i).GetName(),
+                'type': layerDefinition.GetFieldDefn(i).GetFieldTypeName(layerDefinition.GetFieldDefn(i).GetType())
+                    .upper(),
+                'label': layerDefinition.GetFieldDefn(i).GetName()
+            })
+
+        dataSourceOgr.Destroy()

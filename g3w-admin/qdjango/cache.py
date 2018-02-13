@@ -2,6 +2,18 @@ from django.conf import settings
 from django.http.request import QueryDict
 from .models import Layer
 
+
+def get_layer_to_erase_for_project(layer_id):
+    """
+    Get every layer to erase cache in every qdjango project
+    :param layer_id:
+    :return:
+    """
+
+    layer = Layer.objects.get(pk=layer_id)
+    return Layer.objects.filter(datasource=layer.datasource)
+
+
 if 'caching' in settings.G3WADMIN_LOCAL_MORE_APPS:
 
     from caching.utils.layer import TilestacheLayerBase

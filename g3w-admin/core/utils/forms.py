@@ -1,7 +1,7 @@
 from PIL import Image
 from django.forms import ValidationError
 from django.utils.translation import ugettext, ugettext_lazy as _
-from crispy_forms.layout import Div, HTML
+from crispy_forms.layout import Div, HTML, Field
 
 def CheckIsAnImage(name,file):
     try:
@@ -38,3 +38,34 @@ def crispyBoxBaseLayer(form, **kwargs):
                 css_class='{}'.format(boxCssClass)
             )
 
+
+def crispyBoxMacroGroups(form, **kwargs):
+    """
+    Build a Crispy object layout element (div) for on AdminLTE2 box structure.
+    For macrogroups multiple selections
+    :param form: Django form instance
+    :return: Crispy form layout object
+    """
+
+    if form.request.user.is_superuser:
+        return Div(
+                    Div(
+                        Div(
+                            HTML("<h3 class='box-title'><i class='fa fa-globe'></i> {}</h3>".format(
+                                _('MACRO Groups'))),
+                            css_class='box-header with-border'
+                        ),
+                        Div(
+                            Div(
+                                Field('macrogroups',
+                                      **{'css_class': 'select2 col-md-12', 'multiple': 'multiple',
+                                         'style': 'width:100%;'}),
+                            ),
+                            css_class='box-body'
+                        ),
+                        css_class='box box-danger'
+                    ),
+                    css_class='col-md-6'
+                )
+    else:
+        return None

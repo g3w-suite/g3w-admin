@@ -1,8 +1,13 @@
 from django.conf import settings
 from django.apps import apps
+from django.contrib.gis.geos import GEOSGeometry, GEOSException
+from django.contrib.gis.gdal import OGRException
+from django.core.exceptions import ValidationError
+from guardian.shortcuts import get_objects_for_user, get_user_model
 from rest_framework import serializers
 from rest_framework.fields import empty
-from guardian.shortcuts import get_objects_for_user, get_user_model
+from rest_framework_gis.fields import GeometryField
+from shapely import wkt, geometry
 from core.models import Group
 from core.signals import initconfig_plugin_start
 from core.mixins.api.serializers import G3WRequestSerializer
@@ -91,18 +96,17 @@ class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
             projects_anonymous = get_objects_for_user(anonymous_user, '{}.view_project'.format(g3wProjectApp),
                                                       Project).filter(group=instance)
             projects = list(set(projects) | set(projects_anonymous))
-
             for project in projects:
                 self.projects[g3wProjectApp+'-'+str(project.id)] = project
 
                 # project thumbnail
                 project_thumb = project.thumbnail.name if bool(project.thumbnail.name) \
-                    else '{}g3w-client/images/FakeProjectThumb.png'.format(settings.STATIC_URL)
+                    else '{}client/images/FakeProjectThumb.png'.format(settings.STATIC_URL)
                 ret['projects'].append({
                     'id': project.id,
                     'title': project.title,
                     'description': project.description,
-                    'thumbnail': project_thumb  ,
+                    'thumbnail': project_thumb,
                     'type': g3wProjectApp,
                     'gid': "{}:{}".format(g3wProjectApp, project.id)
                 })
@@ -153,3 +157,63 @@ class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
             'header_terms_of_use_link'
         )
 
+
+class G3WGeometryField(GeometryField):
+    """
+    A field to handle GeoDjango Geometry fields
+    """
+
+    def to_internal_value(self, value):
+        if value == '' or value is None:
+            return value
+        if isinstance(value, GEOSGeometry):
+            # value already has the correct representation
+            return value
+        if isinstance(value, dict):
+            value = wkt.dumps(geometry.shape(value))
+        try:
+            return GEOSGeometry(value)
+        except (ValueError, GEOSException, OGRException, TypeError):
+            raise ValidationError(_('Invalid format: string or unicode input unrecognized as GeoJSON, WKT EWKT or HEXEWKB.'))
+
+
+class G3WSerializerMixin(object):
+    """
+    Generic mixins for serializer model
+    """
+
+    relationsAttributes = None
+    using_db = None
+
+    def set_meta(self, kwargs):
+        """
+        Set meta properties for dinamical model
+        :param kwargs: ditc params
+        """
+        self.Meta = self.Meta()
+        self.Meta.model = kwargs['model']
+        del (kwargs['model'])
+        self.Meta.using = kwargs['using']
+        del (kwargs['using'])
+
+    def _get_meta_using(self):
+        return self.Meta.using if hasattr(self.Meta, 'using') else None
+
+    def create(self, validated_data):
+        instance = self.Meta.model(**validated_data)
+        instance.save(using=self._get_meta_using())
+        return instance
+
+    def update(self, instance, validated_data):
+        using = self.Meta.using if hasattr(self.Meta, 'using') else None
+        for field, value in validated_data.items():
+            setattr(instance, field, value)
+        instance.save(using=self._get_meta_using())
+        return instance
+
+    @classmethod
+    def delete(cls, instance):
+        """
+        Classmethod to delete model instance
+        """
+        instance.delete()

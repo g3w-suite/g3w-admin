@@ -55,7 +55,8 @@ def GiveBaseGrant(sender, **kwargs):
 
 class QdjangoConfig(AppConfig):
     name = 'qdjango'
-    verbose_name = 'Qgis project managment'
+    verbose_name = 'QGIS project managment'
+    alias = 'QGIS'
 
     def ready(self):
         post_migrate.connect(GiveBaseGrant, sender=self)

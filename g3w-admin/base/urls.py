@@ -7,6 +7,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.conf.urls.i18n import i18n_patterns
 from django.views.i18n import javascript_catalog, json_catalog
+from ajax_select import urls as ajax_select_urls
 try:
     from qgis.core import *
 except:
@@ -39,10 +40,12 @@ urlpatterns = [
     url(r'^logout/$', auth.views.logout, {'next_page': settings.LOGOUT_NEXT_PAGE + '{}'.format(BASE_ADMIN_URLPATH)},
         name='logout'),
     url(r'^jsi18n/$', javascript_catalog, jsInfoDict, name='javascript-catalog'),
+    url(r'^ajax_select/', include(ajax_select_urls)),
 ]
 
 apiUrlpatterns = [
     url(r'^', include('client.apiurls')),
+    url(r'^', include('core.apiurls'))
 ]
 
 if BASE_ADMIN_URLPATH == 'admin/':
@@ -54,14 +57,15 @@ if BASE_ADMIN_URLPATH == 'admin/':
 for app in settings.G3WADMIN_PROJECT_APPS:
     urlpatterns.append(url(r'^{}{}/'.format(BASE_ADMIN_URLPATH, app), include('{}.urls'.format(app))))
     try:
-      apiUrlpatterns.append(url(r'^{}/'.format(app), include('{}.apiurls'.format(app))))
+        apiUrlpatterns.append(url(r'^{}/'.format(app), include('{}.apiurls'.format(app))))
     except Exception as e:
       pass
 
 # adding local_more_apps
 for app in settings.G3WADMIN_LOCAL_MORE_APPS:
     if app == settings.FRONTEND_APP:
-        urlpatterns.append(url(r'^{}/'.format(app), include('{}.urls'.format(app))))
+        pass
+        #urlpatterns.append(url(r'^{}/'.format(app), include('{}.urls'.format(app))))
     else:
         app_urls = (urlconf_module, app_name, namespace) = include('{}.urls'.format(app))
         try:
@@ -84,23 +88,9 @@ if settings.DEBUG:
 
 urlpatterns = i18n_patterns(*urlpatterns)
 
-'''
-if settings.SITE_PREFIX_URL:
-    apiUrlpatterns = [
-        url(r'^{}/'.format(settings.SITE_PREFIX_URL), include(apiUrlpatterns))
-    ]
-'''
-
 urlpatterns += apiUrlpatterns
 
 urlows = [url(r'^', include('OWS.urls'))]
-
-'''
-if settings.SITE_PREFIX_URL:
-    urlows = [
-        url(r'^{}'.format(settings.SITE_PREFIX_URL), include(urlows))
-    ]
-'''
 
 urlpatterns += urlows
 

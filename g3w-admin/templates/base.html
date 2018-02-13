@@ -14,6 +14,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <title>{{ SETTINGS.SITE_TITLE }}</title>
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <link rel="icon" href="{% static '/img/favicon.ico' %}">
     <!-- Pace -->
     <script src="{% static "bower_components/pace/pace.min.js" %}"></script>
     {% if SETTINGS.DEBUG %}
@@ -115,9 +116,10 @@ scratch. This page gets rid of all links and provides the needed markup only.
         <!-- Logo -->
         <a href="#" class="logo">
           <!-- mini logo for sidebar mini 50x50 pixels -->
-          <span class="logo-mini"><img src="{% static 'img/g3wsuite_logo_rid.png' %}"></span>
+          <span class="logo-mini"><img src="{% static SETTINGS.G3WSUITE_RID_LOGO %}"></span>
           <!-- logo for regular state and mobile devices -->
-          <span class="logo-lg"><img src="{% static 'img/g3wsuite_logo.png' %}"></span>
+          <!--<span class="logo-lg"><b>G3W-A</b>dmin</span>-->
+          <span class="logo-lg"><img src="{% static SETTINGS.G3WSUITE_MAIN_LOGO %}"></span>
         </a>
 
         <!-- Header Navbar -->
@@ -174,6 +176,20 @@ scratch. This page gets rid of all links and provides the needed markup only.
         <!-- Main content --> 
         <section class="content">
 
+        {% if messages %}
+          <div id="page_user_messages" class="row">
+            <div class="col-md-12">
+            {% for message in messages %}
+                <div class="alert alert-{% if message.tags %}{{ message.tags|lower }}{% else %}default{% endif %} alert-dismissible">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <h4><i class="icon fa fa-check"></i> Ok!</h4>
+                    {{ message }}
+                </div>
+            {% endfor %}
+            </div>
+          </div>
+        {% endif %}
+
           {% block main_content %}
           {% endblock %}
 
@@ -228,6 +244,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <!-- DataTables -->
     <script src="{% static "bower_components/datatables/media/js/jquery.dataTables.min.js" %}"></script>
     <script src="{% static "bower_components/datatables/media/js/dataTables.bootstrap.min.js" %}"></script>
+    <script src="{% static "modules/jquery.datatable/lang.js" %}"></script>
     <!-- Bootstrap Tree View -->
     <script src="{% static "bower_components/bootstrap-treeview/dist/bootstrap-treeview.min.js" %}"></script>
     <!-- icheck -->

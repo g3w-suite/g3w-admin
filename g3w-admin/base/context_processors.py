@@ -1,7 +1,7 @@
 from django.conf import settings
 from datetime import datetime
 from usersmanage.configs import *
-from core.signals import load_css_modules, load_js_modules
+from core.signals import load_css_modules, load_js_modules, load_navbar_items
 
 
 def global_settings(request):
@@ -42,4 +42,14 @@ def global_settings(request):
     g3wadmin_context['css_modules'] = [css[1] for css in css_modules]
     js_modules = load_js_modules.send(request)
     g3wadmin_context['js_modules'] = [js[1] for js in js_modules]
+
+    # add specific items to main navbar
+    navbar_items = load_navbar_items.send(request)
+    g3wadmin_context['navbar_items'] = list()
+    for item in navbar_items:
+        if isinstance(item[1], list):
+            g3wadmin_context['navbar_items'] += item[1]
+        else:
+            g3wadmin_context['navbar_items'].append(item[1])
+
     return g3wadmin_context

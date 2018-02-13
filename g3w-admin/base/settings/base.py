@@ -37,7 +37,8 @@ DJANGO_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.gis'
+    'django.contrib.gis',
+    #'django.contrib.sites'
 ]
 
 THIRD_PARTY_APPS = [
@@ -51,9 +52,11 @@ THIRD_PARTY_APPS = [
     'django_extensions',
     'rest_framework',
     'rest_framework_gis',
+    'rest_framework.authtoken',
     'import_export',
     'mptt',
     'ordered_model',
+    'ajax_select'
     #'django_user_agents',
     #'tracking_analyzer'
     # 'debug_toolbar',
@@ -75,7 +78,7 @@ G3WADMIN_PROJECT_APPS_BASE = [
 G3WADMIN_PROJECT_APPS = []
 
 
-MIDDLEWARE_CLASSES = [
+MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
@@ -85,6 +88,7 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.contrib.sites.middleware.CurrentSiteMiddleware'
     #'django_user_agents.middleware.UserAgentMiddleware',
     # 'debug_panel.middleware.DebugPanelMiddleware'
 ]
@@ -94,8 +98,7 @@ ROOT_URLCONF = 'base.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, '../templates')]
-        ,
+        'DIRS': [os.path.join(BASE_DIR, '../templates')],
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
@@ -106,6 +109,8 @@ TEMPLATES = [
                 'base.context_processors.global_settings'
             ],
             'loaders': [
+                    #'django.template.loaders.filesystem.Loader',
+                    #'django.template.loaders.app_directories.Loader'
                 ('django.template.loaders.cached.Loader', [
                     'django.template.loaders.filesystem.Loader',
                     'django.template.loaders.app_directories.Loader'
@@ -185,7 +190,7 @@ SESSION_COOKIE_NAME = 'g3wadmin_sessionid'
 
 # FOR rest_framework
 REST_FRAMEWORK = {
-    'EXCEPTION_HANDLER': 'core.api.views.G3WExceptionHandler',
+    'EXCEPTION_HANDLER': 'core.api.base.views.G3WExceptionHandler',
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 100,
     'UNICODE_JSON': False
@@ -211,7 +216,6 @@ SITE_TITLE = 'g3w-admin'
 
 # for qdjango module
 QDJANGO_SERVER_URL = 'http://localhost/cgi-bin/qgis_mapserv.fcgi'
-QDJANGO_SERVER_PORT = 80
 QDJANGO_PRJ_CACHE_KEY = 'qdjango_prj_{}'
 QDJANGO_MODE_REQUEST = 'proxy'  #'qgsserver'
 
@@ -253,3 +257,5 @@ SITE_PREFIX_URL = None
 # CLIENT SETTINGS
 CLIENTS_AVAILABLE = []
 CLIENT_DEFAULT = 'client'
+
+SITE_ID = 1
