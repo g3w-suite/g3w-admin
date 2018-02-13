@@ -74,7 +74,7 @@ def kill(arg1, arg2):
 @needs([
     'install_bower_components',
     'requirements',
-    'sync'
+    'sync',
     'createsuperuser'
 ])
 def install():
