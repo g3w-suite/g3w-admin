@@ -87,7 +87,7 @@ def install():
 @task
 def install_bower_components():
     info("Installing Bower components...")
-    sh('bower install')
+    sh('bower install --allow-root')
     info("Bower components installed.")
 
 
