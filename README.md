@@ -65,6 +65,9 @@ sudo apt-get install -y \
 after is necessary install the correct python module for GDAL library, check your version and install correct module
 
 ```bash
+export CPLUS_INCLUDE_PATH=/usr/include/gdal
+export C_INCLUDE_PATH=/usr/include/gdal
+
 pip install GDAL==<installed_version or closest>
 ```
 
