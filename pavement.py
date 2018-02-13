@@ -75,6 +75,7 @@ def kill(arg1, arg2):
     'install_bower_components',
     'requirements',
     'sync'
+    'createsuperuser'
 ])
 def install():
     """
@@ -110,6 +111,14 @@ def sync():
 
     # sync menu tree items
     sh("python {}/manage.py sitetree_resync_apps".format(BASE_PATH))
+
+
+@task
+def createsuperuser():
+    """
+    Create super user app
+    """
+    sh("python {}/manage.py createsuperuser".format(BASE_PATH))
 
 
 @task
