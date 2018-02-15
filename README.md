@@ -71,6 +71,42 @@ export C_INCLUDE_PATH=/usr/include/gdal
 pip install GDAL==<installed_version or closest>
 ```
 
+### Set local_config.py file
+G3W-ADMIN is a Django application, and to work is necessary set a config.py file. To start copy local_settings.example.py and set the databse and other:
+```bash
+cd g3w-admin/g3w-admin/base/settings
+cp local_settings_example.py local_settings.py
+```
+
+set database, media root and session cookies name:
+
+```python
+...
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'NAME': '<db_name>',
+        'USER': '<db_user>',
+        'PASSWORD': '<db_user_password>',
+        'HOST': '<db_host>',
+        'PORT': '<db_port>',
+    }
+}
+
+...
+
+DATASOURCE_PATH = '<static_path_to_gis_data_source>'
+
+...
+
+MEDIA_ROOT = '<path_to_media_root>'
+
+...
+
+SESSION_COOKIE_NAME = '<unique_session_id>'
+```
+
 ### With paver commands
 
 G3W-ADMIN has a series of [paver](http://pythonhosted.org/Paver/) commands to administrate the suite.
