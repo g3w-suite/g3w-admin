@@ -45,7 +45,7 @@ source /usr/local/bin/virtualenvwrapper.sh
 ```
 
 ## Virtualenv creation
-To create a virtualnev is sufficent call mkvirtualenv commando follow by the identification name for virtualenv
+To create a virtualnenv is sufficent call mkvirtualenv commando follow by the identification name for virtualenv
 ```bash
 mkvirtualenv g3wsuite
 ```
@@ -59,7 +59,8 @@ sudo apt-get install -y \
     libxml2-dev \
     libxslt-dev \
     postgresql-server-dev-all \
-    libgdal-dev
+    libgdal-dev \
+    python-dev
 ```
 
 after is necessary install the correct python module for GDAL library, check your version and install correct module
