@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-07-18 15:57+0000\n"
+"POT-Creation-Date: 2018-02-22 15:27+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,55 +18,61 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: usersmanage/forms.py:65
+#: usersmanage/forms.py:67
 msgid "Editor user"
 msgstr "Utente editor"
 
-#: usersmanage/forms.py:66
+#: usersmanage/forms.py:68
 msgid "Viewer users"
 msgstr "Utenti viewers"
 
-#: usersmanage/forms.py:135
+#: usersmanage/forms.py:134
 msgid "Select group for this user"
 msgstr "Sleziona un gruppo per questo utente"
 
-#: usersmanage/forms.py:136 usersmanage/templates/usersmanage/user_list.html:30
+#: usersmanage/forms.py:135 usersmanage/templates/usersmanage/user_list.html:30
 msgid "Group"
 msgstr "Gruppo"
 
-#: usersmanage/forms.py:157
+#: usersmanage/forms.py:159
 msgid "Anagraphic"
 msgstr "Anagrafica"
 
-#: usersmanage/forms.py:176
+#: usersmanage/forms.py:178
 msgid "ACL/Roles"
 msgstr "ACL/Ruoli"
 
-#: usersmanage/forms.py:197
+#: usersmanage/forms.py:199
 msgid "Login data"
 msgstr "Dati di accesso"
 
-#: usersmanage/forms.py:215
+#: usersmanage/forms.py:217
 msgid "User data"
 msgstr "Dati utente"
 
-#: usersmanage/forms.py:298
+#: usersmanage/forms.py:245
+#, fuzzy
+#| msgid "User"
+msgid "User backend"
+msgstr "Utente"
+
+#: usersmanage/forms.py:330
 msgid "Avatar is no a valid image"
 msgstr "Questo avatar non è una immagine"
 
-#: usersmanage/forms.py:324
+#: usersmanage/forms.py:356
 msgid "Password"
 msgstr ""
 
-#: usersmanage/forms.py:326
+#: usersmanage/forms.py:358
 msgid "Password confirmation"
 msgstr "Conferma password"
 
-#: usersmanage/forms.py:328
+#: usersmanage/forms.py:360
 msgid "Enter the same password as above, for verification."
 msgstr "Inserisci la stessa passoword indicata sopra per verifica"
 
-#: usersmanage/models.py:18
+#: usersmanage/models.py:20
 msgid "Avatar"
 msgstr ""
 
@@ -117,18 +123,22 @@ msgstr "Nome"
 msgid "Last name"
 msgstr "Cognome"
 
-#: usersmanage/templates/usersmanage/user_list.html:46
+#: usersmanage/templates/usersmanage/user_list.html:40
+msgid "Backend"
+msgstr ""
+
+#: usersmanage/templates/usersmanage/user_list.html:50
 msgid "Show detail"
 msgstr "Mostra i dettagli"
 
-#: usersmanage/templates/usersmanage/user_list.html:50
+#: usersmanage/templates/usersmanage/user_list.html:54
 msgid "Edit"
 msgstr "Modifica"
 
-#: usersmanage/templates/usersmanage/user_list.html:55
+#: usersmanage/templates/usersmanage/user_list.html:59
 msgid "Delete"
 msgstr "Elimina"
 
-#: usersmanage/utils.py:152
+#: usersmanage/utils.py:153
 msgid "ACL Users"
 msgstr "ACL Utenti"

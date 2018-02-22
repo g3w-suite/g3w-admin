@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-07-18 15:57+0000\n"
+"POT-Creation-Date: 2018-02-22 15:27+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,10 +18,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: editing/api/serializers.py:28
-msgid ""
-"Invalid format: string or unicode input unrecognized as GeoJSON, WKT EWKT or "
-"HEXEWKB."
+#: OWS/utils/data.py:126
+msgid "The GetFeatureResponse response is malformed: {}"
 msgstr ""
 
 #: editing/forms.py:14
@@ -58,56 +56,58 @@ msgstr ""
 msgid "Activation layer_editing"
 msgstr ""
 
-#: frontend/templates/frontend/index.html:84
-#: frontend/templates/frontend/index.html:134
+#: frontend/templates/frontend/include/about.html:4
+#: frontend/templates/frontend/include/sidebar.html:8
 msgid "About It"
 msgstr "Cos'è"
 
-#: frontend/templates/frontend/index.html:94
-#: frontend/templates/frontend/index.html:165
-msgid "Maps"
-msgstr "Mappe"
-
-#: frontend/templates/frontend/index.html:104
-#: frontend/templates/frontend/index.html:268
+#: frontend/templates/frontend/include/login.html:4
+#: frontend/templates/frontend/include/sidebar.html:24
 msgid "Admin"
 msgstr "Amministrazione"
 
-#: frontend/templates/frontend/index.html:104
-#: frontend/templates/frontend/index.html:268
-#: frontend/templates/frontend/index.html:297
+#: frontend/templates/frontend/include/login.html:4
+#: frontend/templates/frontend/include/login.html:33
+#: frontend/templates/frontend/include/sidebar.html:24
 msgid "Login"
 msgstr "Accesso"
 
-#: frontend/templates/frontend/index.html:123
-msgid "Adminstration"
-msgstr "Amministrazione"
+#: frontend/templates/frontend/include/login.html:7
+#, fuzzy
+#| msgid "Access to backeng administration stystem or logout"
+msgid "Access to backend administration stystem or logout"
+msgstr "Accedi al backed di amministrazione o esci"
 
-#: frontend/templates/frontend/index.html:202
+#: frontend/templates/frontend/include/login.html:9
+msgid "Login to go backend administration system"
+msgstr "Accesso al sistema di amministrazione"
+
+#: frontend/templates/frontend/include/login.html:21
+msgid "Backend"
+msgstr ""
+
+#: frontend/templates/frontend/include/login.html:24
+msgid "Logout"
+msgstr "Esci"
+
+#: frontend/templates/frontend/include/map_grid.html:5
 #, fuzzy
 #| msgid "Groups list"
 msgid "Group maps"
 msgstr "Lista gruppi"
 
-#: frontend/templates/frontend/index.html:232
+#: frontend/templates/frontend/include/map_grid.html:50
 msgid "Show map"
 msgstr "Mostra mappa"
 
-#: frontend/templates/frontend/index.html:271
-msgid "Access to backeng administration stystem or logout"
-msgstr "Accedi al backed di amministrazione o esci"
+#: frontend/templates/frontend/include/menu.html:9
+msgid "Adminstration"
+msgstr "Amministrazione"
 
-#: frontend/templates/frontend/index.html:273
-msgid "Login to go backend administration system"
-msgstr "Accesso al sistema di amministrazione"
-
-#: frontend/templates/frontend/index.html:285
-msgid "Backend"
-msgstr ""
-
-#: frontend/templates/frontend/index.html:288
-msgid "Logout"
-msgstr "Esci"
+#: frontend/templates/frontend/include/sidebar.html:16
+#: frontend/templates/frontend/index.html:61
+msgid "Maps"
+msgstr "Mappe"
 
 #: templates/403.html:7 templates/404.html:7
 msgid "error page"
@@ -129,27 +129,27 @@ msgstr "Opps! Pagina non trovata"
 msgid "We could not find the page you were looking for."
 msgstr "Non abbiamo trovato la pagina che stavi cercando"
 
-#: templates/base.html:164 templates/index.html:6
+#: templates/base.html:166 templates/index.html:6
 msgid "Dashboard"
 msgstr "Scrivania"
 
-#: templates/include/navbar_right_menu.html:7
+#: templates/include/navbar_right_menu.html:25
 msgid "Frontend"
 msgstr ""
 
-#: templates/include/navbar_right_menu.html:32
+#: templates/include/navbar_right_menu.html:46
 msgid "Registered on"
 msgstr "Registrato il"
 
-#: templates/include/navbar_right_menu.html:33
+#: templates/include/navbar_right_menu.html:47
 msgid "Last login"
 msgstr "Ultimo accesso"
 
-#: templates/include/navbar_right_menu.html:40
+#: templates/include/navbar_right_menu.html:54
 msgid "Profile"
 msgstr "Profilo"
 
-#: templates/include/navbar_right_menu.html:43
+#: templates/include/navbar_right_menu.html:57
 msgid "Sign out"
 msgstr "Esci"
 
@@ -208,24 +208,94 @@ msgid "Sign In"
 msgstr "Accedi"
 
 #, fuzzy
-#~| msgid "Configurations"
-#~ msgid "Configs"
-#~ msgstr "Configurazioni"
-
-#, fuzzy
 #~| msgid "Groups list"
 #~ msgid "Group"
 #~ msgstr "Lista gruppi"
 
 #, fuzzy
+#~| msgid "Login"
+#~ msgid "Login data"
+#~ msgstr "Accesso"
+
+#, fuzzy
+#~| msgid "Admin"
+#~ msgid "Admin Note"
+#~ msgstr "Amministrazione"
+
+#, fuzzy
+#~| msgid "Registered on"
+#~ msgid "Registered user"
+#~ msgstr "Registrato il"
+
+#, fuzzy
+#~| msgid "Configurations"
+#~ msgid "Configuration application"
+#~ msgstr "Configurazioni"
+
+#, fuzzy
 #~| msgid "Users"
-#~ msgid "Viewer users"
+#~ msgid "User"
 #~ msgstr "Utenti"
 
 #, fuzzy
+#~| msgid "Show map"
+#~ msgid "Show detail"
+#~ msgstr "Mostra mappa"
+
+#, fuzzy
 #~| msgid "Show"
-#~ msgid "Show info"
+#~ msgid "Show history"
 #~ msgstr "Mostra"
+
+#, fuzzy
+#~| msgid "Users"
+#~ msgid "Username"
+#~ msgstr "Utenti"
+
+#, fuzzy
+#~| msgid "Last login"
+#~ msgid "Last name"
+#~ msgstr "Ultimo accesso"
+
+#, fuzzy
+#~| msgid "error page"
+#~ msgid "Error time"
+#~ msgstr "Pagina di errore"
+
+#, fuzzy
+#~| msgid "Configurations"
+#~ msgid "Confirm"
+#~ msgstr "Configurazioni"
+
+#, fuzzy
+#~| msgid "Sign out"
+#~ msgid "Signup"
+#~ msgstr "Esci"
+
+#, fuzzy
+#~| msgid "Sign out"
+#~ msgid "Sign up"
+#~ msgstr "Esci"
+
+#, fuzzy
+#~| msgid "Adminstration"
+#~ msgid "Administration"
+#~ msgstr "Amministrazione"
+
+#, fuzzy
+#~| msgid "Sign out"
+#~ msgid "Log out"
+#~ msgstr "Esci"
+
+#, fuzzy
+#~| msgid "Configurations"
+#~ msgid "Configs"
+#~ msgstr "Configurazioni"
+
+#, fuzzy
+#~| msgid "Users"
+#~ msgid "Viewer users"
+#~ msgstr "Utenti"
 
 #, fuzzy
 #~| msgid "Adminstration"
@@ -238,18 +308,8 @@ msgstr "Accedi"
 #~ msgstr "Modifica i dati generali"
 
 #, fuzzy
-#~| msgid "Configurations"
-#~ msgid "Config"
-#~ msgstr "Configurazioni"
-
-#, fuzzy
 #~| msgid "Users"
 #~ msgid "User users"
-#~ msgstr "Utenti"
-
-#, fuzzy
-#~| msgid "Users"
-#~ msgid "Users"
 #~ msgstr "Utenti"
 
 #, fuzzy
