@@ -237,6 +237,21 @@ _.extend(g3wadmin.ui, {
         });
     },
 
+    initBootstrapTimepicker: function(context) {
+        if (!_.isUndefined(context)) {
+            var $widgetItem = $(context).find('.timepicker');
+        }
+        else {
+            var $widgetItem = $('.timepicker');
+        }
+        $widgetItem.timepicker({
+            showMeridian: false,
+            showInputs: true,
+            //appendWidgetTo:$widgetItem
+
+        });
+    },
+
     initBootstrapColorpicker: function(context) {
         if (!_.isUndefined(context)) {
             var $widgetItem = $(context).find('.colorpicker');

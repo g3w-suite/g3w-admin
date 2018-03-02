@@ -309,6 +309,7 @@ _.extend(g3wadmin.widget, {
                     // init form input plugins
                     ga.ui.initRadioCheckbox(modal.$modal);
                     ga.ui.initBootstrapDatepicker(modal.$modal);
+                    ga.ui.initBootstrapTimepicker(modal.$modal);
                     ga.ui.initSelect2(modal.$modal);
                      
                  },
