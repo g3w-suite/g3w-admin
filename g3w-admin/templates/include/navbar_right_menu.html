@@ -59,6 +59,25 @@
                 </li>
             </ul>
         </li>
+        {% get_available_languages as languages %}
+        {% get_current_language as LANGUAGE_CODE %}
+        {% if SETTINGS.USE_I18N and languages|length > 1 %}
+        <li>
+        <form action="{% url "set_language" %}" method="post" class="navbar-form navbar-right">
+        {% csrf_token %}
+        <div class="form-group" style="background: None;">
+            <select name="language" class="form-control" onchange="this.form.submit()">
+            {% for language in languages %}
+            <option value="{{ language.0 }}"
+                {% if language.0 == LANGUAGE_CODE %}selected="selected"{% endif %}>
+                {{ language.1 }}
+            </option>
+            {% endfor %}
+            </select>
+        </div>
+        </form>
+        </li>
+        {% endif %}
         {% if user.is_superuser %}
         <!-- Control Sidebar Toggle Button -->
         <li>

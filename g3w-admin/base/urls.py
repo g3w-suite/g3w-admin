@@ -25,6 +25,7 @@ jsInfoDict = {
 }
 
 urlpatterns = [
+    url(r'^i18n/', include('django.conf.urls.i18n')),
     url(r'^django-admin/', admin.site.urls),
     url(r'^{}'.format(BASE_ADMIN_URLPATH), include('core.urls')),
     url(r'^{}'.format(BASE_ADMIN_URLPATH), include('usersmanage.urls')),
