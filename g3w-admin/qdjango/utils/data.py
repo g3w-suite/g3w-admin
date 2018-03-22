@@ -903,12 +903,20 @@ class QgisProjectSettingsWMS(XmlData):
                 self._getLayerTreeData(subLayerTree)
         else:
             name = layerTree.find(self._buildTagWithNS('Name')).text
-            title = layerTree.find(self._buildTagWithNS('Title')).text
+            attributes = layerTree.find(self._buildTagWithNS('Attributes'))
+            attrs = []
+            for attribute in attributes:
+                attrs.append(attribute.attrib)
+
             dataLayer = {
                 'name': name,
-                'title': title,
                 'queryable': bool(int(layerTree.attrib['queryable'])),
-                'bboxes': self._getBBOXLayer(layerTree)
+                'bboxes': self._getBBOXLayer(layerTree),
+                'metadata': {
+                    'title': layerTree.find(self._buildTagWithNS('Title')).text,
+                    'abstract': layerTree.find(self._buildTagWithNS('Abstract')).text,
+                    'attributes': attrs
+                }
             }
 
             if 'visible' in layerTree.attrib:

@@ -305,6 +305,9 @@ class LayerSerializer(serializers.ModelSerializer):
                 ret['source']['external'] = True
                 #ret['servertype'] = MSTYPES_OGC
 
+        # add metadata
+        ret['metadata'] = self.qgis_projectsettings_wms.layers[instance.name]['metadata']
+
         return ret
 
 
