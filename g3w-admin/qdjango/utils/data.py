@@ -908,6 +908,8 @@ class QgisProjectSettingsWMS(XmlData):
             for attribute in attributes:
                 attrs.append(attribute.attrib)
 
+            CRS = layerTree.xpath('opengis:CRS', namespaces=self._NS)
+
             dataLayer = {
                 'name': name,
                 'queryable': bool(int(layerTree.attrib['queryable'])),
@@ -915,7 +917,8 @@ class QgisProjectSettingsWMS(XmlData):
                 'metadata': {
                     'title': layerTree.find(self._buildTagWithNS('Title')).text,
                     'abstract': layerTree.find(self._buildTagWithNS('Abstract')).text,
-                    'attributes': attrs
+                    'attributes': attrs,
+                    'crs': [crs.text for crs in CRS]
                 }
             }
 
