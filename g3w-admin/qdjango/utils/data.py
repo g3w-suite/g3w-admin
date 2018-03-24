@@ -916,11 +916,16 @@ class QgisProjectSettingsWMS(XmlData):
                 'bboxes': self._getBBOXLayer(layerTree),
                 'metadata': {
                     'title': layerTree.find(self._buildTagWithNS('Title')).text,
-                    'abstract': layerTree.find(self._buildTagWithNS('Abstract')).text,
                     'attributes': attrs,
                     'crs': [crs.text for crs in CRS]
                 }
             }
+
+            # add abstract
+            try:
+                dataLayer['metadata']['abstract'] = layerTree.find(self._buildTagWithNS('Abstract')).text,
+            except:
+                pass
 
             if 'visible' in layerTree.attrib:
                 dataLayer['visible'] = bool(int(layerTree.attrib['visible']))
