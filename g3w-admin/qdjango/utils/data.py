@@ -939,7 +939,6 @@ class QgisProjectSettingsWMS(XmlData):
         self._getLayerTreeData(layersTree[0])
         return self._layersData
 
-
     def _getDataComposerTemplates(self):
 
         self._composerTemplatesData = []
