@@ -905,8 +905,9 @@ class QgisProjectSettingsWMS(XmlData):
             name = layerTree.find(self._buildTagWithNS('Name')).text
             attributes = layerTree.find(self._buildTagWithNS('Attributes'))
             attrs = []
-            for attribute in attributes:
-                attrs.append(attribute.attrib)
+            if attributes:
+                for attribute in attributes:
+                    attrs.append(attribute.attrib)
 
             CRS = layerTree.xpath('opengis:CRS', namespaces=self._NS)
 
@@ -917,7 +918,7 @@ class QgisProjectSettingsWMS(XmlData):
                 'metadata': {
                     'title': layerTree.find(self._buildTagWithNS('Title')).text,
                     'attributes': attrs,
-                    'crs': [crs.text for crs in CRS]
+                    'crs': [crs.text for crs in CRS] if CRS else None
                 }
             }
 
