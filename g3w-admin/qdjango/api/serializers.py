@@ -205,6 +205,9 @@ class ProjectSerializer(serializers.ModelSerializer):
         if instance.relations:
             ret['relations'] += self.get_map_layers_relations(instance, layers)
 
+        # add project metadata
+        ret['metadata'] = qgis_projectsettings_wms.metadata
+
         return ret
 
     class Meta:

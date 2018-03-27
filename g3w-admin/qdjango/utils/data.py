@@ -845,6 +845,7 @@ class QgisProject(XmlData):
 class QgisProjectSettingsWMS(XmlData):
 
     _dataToSet = [
+        'metadata',
         'layers',
         'composerTemplates'
     ]
@@ -932,6 +933,50 @@ class QgisProjectSettingsWMS(XmlData):
                 dataLayer['visible'] = bool(int(layerTree.attrib['visible']))
 
             self._layersData[name] = dataLayer
+
+    def _getDataMetadata(self):
+
+
+
+        service = self.qgisProjectSettingsTree.xpath(
+            'opengis:Service',
+            namespaces=self._NS
+        )[0]
+
+        # add simple tags
+        self._metadata = {}
+        for tag in ('Name',
+                    'Title',
+                    'Abstract',
+                    'Fees',
+                    'AccessConstraints'):
+            self._metadata.update({
+                tag.lower(): service.find(self._buildTagWithNS(tag)).text
+            })
+
+        # add keywords
+        keywords = service.find(self._buildTagWithNS('KeywordList')).xpath('opengis:Keyword', namespaces=self._NS)
+        self._metadata.update({
+            'keywords': [k.text for k in keywords]
+        })
+
+        # add contact informations
+        contactinfo = service.find(self._buildTagWithNS('ContactInformation'))
+        contactperson = contactinfo.find(self._buildTagWithNS('ContactPersonPrimary'))
+
+        self._metadata.update({
+            'contact_information': {
+                'person_primary': {
+                    'person': contactperson.find(self._buildTagWithNS('ContactPerson')).text,
+                    'organization': contactperson.find(self._buildTagWithNS('ContactOrganization')).text,
+                    'position': contactperson.find(self._buildTagWithNS('ContactPosition')).text,
+                },
+                'voice_telephone': contactinfo.find(self._buildTagWithNS('ContactVoiceTelephone')).text,
+                'email_address': contactinfo.find(self._buildTagWithNS('ContactElectronicMailAddress')).text,
+            }
+        })
+
+        return self._metadata
 
     def _getDataLayers(self):
 
