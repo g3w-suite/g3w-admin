@@ -936,8 +936,6 @@ class QgisProjectSettingsWMS(XmlData):
 
     def _getDataMetadata(self):
 
-
-
         service = self.qgisProjectSettingsTree.xpath(
             'opengis:Service',
             namespaces=self._NS
@@ -965,16 +963,20 @@ class QgisProjectSettingsWMS(XmlData):
         contactperson = contactinfo.find(self._buildTagWithNS('ContactPersonPrimary'))
 
         self._metadata.update({
-            'contact_information': {
-                'person_primary': {
-                    'person': contactperson.find(self._buildTagWithNS('ContactPerson')).text,
-                    'organization': contactperson.find(self._buildTagWithNS('ContactOrganization')).text,
-                    'position': contactperson.find(self._buildTagWithNS('ContactPosition')).text,
-                },
-                'voice_telephone': contactinfo.find(self._buildTagWithNS('ContactVoiceTelephone')).text,
-                'email_address': contactinfo.find(self._buildTagWithNS('ContactElectronicMailAddress')).text,
+            'contactinformation': {
+                'personprimary': {},
+                'contactvoicetelephone': contactinfo.find(self._buildTagWithNS('ContactVoiceTelephone')).text,
+                'contactelectronicmailaddress': contactinfo.find(self._buildTagWithNS('ContactElectronicMailAddress')).text,
             }
         })
+
+        for tag in ('ContactPerson', 'ContactOrganization', 'ContactPosition'):
+            try:
+                self._metadata['contact_information']['person_primary'].update({
+                    tag.lower(): contactperson.find(self._buildTagWithNS(tag)).text
+                })
+            except:
+                pass
 
         return self._metadata
 
