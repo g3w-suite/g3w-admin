@@ -26,6 +26,17 @@ class ClientConfigApiView(APIView):
 
         ps = projectSerializer(project)
 
+        # add wms_url to project metadata il user i anonynous
+
+        if request.user.is_anonymous:
+            ps.data['metadata']['wms_url'] = '{}://{}/ows/{}/{}/{}'.format(
+                request._request.META['wsgi.url_scheme'],
+                request._request.META['HTTP_HOST'],
+                project.group.slug,
+                project_type,
+                project_id
+            )
+
         # signal after serialization project
         ps_data = ps.data
         for singnal_receiver, data in post_serialize_project.send(ps, app_name=project_type, request=self.request):
