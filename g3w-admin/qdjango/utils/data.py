@@ -16,6 +16,7 @@ from .validators import (
     CheckMaxExtent
 )
 from .exceptions import QgisProjectException, QgisProjectLayerException
+from collections import OrderedDict
 import os
 import re
 import json
@@ -908,7 +909,10 @@ class QgisProjectSettingsWMS(XmlData):
             attrs = []
             if attributes:
                 for attribute in attributes:
-                    attrs.append(attribute.attrib)
+                    attribs = attribute.attrib
+                    if 'alias' not in attribs:
+                        attribs['alias'] = ''
+                    attrs.append(attribs)
 
             CRS = layerTree.xpath('opengis:CRS', namespaces=self._NS)
 
@@ -962,17 +966,17 @@ class QgisProjectSettingsWMS(XmlData):
         contactinfo = service.find(self._buildTagWithNS('ContactInformation'))
         contactperson = contactinfo.find(self._buildTagWithNS('ContactPersonPrimary'))
 
-        self._metadata.update({
-            'contactinformation': {
+        self._metadata.update(OrderedDict({
+            'contactinformation': OrderedDict({
                 'personprimary': {},
                 'contactvoicetelephone': contactinfo.find(self._buildTagWithNS('ContactVoiceTelephone')).text,
                 'contactelectronicmailaddress': contactinfo.find(self._buildTagWithNS('ContactElectronicMailAddress')).text,
-            }
-        })
+            })
+        }))
 
         for tag in ('ContactPerson', 'ContactOrganization', 'ContactPosition'):
             try:
-                self._metadata['contact_information']['person_primary'].update({
+                self._metadata['contactinformation']['personprimary'].update({
                     tag.lower(): contactperson.find(self._buildTagWithNS(tag)).text
                 })
             except:
