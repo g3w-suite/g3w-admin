@@ -16,7 +16,7 @@ from core.utils.structure import mapLayerAttributes
 from core.configs import *
 from core.signals import after_serialized_project_layer
 from core.api.serializers import update_serializer_data, G3WSerializerMixin
-from core.utils.models import get_geometry_column
+from core.utils.models import get_geometry_column, create_geomodel_from_qdjango_layer
 from core.utils.structure import RELATIONS_ONE_TO_MANY, RELATIONS_ONE_TO_ONE
 from qdjango.utils.structure import QdjangoMetaLayer
 from .utils import serialize_vectorjoin
@@ -175,7 +175,7 @@ class ProjectSerializer(serializers.ModelSerializer):
                     # get widgects for layer
                     widgets = layers[layer['id']].widget_set.all()
                     for widget in widgets:
-                        widget_serializzer_data = WidgetSerializer(widget).data
+                        widget_serializzer_data = WidgetSerializer(widget, layer=layers[layer['id']]).data
                         if widget_serializzer_data['type'] == 'search':
                             widget_serializzer_data['options']['layerid'] = layer['id']
                             widget_serializzer_data['options']['querylayerid'] = layer['id']
@@ -318,6 +318,12 @@ class WidgetSerializer(serializers.ModelSerializer):
     """
     Serializzer for Qdjango Widget
     """
+
+    def __init__(self, instance=None, data=empty, **kwargs):
+        self.layer = kwargs['layer']
+        del(kwargs['layer'])
+        super(WidgetSerializer, self).__init__(instance, data, **kwargs)
+
     def to_representation(self, instance):
         ret = super(WidgetSerializer, self).to_representation(instance)
         ret['type'] = instance.widget_type
@@ -335,13 +341,23 @@ class WidgetSerializer(serializers.ModelSerializer):
                 #'zoom': body['zoom'],
             }
             for field in body['fields']:
+
+                # if widgettype is selectbox, get values
+                if 'widgettype' in field and field['widgettype'] == 'selectbox':
+                    model = create_geomodel_from_qdjango_layer(self.layer)
+                    values = model[0].objects.order_by(field['name']).values(field['name']).distinct()
+                    del(model)
+
+                    field['input']['type'] = 'selectfield'
+                    field['input']['options']['values'] = [v[field['name']] for v in values]
+
                 input = field['input']
                 input['options']['blanktext'] = field['blanktext']
                 ret['options']['filter']['AND'].append({
                     'op': field['filterop'],
                     'attribute': field['name'],
                     'label': field['label'],
-                    'input': input
+                    'input': input,
                 })
         else:
             ret['body'] = json.loads(instance.body)

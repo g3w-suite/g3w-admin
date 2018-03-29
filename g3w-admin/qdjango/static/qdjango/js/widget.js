@@ -16,6 +16,10 @@ ga.Qdjango.widgetEditor = {
 	onAddCallback: null,
 	widget: null,
 	delimiterItems: ['.',',',';'],
+	widgettype : {
+		'inputbox': 'InputBox',
+		'selectbox': 'SelectBox',
+	},
 	/*widget: [
 		{
 			'type': 'unique_value_select',
@@ -95,6 +99,7 @@ ga.Qdjango.widgetEditor = {
 						label: v.find(".textInput").find("input").val(), // ETICHETTA DEL CAMPO DI RICERCA
 						blanktext: v.find(".descriptionInput").find("input").val(), // TESTO INIZIALE NEL CAMPO
 						filterop: v.find(".cmpOperatorSelect").find("select").val(), // OPERATORE DI CONFRONTO (=,&lt;,&gt;,=&lt;,&gt;=,&lt;&gt;)
+						widgettype: v.find(".widgetType").find("select").val(), // widgettype
 						input: {
 							type: that.getType(v.find(".fieldSelect").find("select").find("option:selected").data().type), // TIPO DI CAMPO //
 							options: {}
@@ -245,6 +250,7 @@ ga.Qdjango.widgetEditor = {
 	generateSearchRow: function(values)
 	{
 		var that = this;
+
 		var fieldSelect = $('<select class="form-control" name="searchfield"></select>');
 		$.each(this.layerColumns, function(i,v)
 		{
@@ -270,9 +276,17 @@ ga.Qdjango.widgetEditor = {
 										<option value="LIKE">LIKE</option>\
 									</select>');
 
-		var widgetSelect = $('<select class="form-control" name="widget_type">\
-							  <option value="">...</option>\
-							  </select>');
+
+		var options = that.widgettype;
+		if ($.inArray(that.layer_type, ['postgres', 'spatialite']) == -1){
+			delete options['selectbox'];
+
+		}
+
+		var widgetSelect = $('<select class="form-control" name="widget_type"></select>');
+		$.each(options, function(k,i){
+			widgetSelect.append('<option value="'+k+'">'+i+'</option>');
+		});
 
 		// add widget types
 
@@ -282,6 +296,9 @@ ga.Qdjango.widgetEditor = {
 		}
 		if (that.isset(values) && that.isset(values.filterop))
 			cmpOperatorSelect.val($('<div/>').html(values.filterop).text());
+
+		if (that.isset(values) && that.isset(values.widgettype))
+			widgetSelect.val($('<div/>').html(values.widgettype).text());
 
 		var div = $('<div class="blocco" style="display: none">\
 					<div class="box box-success" >\
@@ -294,15 +311,15 @@ ga.Qdjango.widgetEditor = {
 							<div class="box-body">\
 								<div class="row">\
 									<div class="col-md-3"><span class="label label-default">Campo</span></div>\
-									<!--<div class="col-md-2"><span class="label label-default">Widget</span></div>-->\
+									<div class="col-md-2"><span class="label label-default">Widget</span></div>\
 									<div class="col-md-3"><span class="label label-default">Alias</span></div>\
 									<div class="col-md-3"><span class="label label-default">Descrizione</span></div>\
 									<div class="col-md-1"><span class="label label-default">Operatore comparazione</span></div>\
 								</div>\
 								<div class="row">\
 									<div class="col-md-3 fieldSelect"></div>\
-									<!--<div class="col-md-2 widgetType"></div>-->\
-									<div class="col-md-3 textInput"></div>\
+									<div class="col-md-2 widgetType"></div>\
+										<div class="col-md-3 textInput"></div>\
 									<div class="col-md-3 descriptionInput"></div>\
 									<div class="col-md-1 cmpOperatorSelect"></div>\
 								</div>\
@@ -327,7 +344,7 @@ ga.Qdjango.widgetEditor = {
 		div.find(".textInput").append(textInput);
 		div.find(".descriptionInput").append(descriptionInput);
 		div.find(".cmpOperatorSelect").append(cmpOperatorSelect);
-		//div.find(".widgetType").append(widgetSelect);
+		div.find(".widgetType").append(widgetSelect);
 		
 		$(".rightCol").append(div);
 		div.fadeIn(this.fadeNumber);
