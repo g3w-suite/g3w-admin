@@ -19,3 +19,4 @@ class ProjectPermission(BasePermission):
         return request.user.has_perm('{}.view_project'.format(kwargs['project_type']), project) or \
             get_anonymous_user().has_perm('{}.view_project'.format(kwargs['project_type']), project)
 
+
