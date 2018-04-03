@@ -296,6 +296,9 @@ class LayerSerializer(serializers.ModelSerializer):
         # add capabilities
         ret['capabilities'] = self.get_capabilities(instance)
 
+        # add styles
+        ret['styles'] = self.qgis_projectsettings_wms.layers[instance.name]['styles']
+
         ret['source'] = {
             'type': instance.layer_type
         }

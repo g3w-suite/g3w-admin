@@ -852,7 +852,8 @@ class QgisProjectSettingsWMS(XmlData):
     ]
 
     _NS = {
-        'opengis': 'http://www.opengis.net/wms'
+        'opengis': 'http://www.opengis.net/wms',
+        'xlink': 'http://www.w3.org/1999/xlink'
     }
 
     def __init__(self, project_settings, **kwargs):
@@ -877,6 +878,9 @@ class QgisProjectSettingsWMS(XmlData):
 
     def _buildTagWithNS(self, tag):
         return '{{{0}}}{1}'.format(self._NS['opengis'], tag)
+
+    def _buildTagWithNSXlink(self, tag):
+        return '{{{0}}}{1}'.format(self._NS['xlink'], tag)
 
     def _getBBOXLayer(self, layerTree):
 
@@ -916,16 +920,128 @@ class QgisProjectSettingsWMS(XmlData):
 
             CRS = layerTree.xpath('opengis:CRS', namespaces=self._NS)
 
+
+
             dataLayer = {
                 'name': name,
                 'queryable': bool(int(layerTree.attrib['queryable'])),
                 'bboxes': self._getBBOXLayer(layerTree),
+                'styles': [],
                 'metadata': {
                     'title': layerTree.find(self._buildTagWithNS('Title')).text,
                     'attributes': attrs,
-                    'crs': [crs.text for crs in CRS] if CRS else None
+                    'crs': [crs.text for crs in CRS] if CRS else None,
                 }
             }
+
+            # add STYLE
+            styles = layerTree.xpath('opengis:Style', namespaces=self._NS)
+            for style in styles:
+                style_toadd = {
+                    'name': style.find(self._buildTagWithNS('Name')).text,
+                    'title': style.find(self._buildTagWithNS('Title')).text
+                }
+
+                # add legendurl if is set
+                try:
+                    legendurl = style.find(self._buildTagWithNS('LegendURL'))
+                    style_toadd['legendulr'] = {}
+                    try:
+                        style_toadd['legendulr']['format'] = legendurl.find(
+                            self._buildTagWithNS('Format')).text
+                    except:
+                        pass
+
+                    try:
+                        style_toadd['legendulr']['onlineresources'] = \
+                            legendurl.find(self._buildTagWithNS('OnlineResource')).attrib[
+                                self._buildTagWithNSXlink('href')]
+                    except:
+                        pass
+                except:
+                    pass
+
+                dataLayer['styles'].append(style_toadd)
+
+
+
+            # add keywords
+            try:
+                keywords = layerTree.find(self._buildTagWithNS('KeywordList'))\
+                    .xpath('opengis:Keyword', namespaces=self._NS)
+                dataLayer['metadata'].update({
+                    'keywords': [k.text for k in keywords]
+                })
+            except:
+                pass
+
+
+
+
+            # add attribution
+            try:
+                dataurl = layerTree.find(self._buildTagWithNS('DataURL'))
+                dataLayer['metadata'].update({
+                    'dataurl': {}
+                })
+
+                try:
+                    dataLayer['metadata']['dataurl']['format'] = dataurl.find(
+                        self._buildTagWithNS('Format')).text
+                except:
+                    pass
+
+                try:
+                    dataLayer['metadata']['dataurl']['onlineresources'] = \
+                        dataurl.find(self._buildTagWithNS('OnlineResource')).attrib[
+                            self._buildTagWithNSXlink('href')]
+                except:
+                    pass
+            except:
+                pass
+
+            # add MetadataURL
+            try:
+                metadataurl = layerTree.find(self._buildTagWithNS('MetadataURL'))
+                dataLayer['metadata'].update({
+                    'metadataurl': {}
+                })
+
+                try:
+                    dataLayer['metadata']['metadataurl']['format'] = metadataurl.find(
+                        self._buildTagWithNS('Format')).text
+                except:
+                    pass
+
+                try:
+                    dataLayer['metadata']['metadataurl']['onlineresources'] = \
+                        metadataurl.find(self._buildTagWithNS('OnlineResource')).attrib[
+                            self._buildTagWithNSXlink('href')]
+                except:
+                    pass
+            except:
+                pass
+
+            # add attribution
+            try:
+                attribution = layerTree.find(self._buildTagWithNS('Attribution'))
+                dataLayer['metadata'].update({
+                    'attribution': {}
+                })
+
+                try:
+                    dataLayer['metadata']['attribution']['title'] = attribution.find(self._buildTagWithNS('Title')).text
+                except:
+                    pass
+
+                try:
+                    dataLayer['metadata']['attribution']['onlineresources'] = \
+                        attribution.find(self._buildTagWithNS('OnlineResource')).attrib[
+                            self._buildTagWithNSXlink('href')]
+                except:
+                    pass
+            except:
+                pass
 
             # add abstract
             try:
