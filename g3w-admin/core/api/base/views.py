@@ -5,6 +5,7 @@ from django.utils import six
 from django.utils.translation import ugettext, ugettext_lazy as _
 from django.contrib.gis.geos import GEOSGeometry
 from rest_framework.views import APIView
+from rest_framework.pagination import PageNumberPagination
 from rest_framework import exceptions, status
 from rest_framework.compat import set_rollback
 from rest_framework.response import Response
@@ -129,6 +130,10 @@ class G3WAPIView(APIView):
         return super(G3WAPIView, self).dispatch(request, *args, **kwargs)
 
 
+class G3WAPIPaginator(PageNumberPagination):
+    page_size_query_param = 'page_size'
+
+
 class BaseVectorOnModelApiView(G3WAPIView):
     """
     View base to get layer data
@@ -163,6 +168,35 @@ class BaseVectorOnModelApiView(G3WAPIView):
         MODE_CONFIG,
         MODE_DATA
     ]
+
+    pagination_class = G3WAPIPaginator
+
+    @property
+    def paginator(self):
+        """
+        The paginator instance associated with the view, or `None`.
+        """
+        if not hasattr(self, '_paginator'):
+            if self.pagination_class is None:
+                self._paginator = None
+            else:
+                self._paginator = self.pagination_class()
+        return self._paginator
+
+    def paginate_queryset(self, queryset):
+        """
+        Return a single page of results, or `None` if pagination is disabled.
+        """
+        if self.paginator is None:
+            return None
+        return self.paginator.paginate_queryset(queryset, self.request, view=self)
+
+    def get_paginated_response(self, data):
+        """
+        Return a paginated style `Response` object for the given output data.
+        """
+        assert self.paginator is not None
+        return self.paginator.get_paginated_response(data)
 
     def get_forms(self):
         """
@@ -342,6 +376,9 @@ class BaseVectorOnModelApiView(G3WAPIView):
         self.features_layer = self.metadata_layer.get_queryset()
         if self.bbox_filter:
             self.features_layer = self.bbox_filter.filter_queryset(request, self.features_layer, self)
+
+        if 'page' in request.query_params:
+            self.features_layer = self.paginate_queryset(self.features_layer)
 
         # instance of geoserializer
         layer_serializer = self.metadata_layer.serializer(self.features_layer, many=True,
