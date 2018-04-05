@@ -351,6 +351,7 @@ class APIVectorLayerStructure(object):
     def __init__(self, **kwargs):
 
         self.format = kwargs.get('type', self._format)
+        self.count = kwargs.get('count', None)
         self.pkField = kwargs.get('pkField', self._pkField)
         self.data = kwargs.get('data', self._data)
         self.featureLocks = kwargs.get('featureLocks', self._featureLocks)
@@ -375,6 +376,7 @@ class APIVectorLayerStructure(object):
             'vector': {
                 'format': self.format,
                 'pk': self.pkField,
+                'count': self.count,
                 'data': self.data,
                 'geometrytype': self.geometryType,
                 'fields': self.fields,

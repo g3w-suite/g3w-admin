@@ -17,6 +17,7 @@ from core.api.authentication import CsrfExemptSessionAuthentication
 
 from core.utils.structure import APIVectorLayerStructure
 from copy import copy
+from collections import OrderedDict
 import json
 
 MODE_DATA = 'data'
@@ -397,6 +398,7 @@ class BaseVectorOnModelApiView(G3WAPIView):
 
         self.results.update(APIVectorLayerStructure(**{
             'data': featurecollection,
+            'count': self._paginator.page.paginator.count if 'page' in request.query_params else None,
             'geomentryType': self.metadata_layer.geometry_type,
             'pkField': self.metadata_layer.model._meta.pk.name
         }).as_dict())
