@@ -1,9 +1,7 @@
 from django.db import connections
-from rest_framework.settings import api_settings
-from rest_framework.generics import GenericAPIView
-from rest_framework.mixins import ListModelMixin
-from core.api.base.views import BaseVectorOnModelApiView, IntersectsBBoxFilter, MODE_DATA, MODE_CONFIG, APIException, \
-    APIVectorLayerStructure
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import OrderingFilter
+from core.api.base.views import BaseVectorOnModelApiView, IntersectsBBoxFilter, MODE_DATA, MODE_CONFIG, APIException
 from core.api.base.vector import MetadataVectorLayer
 from core.utils.structure import mapLayerAttributesFromModel
 from core.utils.models import create_geomodel_from_qdjango_layer, get_geometry_column
@@ -135,6 +133,9 @@ class QGISLayerVectorViewMixin(object):
 class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
 
     permission_classes = (ProjectPermission,)
+
+    filter_backends = (OrderingFilter,)
+    ordering_fields = '__all__'
 
     # Modes call avilable
     modes_call_available = [

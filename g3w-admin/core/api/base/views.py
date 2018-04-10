@@ -378,8 +378,13 @@ class BaseVectorOnModelApiView(G3WAPIView):
         if self.bbox_filter:
             self.features_layer = self.bbox_filter.filter_queryset(request, self.features_layer, self)
 
+        for backend in list(self.filter_backends):
+            self.features_layer = backend().filter_queryset(self.request, self.features_layer, self)
+
         if 'page' in request.query_params:
             self.features_layer = self.paginate_queryset(self.features_layer)
+
+
 
         # instance of geoserializer
         layer_serializer = self.metadata_layer.serializer(self.features_layer, many=True,
