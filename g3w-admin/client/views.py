@@ -78,12 +78,14 @@ class ClientView(TemplateView):
         if six.PY3:
             serializedGroup = str(serializedGroup, 'utf-8')
 
+        baseurl = "/{}".format(settings.SITE_PREFIX_URL if settings.SITE_PREFIX_URL else '')
+        frontendurl = ',"frontendurl":"{}"'.format(baseurl) if settings.FRONTEND else ''
+
         # add baseUrl property
         contextData['group_config'] = 'var initConfig ={{ "staticurl":"{}", "client":"{}", ' \
-                                      '"mediaurl":"{}", "user":{}, "group":{}, "baseurl":"{}", "vectorurl":"{}" }}'\
+                                      '"mediaurl":"{}", "user":{}, "group":{}, "baseurl":"{}", "vectorurl":"{}" {} }}'\
             .format(settings.STATIC_URL, "{}/".format(settings.CLIENT_DEFAULT), settings.MEDIA_URL, user_data,
-                    serializedGroup, "/{}".format(settings.SITE_PREFIX_URL if settings.SITE_PREFIX_URL else ''),
-                                                  settings.VECTOR_URL)
+                    serializedGroup, baseurl, settings.VECTOR_URL, frontendurl)
 
         # project by type(app)
         if not '{}-{}'.format(kwargs['project_type'], self.project.pk) in groupSerializer.projects.keys():
