@@ -516,6 +516,7 @@ _.extend(g3wadmin.widget, {
             options['validation'] = window.ajaxUploadValidation;
         }
 
+        //options['deleteFile'] = {'enabled': false};
 
         initUploadFields($item, options);
 
@@ -528,6 +529,37 @@ _.extend(g3wadmin.widget, {
         }).on('deleteComplete', function(e, id, name, xhr){
             var $thumb = $(this).parents('.box-body').find('.img-thumbnail');
             $thumb.hide();
+        });
+
+        $.each($uploader, function(i, ele){
+            var $ele = $(ele);
+            var data_files = eval($ele.attr('data-files'));
+            if (data_files.length > 0){
+                var del_btn = $ele.find(".qq-upload-delete-selector");
+                //del_btn.removeClass('qq-hide');
+
+
+                // retry input_field_name
+                var field_name = $ele.parents('.form-group').attr('id').substring(7);
+
+                // add lick on delete
+                del_btn.on('click', function (e){
+                    var $box_body = $(this).parents('.form-group');
+                    var $thumb = $box_body.find('.img-thumbnail');
+                    $thumb.hide();
+
+                    // add input hidden for delete file on post
+                    var clear_name = field_name + "-clear";
+                    var $clear = $box_body.find("input[name=" + clear_name + "]")
+                    if ($clear.length == 0){
+                        var $hidden_clear = $('<input type="hidden" name="' + clear_name + '">');
+                        $hidden_clear.val('1');
+                        $box_body.append($hidden_clear);
+                        del_btn.addClass('qq-hide')
+                    }
+
+                });
+            }
         });
 
     },
