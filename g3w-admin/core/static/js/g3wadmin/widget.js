@@ -516,6 +516,7 @@ _.extend(g3wadmin.widget, {
             options['validation'] = window.ajaxUploadValidation;
         }
 
+        //options['deleteFile'] = {'enabled': false};
 
         initUploadFields($item, options);
 
@@ -525,9 +526,56 @@ _.extend(g3wadmin.widget, {
             $thumb.attr('src', resJSON.path);
             if ($thumb.is(':hidden'))
                 $thumb.show();
+
+            // for clear value
+            var $form_group = $(this).parents('.form-group');
+            var clear_name = $form_group.attr('id').substring(7) + "-clear";
+            $form_group.find("input[name=" + clear_name + "]").remove();
+
+
         }).on('deleteComplete', function(e, id, name, xhr){
             var $thumb = $(this).parents('.box-body').find('.img-thumbnail');
             $thumb.hide();
+        });
+
+        $.each($uploader, function(i, ele){
+            var $ele = $(ele);
+            var data_files = eval($ele.attr('data-files'));
+            if (data_files.length > 0){
+                var del_btn = $ele.find(".qq-upload-delete-selector");
+                del_btn.addClass('qq-hide');
+
+                // check if required:
+                var $required = $ele.parents('.form-group').find('.requiredField');
+
+                if ($required.length == 0){
+
+                    var new_del_btn = del_btn.clone(false).removeClass('qq-hide').removeClass('qq-upload-delete-selector');
+                    del_btn.parent().append(new_del_btn);
+
+                    // retry input_field_name
+                    var field_name = $ele.parents('.form-group').attr('id').substring(7);
+
+                    // add lick on delete
+                    new_del_btn.on('click', function (e){
+                        var $box_body = $(this).parents('.box-body');
+                        var $form_group = $(this).parents('.form-group');
+                        var $thumb = $box_body.find('.img-thumbnail');
+                        $thumb.hide();
+
+                        // add input hidden for delete file on post
+                        var clear_name = field_name + "-clear";
+                        var $clear = $form_group.find("input[name=" + clear_name + "]")
+                        if ($clear.length == 0){
+                            var $hidden_clear = $('<input type="hidden" name="' + clear_name + '">');
+                            $hidden_clear.val('1');
+                            $form_group.append($hidden_clear);
+                            new_del_btn.addClass('qq-hide')
+                        }
+
+                    });
+                }
+            }
         });
 
     },
