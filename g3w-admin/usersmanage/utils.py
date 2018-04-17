@@ -97,7 +97,7 @@ def get_users_for_object(object, permission, group = None, with_anonymous = Fals
                     result.append(user)
             else:
                 result.append(user)
-            if user.pk == anonymous_user.pk:
+            if user.pk == anonymous_user.pk and with_anonymous:
                 if user not in result:
                     result.append(user)
                 
