@@ -460,6 +460,11 @@ class SpatialiteCreateGeomodel(CreateGeomodel):
                 else:
                     kwargs['max_length'] = 255
 
+            if type(column.type) == SLD.NUMERIC and column.name != self.geometry_column:
+                kwargs['max_digits'] = column.type.precision if column.type.precision else 65535
+                kwargs['decimal_places'] = column.type.scale if column.type.scale else \
+                    column.type._default_decimal_return_scale
+
             self.django_model_fields[column.name] = dj_model_field_type(**kwargs)
 
     def build_connection(self):
