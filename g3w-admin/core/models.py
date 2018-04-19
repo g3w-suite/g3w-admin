@@ -289,6 +289,9 @@ class GeneralSuiteData(models.Model):
     suite_logo = models.ImageField(_('Suite logo'), null=True, blank=True)
     url_suite_logo = models.URLField(_('Suite logo URL'), null=True, blank=True)
 
+    # data fro map client
+    main_map_title = models.CharField(_('Main map title'), max_length=400, null=True, blank=True)
+
     facebook_url = models.URLField(_('Facebook link'), null=True, blank=True)
     twitter_url = models.URLField(_('Twitter link'), null=True, blank=True)
     googleplus_url = models.URLField(_('Google+ link'), null=True, blank=True)

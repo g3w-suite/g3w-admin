@@ -7,6 +7,7 @@ from django.utils.translation import get_language
 from core.api.serializers import GroupSerializer, Group, update_serializer_data
 from core.api.permissions import ProjectPermission
 from core.signals import perform_client_search, post_serialize_project
+from core.models import GeneralSuiteData
 
 
 class ClientConfigApiView(APIView):
@@ -75,13 +76,16 @@ class GroupConfigApiView(APIView):
         group = get_object_or_404(Group, slug=group_slug)
         groupSerializer = GroupSerializer(group, projectId=project_id, projectType=project_type, request=self.request)
         baseurl = "/{}".format(settings.SITE_PREFIX_URL if settings.SITE_PREFIX_URL else '')
+        generaldata = GeneralSuiteData.objects.get()
+
         initconfig = {
           "staticurl": settings.STATIC_URL,
           "client": "client/",
           "mediaurl": settings.MEDIA_URL,
           "baseurl": baseurl,
           "vectorurl": settings.VECTOR_URL,
-          "group": groupSerializer.data
+          "group": groupSerializer.data,
+          "main_map_title": generaldata.main_map_title
         }
 
         # add frontendurl if frontend is set

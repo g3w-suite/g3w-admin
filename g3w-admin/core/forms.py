@@ -279,6 +279,22 @@ class GeneralSuiteDataForm(FileFormMixin, ModelForm):
                     ),
                     css_class='col-md-6'
                 ),
+                Div(
+                    Div(
+                        Div(
+                            HTML("<h3 class='box-title'><i class='fa fa-file'></i> {}</h3>".format(
+                                _('Map client data'))),
+                            css_class='box-header with-border'
+                        ),
+                        Div(
+                            'main_map_title',
+                            css_class='box-body',
+
+                        ),
+                        css_class='box box-default'
+                    ),
+                    css_class='col-md-6'
+                ),
                 css_class='row'
             )
         )

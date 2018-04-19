@@ -11,6 +11,7 @@ from django.apps import apps
 from django.core.exceptions import PermissionDenied
 from rest_framework.renderers import JSONRenderer
 from core.api.serializers import GroupSerializer, Group
+from core.models import GeneralSuiteData
 from usersmanage.utils import get_users_for_object, get_user_model
 from copy import deepcopy
 
@@ -81,11 +82,15 @@ class ClientView(TemplateView):
         baseurl = "/{}".format(settings.SITE_PREFIX_URL if settings.SITE_PREFIX_URL else '')
         frontendurl = ',"frontendurl":"{}"'.format(baseurl) if settings.FRONTEND else ''
 
+        generaldata = GeneralSuiteData.objects.get()
+
         # add baseUrl property
         contextData['group_config'] = 'var initConfig ={{ "staticurl":"{}", "client":"{}", ' \
-                                      '"mediaurl":"{}", "user":{}, "group":{}, "baseurl":"{}", "vectorurl":"{}" {} }}'\
-            .format(settings.STATIC_URL, "{}/".format(settings.CLIENT_DEFAULT), settings.MEDIA_URL, user_data,
-                    serializedGroup, baseurl, settings.VECTOR_URL, frontendurl)
+                                      '"mediaurl":"{}", "user":{}, "group":{}, "baseurl":"{}", "vectorurl":{}, ' \
+                                      '"main_map_title":"{}" {} }}'.\
+            format(settings.STATIC_URL, "{}/".format(settings.CLIENT_DEFAULT), settings.MEDIA_URL, user_data,
+                    serializedGroup, baseurl, settings.VECTOR_URL,
+                   generaldata.main_map_title if generaldata.main_map_title else None, frontendurl)
 
         # project by type(app)
         if not '{}-{}'.format(kwargs['project_type'], self.project.pk) in groupSerializer.projects.keys():
