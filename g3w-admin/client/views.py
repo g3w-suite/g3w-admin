@@ -87,10 +87,10 @@ class ClientView(TemplateView):
         # add baseUrl property
         contextData['group_config'] = 'var initConfig ={{ "staticurl":"{}", "client":"{}", ' \
                                       '"mediaurl":"{}", "user":{}, "group":{}, "baseurl":"{}", "vectorurl":"{}", ' \
-                                      '"main_map_title":"{}" {} }}'.\
+                                      '"main_map_title":{} {} }}'.\
             format(settings.STATIC_URL, "{}/".format(settings.CLIENT_DEFAULT), settings.MEDIA_URL, user_data,
                     serializedGroup, baseurl, settings.VECTOR_URL,
-                   generaldata.main_map_title if generaldata.main_map_title else None, frontendurl)
+                   '"' + generaldata.main_map_title + '"' if generaldata.main_map_title else 'null', frontendurl)
 
         # project by type(app)
         if not '{}-{}'.format(kwargs['project_type'], self.project.pk) in groupSerializer.projects.keys():
