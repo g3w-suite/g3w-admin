@@ -117,5 +117,25 @@ After prepared environment if sufficient invoce paver *install* task
 paver install
 ```
 
+To run the application with paver
+
+```bash
+paver start
+```
+
+and for stop
+```bash
+paver start
+```
+
+
+G3W-ADMIN is a django application so is possibile run app by standard django manage.py commands
+
+```bash
+./manage.py runserver
+```
+
+
+
 
 
