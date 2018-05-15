@@ -1,6 +1,7 @@
 from django.contrib.gis.geos import Polygon
 from rest_framework_gis.filters import InBBoxFilter
 from rest_framework.exceptions import ParseError
+from rest_framework.filters import BaseFilterBackend
 from django.db.models import Q
 
 
@@ -70,3 +71,40 @@ class CentroidBBoxFilter(IntersectsBBoxFilter):
     def get_filter_bbox(self, request):
         polygon = super(CentroidBBoxFilter, self).get_filter_bbox(request)
         return polygon.centroid.buffer(self.tolerance)
+
+
+class DatatablesFilterBackend(BaseFilterBackend):
+    """
+    Filter that works with datatables params.
+    from https://github.com/izimobil/django-rest-framework-datatables/blob/master/rest_framework_datatables/filters.py
+    """
+    def filter_queryset(self, request, queryset, view):
+
+        total_count = queryset.count()
+        # set the queryset count as an attribute of the view for later
+        # TODO: find a better way than this hack
+        setattr(view, '_datatables_total_count', total_count)
+
+        # parse query params
+        getter = request.query_params.get
+        fields = view.metadata_layer.model._meta.fields
+        search_value = getter('search')
+
+        # filter queryset
+        q = Q()
+        for f in fields:
+            q |= Q(**{'%s__icontains' % f.column: search_value})
+
+        if q != Q():
+            queryset = queryset.filter(q).distinct()
+            filtered_count = queryset.count()
+        else:
+            filtered_count = total_count
+        # set the queryset count as an attribute of the view for later
+        # TODO: maybe find a better way than this hack ?
+        setattr(view, '_datatables_filtered_count', filtered_count)
+
+        return queryset
+
+
+
