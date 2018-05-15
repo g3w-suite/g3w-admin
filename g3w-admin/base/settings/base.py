@@ -53,7 +53,6 @@ THIRD_PARTY_APPS = [
     'rest_framework',
     'rest_framework_gis',
     'rest_framework.authtoken',
-    'rest_framework_datatables',
     'import_export',
     'mptt',
     'ordered_model',
