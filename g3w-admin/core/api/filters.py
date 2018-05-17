@@ -91,15 +91,16 @@ class DatatablesFilterBackend(BaseFilterBackend):
         search_value = getter('search')
 
         # filter queryset
-        q = Q()
-        for f in fields:
-            q |= Q(**{'%s__icontains' % f.column: search_value})
+        if search_value:
+            q = Q()
+            for f in fields:
+                q |= Q(**{'%s__icontains' % f.column: search_value})
 
-        if q != Q():
-            queryset = queryset.filter(q).distinct()
-            filtered_count = queryset.count()
-        else:
-            filtered_count = total_count
+            if q != Q():
+                queryset = queryset.filter(q).distinct()
+                filtered_count = queryset.count()
+            else:
+                filtered_count = total_count
         # set the queryset count as an attribute of the view for later
         # TODO: maybe find a better way than this hack ?
         setattr(view, '_datatables_filtered_count', filtered_count)
