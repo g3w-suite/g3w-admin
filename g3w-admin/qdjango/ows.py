@@ -39,6 +39,9 @@ try:
 except:
     pass
 
+import re
+
+
 QDJANGO_PROXY_REQUEST = 'proxy'
 QDJANGO_QGSSERVER_REQUEST = 'qgsserver'
 
@@ -126,6 +129,20 @@ class OWSRequestHandler(OWSRequestHandlerBase):
                 http = urllib3.PoolManager()
 
             result = http.request(request.method, url, body=request.body)
+            result_data = result.data
+
+            if ows_request == 'GETCAPABILITIES':
+
+                to_replace = settings.QDJANGO_SERVER_URL + r'\?map=[^\'" > &]+(?=&)'
+
+                # url to replace
+                wms_url = '{}://{}{}'.format(
+                    request.META['wsgi.url_scheme'],
+                    request.META['HTTP_HOST'],
+                    request.path
+                )
+                result_data = re.sub(to_replace, wms_url, result_data)
+
 
             # If we get a redirect, let's add a useful message.
             if result.status in (301, 302, 303, 307):
@@ -137,7 +154,7 @@ class OWSRequestHandler(OWSRequestHandlerBase):
                 response['Location'] = result.getheader('Location')
             else:
                 response = HttpResponse(
-                    result.data,
+                    result_data,
                     status=result.status,
                     content_type=result.headers["Content-Type"])
             return response
