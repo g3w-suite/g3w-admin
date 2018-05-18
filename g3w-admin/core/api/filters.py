@@ -101,6 +101,8 @@ class DatatablesFilterBackend(BaseFilterBackend):
                 filtered_count = queryset.count()
             else:
                 filtered_count = total_count
+        else:
+            filtered_count = total_count
         # set the queryset count as an attribute of the view for later
         # TODO: maybe find a better way than this hack ?
         setattr(view, '_datatables_filtered_count', filtered_count)
