@@ -49,4 +49,5 @@ build
 /g3w-admin/globalsearch/
 /g3w-admin/stress/
 /g3w-admin/stress_admin/
+/g3w-admin/filemanager/
 .gitmodules

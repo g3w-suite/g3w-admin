@@ -1,0 +1,39 @@
+[submodule "g3w-admin/frontend"]
+	path = g3w-admin/frontend
+	url = https://wlorenzetti@bitbucket.org/gis3w/g3w-admin-frontend.git
+[submodule "g3w-admin/editing"]
+	path = g3w-admin/editing
+	url = https://wlorenzetti@bitbucket.org/gis3w/g3w-admin-editing.git
+[submodule "g3w-admin/ogc"]
+	path = g3w-admin/ogc
+	url = https://wlorenzetti@bitbucket.org/gis3w/g3w-admin-ogc.git
+[submodule "g3w-admin/cdu"]
+	path = g3w-admin/cdu
+	url = https://wlorenzetti@bitbucket.org/gis3w/g3w-admin-cdu.git
+[submodule "g3w-admin/law"]
+	path = g3w-admin/law
+	url = https://wlorenzetti@bitbucket.org/gis3w/g3w-admin-law.git
+[submodule "g3w-admin/caching"]
+	path = g3w-admin/caching
+	url = https://wlorenzetti@github.com/g3w-suite/g3w-admin-caching.git
+[submodule "g3w-admin/notes"]
+	path = g3w-admin/notes
+	url = https://wlorenzetti@bitbucket.org/gis3w/g3w-admin-notes.git
+[submodule "g3w-admin/cadastre"]
+	path = g3w-admin/cadastre
+	url = https://wlorenzetti@bitbucket.org/gis3w/g3w-admin-cadastre.git
+[submodule "g3w-admin/stress_admin"]
+	path = g3w-admin/stress_admin
+	url = https://wlorenzetti@bitbucket.org/gis3w/g3w-admin-stress.git
+[submodule "g3w-admin/stress"]
+	path = g3w-admin/stress
+	url = https://wlorenzetti@bitbucket.org/gis3w/g3w-stress.git
+[submodule "g3w-admin/authldap"]
+	path = g3w-admin/authldap
+	url = https://wlorenzetti@bitbucket.org/gis3w/g3w-stress.git
+[submodule "g3w-admin/globalsearch"]
+	path = g3w-admin/globalsearch
+	url = https://wlorenzetti@bitbucket.org/gis3w/g3w-admin-globalsearch.git
+[submodule "g3w-admin/filemanager"]
+	path = g3w-admin/filemanager
+	url = https://wlorenzetti@bitbucket.org/gis3w/g3w-admin-filemanager.git

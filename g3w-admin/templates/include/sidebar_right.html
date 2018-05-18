@@ -1,4 +1,5 @@
 {% load i18n %}
+{% load sitetree %}
 <!-- Control Sidebar -->
 <aside class="control-sidebar control-sidebar-dark">
 <!-- Tab panes -->
@@ -27,6 +28,11 @@
         </a>
       </li>
     {% endif %}
+    {% for module in SETTINGS.G3WADMIN_LOCAL_MORE_APPS %}
+        {% with sidebar_tree=module|add:"_sidebar_right" %}
+        {% sitetree_menu from sidebar_tree include "trunk" template "sitetree/sidebar.html" %}
+        {% endwith %}
+    {% endfor %}
     </ul>
   </div>
 </div>
