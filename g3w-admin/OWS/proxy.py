@@ -1,4 +1,5 @@
 from django.http import HttpResponse
+from django.http.response import HttpResponseForbidden
 from .auth import AuthForbiddenRequest
 
 import logging
@@ -20,7 +21,7 @@ class Proxy(object):
             authorizer = OWSrh.authorizer
             authorizer.auth_request()
         except AuthForbiddenRequest:
-            raise AuthForbiddenRequest()
+            return HttpResponseForbidden()
         except Exception as e:
             try:
                 """
@@ -29,7 +30,7 @@ class Proxy(object):
                 authorizer = self.authorizer_class()
                 authorizer.auth_request(request)
             except AuthForbiddenRequest:
-                raise AuthForbiddenRequest
+                return HttpResponseForbidden()
             except:
                 return HttpResponse("The proxy service requires a URL-encoded URL as a parameter.",
                                 status=400,
