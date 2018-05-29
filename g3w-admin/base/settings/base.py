@@ -93,6 +93,8 @@ MIDDLEWARE = [
     # 'debug_panel.middleware.DebugPanelMiddleware'
 ]
 
+G3WADMIN_MIDDLEWARE = []
+
 ROOT_URLCONF = 'base.urls'
 
 TEMPLATES = [
