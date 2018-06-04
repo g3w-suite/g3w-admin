@@ -2,6 +2,7 @@ from django.conf import settings
 from datetime import datetime
 from usersmanage.configs import *
 from core.signals import load_css_modules, load_js_modules, load_navbar_items
+from base.version import get_version
 
 
 def global_settings(request):
@@ -51,5 +52,7 @@ def global_settings(request):
             g3wadmin_context['navbar_items'] += item[1]
         else:
             g3wadmin_context['navbar_items'].append(item[1])
+
+    g3wadmin_context['VERSION'] = get_version()
 
     return g3wadmin_context
