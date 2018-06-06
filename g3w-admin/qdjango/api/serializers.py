@@ -18,6 +18,7 @@ from core.signals import after_serialized_project_layer
 from core.api.serializers import update_serializer_data, G3WSerializerMixin
 from core.utils.models import get_geometry_column, create_geomodel_from_qdjango_layer
 from core.utils.structure import RELATIONS_ONE_TO_MANY, RELATIONS_ONE_TO_ONE
+from core.models import G3WSpatialRefSys
 from qdjango.utils.structure import QdjangoMetaLayer
 from .utils import serialize_vectorjoin
 import json
@@ -310,6 +311,9 @@ class LayerSerializer(serializers.ModelSerializer):
                 ret['source'].update(datasourceWMS.dict())
                 ret['source']['external'] = True
                 #ret['servertype'] = MSTYPES_OGC
+
+        # add proj4
+        ret['proj4'] = G3WSpatialRefSys.objects.get(srid=ret['crs']).proj4text
 
         # add metadata
         ret['metadata'] = self.qgis_projectsettings_wms.layers[instance.name]['metadata']
