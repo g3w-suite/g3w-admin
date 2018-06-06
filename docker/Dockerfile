@@ -22,7 +22,7 @@ RUN mkdir /home/apps/g3w-suite/www/media/data
 RUN mkdir /home/apps/g3w-suite/www/static
 WORKDIR /home/apps/g3w-suite
 
-RUN git clone https://wlorenzetti:kotegaeshi7890@bitbucket.org/gis3w/g3w-admin.git g3w-admin
+RUN git clone https://bitbucket.org/gis3w/g3w-admin.git g3w-admin
 
 WORKDIR /home/apps/g3w-suite/g3w-admin
 RUN pip install -r requirements.txt

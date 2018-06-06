@@ -13,7 +13,7 @@ repo["cadastre"]="g3w-admin-cadastre.git"
 repo["iternet"]="g3w-admin-iternet.git"
 
 for key in ${!repo[@]}; do
-    git submodule add -f https://wlorenzetti:kotegaeshi7890@bitbucket.org/gis3w/${repo[${key}]} g3w-admin/${key}
+    git submodule add -f https://bitbucket.org/gis3w/${repo[${key}]} g3w-admin/${key}
     if [ -e g3w-admin/${key}/packages.txt ]
     then
         cat g3w-admin/${key}/packages.txt | xargs apt-get install -y
