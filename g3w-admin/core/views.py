@@ -23,6 +23,12 @@ from .utils.decorators import check_madd
 from .signals import after_update_group
 
 
+#class NotFoundView(TemplateView):
+#
+#    template_name = '404.html'
+
+
+
 class TestView(View):
 
     def get(self, request, *args, **kwargs):

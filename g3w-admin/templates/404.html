@@ -1,21 +1,18 @@
 {% extends "base.html" %}
+{% load staticfiles %}
 {% load i18n %}
 
-{%  block page_header %}
-<h1>
-404
-<small>{% trans "error page" %}</small>
-</h1>
-{% endblock %}
 
-{% block main_content %}
-<div class="error-page">
-<h2 class="headline text-yellow"> 404</h2>
-<div class="error-content">
-    <h3><i class="fa fa-warning text-yellow"></i> {% trans 'Oops! Page not found.' %}</h3>
-    <p>
-    {% trans "We could not find the page you were looking for." %}.
-    </p>
-</div><!-- /.error-content -->
+{% block body_content %}
+<div style="text-align: center;"  class="error-page">
+    <img src="{% static 'img/g3wsuite_logo_h40.png' %}" alt="G3W-SUITE LOGO">
+    <h2 style="float: none;" class="headline text-yellow">404</h2>
+    <div style="margin-left: 0px;" class="error-content">
+        <h3><i class="fa fa-warning text-yellow"></i> {% trans 'Oops! Page not found.' %}</h3>
+        <p>
+        {% trans "We could not find the page you were looking for." %}.
+        </p>
+    </div><!-- /.error-content -->
 </div><!-- /.error-page -->
 {% endblock %}
+

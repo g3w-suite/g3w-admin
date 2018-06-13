@@ -2,6 +2,8 @@
 
 G3W-ADMIN admin server module for G3W-SUITE.
 
+G3W-SUITE works with **QGIS-Server LTR versions**, so at the moment works with **QGIS-Server 2.18.x LTR**
+
 The following instructions are for a Ubuntu 16.04 LTS.
 
 ## Installation of node.js and Bower

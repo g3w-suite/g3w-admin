@@ -16,6 +16,7 @@ urlpatterns = [
     url(r'^$', login_required(DashboardView.as_view()), name='home'),
 
     url(r'^test/$', login_required(TestView.as_view()), name='test'),
+    #url(r'^404/$', NotFoundView.as_view(), name='404'),
 
     # macrogroups urls
     url(r'^macrogroups/$', login_required(MacroGroupListView.as_view()), name='macrogroup-list'),
