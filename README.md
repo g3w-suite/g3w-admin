@@ -112,12 +112,14 @@ SESSION_COOKIE_NAME = '<unique_session_id>'
 
 ### With paver commands
 
-G3W-ADMIN has a series of [paver](http://pythonhosted.org/Paver/) commands to administrate the suite.
+G3W-ADMIN has a series of [paver](http://pythonhosted.org/Paver/) CLI commands to administrate the suite.
 After prepared environment if sufficient invoce paver *install* task
 
 ```bash
 paver install
 ```
+
+### Run G3W-SUITE
 
 To run the application with paver
 
@@ -127,7 +129,7 @@ paver start
 
 and for stop
 ```bash
-paver start
+paver stop
 ```
 
 
@@ -137,7 +139,20 @@ G3W-ADMIN is a django application so is possibile run app by standard django man
 ./manage.py runserver
 ```
 
+## Deploy G3W-SUITE
 
+As other Django application, G3W-SUITE can be deployed by its wsgi capabilities.
+On the web if simple to find tutorial for deploy a Django application.
+
+The simpler way is to use [Apache2](https://httpd.apache.org/) as server WEB and its [mod_wsgi](https://en.wikipedia.org/wiki/Mod_wsgi) module.
+
+Alternative solutions are:
+
+
+* [Apache2](https://httpd.apache.org/) + [mod_proxy](https://httpd.apache.org/docs/2.4/mod/mod_proxy.html) + [Uwsgi](https://uwsgi-docs.readthedocs.io/en/latest/)
+* [Apache2](https://httpd.apache.org/) + [mod_proxy](https://httpd.apache.org/docs/2.4/mod/mod_proxy.html) + [Gunicorn](http://gunicorn.org/)
+* [Nginx](https://nginx.org/) + [Uwsgi](https://uwsgi-docs.readthedocs.io/en/latest/)
+* [Nginx](https://nginx.org/) + [Gunicorn](http://gunicorn.org/)
 
 
 
