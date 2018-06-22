@@ -229,7 +229,7 @@ class LayerSerializer(serializers.ModelSerializer):
     crs = serializers.IntegerField(source='srid')
     servertype = serializers.SerializerMethodField()
 
-    def __init__(self,instance=None, data=empty, **kwargs):
+    def __init__(self, instance=None, data=empty, **kwargs):
         self.qgis_projectsettings_wms = kwargs['qgis_projectsettings_wms']
         del(kwargs['qgis_projectsettings_wms'])
         super(LayerSerializer, self).__init__(instance, data, **kwargs)
@@ -292,7 +292,21 @@ class LayerSerializer(serializers.ModelSerializer):
 
         # add bbox
         if instance.geometrytype != QGIS_LAYER_TYPE_NO_GEOM:
-            ret['bbox'] = self.qgis_projectsettings_wms.layers[instance.name]['bboxes']['EPSG:{}'.format(group.srid.srid)]
+            bbox = self.qgis_projectsettings_wms.layers[instance.name]['bboxes']['EPSG:{}'.format(group.srid.srid)]
+            ret['bbox'] = {}
+            for coord, val in bbox.items():
+                if val not in (float('inf'), float('-inf')):
+                    ret['bbox'][coord] = val
+                else:
+                    if coord == 'maxx':
+                        ret['bbox'][coord] = -ret['bbox']['minx']
+                    elif coord == 'maxy':
+                        ret['bbox'][coord] = -ret['bbox']['miny']
+                    elif coord == 'minx':
+                        ret['bbox'][coord] = -ret['bbox']['maxx']
+                    else:
+                        ret['bbox'][coord] = -ret['bbox']['maxy']
+
 
         # add capabilities
         ret['capabilities'] = self.get_capabilities(instance)
