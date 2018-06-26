@@ -85,6 +85,10 @@ scratch. This page gets rid of all links and provides the needed markup only.
     {% for css in css_modules %}
     <link rel="stylesheet" type="text/css" href="{% static css %}" />
     {% endfor %}
+
+    {% if analytics_js_code %}
+        {{ analytics_js_code|safe }}
+    {% endif %}
   </head>
   <!--
   BODY TAG OPTIONS:

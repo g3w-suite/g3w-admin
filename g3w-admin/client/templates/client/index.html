@@ -21,6 +21,9 @@
   <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
   <![endif]-->
   <link rel="icon" href="{% static '/img/favicon.ico' %}">
+  {% if analytics_js_code %}
+    {{ analytics_js_code|safe }}
+  {% endif %}
 </head>
 <body class="hold-transition skin-{{ skin_class|default:"blue" }} fixed {% if sidebar_collapse %} sidebar-collapse {% endif %}" >
   <div id="app">
