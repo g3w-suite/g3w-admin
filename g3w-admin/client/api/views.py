@@ -29,7 +29,7 @@ class ClientConfigApiView(APIView):
 
         # add wms_url to project metadata il user i anonynous
 
-        if request.user.is_anonymous and 'metadata' in ps.data:
+        if request.user.is_anonymous and 'metadata' in ps.data and 'onlineresource' not in ps.data['metadata']:
             ps.data['metadata']['wms_url'] = '{}://{}/ows/{}/{}/{}/'.format(
                 request._request.META['wsgi.url_scheme'],
                 request._request.META['HTTP_HOST'],
@@ -37,6 +37,11 @@ class ClientConfigApiView(APIView):
                 project_type,
                 project_id
             )
+        elif 'onlineresource' in ps.data['metadata']:
+            ps.data['metadata']['wms_url'] = ps.data['metadata']['onlineresource']
+
+        if 'onlineresource' in ps.data['metadata']:
+            del(ps.data['metadata']['onlineresource'])
 
         # signal after serialization project
         ps_data = ps.data

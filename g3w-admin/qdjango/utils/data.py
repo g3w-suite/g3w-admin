@@ -639,8 +639,6 @@ class QgisProject(XmlData):
             for level, layerTreeSubNode in enumerate(layerTreeNode):
                 if level > 0:
 
-
-
                     toRetLayer = {
                         'name': layerTreeSubNode.attrib['name'],
                         'expanded': True if layerTreeSubNode.attrib['expanded'] == '1' else False
@@ -1076,6 +1074,14 @@ class QgisProjectSettingsWMS(XmlData):
         self._metadata.update({
             'keywords': [k.text for k in keywords]
         })
+
+        # for OnlineResources
+        try:
+            self._metadata['onlineresource'] = \
+                service.find(self._buildTagWithNS('OnlineResource')).attrib[
+                    self._buildTagWithNSXlink('href')]
+        except:
+            pass
 
         # add contact informations
         contactinfo = service.find(self._buildTagWithNS('ContactInformation'))
