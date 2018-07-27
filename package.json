@@ -1,10 +1,11 @@
 {
   "name": "g3w-admin",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "G3w-Admin module of G3W-Suite",
   "main": "gulpfile.js",
   "dependencies": {
-    "bower": "^1.8.0",
+  },
+  "devDependencies": {
     "gulp": "^3.9.1",
     "gulp-useref": "^3.1.2",
     "gulp-if": "^2.0.1",
@@ -14,21 +15,11 @@
     "gulp-flatten": "^0.3.1",
     "del": "^2.2.0"
   },
-  "devDependencies": {
-    "bower": "^1.8.0",
-    "del": "^2.2.0",
-    "gulp-clean-css": "^3.4.0",
-    "gulp-flatten": "^0.3.1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://bitbucket.org/gis3w/g3w-admin.git"
-  },
   "keywords": [
     "Admin",
     "Django"
   ],
   "author": "Walter Lorenzetti",
-  "license": "GPL-3.0",
-  "homepage": "https://bitbucket.org/gis3w/g3w-admin#readme"
+  "license": "MPL-2.0",
+  "homepage": "https://github.com/g3w-suite/g3w-admin"
 }
