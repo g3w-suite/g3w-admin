@@ -6,20 +6,16 @@ G3W-SUITE works with **QGIS-Server LTR versions**, so at the moment works with *
 
 The following instructions are for a Ubuntu 16.04 LTS.
 
-## Installation of node.js and Bower
-G3W-ADMIN use javacript package manager [**bower**](https://bower.io/)
-
-Bower works on [**Node.js**](https://nodejs.org/it/)
+## Installation of node.js and Yarn
+G3W-ADMIN use javacript package manager [**Yarn**](https://yarnpkg.com/) and [**Node.js**](https://nodejs.org/it/)
 
 ```bash
 sudo apt-get install -y nodejs-legacy npm
 ```
 
-after with 'npm' install bower
+for install Yarn follow main installation instructions:
 
-```bash
-sudo npm install -g bower
-```
+https://yarnpkg.com/en/docs/install#debian-stable
 
 ## Create virtualenv
 
