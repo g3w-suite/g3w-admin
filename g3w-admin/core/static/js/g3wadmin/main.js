@@ -43,7 +43,26 @@ _.extend(g3wadmin,{
 
 
         // start bootstrap3-wysihtml5
-        $('.wys5').wysihtml5();
+        //$('.wys5').wysihtml5();
+
+        // start summernote
+        var summernote_options = {
+            height: 240,
+            toolbar: [
+                ['style', ['style']],
+                ['font', ['bold', 'underline', 'clear', 'fontsize']],
+                ['color', ['color']],
+                ['para', ['ul', 'ol', 'paragraph']],
+                ['table', ['table']],
+                ['insert', ['link']],
+                ['view', ['fullscreen', 'codeview', 'undo', 'redo', 'help']]
+            ],
+        };
+
+        if (CURRENT_LANGUAGE_CODE == 'it') {
+            summernote_options['lang'] = 'it-IT'
+        }
+        $('.wys5').summernote(summernote_options);
 
         //Flat red color scheme for iCheck
         this.ui.initRadioCheckbox();

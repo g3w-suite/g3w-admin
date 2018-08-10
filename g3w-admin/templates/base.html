@@ -49,6 +49,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <!-- JsTree -->
     <link rel="stylesheet" href="{% static "bower_components/jstree/dist/themes/default/style.css" %}">
     <link rel="stylesheet" href="{% static "bower_components/jstree-bootstrap-theme/dist/themes/proton/style.min.css" %}">
+    <!-- Summernote -->
+    <link rel="stylesheet" href="{% static "modules/summernote/summernote.css" %}">
     <!-- endbuild -->
 
     {% else %}
@@ -262,6 +264,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <script src="{% static "bower_components/proj4/dist/proj4.js" %}"></script>
     <!-- jsTree -->
     <script src="{% static "bower_components/jstree/dist/jstree.min.js" %}"></script>
+    <!-- Summernote -->
+    <script src="{% static "modules/summernote/summernote.min.js" %}"></script>
+    <script src="{% static "modules/summernote/lang/summernote-it-IT.js" %}"></script>
     <!-- endbuild -->
     {% else %}
     <script src="{% static "dist/js/vendor.min.js" %}"></script>

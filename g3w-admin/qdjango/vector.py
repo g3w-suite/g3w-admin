@@ -43,7 +43,14 @@ class QGISLayerVectorViewMixin(object):
 
     def get_geoserializer_kwargs(self):
 
-        return {'model': self.metadata_layer.model, 'using': self.database_to_use}
+        kwargs = {'model': self.metadata_layer.model, 'using': self.database_to_use}
+        if hasattr(self, 'layer') and self.layer.exclude_attribute_wms:
+            kwargs['exclude'] = eval(self.layer.exclude_attribute_wms)
+            if self.metadata_layer.model._meta.pk.name in kwargs['exclude']:
+                kwargs['exclude'].remove(self.metadata_layer.model._meta.pk.name)
+
+
+        return kwargs
 
     def set_relations(self):
 

@@ -1,10 +1,41 @@
 {
   "name": "g3w-admin",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "G3w-Admin module of G3W-Suite",
   "main": "gulpfile.js",
   "dependencies": {
-    "bower": "^1.8.0",
+    "@bower_components/bootstrap": "twbs/bootstrap#3.3.7",
+    "@bower_components/bootstrap-colorpicker": "itsjavi/bootstrap-colorpicker#2.5.2",
+    "@bower_components/bootstrap-datepicker": "eternicode/bootstrap-datepicker#1.8.0",
+    "@bower_components/bootstrap-timepicker": "jdewit/bootstrap-timepicker#0.5.2",
+    "@bower_components/bootstrap-treeview": "jonmiles/bootstrap-treeview#1.2.0",
+    "@bower_components/bootstrap3-wysihtml5-bower": "Waxolunist/bootstrap3-wysihtml5-bower#0.3.3",
+    "@bower_components/bootswatch-dist": "dbtek/bootswatch-dist#flatly",
+    "@bower_components/components-font-awesome": "components/font-awesome#~4.7.0",
+    "@bower_components/cookieconsent": "insites/cookieconsent#3.0.6",
+    "@bower_components/datatables": "DataTables/DataTables#1.10.16",
+    "@bower_components/fastclick": "ftlabs/fastclick#1.0.6",
+    "@bower_components/font-awesome": "FortAwesome/Font-Awesome#4.7.0",
+    "@bower_components/handlebars": "components/handlebars.js#~1.3.0",
+    "@bower_components/icheck": "fronteed/iCheck#1.0.2",
+    "@bower_components/ionicons": "driftyco/ionicons#2.0.0",
+    "@bower_components/jquery": "jquery/jquery-dist#>=1.7.0",
+    "@bower_components/jquery-cookie": "carhartl/jquery-cookie#1.4.1",
+    "@bower_components/jquery-file-download": "johnculviner/jquery.fileDownload#1.4.6",
+    "@bower_components/jquery-slimscroll": "rochal/jQuery-slimScroll#1.3.8",
+    "@bower_components/jquery-ui": "components/jqueryui#~1.11.4",
+    "@bower_components/jstree": "vakata/jstree#3.3.4",
+    "@bower_components/jstree-bootstrap-theme": "orangehill/jstree-bootstrap-theme#1.0.2",
+    "@bower_components/leaflet": "Leaflet/Leaflet#1.0.0",
+    "@bower_components/leaflet-draw": "Leaflet/Leaflet.draw#1.0.2",
+    "@bower_components/pace": "HubSpot/pace#1.0.2",
+    "@bower_components/proj4": "proj4js/proj4js#2.4.4",
+    "@bower_components/rangy-1.3": "noap/rangy-1.3#master",
+    "@bower_components/select2": "ivaynberg/select2#4.0.5",
+    "@bower_components/underscore": "jashkenas/underscore#1.9.1",
+    "@bower_components/wysihtml5x": "Edicy/wysihtml5#0.4.13"
+  },
+  "devDependencies": {
     "gulp": "^3.9.1",
     "gulp-useref": "^3.1.2",
     "gulp-if": "^2.0.1",
@@ -14,21 +45,17 @@
     "gulp-flatten": "^0.3.1",
     "del": "^2.2.0"
   },
-  "devDependencies": {
-    "bower": "^1.8.0",
-    "del": "^2.2.0",
-    "gulp-clean-css": "^3.4.0",
-    "gulp-flatten": "^0.3.1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://bitbucket.org/gis3w/g3w-admin.git"
-  },
   "keywords": [
     "Admin",
     "Django"
   ],
   "author": "Walter Lorenzetti",
-  "license": "GPL-3.0",
-  "homepage": "https://bitbucket.org/gis3w/g3w-admin#readme"
+  "license": "MPL-2.0",
+  "homepage": "https://github.com/g3w-suite/g3w-admin",
+  "engines": {
+    "yarn": ">= 1.0.0"
+  },
+  "scripts": {
+    "postinstall": "node -e \"try { require('fs').symlinkSync(require('path').resolve('node_modules/@bower_components'), 'g3w-admin/core/static/bower_components', 'junction') } catch (e) { }\""
+  }
 }
