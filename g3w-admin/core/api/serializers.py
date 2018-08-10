@@ -196,6 +196,10 @@ class G3WSerializerMixin(object):
         self.Meta.using = kwargs['using']
         del (kwargs['using'])
 
+        if 'exclude' in kwargs:
+            self.Meta.exclude = kwargs['exclude']
+            del (kwargs['exclude'])
+
     def _get_meta_using(self):
         return self.Meta.using if hasattr(self.Meta, 'using') else None
 
