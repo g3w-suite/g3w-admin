@@ -256,13 +256,11 @@ class LayerSerializer(serializers.ModelSerializer):
 
     def get_attributes(self, instance):
         columns = mapLayerAttributes(instance) if instance.database_columns else []
+
+        #
         column_to_exlude = eval(instance.exclude_attribute_wms) if instance.exclude_attribute_wms else []
         for column in columns:
-            if column['name'] in column_to_exlude:
-                column['show'] = False
-            else:
-                column['show'] = True
-
+            column['show'] = False if column['name'] in column_to_exlude else True
         return columns
 
     def get_capabilities(self, instance):
