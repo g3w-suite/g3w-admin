@@ -88,13 +88,15 @@ class DatatablesFilterBackend(BaseFilterBackend):
         # parse query params
         getter = request.query_params.get
         fields = view.metadata_layer.model._meta.fields
+        exlude_fields = eval(view.layer.exclude_attribute_wms) if view.layer.exclude_attribute_wms else []
         search_value = getter('search')
 
         # filter queryset
         if search_value:
             q = Q()
             for f in fields:
-                q |= Q(**{'%s__icontains' % f.column: search_value})
+                if f.column not in exlude_fields:
+                    q |= Q(**{'%s__icontains' % f.column: search_value})
 
             if q != Q():
                 queryset = queryset.filter(q).distinct()
