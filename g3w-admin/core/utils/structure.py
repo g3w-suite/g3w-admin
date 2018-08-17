@@ -176,7 +176,8 @@ FIELD_TYPES_MAPPING = {
         ForeignKey: FIELD_TYPE_INTEGER, # is not correct
         AutoField: FIELD_TYPE_INTEGER,
         #BigAutoField: FIELD_TYPE_BIGINTEGER,
-        NullBooleanField: FIELD_TYPE_BOOLEAN
+        NullBooleanField: FIELD_TYPE_BOOLEAN,
+        DateField: FIELD_TYPE_DATE
     }
 }
 
