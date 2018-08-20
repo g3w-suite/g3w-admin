@@ -307,7 +307,7 @@ def mapLayerAttributesFromModel(model, **kwargs):
                     fieldLabel=field.verbose_name if field.verbose_name else field.attname,
                     type=fieldType,
                     inputType=FORM_FIELDS_MAPPING[fieldType],
-                    editable=not (field==model._meta.pk and type(field) in (AutoField,))
+                    editable=not (field==model._meta.pk and type(field) in (AutoField,)),
                 )
 
                 # add upload url to image type if module is set

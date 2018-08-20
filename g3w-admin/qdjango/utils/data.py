@@ -398,6 +398,14 @@ class QgisProjectLayer(XmlData):
         edittype_columns = dict()
         edittypes = self.qgisProjectLayerTree.find('edittypes')
 
+        # before defautls field values if isset
+        defaults = self.qgisProjectLayerTree.find('defaults')
+        defaults_columns = dict()
+        if defaults is not None:
+            for default in defaults:
+                if default.attrib['expression']:
+                    defaults_columns[default.attrib['field']] = default.attrib['expression']
+
         if edittypes is not None:
             for edittype in edittypes:
                 data = {
@@ -409,6 +417,8 @@ class QgisProjectLayer(XmlData):
 
                 # update with attributes
                 data.update(widgetv2config.attrib)
+                if edittype.attrib['name'] in defaults_columns:
+                    data['default'] = defaults_columns[edittype.attrib['name']]
 
                 # check for values
                 for value in widgetv2config:
