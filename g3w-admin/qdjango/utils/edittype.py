@@ -129,7 +129,7 @@ class QgisEditTypeUniqueValue(QgisEditType):
                 'options': {
                     'values': list(),
                     'editable': True if self.fieldEditable == '1' else False,
-                    'default': self.default
+                    'default': self.default if hasattr(self, 'default') else None
                 }
             }
         }
