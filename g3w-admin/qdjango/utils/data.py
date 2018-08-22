@@ -26,6 +26,10 @@ import json
 # constant per qgis layers
 QGIS_LAYER_TYPE_NO_GEOM = 'No geometry'
 
+# QGIS edito layout type
+QGIS_EL_GENERATED_LAYOUT = 'generatedlayout'
+QGIS_EL_TABLAYOUT = 'tablayout'
+
 
 def makeDatasource(datasource, layerType):
     """
@@ -87,7 +91,9 @@ class QgisProjectLayer(XmlData):
         'excludeAttributesWFS',
         'geometrytype',
         'vectorjoins',
-        'editTypes'
+        'editTypes',
+        'editorlayout',
+        'editorformstructure'
     ]
 
     _pre_exception_message = 'Layer'
@@ -428,6 +434,59 @@ class QgisProjectLayer(XmlData):
 
         return edittype_columns
 
+    def _getDataEditorlayout(self):
+        """
+        Get qgis editor layout
+        :return:
+        """
+        return self.qgisProjectLayerTree.find('editorlayout').text
+
+    def _getDataEditorformstructure(self):
+        """
+        Get qgis attribute edtiro form if edito layout is not generated layout
+        For now only tablayout management
+        :return:
+        """
+
+        if self.editorlayout == QGIS_EL_TABLAYOUT:
+
+            # get root of layer-tree-group
+            editor_form_root = self.qgisProjectLayerTree.find('attributeEditorForm')
+
+            def build_form_tree_object(editor_form_node):
+                to_ret_form_structure = []
+                for editor_form_subnode in editor_form_node:
+
+                    to_ret_node = {
+                        'name': editor_form_subnode.attrib['name'],
+                        'showlabel': True if editor_form_subnode.attrib['showLabel'] == '1' else False
+                    }
+
+                    if editor_form_subnode.tag == 'attributeEditorContainer':
+
+                        to_ret_node.update({
+                            'groupbox': True if editor_form_subnode.attrib['groupBox'] == '1' else False,
+                            'columncount': editor_form_subnode.attrib['columnCount'],
+                            'nodes': build_form_tree_object(editor_form_subnode.getchildren())
+                        })
+
+                    if editor_form_subnode.tag == 'attributeEditorField':
+                        to_ret_node.update({
+                            'index': editor_form_subnode.attrib['index'],
+                            'field_name': to_ret_node['name']
+                        })
+                        del(to_ret_node['name'])
+
+                    to_ret_form_structure.append(to_ret_node)
+                return to_ret_form_structure
+
+            return build_form_tree_object(editor_form_root.getchildren())
+
+
+
+        else:
+            return None
+
     def clean(self):
         for validator in self.validators:
             validator.clean()
@@ -467,7 +526,9 @@ class QgisProjectLayer(XmlData):
                 'exclude_attribute_wfs': excludeAttributesWFS,
                 'geometrytype': self.geometrytype,
                 'vectorjoins': self.vectorjoins,
-                'edittypes': self.editTypes
+                'edittypes': self.editTypes,
+                'editor_layout': self.editorlayout,
+                'editor_form_structure': self.editorformstructure,
                 }
             )
         if not created:
@@ -490,6 +551,8 @@ class QgisProjectLayer(XmlData):
             self.instance.geometrytype = self.geometrytype
             self.instance.vectorjoins = self.vectorjoins
             self.instance.edittypes = self.editTypes
+            self.instance.editor_layout = self.editorlayout
+            self.instance.editor_form_structure = self.editorformstructure
 
         # Save self.instance
         self.instance.save()

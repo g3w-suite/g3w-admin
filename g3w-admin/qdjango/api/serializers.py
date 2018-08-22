@@ -248,7 +248,8 @@ class LayerSerializer(serializers.ModelSerializer):
             'maxscale',
             'servertype',
             'vectorjoins',
-            'exclude_from_legend'
+            'exclude_from_legend',
+            'editor_form_structure'
         )
 
     def get_servertype(self, instance):
@@ -337,6 +338,10 @@ class LayerSerializer(serializers.ModelSerializer):
 
         # add metadata
         ret['metadata'] = self.qgis_projectsettings_wms.layers[instance.name]['metadata']
+
+        # eval editor_form_structure
+        if ret['editor_form_structure']:
+            ret['editor_form_structure'] = eval(instance.editor_form_structure)
 
         return ret
 

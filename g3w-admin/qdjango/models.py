@@ -210,6 +210,10 @@ class Layer(G3WACLModelMixins, models.Model):
     # exclude from legend
     exclude_from_legend = models.BooleanField(_('Exclude to legend'), default=False, blank=True)
 
+    # form editor layout
+    editor_layout = models.CharField(_('Form editor layout'), max_length=100, blank=True, null=True)
+    editor_form_structure = models.TextField(_('Editor form structure'), blank=True, null=True)
+
     def __unicode__(self):
         return self.name
 
