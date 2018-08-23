@@ -141,7 +141,8 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
         #filter fileds by role:
         self.filterFieldsByRoles()
 
-        self.fields['backend'].choices = USER_BACKEND_TYPES
+        if 'backend' in self.fields:
+            self.fields['backend'].choices = USER_BACKEND_TYPES
 
         #check for groups in intials data
         if 'groups' in self.initial and len(self.initial['groups']) > 0:
@@ -263,17 +264,21 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
         if self.request.user.is_superuser:
             if not self.request.user.is_staff:
                 self.fields.pop('is_staff')
+                self.fields.pop('backend')
         elif G3W_EDITOR1 in getUserGroups(self.request.user):
             # other but only Editor level 1 can add user
             self.fields['groups'].queryset = AuthGroup.objects.filter(name__in=[G3W_VIEWER1, G3W_VIEWER2])
             self.fields['groups'].required = True
             self.fields.pop('is_superuser')
             self.fields.pop('is_staff')
+            self.fields.pop('backend')
         elif userHasGroups(self.request.user, [G3W_VIEWER1, G3W_VIEWER2]):
             self.fields.pop('is_superuser')
             self.fields.pop('is_staff')
             self.fields.pop('groups')
             self.fields.pop('department')
+            self.fields.pop('backend')
+
 
     def save(self, commit=True):
         user = super(UserCreationForm, self).save(commit=False)
@@ -311,6 +316,9 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
                     user.userbackend.save()
                 else:
                     Userbackend(user=user, backend=self.cleaned_data['backend']).save()
+            elif not hasattr(user, 'userbackend'):
+                Userbackend(user=user, backend=USER_BACKEND_DEFAULT).save()
+
 
         return user
 

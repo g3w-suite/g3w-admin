@@ -36,7 +36,7 @@
                         <th class="hidden-sm hidden-xs">Email</th>
                         <th class="hidden-sm hidden-xs">{% trans 'First name' %}</th>
                         <th class="hidden-sm hidden-xs">{% trans 'Last name' %}</th>
-                        {% if user.is_superuser %}
+                        {% if user.is_staff %}
                         <th class="hidden-sm hidden-xs">{% trans 'Backend' %}</th>
                         {% endif %}
                     </tr>
@@ -87,7 +87,7 @@
                         <td class="hidden-sm hidden-xs">{{ object.email }}</td>
                         <td class="hidden-sm hidden-xs">{{ object.first_name }}</td>
                         <td class="hidden-sm hidden-xs">{{ object.last_name }}</td>
-                        {% if user.is_superuser %}
+                        {% if user.is_staff %}
                         <td>{{ object.userbackend.backend }}</td>
                         {% endif %}
                     </tr>
