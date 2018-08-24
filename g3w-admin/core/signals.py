@@ -8,10 +8,10 @@ initconfig_plugin_start = django.dispatch.Signal(providing_args=["projectType", 
 post_create_maplayerattributes = django.dispatch.Signal(providing_args=["layer"])
 
 # signal to add extra maplayers attribute: i.e. iternet
-post_save_maplayer = django.dispatch.Signal(providing_args=["layer", "mode", "data"])
+post_save_maplayer = django.dispatch.Signal(providing_args=["layer", "mode", "data", "user"])
 
 # signal to add extra maplayers attribute: i.e. iternet
-pre_delete_maplayer = django.dispatch.Signal(providing_args=["layer", "data"])
+pre_delete_maplayer = django.dispatch.Signal(providing_args=["layer", "data", "user"])
 
 # signal to add extra maplayers attribute: i.e. iternet
 post_serialize_maplayer = django.dispatch.Signal(providing_args=["layer", "data"])
