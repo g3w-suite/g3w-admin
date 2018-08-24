@@ -439,7 +439,8 @@ class QgisProjectLayer(XmlData):
         Get qgis editor layout
         :return:
         """
-        return self.qgisProjectLayerTree.find('editorlayout').text
+        editor_element = self.qgisProjectLayerTree.find('editorlayout')
+        return editor_element.text if editor_element else None
 
     def _getDataEditorformstructure(self):
         """
