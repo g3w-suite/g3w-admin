@@ -440,7 +440,7 @@ class QgisProjectLayer(XmlData):
         :return:
         """
         editor_element = self.qgisProjectLayerTree.find('editorlayout')
-        return editor_element.text if editor_element else None
+        return editor_element.text if editor_element is not None else None
 
     def _getDataEditorformstructure(self):
         """
