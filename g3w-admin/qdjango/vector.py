@@ -106,7 +106,8 @@ class QGISLayerVectorViewMixin(object):
                     layer=relation_layer,
                     referencing_field=relation['fieldRef']['referencingField'],
                     referenced_field_is_pk=
-                    self.metadata_layer.model._meta.pk.name==relation['fieldRef']['referencedField']
+                    self.metadata_layer.model._meta.pk.name==relation['fieldRef']['referencedField'],
+                    layer_id=relation_layer.pk
                 )
 
     def set_metadata_layer(self, request, **kwargs):
@@ -133,7 +134,8 @@ class QGISLayerVectorViewMixin(object):
             geomodel,
             serializer,
             geometrytype,
-            self.layer.origname
+            self.layer.origname,
+            layer_id=self.layer.pk
         )
 
 
