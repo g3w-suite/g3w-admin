@@ -369,7 +369,7 @@ class PostgisCreateGeomodel(CreateGeomodel):
                 if not self.geometry_type:
                     self.geometry_type = camel_geometry_type(column.type.geometry_type)
 
-            if type(column.type) == PGD.VARCHAR:
+            if type(column.type) in (PGD.VARCHAR, PGD.CHAR):
                 if column.type.length:
                     kwargs['max_length'] = column.type.length
                 else:

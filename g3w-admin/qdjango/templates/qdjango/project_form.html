@@ -30,6 +30,25 @@
             </div>
         {% endif %}
 
+        {% if form.instance.pk %}
+            <div class="row">
+                <div class="col-md-12 col-xs-12">
+                    <div class="box">
+                        <div class="box-header">
+                            <h3 class="box-title">{% trans 'Shortcuts' %}</h3>
+                        </div>
+                        <div class="box-body">
+                            <h4>
+                                <a href="{% url 'group-project-map' group.slug 'qdjango' form.instance.pk %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Show map' %}" target="_blank"><i class="ion ion-map"></i> {% trans 'Show map' %}</a>  |
+                                <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-detail-url="{% url 'qdjango-project-detail' group.slug form.instance.slug %}" ><i class="ion ion-eye"></i> {% trans 'Show detail' %}</a> |
+                                <a href="{% url 'qdjango-project-layers-list' group.slug form.instance.slug %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Layers' %}" ><i class="ion ion-navicon-round"></i> {% trans 'Layers' %}</a>
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
         <form method="post" id="project-qdjango-form" data-widget-type="ajaxUpload" enctype="multipart/form-data">
             {% if form.errors %}
                 <div class="row">

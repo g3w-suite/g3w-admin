@@ -36,6 +36,7 @@ RELATIONS_NAMESPACE = 'g3w_'
 # data field type
 FIELD_TYPE_INTEGER = 'integer'
 FIELD_TYPE_BIGINTEGER = 'integer'
+FIELD_TYPE_SMALLINTEGER = 'integer'
 FIELD_TYPE_FLOAT = 'float'
 FIELD_TYPE_STRING = 'string'
 FIELD_TYPE_TEXT = 'text'
@@ -168,6 +169,7 @@ FIELD_TYPES_MAPPING = {
         URLField: FIELD_TYPE_STRING,
         IntegerField: FIELD_TYPE_INTEGER,
         BigIntegerField: FIELD_TYPE_BIGINTEGER,
+        SmallIntegerField: FIELD_TYPE_SMALLINTEGER,
         FloatField: FIELD_TYPE_FLOAT,
         ImageField: FIELD_TYPE_IMAGE,
         FileField: FIELD_TYPE_FILE,
