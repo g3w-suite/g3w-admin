@@ -1,3 +1,4 @@
+from django.urls import reverse
 import re
 from core.utils.structure import FORM_FIELD_TYPE_CHECK, FORM_FIELD_TYPE_SELECT
 
@@ -148,12 +149,20 @@ class QgisEditTypeExternalResource(QgisEditType):
     @property
     def input_form(self):
 
+        # try to get url
+        try:
+            upload_url = reverse('editing-upload')
+        except:
+            upload_url = None
+
         return {
             'input': {
                 'type': self.field_type,
                 'options': {
                     'editable': True if self.fieldEditable == '1' else False,
+                    'uploadurl': upload_url,
                     'default': self.default if hasattr(self, 'default') else None
+
                 }
             }
         }
