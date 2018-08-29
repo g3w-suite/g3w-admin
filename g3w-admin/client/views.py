@@ -115,3 +115,11 @@ class ClientView(TemplateView):
                 return settings.CLIENT_DEFAULT
         return settings.CLIENT_DEFAULT
 
+
+def user_media_view(request, project_type, layer_md5_resource, file_name, *args, **kwargs):
+    """
+    View to return media checking user project permissions
+    :param request:
+    :return:
+    """
+    pass

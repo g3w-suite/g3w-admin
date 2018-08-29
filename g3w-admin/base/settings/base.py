@@ -202,6 +202,9 @@ REST_FRAMEWORK = {
 MEDIA_ROOT = '/home/www/django-qgis-static/media/'
 MEDIA_URL = '/g3wadmin_media/'
 
+# FOR USER MEDIA DIR (IN PARTICULAR FOR EDITING MODULE)
+USER_MEDIA_ROOT = None
+
 # For Data gis source
 DATASOURCE_PATH = ''
 
