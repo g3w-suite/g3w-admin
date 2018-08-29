@@ -29,6 +29,7 @@ SQLAlchemy==1.1.11
 django-import-export==0.5.1
 coverage==4.4.1
 urllib3==1.21.1
+python-magic==0.4.15
 
 # GDAL by hand
 
