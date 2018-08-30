@@ -14,6 +14,7 @@ from core.api.filters import IntersectsBBoxFilter
 from core.signals import post_create_maplayerattributes, post_serialize_maplayer
 from core.utils.structure import mapLayerAttributes, mapLayerAttributesFromModel
 from core.api.authentication import CsrfExemptSessionAuthentication
+from core.utils.vector import BaseUserMediaHandler as UserMediaHandler
 
 from core.utils.structure import APIVectorLayerStructure
 from copy import copy
@@ -307,6 +308,10 @@ class BaseVectorOnModelApiView(G3WAPIView):
         for feature in featurecollection['features']:
             self.reproject_feature(feature, to_layer)
 
+    def change_media(self, featurecollection):
+        for feature in featurecollection['features']:
+            user_media = UserMediaHandler(layer=self.layer, feature=feature).new_value(change=True)
+
     def initial(self, request, *args, **kwargs):
         super(BaseVectorOnModelApiView, self).initial(request, *args, **kwargs)
 
@@ -399,6 +404,9 @@ class BaseVectorOnModelApiView(G3WAPIView):
         # reproject if necessary
         if self.reproject:
             self.reproject_featurecollection(featurecollection)
+
+        # change media
+        self.change_media(featurecollection)
 
         self.results.update(APIVectorLayerStructure(**{
             'data': featurecollection,

@@ -28,7 +28,6 @@ from .signals import after_update_group
 #    template_name = '404.html'
 
 
-
 class TestView(View):
 
     def get(self, request, *args, **kwargs):

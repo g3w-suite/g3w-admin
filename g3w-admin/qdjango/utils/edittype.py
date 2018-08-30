@@ -174,6 +174,6 @@ MAPPING_EDITTYPE_QGISEDITTYPE = {
     'Range': QgisEditTypeRange,
     'ValueMap': QgisEditTypeValueMap,
     'UniqueValues': QgisEditTypeUniqueValue,
-    'ExternalResource':QgisEditTypeExternalResource
+    'ExternalResource': QgisEditTypeExternalResource
 }
 

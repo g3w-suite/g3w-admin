@@ -3,11 +3,13 @@ from django.views.decorators.csrf import csrf_exempt
 
 LAYERVECTORVIEW_CLASS_DEFAULT = 'LayerVectorView'
 LAYERVECTORVIEW_CLASSES = dict()
+USERMEDIAHANDLER_CLASSES = dict()
 
 for app_name in settings.G3WADMIN_PROJECT_APPS:
     try:
         projectAppModule = __import__('{}.vector'.format(app_name))
         LAYERVECTORVIEW_CLASSES[app_name] = getattr(projectAppModule.vector, LAYERVECTORVIEW_CLASS_DEFAULT)
+        USERMEDIAHANDLER_CLASSES[app_name] = getattr(projectAppModule.vector, 'UserMediaHandler')
     except:
         continue
 

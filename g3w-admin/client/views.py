@@ -1,3 +1,4 @@
+
 from django.utils import six
 from django.utils.translation import get_language
 from django.views.generic import TemplateView
@@ -11,6 +12,7 @@ from django.apps import apps
 from django.core.exceptions import PermissionDenied
 from rest_framework.renderers import JSONRenderer
 from core.api.serializers import GroupSerializer, Group
+from core.api.views import USERMEDIAHANDLER_CLASSES
 from core.models import GeneralSuiteData
 from usersmanage.utils import get_users_for_object, get_user_model
 from copy import deepcopy
@@ -116,10 +118,20 @@ class ClientView(TemplateView):
         return settings.CLIENT_DEFAULT
 
 
-def user_media_view(request, project_type, layer_md5_resource, file_name, *args, **kwargs):
+def user_media_view(request, project_type, layer_id, file_name, *args, **kwargs):
     """
     View to return media checking user project permissions
     :param request:
     :return:
     """
-    pass
+
+    # get model by projet_type
+    Layer = apps.get_app_config(project_type).get_model('layer')
+    layer = Layer.objects.get(pk=layer_id)
+
+
+    # check permission
+    if request.user.has_perm('view_project', layer.project):
+        return USERMEDIAHANDLER_CLASSES[project_type](layer=layer, file_name=file_name).send_file()
+    else:
+        return HttpResponseForbidden()
