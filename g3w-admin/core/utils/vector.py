@@ -68,51 +68,54 @@ class BaseUserMediaHandler(object):
                             'mime_type': file_path_mime(path_file_to_save) if os.path.exists(path_file_to_save)
                             else None
                         }
-                    return
 
-
-                # check if editing or deleting, checking if self.layer has 'field' property not empty.
-                current_field_value = getattr(current_instance, field) if current_instance else None
-                current_field_name = self.get_file_name(current_field_value) if current_instance else None
-
-
-
-                if file_name:
-                    if current_field_name:
-                        if current_field_name != file_name:
-                            save, delete_old = True, True
-                        else:
-                            save, delete_old = False, False
-                    else:
-                        save, delete_old = True, False
                 else:
-                    save, delete_old = False, True
+
+                    # check if editing or deleting, checking if self.layer has 'field' property not empty.
+                    current_field_value = getattr(current_instance, field) if current_instance else None
+                    current_field_name = self.get_file_name(current_field_value) if current_instance else None
+                    if current_field_name:
+                        current_field_name = urllib.unquote(current_field_name)
+
+
+
+                    if file_name:
+                        if current_field_name:
+                            if current_field_name != file_name:
+                                save, delete_old = True, True
+                            else:
+                                save, delete_old = False, False
+                        else:
+                            save, delete_old = True, False
+                    else:
+                        save, delete_old = False, True
 
 
 
 
-                if save:
-                    # path to save media file
-                    path_to_file_tmp = '{}{}'.format(settings.MEDIA_ROOT,
-                                                     self.feature['properties'][field].replace(settings.MEDIA_URL, ''))
+                    if save:
 
-                    if not os.path.isdir(path_to_save):
-                        os.makedirs(path_to_save)
+                        # path to save media file
+                        path_to_file_tmp = '{}{}'.format(settings.MEDIA_ROOT,
+                                                         self.feature['properties'][field].replace(settings.MEDIA_URL, ''))
 
-                    shutil.move(path_to_file_tmp, path_file_to_save)
+                        if not os.path.isdir(path_to_save):
+                            os.makedirs(path_to_save)
 
-                    # build new value
-                    self.feature['properties'][field] = '{}{}'.format(self.request._request.META['HTTP_ORIGIN'],
-                                reverse('user-media', kwargs={
-                                    'project_type': self.type,
-                                    'layer_id': self.layer.pk,
-                                    'file_name': file_name
-                            }))
+                        shutil.move(path_to_file_tmp, path_file_to_save)
 
-                if delete_old:
-                    to_delete = '{}/{}'.format(path_to_save, current_field_name)
-                    if os.path.exists(to_delete):
-                        os.remove(to_delete)
+                        # build new value
+                        self.feature['properties'][field] = '{}{}'.format(self.request._request.META['HTTP_ORIGIN'],
+                                    reverse('user-media', kwargs={
+                                        'project_type': self.type,
+                                        'layer_id': self.layer.pk,
+                                        'file_name': file_name
+                                }))
+
+                    if delete_old:
+                        to_delete = '{}/{}'.format(path_to_save, current_field_name)
+                        if os.path.exists(to_delete):
+                            os.remove(to_delete)
 
     def change_value(self):
 
