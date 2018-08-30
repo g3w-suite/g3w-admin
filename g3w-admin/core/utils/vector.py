@@ -41,7 +41,7 @@ class BaseUserMediaHandler(object):
             return None
 
     def get_path_to_save(self):
-        return '{}/{}/{}'.format(settings.USER_MEDIA_ROOT, self.type, self.layer_md5_source)
+        return '{}{}/{}'.format(settings.USER_MEDIA_ROOT, self.type, self.layer_md5_source)
 
     def new_value(self, change=False):
 
