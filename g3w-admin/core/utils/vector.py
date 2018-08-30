@@ -3,6 +3,7 @@ from django.urls import reverse
 from . import file_path_mime
 from .response import send_file
 from .db import build_dango_connection_name
+import urllib
 import os
 import shutil
 
@@ -54,6 +55,8 @@ class BaseUserMediaHandler(object):
 
                 # new field_name
                 file_name = self.get_file_name(self.feature['properties'][field])
+                if file_name:
+                    file_name = urllib.unquote(file_name)
 
                 path_to_save = self.get_path_to_save()
                 path_file_to_save = '{}/{}'.format(path_to_save, file_name)
