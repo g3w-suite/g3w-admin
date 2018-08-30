@@ -309,8 +309,12 @@ class BaseVectorOnModelApiView(G3WAPIView):
             self.reproject_feature(feature, to_layer)
 
     def change_media(self, featurecollection):
-        for feature in featurecollection['features']:
-            user_media = UserMediaHandler(layer=self.layer, feature=feature).new_value(change=True)
+
+        to_use = featurecollection['features'] if 'features' in featurecollection else featurecollection
+
+        for feature in to_use:
+            UserMediaHandler(layer=self.layer, feature=feature).new_value(change=True)
+
 
     def initial(self, request, *args, **kwargs):
         super(BaseVectorOnModelApiView, self).initial(request, *args, **kwargs)
