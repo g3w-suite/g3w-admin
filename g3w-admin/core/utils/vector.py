@@ -65,7 +65,8 @@ class BaseUserMediaHandler(object):
                     if self.feature['properties'][field]:
                         self.feature['properties'][field] = {
                             'value': self.feature['properties'][field],
-                            'mime_type': file_path_mime(path_file_to_save)
+                            'mime_type': file_path_mime(path_file_to_save) if os.path.exists(path_file_to_save)
+                            else None
                         }
                     return
 
