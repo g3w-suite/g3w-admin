@@ -65,7 +65,7 @@ class BaseUserMediaHandler(object):
         edittypes = eval(self.layer.edittypes)
 
         for field, data in edittypes.items():
-            if data['widgetv2type'] == 'ExternalResource':
+            if data['widgetv2type'] == 'ExternalResource' and field in self.feature_properties:
 
                 # new field_name
                 file_name = self.get_file_name(self.feature_properties[field])
