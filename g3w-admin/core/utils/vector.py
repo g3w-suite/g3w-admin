@@ -19,13 +19,22 @@ class BaseUserMediaHandler(object):
     def __init__(self, file_name=None, layer=None, metadata_layer=None, feature=None, request=None):
 
         self.file_name = file_name
-        self.set_layer(layer)
+
+        # set layer
+        if hasattr(metadata_layer, 'layer'):
+            self.layer = metadata_layer.layer
+        else:
+            self.layer = layer
+
         self.metadata_layer = metadata_layer
+
+        # set feature by type if presente 'properties' or not
+        if feature:
+            self.feature_properties = feature['properties'] if 'properties' in feature else feature
         self.feature = feature
+
         self.request = request
 
-    def set_layer(self, layer):
-        self.layer = layer
 
     def set_layer_md5_source(self):
         self.layer_md5_source = build_dango_connection_name(getattr(self.layer, self.datasource_field)) \
@@ -59,7 +68,7 @@ class BaseUserMediaHandler(object):
             if data['widgetv2type'] == 'ExternalResource':
 
                 # new field_name
-                file_name = self.get_file_name(self.feature['properties'][field])
+                file_name = self.get_file_name(self.feature_properties[field])
                 if file_name:
                     file_name = urllib.unquote(file_name)
 
@@ -67,9 +76,9 @@ class BaseUserMediaHandler(object):
                 path_file_to_save = '{}/{}'.format(path_to_save, file_name)
 
                 if change:
-                    if self.feature['properties'][field]:
-                        self.feature['properties'][field] = {
-                            'value': self.feature['properties'][field],
+                    if self.feature_properties[field]:
+                        self.feature_properties[field] = {
+                            'value': self.feature_properties[field],
                             'mime_type': file_path_mime(path_file_to_save) if os.path.exists(path_file_to_save)
                             else None
                         }
@@ -100,7 +109,7 @@ class BaseUserMediaHandler(object):
 
                         # path to save media file
                         path_to_file_tmp = '{}{}'.format(settings.MEDIA_ROOT,
-                                                         self.feature['properties'][field].replace(settings.MEDIA_URL, ''))
+                                                         self.feature_properties[field].replace(settings.MEDIA_URL, ''))
 
                         if not os.path.isdir(path_to_save):
                             os.makedirs(path_to_save)
@@ -109,7 +118,7 @@ class BaseUserMediaHandler(object):
 
                         # build new value
 
-                        self.feature['properties'][field] = '{}{}'.format(self.get_domain(),
+                        self.feature_properties[field] = '{}{}'.format(self.get_domain(),
                                     reverse('user-media', kwargs={
                                         'project_type': self.type,
                                         'layer_id': self.layer.pk,
