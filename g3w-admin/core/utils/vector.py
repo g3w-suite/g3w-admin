@@ -27,6 +27,8 @@ class BaseUserMediaHandler(object):
             self.layer = layer
 
         self.metadata_layer = metadata_layer
+
+        # set feature by type if presente 'properties' or not
         if feature:
             self.feature = feature['properties'] if 'properties' in feature else feature
         self.request = request
