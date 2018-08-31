@@ -44,6 +44,11 @@ class BaseUserMediaHandler(object):
     def get_path_to_save(self):
         return '{}{}/{}'.format(settings.USER_MEDIA_ROOT, self.type, self.layer_md5_source)
 
+    def get_domain(self):
+
+        schema = 'https' if self.request.is_secure() else 'http'
+        return '{}://{}'.format(schema, self.request.get_host())
+
     def new_value(self, change=False):
 
         self.set_layer_md5_source()
@@ -91,8 +96,6 @@ class BaseUserMediaHandler(object):
                         save, delete_old = False, True
 
 
-
-
                     if save:
 
                         # path to save media file
@@ -105,7 +108,8 @@ class BaseUserMediaHandler(object):
                         shutil.move(path_to_file_tmp, path_file_to_save)
 
                         # build new value
-                        self.feature['properties'][field] = '{}{}'.format(self.request._request.META['HTTP_ORIGIN'],
+
+                        self.feature['properties'][field] = '{}{}'.format(self.get_domain(),
                                     reverse('user-media', kwargs={
                                         'project_type': self.type,
                                         'layer_id': self.layer.pk,
