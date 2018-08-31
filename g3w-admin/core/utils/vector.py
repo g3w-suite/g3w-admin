@@ -30,7 +30,9 @@ class BaseUserMediaHandler(object):
 
         # set feature by type if presente 'properties' or not
         if feature:
-            self.feature = feature['properties'] if 'properties' in feature else feature
+            self.feature_properties = feature['properties'] if 'properties' in feature else feature
+        self.feature = feature
+
         self.request = request
 
 
@@ -66,7 +68,7 @@ class BaseUserMediaHandler(object):
             if data['widgetv2type'] == 'ExternalResource':
 
                 # new field_name
-                file_name = self.get_file_name(self.feature[field])
+                file_name = self.get_file_name(self.feature_properties[field])
                 if file_name:
                     file_name = urllib.unquote(file_name)
 
@@ -74,9 +76,9 @@ class BaseUserMediaHandler(object):
                 path_file_to_save = '{}/{}'.format(path_to_save, file_name)
 
                 if change:
-                    if self.feature[field]:
-                        self.feature[field] = {
-                            'value': self.feature[field],
+                    if self.feature_properties[field]:
+                        self.feature_properties[field] = {
+                            'value': self.feature_properties[field],
                             'mime_type': file_path_mime(path_file_to_save) if os.path.exists(path_file_to_save)
                             else None
                         }
@@ -107,7 +109,7 @@ class BaseUserMediaHandler(object):
 
                         # path to save media file
                         path_to_file_tmp = '{}{}'.format(settings.MEDIA_ROOT,
-                                                         self.feature[field].replace(settings.MEDIA_URL, ''))
+                                                         self.feature_properties[field].replace(settings.MEDIA_URL, ''))
 
                         if not os.path.isdir(path_to_save):
                             os.makedirs(path_to_save)
@@ -116,7 +118,7 @@ class BaseUserMediaHandler(object):
 
                         # build new value
 
-                        self.feature[field] = '{}{}'.format(self.get_domain(),
+                        self.feature_properties[field] = '{}{}'.format(self.get_domain(),
                                     reverse('user-media', kwargs={
                                         'project_type': self.type,
                                         'layer_id': self.layer.pk,
