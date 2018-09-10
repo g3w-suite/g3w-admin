@@ -41,6 +41,7 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
     # Project file
     qgis_file = models.FileField(
         _('QGIS project file'),
+        max_length=400,
         upload_to=get_project_file_path,
         storage=QgisFileOverwriteStorage()
         )
