@@ -505,11 +505,11 @@ class QgisProjectLayer(XmlData):
         excludeAttributesWFS = json.dumps(self.excludeAttributesWFS) if self.excludeAttributesWFS else None
 
         self.instance, created = Layer.objects.get_or_create(
-            name=self.name,
+            origname=self.origname,
             qgs_layer_id=self.layerId,
             project=self.qgisProject.instance,
             defaults={
-                'origname': self.origname,
+                'name': self.name,
                 'title': self.title,
                 'is_visible': self.isVisible,
                 'layer_type': self.layerType,
@@ -532,8 +532,9 @@ class QgisProjectLayer(XmlData):
                 'editor_form_structure': self.editorformstructure,
                 }
             )
+
         if not created:
-            self.instance.origname = self.origname
+            self.instance.name = self.name
             self.instance.title = self.title
             self.instance.is_visible = self.isVisible
             self.instance.layer_type = self.layerType
