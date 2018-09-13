@@ -49,8 +49,9 @@ _.extend(g3wadmin,{
         var summernote_options = {
             height: 240,
             toolbar: [
-                ['style', ['style']],
-                ['font', ['bold', 'underline', 'clear', 'fontsize']],
+                ['magic', ['style']],
+                ['font', ['bold', 'underline', 'italic', 'clear']],
+                ['fontsize', ['fontsize']],
                 ['color', ['color']],
                 ['para', ['ul', 'ol', 'paragraph']],
                 ['table', ['table']],
