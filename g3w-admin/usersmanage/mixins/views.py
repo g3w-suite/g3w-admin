@@ -1,6 +1,7 @@
 from usersmanage.utils import get_users_for_object
 from usersmanage.configs import *
 
+
 class G3WACLViewMixin(object):
     '''
     Mixins for Class FormView for get user initial values for editors and viewers

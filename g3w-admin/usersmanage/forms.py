@@ -1,6 +1,6 @@
 from django.conf import settings
 from django import forms
-from django.forms import Select, ValidationError, ModelChoiceField, ChoiceField
+from django.forms import Select, ValidationError, ModelChoiceField, ModelMultipleChoiceField, ChoiceField
 from django.utils.datastructures import MultiValueDict
 from django.utils.translation import ugettext, ugettext_lazy as _
 from django.contrib.auth.forms import (
@@ -12,6 +12,7 @@ from django.contrib.auth import (
 )
 from django.contrib.auth.models import User, Group as AuthGroup
 from django_file_form.forms import FileFormMixin, UploadedFileField
+from django.db.models import Q
 from django.utils.functional import lazy
 from guardian.compat import get_user_model
 from crispy_forms.helper import FormHelper
@@ -71,18 +72,30 @@ class G3WACLForm(forms.Form):
         self._init_users(**kwargs)
         super(G3WACLForm, self).__init__(*args, **kwargs)
 
-        # check for editor and viewers and edtir groups
+        # check for editor and viewers and editor groups
         self._setEditorUserQueryset()
-        self._setViewerUserQueryset()
+        self._setViewerUserQueryset(**kwargs)
         self._add_anonymou_user()
 
     def _setEditorUserQueryset(self):
         self.fields['editor_user'].queryset = User.objects.filter(groups__name__in=self.editor_groups)\
             .order_by('last_name')
 
-    def _setViewerUserQueryset(self):
-        self.fields['viewer_users'].queryset = User.objects.filter(groups__name__in=self.viewer_groups)\
-            .order_by('last_name')
+    def _setViewerUserQueryset(self, **kwargs):
+
+        queryset = User.objects.filter(groups__name__in=self.viewer_groups)
+
+        # get only viewer not current object editor
+        filters = []
+        if kwargs['initial'].has_key('editor_user'):
+            filters.append(~Q(pk=kwargs['initial']['editor_user']))
+        if userHasGroups(self.request.user, [G3W_EDITOR1]):
+            filters.append(~Q(pk=self.request.user.pk))
+
+        if len(filters) > 0:
+            queryset = queryset.filter(*filters)
+
+        self.fields['viewer_users'].queryset = queryset.order_by('last_name')
 
     def _init_users(self, **kwargs):
         if kwargs['initial'].has_key('viewer_users'):
@@ -128,7 +141,7 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
     department = ModelChoiceField(queryset=Department.objects.all(), required=False)
     backend = ChoiceField(choices=(), required=True)
     avatar = UploadedFileField(required=False)
-    groups = ModelChoiceField(
+    groups = ModelMultipleChoiceField(
         queryset=AuthGroup.objects.all(),
         required=False,
         help_text=_('Select group for this user'),
@@ -146,7 +159,7 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
 
         #check for groups in intials data
         if 'groups' in self.initial and len(self.initial['groups']) > 0:
-            self.initial['groups'] = self.initial['groups'][0]
+            self.initial['groups'] = self.initial['groups']
 
         self.helper = FormHelper(self)
         self.helper.form_tag = False
@@ -293,7 +306,7 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
                 self.cleaned_data['groups'] = self.request.user.groups.all()
             else:
                 if self.cleaned_data['groups']:
-                    self.cleaned_data['groups'] = (self.cleaned_data['groups'],)
+                    self.cleaned_data['groups'] = self.cleaned_data['groups']
                 else:
                     self.cleaned_data['groups'] = []
             self.save_m2m()
