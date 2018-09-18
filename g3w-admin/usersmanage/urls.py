@@ -9,4 +9,7 @@ urlpatterns = [
     url(r'^users/(?P<pk>[-_\w\d]+)/$',login_required(UserDetailView.as_view()),name='user-detail'),
     url(r'^users/update/(?P<pk>[-_\w\d]+)/$',login_required(UserUpdateView.as_view()),name='user-update'),
     url(r'^users/delete/(?P<pk>[-_\w\d]+)/$',login_required(UserAjaxDeleteView.as_view()), name='user-delete'),
+
+    # user groups managment
+    url(r'^groups/$', login_required(UserGroupListView.as_view()), name='user-group-list'),
 ]

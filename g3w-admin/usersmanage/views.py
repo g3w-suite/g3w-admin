@@ -89,10 +89,17 @@ class UserUpdateView(G3WRequestViewMixin, UpdateView):
     def get_success_url(self):
         return reverse('user-list')
 
+
 class UserAjaxDeleteView(G3WAjaxDeleteViewMixin,G3WRequestViewMixin, SingleObjectMixin,View):
     model = User
+
 
 class UserDetailView(DetailView):
     """Detail view."""
     model = User
     template_name = 'usersmanage/ajax/user_detail.html'
+
+
+class UserGroupListView(G3WRequestViewMixin, ListView):
+    """List user groups view."""
+    template_name = 'usersmanage/user_list.html'
