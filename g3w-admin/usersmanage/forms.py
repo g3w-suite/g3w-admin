@@ -441,3 +441,7 @@ class G3WUserGroupForm(G3WRequestFormMixin, G3WFormMixin, ModelForm):
 
         fields='__all__'
         model=AuthGroup
+
+
+class G3WUserGroupUpdateForm(G3WUserGroupForm):
+    pass

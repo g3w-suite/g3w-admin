@@ -15,6 +15,7 @@ from guardian.decorators import permission_required_or_403
 from core.mixins.views import G3WRequestViewMixin, G3WAjaxDeleteViewMixin
 from .decorators import permission_required_by_backend_or_403
 from .utils import getUserGroups
+from .configs import *
 from .forms import *
 
 
@@ -104,7 +105,7 @@ class UserDetailView(DetailView):
 class UserGroupListView(G3WRequestViewMixin, ListView):
     """List user groups view."""
     template_name = 'usersmanage/user_group_list.html'
-    queryset = Group.objects.all()
+    queryset = Group.objects.filter(~Q(name__in=[G3W_EDITOR1, G3W_EDITOR2, G3W_VIEWER1, G3W_VIEWER2]))
 
 
 class UserGroupCreateView(G3WRequestViewMixin, CreateView):
@@ -116,6 +117,20 @@ class UserGroupCreateView(G3WRequestViewMixin, CreateView):
     def dispatch(self, *args, **kwargs):
         return super(UserGroupCreateView, self).dispatch(*args, **kwargs)
 
+    def get_success_url(self):
+        return reverse('user-group-list')
+
+
+class UserGroupUpdateView(G3WRequestViewMixin, UpdateView):
+    form_class = G3WUserGroupUpdateForm
+    model = Group
+    template_name = 'usersmanage/user_group_form.html'
+
+    @method_decorator(permission_required('auth.change_group', raise_exception=True))
+    def dispatch(self, *args, **kwargs):
+        return super(UserGroupUpdateView, self).dispatch(*args, **kwargs)
+
+    # todo: check group if not in base editor and viewer group
     def get_success_url(self):
         return reverse('user-group-list')
 
