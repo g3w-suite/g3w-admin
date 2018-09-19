@@ -1,11 +1,11 @@
 from django.conf import settings
 from django import forms
-from django.forms import Select, ValidationError, ModelChoiceField, ModelMultipleChoiceField, ChoiceField
+from django.forms import Select, ValidationError, ModelChoiceField, ModelMultipleChoiceField, ChoiceField, ModelForm
 from django.utils.datastructures import MultiValueDict
 from django.utils.translation import ugettext, ugettext_lazy as _
 from django.contrib.auth.forms import (
     UserCreationForm,
-    ReadOnlyPasswordHashField
+    ReadOnlyPasswordHashField,
 )
 from django.contrib.auth import (
     password_validation,
@@ -145,7 +145,7 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
         queryset=AuthGroup.objects.all(),
         required=False,
         help_text=_('Select group for this user'),
-        label=_('Group')
+        label=_('Main roles')
     )
 
     def __init__(self, *args, **kwargs):
@@ -400,3 +400,44 @@ class G3WUserUpdateForm(G3WUserForm):
 
 from django.forms.models import inlineformset_factory
 UserFormSet = inlineformset_factory(User, Userdata, fields ='__all__')
+
+
+class G3WUserGroupForm(G3WRequestFormMixin, G3WFormMixin, ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(G3WUserGroupForm, self).__init__(*args, **kwargs)
+
+        self.helper = FormHelper(self)
+        self.helper.form_tag = False
+
+        args =[
+            Div(
+                Div(
+                    Div(
+                        Div(
+                            HTML(
+                                "<h3 class='box-title'><i class='fa fa-file'></i> {}</h3>".format(_('Group'))),
+                            css_class='box-header with-border'
+                        ),
+                        Div(
+                            'name',
+                            css_class='box-body',
+
+                        ),
+                        css_class='box box-success'
+                    ),
+                    css_class='col-md-12'
+                ),
+
+
+                css_class='row'
+            ),
+
+        ]
+
+        self.helper.layout = Layout(*args)
+
+    class Meta():
+
+        fields='__all__'
+        model=AuthGroup

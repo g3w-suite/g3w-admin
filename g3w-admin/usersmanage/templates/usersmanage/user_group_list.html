@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+{% load guardian_tags %}
+{% load auth_extras %}
+{% load i18n %}
+
+{% block page_header %}
+    <h1>
+        {% trans 'User groups' %}
+      </h1>
+{% endblock %}
+
+{% block main_content %}
+<div class="row">
+<div class="col-md-12 col-xs-12">
+    <div class="box">
+        <div class="box-header">
+            {% if perms.auth.add_group %}
+            <h3 class="box-title"><a href="{% url 'user-group-add' %}"><i class="ion ion-plus-circled"></i></a> {% trans 'User group' %}</h3>
+            {% endif %}
+        </div>
+        <div class="box-body">
+            <table id="users_table" class="table table-hover table-striped" data-widget-type="dataTable">
+                <thead>
+                    <tr>
+                        <th style="width:120px">{% trans 'Actions' %}</th>
+                        <th>{% trans 'Name' %}</th>
+                    </tr>
+                </thead>
+                {% for object in object_list %}
+                    <tr id="group_{{ object.pk }}">
+                        <td>
+                            <span class="col-xs-4 icon">
+                                <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-detail-url="{% url 'user-detail' object.id %}"><i class="ion ion-eye"></i></a>
+                            </span>
+                            <span class="col-xs-4 icon">
+                                {% if "change_user" in userObj_perms and "change_user" in userObj_perms_by_backend %}
+                                <a href="{% url 'user-update' object.id %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Edit' %}" ><i class="ion ion-edit"></i></a>
+                                {% endif %}
+                            </span>
+                            <span class="col-xs-4 icon">
+                                {% if "delete_user" in userObj_perms and "delete_user" in userObj_perms_by_backend %}
+                                <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Delete' %}"  data-widget-type="deleteItem" data-delete-url="{% url 'user-delete' object.pk %}" data-item-selector="#user_{{ object.pk }}"><i class="ion ion-trash-b"></i></a>
+                                {% endif %}
+                            </span>
+                        </td>
+                        <td>{{ object.name }}</td>
+                    </tr>
+
+                {% endfor %}
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+{% load g3wadmin_tags %}
+{% load i18n %}
+
+{% block page_header %}
+<h1>
+    {% trans 'System user groups' %}
+    <small>Stystem users list and property</small>
+</h1>
+{% endblock %}
+
+{% block main_content %}
+        <form method="post" id="user-group-form" data-widget-type="ajaxUpload"  enctype="multipart/form-data">
+            {% if form.errors %}
+                <div class="row">
+                    <div class="col-md-12">
+                    <div class="alert alert-danger alert-dismissable">
+                        <h4><i class="icon fa fa-ban"></i> {% trans 'Alert' %}!</h4>
+                            {% trans 'Some errors on form. Check it and send again.' %}
+                      </div>
+                    </div>
+                </div>
+            {% endif %}
+            {% crispy form %}
+            {% g3wadmin_add_button_form %}
+        </form>
+{% endblock %}

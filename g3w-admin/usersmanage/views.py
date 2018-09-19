@@ -9,6 +9,7 @@ from django.views.generic import (
 from django.views.generic.detail import SingleObjectMixin
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import permission_required
+from django.contrib.auth.models import Group
 from guardian.shortcuts import assign_perm, get_objects_for_user
 from guardian.decorators import permission_required_or_403
 from core.mixins.views import G3WRequestViewMixin, G3WAjaxDeleteViewMixin
@@ -90,7 +91,7 @@ class UserUpdateView(G3WRequestViewMixin, UpdateView):
         return reverse('user-list')
 
 
-class UserAjaxDeleteView(G3WAjaxDeleteViewMixin,G3WRequestViewMixin, SingleObjectMixin,View):
+class UserAjaxDeleteView(G3WAjaxDeleteViewMixin, G3WRequestViewMixin, SingleObjectMixin,View):
     model = User
 
 
@@ -102,4 +103,28 @@ class UserDetailView(DetailView):
 
 class UserGroupListView(G3WRequestViewMixin, ListView):
     """List user groups view."""
-    template_name = 'usersmanage/user_list.html'
+    template_name = 'usersmanage/user_group_list.html'
+    queryset = Group.objects.all()
+
+
+class UserGroupCreateView(G3WRequestViewMixin, CreateView):
+    form_class = G3WUserGroupForm
+    model = Group
+    template_name = 'usersmanage/user_group_form.html'
+
+    @method_decorator(permission_required('auth.add_group', raise_exception=True))
+    def dispatch(self, *args, **kwargs):
+        return super(UserGroupCreateView, self).dispatch(*args, **kwargs)
+
+    def get_success_url(self):
+        return reverse('user-group-list')
+
+
+class UserGroupDetailView(DetailView):
+    """Detail view for user group."""
+    model = Group
+    template_name = 'usersmanage/ajax/user_group_detail.html'
+
+
+class UserGroupAjaxDeleteView(G3WAjaxDeleteViewMixin, G3WRequestViewMixin, SingleObjectMixin, View):
+    model = Group
