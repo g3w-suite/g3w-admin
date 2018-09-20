@@ -1,14 +1,15 @@
 from django.conf import settings
 from django.contrib.auth.models import Permission, User
 from django.contrib.contenttypes.models import ContentType
-from guardian.shortcuts import get_users_with_perms, assign_perm, remove_perm
+from django.db.models import Q
+from guardian.shortcuts import get_users_with_perms, assign_perm, remove_perm, get_group_perms, get_groups_with_perms
 from guardian.models import UserObjectPermission
 from guardian.compat import get_user_model
 from crispy_forms.layout import Div, HTML, Field
 from django.utils.translation import ugettext, ugettext_lazy as _
 from django.contrib.sessions.models import Session
 from django.utils import timezone
-from .configs import USER_BACKEND_DEFAULT
+from .configs import *
 from core.signals import pre_show_user_data
 
 def get_all_logged_in_users():
@@ -49,12 +50,18 @@ def userHasGroups(user, groupsToFind, strict=False):
 def get_fields_by_user(user, form, **kwargs):
     fields = [
         'editor_user',
-        'viewer_users'
+        'viewer_users',
+        'editor_user_groups',
+        'viewer_user_groups'
     ]
     if not user.is_superuser:
         del(form.fields['editor_user'])
         if 'editor_user' in fields:
             del(fields[fields.index('editor_user')])
+
+        del (form.fields['editor_user_groups'])
+        if 'editor_user_groups' in fields:
+            del (fields[fields.index('editor_user_groups')])
     else:
 
         # if not required edit_user
@@ -65,7 +72,8 @@ def get_fields_by_user(user, form, **kwargs):
 
     toRet = []
     for field in fields:
-        params = {'css_class': 'select2 col-md-12', 'multiple': 'multiple', 'style': 'width:100%;'} if field == 'viewer_users' else {}
+        params = {'css_class': 'select2 col-md-12', 'multiple': 'multiple', 'style': 'width:100%;'} \
+            if field == 'viewer_users' else {}
         toRet.append(Field(field, **params))
     return toRet
 
@@ -104,6 +112,24 @@ def get_users_for_object(object, permission, group = None, with_anonymous = Fals
     return result
 
 
+def get_groups_for_object(object, permission):
+    """
+    Returns list of groups(worn:not QuerySet) with specific permission for this object
+    :param obejct: model object to check permission
+    :param permission: permission string
+    """
+
+    anyperm = get_groups_with_perms(object, attach_perms=True)
+    if not isinstance(permission, list):
+        permission = [permission]
+    result = []
+    for group, perms in anyperm.iteritems():
+        if set(permission).intersection(set(perms)):
+            result.append(group)
+
+    return result
+
+
 def get_users_with_perms_for_group(obj, attach_perms=False, with_superusers=False,
         with_group_users=True,permission=None,group=None):
     return get_users_with_perms(obj, attach_perms=attach_perms, with_superusers=with_superusers,with_group_users=with_group_users).filter(groups__name=group)
@@ -117,11 +143,21 @@ def setPermissionUserObject(user, object, permissions=[], mode='add'):
     if not isinstance(permissions, list):
         permissions = [permissions]
 
+
+    current_permissions = get_group_perms(user, object)
+
+    for perm in permissions:
+        if mode == 'add' and perm not in current_permissions:
+            assign_perm(perm, user, object)
+        elif mode == 'remove' and perm in current_permissions:
+            remove_perm(perm, user, object)
+    '''
     for perm in permissions:
         if mode == 'add' and not user.has_perm(perm, object):
             assign_perm(perm, user, object)
         elif mode == 'remove' and user.has_perm(perm, object):
             remove_perm(perm, user, object)
+    '''
 
 
 def get_objects_by_perm(obj, perm):
@@ -188,3 +224,21 @@ def get_perms_by_user_backend(user, obj):
         perms = list(other_perms)
 
     return perms
+
+
+def get_user_groups(user):
+    """
+    return user gorups for user instance
+    :param user:
+    :return:
+    """
+    return user.groups.filter(~Q(name__in=[G3W_EDITOR1, G3W_EDITOR2, G3W_VIEWER1, G3W_VIEWER2]))
+
+
+def get_roles(user):
+    """
+    return user gorups for user instance
+    :param user:
+    :return:
+    """
+    return user.groups.filter(name__in=[G3W_EDITOR1, G3W_EDITOR2, G3W_VIEWER1, G3W_VIEWER2])

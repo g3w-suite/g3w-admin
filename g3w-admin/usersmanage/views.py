@@ -14,7 +14,7 @@ from guardian.shortcuts import assign_perm, get_objects_for_user
 from guardian.decorators import permission_required_or_403
 from core.mixins.views import G3WRequestViewMixin, G3WAjaxDeleteViewMixin
 from .decorators import permission_required_by_backend_or_403
-from .utils import getUserGroups
+from .utils import getUserGroups, get_user_groups
 from .configs import *
 from .forms import *
 
@@ -73,7 +73,7 @@ class UserUpdateView(G3WRequestViewMixin, UpdateView):
     def get_form_kwargs(self):
         kwargs = super(UserUpdateView,self).get_form_kwargs()
         kwargs['initial']['password'] = self.object.password
-        if hasattr(self.object,'userdata'):
+        if hasattr(self.object, 'userdata'):
             kwargs['initial']['department'] = self.object.userdata.department
             kwargs['initial']['avatar'] = self.object.userdata.avatar
             '''
@@ -81,6 +81,9 @@ class UserUpdateView(G3WRequestViewMixin, UpdateView):
                 name = Path(self.object.userdata.avatar.name).name
                 kwargs['initial']['avatar'] = ExistingFile(name)
             '''
+
+        # add initial data for user_groups
+        kwargs['initial']['user_groups'] = get_user_groups(self.object)
         return kwargs
 
 

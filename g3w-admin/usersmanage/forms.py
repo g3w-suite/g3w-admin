@@ -68,8 +68,24 @@ class G3WACLForm(forms.Form):
     editor_user = UserChoiceField(label=_('Editor user'), queryset=None, required=False)
     viewer_users = UsersChoiceField(label=_('Viewer users'), queryset=None, required=False)
 
+    initial_editor_user_groups = []
+
+    # user groups
+    editor_user_groups = forms.ModelMultipleChoiceField(
+        label=_('Editor user groups'),
+        queryset=AuthGroup.objects.filter(~Q(name__in=[G3W_EDITOR1, G3W_EDITOR2, G3W_VIEWER1, G3W_VIEWER2])),
+        required=False
+    )
+
+    viewer_user_groups = forms.ModelMultipleChoiceField(
+        label=_('Viewer user groups'),
+        queryset=AuthGroup.objects.filter(~Q(name__in=[G3W_EDITOR1, G3W_EDITOR2, G3W_VIEWER1, G3W_VIEWER2])),
+        required=False
+    )
+
     def __init__(self, *args, **kwargs):
         self._init_users(**kwargs)
+        self._init_user_groups(**kwargs)
         super(G3WACLForm, self).__init__(*args, **kwargs)
 
         # check for editor and viewers and editor groups
@@ -103,6 +119,14 @@ class G3WACLForm(forms.Form):
         if kwargs['initial'].has_key('editor_user'):
             self.initial_editor_user = kwargs['initial']['editor_user']
 
+    def _init_user_groups(self, **kwargs):
+        '''
+        if kwargs['initial'].has_key('viewer_users'):
+            self.initial_viewer_users = kwargs['initial']['viewer_users']
+        '''
+        if kwargs['initial'].has_key('editor_user_groups'):
+            self.initial_editor_user_groups = kwargs['initial']['editor_user_groups']
+
     def _add_anonymou_user(self):
         if self.add_anonynous:
             GuardianUser = get_user_model()
@@ -135,6 +159,17 @@ class G3WACLForm(forms.Form):
         if hasattr(self.instance, 'removePermissionsToViewers'):
             self.instance.removePermissionsToViewers(toRemove)
 
+        # for user_groups
+        editor_group_to_remove = None
+        if self.request.user.is_superuser:
+            current_editor_user_groups = [o.id for o in self.cleaned_data['editor_user_groups']]
+            to_remove = list(set(self.initial_editor_user_groups) - set(current_editor_user_groups))
+            to_add = list(set(current_editor_user_groups) - set(self.initial_editor_user_groups))
+            if hasattr(self.instance, 'add_permissions_to_editor_user_groups'):
+                self.instance.add_permissions_to_editor_user_groups(to_add)
+            if hasattr(self.instance, 'remove_permissions_to_editor_user_groups'):
+                self.instance.add_permissions_to_editor_user_groups(to_remove)
+
 
 class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreationForm):
 
@@ -142,10 +177,17 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
     backend = ChoiceField(choices=(), required=True)
     avatar = UploadedFileField(required=False)
     groups = ModelMultipleChoiceField(
-        queryset=AuthGroup.objects.all(),
+        queryset=AuthGroup.objects.filter(name__in=[G3W_EDITOR1, G3W_EDITOR2, G3W_VIEWER1, G3W_VIEWER2]),
         required=False,
-        help_text=_('Select group for this user'),
+        help_text=_('Select roles for this user'),
         label=_('Main roles')
+    )
+
+    user_groups = ModelMultipleChoiceField(
+        queryset=AuthGroup.objects.filter(~Q(name__in=[G3W_EDITOR1, G3W_EDITOR2, G3W_VIEWER1, G3W_VIEWER2])),
+        required=False,
+        help_text=_('Select groups for this user'),
+        label=_('User groups')
     )
 
     def __init__(self, *args, **kwargs):
@@ -160,6 +202,9 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
         #check for groups in intials data
         if 'groups' in self.initial and len(self.initial['groups']) > 0:
             self.initial['groups'] = self.initial['groups']
+
+        if 'user_groups' in self.initial and len(self.initial['user_groups']) > 0:
+            self.initial['user_groups'] = self.initial['user_groups']
 
         self.helper = FormHelper(self)
         self.helper.form_tag = False
@@ -196,6 +241,7 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
                             'is_superuser',
                             'is_staff',
                             'groups',
+                            'user_groups',
                             css_class='box-body'
                         ),
                         css_class='box box-solid bg-teal-gradient'
@@ -309,6 +355,12 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
                     self.cleaned_data['groups'] = self.cleaned_data['groups']
                 else:
                     self.cleaned_data['groups'] = []
+
+            if 'user_groups' in self.cleaned_data and self.cleaned_data['user_groups']:
+                if self.cleaned_data['groups']:
+                    self.cleaned_data['groups'] = self.cleaned_data['groups'] | self.cleaned_data['user_groups']
+                else:
+                    self.cleaned_data['groups'] = self.cleaned_data['user_groups']
             self.save_m2m()
 
             if hasattr(user, 'userdata'):

@@ -27,7 +27,8 @@
                         <th style="width:120px">{% trans 'Actions' %}</th>
                         <th>{% trans 'Username' %}</th>
                         {% if user.is_superuser %}
-                        <th>{% trans 'Group' %}</th>
+                        <th>{% trans 'Roles' %}</th>
+                        <th>{% trans 'User groups' %}</th>
                         <th>{% trans 'Superuser' %}</th>
                         {% endif %}
                         {% if user.is_staff and user.is_superuser %}
@@ -63,12 +64,19 @@
                         <td>{{ object.username }}</td>
                         {% if user.is_superuser %}
                         <td>
-                        {% for group in object.groups.all %}
+                        {% get_roles4user object as group_roles %}
+                        {% for group in group_roles %}
                             {% if group.name == G3W_EDITOR1 or group.name == G3W_EDITOR2 %}
                                 <span class="label label-danger">{{ group }}</span>
                             {% else %}
                                 <span class="label label-success">{{ group }}</span>
                             {% endif %}
+                        {% endfor %}
+                        </td>
+                        <td>
+                        {% get_groups4user object as user_groups %}
+                        {% for user_group in user_groups %}
+                            <span class="label label-warning">{{ user_group }}</span>
                         {% endfor %}
                         </td>
                         <td>

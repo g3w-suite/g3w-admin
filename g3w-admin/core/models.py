@@ -11,7 +11,7 @@ from model_utils.models import TimeStampedModel
 from model_utils import Choices
 from autoslug import AutoSlugField
 from sitetree.models import TreeItemBase, TreeBase
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group as AuthGroup
 from usersmanage.utils import setPermissionUserObject, getUserGroups, get_users_for_object
 from usersmanage.configs import *
 from .utils.structure import getProjectsByGroup
@@ -252,6 +252,51 @@ class Group(TimeStampedModel, OrderedModel):
             for app, projects in appProjects.items():
                 for project in projects:
                     project.removePermissionsToViewers(users_id)
+
+    def add_permissions_to_editor_user_groups(self, groups_id):
+        """
+        Give guardian permissions to Editor user groups
+        """
+
+        appProjects = getProjectsByGroup(self)
+        permissions = [
+            'core.change_group',
+            'core.delete_group',
+            'core.view_group'
+        ]
+
+        for group_id in groups_id:
+            setPermissionUserObject(AuthGroup.objects.get(pk=group_id), self, permissions=permissions)
+
+            # adding permissions to projects
+            '''
+            for app, projects in appProjects.items():
+                for project in projects:
+                    project.addPermissionsToViewers(group_id)
+            '''
+
+    def remove_permissions_to_editor_user_groups(self, groups_id):
+        """
+        Remove guardian permissions to Editor user groups
+        """
+        appProjects = getProjectsByGroup(self)
+
+        permissions = [
+            'core.change_group',
+            'core.delete_group',
+            'core.view_group'
+        ]
+
+        for group_id in groups_id:
+            setPermissionUserObject(AuthGroup.objects.get(pk=group_id), self, permissions=permissions,
+                                    mode='remove')
+
+            '''
+            # adding permissions to projects
+            for app, projects in appProjects.items():
+                for project in projects:
+                    project.removePermissionsToViewers(users_id)
+            '''
 
     def __getattr__(self, attr):
         if attr == 'viewers':

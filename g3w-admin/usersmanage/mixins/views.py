@@ -1,4 +1,4 @@
-from usersmanage.utils import get_users_for_object
+from usersmanage.utils import get_users_for_object, get_groups_for_object
 from usersmanage.configs import *
 
 
@@ -26,5 +26,10 @@ class G3WACLViewMixin(object):
 
         # get only user id and check if user is group or project editor
         kwargs['initial']['viewer_users'] = [o.id for o in viewers if o.id != editor_user_pk]
+
+
+        # get initial editor user_groups
+        group_editors = get_groups_for_object(self.object, self.editor_permission)
+        kwargs['initial']['editor_user_groups'] = [o.id for o in group_editors]
 
         return kwargs

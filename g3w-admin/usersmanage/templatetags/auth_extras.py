@@ -3,7 +3,7 @@ from django import template
 from django.contrib.auth.models import Group
 from guardian.utils import get_user_model
 from guardian.exceptions import NotUserNorGroup
-from usersmanage.utils import get_perms_by_user_backend
+from usersmanage.utils import get_perms_by_user_backend, get_user_groups, get_roles
 
 register = template.Library()
 
@@ -59,3 +59,23 @@ def get_user_perms_by_userbackend(parser, token):
                                            "argument should be in quotes")
     context_var = context_var[1:-1]
     return ObjectPermissionsNode(for_whom, obj, context_var)
+
+
+@register.simple_tag
+def get_groups4user(user):
+    """
+    Get user groups
+    :param user:
+    :return:
+    """
+    return get_user_groups(user)
+
+
+@register.simple_tag
+def get_roles4user(user):
+    """
+    Get user main roles
+    :param user:
+    :return:
+    """
+    return get_roles(user)
