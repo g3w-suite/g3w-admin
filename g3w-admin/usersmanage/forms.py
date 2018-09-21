@@ -331,12 +331,14 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
             self.fields.pop('is_superuser')
             self.fields.pop('is_staff')
             self.fields.pop('backend')
-        elif userHasGroups(self.request.user, [G3W_VIEWER1, G3W_VIEWER2]):
+        #elif userHasGroups(self.request.user, [G3W_VIEWER1, G3W_VIEWER2]):
+        else:
             self.fields.pop('is_superuser')
             self.fields.pop('is_staff')
             self.fields.pop('groups')
             self.fields.pop('department')
             self.fields.pop('backend')
+
 
 
     def save(self, commit=True):

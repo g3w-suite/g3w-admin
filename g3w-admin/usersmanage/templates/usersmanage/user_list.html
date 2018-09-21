@@ -47,9 +47,11 @@
                     {% get_user_perms_by_userbackend user for object as "userObj_perms_by_backend" %}
                     <tr id="user_{{ object.pk }}">
                         <td>
+                            <!-- to check if necessary
                             <span class="col-xs-4 icon">
                                 <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-detail-url="{% url 'user-detail' object.id %}"><i class="ion ion-eye"></i></a>
                             </span>
+                            -->
                             <span class="col-xs-4 icon">
                                 {% if "change_user" in userObj_perms and "change_user" in userObj_perms_by_backend %}
                                 <a href="{% url 'user-update' object.id %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Edit' %}" ><i class="ion ion-edit"></i></a>
