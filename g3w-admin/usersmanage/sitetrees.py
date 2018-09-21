@@ -8,7 +8,8 @@ sitetrees = (
       # Then define items and their children with `item` function.
       item('ACL', '#', type_header=True),
       item('Utenti', '#', icon_css_class='fa fa-users', children=[
-          item('Aggiungi utente', 'user-add', url_as_pattern=True, icon_css_class='fa fa-user-plus', access_by_perms=['auth.add_user']),
+          item('Aggiungi utente', 'user-add', url_as_pattern=True, icon_css_class='fa fa-user-plus',
+               access_by_perms=['auth.add_user']),
           item('Lista utenti', 'user-list', url_as_pattern=True, icon_css_class='fa fa-users'),
           item('Agg. utente', 'user-update object.pk', url_as_pattern=True, icon_css_class='fa fa-edit', in_menu=False),
           item('Aggiungi gruppo utenti', 'user-group-add', url_as_pattern=True, icon_css_class='fa fa-plus'),

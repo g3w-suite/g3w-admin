@@ -86,7 +86,6 @@ class UserUpdateView(G3WRequestViewMixin, UpdateView):
         kwargs['initial']['user_groups'] = get_user_groups(self.object)
         return kwargs
 
-
     def get_context_data(self, **kwargs):
         c = super(UserUpdateView,self).get_context_data(**kwargs)
         return c
@@ -95,8 +94,12 @@ class UserUpdateView(G3WRequestViewMixin, UpdateView):
         return reverse('user-list')
 
 
-class UserAjaxDeleteView(G3WAjaxDeleteViewMixin, G3WRequestViewMixin, SingleObjectMixin,View):
+class UserAjaxDeleteView(G3WAjaxDeleteViewMixin, G3WRequestViewMixin, SingleObjectMixin, View):
     model = User
+
+    @method_decorator(permission_required_or_403('auth.delete_user', (User, 'pk', 'pk')))
+    def dispatch(self, request, *args, **kwargs):
+        return super(UserAjaxDeleteView, self).dispatch(request, *args, **kwargs)
 
 
 class UserDetailView(DetailView):
