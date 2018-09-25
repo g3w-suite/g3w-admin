@@ -20,6 +20,12 @@ class QdjangoProjectFormMixin(object):
     def clean_qgis_file(self):
         try:
             qgis_file = self.cleaned_data['qgis_file']
+
+            # validate extension
+            file_extension = os.path.splitext(qgis_file.name)[1]
+            if file_extension.lower() not in ('.qgs', '.qgz'):
+                raise Exception(_("File must have 'qgs' or 'qgz' extension"))
+
             kwargs = {'group': self.group}
             if self.instance.pk:
                 kwargs['instance'] = self.instance
