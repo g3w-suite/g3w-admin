@@ -16,7 +16,7 @@ from django.db.models import Q
 from django.utils.functional import lazy
 from guardian.compat import get_user_model
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout,Div, HTML
+from crispy_forms.layout import Layout,Div, HTML, Field
 from crispy_forms.bootstrap import AppendedText, PrependedText
 from PIL import Image
 from .models import Userdata, Department, Userbackend, USER_BACKEND_TYPES
@@ -240,8 +240,12 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
                         Div(
                             'is_superuser',
                             'is_staff',
-                            'groups',
-                            'user_groups',
+                            Field('groups',
+                                  **{'css_class': 'select2 col-md-12', 'multiple': 'multiple',
+                                     'style': 'width:100%;'}),
+                            Field('user_groups',
+                                  **{'css_class': 'select2 col-md-12', 'multiple': 'multiple',
+                                     'style': 'width:100%;'}),
                             css_class='box-body'
                         ),
                         css_class='box box-solid bg-teal-gradient'
