@@ -303,8 +303,6 @@ class MacroGroupUpdateView(UpdateView):
         return res
 
     def get_success_url(self):
-        if self.request.session.get('http_referer', False):
-            return self.request.session['http_referer']
         return reverse('macrogroup-list')
 
 
