@@ -18,7 +18,7 @@ from usersmanage.mixins.views import G3WACLViewMixin
 from usersmanage.decorators import user_passes_test_or_403
 from .forms import GroupForm, GeneralSuiteDataForm, MacroGroupForm
 from .models import Group, GroupProjectPanoramic, MapControl, GeneralSuiteData, MacroGroup
-from .mixins.views import G3WRequestViewMixin, G3WAjaxDeleteViewMixin
+from .mixins.views import G3WRequestViewMixin, G3WAjaxDeleteViewMixin, G3WAjaxSetOrderViewMixin
 from .utils.decorators import check_madd
 from .signals import after_update_group
 
@@ -196,25 +196,18 @@ class GroupSetProjectPanoramicView(View):
         return JsonResponse({'Saved': 'ok'})
 
 
-class GroupSetOrderView(View):
+class GroupSetOrderView(G3WAjaxSetOrderViewMixin, View):
         '''
         Set order view list groups
         '''
+
+        model = Group
 
         # only user with change_group for this group can change overview map.
         #@method_decorator(permission_required('core.change_group', (Group, 'id', 'group_id'), return_403=True))
         @method_decorator(user_passes_test_or_403(lambda u: u.is_superuser))
         def dispatch(self, *args, **kwargs):
             return super(GroupSetOrderView, self).dispatch(*args, **kwargs)
-
-        def post(self, *args, **kwargs):
-
-            # get new order save value for group
-            new_order = self.request.POST.getlist('new_order[]')
-            for oindex, gid in enumerate(new_order):
-                Group.objects.get(pk=gid[6:]).to(oindex + 1)
-
-            return JsonResponse({'Saved': 'ok'})
 
 
 # for PROJECTS
@@ -310,8 +303,6 @@ class MacroGroupUpdateView(UpdateView):
         return res
 
     def get_success_url(self):
-        if self.request.session.get('http_referer', False):
-            return self.request.session['http_referer']
         return reverse('macrogroup-list')
 
 
@@ -336,3 +327,17 @@ class MacroGroupDetailView(G3WRequestViewMixin, DetailView):
     @method_decorator(user_passes_test_or_403(lambda u: u.is_superuser))
     def dispatch(self, *args, **kwargs):
         return super(MacroGroupDetailView, self).dispatch(*args, **kwargs)
+
+
+class MacroGroupSetOrderView(G3WAjaxSetOrderViewMixin, View):
+    '''
+    Set order view list macrogroups
+    '''
+
+    model = MacroGroup
+
+    # only user with change_group for this group can change overview map.
+    # @method_decorator(permission_required('core.change_group', (Group, 'id', 'group_id'), return_403=True))
+    @method_decorator(user_passes_test_or_403(lambda u: u.is_superuser))
+    def dispatch(self, *args, **kwargs):
+        return super(MacroGroupSetOrderView, self).dispatch(*args, **kwargs)

@@ -93,6 +93,7 @@ class MacroGroup(TimeStampedModel, OrderedModel):
     logo_img = models.FileField(_('Logo image'), upload_to='macrogroup/logo_img')
     logo_link = models.URLField(_('Logo link'), blank=True, null=True,
                                        help_text=_('Enter link with http:// or https//'))
+    use_title_logo_client = models.BooleanField(_('Use title and logo for client'), default=False)
 
     slug = AutoSlugField(
         _('Slug'), populate_from='title', unique=True, always_update=True
