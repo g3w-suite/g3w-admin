@@ -14,6 +14,7 @@ from rest_framework.renderers import JSONRenderer
 from core.api.serializers import GroupSerializer, Group
 from core.api.views import USERMEDIAHANDLER_CLASSES
 from core.models import GeneralSuiteData
+from core.utils.general import get_adminlte_skin_by_user
 from usersmanage.utils import get_users_for_object, get_user_model
 from usersmanage.configs import *
 from copy import deepcopy
@@ -104,17 +105,8 @@ class ClientView(TemplateView):
         contextData['page_title'] = 'g3w-client | {}'.format(self.project.title)
         
         # choosen skin by user main role
-        groupsUser = self.request.user.groups.values_list('name', flat=True)
-        if self.request.user.is_superuser and self.request.user.is_staff:
-            contextData['skin_class'] = 'yellow'
-        elif self.request.user.is_superuser:
-            contextData['skin_class'] = 'red'
-        elif G3W_EDITOR1 in groupsUser or G3W_EDITOR2 in groupsUser:
-            contextData['skin_class'] = 'purple'
-        elif G3W_VIEWER1 in groupsUser or G3W_VIEWER2 in groupsUser:
-            contextData['skin_class'] = 'green'
 
-
+        contextData['skin_class'] = get_adminlte_skin_by_user(self.request.user)
         return contextData
         
     def get_template_names(self):
