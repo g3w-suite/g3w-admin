@@ -10,11 +10,13 @@ from django.contrib.auth.forms import (
 from django.contrib.auth import (
     password_validation,
 )
-from django.contrib.auth.models import User, Group as AuthGroup
+from django.contrib.auth.models import User, Group as AuthGroup, Permission
 from django_file_form.forms import FileFormMixin, UploadedFileField
 from django.db.models import Q
 from django.utils.functional import lazy
+from django.contrib.contenttypes.models import ContentType
 from guardian.compat import get_user_model
+from guardian.shortcuts import get_objects_for_user
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout,Div, HTML, Field
 from crispy_forms.bootstrap import AppendedText, PrependedText
@@ -99,7 +101,10 @@ class G3WACLForm(forms.Form):
 
     def _setViewerUserQueryset(self, **kwargs):
 
-        queryset = User.objects.filter(groups__name__in=self.viewer_groups)
+        #queryset = User.objects.filter(groups__name__in=self.viewer_groups)
+
+        queryset = get_objects_for_user(self.request.user, 'auth.change_user', User)\
+            .filter(groups__name__in=self.viewer_groups)
 
         # get only viewer not current object editor
         filters = []
@@ -330,12 +335,11 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
                 self.fields.pop('backend')
         elif G3W_EDITOR1 in getUserGroups(self.request.user):
             # other but only Editor level 1 can add user
-            self.fields['groups'].queryset = AuthGroup.objects.filter(name__in=[G3W_VIEWER1, G3W_VIEWER2])
+            self.fields['groups'].queryset = AuthGroup.objects.filter(name__in=[G3W_EDITOR2, G3W_VIEWER1, G3W_VIEWER2])
             self.fields['groups'].required = True
             self.fields.pop('is_superuser')
             self.fields.pop('is_staff')
             self.fields.pop('backend')
-        #elif userHasGroups(self.request.user, [G3W_VIEWER1, G3W_VIEWER2]):
         else:
             self.fields.pop('is_superuser')
             self.fields.pop('is_staff')
@@ -390,6 +394,13 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
             elif not hasattr(user, 'userbackend'):
                 Userbackend(user=user, backend=USER_BACKEND_DEFAULT).save()
 
+            # add add_group permissions to editor1
+            add_group = Permission.objects.get(codename='add_group',
+                                               content_type=ContentType.objects.get_for_model(AuthGroup))
+            if userHasGroups(user, [G3W_EDITOR1]):
+                user.user_permissions.add(add_group)
+            else:
+                user.user_permissions.remove(add_group)
 
         return user
 

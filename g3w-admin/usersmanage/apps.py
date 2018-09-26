@@ -27,9 +27,6 @@ def GiveBaseGrant(sender, **kwargs):
             Permission.objects.get(codename='add_user'),
             Permission.objects.get(codename='add_group', content_type=ContentType.objects.get_for_model(Group)),
 
-            # todo: move to specific module
-            #Permission.objects.get(codename='add_widget',content_type=ContentType.objects.get_for_model(models.Widget)),
-            #Permission.objects.get(codename='add_project',content_type=ContentType.objects.get_for_model(models.Project)),
         )
         for perm in permissionsToAdd:
             if perm not in editorPermission:

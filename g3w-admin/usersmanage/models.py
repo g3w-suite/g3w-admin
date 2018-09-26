@@ -1,6 +1,6 @@
 from __future__ import unicode_literals
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.db import models
 from core.utils.models import G3WChoices
 from .configs import USER_BACKEND_DEFAULT
@@ -36,3 +36,17 @@ class Userbackend(models.Model):
 
     def __str__(self):
         return self.backend
+
+
+GROUP_ROULES = G3WChoices(
+        ('viewer', 'Viewer'),
+        ('editor', 'Editor'),
+    )
+
+
+class GroupRole(models.Model):
+    """
+    Model to add main user group role
+    """
+    group = models.OneToOneField(Group)
+    role = models.CharField(_('Group role'), max_length=100, choices=GROUP_ROULES)
