@@ -21,11 +21,20 @@
     <div class="col-md-12 col-xs-12">
         <div class="box">
             <div class="box-header">
+                <h3 class="box-title">{% trans 'Current groups' %}</h3>
+                {% comment %}
                 <h3 class="box-title">
                     {% include 'core/include/add_project.html' %}
                 </h3>
+                {% endcomment %}
             </div>
             <div class="box-body">
+            {% comment %}
+                <h4>{% trans 'Current groups' %}</h4>
+            {% endcomment %}
+                {% for group in object.group_set.all %}
+                <a href="{% url 'group-update' group.slug %}">{{ group }}</a> {% if not forloop.last %} | {% endif %}
+                {% endfor %}
             </div>
         </div>
     </div>

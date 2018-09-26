@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+{% load guardian_tags %}
+{% load auth_extras %}
+{% load i18n %}
+{% load g3wadmin_tags %}
+
+{% block page_header %}
+    <h1>{% trans 'Cartographic macro groups' %}</h1>
+{% endblock %}
+
+
+{% block main_content %}
+
+
+<div id="macrogroups_list" class="row">
+<div class="col-md-12">
+    <div class="box">
+        <div class="box-header">
+            <h3 class="box-title"><a href="{% url 'macrogroup-add'%}"><i class="ion ion-plus-circled"></i></a> {% trans 'Macro group' %}</h3>
+        </div>
+        <div class="box-body">
+            <table id="macrogroups_table" class="table table-hover table-striped" data-widget-type="dataTable">
+                <thead>
+                    <tr>
+                        <th style="width:120px">Actions</th>
+                        <th>{% trans 'Title' %}</th>
+                        <th>{% trans 'Groups' %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for object in object_list %}
+                    <tr id="macrogroup_{{ object.pk }}">
+                        <td>
+                            <span class="col-xs-2 icon">
+                                <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-detail-url="{% url 'macrogroup-detail' object.slug %}"><i class="ion ion-eye"></i></a>
+                            </span>
+                            <span class="col-xs-2 icon">
+                                <a href="{% url 'macrogroup-update' object.slug %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Edit' %}" ><i class="ion ion-edit"></i></a>
+                            </span>
+                            <span class="col-xs-4 icon">
+                                <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Delete' %}" data-widget-type="deleteItem" data-delete-url="{% url 'macrogroup-delete' object.slug %}" data-item-selector="#macrogroup_{{ object.pk }}" ><i class="ion ion-trash-b"></i></a>
+                            </span>
+                        </td>
+                        <td>{{ object.title }}</td>
+                        <td>
+                            {% for group in object.group_set.all %}
+                            <a href="{% url 'group-update' group.slug %}">{{ group }}</a> {% if not forloop.last %} | {% endif %}
+                            {% endfor %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</div>
+
+{% endblock %}

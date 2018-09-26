@@ -11,51 +11,93 @@
 {% endblock %}
 
 
+{% block custom_js_links_page %}
+{% if user.is_superuser %}
+<script>
+    $("#macrogroups_list").sortable({
+        placeholder: "col-md-3 col-sm-6 sort-highlight-group",
+        handle: ".handle",
+        update: function(e, ui){
+            new_order = $(e.target).sortable("toArray");
+
+            // get current id of group moved
+            var gid = ui.item.attr('id').substring(11)
+            var url = _.template("/jx/macrogroups/<%= gid %>/setorder/")({gid: gid});
+            var data = {
+                new_order: new_order
+            }
+            ga.utils.addCsfrtokenData(data);
+
+            $.post(url, data, function(res){
+                console.log(res);
+            });
+
+        },
+    });
+    $("#groups_list").disableSelection();
+    $('.handle').hover(function() {
+        $(this).css('cursor','move');
+    });
+</script>
+{% endif %}
+{% endblock %}
+
 {% block main_content %}
 
 
 <div id="macrogroups_list" class="row">
-<div class="col-md-12">
-    <div class="box">
-        <div class="box-header">
-            <h3 class="box-title"><a href="{% url 'macrogroup-add'%}"><i class="ion ion-plus-circled"></i></a> {% trans 'Macro group' %}</h3>
-        </div>
-        <div class="box-body">
-            <table id="macrogroups_table" class="table table-hover table-striped" data-widget-type="dataTable">
-                <thead>
-                    <tr>
-                        <th style="width:120px">Actions</th>
-                        <th>{% trans 'Title' %}</th>
-                        <th>{% trans 'Groups' %}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for object in object_list %}
-                    <tr id="macrogroup_{{ object.pk }}">
-                        <td>
-                            <span class="col-xs-2 icon">
-                                <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-detail-url="{% url 'macrogroup-detail' object.slug %}"><i class="ion ion-eye"></i></a>
-                            </span>
-                            <span class="col-xs-2 icon">
-                                <a href="{% url 'macrogroup-update' object.slug %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Edit' %}" ><i class="ion ion-edit"></i></a>
-                            </span>
-                            <span class="col-xs-4 icon">
-                                <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Delete' %}" data-widget-type="deleteItem" data-delete-url="{% url 'macrogroup-delete' object.slug %}" data-item-selector="#macrogroup_{{ object.pk }}" ><i class="ion ion-trash-b"></i></a>
-                            </span>
-                        </td>
-                        <td>{{ object.title }}</td>
-                        <td>
-                            {% for group in object.group_set.all %}
-                            <a href="{% url 'group-update' group.slug %}">{{ group }}</a> {% if not forloop.last %} | {% endif %}
-                            {% endfor %}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+{% for object in object_list %}
+    {% get_obj_perms user for object as "userObj_perms" %}
+    <div class="col-md-3 col-sm-6" id="macrogroup_{{ object.pk }}">
+     <div class="box box-widget widget-user" id="macrogroup_{{ object.slug }}">
+                <!-- Add the bg color to the header using any of the bg-* classes -->
+                <div class="widget-user-header bg-aqua-active col-sm-12" style="background: url('{{ MEDIA_URL }}{{ object.logo_img }}') center center;">
+                <div class="row">
+                    <div class="col-sm-12 widget-group-title handle">
+                        <h3 class="widget-user-username">{{ object.title }}</h3>
+                    </div>
+                </div>
+                </div>
+                <div class="box-footer">
+                  <div class="row">
+                    <div class="col-sm-2 col-xs-2">
+                      <div class="description-block">
+                         <div class="icon">
+                          <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-detail-url="{% url 'macrogroup-detail' object.slug %}"><i class="ion ion-eye"></i></a>
+                        </div>
+                      </div><!-- /.description-block -->
+                    </div><!-- /.col -->
+                    <div class="col-sm-2 col-xs-2">
+                      <div class="description-block">
+                        <div class="icon">
+                        {% if "change_macrogroup" in userObj_perms %}
+                          <a href="{% url 'macrogroup-update' object.slug %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Edit' %}" ><i class="ion ion-edit"></i></a>
+                        {% endif %}
+                        </div>
+                      </div><!-- /.description-block -->
+                    </div><!-- /.col -->
+                    <div class="col-sm-2 col-xs-2">
+                      <div class="description-block">
+                        <div class="icon">
+                        {% if "delete_macrogroup" in userObj_perms %}
+                          <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Delete' %}"  data-widget-type="deleteItem" data-delete-url="{% url 'macrogroup-delete' object.slug %}" data-item-selector="#macrogrooup_{{ object.slug }}"><i class="ion ion-trash-b"></i></a>
+                        {% endif %}
+                        </div>
+                      </div><!-- /.description-block -->
+                    </div><!-- /.col -->
+                  </div><!-- /.row -->
+                </div>
+          </div><!-- /.widget-user -->
     </div>
+{% endfor %}
 </div>
+{% if perms.core.add_group %}
+<div class="row">
+{% with 'macrogroup-add' as object_add_url_name %}
+    {% include 'core/include/widget_add_box.html' %}
+{% endwith %}
 </div>
+{% endif %}
+
 
 {% endblock %}
