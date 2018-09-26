@@ -1,6 +1,6 @@
 from django.http.request import QueryDict
 from django.conf import settings
-from django.core.cache import cache
+from django.core.cache import caches
 from rest_framework import serializers
 from rest_framework_gis import serializers as geo_serializers
 from rest_framework.fields import empty
@@ -38,6 +38,17 @@ class ProjectSerializer(serializers.ModelSerializer):
         :param instance:
         :return:
         """
+
+        if 'qdjango' in settings.CACHES:
+            cache = caches['qdjango']
+            cache_key = 'qdjango_prjsettings_{}'.format(instance.pk)
+
+            # try to get from cache
+            cached_response = cache.get(cache_key)
+
+            if cached_response:
+                return QgisProjectSettingsWMS(cached_response)
+
         q = QueryDict('', mutable=True)
         q['map'] = instance.qgis_file.file.name
         q['SERVICE'] = 'WMS'
@@ -51,6 +62,11 @@ class ProjectSerializer(serializers.ModelSerializer):
         request.method = 'GET'
         request.body = ''
         response = OWSRequestHandler(None).baseDoRequest(q, request=request)
+
+        if 'qdjango' in settings.CACHES:
+
+            # set in to cache
+            cache.set(cache_key, response.content)
 
         return QgisProjectSettingsWMS(response.content)
 

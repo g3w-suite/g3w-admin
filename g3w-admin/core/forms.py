@@ -322,6 +322,7 @@ class MacroGroupForm(FileFormMixin, G3WFormMixin, ModelForm):
                                         ),
                                         Div(
                                             'title',
+                                            'use_title_logo_client',
                                             Field('description', css_class='wys5', style="width:100%;"),
                                             'logo_img',
                                             HTML(

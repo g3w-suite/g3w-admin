@@ -1,7 +1,7 @@
 from django.conf.urls import url
 from django.contrib.auth.decorators import login_required
 from .api.views import layer_vector_view
-from .views import GroupSetOrderView
+from .views import GroupSetOrderView, MacroGroupSetOrderView
 
 
 urlpatterns = [
@@ -17,4 +17,7 @@ urlpatterns = [
     # changing order
     url(r'^jx/groups/(?P<group_id>[0-9])/setorder/$',
         login_required(GroupSetOrderView.as_view()), name='group-set-order'),
+
+    url(r'^jx/macrogroups/(?P<group_id>[0-9])/setorder/$',
+        login_required(MacroGroupSetOrderView.as_view()), name='macrogroup-set-order'),
 ]

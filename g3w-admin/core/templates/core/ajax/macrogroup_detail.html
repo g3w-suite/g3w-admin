@@ -1,13 +1,27 @@
 {% load i18n %}
 {% load auth_extras %}
 <div class="row">
-  <div class="col-md-12">
+  <div class="col-md-8">
   <h3>{%trans 'Data'%}</h3>
     <ul class="list-unstyled">
       <li><h4>{%trans 'Title'%}</h4>
       <li>{{ object.title }}</li>
       <li><h4>{%trans 'Description'%}</h4>
       <li>{{ object.description|safe }}</li>
+      <li><h4>{% trans 'Groups' %}</h4></li>
+      <li>
+        {% for group in object.group_set.all %}
+        <a href="{% url 'group-update' group.slug %}">{{ group }}</a> {% if not forloop.last %} | {% endif %}
+        {% endfor %}
+      </li>
     </ul>
+  </div>
+  <div class="col-md-4">
+      <ul class="list-unstyled">
+          <li><img class="img-responsive" src="{{ MEDIA_URL }}{{ object.logo_img }}" ></li>
+          {% if object.logo_link %}
+          <li><a href="{{ object.logo_link }}">{{ object.logo_link }}</a></li>
+          {% endif %}
+      </ul>
   </div>
 </div>

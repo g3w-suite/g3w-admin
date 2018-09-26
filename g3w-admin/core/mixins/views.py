@@ -121,3 +121,17 @@ class AjaxableFormResponseMixin(object):
             return JsonResponse({'status': 'ok', 'message': 'Object saved!'})
         else:
             return response
+
+
+class G3WAjaxSetOrderViewMixin(object):
+    """
+    To set order of ordered model
+    """
+
+    def post(self, *args, **kwargs):
+        # get new order save value for group
+        new_order = self.request.POST.getlist('new_order[]')
+        for oindex, gid in enumerate(new_order):
+            self.model.objects.get(pk=gid.split('_')[1]).to(oindex + 1)
+
+        return JsonResponse({'Saved': 'ok'})

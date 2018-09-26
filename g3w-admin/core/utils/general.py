@@ -1,4 +1,5 @@
 from django.apps import apps
+from usersmanage.configs import *
 
 def ucfirst(string):
     """
@@ -24,3 +25,19 @@ def getAuthPermissionContentType():
     ContentType = apps.get_app_config('contenttypes').get_model('ContentType')
 
     return AuthGroup, Permission, ContentType
+
+
+def get_adminlte_skin_by_user(user):
+    """
+    Return css adminLte skin class by user
+    """
+
+    groupsUser = user.groups.values_list('name', flat=True)
+    if user.is_superuser and user.is_staff:
+        return 'yellow'
+    elif user.is_superuser:
+        return 'red'
+    elif G3W_EDITOR1 in groupsUser or G3W_EDITOR2 in groupsUser:
+        return 'purple'
+    elif G3W_VIEWER1 in groupsUser or G3W_VIEWER2 in groupsUser:
+        return 'green'
