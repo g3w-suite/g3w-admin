@@ -1,6 +1,14 @@
 from django.conf import settings
 from django import forms
-from django.forms import Select, ValidationError, ModelChoiceField, ModelMultipleChoiceField, ChoiceField, ModelForm
+from django.forms import (
+    Select,
+    ValidationError,
+    ModelChoiceField,
+    ModelMultipleChoiceField,
+    ChoiceField,
+    ModelForm,
+    ChoiceField
+)
 from django.utils.datastructures import MultiValueDict
 from django.utils.translation import ugettext, ugettext_lazy as _
 from django.contrib.auth.forms import (
@@ -21,7 +29,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout,Div, HTML, Field
 from crispy_forms.bootstrap import AppendedText, PrependedText
 from PIL import Image
-from .models import Userdata, Department, Userbackend, USER_BACKEND_TYPES
+from .models import Userdata, Department, Userbackend, GroupRole, USER_BACKEND_TYPES, GROUP_ROLES
 from core.mixins.forms import G3WRequestFormMixin, G3WFormMixin
 from usersmanage.configs import *
 from .utils import getUserGroups, userHasGroups
@@ -188,11 +196,20 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
         label=_('Main roles')
     )
 
-    user_groups = ModelMultipleChoiceField(
-        queryset=AuthGroup.objects.filter(~Q(name__in=[G3W_EDITOR1, G3W_EDITOR2, G3W_VIEWER1, G3W_VIEWER2])),
+    user_groups_editor = ModelMultipleChoiceField(
+        queryset=AuthGroup.objects.filter(~Q(name__in=[G3W_EDITOR1, G3W_EDITOR2, G3W_VIEWER1, G3W_VIEWER2]),
+                                          grouprole__role='editor'),
         required=False,
-        help_text=_('Select groups for this user'),
-        label=_('User groups')
+        help_text=_('Select EDITOR groups for this user'),
+        label=_('User editor groups')
+    )
+
+    user_groups_viewer = ModelMultipleChoiceField(
+        queryset=AuthGroup.objects.filter(~Q(name__in=[G3W_EDITOR1, G3W_EDITOR2, G3W_VIEWER1, G3W_VIEWER2]),
+                                                grouprole__role='viewer'),
+        required=False,
+        help_text=_('Select VIWER groups for this user'),
+        label=_('User viewer groups')
     )
 
     def __init__(self, *args, **kwargs):
@@ -248,7 +265,10 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
                             Field('groups',
                                   **{'css_class': 'select2 col-md-12', 'multiple': 'multiple',
                                      'style': 'width:100%;'}),
-                            Field('user_groups',
+                            Field('user_groups_editor',
+                                  **{'css_class': 'select2 col-md-12', 'multiple': 'multiple',
+                                     'style': 'width:100%;'}),
+                            Field('user_groups_viewer',
                                   **{'css_class': 'select2 col-md-12', 'multiple': 'multiple',
                                      'style': 'width:100%;'}),
                             css_class='box-body'
@@ -473,6 +493,8 @@ UserFormSet = inlineformset_factory(User, Userdata, fields ='__all__')
 
 class G3WUserGroupForm(G3WRequestFormMixin, G3WFormMixin, ModelForm):
 
+    role = ChoiceField(GROUP_ROLES, label=_('Role'), required=True)
+
     def __init__(self, *args, **kwargs):
         super(G3WUserGroupForm, self).__init__(*args, **kwargs)
 
@@ -490,6 +512,7 @@ class G3WUserGroupForm(G3WRequestFormMixin, G3WFormMixin, ModelForm):
                         ),
                         Div(
                             'name',
+                            'role',
                             css_class='box-body',
 
                         ),
@@ -510,6 +533,19 @@ class G3WUserGroupForm(G3WRequestFormMixin, G3WFormMixin, ModelForm):
 
         fields='__all__'
         model=AuthGroup
+
+    def save(self, commit=True):
+        instance = super(G3WUserGroupForm, self).save(commit=commit)
+
+        # save role
+        try:
+            grouprole = instance.grouprole
+            grouprole.role = self.cleaned_data['role']
+        except:
+            grouprole = GroupRole(group=instance, role=self.cleaned_data['role'])
+        grouprole.save()
+
+        return instance
 
 
 class G3WUserGroupUpdateForm(G3WUserGroupForm):

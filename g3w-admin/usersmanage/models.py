@@ -38,7 +38,7 @@ class Userbackend(models.Model):
         return self.backend
 
 
-GROUP_ROULES = G3WChoices(
+GROUP_ROLES = G3WChoices(
         ('viewer', 'Viewer'),
         ('editor', 'Editor'),
     )
@@ -48,5 +48,5 @@ class GroupRole(models.Model):
     """
     Model to add main user group role
     """
-    group = models.OneToOneField(Group)
-    role = models.CharField(_('Group role'), max_length=100, choices=GROUP_ROULES)
+    group = models.OneToOneField(Group, on_delete=models.CASCADE)
+    role = models.CharField(_('Group role'), max_length=100, choices=GROUP_ROLES)

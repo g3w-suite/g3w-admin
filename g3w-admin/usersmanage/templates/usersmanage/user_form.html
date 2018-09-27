@@ -4,6 +4,35 @@
 {% load g3wadmin_tags %}
 {% load i18n %}
 
+{% block custom_js_links_page %}
+<script>
+    ga.$useRoleSelect = $('#id_groups');
+    ga.$useRoleSelect.on('change', function(e){
+
+        var value = $(this).val();
+        var data = {roles: value};
+        ga.utils.addCsfrtokenData(data);
+        var $viewers_select = $("#id_viewer_users");
+        if (value) {
+            $.ajax({
+                method: 'post',
+                url: '{% url 'user-group-by-user-role' %}',
+                data: data,
+                success:function(res){
+                    //$viewers_select.html('');
+                    //$viewers_select.select2({data: res.viewer_users});
+                }
+            });
+        } else {
+            //$("#id_viewer_users").select2('val', '');
+        }
+
+    });
+    // to start
+    ga.$useRoleSelect.trigger('change');
+</script>
+{% endblock %}
+
 {% block page_header %}
 <h1>
     {% trans 'System users' %}

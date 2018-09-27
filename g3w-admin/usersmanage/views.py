@@ -6,6 +6,7 @@ from django.views.generic import (
     DetailView,
     View
 )
+from django.http.response import JsonResponse
 from django.views.generic.detail import SingleObjectMixin
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import permission_required
@@ -111,10 +112,17 @@ class UserDetailView(DetailView):
 class UserGroupListView(G3WRequestViewMixin, ListView):
     """List user groups view."""
     template_name = 'usersmanage/user_group_list.html'
-    queryset = Group.objects.filter(~Q(name__in=[G3W_EDITOR1, G3W_EDITOR2, G3W_VIEWER1, G3W_VIEWER2]))
+    #queryset = Group.objects.
+
+    def get_queryset(self):
+        return get_objects_for_user(self.request.user, 'auth.change_group', Group).order_by('name')\
+            .filter(~Q(name__in=[G3W_EDITOR1, G3W_EDITOR2, G3W_VIEWER1, G3W_VIEWER2]))
 
 
 class UserGroupCreateView(G3WRequestViewMixin, CreateView):
+    """
+    View for create User Group
+    """
     form_class = G3WUserGroupForm
     model = Group
     template_name = 'usersmanage/user_group_form.html'
@@ -124,10 +132,19 @@ class UserGroupCreateView(G3WRequestViewMixin, CreateView):
         return super(UserGroupCreateView, self).dispatch(*args, **kwargs)
 
     def get_success_url(self):
+
+        # case editor level 1
+        if G3W_EDITOR1 in getUserGroups(self.request.user):
+            assign_perm('auth.change_group', self.request.user, self.object)
+            assign_perm('auth.delete_group', self.request.user, self.object)
+
         return reverse('user-group-list')
 
 
 class UserGroupUpdateView(G3WRequestViewMixin, UpdateView):
+    """
+    View for change User Group
+    """
     form_class = G3WUserGroupUpdateForm
     model = Group
     template_name = 'usersmanage/user_group_form.html'
@@ -135,6 +152,17 @@ class UserGroupUpdateView(G3WRequestViewMixin, UpdateView):
     @method_decorator(permission_required('auth.change_group', raise_exception=True))
     def dispatch(self, *args, **kwargs):
         return super(UserGroupUpdateView, self).dispatch(*args, **kwargs)
+
+    def get_initial(self):
+        initials = super(UserGroupUpdateView, self).get_initial()
+
+        # add group role
+        try:
+            initials['role'] = self.object.grouprole.role
+        except:
+            pass
+
+        return initials
 
     # todo: check group if not in base editor and viewer group
     def get_success_url(self):
@@ -149,3 +177,23 @@ class UserGroupDetailView(DetailView):
 
 class UserGroupAjaxDeleteView(G3WAjaxDeleteViewMixin, G3WRequestViewMixin, SingleObjectMixin, View):
     model = Group
+
+
+# mappging user main role and group role
+MAPPING_USER_ROLE_GROUP_ROLE = {
+    G3W_EDITOR1: ''
+}
+
+
+
+class UserGroupByUserRoleView(View):
+    """
+    Return User Groups editor and viwer by user roles
+    """
+
+    def post(self, *args, **kwargs):
+        user_roles = self.request.POST.getlist('roles[]')
+
+        return JsonResponse({'viewer_user_groups': [], 'editor_user_groups': []})
+
+

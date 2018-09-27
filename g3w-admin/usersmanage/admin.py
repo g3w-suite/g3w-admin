@@ -1,6 +1,7 @@
 from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from django.contrib.auth.models import User
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin, GroupAdmin as BaseGroupAdmin
+from django.contrib.auth.models import User, Group
+from guardian.admin import GuardedModelAdmin
 
 from usersmanage.models import Userdata, Department
 
@@ -16,11 +17,16 @@ class UserdataInLine(admin.StackedInline):
     verbose_name_plural = 'userdata'
 
 # Define a new User admin
-class UserAdmin(BaseUserAdmin):
+class UserAdmin(GuardedModelAdmin, BaseUserAdmin):
     inlines = (UserdataInLine, )
 
-# Re-register UserAdmin
-#admin.site.register(DepartmentAdmin)
+
+class GroupAdmin(GuardedModelAdmin, BaseGroupAdmin):
+    pass
+
+# Re-register UserAdmin and GroupAdmin
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
-admin.site.register(Department,DepartmentAdmin)
+admin.site.register(Department, DepartmentAdmin)
+admin.site.unregister(Group)
+admin.site.register(Group, GroupAdmin)
