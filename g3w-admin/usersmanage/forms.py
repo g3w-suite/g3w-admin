@@ -79,6 +79,7 @@ class G3WACLForm(forms.Form):
     viewer_users = UsersChoiceField(label=_('Viewer users'), queryset=None, required=False)
 
     initial_editor_user_groups = []
+    initial_viewer_user_groups = []
 
     # user groups
     editor_user_groups = forms.ModelMultipleChoiceField(
@@ -101,6 +102,7 @@ class G3WACLForm(forms.Form):
         # check for editor and viewers and editor groups
         self._setEditorUserQueryset()
         self._setViewerUserQueryset(**kwargs)
+        self._set_user_groups_queryset()
         self._add_anonymou_user()
 
     def _setEditorUserQueryset(self):
@@ -133,12 +135,16 @@ class G3WACLForm(forms.Form):
             self.initial_editor_user = kwargs['initial']['editor_user']
 
     def _init_user_groups(self, **kwargs):
-        '''
-        if kwargs['initial'].has_key('viewer_users'):
-            self.initial_viewer_users = kwargs['initial']['viewer_users']
-        '''
+        if kwargs['initial'].has_key('viewer_user_groups'):
+            self.initial_viewer_user_groups = kwargs['initial']['viewer_user_groups']
         if kwargs['initial'].has_key('editor_user_groups'):
             self.initial_editor_user_groups = kwargs['initial']['editor_user_groups']
+
+    def _set_user_groups_queryset(self):
+        self.fields['editor_user_groups'].queryset = get_objects_for_user(self.request.user, 'auth.change_group',
+            AuthGroup).order_by('name').filter(grouprole__role='editor')
+        self.fields['viewer_user_groups'].queryset = get_objects_for_user(self.request.user, 'auth.change_group',
+            AuthGroup).order_by('name').filter(grouprole__role='viewer')
 
     def _add_anonymou_user(self):
         if self.add_anonynous:
@@ -172,16 +178,23 @@ class G3WACLForm(forms.Form):
         if hasattr(self.instance, 'removePermissionsToViewers'):
             self.instance.removePermissionsToViewers(toRemove)
 
-        # for user_groups
-        editor_group_to_remove = None
-        if self.request.user.is_superuser:
+        # for user_groups editor and viewer
+        if 'editor_user_groups' in self.cleaned_data:
             current_editor_user_groups = [o.id for o in self.cleaned_data['editor_user_groups']]
             to_remove = list(set(self.initial_editor_user_groups) - set(current_editor_user_groups))
             to_add = list(set(current_editor_user_groups) - set(self.initial_editor_user_groups))
             if hasattr(self.instance, 'add_permissions_to_editor_user_groups'):
                 self.instance.add_permissions_to_editor_user_groups(to_add)
             if hasattr(self.instance, 'remove_permissions_to_editor_user_groups'):
-                self.instance.add_permissions_to_editor_user_groups(to_remove)
+                self.instance.remove_permissions_to_editor_user_groups(to_remove)
+
+        current_viewer_user_groups = [o.id for o in self.cleaned_data['viewer_user_groups']]
+        to_remove = list(set(self.initial_viewer_user_groups) - set(current_viewer_user_groups))
+        to_add = list(set(current_viewer_user_groups) - set(self.initial_viewer_user_groups))
+        if hasattr(self.instance, 'add_permissions_to_viewer_user_groups'):
+            self.instance.add_permissions_to_viewer_user_groups(to_add)
+        if hasattr(self.instance, 'remove_permissions_to_viewer_user_groups'):
+            self.instance.remove_permissions_to_viewer_user_groups(to_remove)
 
 
 class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreationForm):

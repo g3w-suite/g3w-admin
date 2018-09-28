@@ -4,8 +4,9 @@ from django.db.models.signals import post_delete
 from model_utils.models import TimeStampedModel
 from autoslug import AutoSlugField
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group as AuthGroup
 from autoslug.utils import slugify
+from guardian.shortcuts import get_perms
 from core.models import Group, BaseLayer, GroupProjectPanoramic
 from .utils.storage import QgisFileOverwriteStorage
 from core.mixins.models import G3WACLModelMixins, G3WProjectMixins
@@ -90,9 +91,9 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
     def _permissionsToEditor(self, user, mode='add'):
 
         setPermissionUserObject(user, self, permissions=[
-            'qdjango.change_project',
-            'qdjango.delete_project',
-            'qdjango.view_project'
+            'change_project',
+            'delete_project',
+            'view_project'
         ], mode=mode)
 
         # if editor not has permission on group give permission only view on parent gorup group
@@ -110,7 +111,7 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
 
         for user_id in users_id:
             user = User.objects.get(pk=user_id)
-            setPermissionUserObject(user, self, permissions='qdjango.view_project', mode=mode)
+            setPermissionUserObject(user, self, permissions='view_project', mode=mode)
 
             # if viewer not has permission on group give permission only view on parent gorup group
             if not user.has_perm('core.view_group', self.group):
@@ -122,6 +123,43 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
             layers = self.layer_set.all()
             for layer in layers:
                 getattr(layer, layerAction)(users_id)
+
+    def _permissions_to_user_groups_editor(self, groups_id, mode='add'):
+
+        for group_id in groups_id:
+            auth_group = AuthGroup.objects.get(pk=group_id)
+            setPermissionUserObject(auth_group, self,
+                    permissions=['change_project', 'delete_project', 'view_project'], mode=mode)
+
+            # if viewer not has permission on group give permission only view on parent group
+            if 'view_group' not in get_perms(auth_group, self.group):
+                setPermissionUserObject(auth_group, self.group, permissions=[
+                    'core.view_group'
+                ], mode=mode)
+
+            layerAction = 'add_permissions_to_editor_user_groups' if mode == 'add' \
+                else 'remove_permissions_to_editor_user_groups'
+            layers = self.layer_set.all()
+            for layer in layers:
+                getattr(layer, layerAction)(groups_id)
+
+    def _permissions_to_user_groups_viewer(self, groups_id, mode='add'):
+
+        for group_id in groups_id:
+            auth_group = AuthGroup.objects.get(pk=group_id)
+            setPermissionUserObject(auth_group, self, permissions='qdjango.view_project', mode=mode)
+
+            # if viewer not has permission on group give permission only view on parent group
+            if 'view_group' not in get_perms(auth_group, self.group):
+                setPermissionUserObject(auth_group, self.group, permissions=[
+                    'core.view_group'
+                ], mode=mode)
+
+            layerAction = 'add_permissions_to_viewer_user_groups' if mode == 'add' \
+                else 'remove_permissions_to_viewer_user_groups'
+            layers = self.layer_set.all()
+            for layer in layers:
+                getattr(layer, layerAction)(groups_id)
 
     def __getattr__(self, attr):
         if attr == 'viewers':
@@ -239,19 +277,29 @@ class Layer(G3WACLModelMixins, models.Model):
 
     def _permissionsToEditor(self, user, mode='add'):
         setPermissionUserObject(user, self, permissions=[
-            'qdjango.change_layer',
-            'qdjango.delete_layer',
-            'qdjango.view_layer'
+            'change_layer',
+            'delete_layer',
+            'view_layer'
         ], mode=mode)
-
-        # todo: add widget permmissions
 
     def _permissionsToViewers(self, users_id, mode='add'):
 
         for user_id in users_id:
-            setPermissionUserObject(User.objects.get(pk=user_id), self, permissions='qdjango.view_layer', mode=mode)
+            setPermissionUserObject(User.objects.get(pk=user_id), self, permissions='view_layer', mode=mode)
 
-            # todo: add widget permissions
+    def _permissions_to_user_groups_editor(self, groups_id, mode='add'):
+        for group_id in groups_id:
+            setPermissionUserObject(AuthGroup.objects.get(pk=group_id), self, permissions=[
+                'change_layer',
+                'delete_layer',
+                'view_layer'
+            ], mode=mode)
+
+    def _permissions_to_user_groups_viewer(self, groups_id, mode='add'):
+        for group_id in groups_id:
+            setPermissionUserObject(AuthGroup.objects.get(pk=group_id), self, permissions=[
+                'view_layer'
+            ], mode=mode)
 
 
 class Widget(G3WACLModelMixins, models.Model):

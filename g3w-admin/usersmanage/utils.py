@@ -2,7 +2,8 @@ from django.conf import settings
 from django.contrib.auth.models import Permission, User
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
-from guardian.shortcuts import get_users_with_perms, assign_perm, remove_perm, get_group_perms, get_groups_with_perms
+from guardian.shortcuts import get_users_with_perms, assign_perm, remove_perm, get_group_perms, get_groups_with_perms, \
+    get_perms
 from guardian.models import UserObjectPermission
 from guardian.compat import get_user_model
 from crispy_forms.layout import Div, HTML, Field
@@ -73,7 +74,7 @@ def get_fields_by_user(user, form, **kwargs):
     toRet = []
     for field in fields:
         params = {'css_class': 'select2 col-md-12', 'multiple': 'multiple', 'style': 'width:100%;'} \
-            if field == 'viewer_users' else {}
+            if field in ('viewer_users', 'editor_user_groups', 'viewer_user_groups') else {}
         toRet.append(Field(field, **params))
     return toRet
 
@@ -144,7 +145,7 @@ def setPermissionUserObject(user, object, permissions=[], mode='add'):
         permissions = [permissions]
 
 
-    current_permissions = get_group_perms(user, object)
+    current_permissions = get_perms(user, object)
 
     for perm in permissions:
         if mode == 'add' and perm not in current_permissions:

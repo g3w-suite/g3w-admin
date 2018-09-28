@@ -30,3 +30,31 @@ class G3WACLModelMixins(object):
         Remove guardian permissions to Viewers
         """
         self._permissionsToViewers(users_id, 'remove')
+
+    def add_permissions_to_editor_user_groups(self, groups_id):
+        """
+        Give guardian permissions to User Groups whit editor role
+        """
+        if hasattr(self, '_permissions_to_user_groups_editor'):
+            self._permissions_to_user_groups_editor(groups_id, 'add')
+
+    def add_permissions_to_viewer_user_groups(self, groups_id):
+        """
+        Give guardian permissions to User Groups whit viewer role
+        """
+        if hasattr(self, '_permissions_to_user_groups_viewer'):
+            self._permissions_to_user_groups_viewer(groups_id, 'add')
+
+    def remove_permissions_to_editor_user_groups(self, groups_id):
+        """
+        Give guardian permissions to User Groups whit editor role
+        """
+        if hasattr(self, '_permissions_to_user_groups_editor'):
+            self._permissions_to_user_groups_editor(groups_id, 'remove')
+
+    def remove_permissions_to_viewer_user_groups(self, groups_id):
+        """
+        Give guardian permissions to User Groups whit viewer role
+        """
+        if hasattr(self, '_permissions_to_user_groups_viewer'):
+            self._permissions_to_user_groups_viewer(groups_id, 'remove')

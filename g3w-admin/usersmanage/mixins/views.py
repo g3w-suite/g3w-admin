@@ -31,5 +31,7 @@ class G3WACLViewMixin(object):
         # get initial editor user_groups
         group_editors = get_groups_for_object(self.object, self.editor_permission)
         kwargs['initial']['editor_user_groups'] = [o.id for o in group_editors]
+        group_viewers = get_groups_for_object(self.object, self.viewer_permission)
+        kwargs['initial']['viewer_user_groups'] = [o.id for o in group_viewers]
 
         return kwargs

@@ -194,11 +194,11 @@ class Group(TimeStampedModel, OrderedModel):
         Give guardian permissions to Editor
         """
 
-        permissions = ['core.view_group']
+        permissions = ['view_group']
         if G3W_EDITOR1 in getUserGroups(user):
             permissions += [
-                'core.change_group',
-                'core.delete_group'
+                'change_group',
+                'delete_group'
             ]
 
         setPermissionUserObject(user, self, permissions=permissions)
@@ -215,9 +215,9 @@ class Group(TimeStampedModel, OrderedModel):
         """
 
         setPermissionUserObject(user, self, permissions=[
-            'core.change_group',
-            'core.delete_group',
-            'core.view_group',
+            'change_group',
+            'delete_group',
+            'view_group',
         ], mode='remove')
 
         # adding permissions to projects
@@ -233,7 +233,7 @@ class Group(TimeStampedModel, OrderedModel):
         appProjects = getProjectsByGroup(self)
 
         for user_id in users_id:
-            setPermissionUserObject(User.objects.get(pk=user_id), self, permissions='core.view_group')
+            setPermissionUserObject(User.objects.get(pk=user_id), self, permissions='view_group')
 
             # adding permissions to projects
             for app, projects in appProjects.items():
@@ -247,7 +247,7 @@ class Group(TimeStampedModel, OrderedModel):
         appProjects = getProjectsByGroup(self)
 
         for user_id in users_id:
-            setPermissionUserObject(User.objects.get(pk=user_id), self, permissions='core.view_group', mode='remove')
+            setPermissionUserObject(User.objects.get(pk=user_id), self, permissions='view_group', mode='remove')
 
             # adding permissions to projects
             for app, projects in appProjects.items():
@@ -261,20 +261,20 @@ class Group(TimeStampedModel, OrderedModel):
 
         appProjects = getProjectsByGroup(self)
         permissions = [
-            'core.change_group',
-            'core.delete_group',
-            'core.view_group'
+            'change_group',
+            'delete_group',
+            'view_group'
         ]
 
         for group_id in groups_id:
             setPermissionUserObject(AuthGroup.objects.get(pk=group_id), self, permissions=permissions)
 
             # adding permissions to projects
-            '''
+
             for app, projects in appProjects.items():
                 for project in projects:
-                    project.addPermissionsToViewers(group_id)
-            '''
+                    if hasattr(project, 'add_permissions_to_editor_user_groups'):
+                        project.add_permissions_to_editor_user_groups(groups_id)
 
     def remove_permissions_to_editor_user_groups(self, groups_id):
         """
@@ -283,21 +283,60 @@ class Group(TimeStampedModel, OrderedModel):
         appProjects = getProjectsByGroup(self)
 
         permissions = [
-            'core.change_group',
-            'core.delete_group',
-            'core.view_group'
+            'change_group',
+            'delete_group',
+            'view_group'
         ]
 
         for group_id in groups_id:
             setPermissionUserObject(AuthGroup.objects.get(pk=group_id), self, permissions=permissions,
                                     mode='remove')
 
-            '''
             # adding permissions to projects
             for app, projects in appProjects.items():
                 for project in projects:
-                    project.removePermissionsToViewers(users_id)
-            '''
+                    if hasattr(project, 'remove_permissions_to_editor_user_groups'):
+                        project.remove_permissions_to_editor_user_groups(groups_id)
+
+    def add_permissions_to_viewer_user_groups(self, groups_id):
+        """
+        Give guardian permissions to Editor user groups
+        """
+
+        appProjects = getProjectsByGroup(self)
+        permissions = [
+            'view_group'
+        ]
+
+        for group_id in groups_id:
+            setPermissionUserObject(AuthGroup.objects.get(pk=group_id), self, permissions=permissions)
+
+            # adding permissions to projects
+            for app, projects in appProjects.items():
+                for project in projects:
+                    if hasattr(project, 'add_permissions_to_viewer_user_groups'):
+                        project.add_permissions_to_viewer_user_groups(groups_id)
+
+    def remove_permissions_to_viewer_user_groups(self, groups_id):
+        """
+        Remove guardian permissions to Editor user groups
+        """
+        appProjects = getProjectsByGroup(self)
+
+        permissions = [
+            'view_group'
+        ]
+
+        for group_id in groups_id:
+            setPermissionUserObject(AuthGroup.objects.get(pk=group_id), self, permissions=permissions,
+                                    mode='remove')
+
+            # removing permissions to projects
+            for app, projects in appProjects.items():
+                for project in projects:
+                    if hasattr(project, 'remove_permissions_to_viewer_user_groups'):
+                        project.remove_permissions_to_viewer_user_groups(groups_id)
+
 
     def __getattr__(self, attr):
         if attr == 'viewers':

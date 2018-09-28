@@ -12,8 +12,10 @@ sitetrees = (
                access_by_perms=['auth.add_user']),
           item('Lista utenti', 'user-list', url_as_pattern=True, icon_css_class='fa fa-users'),
           item('Agg. utente', 'user-update object.pk', url_as_pattern=True, icon_css_class='fa fa-edit', in_menu=False),
-          item('Aggiungi gruppo utenti', 'user-group-add', url_as_pattern=True, icon_css_class='fa fa-plus'),
-          item('Lista gruppi utenti', 'user-group-list', url_as_pattern=True, icon_css_class='fa fa-list')
+          item('Aggiungi gruppo utenti', 'user-group-add', url_as_pattern=True, icon_css_class='fa fa-plus',
+               access_by_perms=['auth.add_group']),
+          item('Lista gruppi utenti', 'user-group-list', url_as_pattern=True, icon_css_class='fa fa-list',
+               access_by_perms=['auth.add_group'])
       ]),
   ]),
 
@@ -25,8 +27,10 @@ sitetrees = (
                access_by_perms=['auth.add_user']),
           item('Users list', 'user-list', url_as_pattern=True, icon_css_class='fa fa-users'),
           item('User update', 'user-update object.pk', url_as_pattern=True, icon_css_class='fa fa-edit', in_menu=False),
-          item('Add group users', 'user-group-add', url_as_pattern=True, icon_css_class='fa fa-plus'),
-          item('Groups users list', 'user-group-list', url_as_pattern=True, icon_css_class='fa fa-list')
+          item('Add group users', 'user-group-add', url_as_pattern=True, icon_css_class='fa fa-plus',
+               access_by_perms=['auth.add_user']),
+          item('Groups users list', 'user-group-list', url_as_pattern=True, icon_css_class='fa fa-list',
+               access_by_perms=['auth.add_user'])
       ]),
   ]),
 )

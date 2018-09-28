@@ -11,7 +11,7 @@
     ga.$useRoleSelect.on('change', function(e){
 
         var value = $(this).val();
-        var data = {roles: value, user_id: {{ form.instance.pk }}};
+        var data = {roles: value, user_id: {{ form.instance.pk|default:'null' }}};
         ga.utils.addCsfrtokenData(data);
         var $ug_editor_select = $("#id_user_groups_editor");
         var $ug_viewer_select = $("#id_user_groups_viewer");

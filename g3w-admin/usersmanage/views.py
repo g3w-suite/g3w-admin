@@ -195,7 +195,8 @@ class UserGroupByUserRoleView(View):
 
     def post(self, *args, **kwargs):
         user_roles = Group.objects.filter(pk__in=self.request.POST.getlist('roles[]'))
-        current_user_groups = User.objects.get(pk=self.request.POST['user_id']).groups.all()
+        current_user_groups = User.objects.get(pk=self.request.POST['user_id']).groups.all() \
+            if self.request.POST['user_id'] else []
         group_roles = []
         for user_role in user_roles:
             if MAPPING_USER_ROLE_GROUP_ROLE[user_role.name] not in group_roles:
