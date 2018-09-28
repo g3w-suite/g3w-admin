@@ -4,23 +4,27 @@
 {% load g3wadmin_tags %}
 {% load i18n %}
 
+
 {% block custom_js_links_page %}
 <script>
     ga.$useRoleSelect = $('#id_groups');
     ga.$useRoleSelect.on('change', function(e){
 
         var value = $(this).val();
-        var data = {roles: value};
+        var data = {roles: value, user_id: {{ form.instance.pk }}};
         ga.utils.addCsfrtokenData(data);
-        var $viewers_select = $("#id_viewer_users");
+        var $ug_editor_select = $("#id_user_groups_editor");
+        var $ug_viewer_select = $("#id_user_groups_viewer");
         if (value) {
             $.ajax({
                 method: 'post',
                 url: '{% url 'user-group-by-user-role' %}',
                 data: data,
                 success:function(res){
-                    //$viewers_select.html('');
-                    //$viewers_select.select2({data: res.viewer_users});
+                    $ug_viewer_select.html('');
+                    $ug_viewer_select.select2({data: _.filter(res.user_groups, function(item){return item.role == 'viewer'})});
+                    $ug_editor_select.html('');
+                    $ug_editor_select.select2({data: _.filter(res.user_groups, function(item){return item.role == 'editor'})});
                 }
             });
         } else {
@@ -32,6 +36,7 @@
     ga.$useRoleSelect.trigger('change');
 </script>
 {% endblock %}
+
 
 {% block page_header %}
 <h1>

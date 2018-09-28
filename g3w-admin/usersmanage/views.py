@@ -181,9 +181,11 @@ class UserGroupAjaxDeleteView(G3WAjaxDeleteViewMixin, G3WRequestViewMixin, Singl
 
 # mappging user main role and group role
 MAPPING_USER_ROLE_GROUP_ROLE = {
-    G3W_EDITOR1: ''
+    G3W_EDITOR1: 'editor',
+    G3W_EDITOR2: 'editor',
+    G3W_VIEWER1: 'viewer',
+    G3W_VIEWER2: 'viewer'
 }
-
 
 
 class UserGroupByUserRoleView(View):
@@ -192,8 +194,17 @@ class UserGroupByUserRoleView(View):
     """
 
     def post(self, *args, **kwargs):
-        user_roles = self.request.POST.getlist('roles[]')
+        user_roles = Group.objects.filter(pk__in=self.request.POST.getlist('roles[]'))
+        current_user_groups = User.objects.get(pk=self.request.POST['user_id']).groups.all()
+        group_roles = []
+        for user_role in user_roles:
+            if MAPPING_USER_ROLE_GROUP_ROLE[user_role.name] not in group_roles:
+                group_roles.append(MAPPING_USER_ROLE_GROUP_ROLE[user_role.name])
 
-        return JsonResponse({'viewer_user_groups': [], 'editor_user_groups': []})
+        user_groups = get_objects_for_user(self.request.user, 'auth.change_group', Group).order_by('name')\
+            .filter(grouprole__role__in=group_roles)
+
+        return JsonResponse({'user_groups': [{'id': ug.pk, 'text': ug.name, 'role': ug.grouprole.role,
+                                               'selected': ug in current_user_groups} for ug in user_groups]})
 
 

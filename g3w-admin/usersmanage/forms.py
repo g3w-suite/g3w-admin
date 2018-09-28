@@ -386,11 +386,18 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
                 else:
                     self.cleaned_data['groups'] = []
 
-            if 'user_groups' in self.cleaned_data and self.cleaned_data['user_groups']:
+            if 'user_groups_editor' in self.cleaned_data and self.cleaned_data['user_groups_editor']:
                 if self.cleaned_data['groups']:
-                    self.cleaned_data['groups'] = self.cleaned_data['groups'] | self.cleaned_data['user_groups']
+                    self.cleaned_data['groups'] |= self.cleaned_data['user_groups_editor']
                 else:
-                    self.cleaned_data['groups'] = self.cleaned_data['user_groups']
+                    self.cleaned_data['groups'] = self.cleaned_data['user_groups_editor']
+
+            if 'user_groups_viewer' in self.cleaned_data and self.cleaned_data['user_groups_viewer']:
+                if self.cleaned_data['groups']:
+                    self.cleaned_data['groups'] |= self.cleaned_data['user_groups_viewer']
+                else:
+                    self.cleaned_data['groups'] = self.cleaned_data['user_groups_viewer']
+
             self.save_m2m()
 
             if hasattr(user, 'userdata'):
