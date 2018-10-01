@@ -168,7 +168,9 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
             editors = get_users_for_object(self, ['change_project', 'view_project'], [G3W_EDITOR2, G3W_EDITOR1])
             if len(editors) > 0:
                 return editors[0]
-        return super(Project, self).__getattr__(attr)
+            else:
+                return None
+        return super(Project, self).__getattribute__(attr)
 
 
 post_delete.connect(check_overviewmap_project, sender=Project)
