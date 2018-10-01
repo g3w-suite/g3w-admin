@@ -221,7 +221,7 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
         queryset=AuthGroup.objects.filter(~Q(name__in=[G3W_EDITOR1, G3W_EDITOR2, G3W_VIEWER1, G3W_VIEWER2]),
                                                 grouprole__role='viewer'),
         required=False,
-        help_text=_('Select VIWER groups for this user'),
+        help_text=_('Select VIEWER groups for this user'),
         label=_('User viewer groups')
     )
 

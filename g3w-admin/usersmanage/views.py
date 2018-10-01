@@ -181,27 +181,29 @@ class UserGroupAjaxDeleteView(G3WAjaxDeleteViewMixin, G3WRequestViewMixin, Singl
 
 # mappging user main role and group role
 MAPPING_USER_ROLE_GROUP_ROLE = {
-    G3W_EDITOR1: 'editor',
-    G3W_EDITOR2: 'editor',
-    G3W_VIEWER1: 'viewer',
-    G3W_VIEWER2: 'viewer'
+    G3W_EDITOR1: ['editor', 'viewer'],
+    G3W_EDITOR2: ['editor', 'viewer'],
+    G3W_VIEWER1: ['viewer'],
+    G3W_VIEWER2: ['viewer']
 }
 
 
 class UserGroupByUserRoleView(View):
     """
-    Return User Groups editor and viwer by user roles
+    Return User Groups editor and viewer by user roles
+    Editor user: editor and viewer user groups
+    Viewer user: only viewer user groups
     """
 
     def post(self, *args, **kwargs):
         user_roles = Group.objects.filter(pk__in=self.request.POST.getlist('roles[]'))
         current_user_groups = User.objects.get(pk=self.request.POST['user_id']).groups.all() \
             if self.request.POST['user_id'] else []
-        group_roles = []
+        group_roles = set()
         for user_role in user_roles:
-            if MAPPING_USER_ROLE_GROUP_ROLE[user_role.name] not in group_roles:
-                group_roles.append(MAPPING_USER_ROLE_GROUP_ROLE[user_role.name])
+            group_roles |= set(MAPPING_USER_ROLE_GROUP_ROLE[user_role.name])
 
+        group_roles = list(group_roles)
         user_groups = get_objects_for_user(self.request.user, 'auth.change_group', Group).order_by('name')\
             .filter(grouprole__role__in=group_roles)
 
