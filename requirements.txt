@@ -4,7 +4,6 @@ django-formtools==2.0
 django-crispy-forms==1.6.1
 django-extensions==1.8.0
 django-file-form==0.2.3
-django-filter==1.0.4
 django-guardian==1.4.8
 django-model-utils==3.0.0
 django-sitetree==1.8.0
