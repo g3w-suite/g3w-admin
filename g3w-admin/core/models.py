@@ -99,8 +99,30 @@ class MacroGroup(TimeStampedModel, OrderedModel):
         _('Slug'), populate_from='title', unique=True, always_update=True
     )
 
+    class Meta:
+        permissions = (
+            ('view_macrogroup', 'Can view macro group maps'),
+        )
+
     def __unicode__(self):
         return self.title
+
+    def _permissions_to_editors(self, users_id, mode='add'):
+
+        for user_id in users_id:
+            setPermissionUserObject(User.objects.get(pk=user_id), self, permissions='view_macrogroup', mode=mode)
+
+    def add_permissions_to_editors(self, users_id):
+        """
+        Give guardian permissions to Editors
+        """
+        self._permissions_to_editors(users_id, 'add')
+
+    def remove_permissions_to_editors(self, users_id):
+        """
+        Remove guardian permissions to Editors
+        """
+        self._permissions_to_editors(users_id, 'remove')
 
 
 class Group(TimeStampedModel, OrderedModel):

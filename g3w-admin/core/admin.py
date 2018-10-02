@@ -39,7 +39,7 @@ class GroupAdmin(GuardedModelAdmin):
 admin.site.register(Group, GroupAdmin)
 
 
-class MacroGroupAdmin(OrderedModelAdmin):
+class MacroGroupAdmin(GuardedModelAdmin, OrderedModelAdmin):
     model = MacroGroup
 admin.site.register(MacroGroup, MacroGroupAdmin)
 

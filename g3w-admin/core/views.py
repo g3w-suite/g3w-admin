@@ -16,6 +16,8 @@ from guardian.decorators import permission_required
 from guardian.shortcuts import get_objects_for_user
 from usersmanage.mixins.views import G3WACLViewMixin
 from usersmanage.decorators import user_passes_test_or_403
+from usersmanage.utils import get_users_for_object
+from usersmanage.configs import G3W_EDITOR1
 from .forms import GroupForm, GeneralSuiteDataForm, MacroGroupForm
 from .models import Group, GroupProjectPanoramic, MapControl, GeneralSuiteData, MacroGroup
 from .mixins.views import G3WRequestViewMixin, G3WAjaxDeleteViewMixin, G3WAjaxSetOrderViewMixin
@@ -302,6 +304,12 @@ class MacroGroupUpdateView(UpdateView):
         # delete tempory file form files
         form.delete_temporary_files()
         return res
+
+    def get_form_kwargs(self):
+        kwargs = super(MacroGroupUpdateView, self).get_form_kwargs()
+        editor_users = get_users_for_object(self.object, 'view_macrogroup', [G3W_EDITOR1])
+        kwargs['initial']['editor_users'] = [o.id for o in editor_users]
+        return kwargs
 
     def get_success_url(self):
         return reverse('macrogroup-list')
