@@ -2,6 +2,9 @@ from PIL import Image
 from django.forms import ValidationError
 from django.utils.translation import ugettext, ugettext_lazy as _
 from crispy_forms.layout import Div, HTML, Field
+from usersmanage.utils import userHasGroups
+from usersmanage.configs import G3W_EDITOR1
+
 
 def CheckIsAnImage(name,file):
     try:
@@ -47,7 +50,7 @@ def crispyBoxMacroGroups(form, **kwargs):
     :return: Crispy form layout object
     """
 
-    if form.request.user.is_superuser:
+    if form.request.user.is_superuser or userHasGroups(form.request.user, [G3W_EDITOR1]):
         return Div(
                     Div(
                         Div(

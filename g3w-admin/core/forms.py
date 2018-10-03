@@ -9,8 +9,9 @@ from django.contrib.auth.models import User
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Div, Submit, HTML, Button, Row, Field
 from crispy_forms.bootstrap import AppendedText, PrependedText
+from guardian.shortcuts import get_objects_for_user
 from .utils.forms import crispyBoxMacroGroups
-from usersmanage.utils import get_fields_by_user, crispyBoxACL, userHasGroups
+from usersmanage.utils import get_fields_by_user, crispyBoxACL, userHasGroups, get_users_for_object
 from usersmanage.forms import G3WACLForm, UsersChoiceField
 from core.mixins.forms import *
 from usersmanage.configs import *
@@ -22,6 +23,12 @@ class GroupForm(FileFormMixin, G3WFormMixin, G3WRequestFormMixin, G3WACLForm, Mo
 
     def __init__(self, *args, **kwargs):
         super(GroupForm, self).__init__(*args, **kwargs)
+
+        # add MacroGroups by users
+        self.fields['macrogroups'].queryset = get_objects_for_user(self.request.user, 'view_macrogroup',
+                                                                        MacroGroup)
+
+
         self.helper = FormHelper(self)
         self.helper.form_tag = False
         self.helper.layout = Layout(
