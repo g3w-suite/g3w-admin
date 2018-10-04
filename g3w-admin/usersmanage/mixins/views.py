@@ -1,4 +1,6 @@
-from usersmanage.utils import get_users_for_object, get_groups_for_object
+from django.contrib.auth.models import User
+from guardian.shortcuts import get_objects_for_user
+from usersmanage.utils import get_users_for_object, get_groups_for_object, userHasGroups
 from usersmanage.configs import *
 
 
@@ -21,8 +23,15 @@ class G3WACLViewMixin(object):
                 kwargs['initial']['editor_user'] = editor_users[0].id
 
         # get viewer users
+        editor1_viewers = None
+        if userHasGroups(self.request.user, [G3W_EDITOR1]):
+            editor1_viewers = get_objects_for_user(self.request.user, 'auth.change_user', User) \
+                .filter(groups__name__in=[G3W_VIEWER1, G3W_VIEWER2])
         viewers = get_users_for_object(self.object, self.viewer_permission, [G3W_VIEWER1, G3W_VIEWER2],
                                        with_anonymous=True)
+
+        if editor1_viewers:
+            viewers = list(set(editor1_viewers).intersection(set(viewers)))
 
         # get only user id and check if user is group or project editor
         kwargs['initial']['viewer_users'] = [o.id for o in viewers if o.id != editor_user_pk]
