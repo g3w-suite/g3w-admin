@@ -170,13 +170,14 @@ class G3WACLForm(forms.Form):
 
         #add permission view_group to Viewer
         # check per and change situation
-        currentViewerUsers = [o.id for o in self.cleaned_data['viewer_users']]
-        toRemove = list(set(self.initial_viewer_users) - set(currentViewerUsers))
-        toAdd = list(set(currentViewerUsers) - set(self.initial_viewer_users))
-        if hasattr(self.instance, 'addPermissionsToViewers'):
-            self.instance.addPermissionsToViewers(toAdd)
-        if hasattr(self.instance, 'removePermissionsToViewers'):
-            self.instance.removePermissionsToViewers(toRemove)
+        if 'viewer_users' in self.cleaned_data:
+            currentViewerUsers = [o.id for o in self.cleaned_data['viewer_users']]
+            toRemove = list(set(self.initial_viewer_users) - set(currentViewerUsers))
+            toAdd = list(set(currentViewerUsers) - set(self.initial_viewer_users))
+            if hasattr(self.instance, 'addPermissionsToViewers'):
+                self.instance.addPermissionsToViewers(toAdd)
+            if hasattr(self.instance, 'removePermissionsToViewers'):
+                self.instance.removePermissionsToViewers(toRemove)
 
         # for user_groups editor and viewer
         if 'editor_user_groups' in self.cleaned_data:
@@ -188,13 +189,14 @@ class G3WACLForm(forms.Form):
             if hasattr(self.instance, 'remove_permissions_to_editor_user_groups'):
                 self.instance.remove_permissions_to_editor_user_groups(to_remove)
 
-        current_viewer_user_groups = [o.id for o in self.cleaned_data['viewer_user_groups']]
-        to_remove = list(set(self.initial_viewer_user_groups) - set(current_viewer_user_groups))
-        to_add = list(set(current_viewer_user_groups) - set(self.initial_viewer_user_groups))
-        if hasattr(self.instance, 'add_permissions_to_viewer_user_groups'):
-            self.instance.add_permissions_to_viewer_user_groups(to_add)
-        if hasattr(self.instance, 'remove_permissions_to_viewer_user_groups'):
-            self.instance.remove_permissions_to_viewer_user_groups(to_remove)
+        if 'viewer_user_groups' in  self.cleaned_data:
+            current_viewer_user_groups = [o.id for o in self.cleaned_data['viewer_user_groups']]
+            to_remove = list(set(self.initial_viewer_user_groups) - set(current_viewer_user_groups))
+            to_add = list(set(current_viewer_user_groups) - set(self.initial_viewer_user_groups))
+            if hasattr(self.instance, 'add_permissions_to_viewer_user_groups'):
+                self.instance.add_permissions_to_viewer_user_groups(to_add)
+            if hasattr(self.instance, 'remove_permissions_to_viewer_user_groups'):
+                self.instance.remove_permissions_to_viewer_user_groups(to_remove)
 
 
 class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreationForm):

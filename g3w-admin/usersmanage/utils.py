@@ -2,8 +2,8 @@ from django.conf import settings
 from django.contrib.auth.models import Permission, User
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
-from guardian.shortcuts import get_users_with_perms, assign_perm, remove_perm, get_group_perms, get_groups_with_perms, \
-    get_perms
+from guardian.shortcuts import get_users_with_perms, assign_perm, remove_perm, get_groups_with_perms, \
+    get_perms, get_objects_for_user
 from guardian.models import UserObjectPermission
 from guardian.compat import get_user_model
 from crispy_forms.layout import Div, HTML, Field
@@ -60,9 +60,11 @@ def get_fields_by_user(user, form, **kwargs):
         if 'editor_user' in fields:
             del(fields[fields.index('editor_user')])
 
-        del (form.fields['editor_user_groups'])
-        if 'editor_user_groups' in fields:
-            del (fields[fields.index('editor_user_groups')])
+        if not userHasGroups(user, [G3W_EDITOR1]):
+            for field_to_remove in ['viewer_users', 'editor_user_groups', 'viewer_user_groups']:
+                del (form.fields[field_to_remove])
+                if field_to_remove in fields:
+                    del (fields[fields.index(field_to_remove)])
     else:
 
         # if not required edit_user
@@ -243,3 +245,31 @@ def get_roles(user):
     :return:
     """
     return user.groups.filter(name__in=[G3W_EDITOR1, G3W_EDITOR2, G3W_VIEWER1, G3W_VIEWER2])
+
+
+def get_viewers_for_object(object, user, permissions, with_anonymous=True):
+    """
+    Return viewers user by permission on object and by current g3w-suite user
+    :param object: object to check permission
+    :param user: current g3w-suite user in session
+    :param permissions: permission to check
+    :param with_anonymous: if add anonymous user to viewers list
+    :return: viewers boject list
+    """
+
+    editor1_viewers = None
+    if userHasGroups(user, [G3W_EDITOR1]):
+        editor1_viewers = get_objects_for_user(user, 'auth.change_user', User) \
+            .filter(groups__name__in=[G3W_VIEWER1, G3W_VIEWER2])
+        if with_anonymous:
+            editor1_viewers |= User.objects.filter(pk=get_user_model().get_anonymous().pk)
+    viewers = get_users_for_object(object, permissions, [G3W_VIEWER1, G3W_VIEWER2],
+                                   with_anonymous=with_anonymous)
+
+    if editor1_viewers:
+        viewers = list(set(editor1_viewers).intersection(set(viewers)))
+
+    if user in viewers:
+        viewers.remove(user)
+
+    return viewers
