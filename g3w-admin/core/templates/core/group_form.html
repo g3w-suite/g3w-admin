@@ -25,10 +25,10 @@
             <div class="box-header">
                 <h3 class="box-title">
                     {% include 'core/include/add_project.html' %}
-                    <a href="{% url 'project-list' object.slug %}">{{ object.getProjectsNumber }} {% trans 'Projects' %}</a>
                 </h3>
             </div>
             <div class="box-body">
+                {% trans 'Current' %} <a href="{% url 'project-list' object.slug %}">{{ object.getProjectsNumber }} {% trans 'Projects' %}</a>
             </div>
         </div>
     </div>
