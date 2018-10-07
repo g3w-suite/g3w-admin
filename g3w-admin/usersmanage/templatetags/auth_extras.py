@@ -9,7 +9,13 @@ register = template.Library()
 
 
 @register.filter(name='has_group') 
-def has_group(user, group_name): 
+def has_group(user, group_name):
+    """
+    Check if user object has a group/role
+    :param user:
+    :param group_name:
+    :return:
+    """
     group = Group.objects.get(name=group_name) 
     return True if group in user.groups.all() else False
 

@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.contrib.auth.models import Permission, User
+from django.contrib.auth.models import Permission, User, Group as AuthGroup
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
 from guardian.shortcuts import get_users_with_perms, assign_perm, remove_perm, get_groups_with_perms, \
@@ -115,11 +115,12 @@ def get_users_for_object(object, permission, group = None, with_anonymous = Fals
     return result
 
 
-def get_groups_for_object(object, permission):
+def get_groups_for_object(object, permission, grouprole=None):
     """
     Returns list of groups(worn:not QuerySet) with specific permission for this object
-    :param obejct: model object to check permission
+    :param object: model object to check permission
     :param permission: permission string
+    :param grouprole: role of the group
     """
 
     anyperm = get_groups_with_perms(object, attach_perms=True)
@@ -128,14 +129,19 @@ def get_groups_for_object(object, permission):
     result = []
     for group, perms in anyperm.iteritems():
         if set(permission).intersection(set(perms)):
-            result.append(group)
+            if grouprole and hasattr(group, 'grouprole'):
+                if group.grouprole.role == grouprole:
+                    result.append(group)
+            else:
+                result.append(group)
 
     return result
 
 
-def get_users_with_perms_for_group(obj, attach_perms=False, with_superusers=False,
-        with_group_users=True,permission=None,group=None):
-    return get_users_with_perms(obj, attach_perms=attach_perms, with_superusers=with_superusers,with_group_users=with_group_users).filter(groups__name=group)
+def get_users_with_perms_for_group(obj, attach_perms=False, with_superusers=False, with_group_users=True,
+                                   permission=None, group=None):
+    return get_users_with_perms(obj, attach_perms=attach_perms, with_superusers=with_superusers,
+                                with_group_users=with_group_users).filter(groups__name=group)
 
 
 def setPermissionUserObject(user, object, permissions=[], mode='add'):
@@ -273,3 +279,26 @@ def get_viewers_for_object(object, user, permissions, with_anonymous=True):
         viewers.remove(user)
 
     return viewers
+
+
+def get_user_groups_for_object(object, user, permission, grouprole=None):
+    """
+    Return editors o viewers user groups for object by user
+    :param object: object to check permission
+    :param user: current g3w-suite user in session
+    :param permissions: permission to check
+    :param with_anonymous: if add anonymous user to viewers list
+    :return: viewers boject list
+    """
+
+    editor1_user_groups = None
+    if userHasGroups(user, [G3W_EDITOR1]):
+        editor1_user_groups = get_objects_for_user(user, 'auth.change_group',
+            AuthGroup).order_by('name').filter(grouprole__role=grouprole)
+
+    user_groups = get_groups_for_object(object, permission, grouprole=grouprole)
+
+    if editor1_user_groups:
+        user_groups = list(set(editor1_user_groups).intersection(set(user_groups)))
+
+    return user_groups

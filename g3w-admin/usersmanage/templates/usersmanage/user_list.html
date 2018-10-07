@@ -26,12 +26,13 @@
                     <tr>
                         <th style="width:120px">{% trans 'Actions' %}</th>
                         <th>{% trans 'Username' %}</th>
-                        {% if user.is_superuser %}
+                        {% if user.is_superuser or user|has_group:G3W_EDITOR1 %}
                         <th>{% trans 'Roles' %}</th>
                         <th>{% trans 'User groups' %}</th>
-                        <th>{% trans 'Superuser' %}</th>
                         {% endif %}
+
                         {% if user.is_staff and user.is_superuser %}
+                        <th>{% trans 'Superuser' %}</th>
                         <th>{% trans 'Staff' %}</th>
                         {% endif %}
                         <th class="hidden-sm hidden-xs">Email</th>
@@ -64,7 +65,8 @@
                             </span>
                         </td>
                         <td>{{ object.username }}</td>
-                        {% if user.is_superuser %}
+
+                        {% if user.is_superuser or user|has_group:G3W_EDITOR1 %}
                         <td>
                         {% get_roles4user object as group_roles %}
                         {% for group in group_roles %}
@@ -81,13 +83,14 @@
                             <span class="label label-warning">{{ user_group }}</span>
                         {% endfor %}
                         </td>
+                        {% endif %}
+
+                        {% if user.is_staff and user.is_superuser %}
                         <td>
                         {% if object.is_superuser %}
                             <span class="fa fa-check-circle" style="color: orange"></span>
                         {% endif %}
                         </td>
-                        {% endif %}
-                        {% if user.is_staff and user.is_superuser %}
                         <td>
                         {% if object.is_staff %}
                             <span class="fa fa-check-circle" style="color: orange"></span>

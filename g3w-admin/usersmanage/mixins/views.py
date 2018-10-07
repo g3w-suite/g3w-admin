@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from guardian.shortcuts import get_objects_for_user
-from usersmanage.utils import get_users_for_object, get_groups_for_object, userHasGroups, get_viewers_for_object
+from usersmanage.utils import get_users_for_object, get_groups_for_object, userHasGroups, get_viewers_for_object, get_user_groups_for_object
 from usersmanage.configs import *
 
 
@@ -29,9 +29,10 @@ class G3WACLViewMixin(object):
         kwargs['initial']['viewer_users'] = [o.id for o in viewers if o.id != editor_user_pk]
 
         # get initial editor user_groups
-        group_editors = get_groups_for_object(self.object, self.editor_permission)
+        group_editors = get_user_groups_for_object(self.object, self.request.user, self.editor_permission, 'editor')
         kwargs['initial']['editor_user_groups'] = [o.id for o in group_editors]
-        group_viewers = get_groups_for_object(self.object, self.viewer_permission)
+
+        group_viewers = get_user_groups_for_object(self.object, self.request.user, self.viewer_permission, 'viewer')
         kwargs['initial']['viewer_user_groups'] = [o.id for o in group_viewers]
 
         return kwargs

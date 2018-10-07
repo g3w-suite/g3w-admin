@@ -14,7 +14,11 @@
   <div class="login-box-body">
     <p class="login-box-msg">{%  trans 'Sign in to start your session' %}</p>
       {% if form.errors %}
+      <div class="alert alert-danger alert-dismissible">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+        <h4><i class="icon fa fa-ban"></i> {% trans 'LOGIN ERROR' %}!</h4>
         {% trans 'Username and/or password uncorrect' %}
+      </div>
       {% endif %}
     <form method="post">
       {% csrf_token %}
