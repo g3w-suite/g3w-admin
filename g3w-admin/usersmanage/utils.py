@@ -81,7 +81,7 @@ def get_fields_by_user(user, form, **kwargs):
     return toRet
 
 
-def get_users_for_object(object, permission, group = None, with_anonymous = False):
+def get_users_for_object(object, permission, group=None, with_anonymous = False, with_group_users=False):
     """
     Returns list of users(worn:not QuerySet) with specific permission for this object
     :param obejct: model object to check permission
@@ -92,7 +92,7 @@ def get_users_for_object(object, permission, group = None, with_anonymous = Fals
 
     anonymous_user = get_user_model().get_anonymous()
 
-    anyperm = get_users_with_perms(object, attach_perms=True)
+    anyperm = get_users_with_perms(object, attach_perms=True, with_group_users=with_group_users)
     if not isinstance(permission, list):
         permission = [permission]
     result = []

@@ -1,6 +1,11 @@
 {% load i18n %}
 {% load g3wadmin_tags %}
+{% if mode_btn %}
 <a href="#" data-widget-type="addProjectGroup" class="btn btn-info"><i class="ion ion-plus-circled"></i> {% trans 'Add project' %}</a>
+{% else %}
+<a href="#" data-widget-type="addProjectGroup">{% trans add_project_title %} <i class="ion ion-plus-circled"></i></a>
+{% endif %}
+
 <div class="hidden add-links">
   <p>{% trans 'Select project type do add:' %}</p>
   {% for app in SETTINGS.G3WADMIN_PROJECT_APPS %}

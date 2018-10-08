@@ -147,7 +147,7 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
 
         for group_id in groups_id:
             auth_group = AuthGroup.objects.get(pk=group_id)
-            setPermissionUserObject(auth_group, self, permissions='qdjango.view_project', mode=mode)
+            setPermissionUserObject(auth_group, self, permissions='view_project', mode=mode)
 
             # if viewer not has permission on group give permission only view on parent group
             if 'view_group' not in get_perms(auth_group, self.group):

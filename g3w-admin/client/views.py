@@ -35,7 +35,7 @@ class ClientView(TemplateView):
         self.project = Project.objects.get(pk=kwargs['project_id']) if 'project_id' in kwargs else \
             Project.objects.get(slug=kwargs['project_slug'])
 
-        grant_users = get_users_for_object(self.project, "view_project")
+        grant_users = get_users_for_object(self.project, "view_project", with_group_users=True)
 
         anonymous_user = get_user_model().get_anonymous()
 
