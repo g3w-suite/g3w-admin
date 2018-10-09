@@ -1,5 +1,6 @@
 from django.conf import settings
 from datetime import datetime
+from guardian.utils import get_anonymous_user
 from usersmanage.configs import *
 from core.signals import load_css_modules, load_js_modules, load_navbar_items
 from core.utils.general import get_adminlte_skin_by_user
@@ -15,6 +16,9 @@ def global_settings(request):
     g3wadmin_context['G3W_EDITOR2'] = G3W_EDITOR2
     g3wadmin_context['G3W_VIEWER1'] = G3W_VIEWER1
     g3wadmin_context['G3W_VIEWER2'] = G3W_VIEWER2
+
+    # add anonymous user istance
+    g3wadmin_context['anonymous_user'] = get_anonymous_user()
 
     skin = get_adminlte_skin_by_user(request.user)
     g3wadmin_context['adminlte_skin'] = 'skin-{}'.format(skin if skin else settings.ADMINLTE_SKIN_DEFAULT)
