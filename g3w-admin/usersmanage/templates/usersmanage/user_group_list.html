@@ -27,6 +27,7 @@
                         <th style="width:120px">{% trans 'Actions' %}</th>
                         <th>{% trans 'Name' %}</th>
                         <th>{% trans 'Role' %}</th>
+                        <th>{% trans 'Users' %}</th>
                     </tr>
                 </thead>
                 {% for object in object_list %}
@@ -54,6 +55,11 @@
                             {% else %}
                             <span class="label label-danger">{{ object.grouprole.role|upper }}</span>
                             {% endif %}
+                        </td>
+                        <td>{% get_users4groups user object as users %}
+                            {% for u in users %}
+                            <a href="{% url 'user-update' u.pk %}">{{ u.first_name }} {{ u.last_name }} ({{ u }})</a> {% if not forloop.last %} | {% endif %}
+                            {% endfor %}
                         </td>
                     </tr>
 

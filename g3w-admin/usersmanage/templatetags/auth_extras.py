@@ -3,7 +3,7 @@ from django import template
 from django.contrib.auth.models import Group
 from guardian.utils import get_user_model
 from guardian.exceptions import NotUserNorGroup
-from usersmanage.utils import get_perms_by_user_backend, get_user_groups, get_roles
+from usersmanage.utils import get_perms_by_user_backend, get_user_groups, get_roles, get_objects_for_user, User
 
 register = template.Library()
 
@@ -85,3 +85,16 @@ def get_roles4user(user):
     :return:
     """
     return get_roles(user)
+
+
+@register.simple_tag
+def get_users4groups(current_user, users_group):
+    """
+    Get users for users_groups filter by own users
+    :param user:
+    :return:
+    """
+
+    return list(set(users_group.user_set.all()).intersection(
+        set(get_objects_for_user(current_user, 'auth.change_user', User).order_by('username'))))
+

@@ -237,7 +237,7 @@ def get_perms_by_user_backend(user, obj):
 
 def get_user_groups(user):
     """
-    return user gorups for user instance
+    return user groups for user instance
     :param user:
     :return:
     """
@@ -246,7 +246,7 @@ def get_user_groups(user):
 
 def get_roles(user):
     """
-    return user gorups for user instance
+    return user groups for user instance
     :param user:
     :return:
     """
