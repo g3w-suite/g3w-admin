@@ -91,7 +91,7 @@ class QgisProjectTest(TestCase):
                 self.assertEqual(layer.title, u'countries_simpl')
                 self.assertEqual(layer.name, u'countries_simpl')
                 self.assertEqual(layer.layerType, u'ogr')
-                self.assertEqual(layer.minScale, 1000000)
+                self.assertEqual(layer.minScale, 100000000)
                 self.assertEqual(layer.maxScale, 0)
 
 """                

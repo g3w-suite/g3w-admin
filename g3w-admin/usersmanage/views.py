@@ -149,7 +149,7 @@ class UserGroupUpdateView(G3WRequestViewMixin, UpdateView):
     model = Group
     template_name = 'usersmanage/user_group_form.html'
 
-    @method_decorator(permission_required('auth.change_group', raise_exception=True))
+    @method_decorator(permission_required_or_403('auth.change_group', (Group, 'pk', 'pk')))
     def dispatch(self, *args, **kwargs):
         return super(UserGroupUpdateView, self).dispatch(*args, **kwargs)
 
