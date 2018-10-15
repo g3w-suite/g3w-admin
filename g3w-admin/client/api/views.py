@@ -49,7 +49,7 @@ class ClientConfigApiView(APIView):
             if data:
                 update_serializer_data(ps_data, data)
 
-        return Response(ps.data)
+        return Response(ps_data)
 
 
 class ClientSearchApiView(APIView):

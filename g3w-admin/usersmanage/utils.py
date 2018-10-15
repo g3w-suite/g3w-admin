@@ -43,12 +43,15 @@ def userHasGroups(user, groupsToFind, strict=False):
     groupsIntersect = list(set.intersection(set(userGroups), set(groupsToFind)))
 
     if strict:
-        return groupsIntersect == groupsIntersect
+        return groupsIntersect == groupsToFind
     else:
         return len(groupsIntersect) > 0
 
 
 def get_fields_by_user(user, form, **kwargs):
+    """
+    Filter form ACL fields by user main role
+    """
     fields = [
         'editor_user',
         'viewer_users',

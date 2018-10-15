@@ -118,7 +118,7 @@ class G3WACLForm(forms.Form):
 
         # get only viewer not current object editor
         filters = []
-        if kwargs['initial'].has_key('editor_user'):
+        if kwargs.has_key('initial') and kwargs['initial'].has_key('editor_user'):
             filters.append(~Q(pk=kwargs['initial']['editor_user']))
         if userHasGroups(self.request.user, [G3W_EDITOR1]):
             filters.append(~Q(pk=self.request.user.pk))
@@ -129,15 +129,15 @@ class G3WACLForm(forms.Form):
         self.fields['viewer_users'].queryset = queryset.order_by('last_name')
 
     def _init_users(self, **kwargs):
-        if kwargs['initial'].has_key('viewer_users'):
+        if kwargs.has_key('initial') and kwargs['initial'].has_key('viewer_users'):
             self.initial_viewer_users = kwargs['initial']['viewer_users']
-        if kwargs['initial'].has_key('editor_user'):
+        if kwargs.has_key('initial') and kwargs['initial'].has_key('editor_user'):
             self.initial_editor_user = kwargs['initial']['editor_user']
 
     def _init_user_groups(self, **kwargs):
-        if kwargs['initial'].has_key('viewer_user_groups'):
+        if kwargs.has_key('initial') and kwargs['initial'].has_key('viewer_user_groups'):
             self.initial_viewer_user_groups = kwargs['initial']['viewer_user_groups']
-        if kwargs['initial'].has_key('editor_user_groups'):
+        if kwargs.has_key('initial') and kwargs['initial'].has_key('editor_user_groups'):
             self.initial_editor_user_groups = kwargs['initial']['editor_user_groups']
 
     def _set_user_groups_queryset(self):

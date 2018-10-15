@@ -22,6 +22,8 @@ def update_serializer_data(serializer_data, data):
     if data['operation_type'] == 'update':
         to_update = serializer_data[data['update_path']] if 'update_path' in data else serializer_data
         to_update.update(data['values'])
+    elif data['operation_type'] == 'replace':
+        serializer_data[data['replace_path']] = data['values']
     elif data['operation_type'] == 'append':
         if 'append_path' in data:
             if isinstance(data['append_path'], list):
