@@ -1,8 +1,12 @@
 from django.test import TestCase, RequestFactory
-from usersmanage.models import User, Group
+from guardian.shortcuts import assign_perm
+from crispy_forms.layout import Field
+from usersmanage.models import User, AuthGroup
 from usersmanage.configs import *
 from usersmanage.utils import *
 from core.forms import GroupForm
+from core.models import Group
+import copy
 
 
 class UsersManageTest(TestCase):
@@ -31,6 +35,9 @@ class UsersManageTest(TestCase):
         self.user_viewer2 = User.objects.create_user(username="viewer2", email="viewer2@test.com", password="test")
         self.group_viewer2 = Group.objects.get(name=G3W_VIEWER2)
         self.group_viewer2.user_set.add(self.user_viewer2)
+
+        # create a map group test
+        self.group_test = Group(name='Test', title='Test')
 
     def tearDown(self):
         self.user_admin01.delete()
@@ -79,24 +86,30 @@ class UsersManageTest(TestCase):
         self.group_viewer2.user_set.remove(self.user_editor1)
 
 
-    def test_get_fields_by_user(self):
+    def __test_get_fields_by_user(self):
+
+        fields = [
+            'editor_user',
+            'viewer_users',
+            'editor_user_groups',
+            'viewer_user_groups'
+        ]
 
         request = self.factory.request()
-        request.user = self.user_admin01
+        for u in ('user_admin01', 'user_admin02', 'user_editor1', 'user_editor2'):
+            request.user = getattr(self, u)
 
-        core_form_group = GroupForm(**{'request': request})
+            core_form_group = GroupForm(**{'request': request})
 
-        filtered_fields = get_fields_by_user(request.user, core_form_group)
+            filtered_fields = map(lambda f: f.get_field_names()[0][1], get_fields_by_user(request.user, core_form_group))
 
-        fields = {
-            'editor_user': core_form_group.fields['editor_user'],
-            'viewer_users': core_form_group.fields['viewer_users'],
-            'editor_user_groups': core_form_group.fields['editor_user_groups'],
-            'viewer_user_groups': core_form_group.fields['viewer_user_groups']
-        }
+            self.assertTrue(filtered_fields == fields)
 
-        print filtered_fields
+            del(core_form_group)
 
-        self.assertTrue(filtered_fields == fields.values())
+
+    def get_set_permission_user_object(self):
+
+
 
 
