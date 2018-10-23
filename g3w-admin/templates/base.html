@@ -14,7 +14,11 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <title>{{ SETTINGS.SITE_TITLE }}</title>
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    {% if SETTINGS.G3WSUITE_CUSTOM_STATIC_URL and SETTINGS.G3WSUITE_FAVICON %}
+    <link rel="icon" href="{{ SETTINGS.G3WSUITE_FAVICON }}">
+    {% else %}
     <link rel="icon" href="{% static '/img/favicon.ico' %}">
+    {% endif %}
     <!-- Pace -->
     <script src="{% static "bower_components/pace/pace.min.js" %}"></script>
     {% if SETTINGS.DEBUG %}
