@@ -25,6 +25,8 @@ def global_settings(request):
 
     g3wadmin_context['adminlte_layout_option'] = settings.ADMINLTE_LAYOUT_OPTION
 
+    g3wadmin_context['powerd_by'] = settings.G3WSUITE_POWERD_BY
+
     # add date current time
     g3wadmin_context['today'] = datetime.today()
 

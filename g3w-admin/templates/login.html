@@ -9,7 +9,13 @@
 {% block body_content %}
  <div class="login-box">
   <div class="login-logo">
-    <span class="logo-lg"><img src="{% static SETTINGS.G3WSUITE_LOGIN_LOGO %}"></span>
+    <span class="logo-lg">
+        {% if SETTINGS.G3WSUITE_CUSTOM_STATIC_URL %}
+            <img src="{{ SETTINGS.G3WSUITE_LOGIN_LOGO   }}">
+        {% else %}
+            <img src="{% static SETTINGS.G3WSUITE_LOGIN_LOGO %}">
+        {% endif %}
+    </span>
   </div><!-- /.login-logo -->
   <div class="login-box-body">
     <p class="login-box-msg">{%  trans 'Sign in to start your session' %}</p>

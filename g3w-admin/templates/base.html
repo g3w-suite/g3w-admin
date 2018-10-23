@@ -88,6 +88,13 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <link rel="stylesheet" type="text/css" href="{% static css %}" />
     {% endfor %}
 
+    {% if SETTINGS.G3WSUITE_CUSTOM_STATIC_URL %}
+    {% for css in SETTINGS.G3WSUITE_CUSTOM_CSS %}
+    <link rel="stylesheet" type="text/css" href="{{ css }}" />
+    {% endfor %}
+    {% endif %}
+
+
     {% if analytics_js_code %}
         {{ analytics_js_code|safe }}
     {% endif %}
@@ -121,11 +128,19 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
         <!-- Logo -->
         <a href="#" class="logo">
-          <!-- mini logo for sidebar mini 50x50 pixels -->
-          <span class="logo-mini"><img src="{% static SETTINGS.G3WSUITE_RID_LOGO %}"></span>
-          <!-- logo for regular state and mobile devices -->
-          <!--<span class="logo-lg"><b>G3W-A</b>dmin</span>-->
-          <span class="logo-lg"><img src="{% static SETTINGS.G3WSUITE_MAIN_LOGO %}"></span>
+          {% if SETTINGS.G3WSUITE_CUSTOM_STATIC_URL %}
+              <!-- mini logo for sidebar mini 50x50 pixels -->
+              <span class="logo-mini"><img src="{{ SETTINGS.G3WSUITE_RID_LOGO }}"></span>
+              <!-- logo for regular state and mobile devices -->
+              <!--<span class="logo-lg"><b>G3W-A</b>dmin</span>-->
+              <span class="logo-lg"><img src="{{ SETTINGS.G3WSUITE_MAIN_LOGO }}"></span>
+          {% else %}
+              <!-- mini logo for sidebar mini 50x50 pixels -->
+              <span class="logo-mini"><img src="{% static SETTINGS.G3WSUITE_RID_LOGO %}"></span>
+              <!-- logo for regular state and mobile devices -->
+              <!--<span class="logo-lg"><b>G3W-A</b>dmin</span>-->
+              <span class="logo-lg"><img src="{% static SETTINGS.G3WSUITE_MAIN_LOGO %}"></span>
+          {% endif %}
         </a>
 
         <!-- Header Navbar -->
@@ -211,7 +226,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
         {% endblock %}
         </div>
         <!-- Default to the left -->
-        <strong>Copyright &copy; 2015 - {{ today.year }} <a href="http://www.gis3w.it">GIS3W</a>.</strong> All rights reserved.
+        <strong>Copyright &copy; 2015 - {{ today.year }} {% if powerd_by %}<a href="http://www.gis3w.it">GIS3W</a>.</strong>{% endif %} All rights reserved.
+
       </footer>
       {% include 'include/sidebar_right.html' %}
     </div><!-- ./wrapper -->
@@ -303,7 +319,11 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <script src="{% static js_module %}"></script>
     {% endfor %}
 
-
+    {% if SETTINGS.G3WSUITE_CUSTOM_STATIC_URL %}
+    {% for js in SETTINGS.G3WSUITE_CUSTOM_JS %}
+    <script src="{{ js }}"></script>
+    {% endfor %}
+    {% endif %}
 
     <!-- coockieconset -->
     <script type="text/javascript" src="{% static 'bower_components/cookieconsent/build/cookieconsent.min.js' %}"></script>
