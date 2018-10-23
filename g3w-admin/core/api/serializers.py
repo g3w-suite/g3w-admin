@@ -151,6 +151,10 @@ class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
             if dataPlugin[1]:
                 ret['plugins'] = copy(ret['plugins'])
                 ret['plugins'].update(dataPlugin[1])
+
+        # powerd_by
+        ret['powered_by'] = settings.G3WSUITE_POWERD_BY
+
         return ret
 
     class Meta:
