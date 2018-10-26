@@ -53,4 +53,6 @@ def global_settings(request):
 
     g3wadmin_context['VERSION'] = get_version()
 
+    g3wadmin_context['admin_page_title'] = getattr(settings, 'G3WSUITE_CUSTOM_TITLE', settings.SITE_TITLE)
+
     return g3wadmin_context

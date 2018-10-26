@@ -11,7 +11,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>{{ SETTINGS.SITE_TITLE }}</title>
+    <title>{{ admin_page_title }}</title>
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     {% if SETTINGS.G3WSUITE_CUSTOM_STATIC_URL and SETTINGS.G3WSUITE_FAVICON %}
@@ -223,6 +223,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
       <!-- Main Footer -->
       <footer class="main-footer">
+        {% if powerd_by %}
         <!-- To the right -->
         <div class="pull-right hidden-xs">
         {% block footer-right %}
@@ -230,8 +231,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
         {% endblock %}
         </div>
         <!-- Default to the left -->
-        <strong>Copyright &copy; 2015 - {{ today.year }} {% if powerd_by %}<a href="http://www.gis3w.it">GIS3W</a>.</strong>{% endif %} All rights reserved.
-
+        <strong>Copyright &copy; 2015 - {{ today.year }} <a href="http://www.gis3w.it">GIS3W</a>.</strong> All rights reserved.
+        {% endif %}
       </footer>
       {% include 'include/sidebar_right.html' %}
     </div><!-- ./wrapper -->
