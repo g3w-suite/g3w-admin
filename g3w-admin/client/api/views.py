@@ -91,6 +91,7 @@ class GroupConfigApiView(APIView):
           "vectorurl": settings.VECTOR_URL,
           "group": groupSerializer.data,
           "g3wsuite_logo_img": settings.CLIENT_G3WSUITE_LOGO,
+          "credits": reverse('client-credits'),
           "main_map_title": generaldata.main_map_title
         }
 
