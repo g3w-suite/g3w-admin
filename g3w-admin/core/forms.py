@@ -286,6 +286,7 @@ class GeneralSuiteDataForm(FileFormMixin, ModelForm):
                         ),
                         Div(
                             'main_map_title',
+                            Field('credits', css_class='wys5', style="width:100%;"),
                             css_class='box-body',
 
                         ),

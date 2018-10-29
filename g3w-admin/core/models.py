@@ -396,6 +396,9 @@ class GeneralSuiteData(models.Model):
     suite_logo = models.ImageField(_('Suite logo'), null=True, blank=True)
     url_suite_logo = models.URLField(_('Suite logo URL'), null=True, blank=True)
 
+    # custom credits
+    credits = models.TextField(_('Credits'), null=True, blank=True)
+
     # data fro map client
     main_map_title = models.CharField(_('Main map title'), max_length=400, null=True, blank=True)
 
