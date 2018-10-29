@@ -91,7 +91,7 @@ class ClientView(TemplateView):
         # add baseUrl property
         contextData['group_config'] = 'var initConfig ={{ "staticurl":"{}", "client":"{}", ' \
                                       '"mediaurl":"{}", "user":{}, "group":{}, "baseurl":"{}", "vectorurl":"{}", ' \
-                                      '"main_map_title":{}, '"g3wsuite_logo_img"': "{}", '"credits"': "{}",' \
+                                      '"main_map_title":{}, '"g3wsuite_logo_img"': "{}", '"credits"': "{}"' \
                                       ' {} }}'.\
             format(settings.STATIC_URL, "{}/".format(settings.CLIENT_DEFAULT), settings.MEDIA_URL, user_data,
                     serializedGroup, baseurl, settings.VECTOR_URL,
