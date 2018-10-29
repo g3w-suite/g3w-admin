@@ -15,7 +15,7 @@ def protected_serve(request, path, document_root=None, show_indexes=False):
 urlpatterns = [
     url(r'^$', login_required(DashboardView.as_view()), name='home'),
 
-    url(r'^test/$', login_required(TestView.as_view()), name='test'),
+    #url(r'^test/$', login_required(TestView.as_view()), name='test'),
     #url(r'^404/$', NotFoundView.as_view(), name='404'),
 
     # macrogroups urls
@@ -44,6 +44,7 @@ urlpatterns = [
         name='project-list'),
 
     url(r'^generalsuitedata/$', login_required(GeneralSuiteDataUpdateView.as_view()), name='generaldata-update'),
+
 
 ]
 

@@ -4,7 +4,7 @@ from django.utils.translation import get_language
 from django.views.generic import TemplateView
 from django.template import loader
 from django.shortcuts import get_object_or_404
-from django.http import Http404, HttpResponseForbidden
+from django.http import Http404, HttpResponseForbidden, HttpResponse
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.contrib.auth.views import redirect_to_login
@@ -140,3 +140,11 @@ def user_media_view(request, project_type, layer_id, file_name, *args, **kwargs)
         return USERMEDIAHANDLER_CLASSES[project_type](layer=layer, file_name=file_name).send_file()
     else:
         return HttpResponseForbidden()
+
+
+def credits(request, * args, **kwargs):
+    """
+    Return custom credits from core
+    """
+
+    return HttpResponse(GeneralSuiteData.objects.get().credits)
