@@ -1,7 +1,12 @@
-from django.http import JsonResponse
+from django.conf import settings
+from django.http import JsonResponse, HttpResponseServerError
+from django.core.files import File
+from django.core.files.storage import default_storage
 from django.apps import apps
 from django.shortcuts import get_object_or_404
 from core.models import Group
+from core.utils import file_path_mime
+import os
 
 
 class G3WRequestViewMixin(object):
@@ -135,3 +140,48 @@ class G3WAjaxSetOrderViewMixin(object):
             self.model.objects.get(pk=gid.split('_')[1]).to(oindex + 1)
 
         return JsonResponse({'Saved': 'ok'})
+
+
+class G3WUploadFileViewMixin(object):
+    """
+    Mixin for general upload fle into g3wsuite, by users
+    """
+
+    sub_dir_upload = ''
+
+    def post(self, request, *args, **kwargs):
+
+        if not request.FILES:
+            return HttpResponseServerError('No FILES are uploaded!')
+
+        to_ret = {}
+
+        # get files
+        for file_field, file in request.FILES.items():
+            to_ret[file_field] = self.handle_file(file)
+
+        return JsonResponse(to_ret)
+
+    def handle_file(self, f):
+
+        # make a dir by user_id
+        media_dir = settings.MEDIA_ROOT
+        if self.sub_dir_upload:
+            sub_path_to_save = 'temp_uploads/{}/{}'.format(self.sub_dir_upload, str(self.request.user.pk))
+        else:
+            sub_path_to_save = 'temp_uploads/{}'.format(str(self.request.user.pk))
+
+        # add user id directory
+
+        path_to_save = '{}{}/'.format(settings.MEDIA_ROOT, sub_path_to_save);
+
+        if not os.path.isdir(path_to_save):
+            os.makedirs(path_to_save)
+
+        File(f)
+        path = default_storage.save('{}/{}'.format(sub_path_to_save, f.name), f)
+
+        return {
+            'value': '{}{}'.format(settings.MEDIA_URL, path),
+            'mime_type': file_path_mime('{}/{}'.format(path_to_save, f.name))
+        }
