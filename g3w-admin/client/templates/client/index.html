@@ -25,6 +25,12 @@
   {% else %}
     <link rel="icon" href="{% static '/img/favicon.ico' %}">
   {% endif %}
+
+   {% if SETTINGS.G3WSUITE_CUSTOM_STATIC_URL %}
+   {% for css in SETTINGS.G3WSUITE_CUSTOM_CSS %}
+   <link rel="stylesheet" type="text/css" href="{{ css }}" />
+   {% endfor %}
+   {% endif %}
 </head>
 <body class="hold-transition skin-{{ skin_class|default:'blue' }} fixed {% if sidebar_collapse %} sidebar-collapse {% endif %}" >
   <div id="app">
