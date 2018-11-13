@@ -112,4 +112,36 @@ class DatatablesFilterBackend(BaseFilterBackend):
         return queryset
 
 
+class SuggestFilterBackend(BaseFilterBackend):
 
+    def filter_queryset(self, request, queryset, view):
+
+        total_count = queryset.count()
+        # set the queryset count as an attribute of the view for later
+        # TODO: find a better way than this hack
+        setattr(view, '_datatables_total_count', total_count)
+
+        # parse query params
+        getter = request.query_params.get
+        suggest_value = getter('suggest')
+
+        # filter queryset
+        if suggest_value:
+
+            # get field and value
+            field, value = suggest_value.split('|')
+
+            if field and value:
+
+                q = Q(**{'{}__icontains'. format(field): value})
+
+                queryset = queryset.filter(q).distinct()
+                filtered_count = queryset.count()
+
+        else:
+            filtered_count = total_count
+        # set the queryset count as an attribute of the view for later
+        # TODO: maybe find a better way than this hack ?
+        setattr(view, '_datatables_filtered_count', filtered_count)
+
+        return queryset

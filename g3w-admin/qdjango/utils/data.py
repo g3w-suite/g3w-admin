@@ -398,7 +398,7 @@ class QgisProjectLayer(XmlData):
 
     def _getDataEditTypes(self):
         """
-        Get edtitypes for editing widget
+        Get edittypes for editing widget
         :return: dict
         """
         edittype_columns = dict()

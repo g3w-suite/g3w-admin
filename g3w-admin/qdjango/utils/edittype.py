@@ -1,6 +1,6 @@
 from django.urls import reverse
 import re
-from core.utils.structure import FORM_FIELD_TYPE_CHECK, FORM_FIELD_TYPE_SELECT
+from core.utils.structure import FORM_FIELD_TYPE_CHECK, FORM_FIELD_TYPE_SELECT, FORM_FIELD_TYPE_SELECT_AUTOCOMPLETE
 
 # add form input type based on qgis edittypes
 FORM_FIELD_TYPE_QGIS_DATETIME = 'datetimepicker'
@@ -117,6 +117,28 @@ class QgisEditTypeValueMap(QgisEditType):
         }
 
 
+class QgisEditTypeValueRelation(QgisEditTypeValueMap):
+    """
+    Class for Vluer relation and autocomplete.
+    """
+
+    field_type = FORM_FIELD_TYPE_SELECT_AUTOCOMPLETE
+
+    @property
+    def input_form(self):
+
+        input_form = super(QgisEditTypeValueRelation, self).input_form
+
+        # add params for get value
+        input_form['input']['options'].update({
+            'key': self.Key,
+            'value': self.Value,
+            'layer_id': self.Layer
+        })
+
+        return input_form
+
+
 class QgisEditTypeUniqueValue(QgisEditType):
     """
     Class to read unique_value edittype.
@@ -174,6 +196,7 @@ MAPPING_EDITTYPE_QGISEDITTYPE = {
     'Range': QgisEditTypeRange,
     'ValueMap': QgisEditTypeValueMap,
     'UniqueValues': QgisEditTypeUniqueValue,
-    'ExternalResource': QgisEditTypeExternalResource
+    'ExternalResource': QgisEditTypeExternalResource,
+    'ValueRelation': QgisEditTypeValueRelation
 }
 

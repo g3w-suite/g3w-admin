@@ -6,7 +6,7 @@ from core.utils.structure import mapLayerAttributesFromModel
 from core.utils.models import create_geomodel_from_qdjango_layer, get_geometry_column
 from core.utils.vector import BaseUserMediaHandler
 from core.api.permissions import ProjectPermission
-from core.api.filters import DatatablesFilterBackend
+from core.api.filters import DatatablesFilterBackend, SuggestFilterBackend
 from .utils.edittype import MAPPING_EDITTYPE_QGISEDITTYPE
 from .utils.data import QGIS_LAYER_TYPE_NO_GEOM
 from .api.serializers import QGISLayerSerializer, QGISGeoLayerSerializer
@@ -144,8 +144,9 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
 
     permission_classes = (ProjectPermission,)
 
-    filter_backends = (OrderingFilter, DatatablesFilterBackend)
+    filter_backends = (OrderingFilter, DatatablesFilterBackend, SuggestFilterBackend)
     ordering_fields = '__all__'
+
 
     # Modes call avilable
     modes_call_available = [
