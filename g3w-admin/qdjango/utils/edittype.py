@@ -131,8 +131,9 @@ class QgisEditTypeValueRelation(QgisEditTypeValueMap):
 
         # add params for get value
         input_form['input']['options'].update({
-            'key': self.Key,
-            'value': self.Value,
+            'key': self.Value,
+            'value': self.Key,
+            'usecompleter': True if self.UseCompleter == '1' else False,
             'layer_id': self.Layer
         })
 

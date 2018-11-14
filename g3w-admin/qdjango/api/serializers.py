@@ -301,8 +301,8 @@ class LayerSerializer(serializers.ModelSerializer):
         # add editable capability by signal
         # ----------------------------------
 
-        if capabilities == 0:
-            capabilities = None
+        #if capabilities == 0:
+        #    capabilities = None
 
         return capabilities
 
