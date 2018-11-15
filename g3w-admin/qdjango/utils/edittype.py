@@ -134,7 +134,8 @@ class QgisEditTypeValueRelation(QgisEditTypeValueMap):
             'key': self.Value,
             'value': self.Key,
             'usecompleter': True if self.UseCompleter == '1' else False,
-            'layer_id': self.Layer
+            'layer_id': self.Layer,
+            'loading': None
         })
 
         return input_form
