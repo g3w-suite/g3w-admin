@@ -23,6 +23,7 @@ import json
 
 MODE_DATA = 'data'
 MODE_CONFIG = 'config'
+MODE_SHP = 'shp'
 
 
 class G3WAPIResults(object):
@@ -421,6 +422,7 @@ class BaseVectorOnModelApiView(G3WAPIView):
             'pkField': self.metadata_layer.model._meta.pk.name
         }).as_dict())
 
+
     def set_reprojecting_status(self):
         """
         Check if data have to reproject
@@ -440,7 +442,7 @@ class BaseVectorOnModelApiView(G3WAPIView):
         # todo: make error message for mode call not in mode_call_avalilable
         if self.mode_call in self.modes_call_available:
             method = getattr(self, 'response_{}_mode'.format(self.mode_call))
-            method(request)
+            return method(request)
 
     def get_response(self, request, mode_call=None, project_type=None, layer_id=None, **kwargs):
 
@@ -452,11 +454,13 @@ class BaseVectorOnModelApiView(G3WAPIView):
         self.set_reprojecting_status()
 
         # get results
-        self.get_response_data(request)
+        response = self.get_response_data(request)
 
-
-        # response a APIVectorLayer
-        return Response(self.results.results)
+        if response is None:
+            # response a APIVectorLayer
+            return Response(self.results.results)
+        else:
+            return response
 
     def get(self, request, mode_call=None, project_type=None, layer_id=None, **kwargs):
 
