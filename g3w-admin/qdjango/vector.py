@@ -18,6 +18,7 @@ import subprocess
 import zipfile
 import StringIO
 import os
+import shutil
 
 MODE_WIDGET = 'widget'
 
@@ -311,7 +312,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
 
         process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         output, error = process.communicate()
-        if error:
+        if error and not error.startswith('Warning'):
             raise APIException(error)
 
         # buil on memeory zip file
@@ -330,12 +331,14 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         for fpath in filenames:
 
             # Add file, at correct path
-            zf.write('{}{}'.format(tmp_dir, fpath), fpath)
+            ftoadd = '{}{}'.format(tmp_dir, fpath)
+            if os.path.exists(ftoadd):
+                zf.write(ftoadd, fpath)
 
         # Must close zip for all contents to be written
         zf.close()
-        map(lambda f: os.remove('{}{}'.format(tmp_dir, f)), filenames)
-        os.rmdir(tmp_dir)
+        #map(lambda f: os.remove('{}{}'.format(tmp_dir, f)), filenames)
+        shutil.rmtree(tmp_dir)
 
         # Grab ZIP file from in-memory, make response with correct MIME-type
         response = HttpResponse(s.getvalue(), content_type="application/x-zip-compressed")
