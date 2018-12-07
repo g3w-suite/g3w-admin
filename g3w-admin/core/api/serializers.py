@@ -156,7 +156,7 @@ class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         ret['powered_by'] = settings.G3WSUITE_POWERD_BY
 
         # header customs links
-        header_custom_links = getattr(settings, 'G3W_CLIENT_HEADER_CUSTOM_LINKS')
+        header_custom_links = settings.get('G3W_CLIENT_HEADER_CUSTOM_LINKS')
         if header_custom_links:
             ret['header_custom_links'] = header_custom_links
 
