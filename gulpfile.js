@@ -43,7 +43,7 @@ gulp.task('font-summernote', function () {
       'g3w-admin/core/static/modules/summernote/font/*.{eot,ttf,woff,woff2}'
   ])
     .pipe(flatten())
-    .pipe(gulp.dest('g3w-admin/core/static/dist/font/'))
+    .pipe(gulp.dest('g3w-admin/core/static/dist/css/font/'))
 });
 
 gulp.task('default', ['build', 'icheck_png', 'fonts', 'font-summernote'], function(){
