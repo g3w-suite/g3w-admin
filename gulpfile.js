@@ -31,12 +31,22 @@ gulp.task('icheck_png', function () {
 });
 
 gulp.task('fonts', function () {
-  return gulp.src(['g3w-admin/core/static/bower_components/**/*.{eot,ttf,woff,woff2}'])
+  return gulp.src([
+      'g3w-admin/core/static/bower_components/**/*.{eot,ttf,woff,woff2}'
+  ])
     .pipe(flatten())
     .pipe(gulp.dest('g3w-admin/core/static/dist/fonts/'))
 });
 
-gulp.task('default', ['build', 'icheck_png', 'fonts'], function(){
+gulp.task('font-summernote', function () {
+  return gulp.src([
+      'g3w-admin/core/static/modules/summernote/font/*.{eot,ttf,woff,woff2}'
+  ])
+    .pipe(flatten())
+    .pipe(gulp.dest('g3w-admin/core/static/dist/css/font/'))
+});
+
+gulp.task('default', ['build', 'icheck_png', 'fonts', 'font-summernote'], function(){
     return del([
       'g3w-admin/core/static/dist/base.html'
     ]);
