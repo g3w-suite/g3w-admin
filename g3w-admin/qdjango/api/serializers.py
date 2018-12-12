@@ -402,7 +402,10 @@ class WidgetSerializer(serializers.ModelSerializer):
                     del(model)
 
                     field['input']['type'] = 'selectfield'
-                    field['input']['options']['values'] = [v[field['name']] for v in values]
+                    if 'dependance' not in field['input']['options']:
+                        field['input']['options']['values'] = [v[field['name']] for v in values]
+                    else:
+                        field['input']['options']['values'] = []
 
                 input = field['input']
                 input['options']['blanktext'] = field['blanktext']

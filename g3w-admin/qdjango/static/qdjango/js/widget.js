@@ -94,6 +94,12 @@ ga.Qdjango.widgetEditor = {
 				$.each($(".rightCol").find(".blocco"), function(i,v)
 				{
 					v = $(v);
+
+					var options = {};
+					var dependance = v.find(".cmpDependanceSelect").find("select").val();
+					if (dependance) {
+						options['dependance'] = dependance;
+					}
 					obj.fields.push({
 						name: v.find(".fieldSelect").find("select").val(), // NOME DEL CAMPO DB
 						label: v.find(".textInput").find("input").val(), // ETICHETTA DEL CAMPO DI RICERCA
@@ -102,10 +108,14 @@ ga.Qdjango.widgetEditor = {
 						widgettype: v.find(".widgetType").find("select").val(), // widgettype
 						input: {
 							type: that.getType(v.find(".fieldSelect").find("select").find("option:selected").data().type), // TIPO DI CAMPO //
-							options: {}
+							options: options
 						},
 					});
 				});
+
+
+
+
 				$.each($(".rightCol").find(".bloccoGenerale").find(".resultFields").find(".row"), function(i,v){
 					v = $(v);
 					if (v.hasClass("labels") || !that.isset(v.find(".fieldSelect").find("select").val()))
@@ -276,6 +286,12 @@ ga.Qdjango.widgetEditor = {
 										<option value="LIKE">LIKE</option>\
 									</select>');
 
+		// si aggiunge e si fa apparire la dipendenza se seleziona
+
+		var cmpDependanceSelect = $('<select class="form-control" name="dependence_field">' +
+			'<option value=""> ----- </option>' +
+			'</select>');
+
 
 		var options = that.widgettype;
 		if ($.inArray(that.layer_type, ['postgres', 'spatialite']) == -1){
@@ -287,6 +303,8 @@ ga.Qdjango.widgetEditor = {
 		$.each(options, function(k,i){
 			widgetSelect.append('<option value="'+k+'">'+i+'</option>');
 		});
+
+
 
 		// add widget types
 
@@ -323,6 +341,12 @@ ga.Qdjango.widgetEditor = {
 									<div class="col-md-3 descriptionInput"></div>\
 									<div class="col-md-1 cmpOperatorSelect"></div>\
 								</div>\
+								<div class="row">\
+									<div class="col-md-3 invisible cmpDependanceSelectLabel"><span class="label label-default">Dipendenza</span></div>\
+								</div>\
+								<div class="row">\
+									<div class="col-md-3 invisible cmpDependanceSelect"></div>\
+								</div>\
 							</div>\
 					</div>\
 						<div class="row" style="margin-bottom:20px;">\
@@ -344,10 +368,33 @@ ga.Qdjango.widgetEditor = {
 		div.find(".textInput").append(textInput);
 		div.find(".descriptionInput").append(descriptionInput);
 		div.find(".cmpOperatorSelect").append(cmpOperatorSelect);
+		div.find(".cmpDependanceSelect").append(cmpDependanceSelect);
 		div.find(".widgetType").append(widgetSelect);
 		
 		$(".rightCol").append(div);
 		div.fadeIn(this.fadeNumber);
+
+		widgetSelect.on('change', function(){
+			var $select = div.find(".cmpDependanceSelect");
+			if ($(this).val() == 'selectbox') {
+				div.find(".cmpDependanceSelectLabel").removeClass('invisible');
+				$select.removeClass('invisible');
+
+					// cerchiamo tutti gli input attivati
+				$.each($(".rightCol").find('.blocco'), function(i, v) {
+					var f = $(v).find(".fieldSelect").find("select").val()
+					$select.find('select').append('<option value="'+f+'">'+f+'</option>')
+				});
+
+			} else {
+				div.find(".cmpDependanceSelectLabel").addClass('invisible');
+				$select.addClass('invisible');
+			}
+		});
+
+		widgetSelect.trigger('change');
+		if (that.isset(values) && that.isset(values.input.options['dependance']))
+			cmpDependanceSelect.val($('<div/>').html(values.input.options['dependance']).text());
 	},
 	
 	generateTooltipRow: function(values)

@@ -161,6 +161,28 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
             for layer in layers:
                 getattr(layer, layerAction)(groups_id)
 
+
+    def tree(self):
+
+        def readLeaf(layer, layers):
+            if 'nodes' in layer:
+                children = []
+                for node in layer['nodes']:
+                    children.append(readLeaf(node, layers))
+
+                return ['g_{}'.format(layer['name']), children]
+            else:
+                return [layers[layer['id']][0], layers[layer['id']][1]]
+
+        layers = self.layer_set.values_list('id', 'name', 'qgs_layer_id')
+        _layers = {l[2]: l for l in layers}
+
+        layers_tree = []
+        for l in eval(self.layers_tree):
+            layers_tree.append(readLeaf(l, _layers))
+
+        return layers_tree
+
     def __getattr__(self, attr):
         if attr == 'viewers':
             return get_users_for_object(self, 'view_project', [G3W_VIEWER1, G3W_VIEWER2], with_anonymous=True)

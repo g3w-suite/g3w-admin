@@ -29,16 +29,16 @@ class QgisProjectTest(TestCase):
 
         self.assertEqual(self.project.title, u'G3W-Suite project test')
         self.assertEqual(self.project.name, u'G3W-Suite project test')
-        self.assertEqual(self.project.qgisVersion, u'2.18.15')
+        self.assertEqual(self.project.qgisVersion, u'2.18.24')
         self.assertEqual(self.project.srid, 4326)
         self.assertEqual(self.project.units, 'degrees')
 
         # check initialExtent
         test_initial_extent_data = {
-            'xmin': '-188.9998950000000093',
-            'ymin': '-94.66237441014119725',
-            'xmax': '188.99989499999989562',
-            'ymax': '88.27205541014119206'
+            'xmin': '-33.65090664007660592',
+            'ymin': '27.12817952613412231',
+            'xmax': '60.84904085992335609',
+            'ymax': '72.86178698120474451'
         }
 
         self.assertEqual(self.project.initialExtent, test_initial_extent_data)
@@ -73,10 +73,10 @@ class QgisProjectTest(TestCase):
 
         # test_layersTree
         test_layersTree_data = [
-            {'visible': True, 'expanded': True, 'name': 'rivers', 'id': 'rivers20171228095726368'},
-            {'visible': True, 'expanded': True, 'name': 'cities10000eu', 'id': 'cities10000eu20171228095720113'},
-            {'visible': True, 'expanded': True, 'name': 'countries_simpl', 'id': 'countries_simpl20171228095706310'},
-            {'visible': True, 'expanded': True, 'name': 'europa_dem', 'id': 'europa_dem20171228095729169'}
+            {'visible': True, 'expanded': True, 'name': 'Rivers', 'id': 'rivers20171228095726368'},
+            {'visible': True, 'expanded': True, 'name': 'Cities', 'id': 'cities10000eu20171228095720113'},
+            {'visible': True, 'expanded': True, 'name': 'Countries', 'id': 'countries_simpl20171228095706310'},
+            {'visible': True, 'expanded': True, 'name': 'Dem', 'id': 'europa_dem20171228095729169'}
         ]
 
         self.assertEqual(self.project.layersTree, test_layersTree_data)
@@ -88,21 +88,18 @@ class QgisProjectTest(TestCase):
 
         for layer in self.project.layers:
             if layer.layerId == 'countries_simpl20171228095706310':
-                self.assertEqual(layer.title, u'countries_simpl')
-                self.assertEqual(layer.name, u'countries_simpl')
+                self.assertEqual(layer.title, u'Countries')
+                self.assertEqual(layer.name, u'Countries')
+                self.assertEqual(layer.origname, u'countries')
                 self.assertEqual(layer.layerType, u'ogr')
                 self.assertEqual(layer.minScale, 100000000)
                 self.assertEqual(layer.maxScale, 0)
+                self.assertTrue(layer.isVisible)
+                self.assertEqual(layer.srid, 4030)
+
 
 """                
-'isVisible',
-'title',
-'name',
-'layerType',
-'minScale',
-'maxScale',
 'scaleBasedVisibility',
-'srid',
 # 'capabilities',
 'wfsCapabilities',
 'editOptions',
@@ -114,7 +111,7 @@ class QgisProjectTest(TestCase):
 'excludeAttributesWFS',
 'geometrytype',
 'vectorjoins',
-                'editTypes'
+'editTypes'
 """
 
 
