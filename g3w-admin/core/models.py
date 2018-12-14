@@ -57,6 +57,7 @@ class BaseLayer(models.Model):
     """
     name = models.CharField(max_length=255)
     title = models.CharField(max_length=255)
+    icon = models.ImageField(null=True, blank=True)
     description = models.TextField(null=True, blank=True)
     property = models.TextField()
 

@@ -8,7 +8,7 @@ from rest_framework import serializers
 from rest_framework.fields import empty
 from rest_framework_gis.fields import GeometryField
 from shapely import wkt, geometry
-from core.models import Group
+from core.models import Group, BaseLayer
 from core.signals import initconfig_plugin_start
 from core.mixins.api.serializers import G3WRequestSerializer
 from copy import copy
@@ -49,11 +49,12 @@ class BaseLayerSerializer(serializers.ModelSerializer):
         return ret
 
     class Meta:
-        model = Group
+        model = BaseLayer
         fields = (
             'id',
             'name',
             'title',
+            'icon'
         )
 
 
