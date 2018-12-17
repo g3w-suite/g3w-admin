@@ -177,6 +177,15 @@ class OWSRequestHandler(OWSRequestHandlerBase):
     def doRequest(self):
 
         q = self.request.GET.copy()
+
+        # rebuild q keys upper()
+
+        for k in q.keys():
+            ku = k.upper()
+            if ku != k:
+                q[ku] = q[k]
+                del q[k]
+
         q['map'] = self._projectInstance.qgis_file.file.name
         return self.baseDoRequest(q, self.request)
 
