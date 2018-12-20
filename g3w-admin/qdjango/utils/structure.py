@@ -36,6 +36,9 @@ def datasource2dict(datasource):
     """
 
     datasourceDict = {}
+
+    # befor get sql
+    datasource, sql = datasource.split('sql=')
     datalist = datasource.split(' ')
     for item in datalist:
         try:
@@ -43,6 +46,9 @@ def datasource2dict(datasource):
             datasourceDict[key] = value.strip('\'')
         except ValueError:
             pass
+
+    # add sql
+    datasourceDict['sql'] = '{}'.format(sql)
     return datasourceDict
 
 
