@@ -14,6 +14,7 @@ except ImportError:
 from qdjango.models import Layer
 from urlparse import urlsplit, parse_qs
 from core.utils.projects import CoreMetaLayer
+from core.utils import unicode2ascii
 from .exceptions import QgisProjectLayerException
 
 
@@ -48,7 +49,7 @@ def datasource2dict(datasource):
             pass
 
     # add sql
-    datasourceDict['sql'] = '{}'.format(sql)
+    datasourceDict['sql'] = '{}'.format(unicode2ascii(sql))
     return datasourceDict
 
 
