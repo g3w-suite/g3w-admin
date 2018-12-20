@@ -15,6 +15,7 @@ from usersmanage.utils import setPermissionUserObject, getUserGroups, get_users_
 from usersmanage.configs import *
 from core.configs import *
 from core.receivers import check_overviewmap_project
+from core.utils import unicode2ascii
 import os
 
 
@@ -170,7 +171,7 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
                 for node in layer['nodes']:
                     children.append(readLeaf(node, layers))
 
-                return ['g_{}'.format(layer['name']), children]
+                return [u'g_{}'.format(layer['name']), children]
             else:
                 return [layers[layer['id']][0], layers[layer['id']][1]]
 
