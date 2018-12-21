@@ -1,0 +1,16 @@
+{% load sitetree %}
+{% load i18n %}
+<ul class="treeview-menu">
+    {% for item in sitetree_items %}
+        <li {% if item.is_current or item.in_current_branch %}class="active"{% endif %}>
+            <a href="{% sitetree_url for item %}">
+              {% if item.icon_css_class %}<i class="menu-icon {{ item.icon_css_class }} bg-purple"></i>{% endif %}
+              <div class="menu-info">
+                <h4 class="control-sidebar-subheading">{{ item.title_resolved|safe }}</h4>
+                <p></p>
+              </div>
+            </a>
+        </li>
+    {% endfor %}
+</ul>
+

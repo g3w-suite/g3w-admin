@@ -1,0 +1,26 @@
+{% load sitetree %}
+{% load i18n %}
+{% if sitetree_items.0.type_header %}
+<h3 class="control-sidebar-heading">{% if sitetree_items.0.icon_css_class %}<i class="{{ sitetree_items.0.icon_css_class }}"></i>{% endif %}{{ sitetree_items.0.title_resolved|safe }}</h3>
+{% endif %}
+<ul class="control-sidebar-menu">
+    {% for item in sitetree_items %}
+        {% if not item.type_header %}
+        <li class="{% if item.has_children %}treeview{% endif %} {% if item.is_current or item.in_current_branch %}active{% endif %}">
+            <a href="{% if item.has_children %}#{% else %}{% sitetree_url for item %}{% endif %}" {% if item.has_children %}{% endif %}>
+                {% if item.icon_css_class %}<i class="menu-icon {{ item.icon_css_class }} bg-olive"></i>{% endif %}
+                  <div class="menu-info">
+                    <h4 class="control-sidebar-subheading">{{ item.title_resolved|safe }}</h4>
+                    <p>{{ item.description|safe }}</p>
+                  </div>
+                {% if item.has_children %}<i class="fa fa-angle-left pull-right"></i>{% endif %}
+            </a>
+            {% if item.has_children %}
+                {% sitetree_children of item for menu template "sitetree/sidebar_treeview_right.html" %}
+            {% endif %}
+        </li>
+        {% endif %}
+    {% endfor %}
+</ul>
+
+
