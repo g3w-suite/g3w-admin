@@ -52,4 +52,5 @@ build
 /g3w-admin/filemanager/
 /g3w-admin/preventcurrentlogins/
 /g3w-admin/demo/
+/g3w-admin/egovbari/
 .gitmodules
