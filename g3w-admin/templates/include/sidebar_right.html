@@ -28,12 +28,12 @@
         </a>
       </li>
     {% endif %}
+    </ul>
     {% for module in SETTINGS.G3WADMIN_LOCAL_MORE_APPS %}
         {% with sidebar_tree=module|add:"_sidebar_right" %}
-        {% sitetree_menu from sidebar_tree include "trunk" template "sitetree/sidebar.html" %}
+        {% sitetree_menu from sidebar_tree include "trunk" template "sitetree/sidebar_right.html" %}
         {% endwith %}
     {% endfor %}
-    </ul>
   </div>
 </div>
 </aside>

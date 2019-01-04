@@ -46,3 +46,6 @@
 [submodule "g3w-admin/cadastre_camaiore"]
 	path = g3w-admin/cadastre_camaiore
 	url = https://wlorenzetti@bitbucket.org/gis3w/g3w-admin-cadastre-camaiore.git
+[submodule "g3w-admin/egovbari"]
+	path = g3w-admin/egovbari
+	url = https://wlorenzetti@bitbucket.org/gis3w/g3w-admin-egovbari.git

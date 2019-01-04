@@ -22,7 +22,7 @@ class XmlData(object):
                 setattr(self, data, getattr(self, '_getData{}'.format(ucfirst(data)))())
             except Exception as e:
                 raise self._exceptionclass(_('[{} error on {}]-- {}')
-                                           .format(self._pre_exception_message, data, e.message))
+                                           .format(self._pre_exception_message, data, e))
 
     def registerValidator(self, validator):
         """
