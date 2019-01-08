@@ -41,6 +41,9 @@
           <button type="submit" class="btn btn-primary btn-block btn-flat">{% trans 'Sign In' %}</button>
         </div><!-- /.col -->
       </div>
+      {% if spid_enabled %}
+      {% include "spid_redirect/spid_redirect.html" %}
+      {% endif %}
     </form>
   </div><!-- /.login-box-body -->
 </div><!-- /.login-box -->

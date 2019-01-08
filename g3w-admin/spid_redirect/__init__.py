@@ -1,0 +1,1 @@
+default_app_config = 'spid_redirect.apps.SpidRedirectConfig'

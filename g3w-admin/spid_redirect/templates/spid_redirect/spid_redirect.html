@@ -1,0 +1,62 @@
+{% comment "" %}
+Template for the template tag "spid_redirect"
+{% endcomment %}
+{% load staticfiles %}
+       <style type="text/css">
+       .button-spid {
+          display: inline-block;
+          position: relative;
+          padding: 0;
+          color: #FFF;
+          font-family: "Titillium Web",HelveticaNeue,Helvetica Neue,Helvetica,Arial,Lucida Grande,sans-serif;
+          font-weight: 600;
+          line-height: 1em;
+          text-decoration: none;
+          border: 0;
+          text-align: center;
+          cursor: pointer;
+          overflow: hidden;
+        }
+       .button-spid {
+        	background-color: #06C;
+	        color: #FFF;
+        }
+       .button-spid {
+        	background-color: #06C;
+	        color: #FFF;
+        	font-size: 15px;
+	        width: 220px;
+        }
+        .spid-button-text {
+          padding: .95em 1em .85em 1em;
+          font-size: 1.15em;
+          text-align: center;
+        }
+        .spid-button-icon {
+	        margin: 0 -.4em 0 0;
+	        padding: 0.6em .8em .5em;
+	        border-right: rgba(255,255,255,0.1) 0.1em solid;
+        }
+        .spid-button-icon, .spid-button-text {
+          display: block;
+          float: left;
+        }
+        .button-spid > span img {
+	        width: 29px;
+	        height: 29px;
+	        border: 0;
+        }
+       </style>
+       <div class="row">        
+        <div class="col-xs-12">
+          oppure ...
+        </div><!-- /.col -->
+      </div>
+      <div class="row">        
+        <div class="col-xs-12">
+          <a href="{{ spid_redirect_url }}" class="button-spid">
+            <span class="spid-button-icon"><img src="{% static 'spid_redirect/spid-ico-circle-bb.svg' %}" alt="Icona Entra con SPID" /></span>
+            <span class="spid-button-text">Entra con SPID</span>
+          </a>
+        </div><!-- /.col -->
+      </div>
