@@ -34,7 +34,7 @@ class QdjangoProjectFormMixin(object):
                 self.qgisProject.registerValidator(ProjectExists)
             self.qgisProject.clean()
         except Exception as e:
-            raise ValidationError(e)
+            raise ValidationError(str(e))
         return qgis_file
 
 

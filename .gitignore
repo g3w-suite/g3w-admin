@@ -53,4 +53,5 @@ build
 /g3w-admin/preventcurrentlogins/
 /g3w-admin/demo/
 /g3w-admin/egovbari/
+/g3w-admin/progeo/
 .gitmodules

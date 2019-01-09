@@ -15,9 +15,9 @@ urlpatterns = [
         layer_vector_view, name='core-vector-api'),
 
     # changing order
-    url(r'^jx/groups/(?P<group_id>[0-9])/setorder/$',
+    url(r'^jx/groups/(?P<group_id>[0-9]+)/setorder/$',
         login_required(GroupSetOrderView.as_view()), name='group-set-order'),
 
-    url(r'^jx/macrogroups/(?P<group_id>[0-9])/setorder/$',
+    url(r'^jx/macrogroups/(?P<group_id>[0-9]+)/setorder/$',
         login_required(MacroGroupSetOrderView.as_view()), name='macrogroup-set-order'),
 ]

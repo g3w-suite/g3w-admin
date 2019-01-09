@@ -103,6 +103,8 @@ class QgisProjectLayer(XmlData):
         ColoumnName
     ]
 
+    _layer_model = Layer
+
     def __init__(self, layerTree, **kwargs):
         self.qgisProjectLayerTree = layerTree
 
@@ -504,7 +506,7 @@ class QgisProjectLayer(XmlData):
         excludeAttributesWMS = json.dumps(self.excludeAttributesWMS) if self.excludeAttributesWMS else None
         excludeAttributesWFS = json.dumps(self.excludeAttributesWFS) if self.excludeAttributesWFS else None
 
-        self.instance, created = Layer.objects.get_or_create(
+        self.instance, created = self._layer_model.objects.get_or_create(
             origname=self.origname,
             qgs_layer_id=self.layerId,
             project=self.qgisProject.instance,
@@ -592,6 +594,10 @@ class QgisProject(XmlData):
 
     _regexXmlLayer = 'projectlayers/maplayer'
 
+    _project_model = Project
+
+    _qgisprojectlayer_class = QgisProjectLayer
+
     def __init__(self, qgis_file, **kwargs):
         self.qgisProjectFile = qgis_file
         self.validators = []
@@ -609,7 +615,7 @@ class QgisProject(XmlData):
 
 
         # try to load xml project file
-        self.loadProject()
+        self.loadProject(**kwargs)
 
         # set data value into this object
         self.setData()
@@ -618,7 +624,7 @@ class QgisProject(XmlData):
         for validator in self._defaultValidators:
             self.registerValidator(validator)
 
-    def loadProject(self):
+    def loadProject(self, **kwargs):
         """
         Load projectfile by xml parser
         """
@@ -759,7 +765,7 @@ class QgisProject(XmlData):
 
         for order, layerTree in enumerate(layerTrees):
             if self._checkLayerTypeCompatible(layerTree):
-                layers.append(QgisProjectLayer(layerTree, qgisProject=self, order=order))
+                layers.append(self._qgisprojectlayer_class(layerTree, qgisProject=self, order=order))
         return layers
 
     def _getDataLayerRelations(self):
@@ -838,7 +844,7 @@ class QgisProject(XmlData):
                 description = kwargs.get('description')
                 baselayer = kwargs.get('baselayer')
 
-                self.instance = Project.objects.create(
+                self.instance = self._project_model.objects.create(
                     qgis_file=self.qgisProjectFile,
                     group=self.group,
                     title=self.title,
@@ -904,7 +910,7 @@ class QgisProject(XmlData):
                 layerType = layer.find('provider').text
                 datasource = layer.find('datasource').text
 
-                newDatasource = makeDatasource(datasource,layerType)
+                newDatasource = makeDatasource(datasource, layerType)
 
                 # Update layer
                 if newDatasource:

@@ -25,6 +25,8 @@ MODE_WIDGET = 'widget'
 
 class QGISLayerVectorViewMixin(object):
 
+    _layer_model = Layer
+
     def set_reprojecting_status(self):
         """
         Check if data have to reproject
@@ -48,7 +50,7 @@ class QGISLayerVectorViewMixin(object):
         project_id = params['project_id']
 
         # get layer object from qdjango model layer
-        return Layer.objects.get(project_id=project_id, qgs_layer_id=layer_id)
+        return self._layer_model.objects.get(project_id=project_id, qgs_layer_id=layer_id)
 
     def get_geoserializer_kwargs(self):
 
@@ -63,6 +65,7 @@ class QGISLayerVectorViewMixin(object):
 
     def set_relations(self):
 
+
         # get relations on project
         self.relations = {} if not self.layer.project.relations else \
             {r['id']: r for r in eval(self.layer.project.relations)}
@@ -71,7 +74,7 @@ class QGISLayerVectorViewMixin(object):
         if self.layer.vectorjoins:
             joins = eval(self.layer.vectorjoins)
             for n, join in enumerate(joins):
-                if Layer.objects.get(qgs_layer_id=join['joinLayerId'], project=self.layer.project).layer_type \
+                if self._layer_model.objects.get(qgs_layer_id=join['joinLayerId'], project=self.layer.project).layer_type \
                         in (('postgres', 'spatialite')):
                     name = '{}_vectorjoin_{}'.format(self.layer.qgs_layer_id, n)
                     self.relations[name] = {
@@ -95,7 +98,7 @@ class QGISLayerVectorViewMixin(object):
             # check if in relation there is referencedLayer == self layer
             if relation['referencedLayer'] == self.layer.qgs_layer_id:
                 # get relation layer object
-                relation_layer = Layer.objects.get(qgs_layer_id=relation['referencingLayer'],
+                relation_layer = self._layer_model.objects.get(qgs_layer_id=relation['referencingLayer'],
                                                    project=self.layer.project)
 
                 geomodel, database_to_use, geometrytype = create_geomodel_from_qdjango_layer(relation_layer)
