@@ -44,6 +44,9 @@ class QGISLayerVectorViewMixin(object):
         self.bbox_filter = IntersectsBBoxFilter() if self.metadata_layer.geometry_type != QGIS_LAYER_TYPE_NO_GEOM \
             else None
 
+
+
+
     def get_layer_by_params(self, params):
 
         layer_id = params['layer_name']
