@@ -249,15 +249,22 @@ class BaseVectorOnModelApiView(G3WAPIView):
 
     def set_filters(self):
         """
-        Set filters data from GET/POST params
+        Set filters data from GET/POST params and internal filters
         :return:
         """
         self.set_geo_filter()
+        self.set_sql_filter()
 
     def set_geo_filter(self):
 
         # Instance bbox filter
         self.bbox_filter = IntersectsBBoxFilter()
+
+    def set_sql_filter(self):
+        """
+        Set filter  set general sql fitlter
+        """
+        self.sql_filter = None
 
     def get_geoserializer_kwargs(self):
         """
@@ -389,6 +396,9 @@ class BaseVectorOnModelApiView(G3WAPIView):
         self.features_layer = self.metadata_layer.get_queryset()
         if self.bbox_filter:
             self.features_layer = self.bbox_filter.filter_queryset(request, self.features_layer, self)
+
+        if self.sql_filter:
+            self.features_layer = self.features_layer.filter(**self.sql_filter)
 
         if hasattr(self, 'filter_backends'):
             for backend in list(self.filter_backends):
