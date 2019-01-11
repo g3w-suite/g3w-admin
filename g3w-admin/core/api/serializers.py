@@ -161,6 +161,19 @@ class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         if header_custom_links:
             ret['header_custom_links'] = header_custom_links
 
+        # custom layout
+        ret['layout'] = {}
+
+        # add legend settings if set to layout
+        layout_legend = getattr(settings, 'G3W_CLIENT_LEGEND', None)
+        if layout_legend:
+            ret['layout']['legend'] = layout_legend
+
+        # add legend settings if set to layout
+        layout_right_panel = getattr(settings, 'G3W_CLIENT_RIGHT_PANEL', None)
+        if layout_right_panel:
+            ret['layout']['rightpanel'] = layout_right_panel
+
         return ret
 
     class Meta:
