@@ -149,7 +149,7 @@ class OWSRequestHandler(OWSRequestHandlerBase):
                     request.path
                 )
                 result_data = re.sub(to_replace, wms_url, result_data)
-                result_data = re.sub('&amp;&amp;', '&amp;', result_data)
+                result_data = re.sub('&amp;&amp;', '?', result_data)
 
 
             # If we get a redirect, let's add a useful message.
