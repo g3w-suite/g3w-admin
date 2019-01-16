@@ -133,8 +133,8 @@ class OWSRequestHandler(OWSRequestHandlerBase):
 
             if ows_request == 'GETCAPABILITIES':
 
-                #to_replace = settings.QDJANGO_SERVER_URL + r'\?map=[^\'" > &]+(?=&)'
-                to_replace = r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+\?map=[^\'" > &]+(?=&)'
+                to_replace = settings.QDJANGO_SERVER_URL + r'\?map=[^\'" > &]+(?=&)'
+                #to_replace = r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+\?map=[^\'" > &]+(?=&)'
 
                 # url to replace
                 wms_url = '{}://{}{}'.format(
