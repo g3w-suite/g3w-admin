@@ -132,8 +132,11 @@ class OWSRequestHandler(OWSRequestHandlerBase):
             result_data = result.data
 
             if ows_request == 'GETCAPABILITIES':
-
-                to_replace = getattr(settings, 'QDJANGO_REGEX_GETCAPABILITIES')
+                to_replace = None
+                try:
+                    to_replace = getattr(settings, 'QDJANGO_REGEX_GETCAPABILITIES')
+                except:
+                    pass
 
                 if not to_replace:
                     to_replace = settings.QDJANGO_SERVER_URL + r'\?map=[^\'" > &]+(?=&)'
@@ -146,6 +149,7 @@ class OWSRequestHandler(OWSRequestHandlerBase):
                     request.path
                 )
                 result_data = re.sub(to_replace, wms_url, result_data)
+                result_data = re.sub('&amp;&amp;', '&amp;', result_data)
 
 
             # If we get a redirect, let's add a useful message.
