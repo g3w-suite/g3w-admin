@@ -2,6 +2,8 @@ from django.apps import AppConfig, apps
 from django.db.models.signals import post_migrate
 from usersmanage.configs import *
 from core.utils.general import getAuthPermissionContentType
+from django.conf import settings
+
 try:
     from qgis.core import *
 except:
@@ -34,7 +36,8 @@ def GiveBaseGrant(sender, **kwargs):
         editor2Permission = editor2.permissions.all()
 
         permissionsToAdd = (
-            Permission.objects.get(codename='add_project', content_type=ContentType.objects.get_for_model(Project)),
+            Permission.objects.get(
+                codename='add_project', content_type=ContentType.objects.get_for_model(Project)),
         )
 
         for perm in permissionsToAdd:
@@ -45,7 +48,8 @@ def GiveBaseGrant(sender, **kwargs):
 
         # for editor1
         permissionsToAdd = (
-            Permission.objects.get(codename='add_widget', content_type=ContentType.objects.get_for_model(Widget)),
+            Permission.objects.get(
+                codename='add_widget', content_type=ContentType.objects.get_for_model(Widget)),
         )
 
         for perm in permissionsToAdd:
@@ -64,4 +68,12 @@ class QdjangoConfig(AppConfig):
         # import signals receivers
         import qdjango.receivers
 
+        # Register qdjango catalog record provider
+        if 'catalog' in settings.INSTALLED_APPS:
+            from catalog.models import Catalog
+            from .models import Layer, Project
+            from .utils.catalog_provider import catalog_provider
 
+            Catalog.register_catalog_record_provider(catalog_provider,
+                                        scope=Catalog.SCOPE.GROUP,
+                                        senders=[Layer, Project])

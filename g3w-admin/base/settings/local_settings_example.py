@@ -84,3 +84,10 @@ LOGGING = {
 
 SESSION_COOKIE_NAME = '<unique_session_id>'
 
+
+# Celery is required for CSW Catalog module (optional)
+BROKER_URL = 'amqp://guest:guest@localhost:5672//'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_RESULT_BACKEND = 'db+sqlite:///celerydb.sqlite'
