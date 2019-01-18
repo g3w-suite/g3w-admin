@@ -33,9 +33,9 @@ def catalog_provider(groups=[]):
     build or synchronize the catalog entries.
 
     Only layers that are publicly visible will be returned.
-    Raster layers are returned as WMS entries, vactor layers
-    will return two separate entries: one for WMS and one for
-    WFS.
+    Raster layers are returned as WMS entries, vector layers
+    will return a single entry with two separate links:
+    one for WMS and one for WFS.
 
     The list can be optionally filtered by Group.
 
@@ -87,13 +87,13 @@ def catalog_provider(groups=[]):
                 # Maps to pycsw:Keywords
                 'keywords': ','.join(layer_metadata['keywords']),
                 #'keywords_types': layer_metadata['keywords_types'],  # Maps to pycsw:Keywordstype
-                #'format': 'downloadableData',  # Maps to pycsw:Format
+                'format': 'image/jpeg,image/png',  # Maps to pycsw:Format
                 # Maps to pycsw:Source
-                'source':  _get_url(layer.project.qgis_file),
+                # 'source': layer_metadata['source'],
                 #'date': layer_metadata['date'],  # Maps to pycsw:Date, pycsw:Modified, pycsw:RevisionData, pycsw:CreationDate and pycsw:PublicationDate
-                'type': 'downloadableData',  # Maps to pycsw:Type
+                'type': 'Dataset',  # Maps to pycsw:Type
                 # Maps to pycsw:BoundingBox
-                'bounding_box': '{0} {1}, {2} {3}'.format(*layer_metadata['bbox'].values()),
+                'bounding_box': '{0},{1},{2},{3}'.format(*layer_metadata['bbox'].values()),
                 'crs': layer_metadata['crs'],  # Maps to pycsw:CRS
                 #'alternate_title': layer_metadata['alternate_title'],  # Maps to pycsw:AlternateTitle
                 # From caller 'organization_name': layer_metadata['organization_name'],  # Maps to pycsw:OrganizationName
@@ -131,16 +131,13 @@ def catalog_provider(groups=[]):
                 'links': "WMS,WMS Server,OGC:WMS,%s" % _get_url(layer.project.qgis_file), # Maps to pycsw:Links - format: name,description,protocol,url
             }
 
-            results.append(rec)
-
             if not _is_raster(layer):
-                rec = copy.copy(rec)
-                rec.update({
-                    'identifier': 'wfs.qdjango.%s.%s' % (layer.slug, layer.id),
-                    'service_type': 'WFS',
-                    'service_type_version': '1.1.0',
-                    'links': "WFS,WFS Server,OGC:WFS,%s" % _get_url(layer.project.qgis_file),
-                })
-                results.append(rec)
+                rec['links'] += "^WFS,WFS Server,OGC:WFS,%s" % _get_url(layer.project.qgis_file)
+                rec['service_type'] += ',WFS'
+                rec['format'] += ',application/xml'
+                rec['service_type_version'] += ',1.1.0'
+                rec['identifier'] = 'ows.qdjango.%s.%s' % (layer.slug, layer.id)
+
+            results.append(rec)
 
     return results
