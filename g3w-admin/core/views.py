@@ -259,6 +259,9 @@ class MacroGroupListView(ListView):
     def dispatch(self, request, *args, **kwargs):
         return super(MacroGroupListView, self).dispatch(request, *args, **kwargs)
 
+    def get_queryset(self):
+        return MacroGroup.objects.all().order_by('order')
+
 
 class MacroGroupCreateView(CreateView):
     """
