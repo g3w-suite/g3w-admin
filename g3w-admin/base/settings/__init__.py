@@ -42,4 +42,7 @@ if SENTRY:
 
 
 if TESTING:
-    from .tests_settings import *
+    try:
+        from .tests_settings import *
+    except ImportError:
+        pass
