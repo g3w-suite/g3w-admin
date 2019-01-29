@@ -128,7 +128,7 @@ class QgisOGRLayerStructure(QgisLayerStructure):
         Check if ogr data layer exisists
         """
         if not os.path.exists(self.datasource):
-            raise QgisProjectLayerException(self._errDatasourceNotFound.format(self.layer.name, self.datasource))
+            raise Exception(self._errDatasourceNotFound.format(self.layer.name, self.datasource))
 
     def getTableColumns(self):
         """

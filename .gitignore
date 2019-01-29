@@ -55,3 +55,5 @@ build
 /g3w-admin/egovbari/
 /g3w-admin/progeo/
 .gitmodules
+
+/pymast
