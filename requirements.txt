@@ -1,4 +1,4 @@
-Django==1.11.16
+Django==1.11.18
 django-autoslug==1.9.3
 django-formtools==2.0
 django-crispy-forms==1.6.1
@@ -27,7 +27,7 @@ defusedxml==0.5.0
 SQLAlchemy==1.1.11
 django-import-export==0.5.1
 coverage==4.4.1
-urllib3==1.21.1
+urllib3==1.23
 python-magic==0.4.15
 
 # GDAL by hand
