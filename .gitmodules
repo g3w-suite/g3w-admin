@@ -49,3 +49,6 @@
 [submodule "g3w-admin/egovbari"]
 	path = g3w-admin/egovbari
 	url = https://wlorenzetti@bitbucket.org/gis3w/g3w-admin-egovbari.git
+[submodule "g3w-admin/catalog"]
+	path = g3w-admin/catalog
+	url = https://wlorenzetti@bitbucket.org/gis3w/g3w-admin-catalog.git
