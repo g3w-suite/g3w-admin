@@ -213,7 +213,10 @@ class QgisProjectLayer(XmlData):
         Get min_scale from layer attribute
         :return: string
         """
-        maximumScale = self.qgisProjectLayerTree.attrib['maximumScale']
+        attrib = self.qgisProjectLayerTree.attrib
+
+        # qgis3 project layer chang maximimScale to maxScale
+        maximumScale = attrib['maximumScale'] if 'maximumScale' in attrib else attrib['maxScale']
         if maximumScale == 'inf':
             # return 2**31-1
             return 0
@@ -224,7 +227,10 @@ class QgisProjectLayer(XmlData):
         Get min_scale from layer attribute
         :return: string
         """
-        minimunScale = self.qgisProjectLayerTree.attrib['minimumScale']
+        attrib = self.qgisProjectLayerTree.attrib
+
+        # qgis3 project layer chang minimumScale to minScale
+        minimunScale = attrib['minimumScale'] if 'minimumScale' in attrib else attrib['minScale']
         if minimunScale == 'inf':
             #return 2**31-1
             return 0
@@ -718,8 +724,9 @@ class QgisProject(XmlData):
         def buildLayerTreeNodeObject(layerTreeNode):
             toRetLayers = []
             for level, layerTreeSubNode in enumerate(layerTreeNode):
-                if level > 0:
 
+                # QGIS3 move custom-order here
+                if level > 0 and layerTreeSubNode.tag != 'custom-order':
                     toRetLayer = {
                         'name': layerTreeSubNode.attrib['name'],
                         'expanded': True if layerTreeSubNode.attrib['expanded'] == '1' else False
@@ -1146,9 +1153,13 @@ class QgisProjectSettingsWMS(XmlData):
                     'Abstract',
                     'Fees',
                     'AccessConstraints'):
-            self._metadata.update({
-                tag.lower(): service.find(self._buildTagWithNS(tag)).text
-            })
+            try:
+                self._metadata.update({
+                    tag.lower(): service.find(self._buildTagWithNS(tag)).text
+                })
+            except:
+                pass
+
 
         # add keywords
         keywords = service.find(self._buildTagWithNS('KeywordList')).xpath('opengis:Keyword', namespaces=self._NS)
@@ -1166,15 +1177,27 @@ class QgisProjectSettingsWMS(XmlData):
 
         # add contact informations
         contactinfo = service.find(self._buildTagWithNS('ContactInformation'))
-        contactperson = contactinfo.find(self._buildTagWithNS('ContactPersonPrimary'))
+        try:
+            contactperson = contactinfo.find(self._buildTagWithNS('ContactPersonPrimary'))
+        except:
+            pass
 
         self._metadata.update(OrderedDict({
             'contactinformation': OrderedDict({
                 'personprimary': {},
-                'contactvoicetelephone': contactinfo.find(self._buildTagWithNS('ContactVoiceTelephone')).text,
-                'contactelectronicmailaddress': contactinfo.find(self._buildTagWithNS('ContactElectronicMailAddress')).text,
             })
         }))
+
+        try:
+            self._metadata.update(OrderedDict({
+                'contactinformation': OrderedDict({
+                    'contactvoicetelephone': contactinfo.find(self._buildTagWithNS('ContactVoiceTelephone')).text,
+                    'contactelectronicmailaddress': contactinfo.find(
+                        self._buildTagWithNS('ContactElectronicMailAddress')).text,
+                })
+            }))
+        except:
+            pass
 
         for tag in ('ContactPerson', 'ContactOrganization', 'ContactPosition'):
             try:
