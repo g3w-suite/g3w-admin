@@ -319,6 +319,11 @@ class QdjangoLayersListView(G3WRequestViewMixin, G3WGroupViewMixin, QdjangoProje
             'spatialite',
             'ogr'
         )
+
+        context['type_layer_for_download'] = (
+            'postgres',
+            'spatialite'
+        )
         return context
 
 
@@ -363,9 +368,14 @@ class QdjangoLayerDataView(G3WGroupViewMixin, QdjangoProjectViewMixin, View):
         return super(QdjangoLayerDataView, self).dispatch(*args, **kwargs)
 
     def post(self, request, *args, **kwargs):
-
+        """
+        Save params for layer
+        """
         layer = Layer.objects.get(pk=kwargs['layer_id'])
-        layer.exclude_from_legend = int(request.POST['exclude_from_legend'])
+        if 'exclude_from_legend' in request.POST:
+            layer.exclude_from_legend = int(request.POST['exclude_from_legend'])
+        if 'download_layer' in request.POST:
+            layer.download = int(request.POST['download_layer'])
         layer.save()
         return JsonResponse({'Saved': 'ok'})
 

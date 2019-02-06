@@ -270,6 +270,7 @@ class LayerSerializer(serializers.ModelSerializer):
             'servertype',
             'vectorjoins',
             'exclude_from_legend',
+            'download',
             'editor_form_structure'
         )
 

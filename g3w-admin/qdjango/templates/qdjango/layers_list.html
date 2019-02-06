@@ -10,6 +10,13 @@
 <script>
     $('#tree').treeview({data:{{ layers_tree|safe }}});
     ga.ui.initNolegendLayerCheckBox();
+    ga.ui.initDownloadLayerCheckBox();
+
+    // on check of every download
+    $(document).on('ifChanged', '[name="check_every_download"]', function(e){
+        var state = e.target.checked ? 'check' : 'uncheck';
+        $('[data-widget-type="downloadLayer"]').iCheck(state);
+    });
 </script>
 {% endblock %}
 
@@ -26,17 +33,20 @@
     <div class="col-md-12 col-xs-12">
         <div class="box">
             <div class="box-header">
-                <h3 class="box-title">{% trans 'Project' %} {{ project.title }}
-                {% if "view_project" in userPrj_perms %}
-                <a href="{% url 'group-project-map' group.slug 'qdjango' project.pk %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Show map' %}" target="_blank"><i class="ion ion-map"></i></a>
-                {% endif %}
-                {% if "view_project" in userPrj_perms %}
-                <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-detail-url="{% url 'qdjango-project-detail' group.slug project.slug %}" ><i class="ion ion-eye"></i></a>
-                {% endif %}
-                {% if "change_project" in userPrj_perms %}
-                <a href="{% url 'qdjango-project-update' group.slug project.slug %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Edit' %}" ><i class="ion ion-edit"></i></a>
-                {% endif %}
-                </h3>
+                <h3 class="box-title">{% trans 'Project' %} {{ project.title }}</h3>
+            </div>
+            <div class="box-body">
+                <h4>
+                    {% if "view_project" in userPrj_perms %}
+                    <a href="{% url 'group-project-map' group.slug 'qdjango' project.pk %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Show map' %}" target="_blank"><i class="ion ion-map"></i> {% trans 'Show map' %}</a>  |
+                    {% endif %}
+                    {% if "view_project" in userPrj_perms %}
+                    <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-detail-url="{% url 'qdjango-project-detail' group.slug project.slug %}" ><i class="ion ion-eye"></i> {% trans 'Show detail' %}</a> |
+                    {% endif %}
+                    {% if "change_project" in userPrj_perms %}
+                    <a href="{% url 'qdjango-project-update' group.slug project.slug %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Edit' %}" ><i class="ion ion-edit"></i>{% trans 'Edit' %}</a>
+                    {% endif %}
+                </h4>
             </div>
             <div class="box-body">
                 {{ project.description|safe }}
@@ -64,6 +74,7 @@
                             <th style="width:120px">Actions</th>
                             {% if "change_project" in userPrj_perms %}
                             <th style="width:40px">{% trans 'No legend' %}</th>
+                            <th style="width:100px"><input type="checkbox" name="check_every_download" />{% trans 'Download' %}</th>
                             {% endif %}
                             <th style="width: 40px">Type</th>
                             <th style="width: 40px">WFS</th>
@@ -92,6 +103,11 @@
                             {% if "change_project" in userPrj_perms %}
                             <td>
                                 <input type="checkbox" data-widget-type="noLegendLayer" data-ajax-url="{% url 'qdjango-project-layers-data-editing' project.group.slug project.slug object.pk %}" name="no_legend_{{ object.pk }}" {% if object.exclude_from_legend %}checked="checked"{% endif %}>
+                            </td>
+                            <td>
+                                {% if object.layer_type in type_layer_for_download %}
+                                <input type="checkbox" data-widget-type="downloadLayer" data-ajax-url="{% url 'qdjango-project-layers-data-editing' project.group.slug project.slug object.pk %}" name="download_{{ object.pk }}" {% if object.download %}checked="checked"{% endif %}>
+                                {% endif %}
                             </td>
                             {% endif %}
                             <td>

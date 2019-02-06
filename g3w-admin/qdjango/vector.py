@@ -1,5 +1,5 @@
 from django.db import connections
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseForbidden
 from rest_framework.filters import OrderingFilter
 from core.api.base.views import BaseVectorOnModelApiView, IntersectsBBoxFilter, MODE_DATA, MODE_CONFIG, MODE_SHP, \
     APIException
@@ -285,6 +285,10 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         :param request: Http Django request object
         :return: http response with attached file
         """
+
+        if not self.layer.download:
+            return HttpResponseForbidden()
+
         #ogr2ogr -f "ESRI Shapefile" qds_cnt.shp PG:"host=localhost user=postgres dbname=gisdb password=password" - sql "SELECT sp_count, geom FROM grid50_rsa WHERE province = 'Gauteng'"
 
         tmp_dir = "/tmp/g3w-suite/{}/".format(request.session.session_key)
