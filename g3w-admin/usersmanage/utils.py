@@ -76,6 +76,11 @@ def get_fields_by_user(user, form, **kwargs):
             if 'editor_user' in fields:
                 del (fields[fields.index('editor_user')])
 
+        if 'editor_groups_field_required' in kwargs and not kwargs['editor_groups_field_required']:
+            del (form.fields['editor_user_groups'])
+            if 'editor_user_groups' in fields:
+                del (fields[fields.index('editor_user_groups')])
+
     toRet = []
     for field in fields:
         params = {'css_class': 'select2 col-md-12', 'multiple': 'multiple', 'style': 'width:100%;'} \
