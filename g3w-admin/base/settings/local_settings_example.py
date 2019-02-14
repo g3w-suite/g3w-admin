@@ -57,15 +57,21 @@ LOGGING = {
         },
         'file': {
             'level': 'ERROR',
-            'class': 'logging.FileHandler',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'maxBytes': 1024*1024*10, # 10 MB
+            'backupCount': 10,
             'filename': '/tmp/error.log',
             'formatter': 'verbose'
+
         },
         'file_debug': {
             'level': 'DEBUG',
             'filters': ['require_debug_true'],
-            'class': 'logging.FileHandler',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'maxBytes': 1024*1024*10, # 10 MB
+            'backupCount': 10,
             'filename': '/tmp/debug.log',
+
             'formatter': 'verbose'
         },
     },
