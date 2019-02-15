@@ -57,6 +57,7 @@ class QdjangoConfig(AppConfig):
     name = 'qdjango'
     verbose_name = 'QGIS project managment'
     alias = 'QGIS'
+    icon = 'qdjango/img/qgis-icon32.png'
 
     def ready(self):
         post_migrate.connect(GiveBaseGrant, sender=self)

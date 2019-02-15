@@ -1,4 +1,14 @@
 {% load i18n %}
+{% load staticfiles %}
 {% with app|add:'-project-add' as listurl %}
-<h3 class="box-title"><a href="{% url listurl group.slug %}"><i class="ion ion-plus-circled"></i> {% trans 'Project' %} {{ alias }}</a></h3>
+<h3 class="box-title">
+    {% comment %}<a href="{% url listurl group.slug %}"><i class="ion ion-plus-circled"></i> {% trans 'Project' %} {{ alias }}</a>{% endcomment %}
+    <a href="{% url listurl group.slug %}" class="btn btn-default"><i class="ion ion-plus"></i> {% trans 'Project' %} <b>
+        {{ alias }}
+        {% if icon %}
+           <img src="{% static icon %}"/>
+       {% endif %}
+    </b>
+    </a>
+</h3>
 {% endwith %}
