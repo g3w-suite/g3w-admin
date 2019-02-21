@@ -1005,11 +1005,14 @@ class QgisProjectSettingsWMS(XmlData):
 
             CRS = layerTree.xpath('opengis:CRS', namespaces=self._NS)
 
-
+            # QGIS3 no set queryable attributo for layer groups
+            queryable = False
+            if 'queryable' in layerTree.attrib:
+                queryable = bool(int(layerTree.attrib['queryable']))
 
             dataLayer = {
                 'name': name,
-                'queryable': bool(int(layerTree.attrib['queryable'])),
+                'queryable': queryable,
                 'bboxes': self._getBBOXLayer(layerTree),
                 'styles': [],
                 'metadata': {
