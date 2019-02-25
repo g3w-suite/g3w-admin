@@ -356,7 +356,10 @@ class LayerSerializer(serializers.ModelSerializer):
                 #ret['servertype'] = MSTYPES_OGC
 
         # add proj4
-        ret['proj4'] = G3WSpatialRefSys.objects.get(srid=ret['crs']).proj4text
+        try:
+            ret['proj4'] = G3WSpatialRefSys.objects.get(srid=ret['crs']).proj4text
+        except:
+            ret['proj4'] = None
 
         # add metadata
         ret['metadata'] = self.qgis_projectsettings_wms.layers[instance.name]['metadata']
