@@ -16,6 +16,7 @@ from urlparse import urlsplit, parse_qs
 from core.utils.projects import CoreMetaLayer
 from core.utils import unicode2ascii
 from .exceptions import QgisProjectLayerException
+import shlex
 
 
 def get_schema_table(datasource_table):
@@ -40,7 +41,8 @@ def datasource2dict(datasource):
 
     # befor get sql
     datasource, sql = datasource.split('sql=')
-    datalist = datasource.split(' ')
+    #datalist = datasource.split(' ')
+    datalist = shlex.split(datasource)
     for item in datalist:
         try:
             key, value = item.split('=')
@@ -218,7 +220,7 @@ class QgisDBLayerStructure(QgisLayerStructure):
         Get URL connection for sqlite geoalchemy
         """
 
-        self.urlDB = URL(self._dbTypes[self.layerType], database = self.datasourceDict['dbname'])
+        self.urlDB = URL(self._dbTypes[self.layerType], database=self.datasourceDict['dbname'])
         self.table = self.datasourceDict['table'].strip('"')
         self.schema = None
 

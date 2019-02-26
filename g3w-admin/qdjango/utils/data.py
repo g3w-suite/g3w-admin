@@ -513,10 +513,11 @@ class QgisProjectLayer(XmlData):
         excludeAttributesWFS = json.dumps(self.excludeAttributesWFS) if self.excludeAttributesWFS else None
 
         self.instance, created = self._layer_model.objects.get_or_create(
-            origname=self.origname,
+            #origname=self.origname,
             qgs_layer_id=self.layerId,
             project=self.qgisProject.instance,
             defaults={
+                'origname': self.origname,
                 'name': self.name,
                 'title': self.title,
                 'is_visible': self.isVisible,

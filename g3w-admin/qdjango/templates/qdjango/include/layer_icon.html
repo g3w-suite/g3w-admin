@@ -1,6 +1,7 @@
 {% load staticfiles %}
 {% if object.layer_type == 'postgres' %}
-  <svg id="circle" height="16" width="16" viewBox="0 0 32 32"
+  <svg {% if "change_project" in userPrj_perms %} data-toggle="tooltip" data-placement="top" title="{{ object.datasource }}" {% endif %}
+       id="circle" height="16" width="16" viewBox="0 0 32 32"
      xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" >
   <image x="0" y="0" height="100%" width="100%"  xlink:href="{% static 'svg/pg32.svg' %}" />
   </svg>
