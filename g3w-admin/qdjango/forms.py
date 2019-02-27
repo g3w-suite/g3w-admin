@@ -1,5 +1,6 @@
 from django import forms
 from django.forms import ValidationError, widgets
+from django.core.files.base import ContentFile
 from django.utils.translation import ugettext, ugettext_lazy as _
 from crispy_forms.helper import FormHelper, Layout
 from crispy_forms.layout import Div, Field, HTML
@@ -11,6 +12,7 @@ from .models import *
 from usersmanage.utils import get_fields_by_user, crispyBoxACL, userHasGroups
 from .utils.data import QgisProject
 from .utils.validators import ProjectExists
+import zipfile
 
 
 class QdjangoProjectFormMixin(object):
@@ -25,6 +27,16 @@ class QdjangoProjectFormMixin(object):
             file_extension = os.path.splitext(qgis_file.name)[1]
             if file_extension.lower() not in ('.qgs', '.qgz'):
                 raise Exception(_("File must have 'qgs' or 'qgz' extension"))
+
+            # for QGIS qgz file format
+            if file_extension.lower() == '.qgz':
+                zfile = zipfile.ZipFile(qgis_file, 'r')
+                for fileinfo in zfile.infolist():
+                    if os.path.splitext(fileinfo.filename)[1].lower() == '.qgs':
+                        qzfile = fileinfo.filename
+
+                # put qzfile to qgis_file
+                qgis_file = ContentFile(zfile.open(qzfile, 'r').read(), name=qzfile)
 
             kwargs = {'group': self.group}
             if self.instance.pk:
