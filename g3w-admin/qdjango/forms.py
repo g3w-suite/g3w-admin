@@ -135,7 +135,7 @@ class QdjangoProjetForm(QdjangoProjectFormMixin, G3WFormMixin, G3WGroupFormMixin
         self._ACLPolicy()
 
         # add permission to editor1 if current user is editor1
-        if userHasGroups(self.request.user, [G3W_EDITOR1]):
+        if userHasGroups(self.request.user, [G3W_EDITOR1, G3W_EDITOR2]):
             self.instance.addPermissionsToEditor(self.request.user)
 
 
