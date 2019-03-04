@@ -64,6 +64,20 @@ def makeDatasource(datasource, layerType):
 
     return newDatasource
 
+def makeComposerPictureFile(file):
+    """
+    For ComposerPicture rebuild for DATASOURCE_PATH
+    :param file:
+    :return:
+    """
+    new_file = None
+    # Path and folder name
+    basePath = settings.DATASOURCE_PATH.rstrip('/')  # eg: /home/sit/charts
+    folder = os.path.basename(basePath)  # eg: charts
+
+    new_file = re.sub(r'(.*?)%s(.*)' % folder, r'%s\2' % basePath, file)  # ``?`` means ungreedy
+    return new_file.split('|')[0]
+
 
 class QgisProjectLayer(XmlData):
     """
@@ -585,7 +599,7 @@ class QgisProject(XmlData):
         'layersTree',
         'layers',
         'layerRelations',
-        'qgisVersion',
+        'qgisVersion'
         ]
 
     _defaultValidators = [
@@ -600,6 +614,9 @@ class QgisProject(XmlData):
     #_regexXmlLayer = 'projectlayers/maplayer[@geometry!="No geometry"]'
 
     _regexXmlLayer = 'projectlayers/maplayer'
+
+    _regexXmlComposer = 'Composer'
+    _regexXmlComposerPicture = 'Composition/ComposerPicture'
 
     _project_model = Project
 
@@ -776,6 +793,19 @@ class QgisProject(XmlData):
                 layers.append(self._qgisprojectlayer_class(layerTree, qgisProject=self, order=order))
         return layers
 
+    def _getDataComposer(self):
+        composers = []
+
+        # Get layer trees
+        composersTrees = self.qgisProjectTree.xpath(self._regexXmlComposer)
+
+        '''
+        for order, layerTree in enumerate(layerTrees):
+            if self._checkLayerTypeCompatible(layerTree):
+                layers.append(self._qgisprojectlayer_class(layerTree, qgisProject=self, order=order))
+        '''
+        return composers
+
     def _getDataLayerRelations(self):
         """
         Get relations layer section into project
@@ -923,6 +953,11 @@ class QgisProject(XmlData):
                 # Update layer
                 if newDatasource:
                     layer.find('datasource').text = newDatasource
+
+        # update file of print composers
+        for composer in tree.xpath(self._regexXmlComposer):
+            for composer_picture in composer.xpath(self._regexXmlComposerPicture):
+                composer_picture.attrib['file'] = makeComposerPictureFile(composer_picture.attrib['file'])
 
         # Update QGIS file
         with open(self.instance.qgis_file.path, 'w') as handler:
