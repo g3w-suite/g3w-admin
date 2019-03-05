@@ -55,6 +55,7 @@ build
 /g3w-admin/egovbari/
 /g3w-admin/progeo/
 /g3w-admin/catalog/
+/g3w-admin/spid_redirect/
 .gitmodules
 
 /pymast
