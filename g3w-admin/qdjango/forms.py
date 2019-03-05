@@ -1,5 +1,6 @@
 from django import forms
 from django.forms import ValidationError, widgets
+from django.db.models import Q
 from django.core.files.base import ContentFile
 from django.utils.translation import ugettext, ugettext_lazy as _
 from crispy_forms.helper import FormHelper, Layout
@@ -13,6 +14,7 @@ from usersmanage.utils import get_fields_by_user, crispyBoxACL, userHasGroups
 from .utils.data import QgisProject
 from .utils.validators import ProjectExists
 import zipfile
+import re
 
 
 class QdjangoProjectFormMixin(object):
@@ -49,14 +51,44 @@ class QdjangoProjectFormMixin(object):
             raise ValidationError(str(e))
         return qgis_file
 
+    def clean_url_alias(self):
+        url_alias = self.cleaned_data['url_alias']
+
+        if url_alias:
+            regex = re.compile(r'[\w-]+$')
+            if not regex.match(url_alias):
+                raise ValidationError(_("Url alias can contains only numbers, letters, - or _"))
+
+            # check for unique
+            if ProjectMapUrlAlias.objects.filter(alias=url_alias).exclude(app_name='qdjango', project_id=self.instance.pk).exists():
+                raise ValidationError(_("This alias is used by another project/map"))
+        return url_alias
+
+    def _save_url_alias(self):
+        """
+        Save url_alias if is set
+        :return:
+        """
+        self.instance.url_alias = self.cleaned_data['url_alias']
+
+
 
 class QdjangoProjetForm(QdjangoProjectFormMixin, G3WFormMixin, G3WGroupFormMixin, G3WGroupBaseLayerFormMixin,
                         G3WRequestFormMixin, G3WACLForm, FileFormMixin, forms.ModelForm):
 
     qgis_file = UploadedFileField(required=True)
     thumbnail = UploadedFileField(required=False)
+    url_alias = forms.CharField(
+        required=False,
+        label=_('URL alias'),
+        help_text=_('You can set a human readable URL for the map. Only alphanumeric characters, not white space or '
+                    'special characters')
+    )
 
     def __init__(self, *args, **kwargs):
+        if 'instance' in kwargs:
+            kwargs['initial']['url_alias'] = kwargs['instance'].url_alias
+
         super(QdjangoProjetForm, self).__init__(*args, **kwargs)
 
         self.helper = FormHelper(self)
@@ -100,8 +132,8 @@ class QdjangoProjetForm(QdjangoProjectFormMixin, G3WFormMixin, G3WGroupFormMixin
                                             {% if not form.thumbnail.value %}style="display:none;"{% endif %}
                                             class="img-responsive img-thumbnail"
                                             src="{{ MEDIA_URL }}{{ form.thumbnail.value }}">""", ),
+                                            'url_alias',
                                             css_class='box-body',
-
                                         ),
                                         css_class='box box-success'
                                     ),
@@ -133,6 +165,8 @@ class QdjangoProjetForm(QdjangoProjectFormMixin, G3WFormMixin, G3WGroupFormMixin
 
     def save(self, commit=True):
         self._ACLPolicy()
+
+        self._save_url_alias()
 
         # add permission to editor1 if current user is editor1
         if userHasGroups(self.request.user, [G3W_EDITOR1, G3W_EDITOR2]):

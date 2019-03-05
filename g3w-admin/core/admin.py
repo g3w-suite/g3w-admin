@@ -4,7 +4,7 @@ from django.contrib.admin import ModelAdmin
 from ordered_model.admin import OrderedModelAdmin
 from sitetree.admin import TreeItemAdmin, override_item_admin
 from .ie.admin import G3WImportExportModelAdmin
-from .models import Group, BaseLayer, MapControl, MacroGroup, G3WSpatialRefSys
+from .models import Group, BaseLayer, MapControl, MacroGroup, G3WSpatialRefSys, ProjectMapUrlAlias
 from guardian.admin import GuardedModelAdmin
 
 
@@ -58,6 +58,11 @@ admin.site.register(MapControl, MapControlAdmin)
 class G3WSpatialRefSysAdmin(ModelAdmin):
     model = G3WSpatialRefSys
 admin.site.register(G3WSpatialRefSys, G3WSpatialRefSysAdmin)
+
+
+class ProjectMapUrlAliasAdmin(ModelAdmin):
+    model = ProjectMapUrlAlias
+admin.site.register(ProjectMapUrlAlias, ProjectMapUrlAliasAdmin)
 
 
 # Tweak admin site settings like title, header, 'View Site' URL, etc

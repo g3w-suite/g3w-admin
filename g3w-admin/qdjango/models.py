@@ -7,7 +7,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User, Group as AuthGroup
 from autoslug.utils import slugify
 from guardian.shortcuts import get_perms
-from core.models import Group, BaseLayer, GroupProjectPanoramic
+from core.models import Group, BaseLayer, GroupProjectPanoramic, ProjectMapUrlAlias
 from .utils.storage import QgisFileOverwriteStorage
 from core.mixins.models import G3WACLModelMixins, G3WProjectMixins
 from model_utils import Choices
@@ -183,6 +183,24 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
             layers_tree.append(readLeaf(l, _layers))
 
         return layers_tree
+
+    @property
+    def url_alias(self):
+        try:
+            return ProjectMapUrlAlias.objects.get(app_name='qdjango', project_id=self.pk).alias
+        except:
+            return None
+
+    @url_alias.setter
+    def url_alias(self, url_alias):
+        if url_alias:
+            ProjectMapUrlAlias.objects.update_or_create(app_name='qdjango', project_id=self.pk,
+                                                        defaults={'alias': url_alias})
+        else:
+            try:
+                ProjectMapUrlAlias.objects.get(app_name='qdjango', project_id=self.pk).delete()
+            except:
+                pass
 
     def __getattr__(self, attr):
         if attr == 'viewers':

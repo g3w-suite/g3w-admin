@@ -13,11 +13,25 @@ from django.core.exceptions import PermissionDenied
 from rest_framework.renderers import JSONRenderer
 from core.api.serializers import GroupSerializer, Group
 from core.api.views import USERMEDIAHANDLER_CLASSES
-from core.models import GeneralSuiteData
+from core.models import GeneralSuiteData, ProjectMapUrlAlias
 from core.utils.general import get_adminlte_skin_by_user
 from usersmanage.utils import get_users_for_object, get_user_model
 from usersmanage.configs import *
 from copy import deepcopy
+
+
+def client_map_alias_view(request, map_name_alias, *args, **kwargs):
+    """
+    Proxy view for map view with alias url.
+    """
+
+    # try to find alis url
+    try:
+        pma = ProjectMapUrlAlias.objects.get(alias=map_name_alias)
+        kwargs.update({'project_type': pma.app_name, 'project_id': pma.project_id, 'group_slug': 'for_alias'})
+        return ClientView.as_view()(request, *args, **kwargs)
+    except:
+        raise Http404('Map not found')
 
 
 class ClientView(TemplateView):
