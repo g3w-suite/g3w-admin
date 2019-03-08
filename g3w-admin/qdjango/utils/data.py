@@ -1180,13 +1180,18 @@ class QgisProjectSettingsWMS(XmlData):
 
     def _getDataMetadata(self):
 
-        service = self.qgisProjectSettingsTree.xpath(
-            'opengis:Service',
-            namespaces=self._NS
-        )[0]
-
         # add simple tags
         self._metadata = {}
+
+        try:
+            service = self.qgisProjectSettingsTree.xpath(
+                'opengis:Service',
+                namespaces=self._NS
+            )[0]
+        except:
+            return self._metadata
+
+
         for tag in ('Name',
                     'Title',
                     'Abstract',
