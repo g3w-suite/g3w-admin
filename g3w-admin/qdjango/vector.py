@@ -63,7 +63,6 @@ class QGISLayerVectorViewMixin(object):
             if self.metadata_layer.model._meta.pk.name in kwargs['exclude']:
                 kwargs['exclude'].remove(self.metadata_layer.model._meta.pk.name)
 
-
         return kwargs
 
     def set_relations(self):

@@ -72,7 +72,6 @@ class QdjangoProjectFormMixin(object):
         self.instance.url_alias = self.cleaned_data['url_alias']
 
 
-
 class QdjangoProjetForm(QdjangoProjectFormMixin, G3WFormMixin, G3WGroupFormMixin, G3WGroupBaseLayerFormMixin,
                         G3WRequestFormMixin, G3WACLForm, FileFormMixin, forms.ModelForm):
 
@@ -86,7 +85,7 @@ class QdjangoProjetForm(QdjangoProjectFormMixin, G3WFormMixin, G3WGroupFormMixin
     )
 
     def __init__(self, *args, **kwargs):
-        if 'instance' in kwargs:
+        if 'instance' in kwargs and hasattr(kwargs['instance'], 'url_alias'):
             kwargs['initial']['url_alias'] = kwargs['instance'].url_alias
 
         super(QdjangoProjetForm, self).__init__(*args, **kwargs)
