@@ -230,7 +230,10 @@ class QgisProjectLayer(XmlData):
         attrib = self.qgisProjectLayerTree.attrib
 
         # qgis3 project layer chang maximimScale to maxScale
-        maximumScale = attrib['maximumScale'] if 'maximumScale' in attrib else attrib['maxScale']
+        if self.qgisProject.qgisVersion[0] == '3':
+            maximumScale = attrib['minScale']
+        else:
+            maximumScale = attrib['maximumScale'] if 'maximumScale' in attrib else attrib['maxScale']
         if maximumScale == 'inf':
             # return 2**31-1
             return 0
@@ -244,7 +247,10 @@ class QgisProjectLayer(XmlData):
         attrib = self.qgisProjectLayerTree.attrib
 
         # qgis3 project layer chang minimumScale to minScale
-        minimunScale = attrib['minimumScale'] if 'minimumScale' in attrib else attrib['minScale']
+        if self.qgisProject.qgisVersion[0] == '3':
+            minimunScale = attrib['maxScale']
+        else:
+            minimunScale = attrib['minimumScale'] if 'minimumScale' in attrib else attrib['minScale']
         if minimunScale == 'inf':
             #return 2**31-1
             return 0
@@ -592,14 +598,14 @@ class QgisProject(XmlData):
         'title',
         'srid',
         'units',
+        'qgisVersion',
         'initialExtent',
         'maxExtent',
         'wfsLayers',
         'wfstLayers',
         'layersTree',
         'layers',
-        'layerRelations',
-        'qgisVersion'
+        'layerRelations'
         ]
 
     _defaultValidators = [
