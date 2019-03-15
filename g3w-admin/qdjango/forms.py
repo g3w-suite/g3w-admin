@@ -117,6 +117,9 @@ class QdjangoProjetForm(QdjangoProjectFormMixin, G3WFormMixin, G3WGroupFormMixin
                                 crispyBoxACL(self),
                                 crispyBoxBaseLayer(self),
 
+                                css_class='row'
+                            ),
+                            Div(
                                 Div(
                                     Div(
                                         Div(
@@ -136,12 +139,31 @@ class QdjangoProjetForm(QdjangoProjectFormMixin, G3WFormMixin, G3WGroupFormMixin
                                         ),
                                         css_class='box box-success'
                                     ),
-                                    css_class='col-md-12'
+                                    css_class='col-md-6'
                                 ),
 
+                                Div(
+                                    Div(
+                                        Div(
+                                            HTML("<h3 class='box-title'><i class='ion ion-gear'></i> {}</h3>"
+                                                 .format(_('Options and actions'))),
+                                            css_class='box-header with-border'
+                                        ),
+                                        Div(
+                                            'feature_count_wms',
+                                            'multilayer_query',
+                                            'multilayer_querybybbox',
+                                            'multilayer_querybypolygon',
+                                            css_class='box-body',
+
+                                        ),
+                                        css_class='box box-success'
+                                    ),
+                                    css_class='col-md-6'
+                                ),
 
                                 css_class='row'
-                            )
+                            ),
         )
 
     class Meta:
@@ -150,7 +172,11 @@ class QdjangoProjetForm(QdjangoProjectFormMixin, G3WFormMixin, G3WGroupFormMixin
             'qgis_file',
             'description',
             'thumbnail',
-            'baselayer'
+            'baselayer',
+            'feature_count_wms',
+            'multilayer_query',
+            'multilayer_querybybbox',
+            'multilayer_querybypolygon',
         )
 
         widgets = {
