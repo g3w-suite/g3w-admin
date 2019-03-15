@@ -148,7 +148,7 @@ class ProjectSerializer(serializers.ModelSerializer):
             options['querymultilayers'].append('query')
 
         if hasattr(instance, 'multilayer_querybybbox') and instance.multilayer_querybybbox == 'multiple':
-            options['querymultilayers'].append('querybybbox')
+            options['querymultilayers'].append('querybbox')
 
         if hasattr(instance, 'multilayer_querybypolygon') and instance.multilayer_querybypolygon == 'multiple':
             options['querymultilayers'].append('querybypolygon')
