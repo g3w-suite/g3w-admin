@@ -78,6 +78,9 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
     # possible layer relations
     relations = models.TextField(_('Layer relations'), blank=True, null=True)
 
+    # WMSUseLayerIDs
+    wms_use_layer_ids = models.BooleanField(_('WMS use layer ids'), default=False)
+
     class Meta:
         verbose_name = _('Project')
         verbose_name_plural = _('Projects')
