@@ -129,6 +129,32 @@ class ProjectSerializer(serializers.ModelSerializer):
                 map_relations.append(serialize_vectorjoin(layer_id, n, join))
         return map_relations
 
+    def _set_options(self, instance):
+        """
+        Se client options
+        :param instance:
+        :return:
+        """
+        options = {}
+
+        # set feature_count:
+        if hasattr(instance, 'feature_count_wms'):
+            options['feature_count'] = instance.feature_count_wms
+
+        # set multi layer query
+        options['querymultilayers'] = []
+
+        if hasattr(instance, 'multilayer_query') and instance.multilayer_query == 'multiple':
+            options['querymultilayers'].append('query')
+
+        if hasattr(instance, 'multilayer_querybybbox') and instance.multilayer_querybybbox == 'multiple':
+            options['querymultilayers'].append('querybybbox')
+
+        if hasattr(instance, 'multilayer_querybypolygon') and instance.multilayer_querybypolygon == 'multiple':
+            options['querymultilayers'].append('querybypolygon')
+
+        return options
+
     def to_representation(self, instance):
         ret = super(ProjectSerializer, self).to_representation(instance)
 
@@ -229,6 +255,9 @@ class ProjectSerializer(serializers.ModelSerializer):
 
         # add project metadata
         ret['metadata'] = qgis_projectsettings_wms.metadata
+
+        # set client options/actions
+        ret.update(self._set_options(instance))
 
         return ret
 
