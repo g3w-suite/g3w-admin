@@ -1,18 +1,40 @@
-{% extends "base.html" %}
-{% load staticfiles %}
-{% load i18n %}
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><meta charset="utf-8" />
+<title>Home Page SIT - AVMTB</title>
+<link href="/custom_static/css/home.css" rel="stylesheet"/>
+<link href="favicon.ico" rel="shortcut icon" type="image/x-icon" /><meta name="viewport" content="width=device-width" /></head>
+<body>
+</script>
+	<header>
+		<div class="content-wrapper">
+			<div class="float-left">
+				<p class="site-title">
+					<a href="/"><img id="Image1" src="/custom_static/img/logo.gif" /></a>
+					&nbsp; <a href="/">Area Vasta Metropoli Terra di Bari</a>
+				</p>
+			</div>
+		</div>
+	</header>
+	<div id="body">
+	    <section class="featured">
+			<div class="content-wrapper">
+				<hgroup class="title">
+					<h1>Servizi del Sistema Informativo Territoriale</h1>
+				</hgroup>
+			</div>
+		</section>
+		<section class="content-wrapper main-content clear-fix">
+		<div id="textinfo">
+			<h3>
+			ATTENZIONE: Hai richiesto una pagina non più attiva, questo potrebbe dipendere dalle informazioni memorizzate sul tuo browser.<br>
+			Per poter accedere al sistema clicca <a href="http://sit.egov.ba.it/it/">QUI</a> oppure cancella al cache del tuo browser, attraverso la combinazione dei tasti CTRL+SHIFT+CANC.<br>
+			</h3>
+		</div>
+</div>
 
 
-{% block body_content %}
-<div style="text-align: center;"  class="error-page">
-    <img src="{% static 'img/g3wsuite_logo_h40.png' %}" alt="G3W-SUITE LOGO">
-    <h2 style="float: none;" class="headline text-yellow">404</h2>
-    <div style="margin-left: 0px;" class="error-content">
-        <h3><i class="fa fa-warning text-yellow"></i> {% trans 'Oops! Page not found.' %}</h3>
-        <p>
-        {% trans "We could not find the page you were looking for." %}.
-        </p>
-    </div><!-- /.error-content -->
-</div><!-- /.error-page -->
-{% endblock %}
+</body>
+</html>
+
 
