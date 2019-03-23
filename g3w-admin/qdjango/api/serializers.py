@@ -129,6 +129,32 @@ class ProjectSerializer(serializers.ModelSerializer):
                 map_relations.append(serialize_vectorjoin(layer_id, n, join))
         return map_relations
 
+    def _set_options(self, instance):
+        """
+        Se client options
+        :param instance:
+        :return:
+        """
+        options = {}
+
+        # set feature_count:
+        if hasattr(instance, 'feature_count_wms'):
+            options['feature_count'] = instance.feature_count_wms
+
+        # set multi layer query
+        options['querymultilayers'] = []
+
+        if hasattr(instance, 'multilayer_query') and instance.multilayer_query == 'multiple':
+            options['querymultilayers'].append('query')
+
+        if hasattr(instance, 'multilayer_querybybbox') and instance.multilayer_querybybbox == 'multiple':
+            options['querymultilayers'].append('querybbox')
+
+        if hasattr(instance, 'multilayer_querybypolygon') and instance.multilayer_querybypolygon == 'multiple':
+            options['querymultilayers'].append('querybypolygon')
+
+        return options
+
     def to_representation(self, instance):
         ret = super(ProjectSerializer, self).to_representation(instance)
 
@@ -165,8 +191,8 @@ class ProjectSerializer(serializers.ModelSerializer):
                 for node in layer['nodes']:
                     readLeaf(node, layer['nodes'])
             else:
-                if layers[layer['id']].name in qgis_projectsettings_wms.layers:
-
+                lidname = layers[layer['id']].qgs_layer_id if instance.wms_use_layer_ids else layers[layer['id']].name
+                if lidname in qgis_projectsettings_wms.layers:
                     # remove from tree layer without geometry
                     #if layers[layer['id']].geometrytype == QGIS_LAYER_TYPE_NO_GEOM:
                         #to_remove_from_layerstree.append((container, layer))
@@ -230,6 +256,9 @@ class ProjectSerializer(serializers.ModelSerializer):
         # add project metadata
         ret['metadata'] = qgis_projectsettings_wms.metadata
 
+        # set client options/actions
+        ret.update(self._set_options(instance))
+
         return ret
 
     class Meta:
@@ -238,7 +267,8 @@ class ProjectSerializer(serializers.ModelSerializer):
             'id',
             'name',
             'layerstree',
-            'thumbnail'
+            'thumbnail',
+            'wms_use_layer_ids'
         )
 
 
@@ -293,7 +323,8 @@ class LayerSerializer(serializers.ModelSerializer):
         :return:
         """
         capabilities = 0
-        if self.qgis_projectsettings_wms.layers[instance.name]['queryable']:
+        lidname = instance.qgs_layer_id if instance.project.wms_use_layer_ids else instance.name
+        if self.qgis_projectsettings_wms.layers[lidname]['queryable']:
             capabilities |= settings.QUERYABLE
         if instance.wfscapabilities:
             capabilities |= settings.FILTRABLE
@@ -319,9 +350,12 @@ class LayerSerializer(serializers.ModelSerializer):
         ret['infoformat'] = ''
         ret['infourl'] = ''
 
+        lidname = instance.qgs_layer_id if instance.project.wms_use_layer_ids else instance.name
+
         # add bbox
         if instance.geometrytype != QGIS_LAYER_TYPE_NO_GEOM:
-            bbox = self.qgis_projectsettings_wms.layers[instance.name]['bboxes']['EPSG:{}'.format(group.srid.srid)]
+
+            bbox = self.qgis_projectsettings_wms.layers[lidname]['bboxes']['EPSG:{}'.format(group.srid.srid)]
             ret['bbox'] = {}
             for coord, val in bbox.items():
                 if val not in (float('inf'), float('-inf')):
@@ -341,7 +375,7 @@ class LayerSerializer(serializers.ModelSerializer):
         ret['capabilities'] = self.get_capabilities(instance)
 
         # add styles
-        ret['styles'] = self.qgis_projectsettings_wms.layers[instance.name]['styles']
+        ret['styles'] = self.qgis_projectsettings_wms.layers[lidname]['styles']
 
         ret['source'] = {
             'type': instance.layer_type
@@ -362,7 +396,7 @@ class LayerSerializer(serializers.ModelSerializer):
             ret['proj4'] = None
 
         # add metadata
-        ret['metadata'] = self.qgis_projectsettings_wms.layers[instance.name]['metadata']
+        ret['metadata'] = self.qgis_projectsettings_wms.layers[lidname]['metadata']
 
         # eval editor_form_structure
         if ret['editor_form_structure']:

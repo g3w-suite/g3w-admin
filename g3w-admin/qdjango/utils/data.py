@@ -230,7 +230,10 @@ class QgisProjectLayer(XmlData):
         attrib = self.qgisProjectLayerTree.attrib
 
         # qgis3 project layer chang maximimScale to maxScale
-        maximumScale = attrib['maximumScale'] if 'maximumScale' in attrib else attrib['maxScale']
+        if self.qgisProject.qgisVersion[0] == '3':
+            maximumScale = attrib['minScale']
+        else:
+            maximumScale = attrib['maximumScale'] if 'maximumScale' in attrib else attrib['maxScale']
         if maximumScale == 'inf':
             # return 2**31-1
             return 0
@@ -244,7 +247,10 @@ class QgisProjectLayer(XmlData):
         attrib = self.qgisProjectLayerTree.attrib
 
         # qgis3 project layer chang minimumScale to minScale
-        minimunScale = attrib['minimumScale'] if 'minimumScale' in attrib else attrib['minScale']
+        if self.qgisProject.qgisVersion[0] == '3':
+            minimunScale = attrib['maxScale']
+        else:
+            minimunScale = attrib['minimumScale'] if 'minimumScale' in attrib else attrib['minScale']
         if minimunScale == 'inf':
             #return 2**31-1
             return 0
@@ -592,14 +598,15 @@ class QgisProject(XmlData):
         'title',
         'srid',
         'units',
+        'qgisVersion',
         'initialExtent',
         'maxExtent',
+        'wmsuselayerids',
         'wfsLayers',
         'wfstLayers',
         'layersTree',
         'layers',
-        'layerRelations',
-        'qgisVersion'
+        'layerRelations'
         ]
 
     _defaultValidators = [
@@ -708,6 +715,17 @@ class QgisProject(XmlData):
             }
         else:
             return None
+
+    def _getDataWmsuselayerids(self):
+        """
+        Get WMSUseLayerIDS property
+        :return: bool
+        """
+        wmsuselayerids = self.qgisProjectTree.find('properties/WMSUseLayerIDs')
+        if wmsuselayerids is not None:
+            return True if wmsuselayerids.text == 'true' else False
+        else:
+            return False
 
 
     def _getDataSrid(self):
@@ -888,6 +906,7 @@ class QgisProject(XmlData):
                     title=self.title,
                     initial_extent=self.initialExtent,
                     max_extent=self.maxExtent,
+                    wms_use_layer_ids=self.wmsuselayerids,
                     thumbnail=thumbnail,
                     description=description,
                     baselayer=baselayer,
@@ -905,6 +924,7 @@ class QgisProject(XmlData):
                 self.instance.max_extent = self.maxExtent
                 self.instance.layers_tree = self.layersTree
                 self.instance.relations = self.layerRelations
+                self.instance.wms_use_layer_ids = self.wmsuselayerids
 
                 self.instance.save()
 

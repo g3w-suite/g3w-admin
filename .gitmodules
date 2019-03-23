@@ -55,3 +55,5 @@
 [submodule "g3w-admin/spid_redirect"]
 	path = g3w-admin/spid_redirect
 	url = https://wlorenzetti@bitbucket.org/gis3w/g3w-admin-spid_redirect.git
+
+

@@ -24,6 +24,7 @@ import json
 MODE_DATA = 'data'
 MODE_CONFIG = 'config'
 MODE_SHP = 'shp'
+MODE_XLS = 'xls'
 
 
 class G3WAPIResults(object):

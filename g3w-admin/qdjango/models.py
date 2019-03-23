@@ -40,6 +40,11 @@ def get_thumbnail_path(instance, filename):
 class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
     """A QGIS project."""
 
+    QUERY_TYPE = Choices(
+        ('single', _('Single')),
+        ('multiple', _('Multiple'))
+        )
+
     # Project file
     qgis_file = models.FileField(
         _('QGIS project file'),
@@ -77,6 +82,22 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
                                   null=True, blank=True)
     # possible layer relations
     relations = models.TextField(_('Layer relations'), blank=True, null=True)
+
+    # WMSUseLayerIDs
+    wms_use_layer_ids = models.BooleanField(_('WMS use layer ids'), default=False)
+
+    # client options:
+    #============================================
+
+    feature_count_wms = models.IntegerField(_('Max feature to get for query'), default=5)
+
+    multilayer_query = models.CharField(_('Query control mode'), max_length=20, choices=QUERY_TYPE, default='single')
+
+    multilayer_querybybbox = models.CharField(_('Query by bbox control mode'), max_length=20, choices=QUERY_TYPE,
+                                      default='single')
+
+    multilayer_querybypolygon = models.CharField(_('Query by polygon control mode'), max_length=20, choices=QUERY_TYPE,
+                                            default='single')
 
     class Meta:
         verbose_name = _('Project')

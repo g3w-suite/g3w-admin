@@ -2,11 +2,12 @@ from django.db import connections
 from django.http import HttpResponse, HttpResponseForbidden
 from rest_framework.filters import OrderingFilter
 from core.api.base.views import BaseVectorOnModelApiView, IntersectsBBoxFilter, MODE_DATA, MODE_CONFIG, MODE_SHP, \
-    APIException
+    APIException, MODE_XLS
 from core.api.base.vector import MetadataVectorLayer
 from core.utils.structure import mapLayerAttributesFromModel
 from core.utils.models import create_geomodel_from_qdjango_layer, get_geometry_column
 from core.utils.vector import BaseUserMediaHandler
+from core.utils.ie import modelresource_factory
 from core.api.permissions import ProjectPermission
 from core.api.filters import DatatablesFilterBackend, SuggestFilterBackend
 from .utils.edittype import MAPPING_EDITTYPE_QGISEDITTYPE
@@ -165,7 +166,8 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         MODE_CONFIG,
         MODE_DATA,
         MODE_WIDGET,
-        MODE_SHP
+        MODE_SHP,
+        MODE_XLS
     ]
 
     mapping_layer_attributes_function = mapLayerAttributesFromModel
@@ -352,6 +354,23 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         # Grab ZIP file from in-memory, make response with correct MIME-type
         response = HttpResponse(s.getvalue(), content_type="application/x-zip-compressed")
         response['Content-Disposition'] = 'attachment; filename=%s' % zip_filename
+        response.set_cookie('fileDownload', 'true')
+        return response
+
+    def response_xls_mode(self, request):
+        """
+        Download xls of data
+        :param request: Http Django request object
+        :return: http response with attached file
+        """
+
+        resources = modelresource_factory(self.metadata_layer.model,
+                                          exclude=(get_geometry_column(self.metadata_layer.model).name,))()
+
+        dataset = resources.export()
+
+        response = HttpResponse(dataset.xls, content_type='application/ms-excel')
+        response['Content-Disposition'] = 'attachment; filename=geodata.xls'
         response.set_cookie('fileDownload', 'true')
         return response
 
