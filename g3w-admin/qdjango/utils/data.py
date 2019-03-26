@@ -429,8 +429,6 @@ class QgisProjectLayer(XmlData):
         Get edittypes for editing widget
         :return: dict
         """
-        edittype_columns = dict()
-        edittypes = self.qgisProjectLayerTree.find('edittypes')
 
         # before defautls field values if isset
         defaults = self.qgisProjectLayerTree.find('defaults')
@@ -440,25 +438,64 @@ class QgisProjectLayer(XmlData):
                 if default.attrib['expression']:
                     defaults_columns[default.attrib['field']] = default.attrib['expression']
 
-        if edittypes is not None:
-            for edittype in edittypes:
-                data = {
-                    'widgetv2type': edittype.attrib['widgetv2type'],
-                    'values': list()
-                }
 
-                widgetv2config = edittype.find('widgetv2config')
+        edittype_columns = dict()
 
-                # update with attributes
-                data.update(widgetv2config.attrib)
-                if edittype.attrib['name'] in defaults_columns:
-                    data['default'] = defaults_columns[edittype.attrib['name']]
+        if self.qgisProject.qgisVersion[0] == '3':
 
-                # check for values
-                for value in widgetv2config:
-                    data['values'].append(value.attrib)
+            fieldConfiguration = self.qgisProjectLayerTree.find('fieldConfiguration')
 
-                edittype_columns[edittype.attrib['name']] = data
+            if fieldConfiguration is not None:
+                for field in fieldConfiguration:
+
+                    # get field name
+                    fname = field.attrib['name']
+
+                    # get editWidget
+                    ewdiget = field[0]
+
+                    ewtype = ewdiget.attrib['type']
+                    data = {
+                        'widgetv2type': ewtype,
+                        'fieldEditable': '1',
+                        'values': list()
+                    }
+
+                    # update with options
+                    options = ewdiget[0][0]
+                    if ewtype == 'ValueMap':
+                        options = options[0]
+                        for value in options:
+                            data['values'].append({'key':value.attrib['name'], 'value': value.attrib['value']})
+                    else:
+                        for option in options:
+                            data.update({option.attrib['name']: option.attrib['value']})
+
+                    edittype_columns[fname] = data
+
+        else:
+
+            edittypes = self.qgisProjectLayerTree.find('edittypes')
+
+            if edittypes is not None:
+                for edittype in edittypes:
+                    data = {
+                        'widgetv2type': edittype.attrib['widgetv2type'],
+                        'values': list()
+                    }
+
+                    widgetv2config = edittype.find('widgetv2config')
+
+                    # update with attributes
+                    data.update(widgetv2config.attrib)
+                    if edittype.attrib['name'] in defaults_columns:
+                        data['default'] = defaults_columns[edittype.attrib['name']]
+
+                    # check for values
+                    for value in widgetv2config:
+                        data['values'].append(value.attrib)
+
+                    edittype_columns[edittype.attrib['name']] = data
 
         return edittype_columns
 
