@@ -465,8 +465,13 @@ class QgisProjectLayer(XmlData):
                     options = ewdiget[0][0]
                     if ewtype == 'ValueMap':
                         options = options[0]
-                        for value in options:
-                            data['values'].append({'key':value.attrib['name'], 'value': value.attrib['value']})
+                        if options.attrib['type'] == 'List':
+                            for option in options:
+                                value = option[0]
+                                data['values'].append({'key': value.attrib['name'], 'value': value.attrib['value']})
+                        else:
+                            for value in options:
+                                data['values'].append({'key': value.attrib['name'], 'value': value.attrib['value']})
                     else:
                         for option in options:
                             data.update({option.attrib['name']: option.attrib['value']})
