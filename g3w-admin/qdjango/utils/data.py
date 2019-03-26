@@ -474,7 +474,8 @@ class QgisProjectLayer(XmlData):
                                 data['values'].append({'key': value.attrib['name'], 'value': value.attrib['value']})
                     else:
                         for option in options:
-                            data.update({option.attrib['name']: option.attrib['value']})
+                            if 'value' in option.attrib:
+                                data.update({option.attrib['name']: option.attrib['value']})
 
                     edittype_columns[fname] = data
 
