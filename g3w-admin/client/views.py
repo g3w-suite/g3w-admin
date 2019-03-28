@@ -139,7 +139,8 @@ class ClientView(TemplateView):
             raise Http404('No project type and/or project id present in group')
 
         # page title
-        contextData['page_title'] = '{} | {}'.format(
+
+        contextData['page_title'] = u'{} | {}'.format(
             getattr(settings, 'G3WSUITE_CUSTOM_TITLE', 'g3w - client'), self.project.title)
 
         # choosen skin by user main role
