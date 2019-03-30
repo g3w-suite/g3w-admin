@@ -58,10 +58,12 @@ class QgisEditTypeDateTime(QgisEditType):
                 'type': self.field_type,
                 'options': [
                     {
-                        'date': bool(len(re.findall('/yyyy|MM|dd/', self.field_format))),
-                        'time': bool(len(re.findall('/HH|mm|ss/', self.field_format))),
-                        'fieldformat': self.field_format,
-                        'displayformat': self.display_format,
+                        'date': bool(len(re.findall('/yyyy|MM|dd/', self.field_format)))
+                        if hasattr(self, 'field_format') else True,
+                        'time': bool(len(re.findall('/HH|mm|ss/', self.field_format)))
+                        if hasattr(self, 'field_format') else False,
+                        'fieldformat': self.field_format if hasattr(self, 'field_format') else 'yyyy-MM-dd',
+                        'displayformat': self.display_format if hasattr(self, 'display_format') else 'HH:mm:ss',
                         'default': self.default if hasattr(self, 'default') else None
                     },
 
@@ -85,9 +87,9 @@ class QgisEditTypeRange(QgisEditType):
                 'type': self.field_type,
                 'options': [
                     {
-                        'min': self.Min,
-                        'max': self.Max,
-                        'Step': self.Step,
+                        'min': self.Min if hasattr(self, 'Min') else 2147483647,
+                        'max': self.Max if hasattr(self, 'Max') else -2147483648,
+                        'Step': self.Step if hasattr(self, 'Step') else 1,
                         'default': self.default if hasattr(self, 'default') else None
                     },
 
