@@ -79,10 +79,14 @@ class OWSRequestHandler(OWSRequestHandlerBase):
         # http urllib3 manager
         http = None
 
+        raw_body = request.body
         if request.method == 'GET':
             ows_request = q['REQUEST'].upper()
         else:
-            ows_request = request.POST['REQUEST'][0].upper()
+            if request.content_type == 'application/x-www-form-urlencoded':
+                ows_request = request.POST['REQUEST'].upper()
+            else:
+                ows_request = request.POST['REQUEST'][0].upper()
         if qdjangoModeRequest == QDJANGO_PROXY_REQUEST or ows_request == 'GETLEGENDGRAPHIC':
 
             # try to get getfeatureinfo on wms layer
@@ -128,7 +132,8 @@ class OWSRequestHandler(OWSRequestHandlerBase):
             if not http:
                 http = urllib3.PoolManager()
 
-            result = http.request(request.method, url, body=request.body)
+            result = http.request(request.method, url, body=raw_body)
+            #result = http.request(request.method, url, fields=request.POST)
             result_data = result.data
 
             if ows_request == 'GETCAPABILITIES':
