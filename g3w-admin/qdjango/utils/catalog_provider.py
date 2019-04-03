@@ -71,7 +71,7 @@ def catalog_provider(groups=[]):
             layer = Layer.objects.get(qgs_layer_id=layer_data['id'])
             # Full list of Record fields
             rec = {
-                # Maps to pycsw:Identifier
+                # Maps to pycsw:Identifier NOPE: it will be rewritten by RNDT
                 'identifier': 'wms.qdjango.%s.%s' % (layer.slug, layer.id),
                 # From caller 'catalog': layer_metadata['catalog'],  # Maps to pycsw:ParentIdentifier
                 'typename': layer.name,  # Maps to pycsw:Typename
@@ -84,8 +84,8 @@ def catalog_provider(groups=[]):
                 'title': layer_metadata['title'],  # Maps to pycsw:Title
                 # Maps to pycsw:Abstract
                 'abstract': layer_metadata['abstract'],
-                # Maps to pycsw:Keywords
-                'keywords': ','.join(layer_metadata['keywords']),
+                # Maps to pycsw:Keywords: cannot because they are not GEMET! (comma separated GEMET)
+                # 'keywords': ','.join(layer_metadata['keywords']),
                 #'keywords_types': layer_metadata['keywords_types'],  # Maps to pycsw:Keywordstype
                 'format': 'image/jpeg,image/png',  # Maps to pycsw:Format
                 # Maps to pycsw:Source
