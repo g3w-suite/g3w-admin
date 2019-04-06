@@ -259,6 +259,9 @@ class ProjectSerializer(serializers.ModelSerializer):
         # set client options/actions
         ret.update(self._set_options(instance))
 
+        # set own method
+        ret['ows_method'] = settings.CLIENT_OWS_METHOD
+
         return ret
 
     class Meta:
