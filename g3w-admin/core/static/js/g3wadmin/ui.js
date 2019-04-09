@@ -24,6 +24,10 @@ _.extend(g3wadmin.ui, {
             $(this).remove();
         });
 
+        if (this.options['onModalShow']){
+            this.$modal.on('shown.bs.modal',eval(this.options['onModalShow']));
+        }
+
         this.show = function (){
 
             var backdrop = true;
