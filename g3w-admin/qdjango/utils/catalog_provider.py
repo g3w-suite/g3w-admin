@@ -71,7 +71,7 @@ def catalog_provider(groups=[]):
             layer = Layer.objects.get(qgs_layer_id=layer_data['id'])
             # Full list of Record fields
             rec = {
-                # Maps to pycsw:Identifier NOPE: it will be rewritten by RNDT
+                # Maps to pycsw:Identifier
                 'identifier': 'wms.qdjango.%s.%s' % (layer.slug, layer.id),
                 # From caller 'catalog': layer_metadata['catalog'],  # Maps to pycsw:ParentIdentifier
                 'typename': layer.name,  # Maps to pycsw:Typename
@@ -91,9 +91,9 @@ def catalog_provider(groups=[]):
                 # Maps to pycsw:Source
                 # 'source': layer_metadata['source'],
                 #'date': layer_metadata['date'],  # Maps to pycsw:Date, pycsw:Modified, pycsw:RevisionData, pycsw:CreationDate and pycsw:PublicationDate
-                'type': 'Dataset',  # Maps to pycsw:Type
+                'type': 'dataset',  # Maps to pycsw:Type
                 # Maps to pycsw:BoundingBox
-                'bounding_box': '{0},{1},{2},{3}'.format(*layer_metadata['bbox'].values()),
+                'bounding_box': 'MULTIPOINT({1} {0}, {3} {2})'.format(*layer_metadata['bbox'].values()),
                 'crs': layer_metadata['crs'],  # Maps to pycsw:CRS
                 #'alternate_title': layer_metadata['alternate_title'],  # Maps to pycsw:AlternateTitle
                 # From caller 'organization_name': layer_metadata['organization_name'],  # Maps to pycsw:OrganizationName
