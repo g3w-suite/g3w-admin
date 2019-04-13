@@ -48,6 +48,7 @@ _.extend(g3wadmin.widget, {
         'action-url',
         'modal-title',
         'file-extensions',
+        'on-modal-show',
         'item-plus-form' // #selector to DOM contains addtitional form inputs.
     ],
 
@@ -348,7 +349,8 @@ _.extend(g3wadmin.widget, {
                 closeX: false,
                 backdrop: 'static',
                 modalTitle: ((_.isUndefined(params['modal-title']) ? gettext('Upload file') : params['modal-title'])),
-                modalBody: ga.tpl.ajaxFiler(templateOptions)
+                modalBody: ga.tpl.ajaxFiler(templateOptions),
+                onModalShow: ((_.isUndefined(params['on-modal-show']) ? false : params['on-modal-show']))
             });
 
             var filerDom = $(modal.$modal.find('#filer_input'));

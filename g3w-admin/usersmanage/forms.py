@@ -206,7 +206,7 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
     avatar = UploadedFileField(required=False)
     groups = ModelMultipleChoiceField(
         queryset=AuthGroup.objects.filter(name__in=[G3W_EDITOR1, G3W_EDITOR2, G3W_VIEWER1, G3W_VIEWER2]),
-        required=False,
+        required=True,
         help_text=_('Select roles for this user'),
         label=_('Main roles')
     )
