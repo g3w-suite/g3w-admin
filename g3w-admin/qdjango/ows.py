@@ -2,6 +2,7 @@ from django.http import HttpResponse
 from django.conf import settings
 from django.http.request import QueryDict
 from django.db.models import Q
+from django.core.cache import cache
 
 try:
     from qgis.server import *
@@ -60,6 +61,16 @@ class OWSRequestHandler(OWSRequestHandlerBase):
         self.groupSlug = kwargs.get('group_slug', None)
         self.projectId = kwargs.get('project_id', None)
 
+        # map file chache key
+        '''
+        self.cache_key = '{}/{}/{}'.format(
+            self.groupSlug,
+            'qdjango',
+            self.projectId
+        )
+
+        if not cache.get(self.cache_key):
+        '''
         if self.projectId:
             self._getProjectInstance()
 
@@ -198,6 +209,12 @@ class OWSRequestHandler(OWSRequestHandlerBase):
             if ku != k:
                 q[ku] = q[k]
                 del q[k]
+
+        #if not cache.get(self.cache_key):
+        #   q['map'] = self._projectInstance.qgis_file.file.name
+        #    cache.set(self.cache_key, q['map'])
+        #else:
+        #    q['map'] = cache.get(self.cache_key)
 
         q['map'] = self._projectInstance.qgis_file.file.name
         return self.baseDoRequest(q, self.request)

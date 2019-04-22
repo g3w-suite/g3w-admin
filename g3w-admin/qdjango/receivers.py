@@ -55,13 +55,26 @@ def delete_project_file(sender, **kwargs):
     Perform delete project file from 'projects' media folder
     """
 
+    instance = kwargs['instance']
+
+    # try to cache map file path
+    '''
+    cache_key = '{}/{}/{}'.format(
+        instance.group.pk,
+        'qdjango',
+        instance.pk
+    )
+
+    caches['default'].delete(cache_key)
+    '''
+
     try:
-        os.remove(kwargs['instance'].qgis_file.path)
+        os.remove(instance.qgis_file.path)
     except Exception as e:
         logger.error(e)
 
-        if 'qdjango' in settings.CACHES:
-            caches['qdjango'].delete('qdjango_prjsettings_{}'.format(kwargs['instance'].pk))
+    if 'qdjango' in settings.CACHES:
+        caches['qdjango'].delete(settings.QDJANGO_PRJ_CACHE_KEY.format(instance.pk))
 
 
 @receiver(post_save, sender=Project)
@@ -69,5 +82,6 @@ def delete_cache_project_settings(sender, **kwargs):
     """
     Perform deleting of key caches for getprojectsettings response.
     """
+
     if 'qdjango' in settings.CACHES:
-        caches['qdjango'].delete('qdjango_prjsettings_{}'.format(kwargs['instance'].pk))
+        caches['qdjango'].delete(settings.QDJANGO_PRJ_CACHE_KEY.format(kwargs['instance'].pk))
