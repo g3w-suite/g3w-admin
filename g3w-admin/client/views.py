@@ -83,7 +83,7 @@ class ClientView(TemplateView):
         logout_url = reverse('logout') + '?next={}'.format(reverse('group-project-map', kwargs={
             'group_slug': kwargs['group_slug'],
             'project_type': kwargs['project_type'],
-            'project_id': kwargs['project_id']
+            'project_id': self.project.pk
         }))
 
 
