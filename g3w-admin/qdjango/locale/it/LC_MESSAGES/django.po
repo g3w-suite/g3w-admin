@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-02-22 15:27+0000\n"
+"POT-Creation-Date: 2019-04-18 12:09+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,427 +18,504 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: qdjango/forms.py:52
+#: forms.py:31
+msgid "File must have 'qgs' or 'qgz' extension"
+msgstr ""
+
+#: forms.py:60
+msgid "Url alias can contains only numbers, letters, - or _"
+msgstr "Url alias deve contenere solo numeri, lettere, - o _"
+
+#: forms.py:64
+msgid "This alias is used by another project/map"
+msgstr "Questo alias è utilizzato gia da un'altro progetto"
+
+#: forms.py:82
+msgid "URL alias"
+msgstr ""
+
+#: forms.py:83
+msgid ""
+"You can set a human readable URL for the map. Only alphanumeric characters, "
+"not white space or special characters"
+msgstr "Devi impostare un URL leggibile per la mappa. Sono concessi solo caratteri alfanumerici, "
+"no spazi o caratteri speciali"
+
+#: forms.py:101
 msgid "Qgis Project"
 msgstr "Progetto QGIS"
 
-#: qdjango/forms.py:75
+#: forms.py:127
 msgid "Descrition data"
 msgstr "Descrizione"
 
-#: qdjango/models.py:43
+#: forms.py:149
+msgid "Options and actions"
+msgstr "Opzioni e azioni"
+
+#: models.py:44
+msgid "Single"
+msgstr "Singola"
+
+#: models.py:45
+msgid "Multiple"
+msgstr "Multipla"
+
+#: models.py:50
 msgid "QGIS project file"
 msgstr "File progetto QGIS"
 
-#: qdjango/models.py:49 qdjango/models.py:160
-#: qdjango/templates/qdjango/project_list.html:22
+#: models.py:57 models.py:263 templates/qdjango/project_list.html:22
 msgid "Title"
 msgstr "Titolo"
 
-#: qdjango/models.py:50 qdjango/models.py:163
+#: models.py:58 models.py:266
 msgid "Description"
 msgstr "Descrizione"
 
-#: qdjango/models.py:52 qdjango/models.py:165 qdjango/models.py:265
+#: models.py:60 models.py:268 models.py:384
 msgid "Slug"
 msgstr "Slug"
 
-#: qdjango/models.py:54 qdjango/models.py:167
+#: models.py:62 models.py:270
 msgid "Is active"
 msgstr "Attivo"
 
-#: qdjango/models.py:57 qdjango/templates/qdjango/ajax/project_detail.html:26
+#: models.py:65 templates/qdjango/ajax/project_detail.html:26
 msgid "Thumbnail"
 msgstr "Miniatura"
 
-#: qdjango/models.py:60
+#: models.py:68
 msgid "Group"
 msgstr "Gruppo"
 
-#: qdjango/models.py:63 qdjango/templates/qdjango/ajax/project_detail.html:6
+#: models.py:71 templates/qdjango/ajax/project_detail.html:6
 msgid "Initial extent"
 msgstr "Estenzione iniziale"
 
-#: qdjango/models.py:64
+#: models.py:72
 msgid "Max extent"
 msgstr "Massima estenzione"
 
-#: qdjango/models.py:67
+#: models.py:75
 msgid "Qgis project version"
 msgstr "Versione QGIS"
 
-#: qdjango/models.py:70
+#: models.py:78
 msgid "Layers tree structure"
 msgstr "Albero dei layer"
 
-#: qdjango/models.py:73
+#: models.py:81
 msgid "Base Layer"
 msgstr "Layer di base"
 
-#: qdjango/models.py:76 qdjango/models.py:205
+#: models.py:84 models.py:308
 msgid "Layer relations"
-msgstr ""
+msgstr "Relazioni del layer"
 
-#: qdjango/models.py:79 qdjango/models.py:169
-#: qdjango/templates/qdjango/layers_list.html:29
+#: models.py:87
+msgid "WMS use layer ids"
+msgstr "Usa gli id layer come nome per il WMS"
+
+#: models.py:92
+msgid "Max feature to get for query"
+msgstr "Numero massimo di risultati per query"
+
+#: models.py:94
+msgid "Query control mode"
+msgstr "Tipo di controllo per la query puntuale"
+
+#: models.py:96
+msgid "Query by bbox control mode"
+msgstr "Tipo di controllo per le query per BBOX"
+
+#: models.py:99
+msgid "Query by polygon control mode"
+msgstr "Tipo di controllo per le qhery per poligono"
+
+#: models.py:103 models.py:272 templates/qdjango/layers_list.html:36
 msgid "Project"
 msgstr "Progetto"
 
-#: qdjango/models.py:80
+#: models.py:104
 msgid "Projects"
 msgstr "Progetti"
 
-#: qdjango/models.py:148
+#: models.py:251
 msgid "Postgres"
 msgstr ""
 
-#: qdjango/models.py:149
+#: models.py:252
 msgid "SpatiaLite"
 msgstr ""
 
-#: qdjango/models.py:150
+#: models.py:253
 msgid "Raster"
 msgstr ""
 
-#: qdjango/models.py:151
+#: models.py:254
 msgid "WFS"
 msgstr ""
 
-#: qdjango/models.py:152
+#: models.py:255
 msgid "WMS"
 msgstr ""
 
-#: qdjango/models.py:153
+#: models.py:256
 msgid "OGR"
 msgstr ""
 
-#: qdjango/models.py:154
+#: models.py:257
 msgid "GDAL"
 msgstr ""
 
-#: qdjango/models.py:155
+#: models.py:258
 msgid "CSV"
 msgstr ""
 
-#: qdjango/models.py:159 qdjango/models.py:260
-#: qdjango/templates/qdjango/ajax/layer_widgets.html:9
-#: qdjango/templates/qdjango/layers_list.html:70
+#: models.py:262 models.py:379 templates/qdjango/ajax/layer_widgets.html:9
+#: templates/qdjango/layers_list.html:81
 msgid "Name"
 msgstr "Nome"
 
-#: qdjango/models.py:161
+#: models.py:264
 msgid "Original Name"
 msgstr "Nome originale"
 
-#: qdjango/models.py:162
+#: models.py:265
 msgid "Qgis Layer Porject ID"
 msgstr "ID Layer progetto QGIS"
 
-#: qdjango/models.py:171 qdjango/models.py:263
-#: qdjango/templates/qdjango/ajax/layer_widgets.html:10
+#: models.py:274 models.py:382 templates/qdjango/ajax/layer_widgets.html:10
 msgid "Type"
 msgstr "Tipo"
 
-#: qdjango/models.py:172
+#: models.py:275
 msgid "Datasource"
 msgstr "Sorgente dati"
 
-#: qdjango/models.py:173
+#: models.py:276
 msgid "Is visible"
 msgstr "Visibile"
 
-#: qdjango/models.py:174
+#: models.py:277
 msgid "Order"
 msgstr "Ordine"
 
-#: qdjango/models.py:177
+#: models.py:280
 msgid "Associated data file"
 msgstr "File dati associato"
 
-#: qdjango/models.py:183
+#: models.py:286
 msgid "Database columns"
 msgstr "Colonne databse"
 
-#: qdjango/models.py:186
+#: models.py:289
 msgid "Layer Min Scale visibility"
 msgstr "Scala minima di visibilità"
 
-#: qdjango/models.py:187
+#: models.py:290
 msgid "Layer Max Scale visibility"
 msgstr "Scala massima di visibilità"
 
-#: qdjango/models.py:188
+#: models.py:291
 msgid "Layer scale based visibility"
 msgstr "Scala di visibilità del layer"
 
-#: qdjango/models.py:191
+#: models.py:294
 msgid "Layer SRID"
 msgstr ""
 
-#: qdjango/models.py:194
+#: models.py:297
 msgid "Bitwise capabilities"
 msgstr ""
 
-#: qdjango/models.py:195
+#: models.py:298
 msgid "Bitwise edit options"
 msgstr ""
 
-#: qdjango/models.py:196
+#: models.py:299
 msgid "Bitwise wfs options"
 msgstr ""
 
-#: qdjango/models.py:199
+#: models.py:302
 msgid "Geometry type"
 msgstr "Tipo di geometria"
 
-#: qdjango/models.py:201
+#: models.py:304
 msgid "Attributes excluded from wms"
-msgstr ""
+msgstr "Attributi da esludere dal WMS"
 
-#: qdjango/models.py:202
+#: models.py:305
 msgid "Attributes excluded from wfs"
-msgstr ""
+msgstr "Attributi dsa escludere dal WFS"
 
-#: qdjango/models.py:208
+#: models.py:311
 msgid "Columns layer widgets"
-msgstr ""
+msgstr "Colonne del layer con widgets"
 
-#: qdjango/models.py:211
+#: models.py:314
 msgid "Exclude to legend"
+msgstr "Escludi dalla legenda"
+
+#: models.py:317
+msgid "Form editor layout"
 msgstr ""
 
-#: qdjango/models.py:217
+#: models.py:318
+#, fuzzy
+#| msgid "Layers tree structure"
+msgid "Editor form structure"
+msgstr "Albero dei layer"
+
+#: models.py:320
+#, fuzzy
+#| msgid "Donwload"
+msgid "Download data"
+msgstr "Scarica"
+
+#: models.py:326
 msgid "Layer"
 msgstr ""
 
-#: qdjango/models.py:218 qdjango/templates/qdjango/project_list.html:43
+#: models.py:327 templates/qdjango/project_form.html:44
+#: templates/qdjango/project_list.html:43
 msgid "Layers"
 msgstr ""
 
-#: qdjango/models.py:261
+#: models.py:380
 msgid "Body"
 msgstr "Corpo"
 
-#: qdjango/models.py:262
+#: models.py:381
 msgid "datasource"
 msgstr "Sorgente dati"
 
-#: qdjango/templates/qdjango/ajax/layer_widgets.html:4
+#: templates/qdjango/ajax/layer_widgets.html:4
 msgid "Add new widget"
 msgstr "Nuovo widget"
 
-#: qdjango/templates/qdjango/ajax/layer_widgets.html:8
-#: qdjango/templates/qdjango/project_list.html:20
+#: templates/qdjango/ajax/layer_widgets.html:8
+#: templates/qdjango/project_list.html:20
 msgid "Actions"
 msgstr "Azioni"
 
-#: qdjango/templates/qdjango/ajax/layer_widgets.html:11
+#: templates/qdjango/ajax/layer_widgets.html:11
 msgid "Linked"
 msgstr "Collegato"
 
-#: qdjango/templates/qdjango/ajax/layer_widgets.html:22
-#: qdjango/templates/qdjango/project_list.html:58
+#: templates/qdjango/ajax/layer_widgets.html:22
+#: templates/qdjango/project_list.html:60
 msgid "Delete"
 msgstr "Elimina"
 
-#: qdjango/templates/qdjango/ajax/project_detail.html:10
+#: templates/qdjango/ajax/project_detail.html:10
 msgid "Users"
 msgstr "Utenti"
 
-#: qdjango/templates/qdjango/ajax/project_detail.html:13
+#: templates/qdjango/ajax/project_detail.html:13
 msgid "Editor user"
 msgstr "Utente Editor"
 
-#: qdjango/templates/qdjango/ajax/project_detail.html:16
+#: templates/qdjango/ajax/project_detail.html:16
 msgid "Viewer users"
 msgstr "Utenti Viewers"
 
-#: qdjango/templates/qdjango/ajax/project_detail.html:34
+#: templates/qdjango/ajax/project_detail.html:34
 msgid "Qgis project Version:"
 msgstr "Versione del progetto QGIS"
 
-#: qdjango/templates/qdjango/layers_list.html:18
+#: templates/qdjango/layers_list.html:25
 #, fuzzy
 #| msgid "Qdjango Project Layers"
 msgid "QGIS Project Layers"
 msgstr "Layers del progetto QGIS"
 
-#: qdjango/templates/qdjango/layers_list.html:31
-#: qdjango/templates/qdjango/project_list.html:38
+#: templates/qdjango/layers_list.html:41 templates/qdjango/project_form.html:42
+#: templates/qdjango/project_list.html:38
 msgid "Show map"
 msgstr "Mostra la mappa"
 
-#: qdjango/templates/qdjango/layers_list.html:34
-#: qdjango/templates/qdjango/project_list.html:48
+#: templates/qdjango/layers_list.html:44 templates/qdjango/project_form.html:43
+#: templates/qdjango/project_list.html:48
 msgid "Show detail"
 msgstr "Mostra dettagli"
 
-#: qdjango/templates/qdjango/layers_list.html:37
-#: qdjango/templates/qdjango/project_list.html:53
+#: templates/qdjango/layers_list.html:47 templates/qdjango/project_list.html:54
 msgid "Edit"
 msgstr "Modifica"
 
-#: qdjango/templates/qdjango/layers_list.html:50
+#: templates/qdjango/layers_list.html:60
 #, fuzzy
 #| msgid "Widgets list"
 msgid "Layers list"
 msgstr "Lista dei widget"
 
-#: qdjango/templates/qdjango/layers_list.html:55
+#: templates/qdjango/layers_list.html:65
 msgid "Data"
 msgstr "Dati"
 
-#: qdjango/templates/qdjango/layers_list.html:56
+#: templates/qdjango/layers_list.html:66
 msgid "Structure"
 msgstr "Struttura"
 
-#: qdjango/templates/qdjango/layers_list.html:66
+#: templates/qdjango/layers_list.html:76
 msgid "No legend"
 msgstr ""
 
-#: qdjango/templates/qdjango/layers_list.html:71
+#: templates/qdjango/layers_list.html:77
+#, fuzzy
+#| msgid "Donwload"
+msgid "Download"
+msgstr "Scarica"
+
+#: templates/qdjango/layers_list.html:82
 msgid "Label"
 msgstr "Etichetta"
 
-#: qdjango/templates/qdjango/layers_list.html:85
+#: templates/qdjango/layers_list.html:96
 msgid "Widgets list"
 msgstr "Lista dei widget"
 
-#: qdjango/templates/qdjango/project_form.html:15
+#: templates/qdjango/project_form.html:15
 #, fuzzy
 #| msgid "QGIS project file"
 msgid "QGIS project"
 msgstr "File progetto QGIS"
 
-#: qdjango/templates/qdjango/project_form.html:17
+#: templates/qdjango/project_form.html:17
 #, fuzzy
 #| msgid "New Qdjango project"
 msgid "New QGIS project"
 msgstr "Nuovo progetto Qdjango"
 
-#: qdjango/templates/qdjango/project_form.html:18
+#: templates/qdjango/project_form.html:18
 msgid "Create a new QGIS project for current group"
 msgstr ""
 
-#: qdjango/templates/qdjango/project_form.html:38
+#: templates/qdjango/project_form.html:38
+msgid "Shortcuts"
+msgstr ""
+
+#: templates/qdjango/project_form.html:57
 msgid "Alert"
 msgstr "Attenzione"
 
-#: qdjango/templates/qdjango/project_form.html:39
+#: templates/qdjango/project_form.html:58
 msgid "Some errors on form. Check it and send again."
 msgstr "Si sono verificati alcuni errori. Controlla e reinvia"
 
-#: qdjango/templates/qdjango/project_list.html:10
+#: templates/qdjango/project_list.html:10
 msgid "Qgis project type"
 msgstr "Tipo di progetto QGIS"
 
-#: qdjango/templates/qdjango/project_list.html:18
+#: templates/qdjango/project_list.html:18
 msgid "Panoramic"
 msgstr "Panoramica"
 
-#: qdjango/templates/qdjango/project_list.html:23
+#: templates/qdjango/project_list.html:23
 msgid "Widgets"
 msgstr ""
 
-#: qdjango/templates/qdjango/project_list.html:68
+#: templates/qdjango/project_list.html:70
 msgid "Donwload"
 msgstr "Scarica"
 
-#: qdjango/templates/qdjango/project_list.html:74
+#: templates/qdjango/project_list.html:75
 msgid "Upload"
 msgstr ""
 
-#: qdjango/templates/qdjango/project_list.html:74
+#: templates/qdjango/project_list.html:75
 #, fuzzy
 #| msgid "QGIS project file"
 msgid "Upload qgis project file"
 msgstr "File progetto QGIS"
 
-#: qdjango/templates/qdjango/project_list.html:98
+#: templates/qdjango/project_list.html:100
 #, fuzzy
 #| msgid "QGIS project file"
 msgid "No projects available."
 msgstr "File progetto QGIS"
 
-#: qdjango/utils/data.py:199
+#: utils/data.py:222
 msgid "Missing or invalid type for layer"
 msgstr "Mancante o tipo di layer non valido"
 
-#: qdjango/utils/data.py:555
+#: utils/data.py:711
 msgid "The project file is malformed: {}"
 msgstr "Il file del progetto non è corretto: {}"
 
-#: qdjango/utils/data.py:874
+#: utils/data.py:1061
 #, fuzzy
 #| msgid "The project settings is malformed: {}"
 msgid "The project settings is malformed: {} ----- {}"
 msgstr "I settaggi del progetto non sono corretti: {}"
 
-#: qdjango/utils/exceptions.py:5
+#: utils/exceptions.py:5
 msgid "Qgis Exceptions errors"
 msgstr ""
 
-#: qdjango/utils/exceptions.py:10
+#: utils/exceptions.py:10
 #, fuzzy
 #| msgid "Project"
 msgid "Project error"
 msgstr "Progetto"
 
-#: qdjango/utils/exceptions.py:18
+#: utils/exceptions.py:18
 msgid "Layer error"
 msgstr ""
 
-#: qdjango/utils/structure.py:83
+#: utils/structure.py:92
 msgid "Missing data file for layer"
 msgstr "Manca il file dati per il layer"
 
-#: qdjango/utils/structure.py:84
+#: utils/structure.py:93
 msgid "which should be located at"
 msgstr "dovrebbe essere presente qui"
 
-#: qdjango/utils/validators.py:34
+#: utils/validators.py:34
 msgid "Project and group SRID must be the same"
 msgstr "Il progetto e il lo SRID del gruppo devono essere identici"
 
-#: qdjango/utils/validators.py:44
+#: utils/validators.py:44
 msgid "A project with the same title already exists"
 msgstr "Un progetto con lo stesso titolo è presente nel sistema"
 
-#: qdjango/utils/validators.py:54
+#: utils/validators.py:54
 msgid "Title project not empty"
 msgstr "Il titolo del progetto non deve essere vuoto"
 
-#: qdjango/utils/validators.py:65
+#: utils/validators.py:65
 msgid "More than one layer with same name/shortname: {}"
 msgstr "Più di un layer con lo stesso name/shortname :{}"
 
-#: qdjango/utils/validators.py:90
+#: utils/validators.py:90
 msgid "Check WMS start extent project property: {} didn't set"
 msgstr ""
 
-#: qdjango/utils/validators.py:95
+#: utils/validators.py:95
 msgid "xmax smaller then xmin "
 msgstr ""
 
-#: qdjango/utils/validators.py:97
+#: utils/validators.py:97
 msgid "ymax smaller then ymin "
 msgstr ""
 
-#: qdjango/utils/validators.py:123
+#: utils/validators.py:123
 msgid "Missing data file for layer {} "
 msgstr "Mancanza di dati per il layer {} "
 
-#: qdjango/utils/validators.py:124
+#: utils/validators.py:124
 msgid "which should be located at {}"
 msgstr "dovrebbe trovarsi qui {}"
 
-#: qdjango/utils/validators.py:142
+#: utils/validators.py:142
 msgid ""
 "The follow fields name of layer {} contains white spaces and/or special "
 "characters: {}"
 msgstr ""
 
-#: qdjango/utils/validators.py:145
+#: utils/validators.py:145
 msgid "Please use 'Alias' fields in QGIS project"
 msgstr ""
 
