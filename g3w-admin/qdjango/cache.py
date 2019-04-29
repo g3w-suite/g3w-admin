@@ -24,7 +24,11 @@ if 'caching' in settings.G3WADMIN_LOCAL_MORE_APPS:
             layer = Layer.objects.get(pk=self.caching_layer.layer_id)
 
             # update self.q
-            self.q['LAYERS'] = layer.name
+            if layer.project.wms_use_layer_ids:
+                # update self.q
+                self.q['LAYERS'] = layer.qgs_layer_id
+            else:
+                self.q['LAYERS'] = layer.name
 
             # add qgis project
             self.q['map'] = layer.project.qgis_file.file.name
