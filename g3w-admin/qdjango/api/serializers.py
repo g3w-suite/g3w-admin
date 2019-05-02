@@ -271,7 +271,8 @@ class ProjectSerializer(serializers.ModelSerializer):
             'name',
             'layerstree',
             'thumbnail',
-            'wms_use_layer_ids'
+            'wms_use_layer_ids',
+            'qgis_version'
         )
 
 
