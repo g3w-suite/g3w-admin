@@ -4,6 +4,7 @@ from django.shortcuts import get_object_or_404
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.utils.translation import get_language
+from guardian.utils import get_anonymous_user
 from core.api.serializers import GroupSerializer, Group, update_serializer_data
 from core.api.permissions import ProjectPermission
 from core.signals import perform_client_search, post_serialize_project
@@ -28,9 +29,13 @@ class ClientConfigApiView(APIView):
 
         ps = projectSerializer(project)
 
-        # add wms_url to project metadata il user i anonynous
-
-        if request.user.is_anonymous and 'metadata' in ps.data and not ps.data['metadata']['onlineresource']:
+        # add wms_url to project metadata if user anonimous has grant view on project
+        if get_anonymous_user().has_perm('{}.view_project'.format(project_type), project) and \
+                'metadata' in ps.data and \
+                (
+                        not (ps.data['metadata']['onlineresource']) or
+                        ps.data['metadata']['onlineresource'].startswith(settings.QDJANGO_SERVER_URL)
+                ):
             ps.data['metadata']['wms_url'] = '{}://{}/ows/{}/{}/{}/'.format(
                 request._request.META['wsgi.url_scheme'],
                 request._request.META['HTTP_HOST'],
@@ -38,7 +43,8 @@ class ClientConfigApiView(APIView):
                 project_type,
                 project_id
             )
-        elif 'onlineresource' in ps.data['metadata']:
+        elif 'onlineresource' in ps.data['metadata'] and \
+                not ps.data['metadata']['onlineresource'].startswith(settings.QDJANGO_SERVER_URL):
             ps.data['metadata']['wms_url'] = ps.data['metadata']['onlineresource']
 
         if 'onlineresource' in ps.data['metadata']:
