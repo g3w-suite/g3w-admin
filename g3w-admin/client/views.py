@@ -80,11 +80,15 @@ class ClientView(TemplateView):
         contextData['client_default'] = self.get_client_name()
 
         # logout_url
-        logout_url = reverse('logout') + '?next={}'.format(reverse('group-project-map', kwargs={
-            'group_slug': kwargs['group_slug'],
-            'project_type': kwargs['project_type'],
-            'project_id': self.project.pk
-        }))
+        logout_url = None
+        try:
+            logout_url = reverse('logout') + '?next={}'.format(reverse('group-project-map', kwargs={
+                'group_slug': kwargs['group_slug'],
+                'project_type': kwargs['project_type'],
+                'project_id': self.project.pk
+            }))
+        except:
+            pass
 
 
         # add user login data
