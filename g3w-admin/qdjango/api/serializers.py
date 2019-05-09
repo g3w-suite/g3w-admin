@@ -155,6 +155,17 @@ class ProjectSerializer(serializers.ModelSerializer):
 
         return options
 
+    def _set_ows_method(self, ret, instance):
+
+        # check if settings on POST and user_layer_id and qgis project != from version 3
+        if settings.CLIENT_OWS_METHOD == 'POST' and \
+                instance.wms_use_layer_ids and \
+                instance.qgis_version.startswith('2'):
+            return settings.CLIENT_OWS_METHOD
+        else:
+            return 'GET'
+
+
     def to_representation(self, instance):
         ret = super(ProjectSerializer, self).to_representation(instance)
 
@@ -259,8 +270,8 @@ class ProjectSerializer(serializers.ModelSerializer):
         # set client options/actions
         ret.update(self._set_options(instance))
 
-        # set own method
-        ret['ows_method'] = settings.CLIENT_OWS_METHOD
+        # set ow method
+        ret['ows_method'] = self._set_ows_method(ret, instance)
 
         return ret
 
