@@ -475,7 +475,8 @@ msgstr "dovrebbe essere presente qui"
 
 #: utils/validators.py:34
 msgid "Project and group SRID must be the same"
-msgstr "Il progetto e il lo SRID del gruppo devono essere identici"
+msgstr "Lo SRID del progetto è diverso da quello indicato nel gruppo cartografico. "
+"Aggiornare lo SRID del progetto e pubblicarlo nuovamente."
 
 #: utils/validators.py:44
 msgid "A project with the same title already exists"
