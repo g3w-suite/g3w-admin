@@ -1,0 +1,5 @@
+# Additional requirements for Docker CI image
+
+# Include base requirements
+-r requirements.txt
+
