@@ -8,6 +8,9 @@ services:
       POSTGRES_USER: docker
       POSTGRES_PASS: docker
       POSTGRES_DBNAME: g3w-suite
+    volumes:
+      - shared-volume:/shared-volume
+
   g3w-suite:
     build: .
     command: ["wait-for-it", "-h", "postgis", "-p", "5432", "-t", "60", "--", "/code/entrypoint_docker.sh"]
@@ -17,4 +20,8 @@ services:
       PYTHONUNBUFFERED: 1
     depends_on:
       - postgis
+    volumes:
+      - shared-volume:/shared-volume
 
+volumes:
+    shared-volume:
