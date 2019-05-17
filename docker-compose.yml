@@ -1,0 +1,20 @@
+version: '3'
+services:
+  postgis:
+    image: kartoza/postgis
+    ports:
+    - "55432:5432"
+    environment:
+      POSTGRES_USER: docker
+      POSTGRES_PASS: docker
+      POSTGRES_DBNAME: g3w-suite
+  g3w-suite:
+    build: .
+    command: ["wait-for-it", "-h", "postgis", "-p", "5432", "-t", "60", "--", "/code/entrypoint_docker.sh"]
+    ports:
+    - "8000:8000"
+    environment:
+      PYTHONUNBUFFERED: 1
+    depends_on:
+      - postgis
+

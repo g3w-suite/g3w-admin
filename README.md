@@ -1,3 +1,5 @@
+[![CircleCI](https://circleci.com/gh/elpaso/g3w-admin/tree/dev.svg?style=svg)](https://circleci.com/gh/elpaso/g3w-admin/tree/dev)
+
 # G3W-SUITE
 
 G3W-ADMIN admin server module for G3W-SUITE.
