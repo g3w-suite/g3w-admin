@@ -30,6 +30,12 @@ build
 # Gulp dist directory
 /dist/
 
+# Media and static
+/media/
+/static/
+
+run_local*.sh
+
 # Coverage
 /g3w-admin/.coverage
 

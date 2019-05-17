@@ -8,8 +8,8 @@ jobs:
         - dev
     steps:
       - checkout
-      - run: git submodule sync
-      - run: git submodule update --init
+      #- run: git submodule sync
+      #- run: git submodule update --init (requires credentials for spid_redirect)
       #- setup_remote_docker
       - run:
           name: Starting Docker compose
