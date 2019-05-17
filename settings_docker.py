@@ -27,7 +27,7 @@ DEBUG = True
 #FRONTEND = False
 #FRONTEND_APP = None
 
-QDJANGO_SERVER_URL = 'http://localhost:8001/ows/'
+QDJANGO_SERVER_URL = 'http://qgisserver/'
 
 ALLOWED_HOSTS = "*"
 
@@ -106,26 +106,3 @@ LOGGING = {
 
 SESSION_COOKIE_NAME = 'gis3w-admin'
 
-
-PYCSW_SETTINGS = {
-    "server": {
-        "home": "/",
-        "loglevel": "DEBUG",
-        #FIXME:
-        "logfile": "/tmp/pycsw.log",
-    },
-    "manager": {
-        "transactions": "false",
-        "allowed_ips": "*",
-    },
-    "repository": {
-        "database": "postgresql://{USER}:{PASSWORD}@{HOST}/{NAME}".format(**DATABASES['default']),
-    }
-}
-
-# Celery is required for catalog
-BROKER_URL = 'amqp://guest:guest@localhost:5672//'
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
-CELERY_RESULT_BACKEND = 'db+sqlite:///celerydb.sqlite'

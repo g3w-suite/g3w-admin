@@ -19,11 +19,5 @@ jobs:
           name: Waiting for Django on port 8000
           command: docker-compose exec g3w-suite sh -c "wait-for-it -h localhost -p 8000 -t 180" # Wait for django
       - run:
-          name: Checking shared volumes
-          command: docker-compose exec g3w-suite sh -c "touch /shared-volume/hey.txt"
-      - run:
-          name: Checking shared volumes 2
-          command: docker-compose exec postgis sh -c "ls -lah /shared-volume/hey.txt"
-      - run:
           name: Running g3w-admin core tests
           command: docker-compose exec g3w-suite sh -c "cd /code/g3w-admin && python manage.py test core"

@@ -1,7 +1,7 @@
 version: '3'
 services:
   postgis:
-    image: kartoza/postgis
+    image: kartoza/postgis:11.0-2.5
     ports:
     - "55432:5432"
     environment:
@@ -11,9 +11,16 @@ services:
     volumes:
       - shared-volume:/shared-volume
 
+  qgisserver:
+    image: kartoza/qgis-server:LTR
+    ports:
+    - "8001:80"
+    volumes:
+      - shared-volume:/shared-volume
+
   g3w-suite:
     build: .
-    command: ["wait-for-it", "-h", "postgis", "-p", "5432", "-t", "60", "--", "/code/entrypoint_docker.sh"]
+    command: "/code/entrypoint_docker.sh"
     ports:
     - "8000:8000"
     environment:
