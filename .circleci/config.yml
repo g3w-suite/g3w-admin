@@ -10,7 +10,7 @@ jobs:
       - checkout
       #- run: git submodule sync
       #- run: git submodule update --init (requires credentials for spid_redirect)
-      #- setup_remote_docker
+      - setup_remote_docker
       - run:
           name: Starting Docker compose
           command: docker-compose up -d
