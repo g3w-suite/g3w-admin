@@ -5,6 +5,9 @@
 # Editor temp files
 *~
 
+# Local files
+*_local.sh
+
 # Sphinx docs
 build
 
