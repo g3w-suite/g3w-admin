@@ -2,6 +2,10 @@
 
 set -e
 
+DATASOURCE_PATH='/shared-volume/project_data'
+MEDIA_ROOT='/shared-volume/media'
+PROJECTS_DIR="${MEDIA_ROOT}/projects"
+
 if [ ! -e "setup_done" ]; then
     echo "Setup started for G3W-Suite installation ..."
     echo "Copying docker_settings.py to /base/settings/local_settings.py"
@@ -13,15 +17,15 @@ if [ ! -e "setup_done" ]; then
 
     echo "Cleaning up some dirs before collecting statics ..."
     rm -rf static
-    mkdir static
-    rm -rf media
-    ln -s static media
+    rm -rf ${MEDIA_ROOT}
+    mkdir ${MEDIA_ROOT}
+    ln -s ${MEDIA_ROOT} static
 
     pushd .
-    echo "Creating project directory in /shared-volume/projects"
+    echo "Creating projects(_data) directores in ${PROJECTS_DIR} ..."
     cd media
-    ls /shared-volume/projects || mkdir /shared-volume/projects
-    ln -s /shared-volume/projects projects
+    ls ${PROJECTS_DIR} || mkdir ${PROJECTS_DIR}
+    ls ${DATASOURCE_PATH} || mkdir ${DATASOURCE_PATH}
     popd
 
     pushd .
@@ -36,6 +40,13 @@ if [ ! -e "setup_done" ]; then
     cd g3w-admin
     python manage.py collectstatic --noinput
     python manage.py migrate --noinput
+
+    echo "Installing fixtures ..."
+    for FIXTURE in 'BaseLayer.json' 'G3WGeneralDataSuite.json' 'G3WMapControls.json' 'G3WSpatialRefSys.json'; do
+        python manage.py loaddata  core/fixtures/${FIXTURE}
+    done
+    # sync menu tree items
+    python manage.py sitetree_resync_apps
     python manage.py createsuperuser --noinput --username admin --email admin@email.com || true
     python manage.py set_fake_passwords --password admin
     touch "setup_done"

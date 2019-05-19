@@ -14,9 +14,10 @@ DATABASES = {
     }
 }
 
-DATASOURCE_PATH = '/code/media/project_data'
+DATASOURCE_PATH = '/shared-volume/project_data'
 
-MEDIA_ROOT = '/code/media/'
+
+MEDIA_ROOT = '/shared-volume/media/'
 MEDIA_URL = '/media/'
 STATIC_ROOT = '/code/static'
 STATIC_URL = '/static/'

@@ -15,6 +15,12 @@ services:
     image: kartoza/qgis-server:LTR
     ports:
     - "8001:80"
+    environment:
+      QGIS_DEBUG: 0
+      QGIS_LOG_FILE: /tmp/qgis.log
+      QGIS_SERVER_LOG_FILE:  /tmp/qgis_server.log
+      QGIS_SERVER_LOG_LEVEL: 0
+      QGIS_PROJECT_FILE: ""
     volumes:
       - shared-volume:/shared-volume
 
