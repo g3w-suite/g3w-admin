@@ -33,8 +33,8 @@ class ClientConfigApiView(APIView):
         if get_anonymous_user().has_perm('{}.view_project'.format(project_type), project) and \
                 'metadata' in ps.data and \
                 (
-                        not (ps.data['metadata']['onlineresource']) or
-                        ps.data['metadata']['onlineresource'].startswith(settings.QDJANGO_SERVER_URL)
+                        ps.data['metadata'].get('onlineresource', False) or
+                        ps.data['metadata'].get('onlineresource', '').startswith(settings.QDJANGO_SERVER_URL)
                 ):
             ps.data['metadata']['wms_url'] = '{}://{}/ows/{}/{}/{}/'.format(
                 request._request.META['wsgi.url_scheme'],
