@@ -7,7 +7,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User, Group as AuthGroup
 from autoslug.utils import slugify
 from guardian.shortcuts import get_perms
-from core.models import Group, BaseLayer, GroupProjectPanoramic
+from core.models import Group, BaseLayer, GroupProjectPanoramic, ProjectMapUrlAlias
 from .utils.storage import QgisFileOverwriteStorage
 from core.mixins.models import G3WACLModelMixins, G3WProjectMixins
 from model_utils import Choices
@@ -39,6 +39,11 @@ def get_thumbnail_path(instance, filename):
 
 class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
     """A QGIS project."""
+
+    QUERY_TYPE = Choices(
+        ('single', _('Single')),
+        ('multiple', _('Multiple'))
+        )
 
     # Project file
     qgis_file = models.FileField(
@@ -77,6 +82,22 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
                                   null=True, blank=True)
     # possible layer relations
     relations = models.TextField(_('Layer relations'), blank=True, null=True)
+
+    # WMSUseLayerIDs
+    wms_use_layer_ids = models.BooleanField(_('WMS use layer ids'), default=False)
+
+    # client options:
+    #============================================
+
+    feature_count_wms = models.IntegerField(_('Max feature to get for query'), default=5)
+
+    multilayer_query = models.CharField(_('Query control mode'), max_length=20, choices=QUERY_TYPE, default='single')
+
+    multilayer_querybybbox = models.CharField(_('Query by bbox control mode'), max_length=20, choices=QUERY_TYPE,
+                                      default='single')
+
+    multilayer_querybypolygon = models.CharField(_('Query by polygon control mode'), max_length=20, choices=QUERY_TYPE,
+                                            default='single')
 
     class Meta:
         verbose_name = _('Project')
@@ -184,6 +205,24 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
 
         return layers_tree
 
+    @property
+    def url_alias(self):
+        try:
+            return ProjectMapUrlAlias.objects.get(app_name='qdjango', project_id=self.pk).alias
+        except:
+            return None
+
+    @url_alias.setter
+    def url_alias(self, url_alias):
+        if url_alias:
+            ProjectMapUrlAlias.objects.update_or_create(app_name='qdjango', project_id=self.pk,
+                                                        defaults={'alias': url_alias})
+        else:
+            try:
+                ProjectMapUrlAlias.objects.get(app_name='qdjango', project_id=self.pk).delete()
+            except:
+                pass
+
     def __getattr__(self, attr):
         if attr == 'viewers':
             return get_users_for_object(self, 'view_project', [G3W_VIEWER1, G3W_VIEWER2], with_anonymous=True)
@@ -277,6 +316,8 @@ class Layer(G3WACLModelMixins, models.Model):
     # form editor layout
     editor_layout = models.CharField(_('Form editor layout'), max_length=100, blank=True, null=True)
     editor_form_structure = models.TextField(_('Editor form structure'), blank=True, null=True)
+
+    download = models.BooleanField(_('Download data'), default=False, blank=True)
 
     def __unicode__(self):
         return self.name

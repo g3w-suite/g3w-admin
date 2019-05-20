@@ -1,12 +1,13 @@
 from django.db import connections
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseForbidden
 from rest_framework.filters import OrderingFilter
 from core.api.base.views import BaseVectorOnModelApiView, IntersectsBBoxFilter, MODE_DATA, MODE_CONFIG, MODE_SHP, \
-    APIException
+    APIException, MODE_XLS
 from core.api.base.vector import MetadataVectorLayer
 from core.utils.structure import mapLayerAttributesFromModel
 from core.utils.models import create_geomodel_from_qdjango_layer, get_geometry_column
 from core.utils.vector import BaseUserMediaHandler
+from core.utils.ie import modelresource_factory
 from core.api.permissions import ProjectPermission
 from core.api.filters import DatatablesFilterBackend, SuggestFilterBackend
 from .utils.edittype import MAPPING_EDITTYPE_QGISEDITTYPE
@@ -25,6 +26,8 @@ MODE_WIDGET = 'widget'
 
 class QGISLayerVectorViewMixin(object):
 
+    _layer_model = Layer
+
     def set_reprojecting_status(self):
         """
         Check if data have to reproject
@@ -42,13 +45,16 @@ class QGISLayerVectorViewMixin(object):
         self.bbox_filter = IntersectsBBoxFilter() if self.metadata_layer.geometry_type != QGIS_LAYER_TYPE_NO_GEOM \
             else None
 
+
+
+
     def get_layer_by_params(self, params):
 
         layer_id = params['layer_name']
         project_id = params['project_id']
 
         # get layer object from qdjango model layer
-        return Layer.objects.get(project_id=project_id, qgs_layer_id=layer_id)
+        return self._layer_model.objects.get(project_id=project_id, qgs_layer_id=layer_id)
 
     def get_geoserializer_kwargs(self):
 
@@ -58,10 +64,10 @@ class QGISLayerVectorViewMixin(object):
             if self.metadata_layer.model._meta.pk.name in kwargs['exclude']:
                 kwargs['exclude'].remove(self.metadata_layer.model._meta.pk.name)
 
-
         return kwargs
 
     def set_relations(self):
+
 
         # get relations on project
         self.relations = {} if not self.layer.project.relations else \
@@ -71,7 +77,7 @@ class QGISLayerVectorViewMixin(object):
         if self.layer.vectorjoins:
             joins = eval(self.layer.vectorjoins)
             for n, join in enumerate(joins):
-                if Layer.objects.get(qgs_layer_id=join['joinLayerId'], project=self.layer.project).layer_type \
+                if self._layer_model.objects.get(qgs_layer_id=join['joinLayerId'], project=self.layer.project).layer_type \
                         in (('postgres', 'spatialite')):
                     name = '{}_vectorjoin_{}'.format(self.layer.qgs_layer_id, n)
                     self.relations[name] = {
@@ -95,7 +101,7 @@ class QGISLayerVectorViewMixin(object):
             # check if in relation there is referencedLayer == self layer
             if relation['referencedLayer'] == self.layer.qgs_layer_id:
                 # get relation layer object
-                relation_layer = Layer.objects.get(qgs_layer_id=relation['referencingLayer'],
+                relation_layer = self._layer_model.objects.get(qgs_layer_id=relation['referencingLayer'],
                                                    project=self.layer.project)
 
                 geomodel, database_to_use, geometrytype = create_geomodel_from_qdjango_layer(relation_layer)
@@ -160,7 +166,8 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         MODE_CONFIG,
         MODE_DATA,
         MODE_WIDGET,
-        MODE_SHP
+        MODE_SHP,
+        MODE_XLS
     ]
 
     mapping_layer_attributes_function = mapLayerAttributesFromModel
@@ -279,6 +286,10 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         :param request: Http Django request object
         :return: http response with attached file
         """
+
+        if not self.layer.download:
+            return HttpResponseForbidden()
+
         #ogr2ogr -f "ESRI Shapefile" qds_cnt.shp PG:"host=localhost user=postgres dbname=gisdb password=password" - sql "SELECT sp_count, geom FROM grid50_rsa WHERE province = 'Gauteng'"
 
         tmp_dir = "/tmp/g3w-suite/{}/".format(request.session.session_key)
@@ -343,6 +354,23 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         # Grab ZIP file from in-memory, make response with correct MIME-type
         response = HttpResponse(s.getvalue(), content_type="application/x-zip-compressed")
         response['Content-Disposition'] = 'attachment; filename=%s' % zip_filename
+        response.set_cookie('fileDownload', 'true')
+        return response
+
+    def response_xls_mode(self, request):
+        """
+        Download xls of data
+        :param request: Http Django request object
+        :return: http response with attached file
+        """
+
+        resources = modelresource_factory(self.metadata_layer.model,
+                                          exclude=(get_geometry_column(self.metadata_layer.model).name,))()
+
+        dataset = resources.export()
+
+        response = HttpResponse(dataset.xls, content_type='application/ms-excel')
+        response['Content-Disposition'] = 'attachment; filename=geodata.xls'
         response.set_cookie('fileDownload', 'true')
         return response
 

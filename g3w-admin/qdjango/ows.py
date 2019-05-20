@@ -13,6 +13,7 @@ from django.http import HttpResponse
 from django.conf import settings
 from django.http.request import QueryDict
 from django.db.models import Q
+from django.core.cache import cache
 
 try:
     from qgis.server import *
@@ -69,6 +70,16 @@ class OWSRequestHandler(OWSRequestHandlerBase):
         self.groupSlug = kwargs.get('group_slug', None)
         self.projectId = kwargs.get('project_id', None)
 
+        # map file chache key
+        '''
+        self.cache_key = '{}/{}/{}'.format(
+            self.groupSlug,
+            'qdjango',
+            self.projectId
+        )
+
+        if not cache.get(self.cache_key):
+        '''
         if self.projectId:
             self._getProjectInstance()
 
@@ -106,11 +117,15 @@ class OWSRequestHandler(OWSRequestHandlerBase):
         # http urllib3 manager
         http = None
 
+        raw_body = request.body
         if request.method == 'GET':
             ows_request = q['REQUEST'].upper()
         else:
-            ows_request = request.POST['REQUEST'][0].upper()
-        if cls.qdjangoModeRequest() == QDJANGO_PROXY_REQUEST or ows_request == 'GETLEGENDGRAPHIC':
+            if request.content_type == 'application/x-www-form-urlencoded':
+                ows_request = request.POST['REQUEST'].upper()
+            else:
+                ows_request = request.POST['REQUEST'][0].upper()
+        if qdjangoModeRequest == QDJANGO_PROXY_REQUEST or ows_request == 'GETLEGENDGRAPHIC':
 
             # try to get getfeatureinfo on wms layer
             if ows_request == 'GETFEATUREINFO' and 'SOURCE' in q and q['SOURCE'].upper() == 'WMS':
@@ -155,12 +170,20 @@ class OWSRequestHandler(OWSRequestHandlerBase):
             if not http:
                 http = urllib3.PoolManager()
 
-            result = http.request(request.method, url, body=request.body)
+            result = http.request(request.method, url, body=raw_body)
+            #result = http.request(request.method, url, fields=request.POST)
             result_data = result.data
 
             if ows_request == 'GETCAPABILITIES':
+                to_replace = None
+                try:
+                    to_replace = getattr(settings, 'QDJANGO_REGEX_GETCAPABILITIES')
+                except:
+                    pass
 
-                to_replace = settings.QDJANGO_SERVER_URL + r'\?map=[^\'" > &]+(?=&)'
+                if not to_replace:
+                    to_replace = settings.QDJANGO_SERVER_URL + r'\?map=[^\'" > &]+(?=&)'
+                    #to_replace = r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+\?map=[^\'" > &]+(?=&)'
 
                 # url to replace
                 wms_url = '{}://{}{}'.format(
@@ -169,6 +192,7 @@ class OWSRequestHandler(OWSRequestHandlerBase):
                     request.path
                 )
                 result_data = re.sub(to_replace, wms_url, result_data)
+                result_data = re.sub('&amp;&amp;', '?', result_data)
 
 
             # If we get a redirect, let's add a useful message.
@@ -212,6 +236,12 @@ class OWSRequestHandler(OWSRequestHandlerBase):
             if ku != k:
                 q[ku] = q[k]
                 del q[k]
+
+        #if not cache.get(self.cache_key):
+        #   q['map'] = self._projectInstance.qgis_file.file.name
+        #    cache.set(self.cache_key, q['map'])
+        #else:
+        #    q['map'] = cache.get(self.cache_key)
 
         q['map'] = self._projectInstance.qgis_file.file.name
         return self.baseDoRequest(q, self.request)

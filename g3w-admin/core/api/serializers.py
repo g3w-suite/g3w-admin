@@ -158,8 +158,28 @@ class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
         # header customs links
         header_custom_links = getattr(settings, 'G3W_CLIENT_HEADER_CUSTOM_LINKS', None)
+        ret['header_custom_links'] = []
         if header_custom_links:
-            ret['header_custom_links'] = header_custom_links
+
+            # check for possible callback
+            for head_link in header_custom_links:
+                if callable(head_link):
+                    ret['header_custom_links'].append(head_link(self.request))
+                else:
+                    ret['header_custom_links'].append(head_link)
+
+        # custom layout
+        ret['layout'] = {}
+
+        # add legend settings if set to layout
+        layout_legend = getattr(settings, 'G3W_CLIENT_LEGEND', None)
+        if layout_legend:
+            ret['layout']['legend'] = layout_legend
+
+        # add legend settings if set to layout
+        layout_right_panel = getattr(settings, 'G3W_CLIENT_RIGHT_PANEL', None)
+        if layout_right_panel:
+            ret['layout']['rightpanel'] = layout_right_panel
 
         return ret
 

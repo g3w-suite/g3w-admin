@@ -13,11 +13,25 @@ from django.core.exceptions import PermissionDenied
 from rest_framework.renderers import JSONRenderer
 from core.api.serializers import GroupSerializer, Group
 from core.api.views import USERMEDIAHANDLER_CLASSES
-from core.models import GeneralSuiteData
+from core.models import GeneralSuiteData, ProjectMapUrlAlias
 from core.utils.general import get_adminlte_skin_by_user
 from usersmanage.utils import get_users_for_object, get_user_model
 from usersmanage.configs import *
 from copy import deepcopy
+
+
+def client_map_alias_view(request, map_name_alias, *args, **kwargs):
+    """
+    Proxy view for map view with alias url.
+    """
+
+    # try to find alis url
+    try:
+        pma = ProjectMapUrlAlias.objects.get(alias=map_name_alias)
+        kwargs.update({'project_type': pma.app_name, 'project_id': pma.project_id, 'group_slug': 'for_alias'})
+        return ClientView.as_view()(request, *args, **kwargs)
+    except:
+        raise Http404('Map not found')
 
 
 class ClientView(TemplateView):
@@ -65,8 +79,28 @@ class ClientView(TemplateView):
         # choose client by querystring paramenters
         contextData['client_default'] = self.get_client_name()
 
+        # logout_url
+        logout_url = None
+        try:
+            logout_url = reverse('logout') + '?next={}'.format(reverse('group-project-map', kwargs={
+                'group_slug': kwargs['group_slug'],
+                'project_type': kwargs['project_type'],
+                'project_id': self.project.pk
+            }))
+        except:
+            pass
+
+
         # add user login data
         u = self.request.user
+
+        # admin_url
+        change_grant_users = get_users_for_object(self.project, "change_project", with_group_users=True)
+        if u in change_grant_users or u.is_superuser:
+            admin_url = reverse('home')
+        else:
+            admin_url = None
+
         user_data = {'i18n': get_language()}
         if not u.is_anonymous():
             user_data.update({
@@ -74,9 +108,15 @@ class ClientView(TemplateView):
                 'first_name': u.first_name,
                 'last_name': u.last_name,
                 'groups': [g.name for g in u.groups.all()],
-                'logout_url': reverse('logout'),
-                'admin_url': reverse('home')
+                'logout_url': logout_url
+
             })
+
+        if admin_url:
+            user_data.update({
+                'admin_url': admin_url
+            })
+
         user_data = JSONRenderer().render(user_data)
 
         serializedGroup = JSONRenderer().render(groupData)
@@ -103,7 +143,8 @@ class ClientView(TemplateView):
             raise Http404('No project type and/or project id present in group')
 
         # page title
-        contextData['page_title'] = '{} | {}'.format(
+
+        contextData['page_title'] = u'{} | {}'.format(
             getattr(settings, 'G3WSUITE_CUSTOM_TITLE', 'g3w - client'), self.project.title)
 
         # choosen skin by user main role

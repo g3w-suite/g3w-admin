@@ -412,3 +412,11 @@ class GeneralSuiteData(models.Model):
     tripadvisor_url = models.URLField(_('Tripadvisor link'), null=True, blank=True)
 
 
+class ProjectMapUrlAlias(models.Model):
+    """
+    Model to set alias map url
+    ie: /map/qdjango/group-slug/1 => /map/<alias_field_value>
+    """
+    app_name = models.CharField(max_length=255)
+    project_id = models.IntegerField()
+    alias =models.CharField(max_length=512, unique=True)

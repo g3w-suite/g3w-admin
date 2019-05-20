@@ -11,7 +11,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.utils.decorators import method_decorator
 from django.db import connections
 from django.conf import settings
-from django.core.cache import cache
+from django.core.cache import caches
 from guardian.decorators import permission_required
 from guardian.shortcuts import get_objects_for_user
 from core.mixins.views import *
@@ -102,7 +102,8 @@ class QdjangoProjectUpdateView(QdjangoProjectCUViewMixin, G3WGroupViewMixin, G3W
         after_update_project.send(self, app_name='qdjango', project=form.instance)
 
         # clear cache
-        #cache.delete(settings.QDJANGO_PRJ_CACHE_KEY.format(form.instance.pk))
+        if 'qdjango' in settings.CACHES:
+            caches['qdjango'].delete(settings.QDJANGO_PRJ_CACHE_KEY.format(form.instance.pk))
         return res
 
 
@@ -160,7 +161,8 @@ class QdjangoProjectDeleteView(G3WAjaxDeleteViewMixin, SingleObjectMixin, View):
         before_delete_project.send(self, app_name='qdjango', project=self.object)
 
         # clear cache
-        #cache.delete(settings.QDJANGO_PRJ_CACHE_KEY.format(self.object.pk))
+        if 'qdjango' in settings.CACHES:
+            caches['qdjango'].delete(settings.QDJANGO_PRJ_CACHE_KEY.format(self.object.pk))
 
         return super(QdjangoProjectDeleteView, self).post(request, *args, **kwargs)
 
@@ -319,6 +321,11 @@ class QdjangoLayersListView(G3WRequestViewMixin, G3WGroupViewMixin, QdjangoProje
             'spatialite',
             'ogr'
         )
+
+        context['type_layer_for_download'] = (
+            'postgres',
+            'spatialite'
+        )
         return context
 
 
@@ -363,9 +370,14 @@ class QdjangoLayerDataView(G3WGroupViewMixin, QdjangoProjectViewMixin, View):
         return super(QdjangoLayerDataView, self).dispatch(*args, **kwargs)
 
     def post(self, request, *args, **kwargs):
-
+        """
+        Save params for layer
+        """
         layer = Layer.objects.get(pk=kwargs['layer_id'])
-        layer.exclude_from_legend = int(request.POST['exclude_from_legend'])
+        if 'exclude_from_legend' in request.POST:
+            layer.exclude_from_legend = int(request.POST['exclude_from_legend'])
+        if 'download_layer' in request.POST:
+            layer.download = int(request.POST['download_layer'])
         layer.save()
         return JsonResponse({'Saved': 'ok'})
 

@@ -4,10 +4,12 @@ from django.shortcuts import get_object_or_404
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.utils.translation import get_language
+from guardian.utils import get_anonymous_user
 from core.api.serializers import GroupSerializer, Group, update_serializer_data
 from core.api.permissions import ProjectPermission
 from core.signals import perform_client_search, post_serialize_project
 from core.models import GeneralSuiteData
+from usersmanage.utils import get_roles, G3W_VIEWER1, G3W_VIEWER2, G3W_EDITOR2, G3W_EDITOR1
 
 
 class ClientConfigApiView(APIView):
@@ -27,8 +29,13 @@ class ClientConfigApiView(APIView):
 
         ps = projectSerializer(project)
 
-        # add wms_url to project metadata if user is anonynous
-        if request.user.is_anonymous and 'metadata' in ps.data and not ps.data['metadata']['onlineresource']:
+        # add wms_url to project metadata if user anonimous has grant view on project
+        if get_anonymous_user().has_perm('{}.view_project'.format(project_type), project) and \
+                'metadata' in ps.data and \
+                (
+                        not (ps.data['metadata']['onlineresource']) or
+                        ps.data['metadata']['onlineresource'].startswith(settings.QDJANGO_SERVER_URL)
+                ):
             ps.data['metadata']['wms_url'] = '{}://{}/ows/{}/{}/{}/'.format(
                 request._request.META['wsgi.url_scheme'],
                 request._request.META['HTTP_HOST'],
@@ -36,7 +43,8 @@ class ClientConfigApiView(APIView):
                 project_type,
                 project_id
             )
-        elif 'onlineresource' in ps.data['metadata']:
+        elif 'onlineresource' in ps.data['metadata'] and \
+                not ps.data['metadata']['onlineresource'].startswith(settings.QDJANGO_SERVER_URL):
             ps.data['metadata']['wms_url'] = ps.data['metadata']['onlineresource']
 
         if 'onlineresource' in ps.data['metadata']:
@@ -102,6 +110,15 @@ class GroupConfigApiView(APIView):
 
         u = request.user
 
+
+        #logout_url
+        logout_url = reverse('logout') + '?next={}'.format(reverse('group-project-map', kwargs={
+            'group_slug': group_slug,
+            'project_type': project_type,
+            'project_id': project_id
+        }))
+
+
         # add user login data
         initconfig['user'] = {'i18n': get_language()}
         if not u.is_anonymous():
@@ -110,9 +127,12 @@ class GroupConfigApiView(APIView):
                 'first_name': u.first_name,
                 'last_name': u.last_name,
                 'groups': [g.name for g in u.groups.all()],
-                'logout_url': reverse('logout'),
+                'logout_url': logout_url,
                 'admin_url': reverse('home')
             })
 
+        # build admin_url
+        # only if not viewer 1 or viewer 2
+        #grant_users = get_users_for_object(self.project, "change_project", with_group_users=True)
 
         return Response(initconfig)

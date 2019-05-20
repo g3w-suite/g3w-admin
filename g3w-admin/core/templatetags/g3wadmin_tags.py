@@ -17,8 +17,9 @@ def g3wadmin_add_project(app, group):
 
     oapp = apps.get_app_config(app)
     app_name = oapp.alias if hasattr(oapp, 'alias') else app
+    app_icon = oapp.icon if hasattr(oapp, 'icon') else None
 
-    return {'app': app, 'alias': app_name, 'group': group}
+    return {'app': app, 'alias': app_name, 'icon': app_icon, 'group': group}
 
 
 @register.inclusion_tag('core/tags/add_layer.html')

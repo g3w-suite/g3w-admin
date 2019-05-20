@@ -24,6 +24,10 @@ _.extend(g3wadmin.ui, {
             $(this).remove();
         });
 
+        if (this.options['onModalShow']){
+            this.$modal.on('shown.bs.modal',eval(this.options['onModalShow']));
+        }
+
         this.show = function (){
 
             var backdrop = true;
@@ -386,6 +390,20 @@ _.extend(g3wadmin.ui, {
             // build value
             var data = {
                 exclude_from_legend: e.target.checked ? 1 : 0
+            }
+
+            ga.widget.setLayerData($item, data);
+
+        });
+    },
+
+    initDownloadLayerCheckBox: function(){
+        $(document).on('ifChanged', '[data-widget-type="downloadLayer"]', function(e){
+
+            var $item = $(this);
+            // build value
+            var data = {
+                download_layer: e.target.checked ? 1 : 0
             }
 
             ga.widget.setLayerData($item, data);

@@ -1,6 +1,9 @@
 
 
 class MetadataVectorLayer(object):
+    """
+    Object to manage metadata vector layer
+    """
 
     def __init__(self, model, serializer, geometry_type, client_var, relation_id=None, lock=None, **kwargs):
         self.model = model

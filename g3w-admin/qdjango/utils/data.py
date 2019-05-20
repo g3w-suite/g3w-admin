@@ -64,6 +64,20 @@ def makeDatasource(datasource, layerType):
 
     return newDatasource
 
+def makeComposerPictureFile(file):
+    """
+    For ComposerPicture rebuild for DATASOURCE_PATH
+    :param file:
+    :return:
+    """
+    new_file = None
+    # Path and folder name
+    basePath = settings.DATASOURCE_PATH.rstrip('/')  # eg: /home/sit/charts
+    folder = os.path.basename(basePath)  # eg: charts
+
+    new_file = re.sub(r'(.*?)%s(.*)' % folder, r'%s\2' % basePath, file)  # ``?`` means ungreedy
+    return new_file.split('|')[0]
+
 
 class QgisProjectLayer(XmlData):
     """
@@ -102,6 +116,8 @@ class QgisProjectLayer(XmlData):
         DatasourceExists,
         ColoumnName
     ]
+
+    _layer_model = Layer
 
     def __init__(self, layerTree, **kwargs):
         self.qgisProjectLayerTree = layerTree
@@ -211,7 +227,13 @@ class QgisProjectLayer(XmlData):
         Get min_scale from layer attribute
         :return: string
         """
-        maximumScale = self.qgisProjectLayerTree.attrib['maximumScale']
+        attrib = self.qgisProjectLayerTree.attrib
+
+        # qgis3 project layer chang maximimScale to maxScale
+        if self.qgisProject.qgisVersion[0] == '3':
+            maximumScale = attrib['minScale']
+        else:
+            maximumScale = attrib['maximumScale'] if 'maximumScale' in attrib else attrib['maxScale']
         if maximumScale == 'inf':
             # return 2**31-1
             return 0
@@ -222,7 +244,13 @@ class QgisProjectLayer(XmlData):
         Get min_scale from layer attribute
         :return: string
         """
-        minimunScale = self.qgisProjectLayerTree.attrib['minimumScale']
+        attrib = self.qgisProjectLayerTree.attrib
+
+        # qgis3 project layer chang minimumScale to minScale
+        if self.qgisProject.qgisVersion[0] == '3':
+            minimunScale = attrib['maxScale']
+        else:
+            minimunScale = attrib['minimumScale'] if 'minimumScale' in attrib else attrib['minScale']
         if minimunScale == 'inf':
             #return 2**31-1
             return 0
@@ -401,8 +429,6 @@ class QgisProjectLayer(XmlData):
         Get edittypes for editing widget
         :return: dict
         """
-        edittype_columns = dict()
-        edittypes = self.qgisProjectLayerTree.find('edittypes')
 
         # before defautls field values if isset
         defaults = self.qgisProjectLayerTree.find('defaults')
@@ -412,25 +438,70 @@ class QgisProjectLayer(XmlData):
                 if default.attrib['expression']:
                     defaults_columns[default.attrib['field']] = default.attrib['expression']
 
-        if edittypes is not None:
-            for edittype in edittypes:
-                data = {
-                    'widgetv2type': edittype.attrib['widgetv2type'],
-                    'values': list()
-                }
 
-                widgetv2config = edittype.find('widgetv2config')
+        edittype_columns = dict()
 
-                # update with attributes
-                data.update(widgetv2config.attrib)
-                if edittype.attrib['name'] in defaults_columns:
-                    data['default'] = defaults_columns[edittype.attrib['name']]
+        if self.qgisProject.qgisVersion[0] == '3':
 
-                # check for values
-                for value in widgetv2config:
-                    data['values'].append(value.attrib)
+            fieldConfiguration = self.qgisProjectLayerTree.find('fieldConfiguration')
 
-                edittype_columns[edittype.attrib['name']] = data
+            if fieldConfiguration is not None:
+                for field in fieldConfiguration:
+
+                    # get field name
+                    fname = field.attrib['name']
+
+                    # get editWidget
+                    ewdiget = field[0]
+
+                    ewtype = ewdiget.attrib['type']
+                    data = {
+                        'widgetv2type': ewtype,
+                        'fieldEditable': '1',
+                        'values': list()
+                    }
+
+                    # update with options
+                    options = ewdiget[0][0]
+                    if ewtype == 'ValueMap':
+                        options = options[0]
+                        if options.attrib['type'] == 'List':
+                            for option in options:
+                                value = option[0]
+                                data['values'].append({'key': value.attrib['name'], 'value': value.attrib['value']})
+                        else:
+                            for value in options:
+                                data['values'].append({'key': value.attrib['name'], 'value': value.attrib['value']})
+                    else:
+                        for option in options:
+                            if 'value' in option.attrib:
+                                data.update({option.attrib['name']: option.attrib['value']})
+
+                    edittype_columns[fname] = data
+
+        else:
+
+            edittypes = self.qgisProjectLayerTree.find('edittypes')
+
+            if edittypes is not None:
+                for edittype in edittypes:
+                    data = {
+                        'widgetv2type': edittype.attrib['widgetv2type'],
+                        'values': list()
+                    }
+
+                    widgetv2config = edittype.find('widgetv2config')
+
+                    # update with attributes
+                    data.update(widgetv2config.attrib)
+                    if edittype.attrib['name'] in defaults_columns:
+                        data['default'] = defaults_columns[edittype.attrib['name']]
+
+                    # check for values
+                    for value in widgetv2config:
+                        data['values'].append(value.attrib)
+
+                    edittype_columns[edittype.attrib['name']] = data
 
         return edittype_columns
 
@@ -504,11 +575,12 @@ class QgisProjectLayer(XmlData):
         excludeAttributesWMS = json.dumps(self.excludeAttributesWMS) if self.excludeAttributesWMS else None
         excludeAttributesWFS = json.dumps(self.excludeAttributesWFS) if self.excludeAttributesWFS else None
 
-        self.instance, created = Layer.objects.get_or_create(
-            origname=self.origname,
+        self.instance, created = self._layer_model.objects.get_or_create(
+            #origname=self.origname,
             qgs_layer_id=self.layerId,
             project=self.qgisProject.instance,
             defaults={
+                'origname': self.origname,
                 'name': self.name,
                 'title': self.title,
                 'is_visible': self.isVisible,
@@ -569,14 +641,15 @@ class QgisProject(XmlData):
         'title',
         'srid',
         'units',
+        'qgisVersion',
         'initialExtent',
         'maxExtent',
+        'wmsuselayerids',
         'wfsLayers',
         'wfstLayers',
         'layersTree',
         'layers',
-        'layerRelations',
-        'qgisVersion',
+        'layerRelations'
         ]
 
     _defaultValidators = [
@@ -591,6 +664,13 @@ class QgisProject(XmlData):
     #_regexXmlLayer = 'projectlayers/maplayer[@geometry!="No geometry"]'
 
     _regexXmlLayer = 'projectlayers/maplayer'
+
+    _regexXmlComposer = 'Composer'
+    _regexXmlComposerPicture = 'Composition/ComposerPicture'
+
+    _project_model = Project
+
+    _qgisprojectlayer_class = QgisProjectLayer
 
     def __init__(self, qgis_file, **kwargs):
         self.qgisProjectFile = qgis_file
@@ -609,7 +689,7 @@ class QgisProject(XmlData):
 
 
         # try to load xml project file
-        self.loadProject()
+        self.loadProject(**kwargs)
 
         # set data value into this object
         self.setData()
@@ -618,7 +698,7 @@ class QgisProject(XmlData):
         for validator in self._defaultValidators:
             self.registerValidator(validator)
 
-    def loadProject(self):
+    def loadProject(self, **kwargs):
         """
         Load projectfile by xml parser
         """
@@ -679,6 +759,17 @@ class QgisProject(XmlData):
         else:
             return None
 
+    def _getDataWmsuselayerids(self):
+        """
+        Get WMSUseLayerIDS property
+        :return: bool
+        """
+        wmsuselayerids = self.qgisProjectTree.find('properties/WMSUseLayerIDs')
+        if wmsuselayerids is not None:
+            return True if wmsuselayerids.text == 'true' else False
+        else:
+            return False
+
 
     def _getDataSrid(self):
         """
@@ -712,8 +803,9 @@ class QgisProject(XmlData):
         def buildLayerTreeNodeObject(layerTreeNode):
             toRetLayers = []
             for level, layerTreeSubNode in enumerate(layerTreeNode):
-                if level > 0:
 
+                # QGIS3 move custom-order here
+                if level > 0 and layerTreeSubNode.tag != 'custom-order':
                     toRetLayer = {
                         'name': layerTreeSubNode.attrib['name'],
                         'expanded': True if layerTreeSubNode.attrib['expanded'] == '1' else False
@@ -759,8 +851,21 @@ class QgisProject(XmlData):
 
         for order, layerTree in enumerate(layerTrees):
             if self._checkLayerTypeCompatible(layerTree):
-                layers.append(QgisProjectLayer(layerTree, qgisProject=self, order=order))
+                layers.append(self._qgisprojectlayer_class(layerTree, qgisProject=self, order=order))
         return layers
+
+    def _getDataComposer(self):
+        composers = []
+
+        # Get layer trees
+        composersTrees = self.qgisProjectTree.xpath(self._regexXmlComposer)
+
+        '''
+        for order, layerTree in enumerate(layerTrees):
+            if self._checkLayerTypeCompatible(layerTree):
+                layers.append(self._qgisprojectlayer_class(layerTree, qgisProject=self, order=order))
+        '''
+        return composers
 
     def _getDataLayerRelations(self):
         """
@@ -838,12 +943,13 @@ class QgisProject(XmlData):
                 description = kwargs.get('description')
                 baselayer = kwargs.get('baselayer')
 
-                self.instance = Project.objects.create(
+                self.instance = self._project_model.objects.create(
                     qgis_file=self.qgisProjectFile,
                     group=self.group,
                     title=self.title,
                     initial_extent=self.initialExtent,
                     max_extent=self.maxExtent,
+                    wms_use_layer_ids=self.wmsuselayerids,
                     thumbnail=thumbnail,
                     description=description,
                     baselayer=baselayer,
@@ -861,6 +967,7 @@ class QgisProject(XmlData):
                 self.instance.max_extent = self.maxExtent
                 self.instance.layers_tree = self.layersTree
                 self.instance.relations = self.layerRelations
+                self.instance.wms_use_layer_ids = self.wmsuselayerids
 
                 self.instance.save()
 
@@ -904,11 +1011,16 @@ class QgisProject(XmlData):
                 layerType = layer.find('provider').text
                 datasource = layer.find('datasource').text
 
-                newDatasource = makeDatasource(datasource,layerType)
+                newDatasource = makeDatasource(datasource, layerType)
 
                 # Update layer
                 if newDatasource:
                     layer.find('datasource').text = newDatasource
+
+        # update file of print composers
+        for composer in tree.xpath(self._regexXmlComposer):
+            for composer_picture in composer.xpath(self._regexXmlComposerPicture):
+                composer_picture.attrib['file'] = makeComposerPictureFile(composer_picture.attrib['file'])
 
         # Update QGIS file
         with open(self.instance.qgis_file.path, 'w') as handler:
@@ -992,11 +1104,14 @@ class QgisProjectSettingsWMS(XmlData):
 
             CRS = layerTree.xpath('opengis:CRS', namespaces=self._NS)
 
-
+            # QGIS3 no set queryable attributo for layer groups
+            queryable = False
+            if 'queryable' in layerTree.attrib:
+                queryable = bool(int(layerTree.attrib['queryable']))
 
             dataLayer = {
                 'name': name,
-                'queryable': bool(int(layerTree.attrib['queryable'])),
+                'queryable': queryable,
                 'bboxes': self._getBBOXLayer(layerTree),
                 'styles': [],
                 'metadata': {
@@ -1128,21 +1243,30 @@ class QgisProjectSettingsWMS(XmlData):
 
     def _getDataMetadata(self):
 
-        service = self.qgisProjectSettingsTree.xpath(
-            'opengis:Service',
-            namespaces=self._NS
-        )[0]
-
         # add simple tags
         self._metadata = {}
+
+        try:
+            service = self.qgisProjectSettingsTree.xpath(
+                'opengis:Service',
+                namespaces=self._NS
+            )[0]
+        except:
+            return self._metadata
+
+
         for tag in ('Name',
                     'Title',
                     'Abstract',
                     'Fees',
                     'AccessConstraints'):
-            self._metadata.update({
-                tag.lower(): service.find(self._buildTagWithNS(tag)).text
-            })
+            try:
+                self._metadata.update({
+                    tag.lower(): service.find(self._buildTagWithNS(tag)).text
+                })
+            except:
+                pass
+
 
         # add keywords
         keywords = service.find(self._buildTagWithNS('KeywordList')).xpath('opengis:Keyword', namespaces=self._NS)
@@ -1160,15 +1284,27 @@ class QgisProjectSettingsWMS(XmlData):
 
         # add contact informations
         contactinfo = service.find(self._buildTagWithNS('ContactInformation'))
-        contactperson = contactinfo.find(self._buildTagWithNS('ContactPersonPrimary'))
+        try:
+            contactperson = contactinfo.find(self._buildTagWithNS('ContactPersonPrimary'))
+        except:
+            pass
 
         self._metadata.update(OrderedDict({
             'contactinformation': OrderedDict({
                 'personprimary': {},
-                'contactvoicetelephone': contactinfo.find(self._buildTagWithNS('ContactVoiceTelephone')).text,
-                'contactelectronicmailaddress': contactinfo.find(self._buildTagWithNS('ContactElectronicMailAddress')).text,
             })
         }))
+
+        try:
+            self._metadata.update(OrderedDict({
+                'contactinformation': OrderedDict({
+                    'contactvoicetelephone': contactinfo.find(self._buildTagWithNS('ContactVoiceTelephone')).text,
+                    'contactelectronicmailaddress': contactinfo.find(
+                        self._buildTagWithNS('ContactElectronicMailAddress')).text,
+                })
+            }))
+        except:
+            pass
 
         for tag in ('ContactPerson', 'ContactOrganization', 'ContactPosition'):
             try:

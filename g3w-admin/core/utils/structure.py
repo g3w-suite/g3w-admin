@@ -92,9 +92,12 @@ MAPPING_GEOALCHEMY_DJANGO_FIELDS = {
     SQLTYPE.CHAR: CharField,
     SQLTYPE.NUMERIC: DecimalField,
     SQLTYPE.BLOB: BinaryField,
+    SQLTYPE.TIMESTAMP: DateTimeField,
 
     # specific for postgres
     SQLPOSTGRESTYPE.DOUBLE_PRECISION: FloatField,
+    SQLPOSTGRESTYPE.TIMESTAMP: DateTimeField,
+    SQLPOSTGRESTYPE.BYTEA: BinaryField,
     geotypes.Geometry: geomodels.GeometryField,
     'geotype': geomodels.GeometryField,
     'autoincrement': AutoField

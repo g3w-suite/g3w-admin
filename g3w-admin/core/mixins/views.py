@@ -132,6 +132,8 @@ class G3WAjaxSetOrderViewMixin(object):
     """
     To set order of ordered model
     """
+    def get(self, *args, **kwargs):
+        return 'pippo'
 
     def post(self, *args, **kwargs):
         # get new order save value for group

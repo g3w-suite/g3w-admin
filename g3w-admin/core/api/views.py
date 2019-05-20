@@ -10,7 +10,7 @@ for app_name in settings.G3WADMIN_PROJECT_APPS:
         projectAppModule = __import__('{}.vector'.format(app_name))
         LAYERVECTORVIEW_CLASSES[app_name] = getattr(projectAppModule.vector, LAYERVECTORVIEW_CLASS_DEFAULT)
         USERMEDIAHANDLER_CLASSES[app_name] = getattr(projectAppModule.vector, 'UserMediaHandler')
-    except:
+    except Exception as e:
         continue
 
 @csrf_exempt  # put exempt here because as_view method is outside url bootstrap declaration
