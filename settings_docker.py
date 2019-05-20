@@ -19,7 +19,7 @@ DATASOURCE_PATH = '/shared-volume/project_data'
 
 MEDIA_ROOT = '/shared-volume/media/'
 MEDIA_URL = '/media/'
-STATIC_ROOT = '/code/static'
+STATIC_ROOT = '/shared-volume/static/'
 STATIC_URL = '/static/'
 
 

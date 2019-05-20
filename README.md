@@ -168,7 +168,7 @@ echo "deb https://dl.yarnpkg.com/debian/ stable main" | \
 apt-get update && sudo apt install -y yarn
 # Back to unprivileged user, from the repository directory, run:
 yarn --ignore-engines --ignore-scripts --prod
-    nodejs -e "try { require('fs').symlinkSync(require('path').resolve('node_modules/@bower_components'), 'g3w-admin/core/static/bower_components', 'junction') } catch (e) { }"
+nodejs -e "try { require('fs').symlinkSync(require('path').resolve('node_modules/@bower_components'), 'g3w-admin/core/static/bower_components', 'junction') } catch (e) { }"
 ```
 
 Make sure build components are available in static and collected later
