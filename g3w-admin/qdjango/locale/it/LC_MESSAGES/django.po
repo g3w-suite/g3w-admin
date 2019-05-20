@@ -474,8 +474,8 @@ msgid "which should be located at"
 msgstr "dovrebbe essere presente qui"
 
 #: utils/validators.py:34
-msgid "Project and group SRID must be the same"
-msgstr "Lo SRID del progetto è diverso da quello indicato nel gruppo cartografico. "
+msgid "Project SRID (%s) and group SRID (%s) must be the same"
+msgstr "Lo SRID del progetto (%s) e quello del gruppo (%s) devono essere identici"
 "Aggiornare lo SRID del progetto e pubblicarlo nuovamente."
 
 #: utils/validators.py:44
