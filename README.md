@@ -1,4 +1,5 @@
-[![CircleCI](https://circleci.com/gh/elpaso/g3w-admin/tree/dev.svg?style=svg)](https://circleci.com/gh/elpaso/g3w-admin/tree/dev)
+[![CircleCI](https://circleci.com/gh/g3w-suite/g3w-admin.svg?style=svg)](https://circleci.com/gh/g3w-suite/g3w-admin)
+
 
 # G3W-SUITE
 
