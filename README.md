@@ -210,10 +210,15 @@ python manage.py sitetree_resync_apps
 
 CI tests are automatically run on CircleCI for the `dev` branch only.
 
-The Docker compose configuration used in the CI tests is available at [docker-compose.yml](docker-compose.yml) and can also be used for local testing by running:
+The Docker compose configuration used in the CI tests is available at [docker-compose.yml](docker-compose.yml).
+
+Another configuration for running local tests is provided with [docker-compose-local.yml](docker-compose-local.yml)
+ and can also be used for local testing by running:
 
 ```bash
-docker-compose up
+docker-compose -f docker-compose-local.yml up
 ```
 
-The dependency image is build from the [Dockerfile](Dockerfile) and needs to be rebuilt in case the [requirements.txt](requirements.txt) or the [requirements_docker.txt](requirements_docker.txt) files are modified.
+The testing image is built from the dependency image and it will run all install and build steps from the local repository.
+
+The dependency image is built from the [Dockerfile.deps](ci_scripts/Dockerfile).
