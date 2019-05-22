@@ -1,0 +1,26 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/buildpack-deps:bionic
+    branches:
+      only:
+        - dev
+        - dev-circleci
+    steps:
+      - checkout
+      #- run: git submodule sync
+      #- run: git submodule update --init (requires credentials for spid_redirect)
+      - setup_remote_docker
+      - run:
+          name: Starting Docker compose
+          command: docker-compose up -d
+      - run:
+          name: Waiting for Django on port 8000
+          command: docker-compose exec g3w-suite sh -c "wait-for-it -h localhost -p 8000 -t 180" # Wait for django
+      - run:
+          name: Running g3w-admin core tests
+          command: docker-compose exec g3w-suite sh -c "cd /code/g3w-admin && python manage.py test core"
+      - run:
+          name: Running qdjango core tests
+          command: docker-compose exec g3w-suite sh -c "cd /code/g3w-admin && python manage.py test qdjango"
