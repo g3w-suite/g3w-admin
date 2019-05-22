@@ -23,6 +23,7 @@ DJANGO_DIRECTORY="${CODE_DIRECTORY}/g3w-admin"
 
 cd '/code/'
 
+
 if [ ! -e ${SETUP_DONE_FILE} ]; then
     echo "Setup started for G3W-Suite installation ..."
     echo "Copying docker_settings.py to /base/settings/local_settings.py"

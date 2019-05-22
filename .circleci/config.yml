@@ -19,11 +19,14 @@ jobs:
           name: Copying code into the container
           command: docker cp ./ "$(docker-compose ps -q g3w-suite)":/code
       - run:
+          name: Installing Python requirements
+          command: docker-compose exec g3w-suite sh -c "cd /code/ && pip install -r requirements_docker.txt"
+      - run:
           name: Building g3w-suite
           command: docker-compose exec g3w-suite sh -c "/code/ci_scripts/build_suite.sh"
       - run:
           name: Starting Django
-          command: docker-compose exec g3w-suite sh -c "cd /code/g3w-suite && python manage.py runserver 0.0.0.0:8000"
+          command: docker-compose exec g3w-suite sh -c "cd /code/g3w-admin && python manage.py runserver 0.0.0.0:8000"
           background: true
       - run:
           name: Waiting for Django on port 8000

@@ -1,4 +1,5 @@
 FROM ubuntu:bionic
+# This image is available as elpaso/g3w-suite-deps:latest
 LABEL maintainer="Gis3w" Description="This image is used to prepare build requirements for g3w-suite CI testing" Vendor="Gis3w" Version="1.1"
 RUN chown root:root /tmp && chmod ugo+rwXt /tmp
 RUN apt-get update && apt install -y libgdal20 python-gdal python-pip curl wget vim wait-for-it
