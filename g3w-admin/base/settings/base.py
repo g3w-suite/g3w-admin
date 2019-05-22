@@ -56,7 +56,8 @@ THIRD_PARTY_APPS = [
     'import_export',
     'mptt',
     'ordered_model',
-    'ajax_select'
+    'ajax_select',
+    'djcelery',
     #'django_user_agents',
     #'tracking_analyzer'
     # 'debug_toolbar',
@@ -173,7 +174,7 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 LOCALE_PATHS = (

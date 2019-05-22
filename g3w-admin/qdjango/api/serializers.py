@@ -215,7 +215,7 @@ class ProjectSerializer(serializers.ModelSerializer):
                     # alter layer serialized data from plugin
                     # send layerseralized original and came back only key->value changed
 
-                    for singnal_receiver, data in after_serialized_project_layer.send(layer_serialized,
+                    for signal_receiver, data in after_serialized_project_layer.send(layer_serialized,
                                                                               layer=layers[layer['id']]):
                         update_serializer_data(layer_serialized_data, data)
                     layer_serialized_data['multilayer'] = meta_layer.getCurrentByLayer(layer_serialized_data)
@@ -482,7 +482,7 @@ class WidgetSerializer(serializers.ModelSerializer):
 
 class QGISLayerSerializer(G3WSerializerMixin, serializers.ModelSerializer):
     """
-    Generic layer serializer for postgres/Postgis or sqlite/spatialite NO GEOGRAFIC
+    Generic layer serializer for postgres/Postgis or sqlite/spatialite NO GEOGRAPHIC
     """
     def __init__(self, *args, **kwargs):
 

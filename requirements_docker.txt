@@ -1,0 +1,6 @@
+# Additional requirements for Docker CI image
+# run docker-compose build if this file has changed
+# Include base requirements
+-r requirements.txt
+
+# Additional requirements for CI here:

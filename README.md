@@ -1,3 +1,6 @@
+[![CircleCI](https://circleci.com/gh/g3w-suite/g3w-admin.svg?style=svg)](https://circleci.com/gh/g3w-suite/g3w-admin)
+
+
 # G3W-SUITE
 
 G3W-ADMIN admin server module for G3W-SUITE.
@@ -151,4 +154,72 @@ Alternative solutions are:
 * [Nginx](https://nginx.org/) + [Gunicorn](http://gunicorn.org/)
 
 
+## Manual installation steps
 
+The preferred installation is by using the `paver` script as mentioned above, but in case you need to customize the installation process, here are the build and setup steps:
+
+### Build static js code
+
+
+```bash
+# Install yarn (requires root):
+curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
+echo "deb https://dl.yarnpkg.com/debian/ stable main" | \
+    tee /etc/apt/sources.list.d/yarn.list
+apt-get update && sudo apt install -y yarn
+# Back to unprivileged user, from the repository directory, run:
+yarn --ignore-engines --ignore-scripts --prod
+nodejs -e "try { require('fs').symlinkSync(require('path').resolve('node_modules/@bower_components'), 'g3w-admin/core/static/bower_components', 'junction') } catch (e) { }"
+```
+
+Make sure build components are available in static and collected later
+```
+cd g3w-admin/core/static
+ln -s "../../../node_modules/@bower_components" bower_components
+```
+
+### Install requirements
+
+Possibily within a virtual env:
+
+```bash
+pip install -r requirements.tx
+```
+
+### Django setup
+
+```bash
+python manage.py collectstatic --noinput
+python manage.py migrate --noinput
+```
+
+Install some fixtures for EPSG and other suite options:
+
+```bash
+for FIXTURE in 'BaseLayer.json' 'G3WGeneralDataSuite.json' 'G3WMapControls.json' 'G3WSpatialRefSys.json'; do
+    python manage.py loaddata  core/fixtures/${FIXTURE}
+done
+```
+
+Sync menu tree items (re-run this command in case you installed optional modules and they are not visible in the admin menu tree):
+
+```bash
+python manage.py sitetree_resync_apps
+```
+
+## Continuous integration testing
+
+CI tests are automatically run on CircleCI for the `dev` branch only.
+
+The Docker compose configuration used in the CI tests is available at [docker-compose.yml](docker-compose.yml).
+
+Another configuration for running local tests is provided with [docker-compose-local.yml](docker-compose-local.yml)
+ and can also be used for local testing by running:
+
+```bash
+docker-compose -f docker-compose-local.yml up
+```
+
+The testing image is built from the dependency image and it will run all install and build steps from the local repository.
+
+The dependency image is built from the [Dockerfile.deps](ci_scripts/Dockerfile).

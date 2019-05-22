@@ -1,0 +1,40 @@
+version: '3'
+services:
+  postgis:
+    image: kartoza/postgis:11.0-2.5
+    ports:
+    - "55432:5432"
+    environment:
+      POSTGRES_USER: docker
+      POSTGRES_PASS: docker
+      POSTGRES_DBNAME: g3w-suite
+    volumes:
+      - shared-volume:/shared-volume
+
+  qgisserver:
+    image: kartoza/qgis-server:LTR
+    ports:
+    - "8001:80"
+    environment:
+      QGIS_DEBUG: 0
+      QGIS_LOG_FILE: /tmp/qgis.log
+      QGIS_SERVER_LOG_FILE:  /tmp/qgis_server.log
+      QGIS_SERVER_LOG_LEVEL: 0
+      QGIS_PROJECT_FILE: ""
+    volumes:
+      - shared-volume:/shared-volume
+
+  g3w-suite:
+    image: elpaso/g3w-suite-deps:latest
+    command: "tail -f /dev/null"
+    ports:
+    - "8000:8000"
+    environment:
+      PYTHONUNBUFFERED: 1
+    depends_on:
+      - postgis
+    volumes:
+      - shared-volume:/shared-volume
+
+volumes:
+    shared-volume:
