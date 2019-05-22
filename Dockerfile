@@ -3,3 +3,4 @@ LABEL maintainer="Gis3w" Description="This image is used to install python requi
 COPY requirements*.* /code/
 RUN pip install -r requirements_docker.txt
 COPY . /code/
+CMD ["/code/entrypoint_docker.sh"]

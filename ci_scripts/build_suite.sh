@@ -1,5 +1,6 @@
 #!/bin/bash
-# Startup script for g3w-suite and docker entry point
+#
+# Biuld  script for g3w-suite, to be run inside the docker container
 #
 # Depending on the existence of "setup_done" file
 # setup steps are performed, they consist in:
@@ -13,11 +14,14 @@
 
 set -e
 
+CODE_DIRECTORY='/code'
 DATASOURCE_PATH='/shared-volume/project_data'
 MEDIA_ROOT='/shared-volume/media'
 PROJECTS_DIR="${MEDIA_ROOT}/projects"
 SETUP_DONE_FILE='/code/setup_done'
-DJANGO_DIRECTORY='/code/g3w-admin'
+DJANGO_DIRECTORY="${CODE_DIRECTORY}/g3w-admin"
+
+cd '/code/'
 
 if [ ! -e ${SETUP_DONE_FILE} ]; then
     echo "Setup started for G3W-Suite installation ..."
@@ -35,12 +39,9 @@ if [ ! -e ${SETUP_DONE_FILE} ]; then
     ls static || ln -s media static
     popd
 
-    pushd .
     echo "Creating projects(_data) directores in ${PROJECTS_DIR} ..."
-    cd media
     ls ${PROJECTS_DIR} || mkdir ${PROJECTS_DIR}
     ls ${DATASOURCE_PATH} || mkdir ${DATASOURCE_PATH}
-    popd
 
     pushd .
     cd ${DJANGO_DIRECTORY}/core/static
@@ -73,8 +74,3 @@ fi
 
 # Make sure data are readable:
 chmod -R 777 ${DATASOURCE_PATH}
-
-
-cd ${DJANGO_DIRECTORY}
-echo "Starting Django server ..."
-python manage.py runserver 0.0.0.0:8000
