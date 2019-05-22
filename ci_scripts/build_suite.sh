@@ -26,7 +26,7 @@ cd '/code/'
 
 if [ ! -e ${SETUP_DONE_FILE} ]; then
     echo "Setup started for G3W-Suite installation ..."
-    echo "Copying docker_settings.py to /base/settings/local_settings.py"
+    echo "Copying docker_settings.py to base/settings/local_settings.py"
     cp ./settings_docker.py ./g3w-admin/base/settings/local_settings.py
 
     echo "Building javascript code ..."
