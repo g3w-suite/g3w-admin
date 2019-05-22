@@ -58,6 +58,9 @@ QDJANGO_PROXY_REQUEST = 'proxy'
 QDJANGO_QGSSERVER_REQUEST = 'qgsserver'
 QDJANGO_TESTDATA_REQUEST = 'testdata'  # Read reponse from testdata
 
+# set request mode
+qdjangoModeRequest = getattr(settings, 'QDJANGO_MODE_REQUEST', QDJANGO_QGSSERVER_REQUEST)
+
 
 class OWSRequestHandler(OWSRequestHandlerBase):
     """
