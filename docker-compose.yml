@@ -25,8 +25,7 @@ services:
       - shared-volume:/shared-volume
 
   g3w-suite:
-    #build: .
-    image: elpaso/g3w-suite-deps:latest
+    build: .
     command: "/code/entrypoint_docker.sh"
     ports:
     - "8000:8000"
