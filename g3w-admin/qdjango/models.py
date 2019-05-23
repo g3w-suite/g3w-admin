@@ -262,7 +262,7 @@ class Layer(G3WACLModelMixins, models.Model):
     name = models.CharField(_('Name'), max_length=255)
     title = models.CharField(_('Title'), max_length=255, blank=True)
     origname = models.CharField(_('Original Name'), max_length=256, null=True, blank=True)
-    qgs_layer_id = models.CharField(_('Qgis Layer Porject ID'), max_length=255, blank=True, null=True)
+    qgs_layer_id = models.CharField(_('Qgis Layer Project ID'), max_length=255, blank=True, null=True)
     description = models.TextField(_('Description'), blank=True)
     slug = AutoSlugField(
         _('Slug'), populate_from='name', unique=True, always_update=True

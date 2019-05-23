@@ -1,3 +1,4 @@
+
 G3WADMIN_PROJECT_APPS = []
 
 G3WADMIN_LOCAL_MORE_APPS = []
@@ -5,27 +6,29 @@ G3WADMIN_LOCAL_MORE_APPS = []
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': '<db_name>',
-        'USER': '<db_user>',
-        'PASSWORD': '<db_user_password>',
-        'HOST': '<db_host>',
-        'PORT': '<db_port>',
+        'NAME': 'g3w-suite',
+        'USER': 'docker',
+        'PASSWORD': 'docker',
+        'HOST': 'postgis',
+        'PORT': '5432',
     }
 }
 
-DATASOURCE_PATH = '<static_path_to_gis_data_source>'
+DATASOURCE_PATH = '/shared-volume/project_data'
 
-MEDIA_ROOT = ''
-#MEDIA_URL = '/media/'
-#STATIC_ROOT = '/home/www/django-qgis-static/static/'
-#STATIC_URL = '/static/'
+
+MEDIA_ROOT = '/shared-volume/media/'
+MEDIA_URL = '/media/'
+STATIC_ROOT = '/shared-volume/static/'
+STATIC_URL = '/static/'
+
 
 DEBUG = True
 
 #FRONTEND = False
 #FRONTEND_APP = None
 
-QDJANGO_SERVER_URL = 'http://localhost/cgi-bin/qgis_mapserv.fcgi'
+QDJANGO_SERVER_URL = 'http://qgisserver/'
 
 ALLOWED_HOSTS = "*"
 
@@ -57,22 +60,20 @@ LOGGING = {
         },
         'file': {
             'level': 'ERROR',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'maxBytes': 1024*1024*10, # 10 MB
-            'backupCount': 10,
+            'class': 'logging.FileHandler',
             'filename': '/tmp/error.log',
             'formatter': 'verbose'
-
         },
         'file_debug': {
             'level': 'DEBUG',
             'filters': ['require_debug_true'],
-            'class': 'logging.handlers.RotatingFileHandler',
-            'maxBytes': 1024*1024*10, # 10 MB
-            'backupCount': 10,
+            'class': 'logging.FileHandler',
             'filename': '/tmp/debug.log',
-
             'formatter': 'verbose'
+        },
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
         },
     },
     'loggers': {
@@ -85,15 +86,24 @@ LOGGING = {
             'handlers': ['file_debug'],
             'level': 'DEBUG',
         },
+        'pycsw.server': {
+            'handlers': ['console'],
+            'level': 'ERROR',
+        },
+        'django.db.backends': {
+            'handlers': ['console'],
+            'level': 'ERROR',
+        },
+        'catalog': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+        'celery.task': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
     }
 }
 
-SESSION_COOKIE_NAME = '<unique_session_id>'
+SESSION_COOKIE_NAME = 'gis3w-admin'
 
-
-# Celery is required for CSW Catalog module (optional)
-BROKER_URL = 'amqp://guest:guest@localhost:5672//'
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
-CELERY_RESULT_BACKEND = 'db+sqlite:///celerydb.sqlite'

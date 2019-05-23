@@ -1,3 +1,14 @@
+# coding=utf-8
+""""OWS network related functions
+
+.. note:: This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+"""
+
+import os
 from django.http import HttpResponse
 from django.conf import settings
 from django.http.request import QueryDict
@@ -45,6 +56,7 @@ import re
 
 QDJANGO_PROXY_REQUEST = 'proxy'
 QDJANGO_QGSSERVER_REQUEST = 'qgsserver'
+QDJANGO_TESTDATA_REQUEST = 'testdata'  # Read reponse from testdata
 
 # set request mode
 qdjangoModeRequest = getattr(settings, 'QDJANGO_MODE_REQUEST', QDJANGO_QGSSERVER_REQUEST)
@@ -77,6 +89,16 @@ class OWSRequestHandler(OWSRequestHandlerBase):
     def _getProjectInstance(self):
         self._projectInstance = Project.objects.get(pk=self.projectId)
 
+    @staticmethod
+    def qdjangoModeRequest():
+        """Request mode
+
+        :return: the request mode
+        :rtype: str
+        """
+
+        return getattr(settings, 'QDJANGO_MODE_REQUEST', QDJANGO_QGSSERVER_REQUEST)
+
     @property
     def authorizer(self):
         return QdjangoProjectAuthorizer(request= self.request, project=self._projectInstance)
@@ -86,6 +108,14 @@ class OWSRequestHandler(OWSRequestHandlerBase):
         return self._projectInstance
 
     def baseDoRequest(cls, q, request=None):
+
+        # Used by tests: read fake response from G3WADMIN_OWS_TESTDATA_DIR
+        if cls.qdjangoModeRequest() == QDJANGO_TESTDATA_REQUEST:
+            q['map'] = q['map'][q['map'].rfind('/')+1:]
+            response_path = q.urlencode().replace('&', '_AND_') + '.response'
+            with open(os.path.join(settings.G3WADMIN_OWS_TESTDATA_DIR, response_path)) as f:
+                # Skip header
+                return HttpResponse(''.join(f.readlines()[3:]))
 
         # http urllib3 manager
         http = None

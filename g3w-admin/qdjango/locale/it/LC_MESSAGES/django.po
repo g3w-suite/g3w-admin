@@ -131,7 +131,7 @@ msgstr "Tipo di controllo per le query per BBOX"
 
 #: models.py:99
 msgid "Query by polygon control mode"
-msgstr "Tipo di controllo per le qhery per poligono"
+msgstr "Tipo di controllo per le qwery per poligono"
 
 #: models.py:103 models.py:272 templates/qdjango/layers_list.html:36
 msgid "Project"
@@ -474,8 +474,9 @@ msgid "which should be located at"
 msgstr "dovrebbe essere presente qui"
 
 #: utils/validators.py:34
-msgid "Project and group SRID must be the same"
-msgstr "Il progetto e il lo SRID del gruppo devono essere identici"
+msgid "Project SRID (%s) and group SRID (%s) must be the same"
+msgstr "Lo SRID del progetto (%s) e quello del gruppo (%s) devono essere identici"
+"Aggiornare lo SRID del progetto e pubblicarlo nuovamente."
 
 #: utils/validators.py:44
 msgid "A project with the same title already exists"
