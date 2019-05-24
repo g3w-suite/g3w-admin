@@ -665,8 +665,13 @@ class QgisProject(XmlData):
 
     _regexXmlLayer = 'projectlayers/maplayer'
 
+    # for QGIS2
     _regexXmlComposer = 'Composer'
     _regexXmlComposerPicture = 'Composition/ComposerPicture'
+
+    #for QGIS3
+    _regexXmlLayouts = 'Layouts/Layout'
+    _regexXmlLayoutItems = 'LayoutItem'
 
     _project_model = Project
 
@@ -1021,6 +1026,12 @@ class QgisProject(XmlData):
         for composer in tree.xpath(self._regexXmlComposer):
             for composer_picture in composer.xpath(self._regexXmlComposerPicture):
                 composer_picture.attrib['file'] = makeComposerPictureFile(composer_picture.attrib['file'])
+
+        # for qgis3 try to find Layout/LayoutItem
+        for layout in tree.xpath(self._regexXmlLayouts):
+            for layoutitem in layout.xpath(self._regexXmlLayoutItems):
+                if 'file' in layoutitem.attrib:
+                    layoutitem.attrib['file'] = makeComposerPictureFile(layoutitem.attrib['file'])
 
         # Update QGIS file
         with open(self.instance.qgis_file.path, 'w') as handler:
