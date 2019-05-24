@@ -262,7 +262,7 @@ class QdjangoProjectRelationsApiView(APIView):
                     continue
                 elif exclude_columns and f in exclude_columns:
                     continue
-                if db_columns_referencing_layer:
+                if db_columns_referencing_layer and f in db_columns_referencing_layer:
                     new_rn[db_columns_referencing_layer[f]['label']] = rn[f]
                 else:
                     new_rn[f] = rn[f]
