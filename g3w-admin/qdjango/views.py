@@ -186,9 +186,6 @@ class QdjangoProjectRelationsApiView(APIView):
         # get Project model object:
         project = Project.objects.get(pk=project_id)
 
-        # try to remove ',' and '.'
-        relation_field_value = re.sub('[,.]+', '', relation_field_value)
-
         # ty to get project relations and if fail layer relations
         try:
             relations = {r['id']: r for r in eval(project.relations)}
