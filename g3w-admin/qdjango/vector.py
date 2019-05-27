@@ -1,5 +1,6 @@
 from django.db import connections
 from django.http import HttpResponse, HttpResponseForbidden
+from django.db.models.expressions import RawSQL
 from rest_framework.filters import OrderingFilter
 from core.api.base.views import BaseVectorOnModelApiView, IntersectsBBoxFilter, MODE_DATA, MODE_CONFIG, MODE_SHP, \
     APIException, MODE_XLS
@@ -45,8 +46,20 @@ class QGISLayerVectorViewMixin(object):
         self.bbox_filter = IntersectsBBoxFilter() if self.metadata_layer.geometry_type != QGIS_LAYER_TYPE_NO_GEOM \
             else None
 
+    '''
+    def set_sql_filter(self):
+        """
+        Set filter  set general sql filter
+        """
 
+        # check if datasource has sql key
+        ds = datasource2dict(self.layer.datasource)
 
+        if 'sql' in ds and ds['sql']:
+            self.sql_filter = RawSQL(ds['sql'], ())
+        else:
+            self.sql_filter = None
+    '''
 
     def get_layer_by_params(self, params):
 
