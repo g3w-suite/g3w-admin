@@ -79,17 +79,17 @@ def create_geomodel_from_qdjango_layer(layer, app_label='core'):
     Create dynamic django geo model
     """
 
-    CREATOR_CALSSES = {
+    CREATOR_CLASSES = {
         'postgres': PostgisCreateGeomodel,
         'spatialite': SpatialiteCreateGeomodel
     }
 
     datasource = datasource2dict(layer.datasource)
 
-    if layer.layer_type not in CREATOR_CALSSES.keys():
-        raise Exception('Layer type, {},must be one of {}'.format(layer.layer_type, ' or '.join(CREATOR_CALSSES.keys())))
+    if layer.layer_type not in CREATOR_CLASSES.keys():
+        raise Exception('Layer type is {} - it must be one of {}'.format(layer.layer_type, ' or '.join(CREATOR_CLASSES.keys())))
 
-    creator = CREATOR_CALSSES[layer.layer_type](layer, datasource, app_label)
+    creator = CREATOR_CLASSES[layer.layer_type](layer, datasource, app_label)
 
     return creator.geo_model, creator.using, creator.geometry_type
 
