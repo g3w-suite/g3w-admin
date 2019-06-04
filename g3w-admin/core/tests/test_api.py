@@ -21,6 +21,7 @@ from django.test import override_settings
 from django.contrib.auth.models import User
 from qdjango.models import Project
 from django.core.cache import caches
+from qdjango.models import Layer
 
 # Re-use test data from qdjango module
 DATASOURCE_PATH = os.path.join(os.getcwd(), 'qdjango', 'tests', 'data')
@@ -61,6 +62,11 @@ class CoreApiTest(APITestCase):
         cache_key = settings.QDJANGO_PRJ_CACHE_KEY.format(prj.pk)
         cache = caches['qdjango']
         cache.set(cache_key, open(os.path.join(DATASOURCE_PATH, 'getProjectSettings_gruppo-1_un-progetto.xml')).read())
+
+        # Fix datasource path for spatialite
+        l = Layer.objects.get(name='spatialite_points')
+        l.datasource = u'dbname=\'%s/un-progetto-data/un-progetto.db\' table="spatialite_points" (geom) sql=' % DATASOURCE_PATH
+        l.save()
 
     @classmethod
     def tearDownClass(cls):
