@@ -161,13 +161,13 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
     filter_backends = (OrderingFilter, DatatablesFilterBackend, SuggestFilterBackend)
     ordering_fields = '__all__'
 
-    # Modes call avilable
+    # Modes call available (output formats)
     modes_call_available = [
-        MODE_CONFIG,
-        MODE_DATA,
-        MODE_WIDGET,
-        MODE_SHP,
-        MODE_XLS
+        MODE_CONFIG,  # layer field description (kind of describeFeatureType)
+        MODE_DATA,  # get data geojson (custom)
+        MODE_WIDGET,  # ?
+        MODE_SHP,  # get shapefiles
+        MODE_XLS   # get XLS
     ]
 
     mapping_layer_attributes_function = mapLayerAttributesFromModel
