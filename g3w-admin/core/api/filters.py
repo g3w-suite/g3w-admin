@@ -3,6 +3,7 @@ from rest_framework_gis.filters import InBBoxFilter
 from rest_framework.exceptions import ParseError
 from rest_framework.filters import BaseFilterBackend
 from django.db.models import Q
+from django.contrib.gis.db.models.fields import GeometryField
 
 
 class InsideBBoxFilter(InBBoxFilter):
@@ -95,7 +96,7 @@ class DatatablesFilterBackend(BaseFilterBackend):
         if search_value:
             q = Q()
             for f in fields:
-                if f.column not in exlude_fields:
+                if f.column not in exlude_fields and not isinstance(f, GeometryField):
                     q |= Q(**{'%s__icontains' % f.column: search_value})
 
             if q != Q():
