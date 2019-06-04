@@ -35,5 +35,10 @@ jobs:
           name: Running g3w-admin core tests
           command: docker-compose exec g3w-suite sh -c "cd /code/g3w-admin && python manage.py test core"
       - run:
-          name: Running qdjango core tests
+          name: Running qdjango tests
           command: docker-compose exec g3w-suite sh -c "cd /code/g3w-admin && python manage.py test qdjango"
+      - run:
+          name: Running client tests
+          command: docker-compose exec g3w-suite sh -c "cd /code/g3w-admin && python manage.py test client"
+
+
