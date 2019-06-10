@@ -37,15 +37,15 @@ from .utils import getUserGroups, userHasGroups
 
 
 def label_users(obj):
-    return '{} {} ({})'.format(obj.first_name,obj.last_name, obj.username)
+    return u'{} {} ({})'.format(obj.first_name,obj.last_name, obj.username)
 
 
 def label_viewer_users(obj):
-    return '{} {} ({})'.format(obj.first_name,obj.last_name, obj.username)
+    return u'{} {} ({})'.format(obj.first_name,obj.last_name, obj.username)
 
 
 def label_user(obj):
-    return '{} {} ({})'.format(obj.first_name,obj.last_name, obj.username)
+    return u'{} {} ({})'.format(obj.first_name,obj.last_name, obj.username)
 
 
 class UsersChoiceField(forms.ModelMultipleChoiceField):
