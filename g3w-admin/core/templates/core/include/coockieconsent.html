@@ -8,7 +8,7 @@
         "showLink":false,
         "position":"top",
         "content":{
-            "message":"{% trans 'This website uses cookies to ensure you get the best experience on our website' %}.",
+            "message":"{% if SETTINGS.PRIVACY_MSG %} {{ SETTINGS.PRIVACY_MSG|safe }} {% else %}{% trans 'This website uses cookies to ensure you get the best experience on our website' %}.{% endif %}",
             "dismiss":"{% trans 'Got it'%}!"
         }
     });
