@@ -106,8 +106,12 @@ class G3WACLForm(forms.Form):
         self._add_anonymou_user()
 
     def _setEditorUserQueryset(self):
-        self.fields['editor_user'].queryset = User.objects.filter(groups__name__in=self.editor_groups)\
-            .order_by('last_name')
+
+        self.fields['editor_user'].queryset = get_objects_for_user(self.request.user, 'auth.change_user', User) \
+            .filter(groups__name__in=self.editor_groups)
+
+        #self.fields['editor_user'].queryset = User.objects.filter(groups__name__in=self.editor_groups)\
+            #.order_by('last_name')
 
     def _setViewerUserQueryset(self, **kwargs):
 
@@ -231,7 +235,7 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
         super(G3WUserForm, self).__init__(*args, **kwargs)
 
         #filter fileds by role:
-        self.filterFieldsByRoles()
+        self.filterFieldsByRoles(**kwargs)
 
         if 'backend' in self.fields:
             self.fields['backend'].choices = USER_BACKEND_TYPES
@@ -363,15 +367,19 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
 
         self.helper.layout = Layout(*args)
 
-    def filterFieldsByRoles(self):
+    def filterFieldsByRoles(self, **kwargs):
         if self.request.user.is_superuser:
             if not self.request.user.is_staff:
                 self.fields.pop('is_staff')
                 self.fields.pop('backend')
         elif G3W_EDITOR1 in getUserGroups(self.request.user):
             # other but only Editor level 1 can add user
-            self.fields['groups'].queryset = AuthGroup.objects.filter(name__in=[G3W_EDITOR2, G3W_VIEWER1, G3W_VIEWER2])
-            self.fields['groups'].required = True
+            # if user is not himself
+            if 'instance' in kwargs and kwargs['instance'] == self.request.user:
+                self.fields.pop('groups')
+            else:
+                self.fields['groups'].queryset = AuthGroup.objects.filter(name__in=[G3W_EDITOR2, G3W_VIEWER1, G3W_VIEWER2])
+                self.fields['groups'].required = True
             self.fields.pop('is_superuser')
             self.fields.pop('is_staff')
             self.fields.pop('backend')

@@ -2,6 +2,7 @@ from django_file_form.forms import FileFormMixin, UploadedFileField
 from django.forms import Form, ModelForm
 from django.forms.fields import CharField
 from django.forms.models import ModelMultipleChoiceField
+from django.db.models import Q
 from django.utils.translation import ugettext, ugettext_lazy as _
 from core.models import Group, GeneralSuiteData, MacroGroup
 from django_file_form.forms import FileFormMixin
@@ -157,6 +158,14 @@ class GroupForm(FileFormMixin, G3WFormMixin, G3WRequestFormMixin, G3WACLForm, Mo
     class Meta:
         model = Group
         fields = '__all__'
+
+    def clean_macrogroups(self):
+
+        # for case editor1 without permission on magrogroup
+        if userHasGroups(self.request.user, [G3W_EDITOR1]) and self.instance.pk:
+            return self.cleaned_data['macrogroups'] | \
+                   self.instance.macrogroups.filter(~Q(pk__in=self.fields['macrogroups'].queryset))
+        return self.cleaned_data['macrogroups']
 
     def save(self, commit=True):
         super(GroupForm, self).save()
