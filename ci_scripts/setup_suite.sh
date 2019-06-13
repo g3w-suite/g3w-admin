@@ -60,8 +60,8 @@ if [ ! -e ${SETUP_DONE_FILE} ]; then
     # sync menu tree items
     python manage.py sitetree_resync_apps
     python manage.py createsuperuser --noinput --username admin --email admin@email.com || true
-    # Fails if not debug
-    python manage.py set_fake_passwords --password admin || true
+    # Set fake password for all users
+    python manage.py set_passwords --password admin
     touch ${SETUP_DONE_FILE}
     echo "Setup completed ..."
 else
