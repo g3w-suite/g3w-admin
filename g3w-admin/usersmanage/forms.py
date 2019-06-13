@@ -257,6 +257,7 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
     department = ModelChoiceField(queryset=Department.objects.all(), required=False)
     backend = ChoiceField(choices=(), required=True)
     avatar = UploadedFileField(required=False)
+
     groups = ModelMultipleChoiceField(
         queryset=AuthGroup.objects.filter(name__in=[G3W_EDITOR1, G3W_EDITOR2, G3W_VIEWER1, G3W_VIEWER2]),
         required=True,
@@ -502,6 +503,48 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
                 user.user_permissions.remove(add_group)
 
         return user
+
+    def clean_groups(self):
+        """
+        Check for roles(groups) user can't be editor level 1 and 2 at same time.
+        :return: cleaned_data modified
+        """
+
+        groups = self.cleaned_data['groups']
+
+        if len(set(groups).intersection(set(AuthGroup.objects.filter(name__in=[G3W_EDITOR1, G3W_EDITOR2])))) == 2:
+            raise ValidationError(_('User can\'t be Editor level 1 and at same time Editor level 2'),
+                                  code='groups_invalid')
+
+        return groups
+
+    def clean_user_groups_editor(self):
+        """
+        Check only Editor level 2 users can belong to user groups editor.
+        :return: cleaned_data
+        """
+        user_groups_editor = self.cleaned_data['user_groups_editor']
+
+        if user_groups_editor and len(set(self.cleaned_data['groups']).intersection(
+                set(AuthGroup.objects.filter(name__in=[G3W_EDITOR2])))) == 0:
+            raise ValidationError(_('User can\'t belong a **editor groups** if he isn\'t a Editor level 2'),
+                                  code='user_groups_editor_invalid')
+
+        return user_groups_editor
+
+    def clean_user_groups_viewer(self):
+        """
+        Check only Viewer level 1 users can belong to user groups editor.
+        :return: cleaned_data
+        """
+        user_groups_viewer = self.cleaned_data['user_groups_viewer']
+
+        if user_groups_viewer and len(set(self.cleaned_data['groups']).intersection(
+                set(AuthGroup.objects.filter(name__in=[G3W_VIEWER1])))) == 0:
+            raise ValidationError(_('User can\'t belong a **viewer groups** if he isn\'t a Viewer level 1'),
+                                  code='user_groups_editor_invalid')
+
+        return user_groups_viewer
 
     def clean_avatar(self):
         """
