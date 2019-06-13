@@ -40,18 +40,17 @@ if [ ! -e ${SETUP_DONE_FILE} ]; then
     ls ${PROJECTS_DIR} || mkdir ${PROJECTS_DIR}
     ls ${DATASOURCE_PATH} || mkdir ${DATASOURCE_PATH}
 
-    pushd .
-    cd ${DJANGO_DIRECTORY}/core/static
-    rm -rf bower_components
-    ln -s "/code/node_modules/@bower_components" bower_components
-    popd
-
-    # Wait for postgis here so we avoid waiting while building js code
     wait-for-it -h ${G3WSUITE_POSTGRES_HOST:-postgis} -p ${G3WSUITE_POSTGRES_PORT:-5432} -t 60
 
     cd ${DJANGO_DIRECTORY}
     python manage.py collectstatic --noinput -v 0
     python manage.py migrate --noinput
+
+    pushd .
+    cd ${DJANGO_DIRECTORY}/core/static
+    rm -rf bower_components
+    ln -s "/code/node_modules/@bower_components" bower_components
+    popd
 
     echo "Installing fixtures ..."
     for FIXTURE in 'BaseLayer.json' 'G3WGeneralDataSuite.json' 'G3WMapControls.json' 'G3WSpatialRefSys.json'; do
@@ -67,7 +66,7 @@ if [ ! -e ${SETUP_DONE_FILE} ]; then
 else
     echo "Setup was already done, skipping ..."
     # Wait for postgis
-    wait-for-it -h postgis -p 5432 -t 60
+    wait-for-it -h ${G3WSUITE_POSTGRES_HOST:-postgis} -p ${G3WSUITE_POSTGRES_PORT:-5432} -t 60
 fi
 
 # Make sure data are readable:
