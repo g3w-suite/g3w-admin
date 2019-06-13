@@ -27,9 +27,5 @@ if [ ! -e ${BUILD_DONE_FILE} ]; then
 
 else
     echo "Build was already done, skipping ..."
-    # Wait for postgis
-    wait-for-it -h postgis -p 5432 -t 60
 fi
 
-# Make sure data are readable:
-chmod -R 777 ${DATASOURCE_PATH}
