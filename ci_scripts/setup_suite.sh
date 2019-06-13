@@ -26,8 +26,10 @@ cd '/code/'
 if [ ! -e ${SETUP_DONE_FILE} ]; then
     echo "Setup started for G3W-Suite installation ..."
 
-    echo "Copying docker_settings.py to base/settings/local_settings.py"
-    cp ./settings_docker.py ./g3w-admin/base/settings/local_settings.py
+    if [ ! -e ./g3w-admin/base/settings/local_settings.py ]; then
+        echo "Copying docker_settings.py to base/settings/local_settings.py"
+        cp ./settings_docker.py ./g3w-admin/base/settings/local_settings.py
+    fi
 
     echo "Cleaning up some dirs before collecting statics ..."
     ls ${MEDIA_ROOT} || mkdir ${MEDIA_ROOT}
