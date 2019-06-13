@@ -17,7 +17,7 @@ CODE_DIRECTORY='/code'
 DATASOURCE_PATH='/shared-volume/project_data'
 MEDIA_ROOT='/shared-volume/media'
 PROJECTS_DIR="${MEDIA_ROOT}/projects"
-SETUP_DONE_FILE='/code/setup_done'
+SETUP_DONE_FILE='/shared-volume/setup_done'
 DJANGO_DIRECTORY="${CODE_DIRECTORY}/g3w-admin"
 
 cd '/code/'
