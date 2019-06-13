@@ -54,28 +54,41 @@ def get_fields_by_user(user, form, **kwargs):
     """
     fields = [
         'editor_user',
+        'editor2_user',
         'viewer_users',
         'editor_user_groups',
         'viewer_user_groups'
     ]
+
     if not user.is_superuser:
+
+        # add fields to ACL box by user main role
         del(form.fields['editor_user'])
         if 'editor_user' in fields:
             del(fields[fields.index('editor_user')])
 
-        if not userHasGroups(user, [G3W_EDITOR1]):
-            for field_to_remove in ['viewer_users', 'editor_user_groups', 'viewer_user_groups']:
-                del (form.fields[field_to_remove])
-                if field_to_remove in fields:
-                    del (fields[fields.index(field_to_remove)])
+        if userHasGroups(user, [G3W_EDITOR1]):
+            fields_to_remove = []
+
+        elif userHasGroups(user, [G3W_EDITOR2]):
+            fields_to_remove = ['editor2_user', 'editor_user_groups']
+
+        else:
+            fields_to_remove = ['editor2_user', 'viewer_users', 'editor_user_groups', 'viewer_user_groups']
+
+        for field_to_remove in fields_to_remove:
+            del (form.fields[field_to_remove])
+            if field_to_remove in fields:
+                del (fields[fields.index(field_to_remove)])
     else:
 
-        # if not required edit_user
+        # if not required edit_user editor level 1
         if 'editor_field_required' in kwargs and not kwargs['editor_field_required']:
             del (form.fields['editor_user'])
             if 'editor_user' in fields:
                 del (fields[fields.index('editor_user')])
 
+        # if not required editor groups
         if 'editor_groups_field_required' in kwargs and not kwargs['editor_groups_field_required']:
             del (form.fields['editor_user_groups'])
             if 'editor_user_groups' in fields:
@@ -216,7 +229,7 @@ def crispyBoxACL(form, **kwargs):
                     ),
                     css_class='box box-solid {} {}'.format(bgColorCssClass, form.checkEmptyInitialsData(*userFields))
                 ),
-                css_class='{}'.format(boxCssClass)
+                css_class='{} acl-box'.format(boxCssClass)
             )
 
 

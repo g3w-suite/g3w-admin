@@ -3,6 +3,7 @@ from django.forms import ValidationError, widgets
 from django.db.models import Q
 from django.core.files.base import ContentFile
 from django.utils.translation import ugettext, ugettext_lazy as _
+from guardian.shortcuts import get_objects_for_user
 from crispy_forms.helper import FormHelper, Layout
 from crispy_forms.layout import Div, Field, HTML
 from core.mixins.forms import *
@@ -10,7 +11,7 @@ from core.utils.forms import crispyBoxBaseLayer
 from usersmanage.forms import G3WACLForm
 from django_file_form.forms import FileFormMixin, UploadedFileField
 from .models import *
-from usersmanage.utils import get_fields_by_user, crispyBoxACL, userHasGroups
+from usersmanage.utils import get_fields_by_user, crispyBoxACL, userHasGroups, get_viewers_for_object
 from .utils.data import QgisProject
 from .utils.validators import ProjectExists
 import zipfile
@@ -187,6 +188,23 @@ class QdjangoProjetForm(QdjangoProjectFormMixin, G3WFormMixin, G3WGroupFormMixin
             )
             '''
         }
+
+    def _setViewerUserQueryset(self, **kwargs):
+        """
+        Set query set for viewers chosen fields
+        :return: None
+        """
+        # get viewer from parent if not editor level 2
+
+        if userHasGroups(self.request.user, [G3W_EDITOR2]):
+
+            # get viewers from groups
+            viewers = get_viewers_for_object(self.group, self.request.user,
+                                                                          'view_group')
+            # get queryset
+            self.fields['viewer_users'].queryset = User.objects.filter(groups__name__in=self.viewer_groups, pk__in=[v.pk for v in viewers])
+        else:
+            super(QdjangoProjetForm, self)._setViewerUserQueryset(**kwargs)
 
     def save(self, commit=True):
         self._ACLPolicy()

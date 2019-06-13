@@ -72,22 +72,43 @@ class G3WACLForm(forms.Form):
 
     initial_viewer_users = []
     initial_editor_user = None
-    editor_groups = (G3W_EDITOR1, G3W_EDITOR2)
+    initial_editor2_user = None
+
+    # list of system django group for editor level 1
+    editor1_groups = (G3W_EDITOR1,)
+
+    # list of system django group for editor level 2
+    editor2_groups = (G3W_EDITOR2,)
+
+    # list of system django group for editor every level
+    editor_groups = editor1_groups + editor2_groups
+
+    # list of system django group for viewer every level
     viewer_groups = (G3W_VIEWER1, G3W_VIEWER2)
+
     add_anonynous = True
-    editor_user = UserChoiceField(label=_('Editor user'), queryset=None, required=False)
+
+    # chosen field for editor level 1
+    editor_user = UserChoiceField(label=_('Editor1 user'), queryset=None, required=False,
+                                  help_text=_('Set Editor Level 1 owner'))
+
+    # chosen field for editor level 2
+    editor2_user = UserChoiceField(label=_('Editor2 user'), queryset=None, required=False)
+
+    # chosen field for viewer level 1 or 2
     viewer_users = UsersChoiceField(label=_('Viewer users'), queryset=None, required=False)
 
     initial_editor_user_groups = []
     initial_viewer_user_groups = []
 
-    # user groups
+    # chosen field for editor user groups
     editor_user_groups = forms.ModelMultipleChoiceField(
         label=_('Editor user groups'),
         queryset=AuthGroup.objects.filter(~Q(name__in=[G3W_EDITOR1, G3W_EDITOR2, G3W_VIEWER1, G3W_VIEWER2])),
         required=False
     )
 
+    # chosen field for viewer user groups
     viewer_user_groups = forms.ModelMultipleChoiceField(
         label=_('Viewer user groups'),
         queryset=AuthGroup.objects.filter(~Q(name__in=[G3W_EDITOR1, G3W_EDITOR2, G3W_VIEWER1, G3W_VIEWER2])),
@@ -106,15 +127,22 @@ class G3WACLForm(forms.Form):
         self._add_anonymou_user()
 
     def _setEditorUserQueryset(self):
+        """
+        Set query set for editors chosen fields
+        :return: None
+        """
 
         self.fields['editor_user'].queryset = get_objects_for_user(self.request.user, 'auth.change_user', User) \
-            .filter(groups__name__in=self.editor_groups)
+            .filter(groups__name__in=self.editor1_groups)
 
-        #self.fields['editor_user'].queryset = User.objects.filter(groups__name__in=self.editor_groups)\
-            #.order_by('last_name')
+        self.fields['editor2_user'].queryset = get_objects_for_user(self.request.user, 'auth.change_user', User) \
+            .filter(groups__name__in=self.editor2_groups)
 
     def _setViewerUserQueryset(self, **kwargs):
-
+        """
+        Set query set for viewers chosen fields
+        :return: None
+        """
         #queryset = User.objects.filter(groups__name__in=self.viewer_groups)
 
         queryset = get_objects_for_user(self.request.user, 'auth.change_user', User)\
@@ -137,6 +165,8 @@ class G3WACLForm(forms.Form):
             self.initial_viewer_users = kwargs['initial']['viewer_users']
         if kwargs.has_key('initial') and kwargs['initial'].has_key('editor_user'):
             self.initial_editor_user = kwargs['initial']['editor_user']
+        if kwargs.has_key('initial') and kwargs['initial'].has_key('editor2_user'):
+            self.initial_editor2_user = kwargs['initial']['editor2_user']
 
     def _init_user_groups(self, **kwargs):
         if kwargs.has_key('initial') and kwargs['initial'].has_key('viewer_user_groups'):
@@ -157,7 +187,12 @@ class G3WACLForm(forms.Form):
                                                    User.objects.filter(pk=GuardianUser.get_anonymous().pk)
 
     def _ACLPolicy(self):
+        """
+        Give grant to
+        :return:
+        """
 
+        # editor level 1 management
         editorToRemove = None
         if 'editor_user' in self.cleaned_data and self.request.user.is_superuser:
             permission_user = self.cleaned_data['editor_user']
@@ -165,6 +200,20 @@ class G3WACLForm(forms.Form):
                         self.initial_editor_user != self.cleaned_data['editor_user'].id) or \
                 (self.initial_editor_user and not self.cleaned_data['editor_user']):
                 editorToRemove = User.objects.get(pk=self.initial_editor_user)
+
+            if permission_user and hasattr(self.instance, 'addPermissionsToEditor'):
+                self.instance.addPermissionsToEditor(permission_user)
+
+            if editorToRemove and hasattr(self.instance, 'removePermissionsToEditor'):
+                self.instance.removePermissionsToEditor(editorToRemove)
+
+        # editor level 2 management
+        if 'editor2_user' in self.cleaned_data:
+            permission_user = self.cleaned_data['editor2_user']
+            if (self.initial_editor2_user and self.cleaned_data['editor2_user'] and
+                        self.initial_editor2_user != self.cleaned_data['editor2_user'].id) or \
+                (self.initial_editor2_user and not self.cleaned_data['editor2_user']):
+                editorToRemove = User.objects.get(pk=self.initial_editor2_user)
 
             if permission_user and hasattr(self.instance, 'addPermissionsToEditor'):
                 self.instance.addPermissionsToEditor(permission_user)

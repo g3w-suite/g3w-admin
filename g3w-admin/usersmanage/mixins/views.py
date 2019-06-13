@@ -14,7 +14,7 @@ class G3WACLViewMixin(object):
         kwargs = super(G3WACLViewMixin, self).get_form_kwargs()
         kwargs['request'] = self.request
 
-        # get editor users
+        # get editor level 1 users
         editor_user_pk = None
         editor_users = get_users_for_object(self.object, self.editor_permission, [G3W_EDITOR2, G3W_EDITOR1])
         if editor_users:
@@ -22,11 +22,19 @@ class G3WACLViewMixin(object):
             if self.request.user.is_superuser:
                 kwargs['initial']['editor_user'] = editor_users[0].id
 
+        # get editor level2 users
+        editor2_user_pk = None
+        editor2_users = get_users_for_object(self.object, self.editor2_permission, [G3W_EDITOR2])
+        if editor2_users:
+            editor2_user_pk = editor2_users[0].id
+            if self.request.user.is_superuser or userHasGroups(self.request.user, [G3W_EDITOR1]):
+                kwargs['initial']['editor2_user'] = editor2_users[0].id
+
         # get viewer users
         viewers = get_viewers_for_object(self.object, self.request.user, self.viewer_permission)
 
         # get only user id and check if user is group or project editor
-        kwargs['initial']['viewer_users'] = [o.id for o in viewers if o.id != editor_user_pk]
+        kwargs['initial']['viewer_users'] = [o.id for o in viewers if o.id not in [editor_user_pk, editor2_user_pk]]
 
         # get initial editor user_groups
         group_editors = get_user_groups_for_object(self.object, self.request.user, self.editor_permission, 'editor')

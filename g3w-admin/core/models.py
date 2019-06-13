@@ -214,11 +214,12 @@ class Group(TimeStampedModel, OrderedModel):
 
     def addPermissionsToEditor(self, user):
         """
-        Give guardian permissions to Editor
+        Give guardian permissions to Editor every level
         """
 
-        permissions = ['view_group']
-        if G3W_EDITOR1 in getUserGroups(user):
+        permissions = ['view_group'] # valid for editor2
+        user_groups = getUserGroups(user)
+        if G3W_EDITOR1 in user_groups:
             permissions += [
                 'change_group',
                 'delete_group'
