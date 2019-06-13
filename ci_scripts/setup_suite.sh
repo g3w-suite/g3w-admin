@@ -47,7 +47,7 @@ if [ ! -e ${SETUP_DONE_FILE} ]; then
     popd
 
     # Wait for postgis here so we avoid waiting while building js code
-    wait-for-it -h postgis -p 5432 -t 60
+    wait-for-it -h ${G3WSUITE_POSTGRES_HOST:-postgis} -p ${G3WSUITE_POSTGRES_PORT:-5432} -t 60
 
     cd ${DJANGO_DIRECTORY}
     python manage.py collectstatic --noinput -v 0
