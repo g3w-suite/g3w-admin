@@ -242,7 +242,7 @@ class G3WACLForm(forms.Form):
             if hasattr(self.instance, 'remove_permissions_to_editor_user_groups'):
                 self.instance.remove_permissions_to_editor_user_groups(to_remove)
 
-        if 'viewer_user_groups' in  self.cleaned_data:
+        if 'viewer_user_groups' in self.cleaned_data:
             current_viewer_user_groups = [o.id for o in self.cleaned_data['viewer_user_groups']]
             to_remove = list(set(self.initial_viewer_user_groups) - set(current_viewer_user_groups))
             to_add = list(set(current_viewer_user_groups) - set(self.initial_viewer_user_groups))
@@ -259,7 +259,7 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
     avatar = UploadedFileField(required=False)
 
     groups = ModelMultipleChoiceField(
-        queryset=AuthGroup.objects.filter(name__in=[G3W_EDITOR1, G3W_EDITOR2, G3W_VIEWER1, G3W_VIEWER2]),
+        queryset=AuthGroup.objects.filter(name__in=[G3W_EDITOR1, G3W_EDITOR2, G3W_VIEWER1]),
         required=True,
         help_text=_('Select roles for this user'),
         label=_('Main roles')
@@ -269,7 +269,7 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
         queryset=AuthGroup.objects.filter(~Q(name__in=[G3W_EDITOR1, G3W_EDITOR2, G3W_VIEWER1, G3W_VIEWER2]),
                                           grouprole__role='editor'),
         required=False,
-        help_text=_('Select EDITOR groups for this user'),
+        help_text=_('Select <b>EDITOR groups</b> for this user, <u>only <b>Editor Level 2</b> can be added</u>'),
         label=_('User editor groups')
     )
 
@@ -277,7 +277,7 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
         queryset=AuthGroup.objects.filter(~Q(name__in=[G3W_EDITOR1, G3W_EDITOR2, G3W_VIEWER1, G3W_VIEWER2]),
                                                 grouprole__role='viewer'),
         required=False,
-        help_text=_('Select VIEWER groups for this user'),
+        help_text=_('Select <b>VIEWER groups</b> for this user, <u>only <b>Viewer Level 1</b> can be added</u>'),
         label=_('User viewer groups')
     )
 

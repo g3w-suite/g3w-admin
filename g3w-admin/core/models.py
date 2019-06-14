@@ -285,8 +285,6 @@ class Group(TimeStampedModel, OrderedModel):
 
         appProjects = getProjectsByGroup(self)
         permissions = [
-            'change_group',
-            'delete_group',
             'view_group'
         ]
 
@@ -307,8 +305,6 @@ class Group(TimeStampedModel, OrderedModel):
         appProjects = getProjectsByGroup(self)
 
         permissions = [
-            'change_group',
-            'delete_group',
             'view_group'
         ]
 

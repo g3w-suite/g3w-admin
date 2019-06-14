@@ -6,7 +6,7 @@ from usersmanage.configs import *
 
 class G3WACLViewMixin(object):
     '''
-    Mixins for Class FormView for get user initial values for editors and viewers
+    Mixins for Class FormView for get user initial values for Editor and Viewers and for Editor Group and Viewer Group
     Use self property editor_permission and viewer_permission
     '''
 
@@ -37,7 +37,7 @@ class G3WACLViewMixin(object):
         kwargs['initial']['viewer_users'] = [o.id for o in viewers if o.id not in [editor_user_pk, editor2_user_pk]]
 
         # get initial editor user_groups
-        group_editors = get_user_groups_for_object(self.object, self.request.user, self.editor_permission, 'editor')
+        group_editors = get_user_groups_for_object(self.object, self.request.user, self.editor2_permission, 'editor')
         kwargs['initial']['editor_user_groups'] = [o.id for o in group_editors]
 
         group_viewers = get_user_groups_for_object(self.object, self.request.user, self.viewer_permission, 'viewer')
