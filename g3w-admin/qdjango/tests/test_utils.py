@@ -12,12 +12,6 @@ QGS_FILE = 'g3wsuite_project_test.qgs'
 
 class QgisProjectTest(TestCase):
 
-    #fixtures = ['BaseLayer.json',
-    #            'G3WMapControls.json',
-    #            'G3WSpatialRefSys.json',
-    #            'G3WGeneralDataSuite.json'
-    #            ]
-
     @override_settings(DATASOURCE_PATH=DATASOURCE_PATH)
     def setUp(self):
 
@@ -83,7 +77,7 @@ class QgisProjectTest(TestCase):
 
     def test_layers(self):
 
-        # check lyers in project
+        # check layers in project
         self.assertEqual(len(self.project.layers), 4)
 
         for layer in self.project.layers:
@@ -96,23 +90,5 @@ class QgisProjectTest(TestCase):
                 self.assertEqual(layer.maxScale, 0)
                 self.assertTrue(layer.isVisible)
                 self.assertEqual(layer.srid, 4030)
-
-
-"""                
-'scaleBasedVisibility',
-# 'capabilities',
-'wfsCapabilities',
-'editOptions',
-'datasource',
-'origname',
-'aliases',
-'columns',
-'excludeAttributesWMS',
-'excludeAttributesWFS',
-'geometrytype',
-'vectorjoins',
-'editTypes'
-"""
-
 
 

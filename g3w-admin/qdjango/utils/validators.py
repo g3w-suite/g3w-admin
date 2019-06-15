@@ -127,7 +127,7 @@ class DatasourceExists(QgisProjectLayerValidator):
 
 class ColoumnName(QgisProjectLayerValidator):
     """
-    Check coloumn data name: no whitespace, no special charts.
+    Check column data name: no whitespace, no special charts.
     """
     def clean(self):
         if self.qgisProjectLayer.layerType in [Layer.TYPES.ogr, Layer.TYPES.postgres, Layer.TYPES.spatialite]:
