@@ -164,7 +164,10 @@ class QgisProjectLayer(XmlData):
             name = dts['table'].split('.')[-1].replace("\"", "")
         elif self.layerType ==Layer.TYPES.wms:
             dts = QueryDict(self.datasource)
-            name = dts['layers']
+            try:
+                name = dts['layers']
+            except KeyError:
+                name = self.name
         else:
             name = self.qgisProjectLayerTree.find('layername').text
 
@@ -347,7 +350,7 @@ class QgisProjectLayer(XmlData):
 
     def _getDataColumns(self):
         """
-        Retrive data about columns for db table or ogr lyer type
+        Retrive data about columns for db table or ogr layer type
         :return:
         """
         if self.layerType in [Layer.TYPES.postgres, Layer.TYPES.spatialite]:
@@ -1348,7 +1351,7 @@ class QgisProjectSettingsWMS(XmlData):
             'opengis:Capability/opengis:ComposerTemplates/opengis:ComposerTemplate',
             namespaces=self._NS
         )
-        
+
         _composerTemplateData = {}
         for composerTemplate in composerTemplates:
             _composerTemplateData['name'] = composerTemplate.attrib['name']
