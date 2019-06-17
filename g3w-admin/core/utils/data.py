@@ -47,7 +47,7 @@ class XmlData(object):
 
 def isXML(string):
     """
-    Check is string si a XML
+    Check is string is a XML
     Derived from https://codereview.stackexchange.com/a/137948
     """
 
