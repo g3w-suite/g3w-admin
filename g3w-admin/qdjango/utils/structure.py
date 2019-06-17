@@ -16,7 +16,6 @@ from urlparse import urlsplit, parse_qs
 from core.utils.projects import CoreMetaLayer
 from core.utils import unicode2ascii
 from .exceptions import QgisProjectLayerException
-import shlex
 
 
 # "schema"."table"
@@ -27,6 +26,14 @@ RE2 = re.compile(r'([A-z0-9_]+)\.([A-z0-9_]+)')
 RE3 = re.compile(r'"?([A-z0-9_\.]+)"?')
 
 def get_schema_table(datasource_table):
+    """Returns unquoted schema and table names
+
+    :param datasource_table: table description
+    :type datasource_table: str
+    :return: tuple with unquoted schema and table names
+    :rtype: tuple
+    """
+
     try:
         return RE1.match(datasource_table).groups()
     except AttributeError:
@@ -48,7 +55,7 @@ def datasource2dict(datasource):
     # befor get sql
     datasource, sql = datasource.split('sql=')
     #datalist = datasource.split(' ')
-    datalist = shlex.split(datasource)
+    datalist = re.findall(r'([A-z][A-z0-9-_]+=[\'"]?[#$^?+=!*()\'-/@%&\w\."]+[\'"]?)', datasource)
     for item in datalist:
         try:
             key, value = item.split('=')
@@ -111,7 +118,7 @@ class QgisLayerStructure(object):
         """
 
         # remove
-        coloumn_name = re.sub('[;:,%@$^&*!#()\[\]\{\}\\n\\r]+', '', coloumn_name)
+        coloumn_name = re.sub('[;:,%@$^&*!#()\[\]\{\}\\n\\r]+', '', column_name)
 
         # replace whitespaces
         coloumn_name = re.sub('\s', '_', coloumn_name)
@@ -183,8 +190,9 @@ class QgisDBLayerStructure(QgisLayerStructure):
 
     def _cleanDataSource(self):
         """
-        Chheck il spatilite fiel exists
+        Check il spatialite field exists
         """
+
         if self.layerType == Layer.TYPES.spatialite:
             if not os.path.exists(self.datasourceDict['dbname']):
                 raise QgisProjectLayerException(self._errDatasourceNotFound.format(self.layer.name,self.datasource))

@@ -2,7 +2,7 @@ from django.test import TestCase, override_settings
 from django.core.files import File
 from qdjango.models import Project
 from qdjango.utils.data import QgisProject, QgisPgConnection
-from qdjango.utils.structure import get_schema_table
+from qdjango.utils.structure import get_schema_table, datasource2dict
 
 import os
 
@@ -105,8 +105,22 @@ class QgisProjectTest(TestCase):
             ('"sche.ma"."tab.le"', ('sche.ma', 'tab.le')),
             ('"tab.le"', ('public', 'tab.le')),
             ('"table"', ('public', 'table')),
+            ('"public"."net_datacenter_hyperscale_v0.1_ch_190321"', ('public', 'net_datacenter_hyperscale_v0.1_ch_190321')),
         ]
 
         for check in checks:
             self.assertEqual(get_schema_table(check[0]), check[1])
 
+
+    def test_dataSourceToDict(self):
+
+        res = datasource2dict("dbname='data_testing' host=web-gis.postgres.database.azure.com port=5432 sslmode=require user='testing@webgis' password='#\'$%?@^&rX43#/' srid=4326 type=Point checkPrimaryKeyUnicity='1' table=\"public\".\"net_datacenter_hyperscale_v0.1_ch_190321\" (geom) sql=")
+
+        self.assertEqual(res['checkPrimaryKeyUnicity'], '1')
+        self.assertEqual(res['dbname'], 'data_testing')
+        self.assertEqual(res['host'], 'web-gis.postgres.database.azure.com')
+        self.assertEqual(res['port'], '5432')
+        self.assertEqual(res['sslmode'], 'require')
+        self.assertEqual(res['password'], '#\'$%?@^&rX43#/')
+        self.assertEqual(res['user'], 'testing@webgis')
+        self.assertEqual(res['table'], "\"public\".\"net_datacenter_hyperscale_v0.1_ch_190321\"")
