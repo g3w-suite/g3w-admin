@@ -399,7 +399,7 @@ class LayerSerializer(serializers.ModelSerializer):
         # add options for wms layer
         if instance.layer_type == 'wms':
             datasourceWMS = QueryDict(instance.datasource)
-            if 'username' not in ret['source'] or 'password' not in ret['source']:
+            if ('username' not in ret['source'] or 'password' not in ret['source']) and 'type=xyz' not in instance.datasource:
                 ret['source'].update(datasourceWMS.dict())
                 ret['source']['external'] = True
                 #ret['servertype'] = MSTYPES_OGC
