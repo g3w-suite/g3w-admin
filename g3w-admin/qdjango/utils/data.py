@@ -9,7 +9,7 @@ from core.utils.data import XmlData, isXML
 from .structure import *
 from .validators import (
     DatasourceExists,
-    ColoumnName,
+    ColumnName,
     IsGroupCompatibleValidator,
     ProjectTitleExists,
     UniqueLayername,
@@ -114,7 +114,7 @@ class QgisProjectLayer(XmlData):
 
     _defaultValidators = [
         DatasourceExists,
-        ColoumnName
+        #ColumnName
     ]
 
     _layer_model = Layer
