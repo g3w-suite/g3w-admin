@@ -19,16 +19,22 @@ from .exceptions import QgisProjectLayerException
 import shlex
 
 
+# "schema"."table"
+RE1 = re.compile(r'"([A-z0-9_\.]+)"\."([A-z0-9_\.]+)"')
+# schema.table
+RE2 = re.compile(r'([A-z0-9_]+)\.([A-z0-9_]+)')
+# "table" or table
+RE3 = re.compile(r'"?([A-z0-9_\.]+)"?')
+
 def get_schema_table(datasource_table):
-    if datasource_table.find('.') != -1:
-        schema, table = datasource_table.split('.')
-    else:
-        schema = 'public'
-        table = datasource_table
-
-    table = table.strip('"')
-    schema = schema.strip('"')
-
+    try:
+        return RE1.match(datasource_table).groups()
+    except AttributeError:
+        try:
+            return RE2.match(datasource_table).groups()
+        except AttributeError:
+            table = RE3.match(datasource_table).groups()[0]
+            schema = 'public'
     return schema, table
 
 

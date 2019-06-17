@@ -2,6 +2,8 @@ from django.test import TestCase, override_settings
 from django.core.files import File
 from qdjango.models import Project
 from qdjango.utils.data import QgisProject, QgisPgConnection
+from qdjango.utils.structure import get_schema_table
+
 import os
 
 CURRENT_PATH = os.getcwd()
@@ -91,4 +93,20 @@ class QgisProjectTest(TestCase):
                 self.assertTrue(layer.isVisible)
                 self.assertEqual(layer.srid, 4030)
 
+    def test_get_schema_table(self):
+
+        checks = [
+            ('"schema"."table"', ('schema', 'table')),
+            ('"_schema"."_table"', ('_schema', '_table')),
+            ('"_sch90._ema"."_tab90._le"', ('_sch90._ema', '_tab90._le')),
+            ('schema.table', ('schema', 'table')),
+            ('"sche.ma"."table"', ('sche.ma', 'table')),
+            ('"schema"."tab.le"', ('schema', 'tab.le')),
+            ('"sche.ma"."tab.le"', ('sche.ma', 'tab.le')),
+            ('"tab.le"', ('public', 'tab.le')),
+            ('"table"', ('public', 'table')),
+        ]
+
+        for check in checks:
+            self.assertEqual(get_schema_table(check[0]), check[1])
 
