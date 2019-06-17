@@ -51,7 +51,10 @@ class ProjectTitleExists(QgisProjectValidator):
     """
     def clean(self):
         if not self.qgisProject.title:
-            raise QgisProjectException(_('Title project not empty'))
+            if self.qgisProject.qgisProjectFile.name:
+                self.qgisProject.title = self.qgisProject.qgisProjectFile.name
+            else:
+                raise QgisProjectException(_('Title project not empty'))
 
 
 class UniqueLayername(QgisProjectValidator):
