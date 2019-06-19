@@ -841,7 +841,8 @@ class QgisProject(XmlData):
 
                     if layerTreeSubNode.tag == 'layer-tree-group':
                         toRetLayer.update({
-                            'nodes': buildLayerTreeNodeObject(layerTreeSubNode)
+                            'nodes': buildLayerTreeNodeObject(layerTreeSubNode),
+                            'checked': True if layerTreeSubNode.attrib['checked'] == 'Qt::Checked' else False
                         })
                     toRetLayers.append(toRetLayer)
             return toRetLayers
