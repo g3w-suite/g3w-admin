@@ -99,6 +99,11 @@ def get_fields_by_user(user, form, **kwargs):
         params = {'css_class': 'select2 col-md-12', 'multiple': 'multiple', 'style': 'width:100%;'} \
             if field in ('viewer_users', 'editor_user_groups', 'viewer_user_groups') else {}
         toRet.append(Field(field, **params))
+
+    # add propagate viewers checkbox if user ais a superuser or Editor level 1
+    if 'propagate' in kwargs and kwargs['propagate'] and (user.is_superuser or userHasGroups(user, [G3W_EDITOR1])):
+        toRet.append('propagate_viewers')
+
     return toRet
 
 

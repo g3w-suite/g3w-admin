@@ -230,9 +230,15 @@ class QdjangoProjetForm(QdjangoProjectFormMixin, G3WFormMixin, G3WGroupFormMixin
 
         self._save_url_alias()
 
-        # add permission to editor1 if current user is editor1
+        # add permission to Editor level 1 and 2 if current user is Editor level 1 or 2
         if userHasGroups(self.request.user, [G3W_EDITOR1, G3W_EDITOR2]):
             self.instance.addPermissionsToEditor(self.request.user)
+
+            # giv permission to Editor level 1 of group id user is Editor level 2
+            if userHasGroups(self.request.user, [G3W_EDITOR2]):
+                editor1_users = get_users_for_object(self.instance.group, 'change_group', [G3W_EDITOR1])
+                for eu1 in editor1_users:
+                    self.instance.addPermissionsToEditor(eu1)
 
 
 class QdjangoWidgetForm(QdjangoProjectFormMixin, G3WFormMixin, G3WGroupFormMixin, G3WRequestFormMixin, forms.ModelForm):

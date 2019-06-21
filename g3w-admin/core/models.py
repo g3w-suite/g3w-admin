@@ -250,7 +250,7 @@ class Group(TimeStampedModel, OrderedModel):
             for project in projects:
                 project.removePermissionsToEditor(user)
 
-    def addPermissionsToViewers(self, users_id):
+    def addPermissionsToViewers(self, users_id, **kwargs):
         """
         Give guardian permissions to Viewers
         """
@@ -259,10 +259,11 @@ class Group(TimeStampedModel, OrderedModel):
         for user_id in users_id:
             setPermissionUserObject(User.objects.get(pk=user_id), self, permissions='view_group')
 
-            # adding permissions to projects
-            for app, projects in appProjects.items():
-                for project in projects:
-                    project.addPermissionsToViewers(users_id)
+            # adding permissions to projects only if propagate
+            if 'propagate' in kwargs:
+                for app, projects in appProjects.items():
+                    for project in projects:
+                        project.addPermissionsToViewers(users_id)
 
     def removePermissionsToViewers(self, users_id):
         """
@@ -312,13 +313,13 @@ class Group(TimeStampedModel, OrderedModel):
             setPermissionUserObject(AuthGroup.objects.get(pk=group_id), self, permissions=permissions,
                                     mode='remove')
 
-            # adding permissions to projects
+
             for app, projects in appProjects.items():
                 for project in projects:
                     if hasattr(project, 'remove_permissions_to_editor_user_groups'):
                         project.remove_permissions_to_editor_user_groups(groups_id)
 
-    def add_permissions_to_viewer_user_groups(self, groups_id):
+    def add_permissions_to_viewer_user_groups(self, groups_id, **kwargs):
         """
         Give guardian permissions to Editor user groups
         """
@@ -331,11 +332,12 @@ class Group(TimeStampedModel, OrderedModel):
         for group_id in groups_id:
             setPermissionUserObject(AuthGroup.objects.get(pk=group_id), self, permissions=permissions)
 
-            # adding permissions to projects
-            for app, projects in appProjects.items():
-                for project in projects:
-                    if hasattr(project, 'add_permissions_to_viewer_user_groups'):
-                        project.add_permissions_to_viewer_user_groups(groups_id)
+            # adding permissions to projects only if propagate
+            if 'propagate' in kwargs:
+                for app, projects in appProjects.items():
+                    for project in projects:
+                        if hasattr(project, 'add_permissions_to_viewer_user_groups'):
+                            project.add_permissions_to_viewer_user_groups(groups_id)
 
     def remove_permissions_to_viewer_user_groups(self, groups_id):
         """

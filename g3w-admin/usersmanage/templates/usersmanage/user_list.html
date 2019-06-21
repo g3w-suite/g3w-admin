@@ -70,8 +70,10 @@
                         <td>
                         {% get_roles4user object as group_roles %}
                         {% for group in group_roles %}
-                            {% if group.name == G3W_EDITOR1 or group.name == G3W_EDITOR2 %}
+                            {% if group.name == G3W_EDITOR1 %}
                                 <span class="label label-danger">{{ group }}</span>
+                            {% elif group.name == G3W_EDITOR2 %}
+                                <span class="label bg-purple">{{ group }}</span>
                             {% else %}
                                 <span class="label label-success">{{ group }}</span>
                             {% endif %}

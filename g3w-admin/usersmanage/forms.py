@@ -115,6 +115,10 @@ class G3WACLForm(forms.Form):
         required=False
     )
 
+    # add check for propagate viewers permissions
+    propagate_viewers = forms.BooleanField(label=_('Propagate <b>NEW</b> viewers and new viewers user groups permissions'),
+                                           required=False)
+
     def __init__(self, *args, **kwargs):
         self._init_users(**kwargs)
         self._init_user_groups(**kwargs)
@@ -227,8 +231,14 @@ class G3WACLForm(forms.Form):
             currentViewerUsers = [o.id for o in self.cleaned_data['viewer_users']]
             toRemove = list(set(self.initial_viewer_users) - set(currentViewerUsers))
             toAdd = list(set(currentViewerUsers) - set(self.initial_viewer_users))
+
+            # if propagate is set and in cleaned data set propagate_viewers to true
+            kwargs = {}
+            if 'propagate_viewers' in self.cleaned_data and self.cleaned_data['propagate_viewers']:
+                kwargs['propagate'] = True
+
             if hasattr(self.instance, 'addPermissionsToViewers'):
-                self.instance.addPermissionsToViewers(toAdd)
+                self.instance.addPermissionsToViewers(toAdd, **kwargs)
             if hasattr(self.instance, 'removePermissionsToViewers'):
                 self.instance.removePermissionsToViewers(toRemove)
 
@@ -247,7 +257,12 @@ class G3WACLForm(forms.Form):
             to_remove = list(set(self.initial_viewer_user_groups) - set(current_viewer_user_groups))
             to_add = list(set(current_viewer_user_groups) - set(self.initial_viewer_user_groups))
             if hasattr(self.instance, 'add_permissions_to_viewer_user_groups'):
-                self.instance.add_permissions_to_viewer_user_groups(to_add)
+
+                # if propagate is set and in cleaned data set propagate_viewers to true
+                kwargs = {}
+                if 'propagate_viewers' in self.cleaned_data and self.cleaned_data['propagate_viewers']:
+                    kwargs['propagate'] = True
+                self.instance.add_permissions_to_viewer_user_groups(to_add, **kwargs)
             if hasattr(self.instance, 'remove_permissions_to_viewer_user_groups'):
                 self.instance.remove_permissions_to_viewer_user_groups(to_remove)
 
@@ -525,7 +540,7 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
         """
         user_groups_editor = self.cleaned_data['user_groups_editor']
 
-        if user_groups_editor and len(set(self.cleaned_data['groups']).intersection(
+        if user_groups_editor and 'groups' in self.cleaned_data and len(set(self.cleaned_data['groups']).intersection(
                 set(AuthGroup.objects.filter(name__in=[G3W_EDITOR2])))) == 0:
             raise ValidationError(_('User can\'t belong a **editor groups** if he isn\'t a Editor level 2'),
                                   code='user_groups_editor_invalid')
@@ -539,7 +554,7 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
         """
         user_groups_viewer = self.cleaned_data['user_groups_viewer']
 
-        if user_groups_viewer and len(set(self.cleaned_data['groups']).intersection(
+        if user_groups_viewer and 'groups' in self.cleaned_data and len(set(self.cleaned_data['groups']).intersection(
                 set(AuthGroup.objects.filter(name__in=[G3W_VIEWER1])))) == 0:
             raise ValidationError(_('User can\'t belong a **viewer groups** if he isn\'t a Viewer level 1'),
                                   code='user_groups_editor_invalid')
@@ -576,6 +591,8 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
             'groups',
             'department',
             'avatar',
+            'user_groups_editor',
+            'user_groups_viewer'
         )
 
         widgets = {
