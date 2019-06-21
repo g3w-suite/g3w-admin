@@ -227,7 +227,13 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
         if attr == 'viewers':
             return get_users_for_object(self, 'view_project', [G3W_VIEWER1, G3W_VIEWER2], with_anonymous=True)
         elif attr == 'editor':
-            editors = get_users_for_object(self, ['change_project', 'view_project'], [G3W_EDITOR2, G3W_EDITOR1])
+            editors = get_users_for_object(self, 'change_project', [G3W_EDITOR1])
+            if len(editors) > 0:
+                return editors[0]
+            else:
+                return None
+        elif attr == 'editor2':
+            editors = get_users_for_object(self, 'change_project', [G3W_EDITOR2])
             if len(editors) > 0:
                 return editors[0]
             else:
