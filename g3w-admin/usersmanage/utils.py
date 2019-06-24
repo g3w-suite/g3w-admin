@@ -88,6 +88,12 @@ def get_fields_by_user(user, form, **kwargs):
             if 'editor_user' in fields:
                 del (fields[fields.index('editor_user')])
 
+        # if not required edit2_user Editor level 2
+        if 'editor2_field_required' in kwargs and not kwargs['editor2_field_required']:
+            del (form.fields['editor2_user'])
+            if 'editor2_user' in fields:
+                del (fields[fields.index('editor2_user')])
+
         # if not required editor groups
         if 'editor_groups_field_required' in kwargs and not kwargs['editor_groups_field_required']:
             del (form.fields['editor_user_groups'])
