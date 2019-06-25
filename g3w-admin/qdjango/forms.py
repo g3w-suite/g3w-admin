@@ -238,10 +238,10 @@ class QdjangoProjetForm(QdjangoProjectFormMixin, G3WFormMixin, G3WGroupFormMixin
             if userHasGroups(self.request.user, [G3W_EDITOR2]):
 
                 # give permission to user groups of map group
-                user_editor_groups = get_groups_for_object(self.instance.group, 'change_group', 'editor')
+                user_editor_groups = get_groups_for_object(self.instance.group, 'view_group', 'editor')
                 self.instance.add_permissions_to_editor_user_groups([uge.pk for uge in user_editor_groups])
 
-                editor_users = get_users_for_object(self.instance.group, 'change_group', [G3W_EDITOR1, G3W_EDITOR2])
+                editor_users = get_users_for_object(self.instance.group, 'view_group', [G3W_EDITOR1, G3W_EDITOR2])
                 for eu in editor_users:
                     self.instance.addPermissionsToEditor(eu)
 
