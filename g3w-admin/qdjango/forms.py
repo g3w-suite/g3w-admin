@@ -10,7 +10,7 @@ from core.mixins.forms import *
 from core.utils.forms import crispyBoxBaseLayer
 from core.models import Group as G3WGroup
 from usersmanage.forms import G3WACLForm
-from usersmanage.utils import get_user_groups_for_object
+from usersmanage.utils import get_user_groups_for_object, get_groups_for_object
 from django_file_form.forms import FileFormMixin, UploadedFileField
 from .models import *
 from usersmanage.utils import get_fields_by_user, crispyBoxACL, userHasGroups, get_viewers_for_object
@@ -234,7 +234,11 @@ class QdjangoProjetForm(QdjangoProjectFormMixin, G3WFormMixin, G3WGroupFormMixin
         if userHasGroups(self.request.user, [G3W_EDITOR1, G3W_EDITOR2]):
             self.instance.addPermissionsToEditor(self.request.user)
 
-            # giv permission to Editor level 1 of group id user is Editor level 2
+            # give permission to user gropups of map group
+            user_editor_groups = get_groups_for_object(self.instance.group, 'change_group', 'editor')
+            self.instance.add_permissions_to_editor_user_groups([uge.pk for uge in user_editor_groups])
+
+            # give permission to Editor level 1 of group id user is Editor level 2
             if userHasGroups(self.request.user, [G3W_EDITOR2]):
                 editor1_users = get_users_for_object(self.instance.group, 'change_group', [G3W_EDITOR1])
                 for eu1 in editor1_users:
