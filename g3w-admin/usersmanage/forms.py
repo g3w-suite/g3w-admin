@@ -443,7 +443,7 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
             if 'instance' in kwargs and kwargs['instance'] == self.request.user:
                 self.fields.pop('groups')
             else:
-                self.fields['groups'].queryset = AuthGroup.objects.filter(name__in=[G3W_EDITOR2, G3W_VIEWER1, G3W_VIEWER2])
+                self.fields['groups'].queryset = AuthGroup.objects.filter(name__in=[G3W_EDITOR2, G3W_VIEWER1])
                 self.fields['groups'].required = True
             self.fields.pop('is_superuser')
             self.fields.pop('is_staff')
