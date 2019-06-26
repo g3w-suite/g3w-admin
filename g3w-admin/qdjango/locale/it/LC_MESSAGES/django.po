@@ -131,7 +131,7 @@ msgstr "Tipo di controllo per le query per BBOX"
 
 #: models.py:99
 msgid "Query by polygon control mode"
-msgstr "Tipo di controllo per le qwery per poligono"
+msgstr "Tipo di controllo per le query per poligono"
 
 #: models.py:103 models.py:272 templates/qdjango/layers_list.html:36
 msgid "Project"
