@@ -18,7 +18,7 @@ from .decorators import permission_required_by_backend_or_403
 from .utils import getUserGroups, get_user_groups
 from .configs import *
 from .forms import *
-
+import json
 
 class UserListView(G3WRequestViewMixin, ListView):
     """List users view."""
@@ -77,18 +77,29 @@ class UserUpdateView(G3WRequestViewMixin, UpdateView):
         if hasattr(self.object, 'userdata'):
             kwargs['initial']['department'] = self.object.userdata.department
             kwargs['initial']['avatar'] = self.object.userdata.avatar
-            '''
-            if self.object.userdata.avatar:
-                name = Path(self.object.userdata.avatar.name).name
-                kwargs['initial']['avatar'] = ExistingFile(name)
-            '''
 
         # add initial data for user_groups
         kwargs['initial']['user_groups'] = get_user_groups(self.object)
         return kwargs
 
     def get_context_data(self, **kwargs):
-        c = super(UserUpdateView,self).get_context_data(**kwargs)
+        c = super(UserUpdateView, self).get_context_data(**kwargs)
+
+        # add user_groups_editor and user_groups_viewer cleaned_data for form
+        # select2 relative fields
+
+        cleaned_data = {
+            'user_groups_editor': [],
+            'user_groups_viewer': [],
+        }
+        if hasattr(c['form'], 'cleaned_data'):
+            if 'user_groups_editor' in c['form'].cleaned_data:
+                cleaned_data['user_groups_editor'] = [uge.pk for uge in c['form'].cleaned_data['user_groups_editor']]
+            if 'user_groups_viewer' in c['form'].cleaned_data:
+                cleaned_data['user_groups_viewer'] = [ugv.pk for ugv in c['form'].cleaned_data['user_groups_viewer']]
+
+        c['cleaned_data'] = json.dumps(cleaned_data)
+
         return c
 
     def get_success_url(self):
