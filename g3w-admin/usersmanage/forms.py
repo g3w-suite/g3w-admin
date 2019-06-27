@@ -486,6 +486,14 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
                 else:
                     self.cleaned_data['groups'] = self.cleaned_data['user_groups_viewer']
 
+            # if is_superuser or is_staff are set, remove groups
+            if ('is_superuser' in self.cleaned_data or 'is_staff' in self.cleaned_data) and \
+                    (('is_superuser' in self.cleaned_data and self.cleaned_data['is_superuser']) or
+                     ('is_staff' in self.cleaned_data and self.cleaned_data['is_staff'])):
+                self.cleaned_data['groups'] = []
+                self.cleaned_data['user_groups_editor'] = []
+                self.cleaned_data['user_groups_viewer']= []
+
             self.save_m2m()
 
             if hasattr(user, 'userdata'):

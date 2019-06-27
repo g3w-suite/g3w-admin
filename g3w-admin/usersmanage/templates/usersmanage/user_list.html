@@ -29,6 +29,9 @@
                         {% if user.is_superuser or user|has_group:G3W_EDITOR1 %}
                         <th>{% trans 'Roles' %}</th>
                         <th>{% trans 'User groups' %}</th>
+                        {% if user.is_superuser %}
+                        <th>{% trans ' Macro groups' %}</th>
+                        {% endif %}
                         {% endif %}
 
                         {% if user.is_staff and user.is_superuser %}
@@ -38,6 +41,7 @@
                         <th class="hidden-sm hidden-xs">Email</th>
                         <th class="hidden-sm hidden-xs">{% trans 'First name' %}</th>
                         <th class="hidden-sm hidden-xs">{% trans 'Last name' %}</th>
+                        <th class="hidden-sm hidden-xs">{% trans 'Created' %}</th>
                         {% if user.is_staff %}
                         <th class="hidden-sm hidden-xs">{% trans 'Backend' %}</th>
                         {% endif %}
@@ -85,6 +89,14 @@
                             <span class="label label-warning">{{ user_group }}</span>
                         {% endfor %}
                         </td>
+                        {% if user.is_superuser %}
+                        <td>
+                        {% get_macrogroup4user object as macrogroups %}
+                            {% for m in macrogroups %}
+                            <a href="{% url 'macrogroup-update' m.slug %}">{{ m.title }}</a> {% if not forloop.last %} | {% endif %}
+                            {% endfor %}
+                        </td>
+                        {% endif %}
                         {% endif %}
 
                         {% if user.is_staff and user.is_superuser %}
@@ -102,8 +114,9 @@
                         <td class="hidden-sm hidden-xs">{{ object.email }}</td>
                         <td class="hidden-sm hidden-xs">{{ object.first_name }}</td>
                         <td class="hidden-sm hidden-xs">{{ object.last_name }}</td>
+                        <td class="hidden-sm hidden-xs">{{ object.date_joined|date:"SHORT_DATE_FORMAT" }}</td>
                         {% if user.is_staff %}
-                        <td>{{ object.userbackend.backend }}</td>
+                        <td class="hidden-sm hidden-xs">{{ object.userbackend.backend }}</td>
                         {% endif %}
                     </tr>
 
