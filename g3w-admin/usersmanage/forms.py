@@ -284,7 +284,7 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
         queryset=AuthGroup.objects.filter(~Q(name__in=[G3W_EDITOR1, G3W_EDITOR2, G3W_VIEWER1, G3W_VIEWER2]),
                                           grouprole__role='editor'),
         required=False,
-        help_text=_('Select <b>EDITOR groups</b> for this user, <u>only <b>Editor Level 2</b> can be added</u>'),
+        help_text=_('Select <b>EDITOR groups</b> for this user, only Editor Level 2 can be added'),
         label=_('User editor groups')
     )
 
@@ -292,7 +292,7 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
         queryset=AuthGroup.objects.filter(~Q(name__in=[G3W_EDITOR1, G3W_EDITOR2, G3W_VIEWER1, G3W_VIEWER2]),
                                                 grouprole__role='viewer'),
         required=False,
-        help_text=_('Select <b>VIEWER groups</b> for this user, <u>only <b>Viewer Level 1</b> can be added</u>'),
+        help_text=_('Select <b>VIEWER groups</b> for this user, only Viewer Level 1 can be added'),
         label=_('User viewer groups')
     )
 
