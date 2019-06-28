@@ -46,8 +46,11 @@ class ClientView(TemplateView):
         Project = project_app.get_model('project')
 
         # get project model object
-        self.project = Project.objects.get(pk=kwargs['project_id']) if 'project_id' in kwargs else \
-            Project.objects.get(slug=kwargs['project_slug'])
+        try:
+            self.project = Project.objects.get(pk=kwargs['project_id']) if 'project_id' in kwargs else \
+                Project.objects.get(slug=kwargs['project_slug'])
+        except Project.DoesNotExist:
+            raise Http404('Map not found')
 
         grant_users = get_users_for_object(self.project, "view_project", with_group_users=True)
 
