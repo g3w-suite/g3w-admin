@@ -3,8 +3,9 @@ from django import template
 from django.contrib.auth.models import Group
 from guardian.utils import get_user_model
 from guardian.exceptions import NotUserNorGroup
-from usersmanage.utils import get_perms_by_user_backend, get_user_groups, get_roles, get_objects_for_user, User
-
+from core.models import MacroGroup
+from usersmanage.utils import get_perms_by_user_backend, get_user_groups, get_roles, get_objects_for_user, User, \
+    G3W_EDITOR1
 register = template.Library()
 
 
@@ -97,4 +98,16 @@ def get_users4groups(current_user, users_group):
 
     return list(set(users_group.user_set.all()).intersection(
         set(get_objects_for_user(current_user, 'auth.change_user', User).order_by('username'))))
+
+
+@register.simple_tag
+def get_macrogroup4user(current_user):
+    """
+    Get MacroGroups for user
+    :param user:
+    :return:
+    """
+    if current_user.is_superuser:
+        return []
+    return get_objects_for_user(current_user, 'core.view_macrogroup', MacroGroup)
 

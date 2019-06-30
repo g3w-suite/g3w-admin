@@ -72,27 +72,52 @@ class G3WACLForm(forms.Form):
 
     initial_viewer_users = []
     initial_editor_user = None
-    editor_groups = (G3W_EDITOR1, G3W_EDITOR2)
+    initial_editor2_user = None
+
+    # list of system django group for editor level 1
+    editor1_groups = (G3W_EDITOR1,)
+
+    # list of system django group for editor level 2
+    editor2_groups = (G3W_EDITOR2,)
+
+    # list of system django group for editor every level
+    editor_groups = editor1_groups + editor2_groups
+
+    # list of system django group for viewer every level
     viewer_groups = (G3W_VIEWER1, G3W_VIEWER2)
+
     add_anonynous = True
-    editor_user = UserChoiceField(label=_('Editor user'), queryset=None, required=False)
+
+    # chosen field for editor level 1
+    editor_user = UserChoiceField(label=_('Editor1 user'), queryset=None, required=False,
+                                  help_text=_('Set Editor Level 1 owner'))
+
+    # chosen field for editor level 2
+    editor2_user = UserChoiceField(label=_('Editor2 user'), queryset=None, required=False)
+
+    # chosen field for viewer level 1 or 2
     viewer_users = UsersChoiceField(label=_('Viewer users'), queryset=None, required=False)
 
     initial_editor_user_groups = []
     initial_viewer_user_groups = []
 
-    # user groups
+    # chosen field for editor user groups
     editor_user_groups = forms.ModelMultipleChoiceField(
         label=_('Editor user groups'),
         queryset=AuthGroup.objects.filter(~Q(name__in=[G3W_EDITOR1, G3W_EDITOR2, G3W_VIEWER1, G3W_VIEWER2])),
         required=False
     )
 
+    # chosen field for viewer user groups
     viewer_user_groups = forms.ModelMultipleChoiceField(
         label=_('Viewer user groups'),
         queryset=AuthGroup.objects.filter(~Q(name__in=[G3W_EDITOR1, G3W_EDITOR2, G3W_VIEWER1, G3W_VIEWER2])),
         required=False
     )
+
+    # add check for propagate viewers permissions
+    propagate_viewers = forms.BooleanField(label=_('Propagate <b>NEW</b> viewers and new viewers user groups permissions'),
+                                           required=False)
 
     def __init__(self, *args, **kwargs):
         self._init_users(**kwargs)
@@ -106,15 +131,22 @@ class G3WACLForm(forms.Form):
         self._add_anonymou_user()
 
     def _setEditorUserQueryset(self):
+        """
+        Set query set for editors chosen fields
+        :return: None
+        """
 
         self.fields['editor_user'].queryset = get_objects_for_user(self.request.user, 'auth.change_user', User) \
-            .filter(groups__name__in=self.editor_groups)
+            .filter(groups__name__in=self.editor1_groups)
 
-        #self.fields['editor_user'].queryset = User.objects.filter(groups__name__in=self.editor_groups)\
-            #.order_by('last_name')
+        self.fields['editor2_user'].queryset = get_objects_for_user(self.request.user, 'auth.change_user', User) \
+            .filter(groups__name__in=self.editor2_groups)
 
     def _setViewerUserQueryset(self, **kwargs):
-
+        """
+        Set query set for viewers chosen fields
+        :return: None
+        """
         #queryset = User.objects.filter(groups__name__in=self.viewer_groups)
 
         queryset = get_objects_for_user(self.request.user, 'auth.change_user', User)\
@@ -137,6 +169,8 @@ class G3WACLForm(forms.Form):
             self.initial_viewer_users = kwargs['initial']['viewer_users']
         if kwargs.has_key('initial') and kwargs['initial'].has_key('editor_user'):
             self.initial_editor_user = kwargs['initial']['editor_user']
+        if kwargs.has_key('initial') and kwargs['initial'].has_key('editor2_user'):
+            self.initial_editor2_user = kwargs['initial']['editor2_user']
 
     def _init_user_groups(self, **kwargs):
         if kwargs.has_key('initial') and kwargs['initial'].has_key('viewer_user_groups'):
@@ -157,7 +191,12 @@ class G3WACLForm(forms.Form):
                                                    User.objects.filter(pk=GuardianUser.get_anonymous().pk)
 
     def _ACLPolicy(self):
+        """
+        Give grant to
+        :return:
+        """
 
+        # editor level 1 management
         editorToRemove = None
         if 'editor_user' in self.cleaned_data and self.request.user.is_superuser:
             permission_user = self.cleaned_data['editor_user']
@@ -172,14 +211,34 @@ class G3WACLForm(forms.Form):
             if editorToRemove and hasattr(self.instance, 'removePermissionsToEditor'):
                 self.instance.removePermissionsToEditor(editorToRemove)
 
+        # editor level 2 management
+        if 'editor2_user' in self.cleaned_data:
+            permission_user = self.cleaned_data['editor2_user']
+            if (self.initial_editor2_user and self.cleaned_data['editor2_user'] and
+                        self.initial_editor2_user != self.cleaned_data['editor2_user'].id) or \
+                (self.initial_editor2_user and not self.cleaned_data['editor2_user']):
+                editorToRemove = User.objects.get(pk=self.initial_editor2_user)
+
+            if permission_user and hasattr(self.instance, 'addPermissionsToEditor'):
+                self.instance.addPermissionsToEditor(permission_user)
+
+            if editorToRemove and hasattr(self.instance, 'removePermissionsToEditor'):
+                self.instance.removePermissionsToEditor(editorToRemove)
+
         #add permission view_group to Viewer
         # check per and change situation
         if 'viewer_users' in self.cleaned_data:
             currentViewerUsers = [o.id for o in self.cleaned_data['viewer_users']]
             toRemove = list(set(self.initial_viewer_users) - set(currentViewerUsers))
             toAdd = list(set(currentViewerUsers) - set(self.initial_viewer_users))
+
+            # if propagate is set and in cleaned data set propagate_viewers to true
+            kwargs = {}
+            if 'propagate_viewers' in self.cleaned_data and self.cleaned_data['propagate_viewers']:
+                kwargs['propagate'] = True
+
             if hasattr(self.instance, 'addPermissionsToViewers'):
-                self.instance.addPermissionsToViewers(toAdd)
+                self.instance.addPermissionsToViewers(toAdd, **kwargs)
             if hasattr(self.instance, 'removePermissionsToViewers'):
                 self.instance.removePermissionsToViewers(toRemove)
 
@@ -193,12 +252,17 @@ class G3WACLForm(forms.Form):
             if hasattr(self.instance, 'remove_permissions_to_editor_user_groups'):
                 self.instance.remove_permissions_to_editor_user_groups(to_remove)
 
-        if 'viewer_user_groups' in  self.cleaned_data:
+        if 'viewer_user_groups' in self.cleaned_data:
             current_viewer_user_groups = [o.id for o in self.cleaned_data['viewer_user_groups']]
             to_remove = list(set(self.initial_viewer_user_groups) - set(current_viewer_user_groups))
             to_add = list(set(current_viewer_user_groups) - set(self.initial_viewer_user_groups))
             if hasattr(self.instance, 'add_permissions_to_viewer_user_groups'):
-                self.instance.add_permissions_to_viewer_user_groups(to_add)
+
+                # if propagate is set and in cleaned data set propagate_viewers to true
+                kwargs = {}
+                if 'propagate_viewers' in self.cleaned_data and self.cleaned_data['propagate_viewers']:
+                    kwargs['propagate'] = True
+                self.instance.add_permissions_to_viewer_user_groups(to_add, **kwargs)
             if hasattr(self.instance, 'remove_permissions_to_viewer_user_groups'):
                 self.instance.remove_permissions_to_viewer_user_groups(to_remove)
 
@@ -208,8 +272,9 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
     department = ModelChoiceField(queryset=Department.objects.all(), required=False)
     backend = ChoiceField(choices=(), required=True)
     avatar = UploadedFileField(required=False)
+
     groups = ModelMultipleChoiceField(
-        queryset=AuthGroup.objects.filter(name__in=[G3W_EDITOR1, G3W_EDITOR2, G3W_VIEWER1, G3W_VIEWER2]),
+        queryset=AuthGroup.objects.filter(name__in=[G3W_EDITOR1, G3W_EDITOR2, G3W_VIEWER1]),
         required=True,
         help_text=_('Select roles for this user'),
         label=_('Main roles')
@@ -219,7 +284,7 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
         queryset=AuthGroup.objects.filter(~Q(name__in=[G3W_EDITOR1, G3W_EDITOR2, G3W_VIEWER1, G3W_VIEWER2]),
                                           grouprole__role='editor'),
         required=False,
-        help_text=_('Select EDITOR groups for this user'),
+        help_text=_('Select <b>EDITOR groups</b> for this user, only Editor Level 2 can be added'),
         label=_('User editor groups')
     )
 
@@ -227,7 +292,7 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
         queryset=AuthGroup.objects.filter(~Q(name__in=[G3W_EDITOR1, G3W_EDITOR2, G3W_VIEWER1, G3W_VIEWER2]),
                                                 grouprole__role='viewer'),
         required=False,
-        help_text=_('Select VIEWER groups for this user'),
+        help_text=_('Select <b>VIEWER groups</b> for this user, only Viewer Level 1 can be added'),
         label=_('User viewer groups')
     )
 
@@ -378,7 +443,7 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
             if 'instance' in kwargs and kwargs['instance'] == self.request.user:
                 self.fields.pop('groups')
             else:
-                self.fields['groups'].queryset = AuthGroup.objects.filter(name__in=[G3W_EDITOR2, G3W_VIEWER1, G3W_VIEWER2])
+                self.fields['groups'].queryset = AuthGroup.objects.filter(name__in=[G3W_EDITOR2, G3W_VIEWER1])
                 self.fields['groups'].required = True
             self.fields.pop('is_superuser')
             self.fields.pop('is_staff')
@@ -421,6 +486,14 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
                 else:
                     self.cleaned_data['groups'] = self.cleaned_data['user_groups_viewer']
 
+            # if is_superuser or is_staff are set, remove groups
+            if ('is_superuser' in self.cleaned_data or 'is_staff' in self.cleaned_data) and \
+                    (('is_superuser' in self.cleaned_data and self.cleaned_data['is_superuser']) or
+                     ('is_staff' in self.cleaned_data and self.cleaned_data['is_staff'])):
+                self.cleaned_data['groups'] = []
+                self.cleaned_data['user_groups_editor'] = []
+                self.cleaned_data['user_groups_viewer']= []
+
             self.save_m2m()
 
             if hasattr(user, 'userdata'):
@@ -454,6 +527,48 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
 
         return user
 
+    def clean_groups(self):
+        """
+        Check for roles(groups) user can't be editor level 1 and 2 at same time.
+        :return: cleaned_data modified
+        """
+
+        groups = self.cleaned_data['groups']
+
+        if len(set(groups).intersection(set(AuthGroup.objects.filter(name__in=[G3W_EDITOR1, G3W_EDITOR2])))) == 2:
+            raise ValidationError(_('User can\'t be Editor level 1 and at same time Editor level 2'),
+                                  code='groups_invalid')
+
+        return groups
+
+    def clean_user_groups_editor(self):
+        """
+        Check only Editor level 2 users can belong to user groups editor.
+        :return: cleaned_data
+        """
+        user_groups_editor = self.cleaned_data['user_groups_editor']
+
+        if user_groups_editor and 'groups' in self.cleaned_data and len(set(self.cleaned_data['groups']).intersection(
+                set(AuthGroup.objects.filter(name__in=[G3W_EDITOR2])))) == 0:
+            raise ValidationError(_('User can\'t belong a **editor groups** if he isn\'t a Editor level 2'),
+                                  code='user_groups_editor_invalid')
+
+        return user_groups_editor
+
+    def clean_user_groups_viewer(self):
+        """
+        Check only Viewer level 1 users can belong to user groups editor.
+        :return: cleaned_data
+        """
+        user_groups_viewer = self.cleaned_data['user_groups_viewer']
+
+        if user_groups_viewer and 'groups' in self.cleaned_data and len(set(self.cleaned_data['groups']).intersection(
+                set(AuthGroup.objects.filter(name__in=[G3W_VIEWER1])))) == 0:
+            raise ValidationError(_('User can\'t belong a **viewer groups** if he isn\'t a Viewer level 1'),
+                                  code='user_groups_editor_invalid')
+
+        return user_groups_viewer
+
     def clean_avatar(self):
         """
         Check if upalod file is a valid image by pillow
@@ -484,6 +599,8 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
             'groups',
             'department',
             'avatar',
+            'user_groups_editor',
+            'user_groups_viewer'
         )
 
         widgets = {

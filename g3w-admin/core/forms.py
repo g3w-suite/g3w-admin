@@ -21,6 +21,7 @@ from usersmanage.configs import *
 class GroupForm(FileFormMixin, G3WFormMixin, G3WRequestFormMixin, G3WACLForm, ModelForm):
     """Group form."""
     header_logo_img = UploadedFileField()
+    propagate = True
 
     def __init__(self, *args, **kwargs):
         super(GroupForm, self).__init__(*args, **kwargs)
@@ -53,7 +54,8 @@ class GroupForm(FileFormMixin, G3WFormMixin, G3WRequestFormMixin, G3WACLForm, Mo
                                     css_class='col-md-6'
                                 ),
 
-                                crispyBoxACL(self),
+                                crispyBoxACL(self,
+                                             **{'propagate': self.propagate if hasattr(self, 'propagate') else False}),
 
                                 crispyBoxMacroGroups(self),
 

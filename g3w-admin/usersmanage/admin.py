@@ -3,11 +3,12 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin, GroupAdmin as 
 from django.contrib.auth.models import User, Group
 from guardian.admin import GuardedModelAdmin
 
-from usersmanage.models import Userdata, Department
+from usersmanage.models import Userdata, Department, Userbackend
 
 
 class DepartmentAdmin(admin.ModelAdmin):
     model = Department
+
 
 # Define an inline admin descriptor for Employee model
 # which acts a bit like a singleton
@@ -16,9 +17,15 @@ class UserdataInLine(admin.StackedInline):
     can_delete = False
     verbose_name_plural = 'userdata'
 
+
+class UserbackendInLine(admin.StackedInline):
+    model = Userbackend
+    can_delete = False
+
+
 # Define a new User admin
 class UserAdmin(GuardedModelAdmin, BaseUserAdmin):
-    inlines = (UserdataInLine, )
+    inlines = (UserdataInLine, UserbackendInLine)
 
 
 class GroupAdmin(GuardedModelAdmin, BaseGroupAdmin):

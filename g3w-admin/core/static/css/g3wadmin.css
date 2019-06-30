@@ -110,3 +110,7 @@ h5 small {
 .widget-user .widget-user-username {
     font-weight: 400;
 }
+
+.acl-box .help-block {
+    color: #ffffff;
+}

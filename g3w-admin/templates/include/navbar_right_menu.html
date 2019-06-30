@@ -54,7 +54,7 @@
                         <a href="{% url 'user-update' user.pk %}" class="btn btn-default btn-flat"><i class="fa fa-folder"></i> {% trans 'Profile' %}</a>
                     </div>
                     <div class="pull-right">
-                        <a href="{% url 'logout' %}{% if SETTINGS.FRONTEND %}?next={% url 'frontend' %}{% endif %}" class="btn btn-default btn-flat"><i class="fa fa-sign-out"></i> {% trans 'Sign out' %}</a>
+                        <a href="{% url 'logout' %}{% if SETTINGS.FRONTEND %}?next={% url 'frontend' %}{% endif %}" class="btn btn-default btn-flat"><i class="fa fa-sign-out"></i> {% trans 'Logout' %}</a>
                     </div>
                 </li>
             </ul>

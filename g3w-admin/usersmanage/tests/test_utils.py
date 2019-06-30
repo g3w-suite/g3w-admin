@@ -1,7 +1,18 @@
+# coding=utf-8
+"""
+    Test Usermanage moduel utility functions
+.. note:: This program is free software; you can redistribute it and/or modify
+     it under the terms of the Mozilla Public License 2.0.
+"""
+
+__author__ = 'lorenzetti@gis3w.it'
+__date__ = '2019-06-19'
+__copyright__ = 'Copyright 2019, GIS3W'
+
 from django.test import TestCase, RequestFactory
 from guardian.shortcuts import assign_perm
 from crispy_forms.layout import Field
-from usersmanage.models import User, AuthGroup
+from usersmanage.models import User
 from usersmanage.configs import *
 from usersmanage.utils import *
 from core.forms import GroupForm
@@ -85,7 +96,6 @@ class UsersManageTest(TestCase):
         self.assertFalse(userHasGroups(self.user_editor1, [G3W_EDITOR1, G3W_VIEWER2], strict=True))
         self.group_viewer2.user_set.remove(self.user_editor1)
 
-
     def __test_get_fields_by_user(self):
 
         fields = [
@@ -107,8 +117,6 @@ class UsersManageTest(TestCase):
 
             del(core_form_group)
 
-
-    def get_set_permission_user_object(self):
 
 
 

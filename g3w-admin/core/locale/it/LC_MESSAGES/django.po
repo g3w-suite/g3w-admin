@@ -460,7 +460,7 @@ msgstr "Salva"
 
 #: core/templates/core/include/form_buttons.html:13
 msgid "Redo/Back"
-msgstr "Annula/indietro"
+msgstr "Annulla/indietro"
 
 #: core/templates/core/macrogroup_form.html:10
 #, fuzzy
