@@ -31,7 +31,7 @@ class Userbackend(models.Model):
     """
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    backend = models.CharField('Backend', max_length=255)
+    backend = models.CharField('Backend', choices=USER_BACKEND_TYPES, max_length=255, default=USER_BACKEND_DEFAULT)
     options = models.TextField('Options', null=True, blank=True)
 
     def __str__(self):
