@@ -375,14 +375,14 @@ class PostgisCreateGeomodel(CreateGeomodel):
                 else:
                     kwargs['max_length'] = 255
             elif type(column.type) == PGD.NUMERIC:
-                kwargs['max_digits'] = column.type.precision if column.type.precision else 65535
+                kwargs['max_digits'] = column.type.precision if column.type.precision else 16
                 if column.type.scale:
                     kwargs['decimal_places'] = column.type.scale
                 else:
                     if column.type.precision:
                         kwargs['decimal_places'] = 65535 - kwargs['max_digits']
                     else:
-                        kwargs['decimal_places'] = 32767
+                        kwargs['decimal_places'] = 6
 
             self.django_model_fields[column.name] = dj_model_field_type(**kwargs)
 

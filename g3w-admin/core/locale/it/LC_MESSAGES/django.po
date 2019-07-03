@@ -460,7 +460,7 @@ msgstr "Salva"
 
 #: core/templates/core/include/form_buttons.html:13
 msgid "Redo/Back"
-msgstr "Annula/indietro"
+msgstr "Annulla/indietro"
 
 #: core/templates/core/macrogroup_form.html:10
 #, fuzzy
@@ -513,6 +513,9 @@ msgstr ""
 #: core/utils/structure.py:259 core/utils/structure.py:320
 msgid "Yes"
 msgstr "Si"
+
+msgid "Access"
+msgstr "Accedi"
 
 #~ msgid "Third party maps"
 #~ msgstr "Mappe terze parti"

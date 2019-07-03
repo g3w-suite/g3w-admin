@@ -79,6 +79,7 @@ class QdjangoProjectUpdateView(QdjangoProjectCUViewMixin, G3WGroupViewMixin, G3W
     form_class = QdjangoProjetForm
 
     editor_permission = 'change_project'
+    editor2_permission = 'view_project'
     viewer_permission = 'view_project'
 
     @method_decorator(permission_required('qdjango.change_project', (Project, 'slug', 'slug'), raise_exception=True))

@@ -1,7 +1,7 @@
 from django.test import TestCase, RequestFactory
 from guardian.shortcuts import assign_perm
 from crispy_forms.layout import Field
-from usersmanage.models import User, AuthGroup
+from usersmanage.models import User
 from usersmanage.configs import *
 from usersmanage.utils import *
 from core.forms import GroupForm
@@ -107,8 +107,6 @@ class UsersManageTest(TestCase):
 
             del(core_form_group)
 
-
-    def get_set_permission_user_object(self):
 
 
 

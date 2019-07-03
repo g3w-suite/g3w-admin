@@ -70,7 +70,7 @@ msgstr "Amministrazione"
 #: frontend/templates/frontend/include/login.html:33
 #: frontend/templates/frontend/include/sidebar.html:24
 msgid "Login"
-msgstr "Accesso"
+msgstr "Accedi"
 
 #: frontend/templates/frontend/include/login.html:7
 #, fuzzy

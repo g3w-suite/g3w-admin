@@ -7,6 +7,8 @@
 
 {% block custom_js_links_page %}
 <script>
+
+    var cleaned_data = {{ cleaned_data|safe }};
     ga.$useRoleSelect = $('#id_groups');
     ga.$useRoleSelect.on('change', function(e){
 
@@ -21,10 +23,21 @@
                 url: '{% url 'user-group-by-user-role' %}',
                 data: data,
                 success:function(res){
+
+                    var viewer_groups = _.filter(res.user_groups, function(item){return item.role == 'viewer'})
+                    for (i in viewer_groups) {
+                        if (!viewer_groups[i]['selected'] && _.indexOf(cleaned_data['user_groups_viewer'], viewer_groups[i]['id']) != -1)
+                            viewer_groups[i]['selected'] = true;
+                    }
+                    var editor_groups = _.filter(res.user_groups, function(item){return item.role == 'editor'})
+                    for (i in editor_groups) {
+                        if (!editor_groups[i]['selected'] && _.indexOf(cleaned_data['user_groups_editor'], editor_groups[i]['id']) != -1)
+                            editor_groups[i]['selected'] = true;
+                    }
                     $ug_viewer_select.html('');
-                    $ug_viewer_select.select2({data: _.filter(res.user_groups, function(item){return item.role == 'viewer'})});
+                    $ug_viewer_select.select2({data: viewer_groups});
                     $ug_editor_select.html('');
-                    $ug_editor_select.select2({data: _.filter(res.user_groups, function(item){return item.role == 'editor'})});
+                    $ug_editor_select.select2({data: editor_groups});
                 }
             });
         } else {

@@ -121,8 +121,8 @@ class GroupUpdateView(G3WRequestViewMixin, G3WACLViewMixin, UpdateView):
     form_class = GroupForm
 
     editor_permission = ['change_group']
+    editor2_permission = ['view_group']
     viewer_permission = 'view_group'
-
 
     @method_decorator(permission_required('core.change_group', (Group, 'slug', 'slug'), return_403=True))
     def dispatch(self, request, *args, **kwargs):

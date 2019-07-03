@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-02-22 15:27+0000\n"
+"POT-Creation-Date: 2019-06-27 12:30+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,127 +18,265 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: usersmanage/forms.py:67
-msgid "Editor user"
+#: forms.py:92
+#, fuzzy
+#| msgid "Editor user"
+msgid "Editor1 user"
 msgstr "Utente editor"
 
-#: usersmanage/forms.py:68
+#: forms.py:93
+msgid "Set Editor Level 1 owner"
+msgstr ""
+
+#: forms.py:96
+#, fuzzy
+#| msgid "Editor user"
+msgid "Editor2 user"
+msgstr "Utente editor"
+
+#: forms.py:99
 msgid "Viewer users"
 msgstr "Utenti viewers"
 
-#: usersmanage/forms.py:134
-msgid "Select group for this user"
-msgstr "Sleziona un gruppo per questo utente"
+#: forms.py:106
+#, fuzzy
+#| msgid "Editor user"
+msgid "Editor user groups"
+msgstr "Utente editor"
 
-#: usersmanage/forms.py:135 usersmanage/templates/usersmanage/user_list.html:30
-msgid "Group"
-msgstr "Gruppo"
+#: forms.py:113
+#, fuzzy
+#| msgid "Viewer users"
+msgid "Viewer user groups"
+msgstr "Utenti viewers"
 
-#: usersmanage/forms.py:159
+#: forms.py:119
+msgid "Propagate <b>NEW</b> viewers and new viewers user groups permissions"
+msgstr ""
+"Propaga i permessi dei <b>NUOVI</b> utenti viewer e gruppi di utenti viewer "
+"aggiunti"
+
+#: forms.py:279
+msgid "Select roles for this user"
+msgstr "Seleziona i gruppi principali per questo utente"
+
+#: forms.py:280
+msgid "Main roles"
+msgstr "Ruoli principali"
+
+#: forms.py:287
+#, fuzzy
+#| msgid ""
+#| "Select <b>EDITOR groups</b> for this user, <u>only <b>Editor Level 2</b> "
+#| "can be added</u>"
+msgid ""
+"Select <b>EDITOR groups</b> for this user, only Editor Level 2 can be added"
+msgstr ""
+"Seleziona un <b>EDITOR groups</b> per questo utente, <u>solo se l'utente è "
+"un <b>Editor Level 2</b></u>"
+
+#: forms.py:288
+msgid "User editor groups"
+msgstr ""
+
+#: forms.py:295
+#, fuzzy
+#| msgid ""
+#| "Select <b>VIEWER groups</b> for this user, <u>only <b>Viewer Level 1</b> "
+#| "can be added</u>"
+msgid ""
+"Select <b>VIEWER groups</b> for this user, only Viewer Level 1 can be added"
+msgstr ""
+"Seleziona un <b>VIEWER groups</b> per questo utente, <u>solo se l'utente è "
+"un <b>Viewer Level 1</b></u>"
+
+#: forms.py:296
+msgid "User viewer groups"
+msgstr ""
+
+#: forms.py:324
 msgid "Anagraphic"
 msgstr "Anagrafica"
 
-#: usersmanage/forms.py:178
+#: forms.py:343
 msgid "ACL/Roles"
 msgstr "ACL/Ruoli"
 
-#: usersmanage/forms.py:199
+#: forms.py:372
 msgid "Login data"
 msgstr "Dati di accesso"
 
-#: usersmanage/forms.py:217
+#: forms.py:390
 msgid "User data"
 msgstr "Dati utente"
 
-#: usersmanage/forms.py:245
+#: forms.py:418
 #, fuzzy
 #| msgid "User"
 msgid "User backend"
 msgstr "Utente"
 
-#: usersmanage/forms.py:330
+#: forms.py:539
+msgid "User can't be Editor level 1 and at same time Editor level 2"
+msgstr ""
+"L'utente non può essere allo stesso tempo Editor level 1 e Editor "
+"level 2</b>"
+
+#: forms.py:553
+msgid "User can't belong a **editor groups** if he isn't a Editor level 2"
+msgstr ""
+"L'utente non può appartenere ad un edito group se non è  un Editor "
+"level 2</b>"
+
+#: forms.py:567
+msgid "User can't belong a **viewer groups** if he isn't a Viewer level 1"
+msgstr ""
+"L'utente non può appartenere a un viewer group se non è un Viewer "
+"level 1</b>"
+
+#: forms.py:585
 msgid "Avatar is no a valid image"
 msgstr "Questo avatar non è una immagine"
 
-#: usersmanage/forms.py:356
+#: forms.py:613
 msgid "Password"
 msgstr ""
 
-#: usersmanage/forms.py:358
+#: forms.py:615
 msgid "Password confirmation"
 msgstr "Conferma password"
 
-#: usersmanage/forms.py:360
+#: forms.py:617
 msgid "Enter the same password as above, for verification."
 msgstr "Inserisci la stessa passoword indicata sopra per verifica"
 
-#: usersmanage/models.py:20
+#: forms.py:643 templates/usersmanage/user_group_list.html:29
+#, fuzzy
+#| msgid "ACL/Roles"
+msgid "Role"
+msgstr "ACL/Ruoli"
+
+#: forms.py:657 templates/usersmanage/ajax/user_group_detail.html:5
+msgid "Group"
+msgstr "Gruppo"
+
+#: models.py:20
 msgid "Avatar"
 msgstr ""
 
-#: usersmanage/templates/usersmanage/ajax/user_detail.html:5
+#: models.py:52
+#, fuzzy
+#| msgid "Group"
+msgid "Group role"
+msgstr "Gruppo"
+
+#: templates/usersmanage/ajax/user_detail.html:5
+#: templates/usersmanage/user_list.html:20
 msgid "User"
 msgstr "Utente"
 
-#: usersmanage/templates/usersmanage/user_form.html:9
+#: templates/usersmanage/user_form.html:56
 msgid "System users"
 msgstr "Utenti di sistema"
 
-#: usersmanage/templates/usersmanage/user_form.html:20
+#: templates/usersmanage/user_form.html:67
+#: templates/usersmanage/user_group_form.html:20
 msgid "Alert"
 msgstr "Attenzione"
 
-#: usersmanage/templates/usersmanage/user_form.html:21
+#: templates/usersmanage/user_form.html:68
+#: templates/usersmanage/user_group_form.html:21
 msgid "Some errors on form. Check it and send again."
 msgstr "Si sono verificati alcuni errori. Controlla e reinvia."
 
-#: usersmanage/templates/usersmanage/user_list.html:10
-#: usersmanage/templates/usersmanage/user_list.html:20
-msgid "Users"
+#: templates/usersmanage/user_group_form.html:9
+#, fuzzy
+#| msgid "System users"
+msgid "System user groups"
+msgstr "Utenti di sistema"
+
+#: templates/usersmanage/user_group_list.html:10
+#: templates/usersmanage/user_list.html:31
+#, fuzzy
+#| msgid "Users"
+msgid "User groups"
 msgstr "Utenti"
 
-#: usersmanage/templates/usersmanage/user_list.html:27
+#: templates/usersmanage/user_group_list.html:20
+msgid "User group"
+msgstr ""
+
+#: templates/usersmanage/user_group_list.html:27
+#: templates/usersmanage/user_list.html:27
 msgid "Actions"
 msgstr "Azioni"
 
-#: usersmanage/templates/usersmanage/user_list.html:28
+#: templates/usersmanage/user_group_list.html:28
+msgid "Name"
+msgstr ""
+
+#: templates/usersmanage/user_group_list.html:30
+#: templates/usersmanage/user_list.html:10
+msgid "Users"
+msgstr "Utenti"
+
+#: templates/usersmanage/user_group_list.html:38
+#: templates/usersmanage/user_list.html:57
+msgid "Show detail"
+msgstr "Mostra i dettagli"
+
+#: templates/usersmanage/user_group_list.html:42
+#: templates/usersmanage/user_list.html:62
+msgid "Edit"
+msgstr "Modifica"
+
+#: templates/usersmanage/user_group_list.html:47
+#: templates/usersmanage/user_list.html:67
+msgid "Delete"
+msgstr "Elimina"
+
+#: templates/usersmanage/user_list.html:28
 #, fuzzy
 #| msgid "User"
 msgid "Username"
 msgstr "Utente"
 
-#: usersmanage/templates/usersmanage/user_list.html:31
+#: templates/usersmanage/user_list.html:30
+#, fuzzy
+#| msgid "ACL/Roles"
+msgid "Roles"
+msgstr "ACL/Ruoli"
+
+#: templates/usersmanage/user_list.html:33
+#, fuzzy
+#| msgid "Users"
+msgid " Macro groups"
+msgstr "Utenti"
+
+#: templates/usersmanage/user_list.html:38
 msgid "Superuser"
 msgstr "Super utente"
 
-#: usersmanage/templates/usersmanage/user_list.html:34
+#: templates/usersmanage/user_list.html:39
 msgid "Staff"
 msgstr ""
 
-#: usersmanage/templates/usersmanage/user_list.html:37
+#: templates/usersmanage/user_list.html:42
 msgid "First name"
 msgstr "Nome"
 
-#: usersmanage/templates/usersmanage/user_list.html:38
+#: templates/usersmanage/user_list.html:43
 msgid "Last name"
 msgstr "Cognome"
 
-#: usersmanage/templates/usersmanage/user_list.html:40
+#: templates/usersmanage/user_list.html:44
+msgid "Created"
+msgstr ""
+
+#: templates/usersmanage/user_list.html:46
 msgid "Backend"
 msgstr ""
 
-#: usersmanage/templates/usersmanage/user_list.html:50
-msgid "Show detail"
-msgstr "Mostra i dettagli"
-
-#: usersmanage/templates/usersmanage/user_list.html:54
-msgid "Edit"
-msgstr "Modifica"
-
-#: usersmanage/templates/usersmanage/user_list.html:59
-msgid "Delete"
-msgstr "Elimina"
-
-#: usersmanage/utils.py:153
+#: utils.py:230
 msgid "ACL Users"
 msgstr "ACL Utenti"
