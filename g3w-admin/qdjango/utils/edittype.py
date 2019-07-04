@@ -35,10 +35,12 @@ class QgisEditTypeCheckBox(QgisEditType):
         return {
             'input': {
                 'type': self.field_type,
-                'options': [
-                    {'value': self.CheckedState, 'checked': True},
-                    {'value': self.UncheckedState, 'checked': False},
-                ]
+                'options': {
+                    'values': [
+                        {'value': self.CheckedState, 'checked': True},
+                        {'value': self.UncheckedState, 'checked': False},
+                    ]
+                }
             }
         }
 
@@ -56,18 +58,20 @@ class QgisEditTypeDateTime(QgisEditType):
         return {
             'input': {
                 'type': self.field_type,
-                'options': [
-                    {
-                        'date': bool(len(re.findall('/yyyy|MM|dd/', self.field_format)))
-                        if hasattr(self, 'field_format') else True,
-                        'time': bool(len(re.findall('/HH|mm|ss/', self.field_format)))
-                        if hasattr(self, 'field_format') else False,
-                        'fieldformat': self.field_format if hasattr(self, 'field_format') else 'yyyy-MM-dd',
-                        'displayformat': self.display_format if hasattr(self, 'display_format') else 'HH:mm:ss',
-                        'default': self.default if hasattr(self, 'default') else None
-                    },
+                'options': {
+                    'formats': [
+                                {
+                                    'date': bool(len(re.findall('/yyyy|MM|dd/', self.field_format)))
+                                    if hasattr(self, 'field_format') else True,
+                                    'time': bool(len(re.findall('/HH|mm|ss/', self.field_format)))
+                                    if hasattr(self, 'field_format') else False,
+                                    'fieldformat': self.field_format if hasattr(self, 'field_format') else 'yyyy-MM-dd',
+                                    'displayformat': self.display_format if hasattr(self, 'display_format') else 'HH:mm:ss',
+                                    'default': self.default if hasattr(self, 'default') else None
+                                },
 
-                ]
+                            ]
+                }
             }
         }
 
@@ -85,15 +89,17 @@ class QgisEditTypeRange(QgisEditType):
         return {
             'input': {
                 'type': self.field_type,
-                'options': [
-                    {
-                        'min': self.Min if hasattr(self, 'Min') else 2147483647,
-                        'max': self.Max if hasattr(self, 'Max') else -2147483648,
-                        'Step': self.Step if hasattr(self, 'Step') else 1,
-                        'default': self.default if hasattr(self, 'default') else None
-                    },
+                'options': {
+                    'values': [
+                                {
+                                    'min': self.Min if hasattr(self, 'Min') else 2147483647,
+                                    'max': self.Max if hasattr(self, 'Max') else -2147483648,
+                                    'Step': self.Step if hasattr(self, 'Step') else 1,
+                                    'default': self.default if hasattr(self, 'default') else None
+                                },
 
-                ]
+                            ]
+                }
             }
         }
 

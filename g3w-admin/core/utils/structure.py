@@ -11,8 +11,8 @@ from django.conf import settings
 from django.apps import apps
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext, ugettext_lazy as _
-from copy import deepcopy
 from collections import OrderedDict
+import copy
 
 # Mapping OGRwkbGeometryType
 MAPPING_OGRWKBGTYPE = {
@@ -61,13 +61,14 @@ FORM_FIELD_TYPE_LAYERPICKER = 'layerpicker'
 FORM_FIELD_TYPE_FIELDDEPEND = 'fielddepend'
 FORM_FIELD_TYPE_IMAGE = 'image'
 FORM_FIELD_TYPE_FILE = 'file'
+FORM_FIELD_TYPE_FLOAT = 'float'
 
 
 # mapping between form fields and fields data types
 FORM_FIELDS_MAPPING = {
     FIELD_TYPE_INTEGER: FORM_FIELD_TYPE_TEXT,
     FIELD_TYPE_BIGINTEGER: FORM_FIELD_TYPE_TEXT,
-    FIELD_TYPE_FLOAT: FORM_FIELD_TYPE_TEXT,
+    FIELD_TYPE_FLOAT: FORM_FIELD_TYPE_FLOAT,
     FIELD_TYPE_STRING: FORM_FIELD_TYPE_TEXT,
     FIELD_TYPE_TEXT: FORM_FIELD_TYPE_TEXTAREA,
     FIELD_TYPE_BOOLEAN: FORM_FIELD_TYPE_RADIO,
@@ -228,7 +229,7 @@ def mapLayerAttributes(layer, formField=False, **kwargs):
     mappingData = FIELD_TYPES_MAPPING.get(layer_type, FIELD_TYPES_MAPPING['default'])
 
     fields = eval(layer.database_columns) if layer.database_columns else None
-    fieldsMapped = deepcopy(fields)
+    fieldsMapped = copy.deepcopy(fields)
 
     # exlude if set:
     if 'exlude' in kwargs:
@@ -268,7 +269,8 @@ def mapLayerAttributes(layer, formField=False, **kwargs):
 
                 # update with fields configs data
                 if 'fields' in kwargs and field['name'] in kwargs['fields']:
-                    formFields[field['name']].update(kwargs['fields'][field['name']])
+                    deepupdate(formFields[field['name']], kwargs['fields'][field['name']])
+
 
     # reorder if is set in kwargs
     if 'order' in kwargs:
@@ -329,7 +331,7 @@ def mapLayerAttributesFromModel(model, **kwargs):
 
                 # update with fields configs data
                 if 'fields' in kwargs and field.name in kwargs['fields']:
-                    toRes[field.name].update(kwargs['fields'][field.name])
+                    deepupdate(toRes[field.name], kwargs['fields'][field.name])
     return toRes
 
 
@@ -392,3 +394,37 @@ class APIVectorLayerStructure(object):
         }
 
         return res
+
+
+# Copyright Ferry Boender, released under the MIT license.
+def deepupdate(target, src):
+    """Deep update target dict with src
+    For each k,v in src: if k doesn't exist in target, it is deep copied from
+    src to target. Otherwise, if v is a list, target[k] is extended with
+    src[k]. If v is a set, target[k] is updated with v, If v is a dict,
+    recursively deep-update it.
+
+    Examples:
+    >>> t = {'name': 'Ferry', 'hobbies': ['programming', 'sci-fi']}
+    >>> deepupdate(t, {'hobbies': ['gaming']})
+    >>> print t
+    {'name': 'Ferry', 'hobbies': ['programming', 'sci-fi', 'gaming']}
+    """
+    for k, v in src.items():
+        if type(v) == list:
+            if not k in target:
+                target[k] = copy.deepcopy(v)
+            else:
+                target[k].extend(v)
+        elif type(v) == dict:
+            if not k in target:
+                target[k] = copy.deepcopy(v)
+            else:
+                deepupdate(target[k], v)
+        elif type(v) == set:
+            if not k in target:
+                target[k] = v.copy()
+            else:
+                target[k].update(v.copy())
+        else:
+            target[k] = copy.copy(v)
