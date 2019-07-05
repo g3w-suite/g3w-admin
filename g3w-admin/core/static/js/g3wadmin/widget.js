@@ -296,6 +296,12 @@ _.extend(g3wadmin.widget, {
 
                     var form = ga.currentForm = new ga.forms.form(modal.$modal.find('form'));
                     form.setAction(params['form-url']);
+                    form.on('keypress', function(e){
+
+                        // preven defautl behavior for return
+                        if(e.keyCode == 13)
+                            e.preventDefault();
+                    });
                     form.setOnSuccesAction(function(){
 
                         // close modal and reload page
