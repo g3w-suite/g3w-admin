@@ -514,6 +514,9 @@ msgstr ""
 msgid "Yes"
 msgstr "Si"
 
+msgid "Access"
+msgstr "Accedi"
+
 #~ msgid "Third party maps"
 #~ msgstr "Mappe terze parti"
 
