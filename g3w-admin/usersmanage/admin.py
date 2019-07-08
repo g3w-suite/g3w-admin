@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin, GroupAdmin as BaseGroupAdmin
 from django.contrib.auth.models import User, Group
 from guardian.admin import GuardedModelAdmin
-
+from django.forms.models import ModelForm
 from usersmanage.models import Userdata, Department, Userbackend
 
 
@@ -17,9 +17,16 @@ class UserdataInLine(admin.StackedInline):
     can_delete = False
     verbose_name_plural = 'userdata'
 
+class AlwaysChangedModelForm(ModelForm):
+    def has_changed(self):
+        """ Should returns True if data differs from initial.
+        By always returning true even unchanged inlines will get validated and saved."""
+        return True
+
 
 class UserbackendInLine(admin.StackedInline):
     model = Userbackend
+    form = AlwaysChangedModelForm
     can_delete = False
     verbose_name_plural = 'userbackend'
 
