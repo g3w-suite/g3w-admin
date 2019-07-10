@@ -166,6 +166,10 @@ class OWSRequestHandler(OWSRequestHandlerBase):
                 new_q['LAYERS'] = layers_to_query
                 new_q['QUERY_LAYERS'] = layers_to_query
 
+                # remove map key from new_q if isset
+                if 'map' in new_q:
+                    del(new_q['map'])
+
                 url = '?'.join([base_url, '&'.join([urldata.query, new_q.urlencode()])])
             else:
                 url = '?'.join([settings.QDJANGO_SERVER_URL, q.urlencode()])
