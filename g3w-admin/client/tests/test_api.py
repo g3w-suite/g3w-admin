@@ -2,9 +2,7 @@
 """"Tests for client module API
 
 .. note:: This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+    it under the terms of the Mozilla Public License 2.0.
 
 """
 
@@ -139,10 +137,10 @@ class ClientApiTest(APITestCase):
 
         response = self.__testApiCall('group-project-map-config', ['gruppo-1', 'qdjango', '1'])
         resp = json.loads(response.content)
-        self.assertEqual(resp["layerstree"], [])
-        self.assertEqual(resp["layers"], [])
+
+        self.assertEqual(resp["layerstree"], [{u'visible': True, u'expanded': False, u'name': u'world', u'id': u'world20181008111156525'}, {u'visible': True, u'expanded': True, u'name': u'bluemarble', u'id': u'bluemarble20181008111156906'}])
         self.assertEqual(resp["search"], [])
-        self.assertFalse(resp["wms_use_layer_ids"],)
+        self.assertFalse(resp["wms_use_layer_ids"])
         self.assertEqual(resp["qgis_version"], "2.18.16")
         self.assertEqual(resp["no_legend"], [])
         self.assertEqual(resp["feature_count"], 5)

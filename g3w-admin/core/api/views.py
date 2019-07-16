@@ -15,6 +15,7 @@ for app_name in settings.G3WADMIN_PROJECT_APPS:
 
 @csrf_exempt  # put exempt here because as_view method is outside url bootstrap declaration
 def layer_vector_view(request, project_type, project_id, layer_name, *args, **kwargs):
+    """Extract vector information from a single DB layer"""
 
     # instance module vector view
     view = LAYERVECTORVIEW_CLASSES[project_type].as_view()

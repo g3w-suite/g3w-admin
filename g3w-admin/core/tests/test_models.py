@@ -5,7 +5,14 @@ from django.contrib.auth.models import User
 from django.core.management import call_command
 from django.test import TestCase
 from core.models import BaseLayer
+from django.test import override_settings
 
+@override_settings(CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'some',
+    }
+})
 class GroupsTests(TestCase):
 
     fixtures = ['BaseLayer.json',

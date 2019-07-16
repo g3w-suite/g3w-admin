@@ -34,12 +34,12 @@ def get_schema_table(datasource_table):
 
 def datasource2dict(datasource):
     """
-    Read datasource string e put data in a python dict
+    Read a DB datasource string and put data in a python dict
     """
 
     datasourceDict = {}
 
-    # befor get sql
+    # before get sql
     datasource, sql = datasource.split('sql=')
     #datalist = datasource.split(' ')
     datalist = shlex.split(datasource)
@@ -96,21 +96,21 @@ class QgisLayerStructure(object):
         pass
 
     '''
-    def clearColoumn(self, coloumn_name):
+    def clearColumn(self, column_name):
         """
-        Get coloumn name and remove special charpter like , ; : ecc.
+        Get column name and remove special characters like , ; : ecc.
         Sub blankspace with underscore
-        :param coloumn_name:
+        :param column_name:
         :return:
         """
 
         # remove
-        coloumn_name = re.sub('[;:,%@$^&*!#()\[\]\{\}\\n\\r]+', '', coloumn_name)
+        column_name = re.sub('[;:,%@$^&*!#()\[\]\{\}\\n\\r]+', '', column_name)
 
         # replace whitespaces
-        coloumn_name = re.sub('\s', '_', coloumn_name)
+        column_name = re.sub('\s', '_', column_name)
 
-        return coloumn_name
+        return column_name
     '''
 
 
@@ -127,7 +127,7 @@ class QgisOGRLayerStructure(QgisLayerStructure):
 
     def _cleanDataSource(self):
         """
-        Check if ogr data layer exisists
+        Check if ogr data layer exists
         """
         if not os.path.exists(self.datasource):
             raise Exception(self._errDatasourceNotFound.format(self.layer.name, self.datasource))
