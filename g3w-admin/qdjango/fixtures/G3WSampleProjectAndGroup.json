@@ -132,5 +132,41 @@
       "editor_layout": "generatedlayout",
       "editor_form_structure": null
     }
+  },
+  {
+    "model": "qdjango.layer",
+    "pk": 3,
+    "fields": {
+      "name": "spatialite_points",
+      "title": "spatialite_points",
+      "origname": "spatialite_points",
+      "qgs_layer_id": "spatialite_points20190604101052075",
+      "description": "",
+      "slug": "spatialite_points",
+      "is_active": true,
+      "project": 1,
+      "layer_type": "spatialite",
+      "datasource": "dbname='./un-progetto-data/un-progetto.db' table=\"spatialite_points\" (geom) sql=",
+      "is_visible": true,
+      "order": 1,
+      "data_file": "",
+      "database_columns": "[{\"type\": \"INTEGER\", \"name\": \"pkuid\", \"label\": \"pkuid\"}, {\"type\": \"TEXT\", \"name\": \"name\", \"label\": \"name\"}, {\"type\": \"INTEGER\", \"name\": \"geom\", \"label\": \"geom\"}]",
+      "min_scale": 100000000,
+      "max_scale": 0,
+      "scalebasedvisibility": false,
+      "srid": 4326,
+      "capabilities": null,
+      "edit_options": null,
+      "wfscapabilities": null,
+      "geometrytype": "Point",
+      "exclude_attribute_wms": null,
+      "exclude_attribute_wfs": null,
+      "vectorjoins": "[]",
+      "edittypes": "{'name': {'constraint': '', 'labelOnTop': '0', 'fieldEditable': '1', 'values': [], 'notNull': '0', 'widgetv2type': 'TextEdit', 'constraintDescription': '', 'UseHtml': '0', 'IsMultiline': '0'}, 'pkuid': {'constraint': '', 'labelOnTop': '0', 'fieldEditable': '1', 'values': [], 'notNull': '0', 'widgetv2type': 'TextEdit', 'constraintDescription': '', 'UseHtml': '0', 'IsMultiline': '0'}}",
+      "exclude_from_legend": false,
+      "editor_layout": "generatedlayout",
+      "editor_form_structure": null,
+      "download": true
+    }
   }
 ]

@@ -31,7 +31,7 @@ class IsGroupCompatibleValidator(QgisProjectValidator):
     """
     def clean(self):
         if self.qgisProject.group.srid.srid != self.qgisProject.srid:
-            raise QgisProjectException(_('Project SRID (%s) and group SRID (%s) must be the same') % ( self.qgisProject.group.srid.srid, self.qgisProject.srid))
+            raise QgisProjectException(_('Project SRID (%s) and group SRID (%s) must be the same') % (self.qgisProject.srid, self.qgisProject.group.srid.srid))
 
 
 class ProjectExists(QgisProjectValidator):

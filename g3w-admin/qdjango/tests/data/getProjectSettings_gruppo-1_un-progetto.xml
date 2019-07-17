@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<WMS_Capabilities xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:inspire_vs="http://inspire.ec.europa.eu/schemas/inspire_vs/1.0" xmlns:inspire_common="http://inspire.ec.europa.eu/schemas/common/1.0" version="1.3.0" xmlns="http://www.opengis.net/wms" xsi:schemaLocation="http://www.opengis.net/wms http://schemas.opengis.net/wms/1.3.0/capabilities_1_3_0.xsd http://www.opengis.net/sld http://schemas.opengis.net/sld/1.1.0/sld_capabilities.xsd http://www.qgis.org/wms http://inspire.ec.europa.eu/schemas/inspire_vs/1.0 http://inspire.ec.europa.eu/schemas/inspire_vs/1.0/inspire_vs.xsd http://localhost:8001/ows/?map=/home/ale/dev/python/gis3w/g3w-admin/catalog/tests/testdata/gruppo-1_un-progetto.qgs&amp;SERVICE=WMS&amp;REQUEST=GetSchemaExtension" xmlns:sld="http://www.opengis.net/sld" xmlns:qgs="http://www.qgis.org/wms">
+<WMS_Capabilities xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:inspire_vs="http://inspire.ec.europa.eu/schemas/inspire_vs/1.0" xmlns:inspire_common="http://inspire.ec.europa.eu/schemas/common/1.0" version="1.3.0" xmlns="http://www.opengis.net/wms" xsi:schemaLocation="http://www.opengis.net/wms http://schemas.opengis.net/wms/1.3.0/capabilities_1_3_0.xsd http://www.opengis.net/sld http://schemas.opengis.net/sld/1.1.0/sld_capabilities.xsd http://www.qgis.org/wms http://inspire.ec.europa.eu/schemas/inspire_vs/1.0 http://inspire.ec.europa.eu/schemas/inspire_vs/1.0/inspire_vs.xsd http://localhost:8001/ows/?map=/home/ale/dev/python/gis3w/g3w-admin/qdjango/tests/data/gruppo-1_un-progetto.qgs&amp;SERVICE=WMS&amp;REQUEST=GetSchemaExtension" xmlns:sld="http://www.opengis.net/sld" xmlns:qgs="http://www.qgis.org/wms">
  <Service>
   <Name>WMS</Name>
   <Title>Yet another WMS serving anything</Title>
@@ -29,7 +29,7 @@
     <DCPType>
      <HTTP>
       <Get>
-       <OnlineResource xlink:type="simple" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://localhost:8001/ows/?map=/home/ale/dev/python/gis3w/g3w-admin/catalog/tests/testdata/gruppo-1_un-progetto.qgs&amp;"/>
+       <OnlineResource xlink:type="simple" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://localhost:8001/ows/?map=/home/ale/dev/python/gis3w/g3w-admin/qdjango/tests/data/gruppo-1_un-progetto.qgs&amp;"/>
       </Get>
      </HTTP>
     </DCPType>
@@ -44,7 +44,7 @@
     <DCPType>
      <HTTP>
       <Get>
-       <OnlineResource xlink:type="simple" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://localhost:8001/ows/?map=/home/ale/dev/python/gis3w/g3w-admin/catalog/tests/testdata/gruppo-1_un-progetto.qgs&amp;"/>
+       <OnlineResource xlink:type="simple" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://localhost:8001/ows/?map=/home/ale/dev/python/gis3w/g3w-admin/qdjango/tests/data/gruppo-1_un-progetto.qgs&amp;"/>
       </Get>
      </HTTP>
     </DCPType>
@@ -58,7 +58,7 @@
     <DCPType>
      <HTTP>
       <Get>
-       <OnlineResource xlink:type="simple" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://localhost:8001/ows/?map=/home/ale/dev/python/gis3w/g3w-admin/catalog/tests/testdata/gruppo-1_un-progetto.qgs&amp;"/>
+       <OnlineResource xlink:type="simple" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://localhost:8001/ows/?map=/home/ale/dev/python/gis3w/g3w-admin/qdjango/tests/data/gruppo-1_un-progetto.qgs&amp;"/>
       </Get>
      </HTTP>
     </DCPType>
@@ -69,7 +69,7 @@
     <DCPType>
      <HTTP>
       <Get>
-       <OnlineResource xlink:type="simple" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://localhost:8001/ows/?map=/home/ale/dev/python/gis3w/g3w-admin/catalog/tests/testdata/gruppo-1_un-progetto.qgs&amp;"/>
+       <OnlineResource xlink:type="simple" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://localhost:8001/ows/?map=/home/ale/dev/python/gis3w/g3w-admin/qdjango/tests/data/gruppo-1_un-progetto.qgs&amp;"/>
       </Get>
      </HTTP>
     </DCPType>
@@ -79,7 +79,7 @@
     <DCPType>
      <HTTP>
       <Get>
-       <OnlineResource xlink:type="simple" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://localhost:8001/ows/?map=/home/ale/dev/python/gis3w/g3w-admin/catalog/tests/testdata/gruppo-1_un-progetto.qgs&amp;"/>
+       <OnlineResource xlink:type="simple" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://localhost:8001/ows/?map=/home/ale/dev/python/gis3w/g3w-admin/qdjango/tests/data/gruppo-1_un-progetto.qgs&amp;"/>
       </Get>
      </HTTP>
     </DCPType>
@@ -89,7 +89,7 @@
     <DCPType>
      <HTTP>
       <Get>
-       <OnlineResource xlink:type="simple" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://localhost:8001/ows/?map=/home/ale/dev/python/gis3w/g3w-admin/catalog/tests/testdata/gruppo-1_un-progetto.qgs&amp;"/>
+       <OnlineResource xlink:type="simple" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://localhost:8001/ows/?map=/home/ale/dev/python/gis3w/g3w-admin/qdjango/tests/data/gruppo-1_un-progetto.qgs&amp;"/>
       </Get>
      </HTTP>
     </DCPType>
@@ -101,7 +101,7 @@
     <DCPType>
      <HTTP>
       <Get>
-       <OnlineResource xlink:type="simple" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://localhost:8001/ows/?map=/home/ale/dev/python/gis3w/g3w-admin/catalog/tests/testdata/gruppo-1_un-progetto.qgs&amp;"/>
+       <OnlineResource xlink:type="simple" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://localhost:8001/ows/?map=/home/ale/dev/python/gis3w/g3w-admin/qdjango/tests/data/gruppo-1_un-progetto.qgs&amp;"/>
       </Get>
      </HTTP>
     </DCPType>
@@ -131,6 +131,10 @@
     <inspire_common:Language>ita</inspire_common:Language>
    </inspire_common:ResponseLanguage>
   </inspire_vs:ExtendedCapabilities>
+  <WFSLayers>
+   <WFSLayer name="spatialite_points"/>
+   <WFSLayer name="world"/>
+  </WFSLayers>
   <Layer queryable="1">
    <Name>Un progetto</Name>
    <Title>Un progetto</Title>
@@ -146,6 +150,90 @@
    <BoundingBox CRS="EPSG:3857" maxx="1.9932e+07" minx="-1.9932e+07" maxy="1.97622e+07" miny="-1.64211e+07"/>
    <BoundingBox CRS="EPSG:4326" maxx="123.92" minx="-130.145" maxy="189" miny="-189"/>
    <TreeName>Un progetto</TreeName>
+   <Layer displayField="name" geometryType="WKBPoint" queryable="1" visible="1">
+    <Name>spatialite_points</Name>
+    <Title>spatialite_points</Title>
+    <CRS>CRS:84</CRS>
+    <CRS>EPSG:4326</CRS>
+    <CRS>EPSG:3857</CRS>
+    <EX_GeographicBoundingBox>
+     <westBoundLongitude>1.98009</westBoundLongitude>
+     <eastBoundLongitude>10.6852</eastBoundLongitude>
+     <southBoundLatitude>28.7798</southBoundLatitude>
+     <northBoundLatitude>44.351</northBoundLatitude>
+    </EX_GeographicBoundingBox>
+    <BoundingBox CRS="EPSG:3857" maxx="1.18948e+06" minx="220423" maxy="5.51992e+06" miny="3.34765e+06"/>
+    <BoundingBox CRS="EPSG:4326" maxx="44.351" minx="28.7798" maxy="10.6852" miny="1.98009"/>
+    <Style>
+     <Name>default</Name>
+     <Title>default</Title>
+     <LegendURL>
+      <Format>image/png</Format>
+      <OnlineResource xlink:type="simple" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://localhost:8001/ows/?map=/home/ale/dev/python/gis3w/g3w-admin/qdjango/tests/data/gruppo-1_un-progetto.qgs&amp;&amp;SERVICE=WMS&amp;VERSION=1.3.0&amp;REQUEST=GetLegendGraphic&amp;LAYER=spatialite_points&amp;FORMAT=image/png&amp;STYLE=default&amp;SLD_VERSION=1.1.0"/>
+     </LegendURL>
+    </Style>
+    <TreeName>spatialite_points</TreeName>
+    <Attributes>
+     <Attribute typeName="INTEGER" precision="0" length="0" editType="TextEdit" type="qlonglong" comment="" name="pkuid"/>
+     <Attribute typeName="TEXT" precision="0" length="0" editType="TextEdit" type="QString" comment="" name="name"/>
+    </Attributes>
+   </Layer>
+   <Layer displayField="NAME" geometryType="WKBPolygon" queryable="1" visible="1">
+    <Name>world</Name>
+    <Title>world</Title>
+    <CRS>CRS:84</CRS>
+    <CRS>EPSG:4326</CRS>
+    <CRS>EPSG:3857</CRS>
+    <EX_GeographicBoundingBox>
+     <westBoundLongitude>-180</westBoundLongitude>
+     <eastBoundLongitude>180</eastBoundLongitude>
+     <southBoundLatitude>-89.9</southBoundLatitude>
+     <northBoundLatitude>83.6747</northBoundLatitude>
+    </EX_GeographicBoundingBox>
+    <BoundingBox CRS="EPSG:3857" maxx="2.00375e+07" minx="-2.00375e+07" maxy="1.84698e+07" miny="-4.49273e+07"/>
+    <BoundingBox CRS="EPSG:4326" maxx="83.6747" minx="-89.9" maxy="180" miny="-180"/>
+    <Style>
+     <Name>default</Name>
+     <Title>default</Title>
+     <LegendURL>
+      <Format>image/png</Format>
+      <OnlineResource xlink:type="simple" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://localhost:8001/ows/?map=/home/ale/dev/python/gis3w/g3w-admin/qdjango/tests/data/gruppo-1_un-progetto.qgs&amp;&amp;SERVICE=WMS&amp;VERSION=1.3.0&amp;REQUEST=GetLegendGraphic&amp;LAYER=world&amp;FORMAT=image/png&amp;STYLE=default&amp;SLD_VERSION=1.1.0"/>
+     </LegendURL>
+    </Style>
+    <TreeName>world</TreeName>
+    <Attributes>
+     <Attribute typeName="String" precision="0" length="40" editType="TextEdit" type="QString" comment="" name="NAME"/>
+     <Attribute typeName="String" precision="0" length="64" editType="TextEdit" type="QString" comment="" name="CAPITAL"/>
+     <Attribute typeName="Integer64" precision="0" length="15" editType="TextEdit" type="qlonglong" comment="" name="APPROX"/>
+     <Attribute typeName="Real" precision="15" length="19" editType="TextEdit" type="double" comment="" name="AREA"/>
+     <Attribute typeName="String" precision="0" length="16" editType="TextEdit" type="QString" comment="" name="SOURCETHM"/>
+    </Attributes>
+   </Layer>
+   <Layer queryable="1" visible="1">
+    <Name>bluemarble</Name>
+    <Title>bluemarble</Title>
+    <CRS>CRS:84</CRS>
+    <CRS>EPSG:4326</CRS>
+    <CRS>EPSG:3857</CRS>
+    <EX_GeographicBoundingBox>
+     <westBoundLongitude>-180</westBoundLongitude>
+     <eastBoundLongitude>180</eastBoundLongitude>
+     <southBoundLatitude>-90</southBoundLatitude>
+     <northBoundLatitude>90</northBoundLatitude>
+    </EX_GeographicBoundingBox>
+    <BoundingBox CRS="EPSG:3857" maxx="2.00375e+07" minx="-2.00375e+07" maxy="1.6824e+07" miny="-1.6824e+07"/>
+    <BoundingBox CRS="EPSG:4326" maxx="90" minx="-90" maxy="180" miny="-180"/>
+    <Style>
+     <Name>default</Name>
+     <Title>default</Title>
+     <LegendURL>
+      <Format>image/png</Format>
+      <OnlineResource xlink:type="simple" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://localhost:8001/ows/?map=/home/ale/dev/python/gis3w/g3w-admin/qdjango/tests/data/gruppo-1_un-progetto.qgs&amp;&amp;SERVICE=WMS&amp;VERSION=1.3.0&amp;REQUEST=GetLegendGraphic&amp;LAYER=bluemarble&amp;FORMAT=image/png&amp;STYLE=default&amp;SLD_VERSION=1.1.0"/>
+     </LegendURL>
+    </Style>
+    <TreeName>bluemarble</TreeName>
+   </Layer>
   </Layer>
+  <LayerDrawingOrder>bluemarble,world,spatialite_points</LayerDrawingOrder>
  </Capability>
 </WMS_Capabilities>
