@@ -21,6 +21,7 @@ class UserdataInLine(admin.StackedInline):
 class UserbackendInLine(admin.StackedInline):
     model = Userbackend
     can_delete = False
+    verbose_name_plural = 'userbackend'
 
 
 # Define a new User admin
