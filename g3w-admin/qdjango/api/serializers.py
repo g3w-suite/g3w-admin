@@ -24,6 +24,9 @@ from qdjango.utils.structure import QdjangoMetaLayer
 from .utils import serialize_vectorjoin
 import json
 
+import logging
+logger = logging.getLogger(__name__)
+
 
 class ProjectSerializer(serializers.ModelSerializer):
 
@@ -370,21 +373,24 @@ class LayerSerializer(serializers.ModelSerializer):
         # add bbox
         if instance.geometrytype != QGIS_LAYER_TYPE_NO_GEOM:
 
-            bbox = self.qgis_projectsettings_wms.layers[lidname]['bboxes']['EPSG:{}'.format(group.srid.srid)]
-            ret['bbox'] = {}
-            for coord, val in bbox.items():
-                if val not in (float('inf'), float('-inf')):
-                    ret['bbox'][coord] = val
-                else:
-                    if coord == 'maxx':
-                        ret['bbox'][coord] = -ret['bbox']['minx']
-                    elif coord == 'maxy':
-                        ret['bbox'][coord] = -ret['bbox']['miny']
-                    elif coord == 'minx':
-                        ret['bbox'][coord] = -ret['bbox']['maxx']
+            try:
+                bbox = self.qgis_projectsettings_wms.layers[lidname]['bboxes']['EPSG:{}'.format(group.srid.srid)]
+                ret['bbox'] = {}
+                for coord, val in bbox.items():
+                    if val not in (float('inf'), float('-inf')):
+                        ret['bbox'][coord] = val
                     else:
-                        ret['bbox'][coord] = -ret['bbox']['maxy']
-
+                        if coord == 'maxx':
+                            ret['bbox'][coord] = -ret['bbox']['minx']
+                        elif coord == 'maxy':
+                            ret['bbox'][coord] = -ret['bbox']['miny']
+                        elif coord == 'minx':
+                            ret['bbox'][coord] = -ret['bbox']['maxx']
+                        else:
+                            ret['bbox'][coord] = -ret['bbox']['maxy']
+            except KeyError as ex:
+                logger.critical('BBOX not found for EPSG %s in layer %s' % (group.srid.srid, lidname))
+                raise ex
 
         # add capabilities
         ret['capabilities'] = self.get_capabilities(instance)
@@ -398,8 +404,9 @@ class LayerSerializer(serializers.ModelSerializer):
 
         # add options for wms layer
         if instance.layer_type == 'wms':
-            datasourceWMS = QueryDict(instance.datasource)
-            if 'username' not in ret['source'] or 'password' not in ret['source']:
+
+            datasourceWMS = QueryDict(bytes(instance.datasource))
+            if ('username' not in ret['source'] or 'password' not in ret['source']) and 'type=xyz' not in instance.datasource:
                 ret['source'].update(datasourceWMS.dict())
                 ret['source']['external'] = True
                 #ret['servertype'] = MSTYPES_OGC

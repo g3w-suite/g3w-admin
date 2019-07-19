@@ -16,19 +16,32 @@ from urlparse import urlsplit, parse_qs
 from core.utils.projects import CoreMetaLayer
 from core.utils import unicode2ascii
 from .exceptions import QgisProjectLayerException
-import shlex
 
+
+# "schema"."table"
+RE1 = re.compile(r'"([A-z0-9_\.]+)"\."([A-z0-9_\.]+)"')
+# schema.table
+RE2 = re.compile(r'([A-z0-9_]+)\.([A-z0-9_]+)')
+# "table" or table
+RE3 = re.compile(r'"?([A-z0-9_\.]+)"?')
 
 def get_schema_table(datasource_table):
-    if datasource_table.find('.') != -1:
-        schema, table = datasource_table.split('.')
-    else:
-        schema = 'public'
-        table = datasource_table
+    """Returns unquoted schema and table names
 
-    table = table.strip('"')
-    schema = schema.strip('"')
+    :param datasource_table: table description
+    :type datasource_table: str
+    :return: tuple with unquoted schema and table names
+    :rtype: tuple
+    """
 
+    try:
+        return RE1.match(datasource_table).groups()
+    except AttributeError:
+        try:
+            return RE2.match(datasource_table).groups()
+        except AttributeError:
+            table = RE3.match(datasource_table).groups()[0]
+            schema = 'public'
     return schema, table
 
 
@@ -42,7 +55,7 @@ def datasource2dict(datasource):
     # before get sql
     datasource, sql = datasource.split('sql=')
     #datalist = datasource.split(' ')
-    datalist = shlex.split(datasource)
+    datalist = re.findall(r'([A-z][A-z0-9-_]+=[\'"]?[#$^?+=!*()\'-/@%&\w\."]+[\'"]?)', datasource)
     for item in datalist:
         try:
             key, value = item.split('=')
@@ -96,21 +109,21 @@ class QgisLayerStructure(object):
         pass
 
     '''
-    def clearColumn(self, column_name):
+    def clearColoumn(self, coloumn_name):
         """
-        Get column name and remove special characters like , ; : ecc.
+        Get coloumn name and remove special charpter like , ; : ecc.
         Sub blankspace with underscore
-        :param column_name:
+        :param coloumn_name:
         :return:
         """
 
         # remove
-        column_name = re.sub('[;:,%@$^&*!#()\[\]\{\}\\n\\r]+', '', column_name)
+        coloumn_name = re.sub('[;:,%@$^&*!#()\[\]\{\}\\n\\r]+', '', coloumn_name)
 
         # replace whitespaces
-        column_name = re.sub('\s', '_', column_name)
+        coloumn_name = re.sub('\s', '_', coloumn_name)
 
-        return column_name
+        return coloumn_name
     '''
 
 
@@ -177,8 +190,9 @@ class QgisDBLayerStructure(QgisLayerStructure):
 
     def _cleanDataSource(self):
         """
-        Chheck il spatilite fiel exists
+        Check il spatialite field exists
         """
+
         if self.layerType == Layer.TYPES.spatialite:
             if not os.path.exists(self.datasourceDict['dbname']):
                 raise QgisProjectLayerException(self._errDatasourceNotFound.format(self.layer.name,self.datasource))

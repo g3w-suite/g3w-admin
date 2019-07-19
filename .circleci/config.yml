@@ -25,6 +25,9 @@ jobs:
           name: Building g3w-suite
           command: docker-compose exec g3w-suite sh -c "/code/ci_scripts/build_suite.sh"
       - run:
+          name: Setting up g3w-suite
+          command: docker-compose exec g3w-suite sh -c "/code/ci_scripts/setup_suite.sh"
+      - run:
           name: Starting Django
           command: docker-compose exec g3w-suite sh -c "cd /code/g3w-admin && python manage.py runserver 0.0.0.0:8000"
           background: true

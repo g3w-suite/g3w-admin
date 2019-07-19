@@ -51,7 +51,10 @@ class ProjectTitleExists(QgisProjectValidator):
     """
     def clean(self):
         if not self.qgisProject.title:
-            raise QgisProjectException(_('Title project not empty'))
+            if self.qgisProject.qgisProjectFile.name:
+                self.qgisProject.title = self.qgisProject.qgisProjectFile.name
+            else:
+                raise QgisProjectException(_('Title project not empty'))
 
 
 class UniqueLayername(QgisProjectValidator):
@@ -125,9 +128,9 @@ class DatasourceExists(QgisProjectLayerValidator):
                     raise QgisProjectLayerException(err)
 
 
-class ColoumnName(QgisProjectLayerValidator):
+class ColumnName(QgisProjectLayerValidator):
     """
-    Check column data name: no whitespace, no special charts.
+    Check column data name: no whitespace, no special chars.
     """
     def clean(self):
         if self.qgisProjectLayer.layerType in [Layer.TYPES.ogr, Layer.TYPES.postgres, Layer.TYPES.spatialite]:
