@@ -69,7 +69,8 @@ G3WADMIN_APPS = [
     'core',
     'client',
     'usersmanage',
-    'OWS'
+    'OWS',
+    'constraints'
 ]
 
 G3WADMIN_PROJECT_APPS_BASE = [

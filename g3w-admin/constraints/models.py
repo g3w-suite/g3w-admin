@@ -1,6 +1,18 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+""""Constraints module models
+
+.. note:: This program is free software; you can redistribute it and/or modify
+    it under the terms of the Mozilla Public License 2.0.
+
+"""
+
+__author__ = 'elpaso@itopen.it'
+__date__ = '2019-07-19'
+__copyright__ = 'Copyright 2019, Gis3w'
+
+
 import logging
 
 from django.contrib.auth.models import Group, User
@@ -15,19 +27,6 @@ from core.utils.models import get_creator_from_qdjango_layer
 from qdjango.models import Layer
 
 logger = logging.getLogger(__name__)
-
-""""Constraints module models
-
-.. note:: This program is free software; you can redistribute it and/or modify
-    it under the terms of the Mozilla Public License 2.0.
-
-"""
-
-__author__ = 'elpaso@itopen.it'
-__date__ = '2019-07-19'
-__copyright__ = 'Copyright 2019, Gis3w'
-
-
 
 class Constraint(models.Model):
     """Main Constraint class. Links together two layers: the editing layer and the constraint layer.
@@ -132,8 +131,12 @@ class ConstraintRule(models.Model):
                 matched_counter += 1
         return constraint_geometry, matched_counter
 
-    def get_query_set(self):
-        """Returns the query set from the editing layer filtered by the rule"""
+    def get_filters(self):
+        """Construct the filters for the query set
+
+        :return: filters for the query set
+        :rtype: dict
+        """
 
         editing_model_creator = get_creator_from_qdjango_layer(self.constraint.editing_layer)
         editing_geom_field = [k for k,v in editing_model_creator.django_model_fields.items() if isinstance(v, GeometryField)][0]
@@ -146,6 +149,14 @@ class ConstraintRule(models.Model):
         filters = {
             filter_key: constraint_geometry
         }
+        return filters
+
+    def get_query_set(self):
+        """Returns the query set from the editing layer filtered by the rule"""
+
+        filters = self.get_filters()
+        constraint_geometry = filters.values()[0]
+        editing_model_creator = get_creator_from_qdjango_layer(self.constraint.editing_layer)
         # Apparently, in spatialite:
         # select st_within(st_geomfromtext('point( 9 9)'), st_geomfromtext('multipolygon empty'));
         # returns -1 that is interpreted as TRUE, so we invert the filter to return an empty query set
@@ -170,7 +181,7 @@ class ConstraintRule(models.Model):
         return True
 
     @classmethod
-    def constraints_for_user(cls, user, editing_layer):
+    def get_constraints_for_user(cls, user, editing_layer):
         """Fetch the constraints for a given user and editing layer
 
         :param user: the user
@@ -178,7 +189,7 @@ class ConstraintRule(models.Model):
         :param layer: the editing layer
         :type layer: Layer
         :return: a list of ConstraintRule
-        :rtype: list
+        :rtype: QuerySet
         """
 
         constraints = Constraint.objects.filter(editing_layer=editing_layer)

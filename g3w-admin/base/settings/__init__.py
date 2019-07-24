@@ -42,7 +42,6 @@ if SENTRY:
 
 
 if TESTING:
-    INSTALLED_APPS += ['constraints']
     try:
         from .tests_settings import *
     except ImportError:

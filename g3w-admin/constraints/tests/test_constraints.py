@@ -1,6 +1,18 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+""""Tests for constraints module API
+
+.. note:: This program is free software; you can redistribute it and/or modify
+    it under the terms of the Mozilla Public License 2.0.
+
+"""
+
+__author__ = 'elpaso@itopen.it'
+__date__ = '2019-07-19'
+__copyright__ = 'Copyright 2019, Gis3w'
+
+
 import os
 
 from django.contrib.auth.models import Group as UserGroup
@@ -13,17 +25,6 @@ from constraints.models import *
 from core.models import G3WSpatialRefSys, Group
 from qdjango.models import Project
 from qdjango.utils.data import QgisProject
-
-""""Tests for constraints module API
-
-.. note:: This program is free software; you can redistribute it and/or modify
-    it under the terms of the Mozilla Public License 2.0.
-
-"""
-
-__author__ = 'elpaso@itopen.it'
-__date__ = '2019-07-19'
-__copyright__ = 'Copyright 2019, Gis3w'
 
 
 
