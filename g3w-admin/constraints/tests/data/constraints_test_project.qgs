@@ -5,10 +5,10 @@
   <evaluateDefaultValues active="0"/>
   <layer-tree-group expanded="1" checked="Qt::Checked" name="">
     <customproperties/>
-    <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Checked" id="constraint_layer20190723181916453" source="dbname='/home/ale/dev/python/gis3w/g3w-admin/constraints/tests/data/constraints_test.db' table='constraint_layer'(geom) sql=" name="constraint_layer">
+    <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Checked" id="constraint_layer20190723181916453" source="dbname='/home/ale/dev/python/gis3w/g3w-admin/constraints/tests/data/constraints_test.db' table=&quot;constraint_layer&quot; (geom) sql=" name="constraint_layer">
       <customproperties/>
     </layer-tree-layer>
-    <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Checked" id="editing_layer20190723181842021" source="dbname='/home/ale/dev/python/gis3w/g3w-admin/constraints/tests/data/constraints_test.db' table='editing_layer'(geom) sql=" name="editing_layer">
+    <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Checked" id="editing_layer20190723181842021" source="dbname='/home/ale/dev/python/gis3w/g3w-admin/constraints/tests/data/constraints_test.db' table=&quot;editing_layer&quot; (geom) sql=" name="editing_layer">
       <customproperties/>
     </layer-tree-layer>
   </layer-tree-group>
@@ -16,10 +16,10 @@
   <mapcanvas>
     <units>degrees</units>
     <extent>
-      <xmin>7.1626960885551636</xmin>
-      <ymin>44.73128653429289159</ymin>
-      <xmax>7.5318367135551636</xmax>
-      <ymax>44.90570779448584915</ymax>
+      <xmin>7.16879156223394887</xmin>
+      <ymin>44.71344769991540602</ymin>
+      <xmax>7.53793218723394887</xmax>
+      <ymax>44.88786896010836358</ymax>
     </extent>
     <rotation>0</rotation>
     <projections>1</projections>
@@ -38,6 +38,8 @@
     <rendermaptile>0</rendermaptile>
     <layer_coordinate_transform_info>
       <layer_coordinate_transform destAuthId="EPSG:4326" srcAuthId="EPSG:4326" srcDatumTransform="-1" destDatumTransform="-1" layerid="constraint_layer20190723181916453"/>
+      <layer_coordinate_transform destAuthId="EPSG:4326" srcAuthId="EPSG:4326" srcDatumTransform="-1" destDatumTransform="-1" layerid="memory_20190724151120535"/>
+      <layer_coordinate_transform destAuthId="EPSG:4326" srcAuthId="EPSG:4326" srcDatumTransform="-1" destDatumTransform="-1" layerid="memory_20190724150830492"/>
       <layer_coordinate_transform destAuthId="EPSG:4326" srcAuthId="EPSG:3857" srcDatumTransform="-1" destDatumTransform="-1" layerid="Google20190723181926394"/>
       <layer_coordinate_transform destAuthId="EPSG:4326" srcAuthId="EPSG:4326" srcDatumTransform="-1" destDatumTransform="-1" layerid="editing_layer20190723181842021"/>
     </layer_coordinate_transform_info>
@@ -146,7 +148,7 @@
         <multilineenabled fieldname="" on=""/>
         <selectedonly on=""/>
       </labelattributes>
-      <annotationform></annotationform>
+      <annotationform>.</annotationform>
       <aliases>
         <alias field="pkuid" index="0" name=""/>
         <alias field="name" index="1" name=""/>
@@ -155,13 +157,13 @@
       <excludeAttributesWMS/>
       <excludeAttributesWFS/>
       <attributeactions default="-1"/>
-      <attributetableconfig actionWidgetStyle="dropDown" sortExpression="" sortOrder="4476485">
+      <attributetableconfig actionWidgetStyle="dropDown" sortExpression="" sortOrder="0">
         <columns/>
       </attributetableconfig>
-      <editform></editform>
+      <editform>.</editform>
       <editforminit/>
       <editforminitcodesource>0</editforminitcodesource>
-      <editforminitfilepath></editforminitfilepath>
+      <editforminitfilepath>.</editforminitfilepath>
       <editforminitcode><![CDATA[]]></editforminitcode>
       <featformsuppress>0</featformsuppress>
       <editorlayout>generatedlayout</editorlayout>
@@ -266,7 +268,7 @@
         <multilineenabled fieldname="" on=""/>
         <selectedonly on=""/>
       </labelattributes>
-      <annotationform></annotationform>
+      <annotationform>.</annotationform>
       <aliases>
         <alias field="pkuid" index="0" name=""/>
         <alias field="name" index="1" name=""/>
@@ -274,13 +276,13 @@
       <excludeAttributesWMS/>
       <excludeAttributesWFS/>
       <attributeactions default="-1"/>
-      <attributetableconfig actionWidgetStyle="dropDown" sortExpression="" sortOrder="4476485">
+      <attributetableconfig actionWidgetStyle="dropDown" sortExpression="" sortOrder="0">
         <columns/>
       </attributetableconfig>
-      <editform></editform>
+      <editform>.</editform>
       <editforminit/>
       <editforminitcodesource>0</editforminitcodesource>
-      <editforminitfilepath></editforminitfilepath>
+      <editforminitfilepath>.</editforminitfilepath>
       <editforminitcode><![CDATA[]]></editforminitcode>
       <featformsuppress>0</featformsuppress>
       <editorlayout>generatedlayout</editorlayout>
@@ -327,8 +329,8 @@
       <DegreeFormat type="QString">MU</DegreeFormat>
     </PositionPrecision>
     <WCSUrl type="QString"></WCSUrl>
-    <WMSServiceCapabilities type="bool">false</WMSServiceCapabilities>
     <WMSContactPhone type="QString"></WMSContactPhone>
+    <WMSServiceCapabilities type="bool">false</WMSServiceCapabilities>
     <WMSServiceAbstract type="QString"></WMSServiceAbstract>
     <WMSContactPosition type="QString"></WMSContactPosition>
     <WMSAddWktGeometry type="bool">false</WMSAddWktGeometry>
@@ -354,8 +356,8 @@
     <Digitizing>
       <DefaultSnapToleranceUnit type="int">2</DefaultSnapToleranceUnit>
       <LayerSnappingList type="QStringList">
-        <value>editing_layer20190723181842021</value>
         <value>constraint_layer20190723181916453</value>
+        <value>editing_layer20190723181842021</value>
       </LayerSnappingList>
       <LayerSnappingEnabledList type="QStringList">
         <value>disabled</value>

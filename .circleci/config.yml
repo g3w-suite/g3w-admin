@@ -43,5 +43,8 @@ jobs:
       - run:
           name: Running client tests
           command: docker-compose exec g3w-suite sh -c "cd /code/g3w-admin && python manage.py test client"
+      - run:
+          name: Running constraints tests
+          command: docker-compose exec g3w-suite sh -c "cd /code/g3w-admin && python manage.py test constraints"
 
 
