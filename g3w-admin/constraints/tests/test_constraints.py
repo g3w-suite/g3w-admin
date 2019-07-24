@@ -101,14 +101,14 @@ class ConstraintsTests(TestCase):
             rule2.clean()
 
         # Test constraints for user
-        rules = ConstraintRule.constraints_for_user(self.test_user1, editing_layer)
+        rules = ConstraintRule.get_constraints_for_user(self.test_user1, editing_layer)
         self.assertEqual(len(rules), 1)
         self.assertEqual(rules[0], rule)
 
         # Test the other path with group
         rule3 = ConstraintRule(constraint=constraint, group=self.group, rule='int_f=1')
         rule3.save()
-        rules = ConstraintRule.constraints_for_user(self.test_user2, editing_layer)
+        rules = ConstraintRule.get_constraints_for_user(self.test_user2, editing_layer)
         self.assertEqual(len(rules), 1)
         self.assertEqual(rules[0], rule3)
 
@@ -118,8 +118,8 @@ class ConstraintsTests(TestCase):
             rule4.clean()
 
         # Test we get nothing for the other layer and user
-        rules = ConstraintRule.constraints_for_user(self.test_user3, editing_layer)
-        rules = ConstraintRule.constraints_for_user(self.test_user2, constraint_layer)
+        rules = ConstraintRule.get_constraints_for_user(self.test_user3, editing_layer)
+        rules = ConstraintRule.get_constraints_for_user(self.test_user2, constraint_layer)
         self.assertEqual(len(rules), 0)
 
 
