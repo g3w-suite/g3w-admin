@@ -7,6 +7,7 @@ jobs:
       only:
         - dev
         - dev-circleci
+        - constraints
     steps:
       - checkout
       #- run: git submodule sync
