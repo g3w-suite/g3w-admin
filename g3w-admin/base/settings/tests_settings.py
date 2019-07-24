@@ -19,6 +19,7 @@ import os
 # the actual testdata directory.
 G3WADMIN_OWS_TESTDATA_DIR = ''
 
+SPATIALITE_LIBRARY_PATH = '/usr/lib/x86_64-linux-gnu/mod_spatialite.so'
 
 # Celery
 CELERY_ALWAYS_EAGER = True
