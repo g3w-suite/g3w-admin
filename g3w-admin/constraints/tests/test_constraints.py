@@ -288,7 +288,7 @@ class ConstraintsTests(TestCase):
         self.assertEqual(geom, new_geom)
 
         # Change the geometry outside the allowed rule
-        payload = {"add":[],"delete":[],"lockids":[{"featureid":"1","lockid":"%s" % lock_id }],"relations":{},"update":[{"geometry":{"coordinates":[10, 55],"type":"Point"},"id":1,"properties":{"name":"bagnolo 1 constraint break"},"type":"Feature"}]}
+        payload = {"add":[],"delete":[],"lockids":[{"featureid":"1","lockid":"%s" % lock_id }],"relations":{},"update":[{"geometry":{"coordinates":[10, 55],"type":"Point"},"id":1,"properties":{"name":"constraint violation"},"type":"Feature"}]}
 
         # Verify that the update has failed
         response = client.post('/vector/api/commit/qdjango/%s/%s/' % (editing_layer.project_id, editing_layer.qgs_layer_id), payload, format='json')
@@ -307,5 +307,43 @@ class ConstraintsTests(TestCase):
         # Verify geom was NOT changed
         geom = [f['geometry']['coordinates'] for f in jcontent['vector']['data']['features'] if f['id'] == 1][0]
         self.assertEqual(geom, new_geom)
+
+    @unittest.skipIf(not has_editing, "Skipping test because editing module is not installed")
+    def test_editing_view_insert_data(self):
+        """Test constraint filter for editing API - INSERT"""
+
+        client = APIClient()
+        editing_layer = Layer.objects.get(name='editing_layer')
+        self.assertTrue(client.login(username=self.test_user2.username, password=self.test_user2.username))
+        assign_perm('change_layer', self.test_user2, editing_layer)
+        self.assertTrue(self.test_user2.has_perm('qdjango.change_layer', editing_layer))
+
+        # Now add a constraint for user2
+        constraint_layer = Layer.objects.get(name='constraint_layer')
+        constraint = Constraint(editing_layer=editing_layer, constraint_layer=constraint_layer)
+        constraint.save()
+        rule = ConstraintRule(constraint=constraint, user=self.test_user2, rule='name=\'bagnolo\'')
+        rule.save()
+
+        # Retrieve the data
+        response = client.post('/vector/api/editing/qdjango/%s/%s/' % (editing_layer.project_id, editing_layer.qgs_layer_id), {}, format='json')
+        self.assertEqual(response.status_code, 200)
+        jcontent = json.loads(response.content)
+        fids = [int(f['id']) for f in jcontent['vector']['data']['features']]
+        # All fids should be here
+        self.assertEqual(fids, [1, 2])
+
+        # Get lock id for fid 1
+        lock_id = [l['lockid'] for l in jcontent['featurelocks'] if l['featureid'] == '1'][0]
+
+        # Add the geometry outside the allowed rule
+        new_geom = [10, 55]
+        payload = {"add":[{"geometry":{"coordinates": new_geom,"type":"Point"},"id": "_new_1564320704661", "properties":{"name":"constraint violation"},"type":"Feature"}],"delete":[],"lockids":[{"featureid":"1","lockid":"%s" % lock_id }],"relations":{},"update":[]}
+
+        # Verify that the update has failed
+        response = client.post('/vector/api/commit/qdjango/%s/%s/' % (editing_layer.project_id, editing_layer.qgs_layer_id), payload, format='json')
+        self.assertEqual(response.status_code, 200)
+        jcontent = json.loads(response.content)
+        self.assertEqual(jcontent["errors"], "Constraint validation failed for geometry: POINT (10 55)")
 
 

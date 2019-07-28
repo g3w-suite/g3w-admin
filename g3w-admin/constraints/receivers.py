@@ -28,7 +28,7 @@ def validate_constraint(**kwargs):
     kwargs: ["layer_id", "mode", "data", "user"]
     """
     mode = kwargs['mode']
-    if mode not in ('update',):
+    if mode not in ('update', 'add'):
         return
 
     editing_layer = Layer.objects.get(pk=kwargs['layer'])
