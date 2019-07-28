@@ -92,6 +92,10 @@ class ConstraintsTests(TestCase):
         with self.assertRaises(ValidationError) as ex:
             Constraint(editing_layer=constraint_layer, constraint_layer=editing_layer).clean()
 
+        # Check self constraint
+        with self.assertRaises(ValidationError) as ex:
+            Constraint(editing_layer=constraint_layer, constraint_layer=constraint_layer).clean()
+
         rule = ConstraintRule(constraint=constraint, user=self.test_user1, rule='int_f=1')
         rule.save()
 

@@ -49,6 +49,9 @@ class Constraint(models.Model):
            raise ValidationError(
                 _('Constraint layer geometry type must be Polygon or MultiPolygon'))
 
+        if self.editing_layer ==  self.constraint_layer:
+            raise ValidationError(
+                _('Editing and constraints layer cannot be the same layer'))
 
     def __str__(self):
         return "%s, %s" % (self.editing_layer, self.constraint_layer)
