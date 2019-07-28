@@ -21,8 +21,9 @@ class ConstraintsFilter(BaseFilterBackend):
 
     def filter_queryset(self, request, queryset, view):
         """
-        Return a filtered queryset applying constraints.
+        Return a filtered queryset applying Constraints rules.
         """
+
         if view.mode_call == 'editing':
             rules = ConstraintRule.get_constraints_for_user(request.user, view.layer)
             for rule in rules:

@@ -14,23 +14,38 @@ __copyright__ = 'Copyright 2019, Gis3w'
 
 
 import os
+import json
+import shutil
 
 from django.contrib.auth.models import Group as UserGroup
 from django.core.exceptions import ValidationError
 from django.core.files import File
 from django.db import IntegrityError, transaction
 from django.test import TestCase, override_settings
-
+import unittest
 from constraints.models import *
-from core.models import G3WSpatialRefSys, Group
+from constraints.filters import ConstraintsFilter
+from core.models import G3WSpatialRefSys, Group as CoreGroup
 from qdjango.models import Project
 from qdjango.utils.data import QgisProject
 
+from rest_framework.test import APIClient
+from guardian.shortcuts import assign_perm
+
+
+has_editing = False
+try:
+    from editing.api.views import QGISEditingLayerVectorView
+    has_editing = True
+except:
+    pass
 
 
 CURRENT_PATH = os.getcwd()
 TEST_BASE_PATH = '/constraints/tests/data/'
 DATASOURCE_PATH = '{}{}'.format(CURRENT_PATH, TEST_BASE_PATH)
+QGS_DB = 'constraints_test.db'
+QGS_DB_BACKUP = 'constraints_test_backup.db'
 QGS_FILE = 'constraints_test_project.qgs'
 
 
@@ -51,14 +66,20 @@ class ConstraintsTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.test_user1 = User.objects.create_user(username='user01', password='user01')
+
+        # Editor level 2
         cls.test_user2 = User.objects.create_user(username='user02', password='user02')
-        cls.test_user3 = User.objects.create_user(username='user03', password='user03')
-        cls.group = UserGroup.objects.all()[0]
+        cls.group = UserGroup.objects.get(name='Editor Level 2')
         cls.test_user2.groups.add(cls.group)
         cls.test_user2.save()
+
+        cls.test_user3 = User.objects.create_user(username='user03', password='user03')
+        shutil.copy('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_DB_BACKUP), '{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_DB))
         qgis_project_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_FILE), 'r'))
-        cls.project_group = Group(name='Group1', title='Group1', header_logo_img='', srid=G3WSpatialRefSys.objects.get(auth_srid=4326))
+        cls.project_group = CoreGroup(name='Group1', title='Group1', header_logo_img='', srid=G3WSpatialRefSys.objects.get(auth_srid=4326))
         cls.project_group.save()
+        cls.project_group.addPermissionsToEditor(cls.test_user2)
+
         cls.project = QgisProject(qgis_project_file)
         cls.project.title = 'A project'
         cls.project.group = cls.project_group
@@ -189,3 +210,102 @@ class ConstraintsTests(TestCase):
         rule = ConstraintRule(constraint=constraint, user=self.test_user1, rule='int_f=999')
         qs = rule.get_query_set()
         self.assertEqual(list(qs.values_list('name', flat=True)), [])
+
+    @unittest.skipIf(not has_editing, "Skipping test because editing module is not installed")
+    def test_editing_view_retrieve_data(self):
+        """Test constraint filter for editing API - SELECT"""
+
+        client = APIClient()
+        editing_layer = Layer.objects.get(name='editing_layer')
+        self.assertTrue(client.login(username=self.test_user2.username, password=self.test_user2.username))
+        assign_perm('change_layer', self.test_user2, editing_layer)
+        self.assertTrue(self.test_user2.has_perm('qdjango.change_layer', editing_layer))
+        response = client.post('/vector/api/editing/qdjango/%s/%s/' % (editing_layer.project_id, editing_layer.qgs_layer_id), {}, format='json')
+        self.assertEqual(response.status_code, 200)
+        jcontent = json.loads(response.content)
+        fids = [int(f['id']) for f in jcontent['vector']['data']['features']]
+        # All fids should be here
+        self.assertEqual(fids, [1, 2, 3, 4])
+
+        # Now add a constraint for user2
+        constraint_layer = Layer.objects.get(name='constraint_layer')
+        constraint = Constraint(editing_layer=editing_layer, constraint_layer=constraint_layer)
+        constraint.save()
+        rule = ConstraintRule(constraint=constraint, user=self.test_user2, rule='name=\'bagnolo\'')
+        rule.save()
+        response = client.post('/vector/api/editing/qdjango/%s/%s/' % (editing_layer.project_id, editing_layer.qgs_layer_id), {}, format='json')
+        self.assertEqual(response.status_code, 200)
+        jcontent = json.loads(response.content)
+        fids = [int(f['id']) for f in jcontent['vector']['data']['features']]
+        # All fids should be here
+        self.assertEqual(fids, [1, 2])
+
+    @unittest.skipIf(not has_editing, "Skipping test because editing module is not installed")
+    def test_editing_view_update_data(self):
+        """Test constraint filter for editing API - UPDATE"""
+
+        client = APIClient()
+        editing_layer = Layer.objects.get(name='editing_layer')
+        self.assertTrue(client.login(username=self.test_user2.username, password=self.test_user2.username))
+        assign_perm('change_layer', self.test_user2, editing_layer)
+        self.assertTrue(self.test_user2.has_perm('qdjango.change_layer', editing_layer))
+
+        # Now add a constraint for user2
+        constraint_layer = Layer.objects.get(name='constraint_layer')
+        constraint = Constraint(editing_layer=editing_layer, constraint_layer=constraint_layer)
+        constraint.save()
+        rule = ConstraintRule(constraint=constraint, user=self.test_user2, rule='name=\'bagnolo\'')
+        rule.save()
+
+        # Retrieve the data
+        response = client.post('/vector/api/editing/qdjango/%s/%s/' % (editing_layer.project_id, editing_layer.qgs_layer_id), {}, format='json')
+        self.assertEqual(response.status_code, 200)
+        jcontent = json.loads(response.content)
+        fids = [int(f['id']) for f in jcontent['vector']['data']['features']]
+        # All fids should be here
+        self.assertEqual(fids, [1, 2])
+
+        # Get lock id for fid 1
+        lock_id = [l['lockid'] for l in jcontent['featurelocks'] if l['featureid'] == '1'][0]
+
+        # Change the geometry inside the allowed rule
+        new_geom = [7.347181, 44.761425]
+        payload = {"add":[],"delete":[],"lockids":[{"featureid":"1","lockid":"%s" % lock_id }],"relations":{},"update":[{"geometry":{"coordinates": new_geom,"type":"Point"},"id":1,"properties":{"name":"bagnolo 1"},"type":"Feature"}]}
+
+        # Verify that the update was successful
+        response = client.post('/vector/api/commit/qdjango/%s/%s/' % (editing_layer.project_id, editing_layer.qgs_layer_id), payload, format='json')
+        self.assertEqual(response.status_code, 200)
+        # Retrieve the data
+        response = client.post('/vector/api/editing/qdjango/%s/%s/' % (editing_layer.project_id, editing_layer.qgs_layer_id), {}, format='json')
+        self.assertEqual(response.status_code, 200)
+        jcontent = json.loads(response.content)
+        fids = [int(f['id']) for f in jcontent['vector']['data']['features']]
+        # All fids should be here
+        self.assertEqual(fids, [1, 2])
+
+        # Verify geom was changed
+        geom = [f['geometry']['coordinates'] for f in jcontent['vector']['data']['features'] if f['id'] == 1][0]
+        self.assertEqual(geom, new_geom)
+
+        # Change the geometry outside the allowed rule
+        payload = {"add":[],"delete":[],"lockids":[{"featureid":"1","lockid":"%s" % lock_id }],"relations":{},"update":[{"geometry":{"coordinates":[10, 55],"type":"Point"},"id":1,"properties":{"name":"bagnolo 1 constraint break"},"type":"Feature"}]}
+
+        # Verify that the update has failed
+        response = client.post('/vector/api/commit/qdjango/%s/%s/' % (editing_layer.project_id, editing_layer.qgs_layer_id), payload, format='json')
+        self.assertEqual(response.status_code, 200)
+        jcontent = json.loads(response.content)
+        self.assertEqual(jcontent["errors"], "Constraint validation failed for geometry: POINT (10 55)")
+
+        # Retrieve the data
+        response = client.post('/vector/api/editing/qdjango/%s/%s/' % (editing_layer.project_id, editing_layer.qgs_layer_id), {}, format='json')
+        self.assertEqual(response.status_code, 200)
+        jcontent = json.loads(response.content)
+        fids = [int(f['id']) for f in jcontent['vector']['data']['features']]
+        # All fids should be here
+        self.assertEqual(fids, [1, 2])
+
+        # Verify geom was NOT changed
+        geom = [f['geometry']['coordinates'] for f in jcontent['vector']['data']['features'] if f['id'] == 1][0]
+        self.assertEqual(geom, new_geom)
+
+
