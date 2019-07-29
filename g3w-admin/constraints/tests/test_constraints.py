@@ -63,6 +63,12 @@ class ConstraintsTests(TestCase):
                 'G3WGeneralDataSuite.json'
                 ]
 
+    def setUp(self):
+        """Restore test database"""
+
+        shutil.copy('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_DB_BACKUP), '{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_DB))
+
+
     @classmethod
     def setUpTestData(cls):
         cls.test_user1 = User.objects.create_user(username='user01', password='user01')
@@ -74,12 +80,11 @@ class ConstraintsTests(TestCase):
         cls.test_user2.save()
 
         cls.test_user3 = User.objects.create_user(username='user03', password='user03')
-        shutil.copy('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_DB_BACKUP), '{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_DB))
-        qgis_project_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_FILE), 'r'))
         cls.project_group = CoreGroup(name='Group1', title='Group1', header_logo_img='', srid=G3WSpatialRefSys.objects.get(auth_srid=4326))
         cls.project_group.save()
         cls.project_group.addPermissionsToEditor(cls.test_user2)
 
+        qgis_project_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_FILE), 'r'))
         cls.project = QgisProject(qgis_project_file)
         cls.project.title = 'A project'
         cls.project.group = cls.project_group
@@ -145,6 +150,15 @@ class ConstraintsTests(TestCase):
         # Test we get nothing for the other layer and user
         rules = ConstraintRule.get_constraints_for_user(self.test_user3, editing_layer)
         rules = ConstraintRule.get_constraints_for_user(self.test_user2, constraint_layer)
+        self.assertEqual(len(rules), 0)
+
+        # Test inactive constraints for user
+        constraint.active = False
+        constraint.save()
+        rules = ConstraintRule.get_constraints_for_user(self.test_user2, editing_layer)
+        self.assertEqual(len(rules), 1)
+        self.assertEqual(rules[0], rule3)
+        rules = ConstraintRule.get_active_constraints_for_user(self.test_user2, editing_layer)
         self.assertEqual(len(rules), 0)
 
 
@@ -240,6 +254,17 @@ class ConstraintsTests(TestCase):
         # All fids should be here
         self.assertEqual(fids, [1, 2])
 
+        # Test with inactive constraint
+        constraint.active = False
+        constraint.save()
+        response = client.post('/vector/api/editing/qdjango/%s/%s/' % (editing_layer.project_id, editing_layer.qgs_layer_id), {}, format='json')
+        self.assertEqual(response.status_code, 200)
+        jcontent = json.loads(response.content)
+        fids = [int(f['id']) for f in jcontent['vector']['data']['features']]
+        # All fids should be here
+        self.assertEqual(fids, [1, 2, 3, 4])
+
+
     @unittest.skipIf(not has_editing, "Skipping test because editing module is not installed")
     def test_editing_view_update_data(self):
         """Test constraint filter for editing API - UPDATE"""
@@ -308,6 +333,19 @@ class ConstraintsTests(TestCase):
         geom = [f['geometry']['coordinates'] for f in jcontent['vector']['data']['features'] if f['id'] == 1][0]
         self.assertEqual(geom, new_geom)
 
+        # Test with inactive constraint
+        constraint.active = False
+        constraint.save()
+        payload = {"add":[],"delete":[],"lockids":[{"featureid":"1","lockid":"%s" % lock_id }],"relations":{},"update":[{"geometry":{"coordinates":[10, 55],"type":"Point"},"id":1,"properties":{"name":"constraint violation"},"type":"Feature"}]}
+        response = client.post('/vector/api/commit/qdjango/%s/%s/' % (editing_layer.project_id, editing_layer.qgs_layer_id), payload, format='json')
+        self.assertEqual(response.status_code, 200)
+        # Retrieve the data
+        response = client.post('/vector/api/editing/qdjango/%s/%s/' % (editing_layer.project_id, editing_layer.qgs_layer_id), {}, format='json')
+        self.assertEqual(response.status_code, 200)
+        jcontent = json.loads(response.content)
+        geom = [f['geometry']['coordinates'] for f in jcontent['vector']['data']['features'] if f['id'] == 1][0]
+        self.assertEqual(geom, [10, 55])
+
     @unittest.skipIf(not has_editing, "Skipping test because editing module is not installed")
     def test_editing_view_insert_data(self):
         """Test constraint filter for editing API - INSERT"""
@@ -345,5 +383,25 @@ class ConstraintsTests(TestCase):
         self.assertEqual(response.status_code, 200)
         jcontent = json.loads(response.content)
         self.assertEqual(jcontent["errors"], "Constraint validation failed for geometry: POINT (10 55)")
+
+        # Test with inactive constraint
+        constraint.active = False
+        constraint.save()
+        # Add the geometry outside the allowed rule
+        new_geom = [10, 55]
+        payload = {"add":[{"geometry":{"coordinates": new_geom,"type":"Point"},"id": "_new_1564320704661", "properties":{"name":"constraint violation"},"type":"Feature"}],"delete":[],"lockids":[{"featureid":"1","lockid":"%s" % lock_id }],"relations":{},"update":[]}
+
+        # Verify that the update was successful
+        response = client.post('/vector/api/commit/qdjango/%s/%s/' % (editing_layer.project_id, editing_layer.qgs_layer_id), payload, format='json')
+        self.assertEqual(response.status_code, 200)
+        jcontent = json.loads(response.content)
+        new_fid = jcontent['response']['new'][0]['id']
+        # Retrieve the data
+        response = client.post('/vector/api/editing/qdjango/%s/%s/' % (editing_layer.project_id, editing_layer.qgs_layer_id), {}, format='json')
+        self.assertEqual(response.status_code, 200)
+        jcontent = json.loads(response.content)
+        geom = [f['geometry']['coordinates'] for f in jcontent['vector']['data']['features'] if f['id'] == new_fid][0]
+        self.assertEqual(geom, [10, 55])
+
 
 

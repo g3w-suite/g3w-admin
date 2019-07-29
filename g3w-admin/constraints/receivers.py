@@ -24,7 +24,7 @@ from constraints.models import ConstraintRule
 
 @receiver(post_save_maplayer)
 def validate_constraint(**kwargs):
-    """Checks whether the instance validates the constraints in commit mode
+    """Checks whether the instance validates the active constraints in commit mode
     kwargs: ["layer_id", "mode", "data", "user"]
     """
     mode = kwargs['mode']
@@ -38,7 +38,7 @@ def validate_constraint(**kwargs):
     geom_type = kwargs['data']['feature']['geometry']['type']
     geom_class = getattr(geos, geom_type)
 
-    for rule in ConstraintRule.get_constraints_for_user(user, editing_layer):
+    for rule in ConstraintRule.get_active_constraints_for_user(user, editing_layer):
         allowed_geom, __ = rule.get_constraint_geometry()
         geom = geom_class(coords)
         geom.set_srid(allowed_geom.srid)

@@ -203,3 +203,24 @@ class ConstraintRule(models.Model):
             return cls.objects.filter(Q(constraint__in=constraints), Q(user=user)|Q(group__in=user_groups))
         else:
             return cls.objects.filter(constraint__in=constraints, user=user)
+
+    @classmethod
+    def get_active_constraints_for_user(cls, user, editing_layer):
+        """Fetch the active constraints for a given user and editing layer
+
+        :param user: the user
+        :type user: User
+        :param layer: the editing layer
+        :type layer: Layer
+        :return: a list of ConstraintRule
+        :rtype: QuerySet
+        """
+
+        constraints = Constraint.objects.filter(editing_layer=editing_layer, active=True)
+        if not constraints:
+            return []
+        user_groups = user.groups.all()
+        if user_groups.count():
+            return cls.objects.filter(Q(constraint__in=constraints), Q(user=user)|Q(group__in=user_groups))
+        else:
+            return cls.objects.filter(constraint__in=constraints, user=user)
