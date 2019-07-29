@@ -84,6 +84,7 @@ class ConstraintsTests(TestCase):
         cls.project_group.save()
         cls.project_group.addPermissionsToEditor(cls.test_user2)
 
+        shutil.copy('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_DB_BACKUP), '{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_DB))
         qgis_project_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_FILE), 'r'))
         cls.project = QgisProject(qgis_project_file)
         cls.project.title = 'A project'
