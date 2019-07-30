@@ -38,6 +38,19 @@ class Constraint(models.Model):
     constraint_layer = models.ForeignKey(
         Layer, on_delete=models.CASCADE, related_name='constraint_layer')
 
+    @property
+    def editing_layer_qgs_layer_id(self):
+        """Return the QGIS layer id for editing layer"""
+
+        return self.editing_layer.qgs_layer_id
+
+    @property
+    def constraint_layer_qgs_layer_id(self):
+        """Return the QGIS layer id for constraint layer"""
+
+        return self.constraint_layer.qgs_layer_id
+
+
     def clean(self):
         """Make sure the layer is either PG or SL and check that constraint layer is Polygon"""
 
@@ -56,6 +69,7 @@ class Constraint(models.Model):
     def __str__(self):
         return "%s, %s" % (self.editing_layer, self.constraint_layer)
 
+
     class Meta:
         managed = True
         verbose_name = _('Layer constraint')
@@ -73,6 +87,12 @@ class ConstraintRule(models.Model):
         Group, on_delete=models.CASCADE, blank=True, null=True)
     rule = models.TextField(_("SQL WHERE clause for the constraint layer"), max_length=255)
 
+    @property
+    def active(self):
+        """The rule is active if the constraint is"""
+
+        return self.constraint.active
+
     def __str__(self):
         return "%s, %s: %s" % (self.constraint, self.user_or_group, self.rule)
 
@@ -80,7 +100,7 @@ class ConstraintRule(models.Model):
         managed = True
         verbose_name = _('Constraint rule')
         verbose_name_plural = _('Constraint rules')
-        unique_together = (('constraint', 'user'), ('constraint', 'group'))
+        unique_together = (('constraint', 'user', 'rule'), ('constraint', 'group', 'rule'))
 
     @property
     def user_or_group(self):
@@ -101,7 +121,10 @@ class ConstraintRule(models.Model):
             raise ValidationError(
                 _('You must define a user OR a group'))
 
-        # TODO: SQL validator (it probably goes into an independent method validate_sql to be reused in the API)
+        sql_valid, ex = self.validate_sql()
+        if not sql_valid:
+            raise ValidationError(
+                _('There is an error in the SQL rule where condition: %s' % ex ))
 
     def get_constraint_geometry(self):
         """Returns the geometry from the constraint layer and rule
@@ -172,16 +195,16 @@ class ConstraintRule(models.Model):
     def validate_sql(self):
         """Checks if the rule can be executed without errors
 
-        :return: True if rule has valid SQL
-        :rtype: boolean
+        :return: (True, None) if rule has valid SQL, (False, ValidationError) if it is not valid
+        :rtype: tuple (bool, ValidationError)
         """
 
         try:
             self.get_query_set()
         except Exception as ex:
             logger.debug('Validate SQL failed: %s' % ex)
-            return False
-        return True
+            return False, ex
+        return True, None
 
     @classmethod
     def get_constraints_for_user(cls, user, editing_layer):

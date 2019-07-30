@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-""""Tests for constraints module API
+""""Tests for constraints module models
 
 .. note:: This program is free software; you can redistribute it and/or modify
     it under the terms of the Mozilla Public License 2.0.
@@ -49,13 +49,20 @@ QGS_DB_BACKUP = 'constraints_test_backup.db'
 QGS_FILE = 'constraints_test_project.qgs'
 
 
+
 @override_settings(CACHES = {
-    'default': {
+        'default': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
         'LOCATION': 'some',
-    }
-}, DATASOURCE_PATH=DATASOURCE_PATH)
-class ConstraintsTests(TestCase):
+        }
+    },
+    DATASOURCE_PATH=DATASOURCE_PATH,
+    G3WADMIN_LOCAL_MORE_APPS=[
+    'editing',
+    'constraints',
+])
+class ConstraintsTestsBase(TestCase):
+    """Base class for Constraint tests"""
 
     fixtures = ['BaseLayer.json',
                 'G3WMapControls.json',
@@ -97,6 +104,9 @@ class ConstraintsTests(TestCase):
 
         Constraint.objects.all().delete()
 
+
+class ConstraintsModelTests(ConstraintsTestsBase):
+    """Constraints model tests"""
 
     def test_create_constraint(self):
         """Test constraints creation"""
@@ -196,10 +206,10 @@ class ConstraintsTests(TestCase):
         constraint = Constraint(editing_layer=editing_layer, constraint_layer=constraint_layer)
         constraint.save()
         rule = ConstraintRule(constraint=constraint, user=self.test_user1, rule='int_f=1')
-        self.assertTrue(rule.validate_sql())
+        self.assertTrue(rule.validate_sql()[0])
 
         rule.rule = 'not_exists=999'
-        self.assertFalse(rule.validate_sql())
+        self.assertFalse(rule.validate_sql()[0])
 
     def test_get_query_set(self):
         """Test get query set"""
