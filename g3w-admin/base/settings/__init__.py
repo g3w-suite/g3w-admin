@@ -5,7 +5,7 @@ from .base_layout_settings import *
 from .base_geo_settings import *
 from .local_settings import *
 
-# Determine if we are running a test and import the tests.py at the the end of
+# Determine if we are running a test and import the tests_settings.py at the the end of
 # this init
 import sys
 TESTING = len(sys.argv) > 1 and sys.argv[1] == 'test'

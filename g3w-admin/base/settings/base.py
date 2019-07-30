@@ -73,7 +73,7 @@ G3WADMIN_APPS = [
 ]
 
 G3WADMIN_PROJECT_APPS_BASE = [
-    'qdjango'
+    'qdjango',
 ]
 
 G3WADMIN_PROJECT_APPS = []

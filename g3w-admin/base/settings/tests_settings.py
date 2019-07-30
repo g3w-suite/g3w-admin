@@ -24,3 +24,8 @@ SPATIALITE_LIBRARY_PATH = '/usr/lib/x86_64-linux-gnu/mod_spatialite.so'
 # Celery
 CELERY_ALWAYS_EAGER = True
 TEST_RUNNER = 'djcelery.contrib.test_runner.CeleryTestSuiteRunner'
+
+from django.conf import settings
+
+settings.G3WADMIN_LOCAL_MORE_APPS += ['constraints',]
+settings.INSTALLED_APPS += ['constraints',]
