@@ -15,7 +15,7 @@ from .validators import (
     UniqueLayername,
     CheckMaxExtent
 )
-from .exceptions import QgisProjectException, QgisProjectLayerException
+from .exceptions import QgisProjectException
 from collections import OrderedDict
 import os
 import re
