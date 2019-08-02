@@ -114,13 +114,23 @@ class QgisProjectTest(TestCase):
 
     def test_dataSourceToDict(self):
 
-        res = datasource2dict("dbname='data_testing' host=web-gis.postgres.database.azure.com port=5432 sslmode=require user='testing@webgis' password='#\'$%?@^&rX43#/' srid=4326 type=Point checkPrimaryKeyUnicity='1' table=\"public\".\"net_datacenter_hyperscale_v0.1_ch_190321\" (geom) sql=")
+        res = datasource2dict("dbname='data_testing' host=web-gis.postgres.database.azure.com port=5432 sslmode=require user='testing@webgis' password='#\\\'$%?@^&rX43#/' srid=4326 type=Point checkPrimaryKeyUnicity='1' table=\"public\".\"net_datacenter_hyperscale_v0.1_ch_190321\" (geom) sql=")
 
         self.assertEqual(res['checkPrimaryKeyUnicity'], '1')
         self.assertEqual(res['dbname'], 'data_testing')
         self.assertEqual(res['host'], 'web-gis.postgres.database.azure.com')
         self.assertEqual(res['port'], '5432')
         self.assertEqual(res['sslmode'], 'require')
-        self.assertEqual(res['password'], '#\'$%?@^&rX43#/')
+        self.assertEqual(res['password'], '#\\\'$%?@^&rX43#/')
         self.assertEqual(res['user'], 'testing@webgis')
         self.assertEqual(res['table'], "\"public\".\"net_datacenter_hyperscale_v0.1_ch_190321\"")
+
+        res = datasource2dict('dbname=\'data_testing\' user=\'xxx\' password=\'xxx\' host=localhost port=5432 sslmode=disable key=\'id\' srid=4326 type=LineStringZ checkPrimaryKeyUnicity=\'0\' table="centurylink"."Fbr Chain: HY.OS.001.0001..212.000.31..16 B -- PLTN" (geom) sql=')
+        self.assertEqual(res['table'], "\"centurylink\".\"Fbr Chain: HY.OS.001.0001..212.000.31..16 B -- PLTN\"")
+        self.assertEqual(res['checkPrimaryKeyUnicity'], '0')
+        self.assertEqual(res['dbname'], 'data_testing')
+        self.assertEqual(res['host'], 'localhost')
+        self.assertEqual(res['port'], '5432')
+        self.assertEqual(res['sslmode'], 'disable')
+        self.assertEqual(res['password'], 'xxx')
+        self.assertEqual(res['user'], 'xxx')
