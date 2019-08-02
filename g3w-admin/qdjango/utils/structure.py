@@ -19,11 +19,11 @@ from .exceptions import QgisProjectLayerException
 
 
 # "schema"."table"
-RE1 = re.compile(r'"([A-z0-9_\.]+)"\."([A-z0-9_\.]+)"')
+RE1 = re.compile(r'"([^"]+)"\."([^"]+)"')
 # schema.table
-RE2 = re.compile(r'([A-z0-9_]+)\.([A-z0-9_]+)')
+RE2 = re.compile(r'([^"\.]+)\.(.+)')
 # "table" or table
-RE3 = re.compile(r'"?([A-z0-9_\.]+)"?')
+RE3 = re.compile(r'"?([^"]+)"?')
 
 def get_schema_table(datasource_table):
     """Returns unquoted schema and table names

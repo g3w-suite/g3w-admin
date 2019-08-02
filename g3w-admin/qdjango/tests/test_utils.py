@@ -106,6 +106,7 @@ class QgisProjectTest(TestCase):
             ('"tab.le"', ('public', 'tab.le')),
             ('"table"', ('public', 'table')),
             ('"public"."net_datacenter_hyperscale_v0.1_ch_190321"', ('public', 'net_datacenter_hyperscale_v0.1_ch_190321')),
+            ('"link"."Fbr Chain: HY.OS.001.0001..212.000.31..16 B -- PLTN"', ('link', 'Fbr Chain: HY.OS.001.0001..212.000.31..16 B -- PLTN'))
         ]
 
         for check in checks:
