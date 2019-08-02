@@ -19,11 +19,11 @@ from .exceptions import QgisProjectLayerException
 
 
 # "schema"."table"
-RE1 = re.compile(r'"([A-z0-9_\.]+)"\."([A-z0-9_\.]+)"')
+RE1 = re.compile(r'"([^"]+)"\."([^"]+)"')
 # schema.table
-RE2 = re.compile(r'([A-z0-9_]+)\.([A-z0-9_]+)')
+RE2 = re.compile(r'([^"\.]+)\.(.+)')
 # "table" or table
-RE3 = re.compile(r'"?([A-z0-9_\.]+)"?')
+RE3 = re.compile(r'"?([^"]+)"?')
 
 def get_schema_table(datasource_table):
     """Returns unquoted schema and table names
@@ -55,13 +55,14 @@ def datasource2dict(datasource):
     # before get sql
     datasource, sql = datasource.split('sql=')
     #datalist = datasource.split(' ')
-    datalist = re.findall(r'([A-z][A-z0-9-_]+=[\'"]?[#$^?+=!*()\'-/@%&\w\."]+[\'"]?)', datasource)
-    for item in datalist:
+
+    keys = re.findall(r'([A-z][A-z0-9-_]+)=[\'"]?[#$^?+=!*()\'-/@%&\w\."]+[\'"]?', datasource)
+    for k in keys:
         try:
-            key, value = item.split('=')
-            datasourceDict[key] = value.strip('\'')
-        except ValueError:
-            pass
+            datasourceDict[k] = re.findall(r'%s=([^"\'][#$^?+=!*()\'-/@%%&\w\.]+)' % k, datasource)[0]
+        except:
+            # If I reincarnate as a human, I'll choose to be a farmer.
+            datasourceDict[k] = re.findall(r'%s=((?:["\'](?:(?:[^\"\']|\\\')+)["\'])(?:\.["\'](?:(?:[^\"\']|\\\')+)["\'])?)\s' % k, datasource)[0].strip('\'')
 
     # add sql
     datasourceDict['sql'] = '{}'.format(unicode2ascii(sql))
