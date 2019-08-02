@@ -110,7 +110,7 @@ class QdjangoProjectUpdateView(QdjangoProjectCUViewMixin, G3WGroupViewMixin, G3W
 
 class QdjangoProjectFastUpdateView(QdjangoProjectCUViewMixin, G3WGroupViewMixin, G3WRequestViewMixin, View):
     """
-    View fro fast chanbge project by ajaxfiler
+    View for fast change project by ajaxfiler
     """
 
     @method_decorator(permission_required('qdjango.change_project', (Project, 'slug', 'slug'), raise_exception=True))
