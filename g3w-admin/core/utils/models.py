@@ -74,9 +74,10 @@ def create_model(name, fields=None, app_label='', module='', db='default', optio
     return model
 
 
-def create_geomodel_from_qdjango_layer(layer, app_label='core'):
+
+def get_creator_from_qdjango_layer(layer, app_label='core'):
     """
-    Create dynamic django geo model
+    Returns the creator instance for a layer
     """
 
     CREATOR_CLASSES = {
@@ -91,6 +92,16 @@ def create_geomodel_from_qdjango_layer(layer, app_label='core'):
 
     creator = CREATOR_CLASSES[layer.layer_type](layer, datasource, app_label)
 
+    return creator
+
+
+
+def create_geomodel_from_qdjango_layer(layer, app_label='core'):
+    """
+    Create dynamic django geo model
+    """
+
+    creator = get_creator_from_qdjango_layer(layer, app_label)
     return creator.geo_model, creator.using, creator.geometry_type
 
 
@@ -250,10 +261,14 @@ class G3WChoices(Choices):
         self._store((key, key, value), self._triples, self._doubles)
 
 
-# CLASES FOR BUILD MODEL AT RUNTIME
+
 class CreateGeomodel(object):
+    """Build a model at runtime
+    """
 
     def __init__(self, layer, datasource, app_label='core'):
+        """Create a model from a layer and a datasource
+        """
 
         self.app_label = app_label
         self.layer = layer
