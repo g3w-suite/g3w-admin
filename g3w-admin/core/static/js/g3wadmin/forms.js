@@ -64,11 +64,11 @@ _.extend(g3wadmin.forms, {
         /**
          * Send dato form to action url
          */
-        this.sendData = function() {
+        this.sendData = function(e, method, data) {
             that.$form.trigger('preSendForm');
             $.ajax({
-                method: 'post',
-                data: that.getData(),
+                method: _.isUndefined(method) ?'post' : method,
+                data: _.isUndefined(data) ? that.getData() : data,
                 url: that.$form.attr('action'),
                 success: function (res) {
 
@@ -136,22 +136,27 @@ _.extend(g3wadmin.forms, {
          * Get data from form for post send
          * @returns Object
          */
-        this.getData = function() {
+        this.getData = function(type) {
 
-            return this.$form.serialize();
-            /*
-            // refresh obejct form
-            var dataArray = this.$form.serializeArray();
-            var dataToRet = {};
+            if (_.isUndefined(type)) {
+                return this.$form.serialize();
+            }
+            else {
 
-            // rebuild data for ajax post
-            for (i in dataArray) {
-                var objData = dataArray[i];
-                dataToRet[objData['name']] = objData['value'];
+                // refresh obejct form
+                var dataArray = this.$form.serializeArray();
+                var dataToRet = {};
+
+                // rebuild data for ajax post
+                for (i in dataArray) {
+                    var objData = dataArray[i];
+                    dataToRet[objData['name']] = objData['value'];
+                }
+
+                return dataToRet;
+
             }
 
-            return dataToRet;
-            */
         };
     }
 

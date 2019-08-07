@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-02-22 15:27+0000\n"
+"POT-Creation-Date: 2019-08-06 12:54+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,194 +18,204 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: OWS/utils/data.py:126
-msgid "The GetFeatureResponse response is malformed: {}"
-msgstr ""
-
-#: editing/forms.py:14
+#: forms.py:18
 msgid "Active"
 msgstr ""
 
-#: editing/forms.py:15
+#: forms.py:19
 #, fuzzy
 #| msgid "Users"
 msgid "Viewers"
 msgstr "Utenti"
 
-#: editing/forms.py:30
-msgid "Check on uncheck to attive/desctive editing layer capabilities:"
+#: forms.py:22
+msgid "Select VIEWER groups can do editing on layer"
 msgstr ""
 
-#: editing/forms.py:32
+#: forms.py:23
+msgid "User viewer groups"
+msgstr ""
+
+#: forms.py:37
+msgid "Check on uncheck to attive/deactive editing layer capabilities:"
+msgstr ""
+
+#: forms.py:39
 msgid "Select viewers with 'view permission' on project that can edit layer:"
 msgstr ""
 
-#: editing/templates/editing/editing_layer_active_form.html:7
+#: models/constraints.py:59
+msgid "Layers types must be spatialite or postgres"
+msgstr ""
+
+#: models/constraints.py:63
+msgid "Constraint layer geometry type must be Polygon or MultiPolygon"
+msgstr ""
+
+#: models/constraints.py:67
+msgid "Editing and constraints layer cannot be the same layer"
+msgstr ""
+
+#: models/constraints.py:75
+msgid "Layer constraint"
+msgstr ""
+
+#: models/constraints.py:76
+msgid "Layer constraints"
+msgstr ""
+
+#: models/constraints.py:88
+msgid "SQL WHERE clause for the constraint layer"
+msgstr ""
+
+#: models/constraints.py:101
+msgid "Constraint rule"
+msgstr ""
+
+#: models/constraints.py:102
+msgid "Constraint rules"
+msgstr ""
+
+#: models/constraints.py:118
+msgid "You cannot define a user and a group at the same time"
+msgstr ""
+
+#: models/constraints.py:122
+msgid "You must define a user OR a group"
+msgstr ""
+
+#: models/constraints.py:127
+#, python-format
+msgid "There is an error in the SQL rule where condition: %s"
+msgstr ""
+
+#: receivers.py:167
+#, python-format
+msgid "Constraint validation failed for geometry: %s"
+msgstr ""
+
+#: templates/editing/editing_layer_active_form.html:7
 msgid "Alert"
 msgstr ""
 
-#: editing/templates/editing/editing_layer_active_form.html:8
+#: templates/editing/editing_layer_active_form.html:8
 msgid "Some errors on form. Check it and send again."
 msgstr ""
 
-#: editing/templates/editing/layer_action.html:5
+#: templates/editing/layer_action.html:5
 msgid "Editing layer"
 msgstr ""
 
-#: editing/templates/editing/layer_action.html:7
+#: templates/editing/layer_action.html:7
 msgid "Activation layer_editing"
 msgstr ""
 
-#: frontend/templates/frontend/include/about.html:4
-#: frontend/templates/frontend/include/sidebar.html:8
-msgid "About It"
-msgstr "Cos'è"
-
-#: frontend/templates/frontend/include/login.html:4
-#: frontend/templates/frontend/include/sidebar.html:24
-msgid "Admin"
-msgstr "Amministrazione"
-
-#: frontend/templates/frontend/include/login.html:4
-#: frontend/templates/frontend/include/login.html:33
-#: frontend/templates/frontend/include/sidebar.html:24
-msgid "Login"
-msgstr "Accedi"
-
-#: frontend/templates/frontend/include/login.html:7
-#, fuzzy
-#| msgid "Access to backeng administration stystem or logout"
-msgid "Access to backend administration stystem or logout"
-msgstr "Accedi al backed di amministrazione o esci"
-
-#: frontend/templates/frontend/include/login.html:9
-msgid "Login to go backend administration system"
-msgstr "Accesso al sistema di amministrazione"
-
-#: frontend/templates/frontend/include/login.html:21
-msgid "Backend"
+#: templates/editing/layer_action.html:15
+msgid "Constraints list"
 msgstr ""
 
-#: frontend/templates/frontend/include/login.html:24
-msgid "Logout"
-msgstr "Esci"
+#~ msgid "About It"
+#~ msgstr "Cos'è"
 
-#: frontend/templates/frontend/include/map_grid.html:5
+#~ msgid "Admin"
+#~ msgstr "Amministrazione"
+
+#~ msgid "Login"
+#~ msgstr "Accedi"
+
 #, fuzzy
-#| msgid "Groups list"
-msgid "Group maps"
-msgstr "Lista gruppi"
+#~| msgid "Access to backeng administration stystem or logout"
+#~ msgid "Access to backend administration stystem or logout"
+#~ msgstr "Accedi al backed di amministrazione o esci"
 
-#: frontend/templates/frontend/include/map_grid.html:50
-msgid "Show map"
-msgstr "Mostra mappa"
+#~ msgid "Login to go backend administration system"
+#~ msgstr "Accesso al sistema di amministrazione"
 
-#: frontend/templates/frontend/include/menu.html:9
-msgid "Adminstration"
-msgstr "Amministrazione"
+#~ msgid "Logout"
+#~ msgstr "Esci"
 
-#: frontend/templates/frontend/include/sidebar.html:16
-#: frontend/templates/frontend/index.html:61
-msgid "Maps"
-msgstr "Mappe"
-
-#: templates/403.html:7 templates/404.html:7
-msgid "error page"
-msgstr "Pagina di errore"
-
-#: templates/403.html:15
-msgid "Access denied"
-msgstr "Accesso negato"
-
-#: templates/403.html:17
-msgid "You don't have grant to access this section"
-msgstr "Non hai i privilegi per accedere questa sezione"
-
-#: templates/404.html:15
-msgid "Oops! Page not found."
-msgstr "Opps! Pagina non trovata"
-
-#: templates/404.html:17
-msgid "We could not find the page you were looking for."
-msgstr "Non abbiamo trovato la pagina che stavi cercando"
-
-#: templates/base.html:166 templates/index.html:6
-msgid "Dashboard"
-msgstr "Scrivania"
-
-#: templates/include/navbar_right_menu.html:25
-msgid "Frontend"
-msgstr ""
-
-#: templates/include/navbar_right_menu.html:46
-msgid "Registered on"
-msgstr "Registrato il"
-
-#: templates/include/navbar_right_menu.html:47
-msgid "Last login"
-msgstr "Ultimo accesso"
-
-#: templates/include/navbar_right_menu.html:54
-msgid "Profile"
-msgstr "Profilo"
-
-#: templates/include/navbar_right_menu.html:57
-msgid "Sign out"
-msgstr "Esci"
-
-#: templates/include/sidebar_right.html:8
-msgid "Configurations"
-msgstr "Configurazioni"
-
-#: templates/include/sidebar_right.html:14
-msgid "Edit general data"
-msgstr "Modifica i dati generali"
-
-#: templates/include/sidebar_right.html:15
-msgid "Frontend data and other"
-msgstr "Dati del frontend e altro"
-
-#: templates/include/sidebar_right.html:24
 #, fuzzy
-#| msgid "Adminstration"
-msgid "Django administration"
-msgstr "Amministrazione"
+#~| msgid "Groups list"
+#~ msgid "Group maps"
+#~ msgstr "Lista gruppi"
 
-#: templates/include/sidebar_right.html:25
+#~ msgid "Show map"
+#~ msgstr "Mostra mappa"
+
+#~ msgid "Adminstration"
+#~ msgstr "Amministrazione"
+
+#~ msgid "Maps"
+#~ msgstr "Mappe"
+
+#~ msgid "error page"
+#~ msgstr "Pagina di errore"
+
+#~ msgid "Access denied"
+#~ msgstr "Accesso negato"
+
+#~ msgid "You don't have grant to access this section"
+#~ msgstr "Non hai i privilegi per accedere questa sezione"
+
+#~ msgid "Oops! Page not found."
+#~ msgstr "Opps! Pagina non trovata"
+
+#~ msgid "We could not find the page you were looking for."
+#~ msgstr "Non abbiamo trovato la pagina che stavi cercando"
+
+#~ msgid "Dashboard"
+#~ msgstr "Scrivania"
+
+#~ msgid "Registered on"
+#~ msgstr "Registrato il"
+
+#~ msgid "Last login"
+#~ msgstr "Ultimo accesso"
+
+#~ msgid "Profile"
+#~ msgstr "Profilo"
+
+#~ msgid "Sign out"
+#~ msgstr "Esci"
+
+#~ msgid "Configurations"
+#~ msgstr "Configurazioni"
+
+#~ msgid "Edit general data"
+#~ msgstr "Modifica i dati generali"
+
+#~ msgid "Frontend data and other"
+#~ msgstr "Dati del frontend e altro"
+
 #, fuzzy
-#| msgid "Login to go backend administration system"
-msgid "Go to staff administration section"
-msgstr "Accesso al sistema di amministrazione"
+#~| msgid "Adminstration"
+#~ msgid "Django administration"
+#~ msgstr "Amministrazione"
 
-#: templates/index.html:7
-msgid "Current situation"
-msgstr "Situazione attuale"
-
-#: templates/index.html:17
 #, fuzzy
-#| msgid "Groups list"
-msgid "Groups"
-msgstr "Lista gruppi"
+#~| msgid "Login to go backend administration system"
+#~ msgid "Go to staff administration section"
+#~ msgstr "Accesso al sistema di amministrazione"
 
-#: templates/index.html:22
-msgid "Show"
-msgstr "Mostra"
+#~ msgid "Current situation"
+#~ msgstr "Situazione attuale"
 
-#: templates/index.html:28
-msgid "Module widgets"
-msgstr ""
+#, fuzzy
+#~| msgid "Groups list"
+#~ msgid "Groups"
+#~ msgstr "Lista gruppi"
 
-#: templates/login.html:15
-msgid "Sign in to start your session"
-msgstr "Accedi per iniziare la tua sessione di lavoro"
+#~ msgid "Show"
+#~ msgstr "Mostra"
 
-#: templates/login.html:17
-msgid "Username and/or password uncorrect"
-msgstr "Username e/o password non corretti"
+#~ msgid "Sign in to start your session"
+#~ msgstr "Accedi per iniziare la tua sessione di lavoro"
 
-#: templates/login.html:31
-msgid "Sign In"
-msgstr "Accedi"
+#~ msgid "Username and/or password uncorrect"
+#~ msgstr "Username e/o password non corretti"
+
+#~ msgid "Sign In"
+#~ msgstr "Accedi"
 
 #, fuzzy
 #~| msgid "Groups list"

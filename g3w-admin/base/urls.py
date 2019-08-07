@@ -21,7 +21,7 @@ G3W_SITETREE_I18N_ALIAS = ['core', 'acl']
 
 jsInfoDict = {
     'domain': 'djangojs',
-    'packages': ('core', 'usermanage', 'client',),
+    'packages': ('core', 'usermanage', 'client', 'editing'),
 }
 
 urlpatterns = [

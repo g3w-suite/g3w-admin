@@ -14,7 +14,8 @@ _.extend(g3wadmin.widget, {
     _deleteItemParams: [
         'delete-url',
         'item-selector',
-        'modal-title'
+        'modal-title',
+        'delete-method'
     ],
 
     /**
@@ -104,7 +105,7 @@ _.extend(g3wadmin.widget, {
                 var data = {};
                 ga.utils.addCsfrtokenData(data);
                 $.ajax({
-                    method: 'post',
+                    method: _.isUndefined(params['delete-method']) ? 'post': params['delete-method'],
                     url: params['delete-url'],
                     data: data,
                     success: function (res) {
