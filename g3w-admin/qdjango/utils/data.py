@@ -359,7 +359,13 @@ class QgisProjectLayer(XmlData):
             layerStructure = QgisOGRLayerStructure(self)
         elif self.layerType in [Layer.TYPES.delimitedtext]:
             layerStructure = QgisCSVLayerStructure(self)
-        elif self.layerType in [Layer.TYPES.wms, Layer.TYPES.gdal]:
+        elif self.layerType in [Layer.TYPES.arcgisfeatureserver]:
+            layerStructure = QgisAFSLayerStructure(self)
+        elif self.layerType in [
+            Layer.TYPES.wms,
+            Layer.TYPES.gdal,
+            Layer.TYPES.arcgismapserver
+        ]:
             return None
 
 
@@ -921,13 +927,16 @@ class QgisProject(XmlData):
             'DELETE': []
         }
 
-        wfstLayersTree = self.qgisProjectTree.xpath('properties/WFSTLayers')[0]
+        try:
+            wfstLayersTree = self.qgisProjectTree.xpath('properties/WFSTLayers')[0]
 
-        # collect layer_id for edito ps
-        for editOp in wfstLayers.keys():
-            editOpsLayerIdsTree = wfstLayersTree.xpath('{}/value'.format(editOp.lower().capitalize()))
-            for editOpsLayerIdTree in editOpsLayerIdsTree:
-                wfstLayers[editOp].append(editOpsLayerIdTree.text)
+            # collect layer_id for edito ps
+            for editOp in wfstLayers.keys():
+                editOpsLayerIdsTree = wfstLayersTree.xpath('{}/value'.format(editOp.lower().capitalize()))
+                for editOpsLayerIdTree in editOpsLayerIdsTree:
+                    wfstLayers[editOp].append(editOpsLayerIdTree.text)
+        except:
+            pass
 
         return wfstLayers
 

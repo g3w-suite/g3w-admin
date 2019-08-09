@@ -2,7 +2,7 @@ from django.test import TestCase, override_settings
 from django.core.files import File
 from qdjango.models import Project
 from qdjango.utils.data import QgisProject, QgisPgConnection
-from qdjango.utils.structure import get_schema_table, datasource2dict
+from qdjango.utils.structure import get_schema_table, datasource2dict, datasourcearcgis2dict
 
 import os
 
@@ -135,3 +135,15 @@ class QgisProjectTest(TestCase):
         self.assertEqual(res['sslmode'], 'disable')
         self.assertEqual(res['password'], 'xxx')
         self.assertEqual(res['user'], 'xxx')
+
+
+
+    def test_dataSourceArcGisToDict(self):
+
+        res = datasourcearcgis2dict(
+            'crs=\'EPSG:4326\' format=\'PNG24\' layer=\'2\' url=\'https://sampleserver1.arcgisonline.com/ArcGIS/rest/services/Specialty/ESRI_StateCityHighway_USA/MapServer\'')
+        self.assertEqual(res['crs'], 'EPSG:4326')
+        self.assertEqual(res['format'], 'PNG24')
+        self.assertEqual(res['layer'], '2')
+        self.assertEqual(res['url'],
+                         'https://sampleserver1.arcgisonline.com/ArcGIS/rest/services/Specialty/ESRI_StateCityHighway_USA/MapServer')

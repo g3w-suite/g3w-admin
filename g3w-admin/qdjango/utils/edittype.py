@@ -92,8 +92,8 @@ class QgisEditTypeRange(QgisEditType):
                 'options': {
                     'values': [
                                 {
-                                    'min': self.Min if hasattr(self, 'Min') else 2147483647,
-                                    'max': self.Max if hasattr(self, 'Max') else -2147483648,
+                                    'min': self.Min if hasattr(self, 'Min') else -2147483647,
+                                    'max': self.Max if hasattr(self, 'Max') else 2147483648,
                                     'Step': self.Step if hasattr(self, 'Step') else 1,
                                     'default': self.default if hasattr(self, 'default') else None
                                 },

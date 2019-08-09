@@ -131,7 +131,7 @@ class OWSRequestHandler(OWSRequestHandlerBase):
         if qdjangoModeRequest == QDJANGO_PROXY_REQUEST or ows_request == 'GETLEGENDGRAPHIC':
 
             # try to get getfeatureinfo on wms layer
-            if ows_request == 'GETFEATUREINFO' and 'SOURCE' in q and q['SOURCE'].upper() in ('WMS', 'ARCGISMAPSERVER'):
+            if ows_request == 'GETFEATUREINFO' and 'SOURCE' in q and q['SOURCE'].upper() in ('WMS'):
 
                 # get layer by name
                 layers_to_filter = q['QUERY_LAYER'] if 'QUERY_LAYER' in q else q['QUERY_LAYERS'].split(',')

@@ -261,7 +261,9 @@ class Layer(G3WACLModelMixins, models.Model):
         ('wms', _('WMS')),
         ('ogr', _('OGR')),
         ('gdal', _('GDAL')),
-        ('delimitedtext', _('CSV'))
+        ('delimitedtext', _('CSV')),
+        ('arcgismapserver', _('ArcGisMapServer')),
+        ('arcgisfeatureserver', _('ArcGisFeatureServer'))
         )
 
     # General info

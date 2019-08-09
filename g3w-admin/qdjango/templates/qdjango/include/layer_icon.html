@@ -30,6 +30,16 @@
      xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" >
   <image x="0" y="0" height="100%" width="100%"  xlink:href="{% static 'svg/mIconTableLayer.svg' %}" />
   </svg>
+{% elif object.layer_type == 'arcgismapserver' %}
+  <svg id="circle" height="16" width="16" vviewBox="0 0 32 32"
+     xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" >
+  <image x="0" y="0" height="100%" width="100%"  xlink:href="{% static 'svg/mIconAms.svg' %}" />
+  </svg>
+{% elif object.layer_type == 'arcgisfeatureserver' %}
+  <svg id="circle" height="16" width="16" vviewBox="0 0 32 32"
+     xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" >
+  <image x="0" y="0" height="100%" width="100%"  xlink:href="{% static 'svg/mIconAfs.svg' %}" />
+  </svg>
 {% else %}
   <svg id="circle" height="16" width="16" viewBox="0 0 32 32"
      xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" >
