@@ -80,7 +80,7 @@ _.extend(g3wadmin.forms, {
                         }
                     } else {
                         if(!_.isUndefined(that.successAction)) {
-                            that.successAction();
+                            that.successAction(res);
                         }
                     }
                 },
