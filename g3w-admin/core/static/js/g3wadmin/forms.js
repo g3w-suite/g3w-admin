@@ -88,14 +88,29 @@ _.extend(g3wadmin.forms, {
                     that.$form.trigger('postSendForm');
                 },
                 error: function (xhr, textStatus, errorMessage) {
-                    ga.widget.showError(ga.utils.buildAjaxErrorMessage(xhr.status, errorMessage));
+                    if (_.isUndefined(that.errorAction)){
+                        ga.widget.showError(ga.utils.buildAjaxErrorMessage(xhr.status, errorMessage));
+                    } else {
+                        that.errorAction(xhr, errorMessage);
+                    }
+
                     
                 }
             });
         };
 
+        /**
+         * Method to call on success form send data
+         */
         this.setOnSuccesAction = function (func) {
             this.successAction = func;
+        }
+
+        /**
+         * Method to call on error form send data
+         */
+        this.setOnErrorAction = function (func) {
+            this.errorAction = func;
         }
 
         /**
