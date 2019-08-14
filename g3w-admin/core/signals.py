@@ -65,5 +65,8 @@ pre_show_user_data = django.dispatch.Signal(providing_args=["user"])
 # signal send to load main navbar items
 load_navbar_items = django.dispatch.Signal()
 
+# signal send before rendering vector data layer
+before_return_vector_data_layer = django.dispatch.Signal()
+
 
 
