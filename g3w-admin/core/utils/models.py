@@ -6,6 +6,7 @@ from django.apps import apps as g3wsuite_apps
 from qdjango.utils.structure import datasource2dict, get_schema_table
 from model_utils import Choices
 from sqlalchemy import create_engine, MetaData
+from sqlalchemy.engine.url import URL
 from geoalchemy2 import Table as GEOTable
 import geoalchemy2.types as geotypes
 from sqlalchemy.dialects.postgresql import base as PGD
@@ -323,14 +324,17 @@ class CreateGeomodel(object):
 
 
 class PostgisCreateGeomodel(CreateGeomodel):
-
+    """
+    PostgreSql model Dj creator.
+    """
     layer_type = 'postgis'
 
     def get_geometry_type(self):
         self.geometry_type = self.datasource.get('type', None)
 
     def create_engine(self):
-        engine = create_engine('postgresql://{}:{}@{}:{}/{}'.format(
+        engine = create_engine(URL(
+            'postgresql',
             self.datasource['user'],
             self.datasource['password'],
             self.datasource['host'],

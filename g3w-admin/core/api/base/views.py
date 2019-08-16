@@ -11,7 +11,7 @@ from rest_framework.compat import set_rollback
 from rest_framework.response import Response
 from rest_framework.exceptions import APIException
 from core.api.filters import IntersectsBBoxFilter
-from core.signals import post_create_maplayerattributes, post_serialize_maplayer
+from core.signals import post_create_maplayerattributes, post_serialize_maplayer, before_return_vector_data_layer
 from core.utils.structure import mapLayerAttributes, mapLayerAttributesFromModel
 from core.api.authentication import CsrfExemptSessionAuthentication
 from core.utils.vector import BaseUserMediaHandler as UserMediaHandler
@@ -468,6 +468,13 @@ class BaseVectorOnModelApiView(G3WAPIView):
         response = self.get_response_data(request)
 
         if response is None:
+
+            # before to send response
+            extra_data = before_return_vector_data_layer.send(self)
+            for ed in extra_data:
+                if ed[1] and ed[0].func_name == 'add_constraints':
+                    self.results.results.update(ed[1])
+
             # response a APIVectorLayer
             return Response(self.results.results)
         else:
