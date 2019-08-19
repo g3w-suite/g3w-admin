@@ -17,13 +17,22 @@ class MetadataVectorLayer(object):
             setattr(self, k, v)
 
     def get_queryset(self):
+        """
+        Get queryset all fro current model
+        """
         if hasattr(self, 'using'):
             return self.model.objects.using(self.using).all()
         else:
             return self.model.objects.all()
 
     def get_feature(self, pk):
-        if hasattr(self, 'using'):
-            return self.model.objects.using(self.using).get(pk=pk)
-        else:
-            return self.model.objects.get(pk=pk)
+        """
+        Get current model instance
+        """
+        try:
+            if hasattr(self, 'using'):
+                return self.model.objects.using(self.using).get(pk=pk)
+            else:
+                return self.model.objects.get(pk=pk)
+        except:
+            return None

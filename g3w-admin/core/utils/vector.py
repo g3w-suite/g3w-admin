@@ -41,7 +41,10 @@ class BaseUserMediaHandler(object):
             if self.layer else None
 
     def get_current_instance(self):
-       return self.metadata_layer.get_feature(pk=self.feature['id']) if self.metadata_layer and \
+        """
+        Get current layer to save instance
+        """
+        return self.metadata_layer.get_feature(pk=self.feature['id']) if self.metadata_layer and \
                                                                         type(self.feature['id']) == int else None
 
     def get_file_name(self, uri):
