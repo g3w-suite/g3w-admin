@@ -21,8 +21,8 @@ class XmlData(object):
             try:
                 setattr(self, data, getattr(self, '_getData{}'.format(ucfirst(data)))())
             except Exception as e:
-                raise self._exceptionclass(_('[{} error on {}]-- {}')
-                                           .format(self._pre_exception_message, data, e))
+                raise self._exceptionclass(_('[{} error on {}({})]-- {}')
+                                           .format(self._pre_exception_message, data, self, e))
 
     def registerValidator(self, validator):
         """
@@ -43,6 +43,12 @@ class XmlData(object):
         Return data to json format
         """
         pass
+
+    def __str__(self):
+        """
+        StrId Object for error
+        """
+        return ''
 
 
 def isXML(string):

@@ -137,6 +137,12 @@ class QgisProjectLayer(XmlData):
             self.registerValidator(validator)
 
 
+    def __str__(self):
+        """
+        StrId Object for error
+        """
+        return self._getDataLayerId()
+
     def _getDataName(self):
         """
         Get name form datasource
