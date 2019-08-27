@@ -242,6 +242,11 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <!-- REQUIRED JS SCRIPTS -->
     <script>
         var CURRENT_LANGUAGE_CODE = '{{ lang }}';
+        {% if SETTINGS.SITE_PREFIX_URL %}
+        var SITE_PREFIX_URL = '{{ SETTINGS.SITE_PREFIX_URL }}';
+        {% else %}
+        var SITE_PREFIX_URL = '';
+        {% endif %}
     </script>
     {% if SETTINGS.DEBUG %}
     <!-- build:js js/vendor.min.js -->

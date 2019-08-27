@@ -87,11 +87,32 @@ for app in settings.G3WADMIN_LOCAL_MORE_APPS:
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
+
+if settings.SITE_PREFIX_URL:
+    urlpatterns = [
+        url(r'^{}'.format(settings.SITE_PREFIX_URL), include(urlpatterns))
+    ]
+
+
 urlpatterns = i18n_patterns(*urlpatterns)
+
+
+if settings.SITE_PREFIX_URL:
+    apiUrlpatterns = [
+        url(r'^{}'.format(settings.SITE_PREFIX_URL), include(apiUrlpatterns))
+    ]
+
 
 urlpatterns += apiUrlpatterns
 
 urlows = [url(r'^', include('OWS.urls'))]
+
+
+if settings.SITE_PREFIX_URL:
+    urlows = [
+        url(r'^{}'.format(settings.SITE_PREFIX_URL), include(urlows))
+    ]
+
 
 urlpatterns += urlows
 
