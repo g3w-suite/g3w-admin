@@ -11,6 +11,6 @@ ENV C_INCLUDE_PATH=$C_INCLUDE_PATH
 COPY requirements*.* /code/
 RUN pip3 install -r requirements_docker.txt
 
-# build g3w-suite-deps and run it
+# build g3w-suite and run it
 COPY . /code/
 CMD /code/ci_scripts/build_suite.sh && cd /code/g3w-admin && python3 manage.py runserver 0.0.0.0:8000
