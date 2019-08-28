@@ -3,9 +3,14 @@ FROM ubuntu:bionic
 LABEL maintainer="Gis3w" Description="This image is used to prepare build requirements for g3w-suite CI testing" Vendor="Gis3w" Version="1.1"
 RUN chown root:root /tmp && chmod ugo+rwXt /tmp
 RUN apt-get update && apt install -y \
+	libxml2-dev \
+	libxslt-dev \
+	postgresql-server-dev-all \
+	libgdal-dev \
+	python3-dev \
 	libgdal20 \
-	python-gdal \
-	python-pip \
+	python3-gdal \
+	python3-pip \
 	curl \
 	wget \
 	vim \
