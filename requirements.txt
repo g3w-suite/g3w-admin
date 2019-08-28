@@ -15,21 +15,25 @@ django-debug-panel==0.8.3
 django-mptt==0.8.7
 django-ordered-model==1.4.1
 django-ajax-selects==1.6.1
-pathlib==1.0.1
-shapely==1.5.17
-GeoAlchemy2==0.4.0
-lxml==3.8.0
-psycopg2==2.7.7
-psycopg2-binary==2.7.7
-pillow==4.3.0
-owslib==0.14.0
-defusedxml==0.5.0
-SQLAlchemy==1.1.11
-django-import-export==0.5.1
-coverage==4.4.1
-urllib3==1.23
-python-magic==0.4.15
-celery==3.1.26.post2
-django-celery==3.2.2
+pathlib
+shapely
+GeoAlchemy2
+lxml
+psycopg2
+psycopg2-binary
+pillow
+owslib
+defusedxml
+SQLAlchemy
+django-import-export
+coverage
+urllib3
+python-magic
+celery==3.1.15
+django-celery
 
-# Install GDAL manually or from deb packages: libgdal20 python-gdal
+# package depends on libgdal-dev package => version have to match, e.g. isntall only 
+# the version of the installed dev version. Need also to follow env var setup before install as described in:
+# https://gis.stackexchange.com/questions/28966/python-gdal-package-missing-header-file-when-installing-via-pip
+# to allow finding of libs and includes.
+GDAL
