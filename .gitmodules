@@ -54,4 +54,7 @@
 	url = https://wlorenzetti@bitbucket.org/gis3w/g3w-admin-catalog.git
 [submodule "g3w-admin/spid_redirect"]
 	path = g3w-admin/spid_redirect
-	url = https://wlorenzetti:kote25TT56@bitbucket.org/gis3w/g3w-admin-spid_redirect.git
+	url = https://wlorenzettis@bitbucket.org/gis3w/g3w-admin-spid_redirect.git
+[submodule "g3w-admin/archiweb"]
+	path = g3w-admin/archiweb
+	url = https://wlorenzetti@bitbucket.org/gis3w/g3w-admin-archiweb.git

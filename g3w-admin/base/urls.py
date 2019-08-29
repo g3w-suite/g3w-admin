@@ -93,7 +93,6 @@ if settings.SITE_PREFIX_URL:
         url(r'^{}'.format(settings.SITE_PREFIX_URL), include(urlpatterns))
     ]
 
-
 urlpatterns = i18n_patterns(*urlpatterns)
 
 
