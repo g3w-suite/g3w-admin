@@ -357,17 +357,17 @@ class BaseVectorOnModelApiView(G3WAPIView):
         if hasattr(self.metadata_layer, 'order'):
             kwargs['order'] = self.metadata_layer.order
 
-        if self.mapping_layer_attributes_function.im_func == mapLayerAttributesFromModel:
-            fields = self.mapping_layer_attributes_function.im_func(
+        if self.mapping_layer_attributes_function.__func__ == mapLayerAttributesFromModel:
+            fields = list(self.mapping_layer_attributes_function.__func__(
                 self.metadata_layer.model,
                 **kwargs
-            ).values()
+            ).values())
         else:
-            fields = self.mapping_layer_attributes_function.im_func(
+            fields = list(self.mapping_layer_attributes_function.__func__(
                 self.layer,
                 formField=True,
                 **kwargs
-            ).values()
+            ).values())
 
         vector_params = {
             'geomentryType': self.metadata_layer.geometry_type,
@@ -472,7 +472,7 @@ class BaseVectorOnModelApiView(G3WAPIView):
             # before to send response
             extra_data = before_return_vector_data_layer.send(self)
             for ed in extra_data:
-                if ed[1] and ed[0].func_name == 'add_constraints':
+                if ed[1] and ed[0].__name__ == 'add_constraints':
                     self.results.results.update(ed[1])
 
             # response a APIVectorLayer

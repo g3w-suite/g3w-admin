@@ -33,8 +33,8 @@ except:
 try:
 
     # python 2
-    from httplib import HTTPConnection, HTTPSConnection
-    from urlparse import urlsplit
+    from http.client import HTTPConnection, HTTPSConnection
+    from urllib.parse import urlsplit
     import urllib3
 except:
 
@@ -238,7 +238,7 @@ class OWSRequestHandler(OWSRequestHandlerBase):
 
         # rebuild q keys upper()
 
-        for k in q.keys():
+        for k in list(q.keys()):
             ku = k.upper()
             if ku != k:
                 q[ku] = q[k]

@@ -3,7 +3,7 @@ from django.urls import reverse
 from . import file_path_mime
 from .response import send_file
 from .db import build_dango_connection_name
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import os
 import shutil
 
@@ -67,13 +67,13 @@ class BaseUserMediaHandler(object):
         current_instance = self.get_current_instance()
         edittypes = eval(self.layer.edittypes)
 
-        for field, data in edittypes.items():
+        for field, data in list(edittypes.items()):
             if data['widgetv2type'] == 'ExternalResource' and field in self.feature_properties:
 
                 # new field_name
                 file_name = self.get_file_name(self.feature_properties[field])
                 if file_name:
-                    file_name = urllib.unquote(file_name)
+                    file_name = urllib.parse.unquote(file_name)
 
                 path_to_save = self.get_path_to_save()
                 path_file_to_save = '{}/{}'.format(path_to_save, file_name)
@@ -92,7 +92,7 @@ class BaseUserMediaHandler(object):
                     current_field_value = getattr(current_instance, field) if current_instance else None
                     current_field_name = self.get_file_name(current_field_value) if current_instance else None
                     if current_field_name:
-                        current_field_name = urllib.unquote(current_field_name)
+                        current_field_name = urllib.parse.unquote(current_field_name)
 
 
 

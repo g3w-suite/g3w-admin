@@ -13,12 +13,12 @@ from django.contrib.gis.db.models.fields import GeometryField
 from django.contrib.gis.gdal import check_err, OGRGeomType
 
 try:
-    from cStringIO import StringIO
+    from io import StringIO
 except ImportError:
     try:
         from io import StringIO
     except:
-        from StringIO import StringIO
+        from io import StringIO
 
 try:
     # a mysterious bug with ctypes and python26 causes crashes
@@ -190,7 +190,7 @@ class ShpResponder(object):
                 value = getattr(item, field.name)
                 if value is not None and isinstance(field, ForeignKey):
                     value = getattr(value, 'pk')
-                if isinstance(value, unicode):
+                if isinstance(value, str):
                     value = value.encode('utf-8')
 
                 # truncate the field name.
@@ -359,7 +359,7 @@ class ShpResponder(object):
             # If the class isn't directly mapped, see if any parent classes are
             # mapped (useful for custom Django field types that are just (eg)
             # CharFields under the hood).
-            for dj_cls, ogr_cls in ogr_mapping.items():
+            for dj_cls, ogr_cls in list(ogr_mapping.items()):
                 if issubclass(type(field), dj_cls):
                     ogr_type = ogr_cls
                     break

@@ -128,7 +128,7 @@ def get_users_for_object(object, permission, group=None, with_anonymous = False,
     if not isinstance(permission, list):
         permission = [permission]
     result = []
-    for user, perms in anyperm.iteritems():
+    for user, perms in anyperm.items():
         if set(permission).intersection(set(perms)):
             if group:
                 if not isinstance(group, list):
@@ -159,7 +159,7 @@ def get_groups_for_object(object, permission, grouprole=None):
     if not isinstance(permission, list):
         permission = [permission]
     result = []
-    for group, perms in anyperm.iteritems():
+    for group, perms in anyperm.items():
         if set(permission).intersection(set(perms)):
             if grouprole and hasattr(group, 'grouprole'):
                 if group.grouprole.role == grouprole:

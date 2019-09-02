@@ -250,7 +250,7 @@ class G3WSerializerMixin(object):
 
     def update(self, instance, validated_data):
         using = self.Meta.using if hasattr(self.Meta, 'using') else None
-        for field, value in validated_data.items():
+        for field, value in list(validated_data.items()):
             setattr(instance, field, value)
         instance.save(using=self._get_meta_using())
         return instance

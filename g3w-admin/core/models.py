@@ -1,4 +1,4 @@
-from __future__ import unicode_literals
+
 from django.conf import settings
 from django.conf.global_settings import LANGUAGES
 from django.utils.translation import ugettext, ugettext_lazy as _
@@ -229,7 +229,7 @@ class Group(TimeStampedModel, OrderedModel):
 
         # adding permissions to projects
         appProjects = getProjectsByGroup(self)
-        for app, projects in appProjects.items():
+        for app, projects in list(appProjects.items()):
             for project in projects:
                 project.addPermissionsToEditor(user)
 
@@ -246,7 +246,7 @@ class Group(TimeStampedModel, OrderedModel):
 
         # adding permissions to projects
         appProjects = getProjectsByGroup(self)
-        for app, projects in appProjects.items():
+        for app, projects in list(appProjects.items()):
             for project in projects:
                 project.removePermissionsToEditor(user)
 
@@ -261,7 +261,7 @@ class Group(TimeStampedModel, OrderedModel):
 
             # adding permissions to projects only if propagate
             if 'propagate' in kwargs:
-                for app, projects in appProjects.items():
+                for app, projects in list(appProjects.items()):
                     for project in projects:
                         project.addPermissionsToViewers(users_id)
 
@@ -275,7 +275,7 @@ class Group(TimeStampedModel, OrderedModel):
             setPermissionUserObject(User.objects.get(pk=user_id), self, permissions='view_group', mode='remove')
 
             # adding permissions to projects
-            for app, projects in appProjects.items():
+            for app, projects in list(appProjects.items()):
                 for project in projects:
                     project.removePermissionsToViewers(users_id)
 
@@ -294,7 +294,7 @@ class Group(TimeStampedModel, OrderedModel):
 
             # adding permissions to projects
 
-            for app, projects in appProjects.items():
+            for app, projects in list(appProjects.items()):
                 for project in projects:
                     if hasattr(project, 'add_permissions_to_editor_user_groups'):
                         project.add_permissions_to_editor_user_groups(groups_id)
@@ -314,7 +314,7 @@ class Group(TimeStampedModel, OrderedModel):
                                     mode='remove')
 
 
-            for app, projects in appProjects.items():
+            for app, projects in list(appProjects.items()):
                 for project in projects:
                     if hasattr(project, 'remove_permissions_to_editor_user_groups'):
                         project.remove_permissions_to_editor_user_groups(groups_id)
@@ -334,7 +334,7 @@ class Group(TimeStampedModel, OrderedModel):
 
             # adding permissions to projects only if propagate
             if 'propagate' in kwargs:
-                for app, projects in appProjects.items():
+                for app, projects in list(appProjects.items()):
                     for project in projects:
                         if hasattr(project, 'add_permissions_to_viewer_user_groups'):
                             project.add_permissions_to_viewer_user_groups(groups_id)
@@ -354,7 +354,7 @@ class Group(TimeStampedModel, OrderedModel):
                                     mode='remove')
 
             # removing permissions to projects
-            for app, projects in appProjects.items():
+            for app, projects in list(appProjects.items()):
                 for project in projects:
                     if hasattr(project, 'remove_permissions_to_viewer_user_groups'):
                         project.remove_permissions_to_viewer_user_groups(groups_id)

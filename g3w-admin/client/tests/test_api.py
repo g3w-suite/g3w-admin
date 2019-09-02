@@ -70,7 +70,7 @@ class ClientApiTest(APITestCase):
         self.client.logout()
 
     def _d(self, d, path=[]):
-        for k,v in d.items():
+        for k,v in list(d.items()):
             _path = ( path if path else '') + "[\"%s\"]" % k
             if type(v) == dict:
                 self._d(v, _path)
@@ -102,19 +102,19 @@ class ClientApiTest(APITestCase):
         self.assertEqual(resp["vectorurl"], "/vector/api/")
         self.assertEqual(resp["group"]["crs"], 4326)
         self.assertEqual(resp["group"]["proj4"], "+proj=longlat +datum=WGS84 +no_defs ")
-        self.assertEqual(resp["group"]["mapcontrols"], [u'zoomtoextent', u'zoom', u'zoombox', u'query', u'querybbox', u'querybypolygon', u'overview', u'scaleline', u'geolocation', u'streetview', u'nominatim', u'addlayers', u'length', u'area', u'mouseposition', u'scale'])
+        self.assertEqual(resp["group"]["mapcontrols"], ['zoomtoextent', 'zoom', 'zoombox', 'query', 'querybbox', 'querybypolygon', 'overview', 'scaleline', 'geolocation', 'streetview', 'nominatim', 'addlayers', 'length', 'area', 'mouseposition', 'scale'])
         self.assertEqual(resp["group"]["header_logo_img"], "logo_img/qgis-logo.png")
         self.assertEqual(resp["group"]["name"], "Gruppo 1")
         self.assertIsNone(resp["group"]["header_logo_link"])
         self.assertEqual(resp["group"]["initproject"], "qdjango:1")
         self.assertEqual(resp["group"]["header_terms_of_use_link"], "")
         self.assertTrue(resp["group"]["powered_by"])
-        self.assertEqual(resp["group"]["baselayers"], [{u'crs': 3857, u'servertype': u'OSM', u'attribution': u"<a href='https://www.openstreetmap.org/copyright'>OpenStreetMap contributors</a>", u'name': u'OpenStreetMap', u'title': u'OSM', u'scalebasedvisibility': False, u'maxscale': 0, u'minscale': 100000000, u'id': 3, u'icon': None}])
+        self.assertEqual(resp["group"]["baselayers"], [{'crs': 3857, 'servertype': 'OSM', 'attribution': "<a href='https://www.openstreetmap.org/copyright'>OpenStreetMap contributors</a>", 'name': 'OpenStreetMap', 'title': 'OSM', 'scalebasedvisibility': False, 'maxscale': 0, 'minscale': 100000000, 'id': 3, 'icon': None}])
         self.assertEqual(resp["group"]["header_terms_of_use_text"], "")
         self.assertEqual(resp["group"]["header_custom_links"], [])
         self.assertEqual(resp["group"]["background_color"], "#ffffff")
         self.assertEqual(resp["group"]["id"], 1)
-        self.assertEqual(resp["group"]["projects"], [{u'description': u'<p>progetto 1<br></p>', u'title': u'Un progetto', u'thumbnail': u'/static/client/images/FakeProjectThumb.png', u'gid': u'qdjango:1', u'type': u'qdjango', u'id': 1}])
+        self.assertEqual(resp["group"]["projects"], [{'description': '<p>progetto 1<br></p>', 'title': 'Un progetto', 'thumbnail': '/static/client/images/FakeProjectThumb.png', 'gid': 'qdjango:1', 'type': 'qdjango', 'id': 1}])
         self.assertIsNone(resp["group"]["overviewproject"])
         self.assertIsNone(resp["main_map_title"])
         self.assertEqual(resp["mediaurl"], "/media/")
@@ -138,7 +138,7 @@ class ClientApiTest(APITestCase):
         response = self.__testApiCall('group-project-map-config', ['gruppo-1', 'qdjango', '1'])
         resp = json.loads(response.content)
 
-        self.assertEqual(resp["layerstree"], [{u'visible': True, u'expanded': False, u'name': u'world', u'id': u'world20181008111156525'}, {u'visible': True, u'expanded': True, u'name': u'bluemarble', u'id': u'bluemarble20181008111156906'}])
+        self.assertEqual(resp["layerstree"], [{'visible': True, 'expanded': False, 'name': 'world', 'id': 'world20181008111156525'}, {'visible': True, 'expanded': True, 'name': 'bluemarble', 'id': 'bluemarble20181008111156906'}])
         self.assertEqual(resp["search"], [])
         self.assertFalse(resp["wms_use_layer_ids"])
         self.assertEqual(resp["qgis_version"], "2.18.16")
@@ -161,6 +161,6 @@ class ClientApiTest(APITestCase):
         self.assertEqual(resp["metadata"]["contactinformation"]["contactvoicetelephone"], "1234578")
         self.assertEqual(resp["metadata"]["wms_url"], "")
         self.assertEqual(resp["metadata"]["fees"], "no conditions apply")
-        self.assertEqual(resp["metadata"]["keywords"], [u'infoMapAccessService', u'keyword1', u'keyword2'])
+        self.assertEqual(resp["metadata"]["keywords"], ['infoMapAccessService', 'keyword1', 'keyword2'])
         self.assertIsNone(resp["thumbnail"])
         self.assertEqual(resp["name"], "Un progetto")

@@ -54,7 +54,7 @@ def create_model(name, fields=None, app_label='', module='', db='default', optio
 
     # Update Meta with any options that were provided
     if options is not None:
-        for key, value in options.iteritems():
+        for key, value in options.items():
             setattr(Meta, key, value)
 
     # Set up a dictionary to simulate declarations within a class
@@ -88,8 +88,8 @@ def get_creator_from_qdjango_layer(layer, app_label='core'):
 
     datasource = datasource2dict(layer.datasource)
 
-    if layer.layer_type not in CREATOR_CLASSES.keys():
-        raise Exception('Layer type is {} - it must be one of {}'.format(layer.layer_type, ' or '.join(CREATOR_CLASSES.keys())))
+    if layer.layer_type not in list(CREATOR_CLASSES.keys()):
+        raise Exception('Layer type is {} - it must be one of {}'.format(layer.layer_type, ' or '.join(list(CREATOR_CLASSES.keys()))))
 
     creator = CREATOR_CLASSES[layer.layer_type](layer, datasource, app_label)
 

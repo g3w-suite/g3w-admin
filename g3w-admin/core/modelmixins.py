@@ -27,6 +27,6 @@ class DataUserMixin(object):
                 post = '</a>'
             return pre + viewer.first_name+' '+viewer.last_name+' ('+viewer.username+')'+post
         if flat:
-            return map(lambda s: compileViwerString(s),viewers)
+            return [compileViwerString(s) for s in viewers]
         else:
             return viewers

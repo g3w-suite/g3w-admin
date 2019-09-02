@@ -260,7 +260,7 @@ class QdjangoProjectRelationsApiView(APIView):
         for r in rows:
             rn = r.copy()
             new_rn = OrderedDict()
-            for f in r.keys():
+            for f in list(r.keys()):
                 if type(r[f]) == buffer or f in ['the_geom', 'geom']:
                     continue
                 elif exclude_columns and f in exclude_columns:

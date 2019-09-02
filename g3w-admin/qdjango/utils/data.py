@@ -313,7 +313,7 @@ class QgisProjectLayer(XmlData):
     def _getDataEditOptions(self):
 
         editOptions = 0
-        for editOp, layerIds in self.qgisProject.wfstLayers.items():
+        for editOp, layerIds in list(self.qgisProject.wfstLayers.items()):
             if self.layerId in layerIds:
                 editOptions |= getattr(settings, editOp)
 
@@ -942,7 +942,7 @@ class QgisProject(XmlData):
             wfstLayersTree = self.qgisProjectTree.xpath('properties/WFSTLayers')[0]
 
             # collect layer_id for edito ps
-            for editOp in wfstLayers.keys():
+            for editOp in list(wfstLayers.keys()):
                 editOpsLayerIdsTree = wfstLayersTree.xpath('{}/value'.format(editOp.lower().capitalize()))
                 for editOpsLayerIdTree in editOpsLayerIdsTree:
                     wfstLayers[editOp].append(editOpsLayerIdTree.text)
@@ -1415,19 +1415,19 @@ class QgisPgConnection(object):
     def __init__(self, **kwargs):
 
         self._data = {}
-        for k,v in kwargs.items():
+        for k,v in list(kwargs.items()):
             setattr(self, k, v)
 
     def __setattr__(self, key, value):
 
-        if key in QgisPgConnection._params.keys():
+        if key in list(QgisPgConnection._params.keys()):
             self.__dict__['_data'][key] = value
         else:
             self.__dict__[key] = value
 
     def __getattr__(self, key):
 
-        if key in QgisPgConnection._params.keys():
+        if key in list(QgisPgConnection._params.keys()):
             try:
                 return self.__dict__['_data'][key]
             except:
@@ -1441,7 +1441,7 @@ class QgisPgConnection(object):
         postgisTree = etree.Element('postgis')
         postgisTreeAttributes = postgisTree.attrib
 
-        for key in QgisPgConnection._params.keys():
+        for key in list(QgisPgConnection._params.keys()):
             postgisTreeAttributes[key] = str(getattr(self, key))
 
         qgsPgConnectionTree.append(postgisTree)

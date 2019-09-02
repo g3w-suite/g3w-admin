@@ -23,18 +23,18 @@ import os
 def get_project_file_path(instance, filename):
     """Custom name for uploaded project files."""
 
-    group_name = slugify(unicode(instance.group.name))
-    project_name = slugify(unicode(instance.title))
-    filename = u'{}_{}.qgs'.format(group_name, project_name)
+    group_name = slugify(str(instance.group.name))
+    project_name = slugify(str(instance.title))
+    filename = '{}_{}.qgs'.format(group_name, project_name)
     return os.path.join('projects', filename)
 
 
 def get_thumbnail_path(instance, filename):
     """Custom name for uploaded thumbnails."""
-    group_name = slugify(unicode(instance.group.name))
-    project_name = slugify(unicode(instance.title))
+    group_name = slugify(str(instance.group.name))
+    project_name = slugify(str(instance.title))
     ext = filename.split('.')[-1]
-    filename = u'{}_{}.{}'.format(group_name, project_name, ext)
+    filename = '{}_{}.{}'.format(group_name, project_name, ext)
     return os.path.join('thumbnails', filename)
 
 
@@ -193,7 +193,7 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
                 for node in layer['nodes']:
                     children.append(readLeaf(node, layers))
 
-                return [u'g_{}'.format(layer['name']), children]
+                return ['g_{}'.format(layer['name']), children]
             else:
                 return [layers[layer['id']][0], layers[layer['id']][1]]
 
@@ -388,7 +388,7 @@ class Widget(G3WACLModelMixins, models.Model):
     """
 
     TYPES = Choices(
-        *((w['value'], w['name']) for w in WIDGET_TYPES.values())
+        *((w['value'], w['name']) for w in list(WIDGET_TYPES.values()))
     )
     name = models.CharField(_('Name'), max_length=255)
     body = models.TextField(_('Body'))

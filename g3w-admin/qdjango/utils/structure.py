@@ -12,7 +12,7 @@ except ImportError:
     pass
 
 from qdjango.models import Layer
-from urlparse import urlsplit, parse_qs
+from urllib.parse import urlsplit, parse_qs
 from core.utils.projects import CoreMetaLayer
 from core.utils import unicode2ascii
 from .exceptions import QgisProjectLayerException
@@ -236,7 +236,7 @@ class QgisDBLayerStructure(QgisLayerStructure):
     def __init__(self, layer, **kwargs):
         super(QgisDBLayerStructure, self).__init__(layer, **kwargs)
 
-        if not self.layerType in self._dbTypes.keys():
+        if not self.layerType in list(self._dbTypes.keys()):
             raise Exception('Database Layer Type not available in qdjango module: {}'.format(self.layerType))
 
         self._datasource2dict()

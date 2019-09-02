@@ -93,7 +93,7 @@ def catalog_provider(groups=[]):
                 #'date': layer_metadata['date'],  # Maps to pycsw:Date, pycsw:Modified, pycsw:RevisionData, pycsw:CreationDate and pycsw:PublicationDate
                 'type': 'dataset',  # Maps to pycsw:Type
                 # Maps to pycsw:BoundingBox
-                'bounding_box': 'MULTIPOINT({1} {0}, {3} {2})'.format(*layer_metadata['bbox'].values()),
+                'bounding_box': 'MULTIPOINT({1} {0}, {3} {2})'.format(*list(layer_metadata['bbox'].values())),
                 'crs': layer_metadata['crs'],  # Maps to pycsw:CRS
                 #'alternate_title': layer_metadata['alternate_title'],  # Maps to pycsw:AlternateTitle
                 # From caller 'organization_name': layer_metadata['organization_name'],  # Maps to pycsw:OrganizationName

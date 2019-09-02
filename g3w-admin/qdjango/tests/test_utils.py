@@ -25,9 +25,9 @@ class QgisProjectTest(TestCase):
 
     def test_qgis_project(self):
 
-        self.assertEqual(self.project.title, u'G3W-Suite project test')
-        self.assertEqual(self.project.name, u'G3W-Suite project test')
-        self.assertEqual(self.project.qgisVersion, u'2.18.24')
+        self.assertEqual(self.project.title, 'G3W-Suite project test')
+        self.assertEqual(self.project.name, 'G3W-Suite project test')
+        self.assertEqual(self.project.qgisVersion, '2.18.24')
         self.assertEqual(self.project.srid, 4326)
         self.assertEqual(self.project.units, 'degrees')
 
@@ -86,10 +86,10 @@ class QgisProjectTest(TestCase):
 
         for layer in self.project.layers:
             if layer.layerId == 'countries_simpl20171228095706310':
-                self.assertEqual(layer.title, u'Countries')
-                self.assertEqual(layer.name, u'Countries')
-                self.assertEqual(layer.origname, u'countries')
-                self.assertEqual(layer.layerType, u'ogr')
+                self.assertEqual(layer.title, 'Countries')
+                self.assertEqual(layer.name, 'Countries')
+                self.assertEqual(layer.origname, 'countries')
+                self.assertEqual(layer.layerType, 'ogr')
                 self.assertEqual(layer.minScale, 100000000)
                 self.assertEqual(layer.maxScale, 0)
                 self.assertTrue(layer.isVisible)

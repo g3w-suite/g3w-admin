@@ -142,12 +142,12 @@ class ClientView(TemplateView):
                    settings.CLIENT_G3WSUITE_LOGO, reverse('client-credits'), frontendurl)
 
         # project by type(app)
-        if not '{}-{}'.format(kwargs['project_type'], self.project.pk) in groupSerializer.projects.keys():
+        if not '{}-{}'.format(kwargs['project_type'], self.project.pk) in list(groupSerializer.projects.keys()):
             raise Http404('No project type and/or project id present in group')
 
         # page title
 
-        contextData['page_title'] = u'{} | {}'.format(
+        contextData['page_title'] = '{} | {}'.format(
             getattr(settings, 'G3WSUITE_CUSTOM_TITLE', 'g3w - client'), self.project.title)
 
         # choosen skin by user main role

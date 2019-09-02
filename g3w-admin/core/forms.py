@@ -324,7 +324,7 @@ class MacroGroupForm(FileFormMixin, G3WFormMixin, ModelForm):
 
     def __init__(self, *args, **kwargs):
 
-        if kwargs['initial'].has_key('editor_users'):
+        if 'editor_users' in kwargs['initial']:
             self.initial_editor_users = kwargs['initial']['editor_users']
 
         super(MacroGroupForm, self).__init__(*args, **kwargs)
