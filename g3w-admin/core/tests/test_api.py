@@ -91,7 +91,7 @@ class CoreApiTest(APITestCase):
     def __testApiCall(self, view_name, args):
         """Utility to make test calls"""
 
-         # No auth
+        # No auth
         response = self.client.get(reverse(view_name, args=args))
         self.assertEqual(response.status_code, 403)
 
@@ -107,7 +107,7 @@ class CoreApiTest(APITestCase):
         """Test core-vector-api"""
 
         response = self.__testApiCall('core-vector-api', ['shp', 'qdjango', '1', 'spatialite_points20190604101052075'])
-        self.assertTrue('spatialite_points.shp' in response.content)
+        self.assertTrue('spatialite_points.shp' in response.content.decode('utf-8', 'backslashreplace'))
 
         response = self.__testApiCall('core-vector-api', ['config', 'qdjango', '1', 'spatialite_points20190604101052075'])
         resp = json.loads(response.content)
