@@ -343,7 +343,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         if error and not error.startswith('Warning'):
             raise APIException(error)
 
-        # buil on memeory zip file
+        # build on memory zip file
         # from https://stackoverflow.com/a/12951557
 
         filenames = ["{}{}".format(filename, ftype) for ftype in self.shp_extentions]
