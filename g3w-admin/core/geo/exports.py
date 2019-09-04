@@ -5,20 +5,14 @@ import os
 import zipfile
 import tempfile
 import datetime
+from io import StringIO
 from django.http import HttpResponse
 from django.utils.encoding import smart_str
 from django.db.models.fields import *
 from django.db.models.fields.related import ForeignKey
 from django.contrib.gis.db.models.fields import GeometryField
 from django.contrib.gis.gdal import check_err, OGRGeomType
-
-try:
-    from io import StringIO
 except ImportError:
-    try:
-        from io import StringIO
-    except:
-        from io import StringIO
 
 try:
     # a mysterious bug with ctypes and python26 causes crashes
