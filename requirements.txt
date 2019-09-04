@@ -15,6 +15,7 @@ django-debug-panel==0.8.3
 django-mptt==0.8.7
 django-ordered-model==1.4.1
 django-ajax-selects==1.6.1
+django-filter
 pathlib
 shapely
 GeoAlchemy2
