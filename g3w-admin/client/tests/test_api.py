@@ -122,7 +122,7 @@ class ClientApiTest(APITestCase):
         self.assertEqual(resp["credits"], "/it/credits/")
         self.assertEqual(resp["client"], "client/")
         self.assertEqual(resp["staticurl"], "/static/")
-        self.assertEqual(resp["user"]["username"], "admin<type 'type'>")
+        self.assertEqual(resp["user"]["username"], "admin<class 'type'>")
         self.assertEqual(resp["user"]["first_name"], "")
         self.assertEqual(resp["user"]["last_name"], "")
         self.assertEqual(resp["user"]["admin_url"], "/it/")
