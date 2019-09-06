@@ -85,3 +85,24 @@ def delete_cache_project_settings(sender, **kwargs):
 
     if 'qdjango' in settings.CACHES:
         caches['qdjango'].delete(settings.QDJANGO_PRJ_CACHE_KEY.format(kwargs['instance'].pk))
+
+
+@receiver(post_save, sender=Layer)
+def update_widget(sender, **kwargs):
+    """
+    Update widget data when layer datasource change
+    """
+
+    # only for update
+    if kwargs['created']:
+        return
+
+    layer = kwargs['instance']
+
+    # search for widget
+    widgets = layer.widget_set.all()
+
+    for widget in widgets:
+        if widget.datasource != layer.datasource:
+            widget.datasource = layer.datasource
+            widget.save()
