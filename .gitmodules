@@ -55,3 +55,9 @@
 [submodule "g3w-admin/archiweb"]
 	path = g3w-admin/archiweb
 	url = https://wlorenzetti@bitbucket.org/gis3w/g3w-admin-archiweb.git
+[submodule "g3w-admin/portal"]
+	path = g3w-admin/portal
+	url = https://wlorenzetti@bitbucket.org/gis3w/g3w-admin-portal.git
+[submodule "g3w-admin/authtoken"]
+	path = g3w-admin/authtoken
+	url = https://wlorenzetti@bitbucket.org/gis3w/g3w-admin-authtoken.git

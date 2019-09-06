@@ -66,6 +66,7 @@ run_local*.sh
 /g3w-admin/catalog/
 /g3w-admin/spid_redirect/
 /g3w-admin/archiweb/
+/g3w-admin/portal/
 .gitmodules
 
 /pymast
