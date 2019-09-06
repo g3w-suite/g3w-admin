@@ -1092,7 +1092,7 @@ class QgisProjectSettingsWMS(XmlData):
         :return:
         """
         try:
-            self.qgisProjectSettingsTree = lxml.fromstring(self.qgisProjectSettingsFile)
+            self.qgisProjectSettingsTree = lxml.fromstring(self.qgisProjectSettingsFile.encode('UTF-8'))
         except Exception as e:
             raise Exception(
                 _('The project settings is malformed: {} ----- {}'.format(e.message, self.qgisProjectSettingsFile)))
