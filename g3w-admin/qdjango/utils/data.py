@@ -1132,7 +1132,7 @@ class QgisProjectSettingsWMS(XmlData):
             name = layerTree.find(self._buildTagWithNS('Name')).text
             attributes = layerTree.find(self._buildTagWithNS('Attributes'))
             attrs = []
-            if attributes:
+            if len(attributes):
                 for attribute in attributes:
                     attribs = attribute.attrib
                     if 'alias' not in attribs:
