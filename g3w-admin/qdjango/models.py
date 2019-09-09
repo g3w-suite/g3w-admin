@@ -135,7 +135,7 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
             user = User.objects.get(pk=user_id)
             setPermissionUserObject(user, self, permissions='view_project', mode=mode)
 
-            # if viewer not has permission on group give permission only view on parent gorup group
+            # if viewer not has permission on group give permission only view on parent group
             if not user.has_perm('core.view_group', self.group):
                 setPermissionUserObject(user, self.group, permissions=[
                     'core.view_group'
