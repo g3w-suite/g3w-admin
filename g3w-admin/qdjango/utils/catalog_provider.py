@@ -68,7 +68,7 @@ def catalog_provider(groups=[]):
         for layer_data in [l for l in project_data['layers'] if l['id'] in visible_layers]:
             layer_metadata = project_data['metadata']
             layer_metadata.update(layer_data)
-            layer = Layer.objects.get(qgs_layer_id=layer_data['id'])
+            layer = Layer.objects.get(qgs_layer_id=layer_data['id'], project=project)
             # Full list of Record fields
             rec = {
                 # Maps to pycsw:Identifier

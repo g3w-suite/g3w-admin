@@ -58,6 +58,6 @@
 [submodule "g3w-admin/portal"]
 	path = g3w-admin/portal
 	url = https://wlorenzetti@bitbucket.org/gis3w/g3w-admin-portal.git
-[submodule "g3w-admin/authtoken"]
-	path = g3w-admin/authtoken
+[submodule "g3w-admin/g3wauthtoken"]
+	path = g3w-admin/g3wauthtoken
 	url = https://wlorenzetti@bitbucket.org/gis3w/g3w-admin-authtoken.git
