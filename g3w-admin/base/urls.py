@@ -93,7 +93,7 @@ if settings.SITE_PREFIX_URL:
         url(r'^{}'.format(settings.SITE_PREFIX_URL), include(urlpatterns))
     ]
 
-urlpatterns = i18n_patterns(*urlpatterns)
+urlpatterns = i18n_patterns(*urlpatterns, prefix_default_language=settings.PREFIX_DEFAULT_LANGUAGE)
 
 
 if settings.SITE_PREFIX_URL:

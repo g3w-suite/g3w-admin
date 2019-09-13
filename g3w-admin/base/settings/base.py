@@ -187,6 +187,9 @@ LANGUAGES = (
     ('en', 'English'),
 )
 
+# if prefix for defaltu language put in to url
+PREFIX_DEFAULT_LANGUAGE = True
+
 
 # for sessions
 SESSION_COOKIE_NAME = 'g3wadmin_sessionid'
