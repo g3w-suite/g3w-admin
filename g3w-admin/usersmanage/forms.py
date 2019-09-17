@@ -296,6 +296,17 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
         label=_('User viewer groups')
     )
 
+    def _set_editor1_queryset(self):
+        """
+        Set correct guardian queryset for editor level 1
+        """
+        self.fields['user_groups_editor'].queryset = get_objects_for_user(self.request.user, 'auth.change_group',
+                                                                          AuthGroup).order_by('name').filter(
+            grouprole__role='editor')
+        self.fields['user_groups_viewer'].queryset = get_objects_for_user(self.request.user, 'auth.change_group',
+                                                                          AuthGroup).order_by('name').filter(
+            grouprole__role='viewer')
+
     def __init__(self, *args, **kwargs):
         super(G3WUserForm, self).__init__(*args, **kwargs)
 
@@ -311,6 +322,11 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
 
         if 'user_groups' in self.initial and len(self.initial['user_groups']) > 0:
             self.initial['user_groups'] = self.initial['user_groups']
+
+        # change queryset for editor1
+        if G3W_EDITOR1 in getUserGroups(self.request.user):
+            self._set_editor1_queryset()
+
 
         self.helper = FormHelper(self)
         self.helper.form_tag = False
