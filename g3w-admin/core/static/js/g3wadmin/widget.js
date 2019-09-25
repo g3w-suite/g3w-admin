@@ -94,8 +94,8 @@ _.extend(g3wadmin.widget, {
 
             // open modal to confirm delete
             var modal = ga.ui.buildDefaultModal({
-                modalTitle: 'Delete item',
-                modalBody: 'Are you sure to delete this Item?' + preMessage ,
+                modalTitle: gettext('Delete item'),
+                modalBody: gettext('Are you sure to delete this Item')+ '?' + preMessage ,
                 closeButtonText: 'No'
             });
 
