@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-11-15 16:52+0000\n"
+"POT-Creation-Date: 2019-09-25 16:19+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,129 +18,47 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: core/static/bower_components/jquery-ui/jquery-ui.min.js:8
-#: core/static/dist/js/vendor.min.js:13 core/static/dist/js/vendor.min.js:874
-#: core/static/dist/js/vendor.min.js:1735
-#: core/static/dist/js/vendor.min.js:2596
-#: core/static/dist/js/vendor.min.js:3463
-#: core/static/dist/js/vendor.min.js:3497
-#: core/static/dist/js/vendor.min.js:3523
-#: core/static/dist/js/vendor.min.js:3549
-#: core/static/dist/js/vendor.min.js:3574
-#: core/static/dist/js/vendor.min.js:3600
-msgid "'"
-msgstr ""
-
-#: core/static/bower_components/rangy-1.3/rangy-textrange.js:32
-msgid "isCharacterDataNode"
-msgstr ""
-
-#: core/static/bower_components/rangy-1.3/rangy-textrange.js:32
-msgid "nodeIndex"
-msgstr ""
-
-#: core/static/bower_components/rangy-1.3/rangy-textrange.js:32
-msgid "nodeLength"
-msgstr ""
-
-#: core/static/bower_components/rangy-1.3/rangy-textrange.js:32
-msgid "containsPositions"
-msgstr ""
-
-#: core/static/bower_components/rangy-1.3/rangy-textrange.js:32
-msgid "isWhitespace"
-msgstr ""
-
-#: core/static/bower_components/rangy-1.3/rangy-textrange.js:32
-msgid "isCollapsedWhitespace"
-msgstr ""
-
-#: core/static/bower_components/rangy-1.3/rangy-textrange.js:32
-msgid "computedDisplay"
-msgstr ""
-
-#: core/static/bower_components/rangy-1.3/rangy-textrange.js:32
-msgid "collapsed"
-msgstr ""
-
-#: core/static/bower_components/rangy-1.3/rangy-textrange.js:32
-msgid "ignored"
-msgstr ""
-
-#: core/static/bower_components/rangy-1.3/rangy-textrange.js:32
-msgid "nextPos"
-msgstr ""
-
-#: core/static/bower_components/rangy-1.3/rangy-textrange.js:32
-msgid "previous"
-msgstr ""
-
-#: core/static/bower_components/rangy-1.3/rangy-textrange.js:32
-msgid "textNodeInfo"
-msgstr ""
-
-#: core/static/bower_components/rangy-1.3/rangy-textrange.js:32
-msgid "hasInnerText"
-msgstr ""
-
-#: core/static/bower_components/rangy-1.3/rangy-textrange.js:32
-msgid "isRenderedBlock"
-msgstr ""
-
-#: core/static/bower_components/rangy-1.3/rangy-textrange.js:32
-msgid "trailingSpace"
-msgstr ""
-
-#: core/static/bower_components/rangy-1.3/rangy-textrange.js:32
-msgid "leadingSpace"
-msgstr ""
-
-#: core/static/bower_components/rangy-1.3/rangy-textrange.js:32
-msgid "nextVisible"
-msgstr ""
-
-#: core/static/bower_components/rangy-1.3/rangy-textrange.js:32
-msgid "nextUncollapsed"
-msgstr ""
-
-#: core/static/bower_components/rangy-1.3/rangy-textrange.js:32
-msgid "previousVisible"
-msgstr ""
-
-#: core/static/dist/js/g3wadmin.min.js:695
-#: core/static/js/g3wadmin/widget.js:144
-msgid "Detail object"
-msgstr "Dettagli"
-
-#: core/static/dist/js/g3wadmin.min.js:697 core/static/js/g3wadmin/tpl.js:18
-#: core/static/js/g3wadmin/widget.js:146
-msgid "Close"
-msgstr "Chiudi"
-
-#: core/static/js/g3wadmin/tpl.js:13
+#: static/dist/js/g3wadmin.min.js:1 static/js/g3wadmin/tpl.js:13
 msgid "Title"
 msgstr "Titolo"
 
-#: core/static/js/g3wadmin/tpl.js:14
+#: static/dist/js/g3wadmin.min.js:1 static/js/g3wadmin/tpl.js:14
 msgid "Content"
 msgstr "Contenuto"
 
-#: core/static/js/g3wadmin/widget.js:280
+#: static/dist/js/g3wadmin.min.js:1 static/js/g3wadmin/tpl.js:19
+#: static/js/g3wadmin/widget.js:155
+msgid "Close"
+msgstr "Chiudi"
+
+#: static/dist/js/g3wadmin.min.js:1 static/js/g3wadmin/widget.js:153
+msgid "Detail object"
+msgstr "Dettagli"
+
+#: static/dist/js/g3wadmin.min.js:1 static/js/g3wadmin/widget.js:289
 msgid "Form title"
 msgstr "Titolo del form"
 
-#: core/static/js/g3wadmin/widget.js:339
+#: static/dist/js/g3wadmin.min.js:1 static/js/g3wadmin/widget.js:351
 msgid "Upload file"
 msgstr ""
 
-#: core/static/js/g3wadmin/widget.js:359
+#: static/dist/js/g3wadmin.min.js:1 static/js/g3wadmin/widget.js:383
 msgid "Drag&Drop files here"
 msgstr "Trascina i file da caricare qui"
 
-#: core/static/js/g3wadmin/widget.js:360
+#: static/dist/js/g3wadmin.min.js:1 static/js/g3wadmin/widget.js:384
 msgid "Browse Files"
 msgstr "Scegli i file"
 
-#: core/static/js/g3wadmin/widget.js:430
+#: static/dist/js/g3wadmin.min.js:1 static/js/g3wadmin/widget.js:463
 msgid "ERROR"
 msgstr "ERRORE"
+
+#: static/js/g3wadmin/widget.js:97
+msgid "Delete item"
+msgstr "Elimina elemento"
+
+#: static/js/g3wadmin/widget.js:98
+msgid "Are you sure to delete this Item"
+msgstr "Sei sicuro di volere eliminare questo elemento"
