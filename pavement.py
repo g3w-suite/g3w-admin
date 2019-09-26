@@ -161,20 +161,24 @@ def update_deploy():
     # update code from core module
     info('Updating code:')
     info('- Updating CORE module')
-    #sh('cd {}/{} | git pull'.format(CURRENT_DIR, BASE_PATH))
+    sh('cd {}/{}'.format(CURRENT_DIR, BASE_PATH))
+    sh('git pull')
 
     # get every current g3w-suite app and update single module
     for app in settings.G3WADMIN_LOCAL_MORE_APPS:
         info('- Updating {} module'.format(app.upper()))
-        sh('cd {}/{}/{} | git pull'.format(CURRENT_DIR, BASE_PATH, app))
+        sh('cd {}/{}/{}'.format(CURRENT_DIR, BASE_PATH, app))
+        sh('git pull')
 
     # exec migration
     info('Update DB:')
-    sh('cd {}/{} | python manage.py migrate'.format(CURRENT_DIR, BASE_PATH))
+    sh('cd {}/{}'.format(CURRENT_DIR, BASE_PATH))
+    sh('python manage.py migrate')
 
     # exec collectstatic
     info('Update STATIC files:')
-    sh('cd {}/{} | python manage.py collectstatic --no-input'.format(CURRENT_DIR, BASE_PATH))
+    sh('cd {}/{}'.format(CURRENT_DIR, BASE_PATH))
+    sh('python manage.py collectstatic --no-input')
 
     # restart webserver (default apache2)
     info('Restart WEBSERVER:')
