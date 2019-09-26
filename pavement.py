@@ -6,12 +6,18 @@
 #########################################################################
 
 import os
+import sys
+sys.path.insert(0, os.getcwd())
 import time
 from paver.easy import task, options, cmdopts, needs
 from paver.easy import path, sh, info, call_task
 from paver.easy import BuildFailure
 
 BASE_PATH = 'g3w-admin'
+CURRENT_DIR = os.getcwd()
+sys.path.insert(0, CURRENT_DIR+'/'+BASE_PATH)
+
+from base import settings
 
 FIXTURES = [
     'BaseLayer.json',
@@ -144,3 +150,30 @@ def stop():
     Stop the GeoNode Django application
     """
     kill('python', 'runserver')
+
+
+@task
+def update_deploy():
+    """
+    Update code and do other deploy operations : migration, collect static, etc...
+    """
+
+    # update code from core module
+    info('Updating code:')
+    info('- Updating CORE module')
+    #sh('cd {}/{} | git pull'.format(CURRENT_DIR, BASE_PATH))
+
+    # get every current g3w-suite app and update single module
+    for app in settings.G3WADMIN_LOCAL_MORE_APPS:
+        info('- Updating {} module'.format(app.upper()))
+        # sh('cd {}/{}/{} | git pull'.format(CURRENT_DIR, BASE_PATH, app))
+
+    # exec migration
+    info('Update DB:')
+    sh('cd {}/{} | python manage.py migrate'.format(CURRENT_DIR, BASE_PATH))
+
+    # exec collectstatic
+    info('Update STATIC files:')
+    sh('cd {}/{} | python manage.py collectstatic --no-input'.format(CURRENT_DIR, BASE_PATH))
+
+    info('UPDATE DEPLOY DONE!')
