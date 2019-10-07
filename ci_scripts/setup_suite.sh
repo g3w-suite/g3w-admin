@@ -45,8 +45,8 @@ if [ ! -e ${SETUP_DONE_FILE} ]; then
     wait-for-it -h ${G3WSUITE_POSTGRES_HOST:-postgis} -p ${G3WSUITE_POSTGRES_PORT:-5432} -t 60
 
     cd ${DJANGO_DIRECTORY}
-    python manage.py collectstatic --noinput -v 0
-    python manage.py migrate --noinput
+    python3 manage.py collectstatic --noinput -v 0
+    python3 manage.py migrate --noinput
 
     pushd .
     cd ${DJANGO_DIRECTORY}/core/static
@@ -56,13 +56,13 @@ if [ ! -e ${SETUP_DONE_FILE} ]; then
 
     echo "Installing fixtures ..."
     for FIXTURE in 'BaseLayer.json' 'G3WGeneralDataSuite.json' 'G3WMapControls.json' 'G3WSpatialRefSys.json'; do
-        python manage.py loaddata  core/fixtures/${FIXTURE}
+        python3 manage.py loaddata  core/fixtures/${FIXTURE}
     done
     # sync menu tree items
-    python manage.py sitetree_resync_apps
-    python manage.py createsuperuser --noinput --username admin --email admin@email.com || true
+    python3 manage.py sitetree_resync_apps
+    python3 manage.py createsuperuser --noinput --username admin --email admin@email.com || true
     # Set fake password for all users
-    python manage.py set_passwords --password admin
+    python3 manage.py set_passwords --password admin
     touch ${SETUP_DONE_FILE}
     echo "Setup completed ..."
 else
@@ -70,9 +70,9 @@ else
     # Wait for postgis
     wait-for-it -h ${G3WSUITE_POSTGRES_HOST:-postgis} -p ${G3WSUITE_POSTGRES_PORT:-5432} -t 60
     cd ${DJANGO_DIRECTORY}
-    python manage.py collectstatic --noinput -v 0
-    python manage.py migrate --noinput
-    python manage.py sitetree_resync_apps
+    python3 manage.py collectstatic --noinput -v 0
+    python3 manage.py migrate --noinput
+    python3 manage.py sitetree_resync_apps
 fi
 
 # Make sure data are readable:
