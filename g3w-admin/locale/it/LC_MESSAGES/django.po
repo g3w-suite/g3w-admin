@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-24 15:47+0000\n"
+"POT-Creation-Date: 2019-10-03 10:05+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,1346 +18,826 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: OWS/utils/data.py:126
-msgid "The GetFeatureResponse response is malformed: {}"
-msgstr ""
-
-#: archiweb/forms.py:36
-msgid "Municipality code"
-msgstr ""
-
-#: archiweb/forms.py:57
-msgid "Data config"
-msgstr ""
-
-#: archiweb/models.py:90
-msgid "Codice comune not available"
-msgstr ""
-
-#: archiweb/templates/archiweb/projectconfig.html:9
-msgid "Update configuration project type"
-msgstr ""
-
-#: archiweb/templates/archiweb/projectconfig.html:11
-msgid "New configuration project type"
-msgstr ""
-
-#: archiweb/templates/archiweb/projectconfig_list.html:10
-msgid "Cadastre projects"
-msgstr ""
-
-#: archiweb/templates/archiweb/projectconfig_list.html:21
-msgid ""
-"Add, update or delete ARCHIWEB configurations: indicate relations between "
-"project codice comune and ARCHIWEB project type"
-msgstr ""
-
-#: archiweb/templates/archiweb/projectconfig_list.html:31
-#, fuzzy
-#| msgid "Configurations"
-msgid "Configs"
-msgstr "Configurazioni"
-
-#: archiweb/templates/archiweb/projectconfig_list.html:40
-msgid "Qdjango project"
-msgstr ""
-
-#: archiweb/templates/archiweb/projectconfig_list.html:41
-msgid "Municipality cadastre code"
-msgstr ""
-
-#: archiweb/templates/archiweb/projectconfig_list.html:42
-msgid "ARCHIWEB project type"
-msgstr ""
-
-#: archiweb/templates/archiweb/projectconfig_list.html:53
-#: archiweb/templates/archiweb/projectconfig_list.html:65
-#: catalog/templates/catalog/catalog_detail.html:23
-#: catalog/templates/catalog/catalog_list.html:28
-#: progeo/templates/progeo/project_list.html:45
-msgid "Edit"
-msgstr ""
-
-#: archiweb/templates/archiweb/projectconfig_list.html:58
-#: catalog/templates/catalog/catalog_detail.html:24
-#: catalog/templates/catalog/catalog_list.html:29
-#: progeo/templates/progeo/project_list.html:50
-msgid "Delete"
-msgstr ""
-
-#: base/settings/custom_planetek.py:26
-#, fuzzy
-#| msgid "Access denied"
-msgid "Access"
-msgstr "Accesso negato"
-
-#: base/settings/local_settings.py:441
-msgid ""
-"This website uses cookies to ensure you get the best experience on our "
-"website. <a href='https://egov.ba.it/en/privacy;"
-"jsessionid=767D300745F9C395E1DA3C44C9F82B6B'>Access</a> to privacy "
-"information"
-msgstr ""
-
-#: catalog/forms.py:57
+#: forms.py:57
 #, fuzzy
 #| msgid "Edit general data"
 msgid "General data"
 msgstr "Modifica i dati generali"
 
-#: catalog/forms.py:77
+#: forms.py:77
 msgid "Identification"
 msgstr ""
 
-#: catalog/forms.py:100
+#: forms.py:100
 msgid "Provider"
 msgstr ""
 
-#: catalog/forms.py:117
+#: forms.py:117
 msgid "Contact"
 msgstr ""
 
-#: catalog/forms.py:147
+#: forms.py:147
 msgid "INSPIRE"
 msgstr ""
 
-#: catalog/forms.py:173
+#: forms.py:173
 msgid "RNDT"
 msgstr ""
 
-#: catalog/forms.py:210
+#: forms.py:210
 msgid "Record"
 msgstr ""
 
-#: catalog/models.py:52
+#: models.py:52
 msgid "Global (serves all projects)"
 msgstr ""
 
-#: catalog/models.py:53
+#: models.py:53
 msgid "Group (serves a single group)"
 msgstr ""
 
-#: catalog/models.py:54
+#: models.py:54
 msgid "Macrogroup (serves a macrogroup)"
 msgstr ""
 
-#: catalog/models.py:58
+#: models.py:58
 msgid "conformant"
 msgstr ""
 
-#: catalog/models.py:59
+#: models.py:59
 #, fuzzy
 #| msgid "Configurations"
 msgid "notConformant"
 msgstr "Configurazioni"
 
-#: catalog/models.py:60
+#: models.py:60
 msgid "notEvaluated"
 msgstr ""
 
-#: catalog/models.py:64
+#: models.py:64
 msgid "Addresses"
 msgstr ""
 
-#: catalog/models.py:65
+#: models.py:65
 #, fuzzy
 #| msgid "Adminstration"
 msgid "Administrative units"
 msgstr "Amministrazione"
 
-#: catalog/models.py:67
+#: models.py:67
 msgid "Agricultural and aquaculture facilities"
 msgstr ""
 
-#: catalog/models.py:69
+#: models.py:69
 msgid "Area management/restriction/regulation zones and reporting units"
 msgstr ""
 
-#: catalog/models.py:70
+#: models.py:70
 msgid "Atmospheric conditions"
 msgstr ""
 
-#: catalog/models.py:71
+#: models.py:71
 msgid "Bio-geographical regions"
 msgstr ""
 
-#: catalog/models.py:72
+#: models.py:72
 msgid "Buildings"
 msgstr ""
 
-#: catalog/models.py:73
+#: models.py:73
 msgid "Cadastral parcels"
 msgstr ""
 
-#: catalog/models.py:74
+#: models.py:74
 msgid "Coordinate reference systems"
 msgstr ""
 
-#: catalog/models.py:75
+#: models.py:75
 msgid "Elevation"
 msgstr ""
 
-#: catalog/models.py:76
+#: models.py:76
 msgid "Energy resources"
 msgstr ""
 
-#: catalog/models.py:78
+#: models.py:78
 msgid "Environmental monitoring facilities"
 msgstr ""
 
-#: catalog/models.py:79
+#: models.py:79
 msgid "Geographical grid systems"
 msgstr ""
 
-#: catalog/models.py:80
+#: models.py:80
 msgid "Geographical names"
 msgstr ""
 
-#: catalog/models.py:81
+#: models.py:81
 msgid "Geology"
 msgstr ""
 
-#: catalog/models.py:82
+#: models.py:82
 msgid "Habitats and biotopes"
 msgstr ""
 
-#: catalog/models.py:83
+#: models.py:83
 msgid "Human health and safety"
 msgstr ""
 
-#: catalog/models.py:84
+#: models.py:84
 msgid "Hydrography"
 msgstr ""
 
-#: catalog/models.py:85
+#: models.py:85
 msgid "Land cover"
 msgstr ""
 
-#: catalog/models.py:86
+#: models.py:86
 msgid "Land use"
 msgstr ""
 
-#: catalog/models.py:88
+#: models.py:88
 msgid "Meteorological geographical features"
 msgstr ""
 
-#: catalog/models.py:89
+#: models.py:89
 msgid "Mineral resources"
 msgstr ""
 
-#: catalog/models.py:90
+#: models.py:90
 msgid "Natural risk zones"
 msgstr ""
 
-#: catalog/models.py:92
+#: models.py:92
 msgid "Oceanographic geographical features"
 msgstr ""
 
-#: catalog/models.py:93
+#: models.py:93
 msgid "Orthoimagery"
 msgstr ""
 
-#: catalog/models.py:95
+#: models.py:95
 msgid "Population distribution — demography"
 msgstr ""
 
-#: catalog/models.py:97
+#: models.py:97
 msgid "Production and industrial facilities"
 msgstr ""
 
-#: catalog/models.py:98
+#: models.py:98
 msgid "Protected sites"
 msgstr ""
 
-#: catalog/models.py:99
+#: models.py:99
 msgid "Sea regions"
 msgstr ""
 
-#: catalog/models.py:100
+#: models.py:100
 msgid "Soil"
 msgstr ""
 
-#: catalog/models.py:101
+#: models.py:101
 msgid "Species distribution"
 msgstr ""
 
-#: catalog/models.py:102
+#: models.py:102
 msgid "Statistical units"
 msgstr ""
 
-#: catalog/models.py:103
+#: models.py:103
 msgid "Transport networks"
 msgstr ""
 
-#: catalog/models.py:105
+#: models.py:105
 msgid "Utility and governmental services"
 msgstr ""
 
-#: catalog/models.py:144 progeo/models.py:251 progeo/models.py:394
+#: models.py:144
 msgid "Name"
 msgstr ""
 
-#: catalog/models.py:146 progeo/models.py:97 progeo/models.py:257
+#: models.py:146
 msgid "Slug"
 msgstr ""
 
-#: catalog/models.py:148 progeo/models.py:259
+#: models.py:148
 msgid "Is active"
 msgstr ""
 
-#: catalog/models.py:149 progeo/models.py:266
+#: models.py:149
 msgid "Order"
 msgstr ""
 
-#: catalog/models.py:152
+#: models.py:152
 msgid "Scope"
 msgstr ""
 
-#: catalog/models.py:154
+#: models.py:154
 msgid "This field is ignored unless scope is \"Group\""
 msgstr ""
 
-#: catalog/models.py:156
+#: models.py:156
 msgid "This field is ignored unless scope is \"MacroGroup\""
 msgstr ""
 
-#: catalog/models.py:161
+#: models.py:161
 msgid "identification_title"
 msgstr ""
 
-#: catalog/models.py:163
+#: models.py:163
 msgid "identification_abstract"
 msgstr ""
 
-#: catalog/models.py:165
+#: models.py:165
 msgid "identification_keywords"
 msgstr ""
 
-#: catalog/models.py:167
+#: models.py:167
 msgid "identification_keywords_type"
 msgstr ""
 
-#: catalog/models.py:169
+#: models.py:169
 msgid "identification_fees"
 msgstr ""
 
-#: catalog/models.py:172
+#: models.py:172
 msgid "identification_accessconstraints"
 msgstr ""
 
-#: catalog/models.py:172
+#: models.py:172
 msgid "Text description for other constraints"
 msgstr ""
 
-#: catalog/models.py:174
+#: models.py:174
 msgid "provider_name"
 msgstr ""
 
-#: catalog/models.py:176
+#: models.py:176
 msgid "provider_url"
 msgstr ""
 
-#: catalog/models.py:178
+#: models.py:178
 msgid "contact_name"
 msgstr ""
 
-#: catalog/models.py:180
+#: models.py:180
 msgid "contact_position"
 msgstr ""
 
-#: catalog/models.py:182
+#: models.py:182
 msgid "contact_address"
 msgstr ""
 
-#: catalog/models.py:184
+#: models.py:184
 msgid "contact_city"
 msgstr ""
 
-#: catalog/models.py:186
+#: models.py:186
 msgid "contact_stateorprovince"
 msgstr ""
 
-#: catalog/models.py:188
+#: models.py:188
 msgid "contact_postalcode"
 msgstr ""
 
-#: catalog/models.py:190
+#: models.py:190
 msgid "contact_country"
 msgstr ""
 
-#: catalog/models.py:192
+#: models.py:192
 msgid "contact_phone"
 msgstr ""
 
-#: catalog/models.py:194
+#: models.py:194
 msgid "contact_fax"
 msgstr ""
 
-#: catalog/models.py:196
+#: models.py:196
 msgid "contact_email"
 msgstr ""
 
-#: catalog/models.py:198
+#: models.py:198
 msgid "contact_url"
 msgstr ""
 
-#: catalog/models.py:200
+#: models.py:200
 msgid "contact_hours"
 msgstr ""
 
-#: catalog/models.py:202
+#: models.py:202
 msgid "contact_instructions"
 msgstr ""
 
-#: catalog/models.py:204
+#: models.py:204
 msgid "contact_role"
 msgstr ""
 
-#: catalog/models.py:208
+#: models.py:208
 msgid "inspire_enabled"
 msgstr ""
 
-#: catalog/models.py:209
+#: models.py:209
 msgid "whether to enable the INSPIRE extension"
 msgstr ""
 
-#: catalog/models.py:211
+#: models.py:211
 msgid "inspire_languages_supported"
 msgstr ""
 
-#: catalog/models.py:212
+#: models.py:212
 msgid ""
 "list of comma separated 3 letter codes of supported languages (see http://"
 "inspire.ec.europa.eu/schemas/common/1.0/enums/enum_eng.xsd, simpleType "
 "euLanguageISO6392B)"
 msgstr ""
 
-#: catalog/models.py:213
+#: models.py:213
 msgid "inspire_default_language"
 msgstr ""
 
-#: catalog/models.py:214
+#: models.py:214
 msgid ""
 "3 letter code of the default language (see http://inspire.ec.europa.eu/"
 "schemas/common/1.0/enums/enum_eng.xsd, simpleType euLanguageISO6392B)"
 msgstr ""
 
-#: catalog/models.py:215
+#: models.py:215
 msgid "inspire_date"
 msgstr ""
 
-#: catalog/models.py:216
+#: models.py:216
 msgid " date of INSPIRE metadata offering (in ISO 8601 format)"
 msgstr ""
 
-#: catalog/models.py:218
+#: models.py:218
 msgid "inspire_gemet_keywords"
 msgstr ""
 
-#: catalog/models.py:219 catalog/models.py:623
+#: models.py:219 models.py:623
 msgid ""
 "a comma-seperated keyword list of GEMET INSPIRE theme keywords about the "
 "service (see http://inspire.ec.europa.eu/schemas/common/1.0/enums/enum_eng."
 "xsd, complexType inspireTheme_eng)"
 msgstr ""
 
-#: catalog/models.py:221
+#: models.py:221
 msgid "inspire_conformity_service"
 msgstr ""
 
-#: catalog/models.py:222
+#: models.py:222
 msgid ""
 "the level of INSPIRE conformance for spatial data sets and services "
 "(conformant, notConformant, notEvaluated)"
 msgstr ""
 
-#: catalog/models.py:224
+#: models.py:224
 msgid "inspire_contact_organization"
 msgstr ""
 
-#: catalog/models.py:225
+#: models.py:225
 msgid "the organization name responsible for the INSPIRE/RNDT metadata"
 msgstr ""
 
-#: catalog/models.py:227
+#: models.py:227
 msgid "inspire_contact_email"
 msgstr ""
 
-#: catalog/models.py:228
+#: models.py:228
 msgid "the email address of entity responsible for the INSPIRE/RNDT metadata"
 msgstr ""
 
-#: catalog/models.py:230
+#: models.py:230
 msgid "inspire_contact_url"
 msgstr ""
 
-#: catalog/models.py:231
+#: models.py:231
 msgid "the URL of entity responsible for the INSPIRE/RNDT metadata"
 msgstr ""
 
-#: catalog/models.py:233
+#: models.py:233
 msgid "inspire_contact_phone"
 msgstr ""
 
-#: catalog/models.py:234
+#: models.py:234
 msgid ""
 "the telephone number of entity responsible for the INSPIRE/RNDT metadata"
 msgstr ""
 
-#: catalog/models.py:236
+#: models.py:236
 msgid "inspire_temp_extent"
 msgstr ""
 
-#: catalog/models.py:237
+#: models.py:237
 msgid ""
 "temporal extent of the service (in ISO 8601 format). Either a single date (i."
 "e. yyyy-mm-dd), or an extent (i.e. yyyy-mm-dd/yyyy-mm-dd)"
 msgstr ""
 
-#: catalog/models.py:239
+#: models.py:239
 msgid "inspire_geographical_extent"
 msgstr ""
 
-#: catalog/models.py:240
+#: models.py:240
 msgid ""
 "inspire_geographical_extent of the service. Space separated values of lon/"
 "lat (west south east north)"
 msgstr ""
 
-#: catalog/models.py:244
+#: models.py:244
 msgid "RNDT enabled"
 msgstr ""
 
-#: catalog/models.py:245
+#: models.py:245
 msgid "whether to enable the RNDT extension"
 msgstr ""
 
-#: catalog/models.py:247
+#: models.py:247
 #, fuzzy
 #| msgid "Adminstration"
 msgid "RNDT codice iPA amministrazione"
 msgstr "Amministrazione"
 
-#: catalog/models.py:309
+#: models.py:309
 msgid "Catalog endpoint"
 msgstr ""
 
-#: catalog/models.py:310
+#: models.py:310
 msgid "Catalog endpoints"
 msgstr ""
 
-#: catalog/models.py:366
+#: models.py:366
 msgid "You must select a group or set another scope for the catalog."
 msgstr ""
 
-#: catalog/models.py:369
+#: models.py:369
 msgid "You must select a macro group or set another scope for the catalog."
 msgstr ""
 
-#: catalog/models.py:375
+#: models.py:375
 #, python-format
 msgid "RNDT is enabled: you need to fill in \"%s\"."
 msgstr ""
 
-#: catalog/models.py:380
+#: models.py:380
 #, python-format
 msgid "INSPIRE is enabled: you need to fill in \"%s\"."
 msgstr ""
 
-#: catalog/models.py:385
+#: models.py:385
 msgid ""
 "inspire_geographical_extent is not correct, please use format space "
 "separated values of lon/lat (west south east north)"
 msgstr ""
 
-#: catalog/models.py:483
+#: models.py:483
 #, python-format
 msgid ""
 "%s registerCatalogRecordProvider registration must provide a valid Catalog."
 "SCOPE"
 msgstr ""
 
-#: catalog/models.py:519
+#: models.py:519
 msgid "Farming - Rearing of animals and/or cultivation of plants."
 msgstr ""
 
-#: catalog/models.py:520
+#: models.py:520
 msgid "Biota - Flora and/or fauna in natural environment."
 msgstr ""
 
-#: catalog/models.py:521
+#: models.py:521
 msgid "Boundaries - Legal land descriptions."
 msgstr ""
 
-#: catalog/models.py:523
+#: models.py:523
 msgid ""
 "Climatology / Meteorology / Atmosphere - Processes and phenomena of the "
 "atmosphere."
 msgstr ""
 
-#: catalog/models.py:524
+#: models.py:524
 msgid "Economy - Economic activities, conditions and employment."
 msgstr ""
 
-#: catalog/models.py:525
+#: models.py:525
 msgid "Elevation - Height above or below sea level."
 msgstr ""
 
-#: catalog/models.py:527
+#: models.py:527
 msgid "Environment - Environmental resources, protection and conservation."
 msgstr ""
 
-#: catalog/models.py:529
+#: models.py:529
 msgid "Geoscientific Information - Information pertaining to earth sciences."
 msgstr ""
 
-#: catalog/models.py:530
+#: models.py:530
 msgid "Health, health services, human ecology, and safety."
 msgstr ""
 
-#: catalog/models.py:531
+#: models.py:531
 msgid "Imagery / Base Maps / Earth Cover."
 msgstr ""
 
-#: catalog/models.py:533
+#: models.py:533
 msgid "Intelligence / Military - Military bases, structures, activities."
 msgstr ""
 
-#: catalog/models.py:535
+#: models.py:535
 msgid "Inland water features, drainage systems and their characteristics."
 msgstr ""
 
-#: catalog/models.py:536
+#: models.py:536
 msgid "Location - Positional information and services."
 msgstr ""
 
-#: catalog/models.py:537
+#: models.py:537
 msgid ""
 "Oceans - Features and characteristics of salt water bodies (excluding inland "
 "waters)."
 msgstr ""
 
-#: catalog/models.py:539
+#: models.py:539
 msgid ""
 "Planning / Cadastre - Information used for appropriate actions for future "
 "use of the land."
 msgstr ""
 
-#: catalog/models.py:540
+#: models.py:540
 msgid "Society - Characteristics of society and cultures."
 msgstr ""
 
-#: catalog/models.py:541
+#: models.py:541
 msgid "Structure - Man-made construction."
 msgstr ""
 
-#: catalog/models.py:543
+#: models.py:543
 msgid "Transportation - Means and aids for conveying persons and/or goods."
 msgstr ""
 
-#: catalog/models.py:545
+#: models.py:545
 msgid ""
 "Utilities / Communication - Energy, water and waste systems and "
 "communications infrastructure and services."
 msgstr ""
 
-#: catalog/models.py:622
+#: models.py:622
 msgid "INSPIRE GEMET keywords"
 msgstr ""
 
-#: catalog/models.py:712
+#: models.py:712
 msgid "Spatial resolution denominator"
 msgstr ""
 
-#: catalog/models.py:891
+#: models.py:891
 msgid "Positional accuracy in meters"
 msgstr ""
 
-#: catalog/rndt.py:102 catalog/rndt.py:412
+#: rndt.py:102 rndt.py:412
 msgid "Service"
 msgstr ""
 
-#: catalog/rndt.py:188 catalog/rndt.py:233 catalog/rndt.py:427
+#: rndt.py:188 rndt.py:233 rndt.py:427
 msgid "Publication"
 msgstr ""
 
-#: catalog/rndt.py:263
+#: rndt.py:263
 msgid "No conditions apply"
 msgstr ""
 
-#: catalog/rndt.py:330
+#: rndt.py:330
 msgid "Loose"
 msgstr ""
 
-#: catalog/rndt.py:423
+#: rndt.py:423
 msgid ""
 "Commission Regulation (EU) No 1089/2010 of 23 November 2010 implementing "
 "Directive 2007/2/EC of the European Parliament and of the Council as regards "
 "interoperability of spatial data sets and services"
 msgstr ""
 
-#: catalog/rndt.py:431
+#: rndt.py:431
 msgid "Please refer to the supplied specifications."
 msgstr ""
 
-#: catalog/rndt_profile/rndt/rndt.py:314
+#: rndt_profile/rndt/rndt.py:314
 msgid "Distributor"
 msgstr ""
 
-#: catalog/rndt_profile/rndt/rndt.py:344
+#: rndt_profile/rndt/rndt.py:344
 msgid "Unknown"
 msgstr ""
 
-#: catalog/templates/catalog/catalog_confirm_delete.html:11
+#: templates/catalog/catalog_confirm_delete.html:8
+#: templates/catalog/catalog_detail.html:8
+#: templates/catalog/catalog_form.html:11
+#: templates/catalog/catalog_list.html:27
+msgid "Catalog"
+msgstr ""
+
+#: templates/catalog/catalog_confirm_delete.html:10
+msgid "deleting"
+msgstr ""
+
+#: templates/catalog/catalog_confirm_delete.html:17
 #, python-format
 msgid "Are you sure you want to delete \"%(object)s\"?"
 msgstr ""
 
-#: catalog/templates/catalog/catalog_detail.html:16
-#: catalog/templates/catalog/catalog_list.html:25
+#: templates/catalog/catalog_detail.html:22
+#: templates/catalog/catalog_list.html:41
+msgid "Edit"
+msgstr ""
+
+#: templates/catalog/catalog_detail.html:23
+#: templates/catalog/catalog_list.html:44
+msgid "Delete"
+msgstr ""
+
+#: templates/catalog/catalog_detail.html:39
+msgid "Catalog records"
+msgstr ""
+
+#: templates/catalog/catalog_detail.html:43
 msgid "Records"
 msgstr ""
 
-#: catalog/templates/catalog/catalog_detail.html:35
-#: catalog/templates/catalog/record_form.html:74
-msgid "Back"
-msgstr ""
-
-#: catalog/templates/catalog/catalog_form.html:11
-msgid "Catalog"
-msgstr ""
-
-#: catalog/templates/catalog/catalog_form.html:13
-msgid "catalog metadata"
-msgstr ""
-
-#: catalog/templates/catalog/catalog_form.html:25
-#: catalog/templates/catalog/record_form.html:23
-#: progeo/templates/progeo/ajax/project_copy.html:7
-#: progeo/templates/progeo/project_form.html:51
-msgid "Alert"
-msgstr ""
-
-#: catalog/templates/catalog/catalog_form.html:26
-#: catalog/templates/catalog/record_form.html:24
-#: progeo/templates/progeo/ajax/project_copy.html:8
-#: progeo/templates/progeo/project_form.html:52
-msgid "Some errors on form. Check it and send again."
-msgstr ""
-
-#: catalog/templates/catalog/catalog_list.html:15
-msgid "CSW published catalogs"
-msgstr ""
-
-#: catalog/templates/catalog/catalog_list.html:18
-msgid "New catalog"
-msgstr ""
-
-#: catalog/templates/catalog/catalog_list.html:26
-#, fuzzy
-#| msgid "Users"
-msgid "View"
-msgstr "Utenti"
-
-#: catalog/templates/catalog/catalog_list.html:38
-msgid "There are no CSW published catalogs"
-msgstr ""
-
-#: catalog/templates/catalog/record_form.html:12
-msgid "layer metadata"
-msgstr ""
-
-#: catalog/templates/catalog/record_form.html:73
-msgid "Submit"
-msgstr ""
-
-#: progeo/forms.py:59
-msgid "Progeo Project"
-msgstr ""
-
-#: progeo/forms.py:87
-#, fuzzy
-#| msgid "Adminstration"
-msgid "Descrition data"
-msgstr "Amministrazione"
-
-#: progeo/forms.py:156
-msgid "File must have SRID 3857"
-msgstr ""
-
-#: progeo/forms.py:198
-#, fuzzy
-#| msgid "Profile"
-msgid "New Title"
-msgstr "Profilo"
-
-#: progeo/forms.py:199
-msgid "Set a new title for the copy"
-msgstr ""
-
-#: progeo/models.py:83
-msgid "Project version"
-msgstr ""
-
-#: progeo/models.py:87
-msgid "QGIS project file"
-msgstr ""
-
-#: progeo/models.py:94 progeo/models.py:252
-#: progeo/templates/progeo/project_list.html:19
+#: templates/catalog/catalog_detail.html:49
 msgid "Title"
 msgstr ""
 
-#: progeo/models.py:95 progeo/models.py:255
-msgid "Description"
-msgstr ""
-
-#: progeo/models.py:101
-msgid "Thumbnail"
-msgstr ""
-
-#: progeo/models.py:104
+#: templates/catalog/catalog_detail.html:50
 #, fuzzy
-#| msgid "Groups list"
-msgid "Group"
-msgstr "Lista gruppi"
-
-#: progeo/models.py:107
-msgid "Initial extent"
-msgstr ""
-
-#: progeo/models.py:108
-msgid "Max extent"
-msgstr ""
-
-#: progeo/models.py:111
-msgid "Layers tree structure"
-msgstr ""
-
-#: progeo/models.py:114
-msgid "Base Layer"
-msgstr ""
-
-#: progeo/models.py:118
-msgid "MAST project file"
-msgstr ""
-
-#: progeo/models.py:127
-msgid "DTM file"
-msgstr ""
-
-#: progeo/models.py:140
-msgid "WMS use layer ids"
-msgstr ""
-
-#: progeo/models.py:143
-msgid "Qgis project version"
-msgstr ""
-
-#: progeo/models.py:146 progeo/models.py:297
-msgid "Layer relations"
-msgstr ""
-
-#: progeo/models.py:240
-msgid "Postgres"
-msgstr ""
-
-#: progeo/models.py:241
-msgid "SpatiaLite"
-msgstr ""
-
-#: progeo/models.py:242
-msgid "Raster"
-msgstr ""
-
-#: progeo/models.py:243
-msgid "WFS"
-msgstr ""
-
-#: progeo/models.py:244
-msgid "WMS"
-msgstr ""
-
-#: progeo/models.py:245
-msgid "OGR"
-msgstr ""
-
-#: progeo/models.py:246
-msgid "GDAL"
-msgstr ""
-
-#: progeo/models.py:247
-msgid "CSV"
-msgstr ""
-
-#: progeo/models.py:253
-msgid "Original Name"
-msgstr ""
-
-#: progeo/models.py:254
-msgid "Qgis Layer Porject ID"
-msgstr ""
-
-#: progeo/models.py:261 progeo/models.py:331 progeo/models.py:361
-#: progeo/models.py:390 progeo/models.py:418
-msgid "Project"
-msgstr ""
-
-#: progeo/models.py:263 progeo/models.py:1098 progeo/models.py:1288
-msgid "Type"
-msgstr ""
-
-#: progeo/models.py:264
-msgid "Datasource"
-msgstr ""
-
-#: progeo/models.py:265
-msgid "Is visible"
-msgstr ""
-
-#: progeo/models.py:269
-msgid "Associated data file"
-msgstr ""
-
-#: progeo/models.py:275
-msgid "Database columns"
-msgstr ""
-
-#: progeo/models.py:278
-msgid "Layer Min Scale visibility"
-msgstr ""
-
-#: progeo/models.py:279
-msgid "Layer Max Scale visibility"
-msgstr ""
-
-#: progeo/models.py:280
-msgid "Layer scale based visibility"
-msgstr ""
-
-#: progeo/models.py:283
-msgid "Layer SRID"
-msgstr ""
-
-#: progeo/models.py:286
-msgid "Bitwise capabilities"
-msgstr ""
-
-#: progeo/models.py:287
-msgid "Bitwise edit options"
-msgstr ""
-
-#: progeo/models.py:288
-msgid "Bitwise wfs options"
-msgstr ""
-
-#: progeo/models.py:291
-msgid "Geometry type"
-msgstr ""
-
-#: progeo/models.py:293
-msgid "Attributes excluded from wms"
-msgstr ""
-
-#: progeo/models.py:294
-msgid "Attributes excluded from wfs"
-msgstr ""
-
-#: progeo/models.py:300
-msgid "Columns layer widgets"
-msgstr ""
-
-#: progeo/models.py:303
-msgid "Exclude to legend"
-msgstr ""
-
-#: progeo/models.py:306
-msgid "Form editor layout"
-msgstr ""
-
-#: progeo/models.py:307
-msgid "Editor form structure"
-msgstr ""
-
-#: progeo/models.py:313
-msgid "Layer"
-msgstr ""
-
-#: progeo/models.py:314
-msgid "Layers"
-msgstr ""
-
-#: progeo/models.py:332
-msgid "Branch MAST ID"
-msgstr ""
-
-#: progeo/models.py:333
-msgid "Pipe section default"
-msgstr ""
-
-#: progeo/models.py:334
-msgid "Profile sampling step"
-msgstr ""
-
-#: progeo/models.py:364
-msgid "Pipe MAST ID"
-msgstr ""
-
-#: progeo/models.py:365
-msgid "Pipe MAST name"
-msgstr ""
-
-#: progeo/models.py:366
-msgid "Pipe section"
-msgstr ""
-
-#: progeo/models.py:375
-msgid "Valve"
-msgstr ""
-
-#: progeo/models.py:376
-msgid "Source"
-msgstr ""
-
-#: progeo/models.py:377
-msgid "Boundary"
-msgstr ""
-
-#: progeo/models.py:378
-msgid "Check valve"
-msgstr ""
-
-#: progeo/models.py:379
-msgid "Controller"
-msgstr ""
-
-#: progeo/models.py:391
-msgid "Branch"
-msgstr ""
-
-#: progeo/models.py:392 progeo/models.py:419
-msgid "MAST ID"
-msgstr ""
-
-#: progeo/models.py:393
-msgid "MAST NAME"
-msgstr ""
-
-#: progeo/models.py:428 progeo/models.py:670
-msgid "Diameter"
-msgstr ""
-
-#: progeo/models.py:429 progeo/models.py:671
-msgid "Discharged coefficient"
-msgstr ""
-
-#: progeo/models.py:432 progeo/models.py:674
-msgid "Valve sizing  model"
-msgstr ""
-
-#: progeo/models.py:518 progeo/models.py:929 progeo/models.py:1010
-#: progeo/models.py:1194 progeo/models.py:1485 progeo/models.py:1627
-msgid "Time"
-msgstr ""
-
-#: progeo/models.py:519
-msgid "Openings"
-msgstr ""
-
-#: progeo/models.py:594 progeo/models.py:744
-msgid "CV"
-msgstr ""
-
-#: progeo/models.py:595 progeo/models.py:745
-msgid "CV Openings"
-msgstr ""
-
-#: progeo/models.py:669
-msgid "Critical pressure ratio"
-msgstr ""
-
-#: progeo/models.py:675
-msgid "Controller label"
-msgstr ""
-
-#: progeo/models.py:817
-msgid "Direction"
-msgstr ""
-
-#: progeo/models.py:930 progeo/models.py:1011
-msgid "Flued pressure"
-msgstr ""
-
-#: progeo/models.py:931 progeo/models.py:1012
-msgid "Flued temperature/s"
-msgstr ""
-
-#: progeo/models.py:932 progeo/models.py:1013 progeo/models.py:1198
-msgid "Gas fraction"
-msgstr ""
-
-#: progeo/models.py:935 progeo/models.py:1016 progeo/models.py:1201
-msgid "Water fraction"
-msgstr ""
-
-#: progeo/models.py:936 progeo/models.py:1017 progeo/models.py:1202
-msgid "Total water fraction"
-msgstr ""
-
-#: progeo/models.py:1033
-msgid "Curve degree"
-msgstr ""
-
-#: progeo/models.py:1034
-msgid "Loss label"
-msgstr ""
-
-#: progeo/models.py:1099
-msgid "Temperature of downstream"
-msgstr ""
-
-#: progeo/models.py:1102
-msgid "Transformation"
-msgstr ""
-
-#: progeo/models.py:1195
-msgid "Pressure upstream"
-msgstr ""
-
-#: progeo/models.py:1197
-msgid "Flued temperature/s °k"
-msgstr ""
-
-#: progeo/models.py:1289 progeo/models.py:1367
-msgid "Label"
-msgstr ""
-
-#: progeo/models.py:1293 progeo/models.py:1369
-msgid "Variable"
-msgstr ""
-
-#: progeo/models.py:1294 progeo/models.py:1386
+#| msgid "Access denied"
+msgid "Access"
+msgstr "Accesso negato"
+
+#: templates/catalog/catalog_detail.html:71
 #, fuzzy
-#| msgid "Adminstration"
-msgid "Amplification"
-msgstr "Amministrazione"
+#| msgid "Edit general data"
+msgid "Catalog data"
+msgstr "Modifica i dati generali"
 
-#: progeo/models.py:1295 progeo/models.py:1387
-msgid "Bias"
+#: templates/catalog/catalog_detail.html:76
+msgid "Param"
 msgstr ""
 
-#: progeo/models.py:1296 progeo/models.py:1388
-msgid "DerivateConst"
+#: templates/catalog/catalog_detail.html:77
+msgid "Value"
 msgstr ""
 
-#: progeo/models.py:1297 progeo/models.py:1389
-msgid "IntegralConst"
+#: templates/catalog/catalog_detail.html:92
+msgid "Back"
 msgstr ""
 
-#: progeo/models.py:1298 progeo/models.py:1392
-msgid "MaxSignal"
+#: templates/catalog/catalog_form.html:13
+#, fuzzy
+#| msgid "Edit general data"
+msgid "metadata"
+msgstr "Modifica i dati generali"
+
+#: templates/catalog/catalog_form.html:25 templates/catalog/record_form.html:23
+msgid "Alert"
 msgstr ""
 
-#: progeo/models.py:1299 progeo/models.py:1393
-msgid "MinSignal"
+#: templates/catalog/catalog_form.html:26 templates/catalog/record_form.html:24
+msgid "Some errors on form. Check it and send again."
 msgstr ""
 
-#: progeo/models.py:1300 progeo/models.py:1394
-msgid "MaxChange"
+#: templates/catalog/catalog_list.html:8
+msgid "CSW published catalogs"
 msgstr ""
 
-#: progeo/models.py:1301 progeo/models.py:1395
-msgid "SampleTime"
+#: templates/catalog/catalog_list.html:19
+msgid "New catalog"
 msgstr ""
 
-#: progeo/models.py:1302 progeo/models.py:1396 progeo/models.py:1558
-msgid "StrokeTime"
-msgstr ""
-
-#: progeo/models.py:1305
-msgid "OpenMode"
-msgstr ""
-
-#: progeo/models.py:1306 progeo/models.py:1372
-msgid "Reset"
-msgstr ""
-
-#: progeo/models.py:1307 progeo/models.py:1397
-msgid "NormRange"
-msgstr ""
-
-#: progeo/models.py:1308
-msgid "XCurve"
-msgstr ""
-
-#: progeo/models.py:1486 progeo/models.py:1628
-msgid "Set Point"
-msgstr ""
-
-#: progeo/models.py:1554
-msgid "Min threshold"
-msgstr ""
-
-#: progeo/models.py:1555
-msgid "max threshold"
-msgstr ""
-
-#: progeo/templates/progeo/project_form.html:11
-msgid "PROGEO project"
-msgstr ""
-
-#: progeo/templates/progeo/project_form.html:13
-msgid "New PROGEO project"
-msgstr ""
-
-#: progeo/templates/progeo/project_form.html:14
-msgid "Create a new PROGEO project for current group"
-msgstr ""
-
-#: progeo/templates/progeo/project_form.html:34
-msgid "Shortcuts"
-msgstr ""
-
-#: progeo/templates/progeo/project_form.html:38
-#: progeo/templates/progeo/project_list.html:32
-msgid "Show map"
-msgstr "Mostra mappa"
-
-#: progeo/templates/progeo/project_list.html:10
-msgid "PROGEO project type"
-msgstr ""
-
-#: progeo/templates/progeo/project_list.html:17
+#: templates/catalog/catalog_list.html:26
 msgid "Actions"
 msgstr ""
 
-#: progeo/templates/progeo/project_list.html:20
-msgid "State"
+#: templates/catalog/catalog_list.html:28
+msgid "N record"
 msgstr ""
 
-#: progeo/templates/progeo/project_list.html:21
-#, fuzzy
-#| msgid "Last login"
-msgid "Last update"
-msgstr "Ultimo accesso"
-
-#: progeo/templates/progeo/project_list.html:60
-msgid "Make a project copy"
+#: templates/catalog/catalog_list.html:29
+msgid "Capabilities"
 msgstr ""
 
-#: progeo/templates/progeo/project_list.html:60
-msgid "Copy of project"
-msgstr ""
-
-#: progeo/templates/progeo/project_list.html:79
-msgid "No projects available."
-msgstr ""
-
-#: templates/403.html:7
-msgid "error page"
-msgstr "Pagina di errore"
-
-#: templates/403.html:15
-msgid "Access denied"
-msgstr "Accesso negato"
-
-#: templates/403.html:17
-msgid "You don't have grant to access this section"
-msgstr "Non hai i privilegi per accedere questa sezione"
-
-#: templates/404.html:11
-msgid "Oops! Page not found."
-msgstr "Opps! Pagina non trovata"
-
-#: templates/404.html:13
-msgid "We could not find the page you were looking for."
-msgstr "Non abbiamo trovato la pagina che stavi cercando"
-
-#: templates/base.html:192 templates/index.html:6
-msgid "Dashboard"
-msgstr "Scrivania"
-
-#: templates/base.html:231
-msgid "Version"
-msgstr ""
-
-#: templates/include/navbar_right_menu.html:25
-msgid "Frontend"
-msgstr ""
-
-#: templates/include/navbar_right_menu.html:46
-msgid "Registered on"
-msgstr "Registrato il"
-
-#: templates/include/navbar_right_menu.html:47
-msgid "Last login"
-msgstr "Ultimo accesso"
-
-#: templates/include/navbar_right_menu.html:54
-msgid "Profile"
-msgstr "Profilo"
-
-#: templates/include/navbar_right_menu.html:57
-msgid "Logout"
-msgstr "Esci"
-
-#: templates/include/sidebar_right.html:9
-msgid "Configurations"
-msgstr "Configurazioni"
-
-#: templates/include/sidebar_right.html:15
-msgid "Edit general data"
-msgstr "Modifica i dati generali"
-
-#: templates/include/sidebar_right.html:16
-msgid "Frontend data and other"
-msgstr "Dati del frontend e altro"
-
-#: templates/include/sidebar_right.html:25
-#, fuzzy
-#| msgid "Adminstration"
-msgid "Django administration"
-msgstr "Amministrazione"
-
-#: templates/include/sidebar_right.html:26
-#, fuzzy
-#| msgid "Login to go backend administration system"
-msgid "Go to staff administration section"
-msgstr "Accesso al sistema di amministrazione"
-
-#: templates/index.html:7
-msgid "Current situation"
-msgstr "Situazione attuale"
-
-#: templates/index.html:17
-#, fuzzy
-#| msgid "Groups list"
-msgid "Groups"
-msgstr "Lista gruppi"
-
-#: templates/index.html:22
+#: templates/catalog/catalog_list.html:37
 msgid "Show"
 msgstr "Mostra"
 
-#: templates/index.html:28
-msgid "Module widgets"
+#: templates/catalog/catalog_list.html:60
+msgid "There are no CSW published catalogs"
 msgstr ""
 
-#: templates/login.html:21
-msgid "Sign in to start your session"
-msgstr "Accedi per iniziare la tua sessione di lavoro"
-
-#: templates/login.html:25
-msgid "LOGIN ERROR"
+#: templates/catalog/record_form.html:12
+msgid "layer metadata"
 msgstr ""
 
-#: templates/login.html:26
-msgid "Username and/or password uncorrect"
-msgstr "Username e/o password non corretti"
+#, fuzzy
+#~| msgid "Configurations"
+#~ msgid "Configs"
+#~ msgstr "Configurazioni"
 
-#: templates/login.html:41
-msgid "Sign In"
-msgstr "Accedi"
+#, fuzzy
+#~| msgid "Users"
+#~ msgid "View"
+#~ msgstr "Utenti"
+
+#, fuzzy
+#~| msgid "Adminstration"
+#~ msgid "Descrition data"
+#~ msgstr "Amministrazione"
+
+#, fuzzy
+#~| msgid "Profile"
+#~ msgid "New Title"
+#~ msgstr "Profilo"
+
+#, fuzzy
+#~| msgid "Groups list"
+#~ msgid "Group"
+#~ msgstr "Lista gruppi"
+
+#, fuzzy
+#~| msgid "Adminstration"
+#~ msgid "Amplification"
+#~ msgstr "Amministrazione"
+
+#~ msgid "Show map"
+#~ msgstr "Mostra mappa"
+
+#, fuzzy
+#~| msgid "Last login"
+#~ msgid "Last update"
+#~ msgstr "Ultimo accesso"
+
+#~ msgid "error page"
+#~ msgstr "Pagina di errore"
+
+#~ msgid "Access denied"
+#~ msgstr "Accesso negato"
+
+#~ msgid "You don't have grant to access this section"
+#~ msgstr "Non hai i privilegi per accedere questa sezione"
+
+#~ msgid "Oops! Page not found."
+#~ msgstr "Opps! Pagina non trovata"
+
+#~ msgid "We could not find the page you were looking for."
+#~ msgstr "Non abbiamo trovato la pagina che stavi cercando"
+
+#~ msgid "Dashboard"
+#~ msgstr "Scrivania"
+
+#~ msgid "Registered on"
+#~ msgstr "Registrato il"
+
+#~ msgid "Last login"
+#~ msgstr "Ultimo accesso"
+
+#~ msgid "Profile"
+#~ msgstr "Profilo"
+
+#~ msgid "Logout"
+#~ msgstr "Esci"
+
+#~ msgid "Configurations"
+#~ msgstr "Configurazioni"
+
+#~ msgid "Edit general data"
+#~ msgstr "Modifica i dati generali"
+
+#~ msgid "Frontend data and other"
+#~ msgstr "Dati del frontend e altro"
+
+#, fuzzy
+#~| msgid "Adminstration"
+#~ msgid "Django administration"
+#~ msgstr "Amministrazione"
+
+#, fuzzy
+#~| msgid "Login to go backend administration system"
+#~ msgid "Go to staff administration section"
+#~ msgstr "Accesso al sistema di amministrazione"
+
+#~ msgid "Current situation"
+#~ msgstr "Situazione attuale"
+
+#, fuzzy
+#~| msgid "Groups list"
+#~ msgid "Groups"
+#~ msgstr "Lista gruppi"
+
+#~ msgid "Sign in to start your session"
+#~ msgstr "Accedi per iniziare la tua sessione di lavoro"
+
+#~ msgid "Username and/or password uncorrect"
+#~ msgstr "Username e/o password non corretti"
+
+#~ msgid "Sign In"
+#~ msgstr "Accedi"
 
 #~ msgid "About It"
 #~ msgstr "Cos'è"
@@ -1454,11 +934,6 @@ msgstr "Accedi"
 #~| msgid "Users"
 #~ msgid "Viewer users"
 #~ msgstr "Utenti"
-
-#, fuzzy
-#~| msgid "Edit general data"
-#~ msgid "Censual data"
-#~ msgstr "Modifica i dati generali"
 
 #, fuzzy
 #~| msgid "Users"

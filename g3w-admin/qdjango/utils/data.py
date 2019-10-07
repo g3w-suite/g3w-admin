@@ -459,6 +459,10 @@ class QgisProjectLayer(XmlData):
         if self.qgisProject.qgisVersion[0] == '3':
 
             fieldConfiguration = self.qgisProjectLayerTree.find('fieldConfiguration')
+            editable = self.qgisProjectLayerTree.find('editable')
+            editablesf = {}
+            for field in editable:
+                editablesf[field.attrib['name']] = field.attrib['editable']
 
             if fieldConfiguration is not None:
                 for field in fieldConfiguration:
@@ -472,7 +476,7 @@ class QgisProjectLayer(XmlData):
                     ewtype = ewdiget.attrib['type']
                     data = {
                         'widgetv2type': ewtype,
-                        'fieldEditable': '1',
+                        'fieldEditable': editablesf[fname] if fname in editablesf else '1',
                         'values': list()
                     }
 

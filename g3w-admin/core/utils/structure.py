@@ -308,6 +308,16 @@ def mapLayerAttributesFromModel(model, **kwargs):
         #not isinstance(field, AutoField) and
         if field.name not in fieldsToExlude:
             if type(field) in FIELD_TYPES_MAPPING['djangoModel']:
+
+                # set editable property by kwargs:
+                if field==model._meta.pk and type(field) in (AutoField,):
+                    editable = False
+                else:
+                    editable = kwargs['fields'][field.name]['editable']
+
+                # remove editable from kwrags:
+                del(kwargs['fields'][field.name]['editable'])
+
                 fieldType = FIELD_TYPES_MAPPING['djangoModel'][type(field)]
                 toRes[field.name] = editingFormField(
                     field.name,
@@ -315,7 +325,7 @@ def mapLayerAttributesFromModel(model, **kwargs):
                     fieldLabel=field.verbose_name if field.verbose_name else field.attname,
                     type=fieldType,
                     inputType=FORM_FIELDS_MAPPING[fieldType],
-                    editable=not (field==model._meta.pk and type(field) in (AutoField,)),
+                    editable=editable,
                 )
 
                 # add upload url to image type if module is set

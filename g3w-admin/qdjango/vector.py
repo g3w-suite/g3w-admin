@@ -221,6 +221,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
             allow_edittypes = MAPPING_EDITTYPE_QGISEDITTYPE.keys()
 
             for field, data in edittypes.items():
+
                 if data['widgetv2type'] in allow_edittypes:
 
                     # instance of QgisEditType
@@ -229,6 +230,10 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
                         fields[self.layer_name]['fields'][field] = qet.input_form
                     else:
                         fields[self.layer_name]['fields'][field].update(qet.input_form)
+
+                # add editable property:
+                fields[self.layer_name]['fields'][field]['editable'] = True \
+                    if edittypes[field]['fieldEditable'] == '1' else False
 
         return fields
 
