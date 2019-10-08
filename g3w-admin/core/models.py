@@ -40,7 +40,7 @@ class G3WSpatialRefSys(models.Model):
     srtext = models.CharField(max_length=2048)
     proj4text = models.CharField(max_length=2048)
 
-    def __unicode__(self):
+    def __str__(self):
         '''
         try:
             sref = osr.SpatialReference()
@@ -61,7 +61,7 @@ class BaseLayer(models.Model):
     description = models.TextField(null=True, blank=True)
     property = models.TextField()
 
-    def __unicode__(self):
+    def __str__(self):
         return "{} ({})".format(self.title, self.name)
 
     class Meta:
@@ -76,7 +76,7 @@ class MapControl(OrderedModel):
     name = models.CharField(max_length=255)
     description = models.TextField(null=True, blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     class Meta(OrderedModel.Meta):
@@ -105,7 +105,7 @@ class MacroGroup(TimeStampedModel, OrderedModel):
             ('view_macrogroup', 'Can view macro group maps'),
         )
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
     def _permissions_to_editors(self, users_id, mode='add'):
@@ -172,7 +172,7 @@ class Group(TimeStampedModel, OrderedModel):
             ('view_group', 'Can view group'),
         )
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def get_absolute_url(self):

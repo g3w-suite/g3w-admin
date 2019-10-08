@@ -180,7 +180,7 @@ class ShpResponder(object):
 
             for field in attributes:
                 # if the field is a foreign key, return its pk value. this is
-                # a problem when a model is given a __unicode__ representation.
+                # a problem when a model is given a __str__ representation.
                 value = getattr(item, field.name)
                 if value is not None and isinstance(field, ForeignKey):
                     value = getattr(value, 'pk')
