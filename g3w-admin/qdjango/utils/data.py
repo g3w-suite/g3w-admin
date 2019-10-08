@@ -461,8 +461,9 @@ class QgisProjectLayer(XmlData):
             fieldConfiguration = self.qgisProjectLayerTree.find('fieldConfiguration')
             editable = self.qgisProjectLayerTree.find('editable')
             editablesf = {}
-            for field in editable:
-                editablesf[field.attrib['name']] = field.attrib['editable']
+            if editable:
+                for field in editable:
+                    editablesf[field.attrib['name']] = field.attrib['editable']
 
             if fieldConfiguration is not None:
                 for field in fieldConfiguration:
