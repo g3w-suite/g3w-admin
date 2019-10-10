@@ -7,7 +7,7 @@
 Welcome to G3W-SUITE's documentation!
 =====================================
 
-.. include:: ../README.rst
+.. .. include:: ../README.md
 
 Indices and tables
 ==================
