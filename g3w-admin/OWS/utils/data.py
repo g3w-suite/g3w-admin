@@ -123,7 +123,7 @@ class GetFeatureInfoResponse(XmlData):
         try:
             self.responseTree = lxml.fromstring(self.response)
         except Exception as e:
-            raise Exception(_('The GetFeatureResponse response is malformed: {}'.format(e.message)))
+            raise Exception(_('The GetFeatureResponse response is malformed: {}'.format(e.args[0])))
 
     def _getDataBoundingBox(self):
         bboxTree = self.responseTree.find('BoundingBox')

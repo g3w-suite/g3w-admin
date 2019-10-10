@@ -492,7 +492,7 @@ class QdjangoLinkWidget2LayerView(G3WRequestViewMixin, G3WGroupViewMixin, Qdjang
             self.linkUnlinkWidget(link=(not 'unlink' in self.request.GET))
             return JsonResponse({'status': 'ok'})
         except Exception as e:
-            return JsonResponse({'status': 'error', 'errors_form': e.message})
+            return JsonResponse({'status': 'error', 'errors_form': e.args[0]})
 
     def linkUnlinkWidget(self, link=True):
         if self.layer.datasource != self.widget.datasource:

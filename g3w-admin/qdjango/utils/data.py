@@ -733,7 +733,7 @@ class QgisProject(XmlData):
             self.qgisProjectFile.file.seek(0)
             self.qgisProjectTree = lxml.parse(self.qgisProjectFile, forbid_entities=False)
         except Exception as e:
-            raise QgisProjectException(_('The project file is malformed: {}').format(e.message))
+            raise QgisProjectException(_('The project file is malformed: {}').format(e.args[0]))
 
 
     def _getDataName(self):
@@ -1095,7 +1095,7 @@ class QgisProjectSettingsWMS(XmlData):
             self.qgisProjectSettingsTree = lxml.fromstring(self.qgisProjectSettingsFile.encode('UTF-8'))
         except Exception as e:
             raise Exception(
-                _('The project settings is malformed: {} ----- {}'.format(e.message, self.qgisProjectSettingsFile)))
+                _('The project settings is malformed: {} ----- {}'.format(e.args[0], self.qgisProjectSettingsFile)))
 
     def _buildTagWithNS(self, tag):
         return '{{{0}}}{1}'.format(self._NS['opengis'], tag)
