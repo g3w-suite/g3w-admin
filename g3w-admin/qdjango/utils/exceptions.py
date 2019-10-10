@@ -10,7 +10,7 @@ class QgisProjectException(QgisException):
     pre_error_msg = _('Project error')
 
     def __str__(self):
-        return "[{}]-- {}".format(self.pre_error_msg, self.message)
+        return "[{}]-- {}".format(self.pre_error_msg, self.args[0])
 
 
 class QgisProjectLayerException(QgisProjectException):
