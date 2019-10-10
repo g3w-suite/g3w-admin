@@ -9,7 +9,7 @@
 *_local.sh
 
 # Sphinx docs
-build
+docs/_build
 
 # PyCharms project file
 /.idea/
