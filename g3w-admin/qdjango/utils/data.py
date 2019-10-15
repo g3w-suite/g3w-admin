@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.http.request import QueryDict
-from defusedxml import ElementTree as etree
+from defusedxml import lxml
+from lxml import etree
 from django.utils.translation import ugettext_lazy as _
 from django.db import transaction
 from qdjango.models import Project
@@ -730,7 +731,7 @@ class QgisProject(XmlData):
 
             # we have to rewind the underlying file in case it has been already parsed
             self.qgisProjectFile.file.seek(0)
-            self.qgisProjectTree = etree.parse(self.qgisProjectFile, forbid_entities=False)
+            self.qgisProjectTree = lxml.parse(self.qgisProjectFile, forbid_entities=False)
         except Exception as e:
             raise QgisProjectException(_('The project file is malformed: {}').format(e.args[0]))
 
@@ -1031,7 +1032,7 @@ class QgisProject(XmlData):
 
         # Parse the file and build the XML tree
         self.instance.qgis_file.file.seek(0)
-        tree = etree.parse(self.instance.qgis_file, forbid_entities=False)
+        tree = lxml.parse(self.instance.qgis_file, forbid_entities=False)
 
         # Run through the layer trees
         for layer in tree.xpath(self._regexXmlLayer):
