@@ -1,5 +1,4 @@
-from defusedxml import lxml
-from lxml import etree
+from defusedxml import ElementTree as etree
 from django.utils.translation import ugettext, ugettext_lazy as _
 from django.contrib.gis.geos import GEOSGeometry
 from core.utils.data import XmlData
@@ -121,7 +120,7 @@ class GetFeatureInfoResponse(XmlData):
         :return:
         """
         try:
-            self.responseTree = lxml.fromstring(self.response)
+            self.responseTree = etree.fromstring(self.response)
         except Exception as e:
             raise Exception(_('The GetFeatureResponse response is malformed: {}'.format(e.args[0])))
 
