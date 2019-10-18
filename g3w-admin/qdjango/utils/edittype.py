@@ -141,7 +141,7 @@ class QgisEditTypeValueRelation(QgisEditTypeValueMap):
         input_form['input']['options'].update({
             'key': self.Value,
             'value': self.Key,
-            'usecompleter': True if self.UseCompleter == '1' else False,
+            'usecompleter': True if self.UseCompleter == '1' or self.UseCompleter == 'true' else False,
             'layer_id': self.Layer,
             'loading': {
                 'state': None
