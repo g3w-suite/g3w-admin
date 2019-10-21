@@ -23,7 +23,8 @@ _.extend(g3wadmin.widget, {
      */
     _detailItemParams: [
         'detail-url',
-        'modal-title'
+        'modal-title',
+        'modal-size'
     ],
 
     _detailItemDataTableParams: [
@@ -152,6 +153,7 @@ _.extend(g3wadmin.widget, {
                     // open modal to show detail data
                     var modal = ga.ui.buildDefaultModal({
                         modalTitle: ((_.isUndefined(params['modal-title']) ? gettext('Detail object') : params['modal-title'])),
+                        modalSize: (_.isUndefined(params['modal-size']) ? '' : params['modal-size']),
                         modalBody: res,
                         closeButtonText: gettext('Close'),
                         confirmButton: false
