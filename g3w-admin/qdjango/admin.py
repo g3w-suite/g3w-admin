@@ -10,6 +10,12 @@ admin.site.register(Project, ProjectAdmin)
 
 class LayerAdmin(GuardedModelAdmin):
     model = Layer
+    search_fields = (
+        'name',
+        'title',
+        'qgs_layer_id',
+        'layer_type'
+    )
 admin.site.register(Layer, LayerAdmin)
 
 
