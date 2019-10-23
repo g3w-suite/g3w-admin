@@ -230,7 +230,10 @@ class G3WACLForm(forms.Form):
         if 'viewer_users' in self.cleaned_data:
             currentViewerUsers = [o.id for o in self.cleaned_data['viewer_users']]
             toRemove = list(set(self.initial_viewer_users) - set(currentViewerUsers))
-            toAdd = list(set(currentViewerUsers) - set(self.initial_viewer_users))
+            #toAdd = list(set(currentViewerUsers) - set(self.initial_viewer_users))
+
+            # add without remove initial viewers
+            toAdd = currentViewerUsers
 
             # if propagate is set and in cleaned data set propagate_viewers to true
             kwargs = {}
@@ -246,7 +249,11 @@ class G3WACLForm(forms.Form):
         if 'editor_user_groups' in self.cleaned_data:
             current_editor_user_groups = [o.id for o in self.cleaned_data['editor_user_groups']]
             to_remove = list(set(self.initial_editor_user_groups) - set(current_editor_user_groups))
-            to_add = list(set(current_editor_user_groups) - set(self.initial_editor_user_groups))
+            #to_add = list(set(current_editor_user_groups) - set(self.initial_editor_user_groups))
+
+            # add without remove initial groups
+            to_add = current_editor_user_groups
+
             if hasattr(self.instance, 'add_permissions_to_editor_user_groups'):
                 self.instance.add_permissions_to_editor_user_groups(to_add)
             if hasattr(self.instance, 'remove_permissions_to_editor_user_groups'):
@@ -255,7 +262,11 @@ class G3WACLForm(forms.Form):
         if 'viewer_user_groups' in self.cleaned_data:
             current_viewer_user_groups = [o.id for o in self.cleaned_data['viewer_user_groups']]
             to_remove = list(set(self.initial_viewer_user_groups) - set(current_viewer_user_groups))
-            to_add = list(set(current_viewer_user_groups) - set(self.initial_viewer_user_groups))
+            #to_add = list(set(current_viewer_user_groups) - set(self.initial_viewer_user_groups))
+
+            # add without remove initial groups
+            to_add = current_viewer_user_groups
+
             if hasattr(self.instance, 'add_permissions_to_viewer_user_groups'):
 
                 # if propagate is set and in cleaned data set propagate_viewers to true
