@@ -16,6 +16,11 @@ class LayerAdmin(GuardedModelAdmin):
         'qgs_layer_id',
         'layer_type'
     )
+    list_display = (
+        'name',
+        'title',
+        'project'
+    )
 admin.site.register(Layer, LayerAdmin)
 
 
