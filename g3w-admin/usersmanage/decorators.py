@@ -39,7 +39,7 @@ def permission_required_by_backend_or_403(perm, lookup_variables=None, **kwargs)
         return wraps(view_func)(_wrapped_view)
     return decorator
 
-
+import types
 def user_passes_test_or_403(test_func):
     """
     Decorator for views that checks that the user passes the given test,
@@ -48,7 +48,8 @@ def user_passes_test_or_403(test_func):
 
     def decorator(view_func, **view_func_kwargs):
         def _wrapped_view(request, *args, **kwargs):
-            if not test_func(request.user, **view_func_kwargs):
+            nkwargs = view_func_kwargs if test_func.__name__ == '<lambda>' else kwargs
+            if not test_func(request.user, **nkwargs):
                 template_name = guardian_settings.TEMPLATE_403
                 response = render(request, template_name)
                 response.status_code = 403
