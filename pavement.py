@@ -17,8 +17,6 @@ BASE_PATH = 'g3w-admin'
 CURRENT_DIR = os.getcwd()
 sys.path.insert(0, CURRENT_DIR+'/'+BASE_PATH)
 
-from base import settings
-
 FIXTURES = [
     'BaseLayer.json',
     'G3WGeneralDataSuite.json',
