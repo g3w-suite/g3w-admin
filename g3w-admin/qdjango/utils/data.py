@@ -1075,6 +1075,8 @@ class QgisProjectSettingsWMS(XmlData):
         'xlink': 'http://www.w3.org/1999/xlink'
     }
 
+    _pre_exception_message = 'QGISProjectSettings'
+
     def __init__(self, project_settings, **kwargs):
         self.qgisProjectSettingsFile = project_settings
 
