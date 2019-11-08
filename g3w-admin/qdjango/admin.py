@@ -5,6 +5,13 @@ from .models import *
 
 class ProjectAdmin(GuardedModelAdmin):
     model = Project
+    search_fields = (
+        'title',
+    )
+    list_display = (
+        'title',
+        'group'
+    )
 admin.site.register(Project, ProjectAdmin)
 
 
