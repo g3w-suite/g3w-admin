@@ -57,7 +57,7 @@ THIRD_PARTY_APPS = [
     'mptt',
     'ordered_model',
     'ajax_select',
-    'djcelery',
+    #'djcelery',
     #'django_user_agents',
     #'tracking_analyzer'
     # 'debug_toolbar',
