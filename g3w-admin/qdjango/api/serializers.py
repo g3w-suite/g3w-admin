@@ -336,7 +336,7 @@ class LayerSerializer(serializers.ModelSerializer):
 
     def get_capabilities(self, instance):
         """
-        Get capabilities by layer propterties
+        Get capabilities by layer properties
         :param instance: Model instance
         :return:
         """
