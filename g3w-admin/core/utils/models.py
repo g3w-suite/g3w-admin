@@ -16,7 +16,7 @@ from core.utils.db import build_django_connection, build_dango_connection_name
 from core.utils.geo import camel_geometry_type
 from .structure import MAPPING_GEOALCHEMY_DJANGO_FIELDS, MAPPING_OGRWKBGTYPE, BooleanField, NullBooleanField
 
-
+ogr.UseExceptions()
 
 def get_geometry_column(geomodel):
     """
@@ -420,6 +420,7 @@ class SpatialiteCreateGeomodel(CreateGeomodel):
     def create_engine(self):
 
         # try with ogr
+
         splite = ogr.Open(self.datasource['dbname'])
         daLayer = splite.GetLayerByName(str(self.table))
 
