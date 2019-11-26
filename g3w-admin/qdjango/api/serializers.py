@@ -415,6 +415,8 @@ class LayerSerializer(serializers.ModelSerializer):
                 ret['source']['external'] = True
                 #ret['servertype'] = MSTYPES_OGC
 
+            ret['source']['external'] = False
+
         # add proj4
         try:
             ret['proj4'] = G3WSpatialRefSys.objects.get(srid=ret['crs']).proj4text

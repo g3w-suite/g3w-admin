@@ -327,6 +327,9 @@ class Layer(G3WACLModelMixins, models.Model):
 
     download = models.BooleanField(_('Download data'), default=False, blank=True)
 
+    # for layer WMS/WMST: set if load direct from their servers or from local QGIS-server
+    external = models.BooleanField(_('Get WMS/WMS externally'), default=False, blank=True)
+
     def __unicode__(self):
         return self.name
 
