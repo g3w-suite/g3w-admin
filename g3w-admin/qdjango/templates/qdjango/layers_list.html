@@ -4,6 +4,7 @@
 {% load guardian_tags %}
 {% load svg_icon %}
 {% load staticfiles %}
+{% load qdjango_tags %}
 
 {% block custom_js_links_page %}
 <script src="{% static "qdjango/js/widget.js" %}"></script>
@@ -11,6 +12,7 @@
     $('#tree').treeview({data:{{ layers_tree|safe }}});
     ga.ui.initNolegendLayerCheckBox();
     ga.ui.initDownloadLayerCheckBox();
+    ga.ui.initExternalLayerCheckBox();
 
     // on check of every download
     $(document).on('ifChanged', '[name="check_every_download"]', function(e){
@@ -110,7 +112,11 @@
                                 <input type="checkbox" data-widget-type="downloadLayer" data-ajax-url="{% url 'qdjango-project-layers-data-editing' project.group.slug project.slug object.pk %}" name="download_{{ object.pk }}" {% if object.download %}checked="checked"{% endif %}>
                                 {% endif %}
                             </td>
-                            <td></td>
+                            <td>
+                                {% if object|can_set_external %}
+                                <input type="checkbox" data-widget-type="externalLayer" data-ajax-url="{% url 'qdjango-project-layers-data-editing' project.group.slug project.slug object.pk %}" name="external_{{ object.pk }}" {% if object.download %}checked="checked"{% endif %}>
+                                {% endif %}
+                            </td>
                             {% endif %}
                             <td>
                                 {% include 'qdjango/include/layer_icon.html' %}

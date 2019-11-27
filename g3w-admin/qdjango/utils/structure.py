@@ -87,7 +87,15 @@ def datasourcearcgis2dict(datasource):
 
 
 class QdjangoMetaLayer(CoreMetaLayer):
-
+    """
+    Metalayer used for belonging layers group activations/deactivations image map by client
+    I.e.:
+    Layer 1 (Metalayer value 1)
+    Layer 2 (Metalayer value 1)
+    Layer 3 (Metalayer value 2)
+    Layer 4 (Metalayer value 3)
+    Layer 1 and 2 work as a group also for Layer 3 another group and Layer 4
+    """
     layerTypesSingleLayer = (
         'wms',
     )
@@ -100,7 +108,8 @@ class QdjangoMetaLayer(CoreMetaLayer):
         self.countLayer += 1
         layerType = layer['source']['type']
 
-        if layerType in self.layerTypesSingleLayer and 'url' in layer['source'] or 'cache_url' in layer:
+        if layerType in self.layerTypesSingleLayer and 'url' in layer['source'] and layer['source']['external']\
+                or 'cache_url' in layer:
             if self.countLayer > 1:
                 self.increment()
             self.toIncrement = True

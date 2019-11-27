@@ -364,7 +364,9 @@ class QdjangoLayerCacheView(G3WGroupViewMixin, QdjangoProjectViewMixin, View):
 
 
 class QdjangoLayerDataView(G3WGroupViewMixin, QdjangoProjectViewMixin, View):
-
+    """
+    By ajax call can change few strict layer model attributes.
+    """
     @method_decorator(permission_required('qdjango.change_project', (Project, 'slug', 'project_slug'),
                                           raise_exception=True))
     def dispatch(self, *args, **kwargs):
@@ -379,6 +381,8 @@ class QdjangoLayerDataView(G3WGroupViewMixin, QdjangoProjectViewMixin, View):
             layer.exclude_from_legend = int(request.POST['exclude_from_legend'])
         if 'download_layer' in request.POST:
             layer.download = int(request.POST['download_layer'])
+        if 'external' in request.POST:
+            layer.external = int(request.POST['external'])
         layer.save()
         return JsonResponse({'Saved': 'ok'})
 
