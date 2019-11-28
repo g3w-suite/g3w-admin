@@ -1307,13 +1307,11 @@ class QgisProjectSettingsWMS(XmlData):
         }))
 
         try:
-            self._metadata.update(OrderedDict({
-                'contactinformation': OrderedDict({
+            self._metadata['contactinformation'].update(OrderedDict({
                     'contactvoicetelephone': contactinfo.find(self._buildTagWithNS('ContactVoiceTelephone')).text,
                     'contactelectronicmailaddress': contactinfo.find(
                         self._buildTagWithNS('ContactElectronicMailAddress')).text,
-                })
-            }))
+                }))
         except:
             pass
 
