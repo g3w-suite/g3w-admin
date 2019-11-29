@@ -25,8 +25,10 @@ from .signals import load_qdjango_widgets_data
 from .mixins.views import *
 from .forms import *
 from .api.utils import serialize_vectorjoin
+from .utils.models import get_widgets4layer
 import json
 from collections import OrderedDict
+
 
 class QdjangoProjectDownloadView(ObjectDownloadView):
     """
@@ -398,7 +400,7 @@ class QdjangoLayerWidgetsView(G3WGroupViewMixin, QdjangoProjectViewMixin, Qdjang
         return super(QdjangoLayerWidgetsView, self).dispatch(*args, **kwargs)
 
     def get_queryset(self):
-        return Widget.objects.filter(datasource=self.layer.datasource)
+        return get_widgets4layer(self.layer)
 
 
 class QdjangoLayerWidgetCreateView(G3WRequestViewMixin, G3WGroupViewMixin, QdjangoProjectViewMixin,

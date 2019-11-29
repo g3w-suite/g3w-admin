@@ -1,8 +1,10 @@
+from .base import QdjangoTestBase
 from django.test import TestCase, override_settings
 from django.core.files import File
-from qdjango.models import Project
+from qdjango.models import Project, Layer, Widget
 from qdjango.utils.data import QgisProject, QgisPgConnection
 from qdjango.utils.structure import get_schema_table, datasource2dict, datasourcearcgis2dict
+from qdjango.utils.models import get_widgets4layer
 
 import os
 
@@ -147,3 +149,32 @@ class QgisProjectTest(TestCase):
         self.assertEqual(res['layer'], '2')
         self.assertEqual(res['url'],
                          'https://sampleserver1.arcgisonline.com/ArcGIS/rest/services/Specialty/ESRI_StateCityHighway_USA/MapServer')
+
+
+class QdjangoUtilsTest(QdjangoTestBase):
+    """ Test for utils methods and functions with QGIS 3.4.x project """
+
+    def test_get_widget4layer(self):
+        """ Tets same name util func """
+
+        # check if widget for every layer are 3 items:
+        self.assertEqual(len(get_widgets4layer(self.fake_layer)), 0)
+        self.assertEqual(len(get_widgets4layer(self.fake_layer2)), 0)
+        self.assertEqual(len(get_widgets4layer(self.fake_layer3)), 0)
+
+        # create widget only one for all 3 fake layers
+        widget = Widget(
+            name='fakewidget',
+            body='{}',
+            datasource=self.fake_layer.datasource,
+            widget_type='search'
+        )
+        widget.save()
+
+        # check after creation of 1 widget
+        self.assertEqual(len(get_widgets4layer(self.fake_layer)), 1)
+        self.assertEqual(len(get_widgets4layer(self.fake_layer2)), 1)
+        self.assertEqual(len(get_widgets4layer(self.fake_layer3)), 1)
+
+        # tear down
+        widget.delete()
