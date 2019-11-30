@@ -411,6 +411,21 @@ _.extend(g3wadmin.ui, {
         });
     },
 
+    // Init wms/wmst/arcgiserver external/internal calls
+    initExternalLayerCheckBox: function(){
+        $(document).on('ifChanged', '[data-widget-type="externalLayer"]', function(e){
+
+            var $item = $(this);
+            // build value
+            var data = {
+                external: e.target.checked ? 1 : 0
+            }
+
+            ga.widget.setLayerData($item, data);
+
+        });
+    },
+
     closeMessages: function(){
         var $alerts = $('#page_user_messages').find('.alert');
         $alerts.delay(4000).slideUp(500);
