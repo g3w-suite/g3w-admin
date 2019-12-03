@@ -23,6 +23,12 @@ try:
 except NameError:
     pass
 
+try:
+    if FRONTEND:
+        LOGIN_REDIRECT_URL = '/admin/'
+except:
+    pass
+
 if SENTRY:
     try:
         INSTALLED_APPS += ['raven.contrib.django.raven_compat']

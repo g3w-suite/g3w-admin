@@ -162,6 +162,7 @@ SITETREE_MODEL_TREE_ITEM = 'core.G3W2TreeItem'
 
 LOGIN_URL = 'login'
 LOGOUT_NEXT_PAGE = '/'
+LOGIN_REDIRECT_URL = '/'
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
