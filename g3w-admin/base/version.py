@@ -22,19 +22,31 @@ def get_version(version=None):
     #     | {a|b|c}N - for alpha, beta and rc releases
 
     parts = 2 if version[2] == 0 else 3
-    main = '.'.join(str(x) for x in version[:parts])
+    #main = '.'.join(str(x) for x in version[:parts])
+    main = ''
 
     sub = ''
     if version[3] == 'unstable':
         git_changeset = get_git_changeset()
+        git_branch = get_git_branch()
         if git_changeset:
-            sub = '.dev%s' % git_changeset
+            dot = '.' if main else ''
+            sub = '%s%s-%s' % (dot, git_branch, git_changeset)
 
     elif version[3] != 'final':
         mapping = {'beta': 'b', 'rc': 'rc'}
         sub = mapping[version[3]] + str(version[4])
 
     return main + sub
+
+def get_git_branch():
+    """ Return current git code branch """
+    repo_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    git_branch = subprocess.Popen('git branch',
+                                stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                shell=True, cwd=repo_dir, universal_newlines=True)
+    branches = git_branch.communicate()[0].split('\n')
+    return [b for b in branches if b.startswith('*')][0][2:]
 
 
 def get_git_changeset():
