@@ -47,7 +47,10 @@ def get_git_branch():
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                                 shell=True, cwd=repo_dir, universal_newlines=True)
     branches = git_branch.communicate()[0].split('\n')
-    return [b for b in branches if b.startswith('*')][0][2:]
+    try:
+        return [b for b in branches if b.startswith('*')][0][2:]
+    except:
+        return ''
 
 
 def get_git_changeset():
