@@ -403,8 +403,10 @@ class LayerSerializer(serializers.ModelSerializer):
 
             if ('username' not in ret['source'] or 'password' not in ret['source']) and 'type=xyz' not in instance.datasource:
                 ret['source'].update(datasourceWMS.dict() if isinstance(datasourceWMS, QueryDict) else datasourceWMS)
+                ret['source']['external'] = True
 
-            ret['source']['external'] = instance.external
+            #ret['source']['external'] = instance.external
+
 
         # add proj4
         try:
