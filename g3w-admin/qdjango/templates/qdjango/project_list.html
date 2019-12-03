@@ -52,6 +52,12 @@
 
                         {% if "change_project" in userObj_perms %}
                         <span class="col-xs-2 icon">
+                            <a target="_blank" href="/ows/{{ group.slug }}/qdjango/{{ object.pk }}/?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetProjectSettings" data-toggle="tooltip" data-placement="top" title="{% trans 'Test WMS capabilities' %}" ><i class="ion ion-flash"></i></a>
+                        </span>
+                        {% endif %}
+
+                        {% if "change_project" in userObj_perms %}
+                        <span class="col-xs-2 icon">
                             <a href="{% url 'qdjango-project-update' group.slug object.slug %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Edit' %}" ><i class="ion ion-edit"></i></a>
                         </span>
                         {% endif %}
