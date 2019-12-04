@@ -16,39 +16,52 @@ from urlparse import urlsplit, parse_qs
 from core.utils.projects import CoreMetaLayer
 from core.utils import unicode2ascii
 from .exceptions import QgisProjectLayerException
-import shlex
 
+# "schema"."table"
+RE1 = re.compile(r'"([^"]+)"\."([^"]+)"')
+# schema.table
+RE2 = re.compile(r'([^"\.]+)\.(.+)')
+# "table" or table
+RE3 = re.compile(r'"?([^"]+)"?')
 
 def get_schema_table(datasource_table):
-    if datasource_table.find('.') != -1:
-        schema, table = datasource_table.split('.')
-    else:
-        schema = 'public'
-        table = datasource_table
+    """Returns unquoted schema and table names
 
-    table = table.strip('"')
-    schema = schema.strip('"')
+    :param datasource_table: table description
+    :type datasource_table: str
+    :return: tuple with unquoted schema and table names
+    :rtype: tuple
+    """
 
+    try:
+        return RE1.match(datasource_table).groups()
+    except AttributeError:
+        try:
+            return RE2.match(datasource_table).groups()
+        except AttributeError:
+            table = RE3.match(datasource_table).groups()[0]
+            schema = 'public'
     return schema, table
 
 
 def datasource2dict(datasource):
     """
-    Read datasource string e put data in a python dict
+    Read a DB datasource string and put data in a python dict
     """
 
     datasourceDict = {}
 
-    # befor get sql
+    # before get sql
     datasource, sql = datasource.split('sql=')
     #datalist = datasource.split(' ')
-    datalist = shlex.split(datasource)
-    for item in datalist:
+
+    keys = re.findall(r'([A-z][A-z0-9-_]+)=[\'"]?[#$^?+=!*()\'-/@%&\w\."]+[\'"]?', datasource)
+    for k in keys:
         try:
-            key, value = item.split('=')
-            datasourceDict[key] = value.strip('\'')
-        except ValueError:
-            pass
+            datasourceDict[k] = re.findall(r'%s=([^"\'][#$^?+=!*()\'-/@%%&\w\.]+)' % k, datasource)[0]
+        except:
+            # If I reincarnate as a human, I'll choose to be a farmer.
+            datasourceDict[k] = re.findall(r'%s=((?:["\'](?:(?:[^\"\']|\\\')+)["\'])(?:\.["\'](?:(?:[^\"\']|\\\')+)["\'])?)\s' % k, datasource)[0].strip('\'')
 
     # add sql
     datasourceDict['sql'] = '{}'.format(unicode2ascii(sql))
