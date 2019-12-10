@@ -8,7 +8,7 @@ chardet==3.0.4
 coverage==4.5.4
 defusedxml==0.6.0
 diff-match-patch==20181111
-Django==1.11.18
+Django==1.11.26
 django-ajax-selects==1.6.1
 django-autoslug==1.9.3
 django-celery==3.3.1
@@ -41,7 +41,7 @@ openpyxl==2.6.3
 OWSLib==0.18.0
 pathlib==1.0.1
 Pillow==6.1.0
-pkg-resources==0.0.0
+#pkg-resources==0.0.0
 psycopg2==2.8.3
 psycopg2-binary==2.8.3
 pyproj==2.3.0
@@ -66,4 +66,4 @@ zipp==0.6.0
 # env var setup before install as described in:
 # https://gis.stackexchange.com/questions/28966/python-gdal-package-missing-header-file-when-installing-via-pip
 # to allwo finding of libs and includes.
-GDAL==2.2.3
+#GDAL==2.2.3
