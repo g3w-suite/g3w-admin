@@ -313,7 +313,7 @@ class QgisProjectLayer(XmlData):
     def _getDataEditOptions(self):
 
         editOptions = 0
-        for editOp, layerIds in self.qgisProject.wfstLayers.items():
+        for editOp, layerIds in list(self.qgisProject.wfstLayers.items()):
             if self.layerId in layerIds:
                 editOptions |= getattr(settings, editOp)
 
@@ -461,7 +461,7 @@ class QgisProjectLayer(XmlData):
             fieldConfiguration = self.qgisProjectLayerTree.find('fieldConfiguration')
             editable = self.qgisProjectLayerTree.find('editable')
             editablesf = {}
-            if editable:
+            if editable is not None:
                 for field in editable:
                     editablesf[field.attrib['name']] = field.attrib['editable']
 
@@ -733,7 +733,7 @@ class QgisProject(XmlData):
             self.qgisProjectFile.file.seek(0)
             self.qgisProjectTree = lxml.parse(self.qgisProjectFile, forbid_entities=False)
         except Exception as e:
-            raise QgisProjectException(_('The project file is malformed: {}').format(e.message))
+            raise QgisProjectException(_('The project file is malformed: {}').format(e.args[0]))
 
 
     def _getDataName(self):
@@ -942,7 +942,7 @@ class QgisProject(XmlData):
             wfstLayersTree = self.qgisProjectTree.xpath('properties/WFSTLayers')[0]
 
             # collect layer_id for edito ps
-            for editOp in wfstLayers.keys():
+            for editOp in list(wfstLayers.keys()):
                 editOpsLayerIdsTree = wfstLayersTree.xpath('{}/value'.format(editOp.lower().capitalize()))
                 for editOpsLayerIdTree in editOpsLayerIdsTree:
                     wfstLayers[editOp].append(editOpsLayerIdTree.text)
@@ -1058,8 +1058,7 @@ class QgisProject(XmlData):
                     layoutitem.attrib['file'] = makeComposerPictureFile(layoutitem.attrib['file'])
 
         # Update QGIS file
-        with open(self.instance.qgis_file.path, 'w') as handler:
-            tree.write(handler)
+        tree.write(self.instance.qgis_file.path, encoding='UTF-8')
 
 
 class QgisProjectSettingsWMS(XmlData):
@@ -1095,7 +1094,7 @@ class QgisProjectSettingsWMS(XmlData):
             self.qgisProjectSettingsTree = lxml.fromstring(self.qgisProjectSettingsFile)
         except Exception as e:
             raise Exception(
-                _('The project settings is malformed: {} ----- {}'.format(e.message, self.qgisProjectSettingsFile)))
+                _('The project settings is malformed: {} ----- {}'.format(e.args[0], self.qgisProjectSettingsFile)))
 
     def _buildTagWithNS(self, tag):
         return '{{{0}}}{1}'.format(self._NS['opengis'], tag)
@@ -1132,7 +1131,7 @@ class QgisProjectSettingsWMS(XmlData):
             name = layerTree.find(self._buildTagWithNS('Name')).text
             attributes = layerTree.find(self._buildTagWithNS('Attributes'))
             attrs = []
-            if attributes:
+            if attributes is not None and len(attributes):
                 for attribute in attributes:
                     attribs = attribute.attrib
                     if 'alias' not in attribs:
@@ -1415,19 +1414,19 @@ class QgisPgConnection(object):
     def __init__(self, **kwargs):
 
         self._data = {}
-        for k,v in kwargs.items():
+        for k,v in list(kwargs.items()):
             setattr(self, k, v)
 
     def __setattr__(self, key, value):
 
-        if key in QgisPgConnection._params.keys():
+        if key in list(QgisPgConnection._params.keys()):
             self.__dict__['_data'][key] = value
         else:
             self.__dict__[key] = value
 
     def __getattr__(self, key):
 
-        if key in QgisPgConnection._params.keys():
+        if key in list(QgisPgConnection._params.keys()):
             try:
                 return self.__dict__['_data'][key]
             except:
@@ -1441,7 +1440,7 @@ class QgisPgConnection(object):
         postgisTree = etree.Element('postgis')
         postgisTreeAttributes = postgisTree.attrib
 
-        for key in QgisPgConnection._params.keys():
+        for key in list(QgisPgConnection._params.keys()):
             postgisTreeAttributes[key] = str(getattr(self, key))
 
         qgsPgConnectionTree.append(postgisTree)

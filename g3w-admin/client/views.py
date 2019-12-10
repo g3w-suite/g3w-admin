@@ -134,20 +134,20 @@ class ClientView(TemplateView):
         # add baseUrl property
         contextData['group_config'] = 'var initConfig ={{ "staticurl":"{}", "client":"{}", ' \
                                       '"mediaurl":"{}", "user":{}, "group":{}, "baseurl":"{}", "vectorurl":"{}", ' \
-                                      '"main_map_title":{}, '"g3wsuite_logo_img"': "{}", '"credits"': "{}"' \
+                                      '"main_map_title":{}, "g3wsuite_logo_img": "{}", "credits": "{}"' \
                                       ' {} }}'.\
-            format(settings.STATIC_URL, "{}/".format(settings.CLIENT_DEFAULT), settings.MEDIA_URL, user_data,
+            format(settings.STATIC_URL, "{}/".format(settings.CLIENT_DEFAULT), settings.MEDIA_URL, user_data.decode('UTF-8'),
                     serializedGroup, baseurl, settings.VECTOR_URL,
                    '"' + generaldata.main_map_title + '"' if generaldata.main_map_title else 'null',
                    settings.CLIENT_G3WSUITE_LOGO, reverse('client-credits'), frontendurl)
 
         # project by type(app)
-        if not '{}-{}'.format(kwargs['project_type'], self.project.pk) in groupSerializer.projects.keys():
+        if not '{}-{}'.format(kwargs['project_type'], self.project.pk) in list(groupSerializer.projects.keys()):
             raise Http404('No project type and/or project id present in group')
 
         # page title
 
-        contextData['page_title'] = u'{} | {}'.format(
+        contextData['page_title'] = '{} | {}'.format(
             getattr(settings, 'G3WSUITE_CUSTOM_TITLE', 'g3w - client'), self.project.title)
 
         # choosen skin by user main role

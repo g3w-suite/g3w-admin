@@ -15,7 +15,7 @@ class QgisEditType(object):
     """
     def __init__(self, **kwargs):
 
-        for key, value in kwargs.items():
+        for key, value in list(kwargs.items()):
             setattr(self, key, value)
 
     @property

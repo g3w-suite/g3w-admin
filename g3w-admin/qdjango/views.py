@@ -260,7 +260,7 @@ class QdjangoProjectRelationsApiView(APIView):
         for r in rows:
             rn = r.copy()
             new_rn = OrderedDict()
-            for f in r.keys():
+            for f in list(r.keys()):
                 if type(r[f]) == buffer or f in ['the_geom', 'geom']:
                     continue
                 elif exclude_columns and f in exclude_columns:
@@ -492,7 +492,7 @@ class QdjangoLinkWidget2LayerView(G3WRequestViewMixin, G3WGroupViewMixin, Qdjang
             self.linkUnlinkWidget(link=(not 'unlink' in self.request.GET))
             return JsonResponse({'status': 'ok'})
         except Exception as e:
-            return JsonResponse({'status': 'error', 'errors_form': e.message})
+            return JsonResponse({'status': 'error', 'errors_form': e.args[0]})
 
     def linkUnlinkWidget(self, link=True):
         if self.layer.datasource != self.widget.datasource:

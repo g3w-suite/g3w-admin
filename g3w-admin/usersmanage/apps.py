@@ -1,4 +1,4 @@
-from __future__ import unicode_literals
+
 from django.apps import AppConfig, apps
 from django.db.models.signals import post_migrate
 from .configs import *

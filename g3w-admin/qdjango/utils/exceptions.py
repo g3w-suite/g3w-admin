@@ -9,8 +9,8 @@ class QgisProjectException(QgisException):
 
     pre_error_msg = _('Project error')
 
-    def __unicode__(self):
-        return u"[{}]-- {}".format(self.pre_error_msg, self.message)
+    def __str__(self):
+        return "[{}]-- {}".format(self.pre_error_msg, self.args[0])
 
 
 class QgisProjectLayerException(QgisProjectException):

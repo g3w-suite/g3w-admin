@@ -1,4 +1,4 @@
-from __future__ import division
+
 from django import template
 from django.apps import apps
 from django.conf.urls.static import static

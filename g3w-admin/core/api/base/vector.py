@@ -13,7 +13,7 @@ class MetadataVectorLayer(object):
         self.relation_id = relation_id
         self.lock = lock
 
-        for k, v in kwargs.items():
+        for k, v in list(kwargs.items()):
             setattr(self, k, v)
 
     def get_queryset(self):

@@ -84,7 +84,7 @@ class CheckMaxExtent(QgisProjectValidator):
 
             # check is a cordinate il None or empty
             wrong_coord = list()
-            for coord, value in max_extent.items():
+            for coord, value in list(max_extent.items()):
                 if not value:
                     wrong_coord.append(coord)
 

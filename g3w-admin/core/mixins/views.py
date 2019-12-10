@@ -159,7 +159,7 @@ class G3WUploadFileViewMixin(object):
         to_ret = {}
 
         # get files
-        for file_field, file in request.FILES.items():
+        for file_field, file in list(request.FILES.items()):
             to_ret[file_field] = self.handle_file(file)
 
         return JsonResponse(to_ret)

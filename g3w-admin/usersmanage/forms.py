@@ -37,15 +37,15 @@ from .utils import getUserGroups, userHasGroups
 
 
 def label_users(obj):
-    return u'{} {} ({})'.format(obj.first_name,obj.last_name, obj.username)
+    return '{} {} ({})'.format(obj.first_name,obj.last_name, obj.username)
 
 
 def label_viewer_users(obj):
-    return u'{} {} ({})'.format(obj.first_name,obj.last_name, obj.username)
+    return '{} {} ({})'.format(obj.first_name,obj.last_name, obj.username)
 
 
 def label_user(obj):
-    return u'{} {} ({})'.format(obj.first_name,obj.last_name, obj.username)
+    return '{} {} ({})'.format(obj.first_name,obj.last_name, obj.username)
 
 
 class UsersChoiceField(forms.ModelMultipleChoiceField):
@@ -154,7 +154,7 @@ class G3WACLForm(forms.Form):
 
         # get only viewer not current object editor
         filters = []
-        if kwargs.has_key('initial') and kwargs['initial'].has_key('editor_user'):
+        if 'initial' in kwargs and 'editor_user' in kwargs['initial']:
             filters.append(~Q(pk=kwargs['initial']['editor_user']))
         if userHasGroups(self.request.user, [G3W_EDITOR1]):
             filters.append(~Q(pk=self.request.user.pk))
@@ -165,17 +165,17 @@ class G3WACLForm(forms.Form):
         self.fields['viewer_users'].queryset = queryset.order_by('last_name')
 
     def _init_users(self, **kwargs):
-        if kwargs.has_key('initial') and kwargs['initial'].has_key('viewer_users'):
+        if 'initial' in kwargs and 'viewer_users' in kwargs['initial']:
             self.initial_viewer_users = kwargs['initial']['viewer_users']
-        if kwargs.has_key('initial') and kwargs['initial'].has_key('editor_user'):
+        if 'initial' in kwargs and 'editor_user' in kwargs['initial']:
             self.initial_editor_user = kwargs['initial']['editor_user']
-        if kwargs.has_key('initial') and kwargs['initial'].has_key('editor2_user'):
+        if 'initial' in kwargs and 'editor2_user' in kwargs['initial']:
             self.initial_editor2_user = kwargs['initial']['editor2_user']
 
     def _init_user_groups(self, **kwargs):
-        if kwargs.has_key('initial') and kwargs['initial'].has_key('viewer_user_groups'):
+        if 'initial' in kwargs and 'viewer_user_groups' in kwargs['initial']:
             self.initial_viewer_user_groups = kwargs['initial']['viewer_user_groups']
-        if kwargs.has_key('initial') and kwargs['initial'].has_key('editor_user_groups'):
+        if 'initial' in kwargs and 'editor_user_groups' in kwargs['initial']:
             self.initial_editor_user_groups = kwargs['initial']['editor_user_groups']
 
     def _set_user_groups_queryset(self):

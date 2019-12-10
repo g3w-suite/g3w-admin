@@ -83,7 +83,7 @@ class UsersManageTest(BaseUsermanageTestCase):
 
             core_form_group = GroupForm(**{'request': request})
 
-            filtered_fields = map(lambda f: f.get_field_names()[0][1], get_fields_by_user(request.user, core_form_group))
+            filtered_fields = [f.get_field_names()[0][1] for f in get_fields_by_user(request.user, core_form_group)]
 
             self.assertTrue(filtered_fields == fields)
 

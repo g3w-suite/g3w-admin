@@ -245,7 +245,7 @@ def mapLayerAttributes(layer, formField=False, **kwargs):
     for field in fieldsMapped:
         originType = field['type'].lower()
         type = originType[:originType.find('(')] if originType.find('(') >= 0 else originType
-        if type in mappingData.keys():
+        if type in list(mappingData.keys()):
             field['type'] = mappingData[type]
             if formField:
                 formFields[field['name']] = editingFormField(
@@ -420,7 +420,7 @@ def deepupdate(target, src):
     >>> print t
     {'name': 'Ferry', 'hobbies': ['programming', 'sci-fi', 'gaming']}
     """
-    for k, v in src.items():
+    for k, v in list(src.items()):
         if type(v) == list:
             if not k in target:
                 target[k] = copy.deepcopy(v)

@@ -1,4 +1,4 @@
-from __future__ import division
+
 from django import template
 from qdjango.models import Layer
 

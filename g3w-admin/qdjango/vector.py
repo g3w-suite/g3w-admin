@@ -18,7 +18,7 @@ from .utils.structure import datasource2dict
 from .models import Layer
 import subprocess
 import zipfile
-import StringIO
+import io
 import os
 import shutil
 
@@ -109,7 +109,7 @@ class QGISLayerVectorViewMixin(object):
         # init relations
         self.set_relations()
 
-        for idr, relation in self.relations.items():
+        for idr, relation in list(self.relations.items()):
 
             # check if in relation there is referencedLayer == self layer
             if relation['referencedLayer'] == self.layer.qgs_layer_id:
@@ -210,7 +210,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         # add label
         if self.layer:
             fields_layer = self.layer.database_columns_by_name()
-            for field, data in fields_layer.items():
+            for field, data in list(fields_layer.items()):
                 fields[self.layer_name]['fields'][field] = {'label': data['label']}
 
         # add widgets
@@ -218,10 +218,9 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
 
             # reduild edittypes
             edittypes = eval(self.layer.edittypes)
-            allow_edittypes = MAPPING_EDITTYPE_QGISEDITTYPE.keys()
+            allow_edittypes = list(MAPPING_EDITTYPE_QGISEDITTYPE.keys())
 
-            for field, data in edittypes.items():
-
+            for field, data in list(edittypes.items()):
                 if data['widgetv2type'] in allow_edittypes:
 
                     # instance of QgisEditType
@@ -344,15 +343,15 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         if error and not error.startswith('Warning'):
             raise APIException(error)
 
-        # buil on memeory zip file
+        # build on memory zip file
         # from https://stackoverflow.com/a/12951557
 
         filenames = ["{}{}".format(filename, ftype) for ftype in self.shp_extentions]
 
         zip_filename = "{}.zip".format(filename)
 
-        # Open StringIO to grab in-memory ZIP contents
-        s = StringIO.StringIO()
+        # Open BytesIO to grab in-memory ZIP contents
+        s = io.BytesIO()
 
         # The zip compressor
         zf = zipfile.ZipFile(s, "w")

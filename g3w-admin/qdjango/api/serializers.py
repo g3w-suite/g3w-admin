@@ -376,7 +376,7 @@ class LayerSerializer(serializers.ModelSerializer):
             try:
                 bbox = self.qgis_projectsettings_wms.layers[lidname]['bboxes']['EPSG:{}'.format(group.srid.srid)]
                 ret['bbox'] = {}
-                for coord, val in bbox.items():
+                for coord, val in list(bbox.items()):
                     if val not in (float('inf'), float('-inf')):
                         ret['bbox'][coord] = val
                     else:

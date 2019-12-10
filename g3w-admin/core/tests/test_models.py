@@ -30,13 +30,13 @@ class GroupsTests(TestCase):
         self.baselayer = BaseLayer.objects.get(name='OpenStreetMap')
 
     def test_baselayer_name(self):
-        self.assertEquals(self.baselayer.title, 'OSM')
+        self.assertEqual(self.baselayer.title, 'OSM')
 
     def test_signup_status_code(self):
         activate('it')
         login = self.client.login(username='admin01', password='admin01')
         url = reverse('group-list')
         response = self.client.get(url)
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
 

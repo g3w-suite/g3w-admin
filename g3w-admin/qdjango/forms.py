@@ -127,7 +127,7 @@ class QdjangoProjetForm(QdjangoProjectFormMixin, G3WFormMixin, G3WGroupFormMixin
                                     Div(
                                         Div(
                                             HTML("<h3 class='box-title'><i class='fa fa-file'></i> {}</h3>"
-                                                 .format(_('Descrition data'))),
+                                                 .format(_('Description data'))),
                                             css_class='box-header with-border'
                                         ),
                                         Div(

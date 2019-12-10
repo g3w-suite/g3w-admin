@@ -5,20 +5,14 @@ import os
 import zipfile
 import tempfile
 import datetime
+from io import StringIO
 from django.http import HttpResponse
 from django.utils.encoding import smart_str
 from django.db.models.fields import *
 from django.db.models.fields.related import ForeignKey
 from django.contrib.gis.db.models.fields import GeometryField
 from django.contrib.gis.gdal import check_err, OGRGeomType
-
-try:
-    from cStringIO import StringIO
 except ImportError:
-    try:
-        from io import StringIO
-    except:
-        from StringIO import StringIO
 
 try:
     # a mysterious bug with ctypes and python26 causes crashes
@@ -186,11 +180,11 @@ class ShpResponder(object):
 
             for field in attributes:
                 # if the field is a foreign key, return its pk value. this is
-                # a problem when a model is given a __unicode__ representation.
+                # a problem when a model is given a __str__ representation.
                 value = getattr(item, field.name)
                 if value is not None and isinstance(field, ForeignKey):
                     value = getattr(value, 'pk')
-                if isinstance(value, unicode):
+                if isinstance(value, str):
                     value = value.encode('utf-8')
 
                 # truncate the field name.
@@ -359,7 +353,7 @@ class ShpResponder(object):
             # If the class isn't directly mapped, see if any parent classes are
             # mapped (useful for custom Django field types that are just (eg)
             # CharFields under the hood).
-            for dj_cls, ogr_cls in ogr_mapping.items():
+            for dj_cls, ogr_cls in list(ogr_mapping.items()):
                 if issubclass(type(field), dj_cls):
                     ogr_type = ogr_cls
                     break

@@ -63,7 +63,7 @@ class CoreApiTest(APITestCase):
 
         # Fix datasource path for spatialite
         l = Layer.objects.get(name='spatialite_points')
-        l.datasource = u'dbname=\'%s/un-progetto-data/un-progetto.db\' table="spatialite_points" (geom) sql=' % DATASOURCE_PATH
+        l.datasource = 'dbname=\'%s/un-progetto-data/un-progetto.db\' table="spatialite_points" (geom) sql=' % DATASOURCE_PATH
         l.save()
 
     @classmethod
@@ -77,7 +77,7 @@ class CoreApiTest(APITestCase):
         self.client.logout()
 
     def _d(self, d, path=[]):
-        for k,v in d.items():
+        for k,v in list(d.items()):
             _path = ( path if path else '') + "[\"%s\"]" % k
             if type(v) == dict:
                 self._d(v, _path)
@@ -91,7 +91,7 @@ class CoreApiTest(APITestCase):
     def __testApiCall(self, view_name, args):
         """Utility to make test calls"""
 
-         # No auth
+        # No auth
         response = self.client.get(reverse(view_name, args=args))
         self.assertEqual(response.status_code, 403)
 
@@ -107,13 +107,13 @@ class CoreApiTest(APITestCase):
         """Test core-vector-api"""
 
         response = self.__testApiCall('core-vector-api', ['shp', 'qdjango', '1', 'spatialite_points20190604101052075'])
-        self.assertTrue('spatialite_points.shp' in response.content)
+        self.assertTrue('spatialite_points.shp' in response.content.decode('utf-8', 'backslashreplace'))
 
         response = self.__testApiCall('core-vector-api', ['config', 'qdjango', '1', 'spatialite_points20190604101052075'])
         resp = json.loads(response.content)
         self.assertIsNone(resp["vector"]["count"])
         self.assertEqual(resp["vector"]["format"], "GeoJSON")
-        self.assertEqual(resp["vector"]["fields"], [{u'name': u'pkuid', u'editable': False, u'label': u'pkuid', u'input': {u'type': u'text', u'options': {}}, u'validate': {}, u'type': u'integer'}, {u'name': u'name', u'editable': True, u'label': u'name', u'input': {u'type': u'textarea', u'options': {}}, u'validate': {}, u'type': u'text'}])
+        self.assertEqual(resp["vector"]["fields"], [{'name': 'pkuid', 'editable': False, 'label': 'pkuid', 'input': {'type': 'text', 'options': {}}, 'validate': {}, 'type': 'integer'}, {'name': 'name', 'editable': True, 'label': 'name', 'input': {'type': 'textarea', 'options': {}}, 'validate': {}, 'type': 'text'}])
         self.assertEqual(resp["vector"]["geometrytype"], "Point")
         self.assertEqual(resp["vector"]["pk"], "pkuid")
         self.assertIsNone(resp["vector"]["data"])
@@ -128,7 +128,7 @@ class CoreApiTest(APITestCase):
         self.assertEqual(resp["vector"]["geometrytype"], "Point")
         self.assertEqual(resp["vector"]["pk"], "pkuid")
         self.assertEqual(resp["vector"]["data"]["type"], "FeatureCollection")
-        self.assertEqual(resp["vector"]["data"]["features"], [{u'geometry': {u'type': u'Point', u'coordinates': [1.980089, 28.779772]}, u'type': u'Feature', u'id': 1, u'properties': {u'name': u'a point'}}, {u'geometry': {u'type': u'Point', u'coordinates': [10.685247, 44.350968]}, u'type': u'Feature', u'id': 2, u'properties': {u'name': u'another point'}}])
+        self.assertEqual(resp["vector"]["data"]["features"], [{'geometry': {'type': 'Point', 'coordinates': [1.980089, 28.779772]}, 'type': 'Feature', 'id': 1, 'properties': {'name': 'a point'}}, {'geometry': {'type': 'Point', 'coordinates': [10.685247, 44.350968]}, 'type': 'Feature', 'id': 2, 'properties': {'name': 'another point'}}])
         self.assertTrue(resp["result"])
         self.assertIsNone(resp["featurelocks"])
 

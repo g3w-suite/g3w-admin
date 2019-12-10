@@ -79,7 +79,7 @@ def project_type_permission_required(perm, lookup_variables=None, **kwargs):
 
     # Check if perm is given as string in order not to decorate
     # view function itself which makes debugging harder
-    if not isinstance(perm, basestring):
+    if not isinstance(perm, str):
         raise GuardianError("First argument must be in format: "
             "'app_label.codename or a callable which return similar string'")
 

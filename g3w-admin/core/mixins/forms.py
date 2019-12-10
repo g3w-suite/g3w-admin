@@ -62,7 +62,7 @@ class G3WFormMixin(object):
 
     def checkEmptyInitialsData(self, *fields):
 
-        if not hasattr(self, 'initial') or len(self.initial.items()) == 0:
+        if not hasattr(self, 'initial') or len(list(self.initial.items())) == 0:
             return 'collapsed-box'
         collapsed = True
 
