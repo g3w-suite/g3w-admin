@@ -47,6 +47,21 @@ class UserCreateView(G3WRequestViewMixin, CreateView):
     def dispatch(self, *args, **kwargs):
         return super(UserCreateView, self).dispatch(*args, **kwargs)
 
+    def get_context_data(self, **kwargs):
+        c = super(UserCreateView, self).get_context_data(**kwargs)
+
+        # add user_groups_editor and user_groups_viewer cleaned_data for form
+        # select2 relative fields
+
+        cleaned_data = {
+            'user_groups_editor': [],
+            'user_groups_viewer': [],
+        }
+
+        c['cleaned_data'] = json.dumps(cleaned_data)
+
+        return c
+
     def get_success_url(self):
 
         # case editor level 1
