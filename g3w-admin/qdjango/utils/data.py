@@ -461,7 +461,7 @@ class QgisProjectLayer(XmlData):
             fieldConfiguration = self.qgisProjectLayerTree.find('fieldConfiguration')
             editable = self.qgisProjectLayerTree.find('editable')
             editablesf = {}
-            if editable:
+            if editable is not None:
                 for field in editable:
                     editablesf[field.attrib['name']] = field.attrib['editable']
 
@@ -1091,7 +1091,7 @@ class QgisProjectSettingsWMS(XmlData):
         :return:
         """
         try:
-            self.qgisProjectSettingsTree = lxml.fromstring(self.qgisProjectSettingsFile.decode('UTF-8'))
+            self.qgisProjectSettingsTree = lxml.fromstring(self.qgisProjectSettingsFile)
         except Exception as e:
             raise Exception(
                 _('The project settings is malformed: {} ----- {}'.format(e.args[0], self.qgisProjectSettingsFile)))
