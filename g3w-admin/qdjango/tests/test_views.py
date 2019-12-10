@@ -11,7 +11,7 @@ __copyright__ = 'Copyright 2019, GIS3W'
 
 from django.test.client import RequestFactory, Client
 from django.core.urlresolvers import reverse, NoReverseMatch
-from base import QdjangoTestBase
+from .base import QdjangoTestBase
 
 
 class QdjangoViewsTest(QdjangoTestBase):
