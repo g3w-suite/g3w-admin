@@ -7,12 +7,14 @@ G3W-ADMIN admin server module for G3W-SUITE.
 
 G3W-SUITE works with **QGIS-Server LTR versions**.
 
+
+
 ![Admin GUI](docs/images/admin.jpg)
 
 ![Webgis GUI](docs/images/client.jpg
 )
 
-The following instructions are for a Ubuntu 16.04 LTS.
+The following instructions are for a Ubuntu 18.04 LTS.
 
 ## Installation of node.js and Yarn
 G3W-ADMIN use javacript package manager [**Yarn**](https://yarnpkg.com/) and [**Node.js**](https://nodejs.org/it/)
