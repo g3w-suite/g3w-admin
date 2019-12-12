@@ -1,0 +1,129 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR lorenzetti@gis3w.it, 2019.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-09-24 15:47+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: editing/forms.py:18
+msgid "Active"
+msgstr "Attiva"
+
+#: editing/forms.py:19
+msgid "Scale"
+msgstr "Scala"
+
+#: editing/forms.py:19
+msgid "Scale after that editing mode is active"
+msgstr "Valore di scala oltre la quale la modalità di editing si attiva"
+
+#: editing/forms.py:20
+msgid "Viewers"
+msgstr ""
+
+#: editing/forms.py:21
+msgid "Select user with viewer role can do editing on layer"
+msgstr "Selezione l'utente viewer che può editare i layer"
+
+#: editing/forms.py:23
+msgid "Select VIEWER groups can do editing on layer"
+msgstr "Seleziona il viewer groups che può editare il layer"
+
+#: editing/forms.py:24
+msgid "User viewer groups"
+msgstr ""
+
+#: editing/forms.py:38
+msgid "Check on uncheck to attive/deactive editing layer capabilities:"
+msgstr ""
+"Spunta o despunta per attivare/deattivare la possibilità di editare il layer"
+
+#: editing/forms.py:41
+msgid "Select viewers with 'view permission' on project that can edit layer:"
+msgstr ""
+"Seleziona i viewer con 'permesso di visualizzazione' del progetto che "
+"possono editare il layer:"
+
+#: editing/models/constraints.py:71
+msgid "Layers types must be spatialite or postgres"
+msgstr "Il tipo di layer deve essere spatialite o postgis"
+
+#: editing/models/constraints.py:75
+msgid "Constraint layer geometry type must be Polygon or MultiPolygon"
+msgstr "La geometria del layer constraint deve essere Poligono o MultiPoligono"
+
+#: editing/models/constraints.py:79
+msgid "Editing and constraints layer cannot be the same layer"
+msgstr ""
+"Il layer in editing a il layer di constraint non possono essere gli stessi"
+
+#: editing/models/constraints.py:87
+msgid "Layer constraint"
+msgstr ""
+
+#: editing/models/constraints.py:88
+msgid "Layer constraints"
+msgstr ""
+
+#: editing/models/constraints.py:100
+msgid "SQL WHERE clause for the constraint layer"
+msgstr "La condizione 'SQL WHERE' per il layer constraint"
+
+#: editing/models/constraints.py:113
+msgid "Constraint rule"
+msgstr "Regola di constraint"
+
+#: editing/models/constraints.py:114
+msgid "Constraint rules"
+msgstr "Regole di Constraint"
+
+#: editing/models/constraints.py:130
+msgid "You cannot define a user and a group at the same time"
+msgstr "Non puoi definire un utente o un gruppo di utenti allo stesso tempo"
+
+#: editing/models/constraints.py:134
+msgid "You must define a user OR a group"
+msgstr "Devi definire un user o un gruppo di user"
+
+#: editing/models/constraints.py:139
+#, python-format
+msgid "There is an error in the SQL rule where condition: %s"
+msgstr "C'è un errore nella condizione SQL WHERE: %s"
+
+#: editing/receivers.py:216
+#, python-format
+msgid "Constraint validation failed for geometry: %s"
+msgstr "La geometria non ricade all'interno dell'area di lavoro assegnata: %s"
+
+#: editing/templates/editing/editing_layer_active_form.html:7
+msgid "Alert"
+msgstr "Attenzione"
+
+#: editing/templates/editing/editing_layer_active_form.html:8
+msgid "Some errors on form. Check it and send again."
+msgstr "Alcuni errori, controlla e riprova"
+
+#: editing/templates/editing/layer_action.html:5
+msgid "Editing layer"
+msgstr ""
+
+#: editing/templates/editing/layer_action.html:7
+msgid "Activation layer_editing"
+msgstr "Atttivazione del layer di editing"
+
+#: editing/templates/editing/layer_action.html:15
+msgid "Constraints list"
+msgstr "Lista dei constraint"

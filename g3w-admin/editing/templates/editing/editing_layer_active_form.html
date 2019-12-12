@@ -1,0 +1,32 @@
+{% load i18n %}
+{% load crispy_forms_tags %}
+<form method="post" id="editing_layer_form">
+    <div class="row">
+        <div class="col-md-12 error-form-message hidden">
+            <div class="alert alert-danger alert-dismissable">
+                <h4><i class="icon fa fa-ban"></i> {% trans 'Alert' %}!</h4>
+                    {% trans 'Some errors on form. Check it and send again.' %}
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+        {% crispy form %}
+        </div>
+    </div>
+    <script>
+        $check = $("#editing_layer_form").find('#id_active');
+        $select = $("#editing_layer_form").find('.select2, #id_scale');
+
+        var check_active_status = function(event){
+            if ($check.prop('checked')) {
+                $select.prop('disabled', false);
+            } else {
+                $select.prop('disabled', true);
+            }
+        }
+
+        $check.on('ifChanged', check_active_status);
+        check_active_status();
+    </script>
+</form>

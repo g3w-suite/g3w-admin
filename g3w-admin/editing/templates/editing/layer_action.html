@@ -1,0 +1,16 @@
+{% load i18n %}
+{% load staticfiles %}
+
+<span class="col-xs-2 icon">
+<a href="#" {% if active %}style="color: green;"{% endif %} data-toggle="tooltip" title="{% trans 'Editing layer' %}" data-widget-type="ajaxForm"
+   data-form-url="{% url 'editing-layer-active' layer.project.group.slug app_name layer.project.slug layer.id %}"
+   data-modal-title="{% trans 'Activation layer_editing' %}">
+    <i class="fa {% if active %}fa-pencil-square{% else %}fa-pencil-square-o{% endif %}"></i>
+</a>
+</span>
+{% if active %}
+{% comment %} Add contraints management {% endcomment %}
+<span class="col-xs-2 icon">
+    <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Constraints list' %}" data-widget-type="constraintsList" data-constraints-layer-pk="{{ layer.pk }}" data-constraints-list-url="{% url 'constraint-api-filter-by-editing' layer.pk %}" ><i class="fa fa-chain"></i></a>
+</span>
+{% endif %}

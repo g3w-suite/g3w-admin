@@ -1,0 +1,74 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-09-24 15:51+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: editing/static/editing/js/widget.js:43
+msgid "Add"
+msgstr "Aggiungi"
+
+#: editing/static/editing/js/widget.js:102
+msgid "Save"
+msgstr "Salva"
+
+#: editing/static/editing/js/widget.js:105
+msgid "Delete"
+msgstr "Elimina"
+
+#: editing/static/editing/js/widget.js:116
+msgid "Select the constraint layer, only Polygon or MultiPolygon geomentry"
+msgstr ""
+"Seleziona il layer da utilizzare come vincolo, solo geometrie Poligonali o "
+"Multipoligonali"
+
+#: editing/static/editing/js/widget.js:118
+msgid "Constraint layer"
+msgstr "Layer vincolo"
+
+#: editing/static/editing/js/widget.js:179
+msgid "Saved"
+msgstr "Salvato"
+
+#: editing/static/editing/js/widget.js:348
+msgid "Form title"
+msgstr "Titolo del form"
+
+#: editing/static/editing/js/widget.js:397
+#: editing/static/editing/js/widget.js:401
+msgid "New constraint"
+msgstr "Nuovo vincolo"
+
+#: editing/static/editing/js/widget.js:414
+msgid "Actions"
+msgstr "Azioni"
+
+#: editing/static/editing/js/widget.js:415
+msgid "Layer constraint"
+msgstr "Layer vincolo"
+
+#: editing/static/editing/js/widget.js:416
+msgid "Rules count"
+msgstr "Numero regole"
+
+#: editing/static/editing/js/widget.js:440
+msgid "Update constraint"
+msgstr "Aggiorna vincolo"
+
+#: editing/static/editing/js/widget.js:451
+msgid "Constraint Rules"
+msgstr "Regole del vincolo"
