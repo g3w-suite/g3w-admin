@@ -1,6 +1,6 @@
 FROM ubuntu:bionic
 # This image is available as elpaso/g3w-suite-deps:latest
-LABEL maintainer="Gis3w" Description="This image is used to prepare build requirements for g3w-suite CI testing" Vendor="Gis3w" Version="1.1"
+LABEL maintainer="Gis3w" Description="This image is used to prepare build requirements for g3w-suite CI testing" Vendor="Gis3w" Version="1.2"
 RUN chown root:root /tmp && chmod ugo+rwXt /tmp
 RUN apt-get update && apt install -y \
 	libxml2-dev \

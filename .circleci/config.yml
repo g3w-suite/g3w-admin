@@ -20,7 +20,7 @@ jobs:
           command: docker cp ./ "$(docker-compose ps -q g3w-suite)":/code
       - run:
           name: Installing Python requirements
-          command: docker-compose exec g3w-suite sh -c "cd /code/ && pip install -r requirements_docker.txt"
+          command: docker-compose exec g3w-suite sh -c "cd /code/ && pip3 install -r requirements_docker.txt"
       - run:
           name: Building g3w-suite
           command: docker-compose exec g3w-suite sh -c "/code/ci_scripts/build_suite.sh"
@@ -29,25 +29,25 @@ jobs:
           command: docker-compose exec g3w-suite sh -c "/code/ci_scripts/setup_suite.sh"
       - run:
           name: Starting Django
-          command: docker-compose exec g3w-suite sh -c "cd /code/g3w-admin && python manage.py runserver 0.0.0.0:8000"
+          command: docker-compose exec g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py runserver 0.0.0.0:8000"
           background: true
       - run:
           name: Waiting for Django on port 8000
           command: docker-compose exec g3w-suite sh -c "wait-for-it -h localhost -p 8000 -t 240" # Wait for django
       - run:
           name: Running g3w-admin core tests
-          command: docker-compose exec g3w-suite sh -c "cd /code/g3w-admin && python manage.py test core"
+          command: docker-compose exec g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test core"
       - run:
           name: Running qdjango tests
-          command: docker-compose exec g3w-suite sh -c "cd /code/g3w-admin && python manage.py test qdjango"
+          command: docker-compose exec g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test qdjango"
       - run:
           name: Running usermanage tests
-          command: docker-compose exec g3w-suite sh -c "cd /code/g3w-admin && python manage.py test usermanage"
+          command: docker-compose exec g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test usersmanage"
       - run:
           name: Running client tests
-          command: docker-compose exec g3w-suite sh -c "cd /code/g3w-admin && python manage.py test client"
+          command: docker-compose exec g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test client"
       - run:
           name: Running editing tests
-          command: docker-compose exec g3w-suite sh -c "cd /code/g3w-admin && python manage.py test editing"
+          command: docker-compose exec g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test editing.tests"
 
 

@@ -22,16 +22,12 @@ from django.core.exceptions import ValidationError
 from django.core.files import File
 from django.db import IntegrityError, transaction
 from django.test import TestCase, override_settings
-import unittest
-from editing.models import *
-from editing.filters import ConstraintsFilter
 from core.models import G3WSpatialRefSys, Group as CoreGroup
-from qdjango.models import Project
 from qdjango.utils.data import QgisProject
+from editing.models import *
 
 from rest_framework.test import APIClient
 from guardian.shortcuts import assign_perm
-from editing.api.views import QGISEditingLayerVectorView
 from usersmanage.utils import setPermissionUserObject
 
 

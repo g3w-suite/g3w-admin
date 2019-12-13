@@ -17,12 +17,7 @@ import json
 
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
-from guardian.shortcuts import assign_perm
 from rest_framework.test import APIClient
-
-from editing.models import *
-from qdjango.models import Layer
-
 from .test_models import ConstraintsTestsBase
 
 # Import for testing Python syntax
