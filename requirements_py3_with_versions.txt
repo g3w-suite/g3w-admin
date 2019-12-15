@@ -25,7 +25,7 @@ django-model-utils==3.0.0
 django-mptt==0.8.7
 django-ordered-model==1.4.1
 django-sitetree==1.8.0
-djangorestframework==3.6.3
+djangorestframework==3.9.1
 djangorestframework-gis==0.11.2
 django-filter==2.2.0
 et-xmlfile==1.0.1
