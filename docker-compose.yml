@@ -25,7 +25,7 @@ services:
       - shared-volume:/shared-volume
 
   g3w-suite:
-    image: elpaso/g3w-suite-deps:latest
+    image: g3wsuite/g3w-suite-deps-py3:latest
     command: "tail -f /dev/null"
     ports:
     - "8000:8000"
