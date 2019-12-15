@@ -126,7 +126,10 @@ class ClientView(TemplateView):
         if six.PY3:
             serializedGroup = str(serializedGroup, 'utf-8')
 
-        baseurl = "/{}".format(settings.SITE_PREFIX_URL if settings.SITE_PREFIX_URL else '')
+        baseurl = "{}/{}".format(
+            settings.SITE_DOMAIN if settings.SITE_DOMAIN else '',
+            settings.SITE_PREFIX_URL if settings.SITE_PREFIX_URL else ''
+        )
         frontendurl = ',"frontendurl":"{}"'.format(baseurl) if settings.FRONTEND else ''
 
         generaldata = GeneralSuiteData.objects.get()

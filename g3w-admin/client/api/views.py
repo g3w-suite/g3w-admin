@@ -87,7 +87,10 @@ class GroupConfigApiView(APIView):
     def get(self, request, format=None, group_slug=None, project_type=None, project_id=None):
         group = get_object_or_404(Group, slug=group_slug)
         groupSerializer = GroupSerializer(group, projectId=project_id, projectType=project_type, request=self.request)
-        baseurl = "/{}".format(settings.SITE_PREFIX_URL if settings.SITE_PREFIX_URL else '')
+        baseurl = "{}/{}".format(
+            settings.SITE_DOMAIN if settings.SITE_DOMAIN else '',
+            settings.SITE_PREFIX_URL if settings.SITE_PREFIX_URL else ''
+        )
         generaldata = GeneralSuiteData.objects.get()
 
         initconfig = {
