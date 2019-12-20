@@ -1,4 +1,4 @@
-Django==1.11.26
+Django==1.11.27
 django-autoslug==1.9.3
 django-formtools==2.0
 django-crispy-forms==1.6.1
@@ -30,7 +30,7 @@ django-import-export
 coverage
 urllib3
 python-magic
-celery==3.1.15
+celery==3.1.26.post2
 django-celery
 
 # package depends on libgdal-dev package => version have to match, e.g. isntall only 
