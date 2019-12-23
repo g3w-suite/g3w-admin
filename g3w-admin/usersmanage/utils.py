@@ -37,7 +37,7 @@ def getUserGroups(user):
 
 def userHasGroups(user, groupsToFind, strict=False):
     """
-    check if Grouds to find are in user groups.
+    check if Groups to find are in user groups.
     """
     userGroups = getUserGroups(user)
     groupsIntersect = list(set.intersection(set(userGroups), set(groupsToFind)))
