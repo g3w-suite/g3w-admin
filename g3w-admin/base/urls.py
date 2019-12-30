@@ -6,7 +6,7 @@ from django.contrib import admin, auth
 from django.conf import settings
 from django.conf.urls.static import static
 from django.conf.urls.i18n import i18n_patterns
-from django.views.i18n import javascript_catalog, json_catalog
+from django.views.i18n import JavaScriptCatalog
 from ajax_select import urls as ajax_select_urls
 try:
     from qgis.core import *
@@ -19,10 +19,10 @@ base = BASE_ADMIN_URLPATH = 'admin/' if hasattr(settings, 'FRONTEND') and settin
 
 G3W_SITETREE_I18N_ALIAS = ['core', 'acl']
 
-jsInfoDict = {
-    'domain': 'djangojs',
-    'packages': ('core', 'usermanage', 'client', 'editing'),
-}
+#jsInfoDict = {
+#    'domain': 'djangojs',
+#    'packages': ('core', 'usersmanage', 'client', 'editing'),
+#}
 
 urlpatterns = [
     url(r'^i18n/', include('django.conf.urls.i18n')),
@@ -31,16 +31,15 @@ urlpatterns = [
     url(r'^{}'.format(BASE_ADMIN_URLPATH), include('usersmanage.urls')),
     url(r'^upload/', include('django_file_form.urls')),
     url(r'^', include('client.urls')),
-    url(r'^login/$', auth.views.login, name='login', kwargs={
-        'template_name': 'login.html',
+    url(r'^login/$', auth.views.LoginView.as_view(template_name='login.html'), name='login', kwargs={
         'extra_context': {
             'adminlte_skin': 'login-page',
             'adminlte_layout_option': None
         }
     }),
-    url(r'^logout/$', auth.views.logout, {'next_page': settings.LOGOUT_NEXT_PAGE + '{}'.format(BASE_ADMIN_URLPATH)},
-        name='logout'),
-    url(r'^jsi18n/$', javascript_catalog, jsInfoDict, name='javascript-catalog'),
+    url(r'^logout/$', auth.views.LogoutView.as_view(),
+        {'next_page': settings.LOGOUT_NEXT_PAGE + '{}'.format(BASE_ADMIN_URLPATH)}, name='logout'),
+    url(r'^jsi18n/$', JavaScriptCatalog.as_view(), name='javascript-catalog'),
     url(r'^ajax_select/', include(ajax_select_urls)),
 ]
 

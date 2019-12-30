@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.apps import apps
 from django.contrib.gis.geos import GEOSGeometry, GEOSException
-from django.contrib.gis.gdal import OGRException
+from django.contrib.gis.gdal import GDALException
 from django.core.exceptions import ValidationError
 from guardian.shortcuts import get_objects_for_user, get_user_model
 from rest_framework import serializers
@@ -213,7 +213,7 @@ class G3WGeometryField(GeometryField):
             value = wkt.dumps(geometry.shape(value))
         try:
             return GEOSGeometry(value)
-        except (ValueError, GEOSException, OGRException, TypeError):
+        except (ValueError, GEOSException, GDALException, TypeError):
             raise ValidationError(_('Invalid format: string or unicode input unrecognized as GeoJSON, WKT EWKT or HEXEWKB.'))
 
 

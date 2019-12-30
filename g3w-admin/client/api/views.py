@@ -2,7 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.utils.translation import get_language
 from guardian.utils import get_anonymous_user
 from core.api.serializers import GroupSerializer, Group, update_serializer_data
@@ -121,7 +121,7 @@ class GroupConfigApiView(APIView):
 
         # add user login data
         initconfig['user'] = {'i18n': get_language()}
-        if not u.is_anonymous():
+        if not u.is_anonymous:
             initconfig['user'].update({
                 'username': u.username,
                 'first_name': u.first_name,

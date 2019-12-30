@@ -2,7 +2,7 @@
 from django.conf import settings
 from django.conf.global_settings import LANGUAGES
 from django.utils.translation import ugettext, ugettext_lazy as _
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db import models
 from django.apps import apps
 from guardian.shortcuts import get_objects_for_user
@@ -100,11 +100,6 @@ class MacroGroup(TimeStampedModel, OrderedModel):
         _('Slug'), populate_from='title', unique=True, always_update=True
     )
 
-    class Meta:
-        permissions = (
-            ('view_macrogroup', 'Can view macro group maps'),
-        )
-
     def __str__(self):
         return self.title
 
@@ -146,7 +141,7 @@ class Group(TimeStampedModel, OrderedModel):
                                        help_text=_('Enter link with http:// or https//'))
 
     # Group SRID (a.k.a. EPSG)
-    srid = models.ForeignKey(G3WSpatialRefSys, db_column='srid')
+    srid = models.ForeignKey(G3WSpatialRefSys, db_column='srid', on_delete=models.DO_NOTHING)
 
     # baselayers
     baselayers = models.ManyToManyField(BaseLayer, blank=True)
@@ -167,10 +162,6 @@ class Group(TimeStampedModel, OrderedModel):
 
     macrogroups = models.ManyToManyField(MacroGroup, blank=True)
 
-    class Meta:
-        permissions = (
-            ('view_group', 'Can view group'),
-        )
 
     def __str__(self):
         return self.name

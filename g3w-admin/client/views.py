@@ -6,7 +6,7 @@ from django.template import loader
 from django.shortcuts import get_object_or_404
 from django.http import Http404, HttpResponseForbidden, HttpResponse
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib.auth.views import redirect_to_login
 from django.apps import apps
 from django.core.exceptions import PermissionDenied
@@ -59,7 +59,7 @@ class ClientView(TemplateView):
         if request.user not in grant_users and anonymous_user not in grant_users and not request.user.is_superuser:
 
             # redirect to login if Anonymous user
-            if request.user.is_anonymous():
+            if request.user.is_anonymous:
                 return redirect_to_login(request.get_full_path(), settings.LOGIN_URL, 'next')
             else:
                 raise PermissionDenied()
@@ -105,7 +105,7 @@ class ClientView(TemplateView):
             admin_url = None
 
         user_data = {'i18n': get_language()}
-        if not u.is_anonymous():
+        if not u.is_anonymous:
             user_data.update({
                 'username': u.username,
                 'first_name': u.first_name,
