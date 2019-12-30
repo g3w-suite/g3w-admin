@@ -86,6 +86,7 @@ class Constraint(models.Model):
         managed = True
         verbose_name = _('Layer constraint')
         verbose_name_plural = _('Layer constraints')
+        app_label = 'editing'
 
 
 class ConstraintRule(models.Model):
@@ -113,6 +114,7 @@ class ConstraintRule(models.Model):
         verbose_name = _('Constraint rule')
         verbose_name_plural = _('Constraint rules')
         unique_together = (('constraint', 'user', 'rule'), ('constraint', 'group', 'rule'))
+        app_label = 'editing'
 
     @property
     def user_or_group(self):

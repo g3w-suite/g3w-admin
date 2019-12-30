@@ -1,4 +1,4 @@
-django.urls import reverse
+from django.urls import reverse
 from django.urls import resolve
 from django.utils.translation import activate
 from django.contrib.auth.models import User

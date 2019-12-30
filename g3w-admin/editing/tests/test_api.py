@@ -15,7 +15,7 @@ __copyright__ = 'Copyright 2019, Gis3w'
 
 import json
 
-django.urls import reverse
+from django.urls import reverse
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.test import APIClient
 from .test_models import ConstraintsTestsBase

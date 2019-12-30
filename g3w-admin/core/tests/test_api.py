@@ -128,7 +128,7 @@ class CoreApiTest(APITestCase):
         self.assertEqual(resp["vector"]["geometrytype"], "Point")
         self.assertEqual(resp["vector"]["pk"], "pkuid")
         self.assertEqual(resp["vector"]["data"]["type"], "FeatureCollection")
-        self.assertEqual(resp["vector"]["data"]["features"], [{'geometry': {'type': 'Point', 'coordinates': [1.980089, 28.779772]}, 'type': 'Feature', 'id': 1, 'properties': {'name': 'a point'}}, {'geometry': {'type': 'Point', 'coordinates': [10.685247, 44.350968]}, 'type': 'Feature', 'id': 2, 'properties': {'name': 'another point'}}])
+        self.assertEqual(resp["vector"]["data"]["features"], [{"id": 1, "type": "Feature", "geometry": {"type": "Point", "coordinates": [1.980089360770279, 28.77977157557936]}, "properties": {"name": "a point"}}, {"id": 2, "type": "Feature", "geometry": {"type": "Point", "coordinates": [10.685246675074524, 44.35096846172921]}, "properties": {"name": "another point"}}])
         self.assertTrue(resp["result"])
         self.assertIsNone(resp["featurelocks"])
 

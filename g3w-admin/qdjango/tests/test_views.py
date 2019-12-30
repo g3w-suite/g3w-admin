@@ -10,7 +10,7 @@ __date__ = '2019-11-28'
 __copyright__ = 'Copyright 2019, GIS3W'
 
 from django.test.client import RequestFactory, Client
-django.urls import reverse, NoReverseMatch
+from django.urls import reverse, NoReverseMatch
 from .base import QdjangoTestBase
 
 

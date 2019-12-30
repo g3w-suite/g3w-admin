@@ -16,10 +16,13 @@ class G3WEditingFeatureLock(models.Model):
     app_name = models.CharField(max_length=255)
     layer_name = models.CharField(max_length=255)
     layer_datasource = models.TextField(max_length=255)
-    user = models.ForeignKey(User, null=True, blank=True)
+    user = models.ForeignKey(User, null=True, blank=True, on_delete=models.DO_NOTHING)
     sessionid = models.CharField(max_length=255, null=True, blank=True)
     feature_lock_id = models.CharField(max_length=32, db_index=True)
     time_locked = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        app_label = 'editing'
 
 
 class G3WEditingLayer(models.Model):
@@ -30,6 +33,9 @@ class G3WEditingLayer(models.Model):
     layer_id = models.IntegerField()
     scale = models.IntegerField(null=True, blank=True)
 
+    class Meta:
+        app_label = 'editing'
+
 
 class G3WEditingLog(models.Model):
     """
@@ -38,10 +44,13 @@ class G3WEditingLog(models.Model):
     created = AutoCreatedField()
     app_name = models.CharField(max_length=255)
     layer_id = models.IntegerField()
-    user = models.ForeignKey(User, null=True, blank=True)
+    user = models.ForeignKey(User, null=True, blank=True, on_delete=models.DO_NOTHING)
     mode = models.CharField(max_length=10, default=EDITING_POST_DATA_ADDED, choices=(
         (EDITING_POST_DATA_ADDED, EDITING_POST_DATA_ADDED),
         (EDITING_POST_DATA_UPDATED, EDITING_POST_DATA_UPDATED),
         (EDITING_POST_DATA_DELETED, EDITING_POST_DATA_DELETED)))
     msg = models.TextField()
     #msg = JSONField()
+
+    class Meta:
+        app_label = 'editing'
