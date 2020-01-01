@@ -75,6 +75,15 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
             'featurelocks': features_locked
         })
 
+    def add_crs_to_feature(self, geojson_feature):
+        """
+        Add to geometry crs param if it's not set.
+        :param geojson_feature: str
+        :param metadata_layer: object
+        :return:
+        """
+        if 'crs' not in geojson_feature['geometry']:
+            geojson_feature['geometry']['crs'] = self.layer.srid
 
     def add_media_property(self, geojson_feature, metadata_layer):
         """
@@ -125,6 +134,9 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
 
                     # add media data
                     self.add_media_property(geojson_feature, metadata_layer)
+
+                    # for GEOSGeometry of Django 2.2 it mast add crs to feature if is not set
+                    self.add_crs_to_feature(geojson_feature)
 
                     # reproject data if necessary
                     if self.reproject:
