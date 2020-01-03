@@ -69,6 +69,8 @@ def datasource2dict(datasource):
     # add sql
     if sql:
         datasourceDict['sql'] = '{}'.format(unicode2ascii(sql))
+    else:
+        datasourceDict['sql'] = ''
     return datasourceDict
 
 
