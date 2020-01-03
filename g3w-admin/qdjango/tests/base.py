@@ -26,7 +26,7 @@ from qdjango.models import Layer, Widget
 CURRENT_PATH = os.getcwd()
 TEST_BASE_PATH = '/qdjango/tests/data/'
 DATASOURCE_PATH = '{}{}un-progetto-data'.format(CURRENT_PATH, TEST_BASE_PATH)
-QGS2_FILE = 'gruppo-1_un-progetto.qgs'
+QGS2_FILE = 'gruppo-1_un-progetto.qgs' # QGIS project version 2
 QGS_FILE = 'gruppo-1_un-progetto_qgis34.qgs'
 
 
@@ -62,9 +62,21 @@ class QdjangoTestBase(TestCase):
 
         # Editor Level 1
         cls.test_user1 = User.objects.create_user(username='user1', password='user1')
-        cls.group = UserGroup.objects.get(name='Editor Level 1')
-        cls.test_user1.groups.add(cls.group)
+        group = UserGroup.objects.get(name='Editor Level 1')
+        cls.test_user1.groups.add(group)
         cls.test_user1.save()
+
+        # Editor Level 2
+        cls.test_user_ed2 = User.objects.create_user(username='user2', password='user2')
+        group = UserGroup.objects.get(name='Editor Level 2')
+        cls.test_user_ed2.groups.add(group)
+        cls.test_user_ed2.save()
+
+        # Viewer Level 1
+        cls.test_user_v1 = User.objects.create_user(username='user3', password='user3')
+        group = UserGroup.objects.get(name='Viewer Level 1')
+        cls.test_user_v1.groups.add(group)
+        cls.test_user_v1.save()
 
         # main project group
         cls.project_group = CoreGroup(name='Group1', title='Group1', header_logo_img='',
