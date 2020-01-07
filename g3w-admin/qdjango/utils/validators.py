@@ -2,6 +2,7 @@ from qdjango.models import Layer
 from django.utils.translation import ugettext, ugettext_lazy as _
 from core.utils.data import isXML
 from .exceptions import QgisProjectException, QgisProjectLayerException
+from osgeo import gdal
 import re
 import os
 
@@ -122,10 +123,19 @@ class DatasourceExists(QgisProjectLayerValidator):
     def clean(self):
         if self.qgisProjectLayer.layerType in [Layer.TYPES.gdal, Layer.TYPES.ogr, Layer.TYPES.raster]:
             if self.qgisProjectLayer.layerType != Layer.TYPES.gdal or not isXML(self.qgisProjectLayer.datasource):
-                if not os.path.exists(self.qgisProjectLayer.datasource.split('|')[0]):
-                    err = ugettext('Missing data file for layer {} '.format(self.qgisProjectLayer.name))
-                    err += ugettext('which should be located at {}'.format(self.qgisProjectLayer.datasource))
-                    raise QgisProjectLayerException(err)
+                if self.qgisProjectLayer.datasource.startswith("PG:"):
+
+                    # try to open postgis raster with gdal
+                    raster = gdal.Open(self.qgisProjectLayer.datasource)
+                    if raster is None:
+                        err = ugettext('Cannot connect to Postgis raster layer {} '.format(self.qgisProjectLayer.name))
+                        raise QgisProjectLayerException(err)
+
+                else:
+                    if not os.path.exists(self.qgisProjectLayer.datasource.split('|')[0]):
+                        err = ugettext('Missing data file for layer {} '.format(self.qgisProjectLayer.name))
+                        err += ugettext('which should be located at {}'.format(self.qgisProjectLayer.datasource))
+                        raise QgisProjectLayerException(err)
 
 
 class ColumnName(QgisProjectLayerValidator):

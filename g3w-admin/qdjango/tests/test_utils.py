@@ -138,6 +138,18 @@ class QgisProjectTest(TestCase):
         self.assertEqual(res['password'], 'xxx')
         self.assertEqual(res['user'], 'xxx')
 
+        # for Postgis Raster
+        res = datasource2dict(
+            "PG:  dbname='geo_demo' host=localhost user=postgres password=postgres port=5432 mode=2 schema='raster' column='rast' table='nasa_density_population' ")
+        self.assertEqual(res['dbname'], 'geo_demo')
+        self.assertEqual(res['table'], 'nasa_density_population')
+        self.assertEqual(res['host'], 'localhost')
+        self.assertEqual(res['user'], 'postgres')
+        self.assertEqual(res['password'], 'postgres')
+        self.assertEqual(res['port'], '5432')
+        self.assertEqual(res['mode'], '2')
+        self.assertEqual(res['schema'], 'raster')
+
 
 
     def test_dataSourceArcGisToDict(self):

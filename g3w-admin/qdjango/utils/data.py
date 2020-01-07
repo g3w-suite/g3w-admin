@@ -164,7 +164,13 @@ class QgisProjectLayer(XmlData):
             if isXML(self.datasource):
                 name = self.name
             else:
-                name = os.path.splitext(os.path.basename(self.datasource))[0]
+                if self.datasource.startswith('PG:'):
+
+                    # add whitespace to datasource string for re findall
+                    dts = datasource2dict(self.datasource + ' ')
+                    name = re.sub('["\']', "", dts['table'].split('.')[-1])
+                else:
+                    name = os.path.splitext(os.path.basename(self.datasource))[0]
         elif self.layerType == Layer.TYPES.postgres or self.layerType == Layer.TYPES.spatialite:
             dts = datasource2dict(self.datasource)
             name = dts['table'].split('.')[-1].replace("\"", "")

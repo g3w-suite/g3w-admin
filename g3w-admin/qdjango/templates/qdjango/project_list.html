@@ -2,9 +2,10 @@
 {% load g3wadmin_tags %}
 {% load guardian_tags %}
 {% load svg_icon %}
+{% get_obj_perms user for group as "userObj_group_perms" %}
 <div class="box">
     <div class="box-header">
-        {% if perms.qdjango.add_project %}
+        {% if perms.qdjango.add_project and "add_project_to_group" in userObj_group_perms  %}
         {% g3wadmin_add_project 'qdjango' group %}
         {% endif %}
         <h4 class="description">{% trans 'Qgis project type' %}</h4>
