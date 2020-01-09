@@ -3,7 +3,7 @@
 
 # G3W-SUITE
 
-G3W-ADMIN admin server module for G3W-SUITE.
+G3W-ADMIN admin server module for G3W-SUITE. (Django 2.2 and Python 3.6)
 
 G3W-SUITE works with **QGIS-Server LTR versions**.
 
@@ -31,17 +31,17 @@ https://yarnpkg.com/en/docs/install#debian-stable
 
 [**Virtualenv**](https://virtualenv.pypa.io/en/stable/)
 
-The following instructions are for python 2
+The following instructions are for python 3.6 
 
 Install python pip
 
 ```bash
-sudo apt-get install python-pip
+sudo apt-get install python3-pip
 ```
 
 now we can install virtualenvwrapper
 ```bash
-sudo pip install virtualenvwrapper
+sudo pip3 install virtualenvwrapper
 ```
 
 To activate virtuenvwrapper on system login, add follow lines to 'bashrc' config file of your user
