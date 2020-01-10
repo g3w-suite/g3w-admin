@@ -34,7 +34,7 @@ try:
 
     # python 2
     from httplib import HTTPConnection, HTTPSConnection
-    from urlparse import urlsplit
+    from urlparse import urlsplit, unquote
     import urllib3
 except:
 
@@ -140,13 +140,13 @@ class OWSRequestHandler(OWSRequestHandlerBase):
                 layers_to_query = []
                 for ltf in layers_to_filter:
                     layer = cls._projectInstance.layer_set.filter(Q(name=ltf) | Q(origname=ltf))[0]
-                    layer_source = QueryDict(layer.datasource)
+                    layer_source = QueryDict(unquote(layer.datasource.encode('utf-8')))
                     layers_to_query.append(layer_source['layers'])
 
                 layers_to_query = ','.join(layers_to_query)
 
                 # get ogc server url
-                layer_source = QueryDict(layer.datasource)
+                layer_source = QueryDict(unquote(layer.datasource.encode('utf-8')))
                 urldata = urlsplit(layer_source['url'])
                 base_url = '{}://{}{}'.format(urldata.scheme, urldata.netloc, urldata.path)
 
