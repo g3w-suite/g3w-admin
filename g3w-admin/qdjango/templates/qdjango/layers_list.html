@@ -114,7 +114,7 @@
                             </td>
                             <td>
                                 {% if object|can_set_external %}
-                                <input type="checkbox" data-widget-type="externalLayer" data-ajax-url="{% url 'qdjango-project-layers-data-editing' project.group.slug project.slug object.pk %}" name="external_{{ object.pk }}" {% if object.download %}checked="checked"{% endif %}>
+                                <input type="checkbox" data-widget-type="externalLayer" data-ajax-url="{% url 'qdjango-project-layers-data-editing' project.group.slug project.slug object.pk %}" name="external_{{ object.pk }}" {% if object.external %}checked="checked"{% endif %}>
                                 {% endif %}
                             </td>
                             {% endif %}
