@@ -31,12 +31,10 @@ urlpatterns = [
     url(r'^{}'.format(BASE_ADMIN_URLPATH), include('usersmanage.urls')),
     url(r'^upload/', include('django_file_form.urls')),
     url(r'^', include('client.urls')),
-    url(r'^login/$', auth.views.LoginView.as_view(template_name='login.html'), name='login', kwargs={
-        'extra_context': {
+    url(r'^login/$', auth.views.LoginView.as_view(template_name='login.html', extra_context={
             'adminlte_skin': 'login-page',
             'adminlte_layout_option': None
-        }
-    }),
+        }), name='login'),
     url(r'^logout/$', auth.views.LogoutView.as_view(),
         {'next_page': settings.LOGOUT_NEXT_PAGE + '{}'.format(BASE_ADMIN_URLPATH)}, name='logout'),
     url(r'^jsi18n/$', JavaScriptCatalog.as_view(), name='javascript-catalog'),
