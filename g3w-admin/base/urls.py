@@ -35,8 +35,8 @@ urlpatterns = [
             'adminlte_skin': 'login-page',
             'adminlte_layout_option': None
         }), name='login'),
-    url(r'^logout/$', auth.views.LogoutView.as_view(),
-        {'next_page': settings.LOGOUT_NEXT_PAGE + '{}'.format(BASE_ADMIN_URLPATH)}, name='logout'),
+    url(r'^logout/$', auth.views.LogoutView.as_view(
+        next_page=settings.LOGOUT_NEXT_PAGE + '{}'.format(BASE_ADMIN_URLPATH)), name='logout'),
     url(r'^jsi18n/$', JavaScriptCatalog.as_view(), name='javascript-catalog'),
     url(r'^ajax_select/', include(ajax_select_urls)),
 ]
