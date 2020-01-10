@@ -170,6 +170,7 @@ class Group(TimeStampedModel, OrderedModel):
     class Meta:
         permissions = (
             ('view_group', 'Can view group'),
+            ('add_project_to_group', 'Can add project to the group'),
         )
 
     def __unicode__(self):
@@ -217,10 +218,11 @@ class Group(TimeStampedModel, OrderedModel):
         Give guardian permissions to Editor every level
         """
 
-        permissions = ['view_group'] # valid for editor2
+        permissions = ['view_group', 'add_project_to_group'] # valid for editor2
         user_groups = getUserGroups(user)
         if G3W_EDITOR1 in user_groups:
             permissions += [
+                'add_project_to_group',
                 'change_group',
                 'delete_group'
             ]
@@ -242,6 +244,7 @@ class Group(TimeStampedModel, OrderedModel):
             'change_group',
             'delete_group',
             'view_group',
+            'add_project_to_group'
         ], mode='remove')
 
         # adding permissions to projects

@@ -2,9 +2,10 @@
 {% load g3wadmin_tags %}
 {% load guardian_tags %}
 {% load svg_icon %}
+{% get_obj_perms user for group as "userObj_group_perms" %}
 <div class="box">
     <div class="box-header">
-        {% if perms.qdjango.add_project %}
+        {% if perms.qdjango.add_project and "add_project_to_group" in userObj_group_perms  %}
         {% g3wadmin_add_project 'qdjango' group %}
         {% endif %}
         <h4 class="description">{% trans 'Qgis project type' %}</h4>
@@ -20,6 +21,7 @@
                     <th style="width:120px">{% trans 'Actions' %}</th>
                     <th>Logo</th>
                     <th>{% trans 'Title' %}</th>
+                    <th>{% trans 'Created/Modified' %}</th>
                     <th>{% trans 'Widgets' %}</th>
                 </tr>
             </thead>
@@ -82,10 +84,17 @@
                         {% if object.thumbnail  %}
                         <img style="height:60px;" class="img-responsive" src="{{ MEDIA_URL }}{{ object.thumbnail }}" />
                         {% else %}
-                        <img style="height:60px;" class="img-responsive" src="http://placehold.it/80x60" />
+                        <img style="height:60px;" class="img-responsive" src="//placehold.it/80x60" />
                         {% endif %}
                     </td>
                     <td>{{ object.title }}</td>
+                    <td>
+                        {% trans 'created' %}: {{ object.created }}
+                        {% if object.modified %}
+                            <br />
+                            {% trans 'modified' %}: {{ object.modified }}
+                        {% endif %}
+                    </td>
                     <td>
                         {% g3wadmin_project_widgets object 'qdjango' user as widgets %}
                         {% for widget in widgets %}
