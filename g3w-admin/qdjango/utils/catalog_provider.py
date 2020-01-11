@@ -83,7 +83,7 @@ def catalog_provider(groups=[]):
                 #'language': layer_metadata['language'],  # Maps to pycsw:Language
                 'title': layer_metadata['title'],  # Maps to pycsw:Title
                 # Maps to pycsw:Abstract
-                'abstract': layer_metadata['abstract'],
+                'abstract': layer_metadata.get('abstract', ''),
                 # Maps to pycsw:Keywords: cannot because they are not GEMET! (comma separated GEMET)
                 # 'keywords': ','.join(layer_metadata['keywords']),
                 #'keywords_types': layer_metadata['keywords_types'],  # Maps to pycsw:Keywordstype
