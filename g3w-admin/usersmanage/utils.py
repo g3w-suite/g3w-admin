@@ -184,21 +184,11 @@ def setPermissionUserObject(user, object, permissions=[], mode='add'):
     if not isinstance(permissions, list):
         permissions = [permissions]
 
-
-    current_permissions = get_perms(user, object)
-
     for perm in permissions:
-        if mode == 'add' and perm not in current_permissions:
+        if mode == 'add':
             assign_perm(perm, user, object)
-        elif mode == 'remove' and perm in current_permissions:
+        elif mode == 'remove':
             remove_perm(perm, user, object)
-    '''
-    for perm in permissions:
-        if mode == 'add' and not user.has_perm(perm, object):
-            assign_perm(perm, user, object)
-        elif mode == 'remove' and user.has_perm(perm, object):
-            remove_perm(perm, user, object)
-    '''
 
 
 def get_objects_by_perm(obj, perm):
