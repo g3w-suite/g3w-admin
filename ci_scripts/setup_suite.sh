@@ -44,15 +44,15 @@ if [ ! -e ${SETUP_DONE_FILE} ]; then
 
     wait-for-it -h ${G3WSUITE_POSTGRES_HOST:-postgis} -p ${G3WSUITE_POSTGRES_PORT:-5432} -t 60
 
-    cd ${DJANGO_DIRECTORY}
-    python3 manage.py collectstatic --noinput -v 0
-    python3 manage.py migrate --noinput
-
     pushd .
     cd ${DJANGO_DIRECTORY}/core/static
     rm -rf bower_components
     ln -s "/code/node_modules/@bower_components" bower_components
     popd
+
+    cd ${DJANGO_DIRECTORY}
+    python3 manage.py collectstatic --noinput -v 0
+    python3 manage.py migrate --noinput
 
     echo "Installing fixtures ..."
     for FIXTURE in 'BaseLayer.json' 'G3WGeneralDataSuite.json' 'G3WMapControls.json' 'G3WSpatialRefSys.json'; do
