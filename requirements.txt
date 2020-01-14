@@ -26,7 +26,7 @@ pillow
 owslib
 defusedxml
 SQLAlchemy
-django-import-export
+django-import-export==1.2.0
 coverage
 urllib3
 python-magic
@@ -37,4 +37,4 @@ django-celery
 # the version of the installed dev version. Need also to follow env var setup before install as described in:
 # https://gis.stackexchange.com/questions/28966/python-gdal-package-missing-header-file-when-installing-via-pip
 # to allow finding of libs and includes.
-GDAL
+# GDAL
