@@ -26,6 +26,7 @@ pillow
 owslib
 defusedxml
 SQLAlchemy
+tablib==0.14.0
 django-import-export==1.2.0
 coverage
 urllib3
