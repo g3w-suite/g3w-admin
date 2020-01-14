@@ -667,7 +667,7 @@ UserFormSet = inlineformset_factory(User, Userdata, fields ='__all__')
 
 class G3WUserGroupForm(G3WRequestFormMixin, G3WFormMixin, ModelForm):
 
-    role = ChoiceField(GROUP_ROLES, label=_('Role'), required=True)
+    role = ChoiceField(choices=GROUP_ROLES, label=_('Role'), required=True)
 
     def __init__(self, *args, **kwargs):
         super(G3WUserGroupForm, self).__init__(*args, **kwargs)

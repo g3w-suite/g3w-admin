@@ -9,7 +9,7 @@ from sqlalchemy.dialects.postgresql import base as SQLPOSTGRESTYPE
 import geoalchemy2.types as geotypes
 from django.conf import settings
 from django.apps import apps
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.utils.translation import ugettext, ugettext_lazy as _
 from collections import OrderedDict
 import copy

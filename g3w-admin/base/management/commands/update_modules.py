@@ -1,7 +1,10 @@
 from django.core.management.base import BaseCommand
 from django.apps import apps
 from django.conf import settings
-import git
+try:
+    import git
+except:
+    pass
 import os
 
 
@@ -79,7 +82,7 @@ class Command(BaseCommand):
             except git.exc.InvalidGitRepositoryError:
                 pass
             except Exception as e:
-                print e
+                print(e)
                 continue
             self.stdout.write(self.style.SUCCESS('UPDATE {} DONE'.format(g3wsuite_app)))
             if options['password']:

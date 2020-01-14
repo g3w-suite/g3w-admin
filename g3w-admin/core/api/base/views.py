@@ -7,7 +7,6 @@ from django.contrib.gis.geos import GEOSGeometry
 from rest_framework.views import APIView
 from rest_framework.pagination import PageNumberPagination
 from rest_framework import exceptions, status
-from rest_framework.compat import set_rollback
 from rest_framework.response import Response
 from rest_framework.exceptions import APIException
 from core.api.filters import IntersectsBBoxFilter
@@ -99,23 +98,18 @@ def G3WExceptionHandler(exc, context):
 
         data.results['error']['data'] = exc.detail
 
-        set_rollback()
-        return Response(data.results, status=exc.status_code, headers=headers)
-        set_rollback()
         return Response(data.results, status=exc.status_code, headers=headers)
 
     elif isinstance(exc, Http404):
         msg = _('Not found')
         data.error = six.text_type(msg)
 
-        set_rollback()
         return Response(data.results, status=status.HTTP_404_NOT_FOUND)
 
     elif isinstance(exc, PermissionDenied):
         msg = _('Permission denied')
         data.error = six.text_type(msg)
 
-        set_rollback()
         return Response(data.results, status=status.HTTP_403_FORBIDDEN)
 
     # Note: Unhandled exceptions will raise a 500 error.

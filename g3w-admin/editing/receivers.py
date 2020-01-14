@@ -212,7 +212,7 @@ def validate_constraint(**kwargs):
     for rule in rules:
         allowed_geom, __ = rule.get_constraint_geometry()
         geom = geom_class(coords)
-        geom.set_srid(allowed_geom.srid)
+        geom.srid = allowed_geom.srid
         predicate_method = getattr(allowed_geom, spatial_predicate)
         if not predicate_method(geom):
             raise IntegrityError( _('Constraint validation failed for geometry: %s') % geom.wkt)

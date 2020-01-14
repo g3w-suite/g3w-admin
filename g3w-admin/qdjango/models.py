@@ -66,7 +66,8 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
     thumbnail = models.ImageField(_('Thumbnail'), blank=True, null=True)
 
     # Group
-    group = models.ForeignKey(Group, related_name='qdjango_project', verbose_name=_('Group'))
+    group = models.ForeignKey(Group, related_name='qdjango_project', verbose_name=_('Group'),
+                              on_delete=models.DO_NOTHING)
 
     # Extent
     initial_extent = models.CharField(_('Initial extent'), max_length=255)
@@ -80,7 +81,7 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
 
     # BaseLayer
     baselayer = models.ForeignKey(BaseLayer, verbose_name=_('Base Layer'), related_name='qdjango_project_baselayer',
-                                  null=True, blank=True)
+                                  null=True, blank=True, on_delete=models.DO_NOTHING)
     # possible layer relations
     relations = models.TextField(_('Layer relations'), blank=True, null=True)
 
@@ -104,9 +105,6 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
         verbose_name = _('Project')
         verbose_name_plural = _('Projects')
         unique_together = (('title', 'group'))
-        permissions = (
-            ('view_project', 'Can view qdjango project'),
-        )
 
     def __str__(self):
         return self.title
@@ -339,9 +337,6 @@ class Layer(G3WACLModelMixins, models.Model):
         verbose_name_plural = _('Layers')
         unique_together = (('name', 'project', 'qgs_layer_id'),)
         ordering = ['order']
-        permissions = (
-            ('view_layer', 'Can view qdjango layer'),
-        )
 
     def database_columns_by_name(self):
         return {db_col['name']: db_col for db_col in eval(self.database_columns)}
@@ -401,11 +396,6 @@ class Widget(G3WACLModelMixins, models.Model):
 
     def __str__(self):
         return self.name
-
-    class Meta:
-        permissions = (
-            ('view_widget', 'Can view widget'),
-        )
 
     def _permissionsToEditor(self, user, mode='add'):
         permissions = [

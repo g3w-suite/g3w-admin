@@ -2,7 +2,7 @@
 from django.conf import settings
 from django.conf.global_settings import LANGUAGES
 from django.utils.translation import ugettext, ugettext_lazy as _
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db import models
 from django.apps import apps
 from guardian.shortcuts import get_objects_for_user
@@ -100,11 +100,6 @@ class MacroGroup(TimeStampedModel, OrderedModel):
         _('Slug'), populate_from='title', unique=True, always_update=True
     )
 
-    class Meta:
-        permissions = (
-            ('view_macrogroup', 'Can view macro group maps'),
-        )
-
     def __str__(self):
         return self.title
 
@@ -146,7 +141,7 @@ class Group(TimeStampedModel, OrderedModel):
                                        help_text=_('Enter link with http:// or https//'))
 
     # Group SRID (a.k.a. EPSG)
-    srid = models.ForeignKey(G3WSpatialRefSys, db_column='srid')
+    srid = models.ForeignKey(G3WSpatialRefSys, db_column='srid', on_delete=models.DO_NOTHING)
 
     # baselayers
     baselayers = models.ManyToManyField(BaseLayer, blank=True)
@@ -169,7 +164,7 @@ class Group(TimeStampedModel, OrderedModel):
 
     class Meta:
         permissions = (
-            ('view_group', 'Can view group'),
+            ('add_project_to_group', 'Can add project to the group'),
         )
 
     def __str__(self):
@@ -217,10 +212,11 @@ class Group(TimeStampedModel, OrderedModel):
         Give guardian permissions to Editor every level
         """
 
-        permissions = ['view_group'] # valid for editor2
+        permissions = ['view_group', 'add_project_to_group'] # valid for editor2
         user_groups = getUserGroups(user)
         if G3W_EDITOR1 in user_groups:
             permissions += [
+                'add_project_to_group',
                 'change_group',
                 'delete_group'
             ]
@@ -242,6 +238,7 @@ class Group(TimeStampedModel, OrderedModel):
             'change_group',
             'delete_group',
             'view_group',
+            'add_project_to_group'
         ], mode='remove')
 
         # adding permissions to projects

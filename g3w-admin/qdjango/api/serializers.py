@@ -406,7 +406,7 @@ class LayerSerializer(serializers.ModelSerializer):
         if instance.layer_type in [Layer.TYPES.wms, Layer.TYPES.arcgismapserver]:
 
             if instance.layer_type == Layer.TYPES.wms:
-                datasourceWMS = QueryDict(bytes(instance.datasource))
+                datasourceWMS = QueryDict(instance.datasource)
             else:
                 datasourceWMS = datasourcearcgis2dict(instance.datasource)
 

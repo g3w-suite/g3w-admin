@@ -19,8 +19,9 @@ import shutil
 
 from django.contrib.auth.models import Group as UserGroup
 from django.core.exceptions import ValidationError
+from django.core.management import call_command
 from django.core.files import File
-from django.db import IntegrityError, transaction
+from django.db import IntegrityError, transaction, connections
 from django.test import TestCase, override_settings
 from core.models import G3WSpatialRefSys, Group as CoreGroup
 from qdjango.utils.data import QgisProject
@@ -58,11 +59,14 @@ QGS_FILE = 'constraints_test_project.qgs'
 class ConstraintsTestsBase(TestCase):
     """Base class for Constraint tests"""
 
-    fixtures = ['BaseLayer.json',
-                'G3WMapControls.json',
-                'G3WSpatialRefSys.json',
-                'G3WGeneralDataSuite.json'
-                ]
+    #fixtures = ['BaseLayer.json',
+    #            'G3WMapControls.json',
+    #            'G3WSpatialRefSys.json',
+    #            'G3WGeneralDataSuite.json'
+    #            ]
+
+    databases = '__all__'
+    #databases = {'default'}
 
     def setUp(self):
         """Restore test database"""
@@ -79,6 +83,11 @@ class ConstraintsTestsBase(TestCase):
 
     @classmethod
     def setUpTestData(cls):
+
+        call_command('loaddata', 'BaseLayer.json', '--database=default', verbosity=0)
+        call_command('loaddata', 'G3WMapControls.json', '--database=default', verbosity=0)
+        call_command('loaddata', 'G3WSpatialRefSys.json', '--database=default', verbosity=0)
+        call_command('loaddata', 'G3WGeneralDataSuite.json', '--database=default', verbosity=0)
 
         # Admin level 1
         cls.test_user_admin1 = User.objects.create_user(username='admin01', password='admin01')
@@ -131,6 +140,19 @@ class ConstraintsTestsBase(TestCase):
         """Delete all test data"""
 
         Constraint.objects.all().delete()
+
+    @classmethod
+    def tearDownClass(cls):
+
+        # for new fly connection we destroy it before teardown
+        conn2del = []
+        for conn in connections.databases.keys():
+            if conn != 'default':
+                conn2del.append(conn)
+        for conn in conn2del:
+            del(connections.databases[conn])
+
+        super().tearDownClass()
 
 
 class ConstraintsModelTestsBase(ConstraintsTestsBase):

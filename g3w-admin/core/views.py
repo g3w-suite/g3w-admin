@@ -10,7 +10,7 @@ from django.views.generic import (
 )
 from core.signals import load_dashboard_widgets
 from django.views.generic.detail import SingleObjectMixin
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.utils.decorators import method_decorator
 from guardian.decorators import permission_required
 from guardian.shortcuts import get_objects_for_user

@@ -15,7 +15,7 @@ from django.conf import settings
 from django.test import TestCase, override_settings
 from django.core.files import File
 from django.core.exceptions import ValidationError
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db import IntegrityError
 from core.models import Group as CoreGroup, G3WSpatialRefSys
 from usersmanage.models import User, Group as UserGroup

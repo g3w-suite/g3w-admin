@@ -136,7 +136,7 @@ def get_users_for_object(object, permission, group=None, with_anonymous = False,
                 userGroups = user.groups.values_list('name', flat=True)
                 if set(group).intersection(set(userGroups)):
                     result.append(user)
-                if with_anonymous and user.is_anonymous():
+                if with_anonymous and user.is_anonymous:
                     result.append(user)
             else:
                 result.append(user)

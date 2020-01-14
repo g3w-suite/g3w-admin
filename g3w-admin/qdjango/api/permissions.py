@@ -1,7 +1,7 @@
 from django.apps import apps
 from rest_framework.permissions import BasePermission
 from guardian.utils import get_anonymous_user
-from django.core.urlresolvers import resolve
+from django.urls import resolve
 from qdjango.models import Project
 
 

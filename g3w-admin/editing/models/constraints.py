@@ -86,6 +86,7 @@ class Constraint(models.Model):
         managed = True
         verbose_name = _('Layer constraint')
         verbose_name_plural = _('Layer constraints')
+        app_label = 'editing'
 
 
 class ConstraintRule(models.Model):
@@ -113,6 +114,7 @@ class ConstraintRule(models.Model):
         verbose_name = _('Constraint rule')
         verbose_name_plural = _('Constraint rules')
         unique_together = (('constraint', 'user', 'rule'), ('constraint', 'group', 'rule'))
+        app_label = 'editing'
 
     @property
     def user_or_group(self):
@@ -161,7 +163,7 @@ class ConstraintRule(models.Model):
         )
         # Actually fetch the constraint data
         constraint_geometry = MultiPolygon()
-        constraint_geometry.set_srid(editing_srid)
+        constraint_geometry.srid = editing_srid
         matched_counter = 0
         with transaction.atomic():
             for record in constraint_model_creator.geo_model.objects.raw(sql):
@@ -209,10 +211,10 @@ class ConstraintRule(models.Model):
         # Apparently, in spatialite:
         # select st_within(st_geomfromtext('point( 9 9)'), st_geomfromtext('multipolygon empty'));
         # returns -1 that is interpreted as TRUE, so we invert the filter to return an empty query set
-        if constraint_geometry.empty and self.constraint.editing_layer.layer_type == 'spatialite':
-            return editing_model_creator.geo_model.objects.exclude(**filters)
-        else:
-            return editing_model_creator.geo_model.objects.filter(**filters)
+        #if constraint_geometry.empty and self.constraint.editing_layer.layer_type == 'spatialite':
+        #    return editing_model_creator.geo_model.objects.exclude(**filters)
+        #else:
+        return editing_model_creator.geo_model.objects.filter(**filters)
 
 
     def validate_sql(self):
