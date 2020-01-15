@@ -189,9 +189,8 @@ class OWSRequestHandler(OWSRequestHandlerBase):
                     pass
 
                 if not to_replace:
-                    to_replace = settings.QDJANGO_SERVER_URL + r'\?map=[^\'" > &]+(?=&)'
+                    to_replace = settings.QDJANGO_SERVER_URL + r'\?map=[^\'" > &]+(?=&|)'
 
-                print to_replace
                 # url to replace
                 wms_url = '{}://{}{}'.format(
                     request.META['wsgi.url_scheme'],
