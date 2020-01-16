@@ -49,13 +49,17 @@ def catalog_provider(groups=[]):
         return layer.layer_type in ('gdal', 'raster')
 
     def _get_url(qgs_project):
-        '{}://{}/ows/{}/{}/{}/'.format(
+
+        url = '{}://{}/ows/{}/{}/{}/'.format(
             getattr(settings, 'CATALOG_URL_SCHEME', 'http'),
             getattr(settings, 'CATALOG_HOST', 'localhost'),
             qgs_project.group.slug,
             'qdjango',
             qgs_project.pk
         )
+
+        logger.debug('GET_URL: %s' % url)
+        return url
 
     results = []
 
