@@ -58,7 +58,6 @@ def catalog_provider(groups=[]):
             qgs_project.pk
         )
 
-        logger.debug('GET_URL: %s' % url)
         return url
 
     results = []
