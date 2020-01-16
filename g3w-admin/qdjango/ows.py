@@ -189,8 +189,7 @@ class OWSRequestHandler(OWSRequestHandlerBase):
                     pass
 
                 if not to_replace:
-                    to_replace = settings.QDJANGO_SERVER_URL + r'\?map=[^\'" > &]+(?=&)'
-                    #to_replace = r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+\?map=[^\'" > &]+(?=&)'
+                    to_replace = settings.QDJANGO_SERVER_URL + r'\?map=[^\'" > &]+(?=&|)'
 
                 # url to replace
                 wms_url = '{}://{}{}'.format(
@@ -199,7 +198,10 @@ class OWSRequestHandler(OWSRequestHandlerBase):
                     request.path
                 )
                 result_data = re.sub(to_replace, wms_url, result_data)
-                result_data = re.sub('&amp;&amp;', '?', result_data)
+                # replace /& with /?
+                result_data = re.sub('/&amp;\"', '/\"', result_data)
+                result_data = re.sub('/&amp;', '/?', result_data)
+
 
 
             # If we get a redirect, let's add a useful message.
