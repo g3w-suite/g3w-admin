@@ -48,8 +48,14 @@ def catalog_provider(groups=[]):
     def _is_raster(layer):
         return layer.layer_type in ('gdal', 'raster')
 
-    def _get_url(qgis_file):
-        return "{0.QDJANGO_SERVER_URL}?MAP={0.MEDIA_ROOT}/{1}".format(settings, qgis_file)
+    def _get_url(qgs_project):
+        '{}://{}/ows/{}/{}/{}/'.format(
+            getattr(settings, 'CATALOG_URL_SCHEME', 'http'),
+            getattr(settings, 'CATALOG_HOST', 'localhost'),
+            qgs_project.group.slug,
+            'qdjango',
+            qgs_project.pk
+        )
 
     results = []
 
@@ -128,11 +134,11 @@ def catalog_provider(groups=[]):
                 #'publisher': layer_metadata['publisher'],  # Maps to pycsw:Publisher
                 #'contributor': layer_metadata['contributor'],  # Maps to pycsw:Contributor
                 #'relation': layer_metadata['relation'],  # Maps to pycsw:Relation
-                'links': "WMS,WMS Server,OGC:WMS,%s" % _get_url(layer.project.qgis_file), # Maps to pycsw:Links - format: name,description,protocol,url
+                'links': "WMS,WMS Server,OGC:WMS,%s" % _get_url(project), # Maps to pycsw:Links - format: name,description,protocol,url
             }
 
             if not _is_raster(layer):
-                rec['links'] += "^WFS,WFS Server,OGC:WFS,%s" % _get_url(layer.project.qgis_file)
+                rec['links'] += "^WFS,WFS Server,OGC:WFS,%s" % _get_url(project)
                 rec['service_type'] += ',WFS'
                 rec['format'] += ',application/xml'
                 rec['service_type_version'] += ',1.1.0'
