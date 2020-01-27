@@ -1085,7 +1085,6 @@ class QgisProjectSettingsWMS(XmlData):
 
     def __init__(self, project_settings, **kwargs):
         self.qgisProjectSettingsFile = project_settings
-
         # load data
         self.loadProjectSettings()
 

@@ -4,7 +4,7 @@ from django.core.files import File
 from qdjango.models import Project, Layer, Widget
 from qdjango.utils.data import QgisProject, QgisPgConnection
 from qdjango.utils.structure import get_schema_table, datasource2dict, datasourcearcgis2dict
-from qdjango.utils.models import get_widgets4layer
+from qdjango.utils.models import get_widgets4layer, comparepgdatasoruce
 
 import os
 
@@ -167,7 +167,7 @@ class QdjangoUtilsTest(QdjangoTestBase):
     """ Test for utils methods and functions with QGIS 3.4.x project """
 
     def test_get_widget4layer(self):
-        """ Tets same name util func """
+        """ Test same name util func """
 
         # check if widget for every layer are 3 items:
         self.assertEqual(len(get_widgets4layer(self.fake_layer)), 0)
@@ -190,3 +190,18 @@ class QdjangoUtilsTest(QdjangoTestBase):
 
         # tear down
         widget.delete()
+
+    def test_comparepgdatasource(self):
+        """ Test same name function """
+
+        # differ only by pk
+        ds1 = "dbname='comune_capannori' host=0.0.0.0 port=5432 user='aaa' password='aaa' sslmode=disable key='gid' srid=3003 type=MultiPolygon table=\"dati_catastali\".\"catasto\" (geom) sql="
+        ds2 = "dbname='comune_capannori' host=0.0.0.0 port=5432 user='aaa' password='aaa' sslmode=disable key='id' srid=3003 type=MultiPolygon table=\"dati_catastali\".\"catasto\" (geom) sql="
+
+        self.assertTrue(comparepgdatasoruce(ds1, ds2))
+
+        # differ by host and pk
+        ds1 = "dbname='comune_capannori' host=0.0.0.1 port=5432 user='aaa' password='aaa' sslmode=disable key='gid' srid=3003 type=MultiPolygon table=\"dati_catastali\".\"catasto\" (geom) sql="
+        ds2 = "dbname='comune_capannori' host=0.0.0.0 port=5432 user='aaa' password='aaa' sslmode=disable key='id' srid=3003 type=MultiPolygon table=\"dati_catastali\".\"catasto\" (geom) sql="
+
+        self.assertFalse(comparepgdatasoruce(ds1, ds2))
