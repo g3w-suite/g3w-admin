@@ -25,7 +25,7 @@ from .signals import load_qdjango_widgets_data
 from .mixins.views import *
 from .forms import *
 from .api.utils import serialize_vectorjoin
-from .utils.models import get_widgets4layer
+from .utils.models import get_widgets4layer, comparepgdatasoruce
 import json
 from collections import OrderedDict
 
@@ -485,7 +485,9 @@ class QdjangoLayerWidgetDeleteView(G3WAjaxDeleteViewMixin, SingleObjectMixin, Vi
 
 
 class QdjangoLinkWidget2LayerView(G3WRequestViewMixin, G3WGroupViewMixin, QdjangoProjectViewMixin, QdjangoLayerViewMixin, View):
-
+    """
+    Activate or deactivate widget for layer.
+    """
     def get(self, *args, **kwargs):
         self.widget = get_object_or_404(Widget, slug=kwargs['slug'])
         try:
@@ -495,7 +497,7 @@ class QdjangoLinkWidget2LayerView(G3WRequestViewMixin, G3WGroupViewMixin, Qdjang
             return JsonResponse({'status': 'error', 'errors_form': e.message})
 
     def linkUnlinkWidget(self, link=True):
-        if self.layer.datasource != self.widget.datasource:
+        if not comparepgdatasoruce(self.layer.datasource, self.widget.datasource):
             raise Exception('Datasource of widget is different from layer datasource')
         if link:
             self.widget.layers.add(self.layer)
