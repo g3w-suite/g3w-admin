@@ -147,7 +147,8 @@ class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         ret['plugins'] = {}
 
         # plugins/module data
-        dataPlugins = initconfig_plugin_start.send(sender=self, project=self.projectId, projectType=self.projectType)
+        dataPlugins = initconfig_plugin_start.send(sender=self, project=self.projectId, projectType=self.projectType,
+                                                   request=self.request)
         for dataPlugin in dataPlugins:
             if dataPlugin[1]:
                 ret['plugins'] = copy(ret['plugins'])
