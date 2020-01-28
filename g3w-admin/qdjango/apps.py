@@ -46,7 +46,7 @@ def GiveBaseGrant(sender, **kwargs):
             if perm not in editor2Permission:
                 editor2.permissions.add(perm)
 
-        # for editor1
+        # for editor1 and editor2
         permissionsToAdd = (
             Permission.objects.get(
                 codename='add_widget', content_type=ContentType.objects.get_for_model(Widget)),
@@ -56,7 +56,7 @@ def GiveBaseGrant(sender, **kwargs):
             if perm not in editor1Permission:
                 editor1.permissions.add(perm)
             if perm not in editor2Permission:
-                editor1.permissions.add(perm)
+                editor2.permissions.add(perm)
 
 
 class QdjangoConfig(AppConfig):
