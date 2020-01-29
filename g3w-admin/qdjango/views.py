@@ -25,7 +25,7 @@ from .signals import load_qdjango_widgets_data
 from .mixins.views import *
 from .forms import *
 from .api.utils import serialize_vectorjoin
-from .utils.models import get_widgets4layer
+from .utils.models import get_widgets4layer, comparepgdatasoruce
 import json
 from collections import OrderedDict
 
@@ -262,7 +262,7 @@ class QdjangoProjectRelationsApiView(APIView):
             rn = r.copy()
             new_rn = OrderedDict()
             for f in list(r.keys()):
-                if type(r[f]) == buffer or f in ['the_geom', 'geom']:
+                if type(r[f]) == memoryview or f in ['the_geom', 'geom']:
                     continue
                 elif exclude_columns and f in exclude_columns:
                     continue
@@ -391,7 +391,9 @@ class QdjangoLayerDataView(G3WGroupViewMixin, QdjangoProjectViewMixin, View):
 
 
 class QdjangoLayerWidgetsView(G3WGroupViewMixin, QdjangoProjectViewMixin, QdjangoLayerViewMixin, ListView):
-
+    """
+    Render layer's widgets list.
+    """
     model = Widget
     template_name = 'qdjango/ajax/layer_widgets.html'
 
@@ -486,17 +488,19 @@ class QdjangoLayerWidgetDeleteView(G3WAjaxDeleteViewMixin, SingleObjectMixin, Vi
 
 
 class QdjangoLinkWidget2LayerView(G3WRequestViewMixin, G3WGroupViewMixin, QdjangoProjectViewMixin, QdjangoLayerViewMixin, View):
-
+    """
+    Activate or deactivate widget for layer.
+    """
     def get(self, *args, **kwargs):
         self.widget = get_object_or_404(Widget, slug=kwargs['slug'])
         try:
             self.linkUnlinkWidget(link=(not 'unlink' in self.request.GET))
             return JsonResponse({'status': 'ok'})
         except Exception as e:
-            return JsonResponse({'status': 'error', 'errors_form': e.args[0]})
+            return JsonResponse({'status': 'error', 'errors_form': e.message})
 
     def linkUnlinkWidget(self, link=True):
-        if self.layer.datasource != self.widget.datasource:
+        if not comparepgdatasoruce(self.layer.datasource, self.widget.datasource):
             raise Exception('Datasource of widget is different from layer datasource')
         if link:
             self.widget.layers.add(self.layer)
