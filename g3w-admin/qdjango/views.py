@@ -262,7 +262,7 @@ class QdjangoProjectRelationsApiView(APIView):
             rn = r.copy()
             new_rn = OrderedDict()
             for f in r.keys():
-                if type(r[f]) == buffer or f in ['the_geom', 'geom']:
+                if type(r[f]) == memoryview or f in ['the_geom', 'geom']:
                     continue
                 elif exclude_columns and f in exclude_columns:
                     continue
