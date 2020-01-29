@@ -12,6 +12,22 @@ __copyright__ = 'Copyright 2019, GIS3W'
 from django.db.models import Q
 
 
+def comparepgdatasoruce(ds1, ds2):
+    """
+    Compare postgis datasource bosed on dbname, host and table name
+    :param ds1: qgis pg datasoruce string from compare
+    :param ds2: qgis pg datasource string to compare
+    :return: Boolean
+    """
+    from .structure import datasource2dict
+
+    # split ds
+    ds1 = datasource2dict(ds1)
+    ds2 = datasource2dict(ds2)
+
+    return ds1['dbname'] == ds2['dbname'] and ds1['host'] == ds2['host'] and ds1['table'] == ds2['table']
+
+
 def get_widgets4layer(layer):
     """
     Return widgets list for qdjango layer instance
