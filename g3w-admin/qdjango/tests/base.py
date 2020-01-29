@@ -129,6 +129,9 @@ class QdjangoTestBase(TestCase):
         """Delete all test data"""
 
         #ProjectConfig.objects.all().delete()
-        self.fake_layer.delete()
-        self.fake_layer2.delete()
-        self.fake_layer3.delete()
+        try:
+            self.fake_layer.delete()
+            self.fake_layer2.delete()
+            self.fake_layer3.delete()
+        except:
+            pass
