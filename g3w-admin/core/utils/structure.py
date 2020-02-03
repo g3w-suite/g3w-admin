@@ -288,7 +288,7 @@ def mapLayerAttributes(layer, formField=False, **kwargs):
 
 def mapLayerAttributesFromModel(model, **kwargs):
     """
-    map model simple e direct field to Attributes for client editing system
+    map model simple and direct field to Attributes for client editing system
     only concrete field not virtual field and many2many
     """
     fieldsToExlude = kwargs['fieldsToExlude'] if 'fieldsToExlude' in kwargs else []
@@ -315,7 +315,7 @@ def mapLayerAttributesFromModel(model, **kwargs):
                 else:
                     editable = kwargs['fields'][field.name]['editable']
 
-                # remove editable from kwrags:
+                # remove editable from kwargs:
                 del(kwargs['fields'][field.name]['editable'])
 
                 fieldType = FIELD_TYPES_MAPPING['djangoModel'][type(field)]
