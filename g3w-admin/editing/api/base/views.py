@@ -170,7 +170,7 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
                             **gskwarags
                         )
 
-                    # validation serilizer and then save operations
+                    # validation serializer and then save operations
                     if serializer.is_valid():
                         data_saved = serializer.save()
                         to_res = {}

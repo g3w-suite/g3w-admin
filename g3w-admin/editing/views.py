@@ -76,6 +76,80 @@ class UploadFileView(View):
 
 
 
+from qdjango.models import Layer
+from qdjango.utils.structure import datasource2dict, get_schema_table
+
+from sqlalchemy import create_engine, MetaData
+from geoalchemy2 import Table as GEOTable
+from django.db import connections
+
+
+class G3WAPIInfoView(G3WAPIView):
+    """
+    InfoApiView for editing layer to use in infoulr infoquery call
+    """
+    bbox_filter_field = 'the_geom'
+    bbox_filter_include_overlapping = True
+
+    info_layers = dict()
+
+    def _build_filter_data(self, filter_data):
+        """
+        Build data for query roaw from WMS getinfo call
+        :param filter_data:
+        :return:
+        """
+        # where condiction builder
+        filter_params = filter_data.split('AND')
+        new_filter_params = []
+        for filter_param in filter_params:
+            nws_filter_param = filter_param.replace(' ', '').replace('%%', '')
+            # key_value = nws_filter_param.split('=')
+            key_value = re.split('=|ILIKE', nws_filter_param)
+            if key_value[1] not in ["'null'", "''", "'%%'", "'%null%'", "null", "%%"] and key_value[1]:
+                new_filter_params.append(filter_param)
+        filter_data = 'AND'.join(new_filter_params)
+        filter_data = filter_data.replace('%', '%%')
+        return filter_data
+
+    def get(self, request, format=None, layer_name=None):
+
+        if layer_name not in self.info_layers.keys():
+            raise APIException('Only one of this layer: {}'.format(', '.join(self.info_layers.keys())))
+
+        data_layer = self.info_layers[layer_name]
+
+        # selezione per tipo di query
+        if 'FILTER' in request.query_params:
+
+            # ricerca
+            # split filter
+            filter_data = request.query_params['FILTER'].split(':')[1]
+            featuresLayer = None
+
+            filter_data = self._build_filter_data(filter_data)
+
+            #apply raw query to model
+            query_raw = 'select * from {} where {}'.format(data_layer['model']._meta.db_table, filter_data)
+
+            if featuresLayer == None:
+                featuresLayer = data_layer['model'].objects.raw(query_raw)
+
+        else:
+
+            # per identify
+            bboxFilter = CentroidBBoxFilter(bbox_param='BBOX', tolerance=float(request.query_params['G3W_TOLERANCE']))
+            featurecollection = {}
+            featuresLayer = bboxFilter.filter_queryset(request, data_layer['model'].objects.all(), self)
+
+        layerSerializer = data_layer['geoSerializer'](featuresLayer, many=True, info_mode=True)
+
+        featurecollection = post_serialize_maplayer.send(layerSerializer, layer=layer_name)[0][1]
+
+        vectorParams = {
+            'data': featurecollection,
+            'geomentryType': data_layer['geometryType'],
+        }
 
 
 
