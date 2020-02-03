@@ -1,24 +1,30 @@
+import json
+from collections import OrderedDict
+from copy import copy
+
 from django.conf import settings
+from django.contrib.gis.geos import GEOSGeometry
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from django.utils import six
-from django.utils.translation import ugettext, ugettext_lazy as _
-from django.contrib.gis.geos import GEOSGeometry
-from rest_framework.views import APIView
-from rest_framework.pagination import PageNumberPagination
+from django.utils.translation import ugettext
+from django.utils.translation import ugettext_lazy as _
+from qgis.core import QgsJsonExporter
 from rest_framework import exceptions, status
-from rest_framework.response import Response
 from rest_framework.exceptions import APIException
-from core.api.filters import IntersectsBBoxFilter
-from core.signals import post_create_maplayerattributes, post_serialize_maplayer, before_return_vector_data_layer
-from core.utils.structure import mapLayerAttributes, mapLayerAttributesFromModel
-from core.api.authentication import CsrfExemptSessionAuthentication
-from core.utils.vector import BaseUserMediaHandler as UserMediaHandler
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
-from core.utils.structure import APIVectorLayerStructure
-from copy import copy
-from collections import OrderedDict
-import json
+from core.api.authentication import CsrfExemptSessionAuthentication
+from core.api.filters import IntersectsBBoxFilter
+from core.signals import (before_return_vector_data_layer,
+                          post_create_maplayerattributes,
+                          post_serialize_maplayer)
+from core.utils.structure import (APIVectorLayerStructure, mapLayerAttributes,
+                                  mapLayerAttributesFromModel)
+from core.utils.vector import BaseUserMediaHandler as UserMediaHandler
+from core.utils.qgisapi import get_qgis_features
 
 MODE_DATA = 'data'
 MODE_CONFIG = 'config'
@@ -149,7 +155,7 @@ class BaseVectorOnModelApiView(G3WAPIView):
     bbox_filter_field = 'the_geom'
     bbox_filter_include_overlapping = True
 
-    # sepcific fileds data for media fifileds like picture/movies
+    # specific fileds data for media fifileds like picture/movies
     media_properties = dict()
 
     # Database keyname to use if different from default settings
@@ -255,6 +261,7 @@ class BaseVectorOnModelApiView(G3WAPIView):
         # Instance bbox filter
         self.bbox_filter = IntersectsBBoxFilter()
 
+    # Does nothing
     def set_sql_filter(self):
         """
         Set filter  set general sql fitlter
@@ -381,13 +388,27 @@ class BaseVectorOnModelApiView(G3WAPIView):
         """
         Query layer and return data
         :param request: DjangoREST API request object
-        :return: responce dict data
+        :return: response dict data
         """
+
+        features = get_qgis_features(self.metadata_layer.qgis_layer)
+        ex = QgsJsonExporter(self.metadata_layer.qgis_layer)
+        # FIXME: pkField
+        self.results.update(APIVectorLayerStructure(**{
+            'data': json.loads(ex.exportFeatures(features)),
+            'count': self._paginator.page.paginator.count if 'page' in request.query_params else None,
+            'geomentryType': self.metadata_layer.geometry_type,
+            'pkField': self.metadata_layer.qgis_layer.fields()[0].name()
+        }).as_dict())
+
+        return
+
         # Instance geo filtering
         #self.set_geo_filter()
         self.set_filters()
 
-        # apply bbox filter
+        # apply bbox filter (Polygon object)
+        # FIXME: which CRS?
         self.features_layer = self.metadata_layer.get_queryset()
         if self.bbox_filter:
             self.features_layer = self.bbox_filter.filter_queryset(request, self.features_layer, self)
@@ -481,9 +502,3 @@ class BaseVectorOnModelApiView(G3WAPIView):
     def post(self, request, mode_call=None, project_type=None, layer_id=None, **kwargs):
 
         return self.get_response(request, mode_call=mode_call, project_type=project_type, layer_id=layer_id, **kwargs)
-
-
-
-
-
-

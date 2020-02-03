@@ -1,27 +1,33 @@
-from django.db import connections
-from django.http import HttpResponse, HttpResponseForbidden
-from django.db.models.expressions import RawSQL
-from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.filters import OrderingFilter
-from core.api.base.views import BaseVectorOnModelApiView, IntersectsBBoxFilter, MODE_DATA, MODE_CONFIG, MODE_SHP, \
-    APIException, MODE_XLS
-from core.api.base.vector import MetadataVectorLayer
-from core.utils.structure import mapLayerAttributesFromModel
-from core.utils.models import create_geomodel_from_qdjango_layer, get_geometry_column
-from core.utils.vector import BaseUserMediaHandler
-from core.utils.ie import modelresource_factory
-from core.api.permissions import ProjectPermission
-from core.api.filters import DatatablesFilterBackend, SuggestFilterBackend
-from .utils.edittype import MAPPING_EDITTYPE_QGISEDITTYPE
-from .utils.data import QGIS_LAYER_TYPE_NO_GEOM
-from .api.serializers import QGISLayerSerializer, QGISGeoLayerSerializer
-from .utils.structure import datasource2dict
-from .models import Layer
-import subprocess
-import zipfile
 import io
 import os
 import shutil
+import subprocess
+import zipfile
+
+from django.db import connections
+from django.db.models.expressions import RawSQL
+from django_filters.rest_framework import DjangoFilterBackend
+from django.http import HttpResponse, HttpResponseForbidden
+from rest_framework.filters import OrderingFilter
+
+from core.api.base.vector import MetadataVectorLayer
+from core.api.base.views import (MODE_CONFIG, MODE_DATA, MODE_SHP, MODE_XLS,
+                                 APIException, BaseVectorOnModelApiView,
+                                 IntersectsBBoxFilter)
+from core.api.filters import DatatablesFilterBackend, SuggestFilterBackend
+from core.api.permissions import ProjectPermission
+from core.utils.ie import modelresource_factory
+from core.utils.models import (create_geomodel_from_qdjango_layer,
+                               get_geometry_column)
+from core.utils.structure import mapLayerAttributesFromModel
+from core.utils.vector import BaseUserMediaHandler
+
+from .api.serializers import QGISGeoLayerSerializer, QGISLayerSerializer
+from .models import Layer
+from .utils.data import QGIS_LAYER_TYPE_NO_GEOM
+from .utils.edittype import MAPPING_EDITTYPE_QGISEDITTYPE
+from .utils.structure import datasource2dict
+from core.utils.qgisapi import *
 
 MODE_WIDGET = 'widget'
 
@@ -110,13 +116,11 @@ class QGISLayerVectorViewMixin(object):
                 else:
                     serializer = QGISLayerSerializer
 
+                # FIXME: referenced_field_is_pk
                 self.metadata_relations[relation['referencingLayer']] = MetadataVectorLayer(
-                    geomodel,
-                    serializer,
-                    geometrytype,
+                    qgis_layer,
                     relation_layer.origname,
                     idr,
-                    using=database_to_use,
                     layer=relation_layer,
                     referencing_field=relation['fieldRef']['referencingField'],
                     referenced_field_is_pk=
@@ -125,32 +129,25 @@ class QGISLayerVectorViewMixin(object):
                 )
 
     def set_metadata_layer(self, request, **kwargs):
+        """Set the metadata layer to a QgsVectorLayer instance
+
+        returns a dictionary with layer information and the QGIS layer instance
+        """
 
         self.layer = self.get_layer_by_params(kwargs)
 
         # set layer_name
         self.layer_name = self.layer.origname
 
-        geomodel, self.database_to_use, geometrytype = create_geomodel_from_qdjango_layer(self.layer)
-
-        if geometrytype is None:
-            geometrytype = QGIS_LAYER_TYPE_NO_GEOM
-
-        # set bbox_filter_field with geomentry model field
-        if geometrytype != QGIS_LAYER_TYPE_NO_GEOM:
-            serializer = QGISGeoLayerSerializer
-            self.bbox_filter_field = get_geometry_column(geomodel).name
-        else:
-            serializer = QGISLayerSerializer
+        qgis_layer = get_qgis_layer(self.layer)
 
         # create model and add to editing_layers
         self.metadata_layer = MetadataVectorLayer(
-            geomodel,
-            serializer,
-            geometrytype,
+            qgis_layer,
             self.layer.origname,
             layer_id=self.layer.pk
         )
+
 
 
 class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
