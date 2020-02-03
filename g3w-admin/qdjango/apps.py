@@ -4,22 +4,20 @@ from usersmanage.configs import *
 from core.utils.general import getAuthPermissionContentType
 from django.conf import settings
 
-try:
-    from qgis.core import *
-except:
-    pass
+from qgis.core import QgsApplication
 
-'''
-QgsApplication.setPrefixPath("/path/to/qgis/installation", True)
+
+# Required only if the installation is not in the default path
+# or if virtualenv messes up with the paths
+QgsApplication.setPrefixPath("/usr", True)
 
 # create a reference to the QgsApplication
 # setting the second argument to True enables the GUI, which we need to do
 # since this is a custom application
-QGS_APPLICATION = QgsApplication([], True)
+QGS_APPLICATION = QgsApplication([], False)
 
 # load providers
 QGS_APPLICATION.initQgis()
-'''
 
 
 def GiveBaseGrant(sender, **kwargs):
