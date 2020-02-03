@@ -10,6 +10,7 @@ from django.contrib.auth.models import User
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Div, Submit, HTML, Button, Row, Field
 from crispy_forms.bootstrap import AppendedText, PrependedText
+from modeltranslation.forms import TranslationModelForm
 from guardian.shortcuts import get_objects_for_user
 from .utils.forms import crispyBoxMacroGroups
 from usersmanage.utils import get_fields_by_user, crispyBoxACL, userHasGroups, get_users_for_object
@@ -178,7 +179,7 @@ class GroupForm(FileFormMixin, G3WFormMixin, G3WRequestFormMixin, G3WACLForm, Mo
             self.instance.addPermissionsToEditor(self.request.user)
 
 
-class GeneralSuiteDataForm(FileFormMixin, ModelForm):
+class GeneralSuiteDataForm(TranslationModelForm, FileFormMixin, ModelForm):
     """General suite data form."""
     suite_logo = UploadedFileField(required=False)
 

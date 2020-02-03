@@ -58,6 +58,7 @@ THIRD_PARTY_APPS = [
     'ordered_model',
     'ajax_select',
     'djcelery',
+    'modeltranslation'
     #'django_user_agents',
     #'tracking_analyzer'
     # 'debug_toolbar',
@@ -187,6 +188,8 @@ LANGUAGES = (
     ('it', 'Italian'),
     ('en', 'English'),
 )
+
+MODELTRANSLATION_DEFAULT_LANGUAGE = 'it'
 
 # if prefix for defaltu language put in to url
 PREFIX_DEFAULT_LANGUAGE = True
