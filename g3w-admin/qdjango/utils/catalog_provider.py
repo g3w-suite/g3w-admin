@@ -48,8 +48,17 @@ def catalog_provider(groups=[]):
     def _is_raster(layer):
         return layer.layer_type in ('gdal', 'raster')
 
-    def _get_url(qgis_file):
-        return "{0.QDJANGO_SERVER_URL}?MAP={0.MEDIA_ROOT}/{1}".format(settings, qgis_file)
+    def _get_url(qgs_project):
+
+        url = '{}://{}/ows/{}/{}/{}/'.format(
+            getattr(settings, 'CATALOG_URL_SCHEME', 'http'),
+            getattr(settings, 'CATALOG_HOST', 'localhost'),
+            qgs_project.group.slug,
+            'qdjango',
+            qgs_project.pk
+        )
+
+        return url
 
     results = []
 
