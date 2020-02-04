@@ -573,6 +573,8 @@ class QgisProjectLayer(XmlData):
                             'index': editor_form_subnode.attrib['index'],
                             'field_name': to_ret_node['name']
                         })
+                        if to_ret_node['name'] in self.aliases:
+                            to_ret_node.update({'alias': self.aliases[to_ret_node['name']]})
                         del(to_ret_node['name'])
 
                     to_ret_form_structure.append(to_ret_node)
