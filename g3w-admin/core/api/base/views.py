@@ -360,7 +360,7 @@ class BaseVectorOnModelApiView(G3WAPIView):
 
         if self.mapping_layer_attributes_function.__func__ == mapLayerAttributesFromModel:
             fields = list(self.mapping_layer_attributes_function.__func__(
-                self.metadata_layer.model,
+                self.metadata_layer.qgis_layer,
                 **kwargs
             ).values())
         else:
@@ -373,7 +373,7 @@ class BaseVectorOnModelApiView(G3WAPIView):
         vector_params = {
             'geomentryType': self.metadata_layer.geometry_type,
             'fields': fields,
-            'pkField': self.metadata_layer.model._meta.pk.name
+            # No pk in QGIS API 'pkField': self.metadata_layer.model._meta.pk.name
         }
 
         # post_create_maplayerattributes signal
@@ -393,7 +393,7 @@ class BaseVectorOnModelApiView(G3WAPIView):
 
         features = get_qgis_features(self.metadata_layer.qgis_layer)
         ex = QgsJsonExporter(self.metadata_layer.qgis_layer)
-        # FIXME: pkField
+        # FIXME: pkField, filters
         self.results.update(APIVectorLayerStructure(**{
             'data': json.loads(ex.exportFeatures(features)),
             'count': self._paginator.page.paginator.count if 'page' in request.query_params else None,

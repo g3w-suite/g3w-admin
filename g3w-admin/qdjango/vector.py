@@ -3,6 +3,7 @@ import os
 import shutil
 import subprocess
 import zipfile
+import tempfile
 
 from django.db import connections
 from django.db.models.expressions import RawSQL
@@ -28,6 +29,7 @@ from .utils.data import QGIS_LAYER_TYPE_NO_GEOM
 from .utils.edittype import MAPPING_EDITTYPE_QGISEDITTYPE
 from .utils.structure import datasource2dict
 from core.utils.qgisapi import *
+from qgis.core import QgsVectorFileWriter
 
 MODE_WIDGET = 'widget'
 
@@ -179,7 +181,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
 
     def get_forms(self):
         """
-        Check if edittype is se for layer and build inputtype
+        Check if edittype is set for layer and build inputtype
         """
 
         fields = super(LayerVectorView, self).get_forms()
@@ -221,7 +223,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
 
     def response_widget_unique_data(self, request_data):
         """
-        Execute a distinc query for unique editing qgis widget
+        Execute a distinct query for unique editing qgis widget
         """
         if 'fields' not in request_data:
             raise APIException('The \'fields\' param not in request data')
@@ -290,44 +292,17 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         if not self.layer.download:
             return HttpResponseForbidden()
 
-        #ogr2ogr -f "ESRI Shapefile" qds_cnt.shp PG:"host=localhost user=postgres dbname=gisdb password=password" - sql "SELECT sp_count, geom FROM grid50_rsa WHERE province = 'Gauteng'"
-
         tmp_dir = "/tmp/g3w-suite/{}/".format(request.session.session_key)
 
         if not os.path.isdir(tmp_dir):
             os.makedirs(tmp_dir)
 
-        datasource = datasource2dict(self.layer.datasource)
-        table = datasource['table'].replace('"', '')
-        if self.layer.layer_type in ['sqlite', 'spatialite']:
-            ogr_conn = datasource['dbname']
-            filename = table
+        filename = self.metadata_layer.qgis_layer.name()
 
-        if self.layer.layer_type == 'postgres':
-            ogr_conn = "PG:host={0} user={1} dbname={2} password={3}".format(
-                datasource['host'],
-                datasource['user'],
-                datasource['dbname'],
-                datasource['password'],
-            )
-            filename = table.split('.')[1]
+        error_code, error_message = QgsVectorFileWriter.writeAsVectorFormat(self.metadata_layer.qgis_layer, os.path.join(tmp_dir, filename), "utf-8", self.metadata_layer.qgis_layer.crs(), 'ESRI Shapefile')
 
-        command = [
-            "ogr2ogr",
-            "-f",
-            "ESRI Shapefile",
-            "{}{}{}".format(tmp_dir, filename, self.shp_extentions[0]),
-            ogr_conn,
-            table
-        ]
-
-        process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        output, error = process.communicate()
-        if error and not error.startswith(b'Warning'):
-            raise APIException(error)
-
-        # build on memory zip file
-        # from https://stackoverflow.com/a/12951557
+        if error_code != 0:
+            return HttpResponse(status=500, reason=error_message)
 
         filenames = ["{}{}".format(filename, ftype) for ftype in self.shp_extentions]
 
@@ -342,7 +317,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         for fpath in filenames:
 
             # Add file, at correct path
-            ftoadd = '{}{}'.format(tmp_dir, fpath)
+            ftoadd = os.path.join(tmp_dir, fpath)
             if os.path.exists(ftoadd):
                 zf.write(ftoadd, fpath)
 
@@ -364,12 +339,13 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         :return: http response with attached file
         """
 
-        resources = modelresource_factory(self.metadata_layer.model,
-                                          exclude=(get_geometry_column(self.metadata_layer.model).name,))()
+        xls_tmp_path = tempfile.mktemp('.xlsx')
+        error_code, error_message = QgsVectorFileWriter.writeAsVectorFormat(self.metadata_layer.qgis_layer, xls_tmp_path , "utf-8", self.metadata_layer.qgis_layer.crs(), 'xlsx')
 
-        dataset = resources.export()
+        if error_code != 0:
+            return HttpResponse(status=500, reason=error_message)
 
-        response = HttpResponse(dataset.xls, content_type='application/ms-excel')
+        response = HttpResponse(open(xls_tmp_path, 'rb').read(), content_type='application/ms-excel')
         response['Content-Disposition'] = 'attachment; filename=geodata.xls'
         response.set_cookie('fileDownload', 'true')
         return response

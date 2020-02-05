@@ -118,7 +118,8 @@ class CoreApiTest(CoreTestBase):
         self.assertEqual(resp["vector"]["format"], "GeoJSON")
         self.assertEqual(resp["vector"]["fields"], [{'name': 'pkuid', 'editable': False, 'label': 'pkuid', 'input': {'type': 'text', 'options': {}}, 'validate': {}, 'type': 'integer'}, {'name': 'name', 'editable': True, 'label': 'name', 'input': {'type': 'textarea', 'options': {}}, 'validate': {}, 'type': 'text'}])
         self.assertEqual(resp["vector"]["geometrytype"], "Point")
-        self.assertEqual(resp["vector"]["pk"], "pkuid")
+        # No pk in QGIS API
+        #self.assertEqual(resp["vector"]["pk"], "pkuid")
         self.assertIsNone(resp["vector"]["data"])
         self.assertTrue(resp["result"])
         self.assertIsNone(resp["featurelocks"])
@@ -143,7 +144,7 @@ class CoreApiTest(CoreTestBase):
         """Test core-vector-api data XLS"""
 
         response = self._testApiCall('core-vector-api', ['xls', 'qdjango', '1', 'spatialite_points20190604101052075'])
-        self.assertEqual(len(response.content), 5632)
+        self.assertEqual(len(response.content), 3213)
 
     def testCoreVectorApiSearch(self):
         """Test core-vector-api search"""
