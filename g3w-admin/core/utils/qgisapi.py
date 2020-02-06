@@ -41,7 +41,7 @@ def get_qgis_features(qgis_layer,
                       search_filter=None,
                       with_geometry=True,
                       page=None,
-                      page_size=0,
+                      page_size=None,
                       ordering=None,
                       exclude_fields=None):
     """Returns a list of QgsFeatures from the QGIS vector layer,

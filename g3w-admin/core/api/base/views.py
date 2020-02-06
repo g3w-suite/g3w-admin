@@ -405,7 +405,7 @@ class BaseVectorOnModelApiView(G3WAPIView):
             kwargs['bbox_filter'] = bbox_filter
 
         if 'search' in request.query_params:
-            kwargs['search_filter'] = request.query_params.get('search')
+            kwargs['search'] = request.query_params.get('search')
 
         #FIXME: other filters (ordering, suggest)
 
