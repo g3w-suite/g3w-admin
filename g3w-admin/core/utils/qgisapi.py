@@ -40,9 +40,10 @@ def get_qgis_features(qgis_layer,
                       attribute_filters=None,
                       search_filter=None,
                       with_geometry=True,
-                      feature_count=None,
-                      offset=0,
-                      ordering=None):
+                      page=None,
+                      page_size=0,
+                      ordering=None,
+                      exclude_fields=None):
     """Returns a list of QgsFeatures from the QGIS vector layer,
     with optional filter options.
 
@@ -56,15 +57,23 @@ def get_qgis_features(qgis_layer,
     :type search_filter: str, optional
     :param with_geometry: also return geometries, defaults to True
     :type with_geometry: bool, optional
-    :param feature_count: maximum number of features to return, defaults to None (all features)
-    :type feature_count: int, optional
-    :param  offset: default to 0
-    :type offset: int
+    :param page: pagination, defaults to None (all features)
+    :type page: int, optional
+    :param  page_size: default to 10
+    :type page_size: int
     :param: ordering: ordering field with optional '-' for descending
     :type: ordering: str, optional
+    :param: exclude_fields: list of fields to exclude from returned data
+    :type: ordering: array, optional
+    :return: list of features
+    :rtype: QgsFeature list
     """
 
     req = QgsFeatureRequest()
+
+    if exclude_fields is not None:
+        req.setSubsetOfAttributes([name for name in qgis_layer.fields().names() if name not in exclude_fields], qgis_layer.fields())
+
     expression_parts = []
 
     if not with_geometry:
@@ -73,11 +82,6 @@ def get_qgis_features(qgis_layer,
     if bbox_filter is not None:
         assert isinstance(bbox_filter, QgsRectangle)
         req.setFilterRect(bbox_filter)
-
-    if offset != 0 and feature_count is not None:
-        req.setLimit(feature_count + offset)
-    elif feature_count is not None:
-        req.setLimit(feature_count)
 
     # Ordering
     if ordering is not None:
@@ -103,6 +107,17 @@ def get_qgis_features(qgis_layer,
             exp_parts.append('"{field_name}" ILIKE \'%{field_value}%\''.format(field_name=field_name.replace('"', '\\"'), field_value=str(field_value).replace('\'', '\\\'')))
         expression_parts.append(' AND '.join(exp_parts))
 
+    offset = 0
+    feature_count = qgis_layer.featureCount()
+
+    if page is not None and page_size is not None:
+        offset = page_size * (page - 1)
+        feature_count =  page_size * page
+        # Set to max, without taking filters into account
+        req.setLimit(feature_count)
+    else:
+        page_size = feature_count
+
     # Fetch features
     if expression_parts:
         req.setFilterExpression('(' + ') AND ('.join(expression_parts) + ')')
@@ -113,7 +128,7 @@ def get_qgis_features(qgis_layer,
     try:
         for _ in range(offset):
             next(iterator)
-        while True:
+        for __ in range(page_size):
             features.append(next(iterator))
     except StopIteration:
         pass

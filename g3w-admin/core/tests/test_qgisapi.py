@@ -73,6 +73,7 @@ class CoreQgisApiTest(APITestCase):
     @classmethod
     def tearDownClass(cls):
         cls.user.delete()
+        super().tearDownClass()
 
     def setUp(self):
         self.client = APIClient()
@@ -98,28 +99,28 @@ class CoreQgisApiTest(APITestCase):
         # Check has geometry
         self.assertTrue(features[0].geometry().isNull())
 
-    def testGetQgisFeaturesPaging(self):
-        """Test QGIS API get_qgis_features with paging"""
+    def testGetQgisFeaturesPagination(self):
+        """Test QGIS API get_qgis_features with pagination"""
 
         qgis_layer = get_qgis_layer(self.layer)
         self.assertTrue(qgis_layer.isValid())
 
         # Test get first page
-        features = get_qgis_features(qgis_layer, feature_count=1)
+        features = get_qgis_features(qgis_layer, page=1, page_size=1)
         self.assertEqual(len(features), 1)
         self.assertTrue(features[0].id(), 1)
 
         # second page
-        features = get_qgis_features(qgis_layer, feature_count=1, offset=1)
+        features = get_qgis_features(qgis_layer, page=1, page_size=1)
         self.assertEqual(len(features), 1)
         self.assertTrue(features[0].id(), 2)
 
         # out of range offset
-        features = get_qgis_features(qgis_layer, feature_count=1, offset=100)
+        features = get_qgis_features(qgis_layer, page=100, page_size=1)
         self.assertEqual(len(features), 0)
 
         # out of range feature_count
-        features = get_qgis_features(qgis_layer, feature_count=1000)
+        features = get_qgis_features(qgis_layer, page_size=1000)
         self.assertEqual(len(features), 2)
 
     def testGetQgisFeaturesOrdering(self):
@@ -129,24 +130,19 @@ class CoreQgisApiTest(APITestCase):
         self.assertTrue(qgis_layer.isValid())
 
         # Test get first page
-        features = get_qgis_features(qgis_layer, feature_count=1, ordering='name')
-        self.assertEqual(len(features), 1)
+        features = get_qgis_features(qgis_layer, ordering='name')
+        self.assertEqual(len(features), 2)
         self.assertTrue(features[0].id(), 1)
 
         # second page
-        features = get_qgis_features(qgis_layer, feature_count=1, offset=1, ordering='name')
-        self.assertEqual(len(features), 1)
+        features = get_qgis_features(qgis_layer, ordering='name')
+        self.assertEqual(len(features), 2)
         self.assertTrue(features[0].id(), 2)
 
         # Test get first page
-        features = get_qgis_features(qgis_layer, feature_count=1, ordering='-name')
-        self.assertEqual(len(features), 1)
+        features = get_qgis_features(qgis_layer, ordering='-name')
+        self.assertEqual(len(features), 2)
         self.assertTrue(features[0].id(), 2)
-
-        # second page
-        features = get_qgis_features(qgis_layer, feature_count=1, offset=1, ordering='-name')
-        self.assertEqual(len(features), 1)
-        self.assertTrue(features[0].id(), 1)
 
         # not existent field (ignored)
         features = get_qgis_features(qgis_layer, ordering='not_exists')
@@ -248,3 +244,19 @@ class CoreQgisApiTest(APITestCase):
 
         features = get_qgis_features(qgis_layer, bbox_filter=bbox)
         self.assertEqual(len(features), 1)
+
+    def testGetQgisFeaturesExcludeFields(self):
+        """Test QGIS API get_qgis_features with exclude fields filter"""
+
+        qgis_layer = get_qgis_layer(self.layer)
+        self.assertTrue(qgis_layer.isValid())
+
+        features = get_qgis_features(qgis_layer, exclude_fields=['pkuid'])
+        self.assertEqual(len(features), 2)
+        self.assertIsNone(features[0].attribute('pkuid'))
+        self.assertIsNotNone(features[0].attribute('name'))
+
+        features = get_qgis_features(qgis_layer, exclude_fields=['name'])
+        self.assertEqual(len(features), 2)
+        self.assertIsNotNone(features[0].attribute('pkuid'))
+        self.assertIsNone(features[0].attribute('name'))

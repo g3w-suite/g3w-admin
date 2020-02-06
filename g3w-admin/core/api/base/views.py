@@ -9,7 +9,12 @@ from django.http import Http404
 from django.utils import six
 from django.utils.translation import ugettext
 from django.utils.translation import ugettext_lazy as _
-from qgis.core import QgsJsonExporter
+from qgis.core import (
+    QgsJsonExporter,
+    QgsCoordinateTransform,
+    QgsCoordinateReferenceSystem,
+    QgsCoordinateTransformContext,
+)
 from rest_framework import exceptions, status
 from rest_framework.exceptions import APIException
 from rest_framework.pagination import PageNumberPagination
@@ -254,19 +259,11 @@ class BaseVectorOnModelApiView(G3WAPIView):
         :return:
         """
         self.set_geo_filter()
-        self.set_sql_filter()
 
     def set_geo_filter(self):
 
         # Instance bbox filter
         self.bbox_filter = IntersectsBBoxFilter()
-
-    # Does nothing
-    def set_sql_filter(self):
-        """
-        Set filter  set general sql fitlter
-        """
-        self.sql_filter = None
 
     def get_geoserializer_kwargs(self):
         """
@@ -391,11 +388,45 @@ class BaseVectorOnModelApiView(G3WAPIView):
         :return: response dict data
         """
 
-        features = get_qgis_features(self.metadata_layer.qgis_layer)
+        self.set_filters()
+
+        # Prepare arguments for the get feature call
+        kwargs = {}
+
+        if self.bbox_filter:
+            bbox_filter = self.bbox_filter.get_filter_bbox(request)
+            # reproject bbox
+            if self.reproject:
+                from_srid = self.layer.project.group.srid.auth_srid
+                to_srid = self.layer.srid
+                ct = QgsCoordinateTransform(QgsCoordinateReferenceSystem(from_srid), QgsCoordinateReferenceSystem(to_srid), QgsCoordinateTransformContext())
+                bbox_filter =ct.transform(bbox_filter)
+
+            kwargs['bbox_filter'] = bbox_filter
+
+        if 'search' in request.query_params:
+            kwargs['search_filter'] = request.query_params.get('search')
+
+        #FIXME: other filters (ordering, suggest)
+
+        if 'page' in request.query_params:
+            kwargs['page'] = request.query_params.get('page')
+            kwargs['page_size'] = request.query_params.get('page_size', 10)
+
+        features = get_qgis_features(self.metadata_layer.qgis_layer, **kwargs)
         ex = QgsJsonExporter(self.metadata_layer.qgis_layer)
+        feature_collection = json.loads(ex.exportFeatures(features))
+
+        # reproject if necessary
+        if self.reproject:
+            self.reproject_featurecollection(feature_collection)
+
+        # change media
+        self.change_media(feature_collection)
+
         # FIXME: pkField, filters
         self.results.update(APIVectorLayerStructure(**{
-            'data': json.loads(ex.exportFeatures(features)),
+            'data': feature_collection,
             'count': self._paginator.page.paginator.count if 'page' in request.query_params else None,
             'geomentryType': self.metadata_layer.geometry_type,
             'pkField': self.metadata_layer.qgis_layer.fields()[0].name()
@@ -408,13 +439,9 @@ class BaseVectorOnModelApiView(G3WAPIView):
         self.set_filters()
 
         # apply bbox filter (Polygon object)
-        # FIXME: which CRS?
         self.features_layer = self.metadata_layer.get_queryset()
         if self.bbox_filter:
             self.features_layer = self.bbox_filter.filter_queryset(request, self.features_layer, self)
-
-        if self.sql_filter:
-            self.features_layer = self.features_layer.filter(**self.sql_filter)
 
         if hasattr(self, 'filter_backends'):
             for backend in list(self.filter_backends):
@@ -433,13 +460,6 @@ class BaseVectorOnModelApiView(G3WAPIView):
             featurecollection = featurecollection[0][1]
         else:
             featurecollection = layer_serializer.data
-
-        # reproject if necessary
-        if self.reproject:
-            self.reproject_featurecollection(featurecollection)
-
-        # change media
-        self.change_media(featurecollection)
 
         self.results.update(APIVectorLayerStructure(**{
             'data': featurecollection,

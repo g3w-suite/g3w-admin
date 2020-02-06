@@ -4,7 +4,7 @@ from rest_framework.exceptions import ParseError
 from rest_framework.filters import BaseFilterBackend
 from django.db.models import Q
 from django.contrib.gis.db.models.fields import GeometryField
-
+from qgis.core import QgsRectangle
 
 class InsideBBoxFilter(InBBoxFilter):
 
@@ -18,6 +18,15 @@ class InsideBBoxFilter(InBBoxFilter):
 class IntersectsBBoxFilter(InsideBBoxFilter):
 
     def get_filter_bbox(self, request):
+        """Creates a QgsRectangle from the BBOX request
+
+        :param request: request
+        :type request: django request
+        :raises ParseError: parse error
+        :return: bbox rectangle
+        :rtype: QgsRectangle
+        """
+
         if request.method == 'POST':
             request_data = request.data
         else:
@@ -31,8 +40,7 @@ class IntersectsBBoxFilter(InsideBBoxFilter):
         except ValueError:
             raise ParseError('Invalid bbox string supplied for parameter {0}'.format(self.bbox_param))
 
-        x = Polygon.from_bbox((p1x, p1y, p2x, p2y))
-        return x
+        return QgsRectangle(p1x, p1y, p2x, p2y)
 
     def filter_queryset(self, request, queryset, view):
         filter_field = getattr(view, 'bbox_filter_field', None)

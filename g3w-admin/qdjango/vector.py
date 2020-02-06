@@ -28,7 +28,7 @@ from .models import Layer
 from .utils.data import QGIS_LAYER_TYPE_NO_GEOM
 from .utils.edittype import MAPPING_EDITTYPE_QGISEDITTYPE
 from .utils.structure import datasource2dict
-from core.utils.qgisapi import *
+from core.utils.qgisapi import get_qgis_layer
 from qgis.core import QgsVectorFileWriter
 
 MODE_WIDGET = 'widget'
@@ -74,7 +74,7 @@ class QGISLayerVectorViewMixin(object):
         return kwargs
 
     def set_relations(self):
-
+        """Find relations and set metadata"""
 
         # get relations on project
         self.relations = {} if not self.layer.project.relations else \
