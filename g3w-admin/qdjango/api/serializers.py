@@ -334,9 +334,9 @@ class LayerSerializer(serializers.ModelSerializer):
         columns = mapLayerAttributes(instance) if instance.database_columns else []
 
         # evalute fields to show or not by qgis project
-        column_to_exlude = eval(instance.exclude_attribute_wms) if instance.exclude_attribute_wms else []
+        column_to_exclude = eval(instance.exclude_attribute_wms) if instance.exclude_attribute_wms else []
         for column in columns:
-            column['show'] = False if column['name'] in column_to_exlude else True
+            column['show'] = False if column['name'] in column_to_exclude else True
         return columns
 
     def get_capabilities(self, instance):

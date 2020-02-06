@@ -353,8 +353,8 @@ class BaseVectorOnModelApiView(G3WAPIView):
         # add forms data if exist
         kwargs = {'fields': forms[self.layer_name]['fields']} if forms and forms.get(self.layer_name) else {}
 
-        if hasattr(self.metadata_layer, 'fields_to_exlude'):
-            kwargs['exlude'] = self.metadata_layer.fields_to_exlude
+        if hasattr(self.metadata_layer, 'fields_to_exclude'):
+            kwargs['exclude'] = self.metadata_layer.fields_to_exclude
         if hasattr(self.metadata_layer, 'order'):
             kwargs['order'] = self.metadata_layer.order
 

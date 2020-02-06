@@ -76,7 +76,7 @@ class CentroidBBoxFilter(IntersectsBBoxFilter):
 
 class DatatablesFilterBackend(BaseFilterBackend):
     """
-    Filter that works with datatables params.
+    Filter that works with datatables params. Search filter on all tables.
     from https://github.com/izimobil/django-rest-framework-datatables/blob/master/rest_framework_datatables/filters.py
     """
     def filter_queryset(self, request, queryset, view):
@@ -89,14 +89,14 @@ class DatatablesFilterBackend(BaseFilterBackend):
         # parse query params
         getter = request.query_params.get
         fields = view.metadata_layer.model._meta.fields
-        exlude_fields = eval(view.layer.exclude_attribute_wms) if view.layer.exclude_attribute_wms else []
+        exclude_fields = eval(view.layer.exclude_attribute_wms) if view.layer.exclude_attribute_wms else []
         search_value = getter('search')
 
         # filter queryset
         if search_value:
             q = Q()
             for f in fields:
-                if f.column not in exlude_fields and not isinstance(f, GeometryField):
+                if f.column not in exclude_fields and not isinstance(f, GeometryField):
                     q |= Q(**{'%s__icontains' % f.column: search_value})
 
             if q != Q():

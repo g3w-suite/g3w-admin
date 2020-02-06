@@ -74,7 +74,6 @@ def get_qgis_features(qgis_layer,
         assert isinstance(bbox_filter, QgsRectangle)
         req.setFilterRect(bbox_filter)
 
-
     if offset != 0 and feature_count is not None:
         req.setLimit(feature_count + offset)
     elif feature_count is not None:

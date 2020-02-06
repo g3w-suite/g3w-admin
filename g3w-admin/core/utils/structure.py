@@ -231,11 +231,11 @@ def mapLayerAttributes(layer, formField=False, **kwargs):
     fields = eval(layer.database_columns) if layer.database_columns else None
     fieldsMapped = copy.deepcopy(fields)
 
-    # exlude if set:
-    if 'exlude' in kwargs:
+    # exclude if set:
+    if 'exclude' in kwargs:
         _fieldsMapped = []
         for field in fieldsMapped:
-            if field['name'] not in kwargs['exlude']:
+            if field['name'] not in kwargs['exclude']:
                 _fieldsMapped.append(field)
         fieldsMapped = _fieldsMapped
 
@@ -291,22 +291,22 @@ def mapLayerAttributesFromModel(model, **kwargs):
     map model simple and direct field to Attributes for client editing system
     only concrete field not virtual field and many2many
     """
-    fieldsToExlude = kwargs['fieldsToExlude'] if 'fieldsToExlude' in kwargs else []
+    fieldsToExclude = kwargs['fieldsToExclude'] if 'fieldsToExclude' in kwargs else []
 
     toRes = OrderedDict()
     fields = model._meta.concrete_fields
 
-    # exlude if set:
-    if 'exlude' in kwargs:
+    # exclude if set:
+    if 'exclude' in kwargs:
         _fieldsMapped = []
         for field in fields:
-            if field.name not in kwargs['exlude']:
+            if field.name not in kwargs['exclude']:
                 _fieldsMapped.append(field)
         fields = _fieldsMapped
 
     for field in fields:
         #not isinstance(field, AutoField) and
-        if field.name not in fieldsToExlude:
+        if field.name not in fieldsToExclude:
             if type(field) in FIELD_TYPES_MAPPING['djangoModel']:
 
                 # set editable property by kwargs:
