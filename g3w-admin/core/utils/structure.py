@@ -313,10 +313,10 @@ def mapLayerAttributesFromModel(model, **kwargs):
                 if field==model._meta.pk and type(field) in (AutoField,):
                     editable = False
                 else:
-                    editable = kwargs['fields'][field.name]['editable']
+                    editable = kwargs['fields'][field.db_column if field.db_column else field.name]['editable']
 
                 # remove editable from kwrags:
-                del(kwargs['fields'][field.name]['editable'])
+                del(kwargs['fields'][field.db_column if field.db_column else field.name]['editable'])
 
                 fieldType = FIELD_TYPES_MAPPING['djangoModel'][type(field)]
                 toRes[field.name] = editingFormField(
