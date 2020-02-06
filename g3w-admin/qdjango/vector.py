@@ -20,7 +20,7 @@ from core.api.permissions import ProjectPermission
 from core.utils.ie import modelresource_factory
 from core.utils.models import (create_geomodel_from_qdjango_layer,
                                get_geometry_column)
-from core.utils.structure import mapLayerAttributesFromModel
+from core.utils.structure import mapLayerAttributesFromQgisLayer
 from core.utils.vector import BaseUserMediaHandler
 
 from .api.serializers import QGISGeoLayerSerializer, QGISLayerSerializer
@@ -168,7 +168,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         MODE_XLS   # get XLS
     ]
 
-    mapping_layer_attributes_function = mapLayerAttributesFromModel
+    mapping_layer_attributes_function = mapLayerAttributesFromQgisLayer
 
     shp_extentions = ('.shp', '.shx', '.dbf', '.prj')
 

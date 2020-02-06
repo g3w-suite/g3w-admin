@@ -4,7 +4,8 @@ from django.db.models.fields.related import *
 import django.contrib.gis.db.models as geomodels
 from sqlalchemy.sql import sqltypes as SQLTYPE
 
-# specific fro dialectics
+
+# specific from dialectics
 from sqlalchemy.dialects.postgresql import base as SQLPOSTGRESTYPE
 import geoalchemy2.types as geotypes
 from django.conf import settings
@@ -13,6 +14,8 @@ from django.urls import reverse
 from django.utils.translation import ugettext, ugettext_lazy as _
 from collections import OrderedDict
 import copy
+
+from qgis.core import QgsFieldConstraints
 
 # Mapping OGRwkbGeometryType
 MAPPING_OGRWKBGTYPE = {
@@ -286,15 +289,18 @@ def mapLayerAttributes(layer, formField=False, **kwargs):
         return fieldsMapped
 
 
-def mapLayerAttributesFromModel(model, **kwargs):
+def mapLayerAttributesFromQgisLayer(qgis_layer, **kwargs):
     """
-    map model simple and direct field to Attributes for client editing system
+    map QGIS layer's simple and direct field to Attributes for client editing system
     only concrete field not virtual field and many2many
     """
+
     fieldsToExclude = kwargs['fieldsToExclude'] if 'fieldsToExclude' in kwargs else []
 
     toRes = OrderedDict()
-    fields = model._meta.concrete_fields
+    fields = qgis_layer.fields()
+
+    data_provider = qgis_layer.dataProvider()
 
     # exclude if set:
     if 'exclude' in kwargs:
@@ -304,25 +310,28 @@ def mapLayerAttributesFromModel(model, **kwargs):
                 _fieldsMapped.append(field)
         fields = _fieldsMapped
 
+    field_index = 0
     for field in fields:
-        #not isinstance(field, AutoField) and
-        if field.name not in fieldsToExclude:
-            if type(field) in FIELD_TYPES_MAPPING['djangoModel']:
+        if field.name() not in fieldsToExclude:
+            if field.typeName() in FIELD_TYPES_MAPPING[data_provider.name()]:
 
-                # set editable property by kwargs:
-                if field==model._meta.pk and type(field) in (AutoField,):
+                # Get constraints and default clause to define if the field is editable
+                # or set editable property by kwargs:
+                constraints = data_provider.fieldConstraints(field_index)
+                if data_provider.defaultValue(field_index) and constraints & QgsFieldConstraints.ConstraintUnique and constraints & QgsFieldConstraints.ConstraintNotNull:
                     editable = False
                 else:
-                    editable = kwargs['fields'][field.name]['editable']
+                    editable = kwargs['fields'][field.name()]['editable']
 
                 # remove editable from kwargs:
-                del(kwargs['fields'][field.name]['editable'])
+                del(kwargs['fields'][field.name()]['editable'])
 
-                fieldType = FIELD_TYPES_MAPPING['djangoModel'][type(field)]
-                toRes[field.name] = editingFormField(
-                    field.name,
-                    required=not field.blank,
-                    fieldLabel=field.verbose_name if field.verbose_name else field.attname,
+                comment = field.comment() if field.comment() else field.name()
+                fieldType = FIELD_TYPES_MAPPING[data_provider.name()][field.typeName()]
+                toRes[field.name()] = editingFormField(
+                    field.name(),
+                    required=constraints & QgsFieldConstraints.ConstraintNotNull,
+                    fieldLabel=comment,
                     type=fieldType,
                     inputType=FORM_FIELDS_MAPPING[fieldType],
                     editable=editable,
@@ -331,17 +340,20 @@ def mapLayerAttributesFromModel(model, **kwargs):
                 # add upload url to image type if module is set
                 if 'editing' in settings.G3WADMIN_LOCAL_MORE_APPS:
                     if fieldType == FIELD_TYPE_IMAGE:
-                        toRes[field.name].update({
+                        toRes[field.name()].update({
                             'uploadurl': reverse('editing-upload')
                         })
                     if fieldType == FIELD_TYPE_BOOLEAN:
-                        toRes[field.name]['input']['options'].update({
+                        toRes[field.name()]['input']['options'].update({
                             'values': [{'key': _('Yes'), 'value': True}, {'key': 'No', 'value': False}]
                         })
 
                 # update with fields configs data
-                if 'fields' in kwargs and field.name in kwargs['fields']:
-                    deepupdate(toRes[field.name], kwargs['fields'][field.name])
+                if 'fields' in kwargs and field.name() in kwargs['fields']:
+                    deepupdate(toRes[field.name()], kwargs['fields'][field.name()])
+
+        field_index += 1
+
     return toRes
 
 

@@ -22,7 +22,7 @@ from core.signals import (before_return_vector_data_layer,
                           post_create_maplayerattributes,
                           post_serialize_maplayer)
 from core.utils.structure import (APIVectorLayerStructure, mapLayerAttributes,
-                                  mapLayerAttributesFromModel)
+                                  mapLayerAttributesFromQgisLayer)
 from core.utils.vector import BaseUserMediaHandler as UserMediaHandler
 from core.utils.qgisapi import get_qgis_features
 
@@ -358,7 +358,7 @@ class BaseVectorOnModelApiView(G3WAPIView):
         if hasattr(self.metadata_layer, 'order'):
             kwargs['order'] = self.metadata_layer.order
 
-        if self.mapping_layer_attributes_function.__func__ == mapLayerAttributesFromModel:
+        if self.mapping_layer_attributes_function.__func__ == mapLayerAttributesFromQgisLayer:
             fields = list(self.mapping_layer_attributes_function.__func__(
                 self.metadata_layer.qgis_layer,
                 **kwargs

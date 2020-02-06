@@ -178,8 +178,8 @@ class BaseEditingOnModelApiView(G3WAPIView):
             if self.editing_layers[layer_name].get('order'):
                 kwargs['order'] = self.editing_layers[layer_name]['order']
 
-            if self.map_layer_attributes == 'mapLayerAttributesFromModel':
-                fields = mapLayerAttributesFromModel(
+            if self.map_layer_attributes == 'mapLayerAttributesFromQgisLayer':
+                fields = mapLayerAttributesFromQgisLayer(
                     self.editing_layers[layer_name]['model'],
                     **kwargs
                 ).values()
@@ -459,7 +459,7 @@ class QGISLayerEditingView(BaseEditingOnModelApiView):
 
     app_name = 'editing'
 
-    map_layer_attributes = 'mapLayerAttributesFromModel'
+    map_layer_attributes = 'mapLayerAttributesFromQgisLayer'
 
     permission_classes = (
         QGISLayerEditingPermission,
