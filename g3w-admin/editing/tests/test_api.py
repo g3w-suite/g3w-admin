@@ -177,8 +177,6 @@ class ConstraintsApiTests(ConstraintsTestsBase):
         response = client.delete(url, {}, format='json')
         self.assertEqual(Constraint.objects.count(), 0)
 
-
-
     def test_constraint_api_permissions(self):
         """ Test Contraint API permissions """
 

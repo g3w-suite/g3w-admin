@@ -66,10 +66,10 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
         Perform editing operation, returns features data and features locked.
         :param request: API request object
         """
-        super(BaseEditingVectorOnModelApiView, self).response_data_mode(request)
+        super().response_data_mode(request)
 
         # lock features and get:
-        features_locked = self.metadata_layer.lock.lockFeatures([str(f.pk) for f in self.features_layer])
+        features_locked = self.metadata_layer.lock.lockFeatures(self.metadata_layer.qgis_layer.allFeatureIds())
 
         # update response
         self.results.update({
@@ -88,7 +88,7 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
 
     def add_media_property(self, geojson_feature, metadata_layer):
         """
-        Add to properties image/fiule object uploaded before
+        Add to properties image/file object uploaded before
         if layer model has a media filefield or a imagefield
         :param geojson_feature: geojson object feature
         """

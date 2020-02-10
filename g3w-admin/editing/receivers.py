@@ -206,7 +206,7 @@ def validate_constraint(**kwargs):
         Polygon = getattr(geos, 'Polygon')
         coords = [Polygon(p) for p in coords[0]]
 
-    # set saptial predicate for validation
+    # set spatial predicate for validation
     spatial_predicate = getattr(settings, 'EDITING_CONSTRAINT_SPATIAL_PREDICATE', 'contains')
 
     for rule in rules:

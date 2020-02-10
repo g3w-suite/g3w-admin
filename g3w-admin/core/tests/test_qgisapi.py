@@ -35,7 +35,6 @@ DATASOURCE_PATH = os.path.join(os.getcwd(), 'qdjango', 'tests', 'data')
         'LOCATION': 'some',
     }
 })
-@override_settings(SPATIALITE_LIBRARY_PATH='mod_spatialite.so')
 class CoreQgisApiTest(APITestCase):
     """Test core QGIS API"""
 

@@ -9,13 +9,13 @@ from django.db import connections
 from django.db.models.expressions import RawSQL
 from django_filters.rest_framework import DjangoFilterBackend
 from django.http import HttpResponse, HttpResponseForbidden
-from rest_framework.filters import OrderingFilter
 
 from core.api.base.vector import MetadataVectorLayer
 from core.api.base.views import (MODE_CONFIG, MODE_DATA, MODE_SHP, MODE_XLS,
                                  APIException, BaseVectorOnModelApiView,
                                  IntersectsBBoxFilter)
-from core.api.filters import DatatablesFilterBackend, SuggestFilterBackend
+from core.api.filters import SearchFilter, SuggestFilterBackend, IntersectsBBoxFilter, OrderingFilter
+
 from core.api.permissions import ProjectPermission
 from core.utils.ie import modelresource_factory
 from core.utils.models import (create_geomodel_from_qdjango_layer,
@@ -120,7 +120,7 @@ class QGISLayerVectorViewMixin(object):
 
                 # FIXME: referenced_field_is_pk
                 self.metadata_relations[relation['referencingLayer']] = MetadataVectorLayer(
-                    qgis_layer,
+                    get_qgis_layer(relation_layer),
                     relation_layer.origname,
                     idr,
                     layer=relation_layer,
@@ -151,12 +151,11 @@ class QGISLayerVectorViewMixin(object):
         )
 
 
-
 class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
 
     permission_classes = (ProjectPermission,)
 
-    filter_backends = (DjangoFilterBackend, OrderingFilter, DatatablesFilterBackend, SuggestFilterBackend)
+    filter_backends = (OrderingFilter, IntersectsBBoxFilter, SearchFilter, SuggestFilterBackend)
     ordering_fields = '__all__'
 
     # Modes call available (output formats)

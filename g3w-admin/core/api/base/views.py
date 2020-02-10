@@ -14,6 +14,7 @@ from qgis.core import (
     QgsCoordinateTransform,
     QgsCoordinateReferenceSystem,
     QgsCoordinateTransformContext,
+    QgsFeatureRequest,
 )
 from rest_framework import exceptions, status
 from rest_framework.exceptions import APIException
@@ -388,43 +389,40 @@ class BaseVectorOnModelApiView(G3WAPIView):
         :return: response dict data
         """
 
+        # Prepare filters
         self.set_filters()
+
+        # Create the QGIS feature request, it will be passed through filters
+        # and to the final QGIS API get features call.
+        qgis_feature_request = QgsFeatureRequest()
 
         # Prepare arguments for the get feature call
         kwargs = {}
 
-        if self.bbox_filter:
-            bbox_filter = self.bbox_filter.get_filter_bbox(request)
-            # reproject bbox
-            if self.reproject:
-                from_srid = self.layer.project.group.srid.auth_srid
-                to_srid = self.layer.srid
-                ct = QgsCoordinateTransform(QgsCoordinateReferenceSystem(from_srid), QgsCoordinateReferenceSystem(to_srid), QgsCoordinateTransformContext())
-                bbox_filter =ct.transform(bbox_filter)
+        # Process filter backends
+        try:
+            for backend in self.filter_backends:
+                backend().apply_filter(request, self.metadata_layer.qgis_layer, qgis_feature_request)
+        except AttributeError:
+            pass  # No filters!
 
-            kwargs['bbox_filter'] = bbox_filter
-
-        if 'search' in request.query_params:
-            kwargs['search'] = request.query_params.get('search')
-
-        #FIXME: other filters (ordering, suggest)
-
+        # Paging cannot be a backend filter
         if 'page' in request.query_params:
             kwargs['page'] = request.query_params.get('page')
             kwargs['page_size'] = request.query_params.get('page_size', 10)
 
-        features = get_qgis_features(self.metadata_layer.qgis_layer, **kwargs)
+        features = get_qgis_features(self.metadata_layer.qgis_layer, qgis_feature_request, **kwargs)
         ex = QgsJsonExporter(self.metadata_layer.qgis_layer)
         feature_collection = json.loads(ex.exportFeatures(features))
 
-        # reproject if necessary
+        # Reproject if necessary
         if self.reproject:
             self.reproject_featurecollection(feature_collection)
 
-        # change media
+        # Change media
         self.change_media(feature_collection)
 
-        # FIXME: pkField, filters
+        # FIXME: pkField is included in the results.
         self.results.update(APIVectorLayerStructure(**{
             'data': feature_collection,
             'count': self._paginator.page.paginator.count if 'page' in request.query_params else None,
@@ -432,42 +430,9 @@ class BaseVectorOnModelApiView(G3WAPIView):
             'pkField': self.metadata_layer.qgis_layer.fields()[0].name()
         }).as_dict())
 
-        return
-
-        # Instance geo filtering
-        #self.set_geo_filter()
-        self.set_filters()
-
-        # apply bbox filter (Polygon object)
-        self.features_layer = self.metadata_layer.get_queryset()
-        if self.bbox_filter:
-            self.features_layer = self.bbox_filter.filter_queryset(request, self.features_layer, self)
-
-        if hasattr(self, 'filter_backends'):
-            for backend in list(self.filter_backends):
-                self.features_layer = backend().filter_queryset(self.request, self.features_layer, self)
-
-        if 'page' in request.query_params:
-            self.features_layer = self.paginate_queryset(self.features_layer)
-
-        # instance of geoserializer
-        layer_serializer = self.metadata_layer.serializer(self.features_layer, many=True,
-                                                                **self.get_geoserializer_kwargs())
-
-        # add extra fields data by signals and receivers
-        featurecollection = post_serialize_maplayer.send(layer_serializer, layer=self.layer_name)
-        if isinstance(featurecollection, list) and featurecollection:
-            featurecollection = featurecollection[0][1]
-        else:
-            featurecollection = layer_serializer.data
-
-        self.results.update(APIVectorLayerStructure(**{
-            'data': featurecollection,
-            'count': self._paginator.page.paginator.count if 'page' in request.query_params else None,
-            'geomentryType': self.metadata_layer.geometry_type,
-            'pkField': self.metadata_layer.model._meta.pk.name
-        }).as_dict())
-
+        #FIXME: add extra fields data by signals and receivers
+        #FIXME: featurecollection = post_serialize_maplayer.send(layer_serializer, layer=self.layer_name)
+        #FIXME: Not sure how to map this to the new QGIS API
 
     def set_reprojecting_status(self):
         """

@@ -140,7 +140,7 @@ class ConstraintRuleDetail(generics.RetrieveUpdateDestroyAPIView):
 
 
 class ConstraintGEOFeatureAPIView(APIView):
-    """ APIView to get contraint geometry feature for request user and editign layer id """
+    """ APIView to get constraint geometry feature for request user and editing layer id """
 
     def get(self, *args, **kwargs):
 

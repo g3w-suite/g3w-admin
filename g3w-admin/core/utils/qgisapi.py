@@ -18,9 +18,11 @@ from qgis.core import (
     QgsRectangle,
 )
 
+import logging
+logger = logging.getLogger(__file__)
 
 def get_qgis_layer(layer_info):
-    """[summary]
+    """Create and returns a QGIS vector layer from a layer information record.
 
     :param layer_info: layer record from g3w suite table
     :type layer_info: Layer
@@ -36,6 +38,7 @@ def get_qgis_layer(layer_info):
 
 
 def get_qgis_features(qgis_layer,
+                      qgis_feature_request=None,
                       bbox_filter=None,
                       attribute_filters=None,
                       search_filter=None,
@@ -43,12 +46,21 @@ def get_qgis_features(qgis_layer,
                       page=None,
                       page_size=None,
                       ordering=None,
-                      exclude_fields=None):
+                      exclude_fields=None,
+                      extra_expression=None):
     """Returns a list of QgsFeatures from the QGIS vector layer,
     with optional filter options.
 
+    The API can be used in two distinct ways (that are not mutually exclusive):
+
+    1. pass in a pre-configured QgsFeatureRequest instance
+    2. pass a series of filter attributes and let this method configure
+    the QgsFeatureRequest.
+
     :param qgis_layer: the QGIS vector layer instance
     :type qgis_layer: QgsVectorLayer
+    :param qgis_feature_request: the QGIS feature request
+    :type qgis_feature_request: QgsFeatureRequest, optional
     :param bbox_filter: BBOX filter in layer's CRS, defaults to None
     :type bbox_filter: QgsRectangle, optional
     :param attribute_filters: dictionary of attribute filters combined with AND, defaults to None
@@ -63,25 +75,34 @@ def get_qgis_features(qgis_layer,
     :type page_size: int
     :param: ordering: ordering field with optional '-' for descending
     :type: ordering: str, optional
-    :param: exclude_fields: list of fields to exclude from returned data
+    :param: exclude_fields: list of fields to exclude from returned data, '__all__' for no attributes
     :type: ordering: array, optional
+    :param: extra_expression: extra expression for filtering features
+    :type: extra_expression: str, optional
     :return: list of features
     :rtype: QgsFeature list
     """
 
-    req = QgsFeatureRequest()
+    if not isinstance(qgis_feature_request, QgsFeatureRequest):
+        qgis_feature_request = QgsFeatureRequest()
 
     if exclude_fields is not None:
-        req.setSubsetOfAttributes([name for name in qgis_layer.fields().names() if name not in exclude_fields], qgis_layer.fields())
+        if exclude_fields == '__all__':
+            qgis_feature_request.setNoAttributes()
+        else:
+            qgis_feature_request.setSubsetOfAttributes([name for name in qgis_layer.fields().names() if name not in exclude_fields], qgis_layer.fields())
 
     expression_parts = []
 
+    if extra_expression is not None:
+        expression_parts.append(extra_expression)
+
     if not with_geometry:
-        req.setFlags(QgsFeatureRequest.NoGeometry)
+        qgis_feature_request.setFlags(QgsFeatureRequest.NoGeometry)
 
     if bbox_filter is not None:
         assert isinstance(bbox_filter, QgsRectangle)
-        req.setFilterRect(bbox_filter)
+        qgis_feature_request.setFilterRect(bbox_filter)
 
     # Ordering
     if ordering is not None:
@@ -90,7 +111,7 @@ def get_qgis_features(qgis_layer,
             ordering = ordering[1:]
             ascending = False
         order_by = QgsFeatureRequest.OrderBy([QgsFeatureRequest.OrderByClause('"%s"' % ordering, ascending)])
-        req.setOrderBy(order_by)
+        qgis_feature_request.setOrderBy(order_by)
 
     # Search
     if search_filter is not None:
@@ -114,16 +135,23 @@ def get_qgis_features(qgis_layer,
         offset = page_size * (page - 1)
         feature_count =  page_size * page
         # Set to max, without taking filters into account
-        req.setLimit(feature_count)
+        qgis_feature_request.setLimit(feature_count)
     else:
         page_size = feature_count
 
     # Fetch features
     if expression_parts:
-        req.setFilterExpression('(' + ') AND ('.join(expression_parts) + ')')
+        qgis_feature_request.setFilterExpression('(' + ') AND ('.join(expression_parts) + ')')
+
+
+    logger.debug('Fetching features from layer {layer_name} - filter expression: {filter} - BBOX: {bbox}'.format(
+        layer_name=qgis_layer.name(),
+        filter=qgis_feature_request.filterExpression(),
+        bbox=qgis_feature_request.filterRect()
+    ))
 
     features = []
-    iterator = qgis_layer.getFeatures(req)
+    iterator = qgis_layer.getFeatures(qgis_feature_request)
 
     try:
         for _ in range(offset):

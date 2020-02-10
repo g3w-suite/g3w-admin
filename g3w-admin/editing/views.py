@@ -553,7 +553,7 @@ from django.db import connections
 
 class G3WAPIInfoView(G3WAPIView):
     """
-    InfoApiView for editing layer to use in infoulr infoquery call
+    InfoApiView for editing layer to use in infourl infoquery call
     """
     bbox_filter_field = 'the_geom'
     bbox_filter_include_overlapping = True
@@ -562,7 +562,7 @@ class G3WAPIInfoView(G3WAPIView):
 
     def _build_filter_data(self, filter_data):
         """
-        Build data for query roaw from WMS getinfo call
+        Build data for query raw from WMS getinfo call
         :param filter_data:
         :return:
         """
