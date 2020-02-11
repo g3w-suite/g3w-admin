@@ -217,7 +217,7 @@ class BaseEditingOnModelApiView(G3WAPIView):
                             relation_layer_data['fields'] = relation_layer_data['fields'] + extraField[1]
         else:
 
-            # repoject if necessary
+            # reproject if necessary
             if self.reproject:
                 for feature in featurecollection['features']:
                     geometry = GEOSGeometry(json.dumps(feature['geometry']), srid=int(self.layer.srid))

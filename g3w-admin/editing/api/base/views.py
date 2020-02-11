@@ -1,17 +1,20 @@
 # -*- coding: utf-8 -*-
+import json
 from django.conf import settings
 from django.db import transaction, IntegrityError
 from django.core.files import File
 from django.core.files.images import ImageFile
 from django.db.models import ImageField, FileField, AutoField
 from rest_framework.exceptions import ValidationError
-from core.signals import post_save_maplayer, pre_delete_maplayer
+from core.signals import pre_save_maplayer, post_save_maplayer, pre_delete_maplayer
 from core.api.base.views import BaseVectorOnModelApiView
 from core.api.base.vector import MetadataVectorLayer
 from editing.models import EDITING_POST_DATA_ADDED, EDITING_POST_DATA_DELETED, EDITING_POST_DATA_UPDATED
 from editing.utils import LayerLock
 from editing.utils.data import get_relations_data_by_fid
 from qdjango.utils.data import QGIS_LAYER_TYPE_NO_GEOM
+
+from qgis.core import QgsFeature, QgsJsonUtils
 
 MODE_EDITING = 'editing'
 MODE_UNLOCK = 'unlock'
@@ -104,6 +107,15 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
                         MAPPING_DJANGO_MODEL_FIELD_FILE_OBJECT[type(media_property)](media_file)
 
     def save_vector_data(self, metadata_layer, post_layer_data, post_save_signal=True, **kwargs):
+        """Save vector editing data
+
+        :param metadata_layer: metadata of the layer being edited
+        :type metadata_layer: MetadataVectorLayer
+        :param post_layer_data: post data with 'add', 'delete' etc.
+        :type post_layer_data: dict
+        :param post_save_signal: if this is a post_save_signal call, defaults to True
+        :type post_save_signal: bool, optional
+        """
 
         # get initial featurelocked
         metadata_layer.lock.getInitialFeatureLockedIds()
@@ -115,16 +127,14 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
         insert_ids = list()
         lock_ids = list()
 
+        # FIXME: check this out
         # for add check if is a metadata_layer and referenced field is a pk
         is_referenced_field_is_pk = 'referenced_layer_insert_ids' in kwargs and kwargs['referenced_layer_insert_ids'] \
                             and hasattr(metadata_layer, 'referenced_field_is_pk') \
                                     and metadata_layer.referenced_field_is_pk
 
-        # get geoserializer params
-        gskwarags = {
-            'model': metadata_layer.model,
-            'using': metadata_layer.using if hasattr(metadata_layer, 'using') else self.database_to_use
-        }
+        # Performs all operations directly on the data provider
+        data_provider = metadata_layer.qgis_layer.dataProvider()
 
         # manage news and updating data
         for mode_editing in (EDITING_POST_DATA_ADDED, EDITING_POST_DATA_UPDATED):
@@ -144,9 +154,6 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
                     if self.reproject:
                         self.reproject_feature(geojson_feature, to_layer=True)
 
-                    # if pk no Autofield, add pk to property
-                    if not isinstance(metadata_layer.model._meta.pk, AutoField):
-                        geojson_feature['properties'][metadata_layer.model._meta.pk.name] = geojson_feature['id']
 
                     if mode_editing == EDITING_POST_DATA_ADDED:
 
@@ -156,7 +163,6 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
                                 if geojson_feature['properties'][metadata_layer.referencing_field] == newid['clientid']:
                                     geojson_feature['properties'][metadata_layer.referencing_field] = newid['id']
 
-                        serializer = metadata_layer.serializer(data=geojson_feature, **gskwarags)
                     else:
 
                         # control feature locked
@@ -164,32 +170,78 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
                             raise Exception(self.no_more_lock_feature_msg.format(geojson_feature['id'],
                                                                                   metadata_layer.client_var))
 
-                        serializer = metadata_layer.serializer(
-                            metadata_layer.get_feature(pk=geojson_feature['id']),
-                            data=geojson_feature,
-                            **gskwarags
-                        )
+                    # Send for validation
+                    # Note that this may raise a validation error
+                    pre_save_maplayer.send(
+                        self,
+                        layer_metadata=metadata_layer, mode=mode_editing,                                                    data=data_extra_fields,
+                        user=self.request.user
+                    )
 
-                    # validation serializer and then save operations
-                    if serializer.is_valid():
-                        data_saved = serializer.save()
+                    # Save
+                    # Note: originally this was performing the validation
+                    try:
+
+                        feature = QgsFeature(data_provider.fields())
+
+                        # We use this feature for geometry parsing only:
+                        imported_feature = QgsJsonUtils.stringToFeatureList(
+                            json.dumps(geojson_feature),
+                            data_provider.fields(),
+                            None # UTF8 codec
+                        )[0]
+
+                        feature.setGeometry(imported_feature.geometry())
+
+                        if mode_editing == EDITING_POST_DATA_ADDED:
+                            # There is something wrong in QGIS 3.10 (fixed in later versions)
+                            # so, better loop through the fields and set attributes individually
+                            for name, value in geojson_feature['properties'].items():
+                                feature.setAttribute(name, value)
+
+                            # Save the feature
+                            if not data_provider.addFeature(feature):
+                                # FIXME: what do we do on errors?
+                                raise Exception()
+
+                        elif mode_editing == EDITING_POST_DATA_UPDATED:
+                            attr_map = {}
+                            for name, value in geojson_feature['properties'].items():
+                                attr_map[data_provider.fieldNameMap()[name]] = value
+
+                            if not data_provider.changeFeatures(
+                                {geojson_feature['id']: attr_map},
+                                {geojson_feature['id']: feature.geometry()},
+                                ):
+                                # FIXME: what do we do on errors?
+                                raise Exception()
+
                         to_res = {}
                         to_res_lock = {}
 
                         # signals call
-                        if post_save_signal:
-                            post_save_maplayer.send(serializer, layer=metadata_layer.layer_id, mode=mode_editing,
-                                                    data=data_extra_fields, user=self.request.user)
+                        # FIXME: this may call (constraints) validation and fail,
+                        #        I think that the original idea was meant to fail
+                        #        the whole transaction and rollback, but we have
+                        #        a different implementation now.
+                        #        How about using the editing buffer? The issue is
+                        #        that we have no real feature ids until the save
+                        #        is done, the best thing we can do is to move the
+                        #        validation to post-mortem to preliminary, before
+                        #        we save.
+                        # post_save_signal:
+                        #    post_save_maplayer.send(serializer, layer=metadata_layer.layer_id, #mode=mode_editing,
+                        #                            data=data_extra_fields, user=self.request.user)
 
                         if mode_editing == EDITING_POST_DATA_ADDED:
                             to_res.update({
                                 'clientid': geojson_feature['id'],
-                                'id': data_saved.pk
+                                'id': feature.id()
                             })
 
                             # lock news:
                             to_res_lock = metadata_layer.lock.modelLock2dict(
-                                metadata_layer.lock.lockFeature(data_saved.pk, save=True)
+                                metadata_layer.lock.lockFeature(feature.id(), save=True)
                             )
 
                         if bool(to_res):
@@ -197,30 +249,32 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
                         if bool(to_res_lock):
                             lock_ids.append(to_res_lock)
 
-                    else:
+                    except Exception as ex:
                         raise ValidationError({
                              metadata_layer.client_var: {
                                 mode_editing: {
                                     'id': geojson_feature['id'],
-                                    'fields': serializer.errors
+                                    # FIXME: how to report errors?
+                                    'fields': str(ex),
                                 }
                             }
                         })
 
         # erasing feature if to do
         if EDITING_POST_DATA_DELETED in post_layer_data:
-            features = metadata_layer.model.objects.filter(
-                pk__in=post_layer_data[EDITING_POST_DATA_DELETED])
-            for feature in features:
+
+            for feature_id in post_layer_data[EDITING_POST_DATA_DELETED]:
 
                 # control feature locked
-                if not metadata_layer.lock.checkFeatureLocked(feature.pk):
-                    raise Exception(self.no_more_lock_feature_msg.format(feature.pk, metadata_layer.client_var))
+                if not metadata_layer.lock.checkFeatureLocked(feature_id):
+                    raise Exception(self.no_more_lock_feature_msg.format(feature_id, metadata_layer.client_var))
 
-                serializer = metadata_layer.serializer(feature, **gskwarags)
-                pre_delete_maplayer.send(metadata_layer.serializer, layer=metadata_layer.layer_id, data=serializer.data,
-                                         user=self.request.user)
-                metadata_layer.serializer.delete(feature)
+                # FIXME: pre_delete_maplayer
+                # pre_delete_maplayer.send(metadata_layer.serializer, layer=metadata_layer.layer_id, # data=serializer.data, user=self.request.user)
+
+                if not data_provider.deleteFeatures([feature_id]):
+                    # FIXME: what to do in case of failure?
+                    raise Exception()
 
         return insert_ids, lock_ids
 
@@ -239,6 +293,8 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
         new_relations = dict()
 
         try:
+
+            # FIXME: this won't work with QGIS API
             with transaction.atomic(using=self.database_to_use):
 
                 ref_insert_ids, ref_lock_ids = self.save_vector_data(self.metadata_layer, post_layer_data)
@@ -261,7 +317,6 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
                             sessionid=self.sessionid
                         )
 
-                        # check if
 
                         insert_ids, lock_ids = self.save_vector_data(self.metadata_relations[referencing_layer],
                                                                      post_reletion_data, referenced_layer_insert_ids=

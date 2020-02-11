@@ -20,20 +20,21 @@ class ConstraintsFilter(BaseFilterBackend):
 
     def apply_filter(self, request, qgis_layer, qgis_feature_request, view=None):
 
-        expression = ''
+        rule_parts = []
+
         if view.mode_call == 'editing':
             rules = ConstraintRule.get_active_constraints_for_user(request.user, view.layer)
-            expression_parts = []
+
             for rule in rules:
-                expression_parts.append(rule.get_expression())
-            expression = ' AND '.join(expression_parts)
+                expression = rule.get_qgis_expression()
+                if expression:
+                    rule_parts.append(expression)
 
-            if expression:
-
+            if rule_parts:
+                expression = ' AND '.join(rule_parts)
                 current_expression = qgis_feature_request.filterExpression()
 
                 if current_expression:
-                    expression = '( %s ) AND ( %s )' % (
-                        current_expression, expression)
+                    expression = '( %s ) AND ( %s )' % (current_expression, expression)
 
                 qgis_feature_request.setFilterExpression(expression)

@@ -10,6 +10,17 @@ post_create_maplayerattributes = django.dispatch.Signal(providing_args=["layer"]
 # signal to add extra maplayers attribute: i.e. iternet
 post_save_maplayer = django.dispatch.Signal(providing_args=["layer", "mode", "data", "user"])
 
+"""Signal sent before edited features are sent to the backend for saving.
+Listeners, should perform any validation and raise a validation error in case of failure.
+
+Arguments:
+    layer_metadata: layer metadata (includes qgis_layer)
+    mode: 'editing' etc.
+    data: the feature being edited/added
+    user: current user from the request
+"""
+pre_save_maplayer = django.dispatch.Signal(providing_args=["layer_metadata", "mode", "data", "user"])
+
 # signal to add extra maplayers attribute: i.e. iternet
 pre_delete_maplayer = django.dispatch.Signal(providing_args=["layer", "data", "user"])
 

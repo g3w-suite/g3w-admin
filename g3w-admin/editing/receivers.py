@@ -13,7 +13,7 @@ from django.contrib.auth.signals import user_logged_out
 from django.template import loader
 from django.db.models.signals import pre_delete
 from core.signals import load_layer_actions, initconfig_plugin_start, after_serialized_project_layer, \
-    post_save_maplayer, pre_delete_maplayer, load_js_modules, before_return_vector_data_layer
+    pre_save_maplayer, post_save_maplayer, pre_delete_maplayer, load_js_modules, before_return_vector_data_layer
 from qdjango.models import Layer
 from qdjango.api.serializers import QGIS_LAYER_TYPE_NO_GEOM
 from qdjango.vector import LayerVectorView, MODE_CONFIG
@@ -180,16 +180,17 @@ def log_editing_layer(sender, **kwargs):
                   layer_id=kwargs['layer']).save()
 
 
-@receiver(post_save_maplayer)
+@receiver(pre_save_maplayer)
 def validate_constraint(**kwargs):
     """Checks whether the instance validates the active constraints in commit mode
-    kwargs: ["layer_id", "mode", "data", "user"]
+    kwargs: ["layer_metadata", "mode", "data", "user"]
     """
+
     mode = kwargs['mode']
     if mode not in ('update', 'add'):
         return
 
-    editing_layer = Layer.objects.get(pk=kwargs['layer'])
+    editing_layer = Layer.objects.get(pk=kwargs['layer_metadata'].layer_id)
     user = kwargs['user']
 
     # check rule presence for layer

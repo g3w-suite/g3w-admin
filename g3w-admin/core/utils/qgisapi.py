@@ -132,12 +132,14 @@ def get_qgis_features(qgis_layer,
     feature_count = qgis_layer.featureCount()
 
     if page is not None and page_size is not None:
+        page_size = int(page_size)
+        page = int(page)
         offset = page_size * (page - 1)
         feature_count =  page_size * page
         # Set to max, without taking filters into account
         qgis_feature_request.setLimit(feature_count)
     else:
-        page_size = feature_count
+        page_size = None  # make sure it's none
 
     # Fetch features
     if expression_parts:
@@ -156,8 +158,12 @@ def get_qgis_features(qgis_layer,
     try:
         for _ in range(offset):
             next(iterator)
-        for __ in range(page_size):
-            features.append(next(iterator))
+        if page_size is not None:
+            for __ in range(page_size):
+                features.append(next(iterator))
+        else:
+            while True:
+                features.append(next(iterator))
     except StopIteration:
         pass
 

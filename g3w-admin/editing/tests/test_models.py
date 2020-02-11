@@ -279,7 +279,7 @@ class ConstraintsModelTestsBase(ConstraintsTestsBase):
         self.assertEqual(response.status_code, 200)
         jcontent = json.loads(response.content)
         fids = [int(f['id']) for f in jcontent['vector']['data']['features']]
-        # All fids should be here
+        # Only allowed fids
         self.assertEqual(fids, [1, 2])
 
         # Test with inactive constraint
@@ -295,7 +295,7 @@ class ConstraintsModelTestsBase(ConstraintsTestsBase):
         # reset test db
         self.reset_db_data()
 
-    def _test_editing_view_update_data(self):
+    def test_editing_view_update_data(self):
         """Test constraint filter for editing API - UPDATE"""
 
         client = APIClient()
@@ -378,7 +378,7 @@ class ConstraintsModelTestsBase(ConstraintsTestsBase):
         # reset test db
         self.reset_db_data()
 
-    def _test_editing_view_insert_data(self):
+    def test_editing_view_insert_data(self):
         """Test constraint filter for editing API - INSERT"""
 
         client = APIClient()
@@ -438,9 +438,9 @@ class ConstraintsModelTestsBase(ConstraintsTestsBase):
         self.reset_db_data()
 
 
+
 class ConstraintsModelTestsMulti(ConstraintsModelTestsBase):
     """Constraints model tests"""
 
     def setUp(self):
         self.constraint_layer_name = 'constraint_layer'
-

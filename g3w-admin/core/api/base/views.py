@@ -400,11 +400,9 @@ class BaseVectorOnModelApiView(G3WAPIView):
         kwargs = {}
 
         # Process filter backends
-        try:
+        if hasattr(self, 'filter_backends'):
             for backend in self.filter_backends:
-                backend().apply_filter(request, self.metadata_layer.qgis_layer, qgis_feature_request)
-        except AttributeError:
-            pass  # No filters!
+                backend().apply_filter(request, self.metadata_layer.qgis_layer, qgis_feature_request, self)
 
         # Paging cannot be a backend filter
         if 'page' in request.query_params:
@@ -425,7 +423,7 @@ class BaseVectorOnModelApiView(G3WAPIView):
         # FIXME: pkField is included in the results.
         self.results.update(APIVectorLayerStructure(**{
             'data': feature_collection,
-            'count': self._paginator.page.paginator.count if 'page' in request.query_params else None,
+            'count': request.query_params.get('page_size', 10) if 'page' in request.query_params else None,
             'geomentryType': self.metadata_layer.geometry_type,
             'pkField': self.metadata_layer.qgis_layer.fields()[0].name()
         }).as_dict())

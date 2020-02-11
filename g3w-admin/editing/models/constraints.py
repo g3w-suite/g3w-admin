@@ -180,7 +180,7 @@ class ConstraintRule(models.Model):
             ct = QgsCoordinateTransform(QgsCoordinateReferenceSystem(constraint_layer.crs()), QgsCoordinateReferenceSystem(editing_layer.crs()), QgsCoordinateTransformContext())
             geometry.transform(ct)
 
-        constraint_geometry = MultiPolygon.from_ewkt('SRID=%s;' % editing_layer.crs().postgisSrid() +geometry.asWkt())
+        constraint_geometry = MultiPolygon.from_ewkt('SRID=%s;' % editing_layer.crs().postgisSrid() + geometry.asWkt())
 
         return constraint_geometry, constraint_geometry.num_geom
 
@@ -213,19 +213,15 @@ class ConstraintRule(models.Model):
         }
         return filters
 
-    def apply_filter(self, request, qgis_feature_request, view):
-        """Apply the rule filters to the feature request
-
-        :param request: incoming request
-        :type request: Django request
-        :param qgis_feature_request: QGIS feature request
-        :type qgis_feature_request: QgsFeatureRequest
+    def get_qgis_expression(self):
+        """Returns the QGIS expression text for this rule
         """
 
         constraint_geometry, __ = self.get_constraint_geometry()
 
+        expression = ''
+
         if constraint_geometry:
-            expression = ''
             spatial_predicate = getattr(
             settings, 'EDITING_CONSTRAINT_SPATIAL_PREDICATE', 'contains')
             if spatial_predicate == 'contains':
@@ -235,14 +231,7 @@ class ConstraintRule(models.Model):
                 # The constraint geometry is within the feature geometry
                 expression = "within(geom_from_wkt( '{wkt}' ), $geometry)".format(wkt=constraint_geometry.wkt)
 
-            current_expression = qgis_feature_request.filterExpression()
-
-            if current_expression:
-                expression = '( %s ) AND ( %s )' % (current_expression, expression)
-
-            qgis_feature_request.setFilterExpression(expression)
-
-
+        return expression
 
     # FIXME: remove this method
     def _____get_query_set(self):
@@ -269,7 +258,7 @@ class ConstraintRule(models.Model):
 
         try:
             req = QgsFeatureRequest()
-            self.apply_filter(None, req, None)
+            req.setFilterExpression(self.get_qgis_expression())
             expression = req.filterExpression()
             if expression is None:
                 return False, QgsExpression(self.rule).parserErrorString()
