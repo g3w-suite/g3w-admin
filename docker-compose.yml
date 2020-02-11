@@ -25,8 +25,9 @@ services:
       - shared-volume:/shared-volume
 
   g3w-suite:
-    # Use this when deployed to docker hub
+    # Use this when deployed to docker hub:
     #image: g3wsuite/g3w-suite-deps-py3:latest
+    # Remove this:
     build:
       context: ./ci_scripts
       dockerfile: Dockerfile.deps
