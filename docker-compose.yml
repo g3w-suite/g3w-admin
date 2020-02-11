@@ -25,7 +25,11 @@ services:
       - shared-volume:/shared-volume
 
   g3w-suite:
-    image: g3wsuite/g3w-suite-deps-py3:latest
+    # Use this when deployed to docker hub
+    #image: g3wsuite/g3w-suite-deps-py3:latest
+    build:
+      context: ./ci_scripts
+      dockerfile: Dockerfile.deps
     command: "tail -f /dev/null"
     ports:
     - "8000:8000"
