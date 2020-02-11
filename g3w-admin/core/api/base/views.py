@@ -338,6 +338,21 @@ class BaseVectorOnModelApiView(G3WAPIView):
         self.metadata_relations = dict()
         self.set_metadata_relations(request, **kwargs)
 
+
+    def _get_pk_field_name(self):
+        """Guess the pk name
+
+        There is nothing in QGIS API to get the PK field name,
+        so we can guess it here being the first field
+        FIXME: this is really weak! We should better check for unique/not null
+                constraints, numeric type and defaulValueClause
+        """
+
+        pk_field_name = self.metadata_layer.qgis_layer.fields()[0].name()
+        # pk_field_index = 0 # or: self.metadata_layer.qgis_layer.fields().lookupField(pk_field_index)
+        return pk_field_name
+
+
     def response_config_mode(self, request):
         """
         Perform config operation, return form fields data for editing layer.
@@ -371,7 +386,7 @@ class BaseVectorOnModelApiView(G3WAPIView):
         vector_params = {
             'geomentryType': self.metadata_layer.geometry_type,
             'fields': fields,
-            # No pk in QGIS API 'pkField': self.metadata_layer.model._meta.pk.name
+            'pkField': self._get_pk_field_name(),
         }
 
         # post_create_maplayerattributes signal
@@ -425,7 +440,7 @@ class BaseVectorOnModelApiView(G3WAPIView):
             'data': feature_collection,
             'count': request.query_params.get('page_size', 10) if 'page' in request.query_params else None,
             'geomentryType': self.metadata_layer.geometry_type,
-            'pkField': self.metadata_layer.qgis_layer.fields()[0].name()
+            'pkField': self._get_pk_field_name(),
         }).as_dict())
 
         #FIXME: add extra fields data by signals and receivers
