@@ -340,7 +340,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
 
         process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         output, error = process.communicate()
-        if error and not error.startswith('Warning'):
+        if error and not error.startswith(b'Warning'):
             raise APIException(error)
 
         # build on memory zip file
