@@ -11,6 +11,7 @@ from core.api.base.vector import MetadataVectorLayer
 from editing.models import EDITING_POST_DATA_ADDED, EDITING_POST_DATA_DELETED, EDITING_POST_DATA_UPDATED
 from editing.utils import LayerLock
 from editing.utils.data import get_relations_data_by_fid
+from qdjango.utils.data import QGIS_LAYER_TYPE_NO_GEOM
 
 MODE_EDITING = 'editing'
 MODE_UNLOCK = 'unlock'
@@ -82,7 +83,7 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
         :param metadata_layer: object
         :return:
         """
-        if 'crs' not in geojson_feature['geometry']:
+        if geojson_feature['geometry'] and 'crs' not in geojson_feature['geometry']:
             geojson_feature['geometry']['crs'] = self.layer.srid
 
     def add_media_property(self, geojson_feature, metadata_layer):
@@ -135,8 +136,9 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
                     # add media data
                     self.add_media_property(geojson_feature, metadata_layer)
 
-                    # for GEOSGeometry of Django 2.2 it mast add crs to feature if is not set
-                    self.add_crs_to_feature(geojson_feature)
+                    # for GEOSGeometry of Django 2.2 it mast add crs to feature if is not set if a geo feature
+                    if metadata_layer.geometry_type != QGIS_LAYER_TYPE_NO_GEOM:
+                        self.add_crs_to_feature(geojson_feature)
 
                     # reproject data if necessary
                     if self.reproject:
