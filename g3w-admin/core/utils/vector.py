@@ -37,6 +37,7 @@ class BaseUserMediaHandler(object):
 
 
     def set_layer_md5_source(self):
+        """ Create a unique md5 identification name from layer name and its datasource """
         self.layer_md5_source = build_dango_connection_name(getattr(self.layer, self.datasource_field)) \
             if self.layer else None
 
@@ -48,21 +49,23 @@ class BaseUserMediaHandler(object):
                                                                         type(self.feature['id']) == int else None
 
     def get_file_name(self, uri):
+        """ Get filename from media uri sent by client """
         try:
             return uri.split('/')[-1]
         except:
             return None
 
     def get_path_to_save(self):
+        """ Get and build local path to save media """
         return '{}{}/{}'.format(settings.USER_MEDIA_ROOT, self.type, self.layer_md5_source)
 
     def get_domain(self):
-
+        """ Get current domain within G3W-SUITE running """
         schema = 'https' if self.request.is_secure() else 'http'
         return '{}://{}'.format(schema, self.request.get_host())
 
     def new_value(self, change=False):
-
+        """ Build and save media value from client """
         self.set_layer_md5_source()
         current_instance = self.get_current_instance()
         edittypes = eval(self.layer.edittypes)
@@ -138,9 +141,8 @@ class BaseUserMediaHandler(object):
         self.set_layer_md5_source()
         edittypes = eval(self.layer.edittypes)
 
-
     def send_file(self):
-
+        """ Send current media saved """
         self.set_layer_md5_source()
         file_path = '{}/{}'.format(self.get_path_to_save(), self.file_name)
         return send_file(self.file_name, file_path_mime(file_path), file_path, False)
