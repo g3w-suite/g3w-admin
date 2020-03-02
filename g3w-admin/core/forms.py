@@ -19,7 +19,7 @@ from core.mixins.forms import *
 from usersmanage.configs import *
 
 
-class GroupForm(FileFormMixin, G3WFormMixin, G3WRequestFormMixin, G3WACLForm, ModelForm):
+class GroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, G3WRequestFormMixin, G3WACLForm, ModelForm):
     """Group form."""
     header_logo_img = UploadedFileField()
     propagate = True
@@ -315,7 +315,7 @@ class GeneralSuiteDataForm(TranslationModelForm, FileFormMixin, ModelForm):
         fields = '__all__'
 
 
-class MacroGroupForm(FileFormMixin, G3WFormMixin, ModelForm):
+class MacroGroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, ModelForm):
     """MacroGroup form."""
     logo_img = UploadedFileField()
     initial_editor_users = []

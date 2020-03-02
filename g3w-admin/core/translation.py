@@ -11,11 +11,12 @@ __copyright__ = 'Copyright 2020, GIS3W'
 
 
 from modeltranslation.translator import register, TranslationOptions
-from .models import GeneralSuiteData
+from .models import GeneralSuiteData, Group, MacroGroup
 
 
 @register(GeneralSuiteData)
-class NewsTranslationOptions(TranslationOptions):
+class GeneralSuiteDataTranslationOptions(TranslationOptions):
+    """ GeneralSuiteData model translation """
     fields = (
         'title',
         'sub_title',
@@ -28,4 +29,22 @@ class NewsTranslationOptions(TranslationOptions):
         'login_description',
         'credits',
         'main_map_title',
+    )
+
+
+@register(Group)
+class GroupTranslationOptions(TranslationOptions):
+    """ Map Group model translation """
+    fields = (
+        'title',
+        'description',
+        'header_terms_of_use_text'
+    )
+
+
+@register(MacroGroup)
+class MacroGroupTranslationOptions(TranslationOptions):
+    """ Map MacroGroup model translation """
+    fields = (
+        'description',
     )

@@ -356,7 +356,6 @@ class Group(TimeStampedModel, OrderedModel):
                     if hasattr(project, 'remove_permissions_to_viewer_user_groups'):
                         project.remove_permissions_to_viewer_user_groups(groups_id)
 
-
     def __getattr__(self, attr):
         if attr == 'viewers':
             return get_users_for_object(self, 'view_group', [G3W_VIEWER1, G3W_VIEWER2], with_anonymous=True)

@@ -191,7 +191,7 @@ LANGUAGES = (
 
 MODELTRANSLATION_DEFAULT_LANGUAGE = 'it'
 
-# if prefix for defaltu language put in to url
+# if prefix for default language put in to url
 PREFIX_DEFAULT_LANGUAGE = True
 
 
