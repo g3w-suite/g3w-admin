@@ -1,7 +1,7 @@
 from django.db import connections
 from django.http import HttpResponse, HttpResponseForbidden
 from django.db.models.expressions import RawSQL
-from rest_framework.filters import OrderingFilter
+from rest_framework.filters import OrderingFilter, DjangoFilterBackend
 from core.api.base.views import BaseVectorOnModelApiView, IntersectsBBoxFilter, MODE_DATA, MODE_CONFIG, MODE_SHP, \
     APIException, MODE_XLS
 from core.api.base.vector import MetadataVectorLayer
@@ -154,6 +154,13 @@ class QGISLayerVectorViewMixin(object):
         if geometrytype != QGIS_LAYER_TYPE_NO_GEOM:
             serializer = QGISGeoLayerSerializer
             self.bbox_filter_field = get_geometry_column(geomodel).name
+
+            # set fields for DjangoFilterBackend
+            self.filter_fields = []
+            for fields in geomodel._meta.concrete_fields:
+                if fields.attname != self.bbox_filter_field:
+                    self.filter_fields.append(fields.attname)
+
         else:
             serializer = QGISLayerSerializer
 
@@ -171,7 +178,8 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
 
     permission_classes = (ProjectPermission,)
 
-    filter_backends = (OrderingFilter, DatatablesFilterBackend, SuggestFilterBackend)
+    filter_backends = (DjangoFilterBackend, OrderingFilter, DatatablesFilterBackend, SuggestFilterBackend)
+    filter_fields = '__all__'
     ordering_fields = '__all__'
 
     # Modes call available (output formats)
