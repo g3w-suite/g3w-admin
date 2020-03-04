@@ -387,7 +387,7 @@ class BaseVectorOnModelApiView(G3WAPIView):
         """
         Query layer and return data
         :param request: DjangoREST API request object
-        :return: responce dict data
+        :return: response dict data
         """
         # Instance geo filtering
         #self.set_geo_filter()
