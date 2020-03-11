@@ -364,6 +364,7 @@ class MacroGroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, ModelFor
                                             css_class='box-header with-border'
                                         ),
                                         Div(
+                                            'name',
                                             'title',
                                             'use_title_logo_client',
                                             Field('description', css_class='wys5', style="width:100%;"),

@@ -46,5 +46,7 @@ class GroupTranslationOptions(TranslationOptions):
 class MacroGroupTranslationOptions(TranslationOptions):
     """ Map MacroGroup model translation """
     fields = (
-        'description',
+        'title',
+        'description'
     )
+
