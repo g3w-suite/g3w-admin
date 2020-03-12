@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WMS_Capabilities xmlns:sld="http://www.opengis.net/sld" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.opengis.net/wms" version="1.3.0" xsi:schemaLocation="http://www.opengis.net/wms http://schemas.opengis.net/wms/1.3.0/capabilities_1_3_0.xsd http://www.opengis.net/sld http://schemas.opengis.net/sld/1.1.0/sld_capabilities.xsd http://www.qgis.org/wms http://localhost/qgis?map=/home/walter/PycharmProjects/g3w_suite_dj22/g3w-admin/qdjango/tests/data/g3wsuite_project_test_qgis310.qgs&amp;SERVICE=WMS&amp;REQUEST=GetSchemaExtension" xmlns:qgs="http://www.qgis.org/wms">
+ <Service>
+  <Name>WMS</Name>
+  <KeywordList>
+   <Keyword vocabulary="ISO">infoMapAccessService</Keyword>
+  </KeywordList>
+  <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://localhost/qgis?map=/home/walter/PycharmProjects/g3w_suite_dj22/g3w-admin/qdjango/tests/data/g3wsuite_project_test_qgis310.qgs"/>
+  <Fees>conditions unknown</Fees>
+  <AccessConstraints>None</AccessConstraints>
+ </Service>
+ <Capability>
+  <Request>
+   <GetCapabilities>
+    <Format>text/xml</Format>
+    <DCPType>
+     <HTTP>
+      <Get>
+       <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://localhost/qgis?map=/home/walter/PycharmProjects/g3w_suite_dj22/g3w-admin/qdjango/tests/data/g3wsuite_project_test_qgis310.qgs&amp;"/>
+      </Get>
+     </HTTP>
+    </DCPType>
+   </GetCapabilities>
+   <GetMap>
+    <Format>image/jpeg</Format>
+    <Format>image/png</Format>
+    <Format>image/png; mode=16bit</Format>
+    <Format>image/png; mode=8bit</Format>
+    <Format>image/png; mode=1bit</Format>
+    <Format>application/dxf</Format>
+    <DCPType>
+     <HTTP>
+      <Get>
+       <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://localhost/qgis?map=/home/walter/PycharmProjects/g3w_suite_dj22/g3w-admin/qdjango/tests/data/g3wsuite_project_test_qgis310.qgs&amp;"/>
+      </Get>
+     </HTTP>
+    </DCPType>
+   </GetMap>
+   <GetFeatureInfo>
+    <Format>text/plain</Format>
+    <Format>text/html</Format>
+    <Format>text/xml</Format>
+    <Format>application/vnd.ogc.gml</Format>
+    <Format>application/vnd.ogc.gml/3.1.1</Format>
+    <Format>application/json</Format>
+    <Format>application/geo+json</Format>
+    <DCPType>
+     <HTTP>
+      <Get>
+       <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://localhost/qgis?map=/home/walter/PycharmProjects/g3w_suite_dj22/g3w-admin/qdjango/tests/data/g3wsuite_project_test_qgis310.qgs&amp;"/>
+      </Get>
+     </HTTP>
+    </DCPType>
+   </GetFeatureInfo>
+   <sld:GetLegendGraphic>
+    <Format>image/jpeg</Format>
+    <Format>image/png</Format>
+    <DCPType>
+     <HTTP>
+      <Get>
+       <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://localhost/qgis?map=/home/walter/PycharmProjects/g3w_suite_dj22/g3w-admin/qdjango/tests/data/g3wsuite_project_test_qgis310.qgs&amp;"/>
+      </Get>
+     </HTTP>
+    </DCPType>
+   </sld:GetLegendGraphic>
+   <sld:DescribeLayer>
+    <Format>text/xml</Format>
+    <DCPType>
+     <HTTP>
+      <Get>
+       <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://localhost/qgis?map=/home/walter/PycharmProjects/g3w_suite_dj22/g3w-admin/qdjango/tests/data/g3wsuite_project_test_qgis310.qgs&amp;"/>
+      </Get>
+     </HTTP>
+    </DCPType>
+   </sld:DescribeLayer>
+   <qgs:GetStyles>
+    <Format>text/xml</Format>
+    <DCPType>
+     <HTTP>
+      <Get>
+       <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://localhost/qgis?map=/home/walter/PycharmProjects/g3w_suite_dj22/g3w-admin/qdjango/tests/data/g3wsuite_project_test_qgis310.qgs&amp;"/>
+      </Get>
+     </HTTP>
+    </DCPType>
+   </qgs:GetStyles>
+   <GetPrint>
+    <Format>svg</Format>
+    <Format>png</Format>
+    <Format>pdf</Format>
+    <DCPType>
+     <HTTP>
+      <Get>
+       <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://localhost/qgis?map=/home/walter/PycharmProjects/g3w_suite_dj22/g3w-admin/qdjango/tests/data/g3wsuite_project_test_qgis310.qgs&amp;"/>
+      </Get>
+     </HTTP>
+    </DCPType>
+   </GetPrint>
+  </Request>
+  <Exception>
+   <Format>XML</Format>
+  </Exception>
+  <sld:UserDefinedSymbolization UserStyle="1" RemoteWFS="0" SupportSLD="1" InlineFeature="0" RemoteWCS="0" UserLayer="0"/>
+  <ComposerTemplates>
+   <ComposerTemplate height="210" name="A4" width="297">
+    <ComposerMap height="117.7594485294118" name="map0" width="189.53"/>
+    <ComposerLabel name="Print"/>
+   </ComposerTemplate>
+  </ComposerTemplates>
+  <WFSLayers>
+   <WFSLayer name="Cities"/>
+   <WFSLayer name="Countries"/>
+   <WFSLayer name="Rivers"/>
+  </WFSLayers>
+  <Layer queryable="1">
+   <Title>G3W-Suite project test</Title>
+   <Abstract>G3W-Suite project test</Abstract>
+   <CRS>CRS:84</CRS>
+   <CRS>EPSG:4326</CRS>
+   <CRS>EPSG:3857</CRS>
+   <EX_GeographicBoundingBox>
+    <westBoundLongitude>-188.999895</westBoundLongitude>
+    <eastBoundLongitude>188.999895</eastBoundLongitude>
+    <southBoundLatitude>-94.662375</southBoundLatitude>
+    <northBoundLatitude>88.272056</northBoundLatitude>
+   </EX_GeographicBoundingBox>
+   <BoundingBox CRS="EPSG:3857" maxx="19970727.818" maxy="26752239.344" minx="-19970727.818" miny="-21976087.757"/>
+   <BoundingBox CRS="EPSG:4326" maxx="88.272056" maxy="188.999895" minx="-94.662375" miny="-188.999895"/>
+   <Name>G3W-Suite project test</Name>
+   <KeywordList>
+    <Keyword vocabulary="ISO">infoMapAccessService</Keyword>
+   </KeywordList>
+   <TreeName>G3W-Suite project test</TreeName>
+   <Layer queryable="1" displayField="NAME" geometryType="MultiLineString" visible="1">
+    <Name>Rivers</Name>
+    <Title>Rivers</Title>
+    <CRS>CRS:84</CRS>
+    <CRS>EPSG:4326</CRS>
+    <CRS>EPSG:3857</CRS>
+    <EX_GeographicBoundingBox>
+     <westBoundLongitude>-20.664783</westBoundLongitude>
+     <eastBoundLongitude>64.219734</eastBoundLongitude>
+     <southBoundLatitude>36.316963</southBoundLatitude>
+     <northBoundLatitude>70.433136</northBoundLatitude>
+    </EX_GeographicBoundingBox>
+    <BoundingBox CRS="EPSG:3857" maxx="7148908.088" maxy="11211177.213" minx="-2300393.121" miny="4344323.098"/>
+    <BoundingBox CRS="EPSG:4326" maxx="70.433136" maxy="64.219734" minx="36.316963" miny="-20.664783"/>
+    <Style>
+     <Name>predefinito</Name>
+     <Title>predefinito</Title>
+     <LegendURL>
+      <Format>image/png</Format>
+      <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://localhost/qgis?map=/home/walter/PycharmProjects/g3w_suite_dj22/g3w-admin/qdjango/tests/data/g3wsuite_project_test_qgis310.qgs&amp;SERVICE=WMS&amp;VERSION=1.3.0&amp;REQUEST=GetLegendGraphic&amp;LAYER=Rivers&amp;FORMAT=image/png&amp;STYLE=predefinito&amp;SLD_VERSION=1.1.0"/>
+     </LegendURL>
+    </Style>
+    <TreeName>Rivers</TreeName>
+    <Attributes>
+     <Attribute typeName="String" comment="" name="NAME" editType="TextEdit" length="30" type="QString" precision="0"/>
+    </Attributes>
+   </Layer>
+   <Layer queryable="1" displayField="Geo named" geometryType="Point" visible="1">
+    <Name>Cities</Name>
+    <Title>Cities</Title>
+    <CRS>CRS:84</CRS>
+    <CRS>EPSG:4326</CRS>
+    <CRS>EPSG:3857</CRS>
+    <EX_GeographicBoundingBox>
+     <westBoundLongitude>-9.716667</westBoundLongitude>
+     <eastBoundLongitude>57.351945</eastBoundLongitude>
+     <southBoundLatitude>35.01</southBoundLatitude>
+     <northBoundLatitude>69.966667</northBoundLatitude>
+    </EX_GeographicBoundingBox>
+    <BoundingBox CRS="EPSG:3857" maxx="6384389.247" maxy="11057875.118" minx="-1081654.39" miny="4165240.187"/>
+    <BoundingBox CRS="EPSG:4326" maxx="69.966667" maxy="57.351945" minx="35.01" miny="-9.716667"/>
+    <Style>
+     <Name>predefinito</Name>
+     <Title>predefinito</Title>
+     <LegendURL>
+      <Format>image/png</Format>
+      <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://localhost/qgis?map=/home/walter/PycharmProjects/g3w_suite_dj22/g3w-admin/qdjango/tests/data/g3wsuite_project_test_qgis310.qgs&amp;SERVICE=WMS&amp;VERSION=1.3.0&amp;REQUEST=GetLegendGraphic&amp;LAYER=Cities&amp;FORMAT=image/png&amp;STYLE=predefinito&amp;SLD_VERSION=1.1.0"/>
+     </LegendURL>
+    </Style>
+    <TreeName>Cities</TreeName>
+    <Attributes>
+     <Attribute typeName="Integer64" alias="Geo named" comment="" name="GEONAMEID" editType="TextEdit" length="11" type="qlonglong" precision="0"/>
+     <Attribute typeName="String" alias="Name" comment="" name="NAME" editType="TextEdit" length="200" type="QString" precision="0"/>
+     <Attribute typeName="String" alias="Ascii name" comment="" name="ASCIINAME" editType="TextEdit" length="200" type="QString" precision="0"/>
+     <Attribute typeName="String" alias="ISO Code" comment="" name="ISO2_CODE" editType="UniqueValues" length="2" type="QString" precision="0"/>
+     <Attribute typeName="Integer64" comment="" name="POPULATION" editType="Range" length="11" type="qlonglong" precision="0"/>
+     <Attribute typeName="Integer64" comment="" name="GTOPO30" editType="TextEdit" length="11" type="qlonglong" precision="0"/>
+    </Attributes>
+   </Layer>
+   <Layer queryable="1" displayField="NAME_LOCAL" geometryType="MultiPolygon" visible="1">
+    <Name>Countries</Name>
+    <Title>Countries</Title>
+    <CRS>CRS:84</CRS>
+    <CRS>EPSG:4326</CRS>
+    <CRS>EPSG:3857</CRS>
+    <EX_GeographicBoundingBox>
+     <westBoundLongitude>-31.265748</westBoundLongitude>
+     <eastBoundLongitude>69.070321</eastBoundLongitude>
+     <southBoundLatitude>32.397475</southBoundLatitude>
+     <northBoundLatitude>81.857369</northBoundLatitude>
+    </EX_GeographicBoundingBox>
+    <BoundingBox CRS="EPSG:3857" maxx="7688872.852" maxy="16854709.319" minx="-3480487.036" miny="3815599.363"/>
+    <BoundingBox CRS="EPSG:4326" maxx="81.857369" maxy="69.070321" minx="32.397475" miny="-31.265748"/>
+    <Style>
+     <Name>predefinito</Name>
+     <Title>predefinito</Title>
+     <LegendURL>
+      <Format>image/png</Format>
+      <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://localhost/qgis?map=/home/walter/PycharmProjects/g3w_suite_dj22/g3w-admin/qdjango/tests/data/g3wsuite_project_test_qgis310.qgs&amp;SERVICE=WMS&amp;VERSION=1.3.0&amp;REQUEST=GetLegendGraphic&amp;LAYER=Countries&amp;FORMAT=image/png&amp;STYLE=predefinito&amp;SLD_VERSION=1.1.0"/>
+     </LegendURL>
+    </Style>
+    <TreeName>Countries</TreeName>
+    <Attributes>
+     <Attribute typeName="String" comment="" name="ISOCODE" editType="TextEdit" length="2" type="QString" precision="0"/>
+     <Attribute typeName="String" comment="" name="NAME_LOCAL" editType="TextEdit" length="53" type="QString" precision="0"/>
+     <Attribute typeName="String" comment="" name="NAME_EN" editType="TextEdit" length="44" type="QString" precision="0"/>
+     <Attribute typeName="String" comment="" name="CAPITAL_EN" editType="TextEdit" length="20" type="QString" precision="0"/>
+     <Attribute typeName="String" comment="" name="NAME_DE" editType="TextEdit" length="46" type="QString" precision="0"/>
+     <Attribute typeName="String" comment="" name="CAPITAL_DE" editType="TextEdit" length="26" type="QString" precision="0"/>
+     <Attribute typeName="String" comment="" name="NAME_IT" editType="TextEdit" length="44" type="QString" precision="0"/>
+     <Attribute typeName="String" comment="" name="CAPITAL_IT" editType="TextEdit" length="26" type="QString" precision="0"/>
+     <Attribute typeName="String" comment="" name="NAME_FR" editType="TextEdit" length="44" type="QString" precision="0"/>
+     <Attribute typeName="String" comment="" name="CAPITAL_FR" editType="TextEdit" length="26" type="QString" precision="0"/>
+     <Attribute typeName="String" comment="" name="NAME_BR" editType="TextEdit" length="40" type="QString" precision="0"/>
+     <Attribute typeName="String" comment="" name="CAPITAL_BR" editType="TextEdit" length="37" type="QString" precision="0"/>
+     <Attribute typeName="String" comment="" name="NAME_ES" editType="TextEdit" length="45" type="QString" precision="0"/>
+     <Attribute typeName="String" comment="" name="CAPITAL_ES" editType="TextEdit" length="30" type="QString" precision="0"/>
+     <Attribute typeName="Integer64" comment="" name="POPULATION" editType="TextEdit" length="10" type="qlonglong" precision="0"/>
+     <Attribute typeName="Integer64" comment="" name="AREA_KM2" editType="TextEdit" length="10" type="qlonglong" precision="0"/>
+     <Attribute typeName="Integer" comment="" name="ISO_NUM" editType="TextEdit" length="3" type="int" precision="0"/>
+    </Attributes>
+   </Layer>
+   <Layer queryable="1" visible="1">
+    <Name>Dem</Name>
+    <Title>Dem</Title>
+    <CRS>CRS:84</CRS>
+    <CRS>EPSG:4326</CRS>
+    <CRS>EPSG:3857</CRS>
+    <EX_GeographicBoundingBox>
+     <westBoundLongitude>-26.635258</westBoundLongitude>
+     <eastBoundLongitude>51.232073</eastBoundLongitude>
+     <southBoundLatitude>29.968985</southBoundLatitude>
+     <northBoundLatitude>75.508362</northBoundLatitude>
+    </EX_GeographicBoundingBox>
+    <BoundingBox CRS="EPSG:3857" maxx="5703128.223" maxy="13154597.303" minx="-2965023.278" miny="3499563.79"/>
+    <BoundingBox CRS="EPSG:4326" maxx="75.508362" maxy="51.232073" minx="29.968985" miny="-26.635258"/>
+    <Style>
+     <Name>predefinito</Name>
+     <Title>predefinito</Title>
+     <LegendURL>
+      <Format>image/png</Format>
+      <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://localhost/qgis?map=/home/walter/PycharmProjects/g3w_suite_dj22/g3w-admin/qdjango/tests/data/g3wsuite_project_test_qgis310.qgs&amp;SERVICE=WMS&amp;VERSION=1.3.0&amp;REQUEST=GetLegendGraphic&amp;LAYER=Dem&amp;FORMAT=image/png&amp;STYLE=predefinito&amp;SLD_VERSION=1.1.0"/>
+     </LegendURL>
+    </Style>
+    <TreeName>Dem</TreeName>
+   </Layer>
+   <Layer queryable="1" visible="1">
+    <Name>Blue Marble World Elevation and Bathymetry Raster</Name>
+    <Title>Blue Marble World Elevation and Bathymetry Raster</Title>
+    <CRS>CRS:84</CRS>
+    <CRS>EPSG:4326</CRS>
+    <CRS>EPSG:3857</CRS>
+    <EX_GeographicBoundingBox>
+     <westBoundLongitude>-180</westBoundLongitude>
+     <eastBoundLongitude>180</eastBoundLongitude>
+     <southBoundLatitude>-90</southBoundLatitude>
+     <northBoundLatitude>90</northBoundLatitude>
+    </EX_GeographicBoundingBox>
+    <BoundingBox CRS="EPSG:3857" maxx="20037508.343" maxy="16823984.524" minx="-20037508.343" miny="-16823984.524"/>
+    <BoundingBox CRS="EPSG:4326" maxx="90" maxy="180" minx="-90" miny="-180"/>
+    <Style>
+     <Name>predefinito</Name>
+     <Title>predefinito</Title>
+     <LegendURL>
+      <Format>image/png</Format>
+      <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://localhost/qgis?map=/home/walter/PycharmProjects/g3w_suite_dj22/g3w-admin/qdjango/tests/data/g3wsuite_project_test_qgis310.qgs&amp;SERVICE=WMS&amp;VERSION=1.3.0&amp;REQUEST=GetLegendGraphic&amp;LAYER=Blue Marble World Elevation and Bathymetry Raster&amp;FORMAT=image/png&amp;STYLE=predefinito&amp;SLD_VERSION=1.1.0"/>
+     </LegendURL>
+    </Style>
+    <TreeName>Blue Marble World Elevation and Bathymetry Raster</TreeName>
+    <WMSBackgroundLayer>0</WMSBackgroundLayer>
+   </Layer>
+  </Layer>
+  <LayerDrawingOrder>Blue Marble World Elevation and Bathymetry Raster,Dem,Countries,Cities,Rivers</LayerDrawingOrder>
+ </Capability>
+</WMS_Capabilities>
