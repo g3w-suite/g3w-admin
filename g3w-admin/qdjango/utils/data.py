@@ -94,7 +94,6 @@ class QgisProjectLayer(XmlData):
         'maxScale',
         'scaleBasedVisibility',
         'srid',
-        #'capabilities',
         'wfsCapabilities',
         'editOptions',
         'datasource',
@@ -145,8 +144,9 @@ class QgisProjectLayer(XmlData):
 
     def _getDataName(self):
         """
-        Get name form datasource
-        :return: string
+        Get name(shortname)
+        :return: name(shortname) layer property
+        :rtype: str
         """
 
         try:
@@ -158,6 +158,11 @@ class QgisProjectLayer(XmlData):
         return name
 
     def _getDataOrigname(self):
+        """
+        Get layer QGIS origname value
+        :return: QGIS origin name by layer type
+        :rtype: str
+        """
         if self.layerType == Layer.TYPES.ogr:
             name = os.path.splitext(os.path.basename(self.datasource))[0]
         elif self.layerType == Layer.TYPES.gdal:
@@ -188,14 +193,16 @@ class QgisProjectLayer(XmlData):
     def _getDataLayerId(self):
         """
         Get name tag content from xml
-        :return: string
+        :return: return QGIS layerID
+        :rtype: str
         """
         return self.qgisProjectLayerTree.find('id').text
 
     def _getDataTitle(self):
         """
         Get title tag content from xml
-        :return: string
+        :return: layer title
+        :rtype: str
         """
         try:
             layer_title = self.qgisProjectLayerTree.find('layername').text
@@ -207,11 +214,11 @@ class QgisProjectLayer(XmlData):
 
         return layer_title
 
-
     def _getDataIsVisible(self):
         """
         Get if is visible form xml
-        :return: string
+        :return: layer visibility
+        :rtype: bool
         """
         legendTrees = self.qgisProject.qgisProjectTree.find('legend')
         legends = legendTrees.iterdescendants(tag='legendlayerfile')
@@ -229,7 +236,8 @@ class QgisProjectLayer(XmlData):
     def _getDataLayerType(self):
         """
         Get name tag content from xml
-        :return: string
+        :return: qgis layer type
+        :rtype: str
         """
         availableTypes = [item[0] for item in Layer.TYPES]
         layer_type = self.qgisProjectLayerTree.find('provider').text
@@ -240,7 +248,8 @@ class QgisProjectLayer(XmlData):
     def _getDataMinScale(self):
         """
         Get min_scale from layer attribute
-        :return: string
+        :return: layer min scale value
+        :rtype: int
         """
         attrib = self.qgisProjectLayerTree.attrib
 
@@ -256,8 +265,9 @@ class QgisProjectLayer(XmlData):
 
     def _getDataMaxScale(self):
         """
-        Get min_scale from layer attribute
-        :return: string
+        Get max_scale from layer attribute
+        :return: max scale value for layer
+        :rtype: int
         """
         attrib = self.qgisProjectLayerTree.attrib
 
@@ -267,21 +277,22 @@ class QgisProjectLayer(XmlData):
         else:
             minimunScale = attrib['minimumScale'] if 'minimumScale' in attrib else attrib['minScale']
         if minimunScale == 'inf':
-            #return 2**31-1
             return 0
         return int(float(minimunScale))
 
     def _getDataScaleBasedVisibility(self):
         """
         Get scale based visibility property from layer attribute
-        :return: string
+        :return: boolean visibility by scale
+        :rtype: bool
         """
         return bool(int(self.qgisProjectLayerTree.attrib['hasScaleBasedVisibilityFlag']))
 
     def _getDataSrid(self):
         """
         Get srid property of layer
-        :return: string
+        :return: ESPG srid code
+        :rtype: int, None
         """
         try:
             srid = self.qgisProjectLayerTree.xpath('srs/spatialrefsys/srid')[0].text
@@ -294,12 +305,14 @@ class QgisProjectLayer(XmlData):
         """
         Get relations layer section into project
         :param layerTree:
-        :return:
+        :return: list of dict fo vector joins structure or none is not set
+        :rtype: list, None
         """
+
         # get root of layer-tree-group
+        vectorjoins = []
         vectorjoinsRoot = self.qgisProjectLayerTree.find('vectorjoins')
         if vectorjoinsRoot is not None:
-            vectorjoins = []
             for order, join in enumerate(vectorjoinsRoot):
                 vectorjoins.append(dict(join.attrib))
         return vectorjoins if vectorjoinsRoot is not None else None
@@ -311,13 +324,18 @@ class QgisProjectLayer(XmlData):
     def _getDataGeometrytype(self):
         """
         Get geometry from layer attribute
-        :return: string
+        :return: strting of geometry type
+        :rtype: str
         """
 
         return self.qgisProjectLayerTree.attrib.get('geometry')
 
     def _getDataEditOptions(self):
-
+        """
+        Get bit value from WFSTLayers section
+        :return: bitwise for WFST layer state
+        :rtype: int
+        """
         editOptions = 0
         for editOp, layerIds in list(self.qgisProject.wfstLayers.items()):
             if self.layerId in layerIds:
@@ -326,7 +344,11 @@ class QgisProjectLayer(XmlData):
         return None if editOptions == 0 else editOptions
 
     def _getDataWfsCapabilities(self):
-
+        """
+        Set wfs capability for layer.
+        :return: bitwise WFS layer capabilities: 0 not queryable, 1 queryable.
+        :rtype: int
+        """
         wfsCapabilities = 0
         for wfslayer in self.qgisProject.wfsLayers:
             if self.layerId in wfslayer:
@@ -336,8 +358,9 @@ class QgisProjectLayer(XmlData):
 
     def _getDataDatasource(self):
         """
-        Get name tag content from xml
-        :return: string
+        Get datasource for layer.
+        :return: QGIS project datasource string or new datasource string for OGR and GDAL and SpatiaLite layers
+        :rtype: str
         """
         datasource = self.qgisProjectLayerTree.find('datasource').text
         serverDatasource = makeDatasource(datasource, self.layerType)
@@ -350,10 +373,11 @@ class QgisProjectLayer(XmlData):
     def _getDataAliases(self):
         """
         Get properties fields aliasies
-        :return: string
+        :return: A dict key:value of layer attributes name.
+        :rtype: dict
         """
 
-        ret = {}
+        ret = OrderedDict()
         aliases = self.qgisProjectLayerTree.find('aliases')
         if aliases is not None:
             for alias in aliases:
@@ -363,7 +387,16 @@ class QgisProjectLayer(XmlData):
     def _getDataColumns(self):
         """
         Retrive data about columns for db table or ogr layer type
-        :return:
+        [
+            {
+                'name': '<name>',
+                'type': '<data_type>',
+                'label': '<label>',
+            },
+            ...
+        ]
+        :return: A dict list with data attributes structure.
+        :rtype: list
         """
         if self.layerType in [Layer.TYPES.postgres, Layer.TYPES.spatialite]:
             layerStructure = QgisDBLayerStructure(self, layerType=self.layerType)
@@ -391,7 +424,11 @@ class QgisProjectLayer(XmlData):
         return layerStructure.columns
 
 
-    def _addAliesToColumns(self,columns):
+    def _addAliesToColumns(self, columns):
+        """
+        Add aliases to columen origin name
+        :param columns: dict layer structure columns
+        """
 
         for column in columns:
             if column['name'] in self.aliases:
@@ -400,10 +437,13 @@ class QgisProjectLayer(XmlData):
 
     def _getLayerJoinedColumns(self):
         """
-        Add joined columns as qgis project
+        Add joined columns as QGIS project
+        :return: a list of joined layers
+        :rtype: list
         """
 
         # todo: review for label and other compatibilities
+        # FIXME: is working? Is used?
         joined_columns = []
         try:
             joins = self.qgisProjectLayerTree.find('vectorjoins')
@@ -419,7 +459,9 @@ class QgisProjectLayer(XmlData):
 
     def _getDataExcludeAttributesWMS(self):
         """
-        Get attribute to exlude from WMS info and relations
+        Get attribute to exclude from WMS info and relations
+        :return: a list of columns excluded from WMS services and relations
+        :rtype: list, None
         """
 
         excluded_columns = []
@@ -433,7 +475,9 @@ class QgisProjectLayer(XmlData):
 
     def _getDataExcludeAttributesWFS(self):
         """
-        Get attribute to exlude from WMS info and relations
+        Get attribute to exclude from WMS info and relations
+        :return: a list of columns excluded from WMS services and relations
+        .rtype: list, None
         """
 
         excluded_columns = []
@@ -448,7 +492,15 @@ class QgisProjectLayer(XmlData):
     def _getDataEditTypes(self):
         """
         Get edittypes for editing widget
-        :return: dict
+        {
+            '<field_name>': {
+                    'widgetv2type': <qgis edit widget type>,
+                    'fieldEditable': <field editable boolean value>,
+                    'values': <possible map wigdet value>
+            }
+        }
+        :return: dict of field name key of qgis widgets
+        :rtype: dict
         """
 
         # before defautls field values if isset
@@ -458,7 +510,6 @@ class QgisProjectLayer(XmlData):
             for default in defaults:
                 if default.attrib['expression']:
                     defaults_columns[default.attrib['field']] = default.attrib['expression']
-
 
         edittype_columns = dict()
 
@@ -533,17 +584,19 @@ class QgisProjectLayer(XmlData):
 
     def _getDataEditorlayout(self):
         """
-        Get qgis editor layout
-        :return:
+        Get QGIS editor layout
+        :return: layout type
+        :rtype: str, None
         """
         editor_element = self.qgisProjectLayerTree.find('editorlayout')
         return editor_element.text if editor_element is not None else None
 
     def _getDataEditorformstructure(self):
         """
-        Get qgis attribute edtiro form if edito layout is not generated layout
+        Get qgis attribute editor form if edito layout is not generatedlayout
         For now only tablayout management
-        :return:
+        :return: form structure
+        :rtype: dict, None
         """
 
         if self.editorlayout == QGIS_EL_TABLAYOUT:
@@ -594,9 +647,6 @@ class QgisProjectLayer(XmlData):
     def save(self):
         """
         Save o update layer instance into db
-        :param instance:
-        :param kwargs:
-        :return:
         """
 
         columns = json.dumps(self.columns) if self.columns else None
@@ -664,6 +714,7 @@ class QgisProject(XmlData):
     """
     A qgis xml project file wrapper
     """
+
     _dataToSet = [
         'name',
         'title',
@@ -743,25 +794,27 @@ class QgisProject(XmlData):
         except Exception as e:
             raise QgisProjectException(_('The project file is malformed: {}').format(e.args[0]))
 
-
     def _getDataName(self):
         """
-        Get projectname from xml
-        :return: string
+        Get projectname from xml QGIS project file
+        :return: project name property
+        :rtype: str
         """
         return self.qgisProjectTree.getroot().attrib['projectname']
 
     def _getDataTitle(self):
         """
-        Get title tag content from xml
-        :return: string
+        Get title tag content from xml QGIS project file
+        :return: project title property
+        :rtype: str
         """
         return self.qgisProjectTree.find('title').text
 
     def _getDataInitialExtent(self):
         """
-        Get start extention project from xml
-        :return: dict
+        Get start QGIS project extension
+        :return: Start project extension
+        :rtype: dict
         """
         return {
             'xmin': self.qgisProjectTree.find('mapcanvas/extent/xmin').text,
@@ -772,8 +825,9 @@ class QgisProject(XmlData):
 
     def _getDataMaxExtent(self):
         """
-        Get max extention project from xml wms extent
-        :return: dict
+        Get max QGIS extension project
+        :return: Max extension project
+        :rtype: dict
         """
         wmsExtent = self.qgisProjectTree.find('properties/WMSExtent')
         if wmsExtent is not None:
@@ -795,7 +849,8 @@ class QgisProject(XmlData):
     def _getDataWmsuselayerids(self):
         """
         Get WMSUseLayerIDS property
-        :return: bool
+        :return: boolean WMSUseLayerIDS property
+        :rtype: bool
         """
         wmsuselayerids = self.qgisProjectTree.find('properties/WMSUseLayerIDs')
         if wmsuselayerids is not None:
@@ -803,22 +858,28 @@ class QgisProject(XmlData):
         else:
             return False
 
-
     def _getDataSrid(self):
         """
-
-        :return:
+        Get map SRID
+        :return: Map SRID
+        :rtype: int
         """
         return int(self.qgisProjectTree.find('mapcanvas/destinationsrs/spatialrefsys/srid').text)
 
     def _getDataUnits(self):
+        """
+        Get map units
+        :return: Map units
+        :rtype: str
+        """
         return self.qgisProjectTree.find('mapcanvas/units').text
 
-    def _checkLayerTypeCompatible(self,layerTree):
+    def _checkLayerTypeCompatible(self, layerTree):
         """
         Chek il layer is compatible for to show in webgis
-        :param layerTree:
-        :return:
+        :param layerTree: dict QGIS layer tree structure
+        :return: boolean compatibility
+        .:rtype: bool
         """
         if 'name' in layerTree.attrib:
             if layerTree.attrib['name'] == 'openlayers':
@@ -829,6 +890,11 @@ class QgisProject(XmlData):
         return True
 
     def _getDataLayersTree(self):
+        """
+        Build layers tree structure (TOC)
+        :return: layer tree structure with options
+        :rtype: dict
+        """
 
         #get root of layer-tree-group
         layerTreeRoot = self.qgisProjectTree.find('layer-tree-group')
@@ -878,6 +944,11 @@ class QgisProject(XmlData):
         return buildLayerTreeNodeObject(layerTreeRoot)
 
     def _getDataLayers(self):
+        """
+        Get QGIS project layers
+        :return: list of QgsProjectLayer instances
+        :rtype: list
+        """
         layers = []
 
         # Get layer trees
@@ -888,24 +959,11 @@ class QgisProject(XmlData):
                 layers.append(self._qgisprojectlayer_class(layerTree, qgisProject=self, order=order))
         return layers
 
-    def _getDataComposer(self):
-        composers = []
-
-        # Get layer trees
-        composersTrees = self.qgisProjectTree.xpath(self._regexXmlComposer)
-
-        '''
-        for order, layerTree in enumerate(layerTrees):
-            if self._checkLayerTypeCompatible(layerTree):
-                layers.append(self._qgisprojectlayer_class(layerTree, qgisProject=self, order=order))
-        '''
-        return composers
-
     def _getDataLayerRelations(self):
         """
         Get relations layer section into project
-        :param layerTree:
-        :return:
+        :return: layer relations dict settings
+        :rtype: dict, None
         """
         # get root of layer-tree-group
         layerRelationsRoot = self.qgisProjectTree.find('relations')
@@ -922,14 +980,17 @@ class QgisProject(XmlData):
 
     def _getDataQgisVersion(self):
         """
-        Get Qgisversion project
-        :return:
+        Get QGIS project version
+        :return: QGIS project version
+        :rtype: str
         """
         return self.qgisProjectTree.getroot().attrib['version']
 
     def _getDataWfsLayers(self):
         """
-        Return a array of wfslayers
+        Return WFS layers
+        :return: a list of layers set as WFS
+        :rtype: list
         """
 
         wfsLayersTree = self.qgisProjectTree.xpath('properties/WFSLayers/value')
@@ -940,6 +1001,16 @@ class QgisProject(XmlData):
         return wfsLayers
 
     def _getDataWfstLayers(self):
+        """
+        Return WFST layers
+        :return: a dict of layers set as WFS with editing options
+         {
+            'INSERT': [...],
+            'UPDATE': [...],
+            'DELETE': [...]
+        }
+        :rtype: list
+        """
         wfstLayers = {
             'INSERT': [],
             'UPDATE': [],
@@ -969,7 +1040,8 @@ class QgisProject(XmlData):
 
     def save(self, instance=None, **kwargs):
         """
-        Save or update  qgisporject and layers into db
+        Save or update  qgisporject and layers into db.
+        Update QGIS project file with new datasources for ogr/gdal and sqlite types.
         :param instance: Project instance
         """
 
@@ -1070,6 +1142,7 @@ class QgisProject(XmlData):
 
 
 class QgisProjectSettingsWMS(XmlData):
+    """ Wraper-parsing QGIS WMS projectsettings service """
 
     _dataToSet = [
         'metadata',
@@ -1105,13 +1178,31 @@ class QgisProjectSettingsWMS(XmlData):
                 _('The project settings is malformed: {} ----- {}'.format(e.args[0], self.qgisProjectSettingsFile)))
 
     def _buildTagWithNS(self, tag):
+        """
+        Build Tag with Name Space 'opengis' for XNl searching
+        :param tag: str xml tag name
+        :return: search string
+        :rtype: str
+        """
+
         return '{{{0}}}{1}'.format(self._NS['opengis'], tag)
 
     def _buildTagWithNSXlink(self, tag):
+        """
+        Build Tag with Name Space 'xlink' for XNl searching
+        :param tag: str xml tag name
+        :return: search string
+        :rtype: str
+        """
         return '{{{0}}}{1}'.format(self._NS['xlink'], tag)
 
     def _getBBOXLayer(self, layerTree):
-
+        """
+        Get BBOX for every CRS available
+        :param layerTree: dict layers tree structure
+        :return: a dict of BBOX coordinates for every CRS
+        :rtype: dict
+        """
         bboxes = {}
 
         bboxTrees = layerTree.xpath(
@@ -1130,6 +1221,13 @@ class QgisProjectSettingsWMS(XmlData):
         return bboxes
 
     def _getLayerTreeData(self, layerTree):
+        """
+        Build a layers tree structure with attributes for every layer.
+        Add informations like legend, alias name, metedata etc.
+        :param layerTree: XmlTree object
+        :return: a layers tree dict structure
+        :rtype: dict
+        """
 
         subLayerTrees = layerTree.xpath('opengis:Layer', namespaces=self._NS)
         if subLayerTrees:
@@ -1286,7 +1384,11 @@ class QgisProjectSettingsWMS(XmlData):
             self._layersData[name] = dataLayer
 
     def _getDataMetadata(self):
-
+        """
+        Get metadata project informations.
+        :return: Project metadata info.
+        .:rtype: dict
+        """
         # add simple tags
         self._metadata = {}
 
@@ -1359,6 +1461,11 @@ class QgisProjectSettingsWMS(XmlData):
         return self._metadata
 
     def _getDataLayers(self):
+        """
+        Get layers info as structure metadata end other.
+        :return: Layers data and metadata
+        :rtype: dict
+        """
 
         self._layersData = {}
 
@@ -1371,6 +1478,11 @@ class QgisProjectSettingsWMS(XmlData):
         return self._layersData
 
     def _getDataComposerTemplates(self):
+        """
+        Get print composer data
+        :return: list of print layout available.
+        :rtype: list
+        """
 
         self._composerTemplatesData = []
 
