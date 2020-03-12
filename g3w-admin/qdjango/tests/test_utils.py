@@ -1,17 +1,20 @@
 from .base import QdjangoTestBase
 from django.test import TestCase, override_settings
 from django.core.files import File
+from django.conf import settings
 from qdjango.models import Project, Layer, Widget
-from qdjango.utils.data import QgisProject, QgisPgConnection
+from qdjango.utils.data import QgisProject, QgisPgConnection, QgisProjectSettingsWMS
 from qdjango.utils.structure import get_schema_table, datasource2dict, datasourcearcgis2dict
 from qdjango.utils.models import get_widgets4layer, comparepgdatasoruce
-
+from collections import OrderedDict
 import os
+import json
+import requests
 
 CURRENT_PATH = os.getcwd()
 TEST_BASE_PATH = '/qdjango/tests/data/'
 DATASOURCE_PATH = '{}{}'.format(CURRENT_PATH, TEST_BASE_PATH)
-QGS_FILE = 'g3wsuite_project_test.qgs'
+QGS_FILE = 'g3wsuite_project_test_qgis310.qgs'
 
 
 class QgisProjectTest(TestCase):
@@ -25,16 +28,19 @@ class QgisProjectTest(TestCase):
 
     def test_qgis_project(self):
 
+        # check general data
+        # -----------------------------------------
         self.assertEqual(self.project.title, 'G3W-Suite project test')
         self.assertEqual(self.project.name, 'G3W-Suite project test')
-        self.assertEqual(self.project.qgisVersion, '2.18.24')
+        self.assertEqual(self.project.qgisVersion, '3.10.3-A Coruña')
         self.assertEqual(self.project.srid, 4326)
         self.assertEqual(self.project.units, 'degrees')
 
         # check initialExtent
+        # -----------------------------------------
         test_initial_extent_data = {
             'xmin': '-33.65090664007660592',
-            'ymin': '27.12817952613412231',
+            'ymin': '27.12817952613411876',
             'xmax': '60.84904085992335609',
             'ymax': '72.86178698120474451'
         }
@@ -42,6 +48,7 @@ class QgisProjectTest(TestCase):
         self.assertEqual(self.project.initialExtent, test_initial_extent_data)
 
         # check maxExtent
+        # -----------------------------------------
         test_max_extent_data = {
             'xmin': '-188.9998950000000093',
             'ymin': '-94.66237441014119725',
@@ -50,6 +57,11 @@ class QgisProjectTest(TestCase):
         }
 
         self.assertEqual(self.project.maxExtent, test_max_extent_data)
+
+        # check wms use layer ids:
+        # -----------------------------------------
+
+        self.assertFalse(self.project.wmsuselayerids)
 
         # test wfsLyers
         test_wfs_layers = [
@@ -61,6 +73,7 @@ class QgisProjectTest(TestCase):
         self.assertEqual(self.project.wfsLayers, test_wfs_layers)
 
         # test wfstLayer
+        # -----------------------------------------
         test_wfst_layers = {
             'INSERT': ['countries_simpl20171228095706310'],
             'UPDATE': ['cities10000eu20171228095720113'],
@@ -70,19 +83,30 @@ class QgisProjectTest(TestCase):
         self.assertEqual(self.project.wfstLayers, test_wfst_layers)
 
         # test_layersTree
+        # -----------------------------------------
         test_layersTree_data = [
             {'visible': True, 'expanded': True, 'name': 'Rivers', 'id': 'rivers20171228095726368'},
             {'visible': True, 'expanded': True, 'name': 'Cities', 'id': 'cities10000eu20171228095720113'},
             {'visible': True, 'expanded': True, 'name': 'Countries', 'id': 'countries_simpl20171228095706310'},
-            {'visible': True, 'expanded': True, 'name': 'Dem', 'id': 'europa_dem20171228095729169'}
+            {'visible': True, 'expanded': True, 'name': 'Dem', 'id': 'europa_dem20171228095729169'},
+            {'name': 'Blue Marble World Elevation and Bathymetry Raster', 'expanded': True,
+             'id': 'Blue_Marble_World_Elevation_and_Bathymetry_Raster_3597b571_68a3_4344_867c_8dcd1d44eaf2',
+             'visible': True}
         ]
 
         self.assertEqual(self.project.layersTree, test_layersTree_data)
 
+        # check layerRelations
+        # ------------------------------------------
+        layer_relations_to_check = '[{"referencingLayer": "cities10000eu20171228095720113", "strength": "Association", "referencedLayer": "countries_simpl20171228095706310", "name": "countries-citites", "id": "cities1000_ISO2_CODE_countries__ISOCODE", "fieldRef": {"referencingField": "ISO2_CODE", "referencedField": "ISOCODE"}}]'
+        self.assertEqual(self.project.layerRelations, json.loads(layer_relations_to_check))
+
+
     def test_layers(self):
 
         # check layers in project
-        self.assertEqual(len(self.project.layers), 4)
+        # -------------------------------------
+        self.assertEqual(len(self.project.layers), 5)
 
         for layer in self.project.layers:
             if layer.layerId == 'countries_simpl20171228095706310':
@@ -92,8 +116,115 @@ class QgisProjectTest(TestCase):
                 self.assertEqual(layer.layerType, 'ogr')
                 self.assertEqual(layer.minScale, 100000000)
                 self.assertEqual(layer.maxScale, 0)
+                self.assertFalse(layer.scaleBasedVisibility)
+                self.assertEqual(layer.wfsCapabilities, 1)
                 self.assertTrue(layer.isVisible)
                 self.assertEqual(layer.srid, 4030)
+                self.assertEqual(layer.editOptions, 1)
+
+                # important check datasource, main for shp and raster data
+                # --------------------------------------------------------
+                self.assertEqual(layer.datasource, DATASOURCE_PATH + 'g3wsuite_test/countries.shp')
+
+                # check alias fields
+                # --------------------------------------------------------
+                '''
+                <alias name="" field="ISOCODE" index="0"/>
+                <alias name="" field="NAME_LOCAL" index="1"/>
+                <alias name="" field="NAME_EN" index="2"/>
+                <alias name="" field="CAPITAL_EN" index="3"/>
+                <alias name="" field="NAME_DE" index="4"/>
+                <alias name="" field="CAPITAL_DE" index="5"/>
+                <alias name="" field="NAME_IT" index="6"/>
+                <alias name="" field="CAPITAL_IT" index="7"/>
+                <alias name="" field="NAME_FR" index="8"/>
+                <alias name="" field="CAPITAL_FR" index="9"/>
+                <alias name="" field="NAME_BR" index="10"/>
+                <alias name="" field="CAPITAL_BR" index="11"/>
+                <alias name="" field="NAME_ES" index="12"/>
+                <alias name="" field="CAPITAL_ES" index="13"/>
+                <alias name="" field="POPULATION" index="14"/>
+                <alias name="" field="AREA_KM2" index="15"/>
+                <alias name="" field="ISO_NUM" index="16"/>
+                '''
+                aliases_to_check = OrderedDict({
+                    'ISOCODE': '',
+                    'NAME_LOCAL': '',
+                    'NAME_EN': '',
+                    'CAPITAL_EN': '',
+                    'NAME_DE': '',
+                    'CAPITAL_DE': '',
+                    'NAME_IT': '',
+                    'CAPITAL_IT': '',
+                    'NAME_FR': '',
+                    'CAPITAL_FR': '',
+                    'NAME_BR': '',
+                    'CAPITAL_BR': '',
+                    'NAME_ES': '',
+                    'CAPITAL_ES': '',
+                    'POPULATION': '',
+                    'AREA_KM2': '',
+                    'ISO_NUM': ''
+                })
+
+                self.assertEqual(layer.aliases, aliases_to_check)
+
+
+                # check columns
+                # --------------------------------------------------------
+                columns_to_check = '[{"name": "ISOCODE", "type": "STRING", "label": "ISOCODE"}, {"name": "NAME_LOCAL", "type": "STRING", "label": "NAME_LOCAL"}, {"name": "NAME_EN", "type": "STRING", "label": "NAME_EN"}, {"name": "CAPITAL_EN", "type": "STRING", "label": "CAPITAL_EN"}, {"name": "NAME_DE", "type": "STRING", "label": "NAME_DE"}, {"name": "CAPITAL_DE", "type": "STRING", "label": "CAPITAL_DE"}, {"name": "NAME_IT", "type": "STRING", "label": "NAME_IT"}, {"name": "CAPITAL_IT", "type": "STRING", "label": "CAPITAL_IT"}, {"name": "NAME_FR", "type": "STRING", "label": "NAME_FR"}, {"name": "CAPITAL_FR", "type": "STRING", "label": "CAPITAL_FR"}, {"name": "NAME_BR", "type": "STRING", "label": "NAME_BR"}, {"name": "CAPITAL_BR", "type": "STRING", "label": "CAPITAL_BR"}, {"name": "NAME_ES", "type": "STRING", "label": "NAME_ES"}, {"name": "CAPITAL_ES", "type": "STRING", "label": "CAPITAL_ES"}, {"name": "POPULATION", "type": "INTEGER64", "label": "POPULATION"}, {"name": "AREA_KM2", "type": "INTEGER64", "label": "AREA_KM2"}, {"name": "ISO_NUM", "type": "INTEGER", "label": "ISO_NUM"}]'
+
+                self.assertEqual(layer.columns, json.loads(columns_to_check))
+
+                # check excludeAttributesWMS
+                # --------------------------------------------------------
+                self.assertIsNone(layer.excludeAttributesWMS)
+
+                # check excludeAttributesWFS
+                # --------------------------------------------------------
+                self.assertIsNone(layer.excludeAttributesWFS)
+
+                # check geometrytype
+                # --------------------------------------------------------
+                self.assertEqual(layer.geometrytype, 'Polygon')
+
+                # check vectorjoins
+                # --------------------------------------------------------
+                self.assertCountEqual(layer.vectorjoins, [])
+
+                # check editTypes
+                # --------------------------------------------------------
+
+                edit_types_to_check = '{"ISOCODE": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "NAME_LOCAL": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "NAME_EN": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "CAPITAL_EN": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "NAME_DE": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "CAPITAL_DE": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "NAME_IT": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "CAPITAL_IT": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "NAME_FR": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "CAPITAL_FR": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "NAME_BR": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "CAPITAL_BR": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "NAME_ES": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "CAPITAL_ES": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "POPULATION": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "AREA_KM2": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "ISO_NUM": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}}'
+
+                self.assertEqual(layer.editTypes, json.loads(edit_types_to_check))
+
+                # check editorlayout
+                # --------------------------------------------------------
+                self.assertEqual(layer.editorlayout, 'generatedlayout')
+
+                # check editorformstructure
+                # --------------------------------------------------------
+                self.assertIsNone(layer.editorformstructure)
+
+            if layer.layerId == 'cities10000eu20171228095720113':
+
+                # check editorlayout
+                # --------------------------------------------------------
+                self.assertEqual(layer.editorlayout, 'tablayout')
+
+                # check editorformstructure
+                # --------------------------------------------------------
+
+                editor_form_structure_to_check = '[{"name": "Folder 1", "showlabel": true, "groupbox": false, "columncount": "1", "nodes": [{"showlabel": true, "index": "0", "field_name": "GEONAMEID", "alias": "Geo named"}, {"showlabel": true, "index": "1", "field_name": "NAME", "alias": "Name"}, {"showlabel": true, "index": "2", "field_name": "ASCIINAME", "alias": "Ascii name"}]}, {"name": "Folder 2", "showlabel": true, "groupbox": false, "columncount": "1", "nodes": [{"showlabel": true, "index": "4", "field_name": "POPULATION", "alias": ""}, {"showlabel": true, "index": "5", "field_name": "GTOPO30", "alias": ""}, {"showlabel": true, "index": "3", "field_name": "ISO2_CODE", "alias": "ISO Code"}]}]'
+                self.assertEqual(layer.editorformstructure, json.loads(editor_form_structure_to_check))
+
+                # check editTypes
+                # --------------------------------------------------------
+                edit_types_to_check = '{"GEONAMEID": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "false", "UseHtml": "false"}, "NAME": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "false", "UseHtml": "false"}, "ASCIINAME": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "false", "UseHtml": "false"}, "ISO2_CODE": {"widgetv2type": "UniqueValues", "fieldEditable": "1", "values": [], "Editable": "false"}, "POPULATION": {"widgetv2type": "Range", "fieldEditable": "1", "values": [], "AllowNull": "true", "Max": "2147483647", "Min": "-2147483648", "Precision": "0", "Step": "1", "Style": "SpinBox"}, "GTOPO30": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}}'
+                self.assertEqual(layer.editTypes, json.loads(edit_types_to_check))
+
+
 
     def test_get_schema_table(self):
 
@@ -161,6 +292,55 @@ class QgisProjectTest(TestCase):
         self.assertEqual(res['layer'], '2')
         self.assertEqual(res['url'],
                          'https://sampleserver1.arcgisonline.com/ArcGIS/rest/services/Specialty/ESRI_StateCityHighway_USA/MapServer')
+
+
+class QgisWMSProjectSettingsTest(TestCase):
+    """ Test parsing and reading or WMS project settings service result """
+
+    @override_settings(DATASOURCE_PATH=DATASOURCE_PATH)
+    def setUp(self):
+
+        # build service url and get response
+        self.qgs_prj_file_path = '{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_FILE)
+        service_url = "{}?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetProjectSettings&map={}".format(
+            settings.QDJANGO_SERVER_URL,
+            self.qgs_prj_file_path
+        )
+
+        response = requests.get(service_url)
+        self.project_settings = QgisProjectSettingsWMS(response.content)
+
+    def test_metadata(self):
+
+        metadata = self.project_settings.metadata
+        self.assertEqual(metadata['name'], 'WMS')
+        self.assertEqual(metadata['fees'], 'conditions unknown')
+        self.assertEqual(metadata['accessconstraints'], 'None')
+        self.assertEqual(metadata['keywords'], ['infoMapAccessService'])
+        self.assertEqual(metadata['onlineresource'], '{}?map={}'.format(
+            settings.QDJANGO_SERVER_URL,
+            self.qgs_prj_file_path
+        ))
+
+
+        #FIXME: look bettr to metadata iformations
+
+    def test_composertamplstes(self):
+
+        templates = self.project_settings.composerTemplates
+        self.assertEqual(len(templates), 1)
+        self.assertEqual(templates[0]['name'], 'A4')
+        self.assertEqual(templates[0]['w'], '297')
+        self.assertEqual(templates[0]['h'], '210')
+        self.assertEqual(len(templates[0]['maps']), 1)
+
+        tmap = templates[0]['maps'][0]
+        self.assertEqual(tmap['name'], 'map0')
+        self.assertEqual(tmap['w'], 189.53)
+        self.assertEqual(tmap['h'], 117.7594485294118)
+
+
+
 
 
 class QdjangoUtilsTest(QdjangoTestBase):

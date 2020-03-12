@@ -28,6 +28,7 @@ TEST_BASE_PATH = '/qdjango/tests/data/'
 DATASOURCE_PATH = '{}{}un-progetto-data'.format(CURRENT_PATH, TEST_BASE_PATH)
 QGS2_FILE = 'gruppo-1_un-progetto.qgs'
 QGS_FILE = 'gruppo-1_un-progetto_qgis34.qgs'
+QGS310_FILE = 'g3wsuite_project_test_qgis310.qgs'
 
 
 @override_settings(
