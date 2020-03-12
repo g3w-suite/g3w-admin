@@ -140,24 +140,6 @@ class QgisLayerStructure(object):
     def getTableColumns(self):
         pass
 
-    '''
-    def clearColoumn(self, coloumn_name):
-        """
-        Get coloumn name and remove special charpter like , ; : ecc.
-        Sub blankspace with underscore
-        :param coloumn_name:
-        :return:
-        """
-
-        # remove
-        coloumn_name = re.sub('[;:,%@$^&*!#()\[\]\{\}\\n\\r]+', '', coloumn_name)
-
-        # replace whitespaces
-        coloumn_name = re.sub('\s', '_', coloumn_name)
-
-        return coloumn_name
-    '''
-
 
 class QgisOGRLayerStructure(QgisLayerStructure):
     """
@@ -232,6 +214,7 @@ class QgisAFSLayerStructure(QgisLayerStructure):
 
 
 class QgisDBLayerStructure(QgisLayerStructure):
+    """ Class to analyze and get db data structure """
 
     _dbTypes = {
         Layer.TYPES.postgres: 'postgresql+psycopg2',
@@ -325,6 +308,7 @@ class QgisDBLayerStructure(QgisLayerStructure):
 
 
 class QgisCSVLayerStructure(QgisLayerStructure):
+    """ Class to analyze and get data csv structure """
 
     def __init__(self, layer, **kwargs):
         super(QgisCSVLayerStructure, self).__init__(layer, **kwargs)
