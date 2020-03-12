@@ -48,6 +48,10 @@ def get_schema_table(datasource_table):
 def datasource2dict(datasource):
     """
     Read a DB datasource string and put data in a python dict
+
+    :param datasource: qgis project datasource
+    :return: dict with datasource params
+    :rtype: dict
     """
 
     datasourceDict = {}
@@ -77,6 +81,10 @@ def datasource2dict(datasource):
 def datasourcearcgis2dict(datasource):
     """
     Read a ArcGisMapServer datasource string and put data in a python dict
+
+    :param datasource: qgis project arcgis layer datasource
+    :return: dict with datasource params
+    :rtype: dict
     """
 
     datasourcedict = {}
@@ -126,7 +134,7 @@ class QdjangoMetaLayer(CoreMetaLayer):
 
 
 class QgisLayerStructure(object):
-
+    """ Base calss for data structure """
     def __init__(self, layer, **kwargs):
         self.layer = layer
         self.datasource = layer.datasource
@@ -138,6 +146,7 @@ class QgisLayerStructure(object):
         self._errDatasourceNotFound += _('which should be located at') + ' "{}"'
 
     def getTableColumns(self):
+        """ Main method """
         pass
 
 
@@ -165,7 +174,7 @@ class QgisOGRLayerStructure(QgisLayerStructure):
 
     def getTableColumns(self):
         """
-        Get table column info from ogr layer by gdal python lib
+        Get table column info from ogr layer by gdal python lib and set into self.columns property
         """
         dataSourceOgr = ogr.Open(self.datasource)
         daLayer = dataSourceOgr.GetLayer(0)
