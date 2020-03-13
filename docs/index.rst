@@ -7,20 +7,16 @@
 Welcome to G3W-SUITE's documentation!
 =====================================
 
-.. .. include:: ../README.md
 
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+.. image:: images/admin.jpg
+.. image:: images/client.jpg
 
 .. toctree::
    :maxdepth: 2
    :hidden:
 
    install
+   docker
    deploy
 
 
