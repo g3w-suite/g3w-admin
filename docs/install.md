@@ -1,4 +1,4 @@
-# G3W-SUITE MANUAL INSTALLATION
+# Raw installation
 
 The following instructions are for a Ubuntu 18.04 LTS.
 

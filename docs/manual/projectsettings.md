@@ -47,3 +47,38 @@ In this section it is possible to define the capabilities of the product service
 This information, together with that associated with the data structure of the individual project layers, will be displayed associated with the WebGis service in the Metadata session.
 
 ![Project title settings](../images/manual/qgisservercapabilities.png)
+
+##### Capabilities WMS - Extension published
+In this section it is possible to define the geographical extension displayed when the WebGis service is started.
+    
+The easiest procedure to follow is to set the desired geographical view on the map and then click on the **'Set to map extension'** button.
+
+![](../images/manual/qgisserversetmapexpetent.png)
+
+##### WMS Capabilities - SR Restrictions
+In this section it is possible to define the projection systems for which the project is available in relation to OGC services.
+
+It is clearly necessary to insert the projection system on which the project was made, the SR in question is added by clicking on the **'Used'** button.
+
+Other geographic reference systems can be implemented by clicking on the **'+'** button and choosing from the list of reference systems.
+
+![](../images/manual/qgisserversrisrestriction.png)
+
+##### Capabilities WMS - Exclude compositions
+In this section it is possible to exclude some of the print layouts that are associated with the cartographic project from the availability of the WebGis service.
+
+By clicking on the **'+'** button you have access to the list of print layouts associated with the projects and select those to be excluded from the availability of the WebGis service.
+
+![](../images/manual/qgisserverexludecompositions.png)
+
+##### Capabilities WMS - Exclude layers
+In this section it is possible to define the list of layers contained in the project that will not be exposed in the WebGis service.
+
+![](../images/manual/qgisserverexludelayers.png)
+
+##### Capabilities WMS - General aspects
+Two further aspects are manageable with regard to WMS capabilities
+ * in general it is recommended to use the ids of the project layers as identifiers
+ * to be able to make the zoom function on the results of a search or those of a query active on WebGis, the option "Add geometry to object response" must be activated
+
+![](../images/manual/qgisservergeneralaspects.png)
