@@ -88,4 +88,4 @@ In this section it is possible to define which carriers are exposed as WFS servi
  * bbox query
  * bypolygon queryJust tick the check box for the "Published" column
  
- ![](../images/manual/qgisservergeneralaspectwfs.png)
+ ![](../images/manual/qgisservergeneralaspectswfs.png)
