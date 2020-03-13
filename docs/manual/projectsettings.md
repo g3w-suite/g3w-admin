@@ -82,3 +82,10 @@ Two further aspects are manageable with regard to WMS capabilities
  * to be able to make the zoom function on the results of a search or those of a query active on WebGis, the option "Add geometry to object response" must be activated
 
 ![](../images/manual/qgisservergeneralaspects.png)
+
+##### Capabilities WFS
+In this section it is possible to define which carriers are exposed as WFS services and which will therefore provide an answer following the query in two ways:
+ * bbox query
+ * bypolygon queryJust tick the check box for the "Published" column
+ 
+ ![](../images/manual/qgisservergeneralaspectwfs.png)
