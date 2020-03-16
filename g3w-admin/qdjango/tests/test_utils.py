@@ -22,7 +22,7 @@ class QgisProjectTest(TestCase):
     @override_settings(DATASOURCE_PATH=DATASOURCE_PATH)
     def setUp(self):
 
-        qgis_project_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_FILE), 'r'))
+        qgis_project_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_FILE), 'r', encoding='utf-8'))
         self.project = QgisProject(qgis_project_file)
         qgis_project_file.close()
 
@@ -302,13 +302,11 @@ class QgisWMSProjectSettingsTest(TestCase):
 
         # build service url and get response
         self.qgs_prj_file_path = '{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_FILE)
-        service_url = "{}?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetProjectSettings&map={}".format(
-            settings.QDJANGO_SERVER_URL,
-            self.qgs_prj_file_path
-        )
 
-        response = requests.get(service_url)
-        self.project_settings = QgisProjectSettingsWMS(response.content)
+        with File(open('{}{}{}'.format(
+            CURRENT_PATH, TEST_BASE_PATH, 'getProjectSettings_g3wsuite_project_test_qgis310.xml'
+        ), 'r')) as project_settings_file:
+            self.project_settings = QgisProjectSettingsWMS(bytes(project_settings_file.read(), 'utf-8'))
 
     def test_metadata(self):
 
@@ -317,15 +315,11 @@ class QgisWMSProjectSettingsTest(TestCase):
         self.assertEqual(metadata['fees'], 'conditions unknown')
         self.assertEqual(metadata['accessconstraints'], 'None')
         self.assertEqual(metadata['keywords'], ['infoMapAccessService'])
-        self.assertEqual(metadata['onlineresource'], '{}?map={}'.format(
-            settings.QDJANGO_SERVER_URL,
-            self.qgs_prj_file_path
-        ))
 
 
         #FIXME: look bettr to metadata iformations
 
-    def test_composertamplstes(self):
+    def test_composertemplates(self):
 
         templates = self.project_settings.composerTemplates
         self.assertEqual(len(templates), 1)
