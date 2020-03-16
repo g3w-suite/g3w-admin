@@ -42,5 +42,7 @@ Through the web interface based on the G3W-SUITE framework and developed by Gis3
    manual/infrastructure
    manual/datamanagement
    manual/projectsettings
+   manual/g3wsuite_access_portal
+   manual/g3wsuite_administration
 
 
