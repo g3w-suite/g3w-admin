@@ -19,8 +19,8 @@ The MacroGroups, Groups and WebGis services listed will be those defined as free
 If you have a user for access, you can authenticate yourself through the **Access** session and by entering the **user and password** in your possession.
 Following authentication, the **Maps** page will also show the MacroGroups, Groups and WebGis services with restricted access and on which the user has access permissions.
 
-![Project title settings](../g3wsuite_portal_macrogroups.png)
-![Project title settings](../g3wsuite_portal_groups.png)
+![Project title settings](../images/manual/g3wsuite_portal_macrogroups.png)
+![Project title settings](../images/manual/g3wsuite_portal_groups.png)
 
 ### Login
 If you have a user for access, you can authenticate yourself through this session by entering the **user and password** in your possession.
