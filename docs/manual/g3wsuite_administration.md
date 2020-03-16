@@ -1,4 +1,4 @@
-#G3W-ADMIN: the Administration panel
+# G3W-ADMIN: the Administration panel
 The Administration Panel allows you to manage all aspects related to the publication and configuration of QGIS projects with WebGis services
 The main page of the Administration Panel shows:
  * **a bar at the top:**
@@ -18,7 +18,7 @@ The main page of the Administration Panel shows:
  
 ![Project title settings](../images/manual/g3wsuite_administration_desk.png)
 
-##G3W-SUITE: Access portal customization
+## G3W-SUITE: Access portal customization
 From the main page of the **Administration Panel** it is possible to customize the information shown on the Access Portal.
 To modify these settings, click on the **Configurations** icon located at the bottom of the bar at the top and then click on the item **"Change general data"** which will appear in the menu below.
 
@@ -32,37 +32,37 @@ In the form that will be accessed from this menu we could define:
  * **Social media data:** links to the social channels that will appear in the **What is** it session
  * **Map Client data:** title that will be displayed as the main header of the map client
  
-###Home data
+### Home data
 Information that will be displayed on the access page to the map portal
 **ATTENTION:** contents marked with * are mandatory.
 
 ![Project title settings](../images/manual/g3wsuite_administration_configuration_homedata.png)
 
-###About us data
+### About us data
 Information that will be displayed in the **What is** it session
 **ATTENTION:** contents marked with * are mandatory.
 
 ![Project title settings](../images/manual/g3wsuite_administration_configuration_aboutusdata.png)
 
-###Frontend map groups data
+### Frontend map groups data
 Information that will be displayed in the **Maps** session
 **ATTENTION:** contents marked with * are mandatory.
 
 ![Project title settings](../images/manual/g3wsuite_administration_configuration_mapgroupsdata.png)
 
-###Frontend login data
+### Frontend login data
 Information that will be displayed in the **Login/Administration** session
 **ATTENTION:** contents marked with * are mandatory.
 
 ![Project title settings](../images/manual/g3wsuite_administration_configuration_logindata.png)
 
-###Social media data
+### Social media data
 Links to the social channels that will be displayed in the **What is** it session
 **ATTENTION:** contents marked with * are mandatory.
 
 ![Project title settings](../images/manual/g3wsuite_administration_configuration_socialdata.png)
 
-###Map client data
+### Map client data
 Title that will be displayed as the main header of the map client.
 
 ![Project title settings](../images/manual/g3wsuite_administration_configuration_mapclientdata.png)
@@ -72,7 +72,7 @@ After filling in the various from, click on the Save button to confirm your choi
 
 ![Project title settings](../images/manual/buttom_save.png)
 
-##Hierarchical organization of WebGis services and Types of Users
+## Hierarchical organization of WebGis services and Types of Users
 This paragraph allows you to understand how G3W-SUITE makes it possible to manage the individual WebGis services in a structured and hierarchical way.
 The organizational levels are:
  * Cartographic MacroGroups
@@ -84,7 +84,7 @@ Access policies and individual functional modules may be associated with each We
 
 ![Project title settings](../images/manual/g3wsuite_administration_organization_containers.png)
 
-###Types of Users (Roles)
+### Types of Users (Roles)
 The user management session allows you to create **Users** and **Users Groups** and associate them with specific roles:
  * **Admin1:** user with full powers **including** Django administration (basic suite configuration)
  * **Admin2:** user with full powers **excluding** those of Django administration (basic configuration of the suite)
@@ -99,13 +99,13 @@ The user management session allows you to create **Users** and **Users Groups** 
  * **Viewer:** user with access permission in consultation to WebGis services characterized by authentication. The user can also use individual functional Modules if the relative permissions have been attributed to him
  * **Anonymus User:** user to be associated with WebGis services and / or functional modules with free access
 
-###Hierarchical organization of contents
+### Hierarchical organization of contents
 The following paragraph is dedicated to better understanding the relationships between the different types of users and the different elements of the suite (MacroGroups, Map Groups, WebGis services ...).
 I**t is important to remember that while to publish a WebGis service you must first create a Cartographic Group that contains it, the creation / management of Cartographic MacroGroups (and associated Editor 1 users) is optional.
 If the use of MacroGroups is not necessary, the use of Editor 1 users is not recommended.**
 The following are the two cases below:
 
-####Absence of MacroGroups
+#### Absence of MacroGroups
 In case of absence of the coupled MacroGruppi/Editor1, the **Admin** user will be the only administrator of the suite and can therefore:
  * create users (individuals and/or groups) of various types
  * create **Cartographic Groups**
@@ -120,7 +120,7 @@ In the event that the Cartographic Group is associated with a user or a group of
 Editor 2** users will also be able to define their access policies to the published WebGis services, based only on **Viewers** users associated with the Cartographic Group by the Admin user.
 Even the **Admin** user can publish **WebGis services** within a Cartographic Group and, if necessary, associate them with a user (single and/or group) of **Editor 2** type.
 
-####Presence of MacroGroups
+#### Presence of MacroGroups
 The **Macrogroups** are thematic containers dedicated to the individual superstructures of the Body (e.g. Municipal Administrations of a Union of Municipalities) within which Cartographic Groups dedicated to individual Services (e.g. Registry Office, Public Works, Urban Planning ...) can be created.
 Each **Thematic Group** will welcome individual WebGis services.
 **Macrogroups** can be created only by **Admin** users.
@@ -143,17 +143,17 @@ In the event that the Cartographic Group is associated with a user or a group of
 **Editor 2** users will also be able to define their access policies to the published WebGis services, based only on **Viewers** users associated with the Cartographic Group by the Editor 1 user.
 Even the **Admin** user will be able to publish **WebGis services** within a Cartographic Group and, if necessary, associate them with **Editor 1** type users and **Editor 2** (individual and/or group) users.
 
-###Summary table
+### Summary table
 Below is a summary table of the powers associated with the different types of users.
 
-##Users and Groups management
+## Users and Groups management
 In the left side menu there is the USERS item with four sub-items:
  * **Add user**
  * **User list**
  * **Add user group**
  * **List of user groups**
  
-###Add user
+### Add user
 Through this form it is possible to insert new users and define their characteristics.
 They define themselves:
  * Personal data: name, surname and email address
@@ -174,7 +174,7 @@ After filling in the various from, click on the Save button to confirm your choi
 
 ![Project title settings](../images/manual/buttom_save.png)
 
-###User list
+### User list
 Through this form you can consult the list of enabled users and their characteristics:
  * username
  * role
@@ -191,7 +191,7 @@ Using the icons at the head of each row, you can:
  * ![Project title settings](../images/manual/icon_edit.png) **Modify:** to modify the characteristics of the user
  * ![Project title settings](../images/manual/icon_erase.png) **Delete:** to permanently delete a user
  
-###Add User group
+### Add User group
 Through this form it is possible to insert new user groups and define their role.
 It is possible to create only two types of user groups:
  * **Editor:** in which only Editor2 users can be inserted
@@ -209,7 +209,7 @@ After filling in the from, click on the **Save** button to confirm your choices.
 
 ![Project title settings](../images/manual/buttom_save.png)
 
-###Users groups list
+### Users groups list
 Through this form it is possible to consult the list of enabled user groups, their characteristics and the individual users belonging to the group.
 
 ![Project title settings](../images/manual/g3wsuite_administration_usergroup_list.png)
@@ -219,21 +219,21 @@ Using the icons at the head of each row, you can:
  * ![Project title settings](../images/manual/icon_edit.png) **Modify:** to modify the characteristics of the group 
  * ![Project title settings](../images/manual/icon_erase.png) **Delete:** to permanently delete a group and therefore association with users belonging to the group itself 
 
-##Cartographic Macro Groups management
+## Cartographic Macro Groups management
 In this section it is possible to view the list of Cartographic Macrogroups, manage them and create new ones.
 A Macrogroup was created, for example, to **collect a series of Cartographic Groups belonging to the same macro Service** (single Municipality within a Union of Municipalities) or more simply to have main containers that contain second level groupings (Groups).
 In the left side menu there is the **MacroGroup Cartographic** item with two sub-items:
  * **Add MacroGroup:** to create a new Cartographic MacroGroup
  * **MacroGroups list:** to access the list of MacroGroups present
  
-###Add MacroGroups
+### Add MacroGroups
 Through this item, available only for the **Admin** user, it will be possible to create a new Cartographic MacroGroup and associate it with an Editor1 type user who will become its administrator.
 Let's see in detail the various sub-sessions of the group creation form.
 
-####ACL users
+#### ACL users
 **Editor users:** you define the first level Editor user who will become the group administrator. This user can manage the MacroGroup by creating thematic Groups, publishing projects and creating Users or Associated User Groups.
 
-####General data
+#### General data
  * **Title*:** descriptive title of the MacroGroup (will appear in the list of MacroGroups)
  * **Use title and logo as client header:** by default, the map client header, for each WebGis service, is instead made up of:
   * main title (definable at General Data management level)
@@ -245,7 +245,7 @@ After compiling the rom, click on the Save button to confirm your choices.
 
 ![Project title settings](../images/manual/buttom_save.png)
 
-###MacroGroups list
+### MacroGroups list
 The menu provides access to the list of cartographic macro-groups present.
 
 ![Project title settings](../images/manual/g3wsuite_administration_macrogroup_list.png)
@@ -260,10 +260,10 @@ There are also a series of buttons to access specific functions:
  * the **removal of all the cartographic projects** contained in the individual Groups
  * the **removal of all the widgets** (eg searches) that would remain orphaned after the removal of the cartographic projects contained in the group. See the Widget chapter for more information.
 
-####Display order of the MacroGroups in the FrontEnd
+#### Display order of the MacroGroups in the FrontEnd
 Through the Drag & Drop function it is possible to define the order of the MacroGroups in the list. This order will be reflected in the FronEnd.
 
-##Thematic Groups Management
+## Thematic Groups Management
 In this section it is possible to view the list of Cartographic Groups present, manage them and create new ones.
 A Cartographic Group was created to **collect a series of cartographic projects belonging, for example, to the same theme** (Urban Planning Regulations, tourist maps ...) and characterized by the same projection system.
 It should be remembered that, when viewing the WebGis services, it will be possible to switch from one cartographic project to another, leaving the geographical extension displayed fixed, only between the projects contained in the same cartographic group.
@@ -273,22 +273,22 @@ In the left side menu there is the **Cartographic Groups** item with two sub-ite
 
 You can also access the list of groups by clicking on the **"Show"** button in the **Groups** box on the **Desktop**.
 
-###Add Group
+### Add Group
 Through this item it is possible to create a new thematic group.
 By creating a thematic group, some functional characteristics and modules that the WebGis interface will show for all cartographic projects published within the group are also defined.
 Let's see in detail the various sub-sessions of the group creation form.
 
-####General data
+#### General data
  * **Name*:** group identification name (will appear in the group list)
  * **Title*:** descriptive title of the group (will appear in the list of groups)
  * **Description:** free description of the group (will appear when accessing the group)
  * **Language*:** interface language
     
-####Logo image
+#### Logo image
  * **Header logo img*:** the logo to be displayed at the top left of the WebGis interface
  * **Logo link:** a possible link to associate with the logo
     
-####ACL Users
+#### ACL Users
 Access and modification powers are managed.
 The options present will vary according to the type of user (Admin or Editor1) who creates / manages the Group
  * **Editor1 User:** defines the user (Editor1) manager of the Group.
@@ -304,16 +304,16 @@ This option cancels any differentiation in the access policies applied to the We
 
 ![Project title settings](../images/manual/g3wsuite_administration_group_add_acl.png)
 
-####MacroGroup
+#### MacroGroup
 Possible definition of the belonging MacroGroup.
 This option is available only if the Admin user creates the Cartographic Group.
 In the event that the Group is created by an Editor1 type user, the Group will be automatically associated with the MacroGroup associated with Editor1 itself.
 
-####GEO data
+#### GEO data
 Projection system associated with the group.
 **N.B.** All projects loaded into the group must be associated with this SRID.
 
-####Basic Layer Default Map Features
+#### Basic Layer Default Map Features
 In this box you can define:
  * **Mapcontrols*:** list of tools (buttons) available on the WebGis client:
   * **zoomtoextent:** zoom to the initial extension
@@ -338,7 +338,7 @@ In this box you can define:
 
 ![Project title settings](../images/manual/g3wsuite_administration_group_add_geodata.png)
 
-####Copyrigth
+#### Copyrigth
 **Terms of use:** description of the terms of use of the map and any other info
 **Link to terms:** link to text
 
@@ -346,7 +346,7 @@ After filling in the various from, click on the **Save** button to confirm your 
  
 ![Project title settings](../images/manual/buttom_save.png)
 
-###List of cartographic groups
+### List of cartographic groups
 From the menu you can access the list of cartographic groups present.
 For each group, the Title and Subtitle defined at the time of creation are shown.
 There are also a series of buttons to access specific functions:
@@ -364,7 +364,7 @@ Finally, there is a large **+** key to access the form for creating a new group.
 
 ![Project title settings](../images/manual/g3wsuite_administration_group_list.png)
 
-####Display order of cartographic groups in the FrontEnd
+#### Display order of cartographic groups in the FrontEnd
 Using the Drag & Drop function it is possible to define the order of the Groups in the list.
 This order will be reflected within the belonging MacroGroups.
 **NB:** currently in the list of Groups it is not present in the subdivision in the belonging MacroGroups but the fact that a Group can be associated with only one MacroGroup still allows you to manage intuitively what will be the display order.
