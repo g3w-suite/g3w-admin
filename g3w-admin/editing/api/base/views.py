@@ -72,7 +72,8 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
         super().response_data_mode(request)
 
         # lock features and get:
-        features_locked = self.metadata_layer.lock.lockFeatures(self.metadata_layer.qgis_layer.allFeatureIds())
+        feature_ids = [f.id() for f in self.features]
+        features_locked = self.metadata_layer.lock.lockFeatures(feature_ids)
 
         # update response
         self.results.update({

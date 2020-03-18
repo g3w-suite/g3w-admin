@@ -223,6 +223,8 @@ def validate_constraint(**kwargs):
 def add_constraints(**kwargs):
     """
     Add contraints params to MODE_CONFIG response vectorlayer
+    :return: dict with constraints data
+    :rtype: dict, None
     """
     # check if is instance of layerVectorView
     if not isinstance(kwargs['sender'], LayerVectorView) and kwargs['sender'].mode_call != MODE_CONFIG:

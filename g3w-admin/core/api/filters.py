@@ -147,14 +147,14 @@ class IntersectsBBoxFilter(BaseFilterBackend):
             request_data = request.data
         else:
             request_data = request.query_params
-        bbox_string = request_data.get('bbox_param', None)
+        bbox_string = request_data.get('in_bbox', None)
         if not bbox_string:
             return None
 
         try:
             p1x, p1y, p2x, p2y = (float(n) for n in bbox_string.split(','))
         except ValueError:
-            raise ParseError('Invalid bbox string supplied for parameter bbox_param')
+            raise ParseError('Invalid bbox string supplied for parameter in_bbox')
 
         return QgsRectangle(p1x, p1y, p2x, p2y)
 

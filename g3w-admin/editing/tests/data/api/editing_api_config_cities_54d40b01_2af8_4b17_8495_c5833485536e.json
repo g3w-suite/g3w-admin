@@ -1,0 +1,91 @@
+{
+  "result": true,
+  "vector": {
+    "format": "GeoJSON",
+    "pk": "ogc_fid",
+    "count": null,
+    "data": null,
+    "geometrytype": "Point",
+    "fields": [
+      {
+        "name": "ogc_fid",
+        "type": "integer",
+        "label": "ogc_fid",
+        "editable": false,
+        "validate": {},
+        "input": {
+          "type": "text",
+          "options": {}
+        }
+      },
+      {
+        "name": "geonameid",
+        "type": "integer",
+        "label": "geonameid",
+        "editable": true,
+        "validate": {},
+        "input": {
+          "type": "text",
+          "options": {}
+        }
+      },
+      {
+        "name": "name",
+        "type": "string",
+        "label": "name",
+        "editable": true,
+        "validate": {},
+        "input": {
+          "type": "text",
+          "options": {}
+        }
+      },
+      {
+        "name": "asciiname",
+        "type": "string",
+        "label": "asciiname",
+        "editable": true,
+        "validate": {},
+        "input": {
+          "type": "text",
+          "options": {}
+        }
+      },
+      {
+        "name": "iso2_code",
+        "type": "string",
+        "label": "iso2_code",
+        "editable": true,
+        "validate": {},
+        "input": {
+          "type": "text",
+          "options": {}
+        }
+      },
+      {
+        "name": "population",
+        "type": "integer",
+        "label": "population",
+        "editable": true,
+        "validate": {},
+        "input": {
+          "type": "text",
+          "options": {}
+        }
+      },
+      {
+        "name": "gtopo30",
+        "type": "integer",
+        "label": "gtopo30",
+        "editable": true,
+        "validate": {},
+        "input": {
+          "type": "text",
+          "options": {}
+        }
+      }
+    ]
+  },
+  "featurelocks": null,
+  "constraints": {}
+}

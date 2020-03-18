@@ -38,6 +38,9 @@ DATASOURCE_PATH = '{}{}'.format(CURRENT_PATH, TEST_BASE_PATH)
 QGS_DB = 'constraints_test.db'
 QGS_DB_BACKUP = 'constraints_test_backup.db'
 QGS_FILE = 'constraints_test_project.qgs'
+QGS_EDITING_DB = 'editing_test.db'
+QGS_EDITING_DB_BACKUP = 'editing_test_backup.db'
+QGS_EDITING_FILE = 'editing_test_qgis310.qgs'
 
 
 
@@ -73,6 +76,9 @@ class ConstraintsTestsBase(TestCase):
         """
         shutil.copy('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_DB_BACKUP),
                     '{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_DB))
+
+        shutil.copy('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_EDITING_DB_BACKUP),
+                    '{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_EDITING_DB))
 
     @classmethod
     def setUpTestData(cls):
@@ -127,6 +133,13 @@ class ConstraintsTestsBase(TestCase):
         setPermissionUserObject(cls.test_user3, cls.editing_layer, ['change_layer'])
         setPermissionUserObject(cls.group, cls.editing_layer, ['change_layer'])
 
+        qgis_project_file.close()
+
+        # load QGIS editing project
+        qgis_project_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_EDITING_FILE), 'r'))
+        cls.editing_project = QgisProject(qgis_project_file)
+        cls.editing_project.group = cls.project_group
+        cls.editing_project.save()
         qgis_project_file.close()
 
     def tearDown(self):

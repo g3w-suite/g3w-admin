@@ -18,12 +18,42 @@ import json
 from django.urls import reverse
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.test import APIClient
-from .test_models import ConstraintsTestsBase
+from .test_models import ConstraintsTestsBase, DATASOURCE_PATH
 
 # Import for testing Python syntax
 from editing.api.constraints.views import *
 
 class EditingApiTests(ConstraintsTestsBase):
+
+    def setUp(self):
+        self.client = APIClient()
+        super(EditingApiTests, self).setUp()
+
+    def tearDown(self):
+        super(EditingApiTests, self).tearDown()
+        self.client.logout()
+
+    def _testApiCall(self, view_name, args, kwargs={}):
+        """Utility to make test calls"""
+
+        path = reverse(view_name, args=args)
+        if kwargs:
+            path += '?'
+            parts = []
+            for k,v in kwargs.items():
+                parts.append(k + '=' + v)
+            path += '&'.join(parts)
+
+        # No auth
+        response = self.client.get(path)
+        self.assertIn(response.status_code, [302, 403])
+
+        # Auth
+        self.assertTrue(self.client.login(username=self.test_user_admin1.username, password=self.test_user_admin1.username))
+        response = self.client.get(path)
+        self.assertEqual(response.status_code, 200)
+        self.client.logout()
+        return response
 
     def test_initconfig_plugin_start(self):
         """ Test initconfig api"""
@@ -84,6 +114,38 @@ class EditingApiTests(ConstraintsTestsBase):
                          reverse('constraint-api-geometry', kwargs={'editing_layer_id': editing_layer.pk}))
 
         constraint.delete()
+
+    def test_editing_api(self):
+        """ Test Editing API mode: MODE_UNLOCK,MODE_EDITING, MODE_COMMIT"""
+
+        cities_layer_id = 'cities_54d40b01_2af8_4b17_8495_c5833485536e'
+        cities_layer = self.editing_project.instance.layer_set.filter(qgs_layer_id=cities_layer_id)[0]
+
+        # activate editing plugins: set cities as editing layer
+        G3WEditingLayer.objects.create(app_name='qdjango', layer_id=cities_layer.pk)
+
+        # TEST MODE_CONFIG
+        # ---------------------------------------------
+        response = self._testApiCall('core-vector-api', ['config', 'qdjango', self.editing_project.instance.pk,
+                                      cities_layer_id])
+
+        # load response to compare
+        with open(DATASOURCE_PATH + 'api/editing_api_config_cities_54d40b01_2af8_4b17_8495_c5833485536e.json') as f:
+            res_expected = json.loads(f.read())
+
+        self.assertEqual(json.loads(response.content), res_expected)
+
+        # TEST MODE_EDITING
+        # ---------------------------------------------
+        response = self._testApiCall('editing-commit-vector-api', ['editing', 'qdjango', self.editing_project.instance.pk,
+                                     cities_layer_id])
+
+
+        jres = json.loads(response.content)
+
+        # check features
+        self.assertEqual(len(jres['vector']['data']['features']), 481)
+
 
 
 class ConstraintsApiTests(ConstraintsTestsBase):

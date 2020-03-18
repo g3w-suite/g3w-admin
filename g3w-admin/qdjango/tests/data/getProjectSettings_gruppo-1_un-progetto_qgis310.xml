@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WMS_Capabilities xmlns:sld="http://www.opengis.net/sld" xmlns:inspire_vs="http://inspire.ec.europa.eu/schemas/inspire_vs/1.0" xmlns="http://www.opengis.net/wms" xmlns:qgs="http://www.qgis.org/wms" xmlns:inspire_common="http://inspire.ec.europa.eu/schemas/common/1.0" version="1.3.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wms http://schemas.opengis.net/wms/1.3.0/capabilities_1_3_0.xsd http://www.opengis.net/sld http://schemas.opengis.net/sld/1.1.0/sld_capabilities.xsd http://inspire.ec.europa.eu/schemas/inspire_vs/1.0 http://inspire.ec.europa.eu/schemas/inspire_vs/1.0/inspire_vs.xsd http://www.qgis.org/wms http://localhost/qgis?map=/home/walter/PycharmProjects/g3w_suite_qgis_api/g3w-admin/qdjango/tests/data/gruppo-1_un-progetto_qgis310.qgs&amp;SERVICE=WMS&amp;REQUEST=GetSchemaExtension">
+ <Service>
+  <Name>WMS</Name>
+  <Title>Yet another WMS serving anything</Title>
+  <Abstract><![CDATA[Lorem ipsum sit amet]]></Abstract>
+  <KeywordList>
+   <Keyword vocabulary="ISO">infoMapAccessService</Keyword>
+   <Keyword>keyword1</Keyword>
+   <Keyword>keyword2</Keyword>
+  </KeywordList>
+  <OnlineResource xlink:href="http://localhost/qgis?map=/home/walter/PycharmProjects/g3w_suite_qgis_api/g3w-admin/qdjango/tests/data/gruppo-1_un-progetto_qgis310.qgs" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple"/>
+  <ContactInformation>
+   <ContactPersonPrimary>
+    <ContactPerson>Agent Smith</ContactPerson>
+    <ContactOrganization>ACME</ContactOrganization>
+    <ContactPosition>CEO</ContactPosition>
+   </ContactPersonPrimary>
+   <ContactVoiceTelephone>1234578</ContactVoiceTelephone>
+   <ContactElectronicMailAddress>mail@email.com</ContactElectronicMailAddress>
+  </ContactInformation>
+  <Fees>no conditions apply</Fees>
+  <AccessConstraints>copyright</AccessConstraints>
+ </Service>
+ <Capability>
+  <Request>
+   <GetCapabilities>
+    <Format>text/xml</Format>
+    <DCPType>
+     <HTTP>
+      <Get>
+       <OnlineResource xlink:href="http://localhost/qgis?map=/home/walter/PycharmProjects/g3w_suite_qgis_api/g3w-admin/qdjango/tests/data/gruppo-1_un-progetto_qgis310.qgs&amp;" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple"/>
+      </Get>
+     </HTTP>
+    </DCPType>
+   </GetCapabilities>
+   <GetMap>
+    <Format>image/jpeg</Format>
+    <Format>image/png</Format>
+    <Format>image/png; mode=16bit</Format>
+    <Format>image/png; mode=8bit</Format>
+    <Format>image/png; mode=1bit</Format>
+    <Format>application/dxf</Format>
+    <DCPType>
+     <HTTP>
+      <Get>
+       <OnlineResource xlink:href="http://localhost/qgis?map=/home/walter/PycharmProjects/g3w_suite_qgis_api/g3w-admin/qdjango/tests/data/gruppo-1_un-progetto_qgis310.qgs&amp;" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple"/>
+      </Get>
+     </HTTP>
+    </DCPType>
+   </GetMap>
+   <GetFeatureInfo>
+    <Format>text/plain</Format>
+    <Format>text/html</Format>
+    <Format>text/xml</Format>
+    <Format>application/vnd.ogc.gml</Format>
+    <Format>application/vnd.ogc.gml/3.1.1</Format>
+    <Format>application/json</Format>
+    <Format>application/geo+json</Format>
+    <DCPType>
+     <HTTP>
+      <Get>
+       <OnlineResource xlink:href="http://localhost/qgis?map=/home/walter/PycharmProjects/g3w_suite_qgis_api/g3w-admin/qdjango/tests/data/gruppo-1_un-progetto_qgis310.qgs&amp;" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple"/>
+      </Get>
+     </HTTP>
+    </DCPType>
+   </GetFeatureInfo>
+   <sld:GetLegendGraphic>
+    <Format>image/jpeg</Format>
+    <Format>image/png</Format>
+    <DCPType>
+     <HTTP>
+      <Get>
+       <OnlineResource xlink:href="http://localhost/qgis?map=/home/walter/PycharmProjects/g3w_suite_qgis_api/g3w-admin/qdjango/tests/data/gruppo-1_un-progetto_qgis310.qgs&amp;" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple"/>
+      </Get>
+     </HTTP>
+    </DCPType>
+   </sld:GetLegendGraphic>
+   <sld:DescribeLayer>
+    <Format>text/xml</Format>
+    <DCPType>
+     <HTTP>
+      <Get>
+       <OnlineResource xlink:href="http://localhost/qgis?map=/home/walter/PycharmProjects/g3w_suite_qgis_api/g3w-admin/qdjango/tests/data/gruppo-1_un-progetto_qgis310.qgs&amp;" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple"/>
+      </Get>
+     </HTTP>
+    </DCPType>
+   </sld:DescribeLayer>
+   <qgs:GetStyles>
+    <Format>text/xml</Format>
+    <DCPType>
+     <HTTP>
+      <Get>
+       <OnlineResource xlink:href="http://localhost/qgis?map=/home/walter/PycharmProjects/g3w_suite_qgis_api/g3w-admin/qdjango/tests/data/gruppo-1_un-progetto_qgis310.qgs&amp;" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple"/>
+      </Get>
+     </HTTP>
+    </DCPType>
+   </qgs:GetStyles>
+   <GetPrint>
+    <Format>svg</Format>
+    <Format>png</Format>
+    <Format>pdf</Format>
+    <DCPType>
+     <HTTP>
+      <Get>
+       <OnlineResource xlink:href="http://localhost/qgis?map=/home/walter/PycharmProjects/g3w_suite_qgis_api/g3w-admin/qdjango/tests/data/gruppo-1_un-progetto_qgis310.qgs&amp;" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple"/>
+      </Get>
+     </HTTP>
+    </DCPType>
+   </GetPrint>
+  </Request>
+  <Exception>
+   <Format>XML</Format>
+  </Exception>
+  <sld:UserDefinedSymbolization SupportSLD="1" UserStyle="1" RemoteWCS="0" InlineFeature="0" RemoteWFS="0" UserLayer="0"/>
+  <inspire_vs:ExtendedCapabilities>
+   <inspire_common:ResourceType>service</inspire_common:ResourceType>
+   <inspire_common:SpatialDataServiceType>view</inspire_common:SpatialDataServiceType>
+   <inspire_common:TemporalReference>
+    <inspire_common:DateOfLastRevision>2018-01-02</inspire_common:DateOfLastRevision>
+   </inspire_common:TemporalReference>
+   <inspire_common:MetadataPointOfContact>
+    <inspire_common:OrganisationName>ACME</inspire_common:OrganisationName>
+    <inspire_common:EmailAddress>mail@email.com</inspire_common:EmailAddress>
+   </inspire_common:MetadataPointOfContact>
+   <inspire_common:MetadataDate>2018-01-01</inspire_common:MetadataDate>
+   <inspire_common:SupportedLanguages xsi:type="inspire_common:supportedLanguagesType">
+    <inspire_common:DefaultLanguage>
+     <inspire_common:Language>ita</inspire_common:Language>
+    </inspire_common:DefaultLanguage>
+   </inspire_common:SupportedLanguages>
+   <inspire_common:ResponseLanguage>
+    <inspire_common:Language>ita</inspire_common:Language>
+   </inspire_common:ResponseLanguage>
+  </inspire_vs:ExtendedCapabilities>
+  <WFSLayers>
+   <WFSLayer name="spatialite_points"/>
+   <WFSLayer name="world"/>
+  </WFSLayers>
+  <Layer queryable="1">
+   <Title>Un progetto</Title>
+   <Abstract>Un progetto</Abstract>
+   <CRS>CRS:84</CRS>
+   <CRS>EPSG:4326</CRS>
+   <CRS>EPSG:3857</CRS>
+   <EX_GeographicBoundingBox>
+    <westBoundLongitude>-189</westBoundLongitude>
+    <eastBoundLongitude>189</eastBoundLongitude>
+    <southBoundLatitude>-130.145421</southBoundLatitude>
+    <northBoundLatitude>123.920154</northBoundLatitude>
+   </EX_GeographicBoundingBox>
+   <BoundingBox maxy="19762219.835" CRS="EPSG:3857" maxx="19932047.773" miny="-16421079.114" minx="-19932047.773"/>
+   <BoundingBox maxy="189" CRS="EPSG:4326" maxx="123.920154" miny="-189" minx="-130.145421"/>
+   <Name>Un progetto</Name>
+   <KeywordList>
+    <Keyword vocabulary="ISO">infoMapAccessService</Keyword>
+    <Keyword>keyword1</Keyword>
+    <Keyword>keyword2</Keyword>
+   </KeywordList>
+   <TreeName>Un progetto</TreeName>
+   <Layer visible="1" queryable="1" geometryType="Point" displayField="name">
+    <Name>spatialite_points</Name>
+    <Title>spatialite_points</Title>
+    <CRS>CRS:84</CRS>
+    <CRS>EPSG:4326</CRS>
+    <CRS>EPSG:3857</CRS>
+    <EX_GeographicBoundingBox>
+     <westBoundLongitude>1.980089</westBoundLongitude>
+     <eastBoundLongitude>10.685247</eastBoundLongitude>
+     <southBoundLatitude>28.779771</southBoundLatitude>
+     <northBoundLatitude>44.350969</northBoundLatitude>
+    </EX_GeographicBoundingBox>
+    <BoundingBox maxy="5519916.982" CRS="EPSG:3857" maxx="1189476.219" miny="3347645.64" minx="220422.539"/>
+    <BoundingBox maxy="10.685247" CRS="EPSG:4326" maxx="44.350969" miny="1.980089" minx="28.779771"/>
+    <Style>
+     <Name>predefinito</Name>
+     <Title>predefinito</Title>
+     <LegendURL>
+      <Format>image/png</Format>
+      <OnlineResource xlink:href="http://localhost/qgis?map=/home/walter/PycharmProjects/g3w_suite_qgis_api/g3w-admin/qdjango/tests/data/gruppo-1_un-progetto_qgis310.qgs&amp;SERVICE=WMS&amp;VERSION=1.3.0&amp;REQUEST=GetLegendGraphic&amp;LAYER=spatialite_points&amp;FORMAT=image/png&amp;STYLE=predefinito&amp;SLD_VERSION=1.1.0" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple"/>
+     </LegendURL>
+    </Style>
+    <TreeName>spatialite_points</TreeName>
+    <PrimaryKey>
+     <PrimaryKeyAttribute>pkuid</PrimaryKeyAttribute>
+    </PrimaryKey>
+    <Attributes>
+     <Attribute name="pkuid" editType="TextEdit" typeName="integer" comment="" length="0" precision="0" type="qlonglong"/>
+     <Attribute name="name" editType="TextEdit" typeName="text" comment="" length="0" precision="0" type="QString"/>
+    </Attributes>
+   </Layer>
+   <Layer visible="1" queryable="1" geometryType="MultiPolygon" displayField="NAME">
+    <Name>world</Name>
+    <Title>world</Title>
+    <CRS>CRS:84</CRS>
+    <CRS>EPSG:4326</CRS>
+    <CRS>EPSG:3857</CRS>
+    <EX_GeographicBoundingBox>
+     <westBoundLongitude>-180</westBoundLongitude>
+     <eastBoundLongitude>180</eastBoundLongitude>
+     <southBoundLatitude>-89.9</southBoundLatitude>
+     <northBoundLatitude>83.674733</northBoundLatitude>
+    </EX_GeographicBoundingBox>
+    <BoundingBox maxy="18469844.561" CRS="EPSG:3857" maxx="20037508.343" miny="-44927335.428" minx="-20037508.343"/>
+    <BoundingBox maxy="180" CRS="EPSG:4326" maxx="83.674733" miny="-180" minx="-89.9"/>
+    <Style>
+     <Name>predefinito</Name>
+     <Title>predefinito</Title>
+     <LegendURL>
+      <Format>image/png</Format>
+      <OnlineResource xlink:href="http://localhost/qgis?map=/home/walter/PycharmProjects/g3w_suite_qgis_api/g3w-admin/qdjango/tests/data/gruppo-1_un-progetto_qgis310.qgs&amp;SERVICE=WMS&amp;VERSION=1.3.0&amp;REQUEST=GetLegendGraphic&amp;LAYER=world&amp;FORMAT=image/png&amp;STYLE=predefinito&amp;SLD_VERSION=1.1.0" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple"/>
+     </LegendURL>
+    </Style>
+    <TreeName>world</TreeName>
+    <Attributes>
+     <Attribute name="NAME" editType="TextEdit" typeName="String" comment="" length="40" precision="0" type="QString"/>
+     <Attribute name="CAPITAL" editType="TextEdit" typeName="String" comment="" length="64" precision="0" type="QString"/>
+     <Attribute name="APPROX" editType="TextEdit" typeName="Integer64" comment="" length="15" precision="0" type="qlonglong"/>
+     <Attribute name="AREA" editType="TextEdit" typeName="Real" comment="" length="19" precision="15" type="double"/>
+     <Attribute name="SOURCETHM" editType="TextEdit" typeName="String" comment="" length="16" precision="0" type="QString"/>
+    </Attributes>
+   </Layer>
+   <Layer visible="1" queryable="1">
+    <Name>bluemarble</Name>
+    <Title>bluemarble</Title>
+    <CRS>CRS:84</CRS>
+    <CRS>EPSG:4326</CRS>
+    <CRS>EPSG:3857</CRS>
+    <EX_GeographicBoundingBox>
+     <westBoundLongitude>-180</westBoundLongitude>
+     <eastBoundLongitude>180</eastBoundLongitude>
+     <southBoundLatitude>-90</southBoundLatitude>
+     <northBoundLatitude>90</northBoundLatitude>
+    </EX_GeographicBoundingBox>
+    <BoundingBox maxy="16823984.524" CRS="EPSG:3857" maxx="20037508.343" miny="-16823984.524" minx="-20037508.343"/>
+    <BoundingBox maxy="180" CRS="EPSG:4326" maxx="90" miny="-180" minx="-90"/>
+    <Style>
+     <Name>predefinito</Name>
+     <Title>predefinito</Title>
+     <LegendURL>
+      <Format>image/png</Format>
+      <OnlineResource xlink:href="http://localhost/qgis?map=/home/walter/PycharmProjects/g3w_suite_qgis_api/g3w-admin/qdjango/tests/data/gruppo-1_un-progetto_qgis310.qgs&amp;SERVICE=WMS&amp;VERSION=1.3.0&amp;REQUEST=GetLegendGraphic&amp;LAYER=bluemarble&amp;FORMAT=image/png&amp;STYLE=predefinito&amp;SLD_VERSION=1.1.0" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple"/>
+     </LegendURL>
+    </Style>
+    <TreeName>bluemarble</TreeName>
+   </Layer>
+  </Layer>
+  <LayerDrawingOrder>bluemarble,world,spatialite_points</LayerDrawingOrder>
+ </Capability>
+</WMS_Capabilities>

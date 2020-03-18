@@ -88,6 +88,7 @@ class LayerLock(object):
     def lockFeatures(self, featuresIds):
         """
         Lock features
+        :param featuresIds: list Features layer ids to lock
         """
 
         # first get initial features locked

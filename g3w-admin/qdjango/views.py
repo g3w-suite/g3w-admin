@@ -181,6 +181,7 @@ class QdjangoProjectRelationsApiView(APIView):
     Return list of relations rows
     """
 
+    #FIXME: doing with QGIS api
     permission_classes = [
         ProjectRelationPermission
     ]

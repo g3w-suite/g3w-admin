@@ -49,12 +49,6 @@ class QGISLayerVectorViewMixin(object):
         else:
             self.reproject = False
 
-    def set_geo_filter(self):
-
-        # Instance bbox filter
-        self.bbox_filter = IntersectsBBoxFilter() if self.metadata_layer.geometry_type != QGIS_LAYER_TYPE_NO_GEOM \
-            else None
-
     def get_layer_by_params(self, params):
 
         layer_id = params['layer_name']
@@ -62,16 +56,6 @@ class QGISLayerVectorViewMixin(object):
 
         # get layer object from qdjango model layer
         return self._layer_model.objects.get(project_id=project_id, qgs_layer_id=layer_id)
-
-    def get_geoserializer_kwargs(self):
-
-        kwargs = {'model': self.metadata_layer.model, 'using': self.database_to_use}
-        if hasattr(self, 'layer') and self.layer.exclude_attribute_wms:
-            kwargs['exclude'] = eval(self.layer.exclude_attribute_wms)
-            if self.metadata_layer.model._meta.pk.name in kwargs['exclude']:
-                kwargs['exclude'].remove(self.metadata_layer.model._meta.pk.name)
-
-        return kwargs
 
     def set_relations(self):
         """Find relations and set metadata"""

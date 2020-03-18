@@ -4,6 +4,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from .base.views import BaseEditingVectorOnModelApiView
 from core.utils.db import build_dango_connection_name
 from core.api.views import USERMEDIAHANDLER_CLASSES
+from core.api.filters import IntersectsBBoxFilter
 from editing.api.permissions import QGISLayerEditingPermission
 from qdjango.vector import QGISLayerVectorViewMixin
 from django.views.decorators.csrf import csrf_exempt
@@ -19,7 +20,8 @@ class QGISEditingLayerVectorView(QGISLayerVectorViewMixin, BaseEditingVectorOnMo
         QGISLayerEditingPermission,
     )
 
-    filter_backends = (ConstraintsFilter, DjangoFilterBackend)
+    # for editing apply only contraint and bbox filters
+    filter_backends = (ConstraintsFilter, IntersectsBBoxFilter)
 
     def add_media_property(self, geojson_feature, metadata_layer):
         """

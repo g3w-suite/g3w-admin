@@ -156,11 +156,6 @@ class BaseVectorOnModelApiView(G3WAPIView):
     # Parameter for locking features data into db
     app_name = None
 
-    # Paramenters for bbox filtering
-    bbox_filter = None
-    bbox_filter_field = 'the_geom'
-    bbox_filter_include_overlapping = True
-
     # specific fileds data for media fifileds like picture/movies
     media_properties = dict()
 
@@ -253,25 +248,6 @@ class BaseVectorOnModelApiView(G3WAPIView):
         :return:
         """
         pass
-
-    def set_filters(self):
-        """
-        Set filters data from GET/POST params and internal filters
-        :return:
-        """
-        self.set_geo_filter()
-
-    def set_geo_filter(self):
-
-        # Instance bbox filter
-        self.bbox_filter = IntersectsBBoxFilter()
-
-    def get_geoserializer_kwargs(self):
-        """
-        To implente un sub class
-        :return: Dict for serializers params
-        """
-        return {}
 
     def set_metadata_layer(self, request, **kwargs):
         """
@@ -404,9 +380,6 @@ class BaseVectorOnModelApiView(G3WAPIView):
         :return: response dict data
         """
 
-        # Prepare filters
-        self.set_filters()
-
         # Create the QGIS feature request, it will be passed through filters
         # and to the final QGIS API get features call.
         qgis_feature_request = QgsFeatureRequest()
@@ -414,7 +387,7 @@ class BaseVectorOnModelApiView(G3WAPIView):
         # Prepare arguments for the get feature call
         kwargs = {}
 
-        # Process filter backends
+         # Process filter backends
         if hasattr(self, 'filter_backends'):
             for backend in self.filter_backends:
                 backend().apply_filter(request, self.metadata_layer.qgis_layer, qgis_feature_request, self)
@@ -424,13 +397,14 @@ class BaseVectorOnModelApiView(G3WAPIView):
             kwargs['page'] = request.query_params.get('page')
             kwargs['page_size'] = request.query_params.get('page_size', 10)
 
-        features = get_qgis_features(self.metadata_layer.qgis_layer, qgis_feature_request, **kwargs)
+        self.features = get_qgis_features(self.metadata_layer.qgis_layer, qgis_feature_request, **kwargs)
         ex = QgsJsonExporter(self.metadata_layer.qgis_layer)
-        feature_collection = json.loads(ex.exportFeatures(features))
+        feature_collection = json.loads(ex.exportFeatures(self.features))
 
+        # FIXME: QGIS api reprojecting?
         # Reproject if necessary
-        if self.reproject:
-            self.reproject_featurecollection(feature_collection)
+        #if self.reproject:
+        #    self.reproject_featurecollection(feature_collection)
 
         # Change media
         self.change_media(feature_collection)

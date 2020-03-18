@@ -51,7 +51,7 @@ class CoreApiTest(CoreTestBase):
         prj = Project.objects.get(title='Un progetto')
         cache_key = settings.QDJANGO_PRJ_CACHE_KEY.format(prj.pk)
         cache = caches['qdjango']
-        cache.set(cache_key, open(os.path.join(DATASOURCE_PATH, 'getProjectSettings_gruppo-1_un-progetto.xml')).read())
+        cache.set(cache_key, open(os.path.join(DATASOURCE_PATH, 'getProjectSettings_gruppo-1_un-progetto_qgis310.xml')).read())
 
         # Fix datasource path for spatialite
         l = Layer.objects.get(name='spatialite_points')
@@ -195,7 +195,7 @@ class CoreApiTest(CoreTestBase):
         """Test core-vector-api BBOX"""
 
         response = self._testApiCall('core-vector-api', ['data', 'qdjango', '1',
-        'spatialite_points20190604101052075'], {'bbox_param': '10.60,44.34,10.70,44.36'})
+        'spatialite_points20190604101052075'], {'in_bbox': '10.60,44.34,10.70,44.36'})
         resp = json.loads(response.content)
         self.assertIsNone(resp["vector"]["count"])
         self.assertEqual(resp["vector"]["format"], "GeoJSON")
@@ -230,14 +230,14 @@ class CoreApiTest(CoreTestBase):
 
         response = self._testApiCall('core-vector-api', ['data', 'qdjango', '1', 'spatialite_points20190604101052075'], {
              'search': 'a point',
-             'bbox_param': '10.60,44.34,10.70,44.36',
+             'in_bbox': '10.60,44.34,10.70,44.36',
              })
         resp = json.loads(response.content)
         self.assertEqual(resp["vector"]["data"]["features"], [])
 
         response = self._testApiCall('core-vector-api', ['data', 'qdjango', '1', 'spatialite_points20190604101052075'], {
              'search': 'point',
-             'bbox_param': '1.97,28.76,10.70,44.36',
+             'in_bbox': '1.97,28.76,10.70,44.36',
              'ordering': '-name'
              })
         resp = json.loads(response.content)

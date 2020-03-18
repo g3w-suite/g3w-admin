@@ -38,7 +38,7 @@ RELATIONS_NAMESPACE = 'g3w_'
 
 # data field type
 FIELD_TYPE_INTEGER = 'integer'
-FIELD_TYPE_BIGINTEGER = 'integer'
+FIELD_TYPE_BIGINTEGER = 'bigint'
 FIELD_TYPE_SMALLINTEGER = 'integer'
 FIELD_TYPE_FLOAT = 'float'
 FIELD_TYPE_STRING = 'string'
@@ -49,7 +49,7 @@ FIELD_TYPE_TIME = 'time'
 FIELD_TYPE_DATETIME = 'datetime'
 FIELD_TYPE_IMAGE = 'image'
 FIELD_TYPE_FILE = 'file'
-
+FIELD_TYPE_VARCHAR = 'varchar'
 
 # form field type
 FORM_FIELD_TYPE_TEXT = 'text'
@@ -74,6 +74,7 @@ FORM_FIELDS_MAPPING = {
     FIELD_TYPE_FLOAT: FORM_FIELD_TYPE_FLOAT,
     FIELD_TYPE_STRING: FORM_FIELD_TYPE_TEXT,
     FIELD_TYPE_TEXT: FORM_FIELD_TYPE_TEXTAREA,
+    FIELD_TYPE_VARCHAR: FORM_FIELD_TYPE_TEXT,
     FIELD_TYPE_BOOLEAN: FORM_FIELD_TYPE_RADIO,
     FIELD_TYPE_DATE: FORM_FIELD_TYPE_TEXT,
     FIELD_TYPE_TIME: FORM_FIELD_TYPE_TEXT,
@@ -110,6 +111,35 @@ MAPPING_GEOALCHEMY_DJANGO_FIELDS = {
 
 FIELD_TYPES_MAPPING = {
     'postgres': {
+
+        # numeric:
+        'smallint': FIELD_TYPE_INTEGER,
+        'integer': FIELD_TYPE_INTEGER,
+        'bigint': FIELD_TYPE_INTEGER,
+        'decimal': FIELD_TYPE_FLOAT,
+        'numeric': FIELD_TYPE_FLOAT,
+        'real': FIELD_TYPE_FLOAT,
+        'double precision': FIELD_TYPE_FLOAT,
+        'serial': FIELD_TYPE_INTEGER,
+        'smallserial': FIELD_TYPE_FLOAT,
+        'bigserial': FIELD_TYPE_FLOAT,
+        'boolean': FIELD_TYPE_BOOLEAN,
+
+        # character types:
+        'varchar': FIELD_TYPE_STRING,
+        'character': FIELD_TYPE_STRING,
+        'char': FIELD_TYPE_STRING,
+        'text': FIELD_TYPE_TEXT,
+
+        # date and datetime
+        'timestamp': FIELD_TYPE_DATETIME,
+        FIELD_TYPE_DATE: FIELD_TYPE_DATE,
+        FIELD_TYPE_TIME: FIELD_TYPE_TIME,
+        'interval': FIELD_TYPE_TIME
+    },
+
+    # FIXME: is necessary? Or it's sufficent client refactory field type?
+    'qgs_api': {
 
         # numeric:
         'smallint': FIELD_TYPE_INTEGER,
@@ -302,6 +332,7 @@ def mapLayerAttributesFromQgisLayer(qgis_layer, **kwargs):
 
     data_provider = qgis_layer.dataProvider()
 
+
     # exclude if set:
     if 'exclude' in kwargs:
         _fieldsMapped = []
@@ -313,7 +344,8 @@ def mapLayerAttributesFromQgisLayer(qgis_layer, **kwargs):
     field_index = 0
     for field in fields:
         if field.name() not in fieldsToExclude:
-            if field.typeName() in FIELD_TYPES_MAPPING[data_provider.name()]:
+            internal_typename = field.typeName().split('(')[0]
+            if internal_typename in FIELD_TYPES_MAPPING['qgs_api']:
 
                 # Get constraints and default clause to define if the field is editable
                 # or set editable property by kwargs:
@@ -327,7 +359,7 @@ def mapLayerAttributesFromQgisLayer(qgis_layer, **kwargs):
                 del(kwargs['fields'][field.name()]['editable'])
 
                 comment = field.comment() if field.comment() else field.name()
-                fieldType = FIELD_TYPES_MAPPING[data_provider.name()][field.typeName()]
+                fieldType = FIELD_TYPES_MAPPING['qgs_api'][internal_typename]
                 toRes[field.name()] = editingFormField(
                     field.name(),
                     required=constraints & QgsFieldConstraints.ConstraintNotNull,
