@@ -408,7 +408,7 @@ This order will be reflected within the belonging MacroGroups.
 
 **NB:** currently in the list of Groups it is not present in the subdivision in the belonging MacroGroups but the fact that a Group can be associated with only one MacroGroup still allows you to manage intuitively what will be the complessive display order.
 
-## Publication/Management of new WebGis services
+## Publication of new WebGis services
 ### To publish a new QGIS cartographic project
 It is possible to publish new QGIS projects:
  * **from the list of cartographic groups:** click on the ![Project title settings](../images/manual/icon_add.png) icon located under the box of the cartographic group in which you want to publish the project.

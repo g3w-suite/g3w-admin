@@ -28,7 +28,7 @@ The **Tools panel** is located on the left and containing the following objects:
 
 The centrally located map area presents the various navigation and map interaction controls, this controls are defined at the Cartographic Group level.
 
-## Navigazione e interazione con la mappa
+## Navigation and interaction with the map
 The icons and description of the functions of the various MapControls activated at the thematic group level are shown below.
 
  * **zoomtoextent:** zoom to the initial extension

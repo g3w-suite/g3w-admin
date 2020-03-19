@@ -1,5 +1,6 @@
 # G3W-FRONTEND: the front end portal
-## Access the applicationThe G3W-SUITE application is accessible via any internet browser (FireFox and Chrome recommended) via the URL address defined during installation
+## Access the application
+The G3W-SUITE application is accessible via any internet browser (FireFox and Chrome recommended) via the URL address defined during installation
 
 If you have also installed the front-end portal from the [GitHub repository](https://github.com/g3w-suite/g3w-admin-frontend), access to the application will be via the portal itself.
 
