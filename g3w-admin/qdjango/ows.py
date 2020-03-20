@@ -121,13 +121,20 @@ class OWSRequestHandler(OWSRequestHandlerBase):
         http = None
 
         raw_body = request.body
+        ows_request = None
         if request.method == 'GET':
-            ows_request = q['REQUEST'].upper()
+            try:
+                ows_request = q['REQUEST'].upper()
+            except:
+                pass
         else:
-            if request.content_type == 'application/x-www-form-urlencoded':
-                ows_request = request.POST['REQUEST'].upper()
-            else:
-                ows_request = request.POST['REQUEST'][0].upper()
+            try:
+                if request.content_type == 'application/x-www-form-urlencoded':
+                    ows_request = request.POST['REQUEST'].upper()
+                else:
+                    ows_request = request.POST['REQUEST'][0].upper()
+            except:
+                pass
         if qdjangoModeRequest == QDJANGO_PROXY_REQUEST or ows_request == 'GETLEGENDGRAPHIC':
 
             # try to get getfeatureinfo on wms layer
