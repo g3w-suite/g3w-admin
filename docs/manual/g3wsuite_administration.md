@@ -3,22 +3,22 @@ The Administration Panel allows you to manage all aspects related to the publica
 
 The main page of the Administration Panel shows:
  * **a bar at the top:**
-   * Frontend: to return the access portal
-   * Username: to edit your profile and log out
-   * Language: to choose the interface language
-   * A gear icon ![Project title settings](../images/manual/iconconfiguration.png): to access a menù with:
+   * **Frontend:** to return the access portal
+   * **Username:** to edit your profile and log out
+   * **Language:** to choose the interface language
+   * **A gear icon ![Project title settings](../images/manual/iconconfiguration.png): to access a menù with:
        Edit general data: to set informations shown in the front-end portal 
        Django Administration (only for Admin01 user): to configure Django advanced settings
        Files: to access the File Manager tool
  * **a text menu on the left:**
-   * Dashboard: Administration dashboard
-   * Cartographic groups: to create/manage cartographic groups
-   * Macro Cartographic Groups: to create/manage Cartographic MacroGroups
-   * Users: to create/manage single users and/or user groups
-   * List of active modules: to activate/manage the functional modules active in your installation
+   * **Dashboard:** Administration dashboard
+   * **Cartographic Groups:** to create/manage cartographic groups
+   * **Macro Cartographic Groups:** to create/manage Cartographic MacroGroups
+   * **Users:** to create/manage single users and/or user groups
+   * **List of active modules:** to activate/manage the functional modules active in your installation
  * **a dashboard in the center of the page**
-   * Dashboard: to access to list of Cartographic Groups
-   * Module list: to access the respective settings
+   * **Dashboard:** to access to list of Cartographic Groups
+   * **Module list:** to access the respective settings
  
 ![Project title settings](../images/manual/g3wsuite_administration_desk.png)
 
@@ -165,7 +165,10 @@ When Editor 1 user creates a Cartographic Group, he can define:
  * **Viewers** users (individuals/groups) who will have access to this container
 
 ### Summary table of access/administration policies
-Below is a summary table of the powers associated with the different types of users.
+Below is a summary table of the powers associated with the different roles.
+
+![Project title settings](../images/manual/eng_roles_table.png)
+
 
 ## Users and Users Groups management
 In the left side menu there is the USERS item with four sub-items:
