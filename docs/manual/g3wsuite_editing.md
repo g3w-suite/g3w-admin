@@ -1,5 +1,5 @@
 # Online editing
-## Activation and configuration of the online editing function
+## Activation and configuration
 
 The G3W-SUITE platform allows you to manage and create editing on **PostGis or SpatiaLite layers** present within published projects.
 
@@ -13,7 +13,7 @@ When an enabled user activates the editing function at the map client level, the
 
 This block will be deactivated when the user exits the editing mode.
 
-### QGIS project level settings
+### QGIS project settings
 #### Definition of the attribute editing form
 In the QGIS project, for each layer it is possible to define the structure of the attribute display module.
 
@@ -55,14 +55,16 @@ In the Attribute Form section of the Layer Properties it is also possible to def
 
 The mandatory and/or unique fieds have to be defined onPostGreSQL/PostGis table level.
 
-#### Editing 1:n relation data
+#### Definition of 1:n relations
 In the event that, at the QGIS project level, one or more 1: n type relationships have been associated with a layer (Project menu → Properties…, Relations section), it will be possible to carry out relational editing also on the webgis platform.
 
 Also for the tables related in 1:n mode it will be possible to define the attribute form structure, aliases and editing widgets in the QGIS project.
 
 These configurations and tools will automatically available  on the webgis platform.
 
-### Settings at the Administration panel level
+### Administration settings
+
+#### Activation of layer editing
 To activate the online editing functions, access the Layer list section of the project within the administration panel of G3W-ADMIN.
 
 Identify the PostGreSQL/PostGis layer on which you want to activate the editing function and click on the Editing layer icon located on the left ![Project title settings](../images/manual/icon_editing.png)
@@ -80,7 +82,7 @@ With regard to the last aspect, it should be noted that:
 #### Activation of relational editing
 To allow editing on the related table in mode 1: n , the editing function must also be activated (always in the same way) also for the related table present in the project layers list.
 
-#### Geo-constraints
+#### Geo-constraints setting
 The online editing function also allows you to manage geo-constraints that allow the user to insert/modify features only if they intersect or are contained within specific features of a second polygonal layer.
 
 To activate a geographical constraint, you must click, always at the level of the list of project layers, on the "Constraints list" icon ![Project title settings](../images/manual/icon_constraints_setting.png) which will appear once the online editing function is activated.
@@ -104,16 +106,19 @@ Once all the constraints have been entered and validated, click on the Close but
 
 ![Project title settings](../images/manual/editing_constrain_setting.png)
 
-## Online editing tools at map client level
+## Online editing tools at cartographic client level
+### Direct editing
 Once the online editing function has been activated and configured on one or more layers of a WebGis project, the Editing item, inside the Tools menu of the cartoographic client, will be shown.
 
 ![Project title settings](../images/manual/editing_client_start.png) ![Project title settings](../images/manual/editing_client_tool.png)
 
 By clicking on the **Data Layers** item, the side menu will show the editing tools for all the layers on which this function is activated.
 
-The actual activation of the editing function for the individual layers will take place by clicking on the Edit layer icon.
+The actual activation of the editing function for the individual layers will take place by clicking on the **Edit layer** icon.
 
-The tools available depend on the type of layer (geometric or alphanumeric):
+#### Create and edit features
+
+The tools available are the following:
 
 **Geometric layers**
  * ![Project title settings](../images/manual/icon_feature_add.png) **Add feature:** to add a feature
@@ -151,7 +156,7 @@ By deactivating the editing function, a modal window will be displayed which wil
 
 Remember that during the editing phase the undo/redo icons ![Project title settings](../images/manual/icon_undoredo.png) allow you to delete/restore the latest changes made.
 
-### Editing related tables
+### 1:n related tables editing
 G3W-SUITE allows for relational editing; for this to be possible it is necessary that:
  * on the published QGIS project there are one or more geographic layers related (1: n) with one or more alphanumeric tables
  * on the administration panel the editing function has been activated both on the parent layer and on the child layers
