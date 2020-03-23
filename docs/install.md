@@ -13,6 +13,12 @@ for install Yarn follow main installation instructions:
 
 https://yarnpkg.com/en/docs/install#debian-stable
 
+> **note**
+>
+> If your account is connected to the provider, we'll try to setup the
+> webhook automatically. If something fails, you can still setup the
+> webhook manually.
+
 ## Create virtualenv
 
 [**Virtualenv**](https://virtualenv.pypa.io/en/stable/)
