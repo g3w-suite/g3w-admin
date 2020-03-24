@@ -75,6 +75,9 @@ def catalog_provider(groups=[]):
         layer_filters['project'] = project
         visible_layers = get_objects_for_user(AnonymousUser(), 'view_layer', Layer).filter(
             **layer_filters).values_list('qgs_layer_id', flat=True)
+
+        logger.debug(visible_layers)
+
         for layer_data in [l for l in project_data['layers'] if l['id'] in visible_layers]:
             layer_metadata = project_data['metadata']
             layer_metadata.update(layer_data)
