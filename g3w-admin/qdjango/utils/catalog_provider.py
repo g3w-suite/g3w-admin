@@ -88,7 +88,7 @@ def catalog_provider(groups=[]):
             if layer.srid != 4326:
                 gbbox = GEOSGeometry(bbox, srid=layer.srid)
                 gbbox.transform(4326)
-                bbox = bbox.wkt
+                bbox = gbbox.wkt
 
             # Full list of Record fields
             rec = {
@@ -159,6 +159,7 @@ def catalog_provider(groups=[]):
                 rec['service_type_version'] += ',1.1.0'
                 rec['identifier'] = 'ows.qdjango.%s.%s' % (layer.slug, layer.id)
 
+            logger.debug(rec)
             results.append(rec)
 
     return results
