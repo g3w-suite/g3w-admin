@@ -16,6 +16,7 @@ __copyright__ = 'Copyright 2019, Gis3W'
 from qdjango.api.serializers import ProjectSerializer, LayerSerializer
 from qdjango.models import Layer, Project
 from django.conf import settings
+from django.contrib.gis.geos import GEOSGeometry
 from guardian.shortcuts import assign_perm, get_objects_for_user
 from django.contrib.auth.models import AnonymousUser
 
@@ -78,6 +79,14 @@ def catalog_provider(groups=[]):
             layer_metadata = project_data['metadata']
             layer_metadata.update(layer_data)
             layer = Layer.objects.get(qgs_layer_id=layer_data['id'], project=project)
+
+            # Check if srid is 4326, otherwise reproject
+            bbox = 'MULTIPOINT({1} {0}, {3} {2})'.format(*layer_metadata['bbox'].values())
+            if layer.srid != 4326:
+                gbbox = GEOSGeometry(bbox, srid=layer.srid)
+                gbbox.transform(4326)
+                bbox = bbox.wkt
+
             # Full list of Record fields
             rec = {
                 # Maps to pycsw:Identifier
@@ -102,7 +111,7 @@ def catalog_provider(groups=[]):
                 #'date': layer_metadata['date'],  # Maps to pycsw:Date, pycsw:Modified, pycsw:RevisionData, pycsw:CreationDate and pycsw:PublicationDate
                 'type': 'dataset',  # Maps to pycsw:Type
                 # Maps to pycsw:BoundingBox
-                'bounding_box': 'MULTIPOINT({1} {0}, {3} {2})'.format(*layer_metadata['bbox'].values()),
+                'bounding_box': bbox,
                 'crs': layer_metadata['crs'],  # Maps to pycsw:CRS
                 #'alternate_title': layer_metadata['alternate_title'],  # Maps to pycsw:AlternateTitle
                 # From caller 'organization_name': layer_metadata['organization_name'],  # Maps to pycsw:OrganizationName
