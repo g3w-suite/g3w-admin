@@ -76,8 +76,6 @@ def catalog_provider(groups=[]):
         visible_layers = get_objects_for_user(AnonymousUser(), 'view_layer', Layer).filter(
             **layer_filters).values_list('qgs_layer_id', flat=True)
 
-        logger.debug(visible_layers)
-
         for layer_data in [l for l in project_data['layers'] if l['id'] in visible_layers]:
             layer_metadata = project_data['metadata']
             layer_metadata.update(layer_data)
@@ -88,7 +86,7 @@ def catalog_provider(groups=[]):
             if layer.srid != 4326:
                 gbbox = GEOSGeometry(bbox, srid=layer.srid)
                 gbbox.transform(4326)
-                bbox = bbox.wkt
+                bbox = gbbox.wkt
 
             # Full list of Record fields
             rec = {
