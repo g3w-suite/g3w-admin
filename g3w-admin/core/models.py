@@ -89,6 +89,8 @@ class MacroGroup(TimeStampedModel, OrderedModel):
     Model for Macro groups, no ACL
     """
 
+    name = models.CharField(_('Identification name'), max_length=255, null=True,
+                            help_text=_('Internal identification Macrogroup name'))
     title = models.CharField(_('Title'), max_length=255)
     description = models.TextField(_('Description'), blank=True)
     logo_img = models.FileField(_('Logo image'), upload_to='macrogroup/logo_img')
@@ -97,7 +99,7 @@ class MacroGroup(TimeStampedModel, OrderedModel):
     use_title_logo_client = models.BooleanField(_('Use title and logo for client'), default=False)
 
     slug = AutoSlugField(
-        _('Slug'), populate_from='title', unique=True, always_update=True
+        _('Slug'), populate_from='name', unique=True, always_update=True
     )
 
     def __str__(self):
@@ -355,7 +357,6 @@ class Group(TimeStampedModel, OrderedModel):
                 for project in projects:
                     if hasattr(project, 'remove_permissions_to_viewer_user_groups'):
                         project.remove_permissions_to_viewer_user_groups(groups_id)
-
 
     def __getattr__(self, attr):
         if attr == 'viewers':
