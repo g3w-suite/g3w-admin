@@ -90,6 +90,9 @@ class GroupConfigApiView(APIView):
         baseurl = "/{}".format(settings.SITE_PREFIX_URL if settings.SITE_PREFIX_URL else '')
         generaldata = GeneralSuiteData.objects.get()
 
+        # change groupData name with title for i18n app
+        groupSerializer.data['name'] = group.title
+
         initconfig = {
           "staticurl": settings.STATIC_URL,
           "client": "client/",
