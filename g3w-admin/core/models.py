@@ -12,7 +12,7 @@ from model_utils import Choices
 from autoslug import AutoSlugField
 from sitetree.models import TreeItemBase, TreeBase
 from django.contrib.auth.models import User, Group as AuthGroup
-from usersmanage.utils import setPermissionUserObject, getUserGroups, get_users_for_object
+from usersmanage.utils import setPermissionUserObject, getUserGroups, get_users_for_object, get_groups_for_object
 from usersmanage.configs import *
 from .utils.structure import getProjectsByGroup
 try:
@@ -365,6 +365,22 @@ class Group(TimeStampedModel, OrderedModel):
             editors = get_users_for_object(self, 'change_group', [G3W_EDITOR2, G3W_EDITOR1])
             if len(editors) > 0:
                 return editors[0]
+        elif attr == 'editor1':
+            editors = get_users_for_object(self, 'change_group', [G3W_EDITOR1])
+            if len(editors) > 0:
+                return editors[0]
+        elif attr == 'editor2':
+            editors = get_users_for_object(self, 'view_group', [G3W_EDITOR2])
+            if len(editors) > 0:
+                return editors[0]
+
+        # Get users groups
+        # ================
+        elif attr == 'editor_user_groups':
+            return get_groups_for_object(self, 'view_group', 'editor')
+        elif attr == 'viewer_user_groups':
+            return get_groups_for_object(self, 'view_group', 'viewer')
+
         return super(Group, self).__getattr__(attr)
 
 
