@@ -39,6 +39,7 @@ Through the web interface based on the G3W-SUITE framework and developed by Gis3
    :maxdepth: 2
    :caption: Manual
 
+   manual/introduction
    manual/infrastructure
    manual/datamanagement
    manual/projectsettings

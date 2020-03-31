@@ -19,83 +19,93 @@ msgstr ""
 
 #: ../../install.md:1
 msgid "Raw installation"
-msgstr "Istallazione Manuale"
+msgstr "Istallazione classica"
 
 #: ../../install.md:3
 msgid "The following instructions are for a Ubuntu 18.04 LTS."
-msgstr ""
+msgstr "Le seguenti istruzioni sono basate su sistema operativo Ubuntu 18.04 LTS."
 
 #: ../../install.md:5
 msgid "Installation of node.js and Yarn"
-msgstr ""
+msgstr "Installazione di node.js e Yarn"
 
 #: ../../install.md:6
 msgid "G3W-ADMIN use javacript package manager Yarn and Node.js"
 msgstr ""
+"G3W-ADMIN usa il gestore di pacchetti javacript "
+"[Yarn](https://yarnpkg.com/) e [Node.js](https://nodejs.org/it/)"
 
 #: ../../install.md:12
 msgid "for install Yarn follow main installation instructions:"
-msgstr ""
+msgstr "per l'installazione di Yarn, seguire le istruzioni disponibili qui:"
 
 #: ../../install.md:14
 msgid "https://yarnpkg.com/en/docs/install#debian-stable"
-msgstr ""
+msgstr "https://yarnpkg.com/en/docs/install#debian-stable"
 
 #: ../../install.md:16
 msgid "Create virtualenv"
-msgstr ""
+msgstr "Creazione di una virtualenv"
 
 #: ../../install.md:18
 msgid "Virtualenv"
-msgstr ""
+msgstr "[Virtualenv](https://virtualenv.pypa.io/en/stable/)"
 
 #: ../../install.md:20
 msgid "The following instructions are for python 3.6"
-msgstr ""
+msgstr "Le seguenti istruzioni sono basate su Python versione 3.6"
 
 #: ../../install.md:22
 msgid "Install python pip"
-msgstr ""
+msgstr "Installa python pip"
 
 #: ../../install.md:28
 msgid "now we can install virtualenvwrapper"
-msgstr ""
+msgstr "ora possiamo installare virtualenvwrapper"
 
 #: ../../install.md:33
 msgid ""
 "To activate virtuenvwrapper on system login, add follow lines to 'bashrc'"
 " config file of your user"
 msgstr ""
+"Per attivare virtuenvwrapper all'accesso al sistema, aggiungi le seguenti"
+" righe al file di configurazione 'bashrc' del tuo utente"
 
 #: ../../install.md:41
 msgid "Virtualenv creation"
-msgstr ""
+msgstr "Creazione di Virtualenv"
 
 #: ../../install.md:42
 msgid ""
 "To create a virtualnenv is sufficent call mkvirtualenv commando follow by"
 " the identification name for virtualenv"
 msgstr ""
+"Per creare un virtualenv è sufficiente chiamare il comando mkvirtualenv "
+"seguito dal nome identificativo per virtualenv"
 
 #: ../../install.md:47
 msgid "Install G3W-SUITE"
-msgstr ""
+msgstr "Installazione di G3W-SUITE"
 
 #: ../../install.md:49
 msgid ""
 "First step is install dev libraries packages for python module to install"
 " with requiriments.txt"
 msgstr ""
+"Il primo passo è installare i pacchetti di librerie di sviluppo per il "
+"modulo python da installare con requiriments.txt"
 
 #: ../../install.md:60
 msgid ""
 "after is necessary install the correct python module for GDAL library, "
 "check your version and install correct module"
 msgstr ""
+"dopo è necessario installare il modulo python corretto per la libreria "
+"GDAL, controllare la versione e installare il modulo corretto"
 
 #: ../../install.md:69
 msgid "Set local_config.py file"
-msgstr ""
+msgstr "Impostiamo il file local_config.py"
 
 #: ../../install.md:70
 msgid ""
@@ -103,42 +113,53 @@ msgid ""
 "config.py file. To start copy local_settings.example.py and set the "
 "databse and other:"
 msgstr ""
+"G3W-ADMIN è un'applicazione Django e per funzionare è necessario "
+"impostare un file config.py. Per iniziare copiamo il file "
+"local_settings.example.py, impostiamo il database e settiamo le altre "
+"configurazioni:"
 
 #: ../../install.md:76
 msgid "set database, media root and session cookies name:"
 msgstr ""
+"imposta il nome del database, la media root e il nome della sessione dei "
+"cookies:"
 
 #: ../../install.md:105
 msgid "With paver commands"
-msgstr ""
+msgstr "Con comandi paver"
 
 #: ../../install.md:107
 msgid ""
 "G3W-ADMIN has a series of paver CLI commands to administrate the suite. "
 "After prepared environment if sufficient invoce paver install task"
 msgstr ""
+"G3W-ADMIN ha una serie di comandi [paver](http://pythonhosted.org/Paver/)"
+" CLI per amministrare la suite. Dopo aver preparato l'ambiente è "
+"sufficiente invocare paver install task"
 
 #: ../../install.md:114
 msgid "Run G3W-SUITE"
-msgstr ""
+msgstr "Avviare G3W-SUITE"
 
 #: ../../install.md:116
 msgid "To run the application with paver"
-msgstr ""
+msgstr "Per eseguire l'applicazione con paver"
 
 #: ../../install.md:122
 msgid "and for stop"
-msgstr ""
+msgstr "e per stopparla"
 
 #: ../../install.md:128
 msgid ""
 "G3W-ADMIN is a django application so is possibile run app by standard "
 "django manage.py commands"
 msgstr ""
+"G3W-ADMIN è un'applicazione Django, quindi è possibile eseguire "
+"l'applicazione con i comandi standard manage.py di Django"
 
 #: ../../install.md:134
 msgid "Deploy G3W-SUITE"
-msgstr ""
+msgstr "Deploy di G3W-SUITE"
 
 #: ../../install.md:136
 msgid ""
@@ -146,10 +167,16 @@ msgid ""
 "capabilities. On the web if simple to find tutorial for deploy a Django "
 "application."
 msgstr ""
+"Come altre applicazioni Django, G3W-SUITE può essere implementato dalle "
+"sue funzionalità wsgi. Sul Web se semplice trovare tutorial per deployare"
+" un'applicazione Django."
 
 #: ../../install.md:139
 msgid "The simpler way is to use Apache2 as server WEB and its mod_wsgi module."
 msgstr ""
+"Il modo più semplice è usare [Apache2](https://httpd.apache.org/) come "
+"WEB server e il suo modulo "
+"[mod_wsgi](https://en.wikipedia.org/wiki/Mod_wsgi)."
 
 #: ../../install.md:141
 msgid "Alternative solutions are:"
@@ -157,23 +184,28 @@ msgstr ""
 
 #: ../../install.md:144
 msgid "Apache2 + mod_proxy + Uwsgi"
-msgstr ""
+msgstr "Le soluzioni alternative sono:"
 
 #: ../../install.md:145
 msgid "Apache2 + mod_proxy + Gunicorn"
 msgstr ""
+"[Apache2](https://httpd.apache.org/) + "
+"[mod_proxy](https://httpd.apache.org/docs/2.4/mod/mod_proxy.html) + "
+"[Gunicorn](http://gunicorn.org/)"
 
 #: ../../install.md:146
 msgid "Nginx + Uwsgi"
 msgstr ""
+"[Nginx](https://nginx.org/) + [Uwsgi](https://uwsgi-"
+"docs.readthedocs.io/en/latest/)"
 
 #: ../../install.md:147
 msgid "Nginx + Gunicorn"
-msgstr ""
+msgstr "[Nginx](https://nginx.org/) + [Gunicorn](http://gunicorn.org/)"
 
 #: ../../install.md:150
 msgid "Manual installation steps"
-msgstr ""
+msgstr "Passi per l'installazione manuale"
 
 #: ../../install.md:152
 msgid ""
@@ -181,66 +213,89 @@ msgid ""
 "above, but in case you need to customize the installation process, here "
 "are the build and setup steps:"
 msgstr ""
+"L'installazione consigliata è basata sull'utilizzo dello script paver "
+"come menzionato sopra, ma nel caso in cui sia necessario personalizzare "
+"il processo di installazione, ecco i passaggi di costruzione e "
+"configurazione:"
 
 #: ../../install.md:154
 msgid "Build static js code"
-msgstr ""
+msgstr "Creazione static js code"
 
 #: ../../install.md:168
 msgid "Make sure build components are available in static and collected later"
 msgstr ""
+"Assicurati che i build component siano disponibili in modalità statica e "
+"raccolti in un secondo momento"
 
 #: ../../install.md:174
 msgid "Install requirements"
-msgstr ""
+msgstr "Requisiti di installazione"
 
 #: ../../install.md:176
 msgid "Possibily within a virtual env:"
-msgstr ""
+msgstr "Probabilmente all'interno di un virtual env:"
 
 #: ../../install.md:182
 msgid "Django setup"
-msgstr ""
+msgstr "Settaggio di Django"
 
 #: ../../install.md:189
 msgid "Install some fixtures for EPSG and other suite options:"
-msgstr ""
+msgstr "Installa alcuni dispositivi per EPSG e altre opzioni di suite:"
 
 #: ../../install.md:197
 msgid ""
 "Sync menu tree items (re-run this command in case you installed optional "
 "modules and they are not visible in the admin menu tree):"
 msgstr ""
+"Sincronizza le voci dell'albero dei menu (riesegui questo comando nel "
+"caso in cui tu abbia installato moduli opzionali e non siano visibili "
+"nella struttura dei menu dell'amministratore):"
 
 #: ../../install.md:203
 msgid "Continuous integration testing"
-msgstr ""
+msgstr "Continuous integration testing"
 
 #: ../../install.md:205
+#, fuzzy
 msgid "CI tests are automatically run on CircleCI for the dev branch only."
 msgstr ""
+"I test CI vengono eseguiti automaticamente su CircleCI solo per il dev "
+"branch."
 
 #: ../../install.md:207
 msgid ""
 "The Docker compose configuration used in the CI tests is available at "
 "docker-compose.yml."
 msgstr ""
+"La configurazione del Docker Compose utilizzata nei test CI è disponibile"
+" su [docker-compose.yml](https://g3w-suite.readthedocs.io/it/latest"
+"/docker-compose.yml)."
 
 #: ../../install.md:209
 msgid ""
 "Another configuration for running local tests is provided with docker-"
 "compose-local.yml and can also be used for local testing by running:"
 msgstr ""
+"Un'altra configurazione per l'esecuzione dei test locali è fornita con "
+"[docker-compose-local.yml](https://g3w-suite.readthedocs.io/it/latest"
+"/docker-compose-local.yml) e può essere utilizzata anche per i test "
+"locali eseguendo:"
 
 #: ../../install.md:216
 msgid ""
 "The testing image is built from the dependency image and it will run all "
 "install and build steps from the local repository."
 msgstr ""
+"L'immagine di prova viene creata dall'immagine di dipendenza e eseguirà "
+"tutti i passaggi di installazione e compilazione dal repository locale."
 
 #: ../../install.md:218
 msgid "The dependency image is built from the Dockerfile.deps."
 msgstr ""
+"L'immagine di dipendenza viene creata da [Dockerfile.deps](https://g3w-"
+"suite.readthedocs.io/it/latest/ci_scripts/Dockerfile)."
 
 #~ msgid "note"
 #~ msgstr ""

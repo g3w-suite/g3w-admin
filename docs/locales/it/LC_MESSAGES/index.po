@@ -37,45 +37,45 @@ msgid ""
 "System and for the publication on WebGis of its own projects in a simple "
 "way and intuitive. G3W-SUITE is entirely based on tested Open Source "
 "software components built around QGIS:"
-msgstr ""
+msgstr "G3W-SUITE è un frame-work, basato su **Django** e scritto in **linguaggio Python**, che consente di **gestire in modo integrato i diversi componenti di QGIS** per la realizzazione del proprio Sistema Informativo Geografico e per la **pubblicazione su WebGis dei propri progetti** in modo semplice e intuitivo. G3W-SUITE è interamente basato su componenti **software Open Source costruiti attorno a QGIS**:"
 
 #: ../../index.rst:11
 msgid ""
 "QGIS Desktop: for cartographic data management, editing and realization "
 "of high quality graphic projects"
-msgstr ""
+msgstr "**QGIS Desktop:** per la gestione dei dati cartografici, la modifica e la realizzazione di progetti grafici di alta qualità"
 
 #: ../../index.rst:12
 msgid "QGIS Server: for the publication of QGIS projects as OGC services"
-msgstr ""
+msgstr "**QGIS Server:** per la pubblicazione di progetti QGIS come servizi OGC"
 
 #: ../../index.rst:14
 msgid ""
 "The current development policy provides for the compatibility of the G3W-"
 "SUITE application only with the latest LTR version of QGIS"
-msgstr ""
+msgstr "L'attuale politica di sviluppo prevede la compatibilità dell'applicazione G3W-SUITE solo con l'ultima versione LTR di QGIS"
 
 #: ../../index.rst:27
 msgid ""
 "Through the web interface based on the G3W-SUITE framework and developed "
 "by Gis3W it is possible to:"
-msgstr ""
+msgstr "Tramite l'interfaccia web basata sul framework G3W-SUITE e sviluppato da Gis3W è possibile:"
 
 #: ../../index.rst:21
 msgid "publish QGIS projects directly on WebGis in a structured way"
-msgstr ""
+msgstr "pubblicare progetti QGIS direttamente su WebGis in modo strutturato"
 
 #: ../../index.rst:22
 msgid ""
 "organize webgis services in thematic-functional containers of various "
 "levels"
-msgstr ""
+msgstr "organizzare servizi webgis in contenitori tematici-funzionali di vari livelli"
 
 #: ../../index.rst:23
 msgid ""
 "manage users and groups of users by defining each of them different "
 "functional roles"
-msgstr ""
+msgstr "gestire utenti e gruppi di utenti definendo ciascuno di essi ruoli funzionali diversi"
 
 #: ../../index.rst:24
 msgid "create and manage research methods"
@@ -83,15 +83,15 @@ msgstr ""
 
 #: ../../index.rst:25
 msgid "allow online editing"
-msgstr ""
+msgstr "creare e gestire strumenti di ricerca"
 
 #: ../../index.rst:26
 msgid "activate specific functional modules"
-msgstr ""
+msgstr "attivare specifici moduli funzionali"
 
 #: ../../index.rst:27
 msgid ""
 "define permissions to access services and to use functional modules at "
 "the individual user level"
-msgstr ""
+msgstr "definire le autorizzazioni per accedere ai servizi e per utilizzare i moduli funzionali a livello di singolo utente"
 

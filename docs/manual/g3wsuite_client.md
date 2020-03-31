@@ -31,23 +31,19 @@ The centrally located map area presents the various navigation and map interacti
 ## Navigation and interaction with the map
 The icons and description of the functions of the various MapControls activated at the thematic group level are shown below.
 
- * **zoomtoextent:** zoom to the initial extension
- * **zoom:** zoom in and zoom out
- * **zoombox:** zoom tool based on drawing a rectangle
- * **query:** puntual query of geographical layers
- * **querybbox:** query via bounding box - **N.B.** for the layers to be queried according to this method it is necessary that they are published as WFS services on the QGIS project
- * **querybypolygon:** it will be possible to automatically query the features of one or more layers that fall within a polygonal element of a guide layer. (Eg what's inside a cadastral parcel?). - **N.B.** the questionable layers must be published as WFS services on the QGIS project
- * **overview:** presence of a panoramic map
- * **scaleline:** presence of the scale bar
- * **scale:** tool for defining the display scale
- * **mouseposition:** display of mouse position coordinates
- * **geolocation:** geolocation tool (useful for consultation from tablet)
+ * ![Project title settings](../images/manual/icon_navigation_fitextent.png) **zoomtoextent:** zoom to the initial extension
+ * ![Project title settings](../images/manual/icon_navigation_zoomin.png) **zoom:** zoom in and zoom out
+ * ![Project title settings](../images/manual/icon_navigation_zoomtobox.png) **zoombox:** zoom tool based on drawing a rectangle
+ * ![Project title settings](../images/manual/icon_navigation_querylayer.png) **query:** puntual query of geographical layers
+ * ![Project title settings](../images/manual/icon_navigation_querylayer.png) **querybbox:** query via bounding box - **N.B.** for the layers to be queried according to this method it is necessary that they are published as WFS services on the QGIS project
+ * ![Project title settings](../images/manual/icon_navigation_querylayer.png) **querybypolygon:** it will be possible to automatically query the features of one or more layers that fall within a polygonal element of a guide layer. (Eg what's inside a cadastral parcel?). - **N.B.** the questionable layers must be published as WFS services on the QGIS project
+ * ![Project title settings](../images/manual/icon_navigation_geolocation.png) **geolocation:** geolocation tool (useful for consultation from tablet)
  * **nominatin:** search tools for addresses and toponyms based on OSM
- * **streetview:** Google StreetView on your map
- * **length:** linear measuring instrument
- * **area:** tool for measuring surfaces
- * **addlayers:** tool for temporarily uploading GeoJson ,KML and SHP (zipped) vector layers to WebGis
- * **snapshot:** tool for taking snapshots of the map area
+ * ![Project title settings](../images/manual/icon_navigation_streetview.png) **streetview:** Google StreetView on your map
+ * ![Project title settings](../images/manual/icon_navigation_lunghezza.png) **length:** linear measuring instrument
+ * ![Project title settings](../images/manual/icon_navigation_area.png) **area:** tool for measuring surfaces
+ * ![Project title settings](../images/manual/icon_navigation_addlayer.png) **addlayers:** tool for temporarily uploading GeoJson ,KML and SHP (zipped) vector layers to WebGis
+ * ![Project title settings](../images/manual/icon_navigation_snapshot.png) **snapshot:** tool for taking snapshots of the map area
 
 It should be noted that the query function acts, by default, with the coring method, providing information relating to all the layers underlying the point where you click with the mouse or draw a box.
 
