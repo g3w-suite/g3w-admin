@@ -13,8 +13,8 @@ G3W-SUITE is entirely based on tested Open Source software components built arou
 
 The current development policy provides for the compatibility of the G3W-SUITE application only with the latest LTR version of QGIS
 
-.. image:: images/admin.jpg
-.. image:: images/client.jpg
+.. image:: images/install/admin.jpg
+.. image:: images/install/client.jpg
 
 
 Through the web interface based on the G3W-SUITE framework and developed by Gis3W it is possible to:
