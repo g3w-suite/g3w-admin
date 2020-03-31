@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-10-03 10:05+0000\n"
+"POT-Creation-Date: 2020-03-17 15:34+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,727 +18,121 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+#: forms.py:36
+msgid "Municipality code"
+msgstr ""
+
 #: forms.py:57
-#, fuzzy
-#| msgid "Edit general data"
-msgid "General data"
-msgstr "Modifica i dati generali"
-
-#: forms.py:77
-msgid "Identification"
-msgstr ""
-
-#: forms.py:100
-msgid "Provider"
-msgstr ""
-
-#: forms.py:117
-msgid "Contact"
-msgstr ""
-
-#: forms.py:147
-msgid "INSPIRE"
-msgstr ""
-
-#: forms.py:173
-msgid "RNDT"
-msgstr ""
-
-#: forms.py:210
-msgid "Record"
-msgstr ""
-
-#: models.py:52
-msgid "Global (serves all projects)"
-msgstr ""
-
-#: models.py:53
-msgid "Group (serves a single group)"
-msgstr ""
-
-#: models.py:54
-msgid "Macrogroup (serves a macrogroup)"
-msgstr ""
-
-#: models.py:58
-msgid "conformant"
-msgstr ""
-
-#: models.py:59
-#, fuzzy
-#| msgid "Configurations"
-msgid "notConformant"
-msgstr "Configurazioni"
-
-#: models.py:60
-msgid "notEvaluated"
-msgstr ""
-
-#: models.py:64
-msgid "Addresses"
-msgstr ""
-
-#: models.py:65
-#, fuzzy
-#| msgid "Adminstration"
-msgid "Administrative units"
-msgstr "Amministrazione"
-
-#: models.py:67
-msgid "Agricultural and aquaculture facilities"
-msgstr ""
-
-#: models.py:69
-msgid "Area management/restriction/regulation zones and reporting units"
-msgstr ""
-
-#: models.py:70
-msgid "Atmospheric conditions"
-msgstr ""
-
-#: models.py:71
-msgid "Bio-geographical regions"
-msgstr ""
-
-#: models.py:72
-msgid "Buildings"
-msgstr ""
-
-#: models.py:73
-msgid "Cadastral parcels"
-msgstr ""
-
-#: models.py:74
-msgid "Coordinate reference systems"
-msgstr ""
-
-#: models.py:75
-msgid "Elevation"
-msgstr ""
-
-#: models.py:76
-msgid "Energy resources"
-msgstr ""
-
-#: models.py:78
-msgid "Environmental monitoring facilities"
-msgstr ""
-
-#: models.py:79
-msgid "Geographical grid systems"
-msgstr ""
-
-#: models.py:80
-msgid "Geographical names"
-msgstr ""
-
-#: models.py:81
-msgid "Geology"
-msgstr ""
-
-#: models.py:82
-msgid "Habitats and biotopes"
-msgstr ""
-
-#: models.py:83
-msgid "Human health and safety"
-msgstr ""
-
-#: models.py:84
-msgid "Hydrography"
-msgstr ""
-
-#: models.py:85
-msgid "Land cover"
-msgstr ""
-
-#: models.py:86
-msgid "Land use"
-msgstr ""
-
-#: models.py:88
-msgid "Meteorological geographical features"
-msgstr ""
-
-#: models.py:89
-msgid "Mineral resources"
-msgstr ""
-
-#: models.py:90
-msgid "Natural risk zones"
-msgstr ""
-
-#: models.py:92
-msgid "Oceanographic geographical features"
-msgstr ""
-
-#: models.py:93
-msgid "Orthoimagery"
-msgstr ""
-
-#: models.py:95
-msgid "Population distribution — demography"
-msgstr ""
-
-#: models.py:97
-msgid "Production and industrial facilities"
-msgstr ""
-
-#: models.py:98
-msgid "Protected sites"
+msgid "Data config"
 msgstr ""
 
 #: models.py:99
-msgid "Sea regions"
-msgstr ""
-
-#: models.py:100
-msgid "Soil"
-msgstr ""
-
-#: models.py:101
-msgid "Species distribution"
-msgstr ""
-
-#: models.py:102
-msgid "Statistical units"
-msgstr ""
-
-#: models.py:103
-msgid "Transport networks"
+msgid "Codice comune not available"
 msgstr ""
 
 #: models.py:105
-msgid "Utility and governmental services"
+msgid "Another Project is set to default for this comune"
 msgstr ""
 
-#: models.py:144
-msgid "Name"
+#: models.py:115
+msgid "For CDU project you have to choose a project with CDU profile activated"
 msgstr ""
 
-#: models.py:146
-msgid "Slug"
-msgstr ""
-
-#: models.py:148
-msgid "Is active"
-msgstr ""
-
-#: models.py:149
-msgid "Order"
-msgstr ""
-
-#: models.py:152
-msgid "Scope"
-msgstr ""
-
-#: models.py:154
-msgid "This field is ignored unless scope is \"Group\""
-msgstr ""
-
-#: models.py:156
-msgid "This field is ignored unless scope is \"MacroGroup\""
-msgstr ""
-
-#: models.py:161
-msgid "identification_title"
-msgstr ""
-
-#: models.py:163
-msgid "identification_abstract"
-msgstr ""
-
-#: models.py:165
-msgid "identification_keywords"
-msgstr ""
-
-#: models.py:167
-msgid "identification_keywords_type"
-msgstr ""
-
-#: models.py:169
-msgid "identification_fees"
-msgstr ""
-
-#: models.py:172
-msgid "identification_accessconstraints"
-msgstr ""
-
-#: models.py:172
-msgid "Text description for other constraints"
-msgstr ""
-
-#: models.py:174
-msgid "provider_name"
-msgstr ""
-
-#: models.py:176
-msgid "provider_url"
-msgstr ""
-
-#: models.py:178
-msgid "contact_name"
-msgstr ""
-
-#: models.py:180
-msgid "contact_position"
-msgstr ""
-
-#: models.py:182
-msgid "contact_address"
-msgstr ""
-
-#: models.py:184
-msgid "contact_city"
-msgstr ""
-
-#: models.py:186
-msgid "contact_stateorprovince"
-msgstr ""
-
-#: models.py:188
-msgid "contact_postalcode"
-msgstr ""
-
-#: models.py:190
-msgid "contact_country"
-msgstr ""
-
-#: models.py:192
-msgid "contact_phone"
-msgstr ""
-
-#: models.py:194
-msgid "contact_fax"
-msgstr ""
-
-#: models.py:196
-msgid "contact_email"
-msgstr ""
-
-#: models.py:198
-msgid "contact_url"
-msgstr ""
-
-#: models.py:200
-msgid "contact_hours"
-msgstr ""
-
-#: models.py:202
-msgid "contact_instructions"
-msgstr ""
-
-#: models.py:204
-msgid "contact_role"
-msgstr ""
-
-#: models.py:208
-msgid "inspire_enabled"
-msgstr ""
-
-#: models.py:209
-msgid "whether to enable the INSPIRE extension"
-msgstr ""
-
-#: models.py:211
-msgid "inspire_languages_supported"
-msgstr ""
-
-#: models.py:212
+#: models.py:119
 msgid ""
-"list of comma separated 3 letter codes of supported languages (see http://"
-"inspire.ec.europa.eu/schemas/common/1.0/enums/enum_eng.xsd, simpleType "
-"euLanguageISO6392B)"
+"To set a CDU project administration has to activate G3W-SUITE CDU module"
 msgstr ""
 
-#: models.py:213
-msgid "inspire_default_language"
+#: templates/archiweb/projectconfig.html:9
+msgid "Update configuration project type"
 msgstr ""
 
-#: models.py:214
+#: templates/archiweb/projectconfig.html:11
+msgid "New configuration project type"
+msgstr ""
+
+#: templates/archiweb/projectconfig_list.html:10
+msgid "Cadastre projects"
+msgstr ""
+
+#: templates/archiweb/projectconfig_list.html:21
 msgid ""
-"3 letter code of the default language (see http://inspire.ec.europa.eu/"
-"schemas/common/1.0/enums/enum_eng.xsd, simpleType euLanguageISO6392B)"
+"Add, update or delete ARCHIWEB configurations: indicate relations between "
+"project codice comune and ARCHIWEB project type"
 msgstr ""
 
-#: models.py:215
-msgid "inspire_date"
-msgstr ""
-
-#: models.py:216
-msgid " date of INSPIRE metadata offering (in ISO 8601 format)"
-msgstr ""
-
-#: models.py:218
-msgid "inspire_gemet_keywords"
-msgstr ""
-
-#: models.py:219 models.py:623
-msgid ""
-"a comma-seperated keyword list of GEMET INSPIRE theme keywords about the "
-"service (see http://inspire.ec.europa.eu/schemas/common/1.0/enums/enum_eng."
-"xsd, complexType inspireTheme_eng)"
-msgstr ""
-
-#: models.py:221
-msgid "inspire_conformity_service"
-msgstr ""
-
-#: models.py:222
-msgid ""
-"the level of INSPIRE conformance for spatial data sets and services "
-"(conformant, notConformant, notEvaluated)"
-msgstr ""
-
-#: models.py:224
-msgid "inspire_contact_organization"
-msgstr ""
-
-#: models.py:225
-msgid "the organization name responsible for the INSPIRE/RNDT metadata"
-msgstr ""
-
-#: models.py:227
-msgid "inspire_contact_email"
-msgstr ""
-
-#: models.py:228
-msgid "the email address of entity responsible for the INSPIRE/RNDT metadata"
-msgstr ""
-
-#: models.py:230
-msgid "inspire_contact_url"
-msgstr ""
-
-#: models.py:231
-msgid "the URL of entity responsible for the INSPIRE/RNDT metadata"
-msgstr ""
-
-#: models.py:233
-msgid "inspire_contact_phone"
-msgstr ""
-
-#: models.py:234
-msgid ""
-"the telephone number of entity responsible for the INSPIRE/RNDT metadata"
-msgstr ""
-
-#: models.py:236
-msgid "inspire_temp_extent"
-msgstr ""
-
-#: models.py:237
-msgid ""
-"temporal extent of the service (in ISO 8601 format). Either a single date (i."
-"e. yyyy-mm-dd), or an extent (i.e. yyyy-mm-dd/yyyy-mm-dd)"
-msgstr ""
-
-#: models.py:239
-msgid "inspire_geographical_extent"
-msgstr ""
-
-#: models.py:240
-msgid ""
-"inspire_geographical_extent of the service. Space separated values of lon/"
-"lat (west south east north)"
-msgstr ""
-
-#: models.py:244
-msgid "RNDT enabled"
-msgstr ""
-
-#: models.py:245
-msgid "whether to enable the RNDT extension"
-msgstr ""
-
-#: models.py:247
+#: templates/archiweb/projectconfig_list.html:31
 #, fuzzy
-#| msgid "Adminstration"
-msgid "RNDT codice iPA amministrazione"
-msgstr "Amministrazione"
+#| msgid "Configurations"
+msgid "Configs"
+msgstr "Configurazioni"
 
-#: models.py:309
-msgid "Catalog endpoint"
+#: templates/archiweb/projectconfig_list.html:40
+msgid "Qdjango project"
 msgstr ""
 
-#: models.py:310
-msgid "Catalog endpoints"
+#: templates/archiweb/projectconfig_list.html:41
+msgid "Municipality cadastre code"
 msgstr ""
 
-#: models.py:366
-msgid "You must select a group or set another scope for the catalog."
+#: templates/archiweb/projectconfig_list.html:42
+msgid "ARCHIWEB project type"
 msgstr ""
 
-#: models.py:369
-msgid "You must select a macro group or set another scope for the catalog."
+#: templates/archiweb/projectconfig_list.html:43
+msgid "Default project"
 msgstr ""
 
-#: models.py:375
-#, python-format
-msgid "RNDT is enabled: you need to fill in \"%s\"."
+#: templates/archiweb/projectconfig_list.html:44
+msgid "Alias map url"
 msgstr ""
 
-#: models.py:380
-#, python-format
-msgid "INSPIRE is enabled: you need to fill in \"%s\"."
-msgstr ""
-
-#: models.py:385
-msgid ""
-"inspire_geographical_extent is not correct, please use format space "
-"separated values of lon/lat (west south east north)"
-msgstr ""
-
-#: models.py:483
-#, python-format
-msgid ""
-"%s registerCatalogRecordProvider registration must provide a valid Catalog."
-"SCOPE"
-msgstr ""
-
-#: models.py:519
-msgid "Farming - Rearing of animals and/or cultivation of plants."
-msgstr ""
-
-#: models.py:520
-msgid "Biota - Flora and/or fauna in natural environment."
-msgstr ""
-
-#: models.py:521
-msgid "Boundaries - Legal land descriptions."
-msgstr ""
-
-#: models.py:523
-msgid ""
-"Climatology / Meteorology / Atmosphere - Processes and phenomena of the "
-"atmosphere."
-msgstr ""
-
-#: models.py:524
-msgid "Economy - Economic activities, conditions and employment."
-msgstr ""
-
-#: models.py:525
-msgid "Elevation - Height above or below sea level."
-msgstr ""
-
-#: models.py:527
-msgid "Environment - Environmental resources, protection and conservation."
-msgstr ""
-
-#: models.py:529
-msgid "Geoscientific Information - Information pertaining to earth sciences."
-msgstr ""
-
-#: models.py:530
-msgid "Health, health services, human ecology, and safety."
-msgstr ""
-
-#: models.py:531
-msgid "Imagery / Base Maps / Earth Cover."
-msgstr ""
-
-#: models.py:533
-msgid "Intelligence / Military - Military bases, structures, activities."
-msgstr ""
-
-#: models.py:535
-msgid "Inland water features, drainage systems and their characteristics."
-msgstr ""
-
-#: models.py:536
-msgid "Location - Positional information and services."
-msgstr ""
-
-#: models.py:537
-msgid ""
-"Oceans - Features and characteristics of salt water bodies (excluding inland "
-"waters)."
-msgstr ""
-
-#: models.py:539
-msgid ""
-"Planning / Cadastre - Information used for appropriate actions for future "
-"use of the land."
-msgstr ""
-
-#: models.py:540
-msgid "Society - Characteristics of society and cultures."
-msgstr ""
-
-#: models.py:541
-msgid "Structure - Man-made construction."
-msgstr ""
-
-#: models.py:543
-msgid "Transportation - Means and aids for conveying persons and/or goods."
-msgstr ""
-
-#: models.py:545
-msgid ""
-"Utilities / Communication - Energy, water and waste systems and "
-"communications infrastructure and services."
-msgstr ""
-
-#: models.py:622
-msgid "INSPIRE GEMET keywords"
-msgstr ""
-
-#: models.py:712
-msgid "Spatial resolution denominator"
-msgstr ""
-
-#: models.py:891
-msgid "Positional accuracy in meters"
-msgstr ""
-
-#: rndt.py:102 rndt.py:412
-msgid "Service"
-msgstr ""
-
-#: rndt.py:188 rndt.py:233 rndt.py:427
-msgid "Publication"
-msgstr ""
-
-#: rndt.py:263
-msgid "No conditions apply"
-msgstr ""
-
-#: rndt.py:330
-msgid "Loose"
-msgstr ""
-
-#: rndt.py:423
-msgid ""
-"Commission Regulation (EU) No 1089/2010 of 23 November 2010 implementing "
-"Directive 2007/2/EC of the European Parliament and of the Council as regards "
-"interoperability of spatial data sets and services"
-msgstr ""
-
-#: rndt.py:431
-msgid "Please refer to the supplied specifications."
-msgstr ""
-
-#: rndt_profile/rndt/rndt.py:314
-msgid "Distributor"
-msgstr ""
-
-#: rndt_profile/rndt/rndt.py:344
-msgid "Unknown"
-msgstr ""
-
-#: templates/catalog/catalog_confirm_delete.html:8
-#: templates/catalog/catalog_detail.html:8
-#: templates/catalog/catalog_form.html:11
-#: templates/catalog/catalog_list.html:27
-msgid "Catalog"
-msgstr ""
-
-#: templates/catalog/catalog_confirm_delete.html:10
-msgid "deleting"
-msgstr ""
-
-#: templates/catalog/catalog_confirm_delete.html:17
-#, python-format
-msgid "Are you sure you want to delete \"%(object)s\"?"
-msgstr ""
-
-#: templates/catalog/catalog_detail.html:22
-#: templates/catalog/catalog_list.html:41
+#: templates/archiweb/projectconfig_list.html:55
+#: templates/archiweb/projectconfig_list.html:67
 msgid "Edit"
 msgstr ""
 
-#: templates/catalog/catalog_detail.html:23
-#: templates/catalog/catalog_list.html:44
+#: templates/archiweb/projectconfig_list.html:60
 msgid "Delete"
 msgstr ""
 
-#: templates/catalog/catalog_detail.html:39
-msgid "Catalog records"
-msgstr ""
-
-#: templates/catalog/catalog_detail.html:43
-msgid "Records"
-msgstr ""
-
-#: templates/catalog/catalog_detail.html:49
-msgid "Title"
-msgstr ""
-
-#: templates/catalog/catalog_detail.html:50
 #, fuzzy
-#| msgid "Access denied"
-msgid "Access"
-msgstr "Accesso negato"
-
-#: templates/catalog/catalog_detail.html:71
-#, fuzzy
-#| msgid "Edit general data"
-msgid "Catalog data"
-msgstr "Modifica i dati generali"
-
-#: templates/catalog/catalog_detail.html:76
-msgid "Param"
-msgstr ""
-
-#: templates/catalog/catalog_detail.html:77
-msgid "Value"
-msgstr ""
-
-#: templates/catalog/catalog_detail.html:92
-msgid "Back"
-msgstr ""
-
-#: templates/catalog/catalog_form.html:13
-#, fuzzy
-#| msgid "Edit general data"
-msgid "metadata"
-msgstr "Modifica i dati generali"
-
-#: templates/catalog/catalog_form.html:25 templates/catalog/record_form.html:23
-msgid "Alert"
-msgstr ""
-
-#: templates/catalog/catalog_form.html:26 templates/catalog/record_form.html:24
-msgid "Some errors on form. Check it and send again."
-msgstr ""
-
-#: templates/catalog/catalog_list.html:8
-msgid "CSW published catalogs"
-msgstr ""
-
-#: templates/catalog/catalog_list.html:19
-msgid "New catalog"
-msgstr ""
-
-#: templates/catalog/catalog_list.html:26
-msgid "Actions"
-msgstr ""
-
-#: templates/catalog/catalog_list.html:28
-msgid "N record"
-msgstr ""
-
-#: templates/catalog/catalog_list.html:29
-msgid "Capabilities"
-msgstr ""
-
-#: templates/catalog/catalog_list.html:37
-msgid "Show"
-msgstr "Mostra"
-
-#: templates/catalog/catalog_list.html:60
-msgid "There are no CSW published catalogs"
-msgstr ""
-
-#: templates/catalog/record_form.html:12
-msgid "layer metadata"
-msgstr ""
+#~| msgid "Edit general data"
+#~ msgid "General data"
+#~ msgstr "Modifica i dati generali"
 
 #, fuzzy
 #~| msgid "Configurations"
-#~ msgid "Configs"
+#~ msgid "notConformant"
 #~ msgstr "Configurazioni"
+
+#, fuzzy
+#~| msgid "Adminstration"
+#~ msgid "Administrative units"
+#~ msgstr "Amministrazione"
+
+#, fuzzy
+#~| msgid "Adminstration"
+#~ msgid "RNDT codice iPA amministrazione"
+#~ msgstr "Amministrazione"
+
+#, fuzzy
+#~| msgid "Access denied"
+#~ msgid "Access"
+#~ msgstr "Accesso negato"
+
+#, fuzzy
+#~| msgid "Edit general data"
+#~ msgid "Catalog data"
+#~ msgstr "Modifica i dati generali"
+
+#, fuzzy
+#~| msgid "Edit general data"
+#~ msgid "metadata"
+#~ msgstr "Modifica i dati generali"
+
+#~ msgid "Show"
+#~ msgstr "Mostra"
 
 #, fuzzy
 #~| msgid "Users"

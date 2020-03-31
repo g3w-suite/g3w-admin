@@ -18,10 +18,14 @@
     	<h3>{%trans 'Users' %}:</h3>
     	<ul class="list-unstyled">
     	{% if user.is_superuser %}
-    		<li><strong>{%trans 'Editor user'%}</strong>: {{object.editor|safe}}</li>
+    		<li><strong>{%trans 'Editor level 1 user'%}</strong>: {{object.editor|safe}}</li>
     	{% endif %}
-    	{% if user.is_superuser or user|has_group:"Editor Maps Groups" %}
+
+        {% if user.is_superuser or user|has_group:"Editor Maps Groups" %}
+            <li><strong>{%trans 'Editor level 2 user'%}</strong>: {{object.editor2|safe}}</li>
     		<li><strong>{%trans 'Viewer users'%}</strong>: {{object.viewers|safeseq|join:", "}}</li>
+            <li><strong>{%trans 'Editor user groups'%}</strong>: {{object.editor_user_groups|safeseq|join:", "}}</li>
+            <li><strong>{%trans 'Viewer user groups'%}</strong>: {{object.viewer_user_groups|safeseq|join:", "}}</li>
     	{% endif %}
 
     	</ul>
