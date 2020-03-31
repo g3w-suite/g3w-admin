@@ -411,7 +411,7 @@ This order will be reflected within the belonging MacroGroups.
 
 **NB:** currently in the list of Groups it is not present in the subdivision in the belonging MacroGroups but the fact that a Group can be associated with only one MacroGroup still allows you to manage intuitively what will be the complessive display order.
 
-## Publication of new WebGis services
+## Publication/Management of new WebGis services
 ### To publish a new QGIS cartographic project
 It is possible to publish new QGIS projects:
  * **from the list of cartographic groups:** click on the ![Project title settings](../images/manual/icon_add.png) icon located under the box of the cartographic group in which you want to publish the project.
@@ -473,7 +473,7 @@ If the operation is successful we will see the new project appear in the list of
 
 ![Project title settings](../images/manual/g3wsuite_portal_groups.png)
 
-#### Define the Groups order on the FrontEnd
+### Define the Groups order on the FrontEnd
 The individual WebGis services will be arranged, within the Thematic Groups to which they belong, in alphabetical order based on the title of the service.
 
 ## Manage/Update WebGis services
@@ -484,6 +484,8 @@ Access to the cartographic group will allow you to view the characteristics and 
 To access the list of WebGis services, click with the link associated at the highlighted number of projects.
 
 ![Project title settings](../images/manual/g3wsuite_administration_project_manage.png)
+
+### Basic tools
 
 In this section it is therefore possible to view the list of cartographic projects present, view them, manage them and create new ones.
 

@@ -57,7 +57,7 @@ The Docker hub name for this image is `g3wsuite/postgis:11.0-2.5`
 
 ### QGIS Server
 
-QGIS Server image is built from https://github.com/elpaso/qgis-server-docker/tree/production
+QGIS Server image is built from `https://github.com/elpaso/qgis-server-docker/tree/production`
 
 The Docker hub name for this image is `g3wsuite/qgis3-server:ltr-ubuntu`
 
