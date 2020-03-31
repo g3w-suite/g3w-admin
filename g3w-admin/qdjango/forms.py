@@ -6,6 +6,7 @@ from django.utils.translation import ugettext, ugettext_lazy as _
 from guardian.shortcuts import get_objects_for_user
 from crispy_forms.helper import FormHelper, Layout
 from crispy_forms.layout import Div, Field, HTML
+from modeltranslation.forms import TranslationModelForm
 from core.mixins.forms import *
 from core.utils.forms import crispyBoxBaseLayer
 from core.models import Group as G3WGroup
@@ -75,8 +76,8 @@ class QdjangoProjectFormMixin(object):
         self.instance.url_alias = self.cleaned_data['url_alias']
 
 
-class QdjangoProjetForm(QdjangoProjectFormMixin, G3WFormMixin, G3WGroupFormMixin, G3WGroupBaseLayerFormMixin,
-                        G3WRequestFormMixin, G3WACLForm, FileFormMixin, forms.ModelForm):
+class QdjangoProjetForm(TranslationModelForm, QdjangoProjectFormMixin, G3WFormMixin, G3WGroupFormMixin,
+                        G3WGroupBaseLayerFormMixin, G3WRequestFormMixin, G3WACLForm, FileFormMixin, forms.ModelForm):
 
     qgis_file = UploadedFileField(required=True)
     thumbnail = UploadedFileField(required=False)

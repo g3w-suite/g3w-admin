@@ -1370,6 +1370,7 @@ msgid "the removal of all the Cartoghraphic Groups contained in it"
 msgstr "la **rimozione di tutti i Gruppi Cartografici** in esso contenuti"
 
 #: ../../manual/g3wsuite_administration.md:288
+#, fuzzy
 msgid ""
 "the removal of all the cartographic projects contained in the individual "
 "Groups"
@@ -1547,6 +1548,7 @@ msgid "Editor2 User: defines the user (Editor2) manager of the Group."
 msgstr "Utente Editor2: si definisce l'utente (Editor2) gestore del Gruppo."
 
 #: ../../manual/g3wsuite_administration.md:332
+#, fuzzy
 msgid ""
 "Viewers users: define the individual users (Viewers) who have the "
 "credentials to view the contents of the group. By choosing the anonymous "
@@ -1961,6 +1963,7 @@ msgstr ""
 "associato direttamente a tale utente"
 
 #: ../../manual/g3wsuite_administration.md:440
+#, fuzzy
 msgid ""
 "Viewers users: define the individual users (Viewers) who have the "
 "credentials to view the WebGis service. By choosing the anonymous user "
@@ -1971,6 +1974,7 @@ msgstr ""
 "anonimo (**AnonymusUser**) il gruppo sarà ad accesso libero"
 
 #: ../../manual/g3wsuite_administration.md:441
+#, fuzzy
 msgid ""
 "Editor user groups: define the user groups (Editor2) who manage the "
 "service."
@@ -6220,4 +6224,3 @@ msgstr ""
 
 #~ msgid "Access the application WWW"
 #~ msgstr "Accedere all'applicazione"
-
