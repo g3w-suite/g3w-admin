@@ -117,7 +117,7 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
             'view_project'
         ], mode=mode)
 
-        # if editor not has permission on group give permission only view on parent gorup group
+        # if editor not has permission on group give permission only view on parent group
         if not user.has_perm('core.view_group', self.group):
             setPermissionUserObject(user, self.group, permissions=[
                 'core.view_group'
