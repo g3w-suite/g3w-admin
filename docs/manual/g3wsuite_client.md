@@ -12,7 +12,7 @@ The application has a responsive interface consisting of expandable and reducibl
  * **Credits**
  * **Home:** to access the FrontEnd
 
-![Project title settings](../images/manual/en/g3wclient_header.png)
+![Project title settings](../images/manual/g3wclient_header.png)
 
 The **Tools panel** is located on the left and containing the following objects:
  * **Metadata:** content defined on QGIS project
@@ -24,26 +24,26 @@ The **Tools panel** is located on the left and containing the following objects:
    * **Legend:** graphic legend of the various layers
  * **Tools:** session that collects the various tools that may be activated on the WebGis service
 
-![Project title settings](../images/manual/en/g3wclient_tool_panel.png)
+![Project title settings](../images/manual/g3wclient_tool_panel.png)
 
 The centrally located map area presents the various navigation and map interaction controls, this controls are defined at the Cartographic Group level.
 
 ## Navigation and interaction with the map
 The icons and description of the functions of the various MapControls activated at the thematic group level are shown below.
 
- * ![Project title settings](../images/manual/en/icon_navigation_fitextent.png) **zoomtoextent:** zoom to the initial extension
- * ![Project title settings](../images/manual/en/icon_navigation_zoomin.png) **zoom:** zoom in and zoom out
- * ![Project title settings](../images/manual/en/icon_navigation_zoomtobox.png) **zoombox:** zoom tool based on drawing a rectangle
- * ![Project title settings](../images/manual/en/icon_navigation_querylayer.png) **query:** puntual query of geographical layers
- * ![Project title settings](../images/manual/en/icon_navigation_querylayer.png) **querybbox:** query via bounding box - **N.B.** for the layers to be queried according to this method it is necessary that they are published as WFS services on the QGIS project
- * ![Project title settings](../images/manual/en/icon_navigation_querylayer.png) **querybypolygon:** it will be possible to automatically query the features of one or more layers that fall within a polygonal element of a guide layer. (Eg what's inside a cadastral parcel?). - **N.B.** the questionable layers must be published as WFS services on the QGIS project
- * ![Project title settings](../images/manual/en/icon_navigation_geolocation.png) **geolocation:** geolocation tool (useful for consultation from tablet)
+ * ![Project title settings](../images/manual/icon_navigation_fitextent.png) **zoomtoextent:** zoom to the initial extension
+ * ![Project title settings](../images/manual/icon_navigation_zoomin.png) **zoom:** zoom in and zoom out
+ * ![Project title settings](../images/manual/icon_navigation_zoomtobox.png) **zoombox:** zoom tool based on drawing a rectangle
+ * ![Project title settings](../images/manual/icon_navigation_querylayer.png) **query:** puntual query of geographical layers
+ * ![Project title settings](../images/manual/icon_navigation_querylayer.png) **querybbox:** query via bounding box - **N.B.** for the layers to be queried according to this method it is necessary that they are published as WFS services on the QGIS project
+ * ![Project title settings](../images/manual/icon_navigation_querylayer.png) **querybypolygon:** it will be possible to automatically query the features of one or more layers that fall within a polygonal element of a guide layer. (Eg what's inside a cadastral parcel?). - **N.B.** the questionable layers must be published as WFS services on the QGIS project
+ * ![Project title settings](../images/manual/icon_navigation_geolocation.png) **geolocation:** geolocation tool (useful for consultation from tablet)
  * **nominatin:** search tools for addresses and toponyms based on OSM
- * ![Project title settings](../images/manual/en/icon_navigation_streetview.png) **streetview:** Google StreetView on your map
- * ![Project title settings](../images/manual/en/icon_navigation_lunghezza.png) **length:** linear measuring instrument
- * ![Project title settings](../images/manual/en/icon_navigation_area.png) **area:** tool for measuring surfaces
- * ![Project title settings](../images/manual/en/icon_navigation_addlayer.png) **addlayers:** tool for temporarily uploading GeoJson ,KML and SHP (zipped) vector layers to WebGis
- * ![Project title settings](../images/manual/en/icon_navigation_snapshot.png) **snapshot:** tool for taking snapshots of the map area
+ * ![Project title settings](../images/manual/icon_navigation_streetview.png) **streetview:** Google StreetView on your map
+ * ![Project title settings](../images/manual/icon_navigation_lunghezza.png) **length:** linear measuring instrument
+ * ![Project title settings](../images/manual/icon_navigation_area.png) **area:** tool for measuring surfaces
+ * ![Project title settings](../images/manual/icon_navigation_addlayer.png) **addlayers:** tool for temporarily uploading GeoJson ,KML and SHP (zipped) vector layers to WebGis
+ * ![Project title settings](../images/manual/icon_navigation_snapshot.png) **snapshot:** tool for taking snapshots of the map area
 
 It should be noted that the query function acts, by default, with the coring method, providing information relating to all the layers underlying the point where you click with the mouse or draw a box.
 
@@ -59,7 +59,7 @@ In the QGIS project (Vector properties → Attributes Form), you can create cust
 
 The same structured form will be reported at the query level on the cartographic client.
 
-![Project title settings](../images/manual/en/g3wclient_view.png)
+![Project title settings](../images/manual/g3wclient_view.png)
 
 Any links to photos will determine the display of a clickable preview, any links to links or other multimedia content will determine the display of the Open button that will allow consultation of the link.
 
@@ -67,13 +67,13 @@ For further information on this point, see the paragraph “Displaying multimedi
 
 ### Display of 1:n relation data
 
-In the event that, at the QGIS project level, one or more type 1: n relationships have been associated with a layer, the icon **View Relationships** ![Project title settings](../images/manual/en/icon_relations.png) will be shown in the attribute form.
+In the event that, at the QGIS project level, one or more type 1: n relationships have been associated with a layer, the icon **View Relationships** ![Project title settings](../images/manual/icon_relations.png) will be shown in the attribute form.
 
 By clicking on the icon you will access the list of relationships present and, from these, the list of child records associated with the individual relationships. In the case of a single 1: n relationship, the child layers of the relationship in question will be displayed directly.
 
 A filter, applied generically to the contents of all fields, will allow you to filter the list of child records.
 
-![Project title settings](../images/manual/en/g3wclient_relations_view.png)
+![Project title settings](../images/manual/g3wclient_relations_view.png)
 
 In the case of links to multimedia contents, the previews of the images and / or the Open button will be displayed for consultation of different types of content.
 
@@ -87,7 +87,7 @@ This content is divided into three sessions: **General, Space Info and Layers.**
  * **Spatial:** reports the EPSG code of the projection system associated with the QGIS project and the BoundingBox relating to the initial publication extension, defined in the item: Project →  Properties (QGIS Server session, WMS Capabilities, Advertised extent)
  * **Layers:** reports simple metadata associated with the individual layers.
 
-![Project title settings](../images/manual/en/g3wclient_metadata_view.png)
+![Project title settings](../images/manual/g3wclient_metadata_view.png)
 
 ### Print
 Printing tool based on layouts defined on QGIS project.
@@ -101,7 +101,7 @@ The tool allows you to choose:
 
 On the map, a lit rectangular area will allow you to define the print area.
 
-![Project title settings](../images/manual/en/g3wclient_print_tool.png)
+![Project title settings](../images/manual/g3wclient_print_tool.png)
 
 ### Search
 The Search menu contains the list of search tools defined through the Administration panel.
@@ -116,7 +116,7 @@ The drop-shaped icons will allow you to zoom in on the extension relating to the
 
 The **CSV icon** allows you to download the attributes associated with the features in CVS format.
 
-![Project title settings](../images/manual/en/g3wclient_search_example.png)
+![Project title settings](../images/manual/g3wclient_search_example.png)
 
 ### Map
  * **Layers:** structured list of layers, defined on the QGIS project
@@ -134,5 +134,5 @@ In the case of links to multimedia content, the previews of the images and/or th
 
 A filter, applied generically to the contents of all the fields, will allow you to filter the list of displayed records.
 
-![Project title settings](../images/manual/en/g3wclient_table_view.png)
+![Project title settings](../images/manual/g3wclient_table_view.png)
 

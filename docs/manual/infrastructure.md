@@ -2,7 +2,7 @@
 
 The publishing system is based on a series of OS tools and software
 
-![G3W-SUITE Infrastructure](../images/manual/en//architecture.png)
+![G3W-SUITE Infrastructure](../images/manual/architecture.png)
 
 * PostgreSQL / PostGis or SpatiaLite: for the management of geographic data
 * G3W-ADMIN was developed in Python using Django
