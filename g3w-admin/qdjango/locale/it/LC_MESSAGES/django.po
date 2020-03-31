@@ -94,11 +94,11 @@ msgstr "Gruppo"
 
 #: models.py:73 templates/qdjango/ajax/project_detail.html:7
 msgid "Initial extent"
-msgstr "Estenzione iniziale"
+msgstr "Estensione iniziale"
 
 #: models.py:74
 msgid "Max extent"
-msgstr "Massima estenzione"
+msgstr "Massima estensione"
 
 #: models.py:77
 msgid "Qgis project version"
