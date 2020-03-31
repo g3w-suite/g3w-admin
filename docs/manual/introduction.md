@@ -1,4 +1,4 @@
-#Introduction
+# Introduction
 
 G3W-SUITE is a **modular client-server application for the management and publication of interactive map projects**.
 

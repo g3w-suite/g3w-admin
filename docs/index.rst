@@ -33,7 +33,6 @@ Through the web interface based on the G3W-SUITE framework and developed by Gis3
 
    install
    docker
-   deploy
 
 .. toctree::
    :maxdepth: 2
