@@ -11,7 +11,7 @@ from core.models import Group, BaseLayer, GroupProjectPanoramic, ProjectMapUrlAl
 from .utils.storage import QgisFileOverwriteStorage
 from core.mixins.models import G3WACLModelMixins, G3WProjectMixins
 from model_utils import Choices
-from usersmanage.utils import setPermissionUserObject, getUserGroups, get_users_for_object
+from usersmanage.utils import setPermissionUserObject, getUserGroups, get_users_for_object, get_groups_for_object
 from usersmanage.configs import *
 from core.configs import *
 from core.receivers import check_overviewmap_project
@@ -239,6 +239,15 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
                 return editors[0]
             else:
                 return None
+
+        # Get users groups
+        # ================
+        elif attr == 'editor_user_groups':
+            return get_groups_for_object(self, 'change_project', 'editor')
+
+        elif attr == 'viewer_user_groups':
+            return get_groups_for_object(self, 'view_project', 'viewer')
+
         return super(Project, self).__getattribute__(attr)
 
 
