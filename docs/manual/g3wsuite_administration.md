@@ -6,7 +6,7 @@ The main page of the Administration Panel shows:
    * **Frontend:** to return the access portal
    * **Username:** to edit your profile and log out
    * **Language:** to choose the interface language
-   * **A gear icon ![Project title settings](../images/manual/iconconfiguration.png): to access a menù with:
+   * **A gear icon ![Project title settings](../images/manual/en/iconconfiguration.png): to access a menù with:
        Edit general data: to set informations shown in the front-end portal 
        Django Administration (only for Admin01 user): to configure Django advanced settings
        Files: to access the File Manager tool
@@ -20,14 +20,14 @@ The main page of the Administration Panel shows:
    * **Dashboard:** to access to list of Cartographic Groups
    * **Module list:** to access the respective settings
  
-![Project title settings](../images/manual/g3wsuite_administration_desk.png)
+![Project title settings](../images/manual/en/g3wsuite_administration_desk.png)
 
 ## Front end portal customization
 From the main page of the **Administration Panel** it is possible to customize the information shown on the Front End Portal.
 
-Click on the **Configurations** icon ![Project title settings](../images/manual/iconconfiguration.png) located at the rigth bottom and choose the item **Edit general data** which will appear in the menu below.
+Click on the **Configurations** icon ![Project title settings](../images/manual/en/iconconfiguration.png) located at the rigth bottom and choose the item **Edit general data** which will appear in the menu below.
 
-![Project title settings](../images/manual/g3wsuite_administration_configuration.png)
+![Project title settings](../images/manual/en/g3wsuite_administration_configuration.png)
 
 In the **General suite data** form you can define: * **Home data:** info that will appear on the portal home page
  * **Home data:** info that will appear on the front end landing page
@@ -42,46 +42,46 @@ Informations that will appear on the front end landing page
 
 **ATTENTION:** contents marked with * are mandatory.
 
-![Project title settings](../images/manual/g3wsuite_administration_configuration_homedata.png)
+![Project title settings](../images/manual/en/g3wsuite_administration_configuration_homedata.png)
 
 ### Front End About Data
 Informations that will appear in the **About it** session
 
 **ATTENTION:** contents marked with * are mandatory.
 
-![Project title settings](../images/manual/g3wsuite_administration_configuration_aboutusdata.png)
+![Project title settings](../images/manual/en/g3wsuite_administration_configuration_aboutusdata.png)
 
 ### Frontend Groups Map Data
 Information that will be displayed in the **Maps** session
 
 **ATTENTION:** contents marked with * are mandatory.
 
-![Project title settings](../images/manual/g3wsuite_administration_configuration_mapgroupsdata.png)
+![Project title settings](../images/manual/en/g3wsuite_administration_configuration_mapgroupsdata.png)
 
 ### Front End Login Data
 Information that will be displayed in the **Login/Administration** session
 
 **ATTENTION:** contents marked with * are mandatory.
 
-![Project title settings](../images/manual/g3wsuite_administration_configuration_logindata.png)
+![Project title settings](../images/manual/en/g3wsuite_administration_configuration_logindata.png)
 
 ### Front End Social Data
 Links to the social channels that will be displayed in the **About it** it session
 
 **ATTENTION:** contents marked with * are mandatory.
 
-![Project title settings](../images/manual/g3wsuite_administration_configuration_socialdata.png)
+![Project title settings](../images/manual/en/g3wsuite_administration_configuration_socialdata.png)
 
 ### Map client data
 Main title to be displayed in the cartographic client bar
 
-![Project title settings](../images/manual/g3wsuite_administration_configuration_mapclientdata.png)
+![Project title settings](../images/manual/en/g3wsuite_administration_configuration_mapclientdata.png)
 
 In the **Credits** subsection it is possible to define additional text for the publishing aspects.
 
 After filling in the various form, click on the Save button to confirm your choices.
 
-![Project title settings](../images/manual/buttom_save.png)
+![Project title settings](../images/manual/en/buttom_save.png)
 
 ## Hierarchical organization of WebGis services and types of Users (roles)
 This paragraph allows you to understand how G3W-SUITE makes it possible to manage the individual WebGis services in a structured and hierarchical way.
@@ -96,7 +96,7 @@ The example shown in the following graph is that relating to the case of a Union
 
 Access policies and individual functional modules may be associated with each WebGis service.
 
-![Project title settings](../images/manual/g3wsuite_administration_organization_containers.png)
+![Project title settings](../images/manual/en/g3wsuite_administration_organization_containers.png)
 
 ### Types of Users (Roles)
 The user management session allows you to create **Users** and **Users Groups** and associate them with specific roles:
@@ -167,7 +167,7 @@ When Editor 1 user creates a Cartographic Group, he can define:
 ### Summary table of access/administration policies
 Below is a summary table of the powers associated with the different roles.
 
-![Project title settings](../images/manual/eng_roles_table.png)
+![Project title settings](../images/manual/en/roles_table.png)
 
 
 ## Users and Users Groups management
@@ -192,11 +192,11 @@ Through this form it is possible to insert new users and define their characteri
  * User data:
    * Departments and image to be associated with the profile
 
-![Project title settings](../images/manual/g3wsuite_administration_user_add.png)
+![Project title settings](../images/manual/en/g3wsuite_administration_user_add.png)
 
 After filling in the various form, click on the Save button to confirm your choices.
 
-![Project title settings](../images/manual/buttom_save.png)
+![Project title settings](../images/manual/en/buttom_save.png)
 
 ### Users list
 Through this form you can consult the list of enabled users and their characteristics:
@@ -209,11 +209,11 @@ Through this form you can consult the list of enabled users and their characteri
  * Creation date
  * Info on user creation (G3W-SUITE or LDAP)
  
-![Project title settings](../images/manual/g3wsuite_administration_user_list.png)
+![Project title settings](../images/manual/en/g3wsuite_administration_user_list.png)
 
 The icons at the head of each row, allow you to:
- * ![Project title settings](../images/manual/icon_edit.png) **Modify:** to modify the characteristics of the user
- * ![Project title settings](../images/manual/icon_erase.png) **Delete:** to permanently delete a user
+ * ![Project title settings](../images/manual/en/icon_edit.png) **Modify:** to modify the characteristics of the user
+ * ![Project title settings](../images/manual/en/icon_erase.png) **Delete:** to permanently delete a user
  
 ### Add Group Users
 Through this form it is possible to insert new user groups and define their role.
@@ -228,21 +228,21 @@ In the specific form for creating user groups, the following are defined:
  * **Name**
  * **Role** (Editor or Viewer)
  
-![Project title settings](../images/manual/g3wsuite_administration_usergroup_add.png)
+![Project title settings](../images/manual/en/g3wsuite_administration_usergroup_add.png)
  
 After filling in the from, click on the **Save** button to confirm your choices.
 
-![Project title settings](../images/manual/buttom_save.png)
+![Project title settings](../images/manual/en/buttom_save.png)
 
 ### Groups users list
 Through this form it is possible to consult the list of enabled user groups, their characteristics and the individual users belonging to the group.
 
-![Project title settings](../images/manual/g3wsuite_administration_usergroup_list.png)
+![Project title settings](../images/manual/en/g3wsuite_administration_usergroup_list.png)
 
 Using the icons at the head of each row, you can:
- * ![Project title settings](../images/manual/icon_view.png) **Show details:** to consult the characteristics of the user group 
- * ![Project title settings](../images/manual/icon_edit.png) **Modify:** to modify the characteristics of the group 
- * ![Project title settings](../images/manual/icon_erase.png) **Delete:** to permanently delete a group and therefore association with users belonging to the group itself 
+ * ![Project title settings](../images/manual/en/icon_view.png) **Show details:** to consult the characteristics of the user group 
+ * ![Project title settings](../images/manual/en/icon_edit.png) **Modify:** to modify the characteristics of the group 
+ * ![Project title settings](../images/manual/en/icon_erase.png) **Delete:** to permanently delete a group and therefore association with users belonging to the group itself 
 
 ## Macro Cartographic Groups
 In this section it is possible to view the list of Cartographic Macrogroups, manage them and create new ones.
@@ -271,17 +271,17 @@ Let's see in detail the various sub-sessions of the group creation form.
 
 After compiling the form, click on the Save button to confirm your choices.
 
-![Project title settings](../images/manual/buttom_save.png)
+![Project title settings](../images/manual/en/buttom_save.png)
 
 ### MacroGroups list
 The menu provides access to the list of cartographic macro-groups present.
 
-![Project title settings](../images/manual/g3wsuite_administration_macrogroup_list.png)
+![Project title settings](../images/manual/en/g3wsuite_administration_macrogroup_list.png)
 
 There are a series of icons to access specific functions:
- * ![Project title settings](../images/manual/icon_view.png) **Show the details** of the MacroGroup
- * ![Project title settings](../images/manual/icon_edit.png) **Change** characteristics of the MacroGroup
- * ![Project title settings](../images/manual/icon_erase.png) **Delete** MacroGroup
+ * ![Project title settings](../images/manual/en/icon_view.png) **Show the details** of the MacroGroup
+ * ![Project title settings](../images/manual/en/icon_edit.png) **Change** characteristics of the MacroGroup
+ * ![Project title settings](../images/manual/en/icon_erase.png) **Delete** MacroGroup
 
 **ATTENTION:** the removal of the Cartographic MacroGroup group will result in:
  * the **removal of all the Cartoghraphic Groups** contained in it
@@ -337,7 +337,7 @@ The option **Propagate NEW viewers and new viewers user groups permissions** all
 
 This option cancels any differentiation in the access policies applied to the WebGis services contained in the Group.
 
-![Project title settings](../images/manual/g3wsuite_administration_group_add_acl.png)
+![Project title settings](../images/manual/en/g3wsuite_administration_group_add_acl.png)
 
 #### MacroGroups
 Possible definition of the belonging MacroGroup.
@@ -374,7 +374,7 @@ In this box you can define:
  * **Baselayer:** choice of the base maps that will be available on the WebGis client
  * **Background color:** choice of the background color of the maps (default white)
 
-![Project title settings](../images/manual/g3wsuite_administration_group_add_geodata.png)
+![Project title settings](../images/manual/en/g3wsuite_administration_group_add_geodata.png)
 
 #### Copyrigth
 **Terms of use:** description of the terms of use of the map and any other info
@@ -382,7 +382,7 @@ In this box you can define:
 
 After filling in the various form, click on the **Save** button to confirm your choices.
  
-![Project title settings](../images/manual/buttom_save.png)
+![Project title settings](../images/manual/en/buttom_save.png)
 
 ### Groups List
 From this item you can access the list of the created cartographic groups.
@@ -390,11 +390,11 @@ From this item you can access the list of the created cartographic groups.
 For each group, the Title and Subtitle defined at the time of creation are shown.
 
 There are also a series of icons to access specific functions:
- * ![Project title settings](../images/manual/icon_add.png) **Add a new project** to be published on the WebGis service
+ * ![Project title settings](../images/manual/en/icon_add.png) **Add a new project** to be published on the WebGis service
  * Number and links to projects published within the Group
- * ![Project title settings](../images/manual/icon_view.png) **Show group details**
- * ![Project title settings](../images/manual/icon_edit.png) **Change** group characteristics
- * ![Project title settings](../images/manual/icon_erase.png) **Delete** group
+ * ![Project title settings](../images/manual/en/icon_view.png) **Show group details**
+ * ![Project title settings](../images/manual/en/icon_edit.png) **Change** group characteristics
+ * ![Project title settings](../images/manual/en/icon_erase.png) **Delete** group
 
 **ATTENTION:** the removal of the cartographic group will involve:
  * the **removal of all the WebGis services** contained therein
@@ -402,7 +402,7 @@ There are also a series of icons to access specific functions:
 
 A large **+ icon** is available to access the form for creating a new group.
 
-![Project title settings](../images/manual/g3wsuite_administration_group_list.png)
+![Project title settings](../images/manual/en/g3wsuite_administration_group_list.png)
 
 #### Define the Groups order on the FrontEnd
 Using the Drag & Drop function it is possible to define the order of the Groups in the list.
@@ -414,8 +414,8 @@ This order will be reflected within the belonging MacroGroups.
 ## Publication/Management of new WebGis services
 ### To publish a new QGIS cartographic project
 It is possible to publish new QGIS projects:
- * **from the list of cartographic groups:** click on the ![Project title settings](../images/manual/icon_add.png) icon located under the box of the cartographic group in which you want to publish the project.
- * **from the list of cartographic projects published within a group:** by clicking on the the buttom ![Project title settings](../images/manual/button_add_qgis_project.png)
+ * **from the list of cartographic groups:** click on the ![Project title settings](../images/manual/en/icon_add.png) icon located under the box of the cartographic group in which you want to publish the project.
+ * **from the list of cartographic projects published within a group:** by clicking on the the buttom ![Project title settings](../images/manual/en/button_add_qgis_project.png)
 
 In the dedicated form we could define the charatteristicsof the project being published:
 
@@ -441,7 +441,7 @@ In the event that the WebGis service is published by a user of type Editor1, the
  * **Editor user groups:** define the user groups (Editor2) who manage the service.
  * **Viewer user groups:** you define the user groups (Viewer) which have the credentials to view the content of the service.
 
-![Project title settings](../images/manual/g3wsuite_administration_project_add_acl.png)
+![Project title settings](../images/manual/en/g3wsuite_administration_project_add_acl.png)
 
 #### Default base layer
 In this session you define which base layer should be active at startup.
@@ -463,15 +463,15 @@ These options allow you to define the type of WMS / WFS query to be carried out 
 
 **ATTENTION:** contents marked with * are mandatory.
 
-![Project title settings](../images/manual/g3wsuite_administration_project_add_option.png)
+![Project title settings](../images/manual/en/g3wsuite_administration_project_add_option.png)
 
 After filling in the various form, click on the Save button to confirm your choices.
 
-![Project title settings](../images/manual/buttom_save.png)
+![Project title settings](../images/manual/en/buttom_save.png)
 
 If the operation is successful we will see the new project appear in the list of projects in in the working Cartographic Group.
 
-![Project title settings](../images/manual/g3wsuite_portal_groups.png)
+![Project title settings](../images/manual/en/g3wsuite_portal_groups.png)
 
 ### Define the Groups order on the FrontEnd
 The individual WebGis services will be arranged, within the Thematic Groups to which they belong, in alphabetical order based on the title of the service.
@@ -483,23 +483,23 @@ Access to the cartographic group will allow you to view the characteristics and 
 
 To access the list of WebGis services, click with the link associated at the highlighted number of projects.
 
-![Project title settings](../images/manual/g3wsuite_administration_project_manage.png)
+![Project title settings](../images/manual/en/g3wsuite_administration_project_manage.png)
 
 ### Basic tools
 
 In this section it is therefore possible to view the list of cartographic projects present, view them, manage them and create new ones.
 
-![Project title settings](../images/manual/g3wsuite_administration_project_manage_list.png)
+![Project title settings](../images/manual/en/g3wsuite_administration_project_manage_list.png)
 
 Through the single icons, placed at the level of each project, it is possible to:
- * ![Project title settings](../images/manual/iconsmall_viewmap.png) **Display the cartographic project on the WebGis interface:** to check the display by the user
- * ![Project title settings](../images/manual/iconsmall_layerlist.png) **Access the list of layers** present within the project and define their functional aspects
- * ![Project title settings](../images/manual/iconsmall_view.png) **View the project specifications**
- * ![Project title settings](../images/manual/iconsmall_edit.png) **Update a project:** update of the QGIS file and other options related to the project
- * ![Project title settings](../images/manual/iconsmall_erase.png) **Remove a cartographic project**
+ * ![Project title settings](../images/manual/en/iconsmall_viewmap.png) **Display the cartographic project on the WebGis interface:** to check the display by the user
+ * ![Project title settings](../images/manual/en/iconsmall_layerlist.png) **Access the list of layers** present within the project and define their functional aspects
+ * ![Project title settings](../images/manual/en/iconsmall_view.png) **View the project specifications**
+ * ![Project title settings](../images/manual/en/iconsmall_edit.png) **Update a project:** update of the QGIS file and other options related to the project
+ * ![Project title settings](../images/manual/en/iconsmall_erase.png) **Remove a cartographic project**
    **Warning:** removing a project also removes all the widgets (e.g. searches) that would be orphaned after the project has been removed
- * ![Project title settings](../images/manual/iconsmall_download.png) **Download of the QGIS project**
- * ![Project title settings](../images/manual/iconsmall_wms.png) **Test the WMS Capabilities** of the project
+ * ![Project title settings](../images/manual/en/iconsmall_download.png) **Download of the QGIS project**
+ * ![Project title settings](../images/manual/en/iconsmall_wms.png) **Test the WMS Capabilities** of the project
 
 ### Setting up the overview map for WebGis services
 In this session it is also possible to define which of the cartographic projects loaded within the group will be used as a panoramic map.
@@ -507,21 +507,21 @@ In this session it is also possible to define which of the cartographic projects
 To set the panoramic map, choose the projects and tick the check box in the **Overview** column.
 
 ## Widget management
-Once a cartographic project has been published, thougth the icon ![Project title settings](../images/manual/iconsmall_layerlist.png) it is possible to access the list of the geographical states that compose it and define some functional aspects that will be enabled at the cartographic client level.
+Once a cartographic project has been published, thougth the icon ![Project title settings](../images/manual/en/iconsmall_layerlist.png) it is possible to access the list of the geographical states that compose it and define some functional aspects that will be enabled at the cartographic client level.
 
 Next to each layer are a series of icons and checkboxes:
- * ![Project title settings](../images/manual/icon_cache.png) **Caching Layer:** allows you to activate and manage the cache of the single layer at the project level
- * ![Project title settings](../images/manual/icon_editing.png) **Editing layer:** shows if the online editing function is active on the layer and allows you to activate and define it
- * ![Project title settings](../images/manual/icon_widget.png) **List of widgets:** shows how many widgets (eg searches) are associated with this layer and allows you to activate new ones
+ * ![Project title settings](../images/manual/en/icon_cache.png) **Caching Layer:** allows you to activate and manage the cache of the single layer at the project level
+ * ![Project title settings](../images/manual/en/icon_editing.png) **Editing layer:** shows if the online editing function is active on the layer and allows you to activate and define it
+ * ![Project title settings](../images/manual/en/icon_widget.png) **List of widgets:** shows how many widgets (eg searches) are associated with this layer and allows you to activate new ones
  * **No legend:** it allows to define if the layer must have published the legend at TOC level of the WebGis client
  * **Download:** allows the download of the layer, in .shp format, at the TOC level of the WebGis client
  * **WMS external:** to speed up loading, the WMS layers present in a QGIS project are managed directly by Django and not by QGIS-Server. However, this method prevents the application of any styling  (e.g. opacity level) defined at the project level. The choice of the external WMS option means that the WMS layer is managed directly by QGIS-Server and therefore the associated styling is applied.
- * ![Project title settings](../images/manual/icon_layertype.png) **Type:** illustrates the type of data (WMS, PostGis, SpatiaLite, GDAL / OGR ...)
+ * ![Project title settings](../images/manual/en/icon_layertype.png) **Type:** illustrates the type of data (WMS, PostGis, SpatiaLite, GDAL / OGR ...)
  * **WFS:** a check mark shows whether the layer is published as a WFS service or not
  * **Name:** name of the layer
  * **Label:** layer alias applied at the QGIS project level
 
-![Project title settings](../images/manual/g3wsuite_administration_project_layer_list.png)
+![Project title settings](../images/manual/en/g3wsuite_administration_project_layer_list.png)
 
 ## Search widget setting
 In G3W-SUITE it is possible to create search widgets.
@@ -530,9 +530,9 @@ They will be saved by referring to the layer identifiers (for example the DB par
 
 This aspect allows, once a search widget for a layer has been created, to have it available on all the projects in which the layer is present, without having to rebuild the widget from scratch each time.
 
-In the list of layers present within the project, **identify the layer on which to create and associate the search widget** and click on the icon ![Project title settings](../images/manual/icon_widget.png)
+In the list of layers present within the project, **identify the layer on which to create and associate the search widget** and click on the icon ![Project title settings](../images/manual/en/icon_widget.png)
 
-![Project title settings](../images/manual/g3wsuite_administration_project_widget_list.png)
+![Project title settings](../images/manual/en/g3wsuite_administration_project_widget_list.png)
 
 By clicking on the icon, the list of already active (or activatable) widgets associated with the layer will be shown.
 
@@ -546,7 +546,7 @@ To **create a new search**, click on the link **New widget**.
 
 In the pop-up that appears, the **"Search" type** have to be chosen.
 
-![Project title settings](../images/manual/g3wsuite_administration_project_widget_choose.png)
+![Project title settings](../images/manual/en/g3wsuite_administration_project_widget_choose.png)
 
 In the related form we can define:
  * **Form Title**
@@ -564,12 +564,12 @@ In the related form we can define:
    * **Comparison operator:** comparison operator (**=, <,>,> <,> =, <=, LIKE, ILIKE**) through which the search query will be carried out. The LIKE and ILIKE operators will only be available for PostGis or SpatiaLite layers
    * **Dependency:** this parameter (optional) allows, only in the case of SelectBox widgets, to list the list of values ​​of a field filtered according to the value defined for the previous fields. The tool allows, for example, to display, in the drop-down menu dedicated to the choice of cadastral particles, only the particles connected to the sheet chosen in the previous option. This function is only available for PostGis or SpatiaLite layers.
 
-The button ![Project title settings](../images/manual/buttom_add.png)
+The button ![Project title settings](../images/manual/en/button_add.png)
  allows you to add additional fields for the construction of the search query currently manageable through the AND operator alone.
 
 The example below shows the compilation of the form for creating a search widget dedicated to a cadastral cartography layer.
 
-![Project title settings](../images/manual/g3wsuite_administration_project_search_form.png)
+![Project title settings](../images/manual/en/g3wsuite_administration_project_search_form.png)
 
 Once the form has been filled in, click on the OK button to save the settings.
 

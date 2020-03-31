@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: G3W-SUITE 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-03-18 08:23+0100\n"
+"POT-Creation-Date: 2020-03-31 12:53+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,7 +22,8 @@ msgid "Raw installation"
 msgstr "Istallazione classica"
 
 #: ../../install.md:3
-msgid "The following instructions are for a Ubuntu 18.04 L
+#, fuzzy
+msgid "The following instructions are for a Ubuntu 18.04 LTS."
 msgstr "Le seguenti istruzioni sono basate su sistema operativo Ubuntu 18.04 LTS."
 
 #: ../../install.md:5
@@ -44,8 +45,8 @@ msgid "https://yarnpkg.com/en/docs/install#debian-stable"
 msgstr "https://yarnpkg.com/en/docs/install#debian-stable"
 
 #: ../../install.md:16
-msgid "Create virtualenv"
-msgstr "Creazione di una virtualenv"
+msgid "note"
+msgstr ""
 
 #: ../../install.md:18
 msgid ""
@@ -56,7 +57,7 @@ msgstr ""
 
 #: ../../install.md:22
 msgid "Create virtualenv"
-msgstr "Creazione di un virtualnev"
+msgstr "Creazione di una virtualenv"
 
 #: ../../install.md:24
 msgid "Virtualenv"
@@ -268,7 +269,7 @@ msgstr ""
 msgid "Continuous integration testing"
 msgstr "Continuous integration testing"
 
-#: ../../install.md:205
+#: ../../install.md:211
 #, fuzzy
 msgid "CI tests are automatically run on CircleCI for the dev branch only."
 msgstr ""

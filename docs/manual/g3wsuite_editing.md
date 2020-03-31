@@ -97,7 +97,7 @@ Clicking on the item **+ New constraint** will open a modal window which will al
 
 Once the layer has been defined, the constraint will appear in the list and can be parameterized using the Rules icon ![Project title settings](../images/manual/icon_constraints_setting.png)
 
-Clicking on this icon will open a modal window which, by pressing the button ![Project title settings](../images/manual/buttom_add.png), it will allow you to define, for each user and/or group of users, the rules of the constraints.
+Clicking on this icon will open a modal window which, by pressing the button ![Project title settings](../images/manual/button_add.png), it will allow you to define, for each user and/or group of users, the rules of the constraints.
 The rules definition will be done through a freely compiled SQL expression, which must refer to the attributes and values of the layer defined as geo-constraints.
 
 The Save icon ![Project title settings](../images/manual/icon_save.png) will allow you to validate the SQL itself, in order to ensure proper functioning of the constraints itself.

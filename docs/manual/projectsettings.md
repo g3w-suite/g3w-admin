@@ -23,7 +23,9 @@ From the **Project → Properties** menu, you can access the **Project Propertie
 ### General
 #### General Settings
 **In this section you can define the title of the project.**
+
 This title will be used at the G3W-SUITE application level to uniquely identify the published project; for this reason **it will not be possible to assign the same name to different projects published on the WebGis service**.
+
 **We advise against using special characters, or numbers in the project name.**
 
 ![Project title settings](../images/manual/projecttitle.png)
