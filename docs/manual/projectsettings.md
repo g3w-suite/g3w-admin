@@ -23,17 +23,19 @@ From the **Project → Properties** menu, you can access the **Project Propertie
 ### General
 #### General Settings
 **In this section you can define the title of the project.**
+
 This title will be used at the G3W-SUITE application level to uniquely identify the published project; for this reason **it will not be possible to assign the same name to different projects published on the WebGis service**.
+
 **We advise against using special characters, or numbers in the project name.**
 
-![Project title settings](../images/manual/projecttitle.png)
+![Project title settings](../images/manual/en/projecttitle.png)
 
 ### Data sources
 **This submenu defines the layers that can be queried at the WebGis service level.**
 
 The only column to consider is the one called **Interrogable**.
 
-![Project title settings](../images/manual/datasources.png)
+![Project title settings](../images/manual/en/datasources.png)
 
 ### QGIS Server
 This window is divided into sections:
@@ -43,14 +45,14 @@ In this section it is possible to define the capabilities of the service.
 
 This information, together with info about the structure of the attribute tables of the layers present in the project, will be displayed in the **Metadata session** of the cartographic client.
 
-![Project title settings](../images/manual/qgisservercapabilities.png)
+![Project title settings](../images/manual/en/qgisservercapabilities.png)
 
 ##### Capabilities WMS - Advertised extent
 In this section it is possible to define the geographical extension displayed when the WebGis service starts.
     
 To define it, set the desired geographical view on the map and then click on the **'Use Current Canvas Extent'** button.
 
-![](../images/manual/qgisserversetmapexpetent.png)
+![](../images/manual/en/qgisserversetmapexpetent.png)
 
 ##### WMS Capabilities - CSR restrictions
 In this section it is possible to define the projection systems for which the project is available in relation to OGC services.
@@ -59,19 +61,19 @@ It is clearly necessary to insert the projection system on which the project was
 
 Other geographic reference systems can be implemented by clicking on the **'+'** button and choosing from the list of reference systems.
 
-![](../images/manual/qgisserversrisrestriction.png)
+![](../images/manual/en/qgisserversrisrestriction.png)
 
 ##### Capabilities WMS - Exclude layouts
 In this section it is possible to exclude some of the print layouts that are associated with the cartographic project from the availability of the WebGis service.
 
-![](../images/manual/qgisserverexludecompositions.png)
+![](../images/manual/en/qgisserverexludecompositions.png)
 
 ##### Capabilities WMS - General aspects
 Two further aspects are manageable with regard to WMS capabilities
  * in general it is recommended to **use the layer ids as names**
  * the option **"Add geometry to feature response"** must be checked to activate the **zoom to the features** on the WebGis service
 
-![](../images/manual/qgisservergeneralaspects.png)
+![](../images/manual/en/qgisservergeneralaspects.png)
 
 ##### WFS Capabilities
 In this section it is possible to define which layers are exposed as WFS services.
@@ -81,7 +83,7 @@ The WFS service is needed if you want activate following types of query:
  
 It is sufficient to check only the "Published" column
  
- ![](../images/manual/qgisservergeneralaspectswfs.png)
+ ![](../images/manual/en/qgisservergeneralaspectswfs.png)
 
 
 ## QGIS: layer properties
@@ -95,7 +97,7 @@ In the installation procedure of the G3W-SUITE application, an "svg" named direc
 
 Within this directory it is therefore possible to store SVG icons, also organized in subdirecory.
 
-The **Configurations icon** ![](../images/manual/iconconfiguration.png), located in the upper right corner of the Administration Panel, allows you to access a menu that includes the **File Manager** item.
+The **Configurations icon** ![](../images/manual/en/iconconfiguration.png), located in the upper right corner of the Administration Panel, allows you to access a menu that includes the **File Manager** item.
 
 Through this tool it is possible to manage SVG icons on the server in a simple and intuitive way.
 
@@ -112,7 +114,7 @@ This submenu lists the fields associated to the table of the vector.
 
 The check in the check box of the **'WMS'** column defines whether or not the values contained in this field will be available following the query on the WebGis service.
 
- ![](../images/manual/qgislayerproperties_wmsfields.png)
+ ![](../images/manual/en/qgislayerproperties_wmsfields.png)
  
 ### Viewing multimedia content
 Multimedia contents (images, pdf, web URL ...) can be viewed interactively on the map client following publication of the QGIS project.
@@ -142,5 +144,5 @@ On QGIS it is in fact possible to build a personalized form (query form) by crea
 
 This structural organization will be replicated directly on the query form on the WebGis service.
 
- ![](../images/manual/qgislayerproperties_displayform.png)
+ ![](../images/manual/en/qgislayerproperties_displayform.png)
  

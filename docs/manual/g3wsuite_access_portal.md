@@ -9,7 +9,7 @@ The front-end portal contains a brief presentation of the service and a side men
  * **Maps**
  * **Login**
 
-![Project title settings](../images/manual/g3wsuite_portal_frontend.png)
+![Project title settings](../images/manual/en/g3wsuite_portal_frontend.png)
 
 Most of the information shown in the access portal can be defined from the **Configurations -> Edit General Data session**, accessible from the icon located in the upper right corner of the Administration Panel.
 
@@ -27,8 +27,8 @@ If you have a user for access, you can authenticate yourself through the Login s
 
 Following authentication, the **Maps** page will also show the MacroGroups, Groups and WebGis services with restricted access and on which the user has access permissions.
 
-![Project title settings](../images/manual/g3wsuite_portal_macrogroups.png)
-![Project title settings](../images/manual/g3wsuite_portal_groups.png)
+![Project title settings](../images/manual/en/g3wsuite_portal_macrogroups.png)
+![Project title settings](../images/manual/en/g3wsuite_portal_groups.png)
 
 ### Login
 If you have a user with login credentials, you can authenticate yourself through this session by entering your user and password.
