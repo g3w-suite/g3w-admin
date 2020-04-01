@@ -56,6 +56,7 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
 
     # General info
     title = models.CharField(_('Title'), max_length=255)
+    title_ur = models.CharField(_('Public title'), max_length=255, null=True, blank=True)
     description = models.TextField(_('Description'), blank=True, null=True)
     slug = AutoSlugField(
         _('Slug'), populate_from='title', unique=True, always_update=True
