@@ -18,6 +18,7 @@ from .models import Project
 class GeneralSuiteDataTranslationOptions(TranslationOptions):
     """ Qdjango Project model translation """
     fields = (
+        'title_ur',
         'description',
     )
 
