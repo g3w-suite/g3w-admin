@@ -131,6 +131,7 @@ class ClientApiTest(APITestCase):
         self.assertEqual(resp["user"]["groups"], [])
         self.assertEqual(resp["user"]["i18n"], "it")
         self.assertEqual(resp["g3wsuite_logo_img"], "g3wsuite_logo_h40.png")
+        self.assertEqual(resp['i18n'], json.loads(json.dumps(settings.LANGUAGES)))
 
 
     def testClientConfigApiView(self):

@@ -102,7 +102,8 @@ class GroupConfigApiView(APIView):
           "group": groupSerializer.data,
           "g3wsuite_logo_img": settings.CLIENT_G3WSUITE_LOGO,
           "credits": reverse('client-credits'),
-          "main_map_title": generaldata.main_map_title
+          "main_map_title": generaldata.main_map_title,
+          "i18n": settings.LANGUAGES
         }
 
         # add frontendurl if frontend is set

@@ -18,6 +18,7 @@ from core.utils.general import get_adminlte_skin_by_user
 from usersmanage.utils import get_users_for_object, get_user_model
 from usersmanage.configs import *
 from copy import deepcopy
+import json
 
 
 def client_map_alias_view(request, map_name_alias, *args, **kwargs):
@@ -135,14 +136,20 @@ class ClientView(TemplateView):
         generaldata = GeneralSuiteData.objects.get()
 
         # add baseUrl property
-        contextData['group_config'] = 'var initConfig ={{ "staticurl":"{}", "client":"{}", ' \
+        contextData['group_config'] = 'var initConfig ={{ "i18n": {}, "staticurl":"{}", "client":"{}", ' \
                                       '"mediaurl":"{}", "user":{}, "group":{}, "baseurl":"{}", "vectorurl":"{}", ' \
                                       '"main_map_title":{}, "g3wsuite_logo_img": "{}", "credits": "{}"' \
                                       ' {} }}'.\
-            format(settings.STATIC_URL, "{}/".format(settings.CLIENT_DEFAULT), settings.MEDIA_URL, user_data.decode('UTF-8'),
-                    serializedGroup, baseurl, settings.VECTOR_URL,
+            format(json.dumps(settings.LANGUAGES),
+                   settings.STATIC_URL,
+                   "{}/".format(settings.CLIENT_DEFAULT),
+                   settings.MEDIA_URL,
+                   user_data.decode('UTF-8'),
+                   serializedGroup, baseurl, settings.VECTOR_URL,
                    '"' + generaldata.main_map_title + '"' if generaldata.main_map_title else 'null',
-                   settings.CLIENT_G3WSUITE_LOGO, reverse('client-credits'), frontendurl)
+                   settings.CLIENT_G3WSUITE_LOGO,
+                   reverse('client-credits'),
+                   frontendurl)
 
         # project by type(app)
         if not '{}-{}'.format(kwargs['project_type'], self.project.pk) in list(groupSerializer.projects.keys()):
