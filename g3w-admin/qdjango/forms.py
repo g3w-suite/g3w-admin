@@ -183,15 +183,6 @@ class QdjangoProjetForm(TranslationModelForm, QdjangoProjectFormMixin, G3WFormMi
             'multilayer_querybypolygon',
         )
 
-        widgets = {
-            '''
-            'qgis_file': DropzoneInput(dropzone_config={
-                'url': '/file-upload/',
-                'maxFiles':1}
-            )
-            '''
-        }
-
     def _setViewerUserQueryset(self, **kwargs):
         """
         Set query set for viewers chosen fields
