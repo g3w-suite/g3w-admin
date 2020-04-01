@@ -278,7 +278,7 @@ class ProjectSerializer(serializers.ModelSerializer):
 
         # add html_page_title
         ret['html_page_title'] = u'{} | {}'.format(
-            getattr(settings, 'G3WSUITE_CUSTOM_TITLE', 'g3w - client'), ret['title'])
+            getattr(settings, 'G3WSUITE_CUSTOM_TITLE', 'g3w - client'), instance.title)
 
         return ret
 
