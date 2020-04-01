@@ -151,7 +151,8 @@ class ClientView(TemplateView):
         # page title
 
         contextData['page_title'] = '{} | {}'.format(
-            getattr(settings, 'G3WSUITE_CUSTOM_TITLE', 'g3w - client'), self.project.title)
+            getattr(settings, 'G3WSUITE_CUSTOM_TITLE', 'g3w - client'),
+            self.project.title_ur if self.project.title_ur else self.project.title)
 
         # choosen skin by user main role
         contextData['skin_class'] = get_adminlte_skin_by_user(self.request.user)
