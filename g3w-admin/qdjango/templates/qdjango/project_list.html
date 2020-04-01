@@ -20,7 +20,8 @@
                     {% endif %}
                     <th style="width:120px">{% trans 'Actions' %}</th>
                     <th>Logo</th>
-                    <th>{% trans 'Title' %}</th>
+                    <th>{% trans 'QGIS project title' %}</th>
+                    <th>{% trans 'Public title' %}</th>
                     <th>{% trans 'Created/Modified' %}</th>
                     <th>{% trans 'Widgets' %}</th>
                 </tr>
@@ -94,6 +95,7 @@
                         {% endif %}
                     </td>
                     <td>{{ object.title }}</td>
+                    <td>{% if object.title_ur %}{{ object.title_ur }}{% endif %}</td>
                     <td>
                         {% trans 'created' %}: {{ object.created }}
                         {% if object.modified %}
