@@ -132,6 +132,7 @@ class QdjangoProjetForm(TranslationModelForm, QdjangoProjectFormMixin, G3WFormMi
                                             css_class='box-header with-border'
                                         ),
                                         Div(
+                                            'title_ur',
                                             Field('description', css_class='wys5'),
                                             'thumbnail',
                                             HTML("""<img
@@ -181,6 +182,7 @@ class QdjangoProjetForm(TranslationModelForm, QdjangoProjectFormMixin, G3WFormMi
             'multilayer_query',
             'multilayer_querybybbox',
             'multilayer_querybypolygon',
+            'title_ur'
         )
 
     def _setViewerUserQueryset(self, **kwargs):
