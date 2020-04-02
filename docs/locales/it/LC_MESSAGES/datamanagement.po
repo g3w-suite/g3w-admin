@@ -1,0 +1,179 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2016 - 2020, GIS3W Team
+# This file is distributed under the same license as the G3W-SUITE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: G3W-SUITE 0.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-04-01 15:02+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.8.0\n"
+
+#: ../../datamanagement.md:1
+msgid "Management and organization of geographic data and QGIS projects"
+msgstr "Gestione ed organizzazione dati geografici e progetti QGIS"
+
+#: ../../datamanagement.md:2
+msgid "Data on GeoDatabase PostGis"
+msgstr "Dati su GeoDatabase PostGis"
+
+#: ../../datamanagement.md:4
+msgid ""
+"If your geographical data are stored on GeoDatabase PostGis, it will be "
+"sufficient to allow access to the GeoDB from the IP address on which the "
+"application is installed."
+msgstr ""
+"Nel caso i dati geografici utilizzati per realizzare i vostri progetti "
+"cartografici con QGIS siano situati su GeoDatabase PostGis sarà "
+"sufficiente permettere l’accesso al DB dall’indirizzo IP su cui è "
+"installato l’applicativo."
+
+#: ../../datamanagement.md:6
+msgid "Data on SpatiaLite or on other file system format"
+msgstr "Dati su GeoDatabase SpatiaLite o su file system"
+
+#: ../../datamanagement.md:8
+msgid ""
+"If your geographical data are stored on SpatiaLite or on physical files "
+"(.shp, .kml, .tif ...) located on your local PC, you will need:"
+msgstr ""
+"Nel caso i dati geografici utilizzati per realizzare i vostri progetti "
+"cartografici con QGIS siano situati su Geodatabase SpatiaLite o su altro "
+"tipo di file fisico (.shp, .kml, .tif...) situati sul proprio PC locale, "
+"sarà necessario:"
+
+#: ../../datamanagement.md:9
+msgid "organize data and projects in predefined directories and subdirectories"
+msgstr "organizzare dati e progetti in directory e sottodirectory predefinite"
+
+#: ../../datamanagement.md:10
+msgid ""
+"upload/synchronize geographic data to the default folder located on the "
+"server where the application is installed (see dedicated paragraph)"
+msgstr ""
+"uploadare/sincronizzare i dati geografici sulla cartella predefinita "
+"situata sul server su cui è installato l'applicativo"
+
+#: ../../datamanagement.md:12
+msgid ""
+"Of course, mixed solutions with geographical data on PostGis, SpatiaLite "
+"and other formats will also be possible."
+msgstr ""
+"**Naturalmente saranno possibili anche soluzioni miste con dati "
+"geografici su PostGis, SpatiaLite ed altri formati.**"
+
+#: ../../datamanagement.md:14
+msgid "Organization of data and projects"
+msgstr "Organizzazione dati e progetti"
+
+#: ../../datamanagement.md:16
+msgid ""
+"Data on physical files and/or on GeoDB SpatiaLite and QGIS cartographic "
+"projects must be organized in folders with the following rules:"
+msgstr ""
+"Dati su file fisici e/o su GeoDB SpatiaLite e progetti cartografici QGIS "
+"devono essere organizzati nel modo e con le seguenti denominazioni:"
+
+#: ../../datamanagement.md:17
+msgid "a main directory named and positioned in according to need's user"
+msgstr ""
+
+#: ../../datamanagement.md:18
+msgid ""
+"a geographic_data subdirectory yhat must contain the geographic data used"
+" for the various cartographic projects, such data can also be organized "
+"in subdirectories with no nesting limits. This directory must also "
+"contain images used in the various print layouts associated with the "
+"individual cartographic projects"
+msgstr ""
+"la directory principale può essere nominata e posizionata a piacimento da"
+" parte dell'utente."
+
+#: ../../datamanagement.md:20
+msgid ""
+"a projects sub-directory that must contain the QGIS cartographic projects"
+" (.qgz or .qgs files)"
+msgstr ""
+"la sub directory **projects** deve contenere i i singoli progetti "
+"cartografici di QGIS (file .qgs) da pubblicare."
+
+#: ../../datamanagement.md:22 ../../datamanagement.md:33
+#: ../../datamanagement.md:44
+msgid "Data management"
+msgstr "Gestione dei dati"
+
+#: ../../datamanagement.md:24
+msgid "Geographic data synchronization on the server"
+msgstr "Sincronizzazione dati geografici su spazio server"
+
+#: ../../datamanagement.md:26
+msgid ""
+"The data stored in the local geographic_data directory must be "
+"synchronized on the server where the G3W-SUITE application is installed."
+msgstr ""
+"In caso di file fisici, i dati geografici presenti nella directory "
+"dati_geografici devono essere sincronizzati con quelli presenti "
+"nell'omonima directory sul server in cui è installato l'applicativo G3W-"
+"SUITE."
+
+#: ../../datamanagement.md:28
+msgid ""
+"The geographic data stored in the local geographic_data folder must be "
+"loaded, reflecting any subdirectory structure."
+msgstr ""
+"All'interno di tale directory vanno caricati i file fisici geografici "
+"riportati in locale nella cartella **geo_data** rispecchiando l'eventuale"
+" struttura in subdirectory."
+
+#: ../../datamanagement.md:30
+msgid ""
+"To synchronize your data access to the Administration panel of G3W-ADMIN "
+"and click on the the Configurations icon Configuration icon located in "
+"the upper right corner Choose the File Manager item in the linked menù."
+msgstr ""
+"Nel pannello di Amministrazione l'icona **Configurazioni**  posta "
+"nell'angolo in alto a destra permette di accedere ad un menù che "
+"comprende la voce **File Manager**."
+
+#: ../../datamanagement.md:35
+msgid ""
+"Using this tool it is possible to manage the physical geographic data on "
+"the server in a simple and intuitive way."
+msgstr ""
+"Tramite tale strumento è possibile gestire i file fisici geografici sul "
+"server in modo semplice ed intuitivo."
+
+#: ../../datamanagement.md:37
+msgid "This the directories present by default:"
+msgstr "Queste le directory definite durante l'installazione della suite:"
+
+#: ../../datamanagement.md:38
+msgid "geographic_data: the folder to store your geographic data"
+msgstr "**geo_data**: la cartella per la gestione dei dati geografici"
+
+#: ../../datamanagement.md:39
+msgid "media_user: a folder exposed on the web, to store your multimedia files"
+msgstr ""
+"**media_user**: la cartella esposta su web, per la gestione dei file "
+"multimediali"
+
+#: ../../datamanagement.md:40
+msgid "svg: a folder to store extra SVG icons used your QGIS projects"
+msgstr ""
+"**svg**: una cartella per gestire simboli SVG extra usati a livello di "
+"progetto QGIS"
+
+#: ../../datamanagement.md:42
+msgid "All the folder can be organized in subdirectories with no nesting limits."
+msgstr ""
+"Tutte le cartelle possono essere contenere sub-directory senza limiti di "
+"annidamento"
+

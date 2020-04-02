@@ -1,0 +1,550 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2016 - 2020, GIS3W Team
+# This file is distributed under the same license as the G3W-SUITE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: G3W-SUITE 0.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-04-01 15:02+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.8.0\n"
+
+#: ../../projectsettings.md:1
+msgid "QGIS: project settings"
+msgstr "QGIS: impostazioni dei progetti cartografici"
+
+#: ../../projectsettings.md:2
+msgid ""
+"In the QGIS cartographic projects you can set some parameters and options"
+" that affect functionalities and contents in the derivative WebGis "
+"service. In particular, some parameters of the project affect:"
+msgstr ""
+"I progetti cartografici realizzati sul software QGIS e dedicati alla "
+"pubblicazione su servizio WebGis presentono alcuni parametri ed opzioni "
+"che vanno ad incidere sulla funzionalità e sui contenuti del servizio "
+"WebGis stesso. In particolare alcuni parametri del progetto incidono su:"
+
+#: ../../projectsettings.md:4
+msgid "the webgis service identification name"
+msgstr ""
+"il nome identificativo del progetto una volta caricato sull'applicativo "
+"G3W-SUITE"
+
+#: ../../projectsettings.md:5
+msgid "the associated basic metadata"
+msgstr "i metadati di base associati"
+
+#: ../../projectsettings.md:6
+msgid "the capabilities of the service"
+msgstr "le capabilities del servizio"
+
+#: ../../projectsettings.md:7
+msgid "the geographical extension displayed when the WebGis service starts"
+msgstr "l'estensione geografica visualizzata all'avvio del servizio WebGis"
+
+#: ../../projectsettings.md:8
+msgid "the projection systems for which the project is available"
+msgstr "i sistemi di proiezioni per cui il progetto è disponibile"
+
+#: ../../projectsettings.md:9
+msgid ""
+"the possibility to exclude some associated print layouts on the WebGis "
+"service"
+msgstr "eventuale esclusione di layout di stampa sul servizio WebGis"
+
+#: ../../projectsettings.md:10
+msgid "which layers are queryable and searchable"
+msgstr "quali strati siano interrogabili e ricercabili"
+
+#: ../../projectsettings.md:11
+msgid "which vector layers can be queried using WFS"
+msgstr "quali strati siano interrogabili in modalità WFS"
+
+#: ../../projectsettings.md:12
+msgid ""
+"which fields (for each vector data) and with which aliases are made "
+"visible following interrogation on the WebGis service"
+msgstr ""
+"quali campi e con quali alias siano resi visibili, in seguito ad "
+"interrogazione, per ciascun dato vettoriale"
+
+#: ../../projectsettings.md:13
+msgid "the structure of the query form visible on the WebGis service"
+msgstr "la struttura del query form visible sul servizio WebGis"
+
+#: ../../projectsettings.md:15
+msgid ""
+"The following paragraphs describe which settings will be most relevant in"
+" relation to the published WebGis service."
+msgstr ""
+"Nei paragrafi successivi verranno descritte le impostazioni relative al "
+"progetto cartografico QGIS che avranno maggior risvolti in relazione al "
+"servizio WebGis pubblicato."
+
+#: ../../projectsettings.md:17
+msgid "QGIS: project property"
+msgstr "QGIS: proprietà del progetto"
+
+#: ../../projectsettings.md:18
+msgid ""
+"From the Project → Properties menu, you can access the Project Properties"
+" window and the three submenus of our interest:"
+msgstr ""
+"Dal menù **Progetto → Proprietà** si acceda alla finestra **Proprietà del"
+" progetto** e da qui si accede a tre sottomenù di nostro interesse:"
+
+#: ../../projectsettings.md:19 ../../projectsettings.md:23
+msgid "General"
+msgstr "Generale"
+
+#: ../../projectsettings.md:20 ../../projectsettings.md:33
+msgid "Data sources"
+msgstr "Sorgente dei dati"
+
+#: ../../projectsettings.md:21
+msgid "QGIS server"
+msgstr "QGIS server"
+
+#: ../../projectsettings.md:24
+msgid "General Settings"
+msgstr "Impostazioni generali"
+
+#: ../../projectsettings.md:25
+msgid "In this section you can define the title of the project."
+msgstr ""
+"In questa sezione è possibile definire le capabilities del servizio "
+"prodotto."
+
+#: ../../projectsettings.md:27
+msgid ""
+"This title will be used at the G3W-SUITE application level to uniquely "
+"identify the published project; for this reason it will not be possible "
+"to assign the same name to different projects published on the WebGis "
+"service."
+msgstr "Questo titolo sara usato a livello di applicazione per identificare"
+"univocamente il progetto pubblicato; per questa ragione non sarà possibile"
+"assegnare lo stesso nome a differenti progetti pubblicati su WebGis"
+
+#: ../../projectsettings.md:29
+msgid ""
+"We advise against using special characters, or numbers in the project "
+"name."
+msgstr "Si sconsiglia l'utilizzo di caratteri speciali o numeri nel titolo del progetto"
+
+#: ../../projectsettings.md:31 ../../projectsettings.md:38
+#: ../../projectsettings.md:48
+msgid "Project title settings"
+msgstr "Definizione del titolo del progetto"
+
+#: ../../projectsettings.md:34
+msgid ""
+"This submenu defines the layers that can be queried at the WebGis service"
+" level."
+msgstr ""
+"**In questo sottomenù si definiscono i layer che potranno essere "
+"interrogati a livello del servizio WebGis."
+
+#: ../../projectsettings.md:36
+msgid "The only column to consider is the one called Interrogable."
+msgstr "La sola colonna da considerare è quella denominata **Interrogabile**."
+
+#: ../../projectsettings.md:40
+msgid "QGIS Server"
+msgstr "QGIS Server"
+
+#: ../../projectsettings.md:41
+msgid "This window is divided into sections:"
+msgstr "Tale finestra è suddivisa in sezioni che analizzeremo di seguito:"
+
+#: ../../projectsettings.md:43
+msgid "Service capabilities"
+msgstr "Capabilities del servizio"
+
+#: ../../projectsettings.md:44
+msgid "In this section it is possible to define the capabilities of the service."
+msgstr ""
+"In questa sezione è possibile definire le capabilities del servizio "
+"prodotto."
+
+#: ../../projectsettings.md:46
+msgid ""
+"This information, together with info about the structure of the attribute"
+" tables of the layers present in the project, will be displayed in the "
+"Metadata session of the cartographic client."
+msgstr ""
+"Tali informazioni, insieme a quelle associate alla struttura dati dei "
+"singoli layer del progetto, verranno **visualizzate associate al servizio"
+" WebGis nella sessione Metadati**."
+
+#: ../../projectsettings.md:50
+msgid "Capabilities WMS - Advertised extent"
+msgstr "Capabilities WMS – Estensione di pubblicazione"
+
+#: ../../projectsettings.md:51
+msgid ""
+"In this section it is possible to define the geographical extension "
+"displayed when the WebGis service starts."
+msgstr ""
+"In questa sezione è possibile definire l'estensione geografica "
+"visualizzata all'avvio del servizio WebGis."
+
+#: ../../projectsettings.md:53
+msgid ""
+"To define it, set the desired geographical view on the map and then click"
+" on the 'Use Current Canvas Extent' button."
+msgstr ""
+"La procedura più semplice da seguire è quella di impostare sulla mappa la"
+" vista geografica desiderata e cliccare poi sul tasto **'Imposta "
+"all'estensione della mappa'**."
+
+#: ../../projectsettings.md:57
+msgid "WMS Capabilities - CSR restrictions"
+msgstr "Capabilities WMS – Restrizioni SR"
+
+#: ../../projectsettings.md:58
+msgid ""
+"In this section it is possible to define the projection systems for which"
+" the project is available in relation to OGC services."
+msgstr ""
+"In questa sezione è possibile definire i sistemi di proiezioni per cui il"
+" progetto è disponibile relativamente ai servizi OGC."
+
+#: ../../projectsettings.md:60
+msgid ""
+"It is clearly necessary to insert the projection system on which the "
+"project was made, the SR in question is added by clicking on the 'Used' "
+"button."
+msgstr ""
+"E' chiaramente necessario inserire il sistema di proiezione su cui è "
+"stato realizzato il progetto, il SR in questione è aggiunto cliccando sul"
+" tasto **'Usato'**."
+
+#: ../../projectsettings.md:62
+msgid ""
+"Other geographic reference systems can be implemented by clicking on the "
+"'+' button and choosing from the list of reference systems."
+msgstr ""
+"Altri sistemi di riferimento geografico sono implementabili cliccando sul"
+" tasto **'+'** e scegliendo dalla lista dei sistemi di riferimento."
+
+#: ../../projectsettings.md:66
+msgid "Capabilities WMS - Exclude layouts"
+msgstr "Capabilities WMS – Escludi composizioni"
+
+#: ../../projectsettings.md:67
+msgid ""
+"In this section it is possible to exclude some of the print layouts that "
+"are associated with the cartographic project from the availability of the"
+" WebGis service."
+msgstr ""
+"In questa sezione è possibile escludere dalla disponibilità del servizio "
+"WebGis alcune tra i layout di stampa che sono associati al progetto "
+"cartografico."
+
+#: ../../projectsettings.md:71
+msgid "Capabilities WMS - General aspects"
+msgstr "Capabilities WMS – Aspetti generici"
+
+#: ../../projectsettings.md:72
+msgid "Two further aspects are manageable with regard to WMS capabilities"
+msgstr "Due aspetti ulteriori sono gestibili relativamente alle capabilities WMS"
+
+#: ../../projectsettings.md:73
+msgid "in general it is recommended to use the layer ids as names"
+msgstr ""
+"in generale si consiglia di utilizzare l'opzione **'Usa gli id dei layer "
+"come nomi'** al fine di velocizzare le operazioni di interrogazione e "
+"ricerca"
+
+#: ../../projectsettings.md:74
+msgid ""
+"the option \"Add geometry to feature response\" must be checked to "
+"activate the zoom to the features on the WebGis service"
+msgstr ""
+"per poter rendere attivo sul WebGis la funzione di zoom ai risultati di "
+"una ricerca o a quelli di un interrogazione occorre attivare l'opzione "
+"**'Aggiungi la geometria alla risposta dell'oggetto'**"
+
+#: ../../projectsettings.md:78
+msgid "WFS Capabilities"
+msgstr "Capabilities WFS"
+
+#: ../../projectsettings.md:79
+msgid ""
+"In this section it is possible to define which layers are exposed as WFS "
+"services. The WFS service is needed if you want activate following types "
+"of query:"
+msgstr ""
+"In questa sezione è possibile definire quali siano i vettori esposti come"
+" servizi WFS e che quindi forniranno una risposta in seguito "
+"all'interrogazione secondo le due modalità:"
+
+#: ../../projectsettings.md:81
+msgid "bbox"
+msgstr "**query bbox**"
+
+#: ../../projectsettings.md:82
+msgid "bypolygon"
+msgstr "**query bypolygon**"
+
+#: ../../projectsettings.md:84
+msgid "It is sufficient to check only the \"Published\" column"
+msgstr "E sufficiente spuntare la check box relativa alla colonna **'Pubblicato'**"
+
+#: ../../projectsettings.md:89
+msgid "QGIS: layer properties"
+msgstr "QGIS: proprietà dei layer"
+
+#: ../../projectsettings.md:90
+msgid "Simbology"
+msgstr "Simbologia"
+
+#: ../../projectsettings.md:91
+msgid ""
+"The rendering style associated with the individual layers is replicated "
+"autonomously on the WebGis service."
+msgstr ""
+"La vestizione associata ai singoli layer viene replicata autonomamente "
+"sul servizio WebGis."
+
+#: ../../projectsettings.md:93
+msgid ""
+"If external SVG icons are used (added to the basic ones of QGIS, via the "
+"Settings -> Options -> System -> SVG paths), these must be uploaded to "
+"the server (through the File Manager tool) in order to be used by QGIS "
+"Server."
+msgstr ""
+"Nel caso di utilizzo di **icone SVG esterne** (aggiunte a quelle base di "
+"QGIS, tramite il menù **Impostazioni → Opzioni  → Sistema _> Percorsi "
+"SVG**), queste devono essere caricate sul server per poter essere "
+"utilizzate da QGIS-Server."
+
+#: ../../projectsettings.md:95
+msgid "Manage custom SVG icons"
+msgstr "Gestire icone SVG personalizzate"
+
+#: ../../projectsettings.md:96
+msgid ""
+"In the installation procedure of the G3W-SUITE application, an \"svg\" "
+"named directory is created on the server."
+msgstr ""
+"Nella procedura di installazione dell'applicativo G3W-SUITE viene creata "
+"sul server una **directory nominata 'svg'** che nasce per ospitare le "
+"icone SVG personalizzate."
+
+#: ../../projectsettings.md:98
+msgid ""
+"Within this directory it is therefore possible to store SVG icons, also "
+"organized in subdirecory."
+msgstr ""
+"All'interno di tale directory è possibile quindi ospitare icone SVG, "
+"anche organizzate in subdirecory."
+
+#: ../../projectsettings.md:100
+msgid ""
+"The Configurations icon , located in the upper right corner of the "
+"Administration Panel, allows you to access a menu that includes the File "
+"Manager item."
+msgstr ""
+"Nel pannello di Amministrazione l'**icona Configurazioni**  posta "
+"nell'angolo in alto a destra permette di accedere ad un menù che "
+"comprende la voce **File Manager**."
+
+#: ../../projectsettings.md:102
+msgid ""
+"Through this tool it is possible to manage SVG icons on the server in a "
+"simple and intuitive way."
+msgstr ""
+"Tramite tale strumento è possibile gestire le icone SVG sul server in "
+"modo semplice ed intuitivo."
+
+#: ../../projectsettings.md:104
+msgid ""
+"The SVG folder on the server must reflect the structure in any subfolders"
+" present locally."
+msgstr ""
+"La cartella SVG sul server deve riflettere la struttura in sottocartelle "
+"della directory dedicata a raccogliere le icone SVG extra da parte di "
+"QGIS"
+
+#: ../../projectsettings.md:106
+msgid ""
+"PS: remember that the File Manager tool also allows you to manage the "
+"synchronization of geographical data (in the case of using physical "
+"files) and the management of multimedia files. See dedicated paragraphs."
+msgstr ""
+"**NB:** si ricorda che lo strumento **File Manager** permette di gestire "
+"anche la sincronizzazione dei dati geografici (nel caso di utilizzo di "
+"file fisici) e la gestione dei file multimediali. Vedi paragrafi "
+"dedicati."
+
+#: ../../projectsettings.md:108
+msgid "Definition of the fields that can be consulted for each layer"
+msgstr "Definizione dei campi consultabili per ogni layer"
+
+#: ../../projectsettings.md:109
+msgid ""
+"Within the QGIS project it is also possible to define, for each layer, "
+"which fields are available following query on the WebGis service."
+msgstr ""
+"All'interno del progetto di QGIS è possibile anche definire, per ogni "
+"vettore, quali siano i campi disponibili in seguito ad interrogazione sul"
+" servizio WebGis."
+
+#: ../../projectsettings.md:111
+msgid ""
+"To define these settings, you access the properties of one of the vectors"
+" previously defined as searchable and choose the 'Source Fields' submenu "
+"in the 'Layer Properties' window."
+msgstr ""
+"Per definire queste impostazioni si accede alle proprietà di uno dei "
+"vettori definiti precedentemente come interrogabili e si sceglie il "
+"sottomenù **'Campi Sorgente'** nella finestra **'Proprietà vettore'**."
+
+#: ../../projectsettings.md:113
+msgid "This submenu lists the fields associated to the table of the vector."
+msgstr "In tale sottomenù è riportato l'elenco dei campi del vettore in esame."
+
+#: ../../projectsettings.md:115
+msgid ""
+"The check in the check box of the 'WMS' column defines whether or not the"
+" values contained in this field will be available following the query on "
+"the WebGis service."
+msgstr ""
+"La spunta del chek box della colonna **'WMS'** definisce se i valori "
+"contenuti in tale campo saranno disponibili o meno in seguito "
+"all'interrogazione sul servizio WebGis."
+
+#: ../../projectsettings.md:119
+msgid "Viewing multimedia content"
+msgstr "Visualizzazione di contenuti multimediali"
+
+#: ../../projectsettings.md:120
+msgid ""
+"Multimedia contents (images, pdf, web URL ...) can be viewed "
+"interactively on the map client following publication of the QGIS "
+"project."
+msgstr ""
+"Contenuti multimediali (immagini, pdf, URL web…) possano essere "
+"visualizzati in modo interattivo sul client cartografico in seguito a "
+"pubblicazione del progetto come servizio WebGis."
+
+#: ../../projectsettings.md:122
+msgid ""
+"In the case of web links, simply insert them (preceded by the prefix "
+"http:// or https://) within the dedicated attribute fields"
+msgstr ""
+"Nel caso di link web è sufficiente riportarli (preceduti dal prefisso "
+"http:// o https://) all’interno del campo degli attributi dedicato"
+
+#: ../../projectsettings.md:124
+msgid "In the case of multimedia files it is necessary:"
+msgstr "Per il caso di file multimediali è invece necessario:"
+
+#: ../../projectsettings.md:125
+msgid ""
+"upload the media file to the media_user folder (folder exposed on the "
+"web) accessible through the File Manager tool in the Suite Administration"
+" Panel"
+msgstr ""
+"caricare il file multimediale nell’apposita cartella **media_user** "
+"(cartella esposta su web) presente nella sessione **File Manager** del "
+"Pannello di Amministrazione della suite"
+
+#: ../../projectsettings.md:126
+msgid "insert the web link to this file in the dedicated attribute field"
+msgstr "inserire nel  campo degli attributi dedicato il link web a tale file"
+
+#: ../../projectsettings.md:128
+msgid "The link to the file can be obtained in the following way:"
+msgstr "Il link al file può essere ricavato nel seguente modo:"
+
+#: ../../projectsettings.md:129
+msgid "application domain + media_user + path of the file + file name"
+msgstr ""
+"dominio applicativo + media_user + path di eventuali sottocartelle + nome"
+" del file"
+
+#: ../../projectsettings.md:131
+msgid "Example:"
+msgstr "Esempio:"
+
+#: ../../projectsettings.md:132
+msgid "application domain: https://dev.g3wsuite.it"
+msgstr "dominio applicativo: https://dev.g3wsuite.it"
+
+#: ../../projectsettings.md:133
+msgid "file file_A.pdf located in the folder /media_user/form/"
+msgstr "file **scheda_A.pdf** situato nella cartella **/media_user/schede/**"
+
+#: ../../projectsettings.md:134
+msgid "web link: https://dev.g3wsuite.it/media_user/form/file_A.pdf"
+msgstr "link web: **https://dev.g3wsuite.it/media_user/schede/scheda_A.pdf**"
+
+#: ../../projectsettings.md:136
+msgid ""
+"Following queries at the cartographic client level, we will have "
+"different behaviors based on the type of content:"
+msgstr ""
+"In seguito ad interrogazione del layer in oggetto attraverso il client "
+"cartografico, in base al tipo di contenuto multimediale, avremmo i "
+"seguenti casi:"
+
+#: ../../projectsettings.md:137
+msgid ""
+"image: preview display in the form, click on the preview to display the "
+"image in real size"
+msgstr ""
+"**immagine:** visualizzazione dell’anteprima nel form, click "
+"sull’anteprima per la visualizzazione in sovraimpressione dell’immagine a"
+" dimensioni reale"
+
+#: ../../projectsettings.md:138
+msgid ""
+"web link or other multimedia file: display of an Open orange button to "
+"allow consultation of the content"
+msgstr ""
+"**link web o file multimediale di altro tipo:** visualizzazione di tasto "
+"arancione con la scritta  Apri  per permettere la consultazione del "
+"contenuto"
+
+#: ../../projectsettings.md:140
+msgid "Definition of the attribute display form"
+msgstr "Definizione del form di visualizzazione degli attributi"
+
+#: ../../projectsettings.md:141
+msgid ""
+"For each layer it is possible to define the structure of the attributes "
+"form associated with displaying the results following query operations."
+msgstr ""
+"Per ogni layer è possibile definire la struttura del form degli attributi"
+" associato alla visualizzazione dei risultati in seguito ad operazioni di"
+" interrogazione."
+
+
+#: ../../projectsettings.md:143
+msgid ""
+"On QGIS it is in fact possible to build a personalized form (query form) "
+"by creating thematic tabs and groups and defining the distribution of the"
+" individual fields and their aliases."
+msgstr ""
+"Su QGIS è infatti possibile andare a costruire una maschera di "
+"inserimento (query form) personalizzato creando Schede e Gruppi tematici "
+"e definendo la distribuzione dei singoli campi ed i loro alias "
+"all'interno di essi."
+
+#: ../../projectsettings.md:145
+msgid ""
+"This structural organization will be replicated directly on the query "
+"form on the WebGis service."
+msgstr ""
+"Tale organizzazione strutturale sarà replicata direttamente sul query "
+"form sul servizio WebGis."

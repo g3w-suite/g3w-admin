@@ -19,7 +19,7 @@ Data on physical files and/or on GeoDB SpatiaLite and QGIS cartographic projects
      This directory must also contain images used in the various print layouts associated with the individual cartographic projects
    * a **projects** sub-directory that must contain the QGIS cartographic projects (.qgz or .qgs files)
 
-![Data management](../images/manual/datamanagement.png)
+![Data management](images/manual/datamanagement.png)
 
 ### Geographic data synchronization on the server
 
@@ -27,10 +27,10 @@ The data stored in the local **geographic_data** directory must be synchronized 
 
 The geographic data stored in the local geographic_data folder must be loaded, reflecting any subdirectory structure.
 
-To synchronize your data access to the Administration panel of G3W-ADMIN and click on the the **Configurations icon** ![Configuration icon](../images/manual/rightmenuicon.png) located in the upper right corner
+To synchronize your data access to the Administration panel of G3W-ADMIN and click on the the **Configurations icon** ![Configuration icon](images/manual/rightmenuicon.png) located in the upper right corner
 Choose the **File Manager** item in the linked menù.
 
-![Data management](../images/manual/g3wsuite_administration_configuration_menu.png)
+![Data management](images/manual/g3wsuite_administration_configuration_menu.png)
 
 Using this tool it is possible to manage the physical geographic data on the server in a simple and intuitive way.
 
@@ -41,4 +41,4 @@ This the directories present by default:
 
 All the folder can be organized in subdirectories with no nesting limits.
 
-![Data management](../images/manual/g3wsuite_administration_file_manager.png)
+![Data management](images/manual/g3wsuite_administration_file_manager.png)
