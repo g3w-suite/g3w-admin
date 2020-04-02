@@ -187,37 +187,29 @@ class QdjangoProjetForm(TranslationModelForm, QdjangoProjectFormMixin, G3WFormMi
 
     def _setViewerUserQueryset(self, **kwargs):
         """
-        Set query set for viewers chosen fields
-        Take from viewers set into parent project group by Editor Level 1
+        Set queryset for viewers chosen fields
+        Take Viewers level 1 from Group
         :return: None
         """
-        # get viewer from parent if not editor level 2
 
-        if userHasGroups(self.request.user, [G3W_EDITOR2]):
-
-            # get viewers from groups
-            viewers = get_viewers_for_object(self.group, self.request.user,
-                                                                          'view_group')
-            # get queryset
-            self.fields['viewer_users'].queryset = User.objects.filter(groups__name__in=self.viewer_groups,
-                                                                       pk__in=[v.pk for v in viewers])
-        else:
-            super(QdjangoProjetForm, self)._setViewerUserQueryset(**kwargs)
+        # get viewers from groups
+        viewers = get_viewers_for_object(self.group, self.request.user, 'view_group')
+        # get queryset
+        self.fields['viewer_users'].queryset = User.objects.filter(groups__name__in=self.viewer_groups,
+                                                                   pk__in=[v.pk for v in viewers])
 
     def _set_user_groups_queryset(self):
         """
         Set query set for viewer user groups chosen fields
-        Take from viewer user groups set into parent project group by Editor Level 1
+        Take Viewer User Groups from Group
         :return: None
         """
-        if userHasGroups(self.request.user, [G3W_EDITOR2]):
-            viewer_user_groups = get_user_groups_for_object(self.group,self.request.user, 'view_group', 'viewer')
 
-            # get queryset
-            self.fields['viewer_user_groups'].queryset = AuthGroup.objects.filter(
-                pk__in=[v.pk for v in viewer_user_groups])
-        else:
-            super(QdjangoProjetForm, self)._set_user_groups_queryset()
+        viewer_user_groups = get_user_groups_for_object(self.group,self.request.user, 'view_group', 'viewer')
+
+        # get queryset
+        self.fields['viewer_user_groups'].queryset = AuthGroup.objects.filter(
+            pk__in=[v.pk for v in viewer_user_groups])
 
     def save(self, commit=True):
         self._ACLPolicy()
