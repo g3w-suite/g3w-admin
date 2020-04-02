@@ -282,7 +282,7 @@ def get_viewers_for_object(object, user, permissions, with_anonymous=True):
     :param user: current g3w-suite user in session
     :param permissions: permission to check
     :param with_anonymous: if add anonymous user to viewers list
-    :return: viewers boject list
+    :return: viewers object list
     """
 
     editor1_viewers = None
