@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.urls import reverse
+from django_filters.rest_framework import DjangoFilterBackend
 from .base.views import BaseEditingVectorOnModelApiView
 from core.utils.db import build_dango_connection_name
 from core.api.views import USERMEDIAHANDLER_CLASSES
@@ -18,7 +19,7 @@ class QGISEditingLayerVectorView(QGISLayerVectorViewMixin, BaseEditingVectorOnMo
         QGISLayerEditingPermission,
     )
 
-    filter_backends = (ConstraintsFilter, )
+    filter_backends = (ConstraintsFilter, DjangoFilterBackend)
 
     def add_media_property(self, geojson_feature, metadata_layer):
         """
