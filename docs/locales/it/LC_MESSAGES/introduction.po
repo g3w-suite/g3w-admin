@@ -1,0 +1,76 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2016 - 2020, GIS3W Team
+# This file is distributed under the same license as the G3W-SUITE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: G3W-SUITE 0.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-04-01 15:02+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.8.0\n"
+
+#: ../../introduction.md:1
+msgid "Introduction"
+msgstr "Introduzione"
+
+#: ../../introduction.md:3
+msgid ""
+"G3W-SUITE is a modular client-server application for the management and "
+"publication of interactive map projects."
+msgstr ""
+"**G3W-SUITE è un’applicazione client-server modulare per la gestione e la"
+" pubblicazione di progetti cartografici interattivi**."
+
+#: ../../introduction.md:5
+#, fuzzy
+msgid ""
+"Its development was born from the need to have a software capable of "
+"publishing, in total autonomy and quickly and easily on a webgis client, "
+"QGIS cartographic projects."
+msgstr ""
+"Il suo sviluppo è nato dall’esigenza di avere un software in grado di "
+"pubblicare, in totale autonomia e in maniera semplice e veloce su un "
+"client webgis, progetti cartografici realizzati con QGIS"
+
+#: ../../introduction.md:7
+msgid ""
+"The need to have a management application to be inserted in structured "
+"contexts such as public bodies, parks, companies, etc. was the engine "
+"that led to develop aspects related to:"
+msgstr ""
+"La necessità di avere una applicazione gestionale da inserire in contesti"
+" strutturati come enti pubblici, parchi, aziende, ecc. è stata il motore "
+"che ha portato a sviluppare aspetti relativi a:"
+
+#: ../../introduction.md:9
+msgid ""
+"organization of cartographic contents in a hierarchical way: macro groups"
+" and cartographic groups"
+msgstr ""
+"**organizzazione dei contenuti cartografici in maniera gerarchica: macro "
+"gruppi e gruppi cartografici**"
+
+#: ../../introduction.md:10
+msgid "access control systems for administration and consultation of projects"
+msgstr ""
+"**sistemi di controllo degli accessi all’amministrazione e alla "
+"consultazione dei progetti**"
+
+#: ../../introduction.md:11
+msgid ""
+"editing functionality and access of the various dedicated modules based "
+"on an editable and configurable user profiling system, also of a "
+"hierarchical type"
+msgstr ""
+"**funzionalità di editing e dei vari moduli, basato su un sistema di "
+"profilazione utenti editabili e configurabili, anch’esso di tipo "
+"gerarchico**"
+
