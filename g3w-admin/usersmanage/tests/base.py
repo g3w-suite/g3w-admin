@@ -62,6 +62,8 @@ class BaseUsermanageTestCase(TestCase):
         test_user1.is_superuser = True
         test_user1.save()
 
+        setattr(cls, 'test_user1', test_user1)
+
         # create editor and viewers, and editor and viewr group
         # like create by admin user
         # =====================================================
@@ -70,18 +72,21 @@ class BaseUsermanageTestCase(TestCase):
             user.set_password(euser)
             user.save()
             user.groups.add(roles[G3W_EDITOR1])
+            setattr(cls, 'test_{}'.format(euser.replace('.', '_')), user)
 
         for euser in ['editor2', 'editor2.2', 'editor2.3']:
             user = User.objects.create_user(username=euser)
             user.set_password(euser)
             user.save()
             user.groups.add(roles[G3W_EDITOR2])
+            setattr(cls, 'test_{}'.format(euser.replace('.', '_')), user)
 
         for euser in ['viewer1', 'viewer1.2', 'viewer1.3']:
             user = User.objects.create_user(username=euser)
             user.set_password(euser)
             user.save()
             user.groups.add(roles[G3W_VIEWER1])
+            setattr(cls, 'test_{}'.format(euser.replace('.', '_')), user)
 
         # create user groups
         for ugroup in [
@@ -94,6 +99,7 @@ class BaseUsermanageTestCase(TestCase):
             if created:
                 ug.role = ugroup[1]
                 ug.save()
+                setattr(cls, 'test_{}'.format(ugroup[0].replace('-','_').lower()), ug)
 
 
 

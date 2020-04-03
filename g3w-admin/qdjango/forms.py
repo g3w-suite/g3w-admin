@@ -185,6 +185,22 @@ class QdjangoProjetForm(TranslationModelForm, QdjangoProjectFormMixin, G3WFormMi
             'title_ur'
         )
 
+    def _setEditorUserQueryset(self):
+        """
+        Set query set for editors chosen fields
+        :return: None
+        """
+
+        # add filter by group permissions
+        editor_group = get_users_for_object(self.instance.group, 'change_group', [G3W_EDITOR1])
+        editor2_group = get_users_for_object(self.instance.group, 'add_project_to_group', [G3W_EDITOR2])
+
+        self.fields['editor_user'].queryset = get_objects_for_user(self.request.user, 'auth.change_user', User) \
+            .filter(pk__in=[e.pk for e in editor_group], groups__name__in=self.editor1_groups)
+
+        self.fields['editor2_user'].queryset = get_objects_for_user(self.request.user, 'auth.change_user', User) \
+            .filter(pk__in=[e.pk for e in editor2_group], groups__name__in=self.editor2_groups)
+
     def _setViewerUserQueryset(self, **kwargs):
         """
         Set queryset for viewers chosen fields
@@ -205,9 +221,13 @@ class QdjangoProjetForm(TranslationModelForm, QdjangoProjectFormMixin, G3WFormMi
         :return: None
         """
 
-        viewer_user_groups = get_user_groups_for_object(self.group,self.request.user, 'view_group', 'viewer')
+        super(QdjangoProjetForm, self)._set_user_groups_queryset()
 
-        # get queryset
+        editor_user_groups = get_user_groups_for_object(self.group, self.request.user, 'view_group', 'editor')
+        self.fields['editor_user_groups'].queryset = AuthGroup.objects.filter(
+            pk__in=[v.pk for v in editor_user_groups])
+
+        viewer_user_groups = get_user_groups_for_object(self.group, self.request.user, 'view_group', 'viewer')
         self.fields['viewer_user_groups'].queryset = AuthGroup.objects.filter(
             pk__in=[v.pk for v in viewer_user_groups])
 
