@@ -12,7 +12,7 @@ __copyright__ = 'Copyright 2019, GIS3W'
 from django.conf import settings
 from django.test import TestCase
 from django.utils import translation
-from .utils import setup_testing_user
+from .utils import setup_testing_user, teardown_testing_users
 from django.apps import apps
 from usersmanage.models import User
 from usersmanage.configs import G3W_VIEWER1, \
@@ -37,6 +37,7 @@ class BaseUsermanageTestCase(TestCase):
 
     @classmethod
     def tearDownClass(cls):
+        teardown_testing_users(cls)
         super(BaseUsermanageTestCase, cls).tearDownClass()
 
     def tearDown(self):

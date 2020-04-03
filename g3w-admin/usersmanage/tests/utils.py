@@ -19,6 +19,17 @@ from usersmanage.configs import G3W_VIEWER1, \
     G3W_EDITOR1
 
 
+EU1 = ['editor1', 'editor1.2', 'editor1.3']
+EU2 = ['editor2', 'editor2.2', 'editor2.3']
+VU1 = ['viewer1', 'viewer1.2', 'viewer1.3']
+
+GU = [
+        ('GU-EDITOR1', 'editor'),
+        ('GU-EDITOR2', 'editor'),
+        ('GU-VIEWER1', 'viewer'),
+        ('GU-VIEWER2', 'viewer')
+    ]
+
 def setup_testing_user(cls):
     """
     Setup testing users and user groups
@@ -61,21 +72,21 @@ def setup_testing_user(cls):
     # create editor and viewers, and editor and viewr group
     # like create by admin user
     # =====================================================
-    for euser in ['editor1', 'editor1.2', 'editor1.3']:
+    for euser in EU1:
         user = User.objects.create_user(username=euser)
         user.set_password(euser)
         user.save()
         user.groups.add(roles[G3W_EDITOR1])
         setattr(cls, 'test_{}'.format(euser.replace('.', '_')), user)
 
-    for euser in ['editor2', 'editor2.2', 'editor2.3']:
+    for euser in EU2:
         user = User.objects.create_user(username=euser)
         user.set_password(euser)
         user.save()
         user.groups.add(roles[G3W_EDITOR2])
         setattr(cls, 'test_{}'.format(euser.replace('.', '_')), user)
 
-    for euser in ['viewer1', 'viewer1.2', 'viewer1.3']:
+    for euser in VU1:
         user = User.objects.create_user(username=euser)
         user.set_password(euser)
         user.save()
@@ -83,14 +94,36 @@ def setup_testing_user(cls):
         setattr(cls, 'test_{}'.format(euser.replace('.', '_')), user)
 
     # create user groups
-    for ugroup in [
-        ('GU-EDITOR1', 'editor'),
-        ('GU-EDITOR2', 'editor'),
-        ('GU-VIEWER1', 'viewer'),
-        ('GU-VIEWER2', 'viewer')
-    ]:
+    for ugroup in GU:
         ug, created = AuthGroup.objects.get_or_create(name=ugroup[0])
         if created:
             ug.role = ugroup[1]
             ug.save()
-            setattr(cls, 'test_{}'.format(ugroup[0].replace('-', '_').lower()), ug)
+        setattr(cls, 'test_{}'.format(ugroup[0].replace('-', '_').lower()), ug)
+
+
+def teardown_testing_users(cls):
+    """
+    Delete every users and user groups created
+    :param cls: Testcase class object
+    :return: None
+    """
+
+    # delete admin01
+    cls.test_user1.delete()
+
+    # editor level 1
+    for euser in EU1:
+        getattr(cls, 'test_{}'.format(euser.replace('.', '_'))).delete()
+
+    # editor level 2
+    for euser in EU2:
+        getattr(cls, 'test_{}'.format(euser.replace('.', '_'))).delete()
+
+    # viewer level 1
+    for euser in VU1:
+        getattr(cls, 'test_{}'.format(euser.replace('.', '_'))).delete()
+
+    # user groups
+    for ugroup in GU:
+        getattr(cls, 'test_{}'.format(ugroup[0].replace('-', '_').lower())).delete()
