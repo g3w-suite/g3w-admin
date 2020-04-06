@@ -12,7 +12,8 @@ __copyright__ = 'Copyright 2015 - 2020, Gis3w'
 
 
 from django.apps import apps
-from usersmanage.models import User
+from guardian.shortcuts import assign_perm
+from usersmanage.models import User, GroupRole
 from usersmanage.configs import G3W_VIEWER1, \
     G3W_VIEWER2, \
     G3W_EDITOR2, \
@@ -28,6 +29,12 @@ GU = [
         ('GU-EDITOR2', 'editor'),
         ('GU-VIEWER1', 'viewer'),
         ('GU-VIEWER2', 'viewer')
+    ]
+
+# User groups for editor1.2
+GU_E1_2 = [
+        ('GU-EDITOR1_E1_2', 'editor'),
+        ('GU-VIEWER1_E1_2', 'viewer')
     ]
 
 def setup_testing_user(cls):
@@ -99,7 +106,21 @@ def setup_testing_user(cls):
         if created:
             ug.role = ugroup[1]
             ug.save()
+            GroupRole(group=ug, role=ugroup[1]).save()
         setattr(cls, 'test_{}'.format(ugroup[0].replace('-', '_').lower()), ug)
+
+    # Add users editor and viewers to user groups
+    # editor2 and editor 2.3 -> GU-EDITOR1
+    # editor2.1 -> GU-EDITOR2
+    # viewer1 adn viewer1.2 -> GU-VIEWER1
+    # viewer1.3 -> GU-VIEWER2
+    cls.test_editor2.groups.add(cls.test_gu_editor1)
+    cls.test_editor2_3.groups.add(cls.test_gu_editor1)
+    cls.test_editor2_2.groups.add(cls.test_gu_editor2)
+    cls.test_viewer1.groups.add(cls.test_gu_viewer1)
+    cls.test_viewer1_2.groups.add(cls.test_gu_viewer1)
+    cls.test_viewer1_3.groups.add(cls.test_gu_viewer2)
+
 
 
 def teardown_testing_users(cls):
@@ -127,3 +148,37 @@ def teardown_testing_users(cls):
     # user groups
     for ugroup in GU:
         getattr(cls, 'test_{}'.format(ugroup[0].replace('-', '_').lower())).delete()
+
+
+def setup_testing_user_relations(cls):
+    """
+    Set relations within testing users for testing module.
+    Before to call,  it must be called  setup_testing_user()
+    :param cls: Testcase class
+    :return: None
+    """
+
+    # editor 1.2 -> editor2.2, editor2.3
+    assign_perm('auth.change_user', cls.test_editor1_2, cls.test_editor2_2)
+    assign_perm('auth.delete_user', cls.test_editor1_2, cls.test_editor2_2)
+    assign_perm('auth.change_user', cls.test_editor1_2, cls.test_editor2_3)
+    assign_perm('auth.delete_user', cls.test_editor1_2, cls.test_editor2_3)
+
+    # editor 1.2 -> viewer2.3
+    assign_perm('auth.change_user', cls.test_editor1_2, cls.test_viewer1_3)
+    assign_perm('auth.delete_user', cls.test_editor1_2, cls.test_viewer1_3)
+
+    AuthGroup = apps.get_app_config('auth').get_model('Group')
+
+    # create user groups
+    for ugroup in GU_E1_2:
+        ug, created = AuthGroup.objects.get_or_create(name=ugroup[0])
+        if created:
+            ug.role = ugroup[1]
+            ug.save()
+            GroupRole(group=ug, role=ugroup[1]).save()
+            assign_perm('auth.change_group', cls.test_editor1_2, ug)
+            assign_perm('auth.delete_group', cls.test_editor1_2, ug)
+        setattr(cls, 'test_{}'.format(ugroup[0].replace('-', '_').lower()), ug)
+
+
