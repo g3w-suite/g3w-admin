@@ -312,7 +312,8 @@ class Group(TimeStampedModel, OrderedModel):
         appProjects = getProjectsByGroup(self)
 
         permissions = [
-            'view_group'
+            'view_group',
+            'add_project_to_group'
         ]
 
         for group_id in groups_id:
