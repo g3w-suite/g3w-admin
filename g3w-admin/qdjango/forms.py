@@ -192,8 +192,8 @@ class QdjangoProjetForm(TranslationModelForm, QdjangoProjectFormMixin, G3WFormMi
         """
 
         # add filter by group permissions
-        editor_group = get_users_for_object(self.instance.group, 'change_group', [G3W_EDITOR1])
-        editor2_group = get_users_for_object(self.instance.group, 'add_project_to_group', [G3W_EDITOR2])
+        editor_group = get_users_for_object(self.group, 'change_group', [G3W_EDITOR1])
+        editor2_group = get_users_for_object(self.group, 'add_project_to_group', [G3W_EDITOR2])
 
         self.fields['editor_user'].queryset = get_objects_for_user(self.request.user, 'auth.change_user', User) \
             .filter(pk__in=[e.pk for e in editor_group], groups__name__in=self.editor1_groups)
