@@ -45,5 +45,6 @@ class GroupsTests(TestCase):
     @classmethod
     def tearDownClass(cls):
         teardown_testing_users(cls)
+        super().tearDownClass()
 
 
