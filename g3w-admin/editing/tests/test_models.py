@@ -69,7 +69,8 @@ class ConstraintsTestsBase(TestCase):
 
         self.reset_db_data()
 
-    def reset_db_data(self):
+    @classmethod
+    def reset_db_data(cls):
         """
         Reset restore test database
         Is necessary at the end of every single test where data test are changing
@@ -87,6 +88,9 @@ class ConstraintsTestsBase(TestCase):
         call_command('loaddata', 'G3WMapControls.json', '--database=default', verbosity=0)
         call_command('loaddata', 'G3WSpatialRefSys.json', '--database=default', verbosity=0)
         call_command('loaddata', 'G3WGeneralDataSuite.json', '--database=default', verbosity=0)
+
+        # Make a copy of the test project's databases
+        cls.reset_db_data()
 
         # Admin level 1
         cls.test_user_admin1 = User.objects.create_user(username='admin01', password='admin01')
@@ -118,8 +122,7 @@ class ConstraintsTestsBase(TestCase):
         cls.project_group.save()
         cls.project_group.addPermissionsToEditor(cls.test_user2)
 
-        shutil.copy('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_DB_BACKUP), '{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_DB))
-        qgis_project_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_FILE), 'r'))
+        qgis_project_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_FILE), 'r', encoding='UTF8'))
         cls.project = QgisProject(qgis_project_file)
         cls.project.title = 'A project'
         cls.project.group = cls.project_group
@@ -136,7 +139,7 @@ class ConstraintsTestsBase(TestCase):
         qgis_project_file.close()
 
         # load QGIS editing project
-        qgis_project_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_EDITING_FILE), 'r'))
+        qgis_project_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_EDITING_FILE), 'r', encoding='UTF8'))
         cls.editing_project = QgisProject(qgis_project_file)
         cls.editing_project.group = cls.project_group
         cls.editing_project.save()

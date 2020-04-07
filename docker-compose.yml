@@ -35,6 +35,7 @@ services:
     ports:
     - "8000:8000"
     environment:
+      LANG: "C.UTF-8"
       PYTHONUNBUFFERED: 1
       QT_QPA_PLATFORM: "offscreen"
     depends_on:
