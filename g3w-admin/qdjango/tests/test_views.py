@@ -11,16 +11,34 @@ __copyright__ = 'Copyright 2019, GIS3W'
 
 from django.test.client import RequestFactory, Client
 from django.urls import reverse, NoReverseMatch
+from qdjango.models import Project
 from .base import QdjangoTestBase
+from .utils import create_dff_project
 
 
 class QdjangoViewsTest(QdjangoTestBase):
+
+    def test_qdjango_layers(self):
+        """
+        Test project layers list view
+        :return: None
+        """
+
+        client = Client()
+        self.assertTrue(client.login(username=self.test_user1.username, password=self.test_user1.username))
+
+        url = reverse("qdjango-project-layers-list", args=[self.project_group.slug, self.project.instance.slug])
+
+        response = client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        client.logout()
 
     def test_QdjangoLayerDataView(self):
         """ Test same name view class """
 
         client = Client()
-        self.assertTrue(client.login(username=self.test_user_admin1.username, password=self.test_user_admin1.username))
+        self.assertTrue(client.login(username=self.test_user1.username, password=self.test_user1.username))
 
         # get first layer of project
         layer = self.project.instance.layer_set.all()[0]
@@ -51,3 +69,56 @@ class QdjangoViewsTest(QdjangoTestBase):
 
         for p, a in parms_to_check.items():
             self.assertTrue(getattr(layer, a))
+
+        client.logout()
+
+    def test_qdjango_layer_widgets(self):
+        """
+        Test project layer widget list view
+        :return: None
+        """
+
+        client = Client()
+        self.assertTrue(client.login(username=self.test_user1.username, password=self.test_user1.username))
+
+        # get first layer of project
+        layer = self.project.instance.layer_set.all()[0]
+
+        url = reverse("qdjango-project-layer-widgets", args=[
+            self.project_group.slug,
+            self.project.instance.slug,
+            layer.slug
+        ])
+
+        response = client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        client.logout()
+
+    '''
+    def test_create_qdjango_project_view(self):
+
+        uf = create_dff_project('qgis_file')
+
+        client = Client()
+        self.assertTrue(client.login(username=self.test_user1.username, password=self.test_user1.username))
+
+        url = reverse('qdjango-project-add', args=[
+            self.project_group.slug
+        ])
+
+        post_data = {
+            'form_id': uf.form_id
+        }
+
+        response = client.post(url, post_data)
+        self.assertEqual(response.status_code, 200)
+
+        # Check project saved
+
+        self.assertEqual(len(Project.objects.all()), 1)
+
+
+
+        client.logout()
+    '''

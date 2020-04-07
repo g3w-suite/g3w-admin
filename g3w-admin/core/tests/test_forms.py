@@ -14,7 +14,6 @@ __copyright__ = 'Copyright 2015 - 2020, Gis3w'
 from django.test import TestCase, override_settings
 from django.test.client import RequestFactory
 from usersmanage.tests.utils import setup_testing_user, teardown_testing_users, setup_testing_user_relations
-from guardian.utils import get_user_model
 from core.forms import GroupForm
 from core.models import G3WSpatialRefSys, MapControl, Group
 from .utils import create_dff_image, clear_dff_image
@@ -164,6 +163,8 @@ class CoreTestForm(TestCase):
 
         # Testing for editor level 1 use
         # ====================================================
+        # editor1
+        # -----------------
         self.request.user = self.test_editor1
 
         form = GroupForm(request=self.request)
@@ -171,18 +172,23 @@ class CoreTestForm(TestCase):
 
         self.assertCountEqual(form.fields['editor2_user'].queryset, [])
 
+        # editor1.2
+        # -----------------
         self.request.user = self.test_editor1_2
 
         form = GroupForm(request=self.request)
         self.assertFalse(form.is_valid())
 
+        # editor2.2 and editor2.3
         self.assertEqual(len(form.fields['editor2_user'].queryset), 2)
+        self.assertEqual(list(form.fields['editor2_user'].queryset), [self.test_editor2_2, self.test_editor2_3])
 
         # Anonymous user always present
+        # Anonymoususer, viewer2.3
         self.assertEqual(len(form.fields['viewer_users'].queryset), 2)
-        self.assertEqual(form.fields['viewer_users'].queryset[0], get_user_model().get_anonymous())
+        self.assertEqual(list(form.fields['viewer_users'].queryset), [self.anonymoususer, self.test_viewer1_3])
 
-        # Only editor and viewer user groups fo test_editor1_2
+        # Only editor and viewer user groups for test_editor1_2
         self.assertEqual(len(form.fields['editor_user_groups'].queryset), 1)
         self.assertEqual(len(form.fields['viewer_user_groups'].queryset), 1)
 

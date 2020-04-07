@@ -12,7 +12,7 @@ __copyright__ = 'Copyright 2015 - 2020, Gis3w'
 
 
 from django.apps import apps
-from guardian.shortcuts import assign_perm
+from guardian.shortcuts import assign_perm, get_user_model
 from usersmanage.models import User, GroupRole
 from usersmanage.configs import G3W_VIEWER1, \
     G3W_VIEWER2, \
@@ -37,6 +37,7 @@ GU_E1_2 = [
         ('GU-VIEWER1_E1_2', 'viewer')
     ]
 
+
 def setup_testing_user(cls):
     """
     Setup testing users and user groups
@@ -48,6 +49,9 @@ def setup_testing_user(cls):
     Permission = apps.get_app_config('auth').get_model('Permission')
     ContentType = apps.get_app_config('contenttypes').get_model('ContentType')
     Group = apps.get_app_config('core').get_model('Group')
+
+    # set anonymous users
+    cls.anonymoususer = get_user_model().get_anonymous()
 
     # add base group to g3w-admin database
     roles = {}
@@ -164,7 +168,7 @@ def setup_testing_user_relations(cls):
     assign_perm('auth.change_user', cls.test_editor1_2, cls.test_editor2_3)
     assign_perm('auth.delete_user', cls.test_editor1_2, cls.test_editor2_3)
 
-    # editor 1.2 -> viewer2.3
+    # editor 1.2 -> viewer1.3
     assign_perm('auth.change_user', cls.test_editor1_2, cls.test_viewer1_3)
     assign_perm('auth.delete_user', cls.test_editor1_2, cls.test_viewer1_3)
 

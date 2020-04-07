@@ -19,6 +19,7 @@ from django.urls import reverse
 from django.db import IntegrityError
 from core.models import Group as CoreGroup, G3WSpatialRefSys
 from usersmanage.models import User, Group as UserGroup
+from usersmanage.tests.utils import *
 from qdjango.utils.data import QgisProject
 from qdjango.models import Layer, Widget
 
@@ -28,6 +29,7 @@ TEST_BASE_PATH = '/qdjango/tests/data/'
 DATASOURCE_PATH = '{}{}un-progetto-data'.format(CURRENT_PATH, TEST_BASE_PATH)
 QGS2_FILE = 'gruppo-1_un-progetto.qgs'
 QGS_FILE = 'gruppo-1_un-progetto_qgis34.qgs'
+QGS_FILE_NO_TITLE = 'gruppo-1_un-progetto_qgis34_no_title.qgs'
 QGS310_FILE = 'g3wsuite_project_test_qgis310.qgs'
 
 
@@ -54,22 +56,17 @@ class QdjangoTestBase(TestCase):
                 ]
 
     @classmethod
+    def setUpClass(cls):
+
+        super(QdjangoTestBase, cls).setUpClass()
+        setup_testing_user(cls)
+
+    @classmethod
     def setUpTestData(cls):
-
-        # Admin level 1
-        cls.test_user_admin1 = User.objects.create_user(username='admin01', password='admin01')
-        cls.test_user_admin1.is_superuser = True
-        cls.test_user_admin1.save()
-
-        # Editor Level 1
-        cls.test_user1 = User.objects.create_user(username='user1', password='user1')
-        cls.group = UserGroup.objects.get(name='Editor Level 1')
-        cls.test_user1.groups.add(cls.group)
-        cls.test_user1.save()
 
         # main project group
         cls.project_group = CoreGroup(name='Group1', title='Group1', header_logo_img='',
-                                      srid=G3WSpatialRefSys.objects.get(auth_srid=3003))
+                                      srid=G3WSpatialRefSys.objects.get(auth_srid=4326))
         cls.project_group.save()
 
         qgis_project_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_FILE), 'r'))
@@ -136,3 +133,8 @@ class QdjangoTestBase(TestCase):
             self.fake_layer3.delete()
         except:
             pass
+
+    @classmethod
+    def tearDownClass(cls):
+        teardown_testing_users(cls)
+        super().tearDownClass()
