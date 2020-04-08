@@ -93,6 +93,8 @@ _.extend(g3wadmin.widget, {
 
             // check for pre-delete-message
             var preMessage = $item.parent().find('.pre-delete-message').html();
+            if (_.isUndefined(preMessage))
+                preMessage = '';
 
             // open modal to confirm delete
             var modal = ga.ui.buildDefaultModal({
