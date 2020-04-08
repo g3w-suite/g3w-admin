@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.http.request import QueryDict
+from django.urls import reverse
 from .models import Layer
 
 
@@ -34,10 +35,13 @@ if 'caching' in settings.G3WADMIN_LOCAL_MORE_APPS:
             self.q['map'] = layer.project.qgis_file.file.name
 
             # build dict
+            # FIXME: QDJANGO_SERVER_URL now points to the base URL
+            qdjango_project = layer.project
+            ows_url = reverse('OWS:ows', kwargs={'group_slug': qdjango_project.group.slug, 'project_type': 'qdjango', 'project_id': qdjango_project.id})
             self.layer_dict = {
                 'provider': {
                     'name': 'url template',
-                    'template': '{}?{}'.format(settings.QDJANGO_SERVER_URL, self.q.urlencode(safe='$'))
+                    'template': '{}?{}'.format(ows_url, self.q.urlencode(safe='$'))
                 },
                 'projection': 'caching.utils.projections:CustomXYZGridProjection(\'EPSG:{}\')'.
                     format(layer.project.group.srid.auth_srid)

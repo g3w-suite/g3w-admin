@@ -9,16 +9,15 @@
 """
 
 import os
-from django.http import HttpResponse
+import logging
+from django.http import HttpResponse, Http404, HttpResponseServerError
 from django.conf import settings
 from django.http.request import QueryDict
 from django.db.models import Q
 from django.core.cache import cache
 
-try:
-    from qgis.server import *
-except:
-    pass
+from qgis.server import QgsBufferServerRequest, QgsBufferServerResponse
+from qdjango.apps import QGS_SERVER, get_qgs_project
 
 from OWS.ows import OWSRequestHandlerBase
 from .models import Project, Layer
@@ -30,37 +29,9 @@ try:
 except:
     pass
 
-try:
-
-    # python 2
-    from http.client import HTTPConnection, HTTPSConnection
-    from urllib.parse import urlsplit
-    import urllib3
-except:
-
-    #python 3
-    from http.client import HTTPConnection
-    from urllib.parse import urlsplit
 from .auth import QdjangoProjectAuthorizer
 
-try:
-    # use of qgis server instance
-    #server = QgsServer()
-    #server.init()
-    pass
-except:
-    pass
-
-import re
-
-
-QDJANGO_PROXY_REQUEST = 'proxy'
-QDJANGO_QGSSERVER_REQUEST = 'qgsserver'
-QDJANGO_TESTDATA_REQUEST = 'testdata'  # Read reponse from testdata
-
-# set request mode
-qdjangoModeRequest = getattr(settings, 'QDJANGO_MODE_REQUEST', QDJANGO_QGSSERVER_REQUEST)
-
+logger = logging.getLogger(__name__)
 
 class OWSRequestHandler(OWSRequestHandlerBase):
     """
@@ -79,16 +50,6 @@ class OWSRequestHandler(OWSRequestHandlerBase):
     def _getProjectInstance(self):
         self._projectInstance = Project.objects.get(pk=self.projectId)
 
-    @staticmethod
-    def qdjangoModeRequest():
-        """Request mode
-
-        :return: the request mode
-        :rtype: str
-        """
-
-        return getattr(settings, 'QDJANGO_MODE_REQUEST', QDJANGO_QGSSERVER_REQUEST)
-
     @property
     def authorizer(self):
         """ Return """
@@ -98,154 +59,92 @@ class OWSRequestHandler(OWSRequestHandlerBase):
     def project(self):
         return self._projectInstance
 
-    def baseDoRequest(cls, q, request=None):
+    def baseDoRequest(self, q):
 
-        # Used by tests: read fake response from G3WADMIN_OWS_TESTDATA_DIR
-        if cls.qdjangoModeRequest() == QDJANGO_TESTDATA_REQUEST:
-            q['map'] = q['map'][q['map'].rfind('/')+1:]
-            response_path = q.urlencode().replace('&', '_AND_') + '.response'
-            with open(os.path.join(settings.G3WADMIN_OWS_TESTDATA_DIR, response_path)) as f:
-                # Skip header
-                return HttpResponse(''.join(f.readlines()[3:]))
+        request = self.request
 
-        # http urllib3 manager
-        http = None
-
-        # retrive request from querystring or POST
-        ows_request = None
-        raw_body = request.body
-        if request.method == 'GET':
-            try:
+        # Uppercase REQUEST
+        if 'REQUEST' in [k.upper() for k in  q.keys()]:
+            if request.method == 'GET':
                 ows_request = q['REQUEST'].upper()
-            except:
-                pass
-        else:
-            try:
+            else:
                 if request.content_type == 'application/x-www-form-urlencoded':
                     ows_request = request.POST['REQUEST'].upper()
                 else:
                     ows_request = request.POST['REQUEST'][0].upper()
-            except:
-                pass
+            q['REQUEST'] = ows_request
 
-        if qdjangoModeRequest == QDJANGO_PROXY_REQUEST or ows_request == 'GETLEGENDGRAPHIC':
+        # FIXME: proxy or redirect in case of WMS/WFS/XYZ cascading?
+        qgs_project = get_qgs_project(self.project.qgis_file.path)
 
-            # try to get getfeatureinfo on wms layer
-            if ows_request == 'GETFEATUREINFO' and 'SOURCE' in q and q['SOURCE'].upper() in ('WMS'):
+        if qgs_project is None:
+            raise Http404('The requested QGIS project could not be loaded!')
 
-                # get layer by name
-                layers_to_filter = q['QUERY_LAYER'] if 'QUERY_LAYER' in q else q['QUERY_LAYERS'].split(',')
-
-                # get layers to query
-                layers_to_query = []
-                for ltf in layers_to_filter:
-                    layer = cls._projectInstance.layer_set.filter(Q(name=ltf) | Q(origname=ltf))[0]
-                    layer_source = QueryDict(layer.datasource)
-                    layers_to_query.append(layer_source['layers'])
-
-                layers_to_query = ','.join(layers_to_query)
-
-                # get ogc server url
-                layer_source = QueryDict(layer.datasource)
-                urldata = urlsplit(layer_source['url'])
-                base_url = '{}://{}{}'.format(urldata.scheme, urldata.netloc, urldata.path)
-
-                # try to add proxy server if isset
-                if settings.PROXY_SERVER:
-                    http = urllib3.ProxyManager(settings.PROXY_SERVER_URL)
-
-                # copy q to manage it
-                new_q = copy(q)
-
-                # change layer with wms origname layer
-                if 'LAYER' in new_q:
-                    del (q['LAYER'])
-                if 'LAYERS' in new_q:
-                    del (new_q['LAYERS'])
-                del (new_q['SOURCE'])
-                new_q['LAYERS'] = layers_to_query
-                new_q['QUERY_LAYERS'] = layers_to_query
-
-                # remove map key from new_q if isset
-                if 'map' in new_q:
-                    del(new_q['map'])
-
-                url = '?'.join([base_url, '&'.join([urldata.query, new_q.urlencode()])])
-            else:
-                url = '?'.join([settings.QDJANGO_SERVER_URL, q.urlencode()])
-
-            if not http:
-                http = urllib3.PoolManager()
-
-            result = http.request(request.method, url, body=raw_body)
-            #result = http.request(request.method, url, fields=request.POST)
-            result_data = result.data
-
-            # For GETCAPABILITIES, replace onlineresorce values:
-            if ows_request == 'GETCAPABILITIES':
-                to_replace = None
-                try:
-                    to_replace = getattr(settings, 'QDJANGO_REGEX_GETCAPABILITIES')
-                except:
-                    pass
-
-                if not to_replace:
-                    to_replace = settings.QDJANGO_SERVER_URL + r'\?map=[^\'" > &]+(?=&)'
-
-                # url to replace
-                wms_url = '{}://{}{}'.format(
-                    request.META['wsgi.url_scheme'],
-                    request.META['HTTP_HOST'] if 'HTTP_HOST' in request.META else 'localhost',
-                    request.path
-                )
-                result_data = re.sub(to_replace.encode('utf-8'), wms_url.encode('utf-8'), result_data)
-                result_data = re.sub('&amp;&amp;'.encode('utf-8'), '?'.encode('utf-8'), result_data)
-
-
-            # If we get a redirect, let's add a useful message.
-            if result.status in (301, 302, 303, 307):
-                response = HttpResponse(('This proxy does not support redirects. The server in "%s" '
-                                         'asked for a redirect to "%s"' % ('localhost', result.getheader('Location'))),
-                                        status=result.status,
-                                        content_type=result.headers["Content-Type"])
-
-                response['Location'] = result.getheader('Location')
-            else:
-                response = HttpResponse(
-                    result_data,
-                    status=result.status,
-                    content_type=result.headers["Content-Type"])
-            return response
-
+        data = None
+        if request.method == 'GET':
+            method = QgsBufferServerRequest.GetMethod
+        elif request.method == 'POST':
+            method = QgsBufferServerRequest.PostMethod
+            data = request.body
+        elif request.method == 'PUT':
+            method = QgsBufferServerRequest.PutMethod
+            data = request.body
+        elif request.method == 'PATCH':
+            method = QgsBufferServerRequest.PatchMethod
+            data = request.body
+        elif request.method == 'HEAD':
+            method = QgsBufferServerRequest.HeadMethod
+        elif request.method == 'DELETE':
+            method = QgsBufferServerRequest.DeleteMethod
         else:
+            logger.warning("Request method not supported: %s, assuming GET" % request.method)
+            method = QgsBufferServerRequest.GetMethod
 
+        headers = {}
+        for header_key in request.headers.keys():
+            headers[header_key] = request.headers.get(header_key)
+        uri = request.build_absolute_uri(request.path) + '?' + q.urlencode()
+        logger.debug('Calling QGIS Server: %s' % uri)
+        qgs_request = QgsBufferServerRequest(uri, method, headers, data)
+        qgs_response = QgsBufferServerResponse()
+        try:
+            QGS_SERVER.handleRequest(qgs_request, qgs_response, qgs_project)
+        except Exception as ex:
+            return HttpResponseServerError(reason="Error handling server request: %s" % ex)
+
+        response = HttpResponse(bytes(qgs_response.body()))
+        response.status_code = qgs_response.statusCode()
+
+<<<<<<< HEAD
             #FIXME: try to use QGIS server API
             # case qgisserver python binding
             server = QgsServer()
             headers, body = server.handleRequest(q.urlencode())
             response = HttpResponse(body)
+=======
+        for key, value in qgs_response.headers().items():
+            response[key] = value
+>>>>>>> QGIS Server embedded - remove FCGI requirement
 
-            # Parse headers
-            for header in headers.split('\n'):
-                if header:
-                    k, v = header.split(': ', 1)
-                    response[k] = v
-            return response
+        return response
 
     def doRequest(self):
         """ Main proxy method entry """
         q = self.request.GET.copy()
 
         # rebuild q keys upper()
-
         for k in list(q.keys()):
             ku = k.upper()
             if ku != k:
                 q[ku] = q[k]
                 del q[k]
 
+<<<<<<< HEAD
         q['map'] = self._projectInstance.qgis_file.file.name
         return self.baseDoRequest(q, self.request)
+=======
+        return self.baseDoRequest(q)
+>>>>>>> QGIS Server embedded - remove FCGI requirement
 
 
 class OWSTileRequestHandler(OWSRequestHandlerBase):

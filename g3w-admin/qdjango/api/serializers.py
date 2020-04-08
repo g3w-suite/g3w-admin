@@ -16,6 +16,7 @@ from qdjango.signals import load_qdjango_widget_layer
 from core.utils.structure import mapLayerAttributes
 from core.configs import *
 from core.signals import after_serialized_project_layer
+from core.mixins.api.serializers import G3WRequestSerializer
 from core.api.serializers import update_serializer_data, G3WSerializerMixin
 from core.utils.models import get_geometry_column, create_geomodel_from_qdjango_layer
 from core.utils.structure import RELATIONS_ONE_TO_MANY, RELATIONS_ONE_TO_ONE
@@ -28,7 +29,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class ProjectSerializer(serializers.ModelSerializer):
+class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
     name = serializers.CharField(source='title', read_only=True)
     layerstree = serializers.SerializerMethodField()
@@ -54,18 +55,11 @@ class ProjectSerializer(serializers.ModelSerializer):
                 return QgisProjectSettingsWMS(cached_response)
 
         q = QueryDict('', mutable=True)
-        q['map'] = instance.qgis_file.file.name
         q['SERVICE'] = 'WMS'
         q['VERSION'] = '1.3.0'
         q['REQUEST'] = 'GetProjectSettings'
 
-        class Object(object):
-            pass
-
-        request = Object()
-        request.method = 'GET'
-        request.body = ''
-        response = OWSRequestHandler(None).baseDoRequest(q, request=request)
+        response = OWSRequestHandler(self.request, project_id=instance.id).baseDoRequest(q)
 
         if 'qdjango' in settings.CACHES:
 

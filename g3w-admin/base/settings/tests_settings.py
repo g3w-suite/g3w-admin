@@ -14,12 +14,6 @@ __copyright__ = 'Copyright 2019, Gis3w'
 
 import os
 
-# Test data dir for OWS network calls when QDJANGO_MODE_REQUEST = QDJANGO_TESTDATA_REQUEST
-# This is initially empty, individual tests should alter this setting to point to
-# the actual testdata directory.
-G3WADMIN_OWS_TESTDATA_DIR = ''
-
-
 # Celery
 CELERY_ALWAYS_EAGER = True
 TEST_RUNNER = 'djcelery.contrib.test_runner.CeleryTestSuiteRunner'

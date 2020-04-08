@@ -16,6 +16,7 @@ set -e
 CODE_DIRECTORY='/code'
 DATASOURCE_PATH='/shared-volume/project_data'
 MEDIA_ROOT='/shared-volume/media'
+STATIC_ROOT='/shared-volume/static'
 PROJECTS_DIR="${MEDIA_ROOT}/projects"
 SETUP_DONE_FILE='/shared-volume/setup_done'
 DJANGO_DIRECTORY="${CODE_DIRECTORY}/g3w-admin"
@@ -51,6 +52,7 @@ if [ ! -e ${SETUP_DONE_FILE} ]; then
     popd
 
     cd ${DJANGO_DIRECTORY}
+    rm -rf ${STATIC_ROOT}
     python3 manage.py collectstatic --noinput -v 0
     python3 manage.py migrate --noinput
 
@@ -69,6 +71,7 @@ else
     echo "Setup was already done, skipping ..."
     # Wait for postgis
     wait-for-it -h ${G3WSUITE_POSTGRES_HOST:-postgis} -p ${G3WSUITE_POSTGRES_PORT:-5432} -t 60
+    rm -rf ${STATIC_ROOT}
     cd ${DJANGO_DIRECTORY}
     python3 manage.py collectstatic --noinput -v 0
     python3 manage.py migrate --noinput

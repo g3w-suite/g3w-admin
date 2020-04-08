@@ -18,6 +18,7 @@ from qdjango.models import Layer, Project
 from django.conf import settings
 from guardian.shortcuts import assign_perm, get_objects_for_user
 from django.contrib.auth.models import AnonymousUser
+from django.urls import reverse
 
 import copy
 import logging
@@ -48,17 +49,9 @@ def catalog_provider(groups=[]):
     def _is_raster(layer):
         return layer.layer_type in ('gdal', 'raster')
 
-    def _get_url(qgs_project):
-
-        url = '{}://{}/ows/{}/{}/{}/'.format(
-            getattr(settings, 'CATALOG_URL_SCHEME', 'http'),
-            getattr(settings, 'CATALOG_HOST', 'localhost'),
-            qgs_project.group.slug,
-            'qdjango',
-            qgs_project.pk
-        )
-
-        return url
+    def _get_url(qdjango_project):
+        ows_url = reverse('OWS:ows', kwargs={'group_slug': qdjango_project.group.slug, 'project_type': 'qdjango', 'project_id': qdjango_project.id})
+        return "{0.QDJANGO_SERVER_URL}/{1}".format(settings, ows_url)
 
     results = []
 

@@ -1,86 +1,88 @@
 # coding=utf-8
-"""
-    Test Qdjango OWS capabilities
+""""Test for G3W suite QgsServer proxy
+
 .. note:: This program is free software; you can redistribute it and/or modify
-     it under the terms of the Mozilla Public License 2.0.
+          it under the terms of the Mozilla Public License 2.0.
+
 """
 
-__author__ = 'lorenzetti@gis3w.it'
-__date__ = '2019-11-28'
-__copyright__ = 'Copyright 2019, GIS3W'
+__author__ = 'elpaso@itopen.it'
+__date__ = '2020-04-07'
+__copyright__ = 'Copyright 2020, Gis3w'
 
 
-from .base import QdjangoTestBase
-from django.test.client import Client
+from django.core.management import call_command
+from django.test import Client, override_settings
 from django.urls import reverse
-from PIL import Image
-import io
-
-# FIXME:: CI not work for data path problem
-'''
-class QdjangoOWSTest(QdjangoTestBase):
-
-    def test_wms_request(self):
-        """
-        Test main WMS request
-        GetCapabilities GetLegendGraphics GetMap
-        """
-
-        client = Client()
-        self.assertTrue(client.login(username=self.test_user_admin1.username, password=self.test_user_admin1.username))
-
-        # without REQUEST value
-        # ---------------------------------
-        req_awaited = '<ServiceExceptionReport version="1.3.0" xmlns="http://www.opengis.net/ogc">\n ' \
-                      '<ServiceException code="Service configuration error">Service unknown or unsupported</ServiceException>\n' \
-                       '</ServiceExceptionReport>\n'
-
-        url = reverse('OWS:ows', args=[self.project_group.pk, 'qdjango', self.project.instance.pk])
-
-        response = client.get(url)
-        self.assertEqual(response.status_code, 200)
-
-        self.assertEqual(response.content.decode('utf-8'), req_awaited)
-
-        # REQUEST = GetCapabilities
-        # ---------------------------------
-        url = reverse('OWS:ows', args=[self.project_group.pk, 'qdjango', self.project.instance.pk])+\
-              '?REQUEST=GetCapabilities&SERVICE=WMS&VERSION=1.3.0'
-
-        self.assertEqual(response.status_code, 200)
+from qgis.core import QgsProject
+from core.models import G3WSpatialRefSys
+from core.models import Group as CoreGroup
+from qdjango.apps import QGS_SERVER, QGS_PROJECTS_CACHE, get_qgs_project
+from qdjango.models import Project
+from lxml import etree
+from .base import QdjangoTestBase
 
 
-        # REQUEST = GetLegendGraphic
-        # ---------------------------------
-        url = reverse('OWS:ows', args=[self.project_group.pk, 'qdjango', self.project.instance.pk]) + \
-              '?REQUEST=GetLegendGraphic&SERVICE=WMS&VERSION=1.3.0&' \
-              'SLD_VERSION=1.1.0&WIDTH=300&FORMAT=image/png&TRANSPARENT=true&ITEMFONTCOLOR=white&' \
-              'LAYERFONTCOLOR=white&LAYERTITLE=true&ITEMFONTSIZE=10&&LAYER=spatialite_points'
+@override_settings(CACHES = {
+        'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'some',
+        }
+    },
+    LANGUAGE_CODE='en',
+    LANGUAGES=(
+        ('en', 'English'),
+    )
+)
+class OwsTest(QdjangoTestBase):
+    """Test proxy to QgsServer"""
+
+    @classmethod
+    def setUpTestData(cls):
+
+        super().setUpTestData()
+        cls.qdjango_project = Project(
+            qgis_file=cls.project.qgisProjectFile,
+            title='Test qdjango project',
+            group=cls.project_group,
+        )
+        cls.qdjango_project.save()
+
+    def test_get_qgs_project(self):
+        """test get_qgs_project"""
+
+        qgs_project = get_qgs_project(self.qdjango_project.qgis_file.path)
+        self.assertTrue(isinstance(qgs_project, QgsProject))
 
 
-        response = client.get(url)
-        self.assertEqual(response.status_code, 200)
+    def test_get(self):
+        """Test get request"""
 
+        ows_url = reverse('OWS:ows', kwargs={'group_slug': self.qdjango_project.group.slug, 'project_type': 'qdjango', 'project_id': self.qdjango_project.id})
 
-        image = Image.open(io.BytesIO(response.content))
-        self.assertEqual(image.format, 'PNG')
+        # Make a request to the server
+        c = Client()
+        self.assertTrue(c.login(username='admin01', password='admin01'))
+        response = c.get(ows_url, {
+            'REQUEST': 'GetCapabilities',
+            'SERVICE': 'WMS'
+        })
 
-        # REQUEST = GetMap
-        # ---------------------------------
-        url = reverse('OWS:ows', args=[self.project_group.pk, 'qdjango', self.project.instance.pk]) + \
-              '?REQUEST=GetLegendGraphic&SERVICE=WMS&VERSION=1.3.0&' \
-              'FORMAT=image%2Fpng&TRANSPARENT=true&LAYERS=spatialite_points&SLD_VERSION=1.1.0&' \
-              'DPI=96&CRS=EPSG%3A4326&STYLES=&WIDTH=876&HEIGHT=900&' \
-              'BBOX=3.0080193681475578%2C-33.81013769797853%2C111.2967166214596%2C71.59086096191184'
+        self.assertTrue(b'WMS_Capabilities' in response.content)
+        xml = etree.fromstring(response.content)
+        e = xml.getroottree().findall('//OnlineResource', namespaces=xml.nsmap)[-1]
+        self.assertEqual(e.attrib['{http://www.w3.org/1999/xlink}href'], 'http://testserver%s?&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=bluemarble&FORMAT=image/png&STYLE=predefinito&SLD_VERSION=1.1.0' % ows_url)
 
-        response = client.get(url)
-        self.assertEqual(response.status_code, 200)
+    def test_save_project(self):
+        """Test that when a project is saved it is also removed from the cache"""
 
-        image = Image.open(io.BytesIO(response.content))
-        self.assertEqual(image.format, 'PNG')
-
-'''
-
-
-
+        file_path = self.qdjango_project.qgis_file.path
+        qgs_project = get_qgs_project(file_path)
+        self.assertTrue(isinstance(qgs_project, QgsProject))
+        self.assertTrue(file_path in QGS_PROJECTS_CACHE)
+        self.qdjango_project.save()
+        self.assertFalse(file_path in QGS_PROJECTS_CACHE)
+        # Re-cache
+        get_qgs_project(file_path)
+        self.assertTrue(file_path in QGS_PROJECTS_CACHE)
 
