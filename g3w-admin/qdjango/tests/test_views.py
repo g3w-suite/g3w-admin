@@ -14,6 +14,7 @@ from django.urls import reverse, NoReverseMatch
 from qdjango.models import Project
 from .base import QdjangoTestBase
 from .utils import create_dff_project
+from copy import copy
 
 
 class QdjangoViewsTest(QdjangoTestBase):
@@ -94,6 +95,47 @@ class QdjangoViewsTest(QdjangoTestBase):
         self.assertEqual(response.status_code, 200)
 
         client.logout()
+
+    def test_delete_project_view(self):
+        """ Testing delete project """
+
+        # make a copy of main project testing
+        project_to_delete = copy(self.project)
+
+        # change base properties
+        project_to_delete.title = 'A project to delete'
+
+        # make a db record copy
+        mproject = copy(self.project.instance)
+        mproject.title = project_to_delete.title
+        mproject.pk = None
+        mproject.save()
+
+        # check 2 project on db
+        dbprojects = Project.objects.all()
+        self.assertEqual(len(dbprojects), 2)
+
+        url = reverse('qdjango-project-delete', args=[self.project_group.slug, mproject.slug])
+
+        client = Client()
+        self.assertTrue(client.login(username=self.test_user1.username, password=self.test_user1.username))
+        response = client.post(url)
+
+        self.assertEqual(response.status_code, 200)
+
+        # check only one project into db
+        dbprojects = Project.objects.all()
+        self.assertEqual(len(dbprojects), 1)
+        self.assertTrue(dbprojects[0].pk, self.project.instance.pk)
+
+        client.logout()
+
+
+
+
+
+
+
 
     '''
     def test_create_qdjango_project_view(self):
