@@ -9,9 +9,9 @@ G3W-SUITE works with **QGIS-Server LTR versions**.
 
 
 
-![Admin GUI](docs/images/admin.jpg)
+![Admin GUI](docs/images/install/en/admin.jpg)
 
-![Webgis GUI](docs/images/client.jpg
+![Webgis GUI](docs/images/install/en/client.jpg
 )
 
 The following instructions are for a Ubuntu 18.04 LTS.

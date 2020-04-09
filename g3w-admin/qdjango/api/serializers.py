@@ -276,6 +276,11 @@ class ProjectSerializer(serializers.ModelSerializer):
         # set ow method
         ret['ows_method'] = self._set_ows_method(ret, instance)
 
+        # add html_page_title
+        ret['html_page_title'] = u'{} | {}'.format(
+            getattr(settings, 'G3WSUITE_CUSTOM_TITLE', 'g3w - client'),
+            instance.title_ur if instance.title_ur else instance.title)
+
         return ret
 
     class Meta:

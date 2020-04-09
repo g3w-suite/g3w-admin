@@ -1,0 +1,92 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2016 - 2020, GIS3W Team
+# This file is distributed under the same license as the G3W-SUITE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: G3W-SUITE 0.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-04-08 14:16+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.8.0\n"
+
+#: ../../infrastructure.md:1
+msgid "Technological infrastructure"
+msgstr "Infrastruttura Tecnologica"
+
+#: ../../infrastructure.md:3
+msgid "The publishing system is based on a series of OS tools and software"
+msgstr ""
+"Il sistema di pubblicazione è basato su una serie di strumenti e software"
+" OS"
+
+#: ../../infrastructure.md:7
+msgid "PostgreSQL/PostGis: for the management of application data"
+msgstr "**PostgreSQL/PostGis**: per la gestione dei dati dell'applicativo"
+
+#: ../../infrastructure.md:8
+msgid "PostgreSQL/PostGis or SpatiaLite: for the management of gegraphic data"
+msgstr ""
+"**PostgreSQL/PostGis** o **SQLite/SpatiaLite**: per la gestione dei dati "
+"geografici"
+
+#: ../../infrastructure.md:9
+msgid "QGIS Server LTR as OGC services server"
+msgstr "**`QGIS Server LTR`** come server per i servizi OGC"
+
+#: ../../infrastructure.md:10
+msgid "G3W-ADMIN - the Administration component: developed in Python using Django"
+msgstr ""
+"**`G3W-ADMIN` - la componente di Amministrazione**: sviluppata in "
+"**`Python`** usando **`Django`**"
+
+#: ../../infrastructure.md:11
+#, fuzzy
+msgid ""
+"G3W-CLIENT - the Cartographic client: based on OpenLayer3 and developed "
+"with reactive tecnology by Vue.js"
+msgstr ""
+"**`G3W-CLIENT` - il client cartografico**: basato su **`OpenLayer3`** e "
+"sviluppato con **tecnologia reattiva tramite `Vue.js`**"
+
+#: ../../infrastructure.md:12
+msgid ""
+"The main libraries used for the management and the visualization of the "
+"geographical part and the interaction with the user are: OpenLayer, "
+"Boostrap, jQuery, Lodash and Vue.js."
+msgstr ""
+"Le librerie principali utilizzate per la gestione e la visualizzazione "
+"della parte geografica e  l’interazione con l’utente sono: **`OpenLayer, "
+"Boostrap, jQuery, Lodash` e `Vue.js`**."
+
+#: ../../infrastructure.md:13
+msgid "Gulp.js as task runner"
+msgstr "**`Gulp.js`** come task runner"
+
+#: ../../infrastructure.md:15
+msgid "Below is a diagram relating to the standard workflow"
+msgstr ""
+"Di seguito si riporta uno schema relativo al **flusso operativo** "
+"dell'applicazione"
+
+#~ msgid "G3W-SUITE Infrastructure"
+#~ msgstr "L'infrastruttura di G3W-SUITE"
+
+#~ msgid "G3W-CLIENT was developed using the AdminLTE base template."
+#~ msgstr ""
+#~ "**G3W-CLIENT**: il client cartografico, "
+#~ "basato su **OL3** e **Vue.js** per "
+#~ "la componente reattiva."
+
+#~ msgid "**QGIS Server 3.4 LTR as OGC services server"
+#~ msgstr ""
+
+#~ msgid "QGIS Server 3.4 LTR as OGC services server"
+#~ msgstr ""
+

@@ -1,0 +1,169 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2016 - 2020, GIS3W Team
+# This file is distributed under the same license as the G3W-SUITE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: G3W-SUITE 0.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-04-07 19:06+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.8.0\n"
+
+#: ../../g3wsuite_access_portal.md:1
+msgid "G3W-FRONTEND: the front end portal"
+msgstr "G3W-FRONTEND: il portale di accesso"
+
+#: ../../g3wsuite_access_portal.md:2
+msgid ""
+"This section describes the different sections of the access portal and "
+"how to login to the Administration Panel"
+msgstr "_**In questo paragrafo si descrivono le diverse sezioni del portale di accesso e la modalità di login al Pannello di Amministrazione**_"
+
+#: ../../g3wsuite_access_portal.md:4
+msgid "The login portal sessions"
+msgstr "Le sessioni del portale di accesso"
+
+#: ../../g3wsuite_access_portal.md:5
+msgid ""
+"The G3W-SUITE application is accessible via any internet browser (FireFox"
+" and Chrome recommended) via the URL address defined during installation"
+msgstr ""
+"L'applicativo G3W-SUITE sarà **raggiungibile tramite un qualsiasi browser"
+" internet** (FireFox e Chrome fortemente consigliati) tramite "
+"l'**indirizzo URL definito in fase di installazione**."
+
+#: ../../g3wsuite_access_portal.md:7
+msgid ""
+"If you have also installed the front-end portal from the GitHub "
+"repository, access to the application will be via the portal itself."
+msgstr ""
+"Nel caso abbiate installato anche il modulo relativo al front-end dal "
+"relativo repository [**GitHub repository**](https://github.com/g3w-suite"
+"/g3w-admin-frontend), l'accesso all'applicazione avverrà tramite tale "
+"portale"
+
+#: ../../g3wsuite_access_portal.md:9
+msgid ""
+"The front-end portal contains a brief presentation of the service and a "
+"side menu with the following items:"
+msgstr ""
+"La pagina iniziale conterrà una breve e personalizzabile presentazione "
+"del servizio ed un menù laterale con le seguenti voci:"
+
+#: ../../g3wsuite_access_portal.md:10 ../../g3wsuite_access_portal.md:20
+msgid "About it"
+msgstr "About it"
+
+#: ../../g3wsuite_access_portal.md:11 ../../g3wsuite_access_portal.md:23
+msgid "Maps"
+msgstr "**Mappe**"
+
+#: ../../g3wsuite_access_portal.md:12 ../../g3wsuite_access_portal.md:37
+msgid "Login"
+msgstr "Login"
+
+#: ../../g3wsuite_access_portal.md:16
+msgid ""
+"Most of the information shown in the access portal can be defined from "
+"the Configurations -> Edit General Data session, accessible from the icon"
+" located in the upper right corner of the Administration Panel."
+msgstr ""
+"La maggior parte delle informazioni riportate nel portale di accesso sono"
+" definibili dalla sessione **`Configurazioni → Edit General Data`** "
+"raggiungibile dall’icona  posta nell'angolo in alto a destra nel Pannello"
+" di Amministrazione."
+
+#: ../../g3wsuite_access_portal.md:21
+msgid ""
+"The About it session can contains a small introduction and contact "
+"information for your company or public facility."
+msgstr ""
+"La sessione **About it** mostra una serie di informazioni di base "
+"relative alla struttura responsabile del Portale Cartografico."
+
+#: ../../g3wsuite_access_portal.md:24
+msgid ""
+"Within G3W-SUITE it is possible to organize webgis services in "
+"hierarchical containers (Cartographic Macrogroups and Cartographic "
+"Groups)"
+msgstr ""
+"In G3W-SUITE è possibile organizzare i singoli servizi WebGis in "
+"contenitori gerarchici (MacroGruppi e Gruppi Cartografici)"
+
+#: ../../g3wsuite_access_portal.md:26
+msgid ""
+"By accessing the Maps session, the Macrogroups (if present) will be "
+"displayed, access to the Macrogroup will allow you to view the associated"
+" Cartographic Groups and from these access the list of individual WebGis "
+"services."
+msgstr ""
+"Accedendo alla sessione **Mappe** si visualizzeranno i singoli "
+"**Macrogruppi** (se presenti), l’accesso al Macrogruppo permetterà di "
+"visualizzare i **Gruppi Cartografici** associati e da questi accedere "
+"all'elenco dei singoli servizi **WebGis**."
+
+#: ../../g3wsuite_access_portal.md:28
+msgid ""
+"The MacroGroups, Groups and WebGis services listed will be those defined "
+"as free access."
+msgstr ""
+"I MacroGruppi, i Gruppi e i servizi WebGis elencati saranno quelli ad "
+"accesso libero."
+
+#: ../../g3wsuite_access_portal.md:30
+msgid ""
+"If you have a user for access, you can authenticate yourself through the "
+"Login session."
+msgstr ""
+"Nel caso possediate un utente per l'accesso, potete autentificarvi "
+"tramite la sessione **Login** ed inserendo gli **user** e **password** in"
+" vostro possesso."
+
+#: ../../g3wsuite_access_portal.md:32
+msgid ""
+"Following authentication, the Maps page will also show the MacroGroups, "
+"Groups and WebGis services with restricted access and on which the user "
+"has access permissions."
+msgstr ""
+"In seguito all'autenticazione la pagina **Mappe** mostrerà anche i "
+"MacroGruppi, i Gruppi e i servizi WebGis ad accesso riservato e su cui "
+"l’utente ha permessi di accesso."
+
+#: ../../g3wsuite_access_portal.md:38
+msgid ""
+"If you have a user with login credentials, you can authenticate yourself "
+"through this session by entering your user and password."
+msgstr ""
+"Nel caso possediate un utente per l'accesso, potete autentificarvi "
+"tramite questa sessione inserendo gli **user** e **password** in vostro "
+"possesso."
+
+#: ../../g3wsuite_access_portal.md:40
+msgid ""
+"If you are an Administrator or Editor of 1 or 2 level, you can also "
+"access the Administration session."
+msgstr ""
+"Se siete utente **Amministratore** o **Editor di 1 o 2 livello**, potrete"
+" anche accedere alla sessione di Amministrazione."
+
+#: ../../g3wsuite_access_portal.md:42
+msgid ""
+"Once logged in, you access the Admin session and from here, via the "
+"\"Backend\" button to the Administration panel"
+msgstr ""
+"Una volta loggati si accede alla sessione viola **Amministrazione** e da "
+"qui, tramite il tasto **Amministrazione** al relativo pannello."
+
+#~ msgid "Project title settings"
+#~ msgstr ""
+
+#~ msgid "Project title settings Project title settings"
+#~ msgstr ""
+

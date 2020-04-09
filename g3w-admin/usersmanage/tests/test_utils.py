@@ -51,11 +51,11 @@ class UsersManageTest(BaseUsermanageTestCase):
         self.assertEqual(user_groups[0], G3W_EDITOR1)
 
         user_groups = getUserGroups(self.user_editor2)
-        self.assertEqual(len(user_groups), 1)
+        self.assertEqual(len(user_groups), 2)
         self.assertEqual(user_groups[0], G3W_EDITOR2)
 
         user_groups = getUserGroups(self.user_viewer1)
-        self.assertEqual(len(user_groups), 1)
+        self.assertEqual(len(user_groups), 2)
         self.assertEqual(user_groups[0], G3W_VIEWER1)
 
     def test_user_has_groups(self):

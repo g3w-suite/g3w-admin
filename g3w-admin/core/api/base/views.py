@@ -298,7 +298,7 @@ class BaseVectorOnModelApiView(G3WAPIView):
             from_srid = self.layer.srid
             to_srid = self.layer.project.group.srid.auth_srid
 
-        geometry = GEOSGeometry(json.dumps(feature['geometry']), srid=int(from_srid))
+        geometry = GEOSGeometry(GEOSGeometry(json.dumps(feature['geometry'])).wkt, srid=int(from_srid))
         geometry.transform(to_srid)
         feature['geometry'] = json.loads(geometry.json)
 

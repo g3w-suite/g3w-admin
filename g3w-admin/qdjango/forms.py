@@ -6,6 +6,7 @@ from django.utils.translation import ugettext, ugettext_lazy as _
 from guardian.shortcuts import get_objects_for_user
 from crispy_forms.helper import FormHelper, Layout
 from crispy_forms.layout import Div, Field, HTML
+from modeltranslation.forms import TranslationModelForm
 from core.mixins.forms import *
 from core.utils.forms import crispyBoxBaseLayer
 from core.models import Group as G3WGroup
@@ -75,8 +76,8 @@ class QdjangoProjectFormMixin(object):
         self.instance.url_alias = self.cleaned_data['url_alias']
 
 
-class QdjangoProjetForm(QdjangoProjectFormMixin, G3WFormMixin, G3WGroupFormMixin, G3WGroupBaseLayerFormMixin,
-                        G3WRequestFormMixin, G3WACLForm, FileFormMixin, forms.ModelForm):
+class QdjangoProjetForm(TranslationModelForm, QdjangoProjectFormMixin, G3WFormMixin, G3WGroupFormMixin,
+                        G3WGroupBaseLayerFormMixin, G3WRequestFormMixin, G3WACLForm, FileFormMixin, forms.ModelForm):
 
     qgis_file = UploadedFileField(required=True)
     thumbnail = UploadedFileField(required=False)
@@ -131,6 +132,7 @@ class QdjangoProjetForm(QdjangoProjectFormMixin, G3WFormMixin, G3WGroupFormMixin
                                             css_class='box-header with-border'
                                         ),
                                         Div(
+                                            'title_ur',
                                             Field('description', css_class='wys5'),
                                             'thumbnail',
                                             HTML("""<img
@@ -180,50 +182,54 @@ class QdjangoProjetForm(QdjangoProjectFormMixin, G3WFormMixin, G3WGroupFormMixin
             'multilayer_query',
             'multilayer_querybybbox',
             'multilayer_querybypolygon',
+            'title_ur'
         )
 
-        widgets = {
-            '''
-            'qgis_file': DropzoneInput(dropzone_config={
-                'url': '/file-upload/',
-                'maxFiles':1}
-            )
-            '''
-        }
+    def _setEditorUserQueryset(self):
+        """
+        Set query set for editors chosen fields
+        :return: None
+        """
+
+        # add filter by group permissions
+        editor_group = get_users_for_object(self.group, 'change_group', [G3W_EDITOR1])
+        editor2_group = get_users_for_object(self.group, 'add_project_to_group', [G3W_EDITOR2])
+
+        self.fields['editor_user'].queryset = get_objects_for_user(self.request.user, 'auth.change_user', User) \
+            .filter(pk__in=[e.pk for e in editor_group], groups__name__in=self.editor1_groups)
+
+        self.fields['editor2_user'].queryset = get_objects_for_user(self.request.user, 'auth.change_user', User) \
+            .filter(pk__in=[e.pk for e in editor2_group], groups__name__in=self.editor2_groups)
 
     def _setViewerUserQueryset(self, **kwargs):
         """
-        Set query set for viewers chosen fields
-        Take from viewers set into parent project group by Editor Level 1
+        Set queryset for viewers chosen fields
+        Take Viewers level 1 from Group
         :return: None
         """
-        # get viewer from parent if not editor level 2
 
-        if userHasGroups(self.request.user, [G3W_EDITOR2]):
-
-            # get viewers from groups
-            viewers = get_viewers_for_object(self.group, self.request.user,
-                                                                          'view_group')
-            # get queryset
-            self.fields['viewer_users'].queryset = User.objects.filter(groups__name__in=self.viewer_groups,
-                                                                       pk__in=[v.pk for v in viewers])
-        else:
-            super(QdjangoProjetForm, self)._setViewerUserQueryset(**kwargs)
+        # get viewers from groups
+        viewers = get_viewers_for_object(self.group, self.request.user, 'view_group')
+        # get queryset
+        self.fields['viewer_users'].queryset = User.objects.filter(groups__name__in=self.viewer_groups,
+                                                                   pk__in=[v.pk for v in viewers])
 
     def _set_user_groups_queryset(self):
         """
         Set query set for viewer user groups chosen fields
-        Take from viewer user groups set into parent project group by Editor Level 1
+        Take Viewer User Groups from Group
         :return: None
         """
-        if userHasGroups(self.request.user, [G3W_EDITOR2]):
-            viewer_user_groups = get_user_groups_for_object(self.group,self.request.user, 'view_group', 'viewer')
 
-            # get queryset
-            self.fields['viewer_user_groups'].queryset = AuthGroup.objects.filter(
-                pk__in=[v.pk for v in viewer_user_groups])
-        else:
-            super(QdjangoProjetForm, self)._set_user_groups_queryset()
+        super(QdjangoProjetForm, self)._set_user_groups_queryset()
+
+        editor_user_groups = get_user_groups_for_object(self.group, self.request.user, 'view_group', 'editor')
+        self.fields['editor_user_groups'].queryset = AuthGroup.objects.filter(
+            pk__in=[v.pk for v in editor_user_groups])
+
+        viewer_user_groups = get_user_groups_for_object(self.group, self.request.user, 'view_group', 'viewer')
+        self.fields['viewer_user_groups'].queryset = AuthGroup.objects.filter(
+            pk__in=[v.pk for v in viewer_user_groups])
 
     def save(self, commit=True):
         self._ACLPolicy()

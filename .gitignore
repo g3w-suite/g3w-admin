@@ -10,6 +10,7 @@
 
 # Sphinx docs
 docs/_build
+docs/locales/**/*.mo
 
 # PyCharms project file
 /.idea/

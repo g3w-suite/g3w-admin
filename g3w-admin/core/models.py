@@ -6,13 +6,14 @@ from django.urls import reverse
 from django.db import models
 from django.apps import apps
 from guardian.shortcuts import get_objects_for_user
+from guardian.compat import get_user_model
 from ordered_model.models import OrderedModel
 from model_utils.models import TimeStampedModel
 from model_utils import Choices
 from autoslug import AutoSlugField
 from sitetree.models import TreeItemBase, TreeBase
 from django.contrib.auth.models import User, Group as AuthGroup
-from usersmanage.utils import setPermissionUserObject, getUserGroups, get_users_for_object
+from usersmanage.utils import setPermissionUserObject, getUserGroups, get_users_for_object, get_groups_for_object
 from usersmanage.configs import *
 from .utils.structure import getProjectsByGroup
 try:
@@ -89,6 +90,8 @@ class MacroGroup(TimeStampedModel, OrderedModel):
     Model for Macro groups, no ACL
     """
 
+    name = models.CharField(_('Identification name'), max_length=255, null=True,
+                            help_text=_('Internal identification Macrogroup name'))
     title = models.CharField(_('Title'), max_length=255)
     description = models.TextField(_('Description'), blank=True)
     logo_img = models.FileField(_('Logo image'), upload_to='macrogroup/logo_img')
@@ -97,7 +100,7 @@ class MacroGroup(TimeStampedModel, OrderedModel):
     use_title_logo_client = models.BooleanField(_('Use title and logo for client'), default=False)
 
     slug = AutoSlugField(
-        _('Slug'), populate_from='title', unique=True, always_update=True
+        _('Slug'), populate_from='name', unique=True, always_update=True
     )
 
     def __str__(self):
@@ -268,13 +271,18 @@ class Group(TimeStampedModel, OrderedModel):
         """
         appProjects = getProjectsByGroup(self)
 
+        # anonynous users id
+        anonymous_uid = get_user_model().get_anonymous().pk
+
         for user_id in users_id:
             setPermissionUserObject(User.objects.get(pk=user_id), self, permissions='view_group', mode='remove')
 
             # adding permissions to projects
-            for app, projects in list(appProjects.items()):
-                for project in projects:
-                    project.removePermissionsToViewers(users_id)
+            # not for anonymous user, who exit from this flow
+            if user_id != anonymous_uid:
+                for app, projects in list(appProjects.items()):
+                    for project in projects:
+                        project.removePermissionsToViewers(users_id)
 
     def add_permissions_to_editor_user_groups(self, groups_id):
         """
@@ -283,7 +291,8 @@ class Group(TimeStampedModel, OrderedModel):
 
         appProjects = getProjectsByGroup(self)
         permissions = [
-            'view_group'
+            'view_group',
+            'add_project_to_group'
         ]
 
         for group_id in groups_id:
@@ -303,7 +312,8 @@ class Group(TimeStampedModel, OrderedModel):
         appProjects = getProjectsByGroup(self)
 
         permissions = [
-            'view_group'
+            'view_group',
+            'add_project_to_group'
         ]
 
         for group_id in groups_id:
@@ -356,7 +366,6 @@ class Group(TimeStampedModel, OrderedModel):
                     if hasattr(project, 'remove_permissions_to_viewer_user_groups'):
                         project.remove_permissions_to_viewer_user_groups(groups_id)
 
-
     def __getattr__(self, attr):
         if attr == 'viewers':
             return get_users_for_object(self, 'view_group', [G3W_VIEWER1, G3W_VIEWER2], with_anonymous=True)
@@ -364,6 +373,22 @@ class Group(TimeStampedModel, OrderedModel):
             editors = get_users_for_object(self, 'change_group', [G3W_EDITOR2, G3W_EDITOR1])
             if len(editors) > 0:
                 return editors[0]
+        elif attr == 'editor1':
+            editors = get_users_for_object(self, 'change_group', [G3W_EDITOR1])
+            if len(editors) > 0:
+                return editors[0]
+        elif attr == 'editor2':
+            editors = get_users_for_object(self, 'view_group', [G3W_EDITOR2])
+            if len(editors) > 0:
+                return editors[0]
+
+        # Get users groups
+        # ================
+        elif attr == 'editor_user_groups':
+            return get_groups_for_object(self, 'view_group', 'editor')
+        elif attr == 'viewer_user_groups':
+            return get_groups_for_object(self, 'view_group', 'viewer')
+
         return super(Group, self).__getattr__(attr)
 
 

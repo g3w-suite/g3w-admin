@@ -11,7 +11,7 @@ from core.models import Group, BaseLayer, GroupProjectPanoramic, ProjectMapUrlAl
 from .utils.storage import QgisFileOverwriteStorage
 from core.mixins.models import G3WACLModelMixins, G3WProjectMixins
 from model_utils import Choices
-from usersmanage.utils import setPermissionUserObject, getUserGroups, get_users_for_object
+from usersmanage.utils import setPermissionUserObject, getUserGroups, get_users_for_object, get_groups_for_object
 from usersmanage.configs import *
 from core.configs import *
 from core.receivers import check_overviewmap_project
@@ -56,6 +56,7 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
 
     # General info
     title = models.CharField(_('Title'), max_length=255)
+    title_ur = models.CharField(_('Public title'), max_length=255, null=True, blank=True)
     description = models.TextField(_('Description'), blank=True, null=True)
     slug = AutoSlugField(
         _('Slug'), populate_from='title', unique=True, always_update=True
@@ -117,7 +118,7 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
             'view_project'
         ], mode=mode)
 
-        # if editor not has permission on group give permission only view on parent gorup group
+        # if editor not has permission on group give permission only view on parent group
         if not user.has_perm('core.view_group', self.group):
             setPermissionUserObject(user, self.group, permissions=[
                 'core.view_group'
@@ -133,12 +134,6 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
         for user_id in users_id:
             user = User.objects.get(pk=user_id)
             setPermissionUserObject(user, self, permissions='view_project', mode=mode)
-
-            # if viewer not has permission on group give permission only view on parent group
-            if not user.has_perm('core.view_group', self.group):
-                setPermissionUserObject(user, self.group, permissions=[
-                    'core.view_group'
-                ], mode=mode)
 
             layerAction = 'addPermissionsToViewers' if mode == 'add' else 'removePermissionsToViewers'
             layers = self.layer_set.all()
@@ -169,12 +164,6 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
         for group_id in groups_id:
             auth_group = AuthGroup.objects.get(pk=group_id)
             setPermissionUserObject(auth_group, self, permissions='view_project', mode=mode)
-
-            # if viewer not has permission on group give permission only view on parent group
-            if 'view_group' not in get_perms(auth_group, self.group):
-                setPermissionUserObject(auth_group, self.group, permissions=[
-                    'core.view_group'
-                ], mode=mode)
 
             layerAction = 'add_permissions_to_viewer_user_groups' if mode == 'add' \
                 else 'remove_permissions_to_viewer_user_groups'
@@ -237,6 +226,14 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
                 return editors[0]
             else:
                 return None
+
+        # Get users groups
+        # ================
+        elif attr == 'editor_user_groups':
+            return get_groups_for_object(self, 'change_project', 'editor')
+        elif attr == 'viewer_user_groups':
+            return get_groups_for_object(self, 'view_project', 'viewer')
+
         return super(Project, self).__getattribute__(attr)
 
 

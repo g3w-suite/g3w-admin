@@ -10,6 +10,7 @@ from django.contrib.auth.models import User
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Div, Submit, HTML, Button, Row, Field
 from crispy_forms.bootstrap import AppendedText, PrependedText
+from modeltranslation.forms import TranslationModelForm
 from guardian.shortcuts import get_objects_for_user
 from .utils.forms import crispyBoxMacroGroups
 from usersmanage.utils import get_fields_by_user, crispyBoxACL, userHasGroups, get_users_for_object
@@ -18,7 +19,7 @@ from core.mixins.forms import *
 from usersmanage.configs import *
 
 
-class GroupForm(FileFormMixin, G3WFormMixin, G3WRequestFormMixin, G3WACLForm, ModelForm):
+class GroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, G3WRequestFormMixin, G3WACLForm, ModelForm):
     """Group form."""
     header_logo_img = UploadedFileField()
     propagate = True
@@ -178,7 +179,7 @@ class GroupForm(FileFormMixin, G3WFormMixin, G3WRequestFormMixin, G3WACLForm, Mo
             self.instance.addPermissionsToEditor(self.request.user)
 
 
-class GeneralSuiteDataForm(FileFormMixin, ModelForm):
+class GeneralSuiteDataForm(TranslationModelForm, FileFormMixin, ModelForm):
     """General suite data form."""
     suite_logo = UploadedFileField(required=False)
 
@@ -314,7 +315,7 @@ class GeneralSuiteDataForm(FileFormMixin, ModelForm):
         fields = '__all__'
 
 
-class MacroGroupForm(FileFormMixin, G3WFormMixin, ModelForm):
+class MacroGroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, ModelForm):
     """MacroGroup form."""
     logo_img = UploadedFileField()
     initial_editor_users = []
@@ -363,6 +364,7 @@ class MacroGroupForm(FileFormMixin, G3WFormMixin, ModelForm):
                                             css_class='box-header with-border'
                                         ),
                                         Div(
+                                            'name',
                                             'title',
                                             'use_title_logo_client',
                                             Field('description', css_class='wys5', style="width:100%;"),

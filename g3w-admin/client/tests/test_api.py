@@ -16,7 +16,7 @@ from rest_framework.test import APITestCase, APIClient
 from django.conf import settings
 from django.urls import reverse
 from django.test import override_settings
-from django.contrib.auth.models import User
+from usersmanage.tests.utils import setup_testing_user, teardown_testing_users
 from qdjango.models import Project
 from django.core.cache import caches
 
@@ -47,10 +47,8 @@ class ClientApiTest(APITestCase):
     @classmethod
     def setUpClass(cls):
         super(ClientApiTest, cls).setUpClass()
-        try:
-            cls.user = User.objects.get(username='admin%s' % cls.__class__)
-        except:
-            cls.user = User.objects.create_superuser(username='admin%s' % cls.__class__, password='admin', email='')
+
+        setup_testing_user(cls)
 
         # Fill the cache with getprojectsettings response so we don't need a QGIS instance running
         # TODO: eventually move to QgsServer
@@ -62,7 +60,7 @@ class ClientApiTest(APITestCase):
 
     @classmethod
     def tearDownClass(cls):
-        cls.user.delete()
+        teardown_testing_users(cls)
 
     def setUp(self):
         self.client = APIClient()
@@ -89,7 +87,7 @@ class ClientApiTest(APITestCase):
         self.assertEqual(response.status_code, 403)
 
         # Auth
-        self.assertTrue(self.client.login(username=self.user.username, password='admin'))
+        self.assertTrue(self.client.login(username=self.test_user1.username, password=self.test_user1.username))
         response = self.client.get(reverse(view_name, args=args))
         self.assertEqual(response.status_code, 200)
         self.client.logout()
@@ -123,7 +121,7 @@ class ClientApiTest(APITestCase):
         self.assertEqual(resp["credits"], "/it/credits/")
         self.assertEqual(resp["client"], "client/")
         self.assertEqual(resp["staticurl"], "/static/")
-        self.assertEqual(resp["user"]["username"], "admin<class 'type'>")
+        self.assertEqual(resp["user"]["username"], "admin01")
         self.assertEqual(resp["user"]["first_name"], "")
         self.assertEqual(resp["user"]["last_name"], "")
         self.assertEqual(resp["user"]["admin_url"], "/it/")
@@ -131,6 +129,7 @@ class ClientApiTest(APITestCase):
         self.assertEqual(resp["user"]["groups"], [])
         self.assertEqual(resp["user"]["i18n"], "it")
         self.assertEqual(resp["g3wsuite_logo_img"], "g3wsuite_logo_h40.png")
+        self.assertEqual(resp['i18n'], json.loads(json.dumps(settings.LANGUAGES)))
 
 
     def testClientConfigApiView(self):

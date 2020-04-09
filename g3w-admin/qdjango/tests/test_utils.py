@@ -1,3 +1,15 @@
+# coding=utf-8
+"""
+    Test Qdjango module for utils methods and functions
+.. note:: This program is free software; you can redistribute it and/or modify
+     it under the terms of the Mozilla Public License 2.0.
+"""
+
+__author__ = 'lorenzetti@gis3w.it'
+__date__ = '2019-11-28'
+__copyright__ = 'Copyright 2019, GIS3W'
+
+
 from .base import QdjangoTestBase
 from django.test import TestCase, override_settings
 from django.core.files import File

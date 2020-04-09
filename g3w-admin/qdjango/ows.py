@@ -73,16 +73,6 @@ class OWSRequestHandler(OWSRequestHandlerBase):
         self.groupSlug = kwargs.get('group_slug', None)
         self.projectId = kwargs.get('project_id', None)
 
-        # map file chache key
-        '''
-        self.cache_key = '{}/{}/{}'.format(
-            self.groupSlug,
-            'qdjango',
-            self.projectId
-        )
-
-        if not cache.get(self.cache_key):
-        '''
         if self.projectId:
             self._getProjectInstance()
 
@@ -101,6 +91,7 @@ class OWSRequestHandler(OWSRequestHandlerBase):
 
     @property
     def authorizer(self):
+        """ Return """
         return QdjangoProjectAuthorizer(request= self.request, project=self._projectInstance)
 
     @property
@@ -120,14 +111,23 @@ class OWSRequestHandler(OWSRequestHandlerBase):
         # http urllib3 manager
         http = None
 
+        # retrive request from querystring or POST
+        ows_request = None
         raw_body = request.body
         if request.method == 'GET':
-            ows_request = q['REQUEST'].upper()
+            try:
+                ows_request = q['REQUEST'].upper()
+            except:
+                pass
         else:
-            if request.content_type == 'application/x-www-form-urlencoded':
-                ows_request = request.POST['REQUEST'].upper()
-            else:
-                ows_request = request.POST['REQUEST'][0].upper()
+            try:
+                if request.content_type == 'application/x-www-form-urlencoded':
+                    ows_request = request.POST['REQUEST'].upper()
+                else:
+                    ows_request = request.POST['REQUEST'][0].upper()
+            except:
+                pass
+
         if qdjangoModeRequest == QDJANGO_PROXY_REQUEST or ows_request == 'GETLEGENDGRAPHIC':
 
             # try to get getfeatureinfo on wms layer
@@ -181,6 +181,7 @@ class OWSRequestHandler(OWSRequestHandlerBase):
             #result = http.request(request.method, url, fields=request.POST)
             result_data = result.data
 
+            # For GETCAPABILITIES, replace onlineresorce values:
             if ows_request == 'GETCAPABILITIES':
                 to_replace = None
                 try:
@@ -190,16 +191,15 @@ class OWSRequestHandler(OWSRequestHandlerBase):
 
                 if not to_replace:
                     to_replace = settings.QDJANGO_SERVER_URL + r'\?map=[^\'" > &]+(?=&)'
-                    #to_replace = r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+\?map=[^\'" > &]+(?=&)'
 
                 # url to replace
                 wms_url = '{}://{}{}'.format(
                     request.META['wsgi.url_scheme'],
-                    request.META['HTTP_HOST'],
+                    request.META['HTTP_HOST'] if 'HTTP_HOST' in request.META else 'localhost',
                     request.path
                 )
-                result_data = re.sub(to_replace, wms_url, result_data)
-                result_data = re.sub('&amp;&amp;', '?', result_data)
+                result_data = re.sub(to_replace.encode('utf-8'), wms_url.encode('utf-8'), result_data)
+                result_data = re.sub('&amp;&amp;'.encode('utf-8'), '?'.encode('utf-8'), result_data)
 
 
             # If we get a redirect, let's add a useful message.
@@ -219,6 +219,7 @@ class OWSRequestHandler(OWSRequestHandlerBase):
 
         else:
 
+            #FIXME: try to use QGIS server API
             # case qgisserver python binding
             server = QgsServer()
             headers, body = server.handleRequest(q.urlencode())
@@ -231,9 +232,8 @@ class OWSRequestHandler(OWSRequestHandlerBase):
                     response[k] = v
             return response
 
-
     def doRequest(self):
-
+        """ Main proxy method entry """
         q = self.request.GET.copy()
 
         # rebuild q keys upper()
@@ -243,12 +243,6 @@ class OWSRequestHandler(OWSRequestHandlerBase):
             if ku != k:
                 q[ku] = q[k]
                 del q[k]
-
-        #if not cache.get(self.cache_key):
-        #   q['map'] = self._projectInstance.qgis_file.file.name
-        #    cache.set(self.cache_key, q['map'])
-        #else:
-        #    q['map'] = cache.get(self.cache_key)
 
         q['map'] = self._projectInstance.qgis_file.file.name
         return self.baseDoRequest(q, self.request)

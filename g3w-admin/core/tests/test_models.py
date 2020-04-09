@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.core.management import call_command
 from django.test import TestCase
 from core.models import BaseLayer
+from usersmanage.tests.utils import setup_testing_user, teardown_testing_users
 from django.test import override_settings
 
 @override_settings(CACHES = {
@@ -22,9 +23,9 @@ class GroupsTests(TestCase):
                 ]
 
     @classmethod
-    def setUpTestData(cls):
-        test_user1 = User.objects.create_user(username='admin01', password='admin01')
-        test_user1.save()
+    def setUpClass(cls):
+        super(GroupsTests, cls).setUpClass()
+        setup_testing_user(cls)
 
     def setUp(self):
         self.baselayer = BaseLayer.objects.get(name='OpenStreetMap')
@@ -34,9 +35,16 @@ class GroupsTests(TestCase):
 
     def test_signup_status_code(self):
         activate('it')
-        login = self.client.login(username='admin01', password='admin01')
+        login = self.client.login(username=self.test_user1, password=self.test_user1)
         url = reverse('group-list')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
+
+        self.client.logout()
+
+    @classmethod
+    def tearDownClass(cls):
+        teardown_testing_users(cls)
+        super().tearDownClass()
 
 
