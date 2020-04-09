@@ -3,12 +3,11 @@
 # This file is distributed under the same license as the G3W-SUITE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: G3W-SUITE 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-04-02 16:13+0200\n"
+"POT-Creation-Date: 2020-04-06 15:17+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,38 +16,101 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.8.0\n"
 
-#: ../../index.rst:29
+#: ../../index.rst:53
 msgid "Installation and deploy"
 msgstr "Installazione e deploy"
 
-#: ../../index.rst:37
+#: ../../index.rst:61
 msgid "Manual"
 msgstr "Manuale"
+
+#: ../../index.rst:75
+msgid "Tutorial"
+msgstr ""
 
 #: ../../index.rst:8
 msgid "Welcome to G3W-SUITE's documentation!"
 msgstr "Benvenuti nella documentazione di G3W-SUITE"
 
 #: ../../index.rst:9
-#, fuzzy
 msgid ""
-"G3W-SUITE is a frame-work, based on Django and written in Python "
+"**G3W-SUITE is a frame-work, based on Django and written in Python "
 "language, which allows to manage in an integrated way the different "
 "components of QGIS for the realization of its own Geographic Information "
 "System and for the publication on WebGis of its own projects in a simple "
-"way and intuitive. G3W-SUITE is entirely based on tested Open Source "
-"software components built around QGIS: - QGIS Desktop: for cartographic "
-"data management, editing and realization of high quality graphic projects"
-" - QGIS Server: for the publication of QGIS projects as OGC services"
+"and intuitive way.**"
 msgstr ""
-"G3W-SUITE è un frame-work, basato su **Django** e scritto in **linguaggio"
-" Python**, che consente di **gestire in modo integrato i diversi "
-"Componenti di QGIS** per la realizzazione del proprio Sistema Informativo"
-" Geografico e per la **pubblicazione su WebGis dei propri progetti** in "
-"modo semplice e intuitivo. G3W-SUITE è interamente basato su componenti "
-"**software Open Source costruiti attorno a QGIS**:"
+"**G3W-SUITE è un frame-work, basato su Django e scritto in linguaggio "
+"Python che consente di gestire in modo integrato i diversi componenti di "
+"QGIS per la realizzazione del proprio Sistema Informativo Geografico e "
+"per la pubblicazione su WebGis di progetti QGIS in modo semplice e "
+"intuitivo.**"
 
-#: ../../index.rst:14
+#: ../../index.rst:11
+msgid ""
+"G3W-SUITE is entirely based on tested Open Source software components "
+"built around QGIS:"
+msgstr ""
+"G3W-SUITE è interamente basato su componenti **software Open Source "
+"costruiti attorno a QGIS**:"
+
+#: ../../index.rst:13
+msgid ""
+"**QGIS Desktop:** for cartographic data management, editing and "
+"realization of high quality graphic projects"
+msgstr ""
+"**QGIS Desktop:** per la gestione dei dati geografici, editing "
+"erealizzazione di progetti cartografici di alta qualità"
+
+#: ../../index.rst:15
+msgid "**QGIS Server:** for the publication of QGIS projects as OGC services"
+msgstr "**QGIS Server:** per la pubblicazione dei progetti QGIS come servizi OGC"
+
+#: ../../index.rst:18
+msgid ""
+"G3W-SUITE is a modular client-server application for the publication and "
+"management of QGIS cartographic projects, consisting of 2 components:"
+msgstr ""
+"**G3W-SUITE è un'applicazione modulare client-server per la pubblicazione"
+" e gestione di progetti QGIS, costituita da 2 componenti principali**"
+
+#: ../../index.rst:20
+msgid ""
+"**G3W-ADMIN:** Administration component (project management, ACL, OGC "
+"proxy server, API rest server)"
+msgstr ""
+"**G3W-ADMIN:** la componente di Amministrazione (gestioen progetti, ACL, "
+"OGC,proxy seerver, API REST server...)"
+
+#: ../../index.rst:22
+msgid ""
+"**G3W-CLIENT:** Cartographic client for consultation and interaction with"
+" OGC services"
+msgstr ""
+"**G3W-CLIENT:** il client cartografico per la consultazione ed "
+"interazione con i servizi OGC"
+
+#: ../../index.rst:24
+msgid "Optional OS modules are:"
+msgstr "Ulteriori moduli OS opzionali sono:"
+
+#: ../../index.rst:26
+msgid ""
+"**Front-end geographic portal:** access to information, thematic groups "
+"and WebGis services"
+msgstr ""
+"**Portale cartografico:** per l'accesso alle informazioni di base, "
+"contenitori tematici e servizi WebGis"
+
+#: ../../index.rst:28
+msgid ""
+"**Caching Module:** tile caching module for single layer powerd by "
+"TileStache4"
+msgstr ""
+"**Modulo di Cache:** modulo per la gestione della cache dei singoli layer"
+" basato su TileStache"
+
+#: ../../index.rst:31
 msgid ""
 "The current development policy provides for the compatibility of the G3W-"
 "SUITE application only with the latest LTR version of QGIS"
@@ -56,75 +118,49 @@ msgstr ""
 "L'attuale politica di sviluppo prevede la compatibilità dell'applicazione"
 " G3W-SUITE solo con l'ultima versione LTR di QGIS"
 
-#: ../../index.rst:20
-msgid ""
-"Through the web interface based on the G3W-SUITE framework and developed "
-"by Gis3W it is possible to: - publish QGIS projects directly on WebGis in"
-" a structured way - organize webgis services in thematic-functional "
-"containers of various levels - manage users and groups of users by "
-"defining each of them different functional roles - create and manage "
-"research methods - allow online editing - activate specific functional "
-"modules - define permissions to access services and to use functional "
-"modules at the individual user level"
+#: ../../index.rst:37
+msgid "Through the web interface of the G3W-SUITE framework it is possible to:"
 msgstr ""
+"Attraverso l'interfaccia web ella componente di Amministrazione è "
+"possibile:"
 
-#~ msgid ""
-#~ "QGIS Desktop: for cartographic data "
-#~ "management, editing and realization of "
-#~ "high quality graphic projects"
-#~ msgstr ""
-#~ "**QGIS Desktop:** per la gestione dei"
-#~ " dati cartografici, la modifica e la"
-#~ " realizzazione di progetti grafici di "
-#~ "alta qualità"
+#: ../../index.rst:39
+msgid "**publish QGIS projects** directly on WebGis in a structured way"
+msgstr "**pubblicare progetti QGIS** in modo diretto estrutturato"
 
-#~ msgid "QGIS Server: for the publication of QGIS projects as OGC services"
-#~ msgstr "**QGIS Server:** per la pubblicazione di progetti QGIS come servizi OGC"
+#: ../../index.rst:41
+msgid ""
+"**organize webgis services in thematic-functional containers** of various"
+" levels"
+msgstr ""
+"**organizzare servizi webgis** in contenitori tematici-funzionali di vari"
+" livelli"
 
-#~ msgid ""
-#~ "Through the web interface based on "
-#~ "the G3W-SUITE framework and developed"
-#~ " by Gis3W it is possible to:"
-#~ msgstr ""
-#~ "Tramite l'interfaccia web basata sul "
-#~ "framework G3W-SUITE e sviluppato da "
-#~ "Gis3W è possibile:"
+#: ../../index.rst:43
+msgid ""
+"**manage users and groups of users** by defining each of them **different"
+" functional roles**"
+msgstr ""
+"**gestire utenti** e gruppi di utenti definendo ciascuno di essi **ruoli "
+"funzionali diversi**"
 
-#~ msgid "publish QGIS projects directly on WebGis in a structured way"
-#~ msgstr "pubblicare progetti QGIS direttamente su WebGis in modo strutturato"
+#: ../../index.rst:45
+msgid "**create and manage research methods**"
+msgstr "creare e gestire **strumenti di ricerca**"
 
-#~ msgid ""
-#~ "organize webgis services in thematic-"
-#~ "functional containers of various levels"
-#~ msgstr ""
-#~ "organizzare servizi webgis in contenitori "
-#~ "tematici-funzionali di vari livelli"
+#: ../../index.rst:47
+msgid "allow **online editing**"
+msgstr "permettere l'**editing on line**"
 
-#~ msgid ""
-#~ "manage users and groups of users "
-#~ "by defining each of them different "
-#~ "functional roles"
-#~ msgstr ""
-#~ "gestire utenti e gruppi di utenti "
-#~ "definendo ciascuno di essi ruoli "
-#~ "funzionali diversi"
+#: ../../index.rst:49
+msgid "activate **specific functional modules**"
+msgstr "attivare **specifici moduli funzionali**"
 
-#~ msgid "create and manage research methods"
-#~ msgstr "creare e gestire strumenti di ricerca"
-
-#~ msgid "allow online editing"
-#~ msgstr "permettere l'editing on line"
-
-#~ msgid "activate specific functional modules"
-#~ msgstr "attivare specifici moduli funzionali"
-
-#~ msgid ""
-#~ "define permissions to access services "
-#~ "and to use functional modules at "
-#~ "the individual user level"
-#~ msgstr ""
-#~ "definire le autorizzazioni per accedere "
-#~ "ai servizi e per utilizzare i "
-#~ "moduli funzionali a livello di singolo"
-#~ " utente"
+#: ../../index.rst:51
+msgid ""
+"**define permissions to access services and to use functional modules** "
+"at the individual user level"
+msgstr ""
+"definire le **autorizzazioni per accedere ai servizi e per utilizzare i "
+"moduli funzionali** a livello di singolo utente"
 
