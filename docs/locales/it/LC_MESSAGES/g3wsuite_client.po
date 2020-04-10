@@ -222,7 +222,7 @@ msgstr ""
 #: ../../g3wsuite_client.md:44
 msgid "length: linear measuring instrument"
 msgstr ""
-"![ ](images/manual/icon_navigation_lunghezza.png) **`lunghezza`:** "
+" **`lunghezza`:** "
 "strumento di misura di tratti lineari"
 
 #: ../../g3wsuite_client.md:45
