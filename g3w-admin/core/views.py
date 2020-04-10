@@ -235,6 +235,7 @@ class GeneralSuiteDataUpdateView(UpdateView):
     model = GeneralSuiteData
     form_class = GeneralSuiteDataForm
 
+    @method_decorator(user_passes_test_or_403(lambda u: u.is_superuser))
     def dispatch(self, *args, **kwargs):
         return super(GeneralSuiteDataUpdateView, self).dispatch(*args, **kwargs)
 

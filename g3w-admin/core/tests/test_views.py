@@ -84,3 +84,32 @@ class CoreViewsTest(CoreTestBase):
         self.assertEqual(len(dbgmacrogropus), 0)
 
         client.logout()
+
+    def test_generasuitedata_view(self):
+        """ Check GeneralDataSuite view """
+
+        client = Client()
+
+        # Check only admin can access
+        # No login: loginrequired return redircte to login page 302
+        url = reverse('generaldata-update')
+
+        response = client.get(url)
+        self.assertEqual(response.status_code, 302)
+
+        # Check editor level 1
+        # Not permission return 403
+        self.assertTrue(client.login(username=self.test_editor1.username, password=self.test_editor1.username))
+        response = client.get(url)
+        self.assertEqual(response.status_code, 403)
+
+        client.logout()
+
+        # Check Admin
+        # Has access response 200
+        self.assertTrue(client.login(username=self.test_user1.username, password=self.test_user1.username))
+        response = client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+
+
