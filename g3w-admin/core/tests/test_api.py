@@ -16,11 +16,10 @@ from rest_framework.test import APITestCase, APIClient
 from django.conf import settings
 from django.urls import reverse
 from django.test import override_settings
-from django.contrib.auth.models import User
 from qdjango.models import Project
-from usersmanage.tests.utils import setup_testing_user, teardown_testing_users
 from django.core.cache import caches
 from qdjango.models import Layer
+from .base import CoreTestBase
 
 # Re-use test data from qdjango module
 DATASOURCE_PATH = os.path.join(os.getcwd(), 'qdjango', 'tests', 'data')
@@ -34,15 +33,11 @@ DATASOURCE_PATH = os.path.join(os.getcwd(), 'qdjango', 'tests', 'data')
     }
 })
 @override_settings(SPATIALITE_LIBRARY_PATH='mod_spatialite.so')
-class CoreApiTest(APITestCase):
+class CoreApiTest(CoreTestBase):
     """Test core API"""
 
     # These are stored in core module
-    fixtures = [
-        "BaseLayer.json",
-        "G3WGeneralDataSuite.json",
-        "G3WMapControls.json",
-        "G3WSpatialRefSys.json",
+    fixtures = CoreTestBase.fixtures + [
         # except for this one which is in qdjango:
         "G3WSampleProjectAndGroup.json",
     ]
@@ -50,13 +45,6 @@ class CoreApiTest(APITestCase):
     @classmethod
     def setUpClass(cls):
         super(CoreApiTest, cls).setUpClass()
-
-        setup_testing_user(cls)
-
-        #try:
-        #    cls.user = User.objects.get(username='admin%s' % cls.__class__)
-        #except:
-        #    cls.user = User.objects.create_superuser(username='admin%s' % cls.__class__, password='admin', email='')
 
         # Fill the cache with getprojectsettings response so we don't need a QGIS instance running
         # TODO: eventually move to QgsServer
@@ -69,11 +57,6 @@ class CoreApiTest(APITestCase):
         l = Layer.objects.get(name='spatialite_points')
         l.datasource = 'dbname=\'%s/un-progetto-data/un-progetto.db\' table="spatialite_points" (geom) sql=' % DATASOURCE_PATH
         l.save()
-
-    @classmethod
-    def tearDownClass(cls):
-        teardown_testing_users(cls)
-
 
     def setUp(self):
         self.client = APIClient()

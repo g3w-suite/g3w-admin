@@ -11,35 +11,21 @@ __date__ = '2020-04-03'
 __copyright__ = 'Copyright 2015 - 2020, Gis3w'
 
 
-from django.test import TestCase, override_settings
 from django.test.client import RequestFactory
-from usersmanage.tests.utils import setup_testing_user, teardown_testing_users, setup_testing_user_relations
+from usersmanage.tests.utils import setup_testing_user_relations
 from core.forms import GroupForm
 from core.models import G3WSpatialRefSys, MapControl, Group
-from .utils import create_dff_image, clear_dff_image
+from .base import CoreTestBase
+from .utils import create_dff_image
 import copy
 
-@override_settings(CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-        'LOCATION': 'some',
-    }
-})
-class CoreTestForm(TestCase):
 
-
-    fixtures = [
-        'BaseLayer.json',
-        'G3WMapControls.json',
-        'G3WSpatialRefSys.json',
-        'G3WGeneralDataSuite.json'
-    ]
+class CoreTestForm(CoreTestBase):
 
     @classmethod
     def setUpClass(cls):
 
         super(CoreTestForm, cls).setUpClass()
-        setup_testing_user(cls)
         setup_testing_user_relations(cls)
 
     @classmethod
@@ -192,8 +178,3 @@ class CoreTestForm(TestCase):
         self.assertEqual(len(form.fields['editor_user_groups'].queryset), 1)
         self.assertEqual(len(form.fields['viewer_user_groups'].queryset), 1)
 
-
-    @classmethod
-    def tearDownClass(cls):
-        teardown_testing_users(cls)
-        clear_dff_image()
