@@ -12,9 +12,10 @@ __copyright__ = 'Copyright 2015 - 2020, Gis3w'
 
 
 from django.test.client import RequestFactory
+from django.forms.models import model_to_dict
 from usersmanage.tests.utils import setup_testing_user_relations
-from core.forms import GroupForm, MacroGroupForm
-from core.models import G3WSpatialRefSys, MapControl, Group, MacroGroup
+from core.forms import GroupForm, MacroGroupForm, GeneralSuiteDataForm
+from core.models import G3WSpatialRefSys, MapControl, Group, MacroGroup, GeneralSuiteData
 from .base import CoreTestBase
 from .utils import create_dff_image
 import copy
@@ -249,5 +250,24 @@ class CoreTestForm(CoreTestBase):
         self.assertFalse(self.test_editor1_2.has_perm('core.view_macrogroup', mg))
         self.assertFalse(self.test_editor1_3.has_perm('core.view_macrogroup', mg))
 
+    def test_generalsuitedata_form(self):
+        """ Test for GeneralSuiteData form """
 
+        # upload logo_img
+        uf = create_dff_image(field_name='suite_logo')
 
+        gsd = GeneralSuiteData.objects.get()
+        initial_data = model_to_dict(gsd)
+
+        form_data = copy.copy(initial_data)
+        updated_title = 'Updated title'
+        form_data.update({
+            'title': updated_title
+        })
+
+        form = GeneralSuiteDataForm(instance=gsd, initial=initial_data, data=form_data)
+        self.assertTrue(form.is_valid())
+        form.save()
+
+        gsd.refresh_from_db()
+        self.assertEqual(gsd.title, updated_title)
