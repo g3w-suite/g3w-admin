@@ -29,7 +29,7 @@ from .utils import clear_dff_image
         }
     },
     LANGUAGE_CODE='en',
-    LANGUAGES = (
+    LANGUAGES=(
         ('en', 'English'),
     )
 )

@@ -6,6 +6,7 @@ from .base import CoreTestBase
 class GroupsTests(CoreTestBase):
 
     def setUp(self):
+        super(GroupsTests, self).setUp()
         self.baselayer = BaseLayer.objects.get(name='OpenStreetMap')
 
     def test_baselayer_name(self):
