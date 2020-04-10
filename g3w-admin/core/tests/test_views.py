@@ -11,7 +11,7 @@ __copyright__ = 'Copyright 2019, GIS3W'
 
 from django.test.client import RequestFactory, Client
 from django.urls import reverse, NoReverseMatch
-from core.models import Group, G3WSpatialRefSys
+from core.models import Group, G3WSpatialRefSys, MacroGroup
 from .base import CoreTestBase
 from copy import copy
 
@@ -34,9 +34,9 @@ class CoreViewsTest(CoreTestBase):
         group.save()
 
         # check 1 group on db
-        dbprojects = Group.objects.all()
-        self.assertEqual(len(dbprojects), 1)
-        self.assertEqual(dbprojects[0].name, group_data['name'])
+        dbgroups = Group.objects.all()
+        self.assertEqual(len(dbgroups), 1)
+        self.assertEqual(dbgroups[0].name, group_data['name'])
 
         url = reverse('group-delete', args=[group.slug])
 
@@ -46,8 +46,41 @@ class CoreViewsTest(CoreTestBase):
 
         self.assertEqual(response.status_code, 200)
 
-        # check only one project into db
-        dbprojects = Group.objects.all()
-        self.assertEqual(len(dbprojects), 0)
+        # check no groups into db
+        dbgroups = Group.objects.all()
+        self.assertEqual(len(dbgroups), 0)
+
+        client.logout()
+
+    def test_delete_macrogroup_view(self):
+        """
+        Testing delete macrogroup
+        """
+
+        # Create a macrogroup to delete
+        macrogroup_data = {
+            'name': 'MacroGroup to delete',
+            'title': 'MacroGroup to delete',
+            'logo_img': ''
+        }
+        macrogroup = MacroGroup(**macrogroup_data)
+        macrogroup.save()
+
+        # check 1 macrogroup on db
+        dbgmacrogropus = MacroGroup.objects.all()
+        self.assertEqual(len(dbgmacrogropus), 1)
+        self.assertEqual(dbgmacrogropus[0].name, macrogroup_data['name'])
+
+        url = reverse('macrogroup-delete', args=[macrogroup.slug])
+
+        client = Client()
+        self.assertTrue(client.login(username=self.test_user1.username, password=self.test_user1.username))
+        response = client.post(url)
+
+        self.assertEqual(response.status_code, 200)
+
+        # check no macrogroup into db
+        dbgmacrogropus =MacroGroup.objects.all()
+        self.assertEqual(len(dbgmacrogropus), 0)
 
         client.logout()

@@ -31,7 +31,7 @@ def create_dff_image(field_name, original_filename=None):
     image = open('{}g3wsuite_logo.png'.format(CURRENT_PATH + TEST_BASE_PATH), 'rb')
 
     form_id = uuid.uuid4()
-    file_id=uuid.uuid4()
+    file_id = uuid.uuid4()
 
     uf = UploadedFile(
         form_id=form_id,

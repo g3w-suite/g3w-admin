@@ -13,8 +13,8 @@ __copyright__ = 'Copyright 2015 - 2020, Gis3w'
 
 from django.test.client import RequestFactory
 from usersmanage.tests.utils import setup_testing_user_relations
-from core.forms import GroupForm
-from core.models import G3WSpatialRefSys, MapControl, Group
+from core.forms import GroupForm, MacroGroupForm
+from core.models import G3WSpatialRefSys, MapControl, Group, MacroGroup
 from .base import CoreTestBase
 from .utils import create_dff_image
 import copy
@@ -177,4 +177,77 @@ class CoreTestForm(CoreTestBase):
         # Only editor and viewer user groups for test_editor1_2
         self.assertEqual(len(form.fields['editor_user_groups'].queryset), 1)
         self.assertEqual(len(form.fields['viewer_user_groups'].queryset), 1)
+
+    def test_macrogroups_form(self):
+        """ Test for Macrogroup map object form """
+
+        # set user as admin01
+        self.request.user = self.test_user1
+
+        # empty form
+        form = MacroGroupForm(initial={})
+        self.assertFalse(form.is_valid())
+
+        # upload logo_img
+        uf = create_dff_image(field_name='logo_img')
+
+        # Test Create
+        # ===============================
+        name = 'Macro map group test'
+
+        form_data = {
+            'title': name,
+            'name': name,
+            'description': 'Test',
+            'form_id': uf.form_id,
+            'use_title_logo_client': False
+        }
+
+        # Test ACL
+        form_data.update({
+            'editor_users': [self.test_editor1_3.pk]
+        })
+
+        form = MacroGroupForm(data=form_data, initial={})
+        self.assertTrue(form.is_valid())
+
+        # Check possible choices values
+        # editor1 editor1.2 editor1.3
+        self.assertEqual(len(form.fields['editor_users'].queryset), 3)
+
+        form.save()
+
+        # check is it saved into db
+        mg = MacroGroup.objects.get(name=form_data['name'])
+        self.assertEqual(mg.name, name)
+
+        # check ACl after save
+        self.assertFalse(self.test_editor1.has_perm('core.view_macrogroup', mg))
+        self.assertFalse(self.test_editor1_2.has_perm('core.view_macrogroup', mg))
+        self.assertTrue(self.test_editor1_3.has_perm('core.view_macrogroup', mg))
+
+        # Test UPDATE
+        # ==============================
+
+        initial_data = copy.copy(form_data)
+        updated_name = 'Updated name'
+
+        form_data['name'] = updated_name
+        form_data['editor_users'] = []
+
+        form = MacroGroupForm(data=form_data, initial=initial_data, instance=mg)
+        self.assertTrue(form.is_valid())
+
+        form.save()
+
+        # check is it saved into db
+        mg.refresh_from_db()
+        self.assertEqual(mg.name, updated_name)
+
+        # check ACl after save
+        self.assertFalse(self.test_editor1.has_perm('core.view_macrogroup', mg))
+        self.assertFalse(self.test_editor1_2.has_perm('core.view_macrogroup', mg))
+        self.assertFalse(self.test_editor1_3.has_perm('core.view_macrogroup', mg))
+
+
 
