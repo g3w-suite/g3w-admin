@@ -12,34 +12,22 @@ __copyright__ = 'Copyright 2019, Gis3w'
 
 import os
 import json
-from rest_framework.test import APITestCase, APIClient
 from django.conf import settings
-from django.urls import reverse
 from django.test import override_settings
-from usersmanage.tests.utils import setup_testing_user, teardown_testing_users
 from qdjango.models import Project
 from django.core.cache import caches
+from core.tests.base import CoreTestBase
 
 # Re-use test data from qdjango module
 DATASOURCE_PATH = os.path.join(os.getcwd(), 'qdjango', 'tests', 'data')
 
 @override_settings(MEDIA_ROOT=DATASOURCE_PATH)
 @override_settings(DATASOURCE_PATH=DATASOURCE_PATH)
-@override_settings(CACHES = {
-    'qdjango': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-        'LOCATION': 'some',
-    }
-})
-class ClientApiTest(APITestCase):
+class ClientApiTest(CoreTestBase):
     """Test client API"""
 
     # These are stored in core module
-    fixtures = [
-        "BaseLayer.json",
-        "G3WGeneralDataSuite.json",
-        "G3WMapControls.json",
-        "G3WSpatialRefSys.json",
+    fixtures = CoreTestBase.fixtures + [
         # except for this one which is in qdjango:
         "G3WSampleProjectAndGroup.json",
     ]
@@ -47,8 +35,6 @@ class ClientApiTest(APITestCase):
     @classmethod
     def setUpClass(cls):
         super(ClientApiTest, cls).setUpClass()
-
-        setup_testing_user(cls)
 
         # Fill the cache with getprojectsettings response so we don't need a QGIS instance running
         # TODO: eventually move to QgsServer
@@ -58,45 +44,10 @@ class ClientApiTest(APITestCase):
         cache.set(cache_key, open(os.path.join(DATASOURCE_PATH, 'getProjectSettings_gruppo-1_un-progetto.xml'), 'rb')
                   .read())
 
-    @classmethod
-    def tearDownClass(cls):
-        teardown_testing_users(cls)
-
-    def setUp(self):
-        self.client = APIClient()
-
-    def tearDown(self):
-        self.client.logout()
-
-    def _d(self, d, path=[]):
-        for k,v in list(d.items()):
-            _path = ( path if path else '') + "[\"%s\"]" % k
-            if type(v) == dict:
-                self._d(v, _path)
-            else:
-                if type(v) == list:
-                    print("self.assertEqual(resp%s, %s)" % (_path, v))
-                else:
-                    print("self.assertEqual(resp%s, \"%s\")" % (_path, v))
-
-    def __testApiCall(self, view_name, args):
-        """Utility to make test calls"""
-
-         # No auth
-        response = self.client.get(reverse(view_name, args=args))
-        self.assertEqual(response.status_code, 403)
-
-        # Auth
-        self.assertTrue(self.client.login(username=self.test_user1.username, password=self.test_user1.username))
-        response = self.client.get(reverse(view_name, args=args))
-        self.assertEqual(response.status_code, 200)
-        self.client.logout()
-        return response
-
     def testGroupConfigApiView(self):
         """Test call to config"""
 
-        response = self.__testApiCall('group-map-config', ['gruppo-1', 'qdjango', '1'])
+        response = self._testApiCall('group-map-config', ['gruppo-1', 'qdjango', '1'])
         resp = json.loads(response.content)
         self.assertEqual(resp["vectorurl"], "/vector/api/")
         self.assertEqual(resp["group"]["crs"], 4326)
@@ -118,16 +69,16 @@ class ClientApiTest(APITestCase):
         self.assertIsNone(resp["main_map_title"])
         self.assertEqual(resp["mediaurl"], "/media/")
         self.assertEqual(resp["baseurl"], "/")
-        self.assertEqual(resp["credits"], "/it/credits/")
+        self.assertEqual(resp["credits"], "/en/credits/")
         self.assertEqual(resp["client"], "client/")
         self.assertEqual(resp["staticurl"], "/static/")
         self.assertEqual(resp["user"]["username"], "admin01")
         self.assertEqual(resp["user"]["first_name"], "")
         self.assertEqual(resp["user"]["last_name"], "")
-        self.assertEqual(resp["user"]["admin_url"], "/it/")
-        self.assertEqual(resp["user"]["logout_url"], "/it/logout/?next=/it/map/gruppo-1/qdjango/1/")
+        self.assertEqual(resp["user"]["admin_url"], "/en/")
+        self.assertEqual(resp["user"]["logout_url"], "/en/logout/?next=/en/map/gruppo-1/qdjango/1/")
         self.assertEqual(resp["user"]["groups"], [])
-        self.assertEqual(resp["user"]["i18n"], "it")
+        self.assertEqual(resp["user"]["i18n"], "en")
         self.assertEqual(resp["g3wsuite_logo_img"], "g3wsuite_logo_h40.png")
         self.assertEqual(resp['i18n'], json.loads(json.dumps(settings.LANGUAGES)))
 
@@ -135,7 +86,7 @@ class ClientApiTest(APITestCase):
     def testClientConfigApiView(self):
         """Test call to project config"""
 
-        response = self.__testApiCall('group-project-map-config', ['gruppo-1', 'qdjango', '1'])
+        response = self._testApiCall('group-project-map-config', ['gruppo-1', 'qdjango', '1'])
         resp = json.loads(response.content)
 
         self.assertEqual(resp["layerstree"], [{'visible': True, 'expanded': False, 'name': 'world', 'id': 'world20181008111156525'}, {'visible': True, 'expanded': True, 'name': 'bluemarble', 'id': 'bluemarble20181008111156906'}])
