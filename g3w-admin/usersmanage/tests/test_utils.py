@@ -27,46 +27,35 @@ class UsersManageTest(BaseUsermanageTestCase):
 
         self.factory = RequestFactory()
 
-        self.user_admin01 = User.objects.get(username="admin01")
-        self.user_editor1 = User.objects.get(username="editor1")
-        self.user_editor2 = User.objects.get(username="editor2")
-        self.user_viewer1 = User.objects.get(username="viewer1")
-
         # create a map group test
         self.group_test = Group(name='Test', title='Test')
 
-    def tearDown(self):
-        self.user_admin01.delete()
-        self.user_editor1.delete()
-        self.user_editor2.delete()
-        self.user_viewer1.delete()
-
     def test_user_groups(self):
 
-        user_groups = getUserGroups(self.user_admin01)
+        user_groups = getUserGroups(self.test_user1)
         self.assertEqual(len(user_groups), 0)
 
-        user_groups = getUserGroups(self.user_editor1)
+        user_groups = getUserGroups(self.test_editor1)
         self.assertEqual(len(user_groups), 1)
         self.assertEqual(user_groups[0], G3W_EDITOR1)
 
-        user_groups = getUserGroups(self.user_editor2)
+        user_groups = getUserGroups(self.test_editor2)
         self.assertEqual(len(user_groups), 2)
         self.assertEqual(user_groups[0], G3W_EDITOR2)
 
-        user_groups = getUserGroups(self.user_viewer1)
+        user_groups = getUserGroups(self.test_viewer1)
         self.assertEqual(len(user_groups), 2)
         self.assertEqual(user_groups[0], G3W_VIEWER1)
 
     def test_user_has_groups(self):
 
-        self.assertTrue(userHasGroups(self.user_editor1, [G3W_EDITOR1]))
+        self.assertTrue(userHasGroups(self.test_editor1, [G3W_EDITOR1]))
 
-        self.assertFalse(userHasGroups(self.user_editor1, [G3W_VIEWER1]))
+        self.assertFalse(userHasGroups(self.test_editor1, [G3W_VIEWER1]))
 
-        self.assertTrue(userHasGroups(self.user_editor1, [G3W_EDITOR1, G3W_EDITOR2]))
+        self.assertTrue(userHasGroups(self.test_editor1, [G3W_EDITOR1, G3W_EDITOR2]))
 
-        self.assertFalse(userHasGroups(self.user_editor1, [G3W_EDITOR1, G3W_EDITOR2], strict=True))
+        self.assertFalse(userHasGroups(self.test_editor1, [G3W_EDITOR1, G3W_EDITOR2], strict=True))
 
     def __test_get_fields_by_user(self):
 
@@ -78,7 +67,7 @@ class UsersManageTest(BaseUsermanageTestCase):
         ]
 
         request = self.factory.request()
-        for u in ('user_admin01', 'user_admin02', 'user_editor1', 'user_editor2'):
+        for u in ('test_user1', 'user_admin02', 'test_editor1', 'test_editor2'):
             request.user = getattr(self, u)
 
             core_form_group = GroupForm(**{'request': request})
