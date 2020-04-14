@@ -37,7 +37,7 @@ It is important to remember that while to publish a WebGis service you must firs
 
 The two cases are described below.
 
-### Absence of MacroGroups
+### One organization level (absence of MacroGroups)
 In case it is not need use MacroGruppi, the Admin user will be the only administrator of the suite and can therefore:
  * create users (individuals and/or groups) of various types
  * create **Cartographic Groups**
@@ -57,7 +57,7 @@ In the event that the Cartographic Group is assigned to **Editor 2** (single or 
 
 Even the **Admin** user can publish **WebGis services** within a Cartographic Group and, if necessary, associate them with a user (single and/or group) of **Editor 2** type.
 
-### Presence of MacroGroups
+### Two organization levels (presence of MacroGroups)
 The **Macrogroups** are thematic containers dedicated to the individual superstructures of your company/public administration (e.g. Municipal Administrations of a Union of Municipalities) within which can be created Cartographic Groups dedicated to individual Services (e.g. Registry Office, Public Works, Urban Planning ...) 
 
 Each **Thematic Group** will welcome individual WebGis services.
@@ -88,12 +88,3 @@ When Editor 1 user creates a Cartographic Group, he can define:
 Below is a summary table of the powers associated with the different roles.
 
 ![](images/manual/roles_table.png)
-
-| **Role**| **Description**|  **Users**| **Cartographic MacroGroups**| **Cartographic Grups**| **WebGis Services**| **Editing**
-| ----------- | ----------- | ----------- | ----------- | ----------- | ----------- |   ----------- |  
-| **Admin1**|  Advanced administrator with possibility to act on the Django Administration component| Manages Editor1, Editor2 and Viewer users| Create and manage Cartographic MacroGroups and associate them with user Editor1| Create and manage Cartographic Groups. Manages access/management permissions on the Group| Publish/manage WebGis services. Manages access/management permissions on the service| It acts on all the layers on which the editing function is activated
-| **Admin2**|  Basic administrator. No Django Administration component| Manages Editor1, Editor2 and Viewer users| Create and manage Cartographic MacroGroups and associate them with user Editor1| Create and manage Cartographic Groups. Manages access/management permissions on the Group| Publish/manage WebGis services. Manages access/management permissions on the service| It acts on all the layers on which the editing function is activated
-| **Editor1**|  Advanced manager user| Manages Editor2 and Viewer users. Users created by an Editor1 user cannot be managed by other Editor1 users| Manages contents of the Cartographic MacroGroup assigned to him| Creates and manages Cartographic Groups within the Cartographic MacroGroup assigned to him. Manages access/management permissions on the Group limited to users created by him| Publishes/manages WebGis services within the Cartographic Groups assigned to him. Manages access/management permissions on the service limited to users created by him| It acts on the layers on which the editing function is activated, if contained in the Cartographic MacroGroup assigned to him
-| **Editor2**|  Simple user manager| - | - | Manages Cartographic Groups assigned to him| Publishes/manages WebGis services within Cartographic Groups assigned to him| It works on the layers on which the editing function is activated, if contained in the Cartographic Groups assigned to him
-| **Viewer**|  Simple user manager| - | View Cartographic MacroGroups on the front end based on associated credentials | View Cartographic Groups on the front end based on the associated credentials | View WebGis services based on associated credentials | It acts on all the layers on which the editing function is activated, based on the associated credentials
-

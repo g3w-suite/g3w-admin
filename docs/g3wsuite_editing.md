@@ -67,7 +67,9 @@ These configurations and tools will automatically available  on the webgis platf
 #### Activation of layer editing
 To activate the online editing functions, access the **`Layer list`** section of the project within the administration panel of G3W-ADMIN.
 
-Identify the PostGreSQL/PostGis or SpatiaLite layer on which you want to activate the editing function and click on the **`Editing layer` icon** located on the left ![](images/manual/icon_editing.png)
+Identify the PostGreSQL/PostGis or SpatiaLite layer on which you want to activate the editing function and click on the **`Editing layer` icon** located on the left 
+
+![](images/manual/icon_editing.png)
 
 Clicking on the icon will open a modal window that will allow you to:
  * **define the editing activation scale** (only for geometric tables)
@@ -85,7 +87,9 @@ To allow editing on the related table in mode 1: n , the **editing function must
 #### Geo-constraints setting
 **The online editing function also allows you to manage geo-constraints that allow the user to insert/modify features only if they intersect or are contained within specific features of a second polygonal layer.**
 
-To activate a geographical constraint, you must click, always at the level of the list of project layers, on the **`Constraints list` icon** ![](images/manual/icon_constraints.png) which will appear once the online editing function is activated.
+To activate a geographical constraint, you must click, always at the level of the list of project layers, on the **`Constraints list` icon** which will appear once the online editing function is activated.
+
+![](images/manual/icon_constraints.png) 
 
 Clicking on the icon will show the list of any existing constraints and the item **`+ New constraint`** to create a new geo-constraints.
 
@@ -95,12 +99,17 @@ The icons placed next to any constraints already present allow you to edit/delet
 
 Clicking on the item **`+ New constraint`** will open a modal window which will allow you to **define the polygonal layer** (among those present in the project) **on which the constraint itself must be based**.
 
-Once the layer has been defined, the constraint will appear in the list and can be parameterized using the **Rules icon** ![](images/manual/icon_constraints_setting.png)
+Once the layer has been defined, the constraint will appear in the list and can be parameterized using the **Rules icon**
 
-Clicking on this icon will open a modal window which, by pressing the button ![](images/manual/button_add.png), it will allow you to **define, for each user and/or group of users, the rules of the constraints**.
+![](images/manual/icon_constraints_setting.png)
+
+Clicking on this icon will open a modal window which, by pressing the green button **Add*, it will allow you to **define, for each user and/or group of users, the rules of the constraints**.
+
 The rules definition will be done through a freely compiled **`SQL expression`**, which must refer to the attributes and values of the layer defined as geo-constraints.
 
-The **`Save icon`** ![](images/manual/icon_save.png) will allow you to validate the SQL itself, in order to ensure proper functioning of the constraints itself.
+![](images/manual/button_add.png)
+
+![](images/manual/icon_save.png) The **`Save icon`** will allow you to validate the SQL itself, in order to ensure proper functioning of the constraints itself.
 
 Once all the constraints have been entered and validated, click on the **Close button** to confirm the rules.
 
@@ -145,18 +154,20 @@ Any **unfulfilled constraints will be highlighted** with specific warning messag
 
 The changes made can be saved only after satisfying any constraints of mandatory and/or uniqueness.
 
-For this reason the button ![](images/manual/buttom_save_simple.png) will be disabled until all constraints are met.
+For this reason the green button **SAVE** will be disabled until all constraints are met.
 
 #### Saving changes
 Saving all the changes made in an editing session can be done in two ways:
- * by clicking on the **`diskette icon`** ![](images/manual/icon_disk.png) placed at the top right. The changes made will be saved and you can continue making new changes
- * by deactivating the editing by clicking on the **`Edit layer icon`** ![](images/manual/icon_edit2.png). 
+ * ![](images/manual/icon_disk.png) by clicking on the **`diskette icon`** placed at the top right. The changes made will be saved and you can continue making new changes
+ * ![](images/manual/icon_edit2.png) by deactivating the editing by clicking on the **`Edit layer icon`**. 
 
 By deactivating the editing function, a modal window will be displayed which will show the **list of changes made** and the request for confirmation or not of saving them.
 
 ![](images/manual/editing_client_save.png)
 
-Remember that during the editing phase the **`undo/redo icons`** ![](images/manual/icon_undoredo.png) allow you to delete/restore the latest changes made.
+Remember that during the editing phase the **`undo/redo icons`** allow you to delete/restore the latest changes made.
+
+![](images/manual/icon_undoredo.png)
 
 ### 1:n related tables editing
 G3W-SUITE allows for relational editing; for this to be possible it is necessary that:
@@ -180,12 +191,12 @@ In this macro tab it will be possible to:
  * modify the records currently associated with the edited feature
 
 #### Creation of a new related records
-By clicking on the **icon** ![](images/manual/icon_plus.png) (located at the top right) it will be show the attribute form to insert a new record.
+![](images/manual/icon_plus.png) By clicking on the icon **Create and link a new relation** (located at the top right) it will be show the attribute form to insert a new record.
 
 You can fill in the individual attributes and save the new record. The change must be validated by clicking on the Save button at the bottom of the form.
 
 #### Association of an existing record
-By clicking on the **icon** ![](images/manual/icon_join.png) (located at the top right) you can associate a record, already linked to other features or orphaned, to the edited feature.
+![](images/manual/icon_join.png) By clicking on the icon **Join a relation to this feature** (located at the top right) you can associate a record, already linked to other features or orphaned, to the edited feature.
 
 In the new window displayed:
  * the list of all orphaned or already associated records will be displayed;
@@ -197,7 +208,6 @@ A series of icons appear to the right of each record associated with the edited 
  * ![](images/manual/icon_join_erase.png) **Unlink relation:** to dissociate the record from the edited feature, the record will not be deleted but will become an orphan
  * ![](images/manual/icon_record_erase.png) **Delete feature:** permanently delete the record
  * ![](images/manual/icon_record_attribute.png) **Update feature:** modify the values associated with the attributes of this record; the change must be validated by clicking on the Save button at the bottom of the form.
- * the attribute form relating to the child layer in question (possibly structured as per QGIS project), you can fill in the individual attributes and save the new record.
 
 #### Saving changes
 Saving changes made at the level of related tables is managed by saving made at the level of the parent layer:

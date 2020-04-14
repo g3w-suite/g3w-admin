@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: G3W-SUITE 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-04-08 14:16+0200\n"
+"POT-Creation-Date: 2020-04-14 09:24+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -303,29 +303,29 @@ msgstr ""
 "Nella lista dei layer si identifica il layer PostGreSQL/PostGis o "
 "SQLite/SpatiaLite su cui si vuole attivare la funzione di editing e si "
 "clicca sull’**icona `Editing layer`** "
-"![](images/manual/icon_relations.png) posta sulla sinistra ."
+"posta sulla sinistra ."
 
-#: ../../g3wsuite_editing.md:72
+#: ../../g3wsuite_editing.md:74
 msgid "Clicking on the icon will open a modal window that will allow you to:"
 msgstr "Cliccando sull’icona si aprirà una finestra modale che permetterà di:"
 
-#: ../../g3wsuite_editing.md:73
+#: ../../g3wsuite_editing.md:75
 msgid "define the editing activation scale (only for geometric tables)"
 msgstr ""
 "definire la **scala a cui sarà possibile attivare la funzione di "
 "editing** a livello di webgis (solo per tabelle geometriche)"
 
-#: ../../g3wsuite_editing.md:74
+#: ../../g3wsuite_editing.md:76
 msgid "define the Viewer users (individuals or groups) enabled for online editing"
 msgstr ""
 "definire gli **utenti** di tipo Viewer (singoli o gruppi) **abilitati "
 "all’editing on line**"
 
-#: ../../g3wsuite_editing.md:76
+#: ../../g3wsuite_editing.md:78
 msgid "With regard to the last aspect, it should be noted that:"
 msgstr "Relativamente all’ultimo aspetto si precisa che:"
 
-#: ../../g3wsuite_editing.md:77
+#: ../../g3wsuite_editing.md:79
 msgid ""
 "Viewers users (individuals or groups) available in the drop-down menu "
 "will be limited to those who have allowed access in consultation to the "
@@ -335,7 +335,7 @@ msgstr ""
 "saranno **limitati a quelli che hanno permesso di accesso in "
 "consultazione al progetto WebGis** in cui è contenuto il layer"
 
-#: ../../g3wsuite_editing.md:78
+#: ../../g3wsuite_editing.md:80
 msgid ""
 "Editor1 and Editor2 users, owners of the project, are enabled by default "
 "to the online editing function"
@@ -343,11 +343,11 @@ msgstr ""
 "utenti di tipo Editor I e Editor II “proprietari” del progetto risultano "
 "**abilitati di default** alla funzione di editing on line"
 
-#: ../../g3wsuite_editing.md:82
+#: ../../g3wsuite_editing.md:84
 msgid "Activation of relational editing"
 msgstr "Attivazione editing relazionale"
 
-#: ../../g3wsuite_editing.md:83
+#: ../../g3wsuite_editing.md:85
 msgid ""
 "To allow editing on the related table in mode 1: n , the editing function"
 " must also be activated (always in the same way) also for the related "
@@ -358,11 +358,11 @@ msgstr ""
 "editing anche per la tabella relazionata** presente nella lista dei layer"
 " del progetto."
 
-#: ../../g3wsuite_editing.md:85
+#: ../../g3wsuite_editing.md:87
 msgid "Geo-constraints setting"
 msgstr "Creazione Geo-constraints"
 
-#: ../../g3wsuite_editing.md:86
+#: ../../g3wsuite_editing.md:88
 msgid ""
 "The online editing function also allows you to manage geo-constraints "
 "that allow the user to insert/modify features only if they intersect or "
@@ -374,18 +374,18 @@ msgstr ""
 "sono contenute all’interno di specifiche features di un secondo layer di "
 "tipo poligonale**."
 
-#: ../../g3wsuite_editing.md:88
+#: ../../g3wsuite_editing.md:90
 msgid ""
 "To activate a geographical constraint, you must click, always at the "
-"level of the list of project layers, on the Constraints list icon  which "
+"level of the list of project layers, on the Constraints list icon which "
 "will appear once the online editing function is activated."
 msgstr ""
 "Per attivare un vincolo geografico occorre cliccare, sempre a livello "
 "della lista dei layers del progetto, sull’icona **`Lista dei "
-"constraints`**![](images/manual/icon_constraints.png) che apparirà una "
+"constraints`** che apparirà una "
 "volta attivata la funzione di editing on line."
 
-#: ../../g3wsuite_editing.md:90
+#: ../../g3wsuite_editing.md:94
 msgid ""
 "Clicking on the icon will show the list of any existing constraints and "
 "the item + New constraint to create a new geo-constraints."
@@ -394,7 +394,7 @@ msgstr ""
 "presenti e la voce **`+ Nuovo vincolo`** per creare un nuovo geo-"
 "constraints."
 
-#: ../../g3wsuite_editing.md:94
+#: ../../g3wsuite_editing.md:98
 msgid ""
 "The icons placed next to any constraints already present allow you to "
 "edit/delete the constraint itself."
@@ -402,7 +402,7 @@ msgstr ""
 "Le icone poste accanto ad eventuali viconoli già presenti permettono di "
 "modificare/cancellare il vincolo stesso."
 
-#: ../../g3wsuite_editing.md:96
+#: ../../g3wsuite_editing.md:100
 msgid ""
 "Clicking on the item + New constraint will open a modal window which will"
 " allow you to define the polygonal layer (among those present in the "
@@ -412,39 +412,45 @@ msgstr ""
 "che permetterà di definire il layer poligonale (tra quelli presenti nel "
 "progetto) su cui dovrà basarsi il vincolo stesso."
 
-#: ../../g3wsuite_editing.md:98
+#: ../../g3wsuite_editing.md:102
 msgid ""
 "Once the layer has been defined, the constraint will appear in the list "
 "and can be parameterized using the Rules icon"
 msgstr ""
 "Un volta definito il layer il vincolo apparirà nella lista e potrà essere"
 " parametrizzato tramite l’`icona Rules` "
-"![](images/manual/icon_constraints_setting.png)."
 
-#: ../../g3wsuite_editing.md:100
+#: ../../g3wsuite_editing.md:106
 msgid ""
 "Clicking on this icon will open a modal window which, by pressing the "
-"button , it will allow you to define, for each user and/or group of "
-"users, the rules of the constraints. The rules definition will be done "
-"through a freely compiled SQL expression, which must refer to the "
-"attributes and values of the layer defined as geo-constraints."
+"green button *Add, it will allow you to define, for each user and/or "
+"group of users, the rules of the constraints."
 msgstr ""
 "Cliccando su tale icona si aprirà infatti una finestra modale che, "
-"tramite il tasto ![](images/manual/button_add.png), permetterà di "
-"definire (mediante **`linguaggio SQL`**), per ogni utente e/o gruppo di "
+"tramite il tasto **Aggiungi**, permetterà di "
+"definire, per ogni utente e/o gruppo di "
 "utenti, la/le features del layer definito come geo-constraints, "
 "all’interno delle quali sarà permesso l’editing."
 
-#: ../../g3wsuite_editing.md:103
+#: ../../g3wsuite_editing.md:108
 msgid ""
-"The Save icon  will allow you to validate the SQL itself, in order to "
+"The rules definition will be done through a freely compiled SQL "
+"expression, which must refer to the attributes and values of the layer "
+"defined as geo-constraints."
+msgstr ""
+"La regola potrà essere definita tramite **`linguaggio SQL`** libero che "
+"dovrà fare riferimento agli attributi ed ai valori del layer definito come geo-constraints"
+
+#: ../../g3wsuite_editing.md:112
+msgid ""
+"The Save icon will allow you to validate the SQL itself, in order to "
 "ensure proper functioning of the constraints itself."
 msgstr ""
 "In seguito alla definizione dei singoli SQL l’**`icona Salva`** "
-"![](images/manual/icon_save.png) permetterà di validare l’SQL, ciò allo "
+"permetterà di validare l’SQL, ciò allo "
 "scopo di garantire un corretto funzionamento del constraints stesso."
 
-#: ../../g3wsuite_editing.md:105
+#: ../../g3wsuite_editing.md:114
 msgid ""
 "Once all the constraints have been entered and validated, click on the "
 "Close button to confirm the rules."
@@ -452,15 +458,15 @@ msgstr ""
 "Una volta inseriti e validati tutti i vincoli si cliccherà sul tasto "
 "**Chiudi** per confermare le regole."
 
-#: ../../g3wsuite_editing.md:109
+#: ../../g3wsuite_editing.md:118
 msgid "Online editing tools at cartographic client level"
 msgstr "Strumenti di editing on line a livello di client cartografico"
 
-#: ../../g3wsuite_editing.md:110
+#: ../../g3wsuite_editing.md:119
 msgid "Direct editing"
 msgstr "Editing diretto"
 
-#: ../../g3wsuite_editing.md:111
+#: ../../g3wsuite_editing.md:120
 msgid ""
 "Once the online editing function has been activated and configured on one"
 " or more layers of a WebGis project, the Editing item, inside the Tools "
@@ -473,7 +479,7 @@ msgstr ""
 " sarà disponibile, oltre ad altre eventuali voci, quella relativa "
 "all’editing."
 
-#: ../../g3wsuite_editing.md:117
+#: ../../g3wsuite_editing.md:126
 msgid ""
 "By clicking on the Data Layers item, the side menu will show the editing "
 "tools for all the layers on which this function is activated."
@@ -481,7 +487,7 @@ msgstr ""
 "Cliccando sulla voce **`Editing dati`** il menù laterale mostrerà gli "
 "strumenti di editing per tutti i layer su cui è attivata tale funzione."
 
-#: ../../g3wsuite_editing.md:119
+#: ../../g3wsuite_editing.md:128
 msgid ""
 "The actual activation of the editing function for the individual layers "
 "will take place by clicking on the Edit layer icon."
@@ -489,47 +495,47 @@ msgstr ""
 "L’attivazione effettiva della funzione di editing per i singoli layer "
 "avverrà cliccando sull’icona **`Modifica layer`**."
 
-#: ../../g3wsuite_editing.md:121
+#: ../../g3wsuite_editing.md:130
 msgid "Create and edit features"
 msgstr "Creare ed editare features"
 
-#: ../../g3wsuite_editing.md:123
+#: ../../g3wsuite_editing.md:132
 msgid "The tools available are the following:"
 msgstr "Gli strumenti a disposizione sono i seguenti:"
 
-#: ../../g3wsuite_editing.md:125
+#: ../../g3wsuite_editing.md:134
 msgid "Geometric layers"
 msgstr "**Strati geometrici**"
 
-#: ../../g3wsuite_editing.md:126
+#: ../../g3wsuite_editing.md:135
 msgid "Add feature: to add a feature"
 msgstr ""
-"![](images/manual/icon_feature_add.png) **Aggiungi feature:** per "
+" **Aggiungi feature:** per "
 "aggiungere una feature alla tabella geometrica"
 
-#: ../../g3wsuite_editing.md:127
+#: ../../g3wsuite_editing.md:136
 msgid "Move feature"
-msgstr "![](images/manual/icon_feature_move.png) **Muovi feature**"
+msgstr " **Muovi feature**"
 
-#: ../../g3wsuite_editing.md:128
+#: ../../g3wsuite_editing.md:137
 msgid "Update feature vertex: to modify the shape of a geometry"
 msgstr ""
-"![](images/manual/icon_feature_modify.png) **Aggiorna vertici features:**"
+" **Aggiorna vertici features:**"
 " per modificare al forma di una geometria"
 
-#: ../../g3wsuite_editing.md:129
+#: ../../g3wsuite_editing.md:138
 msgid "Remove feature"
-msgstr "![](images/manual/icon_feature_remove.png) **Cancella feature**"
+msgstr " **Cancella feature**"
 
-#: ../../g3wsuite_editing.md:130
+#: ../../g3wsuite_editing.md:139
 msgid ""
 "Modify feature: to modify the attributes associated with an existing "
 "feature"
 msgstr ""
-"![](images/manual/icon_feature_attribute.png) **Modifica features:** per "
+" **Modifica features:** per "
 "modificare gli attributi associati ad una feature esistente"
 
-#: ../../g3wsuite_editing.md:132
+#: ../../g3wsuite_editing.md:141
 msgid ""
 "Activating the Add features and Update feature vertex tools allows you to"
 " activate the snap intralayer function."
@@ -538,23 +544,23 @@ msgstr ""
 "features** relativamente ad un layer geometrico permette di attivare  "
 "anche la funzione di snap intralayer."
 
-#: ../../g3wsuite_editing.md:134
+#: ../../g3wsuite_editing.md:143
 msgid "Alphanumeric layer"
 msgstr "**Layer alfanumerci**"
 
-#: ../../g3wsuite_editing.md:135
+#: ../../g3wsuite_editing.md:144
 msgid "Add feature: to add a record to the alphanumeric table"
 msgstr ""
-"![](images/manual/icon_record_add.png) **Aggiungi features:** per "
+" **Aggiungi features:** per "
 "aggiungere un record alla tabella alfanumerica"
 
-#: ../../g3wsuite_editing.md:136
+#: ../../g3wsuite_editing.md:145
 msgid "Modify features: to modify the attributes of an existing record"
 msgstr ""
-"![](images/manual/icon_record_modify.png) **Modifica features:** per "
+" **Modifica features:** per "
 "modificare gli attributi di un record esistente"
 
-#: ../../g3wsuite_editing.md:138
+#: ../../g3wsuite_editing.md:147
 msgid ""
 "Whenever a new feature/record is added or an existing feature/record is "
 "update, the attribute editing form and the respective editing widgets "
@@ -565,11 +571,11 @@ msgstr ""
 " form di editing degli attributi ed i rispettivi widget di editing come "
 "definiti a livello di progetto QGIS."
 
-#: ../../g3wsuite_editing.md:142
+#: ../../g3wsuite_editing.md:151
 msgid "Any mandatory fields will be marked with an asterisk."
 msgstr "Eventuali **campi obbligatori** saranno contrassegnati con un asterisco."
 
-#: ../../g3wsuite_editing.md:144
+#: ../../g3wsuite_editing.md:153
 msgid ""
 "Any unfulfilled constraints will be highlighted with specific warning "
 "messages shown in red."
@@ -577,7 +583,7 @@ msgstr ""
 "Eventuali **vincoli non soddisfatti** saranno evidenziati con messaggi di"
 " warning specifici riportati in rosso."
 
-#: ../../g3wsuite_editing.md:146
+#: ../../g3wsuite_editing.md:155
 msgid ""
 "The changes made can be saved only after satisfying any constraints of "
 "mandatory and/or uniqueness."
@@ -585,42 +591,42 @@ msgstr ""
 "Le modifiche apportate potranno essere salvate solo dopo aver soddisfatto"
 " eventuali **vincoli di obbligatorietà e/o univocità**."
 
-#: ../../g3wsuite_editing.md:148
+#: ../../g3wsuite_editing.md:157
 msgid ""
-"For this reason the button  will be disabled until all constraints are "
-"met."
+"For this reason the green button SAVE will be disabled until all "
+"constraints are met."
 msgstr ""
-"Per tale motivo il tasto ![](images/manual/buttom_save_simple.png) sarà "
+"Per tale motivo il tasto **`SALVA`** sarà "
 "**disabilitato** fino a quando non saranno soddisfatti tutti i "
 "constraints."
 
-#: ../../g3wsuite_editing.md:150 ../../g3wsuite_editing.md:202
+#: ../../g3wsuite_editing.md:159 ../../g3wsuite_editing.md:212
 msgid "Saving changes"
 msgstr "Salvataggio modifiche"
 
-#: ../../g3wsuite_editing.md:151
+#: ../../g3wsuite_editing.md:160
 msgid "Saving all the changes made in an editing session can be done in two ways:"
 msgstr ""
 "Il salvataggio di tutte le modifiche realizzate in una sessione di "
 "editing può essere realizzato in due modi:"
 
-#: ../../g3wsuite_editing.md:152 ../../g3wsuite_editing.md:204
+#: ../../g3wsuite_editing.md:161
 msgid ""
-"by clicking on the diskette icon  placed at the top right. The changes "
+"by clicking on the diskette icon placed at the top right. The changes "
 "made will be saved and you can continue making new changes"
 msgstr ""
 "cliccando sull’**icona a forma di `dischetto`** "
-"![](images/manual/icon_disk.png) posta in alto a sinistra. Le modifiche "
+"posta in alto a sinistra. Le modifiche "
 "realizzate verranno salavate e si potrà proseguire realizzando nuove "
 "modifiche"
 
-#: ../../g3wsuite_editing.md:153 ../../g3wsuite_editing.md:205
-msgid "by deactivating the editing by clicking on the Edit layer icon ."
+#: ../../g3wsuite_editing.md:162
+msgid "by deactivating the editing by clicking on the Edit layer icon."
 msgstr ""
-"disattivando l’editing cliccando sull’icona **`Modifica layer`** "
-"![](images/manual/icon_edit2.png)."
+"disattivando l’editing cliccando sull’icona **`Modifica layer`**."
 
-#: ../../g3wsuite_editing.md:155 ../../g3wsuite_editing.md:207
+
+#: ../../g3wsuite_editing.md:164 ../../g3wsuite_editing.md:217
 msgid ""
 "By deactivating the editing function, a modal window will be displayed "
 "which will show the list of changes made and the request for confirmation"
@@ -630,20 +636,20 @@ msgstr ""
 "modale che riporterà la lista delle modifiche realizzate e la richiesta "
 "di conferma o meno del salvataggio delle stesse."
 
-#: ../../g3wsuite_editing.md:159
+#: ../../g3wsuite_editing.md:168
 msgid ""
-"Remember that during the editing phase the undo/redo icons  allow you to "
+"Remember that during the editing phase the undo/redo icons allow you to "
 "delete/restore the latest changes made."
 msgstr ""
 "Si ricorda che in fase di editing le **`icone undo/redo`** "
-"![](images/manual/icon_undoredo.png) permettono di eliminare/ripristinare"
+"permettono di eliminare/ripristinare"
 " le ultime modifiche realizzate."
 
-#: ../../g3wsuite_editing.md:161
+#: ../../g3wsuite_editing.md:172
 msgid "1:n related tables editing"
 msgstr "Editing di tabelle relazionate 1:n"
 
-#: ../../g3wsuite_editing.md:162
+#: ../../g3wsuite_editing.md:173
 msgid ""
 "G3W-SUITE allows for relational editing; for this to be possible it is "
 "necessary that:"
@@ -651,7 +657,7 @@ msgstr ""
 "**G3W-SUITE permette di realizzare editing relazionale; perché ciò sia "
 "possibile occorre che:**"
 
-#: ../../g3wsuite_editing.md:163
+#: ../../g3wsuite_editing.md:174
 msgid ""
 "on the published QGIS project there are one or more geographic layers "
 "related (1: n) with one or more alphanumeric tables"
@@ -659,7 +665,7 @@ msgstr ""
 "sul progetto QGIS pubblicato ci siano uno o più layer geografici "
 "relazionati (1:n) con una o più tabelle alfanumeriche"
 
-#: ../../g3wsuite_editing.md:164
+#: ../../g3wsuite_editing.md:175
 msgid ""
 "on the administration panel the editing function has been activated both "
 "on the parent layer and on the child layers"
@@ -667,11 +673,11 @@ msgstr ""
 "sul pannello di amministrazione sia stata attivata la funzione di editing"
 " sia sul layer padre che sui layer figli"
 
-#: ../../g3wsuite_editing.md:165
+#: ../../g3wsuite_editing.md:176
 msgid "the operator user is enabled for the editing function on these layers"
 msgstr "l’utente operatore sia abilitato alla funzione di editing su tali layer"
 
-#: ../../g3wsuite_editing.md:167
+#: ../../g3wsuite_editing.md:178
 msgid ""
 "The activation, at the cartographic client level, of the editing mode on "
 "the parent layer automatically determines the possibility of also "
@@ -681,7 +687,7 @@ msgstr ""
 "editing sul layer padre determina, automaticamente, la possibilità di "
 "andare a gestire anche le informazioni sulla tabella relazionata."
 
-#: ../../g3wsuite_editing.md:169
+#: ../../g3wsuite_editing.md:180
 msgid ""
 "The insertion of a new geometry or the modification of an existing one "
 "determines the display of the attribute form divided into two or more "
@@ -691,7 +697,7 @@ msgstr ""
 "determina la visualizzazione del form degli attributi suddiviso in due o "
 "più macro schede, una per il layer padre e le altre per i layer figli"
 
-#: ../../g3wsuite_editing.md:173
+#: ../../g3wsuite_editing.md:184
 msgid ""
 "Moving on the macro tab relating to one of the child layers, the list of "
 "records already associated with the edited feature will be displayed"
@@ -699,15 +705,15 @@ msgstr ""
 "Spostandosi sulla macro scheda relativa ad uno dei layer figli verrà "
 "visualizzata la lista dei records già associati alla feature editata"
 
-#: ../../g3wsuite_editing.md:177
+#: ../../g3wsuite_editing.md:188
 msgid "In this macro tab it will be possible to:"
 msgstr "In questa macroscheda sarà possibile:"
 
-#: ../../g3wsuite_editing.md:178
+#: ../../g3wsuite_editing.md:189
 msgid "create and add a new records related to the edited feature"
 msgstr "**creare ed aggiungere un nuovo records** relazionato alla feature editata"
 
-#: ../../g3wsuite_editing.md:179
+#: ../../g3wsuite_editing.md:190
 msgid ""
 "associate an existing records (linked to other features or orphan) to the"
 " edited feature"
@@ -715,24 +721,24 @@ msgstr ""
 "**associare un records esistente** (collegato ad altre features o orfano)"
 " alla feature editata"
 
-#: ../../g3wsuite_editing.md:180
+#: ../../g3wsuite_editing.md:191
 msgid "modify the records currently associated with the edited feature"
 msgstr "**modificare i records** attualmente associati alla feature editata"
 
-#: ../../g3wsuite_editing.md:182
+#: ../../g3wsuite_editing.md:193
 msgid "Creation of a new related records"
 msgstr "Creazione nuovo records relazionato"
 
-#: ../../g3wsuite_editing.md:183
+#: ../../g3wsuite_editing.md:194
 msgid ""
-"By clicking on the icon  (located at the top right) it will be show the "
-"attribute form to insert a new record."
+"By clicking on the icon Create and link a new relation (located at the "
+"top right) it will be show the attribute form to insert a new record."
 msgstr ""
-"Cliccando sull’icona ![](images/manual/icon_plus.png) (posta in alto a "
+"Cliccando sull’icona **`Crea ed aggiungi una nuova relazione`** (posta in alto a "
 "destra) si aprirà il form degli attributi relativo al layer figlio in "
 "oggetto (eventualmente strutturato come da progetto QGIS)."
 
-#: ../../g3wsuite_editing.md:185
+#: ../../g3wsuite_editing.md:196
 msgid ""
 "You can fill in the individual attributes and save the new record. The "
 "change must be validated by clicking on the Save button at the bottom of "
@@ -742,33 +748,33 @@ msgstr ""
 "modifica deve essere validata cliccando sul tasto Salva in fondo alla "
 "scheda**."
 
-#: ../../g3wsuite_editing.md:187
+#: ../../g3wsuite_editing.md:198
 msgid "Association of an existing record"
 msgstr "Associazione di un record già esistente"
 
-#: ../../g3wsuite_editing.md:188
+#: ../../g3wsuite_editing.md:199
 msgid ""
-"By clicking on the icon  (located at the top right) you can associate a "
-"record, already linked to other features or orphaned, to the edited "
-"feature."
+"By clicking on the icon Join a relation to this feature (located at the "
+"top right) you can associate a record, already linked to other features "
+"or orphaned, to the edited feature."
 msgstr ""
-"Cliccando sull’icona ![](images/manual/icon_join.png) (posta in alto a "
+"Cliccando sull’icona **`Collega relazioni esistenti a questa feature`** (posta in alto a "
 "destra) si potrà associare un record, già collegato ad altre features o "
 "orfano, alla feature editata."
 
-#: ../../g3wsuite_editing.md:190
+#: ../../g3wsuite_editing.md:201
 msgid "In the new window displayed:"
 msgstr "Nella nuova finestra visualizzata:"
 
-#: ../../g3wsuite_editing.md:191
+#: ../../g3wsuite_editing.md:202
 msgid "the list of all orphaned or already associated records will be displayed;"
 msgstr "la **lista di tutti i records** orfani o associati alle altre features;"
 
-#: ../../g3wsuite_editing.md:192
+#: ../../g3wsuite_editing.md:203
 msgid "a generic filter will allow you to locate the record of interest;"
 msgstr "un **filtro generico** permetterà di individuare il record di interesse;"
 
-#: ../../g3wsuite_editing.md:193
+#: ../../g3wsuite_editing.md:204
 msgid ""
 "by clicking on the individual records these will be associated with the "
 "edited features and, possibly, dissociated from other features"
@@ -777,11 +783,11 @@ msgstr ""
 "il **tasto Salva**, tali records verranno associati alle feature editata "
 "ed, eventualmente, dissociati da altre features"
 
-#: ../../g3wsuite_editing.md:195
+#: ../../g3wsuite_editing.md:206
 msgid "Modification of an already associated record"
 msgstr "Modifica di un record già associato"
 
-#: ../../g3wsuite_editing.md:196
+#: ../../g3wsuite_editing.md:207
 msgid ""
 "A series of icons appear to the right of each record associated with the "
 "edited feature:"
@@ -789,48 +795,54 @@ msgstr ""
 "Alla destra di ogni records associato alla feature editata compaiono una "
 "serie di icone:"
 
-#: ../../g3wsuite_editing.md:197
+#: ../../g3wsuite_editing.md:208
 msgid ""
 "Unlink relation: to dissociate the record from the edited feature, the "
 "record will not be deleted but will become an orphan"
 msgstr ""
-"![](images/manual/icon_join_erase.png) **Annulla relazione:** per "
+" **Annulla relazione:** per "
 "dissociare il record dalla feature editata, il record non verrà "
 "cancellato ma diverrà orfano"
 
-#: ../../g3wsuite_editing.md:198
+#: ../../g3wsuite_editing.md:209
 msgid "Delete feature: permanently delete the record"
 msgstr ""
-"![](images/manual/icon_record_erase.png) **Elimina feature:** eliminare "
+" **Elimina feature:** eliminare "
 "definitivamente il record"
 
-#: ../../g3wsuite_editing.md:199
+#: ../../g3wsuite_editing.md:210
 msgid ""
 "Update feature: modify the values associated with the attributes of this "
 "record; the change must be validated by clicking on the Save button at "
 "the bottom of the form."
 msgstr ""
-"![](images/manual/icon_record_attribute.png) **Modifica feature:** "
+" **Modifica feature:** "
 "modificare i valori associati agli attributi di tale record; la modifica "
 "deve essere validata cliccando sul tasto Salva in fondo alla scheda."
 
-#: ../../g3wsuite_editing.md:200
-msgid ""
-"the attribute form relating to the child layer in question (possibly "
-"structured as per QGIS project), you can fill in the individual "
-"attributes and save the new record."
-msgstr ""
-"Il form degli attributi relativo al layer figlio in oggetto "
-"(eventualmente strutturato come da progetto QGIS), si potranno compilare "
-"i singoli attributi e salvare il nuovo record."
-
-#: ../../g3wsuite_editing.md:203
+#: ../../g3wsuite_editing.md:213
 msgid ""
 "Saving changes made at the level of related tables is managed by saving "
 "made at the level of the parent layer:"
 msgstr ""
 "Il salvataggio delle modifiche sulla tabella relazionale viene gestito "
 "tramite il salvataggio delle modficihe a livello del alyer padre"
+
+#: ../../g3wsuite_editing.md:214
+msgid ""
+"by clicking on the diskette icon  placed at the top right. The changes "
+"made will be saved and you can continue making new changes"
+msgstr ""
+"cliccando sull’**icona a forma di `dischetto`** "
+"posta in alto a sinistra. Le modifiche "
+"realizzate verranno salavate e si potrà proseguire realizzando nuove "
+"modifiche"
+
+#: ../../g3wsuite_editing.md:215
+msgid "by deactivating the editing by clicking on the Edit layer icon ."
+msgstr ""
+"disattivando l’editing cliccando sull’icona **`Modifica layer`** "
+
 
 #~ msgid "Project title settings"
 #~ msgstr ""
@@ -843,4 +855,17 @@ msgstr ""
 
 #~ msgid "Project title settings Remove feature"
 #~ msgstr "**Elimina features**"
+
+#~ msgid ""
+#~ "the attribute form relating to the "
+#~ "child layer in question (possibly "
+#~ "structured as per QGIS project), you "
+#~ "can fill in the individual attributes"
+#~ " and save the new record."
+#~ msgstr ""
+#~ "Il form degli attributi relativo al "
+#~ "layer figlio in oggetto (eventualmente "
+#~ "strutturato come da progetto QGIS), si"
+#~ " potranno compilare i singoli attributi "
+#~ "e salvare il nuovo record."
 

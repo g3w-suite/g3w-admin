@@ -28,12 +28,12 @@ msgstr ""
 
 #: ../../infrastructure.md:7
 msgid "PostgreSQL/PostGis: for the management of application data"
-msgstr "**PostgreSQL/PostGis**: per la gestione dei dati dell'applicativo"
+msgstr "**`PostgreSQL/PostGis`**: per la gestione dei dati dell'applicativo"
 
 #: ../../infrastructure.md:8
 msgid "PostgreSQL/PostGis or SpatiaLite: for the management of gegraphic data"
 msgstr ""
-"**PostgreSQL/PostGis** o **SQLite/SpatiaLite**: per la gestione dei dati "
+"**`PostgreSQL/PostGi`s** o **`SQLite/SpatiaLite`**: per la gestione dei dati "
 "geografici"
 
 #: ../../infrastructure.md:9
@@ -47,7 +47,6 @@ msgstr ""
 "**`Python`** usando **`Django`**"
 
 #: ../../infrastructure.md:11
-#, fuzzy
 msgid ""
 "G3W-CLIENT - the Cartographic client: based on OpenLayer3 and developed "
 "with reactive tecnology by Vue.js"
