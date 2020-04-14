@@ -13,7 +13,7 @@ __copyright__ = 'Copyright 2015 - 2020, Gis3w'
 
 from django.apps import apps
 from guardian.shortcuts import assign_perm, get_user_model
-from usersmanage.models import User, GroupRole
+from usersmanage.models import User, GroupRole, USER_BACKEND_DEFAULT, Userbackend
 from usersmanage.configs import G3W_VIEWER1, \
     G3W_VIEWER2, \
     G3W_EDITOR2, \
@@ -62,15 +62,15 @@ def setup_testing_user(cls):
             pass
 
     # give permissions to Editor Level 1
-    editorPermission = agroup.permissions.all()
+    editorPermission = cls.main_roles[G3W_EDITOR1].permissions.all()
     permissionsToAdd = (
         Permission.objects.get(codename='add_user'),
-        Permission.objects.get(codename='add_group', content_type=ContentType.objects.get_for_model(Group)),
+        Permission.objects.get(codename='add_group', content_type=ContentType.objects.get_for_model(AuthGroup)),
 
     )
     for perm in permissionsToAdd:
         if perm not in editorPermission:
-            agroup.permissions.add(perm)
+            cls.main_roles[G3W_EDITOR1].permissions.add(perm)
 
     # Create Admin level 1
     test_user1 = User.objects.create_user(username='admin01')
@@ -78,6 +78,7 @@ def setup_testing_user(cls):
     test_user1.is_staff = True
     test_user1.is_superuser = True
     test_user1.save()
+    Userbackend(user=test_user1, backend=USER_BACKEND_DEFAULT).save()
 
     setattr(cls, 'test_user1', test_user1)
 
@@ -87,6 +88,7 @@ def setup_testing_user(cls):
     test_user2.is_staff = False
     test_user2.is_superuser = True
     test_user2.save()
+    Userbackend(user=test_user2, backend=USER_BACKEND_DEFAULT).save()
 
     setattr(cls, 'test_user2', test_user2)
 
@@ -98,6 +100,7 @@ def setup_testing_user(cls):
         user.set_password(euser)
         user.save()
         user.groups.add(cls.main_roles[G3W_EDITOR1])
+        Userbackend(user=user, backend=USER_BACKEND_DEFAULT).save()
         setattr(cls, 'test_{}'.format(euser.replace('.', '_')), user)
 
     for euser in EU2:
@@ -105,6 +108,7 @@ def setup_testing_user(cls):
         user.set_password(euser)
         user.save()
         user.groups.add(cls.main_roles[G3W_EDITOR2])
+        Userbackend(user=user, backend=USER_BACKEND_DEFAULT).save()
         setattr(cls, 'test_{}'.format(euser.replace('.', '_')), user)
 
     for euser in VU1:
@@ -112,6 +116,7 @@ def setup_testing_user(cls):
         user.set_password(euser)
         user.save()
         user.groups.add(cls.main_roles[G3W_VIEWER1])
+        Userbackend(user=user, backend=USER_BACKEND_DEFAULT).save()
         setattr(cls, 'test_{}'.format(euser.replace('.', '_')), user)
 
     # create user groups
