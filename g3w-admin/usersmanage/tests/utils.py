@@ -54,10 +54,10 @@ def setup_testing_user(cls):
     cls.anonymoususer = get_user_model().get_anonymous()
 
     # add base group to g3w-admin database
-    roles = {}
+    cls.main_roles = {}
     for gname in (G3W_VIEWER2, G3W_VIEWER1, G3W_EDITOR2, G3W_EDITOR1):
         agroup, created = AuthGroup.objects.get_or_create(name=gname)
-        roles[gname] = agroup
+        cls.main_roles[gname] = agroup
         if not created:
             pass
 
@@ -72,6 +72,7 @@ def setup_testing_user(cls):
         if perm not in editorPermission:
             agroup.permissions.add(perm)
 
+    # Create Admin level 1
     test_user1 = User.objects.create_user(username='admin01')
     test_user1.set_password('admin01')
     test_user1.is_staff = True
@@ -80,6 +81,15 @@ def setup_testing_user(cls):
 
     setattr(cls, 'test_user1', test_user1)
 
+    # Create Admin level 2
+    test_user2 = User.objects.create_user(username='admin02')
+    test_user2.set_password('admin02')
+    test_user2.is_staff = False
+    test_user2.is_superuser = True
+    test_user2.save()
+
+    setattr(cls, 'test_user2', test_user2)
+
     # create editor and viewers, and editor and viewr group
     # like create by admin user
     # =====================================================
@@ -87,21 +97,21 @@ def setup_testing_user(cls):
         user = User.objects.create_user(username=euser)
         user.set_password(euser)
         user.save()
-        user.groups.add(roles[G3W_EDITOR1])
+        user.groups.add(cls.main_roles[G3W_EDITOR1])
         setattr(cls, 'test_{}'.format(euser.replace('.', '_')), user)
 
     for euser in EU2:
         user = User.objects.create_user(username=euser)
         user.set_password(euser)
         user.save()
-        user.groups.add(roles[G3W_EDITOR2])
+        user.groups.add(cls.main_roles[G3W_EDITOR2])
         setattr(cls, 'test_{}'.format(euser.replace('.', '_')), user)
 
     for euser in VU1:
         user = User.objects.create_user(username=euser)
         user.set_password(euser)
         user.save()
-        user.groups.add(roles[G3W_VIEWER1])
+        user.groups.add(cls.main_roles[G3W_VIEWER1])
         setattr(cls, 'test_{}'.format(euser.replace('.', '_')), user)
 
     # create user groups
