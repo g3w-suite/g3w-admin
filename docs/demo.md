@@ -17,27 +17,28 @@ Through the tutorials it will be possible to:
 
 # Download the demo data
 
-The tutorial is based on predefined data and QGIS project **downloadable from this link:**
+The tutorial is based on predefined data and QGIS 3.4 LTR project **downloadable from this link:**
 
 The .zip file contains la directory **`G3W-SUITE`** with two sub directories:
  * **`projects`:** containing a QGIS project (**`public-buildings-management-spatialite.qgs`**) already optimized for the tutorial
- * **`dati_geografici`**: containing (in the spatialite subdirectory) a SpatiaLite DB with basic data (**`build_management.sqlite`**)
+ * **`dati_geografici`**: containing a SpatiaLite DB with basic data (**`build_management.sqlite`**)
 
 ![](images/manual/demo_zip_file.png)
 
 Inside the **`build_management.sqlite` SpatiaLite DB** there are the following layers:
- * **buildings (geometric):** reference layer for editing aspects
- * **building_interventions (alphanumeric):** with the maintenance interventions associated with the individual buildings
- * **park (geometric):**
- * **roads (geometric):** a simple road network
- * **work_areas (geometric):** with the perimeter of work areas to be used to define any geo-constraints
+ * **buildings (polygon layer):** reference layer for editing aspects
+ * **maintenance_works (alphanumeric table):** with the maintenance interventions associated with the individual buildings
+ * **park (polygon layer):**
+ * **roads (linear layer):** a simple road network
+ * **work_areas (polygon layer):** with the perimeter of work areas to be used to define any geo-constraints
 
+**IMPORTANT: a copy of this data are present on the server, you can not change your local data copy**
 
 The project (**based on QGIS LTR 3.4**) foresees:
- * a **dressing categorized by the `buildings` layer** based on the categorical field **`tipo`**
- * the presence of a **1: n relationship** between the `buildings` layer and the alphanumeric `interventions_building` table
- * pre-developed **query forms** for the `buildings` layer and the `interventions_building` table
- * predefined **editing widgets** for the fields of the two main layers: `buildings` and `interventions_ buildings`
+ * a **dressing categorized by the `buildings` layer** based on the categorical field **`type`**
+ * the presence of a **1: n relationship** between the `buildings` layer and the alphanumeric `maintenance_works` table
+ * pre-developed **query forms** for the `buildings` layer and the `maintenance_works` table
+ * predefined **editing widgets** for the fields of the two main layers: `buildings` and `maintenance_works`
 
 ![](images/manual/demo_qgis_project.png)
 
@@ -67,7 +68,9 @@ In the Dashboard there will be the menu for access to the **Cartographic Groups*
 
 ![](images/manual/demo_dashboard.png)
 
-Access the content of the **G3W-Suite Demo** Cartographic Group and **click on the button** ![](images/manual/button_add_qgis_project.png) **to publish your project**.
+Access the content of the **G3W-Suite Demo** Cartographic Group and click on the button **+ QGIS Project** to publish your project**.
+
+![](images/manual/button_add_qgis_project.png)
 
 Fill out the form defining the various aspects to be associated with the WebGis service being published:
 ## QGIS project
@@ -93,17 +96,21 @@ It is also possible not to define any active base layer at startup.
 
 ![](images/manual/g3wsuite_administration_project_add_option.png)
 
-After filling in the various form, click on the **`Save button`** ![](images/manual/buttom_save.png) to confirm your choices.
+After filling in the various form, click on the **`Save button`** to confirm your choices.
+
+![](images/manual/buttom_save.png)
 
 **If the publication was successful, the QGIS project will appear in the list of projects in the Cartographic Group.**
 
-Clicking on the **`View map** icon` ![](images/manual/iconsmall_viewmap.png) will access the WebGis service in consultation.
+![](images/manual/iconsmall_viewmap.png) Clicking on the **`View map`** icon will access the WebGis service in consultation.
 
 ![](images/manual/demo_webgis_project.png)
 
 # Update the published WebGis service
 
-If you want to modify some graphic-functional aspects of your WebGis service, modify your QGIS project and update the WebGis service by clicking on the **`Modify** icon`** ![](images/manual/iconsmall_edit.png).
+If you want to modify some graphic-functional aspects of your WebGis service, modify your QGIS project and update the WebGis service by clicking on the **`Modify`** icon.
+
+![](images/manual/iconsmall_edit.png)
 
 Reupload the QGIS project with your changes, click on the **Save button** and see the resuts on the cartographic client.
 
@@ -112,7 +119,7 @@ Reupload the QGIS project with your changes, click on the **Save button** and se
 Once your project has been published, you can access the list of widgets and additional functions to enrich your WebGis service.
 
 ## Widget management
-Thougth the **`Layers list` icon** ![](images/manual/iconsmall_layerlist.png) it is possible to access the list of the geographical states that compose it and define some functional aspects that will be enabled at the cartographic client level.
+![](images/manual/iconsmall_layerlist.png) Thougth the **`Layers list` icon** it is possible to access the list of the geographical states that compose it and define some functional aspects that will be enabled at the cartographic client level.
 
 ![](images/manual/demo_project_manage.png)
 
@@ -136,7 +143,9 @@ Next to each layer are a series of icons and checkboxes:
 
 ## Search widget creation
 
-To create a search tool available at WebGis level, **choose the vector layer** on which to apply the tool and **click on the `Widget list icon`** ![](images/manual/icon_widget.png)
+To create a search tool available at WebGis level, **choose the vector layer** on which to apply the tool and **click on the `Widget list icon`** 
+
+![](images/manual/icon_widget.png)
 
 A series of **searches already carried out** for this layer by other users will probably be listed.
 
@@ -164,7 +173,7 @@ In the related form we can define:
    * **`Comparison operator`:** comparison operator (**`=, <,>,> <,> =, <=, LIKE, ILIKE`**) through which the search query will be carried out. The LIKE and ILIKE operators will only be available for PostGis or SpatiaLite layers
    * **`Dependency`:** this parameter (optional) allows, only in the case of SelectBox widgets, to list the list of values ​​of a field filtered according to the value defined for the previous fields. The tool allows, for example, to display, in the drop-down menu dedicated to the choice of cadastral particles, only the particles connected to the sheet chosen in the previous option. This function is only available for PostGis or SpatiaLite layers.
 
-The button ![](images/manual/button_add.png) allows you to add additional fields for the construction of the search query currently manageable through the **AND operator** alone.
+The green button **Aggiungi** allows you to add additional fields for the construction of the search query currently manageable through the **AND operator** alone.
 
 Here a simple example based on the fields **`type`** and **`volume`** othe **`buildings`** layer:
 
@@ -181,11 +190,38 @@ Once the settings are saved, the created widget will appear in the list of Widge
 # Editing on line
 _**Forms and editing widgets are already defined on the project associated with the tutorial for the geometric layer of buildings and for the alphanumeric table related interventions_maintenance.**_
 
+ * **Buildings**
+  * id (integer - primary key): autogenerate
+  * name (text NOT NULL): text edit
+  * address (text): Value relation (roads layer - code/name fileds)
+  * year (integer NOT NULL): unique values (2015,2016,2017,2018,2019,2020)
+  * photo (text): attachment
+  * link (text): text edit
+  * form (text): attachment
+  * high (integer NOT NULL): range (10-30 step 2)
+  * volume (integer): range (50-200 step 10)
+  * surface (integer): text edit
+  * architectural_barriers (text): Checkbox (Checked - Not checked)
+  * date_barriers (date): date (yyyy/MM/dd)
+  * safety_exits (text): Checkbox (Checked - Not checked)
+  * date_exits (date): date (yyyy/MM/dd)
+  * fire_system (text): Checkbox (Checked - Not checked)
+  * date_fire (date): date (yyyy/MM/dd)
+  * type (text NOT NULL): unique values (Administrative, Commercial, Residential)
+  
+ * **Maintenance_works**
+  * id (integer - primary key): autogenerate
+  * id_buildings (text - relation key): text edit
+  * maintenance (text NOT NULL): unique values
+  * date (date): date (yyyy/MM/dd)
+  * form (text): attachment
+  * value (integer): range (10-30 step 2)
+
 To activate the editing function on webgis, access the list of layers and identify the two layers shown above.
 
 ![](images/manual/g3wsuite_administration_project_layer_list.png)
 
-**Clicking on the icon** ![](images/manual/icon_editing.png) (placed at the top of each layer of the list) will open a modal window that will allow you to:
+![](images/manual/icon_editing.png) Clicking on the icon **Editing layer** (placed at the left of each rows) will open a modal window that will allow you to:
  * define the **`editing activation scale`** (only for geometric tables)
  * define the **`Viewer users`** (individuals or groups) **`enabled`** for online editing
 

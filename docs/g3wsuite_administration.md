@@ -341,8 +341,10 @@ This order will be reflected within the belonging MacroGroups.
 ## Publication of new WebGis services
 ### To publish a new QGIS cartographic project
 It is possible to publish new QGIS projects:
- * **from the list of cartographic groups:** click on the ![](images/manual/icon_add.png) icon located under the box of the cartographic group in which you want to publish the project.
- * **from the list of cartographic projects published within a group:** by clicking on the the buttom ![](images/manual/button_add_qgis_project.png)
+ * ![](images/manual/icon_add.png) **from the list of cartographic groups:** click on the icon located under the box of the cartographic group in which you want to publish the project.
+ * **from the list of cartographic projects published within a group:** by clicking on the the buttom 
+ 
+ ![](images/manual/button_add_qgis_project.png)
 
 In the dedicated form we could define the charatteristicsof the project being published:
 
@@ -434,7 +436,7 @@ In this session it is also possible to define which of the cartographic projects
 To set the panoramic map, choose the projects and tick the check box in the **`Overview`** column.
 
 ## Widget management
-Once a cartographic project has been published, thougth the icon ![](images/manual/iconsmall_layerlist.png) it is possible to access the list of the geographical states that compose it and define some functional aspects that will be enabled at the cartographic client level.
+![](images/manual/iconsmall_layerlist.png) Once a cartographic project has been published, thougth the icon it is possible to access the list of the geographical states that compose it and define some functional aspects that will be enabled at the cartographic client level.
 
 ![](images/manual/g3wsuite_administration_project_layer_list.png)
 
@@ -457,7 +459,7 @@ They will be saved by referring to the layer identifiers (for example the DB par
 
 This aspect allows, once a search widget for a layer has been created, to have it available on all the projects in which the layer is present, without having to rebuild the widget from scratch each time.
 
-In the list of layers present within the project, **identify the layer on which to create and associate the search widget** and click on the icon ![](images/manual/icon_widget.png)
+![](images/manual/icon_widget.png) In the list of layers present within the project, **identify the layer on which to create and associate the search widget** and click on the icon 
 
 ![](images/manual/g3wsuite_administration_project_widget_list.png)
 
@@ -491,8 +493,9 @@ In the related form we can define:
    * **`Comparison operator`:** comparison operator (**=, <,>,> <,> =, <=, LIKE, ILIKE**) through which the search query will be carried out. The LIKE and ILIKE operators will only be available for PostGis or SpatiaLite layers
    * **`Dependency`:** this parameter (optional) allows, only in the case of SelectBox widgets, to list the list of values ​​of a field filtered according to the value defined for the previous fields. The tool allows, for example, to display, in the drop-down menu dedicated to the choice of cadastral particles, only the particles connected to the sheet chosen in the previous option. This function is only available for PostGis or SpatiaLite layers.
 
-The button ![](images/manual/button_add.png)
- allows you to add additional fields for the construction of the search query currently manageable through the AND operator alone.
+The button allows you to add additional fields for the construction of the search query currently manageable through the AND operator alone.
+
+![](images/manual/button_add.png)
 
 The example below shows the compilation of the form for creating a search widget dedicated to a cadastral cartography layer.
 

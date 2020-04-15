@@ -144,7 +144,7 @@ msgid ""
 "corner."
 msgstr ""
 "Nel pannello di Amministrazione l'icona **Configurazioni**  posta "
-"nell'angolo in alto a destra permette di accedere ad un menù atnedina."
+"nell'angolo in alto a destra permette di accedere ad un menù a tendina."
 
 #: ../../datamanagement.md:33
 msgid "Choose the File Manager item in the linked menù."
