@@ -98,7 +98,7 @@ def setup_testing_user(cls):
     # alias for test_user2 -> test_admin2
     setattr(cls, 'test_admin2', test_user2)
 
-    # create editor and viewers, and editor and viewr group
+    # create editor and viewers, and editor and viewer group
     # like create by admin user
     # =====================================================
     for euser in EU1:
