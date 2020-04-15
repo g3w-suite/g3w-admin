@@ -26,7 +26,7 @@ msgid ""
 "layer representing a series of buildings located on the territory."
 msgstr ""
 "_**Il tutorial è basato su un progetto QGIS dedicato alla gestione di un "
-"layer rappresentante una serie edifici dislocati sul territorio.**_"
+"layer rappresentante una serie di edifici dislocati sul territorio.**_"
 
 #: ../../demo.md:6
 msgid ""
@@ -34,7 +34,7 @@ msgid ""
 "management of numerous and diversified attributes and of the related "
 "maintenance interventions through a 1: n type relationship."
 msgstr ""
-"_**Oltre agli aspetti geografici i progetto prevede la gestione di "
+"_**Oltre agli aspetti geografici il progetto prevede la gestione di "
 "numerosi e diverisficati attributi e di eventauli interventi di "
 "manutezione tramite una relazione di tipo 1:n**_"
 
@@ -136,11 +136,11 @@ msgstr ""
 msgid ""
 "IMPORTANT: a copy of this data are present on the server, you can not "
 "change your local data copy"
-msgstr ""
+msgstr "IMPORTANTE: per il corretto funzionamento della demo, una copia dei dati geografici è presente sul server. LA modifica dei dati potrebbe ripercuotersi sulla pubblicazione del progetto"
 
 #: ../../demo.md:37
 msgid "The project (based on QGIS LTR 3.4) foresees:"
-msgstr "Il progetto (basato su QGIS LTR 3.4) prevede:"
+msgstr "Il progetto (realizzato con **QGIS LTR 3.4**) prevede:"
 
 #: ../../demo.md:38
 msgid ""
@@ -695,8 +695,8 @@ msgid ""
 "alphanumeric table related interventions_maintenance."
 msgstr ""
 "_**Query form e widget di modifica sono già definiti nel progetto per il "
-"layer: 'edifici' e per la tabella relazionata "
-"'Intervent_manutenzione'**._"
+"layer: `buildings` e per la tabella relazionata "
+"``*maintenance_works*._"
 
 #: ../../demo.md:193
 msgid "Buildings"
