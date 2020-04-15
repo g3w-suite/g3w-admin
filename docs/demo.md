@@ -190,32 +190,33 @@ Once the settings are saved, the created widget will appear in the list of Widge
 # Editing on line
 _**Forms and editing widgets are already defined on the project associated with the tutorial for the geometric layer of buildings and for the alphanumeric table related interventions_maintenance.**_
 
- * **Buildings**
-  * id (integer - primary key): autogenerate
-  * name (text NOT NULL): text edit
-  * address (text): Value relation (roads layer - code/name fileds)
-  * year (integer NOT NULL): unique values (2015,2016,2017,2018,2019,2020)
-  * photo (text): attachment
-  * link (text): text edit
-  * form (text): attachment
-  * high (integer NOT NULL): range (10-30 step 2)
-  * volume (integer): range (50-200 step 10)
-  * surface (integer): text edit
-  * architectural_barriers (text): Checkbox (Checked - Not checked)
-  * date_barriers (date): date (yyyy/MM/dd)
-  * safety_exits (text): Checkbox (Checked - Not checked)
-  * date_exits (date): date (yyyy/MM/dd)
-  * fire_system (text): Checkbox (Checked - Not checked)
-  * date_fire (date): date (yyyy/MM/dd)
-  * type (text NOT NULL): unique values (Administrative, Commercial, Residential)
-  
- * **Maintenance_works**
-  * id (integer - primary key): autogenerate
-  * id_buildings (text - relation key): text edit
-  * maintenance (text NOT NULL): unique values
-  * date (date): date (yyyy/MM/dd)
-  * form (text): attachment
-  * value (integer): range (10-30 step 2)
+ * **`Buildings`**
+   * **id** (integer - primary key): autogenerate
+   * **name** (text NOT NULL): text edit
+   * **address** (text): Value relation (roads layer - code/name fileds)
+   * **year** (integer NOT NULL): unique values (2015,2016,2017,2018,2019,2020)
+   * **photo** (text): attachment
+   * **link** (text): text edit
+   * **form** (text): attachment
+   * **high** (integer NOT NULL): range (10-30 step 2)
+   * **volume** (integer): range (50-200 step 10)
+   * **surface** (integer): text edit
+   * **architectural_barriers** (text): Checkbox (Checked - Not checked)
+   * **date_barriers** (date): date (yyyy/MM/dd)
+   * **safety_exits** (text): Checkbox (Checked - Not checked)
+   * **date_exits** (date): date (yyyy/MM/dd)
+   * **fire_system** (text): Checkbox (Checked - Not checked)
+   * **date_fire** (date): date (yyyy/MM/dd)
+   * **type** (text NOT NULL): unique values (Administrative, Commercial, Residential)
+
+
+ * **`Maintenance_works`**
+   * **id** (integer - primary key): autogenerate
+   * **id_buildings** (text - relation key): text edit
+   * **maintenance** (text NOT NULL): unique values
+   * **date** (date): date (yyyy/MM/dd)
+   * **form** (text): attachment
+   * **value** (integer): range (10-30 step 2)
 
 To activate the editing function on webgis, access the list of layers and identify the two layers shown above.
 

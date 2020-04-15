@@ -77,3 +77,9 @@ Through the web interface of the G3W-SUITE framework it is possible to:
    :caption: Tutorial
 
    demo
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Test
+
+   test
