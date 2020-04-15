@@ -13,7 +13,7 @@ __copyright__ = 'Copyright 2015 - 2020, Gis3w'
 from django.test import Client
 from django.urls import reverse
 from django.core.exceptions import ObjectDoesNotExist
-from django.contrib.auth.models import Group as AuthGroup
+from django.contrib.auth.models import Group as AuthGroup, User
 from .base import BaseUsermanageTestCase
 from .utils import setup_testing_user_relations, assign_perm, G3W_EDITOR1
 
@@ -163,6 +163,52 @@ class UsermanageViewsTest(BaseUsermanageTestCase):
 
         self.assertEqual(len(object_list), 2)
         self.client.logout()
+
+    def test_users_delete(self):
+        """ Test deleting user """
+
+        # Create a user to delete
+        u = User.objects.create_user(username='User to delete')
+        url = reverse('user-delete', args=[u.pk])
+
+        # No Login: redirect
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 302)
+
+        # Viewer1 login: access denied
+        self.assertTrue(self.client.login(username=self.test_viewer1.username, password=self.test_viewer1.username))
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 403)
+        self.client.logout()
+
+        # Editor1 login: access denied, because don't has permission on it
+        self.assertTrue(self.client.login(username=self.test_editor1.username, password=self.test_editor1.username))
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 403)
+        self.client.logout()
+
+        # Admin login: can delete it
+        self.assertTrue(self.client.login(username=self.test_user1.username, password=self.test_user1.username))
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 200)
+        self.client.logout()
+
+        with self.assertRaises(ObjectDoesNotExist) as ex:
+            User.objects.get(pk=u.pk)
+
+        # Create again for test for editor with permission
+        u = User.objects.create_user(username='User to delete')
+        url = reverse('user-delete', args=[u.pk])
+
+        assign_perm('delete_user', self.test_editor1, u)
+
+        self.assertTrue(self.client.login(username=self.test_editor1.username, password=self.test_editor1.username))
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 200)
+        self.client.logout()
+
+        with self.assertRaises(ObjectDoesNotExist) as ex:
+            User.objects.get(pk=u.pk)
 
     def test_user_groups_delete(self):
         """ Test delete users groups """
