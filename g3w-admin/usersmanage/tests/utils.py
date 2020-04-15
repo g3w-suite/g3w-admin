@@ -82,6 +82,9 @@ def setup_testing_user(cls):
 
     setattr(cls, 'test_user1', test_user1)
 
+    # alias for test_user1 -> test_admin1
+    setattr(cls, 'test_admin1', test_user1)
+
     # Create Admin level 2
     test_user2 = User.objects.create_user(username='admin02')
     test_user2.set_password('admin02')
@@ -91,6 +94,9 @@ def setup_testing_user(cls):
     Userbackend(user=test_user2, backend=USER_BACKEND_DEFAULT).save()
 
     setattr(cls, 'test_user2', test_user2)
+
+    # alias for test_user2 -> test_admin2
+    setattr(cls, 'test_admin2', test_user2)
 
     # create editor and viewers, and editor and viewr group
     # like create by admin user
