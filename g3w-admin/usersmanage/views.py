@@ -6,9 +6,10 @@ from django.views.generic import (
     DetailView,
     View
 )
-from django.http.response import JsonResponse
+from django.http.response import JsonResponse, Http404
 from django.views.generic.detail import SingleObjectMixin
 from django.utils.decorators import method_decorator
+from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.models import Group
 from guardian.shortcuts import assign_perm, get_objects_for_user
@@ -202,7 +203,29 @@ class UserGroupDetailView(DetailView):
 
 
 class UserGroupAjaxDeleteView(G3WAjaxDeleteViewMixin, G3WRequestViewMixin, SingleObjectMixin, View):
+    """ Delete Auth Group """
     model = Group
+
+    @method_decorator(permission_required_or_403('auth.change_group', (Group, 'pk', 'pk')))
+    def dispatch(self, request, *args, **kwargs):
+        return super(UserGroupAjaxDeleteView, self).dispatch(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+
+        if not hasattr(self, 'object'):
+            self.object = self.get_object()
+
+        # If User Group is a one of main core roles return a 404
+        if self.object.name in [
+            G3W_EDITOR1,
+            G3W_EDITOR2,
+            G3W_VIEWER1,
+            G3W_VIEWER2
+        ]:
+            raise Http404(_("No %(verbose_name)s found matching the query") %
+                          {'verbose_name': self.object._meta.verbose_name})
+
+        return super(UserGroupAjaxDeleteView, self).post(request, *args, **kwargs)
 
 
 # mapping user main role and group role
