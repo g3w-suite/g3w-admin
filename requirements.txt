@@ -34,6 +34,7 @@ urllib3
 python-magic
 celery==3.1.26.post2
 django-celery
+sphinx==2.4.4
 
 # package depends on libgdal-dev package => version have to match, e.g. isntall only 
 # the version of the installed dev version. Need also to follow env var setup before install as described in:
