@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: G3W-SUITE 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-04-08 16:56+0200\n"
+"POT-Creation-Date: 2020-04-14 09:24+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -68,10 +68,10 @@ msgstr "Scaricare i dati di demo"
 
 #: ../../demo.md:20
 msgid ""
-"The tutorial is based on predefined data and QGIS project downloadable "
-"from this link:"
+"The tutorial is based on predefined data and QGIS 3.4 LTR project "
+"downloadable from this link:"
 msgstr ""
-"Il tutorial è basato su dati e progetto QGIS predefiniti scaricabili da "
+"Il tutorial è basato su dati e progetto QGIS 3.4 LTR predefiniti scaricabili da "
 "questo link:"
 
 #: ../../demo.md:22
@@ -90,10 +90,10 @@ msgstr ""
 
 #: ../../demo.md:24
 msgid ""
-"dati_geografici: containing (in the spatialite subdirectory) a SpatiaLite"
-" DB with basic data (build_management.sqlite)"
+"dati_geografici: containing a SpatiaLite DB with basic data "
+"(build_management.sqlite)"
 msgstr ""
-"**`dati_geografici`:** contenente (nella sottodirectory spatialite) un DB"
+"**`dati_geografici`:** contenente un DB"
 " SpatiaLite con i dati di base (**build_management.sqlite**)"
 
 #: ../../demo.md:28
@@ -105,74 +105,80 @@ msgstr ""
 " i seguenti layer:"
 
 #: ../../demo.md:29
-msgid "buildings (geometric): reference layer for editing aspects"
-msgstr "**edifici (geometrico):** layer di riferiemnto per gli aspetti di editing"
+msgid "buildings (polygon layer): reference layer for editing aspects"
+msgstr "**buildings (layer poligonale):** layer di riferiemnto per gli aspetti di editing"
 
 #: ../../demo.md:30
 msgid ""
-"building_interventions (alphanumeric): with the maintenance interventions"
-" associated with the individual buildings"
+"maintenance_works (alphanumeric table): with the maintenance "
+"interventions associated with the individual buildings"
 msgstr ""
-"**interventi_edifici (alfanumerico):** con gli interventi di manutenzioni"
+"**maintenance_works (tabella alfanumericao):** con gli interventi di manutenzioni"
 " associati ai singoli edifici"
 
 #: ../../demo.md:31
-msgid "park (geometric):"
-msgstr "**park(geometrico):**"
+msgid "park (polygon layer):"
+msgstr "**park (layer poligonale)**"
 
 #: ../../demo.md:32
-msgid "roads (geometric): a simple road network"
-msgstr "**roads(geometrico):** una rete stradale"
+msgid "roads (linear layer): a simple road network"
+msgstr "**roads (layer lineare):** una semplice rete stradale"
 
 #: ../../demo.md:33
 msgid ""
-"work_areas (geometric): with the perimeter of work areas to be used to "
-"define any geo-constraints"
+"work_areas (polygon layer): with the perimeter of work areas to be used "
+"to define any geo-constraints"
 msgstr ""
-"**work_areas(geometrico):** con la perimetrazione di aree di lavoro da "
+"**work_areas (layer poligonale):** con la perimetrazione di aree di lavoro da "
 "utilizzare per definire eventuali geo-constraints"
 
-#: ../../demo.md:36
+#: ../../demo.md:35
+msgid ""
+"IMPORTANT: a copy of this data are present on the server, you can not "
+"change your local data copy"
+msgstr ""
+
+#: ../../demo.md:37
 msgid "The project (based on QGIS LTR 3.4) foresees:"
 msgstr "Il progetto (basato su QGIS LTR 3.4) prevede:"
 
-#: ../../demo.md:37
-msgid ""
-"a dressing categorized by the buildings layer based on the categorical "
-"field tipo"
-msgstr ""
-"una **vestizione categorizzata** dal **`layer edifici`** basata sul "
-"**campo categorico `tipo`**"
-
 #: ../../demo.md:38
 msgid ""
-"the presence of a 1: n relationship between the buildings layer and the "
-"alphanumeric interventions_building table"
+"a dressing categorized by the buildings layer based on the categorical "
+"field type"
 msgstr ""
-"la presenza di una **relazione 1:n** tra il layer `edifici` e la tabella "
-"alfanumerica `interventi_edifici`"
+"una **vestizione categorizzata** dal **`layer buildings`** basata sul "
+"**campo categorico `type`**"
 
 #: ../../demo.md:39
 msgid ""
-"pre-developed query forms for the buildings layer and the "
-"interventions_building table"
+"the presence of a 1: n relationship between the buildings layer and the "
+"alphanumeric maintenance_works table"
 msgstr ""
-"**query form prestutturati** per il layer `edifici` e la tabella "
-"`interventi_edifici`"
+"la presenza di una **relazione 1:n** tra il layer **`buildings`** e la tabella "
+"alfanumerica **`maintenance_works`**"
 
 #: ../../demo.md:40
 msgid ""
+"pre-developed query forms for the buildings layer and the "
+"maintenance_works table"
+msgstr ""
+"**query form prestutturati** per il layer **`buildings`** e la tabella "
+"**`maintenance_works`**"
+
+#: ../../demo.md:41
+msgid ""
 "predefined editing widgets for the fields of the two main layers: "
-"buildings and interventions_ buildings"
+"buildings and maintenance_works"
 msgstr ""
 "**widget di editing predefiniti** per i campi dei due layer principali: "
-"`edifici` e `interventi_edifici`"
+"**`buildings`** e **`maintenance_works`**"
 
-#: ../../demo.md:44
+#: ../../demo.md:45
 msgid "Modify the QGIS project title"
 msgstr "Modificare il titolo del progetto QGIS"
 
-#: ../../demo.md:46
+#: ../../demo.md:47
 msgid ""
 "The publication system provides for the use of the title of the project "
 "as the unique identifier of the WebGis service."
@@ -180,7 +186,7 @@ msgstr ""
 "Il sistema di pubblicazione prevede l'utilizzo del titolo del progetto "
 "come identificatore univoco del servizio WebGis"
 
-#: ../../demo.md:48
+#: ../../demo.md:49
 msgid ""
 "So, before publishing the project, it will be NECESSARY to change the "
 "title associated with the basic project (Project -> Properties ... - "
@@ -190,11 +196,11 @@ msgstr ""
 "modificare il titolo associato al progetto base (**`Progetto -> "
 "Proprietà... - Sessione: Generale`**)**"
 
-#: ../../demo.md:52
+#: ../../demo.md:53
 msgid "Access the online service"
 msgstr "Accedere al servizio on line"
 
-#: ../../demo.md:54
+#: ../../demo.md:55
 msgid ""
 "To publish the project, you can access the G3W-SUITE test application via"
 " the following URL: https://dev.g3wsuite.it"
@@ -203,7 +209,7 @@ msgstr ""
 "SUITE di test tramite il seguente URL: "
 "[**`https://dev.g3wsuite.it`**](https://dev.g3wsuite.it)"
 
-#: ../../demo.md:56
+#: ../../demo.md:57
 msgid ""
 "To access the Administration Panel it is necessary to log in using the "
 "following credentials:"
@@ -211,19 +217,19 @@ msgstr ""
 "Per accedere al **Pannello di Amministrazione** è necesario loggarsi "
 "tramite le seguenti credenziali:"
 
-#: ../../demo.md:57
+#: ../../demo.md:58
 msgid "user: editor"
 msgstr "user: **`editor`**"
 
-#: ../../demo.md:58
+#: ../../demo.md:59
 msgid "password: G3wsuite!"
 msgstr "password: **`G3wsuite!`**"
 
-#: ../../demo.md:62
+#: ../../demo.md:63
 msgid "Publish the QGIS project as a WebGis service"
 msgstr "Pubblicare il progetto QGIS come servizio WebGis"
 
-#: ../../demo.md:64
+#: ../../demo.md:65
 msgid ""
 "After authentication it will be possible to access the Administration "
 "session and view the Dashboard."
@@ -231,7 +237,7 @@ msgstr ""
 "In seguito ad autenticazione sarà possibile accedere alla **`Sessione di "
 "Amministrazione`** e visualizzare la **Dashboard**."
 
-#: ../../demo.md:66
+#: ../../demo.md:67
 msgid ""
 "In the Dashboard there will be the menu for access to the Cartographic "
 "Groups pertaining to your user and the menus relating to additional "
@@ -241,16 +247,16 @@ msgstr ""
 "Cartografici** di competenza del vostro utente e i menù relativi ad "
 "ulteriori moduli non attivi in questa demo."
 
-#: ../../demo.md:70
+#: ../../demo.md:71
 msgid ""
 "Access the content of the G3W-Suite Demo Cartographic Group and click on "
-"the button  to publish your project."
+"the button + QGIS Project to publish your project**."
 msgstr ""
 "Accedete al contenuto del **Gruppo Cartografico 'G3W-SUite Demo'** e "
-"cliccate sul **tasto ![](images/manual/button_add_qgis_project.png)** per"
+"cliccate sul **tasto + Progetto QGIS** per"
 " pubblicare il vostro progetto."
 
-#: ../../demo.md:72
+#: ../../demo.md:75
 msgid ""
 "Fill out the form defining the various aspects to be associated with the "
 "WebGis service being published:"
@@ -258,11 +264,11 @@ msgstr ""
 "Compilate il form definendo i vari aspetti da associare al servizio "
 "WebGis in pubblicazione:"
 
-#: ../../demo.md:73
+#: ../../demo.md:76
 msgid "QGIS project"
 msgstr "Progetto QGIS"
 
-#: ../../demo.md:74
+#: ../../demo.md:77
 msgid ""
 "QGIS file:* load the QGIS cartographic project to be published (.qgz or "
 ".qgs file)"
@@ -270,15 +276,15 @@ msgstr ""
 "**`File QGIS`***: caricare il progetto cartografico di QGIS da pubblicare"
 " (file .qgz o .qgs)"
 
-#: ../../demo.md:76
+#: ../../demo.md:79
 msgid "ACL Users"
 msgstr ""
 
-#: ../../demo.md:77
+#: ../../demo.md:80
 msgid "Management of access permissions"
 msgstr "Gestione poteri di accesso e gestione"
 
-#: ../../demo.md:78
+#: ../../demo.md:81
 msgid ""
 "Viewers users: define the individual users (Viewers) who have the "
 "credentials to view the WebGis service. By choosing the anonymous user "
@@ -288,7 +294,7 @@ msgstr ""
 " le credenziali per visualizzare il servizio WebGis. Scegliendo l'utente "
 "anonimo (**AnonymusUser**) il gruppo sarà ad accesso libero"
 
-#: ../../demo.md:79
+#: ../../demo.md:82
 msgid ""
 "Viewer user groups: you define the user groups (Viewer) which have the "
 "credentials to view the content of the service."
@@ -296,17 +302,17 @@ msgstr ""
 "**`Gruppi di utenti Viewer`:** si definiscono i gruppi di utenti (Viewer)"
 " he hanno le credenziali per visualizzare il contenuto del servizio."
 
-#: ../../demo.md:81
+#: ../../demo.md:84
 msgid "Default base layer"
 msgstr "BaseLayer"
 
-#: ../../demo.md:82
+#: ../../demo.md:85
 msgid "In this session you define which base layer should be active at startup."
 msgstr ""
 "**In questa sessione si va a definire quale `base layer` deve essere "
 "attivo all'avvio.**"
 
-#: ../../demo.md:84
+#: ../../demo.md:87
 msgid ""
 "The choice is limited to the list of base layers activated for the "
 "cartographic group in which you work."
@@ -314,15 +320,15 @@ msgstr ""
 "La scelta è limitata alla lista degli strati di base attivati per il "
 "gruppo cartografico nel quale si lavora."
 
-#: ../../demo.md:86
+#: ../../demo.md:89
 msgid "It is also possible not to define any active base layer at startup."
 msgstr "E' possibile anche non definire nessun strato di base attivo all'avvio."
 
-#: ../../demo.md:88
+#: ../../demo.md:91
 msgid "Description data"
 msgstr "Descrizione"
 
-#: ../../demo.md:89
+#: ../../demo.md:92
 msgid ""
 "Description: Description of the project, it will appear at the public "
 "portal level."
@@ -330,7 +336,7 @@ msgstr ""
 "**`Descrizione`:** descrizione libera del progetto che apparirà a livello"
 " del portale pubblico."
 
-#: ../../demo.md:90
+#: ../../demo.md:93
 msgid ""
 "Thumbnail (Logo): logo to associate with the project. This image will be "
 "viewable in the list of projects within the cartographic group"
@@ -338,19 +344,19 @@ msgstr ""
 "**`Thumbnail (Logo)`:** logo da associare al progetto. Tale immagine sarà"
 " visibile in associazione con il progetto"
 
-#: ../../demo.md:92
+#: ../../demo.md:95
 msgid "ATTENTION: contents marked with * are mandatory."
 msgstr "**ATTENZIONE: contenuti segnati con asetrisco sono obbligatori**"
 
-#: ../../demo.md:96
+#: ../../demo.md:99
 msgid ""
-"After filling in the various form, click on the Save button  to confirm "
+"After filling in the various form, click on the Save button to confirm "
 "your choices."
 msgstr ""
-"Compilati i campi di interesse si clicca sul **`tasto Salva` "
-"![](images/manual/buttom_save.png)** per confermere la pubblicazione"
+"Compilati i campi di interesse si clicca sul **`tasto Salva`** "
+" per confermere la pubblicazione"
 
-#: ../../demo.md:98
+#: ../../demo.md:103
 msgid ""
 "If the publication was successful, the QGIS project will appear in the "
 "list of projects in the Cartographic Group."
@@ -358,31 +364,30 @@ msgstr ""
 "Se la pubblicazione è andata a buon fine il progetto QGIS apparirà "
 "nell'elelnco dei progetti presenti nel Gruppo Cartografico"
 
-#: ../../demo.md:100
+#: ../../demo.md:105
 msgid ""
-"Clicking on the **View map** icon  will access the WebGis service in "
+"Clicking on the View map icon will access the WebGis service in "
 "consultation."
 msgstr ""
 "Cliccando sull'icona **`Visualizza mappa`** "
-"![](images/manual/iconsmall_viewmap.png) si accederà al servizo WebGis in"
+"si accederà al servizo WebGis in"
 " consultazione."
 
-#: ../../demo.md:104
+#: ../../demo.md:109
 msgid "Update the published WebGis service"
 msgstr "Aggionare il servizo WebGis pubblicato"
 
-#: ../../demo.md:106
+#: ../../demo.md:111
 msgid ""
 "If you want to modify some graphic-functional aspects of your WebGis "
 "service, modify your QGIS project and update the WebGis service by "
-"clicking on the Modify** icon ."
+"clicking on the Modify icon."
 msgstr ""
 "Se volete modificare alcuni aspetti grafico-funzionali del vostro "
 "servizio WebGis, modificate il vostro progetto QGIS e aggiornate il "
 "servizio WebGis cliccando sull'**`icona Modifica`** "
-"![](images/manual/iconsmall_edit.png)."
 
-#: ../../demo.md:108
+#: ../../demo.md:115
 msgid ""
 "Reupload the QGIS project with your changes, click on the Save button and"
 " see the resuts on the cartographic client."
@@ -390,11 +395,11 @@ msgstr ""
 "Nel form visualizzato ricaricate il progetto QGIS con le vostre modifiche"
 " e cliccate sul **`tasto Salva`**"
 
-#: ../../demo.md:110
+#: ../../demo.md:117
 msgid "Activation of additional functions"
 msgstr "Attivazione funzioni aggiuntive"
 
-#: ../../demo.md:112
+#: ../../demo.md:119
 msgid ""
 "Once your project has been published, you can access the list of widgets "
 "and additional functions to enrich your WebGis service."
@@ -403,21 +408,21 @@ msgstr ""
 "all'elenco dei widget e funzioni aggiuntive per arricchire il tuo "
 "servizio WebGis."
 
-#: ../../demo.md:114
+#: ../../demo.md:121
 msgid "Widget management"
 msgstr "Gestione widget"
 
-#: ../../demo.md:115
+#: ../../demo.md:122
 msgid ""
-"Thougth the Layers list icon  it is possible to access the list of the "
+"Thougth the Layers list icon it is possible to access the list of the "
 "geographical states that compose it and define some functional aspects "
 "that will be enabled at the cartographic client level."
 msgstr ""
 "Per accedere alla gestione delle funzioni aggiuntive cliccte "
-"sull'**`icona Lista Layers`** ![](images/manual/iconsmall_layerlist.png) "
+"sull'**`icona Lista Layers`** "
 "a livello del vostro progetto QGIS"
 
-#: ../../demo.md:119
+#: ../../demo.md:126
 msgid ""
 "The new session will show you the list of the layer present in the "
 "published QGIS project"
@@ -425,39 +430,39 @@ msgstr ""
 "La nuova sessione mostrerà la **lista dei layer** presenti nel progetto "
 "QGIS pubblicato"
 
-#: ../../demo.md:123
+#: ../../demo.md:130
 msgid "Next to each layer are a series of icons and checkboxes:"
 msgstr ""
 "Accanto a ciascun livello sono presenti una serie di icone e caselle di "
 "controllo:"
 
-#: ../../demo.md:124
+#: ../../demo.md:131
 msgid ""
 "Caching Layer: allows you to activate and manage the cache of the single "
 "layer at the project level"
 msgstr ""
-"![](images/manual/icon_cache.png) **Cache del layer**: ti permette di "
+" **Cache del layer**: ti permette di "
 "attivare e gestire la cache del layer"
 
-#: ../../demo.md:125
+#: ../../demo.md:132
 msgid ""
 "Editing layer: shows if the online editing function is active on the "
 "layer and allows you to activate and define it"
 msgstr ""
-"![](images/manual/icon_editing.png) **Editing layer:** mostra se la "
+" **Editing layer:** mostra se la "
 "funzione di modifica online è attiva sul layer e ti permette di attivarlo"
 " e definirlo"
 
-#: ../../demo.md:126
+#: ../../demo.md:133
 msgid ""
 "List of widgets: shows how many widgets (eg searches) are associated with"
 " this layer and allows you to activate new ones"
 msgstr ""
-"![](images/manual/icon_widget.png) **Lista dei widget:** mostra quanti "
+" **Lista dei widget:** mostra quanti "
 "widget (ad es. ricerche) sono associati a questo livello e ti permette di"
 " attivarne di nuovi"
 
-#: ../../demo.md:127
+#: ../../demo.md:134
 msgid ""
 "No legend: it allows to define if the layer must have published the "
 "legend at TOC level of the WebGis client"
@@ -465,7 +470,7 @@ msgstr ""
 "**No legend:** consente di definire se il layer deve o meno essere "
 "presente nella legendadel client Web"
 
-#: ../../demo.md:128
+#: ../../demo.md:135
 msgid ""
 "Download: allows the download of the layer, in .shp format, at the TOC "
 "level of the WebGis client"
@@ -473,7 +478,7 @@ msgstr ""
 "**Download:** consente il download del layer, in formato .shp, dalla TOC "
 "del client Web"
 
-#: ../../demo.md:129
+#: ../../demo.md:136
 msgid ""
 "WMS external: to speed up loading, the WMS layers present in a QGIS "
 "project are managed directly by Django and not by QGIS-Server. However, "
@@ -483,15 +488,15 @@ msgid ""
 " the associated styling is applied."
 msgstr ""
 
-#: ../../demo.md:130
+#: ../../demo.md:137
 msgid ""
 "Type: illustrates the type of data (WMS, PostGis, SpatiaLite, GDAL / OGR "
 "...)"
 msgstr ""
-"![](images/manual/icon_layertype.png) **Type:** illustra il tipo di dato "
+" **Type:** illustra il tipo di dato "
 "(WMS, PostGis, SpatiaLite, GDAL/OGR…)"
 
-#: ../../demo.md:131
+#: ../../demo.md:138
 msgid ""
 "WFS: a check mark shows whether the layer is published as a WFS service "
 "or not"
@@ -499,25 +504,25 @@ msgstr ""
 "**WFS:** una spunta mostra se il layer è pubblicato o meno come servizio "
 "WFS"
 
-#: ../../demo.md:132
+#: ../../demo.md:139
 msgid "Name: name of the layer"
 msgstr "**Nome:** nome del layer"
 
-#: ../../demo.md:133
+#: ../../demo.md:140
 msgid "Label: layer alias applied at the QGIS project level"
 msgstr "**Etichetta:** alias del layer applicata a livello di progetto QGIS"
 
-#: ../../demo.md:135
+#: ../../demo.md:142
 msgid "Try to activate the available options and test the result on the WebGis"
 msgstr ""
 "**Prova ad attivare le opzioni disponibili e verificare il risultato "
 "refreshando il servizio WebGis**"
 
-#: ../../demo.md:137
+#: ../../demo.md:144
 msgid "Search widget creation"
 msgstr "Creazione strumenti di ricerca"
 
-#: ../../demo.md:139
+#: ../../demo.md:146
 msgid ""
 "To create a search tool available at WebGis level, choose the vector "
 "layer on which to apply the tool and click on the Widget list icon"
@@ -525,9 +530,8 @@ msgstr ""
 "Per creare uno strumento di ricerca disponibile a livello WebGis, "
 "selezionare il layer vettoriale su cui basarsi per creare lo strumento e "
 "fare clic sull'icona **`Elenco widget`** "
-"![](images/manual/icon_widget.png) "
 
-#: ../../demo.md:141
+#: ../../demo.md:150
 msgid ""
 "A series of searches already carried out for this layer by other users "
 "will probably be listed."
@@ -535,11 +539,11 @@ msgstr ""
 "Probabilmente verranno elencate Una serie di ricerche già realizzate per "
 "questo layer da altri utenti "
 
-#: ../../demo.md:143
+#: ../../demo.md:152
 msgid "You can activate them by clicking on the Linked chekbox."
 msgstr "E' possibile attivarle cliccnado sul check **`Collegato`**"
 
-#: ../../demo.md:147
+#: ../../demo.md:156
 msgid ""
 "The listed searches can be modified, deleted or unlinked using the "
 "appropriate icons."
@@ -547,23 +551,23 @@ msgstr ""
 "Le ricerche elencate possono essere **modificate, cancellate** o "
 "**scollegate** usando lerelative icone."
 
-#: ../../demo.md:149
+#: ../../demo.md:158
 msgid "To create a new search, click on the blue link New widget."
 msgstr "Per creare una nuova ricerca, fai clic sul link blu **`Nuovo widget`** "
 
-#: ../../demo.md:151
+#: ../../demo.md:160
 msgid "In the related form we can define:"
 msgstr "Nel form è possibile definire:"
 
-#: ../../demo.md:152
+#: ../../demo.md:161
 msgid "Form Title"
 msgstr "**Titolo del form**"
 
-#: ../../demo.md:153
+#: ../../demo.md:162
 msgid "Type: choose \"Search\" option"
 msgstr "**`Tipo`: Cerca** - L'opzione **Law** non è attiva nella demo"
 
-#: ../../demo.md:154
+#: ../../demo.md:163
 msgid ""
 "Name: name that G3W-SUITE will use to internally register the search "
 "widget."
@@ -571,11 +575,11 @@ msgstr ""
 "**`Nome`:** nome che utilizzerà G3W-SUITE per registrare internamente il "
 "widget di ricerca."
 
-#: ../../demo.md:155
+#: ../../demo.md:164
 msgid "General configuration of research and results"
 msgstr "**Configurazione generale delle ricerca e risultati**"
 
-#: ../../demo.md:156
+#: ../../demo.md:165
 msgid ""
 "Search title: title that will become available in the 'Research' panel of"
 " the WebGis interface"
@@ -583,15 +587,15 @@ msgstr ""
 "**`Titolo ricerca`:** titolo che identifica la ricerca che diverrà "
 "disponibile nel pannello Ricerche dell”interfaccia WebGis"
 
-#: ../../demo.md:157
+#: ../../demo.md:166
 msgid "Search fields settings"
 msgstr "**Impostazioni campi di ricerca**"
 
-#: ../../demo.md:158
+#: ../../demo.md:167
 msgid "Field: field on which to carry out the research"
 msgstr "**`Campo`:** campo su cui realizzare la ricerca"
 
-#: ../../demo.md:159
+#: ../../demo.md:168
 msgid ""
 "Widget: method of entering the value to be searched InputBox: manual "
 "compilation SelectBox: values ​​shown via drop-down menu (only for "
@@ -601,15 +605,15 @@ msgstr ""
 "compilazione manuale **SelectBox:** valori mostrati tramite menù a "
 "tendina (solo per layer PostGis o SpatiaLite)"
 
-#: ../../demo.md:162
+#: ../../demo.md:171
 msgid "Alias: alias assigned to the field that will appear in the search form"
 msgstr "**`Alias`:** alias assegnato al campo che comparirà nel form di ricerca"
 
-#: ../../demo.md:163
+#: ../../demo.md:172
 msgid "Description: description assigned to the field"
 msgstr "**`Descrizione`:** descrizione assegnata al campo"
 
-#: ../../demo.md:164
+#: ../../demo.md:173
 msgid ""
 "Comparison operator: comparison operator (=, <,>,> <,> =, <=, LIKE, "
 "ILIKE) through which the search query will be carried out. The LIKE and "
@@ -620,7 +624,7 @@ msgstr ""
 " Gli operatori LIKE e ILIKE saranno disponibili solo per layer PostGis o "
 "SpatiaLite"
 
-#: ../../demo.md:165
+#: ../../demo.md:174
 msgid ""
 "Dependency: this parameter (optional) allows, only in the case of "
 "SelectBox widgets, to list the list of values ​​of a field filtered "
@@ -638,16 +642,17 @@ msgstr ""
 "foglio scelto nell’opzione precedente. Tale funzione è disponibile solo "
 "per layer PostGis o SpatiaLite."
 
-#: ../../demo.md:167
+#: ../../demo.md:176
 msgid ""
-"The button  allows you to add additional fields for the construction of "
-"the search query currently manageable through the AND operator alone."
+"The green button Aggiungi allows you to add additional fields for the "
+"construction of the search query currently manageable through the AND "
+"operator alone."
 msgstr ""
-"Il tasto ![](images/manual/button_add.png) permette di aggiungere "
+"Il tasto verde **`Aggiungi`** permette di aggiungere "
 "ulteriori campi per la costruzione della query di ricerca attualmente "
 "gestibili tramite il **solo operatore AND.**"
 
-#: ../../demo.md:169
+#: ../../demo.md:178
 msgid ""
 "Here a simple example based on the fields type and volume othe buildings "
 "layer:"
@@ -655,7 +660,7 @@ msgstr ""
 "Di seguito si riporta un esempio basato sui campi**`type`** e "
 "**`volume`** del alyer **`buildings`**"
 
-#: ../../demo.md:173
+#: ../../demo.md:182
 msgid ""
 "Once the form has been filled in, click on the OK button to save the "
 "settings."
@@ -663,7 +668,7 @@ msgstr ""
 "Una volta compilato il form si clicca sul **`tasto OK`** per salvare le "
 "impostazioni."
 
-#: ../../demo.md:175
+#: ../../demo.md:184
 msgid ""
 "Once the settings are saved, the created widget will appear in the list "
 "of Widgets associated with the layer."
@@ -671,7 +676,7 @@ msgstr ""
 "Salvate le impostazioni il widget realizzato comparirà nella lista dei "
 "Widget associati al layer."
 
-#: ../../demo.md:177
+#: ../../demo.md:186
 msgid ""
 "The widget will already be linked and therefore available in the WebGis "
 "interface on the left panel."
@@ -679,11 +684,11 @@ msgstr ""
 "Il widget risulterà già **`Collegato`** e quindi disponibile "
 "nell”inerfaccia WebGis."
 
-#: ../../demo.md:181
+#: ../../demo.md:190
 msgid "Editing on line"
 msgstr "Editing on line"
 
-#: ../../demo.md:182
+#: ../../demo.md:191
 msgid ""
 "Forms and editing widgets are already defined on the project associated "
 "with the tutorial for the geometric layer of buildings and for the "
@@ -693,33 +698,127 @@ msgstr ""
 "layer: 'edifici' e per la tabella relazionata "
 "'Intervent_manutenzione'**._"
 
-#: ../../demo.md:184
+#: ../../demo.md:193
+msgid "Buildings"
+msgstr ""
+
+#: ../../demo.md:194 ../../demo.md:213
+msgid "id (integer - primary key): autogenerate"
+msgstr ""
+
+#: ../../demo.md:195
+msgid "name (text NOT NULL): text edit"
+msgstr ""
+
+#: ../../demo.md:196
+msgid "address (text): Value relation (roads layer - code/name fileds)"
+msgstr ""
+
+#: ../../demo.md:197
+msgid "year (integer NOT NULL): unique values (2015,2016,2017,2018,2019,2020)"
+msgstr ""
+
+#: ../../demo.md:198
+msgid "photo (text): attachment"
+msgstr ""
+
+#: ../../demo.md:199
+msgid "link (text): text edit"
+msgstr ""
+
+#: ../../demo.md:200 ../../demo.md:217
+msgid "form (text): attachment"
+msgstr ""
+
+#: ../../demo.md:201
+msgid "high (integer NOT NULL): range (10-30 step 2)"
+msgstr ""
+
+#: ../../demo.md:202
+msgid "volume (integer): range (50-200 step 10)"
+msgstr ""
+
+#: ../../demo.md:203
+msgid "surface (integer): text edit"
+msgstr ""
+
+#: ../../demo.md:204
+msgid "architectural_barriers (text): Checkbox (Checked - Not checked)"
+msgstr ""
+
+#: ../../demo.md:205
+msgid "date_barriers (date): date (yyyy/MM/dd)"
+msgstr ""
+
+#: ../../demo.md:206
+msgid "safety_exits (text): Checkbox (Checked - Not checked)"
+msgstr ""
+
+#: ../../demo.md:207
+msgid "date_exits (date): date (yyyy/MM/dd)"
+msgstr ""
+
+#: ../../demo.md:208
+msgid "fire_system (text): Checkbox (Checked - Not checked)"
+msgstr ""
+
+#: ../../demo.md:209
+msgid "date_fire (date): date (yyyy/MM/dd)"
+msgstr ""
+
+#: ../../demo.md:210
+msgid ""
+"type (text NOT NULL): unique values (Administrative, Commercial, "
+"Residential)"
+msgstr ""
+
+#: ../../demo.md:212
+msgid "Maintenance_works"
+msgstr ""
+
+#: ../../demo.md:214
+msgid "id_buildings (text - relation key): text edit"
+msgstr ""
+
+#: ../../demo.md:215
+msgid "maintenance (text NOT NULL): unique values"
+msgstr ""
+
+#: ../../demo.md:216
+msgid "date (date): date (yyyy/MM/dd)"
+msgstr ""
+
+#: ../../demo.md:218
+msgid "value (integer): range (10-30 step 2)"
+msgstr ""
+
+#: ../../demo.md:220
 msgid ""
 "To activate the editing function on webgis, access the list of layers and"
 " identify the two layers shown above."
 msgstr ""
 
-#: ../../demo.md:188
+#: ../../demo.md:224
 msgid ""
-"Clicking on the icon  (placed at the top of each layer of the list) will "
-"open a modal window that will allow you to:"
+"Clicking on the icon Editing layer (placed at the left of each rows) will"
+" open a modal window that will allow you to:"
 msgstr ""
-"Cliccando sull'icona ![](images/manual/icon_editing.png) (posizionata a "
+"Cliccando sull'icona **`Editing layer`** (posizionata a "
 "destra di ogni layer) si aprirà un modale che permetterà di:"
 
-#: ../../demo.md:189
+#: ../../demo.md:225
 msgid "define the editing activation scale (only for geometric tables)"
 msgstr ""
 "definire la **`scala di attivazione`** del'editing (solo per le tabelle "
 "geometriche)"
 
-#: ../../demo.md:190
+#: ../../demo.md:226
 msgid "define the Viewer users (individuals or groups) enabled for online editing"
 msgstr ""
 "definire gli `utenti Viewer` (singoli o gruppi) `abilitati` all'editing "
 "online \""
 
-#: ../../demo.md:192
+#: ../../demo.md:228
 msgid ""
 "With regard to the last aspect, it should be noted that Viewers users "
 "(individuals or groups) available in the drop-down menu will be limited "
@@ -729,7 +828,7 @@ msgstr ""
 "**saranno limitati a quelli che hanno permesso di accesso in "
 "consultazione al progetto WebGis** in cui è contenuto il layer"
 
-#: ../../demo.md:196
+#: ../../demo.md:232
 msgid ""
 "Once the editing function is activated, updating the service, the Tools "
 "menu will appear on the left panel."
@@ -737,7 +836,7 @@ msgstr ""
 "**Attivata la funzione di editing, aggiornando il servizio WebGis, la "
 "voce `Strumenti` apparirà sul pannello di sinistra.**"
 
-#: ../../demo.md:198
+#: ../../demo.md:234
 msgid ""
 "By activating the editing function it will be possible to edit the "
 "geometries and attributes of the Public Buildings layer and the related "
@@ -747,7 +846,7 @@ msgstr ""
 "delle features del layer degli **edifici pubblici** e dei "
 "relativi**interventi di manutenzione**"
 
-#: ../../demo.md:206
+#: ../../demo.md:242
 msgid ""
 "For further information on the web editing function, read the dedicated "
 "chapter on the manual"
@@ -757,15 +856,15 @@ msgstr ""
 "suite.readthedocs.io/it/latest/g3wsuite_editing.html#online-editing-"
 "tools-at-cartographic-client-level)."
 
-#: ../../demo.md:208
+#: ../../demo.md:244
 msgid "Personalize your demo"
 msgstr "Personalizza la tua demo"
 
-#: ../../demo.md:210
+#: ../../demo.md:246
 msgid "Do you want to test the online editing function more deeply?"
 msgstr "**Vuoi testare più in profondità la funzione di editing?**"
 
-#: ../../demo.md:212
+#: ../../demo.md:248
 msgid ""
 "Redefine attribute forms, aliases and editing widgets associated with the"
 " individual fields and reload the project to check the new settings."
@@ -774,7 +873,7 @@ msgstr ""
 " ai singoli campi e ricarica il progetto per verificare le nuove "
 "impostazioni."
 
-#: ../../demo.md:214
+#: ../../demo.md:250
 msgid ""
 "It is advisable to consult the paragraph dedicated to the list and "
 "limitations of the individual editing widgets inheritable from the QGIS "
@@ -828,4 +927,7 @@ msgstr ""
 
 #~ msgid "Here a simple example:"
 #~ msgstr "Qui un semplice esempio"
+
+#~ msgid "park (geometric):"
+#~ msgstr "**park(geometrico):**"
 

@@ -68,7 +68,9 @@ For further information on this point, see the [**dedicated paragraph**](https:/
 
 ### Display of 1:n relation data
 
-In the event that, at the QGIS project level, one or more type 1: n relationships have been associated with a layer, the icon **View Relationships** ![](images/manual/icon_relations.png) will be shown in the attribute form.
+In the event that, at the QGIS project level, one or more type 1: n relationships have been associated with a layer, the icon **View Relationships** will be shown in the attribute form.
+
+![](images/manual/icon_relations.png)
 
 By clicking on the icon you will access the list of relationships present and, from these, the list of child records associated with the individual relationships. In the case of a single 1: n relationship, the child layers of the relationship in question will be displayed directly.
 
