@@ -31,6 +31,7 @@ def get_all_logged_in_users():
 def getUserGroups(user):
     """
     Return un array of user's groups.
+    :param: user, django user object
     """
     return user.groups.values_list('name', flat=True)
 
