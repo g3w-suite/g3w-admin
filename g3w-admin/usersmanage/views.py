@@ -205,7 +205,7 @@ class UserGroupAjaxDeleteView(G3WAjaxDeleteViewMixin, G3WRequestViewMixin, Singl
     model = Group
 
 
-# mappging user main role and group role
+# mapping user main role and group role
 MAPPING_USER_ROLE_GROUP_ROLE = {
     G3W_EDITOR1: [],
     G3W_EDITOR2: ['editor', 'viewer'],
