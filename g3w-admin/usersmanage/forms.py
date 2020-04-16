@@ -371,17 +371,7 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
                             css_class='box-header with-border'
                         ),
                         Div(
-                            'is_superuser',
-                            'is_staff',
-                            Field('groups',
-                                  **{'css_class': 'select2 col-md-12', 'multiple': 'multiple',
-                                     'style': 'width:100%;'}),
-                            Field('user_groups_editor',
-                                  **{'css_class': 'select2 col-md-12', 'multiple': 'multiple',
-                                     'style': 'width:100%;'}),
-                            Field('user_groups_viewer',
-                                  **{'css_class': 'select2 col-md-12', 'multiple': 'multiple',
-                                     'style': 'width:100%;'}),
+                            *self.__authrole_fields(),
                             css_class='box-body'
                         ),
                         css_class='box box-solid bg-teal-gradient'
@@ -458,6 +448,39 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
             ))
 
         self.helper.layout = Layout(*args)
+
+    def __authrole_fields(self):
+        """ Get fields for ACL box if they are into self.fields """
+
+        fields = []
+        if 'is_superuser' in self.fields:
+            fields.append('is_superuser')
+
+        if 'is_staff' in self.fields:
+            fields.append('is_staff')
+
+        if 'groups' in self.fields:
+            fields.append(
+                Field('groups',
+                      **{'css_class': 'select2 col-md-12', 'multiple': 'multiple',
+                         'style': 'width:100%;'})
+            )
+
+        if 'user_groups_editor' in self.fields:
+            fields.append(
+                Field('user_groups_editor',
+                      **{'css_class': 'select2 col-md-12', 'multiple': 'multiple',
+                         'style': 'width:100%;'})
+            )
+
+        if 'user_groups_viewer' in self.fields:
+            fields.append(
+                Field('user_groups_viewer',
+                      **{'css_class': 'select2 col-md-12', 'multiple': 'multiple',
+                         'style': 'width:100%;'})
+            )
+
+        return fields
 
     def filterFieldsByRoles(self, **kwargs):
         if self.request.user.is_superuser:
