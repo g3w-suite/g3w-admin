@@ -119,8 +119,6 @@ class QdjangoTestBase(TestCase):
         cls.fake_layer3.save()
 
 
-
-
     def tearDown(self):
         """Delete all test data"""
 

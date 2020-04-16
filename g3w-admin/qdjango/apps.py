@@ -1,3 +1,4 @@
+import os
 from django.apps import AppConfig, apps
 from django.db.models.signals import post_migrate
 from usersmanage.configs import *
@@ -6,6 +7,10 @@ from django.conf import settings
 
 from qgis.core import QgsApplication, QgsProject
 from qgis.server import QgsServer
+
+if settings.DEBUG:
+    os.environ['QGIS_SERVER_LOG_LEVEL'] = '0'
+    os.environ['QGIS_SERVER_LOG_STDERR'] = '1'
 
 # Required only if the installation is not in the default path
 # or if virtualenv messes up with the paths
@@ -107,3 +112,7 @@ class QdjangoConfig(AppConfig):
             Catalog.register_catalog_record_provider(catalog_provider,
                                         scope=Catalog.SCOPE.GROUP,
                                         senders=[Layer, Project])
+
+        # Load all QGIS server filter plugins, apps can load additional filters
+        # by registering them directly to QGS_SERVER
+        from . import server_filters

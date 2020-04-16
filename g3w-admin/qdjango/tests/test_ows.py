@@ -19,7 +19,6 @@ from core.models import G3WSpatialRefSys
 from core.models import Group as CoreGroup
 from qdjango.apps import QGS_SERVER, QGS_PROJECTS_CACHE, get_qgs_project
 from qdjango.models import Project
-from lxml import etree
 from .base import QdjangoTestBase
 
 
@@ -68,10 +67,7 @@ class OwsTest(QdjangoTestBase):
             'SERVICE': 'WMS'
         })
 
-        self.assertTrue(b'WMS_Capabilities' in response.content)
-        xml = etree.fromstring(response.content)
-        e = xml.getroottree().findall('//OnlineResource', namespaces=xml.nsmap)[-1]
-        self.assertEqual(e.attrib['{http://www.w3.org/1999/xlink}href'], 'http://testserver%s?&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=bluemarble&FORMAT=image/png&STYLE=predefinito&SLD_VERSION=1.1.0' % ows_url)
+        self.assertTrue(b'<Name>bluemarble</Name>' in response.content)
 
     def test_save_project(self):
         """Test that when a project is saved it is also removed from the cache"""

@@ -106,6 +106,7 @@ class OWSRequestHandler(OWSRequestHandlerBase):
         uri = request.build_absolute_uri(request.path) + '?' + q.urlencode()
         logger.debug('Calling QGIS Server: %s' % uri)
         qgs_request = QgsBufferServerRequest(uri, method, headers, data)
+        QGS_SERVER.user = request.user
         qgs_response = QgsBufferServerResponse()
         try:
             QGS_SERVER.handleRequest(qgs_request, qgs_response, qgs_project)

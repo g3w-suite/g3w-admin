@@ -8,7 +8,7 @@ from django.contrib.auth.models import User, Group as AuthGroup
 from autoslug.utils import slugify
 from guardian.shortcuts import get_perms
 from core.models import Group, BaseLayer, GroupProjectPanoramic, ProjectMapUrlAlias
-from .utils.storage import QgisFileOverwriteStorage
+from qdjango.utils.storage import QgisFileOverwriteStorage
 from core.mixins.models import G3WACLModelMixins, G3WProjectMixins
 from model_utils import Choices
 from usersmanage.utils import setPermissionUserObject, getUserGroups, get_users_for_object, get_groups_for_object
@@ -16,7 +16,7 @@ from usersmanage.configs import *
 from core.configs import *
 from core.receivers import check_overviewmap_project
 from core.utils import unicode2ascii
-from .utils.models import get_widgets4layer
+from qdjango.utils.models import get_widgets4layer
 import os
 
 
