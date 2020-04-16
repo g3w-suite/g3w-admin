@@ -26,6 +26,10 @@ import gdal
 
 class BaseUsermanageTestCase(TestCase):
 
+    fixtures = [
+                'G3WSpatialRefSys.json'
+                ]
+
     @classmethod
     def setUpClass(cls):
 
