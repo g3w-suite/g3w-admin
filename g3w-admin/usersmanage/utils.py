@@ -248,8 +248,8 @@ def crispyBoxACL(form, **kwargs):
 def get_perms_by_user_backend(user, obj):
     """
     Get permission on user object, by backend value
-    :param user: Auth model object to recover permission
-    :param obj: G3W-SUITE current logged user
+    :param user: G3W-SUITE current logged user
+    :param obj: Auth model object to recover permission
     :return: Permission list
     """
     perms = [
