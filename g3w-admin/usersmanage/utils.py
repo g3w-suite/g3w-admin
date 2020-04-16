@@ -177,12 +177,6 @@ def get_groups_for_object(object, permission, grouprole=None):
     return result
 
 
-def get_users_with_perms_for_group(obj, attach_perms=False, with_superusers=False, with_group_users=True,
-                                   permission=None, group=None):
-    return get_users_with_perms(obj, attach_perms=attach_perms, with_superusers=with_superusers,
-                                with_group_users=with_group_users).filter(groups__name=group)
-
-
 def setPermissionUserObject(user, object, permissions=[], mode='add'):
     """
     Assign or remove guardian permissions to user for object
