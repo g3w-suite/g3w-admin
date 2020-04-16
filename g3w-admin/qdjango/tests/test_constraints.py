@@ -166,16 +166,16 @@ class ConstraintsControlTest(QdjangoTestBase):
         rule = ConstraintRule(constraint=constraint, group=group1, rule="NAME != 'ITALY'")
         rule.save()
 
-        self.assertTrue(rule.validate_sql(admin01)[0])
+        self.assertTrue(rule.validate_sql()[0])
 
         rule.rule = "not a valid rule!"
         rule.save()
 
-        self.assertFalse(rule.validate_sql(admin01)[0])
+        self.assertFalse(rule.validate_sql()[0])
 
         # Valid syntax rule but wrong column name
         rule.rule = "NOT_IN_MY_NAME != 'ITALY'"
         rule.save()
 
-        self.assertFalse(rule.validate_sql(admin01)[0])
+        self.assertFalse(rule.validate_sql()[0])
 

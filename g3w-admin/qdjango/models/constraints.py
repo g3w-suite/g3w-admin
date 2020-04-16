@@ -194,11 +194,9 @@ class ConstraintRule(models.Model):
         return subset_string
 
 
-    def validate_sql(self, user):
+    def validate_sql(self):
         """Checks if the rule can be executed without errors
 
-        :param user: Django user
-        :type user: Django user
         :raises ValidationError: error
         :return: (True, None) if rule has valid SQL, (False, ValidationError) if it is not valid
         :rtype: tuple (bool, ValidationError)
@@ -212,9 +210,9 @@ class ConstraintRule(models.Model):
             layer = project.mapLayers()[self.constraint.layer.qgs_layer_id].clone()
             original_subset_string = layer.subsetString()
             if original_subset_string:
-                subset_string = "(%s) AND (%s)" % (original_subset_string, rule.get_subsetstring_for_user(user, self.constraint.layer.qgs_layer_id))
+                subset_string = "(%s) AND (%s)" % (original_subset_string, self.rule)
             else:
-                subset_string = self.get_subsetstring_for_user(user, self.constraint.layer.qgs_layer_id)
+                subset_string = self.rule
             if not layer.setSubsetString(subset_string):
                 raise ValidationError("Could not set the subset string for layer %s: %s" % (self.constraint.layer.qgs_layer_id, subset_string))
             is_valid = layer.isValid()
