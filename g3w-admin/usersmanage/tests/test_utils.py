@@ -12,14 +12,16 @@ __copyright__ = 'Copyright 2019, GIS3W'
 from django.test import TestCase, RequestFactory, Client
 from django.test.client import RequestFactory
 from django.forms import Form
+from django.dispatch import receiver
 from guardian.shortcuts import assign_perm
 from crispy_forms.layout import Field
-from usersmanage.models import User
+from usersmanage.models import User, Userbackend, USER_BACKEND_TYPES
 from usersmanage.configs import *
 from usersmanage.utils import *
 from usersmanage.forms import G3WACLForm
 from core.forms import GroupForm, G3WRequestFormMixin
 from core.models import Group, G3WSpatialRefSys
+from core.signals import pre_show_user_data
 from .base import BaseUsermanageTestCase
 from .utils import setup_testing_user_relations
 import copy
@@ -279,4 +281,50 @@ class UsersManageTest(BaseUsermanageTestCase):
             self.test_viewer1,
             self.test_viewer1_2
         ]))
+
+    def test_crispyBoxACL(self):
+        """ Test function of the same name """
+
+        request = RequestFactory()
+        request.user = self.test_user1
+
+        form = TestForm(request=request)
+        def fake(*args):
+            pass
+        form.checkEmptyInitialsData = fake
+
+        self.assertIsInstance(crispyBoxACL(form), Div)
+
+    def test_get_perms_by_user_backend(self):
+        """ Test function of the same name """
+
+        # With standard backend
+        perms = get_perms_by_user_backend(self.test_admin1, self.test_editor1)
+
+        self.assertEqual(set(perms), set([
+            'add_user',
+            'change_user',
+            'delete_user'
+        ]))
+
+        # Choice a new backend
+        USER_BACKEND_TYPES['test_backend'] = 'TEST_BACKEND'
+        self.test_editor2_3.userbackend.backend = 'test_backend'
+        self.test_editor2_3.userbackend.save()
+
+        def fake_receiver(sender, **kwargs):
+            print ('passa')
+            return [
+                'add_user'
+            ]
+
+        pre_show_user_data.connect(fake_receiver, sender=self.test_editor2_3)
+
+        perms = get_perms_by_user_backend(self.test_admin1, self.test_editor2_3)
+        self.assertEqual(set(perms), set([
+            'add_user'
+        ]))
+
+
+
 
