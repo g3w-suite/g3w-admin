@@ -13,7 +13,13 @@ from django.utils import timezone
 from .configs import *
 from core.signals import pre_show_user_data
 
+
 def get_all_logged_in_users():
+    """
+    Return auth users queryset logged into G3W-SUITE
+    :return: Users queryset
+    """
+
     # Query all non-expired sessions
     # use timezone.now() instead of datetime.now() in latest versions of Django
     sessions = Session.objects.filter(expire_date__gte=timezone.now())
@@ -281,7 +287,7 @@ def get_viewers_for_object(object, user, permissions, with_anonymous=True):
     Return viewers user by permission on object and by current g3w-suite user
     :param object: object to check permission
     :param user: current g3w-suite user in session
-    :param permissions: permission to check
+    :param permissions: permission to check, permission must is without app name, i.e. core.view_group become view_group
     :param with_anonymous: if add anonymous user to viewers list
     :return: viewers object list
     """
