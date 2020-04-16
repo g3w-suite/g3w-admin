@@ -180,6 +180,12 @@ def get_groups_for_object(object, permission, grouprole=None):
 def setPermissionUserObject(user, object, permissions=[], mode='add'):
     """
     Assign or remove guardian permissions to user for object
+
+    :param user: Auth user or group model obj.
+    :param object: Django model obj to apply or remove permissions.
+    :param permissions: Default: '[]'. A List of permission to add/remove to object for user.
+    :param mode: Default: 'add'. Mode work, 'add' or 'remove'.
+    :return: None
     """
 
     if not isinstance(permissions, list):
