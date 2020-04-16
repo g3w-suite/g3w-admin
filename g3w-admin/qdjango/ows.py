@@ -116,16 +116,8 @@ class OWSRequestHandler(OWSRequestHandlerBase):
         response = HttpResponse(bytes(qgs_response.body()))
         response.status_code = qgs_response.statusCode()
 
-<<<<<<< HEAD
-            #FIXME: try to use QGIS server API
-            # case qgisserver python binding
-            server = QgsServer()
-            headers, body = server.handleRequest(q.urlencode())
-            response = HttpResponse(body)
-=======
         for key, value in qgs_response.headers().items():
             response[key] = value
->>>>>>> QGIS Server embedded - remove FCGI requirement
 
         return response
 
@@ -140,12 +132,7 @@ class OWSRequestHandler(OWSRequestHandlerBase):
                 q[ku] = q[k]
                 del q[k]
 
-<<<<<<< HEAD
-        q['map'] = self._projectInstance.qgis_file.file.name
-        return self.baseDoRequest(q, self.request)
-=======
         return self.baseDoRequest(q)
->>>>>>> QGIS Server embedded - remove FCGI requirement
 
 
 class OWSTileRequestHandler(OWSRequestHandlerBase):

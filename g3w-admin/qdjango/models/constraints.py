@@ -19,6 +19,7 @@ from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 
 from qdjango.models import Layer
+from qdjango.apps import get_qgs_project
 
 logger = logging.getLogger(__name__)
 
@@ -192,3 +193,34 @@ class ConstraintRule(models.Model):
         logger.debug("Returning subset string for user %s and layer %s: %s" % (user, qgs_layer_id, subset_string))
         return subset_string
 
+
+    def validate_sql(self, user):
+        """Checks if the rule can be executed without errors
+
+        :param user: Django user
+        :type user: Django user
+        :raises ValidationError: error
+        :return: (True, None) if rule has valid SQL, (False, ValidationError) if it is not valid
+        :rtype: tuple (bool, ValidationError)
+        """
+
+
+        try:
+            project = get_qgs_project(self.constraint.layer.project.qgis_file.path)
+            if project is None:
+                raise ValidationError("QGIS project not found: %s" % self.constraint.layer.project.qgis_file.path)
+            layer = project.mapLayers()[self.constraint.layer.qgs_layer_id].clone()
+            original_subset_string = layer.subsetString()
+            if original_subset_string:
+                subset_string = "(%s) AND (%s)" % (original_subset_string, rule.get_subsetstring_for_user(user, self.constraint.layer.qgs_layer_id))
+            else:
+                subset_string = self.get_subsetstring_for_user(user, self.constraint.layer.qgs_layer_id)
+            if not layer.setSubsetString(subset_string):
+                raise ValidationError("Could not set the subset string for layer %s: %s" % (self.constraint.layer.qgs_layer_id, subset_string))
+            is_valid = layer.isValid()
+            if not is_valid:
+                raise ValidationError("QGIS layer %s is not valid after setting the new constraint: %s" % (self.constraint.layer.qgs_layer_id, subset_string))
+        except Exception as ex:
+            logger.debug('Validate SQL failed: %s' % ex)
+            return False, ex
+        return True, None

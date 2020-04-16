@@ -30,7 +30,7 @@ QGS_APPLICATION.initQgis()
 QGS_SERVER = QgsServer()
 
 # Cache for projects, key is the project file path.
-# When a project is upated or delete, it must be removed from the cache
+# When a project is upated or deleted, it must be removed from the cache
 QGS_PROJECTS_CACHE = {}
 
 def get_qgs_project(path):

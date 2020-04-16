@@ -17,6 +17,7 @@ from django.conf import settings
 from django.urls import reverse
 from django.test import override_settings
 from qdjango.models import Project
+from django.contrib.auth.models import User
 from django.core.cache import caches
 from qdjango.models import Layer
 from .base import CoreTestBase

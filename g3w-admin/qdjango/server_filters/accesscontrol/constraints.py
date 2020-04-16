@@ -24,8 +24,9 @@ class SingleLayerAccessControlFilter(QgsAccessControlFilter):
 
     def layerFilterSubsetString(self, layer):
         """Retrieve and sets user layer constraints"""
+
         rule = ConstraintRule.get_subsetstring_for_user(QGS_SERVER.user, layer.id())
-        QgsMessageLog.logMessage("SingleLayerAccessControlFilter returning rule for use %s and layer id %s: %s" % (QGS_SERVER.user, layer.id(), rule), "", Qgis.Info)
+        QgsMessageLog.logMessage("SingleLayerAccessControlFilter returning rule for user %s and layer id %s: %s" % (QGS_SERVER.user, layer.id(), rule), "", Qgis.Info)
         return rule
 
 
