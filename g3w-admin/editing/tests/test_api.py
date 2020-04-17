@@ -248,12 +248,12 @@ class ConstraintsApiTests(ConstraintsTestsBase):
         self.assertEqual(Constraint.objects.count(), 0)
 
     def test_constraint_api_permissions(self):
-        """ Test Contraint API permissions """
+        """ Test Constraint API permissions """
 
         editing_layer = Layer.objects.get(name='editing_layer')
         constraint_layer = Layer.objects.get(name='constraint_layer')
 
-        # create a contraint
+        # create a constraint
         constraint = Constraint(editing_layer=editing_layer, constraint_layer=constraint_layer)
         constraint.save()
 
@@ -489,10 +489,10 @@ class ConstraintsApiTests(ConstraintsTestsBase):
         response = client.get(url, {}, format='json')
         self.assertEqual(response.status_code, 200)
 
-        # check 200 for rule list by rule user
+        # check 403 for rule list by rule user (only admin can query rules by user)
         url = reverse('constraintrule-api-filter-by-user', kwargs={'user_id': self.test_user3.pk})
         response = client.get(url, {}, format='json')
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 403)
 
         # check 200 for rule detail
         url = reverse('constraintrule-api-detail', kwargs={'pk': rule.pk})
@@ -502,7 +502,7 @@ class ConstraintsApiTests(ConstraintsTestsBase):
         client.logout()
 
         self.assertTrue(client.login(username=self.test_user3.username, password=self.test_user3.username))
-        # Test get Geometries contraint for request user
+        # Test get Geometries constraint for request user
         url = reverse('constraint-api-geometry', kwargs={'editing_layer_id': editing_layer.pk})
         response = client.get(url, {}, format='json')
         self.assertEqual(response.status_code, 200)

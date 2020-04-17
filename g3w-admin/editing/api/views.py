@@ -20,7 +20,7 @@ class QGISEditingLayerVectorView(QGISLayerVectorViewMixin, BaseEditingVectorOnMo
         QGISLayerEditingPermission,
     )
 
-    # for editing apply only contraint and bbox filters
+    # for editing apply only constraint and bbox filters
     filter_backends = (ConstraintsFilter, IntersectsBBoxFilter)
 
     def add_media_property(self, geojson_feature, metadata_layer):
