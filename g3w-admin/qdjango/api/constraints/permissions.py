@@ -3,7 +3,6 @@ from rest_framework.permissions import BasePermission
 from qdjango.models.constraints import Constraint, ConstraintRule
 from qdjango.models.projects import Layer
 
-
 class SingleLayerConstraintPermission(BasePermission):
     """
     API permission for Constraint urls
@@ -31,8 +30,9 @@ class SingleLayerConstraintPermission(BasePermission):
                         return False
 
             else:
+
                 if 'pk' in view.kwargs:
-                    layer = Layer.objects.get(layer__pk=view.kwargs['pk'])
+                    layer = Constraint.objects.get(pk=view.kwargs['pk']).layer
                 else:
                     # case for GET Constraint API List
                     if 'qgs_layer_id' in view.kwargs:
@@ -62,17 +62,15 @@ class SingleLayerConstraintRulePermission(BasePermission):
 
         try:
             if 'constraint_id' in view.kwargs:
-                layer = Layer.objects.get(layer__pk=view.kwargs['constraint_id'])
+                layer = Constraint.objects.get(pk=view.kwargs['constraint_id']).layer
             # case for rule by layer_id
             elif 'qgs_layer_id' in view.kwargs:
                 layer = Layer.objects.get(qgs_layer_id=view.kwargs['qgs_layer_id'])
             elif 'layer_id' in view.kwargs:
                 layer = Layer.objects.get(id=view.kwargs['layer_id'])
-            elif 'user_id' in view.kwargs:
-                layer = Layer.objects.get(layer__constraintrule__user__pk=view.kwargs['user_id'])
             # case detail
             elif 'pk' in view.kwargs:
-                layer = Layer.objects.get(layer__constraintrule__pk=view.kwargs['pk'])
+                layer = ConstraintRule.objects.get(pk=view.kwargs['pk']).constraint.layer
             else:
                 return False
 

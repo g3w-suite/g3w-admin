@@ -20,7 +20,7 @@ urlpatterns += [
     url(r'^api/rule/detail/(?P<pk>\d+)/$',
         login_required(SingleLayerConstraintRuleDetail.as_view()), name='qdjango-constraintrule-api-detail'),
     # All ConstraintRule(s) filtered by layer qgs_layer_id
-    url(r'^api/rule/layer/(?P<qgs_layer_id>[-_\w\d]+)/$',
+    url(r'^api/rule/layer/qgs_layer_id/(?P<qgs_layer_id>[-_\w\d]+)/$',
         login_required(SingleLayerConstraintRuleList.as_view()), name='qdjango-constraintrule-api-filter-by-qgs-layer-id'),
     # All ConstraintRule(s) filtered by layer qdjango layer pk
     url(r'^api/rule/layer/(?P<layer_id>[\d]+)/$',
@@ -38,11 +38,14 @@ urlpatterns += [
     url(r'^api/constraint/detail/(?P<pk>\d+)/$',
         login_required(SingleLayerConstraintDetail.as_view()), name='qdjango-constraint-api-detail'),
     # All Constraint(s) filtered by layer qgs_layer_id
-    url(r'^api/constraint/(?P<qgs_layer_id>[-_\w\d]+)/$',
+    url(r'^api/constraint/qgs_layer_id/(?P<qgs_layer_id>[-_\w\d]+)/$',
         login_required(SingleLayerConstraintList.as_view()), name='qdjango-constraint-api-filter-by-qgs-layer-id'),
     # All Constraint(s) filtered by layer qdjango layer pk
     url(r'^api/constraint/(?P<layer_id>\d+)/$',
         login_required(SingleLayerConstraintList.as_view()), name='qdjango-constraint-api-filter-by-layer-id'),
+    # All Constraint(s) filtered by user
+    url(r'^api/constraint/(?P<user_id>\d+)/$',
+        login_required(SingleLayerConstraintList.as_view()), name='qdjango-constraint-api-filter-by-user'),
     # All Constraint(s)
     url(r'^api/constraint/$',
         login_required(SingleLayerConstraintList.as_view()), name='qdjango-constraint-api-list'),
