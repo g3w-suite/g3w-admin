@@ -33,7 +33,7 @@ class Constraint(models.Model):
         Layer, on_delete=models.CASCADE, related_name='constrainted_layer')
 
     @property
-    def layer_qgs_layer_id(self):
+    def qgs_layer_id(self):
         """Return the QGIS layer id for the constrainted layer"""
 
         return self.layer.qgs_layer_id

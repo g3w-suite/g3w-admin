@@ -6,10 +6,6 @@ from rest_framework import serializers
 from rest_framework_gis import serializers as geo_serializers
 from rest_framework.fields import empty
 from qdjango.models import Project, Layer, Widget
-try:
-    from qgis.server import *
-except:
-    pass
 from qdjango.utils.data import QgisProjectSettingsWMS, QGIS_LAYER_TYPE_NO_GEOM
 from qdjango.ows import OWSRequestHandler
 from qdjango.signals import load_qdjango_widget_layer
@@ -22,7 +18,7 @@ from core.utils.models import get_geometry_column, create_geomodel_from_qdjango_
 from core.utils.structure import RELATIONS_ONE_TO_MANY, RELATIONS_ONE_TO_ONE
 from core.models import G3WSpatialRefSys
 from qdjango.utils.structure import QdjangoMetaLayer, datasourcearcgis2dict
-from .utils import serialize_vectorjoin
+from ..utils import serialize_vectorjoin
 import json
 
 import logging

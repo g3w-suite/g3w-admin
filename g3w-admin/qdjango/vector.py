@@ -23,7 +23,7 @@ from core.utils.models import (create_geomodel_from_qdjango_layer,
 from core.utils.structure import mapLayerAttributesFromQgisLayer
 from core.utils.vector import BaseUserMediaHandler
 
-from .api.serializers import QGISGeoLayerSerializer, QGISLayerSerializer
+from .api.projects.serializers import QGISGeoLayerSerializer, QGISLayerSerializer
 from .models import Layer
 from .utils.data import QGIS_LAYER_TYPE_NO_GEOM
 from .utils.edittype import MAPPING_EDITTYPE_QGISEDITTYPE

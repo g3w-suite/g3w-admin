@@ -128,6 +128,10 @@ class ConstraintsControlTest(QdjangoTestBase):
 
         self.assertFalse(self._check_subset_string())
 
+        self.assertEqual(constraint.layer_name, 'world')
+        self.assertEqual(constraint.qgs_layer_id, 'world20181008111156525')
+        self.assertEqual(constraint.rule_count, 1)
+
     def test_group_constraint(self):
         """Test model with group constraint"""
 

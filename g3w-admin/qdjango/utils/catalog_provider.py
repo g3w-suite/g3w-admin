@@ -13,7 +13,7 @@ __date__ = '2019-01-15'
 __copyright__ = 'Copyright 2019, Gis3W'
 
 
-from qdjango.api.serializers import ProjectSerializer, LayerSerializer
+from qdjango.api.projects.serializers import ProjectSerializer, LayerSerializer
 from qdjango.models import Layer, Project
 from django.conf import settings
 from guardian.shortcuts import assign_perm, get_objects_for_user
