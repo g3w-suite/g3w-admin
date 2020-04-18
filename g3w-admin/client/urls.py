@@ -7,7 +7,7 @@ urlpatterns = [
 
     # g3w-client bootstrap
     url(r'^map/(?P<map_name_alias>[-_\w\d]+)/$', client_map_alias_view,
-        name='group-project-map'),
+        name='group-project-map-alias'),
     url(r'^map/(?P<group_slug>[-_\w\d]+)/(?P<project_type>[-_\w\d]+)/(?P<project_id>[0-9]+)/$', ClientView.as_view(),
         name='group-project-map'),
     url(r'^map/(?P<group_slug>[-_\w\d]+)/(?P<project_type>[-_\w\d]+)/(?P<project_slug>[-_\w\d]+)/$',
