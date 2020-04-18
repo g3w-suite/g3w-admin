@@ -26,7 +26,7 @@ def client_map_alias_view(request, map_name_alias, *args, **kwargs):
     Proxy view for map view with alias url.
     """
 
-    # try to find alis url
+    # try to find alias url
     try:
         pma = ProjectMapUrlAlias.objects.get(alias=map_name_alias)
         kwargs.update({'project_type': pma.app_name, 'project_id': pma.project_id, 'group_slug': 'for_alias'})
