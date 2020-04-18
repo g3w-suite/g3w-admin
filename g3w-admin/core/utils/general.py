@@ -10,12 +10,6 @@ def ucfirst(string):
     return string[0].upper() + string[1:]
 
 
-def getProjectModels():
-    """
-    Find project model and returns
-    :return:
-    """
-
 def getAuthPermissionContentType():
     """
     Return base object model for apps module app
