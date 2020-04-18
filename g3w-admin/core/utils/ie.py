@@ -4,6 +4,9 @@ from import_export.resources import ModelResource, ModelDeclarativeMetaclass
 def modelresource_factory(model, resource_class=ModelResource, **kwargs):
     """
     Factory for creating ``ModelResource`` class for given Django model.
+    :param model: Django Model Object
+    :param resource_class: ImportExport resources class, ModelResource default.
+    :return: ModelResource class
     """
     attrs = {'model': model}
     attrs.update(kwargs)
