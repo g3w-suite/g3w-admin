@@ -15,7 +15,7 @@ def getNextVlueFromPGSeq(PGSeqName, connection='default'):
 
 def build_django_connection(datasource, layer_type='postgres', schema=None):
     """
-    Build django cdict connection with datasource values
+    Build djangodict connection with datasource values
     :param datasource: dict
     :param layer_type: string
     :return: dict
