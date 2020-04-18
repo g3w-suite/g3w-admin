@@ -24,6 +24,9 @@ import json
 def client_map_alias_view(request, map_name_alias, *args, **kwargs):
     """
     Proxy view for map view with alias url.
+    :param request: Django request object.
+    :param map_name_alias: Alias name by url.
+    :return: ClientView instance or a Http404 instance.
     """
 
     # try to find alias url
@@ -36,6 +39,9 @@ def client_map_alias_view(request, map_name_alias, *args, **kwargs):
 
 
 class ClientView(TemplateView):
+    """
+    Main Map client view.
+    """
 
     template_name = "{}/index.html".format(settings.CLIENT_DEFAULT)
     project = None
@@ -182,8 +188,11 @@ class ClientView(TemplateView):
 def user_media_view(request, project_type, layer_id, file_name, *args, **kwargs):
     """
     View to return media checking user project permissions
-    :param request:
-    :return:
+    :param request: Django request object.
+    :param project_type: G3W-USITE map project, default 'qdjango'.
+    :param layer_id: Django model Layer pk value.
+    :param file_name: File name to render.
+    :return: HttpRensponce or a HttpResponseForbidden instance.
     """
 
     # get model by projet_type
@@ -200,7 +209,9 @@ def user_media_view(request, project_type, layer_id, file_name, *args, **kwargs)
 
 def credits(request, * args, **kwargs):
     """
-    Return custom credits from core
+    Return custom credits from core GeneralSuiteData model object.
+    :param request: Django request object instance.
+    :return: HttpResponse instance.
     """
 
     return HttpResponse(GeneralSuiteData.objects.get().credits)
