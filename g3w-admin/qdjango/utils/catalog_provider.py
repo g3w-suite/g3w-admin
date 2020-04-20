@@ -151,7 +151,8 @@ def catalog_provider(groups=[]):
             }
 
             if not _is_raster(layer):
-                rec['links'] += "^WFS,WFS Server,OGC:WFS,%s" % _get_url(project)
+                if layer.wfscapabilities:
+                    rec['links'] += "^WFS,WFS Server,OGC:WFS,%s" % _get_url(project)
                 rec['service_type'] += ',WFS'
                 rec['format'] += ',application/xml'
                 rec['service_type_version'] += ',1.1.0'
