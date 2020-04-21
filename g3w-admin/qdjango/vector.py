@@ -335,8 +335,17 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         :return: http response with attached file
         """
 
+        # Apply filter backends, store original subset string
+        original_subset_string = self.metadata_layer.qgis_layer.subsetString()
+        if hasattr(self, 'filter_backends'):
+            for backend in self.filter_backends:
+                backend().apply_filter(request, self.metadata_layer.qgis_layer, None, self)
+
         xls_tmp_path = tempfile.mktemp('.xlsx')
         error_code, error_message = QgsVectorFileWriter.writeAsVectorFormat(self.metadata_layer.qgis_layer, xls_tmp_path , "utf-8", self.metadata_layer.qgis_layer.crs(), 'xlsx')
+
+        # Restore the original subset string
+        self.metadata_layer.qgis_layer.setSubsetString(original_subset_string)
 
         if error_code != 0:
             return HttpResponse(status=500, reason=error_message)
