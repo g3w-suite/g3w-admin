@@ -2,34 +2,37 @@ import io
 import os
 import shutil
 import subprocess
-import zipfile
 import tempfile
+import zipfile
 
 from django.db import connections
 from django.db.models.expressions import RawSQL
-from django_filters.rest_framework import DjangoFilterBackend
 from django.http import HttpResponse, HttpResponseForbidden
+from django_filters.rest_framework import DjangoFilterBackend
+from qgis.core import QgsVectorFileWriter
 
 from core.api.base.vector import MetadataVectorLayer
 from core.api.base.views import (MODE_CONFIG, MODE_DATA, MODE_SHP, MODE_XLS,
                                  APIException, BaseVectorOnModelApiView,
                                  IntersectsBBoxFilter)
-from core.api.filters import SearchFilter, SuggestFilterBackend, IntersectsBBoxFilter, OrderingFilter
-
+from core.api.filters import (IntersectsBBoxFilter, OrderingFilter,
+                              SearchFilter, SuggestFilterBackend)
 from core.api.permissions import ProjectPermission
 from core.utils.ie import modelresource_factory
 from core.utils.models import (create_geomodel_from_qdjango_layer,
                                get_geometry_column)
+from core.utils.qgisapi import get_qgis_layer
 from core.utils.structure import mapLayerAttributesFromQgisLayer
 from core.utils.vector import BaseUserMediaHandler
 
-from .api.projects.serializers import QGISGeoLayerSerializer, QGISLayerSerializer
+from qdjango.api.constraints.filters import SingleLayerConstraintFilter
+
+from .api.projects.serializers import (QGISGeoLayerSerializer,
+                                       QGISLayerSerializer)
 from .models import Layer
 from .utils.data import QGIS_LAYER_TYPE_NO_GEOM
 from .utils.edittype import MAPPING_EDITTYPE_QGISEDITTYPE
 from .utils.structure import datasource2dict
-from core.utils.qgisapi import get_qgis_layer
-from qgis.core import QgsVectorFileWriter
 
 MODE_WIDGET = 'widget'
 
@@ -139,7 +142,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
 
     permission_classes = (ProjectPermission,)
 
-    filter_backends = (OrderingFilter, IntersectsBBoxFilter, SearchFilter, SuggestFilterBackend)
+    filter_backends = (OrderingFilter, IntersectsBBoxFilter, SearchFilter, SuggestFilterBackend, SingleLayerConstraintFilter)
     ordering_fields = '__all__'
 
     # Modes call available (output formats)
@@ -282,9 +285,19 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
 
         filename = self.metadata_layer.qgis_layer.name()
 
+        # Apply filter backends, store original subset string
+        original_subset_string = self.metadata_layer.qgis_layer.subsetString()
+        if hasattr(self, 'filter_backends'):
+            for backend in self.filter_backends:
+                backend().apply_filter(request, self.metadata_layer.qgis_layer, None, self)
+
         error_code, error_message = QgsVectorFileWriter.writeAsVectorFormat(self.metadata_layer.qgis_layer, os.path.join(tmp_dir, filename), "utf-8", self.metadata_layer.qgis_layer.crs(), 'ESRI Shapefile')
 
+        # Restore the original subset string
+        self.metadata_layer.qgis_layer.setSubsetString(original_subset_string)
+
         if error_code != 0:
+
             return HttpResponse(status=500, reason=error_message)
 
         filenames = ["{}{}".format(filename, ftype) for ftype in self.shp_extentions]

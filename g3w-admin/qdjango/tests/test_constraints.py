@@ -10,14 +10,19 @@ __author__ = 'elpaso@itopen.it'
 __date__ = '2020-04-15'
 __copyright__ = 'Copyright 2020, ItOpen'
 
+import json
 import logging
 import os
+import zipfile
+from io import BytesIO
 
 from django.conf import settings
 from django.contrib.auth.models import Group as UserGroup
 from django.contrib.auth.models import User
 from django.test import Client
 from django.urls import reverse
+from qgis.core import QgsVectorLayer, QgsFeatureRequest, QgsExpression
+from qgis.PyQt.QtCore import QTemporaryDir
 
 from qdjango.apps import QGS_PROJECTS_CACHE, QGS_SERVER, get_qgs_project
 from qdjango.models import Constraint, ConstraintRule, Layer, Project
@@ -183,3 +188,76 @@ class ConstraintsControlTest(QdjangoTestBase):
 
         self.assertFalse(rule.validate_sql()[0])
 
+    def _testApiCallAdmin01(self, view_name, args, kwargs={}):
+        """Utility to make test calls for admin01 user, returns the response"""
+
+        path = reverse(view_name, args=args)
+        if kwargs:
+            path += '?'
+            parts = []
+            for k,v in kwargs.items():
+                parts.append(k + '=' + v)
+            path += '&'.join(parts)
+
+        # Auth
+        self.assertTrue(self.client.login(username='admin01', password='admin01'))
+        response = self.client.get(path)
+        self.client.logout()
+        return response
+
+    def test_shp_api(self):
+        """Test that the filter applies to shp api"""
+
+        world = Layer.objects.get(name='world')
+        world.download = True
+        world.save()
+        response = self._testApiCallAdmin01('core-vector-api',
+            args={
+                'mode_call': 'shp',
+                'project_type': 'qdjango',
+                'project_id': self.qdjango_project.id,
+                # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                # WARNING: it's the qgs_layer_id, not the name!
+                # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                'layer_name': world.qgs_layer_id
+            }.values()
+        )
+        self.assertEqual(response.status_code, 200)
+        z = zipfile.ZipFile(BytesIO(response.content))
+        temp = QTemporaryDir()
+        z.extractall(temp.path())
+        vl = QgsVectorLayer(temp.path())
+        self.assertTrue(vl.isValid())
+        vl.getFeatures(QgsFeatureRequest(QgsExpression('NAME = \'ITALY\'')))
+        self.assertEqual(len([f for f in vl.getFeatures(QgsFeatureRequest(QgsExpression('NAME = \'ITALY\'')))]), 1)
+
+        # Add a rule
+        admin01 = self.test_user1
+        group1 = admin01.groups.all()[0]
+        world = Layer.objects.get(name='world')
+        constraint = Constraint(layer=world, active=True)
+        constraint.save()
+
+        rule = ConstraintRule(constraint=constraint, group=group1, rule="NAME != 'ITALY'")
+        rule.save()
+
+        response = self._testApiCallAdmin01('core-vector-api',
+            args={
+                'mode_call': 'shp',
+                'project_type': 'qdjango',
+                'project_id': self.qdjango_project.id,
+                # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                # WARNING: it's the qgs_layer_id, not the name!
+                # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                'layer_name': world.qgs_layer_id
+            }.values()
+        )
+        self.assertEqual(response.status_code, 200)
+        z = zipfile.ZipFile(BytesIO(response.content))
+        temp = QTemporaryDir()
+        z.extractall(temp.path())
+        vl = QgsVectorLayer(temp.path())
+        self.assertTrue(vl.isValid())
+        self.assertEqual(len([f for f in vl.getFeatures(QgsFeatureRequest(QgsExpression('NAME = \'ITALY\'')))]), 0)
+
+        self.assertEqual(len([f for f in vl.getFeatures(QgsFeatureRequest(QgsExpression('NAME = \'GERMANY\'')))]), 1)

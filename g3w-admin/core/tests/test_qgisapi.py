@@ -259,3 +259,40 @@ class CoreQgisApiTest(APITestCase):
         self.assertEqual(len(features), 2)
         self.assertIsNotNone(features[0].attribute('pkuid'))
         self.assertIsNone(features[0].attribute('name'))
+
+    def testGetQgisFeaturesExtraSubsetString(self):
+        """Test QGIS API get_qgis_features with subset string filter"""
+
+        qgis_layer = get_qgis_layer(self.layer)
+        self.assertTrue(qgis_layer.isValid())
+
+        features = get_qgis_features(qgis_layer)
+        self.assertEqual(len(features), 2)
+
+        features = get_qgis_features(qgis_layer, extra_subset_string='name != \'another point\'')
+        self.assertEqual(len(features), 1)
+        self.assertEqual(features[0]['name'], 'a point')
+
+        # Check if restored
+        features = get_qgis_features(qgis_layer)
+        self.assertEqual(len(features), 2)
+
+        features = get_qgis_features(qgis_layer, extra_subset_string='name == \'another point\'')
+        self.assertEqual(len(features), 1)
+        self.assertEqual(features[0]['name'], 'another point')
+
+        # Check if original subset string is ANDed
+        qgis_layer_clone = qgis_layer.clone()
+        qgis_layer_clone.setSubsetString('name == \'another point\'')
+        features = get_qgis_features(qgis_layer_clone)
+        self.assertEqual(len(features), 1)
+        self.assertEqual(features[0]['name'], 'another point')
+
+        features = get_qgis_features(qgis_layer_clone, extra_subset_string='name != \'another point\'')
+        self.assertEqual(len(features), 0)
+
+        # Check if restored
+        qgis_layer_clone.setSubsetString('name == \'another point\'')
+        features = get_qgis_features(qgis_layer_clone)
+        self.assertEqual(len(features), 1)
+        self.assertEqual(features[0]['name'], 'another point')

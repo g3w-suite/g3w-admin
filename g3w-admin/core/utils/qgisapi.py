@@ -12,17 +12,19 @@ __author__ = 'elpaso@itopen.it'
 __date__ = '2020-02-03'
 __copyright__ = 'Copyright 2020, Gis3W'
 
-from qgis.core import (
-    QgsVectorLayer,
-    QgsFeatureRequest,
-    QgsRectangle,
-)
-
 import logging
+
+from qgis.core import QgsFeatureRequest, QgsRectangle, QgsVectorLayer
+
+from qdjango.apps import get_qgs_project
+
 logger = logging.getLogger(__file__)
 
 def get_qgis_layer(layer_info):
-    """Create and returns a QGIS vector layer from a layer information record.
+    """Returns a QGIS vector layer from a layer information record.
+    The layer is normally not a clone but it is the live
+    instance of the QgsProject it belongs to. If the project does not exist
+    a new layer will be created.
 
     :param layer_info: layer record from g3w suite table
     :type layer_info: Layer
@@ -30,12 +32,14 @@ def get_qgis_layer(layer_info):
     :rtype: QgsVectorLayer
     """
 
-    provider_name = layer_info.layer_type
-    datasource = layer_info.datasource
-    name = layer_info.name
-
-    return QgsVectorLayer(datasource, name, provider_name)
-
+    try:
+        project = get_qgs_project(layer_info.project.qgis_file.path)
+        return project.mapLayers()[layer_info.qgs_layer_id]
+    except:
+        provider_name = layer_info.layer_type
+        datasource = layer_info.datasource
+        name = layer_info.name
+        return QgsVectorLayer(datasource, name, provider_name)
 
 def get_qgis_features(qgis_layer,
                       qgis_feature_request=None,
@@ -47,7 +51,8 @@ def get_qgis_features(qgis_layer,
                       page_size=None,
                       ordering=None,
                       exclude_fields=None,
-                      extra_expression=None):
+                      extra_expression=None,
+                      extra_subset_string=None):
     """Returns a list of QgsFeatures from the QGIS vector layer,
     with optional filter options.
 
@@ -79,6 +84,8 @@ def get_qgis_features(qgis_layer,
     :type: ordering: array, optional
     :param: extra_expression: extra expression for filtering features
     :type: extra_expression: str, optional
+    :param: extra_subset_string: extra subset string (provider side WHERE condition) for filtering features
+    :type: extra_subset_string: str, optional
     :return: list of features
     :rtype: QgsFeature list
     """
@@ -153,6 +160,15 @@ def get_qgis_features(qgis_layer,
     ))
 
     features = []
+
+    original_subset_string = qgis_layer.subsetString()
+    if extra_subset_string is not None:
+        subset_string = original_subset_string
+        if subset_string:
+            qgis_layer.setSubsetString("({original_subset_string}) AND ({extra_subset_string})".format(original_subset_string=original_subset_string, extra_subset_string=extra_subset_string))
+        else:
+            qgis_layer.setSubsetString(extra_subset_string)
+
     iterator = qgis_layer.getFeatures(qgis_feature_request)
 
     try:
@@ -166,5 +182,8 @@ def get_qgis_features(qgis_layer,
                 features.append(next(iterator))
     except StopIteration:
         pass
+
+    if extra_subset_string is not None:
+        qgis_layer.setSubsetString(original_subset_string)
 
     return features

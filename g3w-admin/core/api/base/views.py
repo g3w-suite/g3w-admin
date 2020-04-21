@@ -387,7 +387,8 @@ class BaseVectorOnModelApiView(G3WAPIView):
         # Prepare arguments for the get feature call
         kwargs = {}
 
-         # Process filter backends
+        # Apply filter backends, store original subset string
+        original_subset_string = self.metadata_layer.qgis_layer.subsetString()
         if hasattr(self, 'filter_backends'):
             for backend in self.filter_backends:
                 backend().apply_filter(request, self.metadata_layer.qgis_layer, qgis_feature_request, self)
@@ -399,6 +400,7 @@ class BaseVectorOnModelApiView(G3WAPIView):
 
         self.features = get_qgis_features(self.metadata_layer.qgis_layer, qgis_feature_request, **kwargs)
         ex = QgsJsonExporter(self.metadata_layer.qgis_layer)
+
         feature_collection = json.loads(ex.exportFeatures(self.features))
 
         # FIXME: QGIS api reprojecting?
@@ -420,6 +422,10 @@ class BaseVectorOnModelApiView(G3WAPIView):
         #FIXME: add extra fields data by signals and receivers
         #FIXME: featurecollection = post_serialize_maplayer.send(layer_serializer, layer=self.layer_name)
         #FIXME: Not sure how to map this to the new QGIS API
+
+        # Restore the original subset string
+        self.metadata_layer.qgis_layer.setSubsetString(original_subset_string)
+
 
     def set_reprojecting_status(self):
         """

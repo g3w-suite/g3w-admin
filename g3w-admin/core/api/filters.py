@@ -24,7 +24,9 @@ class BaseFilterBackend():
     """Base class for QGIS request filters"""
 
     def apply_filter(self, request, qgis_layer, qgis_feature_request, view=None):
-        """Apply the filter to the QGIS feature request
+        """Apply the filter to the QGIS feature request or the layer's subset string.
+        Warning: if the filter alters the layer instance (for example by settings a subset
+        string) make sure to restore the original state or to work on a clone.
 
         :param request: Django request
         :type request: HttRequest

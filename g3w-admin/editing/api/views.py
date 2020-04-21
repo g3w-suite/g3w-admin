@@ -7,6 +7,7 @@ from core.api.views import USERMEDIAHANDLER_CLASSES
 from core.api.filters import IntersectsBBoxFilter
 from editing.api.permissions import QGISLayerEditingPermission
 from qdjango.vector import QGISLayerVectorViewMixin
+from qdjango.api.constraints.filters import SingleLayerConstraintFilter
 from django.views.decorators.csrf import csrf_exempt
 from editing.filters import ConstraintsFilter
 #from client.urls import USER_MEDIA_PREFIX
@@ -21,7 +22,7 @@ class QGISEditingLayerVectorView(QGISLayerVectorViewMixin, BaseEditingVectorOnMo
     )
 
     # for editing apply only constraint and bbox filters
-    filter_backends = (ConstraintsFilter, IntersectsBBoxFilter)
+    filter_backends = (ConstraintsFilter, SingleLayerConstraintFilter,IntersectsBBoxFilter)
 
     def add_media_property(self, geojson_feature, metadata_layer):
         """
