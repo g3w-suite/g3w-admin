@@ -18,14 +18,21 @@ from django.db import connection, models, transaction
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 
+from qgis.core import (
+    QgsExpressionContext,
+    QgsFeatureRequest,
+    QgsExpression,
+    QgsExpressionContextUtils,
+)
+
 from qdjango.models import Layer
 from qdjango.apps import get_qgs_project
 
 logger = logging.getLogger(__name__)
 
-class Constraint(models.Model):
-    """Main Constraint class. Stores the layer that is the target of a constraint
-    and the constraint active state.
+class SingleLayerConstraint(models.Model):
+    """Main constraint class for a single layer.
+    Stores the layer that is the target of a constraint and the constraint active state.
     """
 
     active = models.BooleanField(default=True)
@@ -48,14 +55,13 @@ class Constraint(models.Model):
     def rule_count(self):
         """Return the rules count for constrainted layer"""
 
-        return self.constraintrule_set.count()
+        return self.constraintexpressionrule_set.count() + self.constraintsubsetstringrule_set.count()
 
     def clean(self):
         pass
 
     def __str__(self):
         return "%s (%s)" % (self.layer, self.active)
-
 
     class Meta:
         managed = True
@@ -64,16 +70,21 @@ class Constraint(models.Model):
         app_label = 'qdjango'
 
 
-class ConstraintRule(models.Model):
-    """Constraint rule class: links the constraint with a user or a group and
-    defines the constraint SQL rule"""
+class CommonConstraintRule(models.Model):
+    """Base class for constraint rules"""
 
-    constraint = models.ForeignKey(Constraint, on_delete=models.CASCADE)
+    constraint = models.ForeignKey(SingleLayerConstraint, on_delete=models.CASCADE)
     user = models.ForeignKey(
-        User, on_delete=models.CASCADE, blank=True, null=True, related_name='constrainted_rule_user')
+        User, on_delete=models.CASCADE, blank=True, null=True)
     group = models.ForeignKey(
-        Group, on_delete=models.CASCADE, blank=True, null=True, related_name='constrainted_rule_group')
-    rule = models.TextField(_("SQL WHERE clause for the constrainted layer"), max_length=255)
+        Group, on_delete=models.CASCADE, blank=True, null=True)
+    rule = models.TextField(_("Rule definition"), max_length=1024, help_text=_("Definition of the rule, either an SQL WHERE condition or a QgsExpression definition depending on the rule type"))
+
+    class Meta:
+        abstract = True
+        managed = True
+        unique_together = (('constraint', 'user', 'rule'), ('constraint', 'group', 'rule'))
+        app_label = 'qdjango'
 
     @property
     def active(self):
@@ -83,13 +94,6 @@ class ConstraintRule(models.Model):
 
     def __str__(self):
         return "%s, %s: %s" % (self.constraint, self.user_or_group, self.rule)
-
-    class Meta:
-        managed = True
-        verbose_name = _('Constraint rule')
-        verbose_name_plural = _('Constraint rules')
-        unique_together = (('constraint', 'user', 'rule'), ('constraint', 'group', 'rule'))
-        app_label = 'qdjango'
 
     @property
     def user_or_group(self):
@@ -115,10 +119,9 @@ class ConstraintRule(models.Model):
             raise ValidationError(
                 _('There is an error in the SQL rule where condition: %s' % ex ))
 
-
     @classmethod
     def get_constraints_for_user(cls, user, layer):
-        """Fetch the constraints for a given user and layer
+        """Fetch the constraint rules for a given user and layer
 
         :param user: the user
         :type user: User
@@ -128,7 +131,7 @@ class ConstraintRule(models.Model):
         :rtype: QuerySet
         """
 
-        constraints = Constraint.objects.filter(layer=layer)
+        constraints = SingleLayerConstraint.objects.filter(layer=layer)
         if not constraints:
             return []
         user_groups = user.groups.all()
@@ -149,7 +152,7 @@ class ConstraintRule(models.Model):
         :rtype: QuerySet
         """
 
-        constraints = Constraint.objects.filter(layer=layer, active=True)
+        constraints = SingleLayerConstraint.objects.filter(layer=layer, active=True)
         if not constraints:
             return []
         user_groups = user.groups.all()
@@ -159,8 +162,8 @@ class ConstraintRule(models.Model):
             return cls.objects.filter(constraint__in=constraints, user=user)
 
     @classmethod
-    def get_subsetstring_for_user(cls, user, qgs_layer_id):
-        """Fetch the active constraints for a given user and QGIS layer id and returns the subset string or an empty string if there is no rule.
+    def get_rule_definition_for_user(cls, user, qgs_layer_id):
+        """Fetch the active constraints for a given user and QGIS layer id.
 
         :param user: the user
         :type user: User
@@ -171,7 +174,7 @@ class ConstraintRule(models.Model):
         """
 
         try:
-            constraints = Constraint.objects.filter(layer=Layer.objects.get(qgs_layer_id=qgs_layer_id), active=True)
+            constraints = SingleLayerConstraint.objects.filter(layer=Layer.objects.get(qgs_layer_id=qgs_layer_id), active=True)
         except Layer.DoesNotExist as ex:
             logger.error("A Layer object with QGIS layer id %s was not found: skipping constraints!" % qgs_layer_id)
             return ""
@@ -190,9 +193,17 @@ class ConstraintRule(models.Model):
             subset_strings.append("(%s)" % rule.rule)
 
         subset_string = ' AND '.join(subset_strings)
-        logger.debug("Returning subset string for user %s and layer %s: %s" % (user, qgs_layer_id, subset_string))
+        logger.debug("Returning rule definition for user %s and layer %s: %s" % (user, qgs_layer_id, subset_string))
         return subset_string
 
+
+class ConstraintSubsetStringRule(CommonConstraintRule):
+    """Constraint subset string rule class: links the constraint with a user or a group and
+    defines the constraint subset string SQL rule"""
+
+    class Meta(CommonConstraintRule.Meta):
+        verbose_name = _('Constraint subset string rule')
+        verbose_name_plural = _('Constraint subset string rules')
 
     def validate_sql(self):
         """Checks if the rule can be executed without errors
@@ -201,7 +212,6 @@ class ConstraintRule(models.Model):
         :return: (True, None) if rule has valid SQL, (False, ValidationError) if it is not valid
         :rtype: tuple (bool, ValidationError)
         """
-
 
         try:
             project = get_qgs_project(self.constraint.layer.project.qgis_file.path)
@@ -222,3 +232,46 @@ class ConstraintRule(models.Model):
             logger.debug('Validate SQL failed: %s' % ex)
             return False, ex
         return True, None
+
+
+class ConstraintExpressionRule(CommonConstraintRule):
+    """Constraint expression rule class: links the constraint with a user or a group and
+    defines the constraint string QgsExpression rule"""
+
+    class Meta(CommonConstraintRule.Meta):
+        verbose_name = _('Constraint expression rule')
+        verbose_name_plural = _('Constraint expression rules')
+
+    def validate_sql(self):
+        """Checks if the rule can be executed without errors
+
+        :raises ValidationError: error
+        :return: (True, None) if rule has valid SQL, (False, ValidationError) if it is not valid
+        :rtype: tuple (bool, ValidationError)
+        """
+
+        try:
+            req = QgsFeatureRequest()
+            req.setFilterExpression(self.rule)
+            expression = req.filterExpression()
+            if expression is None:
+                return False, QgsExpression(self.rule).parserErrorString()
+            if not expression.isValid():
+                return False, expression.parserErrorString()
+            project = get_qgs_project(self.constraint.layer.project.qgis_file.path)
+            if project is None:
+                return False, 'QGIS project was not found!'
+            try:
+                layer = project.mapLayers()[self.constraint.layer.qgs_layer_id]
+            except KeyError:
+                return False, 'QGIS layer id not found in the project!'
+            ctx = QgsExpressionContext()
+            ctx.appendScope(QgsExpressionContextUtils.layerScope(layer))
+            if not expression.prepare(ctx):
+                return False, expression.parserErrorString() + '\n' + expression.evalErrorString()
+        except Exception as ex:
+            logger.debug('Validate SQL failed: %s' % ex)
+            return False, ex
+        return True, None
+
+

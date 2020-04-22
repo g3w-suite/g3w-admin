@@ -184,35 +184,6 @@ class ConstraintRule(models.Model):
 
         return constraint_geometry, constraint_geometry.num_geom
 
-    # FIXME: Remove this method
-    def _____get_filters(self):
-        """Construct the filters for the query set
-
-        :return: filters for the query set
-        :rtype: dict
-        """
-
-        editing_model_creator = get_creator_from_qdjango_layer(
-            self.constraint.editing_layer)
-        editing_geom_field = [k for k, v in editing_model_creator.django_model_fields.items(
-        ) if isinstance(v, GeometryField)][0]
-
-        constraint_geometry, matched_counter = self.get_constraint_geometry()
-
-        # set spatial predicate for validation
-        spatial_predicate = getattr(
-            settings, 'EDITING_CONSTRAINT_SPATIAL_PREDICATE', 'contains')
-        if spatial_predicate == 'contains':
-            spatial_predicate = 'within'
-
-        # Now fetch data from editing layer
-        # TODO: check if we want "intersects" instead
-        filter_key = editing_geom_field + '__' + spatial_predicate
-        filters = {
-            filter_key: constraint_geometry
-        }
-        return filters
-
     def get_qgis_expression(self):
         """Returns the QGIS expression text for this rule
         """
@@ -232,22 +203,6 @@ class ConstraintRule(models.Model):
                 expression = "within(geom_from_wkt( '{wkt}' ), $geometry)".format(wkt=constraint_geometry.wkt)
 
         return expression
-
-    # FIXME: remove this method
-    def _____get_query_set(self):
-        """Returns the query set from the editing layer filtered by the rule"""
-
-        filters = self.get_filters()
-        constraint_geometry = list(filters.values())[0]
-        editing_model_creator = get_creator_from_qdjango_layer(
-            self.constraint.editing_layer)
-        # Apparently, in spatialite:
-        # select st_within(st_geomfromtext('point( 9 9)'), st_geomfromtext('multipolygon empty'));
-        # returns -1 that is interpreted as TRUE, so we invert the filter to return an empty query set
-        # if constraint_geometry.empty and self.constraint.editing_layer.layer_type == 'spatialite':
-        #    return editing_model_creator.geo_model.objects.exclude(**filters)
-        # else:
-        return editing_model_creator.geo_model.objects.filter(**filters)
 
     def validate_sql(self):
         """Checks if the rule can be executed without errors

@@ -9,7 +9,7 @@ from django.db import connections
 from django.db.models.expressions import RawSQL
 from django.http import HttpResponse, HttpResponseForbidden
 from django_filters.rest_framework import DjangoFilterBackend
-from qgis.core import QgsVectorFileWriter
+from qgis.core import QgsVectorFileWriter, QgsFeatureRequest
 
 from core.api.base.vector import MetadataVectorLayer
 from core.api.base.views import (MODE_CONFIG, MODE_DATA, MODE_SHP, MODE_XLS,
@@ -25,7 +25,7 @@ from core.utils.qgisapi import get_qgis_layer
 from core.utils.structure import mapLayerAttributesFromQgisLayer
 from core.utils.vector import BaseUserMediaHandler
 
-from qdjango.api.constraints.filters import SingleLayerConstraintFilter
+from qdjango.api.constraints.filters import SingleLayerSubsetStringConstraintFilter, SingleLayerExpressionConstraintFilter
 
 from .api.projects.serializers import (QGISGeoLayerSerializer,
                                        QGISLayerSerializer)
@@ -142,7 +142,15 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
 
     permission_classes = (ProjectPermission,)
 
-    filter_backends = (OrderingFilter, IntersectsBBoxFilter, SearchFilter, SuggestFilterBackend, SingleLayerConstraintFilter)
+    filter_backends = (
+        OrderingFilter,
+        IntersectsBBoxFilter,
+        SearchFilter,
+        SuggestFilterBackend,
+        SingleLayerSubsetStringConstraintFilter,
+        SingleLayerExpressionConstraintFilter
+    )
+
     ordering_fields = '__all__'
 
     # Modes call available (output formats)
@@ -278,26 +286,39 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         if not self.layer.download:
             return HttpResponseForbidden()
 
-        tmp_dir = "/tmp/g3w-suite/{}/".format(request.session.session_key)
-
-        if not os.path.isdir(tmp_dir):
-            os.makedirs(tmp_dir)
+        tmp_dir = tempfile.TemporaryDirectory()
 
         filename = self.metadata_layer.qgis_layer.name()
 
         # Apply filter backends, store original subset string
+        qgs_request = QgsFeatureRequest()
         original_subset_string = self.metadata_layer.qgis_layer.subsetString()
         if hasattr(self, 'filter_backends'):
             for backend in self.filter_backends:
-                backend().apply_filter(request, self.metadata_layer.qgis_layer, None, self)
+                backend().apply_filter(request, self.metadata_layer.qgis_layer, qgs_request, self)
 
-        error_code, error_message = QgsVectorFileWriter.writeAsVectorFormat(self.metadata_layer.qgis_layer, os.path.join(tmp_dir, filename), "utf-8", self.metadata_layer.qgis_layer.crs(), 'ESRI Shapefile')
+        save_options = QgsVectorFileWriter.SaveVectorOptions()
+        save_options.driverName = 'ESRI Shapefile'
+        save_options.fileEncoding = 'utf-8'
 
-        # Restore the original subset string
+        # Make a selection based on the request
+        if qgs_request.filterExpression() is not None:
+            self.metadata_layer.qgis_layer.selectByExpression(qgs_request.filterExpression().expression())
+            save_options.onlySelectedFeatures = True
+
+        error_code, error_message = QgsVectorFileWriter.writeAsVectorFormatV2(
+            self.metadata_layer.qgis_layer,
+            os.path.join(tmp_dir.name, filename),
+            self.metadata_layer.qgis_layer.transformContext(),
+            save_options
+        )
+
+        # Restore the original subset string and select no features
+        self.metadata_layer.qgis_layer.selectByIds([])
         self.metadata_layer.qgis_layer.setSubsetString(original_subset_string)
 
-        if error_code != 0:
-
+        if error_code != QgsVectorFileWriter.NoError:
+            tmp_dir.cleanup()
             return HttpResponse(status=500, reason=error_message)
 
         filenames = ["{}{}".format(filename, ftype) for ftype in self.shp_extentions]
@@ -313,14 +334,13 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         for fpath in filenames:
 
             # Add file, at correct path
-            ftoadd = os.path.join(tmp_dir, fpath)
+            ftoadd = os.path.join(tmp_dir.name, fpath)
             if os.path.exists(ftoadd):
                 zf.write(ftoadd, fpath)
 
         # Must close zip for all contents to be written
         zf.close()
-        #map(lambda f: os.remove('{}{}'.format(tmp_dir, f)), filenames)
-        shutil.rmtree(tmp_dir)
+        tmp_dir.cleanup()
 
         # Grab ZIP file from in-memory, make response with correct MIME-type
         response = HttpResponse(s.getvalue(), content_type="application/x-zip-compressed")
@@ -336,21 +356,43 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         """
 
         # Apply filter backends, store original subset string
+        qgs_request = QgsFeatureRequest()
         original_subset_string = self.metadata_layer.qgis_layer.subsetString()
         if hasattr(self, 'filter_backends'):
             for backend in self.filter_backends:
-                backend().apply_filter(request, self.metadata_layer.qgis_layer, None, self)
+                backend().apply_filter(request, self.metadata_layer.qgis_layer, qgs_request, self)
 
-        xls_tmp_path = tempfile.mktemp('.xlsx')
-        error_code, error_message = QgsVectorFileWriter.writeAsVectorFormat(self.metadata_layer.qgis_layer, xls_tmp_path , "utf-8", self.metadata_layer.qgis_layer.crs(), 'xlsx')
+        save_options = QgsVectorFileWriter.SaveVectorOptions()
+        save_options.driverName = 'xlsx'
+        save_options.fileEncoding = 'utf-8'
 
-        # Restore the original subset string
+        tmp_dir = tempfile.TemporaryDirectory()
+
+        filename = self.metadata_layer.qgis_layer.name() + '.xlsx'
+
+        # Make a selection based on the request
+        if qgs_request.filterExpression() is not None:
+            self.metadata_layer.qgis_layer.selectByExpression(qgs_request.filterExpression().expression())
+            save_options.onlySelectedFeatures = True
+
+        xls_tmp_path = os.path.join(tmp_dir.name, filename)
+        error_code, error_message = QgsVectorFileWriter.writeAsVectorFormatV2(
+            self.metadata_layer.qgis_layer,
+            xls_tmp_path,
+            self.metadata_layer.qgis_layer.transformContext(),
+            save_options
+        )
+
+        # Restore the original subset string and select no features
+        self.metadata_layer.qgis_layer.selectByIds([])
         self.metadata_layer.qgis_layer.setSubsetString(original_subset_string)
 
-        if error_code != 0:
+        if error_code != QgsVectorFileWriter.NoError:
+            tmp_dir.cleanup()
             return HttpResponse(status=500, reason=error_message)
 
         response = HttpResponse(open(xls_tmp_path, 'rb').read(), content_type='application/ms-excel')
+        tmp_dir.cleanup()
         response['Content-Disposition'] = 'attachment; filename=geodata.xls'
         response.set_cookie('fileDownload', 'true')
         return response
