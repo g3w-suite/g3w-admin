@@ -51,9 +51,11 @@ def catalog_provider(groups=[]):
 
     def _get_url(qgs_project):
 
-        url = '{}://{}/ows/{}/{}/{}/'.format(
+        port = getattr(settings, 'CATALOG_PORT', '80')
+        url = '{}://{}{}/ows/{}/{}/{}/'.format(
             getattr(settings, 'CATALOG_URL_SCHEME', 'http'),
             getattr(settings, 'CATALOG_HOST', 'localhost'),
+            ('' if port == '80' else ':' + port),
             qgs_project.group.slug,
             'qdjango',
             qgs_project.pk
@@ -151,7 +153,8 @@ def catalog_provider(groups=[]):
             }
 
             if not _is_raster(layer):
-                rec['links'] += "^WFS,WFS Server,OGC:WFS,%s" % _get_url(project)
+                if layer.wfscapabilities:
+                    rec['links'] += "^WFS,WFS Server,OGC:WFS,%s" % _get_url(project)
                 rec['service_type'] += ',WFS'
                 rec['format'] += ',application/xml'
                 rec['service_type_version'] += ',1.1.0'
