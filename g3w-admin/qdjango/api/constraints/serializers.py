@@ -25,20 +25,28 @@ class SingleLayerConstraintCleanValidator(object):
         except Exception as ex:
             raise serializers.ValidationError(str(ex))
 
-class SingleLayerConstraintRuleCleanValidator(object):
-    """Validates the constraint rule instance by calling model's clean()"""
+class ConstraintSubsetStringRuleCleanValidator(object):
+    """Validates the constraint subset string rule instance by calling model's clean()"""
 
     def __call__(self, value):
         try:
-            ConstraintRule(constraint=value['constraint'], rule=value['rule'], user=value['user'], group=value['group']).clean()
+            ConstraintSubsetStringRule(constraint=value['constraint'], rule=value['rule'], user=value['user'], group=value['group']).clean()
         except Exception as ex:
             raise serializers.ValidationError(str(ex))
 
+class ConstraintExpressionRuleCleanValidator(object):
+    """Validates the constraint expression rule instance by calling model's clean()"""
+
+    def __call__(self, value):
+        try:
+            ConstraintExpressionRule(constraint=value['constraint'], rule=value['rule'], user=value['user'], group=value['group']).clean()
+        except Exception as ex:
+            raise serializers.ValidationError(str(ex))
 
 class SingleLayerConstraintSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = Constraint
+        model = SingleLayerConstraint
         fields = [
             'pk',
             'layer',
@@ -50,9 +58,16 @@ class SingleLayerConstraintSerializer(serializers.ModelSerializer):
         validators = [SingleLayerConstraintCleanValidator()]
 
 
-class SingleLayerConstraintRuleSerializer(serializers.ModelSerializer):
+class ConstraintExpressionRuleSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = ConstraintRule
+        model = ConstraintExpressionRule
         fields = ['pk', 'constraint', 'user', 'group', 'rule', 'active']
-        validators = [SingleLayerConstraintRuleCleanValidator()]
+        validators = [ConstraintExpressionRuleCleanValidator()]
+
+class ConstraintSubsetStringRuleSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ConstraintSubsetStringRule
+        fields = ['pk', 'constraint', 'user', 'group', 'rule', 'active']
+        validators = [ConstraintSubsetStringRuleCleanValidator()]

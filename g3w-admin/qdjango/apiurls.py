@@ -2,10 +2,12 @@ from django.conf.urls import url
 from django.contrib.auth.decorators import login_required
 from .api.projects.views import QdjangoProjectRelationsApiView
 from .api.constraints.views import (
-    SingleLayerConstraintRuleList,
-    SingleLayerConstraintRuleDetail,
-    SingleLayerConstraintList,
+    ConstraintExpressionRuleDetail,
+    ConstraintExpressionRuleList,
+    ConstraintSubsetStringRuleDetail,
+    ConstraintSubsetStringRuleList,
     SingleLayerConstraintDetail,
+    SingleLayerConstraintList,
 )
 
 urlpatterns = [
@@ -16,24 +18,55 @@ urlpatterns = [
 
 # Single layer Constraints
 urlpatterns += [
-    # Detail of a ConstraintRule
-    url(r'^api/rule/detail/(?P<pk>\d+)/$',
-        login_required(SingleLayerConstraintRuleDetail.as_view()), name='qdjango-constraintrule-api-detail'),
-    # All ConstraintRule(s) filtered by layer qgs_layer_id
-    url(r'^api/rule/layer/qgs_layer_id/(?P<qgs_layer_id>[-_\w\d]+)/$',
-        login_required(SingleLayerConstraintRuleList.as_view()), name='qdjango-constraintrule-api-filter-by-qgs-layer-id'),
-    # All ConstraintRule(s) filtered by layer qdjango layer pk
-    url(r'^api/rule/layer/(?P<layer_id>[\d]+)/$',
-        login_required(SingleLayerConstraintRuleList.as_view()), name='qdjango-constraintrule-api-filter-by-layer-id'),
-    # All ConstraintRule(s) filtered by User pk
-    url(r'^api/rule/user/(?P<user_id>\d+)/$',
-        login_required(SingleLayerConstraintRuleList.as_view()), name='qdjango-constraintrule-api-filter-by-user'),
-    # All ConstraintRule(s) filtered by Constraint pk
-    url(r'^api/rule/constraint/(?P<constraint_id>\d+)/$',
-        login_required(SingleLayerConstraintRuleList.as_view()), name='qdjango-constraintrule-api-filter-by-constraint'),
-    # All ConstraintRule(s)
-    url(r'^api/rule/$',
-        login_required(SingleLayerConstraintRuleList.as_view()), name='qdjango-constraintrule-api-list'),
+
+    #############################################################
+    # Subset string rules
+
+    # Detail of a subsetstringrule
+    url(r'^api/subsetstringrule/detail/(?P<pk>\d+)/$',
+        login_required(ConstraintSubsetStringRuleDetail.as_view()), name='qdjango-subsetstringrule-api-detail'),
+    # All subsetstringrule(s) filtered by layer qgs_layer_id
+    url(r'^api/subsetstringrule/layer/qgs_layer_id/(?P<qgs_layer_id>[-_\w\d]+)/$',
+        login_required(ConstraintSubsetStringRuleList.as_view()), name='qdjango-subsetstringrule-api-filter-by-qgs-layer-id'),
+    # All subsetstringrule(s) filtered by layer qdjango layer pk
+    url(r'^api/subsetstringrule/layer/(?P<layer_id>[\d]+)/$',
+        login_required(ConstraintSubsetStringRuleList.as_view()), name='qdjango-subsetstringrule-api-filter-by-layer-id'),
+    # All subsetstringrule(s) filtered by User pk
+    url(r'^api/subsetstringrule/user/(?P<user_id>\d+)/$',
+        login_required(ConstraintSubsetStringRuleList.as_view()), name='qdjango-subsetstringrule-api-filter-by-user'),
+    # All subsetstringrule(s) filtered by Constraint pk
+    url(r'^api/subsetstringrule/constraint/(?P<constraint_id>\d+)/$',
+        login_required(ConstraintSubsetStringRuleList.as_view()), name='qdjango-subsetstringrule-api-filter-by-constraint'),
+    # All subsetstringrule(s)
+    url(r'^api/subsetstringrule/$',
+        login_required(ConstraintSubsetStringRuleList.as_view()), name='qdjango-subsetstringrule-api-list'),
+
+    #############################################################
+    # Expression rules
+
+    # Detail of a expression rule
+    url(r'^api/expressionrule/detail/(?P<pk>\d+)/$',
+        login_required(ConstraintExpressionRuleDetail.as_view()), name='qdjango-expressionrule-api-detail'),
+    # All expressionrule(s) filtered by layer qgs_layer_id
+    url(r'^api/expressionrule/layer/qgs_layer_id/(?P<qgs_layer_id>[-_\w\d]+)/$',
+        login_required(ConstraintExpressionRuleList.as_view()), name='qdjango-expressionrule-api-filter-by-qgs-layer-id'),
+    # All expressionrule(s) filtered by layer qdjango layer pk
+    url(r'^api/expressionrule/layer/(?P<layer_id>[\d]+)/$',
+        login_required(ConstraintExpressionRuleList.as_view()), name='qdjango-expressionrule-api-filter-by-layer-id'),
+    # All expressionrule(s) filtered by User pk
+    url(r'^api/expressionrule/user/(?P<user_id>\d+)/$',
+        login_required(ConstraintExpressionRuleList.as_view()), name='qdjango-expressionrule-api-filter-by-user'),
+    # All expressionrule(s) filtered by Constraint pk
+    url(r'^api/expressionrule/constraint/(?P<constraint_id>\d+)/$',
+        login_required(ConstraintExpressionRuleList.as_view()), name='qdjango-expressionrule-api-filter-by-constraint'),
+    # All expressionrule(s)
+    url(r'^api/expressionrule/$',
+        login_required(ConstraintExpressionRuleList.as_view()), name='qdjango-expressionrule-api-list'),
+
+
+    #############################################################
+    # Constraints
+
     # Detail of a Constraint
     url(r'^api/constraint/detail/(?P<pk>\d+)/$',
         login_required(SingleLayerConstraintDetail.as_view()), name='qdjango-constraint-api-detail'),

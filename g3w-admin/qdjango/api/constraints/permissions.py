@@ -1,6 +1,10 @@
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.permissions import BasePermission
-from qdjango.models.constraints import Constraint, ConstraintRule
+from qdjango.models.constraints import (
+    SingleLayerConstraint,
+    ConstraintExpressionRule,
+    ConstraintSubsetStringRule,
+)
 from qdjango.models.projects import Layer
 
 class SingleLayerConstraintPermission(BasePermission):
@@ -32,7 +36,7 @@ class SingleLayerConstraintPermission(BasePermission):
             else:
 
                 if 'pk' in view.kwargs:
-                    layer = Constraint.objects.get(pk=view.kwargs['pk']).layer
+                    layer = SingleLayerConstraint.objects.get(pk=view.kwargs['pk']).layer
                 else:
                     # case for GET Constraint API List
                     if 'qgs_layer_id' in view.kwargs:
@@ -49,11 +53,10 @@ class SingleLayerConstraintPermission(BasePermission):
             return False
 
 
-class SingleLayerConstraintRulePermission(BasePermission):
-    """
-    API permission for Constraint Rule urls
-    Allows access only to users have permission change_project on project
-    """
+class BaseRulePermission(BasePermission):
+    """Base class for rule permissions"""
+
+    _class = None  # To be overridded
 
     def has_permission(self, request, view):
 
@@ -62,7 +65,7 @@ class SingleLayerConstraintRulePermission(BasePermission):
 
         try:
             if 'constraint_id' in view.kwargs:
-                layer = Constraint.objects.get(pk=view.kwargs['constraint_id']).layer
+                layer = self._class.objects.get(pk=view.kwargs['constraint_id']).layer
             # case for rule by layer_id
             elif 'qgs_layer_id' in view.kwargs:
                 layer = Layer.objects.get(qgs_layer_id=view.kwargs['qgs_layer_id'])
@@ -70,7 +73,7 @@ class SingleLayerConstraintRulePermission(BasePermission):
                 layer = Layer.objects.get(id=view.kwargs['layer_id'])
             # case detail
             elif 'pk' in view.kwargs:
-                layer = ConstraintRule.objects.get(pk=view.kwargs['pk']).constraint.layer
+                layer = self._class.objects.get(pk=view.kwargs['pk']).constraint.layer
             else:
                 return False
 
@@ -79,3 +82,20 @@ class SingleLayerConstraintRulePermission(BasePermission):
 
         except ObjectDoesNotExist:
             return False
+
+
+class ConstraintSubsetStringRulePermission(BaseRulePermission):
+    """
+    API permission for Constraint Rule urls
+    Allows access only to users have permission change_project on project
+    """
+
+    _class = ConstraintSubsetStringRule
+
+class ConstraintExpressionRulePermission(BaseRulePermission):
+    """
+    API permission for Constraint Rule urls
+    Allows access only to users have permission change_project on project
+    """
+
+    _class = ConstraintExpressionRule

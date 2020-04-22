@@ -19,9 +19,24 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from core.api.authentication import CsrfExemptSessionAuthentication
 
-from qdjango.models.constraints import Constraint, ConstraintRule
-from qdjango.api.constraints.serializers import SingleLayerConstraintSerializer, SingleLayerConstraintRuleSerializer
-from qdjango.api.constraints.permissions import SingleLayerConstraintPermission, SingleLayerConstraintRulePermission
+from qdjango.models.constraints import (
+    SingleLayerConstraint,
+    ConstraintExpressionRule,
+    ConstraintSubsetStringRule,
+)
+
+from qdjango.api.constraints.serializers import (
+    SingleLayerConstraintSerializer,
+    ConstraintExpressionRuleSerializer,
+    ConstraintSubsetStringRuleSerializer,
+)
+
+from qdjango.api.constraints.permissions import (
+    SingleLayerConstraintPermission,
+    ConstraintExpressionRulePermission,
+    ConstraintSubsetStringRulePermission,
+)
+
 from qdjango.models import Layer
 import json
 
@@ -29,7 +44,7 @@ import json
 class SingleLayerConstraintList(generics.ListCreateAPIView):
     """List of constraints, optionally filtered by editing layer id"""
 
-    queryset = Constraint.objects.all()
+    queryset = SingleLayerConstraint.objects.all()
     serializer_class = SingleLayerConstraintSerializer
 
     permission_classes = (
@@ -66,7 +81,8 @@ class SingleLayerConstraintList(generics.ListCreateAPIView):
 class SingleLayerConstraintDetail(generics.RetrieveUpdateDestroyAPIView):
     """Details of a constraint"""
 
-    queryset = Constraint.objects.all()
+    queryset = SingleLayerConstraint.objects.all()
+
     serializer_class = SingleLayerConstraintSerializer
 
     permission_classes = (
@@ -78,19 +94,8 @@ class SingleLayerConstraintDetail(generics.RetrieveUpdateDestroyAPIView):
     )
 
 
-class SingleLayerConstraintRuleList(generics.ListCreateAPIView):
-    """List of constraint rules, optionally filtered by editing layer QGIS id, user id or constraint id"""
-
-    queryset = ConstraintRule.objects.all()
-    serializer_class = SingleLayerConstraintRuleSerializer
-
-    permission_classes = (
-        SingleLayerConstraintRulePermission,
-    )
-
-    authentication_classes = (
-        CsrfExemptSessionAuthentication,
-    )
+class RuleListBase(generics.ListCreateAPIView):
+    """Base class for rule APIs"""
 
     def get_queryset(self):
         """
@@ -128,7 +133,36 @@ class SingleLayerConstraintRuleList(generics.ListCreateAPIView):
                 return Response(content, status=status.HTTP_400_BAD_REQUEST)
 
 
-class SingleLayerConstraintRuleDetail(generics.RetrieveUpdateDestroyAPIView):
+class ConstraintSubsetStringRuleList(RuleListBase):
+    """List of constraint subset string rules, optionally filtered by editing layer QGIS id, user id or constraint id"""
+
+    queryset = ConstraintSubsetStringRule.objects.all()
+    serializer_class = ConstraintSubsetStringRuleSerializer
+
+    permission_classes = (
+        ConstraintSubsetStringRulePermission,
+    )
+
+    authentication_classes = (
+        CsrfExemptSessionAuthentication,
+    )
+
+class ConstraintExpressionRuleList(RuleListBase):
+    """List of constraint subset string rules, optionally filtered by editing layer QGIS id, user id or constraint id"""
+
+    queryset = ConstraintExpressionRule.objects.all()
+    serializer_class = ConstraintExpressionRuleSerializer
+
+    permission_classes = (
+        ConstraintExpressionRulePermission,
+    )
+
+    authentication_classes = (
+        CsrfExemptSessionAuthentication,
+    )
+
+
+class ConstraintExpressionRuleDetail(generics.RetrieveUpdateDestroyAPIView):
     """Details of a constraint rule"""
 
     authentication_classes = (
@@ -136,9 +170,24 @@ class SingleLayerConstraintRuleDetail(generics.RetrieveUpdateDestroyAPIView):
     )
 
     permission_classes = (
-        SingleLayerConstraintRulePermission,
+        ConstraintExpressionRulePermission,
     )
 
-    queryset = ConstraintRule.objects.all()
-    serializer_class = SingleLayerConstraintRuleSerializer
+    queryset = ConstraintExpressionRule.objects.all()
+    serializer_class = ConstraintExpressionRuleSerializer
+
+
+class ConstraintSubsetStringRuleDetail(generics.RetrieveUpdateDestroyAPIView):
+    """Details of a constraint rule"""
+
+    authentication_classes = (
+        CsrfExemptSessionAuthentication,
+    )
+
+    permission_classes = (
+        ConstraintSubsetStringRulePermission,
+    )
+
+    queryset = ConstraintSubsetStringRule.objects.all()
+    serializer_class = ConstraintSubsetStringRuleSerializer
 
