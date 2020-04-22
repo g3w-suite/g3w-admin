@@ -63,11 +63,28 @@ class QGISLayerVectorViewMixin(object):
 
     def get_layer_by_params(self, params):
 
-        layer_id = params['layer_name']
+
+        """ !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+        #     #    #    ######  #     # ### #     #  #####
+        #  #  #   # #   #     # ##    #  #  ##    # #     #
+        #  #  #  #   #  #     # # #   #  #  # #   # #
+        #  #  # #     # ######  #  #  #  #  #  #  # #  ####
+        #  #  # ####### #   #   #   # #  #  #   # # #     #
+        #  #  # #     # #    #  #    ##  #  #    ## #     #
+         ## ##  #     # #     # #     # ### #     #  #####
+
+        gets a layer_name in params but then it queries for the
+        qgs_layer_id
+
+        !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! """
+
+
+        qgs_layer_id = params['layer_name']
         project_id = params['project_id']
 
         # get layer object from qdjango model layer
-        return self._layer_model.objects.get(project_id=project_id, qgs_layer_id=layer_id)
+        return self._layer_model.objects.get(project_id=project_id, qgs_layer_id=qgs_layer_id)
 
     def get_geoserializer_kwargs(self):
 
