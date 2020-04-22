@@ -1,27 +1,27 @@
 # -*- coding: utf-8 -*-
-from django.conf import settings
-from django.http.request import QueryDict
-from defusedxml import lxml
-from lxml import etree
-from django.utils.translation import ugettext_lazy as _
-from django.db import transaction
-from qdjango.models import Project
-from core.utils.data import XmlData, isXML
-from .structure import *
-from .validators import (
-    DatasourceExists,
-    ColumnName,
-    IsGroupCompatibleValidator,
-    ProjectTitleExists,
-    UniqueLayername,
-    CheckMaxExtent
-)
-from .exceptions import QgisProjectException
-from collections import OrderedDict
+import json
 import os
 import re
-import json
+from collections import OrderedDict
 
+from defusedxml import lxml
+from django.conf import settings
+from django.db import transaction
+from django.http.request import QueryDict
+from django.utils.translation import ugettext_lazy as _
+from lxml import etree
+
+from qgis.core import QgsProject, QgsMapLayer
+from qgis.PyQt.QtCore import QVariant
+
+from core.utils.data import XmlData, isXML
+from qdjango.models import Project
+
+from .exceptions import QgisProjectException
+from .structure import *
+from .validators import (CheckMaxExtent, ColumnName, DatasourceExists,
+                         IsGroupCompatibleValidator, ProjectTitleExists,
+                         UniqueLayername)
 
 
 # constant per qgis layers
@@ -371,6 +371,18 @@ class QgisProjectLayer(XmlData):
         else:
             return datasource
 
+    def typeMap(self, typename):
+        """Map Qt types to OGR types"""
+
+        try:
+            return {
+            'QSTRING': 'STRING',
+            'QLONGLONG': 'INTEGER64',
+            'INT': 'INTEGER',
+            }[typename]
+        except KeyError:
+            return typename
+
     def _getDataAliases(self):
         """
         Get properties fields aliasies
@@ -399,35 +411,36 @@ class QgisProjectLayer(XmlData):
         :return: A dict list with data attributes structure.
         :rtype: list
         """
-        if self.layerType in [Layer.TYPES.postgres, Layer.TYPES.spatialite]:
-            layerStructure = QgisDBLayerStructure(self, layerType=self.layerType)
-        elif self.layerType in [Layer.TYPES.ogr]:
-            layerStructure = QgisOGRLayerStructure(self)
-        elif self.layerType in [Layer.TYPES.delimitedtext]:
-            layerStructure = QgisCSVLayerStructure(self)
-        elif self.layerType in [Layer.TYPES.arcgisfeatureserver]:
-            layerStructure = QgisAFSLayerStructure(self)
-        elif self.layerType in [
-            Layer.TYPES.wms,
-            Layer.TYPES.gdal,
-            Layer.TYPES.arcgismapserver
-        ]:
+        project = QgsProject()
+
+        if not project.read(self.qgisProject.qgisProjectFile.name):
             return None
 
+        try:
+            layer = project.mapLayers()[self.layerId]
+        except KeyError:
+            return None
 
-        if len(layerStructure.columns) > 0:
-            layerStructure.columns += self._getLayerJoinedColumns()
+        if layer.type() != QgsMapLayer.VectorLayer:
+            return None
 
-        # add aliases
-        if bool(self.aliases):
-            self._addAliesToColumns(layerStructure.columns)
+        columns = []
+        for f in layer.fields():
+            columns.append({
+                'name': f.name(),
+                'type': self.typeMap(QVariant.typeToName(f.type()).upper()),
+                'label': f.displayName(),
+            })
 
-        return layerStructure.columns
+        if len(columns) > 0:
+            columns += self._getLayerJoinedColumns()
+
+        return columns
 
 
     def _addAliesToColumns(self, columns):
         """
-        Add aliases to columen origin name
+        Add aliases to column original name
         :param columns: dict layer structure columns
         """
 
@@ -1567,5 +1580,4 @@ class QgisPgConnection(object):
         qgsPgConnectionTree.append(postgisTree)
 
         return etree.tostring(qgsPgConnectionTree, doctype='<!DOCTYPE connections>')
-
 
