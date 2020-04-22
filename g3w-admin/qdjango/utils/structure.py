@@ -134,7 +134,8 @@ class QdjangoMetaLayer(CoreMetaLayer):
 
 
 class QgisLayerStructure(object):
-    """ Base calss for data structure """
+    """ Base calls for data structure """
+
     def __init__(self, layer, **kwargs):
         self.layer = layer
         self.datasource = layer.datasource

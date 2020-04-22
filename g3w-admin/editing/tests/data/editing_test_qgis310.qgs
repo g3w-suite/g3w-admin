@@ -1,5 +1,5 @@
 <!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
-<qgis version="3.10.3-A Coruña" projectname="editing_test">
+<qgis saveUserFull="Alessandro Pasotti" projectname="editing_test" version="3.13.0-Master" saveUser="ale">
   <homePath path=""/>
   <title>editing_test</title>
   <autotransaction active="0"/>
@@ -7,61 +7,61 @@
   <trust active="0"/>
   <projectCrs>
     <spatialrefsys>
-      <wkt>GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4326"]]</wkt>
+      <wkt>GEOGCRS["WGS 84",DATUM["World Geodetic System 1984",ELLIPSOID["WGS 84",6378137,298.257223563,LENGTHUNIT["metre",1]]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433]],CS[ellipsoidal,2],AXIS["geodetic latitude (Lat)",north,ORDER[1],ANGLEUNIT["degree",0.0174532925199433]],AXIS["geodetic longitude (Lon)",east,ORDER[2],ANGLEUNIT["degree",0.0174532925199433]],USAGE[SCOPE["unknown"],AREA["World"],BBOX[-90,-180,90,180]],ID["EPSG",4326]]</wkt>
       <proj4>+proj=longlat +datum=WGS84 +no_defs</proj4>
       <srsid>3452</srsid>
       <srid>4326</srid>
       <authid>EPSG:4326</authid>
       <description>WGS 84</description>
       <projectionacronym>longlat</projectionacronym>
-      <ellipsoidacronym>WGS84</ellipsoidacronym>
+      <ellipsoidacronym>EPSG:7030</ellipsoidacronym>
       <geographicflag>true</geographicflag>
     </spatialrefsys>
   </projectCrs>
   <layer-tree-group>
     <customproperties/>
-    <layer-tree-layer name="rivers" checked="Qt::Checked" id="rivers_7dd2893b_2cab_48d3_91a2_17fe499dd1c9" providerKey="spatialite" source="dbname='/home/walter/PycharmProjects/g3w_suite_qgis_api/g3w-admin/editing/tests/data/editing_test.db' table=&quot;rivers&quot; (geometry) sql=" expanded="1">
+    <layer-tree-layer source="dbname='/home/ale/dev/python/g3w-suite-py3/g3w-admin/editing/tests/data/editing_test.db' table=&quot;cities&quot; (geometry)" name="cities" providerKey="spatialite" checked="Qt::Checked" legend_exp="" id="cities_54d40b01_2af8_4b17_8495_c5833485536e" expanded="1">
       <customproperties/>
     </layer-tree-layer>
-    <layer-tree-layer name="cities" checked="Qt::Checked" id="cities_54d40b01_2af8_4b17_8495_c5833485536e" providerKey="spatialite" source="dbname='/home/walter/PycharmProjects/g3w_suite_qgis_api/g3w-admin/editing/tests/data/editing_test.db' table=&quot;cities&quot; (geometry) sql=" expanded="1">
+    <layer-tree-layer source="dbname='/home/ale/dev/python/g3w-suite-py3/g3w-admin/editing/tests/data/editing_test.db' table=&quot;rivers&quot; (geometry)" name="rivers" providerKey="spatialite" checked="Qt::Checked" legend_exp="" id="rivers_ec97a7c6_e390_4453_a410_f39843596012" expanded="1">
       <customproperties/>
     </layer-tree-layer>
-    <layer-tree-layer name="countries" checked="Qt::Checked" id="countries_4a93c15c_3360_4771_806f_0ba92574ec0e" providerKey="spatialite" source="dbname='/home/walter/PycharmProjects/g3w_suite_qgis_api/g3w-admin/editing/tests/data/editing_test.db' table=&quot;countries&quot; (geometry) sql=" expanded="1">
+    <layer-tree-layer source="dbname='/home/ale/dev/python/g3w-suite-py3/g3w-admin/editing/tests/data/editing_test.db' table=&quot;countries&quot; (geometry)" name="countries" providerKey="spatialite" checked="Qt::Checked" legend_exp="" id="countries_63e59c18_a1d0_4e25_968a_ccbaecd11725" expanded="1">
       <customproperties/>
     </layer-tree-layer>
     <custom-order enabled="0">
+      <item>rivers_ec97a7c6_e390_4453_a410_f39843596012</item>
+      <item>countries_63e59c18_a1d0_4e25_968a_ccbaecd11725</item>
       <item>cities_54d40b01_2af8_4b17_8495_c5833485536e</item>
-      <item>countries_4a93c15c_3360_4771_806f_0ba92574ec0e</item>
-      <item>rivers_7dd2893b_2cab_48d3_91a2_17fe499dd1c9</item>
     </custom-order>
   </layer-tree-group>
-  <snapping-settings unit="1" mode="2" enabled="0" type="1" tolerance="12" intersection-snapping="0">
+  <snapping-settings scaleDependencyMode="0" tolerance="12" minScale="0" mode="2" intersection-snapping="0" enabled="0" type="1" unit="1" maxScale="0">
     <individual-layer-settings>
-      <layer-setting id="rivers_7dd2893b_2cab_48d3_91a2_17fe499dd1c9" enabled="0" type="1" tolerance="12" units="1"/>
-      <layer-setting id="cities_54d40b01_2af8_4b17_8495_c5833485536e" enabled="0" type="1" tolerance="12" units="1"/>
-      <layer-setting id="countries_4a93c15c_3360_4771_806f_0ba92574ec0e" enabled="0" type="1" tolerance="12" units="1"/>
+      <layer-setting tolerance="12" minScale="0" units="1" id="rivers_ec97a7c6_e390_4453_a410_f39843596012" enabled="0" type="1" maxScale="0"/>
+      <layer-setting tolerance="12" minScale="0" units="1" id="countries_63e59c18_a1d0_4e25_968a_ccbaecd11725" enabled="0" type="1" maxScale="0"/>
+      <layer-setting tolerance="12" minScale="0" units="1" id="cities_54d40b01_2af8_4b17_8495_c5833485536e" enabled="0" type="1" maxScale="0"/>
     </individual-layer-settings>
   </snapping-settings>
   <relations/>
-  <mapcanvas annotationsVisible="1" name="theMapCanvas">
+  <mapcanvas name="theMapCanvas" annotationsVisible="1">
     <units>degrees</units>
     <extent>
-      <xmin>-0.87774635968768777</xmin>
-      <ymin>35.94447613939637876</ymin>
-      <xmax>26.50871809721871131</xmax>
-      <ymax>51.07642868851524298</ymax>
+      <xmin>-5.75647150000001062</xmin>
+      <ymin>35.00312094999999601</ymin>
+      <xmax>20.04162950000001686</xmax>
+      <ymax>55.54473504999994304</ymax>
     </extent>
     <rotation>0</rotation>
     <destinationsrs>
       <spatialrefsys>
-        <wkt>GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4326"]]</wkt>
+        <wkt>GEOGCRS["WGS 84",DATUM["World Geodetic System 1984",ELLIPSOID["WGS 84",6378137,298.257223563,LENGTHUNIT["metre",1]]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433]],CS[ellipsoidal,2],AXIS["geodetic latitude (Lat)",north,ORDER[1],ANGLEUNIT["degree",0.0174532925199433]],AXIS["geodetic longitude (Lon)",east,ORDER[2],ANGLEUNIT["degree",0.0174532925199433]],USAGE[SCOPE["unknown"],AREA["World"],BBOX[-90,-180,90,180]],ID["EPSG",4326]]</wkt>
         <proj4>+proj=longlat +datum=WGS84 +no_defs</proj4>
         <srsid>3452</srsid>
         <srid>4326</srid>
         <authid>EPSG:4326</authid>
         <description>WGS 84</description>
         <projectionacronym>longlat</projectionacronym>
-        <ellipsoidacronym>WGS84</ellipsoidacronym>
+        <ellipsoidacronym>EPSG:7030</ellipsoidacronym>
         <geographicflag>true</geographicflag>
       </spatialrefsys>
     </destinationsrs>
@@ -70,26 +70,25 @@
   </mapcanvas>
   <projectModels/>
   <legend updateDrawingOrder="true">
-    <legendlayer name="rivers" checked="Qt::Checked" open="true" drawingOrder="-1" showFeatureCount="0">
+    <legendlayer name="cities" drawingOrder="-1" open="true" checked="Qt::Checked" showFeatureCount="0">
       <filegroup open="true" hidden="false">
-        <legendlayerfile layerid="rivers_7dd2893b_2cab_48d3_91a2_17fe499dd1c9" visible="1" isInOverview="0"/>
+        <legendlayerfile visible="1" isInOverview="0" layerid="cities_54d40b01_2af8_4b17_8495_c5833485536e"/>
       </filegroup>
     </legendlayer>
-    <legendlayer name="cities" checked="Qt::Checked" open="true" drawingOrder="-1" showFeatureCount="0">
+    <legendlayer name="rivers" drawingOrder="-1" open="true" checked="Qt::Checked" showFeatureCount="0">
       <filegroup open="true" hidden="false">
-        <legendlayerfile layerid="cities_54d40b01_2af8_4b17_8495_c5833485536e" visible="1" isInOverview="0"/>
+        <legendlayerfile visible="1" isInOverview="0" layerid="rivers_ec97a7c6_e390_4453_a410_f39843596012"/>
       </filegroup>
     </legendlayer>
-    <legendlayer name="countries" checked="Qt::Checked" open="true" drawingOrder="-1" showFeatureCount="0">
+    <legendlayer name="countries" drawingOrder="-1" open="true" checked="Qt::Checked" showFeatureCount="0">
       <filegroup open="true" hidden="false">
-        <legendlayerfile layerid="countries_4a93c15c_3360_4771_806f_0ba92574ec0e" visible="1" isInOverview="0"/>
+        <legendlayerfile visible="1" isInOverview="0" layerid="countries_63e59c18_a1d0_4e25_968a_ccbaecd11725"/>
       </filegroup>
     </legendlayer>
   </legend>
   <mapViewDocks/>
-  <mapViewDocks3D/>
   <projectlayers>
-    <maplayer geometry="Point" minScale="1e+8" autoRefreshTime="0" refreshOnNotifyEnabled="0" hasScaleBasedVisibilityFlag="0" styleCategories="AllStyleCategories" refreshOnNotifyMessage="" labelsEnabled="0" type="vector" simplifyDrawingTol="1" simplifyLocal="1" wkbType="Point" simplifyAlgorithm="0" maxScale="0" simplifyMaxScale="1" readOnly="0" simplifyDrawingHints="1" autoRefreshEnabled="0">
+    <maplayer geometry="Point" simplifyAlgorithm="0" minScale="100000000" labelsEnabled="0" maxScale="0" autoRefreshTime="0" hasScaleBasedVisibilityFlag="0" refreshOnNotifyEnabled="0" autoRefreshEnabled="0" simplifyMaxScale="1" type="vector" refreshOnNotifyMessage="" readOnly="0" simplifyLocal="0" simplifyDrawingHints="3" simplifyDrawingTol="1.2" wkbType="Point" styleCategories="AllStyleCategories">
       <extent>
         <xmin>8.88083699999999965</xmin>
         <ymin>42.40723200000000048</ymin>
@@ -97,21 +96,21 @@
         <ymax>46.01007784502829878</ymax>
       </extent>
       <id>cities_54d40b01_2af8_4b17_8495_c5833485536e</id>
-      <datasource>dbname='/home/walter/PycharmProjects/g3w_suite_qgis_api/g3w-admin/editing/tests/data/editing_test.db' table="cities" (geometry) sql=</datasource>
+      <datasource>dbname='../data/editing_test.db' table="cities" (geometry)</datasource>
       <keywordList>
         <value></value>
       </keywordList>
       <layername>cities</layername>
       <srs>
         <spatialrefsys>
-          <wkt>GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4326"]]</wkt>
+          <wkt>GEOGCRS["WGS 84",DATUM["World Geodetic System 1984",ELLIPSOID["WGS 84",6378137,298.257223563,LENGTHUNIT["metre",1]]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433]],CS[ellipsoidal,2],AXIS["geodetic latitude (Lat)",north,ORDER[1],ANGLEUNIT["degree",0.0174532925199433]],AXIS["geodetic longitude (Lon)",east,ORDER[2],ANGLEUNIT["degree",0.0174532925199433]],USAGE[SCOPE["unknown"],AREA["World"],BBOX[-90,-180,90,180]],ID["EPSG",4326]]</wkt>
           <proj4>+proj=longlat +datum=WGS84 +no_defs</proj4>
           <srsid>3452</srsid>
           <srid>4326</srid>
           <authid>EPSG:4326</authid>
           <description>WGS 84</description>
           <projectionacronym>longlat</projectionacronym>
-          <ellipsoidacronym>WGS84</ellipsoidacronym>
+          <ellipsoidacronym>EPSG:7030</ellipsoidacronym>
           <geographicflag>true</geographicflag>
         </spatialrefsys>
       </srs>
@@ -135,19 +134,19 @@
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>true</geographicflag>
+            <geographicflag>false</geographicflag>
           </spatialrefsys>
         </crs>
         <extent/>
       </resourceMetadata>
-      <provider encoding="UTF-8">spatialite</provider>
+      <provider encoding="">spatialite</provider>
       <vectorjoins/>
       <layerDependencies/>
       <dataDependencies/>
       <legend type="default-vector"/>
       <expressionfields/>
-      <map-layer-style-manager current="predefinito">
-        <map-layer-style name="predefinito"/>
+      <map-layer-style-manager current="default">
+        <map-layer-style name="default"/>
       </map-layer-style-manager>
       <auxiliaryLayer/>
       <flags>
@@ -155,12 +154,12 @@
         <Removable>1</Removable>
         <Searchable>1</Searchable>
       </flags>
-      <renderer-v2 forceraster="0" enableorderby="0" type="singleSymbol" symbollevels="0">
+      <renderer-v2 enableorderby="0" forceraster="0" symbollevels="0" type="singleSymbol">
         <symbols>
-          <symbol name="0" force_rhr="0" clip_to_extent="1" type="marker" alpha="1">
-            <layer class="SimpleMarker" enabled="1" pass="0" locked="0">
+          <symbol alpha="1" name="0" force_rhr="0" type="marker" clip_to_extent="1">
+            <layer class="SimpleMarker" pass="0" enabled="1" locked="0">
               <prop v="0" k="angle"/>
-              <prop v="114,155,111,255" k="color"/>
+              <prop v="190,178,151,255" k="color"/>
               <prop v="1" k="horizontal_anchor_point"/>
               <prop v="bevel" k="joinstyle"/>
               <prop v="circle" k="name"/>
@@ -194,12 +193,14 @@
       <blendMode>0</blendMode>
       <featureBlendMode>0</featureBlendMode>
       <layerOpacity>1</layerOpacity>
-      <geometryOptions geometryPrecision="0" removeDuplicateNodes="0">
+      <geometryOptions removeDuplicateNodes="0" geometryPrecision="0">
         <activeChecks type="StringList">
           <Option value="" type="QString"/>
         </activeChecks>
         <checkConfiguration/>
       </geometryOptions>
+      <referencedLayers/>
+      <referencingLayers/>
       <fieldConfiguration>
         <field name="ogc_fid">
           <editWidget type="">
@@ -252,42 +253,42 @@
         </field>
       </fieldConfiguration>
       <aliases>
-        <alias name="" field="ogc_fid" index="0"/>
-        <alias name="" field="geonameid" index="1"/>
-        <alias name="" field="name" index="2"/>
-        <alias name="" field="asciiname" index="3"/>
-        <alias name="" field="iso2_code" index="4"/>
-        <alias name="" field="population" index="5"/>
-        <alias name="" field="gtopo30" index="6"/>
+        <alias name="" index="0" field="ogc_fid"/>
+        <alias name="" index="1" field="geonameid"/>
+        <alias name="" index="2" field="name"/>
+        <alias name="" index="3" field="asciiname"/>
+        <alias name="" index="4" field="iso2_code"/>
+        <alias name="" index="5" field="population"/>
+        <alias name="" index="6" field="gtopo30"/>
       </aliases>
       <excludeAttributesWMS/>
       <excludeAttributesWFS/>
       <defaults>
-        <default expression="" applyOnUpdate="0" field="ogc_fid"/>
-        <default expression="" applyOnUpdate="0" field="geonameid"/>
-        <default expression="" applyOnUpdate="0" field="name"/>
-        <default expression="" applyOnUpdate="0" field="asciiname"/>
-        <default expression="" applyOnUpdate="0" field="iso2_code"/>
-        <default expression="" applyOnUpdate="0" field="population"/>
-        <default expression="" applyOnUpdate="0" field="gtopo30"/>
+        <default applyOnUpdate="0" field="ogc_fid" expression=""/>
+        <default applyOnUpdate="0" field="geonameid" expression=""/>
+        <default applyOnUpdate="0" field="name" expression=""/>
+        <default applyOnUpdate="0" field="asciiname" expression=""/>
+        <default applyOnUpdate="0" field="iso2_code" expression=""/>
+        <default applyOnUpdate="0" field="population" expression=""/>
+        <default applyOnUpdate="0" field="gtopo30" expression=""/>
       </defaults>
       <constraints>
-        <constraint exp_strength="0" unique_strength="1" field="ogc_fid" notnull_strength="1" constraints="3"/>
-        <constraint exp_strength="0" unique_strength="0" field="geonameid" notnull_strength="0" constraints="0"/>
-        <constraint exp_strength="0" unique_strength="0" field="name" notnull_strength="0" constraints="0"/>
-        <constraint exp_strength="0" unique_strength="0" field="asciiname" notnull_strength="0" constraints="0"/>
-        <constraint exp_strength="0" unique_strength="0" field="iso2_code" notnull_strength="0" constraints="0"/>
-        <constraint exp_strength="0" unique_strength="0" field="population" notnull_strength="0" constraints="0"/>
-        <constraint exp_strength="0" unique_strength="0" field="gtopo30" notnull_strength="0" constraints="0"/>
+        <constraint unique_strength="1" field="ogc_fid" constraints="3" notnull_strength="1" exp_strength="0"/>
+        <constraint unique_strength="0" field="geonameid" constraints="0" notnull_strength="0" exp_strength="0"/>
+        <constraint unique_strength="0" field="name" constraints="0" notnull_strength="0" exp_strength="0"/>
+        <constraint unique_strength="0" field="asciiname" constraints="0" notnull_strength="0" exp_strength="0"/>
+        <constraint unique_strength="0" field="iso2_code" constraints="0" notnull_strength="0" exp_strength="0"/>
+        <constraint unique_strength="0" field="population" constraints="0" notnull_strength="0" exp_strength="0"/>
+        <constraint unique_strength="0" field="gtopo30" constraints="0" notnull_strength="0" exp_strength="0"/>
       </constraints>
       <constraintExpressions>
-        <constraint desc="" exp="" field="ogc_fid"/>
-        <constraint desc="" exp="" field="geonameid"/>
-        <constraint desc="" exp="" field="name"/>
-        <constraint desc="" exp="" field="asciiname"/>
-        <constraint desc="" exp="" field="iso2_code"/>
-        <constraint desc="" exp="" field="population"/>
-        <constraint desc="" exp="" field="gtopo30"/>
+        <constraint exp="" desc="" field="ogc_fid"/>
+        <constraint exp="" desc="" field="geonameid"/>
+        <constraint exp="" desc="" field="name"/>
+        <constraint exp="" desc="" field="asciiname"/>
+        <constraint exp="" desc="" field="iso2_code"/>
+        <constraint exp="" desc="" field="population"/>
+        <constraint exp="" desc="" field="gtopo30"/>
       </constraintExpressions>
       <expressionfields/>
       <attributeactions>
@@ -310,33 +311,34 @@
       <editorlayout>generatedlayout</editorlayout>
       <editable/>
       <labelOnTop/>
+      <dataDefinedFieldProperties/>
       <widgets/>
       <previewExpression></previewExpression>
       <mapTip></mapTip>
     </maplayer>
-    <maplayer geometry="Polygon" minScale="1e+8" autoRefreshTime="0" refreshOnNotifyEnabled="0" hasScaleBasedVisibilityFlag="0" styleCategories="AllStyleCategories" refreshOnNotifyMessage="" labelsEnabled="0" type="vector" simplifyDrawingTol="1" simplifyLocal="1" wkbType="MultiPolygon" simplifyAlgorithm="0" maxScale="0" simplifyMaxScale="1" readOnly="0" simplifyDrawingHints="1" autoRefreshEnabled="0">
+    <maplayer geometry="Polygon" simplifyAlgorithm="0" minScale="100000000" labelsEnabled="0" maxScale="0" autoRefreshTime="0" hasScaleBasedVisibilityFlag="0" refreshOnNotifyEnabled="0" autoRefreshEnabled="0" simplifyMaxScale="1" type="vector" refreshOnNotifyMessage="" readOnly="0" simplifyLocal="0" simplifyDrawingHints="3" simplifyDrawingTol="1.2" wkbType="MultiPolygon" styleCategories="AllStyleCategories">
       <extent>
         <xmin>-5.14223100000000954</xmin>
         <ymin>35.4922069999999934</ymin>
         <xmax>19.42738900000000513</xmax>
         <ymax>55.05564899999998829</ymax>
       </extent>
-      <id>countries_4a93c15c_3360_4771_806f_0ba92574ec0e</id>
-      <datasource>dbname='/home/walter/PycharmProjects/g3w_suite_qgis_api/g3w-admin/editing/tests/data/editing_test.db' table="countries" (geometry) sql=</datasource>
+      <id>countries_63e59c18_a1d0_4e25_968a_ccbaecd11725</id>
+      <datasource>dbname='../data/editing_test.db' table="countries" (geometry)</datasource>
       <keywordList>
         <value></value>
       </keywordList>
       <layername>countries</layername>
       <srs>
         <spatialrefsys>
-          <wkt>GEOGCS["Unknown datum based upon the WGS 84 ellipsoid",DATUM["Not_specified_based_on_WGS_84_ellipsoid",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6030"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4030"]]</wkt>
+          <wkt>GEOGCRS["Unknown datum based upon the WGS 84 ellipsoid",DATUM["Not specified (based on WGS 84 ellipsoid)",ELLIPSOID["WGS 84",6378137,298.257223563,LENGTHUNIT["metre",1]]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433]],CS[ellipsoidal,2],AXIS["geodetic latitude (Lat)",north,ORDER[1],ANGLEUNIT["degree",0.0174532925199433]],AXIS["geodetic longitude (Lon)",east,ORDER[2],ANGLEUNIT["degree",0.0174532925199433]],USAGE[SCOPE["unknown"],AREA["Not specified"],BBOX[-90,-180,90,180]],ID["EPSG",4030]]</wkt>
           <proj4>+proj=longlat +ellps=WGS84 +no_defs</proj4>
           <srsid>3239</srsid>
           <srid>4030</srid>
           <authid>EPSG:4030</authid>
           <description>Unknown datum based upon the WGS 84 ellipsoid</description>
           <projectionacronym>longlat</projectionacronym>
-          <ellipsoidacronym>WGS84</ellipsoidacronym>
+          <ellipsoidacronym>EPSG:7030</ellipsoidacronym>
           <geographicflag>true</geographicflag>
         </spatialrefsys>
       </srs>
@@ -360,19 +362,19 @@
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>true</geographicflag>
+            <geographicflag>false</geographicflag>
           </spatialrefsys>
         </crs>
         <extent/>
       </resourceMetadata>
-      <provider encoding="UTF-8">spatialite</provider>
+      <provider encoding="">spatialite</provider>
       <vectorjoins/>
       <layerDependencies/>
       <dataDependencies/>
       <legend type="default-vector"/>
       <expressionfields/>
-      <map-layer-style-manager current="predefinito">
-        <map-layer-style name="predefinito"/>
+      <map-layer-style-manager current="default">
+        <map-layer-style name="default"/>
       </map-layer-style-manager>
       <auxiliaryLayer/>
       <flags>
@@ -380,12 +382,12 @@
         <Removable>1</Removable>
         <Searchable>1</Searchable>
       </flags>
-      <renderer-v2 forceraster="0" enableorderby="0" type="singleSymbol" symbollevels="0">
+      <renderer-v2 enableorderby="0" forceraster="0" symbollevels="0" type="singleSymbol">
         <symbols>
-          <symbol name="0" force_rhr="0" clip_to_extent="1" type="fill" alpha="1">
-            <layer class="SimpleFill" enabled="1" pass="0" locked="0">
+          <symbol alpha="1" name="0" force_rhr="0" type="fill" clip_to_extent="1">
+            <layer class="SimpleFill" pass="0" enabled="1" locked="0">
               <prop v="3x:0,0,0,0,0,0" k="border_width_map_unit_scale"/>
-              <prop v="213,180,60,255" k="color"/>
+              <prop v="196,60,57,255" k="color"/>
               <prop v="bevel" k="joinstyle"/>
               <prop v="0,0" k="offset"/>
               <prop v="3x:0,0,0,0,0,0" k="offset_map_unit_scale"/>
@@ -412,12 +414,14 @@
       <blendMode>0</blendMode>
       <featureBlendMode>0</featureBlendMode>
       <layerOpacity>1</layerOpacity>
-      <geometryOptions geometryPrecision="0" removeDuplicateNodes="0">
+      <geometryOptions removeDuplicateNodes="0" geometryPrecision="0">
         <activeChecks type="StringList">
           <Option value="" type="QString"/>
         </activeChecks>
         <checkConfiguration/>
       </geometryOptions>
+      <referencedLayers/>
+      <referencingLayers/>
       <fieldConfiguration>
         <field name="ogc_fid">
           <editWidget type="">
@@ -547,86 +551,86 @@
         </field>
       </fieldConfiguration>
       <aliases>
-        <alias name="" field="ogc_fid" index="0"/>
-        <alias name="" field="isocode" index="1"/>
-        <alias name="" field="name_local" index="2"/>
-        <alias name="" field="name_en" index="3"/>
-        <alias name="" field="capital_en" index="4"/>
-        <alias name="" field="name_de" index="5"/>
-        <alias name="" field="capital_de" index="6"/>
-        <alias name="" field="name_it" index="7"/>
-        <alias name="" field="capital_it" index="8"/>
-        <alias name="" field="name_fr" index="9"/>
-        <alias name="" field="capital_fr" index="10"/>
-        <alias name="" field="name_br" index="11"/>
-        <alias name="" field="capital_br" index="12"/>
-        <alias name="" field="name_es" index="13"/>
-        <alias name="" field="capital_es" index="14"/>
-        <alias name="" field="population" index="15"/>
-        <alias name="" field="area_km2" index="16"/>
-        <alias name="" field="iso_num" index="17"/>
+        <alias name="" index="0" field="ogc_fid"/>
+        <alias name="" index="1" field="isocode"/>
+        <alias name="" index="2" field="name_local"/>
+        <alias name="" index="3" field="name_en"/>
+        <alias name="" index="4" field="capital_en"/>
+        <alias name="" index="5" field="name_de"/>
+        <alias name="" index="6" field="capital_de"/>
+        <alias name="" index="7" field="name_it"/>
+        <alias name="" index="8" field="capital_it"/>
+        <alias name="" index="9" field="name_fr"/>
+        <alias name="" index="10" field="capital_fr"/>
+        <alias name="" index="11" field="name_br"/>
+        <alias name="" index="12" field="capital_br"/>
+        <alias name="" index="13" field="name_es"/>
+        <alias name="" index="14" field="capital_es"/>
+        <alias name="" index="15" field="population"/>
+        <alias name="" index="16" field="area_km2"/>
+        <alias name="" index="17" field="iso_num"/>
       </aliases>
       <excludeAttributesWMS/>
       <excludeAttributesWFS/>
       <defaults>
-        <default expression="" applyOnUpdate="0" field="ogc_fid"/>
-        <default expression="" applyOnUpdate="0" field="isocode"/>
-        <default expression="" applyOnUpdate="0" field="name_local"/>
-        <default expression="" applyOnUpdate="0" field="name_en"/>
-        <default expression="" applyOnUpdate="0" field="capital_en"/>
-        <default expression="" applyOnUpdate="0" field="name_de"/>
-        <default expression="" applyOnUpdate="0" field="capital_de"/>
-        <default expression="" applyOnUpdate="0" field="name_it"/>
-        <default expression="" applyOnUpdate="0" field="capital_it"/>
-        <default expression="" applyOnUpdate="0" field="name_fr"/>
-        <default expression="" applyOnUpdate="0" field="capital_fr"/>
-        <default expression="" applyOnUpdate="0" field="name_br"/>
-        <default expression="" applyOnUpdate="0" field="capital_br"/>
-        <default expression="" applyOnUpdate="0" field="name_es"/>
-        <default expression="" applyOnUpdate="0" field="capital_es"/>
-        <default expression="" applyOnUpdate="0" field="population"/>
-        <default expression="" applyOnUpdate="0" field="area_km2"/>
-        <default expression="" applyOnUpdate="0" field="iso_num"/>
+        <default applyOnUpdate="0" field="ogc_fid" expression=""/>
+        <default applyOnUpdate="0" field="isocode" expression=""/>
+        <default applyOnUpdate="0" field="name_local" expression=""/>
+        <default applyOnUpdate="0" field="name_en" expression=""/>
+        <default applyOnUpdate="0" field="capital_en" expression=""/>
+        <default applyOnUpdate="0" field="name_de" expression=""/>
+        <default applyOnUpdate="0" field="capital_de" expression=""/>
+        <default applyOnUpdate="0" field="name_it" expression=""/>
+        <default applyOnUpdate="0" field="capital_it" expression=""/>
+        <default applyOnUpdate="0" field="name_fr" expression=""/>
+        <default applyOnUpdate="0" field="capital_fr" expression=""/>
+        <default applyOnUpdate="0" field="name_br" expression=""/>
+        <default applyOnUpdate="0" field="capital_br" expression=""/>
+        <default applyOnUpdate="0" field="name_es" expression=""/>
+        <default applyOnUpdate="0" field="capital_es" expression=""/>
+        <default applyOnUpdate="0" field="population" expression=""/>
+        <default applyOnUpdate="0" field="area_km2" expression=""/>
+        <default applyOnUpdate="0" field="iso_num" expression=""/>
       </defaults>
       <constraints>
-        <constraint exp_strength="0" unique_strength="1" field="ogc_fid" notnull_strength="1" constraints="3"/>
-        <constraint exp_strength="0" unique_strength="0" field="isocode" notnull_strength="0" constraints="0"/>
-        <constraint exp_strength="0" unique_strength="0" field="name_local" notnull_strength="0" constraints="0"/>
-        <constraint exp_strength="0" unique_strength="0" field="name_en" notnull_strength="0" constraints="0"/>
-        <constraint exp_strength="0" unique_strength="0" field="capital_en" notnull_strength="0" constraints="0"/>
-        <constraint exp_strength="0" unique_strength="0" field="name_de" notnull_strength="0" constraints="0"/>
-        <constraint exp_strength="0" unique_strength="0" field="capital_de" notnull_strength="0" constraints="0"/>
-        <constraint exp_strength="0" unique_strength="0" field="name_it" notnull_strength="0" constraints="0"/>
-        <constraint exp_strength="0" unique_strength="0" field="capital_it" notnull_strength="0" constraints="0"/>
-        <constraint exp_strength="0" unique_strength="0" field="name_fr" notnull_strength="0" constraints="0"/>
-        <constraint exp_strength="0" unique_strength="0" field="capital_fr" notnull_strength="0" constraints="0"/>
-        <constraint exp_strength="0" unique_strength="0" field="name_br" notnull_strength="0" constraints="0"/>
-        <constraint exp_strength="0" unique_strength="0" field="capital_br" notnull_strength="0" constraints="0"/>
-        <constraint exp_strength="0" unique_strength="0" field="name_es" notnull_strength="0" constraints="0"/>
-        <constraint exp_strength="0" unique_strength="0" field="capital_es" notnull_strength="0" constraints="0"/>
-        <constraint exp_strength="0" unique_strength="0" field="population" notnull_strength="0" constraints="0"/>
-        <constraint exp_strength="0" unique_strength="0" field="area_km2" notnull_strength="0" constraints="0"/>
-        <constraint exp_strength="0" unique_strength="0" field="iso_num" notnull_strength="0" constraints="0"/>
+        <constraint unique_strength="1" field="ogc_fid" constraints="3" notnull_strength="1" exp_strength="0"/>
+        <constraint unique_strength="0" field="isocode" constraints="0" notnull_strength="0" exp_strength="0"/>
+        <constraint unique_strength="0" field="name_local" constraints="0" notnull_strength="0" exp_strength="0"/>
+        <constraint unique_strength="0" field="name_en" constraints="0" notnull_strength="0" exp_strength="0"/>
+        <constraint unique_strength="0" field="capital_en" constraints="0" notnull_strength="0" exp_strength="0"/>
+        <constraint unique_strength="0" field="name_de" constraints="0" notnull_strength="0" exp_strength="0"/>
+        <constraint unique_strength="0" field="capital_de" constraints="0" notnull_strength="0" exp_strength="0"/>
+        <constraint unique_strength="0" field="name_it" constraints="0" notnull_strength="0" exp_strength="0"/>
+        <constraint unique_strength="0" field="capital_it" constraints="0" notnull_strength="0" exp_strength="0"/>
+        <constraint unique_strength="0" field="name_fr" constraints="0" notnull_strength="0" exp_strength="0"/>
+        <constraint unique_strength="0" field="capital_fr" constraints="0" notnull_strength="0" exp_strength="0"/>
+        <constraint unique_strength="0" field="name_br" constraints="0" notnull_strength="0" exp_strength="0"/>
+        <constraint unique_strength="0" field="capital_br" constraints="0" notnull_strength="0" exp_strength="0"/>
+        <constraint unique_strength="0" field="name_es" constraints="0" notnull_strength="0" exp_strength="0"/>
+        <constraint unique_strength="0" field="capital_es" constraints="0" notnull_strength="0" exp_strength="0"/>
+        <constraint unique_strength="0" field="population" constraints="0" notnull_strength="0" exp_strength="0"/>
+        <constraint unique_strength="0" field="area_km2" constraints="0" notnull_strength="0" exp_strength="0"/>
+        <constraint unique_strength="0" field="iso_num" constraints="0" notnull_strength="0" exp_strength="0"/>
       </constraints>
       <constraintExpressions>
-        <constraint desc="" exp="" field="ogc_fid"/>
-        <constraint desc="" exp="" field="isocode"/>
-        <constraint desc="" exp="" field="name_local"/>
-        <constraint desc="" exp="" field="name_en"/>
-        <constraint desc="" exp="" field="capital_en"/>
-        <constraint desc="" exp="" field="name_de"/>
-        <constraint desc="" exp="" field="capital_de"/>
-        <constraint desc="" exp="" field="name_it"/>
-        <constraint desc="" exp="" field="capital_it"/>
-        <constraint desc="" exp="" field="name_fr"/>
-        <constraint desc="" exp="" field="capital_fr"/>
-        <constraint desc="" exp="" field="name_br"/>
-        <constraint desc="" exp="" field="capital_br"/>
-        <constraint desc="" exp="" field="name_es"/>
-        <constraint desc="" exp="" field="capital_es"/>
-        <constraint desc="" exp="" field="population"/>
-        <constraint desc="" exp="" field="area_km2"/>
-        <constraint desc="" exp="" field="iso_num"/>
+        <constraint exp="" desc="" field="ogc_fid"/>
+        <constraint exp="" desc="" field="isocode"/>
+        <constraint exp="" desc="" field="name_local"/>
+        <constraint exp="" desc="" field="name_en"/>
+        <constraint exp="" desc="" field="capital_en"/>
+        <constraint exp="" desc="" field="name_de"/>
+        <constraint exp="" desc="" field="capital_de"/>
+        <constraint exp="" desc="" field="name_it"/>
+        <constraint exp="" desc="" field="capital_it"/>
+        <constraint exp="" desc="" field="name_fr"/>
+        <constraint exp="" desc="" field="capital_fr"/>
+        <constraint exp="" desc="" field="name_br"/>
+        <constraint exp="" desc="" field="capital_br"/>
+        <constraint exp="" desc="" field="name_es"/>
+        <constraint exp="" desc="" field="capital_es"/>
+        <constraint exp="" desc="" field="population"/>
+        <constraint exp="" desc="" field="area_km2"/>
+        <constraint exp="" desc="" field="iso_num"/>
       </constraintExpressions>
       <expressionfields/>
       <attributeactions>
@@ -649,33 +653,34 @@
       <editorlayout>generatedlayout</editorlayout>
       <editable/>
       <labelOnTop/>
+      <dataDefinedFieldProperties/>
       <widgets/>
       <previewExpression></previewExpression>
       <mapTip></mapTip>
     </maplayer>
-    <maplayer geometry="Line" minScale="1e+8" autoRefreshTime="0" refreshOnNotifyEnabled="0" hasScaleBasedVisibilityFlag="0" styleCategories="AllStyleCategories" refreshOnNotifyMessage="" labelsEnabled="0" type="vector" simplifyDrawingTol="1" simplifyLocal="1" wkbType="MultiLineString" simplifyAlgorithm="0" maxScale="0" simplifyMaxScale="1" readOnly="0" simplifyDrawingHints="1" autoRefreshEnabled="0">
+    <maplayer geometry="Line" simplifyAlgorithm="0" minScale="100000000" labelsEnabled="0" maxScale="0" autoRefreshTime="0" hasScaleBasedVisibilityFlag="0" refreshOnNotifyEnabled="0" autoRefreshEnabled="0" simplifyMaxScale="1" type="vector" refreshOnNotifyMessage="" readOnly="0" simplifyLocal="0" simplifyDrawingHints="3" simplifyDrawingTol="1.2" wkbType="MultiLineString" styleCategories="AllStyleCategories">
       <extent>
         <xmin>7.07773409230401018</xmin>
         <ymin>41.02184299999998984</ymin>
         <xmax>18.93406205412870591</xmax>
         <ymax>46.83325600000000577</ymax>
       </extent>
-      <id>rivers_7dd2893b_2cab_48d3_91a2_17fe499dd1c9</id>
-      <datasource>dbname='/home/walter/PycharmProjects/g3w_suite_qgis_api/g3w-admin/editing/tests/data/editing_test.db' table="rivers" (geometry) sql=</datasource>
+      <id>rivers_ec97a7c6_e390_4453_a410_f39843596012</id>
+      <datasource>dbname='../data/editing_test.db' table="rivers" (geometry)</datasource>
       <keywordList>
         <value></value>
       </keywordList>
       <layername>rivers</layername>
       <srs>
         <spatialrefsys>
-          <wkt>GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4326"]]</wkt>
+          <wkt>GEOGCRS["WGS 84",DATUM["World Geodetic System 1984",ELLIPSOID["WGS 84",6378137,298.257223563,LENGTHUNIT["metre",1]]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433]],CS[ellipsoidal,2],AXIS["geodetic latitude (Lat)",north,ORDER[1],ANGLEUNIT["degree",0.0174532925199433]],AXIS["geodetic longitude (Lon)",east,ORDER[2],ANGLEUNIT["degree",0.0174532925199433]],USAGE[SCOPE["unknown"],AREA["World"],BBOX[-90,-180,90,180]],ID["EPSG",4326]]</wkt>
           <proj4>+proj=longlat +datum=WGS84 +no_defs</proj4>
           <srsid>3452</srsid>
           <srid>4326</srid>
           <authid>EPSG:4326</authid>
           <description>WGS 84</description>
           <projectionacronym>longlat</projectionacronym>
-          <ellipsoidacronym>WGS84</ellipsoidacronym>
+          <ellipsoidacronym>EPSG:7030</ellipsoidacronym>
           <geographicflag>true</geographicflag>
         </spatialrefsys>
       </srs>
@@ -699,19 +704,19 @@
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>true</geographicflag>
+            <geographicflag>false</geographicflag>
           </spatialrefsys>
         </crs>
         <extent/>
       </resourceMetadata>
-      <provider encoding="UTF-8">spatialite</provider>
+      <provider encoding="">spatialite</provider>
       <vectorjoins/>
       <layerDependencies/>
       <dataDependencies/>
       <legend type="default-vector"/>
       <expressionfields/>
-      <map-layer-style-manager current="predefinito">
-        <map-layer-style name="predefinito"/>
+      <map-layer-style-manager current="default">
+        <map-layer-style name="default"/>
       </map-layer-style-manager>
       <auxiliaryLayer/>
       <flags>
@@ -719,17 +724,17 @@
         <Removable>1</Removable>
         <Searchable>1</Searchable>
       </flags>
-      <renderer-v2 forceraster="0" enableorderby="0" type="singleSymbol" symbollevels="0">
+      <renderer-v2 enableorderby="0" forceraster="0" symbollevels="0" type="singleSymbol">
         <symbols>
-          <symbol name="0" force_rhr="0" clip_to_extent="1" type="line" alpha="1">
-            <layer class="SimpleLine" enabled="1" pass="0" locked="0">
+          <symbol alpha="1" name="0" force_rhr="0" type="line" clip_to_extent="1">
+            <layer class="SimpleLine" pass="0" enabled="1" locked="0">
               <prop v="square" k="capstyle"/>
               <prop v="5;2" k="customdash"/>
               <prop v="3x:0,0,0,0,0,0" k="customdash_map_unit_scale"/>
               <prop v="MM" k="customdash_unit"/>
               <prop v="0" k="draw_inside_polygon"/>
               <prop v="bevel" k="joinstyle"/>
-              <prop v="164,113,88,255" k="line_color"/>
+              <prop v="229,182,54,255" k="line_color"/>
               <prop v="solid" k="line_style"/>
               <prop v="0.26" k="line_width"/>
               <prop v="MM" k="line_width_unit"/>
@@ -756,12 +761,14 @@
       <blendMode>0</blendMode>
       <featureBlendMode>0</featureBlendMode>
       <layerOpacity>1</layerOpacity>
-      <geometryOptions geometryPrecision="0" removeDuplicateNodes="0">
+      <geometryOptions removeDuplicateNodes="0" geometryPrecision="0">
         <activeChecks type="StringList">
           <Option value="" type="QString"/>
         </activeChecks>
         <checkConfiguration/>
       </geometryOptions>
+      <referencedLayers/>
+      <referencingLayers/>
       <fieldConfiguration>
         <field name="ogc_fid">
           <editWidget type="">
@@ -779,22 +786,22 @@
         </field>
       </fieldConfiguration>
       <aliases>
-        <alias name="" field="ogc_fid" index="0"/>
-        <alias name="" field="name" index="1"/>
+        <alias name="" index="0" field="ogc_fid"/>
+        <alias name="" index="1" field="name"/>
       </aliases>
       <excludeAttributesWMS/>
       <excludeAttributesWFS/>
       <defaults>
-        <default expression="" applyOnUpdate="0" field="ogc_fid"/>
-        <default expression="" applyOnUpdate="0" field="name"/>
+        <default applyOnUpdate="0" field="ogc_fid" expression=""/>
+        <default applyOnUpdate="0" field="name" expression=""/>
       </defaults>
       <constraints>
-        <constraint exp_strength="0" unique_strength="1" field="ogc_fid" notnull_strength="1" constraints="3"/>
-        <constraint exp_strength="0" unique_strength="0" field="name" notnull_strength="0" constraints="0"/>
+        <constraint unique_strength="1" field="ogc_fid" constraints="3" notnull_strength="1" exp_strength="0"/>
+        <constraint unique_strength="0" field="name" constraints="0" notnull_strength="0" exp_strength="0"/>
       </constraints>
       <constraintExpressions>
-        <constraint desc="" exp="" field="ogc_fid"/>
-        <constraint desc="" exp="" field="name"/>
+        <constraint exp="" desc="" field="ogc_fid"/>
+        <constraint exp="" desc="" field="name"/>
       </constraintExpressions>
       <expressionfields/>
       <attributeactions>
@@ -817,15 +824,16 @@
       <editorlayout>generatedlayout</editorlayout>
       <editable/>
       <labelOnTop/>
+      <dataDefinedFieldProperties/>
       <widgets/>
       <previewExpression></previewExpression>
       <mapTip></mapTip>
     </maplayer>
   </projectlayers>
   <layerorder>
+    <layer id="rivers_ec97a7c6_e390_4453_a410_f39843596012"/>
+    <layer id="countries_63e59c18_a1d0_4e25_968a_ccbaecd11725"/>
     <layer id="cities_54d40b01_2af8_4b17_8495_c5833485536e"/>
-    <layer id="countries_4a93c15c_3360_4771_806f_0ba92574ec0e"/>
-    <layer id="rivers_7dd2893b_2cab_48d3_91a2_17fe499dd1c9"/>
   </layerorder>
   <properties>
     <DefaultStyles>
@@ -836,6 +844,9 @@
       <Opacity type="double">1</Opacity>
       <RandomColors type="bool">true</RandomColors>
     </DefaultStyles>
+    <Digitizing>
+      <AvoidIntersectionsMode type="int">2</AvoidIntersectionsMode>
+    </Digitizing>
     <Gui>
       <CanvasColorBluePart type="int">255</CanvasColorBluePart>
       <CanvasColorGreenPart type="int">255</CanvasColorGreenPart>
@@ -852,7 +863,7 @@
       <pythonCode type="QString"></pythonCode>
     </Macros>
     <Measure>
-      <Ellipsoid type="QString">WGS84</Ellipsoid>
+      <Ellipsoid type="QString">EPSG:7030</Ellipsoid>
     </Measure>
     <Measurement>
       <AreaUnits type="QString">m2</AreaUnits>
@@ -860,10 +871,13 @@
     </Measurement>
     <PAL>
       <CandidatesLine type="int">50</CandidatesLine>
+      <CandidatesLinePerCM type="double">5</CandidatesLinePerCM>
       <CandidatesPoint type="int">16</CandidatesPoint>
       <CandidatesPolygon type="int">30</CandidatesPolygon>
+      <CandidatesPolygonPerCM type="double">2.5</CandidatesPolygonPerCM>
       <DrawRectOnly type="bool">false</DrawRectOnly>
       <DrawUnplaced type="bool">false</DrawUnplaced>
+      <PlacementEngineVersion type="int">0</PlacementEngineVersion>
       <SearchMethod type="int">0</SearchMethod>
       <ShowingAllLabels type="bool">false</ShowingAllLabels>
       <ShowingCandidates type="bool">false</ShowingCandidates>
@@ -872,7 +886,7 @@
       <UnplacedColor type="QString">255,0,0,255</UnplacedColor>
     </PAL>
     <Paths>
-      <Absolute type="bool">true</Absolute>
+      <Absolute type="bool">false</Absolute>
     </Paths>
     <PositionPrecision>
       <Automatic type="bool">true</Automatic>
@@ -973,4 +987,19 @@
   <ProjectViewSettings UseProjectScales="0">
     <Scales/>
   </ProjectViewSettings>
+  <ProjectTimeSettings timeStep="1" timeStepUnit="h" frameRate="1"/>
+  <ProjectDisplaySettings>
+    <BearingFormat id="bearing">
+      <Option type="Map">
+        <Option value="" name="decimal_separator" type="QChar"/>
+        <Option value="6" name="decimals" type="int"/>
+        <Option value="0" name="direction_format" type="int"/>
+        <Option value="0" name="rounding_type" type="int"/>
+        <Option value="false" name="show_plus" type="bool"/>
+        <Option value="true" name="show_thousand_separator" type="bool"/>
+        <Option value="false" name="show_trailing_zeros" type="bool"/>
+        <Option value="" name="thousand_separator" type="QChar"/>
+      </Option>
+    </BearingFormat>
+  </ProjectDisplaySettings>
 </qgis>

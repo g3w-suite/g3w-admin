@@ -399,7 +399,7 @@ class QgisProjectLayer(XmlData):
 
     def _getDataColumns(self):
         """
-        Retrive data about columns for db table or ogr layer type
+        Retrieve data about columns for db table or ogr layer type
         [
             {
                 'name': '<name>',
@@ -1133,7 +1133,6 @@ class QgisProject(XmlData):
             if self._checkLayerTypeCompatible(layer):
                 layerType = layer.find('provider').text
                 datasource = layer.find('datasource').text
-
                 newDatasource = makeDatasource(datasource, layerType)
 
                 # Update layer

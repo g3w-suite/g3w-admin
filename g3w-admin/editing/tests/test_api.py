@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals, absolute_import
-
 """"Tests for constraints module API
 
 .. note:: This program is free software; you can redistribute it and/or modify
@@ -15,14 +13,31 @@ __copyright__ = 'Copyright 2019, Gis3w'
 
 import json
 
-from django.urls import reverse
 from django.core.exceptions import ObjectDoesNotExist
+from django.test import override_settings
+from django.urls import reverse
 from rest_framework.test import APIClient
-from .test_models import ConstraintsTestsBase, DATASOURCE_PATH
 
-# Import for testing Python syntax
 from editing.api.constraints.views import *
 
+from .test_models import DATASOURCE_PATH, ConstraintsTestsBase
+
+
+@override_settings(CACHES = {
+        'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'some',
+        }
+    },
+    DATASOURCE_PATH=DATASOURCE_PATH,
+    G3WADMIN_LOCAL_MORE_APPS=[
+        'editing',
+    ],
+    LANGUAGE_CODE='en',
+    LANGUAGES=(
+        ('en', 'English'),
+    )
+)
 class EditingApiTests(ConstraintsTestsBase):
 
     def setUp(self):
