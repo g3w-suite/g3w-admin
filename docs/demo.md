@@ -1,9 +1,9 @@
 
 # Introduction
 
-**The tutorial is based on a QGIS project dedicated to the management of a layer representing a series of buildings located on the territory.**
+**_The tutorial is based on a QGIS project dedicated to the management of a layer representing a series of buildings located on the territory._**
 
-**In addition to the geographical aspects, the project involves the management of numerous and diversified attributes and of the related maintenance interventions through a 1: n type relationship.**
+**_In addition to the geographical aspects, the project involves the management of numerous and diversified attributes and of the related maintenance interventions through a 1: n type relationship.**_
 
 Through the tutorials it will be possible to:
  * customize the various graphic-functional aspects of the basic project
@@ -17,28 +17,28 @@ Through the tutorials it will be possible to:
 
 # Download the demo data
 
-The tutorial is based on predefined data and QGIS 3.4 LTR project **downloadable from this link:**
+The tutorial is based on predefined data and QGIS 3.4 LTR project **downloadable from [this link](https://dev.g3wsuite.it/media_user/G3WSUITE.zip)**.
 
 The .zip file contains la directory **`G3W-SUITE`** with two sub directories:
- * **`projects`:** containing a QGIS project (**`public-buildings-management-spatialite.qgs`**) already optimized for the tutorial
+ * **`projects`:** containing a QGIS project (**`buildings_management.qgs`**) already optimized for the tutorial
  * **`dati_geografici`**: containing a SpatiaLite DB with basic data (**`build_management.sqlite`**)
 
 ![](images/manual/demo_zip_file.png)
 
 Inside the **`build_management.sqlite` SpatiaLite DB** there are the following layers:
- * **buildings (polygon layer):** reference layer for editing aspects
- * **maintenance_works (alphanumeric table):** with the maintenance interventions associated with the individual buildings
- * **park (polygon layer):**
- * **roads (linear layer):** a simple road network
- * **work_areas (polygon layer):** with the perimeter of work areas to be used to define any geo-constraints
+ * **`buildings` (polygon layer):** reference layer for editing aspects
+ * **`maintenance_works` (alphanumeric table):** with the maintenance interventions associated with the individual buildings
+ * **`park` (polygon layer):**
+ * **`roads` (linear layer):** a simple road network
+ * **`work_areas` (polygon layer):** with the perimeter of work areas to be used to define any geo-constraints
 
 **IMPORTANT: a copy of this data are present on the server, you can not change your local data copy**
 
 The project (**based on QGIS LTR 3.4**) foresees:
  * a **dressing categorized by the `buildings` layer** based on the categorical field **`type`**
- * the presence of a **1: n relationship** between the `buildings` layer and the alphanumeric `maintenance_works` table
- * pre-developed **query forms** for the `buildings` layer and the `maintenance_works` table
- * predefined **editing widgets** for the fields of the two main layers: `buildings` and `maintenance_works`
+ * the presence of a **1: n relationship** between the `buildings` layer and the alphanumeric **`maintenance_works`** table
+ * pre-developed **query forms** for the **`buildings`** layer and the **`maintenance_works`** table
+ * predefined **editing widgets** for the fields of the two main layers: **`buildings`** and **`maintenance_works`**
 
 ![](images/manual/demo_qgis_project.png)
 
@@ -68,9 +68,9 @@ In the Dashboard there will be the menu for access to the **Cartographic Groups*
 
 ![](images/manual/demo_dashboard.png)
 
-Access the content of the **G3W-Suite Demo** Cartographic Group and click on the button **+ QGIS Project** to publish your project**.
+Access the content of the **`G3W-Suite Demo`** Cartographic Group and click on the button ![](images/manual/button_add_qgis_project.png) to publish your project**.
 
-![](images/manual/button_add_qgis_project.png)
+
 
 Fill out the form defining the various aspects to be associated with the WebGis service being published:
 ## QGIS project
@@ -108,9 +108,7 @@ After filling in the various form, click on the **`Save button`** to confirm you
 
 # Update the published WebGis service
 
-If you want to modify some graphic-functional aspects of your WebGis service, modify your QGIS project and update the WebGis service by clicking on the **`Modify`** icon.
-
-![](images/manual/iconsmall_edit.png)
+If you want to modify some graphic-functional aspects of your WebGis service, modify your QGIS project and update the WebGis service by clicking on the **`Modify`** icon ![](images/manual/iconsmall_edit.png).
 
 Reupload the QGIS project with your changes, click on the **Save button** and see the resuts on the cartographic client.
 
@@ -119,7 +117,7 @@ Reupload the QGIS project with your changes, click on the **Save button** and se
 Once your project has been published, you can access the list of widgets and additional functions to enrich your WebGis service.
 
 ## Widget management
-![](images/manual/iconsmall_layerlist.png) Thougth the **`Layers list` icon** it is possible to access the list of the geographical states that compose it and define some functional aspects that will be enabled at the cartographic client level.
+Thougth the **`Layers list` icon** ![](images/manual/iconsmall_layerlist.png) it is possible to access the list of the geographical states that compose it and define some functional aspects that will be enabled at the cartographic client level.
 
 ![](images/manual/demo_project_manage.png)
 
@@ -143,9 +141,7 @@ Next to each layer are a series of icons and checkboxes:
 
 ## Search widget creation
 
-To create a search tool available at WebGis level, **choose the vector layer** on which to apply the tool and **click on the `Widget list icon`** 
-
-![](images/manual/icon_widget.png)
+To create a search tool available at WebGis level, **choose the vector layer** on which to apply the tool and **click on the `Widget list icon` ![](images/manual/icon_widget.png)** 
 
 A series of **searches already carried out** for this layer by other users will probably be listed.
 
@@ -159,7 +155,7 @@ To **create a new search**, click on the blue link **`New widget`**.
 
 In the related form we can define:
  * **Form Title**
-   * **`Type`:** choose "Search" option
+   * **`Type`:** choose **`Search`** option
    * **`Name`:** name that G3W-SUITE will use to internally register the search widget.
  * **General configuration of research and results**
    * **`Search title`:** title that will become available in the **'Research'** panel of the WebGis interface
@@ -222,7 +218,7 @@ To activate the editing function on webgis, access the list of layers and identi
 
 ![](images/manual/g3wsuite_administration_project_layer_list.png)
 
-![](images/manual/icon_editing.png) Clicking on the icon **Editing layer** (placed at the left of each rows) will open a modal window that will allow you to:
+Clicking on the icon **Editing layer** ![](images/manual/icon_editing.png) (placed at the left of each rows) will open a modal window that will allow you to:
  * define the **`editing activation scale`** (only for geometric tables)
  * define the **`Viewer users`** (individuals or groups) **`enabled`** for online editing
 

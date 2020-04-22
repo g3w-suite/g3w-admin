@@ -58,12 +58,16 @@ Informations that will appear on the front end landing page
 
 ![](images/manual/g3wsuite_administration_configuration_homedata.png)
 
+![](images/manual/g3wsuite_administration_configuration_homedata_result.jpg)
+
 ### Front End About Data
 Informations that will appear in the **About it** session
 
 **ATTENTION:** contents marked with * are mandatory.
 
 ![](images/manual/g3wsuite_administration_configuration_aboutusdata.png)
+
+![](images/manual/g3wsuite_administration_configuration_aboutusdata_result.jpg)
 
 ### Frontend Groups Map Data
 Information that will be displayed in the **Maps** session
@@ -72,12 +76,16 @@ Information that will be displayed in the **Maps** session
 
 ![](images/manual/g3wsuite_administration_configuration_mapgroupsdata.png)
 
+![](images/manual/g3wsuite_administration_configuration_mapgroupsdata_result.jpg)
+
 ### Front End Login Data
 Information that will be displayed in the **Login/Administration** session
 
 **ATTENTION:** contents marked with * are mandatory.
 
 ![](images/manual/g3wsuite_administration_configuration_logindata.png)
+
+![](images/manual/g3wsuite_administration_configuration_logindata_result.jpg)
 
 ### Front End Social Data
 Links to the social channels that will be displayed in the **About it** it session
@@ -86,10 +94,14 @@ Links to the social channels that will be displayed in the **About it** it sessi
 
 ![](images/manual/g3wsuite_administration_configuration_socialdata.png)
 
+![](images/manual/g3wsuite_administration_configuration_socialdata_result.jpg)
+
 ### Map client data
 Main title to be displayed in the cartographic client bar
 
 ![](images/manual/g3wsuite_administration_configuration_mapclientdata.png)
+
+![](images/manual/g3wsuite_administration_configuration_mapclientdata_result.jpg)
 
 In the **Credits** subsection it is possible to define additional text for the publishing aspects.
 
@@ -111,11 +123,11 @@ Through this form it is possible to insert new users and define their characteri
  * **`Login`**: username and password
  * **`User backend`**
  * **`ACL/Roles`**
-   * Superuser status (Admin1 and Admin2 users only)
-   * Staff status: deep administration of the application (Admin1 users only)
-   * Main roles (Editor1, Editor2 or Viewer)
-   * User editor groups: user groups Editor of belonging
-   * any groups of Viewer users to which they belong
+   * **Superuser status** (Admin1 and Admin2 users only)
+   * **Staff status**: deep administration of the application (Admin1 users only)
+   * Main roles (**Editor1, Editor2 or Viewer**)
+   * **User Editor groups**: any Editor2 user group they belong to
+   * **User Viewer groups**: any Viewer user group they belong to
  * **`User data`**:
    * Departments and image to be associated with the profile
 
@@ -174,6 +186,10 @@ Using the icons at the head of each row, you can:
 ## Macro Cartographic Groups
 In this section it is possible to view the list of Cartographic Macrogroups, manage them and create new ones.
 
+**ATTENTION: use the Cartographic MacroGroups only if you need them.**
+
+See chapter [Hierarchical organization of WebGis services and types of Users (roles)] (https://g3w-suite.readthedocs.io/en/latest/user_groups_organization.html#hierarchical-organization-of-webgis-services-and-types -of-users-roles) to learn more about this aspect.
+
 For example, you can create a **Macrogroup** to collect a series of **Cartographic Groups** belonging to the same Administration (single Municipality within a Union of Municipalities) or more simply to have main containers that contain second level groupings (Groups).
 
 In the left side menu there is the **MacroGroup Cartographic** item with two sub-items:
@@ -219,7 +235,7 @@ There are a series of icons to access specific functions:
 Through the Drag & Drop function it is possible to define the order of the MacroGroups in the list. This order will be reflected in the FronEnd.
 
 ## Cartographic Groups
-**In this section it is possible to view the list of Cartographic Groups present, manage them and create new ones.**
+_**In this section it is possible to view the list of Cartographic Groups present, manage them and create new ones.**_
 
 A Cartographic Group is create  to **collect a series of cartographic projects belonging, for example, to the same theme** (Urban Planning Regulations, tourist maps ...) and characterized by the same projection system.
 
@@ -232,7 +248,7 @@ In the left side menu there is the **Cartographic Groups** item with two sub-ite
 You can also access the list of groups by clicking on the **"Show"** button in the **Cartographic Groups** box on the **Dashboard**.
 
 ### Add Group
-Through this item it is possible to create a new Cartographic Group.
+**Through this item it is possible to create a new Cartographic Group.**
 
 During creation, some functional characteristics and tools that the WebGis interface will show for all cartographic projects published within the group are also defined.
 
@@ -249,32 +265,32 @@ Let's see in detail the various sub-sessions of the group creation form.
  * **`Logo link`:** a eventual link to associate with the logo
     
 #### ACL Users
-Access and modification powers are managed.
+**Access and modification powers are managed.**
 
-The options present will vary according to the type of user (Admin or Editor1) who creates / manages the Group
- * **`Editor1 User`:** defines the user (Editor1) manager of the Group.
+The options present will vary according to the type of user (Admin or Editor1) who creates/manages the Group
+ * **`Editor1 User`:** defines the **user (Editor1) manager of the Group**.
      The entry is present only when the Admin type user creates the Group
      If the Group is created by a user of type Editor1, the Group is associated directly with that user
- * **`Editor2 User`:** defines the user (Editor2) manager of the Group.
- * **`Viewers users`:** define the individual users (Viewers) who have the credentials to view the contents of the group. By choosing the anonymous user (AnonymusUser) the group will be free to access
- * **`Editor user groups`:** define the user groups (Editor2) who manage the Group.
- * **`Viewer user groups`:** you define the user groups (Viewer) which have the credentials to view the contents of the group.
+ * **`Editor2 User`:** defines the **user (Editor2) manager of the Group**.
+ * **`Viewers users`:** define the individual **users (Viewers) who have the credentials to view the contents of the group**. By choosing the anonymous user (AnonymusUser) the group will be free to access
+ * **`Editor user groups`:** define the **user groups (Editor2) who manage the Group**.
+ * **`Viewer user groups`:** you define the **user groups (Viewer) which have the credentials to view the contents of the group**.
 
-The option **`Propagate NEW viewers and new viewers user groups permissions`** allows you to propagate any changes relating to the Viewer users (individuals and / or groups) of the Group to ALL the WebGis services present in it.
+The option **`Propagate viewers user (single and groups) permissions`** allows you to propagate the Viewer users (individuals and/or groups) associated to the Group to ALL the WebGis services present in it. 
 
-This option cancels any differentiation in the access policies applied to the WebGis services contained in the Group.
+**This option cancels any differentiation in the access policies applied to the WebGis services contained in the Group.**
 
 ![](images/manual/g3wsuite_administration_group_add_acl.png)
 
 #### MacroGroups
-Possible definition of the belonging MacroGroup.
+**Possible definition of the belonging MacroGroup.**
 
 This option is available only if Cartographic macro groups have been created
 
 In the event that the Group is created by an Editor1 type user, the Group will be automatically associated with the MacroGroup associated with the same Editor1.
 
 #### GEO data
-Projection system associated with the group.
+**Projection system associated with the group.**
 
 **N.B.** All projects loaded into the group must be associated with this SRID.
 
@@ -312,7 +328,7 @@ After filling in the various form, click on the **Save** button to confirm your 
 ![](images/manual/buttom_save.png)
 
 ### Groups List
-From this item you can access the list of the created cartographic groups.
+**From this item you can access the list of the created cartographic groups.**
 
 For each group, the Title and Subtitle defined at the time of creation are shown.
 
@@ -341,10 +357,8 @@ This order will be reflected within the belonging MacroGroups.
 ## Publication of new WebGis services
 ### To publish a new QGIS cartographic project
 It is possible to publish new QGIS projects:
- * ![](images/manual/icon_add.png) **from the list of cartographic groups:** click on the icon located under the box of the cartographic group in which you want to publish the project.
- * **from the list of cartographic projects published within a group:** by clicking on the the buttom 
- 
- ![](images/manual/button_add_qgis_project.png)
+ * **from the list of cartographic groups:** click on the icon ![](images/manual/icon_add.png) located under the box of the cartographic group in which you want to publish the project.
+ * **from the list of cartographic projects published within a group:** by clicking on the the buttom ![](images/manual/button_add_qgis_project.png)
 
 In the dedicated form we could define the charatteristicsof the project being published:
 
@@ -352,28 +366,28 @@ In the dedicated form we could define the charatteristicsof the project being pu
 **`QGIS file`***: load the QGIS cartographic project to be published (.qgz or .qgs file)
 
 #### ACL Users
-Management of access and/or modification permissions
+**Management of access and/or modification permissions**
 
 The options present will vary according to the type of user (Admin, Editor1 or Editor2) who creates / manages the WebGis service.
- * **`Editor1 user`:** defines the user (Editor1) manager of the WebGis service.
+ * **`Editor1 user`:** defines the **user (Editor1) manager of the WebGis service**.
 
 The entry is present only when the WebGis service is created by Admin or Editor1 user.
 
 In the event that the WebGis service is published by a user of type Editor1, the WebGis service is associated directly with that user
- * **`Editor2 User`:** defines the user (Editor2) manager of the WebGis service.
+ * **`Editor2 User`:** defines the **user (Editor2) manager of the WebGis service**.
  
    The item is present only when the user of the Admin or Editor1 type creates the service
  WebGis. 
    In the event that the WebGis service is published by a user of type Editor2, the WebGis service is associated directly with that user
 
- * **`Viewers users`:** define the individual users (Viewers) who have the credentials to view the WebGis service. By choosing the anonymous user (**AnonymusUser**) the group will be freely accessible.
- * **`Editor user groups`:** define the user groups (Editor2) who manage the service.
- * **`Viewer user groups`:** you define the user groups (Viewer) which have the credentials to view the content of the service.
+ * **`Viewers users`:** define the individual **users (Viewers) who have the credentials to view the WebGis service**. By choosing the anonymous user (**AnonymusUser**) the group will be freely accessible.
+ * **`Editor user groups`:** define the **user groups (Editor2) who manage the service**.
+ * **`Viewer user groups`:** you define the **user groups (Viewer) which have the credentials to view the content of the service**.
 
 ![](images/manual/g3wsuite_administration_project_add_acl.png)
 
 #### Default base layer
-In this session you define which base layer should be active at startup.
+**In this session you define which base layer should be active at startup.**
 
 The choice is limited to the list of base layers activated for the cartographic group in which you work.
 
@@ -398,25 +412,29 @@ After filling in the various form, click on the Save button to confirm your choi
 
 ![](images/manual/buttom_save.png)
 
-If the operation is successful we will see the new project appear in the list of projects in in the working Cartographic Group.
+**If the operation is successful we will see the new project appear in the list of projects in in the working Cartographic Group.**
+
+![](images/manual/g3wsuite_administration_project_addproject_result.png)
 
 ![](images/manual/g3wsuite_portal_groups.png)
 
 ### Define the Groups order on the FrontEnd
 The individual WebGis services will be arranged, within the Thematic Groups to which they belong, in alphabetical order based on the title of the service.
 
-## Manage/Update WebGis services
-WebGis services are managed within the individual cartographic groups they belong to.
+## Update/ Manage WebGis services
+To **update **a published WebGis service, access the list of projects in the Cartographic Group.
 
-Access to the cartographic group will allow you to view the characteristics and parameters associated with the group.
+Click on the **Edit** ![](Images/manual/iconsmall_edit.png) icon placed at the top of the WebGis service and reload the QGIS file with the changes made in the relevant form.
 
-To access the list of WebGis services, click with the link associated at the highlighted number of projects.
+Click on the **SAVE** button to confirm the change.
+
+Always starting from the list of WebGis services, it is possible to manage numerous functional aspects associated with them.
 
 ![](images/manual/g3wsuite_administration_project_manage.png)
 
 ### Basic tools
 
-In this section it is therefore possible to view the list of cartographic projects present, view them, manage them and create new ones.
+**In this section it is therefore possible to view the list of cartographic projects present, view them, manage them and create new ones.**
 
 ![](images/manual/g3wsuite_administration_project_manage_list.png)
 
@@ -436,7 +454,7 @@ In this session it is also possible to define which of the cartographic projects
 To set the panoramic map, choose the projects and tick the check box in the **`Overview`** column.
 
 ## Widget management
-![](images/manual/iconsmall_layerlist.png) Once a cartographic project has been published, thougth the icon it is possible to access the list of the geographical states that compose it and define some functional aspects that will be enabled at the cartographic client level.
+Once a cartographic project has been published, thougth the icon ![](images/manual/iconsmall_layerlist.png) it is possible to access the list of the geographical states that compose it and define some functional aspects that will be enabled at the cartographic client level.
 
 ![](images/manual/g3wsuite_administration_project_layer_list.png)
 
@@ -459,7 +477,7 @@ They will be saved by referring to the layer identifiers (for example the DB par
 
 This aspect allows, once a search widget for a layer has been created, to have it available on all the projects in which the layer is present, without having to rebuild the widget from scratch each time.
 
-![](images/manual/icon_widget.png) In the list of layers present within the project, **identify the layer on which to create and associate the search widget** and click on the icon 
+In the list of layers present within the project, **identify the layer on which to create and associate the search widget** and click on the icon ![](images/manual/icon_widget.png)
 
 ![](images/manual/g3wsuite_administration_project_widget_list.png)
 
@@ -471,9 +489,9 @@ These widgets can be **modified, deleted or disconnected** using the appropriate
 
 To **deactivate a search** from a project, simply disconnect it using the check-box on the right.
 
-To **create a new search**, click on the link **New widget**.
+To **create a new search**, click on the link **`New widget`**.
 
-In the pop-up that appears, the **"Search" type** have to be chosen.
+In the pop-up that appears, the **`Search` type** have to be chosen.
 
 ![](images/manual/g3wsuite_administration_project_widget_choose.png)
 

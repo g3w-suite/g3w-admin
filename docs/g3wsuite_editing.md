@@ -1,13 +1,13 @@
 # Online editing
 ## Activation and configuration
 
-The G3W-SUITE platform allows you to manage and create editing on **PostGis or SpatiaLite layers** present within published projects.
+The G3W-SUITE platform allows you to manage and create editing on **`PostGis or SpatiaLite layers`** present within published projects.
 
-The tool also allows you to manage **relational type editing (1:1 and 1:n)**.
+The tool also allows you to manage **`relational type editing (1:1 and 1:n)`**.
 
-The editing settings are defined partly at the QGIS project level (**editing form structure, widgets associated with individual attributes, 1:n relationships**) and partly at the Administration level (**users with editing power, activation scale, any geoconstraints**).
+The **editing settings** are defined partly at the **QGIS project level** (**editing form structure, widgets associated with individual attributes, 1:n relationships**) and partly at the **Administration level** (users with editing power, activation scale, any geoconstraints).
 
-It should be noted that this function manages **multi-user editing** through a **features-lock system**.
+It should be noted that this function manages **`multi-user editing`** through a **features-lock system**.
 
 When an enabled user activates the editing function at the map client level, the **features visible on the map at that time will be blocked**, in relation to the editing aspect, **for all the other enabled users** who will still be able to edit features present outside this geographical extension. .
 
@@ -67,9 +67,8 @@ These configurations and tools will automatically available  on the webgis platf
 #### Activation of layer editing
 To activate the online editing functions, access the **`Layer list`** section of the project within the administration panel of G3W-ADMIN.
 
-Identify the PostGreSQL/PostGis or SpatiaLite layer on which you want to activate the editing function and click on the **`Editing layer` icon** located on the left 
+Identify the PostGreSQL/PostGis or SpatiaLite layer on which you want to activate the editing function and click on the **`Editing layer` icon** ![](images/manual/icon_editing.png) located on the left 
 
-![](images/manual/icon_editing.png)
 
 Clicking on the icon will open a modal window that will allow you to:
  * **define the editing activation scale** (only for geometric tables)
@@ -87,9 +86,7 @@ To allow editing on the related table in mode 1: n , the **editing function must
 #### Geo-constraints setting
 **The online editing function also allows you to manage geo-constraints that allow the user to insert/modify features only if they intersect or are contained within specific features of a second polygonal layer.**
 
-To activate a geographical constraint, you must click, always at the level of the list of project layers, on the **`Constraints list` icon** which will appear once the online editing function is activated.
-
-![](images/manual/icon_constraints.png) 
+To activate a geographical constraint, you must click, always at the level of the list of project layers, on the **`Constraints list` icon** ![](images/manual/icon_constraints.png) which will appear once the online editing function is activated.
 
 Clicking on the icon will show the list of any existing constraints and the item **`+ New constraint`** to create a new geo-constraints.
 
@@ -99,17 +96,13 @@ The icons placed next to any constraints already present allow you to edit/delet
 
 Clicking on the item **`+ New constraint`** will open a modal window which will allow you to **define the polygonal layer** (among those present in the project) **on which the constraint itself must be based**.
 
-Once the layer has been defined, the constraint will appear in the list and can be parameterized using the **Rules icon**
+Once the layer has been defined, the constraint will appear in the list and can be parameterized using the **Rules icon** ![](images/manual/icon_constraints_setting.png)
 
-![](images/manual/icon_constraints_setting.png)
-
-Clicking on this icon will open a modal window which, by pressing the green button **Add*, it will allow you to **define, for each user and/or group of users, the rules of the constraints**.
+Clicking on this icon will open a modal window which, by pressing the green button **Add** ![](images/manual/button_add.png), it will allow you to **define, for each user and/or group of users, the rules of the constraints**.
 
 The rules definition will be done through a freely compiled **`SQL expression`**, which must refer to the attributes and values of the layer defined as geo-constraints.
 
-![](images/manual/button_add.png)
-
-![](images/manual/icon_save.png) The **`Save icon`** will allow you to validate the SQL itself, in order to ensure proper functioning of the constraints itself.
+The **`Save icon`** ![](images/manual/icon_save.png) will allow you to validate the SQL itself, in order to ensure proper functioning of the constraints itself.
 
 Once all the constraints have been entered and validated, click on the **Close button** to confirm the rules.
 
@@ -158,24 +151,23 @@ For this reason the green button **SAVE** will be disabled until all constraints
 
 #### Saving changes
 Saving all the changes made in an editing session can be done in two ways:
- * ![](images/manual/icon_disk.png) by clicking on the **`diskette icon`** placed at the top right. The changes made will be saved and you can continue making new changes
- * ![](images/manual/icon_edit2.png) by deactivating the editing by clicking on the **`Edit layer icon`**. 
+ * by clicking on the **`diskette icon`** ![](images/manual/icon_disk.png) placed at the top right. The changes made will be saved and you can continue making new changes
+ * by deactivating the editing by clicking on the **`Edit layer icon`** ![](images/manual/icon_edit2.png). 
 
 By deactivating the editing function, a modal window will be displayed which will show the **list of changes made** and the request for confirmation or not of saving them.
 
 ![](images/manual/editing_client_save.png)
 
-Remember that during the editing phase the **`undo/redo icons`** allow you to delete/restore the latest changes made.
+Remember that during the editing phase the **`undo/redo icons`** ![](images/manual/icon_undoredo.png) allow you to delete/restore the latest changes made.
 
-![](images/manual/icon_undoredo.png)
 
 ### 1:n related tables editing
-G3W-SUITE allows for relational editing; for this to be possible it is necessary that:
+**G3W-SUITE allows for relational editing**; for this to be possible it is necessary that:
  * on the published QGIS project there are one or more geographic layers related (1: n) with one or more alphanumeric tables
  * on the administration panel the editing function has been activated both on the parent layer and on the child layers
  * the operator user is enabled for the editing function on these layers
 
-The activation, at the cartographic client level, of the editing mode on the parent layer automatically determines the possibility of also managing the information on the related table.
+**The activation, at the cartographic client level, of the editing mode on the parent layer automatically determines the possibility of also managing the information on the related table.**
 
 The insertion of a new geometry or the modification of an existing one determines the display of the attribute form divided into two or more macro tabs, one for the parent layer and the other for the child layers
 
@@ -186,17 +178,17 @@ Moving on the macro tab relating to one of the child layers, the list of records
 ![](images/manual/editing_form_relations.png)
 
 In this macro tab it will be possible to:
- * create and add a new records related to the edited feature
- * associate an existing records (linked to other features or orphan) to the edited feature
- * modify the records currently associated with the edited feature
+ * **create and add a new records** related to the edited feature
+ * **associate an existing records** (linked to other features or orphan) to the edited feature
+ * **modify the records** currently associated with the edited feature
 
 #### Creation of a new related records
-![](images/manual/icon_plus.png) By clicking on the icon **Create and link a new relation** (located at the top right) it will be show the attribute form to insert a new record.
+By clicking on the icon **`Create and link a new relation`** ![](images/manual/icon_plus.png)(located at the top right) it will be show the attribute form to insert a new record.
 
-You can fill in the individual attributes and save the new record. The change must be validated by clicking on the Save button at the bottom of the form.
+You can fill in the individual attributes and save the new record. **The change must be validated by clicking on the `Save` button at the bottom of the form.**
 
 #### Association of an existing record
-![](images/manual/icon_join.png) By clicking on the icon **Join a relation to this feature** (located at the top right) you can associate a record, already linked to other features or orphaned, to the edited feature.
+By clicking on the icon **`Join a relation to this feature`** ![](images/manual/icon_join.png) (located at the top right) you can associate a record, already linked to other features or orphaned, to the edited feature.
 
 In the new window displayed:
  * the list of all orphaned or already associated records will be displayed;

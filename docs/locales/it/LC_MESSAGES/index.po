@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: G3W-SUITE 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-04-15 15:00+0200\n"
+"POT-Creation-Date: 2020-04-22 16:11+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,19 +16,19 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.8.0\n"
 
-#: ../../index.rst:53
+#: ../../index.rst:57
 msgid "Installation and deploy"
 msgstr "Installazione e deploy"
 
-#: ../../index.rst:61
+#: ../../index.rst:67
 msgid "Manual"
 msgstr "Manuale"
 
-#: ../../index.rst:75
+#: ../../index.rst:81
 msgid "Tutorial"
 msgstr ""
 
-#: ../../index.rst:81
+#: ../../index.rst:87
 msgid "Test"
 msgstr ""
 
@@ -116,23 +116,37 @@ msgstr ""
 
 #: ../../index.rst:31
 msgid ""
-"The current development policy provides for the compatibility of the G3W-"
-"SUITE application only with the latest LTR version of QGIS"
+"**The current development policy provides for the compatibility of the "
+"G3W-SUITE application only with the latest LTR version of QGIS**"
 msgstr ""
-"L'attuale politica di sviluppo prevede la compatibilità dell'applicazione"
-" G3W-SUITE solo con l'ultima versione LTR di QGIS"
+"**L'attuale politica di sviluppo prevede la compatibilità dell'applicazione"
+" G3W-SUITE solo con l'ultima versione LTR di QGIS.**"
 
-#: ../../index.rst:37
+#: ../../index.rst:33
+msgid ""
+"**The current release is compatible with `QGIS 3.4 LTR` (Server and "
+"Desktop).**"
+msgstr "**L'attuale release è compatibile con la versione `3.4 LTR`**."
+
+#: ../../index.rst:35
+msgid ""
+"The next version (whose release is scheduled for **July 2020**) will be "
+"compatible with **`QGIS 3.10 LTR`**."
+msgstr ""
+"La prossima versione (la cui release è programmata per **Luglio 2020**) sarà "
+"compatibile con la **versione `3.10 LTR`.**"
+
+#: ../../index.rst:38
 msgid "Through the web interface of the G3W-SUITE framework it is possible to:"
 msgstr ""
-"Attraverso l'interfaccia web ella componente di Amministrazione è "
+"Attraverso l'interfaccia web della componente di Amministrazione è "
 "possibile:"
 
-#: ../../index.rst:39
+#: ../../index.rst:40
 msgid "**publish QGIS projects** directly on WebGis in a structured way"
 msgstr "**pubblicare progetti QGIS** in modo diretto estrutturato"
 
-#: ../../index.rst:41
+#: ../../index.rst:42
 msgid ""
 "**organize webgis services in thematic-functional containers** of various"
 " levels"
@@ -140,7 +154,7 @@ msgstr ""
 "**organizzare servizi webgis** in contenitori tematici-funzionali di vari"
 " livelli"
 
-#: ../../index.rst:43
+#: ../../index.rst:44
 msgid ""
 "**manage users and groups of users** by defining each of them **different"
 " functional roles**"
@@ -148,19 +162,19 @@ msgstr ""
 "**gestire utenti** e gruppi di utenti definendo ciascuno di essi **ruoli "
 "funzionali diversi**"
 
-#: ../../index.rst:45
+#: ../../index.rst:46
 msgid "**create and manage research methods**"
 msgstr "creare e gestire **strumenti di ricerca**"
 
-#: ../../index.rst:47
+#: ../../index.rst:48
 msgid "allow **online editing**"
 msgstr "permettere l'**editing on line**"
 
-#: ../../index.rst:49
+#: ../../index.rst:50
 msgid "activate **specific functional modules**"
 msgstr "attivare **specifici moduli funzionali**"
 
-#: ../../index.rst:51
+#: ../../index.rst:52
 msgid ""
 "**define permissions to access services and to use functional modules** "
 "at the individual user level"

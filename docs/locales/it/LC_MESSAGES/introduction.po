@@ -3,12 +3,11 @@
 # This file is distributed under the same license as the G3W-SUITE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: G3W-SUITE 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-04-06 11:06+0200\n"
+"POT-Creation-Date: 2020-04-22 16:11+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -31,24 +30,24 @@ msgstr ""
 
 #: ../../introduction.md:5
 msgid ""
-"Its development was born from the need to have a software capable of "
-"publishing on a webgis client, in total autonomy and easily, QGIS "
-"cartographic projects."
+"The framework was born from the need to have a software capable of "
+"publishing, in total autonomy and in a simple and fast way on a webgis "
+"client, cartographic projects realized with QGIS."
 msgstr ""
-"L'applicazione nasce dalla necessità di avere un software in grado di "
+"Il framework nasce dalla necessità di avere un software in grado di "
 "**pubblicare, in totale autonomia e in maniera semplice e veloce su un "
-"client webgis, progetti cartografici realizzati con** "
-"[**QGIS**](https://qgis.org)"
+"client webgis, progetti cartografici realizzati con "
+"[QGIS](https://qgis.org)**"
 
 #: ../../introduction.md:7
-msgid ""
-"The need to have a management application to be inserted in structured "
-"contexts such as Public authority, parks, companies, etc. was the engine "
-"that led to develop aspects related to:"
+msgid "The following aspects will be analyzed within the manual:"
+msgstr "All’interno del manuale saranno analizzati i seguenti aspetti:"
+
+#: ../../introduction.md:8
+msgid "organization and optimization of data and QGIS projects for web publishing"
 msgstr ""
-"L'esigenza di un'applicazione gestionale da inserire in contesti "
-"strutturati come Enti Pubblici, Enti Parco, aziende, ecc. è stata inoltre"
-" il motore che ha portato a sviluppare aspetti relativi a:"
+"**organizzazione ed ottimizzazione dati e progetti QGIS per la "
+"pubblicazione web**"
 
 #: ../../introduction.md:9
 msgid ""
@@ -59,18 +58,30 @@ msgstr ""
 "gruppi e gruppi cartografici**"
 
 #: ../../introduction.md:10
-msgid "access control systems for administration and consultation of projects"
+msgid ""
+"user management and access control systems for consultation and "
+"management of webgis services"
 msgstr ""
-"**sistemi di controllo degli accessi all’amministrazione e alla "
-"consultazione dei progetti**"
+"**gestione utenti e sistemi di controllo degli accessi in consultazione e"
+" gestione dei servizi webgis**"
 
 #: ../../introduction.md:11
 msgid ""
-"editing functionality and access of the various dedicated modules based "
-"on an editable and configurable user profiling system, also of a "
-"hierarchical type"
+"management of the online editing function for the creation of web "
+"cartographic management systems"
 msgstr ""
-"**funzionalità di editing e dei vari moduli, basato su un sistema di "
-"profilazione utenti editabili e configurabili, anch’esso di tipo "
-"gerarchico**"
+"**gestione della funzione di editing on line per la creazione di "
+"gestionali cartografici web**"
+
+#: ../../introduction.md:13
+msgid "The current release is compatible with QGIS 3.4 LTR.(Server and Desktop)."
+msgstr "**L'attuale release è compatibile con la versione **`3.4 LTR`**.**"
+
+#: ../../introduction.md:15
+msgid ""
+"The next version (whose release is scheduled for July 2020) will be "
+"compatible with QGIS 3.10 LTR."
+msgstr ""
+"La prossima versione (la cui release è programmata per **Luglio 2020**) sarà "
+"compatibile con la **versione `3.10 LTR`**."
 
