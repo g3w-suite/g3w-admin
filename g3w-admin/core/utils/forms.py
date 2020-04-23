@@ -10,7 +10,7 @@ def crispyBoxBaseLayer(form, **kwargs):
     """
     Build a Crispy object layout element (div) for on AdminLTE2 box structure.
     For baselayer project selection
-    :param form: Django form instance
+    :param form: Django form instance (not used)
     :return: Div Crispy form layout object
     """
 
@@ -38,7 +38,7 @@ def crispyBoxMacroGroups(form, **kwargs):
     """
     Build a Crispy object layout element (div) for on AdminLTE2 box structure.
     For macrogroups multiple selections
-    :param form: Django form instance
+    :param form: Django form instance (not used)
     :return: Div Crispy form layout object
     """
 
