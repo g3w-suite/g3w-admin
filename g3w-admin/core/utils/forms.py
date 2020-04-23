@@ -39,7 +39,7 @@ def crispyBoxMacroGroups(form, **kwargs):
     Build a Crispy object layout element (div) for on AdminLTE2 box structure.
     For macrogroups multiple selections
     :param form: Django form instance
-    :return: Crispy form layout object
+    :return: Div Crispy form layout object
     """
 
     if form.request.user.is_superuser or userHasGroups(form.request.user, [G3W_EDITOR1]):
