@@ -2,6 +2,7 @@
 import json
 import os
 import re
+import logging
 from collections import OrderedDict
 
 from defusedxml import lxml
@@ -23,6 +24,8 @@ from .validators import (CheckMaxExtent, ColumnName, DatasourceExists,
                          IsGroupCompatibleValidator, ProjectTitleExists,
                          UniqueLayername)
 
+
+logger = logging.getLogger(__name__)
 
 # constant per qgis layers
 QGIS_LAYER_TYPE_NO_GEOM = 'No geometry'
@@ -414,14 +417,17 @@ class QgisProjectLayer(XmlData):
         project = QgsProject()
 
         if not project.read(self.qgisProject.qgisProjectFile.name):
+            logging.warning("Could not read QGIS project file: %s" % self.qgisProject.qgisProjectFile.name)
             return None
 
         try:
             layer = project.mapLayers()[self.layerId]
         except KeyError:
+            logging.warning("Could not find layer id %s in QGIS project file: %s" % (self.layerId, self.qgisProject.qgisProjectFile.name))
             return None
 
-        if layer.type() != QgsMapLayer.VectorLayer:
+        if not layer.isValid() or layer.type() != QgsMapLayer.VectorLayer:
+            logging.warning("Layer id %s is not valid in QGIS project file: %s" % (self.layerId, self.qgisProject.qgisProjectFile.name))
             return None
 
         columns = []
