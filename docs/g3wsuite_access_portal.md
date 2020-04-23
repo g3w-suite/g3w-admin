@@ -7,9 +7,9 @@ The G3W-SUITE application is accessible via any internet browser (FireFox and Ch
 If you have also installed the front-end portal from the [GitHub repository](https://github.com/g3w-suite/g3w-admin-frontend), access to the application will be via the portal itself.
 
 The front-end portal contains a brief presentation of the service and a side menu with the following items:
- * **About it**
- * **Maps**
- * **Login**
+ * **`About it`**
+ * **`Maps`**
+ * **`Login`**
 
 ![](images/manual/g3wsuite_portal_frontend.png)
 

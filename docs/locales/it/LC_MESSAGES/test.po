@@ -160,5 +160,5 @@ msgstr "Seconda linea"
 
 #: ../../test.md:78
 msgid "Second nested list item"
-msgstr ""Terza linea
+msgstr "Terza linea"
 

@@ -59,15 +59,15 @@ msgstr ""
 
 #: ../../g3wsuite_access_portal.md:10 ../../g3wsuite_access_portal.md:20
 msgid "About it"
-msgstr "About it"
+msgstr "**`About it`**"
 
 #: ../../g3wsuite_access_portal.md:11 ../../g3wsuite_access_portal.md:23
 msgid "Maps"
-msgstr "**Mappe**"
+msgstr "**`Mappe`**"
 
 #: ../../g3wsuite_access_portal.md:12 ../../g3wsuite_access_portal.md:37
 msgid "Login"
-msgstr "Login"
+msgstr "**`Login`**"
 
 #: ../../g3wsuite_access_portal.md:16
 msgid ""
