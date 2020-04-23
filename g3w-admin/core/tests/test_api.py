@@ -48,8 +48,8 @@ class CoreApiTest(CoreTestBase):
 
         # Fill the cache with getprojectsettings response so we don't need a QGIS instance running
         # TODO: eventually move to QgsServer
-        prj = Project.objects.get(title='Un progetto')
-        cache_key = settings.QDJANGO_PRJ_CACHE_KEY.format(prj.pk)
+        cls.prj = Project.objects.get(title='Un progetto')
+        cache_key = settings.QDJANGO_PRJ_CACHE_KEY.format(cls.prj.pk)
         cache = caches['qdjango']
         cache.set(cache_key, open(os.path.join(DATASOURCE_PATH, 'getProjectSettings_gruppo-1_un-progetto.xml')).read())
 
