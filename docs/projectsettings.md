@@ -2,8 +2,9 @@
 
 _**This section describes how to optimize your QGIS projects for publication as a WebGis service.**_
 
-In the QGIS cartographic projects you can set some parameters and options that affect functionalities and contents in the derivative WebGis service.
-In particular, some parameters of the project affect:
+Thanks to the integration with QGIS Server, all the symbology aspects associated with the singoly layers are automatically reproduced on the WebGis service
+
+In the QGIS cartographic projects you can set some parameters and options that affect functionalities and contents in the derivative WebGis service, such as:
 * the **webgis service identification name**
 * the associated **basic metadata**
 * the **capabilities of the service**
@@ -14,6 +15,7 @@ In particular, some parameters of the project affect:
 * which vector layers can be **queried using WFS**
 * which **fields** (for each vector data) and with which **aliases** are made visible following interrogation on the WebGis service 
 * the **structure of the query form** visible on the WebGis service
+* the associated print layouts
       
 The following paragraphs describe which QGIS project settings are more relevant in relation to the published WebGis service.
 
@@ -46,6 +48,8 @@ Check the **Identifiable** column for the layers that we want to query on the We
 **In this section it is possible to define the `capabilities of the service`**.
 
 This information, together with info about the structure of the attribute tables of the layers present in the project, will be displayed in the **Metadata session** of the cartographic client.
+
+See also [dedicated paragraph] (https://g3w-suite.readthedocs.io/en/latest/g3wsuite_client.html#metadata)
 
 ![](images/manual/qgisservercapabilities.png)
 
@@ -88,6 +92,14 @@ It is sufficient to check only the **`Published`** column
  
  ![](images/manual/qgisservergeneralaspectswfs.png)
 
+## Print layouts
+Any print layouts associated with the published QGIS project will automatically be associated with the published WebGis service.
+
+**Print layouts must contain only one `Map` element**.
+
+Any images present in the print layouts must be placed in the local **`geo_data`** folder (in any subdirectory) and synchronized on the server.
+
+See also the dedicated paragraph [Geographic data synchronization on the server](https://g3w-suite.readthedocs.io/it/latest/datamanagement.html#geographic-data-synchronization-on-the-server).
 
 ## QGIS: layer properties
 ### Simbology
@@ -112,7 +124,9 @@ Through this tool it is possible to manage SVG icons on the server in a simple a
 
 The SVG folder on the server must reflect the structure in any subfolders present locally.
 
-**PS:** remember that the **`File Manager`** tool also allows you to manage the synchronization of geographical data (in the case of using physical files) and the management of multimedia files. See dedicated paragraphs.
+**PS:** remember that the **`File Manager`** tool also allows you to manage the synchronization of geographical data (in the case of using physical files) and the management of multimedia files. 
+
+See also [dedicated paragraph] (https://g3w-suite.readthedocs.io/en/latest/projectsettings.html#viewing-multimedia-content)
 
 ### Definition of the fields that can be consulted for each layer
 Within the QGIS project it is also possible to define, for each layer, which fields are available following query on the WebGis service.
@@ -121,7 +135,7 @@ To define these settings, you access the properties of one of the vectors previo
 
 This submenu lists the fields associated to the table of the vector.
 
-The check in the check box of the **`WMS`** column defines whether or not the values contained in this field will be available following the query on the WebGis service.
+The check box relating to the **`WMS`** column defines whether or not the values contained in this field will be available following the query on the WebGis service.
 
  ![](images/manual/qgislayerproperties_wmsfields.png)
  
@@ -131,7 +145,7 @@ Multimedia contents (images, pdf, web URL ...) can be viewed interactively on th
 In the case of web links, simply insert them (preceded by the prefix **`http://`** or **`https://`**) within the dedicated attribute fields
 
 In the case of multimedia files it is necessary:
- * **upload the media file to the media_user folder** (folder exposed on the web) accessible through the **File Manager** tool in the Suite Administration Panel
+ * **upload the media file to the `media_user` folder** (folder exposed on the web) accessible through the **`File Manager`** tool in the Suite Administration Panel
  * **insert the web link to this file in the dedicated attribute field**
 
 The link to the file can be obtained in the following way:
@@ -157,3 +171,17 @@ This structural organization will be replicated directly on the query form on th
 
  ![](images/manual/qgislayerproperties_displayform.png)
 
+## Performances optimization
+
+### Mandatory rules
+* PostGreSQL/PostGis and SQLite/Spatialite layers must have a **primary key**
+* PostGreSQL/PostGis and SQLite/Spatialite layers must have **only a geometric column**
+* **not use numeric type** field in PostGreSQL/PostGis layer
+* the primary key field and all fields involved in search, join, 1:n relation or editing function have to be **published as WMS**
+* **don't use commas for aliases** associated with layers.
+* insert only **one `Map` element in the print layouts**.
+
+### Tips
+* when using rule-based/categorized classification **create indexes on the column(s) involved** in the rule expression
+* start the project with **only a few layers turned on** by default
+* do not exceed three nesting levels in the groups of layers defined in the TOC

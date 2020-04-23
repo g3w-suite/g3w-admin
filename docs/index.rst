@@ -14,6 +14,11 @@ G3W-SUITE is entirely based on tested Open Source software components built arou
 
 - **QGIS Server:** for the publication of QGIS projects as OGC services
 
+**The current development policy provides for the compatibility of the G3W-SUITE application only with the latest LTR version of QGIS**
+
+**The current release is compatible with `QGIS 3.4 LTR` (Server and Desktop).**
+
+The next version (whose release is scheduled for **July 2020**) will be compatible with **`QGIS 3.10 LTR`**.
 
 G3W-SUITE is a modular client-server application for the publication and management of QGIS cartographic projects, consisting of 2 components:
 
@@ -21,17 +26,12 @@ G3W-SUITE is a modular client-server application for the publication and managem
 
 - **G3W-CLIENT:** Cartographic client for consultation and interaction with OGC services
 
+
 Optional OS modules are:
 
 - **Front-end geographic portal:** access to information, thematic groups and WebGis services
 
 - **Caching Module:** tile caching module for single layer powerd by TileStache4
-
-
-The current development policy provides for the compatibility of the G3W-SUITE application only with the latest LTR version of QGIS
-
-.. image:: images/install/admin.jpg
-.. image:: images/install/client.jpg
 
 
 Through the web interface of the G3W-SUITE framework it is possible to:
@@ -49,6 +49,9 @@ Through the web interface of the G3W-SUITE framework it is possible to:
 - activate **specific functional modules**
 
 - **define permissions to access services and to use functional modules** at the individual user level
+
+.. image:: images/install/admin.jpg
+.. image:: images/install/client.jpg
 
 .. toctree::
    :maxdepth: 2
@@ -80,8 +83,3 @@ Through the web interface of the G3W-SUITE framework it is possible to:
 
    demo
 
-.. toctree::
-   :maxdepth: 2
-   :caption: Test
-
-   test
