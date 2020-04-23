@@ -18,6 +18,7 @@ from .structure import MAPPING_GEOALCHEMY_DJANGO_FIELDS, MAPPING_OGRWKBGTYPE, Bo
 
 ogr.UseExceptions()
 
+
 def get_geometry_column(geomodel):
     """
     From GeoDjango model instance return GeometryField instance,
@@ -41,7 +42,14 @@ def get_geometry_column(geomodel):
 
 def create_model(name, fields=None, app_label='', module='', db='default', options=None, admin_opts=None):
     """
-    Create specified model
+    Create specified Django model class.
+    :param field: None default, fields list of model.
+    :param app_label: empty tring default, Django app membership.
+    :param module: empty string default, Class model django module.
+    :param db: 'default' as default, Django db connectios to use.
+    :param options: None default, dict for update Model Class Meta object.
+    :param admin_opts: None default, (not used)
+    :return: Django model class
     """
 
     class Meta:
@@ -113,7 +121,7 @@ class G3WChoices(Choices):
 
 
 class CreateGeomodel(object):
-    """Build a model at runtime
+    """Build a django model at runtime
     """
 
     def __init__(self, layer, datasource, app_label='core'):
