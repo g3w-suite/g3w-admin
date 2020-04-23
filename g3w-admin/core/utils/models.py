@@ -83,10 +83,12 @@ def create_model(name, fields=None, app_label='', module='', db='default', optio
     return model
 
 
-
 def get_creator_from_qdjango_layer(layer, app_label='core'):
     """
-    Returns the creator instance for a layer
+    Returns the creator instance for a qdjango layer model instance by provider (postgis or spatialite).
+    :param layer: qdjango layer model instance.
+    :param app_label: 'core' default, Django app membership.
+    :return: Django geo model class creator.
     """
 
     CREATOR_CLASSES = {
@@ -106,7 +108,9 @@ def get_creator_from_qdjango_layer(layer, app_label='core'):
 
 def create_geomodel_from_qdjango_layer(layer, app_label='core'):
     """
-    Create dynamic django geo model
+    Create dynamic Django geo model by a qdjango layer model instance.
+    :param app_label: 'core' default, Django app membership.
+    :return: A tuple (<geomodel class>, <geomodel using Django db connection>, <geomodel geomentry type>)
     """
 
     creator = get_creator_from_qdjango_layer(layer, app_label)
@@ -114,18 +118,24 @@ def create_geomodel_from_qdjango_layer(layer, app_label='core'):
 
 
 class G3WChoices(Choices):
-
+    """
+    Custom G3W model_utils widget.
+    """
     def __setitem__(self, key, value):
         self._store((key, key, value), self._triples, self._doubles)
 
 
-
 class CreateGeomodel(object):
-    """Build a django model at runtime
+    """
+    Build a geo Django model at runtime
     """
 
     def __init__(self, layer, datasource, app_label='core'):
-        """Create a model from a layer and a datasource
+        """
+        Create a model from a layer and a datasource
+        :param layer: qdjango layer model instance.
+        :param datasource: qdjango layer model datasource property value.
+        :param app_label: 'core' default, Django app membership.
         """
 
         self.app_label = app_label
@@ -162,7 +172,10 @@ class CreateGeomodel(object):
         pass
 
     def create_geotable(self):
-
+        """
+        Create and return a GEOAlchemy geo table.
+        :return: GEOALchemy table instance.
+        """
         engine, geotable_kwargs = self.create_engine()
 
         meta = MetaData(bind=engine)
@@ -174,7 +187,10 @@ class CreateGeomodel(object):
         pass
 
     def create_model(self):
-
+        """
+        Create Django model class.
+        :return: Django model class.
+        """
         self.geo_model = create_model(self.model_table_name, self.django_model_fields, app_label=self.app_label,
                                  module='{}.models'.format(self.app_label), db=self.using,
                                  options={'db_table': self.table})
@@ -182,7 +198,7 @@ class CreateGeomodel(object):
 
 class PostgisCreateGeomodel(CreateGeomodel):
     """
-    PostgreSql model Dj creator.
+    Create a geo Django model class at runtime for Postgis layer.
     """
     layer_type = 'postgis'
 
@@ -190,6 +206,9 @@ class PostgisCreateGeomodel(CreateGeomodel):
         self.geometry_type = self.datasource.get('type', None)
 
     def create_engine(self):
+        """
+        Create SqlAlchemy engine object and option args for GEOTable
+        """
         engine = create_engine(URL(
             'postgresql',
             self.datasource['user'],
@@ -206,6 +225,7 @@ class PostgisCreateGeomodel(CreateGeomodel):
         return engine, geotable_kwargs
 
     def get_fields(self):
+        """ Return a list of django model fields instance """
 
         geotable = super(PostgisCreateGeomodel, self).get_fields()
 
@@ -271,10 +291,16 @@ class PostgisCreateGeomodel(CreateGeomodel):
 
 
 class SpatialiteCreateGeomodel(CreateGeomodel):
+    """
+    Create a geo Django model class at runtime for Spatialite layer.
+    """
 
     layer_type = 'spatialite'
 
     def create_engine(self):
+        """
+        Create SqlAlchemy engine object and option args for GEOTable
+        """
 
         # try with ogr
 
@@ -305,6 +331,7 @@ class SpatialiteCreateGeomodel(CreateGeomodel):
         return engine, geotable_kwargs
 
     def get_fields(self):
+        """ Return a list of django model fields instance """
 
         geotable = super(SpatialiteCreateGeomodel, self).get_fields()
 
