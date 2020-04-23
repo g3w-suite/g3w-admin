@@ -1,8 +1,10 @@
 from core.models import Group
 
+
 def countAllProjects():
     """
-    Count oll projects in the systems
+    Count all projects in the systems.
+    :return: int projects number.
     """
 
     numProjects = 0
