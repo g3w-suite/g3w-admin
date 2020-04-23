@@ -6,20 +6,12 @@ from usersmanage.utils import userHasGroups
 from usersmanage.configs import G3W_EDITOR1
 
 
-def CheckIsAnImage(name,file):
-    try:
-        image = Image.open(file)
-        image.verify()
-    except Exception:
-        raise ValidationError(_('{} is no a valid image'.format(name)),code='image_invalid')
-
-
 def crispyBoxBaseLayer(form, **kwargs):
     """
     Build a Crispy object layout element (div) for on AdminLTE2 box structure.
     For baselayer project selection
     :param form: Django form instance
-    :return: Crispy form layout object
+    :return: Div Crispy form layout object
     """
 
     boxCssClass = kwargs.get('boxCssClass', 'col-md-6')
