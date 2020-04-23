@@ -16,6 +16,7 @@ def countAllProjects():
 
 
 class CoreMetaLayer(object):
+    """ Abstract layer container """
 
     def __init__(self, start=1):
         self.start = start
