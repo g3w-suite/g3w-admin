@@ -24,6 +24,22 @@ from .base import CoreTestBase
 # Re-use test data from qdjango module
 DATASOURCE_PATH = os.path.join(os.getcwd(), 'qdjango', 'tests', 'data')
 
+
+def base_data_test(cls):
+
+    # Fill the cache with getprojectsettings response so we don't need a QGIS instance running
+    # TODO: eventually move to QgsServer
+    cls.prj = Project.objects.get(title='Un progetto')
+    cache_key = settings.QDJANGO_PRJ_CACHE_KEY.format(cls.prj.pk)
+    cache = caches['qdjango']
+    cache.set(cache_key, open(os.path.join(DATASOURCE_PATH, 'getProjectSettings_gruppo-1_un-progetto.xml')).read())
+
+    # Fix datasource path for spatialite
+    l = Layer.objects.get(name='spatialite_points')
+    l.datasource = 'dbname=\'%s/un-progetto-data/un-progetto.db\' table="spatialite_points" (geom) sql=' % DATASOURCE_PATH
+    l.save()
+
+
 @override_settings(MEDIA_ROOT=DATASOURCE_PATH)
 @override_settings(DATASOURCE_PATH=DATASOURCE_PATH)
 @override_settings(CACHES = {
@@ -45,18 +61,7 @@ class CoreApiTest(CoreTestBase):
     @classmethod
     def setUpClass(cls):
         super(CoreApiTest, cls).setUpClass()
-
-        # Fill the cache with getprojectsettings response so we don't need a QGIS instance running
-        # TODO: eventually move to QgsServer
-        cls.prj = Project.objects.get(title='Un progetto')
-        cache_key = settings.QDJANGO_PRJ_CACHE_KEY.format(cls.prj.pk)
-        cache = caches['qdjango']
-        cache.set(cache_key, open(os.path.join(DATASOURCE_PATH, 'getProjectSettings_gruppo-1_un-progetto.xml')).read())
-
-        # Fix datasource path for spatialite
-        l = Layer.objects.get(name='spatialite_points')
-        l.datasource = 'dbname=\'%s/un-progetto-data/un-progetto.db\' table="spatialite_points" (geom) sql=' % DATASOURCE_PATH
-        l.save()
+        base_data_test(cls)
 
     def testCoreVectorApi(self):
         """Test core-vector-api"""

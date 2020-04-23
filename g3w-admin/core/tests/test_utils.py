@@ -30,7 +30,8 @@ from core.utils.ie import modelresource_factory
 from core.utils.projects import countAllProjects
 from core.utils.response import send_file
 from core.models import Group
-from .test_api import CoreApiTest
+from .base import CoreTestBase
+from .test_api import base_data_test
 from .utils import TEST_BASE_PATH, CURRENT_PATH
 import re
 
@@ -48,7 +49,18 @@ class FormRequestTest(Form):
         super().__init__(*args, **kwargs)
 
 
-class CoreUtilsTest(CoreApiTest):
+class CoreUtilsTest(CoreTestBase):
+
+    # These are stored in core module
+    fixtures = CoreTestBase.fixtures + [
+        # except for this one which is in qdjango:
+        "G3WSampleProjectAndGroup.json",
+    ]
+
+    @classmethod
+    def setUpClass(cls):
+        super(CoreUtilsTest, cls).setUpClass()
+        base_data_test(cls)
 
     def test_build_dango_connection_name(self):
         """ Test same name function """
