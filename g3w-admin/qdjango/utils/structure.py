@@ -101,7 +101,7 @@ def datasourcearcgis2dict(datasource):
 
 class QdjangoMetaLayer(CoreMetaLayer):
     """
-    Metalayer used for belonging layers group activations/deactivations image map by client
+    Metalayer used for belonging layers group activations/deactivations image map by client tree toc
     I.e.:
     Layer 1 (Metalayer value 1)
     Layer 2 (Metalayer value 1)
