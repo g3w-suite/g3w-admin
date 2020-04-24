@@ -12,7 +12,7 @@ __copyright__ = 'Copyright 2020, ItOpen'
 
 import logging
 from django.conf import settings
-from django.contrib.auth.models import Group, User
+from django.contrib.auth.models import Group as AuthGroup, User
 from django.core.exceptions import ValidationError
 from django.db import connection, models, transaction
 from django.db.models import Q
@@ -77,7 +77,7 @@ class CommonConstraintRule(models.Model):
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, blank=True, null=True)
     group = models.ForeignKey(
-        Group, on_delete=models.CASCADE, blank=True, null=True)
+        AuthGroup, on_delete=models.CASCADE, blank=True, null=True)
     rule = models.TextField(_("Rule definition"), max_length=1024, help_text=_("Definition of the rule, either an SQL WHERE condition or a QgsExpression definition depending on the rule type"))
 
     class Meta:
