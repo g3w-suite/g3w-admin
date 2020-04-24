@@ -48,7 +48,6 @@ def makeDatasource(datasource, layerType):
     # Modified: <datasource>/home/sit/charts\definitivo\d262120.shp</datasource>
     if layerType == Layer.TYPES.ogr or layerType == Layer.TYPES.gdal:
         newDatasource = re.sub(r'(.*?)%s(.*)' % folder, r'%s\2' % basePath, datasource) # ``?`` means ungreedy
-        newDatasource = newDatasource.split('|')[0]
 
     if layerType == Layer.TYPES.delimitedtext:
         oldPath = re.sub(r"(.*)file:(.*?)", r"\2", datasource)
