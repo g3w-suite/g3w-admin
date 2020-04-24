@@ -273,3 +273,7 @@ CLIENT_G3WSUITE_LOGO = 'g3wsuite_logo_h40.png'
 CLIENT_OWS_METHOD = 'GET'
 
 SITE_ID = 1
+
+# DJANGO-FILE-FORM SETTINGS
+# -------------------------
+FILE_FORM_UPLOAD_BACKEND = 'core.utils.response.G3WFileFormUploadBackend'
