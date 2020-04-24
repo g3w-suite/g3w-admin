@@ -45,13 +45,13 @@ def makeDatasource(datasource, layerType):
     newDatasource = None
     # Path and folder name
     basePath = settings.DATASOURCE_PATH.rstrip('/') # eg: /home/sit/charts
-    folder = os.path.basename(basePath) # eg: charts
+    folder = os.path.basename(basePath) # eg: charts0
     # OGR example datasource:
     # Original: <datasource>\\SIT-SERVER\sit\charts\definitivo\d262120.shp</datasource>
     # Modified: <datasource>/home/sit/charts\definitivo\d262120.shp</datasource>
     if layerType == Layer.TYPES.ogr or layerType == Layer.TYPES.gdal:
         newDatasource = re.sub(r'(.*?)%s(.*)' % folder, r'%s\2' % basePath, datasource) # ``?`` means ungreedy
-        newDatasource = newDatasource.split('|')[0]
+
 
     if layerType == Layer.TYPES.delimitedtext:
         oldPath = re.sub(r"(.*)file:(.*?)", r"\2", datasource)
@@ -416,7 +416,10 @@ class QgisProjectLayer(XmlData):
         """
         project = QgsProject()
 
-        if not project.read(self.qgisProject.qgisProjectFile.name):
+        project_file = self.qgisProject.qgisProjectFile.path if hasattr(self.qgisProject.qgisProjectFile, 'path') else \
+            self.qgisProject.qgisProjectFile.file.path
+
+        if not project.read(project_file):
             logging.warning("Could not read QGIS project file: %s" % self.qgisProject.qgisProjectFile.name)
             return None
 
@@ -426,8 +429,14 @@ class QgisProjectLayer(XmlData):
             logging.warning("Could not find layer id %s in QGIS project file: %s" % (self.layerId, self.qgisProject.qgisProjectFile.name))
             return None
 
-        if not layer.isValid() or layer.type() != QgsMapLayer.VectorLayer:
+        if layer.type() != QgsMapLayer.VectorLayer:
             logging.warning("Layer id %s is not valid in QGIS project file: %s" % (self.layerId, self.qgisProject.qgisProjectFile.name))
+            return None
+
+        layer.setDataSource(self.datasource, layer.name(), layer.dataProvider().name())
+        if not layer.isValid():
+            logging.warning("Layer id %s is not valid in QGIS project file: %s" % (
+            self.layerId, self.qgisProject.qgisProjectFile.name))
             return None
 
         columns = []

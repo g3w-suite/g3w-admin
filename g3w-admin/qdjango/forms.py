@@ -44,6 +44,10 @@ class QdjangoProjectFormMixin(object):
                 # put qzfile to qgis_file
                 qgis_file = ContentFile(zfile.open(qzfile, 'r').read(), name=qzfile)
 
+                # Update path property for QGIS api
+                qgis_file.path = self.cleaned_data['qgis_file'].file.path
+
+
             kwargs = {'group': self.group}
             if self.instance.pk:
                 kwargs['instance'] = self.instance
