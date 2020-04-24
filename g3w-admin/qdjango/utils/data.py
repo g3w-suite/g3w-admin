@@ -416,8 +416,21 @@ class QgisProjectLayer(XmlData):
         """
         project = QgsProject()
 
-        project_file = self.qgisProject.qgisProjectFile.path if hasattr(self.qgisProject.qgisProjectFile, 'path') else \
-            self.qgisProject.qgisProjectFile.file.path
+        # Case FieldFile
+        if hasattr(self.qgisProject.qgisProjectFile, 'path'):
+            project_file = self.qgisProject.qgisProjectFile.path
+
+        # Case UploadedFileWithId
+        elif hasattr(self.qgisProject.qgisProjectFile, 'file'):
+            if hasattr(self.qgisProject.qgisProjectFile.file, 'path'):
+                project_file = self.qgisProject.qgisProjectFile.file.path
+            else:
+                project_file = self.qgisProject.qgisProjectFile.file.name
+
+        # Default case
+        else:
+            project_file = self.qgisProject.qgisProjectFile.name
+
 
         if not project.read(project_file):
             logging.warning("Could not read QGIS project file: %s" % self.qgisProject.qgisProjectFile.name)
