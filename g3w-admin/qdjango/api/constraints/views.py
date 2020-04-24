@@ -57,14 +57,12 @@ class SingleLayerConstraintList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         """
-        This view should return a list constraints for a given layer QGIS id (qgs_layer_id) portion of the URL.
+        This view should return a list constraints for a given layer id portion of the URL.
         """
 
         qs = super().get_queryset()
         if 'layer_id' in self.kwargs:
             qs = qs.filter(layer_id =self.kwargs['layer_id'])
-        if 'qgs_layer_id' in self.kwargs:
-            qs = qs.filter(layer__qgs_layer_id=self.kwargs['qgs_layer_id'])
         return qs
 
     def create(self, request, *args, **kwargs):
@@ -99,7 +97,7 @@ class RuleListBase(generics.ListCreateAPIView):
 
     def get_queryset(self):
         """
-        This view should return a list constraints for a given layer id (qgs_layer_id) or user_id or constraint_id portions of the URL.
+        This view should return a list constraints for a given layer id or user_id or constraint_id portions of the URL.
 
         Note that if user_id is specified a match for user groups will be also attempted.
 
@@ -108,8 +106,6 @@ class RuleListBase(generics.ListCreateAPIView):
         qs = super().get_queryset()
         if 'layer_id' in self.kwargs:
             qs = qs.filter(constraint__layer_id=self.kwargs['layer_id'])
-        if 'qgs_layer_id' in self.kwargs:
-            qs = qs.filter(constraint__layer__qgs_layer_id=self.kwargs['qgs_layer_id'])
         if 'user_id' in self.kwargs:
             user = User.objects.get(pk=self.kwargs['user_id'])
             user_groups = user.groups.all()

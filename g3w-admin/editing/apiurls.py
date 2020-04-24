@@ -19,7 +19,7 @@ urlpatterns += [
     # Detail of a ConstraintRule
     url(r'^api/rule/detail/(?P<pk>\d+)/$',
         login_required(ConstraintRuleDetail.as_view()), name='constraintrule-api-detail'),
-    # All ConstraintRule(s) filtered by editing layer qgs_layer_id
+    # All ConstraintRule(s) filtered by editing layer id
     url(r'^api/rule/layer/(?P<editing_layer_id>[-_\w\d]+)/$',
         login_required(ConstraintRuleList.as_view()), name='constraintrule-api-filter-by-editing'),
     # All ConstraintRule(s) filtered by User pk
@@ -37,7 +37,7 @@ urlpatterns += [
     # Detail of a Constraint
     url(r'^api/constraint/detail/(?P<pk>\d+)/$',
         login_required(ConstraintDetail.as_view()), name='constraint-api-detail'),
-    # All Constraint(s) filtered by editing layer qgs_layer_id
+    # All Constraint(s) filtered by editing layer id
     url(r'^api/constraint/(?P<editing_layer_id>[-_\w\d]+)/$',
         login_required(ConstraintList.as_view()), name='constraint-api-filter-by-editing'),
     # All Constraint(s)

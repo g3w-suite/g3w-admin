@@ -354,6 +354,8 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
         self.metadata_layer.lock.unLockFeatureByKeys(**{
             'sessionid': self.sessionid,
             'app_name': self.app_name,
+            # FIXME: if qgs_layer_id is not unique it shouldn't be used as a key here:
+            # FIXME: the field is called layer_name but it is the qgs_layer_id (maybe!)
             'layer_name': self.layer.qgs_layer_id,
             'user_id': request.user.pk
         })

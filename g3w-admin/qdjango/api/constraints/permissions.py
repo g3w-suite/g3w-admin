@@ -24,27 +24,19 @@ class SingleLayerConstraintPermission(BasePermission):
                 if 'layer' in request.POST:
                     # case Constraint API list
                     layer = Layer.objects.get(pk=request.POST['layer'])
+                elif 'layer_id' in view.kwargs:
+                    layer = Layer.objects.get(pk=view.kwargs['layer_id'])
                 else:
-                    # case for POST Constraint API List
-                    if 'layer_id' in view.kwargs:
-                        layer = Layer.objects.get(pk=view.kwargs['layer_id'])
-                    elif 'qgs_layer_id' in view.kwargs:
-                        layer = Layer.objects.get(qgs_layer_id=view.kwargs['qgs_layer_id'])
-                    else:
-                        return False
+                    return False
 
             else:
 
                 if 'pk' in view.kwargs:
                     layer = SingleLayerConstraint.objects.get(pk=view.kwargs['pk']).layer
+                elif 'layer_id' in view.kwargs:
+                    layer = Layer.objects.get(id=view.kwargs['layer_id'])
                 else:
-                    # case for GET Constraint API List
-                    if 'qgs_layer_id' in view.kwargs:
-                        layer = Layer.objects.get(qgs_layer_id=view.kwargs['qgs_layer_id'])
-                    elif 'layer_id' in view.kwargs:
-                        layer = Layer.objects.get(id=view.kwargs['layer_id'])
-                    else:
-                        return False
+                    return False
 
             # check change_layer permission on qgis layer
             return request.user.has_perm('qdjango.change_project', layer.project)
@@ -67,8 +59,6 @@ class BaseRulePermission(BasePermission):
             if 'constraint_id' in view.kwargs:
                 layer = self._class.objects.get(pk=view.kwargs['constraint_id']).layer
             # case for rule by layer_id
-            elif 'qgs_layer_id' in view.kwargs:
-                layer = Layer.objects.get(qgs_layer_id=view.kwargs['qgs_layer_id'])
             elif 'layer_id' in view.kwargs:
                 layer = Layer.objects.get(id=view.kwargs['layer_id'])
             # case detail

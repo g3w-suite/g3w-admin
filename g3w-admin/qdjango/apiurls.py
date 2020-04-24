@@ -25,9 +25,6 @@ urlpatterns += [
     # Detail of a subsetstringrule
     url(r'^api/subsetstringrule/detail/(?P<pk>\d+)/$',
         login_required(ConstraintSubsetStringRuleDetail.as_view()), name='qdjango-subsetstringrule-api-detail'),
-    # All subsetstringrule(s) filtered by layer qgs_layer_id
-    url(r'^api/subsetstringrule/layer/qgs_layer_id/(?P<qgs_layer_id>[-_\w\d]+)/$',
-        login_required(ConstraintSubsetStringRuleList.as_view()), name='qdjango-subsetstringrule-api-filter-by-qgs-layer-id'),
     # All subsetstringrule(s) filtered by layer qdjango layer pk
     url(r'^api/subsetstringrule/layer/(?P<layer_id>[\d]+)/$',
         login_required(ConstraintSubsetStringRuleList.as_view()), name='qdjango-subsetstringrule-api-filter-by-layer-id'),
@@ -47,9 +44,6 @@ urlpatterns += [
     # Detail of a expression rule
     url(r'^api/expressionrule/detail/(?P<pk>\d+)/$',
         login_required(ConstraintExpressionRuleDetail.as_view()), name='qdjango-expressionrule-api-detail'),
-    # All expressionrule(s) filtered by layer qgs_layer_id
-    url(r'^api/expressionrule/layer/qgs_layer_id/(?P<qgs_layer_id>[-_\w\d]+)/$',
-        login_required(ConstraintExpressionRuleList.as_view()), name='qdjango-expressionrule-api-filter-by-qgs-layer-id'),
     # All expressionrule(s) filtered by layer qdjango layer pk
     url(r'^api/expressionrule/layer/(?P<layer_id>[\d]+)/$',
         login_required(ConstraintExpressionRuleList.as_view()), name='qdjango-expressionrule-api-filter-by-layer-id'),
@@ -70,9 +64,6 @@ urlpatterns += [
     # Detail of a Constraint
     url(r'^api/constraint/detail/(?P<pk>\d+)/$',
         login_required(SingleLayerConstraintDetail.as_view()), name='qdjango-constraint-api-detail'),
-    # All Constraint(s) filtered by layer qgs_layer_id
-    url(r'^api/constraint/qgs_layer_id/(?P<qgs_layer_id>[-_\w\d]+)/$',
-        login_required(SingleLayerConstraintList.as_view()), name='qdjango-constraint-api-filter-by-qgs-layer-id'),
     # All Constraint(s) filtered by layer qdjango layer pk
     url(r'^api/constraint/(?P<layer_id>\d+)/$',
         login_required(SingleLayerConstraintList.as_view()), name='qdjango-constraint-api-filter-by-layer-id'),

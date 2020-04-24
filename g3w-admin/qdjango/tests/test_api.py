@@ -146,9 +146,6 @@ class BaseConstraintsApiTests():
         self._check_constraints(jcontent)
         layer_pk = jcontent['results'][0]['layer']
 
-        jcontent = json.loads(self._testApiCall('qdjango-constraint-api-filter-by-qgs-layer-id', ['world20181008111156525'], {}).content)
-        self.assertEqual(jcontent['count'], 1)
-        self._check_constraints(jcontent)
 
         jcontent = json.loads(self._testApiCall('qdjango-constraint-api-filter-by-layer-id', [layer_pk], {}).content)
         self.assertEqual(jcontent['count'], 1)
@@ -181,10 +178,6 @@ class BaseConstraintsApiTests():
         self.assertEqual(jcontent['count'], 1)
         self._check_constraint_rules(jcontent)
 
-        jcontent = json.loads(self._testApiCall('qdjango-{rule_view_basename}-api-filter-by-qgs-layer-id'.format(rule_view_basename=self._rule_view_name), ['world20181008111156525'], {}).content)
-        self.assertEqual(jcontent['count'], 1)
-        self._check_constraint_rules(jcontent)
-
         rule_pk = jcontent['results'][0]['pk']
 
         jcontent = json.loads(self._testApiCall('qdjango-{rule_view_basename}-api-detail'.format(rule_view_basename=self._rule_view_name), [rule_pk], {}).content)
@@ -201,9 +194,6 @@ class BaseConstraintsApiTests():
         response = jcontent = json.loads(self._testApiCallViewer1('qdjango-constraint-api-filter-by-layer-id', [self.constraint.layer.pk], {}).content)
         self.assertFalse(response['result'])
 
-        response = jcontent = json.loads(self._testApiCallViewer1('qdjango-constraint-api-filter-by-qgs-layer-id', [self.constraint.layer.qgs_layer_id], {}).content)
-        self.assertFalse(response['result'])
-
         # Admin only!
         response = jcontent = json.loads(self._testApiCallViewer1('qdjango-constraint-api-filter-by-user', [viewer1.pk], {}).content)
         self.assertFalse(response['result'])
@@ -215,10 +205,6 @@ class BaseConstraintsApiTests():
         assign_perm('change_project', viewer1, Layer.objects.get(name='world').project)
         # Still false, only admin can list all constraints
         self.assertFalse(response['result'])
-
-        jcontent = json.loads(self._testApiCallViewer1('qdjango-constraint-api-filter-by-qgs-layer-id', ['world20181008111156525'], {}).content)
-        self.assertEqual(jcontent['count'], 1)
-        self._check_constraints(jcontent)
 
         # Admin only!
         response = jcontent = json.loads(self._testApiCallViewer1('qdjango-constraint-api-filter-by-user', [viewer1.pk], {}).content)
@@ -244,10 +230,6 @@ class BaseConstraintsApiTests():
         self._check_constraint_rules(jcontent)
 
         jcontent = json.loads(self._testApiCallViewer1('qdjango-{rule_view_basename}-api-filter-by-layer-id'.format(rule_view_basename=self._rule_view_name), [layer_pk], {}).content)
-        self.assertEqual(jcontent['count'], 1)
-        self._check_constraint_rules(jcontent)
-
-        jcontent = json.loads(self._testApiCallViewer1('qdjango-{rule_view_basename}-api-filter-by-qgs-layer-id'.format(rule_view_basename=self._rule_view_name), ['world20181008111156525'], {}).content)
         self.assertEqual(jcontent['count'], 1)
         self._check_constraint_rules(jcontent)
 
