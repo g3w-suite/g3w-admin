@@ -35,6 +35,9 @@ class QgisProjectTest(TestCase):
     def setUp(self):
 
         qgis_project_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_FILE), 'r', encoding='utf-8'))
+
+        # Replace name property with only file name without path to simulate UploadedFileWithId instance.
+        qgis_project_file.name = qgis_project_file.name.split('/')[-1]
         self.project = QgisProject(qgis_project_file)
         qgis_project_file.close()
 
