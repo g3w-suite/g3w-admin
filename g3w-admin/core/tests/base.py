@@ -80,16 +80,24 @@ class CoreTestBase(TestCase):
                 else:
                     print("self.assertEqual(resp%s, \"%s\")" % (_path, v))
 
-    def _testApiCall(self, view_name, args):
+    def _testApiCall(self, view_name, args, kwargs={}):
         """Utility to make test calls"""
 
-         # No auth
-        response = self.api_client.get(reverse(view_name, args=args))
+        path = reverse(view_name, args=args)
+        if kwargs:
+            path += '?'
+            parts = []
+            for k, v in kwargs.items():
+                parts.append(k + '=' + v)
+            path += '&'.join(parts)
+
+        # No auth
+        response = self.client.get(path)
         self.assertEqual(response.status_code, 403)
 
-        # Auth as admin1
-        self.assertTrue(self.api_client.login(username=self.test_user1.username, password=self.test_user1.username))
-        response = self.api_client.get(reverse(view_name, args=args))
+        # Auth
+        self.assertTrue(self.client.login(username=self.test_admin1.username, password=self.test_admin1.username))
+        response = self.client.get(path)
         self.assertEqual(response.status_code, 200)
-        self.api_client.logout()
+        self.client.logout()
         return response
