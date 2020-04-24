@@ -201,7 +201,8 @@ class CoreTestForm(CoreTestBase):
             'name': name,
             'description': 'Test',
             'form_id': uf.form_id,
-            'use_title_logo_client': False
+            'use_title_client': False,
+            'use_logo_client': False
         }
 
         # Test ACL

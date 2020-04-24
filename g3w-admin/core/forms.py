@@ -366,7 +366,10 @@ class MacroGroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, ModelFor
                                         Div(
                                             'name',
                                             'title',
-                                            'use_title_logo_client',
+                                            HTML(_(
+                                                '<b>Attention!</b> This settigns are valid only for map groups with only one MacroGroup')),
+                                            'use_title_client',
+                                            'use_logo_client',
                                             Field('description', css_class='wys5', style="width:100%;"),
                                             'logo_img',
                                             HTML(

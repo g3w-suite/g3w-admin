@@ -281,6 +281,10 @@ class ProjectSerializer(serializers.ModelSerializer):
             getattr(settings, 'G3WSUITE_CUSTOM_TITLE', 'g3w - client'),
             instance.title_ur if instance.title_ur else instance.title)
 
+        # set name by language if is set
+        if instance.title_ur:
+            ret['name'] = instance.title_ur
+
         return ret
 
     class Meta:

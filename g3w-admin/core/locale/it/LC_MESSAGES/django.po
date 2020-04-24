@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-03-30 07:23+0000\n"
+"POT-Creation-Date: 2020-04-24 14:46+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -50,7 +50,7 @@ msgstr "Non trovato"
 msgid "Permission denied"
 msgstr "Permesso negato"
 
-#: api/serializers.py:217
+#: api/serializers.py:221
 msgid ""
 "Invalid format: string or unicode input unrecognized as GeoJSON, WKT EWKT or "
 "HEXEWKB."
@@ -120,171 +120,181 @@ msgstr "Utente Editor"
 msgid "ACL Users"
 msgstr "Utenti"
 
-#: models.py:83
+#: forms.py:370
+msgid ""
+"<b>Attention!</b> This settigns are valid only for map groups with only one "
+"MacroGroup"
+msgstr "<b>Attenzione!</b> Le seguenti impostazioni sono valide solo per Gruppi di mappe appartenenti ad un unico MacroGruppo"
+
+#: models.py:84
 msgid "Map control"
 msgstr "Controllo di mappa"
 
-#: models.py:84
+#: models.py:85
 msgid "Map controls"
 msgstr "Cantrolli di mappa"
 
-#: models.py:92
-msgid "Identification name"
-msgstr ""
-
 #: models.py:93
-msgid "Internal identification Macrogroup name"
-msgstr ""
+msgid "Identification name"
+msgstr "Identificativo"
 
-#: models.py:94 models.py:130 models.py:398
+#: models.py:94
+msgid "Internal identification Macrogroup name"
+msgstr "Identificativo interno del Macrogruppo"
+
+#: models.py:95 models.py:132 models.py:407
 #: templates/core/ajax/macrogroup_detail.html:7
 #: templates/core/macrogroup_list_table.html:28
 msgid "Title"
 msgstr "Titolo"
 
-#: models.py:95 models.py:131 templates/core/ajax/macrogroup_detail.html:9
+#: models.py:96 models.py:133 templates/core/ajax/macrogroup_detail.html:9
 msgid "Description"
 msgstr "Descrizione"
 
-#: models.py:96 models.py:141
+#: models.py:97 models.py:143
 msgid "Logo image"
 msgstr "Immagine logo"
 
-#: models.py:97 models.py:142
+#: models.py:98 models.py:144
 msgid "Logo link"
 msgstr "Link logo"
 
-#: models.py:98 models.py:143
+#: models.py:99 models.py:145
 msgid "Enter link with http:// or https//"
 msgstr "Il link deve contenere http:// or https//"
 
-#: models.py:99
-msgid "Use title and logo for client"
-msgstr ""
+#: models.py:100
+msgid "Use title for client"
+msgstr "Utilizza il titolo per il client"
 
-#: models.py:102 models.py:133
+#: models.py:101
+msgid "Use logo image for client"
+msgstr "Utilizza il logo per il client"
+
+#: models.py:104 models.py:135
 msgid "Slug"
 msgstr ""
 
-#: models.py:129
+#: models.py:131
 msgid "Name"
 msgstr "Nome"
 
-#: models.py:135
+#: models.py:137
 msgid "Is active"
 msgstr "Attivo"
 
-#: models.py:138
+#: models.py:140
 msgid "lang"
 msgstr "Lunguaggio"
 
-#: models.py:159
+#: models.py:161
 msgid "Terms of use text"
 msgstr "Termi di utilizzo"
 
-#: models.py:162
+#: models.py:164
 msgid "Terms of use link"
 msgstr "Link termini di utilizzo"
 
-#: models.py:389 templates/core/group_form.html:11
+#: models.py:398 templates/core/group_form.html:11
 msgid "Group"
 msgstr "Gruppo"
 
-#: models.py:390
+#: models.py:399
 msgid "Project type"
 msgstr "Tipo di progetto"
 
-#: models.py:391
+#: models.py:400
 msgid "Project type id"
 msgstr "Id tipo di progetto"
 
-#: models.py:399
+#: models.py:408
 msgid "Subtitle"
 msgstr "Sottotitolo"
 
-#: models.py:400
+#: models.py:409
 msgid "Home description"
 msgstr "Descrizione home"
 
-#: models.py:401
+#: models.py:410
 msgid "About title"
 msgstr "Titolo sezione 'Il progetto'"
 
-#: models.py:402
+#: models.py:411
 msgid "About description"
 msgstr "Descrizione pagina 'Il progetto'"
 
-#: models.py:403
+#: models.py:412
 msgid "About name"
 msgstr "Nome del progetto"
 
-#: models.py:404
+#: models.py:413
 msgid "About phone"
 msgstr "Telefono del progetto"
 
-#: models.py:405
+#: models.py:414
 msgid "About email"
 msgstr "Email del progetto"
 
-#: models.py:406
+#: models.py:415
 msgid "About address"
 msgstr "Indirizzo del progetto"
 
-#: models.py:407
+#: models.py:416
 msgid "Groups title"
 msgstr "Titolo pagina gruppi cartografici"
 
-#: models.py:408
+#: models.py:417
 msgid "Groups map description"
 msgstr "Descrizione pagina gruppi cartografici"
 
-#: models.py:409
+#: models.py:418
 msgid "Login description"
 msgstr "Descrizione pagina di login"
 
-#: models.py:410
+#: models.py:419
 msgid "Suite logo"
 msgstr "Logo del progetto"
 
-#: models.py:411
+#: models.py:420
 #, fuzzy
 #| msgid "Suite logo"
 msgid "Suite logo URL"
 msgstr "Logo del progetto"
 
-#: models.py:414
+#: models.py:423
 msgid "Credits"
 msgstr ""
 
-#: models.py:417
+#: models.py:426
 msgid "Main map title"
 msgstr ""
 
-#: models.py:419
+#: models.py:428
 msgid "Facebook link"
 msgstr ""
 
-#: models.py:420
+#: models.py:429
 msgid "Twitter link"
 msgstr ""
 
-#: models.py:421
+#: models.py:430
 msgid "Google+ link"
 msgstr ""
 
-#: models.py:422
+#: models.py:431
 msgid "Youtube link"
 msgstr ""
 
-#: models.py:423
+#: models.py:432
 msgid "Instagram link"
 msgstr ""
 
-#: models.py:424
+#: models.py:433
 msgid "Flickr link"
 msgstr ""
 
-#: models.py:425
+#: models.py:434
 msgid "Tripadvisor link"
 msgstr ""
 
@@ -349,12 +359,10 @@ msgid "Users"
 msgstr "Utenti"
 
 #: templates/core/ajax/group_detail.html:21
-#| msgid "Editor user"
 msgid "Editor level 1 user"
 msgstr "Utente Editor"
 
 #: templates/core/ajax/group_detail.html:25
-#| msgid "Editor user"
 msgid "Editor level 2 user"
 msgstr "Utente Editor 2"
 
@@ -363,12 +371,10 @@ msgid "Viewer users"
 msgstr "Utenti Viewers"
 
 #: templates/core/ajax/group_detail.html:27
-#| msgid "Editor user"
 msgid "Editor user groups"
 msgstr "Gruppi utenti editor"
 
 #: templates/core/ajax/group_detail.html:28
-#| msgid "Viewer users"
 msgid "Viewer user groups"
 msgstr "Gruppi utenti viewer"
 
@@ -466,7 +472,7 @@ msgstr "Si sono verificati alcuni errori sul form. Controlla e reinvia."
 
 #: templates/core/group_form.html:33
 msgid "Current"
-msgstr ""
+msgstr "Corrente"
 
 #: templates/core/group_form.html:33 templates/core/group_list.html:74
 #: templates/core/project_list.html:11
@@ -534,8 +540,6 @@ msgid "Macro Group"
 msgstr "Gruppo"
 
 #: templates/core/macrogroup_form.html:24
-#, fuzzy
-#| msgid "Cartographic groups"
 msgid "Current groups"
 msgstr "Gruppi cartografici"
 
@@ -564,21 +568,20 @@ msgstr "Progetto"
 msgid "[{} error on {}({})]-- {}"
 msgstr ""
 
-#: utils/forms.py:14
-msgid "{} is no a valid image"
-msgstr "{} non è una immagine valida"
-
-#: utils/forms.py:31
+#: utils/forms.py:23
 msgid "Default base layer"
 msgstr "Layer base di default"
 
-#: utils/forms.py:58
+#: utils/forms.py:50
 msgid "MACRO Groups"
 msgstr ""
 
 #: utils/structure.py:267 utils/structure.py:339
 msgid "Yes"
 msgstr "Si"
+
+#~ msgid "{} is no a valid image"
+#~ msgstr "{} non è una immagine valida"
 
 #~ msgid "Access"
 #~ msgstr "Accedi"

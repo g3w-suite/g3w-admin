@@ -86,9 +86,6 @@ class ClientView(TemplateView):
 
         groupData = deepcopy(groupSerializer.data)
 
-        # change groupData name with title for i18n app
-        groupData['name'] = group.title
-
         # choose client by querystring paramenters
         contextData['client_default'] = self.get_client_name()
 
