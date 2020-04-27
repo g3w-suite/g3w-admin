@@ -17,6 +17,7 @@ from django.test import override_settings
 from qdjango.models import Project
 from django.core.cache import caches
 from core.tests.base import CoreTestBase
+from core.models import MacroGroup
 
 # Re-use test data from qdjango module
 DATASOURCE_PATH = os.path.join(os.getcwd(), 'qdjango', 'tests', 'data')
@@ -115,3 +116,33 @@ class ClientApiTest(CoreTestBase):
         self.assertEqual(resp["metadata"]["keywords"], ['infoMapAccessService', 'keyword1', 'keyword2'])
         self.assertIsNone(resp["thumbnail"])
         self.assertEqual(resp["name"], "Un progetto")
+
+    def testClientConfigApiThumbnailView(self):
+        """ Test api project config for thumbnail param """
+
+        self.prj_test.thumbnail = '/fake/project.png'
+        self.prj_test.save()
+
+        response = self._testApiCall('group-project-map-config', ['gruppo-1', 'qdjango', '1'])
+        resp = json.loads(response.content)
+        self.assertEqual(resp["thumbnail"], '/media/fake/project.png')
+
+        # add group to macrogroup
+        macrogorup = MacroGroup(name='thgroup_test', title='thgroup_test', logo_img='/fake/macrogroup.png')
+        macrogorup.save()
+        macrogorup.group_set.add(self.prj_test.group)
+
+        response = self._testApiCall('group-project-map-config', ['gruppo-1', 'qdjango', '1'])
+        resp = json.loads(response.content)
+        self.assertEqual(resp["thumbnail"], '/media/fake/project.png')
+
+        # Check use_logo_client
+        macrogorup.use_logo_client = True
+        macrogorup.save()
+
+        response = self._testApiCall('group-project-map-config', ['gruppo-1', 'qdjango', '1'])
+        resp = json.loads(response.content)
+        self.assertEqual(resp["thumbnail"], '/media/fake/macrogroup.png')
+
+
+

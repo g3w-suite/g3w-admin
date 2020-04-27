@@ -285,6 +285,14 @@ class ProjectSerializer(serializers.ModelSerializer):
         if instance.title_ur:
             ret['name'] = instance.title_ur
 
+        # Set to macrogroup images if options use_logo is checked
+        try:
+            macrogroup = instance.group.macrogroups.get(use_logo_client=True)
+            ret['thumbnail'] = macrogroup.logo_img.url
+        except:
+            pass
+
+
         return ret
 
     class Meta:
