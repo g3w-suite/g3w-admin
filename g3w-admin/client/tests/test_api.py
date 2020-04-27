@@ -111,7 +111,7 @@ class ClientApiTest(CoreTestBase):
         self.assertEqual(resp["metadata"]["abstract"], "Lorem ipsum sit amet")
         self.assertEqual(resp["metadata"]["contactinformation"]["contactelectronicmailaddress"], "mail@email.com")
         self.assertEqual(resp["metadata"]["contactinformation"]["contactvoicetelephone"], "1234578")
-        self.assertEqual(resp["metadata"]["wms_url"], "")
+        #self.assertEqual(resp["metadata"]["wms_url"], "")
         self.assertEqual(resp["metadata"]["fees"], "no conditions apply")
         self.assertEqual(resp["metadata"]["keywords"], ['infoMapAccessService', 'keyword1', 'keyword2'])
         self.assertIsNone(resp["thumbnail"])
