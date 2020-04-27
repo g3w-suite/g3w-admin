@@ -40,6 +40,14 @@ class ClientApiTest(CoreTestBase):
         # Fill the cache with getprojectsettings response so we don't need a QGIS instance running
         # TODO: eventually move to QgsServer
         cls.prj_test = Project.objects.get(title='Un progetto')
+
+        # new properties has to save before caching, signal on svaing project invalidate cache['django']
+
+        cls.prj_test.thumbnail = '/fake/project.png'
+        cls.prj_test.save()
+
+
+
         cache_key = settings.QDJANGO_PRJ_CACHE_KEY.format(cls.prj_test.pk)
         cache = caches['qdjango']
         cache.set(cache_key, open(os.path.join(DATASOURCE_PATH, 'getProjectSettings_gruppo-1_un-progetto.xml'), 'rb')
@@ -65,7 +73,14 @@ class ClientApiTest(CoreTestBase):
         self.assertEqual(resp["group"]["header_custom_links"], [])
         self.assertEqual(resp["group"]["background_color"], "#ffffff")
         self.assertEqual(resp["group"]["id"], 1)
-        self.assertEqual(resp["group"]["projects"], [{'description': '<p>progetto 1<br></p>', 'title': 'Un progetto', 'thumbnail': '/static/client/images/FakeProjectThumb.png', 'gid': 'qdjango:1', 'type': 'qdjango', 'id': 1}])
+        self.assertEqual(len(resp["group"]["projects"]), 1)
+
+        project = resp["group"]["projects"][0]
+        to_compare = {'description': '<p>progetto 1<br></p>', 'title': 'Un progetto',
+          'thumbnail': '/fake/project.png', 'gid': 'qdjango:1', 'type': 'qdjango', 'id': 1}
+        for k in list(to_compare.keys()):
+            self.assertEqual(project[k], to_compare[k])
+
         self.assertIsNone(resp["group"]["overviewproject"])
         self.assertIsNone(resp["main_map_title"])
         self.assertEqual(resp["mediaurl"], "/media/")
@@ -114,14 +129,12 @@ class ClientApiTest(CoreTestBase):
         #self.assertEqual(resp["metadata"]["wms_url"], "")
         self.assertEqual(resp["metadata"]["fees"], "no conditions apply")
         self.assertEqual(resp["metadata"]["keywords"], ['infoMapAccessService', 'keyword1', 'keyword2'])
-        self.assertIsNone(resp["thumbnail"])
+        self.assertEqual(resp["thumbnail"], '/media/fake/project.png')
         self.assertEqual(resp["name"], "Un progetto")
+
 
     def testClientConfigApiThumbnailView(self):
         """ Test api project config for thumbnail param """
-
-        self.prj_test.thumbnail = '/fake/project.png'
-        self.prj_test.save()
 
         response = self._testApiCall('group-project-map-config', ['gruppo-1', 'qdjango', '1'])
         resp = json.loads(response.content)
