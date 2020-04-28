@@ -98,6 +98,25 @@ class ClientApiTest(CoreTestBase):
         self.assertEqual(resp["g3wsuite_logo_img"], "g3wsuite_logo_h40.png")
         self.assertEqual(resp['i18n'], json.loads(json.dumps(settings.LANGUAGES)))
 
+        # Test macrogroup use title
+        # add group to macrogroup
+        macrogorup = MacroGroup(name='titlegroup_test', title='titlegroup_test', logo_img='/fake/macrogroup.png')
+        macrogorup.save()
+        macrogorup.group_set.add(self.prj_test.group)
+
+        response = self._testApiCall('group-map-config', ['gruppo-1', 'qdjango', '1'])
+        resp = json.loads(response.content)
+
+        self.assertEqual(resp['group']['name'], self.prj_test.group.title)
+
+        # activate macrogroup title:
+        macrogorup.use_title_client = True
+        macrogorup.save()
+
+        response = self._testApiCall('group-map-config', ['gruppo-1', 'qdjango', '1'])
+        resp = json.loads(response.content)
+
+        self.assertEqual(resp['group']['name'], macrogorup.title)
 
     def testClientConfigApiView(self):
         """Test call to project config"""
@@ -156,6 +175,3 @@ class ClientApiTest(CoreTestBase):
         response = self._testApiCall('group-project-map-config', ['gruppo-1', 'qdjango', '1'])
         resp = json.loads(response.content)
         self.assertEqual(resp["thumbnail"], '/media/fake/macrogroup.png')
-
-
-
