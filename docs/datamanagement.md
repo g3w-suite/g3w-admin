@@ -3,14 +3,14 @@ _**This section describes how to organize QGIS data and projects locally and how
 
 ## Data on GeoDatabase PostGis
 
-If your geographical data are stored on GeoDatabase `PostGis`, it will be sufficient to allow access to the GeoDB from the IP address on which the application is installed.
+If your geographical data are stored on `PostGreSQL/PostGis` DB, it will be sufficient to allow access to the GeoDB from the IP address on which the application is installed.
 
 ## Data on SpatiaLite or on other file system format
 If your geographical data are stored on `SpatiaLite` or on physical files (`.shp`, `.kml`, `.tif` ...) located on your local PC, you will need:
 * **organize data and projects** in predefined localy directories and subdirectories
 * **upload/synchronize geographic data to the corresponding folder located on the server** where the application is installed
 
-**Of course, mixed solutions with geographical data on PostGis, SpatiaLite and other formats will also be possible.**
+**Of course, mixed solutions with geographical data on PostGreSQL/PostGis, SpatiaLite and other formats will also be possible.**
 
 ### Organization of data and projects
 
