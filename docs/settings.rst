@@ -55,26 +55,29 @@ General layout settings
 ^^^^^^^^^^^^^^^^^^^^^^
 Default is ``True``, set to ``False`` for don't show bottom `attribution` informations.
 
+``G3WSUITE_CUSTOM_STATIC_URL``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+A custom url to find custom static files as images, css, etc..
+
 ``G3WSUITE_MAIN_LOGO``
 ^^^^^^^^^^^^^^^^^^^^^^
 Main admin section logo image.
+Mandatory is set ``G3WSUITE_CUSTOM_STATIC_URL``
 
 ``G3WSUITE_RID_LOGO``
 ^^^^^^^^^^^^^^^^^^^^^
 Main admin section reduced logo image.
+Mandatory is set ``G3WSUITE_CUSTOM_STATIC_URL``
 
 ``G3WSUITE_LOGIN_LOGO``
 ^^^^^^^^^^^^^^^^^^^^^^^
 Login logo image.
+Mandatory is set ``G3WSUITE_CUSTOM_STATIC_URL``
 
 ``G3WSUITE_CUSTOM_TITLE``
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 **G3W-SUITE** html page title.
 If is not set, title is: `g3w-admin` for admin section and `g3w-client` for webgis client.
-
-``G3WSUITE_CUSTOM_STATIC_URL``
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-A custom url to find custom static files as images, css, etc..
 
 ``G3WSUITE_FAVICON``
 ^^^^^^^^^^^^^^^^^^^^
