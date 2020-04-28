@@ -73,6 +73,7 @@ class ClientApiTest(CoreTestBase):
         self.assertEqual(resp["group"]["header_custom_links"], [])
         self.assertEqual(resp["group"]["background_color"], "#ffffff")
         self.assertEqual(resp["group"]["id"], 1)
+        self.assertEqual(resp["group"]["slug"], 'gruppo-1')
         self.assertEqual(len(resp["group"]["projects"]), 1)
 
         project = resp["group"]["projects"][0]

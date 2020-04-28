@@ -192,6 +192,7 @@ class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         fields = (
             'id',
             'name',
+            'slug',
             'minscale',
             'maxscale',
             'crs',
