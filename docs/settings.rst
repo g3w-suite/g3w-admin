@@ -20,11 +20,31 @@ G3W-SUITE accessory modules:
     - ``g3w-admin-filemanager`` (https://github.com/g3w-suite/g3w-admin-filemanager)
     - ``g3w-admin-frontend`` (https://github.com/g3w-suite/g3w-admin-frontend)
 
+``DATASOURCE_PATH``
+^^^^^^^^^^^^^^^^^^^
+Path to geo data directory (shp, Spatialite, ratser, etc..).
+
+.. Important::
+    Last part of path could be common with QGIS project datasource path. I.e.:
+
+    *QGIS project*:
+    <datasource>/<path>/<to>/**geo_data**/<geodata>.shp</datasource>
+
+    *local_settings.py*:
+    DATASOURCE_PATH = /<local_server_<path>/<to>/**geo_data**
+
+
+Mandatory.
+
 
 ``USER_MEDIA_ROOT``
 ^^^^^^^^^^^^^^^^^^^
 Base user media directory, to fill with media files.
 Is necessary for editing module, to manage media elements do upload on a editing session.
+
+
+
+
 
 Frontend portal setting
 ***********************
