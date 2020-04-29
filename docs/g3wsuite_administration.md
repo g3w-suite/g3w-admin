@@ -397,6 +397,9 @@ It is also possible not to define any active base layer at startup.
  * **`Description`:** Description of the project, it will appear at the public portal level.
  * **`Thumbnail (Logo)`:** logo to associate with the project. This image will be viewable in the list of projects within the cartographic group
 
+#### URL alias
+ * It is possible to set an alias for the final part of the map URL. Only alphanumeric characters, not white space or special characters.
+
 #### Options and actions
 These options allow you to define the type of WMS / WFS query to be carried out and the maximum number of results obtainable following a query.
  * **`Max feature to get for query`***:

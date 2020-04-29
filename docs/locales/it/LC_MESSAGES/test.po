@@ -1,0 +1,163 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2016 - 2020, GIS3W Team
+# This file is distributed under the same license as the G3W-SUITE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: G3W-SUITE 0.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-04-15 15:00+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.8.0\n"
+
+#: ../../test.md:1
+msgid "TEST"
+msgstr ""
+
+#: ../../test.md:3
+msgid "https://guides.github.com/features/mastering-markdown/"
+msgstr ""
+
+#: ../../test.md:5
+msgid ""
+"https://help.github.com/en/github/writing-on-github/basic-writing-and-"
+"formatting-syntax"
+msgstr ""
+
+#: ../../test.md:7
+msgid "https://help.smartling.com/hc/en-us/articles/360012489774-Markdown"
+msgstr ""
+
+#: ../../test.md:9
+msgid "Testo rosso"
+msgstr ""
+
+#: ../../test.md:11
+msgid "Create a file .env (or copy .env.example and rename it in .env)"
+msgstr ""
+
+#: ../../test.md:13
+msgid ""
+"Use git status to list all new or modified files that haven't yet been "
+"committed."
+msgstr ""
+
+#: ../../test.md:16
+msgid "Testo corsivo"
+msgstr ""
+
+#: ../../test.md:18
+msgid "1 testo corsivo"
+msgstr ""
+
+#: ../../test.md:20
+msgid "2 testo corsivo"
+msgstr ""
+
+#: ../../test.md:23
+msgid "Testo corsivo e bold"
+msgstr ""
+
+#: ../../test.md:25
+msgid "1 testo corsivo e bold"
+msgstr ""
+
+#: ../../test.md:27
+msgid "2 testo corsivo e bold"
+msgstr ""
+
+#: ../../test.md:29
+msgid "3 You can combine them"
+msgstr ""
+
+#: ../../test.md:31
+msgid "This text is extremely important"
+msgstr ""
+
+#: ../../test.md:33
+msgid "*** 1 All this text is important***"
+msgstr ""
+
+#: ../../test.md:35
+msgid "*** 2 All this text is important***"
+msgstr ""
+
+#: ../../test.md:37
+msgid "Link"
+msgstr ""
+
+#: ../../test.md:39
+msgid "GitHub repository"
+msgstr ""
+
+#: ../../test.md:41
+msgid "https://github.com/g3w-suite/g3w-admin-frontend"
+msgstr ""
+
+#: ../../test.md:43
+msgid "(https://github.com/g3w-suite/g3w-admin-frontend)"
+msgstr ""
+
+#: ../../test.md:46
+msgid "Immagini in linea"
+msgstr ""
+
+#: ../../test.md:48
+msgid "zoomtoextent: zoom to the initial extension"
+msgstr ""
+
+#: ../../test.md:50
+msgid "zoom: zoom in and zoom out"
+msgstr ""
+
+#: ../../test.md:52
+msgid "zoombox: zoom tool based on drawing a rectangle"
+msgstr ""
+
+#: ../../test.md:55
+msgid "Blockquotes"
+msgstr ""
+
+#: ../../test.md:57
+msgid "As Kanye West said:"
+msgstr ""
+
+#: ../../test.md:59
+msgid "We're living the future so the present is our past."
+msgstr ""
+
+#: ../../test.md:62
+msgid "Some basic Git commands are:"
+msgstr ""
+
+#: ../../test.md:69
+msgid "Inline code"
+msgstr ""
+
+#: ../../test.md:71
+msgid "I think you should use an <addr> element here instead."
+msgstr ""
+
+#: ../../test.md:75
+msgid "List"
+msgstr ""
+
+#: ../../test.md:76
+msgid "First list item"
+msgstr ""
+
+#: ../../test.md:77
+msgid "First nested list item"
+msgstr ""
+
+#: ../../test.md:78
+msgid "Second nested list item"
+msgstr ""
+
