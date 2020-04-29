@@ -189,7 +189,7 @@ def user_media_view(request, project_type, layer_id, file_name, *args, **kwargs)
     :param project_type: G3W-USITE map project, default 'qdjango'.
     :param layer_id: Django model Layer pk value.
     :param file_name: File name to render.
-    :return: HttpRensponce or a HttpResponseForbidden instance.
+    :return: HttpRensponse or a HttpResponseForbidden instance.
     """
 
     # get model by project_type
