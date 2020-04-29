@@ -192,7 +192,7 @@ def user_media_view(request, project_type, layer_id, file_name, *args, **kwargs)
     :return: HttpRensponce or a HttpResponseForbidden instance.
     """
 
-    # get model by projet_type
+    # get model by project_type
     Layer = apps.get_app_config(project_type).get_model('layer')
     layer = Layer.objects.get(pk=layer_id)
 
