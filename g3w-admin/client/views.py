@@ -198,10 +198,7 @@ def user_media_view(request, project_type, layer_id, file_name, *args, **kwargs)
 
 
     # check permission
-    if request.user.has_perm('view_project', layer.project):
-        return USERMEDIAHANDLER_CLASSES[project_type](layer=layer, file_name=file_name).send_file()
-    else:
-        return HttpResponseForbidden()
+    return USERMEDIAHANDLER_CLASSES[project_type](layer=layer, file_name=file_name).send_file()
 
 
 def credits(request, * args, **kwargs):
