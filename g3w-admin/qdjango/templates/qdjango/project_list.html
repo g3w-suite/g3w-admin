@@ -22,6 +22,7 @@
                     <th>Logo</th>
                     <th>{% trans 'QGIS project title' %}</th>
                     <th>{% trans 'Public title' %}</th>
+                    <th>{% trans 'URL alias' %}</th>
                     <th>{% trans 'Created/Modified' %}</th>
                     <th>{% trans 'Widgets' %}</th>
                 </tr>
@@ -96,6 +97,7 @@
                     </td>
                     <td>{{ object.title }}</td>
                     <td>{% if object.title_ur %}{{ object.title_ur }}{% endif %}</td>
+                    <td>{% if object.url_alias %}/map/{{ object.url_alias }}{% endif %}</td>
                     <td>
                         {% trans 'created' %}: {{ object.created }}
                         {% if object.modified %}
