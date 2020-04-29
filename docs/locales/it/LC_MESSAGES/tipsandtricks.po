@@ -1,0 +1,76 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2016 - 2020, GIS3W Team
+# This file is distributed under the same license as the G3W-SUITE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: G3W-SUITE 0.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-04-20 12:13+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.8.0\n"
+
+#: ../../tipsandtricks.rst:3
+msgid "Tips and tricks"
+msgstr ""
+
+#: ../../tipsandtricks.rst:6
+msgid "Indication about rendering map performance and other optimization"
+msgstr ""
+
+#: ../../tipsandtricks.rst:10
+msgid "Performances optimization"
+msgstr ""
+
+#: ../../tipsandtricks.rst:13
+msgid ""
+"Followed indications are for geo data, in particular for Postgis data, "
+"and use of they in a QGIS project."
+msgstr ""
+
+#: ../../tipsandtricks.rst:15
+msgid "General rules (in no particular order: they are all mandatory):"
+msgstr ""
+
+#: ../../tipsandtricks.rst:17
+msgid ""
+"set scale-dependent visibility for the entire layer or for some filtered "
+"features (example: show only major roads until at scale 1:1E+6)"
+msgstr ""
+
+#: ../../tipsandtricks.rst:18
+msgid ""
+"when using rule-based/categorized classification or scale-dependent "
+"visibility create indexes on the column(s) involved in the rule "
+"expression (example: \"create index idx_elec_penwell_ious on "
+"elec_penwell_ious (owner);\" )"
+msgstr ""
+
+#: ../../tipsandtricks.rst:19
+msgid "start the project with only a few layers turned on by default"
+msgstr ""
+
+#: ../../tipsandtricks.rst:20
+msgid "do not turn on by default base-layers XYZ such as (Google base maps)"
+msgstr ""
+
+#: ../../tipsandtricks.rst:21
+msgid ""
+"do not use rule-based/categorized rendering on layers with too many "
+"categories (example: elec_penwell_public_power), they are unreadable "
+"anyway"
+msgstr ""
+
+#: ../../tipsandtricks.rst:22
+msgid ""
+"enable redering simplification for not-point layers, set it to `Distance`"
+" `1.2` and check `Enable provider simplification if available`"
+msgstr ""
+

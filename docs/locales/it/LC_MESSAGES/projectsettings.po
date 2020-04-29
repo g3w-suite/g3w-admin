@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: G3W-SUITE 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-04-22 16:05+0200\n"
+"POT-Creation-Date: 2020-04-29 16:08+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -359,12 +359,14 @@ msgstr ""
 "subdirectory) e sincronizzata su server."
 
 #: ../../projectsettings.md:102
-#, fuzzy
 msgid ""
 "See also the dedicated paragraph Geographic data synchronization on the "
 "server."
 msgstr ""
-"Vedi anche il paragrafo dedicato [Sincronizzazione dati geografici su spazio server](https://g3w-suite.readthedocs.io/it/latest/datamanagement.html#geographic-data-synchronization-on-the-server)."
+"Vedi anche il paragrafo dedicato [Sincronizzazione dati geografici su "
+"spazio server](https://g3w-"
+"suite.readthedocs.io/it/latest/datamanagement.html#geographic-data-"
+"synchronization-on-the-server)."
 
 #: ../../projectsettings.md:104
 msgid "QGIS: layer properties"
@@ -444,6 +446,15 @@ msgstr ""
 
 #: ../../projectsettings.md:127
 msgid ""
+"NB: The name of this directory is defined by the basic settings set "
+"during the installation of the suite. See dedicated paragraph."
+msgstr ""
+"**NB:** il nome di questa directory viene definito dalle impostazioni di "
+"base impostate durante l'installazione della suite. [Vedi paragrafo "
+"dedicato](https://g3w-suite.readthedocs.io/it/latest/settings.html#base-settings)"
+
+#: ../../projectsettings.md:130
+msgid ""
 "PS: remember that the File Manager tool also allows you to manage the "
 "synchronization of geographical data (in the case of using physical "
 "files) and the management of multimedia files."
@@ -452,21 +463,15 @@ msgstr ""
 "anche la sincronizzazione dei dati geografici (nel caso di utilizzo di "
 "file fisici) e la gestione dei file multimediali."
 
-#: ../../projectsettings.md:129
-msgid ""
-"See also [dedicated paragraph] (https://g3w-"
-"suite.readthedocs.io/en/latest/projectsettings.html#viewing-multimedia-"
-"content)"
-msgstr ""
-"Vedi anche [paragrafo dedicato](https://g3w-"
-"suite.readthedocs.io/it/latest/projectsettings.html#viewing-multimedia-"
-"content)"
+#: ../../projectsettings.md:132
+msgid "See also dedicated paragraph"
+msgstr "[Vedi anche il paragrafo dedicato](https://g3w-suite.readthedocs.io/it/latest/projectsettings.html#viewing-multimedia-content)"
 
-#: ../../projectsettings.md:131
+#: ../../projectsettings.md:134
 msgid "Definition of the fields that can be consulted for each layer"
 msgstr "Definizione dei campi consultabili per ogni layer"
 
-#: ../../projectsettings.md:132
+#: ../../projectsettings.md:135
 msgid ""
 "Within the QGIS project it is also possible to define, for each layer, "
 "which fields are available following query on the WebGis service."
@@ -475,7 +480,7 @@ msgstr ""
 "vettore, quali siano i campi disponibili in seguito ad interrogazione WMS"
 " sul servizio WebGis."
 
-#: ../../projectsettings.md:134
+#: ../../projectsettings.md:137
 msgid ""
 "To define these settings, you access the properties of one of the vectors"
 " previously defined as searchable and choose the Source Fields submenu in"
@@ -485,11 +490,11 @@ msgstr ""
 "vettori definiti precedentemente come interrogabili e si sceglie il "
 "sottomenù **`Campi Sorgente`** nella finestra **`Proprietà vettore`**."
 
-#: ../../projectsettings.md:136
+#: ../../projectsettings.md:139
 msgid "This submenu lists the fields associated to the table of the vector."
 msgstr "In tale sottomenù è riportato l'elenco dei campi del vettore in esame."
 
-#: ../../projectsettings.md:138
+#: ../../projectsettings.md:141
 msgid ""
 "The check box relating to the WMS column defines whether or not the "
 "values contained in this field will be available following the query on "
@@ -499,11 +504,11 @@ msgstr ""
 "contenuti in tale campo saranno disponibili o meno in seguito "
 "all'interrogazione sul servizio WebGis."
 
-#: ../../projectsettings.md:142
+#: ../../projectsettings.md:145
 msgid "Viewing multimedia content"
 msgstr "Visualizzazione di contenuti multimediali"
 
-#: ../../projectsettings.md:143
+#: ../../projectsettings.md:146
 msgid ""
 "Multimedia contents (images, pdf, web URL ...) can be viewed "
 "interactively on the map client following publication of the QGIS "
@@ -513,7 +518,7 @@ msgstr ""
 "**visualizzati in modo interattivo** sul client cartografico in seguito a"
 " pubblicazione del progetto come servizio WebGis."
 
-#: ../../projectsettings.md:145
+#: ../../projectsettings.md:148
 msgid ""
 "In the case of web links, simply insert them (preceded by the prefix "
 "http:// or https://) within the dedicated attribute fields"
@@ -522,11 +527,11 @@ msgstr ""
 " **`http://` o `https://`**) all’interno del campo degli attributi "
 "dedicato"
 
-#: ../../projectsettings.md:147
+#: ../../projectsettings.md:150
 msgid "In the case of multimedia files it is necessary:"
 msgstr "Per il caso di **file multimediali** è invece necessario:"
 
-#: ../../projectsettings.md:148
+#: ../../projectsettings.md:151
 msgid ""
 "upload the media file to the media_user folder (folder exposed on the "
 "web) accessible through the File Manager tool in the Suite Administration"
@@ -536,37 +541,37 @@ msgstr ""
 "(cartella esposta su web) presente nella sessione **File Manager** del "
 "Pannello di Amministrazione della suite"
 
-#: ../../projectsettings.md:149
+#: ../../projectsettings.md:152
 msgid "insert the web link to this file in the dedicated attribute field"
 msgstr "inserire, nel  campo degli attributi dedicato, il link web a tale file"
 
-#: ../../projectsettings.md:151
+#: ../../projectsettings.md:154
 msgid "The link to the file can be obtained in the following way:"
 msgstr "Il link al file può essere ricavato nel seguente modo:"
 
-#: ../../projectsettings.md:152
+#: ../../projectsettings.md:155
 msgid "application domain + media_user + path of the file + file name"
 msgstr ""
 "**dominio applicativo + media_user + path di eventuali sottocartelle + "
 "nome del file**"
 
-#: ../../projectsettings.md:154
+#: ../../projectsettings.md:157
 msgid "Example:"
 msgstr "**Esempio:**"
 
-#: ../../projectsettings.md:155
+#: ../../projectsettings.md:158
 msgid "application domain: https://dev.g3wsuite.it"
 msgstr "dominio applicativo: **`https://dev.g3wsuite.it`**"
 
-#: ../../projectsettings.md:156
+#: ../../projectsettings.md:159
 msgid "file file_A.pdf located in the folder /media_user/form/"
 msgstr "file **`scheda_A.pdf`** situato nella cartella **`/media_user/schede/`**"
 
-#: ../../projectsettings.md:157
+#: ../../projectsettings.md:160
 msgid "web link: https://dev.g3wsuite.it/media_user/form/file_A.pdf"
 msgstr "link web: **`https://dev.g3wsuite.it/media_user/schede/scheda_A.pdf`**"
 
-#: ../../projectsettings.md:159
+#: ../../projectsettings.md:162
 msgid ""
 "Following queries at the cartographic client level, we will have "
 "different behaviors based on the type of content:"
@@ -575,7 +580,7 @@ msgstr ""
 "cartografico, in base al tipo di contenuto multimediale, avremmo i "
 "seguenti casi:"
 
-#: ../../projectsettings.md:160
+#: ../../projectsettings.md:163
 msgid ""
 "image: preview display in the form, click on the preview to display the "
 "image in real size"
@@ -584,7 +589,7 @@ msgstr ""
 "sull’anteprima per la visualizzazione in sovraimpressione dell’immagine a"
 " dimensioni reale"
 
-#: ../../projectsettings.md:161
+#: ../../projectsettings.md:164
 msgid ""
 "web link or other multimedia file: display of an Open orange button to "
 "allow consultation of the content"
@@ -592,11 +597,11 @@ msgstr ""
 "**link web o file multimediali:** visualizzazione di tasto arancione con "
 "la scritta  Apri  per permettere la consultazione del contenuto"
 
-#: ../../projectsettings.md:165
+#: ../../projectsettings.md:168
 msgid "Definition of the attribute display form"
 msgstr "Definizione del form di visualizzazione degli attributi"
 
-#: ../../projectsettings.md:166
+#: ../../projectsettings.md:169
 msgid ""
 "For each layer it is possible to define the structure of the attributes "
 "form associated with displaying the results following query operations."
@@ -605,7 +610,7 @@ msgstr ""
 "attributi** associato alla visualizzazione dei risultati in seguito ad "
 "operazioni di interrogazione."
 
-#: ../../projectsettings.md:168
+#: ../../projectsettings.md:171
 msgid ""
 "On QGIS we can build a personalized form (query form) by creating "
 "thematic tabs and groups and defining the distribution of the individual "
@@ -616,7 +621,7 @@ msgstr ""
 "tematici** e definendo la distribuzione dei singoli campi ed i loro alias"
 " all'interno di essi."
 
-#: ../../projectsettings.md:170
+#: ../../projectsettings.md:173
 msgid ""
 "This structural organization will be replicated directly on the query "
 "form on the WebGis service."
@@ -624,21 +629,21 @@ msgstr ""
 "Tale organizzazione strutturale sarà **replicata direttamente sul query**"
 " **form** sul servizio WebGis come riportato nell'immagine precedente"
 
-#: ../../projectsettings.md:174
+#: ../../projectsettings.md:177
 msgid "Performances optimization"
 msgstr "Ottimizzazione delle prestazioni"
 
-#: ../../projectsettings.md:176
+#: ../../projectsettings.md:179
 msgid "Mandatory rules"
 msgstr "Regole obbligatorie"
 
-#: ../../projectsettings.md:177
+#: ../../projectsettings.md:180
 msgid "PostGreSQL/PostGis and SQLite/Spatialite layers must have a primary key"
 msgstr ""
 "I layer PostGreSQL/PostGis e SQLite/Spatialite devono avere una **chiave "
 "primaria**"
 
-#: ../../projectsettings.md:178
+#: ../../projectsettings.md:181
 msgid ""
 "PostGreSQL/PostGis and SQLite/Spatialite layers must have only a "
 "geometric column"
@@ -646,11 +651,11 @@ msgstr ""
 "I layer PostGreSQL/PostGis e SQLite/Spatialite devono avere **solo una "
 "colonna geometrica**"
 
-#: ../../projectsettings.md:179
+#: ../../projectsettings.md:182
 msgid "not use numeric type field in PostGreSQL/PostGis layer"
 msgstr "**non utilizzare il campo di tipo numerico** nei layer PostGreSQL/PostGis"
 
-#: ../../projectsettings.md:180
+#: ../../projectsettings.md:183
 msgid ""
 "the primary key field and all fields involved in search, join, 1:n "
 "relation or editing function have to be published as WMS"
@@ -659,19 +664,23 @@ msgstr ""
 "ricerca, join, relazioni 1:N o modifica devono essere **pubblicati come "
 "WMS**"
 
-#: ../../projectsettings.md:181
+#: ../../projectsettings.md:184
 msgid "don't use commas for aliases associated with layers."
 msgstr "**Non utilizzare virgole per gli alias** associati ai layer."
 
-#: ../../projectsettings.md:182
+#: ../../projectsettings.md:185
+msgid "style settings defined at the auxiliary data level are not managed."
+msgstr "gli stili definiti tramite i dati ausiliari non sono gestiti dalla suite"
+
+#: ../../projectsettings.md:186
 msgid "insert only one Map element in the print layouts."
 msgstr "Inserire nei layout di stampa **un solo elemento `Mappa`**."
 
-#: ../../projectsettings.md:184
+#: ../../projectsettings.md:188
 msgid "Tips"
 msgstr "Suggerimenti"
 
-#: ../../projectsettings.md:185
+#: ../../projectsettings.md:189
 msgid ""
 "when using rule-based/categorized classification create indexes on the "
 "column(s) involved in the rule expression"
@@ -679,15 +688,24 @@ msgstr ""
 "quando si utilizza la vestizione categorizzata/basata su regole, **creare"
 " indici sulle colonne coinvolte** nell'espressione della regola"
 
-#: ../../projectsettings.md:186
+#: ../../projectsettings.md:190
 msgid "start the project with only a few layers turned on by default"
 msgstr "avviare il progetto con solo **pochi layer attivati** di default"
 
-#: ../../projectsettings.md:187
+#: ../../projectsettings.md:191
 msgid ""
 "do not exceed three nesting levels in the groups of layers defined in the"
 " TOC"
 msgstr ""
 "non superare i tre livelli di annidamento nei gruppi di layer definiti "
 "nella TOC"
+
+#~ msgid ""
+#~ "See also [dedicated paragraph] (https"
+#~ "://g3w-suite.readthedocs.io/en/latest/projectsettings.html"
+#~ "#viewing-multimedia-content)"
+#~ msgstr ""
+#~ "Vedi anche [paragrafo dedicato](https://g3w-"
+#~ "suite.readthedocs.io/it/latest/projectsettings.html#viewing-"
+#~ "multimedia-content)"
 

@@ -20,7 +20,7 @@ Through the tutorials it will be possible to:
 The tutorial is based on predefined data and QGIS 3.4 LTR project **downloadable from [this link](https://dev.g3wsuite.it/media_user/G3WSUITE.zip)**.
 
 The .zip file contains la directory **`G3W-SUITE`** with two sub directories:
- * **`projects`:** containing a QGIS project (**`buildings_management.qgs`**) already optimized for the tutorial
+ * **`projects`:** containing a QGIS project (**`buildings_management.qgz`**) already optimized for the tutorial
  * **`dati_geografici`**: containing a SpatiaLite DB with basic data (**`build_management.sqlite`**)
 
 ![](images/manual/demo_zip_file.png)
@@ -68,8 +68,11 @@ In the Dashboard there will be the menu for access to the **Cartographic Groups*
 
 ![](images/manual/demo_dashboard.png)
 
-Access the content of the **`G3W-Suite Demo`** Cartographic Group and click on the button ![](images/manual/button_add_qgis_project.png) to publish your project**.
+Click on the **`Show`** item in the ligth blue **Groups** box to acces at the list of available Cartographic Groups.
 
+Access the list of webgis in the Cartographic Group **`G3W-SUITE Demo`** clicking on the project number shown.
+
+Now click on the button ![](images/manual/button_add_qgis_project.png) to publish your **QGIS project**.
 
 
 Fill out the form defining the various aspects to be associated with the WebGis service being published:

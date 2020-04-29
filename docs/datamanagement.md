@@ -16,14 +16,15 @@ If your geographical data are stored on `SpatiaLite` or on physical files (`.shp
 
 Data on physical files and / or on GeoDB SpatiaLite and QGIS cartographic projects must be organized in compliance with the following indications:
  * a **main directory** named and positioned in according to need's user
-   * a **`geo_data` sub-directory** that must contain the **geographic data** used for the various cartographic projects, such data can also be organized in subdirectories with no nesting limits.
+   * a **`geo_data`* sub-directory** that must contain the **geographic data** used for the various cartographic projects, such data can also be organized in subdirectories with no nesting limits.
    * a **`projects` sub-directory** that must contain the **QGIS cartographic projects** (.qgz or .qgs files)
 
 ![](images/manual/datamanagement.png)
 
-The **`geodata`** subdirectory is also used to contain **images used in the print layouts** associated with the QGIS cartographic projects.
+**NB:** The name of the local directory dedicated to geographic data must correspond to the name defined for the **`DATASOURCE_PATH`** variable set during installation.
+[See dedicated paragraph.](https://g3w-suite.readthedocs.io/en/latest/settings.html#base-settings)
 
-See dedicated paragraph.
+That directory is also used to contain **images used in the print layouts** associated with the QGIS cartographic projects.
 
 ### Geographic data synchronization on the server
 
@@ -47,5 +48,9 @@ This the directories present by default:
  * **`svg:`** a folder to store **extra SVG icons** used your QGIS projects
 
 All the folder can be organized in subdirectories with no nesting limits.
+
+**NB:** The names of these directories are defined by the basic settings set during the installation of the suite.
+[See dedicated paragraph.](https://g3w-suite.readthedocs.io/en/latest/settings.html#base-settings)
+
 
 ![](images/manual/g3wsuite_administration_file_manager.png)
