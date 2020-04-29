@@ -125,7 +125,8 @@ msgid ""
 "if you disabled HTTPS, you can move config/nginx/django_ssl.conf back to "
 "its original location now, and restart the Docker compose to finally "
 "enable HTTPS"
-msgstr "se hai disabilitato HTTPS, puoi spostare `config/nginx/django ssl.conf` nella sua posizione originale e riavviare il Docker compose per abilitare HTTPS"
+msgstr "se hai disabilitato HTTPS, puoi spostare `config/nginx/django ssl.conf` nella sua posizione originale e "
+"riavviare il Docker compose per abilitare HTTPS"
 
 #: ../../docker.md:76
 msgid "Run"
@@ -148,7 +149,8 @@ msgid ""
 "Data, projects, uploads and the database are stored in a shared mounted "
 "volume shared-volume, the volume should be on a persistent storage device"
 " and a backup policy must be enforced."
-msgstr "Dati, progetti, caricamenti e database sono archiviati in un volume condiviso `shared-volume`, il volume deve essere su un dispositivo di archiviazione permanente e deve esservi applicato un criterio di backup."
+msgstr "Dati, progetti, caricamenti e database sono archiviati in un volume condiviso `shared-volume`, "
+"il volume deve essere su un dispositivo di archiviazione permanente e deve esservi applicato un criterio di backup."
 
 #: ../../docker.md:92
 msgid "First time setup"
@@ -158,7 +160,8 @@ msgstr "Prima configurazione"
 msgid ""
 "log into the application web administation panel using default "
 "credentials (admin/admin)"
-msgstr "accediamo al pannello di amministrazione Web dell'applicazione utilizzando le credenziali predefinite (admin/admin)"
+msgstr "accediamo al pannello di amministrazione web dell'applicazione utilizzando le "
+"credenziali predefinite (admin/admin)"
 
 #: ../../docker.md:95
 msgid ""
@@ -174,7 +177,8 @@ msgstr "Caching"
 msgid ""
 "Tile cache can be configured and cleared per-layer through the webgis "
 "admin panel and lasts forever until it is disabled or cleared."
-msgstr "La tile cache può essere configurata e cancellata per singolo livello attraverso il pannello di amministrazione di webgis e permane fino a quando non viene disabilitata o cancellata."
+msgstr "La tile cache può essere configurata e cancellata per singolo livello attraverso il pannello di amministrazione "
+"della applicazione e permane fino a quando non viene disabilitata o cancellata."
 
 #: ../../docker.md:101
 msgid "Tip: enable cache on linestring and polygon layers."
@@ -189,21 +193,25 @@ msgid ""
 "Templates can now be overridden by placing the overrides in the config"
 "/g3w-suite/overrides/templates, a Docker service restart is required to "
 "make the changes effective."
-msgstr "I tempaltes ora possono essere sovrascritti inserendo gli override in `config/g3w-suite/overrides/templates`, è necessario un riavvio del servizio Docker per rendere effettive le modifiche."
+msgstr "I templates possono essere sovrascritti inserendo gli override in `config/g3w-suite/overrides/templates`, "
+"è necessario un riavvio del servizio Docker per rendere effettive le modifiche."
 
 #: ../../docker.md:108
 msgid ""
 "The logo is also overridden (through config/g3w-suite/settings_docker.py "
 "which is mounted as a volume), changes to the settings file require the "
 "Docker service to be restarted."
-msgstr "Anche il logo viene sovrascritto (tramite `config/g3w-suite/settings docker.py` che è montato come volume), le modifiche al file delle impostazioni richiedono il riavvio del servizio Docker."
+msgstr "Anche il logo viene sovrascritto (tramite `config/g3w-suite/settings_docker.py` che è montato come volume), "
+"le modifiche al file delle impostazioni richiedono il riavvio del servizio Docker."
 
 #: ../../docker.md:110
 msgid ""
 "A custom CSS is added to the pages, the file is located in config/g3w-"
 "suite/overrides/static/style.css and can be modified directly, changes "
 "are effective immediately."
-msgstr "Un CSS personalizzato viene aggiunto alle pagine, il file si trova in `config/g3w-suite/overrides/static/style.css` e può essere modificato direttamente, le modifiche hanno effetto immediato."
+msgstr "Un CSS personalizzato viene aggiunto alle pagine, il file si trova in "
+"`config/g3w-suite/overrides/static/style.css` e può essere modificato direttamente, "
+"le modifiche hanno effetto immediato."
 
 #: ../../docker.md:113
 msgid "Performances optimization"
@@ -217,7 +225,8 @@ msgstr "Regole generali (in nessun ordine particolare: sono tutte obbligatorie)"
 msgid ""
 "set scale-dependent visibility for the entire layer or for some filtered "
 "features (example: show only major roads until at scale 1:1E+6)"
-msgstr "imposta la visibilità dipendente dalla scala per l'intero layer o per alcune features filtrate (esempio: mostra solo le strade principali fino alla scala 1: 1E+6)"
+msgstr "imposta la visibilità dipendente dalla scala per l'intero layer o per alcune features filtrate "
+"(esempio: mostra solo le strade principali fino alla scala 1: 1E+6)"
 
 #: ../../docker.md:118
 msgid ""
@@ -225,7 +234,9 @@ msgid ""
 "visibility create indexes on the column(s) involved in the rule "
 "expression (example: \"create index idx_elec_penwell_ious on "
 "elec_penwell_ious (owner);\" )"
-msgstr "quando per la stilizzazione dei layer si utilizza il metodo categorizzato o la classificazione basata su regole oppure quando si attiva la visibilità dipendente dalla scala, è fortemente consigliato creare indici sulle colonne coinvolte nell'espressione della regola (esempio: 'create indice idx_elec_penwell_ious on elec_penwell_ious (owner);')"
+msgstr "quando per la stilizzazione dei layer si utilizza il metodo categorizzato o la classificazione basata su regole"
+" oppure quando si attiva la visibilità dipendente dalla scala, è fortemente consigliato creare indici sulle colonne "
+"coinvolte nell'espressione della regola (esempio: 'create indice idx_elec_penwell_ious on elec_penwell_ious (owner);')"
 
 #: ../../docker.md:119
 msgid "start the project with only a few layers turned on by default"
@@ -240,13 +251,15 @@ msgid ""
 "do not use rule-based/categorized rendering on layers with too many "
 "categories (example: elec_penwell_public_power), they are unreadable "
 "anyway"
-msgstr "non utilizzare il rendering basato sul metodo categorizzato o basato su regole con troppe categorie (esempio: elec_penwell_public_power), ciò rallenta il rendering della mappa"
+msgstr "non utilizzare il rendering basato sul metodo categorizzato o basato su regole con troppe categorie "
+"(esempio: elec_penwell_public_power), ciò rallenta il rendering della mappa"
 
 #: ../../docker.md:122
 msgid ""
 "enable redering simplification for not-point layers, set it to Distance "
 "1.2 and check Enable provider simplification if available"
-msgstr "abilitare la semplificazione del rendering per layer non puntuali, impostarlo su `Distanza` `1.2` e selezionare `Abilita semplificazione provider se disponibile`"
+msgstr "abilitare la semplificazione del rendering per layer non puntuali, impostarlo su `Distanza` `1.2` e selezionare "
+"`Abilita semplificazione provider se disponibile`"
 
 #: ../../docker.md:124
 msgid "PostgreSQL administration"
@@ -256,7 +269,8 @@ msgstr "Amministrazione PostgreSQL"
 msgid ""
 "Postgres is running into a Docker container, in order to access the "
 "container, you can follow the instruction below:"
-msgstr "PostGreSQL è in esecuzione in un contenitore Docker, per accedere al contenitore è possibile seguire le istruzioni seguenti:"
+msgstr "PostGreSQL è in esecuzione in un contenitore Docker, per accedere al contenitore è "
+"possibile seguire le istruzioni seguenti:"
 
 #: ../../docker.md:128
 msgid "Check the container name"
