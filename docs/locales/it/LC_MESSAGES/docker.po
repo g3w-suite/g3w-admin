@@ -58,7 +58,7 @@ msgstr "L'immagine del contenitore è compilata da `https://github.com/g3w-suite
 
 #: ../../docker.md:46
 msgid "The Docker hub name for this image is g3wsuite/g3w-suite-dev:latest"
-msgstr "Il Docker hub name per questa immagine è compilata da `g3wsuite/g3w-suite-dev:latest`"
+msgstr "Il Docker hub name per questa immagine è `g3wsuite/g3w-suite-dev:latest`"
 
 #: ../../docker.md:48
 msgid "Postgis"
@@ -84,7 +84,7 @@ msgstr "L'immagine di QGIS Server è costruita da `https://github.com/elpaso/qgi
 
 #: ../../docker.md:62
 msgid "The Docker hub name for this image is g3wsuite/qgis3-server:ltr-ubuntu"
-msgstr "Il nome del Docjer Hub per questa immagine è `g3wsuite/qgis3-server:ltr-ubuntu`"
+msgstr "Il nome del Docker Hub per questa immagine è `g3wsuite/qgis3-server:ltr-ubuntu`"
 
 #: ../../docker.md:64
 msgid "HTTPS additional setup"
@@ -117,7 +117,8 @@ msgid ""
 "make sure the certs are renewed by adding a cron job with crontab -e and "
 "add the following line: 0  3 * * * /home/g3w-"
 "suite/rl.g3wsuite.it/run_certbot.sh"
-msgstr "assicurati che i certificati vengano rinnovati aggiungendo un cron job con `crontab -e` e aggiungi la seguente riga: `0 3 * * * /home/g3w-suite/rl.g3w suite.it/run certbot.sh`"
+msgstr "assicurati che i certificati vengano rinnovati aggiungendo un cron job con `crontab -e` e aggiungi "
+"la seguente riga: `0 3 * * * /home/g3w-suite/rl.g3w suite.it/run certbot.sh`"
 
 #: ../../docker.md:74
 msgid ""
