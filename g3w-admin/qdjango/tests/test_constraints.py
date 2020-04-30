@@ -156,7 +156,7 @@ class SingleLayerSubsetStringConstraints(TestSingleLayerConstraintsBase):
         constraint.active = True
         constraint.save()
         self.assertEqual(ConstraintSubsetStringRule.get_active_constraints_for_user(admin01, world)[0], rule)
-        self.assertEqual(ConstraintSubsetStringRule.get_rule_definition_for_user(admin01, world.qgs_layer_id), "(NAME != 'ITALY')")
+        self.assertEqual(ConstraintSubsetStringRule.get_rule_definition_for_user(admin01, world.pk), "(NAME != 'ITALY')")
 
         self.assertFalse(self._check_subset_string())
 
@@ -186,7 +186,7 @@ class SingleLayerSubsetStringConstraints(TestSingleLayerConstraintsBase):
         constraint.active = True
         constraint.save()
         self.assertEqual(ConstraintSubsetStringRule.get_active_constraints_for_user(admin01, world)[0], rule)
-        self.assertEqual(ConstraintSubsetStringRule.get_rule_definition_for_user(admin01, world.qgs_layer_id), "(NAME != 'ITALY')")
+        self.assertEqual(ConstraintSubsetStringRule.get_rule_definition_for_user(admin01, world.pk), "(NAME != 'ITALY')")
 
         self.assertFalse(self._check_subset_string())
 
@@ -229,7 +229,7 @@ class SingleLayerSubsetStringConstraints(TestSingleLayerConstraintsBase):
                 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 # WARNING: it's the qgs_layer_id, not the name!
                 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                'layer_name': world.qgs_layer_id
+                'layer_name': world.qgs_layer_id,
             }.values()
         )
         self.assertEqual(response.status_code, 200)
@@ -259,7 +259,7 @@ class SingleLayerSubsetStringConstraints(TestSingleLayerConstraintsBase):
                 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 # WARNING: it's the qgs_layer_id, not the name!
                 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                'layer_name': world.qgs_layer_id
+                'layer_name': world.qgs_layer_id,
             }.values()
         )
         self.assertEqual(response.status_code, 200)
@@ -297,7 +297,7 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
         constraint.active = True
         constraint.save()
         self.assertEqual(ConstraintExpressionRule.get_active_constraints_for_user(admin01, world)[0], rule)
-        self.assertEqual(ConstraintExpressionRule.get_rule_definition_for_user(admin01, world.qgs_layer_id), "(NAME != 'ITALY')")
+        self.assertEqual(ConstraintExpressionRule.get_rule_definition_for_user(admin01, world.pk), "(NAME != 'ITALY')")
 
         self.assertFalse(self._check_subset_string())
 
@@ -327,7 +327,7 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
         constraint.active = True
         constraint.save()
         self.assertEqual(ConstraintExpressionRule.get_active_constraints_for_user(admin01, world)[0], rule)
-        self.assertEqual(ConstraintExpressionRule.get_rule_definition_for_user(admin01, world.qgs_layer_id), "(NAME != 'ITALY')")
+        self.assertEqual(ConstraintExpressionRule.get_rule_definition_for_user(admin01, world.pk), "(NAME != 'ITALY')")
 
         self.assertFalse(self._check_subset_string())
 
@@ -370,7 +370,7 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
                 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 # WARNING: it's the qgs_layer_id, not the name!
                 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                'layer_name': world.qgs_layer_id
+                'layer_name': world.qgs_layer_id,
             }.values()
         )
         self.assertEqual(response.status_code, 200)
@@ -400,7 +400,7 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
                 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 # WARNING: it's the qgs_layer_id, not the name!
                 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                'layer_name': world.qgs_layer_id
+                'layer_name': world.qgs_layer_id,
             }.values()
         )
         self.assertEqual(response.status_code, 200)
@@ -459,7 +459,7 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
                 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 # WARNING: it's the qgs_layer_id, not the name!
                 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                'layer_name': world.qgs_layer_id
+                'layer_name': world.qgs_layer_id,
             }.values()
         )
         self.assertEqual(response.status_code, 200)

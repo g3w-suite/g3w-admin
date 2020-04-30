@@ -18,7 +18,7 @@ from core.api.filters import BaseFilterBackend
 class ConstraintsFilter(BaseFilterBackend):
     """A filter backend that applies constraints to the editing data request"""
 
-    def apply_filter(self, request, qgis_layer, qgis_feature_request, view=None):
+    def apply_filter(self, request, qgis_layer, qgis_feature_request, view):
 
         rule_parts = []
 

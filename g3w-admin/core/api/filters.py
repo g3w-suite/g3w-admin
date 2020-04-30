@@ -23,7 +23,7 @@ from rest_framework.exceptions import ParseError
 class BaseFilterBackend():
     """Base class for QGIS request filters"""
 
-    def apply_filter(self, request, qgis_layer, qgis_feature_request, view=None):
+    def apply_filter(self, request, qgis_layer, qgis_feature_request, view):
         """Apply the filter to the QGIS feature request or the layer's subset string.
         Warning: if the filter alters the layer instance (for example by settings a subset
         string) make sure to restore the original state or to work on a clone.
@@ -35,7 +35,7 @@ class BaseFilterBackend():
         :param qgis_feature_request: QGIS feature request
         :type qgis_feature_request: QgsFeatureRequest
         :param view: Django view, optional
-        :type view: optional, Django view
+        :type view: Django view, must have a layer member which is a QDjango Layer instance
         :raises NotImplementedError: all subclasses must implement this method
         """
 
@@ -73,7 +73,7 @@ class BaseFilterBackend():
 class SearchFilter(BaseFilterBackend):
     """A filter backend that does an ILIKE string search in all fields"""
 
-    def apply_filter(self, request, qgis_layer, qgis_feature_request, view=None):
+    def apply_filter(self, request, qgis_layer, qgis_feature_request, view):
 
         if request.query_params.get('search'):
 
@@ -110,7 +110,7 @@ class SearchFilter(BaseFilterBackend):
 class OrderingFilter(BaseFilterBackend):
     """A filter backend that defines ordering"""
 
-    def apply_filter(self, request, qgis_layer, qgis_feature_request, view=None):
+    def apply_filter(self, request, qgis_layer, qgis_feature_request, view):
 
         if request.query_params.get('ordering') is not None:
 
@@ -160,7 +160,7 @@ class IntersectsBBoxFilter(BaseFilterBackend):
 
         return QgsRectangle(p1x, p1y, p2x, p2y)
 
-    def apply_filter(self, request, qgis_layer, qgis_feature_request, view=None):
+    def apply_filter(self, request, qgis_layer, qgis_feature_request, view):
 
         bbox_filter = self._get_filter_bbox(request)
 
@@ -201,7 +201,7 @@ class CentroidBBoxFilter(IntersectsBBoxFilter):
 class SuggestFilterBackend(BaseFilterBackend):
     """Backend filter that returns ILIKE matches for a field|value tuple"""
 
-    def apply_filter(self, request, qgis_layer, qgis_feature_request, view=None):
+    def apply_filter(self, request, qgis_layer, qgis_feature_request, view):
 
         suggest_value = request.query_params.get('suggest')
 

@@ -14,7 +14,7 @@ __copyright__ = 'Copyright 2020, ItOpen'
 from qgis.server import QgsAccessControlFilter
 from qgis.core import QgsMessageLog, Qgis
 from qdjango.apps import QGS_SERVER
-from qdjango.models import ConstraintSubsetStringRule, ConstraintExpressionRule
+from qdjango.models import ConstraintSubsetStringRule, ConstraintExpressionRule, Layer
 
 class SingleLayerSubsetStringAccessControlFilter(QgsAccessControlFilter):
     """A filter that sets a subset string from the layer constraints"""
@@ -25,7 +25,12 @@ class SingleLayerSubsetStringAccessControlFilter(QgsAccessControlFilter):
     def layerFilterSubsetString(self, layer):
         """Retrieve and sets user layer constraints"""
 
-        rule = ConstraintSubsetStringRule.get_rule_definition_for_user(QGS_SERVER.user, layer.id())
+        try:
+            qdjango_layer = Layer.objects.get(project__qgis_file__icontains='group1_a-project.qgs', qgs_layer_id=layer.id())
+        except Layer.DoesNotExist:
+            return ""
+
+        rule = ConstraintSubsetStringRule.get_rule_definition_for_user(QGS_SERVER.user, qdjango_layer.pk)
         QgsMessageLog.logMessage("SingleLayerSubsetStringAccessControlFilter rule for user %s and layer id %s: %s" % (QGS_SERVER.user, layer.id(), rule), "", Qgis.Info)
         return rule
 
@@ -46,7 +51,12 @@ class SingleLayerExpressionAccessControlFilter(QgsAccessControlFilter):
     def layerFilterExpression(self, layer):
         """Retrieve and sets user layer constraints"""
 
-        rule = ConstraintExpressionRule.get_rule_definition_for_user(QGS_SERVER.user, layer.id())
+        try:
+            qdjango_layer = Layer.objects.get(project__qgis_file__icontains='group1_a-project.qgs', qgs_layer_id=layer.id())
+        except Layer.DoesNotExist:
+            return ""
+
+        rule = ConstraintExpressionRule.get_rule_definition_for_user(QGS_SERVER.user, qdjango_layer.pk)
         QgsMessageLog.logMessage("SingleLayerExpressionAccessControlFilter rule for user %s and layer id %s: %s" % (QGS_SERVER.user, layer.id(), rule), "", Qgis.Info)
         return rule
 

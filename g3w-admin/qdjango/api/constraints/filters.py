@@ -16,13 +16,13 @@ from qdjango.models.constraints import ConstraintSubsetStringRule, ConstraintExp
 class SingleLayerSubsetStringConstraintFilter(BaseFilterBackend):
     """A filter backend that applies a subset string"""
 
-    def apply_filter(self, request, qgis_layer, qgis_feature_request, view=None):
+    def apply_filter(self, request, qgis_layer, qgis_feature_request, view):
         """Apply the filter to the QGIS feature request or the layer's subset string
         Warning: if the filter alters the layer instance (for example by settings a subset
         string) make sure to restore the original state or to work on a clone.
         """
 
-        subset_string = ConstraintSubsetStringRule.get_rule_definition_for_user(request.user, qgis_layer.id())
+        subset_string = ConstraintSubsetStringRule.get_rule_definition_for_user(request.user, view.layer.pk)
         if not subset_string:
             return
 
@@ -44,7 +44,7 @@ class SingleLayerExpressionConstraintFilter(BaseFilterBackend):
         string) make sure to restore the original state or to work on a clone.
         """
 
-        expression_text = ConstraintExpressionRule.get_rule_definition_for_user(request.user, qgis_layer.id())
+        expression_text = ConstraintExpressionRule.get_rule_definition_for_user(request.user, view.layer.pk)
         if not expression_text:
             return
 

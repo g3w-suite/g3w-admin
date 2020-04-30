@@ -162,21 +162,21 @@ class CommonConstraintRule(models.Model):
             return cls.objects.filter(constraint__in=constraints, user=user)
 
     @classmethod
-    def get_rule_definition_for_user(cls, user, qgs_layer_id):
-        """Fetch the active constraints for a given user and QGIS layer id.
+    def get_rule_definition_for_user(cls, user, layer_id):
+        """Fetch the active constraints for a given user and qdjango layer pk.
 
         :param user: the user
         :type user: User
-        :param qgs_layer_id: QGIS map layer internal id
-        :type qgs_layer_id: str
+        :param layer_id: qdjango Layer pk
+        :type layer_id: str
         :return: the subset string
         :rtype: str
         """
 
         try:
-            constraints = SingleLayerConstraint.objects.filter(layer=Layer.objects.get(qgs_layer_id=qgs_layer_id), active=True)
+            constraints = SingleLayerConstraint.objects.filter(layer=Layer.objects.get(pk=layer_id), active=True)
         except Layer.DoesNotExist as ex:
-            logger.error("A Layer object with QGIS layer id %s was not found: skipping constraints!" % qgs_layer_id)
+            logger.error("A Layer object with qdjango layer id %s was not found: skipping constraints!" % layer_id)
             return ""
 
         if not constraints:
@@ -193,7 +193,7 @@ class CommonConstraintRule(models.Model):
             subset_strings.append("(%s)" % rule.rule)
 
         subset_string = ' AND '.join(subset_strings)
-        logger.debug("Returning rule definition for user %s and layer %s: %s" % (user, qgs_layer_id, subset_string))
+        logger.debug("Returning rule definition for user %s and layer %s: %s" % (user, layer_id, subset_string))
         return subset_string
 
 
@@ -224,10 +224,10 @@ class ConstraintSubsetStringRule(CommonConstraintRule):
             else:
                 subset_string = self.rule
             if not layer.setSubsetString(subset_string):
-                raise ValidationError("Could not set the subset string for layer %s: %s" % (self.constraint.layer.qgs_layer_id, subset_string))
+                raise ValidationError("Could not set the subset string for layer %s: %s" % (self.constraint.layer, subset_string))
             is_valid = layer.isValid()
             if not is_valid:
-                raise ValidationError("QGIS layer %s is not valid after setting the new constraint: %s" % (self.constraint.layer.qgs_layer_id, subset_string))
+                raise ValidationError("QGIS layer %s is not valid after setting the new constraint: %s" % (self.constraint.layer, subset_string))
         except Exception as ex:
             logger.debug('Validate SQL failed: %s' % ex)
             return False, ex
