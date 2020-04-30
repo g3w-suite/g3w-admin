@@ -124,9 +124,12 @@ Through this tool it is possible to manage SVG icons on the server in a simple a
 
 The SVG folder on the server must reflect the structure in any subfolders present locally.
 
+**NB:** The name of this directory is defined by the basic settings set during the installation of the suite.
+[See dedicated paragraph.](https://g3w-suite.readthedocs.io/en/latest/settings.html#base-settings)
+
 **PS:** remember that the **`File Manager`** tool also allows you to manage the synchronization of geographical data (in the case of using physical files) and the management of multimedia files. 
 
-See also [dedicated paragraph] (https://g3w-suite.readthedocs.io/en/latest/projectsettings.html#viewing-multimedia-content)
+See also [dedicated paragraph](https://g3w-suite.readthedocs.io/en/latest/projectsettings.html#viewing-multimedia-content)
 
 ### Definition of the fields that can be consulted for each layer
 Within the QGIS project it is also possible to define, for each layer, which fields are available following query on the WebGis service.
@@ -179,6 +182,7 @@ This structural organization will be replicated directly on the query form on th
 * **not use numeric type** field in PostGreSQL/PostGis layer
 * the primary key field and all fields involved in search, join, 1:n relation or editing function have to be **published as WMS**
 * **don't use commas for aliases** associated with layers.
+* style settings defined at the auxiliary data level are not managed.
 * insert only **one `Map` element in the print layouts**.
 
 ### Tips

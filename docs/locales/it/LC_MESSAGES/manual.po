@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: G3W-SUITE 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-03-31 17:01+0200\n"
+"POT-Creation-Date: 2020-03-31 14:42+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -3929,7 +3929,7 @@ msgstr "**Come task runner Gulp.js**"
 
 #: ../../manual/introduction.md:1
 #, fuzzy
-msgid "Introduction"
+msgid "#Introduction"
 msgstr "**DPI:** risoluzione di stampa"
 
 #: ../../manual/introduction.md:3
