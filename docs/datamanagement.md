@@ -1,7 +1,7 @@
 #  Management and organization of geographic data and QGIS projects
 _**This section describes how to organize QGIS data and projects locally and how to synchronize them on the server environment for publication purposes**_
 
-## Data on GeoDatabase PostGis
+## Data on PostGreSQL/PostGis DB
 
 If your geographical data are stored on `PostGreSQL/PostGis` DB, it will be sufficient to allow access to the GeoDB from the IP address on which the application is installed.
 
