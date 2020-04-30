@@ -3,16 +3,24 @@
 
 # G3W-SUITE
 
-G3W-ADMIN admin server module for G3W-SUITE. (Django 2.2 and Python 3.6)
+G3W-ADMIN admin server module for G3W-SUITE. (Django 2.2 and Python 3.6, current branch)
 
 G3W-SUITE works with **QGIS-Server LTR versions**.
-
-
 
 ![Admin GUI](docs/images/install/en/admin.jpg)
 
 ![Webgis GUI](docs/images/install/en/client.jpg
 )
+
+### Version
+
+At the moment is not used a classic versioning system for the suite, there are main 3 branches.
+
+| Branch | Python version | Django version | QGIS API |Status |
+|--------|----------------|----------------|----------|-------|
+| dev | 3.6 | 2.2 | Used | Continue developing |
+| dj22-py3 | 3.6 | 2.2 | Not used | Bug fixing |
+| py2 | 2.7 | 1.11 | Not used |Bug fixing |        
 
 The following instructions are for a Ubuntu 18.04 LTS.
 
