@@ -168,12 +168,12 @@ class CoreTestForm(CoreTestBase):
 
         # editor2.2 and editor2.3
         self.assertEqual(len(form.fields['editor2_user'].queryset), 2)
-        self.assertEqual(list(form.fields['editor2_user'].queryset), [self.test_editor2_2, self.test_editor2_3])
+        self.assertEqual(list(form.fields['editor2_user'].queryset.order_by('pk')), [self.test_editor2_2, self.test_editor2_3])
 
         # Anonymous user always present
         # Anonymoususer, viewer2.3
         self.assertEqual(len(form.fields['viewer_users'].queryset), 2)
-        self.assertEqual(list(form.fields['viewer_users'].queryset), [self.anonymoususer, self.test_viewer1_3])
+        self.assertEqual(list(form.fields['viewer_users'].queryset.order_by('pk')), [self.anonymoususer, self.test_viewer1_3])
 
         # Only editor and viewer user groups for test_editor1_2
         self.assertEqual(len(form.fields['editor_user_groups'].queryset), 1)
