@@ -18,3 +18,15 @@ The next version (whose release is scheduled for **July 2020**) will be compatib
 
 ![](images/manual/demo_webgis_project.png)
 
+### Version
+
+At the moment is not used a classic versioning system for the suite, there are main 3 branches.
+
+
+| Branch | Python version | Django version | QGIS API |Status |
+|--------|----------------|----------------|----------|-------|
+| dev    | 3.6            | 2.2            | Used     | Continue developing |
+| dj22-py3 | 3.6 | 2.2 | Not used | Bug fixing |
+| py2 | 2.7 | 1.11 | Not used |Bug fixing |        
+
+
