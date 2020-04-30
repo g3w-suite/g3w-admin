@@ -7,6 +7,7 @@ jobs:
       only:
         - dev
         - dev-circleci
+        - dj22-py3
     steps:
       - checkout
       #- run: git submodule sync
