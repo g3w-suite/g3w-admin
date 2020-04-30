@@ -135,7 +135,7 @@ class CoreApiTest(CoreTestBase):
 
         response = self._testApiCall('core-vector-api', ['data', 'qdjango', '1', 'spatialite_points20190604101052075'])
         resp = json.loads(response.content)
-        self.assertIsNone(resp["vector"]["count"])
+        self.assertIsNotNone(resp["vector"]["count"])
         self.assertEqual(resp["vector"]["format"], "GeoJSON")
         self.assertIsNone(resp["vector"]["fields"])
         self.assertEqual(resp["vector"]["geometrytype"], "Point")
@@ -145,6 +145,7 @@ class CoreApiTest(CoreTestBase):
         self.assertDictEqual(resp["vector"]["data"]["features"][1], {"id": 2, "type": "Feature", "geometry": {"type": "Point", "coordinates": [10.685247, 44.350968]}, "properties": {"name": "another point", "pkuid": 2}})
         self.assertTrue(resp["result"])
         self.assertIsNone(resp["featurelocks"])
+        self.assertIsNotNone(resp["vector"]["count"])
 
     def testCoreVectorApiXls(self):
         """Test core-vector-api data XLS"""
@@ -157,7 +158,7 @@ class CoreApiTest(CoreTestBase):
 
         response = self._testApiCall('core-vector-api', ['data', 'qdjango', '1', 'spatialite_points20190604101052075'], {'search': 'another'})
         resp = json.loads(response.content)
-        self.assertIsNone(resp["vector"]["count"])
+        self.assertIsNotNone(resp["vector"]["count"])
         self.assertEqual(resp["vector"]["format"], "GeoJSON")
         self.assertIsNone(resp["vector"]["fields"])
         self.assertEqual(resp["vector"]["geometrytype"], "Point")
@@ -172,7 +173,7 @@ class CoreApiTest(CoreTestBase):
 
         response = self._testApiCall('core-vector-api', ['data', 'qdjango', '1', 'spatialite_points20190604101052075'], {'ordering': '-name'})
         resp = json.loads(response.content)
-        self.assertIsNone(resp["vector"]["count"])
+        self.assertIsNotNone(resp["vector"]["count"])
         self.assertEqual(resp["vector"]["format"], "GeoJSON")
         self.assertIsNone(resp["vector"]["fields"])
         self.assertEqual(resp["vector"]["geometrytype"], "Point")
@@ -185,7 +186,7 @@ class CoreApiTest(CoreTestBase):
 
         response = self._testApiCall('core-vector-api', ['data', 'qdjango', '1', 'spatialite_points20190604101052075'], {'ordering': 'name'})
         resp = json.loads(response.content)
-        self.assertIsNone(resp["vector"]["count"])
+        self.assertIsNotNone(resp["vector"]["count"])
         self.assertEqual(resp["vector"]["format"], "GeoJSON")
         self.assertIsNone(resp["vector"]["fields"])
         self.assertEqual(resp["vector"]["geometrytype"], "Point")
@@ -202,7 +203,7 @@ class CoreApiTest(CoreTestBase):
         response = self._testApiCall('core-vector-api', ['data', 'qdjango', '1',
         'spatialite_points20190604101052075'], {'in_bbox': '10.60,44.34,10.70,44.36'})
         resp = json.loads(response.content)
-        self.assertIsNone(resp["vector"]["count"])
+        self.assertIsNotNone(resp["vector"]["count"])
         self.assertEqual(resp["vector"]["format"], "GeoJSON")
         self.assertIsNone(resp["vector"]["fields"])
         self.assertEqual(resp["vector"]["geometrytype"], "Point")

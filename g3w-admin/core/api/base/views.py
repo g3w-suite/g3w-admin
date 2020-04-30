@@ -414,7 +414,7 @@ class BaseVectorOnModelApiView(G3WAPIView):
         # FIXME: pkField is included in the results.
         self.results.update(APIVectorLayerStructure(**{
             'data': feature_collection,
-            'count': request.query_params.get('page_size', 10) if 'page' in request.query_params else None,
+            'count': self.metadata_layer.qgis_layer.featureCount(),
             'geomentryType': self.metadata_layer.geometry_type,
             'pkField': self._get_pk_field_name(),
         }).as_dict())
