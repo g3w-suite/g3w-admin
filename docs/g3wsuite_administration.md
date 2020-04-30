@@ -205,12 +205,22 @@ Let's see in detail the various sub-sessions of the group creation form.
 **`Editor users`:** you define the **Editor1 user** who will become the **MacroGroup administrator**. This user will can manage the MacroGroup by creating Cartographic Groups, publishing projects and creating Users or User Groups.
 
 #### General data
- * **`Title *`:** descriptive title of the MacroGroup (will appear in the list of MacroGroups)
- * **`Use title and logo for client`** option: by default, the map client header, for each WebGis service, is instead made up of:
-   * main title (definable at General Data management level)
-   * logo and title associated with the Thematic Group
-   * title of the WebGis service.
- * **`Img logo*`:** the logo to be associated with the MacroGroup in the frontend and, eventually, in the client header
+ * **`Identification name *`:** a generic internal identification name (not show in the front end)
+ * **`Title *`:** descriptive title of the MacroGroup (will appear in the list of MacroGroups) and, eventually, in the client header
+   * **Use title for client** option
+   * **Use logo image for client** option
+ * **`Description`:** the description to be associated with the MacroGroup in the frontend
+ * **`Logo img*`:** the logo to be associated with the MacroGroup in the frontend and, eventually, in the client header
+
+By default, the map client header, for each WebGis service, is composed of:
+ * main title (if set at General Data management level)
+ * logo and title associated with the **Cartographic Group**
+ * title of the WebGis service
+
+If you select the **Use MacroGroup title and logo for the client** options, the map client header, for each WebGis service, will instead consist of:
+ * main title (if set at General Data management level)
+ * logo and title associated with the **Cartographic MacroGroup**
+ * title of the WebGis service
 
 After compiling the form, click on the **Save button** to confirm your choices.
 
@@ -255,10 +265,21 @@ During creation, some functional characteristics and tools that the WebGis inter
 Let's see in detail the various sub-sessions of the group creation form.
 
 #### General data
- * **`Name`***: group identification name (will appear in the group list)
- * **`Title`***: descriptive title of the group (will appear in the list of groups)
+ * **`Name *`:** a generic internal identification name (not show in the front end)
+ * **`Title`***: descriptive title of the Group (will appear in the list of Cartographic Groups)
  * **`Description`**: description of the content
  * **`Language`***: interface language
+ 
+**REMEBER**
+By default, the map client header, for each WebGis service, is composed of:
+ * main title (if set at General Data management level)
+ * logo and title associated with the **Cartographic Group**
+ * title of the WebGis service
+
+If you select the **Use MacroGroup title and logo for the client** options, the map client header, for each WebGis service, will instead consist of:
+ * main title (if set at General Data management level)
+ * logo and title associated with the **Cartographic MacroGroup**
+ * title of the WebGis service
     
 #### Logo/Picture
  * **`Header logo img`***: the logo to be displayed in the header del client cartografico
@@ -394,8 +415,14 @@ The choice is limited to the list of base layers activated for the cartographic 
 It is also possible not to define any active base layer at startup.
 
 #### Description data
+ * **`Public title`:** title of the WebGis service, it will appear at the font end level and in the header of the client.
  * **`Description`:** Description of the project, it will appear at the public portal level.
  * **`Thumbnail (Logo)`:** logo to associate with the project. This image will be viewable in the list of projects within the cartographic group
+
+The title associated with the WebGis service follows this definition logic:
+ * Public title: if set
+ * QGIS project title: if set on **Project properties**
+ * Name of the QGIS project file
 
 #### URL alias
  * It is possible to set an alias for the final part of the map URL. Only alphanumeric characters, not white space or special characters.
@@ -536,5 +563,43 @@ The widget will already be **`connected`** and therefore **available in the WebG
 **This will allow you not to have to recreate the widget several times and to decide in which projects to activate the search and in which not.**
 
 
+## Multilinguage
+By default the suite manages two languages: **English** and **Italian**.
 
+Other languages ​​can be added.
 
+### Map client
+On the top bar you can choose, through a drop-down menu, the language of the entire client interface.
+
+![](images/manual/language_client.png)
+
+### Administration
+Also for the Administration panel, through the same drop-down menu, it is possible to define the language of the entire interface of the console.
+
+![](images/manual/language_admin.png)
+
+### Front end
+Fixed front end content is already available in the two basic languages.
+
+Variable contents, i.e. user-definable contents, are instead translated:
+
+ * Sessions **`Home`**, **`About`**, **`Maps`** and **`Login`**: content that can be defined and translated in the [**Edit General Data**](https://g3w-suite.readthedocs.io/en/latest/g3wsuite_administration.html#front-end-portal-customization) session of the Control Panel Administration
+ * Sessions **`MacroGroups Cartogarfici`**, **`Groups Cartogarfici`** and **`WebGis Services`**: contents definable and translatable in the form defining these elements, limited to the items:
+   * **Public Title**
+   * **Description**
+
+To carry out the translation of these contents, proceed as follows:
+ * access to the form for creating the element (**MacroGroup, Group or WebGis Service**)
+ * define one of the available languages from the drop-down menu at the top right
+ * fill in the form in the chosen language
+ * save the settings
+
+![](images/manual/language_form.png)
+
+Then:
+ * access the form again in modification
+ * change the language
+ * fill in the translatable content in the new language
+ * save the new settings
+ 
+ **Titles and Descriptions of the various elements in the defined languages ​​will be available on the front.**
