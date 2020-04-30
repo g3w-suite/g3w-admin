@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: G3W-SUITE 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-04-29 15:59+0200\n"
+"POT-Creation-Date: 2020-04-30 16:39+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -31,8 +31,8 @@ msgstr ""
 "pubblicazione**_."
 
 #: ../../datamanagement.md:4
-msgid "Data on GeoDatabase PostGis"
-msgstr "Dati su GeoDatabase PostGis"
+msgid "Data on PostGreSQL/PostGis DB"
+msgstr "Dati su DB PostGreSQL/PostGis"
 
 #: ../../datamanagement.md:6
 msgid ""
@@ -222,7 +222,8 @@ msgid ""
 msgstr ""
 "**NB:** i nomi di queste directory sono definiti dalle impostazioni di "
 "base impostate durante l'installazione della suite. [Vedi paragrafo "
-"dedicato](https://g3w-suite.readthedocs.io/it/latest/settings.html#base-settings)"
+"dedicato](https://g3w-suite.readthedocs.io/it/latest/settings.html#base-"
+"settings)"
 
 #~ msgid "Data management"
 #~ msgstr "Gestione dei dati"
@@ -261,4 +262,7 @@ msgstr ""
 
 #~ msgid "See dedicated paragraph."
 #~ msgstr "Vedi paragrafo dedicato"
+
+#~ msgid "Data on GeoDatabase PostGis"
+#~ msgstr "Dati su GeoDatabase PostGis"
 

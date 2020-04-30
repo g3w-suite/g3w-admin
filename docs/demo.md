@@ -3,7 +3,7 @@
 
 **_The tutorial is based on a QGIS project dedicated to the management of a layer representing a series of buildings located on the territory._**
 
-**_In addition to the geographical aspects, the project involves the management of numerous and diversified attributes and of the related maintenance interventions through a 1: n type relationship.**_
+**_In addition to the geographical aspects, the project involves the management of numerous and diversified attributes and of the related maintenance interventions through a 1: n type relationship._**
 
 Through the tutorials it will be possible to:
  * customize the various graphic-functional aspects of the basic project
@@ -66,14 +66,17 @@ After authentication it will be possible to access the **`Administration session
 
 In the Dashboard there will be the menu for access to the **Cartographic Groups** pertaining to your user and the menus relating to additional modules not active in this demo.
 
-![](images/manual/demo_dashboard.png)
-
 Click on the **`Show`** item in the ligth blue **Groups** box to acces at the list of available Cartographic Groups.
+
+![](images/manual/demo_dashboard.png)
 
 Access the list of webgis in the Cartographic Group **`G3W-SUITE Demo`** clicking on the project number shown.
 
-Now click on the button ![](images/manual/button_add_qgis_project.png) to publish your **QGIS project**.
+![](images/manual/demo_choose_group.png)
 
+![](images/manual/demo_project_manage.png)
+
+Now click on the button ![](images/manual/button_add_qgis_project.png) to publish your **QGIS project**.
 
 Fill out the form defining the various aspects to be associated with the WebGis service being published:
 ## QGIS project
