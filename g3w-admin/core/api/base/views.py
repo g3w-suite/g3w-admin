@@ -30,7 +30,7 @@ from core.signals import (before_return_vector_data_layer,
 from core.utils.structure import (APIVectorLayerStructure, mapLayerAttributes,
                                   mapLayerAttributesFromQgisLayer)
 from core.utils.vector import BaseUserMediaHandler as UserMediaHandler
-from core.utils.qgisapi import get_qgis_features
+from core.utils.qgisapi import get_qgis_features, count_qgis_features
 
 MODE_DATA = 'data'
 MODE_CONFIG = 'config'
@@ -414,7 +414,7 @@ class BaseVectorOnModelApiView(G3WAPIView):
         # FIXME: pkField is included in the results.
         self.results.update(APIVectorLayerStructure(**{
             'data': feature_collection,
-            'count': self.metadata_layer.qgis_layer.featureCount(),
+            'count': count_qgis_features(self.metadata_layer.qgis_layer, qgis_feature_request, **kwargs),
             'geomentryType': self.metadata_layer.geometry_type,
             'pkField': self._get_pk_field_name(),
         }).as_dict())

@@ -41,56 +41,22 @@ def get_qgis_layer(layer_info):
         name = layer_info.name
         return QgsVectorLayer(datasource, name, provider_name)
 
-def get_qgis_features(qgis_layer,
-                      qgis_feature_request=None,
-                      bbox_filter=None,
-                      attribute_filters=None,
-                      search_filter=None,
-                      with_geometry=True,
-                      page=None,
-                      page_size=None,
-                      ordering=None,
-                      exclude_fields=None,
-                      extra_expression=None,
-                      extra_subset_string=None):
-    """Returns a list of QgsFeatures from the QGIS vector layer,
-    with optional filter options.
 
-    The API can be used in two distinct ways (that are not mutually exclusive):
+def __get_qgis_features(qgis_layer,
+                        qgis_feature_request=None,
+                        bbox_filter=None,
+                        attribute_filters=None,
+                        search_filter=None,
+                        with_geometry=True,
+                        page=None,
+                        page_size=None,
+                        ordering=None,
+                        exclude_fields=None,
+                        extra_expression=None,
+                        extra_subset_string=None):
+    """Private implementation for count and get"""
 
-    1. pass in a pre-configured QgsFeatureRequest instance
-    2. pass a series of filter attributes and let this method configure
-    the QgsFeatureRequest.
-
-    :param qgis_layer: the QGIS vector layer instance
-    :type qgis_layer: QgsVectorLayer
-    :param qgis_feature_request: the QGIS feature request
-    :type qgis_feature_request: QgsFeatureRequest, optional
-    :param bbox_filter: BBOX filter in layer's CRS, defaults to None
-    :type bbox_filter: QgsRectangle, optional
-    :param attribute_filters: dictionary of attribute filters combined with AND, defaults to None
-    :type attribute_filters: dict, optional
-    :param search_filter: string filter for all fields
-    :type search_filter: str, optional
-    :param with_geometry: also return geometries, defaults to True
-    :type with_geometry: bool, optional
-    :param page: pagination, defaults to None (all features)
-    :type page: int, optional
-    :param  page_size: default to 10
-    :type page_size: int
-    :param: ordering: ordering field with optional '-' for descending
-    :type: ordering: str, optional
-    :param: exclude_fields: list of fields to exclude from returned data, '__all__' for no attributes
-    :type: ordering: array, optional
-    :param: extra_expression: extra expression for filtering features
-    :type: extra_expression: str, optional
-    :param: extra_subset_string: extra subset string (provider side WHERE condition) for filtering features
-    :type: extra_subset_string: str, optional
-    :return: list of features
-    :rtype: QgsFeature list
-    """
-
-    if not isinstance(qgis_feature_request, QgsFeatureRequest):
+    if qgis_feature_request is None:
         qgis_feature_request = QgsFeatureRequest()
 
     if exclude_fields is not None:
@@ -187,3 +153,138 @@ def get_qgis_features(qgis_layer,
         qgis_layer.setSubsetString(original_subset_string)
 
     return features
+
+
+def get_qgis_features(qgis_layer,
+                      qgis_feature_request=None,
+                      bbox_filter=None,
+                      attribute_filters=None,
+                      search_filter=None,
+                      with_geometry=True,
+                      page=None,
+                      page_size=None,
+                      ordering=None,
+                      exclude_fields=None,
+                      extra_expression=None,
+                      extra_subset_string=None):
+    """Returns a list of QgsFeatures from the QGIS vector layer,
+    with optional filter options.
+
+    The API can be used in two distinct ways (that are not mutually exclusive):
+
+    1. pass in a pre-configured QgsFeatureRequest instance
+    2. pass a series of filter attributes and let this method configure
+    the QgsFeatureRequest.
+
+    :param qgis_layer: the QGIS vector layer instance
+    :type qgis_layer: QgsVectorLayer
+    :param qgis_feature_request: the QGIS feature request
+    :type qgis_feature_request: QgsFeatureRequest, optional
+    :param bbox_filter: BBOX filter in layer's CRS, defaults to None
+    :type bbox_filter: QgsRectangle, optional
+    :param attribute_filters: dictionary of attribute filters combined with AND, defaults to None
+    :type attribute_filters: dict, optional
+    :param search_filter: string filter for all fields
+    :type search_filter: str, optional
+    :param with_geometry: also return geometries, defaults to True
+    :type with_geometry: bool, optional
+    :param page: pagination, defaults to None (all features)
+    :type page: int, optional
+    :param  page_size: default to 10
+    :type page_size: int
+    :param: ordering: ordering field with optional '-' for descending
+    :type: ordering: str, optional
+    :param: exclude_fields: list of fields to exclude from returned data, '__all__' for no attributes
+    :type: ordering: array, optional
+    :param: extra_expression: extra expression for filtering features
+    :type: extra_expression: str, optional
+    :param: extra_subset_string: extra subset string (provider side WHERE condition) for filtering features
+    :type: extra_subset_string: str, optional
+    :return: list of features
+    :rtype: QgsFeature list
+    """
+
+    return __get_qgis_features(qgis_layer,
+                      qgis_feature_request,
+                      bbox_filter,
+                      attribute_filters,
+                      search_filter,
+                      with_geometry,
+                      page,
+                      page_size,
+                      ordering,
+                      exclude_fields,
+                      extra_expression,
+                      extra_subset_string)
+
+def count_qgis_features(qgis_layer,
+                      qgis_feature_request=None,
+                      bbox_filter=None,
+                      attribute_filters=None,
+                      search_filter=None,
+                      extra_expression=None,
+                      extra_subset_string=None,
+                      **kwargs):
+    """Returns a list of QgsFeatures from the QGIS vector layer,
+    with optional filter options.
+
+    The API can be used in two distinct ways (that are not mutually exclusive):
+
+    1. pass in a pre-configured QgsFeatureRequest instance
+    2. pass a series of filter attributes and let this method configure
+    the QgsFeatureRequest.
+
+    :param qgis_layer: the QGIS vector layer instance
+    :type qgis_layer: QgsVectorLayer
+    :param qgis_feature_request: the QGIS feature request
+    :type qgis_feature_request: QgsFeatureRequest, optional
+    :param bbox_filter: BBOX filter in layer's CRS, defaults to None
+    :type bbox_filter: QgsRectangle, optional
+    :param attribute_filters: dictionary of attribute filters combined with AND, defaults to None
+    :type attribute_filters: dict, optional
+    :param search_filter: string filter for all fields
+    :type search_filter: str, optional
+    :param: exclude_fields: list of fields to exclude from returned data, '__all__' for no attributes
+    :param: extra_expression: extra expression for filtering features
+    :type: extra_expression: str, optional
+    :param: extra_subset_string: extra subset string (provider side WHERE condition) for filtering features
+    :type: extra_subset_string: str, optional
+    :return: list of features
+    :rtype: QgsFeature list
+    """
+
+    # Fast track for no filters
+    no_filters = (attribute_filters is None
+        and (bbox_filter is None or bbox_filter.isEmpty()) and
+        attribute_filters is None and
+        extra_expression is None and
+        extra_subset_string is None)
+
+    if qgis_feature_request is not None:
+        no_filters = (no_filters and
+            qgis_feature_request.filterRect().isEmpty() and
+            qgis_feature_request.filterType() == QgsFeatureRequest.FilterNone)
+    else:
+        qgis_feature_request = QgsFeatureRequest()
+
+    if no_filters:
+        return qgis_layer.featureCount()
+
+    qgis_feature_request.setNoAttributes()
+    if qgis_feature_request.limit() != -1:
+        qgis_feature_request = QgsFeatureRequest(qgis_feature_request)
+        qgis_feature_request.setLimit(-1)
+
+    return len(__get_qgis_features(qgis_layer,
+                      qgis_feature_request,
+                      bbox_filter,
+                      attribute_filters,
+                      search_filter,
+                      False, #with_geometry,
+                      None, #page,
+                      None, #page_size,
+                      None, #ordering,
+                      None, #exclude_fields,
+                      extra_expression,
+                      extra_subset_string))
+

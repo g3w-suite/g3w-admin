@@ -270,9 +270,7 @@ class CoreApiTest(CoreTestBase):
             'in_bbox': '10.60,44.34,10.70,44.36',
         })
         resp = json.loads(response.content)
-        # FIXME: I'm not sure if this is the expected result or if
-        #        the filter needs to be applied to the count
-        self.assertEqual(resp['vector']['count'], total_count)
+        self.assertEqual(resp['vector']['count'], 1)
 
         # There is one feature returned by the query
         self.assertEqual(len(resp['vector']['data']['features']), 1)
@@ -282,9 +280,7 @@ class CoreApiTest(CoreTestBase):
               'in_bbox': '-5,-4,12,80',
               }).content)
         self.assertEqual(len(resp['vector']['data']['features']), 36)
-        # FIXME: I'm not sure if this is the expected result or if
-        #        the filter needs to be applied to the count
-        self.assertEqual(resp['vector']['count'], total_count)
+        self.assertEqual(resp['vector']['count'], 36)
 
         # Start paging
         # We have 4 full pages plus one of four
@@ -296,9 +292,7 @@ class CoreApiTest(CoreTestBase):
                 'ordering': 'ogc_fid',
                 }).content)
             self.assertEqual(len(resp['vector']['data']['features']), 8)
-            # FIXME: I'm not sure if this is the expected result or if
-            #        the filter needs to be applied to the count
-            self.assertEqual(resp['vector']['count'], total_count)
+            self.assertEqual(resp['vector']['count'], 36)
 
         resp = json.loads(self._testApiCall('core-vector-api', ['data', 'qdjango', '1', world.qgs_layer_id], {
             'in_bbox': '-5,-4,12,80',
@@ -307,9 +301,7 @@ class CoreApiTest(CoreTestBase):
             'ordering': 'ogc_fid',
             }).content)
         self.assertEqual(len(resp['vector']['data']['features']), 4)
-        # FIXME: I'm not sure if this is the expected result or if
-        #        the filter needs to be applied to the count
-        self.assertEqual(resp['vector']['count'], total_count)
+        self.assertEqual(resp['vector']['count'], 36)
 
         # Or one single page of 36 elements and 0 next pages
         resp = json.loads(self._testApiCall('core-vector-api', ['data', 'qdjango', '1', world.qgs_layer_id], {
@@ -319,9 +311,7 @@ class CoreApiTest(CoreTestBase):
             'ordering': 'ogc_fid',
             }).content)
         self.assertEqual(len(resp['vector']['data']['features']), 36)
-        # FIXME: I'm not sure if this is the expected result or if
-        #        the filter needs to be applied to the count
-        self.assertEqual(resp['vector']['count'], total_count)
+        self.assertEqual(resp['vector']['count'], 36)
 
         resp = json.loads(self._testApiCall('core-vector-api', ['data', 'qdjango', '1', world.qgs_layer_id], {
             'in_bbox': '-5,-4,12,80',
@@ -330,9 +320,7 @@ class CoreApiTest(CoreTestBase):
             'ordering': 'ogc_fid',
             }).content)
         self.assertEqual(len(resp['vector']['data']['features']), 0)
-        # FIXME: I'm not sure if this is the expected result or if
-        #        the filter needs to be applied to the count
-        self.assertEqual(resp['vector']['count'], total_count)
+        self.assertEqual(resp['vector']['count'], 36)
 
 
     def testQGISApplication(self):
