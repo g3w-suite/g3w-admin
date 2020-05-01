@@ -10,16 +10,19 @@ __author__ = 'elpaso@itopen.it'
 __date__ = '2019-06-03'
 __copyright__ = 'Copyright 2019, Gis3w'
 
-import os
 import json
-from rest_framework.test import APITestCase, APIClient
+import os
+
 from django.conf import settings
-from django.urls import reverse
-from django.test import override_settings
-from qdjango.models import Project
 from django.contrib.auth.models import User
 from django.core.cache import caches
-from qdjango.models import Layer
+from django.test import override_settings
+from django.urls import reverse
+from rest_framework.test import APIClient, APITestCase
+
+from qdjango.apps import get_qgs_project
+from qdjango.models import Layer, Project
+
 from .base import CoreTestBase
 
 # Re-use test data from qdjango module
@@ -45,7 +48,7 @@ class CoreApiTest(CoreTestBase):
 
     @classmethod
     def setUpClass(cls):
-        super(CoreApiTest, cls).setUpClass()
+        super().setUpClass()
         try:
             cls.user = User.objects.get(username='admin%s' % cls.__class__)
         except:
@@ -94,7 +97,7 @@ class CoreApiTest(CoreTestBase):
             path += '?'
             parts = []
             for k,v in kwargs.items():
-                parts.append(k + '=' + v)
+                parts.append(k + '=' + str(v))
             path += '&'.join(parts)
 
         # No auth
@@ -254,6 +257,83 @@ class CoreApiTest(CoreTestBase):
         self.assertTrue(resp["result"])
 
 
+    def testPagination(self):
+        """Test pagination"""
+
+        world = Layer.objects.get(name='world')
+        qgis_project = get_qgs_project(world.project.qgis_file.path)
+        qgis_layer = qgis_project.mapLayer(world.qgs_layer_id)
+
+        total_count = qgis_layer.featureCount() #  244 features in this layer
+
+        response = self._testApiCall('core-vector-api', ['data', 'qdjango', '1',world.qgs_layer_id], {
+            'in_bbox': '10.60,44.34,10.70,44.36',
+        })
+        resp = json.loads(response.content)
+        # FIXME: I'm not sure if this is the expected result or if
+        #        the filter needs to be applied to the count
+        self.assertEqual(resp['vector']['count'], total_count)
+
+        # There is one feature returned by the query
+        self.assertEqual(len(resp['vector']['data']['features']), 1)
+
+        # Now we get 36 countries:
+        resp = json.loads(self._testApiCall('core-vector-api', ['data', 'qdjango', '1', world.qgs_layer_id], {
+              'in_bbox': '-5,-4,12,80',
+              }).content)
+        self.assertEqual(len(resp['vector']['data']['features']), 36)
+        # FIXME: I'm not sure if this is the expected result or if
+        #        the filter needs to be applied to the count
+        self.assertEqual(resp['vector']['count'], total_count)
+
+        # Start paging
+        # We have 4 full pages plus one of four
+        for page in range(1, 4):
+            resp = json.loads(self._testApiCall('core-vector-api', ['data', 'qdjango', '1', world.qgs_layer_id], {
+                'in_bbox': '-5,-4,12,80',
+                'page': page,
+                'page_size': 8,
+                'ordering': 'ogc_fid',
+                }).content)
+            self.assertEqual(len(resp['vector']['data']['features']), 8)
+            # FIXME: I'm not sure if this is the expected result or if
+            #        the filter needs to be applied to the count
+            self.assertEqual(resp['vector']['count'], total_count)
+
+        resp = json.loads(self._testApiCall('core-vector-api', ['data', 'qdjango', '1', world.qgs_layer_id], {
+            'in_bbox': '-5,-4,12,80',
+            'page': 5,
+            'page_size': 8,
+            'ordering': 'ogc_fid',
+            }).content)
+        self.assertEqual(len(resp['vector']['data']['features']), 4)
+        # FIXME: I'm not sure if this is the expected result or if
+        #        the filter needs to be applied to the count
+        self.assertEqual(resp['vector']['count'], total_count)
+
+        # Or one single page of 36 elements and 0 next pages
+        resp = json.loads(self._testApiCall('core-vector-api', ['data', 'qdjango', '1', world.qgs_layer_id], {
+            'in_bbox': '-5,-4,12,80',
+            'page': 1,
+            'page_size': 36,
+            'ordering': 'ogc_fid',
+            }).content)
+        self.assertEqual(len(resp['vector']['data']['features']), 36)
+        # FIXME: I'm not sure if this is the expected result or if
+        #        the filter needs to be applied to the count
+        self.assertEqual(resp['vector']['count'], total_count)
+
+        resp = json.loads(self._testApiCall('core-vector-api', ['data', 'qdjango', '1', world.qgs_layer_id], {
+            'in_bbox': '-5,-4,12,80',
+            'page': 2,
+            'page_size': 36,
+            'ordering': 'ogc_fid',
+            }).content)
+        self.assertEqual(len(resp['vector']['data']['features']), 0)
+        # FIXME: I'm not sure if this is the expected result or if
+        #        the filter needs to be applied to the count
+        self.assertEqual(resp['vector']['count'], total_count)
+
 
     def testQGISApplication(self):
         """Test global QgsApplication instance was initialized"""
@@ -266,4 +346,3 @@ class CoreApiTest(CoreTestBase):
         self.assertTrue('gdal' in prlist)
         self.assertTrue('postgres' in prlist)
         self.assertTrue('spatialite' in prlist)
-
