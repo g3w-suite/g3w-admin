@@ -37,7 +37,11 @@ class EditingLayerInfo(generics.ListAPIView):
         if 'editing_layer_id' in self.kwargs:
             qs = Layer.objects.get(pk=self.kwargs['editing_layer_id']).project.layer_set.filter(
                 ~Q(pk=self.kwargs['editing_layer_id']),
-                layer_type__in=[Layer.TYPES.postgres, Layer.TYPES.spatialite],
+                layer_type__in=[
+                    Layer.TYPES.postgres,
+                    Layer.TYPES.spatialite,
+                    Layer.TYPES.ogr
+                ],
                 geometrytype='Polygon'
             )
         return qs
