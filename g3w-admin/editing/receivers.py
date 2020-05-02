@@ -56,8 +56,6 @@ def editing_layer_actions(sender, **kwargs):
                         Layer.TYPES.ogr,
                         Layer.TYPES.mssql
                     ) and editing_button:
-         #and kwargs['layer'].geometrytype != QGIS_LAYER_TYPE_NO_GEOM
-        # and kwargs['layer'].project.group.srid.auth_srid == kwargs['layer'].srid
 
         # add if is active
         try:
