@@ -52,7 +52,9 @@ def editing_layer_actions(sender, **kwargs):
     if sender.has_perm('change_project', kwargs['layer'].project) and kwargs['app_name'] == 'qdjango' and \
                     kwargs['layer'].layer_type in (
                         Layer.TYPES.postgres,
-                        Layer.TYPES.spatialite
+                        Layer.TYPES.spatialite,
+                        Layer.TYPES.ogr,
+                        Layer.TYPES.mssql
                     ) and editing_button:
          #and kwargs['layer'].geometrytype != QGIS_LAYER_TYPE_NO_GEOM
         # and kwargs['layer'].project.group.srid.auth_srid == kwargs['layer'].srid
