@@ -169,6 +169,7 @@ class ConstraintsModelTestsBase(ConstraintsTestsBase):
 
     def setUp(self):
         self.constraint_layer_name = 'constraint_layer'
+        self.constraint_layer_name_multi = 'constraint_layer_multi'
 
     def test_create_constraint(self):
         """Test constraints creation"""
@@ -260,6 +261,7 @@ class ConstraintsModelTestsBase(ConstraintsTestsBase):
     def test_sql_validation(self):
         """Test SQL rule validation"""
 
+        # Test with simple geometry
         editing_layer = Layer.objects.get(name='editing_layer')
         constraint_layer = Layer.objects.get(name=self.constraint_layer_name)
         constraint = Constraint(editing_layer=editing_layer, constraint_layer=constraint_layer)
@@ -269,6 +271,18 @@ class ConstraintsModelTestsBase(ConstraintsTestsBase):
 
         rule.rule = 'dfs?Adfasdfs[đß+èèfsd+'
         self.assertFalse(rule.validate_sql()[0])
+
+        # Test with multi geometry
+        constraint_layer_multi = Layer.objects.get(name=self.constraint_layer_name_multi)
+        constraint = Constraint(editing_layer=editing_layer, constraint_layer=constraint_layer_multi)
+        constraint.save()
+        rule = ConstraintRule(constraint=constraint, user=self.test_user1, rule='int_f=20')
+        self.assertTrue(rule.validate_sql()[0], rule.validate_sql()[1])
+
+        rule.rule = 'dfs?Adfasdfs[đß+èèfsd+'
+        self.assertFalse(rule.validate_sql()[0])
+
+
 
     def test_editing_view_retrieve_data(self):
         """Test constraint filter for editing API - SELECT"""
