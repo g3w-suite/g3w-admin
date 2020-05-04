@@ -259,7 +259,8 @@ class Layer(G3WACLModelMixins, models.Model):
         ('gdal', _('GDAL')),
         ('delimitedtext', _('CSV')),
         ('arcgismapserver', _('ArcGisMapServer')),
-        ('arcgisfeatureserver', _('ArcGisFeatureServer'))
+        ('arcgisfeatureserver', _('ArcGisFeatureServer')),
+        ('mssql', _('MSSQL'))
         )
 
     # General info
