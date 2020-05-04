@@ -17,6 +17,7 @@ from django.test import override_settings
 from qdjango.models import Project
 from django.core.cache import caches
 from core.tests.base import CoreTestBase
+from core.models import MacroGroup
 from core.utils.structure import FIELD_TYPES_MAPPING
 
 # Re-use test data from qdjango module
