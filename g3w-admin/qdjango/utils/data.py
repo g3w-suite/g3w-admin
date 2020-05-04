@@ -1,26 +1,28 @@
 # -*- coding: utf-8 -*-
-from django.conf import settings
-from django.http.request import QueryDict
-from defusedxml import lxml
-from lxml import etree
-from django.utils.translation import ugettext_lazy as _
-from django.db import transaction
-from qdjango.models import Project
-from core.utils.data import XmlData, isXML
-from .structure import *
-from .validators import (
-    DatasourceExists,
-    ColumnName,
-    IsGroupCompatibleValidator,
-    ProjectTitleExists,
-    UniqueLayername,
-    CheckMaxExtent
-)
-from .exceptions import QgisProjectException
-from collections import OrderedDict
+import json
 import os
 import re
-import json
+import logging
+from collections import OrderedDict
+
+from defusedxml import lxml
+from django.conf import settings
+from django.db import transaction
+from django.http.request import QueryDict
+from django.utils.translation import ugettext_lazy as _
+from lxml import etree
+
+from qgis.core import QgsProject, QgsMapLayer
+from qgis.PyQt.QtCore import QVariant
+
+from core.utils.data import XmlData, isXML
+from qdjango.models import Project
+
+from .exceptions import QgisProjectException
+from .structure import *
+from .validators import (CheckMaxExtent, ColumnName, DatasourceExists,
+                         IsGroupCompatibleValidator, ProjectTitleExists,
+                         UniqueLayername)
 
 
 
@@ -48,6 +50,7 @@ def makeDatasource(datasource, layerType):
     # Modified: <datasource>/home/sit/charts\definitivo\d262120.shp</datasource>
     if layerType == Layer.TYPES.ogr or layerType == Layer.TYPES.gdal:
         newDatasource = re.sub(r'(.*?)%s(.*)' % folder, r'%s\2' % basePath, datasource) # ``?`` means ungreedy
+
 
     if layerType == Layer.TYPES.delimitedtext:
         oldPath = re.sub(r"(.*)file:(.*?)", r"\2", datasource)
@@ -386,7 +389,7 @@ class QgisProjectLayer(XmlData):
 
     def _getDataColumns(self):
         """
-        Retrive data about columns for db table or ogr layer type
+        Retrieve data about columns for db table or ogr layer type
         [
             {
                 'name': '<name>',
@@ -398,35 +401,61 @@ class QgisProjectLayer(XmlData):
         :return: A dict list with data attributes structure.
         :rtype: list
         """
-        if self.layerType in [Layer.TYPES.postgres, Layer.TYPES.spatialite]:
-            layerStructure = QgisDBLayerStructure(self, layerType=self.layerType)
-        elif self.layerType in [Layer.TYPES.ogr]:
-            layerStructure = QgisOGRLayerStructure(self)
-        elif self.layerType in [Layer.TYPES.delimitedtext]:
-            layerStructure = QgisCSVLayerStructure(self)
-        elif self.layerType in [Layer.TYPES.arcgisfeatureserver]:
-            layerStructure = QgisAFSLayerStructure(self)
-        elif self.layerType in [
-            Layer.TYPES.wms,
-            Layer.TYPES.gdal,
-            Layer.TYPES.arcgismapserver
-        ]:
+        project = QgsProject()
+
+        # Case FieldFile
+        if hasattr(self.qgisProject.qgisProjectFile, 'path'):
+            project_file = self.qgisProject.qgisProjectFile.path
+
+        # Case UploadedFileWithId
+        elif hasattr(self.qgisProject.qgisProjectFile, 'file'):
+            if hasattr(self.qgisProject.qgisProjectFile.file, 'path'):
+                project_file = self.qgisProject.qgisProjectFile.file.path
+            else:
+                project_file = self.qgisProject.qgisProjectFile.file.name
+
+        # Default case
+        else:
+            project_file = self.qgisProject.qgisProjectFile.name
+
+
+        if not project.read(project_file):
+            logging.warning("Could not read QGIS project file: %s" % self.qgisProject.qgisProjectFile.name)
             return None
 
+        try:
+            layer = project.mapLayers()[self.layerId]
+        except KeyError:
+            logging.warning("Could not find layer id %s in QGIS project file: %s" % (self.layerId, self.qgisProject.qgisProjectFile.name))
+            return None
 
-        if len(layerStructure.columns) > 0:
-            layerStructure.columns += self._getLayerJoinedColumns()
+        if layer.type() != QgsMapLayer.VectorLayer:
+            logging.warning("Layer id %s is not valid in QGIS project file: %s" % (self.layerId, self.qgisProject.qgisProjectFile.name))
+            return None
 
-        # add aliases
-        if bool(self.aliases):
-            self._addAliesToColumns(layerStructure.columns)
+        layer.setDataSource(self.datasource, layer.name(), layer.dataProvider().name())
+        if not layer.isValid():
+            logging.warning("Layer id %s is not valid in QGIS project file: %s" % (
+            self.layerId, self.qgisProject.qgisProjectFile.name))
+            return None
 
-        return layerStructure.columns
+        columns = []
+        for f in layer.fields():
+            columns.append({
+                'name': f.name(),
+                'type': QVariant.typeToName(f.type()).upper(),
+                'label': f.displayName(),
+            })
+
+        if len(columns) > 0:
+            columns += self._getLayerJoinedColumns()
+
+        return columns
 
 
     def _addAliesToColumns(self, columns):
         """
-        Add aliases to columen origin name
+        Add aliases to column original name
         :param columns: dict layer structure columns
         """
 

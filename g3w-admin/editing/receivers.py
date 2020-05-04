@@ -13,9 +13,9 @@ from django.contrib.auth.signals import user_logged_out
 from django.template import loader
 from django.db.models.signals import pre_delete
 from core.signals import load_layer_actions, initconfig_plugin_start, after_serialized_project_layer, \
-    post_save_maplayer, pre_delete_maplayer, load_js_modules, before_return_vector_data_layer
+    pre_save_maplayer, post_save_maplayer, pre_delete_maplayer, load_js_modules, before_return_vector_data_layer
 from qdjango.models import Layer
-from qdjango.api.serializers import QGIS_LAYER_TYPE_NO_GEOM
+from qdjango.api.projects.serializers import QGIS_LAYER_TYPE_NO_GEOM
 from qdjango.vector import LayerVectorView, MODE_CONFIG
 from .models import G3WEditingFeatureLock, G3WEditingLayer, G3WEditingLog, EDITING_POST_DATA_DELETED, ConstraintRule
 
@@ -52,10 +52,10 @@ def editing_layer_actions(sender, **kwargs):
     if sender.has_perm('change_project', kwargs['layer'].project) and kwargs['app_name'] == 'qdjango' and \
                     kwargs['layer'].layer_type in (
                         Layer.TYPES.postgres,
-                        Layer.TYPES.spatialite
+                        Layer.TYPES.spatialite,
+                        Layer.TYPES.ogr,
+                        Layer.TYPES.mssql
                     ) and editing_button:
-         #and kwargs['layer'].geometrytype != QGIS_LAYER_TYPE_NO_GEOM
-        # and kwargs['layer'].project.group.srid.auth_srid == kwargs['layer'].srid
 
         # add if is active
         try:
@@ -109,6 +109,7 @@ def set_initconfig_value(sender, **kwargs):
                     envelope = [xmin, ymin, xmax, ymax]
 
             if len(envelope) > 0:
+                # FIXME: if qgs_layer_id is not unique it shouldn't be used as a key here:
                 editable_layers_constraints.update({
                     project_layers[el.layer_id].qgs_layer_id: {
                     'geometry_api_url': reverse('constraint-api-geometry', kwargs={'editing_layer_id': el.layer_id}),
@@ -180,16 +181,17 @@ def log_editing_layer(sender, **kwargs):
                   layer_id=kwargs['layer']).save()
 
 
-@receiver(post_save_maplayer)
+@receiver(pre_save_maplayer)
 def validate_constraint(**kwargs):
     """Checks whether the instance validates the active constraints in commit mode
-    kwargs: ["layer_id", "mode", "data", "user"]
+    kwargs: ["layer_metadata", "mode", "data", "user"]
     """
+
     mode = kwargs['mode']
     if mode not in ('update', 'add'):
         return
 
-    editing_layer = Layer.objects.get(pk=kwargs['layer'])
+    editing_layer = Layer.objects.get(pk=kwargs['layer_metadata'].layer_id)
     user = kwargs['user']
 
     # check rule presence for layer
@@ -206,7 +208,7 @@ def validate_constraint(**kwargs):
         Polygon = getattr(geos, 'Polygon')
         coords = [Polygon(p) for p in coords[0]]
 
-    # set saptial predicate for validation
+    # set spatial predicate for validation
     spatial_predicate = getattr(settings, 'EDITING_CONSTRAINT_SPATIAL_PREDICATE', 'contains')
 
     for rule in rules:
@@ -221,7 +223,9 @@ def validate_constraint(**kwargs):
 @receiver(before_return_vector_data_layer)
 def add_constraints(**kwargs):
     """
-    Add contraints params to MODE_CONFIG response vectorlayer
+    Add constraints params to MODE_CONFIG response vectorlayer
+    :return: dict with constraints data
+    :rtype: dict, None
     """
     # check if is instance of layerVectorView
     if not isinstance(kwargs['sender'], LayerVectorView) and kwargs['sender'].mode_call != MODE_CONFIG:

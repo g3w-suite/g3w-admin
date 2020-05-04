@@ -10,6 +10,9 @@ class LayerLock(object):
     """ Handler features locking """
 
     def __init__(self, layer, appName, **kwargs):
+
+        # FIXME: if qgs_layer_id is not unique it shouldn't be used as a key here:
+        # FIXME: the field is called layerName but it is the qgs_layer_id
         self.layerName = layer.qgs_layer_id
         self.layerDatasource = layer.datasource
         self.appName = appName
@@ -88,6 +91,7 @@ class LayerLock(object):
     def lockFeatures(self, featuresIds):
         """
         Lock features
+        :param featuresIds: list Features layer ids to lock
         """
 
         # first get initial features locked

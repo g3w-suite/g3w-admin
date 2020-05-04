@@ -227,10 +227,9 @@ STATIC_URL = '/static/'
 
 SITE_TITLE = 'g3w-admin'
 
-# for qdjango module
-QDJANGO_SERVER_URL = 'http://localhost/cgi-bin/qgis_mapserv.fcgi'
+# for qdjango module, this is the base URL for WMS/WFS visible by the client
+QDJANGO_SERVER_URL = 'http://localhost'
 QDJANGO_PRJ_CACHE_KEY = 'qdjango_prj_{}'
-QDJANGO_MODE_REQUEST = 'proxy'  #'qgsserver'
 
 # data for proxy server
 PROXY_SERVER = False
@@ -274,3 +273,7 @@ CLIENT_G3WSUITE_LOGO = 'g3wsuite_logo_h40.png'
 CLIENT_OWS_METHOD = 'GET'
 
 SITE_ID = 1
+
+# DJANGO-FILE-FORM SETTINGS
+# -------------------------
+FILE_FORM_UPLOAD_BACKEND = 'core.utils.response.G3WFileFormUploadBackend'

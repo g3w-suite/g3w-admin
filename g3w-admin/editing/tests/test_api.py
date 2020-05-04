@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals, absolute_import
-
 """"Tests for constraints module API
 
 .. note:: This program is free software; you can redistribute it and/or modify
@@ -15,15 +13,62 @@ __copyright__ = 'Copyright 2019, Gis3w'
 
 import json
 
-from django.urls import reverse
 from django.core.exceptions import ObjectDoesNotExist
+from django.test import override_settings
+from django.urls import reverse
 from rest_framework.test import APIClient
-from .test_models import ConstraintsTestsBase
 
-# Import for testing Python syntax
 from editing.api.constraints.views import *
 
+from .test_models import DATASOURCE_PATH, ConstraintsTestsBase
+
+
+@override_settings(CACHES = {
+        'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'some',
+        }
+    },
+    DATASOURCE_PATH=DATASOURCE_PATH,
+    G3WADMIN_LOCAL_MORE_APPS=[
+        'editing',
+    ],
+    LANGUAGE_CODE='en',
+    LANGUAGES=(
+        ('en', 'English'),
+    )
+)
 class EditingApiTests(ConstraintsTestsBase):
+
+    def setUp(self):
+        self.client = APIClient()
+        super(EditingApiTests, self).setUp()
+
+    def tearDown(self):
+        super(EditingApiTests, self).tearDown()
+        self.client.logout()
+
+    def _testApiCall(self, view_name, args, kwargs={}):
+        """Utility to make test calls"""
+
+        path = reverse(view_name, args=args)
+        if kwargs:
+            path += '?'
+            parts = []
+            for k,v in kwargs.items():
+                parts.append(k + '=' + v)
+            path += '&'.join(parts)
+
+        # No auth
+        response = self.client.get(path)
+        self.assertIn(response.status_code, [302, 403])
+
+        # Auth
+        self.assertTrue(self.client.login(username=self.test_user_admin1.username, password=self.test_user_admin1.username))
+        response = self.client.get(path)
+        self.assertEqual(response.status_code, 200)
+        self.client.logout()
+        return response
 
     def test_initconfig_plugin_start(self):
         """ Test initconfig api"""
@@ -84,6 +129,46 @@ class EditingApiTests(ConstraintsTestsBase):
                          reverse('constraint-api-geometry', kwargs={'editing_layer_id': editing_layer.pk}))
 
         constraint.delete()
+
+    def test_editing_api(self):
+        """ Test Editing API mode: MODE_UNLOCK,MODE_EDITING, MODE_COMMIT"""
+
+        cities_layer_id = 'cities_54d40b01_2af8_4b17_8495_c5833485536e'
+        cities_layer = self.editing_project.instance.layer_set.filter(qgs_layer_id=cities_layer_id)[0]
+
+        # activate editing plugins: set cities as editing layer
+        G3WEditingLayer.objects.create(app_name='qdjango', layer_id=cities_layer.pk)
+
+        # TEST MODE_CONFIG
+        # ---------------------------------------------
+        response = self._testApiCall('core-vector-api', ['config', 'qdjango', self.editing_project.instance.pk,
+                                      cities_layer_id])
+
+        # load response to compare
+        with open(DATASOURCE_PATH + 'api/editing_api_config_cities_54d40b01_2af8_4b17_8495_c5833485536e.json') as f:
+            res_expected = json.loads(f.read())
+
+        # In more recent QGIS versions ogc_fid will have a required constraint
+        try:
+            self.assertEqual(json.loads(response.content), res_expected)
+        except AssertionError:
+            actual = json.loads(response.content)
+            actual['vector']['fields'][0]['validate'] = {}
+            actual['vector']['fields'][0]['editable'] = False
+            self.assertEqual(actual, res_expected)
+
+
+        # TEST MODE_EDITING
+        # ---------------------------------------------
+        response = self._testApiCall('editing-commit-vector-api', ['editing', 'qdjango', self.editing_project.instance.pk,
+                                     cities_layer_id])
+
+
+        jres = json.loads(response.content)
+
+        # check features
+        self.assertEqual(len(jres['vector']['data']['features']), 481)
+
 
 
 class ConstraintsApiTests(ConstraintsTestsBase):
@@ -177,15 +262,13 @@ class ConstraintsApiTests(ConstraintsTestsBase):
         response = client.delete(url, {}, format='json')
         self.assertEqual(Constraint.objects.count(), 0)
 
-
-
     def test_constraint_api_permissions(self):
-        """ Test Contraint API permissions """
+        """ Test Constraint API permissions """
 
         editing_layer = Layer.objects.get(name='editing_layer')
         constraint_layer = Layer.objects.get(name='constraint_layer')
 
-        # create a contraint
+        # create a constraint
         constraint = Constraint(editing_layer=editing_layer, constraint_layer=constraint_layer)
         constraint.save()
 
@@ -421,10 +504,10 @@ class ConstraintsApiTests(ConstraintsTestsBase):
         response = client.get(url, {}, format='json')
         self.assertEqual(response.status_code, 200)
 
-        # check 200 for rule list by rule user
+        # check 403 for rule list by rule user (only admin can query rules by user)
         url = reverse('constraintrule-api-filter-by-user', kwargs={'user_id': self.test_user3.pk})
         response = client.get(url, {}, format='json')
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 403)
 
         # check 200 for rule detail
         url = reverse('constraintrule-api-detail', kwargs={'pk': rule.pk})
@@ -434,7 +517,7 @@ class ConstraintsApiTests(ConstraintsTestsBase):
         client.logout()
 
         self.assertTrue(client.login(username=self.test_user3.username, password=self.test_user3.username))
-        # Test get Geometries contraint for request user
+        # Test get Geometries constraint for request user
         url = reverse('constraint-api-geometry', kwargs={'editing_layer_id': editing_layer.pk})
         response = client.get(url, {}, format='json')
         self.assertEqual(response.status_code, 200)

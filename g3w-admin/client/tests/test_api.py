@@ -17,7 +17,7 @@ from django.test import override_settings
 from qdjango.models import Project
 from django.core.cache import caches
 from core.tests.base import CoreTestBase
-from core.models import MacroGroup
+from core.utils.structure import FIELD_TYPES_MAPPING
 
 # Re-use test data from qdjango module
 DATASOURCE_PATH = os.path.join(os.getcwd(), 'qdjango', 'tests', 'data')
@@ -50,8 +50,8 @@ class ClientApiTest(CoreTestBase):
 
         cache_key = settings.QDJANGO_PRJ_CACHE_KEY.format(cls.prj_test.pk)
         cache = caches['qdjango']
-        cache.set(cache_key, open(os.path.join(DATASOURCE_PATH, 'getProjectSettings_gruppo-1_un-progetto.xml'), 'rb')
-                  .read())
+        cache.set(cache_key, open(os.path.join(DATASOURCE_PATH, 'getProjectSettings_gruppo-1_un-progetto_qgis310.xml'),
+                                  'rb').read())
 
     def testGroupConfigApiView(self):
         """Test call to config"""
@@ -99,25 +99,6 @@ class ClientApiTest(CoreTestBase):
         self.assertEqual(resp["g3wsuite_logo_img"], "g3wsuite_logo_h40.png")
         self.assertEqual(resp['i18n'], json.loads(json.dumps(settings.LANGUAGES)))
 
-        # Test macrogroup use title
-        # add group to macrogroup
-        macrogorup = MacroGroup(name='titlegroup_test', title='titlegroup_test', logo_img='/fake/macrogroup.png')
-        macrogorup.save()
-        macrogorup.group_set.add(self.prj_test.group)
-
-        response = self._testApiCall('group-map-config', ['gruppo-1', 'qdjango', '1'])
-        resp = json.loads(response.content)
-
-        self.assertEqual(resp['group']['name'], self.prj_test.group.title)
-
-        # activate macrogroup title:
-        macrogorup.use_title_client = True
-        macrogorup.save()
-
-        response = self._testApiCall('group-map-config', ['gruppo-1', 'qdjango', '1'])
-        resp = json.loads(response.content)
-
-        self.assertEqual(resp['group']['name'], macrogorup.title)
 
     def testClientConfigApiView(self):
         """Test call to project config"""
@@ -125,7 +106,11 @@ class ClientApiTest(CoreTestBase):
         response = self._testApiCall('group-project-map-config', ['gruppo-1', 'qdjango', '1'])
         resp = json.loads(response.content)
 
-        self.assertEqual(resp["layerstree"], [{'visible': True, 'expanded': False, 'name': 'world', 'id': 'world20181008111156525'}, {'visible': True, 'expanded': True, 'name': 'bluemarble', 'id': 'bluemarble20181008111156906'}])
+        self.assertEqual(resp["layerstree"], [
+            {'visible': True, 'expanded': False, 'name': 'spatialite_points',
+             'id': 'spatialite_points20190604101052075'},
+            {'visible': True, 'expanded': False, 'name': 'world', 'id': 'world20181008111156525'},
+            {'visible': True, 'expanded': True, 'name': 'bluemarble', 'id': 'bluemarble20181008111156906'}])
         self.assertEqual(resp["search"], [])
         self.assertFalse(resp["wms_use_layer_ids"])
         self.assertEqual(resp["qgis_version"], "2.18.16")
@@ -152,6 +137,29 @@ class ClientApiTest(CoreTestBase):
         self.assertEqual(resp["thumbnail"], '/media/fake/project.png')
         self.assertEqual(resp["name"], "Un progetto")
 
+        # check for layers and fields
+        self.assertEqual(len(resp['layers']), 3)
+        for l in resp['layers']:
+            if l['id'] == 'world20181008111156525':
+
+                # check fields
+                self.assertEqual(len(l['fields']), 5)
+                self.assertEqual([
+                    {'name': 'NAME', 'type': FIELD_TYPES_MAPPING['QSTRING'], 'label': 'NAME', 'show': True},
+                    {'name': 'CAPITAL', 'type': FIELD_TYPES_MAPPING['QSTRING'], 'label': 'CAPITAL', 'show': True},
+                    {'name': 'APPROX', 'type': FIELD_TYPES_MAPPING['QLONGLONG'], 'label': 'APPROX', 'show': True},
+                    {'name': 'AREA', 'type': FIELD_TYPES_MAPPING['DOUBLE'], 'label': 'AREA', 'show': True},
+                    {'name': 'SOURCETHM', 'type': FIELD_TYPES_MAPPING['QSTRING'], 'label': 'SOURCETHM', 'show': True}]
+                , l['fields'])
+
+            if l['id'] == 'spatialite_points20190604101052075':
+
+                # check fields
+                self.assertEqual(len(l['fields']), 2)
+                self.assertEqual([
+                    {'name': 'pkuid', 'type': FIELD_TYPES_MAPPING['QLONGLONG'], 'label': 'pkuid', 'show': True},
+                    {'name': 'name', 'type': FIELD_TYPES_MAPPING['QSTRING'], 'label': 'name', 'show': True}]
+                , l['fields'])
 
     def testClientConfigApiThumbnailView(self):
         """ Test api project config for thumbnail param """

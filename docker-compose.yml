@@ -11,26 +11,20 @@ services:
     volumes:
       - shared-volume:/shared-volume
 
-  qgisserver:
-    image: kartoza/qgis-server:LTR
-    ports:
-    - "8001:80"
-    environment:
-      QGIS_DEBUG: 0
-      QGIS_LOG_FILE: /tmp/qgis.log
-      QGIS_SERVER_LOG_FILE:  /tmp/qgis_server.log
-      QGIS_SERVER_LOG_LEVEL: 0
-      QGIS_PROJECT_FILE: ""
-    volumes:
-      - shared-volume:/shared-volume
-
   g3w-suite:
-    image: g3wsuite/g3w-suite-deps-py3:latest
+    # Use this when deployed to docker hub:
+    #image: g3wsuite/g3w-suite-deps-py3:latest
+    # Remove this:
+    build:
+      context: ./ci_scripts
+      dockerfile: Dockerfile.deps
     command: "tail -f /dev/null"
     ports:
     - "8000:8000"
     environment:
+      LANG: "C.UTF-8"
       PYTHONUNBUFFERED: 1
+      QT_QPA_PLATFORM: "offscreen"
     depends_on:
       - postgis
     volumes:

@@ -1,27 +1,38 @@
-from django.db import connections
-from django.http import HttpResponse, HttpResponseForbidden
-from django.db.models.expressions import RawSQL
-from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.filters import OrderingFilter
-from core.api.base.views import BaseVectorOnModelApiView, IntersectsBBoxFilter, MODE_DATA, MODE_CONFIG, MODE_SHP, \
-    APIException, MODE_XLS
-from core.api.base.vector import MetadataVectorLayer
-from core.utils.structure import mapLayerAttributesFromModel
-from core.utils.models import create_geomodel_from_qdjango_layer, get_geometry_column
-from core.utils.vector import BaseUserMediaHandler
-from core.utils.ie import modelresource_factory
-from core.api.permissions import ProjectPermission
-from core.api.filters import DatatablesFilterBackend, SuggestFilterBackend
-from .utils.edittype import MAPPING_EDITTYPE_QGISEDITTYPE
-from .utils.data import QGIS_LAYER_TYPE_NO_GEOM
-from .api.serializers import QGISLayerSerializer, QGISGeoLayerSerializer
-from .utils.structure import datasource2dict
-from .models import Layer
-import subprocess
-import zipfile
 import io
 import os
 import shutil
+import subprocess
+import tempfile
+import zipfile
+
+from django.db import connections
+from django.db.models.expressions import RawSQL
+from django.http import HttpResponse, HttpResponseForbidden
+from django_filters.rest_framework import DjangoFilterBackend
+from qgis.core import QgsVectorFileWriter, QgsFeatureRequest
+
+from core.api.base.vector import MetadataVectorLayer
+from core.api.base.views import (MODE_CONFIG, MODE_DATA, MODE_SHP, MODE_XLS,
+                                 APIException, BaseVectorOnModelApiView,
+                                 IntersectsBBoxFilter)
+from core.api.filters import (IntersectsBBoxFilter, OrderingFilter,
+                              SearchFilter, SuggestFilterBackend)
+from core.api.permissions import ProjectPermission
+from core.utils.ie import modelresource_factory
+from core.utils.models import (create_geomodel_from_qdjango_layer,
+                               get_geometry_column)
+from core.utils.qgisapi import get_qgis_layer
+from core.utils.structure import mapLayerAttributesFromQgisLayer
+from core.utils.vector import BaseUserMediaHandler
+
+from qdjango.api.constraints.filters import SingleLayerSubsetStringConstraintFilter, SingleLayerExpressionConstraintFilter
+
+from .api.projects.serializers import (QGISGeoLayerSerializer,
+                                       QGISLayerSerializer)
+from .models import Layer
+from .utils.data import QGIS_LAYER_TYPE_NO_GEOM
+from .utils.edittype import MAPPING_EDITTYPE_QGISEDITTYPE
+from .utils.structure import datasource2dict
 
 MODE_WIDGET = 'widget'
 
@@ -41,12 +52,6 @@ class QGISLayerVectorViewMixin(object):
         else:
             self.reproject = False
 
-    def set_geo_filter(self):
-
-        # Instance bbox filter
-        self.bbox_filter = IntersectsBBoxFilter() if self.metadata_layer.geometry_type != QGIS_LAYER_TYPE_NO_GEOM \
-            else None
-
     def get_layer_by_params(self, params):
 
         layer_id = params['layer_name']
@@ -55,18 +60,8 @@ class QGISLayerVectorViewMixin(object):
         # get layer object from qdjango model layer
         return self._layer_model.objects.get(project_id=project_id, qgs_layer_id=layer_id)
 
-    def get_geoserializer_kwargs(self):
-
-        kwargs = {'model': self.metadata_layer.model, 'using': self.database_to_use}
-        if hasattr(self, 'layer') and self.layer.exclude_attribute_wms:
-            kwargs['exclude'] = eval(self.layer.exclude_attribute_wms)
-            if self.metadata_layer.model._meta.pk.name in kwargs['exclude']:
-                kwargs['exclude'].remove(self.metadata_layer.model._meta.pk.name)
-
-        return kwargs
-
     def set_relations(self):
-
+        """Find relations and set metadata"""
 
         # get relations on project
         self.relations = {} if not self.layer.project.relations else \
@@ -110,13 +105,11 @@ class QGISLayerVectorViewMixin(object):
                 else:
                     serializer = QGISLayerSerializer
 
+                # FIXME: referenced_field_is_pk
                 self.metadata_relations[relation['referencingLayer']] = MetadataVectorLayer(
-                    geomodel,
-                    serializer,
-                    geometrytype,
+                    get_qgis_layer(relation_layer),
                     relation_layer.origname,
                     idr,
-                    using=database_to_use,
                     layer=relation_layer,
                     referencing_field=relation['fieldRef']['referencingField'],
                     referenced_field_is_pk=
@@ -125,29 +118,21 @@ class QGISLayerVectorViewMixin(object):
                 )
 
     def set_metadata_layer(self, request, **kwargs):
+        """Set the metadata layer to a QgsVectorLayer instance
+
+        returns a dictionary with layer information and the QGIS layer instance
+        """
 
         self.layer = self.get_layer_by_params(kwargs)
 
         # set layer_name
         self.layer_name = self.layer.origname
 
-        geomodel, self.database_to_use, geometrytype = create_geomodel_from_qdjango_layer(self.layer)
-
-        if geometrytype is None:
-            geometrytype = QGIS_LAYER_TYPE_NO_GEOM
-
-        # set bbox_filter_field with geomentry model field
-        if geometrytype != QGIS_LAYER_TYPE_NO_GEOM:
-            serializer = QGISGeoLayerSerializer
-            self.bbox_filter_field = get_geometry_column(geomodel).name
-        else:
-            serializer = QGISLayerSerializer
+        qgis_layer = get_qgis_layer(self.layer)
 
         # create model and add to editing_layers
         self.metadata_layer = MetadataVectorLayer(
-            geomodel,
-            serializer,
-            geometrytype,
+            qgis_layer,
             self.layer.origname,
             layer_id=self.layer.pk
         )
@@ -157,7 +142,15 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
 
     permission_classes = (ProjectPermission,)
 
-    filter_backends = (DjangoFilterBackend, OrderingFilter, DatatablesFilterBackend, SuggestFilterBackend)
+    filter_backends = (
+        OrderingFilter,
+        IntersectsBBoxFilter,
+        SearchFilter,
+        SuggestFilterBackend,
+        SingleLayerSubsetStringConstraintFilter,
+        SingleLayerExpressionConstraintFilter
+    )
+
     ordering_fields = '__all__'
 
     # Modes call available (output formats)
@@ -169,7 +162,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         MODE_XLS   # get XLS
     ]
 
-    mapping_layer_attributes_function = mapLayerAttributesFromModel
+    mapping_layer_attributes_function = mapLayerAttributesFromQgisLayer
 
     shp_extentions = ('.shp', '.shx', '.dbf', '.prj')
 
@@ -182,7 +175,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
 
     def get_forms(self):
         """
-        Check if edittype is se for layer and build inputtype
+        Check if edittype is set for layer and build inputtype
         """
 
         fields = super(LayerVectorView, self).get_forms()
@@ -224,7 +217,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
 
     def response_widget_unique_data(self, request_data):
         """
-        Execute a distinc query for unique editing qgis widget
+        Execute a distinct query for unique editing qgis widget
         """
         if 'fields' not in request_data:
             raise APIException('The \'fields\' param not in request data')
@@ -293,44 +286,40 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         if not self.layer.download:
             return HttpResponseForbidden()
 
-        #ogr2ogr -f "ESRI Shapefile" qds_cnt.shp PG:"host=localhost user=postgres dbname=gisdb password=password" - sql "SELECT sp_count, geom FROM grid50_rsa WHERE province = 'Gauteng'"
+        tmp_dir = tempfile.TemporaryDirectory()
 
-        tmp_dir = "/tmp/g3w-suite/{}/".format(request.session.session_key)
+        filename = self.metadata_layer.qgis_layer.name()
 
-        if not os.path.isdir(tmp_dir):
-            os.makedirs(tmp_dir)
+        # Apply filter backends, store original subset string
+        qgs_request = QgsFeatureRequest()
+        original_subset_string = self.metadata_layer.qgis_layer.subsetString()
+        if hasattr(self, 'filter_backends'):
+            for backend in self.filter_backends:
+                backend().apply_filter(request, self.metadata_layer.qgis_layer, qgs_request, self)
 
-        datasource = datasource2dict(self.layer.datasource)
-        table = datasource['table'].replace('"', '')
-        if self.layer.layer_type in ['sqlite', 'spatialite']:
-            ogr_conn = datasource['dbname']
-            filename = table
+        save_options = QgsVectorFileWriter.SaveVectorOptions()
+        save_options.driverName = 'ESRI Shapefile'
+        save_options.fileEncoding = 'utf-8'
 
-        if self.layer.layer_type == 'postgres':
-            ogr_conn = "PG:host={0} user={1} dbname={2} password={3}".format(
-                datasource['host'],
-                datasource['user'],
-                datasource['dbname'],
-                datasource['password'],
-            )
-            filename = table.split('.')[1]
+        # Make a selection based on the request
+        if qgs_request.filterExpression() is not None:
+            self.metadata_layer.qgis_layer.selectByExpression(qgs_request.filterExpression().expression())
+            save_options.onlySelectedFeatures = True
 
-        command = [
-            "ogr2ogr",
-            "-f",
-            "ESRI Shapefile",
-            "{}{}{}".format(tmp_dir, filename, self.shp_extentions[0]),
-            ogr_conn,
-            table
-        ]
+        error_code, error_message = QgsVectorFileWriter.writeAsVectorFormatV2(
+            self.metadata_layer.qgis_layer,
+            os.path.join(tmp_dir.name, filename),
+            self.metadata_layer.qgis_layer.transformContext(),
+            save_options
+        )
 
-        process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        output, error = process.communicate()
-        if error and not error.startswith(b'Warning'):
-            raise APIException(error)
+        # Restore the original subset string and select no features
+        self.metadata_layer.qgis_layer.selectByIds([])
+        self.metadata_layer.qgis_layer.setSubsetString(original_subset_string)
 
-        # build on memory zip file
-        # from https://stackoverflow.com/a/12951557
+        if error_code != QgsVectorFileWriter.NoError:
+            tmp_dir.cleanup()
+            return HttpResponse(status=500, reason=error_message)
 
         filenames = ["{}{}".format(filename, ftype) for ftype in self.shp_extentions]
 
@@ -345,14 +334,13 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         for fpath in filenames:
 
             # Add file, at correct path
-            ftoadd = '{}{}'.format(tmp_dir, fpath)
+            ftoadd = os.path.join(tmp_dir.name, fpath)
             if os.path.exists(ftoadd):
                 zf.write(ftoadd, fpath)
 
         # Must close zip for all contents to be written
         zf.close()
-        #map(lambda f: os.remove('{}{}'.format(tmp_dir, f)), filenames)
-        shutil.rmtree(tmp_dir)
+        tmp_dir.cleanup()
 
         # Grab ZIP file from in-memory, make response with correct MIME-type
         response = HttpResponse(s.getvalue(), content_type="application/x-zip-compressed")
@@ -367,12 +355,44 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         :return: http response with attached file
         """
 
-        resources = modelresource_factory(self.metadata_layer.model,
-                                          exclude=(get_geometry_column(self.metadata_layer.model).name,))()
+        # Apply filter backends, store original subset string
+        qgs_request = QgsFeatureRequest()
+        original_subset_string = self.metadata_layer.qgis_layer.subsetString()
+        if hasattr(self, 'filter_backends'):
+            for backend in self.filter_backends:
+                backend().apply_filter(request, self.metadata_layer.qgis_layer, qgs_request, self)
 
-        dataset = resources.export()
+        save_options = QgsVectorFileWriter.SaveVectorOptions()
+        save_options.driverName = 'xlsx'
+        save_options.fileEncoding = 'utf-8'
 
-        response = HttpResponse(dataset.xls, content_type='application/ms-excel')
+        tmp_dir = tempfile.TemporaryDirectory()
+
+        filename = self.metadata_layer.qgis_layer.name() + '.xlsx'
+
+        # Make a selection based on the request
+        if qgs_request.filterExpression() is not None:
+            self.metadata_layer.qgis_layer.selectByExpression(qgs_request.filterExpression().expression())
+            save_options.onlySelectedFeatures = True
+
+        xls_tmp_path = os.path.join(tmp_dir.name, filename)
+        error_code, error_message = QgsVectorFileWriter.writeAsVectorFormatV2(
+            self.metadata_layer.qgis_layer,
+            xls_tmp_path,
+            self.metadata_layer.qgis_layer.transformContext(),
+            save_options
+        )
+
+        # Restore the original subset string and select no features
+        self.metadata_layer.qgis_layer.selectByIds([])
+        self.metadata_layer.qgis_layer.setSubsetString(original_subset_string)
+
+        if error_code != QgsVectorFileWriter.NoError:
+            tmp_dir.cleanup()
+            return HttpResponse(status=500, reason=error_message)
+
+        response = HttpResponse(open(xls_tmp_path, 'rb').read(), content_type='application/ms-excel')
+        tmp_dir.cleanup()
         response['Content-Disposition'] = 'attachment; filename=geodata.xls'
         response.set_cookie('fileDownload', 'true')
         return response

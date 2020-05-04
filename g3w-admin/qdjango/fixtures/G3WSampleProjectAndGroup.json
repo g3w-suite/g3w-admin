@@ -58,7 +58,7 @@
       "initial_extent": "{'xmin': '-173.22652757078986951', 'ymin': '-87.17660208643816588', 'ymax': '101.82339791356183412', 'xmax': '204.77347242921013049'}",
       "max_extent": "{'xmin': -189.0, 'ymin': -130.14542038524587, 'ymax': 123.92015338524588, 'xmax': 189.0}",
       "qgis_version": "2.18.16",
-      "layers_tree": "[{'visible': True, 'expanded': False, 'name': 'world', 'id': 'world20181008111156525'}, {'visible': True, 'expanded': True, 'name': 'bluemarble', 'id': 'bluemarble20181008111156906'}]",
+      "layers_tree": "[{'visible': True, 'expanded': False, 'name': 'spatialite_points', 'id': 'spatialite_points20190604101052075'}, {'visible': True, 'expanded': False, 'name': 'world', 'id': 'world20181008111156525'}, {'visible': True, 'expanded': True, 'name': 'bluemarble', 'id': 'bluemarble20181008111156906'}]",
       "baselayer": 3,
       "relations": null
     }
@@ -115,7 +115,7 @@
       "is_visible": true,
       "order": 1,
       "data_file": "",
-      "database_columns": "[{\"type\": \"STRING\", \"name\": \"NAME\", \"label\": \"NAME\"}, {\"type\": \"STRING\", \"name\": \"CAPITAL\", \"label\": \"CAPITAL\"}, {\"type\": \"INTEGER64\", \"name\": \"APPROX\", \"label\": \"APPROX\"}, {\"type\": \"REAL\", \"name\": \"AREA\", \"label\": \"AREA\"}, {\"type\": \"STRING\", \"name\": \"SOURCETHM\", \"label\": \"SOURCETHM\"}]",
+      "database_columns": "[{'name': 'NAME', 'type': 'QSTRING', 'label': 'NAME'}, {'name': 'CAPITAL', 'type': 'QSTRING', 'label': 'CAPITAL'}, {'name': 'APPROX', 'type': 'QLONGLONG', 'label': 'APPROX'}, {'name': 'AREA', 'type': 'DOUBLE', 'label': 'AREA'}, {'name': 'SOURCETHM', 'type': 'QSTRING', 'label': 'SOURCETHM'}]",
       "min_scale": 100000000,
       "max_scale": 0,
       "scalebasedvisibility": false,
@@ -150,7 +150,7 @@
       "is_visible": true,
       "order": 1,
       "data_file": "",
-      "database_columns": "[{\"type\": \"INTEGER\", \"name\": \"pkuid\", \"label\": \"pkuid\"}, {\"type\": \"TEXT\", \"name\": \"name\", \"label\": \"name\"}, {\"type\": \"INTEGER\", \"name\": \"geom\", \"label\": \"geom\"}]",
+      "database_columns": "[{'name': 'pkuid', 'type': 'QLONGLONG', 'label': 'pkuid'}, {'name': 'name', 'type': 'QSTRING', 'label': 'name'}]",
       "min_scale": 100000000,
       "max_scale": 0,
       "scalebasedvisibility": false,

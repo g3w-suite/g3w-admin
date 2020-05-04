@@ -1,24 +1,36 @@
+import json
+from collections import OrderedDict
+from copy import copy
+
 from django.conf import settings
+from django.contrib.gis.geos import GEOSGeometry
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from django.utils import six
-from django.utils.translation import ugettext, ugettext_lazy as _
-from django.contrib.gis.geos import GEOSGeometry
-from rest_framework.views import APIView
-from rest_framework.pagination import PageNumberPagination
+from django.utils.translation import ugettext
+from django.utils.translation import ugettext_lazy as _
+from qgis.core import (
+    QgsJsonExporter,
+    QgsCoordinateTransform,
+    QgsCoordinateReferenceSystem,
+    QgsCoordinateTransformContext,
+    QgsFeatureRequest,
+)
 from rest_framework import exceptions, status
-from rest_framework.response import Response
 from rest_framework.exceptions import APIException
-from core.api.filters import IntersectsBBoxFilter
-from core.signals import post_create_maplayerattributes, post_serialize_maplayer, before_return_vector_data_layer
-from core.utils.structure import mapLayerAttributes, mapLayerAttributesFromModel
-from core.api.authentication import CsrfExemptSessionAuthentication
-from core.utils.vector import BaseUserMediaHandler as UserMediaHandler
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
-from core.utils.structure import APIVectorLayerStructure
-from copy import copy
-from collections import OrderedDict
-import json
+from core.api.authentication import CsrfExemptSessionAuthentication
+from core.api.filters import IntersectsBBoxFilter
+from core.signals import (before_return_vector_data_layer,
+                          post_create_maplayerattributes,
+                          post_serialize_maplayer)
+from core.utils.structure import (APIVectorLayerStructure, mapLayerAttributes,
+                                  mapLayerAttributesFromQgisLayer)
+from core.utils.vector import BaseUserMediaHandler as UserMediaHandler
+from core.utils.qgisapi import get_qgis_features, count_qgis_features
 
 MODE_DATA = 'data'
 MODE_CONFIG = 'config'
@@ -144,12 +156,7 @@ class BaseVectorOnModelApiView(G3WAPIView):
     # Parameter for locking features data into db
     app_name = None
 
-    # Paramenters for bbox filtering
-    bbox_filter = None
-    bbox_filter_field = 'the_geom'
-    bbox_filter_include_overlapping = True
-
-    # sepcific fileds data for media fifileds like picture/movies
+    # specific fileds data for media fifileds like picture/movies
     media_properties = dict()
 
     # Database keyname to use if different from default settings
@@ -242,32 +249,6 @@ class BaseVectorOnModelApiView(G3WAPIView):
         """
         pass
 
-    def set_filters(self):
-        """
-        Set filters data from GET/POST params and internal filters
-        :return:
-        """
-        self.set_geo_filter()
-        self.set_sql_filter()
-
-    def set_geo_filter(self):
-
-        # Instance bbox filter
-        self.bbox_filter = IntersectsBBoxFilter()
-
-    def set_sql_filter(self):
-        """
-        Set filter  set general sql fitlter
-        """
-        self.sql_filter = None
-
-    def get_geoserializer_kwargs(self):
-        """
-        To implente un sub class
-        :return: Dict for serializers params
-        """
-        return {}
-
     def set_metadata_layer(self, request, **kwargs):
         """
         set metadata_layer properties
@@ -333,6 +314,21 @@ class BaseVectorOnModelApiView(G3WAPIView):
         self.metadata_relations = dict()
         self.set_metadata_relations(request, **kwargs)
 
+
+    def _get_pk_field_name(self):
+        """Guess the pk name
+
+        There is nothing in QGIS API to get the PK field name,
+        so we can guess it here being the first field
+        FIXME: this is really weak! We should better check for unique/not null
+                constraints, numeric type and defaulValueClause
+        """
+
+        pk_field_name = self.metadata_layer.qgis_layer.fields()[0].name()
+        # pk_field_index = 0 # or: self.metadata_layer.qgis_layer.fields().lookupField(pk_field_index)
+        return pk_field_name
+
+
     def response_config_mode(self, request):
         """
         Perform config operation, return form fields data for editing layer.
@@ -346,14 +342,14 @@ class BaseVectorOnModelApiView(G3WAPIView):
         # add forms data if exist
         kwargs = {'fields': forms[self.layer_name]['fields']} if forms and forms.get(self.layer_name) else {}
 
-        if hasattr(self.metadata_layer, 'fields_to_exlude'):
-            kwargs['exlude'] = self.metadata_layer.fields_to_exlude
+        if hasattr(self.metadata_layer, 'fields_to_exclude'):
+            kwargs['exclude'] = self.metadata_layer.fields_to_exclude
         if hasattr(self.metadata_layer, 'order'):
             kwargs['order'] = self.metadata_layer.order
 
-        if self.mapping_layer_attributes_function.__func__ == mapLayerAttributesFromModel:
+        if self.mapping_layer_attributes_function.__func__ == mapLayerAttributesFromQgisLayer:
             fields = list(self.mapping_layer_attributes_function.__func__(
-                self.metadata_layer.model,
+                self.metadata_layer.qgis_layer,
                 **kwargs
             ).values())
         else:
@@ -366,7 +362,7 @@ class BaseVectorOnModelApiView(G3WAPIView):
         vector_params = {
             'geomentryType': self.metadata_layer.geometry_type,
             'fields': fields,
-            'pkField': self.metadata_layer.model._meta.pk.name
+            'pkField': self._get_pk_field_name(),
         }
 
         # post_create_maplayerattributes signal
@@ -381,51 +377,54 @@ class BaseVectorOnModelApiView(G3WAPIView):
         """
         Query layer and return data
         :param request: DjangoREST API request object
-        :return: responce dict data
+        :return: response dict data
         """
-        # Instance geo filtering
-        #self.set_geo_filter()
-        self.set_filters()
 
-        # apply bbox filter
-        self.features_layer = self.metadata_layer.get_queryset()
-        if self.bbox_filter:
-            self.features_layer = self.bbox_filter.filter_queryset(request, self.features_layer, self)
+        # Create the QGIS feature request, it will be passed through filters
+        # and to the final QGIS API get features call.
+        qgis_feature_request = QgsFeatureRequest()
 
-        if self.sql_filter:
-            self.features_layer = self.features_layer.filter(**self.sql_filter)
+        # Prepare arguments for the get feature call
+        kwargs = {}
 
+        # Apply filter backends, store original subset string
+        original_subset_string = self.metadata_layer.qgis_layer.subsetString()
         if hasattr(self, 'filter_backends'):
-            for backend in list(self.filter_backends):
-                self.features_layer = backend().filter_queryset(self.request, self.features_layer, self)
+            for backend in self.filter_backends:
+                backend().apply_filter(request, self.metadata_layer.qgis_layer, qgis_feature_request, self)
 
+        # Paging cannot be a backend filter
         if 'page' in request.query_params:
-            self.features_layer = self.paginate_queryset(self.features_layer)
+            kwargs['page'] = request.query_params.get('page')
+            kwargs['page_size'] = request.query_params.get('page_size', 10)
 
-        # instance of geoserializer
-        layer_serializer = self.metadata_layer.serializer(self.features_layer, many=True,
-                                                                **self.get_geoserializer_kwargs())
+        self.features = get_qgis_features(self.metadata_layer.qgis_layer, qgis_feature_request, **kwargs)
+        ex = QgsJsonExporter(self.metadata_layer.qgis_layer)
 
-        # add extra fields data by signals and receivers
-        featurecollection = post_serialize_maplayer.send(layer_serializer, layer=self.layer_name)
-        if isinstance(featurecollection, list) and featurecollection:
-            featurecollection = featurecollection[0][1]
-        else:
-            featurecollection = layer_serializer.data
+        feature_collection = json.loads(ex.exportFeatures(self.features))
 
-        # reproject if necessary
-        if self.reproject:
-            self.reproject_featurecollection(featurecollection)
+        # FIXME: QGIS api reprojecting?
+        # Reproject if necessary
+        #if self.reproject:
+        #    self.reproject_featurecollection(feature_collection)
 
-        # change media
-        self.change_media(featurecollection)
+        # Change media
+        self.change_media(feature_collection)
 
+        # FIXME: pkField is included in the results.
         self.results.update(APIVectorLayerStructure(**{
-            'data': featurecollection,
-            'count': self._paginator.page.paginator.count if 'page' in request.query_params else None,
+            'data': feature_collection,
+            'count': count_qgis_features(self.metadata_layer.qgis_layer, qgis_feature_request, **kwargs),
             'geomentryType': self.metadata_layer.geometry_type,
-            'pkField': self.metadata_layer.model._meta.pk.name
+            'pkField': self._get_pk_field_name(),
         }).as_dict())
+
+        #FIXME: add extra fields data by signals and receivers
+        #FIXME: featurecollection = post_serialize_maplayer.send(layer_serializer, layer=self.layer_name)
+        #FIXME: Not sure how to map this to the new QGIS API
+
+        # Restore the original subset string
+        self.metadata_layer.qgis_layer.setSubsetString(original_subset_string)
 
 
     def set_reprojecting_status(self):
@@ -481,9 +480,3 @@ class BaseVectorOnModelApiView(G3WAPIView):
     def post(self, request, mode_call=None, project_type=None, layer_id=None, **kwargs):
 
         return self.get_response(request, mode_call=mode_call, project_type=project_type, layer_id=layer_id, **kwargs)
-
-
-
-
-
-

@@ -1,0 +1,211 @@
+{
+  "result": true,
+  "vector": {
+    "format": "GeoJSON",
+    "pk": "ogc_fid",
+    "count": null,
+    "data": null,
+    "geometrytype": "MultiPolygon",
+    "fields": [
+      {
+        "name": "ogc_fid",
+        "type": "integer",
+        "label": "ogc_fid",
+        "editable": false,
+        "validate": {},
+        "input": {
+          "type": "text",
+          "options": {}
+        }
+      },
+      {
+        "name": "isocode",
+        "type": "string",
+        "label": "isocode",
+        "editable": true,
+        "validate": {},
+        "input": {
+          "type": "text",
+          "options": {}
+        }
+      },
+      {
+        "name": "name_local",
+        "type": "string",
+        "label": "name_local",
+        "editable": true,
+        "validate": {},
+        "input": {
+          "type": "text",
+          "options": {}
+        }
+      },
+      {
+        "name": "name_en",
+        "type": "string",
+        "label": "name_en",
+        "editable": true,
+        "validate": {},
+        "input": {
+          "type": "text",
+          "options": {}
+        }
+      },
+      {
+        "name": "capital_en",
+        "type": "string",
+        "label": "capital_en",
+        "editable": true,
+        "validate": {},
+        "input": {
+          "type": "text",
+          "options": {}
+        }
+      },
+      {
+        "name": "name_de",
+        "type": "string",
+        "label": "name_de",
+        "editable": true,
+        "validate": {},
+        "input": {
+          "type": "text",
+          "options": {}
+        }
+      },
+      {
+        "name": "capital_de",
+        "type": "string",
+        "label": "capital_de",
+        "editable": true,
+        "validate": {},
+        "input": {
+          "type": "text",
+          "options": {}
+        }
+      },
+      {
+        "name": "name_it",
+        "type": "string",
+        "label": "name_it",
+        "editable": true,
+        "validate": {},
+        "input": {
+          "type": "text",
+          "options": {}
+        }
+      },
+      {
+        "name": "capital_it",
+        "type": "string",
+        "label": "capital_it",
+        "editable": true,
+        "validate": {},
+        "input": {
+          "type": "text",
+          "options": {}
+        }
+      },
+      {
+        "name": "name_fr",
+        "type": "string",
+        "label": "name_fr",
+        "editable": true,
+        "validate": {},
+        "input": {
+          "type": "text",
+          "options": {}
+        }
+      },
+      {
+        "name": "capital_fr",
+        "type": "string",
+        "label": "capital_fr",
+        "editable": true,
+        "validate": {},
+        "input": {
+          "type": "text",
+          "options": {}
+        }
+      },
+      {
+        "name": "name_br",
+        "type": "string",
+        "label": "name_br",
+        "editable": true,
+        "validate": {},
+        "input": {
+          "type": "text",
+          "options": {}
+        }
+      },
+      {
+        "name": "capital_br",
+        "type": "string",
+        "label": "capital_br",
+        "editable": true,
+        "validate": {},
+        "input": {
+          "type": "text",
+          "options": {}
+        }
+      },
+      {
+        "name": "name_es",
+        "type": "string",
+        "label": "name_es",
+        "editable": true,
+        "validate": {},
+        "input": {
+          "type": "text",
+          "options": {}
+        }
+      },
+      {
+        "name": "capital_es",
+        "type": "string",
+        "label": "capital_es",
+        "editable": true,
+        "validate": {},
+        "input": {
+          "type": "text",
+          "options": {}
+        }
+      },
+      {
+        "name": "population",
+        "type": "integer",
+        "label": "population",
+        "editable": true,
+        "validate": {},
+        "input": {
+          "type": "text",
+          "options": {}
+        }
+      },
+      {
+        "name": "area_km2",
+        "type": "integer",
+        "label": "area_km2",
+        "editable": true,
+        "validate": {},
+        "input": {
+          "type": "text",
+          "options": {}
+        }
+      },
+      {
+        "name": "iso_num",
+        "type": "integer",
+        "label": "iso_num",
+        "editable": true,
+        "validate": {},
+        "input": {
+          "type": "text",
+          "options": {}
+        }
+      }
+    ]
+  },
+  "featurelocks": null
+}

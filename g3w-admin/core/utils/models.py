@@ -1,23 +1,24 @@
-from django.db import models
-from django.contrib.gis.db.models import Model
-from django.db import connections
-from django.contrib.gis.db.models import GeometryField
-from django.apps import apps as g3wsuite_apps
-from qdjango.utils.structure import datasource2dict, get_schema_table
-from model_utils import Choices
-from sqlalchemy import create_engine, MetaData
-from sqlalchemy.engine.url import URL
-from geoalchemy2 import Table as GEOTable
+import deprecation
 import geoalchemy2.types as geotypes
+from django.apps import apps as g3wsuite_apps
+from django.contrib.gis.db.models import GeometryField, Model
+from django.db import connections, models
+from geoalchemy2 import Table as GEOTable
+from model_utils import Choices
+from osgeo import ogr
+from sqlalchemy import MetaData, create_engine
 from sqlalchemy.dialects.postgresql import base as PGD
 from sqlalchemy.dialects.sqlite import base as SLD
-from osgeo import ogr
-from core.utils.db import build_django_connection, build_dango_connection_name
+from sqlalchemy.engine.url import URL
+
+from core.utils.db import build_dango_connection_name, build_django_connection
 from core.utils.geo import camel_geometry_type
-from .structure import MAPPING_GEOALCHEMY_DJANGO_FIELDS, MAPPING_OGRWKBGTYPE, BooleanField, NullBooleanField
+from qdjango.utils.structure import datasource2dict, get_schema_table
+
+from .structure import (MAPPING_GEOALCHEMY_DJANGO_FIELDS, MAPPING_OGRWKBGTYPE,
+                        BooleanField, NullBooleanField)
 
 ogr.UseExceptions()
-
 
 def get_geometry_column(geomodel):
     """
@@ -33,13 +34,15 @@ def get_geometry_column(geomodel):
         if isinstance(f, GeometryField):
             geo_fields.append(f)
 
-    # check hao many columns are geomentry colummns:
+    # check how many columns are geomentry colummns:
     if len(geo_fields) > 1:
         raise Exception('Model has more then one geometry column {}'.format(', '.join([f.name for f in geo_fields])))
 
     return geo_fields[0]
 
-
+@deprecation.deprecated(deprecated_in="dev", removed_in="qgis-api",
+                        current_version='dev',
+                        details="Use the QGIS API functions instead")
 def create_model(name, fields=None, app_label='', module='', db='default', options=None, admin_opts=None):
     """
     Create specified Django model class.
@@ -83,6 +86,9 @@ def create_model(name, fields=None, app_label='', module='', db='default', optio
     return model
 
 
+@deprecation.deprecated(deprecated_in="dev", removed_in="qgis-api",
+                        current_version='dev',
+                        details="Use the QGIS API functions instead")
 def get_creator_from_qdjango_layer(layer, app_label='core'):
     """
     Returns the creator instance for a qdjango layer model instance by provider (postgis or spatialite).
@@ -106,6 +112,9 @@ def get_creator_from_qdjango_layer(layer, app_label='core'):
     return creator
 
 
+@deprecation.deprecated(deprecated_in="dev", removed_in="qgis-api",
+                        current_version='dev',
+                        details="Use the QGIS API functions instead")
 def create_geomodel_from_qdjango_layer(layer, app_label='core'):
     """
     Create dynamic Django geo model by a qdjango layer model instance.
@@ -125,11 +134,14 @@ class G3WChoices(Choices):
         self._store((key, key, value), self._triples, self._doubles)
 
 
+
 class CreateGeomodel(object):
-    """
-    Build a geo Django model at runtime
+    """Build a model at runtime
     """
 
+    @deprecation.deprecated(deprecated_in="dev", removed_in="qgis-api",
+                        current_version='dev',
+                        details="Use the QGIS API functions instead")
     def __init__(self, layer, datasource, app_label='core'):
         """
         Create a model from a layer and a datasource
@@ -198,7 +210,7 @@ class CreateGeomodel(object):
 
 class PostgisCreateGeomodel(CreateGeomodel):
     """
-    Create a geo Django model class at runtime for Postgis layer.
+    PostgreSql model Dj creator.
     """
     layer_type = 'postgis'
 
@@ -225,7 +237,6 @@ class PostgisCreateGeomodel(CreateGeomodel):
         return engine, geotable_kwargs
 
     def get_fields(self):
-        """ Return a list of django model fields instance """
 
         geotable = super(PostgisCreateGeomodel, self).get_fields()
 

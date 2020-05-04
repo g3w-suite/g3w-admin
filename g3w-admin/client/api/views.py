@@ -22,12 +22,12 @@ class ClientConfigApiView(APIView):
     def get(self, request, format=None, group_slug=None, project_type=None, project_id=None):
 
         # get serializer
-        projectAppModule = __import__('{}.api.serializers'.format(project_type))
-        projectSerializer = projectAppModule.api.serializers.ProjectSerializer
+        projectAppModule = __import__('{}.api.projects.serializers'.format(project_type))
+        projectSerializer = projectAppModule.api.projects.serializers.ProjectSerializer
 
         project = projectAppModule.models.Project.objects.get(pk=project_id)
 
-        ps = projectSerializer(project)
+        ps = projectSerializer(project, request=request)
 
         # add wms_url to project metadata if user anonimous has grant view on project
         if get_anonymous_user().has_perm('{}.view_project'.format(project_type), project) and \

@@ -1,25 +1,57 @@
+import os
 from django.apps import AppConfig, apps
 from django.db.models.signals import post_migrate
 from usersmanage.configs import *
 from core.utils.general import getAuthPermissionContentType
 from django.conf import settings
 
-try:
-    from qgis.core import *
-except:
-    pass
+from qgis.core import QgsApplication, QgsProject
+from qgis.server import QgsServer
 
-'''
-QgsApplication.setPrefixPath("/path/to/qgis/installation", True)
+if settings.DEBUG:
+    os.environ['QGIS_SERVER_LOG_LEVEL'] = '0'
+    os.environ['QGIS_SERVER_LOG_STDERR'] = '1'
+
+# Required only if the installation is not in the default path
+# or if virtualenv messes up with the paths
+QgsApplication.setPrefixPath("/usr", True)
 
 # create a reference to the QgsApplication
-# setting the second argument to True enables the GUI, which we need to do
+# setting the second argument to True enables the GUI, which we do not need to do
 # since this is a custom application
-QGS_APPLICATION = QgsApplication([], True)
+QGS_APPLICATION = QgsApplication([], False)
 
 # load providers
 QGS_APPLICATION.initQgis()
-'''
+
+# Create a singleton server instance, this is not really necessary but it
+# may be a little faster than creating a new instance every time we handle
+# a request
+QGS_SERVER = QgsServer()
+
+# Cache for projects, key is the project file path.
+# When a project is upated or deleted, it must be removed from the cache
+QGS_PROJECTS_CACHE = {}
+
+def get_qgs_project(path):
+    """Reads and returns a project from the cache, trying to load it
+    if it's not there.
+    A None is returned if the project could not be loaded.
+
+    :param path: the filesystem path to the project
+    :type path: str
+    :return: the QgsProject instance or None
+    :rtype: QgsProject or None
+    """
+
+    try:
+        return QGS_PROJECTS_CACHE[path]
+    except KeyError:
+        project = QgsProject()
+        if not project.read(path):
+            return None
+        QGS_PROJECTS_CACHE[path] = project
+    return project
 
 
 def GiveBaseGrant(sender, **kwargs):
@@ -80,3 +112,7 @@ class QdjangoConfig(AppConfig):
             Catalog.register_catalog_record_provider(catalog_provider,
                                         scope=Catalog.SCOPE.GROUP,
                                         senders=[Layer, Project])
+
+        # Load all QGIS server filter plugins, apps can load additional filters
+        # by registering them directly to QGS_SERVER
+        from . import server_filters

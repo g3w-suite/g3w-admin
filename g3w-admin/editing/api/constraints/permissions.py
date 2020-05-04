@@ -11,35 +11,31 @@ class ConstraintPermission(BasePermission):
 
     def has_permission(self, request, view):
 
+        if request.user.is_superuser:
+            return True
+
         if request.method in ('POST'):
             if 'editing_layer' in request.POST:
 
                 # case Constraint API list
                 layer = Layer.objects.get(pk=request.POST['editing_layer'])
             else:
-
-                # case for POST Contraint API List
+                # case for POST Constraint API List
                 if 'editing_layer_id' in view.kwargs:
                     layer = Layer.objects.get(pk=view.kwargs['editing_layer_id'])
                 else:
-
-                    # case every constraint only for admin user
-                    if request.user.is_superuser:
-                        return True
+                    return False
 
         else:
             if 'pk' in view.kwargs:
                 layer = Layer.objects.get(constraint_layer__pk=view.kwargs['pk'])
             else:
 
-                # case for GET Contraint API List
+                # case for GET Constraint API List
                 if 'editing_layer_id' in view.kwargs:
                     layer = Layer.objects.get(pk=view.kwargs['editing_layer_id'])
                 else:
-
-                    # case every constraint only for admin user
-                    if request.user.is_superuser:
-                        return True
+                    return False
 
         # check change_layer permission on qgis layer
         return request.user.has_perm('qdjango.change_project', layer.project)
@@ -53,9 +49,10 @@ class ConstraintRulePermission(BasePermission):
 
     def has_permission(self, request, view):
 
+        if request.user.is_superuser:
+            return True
+
         # check by constraint_id
-        # case Constraint Rule API list
-        # case for GET Constraint API List
         if 'constraint_id' in view.kwargs:
             try:
                 layer = Layer.objects.get(constraint_layer__pk=view.kwargs['constraint_id'])
@@ -68,23 +65,15 @@ class ConstraintRulePermission(BasePermission):
                 layer = Layer.objects.get(pk=view.kwargs['editing_layer_id'])
             except ObjectDoesNotExist:
                 return True
-
-        # case for rule by editing_layer_id
-        elif 'user_id' in view.kwargs:
-            try:
-                layer = Layer.objects.get(constraint_layer__constraintrule__user__pk=view.kwargs['user_id'])
-            except ObjectDoesNotExist:
-                return True
         # case detail
         elif 'pk' in view.kwargs:
             try:
                 layer = Layer.objects.get(constraint_layer__constraintrule__pk=view.kwargs['pk'])
             except ObjectDoesNotExist:
                 return True
+        # Case no layer specified
         else:
-            # case every constraint only for admin user
-            if request.user.is_superuser:
-                return True
+            return False
 
         # check change_layer permission on qgis layer
         return request.user.has_perm('qdjango.change_project', layer.project)

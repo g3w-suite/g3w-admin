@@ -30,8 +30,6 @@ DEBUG = True
 #FRONTEND = False
 #FRONTEND_APP = None
 
-QDJANGO_SERVER_URL = 'http://qgisserver/'
-
 ALLOWED_HOSTS = "*"
 
 LOGGING = {
@@ -97,6 +95,10 @@ LOGGING = {
             'level': 'ERROR',
         },
         'catalog': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+        'qdjango.ows': {
             'handlers': ['console'],
             'level': 'DEBUG',
         },

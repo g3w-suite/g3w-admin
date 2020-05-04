@@ -12,19 +12,29 @@ __date__ = '2019-07-24'
 __copyright__ = 'Copyright 2019, Gis3w'
 
 
-from rest_framework.filters import BaseFilterBackend
-from .models import *
+from .models import ConstraintRule
+from core.api.filters import BaseFilterBackend
 
 class ConstraintsFilter(BaseFilterBackend):
     """A filter backend that applies constraints to the editing data request"""
 
-    def filter_queryset(self, request, queryset, view):
-        """
-        Return a filtered queryset applying Constraints rules.
-        """
+    def apply_filter(self, request, qgis_layer, qgis_feature_request, view):
+
+        rule_parts = []
 
         if view.mode_call == 'editing':
             rules = ConstraintRule.get_active_constraints_for_user(request.user, view.layer)
+
             for rule in rules:
-                queryset = queryset.filter(**rule.get_filters())
-        return queryset
+                expression = rule.get_qgis_expression()
+                if expression:
+                    rule_parts.append(expression)
+
+            if rule_parts:
+                expression = ' AND '.join(rule_parts)
+                current_expression = qgis_feature_request.filterExpression()
+
+                if current_expression:
+                    expression = '( %s ) AND ( %s )' % (current_expression, expression)
+
+                qgis_feature_request.setFilterExpression(expression)

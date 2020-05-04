@@ -10,15 +10,19 @@ __author__ = 'elpaso@itopen.it'
 __date__ = '2019-06-03'
 __copyright__ = 'Copyright 2019, Gis3w'
 
-import os
 import json
-from rest_framework.test import APITestCase, APIClient
+import os
+
 from django.conf import settings
-from django.urls import reverse
-from django.test import override_settings
-from qdjango.models import Project
+from django.contrib.auth.models import User
 from django.core.cache import caches
-from qdjango.models import Layer
+from django.test import override_settings
+from django.urls import reverse
+from rest_framework.test import APIClient, APITestCase
+
+from qdjango.apps import get_qgs_project
+from qdjango.models import Layer, Project
+
 from .base import CoreTestBase
 
 # Re-use test data from qdjango module
@@ -63,34 +67,225 @@ class CoreApiTest(CoreTestBase):
         super(CoreApiTest, cls).setUpClass()
         base_data_test(cls)
 
-    def testCoreVectorApi(self):
-        """Test core-vector-api"""
+    def testCoreVectorApiShp(self):
+        """Test core-vector-api shp"""
 
         response = self._testApiCall('core-vector-api', ['shp', 'qdjango', '1', 'spatialite_points20190604101052075'])
         self.assertTrue('spatialite_points.shp' in response.content.decode('utf-8', 'backslashreplace'))
+
+    def testCoreVectorApiConfig(self):
+        """Test core-vector-api config"""
 
         response = self._testApiCall('core-vector-api', ['config', 'qdjango', '1', 'spatialite_points20190604101052075'])
         resp = json.loads(response.content)
         self.assertIsNone(resp["vector"]["count"])
         self.assertEqual(resp["vector"]["format"], "GeoJSON")
-        self.assertEqual(resp["vector"]["fields"], [{'name': 'pkuid', 'editable': False, 'label': 'pkuid', 'input': {'type': 'text', 'options': {}}, 'validate': {}, 'type': 'integer'}, {'name': 'name', 'editable': True, 'label': 'name', 'input': {'type': 'textarea', 'options': {}}, 'validate': {}, 'type': 'text'}])
+        self.assertEqual(resp["vector"]["fields"], [{'name': 'pkuid', 'editable': True, 'label': 'pkuid', 'input': {'type': 'text', 'options': {}}, 'validate': {'required': True}, 'type': 'integer'}, {'name': 'name', 'editable': True, 'label': 'name', 'input': {'type': 'textarea', 'options': {}}, 'validate': {}, 'type': 'text'}])
         self.assertEqual(resp["vector"]["geometrytype"], "Point")
-        self.assertEqual(resp["vector"]["pk"], "pkuid")
+        # No pk in QGIS API
+        #self.assertEqual(resp["vector"]["pk"], "pkuid")
         self.assertIsNone(resp["vector"]["data"])
         self.assertTrue(resp["result"])
         self.assertIsNone(resp["featurelocks"])
 
+    def testCoreVectorApiData(self):
+        """Test core-vector-api data"""
+
         response = self._testApiCall('core-vector-api', ['data', 'qdjango', '1', 'spatialite_points20190604101052075'])
         resp = json.loads(response.content)
-        self.assertIsNone(resp["vector"]["count"])
+        self.assertIsNotNone(resp["vector"]["count"])
         self.assertEqual(resp["vector"]["format"], "GeoJSON")
         self.assertIsNone(resp["vector"]["fields"])
         self.assertEqual(resp["vector"]["geometrytype"], "Point")
         self.assertEqual(resp["vector"]["pk"], "pkuid")
         self.assertEqual(resp["vector"]["data"]["type"], "FeatureCollection")
-        self.assertEqual(resp["vector"]["data"]["features"], [{"id": 1, "type": "Feature", "geometry": {"type": "Point", "coordinates": [1.980089360770279, 28.77977157557936]}, "properties": {"name": "a point"}}, {"id": 2, "type": "Feature", "geometry": {"type": "Point", "coordinates": [10.685246675074524, 44.35096846172921]}, "properties": {"name": "another point"}}])
+        self.assertDictEqual(resp["vector"]["data"]["features"][0], {"id": 1, "type": "Feature", "geometry": {"type": "Point", "coordinates": [1.980089, 28.779772]}, "properties": {"name": "a point", "pkuid": 1} })
+        self.assertDictEqual(resp["vector"]["data"]["features"][1], {"id": 2, "type": "Feature", "geometry": {"type": "Point", "coordinates": [10.685247, 44.350968]}, "properties": {"name": "another point", "pkuid": 2}})
+        self.assertTrue(resp["result"])
+        self.assertIsNone(resp["featurelocks"])
+        self.assertIsNotNone(resp["vector"]["count"])
+
+    def testCoreVectorApiXls(self):
+        """Test core-vector-api data XLS"""
+
+        response = self._testApiCall('core-vector-api', ['xls', 'qdjango', '1', 'spatialite_points20190604101052075'])
+        self.assertTrue(len(response.content) > 3200)
+
+    def testCoreVectorApiSearch(self):
+        """Test core-vector-api search"""
+
+        response = self._testApiCall('core-vector-api', ['data', 'qdjango', '1', 'spatialite_points20190604101052075'], {'search': 'another'})
+        resp = json.loads(response.content)
+        self.assertIsNotNone(resp["vector"]["count"])
+        self.assertEqual(resp["vector"]["format"], "GeoJSON")
+        self.assertIsNone(resp["vector"]["fields"])
+        self.assertEqual(resp["vector"]["geometrytype"], "Point")
+        #self.assertEqual(resp["vector"]["pk"], "pkuid")
+        self.assertEqual(resp["vector"]["data"]["type"], "FeatureCollection")
+        self.assertEqual(resp["vector"]["data"]["features"], [{"id": 2, "type": "Feature", "geometry": {"type": "Point", "coordinates": [10.685247, 44.350968]}, "properties": {"name": "another point", 'pkuid': 2}}])
         self.assertTrue(resp["result"])
         self.assertIsNone(resp["featurelocks"])
 
-        response = self._testApiCall('core-vector-api', ['xls', 'qdjango', '1', 'spatialite_points20190604101052075'])
-        self.assertEqual(len(response.content), 5632)
+    def testCoreVectorApiOrdering(self):
+        """Test core-vector-api ordering"""
+
+        response = self._testApiCall('core-vector-api', ['data', 'qdjango', '1', 'spatialite_points20190604101052075'], {'ordering': '-name'})
+        resp = json.loads(response.content)
+        self.assertIsNotNone(resp["vector"]["count"])
+        self.assertEqual(resp["vector"]["format"], "GeoJSON")
+        self.assertIsNone(resp["vector"]["fields"])
+        self.assertEqual(resp["vector"]["geometrytype"], "Point")
+        self.assertEqual(resp["vector"]["data"]["type"], "FeatureCollection")
+        self.assertEqual(resp["vector"]["data"]["features"], [
+            {"id": 2, "type": "Feature", "geometry": {"type": "Point", "coordinates": [10.685247, 44.350968]}, "properties": {"name": "another point", 'pkuid': 2}},
+            {'geometry': {'coordinates': [1.980089, 28.779772], 'type': 'Point'},'id': 1,   'properties': {'name': 'a point', 'pkuid': 1}, 'type': 'Feature'},
+            ])
+        self.assertTrue(resp["result"])
+
+        response = self._testApiCall('core-vector-api', ['data', 'qdjango', '1', 'spatialite_points20190604101052075'], {'ordering': 'name'})
+        resp = json.loads(response.content)
+        self.assertIsNotNone(resp["vector"]["count"])
+        self.assertEqual(resp["vector"]["format"], "GeoJSON")
+        self.assertIsNone(resp["vector"]["fields"])
+        self.assertEqual(resp["vector"]["geometrytype"], "Point")
+        self.assertEqual(resp["vector"]["data"]["type"], "FeatureCollection")
+        self.assertEqual(resp["vector"]["data"]["features"], [
+            {'geometry': {'coordinates': [1.980089, 28.779772], 'type': 'Point'},'id': 1,   'properties': {'name': 'a point', 'pkuid': 1}, 'type': 'Feature'},
+            {"id": 2, "type": "Feature", "geometry": {"type": "Point", "coordinates": [10.685247, 44.350968]}, "properties": {"name": "another point", 'pkuid': 2}},
+            ])
+        self.assertTrue(resp["result"])
+
+    def testCoreVectorApiBboxFilter(self):
+        """Test core-vector-api BBOX"""
+
+        response = self._testApiCall('core-vector-api', ['data', 'qdjango', '1',
+        'spatialite_points20190604101052075'], {'in_bbox': '10.60,44.34,10.70,44.36'})
+        resp = json.loads(response.content)
+        self.assertIsNotNone(resp["vector"]["count"])
+        self.assertEqual(resp["vector"]["format"], "GeoJSON")
+        self.assertIsNone(resp["vector"]["fields"])
+        self.assertEqual(resp["vector"]["geometrytype"], "Point")
+        self.assertEqual(resp["vector"]["data"]["type"], "FeatureCollection")
+        self.assertEqual(resp["vector"]["data"]["features"], [
+            {"id": 2, "type": "Feature", "geometry": {"type": "Point", "coordinates": [10.685247, 44.350968]}, "properties": {"name": "another point", 'pkuid': 2}},
+            ])
+        self.assertTrue(resp["result"])
+
+    def testCoreVectorApiSuggest(self):
+        """Test core-vector-api Suggest"""
+
+        response = self._testApiCall('core-vector-api', ['data', 'qdjango', '1',
+        'spatialite_points20190604101052075'], {'suggest': 'name|poin'})
+        resp = json.loads(response.content)
+        self.assertEqual(resp["vector"]["data"]["features"], [
+            {'geometry': {'coordinates': [1.980089, 28.779772], 'type': 'Point'},'id': 1,   'properties': {'name': 'a point', 'pkuid': 1}, 'type': 'Feature'},
+            {"id": 2, "type": "Feature", "geometry": {"type": "Point", "coordinates": [10.685247, 44.350968]}, "properties": {"name": "another point", 'pkuid': 2}},
+        ])
+
+        response = self._testApiCall('core-vector-api', ['data', 'qdjango', '1',
+        'spatialite_points20190604101052075'], {'suggest': 'name|anot'})
+        resp = json.loads(response.content)
+        self.assertEqual(resp["vector"]["data"]["features"], [
+            {"id": 2, "type": "Feature", "geometry": {"type": "Point", "coordinates": [10.685247, 44.350968]}, 'properties': {'name': 'another point', 'pkuid': 2}}
+        ])
+
+    def testCoreVectorApiCombined(self):
+        """Test that multiple filters get ANDed"""
+
+        response = self._testApiCall('core-vector-api', ['data', 'qdjango', '1', 'spatialite_points20190604101052075'], {
+             'search': 'a point',
+             'in_bbox': '10.60,44.34,10.70,44.36',
+             })
+        resp = json.loads(response.content)
+        self.assertEqual(resp["vector"]["data"]["features"], [])
+
+        response = self._testApiCall('core-vector-api', ['data', 'qdjango', '1', 'spatialite_points20190604101052075'], {
+             'search': 'point',
+             'in_bbox': '1.97,28.76,10.70,44.36',
+             'ordering': '-name'
+             })
+        resp = json.loads(response.content)
+        self.assertEqual(resp["vector"]["data"]["features"], [
+            {"id": 2, "type": "Feature", "geometry": {"type": "Point", "coordinates": [10.685247, 44.350968]}, "properties": {"name": "another point", 'pkuid': 2}},
+            {'geometry': {'coordinates': [1.980089, 28.779772], 'type': 'Point'},'id': 1,   'properties': {'name': 'a point', 'pkuid': 1}, 'type': 'Feature'},
+            ])
+        self.assertTrue(resp["result"])
+
+
+    def testPagination(self):
+        """Test pagination"""
+
+        world = Layer.objects.get(name='world')
+        qgis_project = get_qgs_project(world.project.qgis_file.path)
+        qgis_layer = qgis_project.mapLayer(world.qgs_layer_id)
+
+        total_count = qgis_layer.featureCount() #  244 features in this layer
+
+        response = self._testApiCall('core-vector-api', ['data', 'qdjango', '1',world.qgs_layer_id], {
+            'in_bbox': '10.60,44.34,10.70,44.36',
+        })
+        resp = json.loads(response.content)
+        self.assertEqual(resp['vector']['count'], 1)
+
+        # There is one feature returned by the query
+        self.assertEqual(len(resp['vector']['data']['features']), 1)
+
+        # Now we get 36 countries:
+        resp = json.loads(self._testApiCall('core-vector-api', ['data', 'qdjango', '1', world.qgs_layer_id], {
+              'in_bbox': '-5,-4,12,80',
+              }).content)
+        self.assertEqual(len(resp['vector']['data']['features']), 36)
+        self.assertEqual(resp['vector']['count'], 36)
+
+        # Start paging
+        # We have 4 full pages plus one of four
+        for page in range(1, 4):
+            resp = json.loads(self._testApiCall('core-vector-api', ['data', 'qdjango', '1', world.qgs_layer_id], {
+                'in_bbox': '-5,-4,12,80',
+                'page': page,
+                'page_size': 8,
+                'ordering': 'ogc_fid',
+                }).content)
+            self.assertEqual(len(resp['vector']['data']['features']), 8)
+            self.assertEqual(resp['vector']['count'], 36)
+
+        resp = json.loads(self._testApiCall('core-vector-api', ['data', 'qdjango', '1', world.qgs_layer_id], {
+            'in_bbox': '-5,-4,12,80',
+            'page': 5,
+            'page_size': 8,
+            'ordering': 'ogc_fid',
+            }).content)
+        self.assertEqual(len(resp['vector']['data']['features']), 4)
+        self.assertEqual(resp['vector']['count'], 36)
+
+        # Or one single page of 36 elements and 0 next pages
+        resp = json.loads(self._testApiCall('core-vector-api', ['data', 'qdjango', '1', world.qgs_layer_id], {
+            'in_bbox': '-5,-4,12,80',
+            'page': 1,
+            'page_size': 36,
+            'ordering': 'ogc_fid',
+            }).content)
+        self.assertEqual(len(resp['vector']['data']['features']), 36)
+        self.assertEqual(resp['vector']['count'], 36)
+
+        resp = json.loads(self._testApiCall('core-vector-api', ['data', 'qdjango', '1', world.qgs_layer_id], {
+            'in_bbox': '-5,-4,12,80',
+            'page': 2,
+            'page_size': 36,
+            'ordering': 'ogc_fid',
+            }).content)
+        self.assertEqual(len(resp['vector']['data']['features']), 0)
+        self.assertEqual(resp['vector']['count'], 36)
+
+
+    def testQGISApplication(self):
+        """Test global QgsApplication instance was initialized"""
+
+        from qdjango.apps import QGS_APPLICATION
+        from qgis.core import QgsProviderRegistry
+        pr = QgsProviderRegistry.instance()
+        prlist = pr.providerList()
+        self.assertTrue('ogr' in prlist)
+        self.assertTrue('gdal' in prlist)
+        self.assertTrue('postgres' in prlist)
+        self.assertTrue('spatialite' in prlist)

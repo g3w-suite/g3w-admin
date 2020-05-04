@@ -43,7 +43,7 @@ class ConstraintList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         """
-        This view should return a list constraints for a given editing layer QGIS id (qgs_layer_id) portion of the URL.
+        This view should return a list constraints for a given editing layer  id portion of the URL.
         """
         qs = super(ConstraintList, self).get_queryset()
         if 'editing_layer_id' in self.kwargs:
@@ -77,7 +77,7 @@ class ConstraintDetail(generics.RetrieveUpdateDestroyAPIView):
 
 
 class ConstraintRuleList(generics.ListCreateAPIView):
-    """List of constraint rules, optionally filtered by editing layer QGIS id, user id or constraint id"""
+    """List of constraint rules, optionally filtered by editing layer id, user id or constraint id"""
 
     queryset = ConstraintRule.objects.all()
     serializer_class = ConstraintRuleSerializer
@@ -92,7 +92,7 @@ class ConstraintRuleList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         """
-        This view should return a list constraints for a given editing layer id (qgs_layer_id) or user_id or constraint_id portions of the URL.
+        This view should return a list constraints for a given editing layer id or user_id or constraint_id portions of the URL.
 
         Note that if user_id is specified a match for user groups will be also attempted.
 
@@ -140,7 +140,7 @@ class ConstraintRuleDetail(generics.RetrieveUpdateDestroyAPIView):
 
 
 class ConstraintGEOFeatureAPIView(APIView):
-    """ APIView to get contraint geometry feature for request user and editign layer id """
+    """ APIView to get constraint geometry feature for request user and editing layer id """
 
     def get(self, *args, **kwargs):
 

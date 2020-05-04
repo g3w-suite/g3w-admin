@@ -25,7 +25,8 @@ DEBUG = True
 #FRONTEND = False
 #FRONTEND_APP = None
 
-QDJANGO_SERVER_URL = 'http://localhost/cgi-bin/qgis_mapserv.fcgi'
+# for qdjango module, this is the base URL for WMS/WFS visible by the client
+QDJANGO_SERVER_URL = 'http://localhost'
 
 ALLOWED_HOSTS = "*"
 

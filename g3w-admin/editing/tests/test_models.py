@@ -38,6 +38,9 @@ DATASOURCE_PATH = '{}{}'.format(CURRENT_PATH, TEST_BASE_PATH)
 QGS_DB = 'constraints_test.db'
 QGS_DB_BACKUP = 'constraints_test_backup.db'
 QGS_FILE = 'constraints_test_project.qgs'
+QGS_EDITING_DB = 'editing_test.db'
+QGS_EDITING_DB_BACKUP = 'editing_test_backup.db'
+QGS_EDITING_FILE = 'editing_test_qgis310.qgs'
 
 
 
@@ -59,27 +62,24 @@ QGS_FILE = 'constraints_test_project.qgs'
 class ConstraintsTestsBase(TestCase):
     """Base class for Constraint tests"""
 
-    #fixtures = ['BaseLayer.json',
-    #            'G3WMapControls.json',
-    #            'G3WSpatialRefSys.json',
-    #            'G3WGeneralDataSuite.json'
-    #            ]
-
     databases = '__all__'
-    #databases = {'default'}
 
     def setUp(self):
         """Restore test database"""
 
         self.reset_db_data()
 
-    def reset_db_data(self):
+    @classmethod
+    def reset_db_data(cls):
         """
         Reset restore test database
         Is necessary at the end of every single test where data test are changing
         """
         shutil.copy('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_DB_BACKUP),
                     '{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_DB))
+
+        shutil.copy('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_EDITING_DB_BACKUP),
+                    '{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_EDITING_DB))
 
     @classmethod
     def setUpTestData(cls):
@@ -88,6 +88,9 @@ class ConstraintsTestsBase(TestCase):
         call_command('loaddata', 'G3WMapControls.json', '--database=default', verbosity=0)
         call_command('loaddata', 'G3WSpatialRefSys.json', '--database=default', verbosity=0)
         call_command('loaddata', 'G3WGeneralDataSuite.json', '--database=default', verbosity=0)
+
+        # Make a copy of the test project's databases
+        cls.reset_db_data()
 
         # Admin level 1
         cls.test_user_admin1 = User.objects.create_user(username='admin01', password='admin01')
@@ -119,8 +122,7 @@ class ConstraintsTestsBase(TestCase):
         cls.project_group.save()
         cls.project_group.addPermissionsToEditor(cls.test_user2)
 
-        shutil.copy('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_DB_BACKUP), '{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_DB))
-        qgis_project_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_FILE), 'r'))
+        qgis_project_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_FILE), 'r', encoding='UTF8'))
         cls.project = QgisProject(qgis_project_file)
         cls.project.title = 'A project'
         cls.project.group = cls.project_group
@@ -134,6 +136,13 @@ class ConstraintsTestsBase(TestCase):
         setPermissionUserObject(cls.test_user3, cls.editing_layer, ['change_layer'])
         setPermissionUserObject(cls.group, cls.editing_layer, ['change_layer'])
 
+        qgis_project_file.close()
+
+        # load QGIS editing project
+        qgis_project_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_EDITING_FILE), 'r', encoding='UTF8'))
+        cls.editing_project = QgisProject(qgis_project_file)
+        cls.editing_project.group = cls.project_group
+        cls.editing_project.save()
         qgis_project_file.close()
 
     def tearDown(self):
@@ -224,7 +233,6 @@ class ConstraintsModelTestsBase(ConstraintsTestsBase):
         rules = ConstraintRule.get_active_constraints_for_user(self.test_user3, editing_layer)
         self.assertEqual(len(rules), 0)
 
-
     def test_unique(self):
         """Check unique together conditions"""
 
@@ -257,35 +265,12 @@ class ConstraintsModelTestsBase(ConstraintsTestsBase):
         constraint = Constraint(editing_layer=editing_layer, constraint_layer=constraint_layer)
         constraint.save()
         rule = ConstraintRule(constraint=constraint, user=self.test_user1, rule='int_f=1')
-        self.assertTrue(rule.validate_sql()[0])
+        self.assertTrue(rule.validate_sql()[0], rule.validate_sql()[1])
 
-        rule.rule = 'not_exists=999'
+        rule.rule = 'dfs?Adfasdfs[đß+èèfsd+'
         self.assertFalse(rule.validate_sql()[0])
 
-    def test_get_query_set(self):
-        """Test get query set"""
 
-        editing_layer = Layer.objects.get(name='editing_layer')
-        constraint_layer = Layer.objects.get(name=self.constraint_layer_name)
-        constraint = Constraint(editing_layer=editing_layer, constraint_layer=constraint_layer)
-        constraint.save()
-        rule = ConstraintRule(constraint=constraint, user=self.test_user1, rule='name=\'bagnolo\'')
-        qs = rule.get_query_set()
-        self.assertEqual(list(qs.values_list('name', flat=True)), ['bagnolo 1', 'bagnolo 2'])
-        rule = ConstraintRule(constraint=constraint, user=self.test_user1, rule='name=\'pinerolo\'')
-        qs = rule.get_query_set()
-        self.assertEqual(list(qs.values_list('name', flat=True)), ['pinerolo 3', 'pinerolo 4'])
-
-        rule = ConstraintRule(constraint=constraint, user=self.test_user1, rule='int_f=1')
-        qs = rule.get_query_set()
-        self.assertEqual(list(qs.values_list('name', flat=True)), ['bagnolo 1', 'bagnolo 2'])
-        rule = ConstraintRule(constraint=constraint, user=self.test_user1, rule='int_f=2')
-        qs = rule.get_query_set()
-        self.assertEqual(list(qs.values_list('name', flat=True)), ['pinerolo 3', 'pinerolo 4'])
-
-        rule = ConstraintRule(constraint=constraint, user=self.test_user1, rule='int_f=999')
-        qs = rule.get_query_set()
-        self.assertEqual(list(qs.values_list('name', flat=True)), [])
 
     def test_editing_view_retrieve_data(self):
         """Test constraint filter for editing API - SELECT"""
@@ -312,7 +297,7 @@ class ConstraintsModelTestsBase(ConstraintsTestsBase):
         self.assertEqual(response.status_code, 200)
         jcontent = json.loads(response.content)
         fids = [int(f['id']) for f in jcontent['vector']['data']['features']]
-        # All fids should be here
+        # Only allowed fids
         self.assertEqual(fids, [1, 2])
 
         # Test with inactive constraint
@@ -471,9 +456,9 @@ class ConstraintsModelTestsBase(ConstraintsTestsBase):
         self.reset_db_data()
 
 
+
 class ConstraintsModelTestsMulti(ConstraintsModelTestsBase):
     """Constraints model tests"""
 
     def setUp(self):
-        self.constraint_layer_name = 'constraint_layer'
-
+        self.constraint_layer_name = 'constraint_layer_multi'

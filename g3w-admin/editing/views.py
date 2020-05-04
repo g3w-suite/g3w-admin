@@ -29,7 +29,6 @@ MAPPING_DJANGO_MODEL_FIELD_FILE_OBJECT = {
     FileField: File
 }
 
-
 class UploadFileView(View):
     """
     Generic view for upload multimedia file e store inside MEDIA_DIR/users/<user_id>
@@ -175,4 +174,3 @@ class ActiveEditingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3W
                 setPermissionUserObject(AuhtGroup.objects.get(pk=aid), self.layer, ['change_layer'], mode='remove')
 
         return super(ActiveEditingLayerView, self).form_valid(form)
-
