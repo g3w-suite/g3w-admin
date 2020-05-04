@@ -38,6 +38,11 @@ from qdjango.models import Layer
 logger = logging.getLogger(__name__)
 
 
+CONSTRAINT_LAYER_TYPE_GRANTED = (
+    'spatialite',
+    'postgres',
+    'ogr'
+)
 class Constraint(models.Model):
     """Main Constraint class. Links together two layers: the editing layer and the constraint layer.
     """
@@ -75,7 +80,7 @@ class Constraint(models.Model):
     def clean(self):
         """Make sure the layer is either PG or SL and check that constraint layer is Polygon"""
 
-        if self.editing_layer.layer_type not in ('spatialite', 'postgres') or self.constraint_layer.layer_type not in ('spatialite', 'postgres'):
+        if self.editing_layer.layer_type not in CONSTRAINT_LAYER_TYPE_GRANTED or self.constraint_layer.layer_type not in CONSTRAINT_LAYER_TYPE_GRANTED:
             raise ValidationError(
                 _('Layers types must be spatialite or postgres'))
 
@@ -172,8 +177,16 @@ class ConstraintRule(models.Model):
         geometry = QgsMultiPolygon()
 
         for feature in features:
-            geom = feature.geometry().constGet()
-            geometry.insertGeometry(geom.clone(), 0)
+            geom = feature.geometry()
+            if geom.isMultipart():
+                geom = [g for g in geom.constGet()]
+            else:
+                geom = [geom.constGet()]
+
+            i = 0
+            for g in geom:
+                geometry.insertGeometry(g.clone(), 0)
+                i += 1
 
         # Now, transform into a GEOS geometry
         if constraint_layer.crs() != editing_layer.crs():
