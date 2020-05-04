@@ -56,7 +56,7 @@ class EditingApiTests(ConstraintsTestsBase):
             path += '?'
             parts = []
             for k,v in kwargs.items():
-                parts.append(k + '=' + v)
+                parts.append(k + '=' + str(v))
             path += '&'.join(parts)
 
         # No auth
