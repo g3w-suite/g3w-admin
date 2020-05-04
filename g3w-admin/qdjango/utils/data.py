@@ -374,18 +374,6 @@ class QgisProjectLayer(XmlData):
         else:
             return datasource
 
-    def typeMap(self, typename):
-        """Map Qt types to OGR types"""
-
-        try:
-            return {
-            'QSTRING': 'STRING',
-            'QLONGLONG': 'INTEGER64',
-            'INT': 'INTEGER',
-            }[typename]
-        except KeyError:
-            return typename
-
     def _getDataAliases(self):
         """
         Get properties fields aliasies
@@ -456,7 +444,7 @@ class QgisProjectLayer(XmlData):
         for f in layer.fields():
             columns.append({
                 'name': f.name(),
-                'type': self.typeMap(QVariant.typeToName(f.type()).upper()),
+                'type': QVariant.typeToName(f.type()).upper(),
                 'label': f.displayName(),
             })
 
