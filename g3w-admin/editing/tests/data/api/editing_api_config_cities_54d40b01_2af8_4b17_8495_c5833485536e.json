@@ -9,7 +9,7 @@
     "fields": [
       {
         "name": "ogc_fid",
-        "type": "integer",
+        "type": "bigint",
         "label": "ogc_fid",
         "editable": false,
         "validate": {},
@@ -20,7 +20,7 @@
       },
       {
         "name": "geonameid",
-        "type": "integer",
+        "type": "bigint",
         "label": "geonameid",
         "editable": true,
         "validate": {},
@@ -31,7 +31,7 @@
       },
       {
         "name": "name",
-        "type": "string",
+        "type": "varchar",
         "label": "name",
         "editable": true,
         "validate": {},
@@ -42,7 +42,7 @@
       },
       {
         "name": "asciiname",
-        "type": "string",
+        "type": "varchar",
         "label": "asciiname",
         "editable": true,
         "validate": {},
@@ -53,7 +53,7 @@
       },
       {
         "name": "iso2_code",
-        "type": "string",
+        "type": "varchar",
         "label": "iso2_code",
         "editable": true,
         "validate": {},
@@ -64,7 +64,7 @@
       },
       {
         "name": "population",
-        "type": "integer",
+        "type": "bigint",
         "label": "population",
         "editable": true,
         "validate": {},
@@ -75,7 +75,7 @@
       },
       {
         "name": "gtopo30",
-        "type": "integer",
+        "type": "bigint",
         "label": "gtopo30",
         "editable": true,
         "validate": {},
