@@ -16,6 +16,7 @@ from collections import OrderedDict
 import copy
 
 from qgis.core import QgsFieldConstraints
+from qgis.PyQt.QtCore import QVariant
 
 # Mapping OGRwkbGeometryType
 MAPPING_OGRWKBGTYPE = {
@@ -36,7 +37,8 @@ RELATIONS_ONE_TO_MANY = 'MANY'
 # namespace to add 'private' properties to geojson data
 RELATIONS_NAMESPACE = 'g3w_'
 
-# data field type
+# data field type for client
+# ==========================
 FIELD_TYPE_INTEGER = 'integer'
 FIELD_TYPE_BIGINTEGER = 'bigint'
 FIELD_TYPE_SMALLINTEGER = 'integer'
@@ -50,8 +52,10 @@ FIELD_TYPE_DATETIME = 'datetime'
 FIELD_TYPE_IMAGE = 'image'
 FIELD_TYPE_FILE = 'file'
 FIELD_TYPE_VARCHAR = 'varchar'
+FIELD_TYPE_CHAR = 'char'
 
-# form field type
+# form field type for editing and forms in general
+# ================================================
 FORM_FIELD_TYPE_TEXT = 'text'
 FORM_FIELD_TYPE_TEXTAREA = 'textarea'
 FORM_FIELD_TYPE_SELECT = 'select'
@@ -68,6 +72,7 @@ FORM_FIELD_TYPE_FLOAT = 'float'
 
 
 # mapping between form fields and fields data types
+# =================================================
 FORM_FIELDS_MAPPING = {
     FIELD_TYPE_INTEGER: FORM_FIELD_TYPE_TEXT,
     FIELD_TYPE_BIGINTEGER: FORM_FIELD_TYPE_TEXT,
@@ -75,6 +80,7 @@ FORM_FIELDS_MAPPING = {
     FIELD_TYPE_STRING: FORM_FIELD_TYPE_TEXT,
     FIELD_TYPE_TEXT: FORM_FIELD_TYPE_TEXTAREA,
     FIELD_TYPE_VARCHAR: FORM_FIELD_TYPE_TEXT,
+    FIELD_TYPE_CHAR: FORM_FIELD_TYPE_TEXT,
     FIELD_TYPE_BOOLEAN: FORM_FIELD_TYPE_RADIO,
     FIELD_TYPE_DATE: FORM_FIELD_TYPE_TEXT,
     FIELD_TYPE_TIME: FORM_FIELD_TYPE_TEXT,
@@ -83,6 +89,7 @@ FORM_FIELDS_MAPPING = {
     FIELD_TYPE_FILE: FORM_FIELD_TYPE_FILE,
 }
 
+# todo: to remove
 MAPPING_GEOALCHEMY_DJANGO_FIELDS = {
     SQLTYPE.INTEGER: IntegerField,
     SQLTYPE.BIGINT: BigIntegerField,
@@ -110,116 +117,29 @@ MAPPING_GEOALCHEMY_DJANGO_FIELDS = {
 
 
 FIELD_TYPES_MAPPING = {
-    'postgres': {
-
-        # numeric:
-        'smallint': FIELD_TYPE_INTEGER,
-        'integer': FIELD_TYPE_INTEGER,
-        'bigint': FIELD_TYPE_INTEGER,
-        'decimal': FIELD_TYPE_FLOAT,
-        'numeric': FIELD_TYPE_FLOAT,
-        'real': FIELD_TYPE_FLOAT,
-        'double precision': FIELD_TYPE_FLOAT,
-        'serial': FIELD_TYPE_INTEGER,
-        'smallserial': FIELD_TYPE_FLOAT,
-        'bigserial': FIELD_TYPE_FLOAT,
-        'boolean': FIELD_TYPE_BOOLEAN,
-
-        # character types:
-        'varchar': FIELD_TYPE_STRING,
-        'character': FIELD_TYPE_STRING,
-        'char': FIELD_TYPE_STRING,
-        'text': FIELD_TYPE_TEXT,
-
-        # date and datetime
-        'timestamp': FIELD_TYPE_DATETIME,
-        FIELD_TYPE_DATE: FIELD_TYPE_DATE,
-        FIELD_TYPE_TIME: FIELD_TYPE_TIME,
-        'interval': FIELD_TYPE_TIME
-    },
-
-    # FIXME: is necessary? Or it's sufficent client refactory field type?
-    'qgs_api': {
-
-        # numeric:
-        'smallint': FIELD_TYPE_INTEGER,
-        'integer': FIELD_TYPE_INTEGER,
-        'bigint': FIELD_TYPE_INTEGER,
-        'decimal': FIELD_TYPE_FLOAT,
-        'numeric': FIELD_TYPE_FLOAT,
-        'real': FIELD_TYPE_FLOAT,
-        'double precision': FIELD_TYPE_FLOAT,
-        'serial': FIELD_TYPE_INTEGER,
-        'smallserial': FIELD_TYPE_FLOAT,
-        'bigserial': FIELD_TYPE_FLOAT,
-        'boolean': FIELD_TYPE_BOOLEAN,
-
-        # character types:
-        'varchar': FIELD_TYPE_STRING,
-        'character': FIELD_TYPE_STRING,
-        'char': FIELD_TYPE_STRING,
-        'text': FIELD_TYPE_TEXT,
-
-        # date and datetime
-        'timestamp': FIELD_TYPE_DATETIME,
-        FIELD_TYPE_DATE: FIELD_TYPE_DATE,
-        FIELD_TYPE_TIME: FIELD_TYPE_TIME,
-        'interval': FIELD_TYPE_TIME
-    },
-
-    'ogr': {
-
-        # numeric:
-        'integer': FIELD_TYPE_INTEGER,
-        'real': 'real',
-
-        # character types:
-        'string': FIELD_TYPE_STRING,
-
-        # date and datetime
-        'string': FIELD_TYPE_DATETIME
-    },
-
-    'spatialite': {
-        'integer': FIELD_TYPE_INTEGER,
-        'text': FIELD_TYPE_TEXT,
-        'real': FIELD_TYPE_FLOAT,
-        'numeric': FIELD_TYPE_FLOAT,
-    },
-
-    'default': {
-
-        # numeric:
-        'integer': FIELD_TYPE_INTEGER,
-        'real': 'real',
-
-        # character types:
-        'string': FIELD_TYPE_STRING,
-
-        # date and datetime
-        'string': FIELD_TYPE_DATETIME
-    },
-
-    'djangoModel': {
-        CharField: FIELD_TYPE_STRING,
-        BooleanField: FIELD_TYPE_BOOLEAN,
-        TextField: FIELD_TYPE_STRING,
-        URLField: FIELD_TYPE_STRING,
-        IntegerField: FIELD_TYPE_INTEGER,
-        BigIntegerField: FIELD_TYPE_BIGINTEGER,
-        SmallIntegerField: FIELD_TYPE_SMALLINTEGER,
-        FloatField: FIELD_TYPE_FLOAT,
-        ImageField: FIELD_TYPE_IMAGE,
-        FileField: FIELD_TYPE_FILE,
-        DecimalField: FIELD_TYPE_FLOAT,
-        TextField: FIELD_TYPE_TEXT,
-        ForeignKey: FIELD_TYPE_INTEGER, # is not correct
-        AutoField: FIELD_TYPE_INTEGER,
-        #BigAutoField: FIELD_TYPE_BIGINTEGER,
-        NullBooleanField: FIELD_TYPE_BOOLEAN,
-        DateField: FIELD_TYPE_DATE
-    }
+    'BOOL': FIELD_TYPE_BOOLEAN,
+    'INT': FIELD_TYPE_INTEGER,
+    'UINT': FIELD_TYPE_INTEGER,
+    'QLONGLONG': FIELD_TYPE_BIGINTEGER,
+    'QULONGLONG': FIELD_TYPE_BIGINTEGER,
+    'DOUBLE': FIELD_TYPE_FLOAT,
+    'QCHAR': FIELD_TYPE_CHAR,
+    'QSTRING': FIELD_TYPE_VARCHAR,
+    'QDATE': FIELD_TYPE_DATE,
+    'QTIME': FIELD_TYPE_TIME,
+    'QDATETIME': FIELD_TYPE_DATETIME,
+    'QURL': FIELD_TYPE_VARCHAR,
+    'LONG': FIELD_TYPE_FLOAT,
+    'SHORT': FIELD_TYPE_FLOAT,
+    'CHAR': FIELD_TYPE_CHAR,
+    'ULONG': FIELD_TYPE_FLOAT,
+    'USHORT': FIELD_TYPE_FLOAT,
+    'UCHAR': FIELD_TYPE_CHAR,
+    'FLOAT': FIELD_TYPE_FLOAT
 }
+
+
+
 
 
 def editingFormField(fieldName, type=FIELD_TYPE_STRING, editable=True, required=False, validate=None,
@@ -258,8 +178,7 @@ def mapLayerAttributes(layer, formField=False, **kwargs):
     """
     Map database columns data from layer by type for client editing
     """
-    layer_type = getattr(layer, 'layer_type')
-    mappingData = FIELD_TYPES_MAPPING.get(layer_type, FIELD_TYPES_MAPPING['default'])
+    mappingData = FIELD_TYPES_MAPPING
 
     fields = eval(layer.database_columns) if layer.database_columns else None
     fieldsMapped = copy.deepcopy(fields)
@@ -276,7 +195,7 @@ def mapLayerAttributes(layer, formField=False, **kwargs):
         formFields = OrderedDict()
 
     for field in fieldsMapped:
-        originType = field['type'].lower()
+        originType = field['type']
         type = originType[:originType.find('(')] if originType.find('(') >= 0 else originType
         if type in list(mappingData.keys()):
             field['type'] = mappingData[type]
@@ -344,8 +263,9 @@ def mapLayerAttributesFromQgisLayer(qgis_layer, **kwargs):
     field_index = 0
     for field in fields:
         if field.name() not in fieldsToExclude:
-            internal_typename = field.typeName().split('(')[0]
-            if internal_typename in FIELD_TYPES_MAPPING['qgs_api']:
+            #internal_typename = field.typeName().split('(')[0]
+            internal_typename = QVariant.typeToName(field.type()).upper()
+            if internal_typename in FIELD_TYPES_MAPPING:
 
                 # Get constraints and default clause to define if the field is editable
                 # or set editable property by kwargs:
@@ -359,7 +279,7 @@ def mapLayerAttributesFromQgisLayer(qgis_layer, **kwargs):
                 del(kwargs['fields'][field.name()]['editable'])
 
                 comment = field.comment() if field.comment() else field.name()
-                fieldType = FIELD_TYPES_MAPPING['qgs_api'][internal_typename]
+                fieldType = FIELD_TYPES_MAPPING[internal_typename]
                 toRes[field.name()] = editingFormField(
                     field.name(),
                     required=constraints & QgsFieldConstraints.ConstraintNotNull,
