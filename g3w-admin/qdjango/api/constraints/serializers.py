@@ -53,7 +53,9 @@ class SingleLayerConstraintSerializer(serializers.ModelSerializer):
             'qgs_layer_id',
             'layer_name',
             'active',
-            'rule_count'
+            'rule_count',
+            'name',
+            'description'
         ]
         validators = [SingleLayerConstraintCleanValidator()]
 
