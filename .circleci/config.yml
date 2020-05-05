@@ -6,8 +6,6 @@ jobs:
     branches:
       only:
         - dev
-        - qgis-api
-        - dev-circleci
     steps:
       - checkout
       #- run: git submodule sync
