@@ -59,6 +59,18 @@ class SingleLayerConstraint(models.Model):
 
         return self.constraintexpressionrule_set.count() + self.constraintsubsetstringrule_set.count()
 
+    @property
+    def subset_rule_count(self):
+        """Return the subset rules count for constrainted layer"""
+
+        return self.constraintsubsetstringrule_set.count()
+
+    @property
+    def expression_rule_count(self):
+        """Return the subset rules count for constrainted layer"""
+
+        return self.constraintexpressionrule_set.count()
+
     def clean(self):
         pass
 
