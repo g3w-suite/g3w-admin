@@ -46,6 +46,17 @@ class TestSingleLayerConstraintsBase(QdjangoTestBase):
 
         super().setUpTestData()
         cls.qdjango_project = Project.objects.all()[0]
+        cls.world = cls.qdjango_project.layer_set.filter(qgs_layer_id='world20181008111156525')[0]
+        # Make a cloned layer
+        cls.cloned_project = Project(group = cls.qdjango_project.group, title='My Clone')
+
+        cls.cloned_project.qgis_file = cls.qdjango_project.qgis_file
+        cls.cloned_project.save()
+        cls.cloned_layer = cls.qdjango_project.layer_set.filter(qgs_layer_id='world20181008111156525')[0]
+        cls.cloned_layer.pk = None
+        cls.cloned_layer.project = cls.cloned_project
+        cls.cloned_layer.save()
+        assert Layer.objects.filter(qgs_layer_id='world20181008111156525').count() == 2
 
     @classmethod
     def setUpClass(cls):
@@ -59,6 +70,7 @@ class TestSingleLayerConstraintsBase(QdjangoTestBase):
     def tearDownClass(cls):
         super().tearDownClass()
         cls.viewer1_group.user_set.remove(cls.test_user1)
+        cls.cloned_project.delete()
 
     def tearDown(self):
         super().tearDown()
@@ -141,22 +153,21 @@ class SingleLayerSubsetStringConstraints(TestSingleLayerConstraintsBase):
         self.assertTrue(self._check_subset_string())
 
         admin01 = self.test_user1
-        world = Layer.objects.get(name='world')
-        constraint = SingleLayerConstraint(layer=world, active=True)
+        constraint = SingleLayerConstraint(layer=self.world, active=True)
         constraint.save()
 
         rule = ConstraintSubsetStringRule(constraint=constraint, user=admin01, rule="NAME != 'ITALY'")
         rule.save()
 
         self.assertEqual(rule.user_or_group, admin01)
-        self.assertEqual(ConstraintSubsetStringRule.get_constraints_for_user(admin01, world)[0], rule)
+        self.assertEqual(ConstraintSubsetStringRule.get_constraints_for_user(admin01, self.world)[0], rule)
         constraint.active = False
         constraint.save()
-        self.assertEqual(ConstraintSubsetStringRule.get_active_constraints_for_user(admin01, world), [])
+        self.assertEqual(ConstraintSubsetStringRule.get_active_constraints_for_user(admin01, self.world), [])
         constraint.active = True
         constraint.save()
-        self.assertEqual(ConstraintSubsetStringRule.get_active_constraints_for_user(admin01, world)[0], rule)
-        self.assertEqual(ConstraintSubsetStringRule.get_rule_definition_for_user(admin01, world.pk), "(NAME != 'ITALY')")
+        self.assertEqual(ConstraintSubsetStringRule.get_active_constraints_for_user(admin01, self.world)[0], rule)
+        self.assertEqual(ConstraintSubsetStringRule.get_rule_definition_for_user(admin01, self.world.pk), "(NAME != 'ITALY')")
 
         self.assertFalse(self._check_subset_string())
 
@@ -171,7 +182,7 @@ class SingleLayerSubsetStringConstraints(TestSingleLayerConstraintsBase):
 
         admin01 = self.test_user1
         group1 = admin01.groups.all()[0]
-        world = Layer.objects.get(name='world')
+        world = self.world
         constraint = SingleLayerConstraint(layer=world, active=True)
         constraint.save()
 
@@ -195,7 +206,7 @@ class SingleLayerSubsetStringConstraints(TestSingleLayerConstraintsBase):
 
         admin01 = self.test_user1
         group1 = admin01.groups.all()[0]
-        world = Layer.objects.get(name='world')
+        world = self.world
         constraint = SingleLayerConstraint(layer=world, active=True)
         constraint.save()
 
@@ -218,7 +229,7 @@ class SingleLayerSubsetStringConstraints(TestSingleLayerConstraintsBase):
     def test_shp_api(self):
         """Test that the filter applies to shp api"""
 
-        world = Layer.objects.get(name='world')
+        world = self.world
         world.download = True
         world.save()
         response = self._testApiCallAdmin01('core-vector-api',
@@ -244,7 +255,7 @@ class SingleLayerSubsetStringConstraints(TestSingleLayerConstraintsBase):
         # Add a rule
         admin01 = self.test_user1
         group1 = admin01.groups.all()[0]
-        world = Layer.objects.get(name='world')
+        world = self.world
         constraint = SingleLayerConstraint(layer=world, active=True)
         constraint.save()
 
@@ -282,7 +293,7 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
         self.assertTrue(self._check_subset_string())
 
         admin01 = self.test_user1
-        world = Layer.objects.get(name='world')
+        world = self.world
         constraint = SingleLayerConstraint(layer=world, active=True)
         constraint.save()
 
@@ -312,7 +323,7 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
 
         admin01 = self.test_user1
         group1 = admin01.groups.all()[0]
-        world = Layer.objects.get(name='world')
+        world = self.world
         constraint = SingleLayerConstraint(layer=world, active=True)
         constraint.save()
 
@@ -336,7 +347,7 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
 
         admin01 = self.test_user1
         group1 = admin01.groups.all()[0]
-        world = Layer.objects.get(name='world')
+        world = self.world
         constraint = SingleLayerConstraint(layer=world, active=True)
         constraint.save()
 
@@ -359,7 +370,7 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
     def test_shp_api(self):
         """Test that the filter applies to shp api"""
 
-        world = Layer.objects.get(name='world')
+        world = self.world
         world.download = True
         world.save()
         response = self._testApiCallAdmin01('core-vector-api',
@@ -385,7 +396,7 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
         # Add a rule
         admin01 = self.test_user1
         group1 = admin01.groups.all()[0]
-        world = Layer.objects.get(name='world')
+        world = self.world
         constraint = SingleLayerConstraint(layer=world, active=True)
         constraint.save()
 
@@ -416,7 +427,7 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
     def test_xls_api(self):
         """Test XLS export"""
 
-        world = Layer.objects.get(name='world')
+        world = self.world
         world.download = True
         world.save()
         response = self._testApiCallAdmin01('core-vector-api',
@@ -444,7 +455,7 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
         # Add a rule
         admin01 = self.test_user1
         group1 = admin01.groups.all()[0]
-        world = Layer.objects.get(name='world')
+        world = self.world
         constraint = SingleLayerConstraint(layer=world, active=True)
         constraint.save()
 
@@ -477,7 +488,7 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
         """Test a rule with geometry filter"""
 
         admin01 = self.test_user1
-        world = Layer.objects.get(name='world')
+        world = self.world
         constraint = SingleLayerConstraint(layer=world, active=True)
         constraint.save()
 
