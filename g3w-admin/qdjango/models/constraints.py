@@ -38,6 +38,8 @@ class SingleLayerConstraint(models.Model):
     active = models.BooleanField(default=True)
     layer = models.ForeignKey(
         Layer, on_delete=models.CASCADE, related_name='constrainted_layer')
+    name = models.CharField(_('Name'), max_length=255, null=True)
+    description = models.TextField(_('Description'), null=True, blank=True)
 
     @property
     def qgs_layer_id(self):
