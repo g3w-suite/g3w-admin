@@ -216,12 +216,15 @@ class QdjangoLayersListView(G3WRequestViewMixin, G3WGroupViewMixin, QdjangoProje
         context['type_layer_for_widget'] = (
             'postgres',
             'spatialite',
-            'ogr'
+            'ogr',
+            'mssql'
         )
 
         context['type_layer_for_download'] = (
             'postgres',
-            'spatialite'
+            'spatialite',
+            'ogr',
+            'mssql'
         )
         return context
 
