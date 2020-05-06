@@ -14,7 +14,7 @@ from rest_framework import generics, status
 from rest_framework.response import Response
 from qdjango.models import Layer
 from usersmanage.utils import get_viewers_for_object, get_user_groups_for_object
-from .serializers import *
+from qdjango.api.layers.serializers import *
 from .permissions import EditingLayerInfoPermission
 
 
