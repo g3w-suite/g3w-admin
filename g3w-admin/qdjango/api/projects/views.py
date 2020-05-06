@@ -1,10 +1,14 @@
-
+from django.utils import deprecation
 from rest_framework.views import APIView
 from core.utils.db import build_dango_connection_name, build_django_connection, dictfetchall
 from qdjango.utils.structure import datasource2dict
 from .permissions import ProjectRelationPermission
 from qdjango.models.projects import Project
 
+
+@deprecation.deprecated(deprecated_in="dev", removed_in="qgis-api",
+                        current_version='dev',
+                        details="Use the QGIS API functions instead")
 class QdjangoProjectRelationsApiView(APIView):
     """
     Return list of relations rows
