@@ -21,7 +21,7 @@ class SingleLayerConstraintCleanValidator(object):
 
     def __call__(self, value):
         try:
-            Constraint(editing_layer=value['editing_layer'], constraint_layer=value['constraint_layer']).clean()
+            SingleLayerConstraint(layer=value['layer'], name=value['name'], description=value['description']).clean()
         except Exception as ex:
             raise serializers.ValidationError(str(ex))
 
@@ -54,6 +54,8 @@ class SingleLayerConstraintSerializer(serializers.ModelSerializer):
             'layer_name',
             'active',
             'rule_count',
+            'subset_rule_count',
+            'expression_rule_count',
             'name',
             'description'
         ]

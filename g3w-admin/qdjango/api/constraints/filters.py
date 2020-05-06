@@ -8,7 +8,7 @@
 
 __author__ = 'elpaso@itopen.it'
 __date__ = '2020-04-21'
-__copyright__ = 'Copyright 2020, ItOpen'
+__copyright__ = 'Copyright 2020, Gis3W'
 
 from core.api.filters import BaseFilterBackend
 from qdjango.models.constraints import ConstraintSubsetStringRule, ConstraintExpressionRule
