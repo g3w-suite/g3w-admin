@@ -108,10 +108,11 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         map_relations = []
         for relation in relations:
 
+            # FIXME: check if is necessary to check layer type with qgis api solution
             # check layer type
-            if layers[relation['referencingLayer']].layer_type in ('postgres', 'spatialite'):
-                relation['type'] = RELATIONS_ONE_TO_MANY
-                map_relations.append(relation)
+            # if layers[relation['referencingLayer']].layer_type in ('postgres', 'spatialite'):
+            relation['type'] = RELATIONS_ONE_TO_MANY
+            map_relations.append(relation)
         return map_relations
 
     def get_map_layers_relations_from_vectorjoins(self, layer_id, vectorjoins, layers):
