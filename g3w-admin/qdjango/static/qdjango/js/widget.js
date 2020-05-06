@@ -998,7 +998,7 @@ _.extend(g3wadmin.widget, {
         var $div = $('<div style="margin-left:40px;">');
 
         // add new constraint btn
-        $newConstraint = $('<a href="#"><i class="ion ion-plus-circled"></i> '+gettext('New single layer constraint')+'</a>');
+        $newConstraint = $('<a href="#" class="btn btn-sm btn-info"><i class="ion ion-plus-circled"></i> '+gettext('New single layer constraint')+'</a>');
         $newConstraint.on('click', function(){
             ga.widget._singlelayerConstraintForm($newConstraint, null,
                 {
@@ -1027,7 +1027,7 @@ _.extend(g3wadmin.widget, {
         var constraint_res = {};
         $.each(res['results'], function(k, v){
             constraint_res[v['pk']] = v;
-            var editDisplay = v['constraint_rule_count'] > 0 ? 'none': 'display';
+            var editDisplay = v['rule_count'] > 0 ? 'none': 'display';
             $tbody.append('<tr id="singlelayerconstraint-item-'+v['pk']+'">\n' +
             '                <td>'+ga.tpl.singlelayerConstraintActions({
                     'layerId': layer_pk,
@@ -1248,7 +1248,7 @@ _.extend(g3wadmin.tpl, {
 			<a href="#" data-toggle="tooltip" data-placement="top" title="Subset Rules" data-singlelayerconstraint-action-mode="subset_rules" data-singlelayerconstraint-pk="<%= constraintPk %>"><i style="color: orange;" class="fa fa-cubes"></i></a>\
 		</span>\
 		<span class="col-xs-2 icon">\
-			<a href="#" data-toggle="tooltip" data-placement="top" title="Expression Rules" data-singlelayerconstraint-action-mode="expression_rules" data-singlelayerconstraint-pk="<%= constraintPk %>"><i class="fa fa-cubes"></i></a>\
+			<a href="#" data-toggle="tooltip" data-placement="top" title="Expression Rules" data-singlelayerconstraint-action-mode="expression_rules" data-singlelayerconstraint-pk="<%= constraintPk %>"><i style="color: purple;" class="fa fa-cubes"></i></a>\
 		</span>\
 		<span class="col-xs-2 icon" style="display:<%= editDisplay %>">\
 			<a href="#" data-singlelayerconstraint-action-mode="update" data-singlelayerconstraint-pk="<%= constraintPk %>" data-singlelayerconstraint-layer-id="<%= layerId %>"><i class="ion ion-edit"></i></a>\
