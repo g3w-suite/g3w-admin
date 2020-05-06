@@ -394,7 +394,7 @@ _.extend(g3wadmin.widget, {
         var $div = $('<div style="margin-left:40px;">');
 
         // add new constraint btn
-        $newConstraint = $('<a href="#" class="btn btn-default btn-sm"><i class="ion ion-plus-circled"></i> '+gettext('New constraint')+'</a>');
+        $newConstraint = $('<a href="#" class="btn btn-default btn-sm"><i class="ion ion-plus-circled"></i> '+gettext('New geo constraint')+'</a>');
         $newConstraint.on('click', function(){
             ga.widget._constraintForm($newConstraint, null,
                 {
