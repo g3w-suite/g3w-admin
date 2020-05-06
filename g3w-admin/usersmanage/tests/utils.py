@@ -73,12 +73,12 @@ def setup_testing_user(cls):
             cls.main_roles[G3W_EDITOR1].permissions.add(perm)
 
     # Create Admin level 1
-    test_user1 = User.objects.create_user(username='admin01')
-    test_user1.set_password('admin01')
-    test_user1.is_staff = True
-    test_user1.is_superuser = True
-    test_user1.save()
-    Userbackend(user=test_user1, backend=USER_BACKEND_DEFAULT).save()
+    try:
+        test_user1 = User.objects.get(username='admin01')
+    except:
+        test_user1 = User.objects.create_superuser(username='admin01', password='admin01', email='')
+        test_user1.save()
+        Userbackend(user=test_user1, backend=USER_BACKEND_DEFAULT).save()
 
     setattr(cls, 'test_user1', test_user1)
 
@@ -86,12 +86,13 @@ def setup_testing_user(cls):
     setattr(cls, 'test_admin1', test_user1)
 
     # Create Admin level 2
-    test_user2 = User.objects.create_user(username='admin02')
-    test_user2.set_password('admin02')
-    test_user2.is_staff = False
-    test_user2.is_superuser = True
-    test_user2.save()
-    Userbackend(user=test_user2, backend=USER_BACKEND_DEFAULT).save()
+    try:
+        test_user2 = User.objects.get(username='admin02')
+    except:
+        test_user2 = User.objects.create_user(username='admin02', password='admin02')
+        test_user2.is_superuser = True
+        test_user2.save()
+        Userbackend(user=test_user2, backend=USER_BACKEND_DEFAULT).save()
 
     setattr(cls, 'test_user2', test_user2)
 
@@ -102,24 +103,21 @@ def setup_testing_user(cls):
     # like create by admin user
     # =====================================================
     for euser in EU1:
-        user = User.objects.create_user(username=euser)
-        user.set_password(euser)
+        user = User.objects.create_user(username=euser, password=euser)
         user.save()
         user.groups.add(cls.main_roles[G3W_EDITOR1])
         Userbackend(user=user, backend=USER_BACKEND_DEFAULT).save()
         setattr(cls, 'test_{}'.format(euser.replace('.', '_')), user)
 
     for euser in EU2:
-        user = User.objects.create_user(username=euser)
-        user.set_password(euser)
+        user = User.objects.create_user(username=euser, password=euser)
         user.save()
         user.groups.add(cls.main_roles[G3W_EDITOR2])
         Userbackend(user=user, backend=USER_BACKEND_DEFAULT).save()
         setattr(cls, 'test_{}'.format(euser.replace('.', '_')), user)
 
     for euser in VU1:
-        user = User.objects.create_user(username=euser)
-        user.set_password(euser)
+        user = User.objects.create_user(username=euser, password=euser)
         user.save()
         user.groups.add(cls.main_roles[G3W_VIEWER1])
         Userbackend(user=user, backend=USER_BACKEND_DEFAULT).save()
