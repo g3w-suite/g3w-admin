@@ -8,7 +8,7 @@
 
 __author__ = 'elpaso@itopen.it'
 __date__ = '2020-04-15'
-__copyright__ = 'Copyright 2020, ItOpen'
+__copyright__ = 'Copyright 2020, Gis3W'
 
 import logging
 from django.conf import settings

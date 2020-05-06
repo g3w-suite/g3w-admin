@@ -8,7 +8,7 @@
 
 __author__ = 'elpaso@itopen.it'
 __date__ = '2020-04-14'
-__copyright__ = 'Copyright 2020, ItOpen'
+__copyright__ = 'Copyright 2020, Gis3W'
 
 import os
 from django.test import Client

@@ -3,7 +3,36 @@
  * Modified by Walter Lorenzetti on 2016
  */
 
-ga.Qdjango = {};
+ga.Qdjango = {
+	urls: {
+        constraint: {
+            list: '/' + SITE_PREFIX_URL + 'qdjango/api/constraint/',
+            detail: '/' + SITE_PREFIX_URL + 'qdjango/api/constraint/detail/',
+        },
+        layer: {
+            //info: '/' + SITE_PREFIX_URL + 'vector/api/info/layer/',
+            user: '/' + SITE_PREFIX_URL + 'qdjango/api/info/layer/user/',
+            authgroup: '/' + SITE_PREFIX_URL + 'qdjango/api/info/layer/authgroup/'
+        },
+        rule: {
+        	subset: {
+        		list: '/' + SITE_PREFIX_URL + 'qdjango/api/subsetstringrule/constraint/',
+            	detail: '/' + SITE_PREFIX_URL + 'qdjango/api/subsetstringrule/detail/'
+			},
+			expression: {
+        		list: '/' + SITE_PREFIX_URL + 'qdjango/api/expressionrule/constraint/',
+            	detail: '/' + SITE_PREFIX_URL + 'qdjango/api/expressionrule/detail/'
+			}
+
+        }
+    },
+	data: {
+        viewers: [],
+        group_viewers: [],
+        current_rules: []
+    }
+};
+
 ga.Qdjango.localVars = {};
 
 ga.Qdjango.widgetEditor = {
@@ -721,3 +750,524 @@ ga.Qdjango.widgetEditor = {
 		$("#id_widget_type").change(function(){ that.onWidgetTypeChange($(this)); });
 	}
 };
+
+// Add SingleLayer Constraint widget
+// --------------------------------
+_.extend(g3wadmin.widget, {
+
+	_singlelayerConstraintsListParams: [
+		'singlelayerconstraints-list-url',
+		'singlelayerconstraints-layer-pk'
+	],
+
+	_singlelayerConstraintsUrls: {},
+
+	_buildSinglelayerContraintRuleForm: function(constraint_pk, rules_list, res, type='subset',new_rule){
+
+        var actions = {
+            post: ga.Qdjango.urls.rule[type].list+constraint_pk+'/',
+            put: _.isNull(res) ? '' : ga.Qdjango.urls.rule[type].detail+res['pk']+'/'
+        }
+
+        // instance ne form rule
+        var form_options = {
+            rulePk: _.isNull(res) ? 'new' : res['pk'],
+            constraintPk: constraint_pk,
+            action: _.isNull(res) ? actions.post : actions.put,
+        }
+        var form_rule = $(ga.tpl.constraintRule(form_options));
+        var ga_form = new ga.forms.form(form_rule.find('form'));
+
+        // populate selects user and group
+        var sl_user = form_rule.find('[name="user"]');
+        var sl_group = form_rule.find('[name="group"]');
+        var ta_rule = form_rule.find('[name="rule"]');
+        var in_pk = form_rule.find('[name="pk"]');
+
+
+         // ser on success action
+        ga_form.setOnSuccesAction(function(fres){
+            var $ediv = form_rule.find('.form-errors');
+            $ediv.html('');
+            var $saved_msg = $('<h4 class="badge bg-green">'+gettext('Saved')+'</h4>');
+            $ediv.append($saved_msg);
+            $saved_msg.fadeOut(1200);
+
+
+            // transform in a update mode, update pk put value and action
+            if(_.isNull(res)){
+                ga_form.setAction(ga.Qdjango.urls.rule[type].detail+fres['pk']+'/');
+                in_pk.val(fres['pk']);
+            }
+        });
+
+         // set error form action
+        ga_form.setOnErrorAction(function(xhr, msg){
+            var err_data = xhr.responseJSON['error'];
+            var $ediv = form_rule.find('.form-errors');
+            $ediv.html('');
+            $ediv.append('<h4 class="badge bg-red">'+err_data['message']+'</h4>');
+
+            // add field errors message:
+            if (!_.isUndefined(err_data['data']['non_field_errors'])){
+                for (n in err_data['data']['non_field_errors']) {
+                    $ediv.append('<br /><span>'+err_data['data']['non_field_errors'][n]+'</span>');
+                }
+            }
+
+        });
+
+
+        // populate rule
+        if (!_.isNull(res)){
+            ta_rule.val(res['rule']);
+        }
+
+        $.each(ga.Qdjango.data.viewers, function (k,v){
+            v['selected'] = (!_.isNull(res) && res['user']==v['pk']) ? 'selected="selected"' : '';
+            sl_user.append(_.template('<option value="<%= pk %>" <%= selected %>><%= first_name %> <%= last_name %>(<%= username %>)</option>')(v));
+        });
+
+        $.each(ga.Qdjango.data.group_viewers, function (k,v){
+            v['selected'] = (!_.isNull(res) && res['group']==v['pk']) ? 'selected="selected"' : '';
+            sl_group.append(_.template('<option value="<%= pk %>" <%= selected %>><%= name %></option>')(v));
+        });
+
+
+
+        rules_list.append(form_rule);
+
+        // action for delete btn
+        var bt_rule_delete = form_rule.find('.bt-rule-delete');
+        bt_rule_delete.on('click', function(e){
+            var $self = $(this).parents('.rule-form');
+            if(_.isNull(res) && form_rule.find('[name="pk"]').val() == 'new'){
+                $self.remove();
+            } else {
+                $.ajax({
+                    method: 'delete',
+                    url: ga.Qdjango.urls.rule[type].detail+form_rule.find('[name="pk"]').val()+'/',
+                    success: function (res) {
+                        $self.remove();
+                    },
+                    error: function (xhr, textStatus, errorMessage) {
+
+                    }
+                });
+            }
+
+
+        });
+
+        // action for save btn
+        var bt_rule_save = form_rule.find('.bt-rule-save');
+        bt_rule_save.on('click', function(e){
+            if(_.isNull(res) && form_rule.find('[name="pk"]').val() == 'new'){
+                ga_form.sendData();
+            } else {
+                ga_form.sendData(e, 'put');
+            }
+        });
+
+
+    },
+
+	_singlelayerConstraintForm: function($item, res, params){
+
+        // set urls
+
+        form_action = (params['new']) ? ga.Qdjango.urls.constraint.list : ga.Qdjango.urls.constraint.detail+res['pk']+'/'
+
+
+        // open modal to show list of add links
+        modal_options = {
+            'layerId': params['layer_pk'],
+            'action': form_action
+        };
+        var modal = ga.currentModal = ga.ui.buildDefaultModal({
+            modalTitle: ((_.isUndefined(params['modal-title']) ? gettext('Form title') : params['modal-title'])),
+            modalBody: ga.tpl.singlelayerConstraintForm(modal_options),
+            modalSize: (_.isUndefined(params['modal-size']) ? '' : params['modal-size'])
+        });
+
+        modal.data.$evoker = $item;
+
+        // parent_click based on new or update
+        if (params['new']){
+            var $item = params['parent_click'].parents('tr').prev().find('[data-widget-type="singlelayerConstraintsList"]');
+        } else {
+            var $item = $(params['parent_click'].parents('table')[0]).parents('tr').prev().find('[data-widget-type="singlelayerConstraintsList"]');
+        }
+
+
+        // set action for confirm btn
+        var form = new ga.forms.form(modal.$modal.find('form'));
+        var that = this;
+        form.setOnSuccesAction(function(e){
+            that._refreshSinglelayerConstraintList($item)();
+            modal.hide();
+        });
+        modal.setConfirmButtonAction(function(e){
+            form.sendData(e, params['new'] ? 'post' : 'put');
+        });
+
+        modal.show();
+
+        // populate form in update
+		if (!params['new']){
+			$.each(res, function(key, val) {
+				modal.$modal.find('[name=' + key + ']').val(val);
+			});
+		}
+    },
+
+	_singlelayerConstraintRulesForm: function($item, res, params){
+        /**
+         * Build form for constraint subset rules CRUD
+         */
+
+        var that = this;
+
+        // build moodal
+        var modal_options = {
+
+        };
+        var modal = ga.ui.buildDefaultModal({
+            modalTitle: params['modal-title'],
+            modalBody: ga.tpl.singlelayerConstraintRules(modal_options),
+            modalSize: 'modal-lg',
+            confirmButton: false
+        });
+
+        // set action con close modal refresh constraints list
+        var $item = $(params['parent_click'].parents('table')[0]).parents('tr').prev().find('[data-widget-type="singlelayerConstraintsList"]')
+        modal.$modal.on('hidden.bs.modal',this._refreshSinglelayerConstraintList($item));
+
+        // get viewers and users groups viewers for layer
+        ga.Qdjango.data.viewers = [];
+        ga.Qdjango.data.group_viewers = [];
+
+        $.ajaxSetup({async:false});
+        $.getJSON(ga.Qdjango.urls.layer.user+params['layer_pk']+"/", function( data ) {
+            ga.Qdjango.data.viewers = data['results'];
+        });
+
+        $.getJSON(ga.Qdjango.urls.layer.authgroup+params['layer_pk']+"/", function( data ) {
+            ga.Qdjango.data.group_viewers = data['results'];
+        });
+        $.ajaxSetup({async:true});
+
+        // get current rules
+        var current_rules = [];
+        var jqxhr = $.getJSON(ga.Qdjango.urls.rule[params['type']].list+params['constraint_pk']+"/", function( data ) {
+            ga.Qdjango.data.current_rules = data['results'];
+        }).done(function(){
+            $.each(ga.Qdjango.data.current_rules, function (k, v){
+                that._buildSinglelayerContraintRuleForm(params['constraint_pk'], rules_list, v, params['type'],false);
+            });
+        });
+
+
+        // rule list section
+        var rules_list =  modal.$modal.find('.rules-list');
+
+        // rule actions for new rule
+        var $bt_add_rule = modal.$modal.find('.add-rule');
+        $bt_add_rule.on('click', function(e){
+            that._buildSinglelayerContraintRuleForm(params['constraint_pk'], rules_list, null, params['type'],true);
+        });
+
+
+        modal.show();
+    },
+
+	_refreshSinglelayerConstraintList: function($item){
+        /**
+         * Refresh tr main table layer contraints list
+         */
+        return function(){;
+            var $datatable = $item.parents('table').DataTable();
+            ga.widget.singlelayerConstraintsList($datatable, $item, true);
+        };
+    },
+
+	 /*
+    Build singlelayer constraints table
+     */
+    _singlelayerConstraintsTable: function(layer_pk, res){
+        var $div = $('<div style="margin-left:40px;">');
+
+        // add new constraint btn
+        $newConstraint = $('<a href="#"><i class="ion ion-plus-circled"></i> '+gettext('New single layer constraint')+'</a>');
+        $newConstraint.on('click', function(){
+            ga.widget._singlelayerConstraintForm($newConstraint, null,
+                {
+                    'modal-title': gettext('New single layer constraint'),
+                    'layer_pk': layer_pk,
+                    'new': true,
+                    'parent_click': $(this)
+                });
+        });
+        $div.append($newConstraint);
+
+        // add table contraints saved
+        var $table = $('<table class="table">');
+        var $tbody = $table.append($('<tbody>'));
+        $table.append('<thead>\n' +
+            '            <tr>\n' +
+            '                <th style="width:180px;">'+gettext('Actions')+'</th>\n' +
+            '                <th>'+gettext('Name')+'</th>\n' +
+			'                <th>'+gettext('Description')+'</th>\n' +
+			'                <th>'+gettext('Subset rules count')+'</th>\n' +
+            '                <th>'+gettext('Expression rules count')+'</th>\n' +
+            '            </tr>\n' +
+            '        </thead>');
+
+        // add constraints
+        var constraint_res = {};
+        $.each(res['results'], function(k, v){
+            constraint_res[v['pk']] = v;
+            var editDisplay = v['constraint_rule_count'] > 0 ? 'none': 'display';
+            $tbody.append('<tr id="singlelayerconstraint-item-'+v['pk']+'">\n' +
+            '                <td>'+ga.tpl.singlelayerConstraintActions({
+                    'layerId': layer_pk,
+                    'constraintPk': v['pk'],
+                    'editDisplay': editDisplay
+            })+'</td>\n' +
+            '                <td>'+v['name']+'</td>\n' +
+			'                <td>'+v['description']+'</td>\n' +
+            '                <td>'+v['subset_rule_count']+'</td>\n' +
+			'                <td>'+v['expression_rule_count']+'</td>\n' +
+            '            </tr>\n');
+        });
+
+        // add actions to elements action
+        $tbody.find('[data-singlelayerconstraint-action-mode="update"]').on('click', function(e){
+            ga.widget._singlelayerConstraintForm($newConstraint, constraint_res[$(this).attr('data-singlelayerconstraint-pk')],
+                {
+                    'modal-title': gettext('Update single layer constraint'),
+                    'layer_pk': layer_pk,
+                    //'constraint_pk': $(this).attr('data-contraint-pk'),
+                    'new': false,
+                    'parent_click': $(this)
+                });
+        });
+
+        $tbody.find('[data-singlelayerconstraint-action-mode="subset_rules"]').on('click', function(e){
+            ga.widget._singlelayerConstraintRulesForm($newConstraint, null,
+                {
+                    'modal-title': gettext('Constraint Subset Rules'),
+					'type': 'subset',
+                    'constraint_pk': $(this).attr('data-singlelayerconstraint-pk'),
+                    'layer_pk': layer_pk,
+                    'parent_click': $(this)
+                });
+        });
+
+        $tbody.find('[data-singlelayerconstraint-action-mode="expression_rules"]').on('click', function(e){
+            ga.widget._singlelayerConstraintRulesForm($newConstraint, null,
+                {
+                    'modal-title': gettext('Constraint Expression Rules'),
+					'type': 'expression',
+                    'constraint_pk': $(this).attr('data-singlelayerconstraint-pk'),
+                    'layer_pk': layer_pk,
+                    'parent_click': $(this)
+                });
+        });
+
+        $div.append($table);
+
+
+        return $div;
+    },
+
+	 singlelayerConstraintsList: function($datatable, $item, refresh){
+
+        try {
+
+            var params = ga.utils.getDataAttrs($item, this._singlelayerConstraintsListParams);
+            if (_.isUndefined(params['singlelayerconstraints-list-url'])) {
+                throw new Error('Attribute data-singlelayerconstraints-list-url not defined');
+            }
+
+            // get tr row parent
+            refresh = _.isUndefined(refresh) ? false : true;
+
+            var tr = $item.closest('tr');
+            var row = $datatable.row(tr);
+            var idx = $.inArray( tr.attr('id'), [] );
+
+            var getDetail = function(){
+                $.ajax({
+                     method: 'get',
+                     url: params['singlelayerconstraints-list-url'],
+                     success: function (res) {
+                        row.child(g3wadmin.widget._singlelayerConstraintsTable(params['singlelayerconstraints-layer-pk'],res)).show();
+                     },
+                     complete: function(){
+                         var status = arguments[1];
+                         if (status == 'success') {
+                            ga.ui.initRadioCheckbox(row.child());
+                         }
+                     },
+                     error: function (xhr, textStatus, errorMessage) {
+                         ga.widget.showError(ga.utils.buildAjaxErrorMessage(xhr.status, errorMessage));
+                     }
+                });
+            }
+
+            if (refresh){
+                getDetail();
+            } else {
+                if ( row.child.isShown() ) {
+                    tr.removeClass( 'details' );
+                    row.child.hide();
+                } else {
+                    tr.addClass( 'details' );
+
+                    // ajax call to get detail data
+                    getDetail();
+                }
+            }
+
+
+
+        } catch (e) {
+            this.showError(e.message);
+        }
+    }
+});
+
+_.extend(g3wadmin.tpl, {
+
+	singlelayerConstraintRules: _.template('\
+        <div class="row">\
+            <div class="col-md-12 rules-list">\
+            </div>\
+        </div>\
+        <div class="row">\
+            <div class="col-md-12">\
+                <div class="row text-center">\
+                    <div class="col-md-12">\
+                        <button type="button" class="btn btn-success add-rule"><i class="glyphicon glyphicon-plus"></i> '+gettext('Add')+'</button>\
+                    </div>\
+                </div>\
+            </div>\
+        </div>\
+    '),
+
+    singlelayerConstraintRule: _.template('\
+    <div class="row rule-form" style="border-top: 1px solid gray;">\
+        <div class="col-md-12 form-errors" style="color: #ff0000;"></div>\
+        <div class="col-md-10 rule-fields">\
+            <form action="<%= action %>" id="#constraint-rule-<%= rulePk %>">\
+                <input type="hidden" name="pk" value="<%= rulePk %>" />\
+                <input type="hidden" name="constraint" value="<%= constraintPk %>" />\
+                <div class="row">\
+                    <div class="col-md-4">\
+                        <div class="row">\
+                            <div class="col-md-12">\
+                            <div class="form-group">\
+                                <label class="control-label ">Viewer</label>\
+                                <div class="controls ">\
+                                    <select name="user" class="select form-control">\
+                                        <option value="">---------</option>\
+                                    </select>\
+                                </div>\
+                            </div>\
+                            </div>\
+                        </div>\
+                        <div class="row">\
+                            <div class="col-md-12">\
+                            <div class="form-group">\
+                                <label class="control-label ">User viewer group</label>\
+                                <div class="controls ">\
+                                    <select name="group" class="select form-control">\
+                                        <option value="">---------</option>\
+                                    </select>\
+                                </div>\
+                            </div>\
+                            </div>\
+                        </div>\
+                    </div>\
+                    <div class="col-md-8">\
+                        <div class="row">\
+                            <div class="col-md-12">\
+                            <div class="form-group">\
+                                <label class="control-label ">SQL</label>\
+                                <div class="controls ">\
+                                    <textarea name="rule" style="width:100%;"></textarea>\
+                                </div>\
+                            </div>\
+                            </div>\
+                        </div>\
+                    </div>\
+                </div>\
+            </form>\
+        </div>\
+        <div class="col-md-2 rule-actions">\
+            <div class="row" style="font-size: 24px;">\
+                <span class="col-xs-2 icon">\
+                    <a href="#" class="bt-rule-save" data-toggle="tooltip" data-placement="top" title="'+gettext('Save')+'"><i class="fa fa-save"></i></a>\
+                </span>\
+                <span class="col-xs-2 icon">\
+                    <a href="#" class="bt-rule-delete" data-toggle="tooltip" data-placement="top" title="'+gettext('Delete')+'"><i class="ion ion-trash-b"></i></a>\
+                </span>\
+            </div>\
+        </div>\
+    </div>\
+    '),
+
+
+	singlelayerConstraintForm: _.template('\
+        <form action="<%= action %>" id="form-singlelayerconstraint-<%= layerId %>">\
+            <input type="hidden" name="layer" value="<%= layerId %>" />\
+            <input type="hidden" name="active" value="1" />\
+            <div class="row">\
+				<div class="col-md-12">\
+					<div class="info"><h4>'+gettext('Set a name and a possible description for the single layer constraint')+':</h4></div>\
+					<div class="form-group">\
+						<label class="control-label ">'+gettext('Name')+'</label>\
+						<div class="controls ">\
+							<input class="form-control" name="name" style="width:100%;"></input>\
+						</div>\
+					</div>\
+					<div class="form-group">\
+						<label class="control-label ">'+gettext('Description')+'</label>\
+						<div class="controls ">\
+							<textarea class="form-control" name="description" style="width:100%;"></textarea>\
+						</div>\
+					</div>\
+				</div>\
+			</div>\
+        </form>'
+	),
+
+	singlelayerConstraintActions: _.template('\
+		<span class="col-xs-2 icon">\
+			<a href="#" data-toggle="tooltip" data-placement="top" title="Subset Rules" data-singlelayerconstraint-action-mode="subset_rules" data-singlelayerconstraint-pk="<%= constraintPk %>"><i style="color: orange;" class="fa fa-cubes"></i></a>\
+		</span>\
+		<span class="col-xs-2 icon">\
+			<a href="#" data-toggle="tooltip" data-placement="top" title="Expression Rules" data-singlelayerconstraint-action-mode="expression_rules" data-singlelayerconstraint-pk="<%= constraintPk %>"><i class="fa fa-cubes"></i></a>\
+		</span>\
+		<span class="col-xs-2 icon" style="display:<%= editDisplay %>">\
+			<a href="#" data-singlelayerconstraint-action-mode="update" data-singlelayerconstraint-pk="<%= constraintPk %>" data-singlelayerconstraint-layer-id="<%= layerId %>"><i class="ion ion-edit"></i></a>\
+		</span>\
+		<span class="col-xs-2 icon">\
+			<a href="#" \
+			data-widget-type="deleteItem" \
+			data-delete-url="/'+SITE_PREFIX_URL+'qdjango/api/constraint/detail/<%= constraintPk %>/"\
+			data-item-selector="#singlelayerconstraint-item-<%= constraintPk %>"\
+			data-delete-method="delete"\
+			><i class="ion ion-trash-b"></i></a>\
+		</span>\
+    '),
+});
+
+// activate widget
+$(document).ready(function() {
+    $('[data-widget-type="singlelayerConstraintsList"]').on('click', function (e) {
+        var $datatable = $(this).parents('table').DataTable();
+        ga.widget.singlelayerConstraintsList($datatable, $(this));
+    });
+});

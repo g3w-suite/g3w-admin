@@ -1,6 +1,7 @@
 from django.conf.urls import url
 from django.contrib.auth.decorators import login_required
 from .api.projects.views import QdjangoProjectRelationsApiView
+from .api.layers.views import LayerUserInfoAPIView, LayerAuthGroupInfoAPIView
 from .api.constraints.views import (
     ConstraintExpressionRuleDetail,
     ConstraintExpressionRuleList,
@@ -74,4 +75,15 @@ urlpatterns += [
     url(r'^api/constraint/$',
         login_required(SingleLayerConstraintList.as_view()), name='qdjango-constraint-api-list'),
 
+]
+
+
+# API info
+urlpatterns += [
+    # Viewers users can editing on editing layer id
+    url(r'^api/info/layer/user/(?P<layer_id>[-_\w\d]+)/$',
+        login_required(LayerUserInfoAPIView.as_view()), name='qjango-api-info-layer-user'),
+    # Viewers users groups viewer can editing on editing layer id
+    url(r'^api/info/layer/authgroup/(?P<layer_id>[-_\w\d]+)/$',
+        login_required(LayerAuthGroupInfoAPIView.as_view()), name='qdjango-api-info-layer-authgroup'),
 ]

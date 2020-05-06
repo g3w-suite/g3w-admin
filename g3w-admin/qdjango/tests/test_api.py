@@ -26,7 +26,7 @@ from qdjango.models.constraints import (
     ConstraintExpressionRule,
     ConstraintSubsetStringRule,
 )
-
+from core.tests.base import CoreTestBase
 
 from .base import QdjangoTestBase
 
@@ -252,4 +252,81 @@ class TestExpressionRules(BaseConstraintsApiTests, QdjangoTestBase):
 
     _rule_class = ConstraintExpressionRule
     _rule_view_name = 'expressionrule'
+
+
+class TestQdjangoLayersAPI(QdjangoTestBase):
+    """ Test qdjango layer API """
+
+    def test_user_info_api(self):
+
+        url = reverse('qjango-api-info-layer-user', args=[self.fake_layer.pk])
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, 302)
+
+        # login as admin01
+        self.client.login(username=self.test_admin1.username, password=self.test_admin1.username)
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, 200)
+        jres = json.loads(res.content)
+
+        self.assertCountEqual(jres['results'], [])
+
+        # give view_projet to viewer1 and viewer2
+        assign_perm('view_project', self.test_viewer1, self.project.instance)
+        assign_perm('view_project', self.test_viewer1_2, self.project.instance)
+
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, 200)
+        jres = json.loads(res.content)
+
+        self.assertEqual(len(jres['results']), 2)
+
+        r0 = jres['results'][0]
+        self.assertEqual(r0['username'], self.test_viewer1.username)
+        self.assertEqual(r0['first_name'], self.test_viewer1.first_name)
+        self.assertEqual(r0['last_name'], self.test_viewer1.last_name)
+
+        self.client.logout()
+
+        # As user without permissions
+        self.client.login(username=self.test_editor1.username, password=self.test_editor1.username)
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, 403)
+        self.client.logout()
+
+    def test_authgroup_info_api(self):
+
+        url = reverse('qdjango-api-info-layer-authgroup', args=[self.fake_layer.pk])
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, 302)
+
+        # login as admin01
+        self.client.login(username=self.test_admin1.username, password=self.test_admin1.username)
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, 200)
+        jres = json.loads(res.content)
+
+        self.assertCountEqual(jres['results'], [])
+
+        # give view_projest to GU-VIEWER2
+        assign_perm('view_project', self.test_gu_viewer2, self.project.instance)
+
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, 200)
+        jres = json.loads(res.content)
+
+        self.assertEqual(len(jres['results']), 1)
+
+        r0 = jres['results'][0]
+        self.assertEqual(r0['name'], self.test_gu_viewer2.name)
+
+        self.client.logout()
+
+        # As user without permissions
+        self.client.login(username=self.test_editor1.username, password=self.test_editor1.username)
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, 403)
+        self.client.logout()
+
+
 
