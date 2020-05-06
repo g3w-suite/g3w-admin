@@ -26,7 +26,7 @@ class SingleLayerSubsetStringAccessControlFilter(QgsAccessControlFilter):
         """Retrieve and sets user layer constraints"""
 
         try:
-            qdjango_layer = Layer.objects.get(project__qgis_file__icontains='group1_a-project.qgs', qgs_layer_id=layer.id())
+            qdjango_layer = Layer.objects.get(project=QGS_SERVER.project, qgs_layer_id=layer.id())
         except Layer.DoesNotExist:
             return ""
 
@@ -52,7 +52,7 @@ class SingleLayerExpressionAccessControlFilter(QgsAccessControlFilter):
         """Retrieve and sets user layer constraints"""
 
         try:
-            qdjango_layer = Layer.objects.get(project__qgis_file__icontains='group1_a-project.qgs', qgs_layer_id=layer.id())
+            qdjango_layer = Layer.objects.get(project=QGS_SERVER.project, qgs_layer_id=layer.id())
         except Layer.DoesNotExist:
             return ""
 
