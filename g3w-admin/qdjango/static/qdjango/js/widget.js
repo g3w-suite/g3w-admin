@@ -998,7 +998,7 @@ _.extend(g3wadmin.widget, {
         var $div = $('<div style="margin-left:40px;">');
 
         // add new constraint btn
-        $newConstraint = $('<a href="#" class="btn btn-default btn-info"><i class="ion ion-plus-circled"></i> '+gettext('New single layer constraint')+'</a>');
+        $newConstraint = $('<a href="#" class="btn btn-sm btn-default"><i class="ion ion-plus-circled"></i> '+gettext('New single layer constraint')+'</a>');
         $newConstraint.on('click', function(){
             ga.widget._singlelayerConstraintForm($newConstraint, null,
                 {
