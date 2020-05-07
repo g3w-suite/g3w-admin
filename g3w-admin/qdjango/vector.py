@@ -25,7 +25,10 @@ from core.utils.qgisapi import get_qgis_layer
 from core.utils.structure import mapLayerAttributesFromQgisLayer
 from core.utils.vector import BaseUserMediaHandler
 
-from qdjango.api.constraints.filters import SingleLayerSubsetStringConstraintFilter, SingleLayerExpressionConstraintFilter
+from qdjango.api.constraints.filters import SingleLayerSubsetStringConstraintFilter, \
+    SingleLayerExpressionConstraintFilter
+
+from qdjango.api.layers.filters import RelationOneToManyFilter
 
 from .api.projects.serializers import (QGISGeoLayerSerializer,
                                        QGISLayerSerializer)
@@ -148,7 +151,8 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         SearchFilter,
         SuggestFilterBackend,
         SingleLayerSubsetStringConstraintFilter,
-        SingleLayerExpressionConstraintFilter
+        SingleLayerExpressionConstraintFilter,
+        RelationOneToManyFilter
     )
 
     ordering_fields = '__all__'
