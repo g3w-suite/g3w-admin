@@ -118,8 +118,14 @@ class QdjangoTestBase(TestCase):
         )
 
         layers = cls.project.instance.layer_set.all()
-        for n in range(3):
-            setattr(cls, 'fake_layer%s' % (str(n + 1),), layers[n + 2])
+        for l in layers:
+            if l.qgs_layer_id == 'fakelayer_23456':
+                cls.fake_layer1 = l
+            if l.qgs_layer_id == 'fakelayer2_23456':
+                cls.fake_layer2 = l
+            if l.qgs_layer_id == 'fakelayer3_23456':
+                cls.fake_layer3 = l
+
 
         qgis_project_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS310_FILE), 'r'))
         cls.project310 = QgisProject(qgis_project_file)
