@@ -1,6 +1,5 @@
 from django.conf.urls import url
 from django.contrib.auth.decorators import login_required
-from .api.projects.views import QdjangoProjectRelationsApiView
 from .api.layers.views import LayerUserInfoAPIView, LayerAuthGroupInfoAPIView
 from .api.constraints.views import (
     ConstraintExpressionRuleDetail,
