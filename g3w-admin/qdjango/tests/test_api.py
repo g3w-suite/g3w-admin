@@ -26,9 +26,13 @@ from qdjango.models.constraints import (
     ConstraintExpressionRule,
     ConstraintSubsetStringRule,
 )
+from qdjango.api.layers.filters import FILTER_RELATIONONETOMANY_PARAM
 from core.tests.base import CoreTestBase
+from core.utils.qgisapi import get_qgs_project
 
 from .base import QdjangoTestBase
+from qgis.core import QgsFeatureRequest
+
 
 
 class BaseConstraintsApiTests():
@@ -254,7 +258,7 @@ class TestExpressionRules(BaseConstraintsApiTests, QdjangoTestBase):
     _rule_view_name = 'expressionrule'
 
 
-class TestQdjangoLayersAPI(QdjangoTestBase):
+class TestQdjangoLayersAPI(BaseConstraintsApiTests, QdjangoTestBase):
     """ Test qdjango layer API """
 
     def test_user_info_api(self):
@@ -328,6 +332,37 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         self.assertEqual(res.status_code, 403)
         self.client.logout()
 
+    def test_relationonetomany_api(self):
+        """ Test relationonetomany filter """
+
+        cities = Layer.objects.get(project_id=self.project310.instance.pk, origname='cities10000eu')
+        qgis_project = get_qgs_project(cities.project.qgis_file.path)
+        qgis_layer = qgis_project.mapLayer(cities.qgs_layer_id)
+
+        total_count = qgis_layer.featureCount()
+
+        resp = json.loads(self._testApiCall('core-vector-api',
+            ['data', 'qdjango', self.project310.instance.pk, cities.qgs_layer_id],
+            {
+                FILTER_RELATIONONETOMANY_PARAM: ''
+            }).content)
+
+        self.assertEqual(resp['vector']['count'], total_count)
+
+        # check filter by relations
+
+        resp = json.loads(self._testApiCall('core-vector-api',
+            ['data', 'qdjango', self.project310.instance.pk, cities.qgs_layer_id],
+            {
+                FILTER_RELATIONONETOMANY_PARAM: 'cities1000_ISO2_CODE_countries__ISOCODE|18'
+            }).content)
+
+        qgs_request = QgsFeatureRequest()
+        qgs_request.setFilterExpression('"ISO2_CODE" = \'IT\'')
+        qgis_layer.selectByExpression(qgs_request.filterExpression().expression())
+
+        features = qgis_layer.getFeatures(qgs_request)
+        self.assertEqual(resp['vector']['count'], len([f for f in features]))
 
 
 

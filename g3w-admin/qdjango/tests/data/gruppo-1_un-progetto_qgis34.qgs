@@ -19,13 +19,13 @@
   </projectCrs>
   <layer-tree-group>
     <customproperties/>
-    <layer-tree-layer expanded="1" id="spatialite_points20190604101052075" providerKey="spatialite" source="dbname='/home/walter/PycharmProjects/g3w-admin-github/g3w-admin/qdjango/tests/data/un-progetto-data/un-progetto.db' table=&quot;spatialite_points&quot; (geom) sql=" name="spatialite_points" checked="Qt::Checked">
+    <layer-tree-layer expanded="1" id="spatialite_points20190604101052075" providerKey="spatialite" source="dbname='/home/walter/PycharmProjects/g3w-admin-github/g3w-admin/qdjango/tests/data/geodata/un-progetto.db' table=&quot;spatialite_points&quot; (geom) sql=" name="spatialite_points" checked="Qt::Checked">
       <customproperties/>
     </layer-tree-layer>
-    <layer-tree-layer expanded="0" id="world20181008111156525" providerKey="ogr" source="./un-progetto-data/world.shp" name="world" checked="Qt::Checked">
+    <layer-tree-layer expanded="0" id="world20181008111156525" providerKey="ogr" source="./geodata/world.shp" name="world" checked="Qt::Checked">
       <customproperties/>
     </layer-tree-layer>
-    <layer-tree-layer expanded="1" id="bluemarble20181008111156906" providerKey="gdal" source="./un-progetto-data/bluemarble.tiff" name="bluemarble" checked="Qt::Checked">
+    <layer-tree-layer expanded="1" id="bluemarble20181008111156906" providerKey="gdal" source="./geodata/bluemarble.tiff" name="bluemarble" checked="Qt::Checked">
       <customproperties/>
     </layer-tree-layer>
     <custom-order enabled="0">
@@ -92,7 +92,7 @@
         <ymax>90</ymax>
       </extent>
       <id>bluemarble20181008111156906</id>
-      <datasource>./un-progetto-data/bluemarble.tiff</datasource>
+      <datasource>./geodata/bluemarble.tiff</datasource>
       <keywordList>
         <value></value>
       </keywordList>
@@ -176,7 +176,7 @@
         <ymax>44.35096846172920948</ymax>
       </extent>
       <id>spatialite_points20190604101052075</id>
-      <datasource>dbname='./un-progetto-data/un-progetto.db' table="spatialite_points" (geom) sql=</datasource>
+      <datasource>dbname='./geodata/un-progetto.db' table="spatialite_points" (geom) sql=</datasource>
       <keywordList>
         <value></value>
       </keywordList>
@@ -347,7 +347,7 @@
         <ymax>83.67473300000000336</ymax>
       </extent>
       <id>world20181008111156525</id>
-      <datasource>./un-progetto-data/world.shp</datasource>
+      <datasource>./geodata/world.shp</datasource>
       <keywordList>
         <value></value>
       </keywordList>

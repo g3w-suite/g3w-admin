@@ -20,16 +20,16 @@
   </projectCrs>
   <layer-tree-group>
     <customproperties/>
-    <layer-tree-layer checked="Qt::Checked" name="Rivers" expanded="1" id="rivers20171228095726368" source="../data/g3wsuite_test/rivers.shp" providerKey="ogr">
+    <layer-tree-layer checked="Qt::Checked" name="Rivers" expanded="1" id="rivers20171228095726368" source="../data/geodata/rivers.shp" providerKey="ogr">
       <customproperties/>
     </layer-tree-layer>
-    <layer-tree-layer checked="Qt::Checked" name="Cities" expanded="1" id="cities10000eu20171228095720113" source="../data/g3wsuite_test/cities10000eu.shp" providerKey="ogr">
+    <layer-tree-layer checked="Qt::Checked" name="Cities" expanded="1" id="cities10000eu20171228095720113" source="../data/geodata/cities10000eu.shp" providerKey="ogr">
       <customproperties/>
     </layer-tree-layer>
-    <layer-tree-layer checked="Qt::Checked" name="Countries" expanded="1" id="countries_simpl20171228095706310" source="../data/g3wsuite_test/countries.shp" providerKey="ogr">
+    <layer-tree-layer checked="Qt::Checked" name="Countries" expanded="1" id="countries_simpl20171228095706310" source="../data/geodata/countries.shp" providerKey="ogr">
       <customproperties/>
     </layer-tree-layer>
-    <layer-tree-layer checked="Qt::Checked" name="Dem" expanded="1" id="europa_dem20171228095729169" source="../data/g3wsuite_test/europa_dem.jpg" providerKey="gdal">
+    <layer-tree-layer checked="Qt::Checked" name="Dem" expanded="1" id="europa_dem20171228095729169" source="../data/geodata/europa_dem.jpg" providerKey="gdal">
       <customproperties/>
     </layer-tree-layer>
     <layer-tree-layer checked="Qt::Checked" name="Blue Marble World Elevation and Bathymetry Raster" expanded="1" id="Blue_Marble_World_Elevation_and_Bathymetry_Raster_3597b571_68a3_4344_867c_8dcd1d44eaf2" source="contextualWMSLegend=0&amp;crs=EPSG:4326&amp;dpiMode=all&amp;featureCount=10&amp;format=image/png&amp;layers=bluemarble&amp;styles&amp;url=http://demo.mapserver.org/cgi-bin/wms" providerKey="wms">
@@ -203,7 +203,7 @@
         <ymax>69.96666670000000465</ymax>
       </extent>
       <id>cities10000eu20171228095720113</id>
-      <datasource>../data/g3wsuite_test/cities10000eu.shp</datasource>
+      <datasource>../data/geodata/cities10000eu.shp</datasource>
       <keywordList>
         <value></value>
       </keywordList>
@@ -222,7 +222,7 @@
         </spatialrefsys>
       </srs>
       <resourceMetadata>
-        <identifier>"../data/g3wsuite_test/cities10000eu.shp</identifier>
+        <identifier>"../data/geodata/cities10000eu.shp</identifier>
         <parentidentifier></parentidentifier>
         <language>ITA</language>
         <type>feature</type>
@@ -524,7 +524,7 @@ def my_form_open(dialog, layer, feature):
         <ymax>81.85736800000000812</ymax>
       </extent>
       <id>countries_simpl20171228095706310</id>
-      <datasource>../data/g3wsuite_test/countries.shp</datasource>
+      <datasource>../data/geodata/countries.shp</datasource>
       <keywordList>
         <value></value>
       </keywordList>
@@ -922,7 +922,7 @@ def my_form_open(dialog, layer, feature):
         <ymax>75.50836177203473198</ymax>
       </extent>
       <id>europa_dem20171228095729169</id>
-      <datasource>../data/g3wsuite_test/europa_dem.jpg</datasource>
+      <datasource>../data/geodata/europa_dem.jpg</datasource>
       <keywordList>
         <value></value>
       </keywordList>
@@ -1008,7 +1008,7 @@ def my_form_open(dialog, layer, feature):
         <ymax>70.43313599999999042</ymax>
       </extent>
       <id>rivers20171228095726368</id>
-      <datasource>../data/g3wsuite_test/rivers.shp</datasource>
+      <datasource>../data/geodata/rivers.shp</datasource>
       <keywordList>
         <value></value>
       </keywordList>

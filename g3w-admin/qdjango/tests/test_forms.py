@@ -79,7 +79,7 @@ class QdjangoFormsTest(QdjangoTestBase):
         # No Viewer group
         self.assertEqual(len(form.fields['viewer_user_groups'].queryset), 0)
 
-        self.assertEqual(len(Project.objects.all()), 1)
+        self.assertEqual(len(Project.objects.all()), 2)
 
         # Save project as into project CRUD views
         form.qgisProject.save(**form.cleaned_data)
@@ -87,7 +87,7 @@ class QdjangoFormsTest(QdjangoTestBase):
             form.instance = form.qgisProject.instance
         form.save()
 
-        self.assertEqual(len(Project.objects.all()), 2)
+        self.assertEqual(len(Project.objects.all()), 3)
 
 
         # CHECK ACL users and Group users by map group

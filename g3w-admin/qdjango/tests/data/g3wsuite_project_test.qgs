@@ -5,16 +5,16 @@
   <evaluateDefaultValues active="0"/>
   <layer-tree-group expanded="1" checked="Qt::Checked" name="">
     <customproperties/>
-    <layer-tree-layer expanded="1" providerKey="ogr" checked="Qt::Checked" id="rivers20171228095726368" source="../data/g3wsuite_test/rivers.shp" name="Rivers">
+    <layer-tree-layer expanded="1" providerKey="ogr" checked="Qt::Checked" id="rivers20171228095726368" source="../data/geodata/rivers.shp" name="Rivers">
       <customproperties/>
     </layer-tree-layer>
-    <layer-tree-layer expanded="1" providerKey="ogr" checked="Qt::Checked" id="cities10000eu20171228095720113" source="../data/g3wsuite_test/cities10000eu.shp" name="Cities">
+    <layer-tree-layer expanded="1" providerKey="ogr" checked="Qt::Checked" id="cities10000eu20171228095720113" source="../data/geodata/cities10000eu.shp" name="Cities">
       <customproperties/>
     </layer-tree-layer>
-    <layer-tree-layer expanded="1" providerKey="ogr" checked="Qt::Checked" id="countries_simpl20171228095706310" source="../data/g3wsuite_test/countries.shp" name="Countries">
+    <layer-tree-layer expanded="1" providerKey="ogr" checked="Qt::Checked" id="countries_simpl20171228095706310" source="../data/geodata/countries.shp" name="Countries">
       <customproperties/>
     </layer-tree-layer>
-    <layer-tree-layer expanded="1" providerKey="gdal" checked="Qt::Checked" id="europa_dem20171228095729169" source="../data/g3wsuite_test/europa_dem.jpg" name="Dem">
+    <layer-tree-layer expanded="1" providerKey="gdal" checked="Qt::Checked" id="europa_dem20171228095729169" source="../data/geodata/europa_dem.jpg" name="Dem">
       <customproperties/>
     </layer-tree-layer>
   </layer-tree-group>
@@ -82,7 +82,7 @@
   <projectlayers>
     <maplayer simplifyAlgorithm="0" minimumScale="0" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="0" maxLabelScale="1e+08" simplifyDrawingTol="1" readOnly="0" geometry="Point" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
       <id>cities10000eu20171228095720113</id>
-      <datasource>../data/g3wsuite_test/cities10000eu.shp</datasource>
+      <datasource>../data/geodata/cities10000eu.shp</datasource>
       <keywordList>
         <value></value>
       </keywordList>
@@ -226,7 +226,7 @@
         <ymax>83.6095810000000057</ymax>
       </extent>
       <id>countries_simpl20171228095706310</id>
-      <datasource>../data/g3wsuite_test/countries.shp</datasource>
+      <datasource>../data/geodata/countries.shp</datasource>
       <keywordList>
         <value></value>
       </keywordList>
@@ -418,7 +418,7 @@
         <ymax>75.50836177203473198</ymax>
       </extent>
       <id>europa_dem20171228095729169</id>
-      <datasource>../data/g3wsuite_test/europa_dem.jpg</datasource>
+      <datasource>../data/geodata/europa_dem.jpg</datasource>
       <keywordList>
         <value></value>
       </keywordList>
@@ -459,7 +459,7 @@
     </maplayer>
     <maplayer simplifyAlgorithm="0" minimumScale="0" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="0" maxLabelScale="1e+08" simplifyDrawingTol="1" readOnly="0" geometry="Line" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
       <id>rivers20171228095726368</id>
-      <datasource>../data/g3wsuite_test/rivers.shp</datasource>
+      <datasource>../data/geodata/rivers.shp</datasource>
       <keywordList>
         <value></value>
       </keywordList>

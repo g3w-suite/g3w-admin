@@ -26,9 +26,10 @@ from qdjango.models import Layer, Widget
 
 CURRENT_PATH = os.getcwd()
 TEST_BASE_PATH = '/qdjango/tests/data/'
-DATASOURCE_PATH = '{}{}un-progetto-data'.format(CURRENT_PATH, TEST_BASE_PATH)
+DATASOURCE_PATH = '{}{}geodata'.format(CURRENT_PATH, TEST_BASE_PATH)
 QGS2_FILE = 'gruppo-1_un-progetto.qgs'
 QGS_FILE = 'gruppo-1_un-progetto_qgis310.qgs'
+QGS310_FILE = 'g3wsuite_project_test_qgis310.qgs'
 
 
 @override_settings(
@@ -119,6 +120,12 @@ class QdjangoTestBase(TestCase):
         layers = cls.project.instance.layer_set.all()
         for n in range(3):
             setattr(cls, 'fake_layer%s' % (str(n + 1),), layers[n + 2])
+
+        qgis_project_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS310_FILE), 'r'))
+        cls.project310 = QgisProject(qgis_project_file)
+        cls.project310.title = 'A project QGIS 3.10'
+        cls.project310.group = cls.project_group
+        cls.project310.save()
 
     def tearDown(self):
         """Delete all test data"""

@@ -139,7 +139,7 @@ class QgisProjectTest(TestCase):
 
                 # important check datasource, main for shp and raster data
                 # --------------------------------------------------------
-                self.assertEqual(layer.datasource, DATASOURCE_PATH + 'g3wsuite_test/countries.shp')
+                self.assertEqual(layer.datasource, DATASOURCE_PATH + 'geodata/countries.shp')
 
                 # check alias fields
                 # --------------------------------------------------------

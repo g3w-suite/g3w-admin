@@ -113,7 +113,7 @@ class QdjangoViewsTest(QdjangoTestBase):
 
         # check 2 project on db
         dbprojects = Project.objects.all()
-        self.assertEqual(len(dbprojects), 2)
+        self.assertEqual(len(dbprojects), 3)
 
         url = reverse('qdjango-project-delete', args=[self.project_group.slug, mproject.slug])
 
@@ -125,7 +125,7 @@ class QdjangoViewsTest(QdjangoTestBase):
 
         # check only one project into db
         dbprojects = Project.objects.all()
-        self.assertEqual(len(dbprojects), 1)
+        self.assertEqual(len(dbprojects), 2)
         self.assertTrue(dbprojects[0].pk, self.project.instance.pk)
 
         client.logout()
