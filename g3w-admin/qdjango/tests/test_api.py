@@ -259,7 +259,7 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
 
     def test_user_info_api(self):
 
-        url = reverse('qjango-api-info-layer-user', args=[self.fake_layer.pk])
+        url = reverse('qjango-api-info-layer-user', args=[self.fake_layer1.pk])
         res = self.client.get(url)
         self.assertEqual(res.status_code, 302)
 
@@ -296,7 +296,7 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
 
     def test_authgroup_info_api(self):
 
-        url = reverse('qdjango-api-info-layer-authgroup', args=[self.fake_layer.pk])
+        url = reverse('qdjango-api-info-layer-authgroup', args=[self.fake_layer1.pk])
         res = self.client.get(url)
         self.assertEqual(res.status_code, 302)
 
@@ -327,6 +327,7 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         res = self.client.get(url)
         self.assertEqual(res.status_code, 403)
         self.client.logout()
+
 
 
 

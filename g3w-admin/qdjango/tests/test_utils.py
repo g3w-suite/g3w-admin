@@ -359,7 +359,7 @@ class QdjangoUtilsTest(QdjangoTestBase):
         """ Test same name util func """
 
         # check if widget for every layer are 3 items:
-        self.assertEqual(len(get_widgets4layer(self.fake_layer)), 0)
+        self.assertEqual(len(get_widgets4layer(self.fake_layer1)), 0)
         self.assertEqual(len(get_widgets4layer(self.fake_layer2)), 0)
         self.assertEqual(len(get_widgets4layer(self.fake_layer3)), 0)
 
@@ -367,13 +367,13 @@ class QdjangoUtilsTest(QdjangoTestBase):
         widget = Widget(
             name='fakewidget',
             body='{}',
-            datasource=self.fake_layer.datasource,
+            datasource=self.fake_layer1.datasource,
             widget_type='search'
         )
         widget.save()
 
         # check after creation of 1 widget
-        self.assertEqual(len(get_widgets4layer(self.fake_layer)), 1)
+        self.assertEqual(len(get_widgets4layer(self.fake_layer1)), 1)
         self.assertEqual(len(get_widgets4layer(self.fake_layer2)), 1)
         self.assertEqual(len(get_widgets4layer(self.fake_layer3)), 1)
 

@@ -75,7 +75,7 @@ class QdjangoTestBase(TestCase):
 
         # make a fake vector postgis layer
         # ===================================
-        cls.fake_layer, created = Layer.objects.get_or_create(
+        fake_layer1, created = Layer.objects.get_or_create(
             name='fakelayer',
             title='fakelayer',
             origname='fakelayer',
@@ -88,7 +88,7 @@ class QdjangoTestBase(TestCase):
 
         )
 
-        cls.fake_layer2, created = Layer.objects.get_or_create(
+        fake_layer2, created = Layer.objects.get_or_create(
             name='fakelayer2',
             title='fakelayer2',
             origname='fakelayer2',
@@ -103,7 +103,7 @@ class QdjangoTestBase(TestCase):
 
 
         # change datasource
-        cls.fake_layer3, created = Layer.objects.get_or_create(
+        fake_layer3, created = Layer.objects.get_or_create(
             name='fakelayer3',
             title='fakelayer3',
             origname='fakelayer3',
@@ -116,6 +116,9 @@ class QdjangoTestBase(TestCase):
 
         )
 
+        layers = cls.project.instance.layer_set.all()
+        for n in range(3):
+            setattr(cls, 'fake_layer%s' % (str(n + 1),), layers[n + 2])
 
     def tearDown(self):
         """Delete all test data"""
