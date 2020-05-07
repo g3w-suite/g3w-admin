@@ -75,7 +75,7 @@ class QdjangoTestBase(TestCase):
 
         # make a fake vector postgis layer
         # ===================================
-        cls.fake_layer = Layer(
+        cls.fake_layer, created = Layer.objects.get_or_create(
             name='fakelayer',
             title='fakelayer',
             origname='fakelayer',
@@ -87,9 +87,8 @@ class QdjangoTestBase(TestCase):
                        "table=\"casentino\".\"piano_parco\" (geom) sql="
 
         )
-        cls.fake_layer.save()
 
-        cls.fake_layer2 = Layer(
+        cls.fake_layer2, created = Layer.objects.get_or_create(
             name='fakelayer2',
             title='fakelayer2',
             origname='fakelayer2',
@@ -101,10 +100,10 @@ class QdjangoTestBase(TestCase):
                        "table=\"casentino\".\"piano_parco\" (geom) sql="
 
         )
-        cls.fake_layer2.save()
+
 
         # change datasource
-        cls.fake_layer3 = Layer(
+        cls.fake_layer3, created = Layer.objects.get_or_create(
             name='fakelayer3',
             title='fakelayer3',
             origname='fakelayer3',
@@ -116,7 +115,6 @@ class QdjangoTestBase(TestCase):
                        "table=\"casentino\".\"piano_parco\" (geom) sql="
 
         )
-        cls.fake_layer3.save()
 
 
     def tearDown(self):
