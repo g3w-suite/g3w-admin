@@ -9,6 +9,7 @@ __author__ = 'lorenzetti@gis3w.it'
 __date__ = '2019-08-06'
 __copyright__ = 'Copyright 2019, GIS3W'
 
+from django.conf import settings
 from django.db.models import Q
 from rest_framework import generics, status
 from rest_framework.response import Response
