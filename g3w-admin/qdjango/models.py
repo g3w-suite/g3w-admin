@@ -136,12 +136,6 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
             user = User.objects.get(pk=user_id)
             setPermissionUserObject(user, self, permissions='view_project', mode=mode)
 
-            # if viewer not has permission on group give permission only view on parent group
-            if not user.has_perm('core.view_group', self.group):
-                setPermissionUserObject(user, self.group, permissions=[
-                    'core.view_group'
-                ], mode=mode)
-
             layerAction = 'addPermissionsToViewers' if mode == 'add' else 'removePermissionsToViewers'
             layers = self.layer_set.all()
             for layer in layers:
@@ -171,12 +165,6 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
         for group_id in groups_id:
             auth_group = AuthGroup.objects.get(pk=group_id)
             setPermissionUserObject(auth_group, self, permissions='view_project', mode=mode)
-
-            # if viewer not has permission on group give permission only view on parent group
-            if 'view_group' not in get_perms(auth_group, self.group):
-                setPermissionUserObject(auth_group, self.group, permissions=[
-                    'core.view_group'
-                ], mode=mode)
 
             layerAction = 'add_permissions_to_viewer_user_groups' if mode == 'add' \
                 else 'remove_permissions_to_viewer_user_groups'
