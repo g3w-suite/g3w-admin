@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: G3W-SUITE 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-04-22 16:27+0200\n"
+"POT-Creation-Date: 2020-05-05 11:42+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,10 +23,6 @@ msgstr "Installazione e deploy"
 #: ../../index.rst:66
 msgid "Manual"
 msgstr "Manuale"
-
-#: ../../index.rst:80
-msgid "Tutorial"
-msgstr ""
 
 #: ../../index.rst:8
 msgid "Welcome to G3W-SUITE's documentation!"
@@ -179,5 +175,8 @@ msgstr ""
 "moduli funzionali** a livello di singolo utente"
 
 #~ msgid "Test"
+#~ msgstr ""
+
+#~ msgid "Tutorial"
 #~ msgstr ""
 
