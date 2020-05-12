@@ -49,6 +49,7 @@ class QdjangoViewsTest(QdjangoTestBase):
         parms_to_check = {
             'exclude_from_legend': 'exclude_from_legend',
             'download_layer': 'download',
+            'download_layer_xls': 'download',
             'external': 'external'
         }
         for p, a in parms_to_check.items():

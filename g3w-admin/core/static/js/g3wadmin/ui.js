@@ -411,6 +411,20 @@ _.extend(g3wadmin.ui, {
         });
     },
 
+    initDownloadLayerXlsCheckBox: function(){
+        $(document).on('ifChanged', '[data-widget-type="downloadLayerxls"]', function(e){
+
+            var $item = $(this);
+            // build value
+            var data = {
+                download_layer_xls: e.target.checked ? 1 : 0
+            }
+
+            ga.widget.setLayerData($item, data);
+
+        });
+    },
+
     // Init wms/wmst/arcgiserver external/internal calls
     initExternalLayerCheckBox: function(){
         $(document).on('ifChanged', '[data-widget-type="externalLayer"]', function(e){

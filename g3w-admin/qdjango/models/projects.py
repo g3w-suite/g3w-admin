@@ -323,6 +323,7 @@ class Layer(G3WACLModelMixins, models.Model):
     editor_form_structure = models.TextField(_('Editor form structure'), blank=True, null=True)
 
     download = models.BooleanField(_('Download data'), default=False, blank=True)
+    download_xls = models.BooleanField(_('Download data in xls format'), default=False, blank=True)
 
     # for layer WMS/WMST: set if load direct from their servers or from local QGIS-server
     external = models.BooleanField(_('Get WMS/WMS externally'), default=False, blank=True)

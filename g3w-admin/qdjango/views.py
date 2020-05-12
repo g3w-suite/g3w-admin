@@ -280,6 +280,8 @@ class QdjangoLayerDataView(G3WGroupViewMixin, QdjangoProjectViewMixin, View):
             layer.exclude_from_legend = int(request.POST['exclude_from_legend'])
         if 'download_layer' in request.POST:
             layer.download = int(request.POST['download_layer'])
+        if 'download_layer_xls' in request.POST:
+            layer.download_xls = int(request.POST['download_layer_xls'])
         if 'external' in request.POST:
             layer.external = int(request.POST['external'])
         layer.save()
