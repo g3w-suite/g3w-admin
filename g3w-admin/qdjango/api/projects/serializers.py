@@ -327,7 +327,7 @@ class LayerSerializer(serializers.ModelSerializer):
             'vectorjoins',
             'exclude_from_legend',
             'download',
-            'download_xls'
+            'download_xls',
             'editor_form_structure'
         )
 
