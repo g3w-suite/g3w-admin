@@ -92,7 +92,11 @@ class BaseUserMediaHandler(object):
                 else:
 
                     # check if editing or deleting, checking if self.layer has 'field' property not empty.
-                    current_field_value = getattr(current_instance, field) if current_instance else None
+                    try:
+                        current_field_value = current_instance[field]
+                    except:
+                        current_field_value = None
+
                     current_field_name = self.get_file_name(current_field_value) if current_instance else None
                     if current_field_name:
                         current_field_name = urllib.parse.unquote(current_field_name)
