@@ -101,13 +101,6 @@ class QGISLayerVectorViewMixin(object):
                 relation_layer = self._layer_model.objects.get(qgs_layer_id=relation['referencingLayer'],
                                                    project=self.layer.project)
 
-                geomodel, database_to_use, geometrytype = create_geomodel_from_qdjango_layer(relation_layer)
-
-                if geometrytype and geometrytype != QGIS_LAYER_TYPE_NO_GEOM:
-                    serializer = QGISGeoLayerSerializer
-                else:
-                    serializer = QGISLayerSerializer
-
                 # FIXME: referenced_field_is_pk
                 self.metadata_relations[relation['referencingLayer']] = MetadataVectorLayer(
                     get_qgis_layer(relation_layer),
@@ -115,8 +108,6 @@ class QGISLayerVectorViewMixin(object):
                     idr,
                     layer=relation_layer,
                     referencing_field=relation['fieldRef']['referencingField'],
-                    referenced_field_is_pk=
-                    self.metadata_layer.model._meta.pk.name==relation['fieldRef']['referencedField'],
                     layer_id=relation_layer.pk
                 )
 
