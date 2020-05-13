@@ -401,6 +401,12 @@ class BaseVectorOnModelApiView(G3WAPIView):
         self.features = get_qgis_features(self.metadata_layer.qgis_layer, qgis_feature_request, **kwargs)
         ex = QgsJsonExporter(self.metadata_layer.qgis_layer)
 
+        # patch for return GeoJson feature with CRS different from WGS84
+        # TODO: use .setTransformGeometries( false ) with QGIS >= 3.12
+        ex.setSourceCrs(QgsCoordinateReferenceSystem('EPSG:4326'))
+
+
+
         feature_collection = json.loads(ex.exportFeatures(self.features))
 
         # FIXME: QGIS api reprojecting?
