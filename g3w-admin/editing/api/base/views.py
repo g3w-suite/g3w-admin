@@ -175,7 +175,7 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
                     # Note that this may raise a validation error
                     pre_save_maplayer.send(
                         self,
-                        layer_metadata=metadata_layer, mode=mode_editing,                                                    data=data_extra_fields,
+                        layer_metadata=metadata_layer, mode=mode_editing, data=data_extra_fields,
                         user=self.request.user
                     )
 
