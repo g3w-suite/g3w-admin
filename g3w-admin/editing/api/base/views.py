@@ -128,6 +128,7 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
         insert_ids = list()
         lock_ids = list()
 
+
         # FIXME: check this out
         # for add check if is a metadata_layer and referenced field is a pk
         is_referenced_field_is_pk = 'referenced_layer_insert_ids' in kwargs and kwargs['referenced_layer_insert_ids'] \
@@ -210,10 +211,12 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
                             for name, value in geojson_feature['properties'].items():
                                 attr_map[data_provider.fieldNameMap()[name]] = value
 
-                            if not data_provider.changeFeatures(
-                                {geojson_feature['id']: attr_map},
-                                {geojson_feature['id']: feature.geometry()},
-                                ):
+                            if not data_provider.changeAttributeValues({geojson_feature['id']: attr_map}):
+                                # FIXME: what do we do on errors?
+                                raise Exception()
+                            if not feature.geometry().isNull() and not data_provider.changeGeometryValues(
+                                    {geojson_feature['id']: feature.geometry()}
+                            ):
                                 # FIXME: what do we do on errors?
                                 raise Exception()
 
@@ -296,36 +299,36 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
         try:
 
             # FIXME: this won't work with QGIS API
-            with transaction.atomic(using=self.database_to_use):
+            #with transaction.atomic(using=self.database_to_use):
 
-                ref_insert_ids, ref_lock_ids = self.save_vector_data(self.metadata_layer, post_layer_data)
+            ref_insert_ids, ref_lock_ids = self.save_vector_data(self.metadata_layer, post_layer_data)
 
-                # get every relationsedits
-                post_relations_data = dict()
-                if self.relations_data_key in post_layer_data and bool(post_layer_data[self.relations_data_key]):
-                    post_relations_data = post_layer_data[self.relations_data_key]
+            # get every relationsedits
+            post_relations_data = dict()
+            if self.relations_data_key in post_layer_data and bool(post_layer_data[self.relations_data_key]):
+                post_relations_data = post_layer_data[self.relations_data_key]
 
-                # save relations if post data exists
-                for referencing_layer in self.metadata_relations.keys():
-                    if referencing_layer in post_relations_data:
-                        post_reletion_data = post_relations_data[referencing_layer]
+            # save relations if post data exists
+            for referencing_layer in self.metadata_relations.keys():
+                if referencing_layer in post_relations_data:
+                    post_reletion_data = post_relations_data[referencing_layer]
 
-                        # instance lock for relation
-                        self.metadata_relations[referencing_layer].lock = LayerLock(
-                            appName=self.app_name,
-                            layer=self.metadata_relations[referencing_layer].layer,
-                            user=request.user,
-                            sessionid=self.sessionid
-                        )
+                    # instance lock for relation
+                    self.metadata_relations[referencing_layer].lock = LayerLock(
+                        appName=self.app_name,
+                        layer=self.metadata_relations[referencing_layer].layer,
+                        user=request.user,
+                        sessionid=self.sessionid
+                    )
 
 
-                        insert_ids, lock_ids = self.save_vector_data(self.metadata_relations[referencing_layer],
-                                                                     post_reletion_data, referenced_layer_insert_ids=
-                                                                     ref_insert_ids)
-                        new_relations[referencing_layer] = {
-                            'new': insert_ids,
-                            'new_lockids': lock_ids
-                        }
+                    insert_ids, lock_ids = self.save_vector_data(self.metadata_relations[referencing_layer],
+                                                                 post_reletion_data, referenced_layer_insert_ids=
+                                                                 ref_insert_ids)
+                    new_relations[referencing_layer] = {
+                        'new': insert_ids,
+                        'new_lockids': lock_ids
+                    }
 
         except IntegrityError as e:
             self.results.update({

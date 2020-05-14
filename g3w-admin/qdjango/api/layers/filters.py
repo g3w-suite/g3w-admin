@@ -51,7 +51,8 @@ class RelationOneToManyFilter(BaseFilterBackend):
             return
 
         # get expression
-        expression_text = qgs_relation.getRelatedFeaturesFilter(qgs_relation.referencedLayer().getFeature(18))
+        expression_text = qgs_relation.getRelatedFeaturesFilter(qgs_relation.referencedLayer().
+                                                                getFeature(int(parent_fid)))
 
         if not expression_text:
             return

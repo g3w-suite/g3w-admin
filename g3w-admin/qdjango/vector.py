@@ -9,7 +9,8 @@ from django.db import connections
 from django.db.models.expressions import RawSQL
 from django.http import HttpResponse, HttpResponseForbidden
 from django_filters.rest_framework import DjangoFilterBackend
-from qgis.core import QgsVectorFileWriter, QgsFeatureRequest
+from PyQt5.QtCore import QVariant
+from qgis.core import QgsVectorFileWriter, QgsFeatureRequest, QgsJsonUtils
 
 from core.api.base.vector import MetadataVectorLayer
 from core.api.base.views import (MODE_CONFIG, MODE_DATA, MODE_SHP, MODE_XLS,
@@ -226,33 +227,17 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
 
         res = dict()
         for field in fields:
+            uniques = self.metadata_layer.qgis_layer.uniqueValues(
+                self.metadata_layer.qgis_layer.fields().indexOf(field)
+            )
+            tores = []
+            for u in uniques:
+                if isinstance(u, QVariant) and u.isNull():
+                    continue
+                else:
+                    tores.append(QgsJsonUtils.encodeValue(u).replace('"',''))
 
-            # check if field is nullable
-            nullable = False
-
-            for ofield in self.metadata_layer.model._meta.fields:
-                if ofield.column == field and ofield.null and ofield.blank:
-                    nullable = True
-
-            if self.layer.layer_type == 'spatialite':
-
-                # query raw
-                with connections[self.database_to_use].cursor() as cursor:
-                    cursor.execute(
-                        'select distinct {0} from {1} {2}'.format(
-                            field,
-                            self.metadata_layer.model._meta.db_table,
-                            '' if nullable else 'where {} is not null'.format(field)
-                        ))
-                    raws = cursor.fetchall()
-                    field_values = [r[0] for r in raws]
-
-            else:
-
-                # get value
-                field_values = [getattr(r, field)
-                                for r in self.metadata_layer.model.objects.order_by(field).distinct(field)]
-            res[field] = field_values
+            res[field] = tores
 
         return res
 
