@@ -43,8 +43,12 @@ Base user media directory, to fill with media files.
 Is necessary for editing module, to manage media elements do upload on a editing session.
 
 
+Client settings
+***************
 
-
+``CLIENT_OWS_METHOD``
+^^^^^^^^^^^^^^^^^^^^^
+Default is 'GET', set to 'POST' for to do OWS calling from webgis client with METHOD *POST*
 
 Frontend portal setting
 ***********************
