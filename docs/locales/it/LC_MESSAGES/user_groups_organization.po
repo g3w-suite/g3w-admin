@@ -21,7 +21,6 @@ msgid "Hierarchical organization of WebGis services and types of Users (roles)"
 msgstr "Organizzazione gerarchica dei servizi WebGis e Tipologie di Utenti (Ruoli)"
 
 #: ../../user_groups_organization.md:2
-#, fuzzy
 msgid ""
 "**This paragraph allows you to understand how G3W-SUITE makes it possible"
 " to manage the individual WebGis services in a structured and "
@@ -48,7 +47,6 @@ msgid "Cartographic groups"
 msgstr "**`Gruppi Cartografici`**"
 
 #: ../../user_groups_organization.md:8
-#, fuzzy
 msgid ""
 "These organizational levels can be associated with different types of "
 "users (Editor 1, Editor2 and Viewer) in order to manage the "

@@ -3,7 +3,6 @@
 # This file is distributed under the same license as the G3W-SUITE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: G3W-SUITE 0.1\n"
@@ -22,7 +21,6 @@ msgid "Raw installation"
 msgstr "Istallazione classica"
 
 #: ../../install.md:3
-#, fuzzy
 msgid "The following instructions are for a Ubuntu 18.04 LTS."
 msgstr "Le seguenti istruzioni sono basate su sistema operativo Ubuntu 18.04 LTS."
 
@@ -270,7 +268,6 @@ msgid "Continuous integration testing"
 msgstr "Continuous integration testing"
 
 #: ../../install.md:211
-#, fuzzy
 msgid "CI tests are automatically run on CircleCI for the dev branch only."
 msgstr ""
 "I test CI vengono eseguiti automaticamente su CircleCI solo per il dev "
