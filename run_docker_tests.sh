@@ -27,15 +27,15 @@ $DOCKER_COMMAND exec g3w-suite sh -c "/code/ci_scripts/setup_suite.sh"
 
 if [ "$1" == 'test' ]; then
 
-    $DOCKER_COMMAND exec g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test core"
+    #$DOCKER_COMMAND exec g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test core"
 
     $DOCKER_COMMAND exec g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test qdjango"
 
-    $DOCKER_COMMAND exec g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test usersmanage"
+    #$DOCKER_COMMAND exec g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test usersmanage"
 
-    $DOCKER_COMMAND exec g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test client"
+    #$DOCKER_COMMAND exec g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test client"
 
-    $DOCKER_COMMAND exec g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test editing.tests"
+    #$DOCKER_COMMAND exec g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test editing.tests"
 
 else
     $DOCKER_COMMAND exec g3w-suite bash
