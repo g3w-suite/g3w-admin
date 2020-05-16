@@ -169,12 +169,10 @@ class TestFeatureValidator(QdjangoTestBase):
         feature.setAttribute(0, 0)  # fid
         errors = feature_validator(
             feature, self.validator_project_test_unique)
-        self.assertEqual(errors, {'text_nullable': ['Field value must be UNIQUE'],
-                                  'integer_nullable': ['Field value must be UNIQUE'],
-                                  'long_nullable': ['Field value must be UNIQUE'],
-                                  'float_nullable': ['Field value must be UNIQUE'],
-                                  'date_nullable': ['Field value must be UNIQUE'],
-                                  'datetime_nullable': ['Field value must be UNIQUE']})
+        self.assertEqual(set(errors.keys()),
+                         self.nullable_fields.difference(('bool_nullable', )))
+        for k in errors.keys():
+            self.assertEqual(errors[k], ['Field value must be UNIQUE'])
 
     def test_expression(self):
         """Test project level expression constraints"""
