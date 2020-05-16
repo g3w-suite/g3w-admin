@@ -98,11 +98,14 @@ def feature_validator(feature, layer):
                 continue
 
         value = feature.attribute(field_index)
-        _check_value_type(field, value)
 
         # Skip if NULL, not sure if we want to continue in this case but it seems pointless
-        # to check for unique on NULLs
+        # to check for unique or type compatibility on NULLs
         if value is not None:
+
+            if not _check_value_type(field, value):
+                _set_error(field.name(), _(
+                    'Field value cannot be converted to %s') % QVariant.typeToName(field.type()))
 
             unique = (field.constraints().constraintOrigin(
                 QgsFieldConstraints.ConstraintUnique) != QgsFieldConstraints.ConstraintOriginNotSet and

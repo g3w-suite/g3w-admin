@@ -229,4 +229,24 @@ class TestFeatureValidator(QdjangoTestBase):
 
     def test_value_types(self):
         """Test value type compatibility"""
-        pass
+
+        feature = self._feature_factory(
+            {
+                'text_not_nullable': 123,
+                'integer_not_nullable': 'not an int',
+                'long_not_nullable': 'not a number',
+                'float_not_nullable': 'not a number',
+                # Note: this is actually convertible to bool
+                'bool_not_nullable': 'not a boolean',
+                'date_not_nullable': 'not a date',
+                'datetime_not_nullable': 'not a datetime',
+            },
+            'point( 9 45 )')
+        errors = feature_validator(
+            feature, self.validator_project_test)
+
+        self.assertEqual(errors, {'integer_not_nullable': ['Field value cannot be converted to int'],
+                                  'long_not_nullable': ['Field value cannot be converted to qlonglong'],
+                                  'float_not_nullable': ['Field value cannot be converted to double'],
+                                  'date_not_nullable': ['Field value cannot be converted to QDate'],
+                                  'datetime_not_nullable': ['Field value cannot be converted to QDateTime']})
