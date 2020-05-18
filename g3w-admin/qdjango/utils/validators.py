@@ -38,9 +38,10 @@ def feature_validator(feature, layer):
     The logic here is to:
     - if geometry is not None check if geometry type matches the layer type
     - loop through the fields and check for constraints:
-        - NOT NULL, skip the next checks if this fails
-        - UNIQUE
-        - EXPRESSION (QgsExpression configured in the form)
+        - NOT NULL, skip the next check if this fails
+        - UNIQUE (only if not NULL)
+        - EXPRESSION (QgsExpression configured in the form), always evaluated,
+          even in case of NULLs
 
     Note: only hard constraints are checked!
 
@@ -75,9 +76,6 @@ def feature_validator(feature, layer):
             errors[field_name] = []
         errors[field_name].append(error)
 
-    def _check_value_type(field, value):
-        return QVariant(value).convert(field.type())
-
     # Check fields "hard" constraints
     for field_index in range(layer.fields().count()):
 
@@ -103,7 +101,7 @@ def feature_validator(feature, layer):
         # to check for unique or type compatibility on NULLs
         if value is not None:
 
-            if not _check_value_type(field, value):
+            if not QVariant(value).convert(field.type()):
                 _set_error(field.name(), _(
                     'Field value cannot be converted to %s') % QVariant.typeToName(field.type()))
 
