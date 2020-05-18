@@ -57,7 +57,6 @@ run_local*.sh
 /g3w-admin/globalsearch/
 /g3w-admin/stress/
 /g3w-admin/stress_admin/
-/g3w-admin/filemanager/
 /g3w-admin/preventcurrentlogins/
 /g3w-admin/demo/
 /g3w-admin/egovbari/

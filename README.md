@@ -227,7 +227,10 @@ python manage.py sitetree_resync_apps
 Can be installed the follow module accessories.
 
 ## Caching module
-Module to cache on disk layers WMS map. To install please read his [caching/README.md](caching/README.md)
+Module to cache on disk layers WMS map. To install and usd please read his [caching/README.md](caching/README.md)
+
+## Filemanager module
+Module to manage on disk geo data files. To install and use please read his [filemanager/README.md](filemanager/README.md)
 
 ## Continuous integration testing
 
