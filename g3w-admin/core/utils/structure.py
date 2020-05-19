@@ -140,20 +140,26 @@ FIELD_TYPES_MAPPING = {
 
 
 def editingFormField(fieldName, type=FIELD_TYPE_STRING, editable=True, required=False, validate=None,
-                     fieldLabel=None, inputType=None, values=None, default_clause='', not_null=False, unique=False, **kwargs):
+                     fieldLabel=None, inputType=None, values=None, default_clause='', unique=False, expression='', ** kwargs):
     """
     Build editing form field for client.
     """
+
+    validate = {}
+    if required:
+        validate['required'] = True
+    if unique:
+        validate['unique'] = True
+    if expression:
+        validate['expression'] = expression
 
     ret = OrderedDict({
         'name': fieldName,
         'type': type,
         'label': fieldLabel if fieldLabel else fieldName,
         'editable': editable,
-        'validate': {} if not validate else validate,
+        'validate': validate,
         'default': default_clause,
-        'not_null': not_null,
-        'unique': unique,
         'input': {
             'type': inputType if inputType else FORM_FIELD_TYPE_TEXT,
             'options': {}
@@ -273,14 +279,21 @@ def mapLayerAttributesFromQgisLayer(qgis_layer, **kwargs):
                 # Get constraints and default clause to define if the field is editable
                 # or set editable property by kwargs.
                 # Only consider "strong" constraints
-                constraints = data_provider.fieldConstraints(field_index)
+                constraints = qgis_layer.fieldConstraints(field_index)
                 not_null = bool(constraints & QgsFieldConstraints.ConstraintNotNull) and \
                     field.constraints().constraintStrength(
                         QgsFieldConstraints.ConstraintNotNull) == QgsFieldConstraints.ConstraintStrengthHard
                 unique = bool(constraints & QgsFieldConstraints.ConstraintUnique) and \
                     field.constraints().constraintStrength(
                         QgsFieldConstraints.ConstraintUnique) == QgsFieldConstraints.ConstraintStrengthHard
+                has_expression = bool(constraints & QgsFieldConstraints.ConstraintExpression) and \
+                    field.constraints().constraintStrength(
+                        QgsFieldConstraints.ConstraintExpression) == QgsFieldConstraints.ConstraintStrengthHard
                 default_clause = data_provider.defaultValueClause(field_index)
+
+                expression = ''
+                if has_expression:
+                    expression = field.constraints().constraintExpression()
 
                 if not_null and unique and default_clause:
                     editable = False
@@ -300,8 +313,8 @@ def mapLayerAttributesFromQgisLayer(qgis_layer, **kwargs):
                     inputType=FORM_FIELDS_MAPPING[fieldType],
                     editable=editable,
                     default_clause=default_clause,
-                    not_null=not_null,
-                    unique=unique
+                    unique=unique,
+                    expression=expression,
                 )
 
                 # add upload url to image type if module is set

@@ -18,6 +18,7 @@ from django.contrib.auth.models import User
 from django.core.cache import caches
 from django.test import override_settings
 from django.urls import reverse
+from qgis.core import QgsFieldConstraints
 from rest_framework.test import APIClient, APITestCase
 
 from qdjango.apps import get_qgs_project
@@ -79,6 +80,13 @@ class CoreApiTest(CoreTestBase):
     def testCoreVectorApiConfig(self):
         """Test core-vector-api config"""
 
+        # Add a constraint expression to name field
+        project = get_qgs_project(Layer.objects.get(
+            qgs_layer_id='spatialite_points20190604101052075').project.qgis_file.path)
+        layer = project.mapLayers()['spatialite_points20190604101052075']
+        layer.setFieldConstraint(1, QgsFieldConstraints.ConstraintExpression,
+                                 QgsFieldConstraints.ConstraintStrengthHard)
+        layer.setConstraintExpression(1, '"name" != \'my name is no name\'')
         response = self._testApiCall(
             'core-vector-api', ['config', 'qdjango', '1', 'spatialite_points20190604101052075'])
         resp = json.loads(response.content)
@@ -88,19 +96,15 @@ class CoreApiTest(CoreTestBase):
                                                      'type': 'bigint',
                                                      'label': 'pkuid',
                                                      'editable': False,
-                                                     'validate': {'required': True},
+                                                     'validate': {'required': True, 'unique': True},
                                                      'default': 'Autogenerate',
-                                                     'not_null': True,
-                                                     'unique': True,
                                                      'input': {'type': 'text', 'options': {}}},
                                                     {'name': 'name',
                                                      'type': 'varchar',
                                                      'label': 'name',
                                                      'editable': True,
-                                                     'validate': {},
+                                                     'validate': {'expression': '"name" != \'my name is no name\''},
                                                      'default': '',
-                                                     'not_null': False,
-                                                     'unique': False,
                                                      'input': {'type': 'text', 'options': {}}}])
         self.assertEqual(resp["vector"]["geometrytype"], "Point")
         self.assertIsNone(resp["vector"]["data"])

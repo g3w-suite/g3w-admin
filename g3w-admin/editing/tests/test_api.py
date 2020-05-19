@@ -23,20 +23,20 @@ from editing.api.constraints.views import *
 from .test_models import DATASOURCE_PATH, ConstraintsTestsBase
 
 
-@override_settings(CACHES = {
-        'default': {
+@override_settings(CACHES={
+    'default': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
         'LOCATION': 'some',
-        }
-    },
+    }
+},
     DATASOURCE_PATH=DATASOURCE_PATH,
     G3WADMIN_LOCAL_MORE_APPS=[
         'editing',
-    ],
+],
     LANGUAGE_CODE='en',
     LANGUAGES=(
         ('en', 'English'),
-    )
+)
 )
 class EditingApiTests(ConstraintsTestsBase):
 
@@ -55,7 +55,7 @@ class EditingApiTests(ConstraintsTestsBase):
         if kwargs:
             path += '?'
             parts = []
-            for k,v in kwargs.items():
+            for k, v in kwargs.items():
                 parts.append(k + '=' + str(v))
             path += '&'.join(parts)
 
@@ -64,7 +64,8 @@ class EditingApiTests(ConstraintsTestsBase):
         self.assertIn(response.status_code, [302, 403])
 
         # Auth
-        self.assertTrue(self.client.login(username=self.test_user_admin1.username, password=self.test_user_admin1.username))
+        self.assertTrue(self.client.login(
+            username=self.test_user_admin1.username, password=self.test_user_admin1.username))
         response = self.client.get(path)
         self.assertEqual(response.status_code, 200)
         self.client.logout()
@@ -74,14 +75,16 @@ class EditingApiTests(ConstraintsTestsBase):
         """ Test initconfig api"""
 
         # activate editing plugins: set editing_layer as editing layer
-        G3WEditingLayer.objects.create(app_name='qdjango', layer_id=self.editing_layer.pk)
-
+        G3WEditingLayer.objects.create(
+            app_name='qdjango', layer_id=self.editing_layer.pk)
 
         # api client instance
         client = APIClient()
-        self.assertTrue(client.login(username=self.test_user_admin1.username, password=self.test_user_admin1.username))
+        self.assertTrue(client.login(
+            username=self.test_user_admin1.username, password=self.test_user_admin1.username))
 
-        url = reverse('group-map-config', args=[self.project_group.slug, 'qdjango', self.project.instance.pk])
+        url = reverse('group-map-config',
+                      args=[self.project_group.slug, 'qdjango', self.project.instance.pk])
 
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
@@ -93,7 +96,8 @@ class EditingApiTests(ConstraintsTestsBase):
         plugin = jcontent['group']['plugins']['editing']
 
         # check gid and TYPES
-        self.assertEqual(plugin['gid'], 'qdjango:{}'.format(self.project.instance.pk))
+        self.assertEqual(plugin['gid'], 'qdjango:{}'.format(
+            self.project.instance.pk))
 
         client.logout()
 
@@ -104,13 +108,16 @@ class EditingApiTests(ConstraintsTestsBase):
         editing_layer = Layer.objects.get(name='editing_layer')
         constraint_layer = Layer.objects.get(name='constraint_layer')
 
-        constraint = Constraint(editing_layer=editing_layer, constraint_layer=constraint_layer)
+        constraint = Constraint(
+            editing_layer=editing_layer, constraint_layer=constraint_layer)
         constraint.save()
 
-        rule = ConstraintRule(constraint=constraint, user=self.test_user3, rule='name=\'bagnolo\'')
+        rule = ConstraintRule(constraint=constraint,
+                              user=self.test_user3, rule='name=\'bagnolo\'')
         rule.save()
 
-        self.assertTrue(client.login(username=self.test_user3.username, password=self.test_user3.username))
+        self.assertTrue(client.login(
+            username=self.test_user3.username, password=self.test_user3.username))
 
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
@@ -122,7 +129,8 @@ class EditingApiTests(ConstraintsTestsBase):
         plugin = jcontent['group']['plugins']['editing']
 
         # check gid and TYPES
-        self.assertEqual(plugin['gid'], 'qdjango:{}'.format(self.project.instance.pk))
+        self.assertEqual(plugin['gid'], 'qdjango:{}'.format(
+            self.project.instance.pk))
 
         self.assertTrue('constraints' in plugin)
         self.assertEqual(plugin['constraints'][editing_layer.qgs_layer_id]['geometry_api_url'],
@@ -134,15 +142,17 @@ class EditingApiTests(ConstraintsTestsBase):
         """ Test Editing API mode: MODE_UNLOCK,MODE_EDITING, MODE_COMMIT"""
 
         cities_layer_id = 'cities_54d40b01_2af8_4b17_8495_c5833485536e'
-        cities_layer = self.editing_project.instance.layer_set.filter(qgs_layer_id=cities_layer_id)[0]
+        cities_layer = self.editing_project.instance.layer_set.filter(
+            qgs_layer_id=cities_layer_id)[0]
 
         # activate editing plugins: set cities as editing layer
-        G3WEditingLayer.objects.create(app_name='qdjango', layer_id=cities_layer.pk)
+        G3WEditingLayer.objects.create(
+            app_name='qdjango', layer_id=cities_layer.pk)
 
         # TEST MODE_CONFIG
         # ---------------------------------------------
         response = self._testApiCall('core-vector-api', ['config', 'qdjango', self.editing_project.instance.pk,
-                                      cities_layer_id])
+                                                         cities_layer_id])
 
         # load response to compare
         with open(DATASOURCE_PATH + 'api/editing_api_config_cities_54d40b01_2af8_4b17_8495_c5833485536e.json') as f:
@@ -157,18 +167,15 @@ class EditingApiTests(ConstraintsTestsBase):
             actual['vector']['fields'][0]['editable'] = False
             self.assertEqual(actual, res_expected)
 
-
         # TEST MODE_EDITING
         # ---------------------------------------------
         response = self._testApiCall('editing-commit-vector-api', ['editing', 'qdjango', self.editing_project.instance.pk,
-                                     cities_layer_id])
-
+                                                                   cities_layer_id])
 
         jres = json.loads(response.content)
 
         # check features
         self.assertEqual(len(jres['vector']['data']['features']), 481)
-
 
 
 class ConstraintsApiTests(ConstraintsTestsBase):
@@ -178,7 +185,8 @@ class ConstraintsApiTests(ConstraintsTestsBase):
         """Test API constraint CRUD operations"""
 
         client = APIClient()
-        self.assertTrue(client.login(username=self.test_user_admin1.username, password=self.test_user_admin1.username))
+        self.assertTrue(client.login(
+            username=self.test_user_admin1.username, password=self.test_user_admin1.username))
 
         # Test empty record set
         url = reverse('constraint-api-list')
@@ -194,21 +202,25 @@ class ConstraintsApiTests(ConstraintsTestsBase):
         response = client.post(url, {
             'editing_layer': editing_layer.pk,
             'constraint_layer': constraint_layer.pk,
-            }, format='json')
+        }, format='json')
         self.assertEqual(response.status_code, 201)
         jcontent = json.loads(response.content)
         self.assertEqual(Constraint.objects.count(), 1)
         constraint = Constraint.objects.all()[0]
-        self.assertEqual(constraint.editing_layer.pk, jcontent['editing_layer'])
-        self.assertEqual(constraint.constraint_layer.pk, jcontent['constraint_layer'])
+        self.assertEqual(constraint.editing_layer.pk,
+                         jcontent['editing_layer'])
+        self.assertEqual(constraint.constraint_layer.pk,
+                         jcontent['constraint_layer'])
 
         # Retrieve the constraint
         url = reverse('constraint-api-list')
         response = client.get(url, {}, format='json')
         self.assertEqual(response.status_code, 200)
         jcontent = json.loads(response.content)['results'][0]
-        self.assertEqual(constraint.editing_layer.pk, jcontent['editing_layer'])
-        self.assertEqual(constraint.constraint_layer.pk, jcontent['constraint_layer'])
+        self.assertEqual(constraint.editing_layer.pk,
+                         jcontent['editing_layer'])
+        self.assertEqual(constraint.constraint_layer.pk,
+                         jcontent['constraint_layer'])
 
         # Update the constraint (must fail because it's self linked)
         url = reverse('constraint-api-list')
@@ -223,31 +235,37 @@ class ConstraintsApiTests(ConstraintsTestsBase):
         self.assertTrue('error' in jcontent)
 
         # Filter by editing layer id
-        url = reverse('constraint-api-filter-by-editing', kwargs={'editing_layer_id': editing_layer.pk})
+        url = reverse('constraint-api-filter-by-editing',
+                      kwargs={'editing_layer_id': editing_layer.pk})
         response = client.get(url, {}, format='json')
         self.assertEqual(response.status_code, 200)
         jcontent = json.loads(response.content)
         jcontent = json.loads(response.content)['results'][0]
-        self.assertEqual(constraint.editing_layer.pk, jcontent['editing_layer'])
-        self.assertEqual(constraint.constraint_layer.pk, jcontent['constraint_layer'])
+        self.assertEqual(constraint.editing_layer.pk,
+                         jcontent['editing_layer'])
+        self.assertEqual(constraint.constraint_layer.pk,
+                         jcontent['constraint_layer'])
 
         # No results expected: filter by constraint_layer
-        url = reverse('constraint-api-filter-by-editing', kwargs={'editing_layer_id': constraint_layer.pk})
+        url = reverse('constraint-api-filter-by-editing',
+                      kwargs={'editing_layer_id': constraint_layer.pk})
         response = client.get(url, {}, format='json')
         self.assertEqual(response.status_code, 200)
         jcontent = json.loads(response.content)
         self.assertEqual(jcontent['count'], 0)
 
         # Get by pk
-        url = reverse('constraint-api-detail',  kwargs={'pk': constraint.pk })
+        url = reverse('constraint-api-detail',  kwargs={'pk': constraint.pk})
         response = client.get(url, {}, format='json')
         self.assertEqual(response.status_code, 200)
         jcontent = json.loads(response.content)
-        self.assertEqual(constraint.editing_layer.pk, jcontent['editing_layer'])
-        self.assertEqual(constraint.constraint_layer.pk, jcontent['constraint_layer'])
+        self.assertEqual(constraint.editing_layer.pk,
+                         jcontent['editing_layer'])
+        self.assertEqual(constraint.constraint_layer.pk,
+                         jcontent['constraint_layer'])
 
         # Update the constraint (must fail because it's self linked)
-        url = reverse('constraint-api-detail',  kwargs={'pk': constraint.pk })
+        url = reverse('constraint-api-detail',  kwargs={'pk': constraint.pk})
         response = client.put(url, {
             'editing_layer': constraint_layer.pk,
             'constraint_layer': constraint_layer.pk,
@@ -258,7 +276,7 @@ class ConstraintsApiTests(ConstraintsTestsBase):
         self.assertTrue('error' in jcontent)
 
         # Delete
-        url = reverse('constraint-api-detail',  kwargs={'pk': constraint.pk })
+        url = reverse('constraint-api-detail',  kwargs={'pk': constraint.pk})
         response = client.delete(url, {}, format='json')
         self.assertEqual(Constraint.objects.count(), 0)
 
@@ -269,14 +287,17 @@ class ConstraintsApiTests(ConstraintsTestsBase):
         constraint_layer = Layer.objects.get(name='constraint_layer')
 
         # create a constraint
-        constraint = Constraint(editing_layer=editing_layer, constraint_layer=constraint_layer)
+        constraint = Constraint(
+            editing_layer=editing_layer, constraint_layer=constraint_layer)
         constraint.save()
 
         client = APIClient()
-        self.assertTrue(client.login(username=self.test_user1.username, password=self.test_user1.username))
+        self.assertTrue(client.login(
+            username=self.test_user1.username, password=self.test_user1.username))
 
         # No results expected: filter by constraint_layer
-        url_list = reverse('constraint-api-filter-by-editing', kwargs={'editing_layer_id': constraint_layer.pk})
+        url_list = reverse('constraint-api-filter-by-editing',
+                           kwargs={'editing_layer_id': constraint_layer.pk})
         response = client.get(url_list, {}, format='json')
         self.assertEqual(response.status_code, 403)
 
@@ -291,7 +312,8 @@ class ConstraintsApiTests(ConstraintsTestsBase):
         self.assertEqual(response.status_code, 403)
 
         client.logout()
-        self.assertTrue(client.login(username=self.test_user2.username, password=self.test_user2.username))
+        self.assertTrue(client.login(
+            username=self.test_user2.username, password=self.test_user2.username))
 
         # Pass and workflow CRUD
         # ===============================================
@@ -314,7 +336,8 @@ class ConstraintsApiTests(ConstraintsTestsBase):
         }, format='json')
         self.assertEqual(response.status_code, 200)
 
-        url = reverse('constraint-api-detail', kwargs={'pk': new_constraint_pk})
+        url = reverse('constraint-api-detail',
+                      kwargs={'pk': new_constraint_pk})
         response = client.delete(url)
         self.assertEqual(response.status_code, 204)
 
@@ -325,11 +348,13 @@ class ConstraintsApiTests(ConstraintsTestsBase):
         """Test API constraint rule CRUD operations"""
 
         client = APIClient()
-        self.assertTrue(client.login(username=self.test_user_admin1.username, password=self.test_user_admin1.username))
+        self.assertTrue(client.login(
+            username=self.test_user_admin1.username, password=self.test_user_admin1.username))
 
         editing_layer = Layer.objects.get(name='editing_layer')
         constraint_layer = Layer.objects.get(name='constraint_layer')
-        constraint = Constraint(editing_layer=editing_layer, constraint_layer=constraint_layer)
+        constraint = Constraint(
+            editing_layer=editing_layer, constraint_layer=constraint_layer)
         constraint.save()
 
         # Create a valid rule
@@ -339,7 +364,7 @@ class ConstraintsApiTests(ConstraintsTestsBase):
             'user': self.test_user2.pk,
             'group': None,
             'rule': 'name=\'bagnolo\'',
-            }, format='json')
+        }, format='json')
         self.assertEqual(response.status_code, 201)
         jcontent = json.loads(response.content)
         self.assertTrue('pk' in jcontent)
@@ -357,7 +382,7 @@ class ConstraintsApiTests(ConstraintsTestsBase):
             'user': self.test_user2.pk,
             'group': None,
             'rule': 'wrong_field_name=\'bagnolo\'',
-            }, format='json')
+        }, format='json')
         self.assertEqual(response.status_code, 400)
         jcontent = json.loads(response.content)
         self.assertTrue('error', jcontent)
@@ -369,7 +394,7 @@ class ConstraintsApiTests(ConstraintsTestsBase):
             'user': None,
             'group': self.group.pk,
             'rule': 'wrong_field_name=\'bagnolo\'',
-            }, format='json')
+        }, format='json')
         self.assertEqual(response.status_code, 400)
         jcontent = json.loads(response.content)
         self.assertTrue('error', jcontent)
@@ -382,39 +407,45 @@ class ConstraintsApiTests(ConstraintsTestsBase):
         self.assertEqual(jcontent['count'], 1)
 
         # Retrieve the rules for a user
-        url = reverse('constraintrule-api-filter-by-user', kwargs={'user_id': self.test_user2.pk})
+        url = reverse('constraintrule-api-filter-by-user',
+                      kwargs={'user_id': self.test_user2.pk})
         response = client.get(url, {}, format='json')
         self.assertEqual(response.status_code, 200)
         jcontent = json.loads(response.content)
         self.assertEqual(jcontent['count'], 1)
 
-        url = reverse('constraintrule-api-filter-by-user', kwargs={'user_id': self.test_user1.pk})
+        url = reverse('constraintrule-api-filter-by-user',
+                      kwargs={'user_id': self.test_user1.pk})
         response = client.get(url, {}, format='json')
         self.assertEqual(response.status_code, 200)
         jcontent = json.loads(response.content)
         self.assertEqual(jcontent['count'], 0)
 
         # Retrieve the rules for an editing layer
-        url = reverse('constraintrule-api-filter-by-editing', kwargs={'editing_layer_id': editing_layer.pk})
+        url = reverse('constraintrule-api-filter-by-editing',
+                      kwargs={'editing_layer_id': editing_layer.pk})
         response = client.get(url, {}, format='json')
         self.assertEqual(response.status_code, 200)
         jcontent = json.loads(response.content)
         self.assertEqual(jcontent['count'], 1)
 
-        url = reverse('constraintrule-api-filter-by-editing', kwargs={'editing_layer_id': constraint_layer.pk})
+        url = reverse('constraintrule-api-filter-by-editing',
+                      kwargs={'editing_layer_id': constraint_layer.pk})
         response = client.get(url, {}, format='json')
         self.assertEqual(response.status_code, 200)
         jcontent = json.loads(response.content)
         self.assertEqual(jcontent['count'], 0)
 
         # Retrieve the rules for a constraint
-        url = reverse('constraintrule-api-filter-by-constraint', kwargs={'constraint_id': constraint.pk})
+        url = reverse('constraintrule-api-filter-by-constraint',
+                      kwargs={'constraint_id': constraint.pk})
         response = client.get(url, {}, format='json')
         self.assertEqual(response.status_code, 200)
         jcontent = json.loads(response.content)
         self.assertEqual(jcontent['count'], 1)
 
-        url = reverse('constraintrule-api-filter-by-constraint', kwargs={'constraint_id': 999999})
+        url = reverse('constraintrule-api-filter-by-constraint',
+                      kwargs={'constraint_id': 999999})
         response = client.get(url, {}, format='json')
         self.assertEqual(response.status_code, 200)
         jcontent = json.loads(response.content)
@@ -437,7 +468,8 @@ class ConstraintsApiTests(ConstraintsTestsBase):
         self.assertEqual(rule.constraint.pk, jcontent['constraint'])
 
         # Test retrieve rule for user (now that it is a group rule)
-        url = reverse('constraintrule-api-filter-by-user', kwargs={'user_id': self.test_user3.pk})
+        url = reverse('constraintrule-api-filter-by-user',
+                      kwargs={'user_id': self.test_user3.pk})
         response = client.get(url, {}, format='json')
         self.assertEqual(response.status_code, 200)
         jcontent = json.loads(response.content)
@@ -461,28 +493,34 @@ class ConstraintsApiTests(ConstraintsTestsBase):
         """Test API constraint rule permissions"""
 
         client = APIClient()
-        self.assertTrue(client.login(username=self.test_user1.username, password=self.test_user1.username))
+        self.assertTrue(client.login(
+            username=self.test_user1.username, password=self.test_user1.username))
 
         editing_layer = Layer.objects.get(name='editing_layer')
         constraint_layer = Layer.objects.get(name='constraint_layer')
-        constraint = Constraint(editing_layer=editing_layer, constraint_layer=constraint_layer)
+        constraint = Constraint(
+            editing_layer=editing_layer, constraint_layer=constraint_layer)
         constraint.save()
 
-        rule = ConstraintRule(constraint=constraint, user=self.test_user3, group=None, rule="name='pinerolo'")
+        rule = ConstraintRule(
+            constraint=constraint, user=self.test_user3, group=None, rule="name='pinerolo'")
         rule.save()
 
         # check 403 for rule list by constraint
-        url = reverse('constraintrule-api-filter-by-constraint', kwargs={'constraint_id': constraint.pk})
+        url = reverse('constraintrule-api-filter-by-constraint',
+                      kwargs={'constraint_id': constraint.pk})
         response = client.get(url, {}, format='json')
         self.assertEqual(response.status_code, 403)
 
         # check 403 for rule list by editing layer
-        url = reverse('constraintrule-api-filter-by-editing', kwargs={'editing_layer_id': editing_layer.pk})
+        url = reverse('constraintrule-api-filter-by-editing',
+                      kwargs={'editing_layer_id': editing_layer.pk})
         response = client.get(url, {}, format='json')
         self.assertEqual(response.status_code, 403)
 
         # check 403 for rule list by rule user
-        url = reverse('constraintrule-api-filter-by-user', kwargs={'user_id': self.test_user3.pk})
+        url = reverse('constraintrule-api-filter-by-user',
+                      kwargs={'user_id': self.test_user3.pk})
         response = client.get(url, {}, format='json')
         self.assertEqual(response.status_code, 403)
 
@@ -493,19 +531,23 @@ class ConstraintsApiTests(ConstraintsTestsBase):
 
         # check pass for rule list by constraint
         client.logout()
-        self.assertTrue(client.login(username=self.test_user2.username, password=self.test_user2.username))
+        self.assertTrue(client.login(
+            username=self.test_user2.username, password=self.test_user2.username))
 
-        url = reverse('constraintrule-api-filter-by-constraint', kwargs={'constraint_id': constraint.pk})
+        url = reverse('constraintrule-api-filter-by-constraint',
+                      kwargs={'constraint_id': constraint.pk})
         response = client.get(url, {}, format='json')
         self.assertEqual(response.status_code, 200)
 
         # check 200 for rule list by editing layer
-        url = reverse('constraintrule-api-filter-by-editing', kwargs={'editing_layer_id': editing_layer.pk})
+        url = reverse('constraintrule-api-filter-by-editing',
+                      kwargs={'editing_layer_id': editing_layer.pk})
         response = client.get(url, {}, format='json')
         self.assertEqual(response.status_code, 200)
 
         # check 403 for rule list by rule user (only admin can query rules by user)
-        url = reverse('constraintrule-api-filter-by-user', kwargs={'user_id': self.test_user3.pk})
+        url = reverse('constraintrule-api-filter-by-user',
+                      kwargs={'user_id': self.test_user3.pk})
         response = client.get(url, {}, format='json')
         self.assertEqual(response.status_code, 403)
 
@@ -516,9 +558,11 @@ class ConstraintsApiTests(ConstraintsTestsBase):
 
         client.logout()
 
-        self.assertTrue(client.login(username=self.test_user3.username, password=self.test_user3.username))
+        self.assertTrue(client.login(
+            username=self.test_user3.username, password=self.test_user3.username))
         # Test get Geometries constraint for request user
-        url = reverse('constraint-api-geometry', kwargs={'editing_layer_id': editing_layer.pk})
+        url = reverse('constraint-api-geometry',
+                      kwargs={'editing_layer_id': editing_layer.pk})
         response = client.get(url, {}, format='json')
         self.assertEqual(response.status_code, 200)
         jcontent = json.loads(response.content)
@@ -526,7 +570,8 @@ class ConstraintsApiTests(ConstraintsTestsBase):
         self.assertEqual(jcontent['geometries'][0]['type'], 'MultiPolygon')
 
         client.logout()
-        self.assertTrue(client.login(username=self.test_user_admin1.username, password=self.test_user_admin1.username))
+        self.assertTrue(client.login(
+            username=self.test_user_admin1.username, password=self.test_user_admin1.username))
         response = client.get(url, {}, format='json')
         self.assertEqual(response.status_code, 200)
         jcontent = json.loads(response.content)
@@ -536,7 +581,8 @@ class ConstraintsApiTests(ConstraintsTestsBase):
         """ Tets for layer info API"""
 
         client = APIClient()
-        self.assertTrue(client.login(username=self.test_user2.username, password=self.test_user2.username))
+        self.assertTrue(client.login(
+            username=self.test_user2.username, password=self.test_user2.username))
 
         editing_layer = Layer.objects.get(name='editing_layer')
         constraint_layer = Layer.objects.get(name='constraint_layer')
@@ -551,7 +597,8 @@ class ConstraintsApiTests(ConstraintsTestsBase):
         self.assertEqual(constraint_layer.pk, jcontent['pk'])
 
         # testing editing-api-info-layer-user
-        url_user = reverse('editing-api-info-layer-user', args=[editing_layer.pk])
+        url_user = reverse('editing-api-info-layer-user',
+                           args=[editing_layer.pk])
         response = client.get(url_user, {}, format='json')
         self.assertEqual(response.status_code, 200)
 
@@ -559,7 +606,8 @@ class ConstraintsApiTests(ConstraintsTestsBase):
         self.assertEqual(self.test_user3.pk, jcontent['pk'])
 
         # testing editing-api-info-layer-authgroup
-        url_group = reverse('editing-api-info-layer-authgroup', args=[editing_layer.pk])
+        url_group = reverse(
+            'editing-api-info-layer-authgroup', args=[editing_layer.pk])
         response = client.get(url_group, {}, format='json')
         self.assertEqual(response.status_code, 200)
 
@@ -567,8 +615,9 @@ class ConstraintsApiTests(ConstraintsTestsBase):
         self.assertEqual(self.group.pk, jcontent['pk'])
 
         # testing permission
-        client.logout();
-        self.assertTrue(client.login(username=self.test_user1.username, password=self.test_user1.username))
+        client.logout()
+        self.assertTrue(client.login(
+            username=self.test_user1.username, password=self.test_user1.username))
 
         response = client.get(url_layer, {}, format='json')
         self.assertEqual(response.status_code, 403)
@@ -579,8 +628,9 @@ class ConstraintsApiTests(ConstraintsTestsBase):
         response = client.get(url_group, {}, format='json')
         self.assertEqual(response.status_code, 403)
 
-        client.logout();
-        self.assertTrue(client.login(username=self.test_user3.username, password=self.test_user3.username))
+        client.logout()
+        self.assertTrue(client.login(
+            username=self.test_user3.username, password=self.test_user3.username))
 
         response = client.get(url_layer, {}, format='json')
         self.assertEqual(response.status_code, 403)
@@ -591,8 +641,9 @@ class ConstraintsApiTests(ConstraintsTestsBase):
         response = client.get(url_group, {}, format='json')
         self.assertEqual(response.status_code, 403)
 
-        client.logout();
-        self.assertTrue(client.login(username=self.test_user2.username, password=self.test_user2.username))
+        client.logout()
+        self.assertTrue(client.login(
+            username=self.test_user2.username, password=self.test_user2.username))
 
         response = client.get(url_layer, {}, format='json')
         self.assertEqual(response.status_code, 200)
