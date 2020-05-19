@@ -8,6 +8,7 @@ from core.api.filters import IntersectsBBoxFilter
 from editing.api.permissions import QGISLayerEditingPermission
 from qdjango.vector import QGISLayerVectorViewMixin
 from qdjango.api.constraints.filters import SingleLayerSubsetStringConstraintFilter, SingleLayerExpressionConstraintFilter
+from qdjango.api.layers.filters import RelationOneToManyFilter
 from django.views.decorators.csrf import csrf_exempt
 from editing.filters import ConstraintsFilter
 #from client.urls import USER_MEDIA_PREFIX
@@ -26,7 +27,8 @@ class QGISEditingLayerVectorView(QGISLayerVectorViewMixin, BaseEditingVectorOnMo
         ConstraintsFilter,
         SingleLayerSubsetStringConstraintFilter,
         SingleLayerExpressionConstraintFilter,
-        IntersectsBBoxFilter
+        IntersectsBBoxFilter,
+        RelationOneToManyFilter
     )
 
     def add_media_property(self, geojson_feature, metadata_layer):
