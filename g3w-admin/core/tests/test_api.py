@@ -84,13 +84,25 @@ class CoreApiTest(CoreTestBase):
         resp = json.loads(response.content)
         self.assertIsNone(resp["vector"]["count"])
         self.assertEqual(resp["vector"]["format"], "GeoJSON")
-        self.assertEqual(resp["vector"]["fields"], [
-            {'name': 'pkuid', 'editable': False, 'label': 'pkuid', 'input': {
-                'type': 'text', 'options': {}}, 'validate': {'required': True}, 'type': 'bigint'},
-            {'name': 'name', 'editable': True, 'label': 'name', 'input': {'type': 'text', 'options': {}}, 'validate': {}, 'type': 'varchar'}])
+        self.assertEqual(resp["vector"]["fields"], [{'name': 'pkuid',
+                                                     'type': 'bigint',
+                                                     'label': 'pkuid',
+                                                     'editable': False,
+                                                     'validate': {'required': True},
+                                                     'default': 'Autogenerate',
+                                                     'not_null': True,
+                                                     'unique': True,
+                                                     'input': {'type': 'text', 'options': {}}},
+                                                    {'name': 'name',
+                                                     'type': 'varchar',
+                                                     'label': 'name',
+                                                     'editable': True,
+                                                     'validate': {},
+                                                     'default': '',
+                                                     'not_null': False,
+                                                     'unique': False,
+                                                     'input': {'type': 'text', 'options': {}}}])
         self.assertEqual(resp["vector"]["geometrytype"], "Point")
-        # No pk in QGIS API
-        #self.assertEqual(resp["vector"]["pk"], "pkuid")
         self.assertIsNone(resp["vector"]["data"])
         self.assertTrue(resp["result"])
         self.assertIsNone(resp["featurelocks"])
@@ -105,7 +117,6 @@ class CoreApiTest(CoreTestBase):
         self.assertEqual(resp["vector"]["format"], "GeoJSON")
         self.assertIsNone(resp["vector"]["fields"])
         self.assertEqual(resp["vector"]["geometrytype"], "Point")
-        self.assertEqual(resp["vector"]["pk"], "pkuid")
         self.assertEqual(resp["vector"]["data"]["type"], "FeatureCollection")
         self.assertDictEqual(resp["vector"]["data"]["features"][0], {"id": 1, "type": "Feature", "geometry": {
                              "type": "Point", "coordinates": [1.980089, 28.779772]}, "properties": {"name": "a point", "pkuid": 1}})
@@ -242,8 +253,6 @@ class CoreApiTest(CoreTestBase):
         world = Layer.objects.get(name='world')
         qgis_project = get_qgs_project(world.project.qgis_file.path)
         qgis_layer = qgis_project.mapLayer(world.qgs_layer_id)
-
-        total_count = qgis_layer.featureCount()  # 244 features in this layer
 
         response = self._testApiCall('core-vector-api', ['data', 'qdjango', '1', world.qgs_layer_id], {
             'in_bbox': '10.60,44.34,10.70,44.36',
