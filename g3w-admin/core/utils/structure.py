@@ -139,9 +139,6 @@ FIELD_TYPES_MAPPING = {
 }
 
 
-
-
-
 def editingFormField(fieldName, type=FIELD_TYPE_STRING, editable=True, required=False, validate=None,
                      fieldLabel=None, inputType=None, values=None, **kwargs):
     """
@@ -160,7 +157,7 @@ def editingFormField(fieldName, type=FIELD_TYPE_STRING, editable=True, required=
     })
 
     if required:
-        ret['validate']['required'] = True;
+        ret['validate']['required'] = True
 
     if 'default' in kwargs:
         ret['input']['options']['default'] = kwargs['default']
@@ -196,7 +193,8 @@ def mapLayerAttributes(layer, formField=False, **kwargs):
 
     for field in fieldsMapped:
         originType = field['type']
-        type = originType[:originType.find('(')] if originType.find('(') >= 0 else originType
+        type = originType[:originType.find('(')] if originType.find(
+            '(') >= 0 else originType
         if type in list(mappingData.keys()):
             field['type'] = mappingData[type]
             if formField:
@@ -216,13 +214,13 @@ def mapLayerAttributes(layer, formField=False, **kwargs):
 
                     if field['type'] == FIELD_TYPE_BOOLEAN:
                         formFields[field['name']]['input']['options'].update({
-                             'values': [{'key': _('Yes'), 'value': True}, {'key': 'No', 'value': False}]
+                            'values': [{'key': _('Yes'), 'value': True}, {'key': 'No', 'value': False}]
                         })
 
                 # update with fields configs data
                 if 'fields' in kwargs and field['name'] in kwargs['fields']:
-                    deepupdate(formFields[field['name']], kwargs['fields'][field['name']])
-
+                    deepupdate(formFields[field['name']],
+                               kwargs['fields'][field['name']])
 
     # reorder if is set in kwargs
     if 'order' in kwargs:
@@ -244,13 +242,13 @@ def mapLayerAttributesFromQgisLayer(qgis_layer, **kwargs):
     only concrete field not virtual field and many2many
     """
 
-    fieldsToExclude = kwargs['fieldsToExclude'] if 'fieldsToExclude' in kwargs else []
+    fieldsToExclude = kwargs['fieldsToExclude'] if 'fieldsToExclude' in kwargs else [
+    ]
 
     toRes = OrderedDict()
     fields = qgis_layer.fields()
 
     data_provider = qgis_layer.dataProvider()
-
 
     # exclude if set:
     if 'exclude' in kwargs:
@@ -268,9 +266,16 @@ def mapLayerAttributesFromQgisLayer(qgis_layer, **kwargs):
             if internal_typename in FIELD_TYPES_MAPPING:
 
                 # Get constraints and default clause to define if the field is editable
-                # or set editable property by kwargs:
+                # or set editable property by kwargs.
+                # Only consider "strong" constraints
                 constraints = data_provider.fieldConstraints(field_index)
-                if data_provider.defaultValue(field_index) and constraints & QgsFieldConstraints.ConstraintUnique and constraints & QgsFieldConstraints.ConstraintNotNull:
+                not_null = constraints & QgsFieldConstraints.ConstraintNotNull and \
+                    field.constraints().constraintStrength(
+                        QgsFieldConstraints.ConstraintNotNull) == QgsFieldConstraints.ConstraintStrengthHard
+                unique = constraints & QgsFieldConstraints.ConstraintUnique and \
+                    field.constraints().constraintStrength(
+                        QgsFieldConstraints.ConstraintUnique) == QgsFieldConstraints.ConstraintStrengthHard
+                if not_null and unique and data_provider.defaultValueClause(field_index):
                     editable = False
                 else:
                     editable = kwargs['fields'][field.name()]['editable']
@@ -302,7 +307,8 @@ def mapLayerAttributesFromQgisLayer(qgis_layer, **kwargs):
 
                 # update with fields configs data
                 if 'fields' in kwargs and field.name() in kwargs['fields']:
-                    deepupdate(toRes[field.name()], kwargs['fields'][field.name()])
+                    deepupdate(toRes[field.name()],
+                               kwargs['fields'][field.name()])
 
         field_index += 1
 
