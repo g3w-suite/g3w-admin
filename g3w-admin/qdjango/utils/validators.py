@@ -84,8 +84,8 @@ def feature_validator(feature, layer):
         # Check not null first, if it fails skip other tests (unique and expression)
         value = feature.attribute(field.name())
         # If there is a default value we assume it's not NULL (we cannot really know at this point
-        # what will be the result of the default value clause evaluation, it might even be provider-side)
-        if (value is None or value == '') and not _has_default_value(field_index, field):
+        # what will be the result of the default value clause evaluation, it might even be provider-sideu
+        if (value is None or value == QVariant()) and not _has_default_value(field_index, field):
             not_null = (field.constraints().constraintOrigin(
                 QgsFieldConstraints.ConstraintNotNull) != QgsFieldConstraints.ConstraintOriginNotSet
                 and field.constraints().constraintStrength(QgsFieldConstraints.ConstraintNotNull)

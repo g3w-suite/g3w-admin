@@ -147,6 +147,7 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
         qgis_layer = metadata_layer.qgis_layer
 
         for mode_editing in (EDITING_POST_DATA_ADDED, EDITING_POST_DATA_UPDATED):
+
             if mode_editing in post_layer_data:
 
                 for geojson_feature in post_layer_data[mode_editing]:
@@ -231,8 +232,7 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
                                     raise Exception(
                                         'Error changing attribute values')
                                 if not feature.geometry().isNull() and not qgis_layer.changeGeometryValues(
-                                        {geojson_feature['id']
-                                            : feature.geometry()}
+                                        {geojson_feature['id']: feature.geometry()}
                                 ):
                                     raise Exception('Error changing geometry')
                             else:
