@@ -32,12 +32,6 @@ DATASOURCE_PATH = os.path.join(os.getcwd(), 'qdjango', 'tests', 'data')
 
 @override_settings(MEDIA_ROOT=DATASOURCE_PATH)
 @override_settings(DATASOURCE_PATH=DATASOURCE_PATH)
-@override_settings(CACHES={
-    'qdjango': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-        'LOCATION': 'some',
-    }
-})
 @override_settings(SPATIALITE_LIBRARY_PATH='mod_spatialite.so')
 class CoreApiTest(CoreTestBase):
     """Test core API"""
