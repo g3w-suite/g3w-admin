@@ -8,7 +8,7 @@
 
 __author__ = 'elpaso@itopen.it'
 __date__ = '2020-05-15'
-__copyright__ = 'Copyright 2020, ItOpen'
+__copyright__ = 'Copyright 2020, Gis3w'
 
 
 import logging
