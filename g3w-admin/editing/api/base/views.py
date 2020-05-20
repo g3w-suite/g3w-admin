@@ -129,7 +129,7 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
         # get initial featurelocked
         metadata_layer.lock.getInitialFeatureLockedIds()
 
-        # get lockids come from client
+        # get lockids from client
         metadata_layer.lock.setLockeFeaturesFromClient(
             post_layer_data['lockids'])
 
@@ -201,19 +201,19 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
 
                         feature.setGeometry(imported_feature.geometry())
 
+                        # There is something wrong in QGIS 3.10 (fixed in later versions)
+                        # so, better loop through the fields and set attributes individually
+                        for name, value in geojson_feature['properties'].items():
+                            feature.setAttribute(name, value)
+
+                        # Call validator!
+                        errors = feature_validator(
+                            feature, metadata_layer.qgis_layer)
+                        if errors:
+                            raise ValidationError(errors)
+
+                        # Save the feature
                         if mode_editing == EDITING_POST_DATA_ADDED:
-                            # There is something wrong in QGIS 3.10 (fixed in later versions)
-                            # so, better loop through the fields and set attributes individually
-                            for name, value in geojson_feature['properties'].items():
-                                feature.setAttribute(name, value)
-
-                            # Call validator!
-                            errors = feature_validator(
-                                feature, metadata_layer.qgis_layer)
-                            if errors:
-                                raise ValidationError(errors)
-
-                            # Save the feature
                             if has_transactions:
                                 if not qgis_layer.addFeature(feature):
                                     raise Exception('Error adding feature')
@@ -228,12 +228,14 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
                                     name]] = value
 
                             if has_transactions:
-                                if not qgis_layer.changeAttributeValues({geojson_feature['id']: attr_map}):
+                                if not qgis_layer.changeAttributeValues(geojson_feature['id'], attr_map):
                                     raise Exception(
                                         'Error changing attribute values')
-                                if not feature.geometry().isNull() and not qgis_layer.changeGeometryValues(
-                                        {geojson_feature['id']: feature.geometry()}
-                                ):
+                                # Check for errors because of https://github.com/qgis/QGIS/issues/36583
+                                if qgis_layer.dataProvider().errors():
+                                    raise Exception(
+                                        ', '.join(qgis_layer.dataProvider().errors()))
+                                if not feature.geometry().isNull() and not qgis_layer.changeGeometry(geojson_feature['id'], feature.geometry()):
                                     raise Exception('Error changing geometry')
                             else:
                                 if not qgis_layer.dataProvider().changeAttributeValues({geojson_feature['id']: attr_map}):
@@ -353,7 +355,9 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
 
             # save relations if post data exists
             for referencing_layer in self.metadata_relations.keys():
+
                 if referencing_layer in post_relations_data:
+
                     post_relation_data = post_relations_data[referencing_layer]
 
                     if has_transactions:
@@ -383,7 +387,9 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
             if has_transactions:
                 # Commit changes on all layers
                 for ql in editing_layers:
-                    ql.commitChanges()
+                    if not ql.commitChanges():
+                        raise Exception('Backend error saving layer %s: %s' % (
+                            ql.name(), ql.commitErrors()))
 
         except Exception as e:
 

@@ -267,7 +267,8 @@ class BaseVectorOnModelApiView(G3WAPIView):
 
     def reproject_feature(self, feature, to_layer=False):
         """
-        Reproject single geomtry feature
+        Reproject single geometry feature
+
         :param feature: Feature object
         :param to_layer: Reprojecting versus
         :return:
