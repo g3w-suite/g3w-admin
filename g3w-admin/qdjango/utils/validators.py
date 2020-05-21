@@ -99,7 +99,7 @@ def feature_validator(feature, layer):
 
         # Skip if NULL, not sure if we want to continue in this case but it seems pointless
         # to check for unique or type compatibility on NULLs
-        if value is not None:
+        if value is not None and value != QVariant():
 
             if not QVariant(value).convert(field.type()):
                 _set_error(field.name(), _(

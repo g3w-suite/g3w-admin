@@ -14,7 +14,7 @@ __copyright__ = 'Copyright 2020, Gis3w'
 import logging
 import os
 import shutil
-from qgis.PyQt.QtCore import QTemporaryDir
+from qgis.PyQt.QtCore import QTemporaryDir, QVariant
 from qgis.core import QgsFeature, QgsProject, QgsGeometry
 
 from qdjango.utils.validators import feature_validator
@@ -248,3 +248,24 @@ class TestFeatureValidator(QdjangoTestBase):
                                   'float_not_nullable': ["Field value 'not a number' cannot be converted to double"],
                                   'date_not_nullable': ["Field value 'not a date' cannot be converted to QDate"],
                                   'datetime_not_nullable': ["Field value 'not a datetime' cannot be converted to QDateTime"]})
+
+    def test_value_nulls(self):
+        """Test value NULL and None are not passed through the type compatibility check"""
+
+        feature = self._feature_factory(
+            {
+                'text_nullable': None,
+            },
+            'point( 9 45 )')
+        errors = feature_validator(
+            feature, self.validator_project_test)
+        self.assertFalse('text_nullable' in errors)
+
+        feature = self._feature_factory(
+            {
+                'text_nullable': QVariant(),
+            },
+            'point( 9 45 )')
+        errors = feature_validator(
+            feature, self.validator_project_test)
+        self.assertFalse('text_nullable' in errors)
