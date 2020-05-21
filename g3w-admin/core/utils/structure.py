@@ -140,7 +140,7 @@ FIELD_TYPES_MAPPING = {
 
 
 def editingFormField(fieldName, type=FIELD_TYPE_STRING, editable=True, required=False, validate=None,
-                     fieldLabel=None, inputType=None, values=None, default_clause='', unique=False, expression='', ** kwargs):
+                     fieldLabel=None, inputType=None, values=None, default_clause='', unique=False, expression='', pk=False, ** kwargs):
     """
     Build editing form field for client.
     """
@@ -159,6 +159,7 @@ def editingFormField(fieldName, type=FIELD_TYPE_STRING, editable=True, required=
         'label': fieldLabel if fieldLabel else fieldName,
         'editable': editable,
         'validate': validate,
+        'pk': pk,
         'default': default_clause,
         'input': {
             'type': inputType if inputType else FORM_FIELD_TYPE_TEXT,
@@ -270,6 +271,8 @@ def mapLayerAttributesFromQgisLayer(qgis_layer, **kwargs):
         fields = _fieldsMapped
 
     field_index = 0
+    pk_attributes = qgis_layer.primaryKeyAttributes()
+
     for field in fields:
         if field.name() not in fieldsToExclude:
             #internal_typename = field.typeName().split('(')[0]
@@ -315,6 +318,7 @@ def mapLayerAttributesFromQgisLayer(qgis_layer, **kwargs):
                     default_clause=default_clause,
                     unique=unique,
                     expression=expression,
+                    pk=(field_index in pk_attributes)
                 )
 
                 # add upload url to image type if module is set

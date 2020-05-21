@@ -122,7 +122,88 @@ class TransactionGroupTest(TestCase):
         self.test = Layer.objects.get(name='test')
         self.info = Layer.objects.get(name='info')
 
-    def __test_add_feature_simple(self):
+    def test_mode_config(self):
+        """Test mode config to check for field information"""
+
+        client = APIClient()
+        self.assertTrue(client.login(
+            username=self.admin01.username, password=self.admin01.username))
+
+        config_path = reverse('core-vector-api',
+                              args=['config', 'qdjango', self.test.project_id, self.test.qgs_layer_id])
+
+        response = client.post(config_path, {}, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        jresult = json.loads(response.content)
+        self.assertTrue(jresult['result'])
+
+        self.assertEqual(jresult['vector']['fields'],
+                         [{'name': 'fid',
+                           'type': 'bigint',
+                           'label': 'fid',
+                           'editable': False,
+                           'validate': {'required': True, 'unique': True},
+                           'pk': True,
+                           'default': 'Autogenerate',
+                           'input': {'type': 'text', 'options': {}}},
+                          {'name': 'name',
+                           'type': 'varchar',
+                           'label': 'name',
+                           'editable': True,
+                           'validate': {},
+                           'pk': False,
+                           'default': '',
+                           'input': {'type': 'text', 'options': {}}},
+                          {'name': 'value',
+                           'type': 'integer',
+                           'label': 'value',
+                           'editable': True,
+                           'validate': {'expression': '"value" !=  999'},
+                           'pk': False,
+                           'default': '',
+                           'input': {'type': 'range',
+                                     'options': {'values': [{'min': '-2147483648',
+                                                             'max': '2147483647',
+                                                             'Step': '1',
+                                                             'default': None}]}}},
+                          {'name': 'date',
+                             'type': 'date',
+                           'label': 'date',
+                           'editable': True,
+                           'validate': {},
+                           'pk': False,
+                           'default': '',
+                           'input': {'type': 'datetimepicker',
+                                     'options': {'formats': [{'date': True,
+                                                              'time': False,
+                                                              'fieldformat': 'yyyy-MM-dd',
+                                                              'displayformat': 'HH:mm:ss',
+                                                              'default': None}]}}},
+                          {'name': 'option',
+                             'type': 'boolean',
+                             'label': 'option',
+                           'editable': True,
+                           'validate': {},
+                             'pk': False,
+                           'default': '',
+                           'input': {'type': 'check',
+                                     'options': {'values': [{'key': 'Yes', 'value': True},
+                                                            {'key': 'No',
+                                                                'value': False},
+                                                            {'value': 'TRUE',
+                                                                'checked': True},
+                                                            {'value': 'FALSE', 'checked': False}]}}},
+                          {'name': 'pol_id',
+                             'type': 'integer',
+                             'label': 'pol_id',
+                             'editable': True,
+                           'validate': {'required': True},
+                             'pk': False,
+                             'default': '',
+                           'input': {'type': 'text', 'options': {}}}])
+
+    def test_add_feature_simple(self):
         """Test adding a test feature to an existing polygon"""
 
         client = APIClient()
@@ -236,7 +317,7 @@ class TransactionGroupTest(TestCase):
         jresult = json.loads(response.content)
         self.assertFalse(jresult['result'])
 
-    def __test_update_feature_simple(self):
+    def test_update_feature_simple(self):
         """Test adding a test feature to an existing polygon"""
 
         client = APIClient()
@@ -409,6 +490,6 @@ class TransactionGroupTest(TestCase):
         jresult = json.loads(response.content)
         self.assertTrue(jresult['result'])
         self.assertEqual(jresult['response']['new'][0]['id'], 3)
-        from IPython import embed
-        embed(using=False)
+        self.assertEqual(self.poligoni.qgis_layer.getFeature(3).attributes(), [
+                         3, 'name father', 4444.0, QDate(2018, 1, 2), True])
         self.assertNotEqual(jresult['response']['new_relations'], {})
