@@ -74,7 +74,7 @@
                 <table id="layers_table" class="table table-hover table-striped" data-widget-type="dataTable">
                     <thead>
                         <tr>
-                            <th style="width:120px">Actions</th>
+                            <th style="min-width:160px; max-width: 160px;">Actions</th>
                             {% if "change_project" in userPrj_perms %}
                             <th style="width:40px">{% trans 'No legend' %}</th>
                             <th style="width:100px"><input type="checkbox" name="check_every_download" />{% trans 'Download as shp' %}</th>
@@ -138,7 +138,7 @@
                                 <span class="fa fa-check-circle" style="color: orange"></span>
                                 {% endif %}
                             </td>
-                            <td>{{ object.name }}</td>
+                            <td>{{ object.origname }}</td>
                             <td>{{ object.title }}</td>
                         </tr>
                         {% endfor %}
