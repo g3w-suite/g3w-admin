@@ -243,8 +243,8 @@ class TestFeatureValidator(QdjangoTestBase):
         errors = feature_validator(
             feature, self.validator_project_test)
 
-        self.assertEqual(errors, {'integer_not_nullable': ['Field value cannot be converted to int'],
-                                  'long_not_nullable': ['Field value cannot be converted to qlonglong'],
-                                  'float_not_nullable': ['Field value cannot be converted to double'],
-                                  'date_not_nullable': ['Field value cannot be converted to QDate'],
-                                  'datetime_not_nullable': ['Field value cannot be converted to QDateTime']})
+        self.assertEqual(errors, {'integer_not_nullable': ["Field value 'not an int' cannot be converted to int"],
+                                  'long_not_nullable': ["Field value 'not a number' cannot be converted to qlonglong"],
+                                  'float_not_nullable': ["Field value 'not a number' cannot be converted to double"],
+                                  'date_not_nullable': ["Field value 'not a date' cannot be converted to QDate"],
+                                  'datetime_not_nullable': ["Field value 'not a datetime' cannot be converted to QDateTime"]})

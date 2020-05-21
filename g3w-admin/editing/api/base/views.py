@@ -1,23 +1,27 @@
 # -*- coding: utf-8 -*-
 import json
+
 from django.conf import settings
-from django.db import transaction, IntegrityError
 from django.core.files import File
 from django.core.files.images import ImageFile
-from django.db.models import ImageField, FileField, AutoField
+from django.db import IntegrityError, transaction
+from django.db.models import AutoField, FileField, ImageField
+from django.utils.translation import ugettext_lazy as _
+from qgis.core import QgsDataSourceUri, QgsFeature, QgsJsonUtils
 from rest_framework.exceptions import ValidationError
-from core.signals import pre_save_maplayer, post_save_maplayer, pre_delete_maplayer
-from core.api.base.views import BaseVectorOnModelApiView
+
 from core.api.base.vector import MetadataVectorLayer
-from editing.models import EDITING_POST_DATA_ADDED, EDITING_POST_DATA_DELETED, EDITING_POST_DATA_UPDATED
+from core.api.base.views import BaseVectorOnModelApiView
+from core.signals import (post_save_maplayer, pre_delete_maplayer,
+                          pre_save_maplayer)
+from editing.models import (EDITING_POST_DATA_ADDED, EDITING_POST_DATA_DELETED,
+                            EDITING_POST_DATA_UPDATED)
 from editing.utils import LayerLock
 from editing.utils.data import get_relations_data_by_fid
+from qdjango.apps import get_qgs_project
+from qdjango.models import Layer
 from qdjango.utils.data import QGIS_LAYER_TYPE_NO_GEOM
 from qdjango.utils.validators import feature_validator
-from qdjango.models import Layer
-from qdjango.apps import get_qgs_project
-
-from qgis.core import QgsFeature, QgsJsonUtils, QgsDataSourceUri
 
 MODE_EDITING = 'editing'
 MODE_UNLOCK = 'unlock'
@@ -216,10 +220,12 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
                         if mode_editing == EDITING_POST_DATA_ADDED:
                             if has_transactions:
                                 if not qgis_layer.addFeature(feature):
-                                    raise Exception('Error adding feature')
+                                    raise Exception(
+                                        _('Error adding feature: %s') % ', '.join(qgis_layer.dataProvider().errors()))
                             else:
                                 if not qgis_layer.dataProvider().addFeature(feature):
-                                    raise Exception('Error adding feature')
+                                    raise Exception(_('Error adding feature: %s') % ', '.join(
+                                        qgis_layer.dataProvider().errors()))
 
                         elif mode_editing == EDITING_POST_DATA_UPDATED:
                             attr_map = {}
@@ -229,21 +235,23 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
 
                             if has_transactions:
                                 if not qgis_layer.changeAttributeValues(geojson_feature['id'], attr_map):
-                                    raise Exception(
-                                        'Error changing attribute values')
+                                    raise Exception(_(
+                                        'Error changing attribute values: %s') % ', '.join(qgis_layer.dataProvider().errors()))
                                 # Check for errors because of https://github.com/qgis/QGIS/issues/36583
                                 if qgis_layer.dataProvider().errors():
                                     raise Exception(
                                         ', '.join(qgis_layer.dataProvider().errors()))
                                 if not feature.geometry().isNull() and not qgis_layer.changeGeometry(geojson_feature['id'], feature.geometry()):
-                                    raise Exception('Error changing geometry')
+                                    raise Exception(_('Error changing geometry: %s') % ', '.join(
+                                        qgis_layer.dataProvider().errors()))
                             else:
                                 if not qgis_layer.dataProvider().changeAttributeValues({geojson_feature['id']: attr_map}):
-                                    raise Exception(
-                                        'Error changing attribute values')
+                                    raise Exception(_(
+                                        'Error changing attribute values: %s') % ', '.join(qgis_layer.dataProvider().errors()))
                                 if not feature.geometry().isNull() and not qgis_layer.dataProvider().changeGeometryValues(
                                         {geojson_feature['id']: feature.geometry()}):
-                                    raise Exception('Error changing geometry')
+                                    raise Exception(_('Error changing geometry: %s') % ', '.join(
+                                        qgis_layer.dataProvider().errors()))
 
                         to_res = {}
                         to_res_lock = {}
@@ -299,8 +307,14 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
                 # FIXME: pre_delete_maplayer
                 # pre_delete_maplayer.send(metadata_layer.serializer, layer=metadata_layer.layer_id, # data=serializer.data, user=self.request.user)
 
-                if not qgis_layer.deleteFeatures([feature_id]):
-                    raise Exception('Cannot delete feature')
+                if has_transactions:
+                    if not qgis_layer.deleteFeatures([feature_id]) or qgis_layer.dataProvider().errors():
+                        raise Exception(_('Cannot delete feature: %s') %
+                                        ', '.join(qgis_layer.dataProvider().errors()))
+                else:
+                    if not qgis_layer.dataProvider().deleteFeatures([feature_id]) or qgis_layer.dataProvider().errors():
+                        raise Exception(_('Cannot delete feature: %s') %
+                                        ', '.join(qgis_layer.dataProvider().errors()))
 
         return insert_ids, lock_ids
 
@@ -312,8 +326,8 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
         """
 
         # get post data from request object
-        #data = request.data
-        #post_layer_data = data[self.layer_name]
+        # data = request.data
+        # post_layer_data = data[self.layer_name]
         post_layer_data = request.data
 
         new_relations = dict()
@@ -361,10 +375,8 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
                     post_relation_data = post_relations_data[referencing_layer]
 
                     if has_transactions:
-                        # Start layer editing on related layers
-                        if not self.metadata_relations[referencing_layer].qgis_layer.startEditing():
-                            raise Exception(_('Layer %s is not editable!') %
-                                            self.metadata_relations[referencing_layer].qgis_layer.name())
+                        # Editing on related layers has already started because
+                        # it's part of a transaction group
                         editing_layers.append(
                             self.metadata_relations[referencing_layer].qgis_layer)
 
@@ -385,10 +397,13 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
                     }
 
             if has_transactions:
-                # Commit changes on all layers
+                # Commit changes on all editable layers
+                # The check is required because when committing the
+                # "parent" layer in a transaction group all other layers are
+                # committed as well.
                 for ql in editing_layers:
-                    if not ql.commitChanges():
-                        raise Exception('Backend error saving layer %s: %s' % (
+                    if ql.isEditable() and not ql.commitChanges():
+                        raise Exception(_('Backend error saving layer %s: %s') % (
                             ql.name(), ql.commitErrors()))
 
         except Exception as e:

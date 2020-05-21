@@ -120,6 +120,17 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
     def __str__(self):
         return self.title
 
+    @property
+    def qgis_project(self):
+        """Returns the QgsProject instance corresponding to this Project, or None in case of errors
+
+        :return: the QgsProject instance
+        :rtype: QgsProject or None
+        """
+
+        from qdjango.apps import get_qgs_project
+        return get_qgs_project(self.qgis_file.path)
+
     def _permissionsToEditor(self, user, mode='add'):
 
         setPermissionUserObject(user, self, permissions=[
@@ -373,7 +384,7 @@ class Layer(G3WACLModelMixins, models.Model):
         layer = None
         from qdjango.apps import get_qgs_project
         try:
-            return get_qgs_project(self.project.qgis_file.path).mapLayers()[self.qgs_layer_id]
+            return self.project.qgis_project.mapLayers()[self.qgs_layer_id]
         except:
             logger.warning(
                 'Cannot retrieve QgsMapLayer for QDjango layer %s' % self.qgs_layer_id)

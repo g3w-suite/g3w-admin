@@ -274,6 +274,7 @@ class BaseVectorOnModelApiView(G3WAPIView):
         :return:
         """
 
+        # FIXME: use QGIS API!
         if to_layer:
             from_srid = self.layer.project.group.srid.auth_srid
             to_srid = self.layer.srid
@@ -441,6 +442,8 @@ class BaseVectorOnModelApiView(G3WAPIView):
         :return:
         """
         # check if data to reproject
+        # FIXME: use QgsProject crs(), can be (in a try/except block):
+        # self.layer.project.qgis_project.crs() != self.layer.qgis_layer.crs()
         self.reproject = not self.layer.project.group.srid.auth_srid == self.layer.srid
 
     def get_response_data(self, request):

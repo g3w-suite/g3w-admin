@@ -77,7 +77,8 @@ class QGISLayerVectorViewMixin(object):
             for n, join in enumerate(joins):
                 if self._layer_model.objects.get(qgs_layer_id=join['joinLayerId'], project=self.layer.project).layer_type \
                         in (('postgres', 'spatialite')):
-                    name = '{}_vectorjoin_{}'.format(self.layer.qgs_layer_id, n)
+                    name = '{}_vectorjoin_{}'.format(
+                        self.layer.qgs_layer_id, n)
                     self.relations[name] = {
                         'id': name,
                         'name': name,
@@ -100,16 +101,18 @@ class QGISLayerVectorViewMixin(object):
             if relation['referencedLayer'] == self.layer.qgs_layer_id:
                 # get relation layer object
                 relation_layer = self._layer_model.objects.get(qgs_layer_id=relation['referencingLayer'],
-                                                   project=self.layer.project)
+                                                               project=self.layer.project)
 
-                # FIXME: referenced_field_is_pk
+                referenced_field_is_pk = [self.layer.qgis_layer.fields().indexFromName(
+                    relation['fieldRef']['referencedField'])] == self.layer.qgis_layer.primaryKeyAttributes()
                 self.metadata_relations[relation['referencingLayer']] = MetadataVectorLayer(
                     get_qgis_layer(relation_layer),
                     relation_layer.origname,
                     idr,
                     layer=relation_layer,
                     referencing_field=relation['fieldRef']['referencingField'],
-                    layer_id=relation_layer.pk
+                    layer_id=relation_layer.pk,
+                    referenced_field_is_pk=referenced_field_is_pk
                 )
 
     def set_metadata_layer(self, request, **kwargs):
@@ -186,7 +189,8 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         if self.layer:
             fields_layer = self.layer.database_columns_by_name()
             for field, data in list(fields_layer.items()):
-                fields[self.layer_name]['fields'][field] = {'label': data['label']}
+                fields[self.layer_name]['fields'][field] = {
+                    'label': data['label']}
 
         # add widgets
         if hasattr(self.layer, 'edittypes') and self.layer.edittypes:
@@ -199,11 +203,13 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
                 if data['widgetv2type'] in allow_edittypes:
 
                     # instance of QgisEditType
-                    qet = MAPPING_EDITTYPE_QGISEDITTYPE[data['widgetv2type']](**data)
+                    qet = MAPPING_EDITTYPE_QGISEDITTYPE[data['widgetv2type']](
+                        **data)
                     if field not in fields[self.layer_name]['fields']:
                         fields[self.layer_name]['fields'][field] = qet.input_form
                     else:
-                        fields[self.layer_name]['fields'][field].update(qet.input_form)
+                        fields[self.layer_name]['fields'][field].update(
+                            qet.input_form)
 
                 # add editable property:
                 fields[self.layer_name]['fields'][field]['editable'] = True \
@@ -217,7 +223,6 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         """
         if 'fields' not in request_data:
             raise APIException('The \'fields\' param not in request data')
-
 
         # get fields to get unique value:
         fields = request_data['fields'].split(',')
@@ -235,7 +240,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
                 if isinstance(u, QVariant) and u.isNull():
                     continue
                 else:
-                    tores.append(QgsJsonUtils.encodeValue(u).replace('"',''))
+                    tores.append(QgsJsonUtils.encodeValue(u).replace('"', ''))
 
             res[field] = tores
 
@@ -251,7 +256,8 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         else:
             request_data = request.query_params
 
-        method = getattr(self, 'response_widget_{}_data'.format(self.widget_type))
+        method = getattr(
+            self, 'response_widget_{}_data'.format(self.widget_type))
         res = method(request_data)
 
         self.results.update({'data': res})
@@ -283,7 +289,8 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
 
         # Make a selection based on the request
         if qgs_request.filterExpression() is not None:
-            self.metadata_layer.qgis_layer.selectByExpression(qgs_request.filterExpression().expression())
+            self.metadata_layer.qgis_layer.selectByExpression(
+                qgs_request.filterExpression().expression())
             save_options.onlySelectedFeatures = True
 
         error_code, error_message = QgsVectorFileWriter.writeAsVectorFormatV2(
@@ -301,7 +308,8 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
             tmp_dir.cleanup()
             return HttpResponse(status=500, reason=error_message)
 
-        filenames = ["{}{}".format(filename, ftype) for ftype in self.shp_extentions]
+        filenames = ["{}{}".format(filename, ftype)
+                     for ftype in self.shp_extentions]
 
         zip_filename = "{}.zip".format(filename)
 
@@ -323,7 +331,8 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         tmp_dir.cleanup()
 
         # Grab ZIP file from in-memory, make response with correct MIME-type
-        response = HttpResponse(s.getvalue(), content_type="application/x-zip-compressed")
+        response = HttpResponse(
+            s.getvalue(), content_type="application/x-zip-compressed")
         response['Content-Disposition'] = 'attachment; filename=%s' % zip_filename
         response.set_cookie('fileDownload', 'true')
         return response
@@ -352,7 +361,8 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
 
         # Make a selection based on the request
         if qgs_request.filterExpression() is not None:
-            self.metadata_layer.qgis_layer.selectByExpression(qgs_request.filterExpression().expression())
+            self.metadata_layer.qgis_layer.selectByExpression(
+                qgs_request.filterExpression().expression())
             save_options.onlySelectedFeatures = True
 
         xls_tmp_path = os.path.join(tmp_dir.name, filename)
@@ -371,7 +381,8 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
             tmp_dir.cleanup()
             return HttpResponse(status=500, reason=error_message)
 
-        response = HttpResponse(open(xls_tmp_path, 'rb').read(), content_type='application/ms-excel')
+        response = HttpResponse(
+            open(xls_tmp_path, 'rb').read(), content_type='application/ms-excel')
         tmp_dir.cleanup()
         response['Content-Disposition'] = 'attachment; filename=geodata.xls'
         response.set_cookie('fileDownload', 'true')

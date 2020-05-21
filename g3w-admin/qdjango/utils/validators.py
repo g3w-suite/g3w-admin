@@ -103,7 +103,7 @@ def feature_validator(feature, layer):
 
             if not QVariant(value).convert(field.type()):
                 _set_error(field.name(), _(
-                    'Field value cannot be converted to %s') % QVariant.typeToName(field.type()))
+                    'Field value \'%s\' cannot be converted to %s') % (value, QVariant.typeToName(field.type())))
 
             unique = (field.constraints().constraintOrigin(
                 QgsFieldConstraints.ConstraintUnique) != QgsFieldConstraints.ConstraintOriginNotSet and

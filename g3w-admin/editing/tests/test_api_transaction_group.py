@@ -461,7 +461,7 @@ class TransactionGroupTest(TestCase):
             "delete": [],
             "lockids": [],
             "relations": {
-                "test_afb61_pol_id_poligoni_5_fid": {
+                "test_afb61649_1fb2_426e_b588_04217314f0c4": {
                     "add": [
                         {
                             "id": "_new_123452070212212",
@@ -488,8 +488,48 @@ class TransactionGroupTest(TestCase):
         response = client.post(commit_path, payload, format='json')
         self.assertEqual(response.status_code, 200)
         jresult = json.loads(response.content)
-        self.assertTrue(jresult['result'])
+        self.assertTrue(jresult['result'], jresult)
         self.assertEqual(jresult['response']['new'][0]['id'], 3)
         self.assertEqual(self.poligoni.qgis_layer.getFeature(3).attributes(), [
                          3, 'name father', 4444.0, QDate(2018, 1, 2), True])
         self.assertNotEqual(jresult['response']['new_relations'], {})
+
+        # Verify
+        parent_id = jresult['response']['new'][0]['id']
+        self.assertTrue(
+            self.poligoni.qgis_layer.getFeature(parent_id).isValid())
+        child_id = jresult['response']['new_relations']['test_afb61649_1fb2_426e_b588_04217314f0c4']['new'][0]['id']
+        self.assertTrue(
+            self.test.qgis_layer.getFeature(child_id).isValid())
+        self.assertEqual(self.poligoni.qgis_layer.getFeature(
+            parent_id).attributes(), [3, 'name father', 4444.0, QDate(2018, 1, 2), True])
+        self.assertEqual(self.test.qgis_layer.getFeature(
+            child_id).attributes(), [5, 'my name', 77777, QDate(2021, 1, 2), True, 3])
+
+        # Delete the parent
+        response = client.post(commit_path, {
+            "delete": [parent_id],
+            "lockids": jresult['response']['new_lockids']
+        }, format='json')
+        self.assertTrue(json.loads(response.content)['result'])
+
+        # There is no cascade here! Delete the child as well.
+        response = client.post(commit_path, {
+            "delete": [child_id],
+            "lockids": jresult['response']['new_relations']['test_afb61649_1fb2_426e_b588_04217314f0c4']['new_lockids']
+        }, format='json')
+
+        self.assertTrue(json.loads(response.content)['result'])
+
+        # Verify
+        self.assertFalse(
+            self.poligoni.qgis_layer.getFeature(parent_id).isValid())
+        self.assertFalse(
+            self.test.qgis_layer.getFeature(child_id).isValid())
+
+        # Check that errors on child feature will invalidate the whole transaction
+        payload["relations"]["test_afb61649_1fb2_426e_b588_04217314f0c4"]["add"][0]["properties"]["name"] = 'no name'
+        response = client.post(commit_path, payload, format='json')
+        self.assertEqual(response.status_code, 200)
+        jresult = json.loads(response.content)
+        self.assertFalse(jresult['result'], jresult)
