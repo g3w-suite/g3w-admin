@@ -126,7 +126,7 @@ class TransactionGroupTest(TestCase):
         self.test = Layer.objects.get(name='test')
         self.info = Layer.objects.get(name='info')
 
-    def test_mode_config(self):
+    def __test_mode_config(self):
         """Test mode config to check for field information"""
 
         client = APIClient()
@@ -207,7 +207,7 @@ class TransactionGroupTest(TestCase):
                              'default': '',
                            'input': {'type': 'text', 'options': {}}}])
 
-    def test_add_feature_simple(self):
+    def __test_add_feature_simple(self):
         """Test adding a test feature to an existing polygon"""
 
         client = APIClient()
@@ -321,7 +321,7 @@ class TransactionGroupTest(TestCase):
         jresult = json.loads(response.content)
         self.assertFalse(jresult['result'])
 
-    def test_update_feature_simple(self):
+    def __test_update_feature_simple(self):
         """Test adding a test feature to an existing polygon"""
 
         client = APIClient()
@@ -446,8 +446,8 @@ class TransactionGroupTest(TestCase):
         commit_path = reverse('editing-commit-vector-api',
                               args=['commit', 'qdjango', self.poligoni.project_id, self.poligoni.qgs_layer_id])
 
-        editing_path = reverse('editing-commit-vector-api',
-                               args=['editing', 'qdjango', self.poligoni.project_id, self.poligoni.qgs_layer_id])
+        child_commit_path = reverse('editing-commit-vector-api',
+                                    args=['commit', 'qdjango', self.test.project_id, self.test.qgs_layer_id])
 
         payload = {
             "add": [
@@ -518,12 +518,13 @@ class TransactionGroupTest(TestCase):
         self.assertTrue(json.loads(response.content)['result'])
 
         # There is no cascade here! Delete the child as well.
-        response = client.post(commit_path, {
+        response = client.post(child_commit_path, {
             "delete": [child_id],
             "lockids": jresult['response']['new_relations']['test_afb61649_1fb2_426e_b588_04217314f0c4']['new_lockids']
         }, format='json')
 
-        self.assertTrue(json.loads(response.content)['result'])
+        self.assertTrue(json.loads(response.content)
+                        ['result'], response.content)
 
         # Verify
         self.assertFalse(

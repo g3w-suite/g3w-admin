@@ -159,9 +159,9 @@ class LayerLock(object):
         # check if feature_id is in self.clientLockedFeatures
         # after check if is presente in db if no expired
         featureids_locked = self.clientLockedFeatures.keys()
-        if feature_id in featureids_locked:
+        if int(feature_id) in featureids_locked:
             # check in lockid db
-            return self.clientLockedFeatures[feature_id] in self.getInitialUserFeatureLockedByFeatureId.values()
+            return self.clientLockedFeatures[int(feature_id)] in self.getInitialUserFeatureLockedByFeatureId.values()
         else:
             return False
 

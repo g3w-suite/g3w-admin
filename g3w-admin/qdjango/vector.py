@@ -10,7 +10,7 @@ from django.db.models.expressions import RawSQL
 from django.http import HttpResponse, HttpResponseForbidden
 from django_filters.rest_framework import DjangoFilterBackend
 from qgis.PyQt.QtCore import QVariant
-from qgis.core import QgsVectorFileWriter, QgsFeatureRequest, QgsJsonUtils, Qgis
+from qgis.core import QgsVectorFileWriter, QgsFeatureRequest, QgsJsonUtils, Qgis, QgsFieldConstraints
 
 from core.api.base.vector import MetadataVectorLayer
 from core.api.base.views import (MODE_CONFIG, MODE_DATA, MODE_SHP, MODE_XLS,
@@ -106,10 +106,29 @@ class QGISLayerVectorViewMixin(object):
                 relation_layer = self._layer_model.objects.get(qgs_layer_id=relation['referencingLayer'],
                                                                project=self.layer.project)
 
-                referenced_field_is_pk = [self.layer.qgis_layer.fields().indexFromName(
-                    relation['fieldRef']['referencedField'])] == self.layer.qgis_layer.primaryKeyAttributes()
+                # qgis_layer is the referenced layer
+                qgis_layer = self.layer.qgis_layer
+                referenced_field_is_pk = [qgis_layer.fields().indexFromName(
+                    relation['fieldRef']['referencedField'])] == qgis_layer.primaryKeyAttributes()
+
+                # It's an old and buggy QGIS version so we cannot trust primaryKeyAttributes() and we go guessing
                 if IS_QGIS_3_10:
-                    referenced_field_is_pk = unique and default_clause and not_null
+                    field_index = qgis_layer.fields().indexFromName(
+                        relation['fieldRef']['referencedField'])
+                    # Safety check
+                    if field_index >= 0:
+                        field = qgis_layer.fields()[field_index]
+                        default_clause = qgis_layer.dataProvider().defaultValueClause(field_index)
+                        constraints = qgis_layer.fieldConstraints(
+                            field_index)
+                        not_null = bool(constraints & QgsFieldConstraints.ConstraintNotNull) and \
+                            field.constraints().constraintStrength(
+                            QgsFieldConstraints.ConstraintNotNull) == QgsFieldConstraints.ConstraintStrengthHard
+                        unique = bool(constraints & QgsFieldConstraints.ConstraintUnique) and \
+                            field.constraints().constraintStrength(
+                            QgsFieldConstraints.ConstraintUnique) == QgsFieldConstraints.ConstraintStrengthHard
+                        referenced_field_is_pk = unique and default_clause and not_null
+
                 self.metadata_relations[relation['referencingLayer']] = MetadataVectorLayer(
                     get_qgis_layer(relation_layer),
                     relation_layer.origname,
