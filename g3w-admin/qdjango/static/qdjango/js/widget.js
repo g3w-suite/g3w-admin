@@ -998,11 +998,11 @@ _.extend(g3wadmin.widget, {
         var $div = $('<div style="margin-left:40px;">');
 
         // add new constraint btn
-        $newConstraint = $('<a href="#" class="btn btn-sm btn-default"><i class="ion ion-plus-circled"></i> '+gettext('New single layer constraint')+'</a>');
+        $newConstraint = $('<a href="#" class="btn btn-sm btn-default"><i class="ion ion-plus-circled"></i> '+gettext('New alphanumeric constraints')+'</a>');
         $newConstraint.on('click', function(){
             ga.widget._singlelayerConstraintForm($newConstraint, null,
                 {
-                    'modal-title': gettext('New single layer constraint'),
+                    'modal-title': gettext('New alphanumeric constraints'),
                     'layer_pk': layer_pk,
                     'new': true,
                     'parent_click': $(this)
@@ -1045,7 +1045,7 @@ _.extend(g3wadmin.widget, {
         $tbody.find('[data-singlelayerconstraint-action-mode="update"]').on('click', function(e){
             ga.widget._singlelayerConstraintForm($newConstraint, constraint_res[$(this).attr('data-singlelayerconstraint-pk')],
                 {
-                    'modal-title': gettext('Update single layer constraint'),
+                    'modal-title': gettext('Update alphanumeric constraint'),
                     'layer_pk': layer_pk,
                     //'constraint_pk': $(this).attr('data-contraint-pk'),
                     'new': false,
@@ -1225,7 +1225,7 @@ _.extend(g3wadmin.tpl, {
             <input type="hidden" name="active" value="1" />\
             <div class="row">\
 				<div class="col-md-12">\
-					<div class="info"><h4>'+gettext('Set a name and a possible description for the single layer constraint')+':</h4></div>\
+					<div class="info"><h4>'+gettext('Set a name and a possible description for the alphanumeric constraint')+':</h4></div>\
 					<div class="form-group">\
 						<label class="control-label ">'+gettext('Name')+'</label>\
 						<div class="controls ">\
