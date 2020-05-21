@@ -460,16 +460,12 @@ msgid "No legend"
 msgstr "No legenda"
 
 #: templates/qdjango/layers_list.html:80
-#, fuzzy
-#| msgid "Donwload"
 msgid "Download as shp"
-msgstr "Scarica"
+msgstr "Scarica come shp"
 
 #: templates/qdjango/layers_list.html:81
-#, fuzzy
-#| msgid "Donwload"
 msgid "Download as xls"
-msgstr "Scarica"
+msgstr "Scarica come xls"
 
 #: templates/qdjango/layers_list.html:82
 msgid "WMS External"
