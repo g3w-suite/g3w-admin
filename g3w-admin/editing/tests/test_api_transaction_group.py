@@ -207,7 +207,7 @@ class TransactionGroupTest(TestCase):
                              'default': '',
                            'input': {'type': 'text', 'options': {}}}])
 
-    def __test_add_feature_simple(self):
+    def test_add_feature_simple(self):
         """Test adding a test feature to an existing polygon"""
 
         client = APIClient()
@@ -321,7 +321,7 @@ class TransactionGroupTest(TestCase):
         jresult = json.loads(response.content)
         self.assertFalse(jresult['result'])
 
-    def __test_update_feature_simple(self):
+    def test_update_feature_simple(self):
         """Test adding a test feature to an existing polygon"""
 
         client = APIClient()
@@ -436,7 +436,7 @@ class TransactionGroupTest(TestCase):
         jresult = json.loads(response.content)
         self.assertFalse(jresult['result'])
 
-    def __test_add_feature_relations(self):
+    def test_add_feature_relations(self):
         """Test complex transactions with parent and child features"""
 
         client = APIClient()
