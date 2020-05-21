@@ -9,8 +9,8 @@ from django.db import connections
 from django.db.models.expressions import RawSQL
 from django.http import HttpResponse, HttpResponseForbidden
 from django_filters.rest_framework import DjangoFilterBackend
-from PyQt5.QtCore import QVariant
-from qgis.core import QgsVectorFileWriter, QgsFeatureRequest, QgsJsonUtils
+from qgis.PyQt.QtCore import QVariant
+from qgis.core import QgsVectorFileWriter, QgsFeatureRequest, QgsJsonUtils, Qgis
 
 from core.api.base.vector import MetadataVectorLayer
 from core.api.base.views import (MODE_CONFIG, MODE_DATA, MODE_SHP, MODE_XLS,
@@ -95,6 +95,9 @@ class QGISLayerVectorViewMixin(object):
         # init relations
         self.set_relations()
 
+        # Determine if we are using an old and bugged version of QGIS
+        IS_QGIS_3_10 = Qgis.QGIS_VERSION.startswith('3.10')
+
         for idr, relation in list(self.relations.items()):
 
             # check if in relation there is referencedLayer == self layer
@@ -105,6 +108,8 @@ class QGISLayerVectorViewMixin(object):
 
                 referenced_field_is_pk = [self.layer.qgis_layer.fields().indexFromName(
                     relation['fieldRef']['referencedField'])] == self.layer.qgis_layer.primaryKeyAttributes()
+                if IS_QGIS_3_10:
+                    referenced_field_is_pk = unique and default_clause and not_null
                 self.metadata_relations[relation['referencingLayer']] = MetadataVectorLayer(
                     get_qgis_layer(relation_layer),
                     relation_layer.origname,

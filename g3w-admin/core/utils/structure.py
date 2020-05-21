@@ -15,7 +15,7 @@ from django.utils.translation import ugettext, ugettext_lazy as _
 from collections import OrderedDict
 import copy
 
-from qgis.core import QgsFieldConstraints
+from qgis.core import QgsFieldConstraints, Qgis
 from qgis.PyQt.QtCore import QVariant
 
 # Mapping OGRwkbGeometryType
@@ -271,7 +271,11 @@ def mapLayerAttributesFromQgisLayer(qgis_layer, **kwargs):
         fields = _fieldsMapped
 
     field_index = 0
+
     pk_attributes = qgis_layer.primaryKeyAttributes()
+
+    # Determine if we are using an old and bugged version of QGIS
+    IS_QGIS_3_10 = Qgis.QGIS_VERSION.startswith('3.10')
 
     for field in fields:
         if field.name() not in fieldsToExclude:
@@ -308,6 +312,11 @@ def mapLayerAttributesFromQgisLayer(qgis_layer, **kwargs):
 
                 comment = field.comment() if field.comment() else field.name()
                 fieldType = FIELD_TYPES_MAPPING[internal_typename]
+                if IS_QGIS_3_10:
+                    is_pk = unique and default_clause and not_null
+                else:
+                    is_pk = (field_index in pk_attributes)
+
                 toRes[field.name()] = editingFormField(
                     field.name(),
                     required=not_null,
@@ -318,7 +327,7 @@ def mapLayerAttributesFromQgisLayer(qgis_layer, **kwargs):
                     default_clause=default_clause,
                     unique=unique,
                     expression=expression,
-                    pk=(field_index in pk_attributes)
+                    pk=is_pk
                 )
 
                 # add upload url to image type if module is set
