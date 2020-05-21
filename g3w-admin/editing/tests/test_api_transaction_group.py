@@ -26,7 +26,7 @@ from editing.models import *
 from django.urls import reverse
 from rest_framework.test import APIClient
 from usersmanage.tests.utils import *
-
+from qdjango.apps import QGS_PROJECTS_CACHE
 
 # Makes a copy of test project and data into a temporary directory
 
@@ -83,6 +83,10 @@ class TransactionGroupTest(TestCase):
     def reset_db_data(cls):
         """Restore test database from backup
         It is necessary at the end of every single test where data test are changing"""
+
+        # Delete any open project
+        for p in list(QGS_PROJECTS_CACHE.keys()):
+            del (QGS_PROJECTS_CACHE[p])
 
         shutil.copy(QGS_DB_BACKUP, QGS_DB)
 
