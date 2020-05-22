@@ -15,6 +15,7 @@
           "required": true,
           "unique": true
         },
+        "pk": true,
         "default": "Autogenerate",
         "input": {
           "type": "text",
@@ -27,6 +28,7 @@
         "label": "geonameid",
         "editable": true,
         "validate": {},
+        "pk": false,
         "default": "",
         "input": {
           "type": "text",
@@ -40,6 +42,7 @@
         "editable": true,
         "validate": {},
         "default": "",
+        "pk": false,
         "input": {
           "type": "text",
           "options": {}
@@ -51,6 +54,7 @@
         "label": "asciiname",
         "editable": true,
         "validate": {},
+        "pk": false,
         "default": "",
         "input": {
           "type": "text",
@@ -63,6 +67,7 @@
         "label": "iso2_code",
         "editable": true,
         "validate": {},
+        "pk": false,
         "default": "",
         "input": {
           "type": "text",
@@ -75,6 +80,7 @@
         "label": "population",
         "editable": true,
         "validate": {},
+        "pk": false,
         "default": "",
         "input": {
           "type": "text",
@@ -87,6 +93,7 @@
         "label": "gtopo30",
         "editable": true,
         "validate": {},
+        "pk": false,
         "default": "",
         "input": {
           "type": "text",

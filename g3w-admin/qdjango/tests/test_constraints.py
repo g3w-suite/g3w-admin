@@ -234,9 +234,6 @@ class SingleLayerSubsetStringConstraints(TestSingleLayerConstraintsBase):
             constraint=constraint, group=group1, rule="NAME != 'ITALY'")
         rule.save()
 
-        from IPython import embed
-        embed(using=False)
-
         self.assertTrue(rule.validate_sql()[0])
 
         rule.rule = "not a valid rule!"
