@@ -126,7 +126,7 @@ class TransactionGroupTest(TestCase):
         self.test = Layer.objects.get(name='test')
         self.info = Layer.objects.get(name='info')
 
-    def __test_mode_config(self):
+    def test_mode_config(self):
         """Test mode config to check for field information"""
 
         client = APIClient()
@@ -207,7 +207,7 @@ class TransactionGroupTest(TestCase):
                              'default': '',
                            'input': {'type': 'text', 'options': {}}}])
 
-    def __test_add_feature_simple(self):
+    def test_add_feature_simple(self):
         """Test adding a test feature to an existing polygon"""
 
         client = APIClient()
@@ -225,6 +225,7 @@ class TransactionGroupTest(TestCase):
                 {
                     "id": "_new_1234520704661",
                     "geometry": {"coordinates": [1338617, 5425969], "type": "Point"}, "properties": {
+                        "fid": "_new_1234520704661",
                         "name": "name 1",
                         "value": 12345,
                         "date": '2021-01-02',
@@ -321,7 +322,7 @@ class TransactionGroupTest(TestCase):
         jresult = json.loads(response.content)
         self.assertFalse(jresult['result'])
 
-    def __test_update_feature_simple(self):
+    def test_update_feature_simple(self):
         """Test adding a test feature to an existing polygon"""
 
         client = APIClient()
@@ -349,6 +350,7 @@ class TransactionGroupTest(TestCase):
                 {
                     "id": int(to_update['featureid']),
                     "geometry": {"coordinates": [1338617, 5425969], "type": "Point"}, "properties": {
+                        "fid": int(to_update['featureid']),
                         "name": "name 15",
                         "value": 33333,
                         "date": '2022-01-02',
