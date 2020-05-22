@@ -195,6 +195,8 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
                     try:
 
                         feature = QgsFeature(qgis_layer.fields())
+                        if mode_editing == EDITING_POST_DATA_UPDATED:
+                            feature.setId(geojson_feature['id'])
 
                         # We use this feature for geometry parsing only:
                         imported_feature = QgsJsonUtils.stringToFeatureList(
