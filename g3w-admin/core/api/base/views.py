@@ -234,7 +234,8 @@ class BaseVectorOnModelApiView(G3WAPIView):
         if len(mode) == 1:
             self.mode_call = list(mode)[0]
         elif len(mode) > 1:
-            raise APIException('Only one of this mode: {}'.format(', '.join(self.modes_call_available)))
+            raise APIException('Only one of this mode: {}'.format(
+                ', '.join(self.modes_call_available)))
 
     def get_layer_by_name(self, layer_name):
         """
@@ -266,12 +267,14 @@ class BaseVectorOnModelApiView(G3WAPIView):
 
     def reproject_feature(self, feature, to_layer=False):
         """
-        Reproject single geomtry feature
+        Reproject single geometry feature
+
         :param feature: Feature object
         :param to_layer: Reprojecting versus
         :return:
         """
 
+        # FIXME: use QGIS API!
         if to_layer:
             from_srid = self.layer.project.group.srid.auth_srid
             to_srid = self.layer.srid
@@ -279,7 +282,8 @@ class BaseVectorOnModelApiView(G3WAPIView):
             from_srid = self.layer.srid
             to_srid = self.layer.project.group.srid.auth_srid
 
-        geometry = GEOSGeometry(GEOSGeometry(json.dumps(feature['geometry'])).wkt, srid=int(from_srid))
+        geometry = GEOSGeometry(GEOSGeometry(json.dumps(
+            feature['geometry'])).wkt, srid=int(from_srid))
         geometry.transform(to_srid)
         feature['geometry'] = json.loads(geometry.json)
 
@@ -297,10 +301,12 @@ class BaseVectorOnModelApiView(G3WAPIView):
         if 'features' in featurecollection:
 
             for feature in featurecollection['features']:
-                UserMediaHandler(layer=self.layer, feature=feature).new_value(change=True)
+                UserMediaHandler(layer=self.layer,
+                                 feature=feature).new_value(change=True)
         else:
             for feature in featurecollection:
-                UserMediaHandler(layer=self.layer, feature=feature).new_value(change=True)
+                UserMediaHandler(layer=self.layer,
+                                 feature=feature).new_value(change=True)
 
     def initial(self, request, *args, **kwargs):
         super(BaseVectorOnModelApiView, self).initial(request, *args, **kwargs)
@@ -313,7 +319,6 @@ class BaseVectorOnModelApiView(G3WAPIView):
 
         self.metadata_relations = dict()
         self.set_metadata_relations(request, **kwargs)
-
 
     def _get_pk_field_name(self):
         """Guess the pk name
@@ -328,7 +333,6 @@ class BaseVectorOnModelApiView(G3WAPIView):
         # pk_field_index = 0 # or: self.metadata_layer.qgis_layer.fields().lookupField(pk_field_index)
         return pk_field_name
 
-
     def response_config_mode(self, request):
         """
         Perform config operation, return form fields data for editing layer.
@@ -340,13 +344,15 @@ class BaseVectorOnModelApiView(G3WAPIView):
         forms = self.get_forms()
 
         # add forms data if exist
-        kwargs = {'fields': forms[self.layer_name]['fields']} if forms and forms.get(self.layer_name) else {}
+        kwargs = {'fields': forms[self.layer_name]['fields']
+                  } if forms and forms.get(self.layer_name) else {}
 
         if hasattr(self.metadata_layer, 'fields_to_exclude'):
             kwargs['exclude'] = self.metadata_layer.fields_to_exclude
         if hasattr(self.metadata_layer, 'order'):
             kwargs['order'] = self.metadata_layer.order
 
+       # FIXME: is this a wreck of pre-qdjango era? Can we remove it and always use mapLayerAttributesFromQgisLayer ?
         if self.mapping_layer_attributes_function.__func__ == mapLayerAttributesFromQgisLayer:
             fields = list(self.mapping_layer_attributes_function.__func__(
                 self.metadata_layer.qgis_layer,
@@ -360,16 +366,17 @@ class BaseVectorOnModelApiView(G3WAPIView):
             ).values())
 
         vector_params = {
-            'geomentryType': self.metadata_layer.geometry_type,
+            'geometryType': self.metadata_layer.geometry_type,
             'fields': fields,
-            'pkField': self._get_pk_field_name(),
         }
 
         # post_create_maplayerattributes signal
-        extra_fields = post_create_maplayerattributes.send(self, layer=self.layer)
+        extra_fields = post_create_maplayerattributes.send(
+            self, layer=self.layer)
         for extra_field in extra_fields:
             if extra_field[1]:
-                vector_params['fields'] = vector_params['fields'] + extra_field[1]
+                vector_params['fields'] = vector_params['fields'] + \
+                    extra_field[1]
 
         self.results.update(APIVectorLayerStructure(**vector_params).as_dict())
 
@@ -398,40 +405,36 @@ class BaseVectorOnModelApiView(G3WAPIView):
             kwargs['page'] = request.query_params.get('page')
             kwargs['page_size'] = request.query_params.get('page_size', 10)
 
-        self.features = get_qgis_features(self.metadata_layer.qgis_layer, qgis_feature_request, **kwargs)
+        self.features = get_qgis_features(
+            self.metadata_layer.qgis_layer, qgis_feature_request, **kwargs)
         ex = QgsJsonExporter(self.metadata_layer.qgis_layer)
 
         # patch for return GeoJson feature with CRS different from WGS84
         # TODO: use .setTransformGeometries( false ) with QGIS >= 3.12
         ex.setSourceCrs(QgsCoordinateReferenceSystem('EPSG:4326'))
 
-
-
         feature_collection = json.loads(ex.exportFeatures(self.features))
 
         # FIXME: QGIS api reprojecting?
         # Reproject if necessary
-        #if self.reproject:
+        # if self.reproject:
         #    self.reproject_featurecollection(feature_collection)
 
         # Change media
         self.change_media(feature_collection)
 
-        # FIXME: pkField is included in the results.
         self.results.update(APIVectorLayerStructure(**{
             'data': feature_collection,
             'count': count_qgis_features(self.metadata_layer.qgis_layer, qgis_feature_request, **kwargs),
-            'geomentryType': self.metadata_layer.geometry_type,
-            'pkField': self._get_pk_field_name(),
+            'geometryType': self.metadata_layer.geometry_type,
         }).as_dict())
 
-        #FIXME: add extra fields data by signals and receivers
-        #FIXME: featurecollection = post_serialize_maplayer.send(layer_serializer, layer=self.layer_name)
-        #FIXME: Not sure how to map this to the new QGIS API
+        # FIXME: add extra fields data by signals and receivers
+        # FIXME: featurecollection = post_serialize_maplayer.send(layer_serializer, layer=self.layer_name)
+        # FIXME: Not sure how to map this to the new QGIS API
 
         # Restore the original subset string
         self.metadata_layer.qgis_layer.setSubsetString(original_subset_string)
-
 
     def set_reprojecting_status(self):
         """
@@ -439,6 +442,8 @@ class BaseVectorOnModelApiView(G3WAPIView):
         :return:
         """
         # check if data to reproject
+        # FIXME: use QgsProject crs(), can be (in a try/except block):
+        # self.layer.project.qgis_project.crs() != self.layer.qgis_layer.crs()
         self.reproject = not self.layer.project.group.srid.auth_srid == self.layer.srid
 
     def get_response_data(self, request):

@@ -11,29 +11,32 @@ __date__ = '2020-04-18'
 __copyright__ = 'Copyright 2015 - 2020, Gis3w'
 
 
-from django.test import TestCase, RequestFactory
-from django.http import HttpResponse
-from django.urls import reverse
-from django.core.exceptions import PermissionDenied
-from django.forms import Form
-from django.core.files import File
-from guardian.shortcuts import get_anonymous_user, assign_perm
-from guardian.exceptions import GuardianError
+import re
+
 from crispy_forms.layout import Div
+from django.core.exceptions import PermissionDenied
+from django.core.files import File
+from django.forms import Form
+from django.http import HttpResponse
+from django.test import RequestFactory, TestCase
+from django.urls import reverse
+from guardian.exceptions import GuardianError
+from guardian.shortcuts import assign_perm, get_anonymous_user
 from import_export.resources import ModelResource
-from core.utils.general import *
+
+from core.models import Group
 from core.utils.db import build_dango_connection_name
 from core.utils.decorators import project_type_permission_required
 from core.utils.forms import crispyBoxBaseLayer, crispyBoxMacroGroups
+from core.utils.general import *
 from core.utils.geo import camel_geometry_type
 from core.utils.ie import modelresource_factory
 from core.utils.projects import countAllProjects
 from core.utils.response import send_file
-from core.models import Group
+from qdjango.models import Project
+
 from .base import CoreTestBase
-from .test_api import base_data_test
-from .utils import TEST_BASE_PATH, CURRENT_PATH
-import re
+from .utils import CURRENT_PATH, TEST_BASE_PATH
 
 
 class FormRequestTest(Form):
@@ -59,8 +62,8 @@ class CoreUtilsTest(CoreTestBase):
 
     @classmethod
     def setUpClass(cls):
-        super(CoreUtilsTest, cls).setUpClass()
-        base_data_test(cls)
+        super().setUpClass()
+        cls.prj = Project.objects.get(title='Un progetto')
 
     def test_build_dango_connection_name(self):
         """ Test same name function """
@@ -84,8 +87,10 @@ class CoreUtilsTest(CoreTestBase):
 
         self.assertEqual(get_adminlte_skin_by_user(self.test_admin1), 'yellow')
         self.assertEqual(get_adminlte_skin_by_user(self.test_admin2), 'red')
-        self.assertEqual(get_adminlte_skin_by_user(self.test_editor1), 'purple')
-        self.assertEqual(get_adminlte_skin_by_user(self.test_editor2), 'purple')
+        self.assertEqual(get_adminlte_skin_by_user(
+            self.test_editor1), 'purple')
+        self.assertEqual(get_adminlte_skin_by_user(
+            self.test_editor2), 'purple')
         self.assertEqual(get_adminlte_skin_by_user(self.test_viewer1), 'green')
 
     def test_project_type_permission_required(self):
@@ -96,7 +101,7 @@ class CoreUtilsTest(CoreTestBase):
             return HttpResponse()
 
         url_params = {
-            'gropup_slug': self.prj.group.slug,
+            'group_slug': self.prj.group.slug,
             'project_type': 'qdjango',
             'project_slug': self.prj.slug
         }
@@ -193,14 +198,10 @@ class CoreUtilsTest(CoreTestBase):
 
         file = f'{CURRENT_PATH}{TEST_BASE_PATH}g3wsuite_logo.png'
 
-        response = send_file('test_send_file.png', 'image/png', file, attachment=True)
+        response = send_file('test_send_file.png',
+                             'image/png', file, attachment=True)
         self.assertEqual(response.status_code, 200)
 
         fobj = File(open(file, 'rb'))
         self.assertEqual(fobj.read(), response.content)
         fobj.close()
-
-
-
-
-

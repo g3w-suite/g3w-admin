@@ -12,6 +12,7 @@ services:
       - shared-volume:/shared-volume
 
   g3w-suite:
+    image: g3wsuite/g3w-suite-deps-310-py3:latest
     build:
       context: ./ci_scripts
       dockerfile: Dockerfile.310.deps
@@ -20,11 +21,13 @@ services:
     - "8000:8000"
     environment:
       LANG: "C.UTF-8"
+      PYTHONIOENCODING: "UTF-8"
       PYTHONUNBUFFERED: 1
       QT_QPA_PLATFORM: "offscreen"
     depends_on:
       - postgis
     volumes:
+      - ./:/code
       - shared-volume:/shared-volume
 
 volumes:

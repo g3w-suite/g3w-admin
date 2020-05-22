@@ -7,7 +7,7 @@ import hashlib
 
 
 class LayerLock(object):
-    """ Handler features locking """
+    """ Handles features locking """
 
     def __init__(self, layer, appName, **kwargs):
 
@@ -35,7 +35,8 @@ class LayerLock(object):
         sessions = Session.objects.filter(expire_date__lte=timezone.now())
         session_ids = [s.session_key for s in sessions]
 
-        features_to_unlock = LockModel.objects.filter(sessionid__in=session_ids)
+        features_to_unlock = LockModel.objects.filter(
+            sessionid__in=session_ids)
         LayerLock.unLockExpiredFeatures(features_to_unlock)
 
         filters = {
@@ -57,7 +58,8 @@ class LayerLock(object):
         Build Lock Model istance, and optional save it
         """
         featureLockId = hashlib.md5()
-        toCrypt = str(fid) + self.layerName + self.appName + self.layerDatasource
+        toCrypt = str(fid) + self.layerName + \
+            self.appName + self.layerDatasource
         if getattr(self, 'sessionid'):
             toCrypt += self.sessionid
         featureLockId.update(toCrypt.encode('utf-8'))
@@ -98,7 +100,8 @@ class LayerLock(object):
         self.getInitialFeatureLockedIds()
 
         # find feature to lock
-        self.newFeatureToLockIds = list(set(featuresIds) - set(self.initialFeatureLockedIds))
+        self.newFeatureToLockIds = list(
+            set(featuresIds) - set(self.initialFeatureLockedIds))
 
         potentialLockIds = []
         lockModels = []
@@ -112,7 +115,7 @@ class LayerLock(object):
         locks = LockModel.objects.filter(feature_lock_id__in=potentialLockIds)
         lockedFeatures = []
         for lock in locks:
-          lockedFeatures.append(self.modelLock2dict(lock))
+            lockedFeatures.append(self.modelLock2dict(lock))
 
         if getattr(self, 'user') and len(self.getInitialUserFeatureLocked):
             for f in self.getInitialUserFeatureLocked:
@@ -126,7 +129,7 @@ class LayerLock(object):
 
         for featureLocked in featuresLocked:
             featureLocked.delete()
-            #cls.unLockFeature(featureLocked.feature_lock_id)
+            # cls.unLockFeature(featureLocked.feature_lock_id)
 
     @classmethod
     def unLockFeature(cls, featureLockId):
@@ -134,7 +137,8 @@ class LayerLock(object):
 
     @classmethod
     def unLockFeatures(cls, featureLockIds):
-        featuresLocked = LockModel.objects.filter(feature_lock_id__in=featureLockIds)
+        featuresLocked = LockModel.objects.filter(
+            feature_lock_id__in=featureLockIds)
         for featureLock in featuresLocked:
             featureLock.delete()
 
@@ -155,9 +159,9 @@ class LayerLock(object):
         # check if feature_id is in self.clientLockedFeatures
         # after check if is presente in db if no expired
         featureids_locked = self.clientLockedFeatures.keys()
-        if feature_id in featureids_locked:
+        if int(feature_id) in featureids_locked:
             # check in lockid db
-            return self.clientLockedFeatures[feature_id] in self.getInitialUserFeatureLockedByFeatureId.values()
+            return self.clientLockedFeatures[int(feature_id)] in self.getInitialUserFeatureLockedByFeatureId.values()
         else:
             return False
 
@@ -167,4 +171,5 @@ class LayerLock(object):
         """
 
         # rebuild by featureid
-        self.clientLockedFeatures = {int(lf['featureid']): lf['lockid'] for lf in lockedFeatures}
+        self.clientLockedFeatures = {
+            int(lf['featureid']): lf['lockid'] for lf in lockedFeatures}

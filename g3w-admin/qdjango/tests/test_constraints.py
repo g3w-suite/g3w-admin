@@ -21,7 +21,7 @@ from django.contrib.auth.models import Group as UserGroup
 from django.contrib.auth.models import User
 from django.test import Client
 from django.urls import reverse
-from qgis.core import QgsVectorLayer, QgsFeatureRequest, QgsExpression
+from qgis.core import QgsVectorLayer, QgsFeatureRequest, QgsExpression, Qgis
 from qgis.PyQt.QtCore import QTemporaryDir
 
 from qdjango.apps import QGS_PROJECTS_CACHE, QGS_SERVER, get_qgs_project
@@ -32,10 +32,14 @@ from qdjango.models import (
     Layer,
     Project
 )
-
+from unittest import skipIf
 from .base import QdjangoTestBase
 
 logger = logging.getLogger(__name__)
+
+
+# Determine if we are using an old and bugged version of QGIS
+IS_QGIS_3_10 = Qgis.QGIS_VERSION.startswith('3.10')
 
 
 class TestSingleLayerConstraintsBase(QdjangoTestBase):
@@ -46,17 +50,21 @@ class TestSingleLayerConstraintsBase(QdjangoTestBase):
 
         super().setUpTestData()
         cls.qdjango_project = Project.objects.all()[0]
-        cls.world = cls.qdjango_project.layer_set.filter(qgs_layer_id='world20181008111156525')[0]
+        cls.world = cls.qdjango_project.layer_set.filter(
+            qgs_layer_id='world20181008111156525')[0]
         # Make a cloned layer
-        cls.cloned_project = Project(group = cls.qdjango_project.group, title='My Clone')
+        cls.cloned_project = Project(
+            group=cls.qdjango_project.group, title='My Clone')
 
         cls.cloned_project.qgis_file = cls.qdjango_project.qgis_file
         cls.cloned_project.save()
-        cls.cloned_layer = cls.qdjango_project.layer_set.filter(qgs_layer_id='world20181008111156525')[0]
+        cls.cloned_layer = cls.qdjango_project.layer_set.filter(
+            qgs_layer_id='world20181008111156525')[0]
         cls.cloned_layer.pk = None
         cls.cloned_layer.project = cls.cloned_project
         cls.cloned_layer.save()
-        assert Layer.objects.filter(qgs_layer_id='world20181008111156525').count() == 2
+        assert Layer.objects.filter(
+            qgs_layer_id='world20181008111156525').count() == 2
 
     @classmethod
     def setUpClass(cls):
@@ -83,12 +91,13 @@ class TestSingleLayerConstraintsBase(QdjangoTestBase):
         if kwargs:
             path += '?'
             parts = []
-            for k,v in kwargs.items():
+            for k, v in kwargs.items():
                 parts.append(k + '=' + v)
             path += '&'.join(parts)
 
         # Auth
-        self.assertTrue(self.client.login(username='admin01', password='admin01'))
+        self.assertTrue(self.client.login(
+            username='admin01', password='admin01'))
         response = self.client.get(path)
         self.client.logout()
         return response
@@ -96,7 +105,8 @@ class TestSingleLayerConstraintsBase(QdjangoTestBase):
     def _check_subset_string(self):
         """Check for ROME in the returned content"""
 
-        ows_url = reverse('OWS:ows', kwargs={'group_slug': self.qdjango_project.group.slug, 'project_type': 'qdjango', 'project_id': self.qdjango_project.id})
+        ows_url = reverse('OWS:ows', kwargs={'group_slug': self.qdjango_project.group.slug,
+                                             'project_type': 'qdjango', 'project_id': self.qdjango_project.id})
 
         # Make a request to the server
         c = Client()
@@ -149,25 +159,29 @@ class SingleLayerSubsetStringConstraints(TestSingleLayerConstraintsBase):
     def test_user_constraint(self):
         """Test model with user constraint"""
 
-
         self.assertTrue(self._check_subset_string())
 
         admin01 = self.test_user1
         constraint = SingleLayerConstraint(layer=self.world, active=True)
         constraint.save()
 
-        rule = ConstraintSubsetStringRule(constraint=constraint, user=admin01, rule="NAME != 'ITALY'")
+        rule = ConstraintSubsetStringRule(
+            constraint=constraint, user=admin01, rule="NAME != 'ITALY'")
         rule.save()
 
         self.assertEqual(rule.user_or_group, admin01)
-        self.assertEqual(ConstraintSubsetStringRule.get_constraints_for_user(admin01, self.world)[0], rule)
+        self.assertEqual(ConstraintSubsetStringRule.get_constraints_for_user(
+            admin01, self.world)[0], rule)
         constraint.active = False
         constraint.save()
-        self.assertEqual(ConstraintSubsetStringRule.get_active_constraints_for_user(admin01, self.world), [])
+        self.assertEqual(ConstraintSubsetStringRule.get_active_constraints_for_user(
+            admin01, self.world), [])
         constraint.active = True
         constraint.save()
-        self.assertEqual(ConstraintSubsetStringRule.get_active_constraints_for_user(admin01, self.world)[0], rule)
-        self.assertEqual(ConstraintSubsetStringRule.get_rule_definition_for_user(admin01, self.world.pk), "(NAME != 'ITALY')")
+        self.assertEqual(ConstraintSubsetStringRule.get_active_constraints_for_user(
+            admin01, self.world)[0], rule)
+        self.assertEqual(ConstraintSubsetStringRule.get_rule_definition_for_user(
+            admin01, self.world.pk), "(NAME != 'ITALY')")
 
         self.assertFalse(self._check_subset_string())
 
@@ -186,21 +200,27 @@ class SingleLayerSubsetStringConstraints(TestSingleLayerConstraintsBase):
         constraint = SingleLayerConstraint(layer=world, active=True)
         constraint.save()
 
-        rule = ConstraintSubsetStringRule(constraint=constraint, group=group1, rule="NAME != 'ITALY'")
+        rule = ConstraintSubsetStringRule(
+            constraint=constraint, group=group1, rule="NAME != 'ITALY'")
         rule.save()
 
         self.assertEqual(rule.user_or_group, group1)
-        self.assertEqual(ConstraintSubsetStringRule.get_constraints_for_user(admin01, world)[0], rule)
+        self.assertEqual(ConstraintSubsetStringRule.get_constraints_for_user(
+            admin01, world)[0], rule)
         constraint.active = False
         constraint.save()
-        self.assertEqual(ConstraintSubsetStringRule.get_active_constraints_for_user(admin01, world), [])
+        self.assertEqual(
+            ConstraintSubsetStringRule.get_active_constraints_for_user(admin01, world), [])
         constraint.active = True
         constraint.save()
-        self.assertEqual(ConstraintSubsetStringRule.get_active_constraints_for_user(admin01, world)[0], rule)
-        self.assertEqual(ConstraintSubsetStringRule.get_rule_definition_for_user(admin01, world.pk), "(NAME != 'ITALY')")
+        self.assertEqual(ConstraintSubsetStringRule.get_active_constraints_for_user(
+            admin01, world)[0], rule)
+        self.assertEqual(ConstraintSubsetStringRule.get_rule_definition_for_user(
+            admin01, world.pk), "(NAME != 'ITALY')")
 
         self.assertFalse(self._check_subset_string())
 
+    @skipIf(IS_QGIS_3_10, "In QGIS 3.10 setSubsetString() always returns True")
     def test_validate_sql(self):
         """Test rule validation"""
 
@@ -210,7 +230,8 @@ class SingleLayerSubsetStringConstraints(TestSingleLayerConstraintsBase):
         constraint = SingleLayerConstraint(layer=world, active=True)
         constraint.save()
 
-        rule = ConstraintSubsetStringRule(constraint=constraint, group=group1, rule="NAME != 'ITALY'")
+        rule = ConstraintSubsetStringRule(
+            constraint=constraint, group=group1, rule="NAME != 'ITALY'")
         rule.save()
 
         self.assertTrue(rule.validate_sql()[0])
@@ -233,16 +254,16 @@ class SingleLayerSubsetStringConstraints(TestSingleLayerConstraintsBase):
         world.download = True
         world.save()
         response = self._testApiCallAdmin01('core-vector-api',
-            args={
-                'mode_call': 'shp',
-                'project_type': 'qdjango',
-                'project_id': self.qdjango_project.id,
-                # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                # WARNING: it's the qgs_layer_id, not the name!
-                # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                'layer_name': world.qgs_layer_id,
-            }.values()
-        )
+                                            args={
+                                                'mode_call': 'shp',
+                                                'project_type': 'qdjango',
+                                                'project_id': self.qdjango_project.id,
+                                                # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                                # WARNING: it's the qgs_layer_id, not the name!
+                                                # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                                'layer_name': world.qgs_layer_id,
+                                            }.values()
+                                            )
         self.assertEqual(response.status_code, 200)
         z = zipfile.ZipFile(BytesIO(response.content))
         temp = QTemporaryDir()
@@ -250,7 +271,8 @@ class SingleLayerSubsetStringConstraints(TestSingleLayerConstraintsBase):
         vl = QgsVectorLayer(temp.path())
         self.assertTrue(vl.isValid())
         vl.getFeatures(QgsFeatureRequest(QgsExpression('NAME = \'ITALY\'')))
-        self.assertEqual(len([f for f in vl.getFeatures(QgsFeatureRequest(QgsExpression('NAME = \'ITALY\'')))]), 1)
+        self.assertEqual(len([f for f in vl.getFeatures(
+            QgsFeatureRequest(QgsExpression('NAME = \'ITALY\'')))]), 1)
 
         # Add a rule
         admin01 = self.test_user1
@@ -259,29 +281,32 @@ class SingleLayerSubsetStringConstraints(TestSingleLayerConstraintsBase):
         constraint = SingleLayerConstraint(layer=world, active=True)
         constraint.save()
 
-        rule = ConstraintSubsetStringRule(constraint=constraint, group=group1, rule="NAME != 'ITALY'")
+        rule = ConstraintSubsetStringRule(
+            constraint=constraint, group=group1, rule="NAME != 'ITALY'")
         rule.save()
 
         response = self._testApiCallAdmin01('core-vector-api',
-            args={
-                'mode_call': 'shp',
-                'project_type': 'qdjango',
-                'project_id': self.qdjango_project.id,
-                # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                # WARNING: it's the qgs_layer_id, not the name!
-                # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                'layer_name': world.qgs_layer_id,
-            }.values()
-        )
+                                            args={
+                                                'mode_call': 'shp',
+                                                'project_type': 'qdjango',
+                                                'project_id': self.qdjango_project.id,
+                                                # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                                # WARNING: it's the qgs_layer_id, not the name!
+                                                # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                                'layer_name': world.qgs_layer_id,
+                                            }.values()
+                                            )
         self.assertEqual(response.status_code, 200)
         z = zipfile.ZipFile(BytesIO(response.content))
         temp = QTemporaryDir()
         z.extractall(temp.path())
         vl = QgsVectorLayer(temp.path())
         self.assertTrue(vl.isValid())
-        self.assertEqual(len([f for f in vl.getFeatures(QgsFeatureRequest(QgsExpression('NAME = \'ITALY\'')))]), 0)
+        self.assertEqual(len([f for f in vl.getFeatures(
+            QgsFeatureRequest(QgsExpression('NAME = \'ITALY\'')))]), 0)
 
-        self.assertEqual(len([f for f in vl.getFeatures(QgsFeatureRequest(QgsExpression('NAME = \'GERMANY\'')))]), 1)
+        self.assertEqual(len([f for f in vl.getFeatures(
+            QgsFeatureRequest(QgsExpression('NAME = \'GERMANY\'')))]), 1)
 
 
 class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
@@ -297,18 +322,23 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
         constraint = SingleLayerConstraint(layer=world, active=True)
         constraint.save()
 
-        rule = ConstraintExpressionRule(constraint=constraint, user=admin01, rule="NAME != 'ITALY'")
+        rule = ConstraintExpressionRule(
+            constraint=constraint, user=admin01, rule="NAME != 'ITALY'")
         rule.save()
 
         self.assertEqual(rule.user_or_group, admin01)
-        self.assertEqual(ConstraintExpressionRule.get_constraints_for_user(admin01, world)[0], rule)
+        self.assertEqual(ConstraintExpressionRule.get_constraints_for_user(
+            admin01, world)[0], rule)
         constraint.active = False
         constraint.save()
-        self.assertEqual(ConstraintExpressionRule.get_active_constraints_for_user(admin01, world), [])
+        self.assertEqual(
+            ConstraintExpressionRule.get_active_constraints_for_user(admin01, world), [])
         constraint.active = True
         constraint.save()
-        self.assertEqual(ConstraintExpressionRule.get_active_constraints_for_user(admin01, world)[0], rule)
-        self.assertEqual(ConstraintExpressionRule.get_rule_definition_for_user(admin01, world.pk), "(NAME != 'ITALY')")
+        self.assertEqual(ConstraintExpressionRule.get_active_constraints_for_user(
+            admin01, world)[0], rule)
+        self.assertEqual(ConstraintExpressionRule.get_rule_definition_for_user(
+            admin01, world.pk), "(NAME != 'ITALY')")
 
         self.assertFalse(self._check_subset_string())
 
@@ -327,18 +357,23 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
         constraint = SingleLayerConstraint(layer=world, active=True)
         constraint.save()
 
-        rule = ConstraintExpressionRule(constraint=constraint, group=group1, rule="NAME != 'ITALY'")
+        rule = ConstraintExpressionRule(
+            constraint=constraint, group=group1, rule="NAME != 'ITALY'")
         rule.save()
 
         self.assertEqual(rule.user_or_group, group1)
-        self.assertEqual(ConstraintExpressionRule.get_constraints_for_user(admin01, world)[0], rule)
+        self.assertEqual(ConstraintExpressionRule.get_constraints_for_user(
+            admin01, world)[0], rule)
         constraint.active = False
         constraint.save()
-        self.assertEqual(ConstraintExpressionRule.get_active_constraints_for_user(admin01, world), [])
+        self.assertEqual(
+            ConstraintExpressionRule.get_active_constraints_for_user(admin01, world), [])
         constraint.active = True
         constraint.save()
-        self.assertEqual(ConstraintExpressionRule.get_active_constraints_for_user(admin01, world)[0], rule)
-        self.assertEqual(ConstraintExpressionRule.get_rule_definition_for_user(admin01, world.pk), "(NAME != 'ITALY')")
+        self.assertEqual(ConstraintExpressionRule.get_active_constraints_for_user(
+            admin01, world)[0], rule)
+        self.assertEqual(ConstraintExpressionRule.get_rule_definition_for_user(
+            admin01, world.pk), "(NAME != 'ITALY')")
 
         self.assertFalse(self._check_subset_string())
 
@@ -351,7 +386,8 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
         constraint = SingleLayerConstraint(layer=world, active=True)
         constraint.save()
 
-        rule = ConstraintExpressionRule(constraint=constraint, group=group1, rule="NAME != 'ITALY'")
+        rule = ConstraintExpressionRule(
+            constraint=constraint, group=group1, rule="NAME != 'ITALY'")
         rule.save()
 
         self.assertTrue(rule.validate_sql()[0], rule.validate_sql()[1])
@@ -365,7 +401,7 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
         rule.rule = "NOT_IN_MY_NAME != 'ITALY'"
         rule.save()
 
-        self.assertFalse(rule.validate_sql()[0] )
+        self.assertFalse(rule.validate_sql()[0])
 
     def test_shp_api(self):
         """Test that the filter applies to shp api"""
@@ -374,16 +410,16 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
         world.download = True
         world.save()
         response = self._testApiCallAdmin01('core-vector-api',
-            args={
-                'mode_call': 'shp',
-                'project_type': 'qdjango',
-                'project_id': self.qdjango_project.id,
-                # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                # WARNING: it's the qgs_layer_id, not the name!
-                # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                'layer_name': world.qgs_layer_id,
-            }.values()
-        )
+                                            args={
+                                                'mode_call': 'shp',
+                                                'project_type': 'qdjango',
+                                                'project_id': self.qdjango_project.id,
+                                                # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                                # WARNING: it's the qgs_layer_id, not the name!
+                                                # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                                'layer_name': world.qgs_layer_id,
+                                            }.values()
+                                            )
         self.assertEqual(response.status_code, 200)
         z = zipfile.ZipFile(BytesIO(response.content))
         temp = QTemporaryDir()
@@ -391,7 +427,8 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
         vl = QgsVectorLayer(temp.path())
         self.assertTrue(vl.isValid())
         vl.getFeatures(QgsFeatureRequest(QgsExpression('NAME = \'ITALY\'')))
-        self.assertEqual(len([f for f in vl.getFeatures(QgsFeatureRequest(QgsExpression('NAME = \'ITALY\'')))]), 1)
+        self.assertEqual(len([f for f in vl.getFeatures(
+            QgsFeatureRequest(QgsExpression('NAME = \'ITALY\'')))]), 1)
 
         # Add a rule
         admin01 = self.test_user1
@@ -400,29 +437,32 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
         constraint = SingleLayerConstraint(layer=world, active=True)
         constraint.save()
 
-        rule = ConstraintExpressionRule(constraint=constraint, group=group1, rule="NAME != 'ITALY'")
+        rule = ConstraintExpressionRule(
+            constraint=constraint, group=group1, rule="NAME != 'ITALY'")
         rule.save()
 
         response = self._testApiCallAdmin01('core-vector-api',
-            args={
-                'mode_call': 'shp',
-                'project_type': 'qdjango',
-                'project_id': self.qdjango_project.id,
-                # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                # WARNING: it's the qgs_layer_id, not the name!
-                # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                'layer_name': world.qgs_layer_id,
-            }.values()
-        )
+                                            args={
+                                                'mode_call': 'shp',
+                                                'project_type': 'qdjango',
+                                                'project_id': self.qdjango_project.id,
+                                                # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                                # WARNING: it's the qgs_layer_id, not the name!
+                                                # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                                'layer_name': world.qgs_layer_id,
+                                            }.values()
+                                            )
         self.assertEqual(response.status_code, 200)
         z = zipfile.ZipFile(BytesIO(response.content))
         temp = QTemporaryDir()
         z.extractall(temp.path())
         vl = QgsVectorLayer(temp.path())
         self.assertTrue(vl.isValid())
-        self.assertEqual(len([f for f in vl.getFeatures(QgsFeatureRequest(QgsExpression('NAME = \'ITALY\'')))]), 0)
+        self.assertEqual(len([f for f in vl.getFeatures(
+            QgsFeatureRequest(QgsExpression('NAME = \'ITALY\'')))]), 0)
 
-        self.assertEqual(len([f for f in vl.getFeatures(QgsFeatureRequest(QgsExpression('NAME = \'GERMANY\'')))]), 1)
+        self.assertEqual(len([f for f in vl.getFeatures(
+            QgsFeatureRequest(QgsExpression('NAME = \'GERMANY\'')))]), 1)
 
     def test_xls_api(self):
         """Test XLS export"""
@@ -431,16 +471,16 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
         world.download = True
         world.save()
         response = self._testApiCallAdmin01('core-vector-api',
-            args={
-                'mode_call': 'xls',
-                'project_type': 'qdjango',
-                'project_id': self.qdjango_project.id,
-                # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                # WARNING: it's the qgs_layer_id, not the name!
-                # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                'layer_name': world.qgs_layer_id
-            }.values()
-        )
+                                            args={
+                                                'mode_call': 'xls',
+                                                'project_type': 'qdjango',
+                                                'project_id': self.qdjango_project.id,
+                                                # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                                # WARNING: it's the qgs_layer_id, not the name!
+                                                # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                                'layer_name': world.qgs_layer_id
+                                            }.values()
+                                            )
         self.assertEqual(response.status_code, 200)
         temp = QTemporaryDir()
         fname = temp.path() + '/temp.xlsx'
@@ -449,8 +489,10 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
 
         vl = QgsVectorLayer(fname)
         self.assertTrue(vl.isValid())
-        self.assertEqual(len([f for f in vl.getFeatures(QgsFeatureRequest(QgsExpression('NAME = \'ITALY\'')))]), 1)
-        self.assertEqual(len([f for f in vl.getFeatures(QgsFeatureRequest(QgsExpression('NAME = \'GERMANY\'')))]), 1)
+        self.assertEqual(len([f for f in vl.getFeatures(
+            QgsFeatureRequest(QgsExpression('NAME = \'ITALY\'')))]), 1)
+        self.assertEqual(len([f for f in vl.getFeatures(
+            QgsFeatureRequest(QgsExpression('NAME = \'GERMANY\'')))]), 1)
 
         # Add a rule
         admin01 = self.test_user1
@@ -459,20 +501,21 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
         constraint = SingleLayerConstraint(layer=world, active=True)
         constraint.save()
 
-        rule = ConstraintExpressionRule(constraint=constraint, group=group1, rule="NAME != 'ITALY'")
+        rule = ConstraintExpressionRule(
+            constraint=constraint, group=group1, rule="NAME != 'ITALY'")
         rule.save()
 
         response = self._testApiCallAdmin01('core-vector-api',
-            args={
-                'mode_call': 'xls',
-                'project_type': 'qdjango',
-                'project_id': self.qdjango_project.id,
-                # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                # WARNING: it's the qgs_layer_id, not the name!
-                # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                'layer_name': world.qgs_layer_id,
-            }.values()
-        )
+                                            args={
+                                                'mode_call': 'xls',
+                                                'project_type': 'qdjango',
+                                                'project_id': self.qdjango_project.id,
+                                                # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                                # WARNING: it's the qgs_layer_id, not the name!
+                                                # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                                'layer_name': world.qgs_layer_id,
+                                            }.values()
+                                            )
         self.assertEqual(response.status_code, 200)
 
         fname = temp.path() + '/temp2.xlsx'
@@ -481,8 +524,10 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
 
         vl = QgsVectorLayer(fname)
         self.assertTrue(vl.isValid())
-        self.assertEqual(len([f for f in vl.getFeatures(QgsFeatureRequest(QgsExpression('NAME = \'ITALY\'')))]), 0)
-        self.assertEqual(len([f for f in vl.getFeatures(QgsFeatureRequest(QgsExpression('NAME = \'GERMANY\'')))]), 1)
+        self.assertEqual(len([f for f in vl.getFeatures(
+            QgsFeatureRequest(QgsExpression('NAME = \'ITALY\'')))]), 0)
+        self.assertEqual(len([f for f in vl.getFeatures(
+            QgsFeatureRequest(QgsExpression('NAME = \'GERMANY\'')))]), 1)
 
     def test_bbox_filter(self):
         """Test a rule with geometry filter"""
@@ -492,16 +537,19 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
         constraint = SingleLayerConstraint(layer=world, active=True)
         constraint.save()
 
-        rule = ConstraintExpressionRule(constraint=constraint, user=admin01, rule="intersects_bbox( $geometry,  geom_from_wkt( 'POLYGON((8 51, 11 51, 11 52, 11 52, 8 51))') )")
+        rule = ConstraintExpressionRule(constraint=constraint, user=admin01,
+                                        rule="intersects_bbox( $geometry,  geom_from_wkt( 'POLYGON((8 51, 11 51, 11 52, 11 52, 8 51))') )")
         rule.save()
         self.assertFalse(self._check_subset_string())
 
         rule.delete()
 
-        rule = ConstraintExpressionRule(constraint=constraint, user=admin01, rule="intersects_bbox( $geometry,  geom_from_wkt( 'POLYGON((10 42, 13 42, 13 44, 10 44, 10 42))') )")
+        rule = ConstraintExpressionRule(constraint=constraint, user=admin01,
+                                        rule="intersects_bbox( $geometry,  geom_from_wkt( 'POLYGON((10 42, 13 42, 13 44, 10 44, 10 42))') )")
         rule.save()
 
-        ows_url = reverse('OWS:ows', kwargs={'group_slug': self.qdjango_project.group.slug, 'project_type': 'qdjango', 'project_id': self.qdjango_project.id})
+        ows_url = reverse('OWS:ows', kwargs={'group_slug': self.qdjango_project.group.slug,
+                                             'project_type': 'qdjango', 'project_id': self.qdjango_project.id})
 
         # Make a request to the server
         c = Client()
@@ -527,7 +575,8 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
         self.assertFalse(b'BERLIN' in response.content)
 
         # Add a second rule
-        rule2 = ConstraintExpressionRule(constraint=constraint, user=admin01, rule="NAME != 'ITALY'")
+        rule2 = ConstraintExpressionRule(
+            constraint=constraint, user=admin01, rule="NAME != 'ITALY'")
         rule2.save()
 
         response = c.get(ows_url, {
@@ -573,4 +622,3 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
 
         self.assertTrue(b'ROME' in response.content)
         self.assertFalse(b'BERLIN' in response.content)
-

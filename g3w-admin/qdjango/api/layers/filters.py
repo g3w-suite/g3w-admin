@@ -31,11 +31,13 @@ class RelationOneToManyFilter(BaseFilterBackend):
         """
 
         expression_text = None
-        if FILTER_RELATIONONETOMANY_PARAM not in request.GET:
+        if FILTER_RELATIONONETOMANY_PARAM not in request.GET \
+                or request.GET[FILTER_RELATIONONETOMANY_PARAM] == '':
             return
         else:
             try:
-                relation_id, parent_fid = request.GET[FILTER_RELATIONONETOMANY_PARAM].split('|')
+                relation_id, parent_fid = request.GET[FILTER_RELATIONONETOMANY_PARAM].split(
+                    '|')
             except ValueError as e:
                 logger.error('RelationOneToManyFilter: %s' % (e,))
                 return
@@ -57,10 +59,11 @@ class RelationOneToManyFilter(BaseFilterBackend):
         if not expression_text:
             return
 
-        original_expression = qgis_feature_request.filterExpression() if qgis_feature_request is not None else None
+        original_expression = qgis_feature_request.filterExpression(
+        ) if qgis_feature_request is not None else None
         if original_expression is not None:
             qgis_feature_request.setFilterExpression("({original_expression}) AND ({extra_expression})"
-                .format(original_expression=original_expression.expression(),
-                        extra_expression=expression_text))
+                                                     .format(original_expression=original_expression.expression(),
+                                                             extra_expression=expression_text))
         else:
             qgis_feature_request.setFilterExpression(expression_text)

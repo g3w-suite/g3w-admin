@@ -15,7 +15,7 @@ from django.utils.translation import ugettext, ugettext_lazy as _
 from collections import OrderedDict
 import copy
 
-from qgis.core import QgsFieldConstraints
+from qgis.core import QgsFieldConstraints, Qgis
 from qgis.PyQt.QtCore import QVariant
 
 # Mapping OGRwkbGeometryType
@@ -139,20 +139,28 @@ FIELD_TYPES_MAPPING = {
 }
 
 
-
-
-
 def editingFormField(fieldName, type=FIELD_TYPE_STRING, editable=True, required=False, validate=None,
-                     fieldLabel=None, inputType=None, values=None, **kwargs):
+                     fieldLabel=None, inputType=None, values=None, default_clause='', unique=False, expression='', pk=False, ** kwargs):
     """
-    Build editign form field for client.
+    Build editing form field for client.
     """
+
+    validate = {}
+    if required:
+        validate['required'] = True
+    if unique:
+        validate['unique'] = True
+    if expression:
+        validate['expression'] = expression
+
     ret = OrderedDict({
         'name': fieldName,
         'type': type,
         'label': fieldLabel if fieldLabel else fieldName,
         'editable': editable,
-        'validate': {} if not validate else validate,
+        'validate': validate,
+        'pk': pk,
+        'default': default_clause,
         'input': {
             'type': inputType if inputType else FORM_FIELD_TYPE_TEXT,
             'options': {}
@@ -160,7 +168,7 @@ def editingFormField(fieldName, type=FIELD_TYPE_STRING, editable=True, required=
     })
 
     if required:
-        ret['validate']['required'] = True;
+        ret['validate']['required'] = True
 
     if 'default' in kwargs:
         ret['input']['options']['default'] = kwargs['default']
@@ -178,6 +186,7 @@ def mapLayerAttributes(layer, formField=False, **kwargs):
     """
     Map database columns data from layer by type for client editing
     """
+
     mappingData = FIELD_TYPES_MAPPING
 
     fields = eval(layer.database_columns) if layer.database_columns else None
@@ -196,7 +205,8 @@ def mapLayerAttributes(layer, formField=False, **kwargs):
 
     for field in fieldsMapped:
         originType = field['type']
-        type = originType[:originType.find('(')] if originType.find('(') >= 0 else originType
+        type = originType[:originType.find('(')] if originType.find(
+            '(') >= 0 else originType
         if type in list(mappingData.keys()):
             field['type'] = mappingData[type]
             if formField:
@@ -216,13 +226,13 @@ def mapLayerAttributes(layer, formField=False, **kwargs):
 
                     if field['type'] == FIELD_TYPE_BOOLEAN:
                         formFields[field['name']]['input']['options'].update({
-                             'values': [{'key': _('Yes'), 'value': True}, {'key': 'No', 'value': False}]
+                            'values': [{'key': _('Yes'), 'value': True}, {'key': 'No', 'value': False}]
                         })
 
                 # update with fields configs data
                 if 'fields' in kwargs and field['name'] in kwargs['fields']:
-                    deepupdate(formFields[field['name']], kwargs['fields'][field['name']])
-
+                    deepupdate(formFields[field['name']],
+                               kwargs['fields'][field['name']])
 
     # reorder if is set in kwargs
     if 'order' in kwargs:
@@ -244,13 +254,13 @@ def mapLayerAttributesFromQgisLayer(qgis_layer, **kwargs):
     only concrete field not virtual field and many2many
     """
 
-    fieldsToExclude = kwargs['fieldsToExclude'] if 'fieldsToExclude' in kwargs else []
+    fieldsToExclude = kwargs['fieldsToExclude'] if 'fieldsToExclude' in kwargs else [
+    ]
 
     toRes = OrderedDict()
     fields = qgis_layer.fields()
 
     data_provider = qgis_layer.dataProvider()
-
 
     # exclude if set:
     if 'exclude' in kwargs:
@@ -261,6 +271,12 @@ def mapLayerAttributesFromQgisLayer(qgis_layer, **kwargs):
         fields = _fieldsMapped
 
     field_index = 0
+
+    pk_attributes = qgis_layer.primaryKeyAttributes()
+
+    # Determine if we are using an old and bugged version of QGIS
+    IS_QGIS_3_10 = Qgis.QGIS_VERSION.startswith('3.10')
+
     for field in fields:
         if field.name() not in fieldsToExclude:
             #internal_typename = field.typeName().split('(')[0]
@@ -268,9 +284,25 @@ def mapLayerAttributesFromQgisLayer(qgis_layer, **kwargs):
             if internal_typename in FIELD_TYPES_MAPPING:
 
                 # Get constraints and default clause to define if the field is editable
-                # or set editable property by kwargs:
-                constraints = data_provider.fieldConstraints(field_index)
-                if data_provider.defaultValue(field_index) and constraints & QgsFieldConstraints.ConstraintUnique and constraints & QgsFieldConstraints.ConstraintNotNull:
+                # or set editable property by kwargs.
+                # Only consider "strong" constraints
+                constraints = qgis_layer.fieldConstraints(field_index)
+                not_null = bool(constraints & QgsFieldConstraints.ConstraintNotNull) and \
+                    field.constraints().constraintStrength(
+                        QgsFieldConstraints.ConstraintNotNull) == QgsFieldConstraints.ConstraintStrengthHard
+                unique = bool(constraints & QgsFieldConstraints.ConstraintUnique) and \
+                    field.constraints().constraintStrength(
+                        QgsFieldConstraints.ConstraintUnique) == QgsFieldConstraints.ConstraintStrengthHard
+                has_expression = bool(constraints & QgsFieldConstraints.ConstraintExpression) and \
+                    field.constraints().constraintStrength(
+                        QgsFieldConstraints.ConstraintExpression) == QgsFieldConstraints.ConstraintStrengthHard
+                default_clause = data_provider.defaultValueClause(field_index)
+
+                expression = ''
+                if has_expression:
+                    expression = field.constraints().constraintExpression()
+
+                if not_null and unique and default_clause:
                     editable = False
                 else:
                     editable = kwargs['fields'][field.name()]['editable']
@@ -280,13 +312,23 @@ def mapLayerAttributesFromQgisLayer(qgis_layer, **kwargs):
 
                 comment = field.comment() if field.comment() else field.name()
                 fieldType = FIELD_TYPES_MAPPING[internal_typename]
+
+                if IS_QGIS_3_10:
+                    is_pk = unique and default_clause and not_null
+                else:
+                    is_pk = (field_index in pk_attributes)
+
                 toRes[field.name()] = editingFormField(
                     field.name(),
-                    required=constraints & QgsFieldConstraints.ConstraintNotNull,
+                    required=not_null,
                     fieldLabel=comment,
                     type=fieldType,
                     inputType=FORM_FIELDS_MAPPING[fieldType],
                     editable=editable,
+                    default_clause=default_clause,
+                    unique=unique,
+                    expression=expression,
+                    pk=is_pk
                 )
 
                 # add upload url to image type if module is set
@@ -302,7 +344,8 @@ def mapLayerAttributesFromQgisLayer(qgis_layer, **kwargs):
 
                 # update with fields configs data
                 if 'fields' in kwargs and field.name() in kwargs['fields']:
-                    deepupdate(toRes[field.name()], kwargs['fields'][field.name()])
+                    deepupdate(toRes[field.name()],
+                               kwargs['fields'][field.name()])
 
         field_index += 1
 
@@ -324,21 +367,20 @@ class APIVectorLayerStructure(object):
     """
     Structure for API Vector Layer response.
     """
+
     _format = 'GeoJSON'
-    _pkField = 'gid'
     _data = None
     _featureLocks = None
-    _geomentryType = None
+    _geometryType = None
     _fields = None
 
     def __init__(self, **kwargs):
 
         self.format = kwargs.get('type', self._format)
         self.count = kwargs.get('count', None)
-        self.pkField = kwargs.get('pkField', self._pkField)
         self.data = kwargs.get('data', self._data)
         self.featureLocks = kwargs.get('featureLocks', self._featureLocks)
-        self.geometryType = kwargs.get('geomentryType', self._geomentryType)
+        self.geometryType = kwargs.get('geometryType', self._geometryType)
         self.fields = kwargs.get('fields', self._fields)
 
     def setPkField(self, pkField):
@@ -358,7 +400,6 @@ class APIVectorLayerStructure(object):
         res = {
             'vector': {
                 'format': self.format,
-                'pk': self.pkField,
                 'count': self.count,
                 'data': self.data,
                 'geometrytype': self.geometryType,

@@ -23,7 +23,7 @@ if [ ! -e ${BUILD_DONE_FILE} ]; then
 
     echo "Building javascript code ..."
     yarn --ignore-engines --ignore-scripts --prod
-    nodejs -e "try { require('fs').symlinkSync(require('path').resolve('node_modules/@bower_components'), 'g3w-admin/core/static/bower_components', 'junction') } catch (e) { }"
+    nodejs -e "try { require('fs').symlinkSync(require('path').resolve('node_modules/@bower_components'), 'g3w-admin/core/static/bower_components', 'junction') } catch (e) { console.log(e); }"
     touch ${BUILD_DONE_FILE}
 else
     echo "Build was already done, skipping ..."

@@ -13,6 +13,7 @@ class QgisEditType(object):
     """
     Class to read edittype project settings and return client editing form structure
     """
+
     def __init__(self, **kwargs):
 
         for key, value in list(kwargs.items()):
@@ -37,8 +38,10 @@ class QgisEditTypeCheckBox(QgisEditType):
                 'type': self.field_type,
                 'options': {
                     'values': [
-                        {'value': self.CheckedState, 'checked': True},
-                        {'value': self.UncheckedState, 'checked': False},
+                        {'value': getattr(self, 'CheckedState',
+                                          'TRUE'), 'checked': True},
+                        {'value': getattr(
+                            self, 'UncheckedState', 'FALSE'), 'checked': False},
                     ]
                 }
             }
@@ -60,17 +63,17 @@ class QgisEditTypeDateTime(QgisEditType):
                 'type': self.field_type,
                 'options': {
                     'formats': [
-                                {
-                                    'date': bool(len(re.findall('/yyyy|MM|dd/', self.field_format)))
-                                    if hasattr(self, 'field_format') else True,
-                                    'time': bool(len(re.findall('/HH|mm|ss/', self.field_format)))
-                                    if hasattr(self, 'field_format') else False,
-                                    'fieldformat': self.field_format if hasattr(self, 'field_format') else 'yyyy-MM-dd',
-                                    'displayformat': self.display_format if hasattr(self, 'display_format') else 'HH:mm:ss',
-                                    'default': self.default if hasattr(self, 'default') else None
-                                },
+                        {
+                            'date': bool(len(re.findall('/yyyy|MM|dd/', self.field_format)))
+                            if hasattr(self, 'field_format') else True,
+                            'time': bool(len(re.findall('/HH|mm|ss/', self.field_format)))
+                            if hasattr(self, 'field_format') else False,
+                            'fieldformat': self.field_format if hasattr(self, 'field_format') else 'yyyy-MM-dd',
+                            'displayformat': self.display_format if hasattr(self, 'display_format') else 'HH:mm:ss',
+                            'default': self.default if hasattr(self, 'default') else None
+                        },
 
-                            ]
+                    ]
                 }
             }
         }
@@ -91,14 +94,14 @@ class QgisEditTypeRange(QgisEditType):
                 'type': self.field_type,
                 'options': {
                     'values': [
-                                {
-                                    'min': self.Min if hasattr(self, 'Min') else -2147483647,
-                                    'max': self.Max if hasattr(self, 'Max') else 2147483648,
-                                    'Step': self.Step if hasattr(self, 'Step') else 1,
-                                    'default': self.default if hasattr(self, 'default') else None
-                                },
+                        {
+                            'min': self.Min if hasattr(self, 'Min') else -2147483647,
+                            'max': self.Max if hasattr(self, 'Max') else 2147483648,
+                            'Step': self.Step if hasattr(self, 'Step') else 1,
+                            'default': self.default if hasattr(self, 'default') else None
+                        },
 
-                            ]
+                    ]
                 }
             }
         }
@@ -211,4 +214,3 @@ MAPPING_EDITTYPE_QGISEDITTYPE = {
     'ExternalResource': QgisEditTypeExternalResource,
     'ValueRelation': QgisEditTypeValueRelation
 }
-

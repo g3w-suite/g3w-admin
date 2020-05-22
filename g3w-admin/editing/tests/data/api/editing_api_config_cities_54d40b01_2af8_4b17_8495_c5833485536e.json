@@ -2,7 +2,6 @@
   "result": true,
   "vector": {
     "format": "GeoJSON",
-    "pk": "ogc_fid",
     "count": null,
     "data": null,
     "geometrytype": "Point",
@@ -12,7 +11,12 @@
         "type": "bigint",
         "label": "ogc_fid",
         "editable": false,
-        "validate": {},
+        "validate": {
+          "required": true,
+          "unique": true
+        },
+        "pk": true,
+        "default": "Autogenerate",
         "input": {
           "type": "text",
           "options": {}
@@ -24,6 +28,8 @@
         "label": "geonameid",
         "editable": true,
         "validate": {},
+        "pk": false,
+        "default": "",
         "input": {
           "type": "text",
           "options": {}
@@ -35,6 +41,8 @@
         "label": "name",
         "editable": true,
         "validate": {},
+        "default": "",
+        "pk": false,
         "input": {
           "type": "text",
           "options": {}
@@ -46,6 +54,8 @@
         "label": "asciiname",
         "editable": true,
         "validate": {},
+        "pk": false,
+        "default": "",
         "input": {
           "type": "text",
           "options": {}
@@ -57,6 +67,8 @@
         "label": "iso2_code",
         "editable": true,
         "validate": {},
+        "pk": false,
+        "default": "",
         "input": {
           "type": "text",
           "options": {}
@@ -68,6 +80,8 @@
         "label": "population",
         "editable": true,
         "validate": {},
+        "pk": false,
+        "default": "",
         "input": {
           "type": "text",
           "options": {}
@@ -79,6 +93,8 @@
         "label": "gtopo30",
         "editable": true,
         "validate": {},
+        "pk": false,
+        "default": "",
         "input": {
           "type": "text",
           "options": {}
