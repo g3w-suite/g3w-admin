@@ -27,7 +27,7 @@ from .validators import (CheckMaxExtent, ColumnName, DatasourceExists,
 
 
 # constant per qgis layers
-QGIS_LAYER_TYPE_NO_GEOM = 'No geometry'
+QGIS_LAYER_TYPE_NO_GEOM = 'NoGeometry'
 
 # QGIS edito layout type
 QGIS_EL_GENERATED_LAYOUT = 'generatedlayout'
@@ -331,7 +331,7 @@ class QgisProjectLayer(XmlData):
         :rtype: str
         """
 
-        return self.qgisProjectLayerTree.attrib.get('geometry')
+        return self.qgisProjectLayerTree.attrib.get('wkbType')
 
     def _getDataEditOptions(self):
         """
