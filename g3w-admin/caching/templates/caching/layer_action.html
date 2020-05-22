@@ -1,0 +1,14 @@
+{% load i18n %}
+{% load staticfiles %}
+
+{% if as_col %}
+<span class="col-xs-2 icon">
+{% endif %}
+<a href="#" {% if active %}style="color: orangered;"{% endif %} data-toggle="tooltip" title="{% trans 'Caching layer' %}" data-widget-type="ajaxForm"
+   data-form-url="{% url 'caching-layer-active' layer.project.group.slug app_name layer.project.slug layer.id %}"
+   data-modal-title="{% trans 'Activation layer caching' %}">
+    <i class="fa fa-database"></i>
+</a>
+{% if as_col %}
+</span>
+{% endif %}

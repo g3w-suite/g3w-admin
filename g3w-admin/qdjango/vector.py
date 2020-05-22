@@ -38,7 +38,12 @@ from .utils.data import QGIS_LAYER_TYPE_NO_GEOM
 from .utils.edittype import MAPPING_EDITTYPE_QGISEDITTYPE
 from .utils.structure import datasource2dict
 
+import json
+import logging
+
 MODE_WIDGET = 'widget'
+
+logger = logging.getLogger(__name__)
 
 
 class QGISLayerVectorViewMixin(object):
@@ -261,11 +266,12 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
             )
             tores = []
             for u in uniques:
-                if isinstance(u, QVariant) and u.isNull():
+                try :
+                    tores.append(json.loads(QgsJsonUtils.encodeValue(u)))
+                except Exception as e:
+                    logger.error(f'Response vector widget unique: {e}')
                     continue
-                else:
-                    tores.append(QgsJsonUtils.encodeValue(u).replace('"', ''))
-
+                    
             res[field] = tores
 
         return res

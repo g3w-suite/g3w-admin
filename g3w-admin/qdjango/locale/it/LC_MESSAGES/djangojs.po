@@ -1,0 +1,79 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-21 13:31+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: static/qdjango/js/widget.js:792
+msgid "Saved"
+msgstr "Salvato"
+
+#: static/qdjango/js/widget.js:888
+msgid "Form title"
+msgstr "Titolo del form"
+
+#: static/qdjango/js/widget.js:1001 static/qdjango/js/widget.js:1005
+msgid "New alphanumeric constraints"
+msgstr "Nuovo vincolo alfanumerico"
+
+#: static/qdjango/js/widget.js:1018
+msgid "Actions"
+msgstr "Azioni"
+
+#: static/qdjango/js/widget.js:1019 static/qdjango/js/widget.js:1230
+msgid "Name"
+msgstr "Nome"
+
+#: static/qdjango/js/widget.js:1020 static/qdjango/js/widget.js:1236
+msgid "Description"
+msgstr "Descrizione"
+
+#: static/qdjango/js/widget.js:1021
+msgid "Subset rules count"
+msgstr "Conto delle regole di tipo subset"
+
+#: static/qdjango/js/widget.js:1022
+msgid "Expression rules count"
+msgstr "Conto delle regole di espressione"
+
+#: static/qdjango/js/widget.js:1048
+msgid "Update alphanumeric constraint"
+msgstr "Nuovo vincolo alfanumerico"
+
+#: static/qdjango/js/widget.js:1059
+msgid "Constraint Subset Rules"
+msgstr "Regole del vincolo di tipo subset"
+
+#: static/qdjango/js/widget.js:1070
+msgid "Constraint Expression Rules"
+msgstr "Regole del vincolo di tipo espressione"
+
+#: static/qdjango/js/widget.js:1152
+msgid "Add"
+msgstr "Aggiungi"
+
+#: static/qdjango/js/widget.js:1211
+msgid "Save"
+msgstr "Salva"
+
+#: static/qdjango/js/widget.js:1214
+msgid "Delete"
+msgstr "Elimina"
+
+#: static/qdjango/js/widget.js:1228
+msgid "Set a name and a possible description for the alphanumeric constraint"
+msgstr "Indica un nome e una possibile descrizione per il vicolo alfanumerico"

@@ -31,8 +31,8 @@ if 'caching' in settings.G3WADMIN_LOCAL_MORE_APPS:
             else:
                 self.q['LAYERS'] = layer.name
 
-            # add qgis project
-            self.q['map'] = layer.project.qgis_file.file.name
+            # add TILESTACHE_CACHE_TOKEN
+            self.q['g3wsuite_caching_token'] = settings.TILESTACHE_CACHE_TOKEN
 
             # build dict
             # FIXME: QDJANGO_SERVER_URL now points to the base URL
@@ -41,7 +41,7 @@ if 'caching' in settings.G3WADMIN_LOCAL_MORE_APPS:
             self.layer_dict = {
                 'provider': {
                     'name': 'url template',
-                    'template': '{}?{}'.format(ows_url, self.q.urlencode(safe='$'))
+                    'template': '{}{}?{}'.format(settings.QDJANGO_SERVER_URL, ows_url, self.q.urlencode(safe='$'))
                 },
                 'projection': 'caching.utils.projections:CustomXYZGridProjection(\'EPSG:{}\')'.
                     format(layer.project.group.srid.auth_srid)

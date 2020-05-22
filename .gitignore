@@ -53,12 +53,10 @@ run_local*.sh
 /g3w-admin/cadastre/
 /g3w-admin/cadastre_camaiore/
 /g3w-admin/frontend/
-/g3w-admin/caching/
 /g3w-admin/authldap/
 /g3w-admin/globalsearch/
 /g3w-admin/stress/
 /g3w-admin/stress_admin/
-/g3w-admin/filemanager/
 /g3w-admin/preventcurrentlogins/
 /g3w-admin/demo/
 /g3w-admin/egovbari/

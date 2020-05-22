@@ -17,16 +17,23 @@ DATASOURCE_PATH = '<static_path_to_gis_data_source>'
 
 MEDIA_ROOT = ''
 #MEDIA_URL = '/media/'
-#STATIC_ROOT = '/home/www/django-qgis-static/static/'
+#STATIC_ROOT = '/home/www/static/'
 #STATIC_URL = '/static/'
 
 DEBUG = True
 
+# FRONTEND SETTINGS
+# ===============================
+# follow settings work if 'frontend' module is in 'G3WADMIN_LOCAL_MORE_APPS'
 #FRONTEND = False
 #FRONTEND_APP = None
 
-# for qdjango module, this is the base URL for WMS/WFS visible by the client
-QDJANGO_SERVER_URL = 'http://localhost'
+# LAYER CACHING SETTINGS
+# ===============================
+# follow settings work if 'caching' module is in 'G3WADMIN_LOCAL_MORE_APPS'
+TILESTACHE_CACHE_NAME = 'default'
+TILESTACHE_CACHE_TYPE = 'Disk' # or 'Memcache'
+TILESTACHE_CACHE_DISK_PATH = '/tmp/tilestache_cache/'
 
 ALLOWED_HOSTS = "*"
 

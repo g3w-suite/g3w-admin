@@ -11,6 +11,6 @@
 {% if active %}
 {% comment %} Add constraints management {% endcomment %}
 <span class="col-xs-2 icon">
-    <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Editing Geo-constraints list' %}" data-widget-type="constraintsList" data-constraints-layer-pk="{{ layer.pk }}" data-constraints-list-url="{% url 'constraint-api-filter-by-editing' layer.pk %}" ><i class="fa fa-chain"></i></a>
+    <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Manage Geo-constraints list' %}" data-widget-type="constraintsList" data-constraints-layer-pk="{{ layer.pk }}" data-constraints-list-url="{% url 'constraint-api-filter-by-editing' layer.pk %}" ><i class="fa fa-chain"></i></a>
 </span>
 {% endif %}

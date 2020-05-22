@@ -370,7 +370,6 @@ msgstr ""
 "permetterà di filtrare la lista dei records figli."
 
 #: ../../g3wsuite_client.md:81
-#, fuzzy
 msgid ""
 "In the case of links to multimedia contents, the previews of the images "
 "and/or the Open button will be displayed for consultation of different "
@@ -561,7 +560,6 @@ msgid "Zoom to layer: to zoom in on the extension of the layer"
 msgstr "**Zoom to layer:** per zoommare all'estensione del layer"
 
 #: ../../g3wsuite_client.md:131
-#, fuzzy
 msgid "Open the attribute table: to consult the associated attribute table"
 msgstr ""
 "**Apri la tabella degli attributi:** per consultare la tabella degli "
