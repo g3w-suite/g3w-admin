@@ -23,12 +23,16 @@ from qgis.core import (
     QgsFeatureRequest,
     QgsExpression,
     QgsExpressionContextUtils,
+    Qgis,
 )
 
 from qdjango.models import Layer
-from qdjango.apps import get_qgs_project
 
 logger = logging.getLogger(__name__)
+
+# Determine if we are using an old and bugged version of QGIS
+IS_QGIS_3_10 = Qgis.QGIS_VERSION.startswith('3.10')
+
 
 class SingleLayerConstraint(models.Model):
     """Main constraint class for a single layer.
@@ -87,17 +91,20 @@ class SingleLayerConstraint(models.Model):
 class CommonConstraintRule(models.Model):
     """Base class for constraint rules"""
 
-    constraint = models.ForeignKey(SingleLayerConstraint, on_delete=models.CASCADE)
+    constraint = models.ForeignKey(
+        SingleLayerConstraint, on_delete=models.CASCADE)
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, blank=True, null=True)
     group = models.ForeignKey(
         AuthGroup, on_delete=models.CASCADE, blank=True, null=True)
-    rule = models.TextField(_("Rule definition"), max_length=1024, help_text=_("Definition of the rule, either an SQL WHERE condition or a QgsExpression definition depending on the rule type"))
+    rule = models.TextField(_("Rule definition"), max_length=1024, help_text=_(
+        "Definition of the rule, either an SQL WHERE condition or a QgsExpression definition depending on the rule type"))
 
     class Meta:
         abstract = True
         managed = True
-        unique_together = (('constraint', 'user', 'rule'), ('constraint', 'group', 'rule'))
+        unique_together = (('constraint', 'user', 'rule'),
+                           ('constraint', 'group', 'rule'))
         app_label = 'qdjango'
 
     @property
@@ -131,7 +138,7 @@ class CommonConstraintRule(models.Model):
         sql_valid, ex = self.validate_sql()
         if not sql_valid:
             raise ValidationError(
-                _('There is an error in the SQL rule where condition: %s' % ex ))
+                _('There is an error in the SQL rule where condition: %s' % ex))
 
     @classmethod
     def get_constraints_for_user(cls, user, layer):
@@ -150,7 +157,7 @@ class CommonConstraintRule(models.Model):
             return []
         user_groups = user.groups.all()
         if user_groups.count():
-            return cls.objects.filter(Q(constraint__in=constraints), Q(user=user)|Q(group__in=user_groups))
+            return cls.objects.filter(Q(constraint__in=constraints), Q(user=user) | Q(group__in=user_groups))
         else:
             return cls.objects.filter(constraint__in=constraints, user=user)
 
@@ -166,12 +173,13 @@ class CommonConstraintRule(models.Model):
         :rtype: QuerySet
         """
 
-        constraints = SingleLayerConstraint.objects.filter(layer=layer, active=True)
+        constraints = SingleLayerConstraint.objects.filter(
+            layer=layer, active=True)
         if not constraints:
             return []
         user_groups = user.groups.all()
         if user_groups.count():
-            return cls.objects.filter(Q(constraint__in=constraints), Q(user=user)|Q(group__in=user_groups))
+            return cls.objects.filter(Q(constraint__in=constraints), Q(user=user) | Q(group__in=user_groups))
         else:
             return cls.objects.filter(constraint__in=constraints, user=user)
 
@@ -188,9 +196,11 @@ class CommonConstraintRule(models.Model):
         """
 
         try:
-            constraints = SingleLayerConstraint.objects.filter(layer=Layer.objects.get(pk=layer_id), active=True)
+            constraints = SingleLayerConstraint.objects.filter(
+                layer=Layer.objects.get(pk=layer_id), active=True)
         except Layer.DoesNotExist as ex:
-            logger.error("A Layer object with qdjango layer id %s was not found: skipping constraints!" % layer_id)
+            logger.error(
+                "A Layer object with qdjango layer id %s was not found: skipping constraints!" % layer_id)
             return ""
 
         if not constraints:
@@ -198,7 +208,8 @@ class CommonConstraintRule(models.Model):
 
         user_groups = user.groups.all()
         if user_groups.count():
-            rules = cls.objects.filter(Q(constraint__in=constraints), Q(user=user)|Q(group__in=user_groups))
+            rules = cls.objects.filter(Q(constraint__in=constraints), Q(
+                user=user) | Q(group__in=user_groups))
         else:
             rules = cls.objects.filter(constraint__in=constraints, user=user)
 
@@ -207,7 +218,8 @@ class CommonConstraintRule(models.Model):
             subset_strings.append("(%s)" % rule.rule)
 
         subset_string = ' AND '.join(subset_strings)
-        logger.debug("Returning rule definition for user %s and layer %s: %s" % (user, layer_id, subset_string))
+        logger.debug("Returning rule definition for user %s and layer %s: %s" % (
+            user, layer_id, subset_string))
         return subset_string
 
 
@@ -228,20 +240,33 @@ class ConstraintSubsetStringRule(CommonConstraintRule):
         """
 
         try:
-            project = get_qgs_project(self.constraint.layer.project.qgis_file.path)
+            project = self.constraint.layer.project.qgis_project
             if project is None:
-                raise ValidationError("QGIS project not found: %s" % self.constraint.layer.project.qgis_file.path)
-            layer = project.mapLayers()[self.constraint.layer.qgs_layer_id].clone()
+                raise ValidationError(
+                    "QGIS project not found: %s" % self.constraint.layer.project.qgis_file.path)
+            layer = project.mapLayers(
+            )[self.constraint.layer.qgs_layer_id].clone()
             original_subset_string = layer.subsetString()
             if original_subset_string:
-                subset_string = "(%s) AND (%s)" % (original_subset_string, self.rule)
+                subset_string = "(%s) AND (%s)" % (
+                    original_subset_string, self.rule)
             else:
                 subset_string = self.rule
             if not layer.setSubsetString(subset_string):
-                raise ValidationError("Could not set the subset string for layer %s: %s" % (self.constraint.layer, subset_string))
+                raise ValidationError("Could not set the subset string for layer %s: %s" % (
+                    self.constraint.layer, subset_string))
             is_valid = layer.isValid()
             if not is_valid:
-                raise ValidationError("QGIS layer %s is not valid after setting the new constraint: %s" % (self.constraint.layer, subset_string))
+                raise ValidationError("QGIS layer %s is not valid after setting the new constraint: %s" % (
+                    self.constraint.layer, subset_string))
+
+            # If we are using the bugged version, we need to check if the subset
+            # string was really changed because the setSubsetString call above
+            # returns True in any case
+            if IS_QGIS_3_10 and subset_string != layer.subsetString():
+                raise ValidationError("Could not set the subset string for layer %s: %s" % (
+                    self.constraint.layer, subset_string))
+
         except Exception as ex:
             logger.debug('Validate SQL failed: %s' % ex)
             return False, ex
@@ -272,7 +297,7 @@ class ConstraintExpressionRule(CommonConstraintRule):
                 return False, QgsExpression(self.rule).parserErrorString()
             if not expression.isValid():
                 return False, expression.parserErrorString()
-            project = get_qgs_project(self.constraint.layer.project.qgis_file.path)
+            project = self.constraint.layer.project.qgis_project
             if project is None:
                 return False, 'QGIS project was not found!'
             try:
@@ -287,5 +312,3 @@ class ConstraintExpressionRule(CommonConstraintRule):
             logger.debug('Validate SQL failed: %s' % ex)
             return False, ex
         return True, None
-
-
