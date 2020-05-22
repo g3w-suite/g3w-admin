@@ -225,7 +225,6 @@ class TransactionGroupTest(TestCase):
                 {
                     "id": "_new_1234520704661",
                     "geometry": {"coordinates": [1338617, 5425969], "type": "Point"}, "properties": {
-                        "fid": "_new_1234520704661",
                         "name": "name 1",
                         "value": 12345,
                         "date": '2021-01-02',
