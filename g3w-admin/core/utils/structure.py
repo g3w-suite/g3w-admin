@@ -312,6 +312,7 @@ def mapLayerAttributesFromQgisLayer(qgis_layer, **kwargs):
 
                 comment = field.comment() if field.comment() else field.name()
                 fieldType = FIELD_TYPES_MAPPING[internal_typename]
+
                 if IS_QGIS_3_10:
                     is_pk = unique and default_clause and not_null
                 else:

@@ -74,13 +74,14 @@ class CoreApiTest(CoreTestBase):
                                                      'label': 'pkuid',
                                                      'editable': False,
                                                      'validate': {'required': True, 'unique': True},
+                                                     'pk': True,
                                                      'default': 'Autogenerate',
                                                      'input': {'type': 'text', 'options': {}}},
                                                     {'name': 'name',
                                                      'type': 'varchar',
                                                      'label': 'name',
                                                      'editable': True,
-                                                     'validate': {'expression': '"name" != \'my name is no name\''},
+                                                     'validate': {'expression': '"name" != \'my name is no name\''}, 'pk': False,
                                                      'default': '',
                                                      'input': {'type': 'text', 'options': {}}}])
         self.assertEqual(resp["vector"]["geometrytype"], "Point")
