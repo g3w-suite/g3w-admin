@@ -21,7 +21,7 @@ class MetadataVectorLayer(object):
         :type lock: [type], optional
         """
         self.qgis_layer = qgis_layer
-        self.geometry_type = QgsWkbTypes.geometryDisplayString(qgis_layer.geometryType())
+        self.geometry_type = QgsWkbTypes.displayString(qgis_layer.wkbType())
         self.client_var = client_var
         self.relation_id = relation_id
         self.lock = lock
