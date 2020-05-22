@@ -1032,7 +1032,8 @@ _.extend(g3wadmin.widget, {
             '                <td>'+ga.tpl.singlelayerConstraintActions({
                     'layerId': layer_pk,
                     'constraintPk': v['pk'],
-                    'editDisplay': editDisplay
+                    'editDisplay': editDisplay,
+					'expressionIcon': ga.ui.expression_svg
             })+'</td>\n' +
             '                <td>'+v['name']+'</td>\n' +
 			'                <td>'+v['description']+'</td>\n' +
@@ -1245,10 +1246,10 @@ _.extend(g3wadmin.tpl, {
 
 	singlelayerConstraintActions: _.template('\
 		<span class="col-xs-2 icon">\
-			<a href="#" data-toggle="tooltip" data-placement="top" title="Subset Rules" data-singlelayerconstraint-action-mode="subset_rules" data-singlelayerconstraint-pk="<%= constraintPk %>"><i style="color: orange;" class="fa fa-cubes"></i></a>\
+			<a href="#" data-toggle="tooltip" data-placement="top" title="Subset Rules" data-singlelayerconstraint-action-mode="subset_rules" data-singlelayerconstraint-pk="<%= constraintPk %>"><i style="color: purple;" class="fa fa-cubes"></i></a>\
 		</span>\
 		<span class="col-xs-2 icon">\
-			<a href="#" data-toggle="tooltip" data-placement="top" title="Expression Rules" data-singlelayerconstraint-action-mode="expression_rules" data-singlelayerconstraint-pk="<%= constraintPk %>"><i style="color: purple;" class="fa fa-cubes"></i></a>\
+			<a href="#" data-toggle="tooltip" data-placement="top" title="Expression Rules" data-singlelayerconstraint-action-mode="expression_rules" data-singlelayerconstraint-pk="<%= constraintPk %>"><%= expressionIcon %></a>\
 		</span>\
 		<span class="col-xs-2 icon" style="display:<%= editDisplay %>">\
 			<a href="#" data-singlelayerconstraint-action-mode="update" data-singlelayerconstraint-pk="<%= constraintPk %>" data-singlelayerconstraint-layer-id="<%= layerId %>"><i class="ion ion-edit"></i></a>\

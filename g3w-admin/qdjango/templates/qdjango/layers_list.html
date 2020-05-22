@@ -20,6 +20,12 @@
         var state = e.target.checked ? 'check' : 'uncheck';
         $('[data-widget-type="downloadLayer"]').iCheck(state);
     });
+
+    // add expression svg
+    ga.ui.expression_svg = '<svg id="expressioniconsvg" height="20" width="20" viewBox="0 0 32 32"\n' +
+        '     xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" >\n' +
+        '  <image x="0" y="0" height="122%" width="122%"  ' +
+        ' xlink:href="{% static 'svg/mIconExpression_orange.svg' %}" />'
 </script>
 {% endblock %}
 
