@@ -201,7 +201,7 @@ class QgisProjectTest(TestCase):
 
                 # check geometrytype
                 # --------------------------------------------------------
-                self.assertEqual(layer.geometrytype, 'Polygon')
+                self.assertEqual(layer.geometrytype, 'MultiPolygon')
 
                 # check vectorjoins
                 # --------------------------------------------------------
