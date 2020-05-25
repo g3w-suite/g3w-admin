@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-21 13:31+0000\n"
+"POT-Creation-Date: 2020-05-25 13:31+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,62 +18,97 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: static/qdjango/js/widget.js:792
-msgid "Saved"
-msgstr "Salvato"
+#: static/qdjango/js/widget.js:210
+msgid "General configuration for search widget and results"
+msgstr "Configurazione generale della ricerca e dei risultati"
 
-#: static/qdjango/js/widget.js:888
-msgid "Form title"
+#: static/qdjango/js/widget.js:215
+#, fuzzy
+#| msgid "Form title"
+msgid "Search title"
 msgstr "Titolo del form"
 
-#: static/qdjango/js/widget.js:1001 static/qdjango/js/widget.js:1005
-msgid "New alphanumeric constraints"
-msgstr "Nuovo vincolo alfanumerico"
+#: static/qdjango/js/widget.js:335
+msgid "Search field settings"
+msgstr "Impostazioni campo di ricerca"
 
-#: static/qdjango/js/widget.js:1018
-msgid "Actions"
-msgstr "Azioni"
+#: static/qdjango/js/widget.js:342
+msgid "Field"
+msgstr "Campo"
 
-#: static/qdjango/js/widget.js:1019 static/qdjango/js/widget.js:1230
-msgid "Name"
-msgstr "Nome"
+#: static/qdjango/js/widget.js:343
+msgid "Widget"
+msgstr ""
 
-#: static/qdjango/js/widget.js:1020 static/qdjango/js/widget.js:1236
+#: static/qdjango/js/widget.js:344
+msgid "Alias"
+msgstr ""
+
+#: static/qdjango/js/widget.js:345 static/qdjango/js/widget.js:1002
+#: static/qdjango/js/widget.js:1219
 msgid "Description"
 msgstr "Descrizione"
 
-#: static/qdjango/js/widget.js:1021
-msgid "Subset rules count"
-msgstr "Conto delle regole di tipo subset"
+#: static/qdjango/js/widget.js:346
+msgid "Comparison operator"
+msgstr "Operatore di comparazione"
 
-#: static/qdjango/js/widget.js:1022
-msgid "Expression rules count"
-msgstr "Conto delle regole di espressione"
+#: static/qdjango/js/widget.js:356
+msgid "Dependency"
+msgstr "Dipendenza"
 
-#: static/qdjango/js/widget.js:1048
-msgid "Update alphanumeric constraint"
-msgstr "Nuovo vincolo alfanumerico"
-
-#: static/qdjango/js/widget.js:1059
-msgid "Constraint Subset Rules"
-msgstr "Regole del vincolo di tipo subset"
-
-#: static/qdjango/js/widget.js:1070
-msgid "Constraint Expression Rules"
-msgstr "Regole del vincolo di tipo espressione"
-
-#: static/qdjango/js/widget.js:1152
+#: static/qdjango/js/widget.js:625 static/qdjango/js/widget.js:1135
 msgid "Add"
 msgstr "Aggiungi"
 
-#: static/qdjango/js/widget.js:1211
+#: static/qdjango/js/widget.js:774
+msgid "Saved"
+msgstr "Salvato"
+
+#: static/qdjango/js/widget.js:870
+msgid "Form title"
+msgstr "Titolo del form"
+
+#: static/qdjango/js/widget.js:983 static/qdjango/js/widget.js:987
+msgid "New alphanumeric constraints"
+msgstr "Nuovo vincolo alfanumerico"
+
+#: static/qdjango/js/widget.js:1000
+msgid "Actions"
+msgstr "Azioni"
+
+#: static/qdjango/js/widget.js:1001 static/qdjango/js/widget.js:1213
+msgid "Name"
+msgstr "Nome"
+
+#: static/qdjango/js/widget.js:1003
+msgid "Subset rules count"
+msgstr "Conto delle regole di tipo subset"
+
+#: static/qdjango/js/widget.js:1004
+msgid "Expression rules count"
+msgstr "Conto delle regole di espressione"
+
+#: static/qdjango/js/widget.js:1031
+msgid "Update alphanumeric constraint"
+msgstr "Nuovo vincolo alfanumerico"
+
+#: static/qdjango/js/widget.js:1042
+msgid "Constraint Subset Rules"
+msgstr "Regole del vincolo di tipo subset"
+
+#: static/qdjango/js/widget.js:1053
+msgid "Constraint Expression Rules"
+msgstr "Regole del vincolo di tipo espressione"
+
+#: static/qdjango/js/widget.js:1194
 msgid "Save"
 msgstr "Salva"
 
-#: static/qdjango/js/widget.js:1214
+#: static/qdjango/js/widget.js:1197
 msgid "Delete"
 msgstr "Elimina"
 
-#: static/qdjango/js/widget.js:1228
+#: static/qdjango/js/widget.js:1211
 msgid "Set a name and a possible description for the alphanumeric constraint"
 msgstr "Indica un nome e una possibile descrizione per il vicolo alfanumerico"

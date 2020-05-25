@@ -207,35 +207,17 @@ ga.Qdjango.widgetEditor = {
 									
 		var div = $('<div class="bloccoGenerale box box-danger">\
 						<div class="box-header with-border">\
-						<h3 class="box-title">Configurazione generale delle ricerca e risultati</h3>\
+						<h3 class="box-title">'+gettext("General configuration for search widget and results")+'</h3>\
 						</div>\
 						<div class="box-body">\
 							<div class="col-md-12">\
 								<div class="row">\
-									<div class="col-md-12"><span class="label label-default">Titolo Ricerca</span></div>\
+									<div class="col-md-12"><span class="label label-default">'+gettext("Search title")+'</span></div>\
 								</div>\
 								<div class="row">\
 									<div class="form-group col-md-12 title"></div>\
 								</div>\
 							</div>\
-							<!--\
-							<div class="col-md-7 resultFields">\
-								<div class="row labels">\
-									<div class="col-md-6"><span class="label label-default">Campo Risultato</span></div>\
-									<div class="col-md-6"><span class="label label-default">Alias Risultato</span></div>\
-								</div>\
-								<div class="row">\
-									<div class="col-md-6 fieldSelect"></div>\
-									<div class="col-md-5 textInput"></div>\
-									<div class="col-md-1"></div>\
-								</div>\
-								<div class="row">\
-									<div class="col-md-6 fieldSelect"></div>\
-									<div class="col-md-5 textInput"></div>\
-									<div class="col-md-1" style="padding-left:0px;"><button type="button" class="btn btn-default add"><i class="glyphicon glyphicon-plus"></i></button></div>\
-								</div>\
-							</div>\
-							-->\
 						<\div>\
 					</div>');
 					
@@ -350,18 +332,18 @@ ga.Qdjango.widgetEditor = {
 		var div = $('<div class="blocco" style="display: none">\
 					<div class="box box-success" >\
 							<div class="box-header with-border">\
-							<h3 class="box-title">Impostazioni campo di ricerca</h3>\
+							<h3 class="box-title">'+gettext("Search field settings")+'</h3>\
 							<div class="box-tools pull-right">\
                     			<button class="btn btn-box-tool close"><i class="fa fa-times"></i></button>\
                   			</div>\
 							</div>\
 							<div class="box-body">\
 								<div class="row">\
-									<div class="col-md-3"><span class="label label-default">Campo</span></div>\
-									<div class="col-md-2"><span class="label label-default">Widget</span></div>\
-									<div class="col-md-3"><span class="label label-default">Alias</span></div>\
-									<div class="col-md-3"><span class="label label-default">Descrizione</span></div>\
-									<div class="col-md-1"><span class="label label-default">Operatore comparazione</span></div>\
+									<div class="col-md-3"><span class="label label-default">'+gettext("Field")+'</span></div>\
+									<div class="col-md-2"><span class="label label-default">'+gettext("Widget")+'</span></div>\
+									<div class="col-md-3"><span class="label label-default">'+gettext("Alias")+'</span></div>\
+									<div class="col-md-3"><span class="label label-default">'+gettext("Description")+'</span></div>\
+									<div class="col-md-1"><span class="label label-default">'+gettext("Comparison operator")+'</span></div>\
 								</div>\
 								<div class="row">\
 									<div class="col-md-3 fieldSelect"></div>\
@@ -371,7 +353,7 @@ ga.Qdjango.widgetEditor = {
 									<div class="col-md-1 cmpOperatorSelect"></div>\
 								</div>\
 								<div class="row">\
-									<div class="col-md-3 invisible cmpDependanceSelectLabel"><span class="label label-default">Dipendenza</span></div>\
+									<div class="col-md-3 invisible cmpDependanceSelectLabel"><span class="label label-default">'+gettext("Dependency")+'</span></div>\
 								</div>\
 								<div class="row">\
 									<div class="col-md-3 invisible cmpDependanceSelect"></div>\
@@ -640,7 +622,7 @@ ga.Qdjango.widgetEditor = {
 		if(el.val() != 'law')
 		{
 			var addDiv = $('<div class="row text-center">\
-							<button type="button" class="btn btn-success addRow"><i class="glyphicon glyphicon-plus"></i> Aggiungi</button>\
+							<button type="button" class="btn btn-success addRow"><i class="glyphicon glyphicon-plus"></i> '+gettext("Add")+'</button>\
 						</div>');
 			addDiv.find(".addRow").click(function(){
 				var div = $(this).parents("div").first();
