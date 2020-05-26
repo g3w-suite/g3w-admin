@@ -7,7 +7,7 @@ from django.core.files.images import ImageFile
 from django.db import IntegrityError, transaction
 from django.db.models import AutoField, FileField, ImageField
 from django.utils.translation import ugettext_lazy as _
-from qgis.core import QgsDataSourceUri, QgsFeature, QgsJsonUtils
+from qgis.core import QgsDataSourceUri, QgsFeature, QgsJsonUtils, QgsJsonExporter
 from rest_framework.exceptions import ValidationError
 
 from core.api.base.vector import MetadataVectorLayer
@@ -168,16 +168,13 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
                     if self.reproject:
                         self.reproject_feature(geojson_feature, to_layer=True)
 
-                    if mode_editing == EDITING_POST_DATA_ADDED:
+                    # case relation data ADD, if father referenced field is pk
+                    if is_referenced_field_is_pk:
+                        for newid in kwargs['referenced_layer_insert_ids']:
+                            if geojson_feature['properties'][metadata_layer.referencing_field] == newid['clientid']:
+                                geojson_feature['properties'][metadata_layer.referencing_field] = newid['id']
 
-                        # case relation data ADD, if father referenced field is pk
-                        if is_referenced_field_is_pk:
-                            for newid in kwargs['referenced_layer_insert_ids']:
-                                if geojson_feature['properties'][metadata_layer.referencing_field] == newid['clientid']:
-                                    geojson_feature['properties'][metadata_layer.referencing_field] = newid['id']
-
-                    else:
-
+                    if mode_editing == EDITING_POST_DATA_UPDATED:
                         # control feature locked
                         if not metadata_layer.lock.checkFeatureLocked(geojson_feature['id']):
                             raise Exception(self.no_more_lock_feature_msg.format(geojson_feature['id'],
@@ -259,10 +256,15 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
                         to_res_lock = {}
 
                         if mode_editing == EDITING_POST_DATA_ADDED:
+
+                            ex = QgsJsonExporter(qgis_layer)
+                            jfeature = json.loads(ex.exportFeature(feature))
+
                             to_res.update({
                                 'clientid': geojson_feature['id'],
                                 # This might be the internal QGIS feature id (< 0)
-                                'id': feature.id()
+                                'id': feature.id(),
+                                'properties': jfeature['properties']
                             })
 
                             # lock news:
@@ -408,6 +410,17 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
                         raise Exception(_('Backend error saving layer %s: %s') % (
                             ql.name(), ql.commitErrors()))
 
+        except ValidationError as ve:
+
+            if has_transactions:
+                for ql in editing_layers:
+                    ql.rollBack()
+
+            self.results.update({
+                'result': False,
+                'errors': ve.detail
+            })
+
         except Exception as e:
 
             if has_transactions:
@@ -417,7 +430,7 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
             self.results.update({
                 'result': False,
                 'errors': str(e)
-            }).results
+            })
 
         try:
             self.results.update({
