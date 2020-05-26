@@ -80,7 +80,7 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
         super().response_data_mode(request)
 
         # lock features and get:
-        feature_ids = [f.id() for f in self.features]
+        feature_ids = [str(f.id()) for f in self.features]
         features_locked = self.metadata_layer.lock.lockFeatures(feature_ids)
 
         # update response

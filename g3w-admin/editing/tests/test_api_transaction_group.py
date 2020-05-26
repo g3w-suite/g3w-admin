@@ -242,6 +242,8 @@ class TransactionGroupTest(TestCase):
         jresult = json.loads(response.content)
         self.assertTrue(jresult['result'])
         self.assertEqual(jresult['response']['new'][0]['id'], 5)
+        self.assertEqual(jresult['response']['new'][0]['properties']['name'], "name 1")
+        self.assertEqual(jresult['response']['new'][0]['properties']['value'], 12345)
 
         # Retrieve the feature and check
         qgis_layer = self.test.qgis_layer
@@ -363,7 +365,7 @@ class TransactionGroupTest(TestCase):
         jresult = json.loads(response.content)
         self.assertTrue(jresult['result'])
         self.assertEqual(self.test.qgis_layer.getFeature(int(to_update['featureid'])).attributes(), [
-                         4, 'name 15', 33333, QDate(2022, 1, 2), False, 1])
+                         int(to_update['featureid']), 'name 15', 33333, QDate(2022, 1, 2), False, 1])
 
         # Test error conditions:
         # 1: NULL pol_id
@@ -497,6 +499,9 @@ class TransactionGroupTest(TestCase):
         self.assertEqual(jresult['response']['new'][0]['id'], 3)
         self.assertEqual(self.poligoni.qgis_layer.getFeature(3).attributes(), [
                          3, 'name father', 4444.0, QDate(2018, 1, 2), True])
+        self.assertTrue('properties' in jresult['response']['new'][0])
+        self.assertEqual(jresult['response']['new'][0]['properties']['name'], "name father")
+        self.assertEqual(jresult['response']['new'][0]['properties']['value'], 4444)
         self.assertNotEqual(jresult['response']['new_relations'], {})
 
         # Verify
