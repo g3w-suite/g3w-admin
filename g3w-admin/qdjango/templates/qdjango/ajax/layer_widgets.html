@@ -1,7 +1,7 @@
 {% load i18n %}
 {% load qdjango_tags %}
 <div id="layer_widgets_{{ layer.id }}" style="margin-left:40px;">
-    <a href="#" data-widget-type="ajaxForm" data-form-url="{% url 'qdjango-project-layer-widget-add' group.slug project.slug layer.slug %}" data-modal-size="modal-lg"><i class="ion ion-plus-circled"></i> {% trans 'Add new widget' %}</a>
+    <a class="btn btn-sm btn-default" href="#" data-widget-type="ajaxForm" data-form-url="{% url 'qdjango-project-layer-widget-add' group.slug project.slug layer.slug %}" data-modal-size="modal-lg"><i class="ion ion-plus-circled"></i> {% trans 'Add new widget' %}</a>
     <table class="table">
         <thead>
             <tr>
