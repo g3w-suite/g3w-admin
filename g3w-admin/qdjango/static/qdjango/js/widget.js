@@ -318,8 +318,6 @@ ga.Qdjango.widgetEditor = {
 
 
 		// add widget types
-
-
 		if (this.layer_type != 'spatialite'){
 			cmpOperatorSelect.append('<option value="ILIKE">ILIKE</option>')
 		}
@@ -338,6 +336,10 @@ ga.Qdjango.widgetEditor = {
                   			</div>\
 							</div>\
 							<div class="box-body">\
+								<div class="row advise" style="display: none;">\
+									<div class="col-md-offset-2  col-md-8 alert alert-warning">\
+									</div>\
+								</div>\
 								<div class="row">\
 									<div class="col-md-3"><span class="label label-default">'+gettext("Field")+'</span></div>\
 									<div class="col-md-2"><span class="label label-default">'+gettext("Widget")+'</span></div>\
@@ -387,19 +389,26 @@ ga.Qdjango.widgetEditor = {
 
 		widgetSelect.on('change', function(){
 			var $select = div.find(".cmpDependanceSelect");
+			var $advise = div.find(".advise");
 			if ($(this).val() == 'selectbox') {
 				div.find(".cmpDependanceSelectLabel").removeClass('invisible');
 				$select.removeClass('invisible');
 
-					// cerchiamo tutti gli input attivati
 				$.each($(".rightCol").find('.blocco'), function(i, v) {
 					var f = $(v).find(".fieldSelect").find("select").val()
 					$select.find('select').append('<option value="'+f+'">'+f+'</option>')
 				});
 
+				// show advise msg
+				$advise.show();
+				$advise.find('div').html("<strong>"+gettext('Attention')+"!</strong><br>" +
+					gettext('Fields with many unique values can create slow map loading behavior'));
+
+
 			} else {
 				div.find(".cmpDependanceSelectLabel").addClass('invisible');
 				$select.addClass('invisible');
+				$advise.hide();
 			}
 		});
 
