@@ -164,8 +164,8 @@ I.e.::
 
 ``G3W_CLIENT_RIGHT_PANEL``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
-Custom properties settings for webgis right panel section.
-A the moment only `with` is managed.
+Custom properties settings for webgis right panel section (default, width 33%).
+A the moment only `width` is managed.
 I.e.::
 
     G3W_CLIENT_RIGHT_PANEL = {

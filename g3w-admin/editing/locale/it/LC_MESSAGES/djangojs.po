@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-24 15:51+0000\n"
+"POT-Creation-Date: 2020-05-27 10:08+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,57 +18,68 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: editing/static/editing/js/widget.js:43
+#: static/editing/js/widget.js:43
 msgid "Add"
 msgstr "Aggiungi"
 
-#: editing/static/editing/js/widget.js:102
+#: static/editing/js/widget.js:102
 msgid "Save"
 msgstr "Salva"
 
-#: editing/static/editing/js/widget.js:105
+#: static/editing/js/widget.js:105
 msgid "Delete"
 msgstr "Elimina"
 
-#: editing/static/editing/js/widget.js:116
+#: static/editing/js/widget.js:116
 msgid "Select the constraint layer, only Polygon or MultiPolygon geomentry"
 msgstr ""
 "Seleziona il layer da utilizzare come vincolo, solo geometrie Poligonali o "
 "Multipoligonali"
 
-#: editing/static/editing/js/widget.js:118
+#: static/editing/js/widget.js:118
 msgid "Constraint layer"
 msgstr "Layer vincolo"
 
-#: editing/static/editing/js/widget.js:179
+#: static/editing/js/widget.js:126
+msgid "Manage editing geo-constaints"
+msgstr "Gestisci geo-constraints su editing"
+
+#: static/editing/js/widget.js:179
 msgid "Saved"
 msgstr "Salvato"
 
-#: editing/static/editing/js/widget.js:348
+#: static/editing/js/widget.js:348
 msgid "Form title"
 msgstr "Titolo del form"
 
-#: editing/static/editing/js/widget.js:397
-#: editing/static/editing/js/widget.js:401
+#: static/editing/js/widget.js:397
+#, fuzzy
+#| msgid "New constraint"
+msgid "New geo constraint"
+msgstr "Nuovo vincolo"
+
+#: static/editing/js/widget.js:401
 msgid "New constraint"
 msgstr "Nuovo vincolo"
 
-#: editing/static/editing/js/widget.js:414
+#: static/editing/js/widget.js:414
 msgid "Actions"
 msgstr "Azioni"
 
-#: editing/static/editing/js/widget.js:415
+#: static/editing/js/widget.js:415
 msgid "Layer constraint"
 msgstr "Layer vincolo"
 
-#: editing/static/editing/js/widget.js:416
+#: static/editing/js/widget.js:416
 msgid "Rules count"
 msgstr "Numero regole"
 
-#: editing/static/editing/js/widget.js:440
+#: static/editing/js/widget.js:440
 msgid "Update constraint"
 msgstr "Aggiorna vincolo"
 
-#: editing/static/editing/js/widget.js:451
-msgid "Constraint Rules"
+#: static/editing/js/widget.js:451
+#, fuzzy
+#| msgid "Constraint Rules"
+msgid "Geo Constraint Rules"
 msgstr "Regole del vincolo"

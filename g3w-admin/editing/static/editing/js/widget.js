@@ -123,7 +123,7 @@ _.extend(g3wadmin.tpl, {
 
     constraintActions: _.template('\
     <span class="col-xs-2 icon">\
-        <a href="#" data-toggle="tooltip" data-placement="top" title="Rules" data-constraint-action-mode="rules" data-constraint-pk="<%= constraintPk %>"><i class="fa fa-cubes"></i></a>\
+        <a href="#" data-toggle="tooltip" data-placement="top" title="'+gettext('Manage editing geo-constaints')+'" data-constraint-action-mode="rules" data-constraint-pk="<%= constraintPk %>"><i class="fa fa-cubes"></i></a>\
     </span>\
     <span class="col-xs-2 icon" style="display:<%= editDisplay %>">\
         <a href="#" data-constraint-action-mode="update" data-constraint-pk="<%= constraintPk %>" data-constraint-editing-layer-id="<%= editingLayerId %>"><i class="ion ion-edit"></i></a>\
@@ -448,7 +448,7 @@ _.extend(g3wadmin.widget, {
         $tbody.find('[data-constraint-action-mode="rules"]').on('click', function(e){
             ga.widget._constraintRulesForm($newConstraint, null,
                 {
-                    'modal-title': gettext('Constraint Rules'),
+                    'modal-title': gettext('Geo Constraint Rules'),
                     'constraint_pk': $(this).attr('data-constraint-pk'),
                     'layer_pk': layer_pk,
                     'parent_click': $(this)

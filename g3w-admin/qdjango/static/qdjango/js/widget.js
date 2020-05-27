@@ -318,8 +318,6 @@ ga.Qdjango.widgetEditor = {
 
 
 		// add widget types
-
-
 		if (this.layer_type != 'spatialite'){
 			cmpOperatorSelect.append('<option value="ILIKE">ILIKE</option>')
 		}
@@ -338,6 +336,10 @@ ga.Qdjango.widgetEditor = {
                   			</div>\
 							</div>\
 							<div class="box-body">\
+								<div class="row advise" style="display: none;">\
+									<div class="col-md-offset-2  col-md-8 alert alert-warning">\
+									</div>\
+								</div>\
 								<div class="row">\
 									<div class="col-md-3"><span class="label label-default">'+gettext("Field")+'</span></div>\
 									<div class="col-md-2"><span class="label label-default">'+gettext("Widget")+'</span></div>\
@@ -387,19 +389,26 @@ ga.Qdjango.widgetEditor = {
 
 		widgetSelect.on('change', function(){
 			var $select = div.find(".cmpDependanceSelect");
+			var $advise = div.find(".advise");
 			if ($(this).val() == 'selectbox') {
 				div.find(".cmpDependanceSelectLabel").removeClass('invisible');
 				$select.removeClass('invisible');
 
-					// cerchiamo tutti gli input attivati
 				$.each($(".rightCol").find('.blocco'), function(i, v) {
 					var f = $(v).find(".fieldSelect").find("select").val()
 					$select.find('select').append('<option value="'+f+'">'+f+'</option>')
 				});
 
+				// show advise msg
+				$advise.show();
+				$advise.find('div').html("<strong>"+gettext('Attention')+"!</strong><br>" +
+					gettext('Fields with many unique values can create slow map loading behavior'));
+
+
 			} else {
 				div.find(".cmpDependanceSelectLabel").addClass('invisible');
 				$select.addClass('invisible');
+				$advise.hide();
 			}
 		});
 
@@ -910,9 +919,20 @@ _.extend(g3wadmin.widget, {
 
         var that = this;
 
+        // switch intro by type
+		switch (params['type']) {
+			case 'expression':
+				var intro = gettext('Define, for each user and/or group of users, viewing/editing rules based on the QGIS expressions.')
+			break;
+
+			case 'subset':
+				var intro = gettext('Define, for each user and/or group of users, viewing/editing rules based on the language or SQL dialect of the associated provider.')
+			break;
+		}
+
         // build moodal
         var modal_options = {
-
+			'intro': intro,
         };
         var modal = ga.ui.buildDefaultModal({
             modalTitle: params['modal-title'],
@@ -1039,7 +1059,7 @@ _.extend(g3wadmin.widget, {
         $tbody.find('[data-singlelayerconstraint-action-mode="subset_rules"]').on('click', function(e){
             ga.widget._singlelayerConstraintRulesForm($newConstraint, null,
                 {
-                    'modal-title': gettext('Constraint Subset Rules'),
+                    'modal-title': gettext('Constraint Rules based on provider\'s language / SQL dialect'),
 					'type': 'subset',
                     'constraint_pk': $(this).attr('data-singlelayerconstraint-pk'),
                     'layer_pk': layer_pk,
@@ -1050,7 +1070,7 @@ _.extend(g3wadmin.widget, {
         $tbody.find('[data-singlelayerconstraint-action-mode="expression_rules"]').on('click', function(e){
             ga.widget._singlelayerConstraintRulesForm($newConstraint, null,
                 {
-                    'modal-title': gettext('Constraint Expression Rules'),
+                    'modal-title': gettext('Constraint Rules based on QGIS Expression'),
 					'type': 'expression',
                     'constraint_pk': $(this).attr('data-singlelayerconstraint-pk'),
                     'layer_pk': layer_pk,
@@ -1124,6 +1144,7 @@ _.extend(g3wadmin.widget, {
 _.extend(g3wadmin.tpl, {
 
 	singlelayerConstraintRules: _.template('\
+		<div class="intro" style="margin-bottom: 20px;"><%= intro %></div>\
         <div class="row">\
             <div class="col-md-12 rules-list">\
             </div>\
@@ -1228,10 +1249,10 @@ _.extend(g3wadmin.tpl, {
 
 	singlelayerConstraintActions: _.template('\
 		<span class="col-xs-2 icon">\
-			<a href="#" data-toggle="tooltip" data-placement="top" title="Subset Rules" data-singlelayerconstraint-action-mode="subset_rules" data-singlelayerconstraint-pk="<%= constraintPk %>"><i style="color: purple;" class="fa fa-cubes"></i></a>\
+			<a href="#" data-toggle="tooltip" data-placement="top" title="'+gettext("Provider's language / SQL dialect Rules")+'" data-singlelayerconstraint-action-mode="subset_rules" data-singlelayerconstraint-pk="<%= constraintPk %>"><i style="color: purple;" class="fa fa-cubes"></i></a>\
 		</span>\
 		<span class="col-xs-2 icon">\
-			<a href="#" data-toggle="tooltip" data-placement="top" title="Expression Rules" data-singlelayerconstraint-action-mode="expression_rules" data-singlelayerconstraint-pk="<%= constraintPk %>"><%= expressionIcon %></a>\
+			<a href="#" data-toggle="tooltip" data-placement="top" title="'+gettext("QGIS Expression Rules")+'" data-singlelayerconstraint-action-mode="expression_rules" data-singlelayerconstraint-pk="<%= constraintPk %>"><%= expressionIcon %></a>\
 		</span>\
 		<span class="col-xs-2 icon" style="display:<%= editDisplay %>">\
 			<a href="#" data-singlelayerconstraint-action-mode="update" data-singlelayerconstraint-pk="<%= constraintPk %>" data-singlelayerconstraint-layer-id="<%= layerId %>"><i class="ion ion-edit"></i></a>\
