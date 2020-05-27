@@ -43,7 +43,7 @@ class EditingLayerInfo(generics.ListAPIView):
                     Layer.TYPES.spatialite,
                     Layer.TYPES.ogr
                 ],
-                geometrytype='Polygon'
+                geometrytype__in=['Polygon', 'MultiPolygon']
             )
         return qs
 
