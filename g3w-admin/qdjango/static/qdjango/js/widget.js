@@ -765,8 +765,9 @@ _.extend(g3wadmin.widget, {
             rulePk: _.isNull(res) ? 'new' : res['pk'],
             constraintPk: constraint_pk,
             action: _.isNull(res) ? actions.post : actions.put,
+			rule_form_label: type=='subset' ? 'SQL' : gettext('QGIS Expression')
         }
-        var form_rule = $(ga.tpl.constraintRule(form_options));
+        var form_rule = $(ga.tpl.singlelayerConstraintRule(form_options));
         var ga_form = new ga.forms.form(form_rule.find('form'));
 
         // populate selects user and group
@@ -1198,7 +1199,7 @@ _.extend(g3wadmin.tpl, {
                         <div class="row">\
                             <div class="col-md-12">\
                             <div class="form-group">\
-                                <label class="control-label ">SQL</label>\
+                                <label class="control-label "><%= rule_form_label %></label>\
                                 <div class="controls ">\
                                     <textarea name="rule" style="width:100%;"></textarea>\
                                 </div>\
