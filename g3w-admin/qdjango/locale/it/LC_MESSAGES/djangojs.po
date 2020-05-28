@@ -128,7 +128,7 @@ msgstr "visualizzazione/editing"
 
 #: static/qdjango/js/widget.js:1073
 msgid "Constraint Rules based on QGIS Expression"
-msgstr "Regole basate su espressioni di QGIS"
+msgstr "Regole del vincolo basate su espressioni di QGIS"
 
 #: static/qdjango/js/widget.js:1215
 msgid "Save"
@@ -148,7 +148,7 @@ msgstr "Regole basate sul linguaggio o su SQL del provider"
 
 #: static/qdjango/js/widget.js:1255
 msgid "QGIS Expression Rules"
-msgstr "Regole del vincolo di tipo espressione"
+msgstr "Regole basate su espressioni di QGIS"
 
 #~ msgid "Constraint Subset Rules"
 #~ msgstr "Regole del vincolo di tipo subset"
