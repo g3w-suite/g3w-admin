@@ -69,7 +69,7 @@ class QgisEditTypeDateTime(QgisEditType):
                             'time': bool(len(re.findall('/HH|mm|ss/', self.field_format)))
                             if hasattr(self, 'field_format') else False,
                             'fieldformat': self.field_format if hasattr(self, 'field_format') else 'yyyy-MM-dd',
-                            'displayformat': self.display_format if hasattr(self, 'display_format') else 'HH:mm:ss',
+                            'displayformat': self.display_format if hasattr(self, 'display_format') else 'yyyy-MM-dd',
                             'default': self.default if hasattr(self, 'default') else None
                         },
 
