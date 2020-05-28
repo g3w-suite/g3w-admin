@@ -6,6 +6,7 @@ from django.core.urlresolvers import reverse
 from django.db import models
 from django.apps import apps
 from guardian.shortcuts import get_objects_for_user
+from guardian.compat import get_user_model
 from ordered_model.models import OrderedModel
 from model_utils.models import TimeStampedModel
 from model_utils import Choices
@@ -274,13 +275,18 @@ class Group(TimeStampedModel, OrderedModel):
         """
         appProjects = getProjectsByGroup(self)
 
+        # anonynous users id
+        anonymous_uid = get_user_model().get_anonymous().pk
+
         for user_id in users_id:
             setPermissionUserObject(User.objects.get(pk=user_id), self, permissions='view_group', mode='remove')
 
             # adding permissions to projects
-            for app, projects in appProjects.items():
-                for project in projects:
-                    project.removePermissionsToViewers(users_id)
+            # not for anonymous user, who exit from this flow
+            if user_id != anonymous_uid:
+                for app, projects in appProjects.items():
+                    for project in projects:
+                        project.removePermissionsToViewers(users_id)
 
     def add_permissions_to_editor_user_groups(self, groups_id):
         """
