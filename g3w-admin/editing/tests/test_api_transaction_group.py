@@ -182,7 +182,7 @@ class TransactionGroupTest(TestCase):
                                      'options': {'formats': [{'date': True,
                                                               'time': False,
                                                               'fieldformat': 'yyyy-MM-dd',
-                                                              'displayformat': 'HH:mm:ss',
+                                                              'displayformat': 'yyyy-MM-dd',
                                                               'default': None}]}}},
                           {'name': 'option',
                              'type': 'boolean',
