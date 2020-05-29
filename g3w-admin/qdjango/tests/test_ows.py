@@ -122,7 +122,7 @@ class OwsTest(QdjangoTestBase):
         self.assertEqual(features[0]['properties']['code'], 200)
         self.assertEqual(features[0]['properties']['date'], '2020-05-19')
         self.assertEqual(features[0]['properties']['name'], 'olive')
-        self.assertEqual(features[0]['properties']['type'], 'B')
+        self.assertEqual(features[0]['properties']['type'], 'TYPE B')
 
     def test_save_project(self):
         """Test that when a project is saved it is also removed from the cache"""
