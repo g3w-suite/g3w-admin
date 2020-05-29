@@ -30,6 +30,7 @@ DATASOURCE_PATH = '{}{}geodata'.format(CURRENT_PATH, TEST_BASE_PATH)
 QGS2_FILE = 'gruppo-1_un-progetto.qgs'
 QGS_FILE = 'gruppo-1_un-progetto_qgis310.qgs'
 QGS310_FILE = 'g3wsuite_project_test_qgis310.qgs'
+QGS310_WIDGET_FILE = 'qgis_attributes_widget_test_prj.qgs'
 
 
 @override_settings(
@@ -66,6 +67,7 @@ class QdjangoTestBase(TestCase):
         # main project group
         cls.project_group = CoreGroup(name='Group1', title='Group1', header_logo_img='',
                                       srid=G3WSpatialRefSys.objects.get(auth_srid=4326))
+
         cls.project_group.save()
 
         qgis_project_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_FILE), 'r'))
@@ -132,6 +134,7 @@ class QdjangoTestBase(TestCase):
         cls.project310.title = 'A project QGIS 3.10'
         cls.project310.group = cls.project_group
         cls.project310.save()
+
 
     def tearDown(self):
         """Delete all test data"""

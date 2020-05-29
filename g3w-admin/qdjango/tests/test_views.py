@@ -112,7 +112,7 @@ class QdjangoViewsTest(QdjangoTestBase):
         mproject.pk = None
         mproject.save()
 
-        # check 2 project on db
+        # check 4 project on db
         dbprojects = Project.objects.all()
         self.assertEqual(len(dbprojects), 3)
 

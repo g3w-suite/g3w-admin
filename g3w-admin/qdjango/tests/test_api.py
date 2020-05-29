@@ -258,8 +258,36 @@ class TestExpressionRules(BaseConstraintsApiTests, QdjangoTestBase):
     _rule_view_name = 'expressionrule'
 
 
-class TestQdjangoLayersAPI(BaseConstraintsApiTests, QdjangoTestBase):
+class TestQdjangoLayersAPI(QdjangoTestBase):
     """ Test qdjango layer API """
+
+    @classmethod
+    def setUpClass(cls):
+
+        super().setUpClass()
+        cls.client = APIClient()
+
+    def _testApiCall(self, view_name, args, kwargs={}):
+        """Utility to make test calls for admin01 user"""
+
+        path = reverse(view_name, args=args)
+        if kwargs:
+            path += '?'
+            parts = []
+            for k,v in kwargs.items():
+                parts.append(k + '=' + v)
+            path += '&'.join(parts)
+
+        # No auth
+        response = self.client.get(path)
+        self.assertIn(response.status_code, [302, 403])
+
+        # Auth
+        self.assertTrue(self.client.login(username='admin01', password='admin01'))
+        response = self.client.get(path)
+        self.assertEqual(response.status_code, 200)
+        self.client.logout()
+        return response
 
     def test_user_info_api(self):
 
