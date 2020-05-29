@@ -130,7 +130,7 @@ class QgisEditTypeValueMap(QgisEditType):
 
 class QgisEditTypeValueRelation(QgisEditTypeValueMap):
     """
-    Class for Vluer relation and autocomplete.
+    Class for Value relation and autocomplete.
     """
 
     field_type = FORM_FIELD_TYPE_SELECT_AUTOCOMPLETE
