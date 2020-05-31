@@ -24,7 +24,7 @@ from django.urls import reverse
 from qgis.core import QgsVectorLayer, QgsFeatureRequest, QgsExpression, Qgis
 from qgis.PyQt.QtCore import QTemporaryDir
 
-from qdjango.apps import QGS_PROJECTS_CACHE, QGS_SERVER, get_qgs_project
+from qdjango.apps import QGS_SERVER, get_qgs_project
 from qdjango.models import (
     ConstraintSubsetStringRule,
     ConstraintExpressionRule,
