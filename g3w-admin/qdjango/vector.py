@@ -241,8 +241,12 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
                             qet.input_form)
 
                 # add editable property:
-                fields[self.layer_name]['fields'][field]['editable'] = True \
-                    if edittypes[field]['fieldEditable'] == '1' else False
+                #FIXME: find better way for layer join 1:1 managment
+                try:
+                    fields[self.layer_name]['fields'][field]['editable'] = True \
+                        if edittypes[field]['fieldEditable'] == '1' else False
+                except KeyError:
+                    logger.error(f'Not field {field} into layer {self.layer_name}')
 
         return fields
 

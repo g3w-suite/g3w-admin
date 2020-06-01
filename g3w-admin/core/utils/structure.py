@@ -277,8 +277,9 @@ def mapLayerAttributesFromQgisLayer(qgis_layer, **kwargs):
     # Determine if we are using an old and bugged version of QGIS
     IS_QGIS_3_10 = Qgis.QGIS_VERSION.startswith('3.10')
 
+    # FIXME: find better way for layer join 1:1 managment
     for field in fields:
-        if field.name() not in fieldsToExclude:
+        if field.name() not in fieldsToExclude and field.name() in kwargs['fields']:
             #internal_typename = field.typeName().split('(')[0]
             internal_typename = QVariant.typeToName(field.type()).upper()
             if internal_typename in FIELD_TYPES_MAPPING:
