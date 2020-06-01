@@ -15,6 +15,7 @@ __copyright__ = 'Copyright 2020, Gis3w'
 import json
 
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.files import File
 from django.urls import reverse
 from guardian.shortcuts import assign_perm, remove_perm
 from rest_framework.test import APIClient
@@ -27,10 +28,11 @@ from qdjango.models.constraints import (
     ConstraintSubsetStringRule,
 )
 from qdjango.api.layers.filters import FILTER_RELATIONONETOMANY_PARAM
+from qdjango.utils.data import QgisProject
 from core.tests.base import CoreTestBase
 from core.utils.qgisapi import get_qgs_project
 
-from .base import QdjangoTestBase
+from .base import QdjangoTestBase, CURRENT_PATH, TEST_BASE_PATH, QGS310_WIDGET_FILE
 from qgis.core import QgsFeatureRequest
 
 
@@ -267,6 +269,17 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         super().setUpClass()
         cls.client = APIClient()
 
+        qgis_project_file_widget = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS310_WIDGET_FILE), 'r'))
+        cls.project_widget310 = QgisProject(qgis_project_file_widget)
+        cls.project_widget310.title = 'A project with widget QGIS 3.10'
+        cls.project_widget310.group = cls.project_group
+        cls.project_widget310.save()
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.project_widget310.instance.delete()
+        super().tearDownClass()
+
     def _testApiCall(self, view_name, args, kwargs={}):
         """Utility to make test calls for admin01 user"""
 
@@ -392,5 +405,78 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         features = qgis_layer.getFeatures(qgs_request)
         self.assertEqual(resp['vector']['count'], len([f for f in features]))
 
+    def testCoreVectorApiDataFormatter(self):
+        """Test core-vector-api data with qgis formatter enabled"""
+
+        response = self._testApiCall(
+            'core-vector-api', [
+                'data',
+                'qdjango',
+                self.project_widget310.instance.pk,
+                'main_layer_e867d371_3388_4e2d_a214_95adbb56165c'])
+        resp = json.loads(response.content)
+        self.assertIsNotNone(resp["vector"]["count"])
+        self.assertEqual(resp["vector"]["format"], "GeoJSON")
+        self.assertIsNone(resp["vector"]["fields"])
+        self.assertEqual(resp["vector"]["geometrytype"], "Polygon")
+        self.assertEqual(resp["vector"]["data"]["type"], "FeatureCollection")
+        self.assertTrue(resp["result"])
+        self.assertIsNone(resp["featurelocks"])
+        self.assertIsNotNone(resp["vector"]["count"])
+
+        # check for value relation
+        properties = resp["vector"]["data"]["features"][0]["properties"]
+        self.assertEqual(properties['type'], 'A')
+        properties = resp["vector"]["data"]["features"][1]["properties"]
+        self.assertEqual(properties['type'], 'B')
+
+        # add fromatter query url param
+        # formatter=1
+        response = self._testApiCall(
+            'core-vector-api', [
+                'data',
+                'qdjango',
+                self.project_widget310.instance.pk,
+                'main_layer_e867d371_3388_4e2d_a214_95adbb56165c'],
+             {'formatter': '1'})
+
+        # check for value relation
+        resp = json.loads(response.content)
+        properties = resp["vector"]["data"]["features"][0]["properties"]
+        self.assertEqual(properties['type'], 'TYPE A')
+        properties = resp["vector"]["data"]["features"][1]["properties"]
+        self.assertEqual(properties['type'], 'TYPE B')
+
+        # formatter=string
+        response = self._testApiCall(
+            'core-vector-api', [
+                'data',
+                'qdjango',
+                self.project_widget310.instance.pk,
+                'main_layer_e867d371_3388_4e2d_a214_95adbb56165c'],
+            {'formatter': 'randomvalue'})
+
+        # check for value relation
+        resp = json.loads(response.content)
+        properties = resp["vector"]["data"]["features"][0]["properties"]
+        self.assertEqual(properties['type'], 'TYPE A')
+        properties = resp["vector"]["data"]["features"][1]["properties"]
+        self.assertEqual(properties['type'], 'TYPE B')
+
+        # formatter=0
+        response = self._testApiCall(
+            'core-vector-api', [
+                'data',
+                'qdjango',
+                self.project_widget310.instance.pk,
+                'main_layer_e867d371_3388_4e2d_a214_95adbb56165c'],
+            {'formatter': '0'})
+
+        # check for value relation
+        resp = json.loads(response.content)
+        properties = resp["vector"]["data"]["features"][0]["properties"]
+        self.assertEqual(properties['type'], 'A')
+        properties = resp["vector"]["data"]["features"][1]["properties"]
+        self.assertEqual(properties['type'], 'B')
 
 
