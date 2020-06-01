@@ -16,6 +16,7 @@ from django.core.files import File
 from django.conf import settings
 from qdjango.models import Project, Layer, Widget
 from qdjango.utils.data import QgisProject, QgisPgConnection, QgisProjectSettingsWMS
+from qdjango.utils.exceptions import QgisProjectLayerException, QgisProjectException
 from qdjango.utils.structure import get_schema_table, datasource2dict, datasourcearcgis2dict
 from qdjango.utils.models import get_widgets4layer, comparepgdatasoruce
 from collections import OrderedDict
@@ -394,3 +395,30 @@ class QdjangoUtilsTest(QdjangoTestBase):
         ds2 = "dbname='comune_capannori' host=0.0.0.0 port=5432 user='aaa' password='aaa' sslmode=disable key='id' srid=3003 type=MultiPolygon table=\"dati_catastali\".\"catasto\" (geom) sql="
 
         self.assertFalse(comparepgdatasoruce(ds1, ds2))
+
+
+class QdjangoUtilsDataValidators(QdjangoTestBase):
+    """Test for validators loaded into  import data classes"""
+
+    def test_datasource_validator(self):
+        """ Test layer exception for validator DataSourceNotExists"""
+
+        qgis_filename = 'test_wrong_geodata_gdal_type_path.qgs'
+        qgis_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, qgis_filename), 'r', encoding='utf-8'))
+
+        # DatasourceExists
+        project = QgisProject(qgis_file)
+        project.group = self.project_group
+        with self.assertRaises(QgisProjectLayerException):
+            project.clean()
+
+        qgis_file.close()
+
+        # indirect datasource validator into getDataFields for ogr layer
+        qgis_filename = 'test_wrong_geodata_org_type_path.qgs'
+        qgis_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, qgis_filename), 'r', encoding='utf-8'))
+
+        # Project is not valid
+        with self.assertRaises(Exception) as exc:
+            project = QgisProject(qgis_file)
+        qgis_file.close()
