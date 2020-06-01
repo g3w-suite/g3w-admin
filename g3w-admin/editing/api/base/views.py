@@ -157,6 +157,9 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
                 for geojson_feature in post_layer_data[mode_editing]:
                     data_extra_fields = {'feature': geojson_feature}
 
+                    # Clear any old error
+                    qgis_layer.dataProvider().clearErrors()
+
                     # add media data
                     self.add_media_property(geojson_feature, metadata_layer)
 
@@ -310,6 +313,8 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
 
                 # FIXME: pre_delete_maplayer
                 # pre_delete_maplayer.send(metadata_layer.serializer, layer=metadata_layer.layer_id, # data=serializer.data, user=self.request.user)
+
+                qgis_layer.dataProvider().clearErrors()
 
                 if has_transactions:
                     if not qgis_layer.deleteFeatures([feature_id]) or qgis_layer.dataProvider().errors():

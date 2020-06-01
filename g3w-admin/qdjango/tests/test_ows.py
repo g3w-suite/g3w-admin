@@ -18,7 +18,7 @@ from django.urls import reverse
 from qgis.core import QgsProject
 from core.models import G3WSpatialRefSys
 from core.models import Group as CoreGroup
-from qdjango.apps import QGS_SERVER, QGS_PROJECTS_CACHE, get_qgs_project
+from qdjango.apps import QGS_SERVER, get_qgs_project
 from qdjango.models import Project
 from .base import QdjangoTestBase, CURRENT_PATH, TEST_BASE_PATH, QGS310_WIDGET_FILE, QgisProject
 import json
@@ -62,7 +62,8 @@ class OwsTest(QdjangoTestBase):
 
         qgs_project = get_qgs_project(self.qdjango_project.qgis_file.path)
         self.assertTrue(isinstance(qgs_project, QgsProject))
-
+        qgs_project = self.qdjango_project.qgis_project
+        self.assertTrue(isinstance(qgs_project, QgsProject))
 
     def test_get(self):
         """Test get request"""
@@ -80,8 +81,6 @@ class OwsTest(QdjangoTestBase):
 
         self.assertTrue(b'<Name>bluemarble</Name>' in response.content)
 
-
-    @skip
     def test_get_getfeatureinfo(self):
         """Test GetFeatureInfo for QGIS widget"""
 
@@ -124,16 +123,4 @@ class OwsTest(QdjangoTestBase):
         self.assertEqual(features[0]['properties']['name'], 'olive')
         self.assertEqual(features[0]['properties']['type'], 'TYPE B')
 
-    def test_save_project(self):
-        """Test that when a project is saved it is also removed from the cache"""
-
-        file_path = self.qdjango_project.qgis_file.path
-        qgs_project = get_qgs_project(file_path)
-        self.assertTrue(isinstance(qgs_project, QgsProject))
-        self.assertTrue(file_path in QGS_PROJECTS_CACHE)
-        self.qdjango_project.save()
-        self.assertFalse(file_path in QGS_PROJECTS_CACHE)
-        # Re-cache
-        get_qgs_project(file_path)
-        self.assertTrue(file_path in QGS_PROJECTS_CACHE)
 
