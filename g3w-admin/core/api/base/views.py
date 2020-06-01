@@ -414,12 +414,21 @@ class BaseVectorOnModelApiView(G3WAPIView):
         # TODO: use .setTransformGeometries( false ) with QGIS >= 3.12
         ex.setSourceCrs(QgsCoordinateReferenceSystem('EPSG:4326'))
 
-        # to exclude QgsFormater used into QgsJsonjExporter is necessary build by hand single json feature
-        ex.setIncludeAttributes(False)
+        # check for formatter query url param and check if != 0
+        if 'formatter' in request.query_params:
+            formatter = request.query_params.get('formatter')
+            if formatter.isnumeric() and int(formatter) == 0:
+                export_features = False
+            else:
+                export_features = True
 
         if export_features:
             feature_collection = json.loads(ex.exportFeatures(self.features))
         else:
+
+            # to exclude QgsFormater used into QgsJsonjExporter is necessary build by hand single json feature
+            ex.setIncludeAttributes(False)
+
             feature_collection = {
                 'type': 'FeatureCollection',
                 'features': []
