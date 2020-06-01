@@ -26,7 +26,6 @@ from editing.models import *
 from django.urls import reverse
 from rest_framework.test import APIClient
 from usersmanage.tests.utils import *
-from qdjango.apps import QGS_PROJECTS_CACHE
 
 # Makes a copy of test project and data into a temporary directory
 
@@ -83,10 +82,6 @@ class TransactionGroupTest(TestCase):
     def reset_db_data(cls):
         """Restore test database from backup
         It is necessary at the end of every single test where data test are changing"""
-
-        # Delete any open project
-        for p in list(QGS_PROJECTS_CACHE.keys()):
-            del (QGS_PROJECTS_CACHE[p])
 
         shutil.copy(QGS_DB_BACKUP, QGS_DB)
 
@@ -241,15 +236,15 @@ class TransactionGroupTest(TestCase):
 
         jresult = json.loads(response.content)
         self.assertTrue(jresult['result'])
-        self.assertEqual(jresult['response']['new'][0]['id'], 5)
+        self.assertEqual(jresult['response']['new'][0]['id'], 6)
         self.assertEqual(jresult['response']['new'][0]['properties']['name'], "name 1")
         self.assertEqual(jresult['response']['new'][0]['properties']['value'], 12345)
 
         # Retrieve the feature and check
         qgis_layer = self.test.qgis_layer
-        feature = qgis_layer.getFeature(5)
+        feature = qgis_layer.getFeature(6)
         self.assertEqual(feature.attributes(), [
-                         5, 'name 1', 12345, QDate(2021, 1, 2), True, 2])
+                         6, 'name 1', 12345, QDate(2021, 1, 2), True, 2])
 
         # Test error conditions:
         # 1: NULL pol_id
@@ -324,7 +319,7 @@ class TransactionGroupTest(TestCase):
         self.assertFalse(jresult['result'])
 
     def test_update_feature_simple(self):
-        """Test adding a test feature to an existing polygon"""
+        """Test updating a test feature to an existing polygon"""
 
         client = APIClient()
         self.assertTrue(client.login(

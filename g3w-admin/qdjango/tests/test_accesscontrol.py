@@ -14,7 +14,7 @@ import os
 from django.test import Client
 from django.urls import reverse
 from django.conf import settings
-from qdjango.apps import QGS_SERVER, QGS_PROJECTS_CACHE, get_qgs_project
+from qdjango.apps import QGS_SERVER, get_qgs_project
 from qdjango.models import Project
 from .base import QdjangoTestBase
 

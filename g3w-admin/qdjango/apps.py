@@ -6,7 +6,10 @@ from core.utils.general import getAuthPermissionContentType
 from django.conf import settings
 
 from qgis.core import QgsApplication, QgsProject
-from qgis.server import QgsServer
+from qgis.server import QgsServer, QgsConfigCache, QgsServerSettings
+
+import logging
+logger = logging.getLogger(__name__)
 
 if settings.DEBUG:
     os.environ['QGIS_SERVER_LOG_LEVEL'] = '0'
@@ -24,14 +27,18 @@ QGS_APPLICATION = QgsApplication([], False)
 # load providers
 QGS_APPLICATION.initQgis()
 
+# Do any environment manipulation here, before we create the server
+# and the settings are read
+os.environ['QGIS_SERVER_IGNORE_BAD_LAYERS'] = '1'
+
+QGS_SERVER_SETTINGS = QgsServerSettings()
+QGS_SERVER_SETTINGS.load()
+
 # Create a singleton server instance, this is not really necessary but it
 # may be a little faster than creating a new instance every time we handle
 # a request
 QGS_SERVER = QgsServer()
 
-# Cache for projects, key is the project file path.
-# When a project is upated or deleted, it must be removed from the cache
-QGS_PROJECTS_CACHE = {}
 
 def get_qgs_project(path):
     """Reads and returns a project from the cache, trying to load it
@@ -45,13 +52,11 @@ def get_qgs_project(path):
     """
 
     try:
-        return QGS_PROJECTS_CACHE[path]
-    except KeyError:
-        project = QgsProject()
-        if not project.read(path):
-            return None
-        QGS_PROJECTS_CACHE[path] = project
-    return project
+        return QgsConfigCache.instance().project(path, QGS_SERVER_SETTINGS)
+    except:
+        logger.warning('There was an error loading the project from path: %s, this is normally due to unavailable layers. If this is unexpected, please turn on and check server debug logs for further details.' % path)
+        return None
+
 
 
 def GiveBaseGrant(sender, **kwargs):
