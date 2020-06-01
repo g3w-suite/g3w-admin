@@ -1,5 +1,5 @@
 # Hierarchical organization of WebGis services and types of Users (roles)
-_**This paragraph allows you to understand how G3W-SUITE makes it possible to manage the individual WebGis services in a structured and hierarchical way._**
+_**This paragraph allows you to understand how G3W-SUITE makes it possible to manage the individual WebGis services in a structured and hierarchical way.**_
 
 In G3W-SUITE it is possible to organize WebGis services on two thematic/functional levels
  * **`Cartographic MacroGroups`**

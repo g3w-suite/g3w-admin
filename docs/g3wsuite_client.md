@@ -14,6 +14,7 @@ The color of the interface depends on the type of user logged in.
  * **User ID:** if you have logged in to the system
  * **Credits**
  * **Home:** to access the FrontEnd
+ * **Language:** the choice of language is reflected in the individual menus of the map client and on the contents of the access portal. The languages available are those activated by the Administration. 
 
 ![](images/manual/g3wclient_header.png)
 
@@ -32,6 +33,20 @@ The **`Tools panel`** is located on the left and containing the following object
 The centrally located **`map area`** presents the various navigation and map interaction controls, this controls are defined at the Cartographic Group level.
 
 ## Navigation and interaction with the map
+
+### Map area
+
+At the base of the map area there is an information bar showing:
+ * **display scale**
+ * **mouse coordinates**
+ * **project projection system**
+ * **icon to copy the URL with the references to the extension currently displayed**
+
+![](images/manual/g3wclient_maparea.png)
+
+ 
+### Map controls
+
 **The icons and description of the functions of the various **`MapControls`** activated at the thematic group level are shown below.**
 
  * ![ ](images/manual/icon_navigation_fitextent.png) **`zoomtoextent`:** zoom to the initial extension
@@ -106,7 +121,15 @@ On the map, a lit rectangular area will allow you to define the print area.
 
 ![](images/manual/g3wclient_print_tool.png)
 
-### Search
+### Search and Query Builder
+
+A classic Query Builder is present at the Search menu level.
+Through this tool it is possible to:
+* carry out alphanumeric searches on geometric layers
+ * save the query to reuse it until the end of the work session
+ * edit a previously saved query
+
+
 **The Search menu contains the list of search tools defined through the Administration panel.**
 
 You choose the search you are interested in, fill in the required fields and click on the **`Search` button**.
@@ -129,7 +152,8 @@ The **`CSV` icon** allows you to download the attributes associated with the fea
    The right button on the name of the single layer shows the following items:
  * **Zoom to layer:** to zoom in on the extension of the layer
  * **Open the attribute table:** to consult the associated attribute table
- * **Download shapefile:** to download the layer as a shapefile; available only for PostGis and SpatiaLite layers following activation of the function from the administration panel
+ * **Download shapefile:** to download the layer as a shapefile; available only for PostGis, SpatiaLite and GeoPackage layers, following activation of the function from the administration panel
+ * **Download XLS:** to download the layer as a XLS; available for the main layer formats, following activation of the function from the administration panel
  * **WMS URL:** URL of the WMS service relative to the project or URL of the external WMS
 
 The attribute table is equipped with **paging function, highligth function and zooming** to the associated features.

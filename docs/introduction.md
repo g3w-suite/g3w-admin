@@ -10,9 +10,7 @@ The following aspects will be analyzed within the manual:
 * **user management and access control systems for consultation and management of webgis services**
 * **management of the online editing function for the creation of web cartographic management systems**
 
-**The current release is compatible with `QGIS 3.4 LTR`.(Server and Desktop).**
-
-The next version (whose release is scheduled for **July 2020**) will be compatible with **`QGIS 3.10 LTR`**.
+**The current release is compatible with `QGIS 3.10.x LTR`.(Server and Desktop).**
 
 ![](images/manual/demo_qgis_project.png)
 
