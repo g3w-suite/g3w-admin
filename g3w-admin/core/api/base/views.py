@@ -380,10 +380,11 @@ class BaseVectorOnModelApiView(G3WAPIView):
 
         self.results.update(APIVectorLayerStructure(**vector_params).as_dict())
 
-    def response_data_mode(self, request):
+    def response_data_mode(self, request, export_features=False):
         """
         Query layer and return data
         :param request: DjangoREST API request object
+        :param formatter: Boolean, default False, True for to use QgsJsonExport.exportFeatures method
         :return: response dict data
         """
 
@@ -413,7 +414,24 @@ class BaseVectorOnModelApiView(G3WAPIView):
         # TODO: use .setTransformGeometries( false ) with QGIS >= 3.12
         ex.setSourceCrs(QgsCoordinateReferenceSystem('EPSG:4326'))
 
-        feature_collection = json.loads(ex.exportFeatures(self.features))
+        # to exclude QgsFormater used into QgsJsonjExporter is necessary build by hand single json feature
+        ex.setIncludeAttributes(False)
+
+        if export_features:
+            feature_collection = json.loads(ex.exportFeatures(self.features))
+        else:
+            feature_collection = {
+                'type': 'FeatureCollection',
+                'features': []
+            }
+
+            for feature in self.features:
+                fnames = [f.name() for f in feature.fields()]
+                feature_collection['features'].append(
+                    json.loads(ex.exportFeature(feature, dict(zip(fnames, feature.attributes()))))
+                )
+
+
 
         # FIXME: QGIS api reprojecting?
         # Reproject if necessary
