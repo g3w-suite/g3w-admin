@@ -418,26 +418,30 @@ class QgisProjectLayer(XmlData):
         else:
             project_file = self.qgisProject.qgisProjectFile.name
 
+        pre_err_msg = _("A problem occurs during reading layer fields property")
 
         if not project.read(project_file):
             logging.warning("Could not read QGIS project file: %s" % self.qgisProject.qgisProjectFile.name)
-            return None
+            msg = _("Could not read QGIS project file")
+            raise QgisProjectLayerException(f'{pre_err_msg}: {msg}')
+
 
         try:
             layer = project.mapLayers()[self.layerId]
         except KeyError:
             logging.warning("Could not find layer id %s in QGIS project file: %s" % (self.layerId, self.qgisProject.qgisProjectFile.name))
-            return None
+            msg = _("Could not find layer id {} in QGIS project").format(self.layerId)
+            raise QgisProjectLayerException(f'{pre_err_msg}: {msg}')
 
         if layer.type() != QgsMapLayer.VectorLayer:
-            logging.warning("Layer id %s is not valid in QGIS project file: %s" % (self.layerId, self.qgisProject.qgisProjectFile.name))
             return None
 
         layer.setDataSource(self.datasource, layer.name(), layer.dataProvider().name())
         if not layer.isValid():
             logging.warning("Layer id %s is not valid in QGIS project file: %s" % (
             self.layerId, self.qgisProject.qgisProjectFile.name))
-            return None
+            msg = _("Layer id {} is not valid").format(self.layerId)
+            raise QgisProjectLayerException(f'{pre_err_msg}: {msg}')
 
         columns = []
         for f in layer.fields():
