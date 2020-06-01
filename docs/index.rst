@@ -16,9 +16,8 @@ G3W-SUITE is entirely based on tested Open Source software components built arou
 
 **The current development policy provides for the compatibility of the G3W-SUITE application only with the latest LTR version of QGIS**
 
-**The current release is compatible with `QGIS 3.4 LTR` (Server and Desktop).**
+**The current release is compatible with `QGIS 3.10.x LTR` (Server and Desktop).**
 
-The next version (whose release is scheduled for **July 2020**) will be compatible with **`QGIS 3.10 LTR`**.
 
 G3W-SUITE is a modular client-server application for the publication and management of QGIS cartographic projects, consisting of 2 components:
 
