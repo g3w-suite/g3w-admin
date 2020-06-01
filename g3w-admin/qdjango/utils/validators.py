@@ -291,24 +291,28 @@ class DatasourceExists(QgisProjectLayerValidator):
     """
 
     def clean(self):
-        if self.qgisProjectLayer.layerType in [Layer.TYPES.gdal, Layer.TYPES.ogr, Layer.TYPES.raster]:
-            if self.qgisProjectLayer.layerType != Layer.TYPES.gdal or not isXML(self.qgisProjectLayer.datasource):
-                if self.qgisProjectLayer.datasource.startswith("PG:"):
+        if self.qgisProjectLayer.layerType in [
+            Layer.TYPES.gdal,
+            Layer.TYPES.ogr,
+            Layer.TYPES.raster] and not isXML(self.qgisProjectLayer.datasource):
 
-                    # try to open postgis raster with gdal
-                    raster = gdal.Open(self.qgisProjectLayer.datasource)
-                    if raster is None:
-                        err = ugettext('Cannot connect to Postgis raster layer {} '.format(
-                            self.qgisProjectLayer.name))
-                        raise QgisProjectLayerException(err)
+            # tray PostGis raster layer
+            if self.qgisProjectLayer.datasource.startswith("PG:"):
 
-                else:
-                    if not os.path.exists(self.qgisProjectLayer.datasource.split('|')[0]):
-                        err = ugettext('Missing data file for layer {} '.format(
-                            self.qgisProjectLayer.name))
-                        err += ugettext('which should be located at {}'.format(
-                            self.qgisProjectLayer.datasource))
-                        raise QgisProjectLayerException(err)
+                # try to open postgis raster with gdal
+                raster = gdal.Open(self.qgisProjectLayer.datasource)
+                if raster is None:
+                    err = ugettext('Cannot connect to Postgis raster layer {} '.format(
+                        self.qgisProjectLayer.name))
+                    raise QgisProjectLayerException(err)
+
+            else:
+                if not os.path.exists(self.qgisProjectLayer.datasource.split('|')[0]):
+                    err = ugettext('Missing data file for layer {} '.format(
+                        self.qgisProjectLayer.name))
+                    err += ugettext('which should be located at {}'.format(
+                        self.qgisProjectLayer.datasource))
+                    raise QgisProjectLayerException(err)
 
 
 class ColumnName(QgisProjectLayerValidator):
