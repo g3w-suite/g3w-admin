@@ -232,8 +232,8 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
                         elif mode_editing == EDITING_POST_DATA_UPDATED:
                             attr_map = {}
                             for name, value in geojson_feature['properties'].items():
-                                attr_map[qgis_layer.dataProvider().fieldNameMap()[
-                                    name]] = value
+                                if name in qgis_layer.dataProvider().fieldNameMap():
+                                    attr_map[qgis_layer.dataProvider().fieldNameMap()[name]] = value
 
                             if has_transactions:
                                 if not qgis_layer.changeAttributeValues(geojson_feature['id'], attr_map):
