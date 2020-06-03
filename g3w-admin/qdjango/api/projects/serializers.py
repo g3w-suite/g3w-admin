@@ -119,7 +119,7 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         joins = eval(vectorjoins)
         map_relations = []
         for n, join in enumerate(joins):
-            if join['joinLayerId'] in layers and layers[join['joinLayerId']].layer_type in (('postgres', 'spatialite')):
+            if join['joinLayerId'] in layers:
                 map_relations.append(serialize_vectorjoin(layer_id, n, join))
         return map_relations
 
