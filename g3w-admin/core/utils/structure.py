@@ -1,13 +1,3 @@
-from django.db.models.fields import *
-from django.db.models.fields.files import *
-from django.db.models.fields.related import *
-import django.contrib.gis.db.models as geomodels
-from sqlalchemy.sql import sqltypes as SQLTYPE
-
-
-# specific from dialectics
-from sqlalchemy.dialects.postgresql import base as SQLPOSTGRESTYPE
-import geoalchemy2.types as geotypes
 from django.conf import settings
 from django.apps import apps
 from django.urls import reverse
@@ -17,18 +7,6 @@ import copy
 
 from qgis.core import QgsFieldConstraints, Qgis
 from qgis.PyQt.QtCore import QVariant
-
-# Mapping OGRwkbGeometryType
-MAPPING_OGRWKBGTYPE = {
-    0: 'No Geometry',
-    1: 'Point',
-    2: 'LineString',
-    3: 'Polygon',
-    4: 'MultiPoint',
-    5: 'MultiLineString',
-    6: 'MultiPolygon',
-    7: 'Geometry'
-}
 
 # relations data type
 RELATIONS_ONE_TO_ONE = 'ONE'
@@ -89,31 +67,7 @@ FORM_FIELDS_MAPPING = {
     FIELD_TYPE_FILE: FORM_FIELD_TYPE_FILE,
 }
 
-# todo: to remove
-MAPPING_GEOALCHEMY_DJANGO_FIELDS = {
-    SQLTYPE.INTEGER: IntegerField,
-    SQLTYPE.BIGINT: BigIntegerField,
-    SQLTYPE.FLOAT: FloatField,
-    SQLTYPE.VARCHAR: CharField,
-    SQLTYPE.TEXT: TextField,
-    SQLTYPE.SMALLINT: SmallIntegerField,
-    SQLTYPE.BOOLEAN: BooleanField,
-    SQLTYPE.DATE: DateField,
-    SQLTYPE.DATETIME: DateTimeField,
-    SQLTYPE.REAL: FloatField,
-    SQLTYPE.CHAR: CharField,
-    SQLTYPE.NUMERIC: DecimalField,
-    SQLTYPE.BLOB: BinaryField,
-    SQLTYPE.TIMESTAMP: DateTimeField,
 
-    # specific for postgres
-    SQLPOSTGRESTYPE.DOUBLE_PRECISION: FloatField,
-    SQLPOSTGRESTYPE.TIMESTAMP: DateTimeField,
-    SQLPOSTGRESTYPE.BYTEA: BinaryField,
-    geotypes.Geometry: geomodels.GeometryField,
-    'geotype': geomodels.GeometryField,
-    'autoincrement': AutoField
-}
 
 
 FIELD_TYPES_MAPPING = {

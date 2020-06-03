@@ -1,15 +1,9 @@
 import io
 import os
-import shutil
-import subprocess
 import tempfile
 import zipfile
 
-from django.db import connections
-from django.db.models.expressions import RawSQL
 from django.http import HttpResponse, HttpResponseForbidden
-from django_filters.rest_framework import DjangoFilterBackend
-from qgis.PyQt.QtCore import QVariant
 from qgis.core import QgsVectorFileWriter, QgsFeatureRequest, QgsJsonUtils, Qgis, QgsFieldConstraints
 
 from core.api.base.vector import MetadataVectorLayer
@@ -19,9 +13,7 @@ from core.api.base.views import (MODE_CONFIG, MODE_DATA, MODE_SHP, MODE_XLS,
 from core.api.filters import (IntersectsBBoxFilter, OrderingFilter,
                               SearchFilter, SuggestFilterBackend)
 from core.api.permissions import ProjectPermission
-from core.utils.ie import modelresource_factory
-from core.utils.models import (create_geomodel_from_qdjango_layer,
-                               get_geometry_column)
+
 from core.utils.qgisapi import get_qgis_layer
 from core.utils.structure import mapLayerAttributesFromQgisLayer
 from core.utils.vector import BaseUserMediaHandler
@@ -31,12 +23,10 @@ from qdjango.api.constraints.filters import SingleLayerSubsetStringConstraintFil
 
 from qdjango.api.layers.filters import RelationOneToManyFilter
 
-from .api.projects.serializers import (QGISGeoLayerSerializer,
-                                       QGISLayerSerializer)
 from .models import Layer
 from .utils.data import QGIS_LAYER_TYPE_NO_GEOM
 from .utils.edittype import MAPPING_EDITTYPE_QGISEDITTYPE
-from .utils.structure import datasource2dict
+
 
 import json
 import logging
