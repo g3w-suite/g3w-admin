@@ -1,107 +1,425 @@
 {
-  "result": true,
-  "vector": {
-    "format": "GeoJSON",
-    "count": null,
-    "data": null,
-    "geometrytype": "Point",
-    "fields": [
-      {
-        "name": "ogc_fid",
-        "type": "bigint",
-        "label": "ogc_fid",
-        "editable": false,
-        "validate": {
-          "required": true,
-          "unique": true
-        },
-        "pk": true,
-        "default": "Autogenerate",
-        "input": {
-          "type": "text",
-          "options": {}
-        }
-      },
-      {
-        "name": "geonameid",
-        "type": "bigint",
-        "label": "geonameid",
-        "editable": true,
-        "validate": {},
-        "pk": false,
-        "default": "",
-        "input": {
-          "type": "text",
-          "options": {}
-        }
-      },
-      {
-        "name": "name",
-        "type": "varchar",
-        "label": "name",
-        "editable": true,
-        "validate": {},
-        "default": "",
-        "pk": false,
-        "input": {
-          "type": "text",
-          "options": {}
-        }
-      },
-      {
-        "name": "asciiname",
-        "type": "varchar",
-        "label": "asciiname",
-        "editable": true,
-        "validate": {},
-        "pk": false,
-        "default": "",
-        "input": {
-          "type": "text",
-          "options": {}
-        }
-      },
-      {
-        "name": "iso2_code",
-        "type": "varchar",
-        "label": "iso2_code",
-        "editable": true,
-        "validate": {},
-        "pk": false,
-        "default": "",
-        "input": {
-          "type": "text",
-          "options": {}
-        }
-      },
-      {
-        "name": "population",
-        "type": "bigint",
-        "label": "population",
-        "editable": true,
-        "validate": {},
-        "pk": false,
-        "default": "",
-        "input": {
-          "type": "text",
-          "options": {}
-        }
-      },
-      {
-        "name": "gtopo30",
-        "type": "bigint",
-        "label": "gtopo30",
-        "editable": true,
-        "validate": {},
-        "pk": false,
-        "default": "",
-        "input": {
-          "type": "text",
-          "options": {}
-        }
-      }
-    ]
-  },
-  "featurelocks": null,
-  "constraints": {}
+   "result":true,
+   "vector":{
+      "format":"GeoJSON",
+      "count":null,
+      "data":null,
+      "geometrytype":"Point",
+      "fields":[
+         {
+            "name":"ogc_fid",
+            "type":"bigint",
+            "label":"ogc_fid",
+            "editable":false,
+            "validate":{
+               "required":true,
+               "unique":true
+            },
+            "pk":true,
+            "default":"Autogenerate",
+            "input":{
+               "type":"text",
+               "options":{
+
+               }
+            }
+         },
+         {
+            "name":"geonameid",
+            "type":"bigint",
+            "label":"geonameid",
+            "editable":true,
+            "validate":{
+
+            },
+            "pk":false,
+            "default":"",
+            "input":{
+               "type":"text",
+               "options":{
+
+               }
+            }
+         },
+         {
+            "name":"name",
+            "type":"varchar",
+            "label":"name",
+            "editable":true,
+            "validate":{
+
+            },
+            "pk":false,
+            "default":"",
+            "input":{
+               "type":"text",
+               "options":{
+
+               }
+            }
+         },
+         {
+            "name":"asciiname",
+            "type":"varchar",
+            "label":"asciiname",
+            "editable":true,
+            "validate":{
+
+            },
+            "pk":false,
+            "default":"",
+            "input":{
+               "type":"text",
+               "options":{
+
+               }
+            }
+         },
+         {
+            "name":"iso2_code",
+            "type":"varchar",
+            "label":"iso2_code",
+            "editable":true,
+            "validate":{
+
+            },
+            "pk":false,
+            "default":"",
+            "input":{
+               "type":"text",
+               "options":{
+
+               }
+            }
+         },
+         {
+            "name":"population",
+            "type":"bigint",
+            "label":"population",
+            "editable":true,
+            "validate":{
+
+            },
+            "pk":false,
+            "default":"",
+            "input":{
+               "type":"text",
+               "options":{
+
+               }
+            }
+         },
+         {
+            "name":"gtopo30",
+            "type":"bigint",
+            "label":"gtopo30",
+            "editable":true,
+            "validate":{
+
+            },
+            "pk":false,
+            "default":"",
+            "input":{
+               "type":"text",
+               "options":{
+
+               }
+            }
+         },
+         {
+            "name":"countries_ogc_fid",
+            "type":"bigint",
+            "label":"countries_ogc_fid",
+            "editable":false,
+            "validate":{
+               "required":true,
+               "unique":true
+            },
+            "pk":"",
+            "default":"",
+            "input":{
+               "type":"text",
+               "options":{
+
+               }
+            }
+         },
+         {
+            "name":"countries_name_local",
+            "type":"varchar",
+            "label":"countries_name_local",
+            "editable":false,
+            "validate":{
+
+            },
+            "pk":false,
+            "default":"",
+            "input":{
+               "type":"text",
+               "options":{
+
+               }
+            }
+         },
+         {
+            "name":"countries_name_en",
+            "type":"varchar",
+            "label":"countries_name_en",
+            "editable":false,
+            "validate":{
+
+            },
+            "pk":false,
+            "default":"",
+            "input":{
+               "type":"text",
+               "options":{
+
+               }
+            }
+         },
+         {
+            "name":"countries_capital_en",
+            "type":"varchar",
+            "label":"countries_capital_en",
+            "editable":false,
+            "validate":{
+
+            },
+            "pk":false,
+            "default":"",
+            "input":{
+               "type":"text",
+               "options":{
+
+               }
+            }
+         },
+         {
+            "name":"countries_name_de",
+            "type":"varchar",
+            "label":"countries_name_de",
+            "editable":false,
+            "validate":{
+
+            },
+            "pk":false,
+            "default":"",
+            "input":{
+               "type":"text",
+               "options":{
+
+               }
+            }
+         },
+         {
+            "name":"countries_capital_de",
+            "type":"varchar",
+            "label":"countries_capital_de",
+            "editable":false,
+            "validate":{
+
+            },
+            "pk":false,
+            "default":"",
+            "input":{
+               "type":"text",
+               "options":{
+
+               }
+            }
+         },
+         {
+            "name":"countries_name_it",
+            "type":"varchar",
+            "label":"countries_name_it",
+            "editable":false,
+            "validate":{
+
+            },
+            "pk":false,
+            "default":"",
+            "input":{
+               "type":"text",
+               "options":{
+
+               }
+            }
+         },
+         {
+            "name":"countries_capital_it",
+            "type":"varchar",
+            "label":"countries_capital_it",
+            "editable":false,
+            "validate":{
+
+            },
+            "pk":false,
+            "default":"",
+            "input":{
+               "type":"text",
+               "options":{
+
+               }
+            }
+         },
+         {
+            "name":"countries_name_fr",
+            "type":"varchar",
+            "label":"countries_name_fr",
+            "editable":false,
+            "validate":{
+
+            },
+            "pk":false,
+            "default":"",
+            "input":{
+               "type":"text",
+               "options":{
+
+               }
+            }
+         },
+         {
+            "name":"countries_capital_fr",
+            "type":"varchar",
+            "label":"countries_capital_fr",
+            "editable":false,
+            "validate":{
+
+            },
+            "pk":false,
+            "default":"",
+            "input":{
+               "type":"text",
+               "options":{
+
+               }
+            }
+         },
+         {
+            "name":"countries_name_br",
+            "type":"varchar",
+            "label":"countries_name_br",
+            "editable":false,
+            "validate":{
+
+            },
+            "pk":false,
+            "default":"",
+            "input":{
+               "type":"text",
+               "options":{
+
+               }
+            }
+         },
+         {
+            "name":"countries_capital_br",
+            "type":"varchar",
+            "label":"countries_capital_br",
+            "editable":false,
+            "validate":{
+
+            },
+            "pk":false,
+            "default":"",
+            "input":{
+               "type":"text",
+               "options":{
+
+               }
+            }
+         },
+         {
+            "name":"countries_name_es",
+            "type":"varchar",
+            "label":"countries_name_es",
+            "editable":false,
+            "validate":{
+
+            },
+            "pk":false,
+            "default":"",
+            "input":{
+               "type":"text",
+               "options":{
+
+               }
+            }
+         },
+         {
+            "name":"countries_capital_es",
+            "type":"varchar",
+            "label":"countries_capital_es",
+            "editable":false,
+            "validate":{
+
+            },
+            "pk":false,
+            "default":"",
+            "input":{
+               "type":"text",
+               "options":{
+
+               }
+            }
+         },
+         {
+            "name":"countries_population",
+            "type":"bigint",
+            "label":"countries_population",
+            "editable":false,
+            "validate":{
+
+            },
+            "pk":false,
+            "default":"",
+            "input":{
+               "type":"text",
+               "options":{
+
+               }
+            }
+         },
+         {
+            "name":"countries_area_km2",
+            "type":"bigint",
+            "label":"countries_area_km2",
+            "editable":false,
+            "validate":{
+
+            },
+            "pk":false,
+            "default":"",
+            "input":{
+               "type":"text",
+               "options":{
+
+               }
+            }
+         },
+         {
+            "name":"countries_iso_num",
+            "type":"bigint",
+            "label":"countries_iso_num",
+            "editable":false,
+            "validate":{
+
+            },
+            "pk":false,
+            "default":"",
+            "input":{
+               "type":"text",
+               "options":{
+
+               }
+            }
+         }
+      ]
+   },
+   "featurelocks":null,
+   "constraints":{
+
+   }
 }

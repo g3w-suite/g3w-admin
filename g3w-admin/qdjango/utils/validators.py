@@ -26,7 +26,8 @@ from qgis.core import (
     QgsFieldConstraints,
     QgsFeatureRequest,
     QgsExpression,
-    QgsExpressionContextUtils
+    QgsExpressionContextUtils,
+    QgsFields
 )
 
 from qgis.PyQt.QtCore import QVariant, Qt
@@ -76,10 +77,16 @@ def feature_validator(feature, layer):
             errors[field_name] = []
         errors[field_name].append(error)
 
+
+
     # Check fields "hard" constraints
     for field_index in range(layer.fields().count()):
 
         field = layer.fields().field(field_index)
+
+        # check if fields is a join field:
+        if layer.fields().fieldOrigin(field_index) == QgsFields.OriginJoin:
+            continue
 
         # Check not null first, if it fails skip other tests (unique and expression)
         value = feature.attribute(field.name())
