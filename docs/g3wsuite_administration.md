@@ -452,9 +452,9 @@ After filling in the various form, click on the Save button to confirm your choi
 The individual WebGis services will be arranged, within the Thematic Groups to which they belong, in alphabetical order based on the title of the service.
 
 ## Update/ Manage WebGis services
-To **update **a published WebGis service, access the list of projects in the Cartographic Group.
+To **update** a published WebGis service, access the list of projects in the Cartographic Group.
 
-Click on the **Edit** ![](Images/manual/iconsmall_edit.png) icon placed at the top of the WebGis service and reload the QGIS file with the changes made in the relevant form.
+Click on the **Edit** ![](images/manual/iconsmall_edit.png) icon placed at the top of the WebGis service and reload the QGIS file with the changes made in the relevant form.
 
 Click on the **SAVE** button to confirm the change.
 
@@ -493,7 +493,8 @@ Next to each layer are a series of icons and checkboxes:
  * ![](images/manual/icon_editing.png) **Editing layer:** shows if the online editing function is active on the layer and allows you to activate and define it
  * ![](images/manual/icon_widget.png) **List of widgets:** shows how many widgets (eg searches) are associated with this layer and allows you to activate new ones
  * **No legend:** it allows to define if the layer must have published the legend at TOC level of the WebGis client
- * **Download:** allows the download of the layer, in .shp format, at the TOC level of the WebGis client
+ * **Download as shp:** allows the download of the geographic layer, in .shp format
+ * **Download as xls:** allows the download of the layer (geographic or not), in .xls format
  * **WMS external:** to speed up loading, the WMS layers present in a QGIS project are managed directly by Django and not by QGIS-Server. However, this method prevents the application of any styling  (e.g. opacity level) defined at the project level. The choice of the external WMS option means that the WMS layer is managed directly by QGIS-Server and therefore the associated styling is applied.
  * ![](images/manual/icon_layertype.png) **Type:** illustrates the type of data (WMS, PostGis, SpatiaLite, GDAL / OGR ...)
  * **WFS:** a check mark shows whether the layer is published as a WFS service or not

@@ -36,9 +36,13 @@ This title will be used at the G3W-SUITE application level to uniquely identify 
 ![](images/manual/projecttitle.png)
 
 ### Data sources
-**This submenu defines `the layers that can be queried` at the WebGis service level.**
 
-Check the **Identifiable** column for the layers that we want to query on the WebGis
+**This submenu defines the **querable layers** at the WebGis service level.**
+
+Check the **`Identifiable`** column for the layers that we want to query on the WebGis
+
+The option **`Automatically create transaction group where possible`** is automatically inherited in the online editing function.
+
 
 ![](images/manual/datasources.png)
 

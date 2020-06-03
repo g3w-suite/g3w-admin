@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: G3W-SUITE 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-04-30 07:39+0200\n"
+"POT-Creation-Date: 2020-05-22 15:47+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -74,27 +74,30 @@ msgstr ""
 "gestionali cartografici web**"
 
 #: ../../introduction.md:13
-msgid "The current release is compatible with QGIS 3.4 LTR.(Server and Desktop)."
-msgstr "**L'attuale release è compatibile con la versione **`3.4 LTR`**.**"
-
-#: ../../introduction.md:15
 msgid ""
-"The next version (whose release is scheduled for July 2020) will be "
-"compatible with QGIS 3.10 LTR."
-msgstr ""
-"La prossima versione (la cui release è programmata per **Luglio 2020**) "
-"sarà compatibile con la **versione `3.10 LTR`**."
+"The current release is compatible with QGIS 3.10.x LTR.(Server and "
+"Desktop)."
+msgstr "**L'attuale release è compatibile con la versione **`3.10.x LTR`**.**"
 
-#: ../../introduction.md:21
+#: ../../introduction.md:19
 msgid "Version"
 msgstr "Versione"
 
-#: ../../introduction.md:23
+#: ../../introduction.md:21
 msgid ""
 "At the moment is not used a classic versioning system for the suite, "
 "there are main 3 branches."
 msgstr ""
-"Al momento per la suite non è utilizzato un sistema di versionamento classico, sono presenti 3 branch "
-"principali di riferimento"
+"Al momento per la suite non è utilizzato un sistema di versionamento "
+"classico, sono presenti 3 branch principali di riferimento"
 
+#~ msgid ""
+#~ "The next version (whose release is "
+#~ "scheduled for July 2020) will be "
+#~ "compatible with QGIS 3.10 LTR."
+#~ msgstr ""
+#~ "La prossima versione (la cui release "
+#~ "è programmata per **Luglio 2020**) sarà"
+#~ " compatibile con la **versione `3.10 "
+#~ "LTR`**."
 

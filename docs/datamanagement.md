@@ -1,11 +1,19 @@
 #  Management and organization of geographic data and QGIS projects
 _**This section describes how to organize QGIS data and projects locally and how to synchronize them on the server environment for publication purposes**_
 
-## Data on PostGreSQL/PostGis DB
+Thanks to the integration with the QGIS API, G3W-SUITE manages in visualization and editing the main formats (geographic and not) managed by QGIS through the OGR/GDAL library and other specific providers.
 
-If your geographical data are stored on `PostGreSQL/PostGis` DB, it will be sufficient to allow access to the GeoDB from the IP address on which the application is installed.
+Consult the [list of formats](https://docs.qgis.org/3.10/en/docs/user_manual/preamble/features.html#view-data) managed by QGIS.
 
-## Data on SpatiaLite or on other file system format
+## Data on DB Server
+
+If your geographical data are stored on `Server DB`, it will be sufficient to allow access to the DB from the IP address on which the application is installed.
+
+## Data on DB Server
+
+If your geographical data are stored on `Server DB`, it will be sufficient to allow access to the DB from the IP address on which the application is installed.
+
+## Data on SpatiaLite or OGR format
 If your geographical data are stored on `SpatiaLite` or on physical files (`.shp`, `.kml`, `.tif` ...) located on your local PC, you will need:
 * **organize data and projects** in predefined localy directories and subdirectories
 * **upload/synchronize geographic data to the corresponding folder located on the server** where the application is installed
@@ -16,7 +24,7 @@ If your geographical data are stored on `SpatiaLite` or on physical files (`.shp
 
 Data on physical files and / or on GeoDB SpatiaLite and QGIS cartographic projects must be organized in compliance with the following indications:
  * a **main directory** named and positioned in according to need's user
-   * a **`geo_data`* sub-directory** that must contain the **geographic data** used for the various cartographic projects, such data can also be organized in subdirectories with no nesting limits.
+   * a **`geo_data` sub-directory** that must contain the **geographic data** used for the various cartographic projects, such data can also be organized in subdirectories with no nesting limits.
    * a **`projects` sub-directory** that must contain the **QGIS cartographic projects** (.qgz or .qgs files)
 
 ![](images/manual/datamanagement.png)
