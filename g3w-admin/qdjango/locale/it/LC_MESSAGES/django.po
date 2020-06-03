@@ -520,10 +520,9 @@ msgid "Panoramic"
 msgstr "Panoramica"
 
 #: templates/qdjango/project_list.html:23
-#, fuzzy
 #| msgid "QGIS project file"
 msgid "QGIS project title"
-msgstr "File progetto QGIS"
+msgstr "Titolo progetto QGIS"
 
 #: templates/qdjango/project_list.html:26
 msgid "Created/Modified"
