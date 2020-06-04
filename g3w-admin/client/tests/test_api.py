@@ -19,6 +19,7 @@ from django.core.cache import caches
 from core.tests.base import CoreTestBase
 from core.models import MacroGroup
 from core.utils.structure import FIELD_TYPES_MAPPING
+from qdjango.models import Widget, WIDGET_TYPES
 
 # Re-use test data from qdjango module
 DATASOURCE_PATH = os.path.join(os.getcwd(), 'qdjango', 'tests', 'data')
@@ -185,3 +186,58 @@ class ClientApiTest(CoreTestBase):
         response = self._testApiCall('group-project-map-config', ['gruppo-1', 'qdjango', '1'])
         resp = json.loads(response.content)
         self.assertEqual(resp["thumbnail"], '/media/fake/macrogroup.png')
+
+    def testClientConfigApiWidget(self):
+        """Test layer widget config section"""
+
+        layer = self.prj_test.layer_set.get(qgs_layer_id='spatialite_points20190604101052075')
+
+        # update datasource to work
+        layer.datasource = f"dbname='{DATASOURCE_PATH}/geodata/un-progetto.db' table=\"spatialite_points\" (geom) sql="
+        layer.save()
+
+        # create a search widget with selectbox
+        widget_body = {
+            "title": "asert",
+            "query": "simpleWmsSearch",
+            "usewmsrequest": True,
+            "fields": [
+                {
+                    "name": "name",
+                    "label": "name",
+                    "blanktext": "",
+                    "filterop": "eq",
+                    "widgettype": "selectbox",
+                    "input": {
+                        "type": "textfield",
+                        "options": {}
+                    }
+                }
+            ],
+            "results":[],
+            "selectionlayer": "spatialite_points20190604101052075",
+            "selectionzoom": 0,
+            "dozoomtoextent": True
+        }
+
+        widget = Widget(
+            widget_type='search',
+            name='Test selectbox',
+            datasource=layer.datasource,
+            body=json.dumps(widget_body)
+        )
+        widget.save()
+        widget.layers.add(layer)
+
+        response = self._testApiCall('group-project-map-config', ['gruppo-1', 'qdjango', '1'])
+        resp = json.loads(response.content)
+
+        self.assertTrue(len(resp["search"]) > 0)
+        resp_serach = resp['search'][0]
+        self.assertEqual(resp_serach['name'], 'Test selectbox')
+        self.assertEqual(resp_serach['type'], 'search')
+        self.assertEqual(resp_serach['options']['filter']['AND'][0]['input']['type'], 'selectfield')
+        self.assertEqual(resp_serach['options']['filter']['AND'][0]['input']['options']['values'],
+                         ['a point', 'another point'])
+
+
