@@ -13,8 +13,7 @@ from core.utils.structure import mapLayerAttributes
 from core.configs import *
 from core.signals import after_serialized_project_layer
 from core.mixins.api.serializers import G3WRequestSerializer
-from core.api.serializers import update_serializer_data, G3WSerializerMixin
-from core.utils.models import get_geometry_column, create_geomodel_from_qdjango_layer
+from core.api.serializers import update_serializer_data
 from core.utils.structure import RELATIONS_ONE_TO_MANY, RELATIONS_ONE_TO_ONE
 from core.utils.qgisapi import get_qgis_layer
 from core.models import G3WSpatialRefSys
@@ -511,43 +510,3 @@ class WidgetSerializer(serializers.ModelSerializer):
             'id',
             'name',
         )
-
-
-class QGISLayerSerializer(G3WSerializerMixin, serializers.ModelSerializer):
-    """
-    Generic layer serializer for postgres/Postgis or sqlite/spatialite NO GEOGRAPHIC
-    """
-    def __init__(self, *args, **kwargs):
-
-        # to avoid model interrelations on parallel api call
-        self.set_meta(kwargs)
-
-        # get only properties fi geojson data
-        if 'data' in kwargs and 'geometry' in kwargs['data']:
-            kwargs['data'] = kwargs['data']['properties']
-
-        super(QGISLayerSerializer, self).__init__(*args, **kwargs)
-
-    class Meta:
-        model = None
-        exclude = []
-
-
-class QGISGeoLayerSerializer(G3WSerializerMixin, geo_serializers.GeoFeatureModelSerializer):
-    """
-    Generic layer serializer for postgis or spatialite
-    """
-    def __init__(self, *args, **kwargs):
-
-        # to avoid model interrelations on parallel api call
-        self.set_meta(kwargs)
-
-        # set geometry column
-        geometryfield = get_geometry_column(self.Meta.model)
-        self.Meta.geo_field = geometryfield.name
-
-        super(QGISGeoLayerSerializer, self).__init__(*args, **kwargs)
-
-    class Meta:
-        model = None
-        exclude = []

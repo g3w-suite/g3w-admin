@@ -1,11 +1,4 @@
-from sqlalchemy import create_engine
-from geoalchemy2 import Table as GEOTable
-from sqlalchemy.engine.url import URL
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.schema import MetaData
-from django.utils.translation import ugettext_lazy as _
-import os, re
+import re
 try:
     from osgeo import ogr
 except ImportError:

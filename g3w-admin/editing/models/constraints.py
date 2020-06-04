@@ -30,7 +30,6 @@ from qgis.core import (
     QgsExpression,
 )
 
-from core.utils.models import get_creator_from_qdjango_layer
 from core.utils.qgisapi import get_qgis_features, get_qgis_layer
 from qdjango.models import Layer
 
