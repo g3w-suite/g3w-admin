@@ -418,7 +418,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         response = HttpResponse(
             open(xls_tmp_path, 'rb').read(), content_type='application/ms-excel')
         tmp_dir.cleanup()
-        response['Content-Disposition'] = 'attachment; filename=geodata.xls'
+        response['Content-Disposition'] = f'attachment; filename={filename}'
         response.set_cookie('fileDownload', 'true')
         return response
 
