@@ -6,7 +6,7 @@ Thanks to the integration with the QGIS API, **G3W-SUITE allows you to edit all 
 Consult the [list of formats](https://docs.qgis.org/3.10/en/docs/user_manual/preamble/features.html#view-data) managed by QGIS.
 
 
-The tool also allows you to manage **`relational type editing (1:1 and 1:n)`**.
+The tool also allows you to manage **`1:N relational editing`**.
 
 The **editing settings** are defined partly at the **QGIS project level** (**editing form structure, widgets associated with individual attributes, 1:n relationships**) and partly at the **Administration level** (users with editing power, activation scale, any geoconstraints).
 
@@ -132,59 +132,13 @@ The single rules must refer to the layer’s attributes and values.
 
 The **`Save icon`** ![](images/manual/icon_save.png) will allow you to validate the rules, in order to ensure proper functioning of the constraints itself.
 
-Once all the constraints have been entered and validated, click on the **Close button** to confirm the rules.
-
 ![](images/manual/editing_alpha_constrain_setting.png)
+
+Once all the constraints have been entered and validated, click on the **Close button** to confirm the rules.
 
 
 ###### QGIS Expressions Rules
 Clicking on the icon **QGIS expression rules** ![](images/manual/icon_qgisconstraints_setting.png) will open a modal window which, by pressing the green button ![](images/manual/button_add.png), it will allow you to **define, for each user and/or group of users, the rules of the constraints**.
-
-### Constraints setting
-
-G3W-SUITE allows you to manage two types of constraints:
- * **alphanumeric constraints** that operate both in terms of visualization and editing
- * **geoemetric constraints** that operate only at the editing level
-
-
-#### Alphanumeric Constraints
-**Alphanumeric constraints allow you to define, for each published layer, the subset of features that can be viewed and edited by individual users and/or groups of users.**
-
-To activate a alphanumeric constraint, you must click, always at the level of the list of project layers, on the **`Manage alphanumeric visualization and editing constraints`** icon ![](images/manual/icon_alpha_constraints.png).
-
-Clicking on the icon will show the list of any existing alphanumeric constraints and the item **`+ New alphanumeric constraint`** to create a new constraints.
-
-![](images/manual/editing_alphaconstrain_layer.png)
-
-Clicking on the **`+ New constraint`** buttom, it will open a modal window which will allow you to define a name and a description for the new constraint.
-
-After clicking the **OK** button, the constraint will appear in the list and can be parameterized using two ways of defining the rules:  
-
- * ![](images/manual/icon_alphaconstraints_provider.png) **Provider's language / SQL dialect**
- * ![](images/manual/icon_alphaconstraints_qgis.png) **QGIS Expression**
- 
-
-##### Provider's language / SQL dialect Rules
-
-Clicking on the **`Provider's language / SQL dialect Rules`** icon ![](images/manual/icon_alphaconstraints_provider.png) will open a modal window which, by pressing the green button **Add** ![](images/manual/button_add.png), it will allow you to **define, for each user and/or group of users, the rules of the constraints**.
-
-The individual rules must be defined via  the **`Provider's language`** or the **`SQL dialect`** associated with the format of the geo-constraints layer (es. use standard SQL if your geo-constraint layer is a PostGis layer)
-
-The single rules must refer to the layer’s attributes and values.
-
-The **`Save icon`** ![](images/manual/icon_save.png) will allow you to validate the single rules, in order to ensure proper functioning of the constraints itself.
-
-![](images/manual/alphaconstraints_provider_example.png)
-
-Once all the constraints have been entered and validated, click on the **Close button** to confirm the rules.
-
-In the alphanumeric constraints list you can see a summary of the setted rules.
-
-![](images/manual/editing_alphaconstrain_layer_summary.png)
-
-
-##### QGIS Expressions Rules
-Clicking on the **`QGIS Expression Rules`** icon ![](images/manual/icon_alphaconstraints_qgis.png) it will open a modal window which, by pressing the green button **Add** ![](images/manual/button_add.png), it will allow you to **define, for each user and/or group of users, the rules of the constraints**.
 
 The individual rules must be defined via **`QGIS expression`** and this allows to have a great degree of freedom in the ways in which to set these rules.
 
@@ -192,26 +146,12 @@ See the paragraph dedicated to the functions available directly on the [QGIS man
 
 The **`Save icon`** ![](images/manual/icon_save.png) will allow you to validate the rules, in order to ensure proper functioning of the constraints itself.
 
-Once all the constraints have been entered and validated, click on the **Close button** to confirm the rules.
-
 ![](images/manual/editing_qgisconstrain_setting.png)
+
+Once all the constraints have been entered and validated, click on the **Close button** to confirm the rules.
 
 
 ##### Geo-constraints
-
-**The online editing function also allows you to manage geo-constraints that allow the user to insert/modify features only if they intersect or are contained within specific features of a second polygonal layer.**
-
-To activate a geographical constraint, you must click, always at the level of the list of project layers, on the **`Geo-Constraints list` icon** ![](images/manual/icon_constraints.png) which will appear once the online editing function is activated.
-
-![](images/manual/alphaconstraints_qgis_example.png)
-
-Once all the constraints have been entered and validated, click on the **Close button** to confirm the rules.
-
-In the alphanumeric constraints list you can see a summary of the setted rules.
-
-![](images/manual/editing_alphaconstrain_layer_summary.png)
-
-#### Geo-constraints
 **The online editing function also allows you to manage geo-constraints that allow the user to insert/modify features only if they intersect or are contained within specific features of a second polygonal layer.**
 
 To activate a geographical constraint, you must click, always at the level of the list of project layers, on the **`Manage Geo-Constraints` icon** ![](images/manual/icon_constraints.png) which will appear once the online editing function is activated.
@@ -229,12 +169,6 @@ Once the layer has been defined, the constraint will appear in the list and can 
 Clicking on this icon will open a modal window which, by pressing the green button ![](images/manual/button_add.png), it will allow you to **define, for each user and/or group of users, the rules of the constraints**.
 
 The individual rules must be defined via  the **`Provider's language`** or the **`SQL dialect Rules`** associated with the format of the geo-constraints layer (es. use standard SQL if your geo-constraint layer is a PostGis layer)
-
-The single rules must refer to the layer’s attributes and values.
-
-The **`Save icon`** ![](images/manual/icon_save.png) will allow you to validate the rules, in order to ensure proper functioning of the constraints itself.
-
-The individual rules must be defined via the **`Provider's language`** or the **`SQL dialect Rules`** associated with the format of the geo-constraints layer (es. use standard SQL if your geo-constraint layer is a PostGis layer)
 
 The single rules must refer to the layer’s attributes and values.
 
@@ -273,13 +207,7 @@ The tools available are the following:
  * ![](images/manual/icon_feature_dissolve.png) **Dissolve features:** to dissolve two or more features
  * ![](images/manual/icon_feature_split.png) **Split features:** to split one or more features
  * ![](images/manual/icon_feature_remove.png) **Remove feature**
- * ![](images/manual/icon_feature_modify.png) **Update feature vertex:** to modify the shape of a geometry
- * ![](images/manual/icon_feature_move.png) **Move feature:** to move a feature
- * ![](images/manual/icon_feature_copy.png) **Copy features:** to move one or more features
  * ![](images/manual/icon_feature_attribute.png) **Modify feature:** to modify the attributes associated with an existing feature
- * ![](images/manual/icon_feature_split.png) **Split features:** to split one or more features
- * ![](images/manual/icon_feature_dissolve.png) **Dissolve features:** to dissolve two or more features
- * ![](images/manual/icon_feature_remove.png) **Remove feature**
 
 Activating the **Add features** and **Update feature vertex** tools allows you to activate the snap intralayer function.
 
