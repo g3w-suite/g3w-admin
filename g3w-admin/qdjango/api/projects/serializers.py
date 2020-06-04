@@ -488,7 +488,7 @@ class WidgetSerializer(serializers.ModelSerializer):
 
                     field['input']['type'] = 'selectfield'
                     if 'dependance' not in field['input']['options']:
-                        field['input']['options']['values'] = [v[field['name']] for v in values]
+                        field['input']['options']['values'] = values
                     else:
                         field['input']['options']['values'] = []
 
@@ -510,43 +510,3 @@ class WidgetSerializer(serializers.ModelSerializer):
             'id',
             'name',
         )
-
-
-class QGISLayerSerializer(G3WSerializerMixin, serializers.ModelSerializer):
-    """
-    Generic layer serializer for postgres/Postgis or sqlite/spatialite NO GEOGRAPHIC
-    """
-    def __init__(self, *args, **kwargs):
-
-        # to avoid model interrelations on parallel api call
-        self.set_meta(kwargs)
-
-        # get only properties fi geojson data
-        if 'data' in kwargs and 'geometry' in kwargs['data']:
-            kwargs['data'] = kwargs['data']['properties']
-
-        super(QGISLayerSerializer, self).__init__(*args, **kwargs)
-
-    class Meta:
-        model = None
-        exclude = []
-
-
-class QGISGeoLayerSerializer(G3WSerializerMixin, geo_serializers.GeoFeatureModelSerializer):
-    """
-    Generic layer serializer for postgis or spatialite
-    """
-    def __init__(self, *args, **kwargs):
-
-        # to avoid model interrelations on parallel api call
-        self.set_meta(kwargs)
-
-        # set geometry column
-        geometryfield = get_geometry_column(self.Meta.model)
-        self.Meta.geo_field = geometryfield.name
-
-        super(QGISGeoLayerSerializer, self).__init__(*args, **kwargs)
-
-    class Meta:
-        model = None
-        exclude = []
