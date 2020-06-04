@@ -16,8 +16,11 @@ from core.mixins.api.serializers import G3WRequestSerializer
 from core.api.serializers import update_serializer_data, G3WSerializerMixin
 from core.utils.models import get_geometry_column, create_geomodel_from_qdjango_layer
 from core.utils.structure import RELATIONS_ONE_TO_MANY, RELATIONS_ONE_TO_ONE
+from core.utils.qgisapi import get_qgis_layer
 from core.models import G3WSpatialRefSys
 from qdjango.utils.structure import QdjangoMetaLayer, datasourcearcgis2dict
+from qgis.core import QgsJsonUtils
+
 from ..utils import serialize_vectorjoin
 import json
 
@@ -470,13 +473,23 @@ class WidgetSerializer(serializers.ModelSerializer):
 
                 # if widgettype is selectbox, get values
                 if 'widgettype' in field and field['widgettype'] == 'selectbox':
-                    model = create_geomodel_from_qdjango_layer(self.layer)
-                    values = model[0].objects.order_by(field['name']).values(field['name']).distinct()
-                    del(model)
+
+                    qgis_layer = get_qgis_layer(self.layer)
+
+                    uniques = qgis_layer.uniqueValues(
+                        qgis_layer.fields().indexOf(field['name'])
+                    )
+                    values = []
+                    for u in uniques:
+                        try:
+                            values.append(json.loads(QgsJsonUtils.encodeValue(u)))
+                        except Exception as e:
+                            logger.error(f'Response vector widget unique: {e}')
+                            continue
 
                     field['input']['type'] = 'selectfield'
                     if 'dependance' not in field['input']['options']:
-                        field['input']['options']['values'] = [v[field['name']] for v in values]
+                        field['input']['options']['values'] = values
                     else:
                         field['input']['options']['values'] = []
 

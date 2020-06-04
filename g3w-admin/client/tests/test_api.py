@@ -237,7 +237,7 @@ class ClientApiTest(CoreTestBase):
         self.assertEqual(resp_serach['name'], 'Test selectbox')
         self.assertEqual(resp_serach['type'], 'search')
         self.assertEqual(resp_serach['options']['filter']['AND'][0]['input']['type'], 'selectfield')
-        self.assertEqual(resp_serach['options']['filter']['AND'][0]['input']['options']['values'],
-                         ['a point', 'another point'])
+        self.assertEqual(set(resp_serach['options']['filter']['AND'][0]['input']['options']['values']),
+                         set(['a point', 'another point']))
 
 
