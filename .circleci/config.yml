@@ -52,10 +52,10 @@ jobs:
           name: Running editing tests
           command: docker-compose exec g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test editing.tests"
       - run:
-          name: Running editing tests
+          name: Running caching tests
           command: docker-compose exec g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test caching"
       - run:
-          name: Running editing tests
+          name: Running filemanager tests
           command: docker-compose exec g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test filemanager"
 
 
