@@ -18,6 +18,12 @@ jobs:
           name: Installing Python requirements
           command: docker-compose exec g3w-suite sh -c "cd /code/ && pip3 install -r requirements_docker.txt"
       - run:
+          name: Installing Caching Python requirements
+          command: docker-compose exec g3w-suite sh -c "cd /code/ && pip3 install -r g3w-admin/caching/requirements.txt"
+      - run:
+          name: Installing Filemanager Python requirements
+          command: docker-compose exec g3w-suite sh -c "cd /code/ && pip3 install -r g3w-admin/filemanager/requirements.txt"
+      - run:
           name: Building g3w-suite
           command: docker-compose exec g3w-suite sh -c "/code/ci_scripts/build_suite.sh"
       - run:
@@ -45,5 +51,11 @@ jobs:
       - run:
           name: Running editing tests
           command: docker-compose exec g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test editing.tests"
+      - run:
+          name: Running caching tests
+          command: docker-compose exec g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test caching"
+      - run:
+          name: Running filemanager tests
+          command: docker-compose exec g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test filemanager"
 
 

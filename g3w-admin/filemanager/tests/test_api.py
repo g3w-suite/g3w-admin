@@ -60,16 +60,18 @@ class FilemanagerApiTest(BaseFilemanagerTestCase):
         jres = json.loads(res.content)
 
         self.assertEqual(len(jres['data']), 3)
-        self.assertEqual(jres['data'][0]['id'], "/file2_test.txt")
-        self.assertEqual(jres['data'][0]['type'], "file")
-        self.assertEqual(jres['data'][0]['attributes']['name'], "file2_test.txt")
-        self.assertEqual(jres['data'][0]['attributes']['readable'], 1)
-        self.assertEqual(jres['data'][0]['attributes']['writable'], 1)
-        self.assertEqual(jres['data'][0]['attributes']['extension'], "txt")
-        self.assertEqual(jres['data'][0]['attributes']['path'], f"{CURRENT_PATH}{TEST_BASE_PATH}file2_test.txt")
-
-        self.assertEqual(jres['data'][2]['id'], "/folder_test/")
-        self.assertEqual(jres['data'][2]['type'], "folder")
+        for d in jres['data']:
+            if d['id'] == '/file2_test.txt':
+                self.assertEqual(d['id'], "/file2_test.txt")
+                self.assertEqual(d['type'], "file")
+                self.assertEqual(d['attributes']['name'], "file2_test.txt")
+                self.assertEqual(d['attributes']['readable'], 1)
+                self.assertEqual(d['attributes']['writable'], 1)
+                self.assertEqual(d['attributes']['extension'], "txt")
+                self.assertEqual(d['attributes']['path'], f"{CURRENT_PATH}{TEST_BASE_PATH}file2_test.txt")
+            elif d['id'] == '/folder_test/':
+                self.assertEqual(d['id'], "/folder_test/")
+                self.assertEqual(d['type'], "folder")
 
         client.logout()
 

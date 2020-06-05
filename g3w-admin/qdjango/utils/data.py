@@ -130,6 +130,7 @@ class QgisProjectLayer(XmlData):
         if 'order' in kwargs:
             self.order = kwargs['order']
 
+
         # set data value into this object
         self.setData()
 
@@ -368,10 +369,31 @@ class QgisProjectLayer(XmlData):
         datasource = self.qgisProjectLayerTree.find('datasource').text
         serverDatasource = makeDatasource(datasource, self.layerType)
 
-        if serverDatasource is not None:
-            return serverDatasource
-        else:
-            return datasource
+        new_datasource = serverDatasource if serverDatasource is not None else datasource
+
+        pre_err_msg = ""
+
+        # set new data source to qgslayer object:
+        try:
+            layer = self.qgisProject.qgs_project.mapLayers()[self.layerId]
+        except KeyError:
+            logging.warning("Could not find layer id %s in QGIS project file: %s" % (self.layerId, self.qgisProject.qgisProjectFile.name))
+            msg = _("Could not find layer id {} in QGIS project").format(self.layerId)
+            raise Exception(f'{pre_err_msg}: {msg}')
+
+        if layer.type() != QgsMapLayer.VectorLayer:
+            return new_datasource
+
+        # fix new datasource
+        layer.setDataSource(new_datasource, layer.name(), layer.dataProvider().name())
+
+        if not layer.isValid():
+            logging.warning("Layer id %s is not valid in QGIS project file: %s" % (
+            self.layerId, self.qgisProject.qgisProjectFile.name))
+            msg = _("Current datasource is {}").format(new_datasource)
+            raise Exception(f'{pre_err_msg}: {msg}')
+
+        return new_datasource
 
     def _getDataAliases(self):
         """
@@ -401,47 +423,11 @@ class QgisProjectLayer(XmlData):
         :return: A dict list with data attributes structure.
         :rtype: list
         """
-        project = QgsProject()
 
-        # Case FieldFile
-        if hasattr(self.qgisProject.qgisProjectFile, 'path'):
-            project_file = self.qgisProject.qgisProjectFile.path
-
-        # Case UploadedFileWithId
-        elif hasattr(self.qgisProject.qgisProjectFile, 'file'):
-            if hasattr(self.qgisProject.qgisProjectFile.file, 'path'):
-                project_file = self.qgisProject.qgisProjectFile.file.path
-            else:
-                project_file = self.qgisProject.qgisProjectFile.file.name
-
-        # Default case
-        else:
-            project_file = self.qgisProject.qgisProjectFile.name
-
-        pre_err_msg = _("A problem occurs during reading layer fields property")
-
-        if not project.read(project_file):
-            logging.warning("Could not read QGIS project file: %s" % self.qgisProject.qgisProjectFile.name)
-            msg = _("Could not read QGIS project file")
-            raise QgisProjectLayerException(f'{pre_err_msg}: {msg}')
-
-
-        try:
-            layer = project.mapLayers()[self.layerId]
-        except KeyError:
-            logging.warning("Could not find layer id %s in QGIS project file: %s" % (self.layerId, self.qgisProject.qgisProjectFile.name))
-            msg = _("Could not find layer id {} in QGIS project").format(self.layerId)
-            raise QgisProjectLayerException(f'{pre_err_msg}: {msg}')
+        layer = self.qgisProject.qgs_project.mapLayers()[self.layerId]
 
         if layer.type() != QgsMapLayer.VectorLayer:
             return None
-
-        layer.setDataSource(self.datasource, layer.name(), layer.dataProvider().name())
-        if not layer.isValid():
-            logging.warning("Layer id %s is not valid in QGIS project file: %s" % (
-            self.layerId, self.qgisProject.qgisProjectFile.name))
-            msg = _("Layer id {} is not valid").format(self.layerId)
-            raise QgisProjectLayerException(f'{pre_err_msg}: {msg}')
 
         columns = []
         for f in layer.fields():
@@ -811,21 +797,53 @@ class QgisProject(XmlData):
         # set data value into this object
         self.setData()
 
+        self.closeProject(**kwargs)
+
         #register defaul validator
         for validator in self._defaultValidators:
             self.registerValidator(validator)
 
     def loadProject(self, **kwargs):
         """
-        Load projectfile by xml parser
+        Load project file by xml parser and instance a QgsProject object
         """
         try:
 
             # we have to rewind the underlying file in case it has been already parsed
             self.qgisProjectFile.file.seek(0)
             self.qgisProjectTree = lxml.parse(self.qgisProjectFile, forbid_entities=False)
+
         except Exception as e:
             raise QgisProjectException(_('The project file is malformed: {}').format(e.args[0]))
+
+        # set a global QgsProject object
+        self.qgs_project = QgsProject()
+
+        # Case FieldFile
+        if hasattr(self.qgisProjectFile, 'path'):
+            project_file = self.qgisProjectFile.path
+
+        # Case UploadedFileWithId
+        elif hasattr(self.qgisProjectFile, 'file'):
+            if hasattr(self.qgisProjectFile.file, 'path'):
+                project_file = self.qgisProjectFile.file.path
+            else:
+                project_file = self.qgisProjectFile.file.name
+
+        # Default case
+        else:
+            project_file = self.qgisProjectFile.name
+
+        if not self.qgs_project.read(project_file):
+            raise QgisProjectException(_('Could not read QGIS project file: {}').format(project_file))
+
+    def closeProject(self, **kwargs):
+        """
+        Close QgsProject object.
+        Is important to avoid locking data like GeoPackage.
+        """
+
+        del(self.qgs_project)
 
     def _getDataName(self):
         """
@@ -909,7 +927,7 @@ class QgisProject(XmlData):
 
     def _checkLayerTypeCompatible(self, layerTree):
         """
-        Chek il layer is compatible for to show in webgis
+        Check il layer is compatible for to show in webgis
         :param layerTree: dict QGIS layer tree structure
         :return: boolean compatibility
         .:rtype: bool

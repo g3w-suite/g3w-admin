@@ -1,6 +1,6 @@
 from django.conf.urls import url
 from django.contrib.auth.decorators import login_required
-from .api.views import layer_vector_view
+from .api.views import layer_vector_view, G3WSUITEInfoAPIView
 from .views import GroupSetOrderView, MacroGroupSetOrderView
 
 
@@ -20,4 +20,6 @@ urlpatterns = [
 
     url(r'^jx/macrogroups/(?P<group_id>[0-9]+)/setorder/$',
         login_required(MacroGroupSetOrderView.as_view()), name='macrogroup-set-order'),
+
+    url(r'^api/deploy/info/$', G3WSUITEInfoAPIView.as_view(), name='deploy-info-api')
 ]

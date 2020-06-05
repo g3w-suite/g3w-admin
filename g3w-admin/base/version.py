@@ -22,8 +22,7 @@ def get_version(version=None):
     #     | {a|b|c}N - for alpha, beta and rc releases
 
     parts = 2 if version[2] == 0 else 3
-    #main = '.'.join(str(x) for x in version[:parts])
-    main = ''
+    main = '.'.join(str(x) for x in version[:parts])
 
     sub = ''
     if version[3] == 'unstable':

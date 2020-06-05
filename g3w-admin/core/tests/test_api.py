@@ -23,6 +23,7 @@ from rest_framework.test import APIClient, APITestCase
 
 from qdjango.apps import get_qgs_project
 from qdjango.models import Layer, Project
+from base.version import get_version
 
 from .base import CoreTestBase
 
@@ -303,3 +304,15 @@ class CoreApiTest(CoreTestBase):
         self.assertTrue('gdal' in prlist)
         self.assertTrue('postgres' in prlist)
         self.assertTrue('spatialite' in prlist)
+
+    def testG3WSUITEInfoAPI(self):
+        """Test api return general information about suite deploy"""
+
+        url = reverse('deploy-info-api')
+        res = self.client.get(url)
+        self.assertTrue(res.status_code, 200)
+        jres = json.loads(res.content)
+
+        self.assertEqual(jres['data']['version'], get_version())
+        self.assertEqual(jres['data']['modules'], settings.G3WADMIN_LOCAL_MORE_APPS)
+
