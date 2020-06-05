@@ -797,6 +797,8 @@ class QgisProject(XmlData):
         # set data value into this object
         self.setData()
 
+        self.closeProject(**kwargs)
+
         #register defaul validator
         for validator in self._defaultValidators:
             self.registerValidator(validator)
@@ -834,6 +836,14 @@ class QgisProject(XmlData):
 
         if not self.qgs_project.read(project_file):
             raise QgisProjectException(_('Could not read QGIS project file: {}').format(project_file))
+
+    def closeProject(self, **kwargs):
+        """
+        Close QgsProject object.
+        Is important to avoid locking data like GeoPackage.
+        """
+
+        del(self.qgs_project)
 
     def _getDataName(self):
         """
