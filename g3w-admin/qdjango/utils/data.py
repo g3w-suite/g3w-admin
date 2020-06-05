@@ -436,6 +436,7 @@ class QgisProjectLayer(XmlData):
         if layer.type() != QgsMapLayer.VectorLayer:
             return None
 
+        # fix new datasource
         layer.setDataSource(self.datasource, layer.name(), layer.dataProvider().name())
         if not layer.isValid():
             logging.warning("Layer id %s is not valid in QGIS project file: %s" % (
