@@ -34,7 +34,8 @@ import requests
     TILESTACHE_CACHE_TYPE='Disk',
     TILESTACHE_CACHE_DISK_PATH=f'{CURRENT_PATH}${TEST_BASE_PATH}',
     TILESTACHE_CACHE_TOKEN='1234567',
-    QDJANGO_SERVER_URL='http://localhost:55432'
+    QDJANGO_SERVER_URL='http://localhost:55432',
+    DATASOURCE_PATH=f'{CURRENT_PATH}/qdjango/tests/data/'
 )
 class CachingAPITests(LiveServerTestCase):
 
@@ -66,7 +67,7 @@ class CachingAPITests(LiveServerTestCase):
                                       srid=G3WSpatialRefSys.objects.get(auth_srid=4326))
         cls.project_group.save()
 
-        qgis_project_file = File(open('{}{}{}'.format(CURRENT_PATH, '/qdjango/tests/data/', QGS_FILE), 'r'))
+        qgis_project_file = File(open('{}{}{}'.format(CURRENT_PATH, '/caching/tests/data/', QGS_FILE), 'r'))
         cls.project = QgisProject(qgis_project_file)
         cls.project.title = 'A project'
         cls.project.group = cls.project_group
