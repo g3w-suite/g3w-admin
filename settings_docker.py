@@ -2,7 +2,9 @@
 G3WADMIN_PROJECT_APPS = []
 
 G3WADMIN_LOCAL_MORE_APPS = [
-    'editing'
+    'editing',
+    'caching',
+    'filemanager'
 ]
 
 DATABASES = {
@@ -29,6 +31,18 @@ DEBUG = True
 
 #FRONTEND = False
 #FRONTEND_APP = None
+
+# LAYER CACHING SETTINGS
+# ===============================
+# follow settings work if 'caching' module is in 'G3WADMIN_LOCAL_MORE_APPS'
+TILESTACHE_CACHE_NAME = 'default'
+TILESTACHE_CACHE_TYPE = 'Disk' # or 'Memcache'
+TILESTACHE_CACHE_DISK_PATH = '/tmp/'
+TILESTACHE_CACHE_TOKEN = '1234567'
+
+# FILEMANAGER SETTINGS
+# ===============================
+FILEMANAGER_ROOT_PATH = DATASOURCE_PATH
 
 ALLOWED_HOSTS = "*"
 
