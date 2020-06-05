@@ -438,6 +438,7 @@ class QgisProjectLayer(XmlData):
 
         # fix new datasource
         layer.setDataSource(self.datasource, layer.name(), layer.dataProvider().name())
+
         if not layer.isValid():
             logging.warning("Layer id %s is not valid in QGIS project file: %s" % (
             self.layerId, self.qgisProject.qgisProjectFile.name))
