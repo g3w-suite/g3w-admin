@@ -837,6 +837,17 @@ class QgisProject(XmlData):
         if not self.qgs_project.read(project_file):
             raise QgisProjectException(_('Could not read QGIS project file: {}').format(project_file))
 
+        # instance
+        from PyQt5.QtXml import QDomDocument
+        from PyQt5.QtCore import QFile
+        from qgis.gui import QgsMapCanvas
+        from qgis.core import QgsMapSettings
+        qdd = QDomDocument()
+
+        qdd.setContent(QFile(project_file))
+        qmc = QgsMapCanvas()
+
+        print (qmc)
     def closeProject(self, **kwargs):
         """
         Close QgsProject object.
@@ -847,19 +858,18 @@ class QgisProject(XmlData):
 
     def _getDataName(self):
         """
-        Get projectname from xml QGIS project file
-        :return: project name property
+        Get QgsProject title property per projectname xml property
         :rtype: str
         """
-        return self.qgisProjectTree.getroot().attrib['projectname']
+        return self.qgs_project.title()
 
     def _getDataTitle(self):
         """
-        Get title tag content from xml QGIS project file
+        Get QgsProject title property
         :return: project title property
         :rtype: str
         """
-        return self.qgisProjectTree.find('title').text
+        return self.qgs_project.title()
 
     def _getDataInitialExtent(self):
         """
