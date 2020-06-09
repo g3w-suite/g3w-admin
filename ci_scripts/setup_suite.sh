@@ -76,6 +76,11 @@ else
     python3 manage.py collectstatic --noinput -v 0
     python3 manage.py migrate --noinput
     python3 manage.py sitetree_resync_apps
+
+    # Restore on restart ln -s for bower_component
+    cd ${DJANGO_DIRECTORY}/core/static
+    rm -rf bower_components
+    ln -s "/code/node_modules/@bower_components" bower_components
 fi
 
 # Make sure data are readable:
