@@ -17,11 +17,11 @@ Through the tutorials it will be possible to:
 
 # Download the demo data
 
-The tutorial is based on predefined data and QGIS 3.4 LTR project **downloadable from [this link](https://dev.g3wsuite.it/media_user/G3WSUITE.zip)**.
+The tutorial is based on predefined data and QGIS 3.10 LTR project **downloadable from [this link](https://dev.g3wsuite.it/media_user/G3WSUITE.zip)**.
 
 The .zip file contains la directory **`G3W-SUITE`** with two sub directories:
  * **`projects`:** containing a QGIS project (**`buildings_management.qgz`**) already optimized for the tutorial
- * **`dati_geografici`**: containing a SpatiaLite DB with basic data (**`build_management.sqlite`**)
+ * **`project_data/spatialite`**: containing a SpatiaLite DB with basic data (**`build_management.sqlite`**)
 
 ![](images/manual/demo_zip_file.png)
 
@@ -34,11 +34,13 @@ Inside the **`build_management.sqlite` SpatiaLite DB** there are the following l
 
 **IMPORTANT: a copy of this data are present on the server, you can not change your local data copy**
 
-The project (**based on QGIS LTR 3.4**) foresees:
+The project (**based on QGIS LTR 3.10**) foresees:
  * a **dressing categorized by the `buildings` layer** based on the categorical field **`type`**
  * the presence of a **1: n relationship** between the `buildings` layer and the alphanumeric **`maintenance_works`** table
  * pre-developed **query forms** for the **`buildings`** layer and the **`maintenance_works`** table
  * predefined **editing widgets** for the fields of the two main layers: **`buildings`** and **`maintenance_works`**
+ * two **print composer** in A4 and A3
+
 
 ![](images/manual/demo_qgis_project.png)
 
@@ -52,11 +54,13 @@ The publication system provides for the use of the **title of the project** as t
 
 # Access the online service
 
-To publish the project, you can **access the G3W-SUITE test application** via the following URL: [**`https://dev.g3wsuite.it`**](https://dev.g3wsuite.it)
+To publish the project, you can **access the G3W-SUITE test application** via the following URL: [**`https://v30.g3wsuite.it`**](https://v30.g3wsuite.it)
 
 To access the **Administration Panel** it is necessary to log in using the following credentials:
- * user: **`editor`**
+ * user: **`demo`**
  * password: **`G3wsuite!`**
+ 
+**In case of login problems, report the problem to `info@gis3w.it`**
  
  ![](images/manual/g3wsuite_portal_frontend.png)
 
@@ -80,7 +84,7 @@ Now click on the button ![](images/manual/button_add_qgis_project.png) to publis
 
 Fill out the form defining the various aspects to be associated with the WebGis service being published:
 ## QGIS project
-**`QGIS file`:*** load the QGIS cartographic project to be published (.qgz or .qgs file)
+**`QGIS file`:** load the QGIS cartographic project to be published (.qgz or .qgs file)
 
 ## ACL Users
 Management of access permissions
@@ -95,8 +99,12 @@ The choice is limited to the list of base layers activated for the cartographic 
 It is also possible not to define any active base layer at startup.
 
 ## Description data
+ * **`Public title`:** Title to be associated with the project and displayed on the client header.
+If left blank, the title associated with the QGIS project will be used or, in the absence of this, the name of the project file
  * **`Description`:** Description of the project, it will appear at the public portal level.
  * **`Thumbnail (Logo)`:** logo to associate with the project. This image will be viewable in the list of projects within the cartographic group
+ * **`URL alias`:** a human readable URL for the map
+
 
 **ATTENTION:** contents marked with * are mandatory.
 
@@ -136,7 +144,8 @@ Next to each layer are a series of icons and checkboxes:
  * ![](images/manual/icon_editing.png) **Editing layer:** shows if the online editing function is active on the layer and allows you to activate and define it
  * ![](images/manual/icon_widget.png) **List of widgets:** shows how many widgets (eg searches) are associated with this layer and allows you to activate new ones
  * **No legend:** it allows to define if the layer must have published the legend at TOC level of the WebGis client
- * **Download:** allows the download of the layer, in .shp format, at the TOC level of the WebGis client
+ * **Download as shp:** allows the download of the geographic layer, in .shp format
+ * **Download as xls:** allows the download of the layer (geographic or not), in .xls format
  * **WMS external:** to speed up loading, the WMS layers present in a QGIS project are managed directly by Django and not by QGIS-Server. However, this method prevents the application of any styling  (e.g. opacity level) defined at the project level. The choice of the external WMS option means that the WMS layer is managed directly by QGIS-Server and therefore the associated styling is applied.
  * ![](images/manual/icon_layertype.png) **Type:** illustrates the type of data (WMS, PostGis, SpatiaLite, GDAL / OGR ...)
  * **WFS:** a check mark shows whether the layer is published as a WFS service or not

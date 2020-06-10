@@ -14,7 +14,7 @@ If your geographical data are stored on `Server DB`, it will be sufficient to al
 If your geographical data are stored on `Server DB`, it will be sufficient to allow access to the DB from the IP address on which the application is installed.
 
 ## Data on SpatiaLite or OGR format
-If your geographical data are stored on `SpatiaLite` or on physical files (`.shp`, `.kml`, `.tif` ...) located on your local PC, you will need:
+If your geographical data are stored on `SpatiaLite` or on physical files (`.gpkg`, `.shp`, `.kml`, `.tif` ...) located on your local PC, you will need:
 * **organize data and projects** in predefined localy directories and subdirectories
 * **upload/synchronize geographic data to the corresponding folder located on the server** where the application is installed
 
@@ -24,7 +24,7 @@ If your geographical data are stored on `SpatiaLite` or on physical files (`.shp
 
 Data on physical files and / or on GeoDB SpatiaLite and QGIS cartographic projects must be organized in compliance with the following indications:
  * a **main directory** named and positioned in according to need's user
-   * a **`geo_data` sub-directory** that must contain the **geographic data** used for the various cartographic projects, such data can also be organized in subdirectories with no nesting limits.
+   * a **`project_data` sub-directory** that must contain the **geographic data** used for the various cartographic projects, such data can also be organized in subdirectories with no nesting limits.
    * a **`projects` sub-directory** that must contain the **QGIS cartographic projects** (.qgz or .qgs files)
 
 ![](images/manual/datamanagement.png)

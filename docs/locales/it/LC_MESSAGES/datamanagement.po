@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: G3W-SUITE 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-29 09:26+0200\n"
+"POT-Creation-Date: 2020-06-10 16:28+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -47,11 +47,11 @@ msgstr ""
 "formati](https://docs.qgis.org/3.10/en/docs/user_manual/preamble/features.html"
 "#view-data) gestisti da QGIS."
 
-#: ../../datamanagement.md:8
+#: ../../datamanagement.md:8 ../../datamanagement.md:12
 msgid "Data on DB Server"
 msgstr "Dati su DB Server"
 
-#: ../../datamanagement.md:10
+#: ../../datamanagement.md:10 ../../datamanagement.md:14
 msgid ""
 "If your geographical data are stored on Server DB, it will be sufficient "
 "to allow access to the DB from the IP address on which the application is"
@@ -62,21 +62,21 @@ msgstr ""
 "**permettere l’accesso al DB dall’indirizzo IP su cui è installato "
 "l’applicativo**."
 
-#: ../../datamanagement.md:12
+#: ../../datamanagement.md:16
 msgid "Data on SpatiaLite or OGR format"
 msgstr "Dati su SpatiaLite o formati OGR"
 
-#: ../../datamanagement.md:13
+#: ../../datamanagement.md:17
 msgid ""
 "If your geographical data are stored on SpatiaLite or on physical files "
-"(.shp, .kml, .tif ...) located on your local PC, you will need:"
+"(.gpkg, .shp, .kml, .tif ...) located on your local PC, you will need:"
 msgstr ""
 "Nel caso i dati geografici utilizzati per realizzare i vostri progetti "
 "cartografici QGIS siano situati su **GeoDB `SpatiaLite`** o su altro tipo"
-" di file fisico **(`.shp`, `.kml`, `.tif`...)** situati sul proprio PC "
+" di file fisico **(`.gpkg`, `.shp`, `.kml`, `.tif`...)** situati sul proprio PC "
 "locale, sarà necessario:"
 
-#: ../../datamanagement.md:14
+#: ../../datamanagement.md:18
 msgid ""
 "organize data and projects in predefined localy directories and "
 "subdirectories"
@@ -84,7 +84,7 @@ msgstr ""
 "**organizzare dati e progetti in directory e sottodirectory locali "
 "predefinite**"
 
-#: ../../datamanagement.md:15
+#: ../../datamanagement.md:19
 msgid ""
 "upload/synchronize geographic data to the corresponding folder located on"
 " the server where the application is installed"
@@ -92,7 +92,7 @@ msgstr ""
 "**uploadare/sincronizzare** i dati geografici sulle corrispondenti "
 "directory poste **sul server di installatazione dell'applicativo**"
 
-#: ../../datamanagement.md:17
+#: ../../datamanagement.md:21
 msgid ""
 "Of course, mixed solutions with geographical data on PostGreSQL/PostGis, "
 "SpatiaLite and other formats will also be possible."
@@ -100,11 +100,11 @@ msgstr ""
 "**Naturalmente saranno possibili anche soluzioni miste con dati "
 "geografici su PostGreSQL/PostGis, SpatiaLite ed altri formati.**"
 
-#: ../../datamanagement.md:19
+#: ../../datamanagement.md:23
 msgid "Organization of data and projects"
 msgstr "Organizzazione dati e progetti"
 
-#: ../../datamanagement.md:21
+#: ../../datamanagement.md:25
 msgid ""
 "Data on physical files and / or on GeoDB SpatiaLite and QGIS cartographic"
 " projects must be organized in compliance with the following indications:"
@@ -112,24 +112,24 @@ msgstr ""
 "Dati su file fisici e/o su GeoDB SpatiaLite e progetti cartografici QGIS "
 "**devono essere organizzati** nel rispetto delle seguenti indicazioni:"
 
-#: ../../datamanagement.md:22
+#: ../../datamanagement.md:26
 msgid "a main directory named and positioned in according to need's user"
 msgstr ""
 "una **directory principale** nominata e posizionata secodo l'esigenze "
 "dell'utente e contenente"
 
-#: ../../datamanagement.md:23
+#: ../../datamanagement.md:27
 msgid ""
-"a geo_data sub-directory that must contain the geographic data used for "
-"the various cartographic projects, such data can also be organized in "
-"subdirectories with no nesting limits."
+"a project_data sub-directory that must contain the geographic data used "
+"for the various cartographic projects, such data can also be organized in"
+" subdirectories with no nesting limits."
 msgstr ""
-"una **sub-directory `geo_data`** che deve contenere i **dati geografici**"
-" utilizzati per i vari progetti cartografici, tali dati possono anche "
-"essere organizzati in ulteriori sub-directory senza limiti di "
-"nidificazione."
+"una **sub-directory `project_data`** che deve contenere i **dati "
+"geografici** utilizzati per i vari progetti cartografici, tali dati "
+"possono anche essere organizzati in ulteriori sub-directory senza limiti "
+"di nidificazione."
 
-#: ../../datamanagement.md:24
+#: ../../datamanagement.md:28
 msgid ""
 "a projects sub-directory that must contain the QGIS cartographic projects"
 " (.qgz or .qgs files)"
@@ -137,7 +137,7 @@ msgstr ""
 "una sub directory nominata **`projects`** che ospiterà i **progetti "
 "QGIS** da pubblicare."
 
-#: ../../datamanagement.md:28
+#: ../../datamanagement.md:32
 msgid ""
 "NB: The name of the local directory dedicated to geographic data must "
 "correspond to the name defined for the DATASOURCE_PATH variable set "
@@ -149,7 +149,7 @@ msgstr ""
 "dedicato](https://g3w-suite.readthedocs.io/it/latest/settings.html#base-"
 "settings)"
 
-#: ../../datamanagement.md:31
+#: ../../datamanagement.md:35
 msgid ""
 "That directory is also used to contain images used in the print layouts "
 "associated with the QGIS cartographic projects."
@@ -157,11 +157,11 @@ msgstr ""
 "Tale directory è adibita anche a contenere immagini utilizzate nei "
 "**layout di stampa associati ai progetti cartografici QGIS**."
 
-#: ../../datamanagement.md:33
+#: ../../datamanagement.md:37
 msgid "Geographic data synchronization on the server"
 msgstr "Sincronizzazione dati geografici su spazio server"
 
-#: ../../datamanagement.md:35
+#: ../../datamanagement.md:39
 msgid ""
 "The data stored in the local geo_data directory must be synchronized on "
 "the server where the G3W-SUITE application is installed."
@@ -171,7 +171,7 @@ msgstr ""
 "nell'omonima directory sul server in cui è installato l'applicativo G3W-"
 "SUITE."
 
-#: ../../datamanagement.md:37
+#: ../../datamanagement.md:41
 msgid ""
 "The geographic data stored in the local geo_data folder must be loaded, "
 "reflecting any subdirectory structure."
@@ -180,7 +180,7 @@ msgstr ""
 "locale nella cartella **geo_data** rispecchiando l'eventuale struttura in"
 " subdirectory."
 
-#: ../../datamanagement.md:39
+#: ../../datamanagement.md:43
 msgid ""
 "To synchronize your data access to the Administration panel of G3W-ADMIN "
 "and click on the the Configurations icon  located in the upper right "
@@ -190,11 +190,11 @@ msgstr ""
 "![](images/manual/iconconfiguration.png) posta nell'angolo in alto a "
 "destra permette di accedere ad un menù a tendina."
 
-#: ../../datamanagement.md:41
+#: ../../datamanagement.md:45
 msgid "Choose the File Manager item in the linked menù."
 msgstr "Si scelga la voce **`File Manager`** per accedere allo strumento dedicato"
 
-#: ../../datamanagement.md:47
+#: ../../datamanagement.md:51
 msgid ""
 "Using this tool it is possible to manage the physical geographic data on "
 "the server in a simple and intuitive way."
@@ -202,11 +202,11 @@ msgstr ""
 "Tramite tale strumento è possibile gestire i file fisici geografici sul "
 "server in modo semplice ed intuitivo."
 
-#: ../../datamanagement.md:49
+#: ../../datamanagement.md:53
 msgid "This the directories present by default:"
 msgstr "Queste le directory definite durante l'installazione della suite:"
 
-#: ../../datamanagement.md:50
+#: ../../datamanagement.md:54
 msgid ""
 "geo_data: the folder in which to store the geographical data and any "
 "images inserted in the print layouts"
@@ -214,25 +214,25 @@ msgstr ""
 "**`geo_data`**: la cartella in cui archiviare i **dati geografici** ed "
 "eventuali **immagini inserite nei layout di stampa**"
 
-#: ../../datamanagement.md:51
+#: ../../datamanagement.md:55
 msgid "media_user: a folder exposed on the web, to store your multimedia files"
 msgstr ""
 "**`media_user`**: la cartella esposta su web, per la gestione dei file "
 "multimediali"
 
-#: ../../datamanagement.md:52
+#: ../../datamanagement.md:56
 msgid "svg: a folder to store extra SVG icons used your QGIS projects"
 msgstr ""
 "**`svg`**: una cartella per gestire simboli SVG extra usati a livello di "
 "progetto QGIS"
 
-#: ../../datamanagement.md:54
+#: ../../datamanagement.md:58
 msgid "All the folder can be organized in subdirectories with no nesting limits."
 msgstr ""
 "Tutte le cartelle possono essere contenere sub-directory senza limiti di "
 "annidamento"
 
-#: ../../datamanagement.md:56
+#: ../../datamanagement.md:60
 msgid ""
 "NB: The names of these directories are defined by the basic settings set "
 "during the installation of the suite. See dedicated paragraph."
@@ -241,3 +241,4 @@ msgstr ""
 "base impostate durante l'installazione della suite. [Vedi paragrafo "
 "dedicato](https://g3w-suite.readthedocs.io/it/latest/settings.html#base-"
 "settings)"
+
