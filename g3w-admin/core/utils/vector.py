@@ -108,14 +108,8 @@ class BaseUserMediaHandler(object):
                     except:
                         current_field_value = None
 
-                    if current_field_value:
-                        logger.warning(f'current_field_value: {current_field_value}')
-                        logger.warning(f'current_field_value len: {len(current_field_value)}')
-
                     current_file_name = self.get_file_name(current_field_value) if current_instance else None
                     if current_file_name:
-                        logger.warning(f'current_file_name: {current_file_name}')
-                        logger.warning(f'current_file_name len: {len(current_file_name)}')
                         current_file_name = urllib.parse.unquote(current_file_name)
 
                     if file_name:
@@ -128,7 +122,6 @@ class BaseUserMediaHandler(object):
                             save, delete_old = True, False
                     else:
                         save, delete_old = False, True
-
 
                     if save:
 
@@ -152,7 +145,7 @@ class BaseUserMediaHandler(object):
 
                     if delete_old:
                         to_delete = '{}/{}'.format(path_to_save, current_file_name)
-                        if os.path.exists(to_delete):
+                        if os.path.exists(to_delete) and os.path.isfile(to_delete):
                             os.remove(to_delete)
 
     def change_value(self):
