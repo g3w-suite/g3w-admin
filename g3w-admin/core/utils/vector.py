@@ -92,6 +92,7 @@ class BaseUserMediaHandler(object):
                 path_to_save = self.get_path_to_save()
                 path_file_to_save = '{}/{}'.format(path_to_save, file_name)
 
+                logger.warning(f'change: {change}')
                 if change:
                     if self.feature_properties[field]:
                         self.feature_properties[field] = {
