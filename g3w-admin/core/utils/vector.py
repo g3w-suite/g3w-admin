@@ -87,7 +87,8 @@ class BaseUserMediaHandler(object):
                 # new field_name
                 file_name = self.get_file_name(self.feature_properties[field])
                 logger.warning(f'Editing media file_name: {file_name}')
-                logger.warning(f'Editing media file_name len: {len(file_name)}')
+                if file_name:
+                    logger.warning(f'Editing media file_name len: {len(file_name)}')
                 if file_name:
                     file_name = urllib.parse.unquote(file_name)
 
