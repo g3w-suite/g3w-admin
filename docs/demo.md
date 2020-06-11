@@ -17,9 +17,9 @@ Through the tutorials it will be possible to:
 
 # Download the demo data
 
-The tutorial is based on predefined data and QGIS 3.10 LTR project **downloadable from [this link](https://dev.g3wsuite.it/media_user/G3WSUITE.zip)**.
+The tutorial is based on predefined data and QGIS 3.10 LTR project **downloadable from <a href="https://drive.google.com/file/d/1JpeZQgu90NQZ3tjBdD_V9BSaRkbWR1Ex/view?usp=sharing" target="_blank">this link</a>**.
 
-The .zip file contains la directory **`G3W-SUITE`** with two sub directories:
+The .zip file contains the **`G3W-SUITE`** directory with two sub directories:
  * **`projects`:** containing a QGIS project (**`buildings_management.qgz`**) already optimized for the tutorial
  * **`project_data/spatialite`**: containing a SpatiaLite DB with basic data (**`build_management.sqlite`**)
 
