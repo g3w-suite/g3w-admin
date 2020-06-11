@@ -6,6 +6,9 @@ from .db import build_dango_connection_name
 import urllib.request, urllib.parse, urllib.error
 import os
 import shutil
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class BaseUserMediaHandler(object):
@@ -65,8 +68,10 @@ class BaseUserMediaHandler(object):
 
         # For docker check if port is 443 and schema is http
         if schema == 'http' and self.request.get_port() == '443':
+            logger.warning(f'Editing media get_domain docker case: {self.request.get_port()}')
             return '{}://{}'.format('https', self.request.META['SERVER_NAME'])
         else:
+            logger.warning(f'Editing media get_domain: {self.request.get_host()}')
             return '{}://{}'.format(schema, self.request.get_host())
 
     def new_value(self, change=False):
