@@ -71,7 +71,7 @@ class BaseUserMediaHandler(object):
 
         # for docker HTTP_X_FORWARDED_HOST:
         if schema == 'http' and port == '443':
-            return '{}://{}'.format('http', domain)
+            return '{}://{}'.format('https', domain)
         else:
             return '{}://{}'.format(schema, self.request.get_host())
 
