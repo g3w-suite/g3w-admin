@@ -62,7 +62,12 @@ class BaseUserMediaHandler(object):
     def get_domain(self):
         """ Get current domain within G3W-SUITE running """
         schema = 'https' if self.request.is_secure() else 'http'
-        return '{}://{}'.format(schema, self.request.get_host())
+
+        # For docker check if port is 443 and schema is http
+        if schema == 'http' and self.request.get_port() == '443':
+            return '{}://{}'.format('https', self.request.META['SERVER_NAME'])
+        else:
+            return '{}://{}'.format(schema, self.request.get_host())
 
     def new_value(self, change=False):
         """ Build and save media value from client """
