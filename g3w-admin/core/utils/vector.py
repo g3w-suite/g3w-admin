@@ -135,8 +135,6 @@ class BaseUserMediaHandler(object):
                         if not os.path.isdir(path_to_save):
                             os.makedirs(path_to_save)
 
-                        logger.warning(f'Editing media path_to_file_tmp: {path_to_file_tmp}')
-                        logger.warning(f'Editing media path_fiel_to_save: {path_file_to_save}')
                         shutil.move(path_to_file_tmp, path_file_to_save)
 
                         # build new value
