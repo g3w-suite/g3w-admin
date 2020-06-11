@@ -86,9 +86,6 @@ class BaseUserMediaHandler(object):
 
                 # new field_name
                 file_name = self.get_file_name(self.feature_properties[field])
-                logger.warning(f'Editing media file_name: {file_name}')
-                if file_name:
-                    logger.warning(f'Editing media file_name len: {len(file_name)}')
                 if file_name:
                     file_name = urllib.parse.unquote(file_name)
 
@@ -138,6 +135,8 @@ class BaseUserMediaHandler(object):
                         if not os.path.isdir(path_to_save):
                             os.makedirs(path_to_save)
 
+                        logger.warning(f'Editing media path_to_file_tmp: {path_to_file_tmp}')
+                        logger.warning(f'Editing media path_fiel_to_save: {path_file_to_save}')
                         shutil.move(path_to_file_tmp, path_file_to_save)
 
                         # build new value
