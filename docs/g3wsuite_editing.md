@@ -1,4 +1,4 @@
-# Online editing
+# Editing on line
 ## Activation and configuration
 
 Thanks to the integration with the QGIS API, **G3W-SUITE allows you to edit all the formats (geographic and not) edited by QGIS** through the OGR/GDAL library and other specific providers.
