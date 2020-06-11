@@ -127,6 +127,7 @@ class BaseUserMediaHandler(object):
                     else:
                         save, delete_old = False, True
                     logger.warning('Post save')
+                    logger.warning(f'Save: {save}, delete_od: {delete_old}')
 
                     if save:
 
@@ -134,9 +135,12 @@ class BaseUserMediaHandler(object):
                         path_to_file_tmp = '{}{}'.format(settings.MEDIA_ROOT,
                                                          self.feature_properties[field].replace(settings.MEDIA_URL, ''))
 
+                        logger.warning(f'Path_to_save: {path_to_save}')
                         if not os.path.isdir(path_to_save):
                             os.makedirs(path_to_save)
 
+                        logger.warning(f'path_to_file_tmp: {path_to_file_tmp}')
+                        logger.warning(f'path_file_to_save: {path_file_to_save}')
                         shutil.move(path_to_file_tmp, path_file_to_save)
 
                         # build new value
@@ -150,6 +154,7 @@ class BaseUserMediaHandler(object):
 
                     if delete_old:
                         to_delete = '{}/{}'.format(path_to_save, current_field_name)
+                        logger.warning(f'to_delete: {to_delete}')
                         if os.path.exists(to_delete):
                             os.remove(to_delete)
 
