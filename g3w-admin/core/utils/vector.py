@@ -108,12 +108,14 @@ class BaseUserMediaHandler(object):
                     except:
                         current_field_value = None
 
+                    logger.warning('Pre current field name')
+                    logger.warning(f'Current_field_value: {current_field_value}')
                     current_field_name = self.get_file_name(current_field_value) if current_instance else None
                     if current_field_name:
                         current_field_name = urllib.parse.unquote(current_field_name)
+                    logger.warning('Post current field name')
 
-
-
+                    logger.warning('Pre save')
                     if file_name:
                         if current_field_name:
                             if current_field_name != file_name:
@@ -124,7 +126,7 @@ class BaseUserMediaHandler(object):
                             save, delete_old = True, False
                     else:
                         save, delete_old = False, True
-
+                    logger.warning('Post save')
 
                     if save:
 
