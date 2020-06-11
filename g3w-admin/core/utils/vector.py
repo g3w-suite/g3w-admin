@@ -114,6 +114,8 @@ class BaseUserMediaHandler(object):
 
                     current_file_name = self.get_file_name(current_field_value) if current_instance else None
                     if current_file_name:
+                        logger.warning(f'current_file_name: {current_file_name}')
+                        logger.warning(f'current_file_name len: {len(current_file_name)}')
                         current_file_name = urllib.parse.unquote(current_file_name)
 
                     if file_name:
