@@ -108,17 +108,17 @@ class BaseUserMediaHandler(object):
                     except:
                         current_field_value = None
 
-                    logger.warning('Pre current field name')
-                    logger.warning(f'Current_field_value: {current_field_value}')
-                    current_field_name = self.get_file_name(current_field_value) if current_instance else None
-                    if current_field_name:
-                        current_field_name = urllib.parse.unquote(current_field_name)
-                    logger.warning('Post current field name')
+                    if current_field_value:
+                        logger.warning(f'current_field_value: {current_field_value}')
+                        logger.warning(f'current_field_value len: {len(current_field_value)}')
 
-                    logger.warning('Pre save')
+                    current_file_name = self.get_file_name(current_field_value) if current_instance else None
+                    if current_file_name:
+                        current_file_name = urllib.parse.unquote(current_file_name)
+
                     if file_name:
-                        if current_field_name:
-                            if current_field_name != file_name:
+                        if current_file_name:
+                            if current_file_name != file_name:
                                 save, delete_old = True, True
                             else:
                                 save, delete_old = False, False
@@ -126,8 +126,7 @@ class BaseUserMediaHandler(object):
                             save, delete_old = True, False
                     else:
                         save, delete_old = False, True
-                    logger.warning('Post save')
-                    logger.warning(f'Save: {save}, delete_od: {delete_old}')
+
 
                     if save:
 
@@ -135,12 +134,9 @@ class BaseUserMediaHandler(object):
                         path_to_file_tmp = '{}{}'.format(settings.MEDIA_ROOT,
                                                          self.feature_properties[field].replace(settings.MEDIA_URL, ''))
 
-                        logger.warning(f'Path_to_save: {path_to_save}')
                         if not os.path.isdir(path_to_save):
                             os.makedirs(path_to_save)
 
-                        logger.warning(f'path_to_file_tmp: {path_to_file_tmp}')
-                        logger.warning(f'path_file_to_save: {path_file_to_save}')
                         shutil.move(path_to_file_tmp, path_file_to_save)
 
                         # build new value
@@ -153,8 +149,7 @@ class BaseUserMediaHandler(object):
                                 }))
 
                     if delete_old:
-                        to_delete = '{}/{}'.format(path_to_save, current_field_name)
-                        logger.warning(f'to_delete: {to_delete}')
+                        to_delete = '{}/{}'.format(path_to_save, current_file_name)
                         if os.path.exists(to_delete):
                             os.remove(to_delete)
 
