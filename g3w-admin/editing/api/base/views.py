@@ -163,8 +163,10 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
                     # Clear any old error
                     qgis_layer.dataProvider().clearErrors()
 
+                    logger.warning('Before add_media_property')
                     # add media data
                     self.add_media_property(geojson_feature, metadata_layer)
+                    logger.warning('After add_media_property')
 
                     # for GEOSGeometry of Django 2.2 it must add crs to feature if is not set if a geo feature
                     if metadata_layer.geometry_type != QGIS_LAYER_TYPE_NO_GEOM:
@@ -371,12 +373,10 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
 
                 editing_layers.append(self.metadata_layer.qgis_layer)
 
-            logger.warning(f'Before save_vector_data')
 
             ref_insert_ids, ref_lock_ids = self.save_vector_data(
                 self.metadata_layer, post_layer_data, has_transactions)
 
-            logger.warning(f'After save_vector_data')
             # get every relationsedits
             post_relations_data = dict()
             if self.relations_data_key in post_layer_data and bool(post_layer_data[self.relations_data_key]):
