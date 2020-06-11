@@ -28,10 +28,10 @@ Path to geo data directory (shp, Spatialite, raster, etc..).
     Last part of path could be common with QGIS project datasource path. I.e.:
 
     *QGIS project*:
-    <datasource>/<path>/<to>/**geo_data**/<geodata>.shp</datasource>
+    <datasource>/<path>/<to>/**project_data**/<geodata>.shp</datasource>
 
     *local_settings.py*:
-    DATASOURCE_PATH = /<local_server_<path>/<to>/**geo_data**
+    DATASOURCE_PATH = /<local_server_<path>/<to>/**project_data**
 
 
 Mandatory.

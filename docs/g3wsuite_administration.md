@@ -418,14 +418,13 @@ It is also possible not to define any active base layer at startup.
  * **`Public title`:** title of the WebGis service, it will appear at the font end level and in the header of the client.
  * **`Description`:** Description of the project, it will appear at the public portal level.
  * **`Thumbnail (Logo)`:** logo to associate with the project. This image will be viewable in the list of projects within the cartographic group
+ * **`URL alias`:** a human readable URL for the map. Only alphanumeric characters, not white space or special characters.
+
 
 The title associated with the WebGis service follows this definition logic:
  * Public title: if set
  * QGIS project title: if set on **Project properties**
  * Name of the QGIS project file
-
-#### URL alias
- * It is possible to set an alias for the final part of the map URL. Only alphanumeric characters, not white space or special characters.
 
 #### Options and actions
 These options allow you to define the type of WMS / WFS query to be carried out and the maximum number of results obtainable following a query.
@@ -500,6 +499,13 @@ Next to each layer are a series of icons and checkboxes:
  * **WFS:** a check mark shows whether the layer is published as a WFS service or not
  * **Name:** name of the layer
  * **Label:** layer alias applied at the QGIS project level
+ 
+## Display filters
+**By accessing the list of layers, it is possible to define display filters for users authorized to consult the project**
+
+These filters work both for viewing and editing.
+
+See the dedicated paragraph in the [Editing on line session](https://g3w-suite.readthedocs.io/it/latest/g3wsuite_editing.html#constraints-setting).
 
 ## Search widget setting
 In G3W-SUITE it is possible to create search widgets.
@@ -541,6 +547,8 @@ In the related form we can define:
    * **`Description`:** description assigned to the field
    * **`Comparison operator`:** comparison operator (**=, <,>,> <,> =, <=, LIKE, ILIKE**) through which the search query will be carried out. The LIKE and ILIKE operators will only be available for PostGis or SpatiaLite layers
    * **`Dependency`:** this parameter (optional) allows, only in the case of SelectBox widgets, to list the list of values ​​of a field filtered according to the value defined for the previous fields. The tool allows, for example, to display, in the drop-down menu dedicated to the choice of cadastral particles, only the particles connected to the sheet chosen in the previous option. This function is only available for PostGis or SpatiaLite layers.
+
+**Warning: in the case of fields with more than 100 unique values, the WMS service does not allow to obtain the complete list of values. In this case it is recommended not to use the `SelectBox` method**
 
 The button allows you to add additional fields for the construction of the search query currently manageable through the AND operator alone.
 

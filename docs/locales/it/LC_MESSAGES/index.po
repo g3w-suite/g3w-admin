@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: G3W-SUITE 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-05 11:42+0200\n"
+"POT-Creation-Date: 2020-06-05 10:11+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,13 +16,17 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.8.0\n"
 
-#: ../../index.rst:56
+#: ../../index.rst:52
 msgid "Installation and deploy"
 msgstr "Installazione e deploy"
 
-#: ../../index.rst:66
+#: ../../index.rst:61
 msgid "Manual"
 msgstr "Manuale"
+
+#: ../../index.rst:75
+msgid "Tutorial"
+msgstr "Tutorial"
 
 #: ../../index.rst:8
 msgid "Welcome to G3W-SUITE's documentation!"
@@ -72,19 +76,13 @@ msgstr ""
 
 #: ../../index.rst:19
 msgid ""
-"**The current release is compatible with `QGIS 3.4 LTR` (Server and "
+"**The current release is compatible with QGIS 3.10 LTR (Server and "
 "Desktop).**"
-msgstr "**L'attuale release è compatibile con la versione `3.4 LTR`**."
+msgstr ""
+"**L'attuale release è compatibile con la versione `3.10 LTR (Server e "
+"Desktop)`**."
 
 #: ../../index.rst:21
-msgid ""
-"The next version (whose release is scheduled for **July 2020**) will be "
-"compatible with **`QGIS 3.10 LTR`**."
-msgstr ""
-"La prossima versione (la cui release è programmata per **Luglio 2020**) "
-"sarà compatibile con la **versione `3.10 LTR`.**"
-
-#: ../../index.rst:23
 msgid ""
 "G3W-SUITE is a modular client-server application for the publication and "
 "management of QGIS cartographic projects, consisting of 2 components:"
@@ -92,7 +90,7 @@ msgstr ""
 "**G3W-SUITE è un'applicazione modulare client-server per la pubblicazione"
 " e gestione di progetti QGIS, costituita da 2 componenti principali**"
 
-#: ../../index.rst:25
+#: ../../index.rst:23
 msgid ""
 "**G3W-ADMIN:** Administration component (project management, ACL, OGC "
 "proxy server, API rest server)"
@@ -100,7 +98,7 @@ msgstr ""
 "**G3W-ADMIN:** la componente di Amministrazione (gestioen progetti, ACL, "
 "OGC,proxy seerver, API REST server...)"
 
-#: ../../index.rst:27
+#: ../../index.rst:25
 msgid ""
 "**G3W-CLIENT:** Cartographic client for consultation and interaction with"
 " OGC services"
@@ -108,11 +106,11 @@ msgstr ""
 "**G3W-CLIENT:** il client cartografico per la consultazione ed "
 "interazione con i servizi OGC"
 
-#: ../../index.rst:30
+#: ../../index.rst:27
 msgid "Optional OS modules are:"
 msgstr "Ulteriori moduli OS opzionali sono:"
 
-#: ../../index.rst:32
+#: ../../index.rst:29
 msgid ""
 "**Front-end geographic portal:** access to information, thematic groups "
 "and WebGis services"
@@ -120,7 +118,7 @@ msgstr ""
 "**Portale cartografico:** per l'accesso alle informazioni di base, "
 "contenitori tematici e servizi WebGis"
 
-#: ../../index.rst:34
+#: ../../index.rst:31
 msgid ""
 "**Caching Module:** tile caching module for single layer powerd by "
 "TileStache4"
@@ -128,17 +126,17 @@ msgstr ""
 "**Modulo di Cache:** modulo per la gestione della cache dei singoli layer"
 " basato su TileStache"
 
-#: ../../index.rst:37
+#: ../../index.rst:33
 msgid "Through the web interface of the G3W-SUITE framework it is possible to:"
 msgstr ""
 "Attraverso l'interfaccia web della componente di Amministrazione è "
 "possibile:"
 
-#: ../../index.rst:39
+#: ../../index.rst:35
 msgid "**publish QGIS projects** directly on WebGis in a structured way"
 msgstr "**pubblicare progetti QGIS** in modo diretto estrutturato"
 
-#: ../../index.rst:41
+#: ../../index.rst:37
 msgid ""
 "**organize webgis services in thematic-functional containers** of various"
 " levels"
@@ -146,7 +144,7 @@ msgstr ""
 "**organizzare servizi webgis** in contenitori tematici-funzionali di vari"
 " livelli"
 
-#: ../../index.rst:43
+#: ../../index.rst:39
 msgid ""
 "**manage users and groups of users** by defining each of them **different"
 " functional roles**"
@@ -154,19 +152,19 @@ msgstr ""
 "**gestire utenti** e gruppi di utenti definendo ciascuno di essi **ruoli "
 "funzionali diversi**"
 
-#: ../../index.rst:45
+#: ../../index.rst:41
 msgid "**create and manage research methods**"
 msgstr "creare e gestire **strumenti di ricerca**"
 
-#: ../../index.rst:47
+#: ../../index.rst:43
 msgid "allow **online editing**"
 msgstr "permettere l'**editing on line**"
 
-#: ../../index.rst:49
+#: ../../index.rst:45
 msgid "activate **specific functional modules**"
 msgstr "attivare **specifici moduli funzionali**"
 
-#: ../../index.rst:51
+#: ../../index.rst:47
 msgid ""
 "**define permissions to access services and to use functional modules** "
 "at the individual user level"
@@ -179,4 +177,14 @@ msgstr ""
 
 #~ msgid "Tutorial"
 #~ msgstr ""
+
+#~ msgid ""
+#~ "The next version (whose release is "
+#~ "scheduled for **July 2020**) will be "
+#~ "compatible with **`QGIS 3.10 LTR`**."
+#~ msgstr ""
+#~ "La prossima versione (la cui release "
+#~ "è programmata per **Luglio 2020**) sarà"
+#~ " compatibile con la **versione `3.10 "
+#~ "LTR`.**"
 
