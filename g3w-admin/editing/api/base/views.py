@@ -22,6 +22,9 @@ from qdjango.apps import get_qgs_project
 from qdjango.models import Layer
 from qdjango.utils.data import QGIS_LAYER_TYPE_NO_GEOM
 from qdjango.utils.validators import feature_validator
+import logging
+
+logger = logging.getLogger(__name__)
 
 MODE_EDITING = 'editing'
 MODE_UNLOCK = 'unlock'
@@ -368,9 +371,12 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
 
                 editing_layers.append(self.metadata_layer.qgis_layer)
 
+            logger.warning(f'Before save_vector_data')
+
             ref_insert_ids, ref_lock_ids = self.save_vector_data(
                 self.metadata_layer, post_layer_data, has_transactions)
 
+            logger.warning(f'After save_vector_data')
             # get every relationsedits
             post_relations_data = dict()
             if self.relations_data_key in post_layer_data and bool(post_layer_data[self.relations_data_key]):
