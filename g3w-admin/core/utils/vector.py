@@ -8,7 +8,7 @@ import os
 import shutil
 import logging
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__file__)
 
 
 class BaseUserMediaHandler(object):
@@ -66,12 +66,13 @@ class BaseUserMediaHandler(object):
         """ Get current domain within G3W-SUITE running """
         schema = 'https' if self.request.is_secure() else 'http'
 
-        # For docker check if port is 443 and schema is http
-        if schema == 'http' and self.request.get_port() == '443':
-            logger.warning(f'Editing media get_domain docker case: {self.request.get_port()}')
-            return '{}://{}'.format('https', self.request.META['SERVER_NAME'])
+        host = self.request.get_host()
+        domain, port = host.split(':')
+
+        # for docker HTTP_X_FORWARDED_HOST:
+        if schema == 'http' and port == '443':
+            return '{}://{}'.format('http', domain)
         else:
-            logger.warning(f'Editing media get_domain: {self.request.get_host()}')
             return '{}://{}'.format(schema, self.request.get_host())
 
     def new_value(self, change=False):
