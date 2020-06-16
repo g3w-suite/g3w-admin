@@ -12,7 +12,7 @@ from django.http.request import QueryDict
 from django.utils.translation import ugettext_lazy as _
 from lxml import etree
 
-from qgis.core import QgsProject, QgsMapLayer
+from qgis.core import QgsProject, QgsMapLayer, QgsUnitTypes, QgsProjectVersion, QgsWkbTypes
 from qgis.PyQt.QtCore import QVariant
 
 from core.utils.data import XmlData, isXML
@@ -153,12 +153,9 @@ class QgisProjectLayer(XmlData):
         :rtype: str
         """
 
-        try:
-            name = self.qgisProjectLayerTree.find('shortname').text
-            if not name:
-                raise Exception
-        except:
-            name = self.qgisProjectLayerTree.find('layername').text
+        name = self.qgs_layer.shortName()
+        if not name:
+            name = self.qgs_layer.name()
         return name
 
     def _getDataOrigname(self):
@@ -200,7 +197,13 @@ class QgisProjectLayer(XmlData):
         :return: return QGIS layerID
         :rtype: str
         """
-        return self.qgisProjectLayerTree.find('id').text
+
+        layer_id = self.qgisProjectLayerTree.find('id').text
+
+        # instance QgsLayer
+        self.qgs_layer = self.qgisProject.qgs_project.mapLayers()[layer_id]
+
+        return layer_id
 
     def _getDataTitle(self):
         """
@@ -208,15 +211,8 @@ class QgisProjectLayer(XmlData):
         :return: layer title
         :rtype: str
         """
-        try:
-            layer_title = self.qgisProjectLayerTree.find('layername').text
-        except:
-            layer_title = ''
 
-        if layer_title == None:
-            layer_title = ''
-
-        return layer_title
+        return self.qgs_layer.name()
 
     def _getDataIsVisible(self):
         """
@@ -244,7 +240,7 @@ class QgisProjectLayer(XmlData):
         :rtype: str
         """
         availableTypes = [item[0] for item in Layer.TYPES]
-        layer_type = self.qgisProjectLayerTree.find('provider').text
+        layer_type = self.qgs_layer.dataProvider().name()
         if not layer_type in availableTypes:
             raise Exception(_('Missing or invalid type for layer')+' "%s"' % layer_type)
         return layer_type
@@ -255,17 +251,7 @@ class QgisProjectLayer(XmlData):
         :return: layer min scale value
         :rtype: int
         """
-        attrib = self.qgisProjectLayerTree.attrib
-
-        # qgis3 project layer chang maximimScale to maxScale
-        if self.qgisProject.qgisVersion[0] == '3':
-            maximumScale = attrib['minScale']
-        else:
-            maximumScale = attrib['maximumScale'] if 'maximumScale' in attrib else attrib['maxScale']
-        if maximumScale == 'inf':
-            # return 2**31-1
-            return 0
-        return int(float(maximumScale))
+        return int(self.qgs_layer.minimumScale())
 
     def _getDataMaxScale(self):
         """
@@ -273,16 +259,7 @@ class QgisProjectLayer(XmlData):
         :return: max scale value for layer
         :rtype: int
         """
-        attrib = self.qgisProjectLayerTree.attrib
-
-        # qgis3 project layer chang minimumScale to minScale
-        if self.qgisProject.qgisVersion[0] == '3':
-            minimunScale = attrib['maxScale']
-        else:
-            minimunScale = attrib['minimumScale'] if 'minimumScale' in attrib else attrib['minScale']
-        if minimunScale == 'inf':
-            return 0
-        return int(float(minimunScale))
+        return int(self.qgs_layer.maximumScale())
 
     def _getDataScaleBasedVisibility(self):
         """
@@ -290,7 +267,7 @@ class QgisProjectLayer(XmlData):
         :return: boolean visibility by scale
         :rtype: bool
         """
-        return bool(int(self.qgisProjectLayerTree.attrib['hasScaleBasedVisibilityFlag']))
+        return self.qgs_layer.hasScaleBasedVisibility()
 
     def _getDataSrid(self):
         """
@@ -298,12 +275,7 @@ class QgisProjectLayer(XmlData):
         :return: ESPG srid code
         :rtype: int, None
         """
-        try:
-            srid = self.qgisProjectLayerTree.xpath('srs/spatialrefsys/srid')[0].text
-        except:
-            srid = None
-
-        return int(srid)
+        return self.qgs_layer.crs().postgisSrid()
 
     def _getDataVectorjoins(self):
         """
@@ -329,10 +301,13 @@ class QgisProjectLayer(XmlData):
         """
         Get geometry from layer attribute
         :return: strting of geometry type
-        :rtype: str
+        :rtype: str, None
         """
 
-        return self.qgisProjectLayerTree.attrib.get('wkbType')
+        try:
+            return QgsWkbTypes.displayString(self.qgs_layer.wkbType())
+        except:
+            return None
 
     def _getDataEditOptions(self):
         """
@@ -340,6 +315,8 @@ class QgisProjectLayer(XmlData):
         :return: bitwise for WFST layer state
         :rtype: int
         """
+
+        # TODO: ask to elpaso
         editOptions = 0
         for editOp, layerIds in list(self.qgisProject.wfstLayers.items()):
             if self.layerId in layerIds:
@@ -353,6 +330,8 @@ class QgisProjectLayer(XmlData):
         :return: bitwise WFS layer capabilities: 0 not queryable, 1 queryable.
         :rtype: int
         """
+
+        # TODO: ask to elpaso
         wfsCapabilities = 0
         for wfslayer in self.qgisProject.wfsLayers:
             if self.layerId in wfslayer:
@@ -366,28 +345,20 @@ class QgisProjectLayer(XmlData):
         :return: QGIS project datasource string or new datasource string for OGR and GDAL and SpatiaLite layers
         :rtype: str
         """
-        datasource = self.qgisProjectLayerTree.find('datasource').text
+        datasource = self.qgs_layer.source()
         serverDatasource = makeDatasource(datasource, self.layerType)
 
         new_datasource = serverDatasource if serverDatasource is not None else datasource
 
         pre_err_msg = ""
 
-        # set new data source to qgslayer object:
-        try:
-            layer = self.qgisProject.qgs_project.mapLayers()[self.layerId]
-        except KeyError:
-            logging.warning("Could not find layer id %s in QGIS project file: %s" % (self.layerId, self.qgisProject.qgisProjectFile.name))
-            msg = _("Could not find layer id {} in QGIS project").format(self.layerId)
-            raise Exception(f'{pre_err_msg}: {msg}')
-
-        if layer.type() != QgsMapLayer.VectorLayer:
+        if self.qgs_layer.type() != QgsMapLayer.VectorLayer:
             return new_datasource
 
         # fix new datasource
-        layer.setDataSource(new_datasource, layer.name(), layer.dataProvider().name())
+        self.qgs_layer.setDataSource(new_datasource, self.qgs_layer.name(), self.qgs_layer.dataProvider().name())
 
-        if not layer.isValid():
+        if not self.qgs_layer.isValid():
             logging.warning("Layer id %s is not valid in QGIS project file: %s" % (
             self.layerId, self.qgisProject.qgisProjectFile.name))
             msg = _("Current datasource is {}").format(new_datasource)
@@ -403,10 +374,12 @@ class QgisProjectLayer(XmlData):
         """
 
         ret = OrderedDict()
-        aliases = self.qgisProjectLayerTree.find('aliases')
-        if aliases is not None:
-            for alias in aliases:
-                ret[alias.attrib['field']] = alias.attrib['name']
+
+        if self.qgs_layer.type() != QgsMapLayer.VectorLayer:
+            return ret
+
+        for f in self.qgs_layer.fields():
+            ret[f.name()] = f.displayName()
         return ret
 
     def _getDataColumns(self):
@@ -424,13 +397,11 @@ class QgisProjectLayer(XmlData):
         :rtype: list
         """
 
-        layer = self.qgisProject.qgs_project.mapLayers()[self.layerId]
-
-        if layer.type() != QgsMapLayer.VectorLayer:
+        if self.qgs_layer.type() != QgsMapLayer.VectorLayer:
             return None
 
         columns = []
-        for f in layer.fields():
+        for f in self.qgs_layer.fields():
             columns.append({
                 'name': f.name(),
                 'type': QVariant.typeToName(f.type()).upper(),
@@ -480,33 +451,25 @@ class QgisProjectLayer(XmlData):
         """
         Get attribute to exclude from WMS info and relations
         :return: a list of columns excluded from WMS services and relations
-        :rtype: list, None
+        :rtype: list
         """
 
-        excluded_columns = []
         try:
-            attributes = self.qgisProjectLayerTree.find('excludeAttributesWMS')
-            for attribute in attributes:
-                excluded_columns.append(attribute.text)
+            return list(self.qgs_layer.excludeAttributesWms())
         except Exception as e:
-            pass
-        return excluded_columns if excluded_columns else None
+            return []
 
     def _getDataExcludeAttributesWFS(self):
         """
         Get attribute to exclude from WMS info and relations
         :return: a list of columns excluded from WMS services and relations
-        .rtype: list, None
+        .rtype: list
         """
 
-        excluded_columns = []
         try:
-            attributes = self.qgisProjectLayerTree.find('excludeAttributesWFS')
-            for attribute in attributes:
-                excluded_columns.append(attribute.text)
+            return list(self.qgs_layer.excludeAttributesWfs())
         except Exception as e:
-            pass
-        return excluded_columns if excluded_columns else None
+            return []
 
     def _getDataEditTypes(self):
         """
@@ -847,6 +810,7 @@ class QgisProject(XmlData):
         qdd.setContent(QFile(project_file))
         qmc = QgsMapCanvas()
 
+
         print (qmc)
     def closeProject(self, **kwargs):
         """
@@ -877,6 +841,8 @@ class QgisProject(XmlData):
         :return: Start project extension
         :rtype: dict
         """
+
+        # TODO: ask to elpaso
         return {
             'xmin': self.qgisProjectTree.find('mapcanvas/extent/xmin').text,
             'ymin': self.qgisProjectTree.find('mapcanvas/extent/ymin').text,
@@ -925,7 +891,7 @@ class QgisProject(XmlData):
         :return: Map SRID
         :rtype: int
         """
-        return int(self.qgisProjectTree.find('mapcanvas/destinationsrs/spatialrefsys/srid').text)
+        return self.qgs_project.crs().postgisSrid()
 
     def _getDataUnits(self):
         """
@@ -933,7 +899,7 @@ class QgisProject(XmlData):
         :return: Map units
         :rtype: str
         """
-        return self.qgisProjectTree.find('mapcanvas/units').text
+        return QgsUnitTypes().encodeUnit(self.qgs_project.crs().mapUnits())
 
     def _checkLayerTypeCompatible(self, layerTree):
         """
@@ -957,6 +923,7 @@ class QgisProject(XmlData):
         :rtype: dict
         """
 
+        # TODO: ask to elpaso
         #get root of layer-tree-group
         layerTreeRoot = self.qgisProjectTree.find('layer-tree-group')
 
@@ -1027,17 +994,37 @@ class QgisProject(XmlData):
         :rtype: dict, None
         """
         # get root of layer-tree-group
-        layerRelationsRoot = self.qgisProjectTree.find('relations')
+        relations = self.qgs_project.relationManager().relations()
+        if len(relations) == 0:
+            return None
+
         layer_realtions = []
-        for order, layer_relation in enumerate(layerRelationsRoot):
-            attrib = dict(layer_relation.attrib)
+        strength_type = {
+            0: 'Association',
+            1: 'Composition'
+        }
+        for relation_id, relation in relations.items():
+            attrib = {
+                'id': relation_id,
+                'name': relation.name(),
+                'strength': strength_type[relation.strength()],
+                'referencedLayer': relation.referencedLayerId(),
+                'referencingLayer': relation.referencingLayerId(),
+            }
+            # get only first pair relation
+            # FIXME: save every field pair
+            field_refs = []
+            for referencingField, referencedField in relation.fieldPairs().items():
+                field_refs.append([referencingField, referencedField])
+            attrib.update({
+                'fieldRef': {
+                    'referencingField': field_refs[0][0],
+                    'referencedField': field_refs[0][1]
+                }
+            })
 
-            # add fieldRef
-            field_ref = layer_relation.find('fieldRef')
-            attrib['fieldRef'] = field_ref.attrib
             layer_realtions.append(attrib)
-
-        return layer_realtions if layer_realtions else None
+        return layer_realtions
 
     def _getDataQgisVersion(self):
         """
@@ -1045,6 +1032,8 @@ class QgisProject(XmlData):
         :return: QGIS project version
         :rtype: str
         """
+
+        # TODO: ask to elpaso
         return self.qgisProjectTree.getroot().attrib['version']
 
     def _getDataWfsLayers(self):
@@ -1054,6 +1043,7 @@ class QgisProject(XmlData):
         :rtype: list
         """
 
+        # TODO: ask to elpaso
         wfsLayersTree = self.qgisProjectTree.xpath('properties/WFSLayers/value')
         wfsLayers = []
         for wfsLayer in wfsLayersTree:
@@ -1072,6 +1062,8 @@ class QgisProject(XmlData):
         }
         :rtype: list
         """
+
+        # TODO: ask to elpaso
         wfstLayers = {
             'INSERT': [],
             'UPDATE': [],
