@@ -12,7 +12,14 @@ from django.http.request import QueryDict
 from django.utils.translation import ugettext_lazy as _
 from lxml import etree
 
-from qgis.core import QgsProject, QgsMapLayer, QgsUnitTypes, QgsProjectVersion, QgsWkbTypes
+from qgis.core import (
+    QgsProject, QgsMapLayer,
+    QgsUnitTypes,
+    QgsProjectVersion,
+    QgsWkbTypes,
+    QgsEditFormConfig,
+    QgsAttributeEditorElement
+)
 from qgis.PyQt.QtCore import QVariant
 
 from core.utils.data import XmlData, isXML
@@ -29,9 +36,6 @@ from .validators import (CheckMaxExtent, ColumnName, DatasourceExists,
 # constant per qgis layers
 QGIS_LAYER_TYPE_NO_GEOM = 'NoGeometry'
 
-# QGIS edito layout type
-QGIS_EL_GENERATED_LAYOUT = 'generatedlayout'
-QGIS_EL_TABLAYOUT = 'tablayout'
 
 
 def makeDatasource(datasource, layerType):
@@ -549,43 +553,50 @@ class QgisProjectLayer(XmlData):
         :return: layout type
         :rtype: str, None
         """
-        editor_element = self.qgisProjectLayerTree.find('editorlayout')
-        return editor_element.text if editor_element is not None else None
+        layouts = {
+            QgsEditFormConfig.GeneratedLayout: 'generallayout',
+            QgsEditFormConfig.TabLayout: 'tablayout',
+            QgsEditFormConfig.UiFileLayout: 'unfilelayout'
+        }
+
+        try:
+            return layouts[self.qgs_layer.editFormConfig().layout()]
+        except:
+            return None
 
     def _getDataEditorformstructure(self):
         """
-        Get qgis attribute editor form if edito layout is not generatedlayout
+        Get qgis attribute editor form if editor layout is not generatedlayout
         For now only tablayout management
         :return: form structure
         :rtype: dict, None
         """
 
-        if self.editorlayout == QGIS_EL_TABLAYOUT:
+        if self.editorlayout == 'tablayout':
 
-            # get root of layer-tree-group
-            editor_form_root = self.qgisProjectLayerTree.find('attributeEditorForm')
+            tabs = self.qgs_layer.editFormConfig().tabs()
 
-            def build_form_tree_object(editor_form_node):
+            def build_form_tree_object(elements):
                 to_ret_form_structure = []
-                for editor_form_subnode in editor_form_node:
+                for element in elements:
 
                     to_ret_node = {
-                        'name': editor_form_subnode.attrib['name'],
-                        'showlabel': True if editor_form_subnode.attrib['showLabel'] == '1' else False
+                        'name': element.name(),
+                        'showlabel': element.showLabel()
                     }
 
-                    if editor_form_subnode.tag == 'attributeEditorContainer':
+                    if element.type() == QgsAttributeEditorElement.AeTypeContainer:
 
                         to_ret_node.update({
-                            'groupbox': True if editor_form_subnode.attrib['groupBox'] == '1' else False,
-                            'columncount': editor_form_subnode.attrib['columnCount'],
-                            'nodes': build_form_tree_object(editor_form_subnode.getchildren())
+                            'groupbox': element.isGroupBox(),
+                            'columncount': element.columnCount(),
+                            'nodes': build_form_tree_object(element.children())
                         })
 
-                    if editor_form_subnode.tag == 'attributeEditorField':
+                    if element.type() == QgsAttributeEditorElement.AeTypeField:
                         to_ret_node.update({
-                            'index': editor_form_subnode.attrib['index'],
-                            'field_name': to_ret_node['name']
+                            'index': element.idx(),
+                            'field_name': element.name()
                         })
                         if to_ret_node['name'] in self.aliases:
                             to_ret_node.update({'alias': self.aliases[to_ret_node['name']]})
@@ -594,9 +605,7 @@ class QgisProjectLayer(XmlData):
                     to_ret_form_structure.append(to_ret_node)
                 return to_ret_form_structure
 
-            return build_form_tree_object(editor_form_root.getchildren())
-
-
+            return build_form_tree_object(tabs)
 
         else:
             return None
