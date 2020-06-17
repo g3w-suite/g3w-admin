@@ -286,12 +286,26 @@ class QgisProjectLayer(XmlData):
         """
 
         # get root of layer-tree-group
-        vectorjoins = []
-        vectorjoinsRoot = self.qgisProjectLayerTree.find('vectorjoins')
-        if vectorjoinsRoot is not None:
-            for order, join in enumerate(vectorjoinsRoot):
-                vectorjoins.append(dict(join.attrib))
-        return vectorjoins if vectorjoinsRoot is not None else None
+        ret = []
+        try:
+            vectorjoins = self.qgs_layer.vectorJoins()
+            for order, join in enumerate(vectorjoins):
+                ret.append(
+                    {
+                        "cascadedDelete": str(int(join.hasCascadedDelete())),
+                        "targetFieldName": join.targetFieldName(),
+                        "editable": str(int(join.isEditable())),
+                        "memoryCache": str(int(join.isUsingMemoryCache())),
+                        "upsertOnEdit": str(int(join.hasUpsertOnEdit())),
+                        "joinLayerId": join.joinLayerId(),
+                        "dynamicForm": str(int(join.isDynamicFormEnabled())),
+                        "joinFieldName": join.joinFieldName()
+
+                    }
+                )
+        except:
+            pass
+        return ret
 
     def _getDataCapabilities(self):
         return 1
@@ -495,72 +509,37 @@ class QgisProjectLayer(XmlData):
 
         edittype_columns = dict()
 
-        if self.qgisProject.qgisVersion[0] == '3':
+        # only for VectorLayer
+        if self.qgs_layer.type() != QgsMapLayer.VectorLayer:
+            return edittype_columns
 
-            fieldConfiguration = self.qgisProjectLayerTree.find('fieldConfiguration')
-            editable = self.qgisProjectLayerTree.find('editable')
-            editablesf = {}
-            if editable is not None:
-                for field in editable:
-                    editablesf[field.attrib['name']] = field.attrib['editable']
+        fields = self.qgs_layer.fields()
+        eformconf = self.qgs_layer.editFormConfig()
+        for field in fields:
+            idx = fields.indexFromName(field.name())
 
-            if fieldConfiguration is not None:
-                for field in fieldConfiguration:
+            # get field widget data
+            ewidget = self.qgs_layer.editorWidgetSetup(idx)
 
-                    # get field name
-                    fname = field.attrib['name']
+            data = {
+                'widgetv2type': ewidget.type(),
+                'fieldEditable': '0' if eformconf.readOnly(idx) else '1',
+                'values': list()
+            }
 
-                    # get editWidget
-                    ewdiget = field[0]
+            options = ewidget.config()
+            if ewidget.type() == 'ValueMap':
+                if 'map' in options:
+                    for key, value in options['map'].items():
+                        data['values'].append({'key': key, 'value': value})
+                else:
+                    # FIXME: is necessary this else?
+                    for value in options:
+                        data['values'].append({'key': value.attrib['name'], 'value': value.attrib['value']})
+            else:
+                data.update(options)
 
-                    ewtype = ewdiget.attrib['type']
-                    data = {
-                        'widgetv2type': ewtype,
-                        'fieldEditable': editablesf[fname] if fname in editablesf else '1',
-                        'values': list()
-                    }
-
-                    # update with options
-                    options = ewdiget[0][0]
-                    if ewtype == 'ValueMap':
-                        options = options[0]
-                        if options.attrib['type'] == 'List':
-                            for option in options:
-                                value = option[0]
-                                data['values'].append({'key': value.attrib['name'], 'value': value.attrib['value']})
-                        else:
-                            for value in options:
-                                data['values'].append({'key': value.attrib['name'], 'value': value.attrib['value']})
-                    else:
-                        for option in options:
-                            if 'value' in option.attrib:
-                                data.update({option.attrib['name']: option.attrib['value']})
-
-                    edittype_columns[fname] = data
-
-        else:
-
-            edittypes = self.qgisProjectLayerTree.find('edittypes')
-
-            if edittypes is not None:
-                for edittype in edittypes:
-                    data = {
-                        'widgetv2type': edittype.attrib['widgetv2type'],
-                        'values': list()
-                    }
-
-                    widgetv2config = edittype.find('widgetv2config')
-
-                    # update with attributes
-                    data.update(widgetv2config.attrib)
-                    if edittype.attrib['name'] in defaults_columns:
-                        data['default'] = defaults_columns[edittype.attrib['name']]
-
-                    # check for values
-                    for value in widgetv2config:
-                        data['values'].append(value.attrib)
-
-                    edittype_columns[edittype.attrib['name']] = data
+            edittype_columns[field.name()] = data
 
         return edittype_columns
 
