@@ -52,8 +52,6 @@ class QdjangoProjectFormMixin(object):
             if self.instance.pk:
                 kwargs['instance'] = self.instance
             self.qgisProject = QgisProject(qgis_file, **kwargs)
-            if not self.instance.pk:
-                self.qgisProject.registerValidator(ProjectExists)
             self.qgisProject.clean()
         except Exception as e:
             raise ValidationError(str(e))
