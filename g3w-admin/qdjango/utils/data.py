@@ -20,6 +20,9 @@ from qgis.core import (
     QgsEditFormConfig,
     QgsAttributeEditorElement
 )
+
+from qgis.server import QgsServerProjectUtils
+
 from qgis.PyQt.QtCore import QVariant
 
 from core.utils.data import XmlData, isXML
@@ -844,19 +847,13 @@ class QgisProject(XmlData):
         :return: Max extension project
         :rtype: dict
         """
-        wmsExtent = self.qgisProjectTree.find('properties/WMSExtent')
-        if wmsExtent is not None:
-            coordsEls = wmsExtent.getchildren()
-            xmin = coordsEls[0].text
-            ymin = coordsEls[1].text
-            xmax = coordsEls[2].text
-            ymax = coordsEls[3].text
-
+        wmsExtent = QgsServerProjectUtils.wmsExtent(self.qgs_project)
+        if wmsExtent is not wmsExtent.isNull():
             return {
-                'xmin': xmin,
-                'ymin': ymin,
-                'xmax': xmax,
-                'ymax': ymax
+                'xmin': wmsExtent.xMinimum(),
+                'ymin': wmsExtent.yMinimum(),
+                'xmax': wmsExtent.xMaximum(),
+                'ymax': wmsExtent.yMaximum()
             }
         else:
             return None
@@ -867,11 +864,7 @@ class QgisProject(XmlData):
         :return: boolean WMSUseLayerIDS property
         :rtype: bool
         """
-        wmsuselayerids = self.qgisProjectTree.find('properties/WMSUseLayerIDs')
-        if wmsuselayerids is not None:
-            return True if wmsuselayerids.text == 'true' else False
-        else:
-            return False
+        return QgsServerProjectUtils.wmsUseLayerIds(self.qgs_project)
 
     def _getDataSrid(self):
         """
@@ -1031,13 +1024,7 @@ class QgisProject(XmlData):
         :rtype: list
         """
 
-        # TODO: ask to elpaso
-        wfsLayersTree = self.qgisProjectTree.xpath('properties/WFSLayers/value')
-        wfsLayers = []
-        for wfsLayer in wfsLayersTree:
-            wfsLayers.append(wfsLayer.text)
-
-        return wfsLayers
+        return QgsServerProjectUtils.wfsLayerIds(self.qgs_project)
 
     def _getDataWfstLayers(self):
         """
