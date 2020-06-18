@@ -13,7 +13,8 @@ from django.utils.translation import ugettext_lazy as _
 from lxml import etree
 
 from qgis.core import QgsProject, QgsMapLayer
-from qgis.PyQt.QtCore import QVariant
+from qgis.gui import QgsMapCanvas
+from qgis.PyQt.QtCore import QVariant, Qt
 
 from core.utils.data import XmlData, isXML
 from qdjango.models import Project
@@ -835,8 +836,17 @@ class QgisProject(XmlData):
         else:
             project_file = self.qgisProjectFile.name
 
+        # Read canvas settings
+        self.mapCanvas = QgsMapCanvas()
+
+        def _readCanvasSettings(xmlDocument):
+            self.mapCanvas.readProject(xmlDocument)
+
+        self.qgs_project.readProject.connect(_readCanvasSettings, Qt.DirectConnection)
+
         if not self.qgs_project.read(project_file):
             raise QgisProjectException(_('Could not read QGIS project file: {}').format(project_file))
+
 
     def closeProject(self, **kwargs):
         """
@@ -868,11 +878,12 @@ class QgisProject(XmlData):
         :return: Start project extension
         :rtype: dict
         """
+        extent = self.mapCanvas.extent()
         return {
-            'xmin': self.qgisProjectTree.find('mapcanvas/extent/xmin').text,
-            'ymin': self.qgisProjectTree.find('mapcanvas/extent/ymin').text,
-            'xmax': self.qgisProjectTree.find('mapcanvas/extent/xmax').text,
-            'ymax': self.qgisProjectTree.find('mapcanvas/extent/ymax').text
+            'xmin': extent.xMinimum(),
+            'ymin': extent.yMinimum(),
+            'xmax': extent.xMaximum(),
+            'ymax': extent.yMaximum(),
         }
 
     def _getDataMaxExtent(self):
@@ -884,10 +895,10 @@ class QgisProject(XmlData):
         wmsExtent = self.qgisProjectTree.find('properties/WMSExtent')
         if wmsExtent is not None:
             coordsEls = wmsExtent.getchildren()
-            xmin = coordsEls[0].text
-            ymin = coordsEls[1].text
-            xmax = coordsEls[2].text
-            ymax = coordsEls[3].text
+            xmin = float(coordsEls[0].text)
+            ymin = float(coordsEls[1].text)
+            xmax = float(coordsEls[2].text)
+            ymax = float(coordsEls[3].text)
 
             return {
                 'xmin': xmin,
