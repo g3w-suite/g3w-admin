@@ -909,7 +909,6 @@ class QgisProject(XmlData):
             toRetLayers = []
             for node in layerTreeNode.children():
 
-                print (node)
                 toRetLayer = {
                     'name': node.name(),
                     'expanded': node.isExpanded()
