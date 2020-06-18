@@ -904,53 +904,37 @@ class QgisProject(XmlData):
         :rtype: dict
         """
 
-        # TODO: ask to elpaso
-        #get root of layer-tree-group
-        layerTreeRoot = self.qgisProjectTree.find('layer-tree-group')
-
         def buildLayerTreeNodeObject(layerTreeNode):
+
             toRetLayers = []
-            for level, layerTreeSubNode in enumerate(layerTreeNode):
+            for node in layerTreeNode.children():
 
-                # QGIS3 move custom-order here
-                if level > 0 and layerTreeSubNode.tag != 'custom-order':
-                    toRetLayer = {
-                        'name': layerTreeSubNode.attrib['name'],
-                        'expanded': True if layerTreeSubNode.attrib['expanded'] == '1' else False
-                    }
+                print (node)
+                toRetLayer = {
+                    'name': node.name(),
+                    'expanded': node.isExpanded()
+                }
 
-                    if layerTreeSubNode.tag == 'layer-tree-group':
+                try:
+                    # try for layer node
+                    toRetLayer.update({
+                        'id': node.layerId(),
+                        'visible': node.layer() in node.checkedLayers()
+                    })
 
-                        mutually_exclusive = False
-                        if 'mutually-exclusive' in layerTreeSubNode.attrib and \
-                                        layerTreeSubNode.attrib['mutually-exclusive'] == '1':
-                            mutually_exclusive = True
+                except:
 
-                        mutually_exclusive_child = False
-                        if 'mutually-exclusive-child' in layerTreeSubNode.attrib and \
-                                        layerTreeSubNode.attrib['mutually-exclusive-child'] == '1':
-                            mutually_exclusive_child = True
+                    toRetLayer.update({
+                        'mutually-exclusive': node.isMutuallyExclusive(),
+                        'nodes': buildLayerTreeNodeObject(node),
+                        'checked': node.isVisible(),
 
-                        toRetLayer.update({
-                            'mutually-exclusive': mutually_exclusive,
-                            'mutually-exclusive-child': mutually_exclusive_child
-                        })
+                    })
 
-                    if layerTreeSubNode.tag == 'layer-tree-layer':
-                        toRetLayer.update({
-                            'id': layerTreeSubNode.attrib['id'],
-                            'visible': True if layerTreeSubNode.attrib['checked'] == 'Qt::Checked' else False
-                        })
-
-                    if layerTreeSubNode.tag == 'layer-tree-group':
-                        toRetLayer.update({
-                            'nodes': buildLayerTreeNodeObject(layerTreeSubNode),
-                            'checked': True if layerTreeSubNode.attrib['checked'] == 'Qt::Checked' else False
-                        })
-                    toRetLayers.append(toRetLayer)
+                toRetLayers.append(toRetLayer)
             return toRetLayers
 
-        return buildLayerTreeNodeObject(layerTreeRoot)
+        return buildLayerTreeNodeObject(self.qgs_project.layerTreeRoot())
 
     def _getDataLayers(self):
         """
