@@ -11,6 +11,7 @@ import re
 
 from django.utils.translation import ugettext
 from django.utils.translation import ugettext_lazy as _
+from django.db.models import Q
 from osgeo import gdal
 
 from core.utils.data import isXML
@@ -212,7 +213,13 @@ class ProjectExists(QgisProjectValidator):
 
     def clean(self):
         from qdjango.models import Project
-        if Project.objects.filter(title=self.qgisProject.title).exists():
+
+        if self.qgisProject.instance:
+            # for update
+            args = [~Q(pk=self.qgisProject.instance.pk)]
+        else:
+            args = []
+        if Project.objects.filter(*args, title=self.qgisProject.title).exists():
             raise QgisProjectException(
                 _('A project with the same title already exists'))
 
