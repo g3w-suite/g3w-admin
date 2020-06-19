@@ -401,7 +401,6 @@ class LayerSerializer(serializers.ModelSerializer):
                             ret['bbox'][coord] = -ret['bbox']['maxy']
             except KeyError as ex:
                 logger.critical('BBOX not found for EPSG %s in layer %s' % (group.srid.srid, lidname))
-                raise ex
 
         # add capabilities
         ret['capabilities'] = self.get_capabilities(instance)
