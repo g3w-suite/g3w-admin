@@ -55,24 +55,26 @@ class QgisProjectTest(TestCase):
         # check initialExtent
         # -----------------------------------------
         test_initial_extent_data = {
-            'xmin': '-33.65090664007660592',
-            'ymin': '27.12817952613411876',
-            'xmax': '60.84904085992335609',
-            'ymax': '72.86178698120474451'
+            'xmin': -33.65090664007660592,
+            'ymin': 14.631795352726051,
+            'xmax': 60.84904085992335609,
+            'ymax': 85.35817115461282
         }
 
-        self.assertEqual(self.project.initialExtent, test_initial_extent_data)
+        for k in test_initial_extent_data.keys():
+            self.assertAlmostEqual(self.project.initialExtent[k], test_initial_extent_data[k], 3)
 
         # check maxExtent
         # -----------------------------------------
         test_max_extent_data = {
-            'xmin': '-188.9998950000000093',
-            'ymin': '-94.66237441014119725',
-            'xmax': '188.9998950000000093',
-            'ymax': '88.27205541014122048'
+            'xmin': -188.9998950000000093,
+            'ymin': -94.66237441014119725,
+            'xmax': 188.9998950000000093,
+            'ymax': 88.27205541014122048
         }
 
-        self.assertEqual(self.project.maxExtent, test_max_extent_data)
+        for k in test_max_extent_data.keys():
+            self.assertAlmostEqual(self.project.maxExtent[k], test_max_extent_data[k], 3)
 
         # check wms use layer ids:
         # -----------------------------------------
