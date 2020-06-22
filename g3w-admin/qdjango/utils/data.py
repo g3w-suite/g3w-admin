@@ -26,7 +26,6 @@ from .validators import (CheckMaxExtent, ColumnName, DatasourceExists, ProjectEx
                          UniqueLayername)
 
 
-
 # constant per qgis layers
 QGIS_LAYER_TYPE_NO_GEOM = 'NoGeometry'
 
@@ -44,14 +43,14 @@ def makeDatasource(datasource, layerType):
     """
     newDatasource = None
     # Path and folder name
-    basePath = settings.DATASOURCE_PATH.rstrip('/') # eg: /home/sit/charts
-    folder = os.path.basename(basePath) # eg: charts
+    basePath = settings.DATASOURCE_PATH.rstrip('/')  # eg: /home/sit/charts
+    folder = os.path.basename(basePath)  # eg: charts
     # OGR example datasource:
     # Original: <datasource>\\SIT-SERVER\sit\charts\definitivo\d262120.shp</datasource>
     # Modified: <datasource>/home/sit/charts\definitivo\d262120.shp</datasource>
     if layerType == Layer.TYPES.ogr or layerType == Layer.TYPES.gdal:
-        newDatasource = re.sub(r'(.*?)%s(.*)' % folder, r'%s\2' % basePath, datasource) # ``?`` means ungreedy
-
+        newDatasource = re.sub(r'(.*?)%s(.*)' % folder, r'%s\2' %
+                               basePath, datasource)  # ``?`` means ungreedy
 
     if layerType == Layer.TYPES.delimitedtext:
         oldPath = re.sub(r"(.*)file:(.*?)", r"\2", datasource)
@@ -62,11 +61,14 @@ def makeDatasource(datasource, layerType):
     # Original: <datasource>dbname='//SIT-SERVER/sit/charts/Carte stradali\\naturalearth_110m_physical.sqlite' table="ne_110m_glaciated_areas" (geom) sql=</datasource>
     # Modified: <datasource>dbname='/home/sit/charts/Carte stradali\\naturalearth_110m_physical.sqlite' table="ne_110m_glaciated_areas" (geom) sql=</datasource>
     if layerType == Layer.TYPES.spatialite:
-        oldPath = re.sub(r"(.*)dbname='(.*?)'(.*)", r"\2", datasource) # eg: "//SIT-SERVER/sit/charts/Carte stradali\\naturalearth_110m_physical.sqlite"
-        newPath = re.sub(r'(.*?)%s(.*)' % folder, r'%s\2' % basePath, oldPath) # eg: "\home\sit\charts/Carte stradali\\naturalearth_110m_physical.sqlite" (``?`` means ungreedy)
+        # eg: "//SIT-SERVER/sit/charts/Carte stradali\\naturalearth_110m_physical.sqlite"
+        oldPath = re.sub(r"(.*)dbname='(.*?)'(.*)", r"\2", datasource)
+        # eg: "\home\sit\charts/Carte stradali\\naturalearth_110m_physical.sqlite" (``?`` means ungreedy)
+        newPath = re.sub(r'(.*?)%s(.*)' % folder, r'%s\2' % basePath, oldPath)
         newDatasource = datasource.replace(oldPath, newPath)
 
     return newDatasource
+
 
 def makeComposerPictureFile(file):
     """
@@ -79,7 +81,8 @@ def makeComposerPictureFile(file):
     basePath = settings.DATASOURCE_PATH.rstrip('/')  # eg: /home/sit/charts
     folder = os.path.basename(basePath)  # eg: charts
 
-    new_file = re.sub(r'(.*?)%s(.*)' % folder, r'%s\2' % basePath, file)  # ``?`` means ungreedy
+    new_file = re.sub(r'(.*?)%s(.*)' % folder, r'%s\2' %
+                      basePath, file)  # ``?`` means ungreedy
     return new_file.split('|')[0]
 
 
@@ -117,7 +120,7 @@ class QgisProjectLayer(XmlData):
 
     _defaultValidators = [
         DatasourceExists,
-        #ColumnName
+        # ColumnName
     ]
 
     _layer_model = Layer
@@ -131,7 +134,6 @@ class QgisProjectLayer(XmlData):
         if 'order' in kwargs:
             self.order = kwargs['order']
 
-
         # set data value into this object
         self.setData()
 
@@ -139,7 +141,6 @@ class QgisProjectLayer(XmlData):
         self.validators = []
         for validator in self._defaultValidators:
             self.registerValidator(validator)
-
 
     def __str__(self):
         """
@@ -180,11 +181,12 @@ class QgisProjectLayer(XmlData):
                     dts = datasource2dict(self.datasource + ' ')
                     name = re.sub('["\']', "", dts['table'].split('.')[-1])
                 else:
-                    name = os.path.splitext(os.path.basename(self.datasource))[0]
+                    name = os.path.splitext(
+                        os.path.basename(self.datasource))[0]
         elif self.layerType == Layer.TYPES.postgres or self.layerType == Layer.TYPES.spatialite:
             dts = datasource2dict(self.datasource)
             name = dts['table'].split('.')[-1].replace("\"", "")
-        elif self.layerType ==Layer.TYPES.wms:
+        elif self.layerType == Layer.TYPES.wms:
             dts = QueryDict(self.datasource)
             try:
                 name = dts['layers']
@@ -247,7 +249,8 @@ class QgisProjectLayer(XmlData):
         availableTypes = [item[0] for item in Layer.TYPES]
         layer_type = self.qgisProjectLayerTree.find('provider').text
         if not layer_type in availableTypes:
-            raise Exception(_('Missing or invalid type for layer')+' "%s"' % layer_type)
+            raise Exception(
+                _('Missing or invalid type for layer')+' "%s"' % layer_type)
         return layer_type
 
     def _getDataMinScale(self):
@@ -300,7 +303,8 @@ class QgisProjectLayer(XmlData):
         :rtype: int, None
         """
         try:
-            srid = self.qgisProjectLayerTree.xpath('srs/spatialrefsys/srid')[0].text
+            srid = self.qgisProjectLayerTree.xpath(
+                'srs/spatialrefsys/srid')[0].text
         except:
             srid = None
 
@@ -324,7 +328,6 @@ class QgisProjectLayer(XmlData):
 
     def _getDataCapabilities(self):
         return 1
-
 
     def _getDataGeometrytype(self):
         """
@@ -378,19 +381,22 @@ class QgisProjectLayer(XmlData):
         try:
             layer = self.qgisProject.qgs_project.mapLayers()[self.layerId]
         except KeyError:
-            logging.warning("Could not find layer id %s in QGIS project file: %s" % (self.layerId, self.qgisProject.qgisProjectFile.name))
-            msg = _("Could not find layer id {} in QGIS project").format(self.layerId)
+            logging.warning("Could not find layer id %s in QGIS project file: %s" % (
+                self.layerId, self.qgisProject.qgisProjectFile.name))
+            msg = _("Could not find layer id {} in QGIS project").format(
+                self.layerId)
             raise Exception(f'{pre_err_msg}: {msg}')
 
         if layer.type() != QgsMapLayer.VectorLayer:
             return new_datasource
 
         # fix new datasource
-        layer.setDataSource(new_datasource, layer.name(), layer.dataProvider().name())
+        layer.setDataSource(new_datasource, layer.name(),
+                            layer.dataProvider().name())
 
         if not layer.isValid():
             logging.warning("Layer id %s is not valid in QGIS project file: %s" % (
-            self.layerId, self.qgisProject.qgisProjectFile.name))
+                self.layerId, self.qgisProject.qgisProjectFile.name))
             msg = _("Current datasource is {}").format(new_datasource)
             raise Exception(f'{pre_err_msg}: {msg}')
 
@@ -443,7 +449,6 @@ class QgisProjectLayer(XmlData):
 
         return columns
 
-
     def _addAliesToColumns(self, columns):
         """
         Add aliases to column original name
@@ -452,8 +457,8 @@ class QgisProjectLayer(XmlData):
 
         for column in columns:
             if column['name'] in self.aliases:
-                column['label'] = self.aliases[column['name']] if self.aliases[column['name']] != "" else column['name']
-
+                column['label'] = self.aliases[column['name']
+                                               ] if self.aliases[column['name']] != "" else column['name']
 
     def _getLayerJoinedColumns(self):
         """
@@ -471,7 +476,8 @@ class QgisProjectLayer(XmlData):
                 join_id = join.attrib['joinLayerId']
 
                 # prendo l'elemento parent di un tag "id" dove il testo corrisponde al nome del layer
-                joined_layer = self.qgisProjectLayerTree.getroottree().xpath('//id[text()="'+join_id+'"]/..')[0]
+                joined_layer = self.qgisProjectLayerTree.getroottree().xpath(
+                    '//id[text()="'+join_id+'"]/..')[0]
                 joined_columns += []
         except Exception as e:
             pass
@@ -529,13 +535,15 @@ class QgisProjectLayer(XmlData):
         if defaults is not None:
             for default in defaults:
                 if default.attrib['expression']:
-                    defaults_columns[default.attrib['field']] = default.attrib['expression']
+                    defaults_columns[default.attrib['field']
+                                     ] = default.attrib['expression']
 
         edittype_columns = dict()
 
         if self.qgisProject.qgisVersion[0] == '3':
 
-            fieldConfiguration = self.qgisProjectLayerTree.find('fieldConfiguration')
+            fieldConfiguration = self.qgisProjectLayerTree.find(
+                'fieldConfiguration')
             editable = self.qgisProjectLayerTree.find('editable')
             editablesf = {}
             if editable is not None:
@@ -565,14 +573,17 @@ class QgisProjectLayer(XmlData):
                         if options.attrib['type'] == 'List':
                             for option in options:
                                 value = option[0]
-                                data['values'].append({'key': value.attrib['name'], 'value': value.attrib['value']})
+                                data['values'].append(
+                                    {'key': value.attrib['name'], 'value': value.attrib['value']})
                         else:
                             for value in options:
-                                data['values'].append({'key': value.attrib['name'], 'value': value.attrib['value']})
+                                data['values'].append(
+                                    {'key': value.attrib['name'], 'value': value.attrib['value']})
                     else:
                         for option in options:
                             if 'value' in option.attrib:
-                                data.update({option.attrib['name']: option.attrib['value']})
+                                data.update(
+                                    {option.attrib['name']: option.attrib['value']})
 
                     edittype_columns[fname] = data
 
@@ -622,7 +633,8 @@ class QgisProjectLayer(XmlData):
         if self.editorlayout == QGIS_EL_TABLAYOUT:
 
             # get root of layer-tree-group
-            editor_form_root = self.qgisProjectLayerTree.find('attributeEditorForm')
+            editor_form_root = self.qgisProjectLayerTree.find(
+                'attributeEditorForm')
 
             def build_form_tree_object(editor_form_node):
                 to_ret_form_structure = []
@@ -647,15 +659,14 @@ class QgisProjectLayer(XmlData):
                             'field_name': to_ret_node['name']
                         })
                         if to_ret_node['name'] in self.aliases:
-                            to_ret_node.update({'alias': self.aliases[to_ret_node['name']]})
+                            to_ret_node.update(
+                                {'alias': self.aliases[to_ret_node['name']]})
                         del(to_ret_node['name'])
 
                     to_ret_form_structure.append(to_ret_node)
                 return to_ret_form_structure
 
             return build_form_tree_object(editor_form_root.getchildren())
-
-
 
         else:
             return None
@@ -670,11 +681,13 @@ class QgisProjectLayer(XmlData):
         """
 
         columns = json.dumps(self.columns) if self.columns else None
-        excludeAttributesWMS = json.dumps(self.excludeAttributesWMS) if self.excludeAttributesWMS else None
-        excludeAttributesWFS = json.dumps(self.excludeAttributesWFS) if self.excludeAttributesWFS else None
+        excludeAttributesWMS = json.dumps(
+            self.excludeAttributesWMS) if self.excludeAttributesWMS else None
+        excludeAttributesWFS = json.dumps(
+            self.excludeAttributesWFS) if self.excludeAttributesWFS else None
 
         self.instance, created = self._layer_model.objects.get_or_create(
-            #origname=self.origname,
+            # origname=self.origname,
             qgs_layer_id=self.layerId,
             project=self.qgisProject.instance,
             defaults={
@@ -700,8 +713,8 @@ class QgisProjectLayer(XmlData):
                 'edittypes': self.editTypes,
                 'editor_layout': self.editorlayout,
                 'editor_form_structure': self.editorformstructure,
-                }
-            )
+            }
+        )
 
         if not created:
             self.instance.name = self.name
@@ -749,7 +762,7 @@ class QgisProject(XmlData):
         'layersTree',
         'layers',
         'layerRelations'
-        ]
+    ]
 
     _defaultValidators = [
         IsGroupCompatibleValidator,
@@ -769,7 +782,7 @@ class QgisProject(XmlData):
     _regexXmlComposer = 'Composer'
     _regexXmlComposerPicture = 'Composition/ComposerPicture'
 
-    #for QGIS3
+    # for QGIS3
     _regexXmlLayouts = 'Layouts/Layout'
     _regexXmlLayoutItems = 'LayoutItem'
 
@@ -782,7 +795,7 @@ class QgisProject(XmlData):
         self.validators = []
         self.instance = None
 
-        #istance of a model Project
+        # istance of a model Project
         if 'instance' in kwargs:
             self.instance = kwargs['instance']
 
@@ -792,7 +805,6 @@ class QgisProject(XmlData):
         for k in ['thumbnail', 'description', 'baselayer']:
             setattr(self, k, kwargs[k] if k in kwargs else None)
 
-
         # try to load xml project file
         self.loadProject(**kwargs)
 
@@ -801,7 +813,7 @@ class QgisProject(XmlData):
 
         self.closeProject(**kwargs)
 
-        #register defaul validator
+        # register defaul validator
         for validator in self._defaultValidators:
             self.registerValidator(validator)
 
@@ -813,10 +825,12 @@ class QgisProject(XmlData):
 
             # we have to rewind the underlying file in case it has been already parsed
             self.qgisProjectFile.file.seek(0)
-            self.qgisProjectTree = lxml.parse(self.qgisProjectFile, forbid_entities=False)
+            self.qgisProjectTree = lxml.parse(
+                self.qgisProjectFile, forbid_entities=False)
 
         except Exception as e:
-            raise QgisProjectException(_('The project file is malformed: {}').format(e.args[0]))
+            raise QgisProjectException(
+                _('The project file is malformed: {}').format(e.args[0]))
 
         # set a global QgsProject object
         self.qgs_project = QgsProject()
@@ -842,11 +856,12 @@ class QgisProject(XmlData):
         def _readCanvasSettings(xmlDocument):
             self.mapCanvas.readProject(xmlDocument)
 
-        self.qgs_project.readProject.connect(_readCanvasSettings, Qt.DirectConnection)
+        self.qgs_project.readProject.connect(
+            _readCanvasSettings, Qt.DirectConnection)
 
         if not self.qgs_project.read(project_file):
-            raise QgisProjectException(_('Could not read QGIS project file: {}').format(project_file))
-
+            raise QgisProjectException(
+                _('Could not read QGIS project file: {}').format(project_file))
 
     def closeProject(self, **kwargs):
         """
@@ -959,7 +974,7 @@ class QgisProject(XmlData):
         :rtype: dict
         """
 
-        #get root of layer-tree-group
+        # get root of layer-tree-group
         layerTreeRoot = self.qgisProjectTree.find('layer-tree-group')
 
         def buildLayerTreeNodeObject(layerTreeNode):
@@ -977,12 +992,12 @@ class QgisProject(XmlData):
 
                         mutually_exclusive = False
                         if 'mutually-exclusive' in layerTreeSubNode.attrib and \
-                                        layerTreeSubNode.attrib['mutually-exclusive'] == '1':
+                                layerTreeSubNode.attrib['mutually-exclusive'] == '1':
                             mutually_exclusive = True
 
                         mutually_exclusive_child = False
                         if 'mutually-exclusive-child' in layerTreeSubNode.attrib and \
-                                        layerTreeSubNode.attrib['mutually-exclusive-child'] == '1':
+                                layerTreeSubNode.attrib['mutually-exclusive-child'] == '1':
                             mutually_exclusive_child = True
 
                         toRetLayer.update({
@@ -1019,7 +1034,8 @@ class QgisProject(XmlData):
 
         for order, layerTree in enumerate(layerTrees):
             if self._checkLayerTypeCompatible(layerTree):
-                layers.append(self._qgisprojectlayer_class(layerTree, qgisProject=self, order=order))
+                layers.append(self._qgisprojectlayer_class(
+                    layerTree, qgisProject=self, order=order))
         return layers
 
     def _getDataLayerRelations(self):
@@ -1056,7 +1072,8 @@ class QgisProject(XmlData):
         :rtype: list
         """
 
-        wfsLayersTree = self.qgisProjectTree.xpath('properties/WFSLayers/value')
+        wfsLayersTree = self.qgisProjectTree.xpath(
+            'properties/WFSLayers/value')
         wfsLayers = []
         for wfsLayer in wfsLayersTree:
             wfsLayers.append(wfsLayer.text)
@@ -1081,18 +1098,19 @@ class QgisProject(XmlData):
         }
 
         try:
-            wfstLayersTree = self.qgisProjectTree.xpath('properties/WFSTLayers')[0]
+            wfstLayersTree = self.qgisProjectTree.xpath(
+                'properties/WFSTLayers')[0]
 
             # collect layer_id for edito ps
             for editOp in list(wfstLayers.keys()):
-                editOpsLayerIdsTree = wfstLayersTree.xpath('{}/value'.format(editOp.lower().capitalize()))
+                editOpsLayerIdsTree = wfstLayersTree.xpath(
+                    '{}/value'.format(editOp.lower().capitalize()))
                 for editOpsLayerIdTree in editOpsLayerIdsTree:
                     wfstLayers[editOp].append(editOpsLayerIdTree.text)
         except:
             pass
 
         return wfstLayers
-
 
     def clean(self):
         for validator in self.validators:
@@ -1103,7 +1121,7 @@ class QgisProject(XmlData):
 
     def save(self, instance=None, **kwargs):
         """
-        Save or update  qgisporject and layers into db.
+        Save or update  qgisproject and layers into db.
         Update QGIS project file with new datasources for ogr/gdal and sqlite types.
         :param instance: Project instance
         """
@@ -1148,7 +1166,8 @@ class QgisProject(XmlData):
                 l.save()
 
             # Pre-existing layers that have not been updated must be dropped
-            newLayerNameList = [(layer.name, layer.layerId, layer.datasource) for layer in self.layers]
+            newLayerNameList = [
+                (layer.name, layer.layerId, layer.datasource) for layer in self.layers]
             for layer in self.instance.layer_set.all():
                 if (layer.name, layer.qgs_layer_id, layer.datasource) not in newLayerNameList:
                     layer.delete()
@@ -1192,13 +1211,15 @@ class QgisProject(XmlData):
         # update file of print composers
         for composer in tree.xpath(self._regexXmlComposer):
             for composer_picture in composer.xpath(self._regexXmlComposerPicture):
-                composer_picture.attrib['file'] = makeComposerPictureFile(composer_picture.attrib['file'])
+                composer_picture.attrib['file'] = makeComposerPictureFile(
+                    composer_picture.attrib['file'])
 
         # for qgis3 try to find Layout/LayoutItem
         for layout in tree.xpath(self._regexXmlLayouts):
             for layoutitem in layout.xpath(self._regexXmlLayoutItems):
                 if 'file' in layoutitem.attrib:
-                    layoutitem.attrib['file'] = makeComposerPictureFile(layoutitem.attrib['file'])
+                    layoutitem.attrib['file'] = makeComposerPictureFile(
+                        layoutitem.attrib['file'])
 
         # Update QGIS file
         tree.write(self.instance.qgis_file.path, encoding='UTF-8')
@@ -1235,7 +1256,8 @@ class QgisProjectSettingsWMS(XmlData):
         :return:
         """
         try:
-            self.qgisProjectSettingsTree = lxml.fromstring(self.qgisProjectSettingsFile)
+            self.qgisProjectSettingsTree = lxml.fromstring(
+                self.qgisProjectSettingsFile)
         except Exception as e:
             raise Exception(
                 _('The project settings is malformed: {} ----- {}'.format(e.args[0], self.qgisProjectSettingsFile)))
@@ -1355,8 +1377,6 @@ class QgisProjectSettingsWMS(XmlData):
 
                 dataLayer['styles'].append(style_toadd)
 
-
-
             # add keywords
             try:
                 keywords = layerTree.find(self._buildTagWithNS('KeywordList'))\
@@ -1366,9 +1386,6 @@ class QgisProjectSettingsWMS(XmlData):
                 })
             except:
                 pass
-
-
-
 
             # add attribution
             try:
@@ -1394,7 +1411,8 @@ class QgisProjectSettingsWMS(XmlData):
 
             # add MetadataURL
             try:
-                metadataurl = layerTree.find(self._buildTagWithNS('MetadataURL'))
+                metadataurl = layerTree.find(
+                    self._buildTagWithNS('MetadataURL'))
                 dataLayer['metadata'].update({
                     'metadataurl': {}
                 })
@@ -1416,13 +1434,15 @@ class QgisProjectSettingsWMS(XmlData):
 
             # add attribution
             try:
-                attribution = layerTree.find(self._buildTagWithNS('Attribution'))
+                attribution = layerTree.find(
+                    self._buildTagWithNS('Attribution'))
                 dataLayer['metadata'].update({
                     'attribution': {}
                 })
 
                 try:
-                    dataLayer['metadata']['attribution']['title'] = attribution.find(self._buildTagWithNS('Title')).text
+                    dataLayer['metadata']['attribution']['title'] = attribution.find(
+                        self._buildTagWithNS('Title')).text
                 except:
                     pass
 
@@ -1437,7 +1457,8 @@ class QgisProjectSettingsWMS(XmlData):
 
             # add abstract
             try:
-                dataLayer['metadata']['abstract'] = layerTree.find(self._buildTagWithNS('Abstract')).text,
+                dataLayer['metadata']['abstract'] = layerTree.find(
+                    self._buildTagWithNS('Abstract')).text,
             except:
                 pass
 
@@ -1463,7 +1484,6 @@ class QgisProjectSettingsWMS(XmlData):
         except:
             return self._metadata
 
-
         for tag in ('Name',
                     'Title',
                     'Abstract',
@@ -1476,9 +1496,9 @@ class QgisProjectSettingsWMS(XmlData):
             except:
                 pass
 
-
         # add keywords
-        keywords = service.find(self._buildTagWithNS('KeywordList')).xpath('opengis:Keyword', namespaces=self._NS)
+        keywords = service.find(self._buildTagWithNS('KeywordList')).xpath(
+            'opengis:Keyword', namespaces=self._NS)
         self._metadata.update({
             'keywords': [k.text for k in keywords]
         })
@@ -1494,7 +1514,8 @@ class QgisProjectSettingsWMS(XmlData):
         # add contact informations
         contactinfo = service.find(self._buildTagWithNS('ContactInformation'))
         try:
-            contactperson = contactinfo.find(self._buildTagWithNS('ContactPersonPrimary'))
+            contactperson = contactinfo.find(
+                self._buildTagWithNS('ContactPersonPrimary'))
         except:
             pass
 
@@ -1506,10 +1527,10 @@ class QgisProjectSettingsWMS(XmlData):
 
         try:
             self._metadata['contactinformation'].update(OrderedDict({
-                    'contactvoicetelephone': contactinfo.find(self._buildTagWithNS('ContactVoiceTelephone')).text,
-                    'contactelectronicmailaddress': contactinfo.find(
-                        self._buildTagWithNS('ContactElectronicMailAddress')).text,
-                }))
+                'contactvoicetelephone': contactinfo.find(self._buildTagWithNS('ContactVoiceTelephone')).text,
+                'contactelectronicmailaddress': contactinfo.find(
+                    self._buildTagWithNS('ContactElectronicMailAddress')).text,
+            }))
         except:
             pass
 
@@ -1549,7 +1570,7 @@ class QgisProjectSettingsWMS(XmlData):
 
         self._composerTemplatesData = []
 
-        composerTemplates= self.qgisProjectSettingsTree.xpath(
+        composerTemplates = self.qgisProjectSettingsTree.xpath(
             'opengis:Capability/opengis:ComposerTemplates/opengis:ComposerTemplate',
             namespaces=self._NS
         )
@@ -1559,11 +1580,11 @@ class QgisProjectSettingsWMS(XmlData):
             _composerTemplateData['name'] = composerTemplate.attrib['name']
             _composerMaps = []
             for composerMap in composerTemplate.findall("opengis:ComposerMap", namespaces=self._NS):
-              _composerMaps.append({
-                  'name': composerMap.attrib['name'],
-                  'w': float(composerMap.attrib['width']),
-                  'h': float(composerMap.attrib['height'])
-              })
+                _composerMaps.append({
+                    'name': composerMap.attrib['name'],
+                    'w': float(composerMap.attrib['width']),
+                    'h': float(composerMap.attrib['height'])
+                })
             self._composerTemplatesData.append({
                 'name': composerTemplate.attrib['name'],
                 'w': composerTemplate.attrib['width'],
@@ -1597,7 +1618,7 @@ class QgisPgConnection(object):
     def __init__(self, **kwargs):
 
         self._data = {}
-        for k,v in list(kwargs.items()):
+        for k, v in list(kwargs.items()):
             setattr(self, k, v)
 
     def __setattr__(self, key, value):
@@ -1619,7 +1640,8 @@ class QgisPgConnection(object):
 
     def asXML(self):
 
-        qgsPgConnectionTree = etree.Element('qgsPgConnections', version=self._version)
+        qgsPgConnectionTree = etree.Element(
+            'qgsPgConnections', version=self._version)
         postgisTree = etree.Element('postgis')
         postgisTreeAttributes = postgisTree.attrib
 
@@ -1629,5 +1651,3 @@ class QgisPgConnection(object):
         qgsPgConnectionTree.append(postgisTree)
 
         return etree.tostring(qgsPgConnectionTree, doctype='<!DOCTYPE connections>')
-
-

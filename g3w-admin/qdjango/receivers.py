@@ -9,9 +9,9 @@ from .models import Project, Layer, Widget
 from .ows import OWSRequestHandler
 import os
 import logging
-from qgis.server import QgsConfigCache
 
 logger = logging.getLogger('django.request')
+
 
 @receiver(post_delete, sender=Project)
 def delete_project_file(sender, **kwargs):
@@ -27,9 +27,8 @@ def delete_project_file(sender, **kwargs):
         logger.error(e)
 
     if 'qdjango' in settings.CACHES:
-        caches['qdjango'].delete(settings.QDJANGO_PRJ_CACHE_KEY.format(instance.pk))
-
-    QgsConfigCache.instance().removeEntry(instance.qgis_file.path)
+        caches['qdjango'].delete(
+            settings.QDJANGO_PRJ_CACHE_KEY.format(instance.pk))
 
 
 @receiver(post_save, sender=Project)
@@ -39,10 +38,11 @@ def delete_cache_project_settings(sender, **kwargs):
     """
 
     if 'qdjango' in settings.CACHES:
-        caches['qdjango'].delete(settings.QDJANGO_PRJ_CACHE_KEY.format(kwargs['instance'].pk))
+        caches['qdjango'].delete(
+            settings.QDJANGO_PRJ_CACHE_KEY.format(kwargs['instance'].pk))
 
     instance = kwargs['instance']
-    QgsConfigCache.instance().removeEntry(instance.qgis_file.path)
+
 
 @receiver(post_save, sender=Layer)
 def update_widget(sender, **kwargs):
