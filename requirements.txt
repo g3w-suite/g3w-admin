@@ -18,7 +18,6 @@ django-ajax-selects==1.8.0
 django-modeltranslation==0.14.4
 django-filter
 pathlib
-shapely
 lxml
 psycopg2
 psycopg2-binary
