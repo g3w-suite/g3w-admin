@@ -17,6 +17,7 @@ from django.db.models import Q
 from django.core.cache import cache
 
 from qgis.server import QgsBufferServerRequest, QgsBufferServerResponse
+
 from qdjango.apps import QGS_SERVER, get_qgs_project
 
 from OWS.ows import OWSRequestHandlerBase
@@ -32,6 +33,7 @@ except:
 from .auth import QdjangoProjectAuthorizer
 
 logger = logging.getLogger(__name__)
+
 
 class OWSRequestHandler(OWSRequestHandlerBase):
     """
@@ -53,7 +55,7 @@ class OWSRequestHandler(OWSRequestHandlerBase):
     @property
     def authorizer(self):
         """ Return """
-        return QdjangoProjectAuthorizer(request= self.request, project=self._projectInstance)
+        return QdjangoProjectAuthorizer(request=self.request, project=self._projectInstance)
 
     @property
     def project(self):
@@ -64,7 +66,7 @@ class OWSRequestHandler(OWSRequestHandlerBase):
         request = self.request
 
         # Uppercase REQUEST
-        if 'REQUEST' in [k.upper() for k in  q.keys()]:
+        if 'REQUEST' in [k.upper() for k in q.keys()]:
             if request.method == 'GET':
                 ows_request = q['REQUEST'].upper()
             else:
@@ -166,7 +168,8 @@ class OWSTileRequestHandler(OWSRequestHandlerBase):
         '''
 
         configDict = settings.TILESTACHE_CONFIG_BASE
-        configDict['layers'][self.layer_name] = Layer.objects.get(project_id=self.projectId, name=self.layer_name).tilestache_conf
+        configDict['layers'][self.layer_name] = Layer.objects.get(
+            project_id=self.projectId, name=self.layer_name).tilestache_conf
 
         '''
         configDict['layers']['rt'] = {
@@ -179,7 +182,9 @@ class OWSTileRequestHandler(OWSRequestHandlerBase):
         '''
         config = Config.buildConfiguration(configDict)
         layer = config.layers[self.layer_name]
-        coord = Coordinate(int(self.tile_row), int(self.tile_column), int(self.tile_zoom))
-        tile_mimetype, tile_content = getTile(layer, coord, self.tile_format, ignore_cached=False)
+        coord = Coordinate(int(self.tile_row), int(
+            self.tile_column), int(self.tile_zoom))
+        tile_mimetype, tile_content = getTile(
+            layer, coord, self.tile_format, ignore_cached=False)
 
         return HttpResponse(content_type=tile_mimetype, content=tile_content)

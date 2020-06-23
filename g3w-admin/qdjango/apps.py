@@ -52,11 +52,13 @@ def get_qgs_project(path):
     """
 
     try:
+        # Call process events in case the project has been updated and the cache
+        # needs rebuilt
+        QgsApplication.instance().processEvents()
         return QgsConfigCache.instance().project(path, QGS_SERVER_SETTINGS)
     except:
         logger.warning('There was an error loading the project from path: %s, this is normally due to unavailable layers. If this is unexpected, please turn on and check server debug logs for further details.' % path)
         return None
-
 
 
 def GiveBaseGrant(sender, **kwargs):
@@ -115,8 +117,8 @@ class QdjangoConfig(AppConfig):
             from .utils.catalog_provider import catalog_provider
 
             Catalog.register_catalog_record_provider(catalog_provider,
-                                        scope=Catalog.SCOPE.GROUP,
-                                        senders=[Layer, Project])
+                                                     scope=Catalog.SCOPE.GROUP,
+                                                     senders=[Layer, Project])
 
         # Load all QGIS server filter plugins, apps can load additional filters
         # by registering them directly to QGS_SERVER

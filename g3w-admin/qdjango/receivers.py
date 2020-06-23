@@ -42,7 +42,7 @@ def delete_cache_project_settings(sender, **kwargs):
         caches['qdjango'].delete(settings.QDJANGO_PRJ_CACHE_KEY.format(kwargs['instance'].pk))
 
     instance = kwargs['instance']
-    QgsConfigCache.instance().removeEntry(instance.qgis_file.path)
+
 
 @receiver(post_save, sender=Layer)
 def update_widget(sender, **kwargs):
