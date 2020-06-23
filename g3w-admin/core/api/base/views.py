@@ -36,6 +36,7 @@ MODE_DATA = 'data'
 MODE_CONFIG = 'config'
 MODE_SHP = 'shp'
 MODE_XLS = 'xls'
+MODE_GPX = 'gpx'
 
 
 class G3WAPIResults(object):

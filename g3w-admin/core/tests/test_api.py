@@ -116,6 +116,14 @@ class CoreApiTest(CoreTestBase):
             'core-vector-api', ['xls', 'qdjango', '1', 'spatialite_points20190604101052075'])
         self.assertTrue(len(response.content) > 3200)
 
+    def testCoreVectorApiGpx(self):
+        """Test core-vector-api data GPX"""
+
+        response = self._testApiCall(
+            'core-vector-api', ['gpx', 'qdjango', '1', 'spatialite_points20190604101052075'])
+        self.assertTrue(response.content.startswith(b'<?xml'))
+        self.assertTrue(len(response.content) > 700)
+
     def testCoreVectorApiSearch(self):
         """Test core-vector-api search"""
 

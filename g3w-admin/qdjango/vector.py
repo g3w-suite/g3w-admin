@@ -7,7 +7,7 @@ from django.http import HttpResponse, HttpResponseForbidden
 from qgis.core import QgsVectorFileWriter, QgsFeatureRequest, QgsJsonUtils, Qgis, QgsFieldConstraints
 
 from core.api.base.vector import MetadataVectorLayer
-from core.api.base.views import (MODE_CONFIG, MODE_DATA, MODE_SHP, MODE_XLS,
+from core.api.base.views import (MODE_CONFIG, MODE_DATA, MODE_SHP, MODE_XLS, MODE_GPX,
                                  APIException, BaseVectorOnModelApiView,
                                  IntersectsBBoxFilter)
 from core.api.filters import (IntersectsBBoxFilter, OrderingFilter,
@@ -180,7 +180,8 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         MODE_DATA,  # get data geojson (custom)
         MODE_WIDGET,  # ?
         MODE_SHP,  # get shapefiles
-        MODE_XLS   # get XLS
+        MODE_XLS,   # get XLS
+        MODE_GPX    # get GPX
     ]
 
     mapping_layer_attributes_function = mapLayerAttributesFromQgisLayer
@@ -364,12 +365,78 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         response.set_cookie('fileDownload', 'true')
         return response
 
+    def response_gpx_mode(self, request):
+        """
+        Download GPX of data
+        :param request: Http Django request object
+        :return: http response with attached file
+        """
+
+        # FIXME: manage download_gpx for testing
+        #if not self.layer.download_gpx:
+        #    return HttpResponseForbidden()
+
+        tmp_dir = tempfile.TemporaryDirectory()
+
+        filename = self.metadata_layer.qgis_layer.name()
+
+        # Apply filter backends, store original subset string
+        qgs_request = QgsFeatureRequest()
+        original_subset_string = self.metadata_layer.qgis_layer.subsetString()
+        if hasattr(self, 'filter_backends'):
+            for backend in self.filter_backends:
+                backend().apply_filter(request, self.metadata_layer.qgis_layer, qgs_request, self)
+
+        save_options = QgsVectorFileWriter.SaveVectorOptions()
+        save_options.driverName = 'GPX'
+        save_options.fileEncoding = 'utf-8'
+        save_options.datasourceOptions = [
+            "GPX_USE_EXTENSIONS=1",
+            "GPX_EXTENSIONS_NS_URL='http://osgeo.org/gdal'",
+            "GPX_EXTENSIONS_NS='ogr'"
+        ]
+
+        filename = self.metadata_layer.qgis_layer.name() + '.gpx'
+
+        # Make a selection based on the request
+        if qgs_request.filterExpression() is not None:
+            self.metadata_layer.qgis_layer.selectByExpression(
+                qgs_request.filterExpression().expression())
+            save_options.onlySelectedFeatures = True
+
+        gpx_tmp_path = os.path.join(tmp_dir.name, filename)
+        error_code, error_message = QgsVectorFileWriter.writeAsVectorFormatV2(
+            self.metadata_layer.qgis_layer,
+            gpx_tmp_path,
+            self.metadata_layer.qgis_layer.transformContext(),
+            save_options
+        )
+
+        # Restore the original subset string and select no features
+        self.metadata_layer.qgis_layer.selectByIds([])
+        self.metadata_layer.qgis_layer.setSubsetString(original_subset_string)
+
+        if error_code != QgsVectorFileWriter.NoError:
+            tmp_dir.cleanup()
+            return HttpResponse(status=500, reason=error_message)
+
+        response = HttpResponse(
+            open(gpx_tmp_path, 'rb').read(), content_type='application/octet-stream')
+        tmp_dir.cleanup()
+        response['Content-Disposition'] = f'attachment; filename={filename}'
+        response.set_cookie('fileDownload', 'true')
+        return response
+
     def response_xls_mode(self, request):
         """
         Download xls of data
         :param request: Http Django request object
         :return: http response with attached file
         """
+
+        # FIXME: manage download_xls for testing
+        #if not self.layer.download_xls:
+        #    return HttpResponseForbidden()
 
         # Apply filter backends, store original subset string
         qgs_request = QgsFeatureRequest()
