@@ -4,7 +4,7 @@ import tempfile
 import zipfile
 
 from django.http import HttpResponse, HttpResponseForbidden
-from qgis.core import QgsVectorFileWriter, QgsFeatureRequest, QgsJsonUtils, Qgis, QgsFieldConstraints
+from qgis.core import QgsVectorFileWriter, QgsFeatureRequest, QgsJsonUtils, Qgis, QgsFieldConstraints, QgsWkbTypes
 
 from core.api.base.vector import MetadataVectorLayer
 from core.api.base.views import (MODE_CONFIG, MODE_DATA, MODE_SHP, MODE_XLS, MODE_GPX,
@@ -373,6 +373,10 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         """
 
         if not self.layer.download_gpx:
+            return HttpResponseForbidden()
+
+        # check for vector type
+        if self.metadata_layer.qgis_layer.geometryType() == QgsWkbTypes.PolygonGeometry:
             return HttpResponseForbidden()
 
         tmp_dir = tempfile.TemporaryDirectory()

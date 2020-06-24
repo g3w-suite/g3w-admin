@@ -152,6 +152,16 @@ class CoreApiTest(CoreTestBase):
         self.assertTrue(response.content.startswith(b'<?xml'))
         self.assertTrue(len(response.content) > 700)
 
+        # Test GeometryType layer, no PolygonGeometry: forbidden
+        self.assertTrue(self.client.login(username=self.test_admin1.username, password=self.test_admin1.username))
+        path = self._getPath(
+            'core-vector-api', ['gpx', 'qdjango', '1', 'world20181008111156525']
+        )
+        response = self.client.get(path)
+        self.assertEqual(response.status_code, 403)
+        self.client.logout()
+
+
     def testCoreVectorApiSearch(self):
         """Test core-vector-api search"""
 
