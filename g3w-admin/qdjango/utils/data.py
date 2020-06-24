@@ -128,14 +128,14 @@ class QgisProjectLayer(XmlData):
 
     _layer_model = Layer
 
-    def __init__(self, layerTree, **kwargs):
-        self.qgisProjectLayerTree = layerTree
+    def __init__(self, layer, **kwargs):
+        self.qgs_layer = layer
 
         if 'qgisProject' in kwargs:
             self.qgisProject = kwargs['qgisProject']
 
-        if 'order' in kwargs:
-            self.order = kwargs['order']
+        # FIXME: check il order on layer is used
+        self.order = kwargs['order'] if 'order' in kwargs else 0
 
 
         # set data value into this object
@@ -194,7 +194,7 @@ class QgisProjectLayer(XmlData):
             except KeyError:
                 name = self.name
         else:
-            name = self.qgisProjectLayerTree.find('layername').text
+            name = self.qgs_layer.name()
 
         return name
 
@@ -205,12 +205,7 @@ class QgisProjectLayer(XmlData):
         :rtype: str
         """
 
-        layer_id = self.qgisProjectLayerTree.find('id').text
-
-        # instance QgsLayer
-        self.qgs_layer = self.qgisProject.qgs_project.mapLayers()[layer_id]
-
-        return layer_id
+        return self.qgs_layer.id()
 
     def _getDataTitle(self):
         """
@@ -507,12 +502,12 @@ class QgisProjectLayer(XmlData):
         """
 
         # before defautls field values if isset
-        defaults = self.qgisProjectLayerTree.find('defaults')
-        defaults_columns = dict()
-        if defaults is not None:
-            for default in defaults:
-                if default.attrib['expression']:
-                    defaults_columns[default.attrib['field']] = default.attrib['expression']
+        # defaults = self.qgisProjectLayerTree.find('defaults')
+        # defaults_columns = dict()
+        # if defaults is not None:
+        #     for default in defaults:
+        #         if default.attrib['expression']:
+        #             defaults_columns[default.attrib['field']] = default.attrib['expression']
 
         edittype_columns = dict()
 
@@ -537,8 +532,15 @@ class QgisProjectLayer(XmlData):
             options = ewidget.config()
             if ewidget.type() == 'ValueMap':
                 if 'map' in options:
-                    for key, value in options['map'].items():
-                        data['values'].append({'key': key, 'value': value})
+                    if isinstance(options['map'], dict):
+                        for key, value in options['map'].items():
+                            data['values'].append({'key': key, 'value': value})
+                    else:
+                        #case list
+                        for item in options['map']:
+                            for key, value in item.items():
+                                data['values'].append({'key': key, 'value': value})
+
                 else:
                     # FIXME: is necessary this else?
                     for value in options:
@@ -944,11 +946,14 @@ class QgisProject(XmlData):
         layers = []
 
         # Get layer trees
-        layerTrees = self.qgisProjectTree.xpath(self._regexXmlLayer)
+        #layerTrees = self.qgisProjectTree.xpath(self._regexXmlLayer)
 
-        for order, layerTree in enumerate(layerTrees):
-            if self._checkLayerTypeCompatible(layerTree):
-                layers.append(self._qgisprojectlayer_class(layerTree, qgisProject=self, order=order))
+        #for order, layerTree in enumerate(layerTrees):
+        #    if self._checkLayerTypeCompatible(layerTree):
+        #        layers.append(self._qgisprojectlayer_class(layerTree, qgisProject=self, order=order))
+
+        for layerid, layer in self.qgs_project.mapLayers().items():
+            layers.append(self._qgisprojectlayer_class(layer, qgisProject=self))
         return layers
 
     def _getDataLayerRelations(self):
