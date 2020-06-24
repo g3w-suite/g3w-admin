@@ -112,12 +112,40 @@ class CoreApiTest(CoreTestBase):
     def testCoreVectorApiXls(self):
         """Test core-vector-api data XLS"""
 
+        # test forbidden if layer.download_xls is False
+        self.assertTrue(self.client.login(username=self.test_admin1.username, password=self.test_admin1.username))
+        path = self._getPath(
+            'core-vector-api', ['xls', 'qdjango', '1', 'spatialite_points20190604101052075']
+        )
+        response = self.client.get(path)
+        self.assertEqual(response.status_code, 403)
+        self.client.logout()
+
+        # set download_xls property to True
+        layer = Layer.objects.get(project_id=1, qgs_layer_id='spatialite_points20190604101052075')
+        layer.download_xls = True
+        layer.save()
+
         response = self._testApiCall(
             'core-vector-api', ['xls', 'qdjango', '1', 'spatialite_points20190604101052075'])
         self.assertTrue(len(response.content) > 3200)
 
     def testCoreVectorApiGpx(self):
         """Test core-vector-api data GPX"""
+
+        # test forbidden if layer.download_xls is False
+        self.assertTrue(self.client.login(username=self.test_admin1.username, password=self.test_admin1.username))
+        path = self._getPath(
+            'core-vector-api', ['gpx', 'qdjango', '1', 'spatialite_points20190604101052075']
+        )
+        response = self.client.get(path)
+        self.assertEqual(response.status_code, 403)
+        self.client.logout()
+
+        # set download_xls property to True
+        layer = Layer.objects.get(project_id=1, qgs_layer_id='spatialite_points20190604101052075')
+        layer.download_gpx = True
+        layer.save()
 
         response = self._testApiCall(
             'core-vector-api', ['gpx', 'qdjango', '1', 'spatialite_points20190604101052075'])

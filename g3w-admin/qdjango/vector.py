@@ -372,9 +372,8 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         :return: http response with attached file
         """
 
-        # FIXME: manage download_gpx for testing
-        #if not self.layer.download_gpx:
-        #    return HttpResponseForbidden()
+        if not self.layer.download_gpx:
+            return HttpResponseForbidden()
 
         tmp_dir = tempfile.TemporaryDirectory()
 
@@ -434,9 +433,8 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         :return: http response with attached file
         """
 
-        # FIXME: manage download_xls for testing
-        #if not self.layer.download_xls:
-        #    return HttpResponseForbidden()
+        if not self.layer.download_xls:
+            return HttpResponseForbidden()
 
         # Apply filter backends, store original subset string
         qgs_request = QgsFeatureRequest()

@@ -80,8 +80,8 @@ class CoreTestBase(TestCase):
                 else:
                     print("self.assertEqual(resp%s, \"%s\")" % (_path, v))
 
-    def _testApiCall(self, view_name, args, kwargs={}):
-        """Utility to make test calls"""
+    def _getPath(self, view_name, args, kwargs={}):
+        """Utility to build test path calls"""
 
         path = reverse(view_name, args=args)
         if kwargs:
@@ -90,6 +90,13 @@ class CoreTestBase(TestCase):
             for k, v in kwargs.items():
                 parts.append(k + '=' + str(v))
             path += '&'.join(parts)
+
+        return path
+
+    def _testApiCall(self, view_name, args, kwargs={}):
+        """Utility to make test calls"""
+
+        path = self._getPath(view_name, args, kwargs)
 
         # No auth
         response = self.client.get(path)
