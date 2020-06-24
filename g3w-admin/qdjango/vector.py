@@ -21,7 +21,7 @@ from core.utils.vector import BaseUserMediaHandler
 from qdjango.api.constraints.filters import SingleLayerSubsetStringConstraintFilter, \
     SingleLayerExpressionConstraintFilter
 
-from qdjango.api.layers.filters import RelationOneToManyFilter
+from qdjango.api.layers.filters import RelationOneToManyFilter, FidFilter
 
 from .models import Layer
 from .utils.data import QGIS_LAYER_TYPE_NO_GEOM
@@ -169,7 +169,8 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         SuggestFilterBackend,
         SingleLayerSubsetStringConstraintFilter,
         SingleLayerExpressionConstraintFilter,
-        RelationOneToManyFilter
+        RelationOneToManyFilter,
+        FidFilter
     )
 
     ordering_fields = '__all__'
