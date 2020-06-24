@@ -85,7 +85,7 @@ class FidFilter(BaseFilterBackend):
             return
         else:
             try:
-                fid = request.GET[FILTER_FID_PARAM]
+                fid = int(request.GET[FILTER_FID_PARAM])
             except ValueError as e:
                 logger.error('FidFilter: %s' % (e,))
                 return
