@@ -1026,26 +1026,11 @@ class QgisProject(XmlData):
         :rtype: list
         """
 
-        # TODO: ask to elpaso
-        wfstLayers = {
-            'INSERT': [],
-            'UPDATE': [],
-            'DELETE': []
+        return{
+            'INSERT': QgsServerProjectUtils.wfstInsertLayerIds(self.qgs_project),
+            'UPDATE': QgsServerProjectUtils.wfstUpdateLayerIds(self.qgs_project),
+            'DELETE': QgsServerProjectUtils.wfstDeleteLayerIds(self.qgs_project)
         }
-
-        try:
-            wfstLayersTree = self.qgisProjectTree.xpath('properties/WFSTLayers')[0]
-
-            # collect layer_id for edito ps
-            for editOp in list(wfstLayers.keys()):
-                editOpsLayerIdsTree = wfstLayersTree.xpath('{}/value'.format(editOp.lower().capitalize()))
-                for editOpsLayerIdTree in editOpsLayerIdsTree:
-                    wfstLayers[editOp].append(editOpsLayerIdTree.text)
-        except:
-            pass
-
-        return wfstLayers
-
 
     def clean(self):
         for validator in self.validators:
