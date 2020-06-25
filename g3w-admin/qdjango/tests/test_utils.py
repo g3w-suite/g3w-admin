@@ -55,24 +55,26 @@ class QgisProjectTest(TestCase):
         # check initialExtent
         # -----------------------------------------
         test_initial_extent_data = {
-            'xmin': '-33.65090664007660592',
-            'ymin': '27.12817952613411876',
-            'xmax': '60.84904085992335609',
-            'ymax': '72.86178698120474451'
+            'xmin': -33.65090664007660592,
+            'ymin': 14.631795352726051,
+            'xmax': 60.84904085992335609,
+            'ymax': 85.35817115461282
         }
 
-        self.assertEqual(self.project.initialExtent, test_initial_extent_data)
+        for k in test_initial_extent_data.keys():
+            self.assertAlmostEqual(self.project.initialExtent[k], test_initial_extent_data[k], 1)
 
         # check maxExtent
         # -----------------------------------------
         test_max_extent_data = {
-            'xmin': '-188.9998950000000093',
-            'ymin': '-94.66237441014119725',
-            'xmax': '188.9998950000000093',
-            'ymax': '88.27205541014122048'
+            'xmin': -188.9998950000000093,
+            'ymin': -94.66237441014119725,
+            'xmax': 188.9998950000000093,
+            'ymax': 88.27205541014122048
         }
 
-        self.assertEqual(self.project.maxExtent, test_max_extent_data)
+        for k in test_max_extent_data.keys():
+            self.assertAlmostEqual(self.project.maxExtent[k], test_max_extent_data[k], 3)
 
         # check wms use layer ids:
         # -----------------------------------------
@@ -164,23 +166,23 @@ class QgisProjectTest(TestCase):
                 <alias name="" field="ISO_NUM" index="16"/>
                 '''
                 aliases_to_check = OrderedDict({
-                    'ISOCODE': '',
-                    'NAME_LOCAL': '',
-                    'NAME_EN': '',
-                    'CAPITAL_EN': '',
-                    'NAME_DE': '',
-                    'CAPITAL_DE': '',
-                    'NAME_IT': '',
-                    'CAPITAL_IT': '',
-                    'NAME_FR': '',
-                    'CAPITAL_FR': '',
-                    'NAME_BR': '',
-                    'CAPITAL_BR': '',
-                    'NAME_ES': '',
-                    'CAPITAL_ES': '',
-                    'POPULATION': '',
-                    'AREA_KM2': '',
-                    'ISO_NUM': ''
+                    'ISOCODE': 'ISOCODE',
+                    'NAME_LOCAL': 'NAME_LOCAL',
+                    'NAME_EN': 'NAME_EN',
+                    'CAPITAL_EN': 'CAPITAL_EN',
+                    'NAME_DE': 'NAME_DE',
+                    'CAPITAL_DE': 'CAPITAL_DE',
+                    'NAME_IT': 'NAME_IT',
+                    'CAPITAL_IT': 'CAPITAL_IT',
+                    'NAME_FR': 'NAME_FR',
+                    'CAPITAL_FR': 'CAPITAL_FR',
+                    'NAME_BR': 'NAME_BR',
+                    'CAPITAL_BR': 'CAPITAL_BR',
+                    'NAME_ES': 'NAME_ES',
+                    'CAPITAL_ES': 'CAPITAL_ES',
+                    'POPULATION': 'POPULATION',
+                    'AREA_KM2': 'AREA_KM2',
+                    'ISO_NUM': 'ISO_NUM'
                 })
 
                 self.assertEqual(layer.aliases, aliases_to_check)
@@ -194,11 +196,11 @@ class QgisProjectTest(TestCase):
 
                 # check excludeAttributesWMS
                 # --------------------------------------------------------
-                self.assertIsNone(layer.excludeAttributesWMS)
+                self.assertCountEqual(layer.excludeAttributesWMS, [])
 
                 # check excludeAttributesWFS
                 # --------------------------------------------------------
-                self.assertIsNone(layer.excludeAttributesWFS)
+                self.assertCountEqual(layer.excludeAttributesWFS, [])
 
                 # check geometrytype
                 # --------------------------------------------------------
@@ -217,7 +219,7 @@ class QgisProjectTest(TestCase):
 
                 # check editorlayout
                 # --------------------------------------------------------
-                self.assertEqual(layer.editorlayout, 'generatedlayout')
+                self.assertEqual(layer.editorlayout, 'generallayout')
 
                 # check editorformstructure
                 # --------------------------------------------------------
@@ -232,12 +234,12 @@ class QgisProjectTest(TestCase):
                 # check editorformstructure
                 # --------------------------------------------------------
 
-                editor_form_structure_to_check = '[{"name": "Folder 1", "showlabel": true, "groupbox": false, "columncount": "1", "nodes": [{"showlabel": true, "index": "0", "field_name": "GEONAMEID", "alias": "Geo named"}, {"showlabel": true, "index": "1", "field_name": "NAME", "alias": "Name"}, {"showlabel": true, "index": "2", "field_name": "ASCIINAME", "alias": "Ascii name"}]}, {"name": "Folder 2", "showlabel": true, "groupbox": false, "columncount": "1", "nodes": [{"showlabel": true, "index": "4", "field_name": "POPULATION", "alias": ""}, {"showlabel": true, "index": "5", "field_name": "GTOPO30", "alias": ""}, {"showlabel": true, "index": "3", "field_name": "ISO2_CODE", "alias": "ISO Code"}]}]'
+                editor_form_structure_to_check = '[{"name": "Folder 1", "showlabel": true, "groupbox": false, "columncount":1, "nodes": [{"showlabel": true, "index":0, "field_name": "GEONAMEID", "alias": "Geo named"}, {"showlabel": true, "index":1, "field_name": "NAME", "alias": "Name"}, {"showlabel": true, "index":2, "field_name": "ASCIINAME", "alias": "Ascii name"}]}, {"name": "Folder 2", "showlabel": true, "groupbox": false, "columncount":1, "nodes": [{"showlabel": true, "index":4, "field_name": "POPULATION", "alias": "POPULATION"}, {"showlabel": true, "index":5, "field_name": "GTOPO30", "alias": "GTOPO30"}, {"showlabel": true, "index":3, "field_name": "ISO2_CODE", "alias": "ISO Code"}]}]'
                 self.assertEqual(layer.editorformstructure, json.loads(editor_form_structure_to_check))
 
                 # check editTypes
                 # --------------------------------------------------------
-                edit_types_to_check = '{"GEONAMEID": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "false", "UseHtml": "false"}, "NAME": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "false", "UseHtml": "false"}, "ASCIINAME": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "false", "UseHtml": "false"}, "ISO2_CODE": {"widgetv2type": "UniqueValues", "fieldEditable": "1", "values": [], "Editable": "false"}, "POPULATION": {"widgetv2type": "Range", "fieldEditable": "1", "values": [], "AllowNull": "true", "Max": "2147483647", "Min": "-2147483648", "Precision": "0", "Step": "1", "Style": "SpinBox"}, "GTOPO30": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}}'
+                edit_types_to_check = '{"GEONAMEID": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": false, "UseHtml": false}, "NAME": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": false, "UseHtml": false}, "ASCIINAME": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": false, "UseHtml": false}, "ISO2_CODE": {"widgetv2type": "UniqueValues", "fieldEditable": "1", "values": [], "Editable": false}, "POPULATION": {"widgetv2type": "Range", "fieldEditable": "1", "values": [], "AllowNull": true, "Max": 2147483647, "Min": -2147483648, "Precision": 0, "Step": 1, "Style": "SpinBox"}, "GTOPO30": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}}'
                 self.assertEqual(layer.editTypes, json.loads(edit_types_to_check))
 
 
