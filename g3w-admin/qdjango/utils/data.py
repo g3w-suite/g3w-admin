@@ -18,12 +18,15 @@ from qgis.core import (
     QgsProjectVersion,
     QgsWkbTypes,
     QgsEditFormConfig,
-    QgsAttributeEditorElement
+    QgsAttributeEditorElement,
+    QgsRectangle
 )
+
+from qgis.gui import QgsMapCanvas
 
 from qgis.server import QgsServerProjectUtils
 
-from qgis.PyQt.QtCore import QVariant
+from qgis.PyQt.QtCore import QVariant, Qt
 
 from core.utils.data import XmlData, isXML
 from qdjango.models import Project
@@ -790,21 +793,18 @@ class QgisProject(XmlData):
         else:
             project_file = self.qgisProjectFile.name
 
+        # Read canvas settings
+        self.mapCanvas = QgsMapCanvas()
+
+        def _readCanvasSettings(xmlDocument):
+            self.mapCanvas.readProject(xmlDocument)
+
+        self.qgs_project.readProject.connect(
+            _readCanvasSettings, Qt.DirectConnection)
+
         if not self.qgs_project.read(project_file):
             raise QgisProjectException(_('Could not read QGIS project file: {}').format(project_file))
 
-        # instance
-        from PyQt5.QtXml import QDomDocument
-        from PyQt5.QtCore import QFile
-        from qgis.gui import QgsMapCanvas
-        from qgis.core import QgsMapSettings
-        qdd = QDomDocument()
-
-        qdd.setContent(QFile(project_file))
-        qmc = QgsMapCanvas()
-
-
-        print (qmc)
     def closeProject(self, **kwargs):
         """
         Close QgsProject object.
@@ -834,13 +834,12 @@ class QgisProject(XmlData):
         :return: Start project extension
         :rtype: dict
         """
-
-        # TODO: ask to elpaso
+        extent = self.mapCanvas.extent()
         return {
-            'xmin': self.qgisProjectTree.find('mapcanvas/extent/xmin').text,
-            'ymin': self.qgisProjectTree.find('mapcanvas/extent/ymin').text,
-            'xmax': self.qgisProjectTree.find('mapcanvas/extent/xmax').text,
-            'ymax': self.qgisProjectTree.find('mapcanvas/extent/ymax').text
+            'xmin': extent.xMinimum(),
+            'ymin': extent.yMinimum(),
+            'xmax': extent.xMaximum(),
+            'ymax': extent.yMaximum(),
         }
 
     def _getDataMaxExtent(self):
@@ -850,7 +849,7 @@ class QgisProject(XmlData):
         :rtype: dict
         """
         wmsExtent = QgsServerProjectUtils.wmsExtent(self.qgs_project)
-        if wmsExtent is not wmsExtent.isNull():
+        if wmsExtent is not wmsExtent.isNull() and wmsExtent != QgsRectangle():
             return {
                 'xmin': wmsExtent.xMinimum(),
                 'ymin': wmsExtent.yMinimum(),
@@ -945,13 +944,6 @@ class QgisProject(XmlData):
         """
         layers = []
 
-        # Get layer trees
-        #layerTrees = self.qgisProjectTree.xpath(self._regexXmlLayer)
-
-        #for order, layerTree in enumerate(layerTrees):
-        #    if self._checkLayerTypeCompatible(layerTree):
-        #        layers.append(self._qgisprojectlayer_class(layerTree, qgisProject=self, order=order))
-
         for layerid, layer in self.qgs_project.mapLayers().items():
             layers.append(self._qgisprojectlayer_class(layer, qgisProject=self))
         return layers
@@ -1002,7 +994,7 @@ class QgisProject(XmlData):
         :rtype: str
         """
 
-        # TODO: ask to elpaso
+        # FIXME: is not possibile by QGIS API at the moment.
         return self.qgisProjectTree.getroot().attrib['version']
 
     def _getDataWfsLayers(self):
