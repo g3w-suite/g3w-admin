@@ -221,22 +221,14 @@ class QgisProjectLayer(XmlData):
 
     def _getDataIsVisible(self):
         """
-        Get if is visible form xml
+        Get if is visible form lqyerRoot
         :return: layer visibility
         :rtype: bool
         """
-        legendTrees = self.qgisProject.qgisProjectTree.find('legend')
-        legends = legendTrees.iterdescendants(tag='legendlayerfile')
 
-        for legend in legends:
-            if legend.attrib['layerid'] == self.layerId:
-                if legend.attrib['visible'] == '1':
-                    return True
-                else:
-                    return False
-
-        # layer not in legend: return false for default
-        return False
+        # TODO: check if is it possibile use isVisible from node of layer-tree-group.
+        #  Check PyQGIS method to read project '<legend>' section.
+        return self.qgisProject.qgs_project.layerTreeRoot().findLayer(self.qgs_layer).isVisible()
 
     def _getDataLayerType(self):
         """
