@@ -4,4 +4,4 @@
 from .celery import app as celery_app
 __all__ = ('celery_app',)
 
-__version__ = (3, 0, 0, 'final', 0)
+__version__ = (3, 0, 0, 'unstable', 0)
