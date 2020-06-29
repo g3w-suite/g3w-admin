@@ -510,6 +510,8 @@ See the dedicated paragraph in the [Editing on line session](https://g3w-suite.r
 ## Search widget setting
 In G3W-SUITE it is possible to create search widgets.
 
+**Be careful: in this release searching is not available on simple join (1:1/n:1) data**
+
 They will be saved by referring to the layer identifiers (for example the DB parameters: IP, DB name, schema, layer name).
 
 This aspect allows, once a search widget for a layer has been created, to have it available on all the projects in which the layer is present, without having to rebuild the widget from scratch each time.

@@ -8,6 +8,8 @@ Consult the [list of formats](https://docs.qgis.org/3.10/en/docs/user_manual/pre
 
 The tool also allows you to manage **`1:N relational editing`**.
 
+**Be careful: in this release editing is not available on simple join (1:1/n:1) data**
+
 The **editing settings** are defined partly at the **QGIS project level** (**editing form structure, widgets associated with individual attributes, 1:n relationships**) and partly at the **Administration level** (users with editing power, activation scale, any geoconstraints).
 
 It should be noted that this function manages **`multi-user editing`** through a **features-lock system**.
@@ -201,13 +203,13 @@ The tools available are the following:
 
 **Geometric layers**
  * ![](images/manual/icon_feature_add.png) **Add feature:** to add a feature
- * ![](images/manual/icon_feature_move.png) **Move feature:** to move a feature
+  * ![](images/manual/icon_feature_attribute.png) **Modify feature:** to modify the attributes associated with an existing feature
  * ![](images/manual/icon_feature_modify.png) **Update feature vertex:** to modify the shape of a geometry
+ * ![](images/manual/icon_feature_remove.png) **Remove feature**
+ * ![](images/manual/icon_feature_move.png) **Move feature:** to move a feature
  * ![](images/manual/icon_feature_copy.png) **Copy features:** to move one or more features
  * ![](images/manual/icon_feature_dissolve.png) **Dissolve features:** to dissolve two or more features
  * ![](images/manual/icon_feature_split.png) **Split features:** to split one or more features
- * ![](images/manual/icon_feature_remove.png) **Remove feature**
- * ![](images/manual/icon_feature_attribute.png) **Modify feature:** to modify the attributes associated with an existing feature
 
 Activating the **Add features** and **Update feature vertex** tools allows you to activate the snap intralayer function.
 

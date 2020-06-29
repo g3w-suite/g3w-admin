@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: G3W-SUITE 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-06-10 17:45+0200\n"
+"POT-Creation-Date: 2020-06-15 14:34+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1751,16 +1751,22 @@ msgstr "Filtri di visualizzazione"
 msgid ""
 "By accessing the list of layers, it is possible to define display filters"
 " for users authorized to consult the project"
-msgstr "Accedendo all'elenco dei livelli, è possibile definire i filtri di visualizzazione "
-"per gli utenti autorizzati a consultare il progetto"
+msgstr ""
+"Accedendo all'elenco dei livelli, è possibile definire i filtri di "
+"visualizzazione per gli utenti autorizzati a consultare il progetto"
 
 #: ../../g3wsuite_administration.md:505
 msgid "These filters work both for viewing and editing."
-msgstr "Tali filtri funzionano sia per quanto riguarda la visualizzazione che l'editing."
+msgstr ""
+"Tali filtri funzionano sia per quanto riguarda la visualizzazione che "
+"l'editing."
 
 #: ../../g3wsuite_administration.md:507
 msgid "See the dedicated paragraph in the Editing on line session."
-msgstr "Consulta il paragrafo dedicato nella [sessione relativa all'Editing on line](https://g3w-suite.readthedocs.io/it/latest/g3wsuite_editing.html#constraints-setting)."
+msgstr ""
+"Consulta il paragrafo dedicato nella [sessione relativa all'Editing on "
+"line](https://g3w-suite.readthedocs.io/it/latest/g3wsuite_editing.html"
+"#constraints-setting)."
 
 #: ../../g3wsuite_administration.md:509
 msgid "Search widget setting"
@@ -1774,13 +1780,20 @@ msgstr ""
 
 #: ../../g3wsuite_administration.md:512
 msgid ""
+"Be careful: in this release searching is not available on simple join "
+"(1:1/n:1) data"
+msgstr ""
+"**Attenzione: in questa versione, non è possibile creare strumenti di ricerca basati su attriubuti derivanti da join (1:1/n:1)**"
+
+#: ../../g3wsuite_administration.md:514
+msgid ""
 "They will be saved by referring to the layer identifiers (for example the"
 " DB parameters: IP, DB name, schema, layer name)."
 msgstr ""
 "Ogni ricerca verrà **salvata facendo riferimento agli identificativi del "
 "layer associato** (IP, DB name, schema, layer name)."
 
-#: ../../g3wsuite_administration.md:514
+#: ../../g3wsuite_administration.md:516
 msgid ""
 "This aspect allows, once a search widget for a layer has been created, to"
 " have it available on all the projects in which the layer is present, "
@@ -1790,7 +1803,7 @@ msgstr ""
 "layer, di averlo **disponibile su tutti i progetti in cui è presente il "
 "layer in oggetto**, senza dover ogni volta ricostruite il widget ex-novo."
 
-#: ../../g3wsuite_administration.md:516
+#: ../../g3wsuite_administration.md:518
 msgid ""
 "In the list of layers present within the project, identify the layer on "
 "which to create and associate the search widget and click on the icon"
@@ -1799,7 +1812,7 @@ msgstr ""
 " lo strato su cui creare ed associare il widget** di ricerca e si clicca "
 "sull'icona **Lista Widget** ![](images/manual/icon_widget.png)"
 
-#: ../../g3wsuite_administration.md:520
+#: ../../g3wsuite_administration.md:522
 msgid ""
 "By clicking on the icon, the list of already active (or activatable) "
 "widgets associated with the layer will be shown."
@@ -1807,7 +1820,7 @@ msgstr ""
 "Cliccando sull’icona sarà mostrata la lista dei widget già attivi (o "
 "attivabili) associati allo strato."
 
-#: ../../g3wsuite_administration.md:522
+#: ../../g3wsuite_administration.md:524
 msgid ""
 "These widgets can be modified, deleted or disconnected using the "
 "appropriate icons."
@@ -1815,7 +1828,7 @@ msgstr ""
 "Tali widget potranno essere **modificati, eliminati o scollegati** "
 "utilizzando le apposite icone."
 
-#: ../../g3wsuite_administration.md:524
+#: ../../g3wsuite_administration.md:526
 msgid ""
 "ATTENTION: deleting a search will delete it from all projects in which "
 "that search is active."
@@ -1823,7 +1836,7 @@ msgstr ""
 "**ATTENZIONE: l'eliminazione di una ricerca** la eliminerà da tutti i "
 "progetti in cui quella ricerca è attiva."
 
-#: ../../g3wsuite_administration.md:526
+#: ../../g3wsuite_administration.md:528
 msgid ""
 "To deactivate a search from a project, simply disconnect it using the "
 "check-box on the right."
@@ -1831,27 +1844,27 @@ msgstr ""
 "Per **disattivare una ricerca** da un progetto è sufficiente scollegarla "
 "tramite la check-box presente sulla destra."
 
-#: ../../g3wsuite_administration.md:528
+#: ../../g3wsuite_administration.md:530
 msgid "To create a new search, click on the link New widget."
 msgstr "Per **creare una nuova Ricerca** si clicca sul link **`Nuovo widget`**."
 
-#: ../../g3wsuite_administration.md:530
+#: ../../g3wsuite_administration.md:532
 msgid "In the pop-up that appears, the Search type have to be chosen."
 msgstr "Nel pop-up che apparirà si sceglierà il **Tipo `Cerca`**."
 
-#: ../../g3wsuite_administration.md:534
+#: ../../g3wsuite_administration.md:536
 msgid "In the related form we can define:"
 msgstr "Nel form è possibile definire:"
 
-#: ../../g3wsuite_administration.md:535
+#: ../../g3wsuite_administration.md:537
 msgid "Form Title"
 msgstr "**Titolo del form**"
 
-#: ../../g3wsuite_administration.md:536
+#: ../../g3wsuite_administration.md:538
 msgid "Type: \"Search\""
 msgstr "**`Tipo`: Cerca**"
 
-#: ../../g3wsuite_administration.md:537
+#: ../../g3wsuite_administration.md:539
 msgid ""
 "Name: name that G3W-SUITE will use to internally register the search "
 "widget."
@@ -1859,11 +1872,11 @@ msgstr ""
 "**`Nome`:** nome che utilizzerà G3W-SUITE per registrare internamente il "
 "widget di ricerca."
 
-#: ../../g3wsuite_administration.md:538
+#: ../../g3wsuite_administration.md:540
 msgid "General configuration of research and results"
 msgstr "**Configurazione generale delle ricerca e risultati**"
 
-#: ../../g3wsuite_administration.md:539
+#: ../../g3wsuite_administration.md:541
 msgid ""
 "Search title: title that will become available in the 'Research' panel of"
 " the WebGis interface"
@@ -1871,15 +1884,15 @@ msgstr ""
 "**`Titolo ricerca`:** titolo che identifica la ricerca che diverrà "
 "disponibile nel pannello **Ricerche** dell'interfaccia WebGis"
 
-#: ../../g3wsuite_administration.md:540
+#: ../../g3wsuite_administration.md:542
 msgid "Search fields settings"
 msgstr "**Impostazioni campo di ricerca**"
 
-#: ../../g3wsuite_administration.md:541
+#: ../../g3wsuite_administration.md:543
 msgid "Field: field on which to carry out the research"
 msgstr "**`Campo`:** campo su cui realizzare la ricerca"
 
-#: ../../g3wsuite_administration.md:542
+#: ../../g3wsuite_administration.md:544
 msgid ""
 "Widget: method of entering the value to be searched InputBox: manual "
 "compilation SelectBox: values ​​shown via drop-down menu (only for "
@@ -1889,15 +1902,15 @@ msgstr ""
 "compilazione manuale SelectBox: valori mostrati tramite menù a tendina "
 "(solo per layer PostGis o SpatiaLite)"
 
-#: ../../g3wsuite_administration.md:545
+#: ../../g3wsuite_administration.md:547
 msgid "Alias: alias assigned to the field that will appear in the search form"
 msgstr "**`Alias`:** alias assegnato al campo che comparirà nel form di ricerca"
 
-#: ../../g3wsuite_administration.md:546
+#: ../../g3wsuite_administration.md:548
 msgid "Description: description assigned to the field"
 msgstr "**`Descrizione`:** descrizione assegnata al campo"
 
-#: ../../g3wsuite_administration.md:547
+#: ../../g3wsuite_administration.md:549
 msgid ""
 "Comparison operator: comparison operator (=, <,>,> <,> =, <=, LIKE, "
 "ILIKE) through which the search query will be carried out. The LIKE and "
@@ -1908,7 +1921,7 @@ msgstr ""
 " Gli operatori LIKE e ILIKE saranno disponibili solo per layer PostGis o "
 "SpatiaLite "
 
-#: ../../g3wsuite_administration.md:548
+#: ../../g3wsuite_administration.md:550
 msgid ""
 "Dependency: this parameter (optional) allows, only in the case of "
 "SelectBox widgets, to list the list of values ​​of a field filtered "
@@ -1926,7 +1939,7 @@ msgstr ""
 "scelto nell’opzione precedente. Tale funzione è disponibile solo per "
 "layer PostGis o SpatiaLite."
 
-#: ../../g3wsuite_administration.md:550
+#: ../../g3wsuite_administration.md:552
 msgid ""
 "Warning: in the case of fields with more than 100 unique values, the WMS "
 "service does not allow to obtain the complete list of values. In this "
@@ -1936,7 +1949,7 @@ msgstr ""
 "WMS non permette di ottenere la lista completa dei valori. In questo caso"
 " si consiglia di non utilizzare il metodo `SelectBox`**"
 
-#: ../../g3wsuite_administration.md:552
+#: ../../g3wsuite_administration.md:554
 msgid ""
 "The button allows you to add additional fields for the construction of "
 "the search query currently manageable through the AND operator alone."
@@ -1945,7 +1958,7 @@ msgstr ""
 "costruzione della query di ricerca attualmente gestibili tramite il solo "
 "operatore AND."
 
-#: ../../g3wsuite_administration.md:556
+#: ../../g3wsuite_administration.md:558
 msgid ""
 "The example below shows the compilation of the form for creating a search"
 " widget dedicated to a cadastral cartography layer."
@@ -1953,7 +1966,7 @@ msgstr ""
 "Nell'esempio sottostante si mostra la compilazione del form di creazione "
 "di un widget di ricerca dedicato ad un layer di cartografia catastale."
 
-#: ../../g3wsuite_administration.md:560
+#: ../../g3wsuite_administration.md:562
 msgid ""
 "Once the form has been filled in, click on the OK button to save the "
 "settings."
@@ -1961,7 +1974,7 @@ msgstr ""
 "Una volta compilato il form si clicca sul tasto **OK** per salvare le "
 "impostazioni."
 
-#: ../../g3wsuite_administration.md:562
+#: ../../g3wsuite_administration.md:564
 msgid ""
 "Once the settings are saved, the created widget will appear in the list "
 "of Widgets associated with the layer."
@@ -1969,7 +1982,7 @@ msgstr ""
 "Salvate le impostazioni il widget realizzato comparirà nella lista dei "
 "Widget associati al layer."
 
-#: ../../g3wsuite_administration.md:564
+#: ../../g3wsuite_administration.md:566
 msgid ""
 "The widget will already be connected and therefore available in the "
 "WebGis interface."
@@ -1977,7 +1990,7 @@ msgstr ""
 "Il widget risulterà già **`collegato`** e quindi **disponibile "
 "nell'inerfaccia WebGis**."
 
-#: ../../g3wsuite_administration.md:568
+#: ../../g3wsuite_administration.md:570
 msgid ""
 "IMPORTANT: the created search widget will now be available (disconnected)"
 " for all projects in which the layer with which it has been associated "
@@ -1987,7 +2000,7 @@ msgstr ""
 "(scollegato) per tutti i progetti in cui lo strato a cui è stato "
 "associato sarà presente."
 
-#: ../../g3wsuite_administration.md:570
+#: ../../g3wsuite_administration.md:572
 msgid ""
 "This will allow you not to have to recreate the widget several times and "
 "to decide in which projects to activate the search and in which not."
@@ -1995,23 +2008,23 @@ msgstr ""
 "**Questo permetterà di non dover ricreare più volte il widget e di "
 "decidere in quale progetti attivare la ricerca e in quali no.**"
 
-#: ../../g3wsuite_administration.md:572
+#: ../../g3wsuite_administration.md:574
 msgid "Multilinguage"
 msgstr "Multilingua"
 
-#: ../../g3wsuite_administration.md:573
+#: ../../g3wsuite_administration.md:575
 msgid "By default the suite manages two languages: English and Italian."
 msgstr "Di default la suite gestisce due lingue: **inglese** e **italiano**."
 
-#: ../../g3wsuite_administration.md:575
+#: ../../g3wsuite_administration.md:577
 msgid "Other languages ​​can be added."
 msgstr "Altri linguaggi possono essere aggiunti."
 
-#: ../../g3wsuite_administration.md:577
+#: ../../g3wsuite_administration.md:579
 msgid "Map client"
 msgstr "Client cartografico"
 
-#: ../../g3wsuite_administration.md:578
+#: ../../g3wsuite_administration.md:580
 msgid ""
 "On the top bar you can choose, through a drop-down menu, the language of "
 "the entire client interface."
@@ -2019,11 +2032,11 @@ msgstr ""
 "Sulla barra in alto è possibile scegliere, tramite menù a tendina, la "
 "lingua dell'intera interfaccia del client."
 
-#: ../../g3wsuite_administration.md:582
+#: ../../g3wsuite_administration.md:584
 msgid "Administration"
 msgstr "Amministrazione"
 
-#: ../../g3wsuite_administration.md:583
+#: ../../g3wsuite_administration.md:585
 msgid ""
 "Also for the Administration panel, through the same drop-down menu, it is"
 " possible to define the language of the entire interface of the console."
@@ -2032,23 +2045,23 @@ msgstr ""
 "tendina, è possibile definire la lingua dell'intera interfaccia della "
 "console."
 
-#: ../../g3wsuite_administration.md:587
+#: ../../g3wsuite_administration.md:589
 msgid "Front end"
 msgstr "Front End"
 
-#: ../../g3wsuite_administration.md:588
+#: ../../g3wsuite_administration.md:590
 msgid "Fixed front end content is already available in the two basic languages."
 msgstr ""
 "I contenuti fissi del front end sono già disponibilinelle nelle due "
 "lingue di base."
 
-#: ../../g3wsuite_administration.md:590
+#: ../../g3wsuite_administration.md:592
 msgid "Variable contents, i.e. user-definable contents, are instead translated:"
 msgstr ""
 "I contenuti variabili, ovvero quelli definibili dall'utente, sono invece "
 "sottoposti a traduzione:"
 
-#: ../../g3wsuite_administration.md:592
+#: ../../g3wsuite_administration.md:594
 msgid ""
 "Sessions Home, About, Maps and Login: content that can be defined and "
 "translated in the Edit General Data session of the Control Panel "
@@ -2059,7 +2072,7 @@ msgstr ""
 "://g3w-suite.readthedocs.io/it/latest/g3wsuite_administration.html#front-"
 "end-portal-customization) del Pannello di Amministrazione"
 
-#: ../../g3wsuite_administration.md:593
+#: ../../g3wsuite_administration.md:595
 msgid ""
 "Sessions MacroGroups Cartogarfici, Groups Cartogarfici and WebGis "
 "Services: contents definable and translatable in the form defining these "
@@ -2069,19 +2082,19 @@ msgstr ""
 "**`Servizi WebGis`**: contenuti definibili e traducibili nei form di "
 "definizione di tali elementi, limitatamente alle voci:"
 
-#: ../../g3wsuite_administration.md:594
+#: ../../g3wsuite_administration.md:596
 msgid "Public Title"
 msgstr "**Titolo pubblico**"
 
-#: ../../g3wsuite_administration.md:595
+#: ../../g3wsuite_administration.md:597
 msgid "Description"
 msgstr "**Descrizione**"
 
-#: ../../g3wsuite_administration.md:597
+#: ../../g3wsuite_administration.md:599
 msgid "To carry out the translation of these contents, proceed as follows:"
 msgstr "Per realizzare la traduzione di tali contnuti si procede in tal modo:"
 
-#: ../../g3wsuite_administration.md:598
+#: ../../g3wsuite_administration.md:600
 msgid ""
 "access to the form for creating the element (MacroGroup, Group or WebGis "
 "Service)"
@@ -2089,43 +2102,43 @@ msgstr ""
 "accedere al form per la creazione dell'elemento (**MacroGruppo, Gruppo o "
 "Servizio WebGis**)"
 
-#: ../../g3wsuite_administration.md:599
+#: ../../g3wsuite_administration.md:601
 msgid ""
 "define one of the available languages from the drop-down menu at the top "
 "right"
 msgstr "definre una delle lingue disponibili dal menù a tendina in alto a destra"
 
-#: ../../g3wsuite_administration.md:600
+#: ../../g3wsuite_administration.md:602
 msgid "fill in the form in the chosen language"
 msgstr "compilare il form nella lingua prescelta"
 
-#: ../../g3wsuite_administration.md:601
+#: ../../g3wsuite_administration.md:603
 msgid "save the settings"
 msgstr "salvare le impostazioni"
 
-#: ../../g3wsuite_administration.md:605
+#: ../../g3wsuite_administration.md:607
 msgid "Then:"
 msgstr "Successivamente"
 
-#: ../../g3wsuite_administration.md:606
+#: ../../g3wsuite_administration.md:608
 msgid "access the form again in modification"
 msgstr "riaccedere in modifica al form"
 
-#: ../../g3wsuite_administration.md:607
+#: ../../g3wsuite_administration.md:609
 msgid "change the language"
 msgstr "cambiare la lingua"
 
-#: ../../g3wsuite_administration.md:608
+#: ../../g3wsuite_administration.md:610
 msgid "fill in the translatable content in the new language"
 msgstr ""
 "compilare i contenuti traducibili nella nuova lingua si salvano le "
 "impostazioni"
 
-#: ../../g3wsuite_administration.md:609
+#: ../../g3wsuite_administration.md:611
 msgid "save the new settings"
 msgstr "salavare il nuovo settaggio"
 
-#: ../../g3wsuite_administration.md:611
+#: ../../g3wsuite_administration.md:613
 msgid ""
 "Titles and Descriptions of the various elements in the defined languages "
 "​​will be available on the front."
