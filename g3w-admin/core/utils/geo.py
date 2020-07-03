@@ -18,11 +18,12 @@ def camel_geometry_type(geometry_type):
         'geometry': 'Geometry',
         'point': 'Point',
         'line': 'LineString',
+        'linestring': 'LineString',
         'polygon': 'Polygon',
         'multipoint': 'MultiPoint',
         'multilinestring': 'MultiLineString',
         'multipolygon': 'MultiPolygon',
-        'no geomtry': 'No Geometry'
+        'no geometry': 'No Geometry'
     }
 
     return trans[geometry_type.lower()]
