@@ -396,8 +396,8 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         save_options.fileEncoding = 'utf-8'
         save_options.datasourceOptions = [
             "GPX_USE_EXTENSIONS=1",
-            "GPX_EXTENSIONS_NS_URL='http://osgeo.org/gdal'",
-            "GPX_EXTENSIONS_NS='ogr'"
+            "GPX_EXTENSIONS_NS_URL=http://osgeo.org/gdal",
+            "GPX_EXTENSIONS_NS=ogr"
         ]
 
         filename = self.metadata_layer.qgis_layer.name() + '.gpx'
