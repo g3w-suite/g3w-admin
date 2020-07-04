@@ -33,6 +33,9 @@ from .models import Userdata, Department, Userbackend, GroupRole, USER_BACKEND_T
 from core.mixins.forms import G3WRequestFormMixin, G3WFormMixin
 from usersmanage.configs import *
 from .utils import getUserGroups, userHasGroups
+import logging
+
+logger = logging.getLogger('django_auth_ldap')
 
 
 
@@ -281,7 +284,7 @@ class G3WACLForm(forms.Form):
 class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreationForm):
 
     department = ModelChoiceField(queryset=Department.objects.all(), required=False)
-    backend = ChoiceField(choices=(), required=True)
+    backend = ChoiceField(choices=USER_BACKEND_TYPES)
     avatar = UploadedFileField(required=False)
 
     groups = ModelMultipleChoiceField(
@@ -323,9 +326,6 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
 
         #filter fileds by role:
         self.filterFieldsByRoles(**kwargs)
-
-        if 'backend' in self.fields:
-            self.fields['backend'].choices = USER_BACKEND_TYPES
 
         #check for groups in intials data
         if 'groups' in self.initial and len(self.initial['groups']) > 0:
