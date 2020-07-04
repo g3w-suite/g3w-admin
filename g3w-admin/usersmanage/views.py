@@ -95,7 +95,7 @@ class UserUpdateView(G3WRequestViewMixin, UpdateView):
             kwargs['initial']['avatar'] = self.object.userdata.avatar
 
         if hasattr(self.object, 'userbackend'):
-            kwargs['initial']['userbackend'] = self.object.userbackend.backend
+            kwargs['initial']['backend'] = self.object.userbackend.backend
 
         # add initial data for user_groups
         kwargs['initial']['user_groups'] = get_user_groups(self.object)
