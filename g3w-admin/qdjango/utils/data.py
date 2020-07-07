@@ -419,9 +419,6 @@ class QgisProjectLayer(XmlData):
                 'label': f.displayName(),
             })
 
-        if len(columns) > 0:
-            columns += self._getLayerJoinedColumns()
-
         return columns
 
 
@@ -434,29 +431,6 @@ class QgisProjectLayer(XmlData):
         for column in columns:
             if column['name'] in self.aliases:
                 column['label'] = self.aliases[column['name']] if self.aliases[column['name']] != "" else column['name']
-
-
-    def _getLayerJoinedColumns(self):
-        """
-        Add joined columns as QGIS project
-        :return: a list of joined layers
-        :rtype: list
-        """
-
-        # todo: review for label and other compatibilities
-        # FIXME: is working? Is used?
-        joined_columns = []
-        try:
-            joins = self.qgisProjectLayerTree.find('vectorjoins')
-            for join in joins:
-                join_id = join.attrib['joinLayerId']
-
-                # prendo l'elemento parent di un tag "id" dove il testo corrisponde al nome del layer
-                joined_layer = self.qgisProjectLayerTree.getroottree().xpath('//id[text()="'+join_id+'"]/..')[0]
-                joined_columns += []
-        except Exception as e:
-            pass
-        return joined_columns
 
     def _getDataExcludeAttributesWMS(self):
         """
@@ -495,14 +469,6 @@ class QgisProjectLayer(XmlData):
         :return: dict of field name key of qgis widgets
         :rtype: dict
         """
-
-        # before defautls field values if isset
-        # defaults = self.qgisProjectLayerTree.find('defaults')
-        # defaults_columns = dict()
-        # if defaults is not None:
-        #     for default in defaults:
-        #         if default.attrib['expression']:
-        #             defaults_columns[default.attrib['field']] = default.attrib['expression']
 
         edittype_columns = dict()
 
