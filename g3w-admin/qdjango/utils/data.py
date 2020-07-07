@@ -33,7 +33,7 @@ from qdjango.models import Project
 
 from .exceptions import QgisProjectException
 from .structure import *
-from .validators import (CheckMaxExtent, ColumnName, DatasourceExists,
+from .validators import (CheckMaxExtent, ColumnName, DatasourceExists, ProjectExists,
                          IsGroupCompatibleValidator, ProjectTitleExists,
                          UniqueLayername)
 
@@ -669,6 +669,7 @@ class QgisProject(XmlData):
 
     _defaultValidators = [
         IsGroupCompatibleValidator,
+        ProjectExists,
         ProjectTitleExists,
         UniqueLayername,
         CheckMaxExtent
