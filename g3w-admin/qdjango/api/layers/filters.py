@@ -19,6 +19,7 @@ logger = logging.getLogger(__name__)
 
 
 FILTER_RELATIONONETOMANY_PARAM = 'relationonetomany'
+FILTER_FID_PARAM = 'fid'
 
 
 class RelationOneToManyFilter(BaseFilterBackend):
@@ -67,3 +68,29 @@ class RelationOneToManyFilter(BaseFilterBackend):
                                                              extra_expression=expression_text))
         else:
             qgis_feature_request.setFilterExpression(expression_text)
+
+
+class FidFilter(BaseFilterBackend):
+    """A filter backend that applies a QgsExpression for fid"""
+
+    def apply_filter(self, request, qgis_layer, qgis_feature_request, view=None):
+        """Apply the filter to the QGIS feature request or the layer's subset string
+        Warning: if the filter alters the layer instance (for example by settings a subset
+        string) make sure to restore the original state or to work on a clone.
+        """
+
+        expression_text = None
+        if FILTER_FID_PARAM not in request.GET \
+                or request.GET[FILTER_FID_PARAM] == '':
+            return
+        else:
+            try:
+                fid = int(request.GET[FILTER_FID_PARAM])
+            except ValueError as e:
+                logger.error('FidFilter: %s' % (e,))
+                return
+
+        if not fid:
+            return
+
+        qgis_feature_request.setFilterFid(fid)

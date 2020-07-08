@@ -282,6 +282,8 @@ class QdjangoLayerDataView(G3WGroupViewMixin, QdjangoProjectViewMixin, View):
             layer.download = int(request.POST['download_layer'])
         if 'download_layer_xls' in request.POST:
             layer.download_xls = int(request.POST['download_layer_xls'])
+        if 'download_layer_gpx' in request.POST:
+            layer.download_gpx = int(request.POST['download_layer_gpx'])
         if 'external' in request.POST:
             layer.external = int(request.POST['external'])
         layer.save()

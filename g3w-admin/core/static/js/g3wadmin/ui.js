@@ -425,6 +425,20 @@ _.extend(g3wadmin.ui, {
         });
     },
 
+    initDownloadLayerGpxCheckBox: function(){
+        $(document).on('ifChanged', '[data-widget-type="downloadLayergpx"]', function(e){
+
+            var $item = $(this);
+            // build value
+            var data = {
+                download_layer_gpx: e.target.checked ? 1 : 0
+            }
+
+            ga.widget.setLayerData($item, data);
+
+        });
+    },
+
     // Init wms/wmst/arcgiserver external/internal calls
     initExternalLayerCheckBox: function(){
         $(document).on('ifChanged', '[data-widget-type="externalLayer"]', function(e){

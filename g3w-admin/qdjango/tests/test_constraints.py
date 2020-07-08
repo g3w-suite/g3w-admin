@@ -52,6 +52,8 @@ class TestSingleLayerConstraintsBase(QdjangoTestBase):
         cls.qdjango_project = Project.objects.all()[0]
         cls.world = cls.qdjango_project.layer_set.filter(
             qgs_layer_id='world20181008111156525')[0]
+        cls.spatialite_points = cls.qdjango_project.layer_set.filter(
+            qgs_layer_id='spatialite_points20190604101052075')[0]
         # Make a cloned layer
         cls.cloned_project = Project(
             group=cls.qdjango_project.group, title='My Clone')
@@ -468,7 +470,7 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
         """Test XLS export"""
 
         world = self.world
-        world.download = True
+        world.download_xls = True
         world.save()
         response = self._testApiCallAdmin01('core-vector-api',
                                             args={
@@ -528,6 +530,71 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
             QgsFeatureRequest(QgsExpression('NAME = \'ITALY\'')))]), 0)
         self.assertEqual(len([f for f in vl.getFeatures(
             QgsFeatureRequest(QgsExpression('NAME = \'GERMANY\'')))]), 1)
+
+    def test_gpx_api(self):
+        """Test XLS export"""
+
+        points = self.spatialite_points
+        points.download_gpx = True
+        points.save()
+        response = self._testApiCallAdmin01('core-vector-api',
+                                            args={
+                                                'mode_call': 'gpx',
+                                                'project_type': 'qdjango',
+                                                'project_id': self.qdjango_project.id,
+                                                # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                                # WARNING: it's the qgs_layer_id, not the name!
+                                                # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                                'layer_name': points.qgs_layer_id
+                                            }.values()
+                                            )
+        self.assertEqual(response.status_code, 200)
+        temp = QTemporaryDir()
+        fname = temp.path() + '/temp.gpx'
+        with open(fname, 'wb+') as f:
+            f.write(response.content)
+
+        vl = QgsVectorLayer(fname)
+        self.assertTrue(vl.isValid())
+        self.assertEqual(len([f for f in vl.getFeatures(
+            QgsFeatureRequest(QgsExpression('name = \'another point\'')))]), 1)
+        #self.assertEqual(len([f for f in vl.getFeatures(
+        #    QgsFeatureRequest(QgsExpression('NAME = \'point\'')))]), 1)
+
+        # Add a rule
+        admin01 = self.test_user1
+        group1 = admin01.groups.all()[0]
+        world = self.world
+        constraint = SingleLayerConstraint(layer=points, active=True)
+        constraint.save()
+
+        rule = ConstraintExpressionRule(
+            constraint=constraint, group=group1, rule="name != 'another point'")
+        rule.save()
+
+        response = self._testApiCallAdmin01('core-vector-api',
+                                            args={
+                                                'mode_call': 'gpx',
+                                                'project_type': 'qdjango',
+                                                'project_id': self.qdjango_project.id,
+                                                # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                                # WARNING: it's the qgs_layer_id, not the name!
+                                                # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                                'layer_name': points.qgs_layer_id,
+                                            }.values()
+                                            )
+        self.assertEqual(response.status_code, 200)
+
+        fname = temp.path() + '/temp2.gpx'
+        with open(fname, 'wb+') as f:
+            f.write(response.content)
+
+        vl = QgsVectorLayer(fname)
+        self.assertTrue(vl.isValid())
+        self.assertEqual(len([f for f in vl.getFeatures(
+            QgsFeatureRequest(QgsExpression('name = \'another point\'')))]), 0)
+        #self.assertEqual(len([f for f in vl.getFeatures(
+        #    QgsFeatureRequest(QgsExpression('NAME = \'GERMANY\'')))]), 1)
 
     def test_bbox_filter(self):
         """Test a rule with geometry filter"""
