@@ -330,7 +330,7 @@ class LayerSerializer(serializers.ModelSerializer):
             'exclude_from_legend',
             'download',
             'download_xls',
-            'download_gpx'
+            'download_gpx',
             'editor_form_structure'
         )
 
