@@ -43,6 +43,12 @@ Base user media directory, to fill with media files.
 Is necessary for editing module, to manage media elements do upload on a editing session.
 
 
+``G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Default is `['shp', 'xls']`, set download data format. Values possible:
+  - *shp*: download into Esri Shape format.
+  - *xls*: download into Excel format
+  - *gpx*: download into GPS format (only for Point and Line layers)
 
 
 
