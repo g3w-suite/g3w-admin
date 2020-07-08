@@ -291,6 +291,20 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
 
         self.results.update({'data': res})
 
+    def _selection_responde_download_mode(self, qgs_request, save_options):
+        """ Filter download response mode: shp, xls, gpx.."""
+
+        # Make a selection based on the request
+        if qgs_request.filterExpression() is not None:
+            self.metadata_layer.qgis_layer.selectByExpression(
+                qgs_request.filterExpression().expression())
+            save_options.onlySelectedFeatures = True
+        if qgs_request.filterFid() != -1:
+            self.metadata_layer.qgis_layer.selectByIds(
+                [qgs_request.filterFid()]
+            )
+            save_options.onlySelectedFeatures = True
+
     def response_shp_mode(self, request):
         """
         Download Shapefile of data
@@ -317,10 +331,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         save_options.fileEncoding = 'utf-8'
 
         # Make a selection based on the request
-        if qgs_request.filterExpression() is not None:
-            self.metadata_layer.qgis_layer.selectByExpression(
-                qgs_request.filterExpression().expression())
-            save_options.onlySelectedFeatures = True
+        self._selection_responde_download_mode(qgs_request, save_options)
 
         error_code, error_message = QgsVectorFileWriter.writeAsVectorFormatV2(
             self.metadata_layer.qgis_layer,
@@ -403,10 +414,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         filename = self.metadata_layer.qgis_layer.name() + '.gpx'
 
         # Make a selection based on the request
-        if qgs_request.filterExpression() is not None:
-            self.metadata_layer.qgis_layer.selectByExpression(
-                qgs_request.filterExpression().expression())
-            save_options.onlySelectedFeatures = True
+        self._selection_responde_download_mode(qgs_request, save_options)
 
         gpx_tmp_path = os.path.join(tmp_dir.name, filename)
         error_code, error_message = QgsVectorFileWriter.writeAsVectorFormatV2(
@@ -457,10 +465,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         filename = self.metadata_layer.qgis_layer.name() + '.xlsx'
 
         # Make a selection based on the request
-        if qgs_request.filterExpression() is not None:
-            self.metadata_layer.qgis_layer.selectByExpression(
-                qgs_request.filterExpression().expression())
-            save_options.onlySelectedFeatures = True
+        self._selection_responde_download_mode(qgs_request, save_options)
 
         xls_tmp_path = os.path.join(tmp_dir.name, filename)
         error_code, error_message = QgsVectorFileWriter.writeAsVectorFormatV2(
