@@ -480,7 +480,7 @@ msgstr "Etichetta"
 
 #: templates/qdjango/layers_list.html:110
 msgid "Manage alphanumeric visualization and editing constraints"
-msgstr "Gestisci i constrint di visualizzaione e di editing"
+msgstr "Gestisci i constraint di visualizzaione e di editing"
 
 #: templates/qdjango/layers_list.html:115
 msgid "Widgets list"
