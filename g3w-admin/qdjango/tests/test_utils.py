@@ -19,6 +19,7 @@ from qdjango.utils.data import QgisProject, QgisPgConnection, QgisProjectSetting
 from qdjango.utils.exceptions import QgisProjectLayerException, QgisProjectException
 from qdjango.utils.structure import get_schema_table, datasource2dict, datasourcearcgis2dict
 from qdjango.utils.models import get_widgets4layer, comparepgdatasoruce
+from qdjango.templatetags.qdjango_tags import is_geom_type_gpx_compatible
 from collections import OrderedDict
 import os
 import json
@@ -62,7 +63,7 @@ class QgisProjectTest(TestCase):
         }
 
         for k in test_initial_extent_data.keys():
-            self.assertAlmostEqual(self.project.initialExtent[k], test_initial_extent_data[k], 3)
+            self.assertAlmostEqual(self.project.initialExtent[k], test_initial_extent_data[k], 1)
 
         # check maxExtent
         # -----------------------------------------
@@ -424,3 +425,22 @@ class QdjangoUtilsDataValidators(QdjangoTestBase):
         with self.assertRaises(Exception) as exc:
             project = QgisProject(qgis_file)
         qgis_file.close()
+
+
+class TestTemplateTags(QdjangoTestBase):
+    """Test qdjango template tags"""
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.qdjango_project = Project.objects.all()[0]
+        cls.world = cls.qdjango_project.layer_set.filter(
+            qgs_layer_id='world20181008111156525')[0]
+        cls.spatialite_points = cls.qdjango_project.layer_set.filter(
+            qgs_layer_id='spatialite_points20190604101052075')[0]
+
+    def test_is_geom_type_gpx_compatible(self):
+        """Tese omonymous function"""
+
+        self.assertTrue(is_geom_type_gpx_compatible(self.spatialite_points))
+        self.assertFalse(is_geom_type_gpx_compatible(self.world))

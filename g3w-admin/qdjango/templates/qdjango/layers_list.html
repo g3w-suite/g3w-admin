@@ -137,7 +137,7 @@
                                 {% endif %}
                             </td>
                             {% endif %}
-                            {% if 'gpx' in SETTINGS.G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS %}
+                            {% if 'gpx' in SETTINGS.G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS and object|is_geom_type_gpx_compatible %}
                             <td>
                                 {% if object.layer_type in type_layer_for_download %}
                                 <input type="checkbox" data-widget-type="downloadLayergpx" data-ajax-url="{% url 'qdjango-project-layers-data-editing' project.group.slug project.slug object.pk %}" name="download_gpx_{{ object.pk }}" {% if object.download_gpx %}checked="checked"{% endif %}>
