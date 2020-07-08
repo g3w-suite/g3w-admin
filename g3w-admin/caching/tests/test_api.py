@@ -35,7 +35,7 @@ import requests
     TILESTACHE_CACHE_DISK_PATH=f'{CURRENT_PATH}${TEST_BASE_PATH}',
     TILESTACHE_CACHE_TOKEN='1234567',
     QDJANGO_SERVER_URL='http://localhost:55432',
-    DATASOURCE_PATH=f'{CURRENT_PATH}/qdjango/tests/data/'
+    DATASOURCE_PATH=f'{CURRENT_PATH}/qdjango/tests/data/geodata/'
 )
 class CachingAPITests(LiveServerTestCase):
 
