@@ -734,6 +734,7 @@ class ConstraintsApiTests(ConstraintsTestsBase):
 
         editing_layer = Layer.objects.get(name='editing_layer')
         constraint_layer = Layer.objects.get(name='constraint_layer')
+        constraint_layer_multi = Layer.objects.get(name='constraint_layer_multi')
 
         # testing editing-api-info-layer
         # Retrieve the layers
@@ -741,8 +742,14 @@ class ConstraintsApiTests(ConstraintsTestsBase):
         response = client.get(url_layer, {}, format='json')
         self.assertEqual(response.status_code, 200)
 
-        jcontent = json.loads(response.content)['results'][0]
-        self.assertEqual(constraint_layer.pk, jcontent['pk'])
+        print (json.loads(response.content)['results'])
+
+        jcontent = json.loads(response.content)['results']
+        self.assertEqual(len(jcontent), 2)
+
+        pks = [r['pk'] for r in jcontent]
+        self.assertTrue(constraint_layer.pk in pks)
+        self.assertTrue(constraint_layer_multi.pk in pks)
 
         # testing editing-api-info-layer-user
         url_user = reverse('editing-api-info-layer-user',
