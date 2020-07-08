@@ -18,6 +18,10 @@ $DOCKER_COMMAND up -d
 
 $DOCKER_COMMAND exec g3w-suite sh -c "cd /code/ && pip3 install -r requirements_docker.txt"
 
+$DOCKER_COMMAND exec g3w-suite sh -c "cd /code/ && pip3 install -r g3w-admin/caching/requirements.txt"
+
+$DOCKER_COMMAND exec g3w-suite sh -c "cd /code/ && pip3 install -r g3w-admin/filemanager/requirements.txt"
+
 $DOCKER_COMMAND exec g3w-suite sh -c "rm /shared-volume/build_done"
 
 $DOCKER_COMMAND exec g3w-suite sh -c "/code/ci_scripts/build_suite.sh"
