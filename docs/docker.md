@@ -41,7 +41,7 @@ The main suite image can be built with:
 docker build -f Dockerfile.g3wsuite.dockerfile -t g3wsuite/g3w-suite-dev:latest --no-cache .
 ```
 
-The container image is build from `https://github.com/g3w-suite/g3w-admin.git --branch dev`
+The container image is build from `https://github.com/g3w-suite/g3w-admin.git --branch v.3.0.x`
 
 The Docker hub name for this image is `g3wsuite/g3w-suite-dev:latest`
 
@@ -54,12 +54,6 @@ docker build -f Dockerfile.postgis -t g3wsuite/postgis:11.0-2.5 .
 ```
 
 The Docker hub name for this image is `g3wsuite/postgis:11.0-2.5`
-
-### QGIS Server
-
-QGIS Server image is built from `https://github.com/elpaso/qgis-server-docker/tree/production`
-
-The Docker hub name for this image is `g3wsuite/qgis3-server:ltr-ubuntu`
 
 ### HTTPS additional setup
 
