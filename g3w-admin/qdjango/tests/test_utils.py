@@ -440,7 +440,7 @@ class TestTemplateTags(QdjangoTestBase):
             qgs_layer_id='spatialite_points20190604101052075')[0]
 
     def test_is_geom_type_gpx_compatible(self):
-        """Tese omonymous function"""
+        """Test homonymous function"""
 
         self.assertTrue(is_geom_type_gpx_compatible(self.spatialite_points))
         self.assertFalse(is_geom_type_gpx_compatible(self.world))
