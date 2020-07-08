@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: G3W-SUITE 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-06-10 16:23+0200\n"
+"POT-Creation-Date: 2020-07-08 11:10+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.8.0\n"
+"Generated-By: Babel 2.4.0\n"
 
 #: ../../settings.rst:3
 msgid "Settings"
@@ -118,14 +118,34 @@ msgstr ""
 "di editing."
 
 #: ../../settings.rst:44
-msgid "Frontend portal setting"
-msgstr "Impostazioni per il portale fi frontend"
-
-#: ../../settings.rst:47
-msgid "``FRONTEND``"
+msgid "``G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS``"
 msgstr ""
 
 #: ../../settings.rst:48
+msgid "Default is `['shp', 'xls']`, set download data format. Values possible:"
+msgstr "Di default è uguale a `['shp', 'xls']`, imposta il formato di download dei dati. Valori possibili:"
+
+#: ../../settings.rst:46
+msgid "*shp*: download into Esri Shape format."
+msgstr "*shp*: download nel formato Esri Shapefile"
+
+#: ../../settings.rst:47
+msgid "*xls*: download into Excel format"
+msgstr "*xls*: download nel formato Excel"
+
+#: ../../settings.rst:48
+msgid "*gpx*: download into GPS format (only for Point and Line layers)"
+msgstr "*gpx*: download nel formatp GPS (solo per i layer di tipo Punto o Linea)"
+
+#: ../../settings.rst:51
+msgid "Frontend portal setting"
+msgstr "Impostazioni per il portale fi frontend"
+
+#: ../../settings.rst:54
+msgid "``FRONTEND``"
+msgstr ""
+
+#: ../../settings.rst:55
 msgid ""
 "Default is ``False``, set to ``True`` for activate **G3W-SUITE** frontend"
 " portal like ``g3w-admin-frontend``. If it's set to ``True`` base url "
@@ -136,11 +156,11 @@ msgstr ""
 "``True`` la url di base della sezione admin di G3W-SUITE diventerà "
 "`/admin/`."
 
-#: ../../settings.rst:52
+#: ../../settings.rst:59
 msgid "``FRONTEND_APP``"
 msgstr ""
 
-#: ../../settings.rst:53
+#: ../../settings.rst:60
 msgid ""
 "Module name added to ``G3WADMIN_LOCAL_MORE_APPS`` to use as `portal-"
 "frontend`. I.e.::"
@@ -148,15 +168,15 @@ msgstr ""
 "Nome del modulo aggiunto a ``G3WADMIN_LOCAL_MORE_APPS`` t da usare come "
 "`portale-frontend`. P.e.::"
 
-#: ../../settings.rst:65
+#: ../../settings.rst:72
 msgid "General layout settings"
 msgstr "Impostazioni generali di layout"
 
-#: ../../settings.rst:68
+#: ../../settings.rst:75
 msgid "``G3WSUITE_POWERD_BY``"
 msgstr ""
 
-#: ../../settings.rst:69
+#: ../../settings.rst:76
 msgid ""
 "Default is ``True``, set to ``False`` for don't show bottom `attribution`"
 " informations."
@@ -164,20 +184,20 @@ msgstr ""
 "Di base è ``True``, impostare a ``False`` per non mostrare le "
 "informazioni di `attribuzione` nella parte bassa della sezione admin."
 
-#: ../../settings.rst:72
+#: ../../settings.rst:79
 msgid "``G3WSUITE_CUSTOM_STATIC_URL``"
 msgstr ""
 
-#: ../../settings.rst:73
+#: ../../settings.rst:80
 #, fuzzy
 msgid "A custom url from to load custom static files as images, css, etc.."
 msgstr "Un url personale da dove caricare file static come immagini, css, ecc.."
 
-#: ../../settings.rst:76
+#: ../../settings.rst:83
 msgid "``G3WSUITE_MAIN_LOGO``"
 msgstr ""
 
-#: ../../settings.rst:77
+#: ../../settings.rst:84
 msgid ""
 "Main admin section logo image. Mandatory is set "
 "``G3WSUITE_CUSTOM_STATIC_URL``"
@@ -185,11 +205,11 @@ msgstr ""
 "Immagine del logo principale. Perché l'impostazione abbia effetto è "
 "necessario impostare ``G3WSUITE_CUSTOM_STATIC_URL``"
 
-#: ../../settings.rst:81
+#: ../../settings.rst:88
 msgid "``G3WSUITE_RID_LOGO``"
 msgstr ""
 
-#: ../../settings.rst:82
+#: ../../settings.rst:89
 msgid ""
 "Main admin section reduced logo image. Mandatory is set "
 "``G3WSUITE_CUSTOM_STATIC_URL``"
@@ -197,21 +217,21 @@ msgstr ""
 "Immagine ridotta del logo principale. Perché l'impostazione abbia effetto"
 " è necessario impostare ``G3WSUITE_CUSTOM_STATIC_URL``"
 
-#: ../../settings.rst:86
+#: ../../settings.rst:93
 msgid "``G3WSUITE_LOGIN_LOGO``"
 msgstr ""
 
-#: ../../settings.rst:87
+#: ../../settings.rst:94
 msgid "Login logo image. Mandatory is set ``G3WSUITE_CUSTOM_STATIC_URL``"
 msgstr ""
 "Immageine ella pagina di login. Perché l'impostazione abbia effetto è "
 "necessario impostare ``G3WSUITE_CUSTOM_STATIC_URL``"
 
-#: ../../settings.rst:91
+#: ../../settings.rst:98
 msgid "``G3WSUITE_CUSTOM_TITLE``"
 msgstr ""
 
-#: ../../settings.rst:92
+#: ../../settings.rst:99
 msgid ""
 "**G3W-SUITE** html page title. If is not set, title is: `g3w-admin` for "
 "admin section and `g3w-client` for webgis client."
@@ -220,21 +240,21 @@ msgstr ""
 "è: `g3w-admin` per la sezione di admin e `g3w-client` per il client "
 "webgis "
 
-#: ../../settings.rst:96
+#: ../../settings.rst:103
 msgid "``G3WSUITE_FAVICON``"
 msgstr ""
 
-#: ../../settings.rst:97
+#: ../../settings.rst:104
 msgid "Favorite icon image. Mandatory is set ``G3WSUITE_CUSTOM_STATIC_URL``"
 msgstr ""
 "Immagine fovorite icon.  Perché l'impostazione abbia effetto è necessario"
 " impostare ``G3WSUITE_CUSTOM_STATIC_URL``"
 
-#: ../../settings.rst:101
+#: ../../settings.rst:108
 msgid "``G3WSUITE_CUSTOM_CSS``"
 msgstr ""
 
-#: ../../settings.rst:102
+#: ../../settings.rst:109
 msgid ""
 "A list of custom css files added to `admin` pages and to the `client`. "
 "Mandatory is set ``G3WSUITE_CUSTOM_STATIC_URL``. I.e.::"
@@ -243,23 +263,23 @@ msgstr ""
 "sezione `admin` a al `client`. Perché l'impostazione abbia effetto è "
 "necessario impostare ``G3WSUITE_CUSTOM_STATIC_URL``. P.e.::"
 
-#: ../../settings.rst:111
+#: ../../settings.rst:118
 msgid "Client layout settings"
 msgstr ""
 
-#: ../../settings.rst:114
+#: ../../settings.rst:121
 msgid "``G3W_CLIENT_SEARCH_TITLE``"
 msgstr ""
 
-#: ../../settings.rst:115
+#: ../../settings.rst:122
 msgid "Custom webgis client `search` section title."
 msgstr "Ttitolo personalizzato della sezione `search` del client webgis."
 
-#: ../../settings.rst:118
+#: ../../settings.rst:125
 msgid "``G3W_CLIENT_HEADER_CUSTOM_LINKS``"
 msgstr ""
 
-#: ../../settings.rst:119
+#: ../../settings.rst:126
 msgid ""
 "A list of dict of custom links to add into main top bar of wbgis client. "
 "I.e.::"
@@ -267,11 +287,11 @@ msgstr ""
 "Una lista di dizionari python di links personalizzati da aggiungere nalla"
 " barra in alto principale del client. P.e.::"
 
-#: ../../settings.rst:138
+#: ../../settings.rst:145
 msgid "``G3W_CLIENT_LEGEND``"
 msgstr ""
 
-#: ../../settings.rst:139
+#: ../../settings.rst:146
 msgid ""
 "A dict to customize **QGIS-server** legend image generate with WMS "
 "`GetLegendGraphics` request. I.e.::"
@@ -280,11 +300,11 @@ msgstr ""
 "immagine di legenda generata dal servizio WMS  GetLegendGraphics di "
 "**QGIS-server**, P.e.::"
 
-#: ../../settings.rst:157
+#: ../../settings.rst:164
 msgid "``G3W_CLIENT_RIGHT_PANEL``"
 msgstr ""
 
-#: ../../settings.rst:158
+#: ../../settings.rst:165
 #, fuzzy
 msgid ""
 "Custom properties settings for webgis right panel section (default, width"
@@ -294,15 +314,15 @@ msgstr ""
 "(default, width 33%). Al momento solo la proprietà `width` è gestita. "
 "P.e.::"
 
-#: ../../settings.rst:167
+#: ../../settings.rst:174
 msgid "Editing setting"
 msgstr ""
 
-#: ../../settings.rst:170
+#: ../../settings.rst:177
 msgid "``EDITING_SHOW_ACTIVE_BUTTON``"
 msgstr ""
 
-#: ../../settings.rst:171
+#: ../../settings.rst:178
 msgid ""
 "Default is ``True``. Set to ``False`` for not show editing button "
 "activate/deactivate into layers project list."
@@ -311,11 +331,11 @@ msgstr ""
 "attivazione/disattivazione editing nella  pagina della lista dei layer di"
 " un progetto."
 
-#: ../../settings.rst:174
+#: ../../settings.rst:181
 msgid "``EDITING_ANONYMOUS``"
 msgstr ""
 
-#: ../../settings.rst:175
+#: ../../settings.rst:182
 msgid ""
 "Default is ``False``. Set to ``True`` to render possible give to "
 "`anonymous user` editing permissions."
@@ -323,11 +343,11 @@ msgstr ""
 "Di base è ``False``. Impostare a ``True`` per dare al apossibilità di "
 "editing anche all'utente `anonymous`."
 
-#: ../../settings.rst:178
+#: ../../settings.rst:185
 msgid "``EDITING_LOGGING``"
 msgstr ""
 
-#: ../../settings.rst:179
+#: ../../settings.rst:186
 msgid ""
 "Default is ``False``. Set to ``True`` to log users editing action into "
 "database."
