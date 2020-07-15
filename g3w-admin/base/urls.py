@@ -79,6 +79,7 @@ for app in settings.G3WADMIN_LOCAL_MORE_APPS:
             base_url_app = app
         apiUrlpatterns.append(url(r'^{}/'.format(base_url_app), app_urls))
     except Exception as e:
+        print(e)
         pass
 
 if settings.DEBUG:
