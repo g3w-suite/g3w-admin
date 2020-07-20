@@ -962,12 +962,14 @@ class QgisProject(XmlData):
         for qgs_layout in qgs_layouts:
             if qgs_layout.layoutType() == QgsMasterLayoutInterface.PrintLayout:
 
-                # FIXME: find pages before.
+                # find first page into items
+                first_page_size = qgs_layout.pageCollection().pages()[0].pageSize()
+
                 # retrieve dims and name information
                 p_playout = {
                     'name': qgs_layout.name(),
-                    'w': qgs_layout.width(),
-                    'h': qgs_layout.height(),
+                    'w': first_page_size.width(),
+                    'h': first_page_size.height(),
                 }
 
                 # add items
@@ -977,12 +979,13 @@ class QgisProject(XmlData):
                     if isinstance(item, QgsLayoutItemMap):
 
                         brect = item.boundingRect()
-
                         map = {
                             'name': f'map{count}',
                             'displayname': item.displayName(),
                             'w': brect.right() - brect.left(),
                             'h': brect.bottom() - brect.top(),
+                            'overview': item.overview().linkedMap() != None and item == item.overview().map()
+
                         }
 
                         maps.append(map)
