@@ -27,6 +27,7 @@ from qgis.gui import QgsMapCanvas
 from qgis.server import QgsServerProjectUtils
 
 from qgis.PyQt.QtCore import QVariant, Qt
+from qgis.core import QgsMasterLayoutInterface, QgsLayoutItemMap
 
 from core.utils.data import XmlData, isXML
 from qdjango.models import Project
@@ -664,7 +665,8 @@ class QgisProject(XmlData):
         'wfstLayers',
         'layersTree',
         'layers',
-        'layerRelations'
+        'layerRelations',
+        'layouts'
         ]
 
     _defaultValidators = [
@@ -945,6 +947,52 @@ class QgisProject(XmlData):
 
             layer_realtions.append(attrib)
         return layer_realtions
+
+    def _getDataLayouts(self):
+        """
+        Get project layouts (print and others)
+        :return: project layouts dict settings
+        :rtype: dict, None
+        """
+
+        print ('Layouts')
+
+        layouts = []
+        qgs_layouts = self.qgs_project.layoutManager().layouts()
+        for qgs_layout in qgs_layouts:
+            if qgs_layout.layoutType() == QgsMasterLayoutInterface.PrintLayout:
+
+                # retrieve dims and name information
+                p_playout = {
+                    'name': qgs_layout.name(),
+                    'w': qgs_layout.width(),
+                    'h': qgs_layout.height(),
+                }
+
+                # add items
+                maps = []
+                count = 0
+                for item in qgs_layout.items():
+                    if isinstance(item, QgsLayoutItemMap):
+
+                        brect = item.boundingRect()
+
+                        map = {
+                            'name': f'map{count}',
+                            'displayname': item.displayName(),
+                            'w': brect.right() - brect.left(),
+                            'h': brect.bottom() - brect.top(),
+                        }
+
+                        maps.append(map)
+
+                        count += 1
+
+                p_playout.update({'maps': maps})
+                layouts.append(p_playout)
+
+        return layouts
+
 
     def _getDataQgisVersion(self):
         """
