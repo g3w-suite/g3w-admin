@@ -14,15 +14,18 @@ import os
 import json
 from django.conf import settings
 from django.test import override_settings
+from django.core.files import File
 from qdjango.models import Project
+from qdjango.utils.data import QgisProject
 from django.core.cache import caches
 from core.tests.base import CoreTestBase
-from core.models import MacroGroup
+from core.models import MacroGroup, Group
 from core.utils.structure import FIELD_TYPES_MAPPING
 from qdjango.models import Widget, WIDGET_TYPES
 
 # Re-use test data from qdjango module
 DATASOURCE_PATH = os.path.join(os.getcwd(), 'qdjango', 'tests', 'data')
+QGS310_FILE = 'g3wsuite_project_test_qgis310.qgs'
 
 @override_settings(MEDIA_ROOT=DATASOURCE_PATH)
 @override_settings(DATASOURCE_PATH=DATASOURCE_PATH)
@@ -48,11 +51,23 @@ class ClientApiTest(CoreTestBase):
         cls.prj_test.thumbnail = '/fake/project.png'
         cls.prj_test.save()
 
+        # create a group print for follow project
+        cls.print_group = Group(
+            name='Print Group', title='Print Group', header_logo_img='', srid=cls.prj_test.group.srid)
+        cls.print_group.save()
 
+        qgis_project_file_print = File(open('{}/{}'.format(DATASOURCE_PATH, QGS310_FILE), 'r'))
+        cls.project_print310 = QgisProject(qgis_project_file_print)
+        cls.project_print310.group = cls.print_group
+        cls.project_print310.save()
 
         cache_key = settings.QDJANGO_PRJ_CACHE_KEY.format(cls.prj_test.pk)
         cache = caches['qdjango']
         cache.set(cache_key, open(os.path.join(DATASOURCE_PATH, 'getProjectSettings_gruppo-1_un-progetto_qgis310.xml'),
+                                  'rb').read())
+
+        cache_key = settings.QDJANGO_PRJ_CACHE_KEY.format(cls.project_print310.instance.pk)
+        cache.set(cache_key, open(os.path.join(DATASOURCE_PATH, 'getProjectSettings_g3wsuite_project_test_qgis310.xml'),
                                   'rb').read())
 
     def testGroupConfigApiView(self):
@@ -240,4 +255,14 @@ class ClientApiTest(CoreTestBase):
         self.assertEqual(set(resp_serach['options']['filter']['AND'][0]['input']['options']['values']),
                          set(['a point', 'another point']))
 
+    def testClientConfigApiViewForPrint(self):
+        """Test client config API for print section"""
 
+        response = self._testApiCall('group-project-map-config',
+                                     ['gruppo-1', 'qdjango', self.project_print310.instance.pk])
+        resp = json.loads(response.content)
+
+        self.assertEqual(
+            resp["print"],
+            json.loads('[{"name": "A4", "w": "297", "h": "210", "maps": [{"name": "map0", "w": 189.53, "h": 117.7594485294118}]}]')
+        )
