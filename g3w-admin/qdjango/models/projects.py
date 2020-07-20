@@ -112,6 +112,8 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
     multilayer_querybypolygon = models.CharField(_('Query by polygon control mode'), max_length=20, choices=QUERY_TYPE,
                                                  default='single')
 
+    layouts = models.TextField(_('Project layouts'), null=True, blank=True)
+
     class Meta:
         verbose_name = _('Project')
         verbose_name_plural = _('Projects')

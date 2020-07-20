@@ -27,7 +27,7 @@ from qgis.gui import QgsMapCanvas
 from qgis.server import QgsServerProjectUtils
 
 from qgis.PyQt.QtCore import QVariant, Qt
-from qgis.core import QgsMasterLayoutInterface, QgsLayoutItemMap
+from qgis.core import QgsMasterLayoutInterface, QgsLayoutItemMap, QgsLayout
 
 from core.utils.data import XmlData, isXML
 from qdjango.models import Project
@@ -962,6 +962,7 @@ class QgisProject(XmlData):
         for qgs_layout in qgs_layouts:
             if qgs_layout.layoutType() == QgsMasterLayoutInterface.PrintLayout:
 
+                # FIXME: find pages before.
                 # retrieve dims and name information
                 p_playout = {
                     'name': qgs_layout.name(),
@@ -1064,7 +1065,8 @@ class QgisProject(XmlData):
                     baselayer=baselayer,
                     qgis_version=self.qgisVersion,
                     layers_tree=self.layersTree,
-                    relations=self.layerRelations
+                    relations=self.layerRelations,
+                    layouts=self.layouts
                 )
             else:
                 if instance:
@@ -1076,6 +1078,7 @@ class QgisProject(XmlData):
                 self.instance.max_extent = self.maxExtent
                 self.instance.layers_tree = self.layersTree
                 self.instance.relations = self.layerRelations
+                self.instance.layouts = self.layouts
                 self.instance.wms_use_layer_ids = self.wmsuselayerids
 
                 self.instance.save()

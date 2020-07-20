@@ -122,6 +122,10 @@ class QgisProjectTest(TestCase):
         layer_relations_to_check = '[{"referencingLayer": "cities10000eu20171228095720113", "strength": "Association", "referencedLayer": "countries_simpl20171228095706310", "name": "countries-citites", "id": "cities1000_ISO2_CODE_countries__ISOCODE", "fieldRef": {"referencingField": "ISO2_CODE", "referencedField": "ISOCODE"}}]'
         self.assertEqual(self.project.layerRelations, json.loads(layer_relations_to_check))
 
+        # check layouts
+        # -------------------------------------------
+        layouts_to_check = '[{"name": "A4", "w": 326.7, "h": 239.7, "maps": [{"name": "map0", "displayname": "Map 1", "w": 189.53, "h": 117.75944852941177}]}]'
+        self.assertEqual(self.project.layouts, json.loads(layouts_to_check))
 
     def test_layers(self):
 

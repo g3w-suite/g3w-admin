@@ -170,11 +170,7 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         # set init and map extent
         ret['initextent'], ret['extent'] = self.get_map_extent(instance)
 
-        # add print capabilities only if SR not in degree:
-        #if instance.group.srid_id != 4326:
-        ret['print'] = qgis_projectsettings_wms.composerTemplates
-        #else:
-        #    ret['print'] = []
+        ret['print'] = json.loads(instance.layouts.replace("'", "\""))
 
         # add layers data, widgets
         # init proprties
