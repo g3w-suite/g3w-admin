@@ -49,7 +49,7 @@ class QgisProjectTest(TestCase):
         # -----------------------------------------
         self.assertEqual(self.project.title, 'G3W-Suite project test')
         self.assertEqual(self.project.name, 'G3W-Suite project test')
-        self.assertEqual(self.project.qgisVersion, '3.10.3-A Coruña')
+        self.assertEqual(self.project.qgisVersion, '3.10.7-A Coruña')
         self.assertEqual(self.project.srid, 4326)
         self.assertEqual(self.project.units, 'degrees')
 
@@ -110,6 +110,8 @@ class QgisProjectTest(TestCase):
             {'visible': True, 'expanded': True, 'name': 'Dem', 'id': 'europa_dem20171228095729169'},
             {'name': 'Blue Marble World Elevation and Bathymetry Raster', 'expanded': True,
              'id': 'Blue_Marble_World_Elevation_and_Bathymetry_Raster_3597b571_68a3_4344_867c_8dcd1d44eaf2',
+             'visible': True},
+            {'name': 'virtual_layer', 'expanded': True, 'id': 'virtual_layer_330ccb98_61d9_4454_b316_5e5e3b193df4',
              'visible': True}
         ]
 
@@ -125,7 +127,7 @@ class QgisProjectTest(TestCase):
 
         # check layers in project
         # -------------------------------------
-        self.assertEqual(len(self.project.layers), 5)
+        self.assertEqual(len(self.project.layers), 6)
 
         for layer in self.project.layers:
             if layer.layerId == 'countries_simpl20171228095706310':

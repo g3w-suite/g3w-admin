@@ -59,10 +59,10 @@ urlpatterns = [
     url(r'^api/constraint/detail/(?P<pk>\d+)/$',
         login_required(SingleLayerConstraintDetail.as_view()), name='qdjango-constraint-api-detail'),
     # All Constraint(s) filtered by layer qdjango layer pk
-    url(r'^api/constraint/(?P<layer_id>\d+)/$',
+    url(r'^api/constraint/layer/(?P<layer_id>\d+)/$',
         login_required(SingleLayerConstraintList.as_view()), name='qdjango-constraint-api-filter-by-layer-id'),
     # All Constraint(s) filtered by user
-    url(r'^api/constraint/(?P<user_id>\d+)/$',
+    url(r'^api/constraint/user/(?P<user_id>\d+)/$',
         login_required(SingleLayerConstraintList.as_view()), name='qdjango-constraint-api-filter-by-user'),
     # All Constraint(s)
     url(r'^api/constraint/$',

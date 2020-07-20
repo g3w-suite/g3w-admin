@@ -63,6 +63,13 @@ class SingleLayerConstraintList(generics.ListCreateAPIView):
         qs = super().get_queryset()
         if 'layer_id' in self.kwargs:
             qs = qs.filter(layer_id =self.kwargs['layer_id'])
+        if 'user_id' in self.kwargs:
+            user = User.objects.get(pk=self.kwargs['user_id'])
+            user_groups = user.groups.all()
+            if user_groups.count():
+                qs = qs.filter(Q(user=user)|Q(group__in=user_groups))
+            else:
+                qs = qs.filter(user=user)
         return qs
 
     def create(self, request, *args, **kwargs):
