@@ -35,3 +35,12 @@ def get_adminlte_skin_by_user(user):
         return 'purple'
     elif G3W_VIEWER1 in groupsUser or G3W_VIEWER2 in groupsUser:
         return 'green'
+
+
+def clean_for_json(json_string):
+    """Clean a raw python dict string for json.loads"""
+
+    return json_string.replace("False", "false").\
+                        replace("True", "true").\
+                        replace("'", "\"")
+

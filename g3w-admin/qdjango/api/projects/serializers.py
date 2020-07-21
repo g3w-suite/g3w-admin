@@ -16,6 +16,7 @@ from core.mixins.api.serializers import G3WRequestSerializer
 from core.api.serializers import update_serializer_data
 from core.utils.structure import RELATIONS_ONE_TO_MANY, RELATIONS_ONE_TO_ONE
 from core.utils.qgisapi import get_qgis_layer
+from core.utils.general import clean_for_json
 from core.models import G3WSpatialRefSys
 from qdjango.utils.structure import QdjangoMetaLayer, datasourcearcgis2dict
 from qgis.core import QgsJsonUtils
@@ -170,10 +171,7 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         # set init and map extent
         ret['initextent'], ret['extent'] = self.get_map_extent(instance)
 
-        ret['print'] = json.loads(instance.layouts.
-                                  replace("False", "false").
-                                  replace("True", "true").
-                                  replace("'", "\""))
+        ret['print'] = json.loads(clean_for_json(instance.layouts))
 
         # add layers data, widgets
         # init proprties
