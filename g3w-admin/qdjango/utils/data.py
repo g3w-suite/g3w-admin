@@ -979,13 +979,20 @@ class QgisProject(XmlData):
                     if isinstance(item, QgsLayoutItemMap):
 
                         brect = item.boundingRect()
+                        extent = item.extent()
                         map = {
                             'name': f'map{count}',
                             'displayname': item.displayName(),
                             'w': brect.right() - brect.left(),
                             'h': brect.bottom() - brect.top(),
                             'overview': item.overview().linkedMap() != None and item == item.overview().map(),
-                            'scale': item.scale()
+                            'scale': item.scale(),
+                            'extent': {
+                                'xmin': extent.xMinimum(),
+                                'ymin': extent.yMinimum(),
+                                'xmax': extent.xMaximum(),
+                                'ymax': extent.yMaximum()
+                            }
                         }
 
                         maps.append(map)
