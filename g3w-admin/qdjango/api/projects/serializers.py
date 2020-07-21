@@ -171,7 +171,7 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         # set init and map extent
         ret['initextent'], ret['extent'] = self.get_map_extent(instance)
 
-        ret['print'] = json.loads(clean_for_json(instance.layouts))
+        ret['print'] = json.loads(clean_for_json(instance.layouts)) if instance.layouts else []
 
         # add layers data, widgets
         # init proprties
