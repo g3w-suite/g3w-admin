@@ -124,7 +124,7 @@ class QgisProjectTest(TestCase):
 
         # check layouts
         # -------------------------------------------
-        layouts_to_check = '[{"name": "A4", "w": 297.0, "h": 210.0, "maps": [{"name": "map0", "displayname": "Map 1", "w": 189.53, "h": 117.75944852941177, "overview": false}]}]'
+        layouts_to_check = '[{"name": "A4", "w": 297.0, "h": 210.0, "maps": [{"name": "map0", "displayname": "Map 1", "w": 189.53, "h": 117.75944852941177, "overview": false, "scale": 24651341.004171893}]}]'
         self.assertEqual(self.project.layouts, json.loads(layouts_to_check))
 
     def test_layers(self):

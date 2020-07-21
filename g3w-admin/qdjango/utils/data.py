@@ -984,8 +984,8 @@ class QgisProject(XmlData):
                             'displayname': item.displayName(),
                             'w': brect.right() - brect.left(),
                             'h': brect.bottom() - brect.top(),
-                            'overview': item.overview().linkedMap() != None and item == item.overview().map()
-
+                            'overview': item.overview().linkedMap() != None and item == item.overview().map(),
+                            'scale': item.scale()
                         }
 
                         maps.append(map)
