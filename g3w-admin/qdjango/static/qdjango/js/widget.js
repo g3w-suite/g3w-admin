@@ -303,12 +303,7 @@ ga.Qdjango.widgetEditor = {
 			'<option value=""> ----- </option>' +
 			'</select>');
 
-
 		var options = that.widgettype;
-		if ($.inArray(that.layer_type, ['postgres', 'spatialite']) == -1){
-			delete options['selectbox'];
-
-		}
 
 		var widgetSelect = $('<select class="form-control" name="widget_type"></select>');
 		$.each(options, function(k,i){
