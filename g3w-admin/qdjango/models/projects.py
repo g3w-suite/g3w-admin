@@ -27,7 +27,8 @@ TYPE_LAYER_FOR_WIDGET = (
             'postgres',
             'spatialite',
             'ogr',
-            'mssql'
+            'mssql',
+            'virtual'
         )
 
 # Layer type with download capability
