@@ -22,6 +22,23 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+# Layer type with widget set capability
+TYPE_LAYER_FOR_WIDGET = (
+            'postgres',
+            'spatialite',
+            'ogr',
+            'mssql'
+        )
+
+# Layer type with download capability
+TYPE_LAYER_FOR_DOWNLOAD = (
+            'postgres',
+            'spatialite',
+            'ogr',
+            'mssql',
+            'virtual'
+        )
+
 
 def get_project_file_path(instance, filename):
     """Custom name for uploaded project files."""

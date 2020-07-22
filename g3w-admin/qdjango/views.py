@@ -23,6 +23,7 @@ from usersmanage.mixins.views import G3WACLViewMixin
 from .signals import load_qdjango_widgets_data
 from .mixins.views import *
 from .forms import *
+from .models import TYPE_LAYER_FOR_WIDGET, TYPE_LAYER_FOR_DOWNLOAD
 from .api.utils import serialize_vectorjoin
 from .utils.models import get_widgets4layer, comparepgdatasoruce
 import json
@@ -213,19 +214,9 @@ class QdjangoLayersListView(G3WRequestViewMixin, G3WGroupViewMixin, QdjangoProje
         context['project_slug'] = self.project_slug
         context['layers_tree'] = json.dumps(layersTreeBoostrap)
 
-        context['type_layer_for_widget'] = (
-            'postgres',
-            'spatialite',
-            'ogr',
-            'mssql'
-        )
+        context['type_layer_for_widget'] = TYPE_LAYER_FOR_WIDGET
+        context['type_layer_for_download'] = TYPE_LAYER_FOR_DOWNLOAD
 
-        context['type_layer_for_download'] = (
-            'postgres',
-            'spatialite',
-            'ogr',
-            'mssql'
-        )
         return context
 
 
