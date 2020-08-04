@@ -68,7 +68,7 @@ def datasource2dict(datasource):
             datasourceDict[k] = re.findall(r'%s=([^"\'][#$^?+=!*()\'-/@%%&\w\.]+|\d)' % k, datasource)[0]
         except:
             # If I reincarnate as a human, I'll choose to be a farmer.
-            datasourceDict[k] = re.findall(r'%s=((?:["\'](?:(?:[^\"\']|\\\')+)["\'])(?:\.["\'](?:(?:[^\"\']|\\\')+)["\'])?)\s' % k, datasource)[0].strip('\'')
+            datasourceDict[k] = re.findall(r'%s=((?:["\'](?:(?:[^\\\']|\\\')+)["\'])(?:\.["\'](?:(?:[^\"\']|\\\')+)["\'])?)\s' % k, datasource)[0].strip('\'')
 
     # add sql
     if sql:
