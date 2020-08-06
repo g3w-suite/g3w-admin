@@ -169,8 +169,11 @@ class QgisOGRLayerStructure(QgisLayerStructure):
         """
         Check if ogr data layer exists
         """
-        if not os.path.exists(self.datasource):
-            raise Exception(self._errDatasourceNotFound.format(self.layer.name, self.datasource))
+        # to remove possible configs data after "|" to the end of datasource
+        # ie.: /home/g3w-suite/data/dati_geografici/franarisk_2019/franarisk_2019_crollo_2.shp|layername=franarisk_2019_crollo_2
+        datasource = self.datasource.split('|')[0]
+        if not os.path.exists(datasource):
+            raise Exception(self._errDatasourceNotFound.format(self.layer.name, datasource))
 
     def getTableColumns(self):
         """
