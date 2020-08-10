@@ -494,6 +494,33 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
         self.assertTrue(vl.isValid())
         self.assertEqual(len([f for f in vl.getFeatures()]), 1)
 
+        # TEST filter FIDS
+        # ================
+        response = self._testApiCallAdmin01('core-vector-api',
+                                            args={
+                                                'mode_call': 'shp',
+                                                'project_type': 'qdjango',
+                                                'project_id': self.qdjango_project.id,
+                                                # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                                # WARNING: it's the qgs_layer_id, not the name!
+                                                # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                                'layer_name': world.qgs_layer_id,
+                                            }.values(),
+                                            kwargs={
+                                                'fids': '2,3'
+                                            }
+                                            )
+
+        self.assertEqual(response.status_code, 200)
+
+        z = zipfile.ZipFile(BytesIO(response.content))
+        temp = QTemporaryDir()
+        z.extractall(temp.path())
+        vl = QgsVectorLayer(temp.path())
+
+        self.assertTrue(vl.isValid())
+        self.assertEqual(len([f for f in vl.getFeatures()]), 2)
+
     def test_xls_api(self):
         """Test XLS export"""
 
@@ -586,8 +613,35 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
         self.assertTrue(vl.isValid())
         self.assertEqual(len([f for f in vl.getFeatures()]), 1)
 
+        # TEST filter FIDS
+        # ================
+        response = self._testApiCallAdmin01('core-vector-api',
+                                            args={
+                                                'mode_call': 'xls',
+                                                'project_type': 'qdjango',
+                                                'project_id': self.qdjango_project.id,
+                                                # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                                # WARNING: it's the qgs_layer_id, not the name!
+                                                # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                                'layer_name': world.qgs_layer_id,
+                                            }.values(),
+                                            kwargs={
+                                                'fids': '2,3'
+                                            }
+                                            )
+
+        self.assertEqual(response.status_code, 200)
+
+        fname = temp.path() + '/temp4.xlsx'
+        with open(fname, 'wb+') as f:
+            f.write(response.content)
+
+        vl = QgsVectorLayer(fname)
+        self.assertTrue(vl.isValid())
+        self.assertEqual(len([f for f in vl.getFeatures()]), 2)
+
     def test_gpx_api(self):
-        """Test XLS export"""
+        """Test GPX export"""
 
         points = self.spatialite_points
         points.download_gpx = True
@@ -673,6 +727,36 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
         self.assertEqual(response.status_code, 200)
 
         fname = temp.path() + '/temp3.gpx'
+        with open(fname, 'wb+') as f:
+            f.write(response.content)
+
+        vl = QgsVectorLayer(fname)
+        self.assertTrue(vl.isValid())
+        self.assertEqual(len([f for f in vl.getFeatures(
+            QgsFeatureRequest(QgsExpression('name = \'another point\'')))]), 1)
+        self.assertEqual(len([f for f in vl.getFeatures(
+            QgsFeatureRequest(QgsExpression('name = \'point\'')))]), 0)
+
+        # TEST filter FIDS
+        # ================
+        response = self._testApiCallAdmin01('core-vector-api',
+                                            args={
+                                                'mode_call': 'gpx',
+                                                'project_type': 'qdjango',
+                                                'project_id': self.qdjango_project.id,
+                                                # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                                # WARNING: it's the qgs_layer_id, not the name!
+                                                # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                                'layer_name': points.qgs_layer_id,
+                                            }.values(),
+                                            kwargs={
+                                                'fids': '2,3'
+                                            }
+                                            )
+
+        self.assertEqual(response.status_code, 200)
+
+        fname = temp.path() + '/temp4.gpx'
         with open(fname, 'wb+') as f:
             f.write(response.content)
 
@@ -775,6 +859,33 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
         vl = QgsVectorLayer(fname)
         self.assertTrue(vl.isValid())
         self.assertEqual(len([f for f in vl.getFeatures()]), 1)
+
+        # TEST filter FIDS
+        # ================
+        response = self._testApiCallAdmin01('core-vector-api',
+                                            args={
+                                                'mode_call': 'csv',
+                                                'project_type': 'qdjango',
+                                                'project_id': self.qdjango_project.id,
+                                                # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                                # WARNING: it's the qgs_layer_id, not the name!
+                                                # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                                'layer_name': world.qgs_layer_id,
+                                            }.values(),
+                                            kwargs={
+                                                'fids': '2,3'
+                                            }
+                                            )
+
+        self.assertEqual(response.status_code, 200)
+
+        fname = temp.path() + '/temp4.csv'
+        with open(fname, 'wb+') as f:
+            f.write(response.content)
+
+        vl = QgsVectorLayer(fname)
+        self.assertTrue(vl.isValid())
+        self.assertEqual(len([f for f in vl.getFeatures()]), 2)
 
     def test_bbox_filter(self):
         """Test a rule with geometry filter"""

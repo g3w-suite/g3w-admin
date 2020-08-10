@@ -300,9 +300,16 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
             self.metadata_layer.qgis_layer.selectByExpression(
                 qgs_request.filterExpression().expression())
             save_options.onlySelectedFeatures = True
+
         if qgs_request.filterFid() != -1:
             self.metadata_layer.qgis_layer.selectByIds(
                 [qgs_request.filterFid()]
+            )
+            save_options.onlySelectedFeatures = True
+
+        if qgs_request.filterFids() != []:
+            self.metadata_layer.qgis_layer.selectByIds(
+                qgs_request.filterFids()
             )
             save_options.onlySelectedFeatures = True
 

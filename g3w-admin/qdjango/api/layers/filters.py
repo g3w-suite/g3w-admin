@@ -80,17 +80,30 @@ class FidFilter(BaseFilterBackend):
         """
 
         expression_text = None
-        if FILTER_FID_PARAM not in request.GET \
-                or request.GET[FILTER_FID_PARAM] == '':
-            return
-        else:
-            try:
-                fid = int(request.GET[FILTER_FID_PARAM])
-            except ValueError as e:
-                logger.error('FidFilter: %s' % (e,))
+        multiple = True
+        FILTER_FIDS_PARAM = f'{FILTER_FID_PARAM}s'
+
+        if FILTER_FIDS_PARAM not in request.GET or request.GET[FILTER_FIDS_PARAM] == '':
+            if FILTER_FID_PARAM not in request.GET or request.GET[FILTER_FID_PARAM] == '':
                 return
+            else:
+                multiple = False
 
-        if not fid:
+        try:
+            if multiple:
+                fids = [int(f) for f in request.GET[FILTER_FIDS_PARAM].split(',')]
+                if len(fids) == 0:
+                    return
+            else:
+                fid = int(request.GET[FILTER_FID_PARAM])
+                if not fid:
+                    return
+
+        except Exception as e:
+            logger.error('FidFilter: %s' % (e,))
             return
 
-        qgis_feature_request.setFilterFid(fid)
+        if multiple:
+            qgis_feature_request.setFilterFids(fids)
+        else:
+            qgis_feature_request.setFilterFid(fid)
