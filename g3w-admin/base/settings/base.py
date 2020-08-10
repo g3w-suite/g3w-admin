@@ -278,4 +278,4 @@ SITE_ID = 1
 # -------------------------
 FILE_FORM_UPLOAD_BACKEND = 'core.utils.response.G3WFileFormUploadBackend'
 
-G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS = ['shp', 'xls']
+G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS = ['shp', 'xls', 'csv']

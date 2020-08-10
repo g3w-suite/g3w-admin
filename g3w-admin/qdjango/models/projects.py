@@ -391,6 +391,9 @@ class Layer(G3WACLModelMixins, models.Model):
         _('Download data in xls format'), default=False, blank=True)
     download_gpx = models.BooleanField(
         _('Download data in gpx format'), default=False, blank=True)
+    download_csv = models.BooleanField(
+        _('Download data in csv format'), default=False, blank=True)
+
 
     # for layer WMS/WMST: set if load direct from their servers or from local QGIS-server
     external = models.BooleanField(

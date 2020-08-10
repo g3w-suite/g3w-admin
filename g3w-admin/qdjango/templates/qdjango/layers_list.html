@@ -14,6 +14,7 @@
     ga.ui.initDownloadLayerCheckBox();
     ga.ui.initDownloadLayerXlsCheckBox();
     ga.ui.initDownloadLayerGpxCheckBox();
+    ga.ui.initDownloadLayerCsvCheckBox();
     ga.ui.initExternalLayerCheckBox();
 
     // on check of every download
@@ -95,6 +96,9 @@
                             {% if 'xls' in SETTINGS.G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS %}
                             <th style="width:100px"><input type="checkbox" name="check_every_download_xls" />{% trans 'Download as xls' %}</th>
                             {% endif %}
+                            {% if 'csv' in SETTINGS.G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS %}
+                            <th style="width:100px"><input type="checkbox" name="check_every_download_csv" />{% trans 'Download as csv' %}</th>
+                            {% endif %}
                             {% if 'gpx' in SETTINGS.G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS %}
                             <th style="width:100px"><input type="checkbox" name="check_every_download_gpx" />{% trans 'Download as gpx' %}</th>
                             {% endif %}
@@ -143,6 +147,13 @@
                             <td>
                                 {% if object.layer_type in type_layer_for_download %}
                                 <input type="checkbox" data-widget-type="downloadLayerxls" data-ajax-url="{% url 'qdjango-project-layers-data-editing' project.group.slug project.slug object.pk %}" name="download_xls_{{ object.pk }}" {% if object.download_xls %}checked="checked"{% endif %}>
+                                {% endif %}
+                            </td>
+                            {% endif %}
+                            {% if 'csv' in SETTINGS.G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS%}
+                            <td>
+                                {% if object.layer_type in type_layer_for_download %}
+                                <input type="checkbox" data-widget-type="downloadLayercsv" data-ajax-url="{% url 'qdjango-project-layers-data-editing' project.group.slug project.slug object.pk %}" name="download_csv_{{ object.pk }}" {% if object.download_csv %}checked="checked"{% endif %}>
                                 {% endif %}
                             </td>
                             {% endif %}

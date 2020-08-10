@@ -7,7 +7,7 @@ from django.http import HttpResponse, HttpResponseForbidden
 from qgis.core import QgsVectorFileWriter, QgsFeatureRequest, QgsJsonUtils, Qgis, QgsFieldConstraints, QgsWkbTypes
 
 from core.api.base.vector import MetadataVectorLayer
-from core.api.base.views import (MODE_CONFIG, MODE_DATA, MODE_SHP, MODE_XLS, MODE_GPX,
+from core.api.base.views import (MODE_CONFIG, MODE_DATA, MODE_SHP, MODE_XLS, MODE_GPX, MODE_CSV,
                                  APIException, BaseVectorOnModelApiView,
                                  IntersectsBBoxFilter)
 from core.api.filters import (IntersectsBBoxFilter, OrderingFilter,
@@ -182,7 +182,8 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         MODE_WIDGET,  # ?
         MODE_SHP,  # get shapefiles
         MODE_XLS,   # get XLS
-        MODE_GPX    # get GPX
+        MODE_GPX,    # get GPX
+        MODE_CSV  # get CSV
     ]
 
     mapping_layer_attributes_function = mapLayerAttributesFromQgisLayer
@@ -485,6 +486,57 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
 
         response = HttpResponse(
             open(xls_tmp_path, 'rb').read(), content_type='application/ms-excel')
+        tmp_dir.cleanup()
+        response['Content-Disposition'] = f'attachment; filename={filename}'
+        response.set_cookie('fileDownload', 'true')
+        return response
+
+    def response_csv_mode(self, request):
+        """
+        Download csv of data
+        :param request: Http Django request object
+        :return: http response with attached file
+        """
+
+        if not self.layer.download_csv:
+            return HttpResponseForbidden()
+
+        # Apply filter backends, store original subset string
+        qgs_request = QgsFeatureRequest()
+        original_subset_string = self.metadata_layer.qgis_layer.subsetString()
+        if hasattr(self, 'filter_backends'):
+            for backend in self.filter_backends:
+                backend().apply_filter(request, self.metadata_layer.qgis_layer, qgs_request, self)
+
+        save_options = QgsVectorFileWriter.SaveVectorOptions()
+        save_options.driverName = 'csv'
+        save_options.fileEncoding = 'utf-8'
+
+        tmp_dir = tempfile.TemporaryDirectory()
+
+        filename = self.metadata_layer.qgis_layer.name() + '.csv'
+
+        # Make a selection based on the request
+        self._selection_responde_download_mode(qgs_request, save_options)
+
+        xls_tmp_path = os.path.join(tmp_dir.name, filename)
+        error_code, error_message = QgsVectorFileWriter.writeAsVectorFormatV2(
+            self.metadata_layer.qgis_layer,
+            xls_tmp_path,
+            self.metadata_layer.qgis_layer.transformContext(),
+            save_options
+        )
+
+        # Restore the original subset string and select no features
+        self.metadata_layer.qgis_layer.selectByIds([])
+        self.metadata_layer.qgis_layer.setSubsetString(original_subset_string)
+
+        if error_code != QgsVectorFileWriter.NoError:
+            tmp_dir.cleanup()
+            return HttpResponse(status=500, reason=error_message)
+
+        response = HttpResponse(
+            open(xls_tmp_path, 'rb').read(), content_type='text/csv')
         tmp_dir.cleanup()
         response['Content-Disposition'] = f'attachment; filename={filename}'
         response.set_cookie('fileDownload', 'true')
