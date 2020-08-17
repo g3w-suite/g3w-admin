@@ -48,6 +48,7 @@ ga.Qdjango.widgetEditor = {
 	widgettype : {
 		'inputbox': 'InputBox',
 		'selectbox': 'SelectBox',
+		'autocompletebox': 'AutoCompleteBox'
 	},
 	/*widget: [
 		{

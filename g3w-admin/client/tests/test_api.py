@@ -212,6 +212,7 @@ class ClientApiTest(CoreTestBase):
         layer.save()
 
         # create a search widget with selectbox
+        # -------------------------------------------
         widget_body = {
             "title": "asert",
             "query": "simpleWmsSearch",
@@ -254,6 +255,49 @@ class ClientApiTest(CoreTestBase):
         self.assertEqual(resp_serach['options']['filter']['AND'][0]['input']['type'], 'selectfield')
         self.assertEqual(set(resp_serach['options']['filter']['AND'][0]['input']['options']['values']),
                          set(['a point', 'another point']))
+
+        # create a search widget with autocompletebox
+        # -------------------------------------------
+        widget_body = {
+            "title": "autocomplete test title",
+            "query": "simpleWmsSearch",
+            "usewmsrequest": True,
+            "fields": [
+                {
+                    "name": "name",
+                    "label": "name",
+                    "blanktext": "",
+                    "filterop": "eq",
+                    "widgettype": "autocompletebox",
+                    "input": {
+                        "type": "textfield",
+                        "options": {}
+                    }
+                }
+            ],
+            "results": [],
+            "selectionlayer": "spatialite_points20190604101052075",
+            "selectionzoom": 0,
+            "dozoomtoextent": True
+        }
+
+        widget = Widget(
+            widget_type='search',
+            name='Test autocompletebox',
+            datasource=layer.datasource,
+            body=json.dumps(widget_body)
+        )
+        widget.save()
+        widget.layers.add(layer)
+
+        response = self._testApiCall('group-project-map-config', ['gruppo-1', 'qdjango', '1'])
+        resp = json.loads(response.content)
+
+        self.assertTrue(len(resp["search"]) == 2)
+        resp_serach = resp['search'][1]
+        self.assertEqual(resp_serach['name'], 'Test autocompletebox')
+        self.assertEqual(resp_serach['type'], 'search')
+        self.assertEqual(resp_serach['options']['filter']['AND'][0]['input']['type'], 'autocompletefield')
 
     def testClientConfigApiViewForPrint(self):
         """Test client config API for print section"""

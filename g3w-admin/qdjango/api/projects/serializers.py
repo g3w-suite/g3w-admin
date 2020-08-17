@@ -490,6 +490,10 @@ class WidgetSerializer(serializers.ModelSerializer):
                     else:
                         field['input']['options']['values'] = []
 
+                #For AutoccOmpleteBox imput type
+                if 'widgettype' in field and field['widgettype'] == 'autocompletebox':
+                    field['input']['type'] = 'autocompletefield'
+
                 input = field['input']
                 input['options']['blanktext'] = field['blanktext']
                 ret['options']['filter']['AND'].append({
