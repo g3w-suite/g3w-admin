@@ -225,3 +225,31 @@ class SuggestFilterBackend(BaseFilterBackend):
 
                 qgis_feature_request.setFilterExpression(search_expression)
 
+
+class FieldFilterBackend(BaseFilterBackend):
+    """Backend filter that returns matches for a field|value tuple"""
+
+    def apply_filter(self, request, qgis_layer, qgis_feature_request, view):
+
+        suggest_value = request.query_params.get('field')
+
+        if suggest_value:
+
+            # get field and value
+            field_name, field_value = suggest_value.split('|')
+
+            if field_name and field_value and self._is_valid_field(qgis_layer, field_name):
+
+                search_expression = '{field_name} = {field_value}'.format(
+                    field_name=self._quote_identifier(field_name),
+                    field_value=self._quote_value(field_value)
+                    )
+
+                current_expression = qgis_feature_request.filterExpression()
+
+                if current_expression:
+                    search_expression = '( %s ) AND ( %s )' % (
+                        current_expression, search_expression)
+
+                qgis_feature_request.setFilterExpression(search_expression)
+
