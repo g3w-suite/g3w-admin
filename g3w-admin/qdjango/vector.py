@@ -11,7 +11,7 @@ from core.api.base.views import (MODE_CONFIG, MODE_DATA, MODE_SHP, MODE_XLS, MOD
                                  APIException, BaseVectorOnModelApiView,
                                  IntersectsBBoxFilter)
 from core.api.filters import (IntersectsBBoxFilter, OrderingFilter,
-                              SearchFilter, SuggestFilterBackend)
+                              SearchFilter, SuggestFilterBackend, FieldFilterBackend)
 from core.api.permissions import ProjectPermission
 
 from core.utils.qgisapi import get_qgis_layer
@@ -167,6 +167,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         IntersectsBBoxFilter,
         SearchFilter,
         SuggestFilterBackend,
+        FieldFilterBackend,
         SingleLayerSubsetStringConstraintFilter,
         SingleLayerExpressionConstraintFilter,
         RelationOneToManyFilter,
