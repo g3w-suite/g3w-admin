@@ -102,7 +102,7 @@ class SearchFilter(BaseFilterBackend):
 
                 if current_expression:
                     search_expression = '( %s ) AND ( %s )' % (
-                        current_expression, search_expression)
+                        current_expression.dump(), search_expression)
 
                 qgis_feature_request.setFilterExpression(search_expression)
 
@@ -221,7 +221,7 @@ class SuggestFilterBackend(BaseFilterBackend):
 
                 if current_expression:
                     search_expression = '( %s ) AND ( %s )' % (
-                        current_expression, search_expression)
+                        current_expression.dump(), search_expression)
 
                 qgis_feature_request.setFilterExpression(search_expression)
 
@@ -249,7 +249,7 @@ class FieldFilterBackend(BaseFilterBackend):
 
                 if current_expression:
                     search_expression = '( %s ) AND ( %s )' % (
-                        current_expression, search_expression)
+                        current_expression.dump(), search_expression)
 
                 qgis_feature_request.setFilterExpression(search_expression)
 
