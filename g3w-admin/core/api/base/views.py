@@ -15,6 +15,9 @@ from qgis.core import (
     QgsCoordinateReferenceSystem,
     QgsCoordinateTransformContext,
     QgsFeatureRequest,
+    QgsWkbTypes,
+    QgsVectorLayer,
+    QgsJsonUtils
 )
 from rest_framework import exceptions, status
 from rest_framework.exceptions import APIException
@@ -31,6 +34,10 @@ from core.utils.structure import (APIVectorLayerStructure, mapLayerAttributes,
                                   mapLayerAttributesFromQgisLayer)
 from core.utils.vector import BaseUserMediaHandler as UserMediaHandler
 from core.utils.qgisapi import get_qgis_features, count_qgis_features
+
+import logging
+
+logger = logging.getLogger(__name__)
 
 MODE_DATA = 'data'
 MODE_CONFIG = 'config'
@@ -412,55 +419,93 @@ class BaseVectorOnModelApiView(G3WAPIView):
             self.metadata_layer.qgis_layer, qgis_feature_request, **kwargs)
         ex = QgsJsonExporter(self.metadata_layer.qgis_layer)
 
-        # patch for return GeoJson feature with CRS different from WGS84
-        # TODO: use .setTransformGeometries( false ) with QGIS >= 3.12
-        ex.setSourceCrs(QgsCoordinateReferenceSystem('EPSG:4326'))
+        # If 'unique' request params is set,
+        # api return a list of unique
+        # field name sent with 'unique' param.
+        # --------------------------------------
+        if 'unique' in request.query_params:
 
-        # check for formatter query url param and check if != 0
-        if 'formatter' in request.query_params:
-            formatter = request.query_params.get('formatter')
-            if formatter.isnumeric() and int(formatter) == 0:
-                export_features = False
-            else:
-                export_features = True
+            vl = QgsVectorLayer(QgsWkbTypes.displayString(self.metadata_layer.qgis_layer.wkbType()),
+                                "temporary_vector", "memory")
+            pr = vl.dataProvider()
 
-        if export_features:
-            feature_collection = json.loads(ex.exportFeatures(self.features))
+            # add fields
+            pr.addAttributes(self.metadata_layer.qgis_layer.fields())
+            vl.updateFields()  # tell the vector layer to fetch changes from the provider
+
+            res = pr.addFeatures(self.features)
+
+            uniques = vl.uniqueValues(
+                self.metadata_layer.qgis_layer.fields().indexOf(request.query_params.get('unique'))
+            )
+
+            values = []
+            for u in uniques:
+                try:
+                    if u:
+                        values.append(json.loads(QgsJsonUtils.encodeValue(u)))
+                except Exception as e:
+                    logger.error(f'Response vector widget unique: {e}')
+                    continue
+
+            self.results.update({
+                'data': values,
+                'count': len(values)
+            })
+
+            del(vl)
+
         else:
 
-            # to exclude QgsFormater used into QgsJsonjExporter is necessary build by hand single json feature
-            ex.setIncludeAttributes(False)
+            # patch for return GeoJson feature with CRS different from WGS84
+            # TODO: use .setTransformGeometries( false ) with QGIS >= 3.12
+            ex.setSourceCrs(QgsCoordinateReferenceSystem('EPSG:4326'))
 
-            feature_collection = {
-                'type': 'FeatureCollection',
-                'features': []
-            }
+            # check for formatter query url param and check if != 0
+            if 'formatter' in request.query_params:
+                formatter = request.query_params.get('formatter')
+                if formatter.isnumeric() and int(formatter) == 0:
+                    export_features = False
+                else:
+                    export_features = True
 
-            for feature in self.features:
-                fnames = [f.name() for f in feature.fields()]
-                feature_collection['features'].append(
-                    json.loads(ex.exportFeature(feature, dict(zip(fnames, feature.attributes()))))
-                )
+            if export_features:
+                feature_collection = json.loads(ex.exportFeatures(self.features))
+            else:
+
+                # to exclude QgsFormater used into QgsJsonjExporter is necessary build by hand single json feature
+                ex.setIncludeAttributes(False)
+
+                feature_collection = {
+                    'type': 'FeatureCollection',
+                    'features': []
+                }
+
+                for feature in self.features:
+                    fnames = [f.name() for f in feature.fields()]
+                    feature_collection['features'].append(
+                        json.loads(ex.exportFeature(feature, dict(zip(fnames, feature.attributes()))))
+                    )
 
 
 
-        # FIXME: QGIS api reprojecting?
-        # Reproject if necessary
-        # if self.reproject:
-        #    self.reproject_featurecollection(feature_collection)
+            # FIXME: QGIS api reprojecting?
+            # Reproject if necessary
+            # if self.reproject:
+            #    self.reproject_featurecollection(feature_collection)
 
-        # Change media
-        self.change_media(feature_collection)
+            # Change media
+            self.change_media(feature_collection)
 
-        self.results.update(APIVectorLayerStructure(**{
-            'data': feature_collection,
-            'count': count_qgis_features(self.metadata_layer.qgis_layer, qgis_feature_request, **kwargs),
-            'geometryType': self.metadata_layer.geometry_type,
-        }).as_dict())
+            self.results.update(APIVectorLayerStructure(**{
+                'data': feature_collection,
+                'count': count_qgis_features(self.metadata_layer.qgis_layer, qgis_feature_request, **kwargs),
+                'geometryType': self.metadata_layer.geometry_type,
+            }).as_dict())
 
-        # FIXME: add extra fields data by signals and receivers
-        # FIXME: featurecollection = post_serialize_maplayer.send(layer_serializer, layer=self.layer_name)
-        # FIXME: Not sure how to map this to the new QGIS API
+            # FIXME: add extra fields data by signals and receivers
+            # FIXME: featurecollection = post_serialize_maplayer.send(layer_serializer, layer=self.layer_name)
+            # FIXME: Not sure how to map this to the new QGIS API
 
         # Restore the original subset string
         self.metadata_layer.qgis_layer.setSubsetString(original_subset_string)

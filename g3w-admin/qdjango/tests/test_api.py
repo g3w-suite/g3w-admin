@@ -480,7 +480,7 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         self.assertEqual(properties['type'], 'B')
 
     def test_server_fitlers_combination_api(self):
-        """ Test server fitler combination: i.e. FieldFilterBacked + SuggestFilterBackend """
+        """ Test server filter combination: i.e. FieldFilterBacked + SuggestFilterBackend """
 
         cities = Layer.objects.get(project_id=self.project310.instance.pk, origname='cities10000eu')
         qgis_project = get_qgs_project(cities.project.qgis_file.path)
@@ -529,4 +529,39 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
 
         self.assertEqual(resp['vector']['count'], total_count)
         self.assertEqual(resp['vector']['count'], 2)
+
+    def test_unique_request_api_param(self):
+        """ Test 'unique' url request param for 'data' vector API """
+
+        cities = Layer.objects.get(project_id=self.project310.instance.pk, origname='cities10000eu')
+        qgis_project = get_qgs_project(cities.project.qgis_file.path)
+        qgis_layer = qgis_project.mapLayer(cities.qgs_layer_id)
+
+        # check for only unique param
+        total_count = len(qgis_layer.uniqueValues(
+            qgis_layer.fields().indexOf('ISO2_CODE')
+        ))
+
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['data', 'qdjango', self.project310.instance.pk, cities.qgs_layer_id],
+                                            {
+                                                'unique': 'ISO2_CODE'
+                                            }).content)
+
+        self.assertEqual(resp['count'], total_count)
+
+        # check SuggestFilterBackend + FieldFilterBackend
+        # -----------------------------------------------
+
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['data', 'qdjango', self.project310.instance.pk, cities.qgs_layer_id],
+                                            {
+                                                'suggest': 'NAME|flo',
+                                                'field': 'ISO2_CODE|IT',
+                                                'unique': 'ISO2_CODE'
+                                            }).content)
+
+        self.assertEqual(resp['count'], 1)
+
+
 
