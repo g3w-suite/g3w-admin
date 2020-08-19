@@ -229,19 +229,39 @@ class SuggestFilterBackend(BaseFilterBackend):
 class FieldFilterBackend(BaseFilterBackend):
     """Backend filter that returns matches for a field|value tuple"""
 
+    COMPARATORS_MAP = {
+        'eq': '=',
+        'gt': '>',
+        'lt': '<',
+        'ltgt': '<>',
+        'gte': '>=',
+        'lte': '<=',
+        'like': 'LIKE',
+        'ilike': 'ILIKE'
+    }
+
     def apply_filter(self, request, qgis_layer, qgis_feature_request, view):
 
         suggest_value = request.query_params.get('field')
 
         if suggest_value:
 
-            # get field and value
-            field_name, field_value = suggest_value.split('|')
+            # get field and value and operator
+            # ie. ?field=name|Rome, ?field=name|eq|Rome
+            try:
+                field_name, field_operator, field_value = suggest_value.split('|')
+            except ValueError as e:
+                try:
+                    field_name, field_value = suggest_value.split('|')
+                    field_operator = 'eq'
+                except ValueError:
+                    raise ParseError('Invalid field string supplied for parameter field')
 
             if field_name and field_value and self._is_valid_field(qgis_layer, field_name):
 
-                search_expression = '{field_name} = {field_value}'.format(
+                search_expression = '{field_name} {field_operator} {field_value}'.format(
                     field_name=self._quote_identifier(field_name),
+                    field_operator=self.COMPARATORS_MAP[field_operator],
                     field_value=self._quote_value(field_value)
                     )
 

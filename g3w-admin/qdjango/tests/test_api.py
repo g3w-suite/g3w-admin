@@ -479,7 +479,7 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         properties = resp["vector"]["data"]["features"][1]["properties"]
         self.assertEqual(properties['type'], 'B')
 
-    def test_server_fitlers_combination_api(self):
+    def test_server_filters_combination_api(self):
         """ Test server filter combination: i.e. FieldFilterBacked + SuggestFilterBackend """
 
         cities = Layer.objects.get(project_id=self.project310.instance.pk, origname='cities10000eu')
@@ -495,7 +495,7 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         resp = json.loads(self._testApiCall('core-vector-api',
             ['data', 'qdjango', self.project310.instance.pk, cities.qgs_layer_id],
             {
-                'field': 'ISO2_CODE|IT'
+                'field': 'ISO2_CODE|eq|IT'
             }).content)
 
         self.assertEqual(resp['vector']['count'], total_count)
