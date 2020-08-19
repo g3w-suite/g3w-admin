@@ -500,6 +500,19 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
 
         self.assertEqual(resp['vector']['count'], total_count)
 
+        qgs_request = QgsFeatureRequest()
+        qgs_request.setFilterExpression('"ISO2_CODE" = \'IT\' AND "NAME" = \'Florence\'')
+        total_count = len([f for f in qgis_layer.getFeatures(qgs_request)])
+
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['data', 'qdjango', self.project310.instance.pk, cities.qgs_layer_id],
+                                            {
+                                                'field': 'ISO2_CODE|eq|IT,NAME|eq|Florence'
+                                            }).content)
+
+        self.assertEqual(resp['vector']['count'], total_count)
+
+
         # check SuggestFilterBackend
         # --------------------------
         qgs_request = QgsFeatureRequest()
@@ -529,6 +542,20 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
 
         self.assertEqual(resp['vector']['count'], total_count)
         self.assertEqual(resp['vector']['count'], 2)
+
+        qgs_request = QgsFeatureRequest()
+        qgs_request.setFilterExpression('"NAME" ILIKE \'%flo%\' AND "ISO2_CODE" = \'IT\' AND "NAME" = \'Florence\'')
+        total_count = len([f for f in qgis_layer.getFeatures(qgs_request)])
+
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['data', 'qdjango', self.project310.instance.pk, cities.qgs_layer_id],
+                                            {
+                                                'suggest': 'NAME|flo',
+                                                'field': 'ISO2_CODE|IT,NAME|Florence'
+                                            }).content)
+
+        self.assertEqual(resp['vector']['count'], total_count)
+        self.assertEqual(resp['vector']['count'], 1)
 
     def test_unique_request_api_param(self):
         """ Test 'unique' url request param for 'data' vector API """

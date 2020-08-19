@@ -248,28 +248,39 @@ class FieldFilterBackend(BaseFilterBackend):
 
             # get field and value and operator
             # ie. ?field=name|Rome, ?field=name|eq|Rome
-            try:
-                field_name, field_operator, field_value = suggest_value.split('|')
-            except ValueError as e:
+            # field can be multiple separated by ','
+            # i.e. $field=name|Rome,state|eq|Italy
+
+            fields = suggest_value.split(',')
+
+            search_expressions = []
+            for field in fields:
                 try:
-                    field_name, field_value = suggest_value.split('|')
-                    field_operator = 'eq'
-                except ValueError:
-                    raise ParseError('Invalid field string supplied for parameter field')
+                    field_name, field_operator, field_value = field.split('|')
+                except ValueError as e:
+                    try:
+                        field_name, field_value = field.split('|')
+                        field_operator = 'eq'
+                    except ValueError:
+                        raise ParseError('Invalid field string supplied for parameter field')
 
-            if field_name and field_value and self._is_valid_field(qgis_layer, field_name):
+                if field_name and field_value and self._is_valid_field(qgis_layer, field_name):
 
-                search_expression = '{field_name} {field_operator} {field_value}'.format(
-                    field_name=self._quote_identifier(field_name),
-                    field_operator=self.COMPARATORS_MAP[field_operator],
-                    field_value=self._quote_value(field_value)
-                    )
+                    search_expression = '{field_name} {field_operator} {field_value}'.format(
+                        field_name=self._quote_identifier(field_name),
+                        field_operator=self.COMPARATORS_MAP[field_operator],
+                        field_value=self._quote_value(field_value)
+                        )
+                    search_expressions.append(search_expression)
 
-                current_expression = qgis_feature_request.filterExpression()
+            current_expression = qgis_feature_request.filterExpression()
 
-                if current_expression:
-                    search_expression = '( %s ) AND ( %s )' % (
-                        current_expression.dump(), search_expression)
+            search_expression = ' AND '.join(search_expressions)
 
+            if current_expression:
+                search_expression = '( %s ) AND ( %s )' % (
+                    current_expression.dump(), search_expression)
+
+            if search_expression != '':
                 qgis_feature_request.setFilterExpression(search_expression)
 
