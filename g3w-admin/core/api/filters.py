@@ -266,10 +266,11 @@ class FieldFilterBackend(BaseFilterBackend):
 
                 if field_name and field_value and self._is_valid_field(qgis_layer, field_name):
 
+                    pre_post_operator = '%' if field_operator in ('like', 'ilike') else ''
                     search_expression = '{field_name} {field_operator} {field_value}'.format(
                         field_name=self._quote_identifier(field_name),
                         field_operator=self.COMPARATORS_MAP[field_operator],
-                        field_value=self._quote_value(field_value)
+                        field_value=self._quote_value(f'{pre_post_operator}{field_value}{pre_post_operator}')
                         )
                     search_expressions.append(search_expression)
 

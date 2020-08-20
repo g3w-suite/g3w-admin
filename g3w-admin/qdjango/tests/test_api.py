@@ -501,6 +501,30 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         self.assertEqual(resp['vector']['count'], total_count)
 
         qgs_request = QgsFeatureRequest()
+        qgs_request.setFilterExpression('"NAME" LIKE \'%Flo%\'')
+        total_count = len([f for f in qgis_layer.getFeatures(qgs_request)])
+
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['data', 'qdjango', self.project310.instance.pk, cities.qgs_layer_id],
+                                            {
+                                                'field': 'NAME|like|Flo'
+                                            }).content)
+
+        self.assertEqual(resp['vector']['count'], total_count)
+
+        qgs_request = QgsFeatureRequest()
+        qgs_request.setFilterExpression('"NAME" ILIKE \'%flo%\'')
+        total_count = len([f for f in qgis_layer.getFeatures(qgs_request)])
+
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['data', 'qdjango', self.project310.instance.pk, cities.qgs_layer_id],
+                                            {
+                                                'field': 'NAME|ilike|flo'
+                                            }).content)
+
+        self.assertEqual(resp['vector']['count'], total_count)
+
+        qgs_request = QgsFeatureRequest()
         qgs_request.setFilterExpression('"ISO2_CODE" = \'IT\' AND "NAME" = \'Florence\'')
         total_count = len([f for f in qgis_layer.getFeatures(qgs_request)])
 
