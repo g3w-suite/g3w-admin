@@ -282,6 +282,7 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         except:
             pass
 
+        ret['search_endpoint'] = settings.G3W_CLIENT_SEARCH_ENDPOINT
 
         return ret
 

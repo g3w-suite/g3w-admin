@@ -271,6 +271,7 @@ CLIENTS_AVAILABLE = []
 CLIENT_DEFAULT = 'client'
 CLIENT_G3WSUITE_LOGO = 'g3wsuite_logo_h40.png'
 CLIENT_OWS_METHOD = 'GET'
+G3W_CLIENT_SEARCH_ENDPOINT = 'ows' #or 'api' for to use api layer vector with FieldFilterBackend
 
 SITE_ID = 1
 

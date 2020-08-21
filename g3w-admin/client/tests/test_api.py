@@ -153,6 +153,7 @@ class ClientApiTest(CoreTestBase):
         self.assertEqual(resp["metadata"]["keywords"], ['infoMapAccessService', 'keyword1', 'keyword2'])
         self.assertEqual(resp["thumbnail"], '/media/fake/project.png')
         self.assertEqual(resp["name"], "Un progetto")
+        self.assertEqual(resp["search_endpoint"], 'ows')
 
         # check for layers and fields
         self.assertEqual(len(resp['layers']), 3)

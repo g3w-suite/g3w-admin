@@ -127,9 +127,15 @@ Client layout settings
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Custom webgis client `search` section title.
 
+``G3W_CLIENT_SEARCH_ENDPOINT``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Search url endpoint for 'searches calling', default `ows`.
+ - `ows`: by wms search;
+ - `api`: by g3w-suite layer vector API.
+
 ``G3W_CLIENT_HEADER_CUSTOM_LINKS``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-A list of dict of custom links to add into main top bar of wbgis client.
+A list of dict of custom links to add into main top bar of webgis client.
 I.e.::
 
     G3W_CLIENT_HEADER_CUSTOM_LINKS = [
