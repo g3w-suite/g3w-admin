@@ -214,12 +214,11 @@ ga.Qdjango.widgetEditor = {
 						<h3 class="box-title">'+gettext("General configuration for search widget and results")+'</h3>\
 						</div>\
 						<div class="box-body">\
-							<div class="col-md-12">\
-								<div class="row">\
-									<div class="col-md-12"><span class="label label-default">'+gettext("Search title")+'</span></div>\
-								</div>\
-								<div class="row">\
-									<div class="form-group col-md-12 title"></div>\
+							<div class="row">\
+								<div class="form-group col-md-12">\
+									<div class="controls title">\
+									<label class="control-label requiredField">'+gettext("Search title")+'</label>\
+									</div>\
 								</div>\
 							</div>\
 						<\div>\
@@ -255,7 +254,8 @@ ga.Qdjango.widgetEditor = {
 		};
 		
 		div.find("button").click(function(){ onAddAction($(this)); });
-		div.find(".title").append(title);
+		div.find(".title").append(title).append('<div class="help-block">'+gettext("Client search title identification")+'</div>');
+
 		div.find(".fieldSelect").first().append(fieldSelect);
 		div.find(".textInput").first().append(textInput);
 		$(".rightCol").append(div);
@@ -292,13 +292,13 @@ ga.Qdjango.widgetEditor = {
 		var descriptionInput = $('<input class="form-control" type="text" name="searchfield_description" value="'+blTeVa+'" >');
 		
 		var cmpOperatorSelect = $('<select class="form-control" name="comparison_operator">\
-										<option value="eq">=</option>\
-										<option value="gt">&gt;</option>\
-										<option value="lt">&lt;</option>\
-										<option value="ltgt">&lt;&gt;</option>\
-										<option value="gte">&gt;=</option>\
-										<option value="lte=">&lt;=</option>\
-										<option value="LIKE">LIKE</option>\
+										<option value="eq">= ('+gettext("equal")+')</option>\
+										<option value="gt">&gt; ('+gettext("greater than")+')</option>\
+										<option value="lt">&lt; ('+gettext("lower than")+')</option>\
+										<option value="ltgt">&lt;&gt; ('+gettext("not equal")+')</option>\
+										<option value="gte">&gt;= ('+gettext("greater than equal")+')</option>\
+										<option value="lte=">&lt;= ('+gettext("lower than equal")+')</option>\
+										<option value="LIKE">LIKE ('+gettext("like case sensitive")+')</option>\
 									</select>');
 
 		// si aggiunge e si fa apparire la dipendenza se seleziona
@@ -316,7 +316,7 @@ ga.Qdjango.widgetEditor = {
 
 		// add widget types
 		if (this.layer_type != 'spatialite'){
-			cmpOperatorSelect.append('<option value="ILIKE">ILIKE</option>')
+			cmpOperatorSelect.append('<option value="ILIKE">ILIKE ('+gettext("like not case sensitive")+')</option>')
 		}
 
 		if (that.isset(values) && that.isset(values.filterop))
@@ -335,9 +335,9 @@ ga.Qdjango.widgetEditor = {
 			} else {
 				// add like and i like if no just added
 				if (likeopts.length == 0)
-					cmpOperatorSelect.append('<option value="LIKE">LIKE</option>');
+					cmpOperatorSelect.append('<option value="LIKE">LIKE ('+gettext("like case sensitive")+')</option>');
 				if (ilikeopts.length == 0)
-					cmpOperatorSelect.append('<option value="ILIKE">ILIKE</option>');
+					cmpOperatorSelect.append('<option value="ILIKE">ILIKE ('+gettext("like not case sensitive")+')</option>');
 			}
 		});
 
@@ -358,21 +358,40 @@ ga.Qdjango.widgetEditor = {
 									</div>\
 								</div>\
 								<div class="row">\
-									<div class="col-md-3"><span class="label label-default">'+gettext("Field")+'</span></div>\
-									<div class="col-md-2"><span class="label label-default">'+gettext("Widget")+'</span></div>\
-									<div class="col-md-3"><span class="label label-default">'+gettext("Alias")+'</span></div>\
-									<div class="col-md-3"><span class="label label-default">'+gettext("Description")+'</span></div>\
-									<div class="col-md-1"><span class="label label-default">'+gettext("Comparison operator")+'</span></div>\
+									<div class="col-md-3">\
+										<div class="controls fieldSelect">\
+											<label class="control-label">'+gettext("Field")+'</label>\
+										</div>\
+									</div>\
+									<div class="col-md-2">\
+										<div class="controls widgetType">\
+											<label class="control-label">'+gettext("Widget")+'</label>\
+										</div>\
+									</div>\
+									<div class="col-md-3">\
+										<div class="controls textInput">\
+											<label class="control-label">'+gettext("Alias")+'</label>\
+										</div>\
+									</div>\
+									<div class="col-md-4">\
+										<div class="controls descriptionInput">\
+											<label class="control-label">'+gettext("Description")+'</label>\
+										</div>\
+									</div>\
 								</div>\
 								<div class="row">\
-									<div class="col-md-3 fieldSelect"></div>\
-									<div class="col-md-2 widgetType"></div>\
-										<div class="col-md-3 textInput"></div>\
-									<div class="col-md-3 descriptionInput"></div>\
-									<div class="col-md-1 cmpOperatorSelect"></div>\
+									<div class="col-md-3">\
+										<div class="controls cmpOperatorSelect">\
+											<label class="control-label">'+gettext("Comparison operator")+'</label>\
+										</div>\
+									</div>\
 								</div>\
 								<div class="row">\
-									<div class="col-md-3 invisible cmpDependanceSelectLabel"><span class="label label-default">'+gettext("Dependency")+'</span></div>\
+									<div class="col-md-3">\
+										<div class="controls cmpDependanceSelectLabel invisible">\
+											<label class="control-label">'+gettext("Dependency")+'</label>\
+										</div>\
+									</div>\
 								</div>\
 								<div class="row">\
 									<div class="col-md-3 invisible cmpDependanceSelect"></div>\
@@ -384,6 +403,7 @@ ga.Qdjango.widgetEditor = {
 							<select class="form-control logic_operator" name="logic_operator" class="logic_operator" style="display: none">\
 								<option value="and">AND</option>\
 							</select>\
+							<div class="help-block invisible">'+gettext("Logical join")+'</div>\
 						</div>\
 						</div>\
 					</div>');
@@ -395,7 +415,7 @@ ga.Qdjango.widgetEditor = {
 			$(".logic_operator").last().fadeOut(that.fadeNumber);
 		});
 		div.find(".fieldSelect").append(fieldSelect);
-		div.find(".textInput").append(textInput);
+		div.find(".textInput").append(textInput).append('<div class="help-block">'+gettext("Alias field name fro client search input")+'</div>');
 		div.find(".descriptionInput").append(descriptionInput);
 		div.find(".cmpOperatorSelect").append(cmpOperatorSelect);
 		div.find(".cmpDependanceSelect").append(cmpDependanceSelect);
