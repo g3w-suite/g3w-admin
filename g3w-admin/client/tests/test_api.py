@@ -228,7 +228,8 @@ class ClientApiTest(CoreTestBase):
                     "input": {
                         "type": "textfield",
                         "options": {}
-                    }
+                    },
+                    "logicop": 'and'
                 }
             ],
             "results":[],
@@ -253,9 +254,10 @@ class ClientApiTest(CoreTestBase):
         resp_serach = resp['search'][0]
         self.assertEqual(resp_serach['name'], 'Test selectbox')
         self.assertEqual(resp_serach['type'], 'search')
-        self.assertEqual(resp_serach['options']['filter']['AND'][0]['input']['type'], 'selectfield')
-        self.assertEqual(set(resp_serach['options']['filter']['AND'][0]['input']['options']['values']),
+        self.assertEqual(resp_serach['options']['filter'][0]['input']['type'], 'selectfield')
+        self.assertEqual(set(resp_serach['options']['filter'][0]['input']['options']['values']),
                          set(['a point', 'another point']))
+        self.assertEqual(resp_serach['options']['filter'][0]['logicop'], 'and')
 
         # create a search widget with autocompletebox
         # -------------------------------------------
@@ -273,7 +275,8 @@ class ClientApiTest(CoreTestBase):
                     "input": {
                         "type": "textfield",
                         "options": {}
-                    }
+                    },
+                    "logicop": 'and'
                 }
             ],
             "results": [],
@@ -298,7 +301,8 @@ class ClientApiTest(CoreTestBase):
         resp_serach = resp['search'][1]
         self.assertEqual(resp_serach['name'], 'Test autocompletebox')
         self.assertEqual(resp_serach['type'], 'search')
-        self.assertEqual(resp_serach['options']['filter']['AND'][0]['input']['type'], 'autocompletefield')
+        self.assertEqual(resp_serach['options']['filter'][0]['input']['type'], 'autocompletefield')
+        self.assertEqual(resp_serach['options']['filter'][0]['logicop'], 'and')
 
     def testClientConfigApiViewForPrint(self):
         """Test client config API for print section"""

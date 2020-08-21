@@ -507,8 +507,7 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         resp = json.loads(self._testApiCall('core-vector-api',
                                             ['data', 'qdjango', self.project310.instance.pk, cities.qgs_layer_id],
                                             {
-                                                'fieldand': 'ISO2_CODE|eq|IT',
-                                                'fieldor': 'ISO2_CODE|eq|FR',
+                                                'field': 'ISO2_CODE|eq|IT|OR,ISO2_CODE|eq|FR'
                                             }).content)
 
         self.assertEqual(resp['vector']['count'], total_count)
@@ -520,8 +519,7 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         resp = json.loads(self._testApiCall('core-vector-api',
                                             ['data', 'qdjango', self.project310.instance.pk, cities.qgs_layer_id],
                                             {
-                                                'fieldand': 'ISO2_CODE|eq|IT,POPULATION|gt|10000',
-                                                'fieldor': 'ISO2_CODE|eq|FR',
+                                                'field': 'ISO2_CODE|eq|IT|AND,POPULATION|gt|10000|OR,ISO2_CODE|eq|FR',
                                             }).content)
 
         self.assertEqual(resp['vector']['count'], total_count)
@@ -587,7 +585,7 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
                                             ['data', 'qdjango', self.project310.instance.pk, cities.qgs_layer_id],
                                             {
                                                 'suggest': 'NAME|flo',
-                                                'field': 'ISO2_CODE|IT'
+                                                'field': 'ISO2_CODE|eq|IT'
                                             }).content)
 
         self.assertEqual(resp['vector']['count'], total_count)
@@ -601,7 +599,7 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
                                             ['data', 'qdjango', self.project310.instance.pk, cities.qgs_layer_id],
                                             {
                                                 'suggest': 'NAME|flo',
-                                                'field': 'ISO2_CODE|IT,NAME|Florence'
+                                                'field': 'ISO2_CODE|eq|IT,NAME|eq|Florence'
                                             }).content)
 
         self.assertEqual(resp['vector']['count'], total_count)
@@ -634,7 +632,7 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
                                             ['data', 'qdjango', self.project310.instance.pk, cities.qgs_layer_id],
                                             {
                                                 'suggest': 'NAME|flo',
-                                                'field': 'ISO2_CODE|IT',
+                                                'field': 'ISO2_CODE|eq|IT',
                                                 'unique': 'ISO2_CODE'
                                             }).content)
 

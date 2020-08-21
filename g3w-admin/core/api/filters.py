@@ -227,7 +227,7 @@ class SuggestFilterBackend(BaseFilterBackend):
 
 
 class FieldFilterBackend(BaseFilterBackend):
-    """Backend filter that returns matches for a field|operator|value tuple"""
+    """Backend filter that returns matches for a field|operator|value|logic_operator tuple"""
 
     COMPARATORS_MAP = {
         'eq': '=',
@@ -242,65 +242,54 @@ class FieldFilterBackend(BaseFilterBackend):
 
     def apply_filter(self, request, qgis_layer, qgis_feature_request, view):
 
-        search_expressions_and = []
-        search_expressions_or = []
+        suggest_value = request.query_params.get('field')
 
-        for suggest_value, operator in {
-                request.query_params.get('field'): 'AND',
-                request.query_params.get('fieldand'): 'AND',
-                request.query_params.get('fieldor'): 'OR'}.items():
+        if suggest_value:
 
-            if suggest_value:
+            # get field and value and operator
+            # ie. ?field=name|eq|Rome, ?field=name|eq|Rome|and
+            # field can be multiple separated by ','
+            # i.e. $field=name|eq|Rome,state|eq|Italy
 
-                # get field and value and operator
-                # ie. ?field=name|Rome, ?field=name|eq|Rome
-                # field can be multiple separated by ','
-                # i.e. $field=name|Rome,state|eq|Italy
+            fields = suggest_value.split(',')
 
-                fields = suggest_value.split(',')
+            count = 0
+            nfields = len(fields)
+            search_expression = ''
 
-                for field in fields:
+            for field in fields:
+                try:
+                    field_name, field_operator, field_value, field_logicop = field.split('|')
+                    field_logicop = field_logicop.upper()
+                except ValueError as e:
                     try:
                         field_name, field_operator, field_value = field.split('|')
-                    except ValueError as e:
-                        try:
-                            field_name, field_value = field.split('|')
-                            field_operator = 'eq'
-                        except ValueError:
-                            raise ParseError('Invalid field string supplied for parameter field')
+                        field_logicop = 'AND'
+                    except ValueError:
+                        raise ParseError('Invalid field string supplied for parameter field')
 
-                    if field_name and field_value and self._is_valid_field(qgis_layer, field_name):
+                if field_name and field_value and self._is_valid_field(qgis_layer, field_name):
 
-                        pre_post_operator = '%' if field_operator in ('like', 'ilike') else ''
-                        search_expression = '{field_name} {field_operator} {field_value}'.format(
-                            field_name=self._quote_identifier(field_name),
-                            field_operator=self.COMPARATORS_MAP[field_operator],
-                            field_value=self._quote_value(f'{pre_post_operator}{field_value}{pre_post_operator}')
-                            )
+                    pre_post_operator = '%' if field_operator in ('like', 'ilike') else ''
+                    single_search_expression = '{field_name} {field_operator} {field_value}'.format(
+                        field_name=self._quote_identifier(field_name),
+                        field_operator=self.COMPARATORS_MAP[field_operator],
+                        field_value=self._quote_value(f'{pre_post_operator}{field_value}{pre_post_operator}')
+                        )
 
-                        if operator == 'AND':
-                            search_expressions_and.append(search_expression)
-                        else:
-                            search_expressions_or.append(search_expression)
+                    search_expression = f'{search_expression} {single_search_expression}'
 
-        current_expression = qgis_feature_request.filterExpression()
+                    if count != nfields - 1:
+                        search_expression = f'{search_expression} {field_logicop} '
 
-        # first create and fields
-        search_expression = ' AND '.join(search_expressions_and)
+                count += 1
 
-        # second or fields
-        search_expression_or = ' OR '.join(search_expressions_or)
+            current_expression = qgis_feature_request.filterExpression()
 
-        if search_expression_or != '':
+            if current_expression and search_expression != '':
+                search_expression = '( %s ) AND ( %s )' % (
+                    current_expression.dump(), search_expression)
+
             if search_expression != '':
-                search_expression = f'{search_expression} OR {search_expression_or}'
-            else:
-                search_expression = search_expression_or
-
-        if current_expression and search_expression != '':
-            search_expression = '( %s ) AND ( %s )' % (
-                current_expression.dump(), search_expression)
-
-        if search_expression != '':
-            qgis_feature_request.setFilterExpression(search_expression)
+                qgis_feature_request.setFilterExpression(search_expression)
 

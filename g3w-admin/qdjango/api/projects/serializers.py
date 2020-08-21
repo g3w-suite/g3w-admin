@@ -461,9 +461,7 @@ class WidgetSerializer(serializers.ModelSerializer):
                 'queryurl': None,
                 'title': body['title'],
                 'results': body['results'],
-                'filter': {
-                    'AND':[]
-                },
+                'filter': [],
                 'dozoomtoextent': body['dozoomtoextent'],
                 #'zoom': body['zoom'],
             }
@@ -497,11 +495,12 @@ class WidgetSerializer(serializers.ModelSerializer):
 
                 input = field['input']
                 input['options']['blanktext'] = field['blanktext']
-                ret['options']['filter']['AND'].append({
+                ret['options']['filter'].append({
                     'op': field['filterop'],
                     'attribute': field['name'],
                     'label': field['label'],
                     'input': input,
+                    'logicop': field['logicop']
                 })
         else:
             ret['body'] = json.loads(instance.body)

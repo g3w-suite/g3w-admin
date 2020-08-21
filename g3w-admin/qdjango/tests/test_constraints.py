@@ -534,7 +534,7 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
                                                 'layer_name': world.qgs_layer_id,
                                             }.values(),
                                             kwargs={
-                                                'field': 'NAME|FRANCE'
+                                                'field': 'NAME|eq|FRANCE'
                                             }
                                             )
 
@@ -680,7 +680,7 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
                                                 'layer_name': world.qgs_layer_id,
                                             }.values(),
                                             kwargs={
-                                                'field': 'NAME|FRANCE'
+                                                'field': 'NAME|eq|FRANCE'
                                             }
                                             )
 
@@ -834,7 +834,7 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
                                                 'layer_name': points.qgs_layer_id,
                                             }.values(),
                                             kwargs={
-                                                'field': 'name|a point'
+                                                'field': 'name|eq|a point'
                                             }
                                             )
 
@@ -984,7 +984,7 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
                                                 'layer_name': world.qgs_layer_id,
                                             }.values(),
                                             kwargs={
-                                                'field': 'NAME|FRANCE'
+                                                'field': 'NAME|eq|FRANCE'
                                             }
                                             )
 

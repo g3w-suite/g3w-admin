@@ -143,6 +143,8 @@ ga.Qdjango.widgetEditor = {
 							type: that.getType(v.find(".fieldSelect").find("select").find("option:selected").data().type), // TIPO DI CAMPO //
 							options: options
 						},
+						logicop: v.find("select.logic_operator").val()
+
 					});
 				});
 
@@ -402,6 +404,7 @@ ga.Qdjango.widgetEditor = {
 						<div class="col-md-offset-4 col-md-4">\
 							<select class="form-control logic_operator" name="logic_operator" class="logic_operator" style="display: none">\
 								<option value="and">AND</option>\
+								<option value="or">OR</option>\
 							</select>\
 							<div class="help-block invisible">'+gettext("Logical join")+'</div>\
 						</div>\
@@ -453,6 +456,11 @@ ga.Qdjango.widgetEditor = {
 		widgetSelect.trigger('change');
 		if (that.isset(values) && that.isset(values.input.options['dependance']))
 			cmpDependanceSelect.val($('<div/>').html(values.input.options['dependance']).text());
+
+		if (that.isset(values) && that.isset(values.logicop))
+			var logicopselect = div.find("select.logic_operator");
+			if (that.isset(logicopselect))
+				logicopselect.val(values.logicop);
 	},
 	
 	generateTooltipRow: function(values)
