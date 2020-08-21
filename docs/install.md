@@ -45,7 +45,7 @@ source /usr/local/bin/virtualenvwrapper.sh
 ```
 
 ## Virtualenv creation
-To create a virtualnenv is sufficent call mkvirtualenv commando follow by the identification name for virtualenv
+To create a virtualnenv is sufficent call mkvirtualenv commando follow by the identification name for virtualenv (to use QGIS API into a virtualenv only solution is to give access python system site-packages to it using *--system-site-packages* option)
 ```bash
 mkvirtualenv g3wsuite
 ```

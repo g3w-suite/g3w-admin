@@ -232,6 +232,16 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
                                     raise Exception(_('Error adding feature: %s') % ', '.join(
                                         qgis_layer.dataProvider().errors()))
 
+                                # Patch for Spatialite provider on pk
+                                if qgis_layer.dataProvider().name() == 'spatialite':
+                                    pks = qgis_layer.primaryKeyAttributes()
+                                    if len(pks) > 1:
+                                        raise Exception(_(f'Error adding feature on Spatialite provider: '
+                                                          f'layer {qgis_layer.id()} has more than one pk column'))
+
+                                    # update pk attribute:
+                                    feature.setAttribute(pks[0], feature.id())
+
                         elif mode_editing == EDITING_POST_DATA_UPDATED:
                             attr_map = {}
                             for name, value in geojson_feature['properties'].items():
