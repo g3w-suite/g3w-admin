@@ -257,7 +257,7 @@ class ClientApiTest(CoreTestBase):
         self.assertEqual(resp_serach['options']['filter'][0]['input']['type'], 'selectfield')
         self.assertEqual(set(resp_serach['options']['filter'][0]['input']['options']['values']),
                          set(['a point', 'another point']))
-        self.assertEqual(resp_serach['options']['filter'][0]['logicop'], 'and')
+        self.assertEqual(resp_serach['options']['filter'][0]['logicop'], 'AND')
 
         # create a search widget with autocompletebox
         # -------------------------------------------
@@ -302,7 +302,7 @@ class ClientApiTest(CoreTestBase):
         self.assertEqual(resp_serach['name'], 'Test autocompletebox')
         self.assertEqual(resp_serach['type'], 'search')
         self.assertEqual(resp_serach['options']['filter'][0]['input']['type'], 'autocompletefield')
-        self.assertEqual(resp_serach['options']['filter'][0]['logicop'], 'and')
+        self.assertEqual(resp_serach['options']['filter'][0]['logicop'], 'AND')
 
     def testClientConfigApiViewForPrint(self):
         """Test client config API for print section"""
