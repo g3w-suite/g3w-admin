@@ -70,7 +70,8 @@ ga.Qdjango.widgetEditor = {
 	
 	getType: function(str)
 	{
-		if (str.indexOf("VARCHAR") !== -1 ||
+		if (str.indexOf("QSTRING") !== -1 ||
+			str.indexOf("QDATE") !== -1 ||
 			str.indexOf("STRING") !== -1 ||
 			str.indexOf("TEXT") !== -1)
 			return "textfield";
@@ -78,7 +79,9 @@ ga.Qdjango.widgetEditor = {
 			str.indexOf("DOUBLE PRECISION") !== -1 ||
 			str.indexOf("INTEGER") !== -1 ||
 			str.indexOf("BIGINT") !== -1 ||
-			str.indexOf("REAL") !== -1)
+			str.indexOf("REAL") !== -1 ||
+			str.indexOf("INT") !== -1 ||
+			str.indexOf("DOUBLE") !== -1)
 			return "numberfield";
 	},
 
@@ -311,14 +314,32 @@ ga.Qdjango.widgetEditor = {
 			widgetSelect.append('<option value="'+k+'">'+i+'</option>');
 		});
 
-
-
 		// add widget types
 		if (this.layer_type != 'spatialite'){
 			cmpOperatorSelect.append('<option value="ILIKE">ILIKE</option>')
 		}
+
 		if (that.isset(values) && that.isset(values.filterop))
 			cmpOperatorSelect.val($('<div/>').html(values.filterop).text());
+
+		// add control on cmpOperatorSelect for field type:
+		fieldSelect.on('change', function (){
+
+			var likeopts = cmpOperatorSelect.find("option[value='LIKE']");
+			var ilikeopts = cmpOperatorSelect.find("option[value='ILIKE']");
+			var field_type = that.getType($(this).find("option:selected").data().type);
+			if (field_type == 'numberfield') {
+				// remove like and ilike option
+				likeopts.remove();
+				ilikeopts.remove();
+			} else {
+				// add like and i like if no just added
+				if (likeopts.length == 0)
+					cmpOperatorSelect.append('<option value="LIKE">LIKE</option>');
+				if (ilikeopts.length == 0)
+					cmpOperatorSelect.append('<option value="ILIKE">ILIKE</option>');
+			}
+		});
 
 		if (that.isset(values) && that.isset(values.widgettype))
 			widgetSelect.val($('<div/>').html(values.widgettype).text());
