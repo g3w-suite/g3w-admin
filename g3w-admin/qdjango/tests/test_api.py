@@ -501,6 +501,32 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         self.assertEqual(resp['vector']['count'], total_count)
 
         qgs_request = QgsFeatureRequest()
+        qgs_request.setFilterExpression('"ISO2_CODE" = \'IT\' OR "ISO2_CODE" = \'FR\'')
+        total_count = len([f for f in qgis_layer.getFeatures(qgs_request)])
+
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['data', 'qdjango', self.project310.instance.pk, cities.qgs_layer_id],
+                                            {
+                                                'fieldand': 'ISO2_CODE|eq|IT',
+                                                'fieldor': 'ISO2_CODE|eq|FR',
+                                            }).content)
+
+        self.assertEqual(resp['vector']['count'], total_count)
+
+        qgs_request = QgsFeatureRequest()
+        qgs_request.setFilterExpression('"ISO2_CODE" = \'IT\' AND "POPULATION" > 10000 OR "ISO2_CODE" = \'FR\'')
+        total_count = len([f for f in qgis_layer.getFeatures(qgs_request)])
+
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['data', 'qdjango', self.project310.instance.pk, cities.qgs_layer_id],
+                                            {
+                                                'fieldand': 'ISO2_CODE|eq|IT,POPULATION|gt|10000',
+                                                'fieldor': 'ISO2_CODE|eq|FR',
+                                            }).content)
+
+        self.assertEqual(resp['vector']['count'], total_count)
+
+        qgs_request = QgsFeatureRequest()
         qgs_request.setFilterExpression('"NAME" LIKE \'%Flo%\'')
         total_count = len([f for f in qgis_layer.getFeatures(qgs_request)])
 
