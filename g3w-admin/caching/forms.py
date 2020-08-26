@@ -11,6 +11,11 @@ class ActiveCachingLayerForm(G3WRequestFormMixin, G3WProjectFormMixin, forms.For
     active = forms.BooleanField(label=_('Active'), required=False)
     reset_layer_cache_url = forms.CharField(required=False, widget=forms.HiddenInput)
 
+    as_base_layer = forms.BooleanField(label=_('Save as base layer'), required=False)
+    base_layer_title = forms.CharField(label=_('Base layer title'), required=False)
+    base_layer_desc = forms.CharField(label=_('Base layer description'), widget=forms.Textarea, required=False)
+    base_layer_attr = forms.CharField(label=_('Base layer attribution'), required=False)
+
     def __init__(self, *args, **kwargs):
 
         super(ActiveCachingLayerForm, self).__init__(*args, **kwargs)
@@ -36,6 +41,20 @@ class ActiveCachingLayerForm(G3WRequestFormMixin, G3WProjectFormMixin, forms.For
                             css_class='btn-group'
                         ),
                         css_class='col-md-9'
+                    ),
+
+                    css_class='row'
+                ),
+                Div(
+                    Div(
+                        'as_base_layer',
+                        Div(
+                            'base_layer_title',
+                            'base_layer_desc',
+                            'base_layer_attr',
+                            css_class='base-layer-data'
+                        ),
+                        css_class='col-md-12 base-layer-enable'
                     ),
 
                     css_class='row'

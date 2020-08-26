@@ -500,7 +500,7 @@ class WidgetSerializer(serializers.ModelSerializer):
                     'attribute': field['name'],
                     'label': field['label'],
                     'input': input,
-                    'logicop': field['logicop'].upper()
+                    'logicop': field.get('logicop', 'AND').upper()
                 })
         else:
             ret['body'] = json.loads(instance.body)

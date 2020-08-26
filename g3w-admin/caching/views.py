@@ -12,6 +12,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from core.mixins.views import AjaxableFormResponseMixin, G3WRequestViewMixin, G3WProjectViewMixin
 from core.utils.decorators import project_type_permission_required
+from core.models import BaseLayer
 from .forms import ActiveCachingLayerForm
 from .models import G3WCachingLayer
 from .utils import get_config, TilestacheConfig
@@ -19,6 +20,7 @@ from .api.permissions import TilePermission
 from django.core.cache import caches
 from qdjango.models import Layer as QdjangoLayer
 import time
+import json
 
 
 class ActiveCachingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3WRequestViewMixin, FormView):
@@ -53,15 +55,83 @@ class ActiveCachingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3W
             self.layer.pk
         ])
 
-        # try to find notes config
+        # try to find caching layer config
         try:
             self.activated = G3WCachingLayer.objects.get(app_name=self.app_name, layer_id=self.layer_id)
             kwargs['initial']['active'] = True
+            if self.activated.baselayer_id != None:
+                kwargs['initial']['as_base_layer'] = True
+                kwargs['initial']['base_layer_title'] = self.activated.base_layer.title
+                kwargs['initial']['base_layer_desc'] = self.activated.base_layer.description
+                kwargs['initial']['base_layer_attr'] = self.activated.base_layer_attr
+
+                # get title
+                self.base_layer = self.activated.base_layer
+            else:
+                self.base_layer = None
+
         except:
             self.activated = None
             kwargs['initial']['active'] = False
+            kwargs['initial']['as_base_layer'] = False
+            self.base_layer = None
 
         return kwargs
+
+    def _crud_baselayer(self, form):
+        """ CRUD base layer """
+
+        if form.cleaned_data['as_base_layer']:
+
+            # Create/update base layer
+            if self.base_layer:
+
+                # update
+                self.base_layer.title = form.cleaned_data['base_layer_title']
+                self.base_layer.description = form.cleaned_data['base_layer_desc']
+                property = json.loads(self.base_layer.property)
+                property['attribution'] = form.cleaned_data['base_layer_attr']
+                self.base_layer.property = json.dumps(property)
+                self.base_layer.save()
+
+            else:
+
+                # create
+                # create OL config data
+                # i.e.:
+                # {
+                #     "crs": 32632,
+                #     "url": "https://dev.g3wsuite.it/caching/api/qdjango30/{z}/{x}/{y}.png",
+                #     "servertype": "TMS",
+                #     "attributions": "Ortofoto Piemonte AGEA 2015"
+                # }
+
+                property = {
+                    "crs": self.layer.srid,
+                    "url": f"/caching/api/{self.layer._meta.app_label}{self.layer.pk}/"+"{z}/{x}/{y}.png",
+                    "servertype": "TMS",
+                    "attributions": ""
+                }
+
+                kwargs = {
+                    'name': f'bl_from_cached_layer_{self.layer.pk}',
+                    'title': form.cleaned_data['base_layer_title'],
+                    'description': form.cleaned_data['base_layer_title'],
+                    'property': json.dumps(property)
+                }
+
+                self.base_layer = BaseLayer(**kwargs)
+                self.base_layer.save()
+
+                # update caching layer config record
+                self.activated.baselayer_id = self.base_layer.pk
+                self.activated.save()
+        else:
+            # Delete base layer
+            if self.base_layer:
+                self.base_layer.delete()
+
+
 
     @transaction.atomic
     def form_valid(self, form):
@@ -70,14 +140,15 @@ class ActiveCachingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3W
 
         if form.cleaned_data['active']:
             if not self.activated:
-                caching_layer = G3WCachingLayer.objects.create(app_name=self.app_name, layer_id=self.layer_id)
-                #tilestache_cfg.add_layer(str(caching_layer), caching_layer)
+                self.activated = G3WCachingLayer.objects.create(app_name=self.app_name, layer_id=self.layer_id)
         else:
             if self.activated:
-                #tilestache_cfg.remove_layer(str(self.activated))
                 self.activated.delete()
-        #tilestache_cfg.save_hash_file()
+
         TilestacheConfig.set_cache_config_dict(TilestacheConfig().config_dict)
+
+        # Baselayer management
+        self._crud_baselayer(form)
 
         return super(ActiveCachingLayerView, self).form_valid(form)
 
