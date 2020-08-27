@@ -7,6 +7,10 @@
 {% load qdjango_tags %}
 
 {% block custom_js_links_page %}
+{% comment %}Add caching/ui.js if caching in django apps{% endcomment %}
+{% if 'caching' in SETTINGS.G3WADMIN_LOCAL_MORE_APPS %}
+<script src="{% static "caching/js/ui.js" %}"></script>
+{% endif %}
 <script src="{% static "qdjango/js/widget.js" %}"></script>
 <script>
     $('#tree').treeview({data:{{ layers_tree|safe }}});

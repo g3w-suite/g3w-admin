@@ -2,6 +2,7 @@ from django.conf import settings
 from django.http.request import QueryDict
 from django.urls import reverse
 from .models import Layer
+from caching.utils import projections
 
 
 def get_layer_to_erase_for_project(layer_id):

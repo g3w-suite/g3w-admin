@@ -33,3 +33,12 @@ class CachingFormTests(CachingTestBase):
         form = ActiveCachingLayerForm(request=request, data={'active': 1})
         self.assertTrue(form.is_valid())
 
+        # For base layer CRUD
+        # base_layer_title required with as_base_layer as true
+        form = ActiveCachingLayerForm(request=request, data={'active': 1, 'as_base_layer': 1})
+        self.assertFalse(form.is_valid())
+
+        form = ActiveCachingLayerForm(request=request, data={'active': 1, 'as_base_layer': 1, 'base_layer_title': 'title'})
+        self.assertTrue(form.is_valid())
+
+

@@ -1,7 +1,7 @@
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 from crispy_forms.helper import FormHelper, Layout
-from crispy_forms.layout import HTML, Div
+from crispy_forms.layout import HTML, Div, Fieldset, Field
 from core.mixins.forms import G3WRequestFormMixin, G3WProjectFormMixin
 
 
@@ -10,6 +10,11 @@ class ActiveCachingLayerForm(G3WRequestFormMixin, G3WProjectFormMixin, forms.For
 
     active = forms.BooleanField(label=_('Active'), required=False)
     reset_layer_cache_url = forms.CharField(required=False, widget=forms.HiddenInput)
+
+    as_base_layer = forms.BooleanField(label=_('Save as base layer'), required=False)
+    base_layer_title = forms.CharField(label=_('Base layer title'), required=False)
+    base_layer_desc = forms.CharField(label=_('Base layer description'), widget=forms.Textarea, required=False)
+    base_layer_attr = forms.CharField(label=_('Base layer attribution'), required=False)
 
     def __init__(self, *args, **kwargs):
 
@@ -40,7 +45,32 @@ class ActiveCachingLayerForm(G3WRequestFormMixin, G3WProjectFormMixin, forms.For
 
                     css_class='row'
                 ),
+                Div(
+                    Div(
+                        'as_base_layer',
+                        Fieldset(
+                            _('Base layer data'),
+                            'base_layer_title',
+                            'base_layer_desc',
+                            'base_layer_attr',
+                            css_class='base-layer-data',
+                            disabled='disabled'
+                        ),
+                        css_class='col-md-12 base-layer-enable'
+                    ),
+
+                    css_class='row'
+                ),
 
                 css_class='col-md-12'
             )
         )
+
+    def clean_base_layer_title(self):
+        """ Clean base_layer_title not empty if as_base_layer is set """
+
+        base_layer_title = self.cleaned_data['base_layer_title']
+        if self.cleaned_data['as_base_layer'] and base_layer_title == '':
+            raise forms.ValidationError(_('This field is required'))
+
+        return base_layer_title

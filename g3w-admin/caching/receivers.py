@@ -8,9 +8,9 @@ from caching.models import G3WCachingLayer
 from caching.utils import get_config
 
 @receiver(load_layer_actions)
-def editingLayerAction(sender, **kwargs):
+def caching_layer_action(sender, **kwargs):
     """
-    Return html actions editing for project layer.
+    Return html actions caching for project layer.
     """
 
     # only admin and editor1 or editor2:
