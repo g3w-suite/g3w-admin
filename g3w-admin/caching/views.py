@@ -65,7 +65,7 @@ class ActiveCachingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3W
                 kwargs['initial']['base_layer_desc'] = self.activated.base_layer.description
                 kwargs['initial']['base_layer_attr'] = self.activated.base_layer_attr
 
-                # get title
+                # get base layer
                 self.base_layer = self.activated.base_layer
             else:
                 self.base_layer = None
@@ -90,7 +90,7 @@ class ActiveCachingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3W
                 self.base_layer.title = form.cleaned_data['base_layer_title']
                 self.base_layer.description = form.cleaned_data['base_layer_desc']
                 property = json.loads(self.base_layer.property)
-                property['attribution'] = form.cleaned_data['base_layer_attr']
+                property['attributions'] = form.cleaned_data['base_layer_attr']
                 self.base_layer.property = json.dumps(property)
                 self.base_layer.save()
 
@@ -110,13 +110,13 @@ class ActiveCachingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3W
                     "crs": self.layer.srid,
                     "url": f"/caching/api/{self.layer._meta.app_label}{self.layer.pk}/"+"{z}/{x}/{y}.png",
                     "servertype": "TMS",
-                    "attributions": ""
+                    "attributions": form.cleaned_data['base_layer_attr']
                 }
 
                 kwargs = {
                     'name': f'bl_from_cached_layer_{self.layer.pk}',
                     'title': form.cleaned_data['base_layer_title'],
-                    'description': form.cleaned_data['base_layer_title'],
+                    'description': form.cleaned_data['base_layer_desc'],
                     'property': json.dumps(property)
                 }
 
@@ -128,8 +128,11 @@ class ActiveCachingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3W
                 self.activated.save()
         else:
             # Delete base layer
-            if self.base_layer:
+            if self.base_layer and self.base_layer.pk:
                 self.base_layer.delete()
+            if self.activated.baselayer_id:
+                self.activated.baselayer_id = None
+                self.activated.save()
 
 
 
@@ -141,14 +144,16 @@ class ActiveCachingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3W
         if form.cleaned_data['active']:
             if not self.activated:
                 self.activated = G3WCachingLayer.objects.create(app_name=self.app_name, layer_id=self.layer_id)
+
+            # Baselayer management
+            self._crud_baselayer(form)
         else:
             if self.activated:
                 self.activated.delete()
+            if self.base_layer:
+                self.base_layer.delete()
 
         TilestacheConfig.set_cache_config_dict(TilestacheConfig().config_dict)
-
-        # Baselayer management
-        self._crud_baselayer(form)
 
         return super(ActiveCachingLayerView, self).form_valid(form)
 

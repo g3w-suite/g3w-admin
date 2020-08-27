@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-24 15:47+0000\n"
+"POT-Creation-Date: 2020-08-27 08:28+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,40 +18,65 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: caching/forms.py:10
+#: forms.py:11
 msgid "Active"
 msgstr "Attivo"
 
-#: caching/forms.py:21
-msgid "Check on uncheck to attive/desctive caching layer capabilities:"
+#: forms.py:14
+msgid "Save as base layer"
+msgstr "Salva come Base layer"
+
+#: forms.py:15
+msgid "Base layer title"
+msgstr "Titolo Base layer"
+
+#: forms.py:16
+msgid "Base layer description"
+msgstr "Descizione Base layer"
+
+#: forms.py:17
+msgid "Base layer attribution"
+msgstr "Attribuzione/Copyright Base layer"
+
+#: forms.py:27
+#| msgid "Check on uncheck to attive/desctive caching layer capabilities:"
+msgid "Check on uncheck to activate/deactivate caching layer capabilities:"
 msgstr "Attiva o disattiva il caching del layer"
 
-#: caching/forms.py:34
+#: forms.py:40
 msgid "Reset cache"
 msgstr "Cancella la cache del layer"
 
-#: caching/forms.py:34
+#: forms.py:40
 #, fuzzy
 #| msgid "Reset cache"
 msgid "Reset cache for project"
 msgstr "Cancella la cache del layer"
 
-#: caching/templates/caching/caching_layer_active_form.html:7
+#: forms.py:52
+msgid "Base layer data"
+msgstr "Dati Base layer"
+
+#: forms.py:74
+msgid "This field is required"
+msgstr "Campo obbligatorio"
+
+#: templates/caching/caching_layer_active_form.html:7
 msgid "Alert"
 msgstr "Attenzione"
 
-#: caching/templates/caching/caching_layer_active_form.html:8
+#: templates/caching/caching_layer_active_form.html:8
 msgid "Some errors on form. Check it and send again."
 msgstr "Si nono verificati alcuni errori. Controlla e riprova."
 
-#: caching/templates/caching/layer_action.html:7
+#: templates/caching/layer_action.html:7
 msgid "Caching layer"
 msgstr "Cache del layer"
 
-#: caching/templates/caching/layer_action.html:9
+#: templates/caching/layer_action.html:9
 msgid "Activation layer caching"
 msgstr "Attivazione cache del layer"
 
-#: caching/views.py:110
+#: views.py:186
 msgid "Cache erased!"
 msgstr "Cache eliminata!"

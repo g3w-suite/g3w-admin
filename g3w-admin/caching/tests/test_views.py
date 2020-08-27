@@ -14,9 +14,10 @@ from django.urls import reverse
 from django.core.exceptions import ObjectDoesNotExist
 from guardian.shortcuts import assign_perm
 from .base import CachingTestBase
+from core.models import BaseLayer
 from qdjango.models import Layer
 from caching.models import G3WCachingLayer
-
+import json
 
 class CachingViewsTests(CachingTestBase):
 
@@ -59,7 +60,10 @@ class CachingViewsTests(CachingTestBase):
         # Test activate/deactivate layer caching
         ##################################
         self.assertTrue(client.login(username=self.test_admin1.username, password=self.test_admin1.username))
-        res = client.post(url, data={'active': 1})
+        res = client.post(url,
+                          data={
+                              'active': 1
+                          })
 
         # redirect after form is valid.
         self.assertEqual(res.status_code, 302)
@@ -71,6 +75,98 @@ class CachingViewsTests(CachingTestBase):
 
         with self.assertRaises(ObjectDoesNotExist):
             G3WCachingLayer.objects.get(app_name='qdjango', layer_id=layer.pk)
+
+        # Testing caching base layer CRUD
+        # ===============================
+
+        # create
+        res = client.post(url,
+                          data={
+                              'active': 1,
+                              'as_base_layer': 1,
+                              'base_layer_title': 'title base layer from caching',
+                              'base_layer_desc': 'Description',
+                              'base_layer_attr': 'attribution/copyright'
+                          },  **{'HTTP_X_REQUESTED_WITH': 'XMLHttpRequest'})
+
+        self.assertEqual(res.status_code, 200)
+
+        caching_layer = G3WCachingLayer.objects.get(app_name='qdjango', layer_id=layer.pk)
+        base_layer = caching_layer.base_layer
+        self.assertEqual(base_layer.title, 'title base layer from caching')
+        self.assertEqual(base_layer.description, 'Description')
+        body = json.loads(base_layer.property)
+        self.assertEqual(body['attributions'], 'attribution/copyright')
+
+        # update
+        res = client.post(url,
+                          data={
+                              'active': 1,
+                              'as_base_layer': 1,
+                              'base_layer_title': 'title base layer from caching updated',
+                              'base_layer_desc': 'Description updated',
+                              'base_layer_attr': 'attribution/copyright updated'
+                          }, **{'HTTP_X_REQUESTED_WITH': 'XMLHttpRequest'})
+
+        self.assertEqual(res.status_code, 200)
+
+        caching_layer = G3WCachingLayer.objects.get(app_name='qdjango', layer_id=layer.pk)
+        base_layer = caching_layer.base_layer
+        self.assertEqual(base_layer.title, 'title base layer from caching updated')
+        self.assertEqual(base_layer.description, 'Description updated')
+        body = json.loads(base_layer.property)
+        self.assertEqual(body['attributions'], 'attribution/copyright updated')
+
+        base_layer_pk = base_layer.pk
+
+        # delete by deactive as_base_layer
+        res = client.post(url,
+                          data={
+                              'active': 1,
+                          }, **{'HTTP_X_REQUESTED_WITH': 'XMLHttpRequest'})
+
+        self.assertEqual(res.status_code, 200)
+
+        caching_layer = G3WCachingLayer.objects.get(app_name='qdjango', layer_id=layer.pk)
+        self.assertIsNone(caching_layer.baselayer_id)
+
+        with self.assertRaises(ObjectDoesNotExist):
+            BaseLayer.objects.get(pk=base_layer.pk)
+
+        res = client.post(url,
+                          data={
+                              'active': 1,
+                              'as_base_layer': 1,
+                              'base_layer_title': 'title base layer from caching',
+                              'base_layer_desc': 'Description',
+                              'base_layer_attr': 'attribution/copyright'
+                          }, **{'HTTP_X_REQUESTED_WITH': 'XMLHttpRequest'})
+
+        self.assertEqual(res.status_code, 200)
+
+        caching_layer = G3WCachingLayer.objects.get(app_name='qdjango', layer_id=layer.pk)
+        base_layer = caching_layer.base_layer
+        self.assertEqual(base_layer.title, 'title base layer from caching')
+        self.assertEqual(base_layer.description, 'Description')
+        body = json.loads(base_layer.property)
+        self.assertEqual(body['attributions'], 'attribution/copyright')
+
+        res = client.post(url,
+                          data={
+                              'as_base_layer': 1,
+                              'base_layer_title': 'title base layer from caching',
+                              'base_layer_desc': 'Description',
+                              'base_layer_attr': 'attribution/copyright'
+                          }, **{'HTTP_X_REQUESTED_WITH': 'XMLHttpRequest'})
+
+        self.assertEqual(res.status_code, 200)
+
+        with self.assertRaises(ObjectDoesNotExist):
+            G3WCachingLayer.objects.get(app_name='qdjango', layer_id=layer.pk)
+
+        with self.assertRaises(ObjectDoesNotExist):
+            BaseLayer.objects.get(pk=base_layer.pk)
+
 
         client.logout()
 
