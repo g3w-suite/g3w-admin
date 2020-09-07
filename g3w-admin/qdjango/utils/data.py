@@ -969,8 +969,18 @@ class QgisProject(XmlData):
                 p_playout = {
                     'name': qgs_layout.name(),
                     'w': first_page_size.width(),
-                    'h': first_page_size.height(),
+                    'h': first_page_size.height()
                 }
+
+                # check if is a ATLAS print
+                qgs_atlas = qgs_layout.atlas()
+                if qgs_atlas.enabled():
+                    p_playout.update({
+                        'atlas': {
+                            'qgs_layer_id': qgs_atlas.coverageLayer().id(),
+                            'field_name': qgs_atlas.pageNameExpression()[1:-1]
+                        }
+                    })
 
                 # add items
                 maps = []
