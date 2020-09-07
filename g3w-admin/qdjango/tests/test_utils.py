@@ -49,7 +49,7 @@ class QgisProjectTest(TestCase):
         # -----------------------------------------
         self.assertEqual(self.project.title, 'G3W-Suite project test')
         self.assertEqual(self.project.name, 'G3W-Suite project test')
-        self.assertEqual(self.project.qgisVersion, '3.10.7-A Coruña')
+        self.assertEqual(self.project.qgisVersion, '3.10.9-A Coruña')
         self.assertEqual(self.project.srid, 4326)
         self.assertEqual(self.project.units, 'degrees')
 
