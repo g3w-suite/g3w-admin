@@ -175,7 +175,9 @@ class OwsTest(QdjangoTestBase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response['Content-Type'], 'application/pdf')
-        self.assertEqual(len(response.content), 2807526)
+
+        # remove because dimention change by context where test running.
+        #self.assertEqual(len(response.content), 2807526)
 
 
 
