@@ -123,4 +123,62 @@ class OwsTest(QdjangoTestBase):
         self.assertEqual(features[0]['properties']['name'], 'olive')
         self.assertEqual(features[0]['properties']['type'], 'TYPE B')
 
+    def test_getprintalias(self):
+        """Test get request GetPrintAtlas"""
+
+        ows_url = reverse('OWS:ows',
+                          kwargs={'group_slug': self.project310.instance.group.slug,
+                                  'project_type': 'qdjango',
+                                  'project_id': self.project310.instance.id}
+                          )
+
+        # Make a request to the server
+        # check for request error
+
+        c = Client()
+        self.assertTrue(c.login(username='admin01', password='admin01'))
+        response = c.get(ows_url, {
+            'REQUEST': 'GetPrintAtlas',
+            'SERVICE': 'WMS'
+        })
+
+        self.assertEqual(response.status_code, 400)
+        jres = json.loads(response.content)
+        self.assertEqual(jres, {'status': 'fail', 'message': "{}: {}".format(
+            "ATLAS - Error from the user while generating the PDF",
+            "TEMPLATE is required"
+        )})
+
+        c = Client()
+        self.assertTrue(c.login(username='admin01', password='admin01'))
+        response = c.get(ows_url, {
+            'REQUEST': 'GetPrintAtlas',
+            'SERVICE': 'WMS',
+            'TEMPLATE': 'atlas_test'
+        })
+
+        self.assertEqual(response.status_code, 400)
+        jres = json.loads(response.content)
+        self.assertEqual(jres, {'status': 'fail', 'message': "{}: {}".format(
+            "ATLAS - Error from the user while generating the PDF",
+            "EXP_FILTER is mandatory to print an atlas layout"
+        )})
+
+        c = Client()
+        self.assertTrue(c.login(username='admin01', password='admin01'))
+        response = c.get(ows_url, {
+            'REQUEST': 'GetPrintAtlas',
+            'SERVICE': 'WMS',
+            'TEMPLATE': 'atlas_test',
+            'EXP_FILTER': "ISOCODE IN ('IT','FR')"
+        })
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'application/pdf')
+        self.assertEqual(len(response.content), 2807526)
+
+
+
+
+
 
