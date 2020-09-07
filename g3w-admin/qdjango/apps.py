@@ -123,3 +123,7 @@ class QdjangoConfig(AppConfig):
         # Load all QGIS server filter plugins, apps can load additional filters
         # by registering them directly to QGS_SERVER
         from . import server_filters
+
+        # Load all QGIS server services plugins, apps can load additional services
+        # by registering them directly to QGS_SERVER
+        from . import server_services
