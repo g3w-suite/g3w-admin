@@ -6,6 +6,8 @@
     Date                 : October 2017
     Copyright            : (C) 2017 by Michaël Douchin - 3Liz
     Email                : mdouchin at 3liz dot com
+
+    Modified by          : Walter Lorenzetti, Gis3W, lorenzetti at gis3w dot it
 ***************************************************************************
 *                                                                         *
 *   This program is free software; you can redistribute it and/or modify  *
@@ -20,6 +22,10 @@ from qgis.server import QgsServerFilter
 from qgis.core import Qgis, QgsMessageLog
 from qdjango.apps import QGS_SERVER
 
+import logging
+
+logger = logging.getLogger('atlas_server_plugin')
+
 
 class AtlasPrintFilter(QgsServerFilter):
 
@@ -29,7 +35,7 @@ class AtlasPrintFilter(QgsServerFilter):
 
         self.server_iface = server_iface
 
-        # QgsMessageLog.logMessage("atlasprintFilter end init", 'atlasprint', Qgis.Info)
+        QgsMessageLog.logMessage("atlasprintFilter end init", 'atlasprint', Qgis.Info)
 
     def requestReady(self):
         handler = self.server_iface.requestHandler()

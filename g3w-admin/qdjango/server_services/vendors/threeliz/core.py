@@ -19,13 +19,19 @@ from qgis.core import (
 )
 from qgis.PyQt.QtCore import QVariant
 
-#from .logger import Logger
+import logging
+
+logger = logging.getLogger('atlas_server_plugin')
 
 
 __copyright__ = 'Copyright 2019, 3Liz'
 __license__ = 'GPL version 3'
 __email__ = 'info@3liz.org'
 __revision__ = '$Format:%H$'
+
+#------------------------------------------------------------------
+#Modified by : Walter Lorenzetti, Gis3W, lorenzetti at gis3w dot it
+#------------------------------------------------------------------
 
 
 class AtlasPrintException(Exception):
@@ -122,8 +128,6 @@ def print_layout(project, layout_name, feature_filter: str = None, scales=None, 
     atlas_layout = None
     report_layout = None
 
-    #logger = Logger()
-
     if not master_layout:
         raise AtlasPrintException('Layout `{}` not found'.format(layout_name))
 
@@ -181,9 +185,9 @@ def print_layout(project, layout_name, feature_filter: str = None, scales=None, 
                 use_project = len(map_scales) == 0
 
             if not use_project or len(map_scales) == 0:
-                #logger.info(
-                #    'Map scales not found in project, fetching predefined map scales in global config'
-                #)
+                logger.info(
+                    'Map scales not found in project, fetching predefined map scales in global config'
+                )
                 map_scales = global_scales()
 
             if Qgis.QGIS_VERSION_INT >= 30900:
@@ -204,8 +208,8 @@ def print_layout(project, layout_name, feature_filter: str = None, scales=None, 
             if isinstance(item, QgsLayoutItemLabel):
                 item.setText(value)
                 found = True
-        #logger.info(
-        #    'Additional parameters: {} found in layout {}, value {}'.format(key, found, value))
+        logger.info(
+            'Additional parameters: {} found in layout {}, value {}'.format(key, found, value))
 
     export_path = os.path.join(
         tempfile.gettempdir(),
@@ -236,6 +240,6 @@ def optimize_expression(layer, expression):
         return expression
 
     expression = expression.replace('$id', '"{}"'.format(field.name()))
-    #Logger().info('$id has been replaced by "{}"'.format(field.name()))
+    logger.info('$id has been replaced by "{}"'.format(field.name()))
 
     return expression

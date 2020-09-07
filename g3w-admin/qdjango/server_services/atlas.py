@@ -6,6 +6,8 @@
     Date                 : December 2019
     Copyright            : (C) 2019 by René-Luc D'Hont - 3Liz
     Email                : rldhont at 3liz dot com
+
+    Modified by          : Walter Lorenzetti, Gis3W, lorenzetti at gis3w dot it
 ***************************************************************************
 *                                                                         *
 *   This program is free software; you can redistribute it and/or modify  *
@@ -35,7 +37,6 @@ from qgis.server import (
 )
 
 from .vendors.threeliz.core import print_layout, AtlasPrintException
-#from .logger import Logger
 
 from qdjango.apps import QGS_SERVER
 
@@ -43,6 +44,11 @@ __copyright__ = 'Copyright 2019, 3Liz'
 __license__ = 'GPL version 3'
 __email__ = 'info@3liz.org'
 __revision__ = '$Format:%H$'
+
+# ad G3W-SUITE logger
+import logging
+
+logger = logging.getLogger('atlas_server_plugin')
 
 
 def write_json_response(data: Dict[str, str], response: QgsServerResponse, code: int = 200) -> None:
@@ -59,7 +65,7 @@ class AtlasPrintError(Exception):
         super().__init__(msg)
         self.msg = msg
         self.code = code
-        #Logger().critical("Atlas print request error {}: {}".format(code, msg))
+        logger.critical("Atlas print request error {}: {}".format(code, msg))
 
     def formatResponse(self, response: QgsServerResponse) -> None:
         """ Format error response
@@ -76,7 +82,7 @@ class AtlasPrintService(QgsService):
         _ = debug
         self.metadata = {}
         self.get_plugin_metadata()
-        #self.logger = Logger()
+        self.logger = logger
 
     def get_plugin_metadata(self):
         """
@@ -130,7 +136,7 @@ class AtlasPrintService(QgsService):
         except AtlasPrintError as err:
             err.formatResponse(response)
         except Exception:
-            #self.logger.critical("Unhandled exception:\n{}".format(traceback.format_exc()))
+            self.logger.critical("Unhandled exception:\n{}".format(traceback.format_exc()))
             err = AtlasPrintError(500, "Internal 'atlasprint' service error")
             err.formatResponse(response)
 
@@ -194,7 +200,7 @@ class AtlasPrintService(QgsService):
         except AtlasPrintException as e:
             raise AtlasPrintError(400, 'ATLAS - Error from the user while generating the PDF: {}'.format(e))
         except Exception:
-            #self.logger.critical("Unhandled exception:\n{}".format(traceback.format_exc()))
+            self.logger.critical("Unhandled exception:\n{}".format(traceback.format_exc()))
             raise AtlasPrintError(500, "Internal 'atlasprint' service error")
 
         path = Path(pdf_path)
@@ -203,13 +209,15 @@ class AtlasPrintService(QgsService):
 
         # Send PDF
         response.setHeader('Content-Type', 'application/pdf')
+        response.setHeader('Content-Disposition', f'attachment; filename="{params["TEMPLATE"]}".pdf')
         response.setStatusCode(200)
         try:
             response.write(path.read_bytes())
             path.unlink()
         except Exception:
-            #self.logger.critical("Error occured while reading PDF file")
+            self.logger.critical("Error occured while reading PDF file")
             raise
 
+# register service on main qgis_server instance
 reg = QGS_SERVER.serverInterface().serviceRegistry()
 reg.registerService(AtlasPrintService(debug=False))
