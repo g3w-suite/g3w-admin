@@ -315,6 +315,6 @@ class ClientApiTest(CoreTestBase):
             resp["print"],
             json.loads('['
                        '{"name": "A4", "w": 297.0, "h": 210.0, "maps": [{"name": "map0", "displayname": "Map 1", "w": 189.53, "h": 117.75944852941177, "overview": false, "scale": 24651341.004171893, "extent": {"xmin": -33.650906640076606, "ymin": 20.637462798706206, "xmax": 60.849040859923356, "ymax": 79.35250370863265}}]},'
-                       '{"name": "atlas_test", "w": 297.0, "h": 210.0, "maps": [{"name": "map0", "displayname": "Map 1", "w": 117.063, "h": 76.29999107142858, "overview": false, "scale": 2621775.4915320138, "extent": {"xmin": 17.62596823561644, "ymin": 39.497494100000004, "xmax": 22.71810776438356, "ymax": 42.8164779}}]}'
+                       '{"name": "atlas_test", "w": 297.0, "h": 210.0, "atlas": {"qgs_layer_id": "countries_simpl20171228095706310", "field_name": "ISOCODE"}, "maps": [{"name": "map0", "displayname": "Map 1", "w": 117.063, "h": 76.29999107142858, "overview": false, "scale": 2621775.4915320138, "extent": {"xmin": 17.62596823561644, "ymin": 39.497494100000004, "xmax": 22.71810776438356, "ymax": 42.8164779}}]}'
                        ']')
         )
