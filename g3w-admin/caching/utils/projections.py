@@ -12,7 +12,8 @@ class CustomGridProjection():
         self.standardProjections = {
             'EPSG:3857': SphericalMercator(),
             'EPSG:900913': SphericalMercator(),
-            'EPSG:4326': WGS84()
+            'EPSG:4326': WGS84(),
+            'EPSG:4269': WGS84()
         }
 
         standardProjection = self.standardProjections.get(self.srs, None)
@@ -23,6 +24,7 @@ class CustomGridProjection():
         row = (2**coord.zoom - coord.row) if self.xyz else coord.row
         px = coord.column * tile_meters
         py = row * tile_meters
+        print(px, py)
         return Point(px,py)
 
     def normalizeSrs(self,srs):
