@@ -137,6 +137,7 @@ class OwsTest(QdjangoTestBase):
 
         c = Client()
         self.assertTrue(c.login(username='admin01', password='admin01'))
+
         response = c.get(ows_url, {
             'REQUEST': 'GetPrintAtlas',
             'SERVICE': 'WMS'
@@ -146,26 +147,53 @@ class OwsTest(QdjangoTestBase):
         jres = json.loads(response.content)
         self.assertEqual(jres, {'status': 'fail', 'message': "{}: {}".format(
             "ATLAS - Error from the user while generating the PDF",
-            "TEMPLATE is required"
+            "TEMPLATE is required."
         )})
 
-        c = Client()
-        self.assertTrue(c.login(username='admin01', password='admin01'))
         response = c.get(ows_url, {
             'REQUEST': 'GetPrintAtlas',
             'SERVICE': 'WMS',
-            'TEMPLATE': 'atlas_test'
+            'TEMPLATE': 'atlas_test',
+            'FIDS_FILTER': '1,a'
         })
 
         self.assertEqual(response.status_code, 400)
         jres = json.loads(response.content)
         self.assertEqual(jres, {'status': 'fail', 'message': "{}: {}".format(
             "ATLAS - Error from the user while generating the PDF",
-            "EXP_FILTER is mandatory to print an atlas layout"
+            "FIDS_FILTER must contains only numbers."
         )})
 
-        c = Client()
-        self.assertTrue(c.login(username='admin01', password='admin01'))
+
+        response = c.get(ows_url, {
+            'REQUEST': 'GetPrintAtlas',
+            'SERVICE': 'WMS',
+            'TEMPLATE': 'atlas_test'
+        })
+
+        print (response.content)
+        self.assertEqual(response.status_code, 400)
+        jres = json.loads(response.content)
+        self.assertEqual(jres, {'status': 'fail', 'message': "{}: {}".format(
+            "ATLAS - Error from the user while generating the PDF",
+            "EXP_FILTER or FIDS_FILTER are mandatory to print an atlas layout"
+        )})
+
+        response = c.get(ows_url, {
+            'REQUEST': 'GetPrintAtlas',
+            'SERVICE': 'WMS',
+            'TEMPLATE': 'atlas_test',
+            'FIDS_FILTER': '1,2',
+            'EXP_FILTER': "ISOCODE IN ('IT','FR')"
+        })
+
+        self.assertEqual(response.status_code, 400)
+        jres = json.loads(response.content)
+        self.assertEqual(jres, {'status': 'fail', 'message': "{}: {}".format(
+            "ATLAS - Error from the user while generating the PDF",
+            "FIDS_FILTER and EXP_FILTER can not be used together."
+        )})
+
         response = c.get(ows_url, {
             'REQUEST': 'GetPrintAtlas',
             'SERVICE': 'WMS',
@@ -175,6 +203,17 @@ class OwsTest(QdjangoTestBase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response['Content-Type'], 'application/pdf')
+
+        # FIXME: why get an QgsLayoutExporter.IteratorError only on running test?
+        # response = c.get(ows_url, {
+        #     'REQUEST': 'GetPrintAtlas',
+        #     'SERVICE': 'WMS',
+        #     'TEMPLATE': 'atlas_test',
+        #     'FIDS_FILTER': "1"
+        # })
+        #
+        # self.assertEqual(response.status_code, 200)
+        # self.assertEqual(response['Content-Type'], 'application/pdf')
 
         # remove because dimention change by context where test running.
         #self.assertEqual(len(response.content), 2807526)

@@ -16,6 +16,8 @@ from qgis.core import (
     QgsExpression,
     QgsExpressionContext,
     QgsExpressionContextUtils,
+    QgsVectorLayer,
+    QgsWkbTypes
 )
 from qgis.PyQt.QtCore import QVariant
 
@@ -90,7 +92,7 @@ def project_scales(project):
     return scales
 
 
-def print_layout(project, layout_name, feature_filter: str = None, scales=None, scale=None, **kwargs):
+def print_layout(project, layout_name, feature_filter: str = None, fids_filter: list = None, scales=None, scale=None, **kwargs):
     """Generate a PDF for an atlas or a report.
 
     :param project: The QGIS project.
@@ -143,27 +145,45 @@ def print_layout(project, layout_name, feature_filter: str = None, scales=None, 
 
         layer = atlas.coverageLayer()
 
-        if feature_filter is None:
-            raise AtlasPrintException('EXP_FILTER is mandatory to print an atlas layout')
+        if feature_filter is None and fids_filter is None:
+            raise AtlasPrintException('EXP_FILTER or FIDS_FILTER are mandatory to print an atlas layout')
 
-        feature_filter = optimize_expression(layer, feature_filter)
+        if feature_filter:
+            feature_filter = optimize_expression(layer, feature_filter)
 
-        expression = QgsExpression(feature_filter)
-        if expression.hasParserError():
-            raise AtlasPrintException('Expression is invalid, parser error: {}'.format(expression.parserErrorString()))
+            expression = QgsExpression(feature_filter)
+            if expression.hasParserError():
+                raise AtlasPrintException('Expression is invalid, parser error: {}'.format(expression.parserErrorString()))
 
-        context = QgsExpressionContext()
-        context.appendScope(QgsExpressionContextUtils.globalScope())
-        context.appendScope(QgsExpressionContextUtils.projectScope(project))
-        context.appendScope(QgsExpressionContextUtils.layoutScope(atlas_layout))
-        context.appendScope(QgsExpressionContextUtils.atlasScope(atlas))
-        context.appendScope(QgsExpressionContextUtils.layerScope(layer))
-        expression.prepare(context)
-        if expression.hasEvalError():
-            raise AtlasPrintException('Expression is invalid, eval error: {}'.format(expression.evalErrorString()))
+            context = QgsExpressionContext()
+            context.appendScope(QgsExpressionContextUtils.globalScope())
+            context.appendScope(QgsExpressionContextUtils.projectScope(project))
+            context.appendScope(QgsExpressionContextUtils.layoutScope(atlas_layout))
+            context.appendScope(QgsExpressionContextUtils.atlasScope(atlas))
+            context.appendScope(QgsExpressionContextUtils.layerScope(layer))
+            expression.prepare(context)
+            if expression.hasEvalError():
+                raise AtlasPrintException('Expression is invalid, eval error: {}'.format(expression.evalErrorString()))
 
-        atlas.setFilterFeatures(True)
-        atlas.setFilterExpression(feature_filter)
+            atlas.setFilterFeatures(True)
+            atlas.setFilterExpression(feature_filter)
+
+        if fids_filter:
+
+            # for FIDS_FILTER we have to create a memory layer with features selected by ids.
+            if fids_filter[0] != -1:
+                coverage_layer = atlas.coverageLayer()
+                coverage_layer.selectByIds(fids_filter)
+
+                vl = QgsVectorLayer(QgsWkbTypes.displayString(coverage_layer.wkbType()), "temporary_vector", "memory")
+                pr = vl.dataProvider()
+
+                # add fields
+                pr.addAttributes(coverage_layer.fields())
+                vl.updateFields()  # tell the vector layer to fetch changes from the provider
+
+                res = pr.addFeatures(coverage_layer.getSelectedFeatures())
+                atlas.setCoverageLayer(vl)
 
         if scale:
             atlas_layout.referenceMap().setAtlasScalingMode(QgsLayoutItemMap.Fixed)
@@ -219,6 +239,12 @@ def print_layout(project, layout_name, feature_filter: str = None, scales=None, 
 
     if result != QgsLayoutExporter.Success and not os.path.isfile(export_path):
         raise Exception('export not generated {} ({})'.format(export_path, error))
+
+    # free memory for FIDS_FILTER il vl is set
+    try:
+        del(vl)
+    except:
+        pass
 
     return export_path
 
