@@ -184,6 +184,7 @@ def print_layout(project, layout_name, feature_filter: str = None, fids_filter: 
 
                 res = pr.addFeatures(coverage_layer.getSelectedFeatures())
                 atlas.setCoverageLayer(vl)
+                atlas.setFilterFeatures(True)
 
         if scale:
             atlas_layout.referenceMap().setAtlasScalingMode(QgsLayoutItemMap.Fixed)
@@ -239,6 +240,11 @@ def print_layout(project, layout_name, feature_filter: str = None, fids_filter: 
 
     if result != QgsLayoutExporter.Success and not os.path.isfile(export_path):
         raise Exception('export not generated {} ({})'.format(export_path, error))
+
+    if fids_filter and fids_filter[0] != -1:
+
+        # restore original coverage layer
+        atlas.setCoverageLayer(coverage_layer)
 
     # free memory for FIDS_FILTER il vl is set
     try:
