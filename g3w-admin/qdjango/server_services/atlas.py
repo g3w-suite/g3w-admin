@@ -220,7 +220,11 @@ class AtlasPrintService(QgsService):
 
         # Send PDF
         response.setHeader('Content-Type', 'application/pdf')
-        response.setHeader('Content-Disposition', f'attachment; filename="{params["TEMPLATE"]}".pdf')
+
+        # into donwload mode if paramas['download'] is set
+        if 'download' in params:
+            response.setHeader('Content-Disposition', f'attachment; filename="{params["TEMPLATE"]}".pdf')
+
         response.setStatusCode(200)
         try:
             response.write(path.read_bytes())
