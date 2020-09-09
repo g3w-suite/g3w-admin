@@ -21,6 +21,8 @@ from qgis.core import (
 )
 from qgis.PyQt.QtCore import QVariant
 
+import time
+
 import logging
 
 logger = logging.getLogger('atlas_server_plugin')
@@ -175,7 +177,8 @@ def print_layout(project, layout_name, feature_filter: str = None, fids_filter: 
                 coverage_layer = atlas.coverageLayer()
                 coverage_layer.selectByIds(fids_filter)
 
-                vl = QgsVectorLayer(QgsWkbTypes.displayString(coverage_layer.wkbType()), "temporary_vector", "memory")
+                vl = QgsVectorLayer(QgsWkbTypes.displayString(coverage_layer.wkbType()),
+                                    f"temporary_vector{time.time()}", "memory")
                 pr = vl.dataProvider()
 
                 # add fields
@@ -185,6 +188,7 @@ def print_layout(project, layout_name, feature_filter: str = None, fids_filter: 
                 res = pr.addFeatures(coverage_layer.getSelectedFeatures())
                 atlas.setCoverageLayer(vl)
                 atlas.setFilterFeatures(True)
+                atlas.updateFeatures()
 
         if scale:
             atlas_layout.referenceMap().setAtlasScalingMode(QgsLayoutItemMap.Fixed)
@@ -239,18 +243,20 @@ def print_layout(project, layout_name, feature_filter: str = None, fids_filter: 
     result, error = QgsLayoutExporter.exportToPdf(atlas or report_layout, export_path, settings)
 
     if result != QgsLayoutExporter.Success and not os.path.isfile(export_path):
+        logger.error(f'export not generated, export path: {export_path} error: {error}')
         raise Exception('export not generated {} ({})'.format(export_path, error))
 
     if fids_filter and fids_filter[0] != -1:
 
         # restore original coverage layer
         atlas.setCoverageLayer(coverage_layer)
+        atlas.updateFeatures()
 
     # free memory for FIDS_FILTER il vl is set
     try:
-        del(vl)
+       del(vl)
     except:
-        pass
+       pass
 
     return export_path
 

@@ -222,8 +222,11 @@ class AtlasPrintService(QgsService):
         response.setHeader('Content-Type', 'application/pdf')
 
         # into donwload mode if paramas['download'] is set
-        if 'download' in params:
+        if 'DOWNLOAD' in params:
             response.setHeader('Content-Disposition', f'attachment; filename="{params["TEMPLATE"]}".pdf')
+            response.setHeader('Cache-Control', 'no-cache')
+        #else:
+        #    response.setHeader('Content-Disposition', f'inline; filename="{params["TEMPLATE"]}".pdf')
 
         response.setStatusCode(200)
         try:
