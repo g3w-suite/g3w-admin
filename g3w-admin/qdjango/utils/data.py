@@ -974,11 +974,14 @@ class QgisProject(XmlData):
 
                 # check if is a ATLAS print
                 qgs_atlas = qgs_layout.atlas()
+                atlas_field_name = qgs_atlas.pageNameExpression()[1:-1]
+                if atlas_field_name == '':
+                    atlas_field_name = None
                 if qgs_atlas.enabled():
                     p_playout.update({
                         'atlas': {
                             'qgs_layer_id': qgs_atlas.coverageLayer().id(),
-                            'field_name': qgs_atlas.pageNameExpression()[1:-1]
+                            'field_name': atlas_field_name
                         }
                     })
 
@@ -1012,7 +1015,7 @@ class QgisProject(XmlData):
                 p_playout.update({'maps': maps})
                 layouts.append(p_playout)
 
-        return layouts
+        return json.dumps(layouts)
 
 
     def _getDataQgisVersion(self):
