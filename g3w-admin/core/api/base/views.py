@@ -423,6 +423,8 @@ class BaseVectorOnModelApiView(G3WAPIView):
         # api return a list of unique
         # field name sent with 'unique' param.
         # --------------------------------------
+        # IDEA:     for big data it'll be iterate over features to get unique
+        #           c++ iteration is fast. Instead memory layer fith to much features can be a problem.
         if 'unique' in request.query_params:
 
             vl = QgsVectorLayer(QgsWkbTypes.displayString(self.metadata_layer.qgis_layer.wkbType()),
