@@ -150,20 +150,6 @@ class OwsTest(QdjangoTestBase):
             "TEMPLATE is required."
         )})
 
-        response = c.get(ows_url, {
-            'REQUEST': 'GetPrintAtlas',
-            'SERVICE': 'WMS',
-            'TEMPLATE': 'atlas_test',
-            'FIDS_FILTER': '1,a'
-        })
-
-        self.assertEqual(response.status_code, 400)
-        jres = json.loads(response.content)
-        self.assertEqual(jres, {'status': 'fail', 'message': "{}: {}".format(
-            "ATLAS - Error from the user while generating the PDF",
-            "FIDS_FILTER must contains only numbers."
-        )})
-
 
         response = c.get(ows_url, {
             'REQUEST': 'GetPrintAtlas',
@@ -171,27 +157,11 @@ class OwsTest(QdjangoTestBase):
             'TEMPLATE': 'atlas_test'
         })
 
-        print (response.content)
         self.assertEqual(response.status_code, 400)
         jres = json.loads(response.content)
         self.assertEqual(jres, {'status': 'fail', 'message': "{}: {}".format(
             "ATLAS - Error from the user while generating the PDF",
-            "EXP_FILTER or FIDS_FILTER are mandatory to print an atlas layout"
-        )})
-
-        response = c.get(ows_url, {
-            'REQUEST': 'GetPrintAtlas',
-            'SERVICE': 'WMS',
-            'TEMPLATE': 'atlas_test',
-            'FIDS_FILTER': '1,2',
-            'EXP_FILTER': "ISOCODE IN ('IT','FR')"
-        })
-
-        self.assertEqual(response.status_code, 400)
-        jres = json.loads(response.content)
-        self.assertEqual(jres, {'status': 'fail', 'message': "{}: {}".format(
-            "ATLAS - Error from the user while generating the PDF",
-            "FIDS_FILTER and EXP_FILTER can not be used together."
+            "EXP_FILTER is mandatory to print an atlas layout"
         )})
 
         response = c.get(ows_url, {
@@ -204,19 +174,26 @@ class OwsTest(QdjangoTestBase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response['Content-Type'], 'application/pdf')
 
-        # FIXME: why get an QgsLayoutExporter.IteratorError only on running test?
-        # response = c.get(ows_url, {
-        #     'REQUEST': 'GetPrintAtlas',
-        #     'SERVICE': 'WMS',
-        #     'TEMPLATE': 'atlas_test',
-        #     'FIDS_FILTER': "1"
-        # })
-        #
-        # self.assertEqual(response.status_code, 200)
-        # self.assertEqual(response['Content-Type'], 'application/pdf')
+        response = c.get(ows_url, {
+            'REQUEST': 'GetPrintAtlas',
+            'SERVICE': 'WMS',
+            'TEMPLATE': 'atlas_test',
+            'EXP_FILTER': "$id=1"
+        })
 
-        # remove because dimention change by context where test running.
-        #self.assertEqual(len(response.content), 2807526)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'application/pdf')
+
+        response = c.get(ows_url, {
+            'REQUEST': 'GetPrintAtlas',
+            'SERVICE': 'WMS',
+            'TEMPLATE': 'atlas_test',
+            'EXP_FILTER': "$id in (1,2,3,4)"
+        })
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'application/pdf')
+
 
 
 

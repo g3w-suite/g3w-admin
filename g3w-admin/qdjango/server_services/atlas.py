@@ -158,7 +158,6 @@ class AtlasPrintService(QgsService):
 
         template = params.get('TEMPLATE')
         feature_filter = params.get('EXP_FILTER', None)
-        fids_filter = params.get('FIDS_FILTER', None)
         scale = params.get('SCALE')
         scales = params.get('SCALES')
 
@@ -166,19 +165,10 @@ class AtlasPrintService(QgsService):
             if not template:
                 raise AtlasPrintException('TEMPLATE is required.')
 
-            if feature_filter and fids_filter:
-                raise AtlasPrintException('FIDS_FILTER and EXP_FILTER can not be used together.')
-
             if feature_filter:
                 expression = QgsExpression(feature_filter)
                 if expression.hasParserError():
                     raise AtlasPrintException('Expression is invalid: {}'.format(expression.parserErrorString()))
-
-            if fids_filter:
-                try:
-                    fids_filter = [int(f) for f in fids_filter.split(',')]
-                except ValueError:
-                    raise AtlasPrintException('FIDS_FILTER must contains only numbers.')
 
             if scale and scales:
                 raise AtlasPrintException('SCALE and SCALES can not be used together.')
@@ -205,7 +195,6 @@ class AtlasPrintService(QgsService):
                 scale=scale,
                 scales=scales,
                 feature_filter=feature_filter,
-                fids_filter=fids_filter,
                 **additional_params
             )
         except AtlasPrintException as e:
@@ -225,8 +214,7 @@ class AtlasPrintService(QgsService):
         if 'DOWNLOAD' in params:
             response.setHeader('Content-Disposition', f'attachment; filename="{params["TEMPLATE"]}".pdf')
             response.setHeader('Cache-Control', 'no-cache')
-        #else:
-        #    response.setHeader('Content-Disposition', f'inline; filename="{params["TEMPLATE"]}".pdf')
+
 
         response.setStatusCode(200)
         try:
