@@ -30,6 +30,7 @@ from qgis.PyQt.QtCore import QVariant, Qt
 from qgis.core import QgsMasterLayoutInterface, QgsLayoutItemMap, QgsLayout
 
 from core.utils.data import XmlData, isXML
+from core.utils.qgisapi import count_qgis_features
 from qdjango.models import Project
 
 from .exceptions import QgisProjectException
@@ -984,6 +985,10 @@ class QgisProject(XmlData):
                             'field_name': atlas_field_name
                         }
                     })
+
+                    # if atlas_field_name is None, give max feature
+                    if not atlas_field_name:
+                        p_playout['atlas']['feature_count'] = count_qgis_features(qgs_atlas.coverageLayer())
 
                 # add items
                 maps = []
