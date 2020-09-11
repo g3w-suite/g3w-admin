@@ -956,8 +956,6 @@ class QgisProject(XmlData):
         :rtype: dict, None
         """
 
-        print ('Layouts')
-
         layouts = []
         qgs_layouts = self.qgs_project.layoutManager().layouts()
         for qgs_layout in qgs_layouts:
