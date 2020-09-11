@@ -18,7 +18,7 @@ from qdjango.models import Project, Layer, Widget
 from qdjango.utils.data import QgisProject, QgisPgConnection, QgisProjectSettingsWMS
 from qdjango.utils.exceptions import QgisProjectLayerException, QgisProjectException
 from qdjango.utils.structure import get_schema_table, datasource2dict, datasourcearcgis2dict
-from qdjango.utils.models import get_widgets4layer, comparepgdatasoruce
+from qdjango.utils.models import get_widgets4layer, comparedbdatasource
 from collections import OrderedDict
 import os
 import json
@@ -381,21 +381,40 @@ class QdjangoUtilsTest(QdjangoTestBase):
         # tear down
         widget.delete()
 
-    def test_comparepgdatasource(self):
+    def test_comparedbdatasource(self):
         """ Test same name function """
 
         # differ only by pk
         ds1 = "dbname='comune_capannori' host=0.0.0.0 port=5432 user='aaa' password='aaa' sslmode=disable key='gid' srid=3003 type=MultiPolygon table=\"dati_catastali\".\"catasto\" (geom) sql="
         ds2 = "dbname='comune_capannori' host=0.0.0.0 port=5432 user='aaa' password='aaa' sslmode=disable key='id' srid=3003 type=MultiPolygon table=\"dati_catastali\".\"catasto\" (geom) sql="
 
-        self.assertTrue(comparepgdatasoruce(ds1, ds2))
+        self.assertTrue(comparedbdatasource(ds1, ds2))
 
         # differ by host and pk
         ds1 = "dbname='comune_capannori' host=0.0.0.1 port=5432 user='aaa' password='aaa' sslmode=disable key='gid' srid=3003 type=MultiPolygon table=\"dati_catastali\".\"catasto\" (geom) sql="
         ds2 = "dbname='comune_capannori' host=0.0.0.0 port=5432 user='aaa' password='aaa' sslmode=disable key='id' srid=3003 type=MultiPolygon table=\"dati_catastali\".\"catasto\" (geom) sql="
 
-        self.assertFalse(comparepgdatasoruce(ds1, ds2))
+        self.assertFalse(comparedbdatasource(ds1, ds2))
 
+        # for sqlite dsources:
+        ds1 = "dbname='/home/www/g3w_suite_data/dati_geografici/editing_test.db' table=\"cities\" (geometry) sql="
+        ds2 = "dbname='/home/www/g3w_suite_data/dati_geografici/editing_test.db' table=\"cities\" (geometry) sql="
+
+        self.assertTrue(comparedbdatasource(ds1, ds2, 'spatialite'))
+
+        # for sqlite dsources:
+        # differ by table name
+        ds1 = "dbname='/home/www/g3w_suite_data/dati_geografici/editing_test.db' table=\"cities\" (geometry) sql="
+        ds2 = "dbname='/home/www/g3w_suite_data/dati_geografici/editing_test.db' table=\"citiesxxx\" (geometry) sql="
+
+        self.assertFalse(comparedbdatasource(ds1, ds2, 'spatialite'))
+
+        # for sqlite dsources:
+        # differ by sqlite
+        ds1 = "dbname='/home/www/g3w_suite_data/dati_geografici/editing_test.db' table=\"cities\" (geometry) sql="
+        ds2 = "dbname='/home/www/g3w_suite_data/dati_geografici/editing_test.db' table=\"cities\" (geometry) sql='name=\"xxxx\"'"
+
+        self.assertTrue(comparedbdatasource(ds1, ds2, 'spatialite'))
 
 class QdjangoUtilsDataValidators(QdjangoTestBase):
     """Test for validators loaded into  import data classes"""

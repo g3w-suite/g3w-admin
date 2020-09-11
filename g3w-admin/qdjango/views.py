@@ -24,7 +24,7 @@ from .signals import load_qdjango_widgets_data
 from .mixins.views import *
 from .forms import *
 from .api.utils import serialize_vectorjoin
-from .utils.models import get_widgets4layer, comparepgdatasoruce
+from .utils.models import get_widgets4layer, comparedbdatasource
 import json
 from collections import OrderedDict
 
@@ -398,7 +398,10 @@ class QdjangoLinkWidget2LayerView(G3WRequestViewMixin, G3WGroupViewMixin, Qdjang
             return JsonResponse({'status': 'error', 'errors_form': e.message})
 
     def linkUnlinkWidget(self, link=True):
-        if not comparepgdatasoruce(self.layer.datasource, self.widget.datasource):
+
+        # apply check datasourc only for postgres and spatialite
+        if self.layer.layer_type in ('postgres', 'spatialite') \
+                and not comparedbdatasource(self.layer.datasource, self.widget.datasource, self.layer.layer_type):
             raise Exception('Datasource of widget is different from layer datasource')
         if link:
             self.widget.layers.add(self.layer)
