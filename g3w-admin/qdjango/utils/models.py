@@ -12,20 +12,26 @@ __copyright__ = 'Copyright 2019, GIS3W'
 from django.db.models import Q
 
 
-def comparepgdatasoruce(ds1, ds2):
+def comparedbdatasource(ds1, ds2, layer_type='postgres'):
     """
-    Compare postgis datasource bosed on dbname, host and table name
-    :param ds1: qgis pg datasoruce string from compare
-    :param ds2: qgis pg datasource string to compare
+    Compare postgis/sqlite datasource bosed on dbname, host and table name
+    :param ds1: qgis db datasoruce string from compare
+    :param ds2: qgis db datasource string to compare
     :return: Boolean
     """
     from .structure import datasource2dict
+
 
     # split ds
     ds1 = datasource2dict(ds1)
     ds2 = datasource2dict(ds2)
 
-    return ds1['dbname'] == ds2['dbname'] and ds1['host'] == ds2['host'] and ds1['table'] == ds2['table']
+
+    # compare only dbname and table if host is not present like for SQlite db:
+    if layer_type == 'spatialite':
+        return ds1['dbname'] == ds2['dbname'] and ds1['table'] == ds2['table']
+    else:
+        return ds1['dbname'] == ds2['dbname'] and ds1['host'] == ds2['host'] and ds1['table'] == ds2['table']
 
 
 def get_widgets4layer(layer):
