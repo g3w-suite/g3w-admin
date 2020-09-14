@@ -1,5 +1,6 @@
 from django.conf import settings
 from guardian.shortcuts import get_anonymous_user
+from rest_framework.authentication import BasicAuthentication
 from OWS.auth import AuthForbiddenRequest
 
 
@@ -20,6 +21,15 @@ class QdjangoProjectAuthorizer(object):
                 get_anonymous_user().has_perm('qdjango.view_project', self.project):
             return True
         else:
+            # try to authenticate by http basic authentication
+            try:
+                ba = BasicAuthentication()
+                user, other = ba.authenticate(self.request)
+                return user.has_perm('qdjango.view_project', self.project)
+            except Exception as e:
+                print(e)
+                pass
+
             raise AuthForbiddenRequest()
 
     def filter_request(self, request):

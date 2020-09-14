@@ -430,39 +430,39 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         properties = resp["vector"]["data"]["features"][1]["properties"]
         self.assertEqual(properties['type'], 'B')
 
-        # FIXME: a possibile bug of QGIS 3.10.10, as Elpaso.
+        # FIXME: a possibile bug of QGIS 3.10.10, ask Elpaso.
         # add fromatter query url param
         # formatter=1
-        # response = self._testApiCall(
-        #     'core-vector-api', [
-        #         'data',
-        #         'qdjango',
-        #         self.project_widget310.instance.pk,
-        #         'main_layer_e867d371_3388_4e2d_a214_95adbb56165c'],
-        #      {'formatter': '1'})
-        #
-        # # check for value relation
-        # resp = json.loads(response.content)
-        # properties = resp["vector"]["data"]["features"][0]["properties"]
-        # self.assertEqual(properties['type'], 'TYPE A')
-        # properties = resp["vector"]["data"]["features"][1]["properties"]
-        # self.assertEqual(properties['type'], 'TYPE B')
-        #
-        # # formatter=string
-        # response = self._testApiCall(
-        #     'core-vector-api', [
-        #         'data',
-        #         'qdjango',
-        #         self.project_widget310.instance.pk,
-        #         'main_layer_e867d371_3388_4e2d_a214_95adbb56165c'],
-        #     {'formatter': 'randomvalue'})
+        response = self._testApiCall(
+            'core-vector-api', [
+                'data',
+                'qdjango',
+                self.project_widget310.instance.pk,
+                'main_layer_e867d371_3388_4e2d_a214_95adbb56165c'],
+             {'formatter': '1'})
 
         # check for value relation
-        # resp = json.loads(response.content)
-        # properties = resp["vector"]["data"]["features"][0]["properties"]
-        # self.assertEqual(properties['type'], 'TYPE A')
-        # properties = resp["vector"]["data"]["features"][1]["properties"]
-        # self.assertEqual(properties['type'], 'TYPE B')
+        resp = json.loads(response.content)
+        properties = resp["vector"]["data"]["features"][0]["properties"]
+        self.assertEqual(properties['type'], 'TYPE A')
+        properties = resp["vector"]["data"]["features"][1]["properties"]
+        self.assertEqual(properties['type'], 'TYPE B')
+
+        # formatter=string
+        response = self._testApiCall(
+            'core-vector-api', [
+                'data',
+                'qdjango',
+                self.project_widget310.instance.pk,
+                'main_layer_e867d371_3388_4e2d_a214_95adbb56165c'],
+            {'formatter': 'randomvalue'})
+
+        #check for value relation
+        resp = json.loads(response.content)
+        properties = resp["vector"]["data"]["features"][0]["properties"]
+        self.assertEqual(properties['type'], 'TYPE A')
+        properties = resp["vector"]["data"]["features"][1]["properties"]
+        self.assertEqual(properties['type'], 'TYPE B')
 
         # formatter=0
         response = self._testApiCall(

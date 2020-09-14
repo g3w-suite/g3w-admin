@@ -16,6 +16,7 @@ from django.core.files import File
 from django.test import Client, override_settings
 from django.urls import reverse
 from qgis.core import QgsProject
+from guardian.shortcuts import assign_perm, remove_perm
 from core.models import G3WSpatialRefSys
 from core.models import Group as CoreGroup
 from qdjango.apps import QGS_SERVER, get_qgs_project
@@ -80,6 +81,60 @@ class OwsTest(QdjangoTestBase):
         })
 
         self.assertTrue(b'<Name>bluemarble</Name>' in response.content)
+
+    def test_authorizzer(self):
+        """Test authorizzer by user and permission on project"""
+
+        ows_url = reverse('OWS:ows', kwargs={'group_slug': self.qdjango_project.group.slug, 'project_type': 'qdjango',
+                                             'project_id': self.qdjango_project.id})
+
+        # no permissions on project
+        # as anonymous
+
+        # Make a request to the server
+        c = Client()
+        response = c.get(ows_url, {
+            'REQUEST': 'GetCapabilities',
+            'SERVICE': 'WMS'
+        })
+
+        self.assertEqual(response.status_code, 403)
+
+        self.assertTrue(c.login(username=self.test_viewer1.username, password=self.test_viewer1.username))
+
+        response = c.get(ows_url, {
+            'REQUEST': 'GetCapabilities',
+            'SERVICE': 'WMS'
+        })
+
+        self.assertEqual(response.status_code, 403)
+
+        # give permission to user
+        assign_perm('view_project', self.test_viewer1, self.qdjango_project)
+
+        response = c.get(ows_url, {
+            'REQUEST': 'GetCapabilities',
+            'SERVICE': 'WMS'
+        })
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(b'<Name>bluemarble</Name>' in response.content)
+
+        c.logout()
+
+        # try basic authentication
+        # for viewer1
+        c = Client(HTTP_AUTHORIZATION='Basic dmlld2VyMTp2aWV3ZXIx')
+        esponse = c.get(ows_url, {
+            'REQUEST': 'GetCapabilities',
+            'SERVICE': 'WMS'
+        })
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(b'<Name>bluemarble</Name>' in response.content)
+
+
+
 
     def test_get_getfeatureinfo(self):
         """Test GetFeatureInfo for QGIS widget"""

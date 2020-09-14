@@ -503,11 +503,6 @@ class QgisProjectLayer(XmlData):
                         for item in options['map']:
                             for key, value in item.items():
                                 data['values'].append({'key': key, 'value': value})
-
-                else:
-                    # FIXME: is necessary this else?
-                    for value in options:
-                        data['values'].append({'key': value.attrib['name'], 'value': value.attrib['value']})
             else:
                 data.update(options)
 
