@@ -32,12 +32,14 @@ from qgis.core import QgsMasterLayoutInterface, QgsLayoutItemMap, QgsLayout
 from core.utils.data import XmlData, isXML
 from core.utils.qgisapi import count_qgis_features
 from qdjango.models import Project
+from qdjango.signals import load_qdjango_project_file, post_save_qdjango_project_file
 
 from .exceptions import QgisProjectException
 from .structure import *
 from .validators import (CheckMaxExtent, ColumnName, DatasourceExists, ProjectExists,
                          IsGroupCompatibleValidator, ProjectTitleExists,
                          UniqueLayername)
+
 
 
 
@@ -708,10 +710,14 @@ class QgisProject(XmlData):
 
 
         # try to load xml project file
+        # try to load xml project file
         self.loadProject(**kwargs)
 
         # set data value into this object
         self.setData()
+
+        # set data values form third part module
+        self.setDataThirdParts()
 
         self.closeProject(**kwargs)
 
@@ -761,6 +767,7 @@ class QgisProject(XmlData):
 
         if not self.qgs_project.read(project_file):
             raise QgisProjectException(_('Could not read QGIS project file: {}').format(project_file))
+
 
     def closeProject(self, **kwargs):
         """
@@ -1053,6 +1060,13 @@ class QgisProject(XmlData):
             'DELETE': QgsServerProjectUtils.wfstDeleteLayerIds(self.qgs_project)
         }
 
+    def setDataThirdParts(self):
+        """ Load data from project using third part module functions/signal-receiver"""
+
+        load_qdjango_project_file.send(self)
+
+
+
     def clean(self):
         for validator in self.validators:
             validator.clean()
@@ -1116,6 +1130,8 @@ class QgisProject(XmlData):
 
             # Update qgis file datasource for SpatiaLite and OGR layers
             self.updateQgisFileDatasource()
+
+            post_save_qdjango_project_file.send(self)
 
     def updateQgisFileDatasource(self):
         """Update qgis file datasource for SpatiaLite and OGR layers.
