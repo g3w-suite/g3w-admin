@@ -90,7 +90,7 @@ class EditingApiTests(ConstraintsTestsBase):
         self.assertEqual(response.status_code, 200)
         jcontent = json.loads(response.content)
 
-        # check archiweb into plugins section
+        # check editing into plugins section
         self.assertTrue('editing' in jcontent['group']['plugins'])
 
         plugin = jcontent['group']['plugins']['editing']
