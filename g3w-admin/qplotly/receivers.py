@@ -83,7 +83,7 @@ def set_initconfig_value(sender, **kwargs):
 
     try:
         qplotly = project.qplotly_setting.all()[0]
-    except KeyError:
+    except IndexError:
         return
 
     return {
