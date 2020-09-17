@@ -20,8 +20,8 @@ from qgis.PyQt.QtCore import QFile
 
 from core.signals import initconfig_plugin_start
 
-from .vendor.DataPlotly.core.plot_settings import PlotSettings
-from .models import Settings as QplotlySettings
+from .utils.plot_settings import QplotlySettings
+from .models import Settings as QplotlySettingsModel
 
 import logging
 
@@ -41,7 +41,7 @@ def load_dataplotly_project_settings(sender, **kwargs):
     file = QFile(sender.qgs_project.fileName())
     doc.setContent(file)
 
-    settings = PlotSettings()
+    settings = QplotlySettings()
     read = settings.read_from_project(doc)
 
     file.close()
@@ -50,15 +50,11 @@ def load_dataplotly_project_settings(sender, **kwargs):
         logger.info('DataPlotly settings not found into project dom document.')
         return
 
-    document = QDomDocument("dataplotly")
-    elem = settings.write_xml(document)
-    document.appendChild(elem)
-
     sender.qplotly = {
         'qgs_layer_id': settings.source_layer_id,
         'selected_features_only': settings.properties['selected_features_only'],
         'visible_features_only': settings.properties['visible_features_only'],
-        'xml': document.toString()
+        'xml': settings.write_xml_db().toString()
     }
 
 
@@ -70,7 +66,7 @@ def save_dataplotly_project_settings(sender, **kwargs):
         return
 
     if hasattr(sender, 'qplotly'):
-        eplotlysetting, created = QplotlySettings.objects.update_or_create(
+        eplotlysetting, created = QplotlySettingsModel.objects.update_or_create(
             **{'project': sender.instance},
             defaults=sender.qplotly)
 
