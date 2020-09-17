@@ -72,6 +72,8 @@ def save_dataplotly_project_settings(sender, **kwargs):
             **{'project': sender.instance},
             defaults=sender.qplotly)
 
+    #todo: add delete workflow
+
 
 @receiver(initconfig_plugin_start)
 def set_initconfig_value(sender, **kwargs):
