@@ -98,7 +98,9 @@ class QplotlyTestAPI(QdjangoTestBase):
         self.assertEqual(plugin['qgs_layer_id'], 'countries_d53dfb9a_98e1_4196_a601_eed9a33f47c3')
         self.assertFalse(plugin['selected_features_only'])
         self.assertFalse(plugin['visible_features_only'])
-
+        self.assertEqual(plugin['jsscripts'], ["/static/qplotly/polyfill.min.js", "/static/qplotly/plotly-1.52.2.min.js" ])
+        self.assertEqual(plugin['plot']['type'], 'histogram')
+        self.assertTrue('layout' in plugin['plot'])
 
 
 

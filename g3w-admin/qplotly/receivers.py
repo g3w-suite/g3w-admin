@@ -12,6 +12,7 @@ __copyright__ = 'Copyright 2015 - 2020, Gis3w'
 
 from django.dispatch import receiver
 from django.apps import apps
+from django.templatetags.static import static
 from qdjango.signals import load_qdjango_project_file, post_save_qdjango_project_file
 from qdjango.utils.data import QgisProject
 
@@ -19,8 +20,10 @@ from qgis.PyQt.QtXml import QDomDocument
 from qgis.PyQt.QtCore import QFile
 
 from core.signals import initconfig_plugin_start
+from core.utils.qgisapi import get_qgis_layer
 
-from .utils.plot_settings import QplotlySettings
+from .utils.qplotly_settings import QplotlySettings
+from .utils.qplotly_factory import QplotlyFactoring
 from .models import Settings as QplotlySettingsModel
 
 import logging
@@ -82,12 +85,35 @@ def set_initconfig_value(sender, **kwargs):
     except IndexError:
         return
 
+    # load settings from db
+    settings = QplotlySettings()
+    if not settings.read_from_model(qplotly):
+        return
+
+    # instace q QplotlyFactory
+    factory = QplotlyFactoring(settings)
+    factory.build_layout()
+
+    plot_config = config = {
+            'scrollZoom': True,
+            'editable': True,
+            'modeBarButtonsToRemove': ['sendDataToCloud', 'editInChartStudio']
+        }
+
     return {
         'qplotly': {
             'gid': "{}:{}".format(kwargs['projectType'], kwargs['project']),
             'qgs_layer_id': qplotly.qgs_layer_id,
             'selected_features_only': qplotly.selected_features_only,
-            'visible_features_only': qplotly.visible_features_only
+            'visible_features_only': qplotly.visible_features_only,
+            'jsscripts': [
+                static('qplotly/polyfill.min.js'),
+                static('qplotly/plotly-1.52.2.min.js')
+            ],
+            'plot': {
+                'type': settings.plot_type,
+                'layout': factory.layout
+            }
         }
     }
 
