@@ -112,7 +112,8 @@ def set_initconfig_value(sender, **kwargs):
             ],
             'plot': {
                 'type': settings.plot_type,
-                'layout': factory.layout
+                'layout': factory.layout,
+                'config': plot_config
             }
         }
     }
