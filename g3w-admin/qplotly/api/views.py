@@ -10,7 +10,10 @@ __author__ = 'lorenzetti@gis3w.it'
 __date__ = '2020-09-17'
 __copyright__ = 'Copyright 2015 - 2020, Gis3w'
 
-
+from qgis.core import \
+    QgsRectangle, \
+    QgsReferencedRectangle, \
+    QgsCoordinateReferenceSystem
 from rest_framework.response import Response
 from core.api.base.views import G3WAPIView
 from core.utils.qgisapi import get_qgis_layer
@@ -24,7 +27,6 @@ class QplotlyTraceAPIView(G3WAPIView):
 
     def get(self, request, **kwargs):
 
-        #todo: punt into try-except
         qplotly = Settings.objects.get(pk=kwargs['pk'])
 
         # load settings from db
@@ -33,8 +35,14 @@ class QplotlyTraceAPIView(G3WAPIView):
             #todo: raise a API exception
             raise Exception()
 
+        # get bbox if is sent
+        rect = None
+        if 'bbox' in kwargs:
+            rect = QgsReferencedRectangle(QgsRectangle(**kwargs['bbox']),
+                                          QgsCoordinateReferenceSystem(qplotly.project.group.srid.srid))
+
         # instace q QplotlyFactory
-        factory = QplotlyFactoring(settings)
+        factory = QplotlyFactoring(settings, visible_region=rect)
         factory.source_layer = get_qgis_layer(qplotly.project.layer_set.get(qgs_layer_id=settings.source_layer_id))
         factory.rebuild()
 

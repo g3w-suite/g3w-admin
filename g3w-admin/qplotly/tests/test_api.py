@@ -59,10 +59,6 @@ class QplotlyTestAPI(QdjangoTestBase):
                 parts.append(k + '=' + v)
             path += '&'.join(parts)
 
-        # No auth
-        response = self.client.get(path)
-        self.assertIn(response.status_code, [302, 403])
-
         # Auth
         self.assertTrue(self.client.login(username='admin01', password='admin01'))
         response = self.client.get(path)
@@ -84,7 +80,6 @@ class QplotlyTestAPI(QdjangoTestBase):
         response = self._testApiCall('group-map-config',
                       args=[self.project_group.slug, 'qdjango', self.project.instance.pk])
 
-        self.assertEqual(response.status_code, 200)
         jcontent = json.loads(response.content)
 
         # check qplotly into plugins section
@@ -96,12 +91,23 @@ class QplotlyTestAPI(QdjangoTestBase):
             self.project.instance.pk))
 
         self.assertEqual(plugin['qgs_layer_id'], 'countries_d53dfb9a_98e1_4196_a601_eed9a33f47c3')
+        self.assertEqual(plugin['id'], self.project.instance.qplotly_setting.all()[0].pk)
         self.assertFalse(plugin['selected_features_only'])
         self.assertFalse(plugin['visible_features_only'])
-        self.assertEqual(plugin['jsscripts'], ["/static/qplotly/polyfill.min.js", "/static/qplotly/plotly-1.52.2.min.js" ])
+        self.assertEqual(plugin['jsscripts'], ["/static/qplotly/polyfill.min.js", "/static/qplotly/plotly-1.52.2.min.js"])
         self.assertEqual(plugin['plot']['type'], 'histogram')
         self.assertTrue('layout' in plugin['plot'])
 
+    def test_trace_api(self):
+        """/qplotly/api/trace API"""
 
+        qplotly_id = self.project.instance.qplotly_setting.all()[0].pk
+
+        response = self._testApiCall('qplotly-api-trace', args=[qplotly_id])
+
+        print(response)
+
+        jcontent = json.loads(response.content)
+        trace_data = json.loads(response.content)['data']
 
 
