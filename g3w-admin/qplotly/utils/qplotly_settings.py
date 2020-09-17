@@ -24,3 +24,14 @@ class QplotlySettings(PlotSettings):
         document.appendChild(elem)
 
         return document
+
+    def read_from_model(self, setting_instance):
+        """Read settings from qplotly settings model instance"""
+
+        document = QDomDocument()
+        if document.setContent(setting_instance.xml):
+            if self.read_xml(document.firstChildElement()):
+                return True
+
+        return False
+
