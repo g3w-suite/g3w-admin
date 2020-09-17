@@ -10,5 +10,11 @@ __author__ = 'lorenzetti@gis3w.it'
 __date__ = '2020-09-16'
 __copyright__ = 'Copyright 2015 - 2020, Gis3w'
 
+from django.conf.urls import url
+from .api.views import QplotlyTraceAPIView
 
-urlpatterns = []
+BASE_URLS = 'qplotly'
+
+urlpatterns = [
+    url(r'^api/trace/(?P<pk>\d+)/$', QplotlyTraceAPIView.as_view(), name='qplotly-api-trace'),
+]

@@ -20,7 +20,6 @@ from qgis.PyQt.QtXml import QDomDocument
 from qgis.PyQt.QtCore import QFile
 
 from core.signals import initconfig_plugin_start
-from core.utils.qgisapi import get_qgis_layer
 
 from .utils.qplotly_settings import QplotlySettings
 from .utils.qplotly_factory import QplotlyFactoring
@@ -103,6 +102,7 @@ def set_initconfig_value(sender, **kwargs):
     return {
         'qplotly': {
             'gid': "{}:{}".format(kwargs['projectType'], kwargs['project']),
+            'id': qplotly.pk,
             'qgs_layer_id': qplotly.qgs_layer_id,
             'selected_features_only': qplotly.selected_features_only,
             'visible_features_only': qplotly.visible_features_only,
