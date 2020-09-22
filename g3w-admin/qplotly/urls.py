@@ -10,4 +10,12 @@ __author__ = 'lorenzetti@gis3w.it'
 __date__ = '2020-09-15'
 __copyright__ = 'Copyright 2015 - 2020, Gis3w'
 
-urlpatterns = []
+from django.conf.urls import url
+from django.contrib.auth.decorators import login_required
+
+from .views import LayerQplotlyWidgetsView
+
+urlpatterns = [
+    url(r'^(?P<project_slug>[-_\w\d]+)/layer/(?P<layer_slug>[-_\w\d]+)/widgets/$',
+            login_required(LayerQplotlyWidgetsView.as_view()), name='qplotly-project-layer-widgets'),
+]

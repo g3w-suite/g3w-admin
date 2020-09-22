@@ -14,6 +14,9 @@ __copyright__ = 'Copyright 2015 - 2020, Gis3w'
 from django.urls import reverse
 from qdjango.tests.base import QdjangoTestBase, CoreGroup, File, G3WSpatialRefSys, QgisProject, setup_testing_user
 from rest_framework.test import APIClient
+from qplotly.utils import get_qplotlywidget_for_project
+from qplotly.models import QplotlyWidget
+from qplotly.utils.models import get_qplotlywidgets4layer
 from .test_utils import CURRENT_PATH, QGS_FILE, TEST_BASE_PATH, get_data_plotly_settings_from_file
 import json
 
@@ -69,10 +72,10 @@ class QplotlyTestAPI(QdjangoTestBase):
     def test_save_settings(self):
         """test saving data plotly settings into db"""
 
-        qplotly_settings = self.project.instance.qplotly_setting.all()
-        self.assertEqual(len(qplotly_settings), 1)
+        qplotly_widgets = get_qplotlywidget_for_project(self.project.instance)
+        self.assertEqual(len(qplotly_widgets), 1)
 
-        self.assertEqual(qplotly_settings[0].project, self.project.instance)
+        self.assertEqual(qplotly_widgets[0].project, self.project.instance)
 
     def test_initconfig_plugin_start(self):
         """Test data added to API client config"""
@@ -90,24 +93,41 @@ class QplotlyTestAPI(QdjangoTestBase):
         self.assertEqual(plugin['gid'], 'qdjango:{}'.format(
             self.project.instance.pk))
 
-        self.assertEqual(plugin['qgs_layer_id'], 'countries_d53dfb9a_98e1_4196_a601_eed9a33f47c3')
-        self.assertEqual(plugin['id'], self.project.instance.qplotly_setting.all()[0].pk)
-        self.assertFalse(plugin['selected_features_only'])
-        self.assertFalse(plugin['visible_features_only'])
-        self.assertEqual(plugin['jsscripts'], ["/static/qplotly/polyfill.min.js", "/static/qplotly/plotly-1.52.2.min.js"])
-        self.assertEqual(plugin['plot']['type'], 'histogram')
-        self.assertTrue('layout' in plugin['plot'])
+        self.assertEqual(plugin['jsscripts'],
+                         ["/static/qplotly/polyfill.min.js", "/static/qplotly/plotly-1.52.2.min.js"])
+
+        self.assertEqual(len(plugin['plots']), 1)
+
+        plugin_plot = plugin['plots'][0]
+
+        self.assertEqual(plugin_plot['qgs_layer_id'], 'countries_d53dfb9a_98e1_4196_a601_eed9a33f47c3')
+        self.assertEqual(plugin_plot['id'], get_qplotlywidget_for_project(self.project.instance)[0].pk)
+        self.assertFalse(plugin_plot['selected_features_only'])
+        self.assertFalse(plugin_plot['visible_features_only'])
+
+        self.assertEqual(plugin_plot['plot']['type'], 'histogram')
+        self.assertTrue('layout' in plugin_plot['plot'])
 
     def test_trace_api(self):
         """/qplotly/api/trace API"""
 
-        qplotly_id = self.project.instance.qplotly_setting.all()[0].pk
+        qplotlywidget_id = QplotlyWidget.objects.all()[0].pk
 
-        response = self._testApiCall('qplotly-api-trace', args=[qplotly_id])
-
-        print(response)
+        response = self._testApiCall('qplotly-api-trace', args=[
+            self.project.instance.pk,
+            qplotlywidget_id
+        ])
 
         jcontent = json.loads(response.content)
         trace_data = json.loads(response.content)['data']
+
+    def test_get_qplotlywidgets4layer(self):
+        """Test for homonimous util function"""
+
+        layer_city = self.project.instance.layer_set.get(qgs_layer_id='countries_d53dfb9a_98e1_4196_a601_eed9a33f47c3')
+
+        widgets = get_qplotlywidgets4layer(layer_city)
+
+        self.assertEqual(len(widgets), 1)
 
 

@@ -16,5 +16,5 @@ from .api.views import QplotlyTraceAPIView
 BASE_URLS = 'qplotly'
 
 urlpatterns = [
-    url(r'^api/trace/(?P<pk>\d+)/$', QplotlyTraceAPIView.as_view(), name='qplotly-api-trace'),
+    url(r'^api/trace/(?P<project_id>[0-9]+)/(?P<pk>\d+)/$', QplotlyTraceAPIView.as_view(), name='qplotly-api-trace'),
 ]

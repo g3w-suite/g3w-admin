@@ -1,0 +1,52 @@
+{% load staticfiles %}
+{% if object.type == 'histogram' %}
+  <svg id="histogram" height="16" width="16" viewBox="0 0 32 32"
+     xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" >
+  <image x="0" y="0" height="100%" width="100%"  xlink:href="{% static 'qplotly/icons/histogram.svg' %}" />
+  </svg>
+{% elif object.type == '2dhistogram'  %}
+  <svg id="2dhistogram" height="16" width="16" viewBox="0 0 32 32"
+     xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" >
+  <image x="0" y="0" height="100%" width="100%"  xlink:href="{% static 'qplotly/icons/2dhistogram.svg' %}" />
+  </svg>
+{% elif object.type == 'barplot'  %}
+  <svg id="barplot" height="16" width="16" viewBox="0 0 32 32"
+     xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" >
+  <image x="0" y="0" height="100%" width="100%"  xlink:href="{% static 'qplotly/icons/barplot.svg' %}" />
+  </svg>
+{% elif object.type == 'boxplot'  %}
+  <svg id="boxplot" height="16" width="16" viewBox="0 0 32 32"
+     xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" >
+  <image x="0" y="0" height="100%" width="100%"  xlink:href="{% static 'qplotly/icons/boxplot.svg' %}" />
+  </svg>
+{% elif object.type == 'contour'  %}
+  <svg id="contour" height="16" width="16" viewBox="0 0 32 32"
+     xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" >
+  <image x="0" y="0" height="100%" width="100%"  xlink:href="{% static 'qplotly/icons/contour.svg' %}" />
+  </svg>
+{% elif object.type == 'pie'  %}
+  <svg id="pie" height="16" width="16" viewBox="0 0 32 32"
+     xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" >
+  <image x="0" y="0" height="100%" width="100%"  xlink:href="{% static 'qplotly/icons/pie.svg' %}" />
+  </svg>
+{% elif object.type == 'polar'  %}
+  <svg id="polar" height="16" width="16" viewBox="0 0 32 32"
+     xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" >
+  <image x="0" y="0" height="100%" width="100%"  xlink:href="{% static 'qplotly/icons/polar.svg' %}" />
+  </svg>
+{% elif object.type == 'scatterplot'  %}
+  <svg id="scatterplot" height="16" width="16" viewBox="0 0 32 32"
+     xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" >
+  <image x="0" y="0" height="100%" width="100%"  xlink:href="{% static 'qplotly/icons/scatterplot.svg' %}" />
+  </svg>
+{% elif object.type == 'scatterternary'  %}
+  <svg id="scatterternary" height="16" width="16" viewBox="0 0 32 32"
+     xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" >
+  <image x="0" y="0" height="100%" width="100%"  xlink:href="{% static 'qplotly/icons/scatterternary.svg' %}" />
+  </svg>
+{% elif object.type == 'violin'  %}
+  <svg id="violin" height="16" width="16" viewBox="0 0 32 32"
+     xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" >
+  <image x="0" y="0" height="100%" width="100%"  xlink:href="{% static 'qplotly/icons/violin.svg' %}" />
+  </svg>
+{% endif %}

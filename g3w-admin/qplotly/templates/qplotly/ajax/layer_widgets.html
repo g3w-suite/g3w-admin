@@ -1,0 +1,40 @@
+{% load i18n %}
+{% load qdjango_tags %}
+<div id="layer_qplotlywidgets_{{ layer.id }}" style="margin-left:40px;">
+    {% comment %}<a class="btn btn-sm btn-default" href="#" data-widget-type="ajaxForm" data-form-url="{% url 'qdjango-project-layer-widget-add' group.slug project.slug layer.slug %}" data-modal-size="modal-lg"><i class="ion ion-plus-circled"></i> {% trans 'Add new widget' %}</a>{% endcomment %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>{% trans 'Actions' %}</th>
+                <th>{% trans 'Name' %}</th>
+                <th>{% trans 'Type' %}</th>
+                <th>{% trans 'Linked' %}</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for object in object_list %}
+            <tr id="qdjango_project_layer_qplotlywidget_{{ object.slug }}">
+                <td>
+                    <span class="col-xs-2 icon">
+                        {% comment %}<a href="#" data-widget-type="ajaxForm" data-form-url="{% url 'qdjango-project-layer-widget-update' group.slug project.slug layer.slug object.slug %}" data-modal-size="modal-lg"><i class="ion ion-edit"></i></a>{% endcomment %}
+                    </span>
+                    <span class="col-xs-2 icon">
+                        {% comment %}<a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Delete' %}" data-widget-type="deleteItem" data-delete-url="{% url 'qdjango-project-layer-widget-delete' group.slug project.slug layer.slug object.slug %}" data-item-selector="#qdjango_project_layer_qplotlywidget_{{ object.slug }}"><i class="ion ion-trash-b"></i></a>{% endcomment %}
+                    </span>
+                </td>
+                <td>{{ object.pk }}</td>
+                <td>
+                    {% include 'qplotly/include/plot_type_icon.html' %} {{ object.type }}
+                </td>
+                <td>
+                    <input type="checkbox" {% if object|widget_linked_layer:layer  %} checked="checked" {% endif %} value="{{ object.id }}" data-widget-type="linkWidget2Layer" data-ajax-url="{%comment%} {% url 'qdjango-project-layer-widget-link' group.slug project.slug layer.slug object.slug %}{% endcomment %}"/>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+        </table>
+    <script>
+        ga.ui.initLinkWidget2Layer();
+    </script>
+</div>
+

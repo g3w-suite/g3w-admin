@@ -17,7 +17,7 @@ from qgis.core import \
 from rest_framework.response import Response
 from core.api.base.views import G3WAPIView
 from core.utils.qgisapi import get_qgis_layer
-from qplotly.models import Settings
+from qplotly.models import QplotlyWidget
 from qplotly.utils.qplotly_settings import QplotlySettings
 from qplotly.utils.qplotly_factory import QplotlyFactoring
 
@@ -27,7 +27,7 @@ class QplotlyTraceAPIView(G3WAPIView):
 
     def get(self, request, **kwargs):
 
-        qplotly = Settings.objects.get(pk=kwargs['pk'])
+        qplotly = QplotlyWidget.objects.get(pk=kwargs['pk'])
 
         # load settings from db
         settings = QplotlySettings()
@@ -43,7 +43,10 @@ class QplotlyTraceAPIView(G3WAPIView):
 
         # instace q QplotlyFactory
         factory = QplotlyFactoring(settings, visible_region=rect)
-        factory.source_layer = get_qgis_layer(qplotly.project.layer_set.get(qgs_layer_id=settings.source_layer_id))
+
+        # is possibile get the first layer
+        factory.source_layer = get_qgis_layer(qplotly.layers.get(qgs_layer_id=settings.source_layer_id,
+                                                                    project_id=kwargs['project_id']))
         factory.rebuild()
 
         res = {

@@ -12,9 +12,15 @@ __copyright__ = 'Copyright 2015 - 2020, Gis3w'
 
 from django.dispatch import receiver
 from django.apps import apps
+from django.db.models.signals import post_save
 from django.templatetags.static import static
-from qdjango.signals import load_qdjango_project_file, post_save_qdjango_project_file
+from django.template import loader
+
+from core.signals import load_layer_actions, load_js_modules
+
+from qdjango.signals import load_qdjango_project_file, post_save_qdjango_project_file, load_qdjango_widget_layer
 from qdjango.utils.data import QgisProject
+from qdjango.models import Layer
 
 from qgis.PyQt.QtXml import QDomDocument
 from qgis.PyQt.QtCore import QFile
@@ -23,7 +29,7 @@ from core.signals import initconfig_plugin_start
 
 from .utils.qplotly_settings import QplotlySettings
 from .utils.qplotly_factory import QplotlyFactoring
-from .models import Settings as QplotlySettingsModel
+from .models import QplotlyWidget
 
 import logging
 
@@ -54,6 +60,7 @@ def load_dataplotly_project_settings(sender, **kwargs):
 
     sender.qplotly = {
         'qgs_layer_id': settings.source_layer_id,
+        'type': settings.plot_type,
         'selected_features_only': settings.properties['selected_features_only'],
         'visible_features_only': settings.properties['visible_features_only'],
         'xml': settings.write_xml_db().toString()
@@ -68,11 +75,40 @@ def save_dataplotly_project_settings(sender, **kwargs):
         return
 
     if hasattr(sender, 'qplotly'):
-        eplotlysetting, created = QplotlySettingsModel.objects.update_or_create(
-            **{'project': sender.instance},
-            defaults=sender.qplotly)
 
-    #todo: add delete workflow
+        layer = sender.instance.layer_set.get(qgs_layer_id=sender.qplotly['qgs_layer_id'])
+
+        if layer.qplotlywidget_set.count() == 0:
+            qplw = QplotlyWidget(
+                datasource=layer.datasource,
+                type=sender.qplotly['type'],
+                xml=sender.qplotly['xml'],
+                selected_features_only=sender.qplotly['selected_features_only'],
+                visible_features_only=sender.qplotly['visible_features_only']
+            )
+            qplw.save()
+            qplw.layers.add(layer)
+
+
+@receiver(post_save, sender=Layer)
+def update_widget(sender, **kwargs):
+    """
+    Update Qplotly widget data when layer datasource change
+    """
+
+    # only for update
+    if kwargs['created']:
+        return
+
+    layer = kwargs['instance']
+
+    # search for widget
+    widgets = layer.qplotlywidget_set.all()
+
+    for widget in widgets:
+        if widget.datasource != layer.datasource:
+            widget.datasource = layer.datasource
+            widget.save()
 
 
 @receiver(initconfig_plugin_start)
@@ -81,42 +117,95 @@ def set_initconfig_value(sender, **kwargs):
 
     project = apps.get_app_config(kwargs['projectType']).get_model('project').objects.get(pk=kwargs['project'])
 
-    try:
-        qplotly = project.qplotly_setting.all()[0]
-    except IndexError:
-        return
-
-    # load settings from db
-    settings = QplotlySettings()
-    if not settings.read_from_model(qplotly):
-        return
-
-    # instace q QplotlyFactory
-    factory = QplotlyFactoring(settings)
-    factory.build_layout()
+    plots = []
 
     plot_config = config = {
-            'scrollZoom': True,
-            'editable': True,
-            'modeBarButtonsToRemove': ['sendDataToCloud', 'editInChartStudio']
-        }
+        'scrollZoom': True,
+        'editable': True,
+        'modeBarButtonsToRemove': ['sendDataToCloud', 'editInChartStudio']
+    }
+
+    layers = project.layer_set.all()
+
+    for layer in layers:
+        qplotly_widgets = layer.qplotlywidget_set.all()
+
+        for qplotly_widget in qplotly_widgets:
+
+
+            # load settings from db
+            settings = QplotlySettings()
+            if not settings.read_from_model(qplotly_widget):
+                continue
+
+            # instace q QplotlyFactory
+            factory = QplotlyFactoring(settings)
+            factory.build_layout()
+
+            plots.append({
+                'id': qplotly_widget.pk,
+                'qgs_layer_id': layer.qgs_layer_id,
+                'selected_features_only': qplotly_widget.selected_features_only,
+                'visible_features_only': qplotly_widget.visible_features_only,
+
+                'plot': {
+                    'type': settings.plot_type,
+                    'layout': factory.layout,
+                    'config': plot_config
+                }
+
+            })
+
+    # no plots no 'qplotly' section
+    if len(plots) == 0:
+        return
 
     return {
         'qplotly': {
             'gid': "{}:{}".format(kwargs['projectType'], kwargs['project']),
-            'id': qplotly.pk,
-            'qgs_layer_id': qplotly.qgs_layer_id,
-            'selected_features_only': qplotly.selected_features_only,
-            'visible_features_only': qplotly.visible_features_only,
             'jsscripts': [
                 static('qplotly/polyfill.min.js'),
                 static('qplotly/plotly-1.52.2.min.js')
             ],
-            'plot': {
-                'type': settings.plot_type,
-                'layout': factory.layout,
-                'config': plot_config
-            }
+            'plots': plots
         }
     }
 
+
+@receiver(load_js_modules)
+def get_js_modules(sender, **kwargs):
+    """Add qplotly js scripts"""
+
+    if sender.resolver_match.view_name == 'qdjango-project-layers-list':
+        return 'qplotly/js/widget.js'
+
+
+@receiver(load_layer_actions)
+def qplottly_layer_action(sender, **kwargs):
+    """
+    Return html actions qplotly for project layer.
+    """
+
+    # only admin and editor1 or editor2:
+    if sender.has_perm('change_project', kwargs['layer'].project):
+
+        try:
+            app_configs = apps.get_app_config(kwargs['app_name']).configs
+        except:
+            app_configs = object()
+
+        # add if is active
+        #try:
+        #    G3WCachingLayer.objects.get(app_name=kwargs['app_name'], layer_id=kwargs['layer'].pk)
+        #    kwargs['active'] = True
+        #except:
+        #    kwargs['active'] = False
+
+        kwargs['as_col'] = True
+
+        # update with app_configs
+        #if hasattr(app_configs, 'CACHING_LAYER_ACTION'):
+        #    kwargs.update(app_configs.CACHING_LAYER_ACTION)
+
+        template = loader.get_template('qplotly/layer_action.html')
+        return template.render(kwargs)

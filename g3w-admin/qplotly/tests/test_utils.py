@@ -59,10 +59,13 @@ class QgisProjectTest(TestCase):
 
         qplotly_settings = {
             'qgs_layer_id': expected_settings.source_layer_id,
+            'type': expected_settings.plot_type,
             'selected_features_only': expected_settings.properties['selected_features_only'],
             'visible_features_only': expected_settings.properties['visible_features_only'],
             'xml': xml.toString()
         }
 
         self.assertEqual(self.project.qplotly, qplotly_settings)
+
+
 

@@ -1,0 +1,12 @@
+{% load i18n %}
+{% load staticfiles %}
+
+{% if as_col %}
+<span class="col-xs-2 icon">
+{% endif %}
+<a href="#" {% if active %}style="color: orangered;"{% endif %} data-toggle="tooltip" title="{% trans 'Qplotly layer' %}" data-widget-type="detailItemDataTable" data-detail-url="{% url 'qplotly-project-layer-widgets' layer.project.slug layer.slug %}">
+    <i class="fa fa-area-chart"></i>
+</a>
+{% if as_col %}
+</span>
+{% endif %}
