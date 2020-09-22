@@ -310,7 +310,15 @@ class QgisProjectTest(TestCase):
         self.assertEqual(res['mode'], '2')
         self.assertEqual(res['schema'], 'raster')
 
-
+        # Issue with finland customer
+        res = datasource2dict(
+            'dbname=\'my_db\' host=my.host.name port=5432 user=\'user\' password=\'password\' sslmode=disable key=\'identifier\' checkPrimaryKeyUnicity=\'0\' table="akaa_gk20"."spatial_plan_regulation"')
+        self.assertEqual(res['dbname'], 'my_db')
+        self.assertEqual(res['table'], '"akaa_gk20"."spatial_plan_regulation"')
+        self.assertEqual(res['host'], 'my.host.name')
+        self.assertEqual(res['user'], 'user')
+        self.assertEqual(res['password'], 'password')
+        self.assertEqual(res['port'], '5432')
 
     def test_dataSourceArcGisToDict(self):
 
