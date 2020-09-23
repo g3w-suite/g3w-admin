@@ -12,6 +12,7 @@ __copyright__ = 'Copyright 2019, GIS3W'
 from django.test.client import RequestFactory, Client
 from django.urls import reverse, NoReverseMatch
 from qdjango.models import Project
+from core.models import ProjectMapUrlAlias
 from .base import QdjangoTestBase
 from .utils import create_dff_project
 from copy import copy
@@ -113,6 +114,9 @@ class QdjangoViewsTest(QdjangoTestBase):
         mproject.pk = None
         mproject.save()
 
+        # add a ProjectMapUrlAlias
+        ProjectMapUrlAlias.objects.create(app_name='qdjango', project_id=mproject.pk, alias='test_alias')
+
         # check 4 project on db
         dbprojects = Project.objects.all()
         self.assertEqual(len(dbprojects), 3)
@@ -129,6 +133,9 @@ class QdjangoViewsTest(QdjangoTestBase):
         dbprojects = Project.objects.all()
         self.assertEqual(len(dbprojects), 2)
         self.assertTrue(dbprojects[0].pk, self.project.instance.pk)
+
+        # check delete ProjectMapUrlAlias instance
+        self.assertEqual(len(ProjectMapUrlAlias.objects.all()), 0)
 
         client.logout()
 

@@ -16,7 +16,7 @@ from django.contrib.auth.models import User, Group as AuthGroup
 from guardian.shortcuts import assign_perm, remove_perm
 from qdjango.models import Project
 from core.tests.utils import create_dff_image
-from core.models import MapControl
+from core.models import MapControl, ProjectMapUrlAlias
 from core.forms import GroupForm
 from .base import QdjangoTestBase, G3W_VIEWER1
 from .utils import create_dff_project
@@ -56,6 +56,7 @@ class QdjangoFormsTest(QdjangoTestBase):
             'multilayer_query': 'single',
             'multilayer_querybybbox': 'single',
             'multilayer_querybypolygon': 'single',
+            'url_alias': 'test_url_alias_name'
         }
 
         form = QdjangoProjetForm(request=self.request, group=self.project_group, data=form_data)
@@ -88,6 +89,11 @@ class QdjangoFormsTest(QdjangoTestBase):
         form.save()
 
         self.assertEqual(len(Project.objects.all()), 3)
+
+        # check for ProjectMapUrlAlias instance
+        url_aliases = ProjectMapUrlAlias.objects.all()
+        self.assertEqual(len(url_aliases), 1)
+        self.assertEqual(url_aliases[0].alias, 'test_url_alias_name')
 
 
         # CHECK ACL users and Group users by map group
