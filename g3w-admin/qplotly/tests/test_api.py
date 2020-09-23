@@ -52,7 +52,9 @@ class QplotlyTestAPI(QdjangoTestBase):
         cls.project.instance.delete()
         super().tearDownClass()
 
-    def _testApiCall(self, view_name, args, kwargs={}, data=None, method='POST'):
+
+
+    def _testApiCall(self, view_name, args, kwargs={}, data=None, method='POST', username='admin01'):
         """Utility to make test calls for admin01 user"""
 
         path = reverse(view_name, args=args)
@@ -64,19 +66,20 @@ class QplotlyTestAPI(QdjangoTestBase):
             path += '&'.join(parts)
 
         # Auth
-        self.assertTrue(self.client.login(username='admin01', password='admin01'))
+        self.assertTrue(self.client.login(username=username, password=username))
         if data:
             if method == 'POST':
                 response = self.client.post(path, data=data)
             elif method == 'PUT':
                 response = self.client.put(path, data=data, content_type='application/json')
-            elif method == 'DELETE':
-                response = self.client.delete(path)
-            print(response.content)
             self.assertTrue(response.status_code in (200, 201))
         else:
-            response = self.client.get(path)
-            self.assertEqual(response.status_code, 200)
+            if method == 'DELETE':
+                response = self.client.delete(path)
+                self.assertEqual(response.status_code, 204)
+            else:
+                response = self.client.get(path)
+                self.assertEqual(response.status_code, 200)
         self.client.logout()
         return response
 
@@ -180,7 +183,7 @@ class QplotlyTestAPI(QdjangoTestBase):
         # change type for test
         data['pk'] = 2
         data['type'] = 'scatter'
-        jcontent = json.loads(self._testApiCall('qplotly-widget-api-detail', [data['pk']], {}, data=data, method='PUT').content)
+        jcontent = json.loads(self._testApiCall('qplotly-widget-api-detail', [self.project.instance.pk, data['pk']], {}, data=data, method='PUT').content)
         self.assertEqual(jcontent['pk'], 2)
         self.assertEqual(jcontent['type'], 'scatter')
 
@@ -190,11 +193,14 @@ class QplotlyTestAPI(QdjangoTestBase):
 
         # TEST DELETE
         # -----------
+        self._testApiCall('qplotly-widget-api-detail', [self.project.instance.pk, data['pk']], {}, data=None, method='DELETE')
 
-        jcontent = json.loads(
-            self._testApiCall('qplotly-widget-api-detail', [data['pk']], {}, data=None, method='DELETE').content)
+        jcontent = json.loads(self._testApiCall('qplotly-widget-api-filter-by-layer-id', [layer_pk], {}).content)
+        self.assertEqual(jcontent['count'], 1)
+        self.assertEqual(jcontent['results'][0]['type'], 'histogram')
 
-
+    def test_acl_widgets(self):
+        """Test API ACL"""
 
 
 

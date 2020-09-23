@@ -17,6 +17,7 @@ from core.api.authentication import CsrfExemptSessionAuthentication
 from qplotly.models import QplotlyWidget
 
 from .serializers import QplotlyWidgetSerializer
+from .permissions import QplotlyWidgetPermission
 
 
 class QplotlyWidgetList(generics.ListCreateAPIView):
@@ -29,7 +30,9 @@ class QplotlyWidgetList(generics.ListCreateAPIView):
         CsrfExemptSessionAuthentication,
     )
 
-    #todo: add permission_classes
+    permission_classes = (
+        QplotlyWidgetPermission,
+    )
 
     def get_queryset(self):
         """
@@ -43,7 +46,7 @@ class QplotlyWidgetList(generics.ListCreateAPIView):
 
 
 class QplotlyWidgetDetail(generics.RetrieveUpdateDestroyAPIView):
-    """Details/Update of a qplotly widgets"""
+    """Details/Update/Delete of a qplotly widget"""
 
     queryset = QplotlyWidget.objects.all()
     serializer_class = QplotlyWidgetSerializer
@@ -52,4 +55,6 @@ class QplotlyWidgetDetail(generics.RetrieveUpdateDestroyAPIView):
         CsrfExemptSessionAuthentication,
     )
 
-    # todo: add permission_classes
+    permission_classes = (
+        QplotlyWidgetPermission,
+    )
