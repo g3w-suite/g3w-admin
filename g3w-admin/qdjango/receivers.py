@@ -4,6 +4,7 @@ from django.conf import settings
 from django.core.cache import caches
 from django.http.request import QueryDict
 from core.signals import perform_client_search, post_delete_project
+from core.models import ProjectMapUrlAlias
 from OWS.utils.data import GetFeatureInfoResponse
 from .models import Project, Layer, Widget
 from .ows import OWSRequestHandler
@@ -75,6 +76,9 @@ def delete_project_file(sender, **kwargs):
 
     if 'qdjango' in settings.CACHES:
         caches['qdjango'].delete(settings.QDJANGO_PRJ_CACHE_KEY.format(instance.pk))
+
+    # delete ProjectMapUrlAlias related instance
+    ProjectMapUrlAlias.objects.filter(app_name='qdjango', project_id=instance.pk).delete()
 
 
 @receiver(post_save, sender=Project)
