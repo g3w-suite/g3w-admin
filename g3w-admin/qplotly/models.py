@@ -13,9 +13,13 @@ class QplotlyWidget(models.Model):
     visible_features_only = models.BooleanField(_('Use visible features only'), default=False)
     type = models.CharField(_('Plot type'), max_length=50, null=True)
 
-    layers = models.ManyToManyField(Layer)
+    layers = models.ManyToManyField(Layer, null=True)
     
     def __str__(self):
         return self.datasource
+
+    def clean(self):
+        #todo: clean xml data; check for dataplotly tag?
+        pass
 
 

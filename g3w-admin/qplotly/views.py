@@ -16,6 +16,8 @@ from qdjango.models import Project
 from qdjango.mixins.views import QdjangoProjectViewMixin, QdjangoLayerViewMixin
 from guardian.decorators import permission_required
 
+from core.mixins.views import AjaxableFormResponseMixin, G3WProjectViewMixin
+
 from .models import QplotlyWidget
 from .utils.models import get_qplotlywidgets4layer
 
@@ -34,3 +36,5 @@ class LayerQplotlyWidgetsView(QdjangoProjectViewMixin, QdjangoLayerViewMixin, Li
 
     def get_queryset(self):
         return get_qplotlywidgets4layer(self.layer)
+
+

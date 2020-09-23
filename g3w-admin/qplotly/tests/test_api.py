@@ -12,6 +12,7 @@ __copyright__ = 'Copyright 2015 - 2020, Gis3w'
 
 
 from django.urls import reverse
+from django.test.client import encode_multipart
 from qdjango.tests.base import QdjangoTestBase, CoreGroup, File, G3WSpatialRefSys, QgisProject, setup_testing_user
 from rest_framework.test import APIClient
 from qplotly.utils import get_qplotlywidget_for_project
@@ -51,7 +52,7 @@ class QplotlyTestAPI(QdjangoTestBase):
         cls.project.instance.delete()
         super().tearDownClass()
 
-    def _testApiCall(self, view_name, args, kwargs={}):
+    def _testApiCall(self, view_name, args, kwargs={}, data=None, method='POST'):
         """Utility to make test calls for admin01 user"""
 
         path = reverse(view_name, args=args)
@@ -64,8 +65,18 @@ class QplotlyTestAPI(QdjangoTestBase):
 
         # Auth
         self.assertTrue(self.client.login(username='admin01', password='admin01'))
-        response = self.client.get(path)
-        self.assertEqual(response.status_code, 200)
+        if data:
+            if method == 'POST':
+                response = self.client.post(path, data=data)
+            elif method == 'PUT':
+                response = self.client.put(path, data=data, content_type='application/json')
+            elif method == 'DELETE':
+                response = self.client.delete(path)
+            print(response.content)
+            self.assertTrue(response.status_code in (200, 201))
+        else:
+            response = self.client.get(path)
+            self.assertEqual(response.status_code, 200)
         self.client.logout()
         return response
 
@@ -129,5 +140,61 @@ class QplotlyTestAPI(QdjangoTestBase):
         widgets = get_qplotlywidgets4layer(layer_city)
 
         self.assertEqual(len(widgets), 1)
+
+    def _check_constraints(self, jcontent):
+        self.assertEqual(jcontent['results'][0]['pk'], 1)
+        self.assertFalse(jcontent['results'][0]['selected_features_only'])
+        self.assertFalse(jcontent['results'][0]['visible_features_only'])
+        self.assertEqual(jcontent['results'][0]['type'], 'histogram')
+        self.assertTrue(len(jcontent['results'][0]['layers'])==1)
+
+    def test_widgets(self):
+        """Test API"""
+
+        jcontent = json.loads(self._testApiCall('qplotly-widget-api-list', [], {}).content)
+        self.assertEqual(jcontent['count'], 1)
+        self._check_constraints(jcontent)
+        layer_pk = jcontent['results'][0]['layers'][0]
+
+        jcontent = json.loads(self._testApiCall('qplotly-widget-api-filter-by-layer-id', [layer_pk], {}).content)
+        self.assertEqual(jcontent['count'], 1)
+        self._check_constraints(jcontent)
+
+        # TEST CREATE
+        # -----------
+        data = jcontent['results'][0]
+        del(data['pk'])
+
+        # change type for test
+        data['type'] = 'pie'
+        jcontent = json.loads(self._testApiCall('qplotly-widget-api-list', [], {}, data=data).content)
+        self.assertEqual(jcontent['pk'], 2)
+        self.assertEqual(jcontent['type'], 'pie')
+
+        jcontent = json.loads(self._testApiCall('qplotly-widget-api-filter-by-layer-id', [layer_pk], {}).content)
+        self.assertEqual(jcontent['count'], 2)
+
+        # TEST UPDATE
+        # -----------
+
+        # change type for test
+        data['pk'] = 2
+        data['type'] = 'scatter'
+        jcontent = json.loads(self._testApiCall('qplotly-widget-api-detail', [data['pk']], {}, data=data, method='PUT').content)
+        self.assertEqual(jcontent['pk'], 2)
+        self.assertEqual(jcontent['type'], 'scatter')
+
+        jcontent = json.loads(self._testApiCall('qplotly-widget-api-filter-by-layer-id', [layer_pk], {}).content)
+        self.assertEqual(jcontent['count'], 2)
+        self.assertEqual(jcontent['results'][1]['type'], 'scatter')
+
+        # TEST DELETE
+        # -----------
+
+        jcontent = json.loads(
+            self._testApiCall('qplotly-widget-api-detail', [data['pk']], {}, data=None, method='DELETE').content)
+
+
+
 
 
