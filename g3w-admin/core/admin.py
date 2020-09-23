@@ -62,6 +62,7 @@ admin.site.register(G3WSpatialRefSys, G3WSpatialRefSysAdmin)
 
 class ProjectMapUrlAliasAdmin(ModelAdmin):
     model = ProjectMapUrlAlias
+    list_display = ('app_name', 'project_id', 'alias')
 admin.site.register(ProjectMapUrlAlias, ProjectMapUrlAliasAdmin)
 
 
