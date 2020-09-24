@@ -99,6 +99,18 @@ _.extend(g3wadmin.widget, {
         };
     },
 
+    //function to read and set input[name="xml"] value
+    _readQplotlyXmlFile: function(evt){
+        const reader = new FileReader();
+        const file = evt.target.files[0];
+        const name = file.name;
+        reader.onload = (evt) => {
+            const data = evt.target.result;
+            $('input[name="xml"').val(data);
+        };
+        reader.readAsText(file);
+    },
+
     _qplotlyWidgetForm: function($item, res, params){
 
         // set urls
@@ -129,6 +141,8 @@ _.extend(g3wadmin.widget, {
 
         // set action for confirm btn
         var form = new ga.forms.form(modal.$modal.find('form'));
+        var input_xml_plot = $(form.$form[0]).find('#load_xml_plot');
+        $(input_xml_plot).on('change', ga.widget._readQplotlyXmlFile);
         var that = this;
         form.setOnSuccesAction(function(e){
             that._refreshQplotlyWidgetList($item)();
@@ -156,7 +170,6 @@ _.extend(g3wadmin.widget, {
             if (_.isUndefined(params['qplotlywidget-list-url'])) {
                 throw new Error('Attribute data-qplotlywidget-list-url not defined');
             }
-
             // get tr row parent
             refresh = _.isUndefined(refresh) ? false : true;
 
@@ -214,11 +227,10 @@ _.extend(g3wadmin.tpl, {
             <input type="hidden" name="xml" value="" />\
             <div class="row">\
 				<div class="col-md-12">\
-					<div class="info"><h4>'+gettext('Upload DataPlotly configuration xml file.')+':</h4></div>\
 					<div class="form-group" style="border: 1px dot-dash grey;  text-align: center">\
-						<div class="controls">\
-							<input class="form-control" name="xml_file" type="file" style="opacity:0; width:100%; position:absolute; height: 100%;" />\
-							<h4>'+gettext('Upload or drag and drop file.')+'</h4>\
+						<div class="controls" style="position: relative; padding: 10px; border: 1px dashed">\
+							<input class="form-control" id="load_xml_plot" accept=".xml" title="" name="xml_file" type="file" style="margin:0; cursor:pointer;opacity:0; width:100%; position:absolute; height: 100%;" />\
+							<h4>'+gettext('Upload DataPlotly configuration xml file')+':</h4>\
 							<div>\
                                 <i class="fa fa-cloud-upload fa-5x"  aria-hidden="true"></i>\
                             </div>\
