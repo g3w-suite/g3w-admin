@@ -7,7 +7,7 @@
 ga.Qplotly = {
     urls: {
         widget: {
-            list: '/' + SITE_PREFIX_URL + 'qplotly/api/widget/layer/',
+            list: '/' + SITE_PREFIX_URL + 'qplotly/api/widget/',
             detail: '/' + SITE_PREFIX_URL + 'qplotly/api/widget/detail/',
         }
     }
@@ -77,7 +77,6 @@ _.extend(g3wadmin.widget, {
                 {
                     'modal-title': gettext('Update widget'),
                     'layer_pk': layer_pk,
-                    //'constraint_pk': $(this).attr('data-contraint-pk'),
                     'new': false,
                     'parent_click': $(this)
                 });
@@ -106,7 +105,7 @@ _.extend(g3wadmin.widget, {
         const name = file.name;
         reader.onload = (evt) => {
             const data = evt.target.result;
-            $('input[name="xml"').val(data);
+            $('input[name="xml"]').val(data);
         };
         reader.readAsText(file);
     },
@@ -115,7 +114,7 @@ _.extend(g3wadmin.widget, {
 
         // set urls
 
-        form_action = (params['new']) ? ga.Qplotly.urls.widget.list : ga.Qplotly.urls.widget.detail+res['pk']+'/'
+        form_action = (params['new']) ? ga.Qplotly.urls.widget.list : ga.Qplotly.urls.widget.detail+params['layer_pk']+'/'+res['pk']+'/'
 
 
         // open modal to show list of add links
@@ -149,7 +148,16 @@ _.extend(g3wadmin.widget, {
             modal.hide();
         });
         modal.setConfirmButtonAction(function(e){
-            form.sendData(e, params['new'] ? 'post' : 'put');
+            var dt = form.getData('array');
+
+            dt['layers'] = [params['layer_pk']];
+            dt['datasource'] = 'ds'
+
+            if (!params['new']) {
+                dt['xml'] = escape(res['xml']);
+            }
+
+            form.sendData(e, params['new'] ? 'post' : 'put', dt);
         });
 
         modal.show();
@@ -223,7 +231,6 @@ _.extend(g3wadmin.tpl, {
 
     qplotlyWidgetForm: _.template('\
         <form action="<%= action %>" id="form-qplotlywidget-<%= layerId %>">\
-            <input type="hidden" name="layer" value="<%= layerId %>" />\
             <input type="hidden" name="xml" value="" />\
             <div class="row">\
 				<div class="col-md-12">\
