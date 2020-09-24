@@ -103,10 +103,11 @@ _.extend(g3wadmin.widget, {
     _readQplotlyXmlFile: function(evt){
         const reader = new FileReader();
         const file = evt.target.files[0];
-        const name = file.name;
+        const filename = file.name;
         reader.onload = (evt) => {
             const data = evt.target.result;
             $('input[name="xml"').val(data);
+            $('#xml_plot_filename').text(filename).show();
         };
         reader.readAsText(file);
     },
@@ -235,6 +236,7 @@ _.extend(g3wadmin.tpl, {
                                 <i class="fa fa-cloud-upload fa-5x"  aria-hidden="true"></i>\
                             </div>\
 						</div>\
+						<span id="xml_plot_filename" style="display: none"></span>\
 					</div>\
 				</div>\
 			</div>\
