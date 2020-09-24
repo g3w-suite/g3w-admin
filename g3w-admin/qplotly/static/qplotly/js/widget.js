@@ -229,14 +229,14 @@ _.extend(g3wadmin.tpl, {
             <div class="row">\
 				<div class="col-md-12">\
 					<div class="form-group" style="border: 1px dot-dash grey;  text-align: center">\
-						<div class="controls" style="position: relative; padding: 10px; border: 1px dashed">\
-							<input class="form-control" id="load_xml_plot" accept=".xml" title="" name="xml_file" type="file" style="margin:0; cursor:pointer;opacity:0; width:100%; position:absolute; height: 100%;" />\
-							<h4>'+gettext('Upload DataPlotly configuration xml file')+':</h4>\
+						<div class="controls qq-upload-button-selector" style="position: relative; padding: 10px;">\
+							<input class="form-control" id="load_xml_plot" accept=".xml" title="" name="xml_file" type="file" style="top:0; left:0; cursor:pointer;opacity:0; width:100%; position:absolute; height: 100%;" />\
+							<h4>'+gettext('Upload DataPlotly configuration xml file')+'</h4>\
 							<div>\
-                                <i class="fa fa-cloud-upload fa-5x"  aria-hidden="true"></i>\
+                                <i class="fa fa-upload fa-3x"  aria-hidden="true"></i>\
                             </div>\
 						</div>\
-						<span id="xml_plot_filename" style="display: none"></span>\
+						<span id="xml_plot_filename" style="display: none;"></span>\
 					</div>\
 				</div>\
 			</div>\
