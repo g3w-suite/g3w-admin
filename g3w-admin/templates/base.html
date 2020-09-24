@@ -327,7 +327,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
     {% endif %}
 
     {% for js_module in js_modules %}
+    {%  if js_module %}
     <script src="{% static js_module %}"></script>
+    {% endif %}
     {% endfor %}
 
     {% if SETTINGS.G3WSUITE_CUSTOM_STATIC_URL %}
