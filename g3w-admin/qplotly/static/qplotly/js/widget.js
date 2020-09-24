@@ -77,6 +77,7 @@ _.extend(g3wadmin.widget, {
                 {
                     'modal-title': gettext('Update widget'),
                     'layer_pk': layer_pk,
+                    //'constraint_pk': $(this).attr('data-contraint-pk'),
                     'new': false,
                     'parent_click': $(this)
                 });
@@ -102,10 +103,11 @@ _.extend(g3wadmin.widget, {
     _readQplotlyXmlFile: function(evt){
         const reader = new FileReader();
         const file = evt.target.files[0];
-        const name = file.name;
+        const filename = file.name;
         reader.onload = (evt) => {
             const data = evt.target.result;
             $('input[name="xml"]').val(data);
+            $('#xml_plot_filename').text(filename).show();
         };
         reader.readAsText(file);
     },
@@ -114,7 +116,7 @@ _.extend(g3wadmin.widget, {
 
         // set urls
 
-        form_action = (params['new']) ? ga.Qplotly.urls.widget.list : ga.Qplotly.urls.widget.detail+params['layer_pk']+'/'+res['pk']+'/'
+        form_action = (params['new']) ? ga.Qplotly.urls.widget.list : ga.Qplotly.urls.widget.detail+res['pk']+'/'
 
 
         // open modal to show list of add links
@@ -242,6 +244,7 @@ _.extend(g3wadmin.tpl, {
                                 <i class="fa fa-cloud-upload fa-5x"  aria-hidden="true"></i>\
                             </div>\
 						</div>\
+						<span id="xml_plot_filename" style="display: none"></span>\
 					</div>\
 				</div>\
 			</div>\
