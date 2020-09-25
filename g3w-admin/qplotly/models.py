@@ -34,7 +34,7 @@ class QplotlyWidget(models.Model):
         # check for souce_layerd_id inside project and datasource into values
         try:
             layer = Layer.objects.filter(qgs_layer_id=settings.source_layer_id)[0]
-        except KeyError:
+        except IndexError:
             raise ValidationError(_(f'Layer with qgs_layer_id={settings.source_layer_id} is not present into DB'))
 
         # compare datasources
