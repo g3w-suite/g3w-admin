@@ -31,7 +31,7 @@ class QplotlyTestModel(QdjangoTestBase):
 
     @classmethod
     def setUpTestData(cls):
-        # main project group
+
         cls.project_group = CoreGroup(name='Group1', title='Group1', header_logo_img='',
                                       srid=G3WSpatialRefSys.objects.get(auth_srid=4326))
 
@@ -58,7 +58,7 @@ class QplotlyTestModel(QdjangoTestBase):
         cls.wrong_settings_xml = file.read()
         file.close()
 
-        file = File(open(f'{DATASOURCE_PATH}wrong_data_plotly_settings.xml', 'r'))
+        file = File(open(f'{DATASOURCE_PATH}cities_scatter_plot_wrong_source_layer_id.xml', 'r'))
         cls.wrong_settings_source_layer_id_xml = file.read()
         file.close()
 
