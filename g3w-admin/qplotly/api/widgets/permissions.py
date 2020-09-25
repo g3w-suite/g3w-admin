@@ -39,10 +39,11 @@ class QplotlyWidgetPermission(BasePermission):
                     return False
 
             else:
+                # case: GET, PUT, DELETE
                 if 'pk' in view.kwargs and 'project_id' in view.kwargs:
-                    # for thids controll is necessary have project_id
+                    # for this controll is necessary have project_id
                     layer = QplotlyWidget.objects.get(pk=view.kwargs['pk']).\
-                        layers.filter(project_id=view.kwargs['project_id'])
+                        layers.filter(project_id=view.kwargs['project_id'])[0]
                 elif 'layer_id' in view.kwargs:
                     layer = Layer.objects.get(id=view.kwargs['layer_id'])
                 else:

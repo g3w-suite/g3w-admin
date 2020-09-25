@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE dataplotly>
+<Option type="Map">
+ <Option type="Map" name="dynamic_properties">
+  <Option type="QString" value="" name="name"/>
+  <Option name="properties"/>
+  <Option type="QString" value="collection" name="type"/>
+ </Option>
+ <Option type="Map" name="plot_layout">
+  <Option type="QString" value="" name="additional_info_expression"/>
+  <Option type="QString" value="group" name="bar_mode"/>
+  <Option type="double" value="0" name="bargaps"/>
+  <Option type="bool" value="false" name="bins_check"/>
+  <Option type="bool" value="true" name="legend"/>
+  <Option type="QString" value="v" name="legend_orientation"/>
+  <Option type="invalid" name="legend_title"/>
+  <Option type="Map" name="polar">
+   <Option type="Map" name="angularaxis">
+    <Option type="QString" value="clockwise" name="direction"/>
+   </Option>
+  </Option>
+  <Option type="Map" name="range_slider">
+   <Option type="int" value="1" name="borderwidth"/>
+   <Option type="bool" value="false" name="visible"/>
+  </Option>
+  <Option type="QString" value="" name="title"/>
+  <Option type="invalid" name="x_inv"/>
+  <Option type="invalid" name="x_max"/>
+  <Option type="invalid" name="x_min"/>
+  <Option type="QString" value="NAME" name="x_title"/>
+  <Option type="QString" value="linear" name="x_type"/>
+  <Option type="invalid" name="xaxis"/>
+  <Option type="invalid" name="y_inv"/>
+  <Option type="invalid" name="y_max"/>
+  <Option type="invalid" name="y_min"/>
+  <Option type="QString" value="POPULATION" name="y_title"/>
+  <Option type="QString" value="linear" name="y_type"/>
+  <Option type="QString" value="" name="z_title"/>
+ </Option>
+ <Option type="Map" name="plot_properties">
+  <Option type="invalid" name="additional_hover_text"/>
+  <Option type="int" value="10" name="bins"/>
+  <Option type="QString" value="v" name="box_orientation"/>
+  <Option type="bool" value="false" name="box_outliers"/>
+  <Option type="bool" value="false" name="box_stat"/>
+  <Option type="QString" value="Greys" name="color_scale"/>
+  <Option type="bool" value="false" name="color_scale_data_defined_in_check"/>
+  <Option type="bool" value="false" name="color_scale_data_defined_in_invert_check"/>
+  <Option type="QString" value="fill" name="cont_type"/>
+  <Option type="QString" value="Riempimento" name="contour_type_combo"/>
+  <Option type="bool" value="false" name="cumulative"/>
+  <Option type="List" name="custom">
+   <Option type="QString" value="NAME"/>
+  </Option>
+  <Option type="QString" value="auto" name="hover_label_position"/>
+  <Option type="invalid" name="hover_label_text"/>
+  <Option type="QString" value="all" name="hover_text"/>
+  <Option type="QString" value="#8ebad9" name="in_color"/>
+  <Option type="bool" value="false" name="invert_color_scale"/>
+  <Option type="QString" value="increasing" name="invert_hist"/>
+  <Option type="QString" value="Linea continua" name="line_combo"/>
+  <Option type="QString" value="solid" name="line_dash"/>
+  <Option type="QString" value="markers" name="marker"/>
+  <Option type="double" value="10" name="marker_size"/>
+  <Option type="int" value="0" name="marker_symbol"/>
+  <Option type="QString" value="Punti" name="marker_type_combo"/>
+  <Option type="double" value="1" name="marker_width"/>
+  <Option type="QString" value="NAME - POPULATION" name="name"/>
+  <Option type="QString" value="" name="normalization"/>
+  <Option type="double" value="1" name="opacity"/>
+  <Option type="QString" value="#1f77b4" name="out_color"/>
+  <Option type="QString" value="" name="point_combo"/>
+  <Option type="bool" value="false" name="selected_features_only"/>
+  <Option type="bool" value="false" name="show_colorscale_legend"/>
+  <Option type="bool" value="true" name="show_lines"/>
+  <Option type="bool" value="true" name="show_lines_check"/>
+  <Option type="bool" value="true" name="show_mean_line"/>
+  <Option type="bool" value="true" name="violin_box"/>
+  <Option type="QString" value="both" name="violin_side"/>
+  <Option type="bool" value="false" name="visible_features_only"/>
+  <Option type="QString" value="NAME" name="x_name"/>
+  <Option type="QString" value="POPULATION" name="y_name"/>
+  <Option type="QString" value="" name="z_name"/>
+ </Option>
+ <Option type="QString" value="scatter" name="plot_type"/>
+ <Option type="QString" value="XXXXXXXXXXXXX" name="source_layer_id"/>
+</Option>

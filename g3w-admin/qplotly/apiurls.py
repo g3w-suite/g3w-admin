@@ -24,7 +24,7 @@ urlpatterns = [
     #############################################################
     # Widgets
 
-    # Deatil/Update
+    # Detail/Update
     url(r'^api/widget/detail/(?P<project_id>\d+)/(?P<pk>\d+)/$',
         login_required(QplotlyWidgetDetail.as_view()), name='qplotly-widget-api-detail'),
     # Widget(s) filter by layer_id

@@ -7,7 +7,7 @@
 ga.Qplotly = {
     urls: {
         widget: {
-            list: '/' + SITE_PREFIX_URL + 'qplotly/api/widget/',
+            list: '/' + SITE_PREFIX_URL + 'qplotly/api/widget/layer/',
             detail: '/' + SITE_PREFIX_URL + 'qplotly/api/widget/detail/',
             link: '/' + SITE_PREFIX_URL + 'qplotly/api/widget/detail/',
         }
@@ -124,7 +124,7 @@ _.extend(g3wadmin.widget, {
 
         // set urls
 
-        form_action = (params['new']) ? ga.Qplotly.urls.widget.list : ga.Qplotly.urls.widget.detail+params['project_pk']+'/'+res['pk']+'/'
+        form_action = (params['new']) ? ga.Qplotly.urls.widget.list+params['layer_pk']+'/' : ga.Qplotly.urls.widget.detail+params['project_pk']+'/'+res['pk']+'/'
 
 
         // open modal to show list of add links

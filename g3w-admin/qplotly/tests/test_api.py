@@ -15,6 +15,7 @@ from django.urls import reverse
 from django.test.client import encode_multipart
 from qdjango.tests.base import QdjangoTestBase, CoreGroup, File, G3WSpatialRefSys, QgisProject, setup_testing_user
 from rest_framework.test import APIClient
+from guardian.shortcuts import assign_perm
 from qplotly.utils import get_qplotlywidget_for_project
 from qplotly.models import QplotlyWidget
 from qplotly.utils.models import get_qplotlywidgets4layer
@@ -88,8 +89,6 @@ class QplotlyTestAPI(QdjangoTestBase):
 
         qplotly_widgets = get_qplotlywidget_for_project(self.project.instance)
         self.assertEqual(len(qplotly_widgets), 1)
-
-        self.assertEqual(qplotly_widgets[0].project, self.project.instance)
 
     def test_initconfig_plugin_start(self):
         """Test data added to API client config"""
@@ -171,7 +170,7 @@ class QplotlyTestAPI(QdjangoTestBase):
         # change type for test
         data['type'] = 'pie'
         jcontent = json.loads(self._testApiCall('qplotly-widget-api-list', [], {}, data=data).content)
-        self.assertEqual(jcontent['pk'], 2)
+        self.assertEqual(jcontent['pk'], 3)
         self.assertEqual(jcontent['type'], 'pie')
 
         jcontent = json.loads(self._testApiCall('qplotly-widget-api-filter-by-layer-id', [layer_pk], {}).content)
@@ -181,10 +180,9 @@ class QplotlyTestAPI(QdjangoTestBase):
         # -----------
 
         # change type for test
-        data['pk'] = 2
         data['type'] = 'scatter'
-        jcontent = json.loads(self._testApiCall('qplotly-widget-api-detail', [self.project.instance.pk, data['pk']], {}, data=data, method='PUT').content)
-        self.assertEqual(jcontent['pk'], 2)
+        jcontent = json.loads(self._testApiCall('qplotly-widget-api-detail', [self.project.instance.pk, 3], {}, data=data, method='PUT').content)
+        self.assertEqual(jcontent['pk'], 3)
         self.assertEqual(jcontent['type'], 'scatter')
 
         jcontent = json.loads(self._testApiCall('qplotly-widget-api-filter-by-layer-id', [layer_pk], {}).content)
@@ -193,7 +191,7 @@ class QplotlyTestAPI(QdjangoTestBase):
 
         # TEST DELETE
         # -----------
-        self._testApiCall('qplotly-widget-api-detail', [self.project.instance.pk, data['pk']], {}, data=None, method='DELETE')
+        self._testApiCall('qplotly-widget-api-detail', [self.project.instance.pk, 3], {}, data=None, method='DELETE')
 
         jcontent = json.loads(self._testApiCall('qplotly-widget-api-filter-by-layer-id', [layer_pk], {}).content)
         self.assertEqual(jcontent['count'], 1)
@@ -201,6 +199,96 @@ class QplotlyTestAPI(QdjangoTestBase):
 
     def test_acl_widgets(self):
         """Test API ACL"""
+
+        jcontent = json.loads(self._testApiCall('qplotly-widget-api-list', [], {}).content)
+        self.assertEqual(jcontent['count'], 1)
+        self._check_constraints(jcontent)
+        pk = jcontent['results'][0]['pk']
+        layer_pk = jcontent['results'][0]['layers'][0]
+
+        # as viewer1 without grant
+        self.client.login(username=self.test_viewer1.username, password=self.test_viewer1.username)
+        url = reverse('qplotly-widget-api-list')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+        self.client.logout()
+
+        self.client.login(username=self.test_viewer1.username, password=self.test_viewer1.username)
+        url = reverse('qplotly-widget-api-filter-by-layer-id', args=[layer_pk])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+        self.client.logout()
+
+        # as editor1
+        self.client.login(username=self.test_editor1.username, password=self.test_editor1.username)
+        url = reverse('qplotly-widget-api-list')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+        self.client.logout()
+
+        self.client.login(username=self.test_editor1.username, password=self.test_editor1.username)
+        url = reverse('qplotly-widget-api-filter-by-layer-id', args=[layer_pk])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+        self.client.logout()
+
+        # give project change permission
+        # ------------------------------
+        assign_perm('change_project', self.test_editor1, self.project.instance)
+
+        self.client.login(username=self.test_editor1.username, password=self.test_editor1.username)
+        url = reverse('qplotly-widget-api-list')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+        self.client.logout()
+
+        self.client.login(username=self.test_editor1.username, password=self.test_editor1.username)
+        url = reverse('qplotly-widget-api-filter-by-layer-id', args=[layer_pk])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.client.logout()
+
+        self.client.login(username=self.test_editor1.username, password=self.test_editor1.username)
+        url = reverse('qplotly-widget-api-detail', args=[self.project.instance.pk, pk])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.client.logout()
+
+        self.client.login(username=self.test_viewer1.username, password=self.test_viewer1.username)
+        url = reverse('qplotly-widget-api-detail', args=[self.project.instance.pk, pk])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+        self.client.logout()
+
+        # Create
+        data = jcontent['results'][0]
+        data['type'] = 'pie'
+        self.client.login(username=self.test_editor1.username, password=self.test_editor1.username)
+        url = reverse('qplotly-widget-api-list')
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 403)
+
+        url = reverse('qplotly-widget-api-filter-by-layer-id', args=[layer_pk])
+        response = self.client.post(url, data=data)
+        pk = json.loads(response.content)['pk']
+        self.assertEqual(response.status_code, 201)
+
+        # udate
+        url = reverse('qplotly-widget-api-detail', args=[self.project.instance.pk, pk])
+        del(data['pk'])
+        data['type'] = 'scatter'
+        response = self.client.put(url, data=data, content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+
+        # delete
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, 204)
+
+        self.client.logout()
+
+
+
+
 
 
 
