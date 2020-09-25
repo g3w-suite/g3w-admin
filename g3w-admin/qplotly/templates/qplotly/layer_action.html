@@ -4,7 +4,7 @@
 {% if as_col %}
 <span class="col-xs-2 icon">
 {% endif %}
-    <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Qplotly widgets' %}" data-widget-type="qplotlyWidgetList" data-qplotlywidget-layer-pk="{{ layer.pk }}" data-qplotlywidget-list-url="{% url 'qplotly-widget-api-filter-by-layer-id' layer.pk %}" ><i class="fa fa-area-chart"></i></a>
+    <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Qplotly widgets' %}" data-widget-type="qplotlyWidgetList" data-qplotlywidget-project-pk="{{ layer.project.pk }}" data-qplotlywidget-layer-pk="{{ layer.pk }}" data-qplotlywidget-list-url="{% url 'qplotly-widget-api-filter-by-layer-id' layer.pk %}" ><i class="fa fa-area-chart"></i></a>
 {% if as_col %}
 </span>
 {% endif %}

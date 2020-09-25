@@ -42,14 +42,19 @@ class QdjangoProjectViewMixin(object):
 
 class QdjangoLayerViewMixin(object):
     '''
-    Mixins for Class View for get layer slug
+    Mixins for Class View for get layer slug / pk
     '''
 
     def dispatch(self, request, *args, **kwargs):
         """Populate group attribute."""
 
         self.layer_slug = kwargs.get('layer_slug')
-        self.layer = get_object_or_404(Layer, slug=self.layer_slug)
+        if self.layer_slug:
+            self.layer = get_object_or_404(Layer, slug=self.layer_slug)
+        else:
+
+            # try with layer_pk
+            self.layer = get_object_or_404(Layer, pk=kwargs.get('layer_pk'))
         return super(QdjangoLayerViewMixin, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):

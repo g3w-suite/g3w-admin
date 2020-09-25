@@ -9,6 +9,7 @@ ga.Qplotly = {
         widget: {
             list: '/' + SITE_PREFIX_URL + 'qplotly/api/widget/',
             detail: '/' + SITE_PREFIX_URL + 'qplotly/api/widget/detail/',
+            link: '/' + SITE_PREFIX_URL + 'qplotly/api/widget/detail/',
         }
     }
 };
@@ -20,13 +21,14 @@ _.extend(g3wadmin.widget, {
     // params used into html tag
     _qplotlyWidgetListParams: [
 		'qplotlywidget-list-url',
-		'qplotlywidget-layer-pk'
+		'qplotlywidget-layer-pk',
+        'qplotlywidget-project-pk',
 	],
 
     /*
     Build singlelayer constraints table
      */
-    _qplotlyWidgetTable: function(layer_pk, res){
+    _qplotlyWidgetTable: function(layer_pk, project_pk, res){
         var $div = $('<div style="margin-left:40px;">');
 
         // add new constraint btn
@@ -36,6 +38,7 @@ _.extend(g3wadmin.widget, {
                 {
                     'modal-title': gettext('New qplotly widget'),
                     'layer_pk': layer_pk,
+                    'project_pk': project_pk,
                     'new': true,
                     'parent_click': $(this)
                 });
@@ -58,16 +61,20 @@ _.extend(g3wadmin.widget, {
         var constraint_res = {};
         $.each(res['results'], function(k, v){
             constraint_res[v['pk']] = v;
+            var checked = ($.inArray(parseInt(layer_pk), v['layers']) != -1) ? "checked=\"checked\"" : ""
             var editDisplay = v['rule_count'] > 0 ? 'none': 'display';
             $tbody.append('<tr id="qplotlywidget-item-'+v['pk']+'">\n' +
             '                <td>'+ga.tpl.qplotlyWidgetActions({
                     'layerId': layer_pk,
+                    'projectPk': project_pk,
                     'widgetPk': v['pk'],
                     'editDisplay': editDisplay
             })+'</td>\n' +
             '                <td>'+v['title']+'</td>\n' +
 			'                <td>'+v['type']+'</td>\n' +
-            '                <td>'+v['linked']+'</td>\n' +
+            '                <td><input type="checkbox" name="linked" value="1" '+checked+' ' +
+                            'data-widget-type="linkWidget2Layer" ' +
+                            'data-ajax-url="/'+CURRENT_LANGUAGE_CODE+'/'+SITE_PREFIX_URL + 'qplotly/layer/'+layer_pk+'/widgets/link/'+v['pk']+'/" /></td>\n' +
             '            </tr>\n');
         });
 
@@ -77,6 +84,7 @@ _.extend(g3wadmin.widget, {
                 {
                     'modal-title': gettext('Update widget'),
                     'layer_pk': layer_pk,
+                    'project_pk': project_pk,
                     //'constraint_pk': $(this).attr('data-contraint-pk'),
                     'new': false,
                     'parent_click': $(this)
@@ -116,7 +124,7 @@ _.extend(g3wadmin.widget, {
 
         // set urls
 
-        form_action = (params['new']) ? ga.Qplotly.urls.widget.list : ga.Qplotly.urls.widget.detail+res['pk']+'/'
+        form_action = (params['new']) ? ga.Qplotly.urls.widget.list : ga.Qplotly.urls.widget.detail+params['project_pk']+'/'+res['pk']+'/'
 
 
         // open modal to show list of add links
@@ -149,17 +157,33 @@ _.extend(g3wadmin.widget, {
             that._refreshQplotlyWidgetList($item)();
             modal.hide();
         });
+
+        // set error form action
+        form.setOnErrorAction(function(xhr, msg){
+            var err_data = xhr.responseJSON['error'];
+            var $ediv = $(form.$form[0]).find('.form-errors');
+            $ediv.html('');
+            $ediv.append('<h4 class="badge bg-red">'+err_data['message']+'</h4>');
+
+            // add field errors message:
+            if (!_.isUndefined(err_data['data']['non_field_errors'])){
+                for (n in err_data['data']['non_field_errors']) {
+                    $ediv.append('<br /><span>'+err_data['data']['non_field_errors'][n]+'</span>');
+                }
+            }
+
+        });
+
         modal.setConfirmButtonAction(function(e){
             var dt = form.getData('array');
 
             dt['layers'] = [params['layer_pk']];
-            dt['datasource'] = 'ds'
 
             if (!params['new']) {
-                dt['xml'] = escape(res['xml']);
+                dt['xml'] = res['xml'];
             }
 
-            form.sendData(e, params['new'] ? 'post' : 'put', dt);
+            form.sendData(e, params['new'] ? 'post' : 'put', JSON.stringify(dt), 'application/json; charset=UTF-8');
         });
 
         modal.show();
@@ -192,12 +216,19 @@ _.extend(g3wadmin.widget, {
                      method: 'get',
                      url: params['qplotlywidget-list-url'],
                      success: function (res) {
-                        row.child(g3wadmin.widget._qplotlyWidgetTable(params['qplotlywidget-layer-pk'],res)).show();
+                        row.child(g3wadmin.widget._qplotlyWidgetTable(
+                            params['qplotlywidget-layer-pk'], params['qplotlywidget-project-pk'],res)).show();
+
                      },
                      complete: function(){
                          var status = arguments[1];
                          if (status == 'success') {
                             ga.ui.initRadioCheckbox(row.child());
+                            $(row.child()).on('ifChecked', '[data-widget-type="linkWidget2Layer"]', function(e){
+                                ga.widget.linkWidget2Layer($(this));
+                            }).on('ifUnchecked', '[data-widget-type="linkWidget2Layer"]', function(e){
+                                ga.widget.linkWidget2Layer($(this), false);
+                            });
                          }
                      },
                      error: function (xhr, textStatus, errorMessage) {
@@ -233,6 +264,7 @@ _.extend(g3wadmin.tpl, {
 
     qplotlyWidgetForm: _.template('\
         <form action="<%= action %>" id="form-qplotlywidget-<%= layerId %>">\
+            <div class="form-errors"></div>\
             <input type="hidden" name="xml" value="" />\
             <div class="row">\
 				<div class="col-md-12">\
@@ -258,7 +290,7 @@ _.extend(g3wadmin.tpl, {
 		<span class="col-xs-2 icon">\
 			<a href="#" \
 			data-widget-type="deleteItem" \
-			data-delete-url="/'+ga.Qplotly.urls.widget.detail+'<%= widgetPk %>/"\
+			data-delete-url="'+ga.Qplotly.urls.widget.detail+'<%= projectPk %>/<%= widgetPk %>/"\
 			data-item-selector="#qplotlywidget-item-<%= widgetPk %>"\
 			data-delete-method="delete"\
 			><i class="ion ion-trash-b"></i></a>\

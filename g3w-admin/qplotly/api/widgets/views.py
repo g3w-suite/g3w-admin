@@ -15,6 +15,9 @@ from rest_framework import generics
 from core.api.authentication import CsrfExemptSessionAuthentication
 
 from qplotly.models import QplotlyWidget
+from qplotly.utils.models import get_qplotlywidgets4layer
+
+from qdjango.models import Layer
 
 from .serializers import QplotlyWidgetSerializer
 from .permissions import QplotlyWidgetPermission
@@ -41,7 +44,7 @@ class QplotlyWidgetList(generics.ListCreateAPIView):
 
         qs = super().get_queryset()
         if 'layer_id' in self.kwargs:
-            qs = qs.filter(layers__pk=self.kwargs['layer_id'])
+            qs = get_qplotlywidgets4layer(Layer.objects.get(pk=self.kwargs['layer_id']))
         return qs
 
 

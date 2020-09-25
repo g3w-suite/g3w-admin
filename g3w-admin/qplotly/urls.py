@@ -13,9 +13,9 @@ __copyright__ = 'Copyright 2015 - 2020, Gis3w'
 from django.conf.urls import url
 from django.contrib.auth.decorators import login_required
 
-from .views import LayerQplotlyWidgetsView
+from .views import QplotlyLinkWidget2LayerView
 
 urlpatterns = [
-    url(r'^(?P<project_slug>[-_\w\d]+)/layer/(?P<layer_slug>[-_\w\d]+)/widgets/$',
-            login_required(LayerQplotlyWidgetsView.as_view()), name='qplotly-project-layer-widgets'),
+    url(r'^layer/(?P<layer_pk>\d+)/widgets/link/(?P<pk>\d+)/$',
+        login_required(QplotlyLinkWidget2LayerView.as_view()), name='qplotly-project-layer-widget-link'),
 ]
