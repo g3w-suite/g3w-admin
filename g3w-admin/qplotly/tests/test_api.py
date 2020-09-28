@@ -96,6 +96,9 @@ class QplotlyTestAPI(QdjangoTestBase):
         qplotly_widgets = get_qplotlywidget_for_project(self.project.instance)
         self.assertEqual(len(qplotly_widgets), 1)
 
+        # check project fk is saved
+        self.assertEqual(qplotly_widgets[0].project, self.project.instance)
+
     def test_initconfig_plugin_start(self):
         """Test data added to API client config"""
 
@@ -126,6 +129,7 @@ class QplotlyTestAPI(QdjangoTestBase):
 
         self.assertEqual(plugin_plot['plot']['type'], 'histogram')
         self.assertTrue('layout' in plugin_plot['plot'])
+        self.assertEqual(plugin_plot['plot']['layout']['title'], '')
 
     def test_trace_api(self):
         """/qplotly/api/trace API"""
@@ -154,7 +158,7 @@ class QplotlyTestAPI(QdjangoTestBase):
         self.assertFalse(jcontent['results'][0]['selected_features_only'])
         self.assertFalse(jcontent['results'][0]['visible_features_only'])
         self.assertEqual(jcontent['results'][0]['type'], 'histogram')
-        self.assertIsNone(jcontent['results'][0]['title'])
+        self.assertEqual(jcontent['results'][0]['title'], '')
         self.assertTrue(len(jcontent['results'][0]['layers'])==1)
 
     def test_widgets(self):
@@ -212,6 +216,9 @@ class QplotlyTestAPI(QdjangoTestBase):
         self.assertEqual(jcontent['pk'], 3)
         self.assertEqual(jcontent['type'], 'pie')
         self.assertEqual(jcontent['title'], 'Test title create')
+
+        # check project instance into qplotlywidget not saved
+        self.assertIsNone(QplotlyWidget.objects.get(pk=jcontent['pk']).project)
 
 
         jcontent = json.loads(self._testApiCall('qplotly-widget-api-filter-by-layer-id', [layer_pk], {}).content)

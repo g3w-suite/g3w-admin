@@ -61,6 +61,7 @@ def load_dataplotly_project_settings(sender, **kwargs):
     sender.qplotly = {
         'qgs_layer_id': settings.source_layer_id,
         'type': settings.plot_type,
+        'title': settings.layout['title'],
         'selected_features_only': settings.properties['selected_features_only'],
         'visible_features_only': settings.properties['visible_features_only'],
         'xml': settings.write_xml_db().toString()
@@ -78,16 +79,16 @@ def save_dataplotly_project_settings(sender, **kwargs):
 
         layer = sender.instance.layer_set.get(qgs_layer_id=sender.qplotly['qgs_layer_id'])
 
-        if layer.qplotlywidget_set.count() == 0:
-            qplw = QplotlyWidget(
-                datasource=layer.datasource,
-                type=sender.qplotly['type'],
-                xml=sender.qplotly['xml'],
-                selected_features_only=sender.qplotly['selected_features_only'],
-                visible_features_only=sender.qplotly['visible_features_only']
-            )
-            qplw.save()
-            qplw.layers.add(layer)
+        qplw, created = QplotlyWidget.objects.update_or_create(defaults={
+            'datasource': layer.datasource,
+            'type': sender.qplotly['type'],
+            'title':sender.qplotly['title'],
+            'xml': sender.qplotly['xml'],
+            'selected_features_only': sender.qplotly['selected_features_only'],
+            'visible_features_only': sender.qplotly['visible_features_only']
+        }, project=sender.instance)
+
+        qplw.layers.add(layer)
 
 
 @receiver(post_save, sender=Layer)
