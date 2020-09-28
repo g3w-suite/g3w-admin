@@ -59,6 +59,7 @@ class QplotlyWidgetSerializer(serializers.ModelSerializer):
             'selected_features_only',
             'visible_features_only',
             'type',
+            'title',
             'layers'
         ]
 

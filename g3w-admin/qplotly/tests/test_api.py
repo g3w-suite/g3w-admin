@@ -19,8 +19,9 @@ from guardian.shortcuts import assign_perm
 from qplotly.utils import get_qplotlywidget_for_project
 from qplotly.models import QplotlyWidget
 from qplotly.utils.models import get_qplotlywidgets4layer
-from .test_utils import CURRENT_PATH, QGS_FILE, TEST_BASE_PATH, get_data_plotly_settings_from_file
+from .test_utils import CURRENT_PATH, QGS_FILE, TEST_BASE_PATH, get_data_plotly_settings_from_file, DATASOURCE_PATH
 import json
+import copy
 
 
 class QplotlyTestAPI(QdjangoTestBase):
@@ -47,6 +48,11 @@ class QplotlyTestAPI(QdjangoTestBase):
         cls.project.group = cls.project_group
         cls.project.save()
         qgis_project_file.close()
+
+
+        file = File(open(f'{DATASOURCE_PATH}cities_scatter_plot_wrong_source_layer_id.xml', 'r'))
+        cls.wrong_settings_source_layer_id_xml = file.read()
+        file.close()
 
     @classmethod
     def tearDownClass(cls):
@@ -148,6 +154,7 @@ class QplotlyTestAPI(QdjangoTestBase):
         self.assertFalse(jcontent['results'][0]['selected_features_only'])
         self.assertFalse(jcontent['results'][0]['visible_features_only'])
         self.assertEqual(jcontent['results'][0]['type'], 'histogram')
+        self.assertIsNone(jcontent['results'][0]['title'])
         self.assertTrue(len(jcontent['results'][0]['layers'])==1)
 
     def test_widgets(self):
@@ -162,9 +169,41 @@ class QplotlyTestAPI(QdjangoTestBase):
         self.assertEqual(jcontent['count'], 1)
         self._check_constraints(jcontent)
 
+
+        # TEST API VALIDATION
+        # -------------------
+        self.client.login(username=self.test_admin1.username, password=self.test_admin1.username)
+        url = reverse('qplotly-widget-api-list')
+        response = self.client.post(url, data={})
+        self.assertEqual(response.status_code, 400)
+
+        # required xml and layers
+        jvcontent = json.loads(response.content)
+        self.assertFalse(jvcontent['result'])
+        self.assertEqual(jvcontent['error']['code'], 'validation')
+        self.assertIn('xml', jvcontent['error']['data'])
+        self.assertIn('layers', jvcontent['error']['data'])
+
+        data = copy.copy(jcontent['results'][0])
+        data['title'] = 'Test title create'
+        data['xml'] = self.wrong_settings_source_layer_id_xml
+        response = self.client.post(url, data=data)
+        print (response.content)
+        self.assertEqual(response.status_code, 400)
+
+        # source_layer_id != qgs_layer_id
+        jvcontent = json.loads(response.content)
+        self.assertFalse(jvcontent['result'])
+        self.assertEqual(jvcontent['error']['code'], 'validation')
+        self.assertIn('non_field_errors', jvcontent['error']['data'])
+
+
+        self.client.logout()
+
         # TEST CREATE
         # -----------
         data = jcontent['results'][0]
+        data['title'] = 'Test title create'
         del(data['pk'])
 
         # change type for test
@@ -172,6 +211,8 @@ class QplotlyTestAPI(QdjangoTestBase):
         jcontent = json.loads(self._testApiCall('qplotly-widget-api-list', [], {}, data=data).content)
         self.assertEqual(jcontent['pk'], 3)
         self.assertEqual(jcontent['type'], 'pie')
+        self.assertEqual(jcontent['title'], 'Test title create')
+
 
         jcontent = json.loads(self._testApiCall('qplotly-widget-api-filter-by-layer-id', [layer_pk], {}).content)
         self.assertEqual(jcontent['count'], 2)
@@ -269,6 +310,7 @@ class QplotlyTestAPI(QdjangoTestBase):
         self.assertEqual(response.status_code, 403)
 
         url = reverse('qplotly-widget-api-filter-by-layer-id', args=[layer_pk])
+        data['title'] = 'Test create'
         response = self.client.post(url, data=data)
         pk = json.loads(response.content)['pk']
         self.assertEqual(response.status_code, 201)

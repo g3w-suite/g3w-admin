@@ -62,6 +62,11 @@ class QplotlyTestModel(QdjangoTestBase):
         cls.wrong_settings_source_layer_id_xml = file.read()
         file.close()
 
+    @classmethod
+    def tearDownClass(cls):
+        cls.project.instance.delete()
+        super().tearDownClass()
+
     def test_widget(self):
         """Test QplotlyWidget model"""
 
