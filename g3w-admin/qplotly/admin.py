@@ -6,6 +6,7 @@ class QplotlyWidgetAdmin(admin.ModelAdmin):
 
     list_display = (
         'datasource',
+        'project',
         'selected_features_only',
         'visible_features_only'
     )
