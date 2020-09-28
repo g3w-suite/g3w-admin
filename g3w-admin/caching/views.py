@@ -107,7 +107,7 @@ class ActiveCachingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3W
                 # }
 
                 property = {
-                    "crs": self.layer.srid,
+                    "crs": self.layer.project.group.srid.srid,
                     "url": f"/caching/api/{self.layer._meta.app_label}{self.layer.pk}/"+"{z}/{x}/{y}.png",
                     "servertype": "TMS",
                     "attributions": form.cleaned_data['base_layer_attr']
