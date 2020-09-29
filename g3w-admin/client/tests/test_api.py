@@ -150,7 +150,7 @@ class ClientApiTest(CoreTestBase):
         self.assertEqual(resp["metadata"]["contactinformation"]["contactvoicetelephone"], "1234578")
         #self.assertEqual(resp["metadata"]["wms_url"], "")
         self.assertEqual(resp["metadata"]["fees"], "no conditions apply")
-        self.assertEqual(resp["metadata"]["keywords"], ['infoMapAccessService', 'keyword1', 'keyword2'])
+        self.assertEqual(resp["metadata"]["keywords"], ['keyword1', 'keyword2'])
         self.assertEqual(resp["thumbnail"], '/media/fake/project.png')
         self.assertEqual(resp["name"], "Un progetto")
         self.assertEqual(resp["search_endpoint"], 'ows')
@@ -170,6 +170,81 @@ class ClientApiTest(CoreTestBase):
                     {'name': 'SOURCETHM', 'type': FIELD_TYPES_MAPPING['QSTRING'], 'label': 'SOURCETHM', 'show': True}]
                 , l['fields'])
 
+                # capabilities
+                self.assertEqual(l['capabilities'], settings.QUERYABLE | settings.FILTRABLE)
+
+                # bbox
+                self.assertAlmostEqual(l['bbox']['minx'], -180, 4)
+                self.assertAlmostEqual(l['bbox']['miny'], -89.90000000000000568, 4)
+                self.assertAlmostEqual(l['bbox']['maxx'], 180, 4)
+                self.assertAlmostEqual(l['bbox']['maxy'], 83.67473300000000336, 4)
+
+                # metadata
+                metadata_expected = {
+                        "title": "world",
+                        "attributes": [
+                            {
+                                "name": "NAME",
+                                "typeName": "String",
+                                "comment": "",
+                                "length": 40,
+                                "precision": 0,
+                                "type": "QString",
+                                "alias": ""
+                            },
+                            {
+                                "name": "CAPITAL",
+                                "typeName": "String",
+                                "comment": "",
+                                "length": 64,
+                                "precision": 0,
+                                "type": "QString",
+                                "alias": ""
+                            },
+                            {
+                                "name": "APPROX",
+                                "typeName": "Integer64",
+                                "comment": "",
+                                "length": 15,
+                                "precision": 0,
+                                "type": "qlonglong",
+                                "alias": ""
+                            },
+                            {
+                                "name": "AREA",
+                                "typeName": "Real",
+                                "comment": "",
+                                "length": 19,
+                                "precision": 15,
+                                "type": "double",
+                                "alias": ""
+                            },
+                            {
+                                "name": "SOURCETHM",
+                                "typeName": "String",
+                                "comment": "",
+                                "length": 16,
+                                "precision": 0,
+                                "type": "QString",
+                                "alias": ""
+                            }
+                        ],
+                        "crs": [
+                            
+                        ],
+                        "dataurl": {
+                            
+                        },
+                        "metadataurl": {
+                            
+                        },
+                        "attribution": {
+                            
+                        }
+                }
+
+                self.assertEqual(l['metadata'], metadata_expected)
+
             if l['id'] == 'spatialite_points20190604101052075':
 
                 # check fields
@@ -178,6 +253,58 @@ class ClientApiTest(CoreTestBase):
                     {'name': 'pkuid', 'type': FIELD_TYPES_MAPPING['QLONGLONG'], 'label': 'pkuid', 'show': True},
                     {'name': 'name', 'type': FIELD_TYPES_MAPPING['QSTRING'], 'label': 'name', 'show': True}]
                 , l['fields'])
+
+                # capabilities
+                self.assertEqual(l['capabilities'], settings.QUERYABLE | settings.FILTRABLE)
+
+                # bbox
+                self.assertAlmostEqual(l['bbox']['minx'], 1.98008936077027897, 4)
+                self.assertAlmostEqual(l['bbox']['miny'], 28.77977157557936039, 4)
+                self.assertAlmostEqual(l['bbox']['maxx'], 10.68524667507452364, 4)
+                self.assertAlmostEqual(l['bbox']['maxy'], 44.35096846172920948, 4)
+
+                # metadata
+                metadata_expected = {
+                    'title': 'spatialite_points',
+                    'attributes': [
+                                    {
+                                        'name': 'pkuid',
+                                        'typeName': 'integer',
+                                        'comment': '',
+                                        'length': 0,
+                                        'precision': 0,
+                                        'type': 'qlonglong',
+                                        'alias': ''
+                                    },
+                                    {
+                                        'name': 'name',
+                                        'typeName': 'text',
+                                        'comment': '',
+                                        'length': 0,
+                                        'precision': 0,
+                                        'type': 'QString',
+                                        'alias': ''
+                                    }
+                    ],
+                    'crs': [],
+                    'dataurl': {},
+                    'metadataurl': {},
+                    'attribution': {}
+                }
+
+                self.assertEqual(l['metadata'], metadata_expected)
+
+            if l['id'] == 'bluemarble20181008111156906':
+                pass
+                # capabilities
+                # fixeme: ask to elpaso why into test thios raster is sercheable
+                #self.assertEqual(l['capabilities'], settings.QUERYABLE)
+
+                # bbox
+                self.assertAlmostEqual(l['bbox']['minx'], -180, 4)
+                self.assertAlmostEqual(l['bbox']['miny'], -90, 4)
+                self.assertAlmostEqual(l['bbox']['maxx'], 180, 4)
+                self.assertAlmostEqual(l['bbox']['maxy'], 90, 4)
 
     def testClientConfigApiThumbnailView(self):
         """ Test api project config for thumbnail param """

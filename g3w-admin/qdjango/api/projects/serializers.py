@@ -5,10 +5,13 @@ from django.utils.translation import ugettext_lazy as _
 from rest_framework import serializers
 from rest_framework_gis import serializers as geo_serializers
 from rest_framework.fields import empty
+
 from qdjango.models import Project, Layer, Widget
 from qdjango.utils.data import QgisProjectSettingsWMS, QGIS_LAYER_TYPE_NO_GEOM
 from qdjango.ows import OWSRequestHandler
 from qdjango.signals import load_qdjango_widget_layer
+from qdjango.apps import get_qgs_project
+from qdjango.utils.structure import QdjangoMetaLayer, datasourcearcgis2dict
 from core.utils.structure import mapLayerAttributes
 from core.configs import *
 from core.signals import after_serialized_project_layer
@@ -18,10 +21,13 @@ from core.utils.structure import RELATIONS_ONE_TO_MANY, RELATIONS_ONE_TO_ONE
 from core.utils.qgisapi import get_qgis_layer
 from core.utils.general import clean_for_json
 from core.models import G3WSpatialRefSys
-from qdjango.utils.structure import QdjangoMetaLayer, datasourcearcgis2dict
-from qgis.core import QgsJsonUtils
+
+from qgis.core import QgsJsonUtils, QgsMapLayer
+from qgis.server import QgsServerProjectUtils
+from qgis.PyQt.QtCore import QVariant
 
 from ..utils import serialize_vectorjoin
+from collections import OrderedDict
 import json
 
 import logging
@@ -36,36 +42,36 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
     def get_layerstree(self, instance):
         return eval(instance.layers_tree)
 
-    def get_qgis_projectsettings_wms(self, instance):
-        """
-        Exec qgis project setting wms request
-        :param instance:
-        :return:
-        """
-
-        if 'qdjango' in settings.CACHES:
-            cache = caches['qdjango']
-            cache_key = settings.QDJANGO_PRJ_CACHE_KEY.format(instance.pk)
-
-            # try to get from cache
-            cached_response = cache.get(cache_key)
-
-            if cached_response:
-                return QgisProjectSettingsWMS(cached_response)
-
-        q = QueryDict('', mutable=True)
-        q['SERVICE'] = 'WMS'
-        q['VERSION'] = '1.3.0'
-        q['REQUEST'] = 'GetProjectSettings'
-
-        response = OWSRequestHandler(self.request, project_id=instance.id).baseDoRequest(q)
-
-        if 'qdjango' in settings.CACHES:
-
-            # set in to cache
-            cache.set(cache_key, response.content)
-
-        return QgisProjectSettingsWMS(response.content)
+    # def get_qgis_projectsettings_wms(self, instance):
+    #     """
+    #     Exec qgis project setting wms request
+    #     :param instance:
+    #     :return:
+    #     """
+    #
+    #     if 'qdjango' in settings.CACHES:
+    #         cache = caches['qdjango']
+    #         cache_key = settings.QDJANGO_PRJ_CACHE_KEY.format(instance.pk)
+    #
+    #         # try to get from cache
+    #         cached_response = cache.get(cache_key)
+    #
+    #         if cached_response:
+    #             return QgisProjectSettingsWMS(cached_response)
+    #
+    #     q = QueryDict('', mutable=True)
+    #     q['SERVICE'] = 'WMS'
+    #     q['VERSION'] = '1.3.0'
+    #     q['REQUEST'] = 'GetProjectSettings'
+    #
+    #     response = OWSRequestHandler(self.request, project_id=instance.id).baseDoRequest(q)
+    #
+    #     if 'qdjango' in settings.CACHES:
+    #
+    #         # set in to cache
+    #         cache.set(cache_key, response.content)
+    #
+    #     return QgisProjectSettingsWMS(response.content)
 
     def get_map_extent(self, instance):
         """
@@ -162,11 +168,56 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         else:
             return 'GET'
 
+    def get_metadata(self, instance, qgs_project):
+        """Build metadata for layer by QgsProject instance
+        :param instance: qdjango Layer model instance
+        :param qgs_project: QgsProject instance
+        :return: dict
+        """
+
+        # TODO: ask to elpaso is service name si fixed
+        metadata = {
+            'name': 'WMS'
+        }
+        for service_property in [
+            'Title',
+            'Abstract',
+            'Fees',
+            'AccessConstraints',
+            'Keywords',
+            'OnlineResource'
+
+        ]:
+            metadata[service_property.lower()] = getattr(
+                QgsServerProjectUtils, f'owsService{service_property}')(qgs_project)
+
+        # contactinformations
+        metadata.update(OrderedDict({
+            'contactinformation': OrderedDict({
+                'personprimary': {},
+            })
+        }))
+
+        for property in ('ContactPerson', 'ContactOrganization', 'ContactPosition'):
+            metadata['contactinformation']['personprimary'].update({
+                property: getattr(QgsServerProjectUtils, f'owsService{property}')(qgs_project)
+            })
+
+        metadata['contactinformation'].update(OrderedDict({
+            'contactvoicetelephone': QgsServerProjectUtils.owsServiceContactPhone(qgs_project),
+            'contactelectronicmailaddress': QgsServerProjectUtils.owsServiceContactMail(qgs_project)
+        }))
+
+        return metadata
+
 
     def to_representation(self, instance):
         ret = super(ProjectSerializer, self).to_representation(instance)
 
-        qgis_projectsettings_wms = self.get_qgis_projectsettings_wms(instance)
+        # add a QGSMapLayer instance
+        qgs_project = get_qgs_project(instance.qgis_file.path)
+
+        #qgis_projectsettings_wms = self.get_qgis_projectsettings_wms(instance)
 
         # set init and map extent
         ret['initextent'], ret['extent'] = self.get_map_extent(instance)
@@ -196,52 +247,54 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
                     readLeaf(node, layer['nodes'])
             else:
                 lidname = layers[layer['id']].qgs_layer_id if instance.wms_use_layer_ids else layers[layer['id']].name
-                if lidname in qgis_projectsettings_wms.layers:
-                    # remove from tree layer without geometry
-                    #if layers[layer['id']].geometrytype == QGIS_LAYER_TYPE_NO_GEOM:
-                        #to_remove_from_layerstree.append((container, layer))
+                #if lidname in qgis_projectsettings_wms.layers:
 
-                    layer_serialized = LayerSerializer(layers[layer['id']],
-                                                      qgis_projectsettings_wms=qgis_projectsettings_wms)
-                    layer_serialized_data = layer_serialized.data
+                # remove from tree layer without geometry
+                #if layers[layer['id']].geometrytype == QGIS_LAYER_TYPE_NO_GEOM:
+                    #to_remove_from_layerstree.append((container, layer))
 
-                    # alter layer serialized data from plugin
-                    # send layerseralized original and came back only key->value changed
+                layer_serialized = LayerSerializer(layers[layer['id']], qgs_project=qgs_project)
+                layer_serialized_data = layer_serialized.data
 
-                    for signal_receiver, data in after_serialized_project_layer.send(layer_serialized,
-                                                                              layer=layers[layer['id']]):
-                        update_serializer_data(layer_serialized_data, data)
-                    layer_serialized_data['multilayer'] = meta_layer.getCurrentByLayer(layer_serialized_data)
+                # alter layer serialized data from plugin
+                # send layerseralized original and came back only key->value changed
 
-                    # check for vectorjoins and add to project relations
-                    if layer_serialized_data['vectorjoins']:
-                        ret['relations'] += self.get_map_layers_relations_from_vectorjoins(
-                            layer['id'],
-                            layer_serialized_data['vectorjoins'],
-                            layers
-                        )
-                    del(layer_serialized_data['vectorjoins'])
+                for signal_receiver, data in after_serialized_project_layer.send(layer_serialized,
+                                                                          layer=layers[layer['id']]):
+                    update_serializer_data(layer_serialized_data, data)
+                layer_serialized_data['multilayer'] = meta_layer.getCurrentByLayer(layer_serialized_data)
 
-                    ret['layers'].append(layer_serialized_data)
+                # check for vectorjoins and add to project relations
+                if layer_serialized_data['vectorjoins']:
+                    ret['relations'] += self.get_map_layers_relations_from_vectorjoins(
+                        layer['id'],
+                        layer_serialized_data['vectorjoins'],
+                        layers
+                    )
+                del(layer_serialized_data['vectorjoins'])
 
-                    # get widgects for layer
-                    widgets = layers[layer['id']].widget_set.all()
-                    for widget in widgets:
-                        widget_serializzer_data = WidgetSerializer(widget, layer=layers[layer['id']]).data
-                        if widget_serializzer_data['type'] == 'search':
-                            widget_serializzer_data['options']['layerid'] = layer['id']
-                            widget_serializzer_data['options']['querylayerid'] = layer['id']
-                            ret['search'].append(widget_serializzer_data)
-                        else:
-                            load_qdjango_widget_layer.send(self, layer=layer, ret=ret, widget=widget)
+                ret['layers'].append(layer_serialized_data)
 
-                    # add exclude to legend
-                    if layers[layer['id']].exclude_from_legend:
-                        ret['no_legend'].append(layers[layer['id']].qgs_layer_id)
-                else:
+                # get widgects for layer
+                widgets = layers[layer['id']].widget_set.all()
+                for widget in widgets:
+                    widget_serializzer_data = WidgetSerializer(widget, layer=layers[layer['id']]).data
+                    if widget_serializzer_data['type'] == 'search':
+                        widget_serializzer_data['options']['layerid'] = layer['id']
+                        widget_serializzer_data['options']['querylayerid'] = layer['id']
+                        ret['search'].append(widget_serializzer_data)
+                    else:
+                        load_qdjango_widget_layer.send(self, layer=layer, ret=ret, widget=widget)
 
-                    # keep layer for remove after
-                    to_remove_from_layerstree.append((container, layer))
+                # add exclude to legend
+                if layers[layer['id']].exclude_from_legend:
+                    ret['no_legend'].append(layers[layer['id']].qgs_layer_id)
+
+
+                # else:
+                #
+                #     # keep layer for remove after
+                #     to_remove_from_layerstree.append((container, layer))
 
         for l in ret['layerstree']:
             readLeaf(l, ret['layerstree'])
@@ -258,7 +311,8 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
             ret['relations'] += self.get_map_layers_relations(instance, layers)
 
         # add project metadata
-        ret['metadata'] = qgis_projectsettings_wms.metadata
+        #ret['metadata'] = qgis_projectsettings_wms.metadata
+        ret['metadata'] = self.get_metadata(instance, qgs_project)
 
         # set client options/actions
         ret.update(self._set_options(instance))
@@ -307,8 +361,11 @@ class LayerSerializer(serializers.ModelSerializer):
     servertype = serializers.SerializerMethodField()
 
     def __init__(self, instance=None, data=empty, **kwargs):
-        self.qgis_projectsettings_wms = kwargs['qgis_projectsettings_wms']
-        del(kwargs['qgis_projectsettings_wms'])
+
+        # set QsgMapLayer instance
+        self.qgs_project = kwargs['qgs_project']
+        del (kwargs['qgs_project'])
+
         super(LayerSerializer, self).__init__(instance, data, **kwargs)
 
     class Meta:
@@ -345,30 +402,87 @@ class LayerSerializer(serializers.ModelSerializer):
             column['show'] = False if column['name'] in column_to_exclude else True
         return columns
 
-    def get_capabilities(self, instance):
+    def get_capabilities(self, qgs_maplayer):
         """
         Get capabilities by layer properties
         :param instance: Model instance
         :return:
         """
+        # capabilities = 0
+        # lidname = instance.qgs_layer_id if instance.project.wms_use_layer_ids else instance.name
+        # if self.qgis_projectsettings_wms.layers[lidname]['queryable']:
+        #     capabilities |= settings.QUERYABLE
+        # if instance.wfscapabilities:
+        #     capabilities |= settings.FILTRABLE
+
+
         capabilities = 0
-        lidname = instance.qgs_layer_id if instance.project.wms_use_layer_ids else instance.name
-        if self.qgis_projectsettings_wms.layers[lidname]['queryable']:
+        if bool(qgs_maplayer.flags() & QgsMapLayer.Identifiable):
             capabilities |= settings.QUERYABLE
-        if instance.wfscapabilities:
+        if bool(qgs_maplayer.flags() & QgsMapLayer.Searchable):
             capabilities |= settings.FILTRABLE
-
-        # ----------------------------------
-        # add editable capability by signal
-        # ----------------------------------
-
-        #if capabilities == 0:
-        #    capabilities = None
 
         return capabilities
 
+    def get_metadata(self, instance, qgs_maplayer):
+        """Build metadata for layer by QgsMapLayer instance
+        :param instance: qdjango Layer model instance
+        :param qgs_maplayer: QgsMapLayer instance
+        :return: dict
+        """
+
+        metadata = {}
+        metadata['title'] = instance.title
+
+        # try to build by qgs_layer
+        metadata['attributes'] = []
+        if instance.database_columns:
+
+            for f in qgs_maplayer.fields():
+                attribute = {}
+                attribute['name'] = f.name()
+                # attribute['editType'] = f.editType()
+                attribute['typeName'] = f.typeName()
+                attribute['comment'] = f.comment()
+                attribute['length'] = f.length()
+                attribute['precision'] = f.precision()
+                attribute['type'] = QVariant.typeToName(f.type())
+                attribute['alias'] = f.alias()
+
+                metadata['attributes'].append(attribute)
+
+        # FIXME: ask to elapso where to find CRS getprojectsettings layer list.
+        metadata['crs'] = []
+
+        metadata['dataurl'] = {}
+        if qgs_maplayer.dataUrl() != '':
+            metadata['dataurl']['onlineresource'] = qgs_maplayer.dataUrl()
+
+        metadata['metadataurl'] = {}
+
+        if qgs_maplayer.metadataUrl() != '':
+            metadata['metadataurl']['onlineresource'] = qgs_maplayer.metadataUrl()
+            metadata['metadataurl']['type'] = qgs_maplayer.metadataUrlType()
+            metadata['metadataurl']['format'] = qgs_maplayer.metadataUrlFormat()
+
+        metadata['attribution'] = {}
+
+        if qgs_maplayer.attribution() != '':
+            metadata['attribution']['title'] = qgs_maplayer.attribution()
+
+        if qgs_maplayer.attributionUrl() != '':
+            metadata['attribution']['onlineresource'] = qgs_maplayer.attributionUrl()
+
+        # add abstract
+        if qgs_maplayer.abstract() != '':
+            metadata['abstract'] = qgs_maplayer.abstract()
+            
+        return metadata
+
     def to_representation(self, instance):
         ret = super(LayerSerializer, self).to_representation(instance)
+
+        qgs_maplayer = self.qgs_project.mapLayers()[instance.qgs_layer_id]
 
         group = instance.project.group
 
@@ -384,29 +498,37 @@ class LayerSerializer(serializers.ModelSerializer):
         # add bbox
         if instance.geometrytype != QGIS_LAYER_TYPE_NO_GEOM:
 
-            try:
-                bbox = self.qgis_projectsettings_wms.layers[lidname]['bboxes']['EPSG:{}'.format(group.srid.srid)]
-                ret['bbox'] = {}
-                for coord, val in list(bbox.items()):
-                    if val not in (float('inf'), float('-inf')):
-                        ret['bbox'][coord] = val
-                    else:
-                        if coord == 'maxx':
-                            ret['bbox'][coord] = -ret['bbox']['minx']
-                        elif coord == 'maxy':
-                            ret['bbox'][coord] = -ret['bbox']['miny']
-                        elif coord == 'minx':
-                            ret['bbox'][coord] = -ret['bbox']['maxx']
-                        else:
-                            ret['bbox'][coord] = -ret['bbox']['maxy']
-            except KeyError as ex:
-                logger.critical('BBOX not found for EPSG %s in layer %s' % (group.srid.srid, lidname))
+            # try:
+            #     bbox = self.qgis_projectsettings_wms.layers[lidname]['bboxes']['EPSG:{}'.format(group.srid.srid)]
+            #     ret['bbox'] = {}
+            #     for coord, val in list(bbox.items()):
+            #         if val not in (float('inf'), float('-inf')):
+            #             ret['bbox'][coord] = val
+            #         else:
+            #             if coord == 'maxx':
+            #                 ret['bbox'][coord] = -ret['bbox']['minx']
+            #             elif coord == 'maxy':
+            #                 ret['bbox'][coord] = -ret['bbox']['miny']
+            #             elif coord == 'minx':
+            #                 ret['bbox'][coord] = -ret['bbox']['maxx']
+            #             else:
+            #                 ret['bbox'][coord] = -ret['bbox']['maxy']
+            # except KeyError as ex:
+            #     logger.critical('BBOX not found for EPSG %s in layer %s' % (group.srid.srid, lidname))
+
+            extent = qgs_maplayer.extent()
+            ret['bbox'] = {}
+            ret['bbox']['minx'] = extent.xMinimum()
+            ret['bbox']['miny'] = extent.yMinimum()
+            ret['bbox']['maxx'] = extent.xMaximum()
+            ret['bbox']['maxy'] = extent.yMaximum()
 
         # add capabilities
-        ret['capabilities'] = self.get_capabilities(instance)
+        ret['capabilities'] = self.get_capabilities(qgs_maplayer)
 
         # add styles
-        ret['styles'] = self.qgis_projectsettings_wms.layers[lidname]['styles']
+        # FIXME: restore in the future for styles map management
+        #ret['styles'] = self.qgis_projectsettings_wms.layers[lidname]['styles']
 
         ret['source'] = {
             'type': instance.layer_type
@@ -432,7 +554,8 @@ class LayerSerializer(serializers.ModelSerializer):
             ret['proj4'] = None
 
         # add metadata
-        ret['metadata'] = self.qgis_projectsettings_wms.layers[lidname]['metadata']
+        #ret['metadata'] = self.qgis_projectsettings_wms.layers[lidname]['metadata']
+        ret['metadata'] = self.get_metadata(instance, qgs_maplayer)
 
         # eval editor_form_structure
         if ret['editor_form_structure']:
