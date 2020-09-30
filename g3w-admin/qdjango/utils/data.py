@@ -121,7 +121,8 @@ class QgisProjectLayer(XmlData):
         'vectorjoins',
         'editTypes',
         'editorlayout',
-        'editorformstructure'
+        'editorformstructure',
+        'extent'
     ]
 
     _pre_exception_message = 'Layer'
@@ -573,6 +574,11 @@ class QgisProjectLayer(XmlData):
         else:
             return None
 
+    def _getDataExtent(self):
+        """Get layer extension"""
+
+        return self.qgs_layer.extent().asWktPolygon()
+
     def clean(self):
         for validator in self.validators:
             validator.clean()
@@ -613,6 +619,7 @@ class QgisProjectLayer(XmlData):
                 'edittypes': self.editTypes,
                 'editor_layout': self.editorlayout,
                 'editor_form_structure': self.editorformstructure,
+                'extent': self.extent
                 }
             )
 
@@ -638,6 +645,7 @@ class QgisProjectLayer(XmlData):
             self.instance.edittypes = self.editTypes
             self.instance.editor_layout = self.editorlayout
             self.instance.editor_form_structure = self.editorformstructure
+            self.instance.extent = self.extent
 
         # Save self.instance
         self.instance.save()

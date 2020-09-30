@@ -272,7 +272,7 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
         # add relations if exists
         if instance.relations:
-            ret['relations'] += self.get_map_layers_relations(instance, layers)
+            ret['relations'] += self.get_map_layers_relations(instance)
 
         # add project metadata
         ret['metadata'] = self.get_metadata(instance, qgs_project)
@@ -458,12 +458,18 @@ class LayerSerializer(serializers.ModelSerializer):
 
         # add bbox
         if instance.geometrytype != QGIS_LAYER_TYPE_NO_GEOM:
-            extent = qgs_maplayer.extent()
-            ret['bbox'] = {}
-            ret['bbox']['minx'] = extent.xMinimum()
-            ret['bbox']['miny'] = extent.yMinimum()
-            ret['bbox']['maxx'] = extent.xMaximum()
-            ret['bbox']['maxy'] = extent.yMaximum()
+            if instance.extent:
+                print('passa da qui')
+                ret['bbox'] = instance.extent_rect
+            else:
+                print ('non extent saved')
+                # get from QgsMapLayer instance
+                extent = qgs_maplayer.extent()
+                ret['bbox'] = {}
+                ret['bbox']['minx'] = extent.xMinimum()
+                ret['bbox']['miny'] = extent.yMinimum()
+                ret['bbox']['maxx'] = extent.xMaximum()
+                ret['bbox']['maxy'] = extent.yMaximum()
 
         # add capabilities
         ret['capabilities'] = self.get_capabilities(qgs_maplayer)

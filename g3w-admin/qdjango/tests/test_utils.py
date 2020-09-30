@@ -150,6 +150,7 @@ class QgisProjectTest(TestCase):
                 self.assertTrue(layer.isVisible)
                 self.assertEqual(layer.srid, 4030)
                 self.assertEqual(layer.editOptions, 1)
+                self.assertEqual(layer.extent, 'POLYGON((-31.26574700000000462 32.3974759999999975, 69.07032000000000949 32.3974759999999975, 69.07032000000000949 81.85736800000000812, -31.26574700000000462 81.85736800000000812, -31.26574700000000462 32.3974759999999975))')
 
                 # important check datasource, main for shp and raster data
                 # --------------------------------------------------------
@@ -237,6 +238,9 @@ class QgisProjectTest(TestCase):
                 self.assertIsNone(layer.editorformstructure)
 
             if layer.layerId == 'cities10000eu20171228095720113':
+
+                # check extent
+                self.assertEqual(layer.extent, 'POLYGON((-9.71666669999999932 35.00999999999999801, 57.35194440000000071 35.00999999999999801, 57.35194440000000071 69.96666670000000465, -9.71666669999999932 69.96666670000000465, -9.71666669999999932 35.00999999999999801))')
 
                 # check editorlayout
                 # --------------------------------------------------------

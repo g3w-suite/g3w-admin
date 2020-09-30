@@ -17,6 +17,8 @@ from core.configs import *
 from core.receivers import check_overviewmap_project
 from core.utils import unicode2ascii
 from qdjango.utils.models import get_widgets4layer
+
+from qgis.core import QgsRectangle
 import os
 import logging
 
@@ -394,6 +396,9 @@ class Layer(G3WACLModelMixins, models.Model):
     download_csv = models.BooleanField(
         _('Download data in csv format'), default=False, blank=True)
 
+    # layer extension
+    extent = models.TextField(_('Layer extension'), null=True, blank=True)
+
 
     # for layer WMS/WMST: set if load direct from their servers or from local QGIS-server
     external = models.BooleanField(
@@ -415,6 +420,22 @@ class Layer(G3WACLModelMixins, models.Model):
             logger.warning(
                 'Cannot retrieve QgsMapLayer for QDjango layer %s' % self.qgs_layer_id)
             return layer
+
+    @property
+    def extent_rect(self):
+        """Return dict of coordinates extension string
+
+        :rtype: str
+        """
+
+        rect = QgsRectangle().fromWkt(self.extent)
+        return {
+            'minx': rect.xMinimum(),
+            'miny': rect.yMinimum(),
+            'maxx': rect.xMaximum(),
+            'maxy': rect.yMaximum()
+        }
+
 
     def __str__(self):
         return self.name
