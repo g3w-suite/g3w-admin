@@ -64,7 +64,8 @@ _.extend(g3wadmin.forms, {
         /**
          * Send dato form to action url
          */
-        this.sendData = function(e, method, data, content_type='application/x-www-form-urlencoded; charset=UTF-8') {
+        this.sendData = function(e, method, data, content_type) {
+            content_type = content_type ? content_type : 'application/x-www-form-urlencoded; charset=UTF-8';
             that.$form.trigger('preSendForm');
             $.ajax({
                 method: _.isUndefined(method) ?'post' : method,
