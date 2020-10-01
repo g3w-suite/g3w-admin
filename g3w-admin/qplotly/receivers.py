@@ -195,18 +195,7 @@ def qplottly_layer_action(sender, **kwargs):
         except:
             app_configs = object()
 
-        # add if is active
-        #try:
-        #    G3WCachingLayer.objects.get(app_name=kwargs['app_name'], layer_id=kwargs['layer'].pk)
-        #    kwargs['active'] = True
-        #except:
-        #    kwargs['active'] = False
-
         kwargs['as_col'] = True
-
-        # update with app_configs
-        #if hasattr(app_configs, 'CACHING_LAYER_ACTION'):
-        #    kwargs.update(app_configs.CACHING_LAYER_ACTION)
 
         template = loader.get_template('qplotly/layer_action.html')
         return template.render(kwargs)

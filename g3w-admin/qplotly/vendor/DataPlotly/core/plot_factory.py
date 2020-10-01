@@ -11,9 +11,9 @@ the Free Software Foundation; either version 2 of the License, or
 import tempfile
 import os
 import re
-import plotly
 import plotly.graph_objs as go
-from plotly import tools
+import plotly.tools as tools
+import plotly.offline
 
 from qgis.core import (
     QgsProject,
