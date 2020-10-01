@@ -1,13 +1,17 @@
 """
 G3W-ADMIN URL Configuration
 """
-from django.conf.urls import url,include
+from django.conf.urls import url, include
+from django.urls import path
 from django.contrib import admin, auth
 from django.conf import settings
 from django.conf.urls.static import static
 from django.conf.urls.i18n import i18n_patterns
 from django.views.i18n import JavaScriptCatalog
 from ajax_select import urls as ajax_select_urls
+
+import debug_toolbar
+
 try:
     from qgis.core import *
 except:
@@ -25,6 +29,9 @@ G3W_SITETREE_I18N_ALIAS = ['core', 'acl']
 #}
 
 urlpatterns = [
+
+    path('__debug__/', include(debug_toolbar.urls)),
+
     url(r'^i18n/', include('django.conf.urls.i18n')),
     url(r'^django-admin/', admin.site.urls),
     url(r'^{}'.format(BASE_ADMIN_URLPATH), include('core.urls')),

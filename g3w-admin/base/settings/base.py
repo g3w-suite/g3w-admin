@@ -58,10 +58,10 @@ THIRD_PARTY_APPS = [
     'ordered_model',
     'ajax_select',
     'djcelery',
-    'modeltranslation'
+    'modeltranslation',
     #'django_user_agents',
     #'tracking_analyzer'
-    # 'debug_toolbar',
+    'debug_toolbar',
     # 'debug_panel',
 ]
 
@@ -90,9 +90,9 @@ MIDDLEWARE = [
     #'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django.contrib.sites.middleware.CurrentSiteMiddleware'
+    'django.contrib.sites.middleware.CurrentSiteMiddleware',
     #'django_user_agents.middleware.UserAgentMiddleware',
-    # 'debug_panel.middleware.DebugPanelMiddleware'
+    'debug_toolbar.middleware.DebugToolbarMiddleware'
 ]
 
 G3WADMIN_MIDDLEWARE = []
@@ -274,6 +274,12 @@ CLIENT_OWS_METHOD = 'GET'
 G3W_CLIENT_SEARCH_ENDPOINT = 'ows' #or 'api' for to use api layer vector with FieldFilterBackend
 
 SITE_ID = 1
+
+
+INTERNAL_IPS = [
+    '127.0.0.1'
+]
+
 
 # DJANGO-FILE-FORM SETTINGS
 # -------------------------
