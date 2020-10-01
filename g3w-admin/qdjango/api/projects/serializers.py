@@ -459,10 +459,8 @@ class LayerSerializer(serializers.ModelSerializer):
         # add bbox
         if instance.geometrytype != QGIS_LAYER_TYPE_NO_GEOM:
             if instance.extent:
-                print('passa da qui')
                 ret['bbox'] = instance.extent_rect
             else:
-                print ('non extent saved')
                 # get from QgsMapLayer instance
                 extent = qgs_maplayer.extent()
                 ret['bbox'] = {}
