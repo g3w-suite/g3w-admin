@@ -18,7 +18,7 @@ from django.template import loader
 
 from core.signals import load_layer_actions, load_js_modules
 
-from qdjango.signals import load_qdjango_project_file, post_save_qdjango_project_file, load_qdjango_widget_layer
+from qdjango.signals import load_qdjango_project_file, post_save_qdjango_project_file
 from qdjango.utils.data import QgisProject
 from qdjango.models import Layer
 
@@ -177,25 +177,28 @@ def set_initconfig_value(sender, **kwargs):
 def get_js_modules(sender, **kwargs):
     """Add qplotly js scripts"""
 
-    if sender.resolver_match.view_name == 'qdjango-project-layers-list':
-        return 'qplotly/js/widget.js'
+    try:
+        if sender.resolver_match.view_name == 'qdjango-project-layers-list':
+            return 'qplotly/js/widget.js'
+    except Exception as e:
+        logger.error(str(e))
 
 
-@receiver(load_layer_actions)
-def qplottly_layer_action(sender, **kwargs):
-    """
-    Return html actions qplotly for project layer.
-    """
-
-    # only admin and editor1 or editor2:
-    if sender.has_perm('change_project', kwargs['layer'].project):
-
-        try:
-            app_configs = apps.get_app_config(kwargs['app_name']).configs
-        except:
-            app_configs = object()
-
-        kwargs['as_col'] = True
-
-        template = loader.get_template('qplotly/layer_action.html')
-        return template.render(kwargs)
+# @receiver(load_layer_actions)
+# def qplottly_layer_action(sender, **kwargs):
+#     """
+#     Return html actions qplotly for project layer.
+#     """
+#
+#     # only admin and editor1 or editor2:
+#     if sender.has_perm('change_project', kwargs['layer'].project):
+#
+#         try:
+#             app_configs = apps.get_app_config(kwargs['app_name']).configs
+#         except:
+#             app_configs = object()
+#
+#         kwargs['as_col'] = True
+#
+#         template = loader.get_template('qplotly/layer_action.html')
+#         return template.render(kwargs)
