@@ -12,7 +12,7 @@ jobs:
       - name: Run update script
         uses: garygrossgarten/github-action-ssh@release
         with:
-          command: sh /home/g3w-suite-docker/update_deploy.sh
+          command: sh /home/g3w-suite-docker/update-deploy.sh
           host: ${{ secrets.HOST_DEV_G3WSUITE }}
           username: ${{ secrets.user_DEV_G3WSUITE }}
           privateKey: ${{ secrets.PRIVATE_KEY}}
