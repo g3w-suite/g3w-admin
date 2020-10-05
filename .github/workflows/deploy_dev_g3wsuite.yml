@@ -9,10 +9,10 @@ jobs:
     runs-on: ubuntu-18.04
     
     steps:
-      - name: try ls
+      - name: Run update script
         uses: garygrossgarten/github-action-ssh@release
         with:
-          command: ls -a
+          command: sh /home/g3w-suite-docker/update_deploy.sh
           host: ${{ secrets.HOST_DEV_G3WSUITE }}
           username: ${{ secrets.user_DEV_G3WSUITE }}
           privateKey: ${{ secrets.PRIVATE_KEY}}
