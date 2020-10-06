@@ -184,21 +184,21 @@ def get_js_modules(sender, **kwargs):
         logger.error(str(e))
 
 
-# @receiver(load_layer_actions)
-# def qplottly_layer_action(sender, **kwargs):
-#     """
-#     Return html actions qplotly for project layer.
-#     """
-#
-#     # only admin and editor1 or editor2:
-#     if sender.has_perm('change_project', kwargs['layer'].project):
-#
-#         try:
-#             app_configs = apps.get_app_config(kwargs['app_name']).configs
-#         except:
-#             app_configs = object()
-#
-#         kwargs['as_col'] = True
-#
-#         template = loader.get_template('qplotly/layer_action.html')
-#         return template.render(kwargs)
+@receiver(load_layer_actions)
+def qplottly_layer_action(sender, **kwargs):
+    """
+    Return html actions qplotly for project layer.
+    """
+
+    # only admin and editor1 or editor2:
+    if sender.has_perm('change_project', kwargs['layer'].project):
+
+        try:
+            app_configs = apps.get_app_config(kwargs['app_name']).configs
+        except:
+            app_configs = object()
+
+        kwargs['as_col'] = True
+
+        template = loader.get_template('qplotly/layer_action.html')
+        return template.render(kwargs)
