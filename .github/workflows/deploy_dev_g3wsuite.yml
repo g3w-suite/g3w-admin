@@ -1,0 +1,18 @@
+name: Deploy dev.g3wsuite.it
+
+on:
+  push:
+    branches: [ dev ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-18.04
+    
+    steps:
+      - name: Run update script
+        uses: garygrossgarten/github-action-ssh@release
+        with:
+          command: cd /home/g3w-suite-docker && sh update-deploy.sh
+          host: ${{ secrets.HOST_DEV_G3WSUITE }}
+          username: ${{ secrets.user_DEV_G3WSUITE }}
+          privateKey: ${{ secrets.PRIVATE_KEY}}
