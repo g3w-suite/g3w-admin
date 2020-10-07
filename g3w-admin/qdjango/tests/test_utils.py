@@ -49,7 +49,7 @@ class QgisProjectTest(TestCase):
         # -----------------------------------------
         self.assertEqual(self.project.title, 'G3W-Suite project test')
         self.assertEqual(self.project.name, 'G3W-Suite project test')
-        self.assertEqual(self.project.qgisVersion, '3.10.9-A Coruña')
+        self.assertEqual(self.project.qgisVersion, '3.10.10-A Coruña')
         self.assertEqual(self.project.srid, 4326)
         self.assertEqual(self.project.units, 'degrees')
 
@@ -135,7 +135,7 @@ class QgisProjectTest(TestCase):
 
         # check layers in project
         # -------------------------------------
-        self.assertEqual(len(self.project.layers), 6)
+        self.assertEqual(len(self.project.layers), 7)
 
         for layer in self.project.layers:
             if layer.layerId == 'countries_simpl20171228095706310':
