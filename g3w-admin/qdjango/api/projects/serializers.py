@@ -524,6 +524,9 @@ class WidgetSerializer(serializers.ModelSerializer):
         ret = super(WidgetSerializer, self).to_representation(instance)
         ret['type'] = instance.widget_type
 
+        # get edittype
+        edittypes = eval(self.layer.edittypes)
+
         if ret['type'] == 'search':
             body = json.loads(instance.body)
             ret['options'] = {
@@ -554,7 +557,14 @@ class WidgetSerializer(serializers.ModelSerializer):
 
                     field['input']['type'] = 'selectfield'
                     if 'dependance' not in field['input']['options']:
-                        field['input']['options']['values'] = values
+
+                        # check if field has a widget edit type
+                        # todo: add 'ValueRelation' case
+                        if field['name'] in edittypes and \
+                                edittypes[field['name']]['widgetv2type'] in ('ValueMap'):
+                            field['input']['options']['values'] = edittypes[field['name']]['values']
+                        else:
+                            field['input']['options']['values'] = values
                     else:
                         field['input']['options']['values'] = []
 

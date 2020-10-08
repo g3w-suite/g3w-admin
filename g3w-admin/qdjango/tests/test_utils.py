@@ -55,11 +55,13 @@ class QgisProjectTest(TestCase):
 
         # check initialExtent
         # -----------------------------------------
+
+        # to update if qgis project test is changed
         test_initial_extent_data = {
-            'xmin': -33.65090664007660592,
-            'ymin': 14.631795352726051,
-            'xmax': 60.84904085992335609,
-            'ymax': 85.35817115461282
+            'xmin': 6.263645158202422,
+            'ymin': 40.31965139256202,
+            'xmax': 18.076138595702417,
+            'ymax': 49.16976403068898
         }
 
         for k in test_initial_extent_data.keys():
@@ -135,7 +137,7 @@ class QgisProjectTest(TestCase):
 
         # check layers in project
         # -------------------------------------
-        self.assertEqual(len(self.project.layers), 7)
+        self.assertEqual(len(self.project.layers), 6)
 
         for layer in self.project.layers:
             if layer.layerId == 'countries_simpl20171228095706310':
