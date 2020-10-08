@@ -26,6 +26,7 @@ from qdjango.models import Widget, WIDGET_TYPES
 # Re-use test data from qdjango module
 DATASOURCE_PATH = os.path.join(os.getcwd(), 'qdjango', 'tests', 'data')
 QGS310_FILE = 'g3wsuite_project_test_qgis310.qgs'
+QGS310_FILE_1 = 'edit-widget_g3w-suite-project-test.qgs'
 
 @override_settings(MEDIA_ROOT=DATASOURCE_PATH)
 @override_settings(DATASOURCE_PATH=DATASOURCE_PATH)
@@ -69,6 +70,11 @@ class ClientApiTest(CoreTestBase):
         cache_key = settings.QDJANGO_PRJ_CACHE_KEY.format(cls.project_print310.instance.pk)
         cache.set(cache_key, open(os.path.join(DATASOURCE_PATH, 'getProjectSettings_g3wsuite_project_test_qgis310.xml'),
                                   'rb').read())
+
+        qgis_project_file_1 = File(open('{}/{}'.format(DATASOURCE_PATH, QGS310_FILE_1), 'r'))
+        cls.project_print310_1 = QgisProject(qgis_project_file_1)
+        cls.project_print310_1.group = cls.print_group
+        cls.project_print310_1.save()
 
     def testGroupConfigApiView(self):
         """Test call to config"""
@@ -429,6 +435,61 @@ class ClientApiTest(CoreTestBase):
         self.assertEqual(resp_serach['name'], 'Test autocompletebox')
         self.assertEqual(resp_serach['type'], 'search')
         self.assertEqual(resp_serach['options']['filter'][0]['input']['type'], 'autocompletefield')
+        self.assertEqual(resp_serach['options']['filter'][0]['logicop'], 'AND')
+
+        # create a search widget with selectbox for a field with a ValueMap edit widget
+        # -----------------------------------------------------------------------------
+
+        layer = self.project_print310_1.instance.layer_set.get(qgs_layer_id='layer_for_edit_widget_d16f33ed_6014_4dae_b9fe_1aa0381d81c3')
+
+        widget_body = {
+            "title": "asert",
+            "query": "simpleWmsSearch",
+            "usewmsrequest": True,
+            "fields": [
+                {
+                    "name": "t_code_a",
+                    "label": "t_code_a",
+                    "blanktext": "",
+                    "filterop": "eq",
+                    "widgettype": "selectbox",
+                    "input": {
+                        "type": "textfield",
+                        "options": {}
+                    },
+                    "logicop": 'and'
+                }
+            ],
+            "results": [],
+            "selectionlayer": "layer_for_edit_widget_d16f33ed_6014_4dae_b9fe_1aa0381d81c3",
+            "selectionzoom": 0,
+            "dozoomtoextent": True
+        }
+
+        widget = Widget(
+            widget_type='search',
+            name='Test selectbox for field with valuemap',
+            datasource=layer.datasource,
+            body=json.dumps(widget_body)
+        )
+        widget.save()
+        widget.layers.add(layer)
+
+        response = self._testApiCall('group-project-map-config', ['gruppo-1', 'qdjango', self.project_print310_1.instance.pk])
+        resp = json.loads(response.content)
+
+        self.assertTrue(len(resp["search"]) > 0)
+        resp_serach = resp['search'][0]
+        self.assertEqual(resp_serach['name'], 'Test selectbox for field with valuemap')
+        self.assertEqual(resp_serach['type'], 'search')
+        self.assertEqual(resp_serach['options']['filter'][0]['input']['type'], 'selectfield')
+        self.assertEqual(resp_serach['options']['filter'][0]['input']['options']['values'],
+                         [
+                             {"value": "1", "key": "LOW"},
+                             {"value": "2", "key": "MEDIUM"},
+                             {"value": "3", "key": "HIGHT"}
+                         ]
+                         )
         self.assertEqual(resp_serach['options']['filter'][0]['logicop'], 'AND')
 
     def testClientConfigApiViewForPrint(self):
