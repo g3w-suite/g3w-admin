@@ -891,7 +891,7 @@ class QgisProject(XmlData):
                     # try for layer node
                     toRetLayer.update({
                         'id': node.layerId(),
-                        'visible': node.layer() in node.checkedLayers()
+                        'visible': node.itemVisibilityChecked()
                     })
 
                 except:
