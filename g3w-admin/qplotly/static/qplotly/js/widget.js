@@ -53,6 +53,7 @@ _.extend(g3wadmin.widget, {
             '                <th style="width:180px;">'+gettext('Actions')+'</th>\n' +
             '                <th>'+gettext('Title')+'</th>\n' +
 			'                <th>'+gettext('Type')+'</th>\n' +
+            '                <th>'+gettext('From project')+'</th>\n' +
 			'                <th>'+gettext('Linked')+'</th>\n' +
             '            </tr>\n' +
             '        </thead>');
@@ -61,8 +62,9 @@ _.extend(g3wadmin.widget, {
         var constraint_res = {};
         $.each(res['results'], function(k, v){
             constraint_res[v['pk']] = v;
-            var checked = ($.inArray(parseInt(layer_pk), v['layers']) != -1) ? "checked=\"checked\"" : ""
+            var checked = ($.inArray(parseInt(layer_pk), v['layers']) != -1) ? "checked=\"checked\"" : "";
             var editDisplay = v['rule_count'] > 0 ? 'none': 'display';
+            var from_project = v['project'] ? "<span class=\"fa fa-check-circle\" style=\"color: #ffa500\"></span>" : "";
             $tbody.append('<tr id="qplotlywidget-item-'+v['pk']+'">\n' +
             '                <td>'+ga.tpl.qplotlyWidgetActions({
                     'layerId': layer_pk,
@@ -72,6 +74,7 @@ _.extend(g3wadmin.widget, {
             })+'</td>\n' +
             '                <td>'+v['title']+'</td>\n' +
 			'                <td>'+v['type']+'</td>\n' +
+            '                <td>'+from_project+'</td>\n' +
             '                <td><input type="checkbox" name="linked" value="1" '+checked+' ' +
                             'data-widget-type="linkWidget2Layer" ' +
                             'data-ajax-url="/'+CURRENT_LANGUAGE_CODE+'/'+SITE_PREFIX_URL + 'qplotly/layer/'+layer_pk+'/widgets/link/'+v['pk']+'/" /></td>\n' +
@@ -178,10 +181,6 @@ _.extend(g3wadmin.widget, {
             var dt = form.getData('array');
 
             dt['layers'] = [params['layer_pk']];
-
-            if (!params['new']) {
-                dt['xml'] = res['xml'];
-            }
 
             form.sendData(e, params['new'] ? 'post' : 'put', JSON.stringify(dt), 'application/json; charset=UTF-8');
         });

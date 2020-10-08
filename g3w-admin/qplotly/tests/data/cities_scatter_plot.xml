@@ -23,7 +23,7 @@
    <Option type="int" value="1" name="borderwidth"/>
    <Option type="bool" value="false" name="visible"/>
   </Option>
-  <Option type="QString" value="" name="title"/>
+  <Option type="QString" value="Scatter plot test" name="title"/>
   <Option type="invalid" name="x_inv"/>
   <Option type="invalid" name="x_max"/>
   <Option type="invalid" name="x_min"/>

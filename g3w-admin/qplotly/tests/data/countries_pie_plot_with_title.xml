@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE dataplotly>
+<Option type="Map">
+ <Option type="Map" name="dynamic_properties">
+  <Option type="QString" name="name" value=""/>
+  <Option name="properties"/>
+  <Option type="QString" name="type" value="collection"/>
+ </Option>
+ <Option type="Map" name="plot_layout">
+  <Option type="QString" name="additional_info_expression" value=""/>
+  <Option type="QString" name="bar_mode" value="group"/>
+  <Option type="double" name="bargaps" value="0"/>
+  <Option type="bool" name="bins_check" value="false"/>
+  <Option type="bool" name="legend" value="true"/>
+  <Option type="QString" name="legend_orientation" value="v"/>
+  <Option type="invalid" name="legend_title"/>
+  <Option type="Map" name="polar">
+   <Option type="Map" name="angularaxis">
+    <Option type="QString" name="direction" value="clockwise"/>
+   </Option>
+  </Option>
+  <Option type="Map" name="range_slider">
+   <Option type="int" name="borderwidth" value="1"/>
+   <Option type="bool" name="visible" value="false"/>
+  </Option>
+  <Option type="QString" name="title" value="Pie countries test"/>
+  <Option type="invalid" name="x_inv"/>
+  <Option type="invalid" name="x_max"/>
+  <Option type="invalid" name="x_min"/>
+  <Option type="QString" name="x_title" value="NAME_IT"/>
+  <Option type="QString" name="x_type" value="linear"/>
+  <Option type="invalid" name="xaxis"/>
+  <Option type="invalid" name="y_inv"/>
+  <Option type="invalid" name="y_max"/>
+  <Option type="invalid" name="y_min"/>
+  <Option type="QString" name="y_title" value="POPULATION"/>
+  <Option type="QString" name="y_type" value="linear"/>
+  <Option type="QString" name="z_title" value=""/>
+ </Option>
+ <Option type="Map" name="plot_properties">
+  <Option type="invalid" name="additional_hover_text"/>
+  <Option type="int" name="bins" value="10"/>
+  <Option type="QString" name="box_orientation" value="v"/>
+  <Option type="bool" name="box_outliers" value="false"/>
+  <Option type="bool" name="box_stat" value="false"/>
+  <Option type="QString" name="color_scale" value="Greys"/>
+  <Option type="bool" name="color_scale_data_defined_in_check" value="false"/>
+  <Option type="bool" name="color_scale_data_defined_in_invert_check" value="false"/>
+  <Option type="QString" name="cont_type" value="fill"/>
+  <Option type="QString" name="contour_type_combo" value="Riempimento"/>
+  <Option type="bool" name="cumulative" value="false"/>
+  <Option type="List" name="custom">
+   <Option type="QString" value="NAME_IT"/>
+  </Option>
+  <Option type="QString" name="hover_label_position" value="auto"/>
+  <Option type="invalid" name="hover_label_text"/>
+  <Option type="QString" name="hover_text" value="all"/>
+  <Option type="QString" name="in_color" value="#8ebad9"/>
+  <Option type="bool" name="invert_color_scale" value="false"/>
+  <Option type="QString" name="invert_hist" value="increasing"/>
+  <Option type="QString" name="line_combo" value="Linea continua"/>
+  <Option type="QString" name="line_dash" value="solid"/>
+  <Option type="QString" name="marker" value="markers"/>
+  <Option type="double" name="marker_size" value="10"/>
+  <Option type="int" name="marker_symbol" value="0"/>
+  <Option type="QString" name="marker_type_combo" value="Punti"/>
+  <Option type="double" name="marker_width" value="1"/>
+  <Option type="QString" name="name" value="NAME_IT - POPULATION"/>
+  <Option type="QString" name="normalization" value=""/>
+  <Option type="double" name="opacity" value="1"/>
+  <Option type="QString" name="out_color" value="#1f77b4"/>
+  <Option type="QString" name="point_combo" value=""/>
+  <Option type="bool" name="selected_features_only" value="false"/>
+  <Option type="bool" name="show_colorscale_legend" value="false"/>
+  <Option type="bool" name="show_lines" value="true"/>
+  <Option type="bool" name="show_lines_check" value="true"/>
+  <Option type="bool" name="show_mean_line" value="true"/>
+  <Option type="bool" name="violin_box" value="true"/>
+  <Option type="QString" name="violin_side" value="both"/>
+  <Option type="bool" name="visible_features_only" value="false"/>
+  <Option type="QString" name="x_name" value="NAME_IT"/>
+  <Option type="QString" name="y_name" value="POPULATION"/>
+  <Option type="QString" name="z_name" value=""/>
+ </Option>
+ <Option type="QString" name="plot_type" value="pie"/>
+ <Option type="QString" name="source_layer_id" value="countries_d53dfb9a_98e1_4196_a601_eed9a33f47c3"/>
+</Option>

@@ -60,7 +60,8 @@ class QplotlyWidgetSerializer(serializers.ModelSerializer):
             'visible_features_only',
             'type',
             'title',
-            'layers'
+            'layers',
+            'project'
         ]
 
         validators = [
@@ -80,10 +81,12 @@ class QplotlyWidgetSerializer(serializers.ModelSerializer):
         if 'type' not in validate_data:
             validate_data['type'] = settings.plot_type
 
+        if 'title' not in validate_data:
+            validate_data['title'] = settings.layout['title']
+
     def create(self, validated_data):
         self._get_validate_data_from_settings(validated_data)
         return super().create(validated_data=validated_data)
-
 
     def update(self, instance, validated_data):
         self._get_validate_data_from_settings(validated_data)

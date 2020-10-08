@@ -54,6 +54,10 @@ class QplotlyTestAPI(QdjangoTestBase):
         cls.wrong_settings_source_layer_id_xml = file.read()
         file.close()
 
+        file = File(open(f'{DATASOURCE_PATH}countries_pie_plot_with_title.xml', 'r'))
+        cls.countries_plot_xml = file.read()
+        file.close()
+
     @classmethod
     def tearDownClass(cls):
         cls.project.instance.delete()
@@ -192,7 +196,7 @@ class QplotlyTestAPI(QdjangoTestBase):
         data['title'] = 'Test title create'
         data['xml'] = self.wrong_settings_source_layer_id_xml
         response = self.client.post(url, data=data)
-        print (response.content)
+
         self.assertEqual(response.status_code, 400)
 
         # source_layer_id != qgs_layer_id
@@ -209,6 +213,7 @@ class QplotlyTestAPI(QdjangoTestBase):
         data = jcontent['results'][0]
         data['title'] = 'Test title create'
         del(data['pk'])
+        del(data['project'])
 
         # change type for test
         data['type'] = 'pie'
@@ -244,6 +249,20 @@ class QplotlyTestAPI(QdjangoTestBase):
         jcontent = json.loads(self._testApiCall('qplotly-widget-api-filter-by-layer-id', [layer_pk], {}).content)
         self.assertEqual(jcontent['count'], 1)
         self.assertEqual(jcontent['results'][0]['type'], 'histogram')
+
+        # TEST CREATE XML WITH TITLE
+        # ----------------------------------------
+        data = {
+            'xml': self.countries_plot_xml,
+            'layers': data['layers']
+        }
+
+        # change type for test
+        jcontent = json.loads(self._testApiCall('qplotly-widget-api-list', [], {}, data=data).content)
+        self.assertEqual(jcontent['pk'], 4)
+        self.assertEqual(jcontent['type'], 'pie')
+        self.assertEqual(jcontent['title'], 'Pie countries test')
+
 
     def test_acl_widgets(self):
         """Test API ACL"""
