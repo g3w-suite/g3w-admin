@@ -59,10 +59,7 @@ THIRD_PARTY_APPS = [
     'ajax_select',
     'djcelery',
     'modeltranslation',
-    #'django_user_agents',
-    #'tracking_analyzer'
     'debug_toolbar',
-    # 'debug_panel',
 ]
 
 G3WADMIN_APPS = [
