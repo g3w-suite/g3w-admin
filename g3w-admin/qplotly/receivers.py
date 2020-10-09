@@ -54,7 +54,7 @@ def load_dataplotly_project_settings(sender, **kwargs):
 
     file.close()
 
-    if not read:
+    if not read or settings.source_layer_id is None:
         logger.info('DataPlotly settings not found into project dom document.')
         return
 
