@@ -17,7 +17,7 @@ import json
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.files import File
 from django.urls import reverse
-from guardian.shortcuts import assign_perm, remove_perm
+from guardian.shortcuts import assign_perm, remove_perm, get_anonymous_user
 from rest_framework.test import APIClient
 
 from qdjango.api.constraints.permissions import *
@@ -258,6 +258,60 @@ class TestExpressionRules(BaseConstraintsApiTests, QdjangoTestBase):
 
     _rule_class = ConstraintExpressionRule
     _rule_view_name = 'expressionrule'
+
+
+class TestQdjangoProjectsAPI(QdjangoTestBase):
+    """ Test qdjango project API """
+
+    @classmethod
+    def setUpClass(cls):
+
+        super().setUpClass()
+        cls.client = APIClient()
+
+    def _testApiCall(self, view_name, args, kwargs={}):
+        """Utility to make test calls for admin01 user"""
+
+        path = reverse(view_name, args=args)
+        if kwargs:
+            path += '?'
+            parts = []
+            for k,v in kwargs.items():
+                parts.append(k + '=' + v)
+            path += '&'.join(parts)
+
+        # No auth
+        response = self.client.get(path)
+        self.assertIn(response.status_code, [302, 403])
+
+        # Auth
+        self.assertTrue(self.client.login(username='admin01', password='admin01'))
+        response = self.client.get(path)
+        self.assertEqual(response.status_code, 200)
+        self.client.logout()
+        return response
+
+    def test_webservice_api(self):
+        """ Test webservices api """
+
+        # project not exixts
+        resp = json.loads(self._testApiCall('qdjango-webservice-api-list', [1111]).content)
+        self.assertFalse(resp['result'])
+
+        # project exist locked
+        resp = json.loads(self._testApiCall('qdjango-webservice-api-list', [self.project310.instance.pk]).content)
+
+        self.assertEqual(resp['data']['WMS']['access'], 'locked')
+        ows_url = reverse('OWS:ows', args=[self.project310.instance.group.slug, 'qdjango', self.project310.instance.pk])
+        self.assertEqual(resp['data']['WMS']['url'], ows_url)
+        self.assertTrue('WFS' in resp['data'])
+        self.assertEqual(resp['data']['WFS']['url'], ows_url)
+
+        # project exist free
+        assign_perm('view_project', get_anonymous_user(), self.project310.instance)
+        # project exist locked
+        resp = json.loads(self._testApiCall('qdjango-webservice-api-list', [self.project310.instance.pk]).content)
+        self.assertEqual(resp['data']['WMS']['access'], 'free')
 
 
 class TestQdjangoLayersAPI(QdjangoTestBase):
