@@ -55,7 +55,14 @@ def get_qgs_project(path):
         # Call process events in case the project has been updated and the cache
         # needs rebuilt
         QgsApplication.instance().processEvents()
-        return QgsConfigCache.instance().project(path, QGS_SERVER_SETTINGS)
+        project = QgsConfigCache.instance().project(path, QGS_SERVER_SETTINGS)
+        # This is required after QGIS 3.10.11, see https://github.com/qgis/QGIS/pull/38488#issuecomment-692190106
+        if project is not None and project != QgsProject.instance():
+            try:
+                QgsProject.setInstance(project)
+            except AttributeError:  # Temporary workaround for 3.10.10
+                QgsProject.instance().read(path)
+        return project
     except:
         logger.warning('There was an error loading the project from path: %s, this is normally due to unavailable layers. If this is unexpected, please turn on and check server debug logs for further details.' % path)
         return None
