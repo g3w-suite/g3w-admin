@@ -87,6 +87,10 @@
                         -->
 
                         {% endif %}
+                        <span class="col-xs-2 icon">
+                            <a href="#" data-widget-type="showWEBServices" data-api-url="{% url 'qdjango-webservice-api-list' object.pk %}" data-toggle="tooltip" data-placement="top" title="{% trans 'WEB services available' %}" ><i class="ion ion-android-globe"></i></a>
+                        </span>
+
                     </td>
                     <td>
                         <a href="{% url 'group-project-map' group.slug 'qdjango' object.pk %}" target="_blank">

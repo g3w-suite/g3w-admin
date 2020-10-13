@@ -27,6 +27,12 @@ _.extend(g3wadmin.widget, {
         'modal-size'
     ],
 
+    _showWEBServicesParams: [
+        'api-url',
+        'modal-title',
+        'modal-size'
+    ],
+
     _detailItemDataTableParams: [
         'detail-url',
     ],
@@ -810,7 +816,68 @@ _.extend(g3wadmin.widget, {
 
     },
 
+    showWEBServices: function($item){
 
+        try {
+
+            var params = ga.utils.getDataAttrs($item, this._showWEBServicesParams);
+            if (_.isUndefined(params['api-url'])) {
+                throw new Error('Attribute data-api-url not defined');
+            }
+
+            // ajax call to get deatail data
+             $.ajax({
+                 method: 'get',
+                 url: params['api-url'],
+                 success: function (res) {
+                    // build modal body content
+
+                     var $body = $('<div>');
+
+                     _.map(res['data'], function(dt, key){
+                         $body.append($('<h3>').html(key));
+                         if (key == 'TMS') {
+                            var $u = $('<ul>');
+                            $.each(dt, function(){
+                                $u.append($('<li><i>'+this['name']+'</i>: '+this['url']+'/{z}/{x}/{y}.png<br/>'+gettext('Access')+': free</li>'))
+
+                            });
+                            $body.append($u);
+                         } else{
+
+                            if (dt['access'] == 'free'){
+                                var access = '<i class="fa fa-unlock-alt" style="color: green;"></i>';
+                            } else {
+                                var access = '<i class="fa fa-lock" style="color: red;"></i>';
+                            }
+                            access += ' '+dt['access'];
+                            $body.append($('<p>').html('URL:<a href="'+dt['url']+'" target="_blank">'+dt['url']+'</a><br>' +
+                                gettext('Access')+': '+access))
+                         }
+
+                     });
+
+                    // open modal to show detail data
+                    var modal = ga.ui.buildDefaultModal({
+                        modalTitle: ((_.isUndefined(params['modal-title']) ? gettext('WEB Services') : params['modal-title'])),
+                        modalSize: (_.isUndefined(params['modal-size']) ? '' : params['modal-size']),
+                        modalBody: $body.html(),
+                        closeButtonText: gettext('Close'),
+                        confirmButton: false
+                    });
+                    modal.show();
+                 },
+                 error: function (xhr, textStatus, errorMessage) {
+                     ga.widget.showError(ga.utils.buildAjaxErrorMessage(xhr.status, errorMessage));
+                 }
+             });
+
+        } catch (e) {
+            this.showError(e.message);
+        }
+
+
+    },
 
 
 
