@@ -39,7 +39,7 @@
                     <td>
                         {% if "view_project" in userObj_perms %}
                         <span class="col-xs-2 icon">
-                            <a href="{% url 'group-project-map' group.slug 'qdjango' object.pk %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Show map' %}" target="_blank"><i class="ion ion-map"></i></a>
+                            <a class="color-orange" href="{% url 'group-project-map' group.slug 'qdjango' object.pk %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Show map' %}" target="_blank"><i class="ion ion-map"></i></a>
                         </span>
                         {% endif %}
                         {% if "change_project" in userObj_perms %}
@@ -87,17 +87,33 @@
                         -->
 
                         {% endif %}
+                        <span class="col-xs-2 icon">
+                            <a href="#" data-widget-type="showWEBServices" data-api-url="{% url 'qdjango-webservice-api-list' object.pk %}" data-toggle="tooltip" data-placement="top" title="{% trans 'WEB services available' %}" ><i class="ion ion-android-globe"></i></a>
+                        </span>
+
                     </td>
                     <td>
+                        <a href="{% url 'group-project-map' group.slug 'qdjango' object.pk %}" target="_blank">
                         {% if object.thumbnail  %}
                         <img style="height:60px;" class="img-responsive" src="{{ MEDIA_URL }}{{ object.thumbnail }}" />
                         {% else %}
                         <img style="height:60px;" class="img-responsive" src="//placehold.it/80x60" />
                         {% endif %}
+                        </a>
                     </td>
-                    <td>{{ object.title }}</td>
+                    <td>
+                        <a href="{% url 'group-project-map' group.slug 'qdjango' object.pk %}" target="_blank">
+                        <strong>{{ object.title }}</strong>
+                        </a>
+                    </td>
                     <td>{% if object.title_ur %}{{ object.title_ur }}{% endif %}</td>
-                    <td>{% if object.url_alias %}/map/{{ object.url_alias }}{% endif %}</td>
+                    <td>
+                        {% if object.url_alias %}
+                        <a href="{% url 'group-project-map' group.slug 'qdjango' object.pk %}" target="_blank">
+                            <strong>/map/{{ object.url_alias }}</strong>
+                        </a>
+                        {% endif %}
+                    </td>
                     <td>
                         {% trans 'created' %}: {{ object.created }}
                         {% if object.modified %}

@@ -4,6 +4,8 @@ from django.dispatch import receiver
 from django.conf import settings
 from django.db.models.signals import pre_delete, post_save
 from core.signals import load_layer_actions, after_serialized_project_layer
+from qdjango.signals import reading_layer_model
+from qdjango.models import Layer
 from caching.models import G3WCachingLayer
 from caching.utils import get_config
 
@@ -38,6 +40,15 @@ def caching_layer_action(sender, **kwargs):
         return template.render(kwargs)
 
 
+def _get_caching_ulr(layer):
+    """Check if layer is a caching layer and return caching url"""
+
+    caching_layers = {str(cl): cl for cl in G3WCachingLayer.objects.all()}
+    layer_key_name = "{}{}".format(layer._meta.app_label, layer.pk)
+    if layer_key_name in caching_layers.keys():
+        return '/{}caching/api/{}'.format(settings.SITE_PREFIX_URL if settings.SITE_PREFIX_URL else '', layer_key_name)
+
+
 @receiver(after_serialized_project_layer)
 def add_caching_urls(sender, **kwargs):
     """
@@ -50,10 +61,9 @@ def add_caching_urls(sender, **kwargs):
     }
 
     # get config if exists:
-    caching_layers = {str(cl): cl for cl in G3WCachingLayer.objects.all()}
-    layer_key_name = "{}{}".format(layer._meta.app_label, layer.pk)
-    if layer_key_name in caching_layers.keys():
-        data['values'] = {'cache_url': '/{}caching/api/{}'.format(settings.SITE_PREFIX_URL if settings.SITE_PREFIX_URL else '', layer_key_name)}
+    caching_url = _get_caching_ulr(layer)
+    if caching_url:
+        data['values'] = {'cache_url': caching_url}
     return data
 
 
@@ -92,3 +102,23 @@ def post_save_layer(sender, **kwargs):
                     tilestache_cfg.erase_cache_layer(layer_key_name)
             except:
                 pass
+
+@receiver(reading_layer_model)
+def get_tms_services(sender, **kwargs):
+    """
+    Return TMS services for layer if set 
+    :param sender: qdjango layer modle instance
+    :param kwargs:
+    :return:
+    """
+
+    if not isinstance(sender, Layer):
+        return
+
+    caching_url = _get_caching_ulr(sender)
+    if caching_url:
+        return {
+            'TMS': {
+                'url': caching_url
+            }
+        }

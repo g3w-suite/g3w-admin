@@ -9,6 +9,9 @@ from .api.constraints.views import (
     SingleLayerConstraintDetail,
     SingleLayerConstraintList,
 )
+from .api.projects.views import (
+    QdjangoWebServicesAPIview
+)
 
 # Single layer Constraints
 urlpatterns = [
@@ -68,6 +71,13 @@ urlpatterns = [
     url(r'^api/constraint/$',
         login_required(SingleLayerConstraintList.as_view()), name='qdjango-constraint-api-list'),
 
+
+    #############################################################
+    # OGC (web) services
+
+    # All Service(s)
+    url(r'^api/webservice/(?P<project_id>\d+)/$',
+        login_required(QdjangoWebServicesAPIview.as_view()), name='qdjango-webservice-api-list'),
 ]
 
 

@@ -471,7 +471,13 @@ _.extend(g3wadmin.ui, {
     closeMessages: function(){
         var $alerts = $('#page_user_messages').find('.alert');
         $alerts.delay(4000).slideUp(500);
-    }
+    },
+
+    initShowWEBServicesWidget: function() {
+        $(document).on('click', '[data-widget-type="showWEBServices"]', function(e){
+            ga.widget.showWEBServices($(this));
+        });
+    },
 
 
 

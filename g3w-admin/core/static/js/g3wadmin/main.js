@@ -110,6 +110,9 @@ _.extend(g3wadmin,{
         // close every messages on top page
         this.ui.closeMessages();
 
+        // init ShowWEBService widget
+        this.ui.initShowWEBServicesWidget();
+
         /*
         TODO: try to perfom this issue server side
         //If form present che collapsed box

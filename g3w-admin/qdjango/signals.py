@@ -12,3 +12,7 @@ load_qdjango_project_file = django.dispatch.Signal(providing_args=['qgis_project
 
 # post save project file
 post_save_qdjango_project_file = django.dispatch.Signal(providing_args=['qgis_project'])
+
+# using/reading layer model instace
+# invoke this signals for get data from no core module
+reading_layer_model = django.dispatch.Signal()

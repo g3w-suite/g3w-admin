@@ -61,7 +61,7 @@
             <div class="box-body">
                 <h4>
                     {% if "view_project" in userPrj_perms %}
-                    <a href="{% url 'group-project-map' group.slug 'qdjango' project.pk %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Show map' %}" target="_blank"><i class="ion ion-map"></i> {% trans 'Show map' %}</a>  |
+                    <a href="{% url 'group-project-map' group.slug 'qdjango' project.pk %}" class="color-orange" data-toggle="tooltip" data-placement="top" title="{% trans 'Show map' %}" target="_blank"><i class="ion ion-map"></i> {% trans 'Show map' %}</a>  |
                     {% endif %}
                     {% if "view_project" in userPrj_perms %}
                     <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-detail-url="{% url 'qdjango-project-detail' group.slug project.slug %}" ><i class="ion ion-eye"></i> {% trans 'Show detail' %}</a> |

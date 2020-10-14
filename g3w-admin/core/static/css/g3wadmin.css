@@ -114,3 +114,12 @@ h5 small {
 .acl-box .help-block {
     color: #ffffff;
 }
+
+.color-orange {
+    color: orangered;
+}
+
+.color-orange:hover {
+    color: orangered;
+    opacity: 80%;
+}
