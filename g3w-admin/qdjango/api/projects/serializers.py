@@ -84,11 +84,12 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
             # set max extent to CRS bounds
             if instance.group.srid.auth_srid == '4326':
-                rectangle = QgsCoordinateReferenceSystem('4326').bounds()
+                rectangle = QgsCoordinateReferenceSystem('EPSG:4326').bounds()
             else:
 
-                to_srid = QgsCoordinateReferenceSystem(instance.group.srid.auth_srid)
-                from_srid = QgsCoordinateReferenceSystem(4326)
+                # reproject CRS bounds
+                to_srid = QgsCoordinateReferenceSystem(f'EPSG:{instance.group.srid.auth_srid}')
+                from_srid = QgsCoordinateReferenceSystem('EPSG:4326')
                 ct = QgsCoordinateTransform(from_srid, to_srid, QgsCoordinateTransformContext())
                 rectangle = ct.transform(to_srid.bounds())
 
