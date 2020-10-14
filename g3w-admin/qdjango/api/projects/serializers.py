@@ -22,7 +22,13 @@ from core.utils.qgisapi import get_qgis_layer
 from core.utils.general import clean_for_json
 from core.models import G3WSpatialRefSys
 
-from qgis.core import QgsJsonUtils, QgsMapLayer
+from qgis.core import (
+    QgsJsonUtils,
+    QgsMapLayer,
+    QgsCoordinateReferenceSystem,
+    QgsCoordinateTransform,
+    QgsCoordinateTransformContext
+)
 from qgis.server import QgsServerProjectUtils
 from qgis.PyQt.QtCore import QVariant
 
@@ -75,7 +81,24 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
                 float(max_extent['ymax'])
             ]
         else:
-            map_extent = init_map_extent
+
+            # set max extent to CRS bounds
+            if instance.group.srid.auth_srid == '4326':
+                rectangle = QgsCoordinateReferenceSystem('4326').bounds()
+            else:
+
+                to_srid = QgsCoordinateReferenceSystem(instance.group.srid.auth_srid)
+                from_srid = QgsCoordinateReferenceSystem(4326)
+                ct = QgsCoordinateTransform(from_srid, to_srid, QgsCoordinateTransformContext())
+                rectangle = ct.transform(to_srid.bounds())
+
+            map_extent = [
+                rectangle.xMinimum(),
+                rectangle.yMinimum(),
+                rectangle.xMaximum(),
+                rectangle.yMaximum()
+            ]
+
 
         return init_map_extent, map_extent
 
