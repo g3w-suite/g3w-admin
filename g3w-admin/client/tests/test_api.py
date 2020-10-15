@@ -19,14 +19,16 @@ from qdjango.models import Project
 from qdjango.utils.data import QgisProject
 from django.core.cache import caches
 from core.tests.base import CoreTestBase
-from core.models import MacroGroup, Group
+from core.models import MacroGroup, Group, G3WSpatialRefSys
 from core.utils.structure import FIELD_TYPES_MAPPING
 from qdjango.models import Widget, WIDGET_TYPES
+from qgis.core import QgsCoordinateReferenceSystem, QgsCoordinateTransformContext
 
 # Re-use test data from qdjango module
 DATASOURCE_PATH = os.path.join(os.getcwd(), 'qdjango', 'tests', 'data')
 QGS310_FILE = 'g3wsuite_project_test_qgis310.qgs'
 QGS310_FILE_1 = 'edit-widget_g3w-suite-project-test.qgs'
+QGS310_FILE_2 = 'init_extent_max_extent test_qgis310.qgs'
 
 @override_settings(MEDIA_ROOT=DATASOURCE_PATH)
 @override_settings(DATASOURCE_PATH=DATASOURCE_PATH)
@@ -75,6 +77,17 @@ class ClientApiTest(CoreTestBase):
         cls.project_print310_1 = QgisProject(qgis_project_file_1)
         cls.project_print310_1.group = cls.print_group
         cls.project_print310_1.save()
+        qgis_project_file_1.close()
+
+        cls.extent_group = Group(
+            name='Extent Group', title='Extent Group', header_logo_img='', srid=G3WSpatialRefSys.objects.get(srid=32633))
+        cls.extent_group.save()
+        qgis_project_file_2 = File(open('{}/{}'.format(DATASOURCE_PATH, QGS310_FILE_2), 'r'))
+        cls.project_extent310_2 = QgisProject(qgis_project_file_2)
+        cls.project_extent310_2.group = cls.extent_group
+        cls.project_extent310_2.save()
+        qgis_project_file_2.close()
+
 
     def testGroupConfigApiView(self):
         """Test call to config"""
@@ -506,3 +519,15 @@ class ClientApiTest(CoreTestBase):
                        '{"name": "atlas_test", "w": 297.0, "h": 210.0, "atlas": {"qgs_layer_id": "countries_simpl20171228095706310", "field_name": "ISOCODE"}, "maps": [{"name": "map0", "displayname": "Map 1", "w": 117.063, "h": 76.29999107142858, "overview": false, "scale": 2621775.4915320138, "extent": {"xmin": 17.62596823561644, "ymin": 39.497494100000004, "xmax": 22.71810776438356, "ymax": 42.8164779}}]}'
                        ']')
         )
+
+    def testClientConfigApiViewForInitMaxExtent(self):
+        """Test init max extent for client config api"""
+
+        response = self._testApiCall('group-project-map-config',
+                                     [self.extent_group.slug, 'qdjango', self.project_extent310_2.instance.pk])
+        resp = json.loads(response.content)
+
+        self.assertEqual(resp['extent'],
+                         [166021.44308054161956534, 0, 534994.65506113646551967, 9329005.18244743719696999])
+
+
