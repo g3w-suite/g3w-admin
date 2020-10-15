@@ -157,6 +157,7 @@ class QdjangoProjetForm(TranslationModelForm, QdjangoProjectFormMixin, G3WFormMi
                                             css_class='box-header with-border'
                                         ),
                                         Div(
+                                            'context_base_legend',
                                             'feature_count_wms',
                                             'multilayer_query',
                                             'multilayer_querybybbox',
@@ -181,6 +182,7 @@ class QdjangoProjetForm(TranslationModelForm, QdjangoProjectFormMixin, G3WFormMi
             'thumbnail',
             'baselayer',
             'feature_count_wms',
+            'context_base_legend',
             'multilayer_query',
             'multilayer_querybybbox',
             'multilayer_querybypolygon',

@@ -132,6 +132,9 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
     multilayer_querybypolygon = models.CharField(_('Query by polygon control mode'), max_length=20, choices=QUERY_TYPE,
                                                  default='single')
 
+    context_base_legend = models.BooleanField(_('Context base legend'), default=False,
+                                help_text='Show only the symbols for the features falling into the requested area')
+
     layouts = models.TextField(_('Project layouts'), null=True, blank=True)
 
     class Meta:

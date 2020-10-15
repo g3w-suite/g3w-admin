@@ -140,6 +140,9 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         """
         options = {}
 
+        # set context base legend
+        options['context_base_legend'] = instance.context_base_legend
+
         # set feature_count:
         if hasattr(instance, 'feature_count_wms'):
             options['feature_count'] = instance.feature_count_wms

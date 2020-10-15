@@ -160,6 +160,7 @@ class ClientApiTest(CoreTestBase):
         self.assertEqual(resp["ows_method"], "GET")
         self.assertEqual(resp["print"], [])
         self.assertEqual(resp["querymultilayers"], [])
+        self.assertFalse(resp["context_base_legend"])
         self.assertEqual(resp["initbaselayer"], 3)
         self.assertEqual(resp["metadata"]["accessconstraints"], "copyright")
         self.assertEqual(resp["metadata"]["name"], "WMS")
