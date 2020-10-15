@@ -23,6 +23,11 @@ def caching_layer_action(sender, **kwargs):
         except:
             app_configs = object()
 
+        # check if layer is geometric
+        print(kwargs['layer'].geometrytype)
+        if kwargs['layer'].geometrytype == 'no geometry':
+            return
+
         # add if is active
         try:
             G3WCachingLayer.objects.get(app_name=kwargs['app_name'], layer_id=kwargs['layer'].pk)
