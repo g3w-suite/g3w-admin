@@ -182,7 +182,6 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         :return: dict
         """
 
-        # TODO: ask to elpaso is service name si fixed
         metadata = {
             'name': 'WMS'
         }
