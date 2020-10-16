@@ -15,7 +15,7 @@ jobs:
         name: Checkout
         uses: actions/checkout@v2
         with:
-          repository: g3w-admin/g3w-suite-docker 
+          repository: g3w-suite/g3w-suite-docker 
           ref: v3.0.x
       -
         name: Set up Docker Buildx
