@@ -1,6 +1,7 @@
 name: CI to Docker hub for G3W-SUITE v3.0.x image.
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - v.3.0.x
