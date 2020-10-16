@@ -11,7 +11,7 @@
   {% with client_default|add:"/css/vendor.1596811994040.min.css" as vendor_css %}
     <link rel="stylesheet" href="{% static vendor_css %}">
   {% endwith %}
-  {% with client_default|add:"/css/app.1602750798469.min.css" as app_css %}
+  {% with client_default|add:"/css/app.1602831206410.min.css" as app_css %}
     <link rel="stylesheet" href="{% static app_css %}">
   {% endwith %}
   <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -41,7 +41,7 @@
   <script>
     {{ group_config|safe }}
   </script>
-  {% with client_default|add:"/js/app.1602750798469.min.js" as app_js %}
+  {% with client_default|add:"/js/app.1602831206410.min.js" as app_js %}
     <script src="{% static app_js %}"></script>
   {% endwith %}
 </body>
