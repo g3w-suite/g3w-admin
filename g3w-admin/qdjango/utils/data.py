@@ -672,7 +672,8 @@ class QgisProject(XmlData):
         'layersTree',
         'layers',
         'layerRelations',
-        'layouts'
+        'layouts',
+        'contextbaselegend'
         ]
 
     _defaultValidators = [
@@ -1068,6 +1069,19 @@ class QgisProject(XmlData):
             'DELETE': QgsServerProjectUtils.wfstDeleteLayerIds(self.qgs_project)
         }
 
+    def _getDataContextbaselegend(self):
+        """
+        Get QgsProject property Legend->filterByMap, default return False
+        :return: context base legend
+        :rtype: boolean
+        """
+        context_base_legend, getit = self.qgs_project.readBoolEntry('Legend', 'filterByMap')
+
+        if getit:
+            return context_base_legend
+        else:
+            return False
+
     def setDataThirdParts(self):
         """ Load data from project using third part module functions/signal-receiver"""
 
@@ -1109,7 +1123,9 @@ class QgisProject(XmlData):
                     qgis_version=self.qgisVersion,
                     layers_tree=self.layersTree,
                     relations=self.layerRelations,
-                    layouts=self.layouts
+                    layouts=self.layouts,
+                    context_base_legend=self.contextbaselegend
+
                 )
             else:
                 if instance:
@@ -1122,6 +1138,7 @@ class QgisProject(XmlData):
                 self.instance.layers_tree = self.layersTree
                 self.instance.relations = self.layerRelations
                 self.instance.layouts = self.layouts
+                self.instance.context_base_legend = self.contextbaselegend
                 self.instance.wms_use_layer_ids = self.wmsuselayerids
 
                 self.instance.save()
