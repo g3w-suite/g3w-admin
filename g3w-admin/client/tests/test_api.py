@@ -95,8 +95,12 @@ class ClientApiTest(CoreTestBase):
         response = self._testApiCall('group-map-config', ['gruppo-1', 'qdjango', '1'])
         resp = json.loads(response.content)
         self.assertEqual(resp["vectorurl"], "/vector/api/")
-        self.assertEqual(resp["group"]["crs"], 4326)
-        self.assertEqual(resp["group"]["proj4"], "+proj=longlat +datum=WGS84 +no_defs ")
+        self.assertEqual(resp["group"]["crs"], {
+            'epsg': 4326,
+            'proj4': '+proj=longlat +datum=WGS84 +no_defs',
+            'geographic': True,
+            'axisinverted': True
+        })
         self.assertEqual(resp["group"]["mapcontrols"], ['zoomtoextent', 'zoom', 'zoombox', 'query', 'querybbox', 'querybypolygon', 'overview', 'scaleline', 'geolocation', 'streetview', 'nominatim', 'addlayers', 'length', 'area', 'mouseposition', 'scale'])
         self.assertEqual(resp["group"]["header_logo_img"], "logo_img/qgis-logo.png")
         self.assertEqual(resp["group"]["name"], "Gruppo 1")
@@ -265,6 +269,14 @@ class ClientApiTest(CoreTestBase):
 
                 self.assertEqual(l['metadata'], metadata_expected)
 
+                # crs
+                self.assertEqual(l['crs'], {
+                            'epsg': 4326,
+                            'proj4': '+proj=longlat +datum=WGS84 +no_defs',
+                            'geographic': True,
+                            'axisinverted': True
+                        })
+
             if l['id'] == 'spatialite_points20190604101052075':
 
                 # check fields
@@ -314,6 +326,14 @@ class ClientApiTest(CoreTestBase):
 
                 self.assertEqual(l['metadata'], metadata_expected)
 
+                # crs
+                self.assertEqual(l['crs'], {
+                    'epsg': 4326,
+                    'proj4': '+proj=longlat +datum=WGS84 +no_defs',
+                    'geographic': True,
+                    'axisinverted': True
+                })
+
             if l['id'] == 'bluemarble20181008111156906':
                 pass
                 # capabilities
@@ -325,6 +345,14 @@ class ClientApiTest(CoreTestBase):
                 self.assertAlmostEqual(l['bbox']['miny'], -90, 4)
                 self.assertAlmostEqual(l['bbox']['maxx'], 180, 4)
                 self.assertAlmostEqual(l['bbox']['maxy'], 90, 4)
+
+                # crs
+                self.assertEqual(l['crs'], {
+                    'epsg': 4326,
+                    'proj4': '+proj=longlat +datum=WGS84 +no_defs',
+                    'geographic': True,
+                    'axisinverted': True
+                })
 
     def testClientConfigApiThumbnailView(self):
         """ Test api project config for thumbnail param """

@@ -519,14 +519,18 @@ class LayerSerializer(serializers.ModelSerializer):
 
             ret['source']['external'] = instance.external
 
-        # add proj4
-        try:
-            ret['proj4'] = G3WSpatialRefSys.objects.get(srid=ret['crs']).proj4text
-        except:
-            ret['proj4'] = None
+        # replace crs property if is not none with dict structure
+
+        if ret['crs']:
+            crs = QgsCoordinateReferenceSystem(f'EPSG:{ret["crs"]}')
+            ret['crs'] = {
+                'epsg': crs.postgisSrid(),
+                'proj4': crs.toProj4(),
+                'geographic': crs.isGeographic(),
+                'axisinverted': crs.hasAxisInverted()
+            }
 
         # add metadata
-        #ret['metadata'] = self.qgis_projectsettings_wms.layers[lidname]['metadata']
         ret['metadata'] = self.get_metadata(instance, qgs_maplayer)
 
         # eval editor_form_structure

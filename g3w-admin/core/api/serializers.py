@@ -92,8 +92,14 @@ class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
             ret['name'] = instance.title
 
         # add crs:
-        ret['crs'] = int(str(self.instance.srid.srid))
-        ret['proj4'] = self.instance.srid.proj4text
+        crs = QgsCoordinateReferenceSystem(f'EPSG:{self.instance.srid.srid}')
+
+        ret['crs'] = {
+            'epsg': crs.postgisSrid(),
+            'proj4': crs.toProj4(),
+            'geographic': crs.isGeographic(),
+            'axisinverted': crs.hasAxisInverted()
+        }
 
         # map controls
         ret['mapcontrols'] = [mapcontrol.name for mapcontrol in instance.mapcontrols.all()]
