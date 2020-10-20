@@ -29,7 +29,7 @@ Optional OS modules are:
 
 - **Front-end geographic portal:** access to information, thematic groups and WebGis services
 
-- **Caching Module:** tile caching module for single layer powerd by TileStache4
+- **Caching Module:** tile caching module for single layer powered by TileStache4
 
 
 Through the web interface of the G3W-SUITE framework it is possible to:

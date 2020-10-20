@@ -16,7 +16,7 @@ The main page of the Administration Panel shows:
    * **Frontend:** to return the landing page portal
    * **Username:** to edit your profile and log out
    * **Language:** to choose the interface language
-   * **A gear icon** ![](images/manual/iconconfiguration.png): to access a menù with:
+   * **A gear icon** ![](images/manual/iconconfiguration.png): to access a menu with:
    
        **-->  Edit general data**: to set informations shown in the front-end portal 
        
