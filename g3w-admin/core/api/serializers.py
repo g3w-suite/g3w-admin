@@ -9,6 +9,8 @@ from rest_framework.fields import empty
 from core.models import Group, BaseLayer
 from core.signals import initconfig_plugin_start
 from core.mixins.api.serializers import G3WRequestSerializer
+
+from qgis.core import QgsCoordinateReferenceSystem
 from copy import copy
 
 
