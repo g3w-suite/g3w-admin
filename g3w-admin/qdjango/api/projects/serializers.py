@@ -411,6 +411,21 @@ class LayerSerializer(serializers.ModelSerializer):
 
         return capabilities
 
+    def get_ows(self, instance):
+        """
+        Get wfscapabilities to add wos services for layer
+        :param instance: Qdjango Layer model instance
+        :return: array
+        """
+
+        ret = ['WMS']
+        if instance.wfscapabilities:
+            ret.append('WFS')
+
+        # TODO: add WCS if is set
+
+        return ret
+
     def get_metadata(self, instance, qgs_maplayer):
         """Build metadata for layer by QgsMapLayer instance
         :param instance: qdjango Layer model instance
@@ -536,6 +551,9 @@ class LayerSerializer(serializers.ModelSerializer):
         # eval editor_form_structure
         if ret['editor_form_structure']:
             ret['editor_form_structure'] = eval(instance.editor_form_structure)
+
+        # add ows
+        ret['ows'] = self.get_ows(instance)
 
         return ret
 
