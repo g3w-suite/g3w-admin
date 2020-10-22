@@ -40,9 +40,9 @@ The data stored in the local **`geo_data`** directory must be synchronized on th
 
 The geographic data stored in the local **`geo_data`** folder must be loaded, reflecting any subdirectory structure.
 
-To synchronize your data access to the Administration panel of G3W-ADMIN and click on the the **`Configurations` icon** ![](images/manual/iconconfiguration.png) located in the upper right corner.
+To synchronize your data access to the Administration panel of G3W-ADMIN and click on the **`Configurations` icon** ![](images/manual/iconconfiguration.png) located in the upper right corner.
 
-Choose the **`File Manager`** item in the linked menù.
+Choose the **`File Manager`** item in the linked menu.
 
 ![](images/manual/g3wclient_icon_config.png)
 
