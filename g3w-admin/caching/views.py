@@ -19,6 +19,7 @@ from .utils import get_config, TilestacheConfig
 from .api.permissions import TilePermission
 from django.core.cache import caches
 from qdjango.models import Layer as QdjangoLayer
+from qgis.core import QgsCoordinateReferenceSystem
 import time
 import json
 
@@ -100,14 +101,26 @@ class ActiveCachingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3W
                 # create OL config data
                 # i.e.:
                 # {
-                #     "crs": 32632,
+                #     "crs": {
+                #           "epsg": 32632,
+                #           "proj4": '+proj=utm +zone=32 +datum=WGS84 +units=m +no_defs',
+                #           "geographic": False,
+                #           "axisinverted": False
+                #     },
                 #     "url": "https://dev.g3wsuite.it/caching/api/qdjango30/{z}/{x}/{y}.png",
                 #     "servertype": "TMS",
                 #     "attributions": "Ortofoto Piemonte AGEA 2015"
                 # }
 
+                crs = QgsCoordinateReferenceSystem(f'EPSG:{self.layer.project.group.srid.srid}')
+
                 property = {
-                    "crs": self.layer.project.group.srid.srid,
+                    "crs": {
+                        "epsg": self.layer.project.group.srid.srid,
+                        "proj4": crs.toProj4(),
+                        "geographic": crs.isGeographic(),
+                        "axisinverted": crs.hasAxisInverted()
+                    },
                     "url": f"/caching/api/{self.layer._meta.app_label}{self.layer.pk}/"+"{z}/{x}/{y}.png",
                     "servertype": "TMS",
                     "attributions": form.cleaned_data['base_layer_attr']

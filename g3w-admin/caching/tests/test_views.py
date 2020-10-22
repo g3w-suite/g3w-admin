@@ -98,6 +98,14 @@ class CachingViewsTests(CachingTestBase):
         body = json.loads(base_layer.property)
         self.assertEqual(body['attributions'], 'attribution/copyright')
 
+        # crs poperty validation
+        self.assertEqual(body['crs'], {
+            'epsg': 4326,
+            'proj4': '+proj=longlat +datum=WGS84 +no_defs',
+            'geographic': True,
+            'axisinverted': True
+        })
+
         # update
         res = client.post(url,
                           data={
@@ -116,6 +124,14 @@ class CachingViewsTests(CachingTestBase):
         self.assertEqual(base_layer.description, 'Description updated')
         body = json.loads(base_layer.property)
         self.assertEqual(body['attributions'], 'attribution/copyright updated')
+
+        # crs poperty validation
+        self.assertEqual(body['crs'], {
+            'epsg': 4326,
+            'proj4': '+proj=longlat +datum=WGS84 +no_defs',
+            'geographic': True,
+            'axisinverted': True
+        })
 
         base_layer_pk = base_layer.pk
 
