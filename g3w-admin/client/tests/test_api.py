@@ -108,7 +108,7 @@ class ClientApiTest(CoreTestBase):
         self.assertEqual(resp["group"]["initproject"], "qdjango:1")
         self.assertEqual(resp["group"]["header_terms_of_use_link"], "")
         self.assertTrue(resp["group"]["powered_by"])
-        self.assertEqual(resp["group"]["baselayers"], [{'crs': 3857, 'servertype': 'OSM', 'attribution': "<a href='https://www.openstreetmap.org/copyright'>OpenStreetMap contributors</a>", 'name': 'OpenStreetMap', 'title': 'OSM', 'scalebasedvisibility': False, 'maxscale': 0, 'minscale': 100000000, 'id': 3, 'icon': None}])
+        self.assertEqual(resp["group"]["baselayers"], [{'crs': {'epsg': 3857, 'proj4': '+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs', 'geographic': False, 'axisinverted': False}, 'servertype': 'OSM', 'attribution': "<a href='https://www.openstreetmap.org/copyright'>OpenStreetMap contributors</a>", 'name': 'OpenStreetMap', 'title': 'OSM', 'scalebasedvisibility': False, 'maxscale': 0, 'minscale': 100000000, 'id': 3, 'icon': None}])
         self.assertEqual(resp["group"]["header_terms_of_use_text"], "")
         self.assertEqual(resp["group"]["header_custom_links"], [])
         self.assertEqual(resp["group"]["background_color"], "#ffffff")
