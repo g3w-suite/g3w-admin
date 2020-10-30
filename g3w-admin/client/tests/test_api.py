@@ -354,6 +354,31 @@ class ClientApiTest(CoreTestBase):
                     'axisinverted': True
                 })
 
+    def test_init_max_extent_policy(self):
+        """ Test init  and maxextent policy by checked or not of use_map_extent_as_init_extent"""
+
+        response = self._testApiCall('group-project-map-config', ['gruppo-1', 'qdjango', '1'])
+        resp = json.loads(response.content)
+
+        self.assertEqual(resp["initextent"], resp["extent"])
+
+        self.prj_test.use_map_extent_as_init_extent = True
+        self.prj_test.save()
+
+        response = self._testApiCall('group-project-map-config', ['gruppo-1', 'qdjango', '1'])
+        resp = json.loads(response.content)
+
+        self.assertNotEqual(resp["initextent"], resp["extent"])
+
+        self.prj_test.use_map_extent_as_init_extent = False
+        self.prj_test.save()
+
+        response = self._testApiCall('group-project-map-config', ['gruppo-1', 'qdjango', '1'])
+        resp = json.loads(response.content)
+
+        self.assertEqual(resp["initextent"], resp["extent"])
+
+
     def testClientConfigApiThumbnailView(self):
         """ Test api project config for thumbnail param """
 

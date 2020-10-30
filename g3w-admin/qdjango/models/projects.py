@@ -16,7 +16,7 @@ from usersmanage.configs import *
 from core.configs import *
 from core.receivers import check_overviewmap_project
 from core.utils import unicode2ascii
-from qdjango.utils.models import get_widgets4layer
+from qdjango.utils.models import get_widgets4layer, get_contraints4layer
 
 from qgis.core import QgsRectangle
 import os
@@ -136,6 +136,9 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
                                 help_text='Show only the symbols for the features falling into the requested area')
 
     layouts = models.TextField(_('Project layouts'), null=True, blank=True)
+
+    use_map_extent_as_init_extent = models.BooleanField(_('User QGIS project map start extent as webgis init extent'),
+                                                        default=False)
 
     class Meta:
         verbose_name = _('Project')
@@ -459,6 +462,14 @@ class Layer(G3WACLModelMixins, models.Model):
         """
 
         return len(get_widgets4layer(self))
+
+    def getConstraintsNumber(self):
+        """
+        Count constraints for self layer
+        :return: integer
+        """
+
+        return len(get_contraints4layer(self))
 
     def _permissionsToEditor(self, user, mode='add'):
         setPermissionUserObject(user, self, permissions=[

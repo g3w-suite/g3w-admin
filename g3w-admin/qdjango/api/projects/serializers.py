@@ -60,10 +60,7 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         :return: tuple
         """
 
-        if instance.max_extent:
-            extent = eval(instance.max_extent)
-        else:
-            extent = eval(instance.initial_extent)
+        extent = eval(instance.initial_extent)
 
         init_map_extent = [
             float(extent['xmin']),
@@ -100,6 +97,10 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
                 rectangle.yMaximum()
             ]
 
+
+        # if use_map_extent_as_init_extent is not flaged set init_map_extent as map_extent
+        if not instance.use_map_extent_as_init_extent:
+            init_map_extent = map_extent
 
         return init_map_extent, map_extent
 
