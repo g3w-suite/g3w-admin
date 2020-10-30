@@ -33,7 +33,7 @@ class G3WCachingLayer(models.Model):
         try:
             bl = BaseLayer.objects.get(pk=self.baselayer_id)
             property = json.loads(bl.property)
-            return property.get('attribution', None)
+            return property.get('attributions', None)
         except ObjectDoesNotExist:
             return None
 
