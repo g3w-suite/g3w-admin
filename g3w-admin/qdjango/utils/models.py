@@ -53,3 +53,11 @@ def get_widgets4layer(layer):
         return Widget.objects.filter(to_contain)
     else:
         return Widget.objects.filter(datasource=layer.datasource)
+
+
+def get_constraints4layer(layer):
+    """
+    Return list of single layer contraint
+    """
+
+    return layer.constrainted_layer.all()

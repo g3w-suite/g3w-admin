@@ -16,7 +16,7 @@ from usersmanage.configs import *
 from core.configs import *
 from core.receivers import check_overviewmap_project
 from core.utils import unicode2ascii
-from qdjango.utils.models import get_widgets4layer, get_contraints4layer
+from qdjango.utils.models import get_widgets4layer, get_constraints4layer
 
 from qgis.core import QgsRectangle
 import os
@@ -469,7 +469,7 @@ class Layer(G3WACLModelMixins, models.Model):
         :return: integer
         """
 
-        return len(get_contraints4layer(self))
+        return len(get_constraints4layer(self))
 
     def _permissionsToEditor(self, user, mode='add'):
         setPermissionUserObject(user, self, permissions=[
