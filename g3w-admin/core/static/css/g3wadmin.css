@@ -123,3 +123,13 @@ h5 small {
     color: orangered;
     opacity: 80%;
 }
+
+.label-action-layer {
+    position: absolute;
+    top: -2px;
+    right: 2px;
+    text-align: center;
+    font-size: 9px;
+    padding: 2px 3px;
+    line-height: .9;
+}

@@ -91,7 +91,7 @@
                 <table id="layers_table" class="table table-hover table-striped" data-widget-type="dataTable">
                     <thead>
                         <tr>
-                            <th style="min-width:160px; max-width: 160px;">Actions</th>
+                            <th style="min-width:140px; width:220px;">Actions</th>
                             {% if "change_project" in userPrj_perms %}
                             <th style="width:40px">{% trans 'No legend' %}</th>
                             {% if 'shp' in SETTINGS.G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS %}
@@ -118,23 +118,25 @@
                         {% for object in object_list %}
                         <tr id="qdjango_project_layer_{{ object.slug }}">
                             <td>
-                                {% g3wadmin_layer_actions object 'qdjango' user as actions %}
-                                {% for action in actions %}
-                                    {{ action }}
-                                {% endfor %}
-                                {% if object.layer_type in type_layer_for_widget %}
-                                <span class="col-xs-2 icon">
-                                    <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Manage alphanumeric visualization and editing constraints' %}" data-widget-type="singlelayerConstraintsList" data-singlelayerconstraints-layer-pk="{{ object.pk }}" data-singlelayerconstraints-list-url="{% url 'qdjango-constraint-api-filter-by-layer-id' object.pk %}" ><i class="fa fa-filter"></i></a>
+                                <span class="row">
+                                    {% g3wadmin_layer_actions object 'qdjango' user as actions %}
+
+                                    {% for action in actions %}
+                                        {{ action }}
+                                    {% endfor %}
+                                    {% if object.layer_type in type_layer_for_widget %}
+                                    <span class="col-xs-2 icon">
+                                        <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Manage alphanumeric visualization and editing constraints' %}" data-widget-type="singlelayerConstraintsList" data-singlelayerconstraints-layer-pk="{{ object.pk }}" data-singlelayerconstraints-list-url="{% url 'qdjango-constraint-api-filter-by-layer-id' object.pk %}" ><i class="fa fa-filter"></i>
+                                            <span class="label label-info label-action-layer">{{ object.getConstraintsNumber }}</span>
+                                        </a>
+                                    </span>
+                                    <span class="col-xs-2 icon">
+                                        <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Widgets list' %}" data-widget-type="detailItemDataTable" data-detail-url="{% url 'qdjango-project-layer-widgets' group.slug object.project.slug object.slug %}" ><i class="ion ion-gear-b"></i>
+                                            <span class="label label-info label-action-layer">{{ object.getWidgetsNumber }}</span></a>
+
+                                    </span>
+                                    {% endif %}
                                 </span>
-                                {% endif %}
-                                {% if object.layer_type in type_layer_for_widget %}
-                                <span class="col-xs-2 icon">
-                                    <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Widgets list' %}" data-widget-type="detailItemDataTable" data-detail-url="{% url 'qdjango-project-layer-widgets' group.slug object.project.slug object.slug %}" ><i class="ion ion-gear-b"></i></a>
-                                </span>
-                                <span class="label label-info col-xs-2">
-                                    {{ object.getWidgetsNumber }}
-                                </span>
-                                {% endif %}
                             </td>
                             {% if "change_project" in userPrj_perms %}
                             <td>
