@@ -126,10 +126,10 @@ h5 small {
 
 .label-action-layer {
     position: absolute;
-    top: -2px;
-    right: 2px;
+    top: -9px;
+    right: 1px;
     text-align: center;
-    font-size: 9px;
+    font-size: 11px;
     padding: 2px 3px;
     line-height: .9;
 }
