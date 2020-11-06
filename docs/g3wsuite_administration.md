@@ -61,7 +61,7 @@ Informations that will appear on the front end landing page
 ![](images/manual/g3wsuite_administration_configuration_homedata_result.jpg)
 
 ### Front End About Data
-Informations that will appear in the **About it** session
+Informations that will appear in the **Info** session
 
 **ATTENTION:** contents marked with * are mandatory.
 
@@ -427,11 +427,16 @@ The title associated with the WebGis service follows this definition logic:
  * Name of the QGIS project file
 
 #### Options and actions
-These options allow you to define the type of WMS / WFS query to be carried out and the maximum number of results obtainable following a query.
- * **`Max feature to get for query`***:
- * **`Query control mode`***:
- * **`Query by bbox control mode`***:
- * **`Query by polygon control mode`***:
+
+ * **`User QGIS project map start extent as webgis init extent `**: check this control if you want set initial extent from QGSI project initial extent
+ 
+Otherwise the initial extension will correspond to the maximum one defined on the basis of the extension associated with the WMS capabilities of the QGIS project (**Project properties -> QGIS Server -> WMS capabilities (Advertised extent)**)
+ 
+The next options allow you to define the type of WMS / WFS query to be carried out and the maximum number of results obtainable following a query.
+ * **`Max feature to get for query`***: max number of feature to get for single or multiple mode
+ * **`Query control mode`***: single or multiple
+ * **`Query by bbox control mode`***: single or multiple
+ * **`Query by polygon control mode`***: single or multiple
 
 **ATTENTION:** contents marked with * are mandatory.
 
@@ -471,11 +476,13 @@ Through the single icons, placed at the level of each project, it is possible to
  * ![](images/manual/iconsmall_viewmap.png) **Display the cartographic project on the WebGis interface:** to check the display by the user
  * ![](images/manual/iconsmall_layerlist.png) **Access the list of layers** present within the project and define their functional aspects
  * ![](images/manual/iconsmall_view.png) **View the project specifications**
+  * ![](images/manual/iconsmall_wms.png) **Test the WMS Capabilities** of the project
  * ![](images/manual/iconsmall_edit.png) **Update a project:** update of the QGIS file and other options related to the project
  * ![](images/manual/iconsmall_erase.png) **Remove a cartographic project**
    **Warning:** removing a project also removes all the widgets (e.g. searches) that would be orphaned after the project has been removed
  * ![](images/manual/iconsmall_download.png) **Download of the QGIS project**
- * ![](images/manual/iconsmall_wms.png) **Test the WMS Capabilities** of the project
+ * ![](images/manual/iconsmall_ogc.png) **List of OGC services** associated with the project
+
 
 ### Setting up the overview map for WebGis services
 In this session it is also possible to define which of the cartographic projects loaded within the group will be used as a panoramic map.
@@ -488,24 +495,46 @@ Once a cartographic project has been published, thougth the icon ![](images/manu
 ![](images/manual/g3wsuite_administration_project_layer_list.png)
 
 Next to each layer are a series of icons and checkboxes:
+ * **Label:** layer alias applied at the QGIS project level
+ * **Name:** name of the layer (file or DB table)
+ * ![](images/manual/icon_layertype.png) **Type:** illustrates the type of data (WMS, PostGis, SpatiaLite, GDAL / OGR ...)
+ * **WMS external:** to speed up loading, the WMS layers present in a QGIS project are managed directly by Django and not by QGIS-Server. However, this method prevents the application of any styling  (e.g. opacity level) defined at the project level. The choice of the external WMS option means that the WMS layer is managed directly by QGIS-Server and therefore the associated styling is applied.
+ * **WFS:** a check mark shows whether the layer is published as a WFS service or not
  * ![](images/manual/icon_cache.png) **Caching Layer:** allows you to activate and manage the cache of the single layer at the project level
  * ![](images/manual/icon_editing.png) **Editing layer:** shows if the online editing function is active on the layer and allows you to activate and define it
+ * ![](images/manual/icon_geoconstraints.png) **Manage geo-contsraints:** create or manage editing geo-constraints
+ * ![](images/manual/icon_dataplotly.png) **QPlotly widget:** add or manage plots created with DataPlotly QGIS plugin
+ * ![](images/manual/icon_alpha_constraints.png) **Manage alphanumric constraints:** create or manage editing and visualization alphanumeric-constraints
  * ![](images/manual/icon_widget.png) **List of widgets:** shows how many widgets (eg searches) are associated with this layer and allows you to activate new ones
  * **No legend:** it allows to define if the layer must have published the legend at TOC level of the WebGis client
- * **Download as shp:** allows the download of the geographic layer, in .shp format
+ * **Download as shp:** allows the download of the geographic layer (shp) or not geographic layer (dbf)
  * **Download as xls:** allows the download of the layer (geographic or not), in .xls format
- * **WMS external:** to speed up loading, the WMS layers present in a QGIS project are managed directly by Django and not by QGIS-Server. However, this method prevents the application of any styling  (e.g. opacity level) defined at the project level. The choice of the external WMS option means that the WMS layer is managed directly by QGIS-Server and therefore the associated styling is applied.
- * ![](images/manual/icon_layertype.png) **Type:** illustrates the type of data (WMS, PostGis, SpatiaLite, GDAL / OGR ...)
- * **WFS:** a check mark shows whether the layer is published as a WFS service or not
- * **Name:** name of the layer
- * **Label:** layer alias applied at the QGIS project level
+ * **Download as csv:** allows the download of the layer (geographic or not), in .csv format
+ * **Download as gpx:** allows the download of the geographic layer, in .gpx format
+
+The number above each Action icon shows if and how many related objects are present
+
  
-## Display filters
-**By accessing the list of layers, it is possible to define display filters for users authorized to consult the project**
+## Display and editing constraints
+Through the **Manage geo-contsraints** **Manage alphanumric constraints** widgets it is possible to define editing and display filters for users authorized to consult/edit the project**
 
-These filters work both for viewing and editing.
+See the dedicated paragraph in the [Editing on line session](https://g3w-suite.readthedocs.io/it/3.1.x/g3wsuite_editing.html#constraints-setting).
 
-See the dedicated paragraph in the [Editing on line session](https://g3w-suite.readthedocs.io/it/latest/g3wsuite_editing.html#constraints-setting).
+
+## Plots fom DataPlotly QGIS plugin
+
+**View plots created using QGIS [DataPlotly](https://github.com/ghtmtt/DataPlotly) (a great plugin developed by [Matteo Ghetta](https://github.com/ghtmtt)) in the cartographic client.**
+
+The module, based on the [Plotly library](https://plotly.com/), manages both **plots incorporated in the QGIS project** and **plots saved as xml**.
+
+The plots are connected to the layers defined on the QGIS project, in this way, as for the searches and the constraints, it is possible to activate the same plots on all WebGis services in which the reference layer is present.
+
+![](images/manual/g3wsuite_administration_plots.png)
+
+The title of the chart, defined at the plugin level, will be the unique identifier.
+
+**Plots based on visible or selected geometries** will be available in the next version
+
 
 ## Search widget setting
 In G3W-SUITE it is possible to create search widgets.
@@ -544,7 +573,8 @@ In the related form we can define:
    * **`Field`:** field on which to carry out the research
    * **`Widget`:** method of entering the value to be searched
              `InputBox`: manual compilation
-             `SelectBox`: values ​​shown via drop-down menu (only for PostGis or SpatiaLite layers)
+             `SelectBox`: values ​​shown via drop-down menu
+             `AutoCompleteBox`: values ​​shown through auto-complete mode
    * **`Alias`:** alias assigned to the field that will appear in the search form
    * **`Description`:** description assigned to the field
    * **`Comparison operator`:** comparison operator (**=, <,>,> <,> =, <=, LIKE, ILIKE**) through which the search query will be carried out. The LIKE and ILIKE operators will only be available for PostGis or SpatiaLite layers
@@ -552,7 +582,7 @@ In the related form we can define:
 
 **Warning: in the case of fields with more than 100 unique values, the WMS service does not allow to obtain the complete list of values. In this case it is recommended not to use the `SelectBox` method**
 
-The button allows you to add additional fields for the construction of the search query currently manageable through the AND operator alone.
+The button allows you to add additional fields for the construction of the search query currently manageable through AND/OR operators.
 
 ![](images/manual/button_add.png)
 

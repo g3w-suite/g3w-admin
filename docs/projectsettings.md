@@ -99,9 +99,11 @@ It is sufficient to check only the **`Published`** column
 ## Print layouts
 Any print layouts associated with the published QGIS project will automatically be associated with the published WebGis service.
 
-**Print layouts must contain only one `Map` element**.
+**Print layouts can contain more than one `Map` items and panoramic maps.**
 
-Any images present in the print layouts must be placed in the local **`geo_data`** folder (in any subdirectory) and synchronized on the server.
+**Atlas and report are also supported.**
+
+Any images present in the print layouts must be placed in the local **`project_data`** folder (in any subdirectory) and synchronized on the server.
 
 See also the dedicated paragraph [Geographic data synchronization on the server](https://g3w-suite.readthedocs.io/it/latest/datamanagement.html#geographic-data-synchronization-on-the-server).
 
@@ -182,12 +184,10 @@ This structural organization will be replicated directly on the query form on th
 
 ### Mandatory rules
 * PostGreSQL/PostGis and SQLite/Spatialite layers must have a **primary key**
-* PostGreSQL/PostGis and SQLite/Spatialite layers must have **only a geometric column**
 * **not use numeric type** field in PostGreSQL/PostGis layer
 * the primary key field and all fields involved in search, join, 1:n relation or editing function have to be **published as WMS**
 * **don't use commas for aliases** associated with layers.
 * style settings defined at the auxiliary data level are not managed.
-* insert only **one `Map` element in the print layouts**.
 
 ### Tips
 * when using rule-based/categorized classification **create indexes on the column(s) involved** in the rule expression
