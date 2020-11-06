@@ -73,11 +73,12 @@ class QdjangoProjectFormMixin(object):
     def clean_use_map_extent_as_init_extent(self):
         """ Check if init_map_extent is less bigger than max_extent """
 
-        initext = QgsRectangle(*self.qgisProject.initialExtent.values())
-        maxext = QgsRectangle(*self.qgisProject.maxExtent.values()) if self.qgisProject.maxExtent else None
-        if self.cleaned_data['use_map_extent_as_init_extent'] and maxext:
-            if not maxext.contains(initext):
-                raise ValidationError(_('Max extent is smaller than init map extent'))
+        if hasattr(self, 'qgisProject'):
+            initext = QgsRectangle(*self.qgisProject.initialExtent.values())
+            maxext = QgsRectangle(*self.qgisProject.maxExtent.values()) if self.qgisProject.maxExtent else None
+            if self.cleaned_data['use_map_extent_as_init_extent'] and maxext:
+                if not maxext.contains(initext):
+                    raise ValidationError(_('Max extent is smaller than init map extent'))
 
         return self.cleaned_data['use_map_extent_as_init_extent']
 
