@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: G3W-SUITE 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-06-10 16:28+0200\n"
+"POT-Creation-Date: 2020-11-06 14:45+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -73,8 +73,8 @@ msgid ""
 msgstr ""
 "Nel caso i dati geografici utilizzati per realizzare i vostri progetti "
 "cartografici QGIS siano situati su **GeoDB `SpatiaLite`** o su altro tipo"
-" di file fisico **(`.gpkg`, `.shp`, `.kml`, `.tif`...)** situati sul proprio PC "
-"locale, sarà necessario:"
+" di file fisico **(`.gpkg`, `.shp`, `.kml`, `.tif`...)** situati sul "
+"proprio PC locale, sarà necessario:"
 
 #: ../../datamanagement.md:18
 msgid ""
@@ -181,17 +181,18 @@ msgstr ""
 " subdirectory."
 
 #: ../../datamanagement.md:43
+#, fuzzy
 msgid ""
 "To synchronize your data access to the Administration panel of G3W-ADMIN "
-"and click on the the Configurations icon  located in the upper right "
-"corner."
+"and click on the Configurations icon  located in the upper right corner."
 msgstr ""
 "Nel pannello di Amministrazione l'icona **`Configurazioni`** "
 "![](images/manual/iconconfiguration.png) posta nell'angolo in alto a "
 "destra permette di accedere ad un menù a tendina."
 
 #: ../../datamanagement.md:45
-msgid "Choose the File Manager item in the linked menù."
+#, fuzzy
+msgid "Choose the File Manager item in the linked menu."
 msgstr "Si scelga la voce **`File Manager`** per accedere allo strumento dedicato"
 
 #: ../../datamanagement.md:51

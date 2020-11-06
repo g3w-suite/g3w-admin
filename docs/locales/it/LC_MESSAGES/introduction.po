@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: G3W-SUITE 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-22 15:47+0200\n"
+"POT-Creation-Date: 2020-11-06 14:45+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -74,8 +74,9 @@ msgstr ""
 "gestionali cartografici web**"
 
 #: ../../introduction.md:13
+#, fuzzy
 msgid ""
-"The current release is compatible with QGIS 3.10.x LTR.(Server and "
+"The current release is compatible with QGIS 3.10.x LTR (Server and "
 "Desktop)."
 msgstr "**L'attuale release è compatibile con la versione **`3.10.x LTR`**.**"
 

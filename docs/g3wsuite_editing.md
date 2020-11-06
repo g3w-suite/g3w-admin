@@ -41,7 +41,7 @@ Below are the available widgets and any limitations:
  * **`Text edit`** with this excluded options:
    * multiline
    * html
- * **`Unique values`**
+ * **`Unique values`**: this widget will be equipped with a **pick layer** tool at the cartographic client level
  * **`Value map`**
  * **`Value relations`** with this excluded options:
    * sort by value
@@ -203,10 +203,12 @@ The tools available are the following:
 
 **Geometric layers**
  * ![](images/manual/icon_feature_add.png) **Add feature:** to add a feature
-  * ![](images/manual/icon_feature_attribute.png) **Modify feature:** to modify the attributes associated with an existing feature
+ * ![](images/manual/icon_feature_attribute.png) **Modify feature:** to modify the attributes associated with an existing feature
  * ![](images/manual/icon_feature_modify.png) **Update feature vertex:** to modify the shape of a geometry
- * ![](images/manual/icon_feature_remove.png) **Remove feature**
  * ![](images/manual/icon_feature_move.png) **Move feature:** to move a feature
+ * ![](images/manual/icon_feature_remove.png) **Remove feature**
+ * ![](images/manual/icon_feature_add_part.png) **Add part** of a multi-geometry
+ * ![](images/manual/icon_feature_delete_part.png) **Delete part** of a multi-geometry
  * ![](images/manual/icon_feature_copy.png) **Copy features:** to move one or more features
  * ![](images/manual/icon_feature_dissolve.png) **Dissolve features:** to dissolve two or more features
  * ![](images/manual/icon_feature_split.png) **Split features:** to split one or more features

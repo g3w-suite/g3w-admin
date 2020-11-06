@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: G3W-SUITE 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-07-08 11:10+0200\n"
+"POT-Creation-Date: 2020-11-06 14:45+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.4.0\n"
+"Generated-By: Babel 2.8.0\n"
 
 #: ../../settings.rst:3
 msgid "Settings"
@@ -123,7 +123,9 @@ msgstr ""
 
 #: ../../settings.rst:48
 msgid "Default is `['shp', 'xls']`, set download data format. Values possible:"
-msgstr "Di default è uguale a `['shp', 'xls']`, imposta il formato di download dei dati. Valori possibili:"
+msgstr ""
+"Di default è uguale a `['shp', 'xls']`, imposta il formato di download "
+"dei dati. Valori possibili:"
 
 #: ../../settings.rst:46
 msgid "*shp*: download into Esri Shape format."
@@ -276,22 +278,39 @@ msgid "Custom webgis client `search` section title."
 msgstr "Ttitolo personalizzato della sezione `search` del client webgis."
 
 #: ../../settings.rst:125
+msgid "``G3W_CLIENT_SEARCH_ENDPOINT``"
+msgstr ""
+
+#: ../../settings.rst:128
+msgid "Search url endpoint for 'searches calling', default `ows`."
+msgstr ""
+
+#: ../../settings.rst:127
+msgid "`ows`: by wms search;"
+msgstr ""
+
+#: ../../settings.rst:128
+msgid "`api`: by g3w-suite layer vector API."
+msgstr ""
+
+#: ../../settings.rst:131
 msgid "``G3W_CLIENT_HEADER_CUSTOM_LINKS``"
 msgstr ""
 
-#: ../../settings.rst:126
+#: ../../settings.rst:132
+#, fuzzy
 msgid ""
-"A list of dict of custom links to add into main top bar of wbgis client. "
-"I.e.::"
+"A list of dict of custom links to add into main top bar of webgis client."
+" I.e.::"
 msgstr ""
 "Una lista di dizionari python di links personalizzati da aggiungere nalla"
 " barra in alto principale del client. P.e.::"
 
-#: ../../settings.rst:145
+#: ../../settings.rst:151
 msgid "``G3W_CLIENT_LEGEND``"
 msgstr ""
 
-#: ../../settings.rst:146
+#: ../../settings.rst:152
 msgid ""
 "A dict to customize **QGIS-server** legend image generate with WMS "
 "`GetLegendGraphics` request. I.e.::"
@@ -300,11 +319,11 @@ msgstr ""
 "immagine di legenda generata dal servizio WMS  GetLegendGraphics di "
 "**QGIS-server**, P.e.::"
 
-#: ../../settings.rst:164
+#: ../../settings.rst:170
 msgid "``G3W_CLIENT_RIGHT_PANEL``"
 msgstr ""
 
-#: ../../settings.rst:165
+#: ../../settings.rst:171
 #, fuzzy
 msgid ""
 "Custom properties settings for webgis right panel section (default, width"
@@ -314,15 +333,15 @@ msgstr ""
 "(default, width 33%). Al momento solo la proprietà `width` è gestita. "
 "P.e.::"
 
-#: ../../settings.rst:174
+#: ../../settings.rst:180
 msgid "Editing setting"
 msgstr ""
 
-#: ../../settings.rst:177
+#: ../../settings.rst:183
 msgid "``EDITING_SHOW_ACTIVE_BUTTON``"
 msgstr ""
 
-#: ../../settings.rst:178
+#: ../../settings.rst:184
 msgid ""
 "Default is ``True``. Set to ``False`` for not show editing button "
 "activate/deactivate into layers project list."
@@ -331,11 +350,11 @@ msgstr ""
 "attivazione/disattivazione editing nella  pagina della lista dei layer di"
 " un progetto."
 
-#: ../../settings.rst:181
+#: ../../settings.rst:187
 msgid "``EDITING_ANONYMOUS``"
 msgstr ""
 
-#: ../../settings.rst:182
+#: ../../settings.rst:188
 msgid ""
 "Default is ``False``. Set to ``True`` to render possible give to "
 "`anonymous user` editing permissions."
@@ -343,11 +362,11 @@ msgstr ""
 "Di base è ``False``. Impostare a ``True`` per dare al apossibilità di "
 "editing anche all'utente `anonymous`."
 
-#: ../../settings.rst:185
+#: ../../settings.rst:191
 msgid "``EDITING_LOGGING``"
 msgstr ""
 
-#: ../../settings.rst:186
+#: ../../settings.rst:192
 msgid ""
 "Default is ``False``. Set to ``True`` to log users editing action into "
 "database."

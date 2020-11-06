@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: G3W-SUITE 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-04-07 19:06+0200\n"
+"POT-Creation-Date: 2020-11-06 14:45+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -24,7 +24,9 @@ msgstr "G3W-FRONTEND: il portale di accesso"
 msgid ""
 "This section describes the different sections of the access portal and "
 "how to login to the Administration Panel"
-msgstr "_**In questo paragrafo si descrivono le diverse sezioni del portale di accesso e la modalità di login al Pannello di Amministrazione**_"
+msgstr ""
+"_**In questo paragrafo si descrivono le diverse sezioni del portale di "
+"accesso e la modalità di login al Pannello di Amministrazione**_"
 
 #: ../../g3wsuite_access_portal.md:4
 msgid "The login portal sessions"
@@ -51,25 +53,39 @@ msgstr ""
 
 #: ../../g3wsuite_access_portal.md:9
 msgid ""
-"The front-end portal contains a brief presentation of the service and a "
-"side menu with the following items:"
+"The home page will contain, in addition to a brief and customizable "
+"presentation of the service, also:"
 msgstr ""
-"La pagina iniziale conterrà una breve e personalizzabile presentazione "
-"del servizio ed un menù laterale con le seguenti voci:"
 
-#: ../../g3wsuite_access_portal.md:10 ../../g3wsuite_access_portal.md:20
-msgid "About it"
-msgstr "**`About it`**"
+#: ../../g3wsuite_access_portal.md:11
+msgid "a menu at the top right side with the following items:"
+msgstr ""
 
-#: ../../g3wsuite_access_portal.md:11 ../../g3wsuite_access_portal.md:23
-msgid "Maps"
-msgstr "**`Mappe`**"
+#: ../../g3wsuite_access_portal.md:15
+msgid "Change language"
+msgstr ""
 
-#: ../../g3wsuite_access_portal.md:12 ../../g3wsuite_access_portal.md:37
+#: ../../g3wsuite_access_portal.md:16
+msgid "Go back to the home page"
+msgstr ""
+
+#: ../../g3wsuite_access_portal.md:17 ../../g3wsuite_access_portal.md:48
 msgid "Login"
 msgstr "**`Login`**"
 
-#: ../../g3wsuite_access_portal.md:16
+#: ../../g3wsuite_access_portal.md:18
+msgid "a panel menu on the right with the following items:"
+msgstr ""
+
+#: ../../g3wsuite_access_portal.md:19 ../../g3wsuite_access_portal.md:33
+msgid "Maps"
+msgstr "**`Mappe`**"
+
+#: ../../g3wsuite_access_portal.md:20 ../../g3wsuite_access_portal.md:28
+msgid "Info"
+msgstr ""
+
+#: ../../g3wsuite_access_portal.md:24
 msgid ""
 "Most of the information shown in the access portal can be defined from "
 "the Configurations -> Edit General Data session, accessible from the icon"
@@ -80,15 +96,16 @@ msgstr ""
 "raggiungibile dall’icona  posta nell'angolo in alto a destra nel Pannello"
 " di Amministrazione."
 
-#: ../../g3wsuite_access_portal.md:21
+#: ../../g3wsuite_access_portal.md:29
+#, fuzzy
 msgid ""
-"The About it session can contains a small introduction and contact "
+"The Info session can contains a small introduction and contact "
 "information for your company or public facility."
 msgstr ""
 "La sessione **About it** mostra una serie di informazioni di base "
 "relative alla struttura responsabile del Portale Cartografico."
 
-#: ../../g3wsuite_access_portal.md:24
+#: ../../g3wsuite_access_portal.md:34
 msgid ""
 "Within G3W-SUITE it is possible to organize webgis services in "
 "hierarchical containers (Cartographic Macrogroups and Cartographic "
@@ -97,7 +114,7 @@ msgstr ""
 "In G3W-SUITE è possibile organizzare i singoli servizi WebGis in "
 "contenitori gerarchici (MacroGruppi e Gruppi Cartografici)"
 
-#: ../../g3wsuite_access_portal.md:26
+#: ../../g3wsuite_access_portal.md:36
 msgid ""
 "By accessing the Maps session, the Macrogroups (if present) will be "
 "displayed, access to the Macrogroup will allow you to view the associated"
@@ -109,7 +126,7 @@ msgstr ""
 "visualizzare i **Gruppi Cartografici** associati e da questi accedere "
 "all'elenco dei singoli servizi **WebGis**."
 
-#: ../../g3wsuite_access_portal.md:28
+#: ../../g3wsuite_access_portal.md:38
 msgid ""
 "The MacroGroups, Groups and WebGis services listed will be those defined "
 "as free access."
@@ -117,7 +134,7 @@ msgstr ""
 "I MacroGruppi, i Gruppi e i servizi WebGis elencati saranno quelli ad "
 "accesso libero."
 
-#: ../../g3wsuite_access_portal.md:30
+#: ../../g3wsuite_access_portal.md:40
 msgid ""
 "If you have a user for access, you can authenticate yourself through the "
 "Login session."
@@ -126,7 +143,7 @@ msgstr ""
 "tramite la sessione **Login** ed inserendo gli **user** e **password** in"
 " vostro possesso."
 
-#: ../../g3wsuite_access_portal.md:32
+#: ../../g3wsuite_access_portal.md:42
 msgid ""
 "Following authentication, the Maps page will also show the MacroGroups, "
 "Groups and WebGis services with restricted access and on which the user "
@@ -136,7 +153,7 @@ msgstr ""
 "MacroGruppi, i Gruppi e i servizi WebGis ad accesso riservato e su cui "
 "l’utente ha permessi di accesso."
 
-#: ../../g3wsuite_access_portal.md:38
+#: ../../g3wsuite_access_portal.md:49
 msgid ""
 "If you have a user with login credentials, you can authenticate yourself "
 "through this session by entering your user and password."
@@ -145,7 +162,7 @@ msgstr ""
 "tramite questa sessione inserendo gli **user** e **password** in vostro "
 "possesso."
 
-#: ../../g3wsuite_access_portal.md:40
+#: ../../g3wsuite_access_portal.md:51
 msgid ""
 "If you are an Administrator or Editor of 1 or 2 level, you can also "
 "access the Administration session."
@@ -153,7 +170,7 @@ msgstr ""
 "Se siete utente **Amministratore** o **Editor di 1 o 2 livello**, potrete"
 " anche accedere alla sessione di Amministrazione."
 
-#: ../../g3wsuite_access_portal.md:42
+#: ../../g3wsuite_access_portal.md:53
 msgid ""
 "Once logged in, you access the Admin session and from here, via the "
 "\"Backend\" button to the Administration panel"
@@ -166,4 +183,18 @@ msgstr ""
 
 #~ msgid "Project title settings Project title settings"
 #~ msgstr ""
+
+#~ msgid ""
+#~ "The front-end portal contains a "
+#~ "brief presentation of the service and"
+#~ " a side menu with the following "
+#~ "items:"
+#~ msgstr ""
+#~ "La pagina iniziale conterrà una breve"
+#~ " e personalizzabile presentazione del "
+#~ "servizio ed un menù laterale con "
+#~ "le seguenti voci:"
+
+#~ msgid "About it"
+#~ msgstr "**`About it`**"
 

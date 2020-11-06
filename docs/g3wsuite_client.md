@@ -77,17 +77,30 @@ In the QGIS project (**`Vector properties → Attributes Form`**), you can creat
 
 The same structured form will be reported at the query level on the cartographic client.
 
-![](images/manual/g3wclient_view.png)
+![](images/manual/g3wclient_attribute_view.png)
 
 Any links to photos will determine the display of a clickable preview, any links to links or other multimedia content will determine the display of the Open button that will allow consultation of the link.
 
 For further information on this point, see the [**dedicated paragraph**](https://g3w-suite.readthedocs.io/it/latest/projectsettings.html#viewing-multimedia-content).
+
+The orange bar above the query results shows the following icons:
+![](images/manual/g3wclient_attribute_icons.png)
+
+ * Zoom to features: if the function is activated on the Properties of the QGIS project
+ * Show relations (1: N): if present on the GQIS project
+ * Download Shapefile: if activated in the administration session
+ * Download GPX: if activated in the administration session
+ * Download SCV download: if activated in the administration session
+ * Download XLS: if activated in the administration session
+ * Print Atlas: prints the atlas sheet (if set on QGIS project) related to the queried feature
 
 ### Display of 1:n relation data
 
 In the event that, at the QGIS project level, one or more type 1: n relationships have been associated with a layer, the icon **View Relationships**  will be shown in the attribute form.
 
 By clicking on the icon you will access the list of relationships present and, from these, the list of child records associated with the individual relationships. In the case of a single 1: n relationship, the child layers of the relationship in question will be displayed directly.
+
+The icon to the left of each record allows you to switch from the classic table view to the one based on any form defined on the QGIS project
 
 A filter, applied generically to the contents of all fields, will allow you to filter the list of child records.
 
@@ -107,6 +120,15 @@ This content is divided into three sessions: **General, Space Info and Layers.**
 
 ![](images/manual/g3wclient_metadata_view.png)
 
+### Charts
+**View graphs created using QGIS [DataPlotly](https://github.com/ghtmtt/DataPlotly) and activated at the admin session level.**
+
+Check the plots in the list and view on the rigth panel
+
+![](images/manual/g3wclient_plots_view.png)
+
+Plots based on visible or selected geometries will be available in the next version
+
 ### Print
 **Printing tool based on layouts defined on QGIS project.**
 
@@ -121,11 +143,17 @@ On the map, a lit rectangular area will allow you to define the print area.
 
 ![](images/manual/g3wclient_print_tool.png)
 
+If an **Atlas type print layout** is associated in the QGIS project, the layout reference will be available.
+The cards to be printed are defined by referring to the atlas identifier defined in the print layout.
+
+![](images/manual/g3wclient_print_tool_atlas.png)
+
+
 ### Search and Query Builder
 
 A classic Query Builder is present at the Search menu level.
 Through this tool it is possible to:
-* carry out alphanumeric searches on geometric layers
+ * carry out alphanumeric searches on geometric layers
  * save the query to reuse it until the end of the work session
  * edit a previously saved query
 
@@ -138,9 +166,7 @@ The **panel with the list of results** will open on the right side of the client
 
 By positioning on the individual results, the corresponding features will be highlighted on the map; clicking on the individual results you can consult all the attributes.
 
-The **drop-shaped icons** will allow you to **zoom in on the extension** relating to the resulting overall features or that of the individual features.
-
-The **`CSV` icon** allows you to download the attributes associated with the features in CVS format.
+Zoom to features and download icons are available for results (single or cumulative)
 
 ![](images/manual/g3wclient_search_example.png)
 
