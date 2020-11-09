@@ -122,7 +122,7 @@ class CachingViewsTests(CachingTestBase):
         base_layer = caching_layer.base_layer
         self.assertEqual(base_layer.title, 'title base layer from caching updated')
         self.assertEqual(base_layer.description, 'Description updated')
-        body = json.loads(base_layer.property)
+        body = eval(base_layer.property)
         self.assertEqual(body['attributions'], 'attribution/copyright updated')
 
         # crs poperty validation
@@ -164,7 +164,7 @@ class CachingViewsTests(CachingTestBase):
         base_layer = caching_layer.base_layer
         self.assertEqual(base_layer.title, 'title base layer from caching')
         self.assertEqual(base_layer.description, 'Description')
-        body = json.loads(base_layer.property)
+        body = eval(base_layer.property)
         self.assertEqual(body['attributions'], 'attribution/copyright')
 
         res = client.post(url,

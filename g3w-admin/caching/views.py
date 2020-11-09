@@ -71,7 +71,8 @@ class ActiveCachingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3W
             else:
                 self.base_layer = None
 
-        except:
+        except Exception as e:
+            print (e)
             self.activated = None
             kwargs['initial']['active'] = False
             kwargs['initial']['as_base_layer'] = False
@@ -90,9 +91,9 @@ class ActiveCachingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3W
                 # update
                 self.base_layer.title = form.cleaned_data['base_layer_title']
                 self.base_layer.description = form.cleaned_data['base_layer_desc']
-                property = json.loads(self.base_layer.property)
+                property = eval(self.base_layer.property)
                 property['attributions'] = form.cleaned_data['base_layer_attr']
-                self.base_layer.property = json.dumps(property)
+                self.base_layer.property = property
                 self.base_layer.save()
 
             else:
