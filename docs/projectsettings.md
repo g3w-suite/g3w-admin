@@ -1,6 +1,6 @@
 # QGIS: project settings
 
-_**This section describes how to optimize your QGIS projects for publication as a WebGis service.**_
+_**This section describes how to optimize your QGIS projects to publish as a WebGis service.**_
 
 Thanks to the integration with QGIS Server, all the symbology aspects associated with the singoly layers are automatically reproduced on the WebGis service
 
@@ -53,7 +53,7 @@ The option **`Automatically create transaction group where possible`** is automa
 
 This information, together with info about the structure of the attribute tables of the layers present in the project, will be displayed in the **Metadata session** of the cartographic client.
 
-See also [dedicated paragraph] (https://g3w-suite.readthedocs.io/en/latest/g3wsuite_client.html#metadata)
+See also [dedicated paragraph](https://g3w-suite.readthedocs.io/en/3.1.x/g3wsuite_client.html#metadata)
 
 ![](images/manual/qgisservercapabilities.png)
 
@@ -105,7 +105,7 @@ Any print layouts associated with the published QGIS project will automatically 
 
 Any images present in the print layouts must be placed in the local **`project_data`** folder (in any subdirectory) and synchronized on the server.
 
-See also the dedicated paragraph [Geographic data synchronization on the server](https://g3w-suite.readthedocs.io/it/latest/datamanagement.html#geographic-data-synchronization-on-the-server).
+See also the dedicated paragraph [Geographic data synchronization on the server](https://g3w-suite.readthedocs.io/it/3.1.x/datamanagement.html#geographic-data-synchronization-on-the-server).
 
 ## QGIS: layer properties
 ### Simbology
@@ -131,11 +131,11 @@ Through this tool it is possible to manage SVG icons on the server in a simple a
 The SVG folder on the server must reflect the structure in any subfolders present locally.
 
 **NB:** The name of this directory is defined by the basic settings set during the installation of the suite.
-[See dedicated paragraph.](https://g3w-suite.readthedocs.io/en/latest/settings.html#base-settings)
+[See dedicated paragraph.](https://g3w-suite.readthedocs.io/en/3.1.x/settings.html#base-settings)
 
 **PS:** remember that the **`File Manager`** tool also allows you to manage the synchronization of geographical data (in the case of using physical files) and the management of multimedia files. 
 
-See also [dedicated paragraph](https://g3w-suite.readthedocs.io/en/latest/projectsettings.html#viewing-multimedia-content)
+See also [dedicated paragraph](https://g3w-suite.readthedocs.io/en/3.1.x/projectsettings.html#viewing-multimedia-content)
 
 ### Definition of the fields that can be consulted for each layer
 Within the QGIS project it is also possible to define, for each layer, which fields are available following query on the WebGis service.

@@ -8,10 +8,7 @@ If you have also installed the front-end portal from the [GitHub repository](htt
 
 The home page will contain, in addition to a brief and customizable presentation of the service, also:
 
- * a **menu at the top right side** with the following items:
- 
- ![](images/manual/g3wsuite_portal_menu_toprigth.png)
- 
+ * a **menu at the top right side** ![](images/manual/g3wsuite_portal_menu_toprigth.png) with the following items:  
    * **`Change language`**
    * **`Go back to the home page`**
    * **`Login`**

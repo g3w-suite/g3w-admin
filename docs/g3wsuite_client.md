@@ -77,6 +77,8 @@ In the QGIS project (**`Vector properties → Attributes Form`**), you can creat
 
 The same structured form will be reported at the query level on the cartographic client.
 
+The window is resizable.
+
 ![](images/manual/g3wclient_attribute_view.png)
 
 Any links to photos will determine the display of a clickable preview, any links to links or other multimedia content will determine the display of the Open button that will allow consultation of the link.
@@ -156,9 +158,15 @@ Through this tool it is possible to:
  * carry out alphanumeric searches on geometric layers
  * save the query to reuse it until the end of the work session
  * edit a previously saved query
+ 
+The saved query will be available until the browser cache is cleared
 
+![](images/manual/g3wclient_querybuilder.png)
 
-**The Search menu contains the list of search tools defined through the Administration panel.**
+**The Search menu contains the list of search tools defined through the Administration panel and custom searches created with the Query Builder.**
+
+![](images/manual/g3wclient_searc_list.png)
+
 
 You choose the search you are interested in, fill in the required fields and click on the **`Search` button**.
 
@@ -171,22 +179,30 @@ Zoom to features and download icons are available for results (single or cumulat
 ![](images/manual/g3wclient_search_example.png)
 
 ### Map
+
+This session has three tabs:
  * **Layers:** structured list of layers, defined on the QGIS project
  * **Base:** choice of the base map from those defined at the Cartographic Group creation level
- * **Legend:** graphic legend of the various layers
+ * **Legend:** graphic legend
  
-   The right button on the name of the single layer shows the following items:
+In the list of layers, right click on the name of the single layer shows the following items:
+ * **Name and kind of geometry** of the layer
  * **Zoom to layer:** to zoom in on the extension of the layer
- * **Open the attribute table:** to consult the associated attribute table
- * **Download shapefile:** to download the layer as a shapefile; available only for PostGis, SpatiaLite and GeoPackage layers, following activation of the function from the administration panel
- * **Download XLS:** to download the layer as a XLS; available for the main layer formats, following activation of the function from the administration panel
+ * **Open attribute table:** to consult the associated attribute table
+ * **Download shapefile:** to download the layer as a shapefile; function activable from the administration panel
+ * **Download CSV:** to download the layer as a CSV; function activable from the administration panel
+ * **Download XLS:** to download the layer as a XLS; function activable from the administration panel
  * **WMS URL:** URL of the WMS service relative to the project or URL of the external WMS
+
+![](g3wclient_layer_function.png)
 
 The attribute table is equipped with **paging function, highligth function and zooming** to the associated features.
 
 In the case of links to **multimedia content**, the previews of the images and/or the **Open** button will be displayed for consultation of different types of content.
 
 **A filter**, applied generically to the contents of all the fields, will allow you to filter the list of displayed records.
+
+The window is resizable.
 
 ![](images/manual/g3wclient_table_view.png)
 
