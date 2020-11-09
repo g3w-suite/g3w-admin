@@ -95,7 +95,7 @@ class CachingViewsTests(CachingTestBase):
         base_layer = caching_layer.base_layer
         self.assertEqual(base_layer.title, 'title base layer from caching')
         self.assertEqual(base_layer.description, 'Description')
-        body = json.loads(base_layer.property)
+        body = eval(base_layer.property)
         self.assertEqual(body['attributions'], 'attribution/copyright')
 
         # crs poperty validation

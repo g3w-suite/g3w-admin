@@ -130,7 +130,7 @@ class ActiveCachingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3W
                     'name': f'bl_from_cached_layer_{self.layer.pk}',
                     'title': form.cleaned_data['base_layer_title'],
                     'description': form.cleaned_data['base_layer_desc'],
-                    'property': json.dumps(property)
+                    'property': property
                 }
 
                 self.base_layer = BaseLayer(**kwargs)
@@ -245,7 +245,7 @@ class TileStacheTileApiView(APIView):
             return Response(
                 {
                     'status': 'error',
-                    'message': ex.message
+                    'message': str(ex)
                 },
                 status=status.HTTP_404_NOT_FOUND
             )
