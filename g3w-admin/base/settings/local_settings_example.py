@@ -34,6 +34,7 @@ DEBUG = True
 TILESTACHE_CACHE_NAME = 'default'
 TILESTACHE_CACHE_TYPE = 'Disk' # or 'Memcache'
 TILESTACHE_CACHE_DISK_PATH = '/tmp/tilestache_cache/'
+TILESTACHE_CACHE_TOKEN = '1234567'
 
 ALLOWED_HOSTS = "*"
 
