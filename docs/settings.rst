@@ -13,12 +13,13 @@ Custom django map server module other than `qdjango` (QGIS-Server provider)
 
 ``G3WADMIN_LOCAL_MORE_APPS``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Custom django modules that is possible to add, i.e. ``g3w-admin-caching`` (https://github.com/g3w-suite/g3w-admin-caching) module and other third part django modules.
+Custom django modules that is possible to add, i.e. ``g3w-admin-frontend`` (https://github.com/g3w-suite/g3w-admin-frontend) module and other third part django modules.
 G3W-SUITE accessory modules:
 
-    - ``g3w-admin-caching`` (https://github.com/g3w-suite/g3w-admin-caching)
-    - ``g3w-admin-filemanager`` (https://github.com/g3w-suite/g3w-admin-filemanager)
     - ``g3w-admin-frontend`` (https://github.com/g3w-suite/g3w-admin-frontend)
+    - ``caching``
+    - ``filemanager``
+    - ``editing``
 
 ``DATASOURCE_PATH``
 ^^^^^^^^^^^^^^^^^^^
@@ -185,8 +186,9 @@ I.e.::
     }
 
 
-Editing setting
-***************
+Editing settings
+****************
+Settings params for ``editing`` module.
 
 ``EDITING_SHOW_ACTIVE_BUTTON``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -199,3 +201,32 @@ Default is ``False``. Set to ``True`` to render possible give to `anonymous user
 ``EDITING_LOGGING``
 ^^^^^^^^^^^^^^^^^^^
 Default is ``False``. Set to ``True`` to log users editing action into database.
+
+
+Caching settings
+****************
+Settings params for ``caching`` module
+
+``TILESTACHE_CACHE_NAME``
+^^^^^^^^^^^^^^^^^^^^^^^^^
+A name to identify caching
+
+``TILESTACHE_CACHE_TYPE``
+^^^^^^^^^^^^^^^^^^^^^^^^^
+Default is ``Disk`` to save tile on a disk. Set to ``Memcache`` for to use *Memcached* caching framework (https://www.memcached.org/)
+
+``TILESTACHE_CACHE_DISK_PATH``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Path to disk space where to save tile created by tilestache if ``TILESTAHCE_CACHE_TYEPE`` is se to ``Disk``.
+
+``TILESTACHE_CACHE_TOKEN``
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+Mandatory, strign to use as token for internal WMS call for caching module.
+
+Filemanger settings
+*******************
+Settings params for ``filemanager`` module.
+
+``FILEMANAGER_ROOT_PATH``
+^^^^^^^^^^^^^^^^^^^^^^^^^
+Mandatory, path to disk space where to CRUD geo data files i.e. Shp Raster, etc.
