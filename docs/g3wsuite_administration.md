@@ -188,7 +188,7 @@ In this section it is possible to view the list of Cartographic Macrogroups, man
 
 **ATTENTION: use the Cartographic MacroGroups only if you need them.**
 
-See chapter [Hierarchical organization of WebGis services and types of Users (roles)] (https://g3w-suite.readthedocs.io/en/latest/user_groups_organization.html#hierarchical-organization-of-webgis-services-and-types -of-users-roles) to learn more about this aspect.
+See chapter [Hierarchical organization of WebGis services and types of Users (roles)] (https://g3w-suite.readthedocs.io/en/3.1.x/user_groups_organization.html#hierarchical-organization-of-webgis-services-and-types -of-users-roles) to learn more about this aspect.
 
 For example, you can create a **Macrogroup** to collect a series of **Cartographic Groups** belonging to the same Administration (single Municipality within a Union of Municipalities) or more simply to have main containers that contain second level groupings (Groups).
 
@@ -337,8 +337,17 @@ In this box you can define:
    * **screenshot:** tool to take a screenshot of the map area
  * **`Baselayer`:** choice of the base maps that will be available on the WebGis client
  * **`Background color`:** choice of the background color of the maps (default white)
-
+ 
 ![](images/manual/g3wsuite_administration_group_add_geodata.png)
+
+With regard to the **Base Layers**, it is specified that the external services available by default are:
+ * **OSM**
+ * **Bing Street**
+ * **Bing Aerial**
+
+It is possible to create/add **customized Base Layers** starting from the cache of the single layers present in published webgis
+
+See **Caching layer** paragraph in the **Widget management** session.
 
 #### Copyrigth
 **`Terms of use`:** description of the terms of use of the map and any other info
@@ -470,8 +479,6 @@ Always starting from the list of WebGis services, it is possible to manage numer
 
 **In this section it is therefore possible to view the list of cartographic projects present, view them, manage them and create new ones.**
 
-![](images/manual/g3wsuite_administration_project_manage_list.png)
-
 Through the single icons, placed at the level of each project, it is possible to:
  * ![](images/manual/iconsmall_viewmap.png) **Display the cartographic project on the WebGis interface:** to check the display by the user
  * ![](images/manual/iconsmall_layerlist.png) **Access the list of layers** present within the project and define their functional aspects
@@ -500,28 +507,55 @@ Next to each layer are a series of icons and checkboxes:
  * ![](images/manual/icon_layertype.png) **Type:** illustrates the type of data (WMS, PostGis, SpatiaLite, GDAL / OGR ...)
  * **WMS external:** to speed up loading, the WMS layers present in a QGIS project are managed directly by Django and not by QGIS-Server. However, this method prevents the application of any styling  (e.g. opacity level) defined at the project level. The choice of the external WMS option means that the WMS layer is managed directly by QGIS-Server and therefore the associated styling is applied.
  * **WFS:** a check mark shows whether the layer is published as a WFS service or not
- * ![](images/manual/icon_cache.png) **Caching Layer:** allows you to activate and manage the cache of the single layer at the project level
- * ![](images/manual/icon_editing.png) **Editing layer:** shows if the online editing function is active on the layer and allows you to activate and define it
- * ![](images/manual/icon_geoconstraints.png) **Manage geo-contsraints:** create or manage editing geo-constraints
- * ![](images/manual/icon_dataplotly.png) **QPlotly widget:** add or manage plots created with DataPlotly QGIS plugin
- * ![](images/manual/icon_alpha_constraints.png) **Manage alphanumric constraints:** create or manage editing and visualization alphanumeric-constraints
- * ![](images/manual/icon_widget.png) **List of widgets:** shows how many widgets (eg searches) are associated with this layer and allows you to activate new ones
+ * **Actions:** a series of icons dedicated to various functions
+   * ![](images/manual/icon_cache.png) **Caching Layer:** allows you to activate and manage the cache of the single layer at the project level
+   * ![](images/manual/icon_editing.png) **Editing layer:** shows if the online editing function is active on the layer and allows you to activate and define it
+   * ![](images/manual/icon_geoconstraints.png) **Manage geo-contsraints:** create or manage editing geo-constraints
+   * ![](images/manual/icon_dataplotly.png) **QPlotly widget:** add or manage plots created with DataPlotly QGIS plugin
+   * ![](images/manual/icon_alpha_constraints.png) **Manage alphanumric constraints:** create or manage editing and visualization alphanumeric-constraints
+   * ![](images/manual/icon_widget.png) **List of widgets:** shows how many widgets (eg searches) are associated with this layer and allows you to activate new ones
  * **No legend:** it allows to define if the layer must have published the legend at TOC level of the WebGis client
- * **Download as shp:** allows the download of the geographic layer (shp) or not geographic layer (dbf)
- * **Download as xls:** allows the download of the layer (geographic or not), in .xls format
- * **Download as csv:** allows the download of the layer (geographic or not), in .csv format
- * **Download as gpx:** allows the download of the geographic layer, in .gpx format
+ * **Download:** allows the download of the geographic and not geographic layers in various formats
+   * **Download as shp:** for geographic (shp) or not geographic (dbf) layers
+   * **Download as xls:** for all types of layers, in .xls format
+   * **Download as csv:** for all types of layers, in .csv format
+   * **Download as gpx:** for geographic layers, in .gpx format
 
-The number above each Action icon shows if and how many related objects are present
+The number above each Action icon shows if and how many related objects are present.
 
- 
-## Display and editing constraints
-Through the **Manage geo-contsraints** **Manage alphanumric constraints** widgets it is possible to define editing and display filters for users authorized to consult/edit the project**
+The functions present in the **Actions session** are described below.
+
+
+### ![](images/manual/icon_editing.png) Editing layer
+
+Through this icon it is possible to activate the online editing function on the individual layers and define the permissions for individual / groups of users
+
+See the dedicated paragraph in the [Editing on line session](https://g3w-suite.readthedocs.io/en/3.1.x/g3wsuite_editing.html).
+
+### ![](images/manual/icon_geoconstraints.png) ![](images/manual/icon_alpha_constraints.png) Display and editing constraints
+
+Through the **Manage geo-contsraints** and **Manage alphanumric constraints** widgets it is possible to define editing and display filters for users authorized to consult/edit the project.
 
 See the dedicated paragraph in the [Editing on line session](https://g3w-suite.readthedocs.io/it/3.1.x/g3wsuite_editing.html#constraints-setting).
 
+### ![](images/manual/icon_cache.png) Caching layer
 
-## Plots fom DataPlotly QGIS plugin
+With this icon it is possible to **activate/manage the cache of the single layers** and **create XYZ Tiles layer**
+
+The form allows you to:
+ * **enable cache** on the layer
+ * **reset the cache of the single layer**
+ * **reset the cache of all the layers of the project**
+ * **create an XYZ Tiles layer** (to use as a **base layer** for your projects) starting from the cached layer
+
+In this last case you have to set:
+ * Base layer title
+ * Base layer description
+ * Base layer attribution
+
+The newly created base layer will be available to be associated with those available for the various Cartographic Groups.
+
+### ![](images/manual/icon_dataplotly.png) Plots fom DataPlotly QGIS plugin
 
 **View plots created using QGIS [DataPlotly](https://github.com/ghtmtt/DataPlotly) (a great plugin developed by [Matteo Ghetta](https://github.com/ghtmtt)) in the cartographic client.**
 
@@ -536,7 +570,7 @@ The title of the chart, defined at the plugin level, will be the unique identifi
 **Plots based on visible or selected geometries** will be available in the next version
 
 
-## Search widget setting
+### ![](images/manual/icon_widget.png) Search widget setting
 In G3W-SUITE it is possible to create search widgets.
 
 **Be careful: in this release searching is not available on simple join (1:1/n:1) data**
@@ -624,7 +658,7 @@ Fixed front end content is already available in the two basic languages.
 
 Variable contents, i.e. user-definable contents, are instead translated:
 
- * Sessions **`Home`**, **`About`**, **`Maps`** and **`Login`**: content that can be defined and translated in the [**Edit General Data**](https://g3w-suite.readthedocs.io/en/latest/g3wsuite_administration.html#front-end-portal-customization) session of the Control Panel Administration
+ * Sessions **`Home`**, **`About`**, **`Maps`** and **`Login`**: content that can be defined and translated in the [**Edit General Data**](https://g3w-suite.readthedocs.io/en/3.1.x/g3wsuite_administration.html#front-end-portal-customization) session of the Control Panel Administration
  * Sessions **`MacroGroups Cartogarfici`**, **`Groups Cartogarfici`** and **`WebGis Services`**: contents definable and translatable in the form defining these elements, limited to the items:
    * **Public Title**
    * **Description**

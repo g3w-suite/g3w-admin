@@ -28,7 +28,6 @@ The .zip file contains the **`G3W-SUITE`** directory with two sub directories:
 Inside the **`build_management.sqlite` SpatiaLite DB** there are the following layers:
  * **`buildings` (polygon layer):** reference layer for editing aspects
  * **`maintenance_works` (alphanumeric table):** with the maintenance interventions associated with the individual buildings
- * **`park` (polygon layer):**
  * **`roads` (linear layer):** a simple road network
  * **`work_areas` (polygon layer):** with the perimeter of work areas to be used to define any geo-constraints
 
@@ -54,7 +53,7 @@ The publication system provides for the use of the **title of the project** as t
 
 # Access the online service
 
-To publish the project, you can **access the G3W-SUITE test application** via the following URL: [**`https://v30.g3wsuite.it`**](https://v30.g3wsuite.it)
+To publish the project, you can **access the G3W-SUITE test application** via the following URL: [**`https://v31.g3wsuite.it`**](https://v30.g3wsuite.it)
 
 To access the **Administration Panel** it is necessary to log in using the following credentials:
  * user: **`demo`**
@@ -139,18 +138,26 @@ The new session will show you the **list of the layer** present in the published
 
 ![](images/manual/g3wsuite_administration_project_layer_list.png)
 
-Next to each layer are a series of icons and checkboxes:
- * ![](images/manual/icon_cache.png) **Caching Layer:** allows you to activate and manage the cache of the single layer at the project level
- * ![](images/manual/icon_editing.png) **Editing layer:** shows if the online editing function is active on the layer and allows you to activate and define it
- * ![](images/manual/icon_widget.png) **List of widgets:** shows how many widgets (eg searches) are associated with this layer and allows you to activate new ones
- * **No legend:** it allows to define if the layer must have published the legend at TOC level of the WebGis client
- * **Download as shp:** allows the download of the geographic layer, in .shp format
- * **Download as xls:** allows the download of the layer (geographic or not), in .xls format
- * **WMS external:** to speed up loading, the WMS layers present in a QGIS project are managed directly by Django and not by QGIS-Server. However, this method prevents the application of any styling  (e.g. opacity level) defined at the project level. The choice of the external WMS option means that the WMS layer is managed directly by QGIS-Server and therefore the associated styling is applied.
- * ![](images/manual/icon_layertype.png) **Type:** illustrates the type of data (WMS, PostGis, SpatiaLite, GDAL / OGR ...)
- * **WFS:** a check mark shows whether the layer is published as a WFS service or not
- * **Name:** name of the layer
  * **Label:** layer alias applied at the QGIS project level
+ * **Name:** name of the layer (file or DB table)
+ * ![](images/manual/icon_layertype.png) **Type:** illustrates the type of data (WMS, PostGis, SpatiaLite, GDAL / OGR ...)
+ * **WMS external:** to speed up loading, the WMS layers present in a QGIS project are managed directly by Django and not by QGIS-Server. However, this method prevents the application of any styling  (e.g. opacity level) defined at the project level. The choice of the external WMS option means that the WMS layer is managed directly by QGIS-Server and therefore the associated styling is applied.
+ * **WFS:** a check mark shows whether the layer is published as a WFS service or not
+ * **Actions:** a series of icons dedicated to various functions
+   * ![](images/manual/icon_cache.png) **Caching Layer:** allows you to activate and manage the cache of the single layer at the project level
+   * ![](images/manual/icon_editing.png) **Editing layer:** shows if the online editing function is active on the layer and allows you to activate and define it
+   * ![](images/manual/icon_geoconstraints.png) **Manage geo-contsraints:** create or manage editing geo-constraints
+   * ![](images/manual/icon_dataplotly.png) **QPlotly widget:** add or manage plots created with DataPlotly QGIS plugin
+   * ![](images/manual/icon_alpha_constraints.png) **Manage alphanumric constraints:** create or manage editing and visualization alphanumeric-constraints
+   * ![](images/manual/icon_widget.png) **List of widgets:** shows how many widgets (eg searches) are associated with this layer and allows you to activate new ones
+ * **No legend:** it allows to define if the layer must have published the legend at TOC level of the WebGis client
+ * **Download:** allows the download of the geographic and not geographic layers in various formats
+   * **Download as shp:** for geographic (shp) or not geographic (dbf) layers
+   * **Download as xls:** for all types of layers, in .xls format
+   * **Download as csv:** for all types of layers, in .csv format
+   * **Download as gpx:** for geographic layers, in .gpx format
+
+The number above each Action icon shows if and how many related objects are present.
 
 **Try to activate the available options and test the result on the WebGis**
 
@@ -170,25 +177,30 @@ To **create a new search**, click on the blue link **`New widget`**.
 
 In the related form we can define:
  * **Form Title**
-   * **`Type`:** choose **`Search`** option
+   * **`Type`:** "Search"
    * **`Name`:** name that G3W-SUITE will use to internally register the search widget.
  * **General configuration of research and results**
    * **`Search title`:** title that will become available in the **'Research'** panel of the WebGis interface
  * **Search fields settings**
    * **`Field`:** field on which to carry out the research
    * **`Widget`:** method of entering the value to be searched
-             InputBox: manual compilation
-             SelectBox: values ​​shown via drop-down menu (only for PostGis or SpatiaLite layers)
+             `InputBox`: manual compilation
+             `SelectBox`: values ​​shown via drop-down menu
+             `AutoCompleteBox`: values ​​shown through auto-complete mode
    * **`Alias`:** alias assigned to the field that will appear in the search form
    * **`Description`:** description assigned to the field
-   * **`Comparison operator`:** comparison operator (**`=, <,>,> <,> =, <=, LIKE, ILIKE`**) through which the search query will be carried out. The LIKE and ILIKE operators will only be available for PostGis or SpatiaLite layers
+   * **`Comparison operator`:** comparison operator (**=, <,>,> <,> =, <=, LIKE, ILIKE**) through which the search query will be carried out. The LIKE and ILIKE operators will only be available for PostGis or SpatiaLite layers
    * **`Dependency`:** this parameter (optional) allows, only in the case of SelectBox widgets, to list the list of values ​​of a field filtered according to the value defined for the previous fields. The tool allows, for example, to display, in the drop-down menu dedicated to the choice of cadastral particles, only the particles connected to the sheet chosen in the previous option. This function is only available for PostGis or SpatiaLite layers.
 
-The green button **Aggiungi** allows you to add additional fields for the construction of the search query currently manageable through the **AND operator** alone.
+**Warning: in the case of fields with more than 100 unique values, the WMS service does not allow to obtain the complete list of values. In this case it is recommended not to use the `SelectBox` method**
 
-Here a simple example based on the fields **`type`** and **`volume`** othe **`buildings`** layer:
+The button allows you to add additional fields for the construction of the search query currently manageable through AND/OR operators.
 
-![](images/manual/demo_search.png)
+![](images/manual/button_add.png)
+
+The example below shows the compilation of the form for creating a search widget dedicated to a cadastral cartography layer.
+
+![](images/manual/g3wsuite_administration_project_search_form.png)
 
 Once the form has been filled in, click on the **`OK button` to save** the settings.
 
@@ -251,7 +263,7 @@ Once the editing function is activated, updating the service, the **`Tools menu`
 
 ![](images/manual/editing_form2.png)
 
-For **further information** on the web editing function, read the [**dedicated chapter on the manual**](https://g3w-suite.readthedocs.io/en/latest/g3wsuite_editing.html#online-editing-tools-at-cartographic-client-level)
+For **further information** on the web editing function, read the [**dedicated chapter on the manual**](https://g3w-suite.readthedocs.io/en/3.1.x/g3wsuite_editing.html#online-editing-tools-at-cartographic-client-level)
 
 # Personalize your demo
 
@@ -259,6 +271,6 @@ For **further information** on the web editing function, read the [**dedicated c
 
 Redefine attribute forms, aliases and editing widgets associated with the individual fields and reload the project to check the new settings.
 
-**It is advisable to consult the [paragraph dedicated](https://g3w-suite.readthedocs.io/en/latest/g3wsuite_editing.html#activation-and-configuration) to the list and limitations of the individual editing widgets inheritable from the QGIS project.**
+**It is advisable to consult the [paragraph dedicated](https://g3w-suite.readthedocs.io/en/3.1.x/g3wsuite_editing.html#activation-and-configuration) to the list and limitations of the individual editing widgets inheritable from the QGIS project.**
 
 

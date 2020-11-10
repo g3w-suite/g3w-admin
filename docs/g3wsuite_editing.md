@@ -54,9 +54,10 @@ This solution allows you to consult the associated attachments also from QGIS or
 
 **Additional settings at single layer level**
 
-In the **`Attribute Form`** section of the **`Layer Properties`** it is also possible to define for every fields:
- * **mandatory and/or unique constraints**
+In the **`Attribute Form`** section of the **`Layer Properties`** it is also possible to define for every field:
  * **enable/disable editing**
+ * **mandatory and/or unique constraints**
+ * **range of acceptable values** through the **Range** widget
  * **default values**
 
 #### Definition of 1:n relations
@@ -83,7 +84,7 @@ Identify the layer on which you want to activate the editing function and click 
 
 **Attention:** check the list of formats supported by QGIS for editing.
 
-![](images/manual/editing_layer_list.png)
+![](images/manual/g3wsuite_administration_project_layer_list.png)
 
 Identify the layer on which you want to activate the editing function and click on the **`Editing layer` icon** ![](images/manual/icon_editing.png) located on the left 
 
