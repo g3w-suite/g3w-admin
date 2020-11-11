@@ -28,6 +28,11 @@ G3W_SITETREE_I18N_ALIAS = ['core', 'acl']
 #    'packages': ('core', 'usersmanage', 'client', 'editing'),
 #}
 
+extra_context_login_page = {
+            'adminlte_skin': 'login-page',
+            'adminlte_layout_option': None
+        }
+
 urlpatterns = [
 
     path('__debug__/', include(debug_toolbar.urls)),
@@ -38,15 +43,31 @@ urlpatterns = [
     url(r'^{}'.format(BASE_ADMIN_URLPATH), include('usersmanage.urls')),
     url(r'^upload/', include('django_file_form.urls')),
     url(r'^', include('client.urls')),
-    url(r'^login/$', auth.views.LoginView.as_view(template_name='login.html', extra_context={
-            'adminlte_skin': 'login-page',
-            'adminlte_layout_option': None
-        }), name='login'),
+    url(r'^login/$', auth.views.LoginView.as_view(template_name='login.html', extra_context=extra_context_login_page),
+        name='login'),
     url(r'^logout/$', auth.views.LogoutView.as_view(
         next_page=settings.LOGOUT_NEXT_PAGE + '{}'.format(BASE_ADMIN_URLPATH)), name='logout'),
     url(r'^jsi18n/$', JavaScriptCatalog.as_view(), name='javascript-catalog'),
-    url(r'^ajax_select/', include(ajax_select_urls)),
+    url(r'^ajax_select/', include(ajax_select_urls))
 ]
+
+# Add path/url for user password rest by email
+if settings.RESET_USER_PASSWORD:
+    urlpatterns += [
+        path('password_change/', auth.views.PasswordChangeView.as_view(extra_context=extra_context_login_page),
+             name='password_change'),
+        path('password_change/done/', auth.views.PasswordChangeDoneView.as_view(extra_context=extra_context_login_page),
+             name='password_change_done'),
+        path('password_reset/', auth.views.PasswordResetView.as_view(extra_context=extra_context_login_page),
+             name='password_reset'),
+        path('password_reset/done/', auth.views.PasswordResetDoneView.as_view(extra_context=extra_context_login_page),
+             name='password_reset_done'),
+        path('reset/<uidb64>/<token>/',
+             auth.views.PasswordResetConfirmView.as_view(extra_context=extra_context_login_page),
+             name='password_reset_confirm'),
+        path('reset/done/', auth.views.PasswordResetCompleteView.as_view(extra_context=extra_context_login_page),
+             name='password_reset_complete'),
+    ]
 
 apiUrlpatterns = [
     url(r'^', include('client.apiurls')),
