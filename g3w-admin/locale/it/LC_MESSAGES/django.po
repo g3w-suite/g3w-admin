@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-10-03 10:05+0000\n"
+"POT-Creation-Date: 2020-11-11 16:02+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,722 +18,389 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: forms.py:57
-#, fuzzy
-#| msgid "Edit general data"
-msgid "General data"
-msgstr "Modifica i dati generali"
-
-#: forms.py:77
-msgid "Identification"
-msgstr ""
-
-#: forms.py:100
-msgid "Provider"
-msgstr ""
-
-#: forms.py:117
-msgid "Contact"
-msgstr ""
-
-#: forms.py:147
-msgid "INSPIRE"
-msgstr ""
-
-#: forms.py:173
-msgid "RNDT"
-msgstr ""
-
-#: forms.py:210
-msgid "Record"
-msgstr ""
-
-#: models.py:52
-msgid "Global (serves all projects)"
-msgstr ""
-
-#: models.py:53
-msgid "Group (serves a single group)"
-msgstr ""
-
-#: models.py:54
-msgid "Macrogroup (serves a macrogroup)"
-msgstr ""
-
-#: models.py:58
-msgid "conformant"
-msgstr ""
-
-#: models.py:59
-#, fuzzy
-#| msgid "Configurations"
-msgid "notConformant"
-msgstr "Configurazioni"
-
-#: models.py:60
-msgid "notEvaluated"
-msgstr ""
-
-#: models.py:64
-msgid "Addresses"
-msgstr ""
-
-#: models.py:65
-#, fuzzy
-#| msgid "Adminstration"
-msgid "Administrative units"
-msgstr "Amministrazione"
-
-#: models.py:67
-msgid "Agricultural and aquaculture facilities"
-msgstr ""
-
-#: models.py:69
-msgid "Area management/restriction/regulation zones and reporting units"
-msgstr ""
-
-#: models.py:70
-msgid "Atmospheric conditions"
-msgstr ""
-
-#: models.py:71
-msgid "Bio-geographical regions"
-msgstr ""
-
-#: models.py:72
-msgid "Buildings"
-msgstr ""
-
-#: models.py:73
-msgid "Cadastral parcels"
-msgstr ""
-
-#: models.py:74
-msgid "Coordinate reference systems"
-msgstr ""
-
-#: models.py:75
-msgid "Elevation"
-msgstr ""
-
-#: models.py:76
-msgid "Energy resources"
-msgstr ""
-
-#: models.py:78
-msgid "Environmental monitoring facilities"
-msgstr ""
-
-#: models.py:79
-msgid "Geographical grid systems"
-msgstr ""
-
-#: models.py:80
-msgid "Geographical names"
-msgstr ""
-
-#: models.py:81
-msgid "Geology"
-msgstr ""
-
-#: models.py:82
-msgid "Habitats and biotopes"
-msgstr ""
-
-#: models.py:83
-msgid "Human health and safety"
-msgstr ""
-
-#: models.py:84
-msgid "Hydrography"
-msgstr ""
-
-#: models.py:85
-msgid "Land cover"
-msgstr ""
-
-#: models.py:86
-msgid "Land use"
-msgstr ""
-
-#: models.py:88
-msgid "Meteorological geographical features"
-msgstr ""
-
-#: models.py:89
-msgid "Mineral resources"
-msgstr ""
-
-#: models.py:90
-msgid "Natural risk zones"
-msgstr ""
-
-#: models.py:92
-msgid "Oceanographic geographical features"
-msgstr ""
-
-#: models.py:93
-msgid "Orthoimagery"
-msgstr ""
-
-#: models.py:95
-msgid "Population distribution — demography"
-msgstr ""
-
-#: models.py:97
-msgid "Production and industrial facilities"
-msgstr ""
-
-#: models.py:98
-msgid "Protected sites"
-msgstr ""
-
-#: models.py:99
-msgid "Sea regions"
-msgstr ""
-
-#: models.py:100
-msgid "Soil"
-msgstr ""
-
-#: models.py:101
-msgid "Species distribution"
-msgstr ""
-
-#: models.py:102
-msgid "Statistical units"
-msgstr ""
-
-#: models.py:103
-msgid "Transport networks"
-msgstr ""
-
-#: models.py:105
-msgid "Utility and governmental services"
-msgstr ""
-
-#: models.py:144
-msgid "Name"
-msgstr ""
-
-#: models.py:146
-msgid "Slug"
-msgstr ""
-
-#: models.py:148
-msgid "Is active"
-msgstr ""
-
-#: models.py:149
-msgid "Order"
-msgstr ""
-
-#: models.py:152
-msgid "Scope"
-msgstr ""
-
-#: models.py:154
-msgid "This field is ignored unless scope is \"Group\""
-msgstr ""
-
-#: models.py:156
-msgid "This field is ignored unless scope is \"MacroGroup\""
-msgstr ""
-
-#: models.py:161
-msgid "identification_title"
-msgstr ""
-
-#: models.py:163
-msgid "identification_abstract"
-msgstr ""
-
-#: models.py:165
-msgid "identification_keywords"
-msgstr ""
-
-#: models.py:167
-msgid "identification_keywords_type"
-msgstr ""
-
-#: models.py:169
-msgid "identification_fees"
-msgstr ""
-
-#: models.py:172
-msgid "identification_accessconstraints"
-msgstr ""
-
-#: models.py:172
-msgid "Text description for other constraints"
-msgstr ""
-
-#: models.py:174
-msgid "provider_name"
-msgstr ""
-
-#: models.py:176
-msgid "provider_url"
-msgstr ""
-
-#: models.py:178
-msgid "contact_name"
-msgstr ""
-
-#: models.py:180
-msgid "contact_position"
-msgstr ""
-
-#: models.py:182
-msgid "contact_address"
-msgstr ""
-
-#: models.py:184
-msgid "contact_city"
-msgstr ""
-
-#: models.py:186
-msgid "contact_stateorprovince"
-msgstr ""
-
-#: models.py:188
-msgid "contact_postalcode"
-msgstr ""
-
-#: models.py:190
-msgid "contact_country"
-msgstr ""
-
-#: models.py:192
-msgid "contact_phone"
-msgstr ""
-
-#: models.py:194
-msgid "contact_fax"
-msgstr ""
-
-#: models.py:196
-msgid "contact_email"
+#: OWS/utils/data.py:125
+msgid "The GetFeatureResponse response is malformed: {}"
 msgstr ""
 
-#: models.py:198
-msgid "contact_url"
+#: eleprofile/forms.py:44 eleprofile/templates/eleprofile/project_form.html:14
+#: eleprofile/templates/eleprofile/projects_list.html:18
+#: eleprofile/templates/eleprofile/projects_list.html:26
+msgid "Project"
 msgstr ""
 
-#: models.py:200
-msgid "contact_hours"
+#: eleprofile/forms.py:92
+msgid "DTM Layer and pth layers"
 msgstr ""
 
-#: models.py:202
-msgid "contact_instructions"
+#: eleprofile/models.py:33
+msgid "Select DTM project layer to use for sampling"
 msgstr ""
 
-#: models.py:204
-msgid "contact_role"
+#: eleprofile/models.py:34
+msgid "Sampling DTM step"
 msgstr ""
 
-#: models.py:208
-msgid "inspire_enabled"
+#: eleprofile/models.py:35
+msgid "Sampling step in map units, default 10"
 msgstr ""
 
-#: models.py:209
-msgid "whether to enable the INSPIRE extension"
+#: eleprofile/models.py:36
+msgid "Select one or more path layers"
 msgstr ""
 
-#: models.py:211
-msgid "inspire_languages_supported"
+#: eleprofile/models.py:44
+msgid "Layer must be a 'raster' or 'gdal' type"
 msgstr ""
 
-#: models.py:212
+#: eleprofile/models.py:51
+#, python-brace-format
 msgid ""
-"list of comma separated 3 letter codes of supported languages (see http://"
-"inspire.ec.europa.eu/schemas/common/1.0/enums/enum_eng.xsd, simpleType "
-"euLanguageISO6392B)"
+"Layer {layer.name} must be one of 'postgres', 'spatialite', 'ogr' or 'mssql' "
+"type"
 msgstr ""
 
-#: models.py:213
-msgid "inspire_default_language"
-msgstr ""
-
-#: models.py:214
+#: eleprofile/models.py:57
+#, python-brace-format
 msgid ""
-"3 letter code of the default language (see http://inspire.ec.europa.eu/"
-"schemas/common/1.0/enums/enum_eng.xsd, simpleType euLanguageISO6392B)"
+"Layer {layer.name} must be one geometry type of 'LineString' or "
+"'MultiLineString"
 msgstr ""
 
-#: models.py:215
-msgid "inspire_date"
+#: eleprofile/templates/eleprofile/dtm_form.html:11
+#: eleprofile/templates/eleprofile/dtm_form.html:14
+msgid "DTM Layer and Path layers"
 msgstr ""
 
-#: models.py:216
-msgid " date of INSPIRE metadata offering (in ISO 8601 format)"
+#: eleprofile/templates/eleprofile/dtm_form.html:14
+#: eleprofile/templates/eleprofile/project_form.html:14
+#: portal/templates/portal/picture_form.html:14
+msgid "New"
 msgstr ""
 
-#: models.py:218
-msgid "inspire_gemet_keywords"
-msgstr ""
-
-#: models.py:219 models.py:623
-msgid ""
-"a comma-seperated keyword list of GEMET INSPIRE theme keywords about the "
-"service (see http://inspire.ec.europa.eu/schemas/common/1.0/enums/enum_eng."
-"xsd, complexType inspireTheme_eng)"
-msgstr ""
-
-#: models.py:221
-msgid "inspire_conformity_service"
-msgstr ""
-
-#: models.py:222
-msgid ""
-"the level of INSPIRE conformance for spatial data sets and services "
-"(conformant, notConformant, notEvaluated)"
-msgstr ""
-
-#: models.py:224
-msgid "inspire_contact_organization"
-msgstr ""
-
-#: models.py:225
-msgid "the organization name responsible for the INSPIRE/RNDT metadata"
-msgstr ""
-
-#: models.py:227
-msgid "inspire_contact_email"
-msgstr ""
-
-#: models.py:228
-msgid "the email address of entity responsible for the INSPIRE/RNDT metadata"
-msgstr ""
-
-#: models.py:230
-msgid "inspire_contact_url"
-msgstr ""
-
-#: models.py:231
-msgid "the URL of entity responsible for the INSPIRE/RNDT metadata"
-msgstr ""
-
-#: models.py:233
-msgid "inspire_contact_phone"
-msgstr ""
-
-#: models.py:234
-msgid ""
-"the telephone number of entity responsible for the INSPIRE/RNDT metadata"
-msgstr ""
-
-#: models.py:236
-msgid "inspire_temp_extent"
-msgstr ""
-
-#: models.py:237
-msgid ""
-"temporal extent of the service (in ISO 8601 format). Either a single date (i."
-"e. yyyy-mm-dd), or an extent (i.e. yyyy-mm-dd/yyyy-mm-dd)"
-msgstr ""
-
-#: models.py:239
-msgid "inspire_geographical_extent"
-msgstr ""
-
-#: models.py:240
-msgid ""
-"inspire_geographical_extent of the service. Space separated values of lon/"
-"lat (west south east north)"
-msgstr ""
-
-#: models.py:244
-msgid "RNDT enabled"
-msgstr ""
-
-#: models.py:245
-msgid "whether to enable the RNDT extension"
-msgstr ""
-
-#: models.py:247
-#, fuzzy
-#| msgid "Adminstration"
-msgid "RNDT codice iPA amministrazione"
-msgstr "Amministrazione"
-
-#: models.py:309
-msgid "Catalog endpoint"
-msgstr ""
-
-#: models.py:310
-msgid "Catalog endpoints"
-msgstr ""
-
-#: models.py:366
-msgid "You must select a group or set another scope for the catalog."
-msgstr ""
-
-#: models.py:369
-msgid "You must select a macro group or set another scope for the catalog."
-msgstr ""
-
-#: models.py:375
-#, python-format
-msgid "RNDT is enabled: you need to fill in \"%s\"."
-msgstr ""
-
-#: models.py:380
-#, python-format
-msgid "INSPIRE is enabled: you need to fill in \"%s\"."
-msgstr ""
-
-#: models.py:385
-msgid ""
-"inspire_geographical_extent is not correct, please use format space "
-"separated values of lon/lat (west south east north)"
-msgstr ""
-
-#: models.py:483
-#, python-format
-msgid ""
-"%s registerCatalogRecordProvider registration must provide a valid Catalog."
-"SCOPE"
-msgstr ""
-
-#: models.py:519
-msgid "Farming - Rearing of animals and/or cultivation of plants."
-msgstr ""
-
-#: models.py:520
-msgid "Biota - Flora and/or fauna in natural environment."
-msgstr ""
-
-#: models.py:521
-msgid "Boundaries - Legal land descriptions."
-msgstr ""
-
-#: models.py:523
-msgid ""
-"Climatology / Meteorology / Atmosphere - Processes and phenomena of the "
-"atmosphere."
-msgstr ""
-
-#: models.py:524
-msgid "Economy - Economic activities, conditions and employment."
-msgstr ""
-
-#: models.py:525
-msgid "Elevation - Height above or below sea level."
-msgstr ""
-
-#: models.py:527
-msgid "Environment - Environmental resources, protection and conservation."
-msgstr ""
-
-#: models.py:529
-msgid "Geoscientific Information - Information pertaining to earth sciences."
-msgstr ""
-
-#: models.py:530
-msgid "Health, health services, human ecology, and safety."
-msgstr ""
-
-#: models.py:531
-msgid "Imagery / Base Maps / Earth Cover."
-msgstr ""
-
-#: models.py:533
-msgid "Intelligence / Military - Military bases, structures, activities."
-msgstr ""
-
-#: models.py:535
-msgid "Inland water features, drainage systems and their characteristics."
-msgstr ""
-
-#: models.py:536
-msgid "Location - Positional information and services."
-msgstr ""
-
-#: models.py:537
-msgid ""
-"Oceans - Features and characteristics of salt water bodies (excluding inland "
-"waters)."
-msgstr ""
-
-#: models.py:539
-msgid ""
-"Planning / Cadastre - Information used for appropriate actions for future "
-"use of the land."
-msgstr ""
-
-#: models.py:540
-msgid "Society - Characteristics of society and cultures."
-msgstr ""
-
-#: models.py:541
-msgid "Structure - Man-made construction."
-msgstr ""
-
-#: models.py:543
-msgid "Transportation - Means and aids for conveying persons and/or goods."
-msgstr ""
-
-#: models.py:545
-msgid ""
-"Utilities / Communication - Energy, water and waste systems and "
-"communications infrastructure and services."
-msgstr ""
-
-#: models.py:622
-msgid "INSPIRE GEMET keywords"
-msgstr ""
-
-#: models.py:712
-msgid "Spatial resolution denominator"
-msgstr ""
-
-#: models.py:891
-msgid "Positional accuracy in meters"
-msgstr ""
-
-#: rndt.py:102 rndt.py:412
-msgid "Service"
-msgstr ""
-
-#: rndt.py:188 rndt.py:233 rndt.py:427
-msgid "Publication"
-msgstr ""
-
-#: rndt.py:263
-msgid "No conditions apply"
-msgstr ""
-
-#: rndt.py:330
-msgid "Loose"
-msgstr ""
-
-#: rndt.py:423
-msgid ""
-"Commission Regulation (EU) No 1089/2010 of 23 November 2010 implementing "
-"Directive 2007/2/EC of the European Parliament and of the Council as regards "
-"interoperability of spatial data sets and services"
-msgstr ""
-
-#: rndt.py:431
-msgid "Please refer to the supplied specifications."
-msgstr ""
-
-#: rndt_profile/rndt/rndt.py:314
-msgid "Distributor"
-msgstr ""
-
-#: rndt_profile/rndt/rndt.py:344
-msgid "Unknown"
-msgstr ""
-
-#: templates/catalog/catalog_confirm_delete.html:8
-#: templates/catalog/catalog_detail.html:8
-#: templates/catalog/catalog_form.html:11
-#: templates/catalog/catalog_list.html:27
-msgid "Catalog"
-msgstr ""
-
-#: templates/catalog/catalog_confirm_delete.html:10
-msgid "deleting"
-msgstr ""
-
-#: templates/catalog/catalog_confirm_delete.html:17
-#, python-format
-msgid "Are you sure you want to delete \"%(object)s\"?"
-msgstr ""
-
-#: templates/catalog/catalog_detail.html:22
-#: templates/catalog/catalog_list.html:41
-msgid "Edit"
-msgstr ""
-
-#: templates/catalog/catalog_detail.html:23
-#: templates/catalog/catalog_list.html:44
-msgid "Delete"
-msgstr ""
-
-#: templates/catalog/catalog_detail.html:39
-msgid "Catalog records"
-msgstr ""
-
-#: templates/catalog/catalog_detail.html:43
-msgid "Records"
-msgstr ""
-
-#: templates/catalog/catalog_detail.html:49
-msgid "Title"
-msgstr ""
-
-#: templates/catalog/catalog_detail.html:50
-#, fuzzy
-#| msgid "Access denied"
-msgid "Access"
-msgstr "Accesso negato"
-
-#: templates/catalog/catalog_detail.html:71
-#, fuzzy
-#| msgid "Edit general data"
-msgid "Catalog data"
-msgstr "Modifica i dati generali"
-
-#: templates/catalog/catalog_detail.html:76
-msgid "Param"
-msgstr ""
-
-#: templates/catalog/catalog_detail.html:77
-msgid "Value"
-msgstr ""
-
-#: templates/catalog/catalog_detail.html:92
-msgid "Back"
-msgstr ""
-
-#: templates/catalog/catalog_form.html:13
-#, fuzzy
-#| msgid "Edit general data"
-msgid "metadata"
-msgstr "Modifica i dati generali"
-
-#: templates/catalog/catalog_form.html:25 templates/catalog/record_form.html:23
+#: eleprofile/templates/eleprofile/dtm_form.html:27
+#: eleprofile/templates/eleprofile/project_form.html:27
+#: portal/templates/portal/picture_form.html:27
 msgid "Alert"
 msgstr ""
 
-#: templates/catalog/catalog_form.html:26 templates/catalog/record_form.html:24
+#: eleprofile/templates/eleprofile/dtm_form.html:28
+#: eleprofile/templates/eleprofile/project_form.html:28
+#: portal/templates/portal/picture_form.html:28
 msgid "Some errors on form. Check it and send again."
 msgstr ""
 
-#: templates/catalog/catalog_list.html:8
-msgid "CSW published catalogs"
+#: eleprofile/templates/eleprofile/dtms_list.html:11
+msgid "DTM layer and path layers of project "
 msgstr ""
 
-#: templates/catalog/catalog_list.html:19
-msgid "New catalog"
+#: eleprofile/templates/eleprofile/dtms_list.html:23
+#: eleprofile/templates/eleprofile/projects_list.html:40
+msgid "DTM layer and Path layers"
 msgstr ""
 
-#: templates/catalog/catalog_list.html:26
+#: eleprofile/templates/eleprofile/dtms_list.html:32
+#: eleprofile/templates/eleprofile/projects_list.html:25
 msgid "Actions"
 msgstr ""
 
-#: templates/catalog/catalog_list.html:28
-msgid "N record"
+#: eleprofile/templates/eleprofile/dtms_list.html:33
+msgid "DTM layer"
 msgstr ""
 
-#: templates/catalog/catalog_list.html:29
-msgid "Capabilities"
+#: eleprofile/templates/eleprofile/dtms_list.html:34
+msgid "Path layers"
 msgstr ""
 
-#: templates/catalog/catalog_list.html:37
+#: eleprofile/templates/eleprofile/dtms_list.html:35
+#: eleprofile/templates/eleprofile/projects_list.html:27
+msgid "Note"
+msgstr ""
+
+#: eleprofile/templates/eleprofile/dtms_list.html:43
+#: eleprofile/templates/eleprofile/projects_list.html:34
+#: portal/templates/portal/picture_list.html:50
+msgid "Edit"
+msgstr ""
+
+#: eleprofile/templates/eleprofile/dtms_list.html:46
+#: eleprofile/templates/eleprofile/projects_list.html:37
+#: portal/templates/portal/picture_list.html:53
+msgid "Delete"
+msgstr ""
+
+#: eleprofile/templates/eleprofile/project_form.html:11
+msgid "Elevation Profile Project"
+msgstr ""
+
+#: eleprofile/templates/eleprofile/projects_list.html:8
+msgid "Elevation Profile Projects"
+msgstr ""
+
+#: portal/forms.py:45
+msgid "Picture data"
+msgstr ""
+
+#: portal/forms.py:67
+msgid "Author and style data"
+msgstr ""
+
+#: portal/models.py:20 portal/templates/portal/picture_form.html:11
+#: portal/templates/portal/picture_form.html:14
+msgid "Picture"
+msgstr ""
+
+#: portal/models.py:21
+msgid "Main color"
+msgstr ""
+
+#: portal/models.py:22
+msgid "Main title color"
+msgstr ""
+
+#: portal/models.py:23
+msgid "Subtitle color"
+msgstr ""
+
+#: portal/models.py:24 portal/templates/portal/picture_list.html:41
+msgid "Author"
+msgstr ""
+
+#: portal/models.py:25
+msgid "Author URL"
+msgstr ""
+
+#: portal/templates/portal/picture_list.html:10
+msgid "Portal pictures"
+msgstr ""
+
+#: portal/templates/portal/picture_list.html:21
+msgid "Add, update or delete portal picture"
+msgstr ""
+
+#: portal/templates/portal/picture_list.html:31
+msgid "Pictures"
+msgstr ""
+
+#: portal/templates/portal/picture_list.html:40
+msgid "Image"
+msgstr ""
+
+#: portal/templates/portal/picture_list.html:42
+msgid "Author url"
+msgstr ""
+
+#: templates/403.html:7
+msgid "error page"
+msgstr "Pagina di errore"
+
+#: templates/403.html:15
+msgid "Access denied"
+msgstr "Accesso negato"
+
+#: templates/403.html:17
+msgid "You don't have grant to access this section"
+msgstr "Non hai i privilegi per accedere questa sezione"
+
+#: templates/404.html:11
+msgid "Oops! Page not found."
+msgstr "Opps! Pagina non trovata"
+
+#: templates/404.html:13
+msgid "We could not find the page you were looking for."
+msgstr "Non abbiamo trovato la pagina che stavi cercando"
+
+#: templates/base.html:192 templates/index.html:6
+msgid "Dashboard"
+msgstr "Scrivania"
+
+#: templates/base.html:231
+msgid "Version"
+msgstr ""
+
+#: templates/include/navbar_right_menu.html:25
+msgid "Frontend"
+msgstr ""
+
+#: templates/include/navbar_right_menu.html:46
+msgid "Registered on"
+msgstr "Registrato il"
+
+#: templates/include/navbar_right_menu.html:47
+msgid "Last login"
+msgstr "Ultimo accesso"
+
+#: templates/include/navbar_right_menu.html:54
+msgid "Profile"
+msgstr "Profilo"
+
+#: templates/include/navbar_right_menu.html:57
+msgid "Logout"
+msgstr "Esci"
+
+#: templates/include/sidebar_right.html:9
+msgid "Configurations"
+msgstr "Configurazioni"
+
+#: templates/include/sidebar_right.html:15
+msgid "Edit general data"
+msgstr "Modifica i dati generali"
+
+#: templates/include/sidebar_right.html:16
+msgid "Frontend data and other"
+msgstr "Dati del frontend e altro"
+
+#: templates/include/sidebar_right.html:25
+#, fuzzy
+#| msgid "Adminstration"
+msgid "Django administration"
+msgstr "Amministrazione"
+
+#: templates/include/sidebar_right.html:26
+#, fuzzy
+#| msgid "Login to go backend administration system"
+msgid "Go to staff administration section"
+msgstr "Accesso al sistema di amministrazione"
+
+#: templates/index.html:7
+msgid "Current situation"
+msgstr "Situazione attuale"
+
+#: templates/index.html:17
+#, fuzzy
+#| msgid "Groups list"
+msgid "Groups"
+msgstr "Lista gruppi"
+
+#: templates/index.html:22
 msgid "Show"
 msgstr "Mostra"
 
-#: templates/catalog/catalog_list.html:60
-msgid "There are no CSW published catalogs"
+#: templates/index.html:28
+msgid "Module widgets"
 msgstr ""
 
-#: templates/catalog/record_form.html:12
-msgid "layer metadata"
+#: templates/login.html:21
+msgid "Sign in to start your session"
+msgstr "Accedi per iniziare la tua sessione di lavoro"
+
+#: templates/login.html:25 templates/registration/password_reset_form.html:24
+msgid "LOGIN ERROR"
 msgstr ""
+
+#: templates/login.html:26
+msgid "Username and/or password uncorrect"
+msgstr "Username e/o password non corretti"
+
+#: templates/login.html:41
+msgid "Sign In"
+msgstr "Accedi"
+
+#: templates/login.html:47 templates/registration/password_reset_form.html:31
+msgid "Forgot your password?"
+msgstr "Hai dimenticato la password?"
+
+#: templates/login.html:53
+#: templates/registration/password_reset_complete.html:26
+#: templates/registration/password_reset_confirm.html:47
+#: templates/registration/password_reset_done.html:26
+#: templates/registration/password_reset_form.html:45
+msgid " Version"
+msgstr "Versione"
+
+#: templates/registration/password_reset_complete.html:22
+msgid "Password reset complete"
+msgstr "Reimposta password completato"
+
+#: templates/registration/password_reset_complete.html:23
+msgid "Your new password has been set. You can log in now on the"
+msgstr "La tua nuoca password è stata salvata. Puoi eseguire il log in su"
+
+#: templates/registration/password_reset_complete.html:23
+msgid "log in page"
+msgstr "accedi"
+
+#: templates/registration/password_reset_confirm.html:22
+msgid "Enter new password"
+msgstr "Inserisci una nuova password"
+
+#: templates/registration/password_reset_confirm.html:29
+msgid "New password"
+msgstr "Nuova password"
+
+#: templates/registration/password_reset_confirm.html:34
+msgid "Repeat password"
+msgstr "Ripeti la password"
+
+#: templates/registration/password_reset_confirm.html:39
+msgid "Change my password"
+msgstr "Cambia la mia password"
+
+#: templates/registration/password_reset_confirm.html:44
+msgid ""
+"The password reset link <strong>was invalid</strong>, possibly because it "
+"has already been used.  Please request a new password reset."
+msgstr "Il link per reimpostare la password <strong>non è valido<strong>, è possibile che esso sisa stato gia usato."
+"Per favore esegui una nuova richiesta di reimposta password."
+
+#: templates/registration/password_reset_done.html:22
+msgid "Check your inbox."
+msgstr "Controlla la tua casella di posta"
+
+#: templates/registration/password_reset_done.html:23
+msgid ""
+"We've emailed you instructions for setting your password. You should receive "
+"the email shortly!"
+msgstr "Ti abbiamo inviato le istruzioni per reimpostare la tua password. Dovresti ricevere una email a breve!"
+
+#: templates/registration/password_reset_form.html:25
+msgid "Email no present into database"
+msgstr "Email non presente nel sistema"
+
+#: templates/registration/password_reset_form.html:32
+msgid ""
+"Enter your email address below, and we'll email instructions for setting a "
+"new one."
+msgstr "Inserisci il tuo indirizzo email, e noi ti invieremo le istruzioni per impostare una password nuova."
+
+#: templates/registration/password_reset_form.html:40
+#| msgid "Adminstration"
+msgid "Send me instruction"
+msgstr "Inviami le istruzioni"
+
+#, fuzzy
+#~| msgid "Edit general data"
+#~ msgid "General data"
+#~ msgstr "Modifica i dati generali"
+
+#, fuzzy
+#~| msgid "Configurations"
+#~ msgid "notConformant"
+#~ msgstr "Configurazioni"
+
+#, fuzzy
+#~| msgid "Adminstration"
+#~ msgid "Administrative units"
+#~ msgstr "Amministrazione"
+
+#, fuzzy
+#~| msgid "Adminstration"
+#~ msgid "RNDT codice iPA amministrazione"
+#~ msgstr "Amministrazione"
+
+#, fuzzy
+#~| msgid "Access denied"
+#~ msgid "Access"
+#~ msgstr "Accesso negato"
+
+#, fuzzy
+#~| msgid "Edit general data"
+#~ msgid "Catalog data"
+#~ msgstr "Modifica i dati generali"
+
+#, fuzzy
+#~| msgid "Edit general data"
+#~ msgid "metadata"
+#~ msgstr "Modifica i dati generali"
 
 #, fuzzy
 #~| msgid "Configurations"
@@ -773,72 +440,6 @@ msgstr ""
 #~ msgid "Last update"
 #~ msgstr "Ultimo accesso"
 
-#~ msgid "error page"
-#~ msgstr "Pagina di errore"
-
-#~ msgid "Access denied"
-#~ msgstr "Accesso negato"
-
-#~ msgid "You don't have grant to access this section"
-#~ msgstr "Non hai i privilegi per accedere questa sezione"
-
-#~ msgid "Oops! Page not found."
-#~ msgstr "Opps! Pagina non trovata"
-
-#~ msgid "We could not find the page you were looking for."
-#~ msgstr "Non abbiamo trovato la pagina che stavi cercando"
-
-#~ msgid "Dashboard"
-#~ msgstr "Scrivania"
-
-#~ msgid "Registered on"
-#~ msgstr "Registrato il"
-
-#~ msgid "Last login"
-#~ msgstr "Ultimo accesso"
-
-#~ msgid "Profile"
-#~ msgstr "Profilo"
-
-#~ msgid "Logout"
-#~ msgstr "Esci"
-
-#~ msgid "Configurations"
-#~ msgstr "Configurazioni"
-
-#~ msgid "Edit general data"
-#~ msgstr "Modifica i dati generali"
-
-#~ msgid "Frontend data and other"
-#~ msgstr "Dati del frontend e altro"
-
-#, fuzzy
-#~| msgid "Adminstration"
-#~ msgid "Django administration"
-#~ msgstr "Amministrazione"
-
-#, fuzzy
-#~| msgid "Login to go backend administration system"
-#~ msgid "Go to staff administration section"
-#~ msgstr "Accesso al sistema di amministrazione"
-
-#~ msgid "Current situation"
-#~ msgstr "Situazione attuale"
-
-#, fuzzy
-#~| msgid "Groups list"
-#~ msgid "Groups"
-#~ msgstr "Lista gruppi"
-
-#~ msgid "Sign in to start your session"
-#~ msgstr "Accedi per iniziare la tua sessione di lavoro"
-
-#~ msgid "Username and/or password uncorrect"
-#~ msgstr "Username e/o password non corretti"
-
-#~ msgid "Sign In"
-#~ msgstr "Accedi"
-
 #~ msgid "About It"
 #~ msgstr "Cos'è"
 
@@ -860,9 +461,6 @@ msgstr ""
 #~| msgid "Groups list"
 #~ msgid "Group maps"
 #~ msgstr "Lista gruppi"
-
-#~ msgid "Adminstration"
-#~ msgstr "Amministrazione"
 
 #~ msgid "Maps"
 #~ msgstr "Mappe"

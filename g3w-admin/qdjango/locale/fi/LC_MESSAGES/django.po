@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-04 09:17+0000\n"
+"POT-Creation-Date: 2020-11-11 16:02+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,6 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
 #: qdjango/forms.py:35
 msgid "File must have 'qgs' or 'qgz' extension"
 msgstr ""
@@ -29,36 +30,36 @@ msgstr ""
 msgid "This alias is used by another project/map"
 msgstr ""
 
-#: qdjango/forms.py:80
+#: qdjango/forms.py:81
 msgid "Max extent is smaller than init map extent"
 msgstr ""
 
-#: qdjango/forms.py:99 qdjango/templates/qdjango/project_list.html:25
+#: qdjango/forms.py:100 qdjango/templates/qdjango/project_list.html:25
 msgid "URL alias"
 msgstr ""
 
-#: qdjango/forms.py:100
+#: qdjango/forms.py:101
 msgid ""
 "You can set a human readable URL for the map. Only alphanumeric characters, "
 "not white space or special characters"
 msgstr ""
 
-#: qdjango/forms.py:118
+#: qdjango/forms.py:119
 msgid "Qgis Project"
 msgstr ""
 
-#: qdjango/forms.py:144
+#: qdjango/forms.py:145
 msgid "Description data"
 msgstr ""
 
-#: qdjango/forms.py:167
+#: qdjango/forms.py:168
 msgid "Options and actions"
 msgstr ""
 
 #: qdjango/models/constraints.py:45 qdjango/models/projects.py:321
 #: qdjango/models/projects.py:510
 #: qdjango/templates/qdjango/ajax/layer_widgets.html:9
-#: qdjango/templates/qdjango/layers_list.html:114
+#: qdjango/templates/qdjango/layers_list.html:97
 msgid "Name"
 msgstr ""
 
@@ -276,7 +277,7 @@ msgstr ""
 
 #: qdjango/models/projects.py:336 qdjango/models/projects.py:513
 #: qdjango/templates/qdjango/ajax/layer_widgets.html:10
-#: qdjango/templates/qdjango/layers_list.html:112
+#: qdjango/templates/qdjango/layers_list.html:98
 msgid "Type"
 msgstr ""
 
@@ -473,39 +474,39 @@ msgstr ""
 msgid "Structure"
 msgstr ""
 
-#: qdjango/templates/qdjango/layers_list.html:97
-msgid "No legend"
-msgstr ""
-
-#: qdjango/templates/qdjango/layers_list.html:99
-msgid "Download as shp"
-msgstr ""
-
-#: qdjango/templates/qdjango/layers_list.html:102
-msgid "Download as xls"
-msgstr ""
-
-#: qdjango/templates/qdjango/layers_list.html:105
-msgid "Download as csv"
-msgstr ""
-
-#: qdjango/templates/qdjango/layers_list.html:108
-msgid "Download as gpx"
-msgstr ""
-
-#: qdjango/templates/qdjango/layers_list.html:110
-msgid "WMS External"
-msgstr ""
-
-#: qdjango/templates/qdjango/layers_list.html:115
+#: qdjango/templates/qdjango/layers_list.html:96
 msgid "Label"
 msgstr ""
 
-#: qdjango/templates/qdjango/layers_list.html:130
+#: qdjango/templates/qdjango/layers_list.html:100
+msgid "WMS External"
+msgstr ""
+
+#: qdjango/templates/qdjango/layers_list.html:105
+msgid "No legend"
+msgstr ""
+
+#: qdjango/templates/qdjango/layers_list.html:107
+msgid "Download as shp"
+msgstr ""
+
+#: qdjango/templates/qdjango/layers_list.html:110
+msgid "Download as xls"
+msgstr ""
+
+#: qdjango/templates/qdjango/layers_list.html:113
+msgid "Download as csv"
+msgstr ""
+
+#: qdjango/templates/qdjango/layers_list.html:116
+msgid "Download as gpx"
+msgstr ""
+
+#: qdjango/templates/qdjango/layers_list.html:152
 msgid "Manage alphanumeric visualization and editing constraints"
 msgstr ""
 
-#: qdjango/templates/qdjango/layers_list.html:135
+#: qdjango/templates/qdjango/layers_list.html:157
 msgid "Widgets list"
 msgstr ""
 
