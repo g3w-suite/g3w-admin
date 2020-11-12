@@ -1,13 +1,19 @@
 #  Management and organization of geographic data and QGIS projects
 _**This section describes how to organize QGIS data and projects locally and how to synchronize them on the server environment for publication purposes**_
 
-Thanks to the integration with the QGIS API, G3W-SUITE manages in visualization and editing the main formats (geographic and not) managed by QGIS through the OGR/GDAL library and other specific providers.
+Thanks to the integration with the APIs of QGIS it is now possible to manage the main formats (geographically and not) supported by QGIS Server:
 
-Consult the [list of formats](https://docs.qgis.org/3.10/en/docs/user_manual/preamble/features.html#view-data) managed by QGIS.
+ * **reading and editing mode**
+   * PostGreSQL/PostGis
+   * SQLite/SpatiaLite
+   * GeoPackage
+   * ShapeFile
 
-## Data on DB Server
+ * **reading mode**
+   * SQL Server
+   * Virtal layer
 
-If your geographical data are stored on `Server DB`, it will be sufficient to allow access to the DB from the IP address on which the application is installed.
+The suite also allows you to manage **`1:N relational editing`**.
 
 ## Data on DB Server
 
@@ -36,9 +42,9 @@ That directory is also used to contain **images used in the print layouts** asso
 
 ### Geographic data synchronization on the server
 
-The data stored in the local **`geo_data`** directory must be synchronized on the server where the G3W-SUITE application is installed.
+The data stored in the local **`project_data`** directory must be synchronized on the server where the G3W-SUITE application is installed.
 
-The geographic data stored in the local **`geo_data`** folder must be loaded, reflecting any subdirectory structure.
+The geographic data stored in the local **`project_data`** folder must be loaded, reflecting any subdirectory structure.
 
 To synchronize your data access to the Administration panel of G3W-ADMIN and click on the **`Configurations` icon** ![](images/manual/iconconfiguration.png) located in the upper right corner.
 
@@ -51,7 +57,7 @@ Choose the **`File Manager`** item in the linked menu.
 Using this tool it is possible to manage the physical geographic data on the server in a simple and intuitive way.
 
 This the directories present by default:
- * **`geo_data`**: the folder in which to store the **geographical data** and any **images inserted in the print layouts**
+ * **`project_data`**: the folder in which to store the **geographical data** and any **images inserted in the print layouts**
  * **`media_user`**: a folder exposed on the web, to store your **multimedia files**
  * **`svg:`** a folder to store **extra SVG icons** used your QGIS projects
 

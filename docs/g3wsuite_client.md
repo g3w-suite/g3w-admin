@@ -5,6 +5,8 @@ The application has a responsive interface consisting of expandable and reducibl
 
 The color of the interface depends on the type of user logged in.
 
+![](images/manual/g3wclient_interface.png)
+
 **`The header`** contains the following elements:
  * **Logo, title and subtitle**, deriving from:
    * main title (set at General Data level) or MacroGroup name, according to the settings
@@ -22,11 +24,11 @@ The **`Tools panel`** is located on the left and containing the following object
  * **Metadata:** content defined on QGIS project
  * **Print:** printing tool based on the layouts defined on the QGIS project
  * **Search:** with the search tools defined through the Administration panel
+ * **Tools:** session that collects the various tools that may be activated on the WebGis service
  * **Map:** containing:
    * **Layers:** structured list of layers, defined on the QGIS project
    * **Base:** choice of the base map from those defined at the creation level of the Thematic Group
    * **Legend:** graphic legend of the various layers
- * **Tools:** session that collects the various tools that may be activated on the WebGis service
 
 ![](images/manual/g3wclient_tool_panel.png)
 
@@ -41,8 +43,10 @@ At the base of the map area there is an information bar showing:
  * **mouse coordinates**
  * **project projection system**
  * **icon to copy the URL with the references to the extension currently displayed**
+ 
+![](images/manual/g3wclient_tool_panel.png)
 
-![](images/manual/g3wclient_maparea.png)
+![](images/manual/g3wclient_footer2.png)
 
  
 ### Map controls
@@ -67,7 +71,7 @@ It should be noted that the query function acts, by default, with the coring met
 
 To query a single layer, it must be previously selected at the TOC level.
 
-Remember that query modes based on **querybbox** and **querybypolygon** require the publication of the layers as WFS services at the QGIS project level.
+Remember that query modes based on **querybbox** and **querybypolygon** require the publication of all the layers involved as WFS services at the QGIS project level.
 
 **NB:** Remember that, after viewing the results, it will be possible to zoom on the feature associated with the individual results only if the option **`Add geometry to object response`** has been activated at the QGIS project level (**`Project → Properties, QGIS Server session`**).
 
@@ -194,7 +198,7 @@ In the list of layers, right click on the name of the single layer shows the fol
  * **Download XLS:** to download the layer as a XLS; function activable from the administration panel
  * **WMS URL:** URL of the WMS service relative to the project or URL of the external WMS
 
-![](g3wclient_layer_function.png)
+![](images/manual/g3wclient_layer_function.png)
 
 The attribute table is equipped with **paging function, highligth function and zooming** to the associated features.
 

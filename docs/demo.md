@@ -9,6 +9,7 @@ Through the tutorials it will be possible to:
  * customize the various graphic-functional aspects of the basic project
  * publish the project as a WebGis service
  * create personalized searches
+ * add plots made with DataPlotly QGIS plugin
  * activate the editing functionality by customizing associated forms and widgets
  
 ![](images/manual/demo_qgis_project.png)
@@ -17,7 +18,7 @@ Through the tutorials it will be possible to:
 
 # Download the demo data
 
-The tutorial is based on predefined data and QGIS 3.10 LTR project **downloadable from <a href="https://drive.google.com/file/d/1JpeZQgu90NQZ3tjBdD_V9BSaRkbWR1Ex/view?usp=sharing" target="_blank">this link</a>**.
+The tutorial is based on predefined data and QGIS 3.10 LTR project **downloadable from <a href="https://drive.google.com/file/d/1iKDZ7UFelisiAGI720U0EB2dog2SOoGd/view?usp=sharing" target="_blank">this link</a>**.
 
 The .zip file contains the **`G3W-SUITE`** directory with two sub directories:
  * **`projects`:** containing a QGIS project (**`buildings_management.qgz`**) already optimized for the tutorial
@@ -38,7 +39,7 @@ The project (**based on QGIS LTR 3.10**) foresees:
  * the presence of a **1: n relationship** between the `buildings` layer and the alphanumeric **`maintenance_works`** table
  * pre-developed **query forms** for the **`buildings`** layer and the **`maintenance_works`** table
  * predefined **editing widgets** for the fields of the two main layers: **`buildings`** and **`maintenance_works`**
- * two **print composer** in A4 and A3
+ * two standard **print layout** in A4 and A3 and an **atlas print layout** based on buildgs layer features
 
 
 ![](images/manual/demo_qgis_project.png)
@@ -53,7 +54,7 @@ The publication system provides for the use of the **title of the project** as t
 
 # Access the online service
 
-To publish the project, you can **access the G3W-SUITE test application** via the following URL: [**`https://v31.g3wsuite.it`**](https://v30.g3wsuite.it)
+To publish the project, you can **access the G3W-SUITE test application** via the following URL: [**`https://v31.g3wsuite.it`**](https://v31.g3wsuite.it)
 
 To access the **Administration Panel** it is necessary to log in using the following credentials:
  * user: **`demo`**
@@ -61,8 +62,6 @@ To access the **Administration Panel** it is necessary to log in using the follo
  
 **In case of login problems, report the problem to `info@gis3w.it`**
  
- ![](images/manual/g3wsuite_portal_frontend.png)
-
 # Publish the QGIS project as a WebGis service
 
 After authentication it will be possible to access the **`Administration session`** and view the **Dashboard**.
@@ -104,8 +103,20 @@ If left blank, the title associated with the QGIS project will be used or, in th
  * **`Thumbnail (Logo)`:** logo to associate with the project. This image will be viewable in the list of projects within the cartographic group
  * **`URL alias`:** a human readable URL for the map
 
-
 **ATTENTION:** contents marked with * are mandatory.
+
+## Options and actions
+
+ * **`User QGIS project map start extent as webgis init extent `**: check this control if you want set initial extent from QGSI project initial extent
+ 
+Otherwise the initial extension will correspond to the maximum one defined on the basis of the extension associated with the WMS capabilities of the QGIS project (**Project properties -> QGIS Server -> WMS capabilities (Advertised extent)**)
+ 
+The next options allow you to define the type of WMS / WFS query to be carried out and the maximum number of results obtainable following a query.
+ * **`Max feature to get for query`***: max number of feature to get for single or multiple mode
+ * **`Query control mode`***: single or multiple
+ * **`Query by bbox control mode`***: single or multiple
+ * **`Query by polygon control mode`***: single or multiple
+
 
 ![](images/manual/g3wsuite_administration_project_add_option.png)
 
@@ -210,6 +221,24 @@ Once the settings are saved, the created widget will appear in the list of Widge
 
 ![](images/manual/demo_search_result.png)
 
+**Add plots created using QGIS [DataPlotly](https://github.com/ghtmtt/DataPlotly) (a great plugin developed by [Matteo Ghetta](https://github.com/ghtmtt)) in the cartographic client.**
+
+The module, based on the [Plotly library](https://plotly.com/), manages both **plots incorporated in the QGIS project** and **plots saved as xml**.
+
+The plots are connected to the layers defined on the QGIS project, in this way, as for the searches and the constraints, it is possible to activate the same plots on all WebGis services in which the reference layer is present.
+
+![](images/manual/g3wsuite_administration_plots.png)
+
+The title of the chart, defined at the plugin level, will be the unique identifier.
+
+Try to create your plots in the QGIS project, save them as .xml and upload them to view the resluts on the webgis.
+
+**Plots based on visible or selected geometries** will be available in the next version
+
+![](images/manual/g3wsuite_qgis_plots.png)
+![](images/manual/g3wsuite_client_plots.png)
+
+
 # Editing on line
 _**Forms and editing widgets are already defined on the project associated with the tutorial for the geometric layer of buildings and for the alphanumeric table related interventions_maintenance.**_
 
@@ -226,7 +255,7 @@ _**Forms and editing widgets are already defined on the project associated with 
    * **surface** (integer): text edit
    * **architectural_barriers** (text): Checkbox (Checked - Not checked)
    * **date_barriers** (date): date (yyyy/MM/dd)
-   * **safety_exits** (text): Checkbox (Checked - Not checked)
+   * **safety_exits** (text): checkbox (Checked - Not checked)
    * **date_exits** (date): date (yyyy/MM/dd)
    * **fire_system** (text): Checkbox (Checked - Not checked)
    * **date_fire** (date): date (yyyy/MM/dd)
@@ -240,6 +269,10 @@ _**Forms and editing widgets are already defined on the project associated with 
    * **date** (date): date (yyyy/MM/dd)
    * **form** (text): attachment
    * **value** (integer): range (10-30 step 2)
+   * **outcome** (text): unique values (good, medium, bad)
+   * **responsible** (text): text edit
+   * **cost** (integer): range (1000-5000 step 1)
+   * **validation** (boolean): checkbox (0/1)
 
 To activate the editing function on webgis, access the list of layers and identify the two layers shown above.
 
