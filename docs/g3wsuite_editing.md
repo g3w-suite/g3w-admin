@@ -1,16 +1,23 @@
 # Editing on line
 ## Activation and configuration
 
-Thanks to the integration with the QGIS API, **G3W-SUITE allows you to edit all the formats (geographic and not) edited by QGIS** through the OGR/GDAL library and other specific providers.
+Thanks to the integration with the APIs of QGIS it is now possible to manage the main formats (geographically and not) supported by QGIS Server:
 
-Consult the [list of formats](https://docs.qgis.org/3.10/en/docs/user_manual/preamble/features.html#view-data) managed by QGIS.
+ * **reading and editing mode**
+   * PostGreSQL/PostGis
+   * SQLite/SpatiaLite
+   * GeoPackage
+   * ShapeFile
 
+ * **reading mode**
+   * SQL Server
+   * Virtal layer
 
-The tool also allows you to manage **`1:N relational editing`**.
+The suite also allows you to manage **`1:N relational editing`**.
 
 **Be careful: in this release editing is not available on simple join (1:1/n:1) data**
 
-The **editing settings** are defined partly at the **QGIS project level** (**editing form structure, widgets associated with individual attributes, 1:n relationships**) and partly at the **Administration level** (users with editing power, activation scale, any geoconstraints).
+The **editing settings** are defined partly at the **QGIS project level** (**editing form structure, widgets associated with individual attributes, 1:n relationships**) and partly at the **Administration level** (users with editing power, activation scale, alpha and geo constraints).
 
 It should be noted that this function manages **`multi-user editing`** through a **features-lock system**.
 

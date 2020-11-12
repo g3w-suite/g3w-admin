@@ -538,7 +538,7 @@ Through the **Manage geo-contsraints** and **Manage alphanumric constraints** wi
 
 See the dedicated paragraph in the [Editing on line session](https://g3w-suite.readthedocs.io/it/3.1.x/g3wsuite_editing.html#constraints-setting).
 
-### ![](images/manual/icon_cache.png) Caching layer
+### ![](images/manual/icon_cache.png) Caching layer (Base Map)
 
 With this icon it is possible to **activate/manage the cache of the single layers** and **create XYZ Tiles layer**
 
@@ -567,13 +567,17 @@ The plots are connected to the layers defined on the QGIS project, in this way, 
 
 The title of the chart, defined at the plugin level, will be the unique identifier.
 
+![](images/manual/g3wsuite_qgis_plots.png)
+![](images/manual/g3wsuite_client_plots.png)
+
+
 **Plots based on visible or selected geometries** will be available in the next version
 
 
 ### ![](images/manual/icon_widget.png) Search widget setting
 In G3W-SUITE it is possible to create search widgets.
 
-**Be careful: in this release searching is not available on simple join (1:1/n:1) data**
+**NB: in this release searching is not available on simple join (1:1/n:1) data**
 
 They will be saved by referring to the layer identifiers (for example the DB parameters: IP, DB name, schema, layer name).
 
