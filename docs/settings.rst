@@ -51,6 +51,11 @@ Default is `['shp', 'xls']`, set download data format. Values possible:
   - *xls*: download into Excel format
   - *gpx*: download into GPS format (only for Point and Line layers)
 
+``RESET_USER_PASSWORD``
+^^^^^^^^^^^^^^^^^^^^^^^
+Default is `False`, set tot `True` to activate reset user password by email workflow.
+If set to True remember to set Django emailing settings (https://docs.djangoproject.com/en/2.2/topics/email/).
+
 
 
 Frontend portal setting
