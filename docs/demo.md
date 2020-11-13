@@ -221,9 +221,11 @@ Once the settings are saved, the created widget will appear in the list of Widge
 
 ![](images/manual/demo_search_result.png)
 
+## Plots widget
+
 **Add plots created using QGIS [DataPlotly](https://github.com/ghtmtt/DataPlotly) (a great plugin developed by [Matteo Ghetta](https://github.com/ghtmtt)) in the cartographic client.**
 
-The module, based on the [Plotly library](https://plotly.com/), manages both **plots incorporated in the QGIS project** and **plots saved as xml**.
+The module, based on the [Plotly library](https://plotly.com/), manages **plots saved as xml**.
 
 The plots are connected to the layers defined on the QGIS project, in this way, as for the searches and the constraints, it is possible to activate the same plots on all WebGis services in which the reference layer is present.
 
@@ -236,6 +238,7 @@ Try to create your plots in the QGIS project, save them as .xml and upload them 
 **Plots based on visible or selected geometries** will be available in the next version
 
 ![](images/manual/g3wsuite_qgis_plots.png)
+
 ![](images/manual/g3wsuite_client_plots.png)
 
 

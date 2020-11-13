@@ -559,7 +559,7 @@ The newly created base layer will be available to be associated with those avail
 
 **View plots created using QGIS [DataPlotly](https://github.com/ghtmtt/DataPlotly) (a great plugin developed by [Matteo Ghetta](https://github.com/ghtmtt)) in the cartographic client.**
 
-The module, based on the [Plotly library](https://plotly.com/), manages both **plots incorporated in the QGIS project** and **plots saved as xml**.
+The module, based on the [Plotly library](https://plotly.com/), manages **plots saved as xml**.
 
 The plots are connected to the layers defined on the QGIS project, in this way, as for the searches and the constraints, it is possible to activate the same plots on all WebGis services in which the reference layer is present.
 
