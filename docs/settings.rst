@@ -235,3 +235,10 @@ Settings params for ``filemanager`` module.
 ``FILEMANAGER_ROOT_PATH``
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 Mandatory, path to disk space where to CRUD geo data files i.e. Shp Raster, etc.
+
+Qplotly settings
+****************
+
+``LOAD_QPLOTLY_FROM_PROJECT``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Default if ``False``, set to ``True`` for import DataPlotly settings from QGIS project.

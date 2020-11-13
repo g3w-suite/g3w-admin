@@ -42,7 +42,10 @@ def get_data_plotly_settings_from_file():
 
 class QgisProjectTest(TestCase):
 
-    @override_settings(DATASOURCE_PATH=DATASOURCE_PATH)
+    @override_settings(
+        DATASOURCE_PATH=DATASOURCE_PATH,
+        LOAD_QPLOTLY_FROM_PROJECT=True
+    )
     def setUp(self):
 
         qgis_project_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_FILE), 'r', encoding='utf-8'))

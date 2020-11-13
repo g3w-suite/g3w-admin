@@ -10,6 +10,7 @@ __author__ = 'lorenzetti@gis3w.it'
 __date__ = '2020-09-16'
 __copyright__ = 'Copyright 2015 - 2020, Gis3w'
 
+from django.conf import settings as g3wsettings
 from django.dispatch import receiver
 from django.apps import apps
 from django.db.models.signals import post_save
@@ -41,7 +42,7 @@ def load_dataplotly_project_settings(sender, **kwargs):
     """Load from qgis project dom document DatPlotly settings
     and put data into sender(QgisProject instance)"""
 
-    if not isinstance(sender, QgisProject):
+    if not isinstance(sender, QgisProject) or not g3wsettings.LOAD_QPLOTLY_FROM_PROJECT:
         return
 
     # to avoid multithreading load xml file.

@@ -14,12 +14,15 @@ __copyright__ = 'Copyright 2015 - 2020, Gis3w'
 
 
 from django.core.exceptions import ValidationError
+from django.test import override_settings
 
 from .test_api import APIClient, QdjangoTestBase, CoreGroup, G3WSpatialRefSys, QgisProject
 from .test_utils import DATASOURCE_PATH, File, CURRENT_PATH, TEST_BASE_PATH, QGS_FILE
 from qplotly.models import QplotlyWidget
 
-
+@override_settings(
+    LOAD_QPLOTLY_FROM_PROJECT=True
+)
 class QplotlyTestModel(QdjangoTestBase):
     """Test model and """
 

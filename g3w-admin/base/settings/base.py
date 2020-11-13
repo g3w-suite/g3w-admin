@@ -286,3 +286,8 @@ G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS = ['shp', 'xls', 'csv']
 
 # Setting to activate/deactivate user password reset by email.
 RESET_USER_PASSWORD = False
+
+# QPLOTLY DEFAULT SETTINGS
+# ------------------------
+
+LOAD_QPLOTLY_FROM_PROJECT = False

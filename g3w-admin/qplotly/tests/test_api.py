@@ -12,6 +12,7 @@ __copyright__ = 'Copyright 2015 - 2020, Gis3w'
 
 
 from django.urls import reverse
+from django.test import override_settings
 from django.test.client import encode_multipart
 from qdjango.tests.base import QdjangoTestBase, CoreGroup, File, G3WSpatialRefSys, QgisProject, setup_testing_user
 from rest_framework.test import APIClient
@@ -24,6 +25,9 @@ import json
 import copy
 
 
+@override_settings(
+    LOAD_QPLOTLY_FROM_PROJECT=True
+)
 class QplotlyTestAPI(QdjangoTestBase):
 
     @classmethod
