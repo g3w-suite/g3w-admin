@@ -521,7 +521,7 @@ msgid ""
 "This website uses cookies to ensure you get the best experience on our "
 "website"
 msgstr ""
-"Questo sito utilizza i coockie per garantire una buona usabilità "
+"Questo sito utilizza i cookie per garantire una buona usabilità "
 "all'utilizzatore finale"
 
 #: core/templates/core/include/coockieconsent.html:12
