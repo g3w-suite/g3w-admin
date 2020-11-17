@@ -87,7 +87,7 @@ The window is resizable.
 
 Any links to photos will determine the display of a clickable preview, any links to links or other multimedia content will determine the display of the Open button that will allow consultation of the link.
 
-For further information on this point, see the [**dedicated paragraph**](https://g3w-suite.readthedocs.io/it/latest/projectsettings.html#viewing-multimedia-content).
+For further information on this point, see the [**dedicated paragraph**](https://g3w-suite.readthedocs.io/it/v.3.1.x/projectsettings.html#viewing-multimedia-content).
 
 The orange bar above the query results shows the following icons:
 ![](images/manual/g3wclient_attribute_icons.png)

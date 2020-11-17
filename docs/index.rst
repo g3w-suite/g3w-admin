@@ -24,9 +24,6 @@ G3W-SUITE is a modular client-server application for the publication and managem
 
 - **G3W-CLIENT:** Cartographic client for consultation and interaction with OGC services
 
-
-Optional OS modules are:
-
 - **Front-end geographic portal:** access to information, thematic groups and WebGis services
 
 - **Caching Module:** tile caching module for single layer powered by TileStache4
