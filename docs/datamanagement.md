@@ -36,7 +36,7 @@ Data on physical files and / or on GeoDB SpatiaLite and QGIS cartographic projec
 ![](images/manual/datamanagement.png)
 
 **NB:** The name of the local directory dedicated to geographic data must correspond to the name defined for the **`DATASOURCE_PATH`** variable set during installation.
-[See dedicated paragraph.](https://g3w-suite.readthedocs.io/en/3.1.x/settings.html#base-settings)
+[See dedicated paragraph.](https://g3w-suite.readthedocs.io/en/v.3.1.x/settings.html#base-settings)
 
 That directory is also used to contain **images used in the print layouts** associated with the QGIS cartographic projects.
 
@@ -64,7 +64,7 @@ This the directories present by default:
 All the folder can be organized in subdirectories with no nesting limits.
 
 **NB:** The names of these directories are defined by the basic settings set during the installation of the suite.
-[See dedicated paragraph.](https://g3w-suite.readthedocs.io/en/3.1.x/settings.html#base-settings)
+[See dedicated paragraph.](https://g3w-suite.readthedocs.io/en/v.3.1.x/settings.html#base-settings)
 
 
 ![](images/manual/g3wsuite_administration_file_manager.png)
