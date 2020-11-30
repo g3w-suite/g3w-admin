@@ -102,6 +102,9 @@
                         {% if "delete_group" in userObj_perms %}
                           <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Delete' %}"  data-widget-type="deleteItem" data-delete-url="{% url 'group-delete' object.slug %}" data-item-selector="#group_{{ object.slug }}"><i class="ion ion-trash-b"></i></a>
                         {% endif %}
+                            <div class="hidden pre-delete-message">
+                                <div>{% blocktrans %}Warning: deleting the group will delete the projects it contains!{% endblocktrans %}</div>
+                            </div>
                         </div>
                       </div><!-- /.description-block -->
                     </div><!-- /.col -->

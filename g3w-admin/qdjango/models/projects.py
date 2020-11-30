@@ -92,7 +92,7 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
 
     # Group
     group = models.ForeignKey(Group, related_name='qdjango_project', verbose_name=_('Group'),
-                              on_delete=models.DO_NOTHING)
+                              on_delete=models.CASCADE)
 
     # Extent
     initial_extent = models.CharField(_('Initial extent'), max_length=255)

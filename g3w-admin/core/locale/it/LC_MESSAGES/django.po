@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-11 16:02+0000\n"
+"POT-Creation-Date: 2020-11-25 16:06+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,103 +18,103 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: core/admin.py:16
+#: admin.py:16
 msgid "Basic settings"
 msgstr "Configurazioni di base"
 
-#: core/admin.py:19
+#: admin.py:19
 msgid "Access settings"
 msgstr "Accesso configurazioni"
 
-#: core/admin.py:23
+#: admin.py:23
 msgid "Display settings"
 msgstr "Mostra le configurazioni"
 
-#: core/admin.py:27
+#: admin.py:27
 msgid "Additional settings"
 msgstr "Configurazioni accessorie"
 
-#: core/api/base/views.py:111
+#: api/base/views.py:111
 msgid "Data are not correct or insufficent!"
 msgstr "I dati non sono corretti o insufficenti"
 
-#: core/api/base/views.py:117
+#: api/base/views.py:117
 msgid "A error server is occured!"
 msgstr "Si è verificato un errore server!"
 
-#: core/api/base/views.py:125
+#: api/base/views.py:125
 msgid "Not found"
 msgstr "Non trovato"
 
-#: core/api/base/views.py:131
+#: api/base/views.py:131
 msgid "Permission denied"
 msgstr "Permesso negato"
 
-#: core/configs.py:11
+#: configs.py:11
 msgid "Search"
 msgstr "Ricerca"
 
-#: core/configs.py:28
+#: configs.py:28
 msgid "Law"
 msgstr "Normativa"
 
-#: core/forms.py:42 core/forms.py:363
+#: forms.py:42 forms.py:363
 msgid "General data"
 msgstr "Dati generali"
 
-#: core/forms.py:66
+#: forms.py:66
 msgid "GEO data"
 msgstr "GEO dati"
 
-#: core/forms.py:87
+#: forms.py:87
 msgid "Base Layers and Map default features"
 msgstr "Layers di base e caratteristiche di default della mappa"
 
-#: core/forms.py:114
+#: forms.py:114
 msgid "Logo/Picture"
 msgstr "Logo/Immagine"
 
-#: core/forms.py:141
+#: forms.py:141
 msgid "Copyright"
 msgstr ""
 
-#: core/forms.py:195
+#: forms.py:195
 msgid "Frontend home data"
 msgstr "Dati home"
 
-#: core/forms.py:220
+#: forms.py:220
 msgid "Frontend about data"
 msgstr "Dati chi siamo"
 
-#: core/forms.py:241
+#: forms.py:241
 msgid "Frontend groups map data"
 msgstr "Dati gruppi di mappa del frontend"
 
-#: core/forms.py:257
+#: forms.py:257
 msgid "Frontend login data"
 msgstr "Dati login frontend"
 
-#: core/forms.py:274
+#: forms.py:274
 msgid "Frontend social data"
 msgstr "Dati social media"
 
-#: core/forms.py:296
+#: forms.py:296
 msgid "Map client data"
 msgstr ""
 
-#: core/forms.py:322
+#: forms.py:322
 #, fuzzy
 #| msgid "Editor user"
 msgid "Editor users"
 msgstr "Utente Editor"
 
-#: core/forms.py:340
+#: forms.py:340
 #, fuzzy
 #| msgid "Users"
 msgid "ACL Users"
 msgstr "Utenti"
 
-#: core/forms.py:370
+#: forms.py:370
 msgid ""
 "<b>Attention!</b> This settigns are valid only for map groups with only one "
 "MacroGroup"
@@ -122,401 +122,398 @@ msgstr ""
 "<b>Attenzione!</b> Le seguenti impostazioni sono valide solo per Gruppi di "
 "mappe appartenenti ad un unico MacroGruppo"
 
-#: core/models.py:84
+#: models.py:84
 msgid "Map control"
 msgstr "Controllo di mappa"
 
-#: core/models.py:85
+#: models.py:85
 msgid "Map controls"
 msgstr "Cantrolli di mappa"
 
-#: core/models.py:93
+#: models.py:93
 msgid "Identification name"
 msgstr "Identificativo"
 
-#: core/models.py:94
+#: models.py:94
 msgid "Internal identification Macrogroup name"
 msgstr "Identificativo interno del Macrogruppo"
 
-#: core/models.py:95 core/models.py:132 core/models.py:407
-#: core/templates/core/ajax/macrogroup_detail.html:7
-#: core/templates/core/macrogroup_list_table.html:28
+#: models.py:95 models.py:132 models.py:407
+#: templates/core/ajax/macrogroup_detail.html:7
+#: templates/core/macrogroup_list_table.html:28
 msgid "Title"
 msgstr "Titolo"
 
-#: core/models.py:96 core/models.py:133
-#: core/templates/core/ajax/macrogroup_detail.html:9
+#: models.py:96 models.py:133 templates/core/ajax/macrogroup_detail.html:9
 msgid "Description"
 msgstr "Descrizione"
 
-#: core/models.py:97 core/models.py:143
+#: models.py:97 models.py:143
 msgid "Logo image"
 msgstr "Immagine logo"
 
-#: core/models.py:98 core/models.py:144
+#: models.py:98 models.py:144
 msgid "Logo link"
 msgstr "Link logo"
 
-#: core/models.py:99 core/models.py:145
+#: models.py:99 models.py:145
 msgid "Enter link with http:// or https//"
 msgstr "Il link deve contenere http:// or https//"
 
-#: core/models.py:100
+#: models.py:100
 msgid "Use title for client"
 msgstr "Utilizza il titolo per il client"
 
-#: core/models.py:101
+#: models.py:101
 msgid "Use logo image for client"
 msgstr "Utilizza il logo per il client"
 
-#: core/models.py:104 core/models.py:135
+#: models.py:104 models.py:135
 msgid "Slug"
 msgstr ""
 
-#: core/models.py:131
+#: models.py:131
 msgid "Name"
 msgstr "Nome"
 
-#: core/models.py:137
+#: models.py:137
 msgid "Is active"
 msgstr "Attivo"
 
-#: core/models.py:140
+#: models.py:140
 msgid "lang"
 msgstr "Lunguaggio"
 
-#: core/models.py:161
+#: models.py:161
 msgid "Terms of use text"
 msgstr "Termi di utilizzo"
 
-#: core/models.py:164
+#: models.py:164
 msgid "Terms of use link"
 msgstr "Link termini di utilizzo"
 
-#: core/models.py:398 core/templates/core/group_form.html:11
+#: models.py:398 templates/core/group_form.html:11
 msgid "Group"
 msgstr "Gruppo"
 
-#: core/models.py:399
+#: models.py:399
 msgid "Project type"
 msgstr "Tipo di progetto"
 
-#: core/models.py:400
+#: models.py:400
 msgid "Project type id"
 msgstr "Id tipo di progetto"
 
-#: core/models.py:408
+#: models.py:408
 msgid "Subtitle"
 msgstr "Sottotitolo"
 
-#: core/models.py:409
+#: models.py:409
 msgid "Home description"
 msgstr "Descrizione home"
 
-#: core/models.py:410
+#: models.py:410
 msgid "About title"
 msgstr "Titolo sezione 'Il progetto'"
 
-#: core/models.py:411
+#: models.py:411
 msgid "About description"
 msgstr "Descrizione pagina 'Il progetto'"
 
-#: core/models.py:412
+#: models.py:412
 msgid "About name"
 msgstr "Nome del progetto"
 
-#: core/models.py:413
+#: models.py:413
 msgid "About phone"
 msgstr "Telefono del progetto"
 
-#: core/models.py:414
+#: models.py:414
 msgid "About email"
 msgstr "Email del progetto"
 
-#: core/models.py:415
+#: models.py:415
 msgid "About address"
 msgstr "Indirizzo del progetto"
 
-#: core/models.py:416
+#: models.py:416
 msgid "Groups title"
 msgstr "Titolo pagina gruppi cartografici"
 
-#: core/models.py:417
+#: models.py:417
 msgid "Groups map description"
 msgstr "Descrizione pagina gruppi cartografici"
 
-#: core/models.py:418
+#: models.py:418
 msgid "Login description"
 msgstr "Descrizione pagina di login"
 
-#: core/models.py:419
+#: models.py:419
 msgid "Suite logo"
 msgstr "Logo del progetto"
 
-#: core/models.py:420
+#: models.py:420
 #, fuzzy
 #| msgid "Suite logo"
 msgid "Suite logo URL"
 msgstr "Logo del progetto"
 
-#: core/models.py:423
+#: models.py:423
 msgid "Credits"
 msgstr ""
 
-#: core/models.py:426
+#: models.py:426
 msgid "Main map title"
 msgstr ""
 
-#: core/models.py:428
+#: models.py:428
 msgid "Facebook link"
 msgstr ""
 
-#: core/models.py:429
+#: models.py:429
 msgid "Twitter link"
 msgstr ""
 
-#: core/models.py:430
+#: models.py:430
 msgid "Google+ link"
 msgstr ""
 
-#: core/models.py:431
+#: models.py:431
 msgid "Youtube link"
 msgstr ""
 
-#: core/models.py:432
+#: models.py:432
 msgid "Instagram link"
 msgstr ""
 
-#: core/models.py:433
+#: models.py:433
 msgid "Flickr link"
 msgstr ""
 
-#: core/models.py:434
+#: models.py:434
 msgid "Tripadvisor link"
 msgstr ""
 
-#: core/templates/core/403_MGC.html:7 core/templates/core/403_MPC.html:7
+#: templates/core/403_MGC.html:7 templates/core/403_MPC.html:7
 msgid "error page"
 msgstr "Pagine di errore"
 
-#: core/templates/core/403_MGC.html:15 core/templates/core/403_MPC.html:15
+#: templates/core/403_MGC.html:15 templates/core/403_MPC.html:15
 msgid "Access denied"
 msgstr "Accesso negato"
 
-#: core/templates/core/403_MGC.html:17
+#: templates/core/403_MGC.html:17
 msgid "You can't add new Group"
 msgstr "Non puoi aggiungere un nuovo gruppo"
 
-#: core/templates/core/403_MPC.html:17
+#: templates/core/403_MPC.html:17
 msgid "You can't add new Project"
 msgstr "Non puoi aggiungere un nuovo progetto"
 
-#: core/templates/core/ajax/group_detail.html:5
+#: templates/core/ajax/group_detail.html:5
 msgid "Geografic component"
 msgstr "Componente geografica"
 
-#: core/templates/core/ajax/group_detail.html:7
+#: templates/core/ajax/group_detail.html:7
 msgid "Geographic coordinate system"
 msgstr "Sistema di coordinate geografiche"
 
-#: core/templates/core/ajax/group_detail.html:8
+#: templates/core/ajax/group_detail.html:8
 msgid "SRID"
 msgstr ""
 
-#: core/templates/core/ajax/group_detail.html:9
+#: templates/core/ajax/group_detail.html:9
 msgid "Units"
 msgstr "Unità"
 
-#: core/templates/core/ajax/group_detail.html:10
+#: templates/core/ajax/group_detail.html:10
 msgid "Principal map"
 msgstr "Mappa principale"
 
-#: core/templates/core/ajax/group_detail.html:11
+#: templates/core/ajax/group_detail.html:11
 msgid "Max scale"
 msgstr "Massima scala"
 
-#: core/templates/core/ajax/group_detail.html:12
+#: templates/core/ajax/group_detail.html:12
 msgid "Min scale"
 msgstr "Minima scala"
 
-#: core/templates/core/ajax/group_detail.html:13
+#: templates/core/ajax/group_detail.html:13
 msgid "Overview Map"
 msgstr "Mappa di riferimento"
 
-#: core/templates/core/ajax/group_detail.html:14
+#: templates/core/ajax/group_detail.html:14
 msgid "Panoramic max scale"
 msgstr ""
 
-#: core/templates/core/ajax/group_detail.html:15
+#: templates/core/ajax/group_detail.html:15
 msgid "Panoramic min scale"
 msgstr ""
 
-#: core/templates/core/ajax/group_detail.html:18
+#: templates/core/ajax/group_detail.html:18
 msgid "Users"
 msgstr "Utenti"
 
-#: core/templates/core/ajax/group_detail.html:21
+#: templates/core/ajax/group_detail.html:21
 msgid "Editor level 1 user"
 msgstr "Utente Editor"
 
-#: core/templates/core/ajax/group_detail.html:25
+#: templates/core/ajax/group_detail.html:25
 msgid "Editor level 2 user"
 msgstr "Utente Editor 2"
 
-#: core/templates/core/ajax/group_detail.html:26
+#: templates/core/ajax/group_detail.html:26
 msgid "Viewer users"
 msgstr "Utenti Viewers"
 
-#: core/templates/core/ajax/group_detail.html:27
+#: templates/core/ajax/group_detail.html:27
 msgid "Editor user groups"
 msgstr "Gruppi utenti editor"
 
-#: core/templates/core/ajax/group_detail.html:28
+#: templates/core/ajax/group_detail.html:28
 msgid "Viewer user groups"
 msgstr "Gruppi utenti viewer"
 
-#: core/templates/core/ajax/group_detail.html:35
+#: templates/core/ajax/group_detail.html:35
 msgid "Interface component"
 msgstr "Componente di interfaccia"
 
-#: core/templates/core/ajax/group_detail.html:37
+#: templates/core/ajax/group_detail.html:37
 msgid "Interface language"
 msgstr "Lingua interfaccia"
 
-#: core/templates/core/ajax/group_detail.html:38
+#: templates/core/ajax/group_detail.html:38
 msgid "Language"
 msgstr "Lingua"
 
-#: core/templates/core/ajax/group_detail.html:39
+#: templates/core/ajax/group_detail.html:39
 msgid "Associated logo"
 msgstr "Logo associato"
 
-#: core/templates/core/ajax/group_detail.html:40
+#: templates/core/ajax/group_detail.html:40
 msgid "HeaderLogoImg"
 msgstr ""
 
-#: core/templates/core/ajax/group_detail.html:48
+#: templates/core/ajax/group_detail.html:48
 msgid "HeaderLogoHeight"
 msgstr ""
 
-#: core/templates/core/ajax/group_detail.html:49
+#: templates/core/ajax/group_detail.html:49
 msgid "HeaderLogoLink"
 msgstr ""
 
-#: core/templates/core/ajax/group_detail.html:50
+#: templates/core/ajax/group_detail.html:50
 msgid "Terms of use"
 msgstr "Condizioni di utilizzo"
 
-#: core/templates/core/ajax/group_detail.html:51
+#: templates/core/ajax/group_detail.html:51
 msgid "HeaderTermsOfUseText"
 msgstr ""
 
-#: core/templates/core/ajax/group_detail.html:52
+#: templates/core/ajax/group_detail.html:52
 msgid "HeaderTermsOfUseLink"
 msgstr ""
 
-#: core/templates/core/ajax/macrogroup_detail.html:5
+#: templates/core/ajax/macrogroup_detail.html:5
 msgid "Data"
 msgstr ""
 
-#: core/templates/core/ajax/macrogroup_detail.html:11
-#: core/templates/core/macrogroup_list_table.html:29
+#: templates/core/ajax/macrogroup_detail.html:11
+#: templates/core/macrogroup_list_table.html:29
 #, fuzzy
 #| msgid "Group"
 msgid "Groups"
 msgstr "Gruppo"
 
-#: core/templates/core/django_file_form/upload_template.html:5
+#: templates/core/django_file_form/upload_template.html:5
 msgid "Drop files here to upload"
 msgstr "Rilascia i files qui per caricarli"
 
-#: core/templates/core/django_file_form/upload_template.html:8
+#: templates/core/django_file_form/upload_template.html:8
 msgid "Click or Drag file to Upload"
 msgstr "Clicca o trascina i file per caricarlo"
 
-#: core/templates/core/django_file_form/upload_template.html:11
+#: templates/core/django_file_form/upload_template.html:11
 msgid "Processing dropped files..."
 msgstr "Processamento dei file inviati..."
 
-#: core/templates/core/django_file_form/upload_template.html:24
+#: templates/core/django_file_form/upload_template.html:24
 msgid "Cancel"
 msgstr "Annulla"
 
-#: core/templates/core/django_file_form/upload_template.html:25
+#: templates/core/django_file_form/upload_template.html:25
 msgid "Retry"
 msgstr "Riprova"
 
-#: core/templates/core/django_file_form/upload_template.html:26
-#: core/templates/core/group_list.html:103
-#: core/templates/core/macrogroup_list.html:83
-#: core/templates/core/macrogroup_list_table.html:43
-#: core/templates/core/project_list.html:31
+#: templates/core/django_file_form/upload_template.html:26
+#: templates/core/group_list.html:103 templates/core/macrogroup_list.html:83
+#: templates/core/macrogroup_list_table.html:43
+#: templates/core/project_list.html:31
 msgid "Delete"
 msgstr "Elimina"
 
-#: core/templates/core/generalsuitedata_form.html:11
+#: templates/core/generalsuitedata_form.html:11
 msgid "General suite data"
 msgstr "Dati generali della suite"
 
-#: core/templates/core/generalsuitedata_form.html:24
-#: core/templates/core/group_form.html:45
-#: core/templates/core/macrogroup_form.html:51
+#: templates/core/generalsuitedata_form.html:24
+#: templates/core/group_form.html:45 templates/core/macrogroup_form.html:51
 msgid "Alert"
 msgstr "Attenzione"
 
-#: core/templates/core/generalsuitedata_form.html:25
-#: core/templates/core/group_form.html:46
-#: core/templates/core/macrogroup_form.html:52
+#: templates/core/generalsuitedata_form.html:25
+#: templates/core/group_form.html:46 templates/core/macrogroup_form.html:52
 msgid "Some errors on form. Check it and send again."
 msgstr "Si sono verificati alcuni errori sul form. Controlla e reinvia."
 
-#: core/templates/core/group_form.html:33
+#: templates/core/group_form.html:33
 msgid "Current"
 msgstr "Corrente"
 
-#: core/templates/core/group_form.html:33
-#: core/templates/core/group_list.html:78
-#: core/templates/core/project_list.html:11
+#: templates/core/group_form.html:33 templates/core/group_list.html:78
+#: templates/core/project_list.html:11
 msgid "Projects"
 msgstr "Progetti"
 
-#: core/templates/core/group_list.html:10
+#: templates/core/group_list.html:10
 msgid "Cartographic groups"
 msgstr "Gruppi cartografici"
 
-#: core/templates/core/group_list.html:66
+#: templates/core/group_list.html:66
 msgid "Add new project"
 msgstr "Aggiungi un nuovo progetto"
 
-#: core/templates/core/group_list.html:78
+#: templates/core/group_list.html:78
 msgid "Group projects"
 msgstr "Progetti del gruppo"
 
-#: core/templates/core/group_list.html:85
-#: core/templates/core/macrogroup_list.html:66
-#: core/templates/core/macrogroup_list_table.html:37
-#: core/templates/core/project_list.html:25
+#: templates/core/group_list.html:85 templates/core/macrogroup_list.html:66
+#: templates/core/macrogroup_list_table.html:37
+#: templates/core/project_list.html:25
 msgid "Show detail"
 msgstr "Mostra i dettagli"
 
-#: core/templates/core/group_list.html:94
-#: core/templates/core/macrogroup_list.html:74
-#: core/templates/core/macrogroup_list_table.html:40
-#: core/templates/core/project_list.html:28
+#: templates/core/group_list.html:94 templates/core/macrogroup_list.html:74
+#: templates/core/macrogroup_list_table.html:40
+#: templates/core/project_list.html:28
 msgid "Edit"
 msgstr "Modifica"
 
-#: core/templates/core/include/add_project.html:4
+#: templates/core/group_list.html:106
+msgid "Warning: deleting the group will delete the projects it contains!"
+msgstr "Attenzione: cancellando il gruppo cancellerai anche i progetti in esso contenuti!"
+
+#: templates/core/include/add_project.html:4
 #, fuzzy
 #| msgid "Add new project"
 msgid "Add project"
 msgstr "Aggiungi un nuovo progetto"
 
-#: core/templates/core/include/add_project.html:10
+#: templates/core/include/add_project.html:10
 msgid "Select project type do add:"
 msgstr "Selezione il tipo di progetto da aggiungere:"
 
-#: core/templates/core/include/coockieconsent.html:11
+#: templates/core/include/cookieconsent.html:11
 msgid ""
 "This website uses cookies to ensure you get the best experience on our "
 "website"
@@ -524,62 +521,62 @@ msgstr ""
 "Questo sito utilizza i cookie per garantire una buona usabilità "
 "all'utilizzatore finale"
 
-#: core/templates/core/include/coockieconsent.html:12
+#: templates/core/include/cookieconsent.html:12
 msgid "Got it"
 msgstr "Capito"
 
-#: core/templates/core/include/form_buttons.html:7
+#: templates/core/include/form_buttons.html:7
 msgid "Save"
 msgstr "Salva"
 
-#: core/templates/core/include/form_buttons.html:13
+#: templates/core/include/form_buttons.html:13
 msgid "Redo/Back"
 msgstr "Annulla/indietro"
 
-#: core/templates/core/macrogroup_form.html:10
+#: templates/core/macrogroup_form.html:10
 #, fuzzy
 #| msgid "Group"
 msgid "Macro Group"
 msgstr "Gruppo"
 
-#: core/templates/core/macrogroup_form.html:24
+#: templates/core/macrogroup_form.html:24
 msgid "Current groups"
 msgstr "Gruppi cartografici"
 
-#: core/templates/core/macrogroup_list.html:10
-#: core/templates/core/macrogroup_list_table.html:10
+#: templates/core/macrogroup_list.html:10
+#: templates/core/macrogroup_list_table.html:10
 #, fuzzy
 #| msgid "Cartographic groups"
 msgid "Cartographic macro groups"
 msgstr "Gruppi cartografici"
 
-#: core/templates/core/macrogroup_list_table.html:21
+#: templates/core/macrogroup_list_table.html:21
 #, fuzzy
 #| msgid "Cartographic groups"
 msgid "Macro group"
 msgstr "Gruppi cartografici"
 
-#: core/templates/core/tags/add_layer.html:3
+#: templates/core/tags/add_layer.html:3
 msgid "Layer"
 msgstr ""
 
-#: core/templates/core/tags/add_project.html:7
+#: templates/core/tags/add_project.html:7
 msgid "Project"
 msgstr "Progetto"
 
-#: core/utils/data.py:24
+#: utils/data.py:24
 msgid "[{} error on {}({})]-- {}"
 msgstr ""
 
-#: core/utils/forms.py:23
+#: utils/forms.py:23
 msgid "Default base layer"
 msgstr "Layer base di default"
 
-#: core/utils/forms.py:50
+#: utils/forms.py:50
 msgid "MACRO Groups"
 msgstr ""
 
-#: core/utils/structure.py:183 core/utils/structure.py:297
+#: utils/structure.py:183 utils/structure.py:297
 msgid "Yes"
 msgstr "Si"
 
