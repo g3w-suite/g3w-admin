@@ -1,4 +1,4 @@
-name: CI to Docker hub for G3W-SUITE v3.0.x image.
+name: CI to Docker hub for G3W-SUITE v3.1.x image.
 
 on:
   workflow_dispatch:
@@ -29,7 +29,7 @@ jobs:
           context: ./
           file: ./Dockerfile.g3wsuite.dockerfile
           push: false
-          tags: g3wsuite/g3w-suite:v3.0.x
+          tags: g3wsuite/g3w-suite:v3.1.x
 
       -
         name: Image digest
