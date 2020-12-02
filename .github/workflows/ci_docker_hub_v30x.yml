@@ -1,4 +1,4 @@
-name: CI to Docker hub for G3W-SUITE v3.0.x image.
+name: CI to Docker hub for G3W-SUITE v3.0.x image docker.
 
 on:
   workflow_dispatch:
