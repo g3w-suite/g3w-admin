@@ -13,7 +13,7 @@ from django.test.client import RequestFactory, Client
 from django.urls import reverse, NoReverseMatch
 from qdjango.models import Project
 from core.models import ProjectMapUrlAlias
-from .base import QdjangoTestBase
+from .base import QdjangoTestBase, CoreGroup, G3WSpatialRefSys
 from .utils import create_dff_project
 from copy import copy
 
@@ -139,6 +139,36 @@ class QdjangoViewsTest(QdjangoTestBase):
 
         client.logout()
 
+
+    def test_delete_group_with_projects(self):
+        """ Testing delete group with projects """
+
+        # create a Group to delete
+        # main project group
+        project_group = CoreGroup(name='GroupToDelete', title='GroupToDelete', header_logo_img='',
+                                      srid=G3WSpatialRefSys.objects.get(auth_srid=4326))
+
+        project_group.save()
+
+
+        # make a copy of main project testing
+        project_to_delete = copy(self.project)
+
+        # change base properties
+        project_to_delete.title = 'A project to delete with deleting group'
+
+        # make a db record copy
+        mproject = copy(self.project.instance)
+        mproject.title = project_to_delete.title
+        mproject.pk = None
+        mproject.group = project_group
+        mproject.save()
+
+        # delete group
+        project_group.delete()
+
+        # che if project it was deleted
+        self.assertEqual(Project.objects.filter(pk=mproject.pk).count(), 0)
 
 
 
