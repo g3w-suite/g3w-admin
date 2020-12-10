@@ -314,7 +314,8 @@ class Layer(G3WACLModelMixins, models.Model):
         ('arcgismapserver', _('ArcGisMapServer')),
         ('arcgisfeatureserver', _('ArcGisFeatureServer')),
         ('mssql', _('MSSQL')),
-        ('virtual', _('VirtualLayer'))
+        ('virtual', _('VirtualLayer')),
+        ('oracle', _('Oracle'))
     )
 
     # General info
