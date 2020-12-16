@@ -8,6 +8,7 @@ from rest_framework.fields import empty
 
 from qdjango.models import Project, Layer, Widget
 from qdjango.utils.data import QgisProjectSettingsWMS, QGIS_LAYER_TYPE_NO_GEOM
+from qdjango.utils.models import get_capabilities4layer
 from qdjango.ows import OWSRequestHandler
 from qdjango.signals import load_qdjango_widget_layer
 from qdjango.apps import get_qgs_project
@@ -397,21 +398,6 @@ class LayerSerializer(serializers.ModelSerializer):
             column['show'] = False if column['name'] in column_to_exclude else True
         return columns
 
-    def get_capabilities(self, qgs_maplayer):
-        """
-        Get capabilities by layer properties (bitwise comparation)
-        :param qgs_maplayer: QgsMapLayer instance
-        :return: int
-        """
-
-        capabilities = 0
-        if bool(qgs_maplayer.flags() & QgsMapLayer.Identifiable):
-            capabilities |= settings.QUERYABLE
-        if bool(qgs_maplayer.flags() & QgsMapLayer.Searchable):
-            capabilities |= settings.FILTRABLE
-
-        return capabilities
-
     def get_ows(self, instance):
         """
         Get wfscapabilities to add wos services for layer
@@ -512,7 +498,7 @@ class LayerSerializer(serializers.ModelSerializer):
                 ret['bbox']['maxy'] = extent.yMaximum()
 
         # add capabilities
-        ret['capabilities'] = self.get_capabilities(qgs_maplayer)
+        ret['capabilities'] = get_capabilities4layer(qgs_maplayer)
 
         # add styles
         # FIXME: restore in the future for styles map management

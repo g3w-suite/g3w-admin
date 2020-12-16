@@ -18,7 +18,7 @@ from qdjango.models import Project, Layer, Widget
 from qdjango.utils.data import QgisProject, QgisPgConnection, QgisProjectSettingsWMS
 from qdjango.utils.exceptions import QgisProjectLayerException, QgisProjectException
 from qdjango.utils.structure import get_schema_table, datasource2dict, datasourcearcgis2dict
-from qdjango.utils.models import get_widgets4layer, comparedbdatasource
+from qdjango.utils.models import get_widgets4layer, comparedbdatasource, get_capabilities4layer
 from qdjango.templatetags.qdjango_tags import is_geom_type_gpx_compatible
 from collections import OrderedDict
 import os
@@ -442,6 +442,14 @@ class QdjangoUtilsTest(QdjangoTestBase):
         ds2 = "dbname='/home/www/g3w_suite_data/dati_geografici/editing_test.db' table=\"cities\" (geometry) sql='name=\"xxxx\"'"
 
         self.assertTrue(comparedbdatasource(ds1, ds2, 'spatialite'))
+
+    def test_get_capabilities4layer(self):
+        """ Test same name util func """
+
+        layer = self.project310.instance.layer_set.get(qgs_layer_id='countries_simpl20171228095706310')
+        self.assertEqual(get_capabilities4layer(None, layer=layer), 3)
+
+
 
 class QdjangoUtilsDataValidators(QdjangoTestBase):
     """Test for validators loaded into  import data classes"""

@@ -10,6 +10,10 @@ __date__ = '2019-11-29'
 __copyright__ = 'Copyright 2019, GIS3W'
 
 from django.db.models import Q
+from django.conf import settings
+from qdjango.apps import get_qgs_project
+
+from qgis.core import QgsMapLayer
 
 
 def comparedbdatasource(ds1, ds2, layer_type='postgres'):
@@ -61,3 +65,24 @@ def get_constraints4layer(layer):
     """
 
     return layer.constrainted_layer.all()
+
+
+def get_capabilities4layer(qgs_maplayer=None, **kwargs):
+    """
+    Return bitwise layer capabilities (by QGIS consts) values
+    :param qgs_maplayer: QgsMapLayer instance
+    :param **kwargs: optional params
+    :return: int
+    """
+
+    # get qgs_maplayer if not set
+    if not qgs_maplayer:
+        qgs_maplayer = get_qgs_project(kwargs['layer'].project.qgis_file.path).mapLayers()[kwargs['layer'].qgs_layer_id]
+
+    capabilities = 0
+    if bool(qgs_maplayer.flags() & QgsMapLayer.Identifiable):
+        capabilities |= settings.QUERYABLE
+    if bool(qgs_maplayer.flags() & QgsMapLayer.Searchable):
+        capabilities |= settings.FILTRABLE
+
+    return capabilities
