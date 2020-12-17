@@ -30,7 +30,8 @@ TYPE_LAYER_FOR_WIDGET = (
             'spatialite',
             'ogr',
             'mssql',
-            'virtual'
+            'virtual',
+            'oracle'
         )
 
 # Layer type with download capability
@@ -39,7 +40,8 @@ TYPE_LAYER_FOR_DOWNLOAD = (
             'spatialite',
             'ogr',
             'mssql',
-            'virtual'
+            'virtual',
+            'oracle'
         )
 
 
