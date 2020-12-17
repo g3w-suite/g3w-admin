@@ -24,8 +24,7 @@ def caching_layer_action(sender, **kwargs):
             app_configs = object()
 
         # check if layer is geometric
-        print(kwargs['layer'].geometrytype)
-        if kwargs['layer'].geometrytype == 'no geometry':
+        if kwargs['layer'].geometrytype == 'NoGeometry':
             return
 
         # add if is active
