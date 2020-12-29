@@ -746,8 +746,6 @@ class QgisProject(XmlData):
         except Exception as e:
             raise QgisProjectException(_('The project file is malformed: {}').format(e.args[0]))
 
-        # set a global QgsProject object
-        self.qgs_project = QgsProject()
 
         # Case FieldFile
         if hasattr(self.qgisProjectFile, 'path'):
@@ -770,12 +768,15 @@ class QgisProject(XmlData):
         def _readCanvasSettings(xmlDocument):
             self.mapCanvas.readProject(xmlDocument)
 
-        self.qgs_project.readProject.connect(
-            _readCanvasSettings, Qt.DirectConnection)
-
         self.qgs_project = get_qgs_project(project_file)
         if self.qgs_project is None:
             raise QgisProjectException(_('Could not read QGIS project file: {}').format(project_file))
+
+        self.qgs_project.readProject.connect(
+            _readCanvasSettings, Qt.DirectConnection)
+            
+        # Re-read to get map canvas settings (extent)
+        self.qgs_project.read(project_file)
 
 
     def closeProject(self, **kwargs):
