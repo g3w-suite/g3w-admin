@@ -59,8 +59,18 @@ def get_qgs_project(path):
         # This is required after QGIS 3.10.11, see https://github.com/qgis/QGIS/pull/38488#issuecomment-692190106
         if project is not None and project != QgsProject.instance():
             try:
+                # Workaround for virtual layers bug  https://github.com/qgis/QGIS/pull/38488#issuecomment-692190106
                 QgsProject.setInstance(project)
+                for l in list(project.mapLayers().values()):
+                    if not l.isValid():
+                        if l.dataProvider().name() == 'virtual':
+                            project.read(path)
+                            logger.warning('Reloaded project (virtual layer found!) %s' % project.fileName())
+                            break
+                        else:
+                            logger.warning('Invalid layer %s found in project %s' % (l.id(), project.fileName()))
             except AttributeError:  # Temporary workaround for 3.10.10
+                logger.warning('Project reloaded because QgsProject.setInstance() is not available in this QGIS version: %s' % path)
                 QgsProject.instance().read(path)
         return project
     except:

@@ -774,7 +774,9 @@ class QgisProject(XmlData):
         self.qgs_project.readProject.connect(
             _readCanvasSettings, Qt.DirectConnection)
 
-        if not self.qgs_project.read(project_file):
+        # Sets the project instance: this is required for virtual layers because
+        # they need a valid QgsProject instance to retrieve all related layers
+        if not QgsProject.instance().read(project_file) or not self.qgs_project.read(project_file):
             raise QgisProjectException(_('Could not read QGIS project file: {}').format(project_file))
 
 
@@ -1098,7 +1100,7 @@ class QgisProject(XmlData):
 
     def save(self, instance=None, **kwargs):
         """
-        Save or update  qgisporject and layers into db.
+        Save or update  qgisproject and layers into db.
         Update QGIS project file with new datasources for ogr/gdal and sqlite types.
         :param instance: Project instance
         """
