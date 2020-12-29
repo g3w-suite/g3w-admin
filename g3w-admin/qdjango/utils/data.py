@@ -24,7 +24,7 @@ from qgis.core import (
 
 from qgis.gui import QgsMapCanvas
 
-from qgis.server import QgsServerProjectUtils
+from qgis.server import QgsServerProjectUtils, QgsConfigCache
 
 from qgis.PyQt.QtCore import QVariant, Qt
 from qgis.core import QgsMasterLayoutInterface, QgsLayoutItemMap, QgsLayout
@@ -40,8 +40,7 @@ from .validators import (CheckMaxExtent, ColumnName, DatasourceExists, ProjectEx
                          IsGroupCompatibleValidator, ProjectTitleExists,
                          UniqueLayername)
 
-
-
+from qdjango.apps import get_qgs_project
 
 # constant per qgis layers
 QGIS_LAYER_TYPE_NO_GEOM = 'NoGeometry'
@@ -774,9 +773,8 @@ class QgisProject(XmlData):
         self.qgs_project.readProject.connect(
             _readCanvasSettings, Qt.DirectConnection)
 
-        # Sets the project instance: this is required for virtual layers because
-        # they need a valid QgsProject instance to retrieve all related layers
-        if not QgsProject.instance().read(project_file) or not self.qgs_project.read(project_file):
+        self.qgs_project = get_qgs_project(project_file)
+        if self.qgs_project is None:
             raise QgisProjectException(_('Could not read QGIS project file: {}').format(project_file))
 
 
@@ -786,7 +784,7 @@ class QgisProject(XmlData):
         Is important to avoid locking data like GeoPackage.
         """
 
-        del(self.qgs_project)
+        QgsConfigCache.instance().removeEntry(self.qgs_project.fileName())
 
     def _getDataName(self):
         """

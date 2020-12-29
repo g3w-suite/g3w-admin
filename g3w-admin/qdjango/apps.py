@@ -64,7 +64,7 @@ def get_qgs_project(path):
                 for l in list(project.mapLayers().values()):
                     if not l.isValid():
                         if l.dataProvider().name() == 'virtual':
-                            project.read(path)
+                            QgsProject.instance().read(path)
                             logger.warning('Reloaded project (virtual layer found!) %s' % project.fileName())
                             break
                         else:
