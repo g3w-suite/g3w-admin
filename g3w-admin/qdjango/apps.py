@@ -6,6 +6,7 @@ from core.utils.general import getAuthPermissionContentType
 from django.conf import settings
 
 from qgis.core import QgsApplication, QgsProject
+from django.core.exceptions import ImproperlyConfigured
 from qgis.server import QgsServer, QgsConfigCache, QgsServerSettings
 
 import logging
@@ -14,6 +15,21 @@ logger = logging.getLogger(__name__)
 if settings.DEBUG:
     os.environ['QGIS_SERVER_LOG_LEVEL'] = '0'
     os.environ['QGIS_SERVER_LOG_STDERR'] = '1'
+
+# Setup AUTH DB
+if hasattr(settings, 'QGIS_AUTH_DB_DIR_PATH'):
+    os.environ['QGIS_AUTH_DB_DIR_PATH'] = settings.QGIS_AUTH_DB_DIR_PATH
+
+if hasattr(settings, 'QGIS_AUTH_PASSWORD_FILE'):
+    if not os.path.isfile(settings.QGIS_AUTH_PASSWORD_FILE):
+        if not hasattr(settings, 'QGIS_AUTH_PASSWORD'):
+            raise ImproperlyConfigured('QGIS_AUTH_PASSWORD_FILE is set but it does not exist and QGIS_AUTH_PASSWORD is not set: either point QGIS_AUTH_PASSWORD_FILE to an existing file or define a password in QGIS_AUTH_PASSWORD')
+        try:
+            with open(settings.QGIS_AUTH_PASSWORD_FILE, 'w+') as pwd_file:
+                pwd_file.write(settings.QGIS_AUTH_PASSWORD)
+                logger.info('QGIS_AUTH_PASSWORD_FILE created as %s' % settings.QGIS_AUTH_PASSWORD_FILE)
+        except Exception as ex:
+            raise ImproperlyConfigured('Error creating QGIS_AUTH_PASSWORD_FILE %s: %s' % (settings.QGIS_AUTH_PASSWORD_FILE, ex))
 
 # Required only if the installation is not in the default path
 # or if virtualenv messes up with the paths

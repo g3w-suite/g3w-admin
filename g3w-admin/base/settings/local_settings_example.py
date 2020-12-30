@@ -22,6 +22,15 @@ MEDIA_ROOT = ''
 
 DEBUG = True
 
+# QGIS AUTH DB
+# Set the directory where an existing QGIS auth DB can be found or where it will be created if it does not exist (must be writeable from the server).
+QGIS_AUTH_DB_DIR_PATH = ''
+# Full path to a file where the QGIS auth DB master password is saved, if the file does not exists it will be created (directory must be writeable from the server)
+# and the QGIS_AUTH_PASSWORD will be saved into the file.
+QGIS_AUTH_PASSWORD_FILE = ''
+# Define QGIS auth DB master password that will be placed into the QGIS_AUTH_PASSWORD_FILE if it does not exist.
+QGIS_AUTH_PASSWORD = 'my_secret_password'
+
 # FRONTEND SETTINGS
 # ===============================
 # follow settings work if 'frontend' module is in 'G3WADMIN_LOCAL_MORE_APPS'
