@@ -1038,9 +1038,7 @@ class QgisProject(XmlData):
         :return: QGIS project version
         :rtype: str
         """
-
-        # FIXME: is not possibile by QGIS API at the moment.
-        return self.qgisProjectTree.getroot().attrib['version']
+        return self.qgs_project.lastSaveVersion().text()
 
     def _getDataWfsLayers(self):
         """
