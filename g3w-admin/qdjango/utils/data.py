@@ -738,14 +738,6 @@ class QgisProject(XmlData):
         """
         Load project file by xml parser and instance a QgsProject object
         """
-        try:
-
-            # we have to rewind the underlying file in case it has been already parsed
-            self.qgisProjectFile.file.seek(0)
-            self.qgisProjectTree = lxml.parse(self.qgisProjectFile, forbid_entities=False)
-
-        except Exception as e:
-            raise QgisProjectException(_('The project file is malformed: {}').format(e.args[0]))
 
         # set a global QgsProject object
         self.qgs_project = QgsProject()
@@ -1038,9 +1030,7 @@ class QgisProject(XmlData):
         :return: QGIS project version
         :rtype: str
         """
-
-        # FIXME: is not possibile by QGIS API at the moment.
-        return self.qgisProjectTree.getroot().attrib['version']
+        return self.qgs_project.lastSaveVersion().text()
 
     def _getDataWfsLayers(self):
         """
