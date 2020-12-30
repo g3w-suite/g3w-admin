@@ -61,20 +61,22 @@ def get_qgs_project(path):
             try:
                 # Workaround for virtual layers bug  https://github.com/qgis/QGIS/pull/38488#issuecomment-692190106
                 QgsProject.setInstance(project)
+                needs_reload = False
                 for l in list(project.mapLayers().values()):
                     if not l.isValid():
+                        logger.warning('Invalid layer %s found in project %s' % (l.id(), project.fileName()))
                         if l.dataProvider().name() == 'virtual':
-                            QgsProject.instance().read(path)
-                            logger.warning('Reloaded project (virtual layer found!) %s' % project.fileName())
-                            break
-                        else:
-                            logger.warning('Invalid layer %s found in project %s' % (l.id(), project.fileName()))
+                            needs_reload = True
+                            logger.warning('Invalid virtual layer found in project %s: %s' % (project.fileName(), l.publicSource()))
+                if needs_reload:
+                    logger.warning('Reload project %s' % project.fileName())
+                    QgsProject.instance().read(path)
             except AttributeError:  # Temporary workaround for 3.10.10
                 logger.warning('Project reloaded because QgsProject.setInstance() is not available in this QGIS version: %s' % path)
                 QgsProject.instance().read(path)
-        return project
-    except:
-        logger.warning('There was an error loading the project from path: %s, this is normally due to unavailable layers. If this is unexpected, please turn on and check server debug logs for further details.' % path)
+        return QgsProject.instance()
+    except Exception as ex:
+        logger.warning('There was an error loading the project from path: %s, this is normally due to unavailable layers. If this is unexpected, please turn on and check server debug logs for further details.\n%s.' % (path, ex))
         return None
 
 
