@@ -3,13 +3,14 @@ import os
 import tempfile
 import zipfile
 
+from django.conf import settings
 from django.http import HttpResponse, HttpResponseForbidden
 from qgis.core import QgsVectorFileWriter, QgsFeatureRequest, QgsJsonUtils, Qgis, QgsFieldConstraints, QgsWkbTypes
 
 from core.api.base.vector import MetadataVectorLayer
-from core.api.base.views import (MODE_CONFIG, MODE_DATA, MODE_SHP, MODE_XLS, MODE_GPX, MODE_CSV,
+from core.api.base.views import (MODE_CONFIG, MODE_DATA, MODE_SHP, MODE_XLS, MODE_GPX, MODE_CSV, MODE_FILTER_TOKEN,
                                  APIException, BaseVectorOnModelApiView,
-                                 IntersectsBBoxFilter)
+                                 IntersectsBBoxFilter, APIVectorLayerStructure)
 from core.api.filters import (IntersectsBBoxFilter, OrderingFilter,
                               SearchFilter, SuggestFilterBackend, FieldFilterBackend)
 from core.api.permissions import ProjectPermission
@@ -23,7 +24,7 @@ from qdjango.api.constraints.filters import SingleLayerSubsetStringConstraintFil
 
 from qdjango.api.layers.filters import RelationOneToManyFilter, FidFilter
 
-from .models import Layer
+from .models import Layer, SingleLayerSessionFilter
 from .utils.data import QGIS_LAYER_TYPE_NO_GEOM
 from .utils.edittype import MAPPING_EDITTYPE_QGISEDITTYPE
 
@@ -184,7 +185,8 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         MODE_SHP,  # get shapefiles
         MODE_XLS,   # get XLS
         MODE_GPX,    # get GPX
-        MODE_CSV  # get CSV
+        MODE_CSV,  # get CSV
+        MODE_FILTER_TOKEN  # get session filter token
     ]
 
     mapping_layer_attributes_function = mapLayerAttributesFromQgisLayer
@@ -292,6 +294,82 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         res = method(request_data)
 
         self.results.update({'data': res})
+
+    def response_filtertoken_mode(self, request):
+        """
+        Create and return a unique filter token for session layer filter, or delete
+        :param request: API Object Request
+        :param layer_name: editing layer name
+        :return: str
+        """
+
+        sessionid = request.COOKIES[settings.SESSION_COOKIE_NAME]
+
+        if request.method == 'POST':
+            request_data = request.data
+        else:
+            request_data = request.query_params
+
+        # parameters to check:
+        # mode: create, update, delete
+        # fidsin: fids list to filter
+        # fidsout: fids filter to exclude from filtering
+
+        mode = request_data.get('mode', 'create_update')
+        fidsin = request_data.get('fidsin')
+        fidsout = request_data.get('fidsout')
+
+        if mode == 'create_update':
+            if not fidsin and not fidsout:
+                raise APIException("'fidsin' or 'fidsout' parameter is required.")
+
+            if fidsin and fidsout:
+                raise APIException("'fidsin' only or 'fidsout' only parameter is required.")
+
+        try:
+            s = SingleLayerSessionFilter.objects.get(layer=self.layer, sessionid=sessionid)
+        except Exception:
+            s = None
+
+        token_data = {}
+
+        if mode == 'delete' and not s:
+            raise APIException("Session filter token doesn't exists for current session")
+
+        def _create_qgs_expr(s=None, fidsin=None, fidsout=None):
+            """ Create qgs expression to save in db """
+
+            expr = f'$fid IN ({fidsin})' if fidsin else f'$fid NOT IN ({fidsout})'
+            return f'{s.qgs_expr} AND {expr}' if s else expr
+
+        if mode == 'create_update':
+
+            qgs_expr = _create_qgs_expr(s, fidsin, fidsout)
+
+            if s:
+                 s.qgs_expr = qgs_expr
+            else:
+
+                # create
+                s = SingleLayerSessionFilter(
+                    layer=self.layer,
+                    sessionid=sessionid,
+                    qgs_expr=qgs_expr,
+                    user=request.user if request.user.pk else None
+                )
+
+            s.save()
+
+
+            token_data.update({
+                'filtertoken': s.token
+            })
+        else:
+
+            # delete
+            s.delete()
+
+        self.results.update({'data': token_data})
 
     def _selection_responde_download_mode(self, qgs_request, save_options):
         """ Filter download response mode: shp, xls, gpx.."""

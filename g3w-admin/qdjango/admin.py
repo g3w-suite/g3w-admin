@@ -12,6 +12,8 @@ class ProjectAdmin(GuardedModelAdmin):
         'title',
         'group'
     )
+
+
 admin.site.register(Project, ProjectAdmin)
 
 
@@ -28,9 +30,27 @@ class LayerAdmin(GuardedModelAdmin):
         'title',
         'project'
     )
+
+
 admin.site.register(Layer, LayerAdmin)
 
 
 class WidgetAdmin(GuardedModelAdmin):
     model = Widget
+
+
 admin.site.register(Widget, WidgetAdmin)
+
+
+class SingleLayerSessionFilterAdmin(admin.ModelAdmin):
+    model = SingleLayerSessionFilter
+    list_display = (
+        'time_asked',
+        'sessionid',
+        'token',
+        'qgs_expr',
+        'user'
+    )
+
+
+admin.site.register(SingleLayerSessionFilter, SingleLayerSessionFilterAdmin)

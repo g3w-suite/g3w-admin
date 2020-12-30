@@ -29,6 +29,7 @@ from qdjango.models.constraints import (
 )
 from qdjango.api.layers.filters import FILTER_RELATIONONETOMANY_PARAM
 from qdjango.utils.data import QgisProject
+from qdjango.models import SingleLayerSessionFilter
 from core.tests.base import CoreTestBase
 from core.utils.qgisapi import get_qgs_project
 
@@ -334,7 +335,7 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         cls.project_widget310.instance.delete()
         super().tearDownClass()
 
-    def _testApiCall(self, view_name, args, kwargs={}):
+    def _testApiCall(self, view_name, args, kwargs={}, status_auth=200, login=True, logout=True):
         """Utility to make test calls for admin01 user"""
 
         path = reverse(view_name, args=args)
@@ -346,14 +347,17 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
             path += '&'.join(parts)
 
         # No auth
-        response = self.client.get(path)
-        self.assertIn(response.status_code, [302, 403])
+        if login and logout:
+            response = self.client.get(path)
+            self.assertIn(response.status_code, [302, 403])
 
         # Auth
-        self.assertTrue(self.client.login(username='admin01', password='admin01'))
+        if login:
+            self.assertTrue(self.client.login(username='admin01', password='admin01'))
         response = self.client.get(path)
-        self.assertEqual(response.status_code, 200)
-        self.client.logout()
+        self.assertEqual(response.status_code, status_auth)
+        if logout:
+            self.client.logout()
         return response
 
     def test_user_info_api(self):
@@ -458,6 +462,79 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
 
         features = qgis_layer.getFeatures(qgs_request)
         self.assertEqual(resp['vector']['count'], len([f for f in features]))
+
+    def test_tokenfilter_api(self):
+        """ Test tokenfilter mode vector api layer """
+
+        cities = Layer.objects.get(project_id=self.project310.instance.pk, origname='cities10000eu')
+
+        session_filters = SingleLayerSessionFilter.objects.all()
+        self.assertEqual(len(session_filters), 0)
+
+        # test check filtertoken
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['filtertoken', 'qdjango', self.project310.instance.pk,
+                                             cities.qgs_layer_id], status_auth=500).content)
+
+        self.assertFalse(resp['result'])
+        self.assertEqual(resp['error']['data'], "'fidsin' or 'fidsout' parameter is required.")
+
+        session_filters = SingleLayerSessionFilter.objects.all()
+        self.assertEqual(len(session_filters), 0)
+
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['filtertoken', 'qdjango', self.project310.instance.pk,
+                                             cities.qgs_layer_id],{
+                                                'fidsin': '1,2,3,4',
+                                                'fidsout': '2,3,4'
+                                            }, status_auth=500).content)
+
+        self.assertFalse(resp['result'])
+        self.assertEqual(resp['error']['data'], "'fidsin' only or 'fidsout' only parameter is required.")
+
+        session_filters = SingleLayerSessionFilter.objects.all()
+        self.assertEqual(len(session_filters), 0)
+
+        # test create filtertoken
+        # -----------------------
+        resp = json.loads(self._testApiCall('core-vector-api',
+                            ['filtertoken', 'qdjango', self.project310.instance.pk, cities.qgs_layer_id],
+                            {
+                                'fidsin': '1,2,3,4'
+                            }, logout=False).content)
+
+        session_filters = SingleLayerSessionFilter.objects.all()
+        self.assertEqual(len(session_filters), 1)
+        sf = session_filters[0]
+        self.assertEqual(sf.token, resp['data']['filtertoken'])
+
+        # test update filtertoken
+        # -----------------------
+
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['filtertoken', 'qdjango', self.project310.instance.pk,
+                                             cities.qgs_layer_id],
+                                            {
+                                                'fidsout': '6,8,9,0'
+                                            }, login=False, logout=False).content)
+
+        session_filters = SingleLayerSessionFilter.objects.all()
+        self.assertEqual(len(session_filters), 1)
+        sf = session_filters[0]
+        self.assertEqual(sf.token, resp['data']['filtertoken'])
+
+        # test delete filtertoken
+        # -----------------------
+
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['filtertoken', 'qdjango', self.project310.instance.pk,
+                                             cities.qgs_layer_id],
+                                            {
+                                                'mode': 'delete'
+                                            }, login=False).content)
+
+        session_filters = SingleLayerSessionFilter.objects.all()
+        self.assertEqual(len(session_filters), 0)
 
     def testCoreVectorApiDataFormatter(self):
         """Test core-vector-api data with qgis formatter enabled"""
