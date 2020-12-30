@@ -90,7 +90,7 @@ class QdjangoProjectFormMixin(object):
         self.instance.url_alias = self.cleaned_data['url_alias']
 
 
-class QdjangoProjetForm(TranslationModelForm, QdjangoProjectFormMixin, G3WFormMixin, G3WGroupFormMixin,
+class QdjangoProjectForm(TranslationModelForm, QdjangoProjectFormMixin, G3WFormMixin, G3WGroupFormMixin,
                         G3WGroupBaseLayerFormMixin, G3WRequestFormMixin, G3WACLForm, FileFormMixin, forms.ModelForm):
 
     qgis_file = UploadedFileField(required=True)
@@ -106,7 +106,7 @@ class QdjangoProjetForm(TranslationModelForm, QdjangoProjectFormMixin, G3WFormMi
         if 'instance' in kwargs and hasattr(kwargs['instance'], 'url_alias'):
             kwargs['initial']['url_alias'] = kwargs['instance'].url_alias
 
-        super(QdjangoProjetForm, self).__init__(*args, **kwargs)
+        super(QdjangoProjectForm, self).__init__(*args, **kwargs)
 
         self.helper = FormHelper(self)
         self.helper.form_tag = False
@@ -239,7 +239,7 @@ class QdjangoProjetForm(TranslationModelForm, QdjangoProjectFormMixin, G3WFormMi
         :return: None
         """
 
-        super(QdjangoProjetForm, self)._set_user_groups_queryset()
+        super(QdjangoProjectForm, self)._set_user_groups_queryset()
 
         editor_user_groups = get_user_groups_for_object(self.group, self.request.user, 'view_group', 'editor')
         self.fields['editor_user_groups'].queryset = AuthGroup.objects.filter(

@@ -61,17 +61,17 @@ class QdjangoProjectListView(G3WRequestViewMixin, G3WGroupViewMixin, ListView):
         return context
 
 
-class OdjangoProjectCreateView(QdjangoProjectCUViewMixin, G3WGroupViewMixin, G3WRequestViewMixin, CreateView):
+class QdjangoProjectCreateView(QdjangoProjectCUViewMixin, G3WGroupViewMixin, G3WRequestViewMixin, CreateView):
     """Create group view."""
 
     model = Project
-    form_class = QdjangoProjetForm
+    form_class = QdjangoProjectForm
 
     @method_decorator(permission_required('core.add_project_to_group', (Group, 'slug', 'group_slug'), return_403=True))
     @method_decorator(permission_required('qdjango.add_project', return_403=True))
     @method_decorator(check_madd('MPC:XYamtBJA_JgFGmFvEa9x193rnLg', Project))
     def dispatch(self, *args, **kwargs):
-        return super(OdjangoProjectCreateView, self).dispatch(*args, **kwargs)
+        return super(QdjangoProjectCreateView, self).dispatch(*args, **kwargs)
 
 
 class QdjangoProjectUpdateView(QdjangoProjectCUViewMixin, G3WGroupViewMixin, G3WRequestViewMixin, G3WACLViewMixin,
@@ -79,7 +79,7 @@ class QdjangoProjectUpdateView(QdjangoProjectCUViewMixin, G3WGroupViewMixin, G3W
     """Update project view."""
 
     model = Project
-    form_class = QdjangoProjetForm
+    form_class = QdjangoProjectForm
 
     editor_permission = 'change_project'
     editor2_permission = 'view_project'

@@ -8,7 +8,7 @@ G3W_SITETREE_I18N_ALIAS.append('qdjango')
 urlpatterns = [
     url(r'^(?P<group_slug>[-_\w\d]+)/projects/$', login_required(QdjangoProjectListView.as_view()),
         name='qdjango-project-list'),
-    url(r'^(?P<group_slug>[-_\w\d]+)/project/add/$', login_required(OdjangoProjectCreateView.as_view()),
+    url(r'^(?P<group_slug>[-_\w\d]+)/project/add/$', login_required(QdjangoProjectCreateView.as_view()),
         name='qdjango-project-add'),
     url(r'^(?P<group_slug>[-_\w\d]+)/projects/update/(?P<slug>[-_\w\d]+)/$',
         login_required(QdjangoProjectUpdateView.as_view()), name='qdjango-project-update'),

@@ -24,7 +24,7 @@ from qgis.core import (
 
 from qgis.gui import QgsMapCanvas
 
-from qgis.server import QgsServerProjectUtils
+from qgis.server import QgsServerProjectUtils, QgsConfigCache
 
 from qgis.PyQt.QtCore import QVariant, Qt
 from qgis.core import QgsMasterLayoutInterface, QgsLayoutItemMap, QgsLayout
@@ -40,8 +40,7 @@ from .validators import (CheckMaxExtent, ColumnName, DatasourceExists, ProjectEx
                          IsGroupCompatibleValidator, ProjectTitleExists,
                          UniqueLayername)
 
-
-
+from qdjango.apps import get_qgs_project
 
 # constant per qgis layers
 QGIS_LAYER_TYPE_NO_GEOM = 'NoGeometry'
@@ -747,8 +746,6 @@ class QgisProject(XmlData):
         except Exception as e:
             raise QgisProjectException(_('The project file is malformed: {}').format(e.args[0]))
 
-        # set a global QgsProject object
-        self.qgs_project = QgsProject()
 
         # Case FieldFile
         if hasattr(self.qgisProjectFile, 'path'):
@@ -771,11 +768,15 @@ class QgisProject(XmlData):
         def _readCanvasSettings(xmlDocument):
             self.mapCanvas.readProject(xmlDocument)
 
+        self.qgs_project = get_qgs_project(project_file)
+        if self.qgs_project is None:
+            raise QgisProjectException(_('Could not read QGIS project file: {}').format(project_file))
+
         self.qgs_project.readProject.connect(
             _readCanvasSettings, Qt.DirectConnection)
-
-        if not self.qgs_project.read(project_file):
-            raise QgisProjectException(_('Could not read QGIS project file: {}').format(project_file))
+            
+        # Re-read to get map canvas settings (extent)
+        self.qgs_project.read(project_file)
 
 
     def closeProject(self, **kwargs):
@@ -784,7 +785,7 @@ class QgisProject(XmlData):
         Is important to avoid locking data like GeoPackage.
         """
 
-        del(self.qgs_project)
+        QgsConfigCache.instance().removeEntry(self.qgs_project.fileName())
 
     def _getDataName(self):
         """
@@ -1098,7 +1099,7 @@ class QgisProject(XmlData):
 
     def save(self, instance=None, **kwargs):
         """
-        Save or update  qgisporject and layers into db.
+        Save or update  qgisproject and layers into db.
         Update QGIS project file with new datasources for ogr/gdal and sqlite types.
         :param instance: Project instance
         """
