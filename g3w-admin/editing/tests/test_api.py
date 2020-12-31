@@ -158,6 +158,8 @@ class EditingApiTests(ConstraintsTestsBase):
         with open(DATASOURCE_PATH + 'api/editing_api_config_cities_54d40b01_2af8_4b17_8495_c5833485536e.json') as f:
             res_expected = json.loads(f.read())
 
+        # FIXME: remove old stuff, update the reference file and leave only 3.16 code
+
         # In more recent QGIS versions ogc_fid will have a required constraint
         try:
             self.assertEqual(json.loads(response.content), res_expected)
@@ -165,7 +167,13 @@ class EditingApiTests(ConstraintsTestsBase):
             actual = json.loads(response.content)
             actual['vector']['fields'][0]['validate'] = {}
             actual['vector']['fields'][0]['editable'] = False
-            self.assertEqual(actual, res_expected)
+            try:
+                self.assertEqual(actual, res_expected)
+            except: # QGIS 3.16 code
+                actual = json.loads(response.content)
+                res_expected['vector']['fields'][7]['pk'] = False
+                self.assertEqual(actual, res_expected)
+
 
         # TEST MODE_EDITING
         # ---------------------------------------------
