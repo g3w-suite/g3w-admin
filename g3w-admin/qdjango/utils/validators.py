@@ -92,7 +92,7 @@ def feature_validator(feature, layer):
         # Check not null first, if it fails skip other tests (unique and expression)
         value = feature.attribute(field.name())
         # If there is a default value we assume it's not NULL (we cannot really know at this point
-        # what will be the result of the default value clause evaluation, it might even be provider-sideu
+        # what will be the result of the default value clause evaluation, it might even be provider-side
         if (value is None or value == QVariant()) and not _has_default_value(field_index, field):
             not_null = (field.constraints().constraintOrigin(
                 QgsFieldConstraints.ConstraintNotNull) != QgsFieldConstraints.ConstraintOriginNotSet
@@ -134,8 +134,8 @@ def feature_validator(feature, layer):
                     request.setFilterExpression('to_date("%s") = \'%s\'' % (
                         field.name().replace('"', '\\"'), value.toString(Qt.ISODate)))
                 elif field.type() == QVariant.DateTime:
-                    request.setFilterExpression('to_datetime("%s") = \'%s\'' % (
-                        field.name().replace('"', '\\"'), value.toString(Qt.ISODate)))
+                    request.setFilterExpression('to_datetime("{field_name}") = \'{date_time_string}\' OR to_datetime("{field_name}") = \'{date_time_string}.000\''.format(
+                        field_name=field.name().replace('"', '\\"'), date_time_string=value.toString(Qt.ISODate)))
                 elif field.type() == QVariant.Bool:  # This does not make any sense, but still
                     request.setFilterExpression('"%s" = %s' % (
                         field.name().replace('"', '\\"'), 'true' if value else 'false'))
