@@ -29,4 +29,10 @@ At the moment is not used a classic versioning system for the suite, there are m
 | dj22-py3 | 3.6 | 2.2 | Not used | Bug fixing |
 | py2 | 2.7 | 1.11 | Not used |Bug fixing |        
 
+### Contributors
+* Walter Lorenzetti - Gis3W ([@wlorenzetti](https://github.com/wlorenzetti))
+* Leonardo Lami - Gis3W ([@leolami](https://github.com/leolami/))
+* Francesco Boccacci - Gis3W ([@volterra79](https://github.com/volterra79))
+* Alessandro Pasotti - QCooperative ([@elpaso](https://github.com/elpaso))
+* Luigi Pirelli - QCooperative ([@luipir](https://github.com/luipir))
 

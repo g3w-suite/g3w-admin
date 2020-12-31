@@ -249,3 +249,10 @@ docker-compose -f docker-compose-local.yml up
 The testing image is built from the dependency image and it will run all install and build steps from the local repository.
 
 The dependency image is built from the [Dockerfile.deps](ci_scripts/Dockerfile).
+
+### Contributors
+* Walter Lorenzetti - Gis3W ([@wlorenzetti](https://github.com/wlorenzetti))
+* Leonardo Lami - Gis3W ([@leolami](https://github.com/leolami/))
+* Francesco Boccacci - Gis3W ([@volterra79](https://github.com/volterra79))
+* Alessandro Pasotti - QCooperative ([@elpaso](https://github.com/elpaso))
+* Luigi Pirelli - QCooperative ([@luipir](https://github.com/luipir))
