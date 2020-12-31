@@ -1,6 +1,10 @@
 version: 2
 jobs:
   build:
+    parameters:
+      # Appended to the compose file, for instance 310 becomes: docker-compose.310.yml
+      qgis_version:
+        type: string
     docker:
       - image: circleci/buildpack-deps:bionic
     steps:
@@ -10,7 +14,7 @@ jobs:
       - setup_remote_docker
       - run:
           name: Starting Docker compose
-          command: docker-compose up -d
+          command: docker-compose -f docker-compose.<< parameters.qgis_version >>.yml up -d
       - run:
           name: Copying code into the container
           command: docker cp ./ "$(docker-compose ps -q g3w-suite)":/code
@@ -62,3 +66,10 @@ jobs:
           command: docker-compose exec g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test qplotly"
 
 
+workflows:
+  all-tests:
+    jobs:
+      - build:
+          matrix:
+            parameters:
+              qgis_version: ['310', '316']
