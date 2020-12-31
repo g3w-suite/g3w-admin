@@ -14,9 +14,12 @@ __copyright__ = 'Copyright 2020, Gis3w'
 
 import json
 
+from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.files import File
 from django.urls import reverse
+from django.utils.http import int_to_base36
+from django.utils.crypto import salted_hmac
 from guardian.shortcuts import assign_perm, remove_perm, get_anonymous_user
 from rest_framework.test import APIClient
 
@@ -35,6 +38,8 @@ from core.utils.qgisapi import get_qgs_project
 
 from .base import QdjangoTestBase, CURRENT_PATH, TEST_BASE_PATH, QGS310_WIDGET_FILE
 from qgis.core import QgsFeatureRequest
+import time
+import six
 
 
 
@@ -463,6 +468,8 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         features = qgis_layer.getFeatures(qgs_request)
         self.assertEqual(resp['vector']['count'], len([f for f in features]))
 
+
+
     def test_tokenfilter_api(self):
         """ Test tokenfilter mode vector api layer """
 
@@ -507,6 +514,16 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         self.assertEqual(len(session_filters), 1)
         sf = session_filters[0]
         self.assertEqual(sf.token, resp['data']['filtertoken'])
+
+        ts_b36 = int_to_base36(int(time.mktime(sf.time_asked.timetuple())))
+        lid_b36 = int_to_base36(cities.pk)
+        hash = salted_hmac(
+            settings.SECRET_KEY,
+            six.text_type(sf.sessionid)
+        ).hexdigest()
+
+        self.assertEqual(f'{ts_b36}-{hash}-{lid_b36}', resp['data']['filtertoken'])
+
 
         # test update filtertoken
         # -----------------------

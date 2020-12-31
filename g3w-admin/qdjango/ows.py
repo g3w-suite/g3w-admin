@@ -110,8 +110,9 @@ class OWSRequestHandler(OWSRequestHandlerBase):
         logger.debug('Calling QGIS Server: %s' % uri)
         qgs_request = QgsBufferServerRequest(uri, method, headers, data)
 
-        # Attach user and project to the server object to make them accessible by the
+        # Attach user, project ad django request to the server object to make them accessible by the
         # server access control plugins (constraints etc.)
+        QGS_SERVER.djrequest = request
         QGS_SERVER.user = request.user
         QGS_SERVER.project = self.project
 

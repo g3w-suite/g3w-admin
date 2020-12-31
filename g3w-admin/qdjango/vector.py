@@ -22,7 +22,7 @@ from core.utils.vector import BaseUserMediaHandler
 from qdjango.api.constraints.filters import SingleLayerSubsetStringConstraintFilter, \
     SingleLayerExpressionConstraintFilter
 
-from qdjango.api.layers.filters import RelationOneToManyFilter, FidFilter
+from qdjango.api.layers.filters import RelationOneToManyFilter, FidFilter, SingleLayerSessionTokenFilter
 
 from .models import Layer, SingleLayerSessionFilter
 from .utils.data import QGIS_LAYER_TYPE_NO_GEOM
@@ -172,7 +172,8 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         SingleLayerSubsetStringConstraintFilter,
         SingleLayerExpressionConstraintFilter,
         RelationOneToManyFilter,
-        FidFilter
+        FidFilter,
+        SingleLayerSessionTokenFilter
     )
 
     ordering_fields = '__all__'
@@ -339,7 +340,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         def _create_qgs_expr(s=None, fidsin=None, fidsout=None):
             """ Create qgs expression to save in db """
 
-            expr = f'$fid IN ({fidsin})' if fidsin else f'$fid NOT IN ({fidsout})'
+            expr = f'$id IN ({fidsin})' if fidsin else f'$id NOT IN ({fidsout})'
             return f'{s.qgs_expr} AND {expr}' if s else expr
 
         if mode == 'create_update':

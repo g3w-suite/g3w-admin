@@ -11,8 +11,10 @@ __date__ = '2020-05-07'
 __copyright__ = 'Copyright 2015 - 2020, Gis3w'
 
 
+from django.conf import settings
 from core.utils.qgisapi import get_qgs_project
 from core.api.filters import BaseFilterBackend
+from qdjango.models import SingleLayerSessionFilter
 import logging
 
 logger = logging.getLogger(__name__)
@@ -20,6 +22,7 @@ logger = logging.getLogger(__name__)
 
 FILTER_RELATIONONETOMANY_PARAM = 'relationonetomany'
 FILTER_FID_PARAM = 'fid'
+FILTER_SESSION_PARAM = 'filtertoken'
 
 
 class RelationOneToManyFilter(BaseFilterBackend):
@@ -107,3 +110,41 @@ class FidFilter(BaseFilterBackend):
             qgis_feature_request.setFilterFids(fids)
         else:
             qgis_feature_request.setFilterFid(fid)
+
+
+class SingleLayerSessionTokenFilter(BaseFilterBackend):
+    """A filter backend that applies a QgsExpression"""
+
+    def apply_filter(self, request, qgis_layer, qgis_feature_request, view=None):
+        """Apply the filter to the QGIS feature request or the layer's subset string
+        Warning: if the filter alters the layer instance (for example by settings a subset
+        string) make sure to restore the original state or to work on a clone.
+        """
+
+        sessionid = request.COOKIES[settings.SESSION_COOKIE_NAME]
+
+        if request.method == 'POST':
+            request_data = request.data
+        else:
+            request_data = request.query_params
+
+        filtertoken = request_data.get(FILTER_SESSION_PARAM)
+
+        if not filtertoken:
+            return
+
+        try:
+            expression_text = SingleLayerSessionFilter.objects.get(layer=view.layer, sessionid=sessionid).qgs_expr
+        except Exception:
+            return
+
+        if not expression_text:
+            return
+
+        original_expression = qgis_feature_request.filterExpression() if qgis_feature_request is not None else None
+        if original_expression is not None:
+            qgis_feature_request.setFilterExpression("({original_expression}) AND ({extra_expression})"
+                .format(original_expression=original_expression.expression(),
+                        extra_expression=expression_text))
+        else:
+            qgis_feature_request.setFilterExpression(expression_text)
