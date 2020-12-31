@@ -17,10 +17,10 @@ if settings.DEBUG:
     os.environ['QGIS_SERVER_LOG_STDERR'] = '1'
 
 # Setup AUTH DB
-if hasattr(settings, 'QGIS_AUTH_DB_DIR_PATH'):
+if hasattr(settings, 'QGIS_AUTH_DB_DIR_PATH') and settings.QGIS_AUTH_DB_DIR_PATH:
     os.environ['QGIS_AUTH_DB_DIR_PATH'] = settings.QGIS_AUTH_DB_DIR_PATH
 
-if hasattr(settings, 'QGIS_AUTH_PASSWORD_FILE'):
+if hasattr(settings, 'QGIS_AUTH_PASSWORD_FILE') and settings.QGIS_AUTH_PASSWORD_FILE:
     if not os.path.isfile(settings.QGIS_AUTH_PASSWORD_FILE):
         if not hasattr(settings, 'QGIS_AUTH_PASSWORD'):
             raise ImproperlyConfigured('QGIS_AUTH_PASSWORD_FILE is set but it does not exist and QGIS_AUTH_PASSWORD is not set: either point QGIS_AUTH_PASSWORD_FILE to an existing file or define a password in QGIS_AUTH_PASSWORD')
@@ -42,6 +42,14 @@ QGS_APPLICATION = QgsApplication([], False)
 
 # load providers
 QGS_APPLICATION.initQgis()
+
+
+# This is only necessary on 3.10:
+# FIXME: remove when we switch to 3.16
+if hasattr(settings, 'QGIS_AUTH_PASSWORD') and settings.QGIS_AUTH_PASSWORD:
+    if not QgsApplication.authManager().setMasterPassword(settings.QGIS_AUTH_PASSWORD, True):
+        raise ImproperlyConfigured('Error setting QGIS Auth DB master password from settings.QGIS_AUTH_PASSWORD')
+
 
 # Do any environment manipulation here, before we create the server
 # and the settings are read

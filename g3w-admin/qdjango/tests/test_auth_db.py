@@ -98,5 +98,7 @@ class AuthDbTest(QdjangoTestBase):
         self.assertEqual(cfg.id(), config.id())
 
         uri = QgsDataSourceUri('db=/my/fake/uri authcfg=%s' % cfg.id())
-        self.assertEqual(uri.uri(True), "user='my user' password='my password' db='/my/fake/uri'")
-        
+        # Note: string cut is necessary on 3.10 only
+        # FIXME: remove when we switch to 3.16
+        self.assertEqual(uri.uri(True)[:55], "user='my user' password='my password' db='/my/fake/uri'")
+
