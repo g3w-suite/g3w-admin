@@ -2,11 +2,12 @@ from django.dispatch import receiver
 from django.db.models.signals import post_delete, post_save
 from django.conf import settings
 from django.core.cache import caches
+from django.contrib.auth.signals import user_logged_out
 from django.http.request import QueryDict
 from core.signals import perform_client_search, post_delete_project
 from core.models import ProjectMapUrlAlias
 from OWS.utils.data import GetFeatureInfoResponse
-from .models import Project, Layer, Widget
+from .models import Project, Layer, Widget, SessionTokenFilter
 from .ows import OWSRequestHandler
 import os
 import logging
@@ -68,3 +69,12 @@ def update_widget(sender, **kwargs):
         if widget.datasource != layer.datasource:
             widget.datasource = layer.datasource
             widget.save()
+
+
+@receiver(user_logged_out)
+def delete_session_token_filter(sender, **kwargs):
+    """
+    Delete session token filter on user logout
+    """
+
+    SessionTokenFilter.objects.filter(sessionid=kwargs['request'].session.session_key).delete()
