@@ -42,7 +42,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='singlelayersessionfilter',
             name='session_token_filter',
-            field=models.ForeignKey(default=None, on_delete=django.db.models.deletion.CASCADE, to='qdjango.SessionTokenFilter'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='qdjango.SessionTokenFilter'),
             preserve_default=False,
         ),
     ]
