@@ -474,6 +474,7 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         """ Test tokenfilter mode vector api layer """
 
         cities = Layer.objects.get(project_id=self.project310.instance.pk, origname='cities10000eu')
+        countries = Layer.objects.get(project_id=self.project310.instance.pk, qgs_layer_id='countries_simpl20171228095706310')
 
         session_filters = SessionTokenFilter.objects.all()
         self.assertEqual(len(session_filters), 0)
@@ -526,7 +527,6 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         # test layer table saved
         self.assertEqual(sf.stf_layers.count(), 1)
 
-
         # test update filtertoken
         # -----------------------
 
@@ -544,6 +544,31 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
 
         # test layer table saved
         self.assertEqual(sf.stf_layers.count(), 1)
+
+        # test create second filtertoken
+        # ------------------------------
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['filtertoken', 'qdjango', self.project310.instance.pk,
+                                             countries.qgs_layer_id],
+                                            {
+                                                'fidsin': '9,10,20'
+                                            }, login=False, logout=False).content)
+
+        session_filters = SessionTokenFilter.objects.all()
+        self.assertEqual(len(session_filters), 1)
+        sf = session_filters[0]
+        self.assertEqual(sf.token, resp['data']['filtertoken'])
+
+        ts_b36 = int_to_base36(int(time.mktime(sf.time_asked.timetuple())))
+        hash = salted_hmac(
+            settings.SECRET_KEY,
+            six.text_type(sf.sessionid)
+        ).hexdigest()
+
+        self.assertEqual(f'{ts_b36}-{hash}', resp['data']['filtertoken'])
+
+        # test layer table saved
+        self.assertEqual(sf.stf_layers.count(), 2)
 
         # test delete filtertoken
         # -----------------------
