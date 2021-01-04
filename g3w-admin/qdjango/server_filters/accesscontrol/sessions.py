@@ -14,7 +14,7 @@ __copyright__ = 'Copyright 2015 - 2020, Gis3w'
 from qgis.server import QgsAccessControlFilter
 from qgis.core import QgsMessageLog, Qgis
 from qdjango.apps import QGS_SERVER
-from qdjango.models import SingleLayerSessionFilter, Layer
+from qdjango.models import SessionTokenFilter, Layer
 
 
 class SingleLayerSessionTokenAccessControlFilter(QgsAccessControlFilter):
@@ -35,12 +35,12 @@ class SingleLayerSessionTokenAccessControlFilter(QgsAccessControlFilter):
         request_data = QGS_SERVER.djrequest.POST if QGS_SERVER.djrequest.method == 'POST' \
             else QGS_SERVER.djrequest.GET
 
-        filtertokens = request_data.get('filtertokens')
-        if not filtertokens:
+        filtertoken = request_data.get('filtertoken')
+        if not filtertoken:
             return ""
 
-        rule = SingleLayerSessionFilter.get_expr_for_token(filtertokens, layer)
-        QgsMessageLog.logMessage("SingleLayerSessionTokenAccessControlFilter expression for filtertoken %s layer id %s: %s" % (filtertokens, layer.id(), rule), "", Qgis.Info)
+        rule = SessionTokenFilter.get_expr_for_token(filtertoken, qdjango_layer)
+        QgsMessageLog.logMessage("SingleLayerSessionTokenAccessControlFilter expression for filtertoken %s layer id %s: %s" % (filtertoken, layer.id(), rule), "", Qgis.Info)
         return rule
 
 # Register the filter, keep a reference because of the garbage collector

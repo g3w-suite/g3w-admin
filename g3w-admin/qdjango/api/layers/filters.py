@@ -14,7 +14,7 @@ __copyright__ = 'Copyright 2015 - 2020, Gis3w'
 from django.conf import settings
 from core.utils.qgisapi import get_qgs_project
 from core.api.filters import BaseFilterBackend
-from qdjango.models import SingleLayerSessionFilter
+from qdjango.models import SessionTokenFilter
 import logging
 
 logger = logging.getLogger(__name__)
@@ -134,7 +134,7 @@ class SingleLayerSessionTokenFilter(BaseFilterBackend):
             return
 
         try:
-            expression_text = SingleLayerSessionFilter.get_expr_for_token(filtertoken, view.layer)
+            expression_text = SessionTokenFilter.get_expr_for_token(filtertoken, view.layer)
         except Exception:
             return
 

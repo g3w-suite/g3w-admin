@@ -42,15 +42,14 @@ class WidgetAdmin(GuardedModelAdmin):
 admin.site.register(Widget, WidgetAdmin)
 
 
-class SingleLayerSessionFilterAdmin(admin.ModelAdmin):
-    model = SingleLayerSessionFilter
+class SessioneTokenFilterAdmin(admin.ModelAdmin):
+    model = SessionTokenFilter
     list_display = (
         'time_asked',
         'sessionid',
         'token',
-        'qgs_expr',
         'user'
     )
 
 
-admin.site.register(SingleLayerSessionFilter, SingleLayerSessionFilterAdmin)
+admin.site.register(SessionTokenFilter, SessioneTokenFilterAdmin)

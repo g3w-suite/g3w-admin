@@ -29,7 +29,8 @@ from qdjango.models import (
     ConstraintSubsetStringRule,
     ConstraintExpressionRule,
     SingleLayerConstraint,
-    SingleLayerSessionFilter,
+    SessionTokenFilter,
+    SessionTokenFilterLayer,
     Layer,
     Project
 )
@@ -1099,7 +1100,8 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
 
         admin01 = self.test_user1
         world = self.world
-        session_filter = SingleLayerSessionFilter(layer=world, user=admin01, qgs_expr="NAME = 'ITALY'")
+        session_token = SessionTokenFilter.objects.create(user=admin01)
+        session_filter = session_token.stf_layers.create(layer=world, qgs_expr="NAME = 'ITALY'")
         session_filter.save()
 
         ows_url = reverse('OWS:ows', kwargs={'group_slug': self.qdjango_project.group.slug,
@@ -1124,7 +1126,7 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
             'FEATURE_COUNT': 1,
             'X': '50',
             'Y': '50',
-            'filtertokens': session_filter.token
+            'filtertoken': session_token.token
         })
 
         self.assertTrue(b'ROME' in response.content)
@@ -1151,7 +1153,7 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
             'FEATURE_COUNT': 1,
             'X': '50',
             'Y': '50',
-            'filtertokens': session_filter.token
+            'filtertoken': session_token.token
         })
 
         self.assertFalse(b'ROME' in response.content)

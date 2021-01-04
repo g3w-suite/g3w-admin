@@ -32,7 +32,7 @@ from qdjango.models.constraints import (
 )
 from qdjango.api.layers.filters import FILTER_RELATIONONETOMANY_PARAM
 from qdjango.utils.data import QgisProject
-from qdjango.models import SingleLayerSessionFilter
+from qdjango.models import SessionTokenFilter, SessionTokenFilterLayer
 from core.tests.base import CoreTestBase
 from core.utils.qgisapi import get_qgs_project
 
@@ -475,7 +475,7 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
 
         cities = Layer.objects.get(project_id=self.project310.instance.pk, origname='cities10000eu')
 
-        session_filters = SingleLayerSessionFilter.objects.all()
+        session_filters = SessionTokenFilter.objects.all()
         self.assertEqual(len(session_filters), 0)
 
         # test check filtertoken
@@ -486,7 +486,7 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         self.assertFalse(resp['result'])
         self.assertEqual(resp['error']['data'], "'fidsin' or 'fidsout' parameter is required.")
 
-        session_filters = SingleLayerSessionFilter.objects.all()
+        session_filters = SessionTokenFilter.objects.all()
         self.assertEqual(len(session_filters), 0)
 
         resp = json.loads(self._testApiCall('core-vector-api',
@@ -499,7 +499,7 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         self.assertFalse(resp['result'])
         self.assertEqual(resp['error']['data'], "'fidsin' only or 'fidsout' only parameter is required.")
 
-        session_filters = SingleLayerSessionFilter.objects.all()
+        session_filters = SessionTokenFilter.objects.all()
         self.assertEqual(len(session_filters), 0)
 
         # test create filtertoken
@@ -510,19 +510,21 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
                                 'fidsin': '1,2,3,4'
                             }, logout=False).content)
 
-        session_filters = SingleLayerSessionFilter.objects.all()
+        session_filters = SessionTokenFilter.objects.all()
         self.assertEqual(len(session_filters), 1)
         sf = session_filters[0]
         self.assertEqual(sf.token, resp['data']['filtertoken'])
 
         ts_b36 = int_to_base36(int(time.mktime(sf.time_asked.timetuple())))
-        lid_b36 = int_to_base36(cities.pk)
         hash = salted_hmac(
             settings.SECRET_KEY,
             six.text_type(sf.sessionid)
         ).hexdigest()
 
-        self.assertEqual(f'{ts_b36}-{hash}-{lid_b36}', resp['data']['filtertoken'])
+        self.assertEqual(f'{ts_b36}-{hash}', resp['data']['filtertoken'])
+
+        # test layer table saved
+        self.assertEqual(sf.stf_layers.count(), 1)
 
 
         # test update filtertoken
@@ -535,10 +537,13 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
                                                 'fidsout': '6,8,9,0'
                                             }, login=False, logout=False).content)
 
-        session_filters = SingleLayerSessionFilter.objects.all()
+        session_filters = SessionTokenFilter.objects.all()
         self.assertEqual(len(session_filters), 1)
         sf = session_filters[0]
         self.assertEqual(sf.token, resp['data']['filtertoken'])
+
+        # test layer table saved
+        self.assertEqual(sf.stf_layers.count(), 1)
 
         # test delete filtertoken
         # -----------------------
@@ -550,8 +555,9 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
                                                 'mode': 'delete'
                                             }, login=False).content)
 
-        session_filters = SingleLayerSessionFilter.objects.all()
+        session_filters = SessionTokenFilter.objects.all()
         self.assertEqual(len(session_filters), 0)
+        self.assertEqual(SessionTokenFilter.objects.count(), 0)
 
     def testCoreVectorApiDataFormatter(self):
         """Test core-vector-api data with qgis formatter enabled"""
@@ -796,14 +802,14 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
 
         # create a token filter
         admin01 = self.test_user1
-        session_filter = SingleLayerSessionFilter(layer=cities, user=admin01, qgs_expr="ISO2_CODE = 'IT'")
-        session_filter.save()
+        session_token = SessionTokenFilter.objects.create(user=admin01)
+        session_filter = session_token.stf_layers.create(layer=cities, qgs_expr="ISO2_CODE = 'IT'")
 
 
         resp = json.loads(self._testApiCall('core-vector-api',
                                             ['data', 'qdjango', self.project310.instance.pk, cities.qgs_layer_id],
                                             {
-                                                'filtertoken': session_filter.token
+                                                'filtertoken': session_token.token
                                             }).content)
 
 
@@ -816,7 +822,7 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         resp = json.loads(self._testApiCall('core-vector-api',
                                             ['data', 'qdjango', self.project310.instance.pk, cities.qgs_layer_id],
                                             {
-                                                'filtertoken': session_filter.token
+                                                'filtertoken': session_token.token
                                             }).content)
 
         self.assertEqual(resp['vector']['count'], 0)

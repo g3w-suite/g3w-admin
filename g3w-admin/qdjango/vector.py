@@ -24,7 +24,7 @@ from qdjango.api.constraints.filters import SingleLayerSubsetStringConstraintFil
 
 from qdjango.api.layers.filters import RelationOneToManyFilter, FidFilter, SingleLayerSessionTokenFilter
 
-from .models import Layer, SingleLayerSessionFilter
+from .models import Layer, SessionTokenFilter
 from .utils.data import QGIS_LAYER_TYPE_NO_GEOM
 from .utils.edittype import MAPPING_EDITTYPE_QGISEDITTYPE
 
@@ -327,47 +327,35 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
             if fidsin and fidsout:
                 raise APIException("'fidsin' only or 'fidsout' only parameter is required.")
 
-        try:
-            s = SingleLayerSessionFilter.objects.get(layer=self.layer, sessionid=sessionid)
-        except Exception:
-            s = None
+        s, created = SessionTokenFilter.objects.get_or_create(
+            sessionid=sessionid,
+            defaults={'user': request.user if request.user.pk else None}
+        )
 
         token_data = {}
 
         if mode == 'delete' and not s:
             raise APIException("Session filter token doesn't exists for current session")
 
-        def _create_qgs_expr(s=None, fidsin=None, fidsout=None):
+        def _create_qgs_expr(fidsin=None, fidsout=None):
             """ Create qgs expression to save in db """
 
-            expr = f'$id IN ({fidsin})' if fidsin else f'$id NOT IN ({fidsout})'
-            return f'{s.qgs_expr} AND {expr}' if s else expr
+            return f'$id IN ({fidsin})' if fidsin else f'$id NOT IN ({fidsout})'
+
 
         if mode == 'create_update':
 
-            qgs_expr = _create_qgs_expr(s, fidsin, fidsout)
-
-            if s:
-                 s.qgs_expr = qgs_expr
-            else:
-
-                # create
-                s = SingleLayerSessionFilter(
-                    layer=self.layer,
-                    sessionid=sessionid,
-                    qgs_expr=qgs_expr,
-                    user=request.user if request.user.pk else None
-                )
-
-            s.save()
-
+            l, l_created = s.stf_layers.update_or_create(
+                layer=self.layer,
+                defaults={'qgs_expr': _create_qgs_expr(fidsin, fidsout)}
+            )
 
             token_data.update({
                 'filtertoken': s.token
             })
         else:
 
-            # delete
+            # delete session and
             s.delete()
 
         self.results.update({'data': token_data})
