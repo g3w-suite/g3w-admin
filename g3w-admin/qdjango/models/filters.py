@@ -31,7 +31,7 @@ class SingleLayerSessionFilter(models.Model):
 
     layer = models.ForeignKey(Layer, on_delete=models.CASCADE)
     user = models.ForeignKey(User, null=True, blank=True, on_delete=models.DO_NOTHING)
-    sessionid = models.CharField(max_length=255)
+    sessionid = models.CharField(max_length=255, unique=True)
     token = models.CharField(max_length=54)
     qgs_expr = models.TextField()
     time_asked = models.DateTimeField(auto_now=True)

@@ -134,7 +134,7 @@ class SingleLayerSessionTokenFilter(BaseFilterBackend):
             return
 
         try:
-            expression_text = SingleLayerSessionFilter.objects.get(layer=view.layer, sessionid=sessionid).qgs_expr
+            expression_text = SingleLayerSessionFilter.get_expr_for_token(filtertoken, view.layer)
         except Exception:
             return
 

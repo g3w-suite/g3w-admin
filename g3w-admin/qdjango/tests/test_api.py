@@ -470,7 +470,7 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
 
 
 
-    def test_tokenfilter_api(self):
+    def test_tokenfilter_mode_api(self):
         """ Test tokenfilter mode vector api layer """
 
         cities = Layer.objects.get(project_id=self.project310.instance.pk, origname='cities10000eu')
@@ -787,5 +787,45 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
 
         self.assertEqual(resp['count'], 1)
 
+    def test_filtertoken_api(self):
+        """ Test vector layer api data with 'filtertoken' param """
+
+        cities = Layer.objects.get(project_id=self.project310.instance.pk, origname='cities10000eu')
+        qgis_project = get_qgs_project(cities.project.qgis_file.path)
+        qgis_layer = qgis_project.mapLayer(cities.qgs_layer_id)
+
+        # create a token filter
+        admin01 = self.test_user1
+        session_filter = SingleLayerSessionFilter(layer=cities, user=admin01, qgs_expr="ISO2_CODE = 'IT'")
+        session_filter.save()
 
 
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['data', 'qdjango', self.project310.instance.pk, cities.qgs_layer_id],
+                                            {
+                                                'filtertoken': session_filter.token
+                                            }).content)
+
+
+        self.assertEqual(resp['vector']['count'], 1124)
+
+        # update token filer
+        session_filter.qgs_expr = "ISO2_CODE = 'XXXXX'"
+        session_filter.save()
+
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['data', 'qdjango', self.project310.instance.pk, cities.qgs_layer_id],
+                                            {
+                                                'filtertoken': session_filter.token
+                                            }).content)
+
+        self.assertEqual(resp['vector']['count'], 0)
+
+        # submit a fake token/ filter token of other layer
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['data', 'qdjango', self.project310.instance.pk, cities.qgs_layer_id],
+                                            {
+                                                'filtertoken': 'xxxxxxxxxxxxxx'
+                                            }).content)
+
+        self.assertEqual(resp['vector']['count'], 8965)
