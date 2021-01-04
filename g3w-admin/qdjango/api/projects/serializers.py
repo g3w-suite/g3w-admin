@@ -218,7 +218,7 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
         return metadata
 
-    def get_tokenfilter(self):
+    def get_filtertoken(self):
         """Check session token filter ad layer if it is set"""
 
         try:
@@ -345,7 +345,7 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         ret['search_endpoint'] = settings.G3W_CLIENT_SEARCH_ENDPOINT
 
         # add tokenfilter by session
-        ret['tokenfilter'] = self.get_tokenfilter()
+        ret['filtertoken'] = self.get_filtertoken()
 
         return ret
 
