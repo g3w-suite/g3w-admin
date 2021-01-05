@@ -1,5 +1,5 @@
 # coding=utf-8
-""""Auth DB tests
+""""QGIS Auth DB model tests
 
 .. note:: This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -18,6 +18,7 @@ import os
 
 from django.conf import settings
 from django.test import override_settings
+from qdjango.models import QgisAuth
 from qgis.core import QgsApplication, QgsAuthMethodConfig, QgsDataSourceUri
 from .base import CURRENT_PATH, TEST_BASE_PATH, QdjangoTestBase
 
@@ -71,6 +72,10 @@ class AuthDbTest(QdjangoTestBase):
         assert cfg.id() != ''
         assert cfg.id() == config.id()
 
+    def tearDown(self):
+        """Clear DB"""
+
+        self.am.removeAllAuthenticationConfigs()
 
     @classmethod
     def tearDownClass(cls):
@@ -101,4 +106,42 @@ class AuthDbTest(QdjangoTestBase):
         # Note: string cut is necessary on 3.10 only
         # FIXME: remove when we switch to 3.16
         self.assertEqual(uri.uri(True)[:55], "user='my user' password='my password' db='/my/fake/uri'")
+
+    def test_model(self):
+        """Test QGIS Auth model"""
+
+        self.assertEqual(QgisAuth.objects.count(), 0)
+
+        # Create an auth config
+        cfg = QgisAuth.objects.create(id='aabbcc1', name='my config 1', config="{'password': 'pass', 'username': 'user', 'realm': ''}")
+
+        # Check the DB
+        self.assertTrue('aabbcc1' in self.am.configIds())
+        self.assertEqual(QgisAuth.objects.count(), 1)
+
+        config = QgsAuthMethodConfig()
+        self.am.loadAuthenticationConfig('aabbcc1', config, True)
+        self.assertEqual(config.config('username'), 'user')
+        self.assertEqual(config.config('password'), 'pass')
+
+        # Change
+        cfg.config = "{'password': 'pass_new', 'username': 'user_new', 'realm': ''}"
+        cfg.save()
+
+        self.am.loadAuthenticationConfig('aabbcc1', config, True)
+        self.assertEqual(config.config('username'), 'user_new')
+        self.assertEqual(config.config('password'), 'pass_new')
+
+        # Delete
+        cfg.delete()
+        self.assertFalse('aabbcc1' in self.am.configIds())
+        self.assertEqual(QgisAuth.objects.count(), 0)
+
+
+
+
+
+
+
+
 
