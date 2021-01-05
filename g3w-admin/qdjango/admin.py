@@ -3,8 +3,8 @@ from guardian.admin import GuardedModelAdmin
 from .models import *
 
 
+@admin.register(Project)
 class ProjectAdmin(GuardedModelAdmin):
-    model = Project
     search_fields = (
         'title',
     )
@@ -14,11 +14,8 @@ class ProjectAdmin(GuardedModelAdmin):
     )
 
 
-admin.site.register(Project, ProjectAdmin)
-
-
+@admin.register(Layer)
 class LayerAdmin(GuardedModelAdmin):
-    model = Layer
     search_fields = (
         'name',
         'title',
@@ -32,24 +29,29 @@ class LayerAdmin(GuardedModelAdmin):
     )
 
 
-admin.site.register(Layer, LayerAdmin)
-
-
+@admin.register(Widget)
 class WidgetAdmin(GuardedModelAdmin):
-    model = Widget
+    pass
 
 
-admin.site.register(Widget, WidgetAdmin)
+class SessionTokenFilterLayerAdminInline(admin.TabularInline):
+    model = SessionTokenFilterLayer
 
 
-class SessioneTokenFilterAdmin(admin.ModelAdmin):
-    model = SessionTokenFilter
+@admin.register(SessionTokenFilter)
+class SessionTokenFilterAdmin(admin.ModelAdmin):
     list_display = (
         'time_asked',
         'sessionid',
         'token',
         'user'
     )
+    inlines = [
+        SessionTokenFilterLayerAdminInline
+    ]
 
 
-admin.site.register(SessionTokenFilter, SessioneTokenFilterAdmin)
+
+
+
+
