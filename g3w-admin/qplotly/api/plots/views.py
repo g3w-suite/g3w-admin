@@ -17,6 +17,7 @@ from qgis.core import \
 from rest_framework.response import Response
 from core.api.base.views import G3WAPIView
 from core.utils.qgisapi import get_qgis_layer
+from qdjango.models import Layer
 from qplotly.models import QplotlyWidget
 from qplotly.utils.qplotly_settings import QplotlySettings
 from qplotly.utils.qplotly_factory import QplotlyFactoring
@@ -42,7 +43,9 @@ class QplotlyTraceAPIView(G3WAPIView):
                                           QgsCoordinateReferenceSystem(qplotly.project.group.srid.srid))
 
         # instance a QplotlyFactory
-        factory = QplotlyFactoring(settings, visible_region=rect)
+        layer = Layer.objects.get(qgs_layer_id=settings.source_layer_id, project_id=kwargs['project_id'])
+        factory = QplotlyFactoring(settings, visible_region=rect, request=request, layer=layer)
+
 
         # is possible get the first layer
         factory.source_layer = get_qgis_layer(qplotly.layers.get(qgs_layer_id=settings.source_layer_id,

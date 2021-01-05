@@ -11,7 +11,6 @@ __date__ = '2020-09-16'
 __copyright__ = 'Copyright 2015 - 2020, Gis3w'
 
 from qgis.PyQt.QtXml import QDomDocument
-from django.http import HttpRequest
 from qplotly.vendor.DataPlotly.core.plot_factory import (
     PlotFactory,
     QgsExpressionContext,
@@ -28,8 +27,32 @@ from qplotly.vendor.DataPlotly.core.plot_factory import (
     QgsSymbolLayerUtils
 )
 
+from core.api.filters import IntersectsBBoxFilter
+
+from qdjango.api.layers.filters import SingleLayerSessionTokenFilter
+
+from qdjango.api.constraints.filters import SingleLayerSubsetStringConstraintFilter, \
+    SingleLayerExpressionConstraintFilter
+
 
 class QplotlyFactoring(PlotFactory):
+
+    filter_backends = (
+        IntersectsBBoxFilter,
+        SingleLayerSubsetStringConstraintFilter,
+        SingleLayerExpressionConstraintFilter,
+        SingleLayerSessionTokenFilter
+    )
+
+    def __init__(self, *args, **kwargs):
+
+        self.djrequest = kwargs['request']
+        del(kwargs['request'])
+
+        self.layer = kwargs['layer']
+        del (kwargs['layer'])
+
+        super().__init__(*args, **kwargs)
 
     def build_trace(self):
         """Build only trace"""
@@ -41,12 +64,12 @@ class QplotlyFactoring(PlotFactory):
 
         self.layout = self._build_layout()
 
-    def fetch_values_from_layer(self, request: HttpRequest = None):
+    def fetch_values_from_layer(self):
         """
         (Re)fetches plot values from the source layer.
 
         Modified by Walter lorenzetti for integration into G3W-SUITE
-        :param request: Django HttpRequest instance.
+        :param djrequest: Django HttpRequest instance.
         """
 
         # Note: we keep things nice and efficient and only iterate a single time over the layer!
@@ -102,6 +125,13 @@ class QplotlyFactoring(PlotFactory):
             request.setExpressionContext(context)
 
         # TODO: add here G3W-SUITE layer data filters
+
+
+        original_subset_string = self.source_layer.subsetString()
+
+        if hasattr(self, 'filter_backends'):
+            for backend in self.filter_backends:
+                backend().apply_filter(self.djrequest, self.source_layer, request, self)
 
 
         request.setSubsetOfAttributes(attrs, self.source_layer.fields())
@@ -261,5 +291,8 @@ class QplotlyFactoring(PlotFactory):
             self.settings.data_defined_stroke_colors = stroke_colors
         if stroke_widths:
             self.settings.data_defined_stroke_widths = stroke_widths
+
+        # Restore the original subset string
+        self.source_layer.setSubsetString(original_subset_string)
 
 
