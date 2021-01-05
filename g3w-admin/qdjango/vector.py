@@ -340,7 +340,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         def _create_qgs_expr(s, fidsin=None, fidsout=None):
             """ Create qgs expression to save in db """
 
-            expr = f'$fid IN ({fidsin})' if fidsin else f'$fid NOT IN ({fidsout})'
+            expr = f'$id IN ({fidsin})' if fidsin else f'$id NOT IN ({fidsout})'
             return f'{s.qgs_expr} AND {expr}' if s else expr
 
 
