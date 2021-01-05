@@ -41,10 +41,10 @@ class QplotlyTraceAPIView(G3WAPIView):
             rect = QgsReferencedRectangle(QgsRectangle(**kwargs['bbox']),
                                           QgsCoordinateReferenceSystem(qplotly.project.group.srid.srid))
 
-        # instace q QplotlyFactory
+        # instance a QplotlyFactory
         factory = QplotlyFactoring(settings, visible_region=rect)
 
-        # is possibile get the first layer
+        # is possible get the first layer
         factory.source_layer = get_qgis_layer(qplotly.layers.get(qgs_layer_id=settings.source_layer_id,
                                                                     project_id=kwargs['project_id']))
         factory.rebuild()
