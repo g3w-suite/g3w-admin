@@ -141,7 +141,7 @@ def set_initconfig_value(sender, **kwargs):
                 continue
 
             # instace q QplotlyFactory
-            factory = QplotlyFactoring(settings)
+            factory = QplotlyFactoring(settings, request=None, layer=None)
             factory.build_layout()
 
             plots.append({
