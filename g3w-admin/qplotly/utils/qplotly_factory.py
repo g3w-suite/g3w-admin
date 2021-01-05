@@ -127,9 +127,9 @@ class QplotlyFactoring(PlotFactory):
         original_subset_string = self.source_layer.subsetString()
 
         if hasattr(self, 'filter_backends') \
-                and hasattr(self, 'request') \
+                and hasattr(self, 'djrequest') \
                 and hasattr(self, 'layer') \
-                and self.request \
+                and self.djrequest \
                 and self.layer:
             for backend in self.filter_backends:
                 backend().apply_filter(self.djrequest, self.source_layer, request, self)
