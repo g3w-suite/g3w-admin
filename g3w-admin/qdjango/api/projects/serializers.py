@@ -258,7 +258,9 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
                 # alter layer serialized data from plugin
                 # send layerseralized original and came back only key->value changed
                 for signal_receiver, data in after_serialized_project_layer.send(layer_serialized,
-                                                                          layer=layers[layer['id']]):
+                                                                                 layer=layers[layer['id']],
+                                                                                 request=self.request
+                                                                         ):
                     update_serializer_data(layer_serialized_data, data)
                 layer_serialized_data['multilayer'] = meta_layer.getCurrentByLayer(layer_serialized_data)
 
