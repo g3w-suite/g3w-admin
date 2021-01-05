@@ -24,7 +24,7 @@ from qdjango.api.constraints.filters import SingleLayerSubsetStringConstraintFil
 
 from qdjango.api.layers.filters import RelationOneToManyFilter, FidFilter, SingleLayerSessionTokenFilter
 
-from .models import Layer, SessionTokenFilter
+from .models import Layer, SessionTokenFilter, SessionTokenFilterLayer
 from .utils.data import QGIS_LAYER_TYPE_NO_GEOM
 from .utils.edittype import MAPPING_EDITTYPE_QGISEDITTYPE
 
@@ -337,18 +337,24 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         if mode == 'delete' and not s:
             raise APIException("Session filter token doesn't exists for current session")
 
-        def _create_qgs_expr(fidsin=None, fidsout=None):
+        def _create_qgs_expr(s, fidsin=None, fidsout=None):
             """ Create qgs expression to save in db """
 
-            return f'$id IN ({fidsin})' if fidsin else f'$id NOT IN ({fidsout})'
+            expr = f'$fid IN ({fidsin})' if fidsin else f'$fid NOT IN ({fidsout})'
+            return f'{s.qgs_expr} AND {expr}' if s else expr
 
 
         if mode == 'create_update':
 
-            l, l_created = s.stf_layers.update_or_create(
+            l, created = s.stf_layers.get_or_create(
                 layer=self.layer,
-                defaults={'qgs_expr': _create_qgs_expr(fidsin, fidsout)}
+                defaults={'qgs_expr': _create_qgs_expr(None, fidsin, fidsout)}
             )
+
+            if not created:
+                l.qgs_expr = _create_qgs_expr(l, fidsin, fidsout)
+                l.save()
+
 
             token_data.update({
                 'filtertoken': s.token
