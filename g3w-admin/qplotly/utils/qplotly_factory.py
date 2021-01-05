@@ -124,12 +124,13 @@ class QplotlyFactoring(PlotFactory):
             request.setFilterExpression(expression)
             request.setExpressionContext(context)
 
-        # TODO: add here G3W-SUITE layer data filters
-
-
         original_subset_string = self.source_layer.subsetString()
 
-        if hasattr(self, 'filter_backends'):
+        if hasattr(self, 'filter_backends') \
+                and hasattr(self, 'request') \
+                and hasattr(self, 'layer') \
+                and self.request \
+                and self.layer:
             for backend in self.filter_backends:
                 backend().apply_filter(self.djrequest, self.source_layer, request, self)
 
