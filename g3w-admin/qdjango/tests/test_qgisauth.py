@@ -17,9 +17,11 @@ import json
 import os
 
 from django.conf import settings
+from django.db import transaction
 from django.test import override_settings
-from qdjango.models import QgisAuth
+from qdjango.models import Layer, LayerDependenciesError, QgisAuth
 from qgis.core import QgsApplication, QgsAuthMethodConfig, QgsDataSourceUri
+
 from .base import CURRENT_PATH, TEST_BASE_PATH, QdjangoTestBase
 
 # auth DB path
@@ -71,6 +73,11 @@ class AuthDbTest(QdjangoTestBase):
         assert config.id() != ''
         assert cfg.id() != ''
         assert cfg.id() == config.id()
+
+        # Store fakelayer datasource
+        cls.fakelayer = Layer.objects.get(name='fakelayer')
+        cls.fakelayer_datasource = cls.fakelayer.datasource
+
 
     def tearDown(self):
         """Clear DB"""
@@ -132,10 +139,23 @@ class AuthDbTest(QdjangoTestBase):
         self.assertEqual(config.config('username'), 'user_new')
         self.assertEqual(config.config('password'), 'pass_new')
 
-        # Delete
+        self.fakelayer.datasource = 'dbname=\'geo_demo\' host=localhost port=5432 authcfg=\'aabbcc1\' user=\'\' password=\'\' sslmode=disable key=\'id\' srid=3003 type=Polygon checkPrimaryKeyUnicity=\'1\' table="casentino"."piano_parco" (geom) sql='
+        self.fakelayer.save()
+
+        # Try delete, but there is a layer using it
+        with transaction.atomic():
+            with self.assertRaises(LayerDependenciesError):
+                cfg.delete()
+
+        self.fakelayer.datasource = self.fakelayer_datasource
+        self.fakelayer.save()
+
         cfg.delete()
+
         self.assertFalse('aabbcc1' in self.am.configIds())
         self.assertEqual(QgisAuth.objects.count(), 0)
+
+
 
 
 

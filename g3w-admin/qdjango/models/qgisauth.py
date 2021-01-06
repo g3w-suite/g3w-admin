@@ -18,7 +18,7 @@ import random
 
 from django.conf import settings
 from django.db import models
-from django.db.models.signals import post_delete, post_save, pre_save
+from django.db.models.signals import post_delete, post_save, pre_save, pre_delete
 from django.dispatch import receiver
 from django.core.validators import RegexValidator
 from django.utils.translation import ugettext_lazy as _
@@ -27,6 +27,11 @@ from qgis.core import QgsApplication, QgsAuthMethodConfig
 
 logger = logging.getLogger(__name__)
 
+
+class LayerDependenciesError(Exception):
+    """Raised when attempting to delete a QgisAuth that is used by one or more layers"""
+
+    pass
 
 def sync(model):
     """Syncs the model with the QGIS data base"""
@@ -39,7 +44,14 @@ def sync(model):
     }
 
     with temp_disconnect_signal(**kwargs):
-        model._objects.all().delete()
+        kwargs = {
+        'signal': pre_delete,
+        'receiver': check_layer_dependencies,
+        'sender': QgisAuth,
+        'dispatch_uid': None
+        }
+        with temp_disconnect_signal(**kwargs):
+            model._objects.all().delete()
 
     am = QgsApplication.instance().authManager()
 
@@ -108,6 +120,7 @@ class QgisAuth(models.Model):
 
 @receiver(post_delete, sender=QgisAuth)
 def sync_auth_delete(sender, instance, **kwargs):
+    """Sync the QGIS auth DB after delete"""
 
     am = QgsApplication.instance().authManager()
     am.removeAuthenticationConfig(instance.id)
@@ -115,6 +128,7 @@ def sync_auth_delete(sender, instance, **kwargs):
 
 @receiver(post_save, sender=QgisAuth)
 def sync_auth_save(sender, instance, **kwargs):
+    """Sync the QGIS auth DB after save"""
 
     c = QgsAuthMethodConfig()
     c.setId(instance.id)
@@ -128,3 +142,14 @@ def sync_auth_save(sender, instance, **kwargs):
         am.updateAuthenticationConfig(c)
     else:
         am.storeAuthenticationConfig(c)
+
+
+@receiver(pre_delete, sender=QgisAuth)
+def check_layer_dependencies(sender, instance, using, **kwargs):
+    """Check for layer dependencies before delete and raises if any"""
+
+    from qdjango.models import Layer
+    dependent_layers = [l.name for l in  Layer.objects.filter(datasource__contains=instance.id)]
+    if len(dependent_layers) > 0:
+        raise LayerDependenciesError(_("QGIS Auth %s cannot be deletet because it is used by the following layers: %s" % (instance.id, ', '.join(dependent_layers))))
+
