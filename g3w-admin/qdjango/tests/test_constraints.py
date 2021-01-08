@@ -29,11 +29,14 @@ from qdjango.models import (
     ConstraintSubsetStringRule,
     ConstraintExpressionRule,
     SingleLayerConstraint,
+    SessionTokenFilter,
+    SessionTokenFilterLayer,
     Layer,
     Project
 )
 from unittest import skipIf
 from .base import QdjangoTestBase
+
 
 
 logger = logging.getLogger(__name__)
@@ -1090,4 +1093,68 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
         })
 
         self.assertTrue(b'ROME' in response.content)
+        self.assertFalse(b'BERLIN' in response.content)
+
+    def test_token_session_filter(self):
+        """Test session filter by token"""
+
+        admin01 = self.test_user1
+        world = self.world
+        session_token = SessionTokenFilter.objects.create(user=admin01)
+        session_filter = session_token.stf_layers.create(layer=world, qgs_expr="NAME = 'ITALY'")
+        session_filter.save()
+
+        ows_url = reverse('OWS:ows', kwargs={'group_slug': self.qdjango_project.group.slug,
+                                             'project_type': 'qdjango', 'project_id': self.qdjango_project.id})
+
+
+        # Make a request to the server
+        c = Client()
+        self.assertTrue(c.login(username='admin01', password='admin01'))
+        response = c.get(ows_url, {
+            'REQUEST': 'GetFeatureInfo',
+            'SERVICE': 'WMS',
+            'VERSION': '1.1.0',
+            'LAYERS': 'world',
+            'SRS': 'EPSG:4326',
+            'BBOX': '7,45,7.2,45.2',
+            'FORMAT': 'image/png',
+            'INFO_FORMAT': 'application/json',
+            'WIDTH': '100',
+            'HEIGHT': '100',
+            'QUERY_LAYERS': 'world',
+            'FEATURE_COUNT': 1,
+            'X': '50',
+            'Y': '50',
+            'filtertoken': session_token.token
+        })
+
+        self.assertTrue(b'ROME' in response.content)
+        self.assertFalse(b'BERLIN' in response.content)
+
+        # update qgs_expr
+        session_filter.qgs_expr = "NAME != 'ITALY'"
+        session_filter.save()
+
+        c = Client()
+        self.assertTrue(c.login(username='admin01', password='admin01'))
+        response = c.get(ows_url, {
+            'REQUEST': 'GetFeatureInfo',
+            'SERVICE': 'WMS',
+            'VERSION': '1.1.0',
+            'LAYERS': 'world',
+            'SRS': 'EPSG:4326',
+            'BBOX': '7,45,7.2,45.2',
+            'FORMAT': 'image/png',
+            'INFO_FORMAT': 'application/json',
+            'WIDTH': '100',
+            'HEIGHT': '100',
+            'QUERY_LAYERS': 'world',
+            'FEATURE_COUNT': 1,
+            'X': '50',
+            'Y': '50',
+            'filtertoken': session_token.token
+        })
+
+        self.assertFalse(b'ROME' in response.content)
         self.assertFalse(b'BERLIN' in response.content)

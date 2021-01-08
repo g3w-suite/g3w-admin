@@ -14,9 +14,12 @@ __copyright__ = 'Copyright 2020, Gis3w'
 
 import json
 
+from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.files import File
 from django.urls import reverse
+from django.utils.http import int_to_base36
+from django.utils.crypto import salted_hmac
 from guardian.shortcuts import assign_perm, remove_perm, get_anonymous_user
 from rest_framework.test import APIClient
 
@@ -29,11 +32,14 @@ from qdjango.models.constraints import (
 )
 from qdjango.api.layers.filters import FILTER_RELATIONONETOMANY_PARAM
 from qdjango.utils.data import QgisProject
+from qdjango.models import SessionTokenFilter, SessionTokenFilterLayer
 from core.tests.base import CoreTestBase
 from core.utils.qgisapi import get_qgs_project
 
 from .base import QdjangoTestBase, CURRENT_PATH, TEST_BASE_PATH, QGS310_WIDGET_FILE
 from qgis.core import QgsFeatureRequest
+import time
+import six
 
 
 
@@ -334,7 +340,7 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         cls.project_widget310.instance.delete()
         super().tearDownClass()
 
-    def _testApiCall(self, view_name, args, kwargs={}):
+    def _testApiCall(self, view_name, args, kwargs={}, status_auth=200, login=True, logout=True):
         """Utility to make test calls for admin01 user"""
 
         path = reverse(view_name, args=args)
@@ -346,14 +352,17 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
             path += '&'.join(parts)
 
         # No auth
-        response = self.client.get(path)
-        self.assertIn(response.status_code, [302, 403])
+        if login and logout:
+            response = self.client.get(path)
+            self.assertIn(response.status_code, [302, 403])
 
         # Auth
-        self.assertTrue(self.client.login(username='admin01', password='admin01'))
+        if login:
+            self.assertTrue(self.client.login(username='admin01', password='admin01'))
         response = self.client.get(path)
-        self.assertEqual(response.status_code, 200)
-        self.client.logout()
+        self.assertEqual(response.status_code, status_auth)
+        if logout:
+            self.client.logout()
         return response
 
     def test_user_info_api(self):
@@ -458,6 +467,122 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
 
         features = qgis_layer.getFeatures(qgs_request)
         self.assertEqual(resp['vector']['count'], len([f for f in features]))
+
+
+
+    def test_tokenfilter_mode_api(self):
+        """ Test tokenfilter mode vector api layer """
+
+        cities = Layer.objects.get(project_id=self.project310.instance.pk, origname='cities10000eu')
+        countries = Layer.objects.get(project_id=self.project310.instance.pk, qgs_layer_id='countries_simpl20171228095706310')
+
+        session_filters = SessionTokenFilter.objects.all()
+        self.assertEqual(len(session_filters), 0)
+
+        # test check filtertoken
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['filtertoken', 'qdjango', self.project310.instance.pk,
+                                             cities.qgs_layer_id], status_auth=500).content)
+
+        self.assertFalse(resp['result'])
+        self.assertEqual(resp['error']['data'], "'fidsin' or 'fidsout' parameter is required.")
+
+        session_filters = SessionTokenFilter.objects.all()
+        self.assertEqual(len(session_filters), 0)
+
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['filtertoken', 'qdjango', self.project310.instance.pk,
+                                             cities.qgs_layer_id],{
+                                                'fidsin': '1,2,3,4',
+                                                'fidsout': '2,3,4'
+                                            }, status_auth=500).content)
+
+        self.assertFalse(resp['result'])
+        self.assertEqual(resp['error']['data'], "'fidsin' only or 'fidsout' only parameter is required.")
+
+        session_filters = SessionTokenFilter.objects.all()
+        self.assertEqual(len(session_filters), 0)
+
+        # test create filtertoken
+        # -----------------------
+        resp = json.loads(self._testApiCall('core-vector-api',
+                            ['filtertoken', 'qdjango', self.project310.instance.pk, cities.qgs_layer_id],
+                            {
+                                'fidsin': '1,2,3,4'
+                            }, logout=False).content)
+
+        session_filters = SessionTokenFilter.objects.all()
+        self.assertEqual(len(session_filters), 1)
+        sf = session_filters[0]
+        self.assertEqual(sf.token, resp['data']['filtertoken'])
+
+        ts_b36 = int_to_base36(int(time.mktime(sf.time_asked.timetuple())))
+        hash = salted_hmac(
+            settings.SECRET_KEY,
+            six.text_type(sf.sessionid)
+        ).hexdigest()
+
+        self.assertEqual(f'{ts_b36}-{hash}', resp['data']['filtertoken'])
+
+        # test layer table saved
+        self.assertEqual(sf.stf_layers.count(), 1)
+
+        # test update filtertoken
+        # -----------------------
+
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['filtertoken', 'qdjango', self.project310.instance.pk,
+                                             cities.qgs_layer_id],
+                                            {
+                                                'fidsout': '6,8,9,0'
+                                            }, login=False, logout=False).content)
+
+        session_filters = SessionTokenFilter.objects.all()
+        self.assertEqual(len(session_filters), 1)
+        sf = session_filters[0]
+        self.assertEqual(sf.token, resp['data']['filtertoken'])
+
+        # test layer table saved
+        self.assertEqual(sf.stf_layers.count(), 1)
+
+        # test create second filtertoken
+        # ------------------------------
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['filtertoken', 'qdjango', self.project310.instance.pk,
+                                             countries.qgs_layer_id],
+                                            {
+                                                'fidsin': '9,10,20'
+                                            }, login=False, logout=False).content)
+
+        session_filters = SessionTokenFilter.objects.all()
+        self.assertEqual(len(session_filters), 1)
+        sf = session_filters[0]
+        self.assertEqual(sf.token, resp['data']['filtertoken'])
+
+        ts_b36 = int_to_base36(int(time.mktime(sf.time_asked.timetuple())))
+        hash = salted_hmac(
+            settings.SECRET_KEY,
+            six.text_type(sf.sessionid)
+        ).hexdigest()
+
+        self.assertEqual(f'{ts_b36}-{hash}', resp['data']['filtertoken'])
+
+        # test layer table saved
+        self.assertEqual(sf.stf_layers.count(), 2)
+
+        # test delete filtertoken
+        # -----------------------
+
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['filtertoken', 'qdjango', self.project310.instance.pk,
+                                             cities.qgs_layer_id],
+                                            {
+                                                'mode': 'delete'
+                                            }, login=False).content)
+
+        session_filters = SessionTokenFilter.objects.all()
+        self.assertEqual(len(session_filters), 0)
+        self.assertEqual(SessionTokenFilter.objects.count(), 0)
 
     def testCoreVectorApiDataFormatter(self):
         """Test core-vector-api data with qgis formatter enabled"""
@@ -693,5 +818,45 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
 
         self.assertEqual(resp['count'], 1)
 
+    def test_filtertoken_api(self):
+        """ Test vector layer api data with 'filtertoken' param """
+
+        cities = Layer.objects.get(project_id=self.project310.instance.pk, origname='cities10000eu')
+        qgis_project = get_qgs_project(cities.project.qgis_file.path)
+        qgis_layer = qgis_project.mapLayer(cities.qgs_layer_id)
+
+        # create a token filter
+        admin01 = self.test_user1
+        session_token = SessionTokenFilter.objects.create(user=admin01)
+        session_filter = session_token.stf_layers.create(layer=cities, qgs_expr="ISO2_CODE = 'IT'")
 
 
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['data', 'qdjango', self.project310.instance.pk, cities.qgs_layer_id],
+                                            {
+                                                'filtertoken': session_token.token
+                                            }).content)
+
+
+        self.assertEqual(resp['vector']['count'], 1124)
+
+        # update token filer
+        session_filter.qgs_expr = "ISO2_CODE = 'XXXXX'"
+        session_filter.save()
+
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['data', 'qdjango', self.project310.instance.pk, cities.qgs_layer_id],
+                                            {
+                                                'filtertoken': session_token.token
+                                            }).content)
+
+        self.assertEqual(resp['vector']['count'], 0)
+
+        # submit a fake token/ filter token of other layer
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['data', 'qdjango', self.project310.instance.pk, cities.qgs_layer_id],
+                                            {
+                                                'filtertoken': 'xxxxxxxxxxxxxx'
+                                            }).content)
+
+        self.assertEqual(resp['vector']['count'], 8965)

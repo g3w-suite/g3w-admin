@@ -52,7 +52,7 @@ class G3WSpatialRefSys(models.Model):
         return "{} {}".format(self.auth_name, str(self.srid))
 
 
-class BaseLayer(models.Model):
+class BaseLayer(OrderedModel):
     """
     Model to store Base layers
     """

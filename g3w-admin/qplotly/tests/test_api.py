@@ -15,6 +15,7 @@ from django.urls import reverse
 from django.test import override_settings
 from django.test.client import encode_multipart
 from qdjango.tests.base import QdjangoTestBase, CoreGroup, File, G3WSpatialRefSys, QgisProject, setup_testing_user
+from qdjango.models import Layer, SessionTokenFilter, SingleLayerConstraint, ConstraintExpressionRule
 from rest_framework.test import APIClient
 from guardian.shortcuts import assign_perm
 from qplotly.utils import get_qplotlywidget_for_project
@@ -151,6 +152,57 @@ class QplotlyTestAPI(QdjangoTestBase):
 
         jcontent = json.loads(response.content)
         trace_data = json.loads(response.content)['data']
+
+        self.assertEqual(len(trace_data), 1)
+        self.assertEqual(trace_data[0]['type'], 'histogram')
+        self.assertEqual(len(trace_data[0]['x']), 51)
+        self.assertIn('Italia', trace_data[0]['x'])
+
+        # With a session token filter
+        # ---------------------------
+
+        countries = Layer.objects.get(project_id=self.project.instance.pk, qgs_layer_id='countries_d53dfb9a_98e1_4196_a601_eed9a33f47c3')
+
+        # create a token filter
+        session_token = SessionTokenFilter.objects.create(user=self.test_user1) # as admin01
+        session_filter = session_token.stf_layers.create(layer=countries, qgs_expr="NAME_IT = 'Albania'")
+
+        response = self._testApiCall('qplotly-api-trace', args=[
+            self.project.instance.pk,
+            qplotlywidget_id
+        ], kwargs={
+            'filtertoken': session_token.token
+        })
+
+        jcontent = json.loads(response.content)
+        trace_data = json.loads(response.content)['data']
+
+        self.assertEqual(len(trace_data), 1)
+        self.assertEqual(trace_data[0]['type'], 'histogram')
+        self.assertEqual(len(trace_data[0]['x']), 1)
+        self.assertNotIn('Italia', trace_data[0]['x'])
+
+        # Geometry contraint layer
+        # ------------------------
+        constraint = SingleLayerConstraint(layer=countries, active=True)
+        constraint.save()
+
+        rule = ConstraintExpressionRule(constraint=constraint, user=self.test_user1,
+                                        rule="intersects_bbox( $geometry,  geom_from_wkt( 'POLYGON((8 51, 11 51, 11 52, 11 52, 8 51))') )")
+        rule.save()
+
+        response = self._testApiCall('qplotly-api-trace', args=[
+            self.project.instance.pk,
+            qplotlywidget_id
+        ])
+
+        jcontent = json.loads(response.content)
+        trace_data = json.loads(response.content)['data']
+
+        self.assertEqual(len(trace_data), 1)
+        self.assertEqual(trace_data[0]['type'], 'histogram')
+        self.assertEqual(len(trace_data[0]['x']), 1)
+        self.assertIn('Germania', trace_data[0]['x'])
 
     def test_get_qplotlywidgets4layer(self):
         """Test for homonimous util function"""

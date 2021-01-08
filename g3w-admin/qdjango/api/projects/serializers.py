@@ -6,7 +6,7 @@ from rest_framework import serializers
 from rest_framework_gis import serializers as geo_serializers
 from rest_framework.fields import empty
 
-from qdjango.models import Project, Layer, Widget
+from qdjango.models import Project, Layer, Widget, SessionTokenFilter
 from qdjango.utils.data import QgisProjectSettingsWMS, QGIS_LAYER_TYPE_NO_GEOM
 from qdjango.utils.models import get_capabilities4layer
 from qdjango.ows import OWSRequestHandler
@@ -218,6 +218,21 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
         return metadata
 
+    def get_filtertoken(self):
+        """Check session token filter ad layer if it is set"""
+
+        try:
+            stf = SessionTokenFilter.objects.get(sessionid=self.request.COOKIES[settings.SESSION_COOKIE_NAME])
+        except SessionTokenFilter.DoesNotExist:
+            return None
+
+        return {
+            'token': stf.token,
+            'layers': [l.layer.qgs_layer_id for l in stf.stf_layers.all()]
+        }
+
+
+
 
     def to_representation(self, instance):
         ret = super(ProjectSerializer, self).to_representation(instance)
@@ -330,6 +345,9 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
             pass
 
         ret['search_endpoint'] = settings.G3W_CLIENT_SEARCH_ENDPOINT
+
+        # add tokenfilter by session
+        ret['filtertoken'] = self.get_filtertoken()
 
         return ret
 
