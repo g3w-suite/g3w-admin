@@ -10,7 +10,7 @@ __author__ = 'lorenzetti@gis3w.it'
 __date__ = '2020-04-06'
 __copyright__ = 'Copyright 2015 - 2020, Gis3w'
 
-from qdjango.forms import QdjangoProjetForm
+from qdjango.forms import QdjangoProjectForm
 from django.test.client import RequestFactory
 from django.contrib.auth.models import User, Group as AuthGroup
 from guardian.shortcuts import assign_perm, remove_perm
@@ -41,7 +41,7 @@ class QdjangoFormsTest(QdjangoTestBase):
         self.request.user = self.test_user1
 
         # empty form
-        form = QdjangoProjetForm(request=self.request, group=self.project_group)
+        form = QdjangoProjectForm(request=self.request, group=self.project_group)
         self.assertFalse(form.is_valid())
 
         # upload qgis_file
@@ -59,7 +59,7 @@ class QdjangoFormsTest(QdjangoTestBase):
             'url_alias': 'test_url_alias_name'
         }
 
-        form = QdjangoProjetForm(request=self.request, group=self.project_group, data=form_data)
+        form = QdjangoProjectForm(request=self.request, group=self.project_group, data=form_data)
         self.assertTrue(form.is_valid())
 
         # check ACL users and group users
@@ -116,7 +116,7 @@ class QdjangoFormsTest(QdjangoTestBase):
         })
 
         # Update for check permission saved
-        form = QdjangoProjetForm(request=self.request, group=self.project_group, data=form_data, instance=form.instance,
+        form = QdjangoProjectForm(request=self.request, group=self.project_group, data=form_data, instance=form.instance,
                                  initial={})
         self.assertTrue(form.is_valid())
 

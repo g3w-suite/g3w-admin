@@ -11,20 +11,23 @@ __date__ = '2020-04-07'
 __copyright__ = 'Copyright 2020, Gis3w'
 
 
-from django.core.management import call_command
-from django.core.files import File
-from django.test import Client, override_settings
-from django.urls import reverse
-from qgis.core import QgsProject
-from guardian.shortcuts import assign_perm, remove_perm
+import json
+import os
+from unittest import skip
+
 from core.models import G3WSpatialRefSys
 from core.models import Group as CoreGroup
+from django.core.files import File
+from django.core.management import call_command
+from django.test import Client, override_settings
+from django.urls import reverse
+from guardian.shortcuts import assign_perm, remove_perm
 from qdjango.apps import QGS_SERVER, get_qgs_project
 from qdjango.models import Project
-from .base import QdjangoTestBase, CURRENT_PATH, TEST_BASE_PATH, QGS310_WIDGET_FILE, QgisProject
-import json
+from qgis.core import QgsProject
 
-from unittest import skip
+from .base import (CURRENT_PATH, QGS310_WIDGET_FILE, TEST_BASE_PATH,
+                   QdjangoTestBase, QgisProject)
 
 
 @override_settings(CACHES = {
@@ -38,6 +41,7 @@ from unittest import skip
         ('en', 'English'),
     )
 )
+
 class OwsTest(QdjangoTestBase):
     """Test proxy to QgsServer"""
 

@@ -21,6 +21,10 @@ from .models import G3WEditingFeatureLock, G3WEditingLayer, G3WEditingLog, EDITI
 
 from .utils import LayerLock
 
+import logging
+
+logger = logging.getLogger('module_editing')
+
 
 @receiver(load_js_modules)
 def get_js_modules(sender, **kwargs):
@@ -137,7 +141,7 @@ def set_initconfig_value(sender, **kwargs):
 @receiver(after_serialized_project_layer)
 def add_editable_capability(sender, **kwargs):
     """
-    Add EDITABLE capability if layer is in editing layers
+    Add EDITABLE capability if layer is in editing layers and check grant for user
     """
     layer = kwargs['layer']
     data = {
@@ -145,11 +149,18 @@ def add_editable_capability(sender, **kwargs):
         'values': {},
     }
 
-    editable_layers_id = [el.layer_id for el in G3WEditingLayer.objects.filter(app_name=layer._meta.app_label)]
+    try:
+        G3WEditingLayer.objects.get(app_name=layer._meta.app_label, layer_id=layer.pk)
 
-    # get config if exists:
-    if layer.pk in editable_layers_id:
-        data['values']['capabilities'] = sender.data['capabilities'] | settings.EDITABLE
+        # check permission
+        if kwargs['request'].user.has_perm('qdjango.change_layer', layer):
+            data['values']['capabilities'] = sender.data['capabilities'] | settings.EDITABLE
+        else:
+            logger.info(f"Layer {layer.qgs_layer_id} is not editable for user {kwargs['request'].user}")
+
+    except Exception:
+        pass
+
     return data
 
 

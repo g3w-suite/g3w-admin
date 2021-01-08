@@ -10,7 +10,7 @@ from qgis.core import QgsVectorFileWriter, QgsFeatureRequest, QgsJsonUtils, Qgis
 from core.api.base.vector import MetadataVectorLayer
 from core.api.base.views import (MODE_CONFIG, MODE_DATA, MODE_SHP, MODE_XLS, MODE_GPX, MODE_CSV, MODE_FILTER_TOKEN,
                                  APIException, BaseVectorOnModelApiView,
-                                 IntersectsBBoxFilter, APIVectorLayerStructure)
+                                 IntersectsBBoxFilter)
 from core.api.filters import (IntersectsBBoxFilter, OrderingFilter,
                               SearchFilter, SuggestFilterBackend, FieldFilterBackend)
 from core.api.permissions import ProjectPermission

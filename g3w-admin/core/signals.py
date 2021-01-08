@@ -35,7 +35,7 @@ post_serialize_project = django.dispatch.Signal(providing_args=["app_name", "req
 
 # signal after layer serialized data on /api/config/
 # send layer seralized original object and came back only dict data changed
-after_serialized_project_layer = django.dispatch.Signal(providing_args=["layer"])
+after_serialized_project_layer = django.dispatch.Signal(providing_args=["layer", "request"])
 
 # signals pre update project
 pre_update_project = django.dispatch.Signal(providing_args=["projectType", "project"])
