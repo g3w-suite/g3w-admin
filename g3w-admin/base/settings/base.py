@@ -185,7 +185,7 @@ LANGUAGES = (
     ('it', 'Italian'),
     ('en', 'English'),
     ('fi', 'Finish'),
-    ('se', 'Sweden'),
+    ('se', 'Sweden')
 )
 
 MODELTRANSLATION_DEFAULT_LANGUAGE = 'it'
