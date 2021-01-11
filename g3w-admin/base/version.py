@@ -14,7 +14,7 @@ def get_version(version=None):
         from base import __version__ as version
     else:
         assert len(version) == 5
-        assert version[3] in ('unstable', 'beta', 'rc', 'final')
+        assert version[3] in ('unstable', 'beta', 'rc', 'final', 'stable')
 
     # Now build the two parts of the version number:
     # main = X.Y[.Z]
@@ -25,12 +25,17 @@ def get_version(version=None):
     main = '.'.join(str(x) for x in version[:parts])
 
     sub = ''
+    git_changeset = get_git_changeset()
+    git_branch = get_git_branch()
     if version[3] == 'unstable':
-        git_changeset = get_git_changeset()
-        git_branch = get_git_branch()
         if git_changeset:
             dot = '.' if main else ''
             sub = '%s%s-%s' % (dot, git_branch, git_changeset)
+
+    elif version[3] == 'stable':
+        if git_changeset:
+            dot = '.' if main else ''
+            sub = '%sx-%s' % (dot, git_changeset)
 
     elif version[3] != 'final':
         mapping = {'beta': 'b', 'rc': 'rc'}
