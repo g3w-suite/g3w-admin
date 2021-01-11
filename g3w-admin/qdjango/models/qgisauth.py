@@ -78,19 +78,22 @@ class QgisAuthSyncManager(models.Manager):
         return super().get_queryset()
 
 
+def default_authid():
+    """Creates a unique auth id"""
+
+    am = QgsApplication.instance().authManager()
+    while True:
+        hash = random.getrandbits(128)
+        id = ("%032x" % hash)[:7]
+        if not id in am.configIds():
+            return id
+
 class QgisAuth(models.Model):
     """Model definition for QgisAuth."""
 
 
-    def _default_authid():
-        am = QgsApplication.instance().authManager()
-        while True:
-            hash = random.getrandbits(128)
-            id = ("%032x" % hash)[:7]
-            if not id in am.configIds():
-                return id
 
-    id = models.CharField(_("Auth ID"), max_length=7, default=_default_authid, validators=[RegexValidator(r'[A-z0-9]{7}')],
+    id = models.CharField(_("Auth ID"), max_length=7, default=default_authid, validators=[RegexValidator(r'[A-z0-9]{7}')],
                           primary_key=True, help_text=_('7 alphanumeric ASCII chars'))
     name = models.CharField(_("Name"), max_length=256)
     uri = models.CharField(_("URI"), max_length=256, null=True,
