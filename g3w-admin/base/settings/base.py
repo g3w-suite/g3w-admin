@@ -184,8 +184,8 @@ gettext = lambda s: s
 LANGUAGES = (
     ('it', 'Italian'),
     ('en', 'English'),
-    ('fi', 'Finish'),
-    ('se', 'Sweden')
+    ('fi', 'Finnish'),
+    ('se', 'Swedish')
 )
 
 MODELTRANSLATION_DEFAULT_LANGUAGE = 'it'
