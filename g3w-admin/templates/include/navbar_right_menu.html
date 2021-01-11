@@ -66,7 +66,7 @@
         <form action="{% url "set_language" %}" method="post" class="navbar-form navbar-right">
         {% csrf_token %}
         <div class="form-group" style="background: None;">
-            <select name="language" class="form-control" onchange="this.form.submit()">
+            <select id="language-select" name="language" class="form-control" onchange="this.form.submit()">
             {% for language in languages %}
             <option value="{{ language.0 }}"
                 {% if language.0 == LANGUAGE_CODE %}selected="selected"{% endif %}>
