@@ -273,7 +273,39 @@ _.extend(g3wadmin.ui, {
         else {
             var $widgetItem = $('.select2');
         }
+
         $widgetItem.select2();
+
+        // try to special case for language
+        /*
+        if ($widgetItem[0].id == 'language-select') {
+            function formatState (state) {
+              if (!state.id) {
+                return state.text;
+              }
+
+              var baseUrl = "/static/img/flags/";
+              var $state = $(
+                '<span><img class="img-flag" /> <span></span></span>'
+              );
+
+              // Use .text() instead of HTML string concatenation to avoid script injection issues
+              $state.find("span").text(state.text);
+              $state.find("img").attr("src", baseUrl + "/" + state.element.value.toLowerCase() + ".png");
+
+              return $state;
+            };
+
+            $('#language-select').select2({
+                templateResult: formatState
+            });
+        } else {
+            $widgetItem.select2();
+        }
+
+         */
+
+
     },
 
     initBackHistory: function() {
