@@ -80,6 +80,9 @@ _.extend(g3wadmin,{
         //Init select2 plugin
         this.ui.initSelect2();
 
+        //Init language select
+        this.ui.initLanguageSelect();
+
         //Init button back history
         this.ui.initBackHistory();
 

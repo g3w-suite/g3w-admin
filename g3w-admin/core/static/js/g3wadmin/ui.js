@@ -275,16 +275,22 @@ _.extend(g3wadmin.ui, {
         }
 
         $widgetItem.select2();
+    },
 
-        // try to special case for language
-        /*
-        if ($widgetItem[0].id == 'language-select') {
-            function formatState (state) {
+    initBackHistory: function() {
+        $('[data-widget-type="backHistory"]').click(function(){
+            parent.history.back();
+            return false;
+        });
+    },
+
+    initLanguageSelect: function() {
+        function formatState (state) {
               if (!state.id) {
                 return state.text;
               }
 
-              var baseUrl = "/static/img/flags/";
+              var baseUrl = STATIC_BASE_URL + "/img/flags/";
               var $state = $(
                 '<span><img class="img-flag" /> <span></span></span>'
               );
@@ -294,24 +300,11 @@ _.extend(g3wadmin.ui, {
               $state.find("img").attr("src", baseUrl + "/" + state.element.value.toLowerCase() + ".png");
 
               return $state;
-            };
+        };
 
-            $('#language-select').select2({
-                templateResult: formatState
-            });
-        } else {
-            $widgetItem.select2();
-        }
-
-         */
-
-
-    },
-
-    initBackHistory: function() {
-        $('[data-widget-type="backHistory"]').click(function(){
-            parent.history.back();
-            return false;
+        $('#language-select').select2({
+            templateResult: formatState,
+            templateSelection: formatState
         });
     },
 
