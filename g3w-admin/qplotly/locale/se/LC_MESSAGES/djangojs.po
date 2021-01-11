@@ -1,0 +1,206 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-01-11 07:15+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: static/qplotly/js/plugin.js:3
+msgid "&"
+msgstr ""
+
+#: static/qplotly/js/plugin.js:3
+msgid "-enter"
+msgstr ""
+
+#: static/qplotly/js/widget.js:35 static/qplotly/js/widget.js:39
+msgid "New qplotly widget"
+msgstr ""
+
+#: static/qplotly/js/widget.js:53
+msgid "Actions"
+msgstr ""
+
+#: static/qplotly/js/widget.js:54
+msgid "Title"
+msgstr ""
+
+#: static/qplotly/js/widget.js:55
+msgid "Type"
+msgstr ""
+
+#: static/qplotly/js/widget.js:56
+msgid "From project"
+msgstr ""
+
+#: static/qplotly/js/widget.js:57
+msgid "Linked"
+msgstr ""
+
+#: static/qplotly/js/widget.js:88
+msgid "Update widget"
+msgstr ""
+
+#: static/qplotly/js/widget.js:139
+msgid "Form title"
+msgstr ""
+
+#: static/qplotly/js/widget.js:273
+msgid "Upload DataPlotly configuration xml file"
+msgstr ""
+
+#: static/qplotly/plotly-1.52.2.min.js:7
+msgid "index2"
+msgstr ""
+
+#: static/qplotly/plotly-1.52.2.min.js:7
+msgid "index4"
+msgstr ""
+
+#: static/qplotly/plotly-1.52.2.min.js:7
+msgid "uirevision"
+msgstr ""
+
+#: static/qplotly/plotly-1.52.2.min.js:7
+msgid "bgcolor"
+msgstr ""
+
+#: static/qplotly/plotly-1.52.2.min.js:7
+msgid "bordercolor"
+msgstr ""
+
+#: static/qplotly/plotly-1.52.2.min.js:7
+msgid "borderwidth"
+msgstr ""
+
+#: static/qplotly/plotly-1.52.2.min.js:7
+msgid "orientation"
+msgstr ""
+
+#: static/qplotly/plotly-1.52.2.min.js:7
+msgid "traceorder"
+msgstr ""
+
+#: static/qplotly/plotly-1.52.2.min.js:7
+msgid "tracegroupgap"
+msgstr ""
+
+#: static/qplotly/plotly-1.52.2.min.js:7
+msgid "itemsizing"
+msgstr ""
+
+#: static/qplotly/plotly-1.52.2.min.js:7
+msgid "itemclick"
+msgstr ""
+
+#: static/qplotly/plotly-1.52.2.min.js:7
+msgid "itemdoubleclick"
+msgstr ""
+
+#: static/qplotly/plotly-1.52.2.min.js:7
+msgid "x"
+msgstr ""
+
+#: static/qplotly/plotly-1.52.2.min.js:7
+msgid "xanchor"
+msgstr ""
+
+#: static/qplotly/plotly-1.52.2.min.js:7
+msgid "y"
+msgstr ""
+
+#: static/qplotly/plotly-1.52.2.min.js:7
+msgid "yanchor"
+msgstr ""
+
+#: static/qplotly/plotly-1.52.2.min.js:7
+msgid "valign"
+msgstr ""
+
+#: static/qplotly/plotly-1.52.2.min.js:7
+msgid "title.text"
+msgstr ""
+
+#: static/qplotly/plotly-1.52.2.min.js:7
+msgid "title.side"
+msgstr ""
+
+#: static/qplotly/plotly-1.52.2.min.js:7
+msgid "visible"
+msgstr ""
+
+#: static/qplotly/plotly-1.52.2.min.js:7
+msgid "thickness"
+msgstr ""
+
+#: static/qplotly/plotly-1.52.2.min.js:7
+msgid "autorange"
+msgstr ""
+
+#: static/qplotly/plotly-1.52.2.min.js:7
+msgid "range"
+msgstr ""
+
+#: static/qplotly/plotly-1.52.2.min.js:7
+msgid "bingroup"
+msgstr ""
+
+#: static/qplotly/plotly-1.52.2.min.js:7
+msgid "label"
+msgstr ""
+
+#: static/qplotly/plotly-1.52.2.min.js:7
+msgid "source"
+msgstr ""
+
+#: static/qplotly/plotly-1.52.2.min.js:7
+msgid "target"
+msgstr ""
+
+#: static/qplotly/plotly-1.52.2.min.js:7
+msgid "value"
+msgstr ""
+
+#: static/qplotly/plotly-1.52.2.min.js:7
+msgid "line.color"
+msgstr ""
+
+#: static/qplotly/plotly-1.52.2.min.js:7
+msgid "line.width"
+msgstr ""
+
+#: static/qplotly/plotly-1.52.2.min.js:7
+msgid "hoverinfo"
+msgstr ""
+
+#: static/qplotly/plotly-1.52.2.min.js:7
+msgid "hovertemplate"
+msgstr ""
+
+#: static/qplotly/plotly-1.52.2.min.js:7
+msgid "color"
+msgstr ""
+
+#: static/qplotly/plotly-1.52.2.min.js:7
+msgid "final"
+msgstr ""
+
+#: static/qplotly/plotly-1.52.2.min.js:7
+msgid "delta"
+msgstr ""
+
+#: static/qplotly/plotly-1.52.2.min.js:7
+msgid "initial"
+msgstr ""
