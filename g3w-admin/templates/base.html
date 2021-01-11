@@ -247,6 +247,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
         {% else %}
         var SITE_PREFIX_URL = '';
         {% endif %}
+        var STATIC_BASE_URL = '{% static "" %}';
+
     </script>
     {% if SETTINGS.DEBUG %}
     <!-- build:js js/vendor.min.js -->
