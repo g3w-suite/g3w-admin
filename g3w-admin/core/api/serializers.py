@@ -134,7 +134,7 @@ class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
         # baselayers
         ret['baselayers'] = []
-        baselayers = instance.baselayers.all()
+        baselayers = instance.baselayers.all().order_by('order')
         for baselayer in baselayers:
             ret['baselayers'].append(BaseLayerSerializer(baselayer).data)
 

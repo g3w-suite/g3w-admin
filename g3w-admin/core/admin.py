@@ -47,6 +47,7 @@ admin.site.register(MacroGroup, MacroGroupAdmin)
 class BaseLayerAdmin(GuardedModelAdmin, OrderedModelAdmin):
     model = BaseLayer
     list_display = ('name', 'move_up_down_links')
+    ordering = ('order',)
 admin.site.register(BaseLayer, BaseLayerAdmin)
 
 
