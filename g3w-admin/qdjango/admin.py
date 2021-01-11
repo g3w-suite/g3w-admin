@@ -21,10 +21,6 @@ class ProjectAdmin(GuardedModelAdmin):
         'group'
     )
 
-
-admin.site.register(Project, ProjectAdmin)
-
-
 @admin.register(Layer)
 class LayerAdmin(GuardedModelAdmin):
     search_fields = (
@@ -62,9 +58,6 @@ class SessionTokenFilterAdmin(admin.ModelAdmin):
     ]
 
 
-admin.site.register(Layer, LayerAdmin)
-
-
 class QgisAuthAdminForm(ModelForm):
 
     username = CharField()
@@ -96,6 +89,7 @@ class QgisAuthAdminForm(ModelForm):
         return cleaned_data
 
 
+@admin.register(QgisAuth)
 class QgisAuthAdmin(GuardedModelAdmin):
     model = QgisAuth
     form = QgisAuthAdminForm
@@ -145,5 +139,3 @@ class QgisAuthAdmin(GuardedModelAdmin):
                 datasource__contains=obj.id).count() == 0
         )
 
-
-admin.site.register(QgisAuth, QgisAuthAdmin)

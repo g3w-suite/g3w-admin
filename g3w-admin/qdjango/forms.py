@@ -191,7 +191,6 @@ class QdjangoProjectForm(TranslationModelForm, QdjangoProjectFormMixin, G3WFormM
                 css_class='row'
             ),
             Div(
-
                 Div(
                     Div(
                         Div(
@@ -208,41 +207,10 @@ class QdjangoProjectForm(TranslationModelForm, QdjangoProjectFormMixin, G3WFormM
                                             {% if not form.thumbnail.value %}style="display:none;"{% endif %}
                                             class="img-responsive img-thumbnail"
                                             src="{{ MEDIA_URL }}{{ form.thumbnail.value }}">""", ),
-                                            'url_alias',
-                                            css_class='box-body',
-                                        ),
-                                        css_class='box box-success'
-                                    ),
-                                    css_class='col-md-6'
-                                ),
-
-                                Div(
-                                    Div(
-                                        Div(
-                                            HTML("<h3 class='box-title'><i class='ion ion-gear'></i> {}</h3>"
-                                                 .format(_('Options and actions'))),
-                                            css_class='box-header with-border'
-                                        ),
-                                        Div(
-                                            'use_map_extent_as_init_extent',
-                                            'feature_count_wms',
-                                            'multilayer_query',
-                                            'multilayer_querybybbox',
-                                            'multilayer_querybypolygon',
-                                            css_class='box-body',
-
-                                        ),
-                                        css_class='box box-success'
-                                    ),
-                                    css_class='col-md-6'
-                                ),
-
-                                css_class='row'
-                            ),
                             'url_alias',
                             css_class='box-body',
                         ),
-                        css_class = 'box box-success'
+                        css_class='box box-success'
                     ),
                     css_class='col-md-6'
                 ),
@@ -256,7 +224,6 @@ class QdjangoProjectForm(TranslationModelForm, QdjangoProjectFormMixin, G3WFormM
                         ),
                         Div(
                             'use_map_extent_as_init_extent',
-                            'context_base_legend',
                             'feature_count_wms',
                             'multilayer_query',
                             'multilayer_querybybbox',
@@ -272,28 +239,27 @@ class QdjangoProjectForm(TranslationModelForm, QdjangoProjectFormMixin, G3WFormM
                 css_class='row'
             ),
         )
-
-        auth_box = Div(
-            Div(
+        
+        if self.fields['authentication_id'].initial:
+            auth_box = Div(
                 Div(
-                    HTML("""<h3 class='box-title'><i class='fa fa-lock'></i> {}</h3>
+                    Div(
+                        HTML("""<h3 class='box-title'><i class='fa fa-lock'></i> {}</h3>
                                             <p>The error in the project suggests that one or more layers require authentication. You can add the required credentials now. Credentials will be encrypted and added to the QGIS Authentication DB.</p>
                                             <p><strong>Authentication ID: {}</strong></p>"""
-                         .format(_('QGIS Authentication'), self.fields['authentication_id'].initial)),
-                    css_class='box-header with-border'
+                             .format(_('QGIS Authentication'), self.fields['authentication_id'].initial)),
+                        css_class='box-header with-border'
+                    ),
+                    Div(
+                        'authentication_id',
+                        'authentication_username',
+                        'authentication_password',
+                        css_class='box-body',
+                    ),
+                    css_class='box box-success'
                 ),
-                Div(
-                    'authentication_id',
-                    'authentication_username',
-                    'authentication_password',
-                    css_class='box-body',
-                ),
-                css_class='box box-success'
-            ),
-            css_class='col-md-6'
-        )
-
-        if self.fields['authentication_id'].initial:
+                css_class='col-md-6'
+            )
             self.helper.layout.fields.insert(1, auth_box)
 
     class Meta:
