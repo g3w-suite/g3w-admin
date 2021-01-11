@@ -1,0 +1,243 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-01-11 07:30+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: forms.py:95
+msgid "Editor1 user"
+msgstr ""
+
+#: forms.py:96
+msgid "Set Editor Level 1 owner"
+msgstr ""
+
+#: forms.py:99
+msgid "Editor2 user"
+msgstr ""
+
+#: forms.py:102
+msgid "Viewer users"
+msgstr ""
+
+#: forms.py:109
+msgid "Editor user groups"
+msgstr ""
+
+#: forms.py:116
+msgid "Viewer user groups"
+msgstr ""
+
+#: forms.py:122
+msgid "Propagate <b>NEW</b> viewers and new viewers user groups permissions"
+msgstr ""
+
+#: forms.py:293
+msgid "Select roles for this user"
+msgstr ""
+
+#: forms.py:294
+msgid "Main roles"
+msgstr ""
+
+#: forms.py:301
+msgid ""
+"Select <b>EDITOR groups</b> for this user, only Editor Level 2 can be added"
+msgstr ""
+
+#: forms.py:302
+msgid "User editor groups"
+msgstr ""
+
+#: forms.py:309
+msgid ""
+"Select <b>VIEWER groups</b> for this user, only Viewer Level 1 can be added"
+msgstr ""
+
+#: forms.py:310
+msgid "User viewer groups"
+msgstr ""
+
+#: forms.py:351
+msgid "Anagraphic"
+msgstr ""
+
+#: forms.py:370
+msgid "ACL/Roles"
+msgstr ""
+
+#: forms.py:389
+msgid "Login data"
+msgstr ""
+
+#: forms.py:407
+msgid "User data"
+msgstr ""
+
+#: forms.py:435
+msgid "User backend"
+msgstr ""
+
+#: forms.py:589
+msgid "User can't be Editor level 1 and at same time Editor level 2"
+msgstr ""
+
+#: forms.py:603
+msgid "User can't belong a **editor groups** if he isn't a Editor level 2"
+msgstr ""
+
+#: forms.py:617
+msgid "User can't belong a **viewer groups** if he isn't a Viewer level 1"
+msgstr ""
+
+#: forms.py:635
+msgid "Avatar is no a valid image"
+msgstr ""
+
+#: forms.py:663
+msgid "Password"
+msgstr ""
+
+#: forms.py:665
+msgid "Password confirmation"
+msgstr ""
+
+#: forms.py:667
+msgid "Enter the same password as above, for verification."
+msgstr ""
+
+#: forms.py:693 templates/usersmanage/user_group_list.html:29
+msgid "Role"
+msgstr ""
+
+#: forms.py:707 templates/usersmanage/ajax/user_group_detail.html:5
+msgid "Group"
+msgstr ""
+
+#: models.py:20
+msgid "Avatar"
+msgstr ""
+
+#: models.py:52
+msgid "Group role"
+msgstr ""
+
+#: templates/usersmanage/ajax/user_detail.html:5
+#: templates/usersmanage/user_list.html:20
+msgid "User"
+msgstr ""
+
+#: templates/usersmanage/user_form.html:56
+msgid "System users"
+msgstr ""
+
+#: templates/usersmanage/user_form.html:67
+#: templates/usersmanage/user_group_form.html:20
+msgid "Alert"
+msgstr ""
+
+#: templates/usersmanage/user_form.html:68
+#: templates/usersmanage/user_group_form.html:21
+msgid "Some errors on form. Check it and send again."
+msgstr ""
+
+#: templates/usersmanage/user_group_form.html:9
+msgid "System user groups"
+msgstr ""
+
+#: templates/usersmanage/user_group_list.html:10
+#: templates/usersmanage/user_list.html:31
+msgid "User groups"
+msgstr ""
+
+#: templates/usersmanage/user_group_list.html:20
+msgid "User group"
+msgstr ""
+
+#: templates/usersmanage/user_group_list.html:27
+#: templates/usersmanage/user_list.html:27
+msgid "Actions"
+msgstr ""
+
+#: templates/usersmanage/user_group_list.html:28
+msgid "Name"
+msgstr ""
+
+#: templates/usersmanage/user_group_list.html:30
+#: templates/usersmanage/user_list.html:10
+msgid "Users"
+msgstr ""
+
+#: templates/usersmanage/user_group_list.html:38
+#: templates/usersmanage/user_list.html:57
+msgid "Show detail"
+msgstr ""
+
+#: templates/usersmanage/user_group_list.html:42
+#: templates/usersmanage/user_list.html:62
+msgid "Edit"
+msgstr ""
+
+#: templates/usersmanage/user_group_list.html:47
+#: templates/usersmanage/user_list.html:67
+msgid "Delete"
+msgstr ""
+
+#: templates/usersmanage/user_list.html:28
+msgid "Username"
+msgstr ""
+
+#: templates/usersmanage/user_list.html:30
+msgid "Roles"
+msgstr ""
+
+#: templates/usersmanage/user_list.html:33
+msgid " Macro groups"
+msgstr ""
+
+#: templates/usersmanage/user_list.html:38
+msgid "Superuser"
+msgstr ""
+
+#: templates/usersmanage/user_list.html:39
+msgid "Staff"
+msgstr ""
+
+#: templates/usersmanage/user_list.html:42
+msgid "First name"
+msgstr ""
+
+#: templates/usersmanage/user_list.html:43
+msgid "Last name"
+msgstr ""
+
+#: templates/usersmanage/user_list.html:44
+msgid "Created"
+msgstr ""
+
+#: templates/usersmanage/user_list.html:46
+msgid "Backend"
+msgstr ""
+
+#: utils.py:231
+msgid "ACL Users"
+msgstr ""
+
+#: views.py:228
+#, python-format
+msgid "No %(verbose_name)s found matching the query"
+msgstr ""
