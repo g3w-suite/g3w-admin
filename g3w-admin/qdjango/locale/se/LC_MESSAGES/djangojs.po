@@ -1,0 +1,187 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-01-11 07:14+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: static/qdjango/js/widget.js:216
+msgid "General configuration for search widget and results"
+msgstr ""
+
+#: static/qdjango/js/widget.js:222
+msgid "Search title"
+msgstr ""
+
+#: static/qdjango/js/widget.js:259
+msgid "Client search title identification"
+msgstr ""
+
+#: static/qdjango/js/widget.js:297
+msgid "equal"
+msgstr ""
+
+#: static/qdjango/js/widget.js:298
+msgid "greater than"
+msgstr ""
+
+#: static/qdjango/js/widget.js:299
+msgid "lower than"
+msgstr ""
+
+#: static/qdjango/js/widget.js:300
+msgid "not equal"
+msgstr ""
+
+#: static/qdjango/js/widget.js:301
+msgid "greater than equal"
+msgstr ""
+
+#: static/qdjango/js/widget.js:302
+msgid "lower than equal"
+msgstr ""
+
+#: static/qdjango/js/widget.js:303 static/qdjango/js/widget.js:340
+msgid "like case sensitive"
+msgstr ""
+
+#: static/qdjango/js/widget.js:321 static/qdjango/js/widget.js:342
+msgid "like not case sensitive"
+msgstr ""
+
+#: static/qdjango/js/widget.js:352
+msgid "Search field settings"
+msgstr ""
+
+#: static/qdjango/js/widget.js:365
+msgid "Field"
+msgstr ""
+
+#: static/qdjango/js/widget.js:370
+msgid "Widget"
+msgstr ""
+
+#: static/qdjango/js/widget.js:375
+msgid "Alias"
+msgstr ""
+
+#: static/qdjango/js/widget.js:380 static/qdjango/js/widget.js:1069
+#: static/qdjango/js/widget.js:1287
+msgid "Description"
+msgstr ""
+
+#: static/qdjango/js/widget.js:387
+msgid "Comparison operator"
+msgstr ""
+
+#: static/qdjango/js/widget.js:394
+msgid "Dependency"
+msgstr ""
+
+#: static/qdjango/js/widget.js:409
+msgid "Logical join"
+msgstr ""
+
+#: static/qdjango/js/widget.js:421
+msgid "Alias field name fro client search input"
+msgstr ""
+
+#: static/qdjango/js/widget.js:445
+msgid "Attention"
+msgstr ""
+
+#: static/qdjango/js/widget.js:446
+msgid "Fields with many unique values can create slow map loading behavior"
+msgstr ""
+
+#: static/qdjango/js/widget.js:680 static/qdjango/js/widget.js:1203
+msgid "Add"
+msgstr ""
+
+#: static/qdjango/js/widget.js:814
+msgid "QGIS Expression"
+msgstr ""
+
+#: static/qdjango/js/widget.js:830
+msgid "Saved"
+msgstr ""
+
+#: static/qdjango/js/widget.js:926
+msgid "Form title"
+msgstr ""
+
+#: static/qdjango/js/widget.js:972
+msgid ""
+"Define, for each user and/or group of users, viewing/editing rules based on "
+"the QGIS expressions."
+msgstr ""
+
+#: static/qdjango/js/widget.js:976
+msgid ""
+"Define, for each user and/or group of users, viewing/editing rules based on "
+"the language or SQL dialect of the associated provider."
+msgstr ""
+
+#: static/qdjango/js/widget.js:1050 static/qdjango/js/widget.js:1054
+msgid "New alphanumeric constraints"
+msgstr ""
+
+#: static/qdjango/js/widget.js:1067
+msgid "Actions"
+msgstr ""
+
+#: static/qdjango/js/widget.js:1068 static/qdjango/js/widget.js:1281
+msgid "Name"
+msgstr ""
+
+#: static/qdjango/js/widget.js:1070
+msgid "Subset rules count"
+msgstr ""
+
+#: static/qdjango/js/widget.js:1071
+msgid "Expression rules count"
+msgstr ""
+
+#: static/qdjango/js/widget.js:1098
+msgid "Update alphanumeric constraint"
+msgstr ""
+
+#: static/qdjango/js/widget.js:1109
+msgid "Constraint Rules based on provider's language / SQL dialect"
+msgstr ""
+
+#: static/qdjango/js/widget.js:1120
+msgid "Constraint Rules based on QGIS Expression"
+msgstr ""
+
+#: static/qdjango/js/widget.js:1262
+msgid "Save"
+msgstr ""
+
+#: static/qdjango/js/widget.js:1265
+msgid "Delete"
+msgstr ""
+
+#: static/qdjango/js/widget.js:1279
+msgid "Set a name and a possible description for the alphanumeric constraint"
+msgstr ""
+
+#: static/qdjango/js/widget.js:1299
+msgid "Provider's language / SQL dialect Rules"
+msgstr ""
+
+#: static/qdjango/js/widget.js:1302
+msgid "QGIS Expression Rules"
+msgstr ""
