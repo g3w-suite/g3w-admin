@@ -347,7 +347,8 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         ret['search_endpoint'] = settings.G3W_CLIENT_SEARCH_ENDPOINT
 
         # add tokenfilter by session
-        ret['filtertoken'] = self.get_filtertoken()
+        # remove at 2021/01/12<
+        #ret['filtertoken'] = self.get_filtertoken()
 
         return ret
 
