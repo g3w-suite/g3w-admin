@@ -154,5 +154,5 @@ def check_layer_dependencies(sender, instance, using, **kwargs):
     from qdjango.models import Layer
     dependent_layers = [l.name for l in  Layer.objects.filter(datasource__contains=instance.id)]
     if len(dependent_layers) > 0:
-        raise LayerDependenciesError(_("QGIS Auth %s cannot be deletet because it is used by the following layers: %s" % (instance.id, ', '.join(dependent_layers))))
+        raise LayerDependenciesError(_("QGIS Auth %s cannot be deleted because it is used by the following layers: %s" % (instance.id, ', '.join(dependent_layers))))
 
