@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE dataplotly>
+<Option type="Map">
+ <Option name="dynamic_properties" type="Map">
+  <Option name="name" value="" type="QString"/>
+  <Option name="properties"/>
+  <Option name="type" value="collection" type="QString"/>
+ </Option>
+ <Option name="plot_layout" type="Map">
+  <Option name="additional_info_expression" value="" type="QString"/>
+  <Option name="bar_mode" value="group" type="QString"/>
+  <Option name="bargaps" value="0" type="double"/>
+  <Option name="bins_check" value="false" type="bool"/>
+  <Option name="legend" value="true" type="bool"/>
+  <Option name="legend_orientation" value="v" type="QString"/>
+  <Option name="legend_title" type="invalid"/>
+  <Option name="polar" type="Map">
+   <Option name="angularaxis" type="Map">
+    <Option name="direction" value="clockwise" type="QString"/>
+   </Option>
+  </Option>
+  <Option name="range_slider" type="Map">
+   <Option name="borderwidth" value="1" type="int"/>
+   <Option name="visible" value="false" type="bool"/>
+  </Option>
+  <Option name="title" value="" type="QString"/>
+  <Option name="x_inv" type="invalid"/>
+  <Option name="x_max" type="invalid"/>
+  <Option name="x_min" type="invalid"/>
+  <Option name="x_title" value="ISO2_CODE" type="QString"/>
+  <Option name="x_type" value="linear" type="QString"/>
+  <Option name="xaxis" type="invalid"/>
+  <Option name="y_inv" type="invalid"/>
+  <Option name="y_max" type="invalid"/>
+  <Option name="y_min" type="invalid"/>
+  <Option name="y_title" value="POPULATION" type="QString"/>
+  <Option name="y_type" value="linear" type="QString"/>
+  <Option name="z_title" value="" type="QString"/>
+ </Option>
+ <Option name="plot_properties" type="Map">
+  <Option name="additional_hover_text" type="invalid"/>
+  <Option name="bins" value="10" type="int"/>
+  <Option name="box_orientation" value="v" type="QString"/>
+  <Option name="box_outliers" value="false" type="bool"/>
+  <Option name="box_stat" value="false" type="bool"/>
+  <Option name="color_scale" value="Greys" type="QString"/>
+  <Option name="color_scale_data_defined_in_check" value="false" type="bool"/>
+  <Option name="color_scale_data_defined_in_invert_check" value="false" type="bool"/>
+  <Option name="cont_type" value="fill" type="QString"/>
+  <Option name="contour_type_combo" value="Riempimento" type="QString"/>
+  <Option name="cumulative" value="false" type="bool"/>
+  <Option name="custom" type="List">
+   <Option value="ISO2_CODE" type="QString"/>
+  </Option>
+  <Option name="hover_label_position" value="auto" type="QString"/>
+  <Option name="hover_label_text" type="invalid"/>
+  <Option name="hover_text" value="all" type="QString"/>
+  <Option name="in_color" value="#8ebad9" type="QString"/>
+  <Option name="invert_color_scale" value="false" type="bool"/>
+  <Option name="invert_hist" value="increasing" type="QString"/>
+  <Option name="line_combo" value="Linea continua" type="QString"/>
+  <Option name="line_dash" value="solid" type="QString"/>
+  <Option name="marker" value="markers" type="QString"/>
+  <Option name="marker_size" value="10" type="double"/>
+  <Option name="marker_symbol" value="0" type="int"/>
+  <Option name="marker_type_combo" value="Punti" type="QString"/>
+  <Option name="marker_width" value="1" type="double"/>
+  <Option name="name" value="ISO2_CODE" type="QString"/>
+  <Option name="normalization" value="" type="QString"/>
+  <Option name="opacity" value="1" type="double"/>
+  <Option name="out_color" value="#1f77b4" type="QString"/>
+  <Option name="point_combo" value="" type="QString"/>
+  <Option name="selected_features_only" value="false" type="bool"/>
+  <Option name="show_colorscale_legend" value="false" type="bool"/>
+  <Option name="show_lines" value="true" type="bool"/>
+  <Option name="show_lines_check" value="true" type="bool"/>
+  <Option name="show_mean_line" value="true" type="bool"/>
+  <Option name="violin_box" value="true" type="bool"/>
+  <Option name="violin_side" value="both" type="QString"/>
+  <Option name="visible_features_only" value="false" type="bool"/>
+  <Option name="x_name" value="ISO2_CODE" type="QString"/>
+  <Option name="y_name" value="POPULATION" type="QString"/>
+  <Option name="z_name" value="" type="QString"/>
+ </Option>
+ <Option name="plot_type" value="histogram" type="QString"/>
+ <Option name="source_layer_id" value="cities10000eu_399beab0_e385_4ce1_9b59_688d02930517" type="QString"/>
+</Option>

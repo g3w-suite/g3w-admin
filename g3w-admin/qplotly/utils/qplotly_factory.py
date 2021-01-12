@@ -29,10 +29,15 @@ from qplotly.vendor.DataPlotly.core.plot_factory import (
 
 from core.api.filters import IntersectsBBoxFilter
 
-from qdjango.api.layers.filters import SingleLayerSessionTokenFilter
+from qdjango.api.layers.filters import (
+    SingleLayerSessionTokenFilter,
+    RelationOneToManyFilter
+)
 
-from qdjango.api.constraints.filters import SingleLayerSubsetStringConstraintFilter, \
+from qdjango.api.constraints.filters import (
+    SingleLayerSubsetStringConstraintFilter,
     SingleLayerExpressionConstraintFilter
+)
 
 
 class QplotlyFactoring(PlotFactory):
@@ -41,7 +46,8 @@ class QplotlyFactoring(PlotFactory):
         IntersectsBBoxFilter,
         SingleLayerSubsetStringConstraintFilter,
         SingleLayerExpressionConstraintFilter,
-        SingleLayerSessionTokenFilter
+        SingleLayerSessionTokenFilter,
+        RelationOneToManyFilter
     )
 
     def __init__(self, *args, **kwargs):

@@ -63,6 +63,10 @@ class QplotlyTestAPI(QdjangoTestBase):
         cls.countries_plot_xml = file.read()
         file.close()
 
+        file = File(open(f'{DATASOURCE_PATH}cities_histogram_plot.xml', 'r'))
+        cls.cities_histogram_plot_xml = file.read()
+        file.close()
+
     @classmethod
     def tearDownClass(cls):
         cls.project.instance.delete()
@@ -203,6 +207,52 @@ class QplotlyTestAPI(QdjangoTestBase):
         self.assertEqual(trace_data[0]['type'], 'histogram')
         self.assertEqual(len(trace_data[0]['x']), 1)
         self.assertIn('Germania', trace_data[0]['x'])
+
+        # add new plotly widget for cities layer
+        # ======================================
+        cities = self.project.instance.layer_set.get(qgs_layer_id='cities10000eu_399beab0_e385_4ce1_9b59_688d02930517')
+        widget = QplotlyWidget.objects.create(
+            xml=self.cities_histogram_plot_xml,
+            datasource=cities.datasource,
+            type='histogram',
+            title='',
+            project=self.project.instance
+        )
+
+        widget.layers.add(cities)
+
+        response = self._testApiCall('qplotly-api-trace', args=[
+            self.project.instance.pk,
+            widget.pk
+        ])
+
+        jcontent = json.loads(response.content)
+        trace_data = json.loads(response.content)['data']
+
+        self.assertEqual(len(trace_data), 1)
+        self.assertEqual(trace_data[0]['type'], 'histogram')
+        self.assertEqual(len(trace_data[0]['x']), 8965)
+        self.assertIn('IT', trace_data[0]['x'])
+        self.assertIn('DE', trace_data[0]['x'])
+
+        # check relation one to many
+        response = self._testApiCall('qplotly-api-trace', args=[
+            self.project.instance.pk,
+            widget.pk
+        ], kwargs={
+            'relationonetomany': 'cities1000_ISO2_CODE_countries__ISOCODE|18'
+        })
+
+        jcontent = json.loads(response.content)
+        trace_data = json.loads(response.content)['data']
+
+        self.assertEqual(len(trace_data), 1)
+        self.assertEqual(trace_data[0]['type'], 'histogram')
+        self.assertEqual(len(trace_data[0]['x']), 1124)
+        self.assertIn('IT', trace_data[0]['x'])
+        self.assertNotIn('DE', trace_data[0]['x'])
+
+
 
     def test_get_qplotlywidgets4layer(self):
         """Test for homonimous util function"""
