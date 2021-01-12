@@ -251,7 +251,8 @@ class QplotlyTestAPI(QdjangoTestBase):
         self.assertEqual(len(trace_data[0]['x']), 1124)
         self.assertIn('IT', trace_data[0]['x'])
         self.assertNotIn('DE', trace_data[0]['x'])
-
+        
+        widget.delete()
 
 
     def test_get_qplotlywidgets4layer(self):
@@ -324,7 +325,7 @@ class QplotlyTestAPI(QdjangoTestBase):
         # change type for test
         data['type'] = 'pie'
         jcontent = json.loads(self._testApiCall('qplotly-widget-api-list', [], {}, data=data).content)
-        self.assertEqual(jcontent['pk'], 3)
+        self.assertEqual(jcontent['pk'], 4)
         self.assertEqual(jcontent['type'], 'pie')
         self.assertEqual(jcontent['title'], 'Test title create')
 
@@ -340,8 +341,8 @@ class QplotlyTestAPI(QdjangoTestBase):
 
         # change type for test
         data['type'] = 'scatter'
-        jcontent = json.loads(self._testApiCall('qplotly-widget-api-detail', [self.project.instance.pk, 3], {}, data=data, method='PUT').content)
-        self.assertEqual(jcontent['pk'], 3)
+        jcontent = json.loads(self._testApiCall('qplotly-widget-api-detail', [self.project.instance.pk, 4], {}, data=data, method='PUT').content)
+        self.assertEqual(jcontent['pk'], 4)
         self.assertEqual(jcontent['type'], 'scatter')
 
         jcontent = json.loads(self._testApiCall('qplotly-widget-api-filter-by-layer-id', [layer_pk], {}).content)
@@ -350,7 +351,7 @@ class QplotlyTestAPI(QdjangoTestBase):
 
         # TEST DELETE
         # -----------
-        self._testApiCall('qplotly-widget-api-detail', [self.project.instance.pk, 3], {}, data=None, method='DELETE')
+        self._testApiCall('qplotly-widget-api-detail', [self.project.instance.pk, 4], {}, data=None, method='DELETE')
 
         jcontent = json.loads(self._testApiCall('qplotly-widget-api-filter-by-layer-id', [layer_pk], {}).content)
         self.assertEqual(jcontent['count'], 1)
@@ -365,7 +366,7 @@ class QplotlyTestAPI(QdjangoTestBase):
 
         # change type for test
         jcontent = json.loads(self._testApiCall('qplotly-widget-api-list', [], {}, data=data).content)
-        self.assertEqual(jcontent['pk'], 4)
+        self.assertEqual(jcontent['pk'], 5)
         self.assertEqual(jcontent['type'], 'pie')
         self.assertEqual(jcontent['title'], 'Pie countries test')
 
