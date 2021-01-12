@@ -17,7 +17,7 @@ from core.api.filters import BaseFilterBackend
 from qdjango.models import SessionTokenFilter
 import logging
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('module_qdjango')
 
 
 FILTER_RELATIONONETOMANY_PARAM = 'relationonetomany'
