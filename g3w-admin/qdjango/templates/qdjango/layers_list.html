@@ -105,6 +105,9 @@
                             {% if 'shp' in SETTINGS.G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS %}
                             <th style="width:100px"><input type="checkbox" name="check_every_download" />{% trans 'Download as shp' %}</th>
                             {% endif %}
+                            {% if 'gpkg' in SETTINGS.G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS %}
+                            <th style="width:100px"><input type="checkbox" name="check_every_download_gpkg" />{% trans 'Download as gpkg' %}</th>
+                            {% endif %}
                             {% if 'xls' in SETTINGS.G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS %}
                             <th style="width:100px"><input type="checkbox" name="check_every_download_xls" />{% trans 'Download as xls' %}</th>
                             {% endif %}
@@ -168,6 +171,13 @@
                             <td>
                                 {% if object.layer_type in type_layer_for_download %}
                                 <input type="checkbox" data-widget-type="downloadLayer" data-ajax-url="{% url 'qdjango-project-layers-data-editing' project.group.slug project.slug object.pk %}" name="download_{{ object.pk }}" {% if object.download %}checked="checked"{% endif %}>
+                                {% endif %}
+                            </td>
+                            {% endif %}
+                            {% if 'gpkg' in SETTINGS.G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS %}
+                            <td>
+                                {% if object.layer_type in type_layer_for_download %}
+                                <input type="checkbox" data-widget-type="downloadLayer" data-ajax-url="{% url 'qdjango-project-layers-data-editing' project.group.slug project.slug object.pk %}" name="download_gpkg_{{ object.pk }}" {% if object.download %}checked="checked"{% endif %}>
                                 {% endif %}
                             </td>
                             {% endif %}

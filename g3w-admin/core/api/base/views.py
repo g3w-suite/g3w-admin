@@ -45,6 +45,7 @@ MODE_SHP = 'shp'
 MODE_XLS = 'xls'
 MODE_GPX = 'gpx'
 MODE_CSV = 'csv'
+MODE_GPKG = 'gpkg'
 MODE_FILTER_TOKEN = 'filtertoken'
 
 

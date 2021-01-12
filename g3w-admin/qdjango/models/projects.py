@@ -404,6 +404,8 @@ class Layer(G3WACLModelMixins, models.Model):
         _('Download data in gpx format'), default=False, blank=True)
     download_csv = models.BooleanField(
         _('Download data in csv format'), default=False, blank=True)
+    download_gpkg = models.BooleanField(
+        _('Download data in gpkg format'), default=False, blank=True)
 
     # layer extension
     extent = models.TextField(_('Layer extension'), null=True, blank=True)

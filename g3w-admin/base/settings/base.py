@@ -284,7 +284,7 @@ INTERNAL_IPS = [
 # -------------------------
 FILE_FORM_UPLOAD_BACKEND = 'core.utils.response.G3WFileFormUploadBackend'
 
-G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS = ['shp', 'xls', 'csv']
+G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS = ['shp', 'xls', 'csv', 'gpkg']
 
 # Setting to activate/deactivate user password reset by email.
 RESET_USER_PASSWORD = False

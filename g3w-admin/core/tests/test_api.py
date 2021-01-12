@@ -161,6 +161,27 @@ class CoreApiTest(CoreTestBase):
         self.assertEqual(response.status_code, 403)
         self.client.logout()
 
+    def testCoreVectorApiGpkg(self):
+        """Test core-vector-api data GPKG"""
+
+        # test forbidden if layer.download_xls is False
+        self.assertTrue(self.client.login(username=self.test_admin1.username, password=self.test_admin1.username))
+        path = self._getPath(
+            'core-vector-api', ['xls', 'qdjango', '1', 'spatialite_points20190604101052075']
+        )
+        response = self.client.get(path)
+        self.assertEqual(response.status_code, 403)
+        self.client.logout()
+
+        # set download_xls property to True
+        layer = Layer.objects.get(project_id=1, qgs_layer_id='spatialite_points20190604101052075')
+        layer.download_gpkg = True
+        layer.save()
+
+        response = self._testApiCall(
+            'core-vector-api', ['gpkg', 'qdjango', '1', 'spatialite_points20190604101052075'])
+        self.assertTrue(len(response.content) > 3200)
+
 
     def testCoreVectorApiSearch(self):
         """Test core-vector-api search"""

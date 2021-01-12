@@ -52,6 +52,7 @@ class QdjangoViewsTest(QdjangoTestBase):
             'download_layer': 'download',
             'download_layer_xls': 'download',
             'download_layer_csv': 'download',
+            'download_layer_gpkg': 'download',
             'external': 'external'
         }
         for p, a in parms_to_check.items():

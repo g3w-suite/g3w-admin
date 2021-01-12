@@ -9,7 +9,7 @@ from qgis.core import QgsVectorFileWriter, QgsFeatureRequest, QgsJsonUtils, Qgis
 
 from core.api.base.vector import MetadataVectorLayer
 from core.api.base.views import (MODE_CONFIG, MODE_DATA, MODE_SHP, MODE_XLS, MODE_GPX, MODE_CSV, MODE_FILTER_TOKEN,
-                                 APIException, BaseVectorOnModelApiView,
+                                 APIException, BaseVectorOnModelApiView, MODE_GPKG,
                                  IntersectsBBoxFilter)
 from core.api.filters import (IntersectsBBoxFilter, OrderingFilter,
                               SearchFilter, SuggestFilterBackend, FieldFilterBackend)
@@ -187,6 +187,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         MODE_XLS,   # get XLS
         MODE_GPX,    # get GPX
         MODE_CSV,  # get CSV
+        MODE_GPKG, # get GeoPackage
         MODE_FILTER_TOKEN  # get session filter token
     ]
 
@@ -571,6 +572,58 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         response['Content-Disposition'] = f'attachment; filename={filename}'
         response.set_cookie('fileDownload', 'true')
         return response
+
+    def response_gpkg_mode(self, request):
+        """
+        Download Geopackage of data
+        :param request: Http Django request object
+        :return: http response with attached file
+        """
+
+        if not self.layer.download_gpkg:
+            return HttpResponseForbidden()
+
+        # Apply filter backends, store original subset string
+        qgs_request = QgsFeatureRequest()
+        original_subset_string = self.metadata_layer.qgis_layer.subsetString()
+        if hasattr(self, 'filter_backends'):
+            for backend in self.filter_backends:
+                backend().apply_filter(request, self.metadata_layer.qgis_layer, qgs_request, self)
+
+        save_options = QgsVectorFileWriter.SaveVectorOptions()
+        save_options.driverName = 'gpkg'
+        save_options.fileEncoding = 'utf-8'
+
+        tmp_dir = tempfile.TemporaryDirectory()
+
+        filename = self.metadata_layer.qgis_layer.name() + '.gpkg'
+
+        # Make a selection based on the request
+        self._selection_responde_download_mode(qgs_request, save_options)
+
+        gpkg_tmp_path = os.path.join(tmp_dir.name, filename)
+        error_code, error_message = QgsVectorFileWriter.writeAsVectorFormatV2(
+            self.metadata_layer.qgis_layer,
+            gpkg_tmp_path,
+            self.metadata_layer.qgis_layer.transformContext(),
+            save_options
+        )
+
+        # Restore the original subset string and select no features
+        self.metadata_layer.qgis_layer.selectByIds([])
+        self.metadata_layer.qgis_layer.setSubsetString(original_subset_string)
+
+        if error_code != QgsVectorFileWriter.NoError:
+            tmp_dir.cleanup()
+            return HttpResponse(status=500, reason=error_message)
+
+        response = HttpResponse(
+            open(gpkg_tmp_path, 'rb').read(), content_type='application/geopackage+vnd.sqlite3')
+        tmp_dir.cleanup()
+        response['Content-Disposition'] = f'attachment; filename={filename}'
+        response.set_cookie('fileDownload', 'true')
+        return response
+
 
     def response_csv_mode(self, request):
         """

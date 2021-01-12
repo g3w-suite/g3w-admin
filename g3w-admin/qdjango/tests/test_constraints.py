@@ -1001,6 +1001,162 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
         self.assertTrue(vl.isValid())
         self.assertEqual(len([f for f in vl.getFeatures()]), 1)
 
+    def test_gpkg_api(self):
+        """Test that the filter applies to gpkg api"""
+
+        world = self.world
+        world.download_gpkg = True
+        world.save()
+
+        response = self._testApiCallAdmin01('core-vector-api',
+                                            args={
+                                                'mode_call': 'gpkg',
+                                                'project_type': 'qdjango',
+                                                'project_id': self.qdjango_project.id,
+                                                # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                                # WARNING: it's the qgs_layer_id, not the name!
+                                                # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                                'layer_name': world.qgs_layer_id,
+                                            }.values()
+                                            )
+        self.assertEqual(response.status_code, 200)
+
+        temp = QTemporaryDir()
+        fname = temp.path() + '/temp.gpkg'
+        with open(fname, 'wb+') as f:
+            f.write(response.content)
+
+        vl = QgsVectorLayer(fname)
+        self.assertTrue(vl.isValid())
+        vl.getFeatures(QgsFeatureRequest(QgsExpression('NAME = \'ITALY\'')))
+        self.assertEqual(len([f for f in vl.getFeatures(
+            QgsFeatureRequest(QgsExpression('NAME = \'ITALY\'')))]), 1)
+
+        # Add a rule
+        admin01 = self.test_user1
+        group1 = admin01.groups.all()[0]
+        world = self.world
+        constraint = SingleLayerConstraint(layer=world, active=True)
+        constraint.save()
+
+        rule = ConstraintExpressionRule(
+            constraint=constraint, group=group1, rule="NAME != 'ITALY'")
+        rule.save()
+
+        # TODO: ask to elpaso
+        # response = self._testApiCallAdmin01('core-vector-api',
+        #                                     args={
+        #                                         'mode_call': 'gpkg',
+        #                                         'project_type': 'qdjango',
+        #                                         'project_id': self.qdjango_project.id,
+        #                                         # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        #                                         # WARNING: it's the qgs_layer_id, not the name!
+        #                                         # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        #                                         'layer_name': world.qgs_layer_id,
+        #                                     }.values()
+        #                                     )
+        # self.assertEqual(response.status_code, 200)
+        #
+        # temp = QTemporaryDir()
+        # fname = temp.path() + '/temp1.gpkg'
+        # with open(fname, 'wb+') as f:
+        #     f.write(response.content)
+        #
+        # vl = QgsVectorLayer(temp.path())
+        # self.assertTrue(vl.isValid())
+        # self.assertEqual(len([f for f in vl.getFeatures(
+        #     QgsFeatureRequest(QgsExpression('NAME = \'ITALY\'')))]), 0)
+        #
+        # self.assertEqual(len([f for f in vl.getFeatures(
+        #     QgsFeatureRequest(QgsExpression('NAME = \'GERMANY\'')))]), 1)
+
+        # TEST filter FID
+        # ===============
+        response = self._testApiCallAdmin01('core-vector-api',
+                                            args={
+                                                'mode_call': 'gpkg',
+                                                'project_type': 'qdjango',
+                                                'project_id': self.qdjango_project.id,
+                                                # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                                # WARNING: it's the qgs_layer_id, not the name!
+                                                # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                                'layer_name': world.qgs_layer_id,
+                                            }.values(),
+                                            kwargs={
+                                                'fid': '2'
+                                            }
+                                            )
+
+        self.assertEqual(response.status_code, 200)
+
+        temp = QTemporaryDir()
+        fname = temp.path() + '/temp2.gpkg'
+        with open(fname, 'wb+') as f:
+            f.write(response.content)
+
+        vl = QgsVectorLayer(temp.path())
+
+        self.assertTrue(vl.isValid())
+        self.assertEqual(len([f for f in vl.getFeatures()]), 1)
+
+        # TEST filter FIDS
+        # ================
+        response = self._testApiCallAdmin01('core-vector-api',
+                                            args={
+                                                'mode_call': 'gpkg',
+                                                'project_type': 'qdjango',
+                                                'project_id': self.qdjango_project.id,
+                                                # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                                # WARNING: it's the qgs_layer_id, not the name!
+                                                # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                                'layer_name': world.qgs_layer_id,
+                                            }.values(),
+                                            kwargs={
+                                                'fids': '2,3'
+                                            }
+                                            )
+
+        self.assertEqual(response.status_code, 200)
+
+        temp = QTemporaryDir()
+        fname = temp.path() + '/temp3.gpkg'
+        with open(fname, 'wb+') as f:
+            f.write(response.content)
+
+        vl = QgsVectorLayer(temp.path())
+
+        self.assertTrue(vl.isValid())
+        self.assertEqual(len([f for f in vl.getFeatures()]), 2)
+
+        # TEST filter FIELD
+        # =================
+        response = self._testApiCallAdmin01('core-vector-api',
+                                            args={
+                                                'mode_call': 'gpkg',
+                                                'project_type': 'qdjango',
+                                                'project_id': self.qdjango_project.id,
+                                                # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                                # WARNING: it's the qgs_layer_id, not the name!
+                                                # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                                'layer_name': world.qgs_layer_id,
+                                            }.values(),
+                                            kwargs={
+                                                'field': 'NAME|eq|FRANCE'
+                                            }
+                                            )
+
+        self.assertEqual(response.status_code, 200)
+
+        temp = QTemporaryDir()
+        fname = temp.path() + '/temp4.gpkg'
+        with open(fname, 'wb+') as f:
+            f.write(response.content)
+
+        vl = QgsVectorLayer(temp.path())
+
+        self.assertTrue(vl.isValid())
+        self.assertEqual(len([f for f in vl.getFeatures()]), 1)
+
     def test_bbox_filter(self):
         """Test a rule with geometry filter"""
 
