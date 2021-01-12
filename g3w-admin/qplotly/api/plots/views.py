@@ -33,14 +33,14 @@ class QplotlyTraceAPIView(G3WAPIView):
         # load settings from db
         settings = QplotlySettings()
         if not settings.read_from_model(qplotly):
-            #todo: raise a API exception
             raise Exception()
 
         # get bbox if is sent
+        # 2021/01/12 using IntersectBBOXFilter
         rect = None
-        if 'bbox' in kwargs:
-            rect = QgsReferencedRectangle(QgsRectangle(**kwargs['bbox']),
-                                          QgsCoordinateReferenceSystem(qplotly.project.group.srid.srid))
+        #if 'bbox' in kwargs:
+        #    rect = QgsReferencedRectangle(QgsRectangle(**kwargs['bbox']),
+        #                                  QgsCoordinateReferenceSystem(qplotly.project.group.srid.srid))
 
         # instance a QplotlyFactory
         layer = Layer.objects.get(qgs_layer_id=settings.source_layer_id, project_id=kwargs['project_id'])

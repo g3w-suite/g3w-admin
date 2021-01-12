@@ -251,7 +251,26 @@ class QplotlyTestAPI(QdjangoTestBase):
         self.assertEqual(len(trace_data[0]['x']), 1124)
         self.assertIn('IT', trace_data[0]['x'])
         self.assertNotIn('DE', trace_data[0]['x'])
-        
+
+        # test in_bbox filter
+        # -------------------------------------
+
+        response = self._testApiCall('qplotly-api-trace', args=[
+            self.project.instance.pk,
+            widget.pk
+        ], kwargs={
+            'in_bbox': '9.7,41.4,13.0,45.6'
+        })
+
+        jcontent = json.loads(response.content)
+        trace_data = json.loads(response.content)['data']
+
+        self.assertEqual(len(trace_data), 1)
+        self.assertEqual(trace_data[0]['type'], 'histogram')
+        self.assertEqual(len(trace_data[0]['x']), 329)
+        self.assertIn('IT', trace_data[0]['x'])
+        self.assertNotIn('DE', trace_data[0]['x'])
+
         widget.delete()
 
 
