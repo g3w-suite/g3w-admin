@@ -1045,7 +1045,6 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
             constraint=constraint, group=group1, rule="NAME != 'ITALY'")
         rule.save()
 
-        # TODO: ask to elpaso
         response = self._testApiCallAdmin01('core-vector-api',
                                             args={
                                                 'mode_call': 'gpkg',
