@@ -19,6 +19,7 @@ At the moment is not used a classic versioning system for the suite, there are m
 | Branch | Python version | Django version | QGIS API |Status |
 |--------|----------------|----------------|----------|-------|
 | dev | 3.6 | 2.2 | Used | Continue developing |
+| v.3.1.x | 3.6 | 2.2 | Used | Bug fixing |
 | v.3.0.x | 3.6 | 2.2 | Used | Bug fixing |
 | dj22-py3 | 3.6 | 2.2 | Not used | Bug fixing |
 | py2 | 2.7 | 1.11 | Not used |Bug fixing |        
