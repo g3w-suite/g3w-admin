@@ -50,7 +50,8 @@ def clear_session_for_uploaded_files(request):
             logger.error(f'File {f} was not deleted: {e}')
 
     # reset session
-    del request.session[SESSION_KEY]
+    if SESSION_KEY in request.session:
+        del request.session[SESSION_KEY]
 
 
 
