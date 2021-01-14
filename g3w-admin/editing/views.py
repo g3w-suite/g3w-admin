@@ -14,6 +14,7 @@ from django.db.models import ImageField, FileField
 from core.mixins.views import AjaxableFormResponseMixin, G3WRequestViewMixin, G3WProjectViewMixin
 from core.utils.decorators import project_type_permission_required
 from core.utils import file_path_mime
+from core.utils.vector import BaseUserMediaHandler
 from usersmanage.utils import setPermissionUserObject, get_viewers_for_object, \
     get_user_groups_for_object
 from .forms import ActiveEditingLayerForm
@@ -22,6 +23,7 @@ import os
 
 MODE_EDITING = 'editing'
 MODE_UNLOCK = 'unlock'
+SESSION_KEY = 'g3wsuite_updaded_files'
 
 
 MAPPING_DJANGO_MODEL_FIELD_FILE_OBJECT = {
@@ -36,6 +38,19 @@ class UploadFileView(View):
 
     sub_dir_upload = ''
 
+    def save_session(self, request, path):
+        """Save file path uploaded into session"""
+        path = BaseUserMediaHandler.build_fs_path(path)
+
+        session = request.session.get(SESSION_KEY, None)
+
+        if session:
+            if path not in session:
+                session.append(path)
+                request.session[SESSION_KEY] = session
+        else:
+            request.session[SESSION_KEY] = [path]
+
     def post(self, request, *args, **kwargs):
 
         if not request.FILES:
@@ -46,6 +61,8 @@ class UploadFileView(View):
         # get files
         for file_field, file in request.FILES.items():
             to_ret[file_field] = self.handle_file(file)
+
+        self.save_session(request, to_ret[file_field]['value'])
 
         return JsonResponse(to_ret)
 
@@ -67,6 +84,8 @@ class UploadFileView(View):
 
         File(f)
         path = default_storage.save('{}/{}'.format(sub_path_to_save, f.name), f)
+
+
 
         return {
             'value': '{}{}'.format(settings.MEDIA_URL, path),

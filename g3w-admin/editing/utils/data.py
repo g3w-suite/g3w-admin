@@ -1,3 +1,8 @@
+from editing.views import SESSION_KEY
+import os
+import logging
+
+logger = logging.getLogger('module_editing')
 
 
 
@@ -30,6 +35,27 @@ def build_key_value_from_model(model):
     Return a key -> value list object from model with id and description fields.
     """
     return [{'key': l.id, 'value': u'({}) {}'.format(l.id, l.description)} for l in model.objects.all().order_by('id')]
+
+
+def clear_session_for_uploaded_files(request):
+    """Clear filesystem from temporary uploaded files
+    :request: django request instance
+    """
+
+    files = request.session.get(SESSION_KEY, [])
+    for f in files:
+        try:
+            os.remove(f)
+        except OSError as e:
+            logger.error(f'File {f} was not deleted: {e}')
+
+    # reset session
+    del request.session[SESSION_KEY]
+
+
+
+
+
 
 
 

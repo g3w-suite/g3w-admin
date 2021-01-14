@@ -8,7 +8,7 @@ import os
 import shutil
 import logging
 
-logger = logging.getLogger(__file__)
+logger = logging.getLogger('module_core')
 
 
 class BaseUserMediaHandler(object):
@@ -18,6 +18,12 @@ class BaseUserMediaHandler(object):
 
     type = 'qdjango'
     datasource_field = 'datasource'
+
+    @staticmethod
+    def build_fs_path(property):
+        """Build fs path for file from uploading url"""
+
+        return f"{settings.MEDIA_ROOT}{property.replace(settings.MEDIA_URL, '')}"
 
     def __init__(self, file_name=None, layer=None, metadata_layer=None, feature=None, request=None):
 
@@ -126,13 +132,14 @@ class BaseUserMediaHandler(object):
                     if save:
 
                         # path to save media file
-                        path_to_file_tmp = '{}{}'.format(settings.MEDIA_ROOT,
-                                                         self.feature_properties[field].replace(settings.MEDIA_URL, ''))
+                        path_to_file_tmp = BaseUserMediaHandler.build_fs_path(self.feature_properties[field])
 
                         if not os.path.isdir(path_to_save):
                             os.makedirs(path_to_save)
 
-                        shutil.move(path_to_file_tmp, path_file_to_save)
+                        # for upload of the same image or doc during parallel attribute editing
+                        # move delete fo temp uploaded files at the end of commit workflow.
+                        shutil.copy(path_to_file_tmp, path_file_to_save)
 
                         # build new value
 

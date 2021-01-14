@@ -17,14 +17,14 @@ from core.signals import (post_save_maplayer, pre_delete_maplayer,
 from editing.models import (EDITING_POST_DATA_ADDED, EDITING_POST_DATA_DELETED,
                             EDITING_POST_DATA_UPDATED)
 from editing.utils import LayerLock
-from editing.utils.data import get_relations_data_by_fid
+from editing.utils.data import clear_session_for_uploaded_files
 from qdjango.apps import get_qgs_project
 from qdjango.models import Layer
 from qdjango.utils.data import QGIS_LAYER_TYPE_NO_GEOM
 from qdjango.utils.validators import feature_validator
 import logging
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('module_editing')
 
 MODE_EDITING = 'editing'
 MODE_UNLOCK = 'unlock'
@@ -461,6 +461,10 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
             })
         except:
             pass
+
+        # clear file uploaded and reset session
+        clear_session_for_uploaded_files(request)
+
 
     def response_unlock_mode(self, request):
         """
