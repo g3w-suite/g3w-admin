@@ -293,3 +293,8 @@ RESET_USER_PASSWORD = False
 # ------------------------
 
 LOAD_QPLOTLY_FROM_PROJECT = False
+
+# VENDOR KEYS SETTINGS
+# set into local_settings.py to use it
+# ------------------------------------
+VENDOR_KEYS = {}
