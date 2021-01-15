@@ -88,7 +88,7 @@ class ClientApiTest(CoreTestBase):
         cls.project_extent310_2.save()
         qgis_project_file_2.close()
 
-
+    @override_settings(VENDOR_KEYS={'google': '123456789'})
     def testGroupConfigApiView(self):
         """Test call to config"""
 
@@ -115,6 +115,9 @@ class ClientApiTest(CoreTestBase):
         self.assertEqual(resp["group"]["id"], 1)
         self.assertEqual(resp["group"]["slug"], 'gruppo-1')
         self.assertEqual(len(resp["group"]["projects"]), 1)
+
+        self.assertIn('vendorkeys', resp["group"])
+        self.assertEqual(resp["group"]["vendorkeys"], {'google': '123456789'})
 
         project = resp["group"]["projects"][0]
         to_compare = {'description': '<p>progetto 1<br></p>', 'title': 'Un progetto',

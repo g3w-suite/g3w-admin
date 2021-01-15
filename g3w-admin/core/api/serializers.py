@@ -138,6 +138,9 @@ class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         for baselayer in baselayers:
             ret['baselayers'].append(BaseLayerSerializer(baselayer).data)
 
+        # add vendorkeys if it is set into settings
+        if settings.VENDOR_KEYS:
+            ret['vendorkeys'] = settings.VENDOR_KEYS
 
         # add initproject and overviewproject
         ret['initproject'] = "{}:{}".format(self.projectType, self.projectId)
