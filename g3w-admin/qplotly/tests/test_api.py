@@ -21,6 +21,7 @@ from guardian.shortcuts import assign_perm
 from qplotly.utils import get_qplotlywidget_for_project
 from qplotly.models import QplotlyWidget
 from qplotly.utils.models import get_qplotlywidgets4layer
+from qplotly.api.plots.views import WITH_RELATIONS_PARAM
 from .test_utils import CURRENT_PATH, QGS_FILE, TEST_BASE_PATH, get_data_plotly_settings_from_file, DATASOURCE_PATH
 import json
 import copy
@@ -273,6 +274,95 @@ class QplotlyTestAPI(QdjangoTestBase):
 
         widget.delete()
 
+    def test_trace_api_with_relations(self):
+        """/qplotly/api/trace API with_relations param"""
+
+        # qplolty settings of father
+        qplotlywidget_id = QplotlyWidget.objects.all()[0].pk
+
+        # get or create plotly widget for cities layer
+        # ======================================
+        cities = self.project.instance.layer_set.get(qgs_layer_id='cities10000eu_399beab0_e385_4ce1_9b59_688d02930517')
+        widget, created = QplotlyWidget.objects.get_or_create(
+            xml=self.cities_histogram_plot_xml,
+            datasource=cities.datasource,
+            type='histogram',
+            title='',
+            project=self.project.instance
+        )
+
+        if created:
+            widget.layers.add(cities)
+
+        response = self._testApiCall('qplotly-api-trace', args=[
+            self.project.instance.pk,
+            qplotlywidget_id
+        ], kwargs={
+            WITH_RELATIONS_PARAM: 'cities1000_ISO2_CODE_countries__ISOCODE'
+        })
+
+        jcontent = json.loads(response.content)
+        trace = json.loads(response.content)
+
+        trace_data = trace['data']
+
+        self.assertEqual(len(trace_data), 1)
+        self.assertEqual(trace_data[0]['type'], 'histogram')
+        self.assertEqual(len(trace_data[0]['x']), 51)
+        self.assertIn('Italia', trace_data[0]['x'])
+
+        # check for relations
+        self.assertIn('relations', trace)
+        self.assertIn('cities1000_ISO2_CODE_countries__ISOCODE', trace['relations'])
+        relation = trace['relations']['cities1000_ISO2_CODE_countries__ISOCODE']
+        self.assertEqual(len(relation), 1)
+        self.assertEqual(relation[0]['id'], widget.pk)
+        relation_data = relation[0]['data']
+        self.assertIn('IT', relation_data[0]['x'])
+        self.assertIn('DE', relation_data[0]['x'])
+
+        # try with filtered father
+        # ================================
+        # With a session token filter
+        # -------------------------------
+
+        countries = Layer.objects.get(project_id=self.project.instance.pk,
+                                      qgs_layer_id='countries_d53dfb9a_98e1_4196_a601_eed9a33f47c3')
+
+        # create a token filter
+        session_token = SessionTokenFilter.objects.create(user=self.test_user1)  # as admin01
+        session_filter = session_token.stf_layers.create(layer=countries, qgs_expr="NAME_IT = 'Albania'")
+
+        response = self._testApiCall('qplotly-api-trace', args=[
+            self.project.instance.pk,
+            qplotlywidget_id
+        ], kwargs={
+            'filtertoken': session_token.token,
+            WITH_RELATIONS_PARAM: 'cities1000_ISO2_CODE_countries__ISOCODE'
+        })
+
+        trace = json.loads(response.content)
+        trace_data = json.loads(response.content)['data']
+
+        self.assertEqual(len(trace_data), 1)
+        self.assertEqual(trace_data[0]['type'], 'histogram')
+        self.assertEqual(len(trace_data[0]['x']), 1)
+        self.assertNotIn('Italia', trace_data[0]['x'])
+        self.assertIn('Albania', trace_data[0]['x'])
+
+        # check for relation
+        self.assertIn('relations', trace)
+        self.assertIn('cities1000_ISO2_CODE_countries__ISOCODE', trace['relations'])
+        relation = trace['relations']['cities1000_ISO2_CODE_countries__ISOCODE']
+        self.assertEqual(len(relation), 1)
+        self.assertEqual(relation[0]['id'], widget.pk)
+        relation_data = relation[0]['data']
+        self.assertNotIn('IT', relation_data[0]['x'])
+        self.assertNotIn('DE', relation_data[0]['x'])
+        self.assertIn('AL', relation_data[0]['x'])
+
+
+        widget.delete()
 
     def test_get_qplotlywidgets4layer(self):
         """Test for homonimous util function"""
@@ -344,7 +434,7 @@ class QplotlyTestAPI(QdjangoTestBase):
         # change type for test
         data['type'] = 'pie'
         jcontent = json.loads(self._testApiCall('qplotly-widget-api-list', [], {}, data=data).content)
-        self.assertEqual(jcontent['pk'], 4)
+        self.assertEqual(jcontent['pk'], 5)
         self.assertEqual(jcontent['type'], 'pie')
         self.assertEqual(jcontent['title'], 'Test title create')
 
@@ -360,8 +450,8 @@ class QplotlyTestAPI(QdjangoTestBase):
 
         # change type for test
         data['type'] = 'scatter'
-        jcontent = json.loads(self._testApiCall('qplotly-widget-api-detail', [self.project.instance.pk, 4], {}, data=data, method='PUT').content)
-        self.assertEqual(jcontent['pk'], 4)
+        jcontent = json.loads(self._testApiCall('qplotly-widget-api-detail', [self.project.instance.pk, 5], {}, data=data, method='PUT').content)
+        self.assertEqual(jcontent['pk'], 5)
         self.assertEqual(jcontent['type'], 'scatter')
 
         jcontent = json.loads(self._testApiCall('qplotly-widget-api-filter-by-layer-id', [layer_pk], {}).content)
@@ -370,7 +460,7 @@ class QplotlyTestAPI(QdjangoTestBase):
 
         # TEST DELETE
         # -----------
-        self._testApiCall('qplotly-widget-api-detail', [self.project.instance.pk, 4], {}, data=None, method='DELETE')
+        self._testApiCall('qplotly-widget-api-detail', [self.project.instance.pk, 5], {}, data=None, method='DELETE')
 
         jcontent = json.loads(self._testApiCall('qplotly-widget-api-filter-by-layer-id', [layer_pk], {}).content)
         self.assertEqual(jcontent['count'], 1)
@@ -385,7 +475,7 @@ class QplotlyTestAPI(QdjangoTestBase):
 
         # change type for test
         jcontent = json.loads(self._testApiCall('qplotly-widget-api-list', [], {}, data=data).content)
-        self.assertEqual(jcontent['pk'], 5)
+        self.assertEqual(jcontent['pk'], 6)
         self.assertEqual(jcontent['type'], 'pie')
         self.assertEqual(jcontent['title'], 'Pie countries test')
 

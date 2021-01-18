@@ -27,6 +27,8 @@ from qplotly.vendor.DataPlotly.core.plot_factory import (
     QgsSymbolLayerUtils
 )
 
+from qplotly.server_filters import ByFatherFeatursFilter
+
 from core.api.filters import IntersectsBBoxFilter
 
 from qdjango.api.layers.filters import (
@@ -174,6 +176,8 @@ class QplotlyFactoring(PlotFactory):
         else:
             it = self.source_layer.getFeatures(request)
 
+        self.qgsrequest = request
+
         # Some plot types don't draw individual glyphs for each feature, but aggregate them instead.
         # In that case it doesn't make sense to evaluate expressions for settings like marker size or color for each
         # feature. Instead, the evaluation should be executed only once for these settings.
@@ -301,5 +305,30 @@ class QplotlyFactoring(PlotFactory):
 
         # Restore the original subset string
         self.source_layer.setSubsetString(original_subset_string)
+
+
+class QplotlyFactoringRelation(QplotlyFactoring):
+    """Inherit form QplotlyFactoring and is specific for relations"""
+
+    filter_backends = QplotlyFactoring.filter_backends + (ByFatherFeatursFilter, )
+
+    def set_father_features_expresion(self, qgs_relation=None, fsource_layer=None, ffiltered_features=None):
+        """
+        Create expression and set into class
+        :param qgs_relation: QgsRelation instance
+        :param fsource_layer: QgsVectorLayer instance of father
+        :param ffiltered_features: QgsFeatureiterator of father
+        """
+
+        # get features and
+        features = fsource_layer.getFeatures() if fsource_layer else ffiltered_features
+
+        expressions = []
+        for f in features:
+            expressions.append(qgs_relation.getRelatedFeaturesFilter(qgs_relation.referencedLayer().
+                                                                    getFeature(int(f.id()))))
+        self.father_features_expresion = ' OR '.join(expressions)
+
+
 
 

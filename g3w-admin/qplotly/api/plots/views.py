@@ -16,15 +16,80 @@ from qgis.core import \
     QgsCoordinateReferenceSystem
 from rest_framework.response import Response
 from core.api.base.views import G3WAPIView
-from core.utils.qgisapi import get_qgis_layer
+from core.utils.qgisapi import get_qgis_layer, get_qgs_project
 from qdjango.models import Layer
 from qplotly.models import QplotlyWidget
 from qplotly.utils.qplotly_settings import QplotlySettings
-from qplotly.utils.qplotly_factory import QplotlyFactoring
+from qplotly.utils.qplotly_factory import QplotlyFactoring, QplotlyFactoringRelation
+
+import logging
+
+logger = logging.getLogger('module_qplotly')
+
+
+WITH_RELATIONS_PARAM = 'withrelations'
 
 
 class QplotlyTraceAPIView(G3WAPIView):
     """API return plotly trace data"""
+
+    def _get_relations(self, with_relations=[], flayer=None, ffactory=None, request=None, res={}):
+        """
+        Check for relations adn add to res
+        :param with_relations: relations id list
+        :param source_layer: QgsVectorLayer instance of father
+        :param res: result dict to send into response
+        """
+
+        qgs_prj = get_qgs_project(flayer.project.qgis_file.path)
+
+        relations = None
+        for relation_id in with_relations:
+            qgs_relation = qgs_prj.relationManager().relation(relation_id)
+            if not qgs_relation.isValid():
+                logger.error(f'Relation with id {relation_id} is not valid.')
+                continue
+
+            csource_layer = qgs_relation.referencingLayer()
+            clayer = flayer.project.layer_set.get(qgs_layer_id=csource_layer.id())
+
+            # get every qplotly active for child layer
+            qplotlies = clayer.qplotlywidget_set.all()
+            if len(qplotlies) == 0:
+                continue
+
+            if not relations:
+                relations = {
+                    relation_id: []
+                }
+            else:
+                relations.update({
+                    relation_id: []
+                })
+
+            for qplotly in qplotlies:
+                settings = QplotlySettings()
+                if not settings.read_from_model(qplotly):
+                    logger.error(f'Error on load qlotly settings for layer pk {clayer.pk}.')
+                    continue
+
+                factory = QplotlyFactoringRelation(settings, request=request, layer=clayer)
+                factory.source_layer = csource_layer
+
+                # create expression
+                ffiltered_features = ffactory.source_layer.getFeatures(ffactory.qgsrequest)
+                factory.set_father_features_expresion(qgs_relation=qgs_relation,
+                                                      ffiltered_features=ffiltered_features)
+
+                factory.rebuild()
+
+                relations[relation_id].append({
+                    'id': qplotly.pk,
+                    'data': factory.trace
+                })
+
+            if 'relations' not in res and relations:
+                res.update({'relations': relations})
 
     def get(self, request, **kwargs):
 
@@ -56,6 +121,23 @@ class QplotlyTraceAPIView(G3WAPIView):
             'data': factory.trace
 
         }
+
+        # if withrelations was sent add relations trace values
+        # ----------------------------------------------------
+        if request.method == 'POST':
+            request_data = request.data
+        else:
+            request_data = request.query_params
+
+        with_relations = request_data.get(WITH_RELATIONS_PARAM)
+        if with_relations:
+            self._get_relations(
+                with_relations=with_relations.split(','),
+                flayer=layer,
+                ffactory = factory,
+                request=request,
+                res=res,
+            )
 
         self.results.results.update(res)
 
