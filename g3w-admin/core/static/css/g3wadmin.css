@@ -133,3 +133,7 @@ h5 small {
     padding: 2px 3px;
     line-height: .9;
 }
+
+#qdjango_projects_list table a.project-thumb:hover img {
+    border: 2px solid #E6E6E6;
+}

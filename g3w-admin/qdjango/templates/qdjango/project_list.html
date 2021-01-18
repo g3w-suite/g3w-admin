@@ -93,7 +93,7 @@
 
                     </td>
                     <td>
-                        <a href="{% url 'group-project-map' group.slug 'qdjango' object.pk %}" target="_blank">
+                        <a href="{% url 'group-project-map' group.slug 'qdjango' object.pk %}" class="project-thumb" title="{% trans 'Show map' %}" target="_blank">
                         {% if object.thumbnail  %}
                         <img style="height:60px;" class="img-responsive" src="{{ MEDIA_URL }}{{ object.thumbnail }}" />
                         {% else %}
