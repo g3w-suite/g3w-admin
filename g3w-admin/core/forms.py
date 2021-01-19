@@ -146,7 +146,7 @@ class GroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, G3WRequestFor
                                             css_class='box-header with-border'
                                         ),
                                         Div(
-                                            Field('header_terms_of_use_text',css_class='wys5'),
+                                            'header_terms_of_use_text',
                                             'header_terms_of_use_link',
                                             css_class='box-body'
                                         ),
