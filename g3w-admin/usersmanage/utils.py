@@ -179,26 +179,24 @@ def get_users_with_perms_for_group(obj, attach_perms=False, with_superusers=Fals
 def setPermissionUserObject(user, object, permissions=[], mode='add'):
     """
     Assign or remove guardian permissions to user for object
+
+    :param user: Auth user or group model obj.
+    :param object: Django model obj to apply or remove permissions.
+    :param permissions: Default: '[]'. A List of permission to add/remove to object for user.
+    :param mode: Default: 'add'. Mode work, 'add' or 'remove'.
+    :return: None
     """
 
     if not isinstance(permissions, list):
         permissions = [permissions]
 
-
-    current_permissions = get_perms(user, object)
-
     for perm in permissions:
-        if mode == 'add' and perm not in current_permissions:
+        if mode == 'add':
             assign_perm(perm, user, object)
-        elif mode == 'remove' and perm in current_permissions:
+        elif mode == 'remove':
             remove_perm(perm, user, object)
-    '''
-    for perm in permissions:
-        if mode == 'add' and not user.has_perm(perm, object):
-            assign_perm(perm, user, object)
-        elif mode == 'remove' and user.has_perm(perm, object):
-            remove_perm(perm, user, object)
-    '''
+
+
 
 
 def get_objects_by_perm(obj, perm):
