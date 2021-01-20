@@ -361,6 +361,80 @@ class QplotlyTestAPI(QdjangoTestBase):
         self.assertNotIn('DE', relation_data[0]['x'])
         self.assertIn('AL', relation_data[0]['x'])
 
+        # filter with in_bbox
+        # ===============================
+
+
+
+        # bbox on Italy
+        # -------------
+        response = self._testApiCall('qplotly-api-trace', args=[
+            self.project.instance.pk,
+            qplotlywidget_id
+        ], kwargs={
+            'in_bbox': '10.7,43.5,11.5,44.0',
+            WITH_RELATIONS_PARAM: 'cities1000_ISO2_CODE_countries__ISOCODE'
+        })
+
+        trace = json.loads(response.content)
+        trace_data = json.loads(response.content)['data']
+
+        self.assertEqual(len(trace_data), 1)
+        self.assertEqual(trace_data[0]['type'], 'histogram')
+        self.assertEqual(len(trace_data[0]['x']), 1)
+        self.assertEqual(len(trace_data[0]['y']), 1)
+        self.assertIn('Italia', trace_data[0]['x'])
+        self.assertNotIn('Albania', trace_data[0]['x'])
+
+
+        # check for relation
+        self.assertIn('relations', trace)
+        self.assertIn('cities1000_ISO2_CODE_countries__ISOCODE', trace['relations'])
+        relation = trace['relations']['cities1000_ISO2_CODE_countries__ISOCODE']
+        self.assertEqual(len(relation), 1)
+        self.assertEqual(relation[0]['id'], widget.pk)
+        relation_data = relation[0]['data']
+
+        self.assertEqual(relation_data[0]['type'], 'histogram')
+        self.assertEqual(relation_data[0]['name'], 'ISO2_CODE')
+        self.assertEqual(len(relation_data[0]['x']), 35)
+        self.assertEqual(len(relation_data[0]['y']), 35)
+        self.assertIn('IT', relation_data[0]['x'])
+        self.assertNotIn('DE', relation_data[0]['x'])
+        self.assertNotIn('AL', relation_data[0]['x'])
+
+        # bbox with not father data
+        # -------------------------
+        response = self._testApiCall('qplotly-api-trace', args=[
+            self.project.instance.pk,
+            qplotlywidget_id
+        ], kwargs={
+            'in_bbox': '5.8,39.7,6.2,39.9',
+            WITH_RELATIONS_PARAM: 'cities1000_ISO2_CODE_countries__ISOCODE'
+        })
+
+        trace = json.loads(response.content)
+        trace_data = json.loads(response.content)['data']
+
+        self.assertEqual(len(trace_data), 1)
+        self.assertEqual(trace_data[0]['type'], 'histogram')
+        self.assertEqual(len(trace_data[0]['x']), 0)
+        self.assertEqual(len(trace_data[0]['y']), 0)
+
+        # check for relation
+        self.assertIn('relations', trace)
+        self.assertIn('cities1000_ISO2_CODE_countries__ISOCODE', trace['relations'])
+        relation = trace['relations']['cities1000_ISO2_CODE_countries__ISOCODE']
+        self.assertEqual(len(relation), 1)
+        self.assertEqual(relation[0]['id'], widget.pk)
+        relation_data = relation[0]['data']
+
+        self.assertEqual(relation_data[0]['type'], 'histogram')
+        self.assertEqual(relation_data[0]['name'], 'ISO2_CODE')
+        self.assertEqual(len(relation_data[0]['x']), 0)
+        self.assertEqual(len(relation_data[0]['y']), 0)
+
+
 
         widget.delete()
 

@@ -318,6 +318,7 @@ class QplotlyFactoringRelation(QplotlyFactoring):
         :param qgs_relation: QgsRelation instance
         :param fsource_layer: QgsVectorLayer instance of father
         :param ffiltered_features: QgsFeatureiterator of father
+        :return: Boolean
         """
 
         # get features and
@@ -327,7 +328,14 @@ class QplotlyFactoringRelation(QplotlyFactoring):
         for f in features:
             expressions.append(qgs_relation.getRelatedFeaturesFilter(qgs_relation.referencedLayer().
                                                                     getFeature(int(f.id()))))
-        self.father_features_expresion = ' OR '.join(expressions)
+
+        if expressions:
+            self.father_features_expresion = ' OR '.join(expressions)
+        else:
+            self.father_features_expresion = 'false'
+
+
+
 
 
 
