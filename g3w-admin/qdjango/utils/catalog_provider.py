@@ -19,6 +19,9 @@ from django.conf import settings
 from guardian.shortcuts import assign_perm, get_objects_for_user
 from django.contrib.auth.models import AnonymousUser
 from django.urls import reverse
+from qdjango.apps import QGS_SERVER_SETTINGS
+
+from qgis.core import QgsProject
 
 import copy
 import logging
@@ -63,7 +66,7 @@ def catalog_provider(groups=[]):
         projects = projects.filter(group__in=groups)
 
     for project in projects:
-        project_data = ProjectSerializer(project).to_representation(project)
+        project_data = ProjectSerializer(project, request=None).to_representation(project)
         layer_filters['project'] = project
         visible_layers = get_objects_for_user(AnonymousUser(), 'view_layer', Layer).filter(
             **layer_filters).values_list('qgs_layer_id', flat=True)
