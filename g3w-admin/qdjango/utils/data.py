@@ -774,7 +774,7 @@ class QgisProject(XmlData):
 
         self.qgs_project.readProject.connect(
             _readCanvasSettings, Qt.DirectConnection)
-            
+
         # Re-read to get map canvas settings (extent)
         self.qgs_project.read(project_file)
 

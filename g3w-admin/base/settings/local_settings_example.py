@@ -41,7 +41,7 @@ QGIS_AUTH_PASSWORD = 'my_secret_password'
 # ===============================
 # follow settings work if 'caching' module is in 'G3WADMIN_LOCAL_MORE_APPS'
 TILESTACHE_CACHE_NAME = 'default'
-TILESTACHE_CACHE_TYPE = 'Disk' # or 'Memcache'
+TILESTACHE_CACHE_TYPE = 'Disk'  # or 'Memcache'
 TILESTACHE_CACHE_DISK_PATH = '/tmp/tilestache_cache/'
 TILESTACHE_CACHE_TOKEN = '1234567'
 
@@ -76,7 +76,7 @@ LOGGING = {
         'file': {
             'level': 'ERROR',
             'class': 'logging.handlers.RotatingFileHandler',
-            'maxBytes': 1024*1024*10, # 10 MB
+            'maxBytes': 1024*1024*10,  # 10 MB
             'backupCount': 10,
             'filename': '/tmp/error.log',
             'formatter': 'verbose'
@@ -86,7 +86,7 @@ LOGGING = {
             'level': 'DEBUG',
             'filters': ['require_debug_true'],
             'class': 'logging.handlers.RotatingFileHandler',
-            'maxBytes': 1024*1024*10, # 10 MB
+            'maxBytes': 1024*1024*10,  # 10 MB
             'backupCount': 10,
             'filename': '/tmp/debug.log',
 

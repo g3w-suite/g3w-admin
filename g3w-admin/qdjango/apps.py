@@ -23,13 +23,16 @@ if hasattr(settings, 'QGIS_AUTH_DB_DIR_PATH') and settings.QGIS_AUTH_DB_DIR_PATH
 if hasattr(settings, 'QGIS_AUTH_PASSWORD_FILE') and settings.QGIS_AUTH_PASSWORD_FILE:
     if not os.path.isfile(settings.QGIS_AUTH_PASSWORD_FILE):
         if not hasattr(settings, 'QGIS_AUTH_PASSWORD'):
-            raise ImproperlyConfigured('QGIS_AUTH_PASSWORD_FILE is set but it does not exist and QGIS_AUTH_PASSWORD is not set: either point QGIS_AUTH_PASSWORD_FILE to an existing file or define a password in QGIS_AUTH_PASSWORD')
+            raise ImproperlyConfigured(
+                'QGIS_AUTH_PASSWORD_FILE is set but it does not exist and QGIS_AUTH_PASSWORD is not set: either point QGIS_AUTH_PASSWORD_FILE to an existing file or define a password in QGIS_AUTH_PASSWORD')
         try:
             with open(settings.QGIS_AUTH_PASSWORD_FILE, 'w+') as pwd_file:
                 pwd_file.write(settings.QGIS_AUTH_PASSWORD)
-                logger.info('QGIS_AUTH_PASSWORD_FILE created as %s' % settings.QGIS_AUTH_PASSWORD_FILE)
+                logger.info('QGIS_AUTH_PASSWORD_FILE created as %s' %
+                            settings.QGIS_AUTH_PASSWORD_FILE)
         except Exception as ex:
-            raise ImproperlyConfigured('Error creating QGIS_AUTH_PASSWORD_FILE %s: %s' % (settings.QGIS_AUTH_PASSWORD_FILE, ex))
+            raise ImproperlyConfigured('Error creating QGIS_AUTH_PASSWORD_FILE %s: %s' % (
+                settings.QGIS_AUTH_PASSWORD_FILE, ex))
 
 # Required only if the installation is not in the default path
 # or if virtualenv messes up with the paths
@@ -48,7 +51,8 @@ QGS_APPLICATION.initQgis()
 # FIXME: remove when we switch to 3.16
 if hasattr(settings, 'QGIS_AUTH_PASSWORD') and settings.QGIS_AUTH_PASSWORD:
     if not QgsApplication.authManager().setMasterPassword(settings.QGIS_AUTH_PASSWORD, True):
-        raise ImproperlyConfigured('Error setting QGIS Auth DB master password from settings.QGIS_AUTH_PASSWORD')
+        raise ImproperlyConfigured(
+            'Error setting QGIS Auth DB master password from settings.QGIS_AUTH_PASSWORD')
 
 
 # Do any environment manipulation here, before we create the server
@@ -88,15 +92,18 @@ def get_qgs_project(path):
                 needs_reload = False
                 for l in list(project.mapLayers().values()):
                     if not l.isValid():
-                        logger.warning('Invalid layer %s found in project %s' % (l.id(), project.fileName()))
+                        logger.warning('Invalid layer %s found in project %s' % (
+                            l.id(), project.fileName()))
                         if l.dataProvider().name() == 'virtual':
                             needs_reload = True
-                            logger.warning('Invalid virtual layer found in project %s: %s' % (project.fileName(), l.publicSource()))
+                            logger.warning('Invalid virtual layer found in project %s: %s' % (
+                                project.fileName(), l.publicSource()))
                 if needs_reload:
                     logger.warning('Reload project %s' % project.fileName())
                     QgsProject.instance().read(path)
             except AttributeError:  # Temporary workaround for 3.10.10
-                logger.warning('Project reloaded because QgsProject.setInstance() is not available in this QGIS version: %s' % path)
+                logger.warning(
+                    'Project reloaded because QgsProject.setInstance() is not available in this QGIS version: %s' % path)
                 QgsProject.instance().read(path)
         return QgsProject.instance()
     except Exception as ex:
