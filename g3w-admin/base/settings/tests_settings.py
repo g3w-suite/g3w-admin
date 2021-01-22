@@ -14,9 +14,5 @@ __copyright__ = 'Copyright 2019, Gis3w'
 
 import os
 
-# Celery
-CELERY_ALWAYS_EAGER = True
-TEST_RUNNER = 'djcelery.contrib.test_runner.CeleryTestSuiteRunner'
-
 # Frontend/Portal
 FRONTEND = False

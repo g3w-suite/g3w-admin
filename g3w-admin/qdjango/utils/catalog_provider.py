@@ -130,11 +130,11 @@ def catalog_provider(groups=[]):
                 #'publisher': layer_metadata['publisher'],  # Maps to pycsw:Publisher
                 #'contributor': layer_metadata['contributor'],  # Maps to pycsw:Contributor
                 #'relation': layer_metadata['relation'],  # Maps to pycsw:Relation
-                'links': "WMS,WMS Server,OGC:WMS,%s" % _get_url(layer.project.qgis_file), # Maps to pycsw:Links - format: name,description,protocol,url
+                'links': "WMS,WMS Server,OGC:WMS,%s" % _get_url(layer.project), # Maps to pycsw:Links - format: name,description,protocol,url
             }
 
             if not _is_raster(layer):
-                rec['links'] += "^WFS,WFS Server,OGC:WFS,%s" % _get_url(layer.project.qgis_file)
+                rec['links'] += "^WFS,WFS Server,OGC:WFS,%s" % _get_url(layer.project)
                 rec['service_type'] += ',WFS'
                 rec['format'] += ',application/xml'
                 rec['service_type_version'] += ',1.1.0'

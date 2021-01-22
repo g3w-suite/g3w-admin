@@ -86,9 +86,11 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
             else:
 
                 # reproject CRS bounds
-                to_srid = QgsCoordinateReferenceSystem(f'EPSG:{instance.group.srid.auth_srid}')
+                to_srid = QgsCoordinateReferenceSystem(
+                    f'EPSG:{instance.group.srid.auth_srid}')
                 from_srid = QgsCoordinateReferenceSystem('EPSG:4326')
-                ct = QgsCoordinateTransform(from_srid, to_srid, QgsCoordinateTransformContext())
+                ct = QgsCoordinateTransform(
+                    from_srid, to_srid, QgsCoordinateTransformContext())
                 rectangle = ct.transform(to_srid.bounds())
 
             map_extent = [
@@ -97,7 +99,6 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
                 rectangle.xMaximum(),
                 rectangle.yMaximum()
             ]
-
 
         # if use_map_extent_as_init_extent is not flaged set init_map_extent as map_extent
         if not instance.use_map_extent_as_init_extent:
@@ -208,7 +209,8 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
         for property in ('ContactPerson', 'ContactOrganization', 'ContactPosition'):
             metadata['contactinformation']['personprimary'].update({
-                property: getattr(QgsServerProjectUtils, f'owsService{property}')(qgs_project)
+                property: getattr(QgsServerProjectUtils,
+                                  f'owsService{property}')(qgs_project)
             })
 
         metadata['contactinformation'].update(OrderedDict({
@@ -222,7 +224,8 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         """Check session token filter ad layer if it is set"""
 
         try:
-            stf = SessionTokenFilter.objects.get(sessionid=self.request.COOKIES[settings.SESSION_COOKIE_NAME])
+            stf = SessionTokenFilter.objects.get(
+                sessionid=self.request.COOKIES[settings.SESSION_COOKIE_NAME])
         except SessionTokenFilter.DoesNotExist:
             return None
 
@@ -231,19 +234,21 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
             'layers': [l.layer.qgs_layer_id for l in stf.stf_layers.all()]
         }
 
-
-
-
     def to_representation(self, instance):
+        logging.warning('Serializer')
         ret = super(ProjectSerializer, self).to_representation(instance)
+        logging.warning('Before reading project')
 
         # add a QGSMapLayer instance
         qgs_project = get_qgs_project(instance.qgis_file.path)
 
+        logging.warning('Got project: %s' % qgs_project.fileName())
+
         # set init and map extent
         ret['initextent'], ret['extent'] = self.get_map_extent(instance)
 
-        ret['print'] = json.loads(clean_for_json(instance.layouts)) if instance.layouts else []
+        ret['print'] = json.loads(clean_for_json(
+            instance.layouts)) if instance.layouts else []
 
         # add layers data, widgets
         # init proprties
@@ -267,7 +272,8 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
                 for node in layer['nodes']:
                     readLeaf(node, layer['nodes'])
             else:
-                layer_serialized = LayerSerializer(layers[layer['id']], qgs_project=qgs_project)
+                layer_serialized = LayerSerializer(
+                    layers[layer['id']], qgs_project=qgs_project)
                 layer_serialized_data = layer_serialized.data
 
                 # alter layer serialized data from plugin
@@ -275,9 +281,10 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
                 for signal_receiver, data in after_serialized_project_layer.send(layer_serialized,
                                                                                  layer=layers[layer['id']],
                                                                                  request=self.request
-                                                                         ):
+                                                                                 ):
                     update_serializer_data(layer_serialized_data, data)
-                layer_serialized_data['multilayer'] = meta_layer.getCurrentByLayer(layer_serialized_data)
+                layer_serialized_data['multilayer'] = meta_layer.getCurrentByLayer(
+                    layer_serialized_data)
 
                 # check for vectorjoins and add to project relations
                 if layer_serialized_data['vectorjoins']:
@@ -293,13 +300,15 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
                 # get widgects for layer
                 widgets = layers[layer['id']].widget_set.all()
                 for widget in widgets:
-                    widget_serializzer_data = WidgetSerializer(widget, layer=layers[layer['id']]).data
+                    widget_serializzer_data = WidgetSerializer(
+                        widget, layer=layers[layer['id']]).data
                     if widget_serializzer_data['type'] == 'search':
                         widget_serializzer_data['options']['layerid'] = layer['id']
                         widget_serializzer_data['options']['querylayerid'] = layer['id']
                         ret['search'].append(widget_serializzer_data)
                     else:
-                        load_qdjango_widget_layer.send(self, layer=layer, ret=ret, widget=widget)
+                        load_qdjango_widget_layer.send(
+                            self, layer=layer, ret=ret, widget=widget)
 
                 # add exclude to legend
                 if layers[layer['id']].exclude_from_legend:
@@ -354,7 +363,7 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
     class Meta:
         model = Project
-        fields =(
+        fields = (
             'id',
             'name',
             'layerstree',
@@ -411,10 +420,12 @@ class LayerSerializer(serializers.ModelSerializer):
         :param instance: qdjango Layer model instance
         :return: list
         """
-        columns = mapLayerAttributes(instance) if instance.database_columns else []
+        columns = mapLayerAttributes(
+            instance) if instance.database_columns else []
 
         # evalute fields to show or not by qgis project
-        column_to_exclude = eval(instance.exclude_attribute_wms) if instance.exclude_attribute_wms else []
+        column_to_exclude = eval(
+            instance.exclude_attribute_wms) if instance.exclude_attribute_wms else []
         for column in columns:
             column['show'] = False if column['name'] in column_to_exclude else True
         return columns
@@ -486,7 +497,7 @@ class LayerSerializer(serializers.ModelSerializer):
         # add abstract
         if qgs_maplayer.abstract() != '':
             metadata['abstract'] = qgs_maplayer.abstract()
-            
+
         return metadata
 
     def to_representation(self, instance):
@@ -538,7 +549,8 @@ class LayerSerializer(serializers.ModelSerializer):
                 datasourceWMS = datasourcearcgis2dict(instance.datasource)
 
             if ('username' not in ret['source'] or 'password' not in ret['source']) and 'type=xyz' not in instance.datasource:
-                ret['source'].update(datasourceWMS.dict() if isinstance(datasourceWMS, QueryDict) else datasourceWMS)
+                ret['source'].update(datasourceWMS.dict() if isinstance(
+                    datasourceWMS, QueryDict) else datasourceWMS)
 
             ret['source']['external'] = instance.external
 
@@ -591,7 +603,7 @@ class WidgetSerializer(serializers.ModelSerializer):
                 'results': body['results'],
                 'filter': [],
                 'dozoomtoextent': body['dozoomtoextent'],
-                #'zoom': body['zoom'],
+                # 'zoom': body['zoom'],
             }
             for field in body['fields']:
 
@@ -606,7 +618,8 @@ class WidgetSerializer(serializers.ModelSerializer):
                     values = []
                     for u in uniques:
                         try:
-                            values.append(json.loads(QgsJsonUtils.encodeValue(u)))
+                            values.append(json.loads(
+                                QgsJsonUtils.encodeValue(u)))
                         except Exception as e:
                             logger.error(f'Response vector widget unique: {e}')
                             continue
@@ -624,7 +637,7 @@ class WidgetSerializer(serializers.ModelSerializer):
                     else:
                         field['input']['options']['values'] = []
 
-                #For AutoccOmpleteBox imput type
+                # For AutoccOmpleteBox imput type
                 if 'widgettype' in field and field['widgettype'] == 'autocompletebox':
                     field['input']['type'] = 'autocompletefield'
 
