@@ -162,6 +162,10 @@ class IntersectsBBoxFilter(BaseFilterBackend):
 
     def apply_filter(self, request, qgis_layer, qgis_feature_request, view):
 
+        # only for layer with geometry
+        if not qgis_layer.isSpatial():
+            return
+
         bbox_filter = self._get_filter_bbox(request)
 
         if bbox_filter:
