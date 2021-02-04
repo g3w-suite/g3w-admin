@@ -42,6 +42,10 @@ from .validators import (CheckMaxExtent, ColumnName, DatasourceExists, ProjectEx
 
 from qdjango.apps import get_qgs_project
 
+import logging
+
+logger = logging.getLogger('qdjango')
+
 # constant per qgis layers
 QGIS_LAYER_TYPE_NO_GEOM = 'NoGeometry'
 
@@ -232,7 +236,13 @@ class QgisProjectLayer(XmlData):
 
         # TODO: check if is it possibile use isVisible from node of layer-tree-group.
         #  Check PyQGIS method to read project '<legend>' section.
-        return self.qgisProject.qgs_project.layerTreeRoot().findLayer(self.qgs_layer).isVisible()
+        #  2021/02/04 it could be not used
+
+        try:
+            return self.qgisProject.qgs_project.layerTreeRoot().findLayer(self.qgs_layer).isVisible()
+        except:
+            logger.error(f'Layer {self.qgs_layer.id()} is not found into layerTreeRoot')
+            return False
 
     def _getDataLayerType(self):
         """
