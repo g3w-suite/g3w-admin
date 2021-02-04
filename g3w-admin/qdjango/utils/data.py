@@ -40,7 +40,9 @@ from .validators import (CheckMaxExtent, ColumnName, DatasourceExists, ProjectEx
                          IsGroupCompatibleValidator, ProjectTitleExists,
                          UniqueLayername)
 
+import logging
 
+logger = logging.getLogger(__name__)
 
 
 # constant per qgis layers
@@ -233,7 +235,13 @@ class QgisProjectLayer(XmlData):
 
         # TODO: check if is it possibile use isVisible from node of layer-tree-group.
         #  Check PyQGIS method to read project '<legend>' section.
-        return self.qgisProject.qgs_project.layerTreeRoot().findLayer(self.qgs_layer).isVisible()
+        #  2021/02/04 it could be not used
+
+        try:
+            return self.qgisProject.qgs_project.layerTreeRoot().findLayer(self.qgs_layer).isVisible()
+        except:
+            logger.error(f'Layer {self.qgs_layer.id()} is not found into layerTreeRoot')
+            return False
 
     def _getDataLayerType(self):
         """
