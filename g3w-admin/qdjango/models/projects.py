@@ -317,7 +317,8 @@ class Layer(G3WACLModelMixins, models.Model):
         ('arcgisfeatureserver', _('ArcGisFeatureServer')),
         ('mssql', _('MSSQL')),
         ('virtual', _('VirtualLayer')),
-        ('oracle', _('Oracle'))
+        ('oracle', _('Oracle')),
+        ('vector-tile', _('Vector Tile'))
     )
 
     # General info

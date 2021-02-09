@@ -19,7 +19,8 @@ from qgis.core import (
     QgsWkbTypes,
     QgsEditFormConfig,
     QgsAttributeEditorElement,
-    QgsRectangle
+    QgsRectangle,
+    QgsMapLayerType,
 )
 
 from qgis.gui import QgsMapCanvas
@@ -251,7 +252,14 @@ class QgisProjectLayer(XmlData):
         :rtype: str
         """
         availableTypes = [item[0] for item in Layer.TYPES]
-        layer_type = self.qgs_layer.dataProvider().name()
+
+        # TIL: vector tiles have no data provider :/
+        try:
+            layer_type = self.qgs_layer.dataProvider().name()
+        except:
+            if self.qgs_layer.type() == QgsMapLayerType.VectorTileLayer:
+                layer_type = 'vector-tile'
+
         if not layer_type in availableTypes:
             raise Exception(_('Missing or invalid type for layer')+' "%s"' % layer_type)
         return layer_type
@@ -1193,7 +1201,12 @@ class QgisProject(XmlData):
         # Run through the layer trees
         for layer in tree.xpath(self._regexXmlLayer):
             if self._checkLayerTypeCompatible(layer):
-                layerType = layer.find('provider').text
+                try:
+                    layerType = layer.find('provider').text
+                except:
+                    # Vector tiles have no provider :/
+                    layerType = layer.attrib['type']
+
                 datasource = layer.find('datasource').text
 
                 newDatasource = makeDatasource(datasource, layerType)

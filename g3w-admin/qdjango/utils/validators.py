@@ -310,7 +310,7 @@ class DatasourceExists(QgisProjectLayerValidator):
             Layer.TYPES.ogr,
             Layer.TYPES.raster] and not isXML(self.qgisProjectLayer.datasource):
 
-            # tray PostGis raster layer
+            # try PostGis raster layer
             if self.qgisProjectLayer.datasource.startswith("PG:"):
 
                 # try to open postgis raster with gdal
