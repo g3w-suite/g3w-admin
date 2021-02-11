@@ -9,6 +9,11 @@ urlpatterns = [
         r'(?P<layer_name>[-_\w\d]+)/$',
         layer_vector_view, name='core-vector-api'),
 
+    # with extention
+    url(r'^vector/api/(?P<mode_call>shp|xls|gpx|csv)/(?P<project_type>[-_\w\d]+)/(?P<project_id>[0-9]+)/'
+        r'(?P<layer_name>[-_\w\d]+).(?P<ext>zip|xls|gpx|csv)$',
+        layer_vector_view, name='core-vector-api-ext'),
+
     url(r'^vector/api/(?P<mode_call>widget)/(?P<widget_type>[-_\w\d]+)/data/'
         r'(?P<project_type>[-_\w\d]+)/(?P<project_id>[0-9]+)/'
         r'(?P<layer_name>[-_\w\d]+)/$',
