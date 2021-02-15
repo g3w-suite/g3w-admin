@@ -46,6 +46,25 @@ MODE_XLS = 'xls'
 MODE_GPX = 'gpx'
 MODE_CSV = 'csv'
 
+MIME_TYPES_MOD = {
+    MODE_SHP: {
+        'mime_type': 'application/zip',
+        'ext': 'zip'
+    },
+    MODE_XLS: {
+        'mime_type': 'application/ms-excel',
+        'ext': 'xls'
+    },
+    MODE_GPX: {
+        'mime_type': 'application/octet-stream',
+        'ext': 'gpx'
+    },
+    MODE_CSV: {
+        'mime_type': 'text/csv',
+        'ext': 'csv'
+    }
+}
+
 
 class G3WAPIResults(object):
     """
