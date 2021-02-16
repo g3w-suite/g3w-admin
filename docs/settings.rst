@@ -37,13 +37,6 @@ Path to geo data directory (shp, Spatialite, raster, etc..).
 
 Mandatory.
 
-
-``USER_MEDIA_ROOT``
-^^^^^^^^^^^^^^^^^^^
-Base user media directory, to fill with media files.
-Is necessary for editing module, to manage media elements do upload on a editing session.
-
-
 ``G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Default is `['shp', 'xls']`, set download data format. Values possible:
@@ -235,6 +228,10 @@ Settings params for ``filemanager`` module.
 ``FILEMANAGER_ROOT_PATH``
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 Mandatory, path to disk space where to CRUD geo data files i.e. Shp Raster, etc.
+
+``FILENAMANAGER_MAX_N_FILES``
+^^^^^^^^^^^^^^^^^^^^^^^^^
+Default is 5, max number files to upload simultaneously.
 
 Qplotly settings
 ****************
