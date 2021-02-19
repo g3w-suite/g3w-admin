@@ -624,6 +624,9 @@ class WidgetSerializer(serializers.ModelSerializer):
                             logger.error(f'Response vector widget unique: {e}')
                             continue
 
+                    # sort values for selectbox
+                    values.sort()
+
                     field['input']['type'] = 'selectfield'
                     if 'dependance' not in field['input']['options']:
 
