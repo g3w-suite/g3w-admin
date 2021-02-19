@@ -469,6 +469,8 @@ class BaseVectorOnModelApiView(G3WAPIView):
                     logger.error(f'Response vector widget unique: {e}')
                     continue
 
+            # sort values
+            values.sort()
             self.results.update({
                 'data': values,
                 'count': len(values)
