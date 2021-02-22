@@ -48,6 +48,29 @@ MODE_CSV = 'csv'
 MODE_GPKG = 'gpkg'
 MODE_FILTER_TOKEN = 'filtertoken'
 
+MIME_TYPES_MOD = {
+    MODE_SHP: {
+        'mime_type': 'application/zip',
+        'ext': 'zip'
+    },
+    MODE_XLS: {
+        'mime_type': 'application/ms-excel',
+        'ext': 'xls'
+    },
+    MODE_GPX: {
+        'mime_type': 'application/octet-stream',
+        'ext': 'gpx'
+    },
+    MODE_CSV: {
+        'mime_type': 'text/csv',
+        'ext': 'csv'
+    },
+    MODE_GPKG: {
+        'mime_type': 'application/geopackage+vnd.sqlite3',
+        'ext': 'gpkg'
+    }
+}
+
 
 class G3WAPIResults(object):
     """
