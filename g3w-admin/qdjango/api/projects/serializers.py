@@ -625,7 +625,7 @@ class WidgetSerializer(serializers.ModelSerializer):
                             continue
 
                     # sort values for selectbox
-                    values.sort()
+                    values = list(set(values))
 
                     field['input']['type'] = 'selectfield'
                     if 'dependance' not in field['input']['options']:
