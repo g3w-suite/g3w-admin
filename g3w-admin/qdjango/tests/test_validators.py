@@ -15,7 +15,7 @@ import logging
 import os
 import shutil
 from qgis.PyQt.QtCore import QTemporaryDir, QVariant
-from qgis.core import QgsFeature, QgsProject, QgsGeometry
+from qgis.core import QgsFeature, QgsProject, QgsGeometry, Qgis
 
 from qdjango.utils.validators import feature_validator
 
@@ -169,8 +169,15 @@ class TestFeatureValidator(QdjangoTestBase):
         feature.setAttribute(0, 0)  # fid
         errors = feature_validator(
             feature, self.validator_project_test_unique)
-        self.assertEqual(set(errors.keys()),
-                         self.nullable_fields.difference(('bool_nullable', )))
+
+        # 3.16 also supports DB-level unique on OGR layers, 3.10 does not
+        if Qgis.QGIS_VERSION_INT < 31600:
+            self.assertEqual(set(errors.keys()),
+                             self.nullable_fields.difference(('bool_nullable',)))
+        else:
+            self.assertEqual(set(errors.keys()),
+                             self.nullable_fields.union(self.unique_fields).difference(('bool_nullable', 'fid')))
+
         for k in errors.keys():
             self.assertEqual(errors[k], ['Field value must be UNIQUE'])
 
