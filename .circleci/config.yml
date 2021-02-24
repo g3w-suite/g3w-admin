@@ -73,4 +73,4 @@ workflows:
       - build:
           matrix:
             parameters:
-              qgis_version: ['310', '316']
+              qgis_version: ['316']
