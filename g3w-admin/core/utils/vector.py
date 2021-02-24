@@ -67,7 +67,12 @@ class BaseUserMediaHandler(object):
         schema = 'https' if self.request.is_secure() else 'http'
 
         host = self.request.get_host()
-        domain, port = host.split(':')
+
+        try:
+            domain, port = host.split(':')
+        except ValueError as e:
+            domain = host
+            port = '80'
 
         # for docker HTTP_X_FORWARDED_HOST:
         if schema == 'http' and port == '443':
