@@ -65,7 +65,7 @@ class BaseLayer(OrderedModel):
     def __str__(self):
         return "{} ({})".format(self.title, self.name)
 
-    class Meta:
+    class Meta(OrderedModel.Meta):
         verbose_name = 'Base Layer'
         verbose_name_plural = 'Base Layers'
 
