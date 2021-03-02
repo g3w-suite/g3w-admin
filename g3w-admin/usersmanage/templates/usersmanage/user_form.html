@@ -47,6 +47,31 @@
     });
     // to start
     ga.$useRoleSelect.trigger('change');
+
+    var checking_user_properties = function (){
+        if($('#id_is_superuser').prop('checked') || $('#id_is_staff').prop('checked')){
+            ga.$useRoleSelect.removeAttr('required','');
+        } else {
+            ga.$useRoleSelect.attr('required','');
+        }
+    };
+
+    var admin_activation = function(e){
+        var $this = $(this);
+        if (e.type == 'ifChecked'){
+            ga.$useRoleSelect.removeAttr('required');
+        } else {
+            checking_user_properties();
+        }
+    };
+
+    $(document).on('ifChecked', '#id_is_superuser', admin_activation);
+    $(document).on('ifChecked', '#id_is_staff', admin_activation);
+    $(document).on('ifUnchecked', '#id_is_superuser', admin_activation);
+    $(document).on('ifUnchecked', '#id_is_staff', admin_activation);
+
+    // for load page
+    $(document).ready(checking_user_properties);
 </script>
 {% endblock %}
 
