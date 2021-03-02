@@ -10,6 +10,7 @@ ga.Qplotly = {
             list: '/' + SITE_PREFIX_URL + 'qplotly/api/widget/layer/',
             detail: '/' + SITE_PREFIX_URL + 'qplotly/api/widget/detail/',
             link: '/' + SITE_PREFIX_URL + 'qplotly/api/widget/detail/',
+            download: '/' + SITE_PREFIX_URL + 'qplotly/download/xml/',
         }
     }
 };
@@ -70,7 +71,8 @@ _.extend(g3wadmin.widget, {
                     'layerId': layer_pk,
                     'projectPk': project_pk,
                     'widgetPk': v['pk'],
-                    'editDisplay': editDisplay
+                    'editDisplay': editDisplay,
+                    'downloadUrl': '/' + CURRENT_LANGUAGE_CODE + ga.Qplotly.urls.widget.download + v['pk'] + '/'
             })+'</td>\n' +
             '                <td>'+v['title']+'</td>\n' +
 			'                <td>'+v['type']+'</td>\n' +
@@ -93,6 +95,7 @@ _.extend(g3wadmin.widget, {
                     'parent_click': $(this)
                 });
         });
+
 
         $div.append($table);
 
@@ -293,6 +296,9 @@ _.extend(g3wadmin.tpl, {
 			data-item-selector="#qplotlywidget-item-<%= widgetPk %>"\
 			data-delete-method="delete"\
 			><i class="ion ion-trash-b"></i></a>\
+		</span>\
+		<span class="col-xs-2 icon" style="display:<%= editDisplay %>">\
+			<a href="<%= downloadUrl %>" ><i class="ion ion-code-download"></i></a>\
 		</span>\
     '),
 });

@@ -13,8 +13,11 @@ __copyright__ = 'Copyright 2015 - 2020, Gis3w'
 from django.views.generic import View
 from django.shortcuts import get_object_or_404
 from qdjango.mixins.views import QdjangoProjectViewMixin, QdjangoLayerViewMixin
+from django.core.files.base import ContentFile
 from django.http.response import JsonResponse
+from django_downloadview import VirtualDownloadView
 from qdjango.utils.models import comparedbdatasource
+from autoslug.utils import slugify
 from .models import QplotlyWidget
 
 
@@ -42,3 +45,16 @@ class QplotlyLinkWidget2LayerView(QdjangoLayerViewMixin, View):
             self.widget.layers.remove(self.layer)
 
 
+class QplotlyDownloadView(VirtualDownloadView):
+    """Download of xml qplotly file config"""
+
+    def get(self, request, *args, **kwargs):
+        self.widget = get_object_or_404(QplotlyWidget, pk=kwargs['pk'])
+
+        return super().get(request, *args, **kwargs)
+
+    def get_file(self):
+        """Return :class:`django.core.files.base.ContentFile` object."""
+
+        title = slugify(self.widget.title)
+        return ContentFile(self.widget.xml, name=f"qplotly_{title}.xml")
