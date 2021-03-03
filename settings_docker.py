@@ -21,6 +21,7 @@ DATABASES = {
 
 DATASOURCE_PATH = '/shared-volume/project_data'
 
+TEST_RUNNER='qdjango.tests.runner.G3wSuiteTestRunner'
 
 MEDIA_ROOT = '/shared-volume/media/'
 MEDIA_URL = '/media/'

@@ -14,7 +14,7 @@ services:
   g3w-suite:
     build:
       context: ./ci_scripts
-      dockerfile: Dockerfile.deps
+      dockerfile: Dockerfile.316.deps
     command: "tail -f /dev/null"
     ports:
     - "8000:8000"

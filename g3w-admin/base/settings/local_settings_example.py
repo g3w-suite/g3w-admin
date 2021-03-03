@@ -108,6 +108,7 @@ LOGGING = {
 
 SESSION_COOKIE_NAME = '<unique_session_id>'
 
+TEST_RUNNER='qdjango.tests.runner.G3wSuiteTestRunner'
 
 # Celery is required for CSW Catalog module (optional)
 BROKER_URL = 'amqp://guest:guest@localhost:5672//'

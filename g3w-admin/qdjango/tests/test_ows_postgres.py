@@ -82,7 +82,9 @@ class OwsTestPostgres(QdjangoTestBase):
         # Create test layer
         conn_str = "host={HOST} port={PORT} dbname={NAME} user={USER} password={PASSWORD}".format(
             **settings.DATABASES['default'])
+            
         md = QgsProviderRegistry.instance().providerMetadata('postgres')
+
         conn = md.createConnection(conn_str, {})
 
         conn.executeSql("DROP TABLE IF EXISTS multiple_pks")
