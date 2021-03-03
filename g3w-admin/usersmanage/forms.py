@@ -505,6 +505,13 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
             self.fields.pop('department')
             self.fields.pop('backend')
 
+        # remove groups required is is_superuser or is_staff is set
+        # 'on' 'off' come from icheck
+        if 'data' in kwargs and ('is_superuser' in kwargs['data'] or 'is_staff' in kwargs['data']):
+            if ('is_superuser' in kwargs['data'] and (kwargs['data']['is_superuser'] == 'on' or kwargs['data']['is_superuser'] is True)) or \
+                    ('is_staff' in kwargs['data'] and (kwargs['data']['is_staff'] == 'on' or kwargs['data']['is_superuser'] is True)):
+                self.fields['groups'].required = False
+
 
 
     def save(self, commit=True):

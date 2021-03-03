@@ -638,7 +638,7 @@ class WidgetSerializer(serializers.ModelSerializer):
                         # check if field has a widget edit type
                         # todo: add 'ValueRelation' case
                         if field['name'] in edittypes and \
-                                edittypes[field['name']]['widgetv2type'] in ('ValueMap'):
+                                edittypes[field['name']]['widgetv2type'] in ('ValueMap',):
                             field['input']['options']['values'] = edittypes[field['name']]['values']
                         else:
                             field['input']['options']['values'] = values

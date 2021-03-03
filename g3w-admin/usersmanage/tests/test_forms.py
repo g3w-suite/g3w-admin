@@ -232,6 +232,72 @@ class UsermanageFormsTest(BaseUsermanageTestCase):
         # Work ad admin1
         self.request.user = self.test_user1
 
+        # TEST VALIDATION groups
+        # ======================
+
+        form_data = {
+            'password1': self.users_password,
+            'password2': self.users_password,
+            'username': 'editor1_test_constraint',
+            'is_superuser': False,
+            'is_staff': False,
+            'groups': [],
+            'backend': USER_BACKEND_DEFAULT
+
+        }
+
+        uform = G3WUserForm(request=self.request, data=form_data)
+        self.assertFalse(uform.is_valid())
+        self.assertIn('groups', uform.errors)
+        self.assertEqual(uform.errors['groups'].data[0].code, 'required')
+
+        # If admin option(is_superuser, is_staff) are checked
+        # ---------------------------------------------------
+
+        form_data = {
+            'password1': self.users_password,
+            'password2': self.users_password,
+            'username': 'editor1_test_constraint',
+            'is_superuser': 'on',
+            'is_staff': 'off',
+            'groups': [],
+            'backend': USER_BACKEND_DEFAULT
+
+        }
+
+        uform = G3WUserForm(request=self.request, data=form_data)
+        self.assertTrue(uform.is_valid())
+
+        form_data = {
+            'password1': self.users_password,
+            'password2': self.users_password,
+            'username': 'editor1_test_constraint',
+            'is_superuser': 'off',
+            'is_staff': 'on',
+            'groups': [],
+            'backend': USER_BACKEND_DEFAULT
+
+        }
+
+        uform = G3WUserForm(request=self.request, data=form_data)
+        self.assertTrue(uform.is_valid())
+
+        form_data = {
+            'password1': self.users_password,
+            'password2': self.users_password,
+            'username': 'editor1_test_constraint',
+            'is_superuser': 'on',
+            'is_staff': 'on',
+            'groups': [],
+            'backend': USER_BACKEND_DEFAULT
+
+        }
+
+        uform = G3WUserForm(request=self.request, data=form_data)
+        self.assertTrue(uform.is_valid())
+
+
+
         # TEST CONSTRAINT ON GROUPS AND USER GROUPS
         # =========================================
 
