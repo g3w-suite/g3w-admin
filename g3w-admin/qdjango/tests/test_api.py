@@ -468,8 +468,6 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         features = qgis_layer.getFeatures(qgs_request)
         self.assertEqual(resp['vector']['count'], len([f for f in features]))
 
-
-
     def test_tokenfilter_mode_api(self):
         """ Test tokenfilter mode vector api layer """
 

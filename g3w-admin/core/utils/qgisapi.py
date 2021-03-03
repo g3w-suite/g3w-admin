@@ -20,6 +20,61 @@ from qdjango.apps import get_qgs_project
 
 logger = logging.getLogger(__file__)
 
+
+def expression_from_server_fids(server_fids, provider) -> str:
+    """Returns a string expression from a list of server FIDs in the form <pk1>@@<pk2>...
+
+    :param server_fids: list of  server FIDs in the form <pk1>@@<pk2>...
+    :type server_fids: list
+    :param provider data provider
+    :type QgsDataProvider
+    :return a string expression to be used with QgsFeatureRequest.combineFilterExpression(string_expression)
+    """
+
+    str_exps = []
+    pk_attrs = []
+    names = provider.fields().names()
+
+    for pkidx in provider.pkAttributeIndexes():
+        pk_attrs.append(names[pkidx])
+
+    # Provider does not support pks
+    if not pk_attrs:
+        return "$id IN (%s)" % ','.join(server_fids)
+
+    for server_fid in server_fids:
+        vals = server_fid.split('@@')
+        assert len(vals) == len(pk_attrs)
+        bits = []
+        for i in range(len(pk_attrs)):
+            bits.append('"{attr_name}" = \'{attr_val}\''.format(attr_name=pk_attrs[i], attr_val=vals[i]))
+        str_exps.append(' ( ' + ' AND '.join(bits) + ' ) ')
+
+    return ' OR '.join(str_exps)
+
+def server_fid(feature, provider) -> str:
+    """Returns a server FID in the form <pk1>@@<pk2>... from a feature, note that
+    the feature attributes that are part of the FID needs to be evalutated and they
+    need to be present in the fetched attributes
+
+    :param feature
+    :type QgsFeature
+    :param provider data provider
+    :type QgsDataProvider
+    :return a string server FID in the form <pk1>@@<pk2>...
+    """
+
+    assert len(provider.pkAttributeIndexes()) <= len(feature.attributes())
+    bits = []
+    for pkidx in provider.pkAttributeIndexes():
+        bits.append(str(feature.attribute(pkidx)))
+
+    # Provider does not support pks
+    if not bits:
+        return feature.id()
+
+    return '@@'.join(bits)
+
 def get_qgis_layer(layer_info):
     """Returns a QGIS vector layer from a layer information record.
     The layer is normally not a clone but it is the live

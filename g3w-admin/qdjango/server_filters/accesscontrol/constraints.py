@@ -31,7 +31,9 @@ class SingleLayerSubsetStringAccessControlFilter(QgsAccessControlFilter):
             return ""
 
         rule = ConstraintSubsetStringRule.get_rule_definition_for_user(QGS_SERVER.user, qdjango_layer.pk)
-        QgsMessageLog.logMessage("SingleLayerSubsetStringAccessControlFilter rule for user %s and layer id %s: %s" % (QGS_SERVER.user, layer.id(), rule), "", Qgis.Info)
+        if rule:
+            QgsMessageLog.logMessage("SingleLayerSubsetStringAccessControlFilter rule for user %s and layer id %s: %s" % (QGS_SERVER.user, layer.id(), rule), "", Qgis.Info)
+
         return rule
 
 
@@ -54,10 +56,13 @@ class SingleLayerExpressionAccessControlFilter(QgsAccessControlFilter):
         try:
             qdjango_layer = Layer.objects.get(project=QGS_SERVER.project, qgs_layer_id=layer.id())
         except Layer.DoesNotExist:
+            QgsMessageLog.logMessage("SingleLayerExpressionAccessControlFilter for user %s: layer id %s does not exist!" % (QGS_SERVER.user, layer.id()), "", Qgis.Warning)
             return ""
 
         rule = ConstraintExpressionRule.get_rule_definition_for_user(QGS_SERVER.user, qdjango_layer.pk)
-        QgsMessageLog.logMessage("SingleLayerExpressionAccessControlFilter rule for user %s and layer id %s: %s" % (QGS_SERVER.user, layer.id(), rule), "", Qgis.Info)
+        if rule:
+            QgsMessageLog.logMessage("SingleLayerExpressionAccessControlFilter rule for user %s and layer id %s: %s" % (QGS_SERVER.user, layer.id(), rule), "", Qgis.Info)
+
         return rule
 
 
