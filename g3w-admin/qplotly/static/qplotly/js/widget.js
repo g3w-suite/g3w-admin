@@ -71,6 +71,9 @@ _.extend(g3wadmin.widget, {
                     'layerId': layer_pk,
                     'projectPk': project_pk,
                     'widgetPk': v['pk'],
+                    'titleUpdate': gettext('Edit'),
+                    'titleDelete': gettext('Delete'),
+                    'titleDownload': gettext('Download'),
                     'editDisplay': editDisplay,
                     'downloadUrl': '/' + CURRENT_LANGUAGE_CODE + ga.Qplotly.urls.widget.download + v['pk'] + '/'
             })+'</td>\n' +
@@ -287,10 +290,12 @@ _.extend(g3wadmin.tpl, {
 
     qplotlyWidgetActions: _.template('\
 		<span class="col-xs-2 icon" style="display:<%= editDisplay %>">\
-			<a href="#" data-qplotlywidget-action-mode="update" data-qplotlywidget-pk="<%= widgetPk %>" data-qplotlywidget-layer-id="<%= layerId %>"><i class="ion ion-edit"></i></a>\
+			<a href="#" data-toggle="tooltip" title="<%= titleUpdate %>" data-qplotlywidget-action-mode="update" data-qplotlywidget-pk="<%= widgetPk %>" data-qplotlywidget-layer-id="<%= layerId %>"><i class="ion ion-edit"></i></a>\
 		</span>\
 		<span class="col-xs-2 icon">\
 			<a href="#" \
+			data-toggle="tooltip" \
+			title="<%= titleDelete %>" \
 			data-widget-type="deleteItem" \
 			data-delete-url="'+ga.Qplotly.urls.widget.detail+'<%= projectPk %>/<%= widgetPk %>/"\
 			data-item-selector="#qplotlywidget-item-<%= widgetPk %>"\
@@ -298,7 +303,9 @@ _.extend(g3wadmin.tpl, {
 			><i class="ion ion-trash-b"></i></a>\
 		</span>\
 		<span class="col-xs-2 icon" style="display:<%= editDisplay %>">\
-			<a href="<%= downloadUrl %>" ><i class="ion ion-code-download"></i></a>\
+			<a href="<%= downloadUrl %>" \
+            data-toggle="tooltip" \
+			title="<%= titleDownload %>" ><i class="ion ion-code-download"></i></a>\
 		</span>\
     '),
 });
