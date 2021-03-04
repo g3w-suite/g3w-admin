@@ -799,11 +799,12 @@ class QgisProject(XmlData):
 
     def closeProject(self, **kwargs):
         """
-        Close QgsProject object.
+        Close QgsProject object and deletes the project.
         Is important to avoid locking data like GeoPackage.
         """
 
         QgsConfigCache.instance().removeEntry(self.qgs_project.fileName())
+        self.qgs_project = None
 
     def _getDataName(self):
         """
