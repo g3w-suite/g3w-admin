@@ -202,7 +202,7 @@ class BaseVectorOnModelApiView(G3WAPIView):
     # API modes
     mode_call = MODE_DATA
 
-    # Modes call avilable
+    # Modes call available
     modes_call_available = [
         MODE_CONFIG,
         MODE_DATA
