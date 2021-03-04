@@ -82,7 +82,7 @@ class OwsTestPostgres(QdjangoTestBase):
         # Create test layer
         conn_str = "host={HOST} port={PORT} dbname={NAME} user={USER} password={PASSWORD}".format(
             **settings.DATABASES['default'])
-            
+
         md = QgsProviderRegistry.instance().providerMetadata('postgres')
 
         conn = md.createConnection(conn_str, {})
@@ -125,6 +125,12 @@ class OwsTestPostgres(QdjangoTestBase):
         assert created
 
         cls.client = APIClient()
+
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        iface = QGS_SERVER.serverInterface()
+        iface.removeConfigCacheEntry(cls.qdjango_project.qgis_project.fileName())
 
     def _testApiCall(self, view_name, args, kwargs={}, status_auth=200, login=True, logout=True):
         """Utility to make test calls for admin01 user"""
