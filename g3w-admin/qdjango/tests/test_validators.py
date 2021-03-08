@@ -104,6 +104,19 @@ class TestFeatureValidator(QdjangoTestBase):
         cls.unconstrained_fields = set([name for name in cls.validator_project_test.fields(
         ).names() if name not in cls.not_nullable_fields.union(cls.unique_fields)])
 
+    @classmethod
+    def tearDownClass(cls):
+        """Delete projects and layers"""
+
+        super().tearDownClass()
+        del(cls.validator_project_test_expressions)
+        del(cls.validator_project_test_unique)
+        del(cls.validator_project_test_defaults)
+        del(cls.validator_project_test_not_null)
+        del(cls.validator_project_test)
+        del(cls.project)
+
+
     def _feature_factory(self, attrs={}, geom='POINT(9, 45)'):
         """Creates a QgsFeature for the test"""
 

@@ -33,7 +33,7 @@ from core.signals import (before_return_vector_data_layer,
 from core.utils.structure import (APIVectorLayerStructure, mapLayerAttributes,
                                   mapLayerAttributesFromQgisLayer)
 from core.utils.vector import BaseUserMediaHandler as UserMediaHandler
-from core.utils.qgisapi import get_qgis_features, count_qgis_features
+from core.utils.qgisapi import get_qgis_features, count_qgis_features, server_fid
 
 import logging
 
@@ -202,7 +202,7 @@ class BaseVectorOnModelApiView(G3WAPIView):
     # API modes
     mode_call = MODE_DATA
 
-    # Modes call avilable
+    # Modes call available
     modes_call_available = [
         MODE_CONFIG,
         MODE_DATA
@@ -440,6 +440,16 @@ class BaseVectorOnModelApiView(G3WAPIView):
             kwargs['page'] = request.query_params.get('page')
             kwargs['page_size'] = request.query_params.get('page_size', 10)
 
+
+        # Make sure we have all attrs we need to build the server FID
+        provider = self.metadata_layer.qgis_layer.dataProvider()
+        if qgis_feature_request.flags() & QgsFeatureRequest.SubsetOfAttributes:
+            attrs = qgis_feature_request.subsetOfAttributes()
+            for attr_idx in provider.pkAttributeIndexes():
+                if attr_idx not in attrs:
+                    attrs.append(attr_idx)
+            qgis_feature_request.setSubsetOfAttributes(attrs)
+
         self.features = get_qgis_features(
             self.metadata_layer.qgis_layer, qgis_feature_request, **kwargs)
         ex = QgsJsonExporter(self.metadata_layer.qgis_layer)
@@ -449,7 +459,7 @@ class BaseVectorOnModelApiView(G3WAPIView):
         # field name sent with 'unique' param.
         # --------------------------------------
         # IDEA:     for big data it'll be iterate over features to get unique
-        #           c++ iteration is fast. Instead memory layer fith to much features can be a problem.
+        #           c++ iteration is fast. Instead memory layer with too many features can be a problem.
         if 'unique' in request.query_params:
 
             vl = QgsVectorLayer(QgsWkbTypes.displayString(self.metadata_layer.qgis_layer.wkbType()),
@@ -525,6 +535,15 @@ class BaseVectorOnModelApiView(G3WAPIView):
 
             # Change media
             self.change_media(feature_collection)
+
+            # Patch feature IDs with server featureIDs
+            fids_map = {}
+            for f in self.features:
+                fids_map[f.id()] = server_fid(f, provider)
+
+            for i in range(len(feature_collection['features'])):
+                f = feature_collection['features'][i]
+                f['id'] = fids_map[f['id']]
 
             self.results.update(APIVectorLayerStructure(**{
                 'data': feature_collection,

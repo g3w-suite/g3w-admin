@@ -404,7 +404,7 @@ class ConstraintsModelTestsBase(ConstraintsTestsBase):
 
         # Verify geom was changed
         geom = [f['geometry']['coordinates']
-                for f in jcontent['vector']['data']['features'] if f['id'] == 1][0]
+                for f in jcontent['vector']['data']['features'] if f['id'] == '1'][0]
         self.assertEqual(geom, new_geom)
 
         # Change the geometry outside the allowed rule
@@ -430,7 +430,7 @@ class ConstraintsModelTestsBase(ConstraintsTestsBase):
 
         # Verify geom was NOT changed
         geom = [f['geometry']['coordinates']
-                for f in jcontent['vector']['data']['features'] if f['id'] == 1][0]
+                for f in jcontent['vector']['data']['features'] if f['id'] == '1'][0]
         self.assertEqual(geom, new_geom)
 
         # Test with inactive constraint
@@ -447,7 +447,7 @@ class ConstraintsModelTestsBase(ConstraintsTestsBase):
         self.assertEqual(response.status_code, 200)
         jcontent = json.loads(response.content)
         geom = [f['geometry']['coordinates']
-                for f in jcontent['vector']['data']['features'] if f['id'] == 1][0]
+                for f in jcontent['vector']['data']['features'] if f['id'] == '1'][0]
         self.assertEqual(geom, [10, 55])
 
         # reset test db
@@ -512,7 +512,7 @@ class ConstraintsModelTestsBase(ConstraintsTestsBase):
             editing_layer.project_id, editing_layer.qgs_layer_id), payload, format='json')
         self.assertEqual(response.status_code, 200)
         jcontent = json.loads(response.content)
-        new_fid = jcontent['response']['new'][0]['id']
+        new_fid = int(jcontent['response']['new'][0]['id'])
         self.assertTrue(new_fid > 0)
         # Retrieve the data
         response = client.post('/vector/api/editing/qdjango/%s/%s/' % (
@@ -522,7 +522,7 @@ class ConstraintsModelTestsBase(ConstraintsTestsBase):
         geom = jcontent['vector']['data']['features'][-1]['geometry']['coordinates']
         self.assertEqual(geom, [10, 55])
         self.assertEqual(jcontent['vector']['data']
-                         ['features'][-1]['id'], new_fid)
+                         ['features'][-1]['id'], str(new_fid))
 
         # reset test db
         self.reset_db_data()

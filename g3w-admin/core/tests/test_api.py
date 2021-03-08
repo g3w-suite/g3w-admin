@@ -101,9 +101,9 @@ class CoreApiTest(CoreTestBase):
         self.assertIsNone(resp["vector"]["fields"])
         self.assertEqual(resp["vector"]["geometrytype"], "Point")
         self.assertEqual(resp["vector"]["data"]["type"], "FeatureCollection")
-        self.assertDictEqual(resp["vector"]["data"]["features"][0], {"id": 1, "type": "Feature", "geometry": {
+        self.assertDictEqual(resp["vector"]["data"]["features"][0], {"id": '1', "type": "Feature", "geometry": {
                              "type": "Point", "coordinates": [1.980089, 28.779772]}, "properties": {"name": "a point", "pkuid": 1}})
-        self.assertDictEqual(resp["vector"]["data"]["features"][1], {"id": 2, "type": "Feature", "geometry": {
+        self.assertDictEqual(resp["vector"]["data"]["features"][1], {"id": '2', "type": "Feature", "geometry": {
                              "type": "Point", "coordinates": [10.685247, 44.350968]}, "properties": {"name": "another point", "pkuid": 2}})
         self.assertTrue(resp["result"])
         self.assertIsNone(resp["featurelocks"])
@@ -195,7 +195,7 @@ class CoreApiTest(CoreTestBase):
         self.assertEqual(resp["vector"]["geometrytype"], "Point")
         #self.assertEqual(resp["vector"]["pk"], "pkuid")
         self.assertEqual(resp["vector"]["data"]["type"], "FeatureCollection")
-        self.assertEqual(resp["vector"]["data"]["features"], [{"id": 2, "type": "Feature", "geometry": {
+        self.assertEqual(resp["vector"]["data"]["features"], [{"id": '2', "type": "Feature", "geometry": {
                          "type": "Point", "coordinates": [10.685247, 44.350968]}, "properties": {"name": "another point", 'pkuid': 2}}])
         self.assertTrue(resp["result"])
         self.assertIsNone(resp["featurelocks"])
@@ -212,9 +212,9 @@ class CoreApiTest(CoreTestBase):
         self.assertEqual(resp["vector"]["geometrytype"], "Point")
         self.assertEqual(resp["vector"]["data"]["type"], "FeatureCollection")
         self.assertEqual(resp["vector"]["data"]["features"], [
-            {"id": 2, "type": "Feature", "geometry": {"type": "Point", "coordinates": [
+            {"id": '2', "type": "Feature", "geometry": {"type": "Point", "coordinates": [
                 10.685247, 44.350968]}, "properties": {"name": "another point", 'pkuid': 2}},
-            {'geometry': {'coordinates': [1.980089, 28.779772], 'type': 'Point'}, 'id': 1,   'properties': {
+            {'geometry': {'coordinates': [1.980089, 28.779772], 'type': 'Point'}, 'id': '1',   'properties': {
                 'name': 'a point', 'pkuid': 1}, 'type': 'Feature'},
         ])
         self.assertTrue(resp["result"])
@@ -228,9 +228,9 @@ class CoreApiTest(CoreTestBase):
         self.assertEqual(resp["vector"]["geometrytype"], "Point")
         self.assertEqual(resp["vector"]["data"]["type"], "FeatureCollection")
         self.assertEqual(resp["vector"]["data"]["features"], [
-            {'geometry': {'coordinates': [1.980089, 28.779772], 'type': 'Point'}, 'id': 1,   'properties': {
+            {'geometry': {'coordinates': [1.980089, 28.779772], 'type': 'Point'}, 'id': '1',   'properties': {
                 'name': 'a point', 'pkuid': 1}, 'type': 'Feature'},
-            {"id": 2, "type": "Feature", "geometry": {"type": "Point", "coordinates": [
+            {"id": '2', "type": "Feature", "geometry": {"type": "Point", "coordinates": [
                 10.685247, 44.350968]}, "properties": {"name": "another point", 'pkuid': 2}},
         ])
         self.assertTrue(resp["result"])
@@ -247,7 +247,7 @@ class CoreApiTest(CoreTestBase):
         self.assertEqual(resp["vector"]["geometrytype"], "Point")
         self.assertEqual(resp["vector"]["data"]["type"], "FeatureCollection")
         self.assertEqual(resp["vector"]["data"]["features"], [
-            {"id": 2, "type": "Feature", "geometry": {"type": "Point", "coordinates": [
+            {"id": '2', "type": "Feature", "geometry": {"type": "Point", "coordinates": [
                 10.685247, 44.350968]}, "properties": {"name": "another point", 'pkuid': 2}},
         ])
         self.assertTrue(resp["result"])
@@ -259,9 +259,9 @@ class CoreApiTest(CoreTestBase):
                                                          'spatialite_points20190604101052075'], {'suggest': 'name|poin'})
         resp = json.loads(response.content)
         self.assertEqual(resp["vector"]["data"]["features"], [
-            {'geometry': {'coordinates': [1.980089, 28.779772], 'type': 'Point'}, 'id': 1,   'properties': {
+            {'geometry': {'coordinates': [1.980089, 28.779772], 'type': 'Point'}, 'id': '1',   'properties': {
                 'name': 'a point', 'pkuid': 1}, 'type': 'Feature'},
-            {"id": 2, "type": "Feature", "geometry": {"type": "Point", "coordinates": [
+            {"id": '2', "type": "Feature", "geometry": {"type": "Point", "coordinates": [
                 10.685247, 44.350968]}, "properties": {"name": "another point", 'pkuid': 2}},
         ])
 
@@ -269,7 +269,7 @@ class CoreApiTest(CoreTestBase):
                                                          'spatialite_points20190604101052075'], {'suggest': 'name|anot'})
         resp = json.loads(response.content)
         self.assertEqual(resp["vector"]["data"]["features"], [
-            {"id": 2, "type": "Feature", "geometry": {"type": "Point", "coordinates": [
+            {"id": '2', "type": "Feature", "geometry": {"type": "Point", "coordinates": [
                 10.685247, 44.350968]}, 'properties': {'name': 'another point', 'pkuid': 2}}
         ])
 
@@ -290,9 +290,9 @@ class CoreApiTest(CoreTestBase):
         })
         resp = json.loads(response.content)
         self.assertEqual(resp["vector"]["data"]["features"], [
-            {"id": 2, "type": "Feature", "geometry": {"type": "Point", "coordinates": [
+            {"id": '2', "type": "Feature", "geometry": {"type": "Point", "coordinates": [
                 10.685247, 44.350968]}, "properties": {"name": "another point", 'pkuid': 2}},
-            {'geometry': {'coordinates': [1.980089, 28.779772], 'type': 'Point'}, 'id': 1,   'properties': {
+            {'geometry': {'coordinates': [1.980089, 28.779772], 'type': 'Point'}, 'id': '1',   'properties': {
                 'name': 'a point', 'pkuid': 1}, 'type': 'Feature'},
         ])
         self.assertTrue(resp["result"])

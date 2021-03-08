@@ -11,16 +11,18 @@ __date__ = '2020-05-07'
 __copyright__ = 'Copyright 2015 - 2020, Gis3w'
 
 
-from django.conf import settings
-from core.utils.qgisapi import get_qgs_project
-from core.api.filters import BaseFilterBackend
-from qdjango.models import SessionTokenFilter
 import logging
+
+from core.api.filters import BaseFilterBackend
+from core.utils.qgisapi import get_qgs_project, expression_from_server_fids
+from django.conf import settings
+from qdjango.models import SessionTokenFilter
 
 logger = logging.getLogger('module_qdjango')
 
 
 FILTER_RELATIONONETOMANY_PARAM = 'relationonetomany'
+# A string possibly in the form of <pk1>@@<pk2>@@<pk3>....
 FILTER_FID_PARAM = 'fid'
 FILTER_SESSION_PARAM = 'filtertoken'
 
@@ -74,7 +76,7 @@ class RelationOneToManyFilter(BaseFilterBackend):
 
 
 class FidFilter(BaseFilterBackend):
-    """A filter backend that applies a QgsExpression for fid"""
+    """A filter backend that applies a QgsExpression for server fid (<pk1>@@<pk2>...)"""
 
     def apply_filter(self, request, qgis_layer, qgis_feature_request, view=None):
         """Apply the filter to the QGIS feature request or the layer's subset string
@@ -82,7 +84,6 @@ class FidFilter(BaseFilterBackend):
         string) make sure to restore the original state or to work on a clone.
         """
 
-        expression_text = None
         multiple = True
         FILTER_FIDS_PARAM = f'{FILTER_FID_PARAM}s'
 
@@ -94,11 +95,11 @@ class FidFilter(BaseFilterBackend):
 
         try:
             if multiple:
-                fids = [int(f) for f in request.GET[FILTER_FIDS_PARAM].split(',')]
+                fids = [f for f in request.GET[FILTER_FIDS_PARAM].split(',')]
                 if len(fids) == 0:
                     return
             else:
-                fid = int(request.GET[FILTER_FID_PARAM])
+                fid = request.GET[FILTER_FID_PARAM]
                 if not fid:
                     return
 
@@ -107,9 +108,11 @@ class FidFilter(BaseFilterBackend):
             return
 
         if multiple:
-            qgis_feature_request.setFilterFids(fids)
+            exp = expression_from_server_fids(fids, qgis_layer.dataProvider())
         else:
-            qgis_feature_request.setFilterFid(fid)
+            exp = expression_from_server_fids([fid], qgis_layer.dataProvider())
+
+        qgis_feature_request.combineFilterExpression(exp)
 
 
 class SingleLayerSessionTokenFilter(BaseFilterBackend):

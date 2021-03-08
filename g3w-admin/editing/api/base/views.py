@@ -48,12 +48,9 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
 
     relations_data_key = 'relations'
 
-    no_more_lock_feature_msg = u'Spiacente ma la Feature id ' \
-        u'{} del layer {} non è modificabile ' \
-        u'perché non più ' \
-        u'sotto lock'
+    no_more_lock_feature_msg = _('The feature id {} of layer {} cannot be modified because it is not locked anymore')
 
-    # Modes call avilable
+    # Modes call available
     modes_call_available = [
         MODE_UNLOCK,
         MODE_EDITING,

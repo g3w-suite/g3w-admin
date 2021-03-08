@@ -88,9 +88,10 @@ class BaseUserMediaHandler(object):
 
     def new_value(self, change=False):
         """ Build and save media value from client """
+
         self.set_layer_md5_source()
         current_instance = self.get_current_instance()
-        edittypes = eval(self.layer.edittypes)
+        edittypes = eval(self.layer.edittypes) if self.layer.edittypes else {}
 
         for field, data in list(edittypes.items()):
             if data['widgetv2type'] == 'ExternalResource' and field in self.feature_properties:
