@@ -146,6 +146,9 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
     toc_tab_default = models.CharField(_("Tab's TOC active as default"), choices=CLIENT_TOC_TABS, max_length=40,
                                        default='layers', help_text="Set tab's TOC open by default on init client")
 
+    autozoom_query = models.BooleanField(_('Automatic zoom to query result features'), default=False,
+                                         help_text='Automatic zoom on query result features for only one layer')
+
     layouts = models.TextField(_('Project layouts'), null=True, blank=True)
 
     use_map_extent_as_init_extent = models.BooleanField(_('User QGIS project map start extent as webgis init extent'),

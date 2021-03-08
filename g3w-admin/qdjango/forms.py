@@ -232,6 +232,7 @@ class QdjangoProjectForm(TranslationModelForm, QdjangoProjectFormMixin, G3WFormM
                         Div(
                             'use_map_extent_as_init_extent',
                             'toc_tab_default',
+                            'autozoom_query',
                             'feature_count_wms',
                             'multilayer_query',
                             'multilayer_querybybbox',
@@ -279,6 +280,7 @@ class QdjangoProjectForm(TranslationModelForm, QdjangoProjectFormMixin, G3WFormM
             'baselayer',
             'feature_count_wms',
             'toc_tab_default',
+            'autozoom_query',
             'multilayer_query',
             'multilayer_querybybbox',
             'multilayer_querybypolygon',

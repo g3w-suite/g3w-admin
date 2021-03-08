@@ -162,6 +162,12 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         if hasattr(instance, 'multilayer_querybypolygon') and instance.multilayer_querybypolygon == 'multiple':
             options['querymultilayers'].append('querybypolygon')
 
+        # auto_zoom
+        options['autozoom_query'] = getattr(instance, 'autozoom_query', False)
+
+        # for tabs TOC
+        options['toc_tab_default'] = getattr(instance, 'toc_tab_default', 'layers')
+
         return options
 
     def _set_ows_method(self, instance):
@@ -258,8 +264,6 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         ret['relations'] = []
         ret['no_legend'] = []
 
-        # for tabs TOC
-        ret['toc_tab_default'] = instance.toc_tab_default
 
         layers = {l.qgs_layer_id: l for l in instance.layer_set.all()}
 
