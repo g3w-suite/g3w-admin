@@ -129,7 +129,8 @@ class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
                     'description': project.description,
                     'thumbnail': project_thumb,
                     'type': g3wProjectApp,
-                    'gid': "{}:{}".format(g3wProjectApp, project.id)
+                    'gid': "{}:{}".format(g3wProjectApp, project.id),
+                    'modified': project.modified.timestamp() if hasattr(project, 'modified') else 0
                 })
 
         # baselayers
