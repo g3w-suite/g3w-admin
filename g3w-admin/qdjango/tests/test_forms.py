@@ -56,6 +56,7 @@ class QdjangoFormsTest(QdjangoTestBase):
             'multilayer_query': 'single',
             'multilayer_querybybbox': 'single',
             'multilayer_querybypolygon': 'single',
+            'toc_tab_default': 'layers',
             'url_alias': 'test_url_alias_name'
         }
 
@@ -81,6 +82,9 @@ class QdjangoFormsTest(QdjangoTestBase):
         self.assertEqual(len(form.fields['viewer_user_groups'].queryset), 0)
 
         self.assertEqual(len(Project.objects.all()), 2)
+
+        # Toc_tab_default by base layers saved into parent group
+        self.assertEqual(len(form.fields['toc_tab_default'].choices), 2)
 
         # Save project as into project CRUD views
         form.qgisProject.save(**form.cleaned_data)

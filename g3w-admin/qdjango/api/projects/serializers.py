@@ -251,12 +251,16 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
             instance.layouts)) if instance.layouts else []
 
         # add layers data, widgets
-        # init proprties
+        # init properties
         ret['layers'] = []
         ret['search'] = []
         ret['widget'] = []
         ret['relations'] = []
         ret['no_legend'] = []
+
+        # for tabs TOC
+        ret['toc_tab_default'] = instance.toc_tab_default
+
         layers = {l.qgs_layer_id: l for l in instance.layer_set.all()}
 
         # check fo title

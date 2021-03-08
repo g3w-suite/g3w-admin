@@ -141,6 +141,13 @@ class QdjangoProjectForm(TranslationModelForm, QdjangoProjectFormMixin, G3WFormM
 
         super().__init__(*args, **kwargs)
 
+        # rebuild toc_tab_default by baselayers saved into part group
+        base_layers = self.group.baselayers.count()
+        if not base_layers:
+            nc = list(Project.CLIENT_TOC_TABS)
+            del(nc[1])
+            self.fields['toc_tab_default'].choices = nc
+
         # Check for authcfg errors
         if self.has_error('qgis_file'):
             for err in self.errors['qgis_file']:
@@ -224,6 +231,7 @@ class QdjangoProjectForm(TranslationModelForm, QdjangoProjectFormMixin, G3WFormM
                         ),
                         Div(
                             'use_map_extent_as_init_extent',
+                            'toc_tab_default',
                             'feature_count_wms',
                             'multilayer_query',
                             'multilayer_querybybbox',
@@ -270,6 +278,7 @@ class QdjangoProjectForm(TranslationModelForm, QdjangoProjectFormMixin, G3WFormM
             'thumbnail',
             'baselayer',
             'feature_count_wms',
+            'toc_tab_default',
             'multilayer_query',
             'multilayer_querybybbox',
             'multilayer_querybypolygon',

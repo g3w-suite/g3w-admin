@@ -71,6 +71,12 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
         ('multiple', _('Multiple'))
     )
 
+    CLIENT_TOC_TABS = Choices(
+        ('layers', _('Layers')),
+        ('baselayers', _('Base layers')),
+        ('legend', _('Legend'))
+    )
+
     # Project file
     qgis_file = models.FileField(
         _('QGIS project file'),
@@ -136,6 +142,9 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
 
     context_base_legend = models.BooleanField(_('Context base legend'), default=False,
                                 help_text='Show only the symbols for the features falling into the requested area')
+
+    toc_tab_default = models.CharField(_("Tab's TOC active as default"), choices=CLIENT_TOC_TABS, max_length=40,
+                                       default='layers', help_text="Set tab's TOC open by default on init client")
 
     layouts = models.TextField(_('Project layouts'), null=True, blank=True)
 

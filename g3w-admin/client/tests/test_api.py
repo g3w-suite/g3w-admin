@@ -182,6 +182,9 @@ class ClientApiTest(CoreTestBase):
         self.assertEqual(resp["name"], "Un progetto")
         self.assertEqual(resp["search_endpoint"], 'ows')
 
+        # test for tab_toc_default
+        self.assertTrue(resp["toc_tab_default"], 'layers')
+
         # check for layers and fields
         self.assertEqual(len(resp['layers']), 3)
         for l in resp['layers']:
@@ -580,6 +583,12 @@ class ClientApiTest(CoreTestBase):
     def testClientConfigApiViewForInitMaxExtent(self):
         """Test init max extent for client config api"""
 
+        # check for tab_doc_dafault: set to legend
+        self.project_extent310_2.instance.toc_tab_default = 'legend'
+        self.project_extent310_2.instance.save()
+
+
+
         response = self._testApiCall('group-project-map-config',
                                      [self.extent_group.slug, 'qdjango', self.project_extent310_2.instance.pk])
         resp = json.loads(response.content)
@@ -587,4 +596,5 @@ class ClientApiTest(CoreTestBase):
         self.assertEqual(resp['extent'],
                          [166021.44308054161956534, 0, 534994.65506113646551967, 9329005.18244743719696999])
 
+        self.assertEqual(resp['toc_tab_default'], 'legend')
 

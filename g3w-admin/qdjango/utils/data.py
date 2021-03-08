@@ -256,7 +256,7 @@ class QgisProjectLayer(XmlData):
         # TIL: vector tiles have no data provider :/
         try:
             layer_type = self.qgs_layer.dataProvider().name()
-        except:
+        except Exception as e:
             if self.qgs_layer.type() == QgsMapLayerType.VectorTileLayer:
                 layer_type = 'vector-tile'
 
