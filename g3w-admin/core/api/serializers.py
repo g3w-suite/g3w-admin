@@ -77,7 +77,8 @@ class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         ret = super(GroupSerializer, self).to_representation(instance)
 
         # add header_logo
-        # before check macrogroups number anche if is equal to 1 use it
+        # before check macrogroups and groups number also if is equal to 1 use it
+
         try:
             macrogroup = instance.macrogroups.get(use_logo_client=True)
             ret['header_logo_img'] = macrogroup.logo_img.name
