@@ -356,8 +356,11 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
         # Set to macrogroup images if options use_logo is checked
         try:
-            macrogroup = instance.group.macrogroups.get(use_logo_client=True)
-            ret['thumbnail'] = macrogroup.logo_img.url
+            if instance.group.use_logo_client:
+                ret['thumbnail'] = instance.group.header_logo_img.url
+            else:
+                macrogroup = instance.group.macrogroups.get(use_logo_client=True)
+                ret['thumbnail'] = macrogroup.logo_img.url
         except:
             pass
 

@@ -166,6 +166,11 @@ class Group(TimeStampedModel, OrderedModel):
 
     macrogroups = models.ManyToManyField(MacroGroup, blank=True)
 
+    use_logo_client = models.BooleanField(_('Use logo image for client'), default=False,
+                                          help_text=_('As for MacroGroup options is possible to use current logo group '
+                                                      'as client logo, if MacroGroup option is active this options takes '
+                                                      'precendence'))
+
     class Meta:
         permissions = (
             ('add_project_to_group', 'Can add project to the group'),

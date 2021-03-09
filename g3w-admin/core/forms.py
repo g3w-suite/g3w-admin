@@ -118,6 +118,7 @@ class GroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, G3WRequestFor
                                             Div(
                                                 'header_logo_img',
                                                 HTML("""<img {% if not form.header_logo_img.value %}style="display:none;"{% endif %} class="img-responsive img-thumbnail" src="{{ MEDIA_URL }}{{ form.header_logo_img.value }}">""", ),
+                                                'use_logo_client',
                                                 'form_id',
                                                 'upload_url',
                                                 'delete_url',

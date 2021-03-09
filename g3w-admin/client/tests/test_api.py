@@ -401,13 +401,21 @@ class ClientApiTest(CoreTestBase):
         resp = json.loads(response.content)
         self.assertEqual(resp["thumbnail"], '/media/fake/project.png')
 
-        # Check use_logo_client
+        # Check use_logo_client by macrogroup
         macrogorup.use_logo_client = True
         macrogorup.save()
 
         response = self._testApiCall('group-project-map-config', ['gruppo-1', 'qdjango', '1'])
         resp = json.loads(response.content)
         self.assertEqual(resp["thumbnail"], '/media/fake/macrogroup.png')
+
+        # Check use_logo_client by group
+        self.prj_test.group.use_logo_client = True
+        self.prj_test.group.save()
+
+        response = self._testApiCall('group-project-map-config', ['gruppo-1', 'qdjango', '1'])
+        resp = json.loads(response.content)
+        self.assertEqual(resp["thumbnail"], self.prj_test.group.header_logo_img.url)
 
     def testClientConfigApiWidget(self):
         """Test layer widget config section"""
