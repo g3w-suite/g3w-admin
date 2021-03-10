@@ -939,7 +939,10 @@ _.extend(g3wadmin.widget, {
 
 
         // set action for confirm btn
+		ga.ui.initRadioCheckbox(modal.$modal.find('form'));
         var form = new ga.forms.form(modal.$modal.find('form'));
+
+
         var that = this;
         form.setOnSuccesAction(function(e){
             that._refreshSinglelayerConstraintList($item)();
@@ -1287,6 +1290,22 @@ _.extend(g3wadmin.tpl, {
 						<label class="control-label ">'+gettext('Description')+'</label>\
 						<div class="controls ">\
 							<textarea class="form-control" name="description" style="width:100%;"></textarea>\
+						</div>\
+					</div>\
+					<div class="form-group">\
+						<div id="div_id_for_visualization" class="checkbox">\
+							<label for="id_for_visualization" class="">\
+								<input type="checkbox" name="for_view" id="id_for_visualization" value="1">\
+								'+gettext('Active for visualization')+'\
+							</label>\
+						</div>\
+					</div>\
+					<div class="form-group">\
+						<div id="div_id_for_editing" class="checkbox">\
+							<label for="id_for_editing" class="">\
+								<input type="checkbox" name="for_editing" id="id_for_editing" value="1">\
+								'+gettext('Active for editing')+'\
+							</label>\
 						</div>\
 					</div>\
 				</div>\
