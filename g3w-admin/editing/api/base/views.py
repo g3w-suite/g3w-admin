@@ -196,6 +196,7 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
 
                         feature = QgsFeature(qgis_layer.fields())
                         if mode_editing == EDITING_POST_DATA_UPDATED:
+                            geojson_feature['id'] = int(geojson_feature['id'])
                             feature.setId(geojson_feature['id'])
 
                         # We use this feature for geometry parsing only:
@@ -316,6 +317,8 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
 
             for feature_id in post_layer_data[EDITING_POST_DATA_DELETED]:
 
+                # for new Server FID system:
+                feature_id = int(feature_id)
                 # control feature locked
                 if not metadata_layer.lock.checkFeatureLocked(feature_id):
                     raise Exception(self.no_more_lock_feature_msg.format(
