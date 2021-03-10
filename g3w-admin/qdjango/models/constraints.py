@@ -45,6 +45,13 @@ class SingleLayerConstraint(models.Model):
     name = models.CharField(_('Name'), max_length=255, null=True)
     description = models.TextField(_('Description'), null=True, blank=True)
 
+    for_view = models.BooleanField(_('Active for visualization'), default=False, null=True,
+                                   help_text=_(
+                                       'Active this constraint for users have viewing grant on layer/project'))
+    for_editing = models.BooleanField(_('Active for editing'), default=False, null=True,
+                                   help_text=_(
+                                       'Active this constraint for users have editing grant on layer/project'))
+
     @property
     def qgs_layer_id(self):
         """Return the QGIS layer id for the constrainted layer"""
