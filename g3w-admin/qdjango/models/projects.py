@@ -446,6 +446,30 @@ class Layer(G3WACLModelMixins, models.Model):
             return layer
 
     @property
+    def styles(self):
+        """Returns the layer styles for vector layers
+
+        :return: list of dictionaries { name: '<style_name:str>', default: <bool> }
+        :rtype: list
+        """
+
+        styles = []
+
+        try:
+            layer = self.qgis_layer
+            if not layer is None:
+                sm = layer.styleManager()
+                for style in sm.styles():
+                    styles.append({
+                        'name': style,
+                        'current': style == sm.currentStyle()
+                    })
+        except:
+            pass # Non-vectors
+
+        return styles
+
+    @property
     def extent_rect(self):
         """Return dict of coordinates extension string
 

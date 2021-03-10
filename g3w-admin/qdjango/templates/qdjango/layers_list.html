@@ -84,6 +84,7 @@
             <ul class="nav nav-tabs">
               <li class="active"><a href="#tab_layers_data" data-toggle="tab"><i class="fa fa-file"></i> {% trans 'Data' %}</a></li>
               <li><a href="#tab_layers_structure" data-toggle="tab"><i class="fa fa-list-alt"></i> {% trans 'Structure' %}</a></li>
+              <li><a href="#tab_layers_styles" data-toggle="tab"><i class="fa fa-map-marker"></i> {% trans 'Styles' %}</a></li>
 
             </ul>
             <div class="tab-content">
@@ -215,6 +216,47 @@
               </div><!-- /.tab-pane -->
               <div class="tab-pane" id="tab_layers_structure">
                 <div id="tree"></div>
+              </div><!-- /.tab-pane -->
+
+              <div class="tab-pane" id="tab_layers_styles">
+                <div id="styles">
+
+                    {% for layer in object_list %}
+
+                    <div class="card">
+                        <div class="card-body">
+                            <h3 class="card-title">{{ layer.name }} <button type="button" class="btn btn-success btn-sm">{% trans 'Create new style from QML' %}</button></h5>
+
+                            <table class="table table-sm">
+                                <thead>
+                                   <th style="width:30%">{% trans 'Style name' %}</th>
+                                   <th style="width:20%">{% trans 'Current' %}</th>
+                                   <th style="width:50%">&nbsp;</th>
+                                </thead>
+                                <tbody>
+                                  {% for style in layer.styles %}
+                                  <tr>
+                                    <td>{{ style.name }}</td>
+                                    <td><input type="radio" {% if style.current %}checked{% else %}{% endif %} readonly>
+                                    <td>
+                                        {% if style.current %}
+                                        &nbsp;
+                                        {% else %}
+                                        <button type="button" class="btn btn-primary btn-sm">{% trans 'Make current' %}</button>
+                                        <button type="button" class="btn btn-primary btn-sm">{% trans 'Rename' %}</button>
+                                        <button type="button" class="btn btn-danger btn-sm">{% trans 'Remove' %}</button>
+                                        {% endif %}
+                                    </td>
+                                  </tr>
+                                  {% endfor %}
+                               </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    {% endfor %}
+
+                </div>
               </div><!-- /.tab-pane -->
 
             </div><!-- /.tab-content -->
