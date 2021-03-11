@@ -938,8 +938,21 @@ _.extend(g3wadmin.widget, {
         }
 
 
-        // set action for confirm btn
-		ga.ui.initRadioCheckbox(modal.$modal.find('form'));
+        modal.$modal.find('#id_for_view').on('ifChanged', function(e){
+        	if (e.target.checked) {
+        		modal.$modal.find("[name='for_view']").val('true');
+			} else {
+        		modal.$modal.find("[name='for_view']").val('false');
+			}
+		});
+
+        modal.$modal.find('#id_for_editing').on('ifChanged', function(e){
+        	if (e.target.checked) {
+        		modal.$modal.find("[name='for_editing']").val('true');
+			} else {
+        		modal.$modal.find("[name='for_editing']").val('false');
+			}
+		});
         var form = new ga.forms.form(modal.$modal.find('form'));
 
 
@@ -952,14 +965,26 @@ _.extend(g3wadmin.widget, {
             form.sendData(e, params['new'] ? 'post' : 'put');
         });
 
+        ga.ui.initRadioCheckbox(modal.$modal.find('form'));
+
         modal.show();
 
         // populate form in update
 		if (!params['new']){
 			$.each(res, function(key, val) {
 				modal.$modal.find('[name=' + key + ']').val(val);
+				// init icheck
+				if ((key == 'for_view' || key == 'for_editing')){
+					if (val) {
+						modal.$modal.find('#id_' + key).iCheck('check');
+					} else {
+						modal.$modal.find('#id_' + key).iCheck('uncheck');
+					}
+				}
 			});
 		}
+
+
     },
 
 	_singlelayerConstraintRulesForm: function($item, res, params){
@@ -1293,20 +1318,22 @@ _.extend(g3wadmin.tpl, {
 						</div>\
 					</div>\
 					<div class="form-group">\
-						<div id="div_id_for_visualization" class="checkbox">\
-							<label for="id_for_visualization" class="">\
-								<input type="checkbox" name="for_view" id="id_for_visualization" value="1">\
+						<div id="div_id_for_view" class="checkbox">\
+							<label for="id_for_view" class="">\
+								<input type="checkbox" name="icheck_for_view" id="id_for_view" checked="checked" class="checkboxinput">\
 								'+gettext('Active for visualization')+'\
 							</label>\
 						</div>\
+						<input type="hidden" name="for_view">\
 					</div>\
 					<div class="form-group">\
 						<div id="div_id_for_editing" class="checkbox">\
 							<label for="id_for_editing" class="">\
-								<input type="checkbox" name="for_editing" id="id_for_editing" value="1">\
+								<input type="checkbox" name="icheck_for_editing" id="id_for_editing" class="checkboxinput">\
 								'+gettext('Active for editing')+'\
 							</label>\
 						</div>\
+						<input type="hidden" name="for_editing">\
 					</div>\
 				</div>\
 			</div>\
