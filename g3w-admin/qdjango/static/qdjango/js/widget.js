@@ -1095,6 +1095,8 @@ _.extend(g3wadmin.widget, {
             '                <th style="width:180px;">'+gettext('Actions')+'</th>\n' +
             '                <th>'+gettext('Name')+'</th>\n' +
 			'                <th>'+gettext('Description')+'</th>\n' +
+			'                <th>'+gettext('For visualization')+'</th>\n' +
+			'                <th>'+gettext('For editing')+'</th>\n' +
 			'                <th>'+gettext('Subset rules count')+'</th>\n' +
             '                <th>'+gettext('Expression rules count')+'</th>\n' +
             '            </tr>\n' +
@@ -1105,6 +1107,8 @@ _.extend(g3wadmin.widget, {
         $.each(res['results'], function(k, v){
             constraint_res[v['pk']] = v;
             var editDisplay = v['rule_count'] > 0 ? 'none': 'display';
+            var for_view = (v['for_view']) ? '<span class="fa fa-check-circle" style="color: orange"></span>' : '';
+            var for_editing = (v['for_editing']) ? '<span class="fa fa-check-circle" style="color: orange"></span>' : '';
             $tbody.append('<tr id="singlelayerconstraint-item-'+v['pk']+'">\n' +
             '                <td>'+ga.tpl.singlelayerConstraintActions({
                     'layerId': layer_pk,
@@ -1114,6 +1118,8 @@ _.extend(g3wadmin.widget, {
             })+'</td>\n' +
             '                <td>'+v['name']+'</td>\n' +
 			'                <td>'+v['description']+'</td>\n' +
+			'                <td>'+for_view+'</td>\n' +
+			'                <td>'+for_editing+'</td>\n' +
             '                <td>'+v['subset_rule_count']+'</td>\n' +
 			'                <td>'+v['expression_rule_count']+'</td>\n' +
             '            </tr>\n');
