@@ -57,9 +57,7 @@ class SingleLayerConstraintSerializer(serializers.ModelSerializer):
             'subset_rule_count',
             'expression_rule_count',
             'name',
-            'description',
-            'for_view',
-            'for_editing'
+            'description'
         ]
         validators = [SingleLayerConstraintCleanValidator()]
 
