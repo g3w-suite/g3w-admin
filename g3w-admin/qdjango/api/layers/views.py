@@ -30,7 +30,7 @@ class LayerUserInfoAPIView(generics.ListAPIView):
 
     def get_queryset(self):
         """
-        This view should return a list o user with view_project permission.
+        This view should return a list of user with view_project permission.
         """
         if 'layer_id' in self.kwargs:
             # get viewer users
