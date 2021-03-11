@@ -14,6 +14,7 @@ from core.api.base.vector import MetadataVectorLayer
 from core.api.base.views import BaseVectorOnModelApiView
 from core.signals import (post_save_maplayer, pre_delete_maplayer,
                           pre_save_maplayer)
+from core.utils.qgisapi import server_fid, get_layer_fids_from_server_fids
 from editing.models import (EDITING_POST_DATA_ADDED, EDITING_POST_DATA_DELETED,
                             EDITING_POST_DATA_UPDATED)
 from editing.utils import LayerLock
@@ -80,7 +81,7 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
         super().response_data_mode(request)
 
         # lock features and get:
-        feature_ids = [str(f.id()) for f in self.features]
+        feature_ids = [str(server_fid(f, self.metadata_layer.qgis_layer.dataProvider())) for f in self.features]
         features_locked = self.metadata_layer.lock.lockFeatures(feature_ids)
 
         # update response
@@ -196,7 +197,7 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
 
                         feature = QgsFeature(qgis_layer.fields())
                         if mode_editing == EDITING_POST_DATA_UPDATED:
-                            geojson_feature['id'] = int(geojson_feature['id'])
+                            geojson_feature['id'] = get_layer_fids_from_server_fids([geojson_feature['id']], qgis_layer)[0]
                             feature.setId(geojson_feature['id'])
 
                         # We use this feature for geometry parsing only:
@@ -238,7 +239,7 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
                                                           f'layer {qgis_layer.id()} has more than one pk column'))
 
                                     # update pk attribute:
-                                    feature.setAttribute(pks[0], feature.id())
+                                    feature.setAttribute(pks[0], server_fid(feature, qgis_layer.dataProvider()))
 
                         elif mode_editing == EDITING_POST_DATA_UPDATED:
                             attr_map = {}
@@ -277,14 +278,14 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
                             to_res.update({
                                 'clientid': geojson_feature['id'],
                                 # This might be the internal QGIS feature id (< 0)
-                                'id': feature.id(),
+                                'id': server_fid(feature, metadata_layer.qgis_layer.dataProvider()),
                                 'properties': jfeature['properties']
                             })
 
                             # lock news:
                             to_res_lock = metadata_layer.lock.modelLock2dict(
                                 metadata_layer.lock.lockFeature(
-                                    feature.id(), save=True)
+                                    server_fid(feature, metadata_layer.qgis_layer.dataProvider()), save=True)
                             )
 
                         if bool(to_res):
@@ -315,10 +316,11 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
         # erasing feature if to do
         if EDITING_POST_DATA_DELETED in post_layer_data:
 
-            for feature_id in post_layer_data[EDITING_POST_DATA_DELETED]:
+            # get feature fids from server fids from client.
+            fids = get_layer_fids_from_server_fids(post_layer_data[EDITING_POST_DATA_DELETED], qgis_layer)
 
-                # for new Server FID system:
-                feature_id = int(feature_id)
+            for feature_id in fids:
+
                 # control feature locked
                 if not metadata_layer.lock.checkFeatureLocked(feature_id):
                     raise Exception(self.no_more_lock_feature_msg.format(

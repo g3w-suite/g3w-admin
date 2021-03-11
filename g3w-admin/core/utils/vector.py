@@ -54,8 +54,11 @@ class BaseUserMediaHandler(object):
         """
         Get current layer to save instance
         """
-        return self.metadata_layer.get_feature(pk=self.feature['id']) if self.metadata_layer and \
-                                                                        type(self.feature['id']) == int else None
+        if type(self.feature['id'] == str and self.feature['id'].startswith('_new_')):
+            return None
+        else:
+            return self.metadata_layer.get_feature(pk=self.feature['id']) if self.metadata_layer else None
+            # and type(self.feature['id']) == int else None
 
     def get_file_name(self, uri):
         """ Get filename from media uri sent by client """

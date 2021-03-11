@@ -34,4 +34,4 @@ class MetadataVectorLayer(object):
         Returns a (possibly invalid) single feature from QGIS layer
         """
 
-        return self.qgis_layer.getFeature(pk)
+        return self.qgis_layer.getFeature(int(pk))

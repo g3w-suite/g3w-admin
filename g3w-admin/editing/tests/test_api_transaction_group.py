@@ -18,6 +18,7 @@ import shutil
 from django.test import TestCase, override_settings
 from rest_framework.test import APIClient
 from core.models import G3WSpatialRefSys, Group as CoreGroup
+from core.utils.qgisapi import get_layer_fids_from_server_fids
 from django.core.management import call_command
 from qgis.PyQt.QtCore import QTemporaryDir, QDate
 from django.core.files import File
@@ -236,7 +237,7 @@ class TransactionGroupTest(TestCase):
 
         jresult = json.loads(response.content)
         self.assertTrue(jresult['result'])
-        self.assertEqual(jresult['response']['new'][0]['id'], 6)
+        self.assertEqual(jresult['response']['new'][0]['id'], '6')
         self.assertEqual(jresult['response']['new'][0]['properties']['name'], "name 1")
         self.assertEqual(jresult['response']['new'][0]['properties']['value'], 12345)
 
@@ -344,7 +345,7 @@ class TransactionGroupTest(TestCase):
             "relations": {},
             "update": [
                 {
-                    "id": int(to_update['featureid']),
+                    "id": str(to_update['featureid']),
                     "geometry": {"coordinates": [1338617, 5425969], "type": "Point"}, "properties": {
                         "fid": int(to_update['featureid']),
                         "name": "name 15",
@@ -492,7 +493,7 @@ class TransactionGroupTest(TestCase):
         self.assertEqual(response.status_code, 200)
         jresult = json.loads(response.content)
         self.assertTrue(jresult['result'], jresult)
-        self.assertEqual(jresult['response']['new'][0]['id'], 3)
+        self.assertEqual(jresult['response']['new'][0]['id'], '3')
         self.assertEqual(self.poligoni.qgis_layer.getFeature(3).attributes(), [
                          3, 'name father', 4444.0, QDate(2018, 1, 2), True])
         self.assertTrue('properties' in jresult['response']['new'][0])
@@ -501,10 +502,12 @@ class TransactionGroupTest(TestCase):
         self.assertNotEqual(jresult['response']['new_relations'], {})
 
         # Verify
-        parent_id = jresult['response']['new'][0]['id']
+        parent_id_server = jresult['response']['new'][0]['id']
+        parent_id = get_layer_fids_from_server_fids([parent_id_server], self.poligoni.qgis_layer)[0]
         self.assertTrue(
             self.poligoni.qgis_layer.getFeature(parent_id).isValid())
-        child_id = jresult['response']['new_relations']['test_afb61649_1fb2_426e_b588_04217314f0c4']['new'][0]['id']
+        child_id_server = jresult['response']['new_relations']['test_afb61649_1fb2_426e_b588_04217314f0c4']['new'][0]['id']
+        child_id = get_layer_fids_from_server_fids([child_id_server], self.test.qgis_layer)[0]
         self.assertTrue(
             self.test.qgis_layer.getFeature(child_id).isValid())
         self.assertEqual(self.poligoni.qgis_layer.getFeature(
@@ -514,14 +517,14 @@ class TransactionGroupTest(TestCase):
 
         # Delete the parent
         response = client.post(commit_path, {
-            "delete": [parent_id],
+            "delete": [parent_id_server],
             "lockids": jresult['response']['new_lockids']
         }, format='json')
         self.assertTrue(json.loads(response.content)['result'])
 
         # There is no cascade here! Delete the child as well.
         response = client.post(child_commit_path, {
-            "delete": [child_id],
+            "delete": [child_id_server],
             "lockids": jresult['response']['new_relations']['test_afb61649_1fb2_426e_b588_04217314f0c4']['new_lockids']
         }, format='json')
 

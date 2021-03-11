@@ -67,13 +67,31 @@ def server_fid(feature, provider) -> str:
     assert len(provider.pkAttributeIndexes()) <= len(feature.attributes())
     bits = []
     for pkidx in provider.pkAttributeIndexes():
-        bits.append(str(feature.attribute(pkidx)))
+        if feature.attribute(pkidx):
+            bits.append(str(feature.attribute(pkidx)))
 
     # Provider does not support pks
     if not bits:
         return feature.id()
 
     return '@@'.join(bits)
+
+
+def get_layer_fids_from_server_fids(server_fids, layer):
+    """From a list of server_fids for a QGIS vector layer return layer fids
+
+    :param server_fids: list of server_fids
+    :param layer: QGIS vector layer to execute filtering
+    :return: a list for QGIS vector layer fids
+    :rtype: list
+    """
+
+    qgis_feature_request = QgsFeatureRequest()
+    exp = expression_from_server_fids(server_fids, layer.dataProvider())
+    qgis_feature_request.combineFilterExpression(exp)
+    features = get_qgis_features(layer, qgis_feature_request)
+
+    return [f.id() for f in features]
 
 def get_qgis_layer(layer_info):
     """Returns a QGIS vector layer from a layer information record.

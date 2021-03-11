@@ -387,7 +387,7 @@ class ConstraintsModelTestsBase(ConstraintsTestsBase):
         # Change the geometry inside the allowed rule
         new_geom = [7.347181, 44.761425]
         payload = {"add": [], "delete": [], "lockids": [{"featureid": "1", "lockid": "%s" % lock_id}], "relations": {}, "update": [
-            {"geometry": {"coordinates": new_geom, "type": "Point"}, "id": 1, "properties": {"name": "bagnolo 1"}, "type": "Feature"}]}
+            {"geometry": {"coordinates": new_geom, "type": "Point"}, "id": '1', "properties": {"name": "bagnolo 1"}, "type": "Feature"}]}
 
         # Verify that the update was successful
         response = client.post('/vector/api/commit/qdjango/%s/%s/' % (
@@ -409,7 +409,7 @@ class ConstraintsModelTestsBase(ConstraintsTestsBase):
 
         # Change the geometry outside the allowed rule
         payload = {"add": [], "delete": [], "lockids": [{"featureid": "1", "lockid": "%s" % lock_id}], "relations": {}, "update": [
-            {"geometry": {"coordinates": [10, 55], "type":"Point"}, "id":1, "properties":{"name": "constraint violation"}, "type": "Feature"}]}
+            {"geometry": {"coordinates": [10, 55], "type":"Point"}, "id":'1', "properties":{"name": "constraint violation"}, "type": "Feature"}]}
 
         # Verify that the update has failed
         response = client.post('/vector/api/commit/qdjango/%s/%s/' % (
@@ -437,7 +437,7 @@ class ConstraintsModelTestsBase(ConstraintsTestsBase):
         constraint.active = False
         constraint.save()
         payload = {"add": [], "delete": [], "lockids": [{"featureid": "1", "lockid": "%s" % lock_id}], "relations": {}, "update": [
-            {"geometry": {"coordinates": [10, 55], "type":"Point"}, "id":1, "properties":{"name": "constraint violation"}, "type": "Feature"}]}
+            {"geometry": {"coordinates": [10, 55], "type":"Point"}, "id":'1', "properties":{"name": "constraint violation"}, "type": "Feature"}]}
         response = client.post('/vector/api/commit/qdjango/%s/%s/' % (
             editing_layer.project_id, editing_layer.qgs_layer_id), payload, format='json')
         self.assertEqual(response.status_code, 200)
