@@ -52,8 +52,6 @@ class LayerUserInfoAPIView(generics.ListAPIView):
                 qs = get_viewers_for_object(layer.project, self.request.user, 'view_project',
                                                  with_anonymous=with_anonymous)
 
-
-
         else:
             qs = []
 
@@ -76,10 +74,21 @@ class LayerAuthGroupInfoAPIView(generics.ListAPIView):
         """
 
         if 'layer_id' in self.kwargs:
+
+            # get 'context' GET parameter if is present possible values: [v (view), e (editing), ve (view + editing)]
+            context = self.request.GET.get('context', 'v')
+
             # get viewer users
             layer = Layer.objects.get(pk=self.kwargs['layer_id'])
 
-            qs = get_user_groups_for_object(layer.project, self.request.user, 'view_project', 'viewer')
+            if context == 'e':
+
+                # get viewer user groups with change_layer grant
+                qs = get_user_groups_for_object(layer, self.request.user, 'change_layer', 'viewer')
+            else:
+
+                # get viewer user groups with view_project and change_layer
+                qs = get_user_groups_for_object(layer.project, self.request.user, 'view_project', 'viewer')
         else:
             qs = None
         return qs
