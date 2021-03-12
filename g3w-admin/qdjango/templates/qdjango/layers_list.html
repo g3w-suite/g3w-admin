@@ -9,10 +9,10 @@
 {% block custom_js_links_page %}
 {% comment %}Add caching/ui.js if caching in django apps{% endcomment %}
 {% if 'caching' in SETTINGS.G3WADMIN_LOCAL_MORE_APPS %}
-<script src="{% static "caching/js/ui.js" %}"></script>
+<script type="text/javascript" src="{% static "caching/js/ui.js" %}"></script>
 {% endif %}
-<script src="{% static "qdjango/js/widget.js" %}"></script>
-<script>
+<script type="text/javascript" src="{% static "qdjango/js/widget.js" %}"></script>
+<script type="text/javascript">
     $('#tree').treeview({data:{{ layers_tree|safe }}});
     ga.ui.initNolegendLayerCheckBox();
     ga.ui.initDownloadLayerCheckBox();
@@ -161,6 +161,11 @@
                                             <span class="label label-info label-action-layer">{{ object.getWidgetsNumber }}</span></a>
 
                                     </span>
+                                    <span class="col-xs-2 icon">
+                                        <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Manage layer styles' %}" data-widget-type="styleManagerList" data-stylemanager-layer-pk="{{ object.pk }}" data-stylemanager-list-url="{% url 'qdjango-style-list-api' object.pk %}" ><i class="fa fa-paint-brush"></i>
+                                            <span class="label label-info label-action-layer">{{ object.styles_count }}</span>
+                                        </a>
+                                    </span>
                                     {% endif %}
                                 </span>
                             </td>
@@ -205,10 +210,6 @@
                             {% endif %}
                             {% endif %}
 
-
-
-
-
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -218,54 +219,8 @@
                 <div id="tree"></div>
               </div><!-- /.tab-pane -->
 
-              <div class="tab-pane" id="tab_layers_styles">
-                <div id="styles">
-
-                    {% for layer in object_list %}
-
-                    <div class="card">
-                        <div class="card-body">
-                            <h3 class="card-title">{{ layer.name }} <button type="button" class="btn btn-success btn-sm">{% trans 'Create new style from QML' %}</button></h3>
-
-                            <table class="table table-sm">
-                                <thead>
-                                   <th style="width:30%">{% trans 'Style name' %}</th>
-                                   <th style="width:20%">{% trans 'Current' %}</th>
-                                   <th style="width:50%">&nbsp;</th>
-                                </thead>
-                                <tbody>
-                                  {% for style in layer.styles %}
-                                  <tr>
-                                    <td>{{ style.name }}</td>
-                                    <td>{% if style.current %}<i class="fa fa-check-square-o"></i>{% else %}<i class="fa fa-square-o"></i>{% endif %}</td>
-                                    <td>
-                                        {% if style.current %}
-                                        &nbsp;
-                                        {% else %}
-                                        <button type="button" class="btn btn-primary btn-sm">{% trans 'Make current' %}</button>
-                                        <button type="button" class="btn btn-primary btn-sm">{% trans 'Rename' %}</button>
-                                        <button type="button" class="btn btn-danger btn-sm">{% trans 'Remove' %}</button>
-                                        {% endif %}
-                                    </td>
-                                  </tr>
-                                  {% endfor %}
-                               </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    {% endfor %}
-
-                </div>
-              </div><!-- /.tab-pane -->
-
             </div><!-- /.tab-content -->
           </div>
-
-
-
-
-
 
     </div>
 </div>

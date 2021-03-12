@@ -486,6 +486,11 @@ class Layer(G3WACLModelMixins, models.Model):
         sm = layer.styleManager()
         return sm.style(name)
 
+    def styles_count(self):
+        """Return number of styles"""
+
+        return len(self.styles)
+
     def set_current_style(self, style):
         """Changes the current style
 

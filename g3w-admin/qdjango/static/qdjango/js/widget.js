@@ -57,7 +57,7 @@ ga.Qdjango.widgetEditor = {
 			'options': null
 		}
 	],*/
-	
+
 	isset: function(o)
 	{
 		if(typeof o == 'undefined')
@@ -67,7 +67,7 @@ ga.Qdjango.widgetEditor = {
 				return false;
 		return true;
 	},
-	
+
 	getType: function(str)
 	{
 		if (str.indexOf("QSTRING") !== -1 ||
@@ -193,7 +193,7 @@ ga.Qdjango.widgetEditor = {
 		}
 		$('#id_body').val(JSON.stringify(obj));
 	},
-	
+
 	generateGeneralParams: function(values)
 	{
 		var that = this;
@@ -204,13 +204,13 @@ ga.Qdjango.widgetEditor = {
 			var option = $('<option value="'+v.name+'" '+selected+'>'+v.name+'</option>');
 			fieldSelect.append(option);
 		});
-		
+
 		var alInVa = (that.isset(values) && that.isset(values.results) && values.results.length>0 && that.isset(values.results[0].header))? values.results[0].header : "";
 		var textInput = $('<input class="form-control" type="text" name="resultfield_text" value="'+alInVa+'">');
-		
+
 		var tiVa = (that.isset(values) && that.isset(values.title))? values.title : "";
 		var title = $('<input class="form-control" type="text" name="title" id="title" value="'+tiVa+'">');
-									
+
 		var div = $('<div class="bloccoGenerale box box-danger">\
 						<div class="box-header with-border">\
 						<h3 class="box-title">'+gettext("General configuration for search widget and results")+'</h3>\
@@ -225,7 +225,7 @@ ga.Qdjango.widgetEditor = {
 							</div>\
 						<\div>\
 					</div>');
-					
+
 		var onAddAction = function(btn, values)
 		{
 			var fieldSelect = $('<select class="form-control" name="resultfield"></select>');
@@ -235,7 +235,7 @@ ga.Qdjango.widgetEditor = {
 				var option = $('<option value="'+v.name+'" '+selected+'>'+v.name+'</option>');
 				fieldSelect.append(option);
 			});
-		
+
 			var alInVa = (that.isset(values) && that.isset(values.header))? values.header : "";
 			var textInput = $('<input class="form-control" type="text" name="resultfield_text" value="'+alInVa+'" >');
 			var lastRow = btn.parents(".row").first();
@@ -249,19 +249,19 @@ ga.Qdjango.widgetEditor = {
 			btn.parents(".resultFields").first().append(newRow);
 			btn.appendTo(newRow.find(".col-md-1"));
 			var remBtn = $('<button type="button" class="btn btn-default remove"><i class="glyphicon glyphicon-minus"></i></button>');
-			remBtn.click(function(){ 
-				$(this).parents(".row").first().remove(); 
+			remBtn.click(function(){
+				$(this).parents(".row").first().remove();
 			});
 			lastRow.find(".col-md-1").append(remBtn);
 		};
-		
+
 		div.find("button").click(function(){ onAddAction($(this)); });
 		div.find(".title").append(title).append('<div class="help-block">'+gettext("Client search title identification")+'</div>');
 
 		div.find(".fieldSelect").first().append(fieldSelect);
 		div.find(".textInput").first().append(textInput);
 		$(".rightCol").append(div);
-		
+
 		if (that.isset(values) && that.isset(values.results) && values.results.length>1)
 		{
 			$.each(values.results, function(i,v){
@@ -270,10 +270,10 @@ ga.Qdjango.widgetEditor = {
 				onAddAction(div.find("button.add"), v);
 			});
 		}
-		
+
 		div.fadeIn(this.fadeNumber);
 	},
-	
+
 	generateSearchRow: function(values)
 	{
 		var that = this;
@@ -286,13 +286,13 @@ ga.Qdjango.widgetEditor = {
 			option.data({type: v.type});
 			fieldSelect.append(option);
 		});
-		
+
 		var fiLaVa = (that.isset(values) && that.isset(values.label))? values.label : "";
 		var textInput = $('<input class="form-control" type="text" name="searchfield_text" value="'+fiLaVa+'" >');
-		
+
 		var blTeVa = (that.isset(values) && that.isset(values.blanktext))? values.blanktext : "";
 		var descriptionInput = $('<input class="form-control" type="text" name="searchfield_description" value="'+blTeVa+'" >');
-		
+
 		var cmpOperatorSelect = $('<select class="form-control" name="comparison_operator">\
 										<option value="eq">= ('+gettext("equal")+')</option>\
 										<option value="gt">&gt; ('+gettext("greater than")+')</option>\
@@ -410,7 +410,7 @@ ga.Qdjango.widgetEditor = {
 						</div>\
 						</div>\
 					</div>');
-		
+
 		div.find(".close").click(function(){
 			var blocco = $(this).parents(".blocco").first();
 			blocco.find(".logic_operator").fadeOut(that.fadeNumber, function(){ $(this).remove(); });
@@ -423,7 +423,7 @@ ga.Qdjango.widgetEditor = {
 		div.find(".cmpOperatorSelect").append(cmpOperatorSelect);
 		div.find(".cmpDependanceSelect").append(cmpDependanceSelect);
 		div.find(".widgetType").append(widgetSelect);
-		
+
 		$(".rightCol").append(div);
 		div.fadeIn(this.fadeNumber);
 
@@ -462,14 +462,14 @@ ga.Qdjango.widgetEditor = {
 			if (that.isset(logicopselect))
 				logicopselect.val(values.logicop);
 	},
-	
+
 	generateTooltipRow: function(values)
 	{
 		var that = this;
-		
+
 		var alInVa = (that.isset(values) && that.isset(values.text))? values.text : "";
 		var textInput = $('<input class="form-control" type="text" name="field_text" value="'+alInVa+'">');
-		
+
 		var fieldSelect = $('<select class="form-control" name="field" ></select>');
 		$.each(that.layerColumns, function(i,v)
 		{
@@ -477,12 +477,12 @@ ga.Qdjango.widgetEditor = {
 			var option = $('<option value="'+v.name+'" '+selected+'>'+v.name+'</option>');
 			fieldSelect.append(option);
 		});
-		
+
 		var bImage = $('<button type="button" class="btn"><i class="glyphicon glyphicon-remove"></i></button>');
-		
+
 		var imWiVa = (that.isset(values) && that.isset(values.img_width))? values.img_width : "";
 		var imHeVa = (that.isset(values) && that.isset(values.img_height))? values.img_height : "";
-									
+
 		var div = $('<div class="blocco" style="margin-top: 30px; display: none">\
 						<div class="box box-success" >\
 							<div class="box-header with-border">\
@@ -509,10 +509,10 @@ ga.Qdjango.widgetEditor = {
 								</div>\
 							</div>\
 						</div>\
-					</div>');		
-		
+					</div>');
+
 		div.find(".close").click(function(){
-			$(this).parents(".alert").first().fadeOut(that.fadeNumber, function(){ 
+			$(this).parents(".alert").first().fadeOut(that.fadeNumber, function(){
 				$(this).alert('close');
 				$(this).remove();
 			});
@@ -533,16 +533,16 @@ ga.Qdjango.widgetEditor = {
 				$(this).parents(".blocco").first().find(".imgSizeLabel").fadeOut(that.fadeNumber);
 			}
 		});
-		
+
 		div.find(".fieldSelect").append(fieldSelect);
 		div.find(".textInput").append(textInput);
 		div.find(".bImage").append(bImage);
-		
+
 		$(".rightCol").append(div);
-		
+
 		if (that.isset(values) && that.isset(values.image) && values.image)
 			bImage.click();
-			
+
 		div.fadeIn(that.fadeNumber);
 	},
 
@@ -601,7 +601,7 @@ ga.Qdjango.widgetEditor = {
 		$(".rightCol").append(div);
 		div.fadeIn(that.fadeNumber);
 	},
-	
+
 	generateHyperlinkRow: function(values)
 	{
 		var that = this;
@@ -612,12 +612,12 @@ ga.Qdjango.widgetEditor = {
 			var option = $('<option value="'+v.name+'" '+selected+'>'+v.name+'</option>');
 			fieldSelect.append(option);
 		});
-		
+
 		var alInVa = (that.isset(values) && that.isset(values.text))? values.text : "";
 		var textInput = $('<input type="text" name="field_text" value="'+alInVa+'">');
 		var neFiVa = (that.isset(values) && that.isset(values.nuovo_field))? values.nuovo_field : "";
 		var newFieldName = $('<input type="text" name="new_field_name" value="'+neFiVa+'">');
-									
+
 		var div = $('<div class="well blocco alert alert-success row" style="margin-top: 20px; display: none">\
 						<div class="row">\
 							<button type="button" class="close">&times;</button>\
@@ -632,10 +632,10 @@ ga.Qdjango.widgetEditor = {
 							<div class="col-md-4 textInput"></div>\
 							<div class="col-md-4 newFieldName"></div>\
 						</div>\
-					</div>');		
-		
-		div.find(".close").click(function(){ 
-			$(this).parents(".alert").first().fadeOut(that.fadeNumber, function(){ 
+					</div>');
+
+		div.find(".close").click(function(){
+			$(this).parents(".alert").first().fadeOut(that.fadeNumber, function(){
 				$(this).alert('close');
 				$(this).remove();
 			});
@@ -643,11 +643,11 @@ ga.Qdjango.widgetEditor = {
 		div.find(".fieldSelect").append(fieldSelect);
 		div.find(".textInput").append(textInput);
 		div.find(".newFieldName").append(newFieldName);
-		
+
 		$(".rightCol").append(div);
 		div.fadeIn(this.fadeNumber);
 	},
-	
+
 	onWidgetTypeChange: function(el)
 	{
 		var that = this;
@@ -687,17 +687,15 @@ ga.Qdjango.widgetEditor = {
 			$(".rightCol").append(addDiv);
 		}
 
-		
+
 
 	},
-	
 
-	
 	showStoredValues: function()
 	{
 		var that = this;
 		$(".rightCol").empty();
-		
+
 		switch(this.widget.widget_type)
 		{
 			case "hyperlink":
@@ -744,7 +742,7 @@ ga.Qdjango.widgetEditor = {
 			$(".rightCol").append(addDiv);
 		}
 	},
-	
+
 	setLayerData: function(data,layer,layer_type)
 	{
 		this.layerColumns = data;
@@ -752,7 +750,7 @@ ga.Qdjango.widgetEditor = {
 		this.layer_type = layer_type;
 	},
 
-	 init: function()
+	init: function()
 	{
 		var that = this;
 		this.setLayerData(ga.Qdjango.localVars['layer_columns'],ga.Qdjango.localVars['layer_name'],ga.Qdjango.localVars['layer_type']);
@@ -775,13 +773,13 @@ ga.Qdjango.widgetEditor = {
 			var $dataTable = $item.parents('[data-widget-type="dataTable"]').DataTable();
 			ga.widget.showDetailItemDataTable($dataTable, $item, true);
 
-			// get row and update widject counter
+			// get row and update widect counter
 			$item.parent().next().html($item.parents('tr').next().find('tr').length - 1);
 		});
 		/*
 		var button = this.form.find("button.confirm");
-		this.form.find("button.confirm").click(function(){ 
-			that.onFormSubmit(); 
+		this.form.find("button.confirm").click(function(){
+			that.onFormSubmit();
 		});
 		*/
 		$("#id_widget_type").change(function(){ that.onWidgetTypeChange($(this)); });
@@ -1131,7 +1129,7 @@ _.extend(g3wadmin.widget, {
         return $div;
     },
 
-	 singlelayerConstraintsList: function($datatable, $item, refresh){
+	singlelayerConstraintsList: function($datatable, $item, refresh){
 
         try {
 
@@ -1320,5 +1318,174 @@ $(document).ready(function() {
     $('[data-widget-type="singlelayerConstraintsList"]').on('click', function (e) {
         var $datatable = $(this).parents('table').DataTable();
         ga.widget.singlelayerConstraintsList($datatable, $(this));
+    });
+});
+
+
+// Add Style manager widget
+// --------------------------------
+_.extend(g3wadmin.widget, {
+
+	_styleManagerParams: [
+		'stylemanager-list-url',
+		'stylemanager-layer-pk'
+	],
+
+    /**
+     * Creates the styles table
+     */
+    _stylesTable: function(layer_list_url, res, $datatable, $item)
+    {
+        let $div = $('<div style="margin-left:40px;">');
+        let $table = $('<table class="table">');
+        $table.append('<thead>\n' +
+            '            <tr>\n' +
+            '                <th style="width:180px;">'+gettext('Actions')+'</th>\n' +
+            '                <th>'+gettext('Name')+'</th>\n' +
+            '                <th>'+gettext('Current')+'</th>\n' +
+            '            </tr>\n' +
+            '        </thead>');
+        let $tbody = $table.append($('<tbody>'));
+        $.each(res['styles'], function(k, v)
+        {
+            let icon = v['current'] ? 'fa-check-square-o' : 'fa-square-o';
+            let actions = v['current'] ? '&nbsp;' : `
+            <a href="#" data-style-name="${v['name']}" data-style-action-mode="make_current" class="btn btn-primary btn-sm">${gettext("Make current")}</a>
+            <a href="#" data-style-name="${v['name']}" data-style-action-mode="delete" class="btn btn-danger btn-sm" id="">${gettext("Delete")}</a>
+            `;
+
+            $tbody.append(`
+            <tr>
+                <td>${actions}</td>
+                <td>${v['name']}</td>
+                <td><i class="fa ${icon}"></i></td>
+            </tr>`);
+        });
+
+        let that = this;
+
+        // Add events to actions
+        $tbody.find('[data-style-action-mode="delete"]').on('click', function(e){
+            $.ajax({
+                method: 'delete',
+                url: layer_list_url + $(this).attr('data-style-name') + '/',
+                success: function (res) {
+                    ga.widget.showStyleManagerList($datatable, $item, true);
+                },
+                complete: function(){
+                   // Nothing to do
+                },
+                error: function (xhr, textStatus, errorMessage) {
+                    try {
+                        errorMessage = xhr.responseJSON['error']['message'];
+                    } catch (error) {
+                        // Ignore
+                    }
+                    ga.widget.showError(ga.utils.buildAjaxErrorMessage(xhr.status, errorMessage));
+                }
+           });
+        });
+
+        $tbody.find('[data-style-action-mode="make_current"]').on('click', function(e){
+            $.ajax({
+                method: 'patch',
+                url: layer_list_url + $(this).attr('data-style-name') + '/',
+                contentType: 'application/json',
+                data: JSON.stringify({'current': true}),
+                success: function (res) {
+                    ga.widget.showStyleManagerList($datatable, $item, true);
+                },
+                complete: function(){
+                   // Nothing to do
+                },
+                error: function (xhr, textStatus, errorMessage)
+                {
+                    try {
+                        errorMessage = xhr.responseJSON['error']['message'];
+                    } catch (error) {
+                        // Ignore
+                    }
+                    ga.widget.showError(ga.utils.buildAjaxErrorMessage(xhr.status, errorMessage));
+                }
+           });
+        });
+
+        $div.append($table);
+        return $div;
+    },
+
+    /**
+     * Creates the add new style form
+     *
+     */
+    _addStyleForm: function(constraint_pk, style_list, res, type='subset', new_style)
+    {
+        console.log("_addStyleForm called");
+    },
+
+    /**
+     * Display the layer style list
+     */
+    showStyleManagerList: function($datatable, $item, refresh)
+    {
+
+        try {
+
+            var params = ga.utils.getDataAttrs($item, this._styleManagerParams);
+            if (_.isUndefined(params['stylemanager-list-url'])) {
+                throw new Error('Attribute data-stylemanager-list-url not defined');
+            }
+
+            // get tr row parent
+            refresh = _.isUndefined(refresh) ? false : true;
+
+            var tr = $item.closest('tr');
+            var row = $datatable.row(tr);
+            var idx = $.inArray( tr.attr('id'), [] );
+
+            var getDetail = function(){
+                $.ajax({
+                     method: 'get',
+                     url: params['stylemanager-list-url'],
+                     success: function (res) {
+                        row.child(g3wadmin.widget._stylesTable(params['stylemanager-list-url'], res, $datatable, $item)).show();
+                     },
+                     complete: function(){
+                         var status = arguments[1];
+                         if (status == 'success') {
+                            ga.ui.initRadioCheckbox(row.child());
+                         }
+                     },
+                     error: function (xhr, textStatus, errorMessage) {
+                         ga.widget.showError(ga.utils.buildAjaxErrorMessage(xhr.status, errorMessage));
+                     }
+                });
+            }
+
+            if (refresh){
+                getDetail();
+            } else {
+                if ( row.child.isShown() ) {
+                    tr.removeClass( 'details' );
+                    row.child.hide();
+                } else {
+                    tr.addClass( 'details' );
+
+                    // ajax call to get detail data
+                    getDetail();
+                }
+            }
+
+        } catch (e) {
+            this.showError(e.message);
+        }
+    }
+});
+
+// activate widget
+$(document).ready(function() {
+    $('[data-widget-type="styleManagerList"]').on('click', function (e) {
+        var $datatable = $(this).parents('table').DataTable();
+        ga.widget.showStyleManagerList($datatable, $(this));
     });
 });
