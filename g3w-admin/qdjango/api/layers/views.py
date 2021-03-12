@@ -33,11 +33,15 @@ class LayerUserInfoAPIView(generics.ListAPIView):
         This view should return a list of user with view_project permission.
         """
         if 'layer_id' in self.kwargs:
+
             # get viewer users
             layer = Layer.objects.get(pk=self.kwargs['layer_id'])
             with_anonymous = getattr(settings, 'EDITING_ANONYMOUS', False)
             qs = get_viewers_for_object(layer.project, self.request.user, 'view_project',
                                              with_anonymous=with_anonymous)
+
+            # get viewer user with change_layer grant
+
         else:
             qs = []
 
