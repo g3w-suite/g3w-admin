@@ -225,7 +225,7 @@
 
                     <div class="card">
                         <div class="card-body">
-                            <h3 class="card-title">{{ layer.name }} <button type="button" class="btn btn-success btn-sm">{% trans 'Create new style from QML' %}</button></h5>
+                            <h3 class="card-title">{{ layer.name }} <button type="button" class="btn btn-success btn-sm">{% trans 'Create new style from QML' %}</button></h3>
 
                             <table class="table table-sm">
                                 <thead>
@@ -237,7 +237,7 @@
                                   {% for style in layer.styles %}
                                   <tr>
                                     <td>{{ style.name }}</td>
-                                    <td><input type="radio" {% if style.current %}checked{% else %}{% endif %} readonly>
+                                    <td>{% if style.current %}<i class="fa fa-check-square-o"></i>{% else %}<i class="fa fa-square-o"></i>{% endif %}</td>
                                     <td>
                                         {% if style.current %}
                                         &nbsp;

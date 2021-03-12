@@ -1,26 +1,30 @@
-from django.conf import settings
-from django.db import models
-from django.db.models.signals import post_delete
-from model_utils.models import TimeStampedModel
+import logging
+import os
+
 from autoslug import AutoSlugField
-from django.utils.translation import ugettext_lazy as _
-from django.contrib.auth.models import User, Group as AuthGroup
 from autoslug.utils import slugify
-from guardian.shortcuts import get_perms
-from core.models import Group, BaseLayer, GroupProjectPanoramic, ProjectMapUrlAlias
-from qdjango.utils.storage import QgisFileOverwriteStorage
-from core.mixins.models import G3WACLModelMixins, G3WProjectMixins
-from model_utils import Choices
-from usersmanage.utils import setPermissionUserObject, getUserGroups, get_users_for_object, get_groups_for_object
-from usersmanage.configs import *
 from core.configs import *
+from core.mixins.models import G3WACLModelMixins, G3WProjectMixins
+from core.models import (BaseLayer, Group, GroupProjectPanoramic,
+                         ProjectMapUrlAlias)
 from core.receivers import check_overviewmap_project
 from core.utils import unicode2ascii
-from qdjango.utils.models import get_widgets4layer, get_constraints4layer
-
-from qgis.core import QgsRectangle
-import os
-import logging
+from django.conf import settings
+from django.contrib.auth.models import Group as AuthGroup
+from django.contrib.auth.models import User
+from django.db import models
+from django.db.models.signals import post_delete
+from django.utils.translation import ugettext_lazy as _
+from guardian.shortcuts import get_perms
+from model_utils import Choices
+from model_utils.models import TimeStampedModel
+from qdjango.utils.models import get_constraints4layer, get_widgets4layer
+from qdjango.utils.storage import QgisFileOverwriteStorage
+from qgis.core import QgsMapLayerStyle, QgsRectangle
+from qgis.PyQt.QtXml import QDomDocument
+from usersmanage.configs import *
+from usersmanage.utils import (get_groups_for_object, get_users_for_object,
+                               getUserGroups, setPermissionUserObject)
 
 logger = logging.getLogger(__name__)
 
@@ -447,7 +451,7 @@ class Layer(G3WACLModelMixins, models.Model):
 
     @property
     def styles(self):
-        """Returns the layer styles for vector layers
+        """Returns the layer styles
 
         :return: list of dictionaries { name: '<style_name:str>', default: <bool> }
         :rtype: list
@@ -455,19 +459,185 @@ class Layer(G3WACLModelMixins, models.Model):
 
         styles = []
 
-        try:
-            layer = self.qgis_layer
-            if not layer is None:
-                sm = layer.styleManager()
-                for style in sm.styles():
-                    styles.append({
-                        'name': style,
-                        'current': style == sm.currentStyle()
-                    })
-        except:
-            pass # Non-vectors
+        layer = self.qgis_layer
+        if not layer is None:
+            sm = layer.styleManager()
+            for style in sm.styles():
+                styles.append({
+                    'name': style,
+                    'current': style == sm.currentStyle()
+                })
 
         return styles
+
+    def style(self, name):
+        """Returns the style from name
+
+        :param style: name of the style to return
+        :type style: str
+        :return: The requested style
+        :rtype: QgsMapLayerStyle
+        """
+
+        layer = self.qgis_layer
+        if layer is None:
+            return QgsMapLayerStyle()
+
+        sm = layer.styleManager()
+        return sm.style(name)
+
+    def set_current_style(self, style):
+        """Changes the current style
+
+        :param style: name of the style to make current
+        :type style: str
+        :return: True on success
+        :rtype: bool
+        """
+
+        layer = self.qgis_layer
+        if layer is None:
+            return False
+
+        sm = layer.styleManager()
+        result = sm.setCurrentStyle(style)
+
+        if result:
+            result = result and self.project.qgis_project.write()
+
+        return result
+
+    def rename_style(self, style, new_name):
+        """Renames a style
+
+        :param style: name of the style to rename (must not be the current style)
+        :type style: str
+        :param new_name: new name of the style
+        :type new_name: str
+        :return: True on success
+        :rtype: bool
+        """
+
+        layer = self.qgis_layer
+        if layer is None:
+            return False
+
+        sm = layer.styleManager()
+
+        if sm.currentStyle() == style or new_name in sm.styles():
+            return False
+
+        result = sm.renameStyle(style, new_name)
+
+        if result:
+            result = result and self.project.qgis_project.write()
+
+        return result
+
+    def replace_style(self, style, qml):
+        """Replaces the style QML
+
+        :param style: name of the style to replace (must not be the current style)
+        :type style: str
+        :param qml:
+        :type qml: str
+        :return: True on success
+        :rtype: bool
+        """
+
+        layer = self.qgis_layer
+        if layer is None:
+            return False
+
+        sm = layer.styleManager()
+
+        if sm.currentStyle() == style:
+            return False
+
+        # Validate!
+        doc = QDomDocument('qgis')
+        if not doc.setContent(qml)[0]:
+            return False
+
+        tmp_layer = layer.clone()
+        if not tmp_layer.importNamedStyle(doc)[0]:
+            return False
+
+        del(tmp_layer)
+
+        new_style = QgsMapLayerStyle(qml)
+        result = sm.removeStyle(style) and sm.addStyle(style, new_style)
+
+        assert self.style(style).xmlData() == new_style.xmlData()
+
+        if result:
+            result = result and self.project.qgis_project.write()
+
+        return result
+
+    def delete_style(self, style):
+        """Deletes a style
+
+        :param style: name of the style to delete (must not be the current style)
+        :type style: str
+        :return: True on success
+        :rtype: bool
+        """
+
+        layer = self.qgis_layer
+        if layer is None:
+            return False
+
+        sm = layer.styleManager()
+
+        if sm.currentStyle() == style:
+            return False
+
+        result = sm.removeStyle(style)
+
+        if result:
+            result = result and self.project.qgis_project.write()
+
+        return result
+
+    def add_style(self, style, qml):
+        """Deletes a style
+
+        :param style: name of the new style
+        :type style: str
+        :param qml:
+        :type qml: str
+        :return: True on success
+        :rtype: bool
+        """
+
+        layer = self.qgis_layer
+        if layer is None:
+            return False
+
+        sm = layer.styleManager()
+
+        if sm.currentStyle() == style:
+            return False
+
+        # Validate!
+        doc = QDomDocument('qgis')
+        if not doc.setContent(qml)[0]:
+            return False
+
+        tmp_layer = layer.clone()
+        if not tmp_layer.importNamedStyle(doc)[0]:
+            return False
+
+        del(tmp_layer)
+
+        new_style = QgsMapLayerStyle(qml)
+        result = sm.addStyle(style, new_style)
+
+        if result:
+            result = result and self.project.qgis_project.write()
+
+        return result
 
     @property
     def extent_rect(self):

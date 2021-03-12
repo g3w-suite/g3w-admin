@@ -12,9 +12,9 @@ __copyright__ = 'Copyright 2015 - 2020, Gis3w'
 
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.permissions import BasePermission
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import ValidationError, NotFound
 from qdjango.models import Layer
-
+from django.shortcuts import get_object_or_404
 
 class LayerInfoPermission(BasePermission):
     """
@@ -29,5 +29,18 @@ class LayerInfoPermission(BasePermission):
         except ObjectDoesNotExist:
             raise ValidationError('Layer id is not set.')
 
+        # check change_layer permission on qgis layer
+        return request.user.has_perm('qdjango.change_project', layer.project)
+
+
+class LayerStylesManagePermission(BasePermission):
+    """
+    API permission for Qdjango Layer change styles
+    Allows access only to users have permission change_project on project layer parent.
+    """
+
+    def has_permission(self, request, view):
+
+        layer = get_object_or_404(Layer, pk=view.kwargs['layer_id'])
         # check change_layer permission on qgis layer
         return request.user.has_perm('qdjango.change_project', layer.project)
