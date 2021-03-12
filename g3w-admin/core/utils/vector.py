@@ -54,7 +54,7 @@ class BaseUserMediaHandler(object):
         """
         Get current layer to save instance
         """
-        if type(self.feature['id'] == str and self.feature['id'].startswith('_new_')):
+        if type(self.feature['id']) == str and self.feature['id'].startswith('_new_'):
             return None
         else:
             return self.metadata_layer.get_feature(pk=self.feature['id']) if self.metadata_layer else None
