@@ -20,4 +20,9 @@ class Migration(migrations.Migration):
             name='for_view',
             field=models.BooleanField(default=False, help_text='Active this constraint for users have viewing grant on layer/project', null=True, verbose_name='Active for visualization'),
         ),
+
+        # Following SQL update statement is for G3W-SUITE installations without constraints split context.
+        migrations.RunSQL(
+            "UPDATE qdjango_singlelayerconstraint set for_view=true"
+        ),
     ]
