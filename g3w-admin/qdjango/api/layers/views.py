@@ -34,13 +34,25 @@ class LayerUserInfoAPIView(generics.ListAPIView):
         """
         if 'layer_id' in self.kwargs:
 
+            # get 'context' GET parameter if is present possible values: [v (view), e (editing), ve (view + editing)]
+            context = self.request.GET.get('context', 'v')
+
             # get viewer users
             layer = Layer.objects.get(pk=self.kwargs['layer_id'])
             with_anonymous = getattr(settings, 'EDITING_ANONYMOUS', False)
-            qs = get_viewers_for_object(layer.project, self.request.user, 'view_project',
-                                             with_anonymous=with_anonymous)
 
-            # get viewer user with change_layer grant
+            if context == 'e':
+
+                # get viewer users with change_layer grant
+                qs = get_viewers_for_object(layer, self.request.user, 'change_layer',
+                                                with_anonymous=with_anonymous)
+            else:
+
+                # get viewer users with view_project and change_layer
+                qs = get_viewers_for_object(layer.project, self.request.user, 'view_project',
+                                                 with_anonymous=with_anonymous)
+
+
 
         else:
             qs = []
