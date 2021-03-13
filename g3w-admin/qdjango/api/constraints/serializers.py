@@ -21,7 +21,8 @@ class SingleLayerConstraintCleanValidator(object):
 
     def __call__(self, value):
         try:
-            SingleLayerConstraint(layer=value['layer'], name=value['name'], description=value['description']).clean()
+            SingleLayerConstraint(layer=value['layer'], name=value['name'], description=value['description'],
+                                  for_view=value['for_view'], for_editing=value['for_editing']).clean()
         except Exception as ex:
             raise serializers.ValidationError(str(ex))
 
@@ -30,7 +31,8 @@ class ConstraintSubsetStringRuleCleanValidator(object):
 
     def __call__(self, value):
         try:
-            ConstraintSubsetStringRule(constraint=value['constraint'], rule=value['rule'], user=value['user'], group=value['group']).clean()
+            ConstraintSubsetStringRule(constraint=value['constraint'], rule=value['rule'], user=value['user'],
+                                       group=value['group']).clean()
         except Exception as ex:
             raise serializers.ValidationError(str(ex))
 
@@ -39,7 +41,8 @@ class ConstraintExpressionRuleCleanValidator(object):
 
     def __call__(self, value):
         try:
-            ConstraintExpressionRule(constraint=value['constraint'], rule=value['rule'], user=value['user'], group=value['group']).clean()
+            ConstraintExpressionRule(constraint=value['constraint'], rule=value['rule'], user=value['user'],
+                                     group=value['group']).clean()
         except Exception as ex:
             raise serializers.ValidationError(str(ex))
 

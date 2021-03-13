@@ -1025,11 +1025,11 @@ _.extend(g3wadmin.widget, {
         ga.Qdjango.data.group_viewers = [];
 
         $.ajaxSetup({async:false});
-        $.getJSON(ga.Qdjango.urls.layer.user+params['layer_pk']+"/", function( data ) {
+        $.getJSON(ga.Qdjango.urls.layer.user+params['layer_pk']+"/?context="+params['constraint_context'], function( data ) {
             ga.Qdjango.data.viewers = data['results'];
         });
 
-        $.getJSON(ga.Qdjango.urls.layer.authgroup+params['layer_pk']+"/", function( data ) {
+        $.getJSON(ga.Qdjango.urls.layer.authgroup+params['layer_pk']+"/?context="+params['constraint_context'], function( data ) {
             ga.Qdjango.data.group_viewers = data['results'];
         });
         $.ajaxSetup({async:true});
@@ -1109,10 +1109,16 @@ _.extend(g3wadmin.widget, {
             var editDisplay = v['rule_count'] > 0 ? 'none': 'display';
             var for_view = (v['for_view']) ? '<span class="fa fa-check-circle" style="color: orange"></span>' : '';
             var for_editing = (v['for_editing']) ? '<span class="fa fa-check-circle" style="color: orange"></span>' : '';
+            var constraintContext = '';
+            if (for_view != '')
+            		constraintContext += 'v';
+            if (for_editing != '')
+            		constraintContext += 'e';
             $tbody.append('<tr id="singlelayerconstraint-item-'+v['pk']+'">\n' +
             '                <td>'+ga.tpl.singlelayerConstraintActions({
                     'layerId': layer_pk,
                     'constraintPk': v['pk'],
+					'constraintContext': constraintContext,
                     'editDisplay': editDisplay,
 					'expressionIcon': ga.ui.expression_svg
             })+'</td>\n' +
@@ -1143,6 +1149,7 @@ _.extend(g3wadmin.widget, {
                     'modal-title': gettext('Constraint Rules based on provider\'s language / SQL dialect'),
 					'type': 'subset',
                     'constraint_pk': $(this).attr('data-singlelayerconstraint-pk'),
+					'constraint_context': $(this).attr('data-singlelayerconstraint-context'),
                     'layer_pk': layer_pk,
                     'parent_click': $(this)
                 });
@@ -1154,6 +1161,7 @@ _.extend(g3wadmin.widget, {
                     'modal-title': gettext('Constraint Rules based on QGIS Expression'),
 					'type': 'expression',
                     'constraint_pk': $(this).attr('data-singlelayerconstraint-pk'),
+					'constraint_context': $(this).attr('data-singlelayerconstraint-context'),
                     'layer_pk': layer_pk,
                     'parent_click': $(this)
                 });
@@ -1348,13 +1356,13 @@ _.extend(g3wadmin.tpl, {
 
 	singlelayerConstraintActions: _.template('\
 		<span class="col-xs-2 icon">\
-			<a href="#" data-toggle="tooltip" data-placement="top" title="'+gettext("Provider's language / SQL dialect Rules")+'" data-singlelayerconstraint-action-mode="subset_rules" data-singlelayerconstraint-pk="<%= constraintPk %>"><i style="color: purple;" class="fa fa-cubes"></i></a>\
+			<a href="#" data-toggle="tooltip" data-placement="top" title="'+gettext("Provider's language / SQL dialect Rules")+'" data-singlelayerconstraint-context="<%= constraintContext %>" data-singlelayerconstraint-action-mode="subset_rules" data-singlelayerconstraint-pk="<%= constraintPk %>"><i style="color: purple;" class="fa fa-cubes"></i></a>\
 		</span>\
 		<span class="col-xs-2 icon">\
-			<a href="#" data-toggle="tooltip" data-placement="top" title="'+gettext("QGIS Expression Rules")+'" data-singlelayerconstraint-action-mode="expression_rules" data-singlelayerconstraint-pk="<%= constraintPk %>"><%= expressionIcon %></a>\
+			<a href="#" data-toggle="tooltip" data-placement="top" title="'+gettext("QGIS Expression Rules")+'" data-singlelayerconstraint-context="<%= constraintContext %>" data-singlelayerconstraint-action-mode="expression_rules" data-singlelayerconstraint-pk="<%= constraintPk %>"><%= expressionIcon %></a>\
 		</span>\
 		<span class="col-xs-2 icon" style="display:<%= editDisplay %>">\
-			<a href="#" data-singlelayerconstraint-action-mode="update" data-singlelayerconstraint-pk="<%= constraintPk %>" data-singlelayerconstraint-layer-id="<%= layerId %>"><i class="ion ion-edit"></i></a>\
+			<a href="#" data-singlelayerconstraint-action-mode="update" data-singlelayerconstraint-pk="<%= constraintPk %>" data-singlelayerconstraint-context="<%= constraintContext %>" data-singlelayerconstraint-layer-id="<%= layerId %>"><i class="ion ion-edit"></i></a>\
 		</span>\
 		<span class="col-xs-2 icon">\
 			<a href="#" \

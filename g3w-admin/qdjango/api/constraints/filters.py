@@ -13,6 +13,7 @@ __copyright__ = 'Copyright 2020, Gis3W'
 from core.api.filters import BaseFilterBackend
 from qdjango.models.constraints import ConstraintSubsetStringRule, ConstraintExpressionRule
 
+
 class SingleLayerSubsetStringConstraintFilter(BaseFilterBackend):
     """A filter backend that applies a subset string"""
 
@@ -22,7 +23,9 @@ class SingleLayerSubsetStringConstraintFilter(BaseFilterBackend):
         string) make sure to restore the original state or to work on a clone.
         """
 
-        subset_string = ConstraintSubsetStringRule.get_rule_definition_for_user(request.user, view.layer.pk)
+        # get context from view, default 'v (view)'
+        subset_string = ConstraintSubsetStringRule.get_rule_definition_for_user(request.user, view.layer.pk,
+                                                                                context=getattr(view, 'context', 'v'))
         if not subset_string:
             return
 
@@ -44,7 +47,8 @@ class SingleLayerExpressionConstraintFilter(BaseFilterBackend):
         string) make sure to restore the original state or to work on a clone.
         """
 
-        expression_text = ConstraintExpressionRule.get_rule_definition_for_user(request.user, view.layer.pk)
+        expression_text = ConstraintExpressionRule.get_rule_definition_for_user(request.user, view.layer.pk,
+                                                                                context=getattr(view, 'context', 'v'))
         if not expression_text:
             return
 
