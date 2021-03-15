@@ -743,7 +743,6 @@ class QgisProject(XmlData):
             setattr(self, k, kwargs[k] if k in kwargs else None)
 
         # try to load xml project file
-        # try to load xml project file
         self.loadProject(**kwargs)
 
         # set data value into this object
@@ -788,22 +787,15 @@ class QgisProject(XmlData):
         else:
             project_file = self.qgisProjectFile.name
 
-        # Read canvas settings
-        self.mapCanvas = QgsMapCanvas()
 
-        def _readCanvasSettings(xmlDocument):
-            self.mapCanvas.readProject(xmlDocument)
 
         self.qgs_project = get_qgs_project(project_file)
+
         if self.qgs_project is None:
             raise QgisProjectException(
                 _('Could not read QGIS project file: {}').format(project_file))
 
-        self.qgs_project.readProject.connect(
-            _readCanvasSettings, Qt.DirectConnection)
-
-        # Re-read to get map canvas settings (extent)
-        self.qgs_project.read(project_file)
+        self.intialExtent = self.qgs_project.viewSettings().defaultViewExtent()
 
     def closeProject(self, **kwargs):
         """
@@ -835,7 +827,7 @@ class QgisProject(XmlData):
         :return: Start project extension
         :rtype: dict
         """
-        extent = self.mapCanvas.extent()
+        extent = self.intialExtent
         return {
             'xmin': extent.xMinimum(),
             'ymin': extent.yMinimum(),
