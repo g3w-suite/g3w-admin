@@ -137,6 +137,7 @@ class ClientApiTest(CoreTestBase):
         self.assertEqual(resp["user"]["last_name"], "")
         self.assertEqual(resp["user"]["admin_url"], "/en/")
         self.assertEqual(resp["user"]["logout_url"], "/en/logout/?next=/en/map/gruppo-1/qdjango/1/")
+        self.assertEqual(resp["user"]["login_url"], "/en/login/?next=/en/map/gruppo-1/qdjango/1/")
         self.assertEqual(resp["user"]["groups"], [])
         self.assertEqual(resp["user"]["i18n"], "en")
         self.assertEqual(resp["g3wsuite_logo_img"], "g3wsuite_logo_h40.png")
