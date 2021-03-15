@@ -98,9 +98,12 @@ class LayerStylesApiTest(QdjangoTestBase):
             },
         ])
 
+        self.assertFalse(self.qdjango_project.is_dirty)
+
         self.assertFalse(
             self.qdjango_layer.set_current_style('style1234567890'))
         self.assertTrue(self.qdjango_layer.set_current_style('style1'))
+        self.assertTrue(self.qdjango_project.is_dirty)
         self.assertEqual(self.qdjango_layer.styles, [
             {
                 'name': 'style1',
