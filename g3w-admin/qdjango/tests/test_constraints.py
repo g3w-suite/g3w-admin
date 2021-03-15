@@ -416,10 +416,57 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
         constraint.save()
         self.assertEqual(ConstraintExpressionRule.get_active_constraints_for_user(
             admin01, world)[0], rule)
-        self.assertNotEqual(ConstraintExpressionRule.get_rule_definition_for_user(
+        self.assertEqual(ConstraintExpressionRule.get_rule_definition_for_user(
             admin01, world.pk), "(NAME != 'ITALY')")
 
         self.assertFalse(self._check_subset_string())
+
+        # context view + editing ve
+        # =========================
+        constraint.for_editing = True
+        constraint.save()
+
+        self.assertEqual(ConstraintExpressionRule.get_constraints_for_user(
+            admin01, world)[0], rule)
+        constraint.active = False
+        constraint.save()
+
+        self.assertEqual(
+            ConstraintExpressionRule.get_active_constraints_for_user(admin01, world), [])
+        constraint.active = True
+        constraint.save()
+        self.assertEqual(ConstraintExpressionRule.get_active_constraints_for_user(
+            admin01, world)[0], rule)
+        self.assertEqual(ConstraintExpressionRule.get_rule_definition_for_user(
+            admin01, world.pk), "(NAME != 'ITALY')")
+
+        self.assertFalse(self._check_subset_string())
+
+        # context editing e
+        # =========================
+        constraint.for_view = False
+        constraint.for_editing = True
+        constraint.save()
+
+        self.assertEqual(ConstraintExpressionRule.get_constraints_for_user(
+            admin01, world)[0], rule)
+        constraint.active = False
+        constraint.save()
+        self.assertEqual(
+            ConstraintExpressionRule.get_active_constraints_for_user(admin01, world), [])
+        constraint.active = True
+        constraint.save()
+        self.assertEqual(ConstraintExpressionRule.get_active_constraints_for_user(
+            admin01, world)[0], rule)
+        self.assertNotEqual(ConstraintExpressionRule.get_rule_definition_for_user(
+            admin01, world.pk), "(NAME != 'ITALY')")
+
+        self.assertEqual(ConstraintExpressionRule.get_rule_definition_for_user(
+            admin01, world.pk, context='e'), "(NAME != 'ITALY')")
+
+        # for OWS service only for context v and ve
+        self.assertTrue(self._check_subset_string())
+
 
     def test_validate_sql(self):
         """Test rule validation"""
