@@ -99,7 +99,6 @@ class LayerStylesApiTest(QdjangoTestBase):
         ])
 
         self.assertFalse(self.qdjango_project.is_dirty)
-
         self.assertFalse(
             self.qdjango_layer.set_current_style('style1234567890'))
         self.assertTrue(self.qdjango_layer.set_current_style('style1'))
@@ -179,6 +178,15 @@ class LayerStylesApiTest(QdjangoTestBase):
         # Test invalid QML
         self.assertFalse(self.qdjango_layer.add_style(
             'My invalid style', '<xxxx>this is not a valid style</xxxx>'))
+
+        # Restore the project and check the dirt flag
+        project_file = File(open(self.project_path, 'r'))
+        project = QgisProject(project_file)
+        project.instance = self.qdjango_project
+        project.title = 'Test qdjango postgres multiple styles manager project'
+        project.group = self.project_group
+        project.save()
+        self.assertFalse(self.qdjango_project.is_dirty)
 
     def test_style_replace(self):
         """Test style(name) and QML replace"""
