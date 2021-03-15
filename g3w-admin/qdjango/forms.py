@@ -248,7 +248,7 @@ class QdjangoProjectForm(TranslationModelForm, QdjangoProjectFormMixin, G3WFormM
                 css_class='row'
             ),
         )
-        
+
         if self.fields['authentication_id'].initial:
             auth_box = Div(
                 Div(

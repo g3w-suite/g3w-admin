@@ -13,6 +13,7 @@ class QdjangoProjectCUViewMixin(object):
         return reverse('project-list', kwargs={'group_slug': self.group.slug})
 
     def form_valid(self, form):
+
         form.qgisProject.save(**form.cleaned_data)
         if not form.instance.pk:
             form.instance = form.qgisProject.instance
