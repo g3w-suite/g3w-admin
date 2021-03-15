@@ -18,6 +18,7 @@ from django.test import override_settings
 from django.urls import reverse
 from rest_framework.test import APIClient
 
+from qdjango.models import SingleLayerConstraint, ConstraintExpressionRule, ConstraintSubsetStringRule
 from editing.api.constraints.views import *
 
 from .test_models import DATASOURCE_PATH, ConstraintsTestsBase
@@ -185,6 +186,25 @@ class EditingApiTests(ConstraintsTestsBase):
         # check features
         self.assertEqual(len(jres['vector']['data']['features']), 481)
 
+
+
+    def test_editing_api_with_constraint(self):
+
+        cities_layer_id = 'cities_54d40b01_2af8_4b17_8495_c5833485536e'
+        cities_layer = self.editing_project.instance.layer_set.filter(
+            qgs_layer_id=cities_layer_id)[0]
+
+        # CONSTRAINTS TEST
+        # ----------------------------------------------
+
+        # Context 'v' (view)
+        # ------------------
+        constraint = SingleLayerConstraint(layer=cities_layer, active=True)
+        constraint.save()
+
+        rule = ConstraintSubsetStringRule(
+            constraint=constraint, user=self.test_user_admin1, rule="NAME != 'ITALY'")
+        rule.save()
 
 
     def test_editing_commit_mode_api(self):
