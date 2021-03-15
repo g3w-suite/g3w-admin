@@ -30,9 +30,17 @@
         var state = e.target.checked ? 'check' : 'uncheck';
         $('[data-widget-type="downloadLayerxls"]').iCheck(state);
     });
+    $(document).on('ifChanged', '[name="check_every_download_csv"]', function(e){
+        var state = e.target.checked ? 'check' : 'uncheck';
+        $('[data-widget-type="downloadLayercsv"]').iCheck(state);
+    });
     $(document).on('ifChanged', '[name="check_every_download_gpx"]', function(e){
         var state = e.target.checked ? 'check' : 'uncheck';
         $('[data-widget-type="downloadLayergpx"]').iCheck(state);
+    });
+    $(document).on('ifChanged', '[name="check_every_download_gpkg"]', function(e){
+        var state = e.target.checked ? 'check' : 'uncheck';
+        $('[data-widget-type="downloadLayergpkg"]').iCheck(state);
     });
 
     // add expression svg
