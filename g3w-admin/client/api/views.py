@@ -114,17 +114,24 @@ class GroupConfigApiView(APIView):
 
         u = request.user
 
-
-        #logout_url
-        logout_url = reverse('logout') + '?next={}'.format(reverse('group-project-map', kwargs={
+        next_redirect = '?next={}'.format(reverse('group-project-map', kwargs={
             'group_slug': group_slug,
             'project_type': project_type,
             'project_id': project_id
         }))
 
+        # login_url
+        login_url = reverse('login') + next_redirect
+
+        #logout_url
+        logout_url = reverse('logout') + next_redirect
+
 
         # add user login data
-        initconfig['user'] = {'i18n': get_language()}
+        initconfig['user'] = {
+            'i18n': get_language(),
+            'login_url': login_url
+        }
         if not u.is_anonymous:
             initconfig['user'].update({
                 'username': u.username,
