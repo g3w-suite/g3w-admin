@@ -34,3 +34,4 @@ class LayerInfoAuthGroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = AuthGroup
         fields = ['pk', 'name']
+

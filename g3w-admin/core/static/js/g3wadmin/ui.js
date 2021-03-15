@@ -109,7 +109,7 @@ _.extend(g3wadmin.ui, {
         this.setBody = function(bodyContent){
             this.$pageAlert.find('.body-alert').html(bodyContent);
         }
-        
+
         this.show = function($before) {
             $before.after(this.$pageAlert);
         }
@@ -122,7 +122,7 @@ _.extend(g3wadmin.ui, {
         var $modal = $(ga.tpl.pageAlert(_.extendOwn(_.clone(ga.tpl.tplDefValues.pageAlert),options)));
         return new this.pageAlert($modal);
     },
-    
+
     mapModal: function(options) {
         if (!_.isObject(options)){
             options = {};
@@ -186,7 +186,7 @@ _.extend(g3wadmin.ui, {
             });
         });
         return modal;
-        
+
     },
 
     initCrudDeleteWidget: function() {
@@ -387,17 +387,11 @@ _.extend(g3wadmin.ui, {
             var $widgetItem = $('[data-widget-type="dataTable"]');
         }
 
-        // add widgect for details
+        // add widget for details
         // before init datatable because it will work only on first page
         $widgetItem.find('[data-widget-type="detailItemDataTable"]').on('click', function(e){
             ga.widget.showDetailItemDataTable($dataTable, $(this));
         });
-
-        if (!options) {
-            options = {
-                stateSave: true
-            };
-        }
 
         if (CURRENT_LANGUAGE_CODE != 'en') {
             options['language'] = DATATABLE_LANGS[CURRENT_LANGUAGE_CODE]

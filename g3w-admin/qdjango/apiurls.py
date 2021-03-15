@@ -1,6 +1,22 @@
+# coding=utf-8
+""""qdjango API URLs
+
+.. note:: This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+"""
+
+
 from django.conf.urls import url
 from django.contrib.auth.decorators import login_required
-from .api.layers.views import LayerUserInfoAPIView, LayerAuthGroupInfoAPIView
+from .api.layers.views import (
+    LayerUserInfoAPIView,
+    LayerAuthGroupInfoAPIView,
+    LayerStyleListView,
+    LayerStyleDetailView
+)
 from .api.constraints.views import (
     ConstraintExpressionRuleDetail,
     ConstraintExpressionRuleList,
@@ -10,8 +26,9 @@ from .api.constraints.views import (
     SingleLayerConstraintList,
 )
 from .api.projects.views import (
-    QdjangoWebServicesAPIview
+    QdjangoWebServicesAPIview,
 )
+from rest_framework.urlpatterns import format_suffix_patterns
 
 # Single layer Constraints
 urlpatterns = [
@@ -80,6 +97,13 @@ urlpatterns = [
         login_required(QdjangoWebServicesAPIview.as_view()), name='qdjango-webservice-api-list'),
 ]
 
+# Layer style manager
+urlpatterns += [
+    url(r'^api/layerstyles/(?P<layer_id>[\d]+)/$',
+        login_required(LayerStyleListView.as_view()), name='qdjango-style-list-api'),
+    url(r'^api/layerstyles/(?P<layer_id>[\d]+)/(?P<style_name>\w+)/$',
+        login_required(LayerStyleDetailView.as_view()), name='qdjango-style-detail-api'),
+]
 
 # API info
 urlpatterns += [

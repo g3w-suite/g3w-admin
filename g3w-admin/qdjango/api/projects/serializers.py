@@ -419,7 +419,7 @@ class LayerSerializer(serializers.ModelSerializer):
             'download_xls',
             'download_gpx',
             'download_csv',
-            'editor_form_structure'
+            'editor_form_structure',
         )
 
     def get_servertype(self, instance):

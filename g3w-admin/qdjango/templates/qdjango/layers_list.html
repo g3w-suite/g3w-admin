@@ -9,10 +9,10 @@
 {% block custom_js_links_page %}
 {% comment %}Add caching/ui.js if caching in django apps{% endcomment %}
 {% if 'caching' in SETTINGS.G3WADMIN_LOCAL_MORE_APPS %}
-<script src="{% static "caching/js/ui.js" %}"></script>
+<script type="text/javascript" src="{% static "caching/js/ui.js" %}"></script>
 {% endif %}
-<script src="{% static "qdjango/js/widget.js" %}"></script>
-<script>
+<script type="text/javascript" src="{% static "qdjango/js/widget.js" %}"></script>
+<script type="text/javascript">
     $('#tree').treeview({data:{{ layers_tree|safe }}});
     ga.ui.initNolegendLayerCheckBox();
     ga.ui.initDownloadLayerCheckBox();
@@ -84,6 +84,7 @@
             <ul class="nav nav-tabs">
               <li class="active"><a href="#tab_layers_data" data-toggle="tab"><i class="fa fa-file"></i> {% trans 'Data' %}</a></li>
               <li><a href="#tab_layers_structure" data-toggle="tab"><i class="fa fa-list-alt"></i> {% trans 'Structure' %}</a></li>
+              <li><a href="#tab_layers_styles" data-toggle="tab"><i class="fa fa-map-marker"></i> {% trans 'Styles' %}</a></li>
 
             </ul>
             <div class="tab-content">
@@ -160,6 +161,11 @@
                                             <span class="label label-info label-action-layer">{{ object.getWidgetsNumber }}</span></a>
 
                                     </span>
+                                    <span class="col-xs-2 icon">
+                                        <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Manage layer styles' %}" data-widget-type="styleManagerList" data-stylemanager-layer-pk="{{ object.pk }}" data-stylemanager-list-url="{% url 'qdjango-style-list-api' object.pk %}" ><i class="fa fa-paint-brush"></i>
+                                            <span class="label label-info label-action-layer">{{ object.styles_count }}</span>
+                                        </a>
+                                    </span>
                                     {% endif %}
                                 </span>
                             </td>
@@ -204,10 +210,6 @@
                             {% endif %}
                             {% endif %}
 
-
-
-
-
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -219,11 +221,6 @@
 
             </div><!-- /.tab-content -->
           </div>
-
-
-
-
-
 
     </div>
 </div>

@@ -78,3 +78,4 @@ def delete_session_token_filter(sender, **kwargs):
     """
 
     SessionTokenFilter.objects.filter(sessionid=kwargs['request'].session.session_key).delete()
+
