@@ -89,6 +89,17 @@ class ClientView(TemplateView):
         # choose client by querystring paramenters
         contextData['client_default'] = self.get_client_name()
 
+        # login_url
+        login_url = None
+        try:
+            login_url = reverse('login') + '?next={}'.format(reverse('group-project-map', kwargs={
+                'group_slug': kwargs['group_slug'],
+                'project_type': kwargs['project_type'],
+                'project_id': self.project.pk
+            }))
+        except:
+            pass
+
         # logout_url
         logout_url = None
         try:
@@ -111,7 +122,10 @@ class ClientView(TemplateView):
         else:
             admin_url = None
 
-        user_data = {'i18n': get_language()}
+        user_data = {
+            'i18n': get_language(),
+            'login_url': login_url
+        }
         if not u.is_anonymous:
             user_data.update({
                 'username': u.username,
