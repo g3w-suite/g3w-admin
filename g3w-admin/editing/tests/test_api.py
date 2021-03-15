@@ -196,6 +196,8 @@ class EditingApiTests(ConstraintsTestsBase):
 
         # CONSTRAINTS TEST
         # ----------------------------------------------
+        # SUBSETSTRING RULE
+        # ----------------------------------------------
 
         # Context 'v' (view)
         # ------------------
@@ -203,8 +205,102 @@ class EditingApiTests(ConstraintsTestsBase):
         constraint.save()
 
         rule = ConstraintSubsetStringRule(
-            constraint=constraint, user=self.test_user_admin1, rule="NAME != 'ITALY'")
+            constraint=constraint, user=self.test_user_admin1, rule="name = 'Genova' OR name = 'Grosseto'")
         rule.save()
+
+        response = self._testApiCall('editing-commit-vector-api',
+                                     ['editing', 'qdjango', self.editing_project.instance.pk,
+                                      cities_layer_id])
+
+        jres = json.loads(response.content)
+
+        # check features
+        self.assertEqual(len(jres['vector']['data']['features']), 481)
+
+        # Context 've' (view +  editing)
+        # ------------------------------
+        constraint.for_editing = True
+        constraint.save()
+
+        response = self._testApiCall('editing-commit-vector-api',
+                                     ['editing', 'qdjango', self.editing_project.instance.pk,
+                                      cities_layer_id])
+
+        jres = json.loads(response.content)
+
+        # check features
+        self.assertEqual(len(jres['vector']['data']['features']), 2)
+
+        # Context 'e' (editing)
+        # ------------------------------
+        constraint.for_view = False
+        constraint.for_editing = True
+        constraint.save()
+
+        response = self._testApiCall('editing-commit-vector-api',
+                                     ['editing', 'qdjango', self.editing_project.instance.pk,
+                                      cities_layer_id])
+
+        jres = json.loads(response.content)
+
+        # check features
+        self.assertEqual(len(jres['vector']['data']['features']), 2)
+
+        # EXPRESSION RULE
+        # ----------------------------------------------
+
+        constraint.for_view = True
+        constraint.for_editing = False
+        constraint.save()
+        rule.delete()
+
+        rule = ConstraintExpressionRule(
+            constraint=constraint, user=self.test_user_admin1, rule="\"name\" = 'Genova' OR \"name\" = 'Grosseto' OR \"name\" = 'Agliana'")
+        rule.save()
+
+        # context 'v' (view)
+        # ==================
+        response = self._testApiCall('editing-commit-vector-api',
+                                     ['editing', 'qdjango', self.editing_project.instance.pk,
+                                      cities_layer_id])
+
+        jres = json.loads(response.content)
+
+        # check features
+        self.assertEqual(len(jres['vector']['data']['features']), 481)
+
+        # context 've' (view + editing)
+        # ==================
+        constraint.for_editing = True
+        constraint.save()
+
+        response = self._testApiCall('editing-commit-vector-api',
+                                     ['editing', 'qdjango', self.editing_project.instance.pk,
+                                      cities_layer_id])
+
+        jres = json.loads(response.content)
+
+        # check features
+        #self.assertEqual(len(jres['vector']['data']['features']), 3)
+
+        # context 'e' (editing)
+        # ==================
+        constraint.for_editing = False
+        constraint.for_editing = True
+        constraint.save()
+
+        response = self._testApiCall('editing-commit-vector-api',
+                                     ['editing', 'qdjango', self.editing_project.instance.pk,
+                                      cities_layer_id])
+
+        jres = json.loads(response.content)
+
+        # check features
+        self.assertEqual(len(jres['vector']['data']['features']), 3)
+
+
+
+
 
 
     def test_editing_commit_mode_api(self):
