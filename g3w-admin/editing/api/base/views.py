@@ -41,6 +41,9 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
 
     app_name = 'editing'
 
+    # context: unsed i.e. fro constraint
+    context = 'e' # as editing
+
     # current request sessionid
     sessionid = None
 

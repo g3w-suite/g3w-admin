@@ -54,14 +54,18 @@ class LayerUserInfoAPIView(generics.ListAPIView):
 
     def get_queryset(self):
         """
-        This view should return a list o user with view_project permission.
+        This view should return a list of user with view_project permission.
         """
         if 'layer_id' in self.kwargs:
+
+            # get 'context' GET parameter if is present possible values: [v (view), e (editing), ve (view + editing)]
+            context = self.request.GET.get('context', 'v')
+
             # get viewer users
             layer = Layer.objects.get(pk=self.kwargs['layer_id'])
             with_anonymous = getattr(settings, 'EDITING_ANONYMOUS', False)
             qs = get_viewers_for_object(layer.project, self.request.user, 'view_project',
-                                        with_anonymous=with_anonymous)
+                                             with_anonymous=with_anonymous)
         else:
             qs = []
 
@@ -84,11 +88,14 @@ class LayerAuthGroupInfoAPIView(generics.ListAPIView):
         """
 
         if 'layer_id' in self.kwargs:
+
+            # get 'context' GET parameter if is present possible values: [v (view), e (editing), ve (view + editing)]
+            context = self.request.GET.get('context', 'v')
+
             # get viewer users
             layer = Layer.objects.get(pk=self.kwargs['layer_id'])
 
-            qs = get_user_groups_for_object(
-                layer.project, self.request.user, 'view_project', 'viewer')
+            qs = get_user_groups_for_object(layer.project, self.request.user, 'view_project', 'viewer')
         else:
             qs = None
         return qs

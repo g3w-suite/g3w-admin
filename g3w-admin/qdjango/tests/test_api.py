@@ -383,6 +383,8 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         assign_perm('view_project', self.test_viewer1, self.project.instance)
         assign_perm('view_project', self.test_viewer1_2, self.project.instance)
 
+        # without context
+        # =======================================
         res = self.client.get(url)
         self.assertEqual(res.status_code, 200)
         jres = json.loads(res.content)
@@ -390,6 +392,52 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         self.assertEqual(len(jres['results']), 2)
 
         r0 = jres['results'][0]
+        self.assertEqual(r0['username'], self.test_viewer1.username)
+        self.assertEqual(r0['first_name'], self.test_viewer1.first_name)
+        self.assertEqual(r0['last_name'], self.test_viewer1.last_name)
+
+        # with context=v (view)
+        # =======================================
+        res = self.client.get(f'{url}?context=v')
+        self.assertEqual(res.status_code, 200)
+        jres = json.loads(res.content)
+
+        self.assertEqual(len(jres['results']), 2)
+
+        r0 = jres['results'][0]
+        self.assertEqual(r0['username'], self.test_viewer1.username)
+        self.assertEqual(r0['first_name'], self.test_viewer1.first_name)
+        self.assertEqual(r0['last_name'], self.test_viewer1.last_name)
+
+        # with context=ve (view + editing)
+        # =======================================
+        res = self.client.get(f'{url}?context=ve')
+        self.assertEqual(res.status_code, 200)
+        jres = json.loads(res.content)
+
+        self.assertEqual(len(jres['results']), 2)
+
+        r0 = jres['results'][0]
+        self.assertEqual(r0['username'], self.test_viewer1.username)
+        self.assertEqual(r0['first_name'], self.test_viewer1.first_name)
+        self.assertEqual(r0['last_name'], self.test_viewer1.last_name)
+
+        # with context=e (editing)
+        # =======================================
+        res = self.client.get(f'{url}?context=e')
+        self.assertEqual(res.status_code, 200)
+        jres = json.loads(res.content)
+
+        self.assertEqual(len(jres['results']), 0)
+
+        assign_perm('change_layer', self.test_viewer1, self.fake_layer1)
+
+        res = self.client.get(f'{url}?context=e')
+        self.assertEqual(res.status_code, 200)
+        jres = json.loads(res.content)
+
+        self.assertEqual(len(jres['results']), 1)
+
         self.assertEqual(r0['username'], self.test_viewer1.username)
         self.assertEqual(r0['first_name'], self.test_viewer1.first_name)
         self.assertEqual(r0['last_name'], self.test_viewer1.last_name)
@@ -419,7 +467,51 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         # give view_projest to GU-VIEWER2
         assign_perm('view_project', self.test_gu_viewer2, self.project.instance)
 
+        # without context
+        # =======================================
         res = self.client.get(url)
+        self.assertEqual(res.status_code, 200)
+        jres = json.loads(res.content)
+
+        self.assertEqual(len(jres['results']), 1)
+
+        r0 = jres['results'][0]
+        self.assertEqual(r0['name'], self.test_gu_viewer2.name)
+
+        # with context: v (view)
+        # =======================================
+        res = self.client.get(f"{url}?context=v")
+        self.assertEqual(res.status_code, 200)
+        jres = json.loads(res.content)
+
+        self.assertEqual(len(jres['results']), 1)
+
+        r0 = jres['results'][0]
+        self.assertEqual(r0['name'], self.test_gu_viewer2.name)
+
+        # with context: ve (view + editing)
+        # =======================================
+        res = self.client.get(f"{url}?context=v")
+        self.assertEqual(res.status_code, 200)
+        jres = json.loads(res.content)
+
+        self.assertEqual(len(jres['results']), 1)
+
+        r0 = jres['results'][0]
+        self.assertEqual(r0['name'], self.test_gu_viewer2.name)
+
+        # with context: e (editing)
+        # =======================================
+        res = self.client.get(f"{url}?context=e")
+        self.assertEqual(res.status_code, 200)
+        jres = json.loads(res.content)
+
+        self.assertEqual(len(jres['results']), 0)
+
+        # give change_layer to GU-VIEWER2
+        assign_perm('change_layer', self.test_gu_viewer2, self.fake_layer1)
+
+        res = self.client.get(f"{url}?context=v")
         self.assertEqual(res.status_code, 200)
         jres = json.loads(res.content)
 
