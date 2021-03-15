@@ -797,6 +797,26 @@ class QgisProject(XmlData):
 
         self.intialExtent = self.qgs_project.viewSettings().defaultViewExtent()
 
+        # Handle the case for older projects < 3.16.2 where map setttings extent was not stored
+        if self.intialExtent.isEmpty():
+            # Read canvas settings
+            mapCanvas = QgsMapCanvas()
+
+            def _readCanvasSettings(xmlDocument):
+                mapCanvas.readProject(xmlDocument)
+                self.intialExtent = mapCanvas.extent()
+
+            self.qgs_project = get_qgs_project(project_file)
+            if self.qgs_project is None:
+                raise QgisProjectException(_('Could not read QGIS project file: {}').format(project_file))
+
+            self.qgs_project.readProject.connect(
+                _readCanvasSettings, Qt.DirectConnection)
+
+            # Re-read to get map canvas settings (extent)
+            self.qgs_project.read(project_file)
+
+
     def closeProject(self, **kwargs):
         """
         Close QgsProject object and deletes the project.
