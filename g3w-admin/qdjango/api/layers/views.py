@@ -165,7 +165,10 @@ class LayerStyleListView(LayerStyleBaseView):
 
         layer = get_object_or_404(Layer, pk=layer_id)
         try:
-            qml = request.data['qml'].read().decode('utf-8')
+            if request.content_type.startswith('application/json'):
+                qml = request.data['qml']
+            else:
+                qml = request.data['qml'].read().decode('utf-8')
             if not len(qml) > 0:
                 # This is catched below
                 raise ParseError()
@@ -260,9 +263,12 @@ class LayerStyleDetailView(LayerStyleBaseView):
 
         if 'qml' in request.data.keys():
             try:
-                qml = request.data['qml'].read().decode('utf-8')
-                if not len(qml) > 0:  # Catched below
-                    raise ParseError()
+                if request.content_type.startswith('application/json'):
+                    qml = request.data['qml']
+                else:
+                    qml = request.data['qml'].read().decode('utf-8')
+                if len(qml) == 0:  # empty QML is allowed for patch
+                    qml = None
             except:
                 raise ParseError(_('Error parsing QML'))
         else:
@@ -282,7 +288,7 @@ class LayerStyleDetailView(LayerStyleBaseView):
             raise ValidationError(
                 _('Modifications of the current style are not allowed.'))
 
-        if new_name is not None:
+        if new_name is not None and new_name != style_name:
             result = layer.rename_style(style_name, new_name)
             style_name = new_name
 

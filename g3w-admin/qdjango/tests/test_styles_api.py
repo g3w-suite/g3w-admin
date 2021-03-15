@@ -300,6 +300,31 @@ class LayerStylesApiTest(QdjangoTestBase):
         self.assertEqual(response.status_code,
                          status.HTTP_405_METHOD_NOT_ALLOWED)
 
+        # Test QML upload in json format
+
+        with open(os.path.join(
+                CURRENT_PATH + TEST_BASE_PATH, 'multiple_styles_manager_test.qml'), 'rb') as f:
+            qml = f.read()
+
+        data = {
+            'name': 'JSON Upload',
+            'qml': qml
+        }
+        response = self.client.post(
+            reverse('qdjango-style-list-api', args=(layer_id,)), data=data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.json(), {'result': True})
+
+        # Verify
+        response = self.client.get(
+            reverse('qdjango-style-list-api', args=(layer_id,)))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.json(), {'result': True,
+                                           'styles': [{"name": "JSON Upload", "current": False}, {'name': 'My new fancy èé style', 'current': False},
+                                                      {'name': 'style1',
+                                                          'current': False},
+                                                      {'name': 'style2', 'current': True}]})
+
     def test_layer_style_detail_api(self):
         """Test layer single style API calls"""
 
@@ -365,7 +390,7 @@ class LayerStylesApiTest(QdjangoTestBase):
             'qml': SimpleUploadedFile('qml', self.qdjango_layer.style('style2').xmlData().encode('utf-8'), content_type="text/xml")
         }
         response = self.client.patch(
-                reverse('qdjango-style-detail-api', args=(layer_id, 'style1')), data=data)
+            reverse('qdjango-style-detail-api', args=(layer_id, 'style1')), data=data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json(), {'result': True})
 
@@ -385,14 +410,15 @@ class LayerStylesApiTest(QdjangoTestBase):
         layer_id = self.qdjango_layer.pk
 
         response = self.client.delete(
-                reverse('qdjango-style-detail-api', args=(layer_id, 'style2')))
+            reverse('qdjango-style-detail-api', args=(layer_id, 'style2')))
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(self.qdjango_layer.styles, [{'name': 'style1', 'current': False},
                                                      {'name': 'style2', 'current': True}])
         response = self.client.delete(
-                reverse('qdjango-style-detail-api', args=(layer_id, 'style1')))
+            reverse('qdjango-style-detail-api', args=(layer_id, 'style1')))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(self.qdjango_layer.styles, [{'name': 'style2', 'current': True}])
+        self.assertEqual(self.qdjango_layer.styles, [
+                         {'name': 'style2', 'current': True}])
 
     def test_unsupported_methods(self):
         """Test unsupported methods"""
