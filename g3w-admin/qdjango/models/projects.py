@@ -30,23 +30,23 @@ logger = logging.getLogger(__name__)
 
 # Layer type with widget set capability
 TYPE_LAYER_FOR_WIDGET = (
-            'postgres',
-            'spatialite',
-            'ogr',
-            'mssql',
-            'virtual',
-            'oracle'
-        )
+    'postgres',
+    'spatialite',
+    'ogr',
+    'mssql',
+    'virtual',
+    'oracle'
+)
 
 # Layer type with download capability
 TYPE_LAYER_FOR_DOWNLOAD = (
-            'postgres',
-            'spatialite',
-            'ogr',
-            'mssql',
-            'virtual',
-            'oracle'
-        )
+    'postgres',
+    'spatialite',
+    'ogr',
+    'mssql',
+    'virtual',
+    'oracle'
+)
 
 
 def get_project_file_path(instance, filename):
@@ -130,7 +130,7 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
         _('WMS use layer ids'), default=False)
 
     # client options:
-    #============================================
+    # ============================================
 
     feature_count_wms = models.IntegerField(
         _('Max feature to get for query'), default=5)
@@ -145,7 +145,7 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
                                                  default='single')
 
     context_base_legend = models.BooleanField(_('Context base legend'), default=False,
-                                help_text='Show only the symbols for the features falling into the requested area')
+                                              help_text='Show only the symbols for the features falling into the requested area')
 
     toc_tab_default = models.CharField(_("Tab's TOC active as default"), choices=CLIENT_TOC_TABS, max_length=40,
                                        default='layers', help_text="Set tab's TOC open by default on init client")
@@ -157,6 +157,9 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
 
     use_map_extent_as_init_extent = models.BooleanField(_('User QGIS project map start extent as webgis init extent'),
                                                         default=False)
+
+    is_dirty = models.BooleanField(_('The project has been modified by the G3W-Suite application after it was uploaded.'), editable=False,
+                                   default=False)
 
     class Meta:
         verbose_name = _('Project')
@@ -176,6 +179,20 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
 
         from qdjango.apps import get_qgs_project
         return get_qgs_project(self.qgis_file.path)
+
+    def update_qgis_project(self):
+        """Updates the QGIS project associated with the G3W-Suite project instance and sets the "dirty" flag.
+
+        :return: True on success
+        :rtype: bool
+        """
+
+        if self.qgis_project.write():
+            self.is_dirty = True
+            self.save()
+            return True
+        else:
+            return False
 
     def _permissionsToEditor(self, user, mode='add'):
 
@@ -427,7 +444,6 @@ class Layer(G3WACLModelMixins, models.Model):
     # layer extension
     extent = models.TextField(_('Layer extension'), null=True, blank=True)
 
-
     # for layer WMS/WMST: set if load direct from their servers or from local QGIS-server
     external = models.BooleanField(
         _('Get WMS/WMS externally'), default=False, blank=True)
@@ -508,7 +524,7 @@ class Layer(G3WACLModelMixins, models.Model):
         result = sm.setCurrentStyle(style)
 
         if result:
-            result = result and self.project.qgis_project.write()
+            result = result and self.project.update_qgis_project()
 
         return result
 
@@ -535,7 +551,7 @@ class Layer(G3WACLModelMixins, models.Model):
         result = sm.renameStyle(style, new_name)
 
         if result:
-            result = result and self.project.qgis_project.write()
+            result = result and self.project.update_qgis_project()
 
         return result
 
@@ -576,7 +592,7 @@ class Layer(G3WACLModelMixins, models.Model):
         assert self.style(style).xmlData() == new_style.xmlData()
 
         if result:
-            result = result and self.project.qgis_project.write()
+            result = result and self.project.update_qgis_project()
 
         return result
 
@@ -601,7 +617,7 @@ class Layer(G3WACLModelMixins, models.Model):
         result = sm.removeStyle(style)
 
         if result:
-            result = result and self.project.qgis_project.write()
+            result = result and self.project.update_qgis_project()
 
         return result
 
@@ -640,7 +656,7 @@ class Layer(G3WACLModelMixins, models.Model):
         result = sm.addStyle(style, new_style)
 
         if result:
-            result = result and self.project.qgis_project.write()
+            result = result and self.project.update_qgis_project()
 
         return result
 
@@ -658,7 +674,6 @@ class Layer(G3WACLModelMixins, models.Model):
             'maxx': rect.xMaximum(),
             'maxy': rect.yMaximum()
         }
-
 
     def __str__(self):
         return self.name
