@@ -168,13 +168,9 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         :param instance: qdjango Project model instance
         :return: str
         """
-        # check if settings on POST and user_layer_id and qgis project != from version 3
-        if settings.CLIENT_OWS_METHOD == 'POST' and \
-                instance.wms_use_layer_ids and \
-                instance.qgis_version.startswith('2'):
-            return settings.CLIENT_OWS_METHOD
-        else:
-            return 'GET'
+
+        method = getattr(settings, 'CLIENT_OWS_METHOD', 'GET')
+        return method if method in ('GET', 'POST') else 'GET'
 
     def get_metadata(self, instance, qgs_project):
         """Build metadata for layer by QgsProject instance
