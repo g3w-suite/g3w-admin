@@ -1,15 +1,15 @@
-import os
-from django.apps import AppConfig, apps
-from django.db.models.signals import post_migrate
-from usersmanage.configs import *
-from core.utils.general import getAuthPermissionContentType
-from django.conf import settings
-
-from qgis.core import QgsApplication, QgsProject
-from django.core.exceptions import ImproperlyConfigured
-from qgis.server import QgsServer, QgsConfigCache, QgsServerSettings
-
 import logging
+import os
+
+from core.utils.general import getAuthPermissionContentType
+from django.apps import AppConfig, apps
+from django.conf import settings
+from django.core.exceptions import ImproperlyConfigured
+from django.db.models.signals import post_migrate
+from qgis.core import QgsApplication, QgsProject
+from qgis.server import QgsConfigCache, QgsServer, QgsServerSettings
+from usersmanage.configs import *
+
 logger = logging.getLogger(__name__)
 
 if settings.DEBUG:
@@ -33,6 +33,8 @@ if hasattr(settings, 'QGIS_AUTH_PASSWORD_FILE') and settings.QGIS_AUTH_PASSWORD_
         except Exception as ex:
             raise ImproperlyConfigured('Error creating QGIS_AUTH_PASSWORD_FILE %s: %s' % (
                 settings.QGIS_AUTH_PASSWORD_FILE, ex))
+    os.environ['QGIS_AUTH_PASSWORD_FILE'] = settings.QGIS_AUTH_PASSWORD_FILE
+
 
 # Required only if the installation is not in the default path
 # or if virtualenv messes up with the paths
@@ -46,9 +48,6 @@ QGS_APPLICATION = QgsApplication([], False)
 # load providers
 QGS_APPLICATION.initQgis()
 
-
-# This is only necessary on 3.10:
-# FIXME: remove when we switch to 3.16
 if hasattr(settings, 'QGIS_AUTH_PASSWORD') and settings.QGIS_AUTH_PASSWORD:
     if not QgsApplication.authManager().setMasterPassword(settings.QGIS_AUTH_PASSWORD, True):
         raise ImproperlyConfigured(
@@ -83,7 +82,13 @@ def get_qgs_project(path):
         # Call process events in case the project has been updated and the cache
         # needs rebuilt
         QgsApplication.instance().processEvents()
+        if settings.DEBUG:
+            QgsConfigCache.instance().removeEntry(path)
+            QGS_SERVER.serverInterface().capabilitiesCache().removeCapabilitiesDocument(path)
+            logger.warning('settings.DEBUG is True: QGIS project loaded from disk!')
+
         project = QgsConfigCache.instance().project(path, QGS_SERVER_SETTINGS)
+
         # This is required after QGIS 3.10.11, see https://github.com/qgis/QGIS/pull/38488#issuecomment-692190106
         if project is not None and project != QgsProject.instance():
             try:
@@ -155,6 +160,7 @@ class QdjangoConfig(AppConfig):
     icon = 'qdjango/img/qgis-icon32.png'
 
     def ready(self):
+
         post_migrate.connect(GiveBaseGrant, sender=self)
 
         # import signals receivers
@@ -163,6 +169,7 @@ class QdjangoConfig(AppConfig):
         # Register qdjango catalog record provider
         if 'catalog' in settings.INSTALLED_APPS:
             from catalog.models import Catalog
+
             from .models import Layer, Project
             from .utils.catalog_provider import catalog_provider
 
@@ -172,8 +179,6 @@ class QdjangoConfig(AppConfig):
 
         # Load all QGIS server filter plugins, apps can load additional filters
         # by registering them directly to QGS_SERVER
-        from . import server_filters
-
         # Load all QGIS server services plugins, apps can load additional services
         # by registering them directly to QGS_SERVER
-        from . import server_services
+        from . import server_filters, server_services
