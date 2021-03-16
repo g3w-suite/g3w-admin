@@ -226,9 +226,10 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         """Check session token filter ad delete it"""
 
         try:
-            stf = SessionTokenFilter.objects.get(
-                sessionid=self.request.COOKIES[settings.SESSION_COOKIE_NAME])
-            stf.delete()
+            if settings.SESSION_COOKIE_NAME in self.request.COOKIES:
+                stf = SessionTokenFilter.objects.get(
+                    sessionid=self.request.COOKIES[settings.SESSION_COOKIE_NAME])
+                stf.delete()
         except SessionTokenFilter.DoesNotExist:
             return None
 
