@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('qdjango', '0068_project_autozoom_query'),
+        ('qdjango', '0071_auto_20210312_1558'),
     ]
 
     operations = [
