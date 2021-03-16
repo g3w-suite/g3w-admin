@@ -1357,7 +1357,7 @@ _.extend(g3wadmin.tpl, {
 								'+gettext('Active for visualization')+'\
 							</label>\
 						</div>\
-						<input type="hidden" name="for_view">\
+						<input type="hidden" name="for_view" value="true">\
 					</div>\
 					<div class="form-group">\
 						<div id="div_id_for_editing" class="checkbox">\
