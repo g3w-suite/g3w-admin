@@ -43,6 +43,14 @@ class SingleLayerSessionTokenAccessControlFilter(QgsAccessControlFilter):
         QgsMessageLog.logMessage("SingleLayerSessionTokenAccessControlFilter expression for filtertoken %s layer id %s: %s" % (filtertoken, layer.id(), rule), "", Qgis.Info)
         return rule
 
+    def cacheKey(self):
+        """Return a cache key, a contant value means that the cache works
+        normally and this filter does not influence the cache, an empty value
+        (which is the default implementation) means that the cache is disabled"""
+
+        # Return a constant: the cache is not influenced by this filter
+        return "slt"
+
 # Register the filter, keep a reference because of the garbage collector
 ac_filter3 = SingleLayerSessionTokenAccessControlFilter(QGS_SERVER.serverInterface())
 QGS_SERVER.serverInterface().registerAccessControl(ac_filter3, 9998)

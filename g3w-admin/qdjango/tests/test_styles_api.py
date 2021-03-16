@@ -127,9 +127,10 @@ class LayerStylesApiTest(QdjangoTestBase):
         # Test rename
         self.assertFalse(self.qdjango_layer.rename_style(
             'style1234567890', 'new_name'))
-        self.assertFalse(self.qdjango_layer.rename_style('style1', 'new_name'))
         self.assertFalse(self.qdjango_layer.rename_style('style2', 'style1'))
         self.assertTrue(self.qdjango_layer.rename_style('style2', 'new_name'))
+        self.assertTrue(self.qdjango_layer.rename_style('style1', 'new_name1'))
+        self.assertTrue(self.qdjango_layer.rename_style('new_name1', 'style1'))
 
         # Verify the project was written
         p = QgsProject()
@@ -143,8 +144,9 @@ class LayerStylesApiTest(QdjangoTestBase):
 
         # Test remove/delete
         self.assertFalse(self.qdjango_layer.delete_style('style1234567890'))
-        self.assertFalse(self.qdjango_layer.delete_style('style1'))
-        self.assertTrue(self.qdjango_layer.delete_style('new_name'))
+        self.assertTrue(self.qdjango_layer.delete_style('style1'))
+        self.assertFalse(self.qdjango_layer.delete_style('new_name'))
+        assert self.qdjango_layer.rename_style('new_name', 'style1')
 
         # Verify the project was written
         p = QgsProject()
@@ -200,11 +202,32 @@ class LayerStylesApiTest(QdjangoTestBase):
         self.assertEqual(
             style1_xml, self.qdjango_layer.style('style2').xmlData())
 
+    def test_style_replace_current(self):
+        """Test style(name) and QML replace"""
+
+        sm = self.qdjango_layer.qgis_layer.styleManager()
+        self.assertEqual(sm.currentStyle(), 'style2')
+        self.assertTrue(self.qdjango_layer.set_current_style('style1'))
+        style1_xml = self.qdjango_layer.style('style1').xmlData()
+
+        self.assertTrue(self.qdjango_layer.set_current_style('style2'))
+        sm = self.qdjango_layer.qgis_layer.styleManager()
+        self.assertEqual(sm.currentStyle(), 'style2')
+
+        self.assertTrue(self.qdjango_layer.replace_style('style2', style1_xml))
+
+        # Test the current style has not changed
+        self.assertEqual(sm.currentStyle(), 'style2')
+
+        self.assertEqual(
+            style1_xml, self.qdjango_layer.style('style2').xmlData())
+
+
     def test_style_delete(self):
         """Test delete style"""
 
-        self.assertFalse(self.qdjango_layer.delete_style('style2'))
-        self.assertTrue(self.qdjango_layer.delete_style('style1'))
+        self.assertTrue(self.qdjango_layer.delete_style('style2'))
+        self.assertFalse(self.qdjango_layer.delete_style('style1'))
 
         # Verify
         p = QgsProject()
@@ -212,7 +235,7 @@ class LayerStylesApiTest(QdjangoTestBase):
         l = p.mapLayer(self.qdjango_layer.qgis_layer.id())
         self.assertTrue(l.isValid())
         sm = l.styleManager()
-        self.assertEqual(sm.styles(), ['style2'])
+        self.assertEqual(sm.styles(), ['style1'])
         del(sm)
         del(p)
 
@@ -422,14 +445,16 @@ class LayerStylesApiTest(QdjangoTestBase):
 
         response = self.client.delete(
             reverse('qdjango-style-detail-api', args=(layer_id, 'style2')))
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(self.qdjango_layer.styles, [{'name': 'style1', 'current': False},
-                                                     {'name': 'style2', 'current': True}])
+        self.assertEqual(response.status_code,
+                         status.HTTP_200_OK)
+        self.assertEqual(self.qdjango_layer.styles, [
+                         {'name': 'style1', 'current': True}])
+
         response = self.client.delete(
             reverse('qdjango-style-detail-api', args=(layer_id, 'style1')))
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(self.qdjango_layer.styles, [
-                         {'name': 'style2', 'current': True}])
+                         {'name': 'style1', 'current': True}])
 
     def test_unsupported_methods(self):
         """Test unsupported methods"""

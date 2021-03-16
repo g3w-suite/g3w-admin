@@ -14,6 +14,7 @@ __copyright__ = 'Copyright 2020, Gis3W'
 from qgis.server import QgsAccessControlFilter
 from qdjango.apps import QGS_SERVER
 
+
 class TestAccessControlFilter(QgsAccessControlFilter):
     """A filter that denies the layer == TEST_ACCESS_CONTROL
     in the query string"""
@@ -34,6 +35,15 @@ class TestAccessControlFilter(QgsAccessControlFilter):
             return permissions
         else:
             return super().layerPermissions(layer)
+
+    def cacheKey(self):
+        """Return a cache key, a constant value means that the cache works
+        normally and this filter does not influence the cache, an empty value
+        (which is the default implementation) means that the cache is disabled"""
+
+        # Return a constant: the cache is not influenced by this filter
+        return "tac"
+
 
 # Register the filter, keep a reference because of the garbage collector
 ac_filter = TestAccessControlFilter(QGS_SERVER.serverInterface())

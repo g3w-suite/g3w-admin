@@ -36,6 +36,14 @@ class SingleLayerSubsetStringAccessControlFilter(QgsAccessControlFilter):
 
         return rule
 
+    def cacheKey(self):
+        """Return a cache key, a constant value means that the cache works
+        normally and this filter does not influence the cache, an empty value
+        (which is the default implementation) means that the cache is disabled"""
+
+        # Return a constant: the cache is not influenced by this filter
+        return "sl"
+
 
 
 # Register the filter, keep a reference because of the garbage collector
@@ -64,6 +72,14 @@ class SingleLayerExpressionAccessControlFilter(QgsAccessControlFilter):
             QgsMessageLog.logMessage("SingleLayerExpressionAccessControlFilter rule for user %s and layer id %s: %s" % (QGS_SERVER.user, layer.id(), rule), "", Qgis.Info)
 
         return rule
+
+    def cacheKey(self):
+        """Return a cache key, a contant value means that the cache works
+        normally and this filter does not influence the cache, an empty value
+        (which is the default implementation) means that the cache is disabled"""
+
+        # Return a constant: the cache is not influenced by this filter
+        return "sle"
 
 
 # Register the filter, keep a reference because of the garbage collector

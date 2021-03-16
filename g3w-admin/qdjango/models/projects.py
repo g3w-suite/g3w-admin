@@ -531,7 +531,7 @@ class Layer(G3WACLModelMixins, models.Model):
     def rename_style(self, style, new_name):
         """Renames a style
 
-        :param style: name of the style to rename (must not be the current style)
+        :param style: name of the style to rename
         :type style: str
         :param new_name: new name of the style
         :type new_name: str
@@ -545,7 +545,7 @@ class Layer(G3WACLModelMixins, models.Model):
 
         sm = layer.styleManager()
 
-        if sm.currentStyle() == style or new_name in sm.styles():
+        if new_name in sm.styles():
             return False
 
         result = sm.renameStyle(style, new_name)
@@ -558,7 +558,7 @@ class Layer(G3WACLModelMixins, models.Model):
     def replace_style(self, style, qml):
         """Replaces the style QML
 
-        :param style: name of the style to replace (must not be the current style)
+        :param style: name of the style to replace
         :type style: str
         :param qml:
         :type qml: str
@@ -572,9 +572,6 @@ class Layer(G3WACLModelMixins, models.Model):
 
         sm = layer.styleManager()
 
-        if sm.currentStyle() == style:
-            return False
-
         # Validate!
         doc = QDomDocument('qgis')
         if not doc.setContent(qml)[0]:
@@ -586,12 +583,17 @@ class Layer(G3WACLModelMixins, models.Model):
 
         del(tmp_layer)
 
-        new_style = QgsMapLayerStyle(qml)
-        result = sm.removeStyle(style) and sm.addStyle(style, new_style)
-
-        assert self.style(style).xmlData() == new_style.xmlData()
+        # If the style is current, just replace it in the layer
+        if sm.currentStyle() == style:
+            return layer.importNamedStyle(doc)[0]
+        else:
+            new_style = QgsMapLayerStyle(qml)
+            result = sm.addStyle(style, new_style)
+            result = sm.removeStyle(
+                style) and sm.addStyle(style, new_style)
 
         if result:
+            assert self.style(style).xmlData() == new_style.xmlData()
             result = result and self.project.update_qgis_project()
 
         return result
@@ -599,7 +601,7 @@ class Layer(G3WACLModelMixins, models.Model):
     def delete_style(self, style):
         """Deletes a style
 
-        :param style: name of the style to delete (must not be the current style)
+        :param style: name of the style to delete
         :type style: str
         :return: True on success
         :rtype: bool
@@ -610,9 +612,6 @@ class Layer(G3WACLModelMixins, models.Model):
             return False
 
         sm = layer.styleManager()
-
-        if sm.currentStyle() == style:
-            return False
 
         result = sm.removeStyle(style)
 
