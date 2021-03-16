@@ -49,6 +49,9 @@ Default is `['shp', 'xls']`, set download data format. Values possible:
 Default is `False`, set tot `True` to activate reset user password by email workflow.
 If set to True remember to set Django emailing settings (https://docs.djangoproject.com/en/2.2/topics/email/).
 
+``CLIENT_OWS_METHOD``
+^^^^^^^^^^^^^^^^^^^^^
+Default is `'GET'`, set to `'POST'` to change default http call method.
 
 
 Frontend portal setting
