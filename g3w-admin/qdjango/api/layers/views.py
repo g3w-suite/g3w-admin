@@ -255,8 +255,7 @@ class LayerStyleDetailView(LayerStyleBaseView):
             'qml': '<uploaded QML>'
         }
 
-        Note: is is not possible to change the name of the current style and
-        it is not possible to change the "current" status from True to False, it is
+        Note: it is not possible to change the "current" status from True to False, it is
         only possible to change the "current" status from False to True.
 
         :param layer_id: QDjango Layer object pk
@@ -302,15 +301,14 @@ class LayerStyleDetailView(LayerStyleBaseView):
             raise ValidationError(
                 _('Either "name" or "current" or "qml" needs to be specified.'))
 
-        try:
-            is_current = [s for s in layer.styles if s['name']
-                          == style_name][0]['current']
-        except:
-            raise StyleNotFoundError()
+        found = False
+        for s in layer.styles:
+            if s['name'] == style_name:
+                found = True
+                break
 
-        if is_current:
-            raise ValidationError(
-                _('Modifications of the current style are not allowed.'))
+        if not found:
+            raise StyleNotFoundError()
 
         if new_name is not None and new_name != style_name:
             result = layer.rename_style(style_name, new_name)
