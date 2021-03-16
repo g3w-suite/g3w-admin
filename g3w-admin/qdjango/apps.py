@@ -1,6 +1,5 @@
 import logging
 import os
-import threading
 
 from core.utils.general import getAuthPermissionContentType
 from django.apps import AppConfig, apps
@@ -34,44 +33,38 @@ if hasattr(settings, 'QGIS_AUTH_PASSWORD_FILE') and settings.QGIS_AUTH_PASSWORD_
         except Exception as ex:
             raise ImproperlyConfigured('Error creating QGIS_AUTH_PASSWORD_FILE %s: %s' % (
                 settings.QGIS_AUTH_PASSWORD_FILE, ex))
+    os.environ['QGIS_AUTH_PASSWORD_FILE'] = settings.QGIS_AUTH_PASSWORD_FILE
 
 
-# Django runserver autoreload loads this module first from
-# a separate thread, we don't want to initialize QGIS from
-# that thread, delay initialization to the main thread
+# Required only if the installation is not in the default path
+# or if virtualenv messes up with the paths
+QgsApplication.setPrefixPath("/usr", True)
 
-QGS_SERVER_SETTINGS = None
-QGS_SERVER = None
-QGS_APPLICATION = None
+# create a reference to the QgsApplication
+# setting the second argument to True enables the GUI, which we do not need to do
+# since this is a custom application
+QGS_APPLICATION = QgsApplication([], False)
 
-def init_qgis():
-    """Initialize QGIS application and QGIS Server"""
+# load providers
+QGS_APPLICATION.initQgis()
 
-    global QGS_SERVER_SETTINGS, QGS_SERVER, QGS_APPLICATION
+if hasattr(settings, 'QGIS_AUTH_PASSWORD') and settings.QGIS_AUTH_PASSWORD:
+    if not QgsApplication.authManager().setMasterPassword(settings.QGIS_AUTH_PASSWORD, True):
+        raise ImproperlyConfigured(
+            'Error setting QGIS Auth DB master password from settings.QGIS_AUTH_PASSWORD')
 
-    # Required only if the installation is not in the default path
-    # or if virtualenv messes up with the paths
-    QgsApplication.setPrefixPath("/usr", True)
 
-    # create a reference to the QgsApplication
-    # setting the second argument to True enables the GUI, which we do not need to do
-    # since this is a custom application
-    QGS_APPLICATION = QgsApplication([], False)
+# Do any environment manipulation here, before we create the server
+# and the settings are read
+os.environ['QGIS_SERVER_IGNORE_BAD_LAYERS'] = '1'
 
-    # load providers
-    QGS_APPLICATION.initQgis()
+QGS_SERVER_SETTINGS = QgsServerSettings()
+QGS_SERVER_SETTINGS.load()
 
-    # Do any environment manipulation here, before we create the server
-    # and the settings are read
-    os.environ['QGIS_SERVER_IGNORE_BAD_LAYERS'] = '1'
-
-    QGS_SERVER_SETTINGS = QgsServerSettings()
-    QGS_SERVER_SETTINGS.load()
-
-    # Create a singleton server instance, this is not really necessary but it
-    # may be a little faster than creating a new instance every time we handle
-    # a request
-    QGS_SERVER = QgsServer()
+# Create a singleton server instance, this is not really necessary but it
+# may be a little faster than creating a new instance every time we handle
+# a request
+QGS_SERVER = QgsServer()
 
 
 def get_qgs_project(path):
@@ -167,8 +160,6 @@ class QdjangoConfig(AppConfig):
     icon = 'qdjango/img/qgis-icon32.png'
 
     def ready(self):
-
-        init_qgis()
 
         post_migrate.connect(GiveBaseGrant, sender=self)
 
