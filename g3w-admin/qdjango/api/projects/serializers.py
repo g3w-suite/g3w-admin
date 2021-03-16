@@ -222,19 +222,15 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
         return metadata
 
-    def get_filtertoken(self):
-        """Check session token filter ad layer if it is set"""
+    def reset_filtertoken(self):
+        """Check session token filter ad delete it"""
 
         try:
             stf = SessionTokenFilter.objects.get(
                 sessionid=self.request.COOKIES[settings.SESSION_COOKIE_NAME])
+            stf.delete()
         except SessionTokenFilter.DoesNotExist:
             return None
-
-        return {
-            'token': stf.token,
-            'layers': [l.layer.qgs_layer_id for l in stf.stf_layers.all()]
-        }
 
     def to_representation(self, instance):
         logging.warning('Serializer')
@@ -362,9 +358,8 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
         ret['search_endpoint'] = settings.G3W_CLIENT_SEARCH_ENDPOINT
 
-        # add tokenfilter by session
-        # remove at 2021/01/12<
-        #ret['filtertoken'] = self.get_filtertoken()
+        # reset tokenfilter by session
+        self.reset_filtertoken()
 
         return ret
 

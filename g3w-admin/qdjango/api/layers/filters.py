@@ -124,8 +124,6 @@ class SingleLayerSessionTokenFilter(BaseFilterBackend):
         string) make sure to restore the original state or to work on a clone.
         """
 
-        sessionid = request.COOKIES[settings.SESSION_COOKIE_NAME]
-
         if request.method == 'POST':
             request_data = request.data
         else:
