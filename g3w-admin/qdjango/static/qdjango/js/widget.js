@@ -133,6 +133,8 @@ ga.Qdjango.widgetEditor = {
 					if (dependance) {
 						options['dependance'] = dependance;
 					}
+					options['numdigaut'] = v.find(".cmpNumDigAutocomplete").find("input").val();
+
 					obj.fields.push({
 						name: v.find(".fieldSelect").find("select").val(), // NOME DEL CAMPO DB
 						label: v.find(".textInput").find("input").val(), // ETICHETTA DEL CAMPO DI RICERCA
@@ -292,7 +294,10 @@ ga.Qdjango.widgetEditor = {
 		
 		var blTeVa = (that.isset(values) && that.isset(values.blanktext))? values.blanktext : "";
 		var descriptionInput = $('<input class="form-control" type="text" name="searchfield_description" value="'+blTeVa+'" >');
-		
+
+		var numDigAut = (that.isset(values) && that.isset(values.input.options.numdigaut))? values.input.options.numdigaut : "2";
+		var cmpNumDigAutocomplete = $('<input class="form-control" type="text" name="num_dig_autcomplete" value="'+numDigAut+'" >');
+
 		var cmpOperatorSelect = $('<select class="form-control" name="comparison_operator">\
 										<option value="eq">= ('+gettext("equal")+')</option>\
 										<option value="gt">&gt; ('+gettext("greater than")+')</option>\
@@ -383,6 +388,13 @@ ga.Qdjango.widgetEditor = {
 								</div>\
 								<div class="row">\
 									<div class="col-md-3">\
+										<div class="controls cmpNumDigAutocomplete" style="display: none;">\
+											<label class="control-label">'+gettext("Number of digits")+'</label>\
+										</div>\
+									</div>\
+								</div>\
+								<div class="row">\
+									<div class="col-md-3">\
 										<div class="controls cmpOperatorSelect">\
 											<label class="control-label">'+gettext("Comparison operator")+'</label>\
 										</div>\
@@ -418,8 +430,9 @@ ga.Qdjango.widgetEditor = {
 			$(".logic_operator").last().fadeOut(that.fadeNumber);
 		});
 		div.find(".fieldSelect").append(fieldSelect);
-		div.find(".textInput").append(textInput).append('<div class="help-block">'+gettext("Alias field name fro client search input")+'</div>');
+		div.find(".textInput").append(textInput).append('<div class="help-block">'+gettext("Alias field name for client search input")+'</div>');
 		div.find(".descriptionInput").append(descriptionInput);
+		div.find(".cmpNumDigAutocomplete").append(cmpNumDigAutocomplete);
 		div.find(".cmpOperatorSelect").append(cmpOperatorSelect);
 		div.find(".cmpDependanceSelect").append(cmpDependanceSelect);
 		div.find(".widgetType").append(widgetSelect);
@@ -429,6 +442,7 @@ ga.Qdjango.widgetEditor = {
 
 		widgetSelect.on('change', function(){
 			var $select = div.find(".cmpDependanceSelect");
+			var $numdigaut = div.find(".cmpNumDigAutocomplete");
 			var $advise = div.find(".advise");
 			if ($(this).val() == 'selectbox' || $(this).val() == 'autocompletebox') {
 				div.find(".cmpDependanceSelectLabel").removeClass('invisible');
@@ -441,14 +455,19 @@ ga.Qdjango.widgetEditor = {
 
 				if ($(this).val() == 'selectbox') {
 					// show advise msg
+					$numdigaut.hide();
 					$advise.show();
 					$advise.find('div').html("<strong>"+gettext('Attention')+"!</strong><br>" +
 						gettext('Fields with many unique values can create slow map loading behavior'));
+				} else {
+					$numdigaut.show();
+					$advise.hide();
 				}
 
 			} else {
 				div.find(".cmpDependanceSelectLabel").addClass('invisible');
 				$select.addClass('invisible');
+				$numdigaut.hide();
 				$advise.hide();
 			}
 		});
