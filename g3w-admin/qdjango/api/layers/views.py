@@ -70,12 +70,12 @@ class LayerUserInfoAPIView(generics.ListAPIView):
 
                 # get viewer users with change_layer grant
                 qs = get_viewers_for_object(layer, self.request.user, 'change_layer',
-                                                with_anonymous=with_anonymous)
+                                            with_anonymous=with_anonymous)
             else:
 
                 # get viewer users with view_project and change_layer
                 qs = get_viewers_for_object(layer.project, self.request.user, 'view_project',
-                                                 with_anonymous=with_anonymous)
+                                            with_anonymous=with_anonymous)
 
         else:
             qs = []
@@ -109,11 +109,13 @@ class LayerAuthGroupInfoAPIView(generics.ListAPIView):
             if context == 'e':
 
                 # get viewer user groups with change_layer grant
-                qs = get_user_groups_for_object(layer, self.request.user, 'change_layer', 'viewer')
+                qs = get_user_groups_for_object(
+                    layer, self.request.user, 'change_layer', 'viewer')
             else:
 
                 # get viewer user groups with view_project and change_layer
-                qs = get_user_groups_for_object(layer.project, self.request.user, 'view_project', 'viewer')
+                qs = get_user_groups_for_object(
+                    layer.project, self.request.user, 'view_project', 'viewer')
         else:
             qs = None
         return qs
@@ -138,14 +140,15 @@ class LayerStyleBaseView(G3WAPIView):
 
         layer = get_object_or_404(Layer, pk=layer_id)
 
-        if not style_name:
-            return Response({'result': True, 'styles': layer.styles}, content_type='application/json')
+        if style_name is None or style_name == '':
+            return Response({'result': True, 'styles': layer.styles})
         else:
+            style_name = unquote(style_name)
             for s in layer.styles:
                 if s['name'] == style_name:
-                    return Response({'result': True, 'style': s}, content_type='application/json')
+                    return Response({'result': True, 'style': s})
 
-        return Response({'error': _('Style not found.')}, status=status.HTTP_404_NOT_FOUND, content_type='application/json')
+        return Response({'error': _('Style not found.')}, status=status.HTTP_404_NOT_FOUND)
 
 
 class LayerStyleListView(LayerStyleBaseView):
@@ -209,7 +212,7 @@ class LayerStyleListView(LayerStyleBaseView):
             raise StyleConflictError()
 
         if layer.add_style(name, qml):
-            return Response({'result': True}, content_type='application/json', status=status.HTTP_201_CREATED)
+            return Response({'result': True}, status=status.HTTP_201_CREATED)
         else:
             raise ValidationError(_('Error creating new style'))
 
