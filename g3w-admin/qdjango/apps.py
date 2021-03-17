@@ -36,10 +36,6 @@ if hasattr(settings, 'QGIS_AUTH_PASSWORD_FILE') and settings.QGIS_AUTH_PASSWORD_
     os.environ['QGIS_AUTH_PASSWORD_FILE'] = settings.QGIS_AUTH_PASSWORD_FILE
 
 
-# Required only if the installation is not in the default path
-# or if virtualenv messes up with the paths
-QgsApplication.setPrefixPath("/usr", True)
-
 # create a reference to the QgsApplication
 # setting the second argument to True enables the GUI, which we do not need to do
 # since this is a custom application
@@ -82,10 +78,6 @@ def get_qgs_project(path):
         # Call process events in case the project has been updated and the cache
         # needs rebuilt
         QgsApplication.instance().processEvents()
-        if settings.DEBUG:
-            QgsConfigCache.instance().removeEntry(path)
-            QGS_SERVER.serverInterface().capabilitiesCache().removeCapabilitiesDocument(path)
-            logger.warning('settings.DEBUG is True: QGIS project loaded from disk!')
 
         project = QgsConfigCache.instance().project(path, QGS_SERVER_SETTINGS)
 
