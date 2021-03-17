@@ -8,11 +8,29 @@ from core.signals import perform_client_search, post_delete_project
 from core.models import ProjectMapUrlAlias
 from OWS.utils.data import GetFeatureInfoResponse
 from .models import Project, Layer, Widget, SessionTokenFilter
+from .signals import post_save_qdjango_project_file
 from .ows import OWSRequestHandler
 import os
 import logging
 
 logger = logging.getLogger('django.request')
+
+
+# Method to invalidate QGIS Server internal caches in development mode:
+# this happens automatically in production servers but it doesn't work
+# with Django's runserver due to threading issues and automatic reload"""
+if settings.DEBUG:
+    @receiver(post_save_qdjango_project_file)
+    def remove_project_from_cache(sender, **kwargs):
+
+        from qdjango.apps import QGS_SERVER, QgsConfigCache
+        from qdjango.utils.data import QgisProject
+        if not isinstance(sender, QgisProject):
+            return
+        path = sender.instance.qgis_file.path
+        QgsConfigCache.instance().removeEntry(path)
+        QGS_SERVER.serverInterface().capabilitiesCache().removeCapabilitiesDocument(path)
+        logging.getLogger('g3wadmin.debug').warning('settings.DEBUG is True: QGIS Server cached project invalidated: %s' % path)
 
 
 @receiver(post_delete, sender=Project)

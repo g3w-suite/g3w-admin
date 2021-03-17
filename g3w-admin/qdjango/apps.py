@@ -3,11 +3,12 @@ import os
 
 from core.utils.general import getAuthPermissionContentType
 from django.apps import AppConfig, apps
+from django.dispatch import receiver
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.db.models.signals import post_migrate
 from qgis.core import QgsApplication, QgsProject
-from qgis.server import QgsConfigCache, QgsServer, QgsServerSettings
+from qgis.server import QgsServer, QgsServerSettings, QgsConfigCache
 from usersmanage.configs import *
 
 logger = logging.getLogger(__name__)
