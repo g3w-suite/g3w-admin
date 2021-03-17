@@ -108,7 +108,7 @@
                             <th style="width:100px">{% trans 'WMS External' %}</th>
                             {% endif %}
                             <th style="width: 40px">WFS</th>
-                            <th style="min-width:140px; width:220px;">Actions</th>
+                            <th style="min-width:200px; width:240px;">Actions</th>
                             {% if "change_project" in userPrj_perms %}
                             <th style="width:40px">{% trans 'No legend' %}</th>
                             {% if 'shp' in SETTINGS.G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS %}
@@ -159,17 +159,17 @@
                                         {{ action }}
                                     {% endfor %}
                                     {% if object.layer_type in type_layer_for_widget %}
-                                    <span class="col-xs-2 icon">
+                                    <span class="col-xs-1 icon">
                                         <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Manage alphanumeric visualization and editing constraints' %}" data-widget-type="singlelayerConstraintsList" data-singlelayerconstraints-layer-pk="{{ object.pk }}" data-singlelayerconstraints-list-url="{% url 'qdjango-constraint-api-filter-by-layer-id' object.pk %}" ><i class="fa fa-filter"></i>
                                             <span class="label label-info label-action-layer">{{ object.getConstraintsNumber }}</span>
                                         </a>
                                     </span>
-                                    <span class="col-xs-2 icon">
+                                    <span class="col-xs-1 icon">
                                         <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Widgets list' %}" data-widget-type="detailItemDataTable" data-detail-url="{% url 'qdjango-project-layer-widgets' group.slug object.project.slug object.slug %}" ><i class="ion ion-gear-b"></i>
                                             <span class="label label-info label-action-layer">{{ object.getWidgetsNumber }}</span></a>
 
                                     </span>
-                                    <span class="col-xs-2 icon">
+                                    <span class="col-xs-1 icon">
                                         <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Manage layer styles' %}" data-widget-type="styleManagerList" data-stylemanager-layer-pk="{{ object.pk }}" data-stylemanager-list-url="{% url 'qdjango-style-list-api' object.pk %}" ><i class="fa fa-paint-brush"></i>
                                             <span class="label label-info label-action-layer">{{ object.styles_count }}</span>
                                         </a>
