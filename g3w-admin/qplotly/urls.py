@@ -13,11 +13,14 @@ __copyright__ = 'Copyright 2015 - 2020, Gis3w'
 from django.conf.urls import url
 from django.contrib.auth.decorators import login_required
 
-from .views import QplotlyLinkWidget2LayerView, QplotlyDownloadView
+from .views import QplotlyLinkWidget2LayerView, QplotlyDownloadView, QplotlyWidgetShowOnStartClientView
 
 urlpatterns = [
     url(r'^layer/(?P<layer_pk>\d+)/widgets/link/(?P<pk>\d+)/$',
         login_required(QplotlyLinkWidget2LayerView.as_view()), name='qplotly-project-layer-widget-link'),
+    url(r'^showonstartclient/(?P<pk>\d+)/$',
+        login_required(QplotlyWidgetShowOnStartClientView.as_view()),
+        name='qplotly-project-layer-widget-showonstartclient'),
     url(r'^download/xml/(?P<pk>\d+)/$', login_required(QplotlyDownloadView.as_view()),
         name='qplotly-download-xml')
 ]
