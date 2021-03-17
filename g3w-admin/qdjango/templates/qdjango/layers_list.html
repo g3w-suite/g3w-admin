@@ -191,7 +191,7 @@
                             {% if 'gpkg' in SETTINGS.G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS %}
                             <td>
                                 {% if object.layer_type in type_layer_for_download %}
-                                <input type="checkbox" data-widget-type="downloadLayer" data-ajax-url="{% url 'qdjango-project-layers-data-editing' project.group.slug project.slug object.pk %}" name="download_gpkg_{{ object.pk }}" {% if object.download %}checked="checked"{% endif %}>
+                                <input type="checkbox" data-widget-type="downloadLayergpkg" data-ajax-url="{% url 'qdjango-project-layers-data-editing' project.group.slug project.slug object.pk %}" name="download_gpkg_{{ object.pk }}" {% if object.download %}checked="checked"{% endif %}>
                                 {% endif %}
                             </td>
                             {% endif %}
