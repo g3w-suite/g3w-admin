@@ -11,6 +11,7 @@ ga.Qplotly = {
             detail: '/' + SITE_PREFIX_URL + 'qplotly/api/widget/detail/',
             link: '/' + SITE_PREFIX_URL + 'qplotly/api/widget/detail/',
             download: '/' + SITE_PREFIX_URL + 'qplotly/download/xml/',
+            showonstartclient: '/' + SITE_PREFIX_URL + 'qplotly/download/xml/',
         }
     }
 };
@@ -21,10 +22,10 @@ ga.Qplotly = {
 _.extend(g3wadmin.ui, {
 
    initShowOnStartClient: function() {
-        $(document).on('ifChecked', '[data-widget-type="ShowOnStartClient"]', function(e){
-            ga.widget.ShowOnStartClient($(this));
-        }).on('ifUnchecked', '[data-widget-type="ShowOnStartClient"]', function(e){
-            ga.widget.ShowOnStartClient($(this), false);
+        $(document).on('ifChecked', '[data-widget-type="showOnStartClient"]', function(e){
+            ga.widget.showOnStartClient($(this));
+        }).on('ifUnchecked', '[data-widget-type="showOnStartClient"]', function(e){
+            ga.widget.showOnStartClient($(this), false);
         });
     },
 
@@ -39,17 +40,21 @@ _.extend(g3wadmin.widget, {
         'qplotlywidget-project-pk',
 	],
 
-    ShowOnStartClient: function($item, linked) {
+    _showOnStartClient: [
+        'ajax-url',
+    ],
+
+    showOnStartClient: function($item, linked) {
 
         try {
-            var params = ga.utils.getDataAttrs($item, this._linkWidget2Layer);
+            var params = ga.utils.getDataAttrs($item, this._showOnStartClient);
             if (_.isUndefined(params['ajax-url'])) {
                 throw new Error('Attribute data-ajax-url not defined');
             }
 
             var data = {};
             if (!_.isUndefined(linked) && !linked) {
-                data['unlink'] = 'unlink';
+                data['show'] = '0';
             }
 
             $.ajax({
@@ -125,13 +130,13 @@ _.extend(g3wadmin.widget, {
                     'downloadUrl': '/' + CURRENT_LANGUAGE_CODE + ga.Qplotly.urls.widget.download + v['pk'] + '/'
             })+'</td>\n' +
             '                <td><input type="checkbox" name="show_on_start_client" value="1" '+show_on_start_client_checked+' ' +
-                            'data-widget-type="linkWidget2Layer" ' +
-                            'data-ajax-url="/'+CURRENT_LANGUAGE_CODE+'/'+SITE_PREFIX_URL + 'qplotly/layer/'+layer_pk+'/widgets/link/'+v['pk']+'/" /></td>\n' +
+                            'data-widget-type="showOnStartClient" ' +
+                            'data-ajax-url="/'+CURRENT_LANGUAGE_CODE+'/'+SITE_PREFIX_URL + 'qplotly/showonstartclient/'+v['pk']+'/" /></td>\n' +
             '                <td>'+v['title']+'</td>\n' +
 			'                <td>'+v['type']+'</td>\n' +
             '                <td>'+from_project+'</td>\n' +
             '                <td><input type="checkbox" name="linked" value="1" '+checked+' ' +
-                            'data-widget-type="ShowOnStartClient" ' +
+                            'data-widget-type="linkWidget2Layer" ' +
                             'data-ajax-url="/'+CURRENT_LANGUAGE_CODE+'/'+SITE_PREFIX_URL + 'qplotly/layer/'+layer_pk+'/widgets/link/'+v['pk']+'/" /></td>\n' +
             '            </tr>\n');
         });
@@ -365,5 +370,6 @@ $(document).ready(function() {
     $('[data-widget-type="qplotlyWidgetList"]').on('click', function (e) {
         var $datatable = $(this).parents('table').DataTable();
         ga.widget.qplotlyWidgetList($datatable, $(this));
+        ga.ui.initShowOnStartClient();
     });
 });

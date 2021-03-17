@@ -44,11 +44,12 @@ class QplotlyLinkWidget2LayerView(QdjangoLayerViewMixin, View):
         else:
             self.widget.layers.remove(self.layer)
 
-class QplotlyWidgetShowOnStartClientView(QdjangoLayerViewMixin, View):
+class QplotlyWidgetShowOnStartClientView(View):
     """
     Set on true or false show_on_start_client model property.
     """
     def get(self, *args, **kwargs):
+
         self.widget = get_object_or_404(QplotlyWidget, pk=kwargs['pk'])
         try:
             self.show_on_start_client(show=(not 'show' in self.request.GET))
@@ -56,16 +57,11 @@ class QplotlyWidgetShowOnStartClientView(QdjangoLayerViewMixin, View):
         except Exception as e:
             return JsonResponse({'status': 'error', 'errors_form': e.message})
 
-    def linkUnlinkWidget(self, link=True):
+    def show_on_start_client(self, show=True):
 
-        # apply check datasourc only for postgres and spatialite
-        if self.layer.layer_type in ('postgres', 'spatialite') \
-                and not comparedbdatasource(self.layer.datasource, self.widget.datasource, self.layer.layer_type):
-            raise Exception('Datasource of widget is different from layer datasource')
-        if link:
-            self.widget.layers.add(self.layer)
-        else:
-            self.widget.layers.remove(self.layer)
+        self.widget.show_on_start_client = show
+        self.widget.save()
+
 
 
 class QplotlyDownloadView(VirtualDownloadView):
