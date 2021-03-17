@@ -99,9 +99,9 @@ urlpatterns = [
 
 # Layer style manager
 urlpatterns += [
-    url(r'^api/layerstyles/(?P<layer_id>[\d]+)/$',
+    url(r'^api/layerstyles/(?P<layer_id>\d+)/$',
         login_required(LayerStyleListView.as_view()), name='qdjango-style-list-api'),
-    url(r'^api/layerstyles/(?P<layer_id>[\d]+)/(?P<style_name>\w+)/$',
+    url(r'^api/layerstyles/(?P<layer_id>\d+)/(?P<style_name>[\w%-]+)/$',
         login_required(LayerStyleDetailView.as_view()), name='qdjango-style-detail-api'),
 ]
 

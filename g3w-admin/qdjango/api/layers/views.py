@@ -12,6 +12,7 @@ __copyright__ = 'Copyright 2015 - 2020, Gis3w'
 
 
 import base64
+from urllib.parse import unquote
 from core.api.authentication import CsrfExemptSessionAuthentication
 from core.api.views import G3WAPIView
 from django.conf import settings
@@ -267,6 +268,7 @@ class LayerStyleDetailView(LayerStyleBaseView):
         :raises LayerNotFoundException
         """
 
+        style_name = unquote(style_name)
         layer = get_object_or_404(Layer, pk=layer_id)
 
         result = True
@@ -340,6 +342,8 @@ class LayerStyleDetailView(LayerStyleBaseView):
         """
 
         layer = get_object_or_404(Layer, pk=layer_id)
+
+        style_name = unquote(style_name)
 
         if layer.delete_style(style_name):
             return Response({'result': True})

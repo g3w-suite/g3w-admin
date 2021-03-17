@@ -222,7 +222,6 @@ class LayerStylesApiTest(QdjangoTestBase):
         self.assertEqual(
             style1_xml, self.qdjango_layer.style('style2').xmlData())
 
-
     def test_style_delete(self):
         """Test delete style"""
 
@@ -453,6 +452,41 @@ class LayerStylesApiTest(QdjangoTestBase):
         response = self.client.delete(
             reverse('qdjango-style-detail-api', args=(layer_id, 'style1')))
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(self.qdjango_layer.styles, [
+                         {'name': 'style1', 'current': True}])
+
+    def test_rename_space(self):
+        """Test rename with spaces"""
+
+        self.assertTrue(self.client.login(
+            username='admin01', password='admin01'))
+        layer_id = self.qdjango_layer.pk
+
+        data = {
+            'name': 'style2 space'
+        }
+        response = self.client.patch(
+            reverse('qdjango-style-detail-api', args=(layer_id, 'style2')), data=data)
+        self.assertEqual(response.status_code,
+                         status.HTTP_200_OK)
+        self.assertEqual(self.qdjango_layer.styles, [
+                         {'name': 'style1', 'current': False}, {'current': True, 'name': 'style2 space'}])
+
+        data = {
+            'name': 'style2'
+        }
+        response = self.client.patch(
+            reverse('qdjango-style-detail-api', args=(layer_id, r'style2%20space')), data=data)
+        self.assertEqual(self.qdjango_layer.styles, [
+                         {'current': False, 'name': 'style1'}, {'current': True, 'name': 'style2'}])
+
+        self.qdjango_layer.rename_style('style2', 'style2 space')
+
+        response = self.client.delete(
+            reverse('qdjango-style-detail-api', args=(layer_id, r'style2%20space')))
+        self.assertEqual(response.status_code,
+                         status.HTTP_200_OK)
+
         self.assertEqual(self.qdjango_layer.styles, [
                          {'name': 'style1', 'current': True}])
 
