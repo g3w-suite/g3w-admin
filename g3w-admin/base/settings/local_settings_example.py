@@ -45,6 +45,17 @@ TILESTACHE_CACHE_TYPE = 'Disk'  # or 'Memcache'
 TILESTACHE_CACHE_DISK_PATH = '/tmp/tilestache_cache/'
 TILESTACHE_CACHE_TOKEN = '1234567'
 
+# OPENROUTESERVICE SETTINGS
+# ===============================
+# follow settings work if 'openrouteservice' module is in 'G3WADMIN_LOCAL_MORE_APPS'
+# ORS API endpoint
+ORS_API_ENDPOINT = 'http://localhost:8080/ors/v2/'
+# Optional, can be blank if the key is not required by the endpoint
+ORS_API_KEY = ''
+# List of available ORS profiles
+ORS_PROFILES = ("driving-car", "driving-hgv")
+
+
 ALLOWED_HOSTS = "*"
 
 LOGGING = {
@@ -108,7 +119,7 @@ LOGGING = {
 
 SESSION_COOKIE_NAME = '<unique_session_id>'
 
-TEST_RUNNER='qdjango.tests.runner.G3wSuiteTestRunner'
+TEST_RUNNER = 'qdjango.tests.runner.G3wSuiteTestRunner'
 
 # Celery is required for CSW Catalog module (optional)
 BROKER_URL = 'amqp://guest:guest@localhost:5672//'

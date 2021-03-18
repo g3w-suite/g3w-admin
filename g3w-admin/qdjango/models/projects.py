@@ -457,7 +457,6 @@ class Layer(G3WACLModelMixins, models.Model):
         """
 
         layer = None
-        from qdjango.apps import get_qgs_project
         try:
             return self.project.qgis_project.mapLayers()[self.qgs_layer_id]
         except:

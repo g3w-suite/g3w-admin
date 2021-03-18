@@ -83,16 +83,17 @@ __date__ = '2021-03-09'
 __copyright__ = 'Copyright 2021, ItOpen'
 
 
-
 import json
 import os
 import re
+import copy
 from io import StringIO
 from unittest import skip, skipIf
 
 from core.models import G3WSpatialRefSys
 from core.models import Group as CoreGroup
 from django.conf import settings
+from django.shortcuts import get_object_or_404
 from django.core.files import File
 from django.core.management import call_command
 from django.test import Client, override_settings
@@ -103,12 +104,14 @@ from qdjango.models import (ConstraintExpressionRule,
                             ConstraintSubsetStringRule, Layer, Project,
                             SessionTokenFilter, SessionTokenFilterLayer,
                             SingleLayerConstraint)
+from qdjango.tests.base import CURRENT_PATH, QdjangoTestBase, QgisProject
 from qgis.core import Qgis, QgsProject, QgsProviderRegistry, QgsVectorLayer
 from qgis.PyQt.QtCore import QTemporaryDir
 from qgis.PyQt.QtGui import QImage
 from rest_framework.test import APIClient
+from vcr_unittest import VCRMixin
 
-from qdjango.tests.base import CURRENT_PATH, QdjangoTestBase, QgisProject
+temp_datasource = QTemporaryDir()
 
 
 @override_settings(CACHES={
@@ -120,7 +123,8 @@ from qdjango.tests.base import CURRENT_PATH, QdjangoTestBase, QgisProject
     LANGUAGE_CODE='en',
     LANGUAGES=(
         ('en', 'English'),
-)
+),
+    DATASOURCE_PATH=temp_datasource.path()
 )
 class OpenrouteserviceTest(QdjangoTestBase):
     """Test proxy to QgsServer"""
@@ -142,11 +146,13 @@ class OpenrouteserviceTest(QdjangoTestBase):
 
         conn = md.createConnection(conn_str, {})
 
-        conn.executeSql("DROP TABLE IF EXISTS openrouteservice_poly_not_compatible")
+        conn.executeSql(
+            "DROP TABLE IF EXISTS openrouteservice_poly_not_compatible")
         conn.executeSql(
             "CREATE TABLE openrouteservice_poly_not_compatible ( pk SERIAL NOT NULL, name TEXT, geom GEOMETRY(POLYGON, 4326), PRIMARY KEY ( pk ) )")
 
-        conn.executeSql("DROP TABLE IF EXISTS openrouteservice_point_not_compatible")
+        conn.executeSql(
+            "DROP TABLE IF EXISTS openrouteservice_point_not_compatible")
         conn.executeSql(
             "CREATE TABLE openrouteservice_point_not_compatible ( pk SERIAL NOT NULL, value INTEGER, group_index INTEGER, area NUMERIC, reachfactor NUMERIC, total_pop INTEGER, geom GEOMETRY(POINT, 4326), PRIMARY KEY ( pk ) )")
 
@@ -154,7 +160,8 @@ class OpenrouteserviceTest(QdjangoTestBase):
         conn.executeSql(
             "CREATE TABLE openrouteservice_compatible ( pk SERIAL NOT NULL, value INTEGER, group_index INTEGER, area NUMERIC, reachfactor NUMERIC, total_pop INTEGER, geom GEOMETRY(POLYGON, 4326), PRIMARY KEY ( pk ) )")
 
-        conn.executeSql("DROP TABLE IF EXISTS openrouteservice_compatible_3857")
+        conn.executeSql(
+            "DROP TABLE IF EXISTS openrouteservice_compatible_3857")
         conn.executeSql(
             "CREATE TABLE openrouteservice_compatible_3857 ( pk SERIAL NOT NULL, value INTEGER, group_index INTEGER, area NUMERIC, reachfactor NUMERIC, total_pop INTEGER, geom GEOMETRY(POLYGON, 3875), PRIMARY KEY ( pk ) )")
 
@@ -163,13 +170,14 @@ class OpenrouteserviceTest(QdjangoTestBase):
         project = QgsProject()
 
         for table_name, table_spec in {
-                'openrouteservice_poly_not_compatible': ('Polygon', 4326),
-                'openrouteservice_point_not_compatible': ('Point', 4326),
-                'openrouteservice_compatible': ('Polygon', 4326),
-                'openrouteservice_compatible_3857': ('Polygon', 3857),
-            }.items():
+            'openrouteservice_poly_not_compatible': ('Polygon', 4326),
+            'openrouteservice_point_not_compatible': ('Point', 4326),
+            'openrouteservice_compatible': ('Polygon', 4326),
+            'openrouteservice_compatible_3857': ('Polygon', 3857),
+        }.items():
             layer_uri = conn_str + \
-            " sslmode=disable key='pk' estimatedmetadata=true srid={srid} type={geometry_type} checkPrimaryKeyUnicity='0' table=\"public\".\"{table_name}\" (geom)".format(table_name=table_name, geometry_type=table_spec[0], srid=table_spec[1])
+                " sslmode=disable key='pk' estimatedmetadata=true srid={srid} type={geometry_type} checkPrimaryKeyUnicity='0' table=\"public\".\"{table_name}\" (geom)".format(
+                    table_name=table_name, geometry_type=table_spec[0], srid=table_spec[1])
             layer = QgsVectorLayer(layer_uri, table_name, 'postgres')
             assert layer.isValid()
             cls.layer_specs[table_name] = layer_uri
@@ -202,7 +210,8 @@ class OpenrouteserviceTest(QdjangoTestBase):
     def tearDownClass(cls):
         super().tearDownClass()
         iface = QGS_SERVER.serverInterface()
-        iface.removeConfigCacheEntry(cls.qdjango_project.qgis_project.fileName())
+        iface.removeConfigCacheEntry(
+            cls.qdjango_project.qgis_project.fileName())
 
     def _testApiCall(self, view_name, args, kwargs={}, status_auth=200, login=True, logout=True):
         """Utility to make test calls for admin01 user"""
@@ -211,7 +220,7 @@ class OpenrouteserviceTest(QdjangoTestBase):
         if kwargs:
             path += '?'
             parts = []
-            for k,v in kwargs.items():
+            for k, v in kwargs.items():
                 parts.append(k + '=' + v)
             path += '&'.join(parts)
 
@@ -222,9 +231,9 @@ class OpenrouteserviceTest(QdjangoTestBase):
 
         # Auth
         if login:
-            self.assertTrue(self.client.login(username='admin01', password='admin01'))
+            self.assertTrue(self.client.login(
+                username='admin01', password='admin01'))
         response = self.client.get(path)
-        self.assertEqual(response.status_code, status_auth)
         if logout:
             self.client.logout()
         return response
@@ -236,20 +245,22 @@ class OpenrouteserviceTest(QdjangoTestBase):
         if kwargs:
             path += '?'
             parts = []
-            for k,v in kwargs.items():
+            for k, v in kwargs.items():
                 parts.append(k + '=' + v)
             path += '&'.join(parts)
 
         # No auth
         if login and logout:
-            response = self.client.post(path, data, content_type='application/json')
+            response = self.client.post(
+                path, data, content_type='application/json')
             self.assertIn(response.status_code, [302, 403])
 
         # Auth
         if login:
-            self.assertTrue(self.client.login(username='admin01', password='admin01'))
-        response = self.client.post(path, data, content_type='application/json')
-        self.assertEqual(response.status_code, status_auth)
+            self.assertTrue(self.client.login(
+                username='admin01', password='admin01'))
+        response = self.client.post(
+            path, data, content_type='application/json')
         if logout:
             self.client.logout()
         return response
@@ -257,33 +268,109 @@ class OpenrouteserviceTest(QdjangoTestBase):
     def test_compatible_layers(self):
         """Test can retrieve compatible layers"""
 
-        response = self._testApiCall('openrouteservice-compatible-layers', [self.qdjango_project.pk])
-        self.assertEqual(response.json()['compatible'], [k for k in self.qdjango_project.qgis_project.mapLayers().keys() if k.startswith('openrouteservice_compatible')])
+        response = self._testApiCall(
+            'openrouteservice-compatible-layers', [self.qdjango_project.pk])
+        self.assertEqual(response.json()['compatible'], [k for k in self.qdjango_project.qgis_project.mapLayers(
+        ).keys() if k.startswith('openrouteservice_compatible')])
         connection = response.json()['connections'][0]
         self.assertEqual(connection['provider'], 'postgres')
-        self.assertTrue(connection['id'].startswith("dbname='test_g3w-admin' host=localhost port=5432"))
-        self.assertEqual(connection['name'], 'test_g3w-admin (postgres host:localhost, port:5432, schema:public)')
+        self.assertTrue(connection['id'].startswith(
+            "dbname='test_g3w-admin' host=localhost port=5432"))
+        self.assertEqual(
+            connection['name'], 'test_g3w-admin (postgres host:localhost, port:5432, schema:public)')
 
     def test_isochrone(self):
         """Test isochrone calls"""
 
-        layer = self.qdjango_project.qgis_project.mapLayersByName('openrouteservice_compatible')[0]
+        layer = self.qdjango_project.qgis_project.mapLayersByName(
+            'openrouteservice_compatible')[0]
+        self.assertEqual(layer.featureCount(), 0)
+
         data = {
-            'layer_id': layer.id(),
+            'qgis_layer_id': layer.id(),
             'connection_id': None,
+            'new_layer_name': None,
+            "profile": "driving-car",
             'ors': {
-                "locations":[[10.859513,43.401984]],
-                "range_type":"time",
-                "range":[480],
-                "interval":60,
-                "location_type":"start",
-                "attributes":[
+                "locations": [[-77.023902, 38.902293]],
+                "range_type": "time",
+                "range": [480],
+                "interval": 60,
+                "location_type": "start",
+                "attributes": [
                     "area",
                     "reachfactor",
                     "total_pop"
                 ]
             }
         }
-        response = self._testPostApiCall('openrouteservice-isochrone', [self.qdjango_project.pk], data)
 
+        # Test wrong location
+        wrong_data = copy.deepcopy(data)
+        wrong_data['ors']['locations'] = [[0, 0]]
+        response = self._testPostApiCall(
+            'openrouteservice-isochrone', [self.qdjango_project.pk], wrong_data)
+        self.assertEqual(response.status_code, 500)
+        jresponse = response.json()
+        self.assertEqual(jresponse['result'], False)
+        self.assertEqual(jresponse['error'],
+                         'Unable to build an isochrone map.')
 
+        # Test correct location
+        response = self._testPostApiCall(
+            'openrouteservice-isochrone', [self.qdjango_project.pk], data)
+        self.assertEqual(response.status_code, 200)
+        jresponse = response.json()
+        self.assertEqual(jresponse['result'], True)
+        self.assertEqual(jresponse['qgis_layer_id'], layer.id())
+        self.assertEqual(layer.featureCount(), 8)
+
+        # Test append correct location
+        data['ors']['locations'] = [[-90.19789, 38.62727]]
+        response = self._testPostApiCall(
+            'openrouteservice-isochrone', [self.qdjango_project.pk], data)
+        self.assertEqual(response.status_code, 200)
+        jresponse = response.json()
+        self.assertEqual(jresponse['result'], True)
+        self.assertEqual(jresponse['qgis_layer_id'], layer.id())
+        self.assertEqual(layer.featureCount(), 16)
+
+    def test_create_new_layer(self):
+        """Test create new layers"""
+
+        def _check_layer(connection_id, new_name):
+
+            data = {
+                'qgis_layer_id': None,
+                'connection_id': connection_id,
+                'new_layer_name': new_name,
+                "profile": "driving-car",
+                'ors': {
+                    "locations": [[-77.023902, 38.902293]],
+                    "range_type": "time",
+                    "range": [480],
+                    "interval": 60,
+                    "location_type": "start",
+                    "attributes": [
+                        "area",
+                        "reachfactor",
+                        "total_pop"
+                    ]
+                }
+            }
+
+            response = self._testPostApiCall(
+                'openrouteservice-isochrone', [self.qdjango_project.pk], data)
+            self.assertEqual(response.status_code, 200)
+            jresponse = response.json()
+            self.assertEqual(jresponse['result'], True)
+            qgis_layer_id = jresponse['qgis_layer_id']
+
+            # Get QGIS Layer
+            qgis_layer = self.qdjango_project.qgis_project.mapLayer(
+                qgis_layer_id)
+            self.assertEqual(qgis_layer.featureCount(), 8)
+
+        _check_layer('__shapefile__', 'isochrone')
+        _check_layer('__geopackage__', 'isochrone')
+        _check_layer('__spatialite__', 'isochrone')
