@@ -162,6 +162,10 @@ class CommonConstraintRule(models.Model):
         :rtype: QuerySet
         """
 
+        # not filter if user is Anonymoususer
+        if user.is_anonymous:
+            return []
+
         constraints = SingleLayerConstraint.objects.filter(layer=layer)
         if not constraints:
             return []
@@ -182,6 +186,10 @@ class CommonConstraintRule(models.Model):
         :return: a list of ConstraintRule
         :rtype: QuerySet
         """
+
+        # not filter if user is Anonymoususer
+        if user.is_anonymous:
+            return []
 
         constraints = SingleLayerConstraint.objects.filter(
             layer=layer, active=True)
@@ -230,6 +238,9 @@ class CommonConstraintRule(models.Model):
         :rtype: str
         """
 
+        # not filter if user is Anonymoususer
+        if user.is_anonymous:
+            return ""
 
         try:
             constraints = SingleLayerConstraint.objects.filter(
