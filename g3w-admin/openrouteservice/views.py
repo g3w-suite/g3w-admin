@@ -100,7 +100,7 @@ class OpenrouteServiceIsochroneView(View):
         if qgis_layer_id:
             qgis_layer = project.qgis_project.mapLayer(qgis_layer_id)
             if qgis_layer is None or not is_ors_compatible(qgis_layer):
-                raise Http404
+                return HttpResponseBadRequest({'error': _('Layer is not compatible with ORS data.')})
             connection = None
         elif connection_id:
             if connection_id in ('__shapefile__', '__spatialite__', '__geopackage__'):
@@ -112,7 +112,7 @@ class OpenrouteServiceIsochroneView(View):
                         connection = conn
                         break
                 if connection is None:
-                    raise Http404
+                    return HttpResponseBadRequest({'error': _('Wrong connection_id.')})
             qgis_layer = None
         else:
             return HttpResponseBadRequest({'error': _('Either qgis_layer_id or connection_id + layer_name must have a value.')})
@@ -146,7 +146,7 @@ class OpenrouteServiceIsochroneView(View):
 
         # Call ORS
         params = ors
-        
+
         try:
             result = isochrone(profile, params)
         except Exception as ex:

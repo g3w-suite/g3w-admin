@@ -84,6 +84,7 @@ def get_qgs_project(path):
 
         # This is required after QGIS 3.10.11, see https://github.com/qgis/QGIS/pull/38488#issuecomment-692190106
         if project is not None and project != QgsProject.instance():
+
             try:
                 # Workaround for virtual layers bug  https://github.com/qgis/QGIS/pull/38488#issuecomment-692190106
                 QgsProject.setInstance(project)

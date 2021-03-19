@@ -15,6 +15,7 @@ __copyright__ = 'Copyright 2021, ItOpen'
 import requests
 import json
 import os
+import re
 from django.conf import settings
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
@@ -28,10 +29,12 @@ from qgis.core import (
     QgsDataSourceUri,
     QgsVectorFileWriter,
     QgsVectorLayer,
+    QgsCoordinateReferenceSystem,
+    QgsProviderConnectionException,
 )
 from .models import ORS_REQUIRED_LAYER_FIELDS
 from qdjango.models import Layer
-from qgis.PyQt.QtCore import QTemporaryDir
+from qgis.PyQt.QtCore import QTemporaryDir, QVariant
 
 ORS_API_KEY = getattr(settings, 'ORS_API_KEY', None)
 
@@ -46,13 +49,28 @@ def is_ors_compatible(layer):
         # Shapefile attributes max length is 10
         if layer.publicSource().endswith('.shp'):
             field_name = field_name[:10]
-        if fields.lookupField(field_name) < 0 or fields.field(fields.lookupField(field_name)).type() != field_type:
+        if fields.lookupField(field_name) < 0 or not QVariant(fields.field(fields.lookupField(field_name)).type()).canConvert(field_type):
             return False
     return True
 
 
 def db_connections(qgis_project):
-    """Returns a dictionary of DB connections in the QGIS project
+    """Returns a dictionary of DB connections in the QGIS project, OGR connections with
+    no "layername" specification are not  returned because by appending another layer we
+    might break the project.
+
+    Returned dictionary:
+
+    {
+        '<connection id>':
+        {
+            'id': "dbname='test_g3w-admin' host=localhost port=5432 user='ale' sslmode=disable schema='public'",
+            'name': "test_g3w-admin (postgres host:localhost, port:5432, schema:'public')",
+            'provider': 'postgres',
+            'schema': 'public'
+        }
+
+    }
 
     Warning: the dictionary key may contain secrets(passwords): do not disclose to the client.
 
@@ -64,35 +82,57 @@ def db_connections(qgis_project):
 
     connections = {}
     for vector_layer in [layer for layer in qgis_project.mapLayers().values() if layer.type() == QgsMapLayerType.VectorLayer and not layer.readOnly()]:
+
         dp = vector_layer.dataProvider()
         if dp is not None and bool(dp.capabilities() & QgsDataProvider.Database):
-            md = QgsProviderRegistry.instance().providerMetadata(dp.name())
-            if md is not None:
-                conn = md.createConnection(dp.uri().uri(), {})
 
-                if conn is not None:
+            # For OGR we have a file path
+            if dp.name() == 'ogr':
+                path = vector_layer.publicSource()
+                if 'layername' in path.lower():
+                    # Get base path: remove layername
+                    path = re.sub(r'\|layername=.*$', '', path,  re.IGNORECASE)
+                    name = os.path.basename(path)
+                    connections[path] = {
+                        'id': name,
+                        'name': name,
+                        'provider': dp.name(),
+                    }
 
-                    uri = QgsDataSourceUri(dp.uri())
-                    conn_id = conn.uri()
+            else:
+                md = QgsProviderRegistry.instance().providerMetadata(dp.name())
 
-                    if dp.uri().schema():
-                        conn_id += ' schema=%s' % dp.uri().schema()
+                if md is not None:
 
-                    details = []
-                    for detail in ('service', 'host', 'port', 'schema'):
-                        if getattr(dp.uri(), detail)():
-                            details.append('%s:%s' % (
-                                detail, getattr(dp.uri(), detail)()))
-                    details = ', '.join(details)
+                    conn = md.createConnection(dp.uri().uri(), {})
 
-                    conn_name = "{dbname} ({provider_name} {details})".format(
-                        dbname=os.path.basename(uri.database()), provider_name=dp.name(), details=details)
-                    if not conn_id in connections:
-                        connections[conn_id] = {
-                            'id': QgsDataSourceUri.removePassword(conn.uri()),
-                            'name': conn_name,
-                            'provider': dp.name(),
-                        }
+                    if conn is not None:
+                        uri = QgsDataSourceUri(dp.uri())
+                        conn_id = conn.uri()
+
+                        if dp.uri().schema():
+                            conn_id += ' schema=\'%s\'' % dp.uri().schema()
+
+                        details = []
+                        for detail in ('service', 'host', 'port', 'schema'):
+                            value = getattr(dp.uri(), detail)()
+                            if value:
+                                if detail == 'schema':
+                                    # Quote schema
+                                    value = '\'%s\'' % value
+                                details.append('%s:%s' % (
+                                    detail, value))
+                        details = ', '.join(details)
+
+                        conn_name = "{dbname} ({provider_name} {details})".format(
+                            dbname=os.path.basename(uri.database()), provider_name=dp.name(), details=details)
+                        if not conn_id in connections:
+                            connections[conn_id] = {
+                                'id': QgsDataSourceUri.removePassword(conn_id),
+                                'name': conn_name,
+                                'provider': dp.name(),
+                                'schema': dp.uri().schema()
+                            }
 
     return connections
 
@@ -111,7 +151,7 @@ def isochrone(profile, params):
             "attributes":[
                 "area",
                 "reachfactor",
-                "total_pop"
+                "total_pop"  // <<--- currently not available
             ]
         }
 
@@ -169,28 +209,8 @@ def add_geojson_features(geojson, project, qgis_layer_id=None, connection_id=Non
     # Create the new layer
     if connection_id is not None:
 
-        if connection_id == '__shapefile__':
-            driverName = 'ESRI Shapefile'
-            extension = 'shp'
-        elif connection_id == '__spatialite__':
-            driverName = 'SQLite'
-            extension = 'sqlite'
-        elif connection_id == '__geopackage__':
-            driverName = 'GPKG'
-            extension = 'gpkg'
-        else:  # DB
-            driverName = None
-
-        # Create new OGR layer
-        if driverName is not None:
-            new_layer_name = os.path.basename(new_layer_name)
-            destination_path = os.path.join(
-                settings.DATASOURCE_PATH, "{}.{}".format(new_layer_name, extension))
-            i = 0
-            while os.path.exists(destination_path):
-                i += 1
-                destination_path = os.path.join(
-                    settings.DATASOURCE_PATH, "{}_{}.{}".format(new_layer_name, i, extension))
+        def _write_to_ogr(destination_path, new_layer_name, driverName=None):
+            """Writes features to new or existing OGR layer"""
 
             tmp_dir = QTemporaryDir()
             tmp_path = os.path.join(tmp_dir.path(), 'isochrone.json')
@@ -204,8 +224,22 @@ def add_geojson_features(geojson, project, qgis_layer_id=None, connection_id=Non
 
             # Note: shp attribute names are max 10 chars long
             save_options = QgsVectorFileWriter.SaveVectorOptions()
-            save_options.driverName = driverName
+            if driverName is not None:
+                save_options.driverName = driverName
+            save_options.layerName = new_layer_name
             save_options.fileEncoding = 'utf-8'
+
+            # This is nonsense to me: if the file does not exist the actionOnExistingFile
+            # should be ignored instead of raising an error, probable QGIS bug
+            if os.path.exists(destination_path):
+                # Check if the layer already exists
+                layer_exists = QgsVectorFileWriter.targetLayerExists(destination_path, new_layer_name)
+
+                if layer_exists:
+                    raise Exception(
+                        _('Cannot save isochrone result to destination layer: layer already exists (use "qgis_layer_id" instead)!'))
+
+                save_options.actionOnExistingFile = QgsVectorFileWriter.CreateOrOverwriteLayer
 
             error_code, error_message = QgsVectorFileWriter.writeAsVectorFormatV2(
                 tmp_layer,
@@ -218,49 +252,119 @@ def add_geojson_features(geojson, project, qgis_layer_id=None, connection_id=Non
                 raise Exception(
                     _('Cannot save isochrone result to destination layer: ') + error_message)
 
-            # Now reload the final layer and add it to the project
-            layer = QgsVectorLayer(
-                destination_path, new_layer_name, 'ogr')
-            project.qgis_project.addMapLayers([layer])
-            project.update_qgis_project()
-            qgis_layer_id = layer.id()
+            layer_uri = destination_path
 
-            # Create Layer object
-            instance, created = Layer.objects.get_or_create(
-                qgs_layer_id=qgis_layer_id,
-                project=project,
-                defaults={
-                    'origname': new_layer_name,
-                    'name': new_layer_name,
-                    'title': new_layer_name,
-                    'is_visible': True,
-                    'layer_type': 'ogr',
-                    'srid': 4326,
-                    'datasource': destination_path
-                })
+            if driverName != 'ESRI Shapefile':
+                layer_uri += '|layername=' + new_layer_name
 
-            if not created:
-                raise Exception(
-                    _('Error adding destination Layer to the project: layer already exists.'))
+            provider = 'ogr'
+            return layer_uri, provider
 
-            qgis_layer_id = layer.id()
+        destination_path = None
 
-            return qgis_layer_id
+        if connection_id == '__shapefile__':  # new shapefile
+            driverName = 'ESRI Shapefile'
+            extension = 'shp'
+        elif connection_id == '__spatialite__':  # new sqlite
+            driverName = 'SpatiaLite'
+            extension = 'sqlite'
+        elif connection_id == '__geopackage__':  # new gpkg
+            driverName = 'GPKG'
+            extension = 'gpkg'
+        else:  # Add new table to an existing DB connection
 
-        else:
             try:
                 connection = db_connections(project.qgis_project)[
                     connection_id]
             except:
                 raise Exception(
                     _('Wrong connection id.'))
-            # Create new DB layer
-            qgis_layer_id = ''
 
+            if connection['provider'] == 'ogr':
+                destination_path = connection_id
+                driverName = 'GPKG' if destination_path.lower().endswith(
+                    '.gpkg') else 'SpatiaLite'
+            else:
+                driverName = None
+
+        # Create a new file/layer
+        if driverName is not None:
+            new_layer_name = os.path.basename(new_layer_name)
+
+            if destination_path is None:  # new files!
+                destination_path = os.path.join(
+                    settings.DATASOURCE_PATH, "{}.{}".format(new_layer_name, extension))
+                i = 0
+                while os.path.exists(destination_path):
+                    i += 1
+                    destination_path = os.path.join(
+                        settings.DATASOURCE_PATH, "{}_{}.{}".format(new_layer_name, i, extension))
+
+            layer_uri, provider = _write_to_ogr(
+                destination_path, new_layer_name, driverName)
+
+        # Create a new DB table
+        else:
+            assert connection['provider'] != 'ogr'
+            md = QgsProviderRegistry.instance().providerMetadata(
+                connection['provider'])
+            if not md:
+                raise Exception(
+                    _('Error creating destination layer connection.'))
+            conn = md.createConnection(connection_id, {})
+            try:
+                conn.createVectorTable(
+                    connection['schema'], new_layer_name, fields, QgsWkbTypes.Polygon, QgsCoordinateReferenceSystem(4326), False, {})
+            except QgsProviderConnectionException:
+                raise Exception(
+                    _('Error creating destination layer: ') + str(QgsProviderConnectionException))
+
+            uri = QgsDataSourceUri(conn.uri())
+            uri.setTable(new_layer_name)
+            uri.setSchema(connection['schema'])
+            provider = connection['provider']
+            layer_uri = uri.uri()
+
+        # Now reload the new layer and add it to the project
+        layer = QgsVectorLayer(layer_uri, new_layer_name, provider)
+        project.qgis_project.addMapLayers([layer])
+        project.update_qgis_project()
+        qgis_layer_id = layer.id()
+
+        if not layer.isValid():
+            raise Exception(
+                _('Error creating destination layer: layer is not valid!'))
+
+        # Create Layer object
+        instance, created = Layer.objects.get_or_create(
+            qgs_layer_id=qgis_layer_id,
+            project=project,
+            defaults={
+                'origname': new_layer_name,
+                'name': new_layer_name,
+                'title': new_layer_name,
+                'is_visible': True,
+                'layer_type': provider,
+                'srid': 4326,
+                'datasource': layer_uri
+            })
+
+        if not created:
+            raise Exception(
+                _('Error adding destination Layer to the project: layer already exists.'))
+
+        qgis_layer_id = layer.id()
+
+        # for OGR (already filled with features) returns the id of the new layer
+        if driverName is not None:
+            return qgis_layer_id
+
+    # Append to an existing layer
     qgis_layer = project.qgis_project.mapLayer(qgis_layer_id)
 
     features = QgsJsonUtils.stringToFeatureList(
         geojson, fields)
+
     compatible_features = []
     for f in features:
         compatible_features.extend(

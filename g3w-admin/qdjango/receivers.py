@@ -22,7 +22,6 @@ logger = logging.getLogger('django.request')
 if settings.DEBUG:
     @receiver(post_save_qdjango_project_file)
     def remove_project_from_cache(sender, **kwargs):
-
         from qdjango.apps import QGS_SERVER, QgsConfigCache
         from qdjango.utils.data import QgisProject
         if not isinstance(sender, QgisProject):
@@ -30,7 +29,8 @@ if settings.DEBUG:
         path = sender.instance.qgis_file.path
         QgsConfigCache.instance().removeEntry(path)
         QGS_SERVER.serverInterface().capabilitiesCache().removeCapabilitiesDocument(path)
-        logging.getLogger('g3wadmin.debug').warning('settings.DEBUG is True: QGIS Server cached project invalidated: %s' % path)
+        logging.getLogger('g3wadmin.debug').warning(
+            'settings.DEBUG is True: QGIS Server cached project invalidated: %s' % path)
 
 
 @receiver(post_delete, sender=Project)
@@ -51,8 +51,8 @@ def delete_project_file(sender, **kwargs):
             settings.QDJANGO_PRJ_CACHE_KEY.format(instance.pk))
 
     # delete ProjectMapUrlAlias related instance
-    ProjectMapUrlAlias.objects.filter(app_name='qdjango', project_id=instance.pk).delete()
-
+    ProjectMapUrlAlias.objects.filter(
+        app_name='qdjango', project_id=instance.pk).delete()
 
 
 @receiver(post_save, sender=Project)
@@ -95,5 +95,5 @@ def delete_session_token_filter(sender, **kwargs):
     Delete session token filter on user logout
     """
 
-    SessionTokenFilter.objects.filter(sessionid=kwargs['request'].session.session_key).delete()
-
+    SessionTokenFilter.objects.filter(
+        sessionid=kwargs['request'].session.session_key).delete()
