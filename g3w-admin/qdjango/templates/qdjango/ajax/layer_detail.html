@@ -1,0 +1,20 @@
+{% load i18n %}
+{% load auth_extras %}
+<div class="row">
+    <div class="col-md-12">
+        <ul class="list-unstyled">
+            <li>
+                  <h4>{% trans 'Title' %}:</h4>
+                  <span>{{ object.title }}</span>
+            </li>
+            <li>
+                  <h4>{% trans 'Name' %}:</h4>
+                  <span>{{ object.origname }}</span>
+            </li>
+            <li>
+                  <h4>{% trans 'QGIS layer ID' %}:</h4>
+                  <span>{{ object.qgs_layer_id }}</span>
+            </li>
+        </ul>
+    </div>
+</div>

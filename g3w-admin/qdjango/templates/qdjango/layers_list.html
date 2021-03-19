@@ -135,7 +135,11 @@
 
 
                             <td>{{ object.title }}</td>
-                            <td>{{ object.origname }}</td>
+                            <td>{{ object.origname }}
+                                {% if "change_project" in userPrj_perms %}
+                                <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-detail-url="{% url 'qdjango-layer-detail' group.slug project.slug object.pk %}" ><i class="ion ion-eye"></i></a>
+                                {% endif %}
+                            </td>
                             <td>
                                 {% include 'qdjango/include/layer_icon.html' %}
                             </td>

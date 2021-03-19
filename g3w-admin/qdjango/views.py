@@ -423,3 +423,14 @@ class QdjangoLinkWidget2LayerView(G3WRequestViewMixin, G3WGroupViewMixin, Qdjang
             self.widget.layers.add(self.layer)
         else:
             self.widget.layers.remove(self.layer)
+
+
+class QdjangoLayerDetailView(G3WRequestViewMixin, DetailView):
+    """Detail view for qdjango layer object"""
+
+    model = Layer
+    template_name = 'qdjango/ajax/layer_detail.html'
+
+    @method_decorator(permission_required('qdjango.change_project', (Project, 'slug', 'slug'), raise_exception=True))
+    def dispatch(self, *args, **kwargs):
+        return super(QdjangoLayerDetailView, self).dispatch(*args, **kwargs)
