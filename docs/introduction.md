@@ -20,14 +20,14 @@ The following aspects will be analyzed within the manual:
 
 At the moment is not used a classic versioning system for the suite, there are main 3 branches.
 
-
 | Branch | Python version | Django version | QGIS API |Status |
 |--------|----------------|----------------|----------|-------|
-| dev    | 3.6            | 2.2            | Used     | Continue developing |
-| v3.1 | 3.6 | 2.2 | Used | Bug fixing |
-| v3.0 | 3.6 | 2.2 | Used | Bug fixing |
-| dj22-py3 | 3.6 | 2.2 | Not used | Bug fixing |
-| py2 | 2.7 | 1.11 | Not used |Bug fixing |        
+| dev | 3.6 | 2.2 | Used | Continue developing |
+| v.3.2.x | 3.6 | 2.2 | Used | Bug fixing |
+| v.3.1.x | 3.6 | 2.2 | Used | Bug fixing |
+| v.3.0.x | 3.6 | 2.2 | Used | No longer supported |
+| dj22-py3 | 3.6 | 2.2 | Not used | No longer supported  |
+| py2 | 2.7 | 1.11 | Not used |No longer supported  |
 
 ### Contributors
 * Walter Lorenzetti - Gis3W ([@wlorenzetti](https://github.com/wlorenzetti))
@@ -35,4 +35,5 @@ At the moment is not used a classic versioning system for the suite, there are m
 * Francesco Boccacci - Gis3W ([@volterra79](https://github.com/volterra79))
 * Alessandro Pasotti - QCooperative ([@elpaso](https://github.com/elpaso))
 * Luigi Pirelli - QCooperative ([@luipir](https://github.com/luipir))
+* Mazano - Kartoza ([@NyakudyaA](https://github.com/NyakudyaA)) (Dockerization refactoring)
 
