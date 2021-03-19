@@ -4,7 +4,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from .base.views import BaseEditingVectorOnModelApiView
 from core.utils.db import build_dango_connection_name
 from core.api.views import USERMEDIAHANDLER_CLASSES
-from core.api.filters import IntersectsBBoxFilter
+from core.api.filters import IntersectsBBoxFilter, FieldFilterBackend
 from editing.api.permissions import QGISLayerEditingPermission
 from qdjango.vector import QGISLayerVectorViewMixin
 from qdjango.api.constraints.filters import SingleLayerSubsetStringConstraintFilter, SingleLayerExpressionConstraintFilter
@@ -28,6 +28,7 @@ class QGISEditingLayerVectorView(QGISLayerVectorViewMixin, BaseEditingVectorOnMo
         SingleLayerSubsetStringConstraintFilter,
         SingleLayerExpressionConstraintFilter,
         IntersectsBBoxFilter,
+        FieldFilterBackend,
         RelationOneToManyFilter,
         SingleLayerSessionTokenFilter
     )
