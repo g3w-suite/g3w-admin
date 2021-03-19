@@ -246,7 +246,13 @@ class FieldFilterBackend(BaseFilterBackend):
 
     def apply_filter(self, request, qgis_layer, qgis_feature_request, view):
 
+        # Try to get param from GET
         suggest_value = request.query_params.get('field')
+
+        if not suggest_value:
+
+            # Try to get from POST
+            suggest_value = request.data.get('field')
 
         if suggest_value:
 
