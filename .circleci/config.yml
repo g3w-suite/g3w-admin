@@ -65,6 +65,9 @@ jobs:
       - run:
           name: Running qplotly tests
           command: docker-compose -f docker-compose.<< parameters.qgis_version >>.yml exec g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test qplotly"
+      - run:
+          name: Running openrouteservice tests
+          command: docker-compose -f docker-compose.<< parameters.qgis_version >>.yml exec g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test openrouteservice"
 
 
 workflows:
