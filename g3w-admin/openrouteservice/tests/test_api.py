@@ -379,6 +379,8 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
             self.assertEqual(layer.datasource, qgis_layer.source().replace(
                 "key='id' checkPrimaryKeyUnicity='1' ", ''))
 
+            self.assertFalse(Project.objects.get(pk=self.qdjango_project.pk).is_locked)
+
         _check_layer('isochrone gpkg', connection_id='__geopackage__')
         _check_layer('isochrone shp', connection_id='__shapefile__')
         _check_layer('isochrone sqlite', connection_id='__spatialite__')
