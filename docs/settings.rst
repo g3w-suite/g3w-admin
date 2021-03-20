@@ -241,4 +241,20 @@ Qplotly settings
 
 ``LOAD_QPLOTLY_FROM_PROJECT``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Default if ``False``, set to ``True`` for import DataPlotly settings from QGIS project.
+Default is ``False``, set to ``True`` to import DataPlotly settings from QGIS project.
+
+Openrouteservice settings
+*************************
+
+``ORS_API_ENDPOINT``
+^^^^^^^^^^^^^^^^^^^^
+Default is ``http://localhost:8080/ors/v2/``, this is the endpoint for Openrouteservice API.
+
+``ORS_API_KEY``
+^^^^^^^^^^^^^^^
+Openrouteservice API key, optional, can be blank if the key is not required by the endpoint.
+
+``ORS_PROFILES``
+^^^^^^^^^^^^^^^^
+List of available Openrouteservice profiles, default: ``("driving-car", "driving-hgv")``
+
