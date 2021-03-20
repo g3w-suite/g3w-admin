@@ -6,4 +6,4 @@
 # Additional requirements for CI here:
 
 # openrouteservice tests
--r openrouteservice/requirements_testing.txt
+-r g3w-admin/openrouteservice/requirements_testing.txt
