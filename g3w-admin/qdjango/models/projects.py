@@ -71,7 +71,7 @@ class QgisProjectFileLocker():
     """Mutex to prevent multiple processes to write the same project concurrently"""
 
     def __init__(self, project):
-        self.project = Project.objects.get(pk=project.pk)
+        self.project = project
         timeout = 10
         timer = 0
         while Project.objects.get(pk=self.project.pk).is_locked:
@@ -79,7 +79,7 @@ class QgisProjectFileLocker():
             timer += 1
             if timer > timeout:
                 raise Exception('QGIS Project is locked! Cannot write.')
-            
+
         self.project.is_locked = True
         self.project.save()
 
@@ -87,6 +87,7 @@ class QgisProjectFileLocker():
         return self.project
 
     def __exit__(self, type, value, traceback):
+        self.project = Project.objects.get(pk=self.project.pk)
         self.project.is_locked = False
         self.project.save()
 
