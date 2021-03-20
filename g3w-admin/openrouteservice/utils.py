@@ -383,7 +383,7 @@ def add_geojson_features(geojson, project, qgis_layer_id=None, connection_id=Non
             4326), qgis_layer.crs(), project.qgis_project)
         for f in compatible_features:
             geom = f.geometry()
-            if geom.transform(ct) != QgsGeometry.OperationResult.Success:
+            if geom.transform(ct) != QgsGeometry.Success:
                 raise Exception(
                     _('Error transforming geometry from 4326 to destination layer CRS.'))
             f.setGeometry(geom)
