@@ -33,7 +33,7 @@ from qgis.core import (
     QgsProviderConnectionException,
 )
 from .models import ORS_REQUIRED_LAYER_FIELDS
-from qdjango.models import Layer
+from qdjango.models import Layer, QgisProjectFileLocker
 from qgis.PyQt.QtCore import QTemporaryDir, QVariant
 
 ORS_API_KEY = getattr(settings, 'ORS_API_KEY', None)
@@ -233,7 +233,8 @@ def add_geojson_features(geojson, project, qgis_layer_id=None, connection_id=Non
             # should be ignored instead of raising an error, probable QGIS bug
             if os.path.exists(destination_path):
                 # Check if the layer already exists
-                layer_exists = QgsVectorFileWriter.targetLayerExists(destination_path, new_layer_name)
+                layer_exists = QgsVectorFileWriter.targetLayerExists(
+                    destination_path, new_layer_name)
 
                 if layer_exists:
                     raise Exception(
@@ -327,8 +328,11 @@ def add_geojson_features(geojson, project, qgis_layer_id=None, connection_id=Non
 
         # Now reload the new layer and add it to the project
         layer = QgsVectorLayer(layer_uri, new_layer_name, provider)
-        project.qgis_project.addMapLayers([layer])
-        project.update_qgis_project()
+
+        with QgisProjectFileLocker(project) as project:
+            project.qgis_project.addMapLayers([layer])
+            project.update_qgis_project()
+
         qgis_layer_id = layer.id()
 
         if not layer.isValid():

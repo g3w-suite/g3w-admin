@@ -1,6 +1,6 @@
 import logging
 import os
-
+import time
 from autoslug import AutoSlugField
 from autoslug.utils import slugify
 from core.configs import *
@@ -65,6 +65,30 @@ def get_thumbnail_path(instance, filename):
     ext = filename.split('.')[-1]
     filename = '{}_{}.{}'.format(group_name, project_name, ext)
     return os.path.join('thumbnails', filename)
+
+
+class QgisProjectFileLocker():
+    """Mutex to prevent multiple processes to write the same project concurrently"""
+
+    def __init__(self, project):
+        self.project = Project.objects.get(pk=project.pk)
+        timeout = 10
+        timer = 0
+        while Project.objects.get(pk=self.project.pk).is_locked:
+            time.sleep(0.1)
+            timer += 1
+            if timer > timeout:
+                raise Exception('QGIS Project is locked! Cannot write.')
+            
+        self.project.is_locked = True
+        self.project.save()
+
+    def __enter__(self):
+        return self.project
+
+    def __exit__(self, type, value, traceback):
+        self.project.is_locked = False
+        self.project.save()
 
 
 class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
@@ -161,6 +185,9 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
     is_dirty = models.BooleanField(_('The project has been modified by the G3W-Suite application after it was uploaded.'), editable=False,
                                    default=False)
 
+    is_locked = models.BooleanField(_('Mutex to lock the project when it is being written by the G3W-Suite application. This field is used internally by the suite through a context manager'), editable=False,
+                                    default=False)
+
     class Meta:
         verbose_name = _('Project')
         verbose_name_plural = _('Projects')
@@ -182,6 +209,9 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
 
     def update_qgis_project(self):
         """Updates the QGIS project associated with the G3W-Suite project instance and sets the "dirty" flag.
+
+        WARNING: to prevent concurrent writes to the same project from different
+        processes use QgisProjectFileLocker mutex.
 
         :return: True on success
         :rtype: bool
@@ -515,15 +545,17 @@ class Layer(G3WACLModelMixins, models.Model):
         :rtype: bool
         """
 
-        layer = self.qgis_layer
-        if layer is None:
-            return False
+        with QgisProjectFileLocker(self.project) as project:
 
-        sm = layer.styleManager()
-        result = sm.setCurrentStyle(style)
+            layer = self.qgis_layer
+            if layer is None:
+                return False
 
-        if result:
-            result = result and self.project.update_qgis_project()
+            sm = layer.styleManager()
+            result = sm.setCurrentStyle(style)
+
+            if result:
+                result = result and project.update_qgis_project()
 
         return result
 
@@ -538,19 +570,23 @@ class Layer(G3WACLModelMixins, models.Model):
         :rtype: bool
         """
 
-        layer = self.qgis_layer
-        if layer is None:
-            return False
+        result = False
 
-        sm = layer.styleManager()
+        with QgisProjectFileLocker(self.project) as project:
 
-        if new_name in sm.styles():
-            return False
+            layer = self.qgis_layer
+            if layer is None:
+                return False
 
-        result = sm.renameStyle(style, new_name)
+            sm = layer.styleManager()
 
-        if result:
-            result = result and self.project.update_qgis_project()
+            if new_name in sm.styles():
+                return False
+
+            result = sm.renameStyle(style, new_name)
+
+            if result:
+                result = result and project.update_qgis_project()
 
         return result
 
@@ -565,35 +601,39 @@ class Layer(G3WACLModelMixins, models.Model):
         :rtype: bool
         """
 
-        layer = self.qgis_layer
-        if layer is None:
-            return False
+        result = False
 
-        sm = layer.styleManager()
+        with QgisProjectFileLocker(self.project) as project:
 
-        # Validate!
-        doc = QDomDocument('qgis')
-        if not doc.setContent(qml)[0]:
-            return False
+            layer = self.qgis_layer
+            if layer is None:
+                return False
 
-        tmp_layer = layer.clone()
-        if not tmp_layer.importNamedStyle(doc)[0]:
-            return False
+            sm = layer.styleManager()
 
-        del(tmp_layer)
+            # Validate!
+            doc = QDomDocument('qgis')
+            if not doc.setContent(qml)[0]:
+                return False
 
-        # If the style is current, just replace it in the layer
-        if sm.currentStyle() == style:
-            return layer.importNamedStyle(doc)[0]
-        else:
-            new_style = QgsMapLayerStyle(qml)
-            result = sm.addStyle(style, new_style)
-            result = sm.removeStyle(
-                style) and sm.addStyle(style, new_style)
+            tmp_layer = layer.clone()
+            if not tmp_layer.importNamedStyle(doc)[0]:
+                return False
 
-        if result:
-            assert self.style(style).xmlData() == new_style.xmlData()
-            result = result and self.project.update_qgis_project()
+            del(tmp_layer)
+
+            # If the style is current, just replace it in the layer
+            if sm.currentStyle() == style:
+                return layer.importNamedStyle(doc)[0]
+            else:
+                new_style = QgsMapLayerStyle(qml)
+                result = sm.addStyle(style, new_style)
+                result = sm.removeStyle(
+                    style) and sm.addStyle(style, new_style)
+
+            if result:
+                assert self.style(style).xmlData() == new_style.xmlData()
+                result = result and project.update_qgis_project()
 
         return result
 
@@ -606,16 +646,20 @@ class Layer(G3WACLModelMixins, models.Model):
         :rtype: bool
         """
 
-        layer = self.qgis_layer
-        if layer is None:
-            return False
+        result = False
 
-        sm = layer.styleManager()
+        with QgisProjectFileLocker(self.project) as project:
 
-        result = sm.removeStyle(style)
+            layer = self.qgis_layer
+            if layer is None:
+                return False
 
-        if result:
-            result = result and self.project.update_qgis_project()
+            sm = layer.styleManager()
+
+            result = sm.removeStyle(style)
+
+            if result:
+                result = result and project.update_qgis_project()
 
         return result
 
@@ -634,27 +678,31 @@ class Layer(G3WACLModelMixins, models.Model):
         if layer is None:
             return False
 
-        sm = layer.styleManager()
+        result = False
 
-        if sm.currentStyle() == style:
-            return False
+        with QgisProjectFileLocker(self.project) as project:
 
-        # Validate!
-        doc = QDomDocument('qgis')
-        if not doc.setContent(qml)[0]:
-            return False
+            sm = layer.styleManager()
 
-        tmp_layer = layer.clone()
-        if not tmp_layer.importNamedStyle(doc)[0]:
-            return False
+            if sm.currentStyle() == style:
+                return False
 
-        del(tmp_layer)
+            # Validate!
+            doc = QDomDocument('qgis')
+            if not doc.setContent(qml)[0]:
+                return False
 
-        new_style = QgsMapLayerStyle(qml)
-        result = sm.addStyle(style, new_style)
+            tmp_layer = layer.clone()
+            if not tmp_layer.importNamedStyle(doc)[0]:
+                return False
 
-        if result:
-            result = result and self.project.update_qgis_project()
+            del(tmp_layer)
+
+            new_style = QgsMapLayerStyle(qml)
+            result = sm.addStyle(style, new_style)
+
+            if result:
+                result = result and project.update_qgis_project()
 
         return result
 
