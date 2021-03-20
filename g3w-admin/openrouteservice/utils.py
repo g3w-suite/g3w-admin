@@ -30,7 +30,9 @@ from qgis.core import (
     QgsVectorFileWriter,
     QgsVectorLayer,
     QgsCoordinateReferenceSystem,
+    QgsCoordinateTransform,
     QgsProviderConnectionException,
+    QgsGeometry,
 )
 from .models import ORS_REQUIRED_LAYER_FIELDS
 from qdjango.models import Layer, QgisProjectFileLocker
@@ -315,7 +317,7 @@ def add_geojson_features(geojson, project, qgis_layer_id=None, connection_id=Non
             conn = md.createConnection(connection_id, {})
             try:
                 conn.createVectorTable(
-                    connection['schema'], new_layer_name, fields, QgsWkbTypes.Polygon, QgsCoordinateReferenceSystem(4326), False, {})
+                    connection['schema'], new_layer_name, fields, QgsWkbTypes.Polygon, QgsCoordinateReferenceSystem(4326), False, {'geometryColumn': 'geom'})
             except QgsProviderConnectionException:
                 raise Exception(
                     _('Error creating destination layer: ') + str(QgsProviderConnectionException))
@@ -323,6 +325,8 @@ def add_geojson_features(geojson, project, qgis_layer_id=None, connection_id=Non
             uri = QgsDataSourceUri(conn.uri())
             uri.setTable(new_layer_name)
             uri.setSchema(connection['schema'])
+            uri.setSrid('4326')
+            uri.setGeometryColumn('geom')
             provider = connection['provider']
             layer_uri = uri.uri()
 
@@ -374,6 +378,16 @@ def add_geojson_features(geojson, project, qgis_layer_id=None, connection_id=Non
         compatible_features.extend(
             QgsVectorLayerUtils.makeFeatureCompatible(f, qgis_layer))
 
+    if qgis_layer.crs().isValid() and qgis_layer.crs() != QgsCoordinateReferenceSystem(4326):
+        ct = QgsCoordinateTransform(QgsCoordinateReferenceSystem(
+            4326), qgis_layer.crs(), project.qgis_project)
+        for f in compatible_features:
+            geom = f.geometry()
+            if geom.transform(ct) != QgsGeometry.OperationResult.Success:
+                raise Exception(
+                    _('Error transforming geometry from 4326 to destination layer CRS.'))
+            f.setGeometry(geom)
+
     if len(compatible_features) == 0:
         raise Exception(_('No compatible features returned from isochrone.'))
 
@@ -381,7 +395,8 @@ def add_geojson_features(geojson, project, qgis_layer_id=None, connection_id=Non
         raise Exception(_('Destination layer is not editable.'))
 
     # Add features to the layer
-    qgis_layer.addFeatures(compatible_features)
+    if not qgis_layer.addFeatures(compatible_features):
+        raise Exception(_('Error adding features to the destination layer.'))
 
     if not qgis_layer.commitChanges():
         raise Exception(

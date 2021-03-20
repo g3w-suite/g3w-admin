@@ -99,18 +99,20 @@ from django.shortcuts import get_object_or_404
 from django.test import Client, override_settings
 from django.urls import reverse
 from guardian.shortcuts import assign_perm, remove_perm
+from openrouteservice.utils import db_connections
 from qdjango.apps import QGS_SERVER, get_qgs_project
 from qdjango.models import (ConstraintExpressionRule,
                             ConstraintSubsetStringRule, Layer, Project,
                             SessionTokenFilter, SessionTokenFilterLayer,
                             SingleLayerConstraint)
 from qdjango.tests.base import CURRENT_PATH, QdjangoTestBase, QgisProject
-from qgis.core import Qgis, QgsProject, QgsProviderRegistry, QgsVectorLayer, QgsDataSourceUri
+from qgis.core import (Qgis, QgsDataSourceUri, QgsProject, QgsProviderRegistry,
+                       QgsVectorLayer)
 from qgis.PyQt.QtCore import QTemporaryDir
 from qgis.PyQt.QtGui import QImage
 from rest_framework.test import APIClient
+from vcr.record_mode import RecordMode
 from vcr_unittest import VCRMixin
-from openrouteservice.utils import db_connections
 
 temp_datasource = QTemporaryDir()
 
@@ -129,6 +131,11 @@ temp_datasource = QTemporaryDir()
 )
 class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
     """Test proxy to QgsServer"""
+
+    def _get_vcr(self, **kwargs):
+        myvcr = super()._get_vcr(**kwargs)
+        myvcr.record_mode = RecordMode.NEW_EPISODES
+        return myvcr
 
     @classmethod
     def setUpTestData(cls):
@@ -163,7 +170,7 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
             "CREATE TABLE \"openrouteservice test\".openrouteservice_compatible ( pk SERIAL NOT NULL, value NUMERIC, group_index INTEGER, area NUMERIC, reachfactor NUMERIC, total_pop INTEGER, geom GEOMETRY(POLYGON, 4326), PRIMARY KEY ( pk ) )")
 
         conn.executeSql(
-            "CREATE TABLE \"openrouteservice test\".openrouteservice_compatible_3857 ( pk SERIAL NOT NULL, value NUMERIC, group_index INTEGER, area NUMERIC, reachfactor NUMERIC, total_pop INTEGER, geom GEOMETRY(POLYGON, 3875), PRIMARY KEY ( pk ) )")
+            "CREATE TABLE \"openrouteservice test\".openrouteservice_compatible_3857 ( pk SERIAL NOT NULL, value NUMERIC, group_index INTEGER, area NUMERIC, reachfactor NUMERIC, total_pop INTEGER, geom GEOMETRY(POLYGON, 3857), PRIMARY KEY ( pk ) )")
 
         cls.layer_specs = {}
 
@@ -176,7 +183,7 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
             'openrouteservice_compatible_3857': ('Polygon', 3857),
         }.items():
             layer_uri = conn_str + \
-                " sslmode=disable key='pk' estimatedmetadata=true srid={srid} type={geometry_type} checkPrimaryKeyUnicity='0' table=\"openrouteservice test\".\"{table_name}\" (geom)".format(
+                " sslmode=disable key='pk' estimatedmetadata=false srid={srid} type={geometry_type} checkPrimaryKeyUnicity='0' table=\"openrouteservice test\".\"{table_name}\" (geom)".format(
                     table_name=table_name, geometry_type=table_spec[0], srid=table_spec[1])
             layer = QgsVectorLayer(layer_uri, table_name, 'postgres')
             assert layer.isValid()
@@ -370,14 +377,16 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
             qgis_layer = self.qdjango_project.qgis_project.mapLayer(
                 qgis_layer_id)
 
+            self.assertTrue(qgis_layer.crs().isValid())
+
             self.assertEqual(qgis_layer.featureCount(), count)
             self.assertEqual(qgis_layer.name(), new_name)
 
             # Test Layer object
             layer = self.qdjango_project.layer_set.get(name=new_name)
             self.assertEqual(layer.name, new_name)
-            self.assertEqual(layer.datasource, qgis_layer.source().replace(
-                "key='id' checkPrimaryKeyUnicity='1' ", ''))
+            self.assertEqual(layer.qgs_layer_id, qgis_layer.id())
+            self.assertEqual(layer.srid, qgis_layer.crs().postgisSrid())
 
             self.assertFalse(Project.objects.get(pk=self.qdjango_project.pk).is_locked)
 
@@ -468,4 +477,9 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
         _check_layer(new_layer_name,
                      qgis_layer_id=qgis_layer_id, count=16)
 
-        # TODO: test 3857 layer
+        # Test 3857 existing layer
+        layer_3857 = self.qdjango_project.qgis_project.mapLayersByName(
+            'openrouteservice_compatible_3857')[0]
+        _check_layer('openrouteservice_compatible_3857',
+                     qgis_layer_id=layer_3857.id())
+
