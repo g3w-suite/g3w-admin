@@ -205,7 +205,7 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
                 title=layer.name(),
                 origname=layer.name(),
                 qgs_layer_id=layer_id,
-		srid=layer.crs().postgisSrid(),
+                srid=layer.crs().postgisSrid(),
                 project=cls.qdjango_project,
                 layer_type='postgres',
                 datasource=cls.layer_specs[layer.name()]
@@ -220,6 +220,56 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
         iface = QGS_SERVER.serverInterface()
         iface.removeConfigCacheEntry(
             cls.qdjango_project.qgis_project.fileName())
+
+    def _check_layer(self, new_name, connection_id=None, qgis_layer_id=None, count=8, style=None):
+
+        data = {
+            'qgis_layer_id': qgis_layer_id,
+            'connection_id': connection_id,
+            'new_layer_name': new_name,
+            "profile": "driving-car",
+            'ors': {
+                "locations": [[-77.023902, 38.902293]],
+                "range_type": "time",
+                "range": [480],
+                "interval": 60,
+                "location_type": "start",
+                "attributes": [
+                    "area",
+                    "reachfactor",
+                    "total_pop"
+                ]
+            }
+        }
+
+        if style is not None:
+            data['color'] = style['color']
+            data['tranpsarency'] = style['transparency']
+
+        response = self._testPostApiCall(
+            'openrouteservice-isochrone', [self.qdjango_project.pk], data)
+        self.assertEqual(response.status_code, 200, response.json())
+        jresponse = response.json()
+        self.assertEqual(jresponse['result'], True)
+        qgis_layer_id = jresponse['qgis_layer_id']
+
+        # Get QGIS Layer
+        qgis_layer = self.qdjango_project.qgis_project.mapLayer(
+            qgis_layer_id)
+
+        self.assertTrue(qgis_layer.crs().isValid())
+
+        self.assertEqual(qgis_layer.featureCount(), count)
+        self.assertEqual(qgis_layer.name(), new_name)
+
+        # Test Layer object
+        layer = self.qdjango_project.layer_set.get(name=new_name)
+        self.assertEqual(layer.name, new_name)
+        self.assertEqual(layer.qgs_layer_id, qgis_layer.id())
+        self.assertEqual(layer.srid, qgis_layer.crs().postgisSrid())
+
+        self.assertFalse(Project.objects.get(
+            pk=self.qdjango_project.pk).is_locked)
 
     def _testApiCall(self, view_name, args, kwargs={}, status_auth=200, login=True, logout=True):
         """Utility to make test calls for admin01 user"""
@@ -346,54 +396,9 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
     def test_create_new_layer(self):
         """Test create new layers"""
 
-        def _check_layer(new_name, connection_id=None, qgis_layer_id=None, count=8):
-
-            data = {
-                'qgis_layer_id': qgis_layer_id,
-                'connection_id': connection_id,
-                'new_layer_name': new_name,
-                "profile": "driving-car",
-                'ors': {
-                    "locations": [[-77.023902, 38.902293]],
-                    "range_type": "time",
-                    "range": [480],
-                    "interval": 60,
-                    "location_type": "start",
-                    "attributes": [
-                        "area",
-                        "reachfactor",
-                        "total_pop"
-                    ]
-                }
-            }
-
-            response = self._testPostApiCall(
-                'openrouteservice-isochrone', [self.qdjango_project.pk], data)
-            self.assertEqual(response.status_code, 200, response.json())
-            jresponse = response.json()
-            self.assertEqual(jresponse['result'], True)
-            qgis_layer_id = jresponse['qgis_layer_id']
-
-            # Get QGIS Layer
-            qgis_layer = self.qdjango_project.qgis_project.mapLayer(
-                qgis_layer_id)
-
-            self.assertTrue(qgis_layer.crs().isValid())
-
-            self.assertEqual(qgis_layer.featureCount(), count)
-            self.assertEqual(qgis_layer.name(), new_name)
-
-            # Test Layer object
-            layer = self.qdjango_project.layer_set.get(name=new_name)
-            self.assertEqual(layer.name, new_name)
-            self.assertEqual(layer.qgs_layer_id, qgis_layer.id())
-            self.assertEqual(layer.srid, qgis_layer.crs().postgisSrid())
-
-            self.assertFalse(Project.objects.get(pk=self.qdjango_project.pk).is_locked)
-
-        _check_layer('isochrone gpkg', connection_id='__geopackage__')
-        _check_layer('isochrone shp', connection_id='__shapefile__')
-        _check_layer('isochrone sqlite', connection_id='__spatialite__')
+        self._check_layer('isochrone gpkg', connection_id='__geopackage__')
+        self._check_layer('isochrone shp', connection_id='__shapefile__')
+        self._check_layer('isochrone sqlite', connection_id='__spatialite__')
 
         # Check connections
         connections = db_connections(self.qdjango_project.qgis_project)
@@ -409,19 +414,19 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
             ['isochrone gpkg.gpkg', 'isochrone sqlite.sqlite']))
 
         # Test DB layer creation
-        _check_layer('isochrone postgres', connection_id=connection_id)
+        self._check_layer('isochrone postgres', connection_id=connection_id)
 
         # Test layer creation for gpkg
         gpkg_connection_id = [v['id']
                               for k, v in connections.items() if k.endswith('.gpkg')][0]
-        _check_layer('isochrone gpkg2',
-                     connection_id=gpkg_connection_id)
+        self._check_layer('isochrone gpkg2',
+                          connection_id=gpkg_connection_id)
 
         # Test layer creation for OGR/sqlite
         sqlite_connection_id = [v['id']
                                 for k, v in connections.items() if k.endswith('.sqlite')][0]
-        _check_layer('isochrone sqlite2',
-                     connection_id=sqlite_connection_id)
+        self._check_layer('isochrone sqlite2',
+                          connection_id=sqlite_connection_id)
 
         # Check that all layers are there
         names = sorted(
@@ -440,9 +445,9 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
         ])
 
         # Test errors
-        with self.assertRaises(Exception) as ex:
-            _check_layer('isochrone wrong',
-                         connection_id='wrong connection id')
+        with self.assertRaises(Exception):
+            self._check_layer('isochrone wrong',
+                              connection_id='wrong connection id')
 
         # Test isochrone append features to an existing SQLite native layer
         sqlite_path = [
@@ -475,12 +480,22 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
         self.assertIn(sqlite_path, connections.keys())
         sqlite_connection_id = [c['id']
                                 for c in connections.values() if c['provider'] == 'spatialite'][0]
-        _check_layer(new_layer_name,
-                     qgis_layer_id=qgis_layer_id, count=16)
+        self._check_layer(new_layer_name,
+                          qgis_layer_id=qgis_layer_id, count=16)
 
         # Test 3857 existing layer
         layer_3857 = self.qdjango_project.qgis_project.mapLayersByName(
             'openrouteservice_compatible_3857')[0]
-        _check_layer('openrouteservice_compatible_3857',
-                     qgis_layer_id=layer_3857.id())
+        self._check_layer('openrouteservice_compatible_3857',
+                          qgis_layer_id=layer_3857.id())
 
+    def test_style(self):
+        """Test style creation"""
+
+        style = {
+            'color': [50, 200, 200],
+            'transparency': 0.9
+        }
+
+        self._check_layer('isochrone gpkg style',
+                          connection_id='__geopackage__', style=style)
