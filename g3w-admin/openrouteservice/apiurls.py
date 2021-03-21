@@ -15,7 +15,7 @@ __copyright__ = 'Copyright 2021, ItOpen'
 
 from django.conf.urls import url
 from django.contrib.auth.decorators import login_required
-from .views import OpenrouteserviceCompatibleLayersView, OpenrouteServiceIsochroneView
+from .api.views import OpenrouteserviceCompatibleLayersView, OpenrouteServiceIsochroneView
 
 
 BASE_URLS = 'openrouteservice'
