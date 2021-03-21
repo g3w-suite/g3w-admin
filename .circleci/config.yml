@@ -72,11 +72,10 @@ jobs:
           name: Running openrouteservice tests
           command: docker-compose -f docker-compose.<< parameters.qgis_version >>.yml exec g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test openrouteservice"
 
-
 workflows:
   all-tests:
     jobs:
       - build:
           matrix:
             parameters:
-              qgis_version: ['316']
+              qgis_version: ["316", "latest"]
