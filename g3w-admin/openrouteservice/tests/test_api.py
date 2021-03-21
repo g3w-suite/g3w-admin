@@ -205,6 +205,7 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
                 title=layer.name(),
                 origname=layer.name(),
                 qgs_layer_id=layer_id,
+		srid=layer.crs().postgisSrid(),
                 project=cls.qdjango_project,
                 layer_type='postgres',
                 datasource=cls.layer_specs[layer.name()]
