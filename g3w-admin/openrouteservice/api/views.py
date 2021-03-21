@@ -28,7 +28,7 @@ from qdjango.mixins.views import QdjangoProjectViewMixin
 from qdjango.models import Project
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework import status
-from rest_framework.exceptions import APIException
+from rest_framework.exceptions import ValidationError
 from core.api.authentication import CsrfExemptSessionAuthentication
 from .permissions import IsochroneCreatePermission
 
@@ -36,9 +36,6 @@ from .permissions import IsochroneCreatePermission
 OSR_MAX_LOCATIONS = getattr(settings, 'OSR_MAX_LOCATIONS', 10)
 OSR_MAX_RANGES = getattr(settings, 'OSR_MAX_RANGES', 10)
 
-
-class BadRequestException(APIException):
-    status_code = 400
 
 class OpenrouteserviceCompatibleLayersView(G3WAPIView):
     """Returns a list of openrouteservice compatible layer IDs
@@ -122,7 +119,7 @@ class OpenrouteServiceIsochroneView(View):
         try:
             body = json.loads(request.body.decode('utf-8'))
         except Exception as ex:
-            raise BadRequestException({'error': str(ex)})
+            raise ValidationError(str(ex))
 
         project = get_object_or_404(Project, pk=project_id)
 
@@ -138,23 +135,27 @@ class OpenrouteServiceIsochroneView(View):
             color = body['color']
 
             if type(color) != list or len(color) != 3:
-                raise BadRequestException('error', _('Wrong color parameter, color must be a list of three integers (red, green, blue).'))
+                raise ValidationError(_(
+                    'Wrong color parameter, color must be a list of three integers (red, green, blue).'))
 
             for c in color:
                 if type(c) != int or c < 0 or c > 255:
-                    raise BadRequestException('error', _('Wrong color parameter, color must be a list of three integers (red, green, blue).'))
+                    raise ValidationError(_(
+                        'Wrong color parameter, color must be a list of three integers (red, green, blue).'))
 
             try:
                 transparency = body['transparency']
             except KeyError:
-                raise BadRequestException('error', _('Missing tranparency parameter, because color was specified transparency is required.'))
+                raise ValidationError(_(
+                    'Missing tranparency parameter, because color was specified transparency is required.'))
 
             try:
                 transparency = float(transparency)
                 if transparency < 0 or transparency > 1:
                     raise Exception
             except:
-                raise BadRequestException('error', _('Wrong tranparency parameter, transparency must be between 0 and 1.'))
+                raise ValidationError(_(
+                    'Wrong tranparency parameter, transparency must be between 0 and 1.'))
 
         except KeyError:
 
@@ -164,7 +165,8 @@ class OpenrouteServiceIsochroneView(View):
         if qgis_layer_id:
             qgis_layer = project.qgis_project.mapLayer(qgis_layer_id)
             if qgis_layer is None or not is_ors_compatible(qgis_layer):
-                raise BadRequestException('error', _('Layer is not compatible with ORS data.'))
+                raise ValidationError(_(
+                    'Layer is not compatible with ORS data.'))
             connection = None
         elif connection_id:
             if connection_id in ('__shapefile__', '__spatialite__', '__geopackage__'):
@@ -176,10 +178,11 @@ class OpenrouteServiceIsochroneView(View):
                         connection = conn
                         break
                 if connection is None:
-                    raise BadRequestException('error', _('Wrong connection_id.'))
+                    raise ValidationError(_('Wrong connection_id.'))
             qgis_layer = None
         else:
-            raise BadRequestException('error', _('Either qgis_layer_id or connection_id + layer_name must have a value.'))
+            raise ValidationError(_(
+                'Either qgis_layer_id or connection_id + layer_name must have a value.'))
 
         # Validate input
         try:
@@ -189,24 +192,27 @@ class OpenrouteServiceIsochroneView(View):
             ranges = ors['range']
 
             if not profile in settings.ORS_PROFILES:
-                raise BadRequestException('error', _('Profile not found, available profiles: %s') % ', '.join(settings.ORS_PROFILES))
+                raise ValidationError(_(
+                    'Profile not found, available profiles: %s') % ', '.join(settings.ORS_PROFILES))
 
             if len(locations) > OSR_MAX_LOCATIONS:
-                raise BadRequestException('error', _('Max allowed locations: %s') % OSR_MAX_LOCATIONS)
+                raise ValidationError(_(
+                    'Max allowed locations: %s') % OSR_MAX_LOCATIONS)
 
             for location in locations:
                 if type(location[0]) not in (float, int) or type(location[1]) not in (float, int) or len(location) != 2:
-                    raise BadRequestException('error', _('Malformed locations array.'))
+                    raise ValidationError(_('Malformed locations array.'))
 
             if len(ranges) > OSR_MAX_RANGES:
-                raise BadRequestException('error', _('Max allowed ranges: %s') % OSR_MAX_RANGES)
+                raise ValidationError(_(
+                    'Max allowed ranges: %s') % OSR_MAX_RANGES)
 
             for rang in ranges:
                 if type(rang) != int:
-                    raise BadRequestException('error', _('Malformed range array.'))
+                    raise ValidationError(_('Malformed range array.'))
 
         except Exception as ex:
-            raise BadRequestException({'error': str(ex)})
+            raise ValidationError(str(ex))
 
         # Call ORS
         params = ors
