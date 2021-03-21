@@ -18,7 +18,7 @@ import os
 
 from core.api.views import G3WAPIView
 from django.conf import settings
-from django.http.response import JsonResponse
+from rest_framework.response import Response
 from django.shortcuts import Http404, get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import View
@@ -59,7 +59,7 @@ class OpenrouteserviceCompatibleLayersView(G3WAPIView):
 
         connections = db_connections(self.project.qgis_project)
 
-        return JsonResponse({
+        return Response({
             'compatible': compatible,
             'connections': list(connections.values())
         })
@@ -220,7 +220,7 @@ class OpenrouteServiceIsochroneView(View):
         try:
             result = isochrone(profile, params)
         except Exception as ex:
-            return JsonResponse({'result': False, 'error': str(ex)}, status=500)
+            return Response({'result': False, 'error': str(ex)}, status=500)
 
         if result.status_code == 200:
             try:
@@ -230,8 +230,8 @@ class OpenrouteServiceIsochroneView(View):
                 # Apply style
 
             except Exception as ex:
-                return JsonResponse({'result': False, 'error': str(ex)}, status=500)
+                return Response({'result': False, 'error': str(ex)}, status=500)
 
-            return JsonResponse({'result': True, 'qgis_layer_id': qgis_layer_id})
+            return Response({'result': True, 'qgis_layer_id': qgis_layer_id})
         else:
-            return JsonResponse({'result': False, 'error': result.json()['error']['message']}, status=500)
+            return Response({'result': False, 'error': result.json()['error']['message']}, status=500)

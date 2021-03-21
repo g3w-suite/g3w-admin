@@ -110,7 +110,6 @@ from qgis.core import (Qgis, QgsDataSourceUri, QgsProject, QgsProviderRegistry,
                        QgsVectorLayer)
 from qgis.PyQt.QtCore import QTemporaryDir
 from qgis.PyQt.QtGui import QImage
-from rest_framework.test import APIClient
 from vcr.record_mode import RecordMode
 from vcr_unittest import VCRMixin
 
@@ -211,8 +210,6 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
                 datasource=cls.layer_specs[layer.name()]
             )
             assert created
-
-        cls.client = APIClient()
 
     @classmethod
     def tearDownClass(cls):

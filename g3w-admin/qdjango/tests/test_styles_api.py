@@ -20,7 +20,6 @@ from django.urls import reverse
 from qdjango.models import Layer, Project
 from qdjango.utils.data import QgisProject
 from qgis.core import QgsProject
-from rest_framework.test import APIClient
 from rest_framework import status
 from django.core.files.uploadedfile import SimpleUploadedFile
 
@@ -47,8 +46,6 @@ class LayerStylesApiTest(QdjangoTestBase):
 
         cls.qdjango_project = project.instance
         cls.qdjango_layer = cls.qdjango_project.layer_set.all()[0]
-
-        cls.client = APIClient()
 
     @classmethod
     def setUpClass(cls):
