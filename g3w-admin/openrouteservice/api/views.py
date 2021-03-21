@@ -19,6 +19,7 @@ import os
 from core.api.views import G3WAPIView
 from django.conf import settings
 from rest_framework.response import Response
+from rest_framework import status
 from django.shortcuts import Http404, get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import View
@@ -65,7 +66,7 @@ class OpenrouteserviceCompatibleLayersView(G3WAPIView):
         })
 
 
-class OpenrouteServiceIsochroneView(View):
+class OpenrouteServiceIsochroneView(G3WAPIView):
     """Create isochrone"""
 
     permission_classes = (
@@ -220,7 +221,7 @@ class OpenrouteServiceIsochroneView(View):
         try:
             result = isochrone(profile, params)
         except Exception as ex:
-            return Response({'result': False, 'error': str(ex)}, status=500)
+            return Response({'result': False, 'error': str(ex)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         if result.status_code == 200:
             try:
@@ -230,8 +231,8 @@ class OpenrouteServiceIsochroneView(View):
                 # Apply style
 
             except Exception as ex:
-                return Response({'result': False, 'error': str(ex)}, status=500)
+                return Response({'result': False, 'error': str(ex)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
             return Response({'result': True, 'qgis_layer_id': qgis_layer_id})
         else:
-            return Response({'result': False, 'error': result.json()['error']['message']}, status=500)
+            return Response({'result': False, 'error': result.json()['error']['message']}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

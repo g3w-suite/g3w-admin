@@ -21,6 +21,7 @@ from qdjango.models import Layer, Project
 from qdjango.utils.data import QgisProject
 from qgis.core import QgsProject
 from rest_framework import status
+from rest_framework.test import APIClient
 from django.core.files.uploadedfile import SimpleUploadedFile
 
 from .base import CURRENT_PATH, TEST_BASE_PATH, QdjangoTestBase

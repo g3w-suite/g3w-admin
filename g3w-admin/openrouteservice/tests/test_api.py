@@ -96,7 +96,7 @@ from django.conf import settings
 from django.core.files import File
 from django.core.management import call_command
 from django.shortcuts import get_object_or_404
-from django.test import Client, override_settings
+from django.test import override_settings
 from django.urls import reverse
 from guardian.shortcuts import assign_perm, remove_perm
 from openrouteservice.utils import db_connections
@@ -110,6 +110,8 @@ from qgis.core import (Qgis, QgsDataSourceUri, QgsProject, QgsProviderRegistry,
                        QgsVectorLayer)
 from qgis.PyQt.QtCore import QTemporaryDir
 from qgis.PyQt.QtGui import QImage
+from rest_framework import status
+from rest_framework.test import APIClient
 from vcr.record_mode import RecordMode
 from vcr_unittest import VCRMixin
 
@@ -211,6 +213,10 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
             )
             assert created
 
+    def setUp(self):
+        super().setUp()
+        self.client = APIClient()
+
     @classmethod
     def tearDownClass(cls):
         super().tearDownClass()
@@ -241,11 +247,11 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
 
         if style is not None:
             data['color'] = style['color']
-            data['tranpsarency'] = style['transparency']
+            data['transparency'] = style['transparency']
 
         response = self._testPostApiCall(
             'openrouteservice-isochrone', [self.qdjango_project.pk], data)
-        self.assertEqual(response.status_code, 200, response.json())
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.json())
         jresponse = response.json()
         self.assertEqual(jresponse['result'], True)
         qgis_layer_id = jresponse['qgis_layer_id']
@@ -268,7 +274,7 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
         self.assertFalse(Project.objects.get(
             pk=self.qdjango_project.pk).is_locked)
 
-    def _testApiCall(self, view_name, args, kwargs={}, status_auth=200, login=True, logout=True):
+    def _testApiCall(self, view_name, args, kwargs={}, status_auth=status.HTTP_200_OK, login=True, logout=True):
         """Utility to make test calls for admin01 user"""
 
         path = reverse(view_name, args=args)
@@ -282,7 +288,7 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
         # No auth
         if login and logout:
             response = self.client.get(path)
-            self.assertIn(response.status_code, [302, 403])
+            self.assertIn(response.status_code, [status.HTTP_302_FOUND, status.HTTP_403_FORBIDDEN])
 
         # Auth
         if login:
@@ -293,7 +299,7 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
             self.client.logout()
         return response
 
-    def _testPostApiCall(self, view_name, args, data, kwargs={}, status_auth=200, login=True, logout=True):
+    def _testPostApiCall(self, view_name, args, data, kwargs={}, status_auth=status.HTTP_200_OK, login=True, logout=True):
         """Utility to make test calls for admin01 user"""
 
         path = reverse(view_name, args=args)
@@ -307,15 +313,16 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
         # No auth
         if login and logout:
             response = self.client.post(
-                path, data, content_type='application/json')
-            self.assertIn(response.status_code, [302, 403])
+                path, data, format='json')
+            self.assertIn(response.status_code, [
+                          status.HTTP_302_FOUND, status.HTTP_403_FORBIDDEN])
 
         # Auth
         if login:
             self.assertTrue(self.client.login(
                 username='admin01', password='admin01'))
         response = self.client.post(
-            path, data, content_type='application/json')
+            path, data, format='json')
         if logout:
             self.client.logout()
         return response
@@ -365,7 +372,7 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
         wrong_data['ors']['locations'] = [[0, 0]]
         response = self._testPostApiCall(
             'openrouteservice-isochrone', [self.qdjango_project.pk], wrong_data)
-        self.assertEqual(response.status_code, 500)
+        self.assertEqual(response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
         jresponse = response.json()
         self.assertEqual(jresponse['result'], False)
         self.assertEqual(jresponse['error'],
@@ -374,7 +381,7 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
         # Test correct location
         response = self._testPostApiCall(
             'openrouteservice-isochrone', [self.qdjango_project.pk], data)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         jresponse = response.json()
         self.assertEqual(jresponse['result'], True)
         self.assertEqual(jresponse['qgis_layer_id'], layer.id())
@@ -384,7 +391,7 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
         data['ors']['locations'] = [[-90.19789, 38.62727]]
         response = self._testPostApiCall(
             'openrouteservice-isochrone', [self.qdjango_project.pk], data)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         jresponse = response.json()
         self.assertEqual(jresponse['result'], True)
         self.assertEqual(jresponse['qgis_layer_id'], layer.id())
@@ -490,7 +497,7 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
         """Test style creation"""
 
         style = {
-            'color': [50, 200, 200],
+            'color': [50, 100, 200],
             'transparency': 0.9
         }
 
