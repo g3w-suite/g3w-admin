@@ -15,6 +15,7 @@ __copyright__ = 'Copyright 2020, Gis3w'
 import json
 
 from django.conf import settings
+from django.http import SimpleCookie
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.files import File
 from django.urls import reverse
@@ -569,6 +570,7 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         session_filters = SessionTokenFilter.objects.all()
         self.assertEqual(len(session_filters), 0)
 
+
         # test check filtertoken
         resp = json.loads(self._testApiCall('core-vector-api',
                                             ['filtertoken', 'qdjango', self.project310.instance.pk,
@@ -673,6 +675,26 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         session_filters = SessionTokenFilter.objects.all()
         self.assertEqual(len(session_filters), 0)
         self.assertEqual(SessionTokenFilter.objects.count(), 0)
+
+        # give grant to Anonymous user
+        assign_perm('view_project', get_anonymous_user(), self.project310.instance)
+
+        # test filtertoken for Anonymous user
+        # create cfrtoken
+        self.client.cookies = SimpleCookie({'csrftoken': 'wtegdnfj5736sgreth57Tg5473'})
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['filtertoken', 'qdjango', self.project310.instance.pk,
+                                             cities.qgs_layer_id], {
+                                                'fidsin': '1,2,3,4'
+                                            }, logout=False, login=False).content)
+
+        session_filters = SessionTokenFilter.objects.all()
+        self.assertEqual(len(session_filters), 1)
+        sf = session_filters[0]
+        self.assertEqual(sf.token, resp['data']['filtertoken'])
+
+        # reset token table
+        sf.delete()
 
     def testCoreVectorApiDataFormatter(self):
         """Test core-vector-api data with qgis formatter enabled"""

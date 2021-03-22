@@ -305,7 +305,8 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         :return: str
         """
 
-        sessionid = request.COOKIES[settings.SESSION_COOKIE_NAME]
+        sessionid = request.COOKIES[settings.SESSION_COOKIE_NAME] \
+            if not request.user.is_anonymous else request.COOKIES['csrftoken']
 
         if request.method == 'POST':
             request_data = request.data
