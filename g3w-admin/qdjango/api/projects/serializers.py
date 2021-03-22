@@ -411,6 +411,7 @@ class LayerSerializer(serializers.ModelSerializer):
             'download_xls',
             'download_gpx',
             'download_csv',
+            'download_gpkg',
             'editor_form_structure',
             'styles',
         )
