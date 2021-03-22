@@ -100,10 +100,11 @@ class OpenrouteServiceIsochroneView(G3WAPIView):
             'profile': "driving-car",
             'color': [<red>, <green>, <blue>],  // 0-255 RGB values
             'transparency': 0.5, // 0-1, 0: fully opaque, 1: fully transparent
+            'pen_width': 1, // integer
             // This goes straight to ORS API
             'ors': {
                 "locations":[[10.859513,43.401984]],
-                "range_type":"time",
+                "range_type":"time",  // Time or distance
                 "range":[480],
                 "interval":60,
                 "location_type":"start",
@@ -129,6 +130,12 @@ class OpenrouteServiceIsochroneView(G3WAPIView):
         # ... or
         new_layer_name = body['new_layer_name']
         connection_id = body['connection_id']
+
+        # Metadata (isochrone name)
+        try:
+            name = body['name']
+        except KeyError:
+            name = None
 
         # Style information (optional)
         try:
@@ -226,7 +233,7 @@ class OpenrouteServiceIsochroneView(G3WAPIView):
         if result.status_code == 200:
             try:
                 qgis_layer_id = add_geojson_features(result.content.decode(
-                    'utf-8'), project, qgis_layer_id, connection, new_layer_name)
+                    'utf-8'), project, qgis_layer_id, connection, new_layer_name, name)
 
                 # Apply style
 

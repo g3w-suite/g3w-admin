@@ -224,7 +224,7 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
         iface.removeConfigCacheEntry(
             cls.qdjango_project.qgis_project.fileName())
 
-    def _check_layer(self, new_name, connection_id=None, qgis_layer_id=None, count=8, style=None):
+    def _check_layer(self, new_name, connection_id=None, qgis_layer_id=None, count=8, style=None, name=None):
 
         data = {
             'qgis_layer_id': qgis_layer_id,
@@ -245,13 +245,18 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
             }
         }
 
+        if name is not None:
+            data['name'] = name
+
         if style is not None:
             data['color'] = style['color']
             data['transparency'] = style['transparency']
+            data['pen_width'] = style['pen_width']
 
         response = self._testPostApiCall(
             'openrouteservice-isochrone', [self.qdjango_project.pk], data)
-        self.assertEqual(response.status_code, status.HTTP_200_OK, response.json())
+        self.assertEqual(response.status_code,
+                         status.HTTP_200_OK, response.json())
         jresponse = response.json()
         self.assertEqual(jresponse['result'], True)
         qgis_layer_id = jresponse['qgis_layer_id']
@@ -288,7 +293,8 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
         # No auth
         if login and logout:
             response = self.client.get(path)
-            self.assertIn(response.status_code, [status.HTTP_302_FOUND, status.HTTP_403_FORBIDDEN])
+            self.assertIn(response.status_code, [
+                          status.HTTP_302_FOUND, status.HTTP_403_FORBIDDEN])
 
         # Auth
         if login:
@@ -372,7 +378,8 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
         wrong_data['ors']['locations'] = [[0, 0]]
         response = self._testPostApiCall(
             'openrouteservice-isochrone', [self.qdjango_project.pk], wrong_data)
-        self.assertEqual(response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
+        self.assertEqual(response.status_code,
+                         status.HTTP_500_INTERNAL_SERVER_ERROR)
         jresponse = response.json()
         self.assertEqual(jresponse['result'], False)
         self.assertEqual(jresponse['error'],
@@ -402,7 +409,24 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
 
         self._check_layer('isochrone gpkg', connection_id='__geopackage__')
         self._check_layer('isochrone shp', connection_id='__shapefile__')
-        self._check_layer('isochrone sqlite', connection_id='__spatialite__')
+        self._check_layer('isochrone sqlite',
+                          connection_id='__spatialite__', name='my isochrone')
+
+        # Check metadata fields
+        layer = self.qdjango_project.qgis_project.mapLayersByName('isochrone sqlite')[
+            0]
+        self.assertEqual([f.name() for f in layer.fields()], ['ogc_fid',
+                                                              'group_index',
+                                                              'value',
+                                                              'center',
+                                                              'area',
+                                                              'reachfactor',
+                                                              'range_type',
+                                                              #'timestamp',
+                                                              'name'])
+        feature = next(layer.getFeatures())
+        self.assertEqual(feature.attribute('range_type'), 'time')
+        self.assertEqual(feature.attribute('name'), 'my isochrone')
 
         # Check connections
         connections = db_connections(self.qdjango_project.qgis_project)
@@ -498,7 +522,8 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
 
         style = {
             'color': [50, 100, 200],
-            'transparency': 0.9
+            'transparency': 0.9,
+            'pen_width': 1
         }
 
         self._check_layer('isochrone gpkg style',

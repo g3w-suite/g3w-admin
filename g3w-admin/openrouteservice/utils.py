@@ -21,6 +21,7 @@ from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 from qgis.core import (
     QgsJsonUtils,
+    QgsField,
     QgsVectorLayerUtils,
     QgsDataProvider,
     QgsMapLayerType,
@@ -36,7 +37,7 @@ from qgis.core import (
 )
 from .models import ORS_REQUIRED_LAYER_FIELDS
 from qdjango.models import Layer, QgisProjectFileLocker
-from qgis.PyQt.QtCore import QTemporaryDir, QVariant
+from qgis.PyQt.QtCore import QTemporaryDir, QVariant, QDateTime, Qt
 
 ORS_API_KEY = getattr(settings, 'ORS_API_KEY', None)
 
@@ -179,7 +180,34 @@ def isochrone(profile, params):
     return response
 
 
-def add_geojson_features(geojson, project, qgis_layer_id=None, connection_id=None, new_layer_name=None):
+def apply_style(layer, style, is_new, name):
+    """Apply the style to a new or existing layer
+
+    :param layer: QGIS layer instance
+    :type layer: QgsVectorLayer
+    :param style: optional, dictionary with style properties: example {'color': [100, 50, 123], 'transparency': 0.5, 'pen_width: 3 }
+    :type style: dict
+    :param is_new: True is the layer is a new layer
+    :type is_new: bool
+    :param name: name of the isochrone, if blank/None create a timestamp for the name if the layer is not new
+    :type name: str
+    """
+
+    if style is None:
+        return
+
+    if not name:
+        name = QDateTime.currentDateTime().toString(Qt.ISODate)
+
+    if is_new:  # Create the new style
+        pass
+    else:
+        # Check for rule based renderer, pass if not present
+        pass
+
+
+
+def add_geojson_features(geojson, project, qgis_layer_id=None, connection_id=None, new_layer_name=None, name=None, style=None):
     """Add geojson features to a destination layer, the layer can be specified
     by passing a QgsVectorLayer instance or by specifying a connection and
     a new layer name plus the QDjango project for the new layer.
@@ -202,11 +230,35 @@ def add_geojson_features(geojson, project, qgis_layer_id=None, connection_id=Non
     :type connection: str
     :param new_layer_name: optional, name of the new layer
     :type new_layer_name: str
+    :param name: optional, name of the isochrone
+    :type name: str
+    :param style: optional, dictionary with style properties: example {'color': [100, 50, 123], 'transparency': 0.5, 'pen_width: 3 }
+    :type style: dict
     :raises Exception: raise on error
     :rtype: str
     """
 
+    # Additional fields that are not returned by the service as feature attributes
+    json_data = json.loads(geojson)
+
+    metadata = {
+        'range_type': json_data['metadata']['query']['range_type'],
+        # 'timestamp': json_data['metadata']['timestamp'],  // Not supported
+    }
+
+    if name is not None:
+        metadata['name'] = name
+
+    for f in json_data['features']:
+        f['properties'].update(metadata)
+
+    geojson = json.dumps(json_data)
+
     fields = QgsJsonUtils.stringToFields(geojson)
+
+    # Patch timestamp type to DateTime // Not supported
+    # fields.remove(fields.lookupField('timestamp'))
+    #fields.append(QgsField('timestamp', QVariant.DateTime))
 
     # Create the new layer
     if connection_id is not None:
@@ -220,6 +272,7 @@ def add_geojson_features(geojson, project, qgis_layer_id=None, connection_id=Non
                 f.write(geojson)
 
             tmp_layer = QgsVectorLayer(tmp_path, 'tmp_isochrone', 'ogr')
+
             if not tmp_layer.isValid():
                 raise Exception(
                     _('Cannot create temporary layer for isochrone result.'))
@@ -334,6 +387,7 @@ def add_geojson_features(geojson, project, qgis_layer_id=None, connection_id=Non
         layer = QgsVectorLayer(layer_uri, new_layer_name, provider)
 
         with QgisProjectFileLocker(project) as project:
+            apply_style(layer, style)
             project.qgis_project.addMapLayers([layer])
             project.update_qgis_project()
 
