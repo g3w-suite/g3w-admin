@@ -36,32 +36,39 @@ if hasattr(settings, 'QGIS_AUTH_PASSWORD_FILE') and settings.QGIS_AUTH_PASSWORD_
                 settings.QGIS_AUTH_PASSWORD_FILE, ex))
     os.environ['QGIS_AUTH_PASSWORD_FILE'] = settings.QGIS_AUTH_PASSWORD_FILE
 
+QGS_APPLICATION = None
+QGS_SERVER_SETTINGS = None
+QGS_SERVER = None
 
-# create a reference to the QgsApplication
-# setting the second argument to True enables the GUI, which we do not need to do
-# since this is a custom application
-QGS_APPLICATION = QgsApplication([], False)
+def init_qgis():
 
-# load providers
-QGS_APPLICATION.initQgis()
+    global QGS_APPLICATION, QGS_SERVER_SETTINGS, QGS_SERVER
 
-if hasattr(settings, 'QGIS_AUTH_PASSWORD') and settings.QGIS_AUTH_PASSWORD:
-    if not QgsApplication.authManager().setMasterPassword(settings.QGIS_AUTH_PASSWORD, True):
-        raise ImproperlyConfigured(
-            'Error setting QGIS Auth DB master password from settings.QGIS_AUTH_PASSWORD')
+    # create a reference to the QgsApplication
+    # setting the second argument to True enables the GUI, which we do not need to do
+    # since this is a custom application
+    QGS_APPLICATION = QgsApplication([], False)
+
+    # load providers
+    QGS_APPLICATION.initQgis()
+
+    if hasattr(settings, 'QGIS_AUTH_PASSWORD') and settings.QGIS_AUTH_PASSWORD:
+        if not QgsApplication.authManager().setMasterPassword(settings.QGIS_AUTH_PASSWORD, True):
+            raise ImproperlyConfigured(
+                'Error setting QGIS Auth DB master password from settings.QGIS_AUTH_PASSWORD')
 
 
-# Do any environment manipulation here, before we create the server
-# and the settings are read
-os.environ['QGIS_SERVER_IGNORE_BAD_LAYERS'] = '1'
+    # Do any environment manipulation here, before we create the server
+    # and the settings are read
+    os.environ['QGIS_SERVER_IGNORE_BAD_LAYERS'] = '1'
 
-QGS_SERVER_SETTINGS = QgsServerSettings()
-QGS_SERVER_SETTINGS.load()
+    QGS_SERVER_SETTINGS = QgsServerSettings()
+    QGS_SERVER_SETTINGS.load()
 
-# Create a singleton server instance, this is not really necessary but it
-# may be a little faster than creating a new instance every time we handle
-# a request
-QGS_SERVER = QgsServer()
+    # Create a singleton server instance, this is not really necessary but it
+    # may be a little faster than creating a new instance every time we handle
+    # a request
+    QGS_SERVER = QgsServer()
 
 
 def get_qgs_project(path):
@@ -156,6 +163,8 @@ class QdjangoConfig(AppConfig):
     def ready(self):
 
         post_migrate.connect(GiveBaseGrant, sender=self)
+
+        init_qgis()
 
         # import signals receivers
         import qdjango.receivers
