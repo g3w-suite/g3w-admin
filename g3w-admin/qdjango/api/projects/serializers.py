@@ -552,9 +552,19 @@ class LayerSerializer(serializers.ModelSerializer):
             else:
                 datasourceWMS = datasourcearcgis2dict(instance.datasource)
 
-            if ('username' not in ret['source'] or 'password' not in ret['source']) and 'type=xyz' not in instance.datasource:
-                ret['source'].update(datasourceWMS.dict() if isinstance(
-                    datasourceWMS, QueryDict) else datasourceWMS)
+            if ('username' not in ret['source'] or 'password' not in ret['source']) and 'type=xyz' \
+                    not in instance.datasource:
+
+                # rebuild the dict for paramenters repeat n times i.e. 'layers' and 'styles'
+                if isinstance(datasourceWMS, QueryDict):
+                    for p in datasourceWMS.lists():
+                        if p[0] in ('layers', 'styles'):
+                            ret['source'].update({p[0]: ','.join(p[1])})
+                        else:
+                            ret['source'].update({p[0]: datasourceWMS[p[0]]})
+                else:
+                    ret['source'].update(datasourceWMS)
+
 
             ret['source']['external'] = instance.external
 
