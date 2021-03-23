@@ -16,11 +16,14 @@ from django.test.runner import DiscoverRunner, _teardown_databases
 from qdjango.apps import QGS_APPLICATION, QGS_SERVER
 from qgis.server import QgsConfigCache
 
+
 class G3wSuiteTestRunner(DiscoverRunner):
     """Custom test runner that calls exit QGIS on tear down"""
 
     def teardown_databases(self, old_config, **kwargs):
         """Destroy all the non-mirror databases and cleanup projects."""
+
+        global QGS_SERVER
 
         try:
             QgsConfigCache.instance().removeEntry(QGS_SERVER.project.qgis_project.fileName())

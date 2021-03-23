@@ -218,13 +218,6 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
         super().setUp()
         self.client = APIClient()
 
-    @classmethod
-    def tearDownClass(cls):
-        super().tearDownClass()
-        iface = QGS_SERVER.serverInterface()
-        iface.removeConfigCacheEntry(
-            cls.qdjango_project.qgis_project.fileName())
-
     def _check_layer(self, new_name, connection_id=None, qgis_layer_id=None, count=8, style=None, name=None):
 
         data = {
@@ -336,7 +329,7 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
             self.client.logout()
         return response
 
-    def est_compatible_layers(self):
+    def test_compatible_layers(self):
         """Test can retrieve compatible layers"""
 
         response = self._testApiCall(
@@ -372,7 +365,7 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
                 "attributes": [
                     "area",
                     "reachfactor",
-                    "total_pop"
+                    # "total_pop" <<--- currently not available
                 ]
             }
         }
@@ -534,7 +527,7 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
         }
 
         layer = self._check_layer('isochrone gpkg style',
-                          connection_id='__geopackage__', style=style)
+                                  connection_id='__geopackage__', style=style)
 
         settings = layer.labeling().settings()
         text_format = settings.format()
@@ -547,29 +540,29 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
         self.assertEqual(color.red(), style['color'][0])
         self.assertEqual(color.green(), style['color'][1])
         self.assertEqual(color.blue(), style['color'][2])
-        self.assertAlmostEqual(rule.symbol().opacity(), 1 - style['transparency'], delta=0.1)
+        self.assertAlmostEqual(rule.symbol().opacity(),
+                               1 - style['transparency'], delta=0.1)
         symbol_layer = rule.symbol().symbolLayers()[0]
         self.assertEqual(symbol_layer.strokeWidth(), style['stroke_width'])
 
         # Test append to existing
-        style= {
+        style = {
             'color': [100, 50, 150],
             'transparency': 0.5,
             'stroke_width': 0.29
         }
 
-        layer=self._check_layer('isochrone gpkg style',
+        layer = self._check_layer('isochrone gpkg style',
                                   qgis_layer_id=layer.id(), count=16, style=style, name='Appended Isochrone')
 
-        renderer=layer.renderer()
+        renderer = layer.renderer()
         root_rule = renderer.rootRule()
-        rule=root_rule.children()[1]
-        color=rule.symbol().color()
+        rule = root_rule.children()[1]
+        color = rule.symbol().color()
         self.assertEqual(color.red(), style['color'][0])
         self.assertEqual(color.green(), style['color'][1])
         self.assertEqual(color.blue(), style['color'][2])
         self.assertAlmostEqual(rule.symbol().opacity(), 1 -
-                         style['transparency'], delta=0.1)
+                               style['transparency'], delta=0.1)
         symbol_layer = rule.symbol().symbolLayers()[0]
         self.assertEqual(symbol_layer.strokeWidth(), style['stroke_width'])
-
