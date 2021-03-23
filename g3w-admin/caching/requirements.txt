@@ -1,5 +1,5 @@
 #tilestache
-git+https://github.com/gis3w/TileStache/commits/master.git
+git+https://github.com/gis3w/TileStache.git
 python3-memcached
 python-memcached-stats
 
