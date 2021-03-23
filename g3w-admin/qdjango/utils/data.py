@@ -610,7 +610,7 @@ class QgisProjectLayer(XmlData):
 
     def save(self):
         """
-        Save o update layer instance into db
+        Save or update layer instance into db
         """
 
         columns = json.dumps(self.columns) if self.columns else None
@@ -787,8 +787,6 @@ class QgisProject(XmlData):
         else:
             project_file = self.qgisProjectFile.name
 
-
-
         self.qgs_project = get_qgs_project(project_file)
 
         if self.qgs_project is None:
@@ -808,14 +806,14 @@ class QgisProject(XmlData):
 
             self.qgs_project = get_qgs_project(project_file)
             if self.qgs_project is None:
-                raise QgisProjectException(_('Could not read QGIS project file: {}').format(project_file))
+                raise QgisProjectException(
+                    _('Could not read QGIS project file: {}').format(project_file))
 
             self.qgs_project.readProject.connect(
                 _readCanvasSettings, Qt.DirectConnection)
 
             # Re-read to get map canvas settings (extent)
             self.qgs_project.read(project_file)
-
 
     def closeProject(self, **kwargs):
         """

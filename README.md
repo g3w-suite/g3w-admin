@@ -23,7 +23,7 @@ At the moment is not used a classic versioning system for the suite, there are m
 | v.3.1.x | 3.6 | 2.2 | Used | Bug fixing |
 | v.3.0.x | 3.6 | 2.2 | Used | No longer supported |
 | dj22-py3 | 3.6 | 2.2 | Not used | No longer supported  |
-| py2 | 2.7 | 1.11 | Not used |No longer supported  |        
+| py2 | 2.7 | 1.11 | Not used |No longer supported  |
 
 The following instructions are for a Ubuntu 18.04 LTS.
 
@@ -42,7 +42,7 @@ https://yarnpkg.com/en/docs/install#debian-stable
 
 [**Virtualenv**](https://virtualenv.pypa.io/en/stable/)
 
-The following instructions are for python 3.6 
+The following instructions are for python 3.6
 
 Install python pip
 
@@ -66,7 +66,7 @@ source /usr/local/bin/virtualenvwrapper.sh
 ## Virtualenv creation
 To create a virtualnenv is sufficent call mkvirtualenv commando follow by the identification name for virtualenv (to use QGIS API into a virtualenv only solution is to give access python system site-packages to it using *--system-site-packages* option)
 ```bash
-mkvirtualenv --system-site-packages g3wsuite 
+mkvirtualenv --system-site-packages g3wsuite
 ```
 
 ## Install G3W-SUITE
@@ -82,14 +82,6 @@ sudo apt-get install -y \
     python-dev
 ```
 
-after is necessary install the correct python module for GDAL library, check your version and install correct module
-
-```bash
-export CPLUS_INCLUDE_PATH=/usr/include/gdal
-export C_INCLUDE_PATH=/usr/include/gdal
-
-pip install GDAL==<installed_version or closest>
-```
 
 ### Set local_config.py file
 G3W-ADMIN is a Django application, and to work is necessary set a config.py file. To start copy local_settings.example.py and set the databse and other:

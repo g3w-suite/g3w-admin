@@ -16,3 +16,13 @@ import os
 
 # Frontend/Portal
 FRONTEND = False
+
+# OPENROUTESERVICE SETTINGS
+# ===============================
+# follow settings work if 'openrouteservice' module is in 'G3WADMIN_LOCAL_MORE_APPS'
+# ORS API endpoint
+ORS_API_ENDPOINT = 'http://localhost:8080/ors/v2/'
+# Optional, can be blank if the key is not required by the endpoint
+ORS_API_KEY = ''
+# List of available ORS profiles
+ORS_PROFILES = ("driving-car", "driving-hgv")
