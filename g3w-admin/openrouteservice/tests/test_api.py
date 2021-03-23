@@ -336,7 +336,7 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
             self.client.logout()
         return response
 
-    def ___test_compatible_layers(self):
+    def est_compatible_layers(self):
         """Test can retrieve compatible layers"""
 
         response = self._testApiCall(
@@ -350,7 +350,7 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
         self.assertEqual(
             connection['name'], '{NAME} (postgres host:{HOST}, port:{PORT}, schema:\'openrouteservice test\')'.format(**settings.DATABASES['default']))
 
-    def ___test_isochrone_append_postgis(self):
+    def test_isochrone_append_postgis(self):
         """Test isochrone append features to an existing PG layer"""
 
         layer = self.qdjango_project.qgis_project.mapLayersByName(
@@ -405,10 +405,13 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         jresponse = response.json()
         self.assertEqual(jresponse['result'], True)
+        # Reload layer, because the project was changed
+        layer = self.qdjango_project.qgis_project.mapLayersByName(
+            'openrouteservice_compatible')[0]
         self.assertEqual(jresponse['qgis_layer_id'], layer.id())
         self.assertEqual(layer.featureCount(), 16)
 
-    def ___test_create_new_layer(self):
+    def test_create_new_layer(self):
         """Test create new layers"""
 
         self._check_layer('isochrone gpkg', connection_id='__geopackage__')
