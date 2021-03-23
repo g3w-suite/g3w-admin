@@ -393,9 +393,9 @@ _.extend(g3wadmin.ui, {
             ga.widget.showDetailItemDataTable($dataTable, $(this));
         });
 
-        if (CURRENT_LANGUAGE_CODE != 'en') {
+        /*if (CURRENT_LANGUAGE_CODE != 'en') {
             options['language'] = DATATABLE_LANGS[CURRENT_LANGUAGE_CODE]
-        }
+        }*/
 
         var $dataTable = $widgetItem.DataTable(options);
 

@@ -803,18 +803,13 @@ ga.Qdjango.widgetEditor = {
       var $dataTable = $item.parents('[data-widget-type="dataTable"]').DataTable()
       ga.widget.showDetailItemDataTable($dataTable, $item, true)
 
-      // get row and update widject counter
+      // get row and update widget counter
       $item
         .parent()
-        .next()
+        .find(".label")
         .html($item.parents("tr").next().find("tr").length - 1)
     })
-    /*
-		var button = this.form.find("button.confirm");
-		this.form.find("button.confirm").click(function(){
-			that.onFormSubmit();
-		});
-		*/
+
     $("#id_widget_type").change(function () {
       that.onWidgetTypeChange($(this))
     })
