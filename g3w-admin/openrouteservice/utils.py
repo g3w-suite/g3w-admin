@@ -16,6 +16,7 @@ import requests
 import json
 import os
 import re
+import hashlib
 from django.conf import settings
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
@@ -50,6 +51,17 @@ from qgis.PyQt.QtGui import QColor
 ORS_API_KEY = getattr(settings, 'ORS_API_KEY', None)
 
 
+def get_connection_hash(connection_uri):
+    """Create a connection id (md5 hash) from a connection data source uri.
+
+    :param connection_uri:connection data source uri
+    :type connection_uri: str
+    :return: connection id
+    :rtype: str
+    """
+    return hashlib.md5(connection_uri.encode('utf-8')).hexdigest()
+
+
 def is_ors_compatible(layer):
     """Check layer ORS compatibility"""
 
@@ -73,7 +85,7 @@ def db_connections(qgis_project):
     Returned dictionary:
 
     {
-        '<connection id>':
+        '<connection datasource uri>':  // <--- !!! may contain credentials !!!
         {
             'id': "dbname='test_g3w-admin' host=localhost port=5432 user='ale' sslmode=disable schema='public'",
             'name': "test_g3w-admin (postgres host:localhost, port:5432, schema:'public')",
@@ -83,7 +95,11 @@ def db_connections(qgis_project):
 
     }
 
-    Warning: the dictionary key may contain secrets(passwords): do not disclose to the client.
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+    Warning: the dictionary key may contain secrets(passwords): do not disclose to the client!
+
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     :param qgis_project: QGIS vector layer instance
     :type qgis_project: QgsVectorLayer
@@ -105,7 +121,7 @@ def db_connections(qgis_project):
                     path = re.sub(r'\|layername=.*$', '', path,  re.IGNORECASE)
                     name = os.path.basename(path)
                     connections[path] = {
-                        'id': name,
+                        'id': get_connection_hash(path),
                         'name': name,
                         'provider': dp.name(),
                     }
@@ -137,9 +153,10 @@ def db_connections(qgis_project):
 
                         conn_name = "{dbname} ({provider_name} {details})".format(
                             dbname=os.path.basename(uri.database()), provider_name=dp.name(), details=details)
+
                         if not conn_id in connections:
                             connections[conn_id] = {
-                                'id': QgsDataSourceUri.removePassword(conn_id),
+                                'id': get_connection_hash(conn_id),
                                 'name': conn_name,
                                 'provider': dp.name(),
                                 'schema': dp.uri().schema()

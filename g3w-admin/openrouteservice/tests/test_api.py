@@ -99,7 +99,7 @@ from django.shortcuts import get_object_or_404
 from django.test import override_settings
 from django.urls import reverse
 from guardian.shortcuts import assign_perm, remove_perm
-from openrouteservice.utils import db_connections
+from openrouteservice.utils import db_connections, get_connection_hash
 from qdjango.apps import QGS_SERVER, get_qgs_project
 from qdjango.models import (ConstraintExpressionRule,
                             ConstraintSubsetStringRule, Layer, Project,
@@ -338,8 +338,6 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
         ).keys() if k.startswith('openrouteservice_compatible')])
         connection = response.json()['connections'][0]
         self.assertEqual(connection['provider'], 'postgres')
-        self.assertTrue(connection['id'].startswith(
-            "dbname='{NAME}' host={HOST} port={PORT}".format(**settings.DATABASES['default'])), connection['id'])
         self.assertEqual(
             connection['name'], '{NAME} (postgres host:{HOST}, port:{PORT}, schema:\'openrouteservice test\')'.format(**settings.DATABASES['default']))
 
@@ -432,17 +430,16 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
         connections = db_connections(self.qdjango_project.qgis_project)
         self.assertEqual(len(connections), 3)
         conn_uri = self.conn_uri + ' schema=\'openrouteservice test\''
-        connection_id = QgsDataSourceUri.removePassword(conn_uri)
         connection_key = conn_uri
         self.assertTrue(connection_key in connections)
         connection = connections[connection_key]
-        self.assertEqual(connection['id'], connection_id)
+        self.assertEqual(connection['id'], get_connection_hash(connection_key))
         self.assertEqual(connection['provider'], 'postgres')
-        self.assertEqual(sorted([c['id'] for c in connections.values() if c['provider'] == 'ogr']), sorted(
+        self.assertEqual(sorted([c['name'] for c in connections.values() if c['provider'] == 'ogr']), sorted(
             ['isochrone gpkg.gpkg', 'isochrone sqlite.sqlite']))
 
         # Test DB layer creation
-        self._check_layer('isochrone postgres', connection_id=connection_id)
+        self._check_layer('isochrone postgres', connection_id=connection['id'])
 
         # Test layer creation for gpkg
         gpkg_connection_id = [v['id']
@@ -506,8 +503,6 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
         self.assertTrue(created)
         connections = db_connections(self.qdjango_project.qgis_project)
         self.assertIn(sqlite_path, connections.keys())
-        sqlite_connection_id = [c['id']
-                                for c in connections.values() if c['provider'] == 'spatialite'][0]
         self._check_layer(new_layer_name,
                           qgis_layer_id=qgis_layer_id, count=16)
 
