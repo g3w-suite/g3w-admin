@@ -100,7 +100,8 @@ class OpenrouteServiceIsochroneView(G3WAPIView):
             'profile': "driving-car",
             'color': [<red>, <green>, <blue>],  // 0-255 RGB values
             'transparency': 0.5, // 0-1, 0: fully opaque, 1: fully transparent
-            'pen_width': 1, // integer
+            'name' : 'name of the new isochrone',
+            'stroke_width': 0.26, // float, QGIS default is 0.26
             // This goes straight to ORS API
             'ors': {
                 "locations":[[10.859513,43.401984]],
@@ -111,7 +112,7 @@ class OpenrouteServiceIsochroneView(G3WAPIView):
                 "attributes":[
                     "area",
                     "reachfactor",
-                    "total_pop"
+                    // "total_pop" // unsupported
                 ]
             }
         }
@@ -165,10 +166,21 @@ class OpenrouteServiceIsochroneView(G3WAPIView):
                 raise ValidationError(_(
                     'Wrong tranparency parameter, transparency must be between 0 and 1.'))
 
+            try:
+                stroke_width = float(body['stroke_width'])
+            except KeyError:
+                raise ValidationError(_(
+                    'Missing stroke_width from style definition.'))
+
+            style = {
+                'color': color,
+                'transparency': transparency,
+                'stroke_width': stroke_width,
+            }
+
         except KeyError:
 
-            transparency = None
-            color = None
+            style = None
 
         if qgis_layer_id:
             qgis_layer = project.qgis_project.mapLayer(qgis_layer_id)
@@ -233,9 +245,7 @@ class OpenrouteServiceIsochroneView(G3WAPIView):
         if result.status_code == 200:
             try:
                 qgis_layer_id = add_geojson_features(result.content.decode(
-                    'utf-8'), project, qgis_layer_id, connection, new_layer_name, name)
-
-                # Apply style
+                    'utf-8'), project, qgis_layer_id, connection, new_layer_name, name, style)
 
             except Exception as ex:
                 return Response({'result': False, 'error': str(ex)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

@@ -128,7 +128,8 @@ temp_datasource = QTemporaryDir()
     LANGUAGES=(
         ('en', 'English'),
 ),
-    DATASOURCE_PATH=temp_datasource.path()
+    DATASOURCE_PATH=temp_datasource.path(),
+    MEDIA_ROOT=temp_datasource.path(),
 )
 class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
     """Test proxy to QgsServer"""
@@ -251,7 +252,7 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
         if style is not None:
             data['color'] = style['color']
             data['transparency'] = style['transparency']
-            data['pen_width'] = style['pen_width']
+            data['stroke_width'] = style['stroke_width']
 
         response = self._testPostApiCall(
             'openrouteservice-isochrone', [self.qdjango_project.pk], data)
@@ -278,6 +279,8 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
 
         self.assertFalse(Project.objects.get(
             pk=self.qdjango_project.pk).is_locked)
+
+        return qgis_layer
 
     def _testApiCall(self, view_name, args, kwargs={}, status_auth=status.HTTP_200_OK, login=True, logout=True):
         """Utility to make test calls for admin01 user"""
@@ -333,7 +336,7 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
             self.client.logout()
         return response
 
-    def test_compatible_layers(self):
+    def ___test_compatible_layers(self):
         """Test can retrieve compatible layers"""
 
         response = self._testApiCall(
@@ -347,7 +350,7 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
         self.assertEqual(
             connection['name'], '{NAME} (postgres host:{HOST}, port:{PORT}, schema:\'openrouteservice test\')'.format(**settings.DATABASES['default']))
 
-    def test_isochrone_append_postgis(self):
+    def ___test_isochrone_append_postgis(self):
         """Test isochrone append features to an existing PG layer"""
 
         layer = self.qdjango_project.qgis_project.mapLayersByName(
@@ -358,6 +361,7 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
             'qgis_layer_id': layer.id(),
             'connection_id': None,
             'new_layer_name': None,
+            'name': 'New isochrone',
             "profile": "driving-car",
             'ors': {
                 "locations": [[-77.023902, 38.902293]],
@@ -404,7 +408,7 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
         self.assertEqual(jresponse['qgis_layer_id'], layer.id())
         self.assertEqual(layer.featureCount(), 16)
 
-    def test_create_new_layer(self):
+    def ___test_create_new_layer(self):
         """Test create new layers"""
 
         self._check_layer('isochrone gpkg', connection_id='__geopackage__')
@@ -422,7 +426,7 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
                                                               'area',
                                                               'reachfactor',
                                                               'range_type',
-                                                              #'timestamp',
+                                                              # 'timestamp',
                                                               'name'])
         feature = next(layer.getFeatures())
         self.assertEqual(feature.attribute('range_type'), 'time')
@@ -523,8 +527,46 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
         style = {
             'color': [50, 100, 200],
             'transparency': 0.9,
-            'pen_width': 1
+            'stroke_width': 1.1
         }
 
-        self._check_layer('isochrone gpkg style',
+        layer = self._check_layer('isochrone gpkg style',
                           connection_id='__geopackage__', style=style)
+
+        settings = layer.labeling().settings()
+        text_format = settings.format()
+        self.assertTrue(text_format.buffer().enabled())
+
+        renderer = layer.renderer()
+        root_rule = renderer.rootRule()
+        rule = root_rule.children()[0]
+        color = rule.symbol().color()
+        self.assertEqual(color.red(), style['color'][0])
+        self.assertEqual(color.green(), style['color'][1])
+        self.assertEqual(color.blue(), style['color'][2])
+        self.assertAlmostEqual(rule.symbol().opacity(), 1 - style['transparency'], delta=0.1)
+        symbol_layer = rule.symbol().symbolLayers()[0]
+        self.assertEqual(symbol_layer.strokeWidth(), style['stroke_width'])
+
+        # Test append to existing
+        style= {
+            'color': [100, 50, 150],
+            'transparency': 0.5,
+            'stroke_width': 0.29
+        }
+
+        layer=self._check_layer('isochrone gpkg style',
+                                  qgis_layer_id=layer.id(), count=16, style=style, name='Appended Isochrone')
+
+        renderer=layer.renderer()
+        root_rule = renderer.rootRule()
+        rule=root_rule.children()[1]
+        color=rule.symbol().color()
+        self.assertEqual(color.red(), style['color'][0])
+        self.assertEqual(color.green(), style['color'][1])
+        self.assertEqual(color.blue(), style['color'][2])
+        self.assertAlmostEqual(rule.symbol().opacity(), 1 -
+                         style['transparency'], delta=0.1)
+        symbol_layer = rule.symbol().symbolLayers()[0]
+        self.assertEqual(symbol_layer.strokeWidth(), style['stroke_width'])
+

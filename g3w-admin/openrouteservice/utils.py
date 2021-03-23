@@ -34,10 +34,18 @@ from qgis.core import (
     QgsCoordinateTransform,
     QgsProviderConnectionException,
     QgsGeometry,
+    QgsRuleBasedRenderer,
+    QgsSymbol,
+    QgsExpression,
+    QgsVectorLayerSimpleLabeling,
+    QgsPalLayerSettings,
+    QgsLabeling,
+    QgsFeatureRequest,
 )
 from .models import ORS_REQUIRED_LAYER_FIELDS
 from qdjango.models import Layer, QgisProjectFileLocker
 from qgis.PyQt.QtCore import QTemporaryDir, QVariant, QDateTime, Qt
+from qgis.PyQt.QtGui import QColor
 
 ORS_API_KEY = getattr(settings, 'ORS_API_KEY', None)
 
@@ -185,7 +193,7 @@ def apply_style(layer, style, is_new, name):
 
     :param layer: QGIS layer instance
     :type layer: QgsVectorLayer
-    :param style: optional, dictionary with style properties: example {'color': [100, 50, 123], 'transparency': 0.5, 'pen_width: 3 }
+    :param style: optional, dictionary with style properties: example {'color': [100, 50, 123], 'transparency': 0.5, 'stroke_width: 3 }
     :type style: dict
     :param is_new: True is the layer is a new layer
     :type is_new: bool
@@ -196,15 +204,58 @@ def apply_style(layer, style, is_new, name):
     if style is None:
         return
 
-    if not name:
-        name = QDateTime.currentDateTime().toString(Qt.ISODate)
+    def _set_labeling():
+        pal_layer = QgsPalLayerSettings()
+        pal_layer.fieldName = 'value'
+        pal_layer.enabled = True
+        pal_layer.placementFlags = QgsLabeling.OnLine
+        pal_layer.placement = QgsPalLayerSettings.PerimeterCurved
+        text_format = pal_layer.format()
+        buffer = text_format.buffer()
+        buffer.setColor(QColor(255, 255, 255))
+        buffer.setOpacity(0.5)
+        buffer.setEnabled(True)
+        text_format.setBuffer(buffer)
+        pal_layer.setFormat(text_format)
+        labels = QgsVectorLayerSimpleLabeling(pal_layer)
+        return labels
+
+    def _set_rule(renderer):
+        root_rule = renderer.rootRule()
+        if is_new:
+            rule = root_rule.children()[0]
+        else:
+            rule = root_rule.children()[0].clone()
+        rule.setLabel(name)
+        expression = '"name" = {}'.format(QgsExpression.quotedString(name))
+        rule.setFilterExpression(expression)
+        rule.symbol().setColor(QColor(*style['color'], 255))
+        rule.symbol().setOpacity(1 - style['transparency'])
+        rule.symbol().symbolLayers()[0].setStrokeWidth(style['stroke_width'])
+        rule.symbol().symbolLayers()[0].setStrokeColor(QColor(255, 255, 255))
+        if not is_new:
+            root_rule.appendChild(rule)
 
     if is_new:  # Create the new style
-        pass
+        symbol = QgsSymbol.defaultSymbol(layer.geometryType())
+        renderer = QgsRuleBasedRenderer(symbol)
+        req = QgsFeatureRequest()
+        req.addOrderBy('"value"', False, False)
+        renderer.setOrderBy(req.orderBy())
+        renderer.setOrderByEnabled(True)
+        _set_rule(renderer)
+        # Delete first rule
+        layer.setRenderer(renderer)
+        labels = _set_labeling()
+        layer.setLabeling(labels)
+        layer.setCustomProperty("labeling/bufferDraw", True)
+        layer.setLabelsEnabled(True)
+
     else:
         # Check for rule based renderer, pass if not present
-        pass
-
+        renderer = layer.renderer()
+        if isinstance(renderer, QgsRuleBasedRenderer):
+            _set_rule(renderer)
 
 
 def add_geojson_features(geojson, project, qgis_layer_id=None, connection_id=None, new_layer_name=None, name=None, style=None):
@@ -212,11 +263,12 @@ def add_geojson_features(geojson, project, qgis_layer_id=None, connection_id=Non
     by passing a QgsVectorLayer instance or by specifying a connection and
     a new layer name plus the QDjango project for the new layer.
 
-    The connection can assume the special values `__shapefile__`, `__spatialite__` or `__geopackage__`
-    for filesystem storage.
+    The connection may assume the special values `__shapefile__`, `__spatialite__` or `__geopackage__`
+    for the creation of new OGR files of the corresponding type.
 
     The creation of the new layer may raise an exception is a layer with the same name as
-    new_layer_name already exists.
+    new_layer_name already exists. For already existing layers the `qgis_layer_id` can be used,
+    provided that the layer belongs to the current `project`.
 
     Returns the qgis_layer_id
 
@@ -230,9 +282,9 @@ def add_geojson_features(geojson, project, qgis_layer_id=None, connection_id=Non
     :type connection: str
     :param new_layer_name: optional, name of the new layer
     :type new_layer_name: str
-    :param name: optional, name of the isochrone
+    :param name: optional, name of the isochrone, default to current datetime
     :type name: str
-    :param style: optional, dictionary with style properties: example {'color': [100, 50, 123], 'transparency': 0.5, 'pen_width: 3 }
+    :param style: optional, dictionary with style properties: example {'color': [100, 50, 123], 'transparency': 0.5, 'stroke_width: 3 }
     :type style: dict
     :raises Exception: raise on error
     :rtype: str
@@ -241,13 +293,14 @@ def add_geojson_features(geojson, project, qgis_layer_id=None, connection_id=Non
     # Additional fields that are not returned by the service as feature attributes
     json_data = json.loads(geojson)
 
+    if name is None:
+        name = "Isochrone %s" % QDateTime.currentDateTime().toString(Qt.ISODateWithMs)
+
     metadata = {
         'range_type': json_data['metadata']['query']['range_type'],
+        'name': name,
         # 'timestamp': json_data['metadata']['timestamp'],  // Not supported
     }
-
-    if name is not None:
-        metadata['name'] = name
 
     for f in json_data['features']:
         f['properties'].update(metadata)
@@ -384,16 +437,16 @@ def add_geojson_features(geojson, project, qgis_layer_id=None, connection_id=Non
             layer_uri = uri.uri()
 
         # Now reload the new layer and add it to the project
-        layer = QgsVectorLayer(layer_uri, new_layer_name, provider)
+        qgis_layer = QgsVectorLayer(layer_uri, new_layer_name, provider)
 
         with QgisProjectFileLocker(project) as project:
-            apply_style(layer, style)
-            project.qgis_project.addMapLayers([layer])
+            apply_style(qgis_layer, style, True, name)
+            project.qgis_project.addMapLayers([qgis_layer])
             project.update_qgis_project()
 
-        qgis_layer_id = layer.id()
+        qgis_layer_id = qgis_layer.id()
 
-        if not layer.isValid():
+        if not qgis_layer.isValid():
             raise Exception(
                 _('Error creating destination layer: layer is not valid!'))
 
@@ -414,8 +467,6 @@ def add_geojson_features(geojson, project, qgis_layer_id=None, connection_id=Non
         if not created:
             raise Exception(
                 _('Error adding destination Layer to the project: layer already exists.'))
-
-        qgis_layer_id = layer.id()
 
         # for OGR (already filled with features) returns the id of the new layer
         if driverName is not None:
@@ -455,5 +506,9 @@ def add_geojson_features(geojson, project, qgis_layer_id=None, connection_id=Non
     if not qgis_layer.commitChanges():
         raise Exception(
             _('Error committing features to the destination layer.'))
+
+    with QgisProjectFileLocker(project) as project:
+        apply_style(qgis_layer, style, False, name)
+        project.update_qgis_project()
 
     return qgis_layer.id()
