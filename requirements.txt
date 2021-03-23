@@ -7,7 +7,7 @@ django-file-form==0.2.3
 django-guardian==2.0.0
 django-model-utils==4.0.0
 django-sitetree==1.14.0
-djangorestframework==3.11.0
+djangorestframework==3.11.2
 djangorestframework-gis==0.15
 django-downloadview==1.9
 django-debug-toolbar==3.1.1
