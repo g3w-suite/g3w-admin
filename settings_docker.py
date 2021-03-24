@@ -148,4 +148,7 @@ ORS_API_ENDPOINT = 'http://localhost:8080/ors/v2/'
 # Optional, can be blank if the key is not required by the endpoint
 ORS_API_KEY = ''
 # List of available ORS profiles
-ORS_PROFILES = ("driving-car", "driving-hgv")
+ORS_PROFILES = {
+    "driving-car": {"name": "Car"},
+    "driving-hgv": {"name": "Heavy Goods Vehicle"}
+}
