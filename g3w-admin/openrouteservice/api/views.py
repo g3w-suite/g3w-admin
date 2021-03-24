@@ -108,10 +108,13 @@ class OpenrouteServiceIsochroneView(G3WAPIView):
 
         """
 
-        try:
-            body = json.loads(request.body.decode('utf-8'))
-        except Exception as ex:
-            raise ValidationError(str(ex))
+        if request.content_type == 'application/x-www-form-urlencoded':
+            body = json.loads(request.data['_content'])
+        else:
+            try:
+                body = json.loads(request.body.decode('utf-8'))
+            except Exception as ex:
+                raise ValidationError(str(ex))
 
         project = get_object_or_404(Project, pk=project_id)
 
