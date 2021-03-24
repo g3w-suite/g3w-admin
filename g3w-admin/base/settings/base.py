@@ -58,8 +58,7 @@ THIRD_PARTY_APPS = [
     'ordered_model',
     'ajax_select',
     'djcelery',
-    'modeltranslation',
-    'debug_toolbar',
+    'modeltranslation'
 ]
 
 G3WADMIN_APPS = [
@@ -84,13 +83,12 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    #'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.contrib.sites.middleware.CurrentSiteMiddleware',
-    #'django_user_agents.middleware.UserAgentMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware'
 ]
+
+
 
 G3WADMIN_MIDDLEWARE = []
 
