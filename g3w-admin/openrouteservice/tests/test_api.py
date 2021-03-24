@@ -340,6 +340,7 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
         self.assertEqual(connection['provider'], 'postgres')
         self.assertEqual(
             connection['name'], '{NAME} (postgres host:{HOST}, port:{PORT}, schema:\'openrouteservice test\')'.format(**settings.DATABASES['default']))
+        self.assertEqual(response.json()['profiles'], settings.ORS_PROFILES)
 
     def test_isochrone_append_postgis(self):
         """Test isochrone append features to an existing PG layer"""

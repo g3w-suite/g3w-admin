@@ -16,6 +16,7 @@ __copyright__ = 'Copyright 2021, ItOpen'
 from django.apps import AppConfig
 from django.core.exceptions import ImproperlyConfigured
 
+
 class OpenrouteserviceConfig(AppConfig):
     name = 'openrouteservice'
 
@@ -24,9 +25,9 @@ class OpenrouteserviceConfig(AppConfig):
 
         from django.conf import settings
 
-        if not settings.hasattr('OSR_ENDPOINT') or settings.OSR_ENDPOINT == '':
-            raise ImproperlyConfigured("OSR_ENDPOINT setting is not defined.")
+        if not settings.hasattr('ORS_ENDPOINT') or settings.ORS_ENDPOINT == '':
+            raise ImproperlyConfigured("ORS_ENDPOINT setting is not defined.")
 
-        if not settings.hasattr('OSR_PROFILES') or type(settings.OSR_PROFILES) not in (list, tuple) or len(settings.OSR_PROFILES) == 0:
+        if not settings.hasattr('ORS_PROFILES') or type(settings.ORS_PROFILES) != dict or len(settings.ORS_PROFILES.keys()) == 0:
             raise ImproperlyConfigured(
-                "OSR_PROFILES setting is not defined.")
+                "ORS_PROFILES setting is not defined.")

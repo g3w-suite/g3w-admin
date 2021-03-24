@@ -34,8 +34,9 @@ from core.api.authentication import CsrfExemptSessionAuthentication
 from .permissions import IsochroneCreatePermission
 
 
-OSR_MAX_LOCATIONS = getattr(settings, 'OSR_MAX_LOCATIONS', 10)
-OSR_MAX_RANGES = getattr(settings, 'OSR_MAX_RANGES', 10)
+ORS_MAX_LOCATIONS = getattr(settings, 'ORS_MAX_LOCATIONS', 10)
+ORS_MAX_RANGES = getattr(settings, 'ORS_MAX_RANGES', 10)
+ORS_PROFILES = settings.ORS_PROFILES  # mandatory!
 
 
 class OpenrouteserviceCompatibleLayersView(G3WAPIView):
@@ -62,7 +63,8 @@ class OpenrouteserviceCompatibleLayersView(G3WAPIView):
 
         return Response({
             'compatible': compatible,
-            'connections': list(connections.values())
+            'connections': list(connections.values()),
+            'profiles': ORS_PROFILES
         })
 
 
@@ -215,17 +217,17 @@ class OpenrouteServiceIsochroneView(G3WAPIView):
                 raise ValidationError(_(
                     'Profile not found, available profiles: %s') % ', '.join(settings.ORS_PROFILES))
 
-            if len(locations) > OSR_MAX_LOCATIONS:
+            if len(locations) > ORS_MAX_LOCATIONS:
                 raise ValidationError(_(
-                    'Max allowed locations: %s') % OSR_MAX_LOCATIONS)
+                    'Max allowed locations: %s') % ORS_MAX_LOCATIONS)
 
             for location in locations:
                 if type(location[0]) not in (float, int) or type(location[1]) not in (float, int) or len(location) != 2:
                     raise ValidationError(_('Malformed locations array.'))
 
-            if len(ranges) > OSR_MAX_RANGES:
+            if len(ranges) > ORS_MAX_RANGES:
                 raise ValidationError(_(
-                    'Max allowed ranges: %s') % OSR_MAX_RANGES)
+                    'Max allowed ranges: %s') % ORS_MAX_RANGES)
 
             for rang in ranges:
                 if type(rang) != int:
