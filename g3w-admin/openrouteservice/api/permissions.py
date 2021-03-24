@@ -16,7 +16,7 @@ from rest_framework.permissions import BasePermission
 from rest_framework.exceptions import ValidationError, NotFound
 from qdjango.models import Project
 from django.shortcuts import get_object_or_404
-
+from openrouteservice.utils import check_user_permissions
 
 class IsochroneCreatePermission(BasePermission):
     """
@@ -28,4 +28,4 @@ class IsochroneCreatePermission(BasePermission):
 
         project = get_object_or_404(Project, pk=view.kwargs['project_id'])
         # check change_layer permission on qgis layer
-        return request.user.has_perm('qdjango.change_project', project)
+        return check_user_permissions(request.user, project)
