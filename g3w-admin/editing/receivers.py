@@ -14,7 +14,6 @@ from django.template import loader
 from django.db.models.signals import pre_delete
 from core.signals import load_layer_actions, initconfig_plugin_start, after_serialized_project_layer, \
     pre_save_maplayer, post_save_maplayer, pre_delete_maplayer, load_js_modules, before_return_vector_data_layer
-from qdjango.models import Layer
 from qdjango.api.projects.serializers import QGIS_LAYER_TYPE_NO_GEOM
 from qdjango.vector import LayerVectorView, MODE_CONFIG
 from .models import G3WEditingFeatureLock, G3WEditingLayer, G3WEditingLog, EDITING_POST_DATA_DELETED, ConstraintRule

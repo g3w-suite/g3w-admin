@@ -24,7 +24,7 @@ from django.shortcuts import Http404, get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import View
 from openrouteservice.utils import (add_geojson_features, db_connections,
-                                    is_ors_compatible, isochrone)
+                                    is_ors_compatible, isochrone, config)
 from qdjango.mixins.views import QdjangoProjectViewMixin
 from qdjango.models import Project
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
@@ -36,7 +36,6 @@ from .permissions import IsochroneCreatePermission
 
 ORS_MAX_LOCATIONS = getattr(settings, 'ORS_MAX_LOCATIONS', 10)
 ORS_MAX_RANGES = getattr(settings, 'ORS_MAX_RANGES', 10)
-ORS_PROFILES = settings.ORS_PROFILES  # mandatory!
 
 
 class OpenrouteserviceCompatibleLayersView(G3WAPIView):
@@ -51,21 +50,9 @@ class OpenrouteserviceCompatibleLayersView(G3WAPIView):
     def get(self, *args, project_id):
         """Returns a JSON list of openrouteservice compatible layer IDs and DB connections"""
 
-        self.project = get_object_or_404(Project, pk=project_id)
-        compatible = []
-        connections = []
+        project = get_object_or_404(Project, pk=project_id)
 
-        for layer_id, layer in self.project.qgis_project.mapLayers().items():
-            if is_ors_compatible(layer):
-                compatible.append(layer_id)
-
-        connections = db_connections(self.project.qgis_project)
-
-        return Response({
-            'compatible': compatible,
-            'connections': list(connections.values()),
-            'profiles': ORS_PROFILES
-        })
+        return Response(config(project))
 
 
 class OpenrouteServiceIsochroneView(G3WAPIView):

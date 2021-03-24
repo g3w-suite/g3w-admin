@@ -49,6 +49,7 @@ from qgis.PyQt.QtCore import QTemporaryDir, QVariant, QDateTime, Qt
 from qgis.PyQt.QtGui import QColor
 
 ORS_API_KEY = getattr(settings, 'ORS_API_KEY', None)
+ORS_PROFILES = settings.ORS_PROFILES  # mandatory!
 
 
 def get_connection_hash(connection_uri):
@@ -163,6 +164,90 @@ def db_connections(qgis_project):
                             }
 
     return connections
+
+
+def check_user_permissions(user, project):
+    """Check user isochrone creation permissions
+
+    :param user: Django user
+    :type user: Django user instance
+    :param project: QDjango project instance
+    :type project: Project
+    :return: True if user has permissions
+    :rtype: bool
+    """
+
+    return user.has_perm('change_project', project)
+
+
+def config(project):
+    """Returns openrouteservice configuration for a project.
+
+    WARNING: Permissions are not checked! It is responsibility of calling code to
+             check layer permissions, see `check_user_permissions(user, project)`.
+
+    Example returned value:
+
+    {
+        "gid": "qdjango:1234",
+        "compatible":[
+            "isochrone_gpkg_15b2116a_25f5_430c_b9ad_a86dc425ce5f",
+            "isochrone_postgres_49ec3537_8631_4c29_832d_15c91c2430e6",
+            "isochrone_shp_825bc382_628b_4b3b_a078_c377aad56a8d",
+            "isochrone_spatialite_b507eaeb_46bb_41bf_80d6_662d21ad9c9a",
+            "isochrone_sqlite_45de826d_c6a2_4057_bb32_16bb5c2f18df",
+        ],
+        "connections":[
+            {
+                "id":"41fcba09f2bdcdf315ba4119dc7978dd",
+                "name":"isochrone gpkg.gpkg",
+                "provider":"ogr"
+            },
+            {
+                "id":"41fcba09f2bdcdf315ba4119dc7978dd",
+                "name":"test_g3w-admin (postgres host:localhost, port:5432, schema:'openrouteservice test')",
+                "provider":"postgres",
+                "schema":"openrouteservice test"
+            },
+            {
+                "id":"41fcba09f2bdcdf315ba4119dc7978dd",
+                "name":"isochrone sqlite.sqlite (spatialite )",
+                "provider":"spatialite",
+                "schema":""
+            },
+            {
+                "id":"isochrone sqlite.sqlite",
+                "name":"isochrone sqlite.sqlite",
+                "provider":"ogr"
+            }
+        ],
+        "profiles": {
+            "driving-car": {
+                "name": "Car"
+            }
+        }
+    }
+
+    :param project: QDjango project instance
+    :type project: Project
+    :return: openrouteservice configuration dictionary
+    :rtype: dict
+    """
+
+    compatible = []
+    connections = []
+
+    for layer_id, layer in project.qgis_project.mapLayers().items():
+        if is_ors_compatible(layer):
+            compatible.append(layer_id)
+
+    connections = db_connections(project.qgis_project)
+
+    return {
+        'compatible': compatible,
+        'connections': list(connections.values()),
+        'profiles': ORS_PROFILES
+    }
 
 
 def isochrone(profile, params):

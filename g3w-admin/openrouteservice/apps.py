@@ -19,15 +19,20 @@ from django.core.exceptions import ImproperlyConfigured
 
 class OpenrouteserviceConfig(AppConfig):
     name = 'openrouteservice'
+    verbose_name = 'Openrouteservice'
 
     def ready(self):
         """Validate settings"""
 
         from django.conf import settings
 
-        if not settings.hasattr('ORS_ENDPOINT') or settings.ORS_ENDPOINT == '':
-            raise ImproperlyConfigured("ORS_ENDPOINT setting is not defined.")
+        if not hasattr(settings, 'ORS_API_ENDPOINT') or settings.ORS_API_ENDPOINT == '':
+            raise ImproperlyConfigured(
+                "ORS_API_ENDPOINT setting is not defined.")
 
-        if not settings.hasattr('ORS_PROFILES') or type(settings.ORS_PROFILES) != dict or len(settings.ORS_PROFILES.keys()) == 0:
+        if not hasattr(settings, 'ORS_PROFILES') or type(settings.ORS_PROFILES) != dict or len(settings.ORS_PROFILES.keys()) == 0:
             raise ImproperlyConfigured(
                 "ORS_PROFILES setting is not defined.")
+
+        # import signal handlers
+        import openrouteservice.receivers
