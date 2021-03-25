@@ -452,6 +452,9 @@ class BaseVectorOnModelApiView(G3WAPIView):
 
         self.features = get_qgis_features(
             self.metadata_layer.qgis_layer, qgis_feature_request, **kwargs)
+
+        # Reproject feature if layer CRS != Project CRS
+
         ex = QgsJsonExporter(self.metadata_layer.qgis_layer)
 
         # If 'unique' request params is set,
@@ -530,8 +533,8 @@ class BaseVectorOnModelApiView(G3WAPIView):
 
             # FIXME: QGIS api reprojecting?
             # Reproject if necessary
-            # if self.reproject:
-            #    self.reproject_featurecollection(feature_collection)
+            if self.reproject:
+                self.reproject_featurecollection(feature_collection)
 
             # Change media
             self.change_media(feature_collection)
