@@ -10,5 +10,5 @@ ORS_REQUIRED_LAYER_FIELDS = {
     'group_index': QVariant.Int,
     'area': QVariant.Double,
     'reachfactor': QVariant.Double,
-    # 'total_pop': QVariant.Int
+    'total_pop': QVariant.Int
 }
