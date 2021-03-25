@@ -585,10 +585,13 @@ class BaseVectorOnModelApiView(G3WAPIView):
         """
         vector_params = {}
 
-        # todo: make error message for mode call not in mode_call_avalilable
         if self.mode_call in self.modes_call_available:
             method = getattr(self, 'response_{}_mode'.format(self.mode_call))
             return method(request)
+        else:
+            raise APIException(
+                f'Mode {self.mode_call} are not in modes call available: {", ".join(self.modes_call_available)}',
+                code=500)
 
     def get_response(self, request, mode_call=None, project_type=None, layer_id=None, **kwargs):
 
