@@ -17,7 +17,8 @@ from qgis.core import (
     QgsFeatureRequest,
     QgsWkbTypes,
     QgsVectorLayer,
-    QgsJsonUtils
+    QgsJsonUtils,
+    QgsFeature
 )
 from rest_framework import exceptions, status
 from rest_framework.exceptions import APIException
@@ -308,7 +309,6 @@ class BaseVectorOnModelApiView(G3WAPIView):
         :return:
         """
 
-        # FIXME: use QGIS API!
         if to_layer:
             from_srid = self.layer.project.group.srid.auth_srid
             to_srid = self.layer.srid
@@ -316,10 +316,20 @@ class BaseVectorOnModelApiView(G3WAPIView):
             from_srid = self.layer.srid
             to_srid = self.layer.project.group.srid.auth_srid
 
-        geometry = GEOSGeometry(GEOSGeometry(json.dumps(
-            feature['geometry'])).wkt, srid=int(from_srid))
-        geometry.transform(to_srid)
-        feature['geometry'] = json.loads(geometry.json)
+        # Use QGIS APi for QgsFeature instance
+        if isinstance(feature, QgsFeature):
+            to_srid = QgsCoordinateReferenceSystem(f'EPSG:{to_srid}')
+            from_srid = QgsCoordinateReferenceSystem(f'EPSG:{from_srid}')
+            ct = QgsCoordinateTransform(
+                from_srid, to_srid, QgsCoordinateTransformContext())
+            geometry = feature.geometry()
+            geometry.transform(ct)
+            feature.setGeometry(geometry)
+        else:
+            geometry = GEOSGeometry(GEOSGeometry(json.dumps(
+                feature['geometry'])).wkt, srid=int(from_srid))
+            geometry.transform(to_srid)
+            feature['geometry'] = json.loads(geometry.json)
 
     def reproject_featurecollection(self, featurecollection, to_layer=False):
         """
@@ -454,6 +464,9 @@ class BaseVectorOnModelApiView(G3WAPIView):
             self.metadata_layer.qgis_layer, qgis_feature_request, **kwargs)
 
         # Reproject feature if layer CRS != Project CRS
+        if self.reproject:
+            for f in self.features:
+                self.reproject_feature(f)
 
         ex = QgsJsonExporter(self.metadata_layer.qgis_layer)
 
@@ -528,13 +541,6 @@ class BaseVectorOnModelApiView(G3WAPIView):
                     feature_collection['features'].append(
                         json.loads(ex.exportFeature(feature, dict(zip(fnames, feature.attributes()))))
                     )
-
-
-
-            # FIXME: QGIS api reprojecting?
-            # Reproject if necessary
-            #if self.reproject:
-            #    self.reproject_featurecollection(feature_collection)
 
             # Change media
             self.change_media(feature_collection)
