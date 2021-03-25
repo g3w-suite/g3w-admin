@@ -264,7 +264,7 @@ def isochrone(profile, params):
             "attributes":[
                 "area",
                 "reachfactor",
-                "total_pop"  // <<--- currently not available
+                "total_pop"
             ]
         }
 

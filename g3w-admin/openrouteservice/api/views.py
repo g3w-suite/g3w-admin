@@ -101,7 +101,7 @@ class OpenrouteServiceIsochroneView(G3WAPIView):
                 "attributes":[
                     "area",
                     "reachfactor",
-                    // "total_pop" // unsupported
+                    "total_pop"
                 ]
             }
         }

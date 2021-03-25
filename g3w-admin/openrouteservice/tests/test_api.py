@@ -28,7 +28,7 @@ Sample response for isochrones call (single point)
 				],
 				"area": 34178.5,
 				"reachfactor": 0.0039,
-				"total_pop": 0
+				"total_pop": 12345
 			},
 			"geometry": {
 				"coordinates": [
@@ -364,7 +364,7 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
                 "attributes": [
                     "area",
                     "reachfactor",
-                    # "total_pop" <<--- currently not available
+                    "total_pop"
                 ]
             }
         }
@@ -420,6 +420,7 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
                                                               'center',
                                                               'area',
                                                               'reachfactor',
+                                                              'total_pop',
                                                               'range_type',
                                                               # 'timestamp',
                                                               'name'])
