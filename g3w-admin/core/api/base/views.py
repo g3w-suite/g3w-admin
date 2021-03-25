@@ -533,8 +533,8 @@ class BaseVectorOnModelApiView(G3WAPIView):
 
             # FIXME: QGIS api reprojecting?
             # Reproject if necessary
-            if self.reproject:
-                self.reproject_featurecollection(feature_collection)
+            #if self.reproject:
+            #    self.reproject_featurecollection(feature_collection)
 
             # Change media
             self.change_media(feature_collection)
