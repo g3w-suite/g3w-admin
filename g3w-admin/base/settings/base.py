@@ -57,7 +57,6 @@ THIRD_PARTY_APPS = [
     'mptt',
     'ordered_model',
     'ajax_select',
-    'djcelery',
     'modeltranslation'
 ]
 
