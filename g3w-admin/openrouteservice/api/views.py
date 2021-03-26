@@ -2,9 +2,7 @@
 """"API Views for operouteservice G3W-Suite plugin
 
 .. note:: This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+          it under the terms of the Mozilla Public License 2.0.
 
 """
 
@@ -23,19 +21,21 @@ from rest_framework import status
 from django.shortcuts import Http404, get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import View
-from openrouteservice.utils import (add_geojson_features, db_connections,
-                                    is_ors_compatible, isochrone, config)
+from openrouteservice.utils import (
+    add_geojson_features, db_connections,
+    is_ors_compatible, isochrone, config,
+    isochrone_from_layer_task)
 from qdjango.mixins.views import QdjangoProjectViewMixin
-from qdjango.models import Project
+from qdjango.models import Project, Layer
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
 from core.api.authentication import CsrfExemptSessionAuthentication
 from .permissions import IsochroneCreatePermission
+from qgis.core import QgsWkbTypes
 
-
-ORS_MAX_LOCATIONS = getattr(settings, 'ORS_MAX_LOCATIONS', 10)
-ORS_MAX_RANGES = getattr(settings, 'ORS_MAX_RANGES', 10)
+ORS_MAX_LOCATIONS = getattr(settings, 'ORS_MAX_LOCATIONS', 2)
+ORS_MAX_RANGES = ORS_MAX_LOCATIONS
 
 
 class OpenrouteserviceCompatibleLayersView(G3WAPIView):
@@ -55,16 +55,22 @@ class OpenrouteserviceCompatibleLayersView(G3WAPIView):
         return Response(config(project))
 
 
-class OpenrouteServiceIsochroneView(G3WAPIView):
-    """Create isochrone"""
+class OpenrouteServiceIsochroneBaseView(G3WAPIView):
+    """Create isochrone from coordinates or from an input layer.
+
+    Warning: this view is not meant to be called directly, use the subclasses instead.
+
+    """
 
     permission_classes = (
         IsochroneCreatePermission,)
     authentication_classes = (CsrfExemptSessionAuthentication,)
     parser_classes = [JSONParser, MultiPartParser, FormParser]
 
-    def post(self, request, project_id):
-        """Returns the (possibly) new layer ID where the isochrone was added.
+    def _post(self, request, project_id, layer_id=None):
+        """Returns the (possibly) new layer ID where the isochrone was added and a task ID in case
+        of asynchronous processing (input from point layer).
+
         The destination layer can be specified in two different alternative ways:
 
         1. QGIS layer id: the id of a compatible layer that already exists in the current project.
@@ -76,6 +82,8 @@ class OpenrouteServiceIsochroneView(G3WAPIView):
         a new layer the style will be applied automatically, if the destination layer is an existing
         one, the existing style will not be overwritten and the logic will try to create a new
         rule in case of a rule-based renderer, the new style will be ignored in all other situations.
+
+        The input coordinates can be specified by passing 'locations' or by passing `layer_id` in args.
 
         Sample JSON request:
 
@@ -93,7 +101,7 @@ class OpenrouteServiceIsochroneView(G3WAPIView):
             'stroke_width': 0.26, // float, QGIS default is 0.26
             // This goes straight to ORS API
             'ors': {
-                "locations":[[10.859513,43.401984]],
+                "locations":[[10.859513,43.401984]],  // May be null in case of `layer_id`
                 "range_type":"time",  // Time or distance
                 "range":[480],
                 "interval":60,
@@ -118,7 +126,18 @@ class OpenrouteServiceIsochroneView(G3WAPIView):
 
         project = get_object_or_404(Project, pk=project_id)
 
-        # Alternatives:
+        if layer_id is not None:
+            layer = get_object_or_404(Layer, pk=layer_id, project=project)
+            is_task = True
+            # Validate input layer
+            if layer.qgis_layer.geometryType() != QgsWkbTypes.PointGeometry:
+                raise ValidationError(_(
+                    'Input layer is not a point or multipoint layer.'))
+        else:
+            layer = None
+            is_task = False
+
+        # Output alternatives:
         qgis_layer_id = body['qgis_layer_id']
         # ... or
         new_layer_name = body['new_layer_name']
@@ -229,19 +248,57 @@ class OpenrouteServiceIsochroneView(G3WAPIView):
         # Call ORS
         params = ors
 
-        try:
-            result = isochrone(profile, params)
-        except Exception as ex:
-            return Response({'result': False, 'error': str(ex)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-        if result.status_code == 200:
+        if not is_task:
             try:
-                qgis_layer_id = add_geojson_features(result.content.decode(
-                    'utf-8'), project, qgis_layer_id, connection, new_layer_name, name, style)
-
+                result = isochrone(profile, params)
             except Exception as ex:
                 return Response({'result': False, 'error': str(ex)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-            return Response({'result': True, 'qgis_layer_id': qgis_layer_id})
+            if result.status_code == status.HTTP_200_OK:
+                try:
+                    qgis_layer_id = add_geojson_features(result.content.decode(
+                        'utf-8'), project, qgis_layer_id, connection, new_layer_name, name, style)
+
+                except Exception as ex:
+                    return Response({'result': False, 'error': str(ex)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+                return Response({'result': True, 'qgis_layer_id': qgis_layer_id})
+            else:
+                return Response({'result': False, 'error': result.json()['error']['message']}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
         else:
-            return Response({'result': False, 'error': result.json()['error']['message']}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            # Create async task
+            input_qgis_layer_id = layer.qgis_layer.id()
+            task = isochrone_from_layer_task(input_qgis_layer_id, profile, params,
+                                             project, qgis_layer_id, connection, new_layer_name, name, style)
+            task()
+            return Response({'result': True, 'task_id': task.id})
+
+
+class OpenrouteServiceIsochroneView(OpenrouteServiceIsochroneBaseView):
+    """Create isochrone from coordinates"""
+
+    permission_classes = (
+        IsochroneCreatePermission,)
+    authentication_classes = (CsrfExemptSessionAuthentication,)
+    parser_classes = [JSONParser, MultiPartParser, FormParser]
+
+    def post(self, request, project_id):
+        """Returns the (possibly) new layer ID where the isochrone was added."""
+
+        return self._post(request, project_id)
+
+
+class OpenrouteServiceIsochroneFromLayerView(OpenrouteServiceIsochroneBaseView):
+    """Create isochrones from a point layer asynchronously"""
+
+    permission_classes = (
+        IsochroneCreatePermission,)
+    authentication_classes = (CsrfExemptSessionAuthentication,)
+    parser_classes = [JSONParser, MultiPartParser, FormParser]
+
+    def post(self, request, project_id, layer_id):
+        """Returns the (possibly) new layer ID where the isochrone
+        will be added and the asynchronous task id."""
+
+        return self._post(request, project_id, layer_id)

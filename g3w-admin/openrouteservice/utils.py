@@ -12,44 +12,38 @@ __author__ = 'elpaso@itopen.it'
 __date__ = '2021-03-09'
 __copyright__ = 'Copyright 2021, ItOpen'
 
-import requests
+import hashlib
 import json
 import os
 import re
-import hashlib
+import logging
+
+import requests
 from django.conf import settings
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
-from qgis.core import (
-    QgsJsonUtils,
-    QgsField,
-    QgsVectorLayerUtils,
-    QgsDataProvider,
-    QgsMapLayerType,
-    QgsWkbTypes,
-    QgsProviderRegistry,
-    QgsDataSourceUri,
-    QgsVectorFileWriter,
-    QgsVectorLayer,
-    QgsCoordinateReferenceSystem,
-    QgsCoordinateTransform,
-    QgsProviderConnectionException,
-    QgsGeometry,
-    QgsRuleBasedRenderer,
-    QgsSymbol,
-    QgsExpression,
-    QgsVectorLayerSimpleLabeling,
-    QgsPalLayerSettings,
-    QgsLabeling,
-    QgsFeatureRequest,
-)
-from .models import ORS_REQUIRED_LAYER_FIELDS
+from huey.contrib import djhuey as huey
 from qdjango.models import Layer, QgisProjectFileLocker
-from qgis.PyQt.QtCore import QTemporaryDir, QVariant, QDateTime, Qt
+from qgis.core import (QgsCoordinateReferenceSystem, QgsCoordinateTransform,
+                       QgsDataProvider, QgsDataSourceUri, QgsExpression,
+                       QgsFeatureRequest, QgsField, QgsGeometry, QgsJsonUtils,
+                       QgsLabeling, QgsMapLayerType, QgsPalLayerSettings,
+                       QgsProviderConnectionException, QgsProviderRegistry,
+                       QgsRuleBasedRenderer, QgsSymbol, QgsVectorFileWriter,
+                       QgsVectorLayer, QgsVectorLayerSimpleLabeling,
+                       QgsVectorLayerUtils, QgsWkbTypes)
+from qgis.PyQt.QtCore import QDateTime, Qt, QTemporaryDir, QVariant
 from qgis.PyQt.QtGui import QColor
+from rest_framework import status
+
+from .models import ORS_REQUIRED_LAYER_FIELDS
 
 ORS_API_KEY = getattr(settings, 'ORS_API_KEY', None)
 ORS_PROFILES = settings.ORS_PROFILES  # mandatory!
+ORS_MAX_LOCATIONS = getattr(settings, 'ORS_MAX_LOCATIONS', 2)
+
+
+logger = logging.getLogger('openrouteservice')
 
 
 def get_connection_hash(connection_uri):
@@ -284,6 +278,8 @@ def isochrone(profile, params):
 
     if ORS_API_KEY is not None:
         headers['Authorization'] = ORS_API_KEY
+
+    logger.debug('Calling ORS endpoint:\n%s' % json_params)
 
     response = requests.post(os.path.join(
         settings.ORS_API_ENDPOINT, 'isochrones', profile), json=json_params, headers=headers)
@@ -614,3 +610,115 @@ def add_geojson_features(geojson, project, qgis_layer_id=None, connection_id=Non
         project.update_qgis_project()
 
     return qgis_layer.id()
+
+
+@huey.db_task()
+def isochrone_from_layer_task(input_qgis_layer_id, profile, params, project, qgis_layer_id, connection_id, new_layer_name, name, style):
+    """Generate isochrones asynchronously from an input QGIS point layer.
+    This function must be run as an asynchronous task.
+
+    Expected params (dict):
+
+        {
+            "locations" null,  // <-- will be populated in batches by the function
+            "range_type":"time",
+            "range":[480],
+            "interval":60,
+            "location_type":"start",
+            "attributes":[
+                "area",
+                "reachfactor",
+                "total_pop"
+            ]
+        }
+
+    * "range": Maximum range value of the analysis in seconds for time and metres for distance.
+               Alternatively a comma separated list of specific single range values if more than
+               one location is set.
+    * "locations": The locations to use for the route as an array of longitude/latitude pairs
+
+    :param input_qgis_layer_id: QGIS layer ID of the points layer which contains the locations for the isochrones
+    :type input_qgis_layer_id: str
+    :param profile: ORS profile (such as `driving-car`)
+    :type profile: str
+    :param params: ORS params
+    :type profile: str
+    :param project: QDjango Project instance for the new or the existing layer
+    :type project: Project instance
+    :param layer_id: optional, QGIS layer id
+    :type layer_id: QGIS layer id
+    :param connection_id: optional, connection id or the special value `__shapefile__`, `__spatialite__` or `__geopackage__`
+    :type connection: str
+    :param new_layer_name: optional, name of the new layer
+    :type new_layer_name: str
+    :param name: optional, name of the isochrone, default to current datetime
+    :type name: str
+    :param style: optional, dictionary with style properties: example {'color': [100, 50, 123], 'transparency': 0.5, 'stroke_width: 3 }
+    :type style: dict
+    :raises Exception: raise on error
+    :rtype: str
+
+    """
+    try:
+
+        # Loop through features from the layer
+        input_layer = project.qgis_project.mapLayer(input_qgis_layer_id)
+
+        # Check preconditions
+        assert input_layer is not None and input_layer.geometryType() == QgsWkbTypes.PointGeometry
+
+        # Store range
+        rang = params['range']
+
+        req = QgsFeatureRequest()
+        req.setNoAttributes()
+
+        ct = QgsCoordinateTransform(
+            input_layer.crs(), QgsCoordinateReferenceSystem(4326), project.qgis_project.transformContext())
+
+        qgis_layer_id = None
+
+        # Collect point batches
+        points = []
+
+        def _process_batch(points, qgis_layer_id):
+            params['locations'] = points
+            # Note: passing a range list is mutually exclusive
+            # with "interval"
+            result = isochrone(profile, params)
+            if result.status_code != status.HTTP_200_OK:
+                jcontent = json.loads(result.content.decode(
+                    'utf-8'))
+                raise Exception(
+                    _('Error generating isochrone: %s.') % jcontent['error']['message'])
+            return add_geojson_features(result.content.decode(
+                'utf-8'), project, qgis_layer_id, connection_id, new_layer_name, name, style)
+
+        for f in input_layer.getFeatures(req):
+            g = f.geometry()
+            if ct.isValid():
+                g.transform(ct)
+            for point in g.constParts():
+                points.append([point.x(), point.y()])
+                if len(points) >= ORS_MAX_LOCATIONS:
+                    qgis_layer_id = _process_batch(points, qgis_layer_id)
+                    connection_id = None
+                    points = []
+
+        if len(points) > 0:
+            qgis_layer_id = _process_batch(points, qgis_layer_id)
+
+        if qgis_layer_id is None:
+            raise Exception(
+                _('Unknown error adding results to the destination layer.'))
+
+    except Exception as ex:
+        return {
+            'result': False,
+            'error': str(ex)
+        }
+
+    return {
+        'result': True,
+        'qgis_layer_id': qgis_layer_id
+    }
