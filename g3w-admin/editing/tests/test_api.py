@@ -19,7 +19,7 @@ from django.urls import reverse
 from rest_framework.test import APIClient
 
 from qdjango.models import SingleLayerConstraint, ConstraintExpressionRule, ConstraintSubsetStringRule
-from editing.api.constraints.views import *
+from qdjango.api.geoconstraints.views import *
 
 from .test_models import DATASOURCE_PATH, ConstraintsTestsBase
 

@@ -91,7 +91,6 @@ for app in settings.G3WADMIN_PROJECT_APPS:
 for app in settings.G3WADMIN_LOCAL_MORE_APPS:
     if app == settings.FRONTEND_APP:
         pass
-        #urlpatterns.append(url(r'^{}/'.format(app), include('{}.urls'.format(app))))
     else:
         app_urls = (urlconf_module, app_name, namespace) = include('{}.urls'.format(app))
         try:

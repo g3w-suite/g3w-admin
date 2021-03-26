@@ -16,7 +16,9 @@ from core.signals import load_layer_actions, initconfig_plugin_start, after_seri
     pre_save_maplayer, post_save_maplayer, pre_delete_maplayer, load_js_modules, before_return_vector_data_layer
 from qdjango.api.projects.serializers import QGIS_LAYER_TYPE_NO_GEOM
 from qdjango.vector import LayerVectorView, MODE_CONFIG
-from .models import G3WEditingFeatureLock, G3WEditingLayer, G3WEditingLog, EDITING_POST_DATA_DELETED, ConstraintRule
+from qdjango.models import GeoConstraintRule
+from .models import G3WEditingFeatureLock, G3WEditingLayer, G3WEditingLog, EDITING_POST_DATA_DELETED
+
 
 from .utils import LayerLock
 
@@ -93,7 +95,7 @@ def set_initconfig_value(sender, **kwargs):
             editable_layers_id.append(el.layer_id)
 
             # check if layers has constraints
-            constraints = ConstraintRule.get_constraints_for_user(sender.request.user, project_layers[el.layer_id])
+            constraints = GeoConstraintRule.get_constraints_for_user(sender.request.user, project_layers[el.layer_id])
             envelope = []
             for constraint in constraints:
                 geom = constraint.get_constraint_geometry()
@@ -205,7 +207,7 @@ def validate_constraint(**kwargs):
     user = kwargs['user']
 
     # check rule presence for layer
-    rules = ConstraintRule.get_active_constraints_for_user(user, editing_layer)
+    rules = GeoConstraintRule.get_active_constraints_for_user(user, editing_layer)
 
     if len(rules) == 0:
         return

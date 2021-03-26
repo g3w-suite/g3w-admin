@@ -1,6 +1,7 @@
 
 from django import template
 from qdjango.models import Layer
+from qdjango.utils.models import get_geoconstraints4layer
 
 register = template.Library()
 
@@ -34,3 +35,14 @@ def is_geom_type_gpx_compatible(layer):
     """
 
     return layer.geometrytype not in ['Polygon', 'MultiPolygon', 'NoGeometry']
+
+
+@register.simple_tag()
+def geoconstraitnswidget4layer(layer):
+    """
+    Return number of geoconstraints widget for layer
+    :param layer: Qdjango Layer model instance
+    :return: int
+    """
+
+    return len(get_geoconstraints4layer(layer))

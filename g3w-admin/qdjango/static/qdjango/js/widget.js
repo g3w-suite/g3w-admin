@@ -10,7 +10,6 @@ ga.Qdjango = {
       detail: "/" + SITE_PREFIX_URL + "qdjango/api/constraint/detail/",
     },
     layer: {
-      //info: '/' + SITE_PREFIX_URL + 'vector/api/info/layer/',
       user: "/" + SITE_PREFIX_URL + "qdjango/api/info/layer/user/",
       authgroup: "/" + SITE_PREFIX_URL + "qdjango/api/info/layer/authgroup/",
     },

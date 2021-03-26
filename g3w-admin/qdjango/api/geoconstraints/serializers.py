@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-""""Constraints serializers for APIs
+""""GeoConstraints serializers for APIs
 
 .. note:: This program is free software; you can redistribute it and/or modify
     it under the terms of the Mozilla Public License 2.0.
@@ -12,33 +12,34 @@ __author__ = 'elpaso@itopen.it'
 __date__ = '2019-07-29'
 __copyright__ = 'Copyright 2019, Gis3w'
 
-from editing.models.constraints import *
+from qdjango.models.geoconstraints import *
 from rest_framework import serializers
 
 
-class ConstraintCleanValidator(object):
-    """Validates the constraint instance by calling model's clean()"""
+class GeoConstraintCleanValidator(object):
+    """Validates the geoconstraint instance by calling model's clean()"""
 
     def __call__(self, value):
         try:
-            Constraint(editing_layer=value['editing_layer'], constraint_layer=value['constraint_layer']).clean()
-        except Exception as ex:
-            raise serializers.ValidationError(str(ex))
-
-class ConstraintRuleCleanValidator(object):
-    """Validates the constraint rule instance by calling model's clean()"""
-
-    def __call__(self, value):
-        try:
-            ConstraintRule(constraint=value['constraint'], rule=value['rule'], user=value['user'], group=value['group']).clean()
+            GeoConstraint(editing_layer=value['layer'], constraint_layer=value['constraint_layer']).clean()
         except Exception as ex:
             raise serializers.ValidationError(str(ex))
 
 
-class ConstraintSerializer(serializers.ModelSerializer):
+class GeoConstraintRuleCleanValidator(object):
+    """Validates the geoconstraint rule instance by calling model's clean()"""
+
+    def __call__(self, value):
+        try:
+            GeoConstraintRule(constraint=value['constraint'], rule=value['rule'], user=value['user'], group=value['group']).clean()
+        except Exception as ex:
+            raise serializers.ValidationError(str(ex))
+
+
+class GeoConstraintSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = Constraint
+        model = GeoConstraint
         fields = [
             'pk',
             'editing_layer',
@@ -50,12 +51,12 @@ class ConstraintSerializer(serializers.ModelSerializer):
             'constraint_rule_count'
 
         ]
-        validators = [ConstraintCleanValidator()]
+        validators = [GeoConstraintCleanValidator()]
 
 
-class ConstraintRuleSerializer(serializers.ModelSerializer):
+class GeoConstraintRuleSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = ConstraintRule
+        model = GeoConstraintRule
         fields = ['pk', 'constraint', 'user', 'group', 'rule', 'active']
-        validators = [ConstraintRuleCleanValidator()]
+        validators = [GeoConstraintRuleCleanValidator()]

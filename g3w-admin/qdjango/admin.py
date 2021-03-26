@@ -139,3 +139,14 @@ class QgisAuthAdmin(GuardedModelAdmin):
                 datasource__contains=obj.id).count() == 0
         )
 
+
+class GeoConstraintAdmin(admin.ModelAdmin):
+    model = GeoConstraint
+
+
+class GeoConstraintRuleAdmin(admin.ModelAdmin):
+    model = GeoConstraintRule
+
+
+admin.site.register(GeoConstraint, GeoConstraintAdmin)
+admin.site.register(GeoConstraintRule, GeoConstraintRuleAdmin)
