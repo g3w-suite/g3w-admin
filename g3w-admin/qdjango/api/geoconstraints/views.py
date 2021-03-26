@@ -46,8 +46,8 @@ class GeoConstraintList(generics.ListCreateAPIView):
         This view should return a list constraints for a given editing layer  id portion of the URL.
         """
         qs = super(GeoConstraintList, self).get_queryset()
-        if 'editing_layer_id' in self.kwargs:
-            qs = qs.filter(editing_layer__id =self.kwargs['editing_layer_id'])
+        if 'layer_id' in self.kwargs:
+            qs = qs.filter(layer__id =self.kwargs['layer_id'])
         return qs
 
     def create(self, request, *args, **kwargs):
@@ -98,9 +98,9 @@ class GeoConstraintRuleList(generics.ListCreateAPIView):
 
         """
 
-        qs = super(ConstraintRuleList, self).get_queryset()
-        if 'editing_layer_id' in self.kwargs:
-            qs = qs.filter(constraint__editing_layer__id=self.kwargs['editing_layer_id'])
+        qs = super(GeoConstraintRuleList, self).get_queryset()
+        if 'layer_id' in self.kwargs:
+            qs = qs.filter(constraint__layer__id=self.kwargs['layer_id'])
         if 'user_id' in self.kwargs:
             user = User.objects.get(pk=self.kwargs['user_id'])
             user_groups = user.groups.all()
@@ -118,7 +118,7 @@ class GeoConstraintRuleList(generics.ListCreateAPIView):
 
         with transaction.atomic():
             try:
-                return super(ConstraintRuleList, self).create(request, *args, **kwargs)
+                return super(GeoConstraintRuleList, self).create(request, *args, **kwargs)
             except IntegrityError as ex:
                 content = {'error': 'IntegrityError %s' % ex.message.decode('utf8') }
                 return Response(content, status=status.HTTP_400_BAD_REQUEST)
@@ -145,7 +145,7 @@ class GeoConstraintGEOFeatureAPIView(APIView):
     def get(self, *args, **kwargs):
 
         # get user request to get geometry constraint
-        editing_layer = Layer.objects.get(pk=kwargs['editing_layer_id'])
+        editing_layer = Layer.objects.get(pk=kwargs['layer_id'])
         constraints = GeoConstraintRule.get_constraints_for_user(self.request.user, editing_layer)
         geometries = []
         for constraint in constraints:

@@ -86,7 +86,7 @@ class GeoConstraint(models.Model):
     def clean(self):
         """Make sure the layer is either PG or SL and check that constraint layer is Polygon"""
 
-        if self.editing_layer.layer_type not in CONSTRAINT_LAYER_TYPE_GRANTED or self.constraint_layer.layer_type not in CONSTRAINT_LAYER_TYPE_GRANTED:
+        if self.layer.layer_type not in CONSTRAINT_LAYER_TYPE_GRANTED or self.constraint_layer.layer_type not in CONSTRAINT_LAYER_TYPE_GRANTED:
             raise ValidationError(
                 _('Layers types must be spatialite or postgres'))
 

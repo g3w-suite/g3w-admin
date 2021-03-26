@@ -22,6 +22,7 @@ from core.utils.qgisapi import get_layer_fids_from_server_fids
 from django.core.management import call_command
 from qgis.PyQt.QtCore import QTemporaryDir, QDate
 from django.core.files import File
+from qdjango.models import Layer
 from qdjango.utils.data import QgisProject
 from editing.models import *
 from django.urls import reverse

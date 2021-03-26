@@ -14,6 +14,9 @@ urlpatterns = [
 
 # Editing info
 urlpatterns += [
+    # Other vector layers in project get by qdjango layer id
+    url(r'^api/info/layer/(?P<editing_layer_id>[-_\w\d]+)/$',
+        login_required(EditingLayerInfo.as_view()), name='editing-api-info-layer'),
     # Viewers users can editing on editing layer id
     url(r'^api/info/layer/user/(?P<editing_layer_id>[-_\w\d]+)/$',
         login_required(EditingLayerUserInfo.as_view()), name='editing-api-info-layer-user'),

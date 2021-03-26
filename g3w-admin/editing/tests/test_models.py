@@ -25,6 +25,7 @@ from django.db import IntegrityError, transaction, connections
 from django.test import TestCase, override_settings
 from core.models import G3WSpatialRefSys, Group as CoreGroup
 from qdjango.utils.data import QgisProject
+from qdjango.models import GeoConstraint, GeoConstraintRule, Layer
 from editing.models import *
 
 from rest_framework.test import APIClient
@@ -161,7 +162,7 @@ class ConstraintsTestsBase(TestCase):
     def tearDown(self):
         """Delete all test data"""
 
-        Constraint.objects.all().delete()
+        GeoConstraint.objects.all().delete()
 
     @classmethod
     def tearDownClass(cls):
@@ -188,74 +189,74 @@ class ConstraintsModelTestsBase(ConstraintsTestsBase):
 
         editing_layer = Layer.objects.get(name='editing_layer')
         constraint_layer = Layer.objects.get(name=self.constraint_layer_name)
-        constraint = Constraint(
-            editing_layer=editing_layer, constraint_layer=constraint_layer)
+        constraint = GeoConstraint(
+            layer=editing_layer, constraint_layer=constraint_layer)
         # Test validation
         constraint.clean()
         constraint.save()
 
         # Check layer types (PG or SL)
         with self.assertRaises(ValidationError) as ex:
-            Constraint(editing_layer=editing_layer,
+            GeoConstraint(layer=editing_layer,
                        constraint_layer=Layer(layer_type='GDAL')).clean()
 
         with self.assertRaises(ValidationError) as ex:
-            Constraint(editing_layer=Layer(layer_type='GDAL'),
+            GeoConstraint(layer=Layer(layer_type='GDAL'),
                        constraint_layer=constraint_layer).clean()
 
         # Check if constraints layer is polygon
         with self.assertRaises(ValidationError) as ex:
-            Constraint(editing_layer=constraint_layer,
+            GeoConstraint(layer=constraint_layer,
                        constraint_layer=editing_layer).clean()
 
         # Check self constraint
         with self.assertRaises(ValidationError) as ex:
-            Constraint(editing_layer=constraint_layer,
+            GeoConstraint(layer=constraint_layer,
                        constraint_layer=constraint_layer).clean()
 
-        rule = ConstraintRule(constraint=constraint,
+        rule = GeoConstraintRule(constraint=constraint,
                               user=self.test_user1, rule='int_f=1')
         rule.save()
 
         # Test validation
         with self.assertRaises(ValidationError) as ex:
-            rule2 = ConstraintRule(
+            rule2 = GeoConstraintRule(
                 constraint=constraint, user=self.test_user1, group=self.group, rule='int_f=1')
             rule2.clean()
 
         # Test constraints for user
-        rules = ConstraintRule.get_constraints_for_user(
+        rules = GeoConstraintRule.get_constraints_for_user(
             self.test_user1, editing_layer)
         self.assertEqual(len(rules), 1)
         self.assertEqual(rules[0], rule)
 
         # Test the other path with group
-        rule3 = ConstraintRule(constraint=constraint,
+        rule3 = GeoConstraintRule(constraint=constraint,
                                group=self.group, rule='int_f=1')
         rule3.save()
-        rules = ConstraintRule.get_constraints_for_user(
+        rules = GeoConstraintRule.get_constraints_for_user(
             self.test_user3, editing_layer)
         self.assertEqual(len(rules), 1)
         self.assertEqual(rules[0], rule3)
 
         # Test we need a user OR a group
         with self.assertRaises(ValidationError) as ex:
-            rule4 = ConstraintRule(constraint=constraint, rule='int_f=1')
+            rule4 = GeoConstraintRule(constraint=constraint, rule='int_f=1')
             rule4.clean()
 
         # Test we get nothing for the other layer and user
-        rules = ConstraintRule.get_constraints_for_user(
+        rules = GeoConstraintRule.get_constraints_for_user(
             self.test_user2, constraint_layer)
         self.assertEqual(len(rules), 0)
 
         # Test inactive constraints for user
         constraint.active = False
         constraint.save()
-        rules = ConstraintRule.get_constraints_for_user(
+        rules = GeoConstraintRule.get_constraints_for_user(
             self.test_user3, editing_layer)
         self.assertEqual(len(rules), 1)
         self.assertEqual(rules[0], rule3)
-        rules = ConstraintRule.get_active_constraints_for_user(
+        rules = GeoConstraintRule.get_active_constraints_for_user(
             self.test_user3, editing_layer)
         self.assertEqual(len(rules), 0)
 
@@ -264,27 +265,27 @@ class ConstraintsModelTestsBase(ConstraintsTestsBase):
 
         editing_layer = Layer.objects.get(name='editing_layer')
         constraint_layer = Layer.objects.get(name=self.constraint_layer_name)
-        constraint = Constraint(
-            editing_layer=editing_layer, constraint_layer=constraint_layer)
+        constraint = GeoConstraint(
+            layer=editing_layer, constraint_layer=constraint_layer)
         constraint.save()
 
-        rule = ConstraintRule(constraint=constraint,
+        rule = GeoConstraintRule(constraint=constraint,
                               user=self.test_user1, rule='int_f=1')
         rule.save()
 
         # Check unique_together
         with transaction.atomic():
             with self.assertRaises(IntegrityError) as ex:
-                rule_duplicate = ConstraintRule(
+                rule_duplicate = GeoConstraintRule(
                     constraint=constraint, user=self.test_user1, rule='int_f=1')
                 rule_duplicate.save()
 
-        rule3 = ConstraintRule(constraint=constraint,
+        rule3 = GeoConstraintRule(constraint=constraint,
                                group=self.group, rule='int_f=1')
         rule3.save()
         with transaction.atomic():
             with self.assertRaises(IntegrityError) as ex:
-                rule3_duplicate = ConstraintRule(
+                rule3_duplicate = GeoConstraintRule(
                     constraint=constraint, group=self.group, rule='int_f=1')
                 rule3_duplicate.save()
 
@@ -293,10 +294,10 @@ class ConstraintsModelTestsBase(ConstraintsTestsBase):
 
         editing_layer = Layer.objects.get(name='editing_layer')
         constraint_layer = Layer.objects.get(name=self.constraint_layer_name)
-        constraint = Constraint(
-            editing_layer=editing_layer, constraint_layer=constraint_layer)
+        constraint = GeoConstraint(
+            layer=editing_layer, constraint_layer=constraint_layer)
         constraint.save()
-        rule = ConstraintRule(constraint=constraint,
+        rule = GeoConstraintRule(constraint=constraint,
                               user=self.test_user1, rule='int_f=1')
         self.assertTrue(rule.validate_sql()[0], rule.validate_sql()[1])
 
@@ -323,10 +324,10 @@ class ConstraintsModelTestsBase(ConstraintsTestsBase):
 
         # Now add a constraint for user2
         constraint_layer = Layer.objects.get(name=self.constraint_layer_name)
-        constraint = Constraint(
-            editing_layer=editing_layer, constraint_layer=constraint_layer)
+        constraint = GeoConstraint(
+            layer=editing_layer, constraint_layer=constraint_layer)
         constraint.save()
-        rule = ConstraintRule(constraint=constraint,
+        rule = GeoConstraintRule(constraint=constraint,
                               user=self.test_user2, rule='name=\'bagnolo\'')
         rule.save()
         response = client.post('/vector/api/editing/qdjango/%s/%s/' % (
@@ -364,10 +365,10 @@ class ConstraintsModelTestsBase(ConstraintsTestsBase):
 
         # Now add a constraint for user2
         constraint_layer = Layer.objects.get(name=self.constraint_layer_name)
-        constraint = Constraint(
-            editing_layer=editing_layer, constraint_layer=constraint_layer)
+        constraint = GeoConstraint(
+            layer=editing_layer, constraint_layer=constraint_layer)
         constraint.save()
-        rule = ConstraintRule(constraint=constraint,
+        rule = GeoConstraintRule(constraint=constraint,
                               user=self.test_user2, rule='name=\'bagnolo\'')
         rule.save()
 
@@ -466,10 +467,10 @@ class ConstraintsModelTestsBase(ConstraintsTestsBase):
 
         # Now add a constraint for user2
         constraint_layer = Layer.objects.get(name=self.constraint_layer_name)
-        constraint = Constraint(
-            editing_layer=editing_layer, constraint_layer=constraint_layer)
+        constraint = GeoConstraint(
+            layer=editing_layer, constraint_layer=constraint_layer)
         constraint.save()
-        rule = ConstraintRule(constraint=constraint,
+        rule = GeoConstraintRule(constraint=constraint,
                               user=self.test_user2, rule='name=\'bagnolo\'')
         rule.save()
 

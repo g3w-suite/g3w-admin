@@ -68,7 +68,7 @@ class GeoConstraintRulePermission(BasePermission):
         # case detail
         elif 'pk' in view.kwargs:
             try:
-                layer = Layer.objects.get(constraint_layer__constraintrule__pk=view.kwargs['pk'])
+                layer = Layer.objects.get(constraint_layer__geoconstraintrule__pk=view.kwargs['pk'])
             except ObjectDoesNotExist:
                 return True
         # Case no layer specified

@@ -100,31 +100,31 @@ urlpatterns = [
     # GeoConstraints
 
     # Detail of a GeoConstraintRule
-    url(r'^api/rule/detail/(?P<pk>\d+)/$',
+    url(r'^api/georule/detail/(?P<pk>\d+)/$',
         login_required(GeoConstraintRuleDetail.as_view()), name='geoconstraintrule-api-detail'),
     # All ConstraintRule(s) filtered by editing layer id
-    url(r'^api/rule/layer/(?P<layer_id>[-_\w\d]+)/$',
+    url(r'^api/georule/layer/(?P<layer_id>[-_\w\d]+)/$',
         login_required(GeoConstraintRuleList.as_view()), name='geoconstraintrule-api-filter-by-layer'),
     # All ConstraintRule(s) filtered by User pk
-    url(r'^api/rule/user/(?P<user_id>\d+)/$',
+    url(r'^api/georule/user/(?P<user_id>\d+)/$',
         login_required(GeoConstraintRuleList.as_view()), name='geoconstraintrule-api-filter-by-user'),
     # All ConstraintRule(s) filtered by Constraint pk
-    url(r'^api/rule/constraint/(?P<constraint_id>\d+)/$',
+    url(r'^api/georule/geoconstraint/(?P<constraint_id>\d+)/$',
         login_required(GeoConstraintRuleList.as_view()), name='geoconstraintrule-api-filter-by-constraint'),
     # All ConstraintRule(s)
-    url(r'^api/rule/$',
+    url(r'^api/georule/$',
         login_required(GeoConstraintRuleList.as_view()), name='geoconstraintrule-api-list'),
     # Constraint geometry
-    url(r'^api/constraint/geometry/(?P<layer_id>[-_\w\d]+)/$',
+    url(r'^api/geoconstraint/geometry/(?P<layer_id>[-_\w\d]+)/$',
         login_required(GeoConstraintGEOFeatureAPIView.as_view()), name='geoconstraint-api-geometry'),
     # Detail of a Constraint
-    url(r'^api/constraint/detail/(?P<pk>\d+)/$',
+    url(r'^api/geoconstraint/detail/(?P<pk>\d+)/$',
         login_required(GeoConstraintDetail.as_view()), name='geoconstraint-api-detail'),
     # All Constraint(s) filtered by editing layer id
-    url(r'^api/constraint/(?P<layer_id>[-_\w\d]+)/$',
+    url(r'^api/geoconstraint/(?P<layer_id>[-_\w\d]+)/$',
         login_required(GeoConstraintList.as_view()), name='geoconstraint-api-filter-by-layer'),
     # All Constraint(s)
-    url(r'^api/constraint/$',
+    url(r'^api/geoconstraint/$',
         login_required(GeoConstraintList.as_view()), name='geoconstraint-api-list'),
 
 

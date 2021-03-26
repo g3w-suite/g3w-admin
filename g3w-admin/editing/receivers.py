@@ -117,7 +117,7 @@ def set_initconfig_value(sender, **kwargs):
                 # FIXME: if qgs_layer_id is not unique it shouldn't be used as a key here:
                 editable_layers_constraints.update({
                     project_layers[el.layer_id].qgs_layer_id: {
-                    'geometry_api_url': reverse('constraint-api-geometry', kwargs={'editing_layer_id': el.layer_id}),
+                    'geometry_api_url': reverse('geoconstraint-api-geometry', kwargs={'layer_id': el.layer_id}),
                     'bbox': envelope
                     }
                 })
