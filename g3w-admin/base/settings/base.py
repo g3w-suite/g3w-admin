@@ -57,7 +57,8 @@ THIRD_PARTY_APPS = [
     'mptt',
     'ordered_model',
     'ajax_select',
-    'modeltranslation'
+    'modeltranslation',
+    'huey.contrib.djhuey',
 ]
 
 G3WADMIN_APPS = [

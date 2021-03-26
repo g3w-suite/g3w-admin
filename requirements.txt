@@ -31,4 +31,4 @@ urllib3
 python-magic
 celery==3.1.26.post2
 deprecation
-
+huey
