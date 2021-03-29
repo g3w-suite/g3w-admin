@@ -68,19 +68,18 @@ class GeoConstraintsFilter(BaseFilterBackend):
 
         rule_parts = []
 
-        if view.mode_call == 'editing':
-            rules = GeoConstraintRule.get_active_constraints_for_user(request.user, view.layer)
+        rules = GeoConstraintRule.get_active_constraints_for_user(request.user, view.layer)
 
-            for rule in rules:
-                expression = rule.get_qgis_expression()
-                if expression:
-                    rule_parts.append(expression)
+        for rule in rules:
+            expression = rule.get_qgis_expression()
+            if expression:
+                rule_parts.append(expression)
 
-            if rule_parts:
-                expression = ' AND '.join(rule_parts)
-                current_expression = qgis_feature_request.filterExpression()
+        if rule_parts:
+            expression = ' AND '.join(rule_parts)
+            current_expression = qgis_feature_request.filterExpression()
 
-                if current_expression:
-                    expression = '( %s ) AND ( %s )' % (current_expression, expression)
+            if current_expression:
+                expression = '( %s ) AND ( %s )' % (current_expression, expression)
 
-                qgis_feature_request.setFilterExpression(expression)
+            qgis_feature_request.setFilterExpression(expression)

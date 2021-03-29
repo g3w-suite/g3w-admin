@@ -281,6 +281,7 @@ class GeoConstraintRule(models.Model):
         if not constraints:
             return []
         user_groups = user.groups.all()
+        print(user_groups)
         if user_groups.count():
             return cls.objects.filter(Q(constraint__in=constraints), Q(user=user) | Q(group__in=user_groups))
         else:
