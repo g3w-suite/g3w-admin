@@ -99,7 +99,10 @@ from django.shortcuts import get_object_or_404
 from django.test import override_settings
 from django.urls import reverse
 from guardian.shortcuts import assign_perm, remove_perm
-from openrouteservice.utils import db_connections, get_connection_hash
+from huey.contrib import djhuey as huey
+from openrouteservice.utils import (
+    get_db_connections, get_connection_hash)
+from openrouteservice.tasks import isochrone_from_layer_task
 from qdjango.apps import QGS_SERVER, get_qgs_project
 from qdjango.models import (ConstraintExpressionRule,
                             ConstraintSubsetStringRule, Layer, Project,
@@ -174,6 +177,23 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
         conn.executeSql(
             "CREATE TABLE \"openrouteservice test\".openrouteservice_compatible_3857 ( pk SERIAL NOT NULL, value NUMERIC, group_index INTEGER, area NUMERIC, reachfactor NUMERIC, total_pop INTEGER, geom GEOMETRY(POLYGON, 3857), PRIMARY KEY ( pk ) )")
 
+        # Input layers for async tests
+        conn.executeSql(
+            "CREATE TABLE \"openrouteservice test\".openrouteservice_point_3857 ( pk SERIAL NOT NULL, geom GEOMETRY(POINT, 3857), PRIMARY KEY ( pk ) )")
+        conn.executeSql(
+            "CREATE TABLE \"openrouteservice test\".openrouteservice_multipoint_4326 ( pk SERIAL NOT NULL, geom GEOMETRY(MULTIPOINT, 4326), PRIMARY KEY ( pk ) )")
+
+        # Add sample points for async tests
+        conn.executeSql("""INSERT INTO "openrouteservice test".openrouteservice_multipoint_4326 (geom) VALUES
+            ( 'SRID=4326;MULTIPOINT ((-77.55542807059459 37.56350130888833), (-77.5513628235481 37.547924590224554), (-77.53848954123421 37.58068563329007), (-77.59608054105951 37.59518182260462))'::geometry),
+	        ('SRID=4326;MULTIPOINT ((-77.4077240945721 37.538254644499624), (-77.41991983571157 37.54470141434406), (-77.4260177062813 37.55920460826607), (-77.39349572990939 37.562427156963516), (-77.40840163574651 37.58337032579007))'::geometry)""")
+
+        conn.executeSql("""INSERT INTO "openrouteservice test".openrouteservice_point_3857 (geom) VALUES
+            ('SRID=3857;POINT (-8636824.820306677 4510025.909782101)'::geometry),
+            ('SRID=3857;POINT (-8633657.031688528 4512364.0394764505)'::geometry),
+            ('SRID=3857;POINT (-8637126.514460787 4512741.157169087)'::geometry),
+            ('SRID=3857;POINT (-8634109.572919691 4503916.603161385)'::geometry)""")
+
         cls.layer_specs = {}
 
         project = QgsProject()
@@ -183,10 +203,11 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
             'openrouteservice_point_not_compatible': ('Point', 4326),
             'openrouteservice_compatible': ('Polygon', 4326),
             'openrouteservice_compatible_3857': ('Polygon', 3857),
+            'openrouteservice_point_3857': ('Point', 3857),
+            'openrouteservice_multipoint_4326': ('MultiPoint', 4326),
         }.items():
-            layer_uri = conn_str + \
-                " sslmode=disable key='pk' estimatedmetadata=false srid={srid} type={geometry_type} checkPrimaryKeyUnicity='0' table=\"openrouteservice test\".\"{table_name}\" (geom)".format(
-                    table_name=table_name, geometry_type=table_spec[0], srid=table_spec[1])
+            layer_uri = conn_str + " sslmode=disable key='pk' estimatedmetadata=false srid={srid} type={geometry_type} checkPrimaryKeyUnicity='0' table=\"openrouteservice test\".\"{table_name}\" (geom)".format(
+                table_name=table_name, geometry_type=table_spec[0], srid=table_spec[1])
             layer = QgsVectorLayer(layer_uri, table_name, 'postgres')
             assert layer.isValid()
             cls.layer_specs[table_name] = layer_uri
@@ -218,7 +239,7 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
         super().setUp()
         self.client = APIClient()
 
-    def _check_layer(self, new_name, connection_id=None, qgis_layer_id=None, count=8, style=None, name=None):
+    def _check_layer(self, new_name, connection_id=None, qgis_layer_id=None, count=8, style=None, name=None, qdjango_layer_id=None):
 
         data = {
             'qgis_layer_id': qgis_layer_id,
@@ -247,33 +268,46 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
             data['transparency'] = style['transparency']
             data['stroke_width'] = style['stroke_width']
 
-        response = self._testPostApiCall(
-            'openrouteservice-isochrone', [self.qdjango_project.pk], data)
-        self.assertEqual(response.status_code,
-                         status.HTTP_200_OK, response.json())
-        jresponse = response.json()
-        self.assertEqual(jresponse['result'], True)
-        qgis_layer_id = jresponse['qgis_layer_id']
+        if qdjango_layer_id is not None:
+            response = self._testPostApiCall(
+                'openrouteservice-isochrone-from-layer', [self.qdjango_project.pk, qdjango_layer_id], data)
+            self.assertEqual(response.status_code,
+                             status.HTTP_200_OK, response.json())
+            jresponse = response.json()
+            self.assertEqual(jresponse['result'], True)
+            task_id = jresponse['task_id']
+            return task_id
 
-        # Get QGIS Layer
-        qgis_layer = self.qdjango_project.qgis_project.mapLayer(
-            qgis_layer_id)
+        else:
+            response = self._testPostApiCall(
+                'openrouteservice-isochrone', [self.qdjango_project.pk], data)
 
-        self.assertTrue(qgis_layer.crs().isValid())
+            self.assertEqual(response.status_code,
+                             status.HTTP_200_OK, response.json())
 
-        self.assertEqual(qgis_layer.featureCount(), count)
-        self.assertEqual(qgis_layer.name(), new_name)
+            jresponse = response.json()
+            self.assertEqual(jresponse['result'], True)
+            qgis_layer_id = jresponse['qgis_layer_id']
 
-        # Test Layer object
-        layer = self.qdjango_project.layer_set.get(name=new_name)
-        self.assertEqual(layer.name, new_name)
-        self.assertEqual(layer.qgs_layer_id, qgis_layer.id())
-        self.assertEqual(layer.srid, qgis_layer.crs().postgisSrid())
+            # Get QGIS Layer
+            qgis_layer = self.qdjango_project.qgis_project.mapLayer(
+                qgis_layer_id)
 
-        self.assertFalse(Project.objects.get(
-            pk=self.qdjango_project.pk).is_locked)
+            self.assertTrue(qgis_layer.crs().isValid())
 
-        return qgis_layer
+            self.assertEqual(qgis_layer.featureCount(), count)
+            self.assertEqual(qgis_layer.name(), new_name)
+
+            # Test Layer object
+            layer = self.qdjango_project.layer_set.get(name=new_name)
+            self.assertEqual(layer.name, new_name)
+            self.assertEqual(layer.qgs_layer_id, qgis_layer.id())
+            self.assertEqual(layer.srid, qgis_layer.crs().postgisSrid())
+
+            self.assertFalse(Project.objects.get(
+                pk=self.qdjango_project.pk).is_locked)
+
+            return qgis_layer
 
     def _testApiCall(self, view_name, args, kwargs={}, status_auth=status.HTTP_200_OK, login=True, logout=True):
         """Utility to make test calls for admin01 user"""
@@ -429,7 +463,7 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
         self.assertEqual(feature.attribute('name'), 'my isochrone')
 
         # Check connections
-        connections = db_connections(self.qdjango_project.qgis_project)
+        connections = get_db_connections(self.qdjango_project.qgis_project)
         self.assertEqual(len(connections), 3)
         conn_uri = self.conn_uri + ' schema=\'openrouteservice test\''
         connection_key = conn_uri
@@ -467,6 +501,8 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
             'isochrone sqlite2',
             'openrouteservice_compatible',
             'openrouteservice_compatible_3857',
+            'openrouteservice_multipoint_4326',
+            'openrouteservice_point_3857',
             'openrouteservice_point_not_compatible',
             'openrouteservice_poly_not_compatible'
         ])
@@ -503,7 +539,7 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
                 'datasource': sqlite_uri.uri()
             })
         self.assertTrue(created)
-        connections = db_connections(self.qdjango_project.qgis_project)
+        connections = get_db_connections(self.qdjango_project.qgis_project)
         self.assertIn(sqlite_path, connections.keys())
         self._check_layer(new_layer_name,
                           qgis_layer_id=qgis_layer_id, count=16)
@@ -563,3 +599,122 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
                                style['transparency'], delta=0.1)
         symbol_layer = rule.symbol().symbolLayers()[0]
         self.assertEqual(symbol_layer.strokeWidth(), style['stroke_width'])
+
+    def test_isochrone_from_layer(self):
+        """Test generation from points layer"""
+
+        style = {
+            'color': [100, 50, 150],
+            'transparency': 0.5,
+            'stroke_width': 0.29
+        }
+
+        qdjango_layer = self.qdjango_project.layer_set.get(
+            name='openrouteservice_point_3857')
+        qdjango_layer_id = qdjango_layer.pk
+
+        input_qgis_layer_id = qdjango_layer.qgis_layer.id()
+
+        params = {
+            "locations": None,
+            "range_type": "time",
+            "range": [120],
+            "interval": 60,
+            "location_type": "start",
+            "attributes": [
+                "area",
+                "reachfactor",
+                "total_pop"
+            ]
+        }
+
+        # Call task directly
+        result = isochrone_from_layer_task(input_qgis_layer_id, 'driving-car', params,
+                                           self.qdjango_project, None, '__geopackage__', 'isochrone gpkg from points 3857', 'my isochrone', style).get(preserve=True)
+
+        self.assertTrue(result['result'], result)
+
+        # Check output layer
+        qgis_layer_id = result['qgis_layer_id']
+        output_layer = self.qdjango_project.qgis_project.mapLayer(
+            qgis_layer_id)
+        input_layer = self.qdjango_project.qgis_project.mapLayer(
+            input_qgis_layer_id)
+        # We expect 2 isochrones for each input point
+        self.assertEqual(output_layer.featureCount(),
+                         2*input_layer.featureCount())
+        values = set([f.attribute('value')
+                      for f in output_layer.getFeatures()])
+        self.assertEqual(values, {60.0, 120.0})
+
+        # Check invalid input
+        params["range_type"] = 'wrong'
+        task = isochrone_from_layer_task(input_qgis_layer_id, 'driving-car', params,
+                                         self.qdjango_project, None, '__geopackage__', 'isochrone gpkg from points 3857 wrong', 'my isochrone', style)
+
+        result = task.get()
+        self.assertFalse(result['result'])
+        self.assertEqual(
+            result['error'], "Error generating isochrone: Parameter 'range_type' has incorrect value of 'wrong'..")
+
+        # Test from multipoint 4326
+        params["range_type"] = 'time'
+        qdjango_layer = self.qdjango_project.layer_set.get(
+            name='openrouteservice_multipoint_4326')
+        qdjango_layer_id = qdjango_layer.pk
+
+        input_qgis_layer_id = qdjango_layer.qgis_layer.id()
+
+        # Call task directly
+        result = isochrone_from_layer_task(input_qgis_layer_id, 'driving-car', params,
+                                           self.qdjango_project, None, '__geopackage__', 'isochrone gpkg from multipoints 4326', 'my isochrone', style).get()
+
+        self.assertTrue(result['result'], result)
+
+        # Check output layer
+        qgis_layer_id = result['qgis_layer_id']
+        output_layer = self.qdjango_project.qgis_project.mapLayer(
+            qgis_layer_id)
+        input_layer = self.qdjango_project.qgis_project.mapLayer(
+            input_qgis_layer_id)
+        # We expect 2 isochrones for each input point part (from a multipoint)
+        self.assertEqual(output_layer.featureCount(),
+                         2*sum([len([p for p in f.geometry().constParts()]) for f in input_layer.getFeatures()]))
+        values = set([f.attribute('value')
+                      for f in output_layer.getFeatures()])
+        self.assertEqual(values, {60.0, 120.0})
+
+        # Check task status
+        # This logic mimicks what HUEY internally does
+
+        huey.HUEY.immediate = False
+        huey.HUEY.testing = True
+
+        params["range_type"] = 'wrong'
+        task = isochrone_from_layer_task(input_qgis_layer_id, 'driving-car', params,
+                                         self.qdjango_project, None, '__geopackage__', 'isochrone gpkg from points 3857 wrong', 'my isochrone', style)
+
+        # Call the results API
+        result = self._testApiCall(
+            'openrouteservice-isochrone-from-layer-result', [self.qdjango_project.pk, task.id])
+        self.assertEquals(result.json(), {'result': True, 'status': 'pending'})
+
+        # Put the result in the store
+        task_result = huey.HUEY._execute(
+            task.task, huey.HUEY._get_timestamp())
+        # Remove from pending
+        task.huey.dequeue()
+
+        # Return the results
+        response = self._testApiCall(
+            'openrouteservice-isochrone-from-layer-result', [self.qdjango_project.pk, task.id])
+
+        self.assertEqual(response.status_code,
+                         status.HTTP_200_OK, response.json())
+        self.assertEqual(response.json(), task_result)
+
+        # 404 because the results has been already fetched
+        response = self._testApiCall(
+            'openrouteservice-isochrone-from-layer-result', [self.qdjango_project.pk, task.id])
+        self.assertEqual(response.status_code,
+                         status.HTTP_404_NOT_FOUND, response.json())
