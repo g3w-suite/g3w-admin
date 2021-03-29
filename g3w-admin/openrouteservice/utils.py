@@ -72,7 +72,7 @@ def is_ors_compatible(layer):
     return True
 
 
-def db_connections(qgis_project):
+def get_db_connections(qgis_project):
     """Returns a dictionary of DB connections in the QGIS project, OGR connections with
     no "layername" specification are not  returned because by appending another layer we
     might break the project.
@@ -235,7 +235,7 @@ def config(project):
         if is_ors_compatible(layer):
             compatible.append(layer_id)
 
-    connections = db_connections(project.qgis_project)
+    connections = get_db_connections(project.qgis_project)
 
     return {
         'compatible': compatible,
@@ -263,8 +263,7 @@ def isochrone(profile, params):
         }
 
     * "range": Maximum range value of the analysis in seconds for time and metres for distance.
-               Alternatively a comma separated list of specific single range values if more than
-               one location is set.
+               Alternatively a comma separated list of specific single range values.
     * "locations": The locations to use for the route as an array of longitude/latitude pairs
 
     """
@@ -481,7 +480,7 @@ def add_geojson_features(geojson, project, qgis_layer_id=None, connection_id=Non
         else:  # Add new table to an existing DB connection
 
             try:
-                connection = db_connections(project.qgis_project)[
+                connection = get_db_connections(project.qgis_project)[
                     connection_id]
             except:
                 raise Exception(
@@ -612,8 +611,7 @@ def add_geojson_features(geojson, project, qgis_layer_id=None, connection_id=Non
     return qgis_layer.id()
 
 
-@huey.db_task()
-def isochrone_from_layer_task(input_qgis_layer_id, profile, params, project, qgis_layer_id, connection_id, new_layer_name, name, style):
+def isochrone_from_layer(input_qgis_layer_id, profile, params, project, qgis_layer_id, connection_id, new_layer_name, name, style):
     """Generate isochrones asynchronously from an input QGIS point layer.
     This function must be run as an asynchronous task.
 
@@ -633,9 +631,25 @@ def isochrone_from_layer_task(input_qgis_layer_id, profile, params, project, qgi
         }
 
     * "range": Maximum range value of the analysis in seconds for time and metres for distance.
-               Alternatively a comma separated list of specific single range values if more than
-               one location is set.
+               Alternatively a comma separated list of specific single range values.
+
     * "locations": The locations to use for the route as an array of longitude/latitude pairs
+
+    Returns:
+
+        - in case of errors:
+
+        {
+            'result': False,
+            'error': 'error message'
+        }
+
+        - in case of success
+
+        {
+            'result': True,
+            'qgis_layer_id': qgis_layer_id
+        }
 
     :param input_qgis_layer_id: QGIS layer ID of the points layer which contains the locations for the isochrones
     :type input_qgis_layer_id: str
@@ -656,7 +670,7 @@ def isochrone_from_layer_task(input_qgis_layer_id, profile, params, project, qgi
     :param style: optional, dictionary with style properties: example {'color': [100, 50, 123], 'transparency': 0.5, 'stroke_width: 3 }
     :type style: dict
     :raises Exception: raise on error
-    :rtype: str
+    :rtype: dict
 
     """
     try:

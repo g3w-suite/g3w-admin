@@ -34,7 +34,7 @@ ORS_PROFILES = {
 # =================================
 # Enable immediate mode for testing
 HUEY = {
-    'huey_class': 'huey.RedisHuey',  # Huey implementation to use.
+    'huey_class': 'huey.MemoryHuey',  # Huey implementation to use.
     'name': 'g3w-suite',
     'url': 'redis://localhost:6379/?db=1',
     'immediate': True,  # run synchronously for testing.

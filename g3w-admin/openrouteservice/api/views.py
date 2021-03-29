@@ -14,25 +14,26 @@ __copyright__ = 'Copyright 2021, ItOpen'
 import json
 import os
 
+from core.api.authentication import CsrfExemptSessionAuthentication
 from core.api.views import G3WAPIView
 from django.conf import settings
-from rest_framework.response import Response
-from rest_framework import status
 from django.shortcuts import Http404, get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import View
-from openrouteservice.utils import (
-    add_geojson_features, db_connections,
-    is_ors_compatible, isochrone, config,
-    isochrone_from_layer_task)
+from huey.contrib import djhuey as huey
+from openrouteservice.utils import (add_geojson_features, config,
+                                    get_db_connections, is_ors_compatible,
+                                    isochrone)
+from openrouteservice.tasks import isochrone_from_layer_task
 from qdjango.mixins.views import QdjangoProjectViewMixin
-from qdjango.models import Project, Layer
-from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
+from qdjango.models import Layer, Project
+from qgis.core import QgsWkbTypes
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
-from core.api.authentication import CsrfExemptSessionAuthentication
+from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
+from rest_framework.response import Response
+
 from .permissions import IsochroneCreatePermission
-from qgis.core import QgsWkbTypes
 
 ORS_MAX_LOCATIONS = getattr(settings, 'ORS_MAX_LOCATIONS', 2)
 ORS_MAX_RANGES = ORS_MAX_LOCATIONS
@@ -204,7 +205,7 @@ class OpenrouteServiceIsochroneBaseView(G3WAPIView):
                 connection = connection_id
             else:
                 connection = None
-                for conn, details in db_connections(project.qgis_project).items():
+                for conn, details in get_db_connections(project.qgis_project).items():
                     if details['id'] == connection_id:
                         connection = conn
                         break
@@ -278,11 +279,6 @@ class OpenrouteServiceIsochroneBaseView(G3WAPIView):
 class OpenrouteServiceIsochroneView(OpenrouteServiceIsochroneBaseView):
     """Create isochrone from coordinates"""
 
-    permission_classes = (
-        IsochroneCreatePermission,)
-    authentication_classes = (CsrfExemptSessionAuthentication,)
-    parser_classes = [JSONParser, MultiPartParser, FormParser]
-
     def post(self, request, project_id):
         """Returns the (possibly) new layer ID where the isochrone was added."""
 
@@ -292,13 +288,28 @@ class OpenrouteServiceIsochroneView(OpenrouteServiceIsochroneBaseView):
 class OpenrouteServiceIsochroneFromLayerView(OpenrouteServiceIsochroneBaseView):
     """Create isochrones from a point layer asynchronously"""
 
-    permission_classes = (
-        IsochroneCreatePermission,)
-    authentication_classes = (CsrfExemptSessionAuthentication,)
-    parser_classes = [JSONParser, MultiPartParser, FormParser]
-
     def post(self, request, project_id, layer_id):
-        """Returns the (possibly) new layer ID where the isochrone
-        will be added and the asynchronous task id."""
+        """Returns the asynchronous task id."""
 
         return self._post(request, project_id, layer_id)
+
+
+class OpenrouteServiceIsochroneFromLayerResultView(OpenrouteServiceIsochroneBaseView):
+
+    def get(self, request, project_id, task_id):
+        """Returns the (possibly) new layer ID where the isochrone
+        data has been added. If the task has not yet completed a status message is returned
+
+        Note: `project_id` is only used for permissions checking!
+        """
+
+        result = huey.result(task_id)
+        if result is not None:
+            return Response(result)
+        else:
+            # Check if pending
+            pending_task_ids = [task.id for task in huey.HUEY.pending()]
+            if task_id in pending_task_ids:
+                return Response({'result': True, 'status': 'pending'})
+            else:
+                return Response({'result': False, 'error': _('Task not found!')}, status=status.HTTP_404_NOT_FOUND)

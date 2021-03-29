@@ -101,7 +101,8 @@ from django.urls import reverse
 from guardian.shortcuts import assign_perm, remove_perm
 from huey.contrib import djhuey as huey
 from openrouteservice.utils import (
-    db_connections, get_connection_hash, isochrone_from_layer_task)
+    get_db_connections, get_connection_hash)
+from openrouteservice.tasks import isochrone_from_layer_task
 from qdjango.apps import QGS_SERVER, get_qgs_project
 from qdjango.models import (ConstraintExpressionRule,
                             ConstraintSubsetStringRule, Layer, Project,
@@ -462,7 +463,7 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
         self.assertEqual(feature.attribute('name'), 'my isochrone')
 
         # Check connections
-        connections = db_connections(self.qdjango_project.qgis_project)
+        connections = get_db_connections(self.qdjango_project.qgis_project)
         self.assertEqual(len(connections), 3)
         conn_uri = self.conn_uri + ' schema=\'openrouteservice test\''
         connection_key = conn_uri
@@ -538,7 +539,7 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
                 'datasource': sqlite_uri.uri()
             })
         self.assertTrue(created)
-        connections = db_connections(self.qdjango_project.qgis_project)
+        connections = get_db_connections(self.qdjango_project.qgis_project)
         self.assertIn(sqlite_path, connections.keys())
         self._check_layer(new_layer_name,
                           qgis_layer_id=qgis_layer_id, count=16)
@@ -629,25 +630,29 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
 
         # Call task directly
         result = isochrone_from_layer_task(input_qgis_layer_id, 'driving-car', params,
-                                  self.qdjango_project, None, '__geopackage__', 'isochrone gpkg from points 3857', 'my isochrone', style).get()
+                                           self.qdjango_project, None, '__geopackage__', 'isochrone gpkg from points 3857', 'my isochrone', style).get(preserve=True)
 
         self.assertTrue(result['result'], result)
 
         # Check output layer
         qgis_layer_id = result['qgis_layer_id']
-        output_layer = self.qdjango_project.qgis_project.mapLayer(qgis_layer_id)
+        output_layer = self.qdjango_project.qgis_project.mapLayer(
+            qgis_layer_id)
         input_layer = self.qdjango_project.qgis_project.mapLayer(
             input_qgis_layer_id)
         # We expect 2 isochrones for each input point
         self.assertEqual(output_layer.featureCount(),
                          2*input_layer.featureCount())
-        values = set([f.attribute('value') for f in output_layer.getFeatures()])
+        values = set([f.attribute('value')
+                      for f in output_layer.getFeatures()])
         self.assertEqual(values, {60.0, 120.0})
 
         # Check invalid input
         params["range_type"] = 'wrong'
-        result = isochrone_from_layer_task(input_qgis_layer_id, 'driving-car', params,
-                                           self.qdjango_project, None, '__geopackage__', 'isochrone gpkg from points 3857 wrong', 'my isochrone', style).get()
+        task = isochrone_from_layer_task(input_qgis_layer_id, 'driving-car', params,
+                                         self.qdjango_project, None, '__geopackage__', 'isochrone gpkg from points 3857 wrong', 'my isochrone', style)
+
+        result = task.get()
         self.assertFalse(result['result'])
         self.assertEqual(
             result['error'], "Error generating isochrone: Parameter 'range_type' has incorrect value of 'wrong'..")
@@ -679,4 +684,37 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
                       for f in output_layer.getFeatures()])
         self.assertEqual(values, {60.0, 120.0})
 
+        # Check task status
+        # This logic mimicks what HUEY internally does
 
+        huey.HUEY.immediate = False
+        huey.HUEY.testing = True
+
+        params["range_type"] = 'wrong'
+        task = isochrone_from_layer_task(input_qgis_layer_id, 'driving-car', params,
+                                         self.qdjango_project, None, '__geopackage__', 'isochrone gpkg from points 3857 wrong', 'my isochrone', style)
+
+        # Call the results API
+        result = self._testApiCall(
+            'openrouteservice-isochrone-from-layer-result', [self.qdjango_project.pk, task.id])
+        self.assertEquals(result.json(), {'result': True, 'status': 'pending'})
+
+        # Put the result in the store
+        task_result = huey.HUEY._execute(
+            task.task, huey.HUEY._get_timestamp())
+        # Remove from pending
+        task.huey.dequeue()
+
+        # Return the results
+        response = self._testApiCall(
+            'openrouteservice-isochrone-from-layer-result', [self.qdjango_project.pk, task.id])
+
+        self.assertEqual(response.status_code,
+                         status.HTTP_200_OK, response.json())
+        self.assertEqual(response.json(), task_result)
+
+        # 404 because the results has been already fetched
+        response = self._testApiCall(
+            'openrouteservice-isochrone-from-layer-result', [self.qdjango_project.pk, task.id])
+        self.assertEqual(response.status_code,
+                         status.HTTP_404_NOT_FOUND, response.json())
