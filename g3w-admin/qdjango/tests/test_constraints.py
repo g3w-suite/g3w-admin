@@ -1464,6 +1464,9 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
         self.assertFalse(b'BERLIN' in response.content)
 
 
+class TestGeoConstraintsBase(TestSingleLayerConstraintsBase):
+    """For GeoConstraint filters"""
+
     def test_geoconstraint_filter(self):
         """Test GeoConstraint filter"""
 
@@ -1702,5 +1705,3 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
         })
 
         self.assertFalse(b'another point' in response.content)
-
-
