@@ -1475,6 +1475,7 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
         # assign permissions
         assign_perm('view_project', self.test_viewer1, self.qdjango_project)
         assign_perm('view_project', self.test_viewer1_3, self.qdjango_project)
+        assign_perm('view_project', self.test_gu_viewer1, self.qdjango_project)
 
         ows_url = reverse('OWS:ows', kwargs={'group_slug': self.qdjango_project.group.slug,
                                              'project_type': 'qdjango', 'project_id': self.qdjango_project.id})
@@ -1553,14 +1554,14 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
 
         # get point into Italy and not point into Algeria with geoconstraint
         # rule for viewer1
-        rule = GeoConstraintRule(
+        rule_algeria = GeoConstraintRule(
             constraint=constraint, user=self.test_viewer1, group=None, rule="NAME='ALGERIA'")
-        rule.save()
+        rule_algeria.save()
 
         # for viewer1.3
-        rule = GeoConstraintRule(
+        rule_italy = GeoConstraintRule(
             constraint=constraint, user=self.test_viewer1_3, group=None, rule="NAME='ITALY'")
-        rule.save()
+        rule_italy.save()
 
         self.assertTrue(c.login(username='viewer1.3', password='viewer1.3'))
 
@@ -1606,4 +1607,100 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
 
         self.assertFalse(b'another point' in response.content)
         c.logout()
+
+        #For user group GU_VIEWER1: as user VIWER1.2
+
+        rule_algeria.user = None
+        rule_algeria.group = self.test_gu_viewer1
+        rule_algeria.save()
+
+        self.assertTrue(c.login(username='viewer1.3', password='viewer1.3'))
+
+        response = c.get(ows_url, {
+            'REQUEST': 'GetFeatureInfo',
+            'SERVICE': 'WMS',
+            'VERSION': '1.3.0',
+            'LAYERS': 'spatialite_points',
+            'CRS': 'EPSG:4326',
+            'BBOX': '18.77,-7.98,38.77,12.02',
+            'FORMAT': 'image/png',
+            'INFO_FORMAT': 'application/json',
+            'WIDTH': '100',
+            'HEIGHT': '100',
+            'QUERY_LAYERS': 'spatialite_points',
+            'FEATURE_COUNT': 1,
+            'FI_POINT_TOLERANCE': 10,
+            'I': '50',
+            'J': '50',
+        })
+
+        self.assertFalse(b'a point' in response.content)
+        c.logout()
+
+        self.assertTrue(c.login(username='viewer1', password='viewer1'))
+
+        response = c.get(ows_url, {
+            'REQUEST': 'GetFeatureInfo',
+            'SERVICE': 'WMS',
+            'VERSION': '1.3.0',
+            'LAYERS': 'spatialite_points',
+            'CRS': 'EPSG:4326',
+            'BBOX': '18.77,-7.98,38.77,12.02',
+            'FORMAT': 'image/png',
+            'INFO_FORMAT': 'application/json',
+            'WIDTH': '100',
+            'HEIGHT': '100',
+            'QUERY_LAYERS': 'spatialite_points',
+            'FEATURE_COUNT': 1,
+            'FI_POINT_TOLERANCE': 10,
+            'I': '50',
+            'J': '50',
+        })
+
+        self.assertTrue(b'a point' in response.content)
+
+        c.logout()
+
+        self.assertTrue(c.login(username='viewer1.2', password='viewer1.2'))
+
+        response = c.get(ows_url, {
+            'REQUEST': 'GetFeatureInfo',
+            'SERVICE': 'WMS',
+            'VERSION': '1.3.0',
+            'LAYERS': 'spatialite_points',
+            'CRS': 'EPSG:4326',
+            'BBOX': '18.77,-7.98,38.77,12.02',
+            'FORMAT': 'image/png',
+            'INFO_FORMAT': 'application/json',
+            'WIDTH': '100',
+            'HEIGHT': '100',
+            'QUERY_LAYERS': 'spatialite_points',
+            'FEATURE_COUNT': 1,
+            'FI_POINT_TOLERANCE': 10,
+            'I': '50',
+            'J': '50',
+        })
+
+        self.assertTrue(b'a point' in response.content)
+
+        response = c.get(ows_url, {
+            'REQUEST': 'GetFeatureInfo',
+            'SERVICE': 'WMS',
+            'VERSION': '1.3.0',
+            'LAYERS': 'spatialite_points',
+            'CRS': 'EPSG:4326',
+            'BBOX': '34.31,0.82,54.31,20.82',
+            'FORMAT': 'image/png',
+            'INFO_FORMAT': 'application/json',
+            'WIDTH': '100',
+            'HEIGHT': '100',
+            'QUERY_LAYERS': 'spatialite_points',
+            'FEATURE_COUNT': 1,
+            'FI_POINT_TOLERANCE': 10,
+            'I': '50',
+            'J': '50',
+        })
+
+        self.assertFalse(b'another point' in response.content)
+
 
