@@ -36,7 +36,7 @@ from rest_framework.response import Response
 from .permissions import IsochroneCreatePermission
 
 ORS_MAX_LOCATIONS = getattr(settings, 'ORS_MAX_LOCATIONS', 2)
-ORS_MAX_RANGES = ORS_MAX_LOCATIONS
+ORS_MAX_RANGES = getattr(settings, 'ORS_MAX_RANGES', 6)
 
 
 class OpenrouteserviceCompatibleLayersView(G3WAPIView):
