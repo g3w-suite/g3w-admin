@@ -23,7 +23,7 @@ from django.conf import settings
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 from huey.contrib import djhuey as huey
-from qdjango.models import Layer, QgisProjectFileLocker
+from qdjango.models import Layer, QgisProjectFileLocker, Project
 from qgis.core import (QgsCoordinateReferenceSystem, QgsCoordinateTransform,
                        QgsDataProvider, QgsDataSourceUri, QgsExpression,
                        QgsFeatureRequest, QgsField, QgsGeometry, QgsJsonUtils,
@@ -611,7 +611,7 @@ def add_geojson_features(geojson, project, qgis_layer_id=None, connection_id=Non
     return qgis_layer.id()
 
 
-def isochrone_from_layer(input_qgis_layer_id, profile, params, project, qgis_layer_id, connection_id, new_layer_name, name, style):
+def isochrone_from_layer(input_qgis_layer_id, profile, params, project_id, qgis_layer_id, connection_id, new_layer_name, name, style):
     """Generate isochrones asynchronously from an input QGIS point layer.
     This function must be run as an asynchronous task.
 
@@ -657,8 +657,8 @@ def isochrone_from_layer(input_qgis_layer_id, profile, params, project, qgis_lay
     :type profile: str
     :param params: ORS params
     :type profile: str
-    :param project: QDjango Project instance for the new or the existing layer
-    :type project: Project instance
+    :param project_id: QDjango Project pk for the new or the existing layer
+    :type project_id: int
     :param layer_id: optional, QGIS layer id
     :type layer_id: QGIS layer id
     :param connection_id: optional, connection id or the special value `__shapefile__`, `__spatialite__` or `__geopackage__`
@@ -674,6 +674,8 @@ def isochrone_from_layer(input_qgis_layer_id, profile, params, project, qgis_lay
 
     """
     try:
+
+        project = get_object_or_404(Project, pk=project_id)
 
         # Loop through features from the layer
         input_layer = project.qgis_project.mapLayer(input_qgis_layer_id)

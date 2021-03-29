@@ -117,13 +117,13 @@ class OpenrouteServiceIsochroneBaseView(G3WAPIView):
 
         """
 
-        if request.content_type == 'application/x-www-form-urlencoded':
-            body = json.loads(request.data['_content'])
-        else:
-            try:
+        try:
+            if request.content_type == 'application/x-www-form-urlencoded':
+                body = json.loads(request.data['_content'])
+            else:
                 body = json.loads(request.body.decode('utf-8'))
-            except Exception as ex:
-                raise ValidationError(str(ex))
+        except Exception as ex:
+            raise ValidationError(str(ex))
 
         project = get_object_or_404(Project, pk=project_id)
 
@@ -139,10 +139,19 @@ class OpenrouteServiceIsochroneBaseView(G3WAPIView):
             is_task = False
 
         # Output alternatives:
-        qgis_layer_id = body['qgis_layer_id']
-        # ... or
-        new_layer_name = body['new_layer_name']
-        connection_id = body['connection_id']
+        try:
+            qgis_layer_id = body['qgis_layer_id']
+            new_layer_name = None
+        except KeyError:
+            qgis_layer_id = None
+
+        if not qgis_layer_id:
+            try:
+                new_layer_name = body['new_layer_name']
+                connection_id = body['connection_id']
+            except KeyError:
+                raise ValidationError(_(
+                    'Missing "qgis_layer_id", "new_layer_name" or "connection_id".'))
 
         # Metadata (isochrone name)
         try:
@@ -200,6 +209,7 @@ class OpenrouteServiceIsochroneBaseView(G3WAPIView):
                 raise ValidationError(_(
                     'Layer is not compatible with ORS data.'))
             connection = None
+
         elif connection_id:
             if connection_id in ('__shapefile__', '__spatialite__', '__geopackage__'):
                 connection = connection_id
@@ -219,22 +229,26 @@ class OpenrouteServiceIsochroneBaseView(G3WAPIView):
         # Validate input
         try:
             profile = body['profile']
-            ors = body['ors']
-            locations = ors['locations']
-            ranges = ors['range']
 
             if not profile in settings.ORS_PROFILES:
                 raise ValidationError(_(
                     'Profile not found, available profiles: %s') % ', '.join(settings.ORS_PROFILES))
 
-            if len(locations) > ORS_MAX_LOCATIONS:
-                raise ValidationError(_(
-                    'Max allowed locations: %s') % ORS_MAX_LOCATIONS)
+            ors = body['ors']
 
-            for location in locations:
-                if type(location[0]) not in (float, int) or type(location[1]) not in (float, int) or len(location) != 2:
-                    raise ValidationError(_('Malformed locations array.'))
+            # Locations are optional for tasks
+            if not is_task:
+                locations = ors['locations']
 
+                if len(locations) > ORS_MAX_LOCATIONS:
+                    raise ValidationError(_(
+                        'Max allowed locations: %s') % ORS_MAX_LOCATIONS)
+
+                for location in locations:
+                    if type(location[0]) not in (float, int) or type(location[1]) not in (float, int) or len(location) != 2:
+                        raise ValidationError(_('Malformed locations array.'))
+
+            ranges = ors['range']
             if len(ranges) > ORS_MAX_RANGES:
                 raise ValidationError(_(
                     'Max allowed ranges: %s') % ORS_MAX_RANGES)
@@ -271,7 +285,7 @@ class OpenrouteServiceIsochroneBaseView(G3WAPIView):
             # Create async task
             input_qgis_layer_id = layer.qgis_layer.id()
             task = isochrone_from_layer_task(input_qgis_layer_id, profile, params,
-                                             project, qgis_layer_id, connection, new_layer_name, name, style)
+                                             project.pk, qgis_layer_id, connection, new_layer_name, name, style)
             task()
             return Response({'result': True, 'task_id': task.id})
 

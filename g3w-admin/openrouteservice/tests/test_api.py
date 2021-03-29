@@ -630,7 +630,7 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
 
         # Call task directly
         result = isochrone_from_layer_task(input_qgis_layer_id, 'driving-car', params,
-                                           self.qdjango_project, None, '__geopackage__', 'isochrone gpkg from points 3857', 'my isochrone', style).get(preserve=True)
+                                           self.qdjango_project.pk, None, '__geopackage__', 'isochrone gpkg from points 3857', 'my isochrone', style).get(preserve=True)
 
         self.assertTrue(result['result'], result)
 
@@ -650,7 +650,7 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
         # Check invalid input
         params["range_type"] = 'wrong'
         task = isochrone_from_layer_task(input_qgis_layer_id, 'driving-car', params,
-                                         self.qdjango_project, None, '__geopackage__', 'isochrone gpkg from points 3857 wrong', 'my isochrone', style)
+                                         self.qdjango_project.pk, None, '__geopackage__', 'isochrone gpkg from points 3857 wrong', 'my isochrone', style)
 
         result = task.get()
         self.assertFalse(result['result'])
@@ -667,7 +667,7 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
 
         # Call task directly
         result = isochrone_from_layer_task(input_qgis_layer_id, 'driving-car', params,
-                                           self.qdjango_project, None, '__geopackage__', 'isochrone gpkg from multipoints 4326', 'my isochrone', style).get()
+                                           self.qdjango_project.pk, None, '__geopackage__', 'isochrone gpkg from multipoints 4326', 'my isochrone', style).get()
 
         self.assertTrue(result['result'], result)
 
@@ -692,7 +692,7 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
 
         params["range_type"] = 'wrong'
         task = isochrone_from_layer_task(input_qgis_layer_id, 'driving-car', params,
-                                         self.qdjango_project, None, '__geopackage__', 'isochrone gpkg from points 3857 wrong', 'my isochrone', style)
+                                         self.qdjango_project.pk, None, '__geopackage__', 'isochrone gpkg from points 3857 wrong', 'my isochrone', style)
 
         # Call the results API
         result = self._testApiCall(
@@ -718,3 +718,56 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
             'openrouteservice-isochrone-from-layer-result', [self.qdjango_project.pk, task.id])
         self.assertEqual(response.status_code,
                          status.HTTP_404_NOT_FOUND, response.json())
+
+        # Test API call
+        data = {
+            "connection_id":  "__geopackage__",
+            "new_layer_name": "isochrones from multipoint",
+            "profile": "driving-car",
+            "color": [0, 0, 125],
+            "transparency": 0.5,
+            "name": "my iso",
+            "stroke_width": 1.2,
+            "ors": {
+                "range_type": "time",
+                "range": [480],
+                "interval": 60,
+                "location_type": "start",
+                "attributes": [
+                    "area",
+                    "reachfactor",
+                    "total_pop"
+                ]
+            }
+        }
+
+        response = self._testPostApiCall(
+            'openrouteservice-isochrone-from-layer', [self.qdjango_project.pk, qdjango_layer_id], data)
+        self.assertEqual(response.status_code,
+                         status.HTTP_200_OK, response.json())
+        jresponse = response.json()
+
+        self.assertTrue(jresponse["result"])
+        task_id = jresponse["task_id"]
+        task = huey.HUEY.pending()[0]
+        self.assertEqual(task.id, task_id)
+        task_result = huey.HUEY._execute(
+          task, huey.HUEY._get_timestamp())
+        self.assertTrue(task_result["result"])
+
+        # Remove from pending
+        huey.HUEY.dequeue()
+
+        # Return the results
+        response = self._testApiCall(
+            'openrouteservice-isochrone-from-layer-result', [self.qdjango_project.pk, task.id])
+        self.assertEqual(response.status_code,
+                         status.HTTP_200_OK, response.json())
+        self.assertEqual(response.json(), task_result)
+
+
+
+
+
+
+

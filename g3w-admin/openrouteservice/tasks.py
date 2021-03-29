@@ -45,7 +45,7 @@ def db_task(*args, **kwargs):
     return decorator
 
 @db_task()
-def isochrone_from_layer_task(input_qgis_layer_id, profile, params, project, qgis_layer_id, connection_id, new_layer_name, name, style):
+def isochrone_from_layer_task(input_qgis_layer_id, profile, params, project_id, qgis_layer_id, connection_id, new_layer_name, name, style):
     """Generate isochrones asynchronously from an input QGIS point layer.
     This function must be run as an asynchronous task.
 
@@ -91,8 +91,8 @@ def isochrone_from_layer_task(input_qgis_layer_id, profile, params, project, qgi
     :type profile: str
     :param params: ORS params
     :type profile: str
-    :param project: QDjango Project instance for the new or the existing layer
-    :type project: Project instance
+    :param project_id: QDjango Project pk for the new or the existing layer
+    :type project: int
     :param layer_id: optional, QGIS layer id
     :type layer_id: QGIS layer id
     :param connection_id: optional, connection id or the special value `__shapefile__`, `__spatialite__` or `__geopackage__`
@@ -108,4 +108,4 @@ def isochrone_from_layer_task(input_qgis_layer_id, profile, params, project, qgi
 
     """
 
-    return isochrone_from_layer(input_qgis_layer_id, profile, params, project, qgis_layer_id, connection_id, new_layer_name, name, style)
+    return isochrone_from_layer(input_qgis_layer_id, profile, params, project_id, qgis_layer_id, connection_id, new_layer_name, name, style)
