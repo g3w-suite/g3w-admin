@@ -14,7 +14,7 @@ __copyright__ = 'Copyright 2020, Gis3W'
 from qgis.server import QgsAccessControlFilter
 from qgis.core import QgsMessageLog, Qgis
 from qdjango.apps import QGS_SERVER
-from qdjango.models import ConstraintSubsetStringRule, ConstraintExpressionRule, Layer
+from qdjango.models import ConstraintSubsetStringRule, ConstraintExpressionRule, Layer, GeoConstraintRule
 
 class SingleLayerSubsetStringAccessControlFilter(QgsAccessControlFilter):
     """A filter that sets a subset string from the layer constraints"""
@@ -102,7 +102,7 @@ class GeoConstraintAccessControlFilter(QgsAccessControlFilter):
             QgsMessageLog.logMessage("SingleLayerExpressionAccessControlFilter for user %s: layer id %s does not exist!" % (QGS_SERVER.user, layer.id()), "", Qgis.Warning)
             return ""
 
-        rule = ConstraintRule.get_active_constraints_for_user(QGS_SERVER.user, qdjango_layer)
+        rule = GeoConstraintRule.get_rule_definition_for_user(QGS_SERVER.user, qdjango_layer)
         if rule:
             QgsMessageLog.logMessage("SingleLayerExpressionAccessControlFilter rule for user %s and layer id %s: %s" % (QGS_SERVER.user, layer.id(), rule), "", Qgis.Info)
 
@@ -114,9 +114,9 @@ class GeoConstraintAccessControlFilter(QgsAccessControlFilter):
         (which is the default implementation) means that the cache is disabled"""
 
         # Return a constant: the cache is not influenced by this filter
-        return "sle"
+        return "gc"
 
 
 # Register the filter, keep a reference because of the garbage collector
-#ac_filter3 = GeoConstraintAccessControlFilter(QGS_SERVER.serverInterface())
-#QGS_SERVER.serverInterface().registerAccessControl(ac_filter3, 9997)
+ac_filter3 = GeoConstraintAccessControlFilter(QGS_SERVER.serverInterface())
+QGS_SERVER.serverInterface().registerAccessControl(ac_filter3, 9997)

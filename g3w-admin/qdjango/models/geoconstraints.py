@@ -285,3 +285,27 @@ class GeoConstraintRule(models.Model):
             return cls.objects.filter(Q(constraint__in=constraints), Q(user=user) | Q(group__in=user_groups))
         else:
             return cls.objects.filter(constraint__in=constraints, user=user)
+
+    @classmethod
+    def get_rule_definition_for_user(cls, user, layer):
+        """Fetch the active constraints rule QGIS expression for a given user and layer
+
+        :param user: the user
+        :type user: User
+        :param layer: the layer
+        :type layer: Layer
+        :return: a list of GeoConstraintRule
+        :rtype: QuerySet
+        """
+
+        rules = cls.get_active_constraints_for_user(user, layer)
+
+        subset_strings = []
+        for rule in rules:
+            subset_strings.append(rule.get_qgis_expression())
+
+        subset_string = ' AND '.join(subset_strings)
+        logger.debug("Returning rule definition for user %s and layer %s: %s" % (
+            user, layer.pk, subset_string))
+        return subset_string
+
