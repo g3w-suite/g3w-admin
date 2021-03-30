@@ -27,10 +27,10 @@ import logging
 logger = logging.getLogger('module_editing')
 
 
-@receiver(load_js_modules)
-def get_js_modules(sender, **kwargs):
-
-    return 'editing/js/widget.js'
+# @receiver(load_js_modules)
+# def get_js_modules(sender, **kwargs):
+#
+#     return 'editing/js/widget.js'
 
 
 @receiver(user_logged_out)

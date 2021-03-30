@@ -163,7 +163,7 @@
                                     {% if object.layer_type in type_layer_for_widget %}
                                     {% comment %} Add geoconstraints management {% endcomment %}
                                     <span class="col-xs-1 icon">
-                                        <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Manage Geo-constraints list' %}" data-widget-type="constraintsList" data-constraints-layer-pk="{{ object.pk }}" data-constraints-list-url="{% url 'geoconstraint-api-filter-by-layer' object.pk %}" ><i class="fa fa-chain"></i>
+                                        <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Manage Geo-constraints list' %}" data-widget-type="geoConstraintsList" data-geoconstraints-layer-pk="{{ object.pk }}" data-geoconstraints-list-url="{% url 'geoconstraint-api-filter-by-layer' object.pk %}" ><i class="fa fa-chain"></i>
                                         <span class="label label-info label-action-layer">{% geoconstraitnswidget4layer object %}</span>
                                         </a>
                                     </span>

@@ -81,7 +81,7 @@ class GeoConstraint(models.Model):
     def constraint_rule_count(self):
         """Return the rules count for constraint"""
 
-        return self.constraintrule_set.count()
+        return self.geoconstraintrule_set.count()
 
     def clean(self):
         """Make sure the layer is either PG or SL and check that constraint layer is Polygon"""
@@ -281,7 +281,6 @@ class GeoConstraintRule(models.Model):
         if not constraints:
             return []
         user_groups = user.groups.all()
-        print(user_groups)
         if user_groups.count():
             return cls.objects.filter(Q(constraint__in=constraints), Q(user=user) | Q(group__in=user_groups))
         else:
