@@ -20,7 +20,7 @@ from django.conf import settings
 from django.shortcuts import Http404, get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import View
-from huey.contrib import djhuey as huey
+from huey.contrib.djhuey import HUEY
 from openrouteservice.utils import (add_geojson_features, config,
                                     get_db_connections, is_ors_compatible,
                                     isochrone)
@@ -227,38 +227,42 @@ class OpenrouteServiceIsochroneBaseView(G3WAPIView):
                 'Either qgis_layer_id or connection_id + layer_name must have a value.'))
 
         # Validate input
-        try:
-            profile = body['profile']
+        profile = body['profile']
 
-            if not profile in settings.ORS_PROFILES:
-                raise ValidationError(_(
-                    'Profile not found, available profiles: %s') % ', '.join(settings.ORS_PROFILES))
+        if not profile in settings.ORS_PROFILES:
+            raise ValidationError(_(
+                'Profile not found, available profiles: %s') % ', '.join(settings.ORS_PROFILES))
 
-            ors = body['ors']
+        ors = body['ors']
 
-            # Locations are optional for tasks
-            if not is_task:
+        # Locations are optional for tasks
+        if not is_task:
+
+            try:
                 locations = ors['locations']
+            except KeyError:
+                raise ValidationError(_('Missing "locations" array.'))
 
-                if len(locations) > ORS_MAX_LOCATIONS:
-                    raise ValidationError(_(
-                        'Max allowed locations: %s') % ORS_MAX_LOCATIONS)
-
-                for location in locations:
-                    if type(location[0]) not in (float, int) or type(location[1]) not in (float, int) or len(location) != 2:
-                        raise ValidationError(_('Malformed locations array.'))
-
-            ranges = ors['range']
-            if len(ranges) > ORS_MAX_RANGES:
+            if len(locations) > ORS_MAX_LOCATIONS:
                 raise ValidationError(_(
-                    'Max allowed ranges: %s') % ORS_MAX_RANGES)
+                    'Max allowed locations: %s') % ORS_MAX_LOCATIONS)
 
-            for rang in ranges:
-                if type(rang) != int:
-                    raise ValidationError(_('Malformed range array.'))
+            for location in locations:
+                if type(location[0]) not in (float, int) or type(location[1]) not in (float, int) or len(location) != 2:
+                    raise ValidationError(_('Malformed locations array.'))
 
-        except Exception as ex:
-            raise ValidationError(str(ex))
+        try:
+            ranges = ors['range']
+        except KeyError:
+            raise ValidationError(_('Missing "range" array.'))
+
+        if len(ranges) > ORS_MAX_RANGES:
+            raise ValidationError(_(
+                'Max allowed ranges: %s') % ORS_MAX_RANGES)
+
+        for rang in ranges:
+            if type(rang) != int:
+                raise ValidationError(_('Malformed range array.'))
 
         # Call ORS
         params = ors
@@ -317,12 +321,12 @@ class OpenrouteServiceIsochroneFromLayerResultView(OpenrouteServiceIsochroneBase
         Note: `project_id` is only used for permissions checking!
         """
 
-        result = huey.result(task_id)
+        result = HUEY.result(task_id)
         if result is not None:
             return Response(result)
         else:
             # Check if pending
-            pending_task_ids = [task.id for task in huey.HUEY.pending()]
+            pending_task_ids = [task.id for task in HUEY.pending()]
             if task_id in pending_task_ids:
                 return Response({'result': True, 'status': 'pending'})
             else:

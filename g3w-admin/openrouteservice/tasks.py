@@ -17,6 +17,7 @@ from .utils import isochrone_from_layer
 
 task = HUEY.task
 
+
 def close_db(fn):
     """Decorator to be used with tasks that may operate on the database.
 
@@ -43,6 +44,8 @@ def db_task(*args, **kwargs):
         ret.call_local = fn
         return ret
     return decorator
+
+
 
 @db_task()
 def isochrone_from_layer_task(input_qgis_layer_id, profile, params, project_id, qgis_layer_id, connection_id, new_layer_name, name, style):

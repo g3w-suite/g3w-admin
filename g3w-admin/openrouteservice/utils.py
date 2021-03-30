@@ -17,6 +17,7 @@ import json
 import os
 import re
 import logging
+import traceback
 
 import requests
 from django.conf import settings
@@ -604,11 +605,12 @@ def add_geojson_features(geojson, project, qgis_layer_id=None, connection_id=Non
         raise Exception(
             _('Error committing features to the destination layer.'))
 
-    with QgisProjectFileLocker(project) as project:
-        apply_style(qgis_layer, style, False, name)
-        project.update_qgis_project()
+    if style is not None:
+        with QgisProjectFileLocker(project) as project:
+            apply_style(qgis_layer, style, False, name)
+            project.update_qgis_project()
 
-    return qgis_layer.id()
+    return qgis_layer_id
 
 
 def isochrone_from_layer(input_qgis_layer_id, profile, params, project_id, qgis_layer_id, connection_id, new_layer_name, name, style):
@@ -659,8 +661,8 @@ def isochrone_from_layer(input_qgis_layer_id, profile, params, project_id, qgis_
     :type profile: str
     :param project_id: QDjango Project pk for the new or the existing layer
     :type project_id: int
-    :param layer_id: optional, QGIS layer id
-    :type layer_id: QGIS layer id
+    :param qgis_layer_id: optional, QGIS layer id
+    :type qgis_layer_id: QGIS layer id
     :param connection_id: optional, connection id or the special value `__shapefile__`, `__spatialite__` or `__geopackage__`
     :type connection: str
     :param new_layer_name: optional, name of the new layer
@@ -673,6 +675,7 @@ def isochrone_from_layer(input_qgis_layer_id, profile, params, project_id, qgis_
     :rtype: dict
 
     """
+
     try:
 
         project = get_object_or_404(Project, pk=project_id)
@@ -698,13 +701,14 @@ def isochrone_from_layer(input_qgis_layer_id, profile, params, project_id, qgis_
         points = []
 
         def _process_batch(points, qgis_layer_id):
+            #import time
+            # time.sleep(20)
             params['locations'] = points
             # Note: passing a range list is mutually exclusive
             # with "interval"
             result = isochrone(profile, params)
             if result.status_code != status.HTTP_200_OK:
-                jcontent = json.loads(result.content.decode(
-                    'utf-8'))
+                jcontent = json.loads(result.content.decode('utf-8'))
                 raise Exception(
                     _('Error generating isochrone: %s.') % jcontent['error']['message'])
             return add_geojson_features(result.content.decode(
@@ -719,6 +723,7 @@ def isochrone_from_layer(input_qgis_layer_id, profile, params, project_id, qgis_
                 if len(points) >= ORS_MAX_LOCATIONS:
                     qgis_layer_id = _process_batch(points, qgis_layer_id)
                     connection_id = None
+                    style = None
                     points = []
 
         if len(points) > 0:
@@ -729,9 +734,13 @@ def isochrone_from_layer(input_qgis_layer_id, profile, params, project_id, qgis_
                 _('Unknown error adding results to the destination layer.'))
 
     except Exception as ex:
+
+        msg = traceback.format_exc()
+        logger.debug('ORS Exception: %s' % msg)
+
         return {
             'result': False,
-            'error': str(ex)
+            'error': str(ex),
         }
 
     return {

@@ -133,6 +133,9 @@ temp_datasource = QTemporaryDir()
 ),
     DATASOURCE_PATH=temp_datasource.path(),
     MEDIA_ROOT=temp_datasource.path(),
+    HUEY={
+        'immediate': True
+}
 )
 class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
     """Test proxy to QgsServer"""
@@ -686,7 +689,6 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
 
         # Check task status
         # This logic mimicks what HUEY internally does
-
         huey.HUEY.immediate = False
         huey.HUEY.testing = True
 
@@ -752,7 +754,7 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
         task = huey.HUEY.pending()[0]
         self.assertEqual(task.id, task_id)
         task_result = huey.HUEY._execute(
-          task, huey.HUEY._get_timestamp())
+            task, huey.HUEY._get_timestamp())
         self.assertTrue(task_result["result"])
 
         # Remove from pending
@@ -764,10 +766,3 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
         self.assertEqual(response.status_code,
                          status.HTTP_200_OK, response.json())
         self.assertEqual(response.json(), task_result)
-
-
-
-
-
-
-
