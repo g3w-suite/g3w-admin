@@ -248,6 +248,29 @@ class GeoConstraintRule(models.Model):
         return True, None
 
     @classmethod
+    def get_context(cls, context='v'):
+        """Build kwargs params for constraint
+
+        :param context: SingleLayerConstraint context 'v (view)' 'e (editing)' 've (view + editing)'
+        :type context: str
+        :return: kwargs dict
+        :rtype: dict
+        """
+
+        kwargs = {}
+        if context == 'v':
+            kwargs['for_view'] = True
+        elif context == 'e':
+            kwargs['for_editing'] = True
+        elif context == 've':
+            kwargs['for_view'] = True
+            kwargs['for_editing'] = True
+        else:
+            kwargs['for_view'] = True
+
+        return kwargs
+
+    @classmethod
     def get_constraints_for_user(cls, user, layer):
         """Fetch the constraints for a given user and editing layer
 
@@ -269,19 +292,21 @@ class GeoConstraintRule(models.Model):
             return cls.objects.filter(constraint__in=constraints, user=user)
 
     @classmethod
-    def get_active_constraints_for_user(cls, user, layer):
+    def get_active_constraints_for_user(cls, user, layer, context='v'):
         """Fetch the active constraints for a given user and editing layer
 
         :param user: the user
         :type user: User
         :param layer: the editing layer
         :type layer: Layer
+        :param context: SingleLayerConstraint context 'v (view)' 'e (editing)' 've (view + editing)'
+        :type context: str
         :return: a list of GeoConstraintRule
         :rtype: QuerySet
         """
 
         constraints = GeoConstraint.objects.filter(
-            layer=layer, active=True)
+            layer=layer, active=True, **cls.get_context(context))
         if not constraints:
             return []
         user_groups = user.groups.all()

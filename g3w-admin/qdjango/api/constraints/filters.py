@@ -68,7 +68,8 @@ class GeoConstraintsFilter(BaseFilterBackend):
 
         rule_parts = []
 
-        rules = GeoConstraintRule.get_active_constraints_for_user(request.user, view.layer)
+        rules = GeoConstraintRule.get_active_constraints_for_user(request.user, view.layer,
+                                                                  context=getattr(view, 'context', 'v'))
 
         for rule in rules:
             expression = rule.get_qgis_expression()
