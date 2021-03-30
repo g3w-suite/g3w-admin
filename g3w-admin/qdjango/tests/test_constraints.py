@@ -1705,3 +1705,84 @@ class TestGeoConstraintsServerFilters(TestSingleLayerConstraintsBase):
         })
 
         self.assertFalse(b'another point' in response.content)
+
+        # CHANGE CONTEXT FOR VIEWING AND EDITING
+        # ======================================
+        # Aspect same response for Viewer1.2
+
+        constraint.for_editing = True
+        constraint.save()
+
+        response = c.get(ows_url, {
+            'REQUEST': 'GetFeatureInfo',
+            'SERVICE': 'WMS',
+            'VERSION': '1.3.0',
+            'LAYERS': 'spatialite_points',
+            'CRS': 'EPSG:4326',
+            'BBOX': '18.77,-7.98,38.77,12.02',
+            'FORMAT': 'image/png',
+            'INFO_FORMAT': 'application/json',
+            'WIDTH': '100',
+            'HEIGHT': '100',
+            'QUERY_LAYERS': 'spatialite_points',
+            'FEATURE_COUNT': 1,
+            'FI_POINT_TOLERANCE': 10,
+            'I': '50',
+            'J': '50',
+        })
+
+        self.assertTrue(b'a point' in response.content)
+
+        response = c.get(ows_url, {
+            'REQUEST': 'GetFeatureInfo',
+            'SERVICE': 'WMS',
+            'VERSION': '1.3.0',
+            'LAYERS': 'spatialite_points',
+            'CRS': 'EPSG:4326',
+            'BBOX': '34.31,0.82,54.31,20.82',
+            'FORMAT': 'image/png',
+            'INFO_FORMAT': 'application/json',
+            'WIDTH': '100',
+            'HEIGHT': '100',
+            'QUERY_LAYERS': 'spatialite_points',
+            'FEATURE_COUNT': 1,
+            'FI_POINT_TOLERANCE': 10,
+            'I': '50',
+            'J': '50',
+        })
+
+        self.assertFalse(b'another point' in response.content)
+
+        c.logout()
+
+        # CHANGE CONTEXT FROM VIEWING TO EDITING
+        # ======================================
+
+        constraint.for_editing = True
+        constraint.for_view = False
+        constraint.save()
+
+        # with GeoConstraint Viewer1 can see only ALgeria point, with geoconstraint only editing can see every point
+        self.assertTrue(c.login(username='viewer1', password='viewer1'))
+
+        response = c.get(ows_url, {
+            'REQUEST': 'GetFeatureInfo',
+            'SERVICE': 'WMS',
+            'VERSION': '1.3.0',
+            'LAYERS': 'spatialite_points',
+            'CRS': 'EPSG:4326',
+            'BBOX': '34.31,0.82,54.31,20.82',
+            'FORMAT': 'image/png',
+            'INFO_FORMAT': 'application/json',
+            'WIDTH': '100',
+            'HEIGHT': '100',
+            'QUERY_LAYERS': 'spatialite_points',
+            'FEATURE_COUNT': 1,
+            'FI_POINT_TOLERANCE': 10,
+            'I': '50',
+            'J': '50',
+        })
+
+        self.assertTrue(b'another point' in response.content)
+
+        c.logout()
