@@ -98,6 +98,10 @@ class GeoConstraint(models.Model):
             raise ValidationError(
                 _('Editing and constraints layer cannot be the same layer'))
 
+        # add for_view and for_editing cleaning
+        if not self.for_view and not self.for_editing:
+            raise ValidationError(_('Almonst one of fields for_view and for_editing it must be True'))
+
     def __str__(self):
         return "%s, %s" % (self.layer, self.constraint_layer)
 
