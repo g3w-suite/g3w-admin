@@ -325,10 +325,11 @@ class ConstraintsModelTestsBase(ConstraintsTestsBase):
         # Now add a constraint for user2
         constraint_layer = Layer.objects.get(name=self.constraint_layer_name)
         constraint = GeoConstraint(
-            layer=editing_layer, constraint_layer=constraint_layer)
+            layer=editing_layer, constraint_layer=constraint_layer, for_editing=True)
         constraint.save()
         rule = GeoConstraintRule(constraint=constraint,
-                              user=self.test_user2, rule='name=\'bagnolo\'')
+                                 user=self.test_user2,
+                                 rule='name=\'bagnolo\'')
         rule.save()
         response = client.post('/vector/api/editing/qdjango/%s/%s/' % (
             editing_layer.project_id, editing_layer.qgs_layer_id), {}, format='json')
@@ -366,7 +367,7 @@ class ConstraintsModelTestsBase(ConstraintsTestsBase):
         # Now add a constraint for user2
         constraint_layer = Layer.objects.get(name=self.constraint_layer_name)
         constraint = GeoConstraint(
-            layer=editing_layer, constraint_layer=constraint_layer)
+            layer=editing_layer, constraint_layer=constraint_layer, for_editing=True)
         constraint.save()
         rule = GeoConstraintRule(constraint=constraint,
                               user=self.test_user2, rule='name=\'bagnolo\'')
@@ -468,10 +469,11 @@ class ConstraintsModelTestsBase(ConstraintsTestsBase):
         # Now add a constraint for user2
         constraint_layer = Layer.objects.get(name=self.constraint_layer_name)
         constraint = GeoConstraint(
-            layer=editing_layer, constraint_layer=constraint_layer)
+            layer=editing_layer, constraint_layer=constraint_layer, for_editing=True)
         constraint.save()
         rule = GeoConstraintRule(constraint=constraint,
-                              user=self.test_user2, rule='name=\'bagnolo\'')
+                                 user=self.test_user2,
+                                 rule='name=\'bagnolo\'')
         rule.save()
 
         # Retrieve the data

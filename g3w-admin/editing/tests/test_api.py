@@ -607,6 +607,8 @@ class ConstraintsApiTests(ConstraintsTestsBase):
         response = client.post(url, {
             'layer': editing_layer.pk,
             'constraint_layer': constraint_layer.pk,
+            'for_view': True,
+            'for_editing': True
         }, format='json')
         self.assertEqual(response.status_code, 201)
         jcontent = json.loads(response.content)
@@ -632,6 +634,8 @@ class ConstraintsApiTests(ConstraintsTestsBase):
         response = client.post(url, {
             'editing_layer': constraint_layer.pk,
             'constraint_layer': constraint_layer.pk,
+            'for_view': True,
+            'for_editing': True,
             'pk': constraint.pk
         }, format='json')
         # Bad request
@@ -727,7 +731,9 @@ class ConstraintsApiTests(ConstraintsTestsBase):
 
         response = client.post(url_list, {
             'layer': editing_layer.pk,
-            'constraint_layer': constraint_layer.pk
+            'constraint_layer': constraint_layer.pk,
+            'for_view': True,
+            'for_editing': True
         }, format='json')
         self.assertEqual(response.status_code, 201)
         jcontent = json.loads(response.content)
@@ -737,6 +743,8 @@ class ConstraintsApiTests(ConstraintsTestsBase):
         response = client.put(url, {
             'layer': editing_layer.pk,
             'constraint_layer': constraint_layer.pk,
+            'for_view': True,
+            'for_editing': True,
             'pk': new_constraint_pk
         }, format='json')
         self.assertEqual(response.status_code, 200)
