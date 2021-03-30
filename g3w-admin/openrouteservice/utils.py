@@ -37,7 +37,7 @@ from qgis.PyQt.QtCore import QDateTime, Qt, QTemporaryDir, QVariant
 from qgis.PyQt.QtGui import QColor
 from rest_framework import status
 
-from .models import ORS_REQUIRED_LAYER_FIELDS
+from .models import ORS_REQUIRED_LAYER_FIELDS, OpenrouteserviceProject
 
 ORS_API_KEY = getattr(settings, 'ORS_API_KEY', None)
 ORS_PROFILES = settings.ORS_PROFILES  # mandatory!
@@ -161,37 +161,62 @@ def get_db_connections(qgis_project):
     return connections
 
 
-def check_user_permissions(user, project):
-    """Check user isochrone creation permissions
+def check_user_permissions(user, project, service=None):
+    """Check user Openrouteservice permissions on a project and optionally on a service.
+
+    If service is not specified, the function returns True if at least one service is available.
 
     :param user: Django user
     :type user: Django user instance
     :param project: QDjango project instance
     :type project: Project
+    :param service: OpenrouteserviceProject service, optional
+    :type service: OpenrouteserviceProjectService
     :return: True if user has permissions
     :rtype: bool
     """
 
-    return user.has_perm('change_project', project)
+    if not user.has_perm('change_project', project):
+        return False
+
+    try:
+        if service is not None:
+            OpenrouteserviceProject.objects.get(
+                project=project, services__contains=service.value)
+        else:
+            OpenrouteserviceProject.objects.get(project=project)
+    except:
+        return False
+
+    return True
 
 
 def config(project):
     """Returns openrouteservice configuration for a project.
 
     WARNING: Permissions are not checked! It is responsibility of calling code to
-             check layer permissions, see `check_user_permissions(user, project)`.
+             check project permissions, see `check_user_permissions(user, project, service)`.
 
     Example returned value:
 
     {
-        "gid": "qdjango:1234",
-        "compatible":[
-            "isochrone_gpkg_15b2116a_25f5_430c_b9ad_a86dc425ce5f",
-            "isochrone_postgres_49ec3537_8631_4c29_832d_15c91c2430e6",
-            "isochrone_shp_825bc382_628b_4b3b_a078_c377aad56a8d",
-            "isochrone_spatialite_b507eaeb_46bb_41bf_80d6_662d21ad9c9a",
-            "isochrone_sqlite_45de826d_c6a2_4057_bb32_16bb5c2f18df",
-        ],
+        // This part is specific for isochrones
+        "isochrones":
+        {
+            "compatible":[
+                "isochrone_gpkg_15b2116a_25f5_430c_b9ad_a86dc425ce5f",
+                "isochrone_postgres_49ec3537_8631_4c29_832d_15c91c2430e6",
+                "isochrone_shp_825bc382_628b_4b3b_a078_c377aad56a8d",
+                "isochrone_spatialite_b507eaeb_46bb_41bf_80d6_662d21ad9c9a",
+                "isochrone_sqlite_45de826d_c6a2_4057_bb32_16bb5c2f18df",
+            ],
+            "profiles": {
+                "driving-car": {
+                    "name": "Car"
+                }
+            }
+        },
+        // This part may be useful for other services in the future
         "connections":[
             {
                 "id":"41fcba09f2bdcdf315ba4119dc7978dd",
@@ -216,11 +241,6 @@ def config(project):
                 "provider":"ogr"
             }
         ],
-        "profiles": {
-            "driving-car": {
-                "name": "Car"
-            }
-        }
     }
 
     :param project: QDjango project instance
@@ -239,9 +259,11 @@ def config(project):
     connections = get_db_connections(project.qgis_project)
 
     return {
-        'compatible': compatible,
+        'isochrones': {
+            'compatible': compatible,
+            'profiles': ORS_PROFILES
+        },
         'connections': list(connections.values()),
-        'profiles': ORS_PROFILES
     }
 
 

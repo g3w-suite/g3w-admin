@@ -103,6 +103,7 @@ from huey.contrib import djhuey as huey
 from openrouteservice.utils import (
     get_db_connections, get_connection_hash)
 from openrouteservice.tasks import isochrone_from_layer_task
+from openrouteservice.models import OpenrouteserviceProject, OpenrouteserviceService
 from qdjango.apps import QGS_SERVER, get_qgs_project
 from qdjango.models import (ConstraintExpressionRule,
                             ConstraintSubsetStringRule, Layer, Project,
@@ -238,6 +239,9 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
             )
             assert created
 
+        OpenrouteserviceProject.objects.get_or_create(
+            project=cls.qdjango_project, services={OpenrouteserviceService.ISOCHRONE.value})
+
     def setUp(self):
         super().setUp()
         self.client = APIClient()
@@ -371,13 +375,14 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
 
         response = self._testApiCall(
             'openrouteservice-compatible-layers', [self.qdjango_project.pk])
-        self.assertEqual(response.json()['compatible'], [k for k in self.qdjango_project.qgis_project.mapLayers(
+        self.assertEqual(response.json()['isochrones']['compatible'], [k for k in self.qdjango_project.qgis_project.mapLayers(
         ).keys() if k.startswith('openrouteservice_compatible')])
         connection = response.json()['connections'][0]
         self.assertEqual(connection['provider'], 'postgres')
         self.assertEqual(
             connection['name'], '{NAME} (postgres host:{HOST}, port:{PORT}, schema:\'openrouteservice test\')'.format(**settings.DATABASES['default']))
-        self.assertEqual(response.json()['profiles'], settings.ORS_PROFILES)
+        self.assertEqual(
+            response.json()['isochrones']['profiles'], settings.ORS_PROFILES)
 
     def test_isochrone_append_postgis(self):
         """Test isochrone append features to an existing PG layer"""
