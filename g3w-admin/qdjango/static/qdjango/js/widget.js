@@ -1449,7 +1449,7 @@ _.extend(ga.Qdjango, {
         detail: '/' + SITE_PREFIX_URL + 'qdjango/api/geoconstraint/detail/',
     },
     layer: {
-        info: '/' + SITE_PREFIX_URL + 'vector/api/info/layer/',
+        info: '/' + SITE_PREFIX_URL + 'qdjango/api/info/layer/polygon/',
         user: '/' + SITE_PREFIX_URL + 'qdjango/api/info/layer/user/',
         authgroup: '/' + SITE_PREFIX_URL + 'qdjango/api/info/layer/authgroup/',
     },
@@ -1553,6 +1553,24 @@ _.extend(g3wadmin.tpl, {
           <div class="controls">\
               <label>'+gettext('Constraint layer')+'</label>\
               <select name="constraint_layer" class="select form-control"></select>\
+          </div>\
+          <div class="form-group">\
+              <div id="div_id_for_view" class="checkbox">\
+                  <label for="id_for_view" class="">\
+                      <input type="checkbox" name="icheck_for_view" id="id_for_view" checked="checked" class="checkboxinput">\
+                      ' + gettext("Active for visualization") +'\
+                  </label>\
+              </div>\
+              <input type="hidden" name="for_view" value="true">\
+          </div>\
+          <div class="form-group">\
+              <div id="div_id_for_editing" class="checkbox">\
+                  <label for="id_for_editing" class="">\
+                      <input type="checkbox" name="icheck_for_editing" id="id_for_editing" class="checkboxinput">\
+                      ' + gettext("Active for editing") +'\
+                  </label>\
+              </div>\
+              <input type="hidden" name="for_editing">\
           </div>\
       </form>'
   ),
