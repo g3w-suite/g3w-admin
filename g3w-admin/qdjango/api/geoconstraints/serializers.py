@@ -21,7 +21,8 @@ class GeoConstraintCleanValidator(object):
 
     def __call__(self, value):
         try:
-            GeoConstraint(layer=value['layer'], constraint_layer=value['constraint_layer']).clean()
+            GeoConstraint(layer=value['layer'], constraint_layer=value['constraint_layer'],
+                          for_view=value['for_view'], for_editing=value['for_editing']).clean()
         except Exception as ex:
             raise serializers.ValidationError(str(ex))
 
@@ -48,8 +49,9 @@ class GeoConstraintSerializer(serializers.ModelSerializer):
             'constraint_layer',
             'constraint_layer_name',
             'active',
-            'constraint_rule_count'
-
+            'constraint_rule_count',
+            'for_view',
+            'for_editing'
         ]
         validators = [GeoConstraintCleanValidator()]
 
