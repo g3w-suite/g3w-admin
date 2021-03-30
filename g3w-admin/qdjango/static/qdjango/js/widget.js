@@ -1097,12 +1097,8 @@ _.extend(g3wadmin.widget, {
     $table.append(
       "<thead>\n" +
         "            <tr>\n" +
-        '                <th style="width:180px;">' +
-        gettext("Actions") +
-        "</th>\n" +
-        "                <th>" +
-        gettext("Name") +
-        "</th>\n" +
+        '                <th style="width:180px;">' + gettext("Actions") + "</th>\n" +
+        "                <th>" + gettext("Name") + "</th>\n" +
         "                <th>" +
         gettext("Description") +
         "</th>\n" +
@@ -1577,10 +1573,10 @@ _.extend(g3wadmin.tpl, {
 
   geoConstraintActions: _.template('\
       <span class="col-xs-2 icon">\
-          <a href="#" data-toggle="tooltip" data-placement="top" title="'+gettext('Manage geo-constaints')+'" data-geoconstraint-action-mode="rules" data-geoconstraint-pk="<%= constraintPk %>"><i class="fa fa-cubes"></i></a>\
+          <a href="#" data-toggle="tooltip" data-placement="top" title="'+gettext('Manage geo-constaints')+'" data-geoconstraint-action-mode="rules" data-geoconstraint-context="<%= constraintContext %>" data-geoconstraint-pk="<%= constraintPk %>"><i class="fa fa-cubes"></i></a>\
       </span>\
       <span class="col-xs-2 icon" style="display:<%= editDisplay %>">\
-          <a href="#" data-geoconstraint-action-mode="update" data-geoconstraint-pk="<%= constraintPk %>" data-geoconstraint-layer-id="<%= layerId %>"><i class="ion ion-edit"></i></a>\
+          <a href="#" data-geoconstraint-action-mode="update" data-geoconstraint-pk="<%= constraintPk %>" data-geoconstraint-layer-id="<%= layerId %>" data-geoconstraint-context="<%= constraintContext %>"><i class="ion ion-edit"></i></a>\
       </span>\
       <span class="col-xs-2 icon">\
           <a href="#" \
@@ -1751,11 +1747,11 @@ _.extend(g3wadmin.widget, {
         ga.Qdjango.geoconstraint_data.group_viewers = [];
 
         $.ajaxSetup({async:false});
-        $.getJSON(ga.Qdjango.geoconstraint_urls.layer.user+params['layer_pk']+"/", function( data ) {
+        $.getJSON(ga.Qdjango.geoconstraint_urls.layer.user+params['layer_pk']+"/?context=" + params["constraint_context"], function( data ) {
             ga.Qdjango.geoconstraint_data.viewers = data['results'];
         });
 
-        $.getJSON(ga.Qdjango.geoconstraint_urls.layer.authgroup+params['layer_pk']+"/", function( data ) {
+        $.getJSON(ga.Qdjango.geoconstraint_urls.layer.authgroup+params['layer_pk']+"/?context=" + params["constraint_context"], function( data ) {
             ga.Qdjango.geoconstraint_data.group_viewers = data['results'];
         });
         $.ajaxSetup({async:true});
@@ -1813,6 +1809,21 @@ _.extend(g3wadmin.widget, {
             var $item = $(params['parent_click'].parents('table')[0]).parents('tr').prev().find('[data-widget-type="geoConstraintsList"]');
         }
 
+        modal.$modal.find("#id_for_view").on("ifChanged", function (e) {
+          if (e.target.checked) {
+            modal.$modal.find("[name='for_view']").val("true")
+          } else {
+            modal.$modal.find("[name='for_view']").val("false")
+          }
+        })
+
+        modal.$modal.find("#id_for_editing").on("ifChanged", function (e) {
+          if (e.target.checked) {
+            modal.$modal.find("[name='for_editing']").val("true")
+          } else {
+            modal.$modal.find("[name='for_editing']").val("false")
+          }
+        })
 
         // set action for confirm btn
         var form = new ga.forms.form(modal.$modal.find('form'));
@@ -1824,6 +1835,8 @@ _.extend(g3wadmin.widget, {
         modal.setConfirmButtonAction(function(e){
             form.sendData(e, params['new'] ? 'post' : 'put');
         });
+
+        ga.ui.initRadioCheckbox(modal.$modal.find("form"))
 
         modal.show();
 
@@ -1839,6 +1852,21 @@ _.extend(g3wadmin.widget, {
                $select.append($option);
             });
         });
+
+        // populate form in update
+        if (!params["new"]) {
+          $.each(res, function (key, val) {
+            modal.$modal.find("[name=" + key + "]").val(val)
+            // init icheck
+            if (key == "for_view" || key == "for_editing") {
+              if (val) {
+                modal.$modal.find("#id_" + key).iCheck("check")
+              } else {
+                modal.$modal.find("#id_" + key).iCheck("uncheck")
+              }
+            }
+          })
+        }
     },
 
     /*
@@ -1867,6 +1895,8 @@ _.extend(g3wadmin.widget, {
             '            <tr>\n' +
             '                <th style="width:180px;">'+gettext('Actions')+'</th>\n' +
             '                <th>'+gettext('Layer constraint')+'</th>\n' +
+            '                <th>'+gettext('For visualization')+'</th>\n' +
+            '                <th>'+gettext('For editing')+'</th>\n' +
             '                <th>'+gettext('Rules count')+'</th>\n' +
             '            </tr>\n' +
             '        </thead>');
@@ -1876,13 +1906,21 @@ _.extend(g3wadmin.widget, {
         $.each(res['results'], function(k, v){
             constraint_res[v['pk']] = v;
             var editDisplay = v['constraint_rule_count'] > 0 ? 'none': 'display';
+            var for_view = v["for_view"] ? '<span class="fa fa-check-circle" style="color: orange"></span>' : ""
+            var for_editing = v["for_editing"] ? '<span class="fa fa-check-circle" style="color: orange"></span>' : ""
+            var constraintContext = ""
+            if (for_view != "") constraintContext += "v"
+            if (for_editing != "") constraintContext += "e"
             $tbody.append('<tr id="constraint-item-'+v['pk']+'">\n' +
             '                <td>'+ga.tpl.geoConstraintActions({
                     'layerId': layer_pk,
                     'constraintPk': v['pk'],
+                    'constraintContext': constraintContext,
                     'editDisplay': editDisplay
             })+'</td>\n' +
             '                <td>'+v['constraint_layer_name']+'</td>\n' +
+            '                <td>'+for_view+'</td>\n' +
+            '                <td>'+for_editing+'</td>\n' +
             '                <td>'+v['constraint_rule_count']+'</td>\n' +
             '            </tr>\n');
         });
@@ -1894,6 +1932,7 @@ _.extend(g3wadmin.widget, {
                     'modal-title': gettext('Update constraint'),
                     'layer_pk': layer_pk,
                     //'constraint_pk': $(this).attr('data-contraint-pk'),
+                    'constraint_context': $(this).attr("data-geoconstraint-context"),
                     'new': false,
                     'parent_click': $(this)
                 });
@@ -1904,6 +1943,7 @@ _.extend(g3wadmin.widget, {
                 {
                     'modal-title': gettext('Geo Constraint Rules'),
                     'constraint_pk': $(this).attr('data-geoconstraint-pk'),
+                    'constraint_context': $(this).attr("data-geoconstraint-context"),
                     'layer_pk': layer_pk,
                     'parent_click': $(this)
                 });
