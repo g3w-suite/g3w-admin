@@ -1569,6 +1569,12 @@ _.extend(g3wadmin.tpl, {
               <select name="constraint_layer" class="select form-control"></select>\
           </div>\
           <div class="form-group">\
+              <label class="control-label ">'+gettext("Description") +'</label>\
+              <div class="controls ">\
+                 <textarea class="form-control" name="description" style="width:100%;"></textarea>\
+              </div>\
+          </div>\
+          <div class="form-group">\
               <div id="div_id_for_view" class="checkbox">\
                   <label for="id_for_view" class="">\
                       <input type="checkbox" name="icheck_for_view" id="id_for_view" checked="checked" class="checkboxinput">\
@@ -1918,7 +1924,8 @@ _.extend(g3wadmin.widget, {
         var thead = '<thead>\n' +
             '            <tr>\n' +
             '                <th style="width:180px;">'+gettext('Actions')+'</th>\n' +
-            '                <th>'+gettext('Layer constraint')+'</th>\n';
+            '                <th>'+gettext('Layer constraint')+'</th>\n' +
+            '                <th>'+gettext('Description')+'</th>\n';
             if (_.indexOf(ga.settings.G3WADMIN_LOCAL_MORE_APPS, 'editing') != -1) {
               thead += '                <th>' + gettext('For visualization') + '</th>\n' +
               '                <th>' + gettext('For editing') + '</th>\n';
@@ -1946,7 +1953,8 @@ _.extend(g3wadmin.widget, {
                     'constraintContext': constraintContext,
                     'editDisplay': editDisplay
             })+'</td>\n' +
-            '                <td>'+v['constraint_layer_name']+'</td>\n';
+            '                <td>'+v['constraint_layer_name']+'</td>\n' +
+            '                <td>'+v['description']+'</td>\n';
             if (_.indexOf(ga.settings.G3WADMIN_LOCAL_MORE_APPS, 'editing') != -1) {
               tr += '                <td>' + for_view + '</td>\n' +
                   '                <td>' + for_editing + '</td>\n';

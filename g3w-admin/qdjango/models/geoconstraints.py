@@ -51,6 +51,7 @@ class GeoConstraint(models.Model):
     active = models.BooleanField(default=True)
     layer = models.ForeignKey(
         Layer, on_delete=models.CASCADE, related_name='editing_layer')
+    description = models.TextField(_('Description'), null=True, blank=True)
     constraint_layer = models.ForeignKey(
         Layer, on_delete=models.CASCADE, related_name='constraint_layer')
 

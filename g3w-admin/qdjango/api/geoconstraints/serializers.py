@@ -44,6 +44,7 @@ class GeoConstraintSerializer(serializers.ModelSerializer):
         fields = [
             'pk',
             'layer',
+            'description',
             'constraint_layer_qgs_layer_id',
             'layer_qgs_layer_id',
             'constraint_layer',
