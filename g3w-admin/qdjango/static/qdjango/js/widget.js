@@ -1095,47 +1095,51 @@ _.extend(g3wadmin.widget, {
         parent_click: $(this),
       })
     })
-    $div.append($newConstraint)
+    $div.append($newConstraint);
 
     // add table contraints saved
-    var $table = $('<table class="table">')
-    var $tbody = $table.append($("<tbody>"))
-    $table.append(
-      "<thead>\n" +
+    var $table = $('<table class="table">');
+    var $tbody = $table.append($("<tbody>"));
+    var thead = "<thead>\n" +
         "            <tr>\n" +
         '                <th style="width:180px;">' + gettext("Actions") + "</th>\n" +
         "                <th>" + gettext("Name") + "</th>\n" +
         "                <th>" +
         gettext("Description") +
-        "</th>\n" +
-        "                <th>" +
-        gettext("For visualization") +
-        "</th>\n" +
-        "                <th>" +
-        gettext("For editing") +
-        "</th>\n" +
-        "                <th>" +
+        "</th>\n";
+
+        if (_.indexOf(ga.settings.G3WADMIN_LOCAL_MORE_APPS, 'editing') != -1) {
+          thead += "                <th>"+
+          gettext("For visualization") +
+          "</th>\n" +
+          "                <th>" +
+          gettext("For editing") +
+          "</th>\n";
+        }
+
+        thead += "                <th>" +
         gettext("Subset rules count") +
         "</th>\n" +
         "                <th>" +
         gettext("Expression rules count") +
         "</th>\n" +
         "            </tr>\n" +
-        "        </thead>"
-    )
+        "        </thead>";
+
+    $table.append(thead);
+
 
     // add constraints
-    var constraint_res = {}
+    var constraint_res = {};
     $.each(res["results"], function (k, v) {
       constraint_res[v["pk"]] = v
       var editDisplay = v["rule_count"] > 0 ? "none" : "display"
       var for_view = v["for_view"] ? '<span class="fa fa-check-circle" style="color: orange"></span>' : ""
       var for_editing = v["for_editing"] ? '<span class="fa fa-check-circle" style="color: orange"></span>' : ""
-      var constraintContext = ""
-      if (for_view != "") constraintContext += "v"
-      if (for_editing != "") constraintContext += "e"
-      $tbody.append(
-        '<tr id="singlelayerconstraint-item-' +
+      var constraintContext = "";
+      if (for_view != "") constraintContext += "v";
+      if (for_editing != "") constraintContext += "e";
+      var tr = '<tr id="singlelayerconstraint-item-' +
           v["pk"] +
           '">\n' +
           "                <td>" +
@@ -1152,21 +1156,23 @@ _.extend(g3wadmin.widget, {
           "</td>\n" +
           "                <td>" +
           v["description"] +
-          "</td>\n" +
-          "                <td>" +
-          for_view +
-          "</td>\n" +
-          "                <td>" +
-          for_editing +
-          "</td>\n" +
-          "                <td>" +
+          "</td>\n";
+          if (_.indexOf(ga.settings.G3WADMIN_LOCAL_MORE_APPS, 'editing') != -1) {
+            tr += "                <td>" +
+                for_view +
+                "</td>\n" +
+                "                <td>" +
+                for_editing +
+                "</td>\n";
+          }
+          tr += "                <td>" +
           v["subset_rule_count"] +
           "</td>\n" +
           "                <td>" +
           v["expression_rule_count"] +
           "</td>\n" +
           "            </tr>\n"
-      )
+      $tbody.append(tr);
     })
 
     // add actions to elements action
