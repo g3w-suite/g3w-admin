@@ -976,6 +976,12 @@ _.extend(g3wadmin.widget, {
 
     ga.ui.initRadioCheckbox(modal.$modal.find("form"))
 
+    // remove for_view and for_editing checkbox if 'editing' module is not active
+    if (_.indexOf(ga.settings.G3WADMIN_LOCAL_MORE_APPS, 'editing') == -1){
+        modal.$modal.find("#div_id_for_view").hide();
+        modal.$modal.find("#div_id_for_editing").hide();
+    }
+
     modal.show()
 
     // populate form in update
@@ -1843,6 +1849,12 @@ _.extend(g3wadmin.widget, {
         });
 
         ga.ui.initRadioCheckbox(modal.$modal.find("form"))
+
+        // remove for_view and for_editing checkbox if 'editing' module is not active
+        if (_.indexOf(ga.settings.G3WADMIN_LOCAL_MORE_APPS, 'editing') == -1){
+            modal.$modal.find("#div_id_for_view").hide();
+            modal.$modal.find("#div_id_for_editing").hide();
+        }
 
         modal.show();
 
