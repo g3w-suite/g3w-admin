@@ -48,6 +48,41 @@ TYPE_LAYER_FOR_DOWNLOAD = (
     'oracle'
 )
 
+def buildLayerTreeNodeObject(layerTreeNode):
+    """Creates a dictionary that represents the QGIS Project layer tree
+
+    :param layerTreeNode: QGIS layer tree node (usually from QgsProject.layerTreeRoot())
+    :type layerTreeNode: QgsLayerTreeNode
+    :return: the project's layer tree
+    :rtype: dict
+    """
+
+    toRetLayers = []
+    for node in layerTreeNode.children():
+
+        toRetLayer = {
+            'name': node.name(),
+            'expanded': node.isExpanded()
+        }
+
+        try:
+            # try for layer node
+            toRetLayer.update({
+                'id': node.layerId(),
+                'visible': node.itemVisibilityChecked()
+            })
+
+        except:
+
+            toRetLayer.update({
+                'mutually-exclusive': node.isMutuallyExclusive(),
+                'nodes': buildLayerTreeNodeObject(node),
+                'checked': node.isVisible(),
+
+            })
+
+        toRetLayers.append(toRetLayer)
+    return toRetLayers
 
 def get_project_file_path(instance, filename):
     """Custom name for uploaded project files."""
@@ -220,6 +255,8 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
 
         if self.qgis_project.write():
             self.is_dirty = True
+            # Update layers tree
+            self.layers_tree = str(buildLayerTreeNodeObject(self.qgis_project.layerTreeRoot()))
             self.save()
             return True
         else:

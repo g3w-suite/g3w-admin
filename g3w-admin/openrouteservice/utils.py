@@ -558,17 +558,17 @@ def add_geojson_features(geojson, project, qgis_layer_id=None, connection_id=Non
 
         # Now reload the new layer and add it to the project
         qgis_layer = QgsVectorLayer(layer_uri, new_layer_name, provider)
+        if not qgis_layer.isValid():
+            raise Exception(
+                _('Error creating destination layer: layer is not valid!'))
+
+        qgis_layer_id = qgis_layer.id()
 
         with QgisProjectFileLocker(project) as project:
             apply_style(qgis_layer, style, True, name)
             project.qgis_project.addMapLayers([qgis_layer])
             project.update_qgis_project()
 
-        qgis_layer_id = qgis_layer.id()
-
-        if not qgis_layer.isValid():
-            raise Exception(
-                _('Error creating destination layer: layer is not valid!'))
 
         # Create Layer object
         instance, created = Layer.objects.get_or_create(

@@ -32,7 +32,7 @@ from qgis.core import QgsMasterLayoutInterface, QgsLayoutItemMap, QgsLayout
 
 from core.utils.data import XmlData, isXML
 from core.utils.qgisapi import count_qgis_features
-from qdjango.models import Project
+from qdjango.models import Project, buildLayerTreeNodeObject
 from qdjango.signals import load_qdjango_project_file, post_save_qdjango_project_file
 
 from .exceptions import QgisProjectException
@@ -915,35 +915,6 @@ class QgisProject(XmlData):
         :return: layer tree structure with options
         :rtype: dict
         """
-
-        def buildLayerTreeNodeObject(layerTreeNode):
-
-            toRetLayers = []
-            for node in layerTreeNode.children():
-
-                toRetLayer = {
-                    'name': node.name(),
-                    'expanded': node.isExpanded()
-                }
-
-                try:
-                    # try for layer node
-                    toRetLayer.update({
-                        'id': node.layerId(),
-                        'visible': node.itemVisibilityChecked()
-                    })
-
-                except:
-
-                    toRetLayer.update({
-                        'mutually-exclusive': node.isMutuallyExclusive(),
-                        'nodes': buildLayerTreeNodeObject(node),
-                        'checked': node.isVisible(),
-
-                    })
-
-                toRetLayers.append(toRetLayer)
-            return toRetLayers
 
         return buildLayerTreeNodeObject(self.qgs_project.layerTreeRoot())
 
