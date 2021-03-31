@@ -1458,6 +1458,12 @@ _.extend(ga.Qdjango, {
     viewers: [],
     group_viewers: [],
     current_rules: [],
+    layer_types: [
+        'spatialite',
+        'postgres',
+        'ogr',
+        'oracle'
+    ]
   },
 });
 
@@ -1846,7 +1852,7 @@ _.extend(g3wadmin.widget, {
             $.each(data['results'], function(key, val){
                 var $option = $('<option value="'+val['pk']+'">'+val['name']+'</option>');
                 if (!_.isNull(res)) {
-                    if (val['pk'] == res['constraint_layer'])
+                    if (val['pk'] == res['constraint_layer'] && _.indexOf(ga.Qdjango.geoconstraint_data.layer_types, val['layer_type']) != -1)
                         $option.attr('selected','selected');
                 }
                $select.append($option);
