@@ -103,12 +103,13 @@ from huey.contrib import djhuey as huey
 from openrouteservice.utils import (
     get_db_connections, get_connection_hash)
 from openrouteservice.tasks import isochrone_from_layer_task
+from openrouteservice.models import OpenrouteserviceProject, OpenrouteserviceService
 from qdjango.apps import QGS_SERVER, get_qgs_project
 from qdjango.models import (ConstraintExpressionRule,
                             ConstraintSubsetStringRule, Layer, Project,
                             SessionTokenFilter, SessionTokenFilterLayer,
-                            SingleLayerConstraint)
-from qdjango.tests.base import CURRENT_PATH, QdjangoTestBase, QgisProject
+                            SingleLayerConstraint, buildLayerTreeNodeObject)
+from qdjango.tests.base import CURRENT_PATH, QdjangoTestBase
 from qgis.core import (Qgis, QgsDataSourceUri, QgsProject, QgsProviderRegistry,
                        QgsVectorLayer)
 from qgis.PyQt.QtCore import QTemporaryDir
@@ -221,8 +222,10 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
         Project.objects.filter(
             title='Test openrouteservice project').delete()
 
+        toc = buildLayerTreeNodeObject(project.layerTreeRoot())
+
         cls.qdjango_project = Project(
-            qgis_file=File(open(cls.temp_project_path, 'r')), title='Test openrouteservice project', group=cls.project_group)
+            qgis_file=File(open(cls.temp_project_path, 'r')), title='Test openrouteservice project', group=cls.project_group, layers_tree=toc)
         cls.qdjango_project.save()
 
         for layer_id, layer in project.mapLayers().items():
@@ -237,6 +240,9 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
                 datasource=cls.layer_specs[layer.name()]
             )
             assert created
+
+        OpenrouteserviceProject.objects.get_or_create(
+            project=cls.qdjango_project, services={OpenrouteserviceService.ISOCHRONE.value})
 
     def setUp(self):
         super().setUp()
@@ -371,13 +377,14 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
 
         response = self._testApiCall(
             'openrouteservice-compatible-layers', [self.qdjango_project.pk])
-        self.assertEqual(response.json()['compatible'], [k for k in self.qdjango_project.qgis_project.mapLayers(
+        self.assertEqual(response.json()['isochrones']['compatible'], [k for k in self.qdjango_project.qgis_project.mapLayers(
         ).keys() if k.startswith('openrouteservice_compatible')])
         connection = response.json()['connections'][0]
         self.assertEqual(connection['provider'], 'postgres')
         self.assertEqual(
             connection['name'], '{NAME} (postgres host:{HOST}, port:{PORT}, schema:\'openrouteservice test\')'.format(**settings.DATABASES['default']))
-        self.assertEqual(response.json()['profiles'], settings.ORS_PROFILES)
+        self.assertEqual(
+            response.json()['isochrones']['profiles'], settings.ORS_PROFILES)
 
     def test_isochrone_append_postgis(self):
         """Test isochrone append features to an existing PG layer"""
@@ -464,6 +471,15 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
         feature = next(layer.getFeatures())
         self.assertEqual(feature.attribute('range_type'), 'time')
         self.assertEqual(feature.attribute('name'), 'my isochrone')
+
+        # Check layer tree
+        # We need to re-read the Project because of the updated layer_tree
+        self.qdjango_project = Project.objects.get(pk=self.qdjango_project.pk)
+        toc = eval(self.qdjango_project.layers_tree)
+        ids = [l['id'] for l in toc]
+        self.assertIn(layer.id(), ids)
+        self.assertIn(
+            layer.id(), self.qdjango_project.qgis_project.layerTreeRoot().dump())
 
         # Check connections
         connections = get_db_connections(self.qdjango_project.qgis_project)

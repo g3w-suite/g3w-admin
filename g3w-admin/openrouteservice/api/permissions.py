@@ -17,15 +17,17 @@ from rest_framework.exceptions import ValidationError, NotFound
 from qdjango.models import Project
 from django.shortcuts import get_object_or_404
 from openrouteservice.utils import check_user_permissions
+from openrouteservice.models import OpenrouteserviceProject, OpenrouteserviceService
 
 class IsochroneCreatePermission(BasePermission):
     """
     API permission for Isochrone creation
-    Allows access only to users have permission change_project on project.
+    Allows access only to users have permission change_project on project
+    and checks the project for ISOCHRONE support.
     """
 
     def has_permission(self, request, view):
 
         project = get_object_or_404(Project, pk=view.kwargs['project_id'])
         # check change_layer permission on qgis layer
-        return check_user_permissions(request.user, project)
+        return check_user_permissions(request.user, project, OpenrouteserviceService.ISOCHRONE)
