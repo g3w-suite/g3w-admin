@@ -21,7 +21,7 @@ from django.contrib.auth.models import Group as UserGroup
 from django.contrib.auth.models import User
 from django.test import Client
 from django.urls import reverse
-from guardian.shortcuts import assign_perm
+from guardian.shortcuts import assign_perm, get_anonymous_user
 from qgis.core import QgsVectorLayer, QgsFeatureRequest, QgsExpression, Qgis
 from qgis.PyQt.QtCore import QTemporaryDir
 
@@ -1480,6 +1480,9 @@ class TestGeoConstraintsServerFilters(TestSingleLayerConstraintsBase):
         assign_perm('view_project', self.test_viewer1_3, self.qdjango_project)
         assign_perm('view_project', self.test_gu_viewer1, self.qdjango_project)
 
+        # also to Anonymous user
+        assign_perm('view_project', get_anonymous_user(), self.qdjango_project)
+
         ows_url = reverse('OWS:ows', kwargs={'group_slug': self.qdjango_project.group.slug,
                                              'project_type': 'qdjango', 'project_id': self.qdjango_project.id})
 
@@ -1786,3 +1789,48 @@ class TestGeoConstraintsServerFilters(TestSingleLayerConstraintsBase):
         self.assertTrue(b'another point' in response.content)
 
         c.logout()
+
+        # for anonymous user non filtering
+        constraint.for_editing = True
+        constraint.for_view = False
+        constraint.save()
+
+        response = c.get(ows_url, {
+            'REQUEST': 'GetFeatureInfo',
+            'SERVICE': 'WMS',
+            'VERSION': '1.3.0',
+            'LAYERS': 'spatialite_points',
+            'CRS': 'EPSG:4326',
+            'BBOX': '18.77,-7.98,38.77,12.02',
+            'FORMAT': 'image/png',
+            'INFO_FORMAT': 'application/json',
+            'WIDTH': '100',
+            'HEIGHT': '100',
+            'QUERY_LAYERS': 'spatialite_points',
+            'FEATURE_COUNT': 1,
+            'FI_POINT_TOLERANCE': 10,
+            'I': '50',
+            'J': '50',
+        })
+
+        self.assertTrue(b'a point' in response.content)
+
+        response = c.get(ows_url, {
+            'REQUEST': 'GetFeatureInfo',
+            'SERVICE': 'WMS',
+            'VERSION': '1.3.0',
+            'LAYERS': 'spatialite_points',
+            'CRS': 'EPSG:4326',
+            'BBOX': '34.31,0.82,54.31,20.82',
+            'FORMAT': 'image/png',
+            'INFO_FORMAT': 'application/json',
+            'WIDTH': '100',
+            'HEIGHT': '100',
+            'QUERY_LAYERS': 'spatialite_points',
+            'FEATURE_COUNT': 1,
+            'FI_POINT_TOLERANCE': 10,
+            'I': '50',
+            'J': '50',
+        })
+
+        self.assertTrue(b'another point' in response.content)
