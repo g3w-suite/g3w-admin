@@ -40,8 +40,10 @@ logger = logging.getLogger(__name__)
 CONSTRAINT_LAYER_TYPE_GRANTED = (
     'spatialite',
     'postgres',
-    'ogr'
+    'ogr',
+    'oracle'
 )
+
 class GeoConstraint(models.Model):
     """Main GeoConstraint class. Links together two layers: the editing layer and the constraint layer.
     """
