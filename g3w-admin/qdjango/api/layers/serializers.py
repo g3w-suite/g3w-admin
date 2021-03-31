@@ -19,7 +19,7 @@ class LayerInfoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Layer
-        fields = ['pk', 'name', 'title', 'origname', 'qgs_layer_id']
+        fields = ['pk', 'name', 'title', 'origname', 'qgs_layer_id', 'layer_type']
 
 
 class LayerInfoUserSerializer(serializers.ModelSerializer):
