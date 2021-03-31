@@ -20,21 +20,21 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from core.api.authentication import CsrfExemptSessionAuthentication
 
-from editing.models import *
-from editing.api.constraints.serializers import ConstraintSerializer, ConstraintRuleSerializer
-from editing.api.constraints.permissions import ConstraintPermission, ConstraintRulePermission
+from qdjango.models import *
+from qdjango.api.geoconstraints.serializers import GeoConstraintSerializer, GeoConstraintRuleSerializer
+from qdjango.api.geoconstraints.permissions import GeoConstraintPermission, GeoConstraintRulePermission
 from qdjango.models import Layer
 import json
 
 
-class ConstraintList(generics.ListCreateAPIView):
+class GeoConstraintList(generics.ListCreateAPIView):
     """List of constraints, optionally filtered by editing layer id"""
 
-    queryset = Constraint.objects.all()
-    serializer_class = ConstraintSerializer
+    queryset = GeoConstraint.objects.all()
+    serializer_class = GeoConstraintSerializer
 
     permission_classes = (
-        ConstraintPermission,
+        GeoConstraintPermission,
     )
 
     authentication_classes = (
@@ -45,9 +45,9 @@ class ConstraintList(generics.ListCreateAPIView):
         """
         This view should return a list constraints for a given editing layer  id portion of the URL.
         """
-        qs = super(ConstraintList, self).get_queryset()
-        if 'editing_layer_id' in self.kwargs:
-            qs = qs.filter(editing_layer__id =self.kwargs['editing_layer_id'])
+        qs = super(GeoConstraintList, self).get_queryset()
+        if 'layer_id' in self.kwargs:
+            qs = qs.filter(layer__id =self.kwargs['layer_id'])
         return qs
 
     def create(self, request, *args, **kwargs):
@@ -55,20 +55,20 @@ class ConstraintList(generics.ListCreateAPIView):
 
         with transaction.atomic():
             try:
-                return super(ConstraintList, self).create(request, *args, **kwargs)
+                return super(GeoConstraintList, self).create(request, *args, **kwargs)
             except IntegrityError as ex:
                 content = {'error': 'IntegrityError %s' % ex.message.decode('utf8') }
                 return Response(content, status=status.HTTP_400_BAD_REQUEST)
 
 
-class ConstraintDetail(generics.RetrieveUpdateDestroyAPIView):
+class GeoConstraintDetail(generics.RetrieveUpdateDestroyAPIView):
     """Details of a constraint"""
 
-    queryset = Constraint.objects.all()
-    serializer_class = ConstraintSerializer
+    queryset = GeoConstraint.objects.all()
+    serializer_class = GeoConstraintSerializer
 
     permission_classes = (
-        ConstraintPermission,
+        GeoConstraintPermission,
     )
 
     authentication_classes = (
@@ -76,14 +76,14 @@ class ConstraintDetail(generics.RetrieveUpdateDestroyAPIView):
     )
 
 
-class ConstraintRuleList(generics.ListCreateAPIView):
+class GeoConstraintRuleList(generics.ListCreateAPIView):
     """List of constraint rules, optionally filtered by editing layer id, user id or constraint id"""
 
-    queryset = ConstraintRule.objects.all()
-    serializer_class = ConstraintRuleSerializer
+    queryset = GeoConstraintRule.objects.all()
+    serializer_class = GeoConstraintRuleSerializer
 
     permission_classes = (
-        ConstraintRulePermission,
+        GeoConstraintRulePermission,
     )
 
     authentication_classes = (
@@ -98,9 +98,9 @@ class ConstraintRuleList(generics.ListCreateAPIView):
 
         """
 
-        qs = super(ConstraintRuleList, self).get_queryset()
-        if 'editing_layer_id' in self.kwargs:
-            qs = qs.filter(constraint__editing_layer__id=self.kwargs['editing_layer_id'])
+        qs = super(GeoConstraintRuleList, self).get_queryset()
+        if 'layer_id' in self.kwargs:
+            qs = qs.filter(constraint__layer__id=self.kwargs['layer_id'])
         if 'user_id' in self.kwargs:
             user = User.objects.get(pk=self.kwargs['user_id'])
             user_groups = user.groups.all()
@@ -118,13 +118,13 @@ class ConstraintRuleList(generics.ListCreateAPIView):
 
         with transaction.atomic():
             try:
-                return super(ConstraintRuleList, self).create(request, *args, **kwargs)
+                return super(GeoConstraintRuleList, self).create(request, *args, **kwargs)
             except IntegrityError as ex:
                 content = {'error': 'IntegrityError %s' % ex.message.decode('utf8') }
                 return Response(content, status=status.HTTP_400_BAD_REQUEST)
 
 
-class ConstraintRuleDetail(generics.RetrieveUpdateDestroyAPIView):
+class GeoConstraintRuleDetail(generics.RetrieveUpdateDestroyAPIView):
     """Details of a constraint rule"""
 
     authentication_classes = (
@@ -132,21 +132,21 @@ class ConstraintRuleDetail(generics.RetrieveUpdateDestroyAPIView):
     )
 
     permission_classes = (
-        ConstraintRulePermission,
+        GeoConstraintRulePermission,
     )
 
-    queryset = ConstraintRule.objects.all()
-    serializer_class = ConstraintRuleSerializer
+    queryset = GeoConstraintRule.objects.all()
+    serializer_class = GeoConstraintRuleSerializer
 
 
-class ConstraintGEOFeatureAPIView(APIView):
+class GeoConstraintGEOFeatureAPIView(APIView):
     """ APIView to get constraint geometry feature for request user and editing layer id """
 
     def get(self, *args, **kwargs):
 
         # get user request to get geometry constraint
-        editing_layer = Layer.objects.get(pk=kwargs['editing_layer_id'])
-        constraints = ConstraintRule.get_constraints_for_user(self.request.user, editing_layer)
+        editing_layer = Layer.objects.get(pk=kwargs['layer_id'])
+        constraints = GeoConstraintRule.get_constraints_for_user(self.request.user, editing_layer)
         geometries = []
         for constraint in constraints:
             geom = constraint.get_constraint_geometry()

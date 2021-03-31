@@ -44,15 +44,3 @@ class G3WEditingLogAdmin(admin.ModelAdmin):
 
 
 admin.site.register(G3WEditingLog, G3WEditingLogAdmin)
-
-
-class ConstraintAdmin(admin.ModelAdmin):
-    model = Constraint
-
-
-class ConstraintRuleAdmin(admin.ModelAdmin):
-    model = ConstraintRule
-
-
-admin.site.register(Constraint, ConstraintAdmin)
-admin.site.register(ConstraintRule, ConstraintRuleAdmin)
