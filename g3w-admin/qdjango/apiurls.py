@@ -15,7 +15,8 @@ from .api.layers.views import (
     LayerUserInfoAPIView,
     LayerAuthGroupInfoAPIView,
     LayerStyleListView,
-    LayerStyleDetailView
+    LayerStyleDetailView,
+    LayerPolygonView
 )
 from .api.constraints.views import (
     ConstraintExpressionRuleDetail,
@@ -24,6 +25,13 @@ from .api.constraints.views import (
     ConstraintSubsetStringRuleList,
     SingleLayerConstraintDetail,
     SingleLayerConstraintList,
+)
+from .api.geoconstraints.views import (
+    GeoConstraintList,
+    GeoConstraintDetail,
+    GeoConstraintRuleList,
+    GeoConstraintRuleDetail,
+    GeoConstraintGEOFeatureAPIView
 )
 from .api.projects.views import (
     QdjangoWebServicesAPIview,
@@ -88,6 +96,37 @@ urlpatterns = [
     url(r'^api/constraint/$',
         login_required(SingleLayerConstraintList.as_view()), name='qdjango-constraint-api-list'),
 
+    #############################################################
+    # GeoConstraints
+
+    # Detail of a GeoConstraintRule
+    url(r'^api/georule/detail/(?P<pk>\d+)/$',
+        login_required(GeoConstraintRuleDetail.as_view()), name='geoconstraintrule-api-detail'),
+    # All ConstraintRule(s) filtered by editing layer id
+    url(r'^api/georule/layer/(?P<layer_id>[-_\w\d]+)/$',
+        login_required(GeoConstraintRuleList.as_view()), name='geoconstraintrule-api-filter-by-layer'),
+    # All ConstraintRule(s) filtered by User pk
+    url(r'^api/georule/user/(?P<user_id>\d+)/$',
+        login_required(GeoConstraintRuleList.as_view()), name='geoconstraintrule-api-filter-by-user'),
+    # All ConstraintRule(s) filtered by Constraint pk
+    url(r'^api/georule/geoconstraint/(?P<constraint_id>\d+)/$',
+        login_required(GeoConstraintRuleList.as_view()), name='geoconstraintrule-api-filter-by-constraint'),
+    # All ConstraintRule(s)
+    url(r'^api/georule/$',
+        login_required(GeoConstraintRuleList.as_view()), name='geoconstraintrule-api-list'),
+    # Constraint geometry
+    url(r'^api/geoconstraint/geometry/(?P<layer_id>[-_\w\d]+)/$',
+        login_required(GeoConstraintGEOFeatureAPIView.as_view()), name='geoconstraint-api-geometry'),
+    # Detail of a Constraint
+    url(r'^api/geoconstraint/detail/(?P<pk>\d+)/$',
+        login_required(GeoConstraintDetail.as_view()), name='geoconstraint-api-detail'),
+    # All Constraint(s) filtered by editing layer id
+    url(r'^api/geoconstraint/(?P<layer_id>[-_\w\d]+)/$',
+        login_required(GeoConstraintList.as_view()), name='geoconstraint-api-filter-by-layer'),
+    # All Constraint(s)
+    url(r'^api/geoconstraint/$',
+        login_required(GeoConstraintList.as_view()), name='geoconstraint-api-list'),
+
 
     #############################################################
     # OGC (web) services
@@ -107,6 +146,9 @@ urlpatterns += [
 
 # API info
 urlpatterns += [
+    # Other vector layers in project get by qdjango layer id
+    url(r'^api/info/layer/polygon/(?P<layer_id>[-_\w\d]+)/$',
+        login_required(LayerPolygonView.as_view()), name='qdjango-api-info-layer-polygon'),
     # Viewers users can editing on editing layer id
     url(r'^api/info/layer/user/(?P<layer_id>[-_\w\d]+)/$',
         login_required(LayerUserInfoAPIView.as_view()), name='qjango-api-info-layer-user'),

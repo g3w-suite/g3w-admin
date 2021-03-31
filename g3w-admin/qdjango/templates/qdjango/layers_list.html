@@ -161,6 +161,13 @@
                                         {{ action }}
                                     {% endfor %}
                                     {% if object.layer_type in type_layer_for_widget %}
+                                    {% comment %} Add geoconstraints management {% endcomment %}
+                                    <span class="col-xs-1 icon">
+                                        <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Manage Geo-constraints list' %}" data-widget-type="geoConstraintsList" data-geoconstraints-layer-pk="{{ object.pk }}" data-geoconstraints-list-url="{% url 'geoconstraint-api-filter-by-layer' object.pk %}" ><i class="fa fa-object-ungroup"></i>
+                                        <span class="label label-info label-action-layer">{% geoconstraitnswidget4layer object %}</span>
+                                        </a>
+                                    </span>
+                                    {% comment %} Add singlelayerconstraints management {% endcomment %}
                                     <span class="col-xs-1 icon">
                                         <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Manage alphanumeric visualization and editing constraints' %}" data-widget-type="singlelayerConstraintsList" data-singlelayerconstraints-layer-pk="{{ object.pk }}" data-singlelayerconstraints-list-url="{% url 'qdjango-constraint-api-filter-by-layer-id' object.pk %}" ><i class="fa fa-filter"></i>
                                             <span class="label label-info label-action-layer">{{ object.getConstraintsNumber }}</span>

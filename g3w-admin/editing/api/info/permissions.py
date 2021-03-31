@@ -1,7 +1,7 @@
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.permissions import BasePermission
 from rest_framework.exceptions import ValidationError
-from editing.models.constraints import Layer
+from qdjango.models import Layer
 
 
 class EditingLayerInfoPermission(BasePermission):

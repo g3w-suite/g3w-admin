@@ -111,3 +111,14 @@ class temp_disconnect_signal():
             sender=self.sender,
             dispatch_uid=self.dispatch_uid
         )
+
+
+def get_geoconstraints4layer(layer):
+    """
+    Return editing geoconstraints widgets list for qdjango layer instance
+    :param layer: Qdjango Layer model instance
+    :return: List or Querydict of Geoconstraints models
+    """
+
+    from qdjango.models import GeoConstraint
+    return GeoConstraint.objects.filter(layer=layer)

@@ -57,6 +57,10 @@ ORS_PROFILES = {
     "driving-car": {"name": "Car"},
     "driving-hgv": {"name": "Heavy Goods Vehicle"}
 }
+# Max number of ranges (it depends on the server configuration)
+ORS_MAX_RANGES = 6
+# Max number of locations(it depends on the server configuration)
+ORS_MAX_LOCATIONS = 2
 
 
 ALLOWED_HOSTS = "*"

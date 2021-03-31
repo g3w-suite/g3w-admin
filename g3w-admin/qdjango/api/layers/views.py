@@ -16,6 +16,7 @@ from urllib.parse import unquote
 from core.api.authentication import CsrfExemptSessionAuthentication
 from core.api.views import G3WAPIView
 from django.conf import settings
+from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 from qdjango.models import Layer
@@ -28,7 +29,7 @@ from usersmanage.utils import (get_user_groups_for_object,
                                get_viewers_for_object)
 
 from .permissions import LayerInfoPermission, LayerStylesManagePermission
-from .serializers import LayerInfoAuthGroupSerializer, LayerInfoUserSerializer
+from .serializers import LayerInfoAuthGroupSerializer, LayerInfoUserSerializer, LayerInfoSerializer
 
 
 class StyleNotFoundError(NotFound):
@@ -353,3 +354,23 @@ class LayerStyleDetailView(LayerStyleBaseView):
         else:
             raise ValidationError(
                 _('Unknown error while modifying the style.'))
+
+
+class LayerPolygonView(generics.ListAPIView):
+    """Layer vector usable as geoconstraint layer: layer Polygon or Multipolygon"""
+
+    queryset = Layer.objects.all()
+    serializer_class = LayerInfoSerializer
+
+    def get_queryset(self):
+        """
+        This view should return a list layer (Polygon and MultiPolygon)
+        for a given editing layer QGIS id (qdjango layer_id) portion of the URL.
+        """
+        qs = super(LayerPolygonView, self).get_queryset()
+        if 'layer_id' in self.kwargs:
+            qs = Layer.objects.get(pk=self.kwargs['layer_id']).project.layer_set.filter(
+                ~Q(pk=self.kwargs['layer_id']),
+                geometrytype__in=['Polygon', 'MultiPolygon']
+            )
+        return qs

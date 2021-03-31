@@ -29,3 +29,17 @@ ORS_PROFILES = {
     "driving-car": {"name": "Car"},
     "driving-hgv": {"name": "Heavy Goods Vehicle"}
 }
+
+# HUEY SETTINGS
+# =================================
+# Enable immediate mode for testing
+HUEY = {
+    'huey_class': 'huey.MemoryHuey',  # Huey implementation to use.
+    'name': 'g3w-suite',
+    'url': 'redis://localhost:6379/?db=1',
+    'immediate': True,  # run synchronously for testing.
+    'consumer': {
+        'workers': 5,
+        'worker_type': 'process',
+    },
+}

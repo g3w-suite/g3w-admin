@@ -26,11 +26,13 @@ from rest_framework.test import APIClient
 
 from qdjango.api.constraints.permissions import *
 from qdjango.api.constraints.views import *
+from qdjango.models import Project
 from qdjango.models.constraints import (
     SingleLayerConstraint,
     ConstraintExpressionRule,
-    ConstraintSubsetStringRule,
+    ConstraintSubsetStringRule
 )
+from qdjango.models.geoconstraints import GeoConstraint, GeoConstraintRule
 from qdjango.api.layers.filters import FILTER_RELATIONONETOMANY_PARAM
 from qdjango.utils.data import QgisProject
 from qdjango.models import SessionTokenFilter, SessionTokenFilterLayer
@@ -972,3 +974,110 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
                                             }).content)
 
         self.assertEqual(resp['vector']['count'], 8965)
+
+
+class TestGeoConstraintVectorAPIFilter(QdjangoTestBase):
+    """Test GeoConstraint Vector API Filters"""
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+
+
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+
+    def setUp(self):
+        """Create a rule"""
+
+        super().setUp()
+
+        self.qdjango_project = Project.objects.all()[0]
+        self.world = self.qdjango_project.layer_set.filter(
+            qgs_layer_id='world20181008111156525')[0]
+        self.spatialite_points = self.qdjango_project.layer_set.filter(
+            qgs_layer_id='spatialite_points20190604101052075')[0]
+
+        # assign permissions
+        assign_perm('view_project', self.test_viewer1, self.qdjango_project)
+        assign_perm('view_project', self.test_viewer1_2, self.qdjango_project)
+        assign_perm('view_project', self.test_gu_viewer2, self.qdjango_project)
+
+        self.geoconstraint = GeoConstraint(layer=self.spatialite_points, constraint_layer=self.world, active=True)
+        self.geoconstraint.save()
+
+        self.rule_italy = GeoConstraintRule(constraint=self.geoconstraint, user=self.test_viewer1, rule="NAME='ITALY'")
+        self.rule_italy.save()
+
+        # bind rule to a users group.
+        self.rule_algeria = GeoConstraintRule(constraint=self.geoconstraint, group=self.test_gu_viewer2,
+                                                   rule="NAME='ALGERIA'")
+        self.rule_algeria.save()
+
+        # bind rule to a users group.
+        self.rule_france = GeoConstraintRule(constraint=self.geoconstraint, user=self.test_viewer1_2,
+                                              rule="NAME='FRANCE'")
+        self.rule_france.save()
+
+        self.client = APIClient()
+
+    def tearDown(self):
+        super().tearDown()
+        GeoConstraint.objects.all().delete()
+
+    def test_geoconstraint_api(self):
+        """ Test vector layer api data with GeoConstraintFilter """
+
+        # Make a request to the server
+
+        self.assertTrue(self.client.login(username='admin01', password='admin01'))
+        url = reverse('core-vector-api',
+                      args=['data', 'qdjango', self.qdjango_project.pk, self.spatialite_points.qgs_layer_id])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        jres = json.loads(response.content)
+
+        self.assertEqual(jres['vector']['count'], 2)
+
+        self.client.logout()
+
+        # as viewer1
+        self.assertTrue(self.client.login(username='viewer1', password='viewer1'))
+        url = reverse('core-vector-api',
+                      args=['data', 'qdjango', self.qdjango_project.pk, self.spatialite_points.qgs_layer_id])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        jres = json.loads(response.content)
+
+        self.assertEqual(jres['vector']['count'], 1)
+        feature = jres['vector']['data']['features'][0]
+        self.assertEqual(feature['properties']['name'], 'another point')
+
+        self.client.logout()
+
+        # User without users group.
+        self.assertTrue(self.client.login(username='viewer1.2', password='viewer1.2'))
+        url = reverse('core-vector-api',
+                      args=['data', 'qdjango', self.qdjango_project.pk, self.spatialite_points.qgs_layer_id])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        jres = json.loads(response.content)
+
+        self.assertEqual(jres['vector']['count'], 0)
+
+        self.client.logout()
+
+        # User group viewer GU-VIEWER1 by Viewer1.3.
+        self.assertTrue(self.client.login(username='viewer1.3', password='viewer1.3'))
+        url = reverse('core-vector-api',
+                      args=['data', 'qdjango', self.qdjango_project.pk, self.spatialite_points.qgs_layer_id])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        jres = json.loads(response.content)
+
+        self.assertEqual(jres['vector']['count'], 1)
+        feature = jres['vector']['data']['features'][0]
+        self.assertEqual(feature['properties']['name'], 'a point')
+
+        self.client.logout()
