@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-08-21 08:41+0000\n"
+"POT-Creation-Date: 2021-03-31 15:02+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,32 +18,31 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: static/qdjango/js/widget.js:214
+#: static/qdjango/js/widget.js:196
 msgid "General configuration for search widget and results"
 msgstr "Configurazione generale della ricerca e dei risultati"
 
-#: static/qdjango/js/widget.js:220
-#| msgid "Form title"
+#: static/qdjango/js/widget.js:204
 msgid "Search title"
 msgstr "Titolo della ricerca"
 
-#: static/qdjango/js/widget.js:257
+#: static/qdjango/js/widget.js:248
 msgid "Client search title identification"
 msgstr "Titolo identificativo della ricerca che apparirà sul client"
 
-#: static/qdjango/js/widget.js:295
+#: static/qdjango/js/widget.js:287
 msgid "equal"
 msgstr "uguale"
 
-#: static/qdjango/js/widget.js:296
+#: static/qdjango/js/widget.js:290
 msgid "greater than"
 msgstr "maggiore di"
 
-#: static/qdjango/js/widget.js:297
+#: static/qdjango/js/widget.js:293
 msgid "lower than"
 msgstr "minore di"
 
-#: static/qdjango/js/widget.js:298
+#: static/qdjango/js/widget.js:296
 msgid "not equal"
 msgstr "diverso"
 
@@ -51,86 +50,94 @@ msgstr "diverso"
 msgid "greater than equal"
 msgstr "maggiore o uguale di"
 
-#: static/qdjango/js/widget.js:300
+#: static/qdjango/js/widget.js:302
 msgid "lower than equal"
 msgstr "minore o uguale di"
 
-#: static/qdjango/js/widget.js:301 static/qdjango/js/widget.js:338
+#: static/qdjango/js/widget.js:305 static/qdjango/js/widget.js:339
 msgid "like case sensitive"
 msgstr "circa sensibile alle maiuscole"
 
-#: static/qdjango/js/widget.js:319 static/qdjango/js/widget.js:340
+#: static/qdjango/js/widget.js:323 static/qdjango/js/widget.js:340
 msgid "like not case sensitive"
 msgstr "circa non sensibile alle maiuscole"
 
-#: static/qdjango/js/widget.js:350
+#: static/qdjango/js/widget.js:351
 msgid "Search field settings"
 msgstr "Impostazioni campo di ricerca"
 
-#: static/qdjango/js/widget.js:363
+#: static/qdjango/js/widget.js:366
 msgid "Field"
 msgstr "Campo"
 
-#: static/qdjango/js/widget.js:368
+#: static/qdjango/js/widget.js:373
 msgid "Widget"
 msgstr ""
 
-#: static/qdjango/js/widget.js:373
+#: static/qdjango/js/widget.js:380
 msgid "Alias"
 msgstr ""
 
-#: static/qdjango/js/widget.js:378 static/qdjango/js/widget.js:1061
-#: static/qdjango/js/widget.js:1279
+#: static/qdjango/js/widget.js:387 static/qdjango/js/widget.js:1108
+#: static/qdjango/js/widget.js:1378
 msgid "Description"
 msgstr "Descrizione"
 
-#: static/qdjango/js/widget.js:385
+#: static/qdjango/js/widget.js:396
+msgid "Number of digits"
+msgstr "Numero di digitazioni"
+
+#: static/qdjango/js/widget.js:405
 msgid "Comparison operator"
 msgstr "Operatore di comparazione"
 
-#: static/qdjango/js/widget.js:392
+#: static/qdjango/js/widget.js:414
 msgid "Dependency"
 msgstr "Dipendenza"
 
-#: static/qdjango/js/widget.js:406
+#: static/qdjango/js/widget.js:431
 msgid "Logical join"
 msgstr "Congiunzione logica"
 
-#: static/qdjango/js/widget.js:418
-msgid "Alias field name fro client search input"
+#: static/qdjango/js/widget.js:450
+#, fuzzy
+#| msgid "Alias field name fro client search input"
+msgid "Alias field name for client search input"
 msgstr "Il nome del campo che apparirà nel form di ricerca sul client"
 
-#: static/qdjango/js/widget.js:442
+#: static/qdjango/js/widget.js:477
 #, fuzzy
 #| msgid "Actions"
 msgid "Attention"
 msgstr "Azioni"
 
-#: static/qdjango/js/widget.js:443
+#: static/qdjango/js/widget.js:477
 msgid "Fields with many unique values can create slow map loading behavior"
 msgstr ""
 "Campi con molti valori unici possono creare dei rallentamenti nel "
 "caricamento della mappa"
 
-#: static/qdjango/js/widget.js:672 static/qdjango/js/widget.js:1195
+#: static/qdjango/js/widget.js:716 static/qdjango/js/widget.js:1281
+#: static/qdjango/js/widget.js:1493
 msgid "Add"
 msgstr "Aggiungi"
 
-#: static/qdjango/js/widget.js:806
+#: static/qdjango/js/widget.js:839
 #, fuzzy
 #| msgid "QGIS Expression Rules"
 msgid "QGIS Expression"
 msgstr "Regole basate su espressioni di QGIS"
 
-#: static/qdjango/js/widget.js:822
+#: static/qdjango/js/widget.js:854 static/qdjango/js/widget.js:1647
 msgid "Saved"
 msgstr "Salvato"
 
-#: static/qdjango/js/widget.js:918
+#: static/qdjango/js/widget.js:937 static/qdjango/js/widget.js:1816
+#: static/qdjango/js/widget.js:2225
 msgid "Form title"
 msgstr "Titolo del form"
 
-#: static/qdjango/js/widget.js:964
+#: static/qdjango/js/widget.js:1013
 msgid ""
 "Define, for each user and/or group of users, viewing/editing rules based on "
 "the QGIS expressions."
@@ -138,7 +145,7 @@ msgstr ""
 "Definisci, per ogni utente e/o gruppo di utenti, le regole di "
 "visualizzazione/editing basate sulle espressioni di QGIS."
 
-#: static/qdjango/js/widget.js:968
+#: static/qdjango/js/widget.js:1017
 msgid ""
 "Define, for each user and/or group of users, viewing/editing rules based on "
 "the language or SQL dialect of the associated provider."
@@ -147,57 +154,166 @@ msgstr ""
 "visualizzazione/editing basate sul linguaggio o il dialetto SQL del provider "
 "associato al layer."
 
-#: static/qdjango/js/widget.js:1042 static/qdjango/js/widget.js:1046
+#: static/qdjango/js/widget.js:1089 static/qdjango/js/widget.js:1092
 msgid "New alphanumeric constraints"
 msgstr "Nuovo vincolo alfanumerico"
 
-#: static/qdjango/js/widget.js:1059
+#: static/qdjango/js/widget.js:1105 static/qdjango/js/widget.js:1920
+#: static/qdjango/js/widget.js:2089
 msgid "Actions"
 msgstr "Azioni"
 
-#: static/qdjango/js/widget.js:1060 static/qdjango/js/widget.js:1273
+#: static/qdjango/js/widget.js:1106 static/qdjango/js/widget.js:1370
 msgid "Name"
 msgstr "Nome"
 
-#: static/qdjango/js/widget.js:1062
+#: static/qdjango/js/widget.js:1113 static/qdjango/js/widget.js:1923
+msgid "For visualization"
+msgstr "Visualizzazione"
+
+#: static/qdjango/js/widget.js:1116 static/qdjango/js/widget.js:1924
+msgid "For editing"
+msgstr "Editing"
+
+#: static/qdjango/js/widget.js:1121
 msgid "Subset rules count"
 msgstr "Conto delle regole di tipo subset"
 
-#: static/qdjango/js/widget.js:1063
+#: static/qdjango/js/widget.js:1124
 msgid "Expression rules count"
 msgstr "Conto delle regole di espressione"
 
-#: static/qdjango/js/widget.js:1090
+#: static/qdjango/js/widget.js:1181
 msgid "Update alphanumeric constraint"
 msgstr "Nuovo vincolo alfanumerico"
 
-#: static/qdjango/js/widget.js:1101
+#: static/qdjango/js/widget.js:1191
 msgid "Constraint Rules based on provider's language / SQL dialect"
 msgstr "visualizzazione/editing"
 
-#: static/qdjango/js/widget.js:1112
+#: static/qdjango/js/widget.js:1202
 msgid "Constraint Rules based on QGIS Expression"
 msgstr "Regole del vincolo basate su espressioni di QGIS"
 
-#: static/qdjango/js/widget.js:1254
+#: static/qdjango/js/widget.js:1344 static/qdjango/js/widget.js:1552
 msgid "Save"
 msgstr "Salva"
 
-#: static/qdjango/js/widget.js:1257
+#: static/qdjango/js/widget.js:1349 static/qdjango/js/widget.js:1555
 msgid "Delete"
 msgstr "Elimina"
 
-#: static/qdjango/js/widget.js:1271
+#: static/qdjango/js/widget.js:1366
 msgid "Set a name and a possible description for the alphanumeric constraint"
 msgstr "Indica un nome e una possibile descrizione per il vicolo alfanumerico"
 
-#: static/qdjango/js/widget.js:1291
+#: static/qdjango/js/widget.js:1389 static/qdjango/js/widget.js:1575
+msgid "Active for visualization"
+msgstr "Attiva in visualizzazione"
+
+#: static/qdjango/js/widget.js:1400 static/qdjango/js/widget.js:1584
+msgid "Active for editing"
+msgstr "Attiva in editing"
+
+#: static/qdjango/js/widget.js:1415
 msgid "Provider's language / SQL dialect Rules"
 msgstr "Regole basate sul linguaggio o su SQL del provider"
 
-#: static/qdjango/js/widget.js:1294
+#: static/qdjango/js/widget.js:1420
 msgid "QGIS Expression Rules"
 msgstr "Regole basate su espressioni di QGIS"
 
-#~ msgid "Constraint Subset Rules"
-#~ msgstr "Regole del vincolo di tipo subset"
+#: static/qdjango/js/widget.js:1566
+msgid "Select the constraint layer, only Polygon or MultiPolygon geomentry"
+msgstr "Seleziona il layer vincolo, solo Poligoni o Multipoligoni"
+
+#: static/qdjango/js/widget.js:1568
+#, fuzzy
+#| msgid "Constraint Subset Rules"
+msgid "Constraint layer"
+msgstr "Regole del vincolo di tipo subset"
+
+#: static/qdjango/js/widget.js:1594
+msgid "Manage geo-constaints"
+msgstr "Gestione dei Geo-Vincoli"
+
+#: static/qdjango/js/widget.js:1903
+#, fuzzy
+#| msgid "New alphanumeric constraints"
+msgid "New geo constraint"
+msgstr "Nuovo vincolo alfanumerico"
+
+#: static/qdjango/js/widget.js:1907
+#, fuzzy
+#| msgid "New alphanumeric constraints"
+msgid "New constraint"
+msgstr "Nuovo vincolo alfanumerico"
+
+#: static/qdjango/js/widget.js:1921
+#, fuzzy
+#| msgid "New alphanumeric constraints"
+msgid "Layer constraint"
+msgstr "Nuovo vincolo alfanumerico"
+
+#: static/qdjango/js/widget.js:1926
+#, fuzzy
+#| msgid "Subset rules count"
+msgid "Rules count"
+msgstr "Conto delle regole di tipo subset"
+
+#: static/qdjango/js/widget.js:1963
+#, fuzzy
+#| msgid "Update alphanumeric constraint"
+msgid "Update constraint"
+msgstr "Nuovo vincolo alfanumerico"
+
+#: static/qdjango/js/widget.js:1975
+#, fuzzy
+#| msgid "Constraint Subset Rules"
+msgid "Geo Constraint Rules"
+msgstr "Regole del vincolo di tipo subset"
+
+#: static/qdjango/js/widget.js:2071
+msgid "Create New Style From QML"
+msgstr "Crea un nuovo stile da un QML"
+
+#: static/qdjango/js/widget.js:2074
+msgid "New Style From QML"
+msgstr "Nuovo stile da QML"
+
+#: static/qdjango/js/widget.js:2091
+msgid "Current"
+msgstr "Attuale"
+
+#: static/qdjango/js/widget.js:2160
+#| msgid "Delete"
+msgid "Delete Style"
+msgstr "Elimina lo style"
+
+#: static/qdjango/js/widget.js:2161
+msgid "Are you sure to delete style"
+msgstr "Sei sicuro di voler eliminare lo stile"
+
+#: static/qdjango/js/widget.js:2219
+msgid "Create a new style from an uploaded QML file."
+msgstr "Crea un nuovo stile da un file QML caricato"
+
+#: static/qdjango/js/widget.js:2221
+msgid "Edit style name or replace the style from an uploaded QML file."
+msgstr "Modifica il nome dello stile o rimpiazza lo style con un QML file caricato."
+
+#: static/qdjango/js/widget.js:2255
+msgid "Style name is required!"
+msgstr "Il nome dello stile è richiesto!"
+
+#: static/qdjango/js/widget.js:2269
+msgid "A style with this name already exists!"
+msgstr "Uno stile con questo nome esiste gia!"
+
+#: static/qdjango/js/widget.js:2370
+msgid "Style name (required)"
+msgstr "Nome dello stile (richiesto)"
+
+#: static/qdjango/js/widget.js:2379
+msgid "Upload layer style QML file"
+msgstr "Carica un file QML"
