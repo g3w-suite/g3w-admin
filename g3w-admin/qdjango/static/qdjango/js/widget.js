@@ -1909,15 +1909,19 @@ _.extend(g3wadmin.widget, {
         // add table contraints saved
         var $table = $('<table class="table">');
         var $tbody = $table.append($('<tbody>'));
-        $table.append('<thead>\n' +
+        var thead = '<thead>\n' +
             '            <tr>\n' +
             '                <th style="width:180px;">'+gettext('Actions')+'</th>\n' +
-            '                <th>'+gettext('Layer constraint')+'</th>\n' +
-            '                <th>'+gettext('For visualization')+'</th>\n' +
-            '                <th>'+gettext('For editing')+'</th>\n' +
-            '                <th>'+gettext('Rules count')+'</th>\n' +
+            '                <th>'+gettext('Layer constraint')+'</th>\n';
+            if (_.indexOf(ga.settings.G3WADMIN_LOCAL_MORE_APPS, 'editing') != -1) {
+              thead += '                <th>' + gettext('For visualization') + '</th>\n' +
+              '                <th>' + gettext('For editing') + '</th>\n';
+            }
+            thead += '                <th>'+gettext('Rules count')+'</th>\n' +
             '            </tr>\n' +
-            '        </thead>');
+            '        </thead>'
+
+        $table.append(thead);
 
         // add constraints
         var constraint_res = {};
@@ -1927,20 +1931,23 @@ _.extend(g3wadmin.widget, {
             var for_view = v["for_view"] ? '<span class="fa fa-check-circle" style="color: orange"></span>' : ""
             var for_editing = v["for_editing"] ? '<span class="fa fa-check-circle" style="color: orange"></span>' : ""
             var constraintContext = ""
-            if (for_view != "") constraintContext += "v"
-            if (for_editing != "") constraintContext += "e"
-            $tbody.append('<tr id="constraint-item-'+v['pk']+'">\n' +
+            if (for_view != "") constraintContext += "v";
+            if (for_editing != "") constraintContext += "e";
+            var tr = '<tr id="constraint-item-'+v['pk']+'">\n' +
             '                <td>'+ga.tpl.geoConstraintActions({
                     'layerId': layer_pk,
                     'constraintPk': v['pk'],
                     'constraintContext': constraintContext,
                     'editDisplay': editDisplay
             })+'</td>\n' +
-            '                <td>'+v['constraint_layer_name']+'</td>\n' +
-            '                <td>'+for_view+'</td>\n' +
-            '                <td>'+for_editing+'</td>\n' +
-            '                <td>'+v['constraint_rule_count']+'</td>\n' +
-            '            </tr>\n');
+            '                <td>'+v['constraint_layer_name']+'</td>\n';
+            if (_.indexOf(ga.settings.G3WADMIN_LOCAL_MORE_APPS, 'editing') != -1) {
+              tr += '                <td>' + for_view + '</td>\n' +
+                  '                <td>' + for_editing + '</td>\n';
+            }
+            tr += '                <td>'+v['constraint_rule_count']+'</td>\n' +
+            '            </tr>\n'
+            $tbody.append(tr);
         });
 
         // add actions to elements action
