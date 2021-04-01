@@ -35,7 +35,7 @@ class OpenrouteserviceService(Enum):
 class OpenrouteserviceProject(models.Model):
     """Define ORS project enabled services"""
 
-    SERVICES = ((OpenrouteserviceService.ISOCHRONE, _('Isochrones')),)
+    SERVICES = ((OpenrouteserviceService.ISOCHRONE.value, _('Isochrones')),)
 
     project = models.OneToOneField(
         Project, on_delete=models.CASCADE, related_name="%(app_label)s_projects")
