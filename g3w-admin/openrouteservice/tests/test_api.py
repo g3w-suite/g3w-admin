@@ -118,6 +118,7 @@ from rest_framework import status
 from rest_framework.test import APIClient
 from vcr.record_mode import RecordMode
 from vcr_unittest import VCRMixin
+from huey_monitor.models import *
 
 temp_datasource = QTemporaryDir()
 
@@ -712,16 +713,23 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
         task = isochrone_from_layer_task(input_qgis_layer_id, 'driving-car', params,
                                          self.qdjango_project.pk, None, '__geopackage__', 'isochrone gpkg from points 3857 wrong', 'my isochrone', style)
 
+        with self.assertRaises(TaskModel.DoesNotExist):
+            TaskModel.objects.get(task_id=task.id)
+
         # Call the results API
         result = self._testApiCall(
             'openrouteservice-isochrone-from-layer-result', [self.qdjango_project.pk, task.id])
-        self.assertEquals(result.json(), {'result': True, 'status': 'pending'})
+        self.assertEqual(result.json(), {'result': True, 'status': 'pending'})
 
         # Put the result in the store
         task_result = huey.HUEY._execute(
             task.task, huey.HUEY._get_timestamp())
         # Remove from pending
         task.huey.dequeue()
+
+        task_model = TaskModel.objects.get(task_id=task.id)
+        self.assertEqual(
+            task_model.state.signal_name, 'complete')
 
         # Return the results
         response = self._testApiCall(
@@ -731,11 +739,13 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
                          status.HTTP_200_OK, response.json())
         self.assertEqual(response.json(), task_result)
 
-        # 404 because the results has been already fetched
+        # The results has been already fetched, we find the status in the logs
         response = self._testApiCall(
             'openrouteservice-isochrone-from-layer-result', [self.qdjango_project.pk, task.id])
         self.assertEqual(response.status_code,
-                         status.HTTP_404_NOT_FOUND, response.json())
+                         status.HTTP_200_OK, response.json())
+        self.assertEqual(response.json(), {'result': True, 'status': 'complete',
+            'exception': None, 'progress_info': [0, None]})
 
         # Test API call
         data = {

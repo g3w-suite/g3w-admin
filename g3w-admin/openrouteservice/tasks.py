@@ -10,16 +10,20 @@ __author__ = 'elpaso@itopen.it'
 __date__ = '2021-03-29'
 __copyright__ = 'Copyright 2021, Gis3W'
 
-from django.db import close_old_connections
 from functools import wraps
+
+from django.db import close_old_connections
 from huey.contrib.djhuey import HUEY
+from huey_monitor.tqdm import ProcessInfo
+
 from .utils import isochrone_from_layer
 
 task = HUEY.task
 
 
 def close_db(fn):
-    """Decorator to be used with tasks that may operate on the database.
+    """Decorator called by db_task() to be used with tasks that may operate
+    on the database.
 
     This implementation is a copy of djhuey implementation but it falls
     back to noop when HUEY.testing is True.
@@ -39,6 +43,15 @@ def close_db(fn):
 
 
 def db_task(*args, **kwargs):
+    """Decorator to be used with tasks that may operate on the database.
+
+    This implementation is a copy of djhuey implementation but it falls
+    back to noop when HUEY.testing is True.
+
+    Set HUEY.testing to True to skip DB connection close.
+
+    """
+
     def decorator(fn):
         ret = task(*args, **kwargs)(close_db(fn))
         ret.call_local = fn
@@ -46,9 +59,8 @@ def db_task(*args, **kwargs):
     return decorator
 
 
-
-@db_task()
-def isochrone_from_layer_task(input_qgis_layer_id, profile, params, project_id, qgis_layer_id, connection_id, new_layer_name, name, style):
+@db_task(context=True)
+def isochrone_from_layer_task(input_qgis_layer_id, profile, params, project_id, qgis_layer_id, connection_id, new_layer_name, name, style, task):
     """Generate isochrones asynchronously from an input QGIS point layer.
     This function must be run as an asynchronous task.
 
@@ -111,4 +123,10 @@ def isochrone_from_layer_task(input_qgis_layer_id, profile, params, project_id, 
 
     """
 
-    return isochrone_from_layer(input_qgis_layer_id, profile, params, project_id, qgis_layer_id, connection_id, new_layer_name, name, style)
+    process_info = ProcessInfo(
+        task,
+        desc='Isochrones from layer',
+        total=100
+    )
+
+    return isochrone_from_layer(input_qgis_layer_id, profile, params, project_id, qgis_layer_id, connection_id, new_layer_name, name, style, process_info)

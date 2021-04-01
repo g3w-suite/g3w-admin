@@ -21,10 +21,11 @@ from django.shortcuts import Http404, get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import View
 from huey.contrib.djhuey import HUEY
+from huey_monitor.models import TaskModel
+from openrouteservice.tasks import isochrone_from_layer_task
 from openrouteservice.utils import (add_geojson_features, config,
                                     get_db_connections, is_ors_compatible,
                                     isochrone)
-from openrouteservice.tasks import isochrone_from_layer_task
 from qdjango.mixins.views import QdjangoProjectViewMixin
 from qdjango.models import Layer, Project
 from qgis.core import QgsWkbTypes
@@ -321,7 +322,10 @@ class OpenrouteServiceIsochroneFromLayerResultView(OpenrouteServiceIsochroneBase
         Note: `project_id` is only used for permissions checking!
         """
 
+        # First try to retrieve th result of the task execution
         result = HUEY.result(task_id)
+
+        # If the result is available, send it
         if result is not None:
             return Response(result)
         else:
@@ -330,4 +334,14 @@ class OpenrouteServiceIsochroneFromLayerResultView(OpenrouteServiceIsochroneBase
             if task_id in pending_task_ids:
                 return Response({'result': True, 'status': 'pending'})
             else:
-                return Response({'result': False, 'error': _('Task not found!')}, status=status.HTTP_404_NOT_FOUND)
+                # Check wether is is aborted or processing
+                try:
+                    task_model = TaskModel.objects.get(task_id=task_id)
+                    return Response({
+                        'result': True,
+                        'status': task_model.state.signal_name,
+                        'exception': task_model.state.exception,
+                        'progress_info': task_model.progress_info
+                    })
+                except TaskModel.TaskModel.DoesNotExist:
+                    return Response({'result': False, 'error': _('Task not found!')}, status=status.HTTP_404_NOT_FOUND)

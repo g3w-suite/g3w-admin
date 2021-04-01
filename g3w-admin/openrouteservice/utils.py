@@ -635,7 +635,7 @@ def add_geojson_features(geojson, project, qgis_layer_id=None, connection_id=Non
     return qgis_layer_id
 
 
-def isochrone_from_layer(input_qgis_layer_id, profile, params, project_id, qgis_layer_id, connection_id, new_layer_name, name, style):
+def isochrone_from_layer(input_qgis_layer_id, profile, params, project_id, qgis_layer_id, connection_id, new_layer_name, name, style, process_info=None):
     """Generate isochrones asynchronously from an input QGIS point layer.
     This function must be run as an asynchronous task.
 
@@ -693,6 +693,8 @@ def isochrone_from_layer(input_qgis_layer_id, profile, params, project_id, qgis_
     :type name: str
     :param style: optional, dictionary with style properties: example {'color': [100, 50, 123], 'transparency': 0.5, 'stroke_width: 3 }
     :type style: dict
+    :param process_info: optional Huey process information
+    :type process_info: ProcessInfo
     :raises Exception: raise on error
     :rtype: dict
 
@@ -723,8 +725,7 @@ def isochrone_from_layer(input_qgis_layer_id, profile, params, project_id, qgis_
         points = []
 
         def _process_batch(points, qgis_layer_id):
-            #import time
-            # time.sleep(20)
+            #import time; time.sleep(20)
             params['locations'] = points
             # Note: passing a range list is mutually exclusive
             # with "interval"
@@ -736,6 +737,8 @@ def isochrone_from_layer(input_qgis_layer_id, profile, params, project_id, qgis_
             return add_geojson_features(result.content.decode(
                 'utf-8'), project, qgis_layer_id, connection_id, new_layer_name, name, style)
 
+        feature_count = input_layer.featureCount()
+        counter = feature_count
         for f in input_layer.getFeatures(req):
             g = f.geometry()
             if ct.isValid():
@@ -747,6 +750,10 @@ def isochrone_from_layer(input_qgis_layer_id, profile, params, project_id, qgis_
                     connection_id = None
                     style = None
                     points = []
+            counter -= 1
+            progress = int(100 * (feature_count - counter) / feature_count)
+            logger.debug('Progress: %s' % progress)
+            process_info.update(n=progress)
 
         if len(points) > 0:
             qgis_layer_id = _process_batch(points, qgis_layer_id)

@@ -33,6 +33,8 @@ ORS_PROFILES = {
 # HUEY SETTINGS
 # =================================
 # Enable immediate mode for testing
+# and use MemoryHuey or we would need
+# redis for testing too
 HUEY = {
     'huey_class': 'huey.MemoryHuey',  # Huey implementation to use.
     'name': 'g3w-suite',
