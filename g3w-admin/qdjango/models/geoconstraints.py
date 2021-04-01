@@ -13,7 +13,7 @@ __copyright__ = 'Copyright 2019, Gis3w'
 import logging
 
 from django.conf import settings
-from django.contrib.auth.models import Group, User
+from django.contrib.auth.models import Group as AuthGroup, User
 from django.contrib.gis.db.models.fields import GeometryField
 from django.contrib.gis.geos import MultiPolygon, Polygon
 from django.core.exceptions import ValidationError
@@ -123,7 +123,7 @@ class GeoConstraintRule(models.Model):
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, blank=True, null=True)
     group = models.ForeignKey(
-        Group, on_delete=models.CASCADE, blank=True, null=True)
+        AuthGroup, on_delete=models.CASCADE, blank=True, null=True)
     rule = models.TextField(
         _("SQL WHERE clause for the constraint layer"), max_length=255)
 
