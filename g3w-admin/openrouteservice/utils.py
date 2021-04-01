@@ -569,7 +569,6 @@ def add_geojson_features(geojson, project, qgis_layer_id=None, connection_id=Non
             project.qgis_project.addMapLayers([qgis_layer])
             project.update_qgis_project()
 
-
         # Create Layer object
         instance, created = Layer.objects.get_or_create(
             qgs_layer_id=qgis_layer_id,
@@ -700,79 +699,68 @@ def isochrone_from_layer(input_qgis_layer_id, profile, params, project_id, qgis_
 
     """
 
-    try:
+    project = get_object_or_404(Project, pk=project_id)
 
-        project = get_object_or_404(Project, pk=project_id)
+    # Loop through features from the layer
+    input_layer = project.qgis_project.mapLayer(input_qgis_layer_id)
 
-        # Loop through features from the layer
-        input_layer = project.qgis_project.mapLayer(input_qgis_layer_id)
+    # Check preconditions
+    assert input_layer is not None and input_layer.geometryType() == QgsWkbTypes.PointGeometry
 
-        # Check preconditions
-        assert input_layer is not None and input_layer.geometryType() == QgsWkbTypes.PointGeometry
+    # Store range
+    rang = params['range']
 
-        # Store range
-        rang = params['range']
+    req = QgsFeatureRequest()
+    req.setNoAttributes()
 
-        req = QgsFeatureRequest()
-        req.setNoAttributes()
+    ct = QgsCoordinateTransform(
+        input_layer.crs(), QgsCoordinateReferenceSystem(4326), project.qgis_project.transformContext())
 
-        ct = QgsCoordinateTransform(
-            input_layer.crs(), QgsCoordinateReferenceSystem(4326), project.qgis_project.transformContext())
+    qgis_layer_id = None
 
-        qgis_layer_id = None
+    # Collect point batches
+    points = []
 
-        # Collect point batches
-        points = []
-
-        def _process_batch(points, qgis_layer_id):
-            #import time; time.sleep(20)
-            params['locations'] = points
-            # Note: passing a range list is mutually exclusive
-            # with "interval"
-            result = isochrone(profile, params)
-            if result.status_code != status.HTTP_200_OK:
-                jcontent = json.loads(result.content.decode('utf-8'))
-                raise Exception(
-                    _('Error generating isochrone: %s.') % jcontent['error']['message'])
-            return add_geojson_features(result.content.decode(
-                'utf-8'), project, qgis_layer_id, connection_id, new_layer_name, name, style)
-
-        feature_count = input_layer.featureCount()
-        counter = feature_count
-        for f in input_layer.getFeatures(req):
-            g = f.geometry()
-            if ct.isValid():
-                g.transform(ct)
-            for point in g.constParts():
-                points.append([point.x(), point.y()])
-                if len(points) >= ORS_MAX_LOCATIONS:
-                    qgis_layer_id = _process_batch(points, qgis_layer_id)
-                    connection_id = None
-                    style = None
-                    points = []
-            counter -= 1
-            progress = int(100 * (feature_count - counter) / feature_count)
-            logger.debug('Progress: %s' % progress)
-            process_info.update(n=progress)
-
-        if len(points) > 0:
-            qgis_layer_id = _process_batch(points, qgis_layer_id)
-
-        if qgis_layer_id is None:
+    def _process_batch(points, qgis_layer_id):
+        #import time; time.sleep(20)
+        params['locations'] = points
+        # Note: passing a range list is mutually exclusive
+        # with "interval"
+        result = isochrone(profile, params)
+        if result.status_code != status.HTTP_200_OK:
+            jcontent = json.loads(result.content.decode('utf-8'))
             raise Exception(
-                _('Unknown error adding results to the destination layer.'))
+                _('Error generating isochrone: %s.') % jcontent['error']['message'])
+        return add_geojson_features(result.content.decode(
+            'utf-8'), project, qgis_layer_id, connection_id, new_layer_name, name, style)
 
-    except Exception as ex:
+    feature_count = input_layer.featureCount()
 
-        msg = traceback.format_exc()
-        logger.debug('ORS Exception: %s' % msg)
+    if process_info is not None:
+        process_info.update_total(feature_count)
 
-        return {
-            'result': False,
-            'error': str(ex),
-        }
+    counter = 0
+    for f in input_layer.getFeatures(req):
+        g = f.geometry()
+        if ct.isValid():
+            g.transform(ct)
+        for point in g.constParts():
+            points.append([point.x(), point.y()])
+            if len(points) >= ORS_MAX_LOCATIONS:
+                qgis_layer_id = _process_batch(points, qgis_layer_id)
+                connection_id = None
+                style = None
+                points = []
 
-    return {
-        'result': True,
-        'qgis_layer_id': qgis_layer_id
-    }
+        if process_info is not None:
+            counter += 1
+            process_info.update(n=counter)
+
+    if len(points) > 0:
+        qgis_layer_id = _process_batch(points, qgis_layer_id)
+
+    if qgis_layer_id is None:
+        raise Exception(
+            _('Unknown error adding results to the destination layer.'))
+
+    return {'qgis_layer_id': qgis_layer_id}

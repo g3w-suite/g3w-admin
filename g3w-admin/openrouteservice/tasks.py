@@ -84,21 +84,7 @@ def isochrone_from_layer_task(input_qgis_layer_id, profile, params, project_id, 
 
     * "locations": The locations to use for the route as an array of longitude/latitude pairs
 
-    Returns:
-
-        - in case of errors:
-
-        {
-            'result': False,
-            'error': 'error message'
-        }
-
-        - in case of success
-
-        {
-            'result': True,
-            'qgis_layer_id': qgis_layer_id
-        }
+    Returns: {'qgis_layer_id': qgis_layer_id}
 
     :param input_qgis_layer_id: QGIS layer ID of the points layer which contains the locations for the isochrones
     :type input_qgis_layer_id: str
@@ -125,8 +111,7 @@ def isochrone_from_layer_task(input_qgis_layer_id, profile, params, project_id, 
 
     process_info = ProcessInfo(
         task,
-        desc='Isochrones from layer',
-        total=100
+        desc='Isochrones from layer'
     )
 
     return isochrone_from_layer(input_qgis_layer_id, profile, params, project_id, qgis_layer_id, connection_id, new_layer_name, name, style, process_info)

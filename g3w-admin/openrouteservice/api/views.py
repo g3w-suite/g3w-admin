@@ -327,7 +327,13 @@ class OpenrouteServiceIsochroneFromLayerResultView(OpenrouteServiceIsochroneBase
 
         # If the result is available, send it
         if result is not None:
-            return Response(result)
+            task_model = TaskModel.objects.get(task_id=task_id)
+            return Response({
+                'status': task_model.state.signal_name,
+                'exception': task_model.state.exception,
+                'progress_info': task_model.progress_info,
+                'task_result': result
+            })
         else:
             # Check if pending
             pending_task_ids = [task.id for task in HUEY.pending()]

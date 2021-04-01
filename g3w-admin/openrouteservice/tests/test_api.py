@@ -100,10 +100,12 @@ from django.test import override_settings
 from django.urls import reverse
 from guardian.shortcuts import assign_perm, remove_perm
 from huey.contrib import djhuey as huey
-from openrouteservice.utils import (
-    get_db_connections, get_connection_hash)
+from huey.exceptions import TaskException
+from huey_monitor.models import *
+from openrouteservice.models import (OpenrouteserviceProject,
+                                     OpenrouteserviceService)
 from openrouteservice.tasks import isochrone_from_layer_task
-from openrouteservice.models import OpenrouteserviceProject, OpenrouteserviceService
+from openrouteservice.utils import get_connection_hash, get_db_connections
 from qdjango.apps import QGS_SERVER, get_qgs_project
 from qdjango.models import (ConstraintExpressionRule,
                             ConstraintSubsetStringRule, Layer, Project,
@@ -118,7 +120,6 @@ from rest_framework import status
 from rest_framework.test import APIClient
 from vcr.record_mode import RecordMode
 from vcr_unittest import VCRMixin
-from huey_monitor.models import *
 
 temp_datasource = QTemporaryDir()
 
@@ -652,7 +653,7 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
         result = isochrone_from_layer_task(input_qgis_layer_id, 'driving-car', params,
                                            self.qdjango_project.pk, None, '__geopackage__', 'isochrone gpkg from points 3857', 'my isochrone', style).get(preserve=True)
 
-        self.assertTrue(result['result'], result)
+        self.assertIn('qgis_layer_id', result)
 
         # Check output layer
         qgis_layer_id = result['qgis_layer_id']
@@ -672,10 +673,10 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
         task = isochrone_from_layer_task(input_qgis_layer_id, 'driving-car', params,
                                          self.qdjango_project.pk, None, '__geopackage__', 'isochrone gpkg from points 3857 wrong', 'my isochrone', style)
 
-        result = task.get()
-        self.assertFalse(result['result'])
-        self.assertEqual(
-            result['error'], "Error generating isochrone: Parameter 'range_type' has incorrect value of 'wrong'..")
+        with self.assertRaises(TaskException) as ex:
+            result = task.get()
+            self.assertEqual(
+                str(ex), "Error generating isochrone: Parameter 'range_type' has incorrect value of 'wrong'..")
 
         # Test from multipoint 4326
         params["range_type"] = 'time'
@@ -689,7 +690,8 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
         result = isochrone_from_layer_task(input_qgis_layer_id, 'driving-car', params,
                                            self.qdjango_project.pk, None, '__geopackage__', 'isochrone gpkg from multipoints 4326', 'my isochrone', style).get()
 
-        self.assertTrue(result['result'], result)
+
+        self.assertIn('qgis_layer_id', result)
 
         # Check output layer
         qgis_layer_id = result['qgis_layer_id']
@@ -709,9 +711,10 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
         huey.HUEY.immediate = False
         huey.HUEY.testing = True
 
-        params["range_type"] = 'wrong'
+
+        params["range_type"] = 'time'
         task = isochrone_from_layer_task(input_qgis_layer_id, 'driving-car', params,
-                                         self.qdjango_project.pk, None, '__geopackage__', 'isochrone gpkg from points 3857 wrong', 'my isochrone', style)
+                                         self.qdjango_project.pk, None, '__geopackage__', 'isochrone gpkg from points 3857 time', 'my isochrone', style)
 
         with self.assertRaises(TaskModel.DoesNotExist):
             TaskModel.objects.get(task_id=task.id)
@@ -735,17 +738,21 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
         response = self._testApiCall(
             'openrouteservice-isochrone-from-layer-result', [self.qdjango_project.pk, task.id])
 
+
         self.assertEqual(response.status_code,
                          status.HTTP_200_OK, response.json())
-        self.assertEqual(response.json(), task_result)
+        jresponse = response.json()
+        self.assertEqual(jresponse['task_result'], task_result)
+        self.assertIsNone(jresponse['exception'])
 
         # The results has been already fetched, we find the status in the logs
         response = self._testApiCall(
             'openrouteservice-isochrone-from-layer-result', [self.qdjango_project.pk, task.id])
         self.assertEqual(response.status_code,
                          status.HTTP_200_OK, response.json())
-        self.assertEqual(response.json(), {'result': True, 'status': 'complete',
-            'exception': None, 'progress_info': [0, None]})
+        jresponse = response.json()
+        self.assertEqual(jresponse['status'], 'complete')
+        self.assertEqual(jresponse['exception'], None)
 
         # Test API call
         data = {
@@ -781,7 +788,8 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
         self.assertEqual(task.id, task_id)
         task_result = huey.HUEY._execute(
             task, huey.HUEY._get_timestamp())
-        self.assertTrue(task_result["result"])
+
+        self.assertIn('qgis_layer_id', task_result)
 
         # Remove from pending
         huey.HUEY.dequeue()
@@ -791,4 +799,4 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
             'openrouteservice-isochrone-from-layer-result', [self.qdjango_project.pk, task.id])
         self.assertEqual(response.status_code,
                          status.HTTP_200_OK, response.json())
-        self.assertEqual(response.json(), task_result)
+        self.assertEqual(response.json()['task_result'], task_result)
