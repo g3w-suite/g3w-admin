@@ -332,9 +332,8 @@ class OpenrouteServiceIsochroneFromLayerResultView(OpenrouteServiceIsochroneBase
             "status": "complete",  // or "pending" or "error", full list at
                                    // https://huey.readthedocs.io/en/latest/signals.html#signals
             "exception": "Normally empty, error message in case of errors",
-            "progress_info": [
-                0,  // Progress
-                null
+            "progress": [
+                100,  // Progress %
             ],
             "task_result": {
                 "qgis_ayer_id": "4f2a88a1-ca93-4859-9de3-75d9728cde0e"
@@ -346,7 +345,7 @@ class OpenrouteServiceIsochroneFromLayerResultView(OpenrouteServiceIsochroneBase
         """
 
         try:
-            task_model = TaskModel.objects.get(task_id=task_id)
+
 
             # Try to retrieve the task result, may throw an exception
             try:
@@ -356,10 +355,18 @@ class OpenrouteServiceIsochroneFromLayerResultView(OpenrouteServiceIsochroneBase
                 result = None
                 ret_status = status.HTTP_500_INTERNAL_SERVER_ERROR
 
+            task_model = TaskModel.objects.get(task_id=task_id)
+            progress_info = task_model.progress_info
+
+            try:
+                progress_percentage = int(100 * progress_info[0] / task_model.total)
+            except:
+                progress_percentage = 0
+
             return Response({
                 'status': task_model.state.signal_name,
                 'exception': task_model.state.exception_line,
-                'progress_info': task_model.progress_info,
+                'progress': progress_percentage,
                 'task_result': result
             }, status=ret_status)
 

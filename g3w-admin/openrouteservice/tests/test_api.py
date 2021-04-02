@@ -690,7 +690,6 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
         result = isochrone_from_layer_task(input_qgis_layer_id, 'driving-car', params,
                                            self.qdjango_project.pk, None, '__geopackage__', 'isochrone gpkg from multipoints 4326', 'my isochrone', style).get()
 
-
         self.assertIn('qgis_layer_id', result)
 
         # Check output layer
@@ -710,7 +709,6 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
         # This logic mimicks what HUEY internally does
         huey.HUEY.immediate = False
         huey.HUEY.testing = True
-
 
         params["range_type"] = 'time'
         task = isochrone_from_layer_task(input_qgis_layer_id, 'driving-car', params,
@@ -737,7 +735,6 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
         # Return the results
         response = self._testApiCall(
             'openrouteservice-isochrone-from-layer-result', [self.qdjango_project.pk, task.id])
-
 
         self.assertEqual(response.status_code,
                          status.HTTP_200_OK, response.json())
@@ -799,4 +796,6 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
             'openrouteservice-isochrone-from-layer-result', [self.qdjango_project.pk, task.id])
         self.assertEqual(response.status_code,
                          status.HTTP_200_OK, response.json())
-        self.assertEqual(response.json()['task_result'], task_result)
+        jresponse = response.json()
+        self.assertEqual(jresponse['task_result'], task_result)
+        self.assertEqual(jresponse['progress'], 100)

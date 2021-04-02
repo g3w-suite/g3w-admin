@@ -739,7 +739,6 @@ def isochrone_from_layer(input_qgis_layer_id, profile, params, project_id, qgis_
     if process_info is not None:
         process_info.update_total(feature_count)
 
-    counter = 0
     for f in input_layer.getFeatures(req):
         g = f.geometry()
         if ct.isValid():
@@ -753,8 +752,7 @@ def isochrone_from_layer(input_qgis_layer_id, profile, params, project_id, qgis_
                 points = []
 
         if process_info is not None:
-            counter += 1
-            process_info.update(n=counter)
+            process_info.update(n=1)
 
     if len(points) > 0:
         qgis_layer_id = _process_batch(points, qgis_layer_id)
