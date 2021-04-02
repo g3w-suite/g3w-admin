@@ -743,7 +743,7 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
                          status.HTTP_200_OK, response.json())
         jresponse = response.json()
         self.assertEqual(jresponse['task_result'], task_result)
-        self.assertIsNone(jresponse['exception'])
+        self.assertEqual(jresponse['exception'], '')
 
         # The results has been already fetched, we find the status in the logs
         response = self._testApiCall(
@@ -752,7 +752,7 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
                          status.HTTP_200_OK, response.json())
         jresponse = response.json()
         self.assertEqual(jresponse['status'], 'complete')
-        self.assertEqual(jresponse['exception'], None)
+        self.assertEqual(jresponse['exception'], '')
 
         # Test API call
         data = {

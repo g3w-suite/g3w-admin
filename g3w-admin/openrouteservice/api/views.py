@@ -21,6 +21,7 @@ from django.shortcuts import Http404, get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import View
 from huey.contrib.djhuey import HUEY
+from huey.exceptions import TaskException
 from huey_monitor.models import TaskModel
 from openrouteservice.tasks import isochrone_from_layer_task
 from openrouteservice.utils import (add_geojson_features, config,
@@ -320,34 +321,54 @@ class OpenrouteServiceIsochroneFromLayerResultView(OpenrouteServiceIsochroneBase
         data has been added. If the task has not yet completed a status message is returned
 
         Note: `project_id` is only used for permissions checking!
+
+        Returns 500 in case of exceptions
+        Returns 404 in case of task not found
+        Returns 200 ok for all other cases
+
+        Response body:
+
+        {
+            "status": "complete",  // or "pending" or "error", full list at
+                                   // https://huey.readthedocs.io/en/latest/signals.html#signals
+            "exception": "Normally empty, error message in case of errors",
+            "progress_info": [
+                0,  // Progress
+                null
+            ],
+            "task_result": {
+                "qgis_ayer_id": "4f2a88a1-ca93-4859-9de3-75d9728cde0e"
+            }
+        }
+
+        TODO: move this into core, make it generic for task status and result reporting
+
         """
 
-        # First try to retrieve th result of the task execution
-        result = HUEY.result(task_id)
-
-        # If the result is available, send it
-        if result is not None:
+        try:
             task_model = TaskModel.objects.get(task_id=task_id)
+
+            # Try to retrieve the task result, may throw an exception
+            try:
+                result = HUEY.result(task_id)
+                ret_status = status.HTTP_200_OK
+            except TaskException:
+                result = None
+                ret_status = status.HTTP_500_INTERNAL_SERVER_ERROR
+
             return Response({
                 'status': task_model.state.signal_name,
-                'exception': task_model.state.exception,
+                'exception': task_model.state.exception_line,
                 'progress_info': task_model.progress_info,
                 'task_result': result
-            })
-        else:
-            # Check if pending
+            }, status=ret_status)
+
+        except TaskModel.DoesNotExist:
+
+            # Handle pending
             pending_task_ids = [task.id for task in HUEY.pending()]
+
             if task_id in pending_task_ids:
                 return Response({'result': True, 'status': 'pending'})
-            else:
-                # Check wether is is aborted or processing
-                try:
-                    task_model = TaskModel.objects.get(task_id=task_id)
-                    return Response({
-                        'result': True,
-                        'status': task_model.state.signal_name,
-                        'exception': task_model.state.exception,
-                        'progress_info': task_model.progress_info
-                    })
-                except TaskModel.TaskModel.DoesNotExist:
-                    return Response({'result': False, 'error': _('Task not found!')}, status=status.HTTP_404_NOT_FOUND)
+
+            return Response({'result': False, 'error': _('Task not found!')}, status=status.HTTP_404_NOT_FOUND)
