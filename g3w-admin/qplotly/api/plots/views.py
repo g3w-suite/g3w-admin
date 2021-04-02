@@ -100,6 +100,9 @@ class QplotlyTraceAPIView(G3WAPIView):
         if not settings.read_from_model(qplotly):
             raise Exception()
 
+        # patch for xml setting linked to layer with same datasource.
+        qgs_layer_id = kwargs['qgs_layer_id'] if 'qgs_layer_id' in kwargs else settings.source_layer_id
+
         # get bbox if is sent
         # 2021/01/12 using IntersectBBOXFilter
         rect = None
@@ -108,7 +111,7 @@ class QplotlyTraceAPIView(G3WAPIView):
         #                                  QgsCoordinateReferenceSystem(qplotly.project.group.srid.srid))
 
         # instance a QplotlyFactory
-        layer = Layer.objects.get(qgs_layer_id=settings.source_layer_id, project_id=kwargs['project_id'])
+        layer = Layer.objects.get(qgs_layer_id=qgs_layer_id, project_id=kwargs['project_id'])
         factory = QplotlyFactoring(settings, visible_region=rect, request=request, layer=layer)
 
 
