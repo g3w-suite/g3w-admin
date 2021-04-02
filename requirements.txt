@@ -33,3 +33,4 @@ celery==3.1.26.post2
 deprecation
 huey
 redis
+git+https://github.com/elpaso/django-huey-monitor.git

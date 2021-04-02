@@ -21,7 +21,7 @@ jobs:
           command: docker cp ./ "$(docker-compose -f docker-compose.<< parameters.qgis_version >>.yml ps -q g3w-suite)":/code
       - run:
           name: Installing Python requirements
-          command: docker-compose -f docker-compose.<< parameters.qgis_version >>.yml exec g3w-suite sh -c "cd /code/ && pip3 install -r requirements_docker.txt"
+          command: docker-compose -f docker-compose.<< parameters.qgis_version >>.yml exec g3w-suite sh -c "cd /code/ && python3 -m pip install --upgrade pip && pip3 install -r requirements_docker.txt"
       - run:
           name: Installing Caching Python requirements
           command: docker-compose -f docker-compose.<< parameters.qgis_version >>.yml exec g3w-suite sh -c "cd /code/ && pip3 install -r g3w-admin/caching/requirements.txt"

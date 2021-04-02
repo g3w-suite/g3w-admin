@@ -59,6 +59,8 @@ THIRD_PARTY_APPS = [
     'ajax_select',
     'modeltranslation',
     'huey.contrib.djhuey',
+    'bx_py_utils',  # required by huey_monitor
+    'huey_monitor',
 ]
 
 G3WADMIN_APPS = [

@@ -128,9 +128,32 @@ SESSION_COOKIE_NAME = '<unique_session_id>'
 
 TEST_RUNNER = 'qdjango.tests.runner.G3wSuiteTestRunner'
 
+# CELERY SETTINGS
+# ===============================
+# Run RabbiMQ with docker : docker run -d --hostname my-rabbit -p 5672:5672 --name some-rabbit rabbitmq:latest
+
 # Celery is required for CSW Catalog module (optional)
 BROKER_URL = 'amqp://guest:guest@localhost:5672//'
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_RESULT_BACKEND = 'db+sqlite:///celerydb.sqlite'
+
+
+# HUEY SETTINGS
+# ===============================
+# Requires redis: docker run --name redis:latest -d redis
+# HUEY configuration
+HUEY = {
+    # Huey implementation to use.
+    'huey_class': 'huey.RedisExpireHuey',
+    'name': 'g3w-suite',
+    # Point this to your redis DB:
+    'url': 'redis://localhost:6379/?db=0',
+    'immediate': False,
+    'consumer': {
+        'workers': 5,
+        # Do not even think to change the line below!
+        'worker_type': 'process',
+    },
+}
