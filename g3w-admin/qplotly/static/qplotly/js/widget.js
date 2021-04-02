@@ -365,9 +365,10 @@ _.extend(g3wadmin.tpl, {
     '),
 });
 
-// activate widget
-$(document).ready(function() {
-    $('[data-widget-type="qplotlyWidgetList"]').on('click', function (e) {
+
+// activate widget: append to ga.ui.before_datatable_callbacks for to cala it before DatTable init
+ga.ui.before_datatable_callbacks.push(function($widgetItem){
+  $widgetItem.find('[data-widget-type="qplotlyWidgetList"]').on('click', function (e) {
         var $datatable = $(this).parents('table').DataTable();
         ga.widget.qplotlyWidgetList($datatable, $(this));
         ga.ui.initShowOnStartClient();

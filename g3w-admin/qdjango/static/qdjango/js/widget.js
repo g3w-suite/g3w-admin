@@ -1438,13 +1438,13 @@ _.extend(g3wadmin.tpl, {
 
 })
 
-// activate widget
-$(document).ready(function () {
-  $('[data-widget-type="singlelayerConstraintsList"]').on("click", function (e) {
+// activate widget: append to ga.ui.before_datatable_callbacks for to cala it before DatTable init
+ga.ui.before_datatable_callbacks.push(function($widgetItem){
+  $widgetItem.find('[data-widget-type="singlelayerConstraintsList"]').on("click", function (e) {
     var $datatable = $(this).parents("table").DataTable()
     ga.widget.singlelayerConstraintsList($datatable, $(this))
-  })
-})
+  });
+});
 
 
 // Add GeoConstraint widget
@@ -2051,13 +2051,14 @@ _.extend(g3wadmin.widget, {
     }
 });
 
-// activate widget
-$(document).ready(function() {
-    $('[data-widget-type="geoConstraintsList"]').on('click', function (e) {
+// activate widget: append to ga.ui.before_datatable_callbacks for to call it before DatTable init
+ga.ui.before_datatable_callbacks.push(function($widgetItem){
+  $widgetItem.find('[data-widget-type="geoConstraintsList"]').on('click', function (e) {
         var $datatable = $(this).parents('table').DataTable();
         ga.widget.geoConstraintsList($datatable, $(this));
     });
 });
+
 
 // Add Style manager widget
 // --------------------------------
@@ -2357,13 +2358,13 @@ _.extend(g3wadmin.widget, {
   },
 })
 
-// activate widget
-$(document).ready(function () {
-  $('[data-widget-type="styleManagerList"]').on("click", function (e) {
+// activate widget: append to ga.ui.before_datatable_callbacks for to cala it before DatTable init
+ga.ui.before_datatable_callbacks.push(function($widgetItem){
+  $widgetItem.find('[data-widget-type="styleManagerList"]').on("click", function (e) {
     var $datatable = $(this).parents("table").DataTable()
     ga.widget.showStyleManagerList($datatable, $(this))
   })
-})
+});
 
 _.extend(g3wadmin.tpl, {
   _newStyleForm: _.template(`

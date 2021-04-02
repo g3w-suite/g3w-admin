@@ -11,6 +11,9 @@
 
 _.extend(g3wadmin.ui, {
 
+    // a list of callback(closer) to call before init DataTable
+    before_datatable_callbacks: [],
+
     modal:  function($modal, options){
 
         this.$modal = $modal;
@@ -392,6 +395,12 @@ _.extend(g3wadmin.ui, {
         $widgetItem.find('[data-widget-type="detailItemDataTable"]').on('click', function(e){
             ga.widget.showDetailItemDataTable($dataTable, $(this));
         });
+
+        _.each(ga.ui.before_datatable_callbacks, function(f){
+            f($widgetItem);
+        })
+
+
 
         /*if (CURRENT_LANGUAGE_CODE != 'en') {
             options['language'] = DATATABLE_LANGS[CURRENT_LANGUAGE_CODE]
