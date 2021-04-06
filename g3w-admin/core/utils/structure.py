@@ -257,6 +257,8 @@ def mapLayerAttributesFromQgisLayer(qgis_layer, **kwargs):
                 if 'default' not in kwargs:
                     default_value = qgis_layer.defaultValue(field_index) if qgis_layer.defaultValue(field_index) \
                         else None
+                else:
+                    default_value = kwargs['default']
 
                 expression = ''
                 if has_expression:
