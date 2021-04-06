@@ -188,7 +188,7 @@ In this section it is possible to view the list of Cartographic Macrogroups, man
 
 **ATTENTION: use the Cartographic MacroGroups only if you need them.**
 
-See chapter [Hierarchical organization of WebGis services and types of Users (roles)] (https://g3w-suite.readthedocs.io/en/3.2.x/user_groups_organization.html#hierarchical-organization-of-webgis-services-and-types -of-users-roles) to learn more about this aspect.
+See chapter [Hierarchical organization of WebGis services and types of Users](https://g3w-suite.readthedocs.io/en/3.2.x/user_groups_organization.html#hierarchical-organization-of-webgis-services-and-types-of-users-roles) to learn more about this aspect.
 
 For example, you can create a **Macrogroup** to collect a series of **Cartographic Groups** belonging to the same Administration (single Municipality within a Union of Municipalities) or more simply to have main containers that contain second level groupings (Groups).
 
@@ -550,7 +550,7 @@ See the dedicated paragraph in the [Editing on line session](https://g3w-suite.r
 
 Through the **Manage geo-contsraints** and **Manage alphanumric constraints** widgets it is possible to define editing and display filters for users authorized to consult/edit the project.
 
-See the dedicated paragraph in the [Editing on line session](https://g3w-suite.readthedocs.io/it/3.1.x/g3wsuite_editing.html#constraints-setting).
+See the dedicated paragraph in the [Editing on line session](https://g3w-suite.readthedocs.io/it/3.2.x/g3wsuite_editing.html#constraints-setting).
 
 ### ![](images/manual/icon_cache.png) Caching layer (Base Map)
 

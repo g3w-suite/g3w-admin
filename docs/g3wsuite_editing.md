@@ -160,7 +160,7 @@ Clicking on the icon **QGIS expression rules** ![](images/manual/icon_qgisconstr
 
 The individual rules must be defined via **`QGIS expression`** and this allows to have a great degree of freedom in the ways in which to set these rules.
 
-See the paragraph dedicated to the functions available directly on the [QGIS manual](https://docs.qgis.org/3.10/en/docs/user_manual/working_with_vector/expression.html).
+See the paragraph dedicated to the functions available directly on the [QGIS manual](https://docs.qgis.org/3.16/en/docs/user_manual/working_with_vector/expression.html).
 
 The **`Save icon`** ![](images/manual/icon_save.png) will allow you to validate the rules, in order to ensure proper functioning of the constraints itself.
 
