@@ -253,6 +253,11 @@ def mapLayerAttributesFromQgisLayer(qgis_layer, **kwargs):
                         QgsFieldConstraints.ConstraintExpression) == QgsFieldConstraints.ConstraintStrengthHard
                 default_clause = data_provider.defaultValueClause(field_index)
 
+                # default value for editing from qgis_layer
+                if 'default' not in kwargs:
+                    default_value = qgis_layer.defaultValue(field_index) if qgis_layer.defaultValue(field_index) \
+                        else None
+
                 expression = ''
                 if has_expression:
                     expression = field.constraints().constraintExpression()
@@ -283,7 +288,8 @@ def mapLayerAttributesFromQgisLayer(qgis_layer, **kwargs):
                     default_clause=default_clause,
                     unique=unique,
                     expression=expression,
-                    pk=is_pk
+                    pk=is_pk,
+                    default=default_value
                 )
 
                 # add upload url to image type if module is set
