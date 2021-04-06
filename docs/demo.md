@@ -16,9 +16,9 @@ Through the tutorials it will be possible to:
 
 ![](images/manual/demo_webgis_project.png)
 
-# Download the demo data
+# Download demo data
 
-The tutorial is based on predefined data and QGIS 3.16.x LTR project **downloadable from <a href="https://drive.google.com/file/d/1iKDZ7UFelisiAGI720U0EB2dog2SOoGd/view?usp=sharing" target="_blank">this link</a>**.
+The tutorial is based on predefined data and QGIS 3.16.x LTR project **downloadable from <a href="https://drive.google.com/file/d/1eVGlexZaKSOLGphEyE59_tX3frDb06NS/view?usp=sharing" target="_blank">this link</a>**.
 
 The .zip file contains the **`G3W-SUITE`** directory with three sub directories:
  * **`projects`:** containing a QGIS project (**`buildings_management.qgz`**) already optimized for the tutorial

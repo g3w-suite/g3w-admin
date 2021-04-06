@@ -3,21 +3,21 @@ _**This section describes how to organize QGIS data and projects locally and how
 
 Thanks to the integration with the APIs of QGIS it is now possible to manage the main formats (geographically and not) supported by QGIS Server:
 
- * **reading and editing mode**
-   * PostGreSQL/PostGis
-   * Oracle Spatial (compiling QGIS Server)
-   * SQLite/SpatiaLite
-   * GeoPackage
-   * ShapeFile
+* **reading and editing mode**
+  * PostGreSQL/PostGis
+  * Oracle Spatial (compiling QGIS Server)
+  * SQLite/SpatiaLite
+  * GeoPackage
+  * ShapeFile
 
 
- * **reading mode**
-   * SQL Server
-   * Virtal layer
+* **reading mode**
+  * SQL Server
+  * Virtal layer
 
 The suite also allows you to manage in consultation ed editing:
- * **`simple join data`**
- * **`1:N relation data**
+ * **simple join data**
+ * **1:N relation data**
 
 ## Data on DB Server
 
