@@ -6,7 +6,7 @@ Thanks to the integration with the APIs of QGIS it is now possible to manage the
  * **reading and editing mode**
    * PostGreSQL/PostGis
    * SQLite/SpatiaLite
-   * GeoPackage
+   * GeoPackage (not recommended for multi-user editing)
    * ShapeFile
 
  * **reading mode**
@@ -127,6 +127,14 @@ Clicking on the icon will show the list of any existing alphanumeric constraints
 
 Clicking on the item **`+ New constraint`** will open a modal window which will allow you to define a name and a description for the new constraint.
 
+In the form it is possible to specify whether this filter will act at the level:
+ * display only
+ * of editing only
+ * in both cases
+ 
+![](images/manual/editing_alpha_constrain_layer_init.png)
+
+
 After clicking the OK button, the constraint will appear in the list and can be parameterized using two ways of defining the rules:  
 
  * ![](images/manual/icon_alphaconstraints_setting.png) **Provider's language / SQL dialect**
@@ -160,6 +168,10 @@ The **`Save icon`** ![](images/manual/icon_save.png) will allow you to validate 
 
 Once all the constraints have been entered and validated, click on the **Close button** to confirm the rules.
 
+In the dedicated panel it will be possible to check, modify and delete the defined rules.
+
+![](images/manual/alpha_constrain_list.png)
+
 
 ##### Geo-constraints
 **The online editing function also allows you to manage geo-constraints that allow the user to insert/modify features only if they intersect or are contained within specific features of a second polygonal layer.**
@@ -170,9 +182,15 @@ Clicking on the icon will show the list of any existing constraints and the item
 
 ![](images/manual/editing_constrain_layer.png)
 
-The icons placed next to any constraints already present allow you to edit/delete the constraint itself.
-
 Clicking on the item **`+ New geo-constraint`** will open a modal window which will allow you to **define the polygonal layer** (among those present in the project) **on which the constraint itself must be based**.
+
+In the form it is possible to specify whether this filter will act at the level:
+ * display only
+ * of editing only
+ * in both cases
+
+![](images/manual/geo_constrain_layer_init.png)
+
 
 Once the layer has been defined, the constraint will appear in the list and can be parameterized using the **Rules icon** ![](images/manual/icon_constraints_setting.png)
 
@@ -194,7 +212,8 @@ In the alphanumeric constraints list you can see a summary of the setted rules.
 
 
 ## Online editing tools at cartographic client level
-### Direct editing
+### Geographic and alphanumeric editing
+
 **Once the online editing function has been activated and configured on one or more layers of a WebGis project, the `Editing` item, inside the `Tools` menu of the cartoographic client, will be shown.**
 
 ![](images/manual/editing_client_start.png) 
@@ -211,7 +230,8 @@ The tools available are the following:
 
 **Geometric layers**
  * ![](images/manual/icon_feature_add.png) **Add feature:** to add a feature
- * ![](images/manual/icon_feature_attribute.png) **Modify feature:** to modify the attributes associated with an existing feature
+ * ![](images/manual/icon_feature_attribute.png) **Modify feature:** to modify the attribute values associated with an existing feature
+ * ![](images/manual/icon_feature_multiattribute.png) **Update attributes for selected features:** to modify the attribute values associated with more than one features
  * ![](images/manual/icon_feature_modify.png) **Update feature vertex:** to modify the shape of a geometry
  * ![](images/manual/icon_feature_move.png) **Move feature:** to move a feature
  * ![](images/manual/icon_feature_remove.png) **Remove feature**
@@ -253,7 +273,7 @@ By deactivating the editing function, a modal window will be displayed which wil
 Remember that during the editing phase the **`undo/redo icons`** ![](images/manual/icon_undoredo.png) allow you to delete/restore the latest changes made.
 
 
-### 1:n related tables editing
+### 1:N related tables editing
 **G3W-SUITE allows for relational editing**; for this to be possible it is necessary that:
  * on the published QGIS project there are one or more geographic layers related (1: n) with one or more alphanumeric tables
  * on the administration panel the editing function has been activated both on the parent layer and on the child layers

@@ -92,27 +92,34 @@ For further information on this point, see the [**dedicated paragraph**](https:/
 The orange bar above the query results shows the following icons:
 ![](images/manual/g3wclient_attribute_icons.png)
 
- * Zoom to features: if the function is activated on the Properties of the QGIS project
- * Show relations (1: N): if present on the GQIS project
- * Download Shapefile: if activated in the administration session
- * Download GPX: if activated in the administration session
- * Download SCV download: if activated in the administration session
- * Download XLS: if activated in the administration session
- * Print Atlas: prints the atlas sheet (if set on QGIS project) related to the queried feature
+ * **Zoom to features:** if the function is activated on the Properties of the QGIS project
+ * **Show relations (1: N):** if present on the QGIS project
+ * **Show relation charts:** display of plots related to 1: N related data. Only if 1: N relationships are associated with the interrogated layer and plots have been activated on the referencing tables.
+ * **Download Shapefile, GPK, GPX, CSV, XLS:** if activated in the administration session
+ * **Print Atlas:** prints the atlas sheet (if set on QGIS project) related to the queried feature
+ * **Add/Remove selection:** add/remove the features to the current selection
+ 
+![](images/manual/g3wclient_attribute_view_plots.png)
+
 
 ### Display of 1:n relation data
 
-In the event that, at the QGIS project level, one or more type 1: n relationships have been associated with a layer, the icon **View Relationships**  will be shown in the attribute form.
+In the event that, at the QGIS project level, **one or more type 1:n relations** have been associated with a layer, the icon **View Relationships**  will be shown in the attribute form.
 
-By clicking on the icon you will access the list of relationships present and, from these, the list of child records associated with the individual relationships. In the case of a single 1: n relationship, the child layers of the relationship in question will be displayed directly.
+By clicking on the icon you will access the **list of 1:N relations** present and, from these, the list of child records associated with the individual relationships. 
+
+In the case of a **simple 1:1 or N:1 joins**, the joined records will be displayed directly in the main form.
+
+
+In the new frame, a filter, applied generically to the contents of all fields, will allow you to filter the list of child records.
 
 The icon to the left of each record allows you to switch from the classic table view to the one based on any form defined on the QGIS project
 
-A filter, applied generically to the contents of all fields, will allow you to filter the list of child records.
+In the case of **links to multimedia contents**, the previews of the images and/or the **`Open` button** will be displayed for consultation of different types of content.
+
+In case of **active plots** on the related table, these will be displayed through **`Show charts`** at the top right.
 
 ![](images/manual/g3wclient_relations_view.png)
-
-In the case of links to multimedia contents, the previews of the images and/or the **`Open` button** will be displayed for consultation of different types of content.
 
 ## Tools panel
 ### Metadata
@@ -129,11 +136,24 @@ This content is divided into three sessions: **General, Space Info and Layers.**
 ### Charts
 **View graphs created using QGIS [DataPlotly](https://github.com/ghtmtt/DataPlotly) and activated at the admin session level.**
 
-Check the plots in the list and view on the rigth panel
+Check the plots in the list and consult them on the rigth panel.
 
-![](images/manual/g3wclient_plots_view.png)
+![](images/manual/g3wclient_plots.png)
 
-Plots based on visible or selected geometries will be available in the next version
+The graphs are filterable based on the:
+ * ![](images/manual/g3wclient_plots_map_filter.png) features visible on the map
+ * ![](images/manual/g3wclient_plots_selection_filter.png) filter based on the selected features
+ 
+These **filters** are also **reflected on the plots associated to the related data** (in 1:N mode) based on the visible and/or selected parent features.
+
+The **filter based on the map content** can be activated globally on all plots (icon at the top of the panel dedicated to charts) or on only some specific plots (icon placed at the level of the individual plots).
+
+The plots will automatically update after pan and zoom operations on the map
+
+If activated, the **filter based on the selected features** is automatically activated on all related plots (associated with the same layer and with the 1:N relationed tables)
+
+Appropriate **messages** at the single plots level will indicate the activation of these filters.
+
 
 ### Print
 **Printing tool based on layouts defined on QGIS project.**
@@ -189,24 +209,80 @@ This session has three tabs:
  * **Base:** choice of the base map from those defined at the Cartographic Group creation level
  * **Legend:** graphic legend
  
+#### Layers
+ 
 In the list of layers, right click on the name of the single layer shows the following items:
+ * **Styles:** to choose the style to be applied to the layer, in the case of multi-style layers
  * **Name and kind of geometry** of the layer
  * **Zoom to layer:** to zoom in on the extension of the layer
  * **Open attribute table:** to consult the associated attribute table
  * **Download shapefile:** to download the layer as a shapefile; function activable from the administration panel
+ * **Download GeoPackage:** to download the layer as a GeoPackage; function activable from the administration panel
  * **Download CSV:** to download the layer as a CSV; function activable from the administration panel
  * **Download XLS:** to download the layer as a XLS; function activable from the administration panel
  * **WMS URL:** URL of the WMS service relative to the project or URL of the external WMS
 
 ![](images/manual/g3wclient_layer_function.png)
 
-The attribute table is equipped with **paging function, highligth function and zooming** to the associated features.
+##### Attribute table
+
+The attribute table (resizable) is equipped with **paging function, highligth function and zooming** to the associated features.
 
 In the case of links to **multimedia content**, the previews of the images and/or the **Open** button will be displayed for consultation of different types of content.
-
-**A filter**, applied generically to the contents of all the fields, will allow you to filter the list of displayed records.
 
 The window is resizable.
 
 ![](images/manual/g3wclient_table_view.png)
+
+A **generic filter**, positioned at the top right, is applied generically to the contents of all the fields and it will allow you to filter the list of displayed records. 
+
+**Filters based on the contents of the individual fields** are available at the top of each column.
+
+The **Show features visible on the map** icon ![](images/manual/g3wclient_mapfilter_table.png) allows you to filter the records of the table according to the features visible in the map.
+
+From this version it is possible to **select the features of the individual layers and apply filters** that will affect:
+ * on the map content
+ * on the attribute table content
+ * on the contents of the plots
+ * on print contents (only with QGIS 3.18)
+
+The selection of features can be made:
+ * at the attribute table level (through the checkboxes on the left of each records)
+ * on the results of a query (add / remove from current selection)
+ * on the results of a query (add / remove from current selection)
+
+At the same time, additional icons appear:
+ * on the layer attribute table
+ * to the right of the layer on the TOC
+ * at the level of the relevant plots
+
+Aggiungi immagine: g3wclient_selection.png
+The icons in the attribute table allow you to:
+ * ![](images/manual/g3wclient_selection_table_clear.png) Clear selection
+ * ![](images/manual/g3wclient_selection_table_invert.png) Invert selection
+ * ![](images/manual/g3wclient_selection_table_filter.png) Add/Remove filter
+
+The icons to the right of the layer on the TOC allow you to:
+ * Clear selection
+ * Add/Remove filter
+
+![](images/manual/g3wclient_selection_icon_toc.png)
+
+When one or more features are selected, they appear highlighted in red on the map.
+Activation of the filter is reflected:
+ * on the map content
+ * on the attribute table content
+ * on the data displayed by plots
+ * on the print contents (only with QGIS 3.18)
+
+#### Base layer
+The list shows the active base layers at the cartographic group level.
+
+If the user has created base layers starting from cached layers, these may also be present.
+
+#### Legend
+if the option is activated on the QGIS project, the legend is filtered on the map content.
+
+
+
 

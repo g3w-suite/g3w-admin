@@ -1,0 +1,317 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2016 - 2021, GIS3W Team
+# This file is distributed under the same license as the G3W-SUITE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: G3W-SUITE 0.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-03-15 15:32+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.8.0\n"
+
+#: ../../user_groups_organization.md:1
+msgid "Hierarchical organization of WebGis services and types of Users (roles)"
+msgstr ""
+
+#: ../../user_groups_organization.md:2
+msgid ""
+"This paragraph allows you to understand how G3W-SUITE makes it possible "
+"to manage the individual WebGis services in a structured and hierarchical"
+" way."
+msgstr ""
+
+#: ../../user_groups_organization.md:4
+msgid ""
+"In G3W-SUITE it is possible to organize WebGis services on two "
+"thematic/functional levels"
+msgstr ""
+
+#: ../../user_groups_organization.md:5
+msgid "Cartographic MacroGroups"
+msgstr ""
+
+#: ../../user_groups_organization.md:6
+msgid "Cartographic groups"
+msgstr ""
+
+#: ../../user_groups_organization.md:8
+msgid ""
+"These organizational levels can be associated with different types of "
+"users (Editor 1, Editor2 and Viewer) in order to manage the "
+"access/management powers to the individual elements in a granular way."
+msgstr ""
+
+#: ../../user_groups_organization.md:10
+msgid ""
+"The following image shows an example of the functional use of these "
+"organizational levels within a Union of Municipalities."
+msgstr ""
+
+#: ../../user_groups_organization.md:12
+msgid ""
+"Access policies and individual functional modules may be associated with "
+"each WebGis service."
+msgstr ""
+
+#: ../../user_groups_organization.md:16
+msgid "Types of Users (Roles)"
+msgstr ""
+
+#: ../../user_groups_organization.md:17
+msgid ""
+"In G3W-SUITE you can create Users and Users Groups and associate them "
+"with specific roles:"
+msgstr ""
+
+#: ../../user_groups_organization.md:18
+msgid ""
+"Admin1: user with full powers including Django administration (basic "
+"suite configuration)"
+msgstr ""
+
+#: ../../user_groups_organization.md:19
+msgid ""
+"Admin2: user with full powers excluding those of Django administration "
+"(basic configuration of the suite)"
+msgstr ""
+
+#: ../../user_groups_organization.md:20
+msgid ""
+"Editor1: administrator of one or more Cartographic MacroGroups for which "
+"it will be possible:"
+msgstr ""
+
+#: ../../user_groups_organization.md:21
+msgid "create users and/or user groups"
+msgstr ""
+
+#: ../../user_groups_organization.md:22
+msgid ""
+"create Cartographic Groups and, if necessary, assign them to an Editor 2 "
+"user"
+msgstr ""
+
+#: ../../user_groups_organization.md:23
+msgid "publish WebGis services and define their access policy"
+msgstr ""
+
+#: ../../user_groups_organization.md:24 ../../user_groups_organization.md:27
+msgid "activate and configure some functional modules"
+msgstr ""
+
+#: ../../user_groups_organization.md:25
+msgid ""
+"Editor2: administrator of one or more Cartographic Groups for which it "
+"will be possible:"
+msgstr ""
+
+#: ../../user_groups_organization.md:26
+msgid "publish/update WebGis services and define their access policy"
+msgstr ""
+
+#: ../../user_groups_organization.md:28
+msgid ""
+"Viewer: user with access permission in consultation on WebGis services "
+"characterized by authentication. This user can also use individual "
+"functional Modules if the relative permissions have been attributed to "
+"him"
+msgstr ""
+
+#: ../../user_groups_organization.md:29
+msgid ""
+"Anonymus User: user to be associated with WebGis services and/or "
+"functional modules with free access"
+msgstr ""
+
+#: ../../user_groups_organization.md:31
+msgid "Hierarchical organization of contents"
+msgstr ""
+
+#: ../../user_groups_organization.md:32
+msgid ""
+"The following paragraph is dedicated to better understanding the "
+"relationships between the different types of users and the different "
+"elements of the suite (MacroGroups, Map Groups, WebGis services ...)."
+msgstr ""
+
+#: ../../user_groups_organization.md:34
+msgid ""
+"In G3W-SUITE it is possible to manage Webgis services in a more or less "
+"structured way"
+msgstr ""
+
+#: ../../user_groups_organization.md:35
+msgid "an organizational level (Cartographic Groups):"
+msgstr ""
+
+#: ../../user_groups_organization.md:36
+msgid "two organizational levels (MacroGroups and Cartographic Groups)"
+msgstr ""
+
+#: ../../user_groups_organization.md:38
+msgid ""
+"These hierarchical levels can be used for organizational purposes "
+"(thematic containers) and/or functional (containers managed by different "
+"users/roles)."
+msgstr ""
+
+#: ../../user_groups_organization.md:40
+msgid ""
+"It is in fact possible to associate the two types of containers "
+"(MacroGroups and Cartographic Groups) to users with different "
+"roles/powers (Editor1 and Editor2) who will thus become the "
+"Administrators of all their contents."
+msgstr ""
+
+#: ../../user_groups_organization.md:42
+msgid ""
+"In particular Editor1 users will also be able to create/manage users who "
+"can be associated with the Cartographic Groups and WebGis services "
+"present in the reference MacroGroup."
+msgstr ""
+
+#: ../../user_groups_organization.md:44
+msgid ""
+"The cases relating to one or two organizational levels will be better "
+"described below."
+msgstr ""
+
+#: ../../user_groups_organization.md:46
+msgid "One organization level (absence of MacroGroups)"
+msgstr ""
+
+#: ../../user_groups_organization.md:47
+msgid ""
+"In case it is not need use MacroGruppi, the Admin user will be the only "
+"administrator of the suite and can therefore:"
+msgstr ""
+
+#: ../../user_groups_organization.md:48
+msgid "create users (individuals and/or groups) of various types"
+msgstr ""
+
+#: ../../user_groups_organization.md:49
+msgid "create Cartographic Groups"
+msgstr ""
+
+#: ../../user_groups_organization.md:50
+msgid "publish WebGis services within the individual Cartographic Groups"
+msgstr ""
+
+#: ../../user_groups_organization.md:51
+msgid "activate some specific modules on individual WebGis services"
+msgstr ""
+
+#: ../../user_groups_organization.md:53
+msgid "When creating a cartographic group, the Admin user can define:"
+msgstr ""
+
+#: ../../user_groups_organization.md:54
+msgid "the eventual user (individual/group) Editor 2 to associate the Group with"
+msgstr ""
+
+#: ../../user_groups_organization.md:55 ../../user_groups_organization.md:87
+msgid "Viewers users (individuals/groups) who will have access to this container"
+msgstr ""
+
+#: ../../user_groups_organization.md:59
+msgid ""
+"In the event that the Cartographic Group is assigned to Editor 2 (single "
+"or group users), they will may autonomously publish/update WebGis "
+"services inside in this container."
+msgstr ""
+
+#: ../../user_groups_organization.md:61
+msgid ""
+"Editor 2 users will also be able to define the access policies to the "
+"published WebGis services, limited to the Viewers users associated with "
+"the Cartographic Group by the Admin user."
+msgstr ""
+
+#: ../../user_groups_organization.md:63
+msgid ""
+"Even the Admin user can publish WebGis services within a Cartographic "
+"Group and, if necessary, associate them with a user (single and/or group)"
+" of Editor 2 type."
+msgstr ""
+
+#: ../../user_groups_organization.md:65
+msgid "Two organization levels (presence of MacroGroups)"
+msgstr ""
+
+#: ../../user_groups_organization.md:67
+msgid "Macrogroups can be created only by Admin users."
+msgstr ""
+
+#: ../../user_groups_organization.md:69
+msgid "Each Macrogroup can be associated with only one Editor1 user."
+msgstr ""
+
+#: ../../user_groups_organization.md:71
+msgid ""
+"Each MacroGroup can be considered as a watertight compartment within "
+"which the associated Editor 1 user (administrator of the MacroGroup), "
+"will be able to create users and user groups that will be made available "
+"to define access permissions for content (Groups Maps, WebGis services, "
+"functional modules …) of the reference MacroGroup only."
+msgstr ""
+
+#: ../../user_groups_organization.md:73
+msgid ""
+"In this way it will be possible to create totally independent entities, "
+"the MacroGroups, which will be managed exclusively by the user Editor 1 "
+"associated with them."
+msgstr ""
+
+#: ../../user_groups_organization.md:75
+msgid ""
+"Clearly the Admin users (1 and 2) will continue to have full powers on "
+"all groups present in the system."
+msgstr ""
+
+#: ../../user_groups_organization.md:79
+msgid "As previously specified, Editor 1 user will be able to:"
+msgstr ""
+
+#: ../../user_groups_organization.md:80
+msgid "create users (single and/or groups) of type Editor2 and Viewer"
+msgstr ""
+
+#: ../../user_groups_organization.md:81
+msgid "create Cartographic Groups within its Macro Group"
+msgstr ""
+
+#: ../../user_groups_organization.md:82
+msgid "publish WebGis services within his Cartographic Groups"
+msgstr ""
+
+#: ../../user_groups_organization.md:83
+msgid "activate specific modules on individual WebGis services"
+msgstr ""
+
+#: ../../user_groups_organization.md:85
+msgid "When Editor 1 user creates a Cartographic Group, he can define:"
+msgstr ""
+
+#: ../../user_groups_organization.md:86
+msgid "the eventual Editor2 user (individual/group) to associate with this Group"
+msgstr ""
+
+#: ../../user_groups_organization.md:89
+msgid "Summary table of access/administration policies"
+msgstr ""
+
+#: ../../user_groups_organization.md:90
+msgid ""
+"Below is a summary table of the powers associated with the different "
+"roles."
+msgstr ""
+

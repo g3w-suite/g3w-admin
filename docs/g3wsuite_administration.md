@@ -188,7 +188,7 @@ In this section it is possible to view the list of Cartographic Macrogroups, man
 
 **ATTENTION: use the Cartographic MacroGroups only if you need them.**
 
-See chapter [Hierarchical organization of WebGis services and types of Users (roles)] (https://g3w-suite.readthedocs.io/en/3.1.x/user_groups_organization.html#hierarchical-organization-of-webgis-services-and-types -of-users-roles) to learn more about this aspect.
+See chapter [Hierarchical organization of WebGis services and types of Users (roles)] (https://g3w-suite.readthedocs.io/en/3.2.x/user_groups_organization.html#hierarchical-organization-of-webgis-services-and-types -of-users-roles) to learn more about this aspect.
 
 For example, you can create a **Macrogroup** to collect a series of **Cartographic Groups** belonging to the same Administration (single Municipality within a Union of Municipalities) or more simply to have main containers that contain second level groupings (Groups).
 
@@ -270,7 +270,13 @@ Let's see in detail the various sub-sessions of the group creation form.
  * **`Description`**: description of the content
  * **`Language`***: interface language
  
-**REMEBER**
+#### Logo/Picture
+ * **`Header logo img`***: the logo to be displayed in the header del client cartografico
+ * **`Use logo image for client`** option
+ * **`Logo link`:** a eventual link to associate with the logo
+ 
+ **REMEBER**
+ 
 By default, the map client header, for each WebGis service, is composed of:
  * main title (if set at General Data management level)
  * logo and title associated with the **Cartographic Group**
@@ -280,11 +286,13 @@ If you select the **Use MacroGroup title and logo for the client** options, the 
  * main title (if set at General Data management level)
  * logo and title associated with the **Cartographic MacroGroup**
  * title of the WebGis service
-    
-#### Logo/Picture
- * **`Header logo img`***: the logo to be displayed in the header del client cartografico
- * **`Logo link`:** a eventual link to associate with the logo
-    
+ 
+ If you select the **Use Group logo for the client** options, the map client header, for each WebGis service, will instead consist of:
+ * main title (if set at General Data management level)
+ * title associated with the **Cartographic MacroGroup**
+ * logo associated with the **Cartographic Group** (if MacroGroup logo option is active this options takes precendence)
+ * title of the WebGis service
+     
 #### ACL Users
 **Access and modification powers are managed.**
 
@@ -328,9 +336,9 @@ In this box you can define:
    * **scaleline:** presence of the scale bar
    * **scale:** tool for defining the display scale
    * **mouseposition:** display of mouse position coordinates
-   * **geolocation:** geolocation tool (useful for consultation from tablet)
+   * **geolocation:** geolocation tool  (available only with https certificate)
    * **nominatin:** address search tools and toponyms based on OSM
-   * **streetview:** Google StreetView on your map
+   * **streetview:** Google StreetView on your map (available only with GoogleMaps API Key)
    * **length:** linear measuring instrument
    * **area:** surface measuring instrument
    * **addlayers:** tool for temporarily uploading GeoJson, KML and SHP (zipped) vector layers to WebGis
@@ -432,14 +440,18 @@ It is also possible not to define any active base layer at startup.
 
 The title associated with the WebGis service follows this definition logic:
  * Public title: if set
- * QGIS project title: if set on **Project properties**
+ * QGIS project title: if set on the **General session** of **QGIS project properties**
  * Name of the QGIS project file
 
 #### Options and actions
 
- * **`User QGIS project map start extent as webgis init extent `**: check this control if you want set initial extent from QGSI project initial extent
+ * **`User QGIS project map start extent as webgis init extent`**: check this control if you want set initial extent from QGSI project initial extent
  
 Otherwise the initial extension will correspond to the maximum one defined on the basis of the extension associated with the WMS capabilities of the QGIS project (**Project properties -> QGIS Server -> WMS capabilities (Advertised extent)**)
+
+ * **`Tab's TOC active as default`**: set tab's TOC (Layers, Base layers, Legend) open by default on startup of webgis service
+ 
+ * **`Automatic zoom to query result features`**: if in the results of a search there are only features of a layer, the webgis automatic zoom on their extension
  
 The next options allow you to define the type of WMS / WFS query to be carried out and the maximum number of results obtainable following a query.
  * **`Max feature to get for query`***: max number of feature to get for single or multiple mode
@@ -510,18 +522,20 @@ Next to each layer are a series of icons and checkboxes:
  * **Actions:** a series of icons dedicated to various functions
    * ![](images/manual/icon_cache.png) **Caching Layer:** allows you to activate and manage the cache of the single layer at the project level
    * ![](images/manual/icon_editing.png) **Editing layer:** shows if the online editing function is active on the layer and allows you to activate and define it
+   * ![](images/manual/icon_alpha_constraints.png) **Manage alphanumric constraints:** create or manage editing and visualization alphanumeric-constraints
    * ![](images/manual/icon_geoconstraints.png) **Manage geo-contsraints:** create or manage editing geo-constraints
    * ![](images/manual/icon_dataplotly.png) **QPlotly widget:** add or manage plots created with DataPlotly QGIS plugin
-   * ![](images/manual/icon_alpha_constraints.png) **Manage alphanumric constraints:** create or manage editing and visualization alphanumeric-constraints
    * ![](images/manual/icon_widget.png) **List of widgets:** shows how many widgets (eg searches) are associated with this layer and allows you to activate new ones
+   * ![](images/manual/icon_styles.png) **Manage layer styles:** manage multi-style layer
  * **No legend:** it allows to define if the layer must have published the legend at TOC level of the WebGis client
  * **Download:** allows the download of the geographic and not geographic layers in various formats
    * **Download as shp:** for geographic (shp) or not geographic (dbf) layers
+   * **Download as GPK:** for geographic or not geographic layers
    * **Download as xls:** for all types of layers, in .xls format
    * **Download as csv:** for all types of layers, in .csv format
    * **Download as gpx:** for geographic layers, in .gpx format
 
-The number above each Action icon shows if and how many related objects are present.
+**The number above each Action icon shows if and how many related objects are present.**
 
 The functions present in the **Actions session** are described below.
 
@@ -530,7 +544,7 @@ The functions present in the **Actions session** are described below.
 
 Through this icon it is possible to activate the online editing function on the individual layers and define the permissions for individual / groups of users
 
-See the dedicated paragraph in the [Editing on line session](https://g3w-suite.readthedocs.io/en/3.1.x/g3wsuite_editing.html).
+See the dedicated paragraph in the [Editing on line session](https://g3w-suite.readthedocs.io/en/3.2.x/g3wsuite_editing.html).
 
 ### ![](images/manual/icon_geoconstraints.png) ![](images/manual/icon_alpha_constraints.png) Display and editing constraints
 
@@ -555,13 +569,17 @@ In this last case you have to set:
 
 The newly created base layer will be available to be associated with those available for the various Cartographic Groups.
 
-### ![](images/manual/icon_dataplotly.png) Plots fom DataPlotly QGIS plugin
+### ![](images/manual/icon_dataplotly.png) Plots from DataPlotly QGIS plugin
 
 **View plots created using QGIS [DataPlotly](https://github.com/ghtmtt/DataPlotly) (a great plugin developed by [Matteo Ghetta](https://github.com/ghtmtt)) in the cartographic client.**
 
 The module, based on the [Plotly library](https://plotly.com/), manages **plots saved as xml**.
 
-The plots are connected to the layers defined on the QGIS project, in this way, as for the searches and the constraints, it is possible to activate the same plots on all WebGis services in which the reference layer is present.
+The plots are connected to the layers defined on the QGIS project, in this way, as for the searches and the constraints, it is possible to activate  (checkink the **Linked** checkbox) the same plots on all WebGis services in which the reference layer is present.
+
+It is also possible:
+ * download the plot XML file to reuse it in QGIS
+ * define the activation status of the plots when the WebGis service is started
 
 ![](images/manual/g3wsuite_administration_plots.png)
 
@@ -571,15 +589,26 @@ The title of the chart, defined at the plugin level, will be the unique identifi
 ![](images/manual/g3wsuite_client_plots.png)
 
 
-**Plots based on visible or selected geometries** will be available in the next version
+It will be possible to **filter plots based on the geometries visible on the map and/or selected by the user**.
+
+### ![](images/manual/icon_styles.png) Manage layer styles
+
+If **multi styles have been associated with the same layer** in the QGIS project, they will be exposed.
+
+It will be possible to associate new layers by **loading related QML files** and **set the style to be used as default**.
+
+![](images/manual/g3wsuite_administration_styles.png)
 
 
 ### ![](images/manual/icon_widget.png) Search widget setting
 In G3W-SUITE it is possible to create search widgets.
 
-**NB: in this release searching is not available on simple join (1:1/n:1) data**
+By default, searches can be built on individual vector layers based on the fields of the table associated with the layer.
 
-They will be saved by referring to the layer identifiers (for example the DB parameters: IP, DB name, schema, layer name).
+**NB: it is possible to create searches based on fields derived from simple joins (1:1/n:1) switching form WMS to QGIS API method.
+See [dedicated paragraph](https://g3w-suite.readthedocs.io/en/3.2.x/settings.html#g3w-client-search-endpoint).**
+
+Every search widget will be saved by referring to the layer identifiers (for example the DB parameters: IP, DB name, schema, layer name).
 
 This aspect allows, once a search widget for a layer has been created, to have it available on all the projects in which the layer is present, without having to rebuild the widget from scratch each time.
 
@@ -615,14 +644,15 @@ In the related form we can define:
              `AutoCompleteBox`: values ​​shown through auto-complete mode
    * **`Alias`:** alias assigned to the field that will appear in the search form
    * **`Description`:** description assigned to the field
-   * **`Comparison operator`:** comparison operator (**=, <,>,> <,> =, <=, LIKE, ILIKE**) through which the search query will be carried out. The LIKE and ILIKE operators will only be available for PostGis or SpatiaLite layers
+   * **`Comparison operator`:** comparison operator (**=, <,>,> <,> =, <=, LIKE, ILIKE**) through which the search query will be carried out.
    * **`Dependency`:** this parameter (optional) allows, only in the case of SelectBox widgets, to list the list of values ​​of a field filtered according to the value defined for the previous fields. The tool allows, for example, to display, in the drop-down menu dedicated to the choice of cadastral particles, only the particles connected to the sheet chosen in the previous option. This function is only available for PostGis or SpatiaLite layers.
 
 **Warning: in the case of fields with more than 100 unique values, the WMS service does not allow to obtain the complete list of values. In this case it is recommended not to use the `SelectBox` method**
 
-The button allows you to add additional fields for the construction of the search query currently manageable through AND/OR operators.
+**Alternatively, you can use the QGIS API as a search method to overcome this limitation. See [dedicated paragraph](https://g3w-suite.readthedocs.io/en/3.2.x/settings.html#g3w-client-search-endpoint).**
 
-![](images/manual/button_add.png)
+The button ![](images/manual/button_add.png) allows you to add additional fields for the construction of the search query currently manageable through **AND/OR operators**.
+
 
 The example below shows the compilation of the form for creating a search widget dedicated to a cadastral cartography layer.
 
@@ -643,7 +673,11 @@ The widget will already be **`connected`** and therefore **available in the WebG
 
 
 ## Multilinguage
-By default the suite manages two languages: **English** and **Italian**.
+y default the suite manages four languages: 
+ * English
+ * Italian
+ * Finnish
+ * Swedish
 
 Other languages ​​can be added.
 
@@ -658,11 +692,11 @@ Also for the Administration panel, through the same drop-down menu, it is possib
 ![](images/manual/language_admin.png)
 
 ### Front end
-Fixed front end content is already available in the two basic languages.
+Fixed front end content is already available in the four basic languages.
 
 Variable contents, i.e. user-definable contents, are instead translated:
 
- * Sessions **`Home`**, **`About`**, **`Maps`** and **`Login`**: content that can be defined and translated in the [**Edit General Data**](https://g3w-suite.readthedocs.io/en/3.1.x/g3wsuite_administration.html#front-end-portal-customization) session of the Control Panel Administration
+ * Sessions **`Home`**, **`About`**, **`Maps`** and **`Login`**: content that can be defined and translated in the [**Edit General Data**](https://g3w-suite.readthedocs.io/en/3.2.x/g3wsuite_administration.html#front-end-portal-customization) session of the Control Panel Administration
  * Sessions **`MacroGroups Cartogarfici`**, **`Groups Cartogarfici`** and **`WebGis Services`**: contents definable and translatable in the form defining these elements, limited to the items:
    * **Public Title**
    * **Description**

@@ -18,28 +18,29 @@ Through the tutorials it will be possible to:
 
 # Download the demo data
 
-The tutorial is based on predefined data and QGIS 3.10 LTR project **downloadable from <a href="https://drive.google.com/file/d/1iKDZ7UFelisiAGI720U0EB2dog2SOoGd/view?usp=sharing" target="_blank">this link</a>**.
+The tutorial is based on predefined data and QGIS 3.16.x LTR project **downloadable from <a href="https://drive.google.com/file/d/1iKDZ7UFelisiAGI720U0EB2dog2SOoGd/view?usp=sharing" target="_blank">this link</a>**.
 
-The .zip file contains the **`G3W-SUITE`** directory with two sub directories:
+The .zip file contains the **`G3W-SUITE`** directory with three sub directories:
  * **`projects`:** containing a QGIS project (**`buildings_management.qgz`**) already optimized for the tutorial
  * **`project_data/spatialite`**: containing a SpatiaLite DB with basic data (**`build_management.sqlite`**)
+ * **`plots`**: containing a a series of plots created with the **DataPlotly** plugin and saved in xml format
 
 ![](images/manual/demo_zip_file.png)
 
 Inside the **`build_management.sqlite` SpatiaLite DB** there are the following layers:
  * **`buildings` (polygon layer):** reference layer for editing aspects
  * **`maintenance_works` (alphanumeric table):** with the maintenance interventions associated with the individual buildings
- * **`roads` (linear layer):** a simple road network
+ * **`buildings_rating` (alphanumeric table):** with the annual assessments relating to individual buildings
  * **`work_areas` (polygon layer):** with the perimeter of work areas to be used to define any geo-constraints
 
 **IMPORTANT: a copy of this data are present on the server, you can not change your local data copy**
 
-The project (**based on QGIS LTR 3.10**) foresees:
+The project (**based on QGIS LTR 3.16.x**) foresees:
  * a **dressing categorized by the `buildings` layer** based on the categorical field **`type`**
- * the presence of a **1: n relationship** between the `buildings` layer and the alphanumeric **`maintenance_works`** table
+ * the presence of a **1: n relationship** between the **`buildings`** layer and the alphanumeric **`maintenance_works`** and **`buildings_rating`** tables
  * pre-developed **query forms** for the **`buildings`** layer and the **`maintenance_works`** table
- * predefined **editing widgets** for the fields of the two main layers: **`buildings`** and **`maintenance_works`**
- * two standard **print layout** in A4 and A3 and an **atlas print layout** based on buildgs layer features
+ * predefined **editing widgets** for the fields of the two main layers: **`buildings`** , **`maintenance_works`** and **`buildings_rating`** tables
+ * two standard **print layout** in A4 and A3 and an two **atlas print layout** based on buildgs layer features
 
 
 ![](images/manual/demo_qgis_project.png)
@@ -54,7 +55,7 @@ The publication system provides for the use of the **title of the project** as t
 
 # Access the online service
 
-To publish the project, you can **access the G3W-SUITE test application** via the following URL: [**`https://v31.g3wsuite.it`**](https://v31.g3wsuite.it)
+To publish the project, you can **access the G3W-SUITE test application** via the following URL: [**`https://v32.g3wsuite.it`**](https://v32.g3wsuite.it)
 
 To access the **Administration Panel** it is necessary to log in using the following credentials:
  * user: **`demo`**
@@ -164,6 +165,7 @@ The new session will show you the **list of the layer** present in the published
  * **No legend:** it allows to define if the layer must have published the legend at TOC level of the WebGis client
  * **Download:** allows the download of the geographic and not geographic layers in various formats
    * **Download as shp:** for geographic (shp) or not geographic (dbf) layers
+   * **Download as GPK:** for geographic or not geographic layers
    * **Download as xls:** for all types of layers, in .xls format
    * **Download as csv:** for all types of layers, in .csv format
    * **Download as gpx:** for geographic layers, in .gpx format
@@ -176,7 +178,7 @@ The number above each Action icon shows if and how many related objects are pres
 
 To create a search tool available at WebGis level, **choose the vector layer** on which to apply the tool and **click on the `Widget list icon` ![](images/manual/icon_widget.png)** 
 
-A series of **searches already carried out** for this layer by other users will probably be listed.
+**NB:** there may be a number of searches created by other users for the same layer.
 
 You can activate them by **clicking on the `Linked` chekbox**.
 
@@ -229,17 +231,42 @@ The module, based on the [Plotly library](https://plotly.com/), manages **plots 
 
 The plots are connected to the layers defined on the QGIS project, in this way, as for the searches and the constraints, it is possible to activate the same plots on all WebGis services in which the reference layer is present.
 
+For this reason, there may be some plots created by other users for the same layer.
+You can activate them by **clicking on the `Linked` chekbox**.
+
+
 ![](images/manual/g3wsuite_administration_plots.png)
 
 The title of the chart, defined at the plugin level, will be the unique identifier.
 
 Try to create your plots in the QGIS project, save them as .xml and upload them to view the resluts on the webgis.
 
-**Plots based on visible or selected geometries** will be available in the next version
-
 ![](images/manual/g3wsuite_qgis_plots.png)
 
 ![](images/manual/g3wsuite_client_plots.png)
+
+The graphs are filterable based on the:
+ * ![](images/manual/g3wclient_plots_map_filter.png) features visible on the map
+ * ![](images/manual/g3wclient_plots_selection_filter.png) filter based on the selected features
+ 
+These **filters** are also **reflected on the plots associated to the related data** (in 1:N mode) based on the visible and/or selected parent features.
+
+The **filter based on the map content** can be activated globally on all plots (icon at the top of the panel dedicated to charts) or on only some specific plots (icon placed at the level of the individual plots).
+
+The plots will automatically update after pan and zoom operations on the map
+
+If activated, the **filter based on the selected features** is automatically activated on all related plots (associated with the same layer and with the 1:N relationed tables)
+
+Appropriate **messages** at the single plots level will indicate the activation of these filters.
+
+
+If 1: N relationships are associated with the interrogated layer and plots have been activated on the referencing tables, it will also be possible to consult these plots by querying the referenced layer and clicking on the **Show relation charts** icon present in the results form.
+
+![](images/manual/g3wclient_attribute_view_plots.png)
+
+
+**Show relation charts:** display of graphs related to 1: N related data. Only if 1: N relationships are associated with the interrogated layer and graphics have been activated on the boy tables.
+
 
 
 # Editing on line
@@ -276,8 +303,15 @@ _**Forms and editing widgets are already defined on the project associated with 
    * **responsible** (text): text edit
    * **cost** (integer): range (1000-5000 step 1)
    * **validation** (boolean): checkbox (0/1)
+   
+ * **`Buildings rating`**
+   * **id** (integer - primary key): autogenerate
+   * **id_buildings** (text - relation key): text edit
+   * **date** (date): date (yyyy/MM/dd)
+   * **value** (integer): range (1000-4000 step 500)
+   * **year** (integer): range (2018-2022 step 1)
 
-To activate the editing function on webgis, access the list of layers and identify the two layers shown above.
+To activate the editing function on webgis, access the list of layers and identify the three layers shown above.
 
 ![](images/manual/g3wsuite_administration_project_layer_list.png)
 
@@ -299,7 +333,7 @@ Once the editing function is activated, updating the service, the **`Tools menu`
 
 ![](images/manual/editing_form2.png)
 
-For **further information** on the web editing function, read the [**dedicated chapter on the manual**](https://g3w-suite.readthedocs.io/en/3.1.x/g3wsuite_editing.html#online-editing-tools-at-cartographic-client-level)
+For **further information** on the web editing function, read the [**dedicated chapter on the manual**](https://g3w-suite.readthedocs.io/en/3.2.x/g3wsuite_editing.html#online-editing-tools-at-cartographic-client-level)
 
 # Personalize your demo
 
@@ -307,6 +341,6 @@ For **further information** on the web editing function, read the [**dedicated c
 
 Redefine attribute forms, aliases and editing widgets associated with the individual fields and reload the project to check the new settings.
 
-**It is advisable to consult the [paragraph dedicated](https://g3w-suite.readthedocs.io/en/3.1.x/g3wsuite_editing.html#activation-and-configuration) to the list and limitations of the individual editing widgets inheritable from the QGIS project.**
+**It is advisable to consult the [paragraph dedicated](https://g3w-suite.readthedocs.io/en/3.2.x/g3wsuite_editing.html#activation-and-configuration) to the list and limitations of the individual editing widgets inheritable from the QGIS project.**
 
 
