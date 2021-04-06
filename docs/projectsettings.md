@@ -37,11 +37,17 @@ This title will be used at the G3W-SUITE application level to uniquely identify 
 
 ### Data sources
 
-**This submenu defines the **querable layers** at the WebGis service level.**
-
-Check the **`Identifiable`** column for the layers that we want to query on the WebGis
-
 The option **`Automatically create transaction group where possible`** is automatically inherited in the online editing function.
+
+#### Layers Capabilities
+
+**This submenu defines the **querable and/or searchable layers** at the WebGis service level.**
+ * Check the **`Identifiable`** column if you want that the layer will be searchable on the WebGis
+ * Check the **`Searchable`** column if you want that the layer will be querable on the WebGis
+ 
+
+**NB: this differentiation is only possible by using the QGIS APIs such as Search URL endpoint.
+See [dedicated paragraph](https://g3w-suite.readthedocs.io/en/3.2.x/settings.html#g3w-client-search-endpoint).**
 
 
 ![](images/manual/datasources.png)
@@ -53,7 +59,7 @@ The option **`Automatically create transaction group where possible`** is automa
 
 This information, together with info about the structure of the attribute tables of the layers present in the project, will be displayed in the **Metadata session** of the cartographic client.
 
-See also [dedicated paragraph](https://g3w-suite.readthedocs.io/en/3.1.x/g3wsuite_client.html#metadata)
+See also [dedicated paragraph](https://g3w-suite.readthedocs.io/en/3.2.x/g3wsuite_client.html#metadata)
 
 ![](images/manual/qgisservercapabilities.png)
 
@@ -85,6 +91,9 @@ Two further aspects are manageable with regard to WMS capabilities
 
 ![](images/manual/qgisservergeneralaspects.png)
 
+##### WMTS Capabilities
+**In this section it is possible to define which `layers are exposed as WMTS services` defining the various options**
+
 ##### WFS Capabilities
 **In this section it is possible to define which `layers are exposed as WFS services`.**
 
@@ -95,6 +104,10 @@ The WFS service is needed if you want activate following types of query:
 It is sufficient to check only the **`Published`** column
  
  ![](images/manual/qgisservergeneralaspectswfs.png)
+ 
+ ##### WCS Capabilities
+**In this section it is possible to define which `rasters are exposed as WCS services`**
+
 
 ## Print layouts
 Any print layouts associated with the published QGIS project will automatically be associated with the published WebGis service.
@@ -105,13 +118,21 @@ Any print layouts associated with the published QGIS project will automatically 
 
 Any images present in the print layouts must be placed in the local **`project_data`** folder (in any subdirectory) and synchronized on the server.
 
-See also the dedicated paragraph [Geographic data synchronization on the server](https://g3w-suite.readthedocs.io/it/3.1.x/datamanagement.html#geographic-data-synchronization-on-the-server).
+See also the dedicated paragraph [Geographic data synchronization on the server](https://g3w-suite.readthedocs.io/it/3.2.x/datamanagement.html#geographic-data-synchronization-on-the-server).
 
 ## QGIS: layer properties
 ### Simbology
 The rendering style associated with the individual layers is replicated autonomously on the WebGis service.
 
 If external SVG icons are used (added to the basic ones of QGIS, via the **`Settings -> Options -> System -> SVG paths`**), these must be uploaded to the server (through the **`File Manager`** tool) in order to be used by QGIS Server.
+
+#### Layer style
+**The suite manages the presence of multiple styles associated with a layer.**
+
+It will be possible to dynamically choose the style on the cartographic client.
+
+It will be possible to manage the styles associated with a layer from the Administration component, also by **loading .qml file styles** and **setting the default style** among those present.
+
 
 #### Manage custom SVG icons
 In the installation procedure of the G3W-SUITE application, an **`svg`** named directory is created on the server.
@@ -131,11 +152,11 @@ Through this tool it is possible to manage SVG icons on the server in a simple a
 The SVG folder on the server must reflect the structure in any subfolders present locally.
 
 **NB:** The name of this directory is defined by the basic settings set during the installation of the suite.
-[See dedicated paragraph.](https://g3w-suite.readthedocs.io/en/3.1.x/settings.html#base-settings)
+[See dedicated paragraph.](https://g3w-suite.readthedocs.io/en/3.2.x/settings.html#base-settings)
 
 **PS:** remember that the **`File Manager`** tool also allows you to manage the synchronization of geographical data (in the case of using physical files) and the management of multimedia files. 
 
-See also [dedicated paragraph](https://g3w-suite.readthedocs.io/en/3.1.x/projectsettings.html#viewing-multimedia-content)
+See also [dedicated paragraph](https://g3w-suite.readthedocs.io/en/3.2.x/projectsettings.html#viewing-multimedia-content)
 
 ### Definition of the fields that can be consulted for each layer
 Within the QGIS project it is also possible to define, for each layer, which fields are available following query on the WebGis service.
@@ -147,6 +168,14 @@ This submenu lists the fields associated to the table of the vector.
 The check box relating to the **`WMS`** column defines whether or not the values contained in this field will be available following the query on the WebGis service.
 
  ![](images/manual/qgislayerproperties_wmsfields.png)
+ 
+### Legend
+
+The activation of the **`Filter legend by Map content`** option on the QGIS project is automatically applied to the derived WebGis service.
+
+### Groups of layers
+
+The activation on the QGIS project of the **`Mutually exclusive group`** option for the layers groups is automatically applied to the derived WebGis service.
  
 ### Viewing multimedia content
 Multimedia contents (images, pdf, web URL ...) can be viewed interactively on the map client following publication of the QGIS project.
@@ -183,11 +212,11 @@ This structural organization will be replicated directly on the query form on th
 ## Performances optimization
 
 ### Mandatory rules
-* PostGreSQL/PostGis and SQLite/Spatialite layers must have a **primary key**
+* PostGreSQL/PostGis, SQLite/Spatialite and GeoPKG layers must have a **primary key**
 * **not use numeric type** field in PostGreSQL/PostGis layer
 * the primary key field and all fields involved in search, join, 1:n relation or editing function have to be **published as WMS**
-* **don't use commas for aliases** associated with layers.
-* style settings defined at the auxiliary data level are not managed.
+* **don't use commas for aliases** associated with layers
+* style settings defined at the auxiliary data level are not supported
 
 ### Tips
 * when using rule-based/categorized classification **create indexes on the column(s) involved** in the rule expression

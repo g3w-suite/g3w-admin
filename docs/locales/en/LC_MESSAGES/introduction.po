@@ -1,13 +1,14 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) 2016 - 2020, GIS3W Team
+# Copyright (C) 2016 - 2021, GIS3W Team
 # This file is distributed under the same license as the G3W-SUITE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
 #
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: G3W-SUITE 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-15 15:32+0100\n"
+"POT-Creation-Date: 2021-03-17 17:36+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,15 +19,13 @@ msgstr ""
 
 #: ../../introduction.md:1
 msgid "Introduction"
-msgstr "Introduzione"
+msgstr ""
 
 #: ../../introduction.md:3
 msgid ""
 "G3W-SUITE is a modular client-server application for the management and "
 "publication of interactive map projects."
 msgstr ""
-"**G3W-SUITE è un’applicazione client-server modulare per la gestione e la"
-" pubblicazione di progetti cartografici interattivi**."
 
 #: ../../introduction.md:5
 msgid ""
@@ -34,95 +33,88 @@ msgid ""
 "publishing, in total autonomy and in a simple and fast way on a webgis "
 "client, cartographic projects realized with QGIS."
 msgstr ""
-"Il framework nasce dalla necessità di avere un software in grado di "
-"**pubblicare, in totale autonomia e in maniera semplice e veloce su un "
-"client webgis, progetti cartografici realizzati con "
-"[QGIS](https://qgis.org)**"
 
 #: ../../introduction.md:7
 msgid "The following aspects will be analyzed within the manual:"
-msgstr "All’interno del manuale saranno analizzati i seguenti aspetti:"
+msgstr ""
 
 #: ../../introduction.md:8
 msgid "organization and optimization of data and QGIS projects for web publishing"
 msgstr ""
-"**organizzazione ed ottimizzazione dati e progetti QGIS per la "
-"pubblicazione web**"
 
 #: ../../introduction.md:9
 msgid ""
 "organization of cartographic contents in a hierarchical way: macro groups"
 " and cartographic groups"
 msgstr ""
-"**organizzazione dei contenuti cartografici in maniera gerarchica: macro "
-"gruppi e gruppi cartografici**"
 
 #: ../../introduction.md:10
 msgid ""
 "user management and access control systems for consultation and "
 "management of webgis services"
 msgstr ""
-"**gestione utenti e sistemi di controllo degli accessi in consultazione e"
-" gestione dei servizi webgis**"
 
 #: ../../introduction.md:11
 msgid ""
 "management of the online editing function for the creation of web "
 "cartographic management systems"
 msgstr ""
-"**gestione della funzione di editing on line per la creazione di "
-"gestionali cartografici web**"
 
 #: ../../introduction.md:13
-#, fuzzy
 msgid ""
-"The current release (3.1) is compatible with QGIS 3.10.x LTR (Server and "
+"The current release (3.2) is compatible with QGIS 3.16.x LTR (Server and "
 "Desktop)."
-msgstr "**L'attuale release è compatibile con la versione **`3.10.x LTR`**.**"
+msgstr ""
 
-#: ../../introduction.md:19
-msgid "Version"
-msgstr "Versione"
+#: ../../introduction.md:15
+msgid ""
+"NB: The filter function (based on features selection) at the print level "
+"is supported only with QGIS 3.18"
+msgstr ""
 
 #: ../../introduction.md:21
+msgid "Version"
+msgstr ""
+
+#: ../../introduction.md:23
 msgid ""
-"At the moment is not used a classic versioning system for the suite, "
+"At the moment it's not used a classic versioning system for the suite, "
 "there are main 3 branches."
 msgstr ""
-"Al momento per la suite non è utilizzato un sistema di versionamento "
-"classico, sono presenti 3 branch principali di riferimento"
 
-#: ../../introduction.md:72
+#: ../../introduction.md:88
 msgid "Contributors"
 msgstr ""
 
-#: ../../introduction.md:73
+#: ../../introduction.md:89
 msgid "Walter Lorenzetti - Gis3W (@wlorenzetti)"
 msgstr ""
 
-#: ../../introduction.md:74
+#: ../../introduction.md:90
 msgid "Leonardo Lami - Gis3W (@leolami)"
 msgstr ""
 
-#: ../../introduction.md:75
+#: ../../introduction.md:91
 msgid "Francesco Boccacci - Gis3W (@volterra79)"
 msgstr ""
 
-#: ../../introduction.md:76
+#: ../../introduction.md:92
 msgid "Alessandro Pasotti - QCooperative (@elpaso)"
 msgstr ""
 
-#: ../../introduction.md:77
+#: ../../introduction.md:93
 msgid "Luigi Pirelli - QCooperative (@luipir)"
 msgstr ""
 
 #~ msgid ""
-#~ "The next version (whose release is "
-#~ "scheduled for July 2020) will be "
-#~ "compatible with QGIS 3.10 LTR."
+#~ "The current release (3.1) is compatible"
+#~ " with QGIS 3.10.x LTR (Server and "
+#~ "Desktop)."
 #~ msgstr ""
-#~ "La prossima versione (la cui release "
-#~ "è programmata per **Luglio 2020**) sarà"
-#~ " compatibile con la **versione `3.10 "
-#~ "LTR`**."
+
+#~ msgid ""
+#~ "At the moment is not used a "
+#~ "classic versioning system for the suite,"
+#~ " there are main 3 branches."
+#~ msgstr ""
 

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: G3W-SUITE 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-06 14:45+0100\n"
+"POT-Creation-Date: 2021-03-15 15:32+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,9 +21,10 @@ msgid "QGIS: project settings"
 msgstr "QGIS: impostazioni dei progetti cartografici"
 
 #: ../../projectsettings.md:3
+#, fuzzy
 msgid ""
-"This section describes how to optimize your QGIS projects for publication"
-" as a WebGis service."
+"This section describes how to optimize your QGIS projects to publish as a"
+" WebGis service."
 msgstr ""
 "_**In questo paragrafo si descrive come ottimizzare i propri progetti "
 "QGIS ai fine della pubblicazione come servizio WebGis.**_"
@@ -211,13 +212,12 @@ msgstr ""
 "singoli layer del progetto, verranno **visualizzate associate al servizio"
 " WebGis nella sessione Metadati**."
 
-#: ../../projectsettings.md:55
-msgid ""
-"See also [dedicated paragraph] (https://g3w-"
-"suite.readthedocs.io/en/latest/g3wsuite_client.html#metadata)"
+#: ../../projectsettings.md:55 ../../projectsettings.md:137
+msgid "See also dedicated paragraph"
 msgstr ""
-"Vedi anche [paragrafo dedicato](https://g3w-"
-"suite.readthedocs.io/it/latest/g3wsuite_client.html#metadata)"
+"[Vedi anche il paragrafo dedicato](https://g3w-"
+"suite.readthedocs.io/it/latest/projectsettings.html#viewing-multimedia-"
+"content)"
 
 #: ../../projectsettings.md:59
 msgid "Capabilities WMS - Advertised extent"
@@ -476,13 +476,6 @@ msgstr ""
 "anche la sincronizzazione dei dati geografici (nel caso di utilizzo di "
 "file fisici) e la gestione dei file multimediali."
 
-#: ../../projectsettings.md:137
-msgid "See also dedicated paragraph"
-msgstr ""
-"[Vedi anche il paragrafo dedicato](https://g3w-"
-"suite.readthedocs.io/it/latest/projectsettings.html#viewing-multimedia-"
-"content)"
-
 #: ../../projectsettings.md:139
 msgid "Definition of the fields that can be consulted for each layer"
 msgstr "Definizione dei campi consultabili per ogni layer"
@@ -723,4 +716,12 @@ msgstr ""
 
 #~ msgid "insert only one Map element in the print layouts."
 #~ msgstr "Inserire nei layout di stampa **un solo elemento `Mappa`**."
+
+#~ msgid ""
+#~ "See also [dedicated paragraph] (https"
+#~ "://g3w-"
+#~ "suite.readthedocs.io/en/latest/g3wsuite_client.html#metadata)"
+#~ msgstr ""
+#~ "Vedi anche [paragrafo dedicato](https://g3w-"
+#~ "suite.readthedocs.io/it/latest/g3wsuite_client.html#metadata)"
 

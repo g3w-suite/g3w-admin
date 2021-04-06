@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: G3W-SUITE 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-06 14:45+0100\n"
+"POT-Creation-Date: 2021-03-15 15:32+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -37,15 +37,15 @@ msgstr ""
 msgid "The color of the interface depends on the type of user logged in."
 msgstr "Il colore dell'interfaccia dipende dalla tipologia di utente loggato."
 
-#: ../../g3wsuite_client.md:8
+#: ../../g3wsuite_client.md:10
 msgid "The header contains the following elements:"
 msgstr ""
 
-#: ../../g3wsuite_client.md:9
+#: ../../g3wsuite_client.md:11
 msgid "Logo, title and subtitle, deriving from:"
 msgstr "**Logo, titolo e sottotitolo**, derivanti da:"
 
-#: ../../g3wsuite_client.md:10
+#: ../../g3wsuite_client.md:12
 msgid ""
 "main title (set at General Data level) or MacroGroup name, according to "
 "the settings"
@@ -53,15 +53,15 @@ msgstr ""
 "titolo principale (impostato a livello di Dati Generali) o nome "
 "MacroGruppo, in base alle impostazioni"
 
-#: ../../g3wsuite_client.md:11
+#: ../../g3wsuite_client.md:13
 msgid "Cartographic Group name"
 msgstr "nome Gruppo Cartografico"
 
-#: ../../g3wsuite_client.md:12
+#: ../../g3wsuite_client.md:14
 msgid "WebGis service title"
 msgstr "titolo servizio WebGis"
 
-#: ../../g3wsuite_client.md:13
+#: ../../g3wsuite_client.md:15
 msgid ""
 "Change map: which allows you to switch from one WebGis service to another"
 " (located within the same Cartographic Group) while maintaining extension"
@@ -71,21 +71,21 @@ msgstr ""
 "all'interno del solito Gruppo Tematico, ad un altro mantenendo estensione"
 " e scala di visualizzazione"
 
-#: ../../g3wsuite_client.md:14
+#: ../../g3wsuite_client.md:16
 msgid "User ID: if you have logged in to the system"
 msgstr ""
 "**Identificativo dell'utente:** nel caso sia stato effettuato l'accesso "
 "al sistema"
 
-#: ../../g3wsuite_client.md:15
+#: ../../g3wsuite_client.md:17
 msgid "Credits"
 msgstr "**Credits**"
 
-#: ../../g3wsuite_client.md:16
+#: ../../g3wsuite_client.md:18
 msgid "Home: to access the FrontEnd"
 msgstr "**Home:** per accedere al FrontEnd"
 
-#: ../../g3wsuite_client.md:17
+#: ../../g3wsuite_client.md:19
 msgid ""
 "Language: the choice of language is reflected in the individual menus of "
 "the map client and on the contents of the access portal. The languages "
@@ -95,7 +95,7 @@ msgstr ""
 "clienta e sui contenuti del portale di accesso. Le linguedisponibili sono"
 " quelli attivati dall'amministrazione."
 
-#: ../../g3wsuite_client.md:21
+#: ../../g3wsuite_client.md:23
 msgid ""
 "The Tools panel is located on the left and containing the following "
 "objects:"
@@ -103,43 +103,23 @@ msgstr ""
 "Il **`Pannello Strumenti`** é posto a sinistra e contiene i seguenti "
 "oggetti:"
 
-#: ../../g3wsuite_client.md:22
+#: ../../g3wsuite_client.md:24
 msgid "Metadata: content defined on QGIS project"
 msgstr "**Metadati:** contenuto definito su progetto QGIS"
 
-#: ../../g3wsuite_client.md:23
+#: ../../g3wsuite_client.md:25
 msgid "Print: printing tool based on the layouts defined on the QGIS project"
 msgstr ""
 "**Stampa:** strumento di stampa basato sui layout definiti su progetto "
 "QGIS"
 
-#: ../../g3wsuite_client.md:24
+#: ../../g3wsuite_client.md:26
 msgid "Search: with the search tools defined through the Administration panel"
 msgstr ""
 "**Ricerche:** con i tool di ricerca definiti tramite pannello di "
 "Amministrazione"
 
-#: ../../g3wsuite_client.md:25
-msgid "Map: containing:"
-msgstr "**Mappa:** contenente:"
-
-#: ../../g3wsuite_client.md:26 ../../g3wsuite_client.md:172
-msgid "Layers: structured list of layers, defined on the QGIS project"
-msgstr "**Strati:** elenco strutturato degli strati, definito su progetto QGIS"
-
 #: ../../g3wsuite_client.md:27
-msgid ""
-"Base: choice of the base map from those defined at the creation level of "
-"the Thematic Group"
-msgstr ""
-"**Basi:** scelta della mappa di base tra quelle definite a livello di "
-"creazione Gruppo Tematico"
-
-#: ../../g3wsuite_client.md:28 ../../g3wsuite_client.md:174
-msgid "Legend: graphic legend of the various layers"
-msgstr "**Legenda:** legenda grafica dei vari strati"
-
-#: ../../g3wsuite_client.md:29
 msgid ""
 "Tools: session that collects the various tools that may be activated on "
 "the WebGis service"
@@ -147,7 +127,27 @@ msgstr ""
 "**Strumenti:** sessione che raccogli i vari strumenti eventualmente "
 "attivati sul servizio WebGis"
 
-#: ../../g3wsuite_client.md:33
+#: ../../g3wsuite_client.md:28
+msgid "Map: containing:"
+msgstr "**Mappa:** contenente:"
+
+#: ../../g3wsuite_client.md:29 ../../g3wsuite_client.md:186
+msgid "Layers: structured list of layers, defined on the QGIS project"
+msgstr "**Strati:** elenco strutturato degli strati, definito su progetto QGIS"
+
+#: ../../g3wsuite_client.md:30
+msgid ""
+"Base: choice of the base map from those defined at the creation level of "
+"the Thematic Group"
+msgstr ""
+"**Basi:** scelta della mappa di base tra quelle definite a livello di "
+"creazione Gruppo Tematico"
+
+#: ../../g3wsuite_client.md:31
+msgid "Legend: graphic legend of the various layers"
+msgstr "**Legenda:** legenda grafica dei vari strati"
+
+#: ../../g3wsuite_client.md:35
 msgid ""
 "The centrally located map area presents the various navigation and map "
 "interaction controls, this controls are defined at the Cartographic Group"
@@ -157,31 +157,31 @@ msgstr ""
 "per la navigazione e l'interazione con la mappa, mapcontrols definiti a "
 "livello di Gruppo Cartografico."
 
-#: ../../g3wsuite_client.md:35
+#: ../../g3wsuite_client.md:37
 msgid "Navigation and interaction with the map"
 msgstr "Navigazione e interazione con la mappa"
 
-#: ../../g3wsuite_client.md:37
+#: ../../g3wsuite_client.md:39
 msgid "Map area"
 msgstr "Area di mappa"
 
-#: ../../g3wsuite_client.md:39
+#: ../../g3wsuite_client.md:41
 msgid "At the base of the map area there is an information bar showing:"
 msgstr "Il footer dell'area di mappa mostra:"
 
-#: ../../g3wsuite_client.md:40
+#: ../../g3wsuite_client.md:42
 msgid "display scale"
 msgstr "**la scala di visualizzazione** (modificabile)"
 
-#: ../../g3wsuite_client.md:41
+#: ../../g3wsuite_client.md:43
 msgid "mouse coordinates"
 msgstr "le **coordinate** della posizione del mouse"
 
-#: ../../g3wsuite_client.md:42
+#: ../../g3wsuite_client.md:44
 msgid "project projection system"
 msgstr "il **sistema di proiezione** del progetto"
 
-#: ../../g3wsuite_client.md:43
+#: ../../g3wsuite_client.md:45
 msgid ""
 "icon to copy the URL with the references to the extension currently "
 "displayed"
@@ -189,11 +189,11 @@ msgstr ""
 "un'icona per copiare l'**URL del servizio con riferiemnto "
 "all'estensione** visualizzata al momento"
 
-#: ../../g3wsuite_client.md:48
+#: ../../g3wsuite_client.md:52
 msgid "Map controls"
 msgstr "Controlli di mappa"
 
-#: ../../g3wsuite_client.md:50
+#: ../../g3wsuite_client.md:54
 msgid ""
 "The icons and description of the functions of the various MapControls "
 "activated at the thematic group level are shown below."
@@ -202,31 +202,31 @@ msgstr ""
 "dei diversi **`MapControls`** attivati a livello di Gruppo "
 "Cartografico.**"
 
-#: ../../g3wsuite_client.md:52
+#: ../../g3wsuite_client.md:56
 msgid "zoomtoextent: zoom to the initial extension"
 msgstr ""
 " ![ ](images/manual/icon_navigation_fitextent.png) **`zoomtoextent`:** "
 "zoom all'estensione iniziale"
 
-#: ../../g3wsuite_client.md:53
+#: ../../g3wsuite_client.md:57
 msgid "zoom: zoom in and zoom out"
 msgstr ""
 " ![ ](images/manual/icon_navigation_zoomin.png) **`zoom`:** zoom in e "
 "zoom out"
 
-#: ../../g3wsuite_client.md:54
+#: ../../g3wsuite_client.md:58
 msgid "zoombox: zoom tool based on drawing a rectangle"
 msgstr ""
 " ![ ](images/manual/icon_navigation_zoomtobox.png) **`zoombox`:** "
 "strumento di zoom basato su disegno di un rettangolo"
 
-#: ../../g3wsuite_client.md:55
+#: ../../g3wsuite_client.md:59
 msgid "query: puntual query of geographical layers"
 msgstr ""
 " ![ ](images/manual/icon_navigation_querylayer.png) **`query`:** "
 "interrogazione puntuale strati geografici"
 
-#: ../../g3wsuite_client.md:56
+#: ../../g3wsuite_client.md:60
 msgid ""
 "querybbox: query via bounding box - N.B. for the layers to be queried "
 "according to this method it is necessary that they are published as WFS "
@@ -236,7 +236,7 @@ msgstr ""
 "interrogazione tramite box degli strati - **N.B.** gli strati "
 "interrogabili devono essere pubblicati come servizi WFS sul progetto QGIS"
 
-#: ../../g3wsuite_client.md:57
+#: ../../g3wsuite_client.md:61
 msgid ""
 "querybypolygon: it will be possible to automatically query the features "
 "of one or more layers that fall within a polygonal element of a guide "
@@ -250,37 +250,37 @@ msgstr ""
 "**N.B.** gli strati interrogabili devono essere pubblicati come servizi "
 "WFS sul progetto QGIS"
 
-#: ../../g3wsuite_client.md:58
+#: ../../g3wsuite_client.md:62
 msgid "geolocation: geolocation tool (useful for consultation from tablet)"
 msgstr ""
 " ![ ](images/manual/icon_navigation_geolocation.png) **`geolocation`:** "
 "strumento di geolocalizzazione (utile per consultazione da tablet)"
 
-#: ../../g3wsuite_client.md:59
+#: ../../g3wsuite_client.md:63
 msgid "nominatin: search tools for addresses and toponyms based on OSM"
 msgstr ""
 " ![ ](images/manual/icon_navigation_nominatim.png) **`nominatin`:** "
 "strumenti ricerca indirizzi e toponimi basato su OSM"
 
-#: ../../g3wsuite_client.md:60
+#: ../../g3wsuite_client.md:64
 msgid "streetview: Google StreetView on your map"
 msgstr ""
 " ![ ](images/manual/icon_navigation_streetview.png) **`streetview`:** "
 "StreetView di Google sulla tua mappa"
 
-#: ../../g3wsuite_client.md:61
+#: ../../g3wsuite_client.md:65
 msgid "length: linear measuring instrument"
 msgstr ""
 " ![ ](images/manual/icon_navigation_lunghezza.png) **`lunghezza`:** "
 "strumento di misura di tratti lineari"
 
-#: ../../g3wsuite_client.md:62
+#: ../../g3wsuite_client.md:66
 msgid "area: tool for measuring surfaces"
 msgstr ""
 " ![ ](images/manual/icon_navigation_area.png) **`area`:** strumento di "
 "misura di superfici"
 
-#: ../../g3wsuite_client.md:63
+#: ../../g3wsuite_client.md:67
 msgid ""
 "addlayers: tool for temporarily uploading GeoJson ,KML and SHP (zipped) "
 "vector layers to WebGis"
@@ -289,13 +289,13 @@ msgstr ""
 "strumento per caricare temporaneamente su WebGis strati vettoriali "
 "GeoJson ,KML e SHP (zippati)"
 
-#: ../../g3wsuite_client.md:64
+#: ../../g3wsuite_client.md:68
 msgid "snapshot: tool for taking snapshots of the map area"
 msgstr ""
 " ![ ](images/manual/icon_navigation_snapshot.png) **`snapshot`:** "
 "strumento per realizzare snapshot dell’area di mappa"
 
-#: ../../g3wsuite_client.md:66
+#: ../../g3wsuite_client.md:70
 msgid ""
 "It should be noted that the query function acts, by default, with the "
 "coring method, providing information relating to all the layers "
@@ -306,22 +306,24 @@ msgstr ""
 " che sottostanno al punto in cui si clicca con il mouse o si disegna un "
 "riquadro."
 
-#: ../../g3wsuite_client.md:68
+#: ../../g3wsuite_client.md:72
 msgid "To query a single layer, it must be previously selected at the TOC level."
 msgstr ""
 "Per interrogare un singolo layer occorre che questo sia precedentemente "
 "selezionato a livello di TOC."
 
-#: ../../g3wsuite_client.md:70
+#: ../../g3wsuite_client.md:74
+#, fuzzy
 msgid ""
 "Remember that query modes based on querybbox and querybypolygon require "
-"the publication of the layers as WFS services at the QGIS project level."
+"the publication of all the layers involved as WFS services at the QGIS "
+"project level."
 msgstr ""
 "Si ricorda che le modalità di interrogazione  basate su **querybbox** e "
 "**querybypolygon** necessitano della pubblicazione dei layer come servizi"
 " WFS a livello di progetto QGIS."
 
-#: ../../g3wsuite_client.md:72
+#: ../../g3wsuite_client.md:76
 msgid ""
 "NB: Remember that, after viewing the results, it will be possible to zoom"
 " on the feature associated with the individual results only if the option"
@@ -334,11 +336,11 @@ msgstr ""
 "**`Aggiungi la geometria alla risposta dell'oggetto`** a livello di menù "
 "**`Progetto → Proprietà Progetto, sessione QGIS Server`**."
 
-#: ../../g3wsuite_client.md:74
+#: ../../g3wsuite_client.md:78
 msgid "Attributes form"
 msgstr "Form dei risultati"
 
-#: ../../g3wsuite_client.md:76
+#: ../../g3wsuite_client.md:80
 msgid ""
 "In the QGIS project (Vector properties → Attributes Form), you can create"
 " custom attribute forms (tabs, groups ...)"
@@ -348,7 +350,7 @@ msgstr ""
 "la visualizzazione strutturata dei risultati  di un interrogazione "
 "(schede, gruppi...)"
 
-#: ../../g3wsuite_client.md:78
+#: ../../g3wsuite_client.md:82
 msgid ""
 "The same structured form will be reported at the query level on the "
 "cartographic client."
@@ -356,7 +358,11 @@ msgstr ""
 "Lo stesso form sarà riportato a livello di interrogazione sul client "
 "cartografico."
 
-#: ../../g3wsuite_client.md:82
+#: ../../g3wsuite_client.md:84 ../../g3wsuite_client.md:207
+msgid "The window is resizable."
+msgstr ""
+
+#: ../../g3wsuite_client.md:88
 msgid ""
 "Any links to photos will determine the display of a clickable preview, "
 "any links to links or other multimedia content will determine the display"
@@ -367,7 +373,7 @@ msgstr ""
 "multimediali determineranno la visualizzazione del tasto  Apri  che "
 "permetterà al consultazione del collegamento."
 
-#: ../../g3wsuite_client.md:84
+#: ../../g3wsuite_client.md:90
 msgid "For further information on this point, see the dedicated paragraph."
 msgstr ""
 "Per approfondimenti su questo punto vedi il paragrafo [**Visualizzazione "
@@ -375,47 +381,47 @@ msgstr ""
 "suite.readthedocs.io/it/latest/projectsettings.html#viewing-multimedia-"
 "content)."
 
-#: ../../g3wsuite_client.md:86
+#: ../../g3wsuite_client.md:92
 msgid "The orange bar above the query results shows the following icons:"
 msgstr ""
 
-#: ../../g3wsuite_client.md:89
+#: ../../g3wsuite_client.md:95
 msgid ""
 "Zoom to features: if the function is activated on the Properties of the "
 "QGIS project"
 msgstr ""
 
-#: ../../g3wsuite_client.md:90
+#: ../../g3wsuite_client.md:96
 msgid "Show relations (1: N): if present on the GQIS project"
 msgstr ""
 
-#: ../../g3wsuite_client.md:91
+#: ../../g3wsuite_client.md:97
 msgid "Download Shapefile: if activated in the administration session"
 msgstr ""
 
-#: ../../g3wsuite_client.md:92
+#: ../../g3wsuite_client.md:98
 msgid "Download GPX: if activated in the administration session"
 msgstr ""
 
-#: ../../g3wsuite_client.md:93
+#: ../../g3wsuite_client.md:99
 msgid "Download SCV download: if activated in the administration session"
 msgstr ""
 
-#: ../../g3wsuite_client.md:94
+#: ../../g3wsuite_client.md:100
 msgid "Download XLS: if activated in the administration session"
 msgstr ""
 
-#: ../../g3wsuite_client.md:95
+#: ../../g3wsuite_client.md:101
 msgid ""
 "Print Atlas: prints the atlas sheet (if set on QGIS project) related to "
 "the queried feature"
 msgstr ""
 
-#: ../../g3wsuite_client.md:97
+#: ../../g3wsuite_client.md:103
 msgid "Display of 1:n relation data"
 msgstr "Visualizzazione di dati relazionati in modalità 1:N"
 
-#: ../../g3wsuite_client.md:99
+#: ../../g3wsuite_client.md:105
 msgid ""
 "In the event that, at the QGIS project level, one or more type 1: n "
 "relationships have been associated with a layer, the icon View "
@@ -427,7 +433,7 @@ msgstr ""
 "risultati sarà presente l’icona **Visualizza relazioni** "
 "![](images/manual/icon_relations.png)"
 
-#: ../../g3wsuite_client.md:101
+#: ../../g3wsuite_client.md:107
 msgid ""
 "By clicking on the icon you will access the list of relationships present"
 " and, from these, the list of child records associated with the "
@@ -439,13 +445,13 @@ msgstr ""
 "In caso di una sola relazione 1:n verranno visualizzati direttamente i "
 "layer figli della relazione in oggetto."
 
-#: ../../g3wsuite_client.md:103
+#: ../../g3wsuite_client.md:109
 msgid ""
 "The icon to the left of each record allows you to switch from the classic"
 " table view to the one based on any form defined on the QGIS project"
 msgstr ""
 
-#: ../../g3wsuite_client.md:105
+#: ../../g3wsuite_client.md:111
 msgid ""
 "A filter, applied generically to the contents of all fields, will allow "
 "you to filter the list of child records."
@@ -453,7 +459,7 @@ msgstr ""
 "Un filtro, applicato genericamente ai contenuti di tutti i campi, "
 "permetterà di filtrare la lista dei records figli."
 
-#: ../../g3wsuite_client.md:109
+#: ../../g3wsuite_client.md:115
 msgid ""
 "In the case of links to multimedia contents, the previews of the images "
 "and/or the Open button will be displayed for consultation of different "
@@ -463,15 +469,15 @@ msgstr ""
 "**visualizzabili le anteprime delle immagini e/o il tasto  Apri**  per la"
 " consultazione di diversa tipologia di contenuto."
 
-#: ../../g3wsuite_client.md:111
+#: ../../g3wsuite_client.md:117
 msgid "Tools panel"
 msgstr "Pannello Strumenti"
 
-#: ../../g3wsuite_client.md:112
+#: ../../g3wsuite_client.md:118
 msgid "Metadata"
 msgstr "Metadati"
 
-#: ../../g3wsuite_client.md:113
+#: ../../g3wsuite_client.md:119
 msgid ""
 "The metadata reported in this session derive from those set at the QGIS "
 "project level."
@@ -479,7 +485,7 @@ msgstr ""
 "I Metadati riportati in questa sessione derivano da quelli impostati a "
 "livello di progetto QGIS."
 
-#: ../../g3wsuite_client.md:115
+#: ../../g3wsuite_client.md:121
 msgid ""
 "This content is divided into three sessions: General, Space Info and "
 "Layers."
@@ -487,7 +493,7 @@ msgstr ""
 "Tale contenuto è diviso in tre sessioni: **Generale, Info Spaziali e "
 "Strati**."
 
-#: ../../g3wsuite_client.md:116
+#: ../../g3wsuite_client.md:122
 msgid ""
 "General: reports the metadata defined on the QGIS project in the item: "
 "Project →  Properties (QGIS Server session, Service Capabilities) In case"
@@ -499,7 +505,7 @@ msgstr ""
 " in questa sessione è presente anche l'URL del servizio WMS di tael "
 "progetto."
 
-#: ../../g3wsuite_client.md:118
+#: ../../g3wsuite_client.md:124
 msgid ""
 "Spatial: reports the EPSG code of the projection system associated with "
 "the QGIS project and the BoundingBox relating to the initial publication "
@@ -512,45 +518,45 @@ msgstr ""
 "Proprietà Progetto`**, sessione **`Server OWS, Capabilities WMS, "
 "Estensione pubblicata`**"
 
-#: ../../g3wsuite_client.md:119
+#: ../../g3wsuite_client.md:125
 msgid "Layers: reports simple metadata associated with the individual layers."
 msgstr ""
 "**`Layer`:** riporta i metadati associati ai singoli layer. Metadati "
 "definiti a livello delle Proprietà del layer"
 
-#: ../../g3wsuite_client.md:123
+#: ../../g3wsuite_client.md:129
 msgid "Charts"
 msgstr ""
 
-#: ../../g3wsuite_client.md:124
+#: ../../g3wsuite_client.md:130
 msgid ""
 "View graphs created using QGIS DataPlotly and activated at the admin "
 "session level."
 msgstr ""
 
-#: ../../g3wsuite_client.md:126
+#: ../../g3wsuite_client.md:132
 msgid "Check the plots in the list and view on the rigth panel"
 msgstr ""
 
-#: ../../g3wsuite_client.md:130
+#: ../../g3wsuite_client.md:136
 msgid ""
 "Plots based on visible or selected geometries will be available in the "
 "next version"
 msgstr ""
 
-#: ../../g3wsuite_client.md:132
+#: ../../g3wsuite_client.md:138
 msgid "Print"
 msgstr "Stampa"
 
-#: ../../g3wsuite_client.md:133
+#: ../../g3wsuite_client.md:139
 msgid "Printing tool based on layouts defined on QGIS project."
 msgstr "**Strumento di stampa basato sui layout definiti su progetto QGIS.**"
 
-#: ../../g3wsuite_client.md:135
+#: ../../g3wsuite_client.md:141
 msgid "The tool allows you to choose:"
 msgstr "Lo strumento permette di scegliere:"
 
-#: ../../g3wsuite_client.md:136
+#: ../../g3wsuite_client.md:142
 msgid ""
 "Template: print layout among those associated with the published QGIS "
 "project"
@@ -558,23 +564,23 @@ msgstr ""
 "**Template:** layout di stampa tra quelli associati al progetto QGIS "
 "pubblicato"
 
-#: ../../g3wsuite_client.md:137
+#: ../../g3wsuite_client.md:143
 msgid "Scale: print scale"
 msgstr "**Scala:** scala di stampa"
 
-#: ../../g3wsuite_client.md:138
+#: ../../g3wsuite_client.md:144
 msgid "DPI: print resolution"
 msgstr "**DPI:** risoluzione di stampa"
 
-#: ../../g3wsuite_client.md:139
+#: ../../g3wsuite_client.md:145
 msgid "Rotation: rotation angle"
 msgstr "**Rotazione:** angolo di rotazione"
 
-#: ../../g3wsuite_client.md:140
+#: ../../g3wsuite_client.md:146
 msgid "Format: print to PDF or JPEG"
 msgstr "**Formato:** stampa in PDF o JPEG"
 
-#: ../../g3wsuite_client.md:142
+#: ../../g3wsuite_client.md:148
 msgid ""
 "On the map, a lit rectangular area will allow you to define the print "
 "area."
@@ -582,44 +588,49 @@ msgstr ""
 "Sulla mappa un area rettangolare illuminata permetterà di definire l'area"
 " di stampa."
 
-#: ../../g3wsuite_client.md:146
+#: ../../g3wsuite_client.md:152
 msgid ""
 "If an Atlas type print layout is associated in the QGIS project, the "
 "layout reference will be available. The cards to be printed are defined "
 "by referring to the atlas identifier defined in the print layout."
 msgstr ""
 
-#: ../../g3wsuite_client.md:151
+#: ../../g3wsuite_client.md:157
 msgid "Search and Query Builder"
 msgstr ""
 
-#: ../../g3wsuite_client.md:153
+#: ../../g3wsuite_client.md:159
 msgid ""
 "A classic Query Builder is present at the Search menu level. Through this"
 " tool it is possible to:"
 msgstr ""
 
-#: ../../g3wsuite_client.md:155
+#: ../../g3wsuite_client.md:161
 msgid "carry out alphanumeric searches on geometric layers"
 msgstr ""
 
-#: ../../g3wsuite_client.md:156
+#: ../../g3wsuite_client.md:162
 msgid "save the query to reuse it until the end of the work session"
 msgstr ""
 
-#: ../../g3wsuite_client.md:157
+#: ../../g3wsuite_client.md:163
 msgid "edit a previously saved query"
 msgstr ""
 
-#: ../../g3wsuite_client.md:159
+#: ../../g3wsuite_client.md:165
+msgid "The saved query will be available until the browser cache is cleared"
+msgstr ""
+
+#: ../../g3wsuite_client.md:169
+#, fuzzy
 msgid ""
 "The Search menu contains the list of search tools defined through the "
-"Administration panel."
+"Administration panel and custom searches created with the Query Builder."
 msgstr ""
 "**Il menù Ricerche contiene la lista dei tool di ricerca definiti tramite"
 " pannello di Amministrazione.**"
 
-#: ../../g3wsuite_client.md:161
+#: ../../g3wsuite_client.md:173
 msgid ""
 "You choose the search you are interested in, fill in the required fields "
 "and click on the Search button."
@@ -627,7 +638,7 @@ msgstr ""
 "Si sceglie la ricerca di interessa, si compilano i campi richiesti e si "
 "clicca sul **tasto `Cerca`**."
 
-#: ../../g3wsuite_client.md:163
+#: ../../g3wsuite_client.md:175
 msgid ""
 "The panel with the list of results will open on the right side of the "
 "client, for each result the first three fields of the associated table "
@@ -637,7 +648,7 @@ msgstr ""
 "risultati**, per ogni risultato saranno visualizzati i primi tre campi "
 "della tabella associata."
 
-#: ../../g3wsuite_client.md:165
+#: ../../g3wsuite_client.md:177
 msgid ""
 "By positioning on the individual results, the corresponding features will"
 " be highlighted on the map; clicking on the individual results you can "
@@ -647,17 +658,21 @@ msgstr ""
 "evidenziata in mappa**; cliccando sui singoli risultati si potranno "
 "consultare tutti gli attributi associati alla feature."
 
-#: ../../g3wsuite_client.md:167
+#: ../../g3wsuite_client.md:179
 msgid ""
 "Zoom to features and download icons are available for results (single or "
 "cumulative)"
 msgstr ""
 
-#: ../../g3wsuite_client.md:171
+#: ../../g3wsuite_client.md:183
 msgid "Map"
 msgstr "Mappa"
 
-#: ../../g3wsuite_client.md:173
+#: ../../g3wsuite_client.md:185
+msgid "This session has three tabs:"
+msgstr ""
+
+#: ../../g3wsuite_client.md:187
 msgid ""
 "Base: choice of the base map from those defined at the Cartographic Group"
 " creation level"
@@ -665,45 +680,66 @@ msgstr ""
 "**Basi:** scelta della mappa di base tra quelle definite a livello di "
 "creazione Gruppo Cartografico"
 
-#: ../../g3wsuite_client.md:176
+#: ../../g3wsuite_client.md:188
+#, fuzzy
+msgid "Legend: graphic legend"
+msgstr "**Legenda:** legenda grafica dei vari strati"
+
+#: ../../g3wsuite_client.md:190
+#, fuzzy
 msgid ""
-"The right button on the name of the single layer shows the following "
-"items:"
+"In the list of layers, right click on the name of the single layer shows "
+"the following items:"
 msgstr ""
 "**Legenda:** legenda grafica dei vari strati. Il tasto destro sul nome "
 "del singolo layer mostra le seguenti voci:"
 
-#: ../../g3wsuite_client.md:177
+#: ../../g3wsuite_client.md:191
+msgid "Name and kind of geometry of the layer"
+msgstr ""
+
+#: ../../g3wsuite_client.md:192
 msgid "Zoom to layer: to zoom in on the extension of the layer"
 msgstr "**Zoom to layer:** per zoommare all'estensione del layer"
 
-#: ../../g3wsuite_client.md:178
-msgid "Open the attribute table: to consult the associated attribute table"
+#: ../../g3wsuite_client.md:193
+#, fuzzy
+msgid "Open attribute table: to consult the associated attribute table"
 msgstr ""
 "**Apri la tabella degli attributi:** per consultare la tabella degli "
 "attributi associata"
 
-#: ../../g3wsuite_client.md:179
+#: ../../g3wsuite_client.md:194
+#, fuzzy
 msgid ""
-"Download shapefile: to download the layer as a shapefile; available only "
-"for PostGis, SpatiaLite and GeoPackage layers, following activation of "
-"the function from the administration panel"
+"Download shapefile: to download the layer as a shapefile; function "
+"activable from the administration panel"
 msgstr ""
 "**Download shapefile:** per scaricare lo strato come shapefile; "
 "disponibile per layer PostGis, SpatiaLite e GeoPackage, in seguito ad "
 "attivazione della funzione dal pannello di amministrazione"
 
-#: ../../g3wsuite_client.md:180
+#: ../../g3wsuite_client.md:195
+#, fuzzy
 msgid ""
-"Download XLS: to download the layer as a XLS; available for the main "
-"layer formats, following activation of the function from the "
-"administration panel"
+"Download CSV: to download the layer as a CSV; function activable from the"
+" administration panel"
 msgstr ""
 "**Download shapefile:** per scaricare lo strato come XLS; disponibile per"
 " i principali formati, in seguito ad attivazione della funzione dal "
 "pannello di amministrazione"
 
-#: ../../g3wsuite_client.md:181
+#: ../../g3wsuite_client.md:196
+#, fuzzy
+msgid ""
+"Download XLS: to download the layer as a XLS; function activable from the"
+" administration panel"
+msgstr ""
+"**Download shapefile:** per scaricare lo strato come XLS; disponibile per"
+" i principali formati, in seguito ad attivazione della funzione dal "
+"pannello di amministrazione"
+
+#: ../../g3wsuite_client.md:197
 msgid ""
 "WMS URL: URL of the WMS service relative to the project or URL of the "
 "external WMS"
@@ -711,7 +747,7 @@ msgstr ""
 "**WMS URL:** URL del servizio WMS relativo al progetto, o URL del "
 "servizio WMS originario di eventuali layer WMS"
 
-#: ../../g3wsuite_client.md:183
+#: ../../g3wsuite_client.md:201
 msgid ""
 "The attribute table is equipped with paging function, highligth function "
 "and zooming to the associated features."
@@ -719,7 +755,7 @@ msgstr ""
 "La tabella degli attributi è dotata di **funzione di paginazione, "
 "highligth e zoom** alle features associate."
 
-#: ../../g3wsuite_client.md:185
+#: ../../g3wsuite_client.md:203
 msgid ""
 "In the case of links to multimedia content, the previews of the images "
 "and/or the Open button will be displayed for consultation of different "
@@ -729,7 +765,7 @@ msgstr ""
 "**visualizzabili le anteprime delle immagini e/o il tasto  Apri**  per la"
 " consultazione di diversa tipologia di contenuto."
 
-#: ../../g3wsuite_client.md:187
+#: ../../g3wsuite_client.md:205
 msgid ""
 "A filter, applied generically to the contents of all the fields, will "
 "allow you to filter the list of displayed records."
