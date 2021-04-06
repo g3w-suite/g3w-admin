@@ -102,3 +102,32 @@ class QplotlyTestViews(QdjangoTestBase):
         self.assertEqual(response.status_code, 404)
 
         self.client.logout()
+
+    def test_show_on_start_client_view(self):
+
+        # Create widget
+        qwidget = QplotlyWidget(xml=self.cities_histogram_plot_xml)
+        qwidget.save()
+
+        self.assertFalse(qwidget.show_on_start_client)
+
+        # get download url
+        url = reverse('qplotly-project-layer-widget-showonstartclient', kwargs={
+            'pk': qwidget.pk
+        })
+
+        # test login required
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+
+        # test set
+        self.assertTrue(self.client.login(username='admin01', password='admin01'))
+        print(url)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        jresponse = json.loads(response.content)
+        self.assertEqual(jresponse['status'], 'ok')
+
+        qwidget.refresh_from_db()
+        self.assertTrue(qwidget.show_on_start_client)

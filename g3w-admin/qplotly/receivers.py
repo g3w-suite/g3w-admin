@@ -149,6 +149,7 @@ def set_initconfig_value(sender, **kwargs):
                 'qgs_layer_id': layer.qgs_layer_id,
                 'selected_features_only': qplotly_widget.selected_features_only,
                 'visible_features_only': qplotly_widget.visible_features_only,
+                'show': qplotly_widget.show_on_start_client,
 
                 'plot': {
                     'type': settings.plot_type,

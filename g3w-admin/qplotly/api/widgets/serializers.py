@@ -61,7 +61,8 @@ class QplotlyWidgetSerializer(serializers.ModelSerializer):
             'type',
             'title',
             'layers',
-            'project'
+            'project',
+            'show_on_start_client'
         ]
 
         validators = [

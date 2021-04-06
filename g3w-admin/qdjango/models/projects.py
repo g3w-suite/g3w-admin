@@ -1,6 +1,6 @@
 import logging
 import os
-
+import time
 from autoslug import AutoSlugField
 from autoslug.utils import slugify
 from core.configs import *
@@ -30,24 +30,59 @@ logger = logging.getLogger(__name__)
 
 # Layer type with widget set capability
 TYPE_LAYER_FOR_WIDGET = (
-            'postgres',
-            'spatialite',
-            'ogr',
-            'mssql',
-            'virtual',
-            'oracle'
-        )
+    'postgres',
+    'spatialite',
+    'ogr',
+    'mssql',
+    'virtual',
+    'oracle'
+)
 
 # Layer type with download capability
 TYPE_LAYER_FOR_DOWNLOAD = (
-            'postgres',
-            'spatialite',
-            'ogr',
-            'mssql',
-            'virtual',
-            'oracle'
-        )
+    'postgres',
+    'spatialite',
+    'ogr',
+    'mssql',
+    'virtual',
+    'oracle'
+)
 
+def buildLayerTreeNodeObject(layerTreeNode):
+    """Creates a dictionary that represents the QGIS Project layer tree
+
+    :param layerTreeNode: QGIS layer tree node (usually from QgsProject.layerTreeRoot())
+    :type layerTreeNode: QgsLayerTreeNode
+    :return: the project's layer tree
+    :rtype: dict
+    """
+
+    toRetLayers = []
+    for node in layerTreeNode.children():
+
+        toRetLayer = {
+            'name': node.name(),
+            'expanded': node.isExpanded()
+        }
+
+        try:
+            # try for layer node
+            toRetLayer.update({
+                'id': node.layerId(),
+                'visible': node.itemVisibilityChecked()
+            })
+
+        except:
+
+            toRetLayer.update({
+                'mutually-exclusive': node.isMutuallyExclusive(),
+                'nodes': buildLayerTreeNodeObject(node),
+                'checked': node.isVisible(),
+
+            })
+
+        toRetLayers.append(toRetLayer)
+    return toRetLayers
 
 def get_project_file_path(instance, filename):
     """Custom name for uploaded project files."""
@@ -65,6 +100,31 @@ def get_thumbnail_path(instance, filename):
     ext = filename.split('.')[-1]
     filename = '{}_{}.{}'.format(group_name, project_name, ext)
     return os.path.join('thumbnails', filename)
+
+
+class QgisProjectFileLocker():
+    """Mutex to prevent multiple processes to write the same project concurrently"""
+
+    def __init__(self, project):
+        self.project = project
+        timeout = 10
+        timer = 0
+        while Project.objects.get(pk=self.project.pk).is_locked:
+            time.sleep(0.1)
+            timer += 1
+            if timer > timeout:
+                raise Exception('QGIS Project is locked! Cannot write.')
+
+        self.project.is_locked = True
+        self.project.save()
+
+    def __enter__(self):
+        return self.project
+
+    def __exit__(self, type, value, traceback):
+        self.project = Project.objects.get(pk=self.project.pk)
+        self.project.is_locked = False
+        self.project.save()
 
 
 class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
@@ -130,7 +190,7 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
         _('WMS use layer ids'), default=False)
 
     # client options:
-    #============================================
+    # ============================================
 
     feature_count_wms = models.IntegerField(
         _('Max feature to get for query'), default=5)
@@ -145,7 +205,7 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
                                                  default='single')
 
     context_base_legend = models.BooleanField(_('Context base legend'), default=False,
-                                help_text='Show only the symbols for the features falling into the requested area')
+                                              help_text='Show only the symbols for the features falling into the requested area')
 
     toc_tab_default = models.CharField(_("Tab's TOC active as default"), choices=CLIENT_TOC_TABS, max_length=40,
                                        default='layers', help_text="Set tab's TOC open by default on init client")
@@ -157,6 +217,12 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
 
     use_map_extent_as_init_extent = models.BooleanField(_('User QGIS project map start extent as webgis init extent'),
                                                         default=False)
+
+    is_dirty = models.BooleanField(_('The project has been modified by the G3W-Suite application after it was uploaded.'), editable=False,
+                                   default=False)
+
+    is_locked = models.BooleanField(_('Mutex to lock the project when it is being written by the G3W-Suite application. This field is used internally by the suite through a context manager'), editable=False,
+                                    default=False)
 
     class Meta:
         verbose_name = _('Project')
@@ -176,6 +242,25 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
 
         from qdjango.apps import get_qgs_project
         return get_qgs_project(self.qgis_file.path)
+
+    def update_qgis_project(self):
+        """Updates the QGIS project associated with the G3W-Suite project instance and sets the "dirty" flag.
+
+        WARNING: to prevent concurrent writes to the same project from different
+        processes use QgisProjectFileLocker mutex.
+
+        :return: True on success
+        :rtype: bool
+        """
+
+        if self.qgis_project.write():
+            self.is_dirty = True
+            # Update layers tree
+            self.layers_tree = str(buildLayerTreeNodeObject(self.qgis_project.layerTreeRoot()))
+            self.save()
+            return True
+        else:
+            return False
 
     def _permissionsToEditor(self, user, mode='add'):
 
@@ -427,7 +512,6 @@ class Layer(G3WACLModelMixins, models.Model):
     # layer extension
     extent = models.TextField(_('Layer extension'), null=True, blank=True)
 
-
     # for layer WMS/WMST: set if load direct from their servers or from local QGIS-server
     external = models.BooleanField(
         _('Get WMS/WMS externally'), default=False, blank=True)
@@ -441,7 +525,6 @@ class Layer(G3WACLModelMixins, models.Model):
         """
 
         layer = None
-        from qdjango.apps import get_qgs_project
         try:
             return self.project.qgis_project.mapLayers()[self.qgs_layer_id]
         except:
@@ -500,22 +583,24 @@ class Layer(G3WACLModelMixins, models.Model):
         :rtype: bool
         """
 
-        layer = self.qgis_layer
-        if layer is None:
-            return False
+        with QgisProjectFileLocker(self.project) as project:
 
-        sm = layer.styleManager()
-        result = sm.setCurrentStyle(style)
+            layer = self.qgis_layer
+            if layer is None:
+                return False
 
-        if result:
-            result = result and self.project.qgis_project.write()
+            sm = layer.styleManager()
+            result = sm.setCurrentStyle(style)
+
+            if result:
+                result = result and project.update_qgis_project()
 
         return result
 
     def rename_style(self, style, new_name):
         """Renames a style
 
-        :param style: name of the style to rename (must not be the current style)
+        :param style: name of the style to rename
         :type style: str
         :param new_name: new name of the style
         :type new_name: str
@@ -523,26 +608,30 @@ class Layer(G3WACLModelMixins, models.Model):
         :rtype: bool
         """
 
-        layer = self.qgis_layer
-        if layer is None:
-            return False
+        result = False
 
-        sm = layer.styleManager()
+        with QgisProjectFileLocker(self.project) as project:
 
-        if sm.currentStyle() == style or new_name in sm.styles():
-            return False
+            layer = self.qgis_layer
+            if layer is None:
+                return False
 
-        result = sm.renameStyle(style, new_name)
+            sm = layer.styleManager()
 
-        if result:
-            result = result and self.project.qgis_project.write()
+            if new_name in sm.styles():
+                return False
+
+            result = sm.renameStyle(style, new_name)
+
+            if result:
+                result = result and project.update_qgis_project()
 
         return result
 
     def replace_style(self, style, qml):
         """Replaces the style QML
 
-        :param style: name of the style to replace (must not be the current style)
+        :param style: name of the style to replace
         :type style: str
         :param qml:
         :type qml: str
@@ -550,58 +639,65 @@ class Layer(G3WACLModelMixins, models.Model):
         :rtype: bool
         """
 
-        layer = self.qgis_layer
-        if layer is None:
-            return False
+        result = False
 
-        sm = layer.styleManager()
+        with QgisProjectFileLocker(self.project) as project:
 
-        if sm.currentStyle() == style:
-            return False
+            layer = self.qgis_layer
+            if layer is None:
+                return False
 
-        # Validate!
-        doc = QDomDocument('qgis')
-        if not doc.setContent(qml)[0]:
-            return False
+            sm = layer.styleManager()
 
-        tmp_layer = layer.clone()
-        if not tmp_layer.importNamedStyle(doc)[0]:
-            return False
+            # Validate!
+            doc = QDomDocument('qgis')
+            if not doc.setContent(qml)[0]:
+                return False
 
-        del(tmp_layer)
+            tmp_layer = layer.clone()
+            if not tmp_layer.importNamedStyle(doc)[0]:
+                return False
 
-        new_style = QgsMapLayerStyle(qml)
-        result = sm.removeStyle(style) and sm.addStyle(style, new_style)
+            del(tmp_layer)
 
-        assert self.style(style).xmlData() == new_style.xmlData()
+            # If the style is current, just replace it in the layer
+            if sm.currentStyle() == style:
+                return layer.importNamedStyle(doc)[0]
+            else:
+                new_style = QgsMapLayerStyle(qml)
+                result = sm.addStyle(style, new_style)
+                result = sm.removeStyle(
+                    style) and sm.addStyle(style, new_style)
 
-        if result:
-            result = result and self.project.qgis_project.write()
+            if result:
+                assert self.style(style).xmlData() == new_style.xmlData()
+                result = result and project.update_qgis_project()
 
         return result
 
     def delete_style(self, style):
         """Deletes a style
 
-        :param style: name of the style to delete (must not be the current style)
+        :param style: name of the style to delete
         :type style: str
         :return: True on success
         :rtype: bool
         """
 
-        layer = self.qgis_layer
-        if layer is None:
-            return False
+        result = False
 
-        sm = layer.styleManager()
+        with QgisProjectFileLocker(self.project) as project:
 
-        if sm.currentStyle() == style:
-            return False
+            layer = self.qgis_layer
+            if layer is None:
+                return False
 
-        result = sm.removeStyle(style)
+            sm = layer.styleManager()
 
-        if result:
-            result = result and self.project.qgis_project.write()
+            result = sm.removeStyle(style)
+
+            if result:
+                result = result and project.update_qgis_project()
 
         return result
 
@@ -620,27 +716,31 @@ class Layer(G3WACLModelMixins, models.Model):
         if layer is None:
             return False
 
-        sm = layer.styleManager()
+        result = False
 
-        if sm.currentStyle() == style:
-            return False
+        with QgisProjectFileLocker(self.project) as project:
 
-        # Validate!
-        doc = QDomDocument('qgis')
-        if not doc.setContent(qml)[0]:
-            return False
+            sm = layer.styleManager()
 
-        tmp_layer = layer.clone()
-        if not tmp_layer.importNamedStyle(doc)[0]:
-            return False
+            if sm.currentStyle() == style:
+                return False
 
-        del(tmp_layer)
+            # Validate!
+            doc = QDomDocument('qgis')
+            if not doc.setContent(qml)[0]:
+                return False
 
-        new_style = QgsMapLayerStyle(qml)
-        result = sm.addStyle(style, new_style)
+            tmp_layer = layer.clone()
+            if not tmp_layer.importNamedStyle(doc)[0]:
+                return False
 
-        if result:
-            result = result and self.project.qgis_project.write()
+            del(tmp_layer)
+
+            new_style = QgsMapLayerStyle(qml)
+            result = sm.addStyle(style, new_style)
+
+            if result:
+                result = result and project.update_qgis_project()
 
         return result
 
@@ -658,7 +758,6 @@ class Layer(G3WACLModelMixins, models.Model):
             'maxx': rect.xMaximum(),
             'maxy': rect.yMaximum()
         }
-
 
     def __str__(self):
         return self.name

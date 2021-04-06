@@ -24,7 +24,6 @@ The following aspects will be analyzed within the manual:
 
 At the moment it's not used a classic versioning system for the suite, this branches are avialable.
 
-
 | Branch   | Python version | Django version | QGIS        | QGIS API | Status                 |
 |----------|----------------|----------------|-------------|----------|------------------------|
 | dev      | 3.6            | 2.2            | 3.16 (3.18) | Used     | Continuous development |
@@ -40,4 +39,5 @@ At the moment it's not used a classic versioning system for the suite, this bran
 * Francesco Boccacci - Gis3W ([@volterra79](https://github.com/volterra79))
 * Alessandro Pasotti - QCooperative ([@elpaso](https://github.com/elpaso))
 * Luigi Pirelli - QCooperative ([@luipir](https://github.com/luipir))
+* Mazano - Kartoza ([@NyakudyaA](https://github.com/NyakudyaA)) (Dockerization refactoring)
 

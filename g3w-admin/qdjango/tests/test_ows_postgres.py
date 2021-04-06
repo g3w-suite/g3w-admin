@@ -51,7 +51,7 @@ def check_qgis_patches():
     minor = int(str_ver[1:3])
     patch = int(str_ver[3:])
 
-    return (minor == 16 and patch >= 5) or (minor == 18 and patch >= 1) or minor > 18
+    return (minor == 16 and patch >= 6) or (minor == 18 and patch >= 1) or minor > 18
 
 
 @override_settings(CACHES={

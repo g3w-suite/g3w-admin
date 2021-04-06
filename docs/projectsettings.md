@@ -13,10 +13,10 @@ In the QGIS cartographic projects you can set some parameters and options that a
 * the possibility to **exclude some associated print layouts** on the WebGis service
 * which layers are **queryable and searchable**
 * which vector layers can be **queried using WFS**
-* which **fields** (for each vector data) and with which **aliases** are made visible following interrogation on the WebGis service 
+* which **fields** (for each vector data) and with which **aliases** are made visible following interrogation on the WebGis service
 * the **structure of the query form** visible on the WebGis service
 * the associated print layouts
-      
+
 The following paragraphs describe which QGIS project settings are more relevant in relation to the published WebGis service.
 
 ## QGIS: project property
@@ -24,7 +24,7 @@ From the **`Project → Properties`** menu, you can access the **`Project Proper
  * **General**
  * **Data sources**
  * **QGIS server**
- 
+
 ### General
 #### General Settings
 **In this section it is possible to define the title of the project, consequently the `title of the WebGis service`.**
@@ -65,7 +65,7 @@ See also [dedicated paragraph](https://g3w-suite.readthedocs.io/en/3.2.x/g3wsuit
 
 ##### Capabilities WMS - Advertised extent
 **In this section it is possible to define the `geographical extension` displayed when the WebGis service starts.**
-    
+
 To define it, set the desired geographical view on the map and then click on the **'Use Current Canvas Extent'** button.
 
 ![](images/manual/qgisserversetmapexpetent.png)
@@ -100,9 +100,9 @@ Two further aspects are manageable with regard to WMS capabilities
 The WFS service is needed if you want activate following types of query:
  * **bbox query**
  * **bypolygon query**
- 
+
 It is sufficient to check only the **`Published`** column
- 
+
  ![](images/manual/qgisservergeneralaspectswfs.png)
  
  ##### WCS Capabilities
@@ -154,7 +154,7 @@ The SVG folder on the server must reflect the structure in any subfolders presen
 **NB:** The name of this directory is defined by the basic settings set during the installation of the suite.
 [See dedicated paragraph.](https://g3w-suite.readthedocs.io/en/3.2.x/settings.html#base-settings)
 
-**PS:** remember that the **`File Manager`** tool also allows you to manage the synchronization of geographical data (in the case of using physical files) and the management of multimedia files. 
+**PS:** remember that the **`File Manager`** tool also allows you to manage the synchronization of geographical data (in the case of using physical files) and the management of multimedia files.
 
 See also [dedicated paragraph](https://g3w-suite.readthedocs.io/en/3.2.x/projectsettings.html#viewing-multimedia-content)
 
@@ -168,7 +168,7 @@ This submenu lists the fields associated to the table of the vector.
 The check box relating to the **`WMS`** column defines whether or not the values contained in this field will be available following the query on the WebGis service.
 
  ![](images/manual/qgislayerproperties_wmsfields.png)
- 
+
 ### Legend
 
 The activation of the **`Filter legend by Map content`** option on the QGIS project is automatically applied to the derived WebGis service.
@@ -176,7 +176,7 @@ The activation of the **`Filter legend by Map content`** option on the QGIS proj
 ### Groups of layers
 
 The activation on the QGIS project of the **`Mutually exclusive group`** option for the layers groups is automatically applied to the derived WebGis service.
- 
+
 ### Viewing multimedia content
 Multimedia contents (images, pdf, web URL ...) can be viewed interactively on the map client following publication of the QGIS project.
 
@@ -212,6 +212,7 @@ This structural organization will be replicated directly on the query form on th
 ## Performances optimization
 
 ### Mandatory rules
+
 * PostGreSQL/PostGis, SQLite/Spatialite and GeoPKG layers must have a **primary key**
 * **not use numeric type** field in PostGreSQL/PostGis layer
 * the primary key field and all fields involved in search, join, 1:n relation or editing function have to be **published as WMS**

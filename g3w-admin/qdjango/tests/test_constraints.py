@@ -21,6 +21,7 @@ from django.contrib.auth.models import Group as UserGroup
 from django.contrib.auth.models import User
 from django.test import Client
 from django.urls import reverse
+from guardian.shortcuts import assign_perm, get_anonymous_user
 from qgis.core import QgsVectorLayer, QgsFeatureRequest, QgsExpression, Qgis
 from qgis.PyQt.QtCore import QTemporaryDir
 
@@ -31,6 +32,8 @@ from qdjango.models import (
     SingleLayerConstraint,
     SessionTokenFilter,
     SessionTokenFilterLayer,
+    GeoConstraint,
+    GeoConstraintRule,
     Layer,
     Project
 )
@@ -195,6 +198,56 @@ class SingleLayerSubsetStringConstraints(TestSingleLayerConstraintsBase):
         self.assertEqual(constraint.qgs_layer_id, 'world20181008111156525')
         self.assertEqual(constraint.rule_count, 1)
 
+        # context view + editing ve
+        # =========================
+        constraint.for_editing = True
+        constraint.save()
+
+        self.assertEqual(ConstraintSubsetStringRule.get_constraints_for_user(
+            admin01, self.world)[0], rule)
+        constraint.active = False
+        constraint.save()
+        self.assertEqual(ConstraintSubsetStringRule.get_active_constraints_for_user(
+            admin01, self.world), [])
+        constraint.active = True
+        constraint.save()
+        self.assertEqual(ConstraintSubsetStringRule.get_active_constraints_for_user(
+            admin01, self.world)[0], rule)
+        self.assertEqual(ConstraintSubsetStringRule.get_rule_definition_for_user(
+            admin01, self.world.pk), "(NAME != 'ITALY')")
+
+        self.assertFalse(self._check_subset_string())
+
+        self.assertEqual(constraint.layer_name, 'world')
+        self.assertEqual(constraint.qgs_layer_id, 'world20181008111156525')
+        self.assertEqual(constraint.rule_count, 1)
+
+        # context editing e
+        # =========================
+        constraint.for_view = False
+        constraint.for_editing = True
+        constraint.save()
+
+        self.assertEqual(ConstraintSubsetStringRule.get_constraints_for_user(
+            admin01, self.world)[0], rule)
+        constraint.active = False
+        constraint.save()
+        self.assertEqual(ConstraintSubsetStringRule.get_active_constraints_for_user(
+            admin01, self.world), [])
+        constraint.active = True
+        constraint.save()
+        self.assertEqual(ConstraintSubsetStringRule.get_active_constraints_for_user(
+            admin01, self.world)[0], rule)
+
+        self.assertNotEqual(ConstraintSubsetStringRule.get_rule_definition_for_user(
+            admin01, self.world.pk), "(NAME != 'ITALY')")
+
+        self.assertEqual(ConstraintSubsetStringRule.get_rule_definition_for_user(
+            admin01, self.world.pk, context='e'), "(NAME != 'ITALY')")
+
+        # for OGC service only in v an ve context
+        self.assertTrue(self._check_subset_string())
+
     def test_group_constraint(self):
         """Test model with group constraint"""
 
@@ -352,6 +405,44 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
         self.assertEqual(constraint.qgs_layer_id, 'world20181008111156525')
         self.assertEqual(constraint.rule_count, 1)
 
+        # context view + editing ve
+        # =========================
+        constraint.for_editing = True
+        constraint.save()
+
+        self.assertEqual(ConstraintExpressionRule.get_active_constraints_for_user(
+            admin01, world)[0], rule)
+        self.assertEqual(ConstraintExpressionRule.get_rule_definition_for_user(
+            admin01, world.pk), "(NAME != 'ITALY')")
+        self.assertEqual(ConstraintExpressionRule.get_rule_definition_for_user(
+            admin01, world.pk, context='e'), "(NAME != 'ITALY')")
+
+        self.assertFalse(self._check_subset_string())
+
+        self.assertEqual(constraint.layer_name, 'world')
+        self.assertEqual(constraint.qgs_layer_id, 'world20181008111156525')
+        self.assertEqual(constraint.rule_count, 1)
+
+        # context editing e
+        # =========================
+        constraint.for_view = False
+        constraint.for_editing = True
+        constraint.save()
+
+        self.assertEqual(ConstraintExpressionRule.get_active_constraints_for_user(
+            admin01, world)[0], rule)
+        self.assertNotEqual(ConstraintExpressionRule.get_rule_definition_for_user(
+            admin01, world.pk), "(NAME != 'ITALY')")
+
+        self.assertEqual(ConstraintExpressionRule.get_rule_definition_for_user(
+            admin01, world.pk, context='e'), "(NAME != 'ITALY')")
+
+        self.assertTrue(self._check_subset_string())
+
+        self.assertEqual(constraint.layer_name, 'world')
+        self.assertEqual(constraint.qgs_layer_id, 'world20181008111156525')
+        self.assertEqual(constraint.rule_count, 1)
+
     def test_group_constraint(self):
         """Test model with group constraint"""
 
@@ -382,6 +473,53 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
             admin01, world.pk), "(NAME != 'ITALY')")
 
         self.assertFalse(self._check_subset_string())
+
+        # context view + editing ve
+        # =========================
+        constraint.for_editing = True
+        constraint.save()
+
+        self.assertEqual(ConstraintExpressionRule.get_constraints_for_user(
+            admin01, world)[0], rule)
+        constraint.active = False
+        constraint.save()
+
+        self.assertEqual(
+            ConstraintExpressionRule.get_active_constraints_for_user(admin01, world), [])
+        constraint.active = True
+        constraint.save()
+        self.assertEqual(ConstraintExpressionRule.get_active_constraints_for_user(
+            admin01, world)[0], rule)
+        self.assertEqual(ConstraintExpressionRule.get_rule_definition_for_user(
+            admin01, world.pk), "(NAME != 'ITALY')")
+
+        self.assertFalse(self._check_subset_string())
+
+        # context editing e
+        # =========================
+        constraint.for_view = False
+        constraint.for_editing = True
+        constraint.save()
+
+        self.assertEqual(ConstraintExpressionRule.get_constraints_for_user(
+            admin01, world)[0], rule)
+        constraint.active = False
+        constraint.save()
+        self.assertEqual(
+            ConstraintExpressionRule.get_active_constraints_for_user(admin01, world), [])
+        constraint.active = True
+        constraint.save()
+        self.assertEqual(ConstraintExpressionRule.get_active_constraints_for_user(
+            admin01, world)[0], rule)
+        self.assertNotEqual(ConstraintExpressionRule.get_rule_definition_for_user(
+            admin01, world.pk), "(NAME != 'ITALY')")
+
+        self.assertEqual(ConstraintExpressionRule.get_rule_definition_for_user(
+            admin01, world.pk, context='e'), "(NAME != 'ITALY')")
+
+        # for OWS service only for context v and ve
+        self.assertTrue(self._check_subset_string())
+
 
     def test_validate_sql(self):
         """Test rule validation"""
@@ -1324,3 +1462,375 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
 
         self.assertFalse(b'ROME' in response.content)
         self.assertFalse(b'BERLIN' in response.content)
+
+
+class TestGeoConstraintsServerFilters(TestSingleLayerConstraintsBase):
+    """For GeoConstraint filters"""
+
+    def test_geoconstraint_filter(self):
+        """Test GeoConstraint filter"""
+
+        # build the Geo Constraint
+        constraint = GeoConstraint(
+            layer=self.spatialite_points, constraint_layer=self.world, active=True)
+        constraint.save()
+
+        # assign permissions
+        assign_perm('view_project', self.test_viewer1, self.qdjango_project)
+        assign_perm('view_project', self.test_viewer1_3, self.qdjango_project)
+        assign_perm('view_project', self.test_gu_viewer1, self.qdjango_project)
+
+        # also to Anonymous user
+        assign_perm('view_project', get_anonymous_user(), self.qdjango_project)
+
+        ows_url = reverse('OWS:ows', kwargs={'group_slug': self.qdjango_project.group.slug,
+                                             'project_type': 'qdjango', 'project_id': self.qdjango_project.id})
+
+        # Make a request to the server
+        c = Client()
+        self.assertTrue(c.login(username='admin01', password='admin01'))
+        response = c.get(ows_url, {
+            'REQUEST': 'GetFeatureInfo',
+            'SERVICE': 'WMS',
+            'VERSION': '1.3.0',
+            'LAYERS': 'spatialite_points',
+            'CRS': 'EPSG:4326',
+            'BBOX': '18.77,-7.98,38.77,12.02',
+            'FORMAT': 'image/png',
+            'INFO_FORMAT': 'application/json',
+            'WIDTH': '100',
+            'HEIGHT': '100',
+            'QUERY_LAYERS': 'spatialite_points',
+            'FEATURE_COUNT': 1,
+            'FI_POINT_TOLERANCE': 10,
+            'I': '50',
+            'J': '50',
+        })
+
+        self.assertTrue(b'a point' in response.content)
+
+        c.logout()
+
+        # login as viewer1.3:
+        # get point into Italy and  point into Algeria without geoconstraint
+        self.assertTrue(c.login(username='viewer1.3', password='viewer1.3'))
+
+        response = c.get(ows_url, {
+            'REQUEST': 'GetFeatureInfo',
+            'SERVICE': 'WMS',
+            'VERSION': '1.3.0',
+            'LAYERS': 'spatialite_points',
+            'CRS': 'EPSG:4326',
+            'BBOX': '34.31,0.82,54.31,20.82',
+            'FORMAT': 'image/png',
+            'INFO_FORMAT': 'application/json',
+            'WIDTH': '100',
+            'HEIGHT': '100',
+            'QUERY_LAYERS': 'spatialite_points',
+            'FEATURE_COUNT': 1,
+            'FI_POINT_TOLERANCE': 10,
+            'I': '50',
+            'J': '50',
+        })
+
+        self.assertTrue(b'another point' in response.content)
+        c.logout()
+
+        self.assertTrue(c.login(username='viewer1', password='viewer1'))
+        response = c.get(ows_url, {
+            'REQUEST': 'GetFeatureInfo',
+            'SERVICE': 'WMS',
+            'VERSION': '1.3.0',
+            'LAYERS': 'spatialite_points',
+            'CRS': 'EPSG:4326',
+            'BBOX': '34.31,0.82,54.31,20.82',
+            'FORMAT': 'image/png',
+            'INFO_FORMAT': 'application/json',
+            'WIDTH': '100',
+            'HEIGHT': '100',
+            'QUERY_LAYERS': 'spatialite_points',
+            'FEATURE_COUNT': 1,
+            'FI_POINT_TOLERANCE': 10,
+            'I': '50',
+            'J': '50',
+        })
+
+        self.assertTrue(b'another point' in response.content)
+        c.logout()
+
+        # get point into Italy and not point into Algeria with geoconstraint
+        # rule for viewer1
+        rule_algeria = GeoConstraintRule(
+            constraint=constraint, user=self.test_viewer1, group=None, rule="NAME='ALGERIA'")
+        rule_algeria.save()
+
+        # for viewer1.3
+        rule_italy = GeoConstraintRule(
+            constraint=constraint, user=self.test_viewer1_3, group=None, rule="NAME='ITALY'")
+        rule_italy.save()
+
+        self.assertTrue(c.login(username='viewer1.3', password='viewer1.3'))
+
+        response = c.get(ows_url, {
+            'REQUEST': 'GetFeatureInfo',
+            'SERVICE': 'WMS',
+            'VERSION': '1.3.0',
+            'LAYERS': 'spatialite_points',
+            'CRS': 'EPSG:4326',
+            'BBOX': '34.31,0.82,54.31,20.82',
+            'FORMAT': 'image/png',
+            'INFO_FORMAT': 'application/json',
+            'WIDTH': '100',
+            'HEIGHT': '100',
+            'QUERY_LAYERS': 'spatialite_points',
+            'FEATURE_COUNT': 1,
+            'FI_POINT_TOLERANCE': 10,
+            'I': '50',
+            'J': '50',
+        })
+
+        self.assertTrue(b'another point' in response.content)
+        c.logout()
+
+        self.assertTrue(c.login(username='viewer1', password='viewer1'))
+        response = c.get(ows_url, {
+            'REQUEST': 'GetFeatureInfo',
+            'SERVICE': 'WMS',
+            'VERSION': '1.3.0',
+            'LAYERS': 'spatialite_points',
+            'CRS': 'EPSG:4326',
+            'BBOX': '34.31,0.82,54.31,20.82',
+            'FORMAT': 'image/png',
+            'INFO_FORMAT': 'application/json',
+            'WIDTH': '100',
+            'HEIGHT': '100',
+            'QUERY_LAYERS': 'spatialite_points',
+            'FEATURE_COUNT': 1,
+            'FI_POINT_TOLERANCE': 10,
+            'I': '50',
+            'J': '50',
+        })
+
+        self.assertFalse(b'another point' in response.content)
+        c.logout()
+
+        #For user group GU_VIEWER1: as user VIWER1.2
+
+        rule_algeria.user = None
+        rule_algeria.group = self.test_gu_viewer1
+        rule_algeria.save()
+
+        self.assertTrue(c.login(username='viewer1.3', password='viewer1.3'))
+
+        response = c.get(ows_url, {
+            'REQUEST': 'GetFeatureInfo',
+            'SERVICE': 'WMS',
+            'VERSION': '1.3.0',
+            'LAYERS': 'spatialite_points',
+            'CRS': 'EPSG:4326',
+            'BBOX': '18.77,-7.98,38.77,12.02',
+            'FORMAT': 'image/png',
+            'INFO_FORMAT': 'application/json',
+            'WIDTH': '100',
+            'HEIGHT': '100',
+            'QUERY_LAYERS': 'spatialite_points',
+            'FEATURE_COUNT': 1,
+            'FI_POINT_TOLERANCE': 10,
+            'I': '50',
+            'J': '50',
+        })
+
+        self.assertFalse(b'a point' in response.content)
+        c.logout()
+
+        self.assertTrue(c.login(username='viewer1', password='viewer1'))
+
+        response = c.get(ows_url, {
+            'REQUEST': 'GetFeatureInfo',
+            'SERVICE': 'WMS',
+            'VERSION': '1.3.0',
+            'LAYERS': 'spatialite_points',
+            'CRS': 'EPSG:4326',
+            'BBOX': '18.77,-7.98,38.77,12.02',
+            'FORMAT': 'image/png',
+            'INFO_FORMAT': 'application/json',
+            'WIDTH': '100',
+            'HEIGHT': '100',
+            'QUERY_LAYERS': 'spatialite_points',
+            'FEATURE_COUNT': 1,
+            'FI_POINT_TOLERANCE': 10,
+            'I': '50',
+            'J': '50',
+        })
+
+        self.assertTrue(b'a point' in response.content)
+
+        c.logout()
+
+        self.assertTrue(c.login(username='viewer1.2', password='viewer1.2'))
+
+        response = c.get(ows_url, {
+            'REQUEST': 'GetFeatureInfo',
+            'SERVICE': 'WMS',
+            'VERSION': '1.3.0',
+            'LAYERS': 'spatialite_points',
+            'CRS': 'EPSG:4326',
+            'BBOX': '18.77,-7.98,38.77,12.02',
+            'FORMAT': 'image/png',
+            'INFO_FORMAT': 'application/json',
+            'WIDTH': '100',
+            'HEIGHT': '100',
+            'QUERY_LAYERS': 'spatialite_points',
+            'FEATURE_COUNT': 1,
+            'FI_POINT_TOLERANCE': 10,
+            'I': '50',
+            'J': '50',
+        })
+
+        self.assertTrue(b'a point' in response.content)
+
+        response = c.get(ows_url, {
+            'REQUEST': 'GetFeatureInfo',
+            'SERVICE': 'WMS',
+            'VERSION': '1.3.0',
+            'LAYERS': 'spatialite_points',
+            'CRS': 'EPSG:4326',
+            'BBOX': '34.31,0.82,54.31,20.82',
+            'FORMAT': 'image/png',
+            'INFO_FORMAT': 'application/json',
+            'WIDTH': '100',
+            'HEIGHT': '100',
+            'QUERY_LAYERS': 'spatialite_points',
+            'FEATURE_COUNT': 1,
+            'FI_POINT_TOLERANCE': 10,
+            'I': '50',
+            'J': '50',
+        })
+
+        self.assertFalse(b'another point' in response.content)
+
+        # CHANGE CONTEXT FOR VIEWING AND EDITING
+        # ======================================
+        # Aspect same response for Viewer1.2
+
+        constraint.for_editing = True
+        constraint.save()
+
+        response = c.get(ows_url, {
+            'REQUEST': 'GetFeatureInfo',
+            'SERVICE': 'WMS',
+            'VERSION': '1.3.0',
+            'LAYERS': 'spatialite_points',
+            'CRS': 'EPSG:4326',
+            'BBOX': '18.77,-7.98,38.77,12.02',
+            'FORMAT': 'image/png',
+            'INFO_FORMAT': 'application/json',
+            'WIDTH': '100',
+            'HEIGHT': '100',
+            'QUERY_LAYERS': 'spatialite_points',
+            'FEATURE_COUNT': 1,
+            'FI_POINT_TOLERANCE': 10,
+            'I': '50',
+            'J': '50',
+        })
+
+        self.assertTrue(b'a point' in response.content)
+
+        response = c.get(ows_url, {
+            'REQUEST': 'GetFeatureInfo',
+            'SERVICE': 'WMS',
+            'VERSION': '1.3.0',
+            'LAYERS': 'spatialite_points',
+            'CRS': 'EPSG:4326',
+            'BBOX': '34.31,0.82,54.31,20.82',
+            'FORMAT': 'image/png',
+            'INFO_FORMAT': 'application/json',
+            'WIDTH': '100',
+            'HEIGHT': '100',
+            'QUERY_LAYERS': 'spatialite_points',
+            'FEATURE_COUNT': 1,
+            'FI_POINT_TOLERANCE': 10,
+            'I': '50',
+            'J': '50',
+        })
+
+        self.assertFalse(b'another point' in response.content)
+
+        c.logout()
+
+        # CHANGE CONTEXT FROM VIEWING TO EDITING
+        # ======================================
+
+        constraint.for_editing = True
+        constraint.for_view = False
+        constraint.save()
+
+        # with GeoConstraint Viewer1 can see only ALgeria point, with geoconstraint only editing can see every point
+        self.assertTrue(c.login(username='viewer1', password='viewer1'))
+
+        response = c.get(ows_url, {
+            'REQUEST': 'GetFeatureInfo',
+            'SERVICE': 'WMS',
+            'VERSION': '1.3.0',
+            'LAYERS': 'spatialite_points',
+            'CRS': 'EPSG:4326',
+            'BBOX': '34.31,0.82,54.31,20.82',
+            'FORMAT': 'image/png',
+            'INFO_FORMAT': 'application/json',
+            'WIDTH': '100',
+            'HEIGHT': '100',
+            'QUERY_LAYERS': 'spatialite_points',
+            'FEATURE_COUNT': 1,
+            'FI_POINT_TOLERANCE': 10,
+            'I': '50',
+            'J': '50',
+        })
+
+        self.assertTrue(b'another point' in response.content)
+
+        c.logout()
+
+        # for anonymous user non filtering
+        constraint.for_editing = True
+        constraint.for_view = False
+        constraint.save()
+
+        response = c.get(ows_url, {
+            'REQUEST': 'GetFeatureInfo',
+            'SERVICE': 'WMS',
+            'VERSION': '1.3.0',
+            'LAYERS': 'spatialite_points',
+            'CRS': 'EPSG:4326',
+            'BBOX': '18.77,-7.98,38.77,12.02',
+            'FORMAT': 'image/png',
+            'INFO_FORMAT': 'application/json',
+            'WIDTH': '100',
+            'HEIGHT': '100',
+            'QUERY_LAYERS': 'spatialite_points',
+            'FEATURE_COUNT': 1,
+            'FI_POINT_TOLERANCE': 10,
+            'I': '50',
+            'J': '50',
+        })
+
+        self.assertTrue(b'a point' in response.content)
+
+        response = c.get(ows_url, {
+            'REQUEST': 'GetFeatureInfo',
+            'SERVICE': 'WMS',
+            'VERSION': '1.3.0',
+            'LAYERS': 'spatialite_points',
+            'CRS': 'EPSG:4326',
+            'BBOX': '34.31,0.82,54.31,20.82',
+            'FORMAT': 'image/png',
+            'INFO_FORMAT': 'application/json',
+            'WIDTH': '100',
+            'HEIGHT': '100',
+            'QUERY_LAYERS': 'spatialite_points',
+            'FEATURE_COUNT': 1,
+            'FI_POINT_TOLERANCE': 10,
+            'I': '50',
+            'J': '50',
+        })
+
+        self.assertTrue(b'another point' in response.content)

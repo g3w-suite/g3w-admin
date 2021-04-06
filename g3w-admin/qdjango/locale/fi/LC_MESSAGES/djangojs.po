@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-11 09:34+0000\n"
+"POT-Creation-Date: 2021-03-31 15:02+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,35 +18,35 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: static/qdjango/js/widget.js:216
+#: static/qdjango/js/widget.js:196
 msgid "General configuration for search widget and results"
 msgstr ""
 
-#: static/qdjango/js/widget.js:222
+#: static/qdjango/js/widget.js:204
 msgid "Search title"
 msgstr ""
 
-#: static/qdjango/js/widget.js:259
+#: static/qdjango/js/widget.js:248
 msgid "Client search title identification"
 msgstr ""
 
-#: static/qdjango/js/widget.js:297
+#: static/qdjango/js/widget.js:287
 msgid "equal"
 msgstr ""
 
-#: static/qdjango/js/widget.js:298
+#: static/qdjango/js/widget.js:290
 msgid "greater than"
 msgstr ""
 
-#: static/qdjango/js/widget.js:299
+#: static/qdjango/js/widget.js:293
 msgid "lower than"
 msgstr ""
 
-#: static/qdjango/js/widget.js:300
+#: static/qdjango/js/widget.js:296
 msgid "not equal"
 msgstr ""
 
-#: static/qdjango/js/widget.js:301
+#: static/qdjango/js/widget.js:299
 msgid "greater than equal"
 msgstr ""
 
@@ -54,135 +54,238 @@ msgstr ""
 msgid "lower than equal"
 msgstr ""
 
-#: static/qdjango/js/widget.js:303 static/qdjango/js/widget.js:340
+#: static/qdjango/js/widget.js:305 static/qdjango/js/widget.js:339
 msgid "like case sensitive"
 msgstr ""
 
-#: static/qdjango/js/widget.js:321 static/qdjango/js/widget.js:342
+#: static/qdjango/js/widget.js:323 static/qdjango/js/widget.js:340
 msgid "like not case sensitive"
 msgstr ""
 
-#: static/qdjango/js/widget.js:352
+#: static/qdjango/js/widget.js:351
 msgid "Search field settings"
 msgstr ""
 
-#: static/qdjango/js/widget.js:365
+#: static/qdjango/js/widget.js:366
 msgid "Field"
 msgstr ""
 
-#: static/qdjango/js/widget.js:370
+#: static/qdjango/js/widget.js:373
 msgid "Widget"
 msgstr ""
 
-#: static/qdjango/js/widget.js:375
+#: static/qdjango/js/widget.js:380
 msgid "Alias"
 msgstr ""
 
-#: static/qdjango/js/widget.js:380 static/qdjango/js/widget.js:1069
-#: static/qdjango/js/widget.js:1287
+#: static/qdjango/js/widget.js:387 static/qdjango/js/widget.js:1108
+#: static/qdjango/js/widget.js:1378
 msgid "Description"
 msgstr ""
 
-#: static/qdjango/js/widget.js:387
+#: static/qdjango/js/widget.js:396
+msgid "Number of digits"
+msgstr ""
+
+#: static/qdjango/js/widget.js:405
 msgid "Comparison operator"
 msgstr ""
 
-#: static/qdjango/js/widget.js:394
+#: static/qdjango/js/widget.js:414
 msgid "Dependency"
 msgstr ""
 
-#: static/qdjango/js/widget.js:409
+#: static/qdjango/js/widget.js:431
 msgid "Logical join"
 msgstr ""
 
-#: static/qdjango/js/widget.js:421
-msgid "Alias field name fro client search input"
+#: static/qdjango/js/widget.js:450
+msgid "Alias field name for client search input"
 msgstr ""
 
-#: static/qdjango/js/widget.js:445
+#: static/qdjango/js/widget.js:477
 msgid "Attention"
 msgstr ""
 
-#: static/qdjango/js/widget.js:446
+#: static/qdjango/js/widget.js:477
 msgid "Fields with many unique values can create slow map loading behavior"
 msgstr ""
 
-#: static/qdjango/js/widget.js:680 static/qdjango/js/widget.js:1203
+#: static/qdjango/js/widget.js:716 static/qdjango/js/widget.js:1281
+#: static/qdjango/js/widget.js:1493
 msgid "Add"
 msgstr ""
 
-#: static/qdjango/js/widget.js:814
+#: static/qdjango/js/widget.js:839
 msgid "QGIS Expression"
 msgstr ""
 
-#: static/qdjango/js/widget.js:830
+#: static/qdjango/js/widget.js:854 static/qdjango/js/widget.js:1647
 msgid "Saved"
 msgstr ""
 
-#: static/qdjango/js/widget.js:926
+#: static/qdjango/js/widget.js:937 static/qdjango/js/widget.js:1816
+#: static/qdjango/js/widget.js:2225
 msgid "Form title"
 msgstr ""
 
-#: static/qdjango/js/widget.js:972
+#: static/qdjango/js/widget.js:1013
 msgid ""
 "Define, for each user and/or group of users, viewing/editing rules based on "
 "the QGIS expressions."
 msgstr ""
 
-#: static/qdjango/js/widget.js:976
+#: static/qdjango/js/widget.js:1017
 msgid ""
 "Define, for each user and/or group of users, viewing/editing rules based on "
 "the language or SQL dialect of the associated provider."
 msgstr ""
 
-#: static/qdjango/js/widget.js:1050 static/qdjango/js/widget.js:1054
+#: static/qdjango/js/widget.js:1089 static/qdjango/js/widget.js:1092
 msgid "New alphanumeric constraints"
 msgstr ""
 
-#: static/qdjango/js/widget.js:1067
+#: static/qdjango/js/widget.js:1105 static/qdjango/js/widget.js:1920
+#: static/qdjango/js/widget.js:2089
 msgid "Actions"
 msgstr ""
 
-#: static/qdjango/js/widget.js:1068 static/qdjango/js/widget.js:1281
+#: static/qdjango/js/widget.js:1106 static/qdjango/js/widget.js:1370
 msgid "Name"
 msgstr ""
 
-#: static/qdjango/js/widget.js:1070
+#: static/qdjango/js/widget.js:1113 static/qdjango/js/widget.js:1923
+msgid "For visualization"
+msgstr ""
+
+#: static/qdjango/js/widget.js:1116 static/qdjango/js/widget.js:1924
+msgid "For editing"
+msgstr ""
+
+#: static/qdjango/js/widget.js:1121
 msgid "Subset rules count"
 msgstr ""
 
-#: static/qdjango/js/widget.js:1071
+#: static/qdjango/js/widget.js:1124
 msgid "Expression rules count"
 msgstr ""
 
-#: static/qdjango/js/widget.js:1098
+#: static/qdjango/js/widget.js:1181
 msgid "Update alphanumeric constraint"
 msgstr ""
 
-#: static/qdjango/js/widget.js:1109
+#: static/qdjango/js/widget.js:1191
 msgid "Constraint Rules based on provider's language / SQL dialect"
 msgstr ""
 
-#: static/qdjango/js/widget.js:1120
+#: static/qdjango/js/widget.js:1202
 msgid "Constraint Rules based on QGIS Expression"
 msgstr ""
 
-#: static/qdjango/js/widget.js:1262
+#: static/qdjango/js/widget.js:1344 static/qdjango/js/widget.js:1552
 msgid "Save"
 msgstr ""
 
-#: static/qdjango/js/widget.js:1265
+#: static/qdjango/js/widget.js:1349 static/qdjango/js/widget.js:1555
 msgid "Delete"
 msgstr ""
 
-#: static/qdjango/js/widget.js:1279
+#: static/qdjango/js/widget.js:1366
 msgid "Set a name and a possible description for the alphanumeric constraint"
 msgstr ""
 
-#: static/qdjango/js/widget.js:1299
+#: static/qdjango/js/widget.js:1389 static/qdjango/js/widget.js:1575
+msgid "Active for visualization"
+msgstr ""
+
+#: static/qdjango/js/widget.js:1400 static/qdjango/js/widget.js:1584
+msgid "Active for editing"
+msgstr ""
+
+#: static/qdjango/js/widget.js:1415
 msgid "Provider's language / SQL dialect Rules"
 msgstr ""
 
-#: static/qdjango/js/widget.js:1302
+#: static/qdjango/js/widget.js:1420
 msgid "QGIS Expression Rules"
+msgstr ""
+
+#: static/qdjango/js/widget.js:1566
+msgid "Select the constraint layer, only Polygon or MultiPolygon geomentry"
+msgstr ""
+
+#: static/qdjango/js/widget.js:1568
+msgid "Constraint layer"
+msgstr ""
+
+#: static/qdjango/js/widget.js:1594
+msgid "Manage geo-constaints"
+msgstr ""
+
+#: static/qdjango/js/widget.js:1903
+msgid "New geo constraint"
+msgstr ""
+
+#: static/qdjango/js/widget.js:1907
+msgid "New constraint"
+msgstr ""
+
+#: static/qdjango/js/widget.js:1921
+msgid "Layer constraint"
+msgstr ""
+
+#: static/qdjango/js/widget.js:1926
+msgid "Rules count"
+msgstr ""
+
+#: static/qdjango/js/widget.js:1963
+msgid "Update constraint"
+msgstr ""
+
+#: static/qdjango/js/widget.js:1975
+msgid "Geo Constraint Rules"
+msgstr ""
+
+#: static/qdjango/js/widget.js:2071
+msgid "Create New Style From QML"
+msgstr ""
+
+#: static/qdjango/js/widget.js:2074
+msgid "New Style From QML"
+msgstr ""
+
+#: static/qdjango/js/widget.js:2091
+msgid "Current"
+msgstr ""
+
+#: static/qdjango/js/widget.js:2160
+msgid "Delete Style"
+msgstr ""
+
+#: static/qdjango/js/widget.js:2161
+msgid "Are you sure to delete style"
+msgstr ""
+
+#: static/qdjango/js/widget.js:2219
+msgid "Create a new style from an uploaded QML file."
+msgstr ""
+
+#: static/qdjango/js/widget.js:2221
+msgid "Edit style name or replace the style from an uploaded QML file."
+msgstr ""
+
+#: static/qdjango/js/widget.js:2255
+msgid "Style name is required!"
+msgstr ""
+
+#: static/qdjango/js/widget.js:2269
+msgid "A style with this name already exists!"
+msgstr ""
+
+#: static/qdjango/js/widget.js:2370
+msgid "Style name (required)"
+msgstr ""
+
+#: static/qdjango/js/widget.js:2379
+msgid "Upload layer style QML file"
 msgstr ""

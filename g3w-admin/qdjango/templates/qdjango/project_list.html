@@ -109,7 +109,7 @@
                     <td>{% if object.title_ur %}{{ object.title_ur }}{% endif %}</td>
                     <td>
                         {% if object.url_alias %}
-                        <a href="{% url 'group-project-map' group.slug 'qdjango' object.pk %}" target="_blank">
+                        <a href="{% url 'group-project-map-alias' object.url_alias %}" target="_blank">
                             <strong>/map/{{ object.url_alias }}</strong>
                         </a>
                         {% endif %}

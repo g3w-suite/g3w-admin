@@ -20,8 +20,8 @@ from django.urls import reverse
 from qdjango.models import Layer, Project
 from qdjango.utils.data import QgisProject
 from qgis.core import QgsProject
-from rest_framework.test import APIClient
 from rest_framework import status
+from rest_framework.test import APIClient
 from django.core.files.uploadedfile import SimpleUploadedFile
 
 from .base import CURRENT_PATH, TEST_BASE_PATH, QdjangoTestBase
@@ -47,8 +47,6 @@ class LayerStylesApiTest(QdjangoTestBase):
 
         cls.qdjango_project = project.instance
         cls.qdjango_layer = cls.qdjango_project.layer_set.all()[0]
-
-        cls.client = APIClient()
 
     @classmethod
     def setUpClass(cls):
@@ -98,9 +96,11 @@ class LayerStylesApiTest(QdjangoTestBase):
             },
         ])
 
+        self.assertFalse(self.qdjango_project.is_dirty)
         self.assertFalse(
             self.qdjango_layer.set_current_style('style1234567890'))
         self.assertTrue(self.qdjango_layer.set_current_style('style1'))
+        self.assertTrue(self.qdjango_project.is_dirty)
         self.assertEqual(self.qdjango_layer.styles, [
             {
                 'name': 'style1',
@@ -125,9 +125,10 @@ class LayerStylesApiTest(QdjangoTestBase):
         # Test rename
         self.assertFalse(self.qdjango_layer.rename_style(
             'style1234567890', 'new_name'))
-        self.assertFalse(self.qdjango_layer.rename_style('style1', 'new_name'))
         self.assertFalse(self.qdjango_layer.rename_style('style2', 'style1'))
         self.assertTrue(self.qdjango_layer.rename_style('style2', 'new_name'))
+        self.assertTrue(self.qdjango_layer.rename_style('style1', 'new_name1'))
+        self.assertTrue(self.qdjango_layer.rename_style('new_name1', 'style1'))
 
         # Verify the project was written
         p = QgsProject()
@@ -141,8 +142,9 @@ class LayerStylesApiTest(QdjangoTestBase):
 
         # Test remove/delete
         self.assertFalse(self.qdjango_layer.delete_style('style1234567890'))
-        self.assertFalse(self.qdjango_layer.delete_style('style1'))
-        self.assertTrue(self.qdjango_layer.delete_style('new_name'))
+        self.assertTrue(self.qdjango_layer.delete_style('style1'))
+        self.assertFalse(self.qdjango_layer.delete_style('new_name'))
+        assert self.qdjango_layer.rename_style('new_name', 'style1')
 
         # Verify the project was written
         p = QgsProject()
@@ -177,6 +179,15 @@ class LayerStylesApiTest(QdjangoTestBase):
         self.assertFalse(self.qdjango_layer.add_style(
             'My invalid style', '<xxxx>this is not a valid style</xxxx>'))
 
+        # Restore the project and check the dirt flag
+        project_file = File(open(self.project_path, 'r'))
+        project = QgisProject(project_file)
+        project.instance = self.qdjango_project
+        project.title = 'Test qdjango postgres multiple styles manager project'
+        project.group = self.project_group
+        project.save()
+        self.assertFalse(self.qdjango_project.is_dirty)
+
     def test_style_replace(self):
         """Test style(name) and QML replace"""
 
@@ -189,11 +200,31 @@ class LayerStylesApiTest(QdjangoTestBase):
         self.assertEqual(
             style1_xml, self.qdjango_layer.style('style2').xmlData())
 
+    def test_style_replace_current(self):
+        """Test style(name) and QML replace"""
+
+        sm = self.qdjango_layer.qgis_layer.styleManager()
+        self.assertEqual(sm.currentStyle(), 'style2')
+        self.assertTrue(self.qdjango_layer.set_current_style('style1'))
+        style1_xml = self.qdjango_layer.style('style1').xmlData()
+
+        self.assertTrue(self.qdjango_layer.set_current_style('style2'))
+        sm = self.qdjango_layer.qgis_layer.styleManager()
+        self.assertEqual(sm.currentStyle(), 'style2')
+
+        self.assertTrue(self.qdjango_layer.replace_style('style2', style1_xml))
+
+        # Test the current style has not changed
+        self.assertEqual(sm.currentStyle(), 'style2')
+
+        self.assertEqual(
+            style1_xml, self.qdjango_layer.style('style2').xmlData())
+
     def test_style_delete(self):
         """Test delete style"""
 
-        self.assertFalse(self.qdjango_layer.delete_style('style2'))
-        self.assertTrue(self.qdjango_layer.delete_style('style1'))
+        self.assertTrue(self.qdjango_layer.delete_style('style2'))
+        self.assertFalse(self.qdjango_layer.delete_style('style1'))
 
         # Verify
         p = QgsProject()
@@ -201,7 +232,7 @@ class LayerStylesApiTest(QdjangoTestBase):
         l = p.mapLayer(self.qdjango_layer.qgis_layer.id())
         self.assertTrue(l.isValid())
         sm = l.styleManager()
-        self.assertEqual(sm.styles(), ['style2'])
+        self.assertEqual(sm.styles(), ['style1'])
         del(sm)
         del(p)
 
@@ -411,14 +442,51 @@ class LayerStylesApiTest(QdjangoTestBase):
 
         response = self.client.delete(
             reverse('qdjango-style-detail-api', args=(layer_id, 'style2')))
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(self.qdjango_layer.styles, [{'name': 'style1', 'current': False},
-                                                     {'name': 'style2', 'current': True}])
+        self.assertEqual(response.status_code,
+                         status.HTTP_200_OK)
+        self.assertEqual(self.qdjango_layer.styles, [
+                         {'name': 'style1', 'current': True}])
+
         response = self.client.delete(
             reverse('qdjango-style-detail-api', args=(layer_id, 'style1')))
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(self.qdjango_layer.styles, [
-                         {'name': 'style2', 'current': True}])
+                         {'name': 'style1', 'current': True}])
+
+    def test_rename_space(self):
+        """Test rename with spaces"""
+
+        self.assertTrue(self.client.login(
+            username='admin01', password='admin01'))
+        layer_id = self.qdjango_layer.pk
+
+        data = {
+            'name': 'style2 space'
+        }
+        response = self.client.patch(
+            reverse('qdjango-style-detail-api', args=(layer_id, 'style2')), data=data)
+        self.assertEqual(response.status_code,
+                         status.HTTP_200_OK)
+        self.assertEqual(self.qdjango_layer.styles, [
+                         {'name': 'style1', 'current': False}, {'current': True, 'name': 'style2 space'}])
+
+        data = {
+            'name': 'style2'
+        }
+        response = self.client.patch(
+            reverse('qdjango-style-detail-api', args=(layer_id, r'style2%20space')), data=data)
+        self.assertEqual(self.qdjango_layer.styles, [
+                         {'current': False, 'name': 'style1'}, {'current': True, 'name': 'style2'}])
+
+        self.qdjango_layer.rename_style('style2', 'style2 space')
+
+        response = self.client.delete(
+            reverse('qdjango-style-detail-api', args=(layer_id, r'style2%20space')))
+        self.assertEqual(response.status_code,
+                         status.HTTP_200_OK)
+
+        self.assertEqual(self.qdjango_layer.styles, [
+                         {'name': 'style1', 'current': True}])
 
     def test_unsupported_methods(self):
         """Test unsupported methods"""

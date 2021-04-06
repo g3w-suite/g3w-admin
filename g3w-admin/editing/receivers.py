@@ -14,22 +14,17 @@ from django.template import loader
 from django.db.models.signals import pre_delete
 from core.signals import load_layer_actions, initconfig_plugin_start, after_serialized_project_layer, \
     pre_save_maplayer, post_save_maplayer, pre_delete_maplayer, load_js_modules, before_return_vector_data_layer
-from qdjango.models import Layer
 from qdjango.api.projects.serializers import QGIS_LAYER_TYPE_NO_GEOM
 from qdjango.vector import LayerVectorView, MODE_CONFIG
-from .models import G3WEditingFeatureLock, G3WEditingLayer, G3WEditingLog, EDITING_POST_DATA_DELETED, ConstraintRule
+from qdjango.models import GeoConstraintRule
+from .models import G3WEditingFeatureLock, G3WEditingLayer, G3WEditingLog, EDITING_POST_DATA_DELETED
+
 
 from .utils import LayerLock
 
 import logging
 
 logger = logging.getLogger('module_editing')
-
-
-@receiver(load_js_modules)
-def get_js_modules(sender, **kwargs):
-
-    return 'editing/js/widget.js'
 
 
 @receiver(user_logged_out)
@@ -94,7 +89,7 @@ def set_initconfig_value(sender, **kwargs):
             editable_layers_id.append(el.layer_id)
 
             # check if layers has constraints
-            constraints = ConstraintRule.get_constraints_for_user(sender.request.user, project_layers[el.layer_id])
+            constraints = GeoConstraintRule.get_constraints_for_user(sender.request.user, project_layers[el.layer_id])
             envelope = []
             for constraint in constraints:
                 geom = constraint.get_constraint_geometry()
@@ -116,7 +111,7 @@ def set_initconfig_value(sender, **kwargs):
                 # FIXME: if qgs_layer_id is not unique it shouldn't be used as a key here:
                 editable_layers_constraints.update({
                     project_layers[el.layer_id].qgs_layer_id: {
-                    'geometry_api_url': reverse('constraint-api-geometry', kwargs={'editing_layer_id': el.layer_id}),
+                    'geometry_api_url': reverse('geoconstraint-api-geometry', kwargs={'layer_id': el.layer_id}),
                     'bbox': envelope
                     }
                 })
@@ -206,7 +201,7 @@ def validate_constraint(**kwargs):
     user = kwargs['user']
 
     # check rule presence for layer
-    rules = ConstraintRule.get_active_constraints_for_user(user, editing_layer)
+    rules = GeoConstraintRule.get_active_constraints_for_user(user, editing_layer)
 
     if len(rules) == 0:
         return

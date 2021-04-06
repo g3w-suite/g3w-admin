@@ -11,7 +11,8 @@ __date__ = '2020-04-21'
 __copyright__ = 'Copyright 2020, Gis3W'
 
 from core.api.filters import BaseFilterBackend
-from qdjango.models.constraints import ConstraintSubsetStringRule, ConstraintExpressionRule
+from qdjango.models import ConstraintSubsetStringRule, ConstraintExpressionRule, GeoConstraintRule
+
 
 class SingleLayerSubsetStringConstraintFilter(BaseFilterBackend):
     """A filter backend that applies a subset string"""
@@ -22,7 +23,9 @@ class SingleLayerSubsetStringConstraintFilter(BaseFilterBackend):
         string) make sure to restore the original state or to work on a clone.
         """
 
-        subset_string = ConstraintSubsetStringRule.get_rule_definition_for_user(request.user, view.layer.pk)
+        # get context from view, default 'v (view)'
+        subset_string = ConstraintSubsetStringRule.get_rule_definition_for_user(request.user, view.layer.pk,
+                                                                                context=getattr(view, 'context', 'v'))
         if not subset_string:
             return
 
@@ -44,7 +47,8 @@ class SingleLayerExpressionConstraintFilter(BaseFilterBackend):
         string) make sure to restore the original state or to work on a clone.
         """
 
-        expression_text = ConstraintExpressionRule.get_rule_definition_for_user(request.user, view.layer.pk)
+        expression_text = ConstraintExpressionRule.get_rule_definition_for_user(request.user, view.layer.pk,
+                                                                                context=getattr(view, 'context', 'v'))
         if not expression_text:
             return
 
@@ -56,3 +60,27 @@ class SingleLayerExpressionConstraintFilter(BaseFilterBackend):
         else:
             qgis_feature_request.setFilterExpression(expression_text)
 
+
+class GeoConstraintsFilter(BaseFilterBackend):
+    """A filter backend that applies constraints to the editing data request"""
+
+    def apply_filter(self, request, qgis_layer, qgis_feature_request, view):
+
+        rule_parts = []
+
+        rules = GeoConstraintRule.get_active_constraints_for_user(request.user, view.layer,
+                                                                  context=getattr(view, 'context', 'v'))
+
+        for rule in rules:
+            expression = rule.get_qgis_expression()
+            if expression:
+                rule_parts.append(expression)
+
+        if rule_parts:
+            expression = ' AND '.join(rule_parts)
+            current_expression = qgis_feature_request.filterExpression()
+
+            if current_expression:
+                expression = '( %s ) AND ( %s )' % (current_expression, expression)
+
+            qgis_feature_request.setFilterExpression(expression)

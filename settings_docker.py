@@ -5,7 +5,8 @@ G3WADMIN_LOCAL_MORE_APPS = [
     'editing',
     'caching',
     'filemanager',
-    'qplotly'
+    'qplotly',
+    'openrouteservice',
 ]
 
 DATABASES = {
@@ -21,7 +22,7 @@ DATABASES = {
 
 DATASOURCE_PATH = '/shared-volume/project_data'
 
-TEST_RUNNER='qdjango.tests.runner.G3wSuiteTestRunner'
+TEST_RUNNER = 'qdjango.tests.runner.G3wSuiteTestRunner'
 
 MEDIA_ROOT = '/shared-volume/media/'
 MEDIA_URL = '/media/'
@@ -48,7 +49,7 @@ QGIS_AUTH_PASSWORD = 'my_secret_password'
 # ===============================
 # follow settings work if 'caching' module is in 'G3WADMIN_LOCAL_MORE_APPS'
 TILESTACHE_CACHE_NAME = 'default'
-TILESTACHE_CACHE_TYPE = 'Disk' # or 'Memcache'
+TILESTACHE_CACHE_TYPE = 'Disk'  # or 'Memcache'
 TILESTACHE_CACHE_DISK_PATH = '/tmp/'
 TILESTACHE_CACHE_TOKEN = '1234567'
 
@@ -138,3 +139,16 @@ LOGGING = {
 SPATIALITE_LIBRARY_PATH = '/usr/lib/x86_64-linux-gnu/mod_spatialite.so'
 
 SESSION_COOKIE_NAME = 'gis3w-admin'
+
+# OPENROUTESERVICE SETTINGS
+# ===============================
+# follow settings work if 'openrouteservice' module is in 'G3WADMIN_LOCAL_MORE_APPS'
+# ORS API endpoint
+ORS_API_ENDPOINT = 'http://localhost:8080/ors/v2/'
+# Optional, can be blank if the key is not required by the endpoint
+ORS_API_KEY = ''
+# List of available ORS profiles
+ORS_PROFILES = {
+    "driving-car": {"name": "Car"},
+    "driving-hgv": {"name": "Heavy Goods Vehicle"}
+}

@@ -42,8 +42,15 @@ class SingleLayerConstraint(models.Model):
     active = models.BooleanField(default=True)
     layer = models.ForeignKey(
         Layer, on_delete=models.CASCADE, related_name='constrainted_layer')
-    name = models.CharField(_('Name'), max_length=255, null=True)
+    name = models.CharField(_('Name'), max_length=255)
     description = models.TextField(_('Description'), null=True, blank=True)
+
+    for_view = models.BooleanField(_('Active for visualization'), default=True, null=True,
+                                   help_text=_(
+                                       'Active this constraint for users have viewing grant on layer/project'))
+    for_editing = models.BooleanField(_('Active for editing'), default=False, null=True,
+                                   help_text=_(
+                                       'Active this constraint for users have editing grant on layer/project'))
 
     @property
     def qgs_layer_id(self):
@@ -76,7 +83,10 @@ class SingleLayerConstraint(models.Model):
         return self.constraintexpressionrule_set.count()
 
     def clean(self):
-        pass
+
+        # add for_view and for_editing cleaning
+        if not self.for_view and not self.for_editing:
+            raise ValidationError(_('Almonst one of fields for_view and for_editing it must be True'))
 
     def __str__(self):
         return "%s (%s)" % (self.layer, self.active)
@@ -152,6 +162,10 @@ class CommonConstraintRule(models.Model):
         :rtype: QuerySet
         """
 
+        # not filter if user is Anonymoususer
+        if user.is_anonymous:
+            return []
+
         constraints = SingleLayerConstraint.objects.filter(layer=layer)
         if not constraints:
             return []
@@ -173,6 +187,10 @@ class CommonConstraintRule(models.Model):
         :rtype: QuerySet
         """
 
+        # not filter if user is Anonymoususer
+        if user.is_anonymous:
+            return []
+
         constraints = SingleLayerConstraint.objects.filter(
             layer=layer, active=True)
         if not constraints:
@@ -184,20 +202,49 @@ class CommonConstraintRule(models.Model):
             return cls.objects.filter(constraint__in=constraints, user=user)
 
     @classmethod
-    def get_rule_definition_for_user(cls, user, layer_id):
+    def get_context(cls, context='v'):
+        """Build kwargs params for constraint
+
+        :param context: SingleLayerConstraint context 'v (view)' 'e (editing)' 've (view + editing)'
+        :type context: str
+        :return: kwargs dict
+        :rtype: dict
+        """
+
+        kwargs = {}
+        if context == 'v':
+            kwargs['for_view'] = True
+        elif context == 'e':
+            kwargs['for_editing'] = True
+        elif context == 've':
+            kwargs['for_view'] = True
+            kwargs['for_editing'] = True
+        else:
+            kwargs['for_view'] = True
+
+        return kwargs
+
+    @classmethod
+    def get_rule_definition_for_user(cls, user, layer_id, context='v'):
         """Fetch the active constraints for a given user and qdjango layer pk.
 
         :param user: the user
         :type user: User
         :param layer_id: qdjango Layer pk
         :type layer_id: str
+        :param context: SingleLayerConstraint context 'v (view)' 'e (editing)' 've (view + editing)'
+        :type context: str
         :return: the subset string
         :rtype: str
         """
 
+        # not filter if user is Anonymoususer
+        if user.is_anonymous:
+            return ""
+
         try:
             constraints = SingleLayerConstraint.objects.filter(
-                layer=Layer.objects.get(pk=layer_id), active=True)
+                layer=Layer.objects.get(pk=layer_id), active=True, **cls.get_context(context))
         except Layer.DoesNotExist as ex:
             logger.error(
                 "A Layer object with qdjango layer id %s was not found: skipping constraints!" % layer_id)

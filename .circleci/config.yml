@@ -21,13 +21,16 @@ jobs:
           command: docker cp ./ "$(docker-compose -f docker-compose.<< parameters.qgis_version >>.yml ps -q g3w-suite)":/code
       - run:
           name: Installing Python requirements
-          command: docker-compose -f docker-compose.<< parameters.qgis_version >>.yml exec g3w-suite sh -c "cd /code/ && pip3 install -r requirements_docker.txt"
+          command: docker-compose -f docker-compose.<< parameters.qgis_version >>.yml exec g3w-suite sh -c "cd /code/ && python3 -m pip install --upgrade pip && pip3 install -r requirements_docker.txt"
       - run:
           name: Installing Caching Python requirements
           command: docker-compose -f docker-compose.<< parameters.qgis_version >>.yml exec g3w-suite sh -c "cd /code/ && pip3 install -r g3w-admin/caching/requirements.txt"
       - run:
           name: Installing Filemanager Python requirements
           command: docker-compose -f docker-compose.<< parameters.qgis_version >>.yml exec g3w-suite sh -c "cd /code/ && pip3 install -r g3w-admin/filemanager/requirements.txt"
+      - run:
+          name: Installing Openrouteservice Python requirements
+          command: docker-compose -f docker-compose.<< parameters.qgis_version >>.yml exec g3w-suite sh -c "cd /code/ && pip3 install -r g3w-admin/openrouteservice/requirements.txt && pip3 install -r g3w-admin/openrouteservice/requirements_testing.txt"
       - run:
           name: Building g3w-suite
           command: docker-compose -f docker-compose.<< parameters.qgis_version >>.yml exec g3w-suite sh -c "/code/ci_scripts/build_suite.sh"
@@ -65,7 +68,9 @@ jobs:
       - run:
           name: Running qplotly tests
           command: docker-compose -f docker-compose.<< parameters.qgis_version >>.yml exec g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test qplotly"
-
+      - run:
+          name: Running openrouteservice tests
+          command: docker-compose -f docker-compose.<< parameters.qgis_version >>.yml exec g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test openrouteservice"
 
 workflows:
   all-tests:
@@ -73,4 +78,4 @@ workflows:
       - build:
           matrix:
             parameters:
-              qgis_version: ['316']
+              qgis_version: ["316", "latest"]

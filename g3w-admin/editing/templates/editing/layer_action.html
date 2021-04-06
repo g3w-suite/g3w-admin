@@ -1,8 +1,7 @@
 {% load i18n %}
 {% load staticfiles %}
-{% load editing_tags %}
 
-<span class="col-xs-2 icon">
+<span class="col-xs-1 icon">
 <a href="#" {% if active %}style="color: green;"{% endif %} data-toggle="tooltip" title="{% trans 'Editing layer' %}" data-widget-type="ajaxForm"
    data-form-url="{% url 'editing-layer-active' layer.project.group.slug app_name layer.project.slug layer.id %}"
    data-modal-title="{% trans 'Activation layer_editing' %}">
@@ -11,10 +10,5 @@
 </span>
 <span class="label label-info col-xs-1"></span>
 {% if active %}
-{% comment %} Add constraints management {% endcomment %}
-<span class="col-xs-2 icon">
-    <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Manage Geo-constraints list' %}" data-widget-type="constraintsList" data-constraints-layer-pk="{{ layer.pk }}" data-constraints-list-url="{% url 'constraint-api-filter-by-editing' layer.pk %}" ><i class="fa fa-chain"></i>
-    <span class="label label-info label-action-layer">{% editinggeoconstraitnswidget4layer layer %}</span>
-    </a>
-</span>
+
 {% endif %}

@@ -11,12 +11,26 @@ ga.Qplotly = {
             detail: '/' + SITE_PREFIX_URL + 'qplotly/api/widget/detail/',
             link: '/' + SITE_PREFIX_URL + 'qplotly/api/widget/detail/',
             download: '/' + SITE_PREFIX_URL + 'qplotly/download/xml/',
+            showonstartclient: '/' + SITE_PREFIX_URL + 'qplotly/download/xml/',
         }
     }
 };
 
 // Add Qplotly widget
 // --------------------------------
+
+_.extend(g3wadmin.ui, {
+
+   initShowOnStartClient: function() {
+        $(document).on('ifChecked', '[data-widget-type="showOnStartClient"]', function(e){
+            ga.widget.showOnStartClient($(this));
+        }).on('ifUnchecked', '[data-widget-type="showOnStartClient"]', function(e){
+            ga.widget.showOnStartClient($(this), false);
+        });
+    },
+
+});
+
 _.extend(g3wadmin.widget, {
 
     // params used into html tag
@@ -25,6 +39,42 @@ _.extend(g3wadmin.widget, {
 		'qplotlywidget-layer-pk',
         'qplotlywidget-project-pk',
 	],
+
+    _showOnStartClient: [
+        'ajax-url',
+    ],
+
+    showOnStartClient: function($item, linked) {
+
+        try {
+            var params = ga.utils.getDataAttrs($item, this._showOnStartClient);
+            if (_.isUndefined(params['ajax-url'])) {
+                throw new Error('Attribute data-ajax-url not defined');
+            }
+
+            var data = {};
+            if (!_.isUndefined(linked) && !linked) {
+                data['show'] = '0';
+            }
+
+            $.ajax({
+                method: 'get',
+                url: params['ajax-url'],
+                data: data,
+                success: function(res){
+
+                },
+                error: function (xhr, textStatus, errorMessage) {
+                    ga.widget.showError(ga.utils.buildAjaxErrorMessage(xhr.status, errorMessage));
+                }
+            });
+
+
+        } catch (e) {
+            this.showError(e.message);
+        }
+    },
+
 
     /*
     Build singlelayer constraints table
@@ -52,6 +102,7 @@ _.extend(g3wadmin.widget, {
         $table.append('<thead>\n' +
             '            <tr>\n' +
             '                <th style="width:180px;">'+gettext('Actions')+'</th>\n' +
+            '                <th>'+gettext('Active on startup')+'</th>\n' +
             '                <th>'+gettext('Title')+'</th>\n' +
 			'                <th>'+gettext('Type')+'</th>\n' +
             '                <th>'+gettext('From project')+'</th>\n' +
@@ -63,6 +114,7 @@ _.extend(g3wadmin.widget, {
         var constraint_res = {};
         $.each(res['results'], function(k, v){
             constraint_res[v['pk']] = v;
+            var show_on_start_client_checked = (v['show_on_start_client']) ? "checked=\"checked\"" : "";
             var checked = ($.inArray(parseInt(layer_pk), v['layers']) != -1) ? "checked=\"checked\"" : "";
             var editDisplay = v['rule_count'] > 0 ? 'none': 'display';
             var from_project = v['project'] ? "<span class=\"fa fa-check-circle\" style=\"color: #ffa500\"></span>" : "";
@@ -77,6 +129,9 @@ _.extend(g3wadmin.widget, {
                     'editDisplay': editDisplay,
                     'downloadUrl': '/' + CURRENT_LANGUAGE_CODE + ga.Qplotly.urls.widget.download + v['pk'] + '/'
             })+'</td>\n' +
+            '                <td><input type="checkbox" name="show_on_start_client" value="1" '+show_on_start_client_checked+' ' +
+                            'data-widget-type="showOnStartClient" ' +
+                            'data-ajax-url="/'+CURRENT_LANGUAGE_CODE+'/'+SITE_PREFIX_URL + 'qplotly/showonstartclient/'+v['pk']+'/" /></td>\n' +
             '                <td>'+v['title']+'</td>\n' +
 			'                <td>'+v['type']+'</td>\n' +
             '                <td>'+from_project+'</td>\n' +
@@ -310,10 +365,12 @@ _.extend(g3wadmin.tpl, {
     '),
 });
 
-// activate widget
-$(document).ready(function() {
-    $('[data-widget-type="qplotlyWidgetList"]').on('click', function (e) {
+
+// activate widget: append to ga.ui.before_datatable_callbacks for to cala it before DatTable init
+ga.ui.before_datatable_callbacks.push(function($widgetItem){
+  $widgetItem.find('[data-widget-type="qplotlyWidgetList"]').on('click', function (e) {
         var $datatable = $(this).parents('table').DataTable();
         ga.widget.qplotlyWidgetList($datatable, $(this));
+        ga.ui.initShowOnStartClient();
     });
 });

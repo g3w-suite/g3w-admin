@@ -176,13 +176,9 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         :param instance: qdjango Project model instance
         :return: str
         """
-        # check if settings on POST and user_layer_id and qgis project != from version 3
-        if settings.CLIENT_OWS_METHOD == 'POST' and \
-                instance.wms_use_layer_ids and \
-                instance.qgis_version.startswith('2'):
-            return settings.CLIENT_OWS_METHOD
-        else:
-            return 'GET'
+
+        method = getattr(settings, 'CLIENT_OWS_METHOD', 'GET')
+        return method if method in ('GET', 'POST') else 'GET'
 
     def get_metadata(self, instance, qgs_project):
         """Build metadata for layer by QgsProject instance
@@ -226,19 +222,16 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
         return metadata
 
-    def get_filtertoken(self):
-        """Check session token filter ad layer if it is set"""
+    def reset_filtertoken(self):
+        """Check session token filter ad delete it"""
 
         try:
-            stf = SessionTokenFilter.objects.get(
-                sessionid=self.request.COOKIES[settings.SESSION_COOKIE_NAME])
+            if settings.SESSION_COOKIE_NAME in self.request.COOKIES:
+                stf = SessionTokenFilter.objects.get(
+                    sessionid=self.request.COOKIES[settings.SESSION_COOKIE_NAME])
+                stf.delete()
         except SessionTokenFilter.DoesNotExist:
             return None
-
-        return {
-            'token': stf.token,
-            'layers': [l.layer.qgs_layer_id for l in stf.stf_layers.all()]
-        }
 
     def to_representation(self, instance):
         logging.warning('Serializer')
@@ -366,9 +359,8 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
         ret['search_endpoint'] = settings.G3W_CLIENT_SEARCH_ENDPOINT
 
-        # add tokenfilter by session
-        # remove at 2021/01/12<
-        #ret['filtertoken'] = self.get_filtertoken()
+        # reset tokenfilter by session
+        self.reset_filtertoken()
 
         return ret
 
@@ -419,6 +411,7 @@ class LayerSerializer(serializers.ModelSerializer):
             'download_xls',
             'download_gpx',
             'download_csv',
+            'download_gpkg',
             'editor_form_structure',
             'styles',
         )
@@ -560,9 +553,19 @@ class LayerSerializer(serializers.ModelSerializer):
             else:
                 datasourceWMS = datasourcearcgis2dict(instance.datasource)
 
-            if ('username' not in ret['source'] or 'password' not in ret['source']) and 'type=xyz' not in instance.datasource:
-                ret['source'].update(datasourceWMS.dict() if isinstance(
-                    datasourceWMS, QueryDict) else datasourceWMS)
+            if ('username' not in ret['source'] or 'password' not in ret['source']) and 'type=xyz' \
+                    not in instance.datasource:
+
+                # rebuild the dict for paramenters repeat n times i.e. 'layers' and 'styles'
+                if isinstance(datasourceWMS, QueryDict):
+                    for p in datasourceWMS.lists():
+                        if p[0] in ('layers', 'styles'):
+                            ret['source'].update({p[0]: ','.join(p[1])})
+                        else:
+                            ret['source'].update({p[0]: datasourceWMS[p[0]]})
+                else:
+                    ret['source'].update(datasourceWMS)
+
 
             ret['source']['external'] = instance.external
 

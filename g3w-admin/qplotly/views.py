@@ -44,6 +44,25 @@ class QplotlyLinkWidget2LayerView(QdjangoLayerViewMixin, View):
         else:
             self.widget.layers.remove(self.layer)
 
+class QplotlyWidgetShowOnStartClientView(View):
+    """
+    Set on true or false show_on_start_client model property.
+    """
+    def get(self, *args, **kwargs):
+
+        self.widget = get_object_or_404(QplotlyWidget, pk=kwargs['pk'])
+        try:
+            self.show_on_start_client(show=(not 'show' in self.request.GET))
+            return JsonResponse({'status': 'ok'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'errors_form': e.message})
+
+    def show_on_start_client(self, show=True):
+
+        self.widget.show_on_start_client = show
+        self.widget.save()
+
+
 
 class QplotlyDownloadView(VirtualDownloadView):
     """Download of xml qplotly file config"""

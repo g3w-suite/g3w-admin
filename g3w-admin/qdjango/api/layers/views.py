@@ -12,9 +12,11 @@ __copyright__ = 'Copyright 2015 - 2020, Gis3w'
 
 
 import base64
+from urllib.parse import unquote
 from core.api.authentication import CsrfExemptSessionAuthentication
 from core.api.views import G3WAPIView
 from django.conf import settings
+from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 from qdjango.models import Layer
@@ -27,7 +29,7 @@ from usersmanage.utils import (get_user_groups_for_object,
                                get_viewers_for_object)
 
 from .permissions import LayerInfoPermission, LayerStylesManagePermission
-from .serializers import LayerInfoAuthGroupSerializer, LayerInfoUserSerializer
+from .serializers import LayerInfoAuthGroupSerializer, LayerInfoUserSerializer, LayerInfoSerializer
 
 
 class StyleNotFoundError(NotFound):
@@ -54,14 +56,28 @@ class LayerUserInfoAPIView(generics.ListAPIView):
 
     def get_queryset(self):
         """
-        This view should return a list o user with view_project permission.
+        This view should return a list of user with view_project permission.
         """
         if 'layer_id' in self.kwargs:
+
+            # get 'context' GET parameter if is present possible values: [v (view), e (editing), ve (view + editing)]
+            context = self.request.GET.get('context', 'v')
+
             # get viewer users
             layer = Layer.objects.get(pk=self.kwargs['layer_id'])
             with_anonymous = getattr(settings, 'EDITING_ANONYMOUS', False)
-            qs = get_viewers_for_object(layer.project, self.request.user, 'view_project',
-                                        with_anonymous=with_anonymous)
+
+            if context == 'e':
+
+                # get viewer users with change_layer grant
+                qs = get_viewers_for_object(layer, self.request.user, 'change_layer',
+                                            with_anonymous=with_anonymous)
+            else:
+
+                # get viewer users with view_project and change_layer
+                qs = get_viewers_for_object(layer.project, self.request.user, 'view_project',
+                                            with_anonymous=with_anonymous)
+
         else:
             qs = []
 
@@ -84,11 +100,23 @@ class LayerAuthGroupInfoAPIView(generics.ListAPIView):
         """
 
         if 'layer_id' in self.kwargs:
+
+            # get 'context' GET parameter if is present possible values: [v (view), e (editing), ve (view + editing)]
+            context = self.request.GET.get('context', 'v')
+
             # get viewer users
             layer = Layer.objects.get(pk=self.kwargs['layer_id'])
 
-            qs = get_user_groups_for_object(
-                layer.project, self.request.user, 'view_project', 'viewer')
+            if context == 'e':
+
+                # get viewer user groups with change_layer grant
+                qs = get_user_groups_for_object(
+                    layer, self.request.user, 'change_layer', 'viewer')
+            else:
+
+                # get viewer user groups with view_project and change_layer
+                qs = get_user_groups_for_object(
+                    layer.project, self.request.user, 'view_project', 'viewer')
         else:
             qs = None
         return qs
@@ -113,14 +141,15 @@ class LayerStyleBaseView(G3WAPIView):
 
         layer = get_object_or_404(Layer, pk=layer_id)
 
-        if not style_name:
-            return Response({'result': True, 'styles': layer.styles}, content_type='application/json')
+        if style_name is None or style_name == '':
+            return Response({'result': True, 'styles': layer.styles})
         else:
+            style_name = unquote(style_name)
             for s in layer.styles:
                 if s['name'] == style_name:
-                    return Response({'result': True, 'style': s}, content_type='application/json')
+                    return Response({'result': True, 'style': s})
 
-        return Response({'error': _('Style not found.')}, status=status.HTTP_404_NOT_FOUND, content_type='application/json')
+        return Response({'error': _('Style not found.')}, status=status.HTTP_404_NOT_FOUND)
 
 
 class LayerStyleListView(LayerStyleBaseView):
@@ -184,7 +213,7 @@ class LayerStyleListView(LayerStyleBaseView):
             raise StyleConflictError()
 
         if layer.add_style(name, qml):
-            return Response({'result': True}, content_type='application/json', status=status.HTTP_201_CREATED)
+            return Response({'result': True}, status=status.HTTP_201_CREATED)
         else:
             raise ValidationError(_('Error creating new style'))
 
@@ -231,8 +260,7 @@ class LayerStyleDetailView(LayerStyleBaseView):
             'qml': '<uploaded QML>'
         }
 
-        Note: is is not possible to change the name of the current style and
-        it is not possible to change the "current" status from True to False, it is
+        Note: it is not possible to change the "current" status from True to False, it is
         only possible to change the "current" status from False to True.
 
         :param layer_id: QDjango Layer object pk
@@ -244,6 +272,7 @@ class LayerStyleDetailView(LayerStyleBaseView):
         :raises LayerNotFoundException
         """
 
+        style_name = unquote(style_name)
         layer = get_object_or_404(Layer, pk=layer_id)
 
         result = True
@@ -278,15 +307,14 @@ class LayerStyleDetailView(LayerStyleBaseView):
             raise ValidationError(
                 _('Either "name" or "current" or "qml" needs to be specified.'))
 
-        try:
-            is_current = [s for s in layer.styles if s['name']
-                          == style_name][0]['current']
-        except:
-            raise StyleNotFoundError()
+        found = False
+        for s in layer.styles:
+            if s['name'] == style_name:
+                found = True
+                break
 
-        if is_current:
-            raise ValidationError(
-                _('Modifications of the current style are not allowed.'))
+        if not found:
+            raise StyleNotFoundError()
 
         if new_name is not None and new_name != style_name:
             result = layer.rename_style(style_name, new_name)
@@ -319,8 +347,30 @@ class LayerStyleDetailView(LayerStyleBaseView):
 
         layer = get_object_or_404(Layer, pk=layer_id)
 
+        style_name = unquote(style_name)
+
         if layer.delete_style(style_name):
             return Response({'result': True})
         else:
             raise ValidationError(
                 _('Unknown error while modifying the style.'))
+
+
+class LayerPolygonView(generics.ListAPIView):
+    """Layer vector usable as geoconstraint layer: layer Polygon or Multipolygon"""
+
+    queryset = Layer.objects.all()
+    serializer_class = LayerInfoSerializer
+
+    def get_queryset(self):
+        """
+        This view should return a list layer (Polygon and MultiPolygon)
+        for a given editing layer QGIS id (qdjango layer_id) portion of the URL.
+        """
+        qs = super(LayerPolygonView, self).get_queryset()
+        if 'layer_id' in self.kwargs:
+            qs = Layer.objects.get(pk=self.kwargs['layer_id']).project.layer_set.filter(
+                ~Q(pk=self.kwargs['layer_id']),
+                geometrytype__in=['Polygon', 'MultiPolygon']
+            )
+        return qs

@@ -1,4 +1,4 @@
-""""Constraints module models
+""""GeoConstraints module models
 
 .. note:: This program is free software; you can redistribute it and/or modify
     it under the terms of the Mozilla Public License 2.0.
@@ -13,7 +13,7 @@ __copyright__ = 'Copyright 2019, Gis3w'
 import logging
 
 from django.conf import settings
-from django.contrib.auth.models import Group, User
+from django.contrib.auth.models import Group as AuthGroup, User
 from django.contrib.gis.db.models.fields import GeometryField
 from django.contrib.gis.geos import MultiPolygon, Polygon
 from django.core.exceptions import ValidationError
@@ -40,23 +40,33 @@ logger = logging.getLogger(__name__)
 CONSTRAINT_LAYER_TYPE_GRANTED = (
     'spatialite',
     'postgres',
-    'ogr'
+    'ogr',
+    'oracle'
 )
-class Constraint(models.Model):
-    """Main Constraint class. Links together two layers: the editing layer and the constraint layer.
+
+class GeoConstraint(models.Model):
+    """Main GeoConstraint class. Links together two layers: the editing layer and the constraint layer.
     """
 
     active = models.BooleanField(default=True)
-    editing_layer = models.ForeignKey(
+    layer = models.ForeignKey(
         Layer, on_delete=models.CASCADE, related_name='editing_layer')
+    description = models.TextField(_('Description'), null=True, blank=True)
     constraint_layer = models.ForeignKey(
         Layer, on_delete=models.CASCADE, related_name='constraint_layer')
 
+    for_view = models.BooleanField(_('Active for visualization'), default=True, null=True,
+                                   help_text=_(
+                                       'Active this constraint for users have viewing grant on layer/project'))
+    for_editing = models.BooleanField(_('Active for editing'), default=False, null=True,
+                                      help_text=_(
+                                          'Active this constraint for users have editing grant on layer/project'))
+
     @property
-    def editing_layer_qgs_layer_id(self):
+    def layer_qgs_layer_id(self):
         """Return the QGIS layer id for editing layer"""
 
-        return self.editing_layer.qgs_layer_id
+        return self.layer.qgs_layer_id
 
     @property
     def constraint_layer_qgs_layer_id(self):
@@ -74,12 +84,12 @@ class Constraint(models.Model):
     def constraint_rule_count(self):
         """Return the rules count for constraint"""
 
-        return self.constraintrule_set.count()
+        return self.geoconstraintrule_set.count()
 
     def clean(self):
         """Make sure the layer is either PG or SL and check that constraint layer is Polygon"""
 
-        if self.editing_layer.layer_type not in CONSTRAINT_LAYER_TYPE_GRANTED or self.constraint_layer.layer_type not in CONSTRAINT_LAYER_TYPE_GRANTED:
+        if self.layer.layer_type not in CONSTRAINT_LAYER_TYPE_GRANTED or self.constraint_layer.layer_type not in CONSTRAINT_LAYER_TYPE_GRANTED:
             raise ValidationError(
                 _('Layers types must be spatialite or postgres'))
 
@@ -87,29 +97,33 @@ class Constraint(models.Model):
             raise ValidationError(
                 _('Constraint layer geometry type must be Polygon or MultiPolygon'))
 
-        if self.editing_layer.pk == self.constraint_layer.pk:
+        if self.layer.pk == self.constraint_layer.pk:
             raise ValidationError(
                 _('Editing and constraints layer cannot be the same layer'))
 
+        # add for_view and for_editing cleaning
+        if not self.for_view and not self.for_editing:
+            raise ValidationError(_('Almonst one of fields for_view and for_editing it must be True'))
+
     def __str__(self):
-        return "%s, %s" % (self.editing_layer, self.constraint_layer)
+        return "%s, %s" % (self.layer, self.constraint_layer)
 
     class Meta:
         managed = True
-        verbose_name = _('Layer constraint')
-        verbose_name_plural = _('Layer constraints')
-        app_label = 'editing'
+        verbose_name = _('Layer geoconstraint')
+        verbose_name_plural = _('Layer geoconstraints')
+        app_label = 'qdjango'
 
 
-class ConstraintRule(models.Model):
+class GeoConstraintRule(models.Model):
     """Constraint rule class: links the constraint with a user or a group and
     defines the constraint SQL rule"""
 
-    constraint = models.ForeignKey(Constraint, on_delete=models.CASCADE)
+    constraint = models.ForeignKey(GeoConstraint, on_delete=models.CASCADE)
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, blank=True, null=True)
     group = models.ForeignKey(
-        Group, on_delete=models.CASCADE, blank=True, null=True)
+        AuthGroup, on_delete=models.CASCADE, blank=True, null=True)
     rule = models.TextField(
         _("SQL WHERE clause for the constraint layer"), max_length=255)
 
@@ -124,11 +138,11 @@ class ConstraintRule(models.Model):
 
     class Meta:
         managed = True
-        verbose_name = _('Constraint rule')
-        verbose_name_plural = _('Constraint rules')
+        verbose_name = _('Geoconstraint rule')
+        verbose_name_plural = _('Geoconstraint rules')
         unique_together = (('constraint', 'user', 'rule'),
                            ('constraint', 'group', 'rule'))
-        app_label = 'editing'
+        app_label = 'qdjango'
 
     @property
     def user_or_group(self):
@@ -162,7 +176,7 @@ class ConstraintRule(models.Model):
         """
 
         constraint_layer = get_qgis_layer(self.constraint.constraint_layer)
-        editing_layer = get_qgis_layer(self.constraint.editing_layer)
+        layer = get_qgis_layer(self.constraint.layer)
 
         # Get the geometries from constraint layer and rule
         qgis_feature_request = QgsFeatureRequest()
@@ -188,11 +202,11 @@ class ConstraintRule(models.Model):
                 i += 1
 
         # Now, transform into a GEOS geometry
-        if constraint_layer.crs() != editing_layer.crs():
-            ct = QgsCoordinateTransform(QgsCoordinateReferenceSystem(constraint_layer.crs()), QgsCoordinateReferenceSystem(editing_layer.crs()), QgsCoordinateTransformContext())
+        if constraint_layer.crs() != layer.crs():
+            ct = QgsCoordinateTransform(QgsCoordinateReferenceSystem(constraint_layer.crs()), QgsCoordinateReferenceSystem(layer.crs()), QgsCoordinateTransformContext())
             geometry.transform(ct)
 
-        constraint_geometry = MultiPolygon.from_ewkt('SRID=%s;' % editing_layer.crs().postgisSrid() + geometry.asWkt())
+        constraint_geometry = MultiPolygon.from_ewkt('SRID=%s;' % layer.crs().postgisSrid() + geometry.asWkt())
 
         return constraint_geometry, constraint_geometry.num_geom
 
@@ -237,18 +251,45 @@ class ConstraintRule(models.Model):
         return True, None
 
     @classmethod
-    def get_constraints_for_user(cls, user, editing_layer):
+    def get_context(cls, context='v'):
+        """Build kwargs params for constraint
+
+        :param context: SingleLayerConstraint context 'v (view)' 'e (editing)' 've (view + editing)'
+        :type context: str
+        :return: kwargs dict
+        :rtype: dict
+        """
+
+        kwargs = {}
+        if context == 'v':
+            kwargs['for_view'] = True
+        elif context == 'e':
+            kwargs['for_editing'] = True
+        elif context == 've':
+            kwargs['for_view'] = True
+            kwargs['for_editing'] = True
+        else:
+            kwargs['for_view'] = True
+
+        return kwargs
+
+    @classmethod
+    def get_constraints_for_user(cls, user, layer):
         """Fetch the constraints for a given user and editing layer
 
         :param user: the user
         :type user: User
         :param layer: the editing layer
         :type layer: Layer
-        :return: a list of ConstraintRule
+        :return: a list of GeoConstraintRule
         :rtype: QuerySet
         """
 
-        constraints = Constraint.objects.filter(editing_layer=editing_layer)
+        # not filter if user is Anonymoususer
+        if user.is_anonymous:
+            return []
+
+        constraints = GeoConstraint.objects.filter(layer=layer)
         if not constraints:
             return []
         user_groups = user.groups.all()
@@ -258,19 +299,25 @@ class ConstraintRule(models.Model):
             return cls.objects.filter(constraint__in=constraints, user=user)
 
     @classmethod
-    def get_active_constraints_for_user(cls, user, editing_layer):
+    def get_active_constraints_for_user(cls, user, layer, context='v'):
         """Fetch the active constraints for a given user and editing layer
 
         :param user: the user
         :type user: User
         :param layer: the editing layer
         :type layer: Layer
-        :return: a list of ConstraintRule
+        :param context: SingleLayerConstraint context 'v (view)' 'e (editing)' 've (view + editing)'
+        :type context: str
+        :return: a list of GeoConstraintRule
         :rtype: QuerySet
         """
 
-        constraints = Constraint.objects.filter(
-            editing_layer=editing_layer, active=True)
+        # not filter if user is Anonymoususer
+        if user.is_anonymous:
+            return []
+
+        constraints = GeoConstraint.objects.filter(
+            layer=layer, active=True, **cls.get_context(context))
         if not constraints:
             return []
         user_groups = user.groups.all()
@@ -278,3 +325,31 @@ class ConstraintRule(models.Model):
             return cls.objects.filter(Q(constraint__in=constraints), Q(user=user) | Q(group__in=user_groups))
         else:
             return cls.objects.filter(constraint__in=constraints, user=user)
+
+    @classmethod
+    def get_rule_definition_for_user(cls, user, layer):
+        """Fetch the active constraints rule QGIS expression for a given user and layer
+
+        :param user: the user
+        :type user: User
+        :param layer: the layer
+        :type layer: Layer
+        :return: a list of GeoConstraintRule
+        :rtype: QuerySet
+        """
+
+        # not filter if user is Anonymoususer
+        if user.is_anonymous:
+            return ""
+
+        rules = cls.get_active_constraints_for_user(user, layer)
+
+        subset_strings = []
+        for rule in rules:
+            subset_strings.append(rule.get_qgis_expression())
+
+        subset_string = ' AND '.join(subset_strings)
+        logger.debug("Returning rule definition for user %s and layer %s: %s" % (
+            user, layer.pk, subset_string))
+        return subset_string
+

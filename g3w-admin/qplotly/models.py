@@ -16,6 +16,7 @@ class QplotlyWidget(models.Model):
     type = models.CharField(_('Plot type'), max_length=50, null=True)
     title = models.CharField(_('Plot title'), max_length=255, null=True)
     project = models.ForeignKey(Project, on_delete=models.CASCADE, null=True)
+    show_on_start_client = models.BooleanField(_('Set as default plot on starting map'), null=True, default=False)
 
     layers = models.ManyToManyField(Layer)
     

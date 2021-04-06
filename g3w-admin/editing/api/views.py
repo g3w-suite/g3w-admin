@@ -4,16 +4,14 @@ from django_filters.rest_framework import DjangoFilterBackend
 from .base.views import BaseEditingVectorOnModelApiView
 from core.utils.db import build_dango_connection_name
 from core.api.views import USERMEDIAHANDLER_CLASSES
-from core.api.filters import IntersectsBBoxFilter
+from core.api.filters import IntersectsBBoxFilter, FieldFilterBackend
 from editing.api.permissions import QGISLayerEditingPermission
 from qdjango.vector import QGISLayerVectorViewMixin
-from qdjango.api.constraints.filters import SingleLayerSubsetStringConstraintFilter, SingleLayerExpressionConstraintFilter
+from qdjango.api.constraints.filters import SingleLayerSubsetStringConstraintFilter, \
+    SingleLayerExpressionConstraintFilter, \
+    GeoConstraintsFilter
 from qdjango.api.layers.filters import RelationOneToManyFilter, SingleLayerSessionTokenFilter
 from django.views.decorators.csrf import csrf_exempt
-from editing.filters import ConstraintsFilter
-#from client.urls import USER_MEDIA_PREFIX
-#import os
-#import shutil
 
 
 class QGISEditingLayerVectorView(QGISLayerVectorViewMixin, BaseEditingVectorOnModelApiView):
@@ -24,10 +22,11 @@ class QGISEditingLayerVectorView(QGISLayerVectorViewMixin, BaseEditingVectorOnMo
 
     # for editing apply only constraint and bbox filters
     filter_backends = (
-        ConstraintsFilter,
+        GeoConstraintsFilter,
         SingleLayerSubsetStringConstraintFilter,
         SingleLayerExpressionConstraintFilter,
         IntersectsBBoxFilter,
+        FieldFilterBackend,
         RelationOneToManyFilter,
         SingleLayerSessionTokenFilter
     )

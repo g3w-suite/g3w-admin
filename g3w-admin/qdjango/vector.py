@@ -20,7 +20,8 @@ from core.utils.structure import mapLayerAttributesFromQgisLayer
 from core.utils.vector import BaseUserMediaHandler
 
 from qdjango.api.constraints.filters import SingleLayerSubsetStringConstraintFilter, \
-    SingleLayerExpressionConstraintFilter
+    SingleLayerExpressionConstraintFilter, \
+    GeoConstraintsFilter
 
 from qdjango.api.layers.filters import RelationOneToManyFilter, FidFilter, SingleLayerSessionTokenFilter
 
@@ -171,6 +172,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         FieldFilterBackend,
         SingleLayerSubsetStringConstraintFilter,
         SingleLayerExpressionConstraintFilter,
+        GeoConstraintsFilter,
         RelationOneToManyFilter,
         FidFilter,
         SingleLayerSessionTokenFilter
@@ -305,7 +307,8 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         :return: str
         """
 
-        sessionid = request.COOKIES[settings.SESSION_COOKIE_NAME]
+        sessionid = request.COOKIES[settings.SESSION_COOKIE_NAME] \
+            if not request.user.is_anonymous else request.COOKIES['csrftoken']
 
         if request.method == 'POST':
             request_data = request.data

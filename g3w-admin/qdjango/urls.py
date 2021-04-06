@@ -31,6 +31,8 @@ urlpatterns = [
         login_required(QdjangoLayerCacheView.as_view()), name='qdjango-project-layers-cache'),
     url(r'^(?P<group_slug>[-_\w\d]+)/projects/(?P<project_slug>[-_\w\d]+)/layer/(?P<layer_slug>[-_\w\d]+)/widgets/$',
         login_required(QdjangoLayerWidgetsView.as_view()), name='qdjango-project-layer-widgets'),
+    url(r'^(?P<group_slug>[-_\w\d]+)/projects/(?P<slug>[-_\w\d]+)/layer/(?P<pk>[0-9]+)/detail/$',
+        login_required(QdjangoLayerDetailView.as_view()), name='qdjango-layer-detail'),
 
     # for data layer by ajax
     url(r'^jx/(?P<group_slug>[-_\w\d]+)/projects/(?P<project_slug>[-_\w\d]+)/layers/(?P<layer_id>[0-9]+)/data/$',

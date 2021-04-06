@@ -20,6 +20,8 @@ BASE_URLS = 'qplotly'
 urlpatterns = [
 
     url(r'^api/trace/(?P<project_id>[0-9]+)/(?P<pk>\d+)/$', QplotlyTraceAPIView.as_view(), name='qplotly-api-trace'),
+    url(r'^api/trace/(?P<project_id>[0-9]+)/(?P<qgs_layer_id>[-_\w\d]+)/(?P<pk>\d+)/$', QplotlyTraceAPIView.as_view(),
+        name='qplotly-api-trace-qgs-layer-id'),
 
     #############################################################
     # Widgets

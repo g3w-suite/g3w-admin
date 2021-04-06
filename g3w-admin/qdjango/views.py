@@ -12,6 +12,7 @@ from django.utils.decorators import method_decorator
 from django.db import connections
 from django.conf import settings
 from django.core.cache import caches
+from django.utils.translation import gettext_lazy as _
 from guardian.decorators import permission_required
 from guardian.shortcuts import get_objects_for_user
 from core.mixins.views import *
@@ -45,11 +46,13 @@ class QdjangoProjectListView(G3WRequestViewMixin, G3WGroupViewMixin, ListView):
     def get_queryset(self):
         return get_objects_for_user(self.request.user, 'qdjango.view_project', Project)\
             .filter(group=self.group).order_by('title')
-        #return self.group.qdjango_project.all().order_by('title')
+        # return self.group.qdjango_project.all().order_by('title')
 
     def get_context_data(self, **kwargs):
-        context = super(QdjangoProjectListView, self).get_context_data(**kwargs)
-        context['projectPanoramic'] = self.group.project_panoramic.filter(project_type='qdjango')
+        context = super(QdjangoProjectListView,
+                        self).get_context_data(**kwargs)
+        context['projectPanoramic'] = self.group.project_panoramic.filter(
+            project_type='qdjango')
 
         context['pre_delete_messages'] = {}
         messages = pre_delete_project.send(self, projects=self.object_list)
@@ -90,10 +93,15 @@ class QdjangoProjectUpdateView(QdjangoProjectCUViewMixin, G3WGroupViewMixin, G3W
         return super(QdjangoProjectUpdateView, self).dispatch(*args, **kwargs)
 
     def get_context_data(self, **kwargs):
-        context = super(QdjangoProjectUpdateView, self).get_context_data(**kwargs)
+        context = super(QdjangoProjectUpdateView,
+                        self).get_context_data(**kwargs)
         if self.request.method == 'GET':
             context['pre_update_messages'] = []
-            messages = pre_update_project.send(self, project=self.object, projectType='qdjango')
+            if self.object.is_dirty:
+                context['pre_update_messages'].append(
+                    _('The project has been modified by G3W-Suite after it was uploaded.'))
+            messages = pre_update_project.send(
+                self, project=self.object, projectType='qdjango')
             for message in messages:
                 if message[1]:
                     context['pre_update_messages'].append(message[1])
@@ -103,11 +111,13 @@ class QdjangoProjectUpdateView(QdjangoProjectCUViewMixin, G3WGroupViewMixin, G3W
         res = super(QdjangoProjectUpdateView, self).form_valid(form)
 
         # send project update signal
-        after_update_project.send(self, app_name='qdjango', project=form.instance)
+        after_update_project.send(
+            self, app_name='qdjango', project=form.instance)
 
         # clear cache
         if 'qdjango' in settings.CACHES:
-            caches['qdjango'].delete(settings.QDJANGO_PRJ_CACHE_KEY.format(form.instance.pk))
+            caches['qdjango'].delete(
+                settings.QDJANGO_PRJ_CACHE_KEY.format(form.instance.pk))
         return res
 
 
@@ -162,14 +172,15 @@ class QdjangoProjectDeleteView(G3WAjaxDeleteViewMixin, SingleObjectMixin, View):
 
         # send before project delete signal
         self.object = self.get_object()
-        before_delete_project.send(self, app_name='qdjango', project=self.object)
+        before_delete_project.send(
+            self, app_name='qdjango', project=self.object)
 
         # clear cache
         if 'qdjango' in settings.CACHES:
-            caches['qdjango'].delete(settings.QDJANGO_PRJ_CACHE_KEY.format(self.object.pk))
+            caches['qdjango'].delete(
+                settings.QDJANGO_PRJ_CACHE_KEY.format(self.object.pk))
 
         return super(QdjangoProjectDeleteView, self).post(request, *args, **kwargs)
-
 
 
 # For layers
@@ -224,6 +235,7 @@ class QdjangoLayerCacheView(G3WGroupViewMixin, QdjangoProjectViewMixin, View):
     """
     To set cached layer settings
     """
+
     def get(self, *args, **kwargs):
 
         # get layer to work
@@ -235,15 +247,16 @@ class QdjangoLayerCacheView(G3WGroupViewMixin, QdjangoProjectViewMixin, View):
             # build tilestache layer configuration
             layer.tilestache_conf = {
                 "provider": {
-                              "name": layer.name,
-                              "template": "{}://{}{}?SERVICE=WMS&REQUEST=GetMap&VERSION=1.3.0&LAYERS={}&STYLES=&FORMAT=image/png&TRANSPARENT=undefined&CRS={}&WIDTH=$width&HEIGHT=$height&bbox=$xmin,$ymin,$xmax,$ymax".format(
-                                  self.request.META['wsgi.url_scheme'],
-                                  self.request.META['HTTP_HOST'],
-                                  reverse('ows', args=[kwargs['group_slug'], 'qdjango', layer.project.id]),
-                                  layer.name,
-                                  'EPSG:3857'
-                              )
-                          },
+                    "name": layer.name,
+                    "template": "{}://{}{}?SERVICE=WMS&REQUEST=GetMap&VERSION=1.3.0&LAYERS={}&STYLES=&FORMAT=image/png&TRANSPARENT=undefined&CRS={}&WIDTH=$width&HEIGHT=$height&bbox=$xmin,$ymin,$xmax,$ymax".format(
+                        self.request.META['wsgi.url_scheme'],
+                        self.request.META['HTTP_HOST'],
+                        reverse('ows', args=[
+                            kwargs['group_slug'], 'qdjango', layer.project.id]),
+                        layer.name,
+                        'EPSG:3857'
+                    )
+                },
                 "projection": "spherical mercator"
             }
 
@@ -268,7 +281,8 @@ class QdjangoLayerDataView(G3WGroupViewMixin, QdjangoProjectViewMixin, View):
         """
         layer = Layer.objects.get(pk=kwargs['layer_id'])
         if 'exclude_from_legend' in request.POST:
-            layer.exclude_from_legend = int(request.POST['exclude_from_legend'])
+            layer.exclude_from_legend = int(
+                request.POST['exclude_from_legend'])
 
         for format in settings.G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS:
             k = 'download_layer'
@@ -358,7 +372,7 @@ class QdjangoLayerWidgetUpdateView(G3WRequestViewMixin, G3WGroupViewMixin, Qdjan
     model = Widget
     template_name = 'qdjango/ajax/widget_form.html'
 
-    #@method_decorator(permission_required('qdjango.change_widget', (Widget, 'slug', 'slug'), raise_exception=True))
+    # @method_decorator(permission_required('qdjango.change_widget', (Widget, 'slug', 'slug'), raise_exception=True))
     def dispatch(self, *args, **kwargs):
         return super(QdjangoLayerWidgetUpdateView, self).dispatch(*args, **kwargs)
 
@@ -380,7 +394,7 @@ class QdjangoLayerWidgetDeleteView(G3WAjaxDeleteViewMixin, SingleObjectMixin, Vi
     '''
     model = Widget
 
-    #@method_decorator(permission_required('qdjango.delete_widget', (Widget, 'slug', 'slug'), raise_exception=True))
+    # @method_decorator(permission_required('qdjango.delete_widget', (Widget, 'slug', 'slug'), raise_exception=True))
     def dispatch(self, *args, **kwargs):
         return super(QdjangoLayerWidgetDeleteView, self).dispatch(*args, **kwargs)
 
@@ -389,6 +403,7 @@ class QdjangoLinkWidget2LayerView(G3WRequestViewMixin, G3WGroupViewMixin, Qdjang
     """
     Activate or deactivate widget for layer.
     """
+
     def get(self, *args, **kwargs):
         self.widget = get_object_or_404(Widget, slug=kwargs['slug'])
         try:
@@ -402,9 +417,20 @@ class QdjangoLinkWidget2LayerView(G3WRequestViewMixin, G3WGroupViewMixin, Qdjang
         # apply check datasourc only for postgres and spatialite
         if self.layer.layer_type in ('postgres', 'spatialite') \
                 and not comparedbdatasource(self.layer.datasource, self.widget.datasource, self.layer.layer_type):
-            raise Exception('Datasource of widget is different from layer datasource')
+            raise Exception(
+                'Datasource of widget is different from layer datasource')
         if link:
             self.widget.layers.add(self.layer)
         else:
             self.widget.layers.remove(self.layer)
 
+
+class QdjangoLayerDetailView(G3WRequestViewMixin, DetailView):
+    """Detail view for qdjango layer object"""
+
+    model = Layer
+    template_name = 'qdjango/ajax/layer_detail.html'
+
+    @method_decorator(permission_required('qdjango.change_project', (Project, 'slug', 'slug'), raise_exception=True))
+    def dispatch(self, *args, **kwargs):
+        return super(QdjangoLayerDetailView, self).dispatch(*args, **kwargs)

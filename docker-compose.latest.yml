@@ -1,0 +1,33 @@
+# Use QGIS latest release
+
+version: "3"
+services:
+  postgis:
+    image: kartoza/postgis:11.0-2.5
+    ports:
+      - "55432:5432"
+    environment:
+      POSTGRES_USER: docker
+      POSTGRES_PASS: docker
+      POSTGRES_DBNAME: g3w-suite
+    volumes:
+      - shared-volume:/shared-volume
+
+  g3w-suite:
+    build:
+      context: ./ci_scripts
+      dockerfile: Dockerfile.deps
+    command: "tail -f /dev/null"
+    ports:
+      - "8000:8000"
+    environment:
+      LANG: "C.UTF-8"
+      PYTHONUNBUFFERED: 1
+      QT_QPA_PLATFORM: "offscreen"
+    depends_on:
+      - postgis
+    volumes:
+      - shared-volume:/shared-volume
+
+volumes:
+  shared-volume:

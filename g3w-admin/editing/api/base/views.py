@@ -41,6 +41,9 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
 
     app_name = 'editing'
 
+    # context: unsed i.e. fro constraint
+    context = 'e' # as editing
+
     # current request sessionid
     sessionid = None
 
@@ -197,7 +200,10 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
 
                         feature = QgsFeature(qgis_layer.fields())
                         if mode_editing == EDITING_POST_DATA_UPDATED:
-                            geojson_feature['id'] = get_layer_fids_from_server_fids([geojson_feature['id']], qgis_layer)[0]
+
+                            # add patch for shapefile type, geojson_feature['id'] id int() instead of str()
+                            # path to fix into QGIS api
+                            geojson_feature['id'] = get_layer_fids_from_server_fids([str(geojson_feature['id'])], qgis_layer)[0]
                             feature.setId(geojson_feature['id'])
 
                         # We use this feature for geometry parsing only:
