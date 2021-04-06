@@ -124,7 +124,7 @@ def editingFormField(fieldName, type=FIELD_TYPE_STRING, editable=True, required=
     if required:
         ret['validate']['required'] = True
 
-    if 'default' in kwargs:
+    if 'default' in kwargs and kwargs['default']:
         ret['input']['options']['default'] = kwargs['default']
 
     if inputType in (FORM_FIELD_TYPE_LAYERPICKER, ) and 'pickerdata' in kwargs:
