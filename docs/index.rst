@@ -3,9 +3,9 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-=====================================
+=======================================
 Welcome to G3W-SUITE 3.2 documentation!
-=====================================
+=======================================
 **G3W-SUITE is a frame-work, based on Django and written in Python language, which allows to manage in an integrated way the different components of QGIS for the realization of its own Geographic Information System and for the publication on WebGis of its own projects in a simple and intuitive way.**
 
 G3W-SUITE is entirely based on tested Open Source software components built around QGIS:
