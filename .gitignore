@@ -69,6 +69,7 @@ run_local*.sh
 /g3w-admin/g3wauthtoken/
 /g3w-admin/politowps/
 /g3w-admin/eleprofile/
+/g3w-admin/simplereporting/
 .gitmodules
 
 /pymast
