@@ -187,6 +187,22 @@ pip install -r requirements.tx
 
 ### Django setup
 
+#### ATTENTION!
+To migrate from V.3.1.x to v.3.2.x to avoid migration issues follow instructions below:
+
+before run *migrate* django commands
+```
+psql <connection_to_g3w_suite_db> -f db_scripts/pre_migration_v3.1.x_to_v3.2.x.sql
+```
+run **migrate** django command
+```
+python3 manage.py migrate
+```
+after run **migrate** django command
+```
+psql <connection_to_g3w_suite_db> -f db_scripts/post_migration_v3.1.x_to_v3.2.x.sql
+```
+
 ```bash
 python manage.py collectstatic --noinput
 python manage.py migrate --noinput
