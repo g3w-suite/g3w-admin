@@ -6,6 +6,7 @@
 
 -- Into core_baselayer
 ALTER TABLE core_baselayer RENAME COLUMN "order" TO "_order";
+DROP INDEX core_baselayer_order_ffe4069b;
 
 
 -- Into core_generalsuitedata
