@@ -1,5 +1,5 @@
 sphinx==2.4.4
 sphinx-markdown-tables
-sphinx_rtd_theme
+sphinx_rtd_theme==0.5.2
 recommonmark==0.7.1
 sphinx-intl
