@@ -544,9 +544,9 @@ def add_geojson_features(geojson, project, qgis_layer_id=None, connection_id=Non
             try:
                 conn.createVectorTable(
                     connection['schema'], new_layer_name, fields, QgsWkbTypes.Polygon, QgsCoordinateReferenceSystem(4326), False, {'geometryColumn': 'geom'})
-            except QgsProviderConnectionException:
+            except QgsProviderConnectionException as ex:
                 raise Exception(
-                    _('Error creating destination layer: ') + str(QgsProviderConnectionException))
+                    _('Error creating destination layer: ') + str(ex))
 
             uri = QgsDataSourceUri(conn.uri())
             uri.setTable(new_layer_name)
@@ -567,7 +567,13 @@ def add_geojson_features(geojson, project, qgis_layer_id=None, connection_id=Non
         with QgisProjectFileLocker(project) as project:
             apply_style(qgis_layer, style, True, name)
             project.qgis_project.addMapLayers([qgis_layer])
-            project.update_qgis_project()
+            root = project.qgis_project.layerTreeRoot()
+            if qgis_layer_id not in root.findLayerIds():
+                # Append layer at the end
+                root.insertLayer(-1, qgis_layer)
+            if not project.update_qgis_project():
+                raise Exception(
+                    _('Error saving the destination layer: could not write project!'))
 
         # Create Layer object
         instance, created = Layer.objects.get_or_create(
@@ -580,7 +586,10 @@ def add_geojson_features(geojson, project, qgis_layer_id=None, connection_id=Non
                 'is_visible': True,
                 'layer_type': provider,
                 'srid': 4326,
-                'datasource': layer_uri
+                'datasource': layer_uri,
+                'geometrytype': 'Polygon',
+                # TODO: make this a property of the Layer object
+                'database_columns': str([{'name': f.name(), 'type': QVariant.typeToName(f.type()).upper(), 'label': f.displayName()} for f in qgis_layer.fields()]),
             })
 
         if not created:

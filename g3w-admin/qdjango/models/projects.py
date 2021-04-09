@@ -48,6 +48,7 @@ TYPE_LAYER_FOR_DOWNLOAD = (
     'oracle'
 )
 
+
 def buildLayerTreeNodeObject(layerTreeNode):
     """Creates a dictionary that represents the QGIS Project layer tree
 
@@ -83,6 +84,7 @@ def buildLayerTreeNodeObject(layerTreeNode):
 
         toRetLayers.append(toRetLayer)
     return toRetLayers
+
 
 def get_project_file_path(instance, filename):
     """Custom name for uploaded project files."""
@@ -256,7 +258,8 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
         if self.qgis_project.write():
             self.is_dirty = True
             # Update layers tree
-            self.layers_tree = str(buildLayerTreeNodeObject(self.qgis_project.layerTreeRoot()))
+            self.layers_tree = str(buildLayerTreeNodeObject(
+                self.qgis_project.layerTreeRoot()))
             self.save()
             return True
         else:
@@ -449,7 +452,9 @@ class Layer(G3WACLModelMixins, models.Model):
         blank=True,
         null=True
     )
-    # Database columns (postgres layers need it)
+
+    # TODO: make this a property of the Layer object
+    # Database columns (DB layers need it)
     database_columns = models.TextField(
         _('Database columns'), blank=True, null=True)
 
