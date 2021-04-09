@@ -1,4 +1,4 @@
-Django==2.2.18
+Django==2.2.20
 django-autoslug==1.9.6
 django-formtools==2.2
 django-crispy-forms==1.8.1
