@@ -575,6 +575,9 @@ def add_geojson_features(geojson, project, qgis_layer_id=None, connection_id=Non
                 raise Exception(
                     _('Error saving the destination layer: could not write project!'))
 
+        # Retrieve the layer again because saving the project deleted it
+        qgis_layer = project.qgis_project.mapLayer(qgis_layer_id)
+
         # Create Layer object
         instance, created = Layer.objects.get_or_create(
             qgs_layer_id=qgis_layer_id,
