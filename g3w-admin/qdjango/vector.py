@@ -496,8 +496,6 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
 
         tmp_dir = tempfile.TemporaryDirectory()
 
-        filename = self._build_download_filename(request)
-
         # Apply filter backends, store original subset string
         qgs_request = QgsFeatureRequest()
         original_subset_string = self.metadata_layer.qgis_layer.subsetString()
@@ -514,7 +512,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
             "GPX_EXTENSIONS_NS=ogr"
         ]
 
-        filename = self.metadata_layer.qgis_layer.name() + '.gpx'
+        filename = self._build_download_filename(request) + '.gpx'
 
         # Make a selection based on the request
         self._selection_responde_download_mode(qgs_request, save_options)
