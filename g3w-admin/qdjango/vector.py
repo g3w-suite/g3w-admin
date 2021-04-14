@@ -23,7 +23,8 @@ from qdjango.api.constraints.filters import SingleLayerSubsetStringConstraintFil
     SingleLayerExpressionConstraintFilter, \
     GeoConstraintsFilter
 
-from qdjango.api.layers.filters import RelationOneToManyFilter, FidFilter, SingleLayerSessionTokenFilter
+from qdjango.api.layers.filters import RelationOneToManyFilter, FidFilter, SingleLayerSessionTokenFilter, \
+    FILTER_FID_PARAM
 
 from .models import Layer, SessionTokenFilter, SessionTokenFilterLayer
 from .utils.data import QGIS_LAYER_TYPE_NO_GEOM
@@ -391,6 +392,22 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
             )
             save_options.onlySelectedFeatures = True
 
+    def _build_download_filename(self, request):
+        """Build file name on filter context"""
+
+        filename = self.metadata_layer.qgis_layer.name()
+
+        # With FilterFid add feature ids sent with request
+        FILTER_FIDS_PARAM = f'{FILTER_FID_PARAM}s'
+
+        if FILTER_FIDS_PARAM in request.GET and request.GET[FILTER_FIDS_PARAM] != '':
+            filename += f"_{request.GET[FILTER_FIDS_PARAM].replace(',', '_')}"
+
+        if FILTER_FID_PARAM in request.GET and request.GET[FILTER_FID_PARAM] == '':
+            filename += f"_{request.GET[FILTER_FIDS_PARAM]}"
+
+        return filename
+
     def response_shp_mode(self, request):
         """
         Download Shapefile of data
@@ -403,7 +420,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
 
         tmp_dir = tempfile.TemporaryDirectory()
 
-        filename = self.metadata_layer.qgis_layer.name()
+        filename = self._build_download_filename(request)
 
         # Apply filter backends, store original subset string
         qgs_request = QgsFeatureRequest()
@@ -479,8 +496,6 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
 
         tmp_dir = tempfile.TemporaryDirectory()
 
-        filename = self.metadata_layer.qgis_layer.name()
-
         # Apply filter backends, store original subset string
         qgs_request = QgsFeatureRequest()
         original_subset_string = self.metadata_layer.qgis_layer.subsetString()
@@ -497,7 +512,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
             "GPX_EXTENSIONS_NS=ogr"
         ]
 
-        filename = self.metadata_layer.qgis_layer.name() + '.gpx'
+        filename = self._build_download_filename(request) + '.gpx'
 
         # Make a selection based on the request
         self._selection_responde_download_mode(qgs_request, save_options)
@@ -548,7 +563,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
 
         tmp_dir = tempfile.TemporaryDirectory()
 
-        filename = self.metadata_layer.qgis_layer.name() + '.xlsx'
+        filename = self._build_download_filename(request) + '.xlsx'
 
         # Make a selection based on the request
         self._selection_responde_download_mode(qgs_request, save_options)
@@ -599,7 +614,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
 
         tmp_dir = tempfile.TemporaryDirectory()
 
-        filename = self.metadata_layer.qgis_layer.name() + '.gpkg'
+        filename = self._build_download_filename(request) + '.gpkg'
 
         # Make a selection based on the request
         self._selection_responde_download_mode(qgs_request, save_options)
@@ -651,7 +666,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
 
         tmp_dir = tempfile.TemporaryDirectory()
 
-        filename = self.metadata_layer.qgis_layer.name() + '.csv'
+        filename = self._build_download_filename(request) + '.csv'
 
         # Make a selection based on the request
         self._selection_responde_download_mode(qgs_request, save_options)
