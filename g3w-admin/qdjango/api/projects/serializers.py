@@ -166,7 +166,8 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         options['autozoom_query'] = getattr(instance, 'autozoom_query', False)
 
         # for tabs TOC
-        options['toc_tab_default'] = getattr(instance, 'toc_tab_default', 'layers')
+        options['toc_tab_default'] = getattr(
+            instance, 'toc_tab_default', 'layers')
 
         return options
 
@@ -257,7 +258,6 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         ret['relations'] = []
         ret['no_legend'] = []
 
-
         layers = {l.qgs_layer_id: l for l in instance.layer_set.all()}
 
         # check fo title
@@ -269,12 +269,19 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         to_remove_from_layerstree = []
 
         def readLeaf(layer, container):
+
             if 'nodes' in layer:
                 for node in layer['nodes']:
                     readLeaf(node, layer['nodes'])
             else:
-                layer_serialized = LayerSerializer(
-                    layers[layer['id']], qgs_project=qgs_project)
+                try:
+                    layer_serialized = LayerSerializer(
+                        layers[layer['id']], qgs_project=qgs_project)
+                except KeyError:
+                    logger.error(
+                        'Layer %s is missing from QGIS project!' % layer['id'])
+                    return
+
                 layer_serialized_data = layer_serialized.data
 
                 # alter layer serialized data from plugin
@@ -352,7 +359,8 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
             if instance.group.use_logo_client:
                 ret['thumbnail'] = instance.group.header_logo_img.url
             else:
-                macrogroup = instance.group.macrogroups.get(use_logo_client=True)
+                macrogroup = instance.group.macrogroups.get(
+                    use_logo_client=True)
                 ret['thumbnail'] = macrogroup.logo_img.url
         except:
             pass
@@ -565,7 +573,6 @@ class LayerSerializer(serializers.ModelSerializer):
                             ret['source'].update({p[0]: datasourceWMS[p[0]]})
                 else:
                     ret['source'].update(datasourceWMS)
-
 
             ret['source']['external'] = instance.external
 
