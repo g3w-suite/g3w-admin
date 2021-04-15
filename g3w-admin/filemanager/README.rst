@@ -29,7 +29,7 @@ Add root path folder for data (optional), if is not set root path is set to DATA
 ::
 
     FILEMANAGER_ROOT_PATH = '<path_to_root_folder>'
-    FILENAMANAGER_MAX_N_FILES = <int number| default 10>
+    FILEMANAGER_MAX_UPLOAD_N_FILES = <int number| default 10>
 
 
 Sync tree menu by manage.py:
