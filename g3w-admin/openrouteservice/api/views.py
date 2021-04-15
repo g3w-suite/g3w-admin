@@ -285,7 +285,11 @@ class OpenrouteServiceIsochroneBaseView(G3WAPIView):
 
                 return Response({'result': True, 'qgis_layer_id': qgis_layer_id})
             else:
-                return Response({'result': False, 'error': result.json()['error']['message']}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                # Handle case where there is no "message"
+                try:
+                    return Response({'result': False, 'error': result.json()['error']['message']}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                except TypeError:
+                    return Response({'result': False, 'error': result.json()['error']}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         else:
             # Create async task
@@ -346,7 +350,6 @@ class OpenrouteServiceIsochroneFromLayerResultView(OpenrouteServiceIsochroneBase
 
         try:
 
-
             # Try to retrieve the task result, may throw an exception
             try:
                 result = HUEY.result(task_id)
@@ -359,7 +362,8 @@ class OpenrouteServiceIsochroneFromLayerResultView(OpenrouteServiceIsochroneBase
             progress_info = task_model.progress_info
 
             try:
-                progress_percentage = int(100 * progress_info[0] / task_model.total)
+                progress_percentage = int(
+                    100 * progress_info[0] / task_model.total)
             except:
                 progress_percentage = 0
 
