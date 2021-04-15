@@ -24,7 +24,6 @@ class CustomGridProjection():
         row = (2**coord.zoom - coord.row) if self.xyz else coord.row
         px = coord.column * tile_meters
         py = row * tile_meters
-        print(px, py)
         return Point(px,py)
 
     def normalizeSrs(self,srs):

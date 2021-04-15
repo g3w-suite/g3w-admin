@@ -72,7 +72,6 @@ class ActiveCachingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3W
                 self.base_layer = None
 
         except Exception as e:
-            print (e)
             self.activated = None
             kwargs['initial']['active'] = False
             kwargs['initial']['as_base_layer'] = False
