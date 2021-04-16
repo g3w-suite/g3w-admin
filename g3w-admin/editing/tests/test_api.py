@@ -16,6 +16,8 @@ import json
 from django.core.exceptions import ObjectDoesNotExist
 from django.test import override_settings
 from django.urls import reverse
+from django.http import SimpleCookie
+from guardian.shortcuts import assign_perm, get_anonymous_user
 from rest_framework.test import APIClient
 
 from qdjango.models import \
@@ -40,7 +42,8 @@ from .test_models import DATASOURCE_PATH, ConstraintsTestsBase
     DATASOURCE_PATH=DATASOURCE_PATH,
     G3WADMIN_LOCAL_MORE_APPS=[
         'editing',
-],
+    ],
+    EDITING_ANONYMOUS=True,
     LANGUAGE_CODE='en',
     LANGUAGES=(
         ('en', 'English'),
@@ -189,6 +192,27 @@ class EditingApiTests(ConstraintsTestsBase):
                                                                    cities_layer_id])
 
         jres = json.loads(response.content)
+
+        # check features
+        self.assertEqual(len(jres['vector']['data']['features']), 481)
+
+        # Test for Anonymous user
+        # -----------------------
+        path = reverse('editing-commit-vector-api', args=['editing', 'qdjango', self.editing_project.instance.pk,
+                                      cities_layer_id])
+
+        response = self.client.get(path)
+
+        # not editing grant to anonymous user
+        self.assertEqual(response.status_code, 403)
+
+        # with editing grant to anonymous user
+        assign_perm('change_layer', get_anonymous_user(), cities_layer)
+
+        # create cfrtoken
+        self.client.cookies = SimpleCookie({'csrftoken': 'wtegdnfj5736sgreth57Tg5473'})
+        response = self.client.get(path)
+        self.assertEqual(response.status_code, 200)
 
         # check features
         self.assertEqual(len(jres['vector']['data']['features']), 481)
@@ -512,6 +536,145 @@ class EditingApiTests(ConstraintsTestsBase):
                         "iso2_code": "IT",
                         "name": "CityTestNewUpdate",
                         "population": 1234
+                    },
+                    "type": "Feature"
+                }
+            ],
+            "delete": [],
+            "lockids": [
+                {
+                    "featureid": newid,
+                    "lockid": newlockid
+                }
+            ],
+            "relations": {},
+            "add": []
+        }
+
+        response = self.client.post(commit_path, payload, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        jresult = json.loads(response.content)
+        self.assertTrue(jresult['result'])
+
+        # check total feauture
+        data_path = reverse('core-vector-api',
+                            args=['data', 'qdjango', self.editing_project.instance.pk, cities_layer_id])
+
+        response = self.client.get(data_path, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        jresult = json.loads(response.content)
+
+        # check features
+        self.assertEqual(len(jresult['vector']['data']['features']), 482)
+
+        # DELETE
+        # ======
+
+        payload = {
+            "update": [],
+            "delete": [
+                newid
+            ],
+            "lockids": [
+                {
+                    "featureid": newid,
+                    "lockid": newlockid
+                }
+            ],
+            "relations": {},
+            "add": []
+        }
+
+        response = self.client.post(commit_path, payload, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        jresult = json.loads(response.content)
+        self.assertTrue(jresult['result'])
+
+        # check total feauture
+        data_path = reverse('core-vector-api',
+                            args=['data', 'qdjango', self.editing_project.instance.pk, cities_layer_id])
+
+        response = self.client.get(data_path, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        jresult = json.loads(response.content)
+
+        # check features
+        self.assertEqual(len(jresult['vector']['data']['features']), 481)
+
+        # TEST MODE_COMMIT FOR ANONYMOUS USER
+        # ---------------------------------------------
+
+        # test with join layer
+        # ---------------------------------------------
+        # ADD
+        # ===
+
+        # with editing grant to anonymous user
+        assign_perm('change_layer', get_anonymous_user(), cities_layer)
+
+        commit_path = reverse('editing-commit-vector-api',
+                              args=['commit', 'qdjango', self.editing_project.instance.pk, cities_layer_id])
+
+        payload = {
+            "add": [
+                {
+                    "id": "_new_1234520704670",
+                    "geometry": {"coordinates": [11.620713, 44.82678], "type": "Point"},
+                    "properties": {
+                        "geonameid": 5678,
+                        "gtopo30": 9,
+                        "iso2_code": "IT",
+                        "name": "CityTestNewForAnonymousUser",
+                        "population": 12345
+                    },
+                    "type": "Feature"
+                }
+            ],
+            "delete": [],
+            "lockids": [],
+            "relations": {},
+            "update": []
+        }
+
+        response = self.client.post(commit_path, payload, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        jresult = json.loads(response.content)
+        self.assertTrue(jresult['result'])
+
+        newid = jresult['response']['new'][0]['id']
+        newlockid = jresult['response']['new_lockids'][0]['lockid']
+
+        # check total feauture
+        data_path = reverse('core-vector-api',
+                            args=['data', 'qdjango', self.editing_project.instance.pk, cities_layer_id])
+
+        response = self.client.get(data_path, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        jresult = json.loads(response.content)
+
+        # check features
+        self.assertEqual(len(jresult['vector']['data']['features']), 482)
+
+        # UPDATE
+        # ======
+
+        payload = {
+            "update": [
+                {
+                    "id": newid,
+                    "geometry": {"coordinates": [11.620713, 44.82678], "type": "Point"},
+                    "properties": {
+                        "geonameid": 5678,
+                        "gtopo30": 9,
+                        "iso2_code": "IT",
+                        "name": "CityTestNewForAnonymousUser",
+                        "population": 12345
                     },
                     "type": "Feature"
                 }

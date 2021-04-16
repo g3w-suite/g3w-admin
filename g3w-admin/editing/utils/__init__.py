@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.sessions.models import Session
 from django.utils import timezone
 from usersmanage.configs import *
@@ -48,7 +49,9 @@ class LayerLock(object):
         featuresLocked = LockModel.objects.filter(**filters)
         for f in featuresLocked:
             self.initialFeatureLockedIds.append(f.feature_id)
-            if getattr(self, 'user') and f.user == self.user and getattr(self, 'sessionid') \
+            if getattr(self, 'user') and \
+                    (f.user == self.user or (self.user.is_anonymous and getattr(settings, 'EDITING_ANONYMOUS', False))) \
+                    and getattr(self, 'sessionid') \
                     and f.sessionid == self.sessionid:
                 self.getInitialUserFeatureLocked.append(f)
                 self.getInitialUserFeatureLockedByFeatureId[f.feature_id] = f.feature_lock_id
@@ -72,7 +75,8 @@ class LayerLock(object):
         )
 
         if getattr(self, 'user'):
-            featureLock.user = self.user
+            if self.user.pk:
+                featureLock.user = self.user
         if getattr(self, 'sessionid'):
             featureLock.sessionid = self.sessionid
 

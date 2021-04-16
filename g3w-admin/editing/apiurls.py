@@ -9,7 +9,7 @@ BASE_URLS = 'vector'
 urlpatterns = [
     url(r'^api/(?P<mode_call>editing|commit|unlock)/(?P<project_type>[-_\w\d]+)/(?P<project_id>[0-9]+)/'
         r'(?P<layer_name>[-_\w\d]+)/$',
-        login_required(layer_commit_vector_view), name='editing-commit-vector-api')
+        layer_commit_vector_view, name='editing-commit-vector-api')
 ]
 
 # Editing info
