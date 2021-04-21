@@ -6,7 +6,7 @@ from collections import OrderedDict
 import copy
 
 from qgis.core import QgsFieldConstraints, Qgis
-from qgis.PyQt.QtCore import QVariant
+from qgis.PyQt.QtCore import QVariant, QDate, QDateTime
 
 # relations data type
 RELATIONS_ONE_TO_ONE = 'ONE'
@@ -259,6 +259,10 @@ def mapLayerAttributesFromQgisLayer(qgis_layer, **kwargs):
                         else None
                 else:
                     default_value = kwargs['default']
+
+                if isinstance(default_value, QDate) or isinstance(default_value, QDateTime):
+                    default_value = default_value.toString(
+                        kwargs['fields'][field.name()]['input']['options']['formats'][0]['displayformat'])
 
                 expression = ''
                 if has_expression:
