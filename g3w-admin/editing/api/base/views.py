@@ -65,7 +65,8 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
         super(BaseEditingVectorOnModelApiView, self).initial(
             request, *args, **kwargs)
 
-        self.sessionid = request.COOKIES[settings.SESSION_COOKIE_NAME]
+        self.sessionid = request.COOKIES[settings.SESSION_COOKIE_NAME] \
+            if not request.user.is_anonymous else settings.ANONYMOUS_USER_SESSIONID
 
         # instance lock object
         # set lock object

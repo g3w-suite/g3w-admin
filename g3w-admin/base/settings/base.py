@@ -298,3 +298,6 @@ LOAD_QPLOTLY_FROM_PROJECT = False
 # set into local_settings.py to use it
 # ------------------------------------
 VENDOR_KEYS = {}
+
+# sessionid value for AnonymousUser to us i.e. for editing module
+ANONYMOUS_USER_SESSIONID = '_anonymous_g3w_suite_sessionid_'
