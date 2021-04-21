@@ -36,7 +36,6 @@ MAPPING_DJANGO_MODEL_FIELD_FILE_OBJECT = {
     FileField: File
 }
 
-
 class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
 
     app_name = 'editing'
@@ -66,7 +65,7 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
             request, *args, **kwargs)
 
         self.sessionid = request.COOKIES[settings.SESSION_COOKIE_NAME] \
-            if not request.user.is_anonymous else request.COOKIES['csrftoken']
+            if not request.user.is_anonymous else settings.ANONYMOUS_USER_SESSIONID
 
         # instance lock object
         # set lock object
