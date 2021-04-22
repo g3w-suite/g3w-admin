@@ -209,8 +209,6 @@ class EditingApiTests(ConstraintsTestsBase):
         # with editing grant to anonymous user
         assign_perm('change_layer', get_anonymous_user(), cities_layer)
 
-        # create cfrtoken
-        self.client.cookies = SimpleCookie({'csrftoken': 'wtegdnfj5736sgreth57Tg5473'})
         response = self.client.get(path)
         self.assertEqual(response.status_code, 200)
 
