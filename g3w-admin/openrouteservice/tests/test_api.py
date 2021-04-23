@@ -379,8 +379,7 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
 
         response = self._testApiCall(
             'openrouteservice-compatible-layers', [self.qdjango_project.pk])
-        self.assertEqual(response.json()['isochrones']['compatible'], [k for k in self.qdjango_project.qgis_project.mapLayers(
-        ).keys() if k.startswith('openrouteservice_compatible')])
+        self.assertEqual(response.json()['isochrones']['compatible'], [{'layer_id': l.pk, 'qgis_layer_id': l.qgs_layer_id} for l in self.qdjango_project.layer_set.all() if l.name.startswith('openrouteservice_compatible')])
         connection = response.json()['connections'][0]
         self.assertEqual(connection['provider'], 'postgres')
         self.assertEqual(

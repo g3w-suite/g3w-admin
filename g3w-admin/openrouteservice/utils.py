@@ -203,12 +203,15 @@ def config(project):
         // This part is specific for isochrones
         "isochrones":
         {
-            "compatible":[
-                "isochrone_gpkg_15b2116a_25f5_430c_b9ad_a86dc425ce5f",
-                "isochrone_postgres_49ec3537_8631_4c29_832d_15c91c2430e6",
-                "isochrone_shp_825bc382_628b_4b3b_a078_c377aad56a8d",
-                "isochrone_spatialite_b507eaeb_46bb_41bf_80d6_662d21ad9c9a",
-                "isochrone_sqlite_45de826d_c6a2_4057_bb32_16bb5c2f18df",
+            "compatible": [
+                {
+                    'layer_id': 13,
+                    'qgis_layer_id': 'openrouteservice_compatible_3857_b8432614_8f73_46de_8c68_366d5249d470'
+                },
+                {
+                    'layer_id': 14,
+                    'qgis_layer_id': 'openrouteservice_compatible_dd8c034a_a482_4047_9509_1d6dd3bd5c81'
+                }
             ],
             "profiles": {
                 "driving-car": {
@@ -252,9 +255,12 @@ def config(project):
     compatible = []
     connections = []
 
-    for layer_id, layer in project.qgis_project.mapLayers().items():
-        if is_ors_compatible(layer):
-            compatible.append(layer_id)
+    for layer in project.layer_set.all():
+        if is_ors_compatible(layer.qgis_layer):
+            compatible.append({
+                'layer_id': layer.pk,
+                'qgis_layer_id': layer.qgs_layer_id,
+            })
 
     connections = get_db_connections(project.qgis_project)
 
