@@ -113,7 +113,7 @@ from qdjango.models import (ConstraintExpressionRule,
                             SingleLayerConstraint, buildLayerTreeNodeObject)
 from qdjango.tests.base import CURRENT_PATH, QdjangoTestBase
 from qgis.core import (Qgis, QgsDataSourceUri, QgsProject, QgsProviderRegistry,
-                       QgsVectorLayer)
+                       QgsVectorLayer, QgsWkbTypes)
 from qgis.PyQt.QtCore import QTemporaryDir
 from qgis.PyQt.QtGui import QImage
 from rest_framework import status
@@ -379,7 +379,9 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
 
         response = self._testApiCall(
             'openrouteservice-compatible-layers', [self.qdjango_project.pk])
-        self.assertEqual(response.json()['isochrones']['compatible'], [{'layer_id': l.pk, 'qgis_layer_id': l.qgs_layer_id} for l in self.qdjango_project.layer_set.all() if l.name.startswith('openrouteservice_compatible')])
+        self.assertEqual(response.json()['isochrones']['compatible'], [{'layer_id':l.pk, 'qgis_layer_id':l.qgs_layer_id} for l in self.qdjango_project.layer_set.all() if l.name.startswith('openrouteservice_compatible')])
+        self.assertEqual(response.json()['isochrones']['pointlayers'], [{'layer_id': l.pk, 'qgis_layer_id': l.qgs_layer_id}
+                                                       for l in self.qdjango_project.layer_set.all() if l.qgis_layer.geometryType() == QgsWkbTypes.PointGeometry])
         connection = response.json()['connections'][0]
         self.assertEqual(connection['provider'], 'postgres')
         self.assertEqual(

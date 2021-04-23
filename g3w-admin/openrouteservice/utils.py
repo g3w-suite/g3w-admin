@@ -213,6 +213,18 @@ def config(project):
                     'qgis_layer_id': 'openrouteservice_compatible_dd8c034a_a482_4047_9509_1d6dd3bd5c81'
                 }
             ],
+            "pointlayers":  // Point and multipoint layers
+            {
+                {
+                    'layer_id': 23,
+                    'qgis_layer_id': 'points_3857_b8432614_8f73_46de_8c68_366d5249d470'
+                },
+                {
+                    'layer_id': 24,
+                    'qgis_layer_id': 'multipoints_dd8c034a_a482_4047_9509_1d6dd3bd5c81'
+                }
+
+            },
             "profiles": {
                 "driving-car": {
                     "name": "Car"
@@ -253,11 +265,17 @@ def config(project):
     """
 
     compatible = []
+    pointlayers = []
     connections = []
 
     for layer in project.layer_set.all():
         if is_ors_compatible(layer.qgis_layer):
             compatible.append({
+                'layer_id': layer.pk,
+                'qgis_layer_id': layer.qgs_layer_id,
+            })
+        if layer.qgis_layer.geometryType() == QgsWkbTypes.PointGeometry:
+            pointlayers.append({
                 'layer_id': layer.pk,
                 'qgis_layer_id': layer.qgs_layer_id,
             })
@@ -267,6 +285,7 @@ def config(project):
     return {
         'isochrones': {
             'compatible': compatible,
+            'pointlayers': pointlayers,
             'profiles': ORS_PROFILES
         },
         'connections': list(connections.values()),
