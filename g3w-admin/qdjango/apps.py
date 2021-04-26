@@ -82,6 +82,18 @@ def init_qgis():
     QGS_SERVER = QgsServer()
 
 
+def remove_project_from_cache(path):
+    """Removes a project from server's cache
+
+    :param path: project path
+    :type path: str
+    """
+    QgsConfigCache.instance().removeEntry(path)
+    QGS_SERVER.serverInterface().capabilitiesCache().removeCapabilitiesDocument(path)
+    logger.warning(
+        'QGIS Server project removed from cache: %s' % path)
+
+
 class ProjectCacheInvalidator():
     """Cache manager that checks the project file last modified time and
     invalidates the project cache if the project has changed.
@@ -109,8 +121,8 @@ class ProjectCacheInvalidator():
             if cls.__CACHED_PROJECTS[path] < mtime:
                 logger.warning(
                     'QGIS Server cached project mtime has changed, clearing cache: %s' % path)
-                QgsConfigCache.instance().removeEntry(path)
-                QGS_SERVER.serverInterface().capabilitiesCache().removeCapabilitiesDocument(path)
+                remove_project_from_cache(path)
+                del(cls.__CACHED_PROJECTS[path])
         except KeyError:
             logger.warning(
                 'QGIS Server project added to mtime cache: %s' % path)
@@ -136,7 +148,7 @@ def get_qgs_project(path):
         # does not work reliably with project that are stored on network mounted
         # volumes, in that case we need to use our own cache manager, enable it with
         # G3WADMIN_USE_CUSTOM_CACHE_INVALIDATOR=True
-        
+
         QgsApplication.instance().processEvents()
 
         if USE_CUSTOM_CACHE_INVALIDATOR:
