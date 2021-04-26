@@ -6,7 +6,7 @@
  
 -- Into core_baselayer
 UPDATE core_baselayer SET "order"="__order";
-ALTER TABLE core_baselayer DROP COLUMN __order;
+ALTER TABLE core_baselayer DROP COLUMN order;
 
 
 -- Into core_generalsuitedata
