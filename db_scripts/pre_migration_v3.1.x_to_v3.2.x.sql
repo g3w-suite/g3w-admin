@@ -5,7 +5,7 @@
 --------------------------------------------------------------------------------------------------------
 
 -- Into core_baselayer
-ALTER TABLE core_baselayer RENAME COLUMN "order" TO "_order";
+ALTER TABLE core_baselayer RENAME COLUMN "order" TO "__order";
 DROP INDEX core_baselayer_order_ffe4069b;
 
 
