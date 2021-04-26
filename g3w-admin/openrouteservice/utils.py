@@ -14,9 +14,9 @@ __copyright__ = 'Copyright 2021, ItOpen'
 
 import hashlib
 import json
+import logging
 import os
 import re
-import logging
 import traceback
 
 import requests
@@ -24,7 +24,8 @@ from django.conf import settings
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 from huey.contrib import djhuey as huey
-from qdjango.models import Layer, QgisProjectFileLocker, Project
+from qdjango.apps import remove_project_from_cache
+from qdjango.models import Layer, Project, QgisProjectFileLocker
 from qgis.core import (QgsCoordinateReferenceSystem, QgsCoordinateTransform,
                        QgsDataProvider, QgsDataSourceUri, QgsExpression,
                        QgsFeatureRequest, QgsField, QgsGeometry, QgsJsonUtils,
@@ -269,16 +270,24 @@ def config(project):
     connections = []
 
     for layer in project.layer_set.all():
-        if is_ors_compatible(layer.qgis_layer):
-            compatible.append({
-                'layer_id': layer.pk,
-                'qgis_layer_id': layer.qgs_layer_id,
-            })
-        if layer.qgis_layer.geometryType() == QgsWkbTypes.PointGeometry:
-            pointlayers.append({
-                'layer_id': layer.pk,
-                'qgis_layer_id': layer.qgs_layer_id,
-            })
+
+        # Try to invalidate the cache
+        if layer.qgis_layer is None:
+            remove_project_from_cache(project.qgis_project.fileName())
+
+        if layer.qgis_layer is None:
+            logger.warning('Layer %s has no valid QGIS layer!' % layer.name)
+        else:
+            if is_ors_compatible(layer.qgis_layer):
+                compatible.append({
+                    'layer_id': layer.pk,
+                    'qgis_layer_id': layer.qgs_layer_id,
+                })
+            if layer.qgis_layer.geometryType() == QgsWkbTypes.PointGeometry:
+                pointlayers.append({
+                    'layer_id': layer.pk,
+                    'qgis_layer_id': layer.qgs_layer_id,
+                })
 
     connections = get_db_connections(project.qgis_project)
 
@@ -630,6 +639,9 @@ def add_geojson_features(geojson, project, qgis_layer_id=None, connection_id=Non
 
     # Append to an existing layer
     qgis_layer = project.qgis_project.mapLayer(qgis_layer_id)
+    if qgis_layer is None:
+        raise Exception(
+            _('Error opening destination layer %s: layer not found in QGIS project!' % qgis_layer_id))
 
     features = QgsJsonUtils.stringToFeatureList(
         geojson, fields)
@@ -753,8 +765,6 @@ def isochrone_from_layer(input_qgis_layer_id, profile, params, project_id, qgis_
     ct = QgsCoordinateTransform(
         input_layer.crs(), QgsCoordinateReferenceSystem(4326), project.qgis_project.transformContext())
 
-    qgis_layer_id = None
-
     # Collect point batches
     points = []
 
@@ -766,8 +776,12 @@ def isochrone_from_layer(input_qgis_layer_id, profile, params, project_id, qgis_
         result = isochrone(profile, params)
         if result.status_code != status.HTTP_200_OK:
             jcontent = json.loads(result.content.decode('utf-8'))
+            try:
+                error_message = jcontent['error']['message']
+            except KeyError:
+                error_message = jcontent['error']
             raise Exception(
-                _('Error generating isochrone: %s.') % jcontent['error']['message'])
+                _('Error generating isochrone: %s.') % error_message)
         return add_geojson_features(result.content.decode(
             'utf-8'), project, qgis_layer_id, connection_id, new_layer_name, name, style)
 
