@@ -296,7 +296,6 @@ class OpenrouteServiceIsochroneBaseView(G3WAPIView):
             input_qgis_layer_id = layer.qgis_layer.id()
             task = isochrone_from_layer_task(input_qgis_layer_id, profile, params,
                                              project.pk, qgis_layer_id, connection, new_layer_name, name, style)
-            task()
             return Response({'result': True, 'task_id': task.id})
 
 
