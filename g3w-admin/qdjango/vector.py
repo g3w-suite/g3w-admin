@@ -401,7 +401,8 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         FILTER_FIDS_PARAM = f'{FILTER_FID_PARAM}s'
 
         if FILTER_FIDS_PARAM in request.GET and request.GET[FILTER_FIDS_PARAM] != '':
-            filename += f"_{request.GET[FILTER_FIDS_PARAM].replace(',', '_')}"
+            if len(request.GET[FILTER_FIDS_PARAM].split(',')) == 1:
+                filename += f"_{request.GET[FILTER_FIDS_PARAM].replace(',', '_')}"
 
         if FILTER_FID_PARAM in request.GET and request.GET[FILTER_FID_PARAM] == '':
             filename += f"_{request.GET[FILTER_FIDS_PARAM]}"
