@@ -282,7 +282,10 @@ class QgisProjectLayer(XmlData):
         :return: max scale value for layer
         :rtype: int
         """
-        return int(self.qgs_layer.maximumScale())
+        denom = self.qgs_layer.maximumScale()
+        if denom == float("inf") or denom == float("-inf"):
+            return 0
+        return int(denom)
 
     def _getDataScaleBasedVisibility(self):
         """
