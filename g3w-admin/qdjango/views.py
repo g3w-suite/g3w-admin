@@ -394,7 +394,7 @@ class QdjangoLayerWidgetUpdateView(G3WRequestViewMixin, G3WGroupViewMixin, Qdjan
     def get_context_data(self, **kwargs):
         context = super(QdjangoLayerWidgetUpdateView, self).get_context_data()
         context['layer'] = self.layer
-        context['project_layers'] = json.dumps(json.dumps(project_layers4search_widget(self.layer)))
+        context['project_layers'] = json.dumps(project_layers4search_widget(self.layer))
 
         load_qdjango_widgets_data.send(self, context=context)
 
