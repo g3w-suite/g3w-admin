@@ -331,8 +331,8 @@ class QdjangoLayerWidgetCreateView(G3WRequestViewMixin, G3WGroupViewMixin, Qdjan
     def get_context_data(self, **kwargs):
         context = super(QdjangoLayerWidgetCreateView, self).get_context_data()
         context['layer'] = self.layer
+        context['project_layers'] = json.dumps({l.qgs_layer_id: l.name for l in self.layer.project.layer_set.all()})
 
-        # todo: da rifare meglio la struttura dei widget
         load_qdjango_widgets_data.send(self, context=context)
 
         return context
@@ -379,6 +379,7 @@ class QdjangoLayerWidgetUpdateView(G3WRequestViewMixin, G3WGroupViewMixin, Qdjan
     def get_context_data(self, **kwargs):
         context = super(QdjangoLayerWidgetUpdateView, self).get_context_data()
         context['layer'] = self.layer
+        context['project_layers'] = json.dumps({l.qgs_layer_id: l.name for l in self.layer.project.layer_set.all()})
 
         load_qdjango_widgets_data.send(self, context=context)
 
