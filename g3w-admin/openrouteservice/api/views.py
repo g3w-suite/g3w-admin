@@ -272,6 +272,8 @@ class OpenrouteServiceIsochroneBaseView(G3WAPIView):
         if not is_task:
             try:
                 result = isochrone(profile, params)
+                if result.content == b'':
+                    return Response({'result': False, 'error': 'Empty response from the Openrouteservice server, please check your input values.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             except Exception as ex:
                 return Response({'result': False, 'error': str(ex)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
