@@ -341,7 +341,7 @@ class OpenrouteServiceIsochroneFromLayerResultView(OpenrouteServiceIsochroneBase
                 100,  // Progress %
             ],
             "task_result": {
-                "qgis_ayer_id": "4f2a88a1-ca93-4859-9de3-75d9728cde0e"
+                "qgis_layer_id": "4f2a88a1-ca93-4859-9de3-75d9728cde0e"
             }
         }
 
