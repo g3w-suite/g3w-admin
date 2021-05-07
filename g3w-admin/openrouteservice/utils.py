@@ -778,7 +778,7 @@ def isochrone_from_layer(input_qgis_layer_id, profile, params, project_id, qgis_
             jcontent = json.loads(result.content.decode('utf-8'))
             try:
                 error_message = jcontent['error']['message']
-            except KeyError:
+            except (KeyError, TypeError):
                 error_message = jcontent['error']
             raise Exception(
                 _('Error generating isochrone: %s.') % error_message)
