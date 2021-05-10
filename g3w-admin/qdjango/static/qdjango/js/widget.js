@@ -729,7 +729,7 @@ ga.Qdjango.widgetEditor = {
         </div>\
         </div>');
 
-        var cmpPlusLayersSearch = $('<select class="form-control" multiple="multiple" name="pluslayer_field"></select>')
+        var cmpPlusLayersSearch = $('<select class="form-control" multiple="multiple" name="pluslayer_field" style="width: 570px"></select>')
 
         $.each(this.projectLayers, function (i, v) {
           var selected = ""
@@ -809,7 +809,7 @@ ga.Qdjango.widgetEditor = {
         </div>\
         </div>');
 
-        var cmpPlusLayersSearch = $('<select class="form-control" multiple="multiple" name="pluslayer_field"></select>')
+        var cmpPlusLayersSearch = $('<select class="form-control" multiple="multiple" name="pluslayer_field" style="width: 570px;"></select>')
 
         $.each(this.projectLayers, function (i, v) {
 
@@ -817,7 +817,6 @@ ga.Qdjango.widgetEditor = {
           if (that.isset(that.widget.body.otherlayers) && _.indexOf(that.widget.body.otherlayers, i) != -1){
             selected = "selected";
           }
-          //var selected = that.isset(values) && values.name === v.name ? "selected" : ""
           var option = $('<option value="' + i + '" ' + selected + ">" + v + "</option>")
           cmpPlusLayersSearch.append(option)
         })
@@ -826,6 +825,7 @@ ga.Qdjango.widgetEditor = {
 
         $(".rightCol").append(pluslayers);
         cmpPlusLayersSearch.select2();
+
       }
 
 
@@ -843,7 +843,7 @@ ga.Qdjango.widgetEditor = {
 
         div.appendTo($(".rightCol"))
       })
-      $(".rightCol").append(addDiv)
+      $(".rightCol").append(addDiv);
     }
   },
 
