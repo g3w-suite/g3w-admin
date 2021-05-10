@@ -272,6 +272,8 @@ class OpenrouteServiceIsochroneBaseView(G3WAPIView):
         if not is_task:
             try:
                 result = isochrone(profile, params)
+                if result.content == b'':
+                    return Response({'result': False, 'error': 'Empty response from the Openrouteservice server, please check your input values.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             except Exception as ex:
                 return Response({'result': False, 'error': str(ex)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -339,7 +341,7 @@ class OpenrouteServiceIsochroneFromLayerResultView(OpenrouteServiceIsochroneBase
                 100,  // Progress %
             ],
             "task_result": {
-                "qgis_ayer_id": "4f2a88a1-ca93-4859-9de3-75d9728cde0e"
+                "qgis_layer_id": "4f2a88a1-ca93-4859-9de3-75d9728cde0e"
             }
         }
 

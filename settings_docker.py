@@ -142,8 +142,11 @@ SESSION_COOKIE_NAME = 'gis3w-admin'
 
 # OPENROUTESERVICE SETTINGS
 # ===============================
-# follow settings work if 'openrouteservice' module is in 'G3WADMIN_LOCAL_MORE_APPS'
+# following settings work if 'openrouteservice' module is in 'G3WADMIN_LOCAL_MORE_APPS'
 # ORS API endpoint
+# Public service, requires API
+# ORS_API_ENDPOINT = 'https://api.openrouteservice.org/v2'
+# Localhost for testing
 ORS_API_ENDPOINT = 'http://localhost:8080/ors/v2/'
 # Optional, can be blank if the key is not required by the endpoint
 ORS_API_KEY = ''
