@@ -8,14 +8,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: G3W-SUITE 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-01 10:26+0200\n"
+"POT-Creation-Date: 2021-04-07 17:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.8.0\n"
+"Generated-By: Babel 2.4.0\n"
 
 #: ../../g3wsuite_client.md:1
 msgid "G3W-CLIENT: the cartographic viewer"
@@ -111,7 +111,7 @@ msgstr ""
 msgid "Map: containing:"
 msgstr ""
 
-#: ../../g3wsuite_client.md:29 ../../g3wsuite_client.md:203
+#: ../../g3wsuite_client.md:29 ../../g3wsuite_client.md:208
 msgid "Layers: structured list of layers, defined on the QGIS project"
 msgstr ""
 
@@ -275,7 +275,7 @@ msgid ""
 "cartographic client."
 msgstr ""
 
-#: ../../g3wsuite_client.md:84 ../../g3wsuite_client.md:228
+#: ../../g3wsuite_client.md:84 ../../g3wsuite_client.md:233
 msgid "The window is resizable."
 msgstr ""
 
@@ -301,11 +301,14 @@ msgid ""
 msgstr ""
 
 #: ../../g3wsuite_client.md:96
-msgid "Show relations (1: N): if present on the GQIS project"
+msgid "Show relations (1: N): if present on the QGIS project"
 msgstr ""
 
 #: ../../g3wsuite_client.md:97
-msgid "Show relation charts: if setted"
+msgid ""
+"Show relation charts: display of plots related to 1: N related data. Only"
+" if 1: N relationships are associated with the interrogated layer and "
+"plots have been activated on the referencing tables."
 msgstr ""
 
 #: ../../g3wsuite_client.md:98
@@ -324,83 +327,83 @@ msgstr ""
 msgid "Add/Remove selection: add/remove the features to the current selection"
 msgstr ""
 
-#: ../../g3wsuite_client.md:104
+#: ../../g3wsuite_client.md:105
 msgid "Display of 1:n relation data"
 msgstr ""
 
-#: ../../g3wsuite_client.md:106
+#: ../../g3wsuite_client.md:107
 msgid ""
 "In the event that, at the QGIS project level, one or more type 1:n "
 "relations have been associated with a layer, the icon View Relationships"
 "  will be shown in the attribute form."
 msgstr ""
 
-#: ../../g3wsuite_client.md:108
+#: ../../g3wsuite_client.md:109
 msgid ""
 "By clicking on the icon you will access the list of 1:N relations present"
 " and, from these, the list of child records associated with the "
 "individual relationships."
 msgstr ""
 
-#: ../../g3wsuite_client.md:110
+#: ../../g3wsuite_client.md:111
 msgid ""
 "In the case of a simple 1:1 or N:1 joins, the joined records will be "
 "displayed directly in the main form."
 msgstr ""
 
-#: ../../g3wsuite_client.md:112
+#: ../../g3wsuite_client.md:114
 msgid ""
 "In the new frame, a filter, applied generically to the contents of all "
 "fields, will allow you to filter the list of child records."
 msgstr ""
 
-#: ../../g3wsuite_client.md:114
+#: ../../g3wsuite_client.md:116
 msgid ""
 "The icon to the left of each record allows you to switch from the classic"
 " table view to the one based on any form defined on the QGIS project"
 msgstr ""
 
-#: ../../g3wsuite_client.md:116
+#: ../../g3wsuite_client.md:118
 msgid ""
 "In the case of links to multimedia contents, the previews of the images "
 "and/or the Open button will be displayed for consultation of different "
 "types of content."
 msgstr ""
 
-#: ../../g3wsuite_client.md:118
+#: ../../g3wsuite_client.md:120
 msgid ""
 "In case of active plots on the related table, these will be displayed "
 "through Show charts at the top right."
 msgstr ""
 
-#: ../../g3wsuite_client.md:122
+#: ../../g3wsuite_client.md:124
 msgid "Tools panel"
 msgstr ""
 
-#: ../../g3wsuite_client.md:123
+#: ../../g3wsuite_client.md:125
 msgid "Metadata"
 msgstr ""
 
-#: ../../g3wsuite_client.md:124
+#: ../../g3wsuite_client.md:126
 msgid ""
 "The metadata reported in this session derive from those set at the QGIS "
 "project level."
 msgstr ""
 
-#: ../../g3wsuite_client.md:126
+#: ../../g3wsuite_client.md:128
 msgid ""
 "This content is divided into three sessions: General, Space Info and "
 "Layers."
 msgstr ""
 
-#: ../../g3wsuite_client.md:127
+#: ../../g3wsuite_client.md:129
 msgid ""
 "General: reports the metadata defined on the QGIS project in the item: "
 "Project →  Properties (QGIS Server session, Service Capabilities) In case"
 " of login as anonymous user the URL of the WMS service is shown."
 msgstr ""
 
-#: ../../g3wsuite_client.md:129
+#: ../../g3wsuite_client.md:131
 msgid ""
 "Spatial: reports the EPSG code of the projection system associated with "
 "the QGIS project and the BoundingBox relating to the initial publication "
@@ -408,392 +411,392 @@ msgid ""
 "session, WMS Capabilities, Advertised extent)"
 msgstr ""
 
-#: ../../g3wsuite_client.md:130
+#: ../../g3wsuite_client.md:132
 msgid "Layers: reports simple metadata associated with the individual layers."
 msgstr ""
 
-#: ../../g3wsuite_client.md:134
+#: ../../g3wsuite_client.md:136
 msgid "Charts"
 msgstr ""
 
-#: ../../g3wsuite_client.md:135
+#: ../../g3wsuite_client.md:137
 msgid ""
 "View graphs created using QGIS DataPlotly and activated at the admin "
 "session level."
 msgstr ""
 
-#: ../../g3wsuite_client.md:137
+#: ../../g3wsuite_client.md:139
 msgid "Check the plots in the list and consult them on the rigth panel."
 msgstr ""
 
-#: ../../g3wsuite_client.md:141
+#: ../../g3wsuite_client.md:143
 msgid "The graphs are filterable based on the:"
 msgstr ""
 
-#: ../../g3wsuite_client.md:142
+#: ../../g3wsuite_client.md:144
 msgid "features visible on the map"
 msgstr ""
 
-#: ../../g3wsuite_client.md:143
+#: ../../g3wsuite_client.md:145
 msgid "filter based on the selected features"
 msgstr ""
 
-#: ../../g3wsuite_client.md:145
+#: ../../g3wsuite_client.md:147
 msgid ""
 "These filters are also reflected on the plots associated to the related "
 "data (in 1:N mode) based on the visible and/or selected parent features."
 msgstr ""
 
-#: ../../g3wsuite_client.md:147
+#: ../../g3wsuite_client.md:149
 msgid ""
 "The filter based on the map content can be activated globally on all "
 "plots (icon at the top of the panel dedicated to charts) or on only some "
 "specific plots (icon placed at the level of the individual plots)."
 msgstr ""
 
-#: ../../g3wsuite_client.md:149
+#: ../../g3wsuite_client.md:151
 msgid ""
 "The plots will automatically update after pan and zoom operations on the "
 "map"
 msgstr ""
 
-#: ../../g3wsuite_client.md:151
+#: ../../g3wsuite_client.md:153
 msgid ""
 "If activated, the filter based on the selected features is automatically "
 "activated on all related plots (associated with the same layer and with "
 "the 1:N relationed tables)"
 msgstr ""
 
-#: ../../g3wsuite_client.md:153
+#: ../../g3wsuite_client.md:155
 msgid ""
 "Appropriate messages at the single plots level will indicate the "
 "activation of these filters."
 msgstr ""
 
-#: ../../g3wsuite_client.md:155
+#: ../../g3wsuite_client.md:158
 msgid "Print"
 msgstr ""
 
-#: ../../g3wsuite_client.md:156
+#: ../../g3wsuite_client.md:159
 msgid "Printing tool based on layouts defined on QGIS project."
 msgstr ""
 
-#: ../../g3wsuite_client.md:158
+#: ../../g3wsuite_client.md:161
 msgid "The tool allows you to choose:"
 msgstr ""
 
-#: ../../g3wsuite_client.md:159
+#: ../../g3wsuite_client.md:162
 msgid ""
 "Template: print layout among those associated with the published QGIS "
 "project"
 msgstr ""
 
-#: ../../g3wsuite_client.md:160
+#: ../../g3wsuite_client.md:163
 msgid "Scale: print scale"
 msgstr ""
 
-#: ../../g3wsuite_client.md:161
+#: ../../g3wsuite_client.md:164
 msgid "DPI: print resolution"
 msgstr ""
 
-#: ../../g3wsuite_client.md:162
+#: ../../g3wsuite_client.md:165
 msgid "Rotation: rotation angle"
 msgstr ""
 
-#: ../../g3wsuite_client.md:163
+#: ../../g3wsuite_client.md:166
 msgid "Format: print to PDF or JPEG"
 msgstr ""
 
-#: ../../g3wsuite_client.md:165
+#: ../../g3wsuite_client.md:168
 msgid ""
 "On the map, a lit rectangular area will allow you to define the print "
 "area."
 msgstr ""
 
-#: ../../g3wsuite_client.md:169
+#: ../../g3wsuite_client.md:172
 msgid ""
 "If an Atlas type print layout is associated in the QGIS project, the "
 "layout reference will be available. The cards to be printed are defined "
 "by referring to the atlas identifier defined in the print layout."
 msgstr ""
 
-#: ../../g3wsuite_client.md:174
+#: ../../g3wsuite_client.md:178
 msgid "Search and Query Builder"
 msgstr ""
 
-#: ../../g3wsuite_client.md:176
+#: ../../g3wsuite_client.md:180
 msgid ""
 "A classic Query Builder is present at the Search menu level. Through this"
 " tool it is possible to:"
 msgstr ""
 
-#: ../../g3wsuite_client.md:178
+#: ../../g3wsuite_client.md:182
 msgid "carry out alphanumeric searches on geometric layers"
 msgstr ""
 
-#: ../../g3wsuite_client.md:179
+#: ../../g3wsuite_client.md:183
 msgid "save the query to reuse it until the end of the work session"
 msgstr ""
 
-#: ../../g3wsuite_client.md:180
+#: ../../g3wsuite_client.md:184
 msgid "edit a previously saved query"
 msgstr ""
 
-#: ../../g3wsuite_client.md:182
+#: ../../g3wsuite_client.md:186
 msgid "The saved query will be available until the browser cache is cleared"
 msgstr ""
 
-#: ../../g3wsuite_client.md:186
+#: ../../g3wsuite_client.md:190
 msgid ""
 "The Search menu contains the list of search tools defined through the "
 "Administration panel and custom searches created with the Query Builder."
 msgstr ""
 
-#: ../../g3wsuite_client.md:190
+#: ../../g3wsuite_client.md:195
 msgid ""
 "You choose the search you are interested in, fill in the required fields "
 "and click on the Search button."
 msgstr ""
 
-#: ../../g3wsuite_client.md:192
+#: ../../g3wsuite_client.md:197
 msgid ""
 "The panel with the list of results will open on the right side of the "
 "client, for each result the first three fields of the associated table "
 "will be displayed."
 msgstr ""
 
-#: ../../g3wsuite_client.md:194
+#: ../../g3wsuite_client.md:199
 msgid ""
 "By positioning on the individual results, the corresponding features will"
 " be highlighted on the map; clicking on the individual results you can "
 "consult all the attributes."
 msgstr ""
 
-#: ../../g3wsuite_client.md:196
+#: ../../g3wsuite_client.md:201
 msgid ""
 "Zoom to features and download icons are available for results (single or "
 "cumulative)"
 msgstr ""
 
-#: ../../g3wsuite_client.md:200
+#: ../../g3wsuite_client.md:205
 msgid "Map"
 msgstr ""
 
-#: ../../g3wsuite_client.md:202
+#: ../../g3wsuite_client.md:207
 msgid "This session has three tabs:"
 msgstr ""
 
-#: ../../g3wsuite_client.md:204
+#: ../../g3wsuite_client.md:209
 msgid ""
 "Base: choice of the base map from those defined at the Cartographic Group"
 " creation level"
 msgstr ""
 
-#: ../../g3wsuite_client.md:205
+#: ../../g3wsuite_client.md:210
 msgid "Legend: graphic legend"
 msgstr ""
 
-#: ../../g3wsuite_client.md:207
+#: ../../g3wsuite_client.md:212
 msgid "Layers"
 msgstr ""
 
-#: ../../g3wsuite_client.md:209
+#: ../../g3wsuite_client.md:214
 msgid ""
 "In the list of layers, right click on the name of the single layer shows "
 "the following items:"
 msgstr ""
 
-#: ../../g3wsuite_client.md:210
+#: ../../g3wsuite_client.md:215
 msgid ""
 "Styles: to choose the style to be applied to the layer, in the case of "
 "multi-style layers"
 msgstr ""
 
-#: ../../g3wsuite_client.md:211
+#: ../../g3wsuite_client.md:216
 msgid "Name and kind of geometry of the layer"
 msgstr ""
 
-#: ../../g3wsuite_client.md:212
+#: ../../g3wsuite_client.md:217
 msgid "Zoom to layer: to zoom in on the extension of the layer"
 msgstr ""
 
-#: ../../g3wsuite_client.md:213
+#: ../../g3wsuite_client.md:218
 msgid "Open attribute table: to consult the associated attribute table"
 msgstr ""
 
-#: ../../g3wsuite_client.md:214
+#: ../../g3wsuite_client.md:219
 msgid ""
 "Download shapefile: to download the layer as a shapefile; function "
 "activable from the administration panel"
 msgstr ""
 
-#: ../../g3wsuite_client.md:215
+#: ../../g3wsuite_client.md:220
 msgid ""
 "Download GeoPackage: to download the layer as a GeoPackage; function "
 "activable from the administration panel"
 msgstr ""
 
-#: ../../g3wsuite_client.md:216
+#: ../../g3wsuite_client.md:221
 msgid ""
 "Download CSV: to download the layer as a CSV; function activable from the"
 " administration panel"
 msgstr ""
 
-#: ../../g3wsuite_client.md:217
+#: ../../g3wsuite_client.md:222
 msgid ""
 "Download XLS: to download the layer as a XLS; function activable from the"
 " administration panel"
 msgstr ""
 
-#: ../../g3wsuite_client.md:218
+#: ../../g3wsuite_client.md:223
 msgid ""
 "WMS URL: URL of the WMS service relative to the project or URL of the "
 "external WMS"
 msgstr ""
 
-#: ../../g3wsuite_client.md:222
+#: ../../g3wsuite_client.md:227
 msgid "Attribute table"
 msgstr ""
 
-#: ../../g3wsuite_client.md:224
+#: ../../g3wsuite_client.md:229
 msgid ""
 "The attribute table (resizable) is equipped with paging function, "
 "highligth function and zooming to the associated features."
 msgstr ""
 
-#: ../../g3wsuite_client.md:226
+#: ../../g3wsuite_client.md:231
 msgid ""
 "In the case of links to multimedia content, the previews of the images "
 "and/or the Open button will be displayed for consultation of different "
 "types of content."
 msgstr ""
 
-#: ../../g3wsuite_client.md:232
+#: ../../g3wsuite_client.md:237
 msgid ""
 "A generic filter, positioned at the top right, is applied generically to "
 "the contents of all the fields and it will allow you to filter the list "
 "of displayed records."
 msgstr ""
 
-#: ../../g3wsuite_client.md:234
+#: ../../g3wsuite_client.md:239
 msgid ""
 "Filters based on the contents of the individual fields are available at "
 "the top of each column."
 msgstr ""
 
-#: ../../g3wsuite_client.md:236
+#: ../../g3wsuite_client.md:241
 msgid ""
 "The Show features visible on the map icon  allows you to filter the "
 "records of the table according to the features visible in the map."
 msgstr ""
 
-#: ../../g3wsuite_client.md:238
+#: ../../g3wsuite_client.md:243
 msgid ""
 "From this version it is possible to select the features of the individual"
 " layers and apply filters that will affect:"
 msgstr ""
 
-#: ../../g3wsuite_client.md:239 ../../g3wsuite_client.md:268
+#: ../../g3wsuite_client.md:244 ../../g3wsuite_client.md:273
 msgid "on the map content"
 msgstr ""
 
-#: ../../g3wsuite_client.md:240 ../../g3wsuite_client.md:269
+#: ../../g3wsuite_client.md:245 ../../g3wsuite_client.md:274
 msgid "on the attribute table content"
 msgstr ""
 
-#: ../../g3wsuite_client.md:241
+#: ../../g3wsuite_client.md:246
 msgid "on the contents of the plots"
 msgstr ""
 
-#: ../../g3wsuite_client.md:242
+#: ../../g3wsuite_client.md:247
 msgid "on print contents (only with QGIS 3.18)"
 msgstr ""
 
-#: ../../g3wsuite_client.md:244
+#: ../../g3wsuite_client.md:249
 msgid "The selection of features can be made:"
 msgstr ""
 
-#: ../../g3wsuite_client.md:245
+#: ../../g3wsuite_client.md:250
 msgid ""
 "at the attribute table level (through the checkboxes on the left of each "
 "records)"
 msgstr ""
 
-#: ../../g3wsuite_client.md:246 ../../g3wsuite_client.md:247
+#: ../../g3wsuite_client.md:251 ../../g3wsuite_client.md:252
 msgid "on the results of a query (add / remove from current selection)"
 msgstr ""
 
-#: ../../g3wsuite_client.md:249
+#: ../../g3wsuite_client.md:254
 msgid "At the same time, additional icons appear:"
 msgstr ""
 
-#: ../../g3wsuite_client.md:250
+#: ../../g3wsuite_client.md:255
 msgid "on the layer attribute table"
 msgstr ""
 
-#: ../../g3wsuite_client.md:251
+#: ../../g3wsuite_client.md:256
 msgid "to the right of the layer on the TOC"
 msgstr ""
 
-#: ../../g3wsuite_client.md:252
+#: ../../g3wsuite_client.md:257
 msgid "at the level of the relevant plots"
 msgstr ""
 
-#: ../../g3wsuite_client.md:254
+#: ../../g3wsuite_client.md:259
 msgid ""
 "Aggiungi immagine: g3wclient_selection.png The icons in the attribute "
 "table allow you to:"
 msgstr ""
 
-#: ../../g3wsuite_client.md:256 ../../g3wsuite_client.md:261
+#: ../../g3wsuite_client.md:261 ../../g3wsuite_client.md:266
 msgid "Clear selection"
 msgstr ""
 
-#: ../../g3wsuite_client.md:257
+#: ../../g3wsuite_client.md:262
 msgid "Invert selection"
 msgstr ""
 
-#: ../../g3wsuite_client.md:258 ../../g3wsuite_client.md:262
+#: ../../g3wsuite_client.md:263 ../../g3wsuite_client.md:267
 msgid "Add/Remove filter"
 msgstr ""
 
-#: ../../g3wsuite_client.md:260
+#: ../../g3wsuite_client.md:265
 msgid "The icons to the right of the layer on the TOC allow you to:"
 msgstr ""
 
-#: ../../g3wsuite_client.md:266
+#: ../../g3wsuite_client.md:271
 msgid ""
 "When one or more features are selected, they appear highlighted in red on"
 " the map. Activation of the filter is reflected:"
 msgstr ""
 
-#: ../../g3wsuite_client.md:270
+#: ../../g3wsuite_client.md:275
 msgid "on the data displayed by plots"
 msgstr ""
 
-#: ../../g3wsuite_client.md:271
+#: ../../g3wsuite_client.md:276
 msgid "on the print contents (only with QGIS 3.18)"
 msgstr ""
 
-#: ../../g3wsuite_client.md:273
+#: ../../g3wsuite_client.md:278
 msgid "Base layer"
 msgstr ""
 
-#: ../../g3wsuite_client.md:274
+#: ../../g3wsuite_client.md:279
 msgid "The list shows the active base layers at the cartographic group level."
 msgstr ""
 
-#: ../../g3wsuite_client.md:276
+#: ../../g3wsuite_client.md:281
 msgid ""
 "If the user has created base layers starting from cached layers, these "
 "may also be present."
 msgstr ""
 
-#: ../../g3wsuite_client.md:278
+#: ../../g3wsuite_client.md:283
 msgid "Legend"
 msgstr ""
 
-#: ../../g3wsuite_client.md:279
+#: ../../g3wsuite_client.md:284
 msgid ""
 "if the option is activated on the QGIS project, the legend is filtered on"
 " the map content."
@@ -858,5 +861,11 @@ msgstr ""
 #~ "contents of all the fields, will "
 #~ "allow you to filter the list of"
 #~ " displayed records."
+#~ msgstr ""
+
+#~ msgid "Show relations (1: N): if present on the GQIS project"
+#~ msgstr ""
+
+#~ msgid "Show relation charts: if setted"
 #~ msgstr ""
 
