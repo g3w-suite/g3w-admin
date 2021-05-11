@@ -2,7 +2,11 @@
  * Created  Walter Lorenzetti on 2020
  */
 
-
+if (FRONTEND){
+    var ADMIN_URL_PATH = 'admin/';
+} else {
+    var ADMIN_URL_PATH = '';
+}
 
 ga.Qplotly = {
     urls: {
@@ -10,8 +14,8 @@ ga.Qplotly = {
             list: '/' + SITE_PREFIX_URL + 'qplotly/api/widget/layer/',
             detail: '/' + SITE_PREFIX_URL + 'qplotly/api/widget/detail/',
             link: '/' + SITE_PREFIX_URL + 'qplotly/api/widget/detail/',
-            download: '/' + SITE_PREFIX_URL + 'qplotly/download/xml/',
-            showonstartclient: '/' + SITE_PREFIX_URL + 'qplotly/download/xml/',
+            download: '/' + SITE_PREFIX_URL + ADMIN_URL_PATH +'qplotly/download/xml/',
+            showonstartclient: '/' + SITE_PREFIX_URL + ADMIN_URL_PATH + 'qplotly/download/xml/',
         }
     }
 };
