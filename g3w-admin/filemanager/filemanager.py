@@ -16,6 +16,10 @@ from mimetypes import MimeTypes
 from zipfile import ZipFile
 from werkzeug.utils import secure_filename
 
+import logging
+
+logger = logging.getLogger('g3wadmin.debug')
+
 
 PROJECTS_PATH = '{}{}'.format(settings.MEDIA_ROOT, 'projects')
 
@@ -77,6 +81,7 @@ class FileManager:
                response.set_response()
                return JsonResponse(response.response)
            except Exception as e:
+               logger.debug(e)
                return self.fileManagerError(path=path, title="NOT_ALLOWED")
         else:
            return self.fileManagerError(path=path)
@@ -104,6 +109,7 @@ class FileManager:
                results['data'] = data
                return JsonResponse(results)
            except Exception as e:
+               logger.debug(e)
                return self.fileManagerError(path=folder, title="NOT_ALLOWED")
         else:
            return self.fileManagerError(path=folder)
@@ -141,6 +147,7 @@ class FileManager:
                results['data'] = data
                return JsonResponse(results)
            except Exception as e:
+               logger.debug(e)
                return self.fileManagerError(path=folder,title="NOT_ALLOWED")
         else:
            return self.fileManagerError(path=folder,title="NOT_ALLOWED")
