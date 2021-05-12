@@ -8,14 +8,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: G3W-SUITE 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-15 15:32+0100\n"
+"POT-Creation-Date: 2021-04-07 17:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.8.0\n"
+"Generated-By: Babel 2.4.0\n"
 
 #: ../../settings.rst:3
 msgid "Settings"
@@ -92,323 +92,371 @@ msgid ""
 "/<local_server_<path>/<to>/**project_data**"
 msgstr ""
 
-#: ../../settings.rst:37
+#: ../../settings.rst:38
 msgid "Mandatory."
 msgstr ""
 
-#: ../../settings.rst:40
+#: ../../settings.rst:41
 msgid "``G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS``"
 msgstr ""
 
-#: ../../settings.rst:44
+#: ../../settings.rst:45
 msgid "Default is `['shp', 'xls']`, set download data format. Values possible:"
 msgstr ""
 
-#: ../../settings.rst:42
+#: ../../settings.rst:43
 msgid "*shp*: download into Esri Shape format."
 msgstr ""
 
-#: ../../settings.rst:43
+#: ../../settings.rst:44
 msgid "*xls*: download into Excel format"
 msgstr ""
 
-#: ../../settings.rst:44
+#: ../../settings.rst:45
 msgid "*gpx*: download into GPS format (only for Point and Line layers)"
 msgstr ""
 
-#: ../../settings.rst:47
+#: ../../settings.rst:48
 msgid "``RESET_USER_PASSWORD``"
 msgstr ""
 
-#: ../../settings.rst:48
+#: ../../settings.rst:49
 msgid ""
 "Default is `False`, set tot `True` to activate reset user password by "
 "email workflow. If set to True remember to set Django emailing settings "
 "(https://docs.djangoproject.com/en/2.2/topics/email/)."
 msgstr ""
 
-#: ../../settings.rst:52
+#: ../../settings.rst:53
+msgid "``CLIENT_OWS_METHOD``"
+msgstr ""
+
+#: ../../settings.rst:54
+msgid "Default is `'GET'`, set to `'POST'` to change default http call method."
+msgstr ""
+
+#: ../../settings.rst:58
 msgid "Frontend portal setting"
 msgstr ""
 
-#: ../../settings.rst:55
+#: ../../settings.rst:61
 msgid "``FRONTEND``"
 msgstr ""
 
-#: ../../settings.rst:56
+#: ../../settings.rst:62
 msgid ""
 "Default is ``False``, set to ``True`` for activate **G3W-SUITE** frontend"
 " portal like ``g3w-admin-frontend``. If it's set to ``True`` base url "
 "path for G3W-SUITE admin section become `/admin/`."
 msgstr ""
 
-#: ../../settings.rst:60
+#: ../../settings.rst:66
 msgid "``FRONTEND_APP``"
 msgstr ""
 
-#: ../../settings.rst:61
+#: ../../settings.rst:67
 msgid ""
 "Module name added to ``G3WADMIN_LOCAL_MORE_APPS`` to use as `portal-"
 "frontend`. I.e.::"
 msgstr ""
 
-#: ../../settings.rst:73
+#: ../../settings.rst:80
 msgid "General layout settings"
 msgstr ""
 
-#: ../../settings.rst:76
+#: ../../settings.rst:83
 msgid "``G3WSUITE_POWERD_BY``"
 msgstr ""
 
-#: ../../settings.rst:77
+#: ../../settings.rst:84
 msgid ""
 "Default is ``True``, set to ``False`` for don't show bottom `attribution`"
 " informations."
 msgstr ""
 
-#: ../../settings.rst:80
+#: ../../settings.rst:87
 msgid "``G3WSUITE_CUSTOM_STATIC_URL``"
 msgstr ""
 
-#: ../../settings.rst:81
+#: ../../settings.rst:88
 msgid "A custom url from to load custom static files as images, css, etc.."
 msgstr ""
 
-#: ../../settings.rst:84
+#: ../../settings.rst:91
 msgid "``G3WSUITE_MAIN_LOGO``"
 msgstr ""
 
-#: ../../settings.rst:85
+#: ../../settings.rst:92
 msgid ""
 "Main admin section logo image. Mandatory is set "
 "``G3WSUITE_CUSTOM_STATIC_URL``"
 msgstr ""
 
-#: ../../settings.rst:89
+#: ../../settings.rst:96
 msgid "``G3WSUITE_RID_LOGO``"
 msgstr ""
 
-#: ../../settings.rst:90
+#: ../../settings.rst:97
 msgid ""
 "Main admin section reduced logo image. Mandatory is set "
 "``G3WSUITE_CUSTOM_STATIC_URL``"
 msgstr ""
 
-#: ../../settings.rst:94
+#: ../../settings.rst:101
 msgid "``G3WSUITE_LOGIN_LOGO``"
 msgstr ""
 
-#: ../../settings.rst:95
+#: ../../settings.rst:102
 msgid "Login logo image. Mandatory is set ``G3WSUITE_CUSTOM_STATIC_URL``"
 msgstr ""
 
-#: ../../settings.rst:99
+#: ../../settings.rst:106
 msgid "``G3WSUITE_CUSTOM_TITLE``"
 msgstr ""
 
-#: ../../settings.rst:100
+#: ../../settings.rst:107
 msgid ""
 "**G3W-SUITE** html page title. If is not set, title is: `g3w-admin` for "
 "admin section and `g3w-client` for webgis client."
 msgstr ""
 
-#: ../../settings.rst:104
+#: ../../settings.rst:111
 msgid "``G3WSUITE_FAVICON``"
 msgstr ""
 
-#: ../../settings.rst:105
+#: ../../settings.rst:112
 msgid "Favorite icon image. Mandatory is set ``G3WSUITE_CUSTOM_STATIC_URL``"
 msgstr ""
 
-#: ../../settings.rst:109
+#: ../../settings.rst:116
 msgid "``G3WSUITE_CUSTOM_CSS``"
 msgstr ""
 
-#: ../../settings.rst:110
+#: ../../settings.rst:117
 msgid ""
 "A list of custom css files added to `admin` pages and to the `client`. "
 "Mandatory is set ``G3WSUITE_CUSTOM_STATIC_URL``. I.e.::"
 msgstr ""
 
-#: ../../settings.rst:119
+#: ../../settings.rst:126
 msgid "Client layout settings"
 msgstr ""
 
-#: ../../settings.rst:122
+#: ../../settings.rst:129
 msgid "``G3W_CLIENT_SEARCH_TITLE``"
 msgstr ""
 
-#: ../../settings.rst:123
+#: ../../settings.rst:130
 msgid "Custom webgis client `search` section title."
 msgstr ""
 
-#: ../../settings.rst:126
+#: ../../settings.rst:133
 msgid "``G3W_CLIENT_SEARCH_ENDPOINT``"
 msgstr ""
 
-#: ../../settings.rst:129
+#: ../../settings.rst:136
 msgid "Search url endpoint for 'searches calling', default `ows`."
 msgstr ""
 
-#: ../../settings.rst:128
+#: ../../settings.rst:135
 msgid "`ows`: by wms search;"
 msgstr ""
 
-#: ../../settings.rst:129
+#: ../../settings.rst:136
 msgid "`api`: by g3w-suite layer vector API."
 msgstr ""
 
-#: ../../settings.rst:132
+#: ../../settings.rst:139
 msgid "``G3W_CLIENT_HEADER_CUSTOM_LINKS``"
 msgstr ""
 
-#: ../../settings.rst:133
+#: ../../settings.rst:140
 msgid ""
 "A list of dict of custom links to add into main top bar of webgis client."
 " I.e.::"
 msgstr ""
 
-#: ../../settings.rst:152
+#: ../../settings.rst:159
 msgid "``G3W_CLIENT_LEGEND``"
 msgstr ""
 
-#: ../../settings.rst:153
+#: ../../settings.rst:160
 msgid ""
 "A dict to customize **QGIS-server** legend image generate with WMS "
 "`GetLegendGraphics` request. I.e.::"
 msgstr ""
 
-#: ../../settings.rst:171
+#: ../../settings.rst:180
 msgid "``G3W_CLIENT_RIGHT_PANEL``"
 msgstr ""
 
-#: ../../settings.rst:172
+#: ../../settings.rst:181
 msgid ""
 "Custom properties settings for webgis right panel section (default, width"
 " 33%). A the moment only `width` is managed. I.e.::"
 msgstr ""
 
-#: ../../settings.rst:181
+#: ../../settings.rst:191
 msgid "Editing settings"
 msgstr ""
 
-#: ../../settings.rst:182
+#: ../../settings.rst:192
 msgid "Settings params for ``editing`` module."
 msgstr ""
 
-#: ../../settings.rst:185
+#: ../../settings.rst:195
 msgid "``EDITING_SHOW_ACTIVE_BUTTON``"
 msgstr ""
 
-#: ../../settings.rst:186
+#: ../../settings.rst:196
 msgid ""
 "Default is ``True``. Set to ``False`` for not show editing button "
 "activate/deactivate into layers project list."
 msgstr ""
 
-#: ../../settings.rst:189
+#: ../../settings.rst:199
 msgid "``EDITING_ANONYMOUS``"
 msgstr ""
 
-#: ../../settings.rst:190
+#: ../../settings.rst:200
 msgid ""
 "Default is ``False``. Set to ``True`` to render possible give to "
 "`anonymous user` editing permissions."
 msgstr ""
 
-#: ../../settings.rst:193
+#: ../../settings.rst:203
 msgid "``EDITING_LOGGING``"
 msgstr ""
 
-#: ../../settings.rst:194
+#: ../../settings.rst:204
 msgid ""
 "Default is ``False``. Set to ``True`` to log users editing action into "
 "database."
 msgstr ""
 
-#: ../../settings.rst:197
+#: ../../settings.rst:208
 msgid "Caching settings"
 msgstr ""
 
-#: ../../settings.rst:198
+#: ../../settings.rst:209
 msgid "Settings params for ``caching`` module"
 msgstr ""
 
-#: ../../settings.rst:201
+#: ../../settings.rst:212
 msgid "``TILESTACHE_CACHE_NAME``"
 msgstr ""
 
-#: ../../settings.rst:202
+#: ../../settings.rst:213
 msgid "A name to identify caching"
 msgstr ""
 
-#: ../../settings.rst:205
+#: ../../settings.rst:216
 msgid "``TILESTACHE_CACHE_TYPE``"
 msgstr ""
 
-#: ../../settings.rst:206
+#: ../../settings.rst:217
 msgid ""
 "Default is ``Disk`` to save tile on a disk. Set to ``Memcache`` for to "
 "use *Memcached* caching framework (https://www.memcached.org/)"
 msgstr ""
 
-#: ../../settings.rst:209
+#: ../../settings.rst:220
 msgid "``TILESTACHE_CACHE_DISK_PATH``"
 msgstr ""
 
-#: ../../settings.rst:210
+#: ../../settings.rst:221
 msgid ""
 "Path to disk space where to save tile created by tilestache if "
 "``TILESTAHCE_CACHE_TYEPE`` is se to ``Disk``."
 msgstr ""
 
-#: ../../settings.rst:213
+#: ../../settings.rst:224
 msgid "``TILESTACHE_CACHE_TOKEN``"
 msgstr ""
 
-#: ../../settings.rst:214
+#: ../../settings.rst:225
 msgid ""
 "Mandatory, strign to use as token for internal WMS call for caching "
 "module."
 msgstr ""
 
-#: ../../settings.rst:217
+#: ../../settings.rst:228
 msgid "Filemanger settings"
 msgstr ""
 
-#: ../../settings.rst:218
+#: ../../settings.rst:229
 msgid "Settings params for ``filemanager`` module."
 msgstr ""
 
-#: ../../settings.rst:221
+#: ../../settings.rst:232
 msgid "``FILEMANAGER_ROOT_PATH``"
 msgstr ""
 
-#: ../../settings.rst:222
+#: ../../settings.rst:233
 msgid ""
 "Mandatory, path to disk space where to CRUD geo data files i.e. Shp "
 "Raster, etc."
 msgstr ""
 
-#: ../../settings.rst:225
+#: ../../settings.rst:236
 msgid "``FILENAMANAGER_MAX_N_FILES``"
 msgstr ""
 
-#: ../../settings.rst:226
+#: ../../settings.rst:237
 msgid "Default is 5, max number files to upload simultaneously."
 msgstr ""
 
-#: ../../settings.rst:229
+#: ../../settings.rst:240
 msgid "Qplotly settings"
 msgstr ""
 
-#: ../../settings.rst:232
+#: ../../settings.rst:243
 msgid "``LOAD_QPLOTLY_FROM_PROJECT``"
 msgstr ""
 
-#: ../../settings.rst:233
+#: ../../settings.rst:244
 msgid ""
-"Default if ``False``, set to ``True`` for import DataPlotly settings from"
-" QGIS project."
+"Default is ``False``, set to ``True`` to import DataPlotly settings from "
+"QGIS project."
 msgstr ""
+
+#: ../../settings.rst:247
+msgid "Openrouteservice settings"
+msgstr ""
+
+#: ../../settings.rst:250
+msgid "``ORS_API_ENDPOINT``"
+msgstr ""
+
+#: ../../settings.rst:251
+msgid ""
+"Default is ``http://localhost:8080/ors/v2/``, this is the endpoint for "
+"Openrouteservice API."
+msgstr ""
+
+#: ../../settings.rst:254
+msgid "``ORS_API_KEY``"
+msgstr ""
+
+#: ../../settings.rst:255
+msgid ""
+"Openrouteservice API key, optional, can be blank if the key is not "
+"required by the endpoint."
+msgstr ""
+
+#: ../../settings.rst:258
+msgid "``ORS_PROFILES``"
+msgstr ""
+
+#: ../../settings.rst:259
+msgid ""
+"List of available Openrouteservice profiles, default: ``(\"driving-car\","
+" \"driving-hgv\")``"
+msgstr ""
+
+#~ msgid ""
+#~ "Default if ``False``, set to ``True``"
+#~ " for import DataPlotly settings from "
+#~ "QGIS project."
+#~ msgstr ""
 

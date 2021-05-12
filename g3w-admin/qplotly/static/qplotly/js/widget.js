@@ -2,7 +2,11 @@
  * Created  Walter Lorenzetti on 2020
  */
 
-
+if (FRONTEND){
+    var ADMIN_URL_PATH = 'admin/';
+} else {
+    var ADMIN_URL_PATH = '';
+}
 
 ga.Qplotly = {
     urls: {
@@ -10,8 +14,8 @@ ga.Qplotly = {
             list: '/' + SITE_PREFIX_URL + 'qplotly/api/widget/layer/',
             detail: '/' + SITE_PREFIX_URL + 'qplotly/api/widget/detail/',
             link: '/' + SITE_PREFIX_URL + 'qplotly/api/widget/detail/',
-            download: '/' + SITE_PREFIX_URL + 'qplotly/download/xml/',
-            showonstartclient: '/' + SITE_PREFIX_URL + 'qplotly/download/xml/',
+            download: '/' + SITE_PREFIX_URL + ADMIN_URL_PATH +'qplotly/download/xml/',
+            showonstartclient: '/' + SITE_PREFIX_URL + ADMIN_URL_PATH + 'qplotly/download/xml/',
         }
     }
 };
@@ -131,13 +135,13 @@ _.extend(g3wadmin.widget, {
             })+'</td>\n' +
             '                <td><input type="checkbox" name="show_on_start_client" value="1" '+show_on_start_client_checked+' ' +
                             'data-widget-type="showOnStartClient" ' +
-                            'data-ajax-url="/'+CURRENT_LANGUAGE_CODE+'/'+SITE_PREFIX_URL + 'qplotly/showonstartclient/'+v['pk']+'/" /></td>\n' +
+                            'data-ajax-url="/'+CURRENT_LANGUAGE_CODE+'/'+SITE_PREFIX_URL + ADMIN_URL_PATH +'qplotly/showonstartclient/'+v['pk']+'/" /></td>\n' +
             '                <td>'+v['title']+'</td>\n' +
 			'                <td>'+v['type']+'</td>\n' +
             '                <td>'+from_project+'</td>\n' +
             '                <td><input type="checkbox" name="linked" value="1" '+checked+' ' +
                             'data-widget-type="linkWidget2Layer" ' +
-                            'data-ajax-url="/'+CURRENT_LANGUAGE_CODE+'/'+SITE_PREFIX_URL + 'qplotly/layer/'+layer_pk+'/widgets/link/'+v['pk']+'/" /></td>\n' +
+                            'data-ajax-url="/'+CURRENT_LANGUAGE_CODE+'/'+SITE_PREFIX_URL + ADMIN_URL_PATH +'qplotly/layer/'+layer_pk+'/widgets/link/'+v['pk']+'/" /></td>\n' +
             '            </tr>\n');
         });
 

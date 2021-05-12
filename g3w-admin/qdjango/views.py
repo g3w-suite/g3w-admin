@@ -302,6 +302,21 @@ class QdjangoLayerDataView(G3WGroupViewMixin, QdjangoProjectViewMixin, View):
         return JsonResponse({'Saved': 'ok'})
 
 
+def project_layers4search_widget(layer):
+    """
+    Return a dict {layer.qgs_project_id: layer} for Search Widget
+    :param layer: Qdjango Model Layer instance
+    :return: dict {layer.qgs_project_id: layer}
+    :return-type: dict
+    """
+
+    return {
+        l.qgs_layer_id: (
+            lambda l: l.name if l.datasource != layer.datasource else f'{l.name} ({_("same datasource")})')(l)
+        for l in layer.project.layer_set.filter(~Q(pk=layer.pk))
+    }
+
+
 class QdjangoLayerWidgetsView(G3WGroupViewMixin, QdjangoProjectViewMixin, QdjangoLayerViewMixin, ListView):
     """
     Render layer's widgets list.
@@ -331,8 +346,8 @@ class QdjangoLayerWidgetCreateView(G3WRequestViewMixin, G3WGroupViewMixin, Qdjan
     def get_context_data(self, **kwargs):
         context = super(QdjangoLayerWidgetCreateView, self).get_context_data()
         context['layer'] = self.layer
+        context['project_layers'] = json.dumps(project_layers4search_widget(self.layer))
 
-        # todo: da rifare meglio la struttura dei widget
         load_qdjango_widgets_data.send(self, context=context)
 
         return context
@@ -379,6 +394,7 @@ class QdjangoLayerWidgetUpdateView(G3WRequestViewMixin, G3WGroupViewMixin, Qdjan
     def get_context_data(self, **kwargs):
         context = super(QdjangoLayerWidgetUpdateView, self).get_context_data()
         context['layer'] = self.layer
+        context['project_layers'] = json.dumps(project_layers4search_widget(self.layer))
 
         load_qdjango_widgets_data.send(self, context=context)
 
