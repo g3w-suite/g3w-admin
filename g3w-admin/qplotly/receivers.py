@@ -83,7 +83,7 @@ def save_dataplotly_project_settings(sender, **kwargs):
         qplw, created = QplotlyWidget.objects.update_or_create(defaults={
             'datasource': layer.datasource,
             'type': sender.qplotly['type'],
-            'title':sender.qplotly['title'],
+            'title': sender.qplotly['title'],
             'xml': sender.qplotly['xml'],
             'selected_features_only': sender.qplotly['selected_features_only'],
             'visible_features_only': sender.qplotly['visible_features_only']

@@ -60,7 +60,21 @@ class QplotlyFactoring(PlotFactory):
         self.layer = kwargs['layer']
         del (kwargs['layer'])
 
+        # set data have to reproject
+        self.set_reprojecting_status()
+
         super().__init__(*args, **kwargs)
+
+    def set_reprojecting_status(self):
+        """
+        Check if data have to reproject
+        :return:
+        """
+        # check if data to reproject
+        # FIXME: use QgsProject crs(), can be (in a try/except block):
+        # self.layer.project.qgis_project.crs() != self.layer.qgis_layer.crs()
+        if self.layer:
+            self.reproject = not self.layer.project.group.srid.auth_srid == self.layer.srid
 
     def build_trace(self):
         """Build only trace"""

@@ -22,7 +22,8 @@ from qplotly.utils import get_qplotlywidget_for_project
 from qplotly.models import QplotlyWidget
 from qplotly.utils.models import get_qplotlywidgets4layer
 from qplotly.api.plots.views import WITH_RELATIONS_PARAM
-from .test_utils import CURRENT_PATH, QGS_FILE, TEST_BASE_PATH, get_data_plotly_settings_from_file, DATASOURCE_PATH
+from .test_utils import CURRENT_PATH, QGS_FILE, QGS_FILE_3857, TEST_BASE_PATH, get_data_plotly_settings_from_file, \
+    DATASOURCE_PATH
 import json
 import copy
 
@@ -46,6 +47,11 @@ class QplotlyTestAPI(QdjangoTestBase):
 
         cls.project_group.save()
 
+        cls.project_group_3857 = CoreGroup(name='Group3857', title='Group3857', header_logo_img='',
+                                      srid=G3WSpatialRefSys.objects.get(auth_srid=3857))
+
+        cls.project_group_3857.save()
+
         qgis_project_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_FILE), 'r', encoding='utf-8'))
 
         # Replace name property with only file name without path to simulate UploadedFileWithId instance.
@@ -54,6 +60,16 @@ class QplotlyTestAPI(QdjangoTestBase):
         cls.project.group = cls.project_group
         cls.project.save()
         qgis_project_file.close()
+
+        qgis_project_file_3857 = File(
+            open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_FILE_3857), 'r', encoding='utf-8'))
+
+        # Replace name property with only file name without path to simulate UploadedFileWithId instance.
+        qgis_project_file_3857.name = qgis_project_file_3857.name.split('/')[-1]
+        cls.project_3857 = QgisProject(qgis_project_file_3857)
+        cls.project_3857.group = cls.project_group_3857
+        cls.project_3857.save()
+        qgis_project_file_3857.close()
 
 
         file = File(open(f'{DATASOURCE_PATH}cities_scatter_plot_wrong_source_layer_id.xml', 'r'))
@@ -113,6 +129,12 @@ class QplotlyTestAPI(QdjangoTestBase):
         # check project fk is saved
         self.assertEqual(qplotly_widgets[0].project, self.project.instance)
 
+        qplotly_widgets = get_qplotlywidget_for_project(self.project_3857.instance)
+        self.assertEqual(len(qplotly_widgets), 1)
+
+        # check project fk is saved
+        self.assertEqual(qplotly_widgets[0].project, self.project_3857.instance)
+
     def test_initconfig_plugin_start(self):
         """Test data added to API client config"""
 
@@ -150,6 +172,7 @@ class QplotlyTestAPI(QdjangoTestBase):
         """/qplotly/api/trace API"""
 
         qplotlywidget_id = QplotlyWidget.objects.all()[0].pk
+        qplotlywidget_3857_id = QplotlyWidget.objects.all()[1].pk
 
         response = self._testApiCall('qplotly-api-trace', args=[
             self.project.instance.pk,
@@ -163,6 +186,21 @@ class QplotlyTestAPI(QdjangoTestBase):
         self.assertEqual(trace_data[0]['type'], 'histogram')
         self.assertEqual(len(trace_data[0]['x']), 51)
         self.assertIn('Italia', trace_data[0]['x'])
+
+        # for 3857 projetc
+        response = self._testApiCall('qplotly-api-trace', args=[
+            self.project_3857.instance.pk,
+            qplotlywidget_3857_id
+        ])
+
+        jcontent = json.loads(response.content)
+        trace_data = json.loads(response.content)['data']
+
+        self.assertEqual(len(trace_data), 1)
+        self.assertEqual(trace_data[0]['type'], 'histogram')
+        self.assertEqual(len(trace_data[0]['x']), 51)
+        self.assertIn('Italia', trace_data[0]['x'])
+
 
         # With a session token filter
         # ---------------------------
@@ -223,6 +261,17 @@ class QplotlyTestAPI(QdjangoTestBase):
 
         widget.layers.add(cities)
 
+        cities_3857 = self.project_3857.instance.layer_set.get(qgs_layer_id='cities10000eu_399beab0_e385_4ce1_9b59_688d02930517')
+        widget_3857 = QplotlyWidget.objects.create(
+            xml=self.cities_histogram_plot_xml,
+            datasource=cities_3857.datasource,
+            type='histogram',
+            title='',
+            project=self.project_3857.instance
+        )
+
+        widget_3857.layers.add(cities_3857)
+
         response = self._testApiCall('qplotly-api-trace', args=[
             self.project.instance.pk,
             widget.pk
@@ -273,6 +322,23 @@ class QplotlyTestAPI(QdjangoTestBase):
         self.assertIn('IT', trace_data[0]['x'])
         self.assertNotIn('DE', trace_data[0]['x'])
 
+        # for 3857 and reproject
+        response = self._testApiCall('qplotly-api-trace', args=[
+            self.project_3857.instance.pk,
+            widget_3857.pk
+        ], kwargs={
+            'in_bbox': '1079799.06069475435651839,5071521.81142560951411724,1447153.38031255709938705,5716479.01532683055847883'
+        })
+
+        jcontent = json.loads(response.content)
+        trace_data = json.loads(response.content)['data']
+
+        self.assertEqual(len(trace_data), 1)
+        self.assertEqual(trace_data[0]['type'], 'histogram')
+        self.assertEqual(len(trace_data[0]['x']), 329)
+        self.assertIn('IT', trace_data[0]['x'])
+        self.assertNotIn('DE', trace_data[0]['x'])
+
         widget.delete()
 
     def test_trace_api_with_relations(self):
@@ -280,6 +346,7 @@ class QplotlyTestAPI(QdjangoTestBase):
 
         # qplolty settings of father
         qplotlywidget_id = QplotlyWidget.objects.all()[0].pk
+        qplotlywidget_3857_id = QplotlyWidget.objects.all()[1].pk
 
         # get or create plotly widget for cities layer
         # ======================================
@@ -294,6 +361,21 @@ class QplotlyTestAPI(QdjangoTestBase):
 
         if created:
             widget.layers.add(cities)
+
+        # also for 3857 project
+        cities_3857 = self.project_3857.instance.layer_set.get(qgs_layer_id='cities10000eu_399beab0_e385_4ce1_9b59_688d02930517')
+        widget_3857, created = QplotlyWidget.objects.get_or_create(
+            xml=self.cities_histogram_plot_xml,
+            datasource=cities_3857.datasource,
+            type='histogram',
+            title='',
+            project=self.project_3857.instance
+        )
+
+        if created:
+            widget_3857.layers.add(cities_3857)
+
+
 
         response = self._testApiCall('qplotly-api-trace', args=[
             self.project.instance.pk,
@@ -394,6 +476,41 @@ class QplotlyTestAPI(QdjangoTestBase):
         relation = trace['relations']['cities1000_ISO2_CODE_countries__ISOCODE']
         self.assertEqual(len(relation), 1)
         self.assertEqual(relation[0]['id'], widget.pk)
+        relation_data = relation[0]['data']
+
+        self.assertEqual(relation_data[0]['type'], 'histogram')
+        self.assertEqual(relation_data[0]['name'], 'ISO2_CODE')
+        self.assertEqual(len(relation_data[0]['x']), 35)
+        self.assertEqual(len(relation_data[0]['y']), 35)
+        self.assertIn('IT', relation_data[0]['x'])
+        self.assertNotIn('DE', relation_data[0]['x'])
+        self.assertNotIn('AL', relation_data[0]['x'])
+
+        # for 3857 reproject
+        response = self._testApiCall('qplotly-api-trace', args=[
+            self.project_3857.instance.pk,
+            qplotlywidget_3857_id
+        ], kwargs={
+            'in_bbox': '1191118.55148802674375474,5388389.27281932532787323,1280174.14412264572456479,5465442.18332275282591581',
+            WITH_RELATIONS_PARAM: 'cities1000_ISO2_CODE_countries__ISOCODE'
+        })
+
+        trace = json.loads(response.content)
+        trace_data = json.loads(response.content)['data']
+
+        self.assertEqual(len(trace_data), 1)
+        self.assertEqual(trace_data[0]['type'], 'histogram')
+        self.assertEqual(len(trace_data[0]['x']), 1)
+        self.assertEqual(len(trace_data[0]['y']), 1)
+        self.assertIn('Italia', trace_data[0]['x'])
+        self.assertNotIn('Albania', trace_data[0]['x'])
+
+        # check for relation
+        self.assertIn('relations', trace)
+        self.assertIn('cities1000_ISO2_CODE_countries__ISOCODE', trace['relations'])
+        relation = trace['relations']['cities1000_ISO2_CODE_countries__ISOCODE']
+        self.assertEqual(len(relation), 1)
+        self.assertEqual(relation[0]['id'], widget_3857.pk)
         relation_data = relation[0]['data']
 
         self.assertEqual(relation_data[0]['type'], 'histogram')

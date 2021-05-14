@@ -23,6 +23,7 @@ CURRENT_PATH = os.getcwd()
 TEST_BASE_PATH = '/qplotly/tests/data/'
 DATASOURCE_PATH = '{}{}'.format(CURRENT_PATH, TEST_BASE_PATH)
 QGS_FILE = 'G3W_SUITE_DataPlotly_test_project_310.qgs'
+QGS_FILE_3857 = 'G3W_SUITE_DataPlotly_test_project_310_epsg3857.qgs'
 DATA_PLOTLY_SETTINGS = 'data_plotly_settings.xml'
 
 
@@ -54,6 +55,7 @@ class QgisProjectTest(TestCase):
         qgis_project_file.name = qgis_project_file.name.split('/')[-1]
         self.project = QgisProject(qgis_project_file)
         qgis_project_file.close()
+
 
     def test_qgis_project(self):
         """Test reading project data plotly settings"""
