@@ -185,10 +185,12 @@ class QplotlyFactoring(PlotFactory):
             except QgsCsException:
                 pass
 
-        if self.selected_features_only:
-            it = self.source_layer.getSelectedFeatures(request)
-        else:
-            it = self.source_layer.getFeatures(request)
+        # self.selected_features_only is not used into qplotly module !
+        # -------------------------------------------------------------
+        #if self.selected_features_only:
+        #    it = self.source_layer.getSelectedFeatures(request)
+        #else:
+        it = self.source_layer.getFeatures(request)
 
         self.qgsrequest = request
 
