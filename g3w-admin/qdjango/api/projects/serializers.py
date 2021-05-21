@@ -251,7 +251,10 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
         # add layers data, widgets
         # init properties
-        ret['layers'] = []
+        if qgs_project.layerTreeRoot().hasCustomLayerOrder():
+            ret['layers'] = {}
+        else:
+            ret['layers'] = []
         ret['search'] = []
         ret['widget'] = []
         ret['relations'] = []
@@ -296,7 +299,10 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
                     )
                 del(layer_serialized_data['vectorjoins'])
 
-                ret['layers'].append(layer_serialized_data)
+                if qgs_project.layerTreeRoot().hasCustomLayerOrder():
+                    ret['layers'].update({layer_serialized_data['id']: layer_serialized_data})
+                else:
+                    ret['layers'].append(layer_serialized_data)
 
                 # get widgects for layer
                 widgets = layers[layer['id']].widget_set.all()
@@ -321,6 +327,17 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         # remove layers from layerstree
         for to_remove in to_remove_from_layerstree:
             to_remove[0].remove(to_remove[1])
+
+        # for custom order layer
+        if qgs_project.layerTreeRoot().hasCustomLayerOrder():
+            new_order = []
+            meta_layer = QdjangoMetaLayer()
+            for qgs_layer in qgs_project.layerTreeRoot().customLayerOrder():
+                lsd = ret['layers'][qgs_layer.id()]
+                lsd['multilayer'] = meta_layer.getCurrentByLayer(
+                    lsd)
+                new_order.append(lsd)
+            ret['layers'] = new_order
 
         # add baselayer default
         ret['initbaselayer'] = instance.baselayer.id if instance.baselayer else None
