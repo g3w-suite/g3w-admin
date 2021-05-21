@@ -29,6 +29,7 @@ DATASOURCE_PATH = os.path.join(os.getcwd(), 'qdjango', 'tests', 'data')
 QGS310_FILE = 'g3wsuite_project_test_qgis310.qgs'
 QGS310_FILE_1 = 'edit-widget_g3w-suite-project-test.qgs'
 QGS310_FILE_2 = 'init_extent_max_extent test_qgis310.qgs'
+QGS310_FILE_3 = 'gruppo-1_custom_layer_order_qgis316.qgs'
 
 @override_settings(MEDIA_ROOT=DATASOURCE_PATH)
 @override_settings(DATASOURCE_PATH=DATASOURCE_PATH)
@@ -87,6 +88,16 @@ class ClientApiTest(CoreTestBase):
         cls.project_extent310_2.group = cls.extent_group
         cls.project_extent310_2.save()
         qgis_project_file_2.close()
+
+        cls.custom_order_layer_group = Group(
+            name='Custom Order Layer Group', title='Custom Order Layer Group', header_logo_img='',
+            srid=G3WSpatialRefSys.objects.get(srid=4326))
+        cls.extent_group.save()
+        qgis_project_file_3 = File(open('{}/{}'.format(DATASOURCE_PATH, QGS310_FILE_3), 'r'))
+        cls.project_extent316_1 = QgisProject(qgis_project_file_3)
+        cls.project_extent316_1.group = cls.extent_group
+        cls.project_extent316_1.save()
+        qgis_project_file_3.close()
 
     @override_settings(VENDOR_KEYS={'google': '123456789'})
     def testGroupConfigApiView(self):
@@ -360,6 +371,17 @@ class ClientApiTest(CoreTestBase):
                     'geographic': True,
                     'axisinverted': True
                 })
+
+    def test_custom_layer_order(self):
+        """Testing qgis custom layer order"""
+
+        response = self._testApiCall('group-project-map-config', ['custom-order-layer-group', 'qdjango',
+                                                                  self.project_extent316_1.instance.pk])
+        resp = json.loads(response.content)
+
+        self.assertTrue(resp['layers'][0]['id'], 'bluemarble20181008111156906')
+        self.assertTrue(resp['layers'][1]['id'], 'world20181008111156525')
+        self.assertTrue(resp['layers'][2]['id'], 'spatialite_points20190604101052075')
 
     def test_init_max_extent_policy(self):
         """ Test init  and maxextent policy by checked or not of use_map_extent_as_init_extent"""
