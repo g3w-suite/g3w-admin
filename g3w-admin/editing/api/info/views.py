@@ -41,7 +41,8 @@ class EditingLayerInfo(generics.ListAPIView):
                 layer_type__in=[
                     Layer.TYPES.postgres,
                     Layer.TYPES.spatialite,
-                    Layer.TYPES.ogr
+                    Layer.TYPES.ogr,
+                    Layer.TYPES.oracle
                 ],
                 geometrytype__in=['Polygon', 'MultiPolygon']
             )

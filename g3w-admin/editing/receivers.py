@@ -58,7 +58,8 @@ def editing_layer_actions(sender, **kwargs):
                         Layer.TYPES.postgres,
                         Layer.TYPES.spatialite,
                         Layer.TYPES.ogr,
-                        Layer.TYPES.mssql
+                        Layer.TYPES.mssql,
+                        Layer.TYPES.oracle
                     ) and editing_button:
 
         # add if is active
