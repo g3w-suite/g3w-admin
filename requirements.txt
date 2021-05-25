@@ -33,6 +33,6 @@ celery==3.1.26.post2
 deprecation
 huey
 redis
-git+https://github.com/elpaso/django-huey-monitor.git
+git+https://github.com/g3w-suite/django-huey-monitor.git
 # to fix compatibility con huey_monitor
 git+https://github.com/boxine/bx_py_utils.git@v36
