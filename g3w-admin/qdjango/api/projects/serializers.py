@@ -637,6 +637,13 @@ class WidgetSerializer(serializers.ModelSerializer):
                 'dozoomtoextent': body['dozoomtoextent'],
                 # 'zoom': body['zoom'],
             }
+
+            # other layers
+            if 'otherlayers' in body:
+                ret['options'].update({
+                    'otherquerylayerids': body['otherlayers']
+                })
+
             for field in body['fields']:
 
                 # if widgettype is selectbox, get values

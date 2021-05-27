@@ -36,6 +36,7 @@ ga.Qdjango.localVars = {}
 ga.Qdjango.widgetEditor = {
   fadeNumber: 400,
   layerColumns: null,
+  projectLayers: null,
   lawslist: null,
   layer: null,
   form: null,
@@ -104,6 +105,7 @@ ga.Qdjango.widgetEditor = {
           query: "simpleWmsSearch", // It can be removed?
           usewmsrequest: true, // Always set to true
           fields: [],
+          otherlayers: [],
           results: [
             // Column to show as results, it could be removed?
           ],
@@ -134,6 +136,10 @@ ga.Qdjango.widgetEditor = {
             logicop: v.find("select.logic_operator").val(),
           })
         })
+
+        // add otherlayers
+        obj['otherlayers'] = $(".rightCol").find('.cmpPlusLayersSearch').find('select').val();
+
 
         $.each($(".rightCol").find(".bloccoGenerale").find(".resultFields").find(".row"), function (i, v) {
           v = $(v)
@@ -323,6 +329,8 @@ ga.Qdjango.widgetEditor = {
       cmpOperatorSelect.append('<option value="ILIKE">ILIKE (' + gettext("like not case sensitive") + ")</option>")
     }
 
+
+
     if (that.isset(values) && that.isset(values.filterop)) cmpOperatorSelect.val($("<div/>").html(values.filterop).text())
 
     // add control on cmpOperatorSelect for field type:
@@ -427,12 +435,10 @@ ga.Qdjango.widgetEditor = {
 								<option value="and">AND</option>\
 								<option value="or">OR</option>\
 							</select>\
-							<div class="help-block invisible">' +
-        gettext("Logical join") +
-        "</div>\
+							<div class="help-block invisible">' + gettext("Logical join") + '</div>\
 						</div>\
 						</div>\
-					</div>"
+					</div>'
     )
 
     div.find(".close").click(function () {
@@ -455,6 +461,7 @@ ga.Qdjango.widgetEditor = {
     div.find(".widgetType").append(widgetSelect)
 
     $(".rightCol").append(div)
+
     div.fadeIn(this.fadeNumber)
 
     widgetSelect.on("change", function () {
@@ -490,8 +497,8 @@ ga.Qdjango.widgetEditor = {
     widgetSelect.trigger("change")
     if (that.isset(values) && that.isset(values.input.options["dependance"])) cmpDependanceSelect.val($("<div/>").html(values.input.options["dependance"]).text())
 
-    if (that.isset(values) && that.isset(values.logicop)) var logicopselect = div.find("select.logic_operator")
-    if (that.isset(logicopselect)) logicopselect.val(values.logicop)
+    if (that.isset(values) && that.isset(values.logicop)) var logicopselect = div.find("select.logic_operator");
+    if (that.isset(logicopselect)) logicopselect.val(values.logicop);
   },
 
   generateTooltipRow: function (values) {
@@ -711,6 +718,33 @@ ga.Qdjango.widgetEditor = {
         return
     }
     if (el.val() != "law") {
+
+      // for plusLayers
+      if (el.val() == 'search') {
+        var pluslayers = $('<div class="row pluslayers" style="margin-bottom:20px;">\
+        <div class="col-md-offset-2 col-md-8">\
+            <div class="controls cmpPlusLayersSearch">\
+                <label class="control-label">' + gettext("Other searching layers") + '</label>\
+            </div>\
+            <div class="help-block">' + gettext("Select one or more additional layers to search on") + '</div>\
+        </div>\
+        </div>');
+
+        var cmpPlusLayersSearch = $('<select class="form-control" multiple="multiple" name="pluslayer_field" style="width: 570px"></select>')
+
+        $.each(this.projectLayers, function (i, v) {
+          var selected = ""
+          //var selected = that.isset(values) && values.name === v.name ? "selected" : ""
+          var option = $('<option value="' + i + '" ' + selected + ">" + v + "</option>")
+          cmpPlusLayersSearch.append(option)
+        })
+
+        pluslayers.find(".cmpPlusLayersSearch").append(cmpPlusLayersSearch)
+
+
+      }
+
+
       var addDiv = $(
         '<div class="row text-center">\
 							<button type="button" class="btn btn-success addRow"><i class="glyphicon glyphicon-plus"></i> ' + gettext("Add") + "</button>\
@@ -718,10 +752,20 @@ ga.Qdjango.widgetEditor = {
       )
       addDiv.find(".addRow").click(function () {
         var div = $(this).parents("div").first()
-        that.onAddCallback()
-        div.appendTo($(".rightCol"))
+        that.onAddCallback();
+
+        div.appendTo($(".rightCol"));
+        if (el.val() == 'search') {;
+          $(this).parents().find(".pluslayers").appendTo($(".rightCol"))
+        }
+
       })
       $(".rightCol").append(addDiv)
+
+      if (el.val() == 'search') {
+        $(".rightCol").append(pluslayers);
+        cmpPlusLayersSearch.select2();
+      }
     }
   },
 
@@ -761,28 +805,68 @@ ga.Qdjango.widgetEditor = {
         return
     }
     if (this.widget.widget_type != "law") {
-      var addDiv = $('<div class="row text-center">\
-							<button type="button" class="btn btn-success addRow"><i class="glyphicon glyphicon-plus"></i> Aggiungi</button>\
-						</div>')
+      // for plusLayers
+      if (this.widget.widget_type == 'search') {
+        var pluslayers = $('<div class="row pluslayers" style="margin-bottom:20px;">\
+        <div class="col-md-offset-2 col-md-8">\
+            <div class="controls cmpPlusLayersSearch">\
+                <label class="control-label">' + gettext("Other searching layers") + '</label>\
+            </div>\
+            <div class="help-block">' + gettext("Select one or more additional layers to search on") + '</div>\
+        </div>\
+        </div>');
 
+        var cmpPlusLayersSearch = $('<select class="form-control" multiple="multiple" name="pluslayer_field" style="width: 570px;"></select>')
+
+        $.each(this.projectLayers, function (i, v) {
+
+          var selected = "";
+          if (that.isset(that.widget.body.otherlayers) && _.indexOf(that.widget.body.otherlayers, i) != -1){
+            selected = "selected";
+          }
+          var option = $('<option value="' + i + '" ' + selected + ">" + v + "</option>")
+          cmpPlusLayersSearch.append(option)
+        })
+
+        pluslayers.find(".cmpPlusLayersSearch").append(cmpPlusLayersSearch)
+
+      }
+
+
+      var addDiv = $(
+        '<div class="row text-center">\
+							<button type="button" class="btn btn-success addRow"><i class="glyphicon glyphicon-plus"></i> ' + gettext("Add") + "</button>\
+						</div>"
+      )
       addDiv.find(".addRow").click(function () {
         var div = $(this).parents("div").first()
-        that.onAddCallback()
-        div.appendTo($(".rightCol"))
+        that.onAddCallback();
+        div.appendTo($(".rightCol"));
+
+        if (that.widget.widget_type == 'search') {;
+          $(this).parents().find(".pluslayers").appendTo($(".rightCol"))
+        }
       })
-      $(".rightCol").append(addDiv)
+
+      $(".rightCol").append(addDiv);
+
+      if (this.widget.widget_type != "law") {
+        $(".rightCol").append(pluslayers);
+        cmpPlusLayersSearch.select2();
+      }
     }
   },
 
-  setLayerData: function (data, layer, layer_type) {
+  setLayerData: function (data, layer, layer_type, project_layers) {
     this.layerColumns = data
     this.layer = layer
     this.layer_type = layer_type
+    this.projectLayers = project_layers
   },
 
   init: function () {
     var that = this
-    this.setLayerData(ga.Qdjango.localVars["layer_columns"], ga.Qdjango.localVars["layer_name"], ga.Qdjango.localVars["layer_type"])
+    this.setLayerData(ga.Qdjango.localVars["layer_columns"], ga.Qdjango.localVars["layer_name"], ga.Qdjango.localVars["layer_type"], ga.Qdjango.localVars["project_layers"])
     this.lawslist = ga.Qdjango.localVars["laws_list"]
     if (ga.Qdjango.localVars["update"]) {
       if (!$.isEmptyObject(ga.Qdjango.localVars["widget"])) {
