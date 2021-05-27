@@ -726,6 +726,7 @@ ga.Qdjango.widgetEditor = {
             <div class="controls cmpPlusLayersSearch">\
                 <label class="control-label">' + gettext("Other searching layers") + '</label>\
             </div>\
+            <div class="help-block">' + gettext("Select one or more additional layers to search on") + '</div>\
         </div>\
         </div>');
 
@@ -740,8 +741,7 @@ ga.Qdjango.widgetEditor = {
 
         pluslayers.find(".cmpPlusLayersSearch").append(cmpPlusLayersSearch)
 
-        $(".rightCol").append(pluslayers);
-        cmpPlusLayersSearch.select2();
+
       }
 
 
@@ -752,14 +752,20 @@ ga.Qdjango.widgetEditor = {
       )
       addDiv.find(".addRow").click(function () {
         var div = $(this).parents("div").first()
-        that.onAddCallback()
+        that.onAddCallback();
+
+        div.appendTo($(".rightCol"));
         if (el.val() == 'search') {;
           $(this).parents().find(".pluslayers").appendTo($(".rightCol"))
         }
 
-        div.appendTo($(".rightCol"))
       })
       $(".rightCol").append(addDiv)
+
+      if (el.val() == 'search') {
+        $(".rightCol").append(pluslayers);
+        cmpPlusLayersSearch.select2();
+      }
     }
   },
 
@@ -806,6 +812,7 @@ ga.Qdjango.widgetEditor = {
             <div class="controls cmpPlusLayersSearch">\
                 <label class="control-label">' + gettext("Other searching layers") + '</label>\
             </div>\
+            <div class="help-block">' + gettext("Select one or more additional layers to search on") + '</div>\
         </div>\
         </div>');
 
@@ -823,9 +830,6 @@ ga.Qdjango.widgetEditor = {
 
         pluslayers.find(".cmpPlusLayersSearch").append(cmpPlusLayersSearch)
 
-        $(".rightCol").append(pluslayers);
-        cmpPlusLayersSearch.select2();
-
       }
 
 
@@ -836,14 +840,20 @@ ga.Qdjango.widgetEditor = {
       )
       addDiv.find(".addRow").click(function () {
         var div = $(this).parents("div").first()
-        that.onAddCallback()
+        that.onAddCallback();
+        div.appendTo($(".rightCol"));
+
         if (that.widget.widget_type == 'search') {;
           $(this).parents().find(".pluslayers").appendTo($(".rightCol"))
         }
-
-        div.appendTo($(".rightCol"))
       })
+
       $(".rightCol").append(addDiv);
+
+      if (this.widget.widget_type != "law") {
+        $(".rightCol").append(pluslayers);
+        cmpPlusLayersSearch.select2();
+      }
     }
   },
 
