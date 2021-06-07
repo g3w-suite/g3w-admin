@@ -368,12 +368,20 @@ class OpenrouteServiceIsochroneFromLayerResultView(OpenrouteServiceIsochroneBase
             except:
                 progress_percentage = 0
 
-            return Response({
-                'status': task_model.state.signal_name,
-                'exception': task_model.state.exception_line,
-                'progress': progress_percentage,
-                'task_result': result
-            }, status=ret_status)
+            try:
+                return Response({
+                    'status': task_model.state.signal_name,
+                    'exception': task_model.state.exception_line,
+                    'progress': progress_percentage,
+                    'task_result': result
+                }, status=ret_status)
+            except:
+                return Response({
+                    'status': 'error',
+                    'exception': 'Error retrieving task informations',
+                    'progress': 0,
+                    'task_result': result,
+                }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         except TaskModel.DoesNotExist:
 
