@@ -18,6 +18,7 @@ from qgis.core import (
     QgsCoordinateTransformContext,
 )
 from rest_framework.exceptions import ParseError
+from urllib.parse import unquote
 
 
 class BaseFilterBackend():
@@ -274,7 +275,7 @@ class FieldFilterBackend(BaseFilterBackend):
                     single_search_expression = '{field_name} {field_operator} {field_value}'.format(
                         field_name=self._quote_identifier(field_name),
                         field_operator=self.COMPARATORS_MAP[field_operator],
-                        field_value=self._quote_value(f'{pre_post_operator}{field_value}{pre_post_operator}')
+                        field_value=self._quote_value(f'{pre_post_operator}{unquote(field_value)}{pre_post_operator}')
                         )
 
                     search_expression = f'{search_expression} {single_search_expression}'
