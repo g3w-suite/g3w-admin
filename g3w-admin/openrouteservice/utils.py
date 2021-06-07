@@ -330,15 +330,24 @@ def isochrone(profile, params):
         'Content-Type': 'application/json; charset=utf-8'
     }
 
+    # Fix interval = 0
+    try:
+        if int(params['interval']) == 0:
+            del (params['interval'])
+    except KeyError:
+        pass
+
     json_params = params
 
     if ORS_API_KEY is not None:
         headers['Authorization'] = ORS_API_KEY
 
-    logger.debug('Calling ORS endpoint:\n%s' % json_params)
+    url_path = os.path.join(
+        settings.ORS_API_ENDPOINT, 'isochrones', profile)
 
-    response = requests.post(os.path.join(
-        settings.ORS_API_ENDPOINT, 'isochrones', profile), json=json_params, headers=headers)
+    logger.debug('Calling ORS endpoint %s:\n%s' % (url_path, json.dumps(json_params)))
+
+    response = requests.post(url_path, json=json_params, headers=headers)
     return response
 
 
