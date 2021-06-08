@@ -1,7 +1,9 @@
 from django.conf import settings
+from django.http import Http404
 from django.views.generic import View
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
+from core.models import ProjectMapUrlAlias
 from .proxy import Proxy
 
 OWSREQUESTHANDLER_CLASS_DEFAULT = 'OWSRequestHandler'
@@ -35,3 +37,20 @@ class OWSView(View):
 
     def post(self, request, *args, **kwargs):
             return self.proxy.request(request, self.OWSRequestHandler, **kwargs)
+
+
+def ows_alias_view(request, map_name_alias, *args, **kwargs):
+    """
+    Proxy view for OWS view with alias url.
+    :param request: Django request object.
+    :param map_name_alias: Alias name by url.
+    :return: ClientView instance or a Http404 instance.
+    """
+
+    # try to find alias url
+    try:
+        pma = ProjectMapUrlAlias.objects.get(alias=map_name_alias)
+        kwargs.update({'project_type': pma.app_name, 'project_id': pma.project_id, 'group_slug': 'for_alias'})
+        return OWSView.as_view()(request, *args, **kwargs)
+    except:
+        raise Http404('Map not found')
