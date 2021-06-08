@@ -382,6 +382,7 @@ class ClientApiTest(CoreTestBase):
         self.assertTrue(resp['layers'][0]['id'], 'bluemarble20181008111156906')
         self.assertTrue(resp['layers'][1]['id'], 'world20181008111156525')
         self.assertTrue(resp['layers'][2]['id'], 'spatialite_points20190604101052075')
+        self.assertTrue(resp['layers'][3]['id'], 'popolation_femme_2019_4a0ec267_1fc5_466c_be89_1c7525744e11')
 
     def test_init_max_extent_policy(self):
         """ Test init  and maxextent policy by checked or not of use_map_extent_as_init_extent"""
