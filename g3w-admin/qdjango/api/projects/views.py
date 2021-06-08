@@ -40,6 +40,11 @@ class QdjangoWebServicesAPIview(G3WAPIView):
                 }
             }
 
+            # add url alias if url map alias is set
+            alias = project.url_alias
+            if alias:
+                res['WMS']['alias'] = reverse('OWS:ows-alias', args=[alias])
+
             # check if WFS layers is active
             wfs = False
             tms_layers = []

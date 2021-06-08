@@ -23,7 +23,7 @@ from django.test import Client, override_settings
 from django.urls import reverse
 from guardian.shortcuts import assign_perm, remove_perm
 from qdjango.apps import QGS_SERVER, get_qgs_project
-from qdjango.models import Project
+from qdjango.models import Project, ProjectMapUrlAlias
 from qgis.core import QgsProject
 
 from .base import (CURRENT_PATH, QGS310_WIDGET_FILE, TEST_BASE_PATH,
@@ -62,6 +62,10 @@ class OwsTest(QdjangoTestBase):
         cls.project_widget310.group = cls.project_group
         cls.project_widget310.save()
 
+        # Add Map Url Alias
+        ProjectMapUrlAlias.objects.create(app_name='qdjango', project_id=cls.project_widget310.instance.pk,
+                                          alias='alias-map')
+
     def test_get(self):
         """Test get request"""
 
@@ -77,6 +81,26 @@ class OwsTest(QdjangoTestBase):
         })
 
         self.assertTrue(b'<Name>bluemarble</Name>' in response.content)
+
+        # Test with map alias name
+        ows_alias_url = reverse('OWS:ows-alias', kwargs={'map_name_alias': 'alias-map'})
+
+        response = c.get(ows_alias_url, {
+            'REQUEST': 'GetCapabilities',
+            'SERVICE': 'WMS'
+        })
+
+        self.assertTrue(b'<Name>main_layer</Name>' in response.content)
+
+        # test response 404 on wrong map alias name
+        ows_alias_url_wrong = reverse('OWS:ows-alias', kwargs={'map_name_alias': 'alias-map-wrong'})
+        response = c.get(ows_alias_url_wrong, {
+            'REQUEST': 'GetCapabilities',
+            'SERVICE': 'WMS'
+        })
+
+        self.assertEqual(response.status_code, 404)
+
 
     def test_authorizzer(self):
         """Test authorizzer by user and permission on project"""
@@ -140,6 +164,42 @@ class OwsTest(QdjangoTestBase):
         ows_url = reverse('OWS:ows', kwargs={'group_slug': self.project_widget310.instance.group.slug,
                                              'project_type': 'qdjango',
                                              'project_id': self.project_widget310.instance.pk})
+
+        # test GetFeatureInfo
+        response = c.get(ows_url, {
+            'SERVICE': "WMS",
+            'VERSION': "1.3.0",
+            'REQUEST': "GetFeatureInfo",
+            'CRS': "EPSG:4326",
+            'LAYERS': "main_layer",
+            'QUERY_LAYERS': "main_layer",
+            'INFO_FORMAT': "application/json",
+            'FEATURE_COUNT': "5",
+            'FI_POINT_TOLERANCE': "10",
+            'FI_LINE_TOLERANCE': "10",
+            'FI_POLYGON_TOLERANCE': "10",
+            'G3W_TOLERANCE': "0.0001259034459559036",
+            'WITH_GEOMETRY': "1",
+            'I': "300",
+            'J': "438",
+            'DPI': "96",
+            'WIDTH': "600",
+            'HEIGHT': "877",
+            'STYLES': "",
+            'BBOX': "43.78646121799684,11.249447715470794,43.79750295020717,11.257001922228149"
+        })
+
+        self.assertEqual(response.status_code, 200)
+        jresponse = json.loads(response.content)
+
+        features = jresponse['features']
+        self.assertEqual(features[0]['properties']['code'], 200)
+        self.assertEqual(features[0]['properties']['date'], '2020-05-19')
+        self.assertEqual(features[0]['properties']['name'], 'olive')
+        self.assertEqual(features[0]['properties']['type'], 'TYPE B')
+
+        # Test url alias
+        ows_url = reverse('OWS:ows-alias', kwargs={'map_name_alias': 'alias-map'})
 
         # test GetFeatureInfo
         response = c.get(ows_url, {

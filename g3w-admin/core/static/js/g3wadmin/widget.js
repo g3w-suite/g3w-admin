@@ -850,9 +850,16 @@ _.extend(g3wadmin.widget, {
                             } else {
                                 var access = '<i class="fa fa-lock" style="color: red;"></i>';
                             }
+
+                            var alias = '';
+                            if (_.has(dt, 'alias')) {
+                                alias = '<br>ALIAS URL:<a href="'+dt['alias']+'" target="_blank">'+dt['alias'];
+                            }
                             access += ' '+dt['access'];
-                            $body.append($('<p>').html('URL:<a href="'+dt['url']+'" target="_blank">'+dt['url']+'</a><br>' +
-                                gettext('Access')+': '+access))
+                            $body.append($('<p>').html('URL:<a href="'+dt['url']+'" target="_blank">'+dt['url']+'</a>'+alias+'<br>' +
+                                gettext('Access')+': '+access));
+
+
                          }
 
                      });
