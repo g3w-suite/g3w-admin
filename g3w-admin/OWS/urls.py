@@ -3,10 +3,6 @@ from django.urls import re_path
 
 app_name = 'OWS'
 
-app_name = 'OWS'
-
-
-
 urlpatterns = [
     # url working for qgis wms client
     re_path(r'^ows/(?P<map_name_alias>[-_\w\d]+)/&?$', ows_alias_view, name='ows-alias'),
