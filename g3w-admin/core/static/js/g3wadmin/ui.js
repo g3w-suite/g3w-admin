@@ -472,7 +472,7 @@ _.extend(g3wadmin.ui, {
             var $item = $(this);
             // build value
             var data = {
-                download_layer_gpx: e.target.checked ? 1 : 0
+                download_layer_gpkg: e.target.checked ? 1 : 0
             }
 
             ga.widget.setLayerData($item, data);
