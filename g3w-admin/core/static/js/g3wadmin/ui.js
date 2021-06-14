@@ -466,6 +466,19 @@ _.extend(g3wadmin.ui, {
 
         });
     },
+    initDownloadLayerGpkgCheckBox: function(){
+        $(document).on('ifChanged', '[data-widget-type="downloadLayergpkg"]', function(e){
+
+            var $item = $(this);
+            // build value
+            var data = {
+                download_layer_gpkg: e.target.checked ? 1 : 0
+            }
+
+            ga.widget.setLayerData($item, data);
+
+        });
+    },
     initDownloadLayerCsvCheckBox: function(){
         $(document).on('ifChanged', '[data-widget-type="downloadLayercsv"]', function(e){
 
