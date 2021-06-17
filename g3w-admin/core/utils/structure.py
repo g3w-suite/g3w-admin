@@ -268,7 +268,10 @@ def mapLayerAttributesFromQgisLayer(qgis_layer, **kwargs):
                 if has_expression:
                     expression = field.constraints().constraintExpression()
 
-                if not_null and unique and default_clause:
+                # Check for defaultValueDefinition with expression
+                has_default_value_expression = True if field.defaultValueDefinition().expression() != '' else False
+
+                if not_null and unique and default_clause or has_default_value_expression:
                     editable = False
                 else:
                     editable = kwargs['fields'][field.name()]['editable']

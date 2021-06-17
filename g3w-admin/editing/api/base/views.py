@@ -7,7 +7,13 @@ from django.core.files.images import ImageFile
 from django.db import IntegrityError, transaction
 from django.db.models import AutoField, FileField, ImageField
 from django.utils.translation import ugettext_lazy as _
-from qgis.core import QgsDataSourceUri, QgsFeature, QgsJsonUtils, QgsJsonExporter
+from qgis.core import \
+    QgsDataSourceUri, \
+    QgsFeature, \
+    QgsJsonUtils, \
+    QgsJsonExporter, \
+    QgsExpression, \
+    QgsExpressionContextUtils
 from rest_framework.exceptions import ValidationError
 
 from core.api.base.vector import MetadataVectorLayer
@@ -220,6 +226,23 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
                         for name, value in geojson_feature['properties'].items():
                             feature.setAttribute(name, value)
 
+                        # Lop again for set expressions value:
+                        # For update store expression result to use later into update condition
+                        field_expresion_values = {}
+                        for qgis_field in qgis_layer.fields():
+                            if qgis_field.defaultValueDefinition().expression():
+                                exp = QgsExpression(qgis_field.defaultValueDefinition().expression())
+                                if not exp.hasParserError():
+                                    context = QgsExpressionContextUtils.createFeatureBasedContext(
+                                        feature, qgis_layer.fields())
+                                    context.appendScopes(
+                                        QgsExpressionContextUtils.globalProjectLayerScopes(qgis_layer))
+                                    result = exp.evaluate(context)
+                                    if not exp.hasEvalError():
+                                        feature.setAttribute(qgis_field.name(), result)
+                                        field_expresion_values[qgis_field.name()] = result
+
+
                         # Call validator!
                         errors = feature_validator(
                             feature, metadata_layer.qgis_layer)
@@ -251,6 +274,8 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
                             attr_map = {}
                             for name, value in geojson_feature['properties'].items():
                                 if name in qgis_layer.dataProvider().fieldNameMap():
+                                    if name in field_expresion_values:
+                                        value = field_expresion_values[name]
                                     attr_map[qgis_layer.dataProvider().fieldNameMap()[name]] = value
 
                             if has_transactions:

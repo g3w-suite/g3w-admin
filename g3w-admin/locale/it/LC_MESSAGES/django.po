@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-19 13:54+0000\n"
+"POT-Creation-Date: 2021-06-15 14:41+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,92 +18,82 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: forms.py:45 templates/simplereporting/projects_list.html:18
-#: templates/simplereporting/projects_list.html:26
-msgid "Project"
+#: forms.py:44
+msgid "Invalid file extension: only "
 msgstr ""
 
-#: forms.py:85
-msgid "Reporting vector layer"
+#: forms.py:49
+msgid "With coordinates (x,y)"
 msgstr ""
 
-#: models.py:42
-msgid "This project is just set for a simple reporting"
+#: forms.py:50
+msgid "With addresses"
 msgstr ""
 
-#: models.py:75
+#: forms.py:54
+msgid "With cadastral parcels (sheet, parcels, section)"
+msgstr ""
+
+#: forms.py:68
+msgid "File type you want to geolocate"
+msgstr ""
+
+#: forms.py:69
+msgid "File you wanto to gelocate"
+msgstr ""
+
+#: forms.py:70
+msgid "Output file name"
+msgstr ""
+
+#: forms.py:71
 msgid ""
-"Select vector project layer to use for reporting: only follow geometry types "
-"are allowed: , "
+"(Optional) Specify a output file name, if not set original spreed sheet file "
+"name used"
 msgstr ""
 
-#: models.py:90
-msgid "Layer geometry type is not in allowed type: , "
+#: forms.py:96
+msgid "Geolocation file"
 msgstr ""
 
-#: models.py:95
-msgid "Layer is not in editing state (required)"
+#: forms.py:118
+msgid "With Cadastral file type, comune code doesn't have to be empty"
 msgstr ""
 
-#: models.py:104
-msgid "Only once combination of SimpleReporting adn vector layer reporting!"
+#: geolocation/address.py:38 geolocation/cadastral.py:46
+msgid "Input file has not the follow columns: , "
 msgstr ""
 
-#: templates/simplereporting/layer_form.html:11
-#: templates/simplereporting/layer_form.html:14
-msgid "Reporting Vector Layer"
+#: geolocation/base.py:121
+msgid "Input data has not HEADERS column."
 msgstr ""
 
-#: templates/simplereporting/layer_form.html:14
-#: templates/simplereporting/project_form.html:14
-msgid "New"
+#: geolocation/xy.py:34
+msgid "Input file has not 'x' and/or 'y' columns!"
 msgstr ""
 
-#: templates/simplereporting/layer_form.html:27
-#: templates/simplereporting/project_form.html:27
+#: templates/geolocalexls/gelocale_action.html:9
+msgid "Gelocation in action..."
+msgstr ""
+
+#: templates/geolocalexls/gelocale_form.html:9
+msgid "Gelocation XLS/CSV"
+msgstr ""
+
+#: templates/geolocalexls/gelocale_form.html:38
 msgid "Alert"
 msgstr ""
 
-#: templates/simplereporting/layer_form.html:28
-#: templates/simplereporting/project_form.html:28
+#: templates/geolocalexls/gelocale_form.html:39
 msgid "Some errors on form. Check it and send again."
 msgstr ""
 
-#: templates/simplereporting/project_form.html:11
-#: templates/simplereporting/project_form.html:14
-msgid "Simple Reporting Project"
+#: templates/geolocalexls/include/form_buttons.html:6
+msgid "Geolocate - Generate ShapeFile"
 msgstr ""
 
-#: templates/simplereporting/projects_list.html:8
-msgid "Simple reporting Projects"
-msgstr ""
-
-#: templates/simplereporting/projects_list.html:25
-msgid "Actions"
-msgstr ""
-
-#: templates/simplereporting/projects_list.html:27
-msgid "Reporting Layer"
-msgstr ""
-
-#: templates/simplereporting/projects_list.html:28
-msgid "Note"
-msgstr ""
-
-#: templates/simplereporting/projects_list.html:36
-msgid "Edit"
-msgstr ""
-
-#: templates/simplereporting/projects_list.html:39
-msgid "Delete"
-msgstr ""
-
-#: templates/simplereporting/projects_list.html:42
-msgid "Reporting Vector layer"
-msgstr ""
-
-#: templates/simplereporting/projects_list.html:52
-msgid "No set"
+#: templates/geolocalexls/include/form_buttons.html:10
+msgid "Redo/Back"
 msgstr ""
 
 #~ msgid "error page"
