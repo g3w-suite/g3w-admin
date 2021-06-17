@@ -30,10 +30,10 @@ def get_qplotlywidgets4layer(layer):
         if 'service' in ds:
             to_contain = Q(datasource__contains=u'service=\'{}\''.format(ds['service']))
         else:
-            to_contain = Q(datasource__contains=u'dbname=\'{}\''.format(ds['dbname']))
+            to_contain = Q(datasource__contains=u'dbname=\'{}\''.format(ds['dbname'])) & \
+                         Q(datasource__contains=u'host={}'.format(ds['host']))
 
         to_contain = to_contain & \
-                     Q(datasource__contains=u'host={}'.format(ds['host'])) & \
                      Q(datasource__contains=u'table={}'.format(ds['table']))
         return QplotlyWidget.objects.filter(to_contain)
     else:
