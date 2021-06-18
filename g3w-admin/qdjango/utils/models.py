@@ -51,9 +51,16 @@ def get_widgets4layer(layer):
     # for postgis layer
     if layer.layer_type == 'postgres':
         ds = datasource2dict(layer.datasource)
-        to_contain = Q(datasource__contains=u'dbname=\'{}\''.format(ds['dbname'])) & \
-                     Q(datasource__contains=u'host={}'.format(ds['host'])) & \
+
+        if 'service' in ds:
+            to_contain = Q(datasource__contains=u'service=\'{}\''.format(ds['service']))
+        else:
+            to_contain = Q(datasource__contains=u'dbname=\'{}\''.format(ds['dbname'])) & \
+                         Q(datasource__contains=u'host={}'.format(ds['host']))
+
+        to_contain = to_contain & \
                      Q(datasource__contains=u'table={}'.format(ds['table']))
+
         return Widget.objects.filter(to_contain)
     else:
         return Widget.objects.filter(datasource=layer.datasource)
