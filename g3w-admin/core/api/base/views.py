@@ -442,8 +442,11 @@ class BaseVectorOnModelApiView(G3WAPIView):
         # Apply filter backends, store original subset string
         original_subset_string = self.metadata_layer.qgis_layer.subsetString()
         if hasattr(self, 'filter_backends'):
-            for backend in self.filter_backends:
-                backend().apply_filter(request, self.metadata_layer.qgis_layer, qgis_feature_request, self)
+            try:
+                for backend in self.filter_backends:
+                    backend().apply_filter(request, self.metadata_layer.qgis_layer, qgis_feature_request, self)
+            except Exception as e:
+                raise APIException(e)
 
         # Paging cannot be a backend filter
         if 'page' in request.query_params:

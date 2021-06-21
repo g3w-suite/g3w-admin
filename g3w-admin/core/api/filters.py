@@ -215,7 +215,10 @@ class SuggestFilterBackend(BaseFilterBackend):
             # get field and value
             field_name, field_value = suggest_value.split('|')
 
-            if field_name and field_value and self._is_valid_field(qgis_layer, field_name):
+            if not self._is_valid_field(qgis_layer, field_name):
+                raise Exception(f"{field_name} doesn't belongs from layer!")
+
+            if field_name and field_value:
 
                 search_expression = '{field_name} ILIKE {field_value}'.format(
                     field_name=self._quote_identifier(field_name),
@@ -279,7 +282,10 @@ class FieldFilterBackend(BaseFilterBackend):
                     except ValueError:
                         raise ParseError('Invalid field string supplied for parameter field')
 
-                if field_name and field_value and self._is_valid_field(qgis_layer, field_name):
+                if not self._is_valid_field(qgis_layer, field_name):
+                    raise Exception(f"{field_name} doesn't belongs from layer {qgis_layer.name()}!")
+
+                if field_name and field_value:
 
                     pre_post_operator = '%' if field_operator in ('like', 'ilike') else ''
                     single_search_expression = '{field_name} {field_operator} {field_value}'.format(
