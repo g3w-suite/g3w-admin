@@ -221,14 +221,7 @@ class GeoConstraintRule(models.Model):
         if constraint_geometry:
             spatial_predicate = getattr(
             settings, 'EDITING_CONSTRAINT_SPATIAL_PREDICATE', 'contains')
-            if spatial_predicate == 'contains':
-                # The constraint geometry contains feature geometry
-                expression = "contains(geom_from_wkt( '{wkt}' ), $geometry )".format(wkt=constraint_geometry.wkt)
-            else:
-                # The constraint geometry is within the feature geometry
-                expression = "within(geom_from_wkt( '{wkt}' ), $geometry)".format(wkt=constraint_geometry.wkt)
-
-        return expression
+            return f"{spatial_predicate}(geom_from_wkt( '{constraint_geometry.wkt}' ), $geometry )"
 
     def validate_sql(self):
         """Checks if the rule can be executed without errors
