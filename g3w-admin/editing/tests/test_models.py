@@ -469,7 +469,7 @@ class ConstraintsModelTestsBase(ConstraintsTestsBase):
         # Now add a constraint for user2
         constraint_layer = Layer.objects.get(name=self.constraint_layer_name)
         constraint = GeoConstraint(
-            layer=editing_layer, constraint_layer=constraint_layer, for_editing=True)
+            layer=editing_layer, constraint_layer=constraint_layer, for_editing=True, for_view=False)
         constraint.save()
         rule = GeoConstraintRule(constraint=constraint,
                                  user=self.test_user2,
