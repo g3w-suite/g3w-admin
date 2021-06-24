@@ -202,7 +202,7 @@ def validate_constraint(**kwargs):
     user = kwargs['user']
 
     # check rule presence for layer
-    rules = GeoConstraintRule.get_active_constraints_for_user(user, editing_layer)
+    rules = GeoConstraintRule.get_active_constraints_for_user(user, editing_layer, context='e')
 
     if len(rules) == 0:
         return

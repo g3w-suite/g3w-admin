@@ -39,4 +39,4 @@ Settings for module:
     EDITING_LOGGING: <if note set is False>
 
     # set spatila predicate for (Multi)Polygon predicate
-    EDITIGN_CONSTRAINT_SPATIAL_PREDICATE = 'contains' | 'intersects' (contains default)
+    EDITING_CONSTRAINT_SPATIAL_PREDICATE = 'contains' | 'intersects' (contains default)
