@@ -466,10 +466,10 @@ class ConstraintsModelTestsBase(ConstraintsTestsBase):
         self.assertTrue(self.test_user2.has_perm(
             'qdjango.change_layer', editing_layer))
 
-        # Now add a constraint for user2
+        # Now add a constraint for user2: strict for editing
         constraint_layer = Layer.objects.get(name=self.constraint_layer_name)
         constraint = GeoConstraint(
-            layer=editing_layer, constraint_layer=constraint_layer, for_editing=True)
+            layer=editing_layer, constraint_layer=constraint_layer, for_editing=True, for_view=False)
         constraint.save()
         rule = GeoConstraintRule(constraint=constraint,
                                  user=self.test_user2,
