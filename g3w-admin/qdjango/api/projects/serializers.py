@@ -19,7 +19,7 @@ from core.signals import after_serialized_project_layer
 from core.mixins.api.serializers import G3WRequestSerializer
 from core.api.serializers import update_serializer_data
 from core.utils.structure import RELATIONS_ONE_TO_MANY, RELATIONS_ONE_TO_ONE
-from core.utils.qgisapi import get_qgis_layer
+from core.utils.qgisapi import get_qgis_layer, count_qgis_features
 from core.utils.general import clean_for_json
 from core.models import G3WSpatialRefSys
 
@@ -234,6 +234,21 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         except SessionTokenFilter.DoesNotExist:
             return None
 
+    def layer_is_empty(self, layer):
+        """
+        Check if a vector layer is empty (not data)
+
+        :param layer: qdjango Layer model instance
+        :return: True or False
+        :rtype: boolean
+        """
+
+        qgis_layer = get_qgis_layer(layer)
+        if qgis_layer.type() == QgsMapLayer.VectorLayer:
+            return not bool(count_qgis_features(qgis_layer))
+        else:
+            return False
+
     def to_representation(self, instance):
         logging.warning('Serializer')
         ret = super(ProjectSerializer, self).to_representation(instance)
@@ -277,6 +292,11 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
                 for node in layer['nodes']:
                     readLeaf(node, layer['nodes'])
             else:
+
+                # Check for empty vector layer
+                if settings.G3W_CLIENT_NOT_SHOW_EMPTY_VECTORLAYER and self.layer_is_empty(layers[layer['id']]):
+                    return
+
                 try:
                     layer_serialized = LayerSerializer(
                         layers[layer['id']], qgs_project=qgs_project)
@@ -342,11 +362,12 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
             new_order = []
             meta_layer = QdjangoMetaLayer()
             for qgs_layer in qgs_project.layerTreeRoot().customLayerOrder():
-                custom_layer_order_ids.append(qgs_layer.id())
-                lsd = ret['layers'][qgs_layer.id()]
-                lsd['multilayer'] = meta_layer.getCurrentByLayer(
-                    lsd)
-                new_order.append(lsd)
+                if qgs_layer.id() in ret['layers']:
+                    custom_layer_order_ids.append(qgs_layer.id())
+                    lsd = ret['layers'][qgs_layer.id()]
+                    lsd['multilayer'] = meta_layer.getCurrentByLayer(
+                        lsd)
+                    new_order.append(lsd)
 
             # get layers not in customLayerOrder to add an the end of return layers list
             to_add_to_end = set(ret['layers'].keys()) - set(custom_layer_order_ids)

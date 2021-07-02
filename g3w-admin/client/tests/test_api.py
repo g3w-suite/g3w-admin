@@ -25,13 +25,15 @@ from qdjango.models import Widget, WIDGET_TYPES
 from qgis.core import QgsCoordinateReferenceSystem, QgsCoordinateTransformContext
 
 # Re-use test data from qdjango module
-DATASOURCE_PATH = os.path.join(os.getcwd(), 'qdjango', 'tests', 'data')
+PROJECTS_PATH = os.path.join(os.getcwd(), 'qdjango', 'tests', 'data')
+DATASOURCE_PATH = f'{PROJECTS_PATH}/geodata'
 QGS310_FILE = 'g3wsuite_project_test_qgis310.qgs'
 QGS310_FILE_1 = 'edit-widget_g3w-suite-project-test.qgs'
 QGS310_FILE_2 = 'init_extent_max_extent test_qgis310.qgs'
 QGS310_FILE_3 = 'gruppo-1_custom_layer_order_qgis316.qgs'
+QGS310_FILE_4 = 'gruppo-1_empty_vector_layer316.qgs'
 
-@override_settings(MEDIA_ROOT=DATASOURCE_PATH)
+@override_settings(MEDIA_ROOT=PROJECTS_PATH)
 @override_settings(DATASOURCE_PATH=DATASOURCE_PATH)
 class ClientApiTest(CoreTestBase):
     """Test client API"""
@@ -60,21 +62,21 @@ class ClientApiTest(CoreTestBase):
             name='Print Group', title='Print Group', header_logo_img='', srid=cls.prj_test.group.srid)
         cls.print_group.save()
 
-        qgis_project_file_print = File(open('{}/{}'.format(DATASOURCE_PATH, QGS310_FILE), 'r'))
+        qgis_project_file_print = File(open('{}/{}'.format(PROJECTS_PATH, QGS310_FILE), 'r'))
         cls.project_print310 = QgisProject(qgis_project_file_print)
         cls.project_print310.group = cls.print_group
         cls.project_print310.save()
 
         cache_key = settings.QDJANGO_PRJ_CACHE_KEY.format(cls.prj_test.pk)
         cache = caches['qdjango']
-        cache.set(cache_key, open(os.path.join(DATASOURCE_PATH, 'getProjectSettings_gruppo-1_un-progetto_qgis310.xml'),
+        cache.set(cache_key, open(os.path.join(PROJECTS_PATH, 'getProjectSettings_gruppo-1_un-progetto_qgis310.xml'),
                                   'rb').read())
 
         cache_key = settings.QDJANGO_PRJ_CACHE_KEY.format(cls.project_print310.instance.pk)
-        cache.set(cache_key, open(os.path.join(DATASOURCE_PATH, 'getProjectSettings_g3wsuite_project_test_qgis310.xml'),
+        cache.set(cache_key, open(os.path.join(PROJECTS_PATH, 'getProjectSettings_g3wsuite_project_test_qgis310.xml'),
                                   'rb').read())
 
-        qgis_project_file_1 = File(open('{}/{}'.format(DATASOURCE_PATH, QGS310_FILE_1), 'r'))
+        qgis_project_file_1 = File(open('{}/{}'.format(PROJECTS_PATH, QGS310_FILE_1), 'r'))
         cls.project_print310_1 = QgisProject(qgis_project_file_1)
         cls.project_print310_1.group = cls.print_group
         cls.project_print310_1.save()
@@ -83,7 +85,7 @@ class ClientApiTest(CoreTestBase):
         cls.extent_group = Group(
             name='Extent Group', title='Extent Group', header_logo_img='', srid=G3WSpatialRefSys.objects.get(srid=32633))
         cls.extent_group.save()
-        qgis_project_file_2 = File(open('{}/{}'.format(DATASOURCE_PATH, QGS310_FILE_2), 'r'))
+        qgis_project_file_2 = File(open('{}/{}'.format(PROJECTS_PATH, QGS310_FILE_2), 'r'))
         cls.project_extent310_2 = QgisProject(qgis_project_file_2)
         cls.project_extent310_2.group = cls.extent_group
         cls.project_extent310_2.save()
@@ -92,12 +94,22 @@ class ClientApiTest(CoreTestBase):
         cls.custom_order_layer_group = Group(
             name='Custom Order Layer Group', title='Custom Order Layer Group', header_logo_img='',
             srid=G3WSpatialRefSys.objects.get(srid=4326))
-        cls.extent_group.save()
-        qgis_project_file_3 = File(open('{}/{}'.format(DATASOURCE_PATH, QGS310_FILE_3), 'r'))
+        cls.custom_order_layer_group.save()
+        qgis_project_file_3 = File(open('{}/{}'.format(PROJECTS_PATH, QGS310_FILE_3), 'r'))
         cls.project_extent316_1 = QgisProject(qgis_project_file_3)
-        cls.project_extent316_1.group = cls.extent_group
+        cls.project_extent316_1.group = cls.custom_order_layer_group
         cls.project_extent316_1.save()
         qgis_project_file_3.close()
+
+        cls.empty_vector_layer_layer_group = Group(
+            name='Empty vector layer Layer Group', title='Empty vector layer Layer Group', header_logo_img='',
+            srid=G3WSpatialRefSys.objects.get(srid=4326))
+        cls.empty_vector_layer_layer_group.save()
+        qgis_project_file_4 = File(open('{}/{}'.format(PROJECTS_PATH, QGS310_FILE_4), 'r'))
+        cls.project_extent316_2 = QgisProject(qgis_project_file_4)
+        cls.project_extent316_2.group = cls.empty_vector_layer_layer_group
+        cls.project_extent316_2.save()
+        qgis_project_file_4.close()
 
     @override_settings(VENDOR_KEYS={'google': '123456789'})
     def testGroupConfigApiView(self):
@@ -383,6 +395,31 @@ class ClientApiTest(CoreTestBase):
         self.assertTrue(resp['layers'][1]['id'], 'world20181008111156525')
         self.assertTrue(resp['layers'][2]['id'], 'spatialite_points20190604101052075')
         self.assertTrue(resp['layers'][3]['id'], 'popolation_femme_2019_4a0ec267_1fc5_466c_be89_1c7525744e11')
+
+    def test_empty_vector_layer(self):
+        """Testing remove empty vector layer from config client API"""
+
+
+
+        # G3W_CLIENT_NOT_SHOW_EMPTY_VECTORLAYER = False
+        # --------------------------------------------
+        with self.settings(G3W_CLIENT_NOT_SHOW_EMPTY_VECTORLAYER=False):
+            response = self._testApiCall('group-project-map-config', ['empty_vector_layer_layer_group', 'qdjango',
+                                                                      self.project_extent316_2.instance.pk])
+            resp = json.loads(response.content)
+            layers = [l['id'] for l in resp['layers']]
+
+            self.assertTrue('empty_table_c24561b9_a94f_4515_ba52_0c12e5608094' in layers)
+
+        # G3W_CLIENT_NOT_SHOW_EMPTY_VECTORLAYER = True
+        # --------------------------------------------
+        with self.settings(G3W_CLIENT_NOT_SHOW_EMPTY_VECTORLAYER=True):
+            response = self._testApiCall('group-project-map-config', ['empty_vector_layer_layer_group', 'qdjango',
+                                                                      self.project_extent316_2.instance.pk])
+            resp = json.loads(response.content)
+            layers = [l['id'] for l in resp['layers']]
+
+            self.assertFalse('empty_table_c24561b9_a94f_4515_ba52_0c12e5608094' in layers)
 
     def test_init_max_extent_policy(self):
         """ Test init  and maxextent policy by checked or not of use_map_extent_as_init_extent"""
