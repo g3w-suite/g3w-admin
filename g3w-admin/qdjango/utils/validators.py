@@ -232,7 +232,7 @@ class ProjectTitleExists(QgisProjectValidator):
     def clean(self):
         if not self.qgisProject.title:
             if self.qgisProject.qgisProjectFile.name:
-                self.qgisProject.title = self.qgisProject.qgisProjectFile.name
+                self.qgisProject.title = os.path.basename(self.qgisProject.qgisProjectFile.name)
             else:
                 raise QgisProjectException(_('Title project not empty'))
 
