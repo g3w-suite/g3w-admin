@@ -3,16 +3,15 @@
 <div class="navbar-custom-menu">
     <ul class="nav navbar-nav">
 
-        <!--<li>
+        <li>
             <div class="has-feedback" style="margin-top:10px; color: #fff;">
-                <input type="text" class="form-control input-sm"
-                       style="width: 245px; padding-right: 24px; border: none; border-bottom: 2px solid #fff;
-                       color: #fff;
-                       background: transparent;"
-                       placeholder="Search">
+                <form action="{% url 'search-admin' %}">
+                <input type="text" name="stext" class="form-control input-sm search-admin-input"
+                       placeholder="{% trans 'Search' %}">
                 <span class="glyphicon glyphicon-search form-control-feedback"></span>
+                </form>
             </div>
-        </li>-->
+        </li>
         {% for item in navbar_items %}
         <li>
             {{ item }}

@@ -1,0 +1,39 @@
+{% load i18n %}
+{% load g3wadmin_tags %}
+{% load guardian_tags %}
+
+
+{% if results|length > 0 %}
+<div class="box">
+    <div class="box-header with-border">
+        <h3 class="box-title">{% trans 'Cartographic groups' %} ({{ results|length }})</h3>
+    </div>
+    <div class="box-body">
+    {% for r in results %}
+        {% if user %}
+        {% get_obj_perms user for r as "userObj_perms" %}
+        {% endif %}
+        <div class="result-search-item result-search-item-{% cycle 'odd' 'even' %} row">
+            <div class="col-sm-2 col-md-1"><img style="height: 60px;" class="img-responsive" src="{{ MEDIA_URL }}{{ r.header_logo_img }}"></div>
+            <div class="col-sm-10 col-md-11">
+                <p>{{ r.title }} ({{ r.name }})</p>
+                {% if r.description %}<p>{{ r.description|safe }}</p> {% endif %}
+                {% if user %}
+                <p class="result-search-item-links">
+                    {% if "view_group" in userObj_perms %}
+                    <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-detail-url="{% url 'group-detail' r.slug %}"><i class="ion ion-eye"></i></a>
+                        <a href="{% url 'project-list' r.slug %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Group projects' %}"><i class="ion ion-map"></i></a>
+                    {% endif %}
+                    {% if "change_group" in userObj_perms %}
+                    <a href="{% url 'group-update' r.slug %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Edit' %}" ><i class="ion ion-edit"></i></a>
+                    {% endif %}
+                </p>
+            {% endif %}
+            </div>
+
+
+        </div>
+    {% endfor %}
+    </div>
+</div>
+{% endif %}

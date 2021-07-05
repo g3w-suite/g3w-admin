@@ -1,0 +1,46 @@
+{% load i18n %}
+{% load g3wadmin_tags %}
+{% load guardian_tags %}
+
+{% if results|length > 0 %}
+<div class="box">
+    <div class="box-header with-border">
+        <h3 class="box-title">{% trans 'Projects' %} ({{ results|length }})</h3>
+    </div>
+    <div class="box-body">
+    {% for r in results %}
+        {% get_obj_perms user for r as "userObj_perms" %}
+
+        <div class="result-search-item result-search-item-{% cycle 'odd' 'even' %} row">
+            <div class="col-sm-2 col-md-1">
+            {% if "view_project" in userObj_perms %}
+            <a href="{% url 'group-project-map' r.group.slug 'qdjango' r.pk %}" class="project-thumb" title="{% trans 'Show map' %}" target="_blank">
+            {% endif %}
+            {% if r.thumbnail  %}
+            <img style="height:60px;" class="img-responsive" src="{{ MEDIA_URL }}{{ r.thumbnail }}" />
+            {% else %}
+            <img style="height:60px;" class="img-responsive" src="https://via.placeholder.com/80x60" />
+            {% endif %}
+            {% if "view_project" in userObj_perms %}
+            </a>
+            {% endif %}
+            </div>
+            <div class="col-sm-10 col-md-11">
+                <h4>{{ r.title }} <small>({% trans 'group:' %}{{ r.group }})</small></h4>
+                {% if r.description %}<p>{{ r.description|safe }}</p> {% endif %}
+                <p class="result-search-item-links">
+                    {% if "view_project" in userObj_perms %}
+                        <a class="color-orange" href="{% url 'group-project-map' r.group.slug 'qdjango' r.pk %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Show map' %}" target="_blank"><i class="ion ion-map"></i></a>
+                        <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-detail-url="{% url 'qdjango-project-detail' r.group.slug r.slug %}" ><i class="ion ion-eye"></i></a>
+                    {% endif %}
+                    {% if "change_project" in userObj_perms %}
+                        <a href="{% url 'qdjango-project-update' r.group.slug r.slug %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Edit' %}" ><i class="ion ion-edit"></i></a>
+                        <a href="{% url 'qdjango-project-layers-list' r.group.slug r.slug %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Layers' %}" ><i class="ion ion-navicon-round"></i></a>
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    {% endfor %}
+    </div>
+</div>
+{% endif %}

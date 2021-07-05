@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block page_header %}
+<h1>
+    {% trans 'Search results for' %} ...<i>{{ search_text }}</i>...
+</h1>
+
+
+{% endblock%}
+
+{% block main_content %}
+{% if n_tot_results == 0 %}
+<div><h4>{% trans 'Not results found!' %}</h4></div>
+{% else %}
+<div><h4>{% trans 'Found ' %} {{ n_tot_results }} {% trans ' results.' %}</h4></div>
+{% for r in results %}
+    {{ r.render }}
+{% endfor %}
+{% endif %}
+{% endblock %}

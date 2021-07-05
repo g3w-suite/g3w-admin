@@ -44,6 +44,7 @@ urlpatterns = [
         name='project-list'),
 
     url(r'^generalsuitedata/$', login_required(GeneralSuiteDataUpdateView.as_view()), name='generaldata-update'),
+    url(r'^search/$', login_required(SearchAdminView.as_view()), name='search-admin'),
 
 
 ]

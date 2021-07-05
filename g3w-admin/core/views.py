@@ -22,7 +22,7 @@ from .forms import GroupForm, GeneralSuiteDataForm, MacroGroupForm
 from .models import Group, GroupProjectPanoramic, MapControl, GeneralSuiteData, MacroGroup
 from .mixins.views import G3WRequestViewMixin, G3WAjaxDeleteViewMixin, G3WAjaxSetOrderViewMixin
 from .utils.decorators import check_madd
-from .signals import after_update_group
+from .signals import after_update_group, execute_search_on_models
 
 
 #class NotFoundView(TemplateView):
@@ -68,6 +68,27 @@ class DashboardView(TemplateView):
         for widget in dashboard_widgets:
             if widget[1]:
                 context['widgets'].append(widget[1])
+
+        return context
+
+
+class SearchAdminView(TemplateView):
+    template_name = "search.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # Execute searches on modules
+        results = execute_search_on_models.send(self, request=self.request, search_text=self.request.GET['stext'])
+        context['search_text'] = self.request.GET['stext']
+        context['results'] = []
+        for r in results:
+            context['results'] += r[1]
+
+        # Get _n_tot_results
+        context['n_tot_results'] = 0
+        for r in context['results']:
+            context['n_tot_results'] += r.n_tot_results
 
         return context
 

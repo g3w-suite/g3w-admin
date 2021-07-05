@@ -3,13 +3,11 @@ from django.db.models.signals import post_delete, post_save
 from django.conf import settings
 from django.core.cache import caches
 from django.contrib.auth.signals import user_logged_out
-from django.http.request import QueryDict
-from core.signals import perform_client_search, post_delete_project
+from core.signals import execute_search_on_models
 from core.models import ProjectMapUrlAlias
-from OWS.utils.data import GetFeatureInfoResponse
-from .models import Project, Layer, Widget, SessionTokenFilter
+from .models import Project, Layer, SessionTokenFilter
 from .signals import post_save_qdjango_project_file
-from .ows import OWSRequestHandler
+from .searches import ProjectSearch
 import os
 import logging
 
@@ -97,3 +95,17 @@ def delete_session_token_filter(sender, **kwargs):
 
     SessionTokenFilter.objects.filter(
         sessionid=kwargs['request'].session.session_key).delete()
+
+
+@receiver(execute_search_on_models)
+def execute_search(sender, request, search_text, **kwargs):
+    """
+    Execute searches on Group and MacroGroup models
+    :param request: django request instance
+    :param text_search: str search string
+    :return: list object search result
+    """
+
+    return [
+        ProjectSearch(search_text, request.user)
+    ]

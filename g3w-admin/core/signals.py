@@ -79,5 +79,8 @@ load_navbar_items = django.dispatch.Signal()
 # signal send before rendering vector data layer
 before_return_vector_data_layer = django.dispatch.Signal()
 
+# signal send for execute model searches.
+execute_search_on_models = django.dispatch.Signal(providing_args=['request', 'search_text'])
+
 
 
