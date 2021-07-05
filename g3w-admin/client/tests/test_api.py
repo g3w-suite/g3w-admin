@@ -181,7 +181,6 @@ class ClientApiTest(CoreTestBase):
         self.assertEqual(resp["search"], [])
         self.assertFalse(resp["wms_use_layer_ids"])
         self.assertEqual(resp["qgis_version"], "2.18.16")
-        self.assertEqual(resp["no_legend"], [])
         self.assertEqual(resp["feature_count"], 5)
         self.assertEqual(resp["widget"], [])
         self.assertEqual(resp["relations"], [])
