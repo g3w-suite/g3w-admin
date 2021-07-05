@@ -45,9 +45,10 @@ class QdjangoViewsTest(QdjangoTestBase):
         # get first layer of project
         layer = self.project.instance.layer_set.all()[0]
 
-        # check initial contidion for params list
+        # check initial condition for params list
         data_post = {}
         parms_to_check = {
+            'not_show_attributes_table': 'not_show_attributes_table',
             'exclude_from_legend': 'exclude_from_legend',
             'download_layer': 'download',
             'download_layer_xls': 'download',

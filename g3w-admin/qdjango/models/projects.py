@@ -493,6 +493,10 @@ class Layer(G3WACLModelMixins, models.Model):
     edittypes = models.TextField(
         _('Columns layer widgets'), blank=True, null=True)
 
+    # not show attributes table
+    not_show_attributes_table = models.BooleanField(
+        _('Not show attributes table'), default=False, blank=True)
+
     # exclude from legend
     exclude_from_legend = models.BooleanField(
         _('Exclude to legend'), default=False, blank=True)

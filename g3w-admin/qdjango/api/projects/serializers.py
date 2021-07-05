@@ -274,7 +274,6 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         ret['search'] = []
         ret['widget'] = []
         ret['relations'] = []
-        ret['no_legend'] = []
 
         layers = {l.qgs_layer_id: l for l in instance.layer_set.all()}
 
@@ -343,10 +342,6 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
                     else:
                         load_qdjango_widget_layer.send(
                             self, layer=layer, ret=ret, widget=widget)
-
-                # add exclude to legend
-                if layers[layer['id']].exclude_from_legend:
-                    ret['no_legend'].append(layers[layer['id']].qgs_layer_id)
 
         for l in ret['layerstree']:
             readLeaf(l, ret['layerstree'])
@@ -465,6 +460,7 @@ class LayerSerializer(serializers.ModelSerializer):
             'servertype',
             'vectorjoins',
             'exclude_from_legend',
+            'not_show_attributes_table',
             'download',
             'download_xls',
             'download_gpx',

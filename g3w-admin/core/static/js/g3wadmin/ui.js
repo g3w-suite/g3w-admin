@@ -411,6 +411,20 @@ _.extend(g3wadmin.ui, {
 
     },
 
+    initNotShowAtrrtibutesTableCheckBox: function(){
+        $(document).on('ifChanged', '[data-widget-type="noShowAttributesTable"]', function(e){
+
+            var $item = $(this);
+            // build value
+            var data = {
+                not_show_attributes_table: e.target.checked ? 1 : 0
+            }
+
+            ga.widget.setLayerData($item, data);
+
+        });
+    },
+
     initNolegendLayerCheckBox: function(){
         $(document).on('ifChanged', '[data-widget-type="noLegendLayer"]', function(e){
 

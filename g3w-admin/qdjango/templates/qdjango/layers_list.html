@@ -14,6 +14,7 @@
 <script type="text/javascript" src="{% static "qdjango/js/widget.js" %}"></script>
 <script type="text/javascript">
     $('#tree').treeview({data:{{ layers_tree|safe }}});
+    ga.ui.initNotShowAtrrtibutesTableCheckBox();
     ga.ui.initNolegendLayerCheckBox();
     ga.ui.initDownloadLayerCheckBox();
     ga.ui.initDownloadLayerXlsCheckBox();
@@ -109,6 +110,7 @@
                             <th style="width: 40px">WFS</th>
                             <th style="min-width:200px; width:240px;">Actions</th>
                             {% if "change_project" in userPrj_perms %}
+                            <th style="width:40px">{% trans 'Not show attributes table' %}</th>
                             <th style="width:40px">{% trans 'No legend' %}</th>
                             {% if 'shp' in SETTINGS.G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS %}
                             <th style="width:100px"><input type="checkbox" name="check_every_download" />{% trans 'Download as shp' %}</th>
@@ -188,6 +190,11 @@
                                 </span>
                             </td>
                             {% if "change_project" in userPrj_perms %}
+                            <td>
+                            {% if object.layer_type in type_layer_for_download %}
+                                <input type="checkbox" data-widget-type="noShowAttributesTable" data-ajax-url="{% url 'qdjango-project-layers-data-editing' project.group.slug project.slug object.pk %}" name="not_show_attributes_table_{{ object.pk }}" {% if object.not_show_attributes_table %}checked="checked"{% endif %}>
+                            {% endif %}
+                            </td>
                             <td>
                                 <input type="checkbox" data-widget-type="noLegendLayer" data-ajax-url="{% url 'qdjango-project-layers-data-editing' project.group.slug project.slug object.pk %}" name="no_legend_{{ object.pk }}" {% if object.exclude_from_legend %}checked="checked"{% endif %}>
                             </td>

@@ -284,6 +284,10 @@ class QdjangoLayerDataView(G3WGroupViewMixin, QdjangoProjectViewMixin, View):
             layer.exclude_from_legend = int(
                 request.POST['exclude_from_legend'])
 
+        if 'not_show_attributes_table' in request.POST:
+            layer.not_show_attributes_table = int(
+                request.POST['not_show_attributes_table'])
+
         for format in settings.G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS:
             k = 'download_layer'
             mparam = 'download'
