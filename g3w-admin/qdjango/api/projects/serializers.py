@@ -231,6 +231,8 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
                 stf = SessionTokenFilter.objects.get(
                     sessionid=self.request.COOKIES[settings.SESSION_COOKIE_NAME])
                 stf.delete()
+        except AttributeError:
+            return None
         except SessionTokenFilter.DoesNotExist:
             return None
 
