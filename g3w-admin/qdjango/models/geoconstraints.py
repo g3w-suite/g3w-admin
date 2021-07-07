@@ -124,6 +124,7 @@ class GeoConstraintRule(models.Model):
         User, on_delete=models.CASCADE, blank=True, null=True)
     group = models.ForeignKey(
         AuthGroup, on_delete=models.CASCADE, blank=True, null=True)
+    anonymoususer = models.BooleanField(blank=True, null=True, default=False)
     rule = models.TextField(
         _("SQL WHERE clause for the constraint layer"), max_length=255)
 
@@ -293,6 +294,23 @@ class GeoConstraintRule(models.Model):
             return cls.objects.filter(constraint__in=constraints, user=user)
 
     @classmethod
+    def get_constraints_for_anonymoususer(cls, layer, context='v'):
+        """Fetch the constraints for anonymoususer
+
+        :param layer: the editing layer
+        :type layer: Layer
+        :return: a list of GeoConstraintRule
+        :rtype: QuerySet
+        """
+
+        constraints = GeoConstraint.objects.filter(
+            layer=layer, active=True, **cls.get_context(context))
+        if not constraints:
+            return []
+
+        return cls.objects.filter(anonymoususer=True)
+
+    @classmethod
     def get_active_constraints_for_user(cls, user, layer, context='v'):
         """Fetch the active constraints for a given user and editing layer
 
@@ -334,9 +352,9 @@ class GeoConstraintRule(models.Model):
 
         # not filter if user is Anonymoususer
         if user.is_anonymous:
-            return ""
-
-        rules = cls.get_active_constraints_for_user(user, layer)
+            rules = cls.get_constraints_for_anonymoususer(layer)
+        else:
+            rules = cls.get_active_constraints_for_user(user, layer)
 
         subset_strings = []
         for rule in rules:
