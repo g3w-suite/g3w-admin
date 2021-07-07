@@ -363,11 +363,12 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
             new_order = []
             meta_layer = QdjangoMetaLayer()
             for qgs_layer in qgs_project.layerTreeRoot().customLayerOrder():
-                custom_layer_order_ids.append(qgs_layer.id())
-                lsd = ret['layers'][qgs_layer.id()]
-                lsd['multilayer'] = meta_layer.getCurrentByLayer(
-                    lsd)
-                new_order.append(lsd)
+                if qgs_layer.id() in ret['layers']:
+                    custom_layer_order_ids.append(qgs_layer.id())
+                    lsd = ret['layers'][qgs_layer.id()]
+                    lsd['multilayer'] = meta_layer.getCurrentByLayer(
+                        lsd)
+                    new_order.append(lsd)
 
             # get layers not in customLayerOrder to add an the end of return layers list
             to_add_to_end = set(ret['layers'].keys()) - set(custom_layer_order_ids)
