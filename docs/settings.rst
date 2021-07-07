@@ -187,6 +187,10 @@ I.e.::
     }
 
 
+``G3W_CLIENT_NOT_SHOW_EMPTY_VECTORLAYER``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Default is ``False``. Set to ``True`` for remove from webgis TOC vector layer empty, without data.
+
 Editing settings
 ****************
 Settings params for ``editing`` module.
