@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-11 16:02+0000\n"
+"POT-Creation-Date: 2021-07-08 07:51+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,36 +18,42 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: editing/api/base/views.py:229 editing/api/base/views.py:232
+#: editing/api/base/views.py:60
+msgid ""
+"The feature id {} of layer {} cannot be modified because it is not locked "
+"anymore"
+msgstr ""
+
+#: editing/api/base/views.py:257 editing/api/base/views.py:260
 #, python-format
 msgid "Error adding feature: %s"
 msgstr ""
 
-#: editing/api/base/views.py:239
+#: editing/api/base/views.py:267
 msgid "Error adding feature on Spatialite provider: "
 msgstr ""
 
-#: editing/api/base/views.py:254 editing/api/base/views.py:265
+#: editing/api/base/views.py:284 editing/api/base/views.py:295
 #, python-format
 msgid "Error changing attribute values: %s"
 msgstr ""
 
-#: editing/api/base/views.py:260 editing/api/base/views.py:268
+#: editing/api/base/views.py:290 editing/api/base/views.py:298
 #, python-format
 msgid "Error changing geometry: %s"
 msgstr ""
 
-#: editing/api/base/views.py:334 editing/api/base/views.py:338
+#: editing/api/base/views.py:367 editing/api/base/views.py:371
 #, python-format
 msgid "Cannot delete feature: %s"
 msgstr ""
 
-#: editing/api/base/views.py:379
+#: editing/api/base/views.py:412
 #, python-format
 msgid "Layer %s is not editable!"
 msgstr ""
 
-#: editing/api/base/views.py:429
+#: editing/api/base/views.py:462
 #, python-format
 msgid "Backend error saving layer %s: %s"
 msgstr ""
@@ -91,53 +97,7 @@ msgstr ""
 "Seleziona i viewer con 'permesso di visualizzazione' del progetto che "
 "possono editare il layer:"
 
-#: editing/models/constraints.py:84
-msgid "Layers types must be spatialite or postgres"
-msgstr "Il tipo di layer deve essere spatialite o postgis"
-
-#: editing/models/constraints.py:88
-msgid "Constraint layer geometry type must be Polygon or MultiPolygon"
-msgstr "La geometria del layer constraint deve essere Poligono o MultiPoligono"
-
-#: editing/models/constraints.py:92
-msgid "Editing and constraints layer cannot be the same layer"
-msgstr ""
-"Il layer in editing a il layer di constraint non possono essere gli stessi"
-
-#: editing/models/constraints.py:99
-msgid "Layer constraint"
-msgstr ""
-
-#: editing/models/constraints.py:100
-msgid "Layer constraints"
-msgstr ""
-
-#: editing/models/constraints.py:114
-msgid "SQL WHERE clause for the constraint layer"
-msgstr "La condizione 'SQL WHERE' per il layer constraint"
-
-#: editing/models/constraints.py:127
-msgid "Constraint rule"
-msgstr "Regola di constraint"
-
-#: editing/models/constraints.py:128
-msgid "Constraint rules"
-msgstr "Regole di Constraint"
-
-#: editing/models/constraints.py:146
-msgid "You cannot define a user and a group at the same time"
-msgstr "Non puoi definire un utente o un gruppo di utenti allo stesso tempo"
-
-#: editing/models/constraints.py:150
-msgid "You must define a user OR a group"
-msgstr "Devi definire un user o un gruppo di user"
-
-#: editing/models/constraints.py:155
-#, python-format
-msgid "There is an error in the SQL rule where condition: %s"
-msgstr "C'è un errore nella condizione SQL WHERE: %s"
-
-#: editing/receivers.py:220
+#: editing/receivers.py:227
 #, python-format
 msgid "Constraint validation failed for geometry: %s"
 msgstr "La geometria non ricade all'interno dell'area di lavoro assegnata: %s"
@@ -150,16 +110,44 @@ msgstr "Attenzione"
 msgid "Some errors on form. Check it and send again."
 msgstr "Alcuni errori, controlla e riprova"
 
-#: editing/templates/editing/layer_action.html:6
+#: editing/templates/editing/layer_action.html:5
 msgid "Editing layer"
 msgstr ""
 
-#: editing/templates/editing/layer_action.html:8
+#: editing/templates/editing/layer_action.html:7
 msgid "Activation layer_editing"
 msgstr "Atttivazione del layer di editing"
 
-#: editing/templates/editing/layer_action.html:17
+#~ msgid "Layers types must be spatialite or postgres"
+#~ msgstr "Il tipo di layer deve essere spatialite o postgis"
+
+#~ msgid "Constraint layer geometry type must be Polygon or MultiPolygon"
+#~ msgstr ""
+#~ "La geometria del layer constraint deve essere Poligono o MultiPoligono"
+
+#~ msgid "Editing and constraints layer cannot be the same layer"
+#~ msgstr ""
+#~ "Il layer in editing a il layer di constraint non possono essere gli stessi"
+
+#~ msgid "SQL WHERE clause for the constraint layer"
+#~ msgstr "La condizione 'SQL WHERE' per il layer constraint"
+
+#~ msgid "Constraint rule"
+#~ msgstr "Regola di constraint"
+
+#~ msgid "Constraint rules"
+#~ msgstr "Regole di Constraint"
+
+#~ msgid "You cannot define a user and a group at the same time"
+#~ msgstr "Non puoi definire un utente o un gruppo di utenti allo stesso tempo"
+
+#~ msgid "You must define a user OR a group"
+#~ msgstr "Devi definire un user o un gruppo di user"
+
+#~ msgid "There is an error in the SQL rule where condition: %s"
+#~ msgstr "C'è un errore nella condizione SQL WHERE: %s"
+
 #, fuzzy
-#| msgid "Constraints list"
-msgid "Manage Geo-constraints list"
-msgstr "Lista dei constraint"
+#~| msgid "Constraints list"
+#~ msgid "Manage Geo-constraints list"
+#~ msgstr "Lista dei constraint"

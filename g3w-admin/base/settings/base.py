@@ -184,6 +184,7 @@ gettext = lambda s: s
 LANGUAGES = (
     ('it', 'Italian'),
     ('en', 'English'),
+    ('fr', 'French'),
     ('fi', 'Finnish'),
     ('se', 'Swedish')
 )

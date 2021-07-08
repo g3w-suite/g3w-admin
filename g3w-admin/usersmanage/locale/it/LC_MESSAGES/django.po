@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-11 16:02+0000\n"
+"POT-Creation-Date: 2021-07-08 07:51+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -116,46 +116,46 @@ msgstr "Dati utente"
 msgid "User backend"
 msgstr "Utente"
 
-#: usersmanage/forms.py:589
+#: usersmanage/forms.py:596
 msgid "User can't be Editor level 1 and at same time Editor level 2"
 msgstr ""
 "L'utente non può essere allo stesso tempo Editor level 1 e Editor level 2</b>"
 
-#: usersmanage/forms.py:603
+#: usersmanage/forms.py:610
 msgid "User can't belong a **editor groups** if he isn't a Editor level 2"
 msgstr ""
 "L'utente non può appartenere ad un edito group se non è  un Editor level 2</"
 "b>"
 
-#: usersmanage/forms.py:617
+#: usersmanage/forms.py:624
 msgid "User can't belong a **viewer groups** if he isn't a Viewer level 1"
 msgstr ""
 "L'utente non può appartenere a un viewer group se non è un Viewer level 1</b>"
 
-#: usersmanage/forms.py:635
+#: usersmanage/forms.py:642
 msgid "Avatar is no a valid image"
 msgstr "Questo avatar non è una immagine"
 
-#: usersmanage/forms.py:663
+#: usersmanage/forms.py:670
 msgid "Password"
 msgstr ""
 
-#: usersmanage/forms.py:665
+#: usersmanage/forms.py:672
 msgid "Password confirmation"
 msgstr "Conferma password"
 
-#: usersmanage/forms.py:667
+#: usersmanage/forms.py:674
 msgid "Enter the same password as above, for verification."
 msgstr "Inserisci la stessa passoword indicata sopra per verifica"
 
-#: usersmanage/forms.py:693
+#: usersmanage/forms.py:700
 #: usersmanage/templates/usersmanage/user_group_list.html:29
 #, fuzzy
 #| msgid "ACL/Roles"
 msgid "Role"
 msgstr "ACL/Ruoli"
 
-#: usersmanage/forms.py:707
+#: usersmanage/forms.py:714
 #: usersmanage/templates/usersmanage/ajax/user_group_detail.html:5
 msgid "Group"
 msgstr "Gruppo"
@@ -175,16 +175,16 @@ msgstr "Gruppo"
 msgid "User"
 msgstr "Utente"
 
-#: usersmanage/templates/usersmanage/user_form.html:56
+#: usersmanage/templates/usersmanage/user_form.html:81
 msgid "System users"
 msgstr "Utenti di sistema"
 
-#: usersmanage/templates/usersmanage/user_form.html:67
+#: usersmanage/templates/usersmanage/user_form.html:92
 #: usersmanage/templates/usersmanage/user_group_form.html:20
 msgid "Alert"
 msgstr "Attenzione"
 
-#: usersmanage/templates/usersmanage/user_form.html:68
+#: usersmanage/templates/usersmanage/user_form.html:93
 #: usersmanage/templates/usersmanage/user_group_form.html:21
 msgid "Some errors on form. Check it and send again."
 msgstr "Si sono verificati alcuni errori. Controlla e reinvia."

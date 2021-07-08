@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-11 16:02+0000\n"
+"POT-Creation-Date: 2021-07-08 07:51+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -49,17 +49,21 @@ msgstr ""
 msgid "Plot title"
 msgstr ""
 
-#: qplotly/models.py:32
+#: qplotly/models.py:19
+msgid "Set as default plot on starting map"
+msgstr ""
+
+#: qplotly/models.py:33
 msgid "XML is not a DataPlotly settings."
 msgstr ""
 
-#: qplotly/models.py:38
+#: qplotly/models.py:39
 #, python-brace-format
 msgid ""
 "Layer with qgs_layer_id={settings.source_layer_id} is not present into DB"
 msgstr ""
 
-#: qplotly/models.py:42
+#: qplotly/models.py:43
 msgid ""
 "Layer DataPlotly settings layer datasource is not equal to datasource into "
 "values."

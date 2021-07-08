@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-06-15 14:41+0000\n"
+"POT-Creation-Date: 2021-07-08 07:51+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,80 +17,534 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: forms.py:44
-msgid "Invalid file extension: only "
+#: OWS/utils/data.py:125
+msgid "The GetFeatureResponse response is malformed: {}"
 msgstr ""
 
-#: forms.py:49
-msgid "With coordinates (x,y)"
+#: eleprofile/forms.py:44 eleprofile/templates/eleprofile/project_form.html:14
+#: eleprofile/templates/eleprofile/projects_list.html:18
+#: eleprofile/templates/eleprofile/projects_list.html:26
+#: openrouteservice/forms.py:41
+#: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:19
+#: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:27
+msgid "Project"
 msgstr ""
 
-#: forms.py:50
-msgid "With addresses"
+#: eleprofile/forms.py:92
+msgid "DTM Layer and pth layers"
 msgstr ""
 
-#: forms.py:54
-msgid "With cadastral parcels (sheet, parcels, section)"
+#: eleprofile/models.py:33
+msgid "Select DTM project layer to use for sampling"
 msgstr ""
 
-#: forms.py:68
-msgid "File type you want to geolocate"
+#: eleprofile/models.py:34
+msgid "Sampling DTM step"
 msgstr ""
 
-#: forms.py:69
-msgid "File you wanto to gelocate"
+#: eleprofile/models.py:35
+msgid "Sampling step in map units, default 10"
 msgstr ""
 
-#: forms.py:70
-msgid "Output file name"
+#: eleprofile/models.py:36
+msgid "Select one or more path layers"
 msgstr ""
 
-#: forms.py:71
+#: eleprofile/models.py:44
+msgid "Layer must be a 'raster' or 'gdal' type"
+msgstr ""
+
+#: eleprofile/models.py:51
+#, python-brace-format
 msgid ""
-"(Optional) Specify a output file name, if not set original spreed sheet file "
-"name used"
+"Layer {layer.name} must be one of 'postgres', 'spatialite', 'ogr' or 'mssql' "
+"type"
 msgstr ""
 
-#: forms.py:96
-msgid "Geolocation file"
+#: eleprofile/models.py:57
+#, python-brace-format
+msgid ""
+"Layer {layer.name} must be one geometry type of 'LineString' or "
+"'MultiLineString"
 msgstr ""
 
-#: forms.py:118
-msgid "With Cadastral file type, comune code doesn't have to be empty"
+#: eleprofile/templates/eleprofile/dtm_form.html:11
+#: eleprofile/templates/eleprofile/dtm_form.html:14
+msgid "DTM Layer and Path layers"
 msgstr ""
 
-#: geolocation/address.py:38 geolocation/cadastral.py:46
-msgid "Input file has not the follow columns: , "
+#: eleprofile/templates/eleprofile/dtm_form.html:14
+#: eleprofile/templates/eleprofile/project_form.html:14
+#: portal/templates/portal/picture_form.html:14
+msgid "New"
 msgstr ""
 
-#: geolocation/base.py:121
-msgid "Input data has not HEADERS column."
-msgstr ""
-
-#: geolocation/xy.py:34
-msgid "Input file has not 'x' and/or 'y' columns!"
-msgstr ""
-
-#: templates/geolocalexls/gelocale_action.html:9
-msgid "Gelocation in action..."
-msgstr ""
-
-#: templates/geolocalexls/gelocale_form.html:9
-msgid "Gelocation XLS/CSV"
-msgstr ""
-
-#: templates/geolocalexls/gelocale_form.html:38
+#: eleprofile/templates/eleprofile/dtm_form.html:27
+#: eleprofile/templates/eleprofile/project_form.html:27
+#: openrouteservice/templates/openrouteservice/openrouteserviceproject_form.html:25
+#: portal/templates/portal/picture_form.html:27
 msgid "Alert"
 msgstr ""
 
-#: templates/geolocalexls/gelocale_form.html:39
+#: eleprofile/templates/eleprofile/dtm_form.html:28
+#: eleprofile/templates/eleprofile/project_form.html:28
+#: openrouteservice/templates/openrouteservice/openrouteserviceproject_form.html:26
+#: portal/templates/portal/picture_form.html:28
 msgid "Some errors on form. Check it and send again."
 msgstr ""
 
-#: templates/geolocalexls/include/form_buttons.html:6
-msgid "Geolocate - Generate ShapeFile"
+#: eleprofile/templates/eleprofile/dtms_list.html:11
+msgid "DTM layer and path layers of project "
 msgstr ""
 
-#: templates/geolocalexls/include/form_buttons.html:10
-msgid "Redo/Back"
+#: eleprofile/templates/eleprofile/dtms_list.html:23
+#: eleprofile/templates/eleprofile/projects_list.html:40
+msgid "DTM layer and Path layers"
+msgstr ""
+
+#: eleprofile/templates/eleprofile/dtms_list.html:32
+#: eleprofile/templates/eleprofile/projects_list.html:25
+#: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:26
+msgid "Actions"
+msgstr ""
+
+#: eleprofile/templates/eleprofile/dtms_list.html:33
+msgid "DTM layer"
+msgstr ""
+
+#: eleprofile/templates/eleprofile/dtms_list.html:34
+msgid "Path layers"
+msgstr ""
+
+#: eleprofile/templates/eleprofile/dtms_list.html:35
+#: eleprofile/templates/eleprofile/projects_list.html:27
+msgid "Note"
+msgstr ""
+
+#: eleprofile/templates/eleprofile/dtms_list.html:43
+#: eleprofile/templates/eleprofile/projects_list.html:34
+#: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:36
+#: portal/templates/portal/picture_list.html:50
+msgid "Edit"
+msgstr ""
+
+#: eleprofile/templates/eleprofile/dtms_list.html:46
+#: eleprofile/templates/eleprofile/projects_list.html:37
+#: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:39
+#: portal/templates/portal/picture_list.html:53
+msgid "Delete"
+msgstr ""
+
+#: eleprofile/templates/eleprofile/project_form.html:11
+msgid "Elevation Profile Project"
+msgstr ""
+
+#: eleprofile/templates/eleprofile/projects_list.html:8
+msgid "Elevation Profile Projects"
+msgstr ""
+
+#: openrouteservice/api/views.py:138
+msgid "Input layer is not a point or multipoint layer."
+msgstr ""
+
+#: openrouteservice/api/views.py:156
+msgid "Missing \"qgis_layer_id\", \"new_layer_name\" or \"connection_id\"."
+msgstr ""
+
+#: openrouteservice/api/views.py:171 openrouteservice/api/views.py:176
+msgid ""
+"Wrong color parameter, color must be a list of three integers (red, green, "
+"blue)."
+msgstr ""
+
+#: openrouteservice/api/views.py:182
+msgid ""
+"Missing tranparency parameter, because color was specified transparency is "
+"required."
+msgstr ""
+
+#: openrouteservice/api/views.py:190
+msgid "Wrong tranparency parameter, transparency must be between 0 and 1."
+msgstr ""
+
+#: openrouteservice/api/views.py:196
+msgid "Missing stroke_width from style definition."
+msgstr ""
+
+#: openrouteservice/api/views.py:212
+msgid "Layer is not compatible with ORS data."
+msgstr ""
+
+#: openrouteservice/api/views.py:225
+msgid "Wrong connection_id."
+msgstr ""
+
+#: openrouteservice/api/views.py:229
+msgid "Either qgis_layer_id or connection_id + layer_name must have a value."
+msgstr ""
+
+#: openrouteservice/api/views.py:236
+#, python-format
+msgid "Profile not found, available profiles: %s"
+msgstr ""
+
+#: openrouteservice/api/views.py:246
+msgid "Missing \"locations\" array."
+msgstr ""
+
+#: openrouteservice/api/views.py:250
+#, python-format
+msgid "Max allowed locations: %s"
+msgstr ""
+
+#: openrouteservice/api/views.py:254
+msgid "Malformed locations array."
+msgstr ""
+
+#: openrouteservice/api/views.py:259
+msgid "Missing \"range\" array."
+msgstr ""
+
+#: openrouteservice/api/views.py:263
+#, python-format
+msgid "Max allowed ranges: %s"
+msgstr ""
+
+#: openrouteservice/api/views.py:267
+msgid "Malformed range array."
+msgstr ""
+
+#: openrouteservice/api/views.py:394
+msgid "Task not found!"
+msgstr ""
+
+#: openrouteservice/models.py:38
+msgid "Isochrones"
+msgstr ""
+
+#: openrouteservice/templates/openrouteservice/openrouteserviceproject_form.html:13
+msgid "Openrouteservice Project"
+msgstr ""
+
+#: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:8
+msgid "Openrouteservice Projects"
+msgstr ""
+
+#: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:28
+msgid "Services"
+msgstr ""
+
+#: openrouteservice/utils.py:494
+msgid "Cannot create temporary layer for isochrone result."
+msgstr ""
+
+#: openrouteservice/utils.py:512
+msgid ""
+"Cannot save isochrone result to destination layer: layer already exists (use "
+"\"qgis_layer_id\" instead)!"
+msgstr ""
+
+#: openrouteservice/utils.py:525
+msgid "Cannot save isochrone result to destination layer: "
+msgstr ""
+
+#: openrouteservice/utils.py:553
+msgid "Wrong connection id."
+msgstr ""
+
+#: openrouteservice/utils.py:585
+msgid "Error creating destination layer connection."
+msgstr ""
+
+#: openrouteservice/utils.py:592
+msgid "Error creating destination layer: "
+msgstr ""
+
+#: openrouteservice/utils.py:606
+msgid "Error creating destination layer: layer is not valid!"
+msgstr ""
+
+#: openrouteservice/utils.py:619
+msgid "Error saving the destination layer: could not write project!"
+msgstr ""
+
+#: openrouteservice/utils.py:643
+msgid "Error adding destination Layer to the project: layer already exists."
+msgstr ""
+
+#: openrouteservice/utils.py:653
+#, python-format
+msgid "Error opening destination layer %s: layer not found in QGIS project!"
+msgstr ""
+
+#: openrouteservice/utils.py:670
+msgid "Error transforming geometry from 4326 to destination layer CRS."
+msgstr ""
+
+#: openrouteservice/utils.py:674
+msgid "No compatible features returned from isochrone."
+msgstr ""
+
+#: openrouteservice/utils.py:677
+msgid "Destination layer is not editable."
+msgstr ""
+
+#: openrouteservice/utils.py:681
+msgid "Error adding features to the destination layer."
+msgstr ""
+
+#: openrouteservice/utils.py:685
+msgid "Error committing features to the destination layer."
+msgstr ""
+
+#: openrouteservice/utils.py:793
+#, python-format
+msgid "Error generating isochrone: %s."
+msgstr ""
+
+#: openrouteservice/utils.py:822
+msgid "Unknown error adding results to the destination layer."
+msgstr ""
+
+#: portal/forms.py:45
+msgid "Picture data"
+msgstr ""
+
+#: portal/forms.py:67
+msgid "Author and style data"
+msgstr ""
+
+#: portal/models.py:20 portal/templates/portal/picture_form.html:11
+#: portal/templates/portal/picture_form.html:14
+msgid "Picture"
+msgstr ""
+
+#: portal/models.py:21
+msgid "Main color"
+msgstr ""
+
+#: portal/models.py:22
+msgid "Main title color"
+msgstr ""
+
+#: portal/models.py:23
+msgid "Subtitle color"
+msgstr ""
+
+#: portal/models.py:24 portal/templates/portal/picture_list.html:41
+msgid "Author"
+msgstr ""
+
+#: portal/models.py:25
+msgid "Author URL"
+msgstr ""
+
+#: portal/templates/portal/picture_list.html:10
+msgid "Portal pictures"
+msgstr ""
+
+#: portal/templates/portal/picture_list.html:21
+msgid "Add, update or delete portal picture"
+msgstr ""
+
+#: portal/templates/portal/picture_list.html:31
+msgid "Pictures"
+msgstr ""
+
+#: portal/templates/portal/picture_list.html:40
+msgid "Image"
+msgstr ""
+
+#: portal/templates/portal/picture_list.html:42
+msgid "Author url"
+msgstr ""
+
+#: templates/403.html:7
+msgid "error page"
+msgstr ""
+
+#: templates/403.html:15
+msgid "Access denied"
+msgstr ""
+
+#: templates/403.html:17
+msgid "You don't have grant to access this section"
+msgstr ""
+
+#: templates/404.html:11
+msgid "Oops! Page not found."
+msgstr ""
+
+#: templates/404.html:13
+msgid "We could not find the page you were looking for."
+msgstr ""
+
+#: templates/base.html:192 templates/index.html:6
+msgid "Dashboard"
+msgstr ""
+
+#: templates/base.html:231
+msgid "Version"
+msgstr ""
+
+#: templates/include/navbar_right_menu.html:10
+msgid "Search"
+msgstr ""
+
+#: templates/include/navbar_right_menu.html:24
+msgid "Frontend"
+msgstr ""
+
+#: templates/include/navbar_right_menu.html:45
+msgid "Registered on"
+msgstr ""
+
+#: templates/include/navbar_right_menu.html:46
+msgid "Last login"
+msgstr ""
+
+#: templates/include/navbar_right_menu.html:53
+msgid "Profile"
+msgstr ""
+
+#: templates/include/navbar_right_menu.html:56
+msgid "Logout"
+msgstr ""
+
+#: templates/include/sidebar_right.html:9
+msgid "Configurations"
+msgstr ""
+
+#: templates/include/sidebar_right.html:15
+msgid "Edit general data"
+msgstr ""
+
+#: templates/include/sidebar_right.html:16
+msgid "Frontend data and other"
+msgstr ""
+
+#: templates/include/sidebar_right.html:25
+msgid "Django administration"
+msgstr ""
+
+#: templates/include/sidebar_right.html:26
+msgid "Go to staff administration section"
+msgstr ""
+
+#: templates/index.html:7
+msgid "Current situation"
+msgstr ""
+
+#: templates/index.html:19
+msgid "Groups"
+msgstr ""
+
+#: templates/index.html:26
+msgid "Show"
+msgstr ""
+
+#: templates/index.html:32
+msgid "Module widgets"
+msgstr ""
+
+#: templates/login.html:21
+msgid "Sign in to start your session"
+msgstr ""
+
+#: templates/login.html:25 templates/registration/password_reset_form.html:24
+msgid "LOGIN ERROR"
+msgstr ""
+
+#: templates/login.html:26
+msgid "Username and/or password uncorrect"
+msgstr ""
+
+#: templates/login.html:41
+msgid "Sign In"
+msgstr ""
+
+#: templates/login.html:47 templates/registration/password_reset_form.html:31
+msgid "Forgot your password?"
+msgstr ""
+
+#: templates/login.html:53
+#: templates/registration/password_reset_complete.html:26
+#: templates/registration/password_reset_confirm.html:47
+#: templates/registration/password_reset_done.html:26
+#: templates/registration/password_reset_form.html:45
+msgid " Version"
+msgstr ""
+
+#: templates/registration/password_reset_complete.html:22
+msgid "Password reset complete"
+msgstr ""
+
+#: templates/registration/password_reset_complete.html:23
+msgid "Your new password has been set. You can log in now on the"
+msgstr ""
+
+#: templates/registration/password_reset_complete.html:23
+msgid "log in page"
+msgstr ""
+
+#: templates/registration/password_reset_confirm.html:22
+msgid "Enter new password"
+msgstr ""
+
+#: templates/registration/password_reset_confirm.html:29
+msgid "New password"
+msgstr ""
+
+#: templates/registration/password_reset_confirm.html:34
+msgid "Repeat password"
+msgstr ""
+
+#: templates/registration/password_reset_confirm.html:39
+msgid "Change my password"
+msgstr ""
+
+#: templates/registration/password_reset_confirm.html:44
+msgid ""
+"The password reset link <strong>was invalid</strong>, possibly because it "
+"has already been used.  Please request a new password reset."
+msgstr ""
+
+#: templates/registration/password_reset_done.html:22
+msgid "Check your inbox."
+msgstr ""
+
+#: templates/registration/password_reset_done.html:23
+msgid ""
+"We've emailed you instructions for setting your password. You should receive "
+"the email shortly!"
+msgstr ""
+
+#: templates/registration/password_reset_form.html:25
+msgid "Email no present into database"
+msgstr ""
+
+#: templates/registration/password_reset_form.html:32
+msgid ""
+"Enter your email address below, and we'll email instructions for setting a "
+"new one."
+msgstr ""
+
+#: templates/registration/password_reset_form.html:40
+msgid "Send me instruction"
+msgstr ""
+
+#: templates/search.html:6
+msgid "Search results for"
+msgstr ""
+
+#: templates/search.html:14
+msgid "Not results found!"
+msgstr ""
+
+#: templates/search.html:16
+msgid "Found "
+msgstr ""
+
+#: templates/search.html:16
+msgid " results."
 msgstr ""

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-11 07:27+0000\n"
+"POT-Creation-Date: 2021-07-08 07:51+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -33,19 +33,19 @@ msgstr ""
 msgid "Additional settings"
 msgstr ""
 
-#: core/api/base/views.py:112
+#: core/api/base/views.py:137
 msgid "Data are not correct or insufficent!"
 msgstr ""
 
-#: core/api/base/views.py:118
+#: core/api/base/views.py:143
 msgid "A error server is occured!"
 msgstr ""
 
-#: core/api/base/views.py:126
+#: core/api/base/views.py:151
 msgid "Not found"
 msgstr ""
 
-#: core/api/base/views.py:132
+#: core/api/base/views.py:157
 msgid "Permission denied"
 msgstr ""
 
@@ -57,7 +57,7 @@ msgstr ""
 msgid "Law"
 msgstr ""
 
-#: core/forms.py:42 core/forms.py:363
+#: core/forms.py:42 core/forms.py:364
 msgid "General data"
 msgstr ""
 
@@ -73,43 +73,43 @@ msgstr ""
 msgid "Logo/Picture"
 msgstr ""
 
-#: core/forms.py:141
+#: core/forms.py:142
 msgid "Copyright"
 msgstr ""
 
-#: core/forms.py:195
+#: core/forms.py:196
 msgid "Frontend home data"
 msgstr ""
 
-#: core/forms.py:220
+#: core/forms.py:221
 msgid "Frontend about data"
 msgstr ""
 
-#: core/forms.py:241
+#: core/forms.py:242
 msgid "Frontend groups map data"
 msgstr ""
 
-#: core/forms.py:257
+#: core/forms.py:258
 msgid "Frontend login data"
 msgstr ""
 
-#: core/forms.py:274
+#: core/forms.py:275
 msgid "Frontend social data"
 msgstr ""
 
-#: core/forms.py:296
+#: core/forms.py:297
 msgid "Map client data"
 msgstr ""
 
-#: core/forms.py:322
+#: core/forms.py:323
 msgid "Editor users"
 msgstr ""
 
-#: core/forms.py:340
+#: core/forms.py:341
 msgid "ACL Users"
 msgstr ""
 
-#: core/forms.py:370
+#: core/forms.py:371
 msgid ""
 "<b>Attention!</b> This settigns are valid only for map groups with only one "
 "MacroGroup"
@@ -131,7 +131,7 @@ msgstr ""
 msgid "Internal identification Macrogroup name"
 msgstr ""
 
-#: core/models.py:95 core/models.py:132 core/models.py:407
+#: core/models.py:95 core/models.py:132 core/models.py:412
 #: core/templates/core/ajax/macrogroup_detail.html:7
 #: core/templates/core/macrogroup_list_table.html:28
 msgid "Title"
@@ -158,7 +158,7 @@ msgstr ""
 msgid "Use title for client"
 msgstr ""
 
-#: core/models.py:101
+#: core/models.py:101 core/models.py:169
 msgid "Use logo image for client"
 msgstr ""
 
@@ -186,103 +186,109 @@ msgstr ""
 msgid "Terms of use link"
 msgstr ""
 
-#: core/models.py:398 core/templates/core/group_form.html:11
+#: core/models.py:170
+msgid ""
+"As for MacroGroup options is possible to use current logo group as client "
+"logo, if MacroGroup option is active this options takes precendence"
+msgstr ""
+
+#: core/models.py:403 core/templates/core/group_form.html:11
 msgid "Group"
 msgstr ""
 
-#: core/models.py:399
+#: core/models.py:404
 msgid "Project type"
 msgstr ""
 
-#: core/models.py:400
+#: core/models.py:405
 msgid "Project type id"
 msgstr ""
 
-#: core/models.py:408
+#: core/models.py:413
 msgid "Subtitle"
 msgstr ""
 
-#: core/models.py:409
+#: core/models.py:414
 msgid "Home description"
 msgstr ""
 
-#: core/models.py:410
+#: core/models.py:415
 msgid "About title"
 msgstr ""
 
-#: core/models.py:411
+#: core/models.py:416
 msgid "About description"
 msgstr ""
 
-#: core/models.py:412
+#: core/models.py:417
 msgid "About name"
 msgstr ""
 
-#: core/models.py:413
+#: core/models.py:418
 msgid "About phone"
 msgstr ""
 
-#: core/models.py:414
+#: core/models.py:419
 msgid "About email"
 msgstr ""
 
-#: core/models.py:415
+#: core/models.py:420
 msgid "About address"
 msgstr ""
 
-#: core/models.py:416
+#: core/models.py:421
 msgid "Groups title"
 msgstr ""
 
-#: core/models.py:417
+#: core/models.py:422
 msgid "Groups map description"
 msgstr ""
 
-#: core/models.py:418
+#: core/models.py:423
 msgid "Login description"
 msgstr ""
 
-#: core/models.py:419
+#: core/models.py:424
 msgid "Suite logo"
 msgstr ""
 
-#: core/models.py:420
+#: core/models.py:425
 msgid "Suite logo URL"
 msgstr ""
 
-#: core/models.py:423
+#: core/models.py:428
 msgid "Credits"
 msgstr ""
 
-#: core/models.py:426
+#: core/models.py:431
 msgid "Main map title"
 msgstr ""
 
-#: core/models.py:428
+#: core/models.py:433
 msgid "Facebook link"
 msgstr ""
 
-#: core/models.py:429
+#: core/models.py:434
 msgid "Twitter link"
 msgstr ""
 
-#: core/models.py:430
+#: core/models.py:435
 msgid "Google+ link"
 msgstr ""
 
-#: core/models.py:431
+#: core/models.py:436
 msgid "Youtube link"
 msgstr ""
 
-#: core/models.py:432
+#: core/models.py:437
 msgid "Instagram link"
 msgstr ""
 
-#: core/models.py:433
+#: core/models.py:438
 msgid "Flickr link"
 msgstr ""
 
-#: core/models.py:434
+#: core/models.py:439
 msgid "Tripadvisor link"
 msgstr ""
 
@@ -470,6 +476,7 @@ msgid "Projects"
 msgstr ""
 
 #: core/templates/core/group_list.html:10
+#: core/templates/core/search/group.html:9
 msgid "Cartographic groups"
 msgstr ""
 
@@ -478,6 +485,7 @@ msgid "Add new project"
 msgstr ""
 
 #: core/templates/core/group_list.html:78
+#: core/templates/core/search/group.html:25
 msgid "Group projects"
 msgstr ""
 
@@ -485,6 +493,8 @@ msgstr ""
 #: core/templates/core/macrogroup_list.html:66
 #: core/templates/core/macrogroup_list_table.html:37
 #: core/templates/core/project_list.html:25
+#: core/templates/core/search/group.html:24
+#: core/templates/core/search/macrogroup.html:22
 msgid "Show detail"
 msgstr ""
 
@@ -492,6 +502,8 @@ msgstr ""
 #: core/templates/core/macrogroup_list.html:74
 #: core/templates/core/macrogroup_list_table.html:40
 #: core/templates/core/project_list.html:28
+#: core/templates/core/search/group.html:28
+#: core/templates/core/search/macrogroup.html:24
 msgid "Edit"
 msgstr ""
 
@@ -535,6 +547,7 @@ msgstr ""
 
 #: core/templates/core/macrogroup_list.html:10
 #: core/templates/core/macrogroup_list_table.html:10
+#: core/templates/core/search/macrogroup.html:8
 msgid "Cartographic macro groups"
 msgstr ""
 
@@ -562,6 +575,6 @@ msgstr ""
 msgid "MACRO Groups"
 msgstr ""
 
-#: core/utils/structure.py:183 core/utils/structure.py:297
+#: core/utils/structure.py:183 core/utils/structure.py:312
 msgid "Yes"
 msgstr ""
