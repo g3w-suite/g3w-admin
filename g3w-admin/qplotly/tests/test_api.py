@@ -15,7 +15,13 @@ from django.urls import reverse
 from django.test import override_settings
 from django.test.client import encode_multipart
 from qdjango.tests.base import QdjangoTestBase, CoreGroup, File, G3WSpatialRefSys, QgisProject, setup_testing_user
-from qdjango.models import Layer, SessionTokenFilter, SingleLayerConstraint, ConstraintExpressionRule
+from qdjango.models import \
+    Layer, \
+    SessionTokenFilter, \
+    SingleLayerConstraint, \
+    ConstraintExpressionRule, \
+    GeoConstraint, \
+    GeoConstraintRule
 from rest_framework.test import APIClient
 from guardian.shortcuts import assign_perm
 from qplotly.utils import get_qplotlywidget_for_project
@@ -336,6 +342,29 @@ class QplotlyTestAPI(QdjangoTestBase):
         self.assertEqual(len(trace_data), 1)
         self.assertEqual(trace_data[0]['type'], 'histogram')
         self.assertEqual(len(trace_data[0]['x']), 329)
+        self.assertIn('IT', trace_data[0]['x'])
+        self.assertNotIn('DE', trace_data[0]['x'])
+
+        # Geocontraint
+        # ------------------------
+        constraint = GeoConstraint(layer=cities, constraint_layer=countries, active=True)
+        constraint.save()
+
+        rule = GeoConstraintRule(constraint=constraint, user=self.test_user1,
+                                        rule="ISOCODE = 'IT'")
+        rule.save()
+
+        response = self._testApiCall('qplotly-api-trace', args=[
+            self.project.instance.pk,
+            widget.pk
+        ])
+
+        jcontent = json.loads(response.content)
+        trace_data = json.loads(response.content)['data']
+
+        self.assertEqual(len(trace_data), 1)
+        self.assertEqual(trace_data[0]['type'], 'histogram')
+        self.assertEqual(len(trace_data[0]['x']), 1115)
         self.assertIn('IT', trace_data[0]['x'])
         self.assertNotIn('DE', trace_data[0]['x'])
 

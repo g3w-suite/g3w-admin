@@ -38,7 +38,8 @@ from qdjango.api.layers.filters import (
 
 from qdjango.api.constraints.filters import (
     SingleLayerSubsetStringConstraintFilter,
-    SingleLayerExpressionConstraintFilter
+    SingleLayerExpressionConstraintFilter,
+    GeoConstraintsFilter
 )
 
 
@@ -49,6 +50,7 @@ class QplotlyFactoring(PlotFactory):
         SingleLayerSubsetStringConstraintFilter,
         SingleLayerExpressionConstraintFilter,
         SingleLayerSessionTokenFilter,
+        GeoConstraintsFilter,
         RelationOneToManyFilter
     )
 
