@@ -326,7 +326,7 @@ class GeoConstraintRule(models.Model):
 
         # not filter if user is Anonymoususer
         if user.is_anonymous:
-            return []
+            return cls.get_constraints_for_anonymoususer(layer=layer, context=context)
 
         constraints = GeoConstraint.objects.filter(
             layer=layer, active=True, **cls.get_context(context))
@@ -350,11 +350,7 @@ class GeoConstraintRule(models.Model):
         :rtype: QuerySet
         """
 
-        # not filter if user is Anonymoususer
-        if user.is_anonymous:
-            rules = cls.get_constraints_for_anonymoususer(layer)
-        else:
-            rules = cls.get_active_constraints_for_user(user, layer)
+        rules = cls.get_active_constraints_for_user(user, layer)
 
         subset_strings = []
         for rule in rules:
