@@ -107,6 +107,7 @@ class CommonConstraintRule(models.Model):
         User, on_delete=models.CASCADE, blank=True, null=True)
     group = models.ForeignKey(
         AuthGroup, on_delete=models.CASCADE, blank=True, null=True)
+    anonymoususer = models.BooleanField(blank=True, null=True, default=False)
     rule = models.TextField(_("Rule definition"), max_length=1024, help_text=_(
         "Definition of the rule, either an SQL WHERE condition or a QgsExpression definition depending on the rule type"))
 
@@ -225,6 +226,23 @@ class CommonConstraintRule(models.Model):
         return kwargs
 
     @classmethod
+    def get_constraints_for_anonymoususer(cls, layer_id, context='v'):
+        """Fetch the constraints for anonymou suser
+
+        :param layer: the editing layer
+        :type layer_: Layer pk
+        :return: a list of SigleLayerContraint
+        :rtype: QuerySet
+        """
+
+        constraints = SingleLayerConstraint.objects.filter(
+            layer_id=layer_id, active=True, **cls.get_context(context))
+        if not constraints:
+            return []
+
+        return cls.objects.filter(anonymoususer=True)
+
+    @classmethod
     def get_rule_definition_for_user(cls, user, layer_id, context='v'):
         """Fetch the active constraints for a given user and qdjango layer pk.
 
@@ -240,25 +258,25 @@ class CommonConstraintRule(models.Model):
 
         # not filter if user is Anonymoususer
         if user.is_anonymous:
-            return ""
-
-        try:
-            constraints = SingleLayerConstraint.objects.filter(
-                layer=Layer.objects.get(pk=layer_id), active=True, **cls.get_context(context))
-        except Layer.DoesNotExist as ex:
-            logger.error(
-                "A Layer object with qdjango layer id %s was not found: skipping constraints!" % layer_id)
-            return ""
-
-        if not constraints:
-            return ""
-
-        user_groups = user.groups.all()
-        if user_groups.count():
-            rules = cls.objects.filter(Q(constraint__in=constraints), Q(
-                user=user) | Q(group__in=user_groups))
+            rules = cls.get_constraints_for_anonymoususer(layer_id=layer_id, context=context)
         else:
-            rules = cls.objects.filter(constraint__in=constraints, user=user)
+            try:
+                constraints = SingleLayerConstraint.objects.filter(
+                    layer=Layer.objects.get(pk=layer_id), active=True, **cls.get_context(context))
+            except Layer.DoesNotExist as ex:
+                logger.error(
+                    "A Layer object with qdjango layer id %s was not found: skipping constraints!" % layer_id)
+                return ""
+
+            if not constraints:
+                return ""
+
+            user_groups = user.groups.all()
+            if user_groups.count():
+                rules = cls.objects.filter(Q(constraint__in=constraints), Q(
+                    user=user) | Q(group__in=user_groups))
+            else:
+                rules = cls.objects.filter(constraint__in=constraints, user=user)
 
         subset_strings = []
         for rule in rules:
