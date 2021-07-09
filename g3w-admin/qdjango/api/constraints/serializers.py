@@ -14,6 +14,7 @@ __copyright__ = 'Copyright 2020, Gis3w'
 
 from qdjango.models.constraints import *
 from rest_framework import serializers
+from rest_framework.fields import empty
 
 
 class SingleLayerConstraintCleanValidator(object):
@@ -67,16 +68,32 @@ class SingleLayerConstraintSerializer(serializers.ModelSerializer):
         validators = [SingleLayerConstraintCleanValidator()]
 
 
-class ConstraintExpressionRuleSerializer(serializers.ModelSerializer):
+class ConstraintRuleAnonymoususerMixin(object):
+    """Mixin for management of anonymoususer property/flag"""
+
+    def run_validation(self, data=empty):
+        value = super().run_validation(data=data)
+
+        # Set flag anonymoususer
+        if value['user']:
+            value['anonymoususer'] = True if value['user'].username == 'AnonymousUser' else False
+
+        return value
+
+
+class ConstraintExpressionRuleSerializer(ConstraintRuleAnonymoususerMixin, serializers.ModelSerializer):
 
     class Meta:
         model = ConstraintExpressionRule
-        fields = ['pk', 'constraint', 'user', 'group', 'rule', 'active']
+        fields = ['pk', 'constraint', 'user', 'group', 'rule', 'active', 'anonymoususer']
         validators = [ConstraintExpressionRuleCleanValidator()]
 
-class ConstraintSubsetStringRuleSerializer(serializers.ModelSerializer):
+
+class ConstraintSubsetStringRuleSerializer(ConstraintRuleAnonymoususerMixin, serializers.ModelSerializer):
 
     class Meta:
         model = ConstraintSubsetStringRule
-        fields = ['pk', 'constraint', 'user', 'group', 'rule', 'active']
+        fields = ['pk', 'constraint', 'user', 'group', 'rule', 'active', 'anonymoususer']
         validators = [ConstraintSubsetStringRuleCleanValidator()]
+
+
