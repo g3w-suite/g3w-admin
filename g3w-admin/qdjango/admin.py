@@ -150,3 +150,20 @@ class GeoConstraintRuleAdmin(admin.ModelAdmin):
 
 admin.site.register(GeoConstraint, GeoConstraintAdmin)
 admin.site.register(GeoConstraintRule, GeoConstraintRuleAdmin)
+
+
+class SingleLayerConstraintAdmin(admin.ModelAdmin):
+    model = SingleLayerConstraint
+
+
+class ConstraintExpressionRuleAdmin(admin.ModelAdmin):
+    model = ConstraintExpressionRule
+
+
+class ConstraintSubsetStringRuleAdmin(admin.ModelAdmin):
+    model = ConstraintSubsetStringRule
+
+
+admin.site.register(SingleLayerConstraint, SingleLayerConstraintAdmin)
+admin.site.register(ConstraintExpressionRule, ConstraintExpressionRuleAdmin)
+admin.site.register(ConstraintSubsetStringRule, ConstraintSubsetStringRuleAdmin)
