@@ -33,4 +33,19 @@ sitetrees = (
                access_by_perms=['auth.add_user'])
       ]),
   ]),
+
+  G3Wtree('acl_fr', title='ACL', module='usermanage', items=[
+      # Then define items and their children with `item` function.
+      item('ACL', '#', type_header=True),
+      item('Utilisateurs', '#', icon_css_class='fa fa-users', children=[
+          item('Ajouter un utilisateur', 'user-add', url_as_pattern=True, icon_css_class='fa fa-user-plus',
+               access_by_perms=['auth.add_user']),
+          item('Liste des utilisateurs', 'user-list', url_as_pattern=True, icon_css_class='fa fa-users'),
+          item('Mise à jour utilisateur', 'user-update object.pk', url_as_pattern=True, icon_css_class='fa fa-edit', in_menu=False),
+          item('Ajouter des utilisateurs de groupe', 'user-group-add', url_as_pattern=True, icon_css_class='fa fa-plus',
+               access_by_perms=['auth.add_user']),
+          item('Liste des utilisateurs des groupes', 'user-group-list', url_as_pattern=True, icon_css_class='fa fa-list',
+               access_by_perms=['auth.add_user'])
+      ]),
+  ]),
 )
