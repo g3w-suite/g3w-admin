@@ -15,6 +15,10 @@ from qdjango.apps import get_qgs_project
 
 from qgis.core import QgsMapLayer
 
+import logging
+
+logger = logging.getLogger('django.request')
+
 
 def comparedbdatasource(ds1, ds2, layer_type='postgres'):
     """
@@ -25,17 +29,22 @@ def comparedbdatasource(ds1, ds2, layer_type='postgres'):
     """
     from .structure import datasource2dict
 
+    try:
+        # split ds
+        ds1 = datasource2dict(ds1)
+        ds2 = datasource2dict(ds2)
 
-    # split ds
-    ds1 = datasource2dict(ds1)
-    ds2 = datasource2dict(ds2)
 
+        # compare only dbname and table if host is not present like for SQlite db:
+        if layer_type == 'spatialite':
+            return ds1['dbname'] == ds2['dbname'] and ds1['table'] == ds2['table']
+        else:
+            return ds1['dbname'] == ds2['dbname'] and ds1['host'] == ds2['host'] and ds1['table'] == ds2['table']
+    except:
 
-    # compare only dbname and table if host is not present like for SQlite db:
-    if layer_type == 'spatialite':
-        return ds1['dbname'] == ds2['dbname'] and ds1['table'] == ds2['table']
-    else:
-        return ds1['dbname'] == ds2['dbname'] and ds1['host'] == ds2['host'] and ds1['table'] == ds2['table']
+        # For very complex QueryLayer
+        logger.warning(f"Postgres datasource very complex,  DS1: {ds1} | DS2: {ds2}")
+        return ds1 == ds2
 
 
 def get_widgets4layer(layer):

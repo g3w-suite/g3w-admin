@@ -17,6 +17,7 @@ from core.signals import load_layer_actions, initconfig_plugin_start, after_seri
 from qdjango.api.projects.serializers import QGIS_LAYER_TYPE_NO_GEOM
 from qdjango.vector import LayerVectorView, MODE_CONFIG
 from qdjango.models import GeoConstraintRule
+from qdjango.utils.structure import datasource2dict
 from .models import G3WEditingFeatureLock, G3WEditingLayer, G3WEditingLog, EDITING_POST_DATA_DELETED
 
 
@@ -47,6 +48,15 @@ def editing_layer_actions(sender, **kwargs):
 
     editing_button = getattr(settings, 'EDITING_SHOW_ACTIVE_BUTTON', True)
 
+    # Try to parse table and datasource for postgres and spatialite.
+    # If datasource parsing fail not don not allow editing.
+    do_editing = True
+    if kwargs['layer'].layer_type in (Layer.TYPES.postgres, Layer.TYPES.spatialite):
+        try:
+            datasource2dict(kwargs['layer'].datasource)
+        except:
+            do_editing = False
+
     # only admin and editor1 or editor2:
     if sender.has_perm('change_project', kwargs['layer'].project) and kwargs['app_name'] == 'qdjango' and \
                     kwargs['layer'].layer_type in (
@@ -55,7 +65,7 @@ def editing_layer_actions(sender, **kwargs):
                         Layer.TYPES.ogr,
                         Layer.TYPES.mssql,
                         Layer.TYPES.oracle
-                    ) and editing_button:
+                    ) and editing_button and do_editing:
 
         # add if is active
         try:
