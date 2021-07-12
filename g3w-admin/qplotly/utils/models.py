@@ -15,6 +15,10 @@ from django.db.models import Q
 from qdjango.utils.structure import datasource2dict
 from qplotly.models import QplotlyWidget
 
+import logging
+
+logger = logging.getLogger('django.request')
+
 
 def get_qplotlywidgets4layer(layer):
     """
@@ -26,7 +30,14 @@ def get_qplotlywidgets4layer(layer):
     # different by layer type
     # for postgis layer
     if layer.layer_type == 'postgres':
-        ds = datasource2dict(layer.datasource)
+        try:
+            ds = datasource2dict(layer.datasource)
+        except:
+
+            # For very complex QueryLayer
+            logger.warning(f"Postgres datasource very complex: {layer.datasource}")
+            return QplotlyWidget.objects.filter(datasource=layer.datasource)
+
         if 'service' in ds:
             to_contain = Q(datasource__contains=u'service=\'{}\''.format(ds['service']))
         else:

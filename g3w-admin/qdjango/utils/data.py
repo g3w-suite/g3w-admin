@@ -199,8 +199,15 @@ class QgisProjectLayer(XmlData):
                     name = os.path.splitext(
                         os.path.basename(self.datasource))[0]
         elif self.layerType == Layer.TYPES.postgres or self.layerType == Layer.TYPES.spatialite:
-            dts = datasource2dict(self.datasource)
-            name = dts['table'].split('.')[-1].replace("\"", "")
+            try:
+                dts = datasource2dict(self.datasource)
+                name = dts['table'].split('.')[-1].replace("\"", "")
+            except:
+
+                # For very complex QueryLayer
+                logger.warning(f"Postgres datasource very complex: {self.datasource}")
+                name = self.name
+
         elif self.layerType == Layer.TYPES.wms:
             dts = QueryDict(self.datasource)
             try:
