@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('qdjango', '0077_layer_not_show_attributes_table'),
+        ('qdjango', '0078_auto_20210708_0749'),
     ]
 
     operations = [
