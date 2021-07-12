@@ -14,6 +14,7 @@ __copyright__ = 'Copyright 2019, Gis3w'
 
 from qdjango.models.geoconstraints import *
 from rest_framework import serializers
+from rest_framework.fields import empty
 
 
 class GeoConstraintCleanValidator(object):
@@ -61,5 +62,14 @@ class GeoConstraintRuleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = GeoConstraintRule
-        fields = ['pk', 'constraint', 'user', 'group', 'rule', 'active']
+        fields = ['pk', 'constraint', 'user', 'group', 'rule', 'active', 'anonymoususer']
         validators = [GeoConstraintRuleCleanValidator()]
+
+    def run_validation(self, data=empty):
+        value = super().run_validation(data=data)
+
+        # Set flag anonymoususer
+        if value['user']:
+            value['anonymoususer'] = True if value['user'].username == 'AnonymousUser' else False
+
+        return value

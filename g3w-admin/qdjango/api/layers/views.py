@@ -76,7 +76,7 @@ class LayerUserInfoAPIView(generics.ListAPIView):
 
                 # get viewer users with view_project and change_layer
                 qs = get_viewers_for_object(layer.project, self.request.user, 'view_project',
-                                            with_anonymous=with_anonymous)
+                                            with_anonymous=True)
 
         else:
             qs = []

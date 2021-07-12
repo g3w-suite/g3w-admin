@@ -81,6 +81,6 @@ class GeoConstraintsFilter(BaseFilterBackend):
             current_expression = qgis_feature_request.filterExpression()
 
             if current_expression:
-                expression = '( %s ) AND ( %s )' % (current_expression, expression)
+                expression = f'({current_expression.expression()}) AND ({expression})'
 
             qgis_feature_request.setFilterExpression(expression)

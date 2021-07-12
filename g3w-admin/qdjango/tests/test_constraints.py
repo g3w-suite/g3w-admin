@@ -111,7 +111,7 @@ class TestSingleLayerConstraintsBase(QdjangoTestBase):
         self.client.logout()
         return response
 
-    def _check_subset_string(self):
+    def _check_subset_string(self, login=True):
         """Check for ROME in the returned content"""
 
         ows_url = reverse('OWS:ows', kwargs={'group_slug': self.qdjango_project.group.slug,
@@ -119,7 +119,8 @@ class TestSingleLayerConstraintsBase(QdjangoTestBase):
 
         # Make a request to the server
         c = Client()
-        self.assertTrue(c.login(username='admin01', password='admin01'))
+        if login:
+            self.assertTrue(c.login(username='admin01', password='admin01'))
         response = c.get(ows_url, {
             'REQUEST': 'GetFeatureInfo',
             'SERVICE': 'WMS',
@@ -156,8 +157,10 @@ class TestSingleLayerConstraintsBase(QdjangoTestBase):
             'X': '50',
             'Y': '50',
         })
-        logging.debug(response.content)
         assert b'BERLIN' in response.content
+
+        if login:
+            c.logout()
 
         return is_rome
 
@@ -197,6 +200,8 @@ class SingleLayerSubsetStringConstraints(TestSingleLayerConstraintsBase):
         self.assertEqual(constraint.layer_name, 'world')
         self.assertEqual(constraint.qgs_layer_id, 'world20181008111156525')
         self.assertEqual(constraint.rule_count, 1)
+
+        # self.assertFalse(self._check_subset_string(login=False))
 
         # context view + editing ve
         # =========================
@@ -247,6 +252,21 @@ class SingleLayerSubsetStringConstraints(TestSingleLayerConstraintsBase):
 
         # for OGC service only in v an ve context
         self.assertTrue(self._check_subset_string())
+
+    def test_anonymoususer_constraint(self):
+        """Test for anonymous user"""
+
+        # For AnonymousUser
+        assign_perm('view_project', get_anonymous_user(), self.qdjango_project)
+        self.assertTrue(self._check_subset_string(login=False))
+
+        constraint_anonymous = SingleLayerConstraint(layer=self.world, active=True)
+        constraint_anonymous.save()
+        rule_anonymous = ConstraintSubsetStringRule(
+            constraint=constraint_anonymous, user=get_anonymous_user(), rule="NAME != 'ITALY'", anonymoususer=True)
+        rule_anonymous.save()
+
+        self.assertFalse(self._check_subset_string(login=False))
 
     def test_group_constraint(self):
         """Test model with group constraint"""
@@ -442,6 +462,21 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
         self.assertEqual(constraint.layer_name, 'world')
         self.assertEqual(constraint.qgs_layer_id, 'world20181008111156525')
         self.assertEqual(constraint.rule_count, 1)
+
+    def test_anonymoususer_constraint(self):
+        """Test for anonymous user"""
+
+        # For AnonymousUser
+        assign_perm('view_project', get_anonymous_user(), self.qdjango_project)
+        self.assertTrue(self._check_subset_string(login=False))
+
+        constraint_anonymous = SingleLayerConstraint(layer=self.world, active=True)
+        constraint_anonymous.save()
+        rule_anonymous = ConstraintExpressionRule(
+            constraint=constraint_anonymous, user=get_anonymous_user(), rule="NAME != 'ITALY'", anonymoususer=True)
+        rule_anonymous.save()
+
+        self.assertFalse(self._check_subset_string(login=False))
 
     def test_group_constraint(self):
         """Test model with group constraint"""
@@ -689,6 +724,35 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
         self.assertTrue(vl.isValid())
         self.assertEqual(len([f for f in vl.getFeatures()]), 1)
 
+        # TEST filter for AnonymousUser
+        # =============================
+
+        assign_perm('view_project', get_anonymous_user(), self.qdjango_project)
+
+        rule = ConstraintExpressionRule(
+            constraint=constraint, user=get_anonymous_user(), rule="NAME != 'ITALY'", anonymoususer=True)
+        rule.save()
+
+        path = reverse('core-vector-api', kwargs={'mode_call': 'shp',
+                                                 'project_type': 'qdjango',
+                                                 'project_id': self.qdjango_project.id,
+                                                 'layer_name': world.qgs_layer_id})
+
+        response = self.client.get(path)
+        self.assertEqual(response.status_code, 200)
+        z = zipfile.ZipFile(BytesIO(response.content))
+        temp = QTemporaryDir()
+        z.extractall(temp.path())
+        vl = QgsVectorLayer(temp.path())
+        self.assertTrue(vl.isValid())
+        self.assertEqual(len([f for f in vl.getFeatures(
+            QgsFeatureRequest(QgsExpression('NAME = \'ITALY\'')))]), 0)
+
+        self.assertEqual(len([f for f in vl.getFeatures(
+            QgsFeatureRequest(QgsExpression('NAME = \'GERMANY\'')))]), 1)
+
+
+
     def test_xls_api(self):
         """Test XLS export"""
 
@@ -834,6 +898,34 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
         vl = QgsVectorLayer(fname)
         self.assertTrue(vl.isValid())
         self.assertEqual(len([f for f in vl.getFeatures()]), 1)
+
+        # For AnonymousUser
+        # -----------------
+
+        assign_perm('view_project', get_anonymous_user(), self.qdjango_project)
+
+        rule = ConstraintExpressionRule(
+            constraint=constraint, user=get_anonymous_user(), rule="NAME != 'ITALY'", anonymoususer=True)
+        rule.save()
+
+        path = reverse('core-vector-api', kwargs={'mode_call': 'xls',
+                                                  'project_type': 'qdjango',
+                                                  'project_id': self.qdjango_project.id,
+                                                  'layer_name': world.qgs_layer_id})
+
+        response = self.client.get(path)
+        self.assertEqual(response.status_code, 200)
+
+        fname = temp.path() + '/temp6.xlsx'
+        with open(fname, 'wb+') as f:
+            f.write(response.content)
+
+        vl = QgsVectorLayer(fname)
+        self.assertTrue(vl.isValid())
+        self.assertEqual(len([f for f in vl.getFeatures(
+            QgsFeatureRequest(QgsExpression('NAME = \'ITALY\'')))]), 0)
+        self.assertEqual(len([f for f in vl.getFeatures(
+            QgsFeatureRequest(QgsExpression('NAME = \'GERMANY\'')))]), 1)
 
     def test_gpx_api(self):
         """Test GPX export"""
@@ -1790,7 +1882,8 @@ class TestGeoConstraintsServerFilters(TestSingleLayerConstraintsBase):
 
         c.logout()
 
-        # for anonymous user non filtering
+        # For anonymous context editing
+        # --------------------------------
         constraint.for_editing = True
         constraint.for_view = False
         constraint.save()
@@ -1814,6 +1907,99 @@ class TestGeoConstraintsServerFilters(TestSingleLayerConstraintsBase):
         })
 
         self.assertTrue(b'a point' in response.content)
+
+        response = c.get(ows_url, {
+            'REQUEST': 'GetFeatureInfo',
+            'SERVICE': 'WMS',
+            'VERSION': '1.3.0',
+            'LAYERS': 'spatialite_points',
+            'CRS': 'EPSG:4326',
+            'BBOX': '34.31,0.82,54.31,20.82',
+            'FORMAT': 'image/png',
+            'INFO_FORMAT': 'application/json',
+            'WIDTH': '100',
+            'HEIGHT': '100',
+            'QUERY_LAYERS': 'spatialite_points',
+            'FEATURE_COUNT': 1,
+            'FI_POINT_TOLERANCE': 10,
+            'I': '50',
+            'J': '50',
+        })
+
+        self.assertTrue(b'another point' in response.content)
+
+        # For anonymous user NO FILTERING
+        # --------------------------------
+        constraint.for_editing = False
+        constraint.for_view = True
+        constraint.save()
+
+        response = c.get(ows_url, {
+            'REQUEST': 'GetFeatureInfo',
+            'SERVICE': 'WMS',
+            'VERSION': '1.3.0',
+            'LAYERS': 'spatialite_points',
+            'CRS': 'EPSG:4326',
+            'BBOX': '18.77,-7.98,38.77,12.02',
+            'FORMAT': 'image/png',
+            'INFO_FORMAT': 'application/json',
+            'WIDTH': '100',
+            'HEIGHT': '100',
+            'QUERY_LAYERS': 'spatialite_points',
+            'FEATURE_COUNT': 1,
+            'FI_POINT_TOLERANCE': 10,
+            'I': '50',
+            'J': '50',
+        })
+
+        self.assertTrue(b'a point' in response.content)
+
+        response = c.get(ows_url, {
+            'REQUEST': 'GetFeatureInfo',
+            'SERVICE': 'WMS',
+            'VERSION': '1.3.0',
+            'LAYERS': 'spatialite_points',
+            'CRS': 'EPSG:4326',
+            'BBOX': '34.31,0.82,54.31,20.82',
+            'FORMAT': 'image/png',
+            'INFO_FORMAT': 'application/json',
+            'WIDTH': '100',
+            'HEIGHT': '100',
+            'QUERY_LAYERS': 'spatialite_points',
+            'FEATURE_COUNT': 1,
+            'FI_POINT_TOLERANCE': 10,
+            'I': '50',
+            'J': '50',
+        })
+
+        self.assertTrue(b'another point' in response.content)
+
+        # For anonymous user FILTERING
+        # ----------------------------
+
+        rule_italy_anonymous = GeoConstraintRule(
+            constraint=constraint, user=get_anonymous_user(), group=None, rule="NAME='ITALY'", anonymoususer=True)
+        rule_italy_anonymous.save()
+
+        response = c.get(ows_url, {
+            'REQUEST': 'GetFeatureInfo',
+            'SERVICE': 'WMS',
+            'VERSION': '1.3.0',
+            'LAYERS': 'spatialite_points',
+            'CRS': 'EPSG:4326',
+            'BBOX': '18.77,-7.98,38.77,12.02',
+            'FORMAT': 'image/png',
+            'INFO_FORMAT': 'application/json',
+            'WIDTH': '100',
+            'HEIGHT': '100',
+            'QUERY_LAYERS': 'spatialite_points',
+            'FEATURE_COUNT': 1,
+            'FI_POINT_TOLERANCE': 10,
+            'I': '50',
+            'J': '50',
+        })
+
+        self.assertFalse(b'a point' in response.content)
 
         response = c.get(ows_url, {
             'REQUEST': 'GetFeatureInfo',

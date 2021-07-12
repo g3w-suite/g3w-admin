@@ -1043,6 +1043,7 @@ class TestGeoConstraintVectorAPIFilter(QdjangoTestBase):
         self.client.logout()
 
         # as viewer1
+        # ------------------------
         self.assertTrue(self.client.login(username='viewer1', password='viewer1'))
         url = reverse('core-vector-api',
                       args=['data', 'qdjango', self.qdjango_project.pk, self.spatialite_points.qgs_layer_id])
@@ -1081,3 +1082,32 @@ class TestGeoConstraintVectorAPIFilter(QdjangoTestBase):
         self.assertEqual(feature['properties']['name'], 'a point')
 
         self.client.logout()
+
+        # As Anonymous user  non FILTERING
+        # ---------------------------------
+
+        # also to Anonymous user
+        assign_perm('view_project', get_anonymous_user(), self.qdjango_project)
+
+        url = reverse('core-vector-api',
+                      args=['data', 'qdjango', self.qdjango_project.pk, self.spatialite_points.qgs_layer_id])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        jres = json.loads(response.content)
+
+        self.assertEqual(jres['vector']['count'], 2)
+
+        # bind rule to a users group.
+        rule_anonymoususer = GeoConstraintRule(constraint=self.geoconstraint, user=get_anonymous_user(),
+                                             rule="NAME='ITALY'", anonymoususer=True)
+        rule_anonymoususer.save()
+
+        url = reverse('core-vector-api',
+                      args=['data', 'qdjango', self.qdjango_project.pk, self.spatialite_points.qgs_layer_id])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        jres = json.loads(response.content)
+
+        self.assertEqual(jres['vector']['count'], 1)
+        feature = jres['vector']['data']['features'][0]
+        self.assertEqual(feature['properties']['name'], 'another point')
