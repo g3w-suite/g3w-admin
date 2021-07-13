@@ -2,8 +2,9 @@ from django.dispatch import receiver
 from django.db.models.signals import post_delete, post_save
 from django.conf import settings
 from django.core.cache import caches
+from django.template import loader
 from django.contrib.auth.signals import user_logged_out
-from core.signals import execute_search_on_models
+from core.signals import execute_search_on_models, load_layer_actions
 from core.models import ProjectMapUrlAlias
 from .models import Project, Layer, SessionTokenFilter
 from .signals import post_save_qdjango_project_file
@@ -109,3 +110,13 @@ def execute_search(sender, request, search_text, **kwargs):
     return [
         ProjectSearch(search_text, request.user)
     ]
+
+
+@receiver(load_layer_actions)
+def filter_by_user_layer_action(sender, **kwargs):
+    """
+    Return html actions editing for project layer.
+    """
+
+    template = loader.get_template('qdjango/layer_actions/filter_by_user.html')
+    return template.render(kwargs)

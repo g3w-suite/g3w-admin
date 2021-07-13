@@ -18,7 +18,7 @@ from django.utils.html import mark_safe
 from django_file_form.forms import FileFormMixin, UploadedFileField
 from guardian.shortcuts import get_objects_for_user
 from modeltranslation.forms import TranslationModelForm
-from usersmanage.forms import G3WACLForm
+from usersmanage.forms import G3WACLForm, label_users
 from usersmanage.utils import (crispyBoxACL, get_fields_by_user,
                                get_groups_for_object,
                                get_user_groups_for_object,
@@ -399,3 +399,62 @@ class QdjangoWidgetForm(QdjangoProjectFormMixin, G3WFormMixin, G3WGroupFormMixin
         widgets = {
             'body': widgets.HiddenInput
         }
+
+
+class FitlerByUserLayerForm(G3WRequestFormMixin, G3WProjectFormMixin, forms.Form):
+    """Form for Layer action filter by users/groups"""
+
+    viewer_users = forms.MultipleChoiceField(choices=[], label=_('Viewers'), required=False,
+                                             help_text=_('Select/Unselect user with viewer role can view the layer'))
+    user_groups_viewer = forms.MultipleChoiceField(
+        choices=[], required=False, help_text=_('Select/Unselect viewer groups can view the layer'),
+        label=_('User viewer groups')
+    )
+
+    def __init__(self, *args, **kwargs):
+
+        super().__init__(*args, **kwargs)
+
+        # set choices
+        self._set_viewer_users_choices()
+        self._set_viewer_user_groups_choices()
+
+        self.helper = FormHelper(self)
+        self.helper.form_tag = False
+        self.helper.layout = Layout(
+            HTML(_('Select viewers with \'view permission\' on project that can view layer:')),
+            Field('viewer_users', css_class='select2', style="width:100%;"),
+            Field('user_groups_viewer', css_class='select2', style="width:100%;"),
+        )
+
+    def _set_viewer_users_choices(self):
+        """
+        Set choices for viewer_users select by permission on project and by user main role
+        """
+
+        with_anonymous = getattr(settings, 'EDITING_ANONYMOUS', False)
+        viewers = get_viewers_for_object(self.project, self.request.user, 'view_project', with_anonymous=with_anonymous)
+
+        # get Editor Level 1 and Editor level 2 to clear from list
+        editor_pk = self.project.editor.pk if self.project.editor else None
+        editor2_pk = self.project.editor2.pk if self.project.editor2 else None
+
+        self.fields['viewer_users'].choices = [(v.pk, label_users(v)) for v in viewers
+                                               if v.pk not in (editor_pk, editor2_pk)]
+
+    def _set_viewer_user_groups_choices(self):
+        """
+        Set choices for viewer_user_groups select by permission on project and by user main role
+        """
+
+        # add user_groups_viewer choices
+        user_groups_viewers = get_groups_for_object(self.project, 'view_project', grouprole='viewer')
+
+        # for Editor level filter by his groups
+        if userHasGroups(self.request.user, [G3W_EDITOR1]):
+            editor1_user_gorups_viewers = get_objects_for_user(self.request.user, 'auth.change_group',
+                                 AuthGroup).order_by('name').filter(grouprole__role='viewer')
+
+            user_groups_viewers = list(set(user_groups_viewers).intersection(set(editor1_user_gorups_viewers)))
+
+        self.fields['user_groups_viewer'].choices = [(v.pk, v) for v in user_groups_viewers]

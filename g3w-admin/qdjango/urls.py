@@ -48,6 +48,11 @@ urlpatterns = [
     url(r'^(?P<group_slug>[-_\w\d]+)/projects/(?P<project_slug>[-_\w\d]+)/layer/(?P<layer_slug>[-_\w\d]+)/widgets/link/(?P<slug>[-_\w\d]+)$',
         login_required(QdjangoLinkWidget2LayerView.as_view()), name='qdjango-project-layer-widget-link'),
 
+    # Filter by user/group urls
+    url(r'^(?P<group_slug>[-_\w\d]+)/(?P<project_type>[-_\w\d]+)/(?P<project_slug>[-_\w\d]+)/(?P<layer_id>[0-9]+)/'
+        r'filterbyuser/$',
+        login_required(FilterByUserLayerView.as_view()), name='fitler-by-user-layer'),
+
 ]
 
 try:

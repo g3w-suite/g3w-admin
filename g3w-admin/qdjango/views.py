@@ -4,6 +4,7 @@ from django.views.generic import (
     ListView,
     DetailView,
     TemplateView,
+    FormView,
     View,
 )
 from django.views.generic.detail import SingleObjectMixin
@@ -17,7 +18,7 @@ from guardian.decorators import permission_required
 from guardian.shortcuts import get_objects_for_user
 from core.mixins.views import *
 from core.signals import pre_update_project, pre_delete_project, after_update_project, before_delete_project
-from core.utils.decorators import check_madd
+from core.utils.decorators import check_madd, project_type_permission_required
 from django_downloadview import ObjectDownloadView
 from rest_framework.response import Response
 from usersmanage.mixins.views import G3WACLViewMixin
@@ -454,3 +455,21 @@ class QdjangoLayerDetailView(G3WRequestViewMixin, DetailView):
     @method_decorator(permission_required('qdjango.change_project', (Project, 'slug', 'slug'), raise_exception=True))
     def dispatch(self, *args, **kwargs):
         return super(QdjangoLayerDetailView, self).dispatch(*args, **kwargs)
+
+
+class FilterByUserLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3WRequestViewMixin, FormView):
+    """
+    View for filter layer by user/group form
+    """
+
+    form_class = FitlerByUserLayerForm
+    template_name = 'editing/editing_layer_active_form.html'
+
+    @method_decorator(project_type_permission_required('change_project', ('project_type', 'project_slug'),
+                                                       return_403=True))
+    def dispatch(self, request, *args, **kwargs):
+        self.layer_id = kwargs['layer_id']
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_success_url(self):
+        return None
