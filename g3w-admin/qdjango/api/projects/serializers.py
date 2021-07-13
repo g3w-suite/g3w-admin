@@ -5,6 +5,7 @@ from django.utils.translation import ugettext_lazy as _
 from rest_framework import serializers
 from rest_framework_gis import serializers as geo_serializers
 from rest_framework.fields import empty
+from guardian.shortcuts import get_objects_for_user, get_anonymous_user
 
 from qdjango.models import Project, Layer, Widget, SessionTokenFilter
 from qdjango.utils.data import QgisProjectSettingsWMS, QGIS_LAYER_TYPE_NO_GEOM
@@ -267,6 +268,10 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         ret['print'] = json.loads(clean_for_json(
             instance.layouts)) if instance.layouts else []
 
+        # Get layer which request.user can view:
+        view_layer_ids = [l.qgs_layer_id for l in get_objects_for_user(self.request.user, 'qdjango.view_layer', Layer) \
+        | get_objects_for_user(get_anonymous_user(), 'qdjango.view_layer', Layer)]
+
         # add layers data, widgets
         # init properties
         if qgs_project.layerTreeRoot().hasCustomLayerOrder():
@@ -296,6 +301,10 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
                 # Check for empty vector layer
                 if settings.G3W_CLIENT_NOT_SHOW_EMPTY_VECTORLAYER and self.layer_is_empty(layers[layer['id']]):
+                    return
+
+                # Chek if layer is visible for user
+                if not layer['id'] in view_layer_ids:
                     return
 
                 try:

@@ -22,6 +22,7 @@ from core.utils.decorators import check_madd, project_type_permission_required
 from django_downloadview import ObjectDownloadView
 from rest_framework.response import Response
 from usersmanage.mixins.views import G3WACLViewMixin
+from usersmanage.models import Group as AuthGroup
 from .signals import load_qdjango_widgets_data
 from .mixins.views import *
 from .forms import *
@@ -463,13 +464,66 @@ class FilterByUserLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3WR
     """
 
     form_class = FitlerByUserLayerForm
-    template_name = 'editing/editing_layer_active_form.html'
+    template_name = 'qdjango/layer_actions/fitler_by_user_layer_form.html'
 
     @method_decorator(project_type_permission_required('change_project', ('project_type', 'project_slug'),
                                                        return_403=True))
     def dispatch(self, request, *args, **kwargs):
+
         self.layer_id = kwargs['layer_id']
         return super().dispatch(request, *args, **kwargs)
 
     def get_success_url(self):
         return None
+
+    def get_form_kwargs(self):
+
+        kwargs = super().get_form_kwargs()
+
+        self.layer = Layer.objects.get(pk=self.layer_id)
+
+        # get viewer users
+        viewers = get_viewers_for_object(self.layer, self.request.user, 'view_layer', with_anonymous=True)
+
+        editor_pk = self.layer.project.editor.pk if self.layer.project.editor else None
+        self.initial_viewer_users = kwargs['initial']['viewer_users'] = [int(o.id) for o in viewers
+                                                                         if o.id != editor_pk]
+        group_viewers = get_user_groups_for_object(self.layer, self.request.user, 'view_layer', 'viewer')
+        self.initial_viewer_user_groups = kwargs['initial']['user_groups_viewer'] = [o.id for o in group_viewers]
+
+        return kwargs
+
+    def form_valid(self, form):
+
+        # give permission to viewers:
+        toAdd = toRemove = None
+
+        currentViewerUsers = [int(i) for i in form.cleaned_data['viewer_users']]
+        toRemove = list(set(self.initial_viewer_users) - set(currentViewerUsers))
+        toAdd = list(set(currentViewerUsers) - set(self.initial_viewer_users))
+
+        if toAdd:
+            for uid in toAdd:
+                setPermissionUserObject(User.objects.get(pk=uid), self.layer, ['view_layer'])
+
+        if toRemove:
+            for uid in toRemove:
+                setPermissionUserObject(User.objects.get(pk=uid), self.layer, ['view_layer'], mode='remove')
+
+        # give permission to user groups viewers:
+        to_add = to_remove = None
+
+        current_user_groups_viewers = [int(i) for i in form.cleaned_data['user_groups_viewer']]
+        to_remove = list(set(self.initial_viewer_user_groups) - set(current_user_groups_viewers))
+        to_add = list(set(current_user_groups_viewers) - set(self.initial_viewer_user_groups))
+
+
+        if to_add:
+            for aid in to_add:
+                setPermissionUserObject(AuthGroup.objects.get(pk=aid), self.layer, ['view_layer'])
+
+        if to_remove:
+            for aid in to_remove:
+                setPermissionUserObject(AuthGroup.objects.get(pk=aid), self.layer, ['view_layer'], mode='remove')
+
+        return super().form_valid(form)
