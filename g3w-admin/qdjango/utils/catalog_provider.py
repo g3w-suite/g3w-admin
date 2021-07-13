@@ -140,6 +140,10 @@ def catalog_provider(groups=[]):
                 rec['service_type_version'] += ',1.1.0'
                 rec['identifier'] = 'ows.qdjango.%s.%s' % (layer.slug, layer.id)
 
+            # for POD
+            rec['g3w_project_type'] = 'qdjango'
+            rec['g3w_layer_id'] = layer.id
+
             results.append(rec)
 
     return results
