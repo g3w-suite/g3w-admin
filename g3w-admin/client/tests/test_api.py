@@ -666,3 +666,21 @@ class ClientApiTest(CoreTestBase):
 
         self.assertEqual(resp['toc_tab_default'], 'legend')
 
+    def testClientConfigApiViewForFilterByUser(self):
+        """Test Filter by User/Group"""
+
+        # check for tab_doc_dafault: set to legend
+        self.project_extent310_2.instance.toc_tab_default = 'legend'
+        self.project_extent310_2.instance.save()
+
+
+
+        response = self._testApiCall('group-project-map-config',
+                                     [self.extent_group.slug, 'qdjango', self.project_extent310_2.instance.pk])
+        resp = json.loads(response.content)
+
+        self.assertEqual(resp['extent'],
+                         [166021.44308054161956534, 0, 534994.65506113646551967, 9329005.18244743719696999])
+
+        self.assertEqual(resp['toc_tab_default'], 'legend')
+
