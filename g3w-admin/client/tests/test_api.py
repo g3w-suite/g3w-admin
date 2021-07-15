@@ -13,6 +13,7 @@ __copyright__ = 'Copyright 2019, Gis3w'
 import os
 import json
 from django.conf import settings
+from django.urls import reverse
 from django.test import override_settings
 from django.core.files import File
 from qdjango.models import Project
@@ -670,15 +671,14 @@ class ClientApiTest(CoreTestBase):
         """Test Filter by User/Group"""
 
 
+        path = reverse('group-project-map-config', args=[self.project_print310.group.slug, 'qdjango', self.project_print310.instance.pk])
+        res = self.client.get(path)
+        self.assertEqual(res.status_code, 403)
 
+        # grant to viewer_1
 
+        self.project_print310.instance.addPermissionsToViewers([self.test_viewer1.pk])
+        self.client.login(username=self.test_viewer1.username, password=self.test_viewer1.username)
+        res = self.client.get(path)
 
-        response = self._testApiCall('group-project-map-config',
-                                     [self.extent_group.slug, 'qdjango', self.project_extent310_2.instance.pk])
-        resp = json.loads(response.content)
-
-        self.assertEqual(resp['extent'],
-                         [166021.44308054161956534, 0, 534994.65506113646551967, 9329005.18244743719696999])
-
-        self.assertEqual(resp['toc_tab_default'], 'legend')
-
+        self.assertEqual(res.status_code, 200)
