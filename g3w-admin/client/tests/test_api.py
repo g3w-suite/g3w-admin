@@ -669,9 +669,7 @@ class ClientApiTest(CoreTestBase):
     def testClientConfigApiViewForFilterByUser(self):
         """Test Filter by User/Group"""
 
-        # check for tab_doc_dafault: set to legend
-        self.project_extent310_2.instance.toc_tab_default = 'legend'
-        self.project_extent310_2.instance.save()
+
 
 
 
