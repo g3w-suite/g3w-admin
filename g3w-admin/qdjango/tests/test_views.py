@@ -172,7 +172,58 @@ class QdjangoViewsTest(QdjangoTestBase):
         # che if project it was deleted
         self.assertEqual(Project.objects.filter(pk=mproject.pk).count(), 0)
 
+    def test_filter_by_user_view(self):
+        """Test FilterByUserLayerView"""
 
+        self.project310.instance.addPermissionsToViewers([self.test_viewer1.pk])
+        self.project310.instance.add_permissions_to_viewer_user_groups([self.test_gu_viewer2.pk])
+
+        layer_cities = self.project310.instance.layer_set.filter(name="Cities")[0]
+        url = reverse("fitler-by-user-layer", args=[
+            self.project310.instance.group.slug,
+            'qdjango',
+            self.project310.instance.slug,
+            layer_cities.pk
+        ])
+
+        self.assertTrue(self.test_viewer1.has_perm('qdjango.view_layer', layer_cities))
+        self.assertTrue(self.test_viewer1_3.has_perm('qdjango.view_layer', layer_cities))
+
+        client = Client()
+        self.assertTrue(client.login(username=self.test_user1.username, password=self.test_user1.username))
+
+        response = client.post(url, data={
+            'viewer_users': [],
+            'user_groups_viewer': []
+        })
+
+        # Redirect to None
+        self.assertEqual(response.status_code, 302)
+
+        self.assertFalse(self.test_viewer1.has_perm('qdjango.view_layer', layer_cities))
+        self.assertFalse(self.test_viewer1_3.has_perm('qdjango.view_layer', layer_cities))
+
+        response = client.post(url, data={
+            'viewer_users': [self.test_viewer1.pk],
+            'user_groups_viewer': []
+        })
+
+        # Redirect to None
+        self.assertEqual(response.status_code, 302)
+
+        self.assertTrue(self.test_viewer1.has_perm('qdjango.view_layer', layer_cities))
+        self.assertFalse(self.test_viewer1_3.has_perm('qdjango.view_layer', layer_cities))
+
+        response = client.post(url, data={
+            'viewer_users': [self.test_viewer1.pk],
+            'user_groups_viewer': [self.test_gu_viewer2.pk]
+        })
+
+        # Redirect to None
+        self.assertEqual(response.status_code, 302)
+
+        self.assertTrue(self.test_viewer1.has_perm('qdjango.view_layer', layer_cities))
+        self.assertTrue(self.test_viewer1_3.has_perm('qdjango.view_layer', layer_cities))
 
 
 

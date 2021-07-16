@@ -1,0 +1,17 @@
+{% load i18n %}
+{% load crispy_forms_tags %}
+<form method="post" id="fitler_by_user_layer_form">
+    <div class="row">
+        <div class="col-md-12 error-form-message hidden">
+            <div class="alert alert-danger alert-dismissable">
+                <h4><i class="icon fa fa-ban"></i> {% trans 'Alert' %}!</h4>
+                    {% trans 'Some errors on form. Check it and send again.' %}
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+        {% crispy form %}
+        </div>
+    </div>
+</form>

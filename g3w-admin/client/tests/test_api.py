@@ -13,11 +13,13 @@ __copyright__ = 'Copyright 2019, Gis3w'
 import os
 import json
 from django.conf import settings
+from django.urls import reverse
 from django.test import override_settings
 from django.core.files import File
+from django.core.cache import caches
+from guardian.shortcuts import remove_perm
 from qdjango.models import Project
 from qdjango.utils.data import QgisProject
-from django.core.cache import caches
 from core.tests.base import CoreTestBase
 from core.models import MacroGroup, Group, G3WSpatialRefSys
 from core.utils.structure import FIELD_TYPES_MAPPING
@@ -665,4 +667,71 @@ class ClientApiTest(CoreTestBase):
                          [166021.44308054161956534, 0, 534994.65506113646551967, 9329005.18244743719696999])
 
         self.assertEqual(resp['toc_tab_default'], 'legend')
+
+    def testClientConfigApiViewForFilterByUser(self):
+        """Test Filter by User/Group"""
+
+
+        path = reverse('group-project-map-config', args=[self.project_print310.group.slug, 'qdjango', self.project_print310.instance.pk])
+        res = self.client.get(path)
+        self.assertEqual(res.status_code, 403)
+
+        # grant to viewer_1 and
+        self.project_print310.instance.addPermissionsToViewers([self.test_viewer1.pk])
+        self.project_print310.instance.add_permissions_to_viewer_user_groups([self.test_gu_viewer2.pk])
+
+        self.client.login(username=self.test_viewer1.username, password=self.test_viewer1.username)
+        res = self.client.get(path)
+
+        self.assertEqual(res.status_code, 200)
+        jres = json.loads(res.content)
+
+        layers = [l['name'] for l in jres['layers']]
+
+        self.assertTrue("Cities" in layers)
+        self.assertTrue("Countries" in layers)
+
+        # check
+        self.assertTrue("Rivers" in layers)
+
+        layer_cities = self.project_print310.instance.layer_set.filter(name="Cities")
+        layer_countries = self.project_print310.instance.layer_set.filter(name="Countries")
+
+        # remove Cities for viewer_1
+        remove_perm('qdjango.view_layer', self.test_viewer1, layer_cities)
+
+        # remove Countries and Cities for group GU-VIEWER2
+        remove_perm('qdjango.view_layer', self.test_gu_viewer2, layer_cities)
+        remove_perm('qdjango.view_layer', self.test_gu_viewer2, layer_countries)
+
+        res = self.client.get(path)
+
+        self.assertEqual(res.status_code, 200)
+        jres = json.loads(res.content)
+
+        layers = [l['name'] for l in jres['layers']]
+
+        self.assertFalse("Cities" in layers)
+        self.assertTrue("Countries" in layers)
+
+        #check
+        self.assertTrue("Rivers" in layers)
+
+        self.client.logout()
+
+        # login as viewer1.3 inside group gu_viewer2
+        self.client.login(username=self.test_viewer1_3.username, password=self.test_viewer1_3.username)
+        res = self.client.get(path)
+
+        self.assertEqual(res.status_code, 200)
+        jres = json.loads(res.content)
+
+        layers = [l['name'] for l in jres['layers']]
+
+        self.assertFalse("Cities" in layers)
+        self.assertFalse("Countries" in layers)
+
+        # check
+        self.assertTrue("Rivers" in layers)
+
 
