@@ -269,8 +269,9 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
             instance.layouts)) if instance.layouts else []
 
         # Get layer which request.user can view:
-        view_layer_ids = [l.qgs_layer_id for l in get_objects_for_user(self.request.user, 'qdjango.view_layer', Layer) \
-        | get_objects_for_user(get_anonymous_user(), 'qdjango.view_layer', Layer)]
+        if self.request:
+            view_layer_ids = [l.qgs_layer_id for l in get_objects_for_user(self.request.user, 'qdjango.view_layer', Layer) \
+            | get_objects_for_user(get_anonymous_user(), 'qdjango.view_layer', Layer)]
 
         # add layers data, widgets
         # init properties
@@ -303,8 +304,8 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
                 if settings.G3W_CLIENT_NOT_SHOW_EMPTY_VECTORLAYER and self.layer_is_empty(layers[layer['id']]):
                     return
 
-                # Chek if layer is visible for user
-                if not layer['id'] in view_layer_ids:
+                # Check if layer is visible for user
+                if self.request and not layer['id'] in view_layer_ids:
                     return
 
                 try:
