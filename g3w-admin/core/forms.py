@@ -46,7 +46,6 @@ class GroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, G3WRequestFor
                                             'name',
                                             'title',
                                             Field('description', css_class='wys5', style="width:100%;"),
-                                            Field('lang', css_class='select2', style="width:100%;"),
                                             css_class='box-body',
 
                                         ),

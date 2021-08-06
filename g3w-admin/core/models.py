@@ -136,9 +136,6 @@ class Group(TimeStampedModel, OrderedModel):
         )
     is_active = models.BooleanField(_('Is active'), default=1)
 
-    # l10n
-    lang = models.CharField(_('lang'), max_length=20, choices=LANGUAGES, default='it')
-
     # Company logo
     header_logo_img = models.FileField(_('Logo image'), upload_to='logo_img')
     header_logo_link = models.URLField(_('Logo link'), blank=True, null=True,
