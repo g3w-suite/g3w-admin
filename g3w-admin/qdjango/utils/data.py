@@ -1004,7 +1004,8 @@ class QgisProject(XmlData):
                     'h': first_page_size.height()
                 }
 
-                # check if is a ATLAS print
+                # Check if is a ATLAS print
+                # ----------------------------
                 qgs_atlas = qgs_layout.atlas()
                 atlas_field_name = qgs_atlas.pageNameExpression()[1:-1]
                 if atlas_field_name == '':
@@ -1012,13 +1013,13 @@ class QgisProject(XmlData):
                 if qgs_atlas.enabled():
                     p_playout.update({
                         'atlas': {
-                            'qgs_layer_id': qgs_atlas.coverageLayer().id(),
+                            'qgs_layer_id': qgs_atlas.coverageLayer().id() if qgs_atlas.coverageLayer() else None,
                             'field_name': atlas_field_name
                         }
                     })
 
                     # if atlas_field_name is None, give max feature
-                    if not atlas_field_name:
+                    if not atlas_field_name and qgs_atlas.coverageLayer():
                         p_playout['atlas']['feature_count'] = count_qgis_features(
                             qgs_atlas.coverageLayer())
 
