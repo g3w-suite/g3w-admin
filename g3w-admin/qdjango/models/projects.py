@@ -77,7 +77,7 @@ def buildLayerTreeNodeObject(layerTreeNode):
             toRetLayer.update({
                 'mutually-exclusive': node.isMutuallyExclusive(),
                 'nodes': buildLayerTreeNodeObject(node),
-                'checked': node.isVisible(),
+                'checked': node.itemVisibilityChecked(),
 
             })
 
