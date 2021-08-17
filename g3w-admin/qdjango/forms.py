@@ -106,6 +106,17 @@ class QdjangoProjectFormMixin(object):
 
         return self.cleaned_data['use_map_extent_as_init_extent']
 
+    def clean_legend_position(self):
+        """ Check if toc_tab_default is set to 'Legend' """
+
+        if self.cleaned_data['toc_tab_default'] == 'legend' and self.cleaned_data['legend_position'] == 'toc':
+            raise ValidationError(
+                _(f"Is not possible set Legend position rendering to \"{Project.CLIENT_LEGEND_POSITION['toc']}\" "
+                  f"if Tab's TOC active as default is set to \"{Project.CLIENT_TOC_TABS['legend']}\""))
+
+        return self.cleaned_data['legend_position']
+
+
     def _save_url_alias(self):
         """
         Save url_alias if is set
