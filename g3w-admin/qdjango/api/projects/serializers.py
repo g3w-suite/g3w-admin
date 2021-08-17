@@ -172,7 +172,7 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
         # legend position
         options['legend_position'] = getattr(
-            instance, 'legend_posistion', 'tab')
+            instance, 'legend_position', 'tab')
 
         return options
 
