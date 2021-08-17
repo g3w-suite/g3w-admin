@@ -174,6 +174,7 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         options['legend_position'] = getattr(
             instance, 'legend_position', 'tab')
 
+
         return options
 
     def _set_ows_method(self, instance):

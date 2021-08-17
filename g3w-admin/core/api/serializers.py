@@ -118,8 +118,12 @@ class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
             projects_anonymous = get_objects_for_user(anonymous_user, '{}.view_project'.format(g3wProjectApp),
                                                       Project).filter(group=instance)
             projects = list(set(projects) | set(projects_anonymous))
+            print(projects)
             for project in projects:
                 self.projects[g3wProjectApp+'-'+str(project.id)] = project
+
+                if project.pk == int(self.projectId) and g3wProjectApp == self.projectType:
+                    self.project = project
 
                 # project thumbnail
                 project_thumb = project.thumbnail.name if bool(project.thumbnail.name) \
@@ -190,6 +194,13 @@ class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         layout_legend = getattr(settings, 'G3W_CLIENT_LEGEND', None)
         if layout_legend:
             ret['layout']['legend'] = layout_legend
+
+        # Check if G3W_CLIENT_LEGEND['layertitle'] set it tu false
+        if self.project.legend_position == 'toc':
+            if layout_legend:
+                ret['layout']['legend']['layertitle'] = False
+            else:
+                ret['layout']['legend'] = {'layertitle': False}
 
         # add legend settings if set to layout
         layout_right_panel = getattr(settings, 'G3W_CLIENT_RIGHT_PANEL', None)
