@@ -8,10 +8,10 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>{{ page_title }}</title>
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no" name="viewport">
-  {% with client_default|add:"/css/vendor.1623234429844.min.css" as vendor_css %}
+  {% with client_default|add:"/css/vendor.5f29f02faeb1cc6d78bbb41fd7979815.min.css" as vendor_css %}
     <link rel="stylesheet" href="{% static vendor_css %}">
   {% endwith %}
-  {% with client_default|add:"/css/app.1628149389333.min.css" as app_css %}
+  {% with client_default|add:"/css/app.56cdb947ccaf510d6a136ec70322a952.min.css" as app_css %}
     <link rel="stylesheet" href="{% static app_css %}">
   {% endwith %}
   <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -35,13 +35,13 @@
   <div id="app">
     <app></app>
   </div>
-  {% with client_default|add:"/js/vendor.1623234429844.min.js" as vendor_js %}
+  {% with client_default|add:"/js/vendor.1752f2ce3670adcf22343e66e0e076ee.min.js" as vendor_js %}
       <script src="{% static vendor_js %}"></script>
   {% endwith %}
   <script>
     {{ group_config|safe }}
   </script>
-  {% with client_default|add:"/js/app.1628149389333.min.js" as app_js %}
+  {% with client_default|add:"/js/app.6ebc222150cd3a9b83918eb078d7b8dd.min.js" as app_js %}
     <script src="{% static app_js %}"></script>
   {% endwith %}
 </body>
