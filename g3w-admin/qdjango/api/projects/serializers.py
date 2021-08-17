@@ -170,6 +170,10 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         options['toc_tab_default'] = getattr(
             instance, 'toc_tab_default', 'layers')
 
+        # legend position
+        options['legend_position'] = getattr(
+            instance, 'legend_posistion', 'tab')
+
         return options
 
     def _set_ows_method(self, instance):

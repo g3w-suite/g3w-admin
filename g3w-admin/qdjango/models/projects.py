@@ -143,6 +143,11 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
         ('legend', _('Legend'))
     )
 
+    CLIENT_LEGEND_POSITION = Choices(
+        ('tab', _('In a separate TAB')),
+        ('toc', _('Into TOC layers'))
+    )
+
     # Project file
     qgis_file = models.FileField(
         _('QGIS project file'),
@@ -211,6 +216,9 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
 
     toc_tab_default = models.CharField(_("Tab's TOC active as default"), choices=CLIENT_TOC_TABS, max_length=40,
                                        default='layers', help_text="Set tab's TOC open by default on init client")
+
+    legend_position = models.CharField(_("Legend position rendering"), choices=CLIENT_LEGEND_POSITION, max_length=20,
+                                       default='tab', help_text="Set legend position rendering")
 
     autozoom_query = models.BooleanField(_('Automatic zoom to query result features'), default=False,
                                          help_text='Automatic zoom on query result features for only one layer')

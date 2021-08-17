@@ -57,6 +57,7 @@ class QdjangoFormsTest(QdjangoTestBase):
             'multilayer_querybybbox': 'single',
             'multilayer_querybypolygon': 'single',
             'toc_tab_default': 'layers',
+            'legend_position': 'tab',
             'url_alias': 'test_url_alias_name'
         }
 
