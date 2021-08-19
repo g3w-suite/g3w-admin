@@ -20,6 +20,8 @@ from usersmanage.utils import setPermissionUserObject, get_viewers_for_object, \
 from .forms import ActiveEditingLayerForm
 from .models import G3WEditingLayer
 import os
+import json
+from copy import deepcopy
 
 MODE_EDITING = 'editing'
 MODE_UNLOCK = 'unlock'
@@ -105,10 +107,30 @@ class ActiveEditingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3W
     form_class = ActiveEditingLayerForm
     template_name = 'editing/editing_layer_active_form.html'
 
+    contexts = ('user', 'group')
+    atomic_permissions = (
+        'add_feature',
+        'change_feature',
+        'delete_feature',
+        'change_attr_feature'
+    )
+
     @method_decorator(project_type_permission_required('change_project', ('project_type', 'project_slug'),
                                                        return_403=True))
     def dispatch(self, request, *args, **kwargs):
         self.layer_id = kwargs['layer_id']
+
+        # Instance user/groups atomic capabilitites
+        _capabilities = {ap:[] for ap in self.atomic_permissions}
+
+        self.atomic_capabilitites = {}
+        for context in self.contexts:
+            self.atomic_capabilitites[context] = deepcopy(_capabilities)
+
+        self.initial_atomic_capabilitites = {}
+        for context in self.contexts:
+            self.initial_atomic_capabilitites[context] = deepcopy(_capabilities)
+
         return super(ActiveEditingLayerView, self).dispatch(request, *args, **kwargs)
 
     def get_success_url(self):
@@ -140,7 +162,70 @@ class ActiveEditingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3W
         group_viewers = get_user_groups_for_object(self.layer, self.request.user, 'change_layer', 'viewer')
         self.initial_viewer_user_groups = kwargs['initial']['user_groups_viewer'] = [o.id for o in group_viewers]
 
+        # Get atomic editing capabilities for users and user_groups form data
+        self.get_initial_atomic_capabilitites(with_anonymous, editor_pk)
+        if 'data' in kwargs:
+            self.get_atomic_capabilities(kwargs['data'])
+
         return kwargs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # Add initial atomic capabilities for widget.js
+        context['initial_atomic_capabilities'] = json.dumps(self.initial_atomic_capabilitites)
+
+        return context
+
+    def get_initial_atomic_capabilitites(self, with_anonymous, editor_pk):
+        """Set initial users and user_groups atomic capabilities"""
+
+        for ap in self.atomic_permissions:
+            viewers = get_viewers_for_object(self.layer, self.request.user, ap, with_anonymous=with_anonymous)
+            self.initial_atomic_capabilitites['user'][ap] = [int(o.id) for o in viewers
+                                                                             if o.id != editor_pk]
+            group_viewers = get_user_groups_for_object(self.layer, self.request.user, ap, 'viewer')
+            self.initial_atomic_capabilitites['group'][ap] = [o.id for o in group_viewers]
+
+    def get_atomic_capabilities(self, data=None):
+        """Get e build atomic capabilities from POST/PUT data"""
+        
+        def fill_atomic_capabilitites(context, capability, id):
+            if capability == 'add':
+                self.atomic_capabilitites[context]['add_feature'].append(id)
+            elif capability == 'change':
+                self.atomic_capabilitites[context]['change_feature'].append(id)
+            elif capability == 'delete':
+                self.atomic_capabilitites[context]['delete_feature'].append(id)
+            else:
+                self.atomic_capabilitites[context]['change_attr_feature'].append(id)
+
+        for k, v in data.items():
+            param = k.split('_')
+            if len(param) == 4 and param[3].isnumeric() and param[0] in self.contexts:
+                fill_atomic_capabilitites(param[0], param[1], int(param[3]))
+
+    def add_remove_atomic_permissions(self):
+        """ Add and remove atomic permissions for user and groups"""
+
+        for context in self.contexts:
+            for ap in self.atomic_permissions:
+
+                model = User if context == 'user' else AuhtGroup
+
+                to_remove = list(set(self.initial_atomic_capabilitites[context][ap]) -
+                                 set(self.atomic_capabilitites[context][ap]))
+                to_add = list(set(self.atomic_capabilitites[context][ap]) -
+                              set(self.initial_atomic_capabilitites[context][ap]))
+
+                if to_add:
+                    for uid in to_add:
+                        setPermissionUserObject(model.objects.get(pk=uid), self.layer, [ap])
+
+                if to_remove:
+                    for uid in to_remove:
+                        setPermissionUserObject(model.objects.get(pk=uid), self.layer, [ap], mode='remove')
+
 
     @transaction.atomic
     def form_valid(self, form):
@@ -191,5 +276,8 @@ class ActiveEditingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3W
         if to_remove:
             for aid in to_remove:
                 setPermissionUserObject(AuhtGroup.objects.get(pk=aid), self.layer, ['change_layer'], mode='remove')
+
+        # ADD/REMOVE atomic permissions
+        self.add_remove_atomic_permissions()
 
         return super(ActiveEditingLayerView, self).form_valid(form)

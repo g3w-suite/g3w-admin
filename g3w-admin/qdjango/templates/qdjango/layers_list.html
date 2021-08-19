@@ -11,6 +11,9 @@
 {% if 'caching' in SETTINGS.G3WADMIN_LOCAL_MORE_APPS %}
 <script type="text/javascript" src="{% static "caching/js/ui.js" %}"></script>
 {% endif %}
+{% if 'editing' in SETTINGS.G3WADMIN_LOCAL_MORE_APPS %}
+<script type="text/javascript" src="{% static "editing/js/widget.js" %}"></script>
+{% endif %}
 <script type="text/javascript" src="{% static "qdjango/js/widget.js" %}"></script>
 <script type="text/javascript">
     $('#tree').treeview({data:{{ layers_tree|safe }}});

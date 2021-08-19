@@ -784,6 +784,12 @@ class Layer(G3WACLModelMixins, models.Model):
         verbose_name_plural = _('Layers')
         unique_together = (('name', 'project', 'qgs_layer_id'),)
         ordering = ['order']
+        permissions = (
+            ('add_feature', 'Can add features to layer'),
+            ('change_feature', 'Can update features geometry of layer'),
+            ('delete_feature', 'Can delete features from layer'),
+            ('change_attr_feature', 'Can update features attributes into layer'),
+        )
 
     def database_columns_by_name(self):
         return {db_col['name']: db_col for db_col in eval(self.database_columns)}

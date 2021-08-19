@@ -40,7 +40,9 @@ class ActiveEditingLayerForm(G3WRequestFormMixin, G3WProjectFormMixin, forms.For
             'scale',
             HTML(_('Select viewers with \'view permission\' on project that can edit layer:')),
             Field('viewer_users', css_class='select2', style="width:100%;"),
+            Div(css_class='users_atomic_capabilities'),
             Field('user_groups_viewer', css_class='select2', style="width:100%;"),
+            Div(css_class='user_groups_atomic_capabilities')
         )
 
     def _set_viewer_users_choices(self):
