@@ -18,7 +18,7 @@ from core.utils.vector import BaseUserMediaHandler
 from usersmanage.utils import setPermissionUserObject, get_viewers_for_object, \
     get_user_groups_for_object
 from .forms import ActiveEditingLayerForm
-from .models import G3WEditingLayer
+from .models import G3WEditingLayer, EDITING_ATOMIC_PERMISSIONS
 import os
 import json
 from copy import deepcopy
@@ -108,12 +108,6 @@ class ActiveEditingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3W
     template_name = 'editing/editing_layer_active_form.html'
 
     contexts = ('user', 'group')
-    atomic_permissions = (
-        'add_feature',
-        'change_feature',
-        'delete_feature',
-        'change_attr_feature'
-    )
 
     @method_decorator(project_type_permission_required('change_project', ('project_type', 'project_slug'),
                                                        return_403=True))
@@ -121,7 +115,7 @@ class ActiveEditingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3W
         self.layer_id = kwargs['layer_id']
 
         # Instance user/groups atomic capabilitites
-        _capabilities = {ap:[] for ap in self.atomic_permissions}
+        _capabilities = {ap:[] for ap in EDITING_ATOMIC_PERMISSIONS}
 
         self.atomic_capabilitites = {}
         for context in self.contexts:
@@ -180,7 +174,7 @@ class ActiveEditingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3W
     def get_initial_atomic_capabilitites(self, with_anonymous, editor_pk):
         """Set initial users and user_groups atomic capabilities"""
 
-        for ap in self.atomic_permissions:
+        for ap in EDITING_ATOMIC_PERMISSIONS:
             viewers = get_viewers_for_object(self.layer, self.request.user, ap, with_anonymous=with_anonymous)
             self.initial_atomic_capabilitites['user'][ap] = [int(o.id) for o in viewers
                                                                              if o.id != editor_pk]
@@ -209,7 +203,7 @@ class ActiveEditingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3W
         """ Add and remove atomic permissions for user and groups"""
 
         for context in self.contexts:
-            for ap in self.atomic_permissions:
+            for ap in EDITING_ATOMIC_PERMISSIONS:
 
                 model = User if context == 'user' else AuhtGroup
 

@@ -613,7 +613,7 @@ class BaseVectorOnModelApiView(G3WAPIView):
             # before to send response
             extra_data = before_return_vector_data_layer.send(self)
             for ed in extra_data:
-                if ed[1] and ed[0].__name__ == 'add_constraints':
+                if ed[1] and ed[0].__name__ in ('add_constraints', 'add_atomic_capabilities'):
                     self.results.results.update(ed[1])
 
             # response a APIVectorLayer

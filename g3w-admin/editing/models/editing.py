@@ -7,6 +7,13 @@ EDITING_POST_DATA_ADDED = 'add'
 EDITING_POST_DATA_UPDATED = 'update'
 EDITING_POST_DATA_DELETED = 'delete'
 
+EDITING_ATOMIC_PERMISSIONS = (
+        'add_feature',
+        'change_feature',
+        'delete_feature',
+        'change_attr_feature'
+    )
+
 
 class G3WEditingFeatureLock(models.Model):
     """
