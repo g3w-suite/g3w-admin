@@ -814,7 +814,11 @@ class Layer(G3WACLModelMixins, models.Model):
         setPermissionUserObject(user, self, permissions=[
             'change_layer',
             'delete_layer',
-            'view_layer'
+            'view_layer',
+            'add_feature',
+            'change_feature',
+            'change_attr_feature',
+            'delete_feature'
         ], mode=mode)
 
     def _permissionsToViewers(self, users_id, mode='add'):
@@ -828,7 +832,11 @@ class Layer(G3WACLModelMixins, models.Model):
             setPermissionUserObject(AuthGroup.objects.get(pk=group_id), self, permissions=[
                 'change_layer',
                 'delete_layer',
-                'view_layer'
+                'view_layer',
+                'add_feature',
+                'change_feature',
+                'change_attr_feature',
+                'delete_feature'
             ], mode=mode)
 
     def _permissions_to_user_groups_viewer(self, groups_id, mode='add'):
