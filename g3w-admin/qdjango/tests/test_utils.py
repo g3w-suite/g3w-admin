@@ -481,17 +481,13 @@ class QdjangoUtilsDataValidators(QdjangoTestBase):
 class TestTemplateTags(QdjangoTestBase):
     """Test qdjango template tags"""
 
-    @classmethod
-    def setUpTestData(cls):
-        super().setUpTestData()
-        cls.qdjango_project = Project.objects.all()[0]
-        cls.world = cls.qdjango_project.layer_set.filter(
-            qgs_layer_id='world20181008111156525')[0]
-        cls.spatialite_points = cls.qdjango_project.layer_set.filter(
-            qgs_layer_id='spatialite_points20190604101052075')[0]
-
     def test_is_geom_type_gpx_compatible(self):
         """Test homonymous function"""
 
-        self.assertTrue(is_geom_type_gpx_compatible(self.spatialite_points))
-        self.assertFalse(is_geom_type_gpx_compatible(self.world))
+        world = self.project.instance.layer_set.filter(
+            qgs_layer_id='world20181008111156525')[0]
+        spatialite_points = self.project.instance.layer_set.filter(
+            qgs_layer_id='spatialite_points20190604101052075')[0]
+
+        self.assertTrue(is_geom_type_gpx_compatible(spatialite_points))
+        self.assertFalse(is_geom_type_gpx_compatible(world))
