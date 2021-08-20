@@ -48,15 +48,6 @@ def editing_layer_actions(sender, **kwargs):
 
     editing_button = getattr(settings, 'EDITING_SHOW_ACTIVE_BUTTON', True)
 
-    # Try to parse table and datasource for postgres and spatialite.
-    # If datasource parsing fail not don not allow editing.
-    do_editing = True
-    if kwargs['layer'].layer_type in (Layer.TYPES.postgres, Layer.TYPES.spatialite):
-        try:
-            datasource2dict(kwargs['layer'].datasource)
-        except:
-            do_editing = False
-
     # only admin and editor1 or editor2:
     if sender.has_perm('change_project', kwargs['layer'].project) and kwargs['app_name'] == 'qdjango' and \
                     kwargs['layer'].layer_type in (
@@ -65,7 +56,7 @@ def editing_layer_actions(sender, **kwargs):
                         Layer.TYPES.ogr,
                         Layer.TYPES.mssql,
                         Layer.TYPES.oracle
-                    ) and editing_button and do_editing:
+                    ) and editing_button:
 
         # add if is active
         try:
