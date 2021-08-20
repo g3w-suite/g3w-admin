@@ -119,6 +119,11 @@ ga.Editing.widget = {
             } else {
                 $table.find('tbody').append($row);
             }
+
+            // init icheck
+            that.capas[context].find('input[type="checkbox"]').iCheck({
+              checkboxClass: 'icheckbox_flat-blue'
+            });
         }
     },
 
