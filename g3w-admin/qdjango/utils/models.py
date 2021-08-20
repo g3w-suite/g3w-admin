@@ -59,7 +59,13 @@ def get_widgets4layer(layer):
     # different by layer type
     # for postgis layer
     if layer.layer_type == 'postgres':
-        ds = datasource2dict(layer.datasource)
+        try:
+            ds = datasource2dict(layer.datasource)
+        except:
+
+            # For very complex QueryLayer
+            logger.warning(f"Postgres datasource very complex: {layer.datasource}")
+            return Widget.objects.filter(datasource=layer.datasource)
 
         if 'service' in ds:
             to_contain = Q(datasource__contains=u'service=\'{}\''.format(ds['service']))
