@@ -122,7 +122,7 @@ ga.Editing.widget = {
 
             // init icheck
             that.capas[context].find('input[type="checkbox"]').iCheck({
-              checkboxClass: 'icheckbox_flat-green'
+              checkboxClass: 'icheckbox_flat-blue'
             });
         }
     },
