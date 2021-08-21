@@ -85,8 +85,12 @@ ga.Editing.widget = {
             // check if table is rendered
             var $table = that.capas[context].find('table');
 
+            // Check if user_id is in initial_atomic_capabilities,
+            // if it is not could be new-one to add to atomic permissions (possible back version compatibility)
             var is_checked = function(c,p,id){
-                if (_.indexOf(that.initial_atomic_capabilities[c][p], parseInt(data.id)) != -1) {
+                if (_.indexOf(that.initial_atomic_capabilities[c]['change_layer'], parseInt(data.id)) == -1){
+                    return "checked=checked"
+                } else if (_.indexOf(that.initial_atomic_capabilities[c][p], parseInt(data.id)) != -1) {
                     return "checked=checked";
                 } else {
                     return "";

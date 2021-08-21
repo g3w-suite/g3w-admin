@@ -151,10 +151,15 @@ class ActiveEditingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3W
         viewers = get_viewers_for_object(self.layer, self.request.user, 'change_layer', with_anonymous=with_anonymous)
 
         editor_pk = self.layer.project.editor.pk if self.layer.project.editor else None
-        self.initial_viewer_users = kwargs['initial']['viewer_users'] = [int(o.id) for o in viewers
-                                                                         if o.id != editor_pk]
+        self.initial_viewer_users = kwargs['initial']['viewer_users'] = [int(o.id) for o in viewers                                                                         if o.id != editor_pk]
+
+        self.initial_atomic_capabilitites['user']['change_layer'] = self.initial_viewer_users
+
         group_viewers = get_user_groups_for_object(self.layer, self.request.user, 'change_layer', 'viewer')
         self.initial_viewer_user_groups = kwargs['initial']['user_groups_viewer'] = [o.id for o in group_viewers]
+
+        self.initial_atomic_capabilitites['group']['change_layer'] = self.initial_viewer_user_groups
+
 
         # Get atomic editing capabilities for users and user_groups form data
         self.get_initial_atomic_capabilitites(with_anonymous, editor_pk)
