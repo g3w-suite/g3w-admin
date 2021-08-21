@@ -53,7 +53,7 @@ def get_widgets4layer(layer):
     :param layer: Qdjango Layer model instance
     :return: List or Querydict fo Widget models
     """
-    from .structure import datasource2dict
+    from .structure import datasource2dict, qgsdatasoruceuri2dict
     from qdjango.models import Widget
 
     # different by layer type

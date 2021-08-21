@@ -9,6 +9,8 @@ from urllib.parse import urlsplit, parse_qs
 from core.utils.projects import CoreMetaLayer
 from core.utils import unicode2ascii
 from .exceptions import QgisProjectLayerException
+from qgis.core import QgsDataSourceUri
+
 import requests
 
 # "schema"."table"
@@ -36,6 +38,41 @@ def get_schema_table(datasource_table):
             table = RE3.match(datasource_table).groups()[0]
             schema = 'public'
     return schema, table
+
+
+def qgsdatasoruceuri2dict(datasource: str) -> dict:
+    """
+    From QgsDatasourceUri to dict
+    At now only for postgres type layer
+
+    :param qgsdsuri: Instace fo QgsDatasourceUri
+    :return: a dict with uri parameters
+    :return type: dict
+    """
+
+    qgsdsuri = QgsDataSourceUri(datasource)
+
+    # Mapping from QgsDatasourceUri to g3w-admin parameters
+    params = {
+        'database': 'dbname',
+        'host': 'host',
+        'password': 'password',
+        'port': 'port',
+        'sslMode': 'sslmode',
+        'username': 'user',
+        'keyColumn': 'key',
+        'srid': 'srid',
+        'table': 'table',
+        'sql': 'sql'
+    }
+
+    toret = {}
+    for k, v in params.items():
+        if k == 'sql':
+            toret[v] = unicode2ascii(getattr(qgsdsuri, k)())
+        toret[v] = getattr(qgsdsuri, k)()
+
+    return toret
 
 
 def datasource2dict(datasource):
