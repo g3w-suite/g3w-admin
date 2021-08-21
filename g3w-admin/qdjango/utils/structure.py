@@ -63,13 +63,17 @@ def qgsdatasoruceuri2dict(datasource: str) -> dict:
         'keyColumn': 'key',
         'srid': 'srid',
         'table': 'table',
-        'sql': 'sql'
+        'sql': 'sql',
+        'schema': 'schema'
     }
 
     toret = {}
     for k, v in params.items():
         if k == 'sql':
             toret[v] = unicode2ascii(getattr(qgsdsuri, k)())
+        elif k == 'sslMode':
+            print(qgsdsuri.sslMode())
+            toret[v] = qgsdsuri.encodeSslMode(qgsdsuri.sslMode())
         toret[v] = getattr(qgsdsuri, k)()
 
     return toret
