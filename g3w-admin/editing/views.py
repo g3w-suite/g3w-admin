@@ -95,10 +95,6 @@ class UploadFileView(View):
         }
 
 
-
-
-
-
 class ActiveEditingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3WRequestViewMixin, FormView):
     """
     View for enabled editing layer form
@@ -151,7 +147,8 @@ class ActiveEditingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3W
         viewers = get_viewers_for_object(self.layer, self.request.user, 'change_layer', with_anonymous=with_anonymous)
 
         editor_pk = self.layer.project.editor.pk if self.layer.project.editor else None
-        self.initial_viewer_users = kwargs['initial']['viewer_users'] = [int(o.id) for o in viewers                                                                         if o.id != editor_pk]
+        self.initial_viewer_users = kwargs['initial']['viewer_users'] = [int(o.id) for o in viewers
+                                                                         if o.id != editor_pk]
 
         self.initial_atomic_capabilitites['user']['change_layer'] = self.initial_viewer_users
 
@@ -159,7 +156,6 @@ class ActiveEditingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3W
         self.initial_viewer_user_groups = kwargs['initial']['user_groups_viewer'] = [o.id for o in group_viewers]
 
         self.initial_atomic_capabilitites['group']['change_layer'] = self.initial_viewer_user_groups
-
 
         # Get atomic editing capabilities for users and user_groups form data
         self.get_initial_atomic_capabilitites(with_anonymous, editor_pk)
@@ -225,14 +221,20 @@ class ActiveEditingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3W
                     for uid in to_remove:
                         setPermissionUserObject(model.objects.get(pk=uid), self.layer, [ap], mode='remove')
 
+    def remove_from_atomic_permissions(self, context, u_g_id):
+        """remove from self.atomic_capbilitites ugid"""
+
+        for ap in EDITING_ATOMIC_PERMISSIONS:
+            if u_g_id in self.atomic_capabilitites[context][ap]:
+                self.atomic_capabilitites[context][ap].remove(u_g_id)
 
     @transaction.atomic
     def form_valid(self, form):
         scale = form.cleaned_data['scale']
         if form.cleaned_data['active']:
             if not self.activated:
-                G3WEditingLayer.objects.create(app_name=self.app_name, layer_id=self.layer_id, scale=scale)
-                self.activated = True
+                self.activated = G3WEditingLayer.objects.create(app_name=self.app_name, layer_id=self.layer_id,
+                                                                scale=scale)
             else:
                 self.activated.scale = scale
                 self.activated.save()
@@ -242,7 +244,7 @@ class ActiveEditingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3W
 
         # give permission to viewers:
         toAdd = toRemove = None
-        if self.activated:
+        if self.activated.pk:
             currentViewerUsers = [int(i) for i in form.cleaned_data['viewer_users']]
             toRemove = list(set(self.initial_viewer_users) - set(currentViewerUsers))
             toAdd = list(set(currentViewerUsers) - set(self.initial_viewer_users))
@@ -258,9 +260,12 @@ class ActiveEditingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3W
             for uid in toRemove:
                 setPermissionUserObject(User.objects.get(pk=uid), self.layer, ['change_layer'], mode='remove')
 
+                # remove from atomic_capabilitites user id
+                self.remove_from_atomic_permissions('user', uid)
+
         # give permission to user groups viewers:
         to_add = to_remove = None
-        if self.activated:
+        if self.activated.pk:
             current_user_groups_viewers = [int(i) for i in form.cleaned_data['user_groups_viewer']]
             to_remove = list(set(self.initial_viewer_user_groups) - set(current_user_groups_viewers))
             to_add = list(set(current_user_groups_viewers) - set(self.initial_viewer_user_groups))
@@ -275,6 +280,9 @@ class ActiveEditingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3W
         if to_remove:
             for aid in to_remove:
                 setPermissionUserObject(AuhtGroup.objects.get(pk=aid), self.layer, ['change_layer'], mode='remove')
+
+                # remove from atomic_capabilitites user id
+                self.remove_from_atomic_permissions('group', aid)
 
         # ADD/REMOVE atomic permissions
         self.add_remove_atomic_permissions()

@@ -20,6 +20,7 @@ from core.models import MapControl, ProjectMapUrlAlias
 from core.forms import GroupForm
 from .base import QdjangoTestBase, G3W_VIEWER1
 from .utils import create_dff_project
+from editing.models import EDITING_ATOMIC_PERMISSIONS
 from copy import copy
 
 
@@ -163,6 +164,14 @@ class QdjangoFormsTest(QdjangoTestBase):
         # by editor groups
         self.assertTrue(self.test_editor2_3.has_perm('qdjango.change_project', p))
 
+        # CHECK EDITING ATOMIC PERMISSIONS
+        # For editor
+        # --------------------------------
+
+        for l in p.layer_set.all():
+            for perm in EDITING_ATOMIC_PERMISSIONS:
+                self.assertTrue(self.test_editor1.has_perm(f'qdjango.{perm}', l))
+                self.assertTrue(self.test_editor2_3.has_perm(f'qdjango.{perm}', l))
 
         # CHECK GROUP PROPAGATION OPTIONS
         # only new viewers and new viwer users group

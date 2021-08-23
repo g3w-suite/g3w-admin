@@ -31,6 +31,7 @@ from editing.models import *
 from rest_framework.test import APIClient
 from guardian.shortcuts import assign_perm
 from usersmanage.utils import setPermissionUserObject
+from usersmanage.models import GroupRole
 
 
 CURRENT_PATH = os.getcwd()
@@ -127,6 +128,11 @@ class ConstraintsTestsBase(TestCase):
         cls.test_user4.groups.add(cls.group)
         cls.test_user3.save()
 
+        # Create a user_group
+        cls.test_user_group1 = UserGroup.objects.create(name='Viewer user group1')
+        GroupRole(group=cls.test_user_group1, role='viewer').save()
+        cls.test_user4.groups.add(cls.test_user_group1)
+
         cls.project_group = CoreGroup(
             name='Group1', title='Group1', header_logo_img='', srid=G3WSpatialRefSys.objects.get(auth_srid=4326))
         cls.project_group.save()
@@ -183,7 +189,7 @@ class ConstraintsModelTestsBase(ConstraintsTestsBase):
 
     def setUp(self):
         self.constraint_layer_name = 'constraint_layer'
-
+        
     def test_create_constraint(self):
         """Test constraints creation"""
 
