@@ -11,5 +11,4 @@ class QGISLayerEditingPermission(BasePermission):
         layer = view.get_layer_by_params(view.kwargs)
 
         # if is a editor of project can pass
-        # only for qdjango project todo: extend to other project type
         return request.user.has_perm('qdjango.change_layer', layer)

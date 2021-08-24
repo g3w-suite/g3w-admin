@@ -140,6 +140,27 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
         :type post_save_signal: bool, optional
         """
 
+        # Check atomic capabilities for validation
+        # -----------------------------------------------
+        #for mode_editing in (EDITING_POST_DATA_ADDED, EDITING_POST_DATA_UPDATED, EDITING_POST_DATA_DELETED):
+
+        # try to get layer model object from metatada_layer
+        layer = getattr(metadata_layer, 'layer', self.layer)
+
+        if EDITING_POST_DATA_ADDED in post_layer_data and len(post_layer_data[EDITING_POST_DATA_ADDED]) > 0:
+            if not self.request.user.has_perm('qdjango.add_feature', layer):
+                raise ValidationError(_('Sorry but your user doesn\'t has \'Add Feature\' capability'))
+
+        if EDITING_POST_DATA_DELETED in post_layer_data and len(post_layer_data[EDITING_POST_DATA_DELETED]) > 0:
+            if not self.request.user.has_perm('qdjango.delete_feature', layer):
+                raise ValidationError(_('Sorry but your user doesn\'t has \'Delete Feature\' capability'))
+
+        if EDITING_POST_DATA_UPDATED in post_layer_data and len(post_layer_data[EDITING_POST_DATA_UPDATED]) > 0:
+            if not self.request.user.has_perm('qdjango.change_feature', layer) and \
+                    not self.request.user.has_perm('qdjango.change_attr_feature', layer):
+                raise ValidationError(
+                    _('Sorry but your user doesn\'t has \'Change or Change Attributes Features\' capability'))
+
         # get initial featurelocked
         metadata_layer.lock.getInitialFeatureLockedIds()
 

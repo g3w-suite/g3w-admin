@@ -19,7 +19,11 @@ from qdjango.api.projects.serializers import QGIS_LAYER_TYPE_NO_GEOM
 from qdjango.vector import LayerVectorView, MODE_CONFIG
 from qdjango.models import GeoConstraintRule
 from qdjango.utils.structure import datasource2dict
-from .models import G3WEditingFeatureLock, G3WEditingLayer, G3WEditingLog, EDITING_POST_DATA_DELETED
+from .models import G3WEditingFeatureLock, \
+    G3WEditingLayer, \
+    G3WEditingLog, \
+    EDITING_POST_DATA_DELETED, \
+    EDITING_ATOMIC_PERMISSIONS
 
 
 from .utils import LayerLock
@@ -232,7 +236,7 @@ def validate_constraint(**kwargs):
 @receiver(before_return_vector_data_layer)
 def add_constraints(**kwargs):
     """
-    Add constraints params to MODE_CONFIG response vectorlayer
+    Add constraints params to MODE_CONFIG response vectorlayer and capabilities is editing module is active
     :return: dict with constraints data
     :rtype: dict, None
     """
@@ -242,7 +246,7 @@ def add_constraints(**kwargs):
 
     layer = kwargs['sender'].layer
     toret = {
-        'constraints': {}
+        'constraints': {},
     }
 
     try:
@@ -257,4 +261,27 @@ def add_constraints(**kwargs):
         return None
 
 
+@receiver(before_return_vector_data_layer)
+def add_atomic_capabilities(**kwargs):
+    """
+    Add catomic editing permisions to MODE_CONFIG response vectorlayer
+    :return: list with atomic permissions
+    :rtype: dict, None
+    """
+    # check if is instance of layerVectorView
+    if not isinstance(kwargs['sender'], LayerVectorView) and kwargs['sender'].mode_call != MODE_CONFIG:
+        return None
+
+    layer = kwargs['sender'].layer
+    toret = {
+        'capabilities': [],
+    }
+
+    try:
+        for ap in EDITING_ATOMIC_PERMISSIONS:
+            if kwargs['sender'].request.user.has_perm(ap, layer):
+                toret['capabilities'].append(ap)
+        return toret
+    except:
+        return None
 

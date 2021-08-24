@@ -15,18 +15,9 @@
         </div>
     </div>
     <script>
-        $check = $("#editing_layer_form").find('#id_active');
-        $select = $("#editing_layer_form").find('.select2, #id_scale');
 
-        var check_active_status = function(event){
-            if ($check.prop('checked')) {
-                $select.prop('disabled', false);
-            } else {
-                $select.prop('disabled', true);
-            }
-        }
-
-        $check.on('ifChanged', check_active_status);
-        check_active_status();
+        /* Set for widget initial atomic capabilities */
+        ga.Editing.widget.initial_atomic_capabilities = {{ initial_atomic_capabilities|safe }};
+        ga.Editing.widget.init();
     </script>
 </form>

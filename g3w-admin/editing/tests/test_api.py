@@ -134,7 +134,7 @@ class EditingApiTests(ConstraintsTestsBase):
         self.assertEqual(response.status_code, 200)
         jcontent = json.loads(response.content)
 
-        # check archiweb into plugins section
+        # check editing into plugins section
         self.assertTrue('editing' in jcontent['group']['plugins'])
 
         plugin = jcontent['group']['plugins']['editing']
@@ -148,6 +148,7 @@ class EditingApiTests(ConstraintsTestsBase):
                          reverse('geoconstraint-api-geometry', kwargs={'layer_id': editing_layer.pk}))
 
         constraint.delete()
+        client.logout()
 
     def test_editing_api(self):
         """ Test Editing API mode: MODE_UNLOCK,MODE_EDITING"""
@@ -185,6 +186,78 @@ class EditingApiTests(ConstraintsTestsBase):
                 res_expected['vector']['fields'][7]['pk'] = False
                 self.assertEqual(actual, res_expected)
 
+        # TEST ATOMIC CAPABILITITES FOR USERS
+        # ---------------------------------------------
+
+        self.assertTrue(self.client.login(
+            username=self.test_user3.username, password=self.test_user3.username))
+
+        # give grant `view` to project
+        assign_perm('view_project', self.test_user3, self.editing_project.instance)
+
+        url = reverse('core-vector-api', args=['config', 'qdjango', self.editing_project.instance.pk,
+                                                         cities_layer_id])
+
+        response = self.client.get(url)
+        self.assertTrue(response.status_code, 200)
+
+        jres = json.loads(response.content)
+
+        self.assertTrue('capabilities' in jres)
+        self.assertEqual(jres['capabilities'], [])
+
+        # give atomic grants
+        assign_perm('add_feature', self.test_user3, cities_layer)
+        assign_perm('change_feature', self.test_user3, cities_layer)
+
+        response = self.client.get(url)
+        self.assertTrue(response.status_code, 200)
+        jres = json.loads(response.content)
+
+        self.assertTrue('capabilities' in jres)
+        self.assertEqual(jres['capabilities'], [
+            'add_feature',
+            'change_feature'
+        ])
+
+        self.client.logout()
+
+        # TEST ATOMIC CAPABILITIES FOR USER_GROUP
+        # ---------------------------------------------
+
+        # User_group self.test_user_group1 (viewer)
+        self.assertTrue(self.client.login(
+            username=self.test_user4.username, password=self.test_user4.username))
+
+        # give grant `view` to project
+        assign_perm('view_project', self.test_user4, self.editing_project.instance)
+
+        url = reverse('core-vector-api', args=['config', 'qdjango', self.editing_project.instance.pk,
+                                               cities_layer_id])
+
+        response = self.client.get(url)
+        self.assertTrue(response.status_code, 200)
+
+        jres = json.loads(response.content)
+
+        self.assertTrue('capabilities' in jres)
+        self.assertEqual(jres['capabilities'], [])
+
+        # give atomic grants
+        assign_perm('delete_feature', self.test_user_group1, cities_layer)
+        assign_perm('change_attr_feature', self.test_user_group1, cities_layer)
+
+        response = self.client.get(url)
+        self.assertTrue(response.status_code, 200)
+        jres = json.loads(response.content)
+
+        self.assertTrue('capabilities' in jres)
+        self.assertEqual(jres['capabilities'], [
+            'delete_feature',
+            'change_attr_feature'
+        ])
+
+        self.client.logout()
 
         # TEST MODE_EDITING
         # ---------------------------------------------
@@ -742,6 +815,180 @@ class EditingApiTests(ConstraintsTestsBase):
         # check features
         self.assertEqual(len(jresult['vector']['data']['features']), 481)
 
+        # TEST ATOMIC CAPABILITIES
+        # ===============================================================
+        # ===============================================================
+
+        # Login as viewer
+        self.assertTrue(
+            self.client.login(username=self.test_user3.username, password=self.test_user3.username))
+
+        # ADD
+        # ===
+
+        # with editing grant to anonymous user
+        assign_perm('change_layer', self.test_user3, cities_layer)
+
+        commit_path = reverse('editing-commit-vector-api',
+                              args=['commit', 'qdjango', self.editing_project.instance.pk, cities_layer_id])
+
+        payload = {
+            "add": [
+                {
+                    "id": "_new_1234520704670",
+                    "geometry": {"coordinates": [11.620713, 44.82678], "type": "Point"},
+                    "properties": {
+                        "geonameid": 5678,
+                        "gtopo30": 9,
+                        "iso2_code": "IT",
+                        "name": "CityTestNewForAnonymousUser",
+                        "population": 12345
+                    },
+                    "type": "Feature"
+                }
+            ],
+            "delete": [],
+            "lockids": [],
+            "relations": {},
+            "update": []
+        }
+
+        response = self.client.post(commit_path, payload, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        jresult = json.loads(response.content)
+        self.assertFalse(jresult['result'])
+
+        self.assertEqual(jresult['errors'], ["Sorry but your user doesn't has 'Add Feature' capability"])
+
+        # give add_feature permission
+        assign_perm('view_project', self.test_user3, self.editing_project.instance)
+        assign_perm('add_feature', self.test_user3, cities_layer)
+
+        response = self.client.post(commit_path, payload, format='json')
+        self.assertTrue(response.status_code, 200)
+
+        jresult = json.loads(response.content)
+        self.assertTrue(jresult['result'])
+
+        newid = jresult['response']['new'][0]['id']
+        newlockid = jresult['response']['new_lockids'][0]['lockid']
+
+        # check total feauture
+        data_path = reverse('core-vector-api',
+                            args=['data', 'qdjango', self.editing_project.instance.pk, cities_layer_id])
+
+        response = self.client.get(data_path, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        jresult = json.loads(response.content)
+
+        # check features
+        self.assertEqual(len(jresult['vector']['data']['features']), 482)
+
+        # UPDATE
+        # ======
+
+        payload = {
+            "update": [
+                {
+                    "id": newid,
+                    "geometry": {"coordinates": [11.620713, 44.82678], "type": "Point"},
+                    "properties": {
+                        "geonameid": 5678,
+                        "gtopo30": 9,
+                        "iso2_code": "IT",
+                        "name": "CityTestNewForAnonymousUser",
+                        "population": 12345
+                    },
+                    "type": "Feature"
+                }
+            ],
+            "delete": [],
+            "lockids": [
+                {
+                    "featureid": newid,
+                    "lockid": newlockid
+                }
+            ],
+            "relations": {},
+            "add": []
+        }
+
+        response = self.client.post(commit_path, payload, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        jresult = json.loads(response.content)
+        self.assertFalse(jresult['result'])
+
+        self.assertEqual(jresult['errors'], ["Sorry but your user doesn't has 'Change or Change Attributes Features' capability"])
+
+
+        # give change_attr_feature permission
+        assign_perm('change_attr_feature', self.test_user3, cities_layer)
+
+        response = self.client.post(commit_path, payload, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        jresult = json.loads(response.content)
+        self.assertTrue(jresult['result'])
+
+        # check total feauture
+        data_path = reverse('core-vector-api',
+                            args=['data', 'qdjango', self.editing_project.instance.pk, cities_layer_id])
+
+        response = self.client.get(data_path, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        jresult = json.loads(response.content)
+
+        # check features
+        self.assertEqual(len(jresult['vector']['data']['features']), 482)
+
+        # DELETE
+        # ======
+
+        payload = {
+            "update": [],
+            "delete": [
+                newid
+            ],
+            "lockids": [
+                {
+                    "featureid": newid,
+                    "lockid": newlockid
+                }
+            ],
+            "relations": {},
+            "add": []
+        }
+
+        response = self.client.post(commit_path, payload, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        jresult = json.loads(response.content)
+        self.assertFalse(jresult['result'])
+
+        # give change_attr_feature permission
+        assign_perm('delete_feature', self.test_user3, cities_layer)
+
+        response = self.client.post(commit_path, payload, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        jresult = json.loads(response.content)
+        self.assertTrue(jresult['result'])
+
+        # check total feauture
+        data_path = reverse('core-vector-api',
+                            args=['data', 'qdjango', self.editing_project.instance.pk, cities_layer_id])
+
+        response = self.client.get(data_path, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        jresult = json.loads(response.content)
+
+        # check features
+        self.assertEqual(len(jresult['vector']['data']['features']), 481)
 
 
 class ConstraintsApiTests(ConstraintsTestsBase):
