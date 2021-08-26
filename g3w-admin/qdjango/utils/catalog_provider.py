@@ -51,7 +51,11 @@ def catalog_provider(groups=[]):
 
     def _get_url(qdjango_project):
         ows_url = reverse('OWS:ows', kwargs={'group_slug': qdjango_project.group.slug, 'project_type': 'qdjango', 'project_id': qdjango_project.id})
-        return "{0.QDJANGO_SERVER_URL}/{1}".format(settings, ows_url)
+        port = str(getattr(settings, 'CATALOG_PORT', '80'))
+        base_url = getattr(settings, 'CATALOG_URL_SCHEME', 'http') + '://' + \
+                                          getattr(settings, 'CATALOG_HOST', 'localhost') + \
+                                          ('' if port == '80' else ':' + port)
+        return "{0}{1}".format(base_url, ows_url)
 
     results = []
 
