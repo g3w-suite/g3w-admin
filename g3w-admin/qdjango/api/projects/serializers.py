@@ -581,8 +581,6 @@ class LayerSerializer(serializers.ModelSerializer):
 
         qgs_maplayer = self.qgs_project.mapLayers()[instance.qgs_layer_id]
 
-        group = instance.project.group
-
         # add attributes/fields
         ret['fields'] = self.get_attributes(instance)
 
@@ -590,7 +588,7 @@ class LayerSerializer(serializers.ModelSerializer):
         ret['infoformat'] = ''
         ret['infourl'] = ''
 
-        lidname = instance.qgs_layer_id if instance.project.wms_use_layer_ids else instance.name
+        #lidname = instance.qgs_layer_id if instance.project.wms_use_layer_ids else instance.name
 
         # add bbox
         if instance.geometrytype != QGIS_LAYER_TYPE_NO_GEOM:
@@ -620,22 +618,22 @@ class LayerSerializer(serializers.ModelSerializer):
         if instance.layer_type in [Layer.TYPES.wms, Layer.TYPES.arcgismapserver]:
 
             if instance.layer_type == Layer.TYPES.wms:
-                datasourceWMS = QueryDict(instance.datasource)
+                datasource_wms = QueryDict(instance.datasource)
             else:
-                datasourceWMS = datasourcearcgis2dict(instance.datasource)
+                datasource_wms = datasourcearcgis2dict(instance.datasource)
 
             if ('username' not in ret['source'] or 'password' not in ret['source']) and 'type=xyz' \
                     not in instance.datasource:
 
                 # rebuild the dict for paramenters repeat n times i.e. 'layers' and 'styles'
-                if isinstance(datasourceWMS, QueryDict):
-                    for p in datasourceWMS.lists():
+                if isinstance(datasource_wms, QueryDict):
+                    for p in datasource_wms.lists():
                         if p[0] in ('layers', 'styles'):
                             ret['source'].update({p[0]: ','.join(p[1])})
                         else:
-                            ret['source'].update({p[0]: datasourceWMS[p[0]]})
+                            ret['source'].update({p[0]: datasource_wms[p[0]]})
                 else:
-                    ret['source'].update(datasourceWMS)
+                    ret['source'].update(datasource_wms)
 
             ret['source']['external'] = instance.external
 
