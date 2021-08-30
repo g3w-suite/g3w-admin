@@ -445,8 +445,7 @@ class FitlerByUserLayerForm(G3WRequestFormMixin, G3WProjectFormMixin, forms.Form
         Set choices for viewer_users select by permission on project and by user main role
         """
 
-        with_anonymous = getattr(settings, 'EDITING_ANONYMOUS', False)
-        viewers = get_viewers_for_object(self.project, self.request.user, 'view_project', with_anonymous=with_anonymous)
+        viewers = get_viewers_for_object(self.project, self.request.user, 'view_project', with_anonymous=True)
 
         # get Editor Level 1 and Editor level 2 to clear from list
         editor_pk = self.project.editor.pk if self.project.editor else None
