@@ -275,8 +275,7 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
         # Get layer which request.user can view:
         if self.request:
-            view_layer_ids = [l.qgs_layer_id for l in get_objects_for_user(self.request.user, 'qdjango.view_layer', Layer) \
-            | get_objects_for_user(get_anonymous_user(), 'qdjango.view_layer', Layer)]
+            view_layer_ids = [l.qgs_layer_id for l in get_objects_for_user(self.request.user, 'qdjango.view_layer', Layer)]
 
         # add layers data, widgets
         # init properties
