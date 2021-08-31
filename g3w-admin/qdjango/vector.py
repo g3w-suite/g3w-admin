@@ -392,6 +392,46 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
             )
             save_options.onlySelectedFeatures = True
 
+    def _get_vectorlayer_to_use(self, request):
+        """
+        Return vector layer to use for export (shp, cvs, etc.)
+        Choose made by request GET param
+        """
+
+        # check for fields data in GET OR POST
+        if request.method == 'POST':
+            request_data = request.data
+        else:
+            request_data = request.query_params
+
+        if 'sbp_qgs_layer_id' in request_data and 'sbp_fid' in request_data:
+
+            try:
+                cloned_layer = self.metadata_layer.qgis_layer.clone()
+
+                # Try to add the layer feature of SearchByPolygon widget
+                sbp_layer = get_qgis_layer(
+                    self.layer.project.layer_set.filter(qgs_layer_id=request_data['sbp_qgs_layer_id'])[0])
+                sbp_feature = sbp_layer.getFeature(int(request_data['sbp_fid']))
+
+                cloned_layer.startEditing()
+
+                for f in sbp_feature.fields():
+                    cloned_layer.addAttribute(f)
+
+                # Add values to new fields
+                for feature in cloned_layer.getSelectedFeatures():
+                    for f in sbp_feature.fields():
+                        feature.setAttribute(feature.fieldNameIndex(f.name()), sbp_feature[f.name()])
+                        cloned_layer.updateFeature(feature)
+
+                return cloned_layer, True
+            except Exception as e:
+                logger.error(e)
+                return self.metadata_layer.qgis_layer, False
+        else:
+            return self.metadata_layer.qgis_layer, False
+
     def _build_download_filename(self, request):
         """Build file name on filter context"""
 
@@ -437,16 +477,23 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         # Make a selection based on the request
         self._selection_responde_download_mode(qgs_request, save_options)
 
+        # For SearchByPolygon (and other) check if add new fields
+        layer_to_export, cloned = self._get_vectorlayer_to_use(request)
+
         error_code, error_message = QgsVectorFileWriter.writeAsVectorFormatV2(
-            self.metadata_layer.qgis_layer,
+            layer_to_export,
             os.path.join(tmp_dir.name, filename),
-            self.metadata_layer.qgis_layer.transformContext(),
+            layer_to_export.transformContext(),
             save_options
         )
 
         # Restore the original subset string and select no features
         self.metadata_layer.qgis_layer.selectByIds([])
         self.metadata_layer.qgis_layer.setSubsetString(original_subset_string)
+
+        # If layer it was cloned, delete it
+        if cloned:
+            del (layer_to_export)
 
         if error_code != QgsVectorFileWriter.NoError:
             tmp_dir.cleanup()
@@ -518,17 +565,24 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         # Make a selection based on the request
         self._selection_responde_download_mode(qgs_request, save_options)
 
+        # For SearchByPolygon (and other) check if add new fields
+        layer_to_export, cloned = self._get_vectorlayer_to_use(request)
+
         gpx_tmp_path = os.path.join(tmp_dir.name, filename)
         error_code, error_message = QgsVectorFileWriter.writeAsVectorFormatV2(
-            self.metadata_layer.qgis_layer,
+            layer_to_export,
             gpx_tmp_path,
-            self.metadata_layer.qgis_layer.transformContext(),
+            layer_to_export.transformContext(),
             save_options
         )
 
         # Restore the original subset string and select no features
         self.metadata_layer.qgis_layer.selectByIds([])
         self.metadata_layer.qgis_layer.setSubsetString(original_subset_string)
+
+        # If layer it was cloned, delete it
+        if cloned:
+            del (layer_to_export)
 
         if error_code != QgsVectorFileWriter.NoError:
             tmp_dir.cleanup()
@@ -569,17 +623,24 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         # Make a selection based on the request
         self._selection_responde_download_mode(qgs_request, save_options)
 
+        # For SearchByPolygon (and other) check if add new fields
+        layer_to_export, cloned = self._get_vectorlayer_to_use(request)
+
         xls_tmp_path = os.path.join(tmp_dir.name, filename)
         error_code, error_message = QgsVectorFileWriter.writeAsVectorFormatV2(
-            self.metadata_layer.qgis_layer,
+            layer_to_export,
             xls_tmp_path,
-            self.metadata_layer.qgis_layer.transformContext(),
+            layer_to_export.transformContext(),
             save_options
         )
 
         # Restore the original subset string and select no features
         self.metadata_layer.qgis_layer.selectByIds([])
         self.metadata_layer.qgis_layer.setSubsetString(original_subset_string)
+
+        # If layer it was cloned, delete it
+        if cloned:
+            del (layer_to_export)
 
         if error_code != QgsVectorFileWriter.NoError:
             tmp_dir.cleanup()
@@ -620,17 +681,24 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         # Make a selection based on the request
         self._selection_responde_download_mode(qgs_request, save_options)
 
+        # For SearchByPolygon (and other) check if add new fields
+        layer_to_export, cloned = self._get_vectorlayer_to_use(request)
+
         gpkg_tmp_path = os.path.join(tmp_dir.name, filename)
         error_code, error_message = QgsVectorFileWriter.writeAsVectorFormatV2(
-            self.metadata_layer.qgis_layer,
+            layer_to_export,
             gpkg_tmp_path,
-            self.metadata_layer.qgis_layer.transformContext(),
+            layer_to_export.transformContext(),
             save_options
         )
 
         # Restore the original subset string and select no features
         self.metadata_layer.qgis_layer.selectByIds([])
         self.metadata_layer.qgis_layer.setSubsetString(original_subset_string)
+
+        # If layer it was cloned, delete it
+        if cloned:
+            del (layer_to_export)
 
         if error_code != QgsVectorFileWriter.NoError:
             tmp_dir.cleanup()
@@ -672,11 +740,14 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         # Make a selection based on the request
         self._selection_responde_download_mode(qgs_request, save_options)
 
+        # For SearchByPolygon (and other) check if add new fields
+        layer_to_export, cloned = self._get_vectorlayer_to_use(request)
+
         xls_tmp_path = os.path.join(tmp_dir.name, filename)
         error_code, error_message = QgsVectorFileWriter.writeAsVectorFormatV2(
-            self.metadata_layer.qgis_layer,
+            layer_to_export,
             xls_tmp_path,
-            self.metadata_layer.qgis_layer.transformContext(),
+            layer_to_export.transformContext(),
             save_options
         )
 
@@ -684,9 +755,14 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         self.metadata_layer.qgis_layer.selectByIds([])
         self.metadata_layer.qgis_layer.setSubsetString(original_subset_string)
 
+        # If layer it was cloned, delete it
+        if cloned:
+            del(layer_to_export)
+
         if error_code != QgsVectorFileWriter.NoError:
             tmp_dir.cleanup()
             return HttpResponse(status=500, reason=error_message)
+
 
         response = HttpResponse(
             open(xls_tmp_path, 'rb').read(), content_type='text/csv')
