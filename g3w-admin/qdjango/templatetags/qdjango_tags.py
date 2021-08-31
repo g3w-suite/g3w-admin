@@ -34,7 +34,7 @@ def is_geom_type_gpx_compatible(layer):
     Return True if layer type can be exported as GPS format.
     """
 
-    return layer.geometrytype not in ['Polygon', 'MultiPolygon', 'NoGeometry']
+    return layer.geometrytype not in ['Polygon', 'MultiPolygon', 'NoGeometry', 'MultiPoint']
 
 
 @register.simple_tag()
