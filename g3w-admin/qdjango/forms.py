@@ -244,6 +244,7 @@ class QdjangoProjectForm(TranslationModelForm, QdjangoProjectFormMixin, G3WFormM
                             'use_map_extent_as_init_extent',
                             'toc_tab_default',
                             'legend_position',
+                            'context_base_legend',
                             'autozoom_query',
                             'feature_count_wms',
                             'multilayer_query',
