@@ -1393,8 +1393,6 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
         self.assertTrue('a point' in fields_values)
 
 
-
-
     def test_gpkg_api(self):
         """Test that the filter applies to gpkg api"""
 

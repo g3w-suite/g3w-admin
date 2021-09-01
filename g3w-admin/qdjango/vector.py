@@ -416,13 +416,18 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
 
                 cloned_layer.startEditing()
 
+                # Add prefix to field name to avoid repeated names
+                # Use 'p' as polygon
+                prefix = 'p_'
                 for f in sbp_feature.fields():
+
+                    f.setName(prefix + f.name())
                     cloned_layer.addAttribute(f)
 
                 # Add values to new fields
                 for feature in cloned_layer.getSelectedFeatures():
                     for f in sbp_feature.fields():
-                        feature.setAttribute(feature.fieldNameIndex(f.name()), sbp_feature[f.name()])
+                        feature.setAttribute(feature.fieldNameIndex(prefix + f.name()), sbp_feature[f.name()])
                         cloned_layer.updateFeature(feature)
 
                 return cloned_layer, True
