@@ -271,12 +271,17 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         if len(map_themes) == 0:
             return
 
+        #from qdjango.utils.data import buildLayerTreeNodeObject
+
         for map_theme in map_themes:
             theme = {
                 'theme': map_theme,
                 'visible_layer_ids': qgs_project.mapThemeCollection().mapThemeVisibleLayerIds(map_theme),
                 'styles': {}
             }
+
+            #qgs_project.mapThemeCollection().applyTheme('view3', qgs_project.layerTreeRoot(), None)
+            #tree = buildLayerTreeNodeObject(qgs_project.layerTreeRoot())
 
             # styles management
             styles = qgs_project.mapThemeCollection().mapThemeStyleOverrides(map_theme)
