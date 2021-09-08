@@ -257,6 +257,39 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         else:
             return False
 
+    def set_map_themes(self, ret, qgs_project):
+        """
+        Set QGIS map themes if they are into project
+
+        :param ret: dict to return in to_representation
+        :param qgs_project: QgsProject instamce
+        :return: None
+        """
+
+        ret['map_themes'] = []
+        map_themes = qgs_project.mapThemeCollection().mapThemes()
+        if len(map_themes) == 0:
+            return
+
+        for map_theme in map_themes:
+            theme = {
+                'theme': map_theme,
+                'visible_layer_ids': qgs_project.mapThemeCollection().mapThemeVisibleLayerIds(map_theme),
+                'styles': {}
+            }
+
+            # styles management
+            styles = qgs_project.mapThemeCollection().mapThemeStyleOverrides(map_theme)
+            for qgs_layer_id, style in styles.items():
+                qgs_layer = qgs_project.mapLayer(qgs_layer_id)
+                sm = qgs_layer.styleManager()
+                for s in sm.styles():
+                    qgs_style = sm.style(s)
+                    if qgs_style.xmlData() == style:
+                        theme['styles'][qgs_layer_id] = s
+
+            ret['map_themes'].append(theme)
+
     def to_representation(self, instance):
         logging.warning('Serializer')
         ret = super(ProjectSerializer, self).to_representation(instance)
@@ -428,6 +461,11 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
             pass
 
         ret['search_endpoint'] = settings.G3W_CLIENT_SEARCH_ENDPOINT
+
+        # QGIS project themes
+        # ----------------------------------
+        self.set_map_themes(ret, qgs_project)
+
 
         # reset tokenfilter by session
         self.reset_filtertoken()
