@@ -351,9 +351,10 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
                 for widget in widgets:
                     widget_serializzer_data = WidgetSerializer(
                         widget, layer=layers[layer['id']]).data
-                    if widget_serializzer_data['type'] == 'search':
+                    if widget_serializzer_data['type'] in ('search', 'search_1n'):
                         widget_serializzer_data['options']['layerid'] = layer['id']
                         widget_serializzer_data['options']['querylayerid'] = layer['id']
+
                         ret['search'].append(widget_serializzer_data)
                     else:
                         load_qdjango_widget_layer.send(
@@ -674,11 +675,13 @@ class WidgetSerializer(serializers.ModelSerializer):
         ret = super(WidgetSerializer, self).to_representation(instance)
         ret['type'] = instance.widget_type
 
+
         # get edittype
         edittypes = eval(self.layer.edittypes)
 
         if ret['type'] == 'search':
             body = json.loads(instance.body)
+
             ret['options'] = {
                 'queryurl': None,
                 'title': body['title'],
@@ -747,6 +750,13 @@ class WidgetSerializer(serializers.ModelSerializer):
                     'input': input,
                     'logicop': field.get('logicop', 'AND').upper()
                 })
+
+            # rewrite type if relations is set relations
+            if 'relations' in body and body['relations'] != '':
+                ret['type'] = 'search_1n'
+                ret['options']['search_1n_relationid'] = body['relations']
+                del(body['relations'])
+
         else:
             ret['body'] = json.loads(instance.body)
         return ret

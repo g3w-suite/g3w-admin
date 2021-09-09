@@ -322,6 +322,39 @@ def project_layers4search_widget(layer):
         for l in layer.project.layer_set.filter(~Q(pk=layer.pk))
     }
 
+class QdjangoLayerWidgetsMixin(object):
+
+    def get_relations(self, layer):
+        """
+        Get and return  relations from project where layer is a children
+
+        :param layer: Qdjango model Layer instance
+        :return: Relations data
+        :return type: dict
+        """
+
+        relations = eval(layer.project.relations)
+        toret = []
+        for relation in relations:
+            if relation['referencingLayer'] == layer.qgs_layer_id:
+                toret.append(relation)
+        return toret
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        context['layer'] = self.layer
+        context['project_layers'] = json.dumps(project_layers4search_widget(self.layer))
+
+        # Get every relations were layer is child
+        context['relations'] = json.dumps(self.get_relations(self.layer))
+
+        load_qdjango_widgets_data.send(self, context=context)
+
+        return context
+
+    def get_success_url(self):
+        return None
+
 
 class QdjangoLayerWidgetsView(G3WGroupViewMixin, QdjangoProjectViewMixin, QdjangoLayerViewMixin, ListView):
     """
@@ -339,7 +372,7 @@ class QdjangoLayerWidgetsView(G3WGroupViewMixin, QdjangoProjectViewMixin, Qdjang
         return get_widgets4layer(self.layer)
 
 
-class QdjangoLayerWidgetCreateView(G3WRequestViewMixin, G3WGroupViewMixin, QdjangoProjectViewMixin,
+class QdjangoLayerWidgetCreateView(QdjangoLayerWidgetsMixin, G3WRequestViewMixin, G3WGroupViewMixin, QdjangoProjectViewMixin,
                                    QdjangoLayerViewMixin, AjaxableFormResponseMixin, CreateView):
 
     form_class = QdjangoWidgetForm
@@ -348,18 +381,6 @@ class QdjangoLayerWidgetCreateView(G3WRequestViewMixin, G3WGroupViewMixin, Qdjan
     @method_decorator(permission_required('qdjango.add_widget', return_403=True))
     def dispatch(self, *args, **kwargs):
         return super(QdjangoLayerWidgetCreateView, self).dispatch(*args, **kwargs)
-
-    def get_context_data(self, **kwargs):
-        context = super(QdjangoLayerWidgetCreateView, self).get_context_data()
-        context['layer'] = self.layer
-        context['project_layers'] = json.dumps(project_layers4search_widget(self.layer))
-
-        load_qdjango_widgets_data.send(self, context=context)
-
-        return context
-
-    def get_success_url(self):
-        return None
 
     def form_valid(self, form):
         self.object = form.save(commit=False)
@@ -386,7 +407,7 @@ class QdjangoLayerWidgetCreateView(G3WRequestViewMixin, G3WGroupViewMixin, Qdjan
         return ret
 
 
-class QdjangoLayerWidgetUpdateView(G3WRequestViewMixin, G3WGroupViewMixin, QdjangoProjectViewMixin,
+class QdjangoLayerWidgetUpdateView(QdjangoLayerWidgetsMixin, G3WRequestViewMixin, G3WGroupViewMixin, QdjangoProjectViewMixin,
                                    QdjangoLayerViewMixin, AjaxableFormResponseMixin, UpdateView):
 
     form_class = QdjangoWidgetForm
@@ -396,18 +417,6 @@ class QdjangoLayerWidgetUpdateView(G3WRequestViewMixin, G3WGroupViewMixin, Qdjan
     # @method_decorator(permission_required('qdjango.change_widget', (Widget, 'slug', 'slug'), raise_exception=True))
     def dispatch(self, *args, **kwargs):
         return super(QdjangoLayerWidgetUpdateView, self).dispatch(*args, **kwargs)
-
-    def get_context_data(self, **kwargs):
-        context = super(QdjangoLayerWidgetUpdateView, self).get_context_data()
-        context['layer'] = self.layer
-        context['project_layers'] = json.dumps(project_layers4search_widget(self.layer))
-
-        load_qdjango_widgets_data.send(self, context=context)
-
-        return context
-
-    def get_success_url(self):
-        return None
 
 
 class QdjangoLayerWidgetDeleteView(G3WAjaxDeleteViewMixin, SingleObjectMixin, View):

@@ -140,6 +140,9 @@ ga.Qdjango.widgetEditor = {
         // add otherlayers
         obj['otherlayers'] = $(".rightCol").find('.cmpPlusLayersSearch').find('select').val();
 
+        // add relations
+        obj['relations'] = $(".rightCol").find('.cmpRelations').find('select').val();
+
 
         $.each($(".rightCol").find(".bloccoGenerale").find(".resultFields").find(".row"), function (i, v) {
           v = $(v)
@@ -730,6 +733,30 @@ ga.Qdjango.widgetEditor = {
         </div>\
         </div>');
 
+        // for relations
+        if (this.relations.length > 0) {
+            var relations = $('<div class="row relations" style="margin-bottom:20px;">\
+            <div class="col-md-12">\
+                <div class="controls cmpRelations">\
+                    <label class="control-label">' + gettext("Relations") + '</label>\
+                </div>\
+                <div class="help-block">' + gettext("This layer is a child in a relation, if you want to excute the search on father layer of relation, select the relative relation") + '</div>\
+            </div>\
+            </div>');
+
+            var relation_select = $('<select class="form-control" name="relation" style="width: 570px">' +
+                '<option value="">---</option>' +
+                '</select>')
+
+            $.each(this.relations, function (i, v) {
+              var selected = ""
+              var option = $('<option value="' + v['id'] + '" ' + selected + ">" + v['name'] + "</option>")
+              relation_select.append(option)
+            });
+
+            relations.find(".cmpRelations").append(relation_select);
+        }
+
         var cmpPlusLayersSearch = $('<select class="form-control" multiple="multiple" name="pluslayer_field" style="width: 570px"></select>')
 
         $.each(this.projectLayers, function (i, v) {
@@ -755,7 +782,8 @@ ga.Qdjango.widgetEditor = {
         that.onAddCallback();
 
         div.appendTo($(".rightCol"));
-        if (el.val() == 'search') {;
+        if (el.val() == 'search') {
+
           $(this).parents().find(".pluslayers").appendTo($(".rightCol"))
         }
 
@@ -763,6 +791,9 @@ ga.Qdjango.widgetEditor = {
       $(".rightCol").append(addDiv)
 
       if (el.val() == 'search') {
+        if (this.relations.length > 0) {
+          $(".bloccoGenerale").append(relations);
+        }
         $(".rightCol").append(pluslayers);
         cmpPlusLayersSearch.select2();
       }
@@ -830,6 +861,33 @@ ga.Qdjango.widgetEditor = {
 
         pluslayers.find(".cmpPlusLayersSearch").append(cmpPlusLayersSearch)
 
+        // for relations
+        if (this.relations.length > 0) {
+            var relations = $('<div class="row relations" style="margin-bottom:20px;">\
+            <div class="col-md-12">\
+                <div class="controls cmpRelations">\
+                    <label class="control-label">' + gettext("Relations") + '</label>\
+                </div>\
+                <div class="help-block">' + gettext("This layer is a child in a relation, if you want to excute the search on father layer of relation, select the relative relation") + '</div>\
+            </div>\
+            </div>');
+
+            var relation_select = $('<select class="form-control" name="relation" style="width: 570px">' +
+                '<option value="">---</option>' +
+                '</select>')
+
+            $.each(this.relations, function (i, v) {
+              var selected = ""
+              if (that.isset(that.widget.body.relations) && that.widget.body.relations == v['id']){
+                selected = "selected";
+              }
+              var option = $('<option value="' + v['id'] + '" ' + selected + ">" + v['name'] + "</option>")
+              relation_select.append(option)
+            });
+
+            relations.find(".cmpRelations").append(relation_select);
+        }
+
       }
 
 
@@ -851,22 +909,32 @@ ga.Qdjango.widgetEditor = {
       $(".rightCol").append(addDiv);
 
       if (this.widget.widget_type != "law") {
+        if (this.relations.length > 0) {
+          $(".bloccoGenerale").append(relations);
+        }
         $(".rightCol").append(pluslayers);
         cmpPlusLayersSearch.select2();
       }
     }
   },
 
-  setLayerData: function (data, layer, layer_type, project_layers) {
+  setLayerData: function (data, layer, layer_type, project_layers, relations) {
     this.layerColumns = data
     this.layer = layer
     this.layer_type = layer_type
     this.projectLayers = project_layers
+    this.relations = relations
   },
 
   init: function () {
     var that = this
-    this.setLayerData(ga.Qdjango.localVars["layer_columns"], ga.Qdjango.localVars["layer_name"], ga.Qdjango.localVars["layer_type"], ga.Qdjango.localVars["project_layers"])
+    this.setLayerData(
+        ga.Qdjango.localVars["layer_columns"],
+        ga.Qdjango.localVars["layer_name"],
+        ga.Qdjango.localVars["layer_type"],
+        ga.Qdjango.localVars["project_layers"],
+        ga.Qdjango.localVars["relations"]
+    )
     this.lawslist = ga.Qdjango.localVars["laws_list"]
     if (ga.Qdjango.localVars["update"]) {
       if (!$.isEmptyObject(ga.Qdjango.localVars["widget"])) {

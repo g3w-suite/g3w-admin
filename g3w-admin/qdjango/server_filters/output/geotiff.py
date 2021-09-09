@@ -80,7 +80,7 @@ class GeoTiffOutPutFilter(QgsServerFilter):
         #     outputBounds=[0, 0, 10, 10]
         # )
 
-        src = gdal.Open(src_filename)
+        src = gdal.OpenEx(src_filename)
         src_band = {}
         for n in (1, 2, 3, 4):
             src_band[n] = src.GetRasterBand(n)
