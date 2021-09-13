@@ -144,6 +144,7 @@ I.e.::
         {
             'url': 'https://gis3w.it',
             'title': 'Gis3W company',
+            'i18n', True, #(False as default value)
             'target': '_blank'
             'img': 'https://gis3w.it/wp-content/uploads/2016/10/logo_qgis-1-100x100.png?x22227'
         },
@@ -154,6 +155,8 @@ I.e.::
            'position': 10
        },
    ]
+
+`i18n` (optional) set True if you want lent client try to translate title.
 
 ``G3W_CLIENT_LEGEND``
 ^^^^^^^^^^^^^^^^^^^^^
