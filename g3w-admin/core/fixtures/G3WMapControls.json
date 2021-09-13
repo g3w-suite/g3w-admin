@@ -149,5 +149,13 @@
     "order": 17,
     "name": "screenshot",
     "description": ""
+  },
+{
+  "model": "core.mapcontrol",
+  "pk": 18,
+  "fields": {
+    "order": 18,
+    "name": "geoscreenshot",
+    "description": ""
   }
 }]
