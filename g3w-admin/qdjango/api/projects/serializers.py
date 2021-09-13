@@ -273,6 +273,15 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
         #from qdjango.utils.data import buildLayerTreeNodeObject
 
+        collection = qgs_project.mapThemeCollection()
+        rec = collection.mapThemeState('View2')
+        print(rec.checkedGroupNodes())
+        print(rec.expandedGroupNodes())
+        lrec = rec.layerRecords()[0]
+        print(lrec.isVisible)
+        print(lrec.expandedLayerNode)
+        print(lrec.expandedLegendItems)
+
         for map_theme in map_themes:
             theme = {
                 'theme': map_theme,

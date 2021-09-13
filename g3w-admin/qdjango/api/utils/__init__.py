@@ -23,3 +23,4 @@ def serialize_vectorjoin(layer_id, n, join):
         ret['customPrefix'] = join['customPrefix']
 
     return ret
+
