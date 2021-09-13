@@ -35,6 +35,7 @@ from .api.geoconstraints.views import (
 )
 from .api.projects.views import (
     QdjangoWebServicesAPIview,
+    QdjangoAsGeoTiffAPIview
 )
 from rest_framework.urlpatterns import format_suffix_patterns
 
@@ -134,6 +135,11 @@ urlpatterns = [
     # All Service(s)
     url(r'^api/webservice/(?P<project_id>\d+)/$',
         login_required(QdjangoWebServicesAPIview.as_view()), name='qdjango-webservice-api-list'),
+
+    #############################################################
+    # General API
+    url(r'^api/asgeotiff/(?P<project_id>\d+)/$',
+        QdjangoAsGeoTiffAPIview.as_view(), name='qdjango-asgeotiff-api'),
 ]
 
 # Layer style manager
