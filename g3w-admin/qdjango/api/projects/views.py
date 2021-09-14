@@ -139,8 +139,8 @@ class QdjangoAsGeoTiffAPIview(G3WAPIView):
             src_filename = tmp_dir.name + filename
 
             filename = 'map.tif'
-            out_filename = tmp_dir.name + '/' + filename
-            #out_filename = '/tmp/' + filename
+            #out_filename = tmp_dir.name + '/' + filename
+            out_filename = '/tmp/' + filename
 
             with open(src_filename, 'w+b') as file:
                 for chunk in image.chunks():
