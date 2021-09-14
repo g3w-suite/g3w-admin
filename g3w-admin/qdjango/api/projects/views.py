@@ -227,24 +227,48 @@ class QdjangoPrjThemeAPIview(G3WAPIView):
             # Get node group expanded anche checked
             node_group_expanded = map_theme.expandedGroupNodes()
             node_group_checked = map_theme.checkedGroupNodes()
-            node_layer_checked = theme_collections.mapThemeVisibleLayerIds(theme_name)
+            node_layerids_checked = theme_collections.mapThemeVisibleLayerIds(theme_name)
 
-            # Iterate over layers tree
-            def readLeaf(layer, container):
+            def build_group_name_by_parents(node):
 
-                # Case node group
-                if 'nodes' in layer:
-                    layer['expanded'] = True if layer['name'] in node_group_expanded else False
-                    layer['checked'] = True if layer['name'] in node_group_checked else False
-
-                    for node in layer['nodes']:
-                        readLeaf(node, layer['nodes'])
+                parent = node.parent()
+                if parent and parent.nodeType() == 0 and parent.name() != '':
+                    return build_group_name_by_parents(parent) + '/' + node.name()
                 else:
-                    layer['visible'] = True if layer['name'] in node_layer_checked else False
+                    return node.name()
 
-            layers_tree = eval(project.layers_tree)
-            for l in layers_tree:
-                readLeaf(l, layers_tree)
+
+            def build_tree(layertreenode):
+                toRetLayers = []
+                for node in layertreenode.children():
+
+                    toRetLayer = {
+                        'name': node.name()
+                    }
+
+                    try:
+                        # try for layer node
+                        toRetLayer.update({
+                            'id': node.layerId(),
+                            'visible': True if node.layerId() in node_layerids_checked else False
+                        })
+
+                    except:
+
+                        # Try to build by parent
+                        deep_tree_name = build_group_name_by_parents(node)
+
+                        toRetLayer.update({
+                            'mutually-exclusive': node.isMutuallyExclusive(),
+                            'nodes': build_tree(node),
+                            'checked': True if deep_tree_name in node_group_checked else False,
+                            'expanded': True if deep_tree_name in node_group_expanded else False
+                        })
+
+                    toRetLayers.append(toRetLayer)
+                return toRetLayers
+
+            layers_tree = build_tree(qgs_project.layerTreeRoot())
 
             self.results.results.update({
                 'data': layers_tree

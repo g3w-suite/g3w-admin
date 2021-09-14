@@ -1,16 +1,13 @@
 from django.http.request import QueryDict
 from django.conf import settings
-from django.core.cache import caches
 from django.utils.translation import ugettext_lazy as _
 from rest_framework import serializers
-from rest_framework_gis import serializers as geo_serializers
 from rest_framework.fields import empty
-from guardian.shortcuts import get_objects_for_user, get_anonymous_user
+from guardian.shortcuts import get_objects_for_user
 
 from qdjango.models import Project, Layer, Widget, SessionTokenFilter
-from qdjango.utils.data import QgisProjectSettingsWMS, QGIS_LAYER_TYPE_NO_GEOM
+from qdjango.utils.data import QGIS_LAYER_TYPE_NO_GEOM
 from qdjango.utils.models import get_capabilities4layer
-from qdjango.ows import OWSRequestHandler
 from qdjango.signals import load_qdjango_widget_layer
 from qdjango.apps import get_qgs_project
 from qdjango.utils.structure import QdjangoMetaLayer, datasourcearcgis2dict
@@ -19,10 +16,9 @@ from core.configs import *
 from core.signals import after_serialized_project_layer
 from core.mixins.api.serializers import G3WRequestSerializer
 from core.api.serializers import update_serializer_data
-from core.utils.structure import RELATIONS_ONE_TO_MANY, RELATIONS_ONE_TO_ONE
+from core.utils.structure import RELATIONS_ONE_TO_MANY
 from core.utils.qgisapi import get_qgis_layer, count_qgis_features
 from core.utils.general import clean_for_json
-from core.models import G3WSpatialRefSys
 
 from qgis.core import (
     QgsJsonUtils,
@@ -271,26 +267,11 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         if len(map_themes) == 0:
             return
 
-        #from qdjango.utils.data import buildLayerTreeNodeObject
-
-        # collection = qgs_project.mapThemeCollection()
-        # rec = collection.mapThemeState('View2')
-        # print(rec.checkedGroupNodes())
-        # print(rec.expandedGroupNodes())
-        # lrec = rec.layerRecords()[0]
-        # print(lrec.isVisible)
-        # print(lrec.expandedLayerNode)
-        # print(lrec.expandedLegendItems)
-
         for map_theme in map_themes:
             theme = {
                 'theme': map_theme,
-                'visible_layer_ids': qgs_project.mapThemeCollection().mapThemeVisibleLayerIds(map_theme),
                 'styles': {}
             }
-
-            #qgs_project.mapThemeCollection().applyTheme('view3', qgs_project.layerTreeRoot(), None)
-            #tree = buildLayerTreeNodeObject(qgs_project.layerTreeRoot())
 
             # styles management
             styles = qgs_project.mapThemeCollection().mapThemeStyleOverrides(map_theme)
