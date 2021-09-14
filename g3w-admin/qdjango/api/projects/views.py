@@ -138,8 +138,9 @@ class QdjangoAsGeoTiffAPIview(G3WAPIView):
             filename = '/in.png'
             src_filename = tmp_dir.name + filename
 
-            filename = '/out.tiff'
-            out_filename = tmp_dir.name + filename
+            filename = 'map.tif'
+            out_filename = tmp_dir.name + '/' + filename
+            #out_filename = '/tmp/' + filename
 
             with open(src_filename, 'w+b') as file:
                 for chunk in image.chunks():
@@ -156,7 +157,7 @@ class QdjangoAsGeoTiffAPIview(G3WAPIView):
             [cols, rows] = band_data[1].shape
 
             driver = gdal.GetDriverByName("GTiff")
-            out = driver.Create(out_filename, rows, cols, 3)
+            out = driver.Create(out_filename, rows, cols, src.RasterCount)
 
             xres = (xmax - xmin) / float(cols)
             yres = (ymax - ymin) / float(rows)
@@ -164,11 +165,11 @@ class QdjangoAsGeoTiffAPIview(G3WAPIView):
 
             out.SetGeoTransform(geotransform)
 
-            srs = osr.SpatialReference()  # establish encoding
-            srs.ImportFromEPSG(project.group.srid.srid)  # WGS84 lat/long
+            srs = osr.SpatialReference()
+            srs.ImportFromEPSG(project.group.srid.srid)
             out.SetProjection(srs.ExportToWkt())
 
-            for n in range(1, src.RasterCount):
+            for n in range(1, src.RasterCount + 1):
                 logger.debug('Writing band {}'.format(n))
                 out.GetRasterBand(n).WriteArray(band_data[n])
             out.FlushCache()

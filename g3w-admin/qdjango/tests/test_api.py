@@ -21,6 +21,7 @@ from django.core.files import File
 from django.urls import reverse
 from django.utils.http import int_to_base36
 from django.utils.crypto import salted_hmac
+from django.core.files.uploadedfile import SimpleUploadedFile
 from guardian.shortcuts import assign_perm, remove_perm, get_anonymous_user
 from rest_framework.test import APIClient
 
@@ -40,9 +41,11 @@ from core.tests.base import CoreTestBase
 from core.utils.qgisapi import get_qgs_project
 
 from .base import QdjangoTestBase, CURRENT_PATH, TEST_BASE_PATH, QGS310_WIDGET_FILE
-from qgis.core import QgsFeatureRequest
+from qgis.core import QgsFeatureRequest, QgsRasterLayer
+from qgis.PyQt.QtCore import QTemporaryDir
 import time
 import six
+import os
 
 
 
@@ -321,6 +324,106 @@ class TestQdjangoProjectsAPI(QdjangoTestBase):
         # project exist locked
         resp = json.loads(self._testApiCall('qdjango-webservice-api-list', [self.project310.instance.pk]).content)
         self.assertEqual(resp['data']['WMS']['access'], 'free')
+
+    def test_asgeotiff_api(self):
+        """ Test asgeotiff projects api"""
+
+        url = reverse('qdjango-asgeotiff-api', kwargs={'project_id': self.project.instance.pk})
+
+        # Only POST request
+        # -----------------------------
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 405)
+        jres = json.loads(response.content)
+
+        self.assertFalse(jres['result'])
+
+        # Validation queryurl parameters
+        # ------------------------------
+        response = self.client.post(url)
+
+        self.assertEqual(response.status_code, 200)
+        jres = json.loads(response.content)
+
+        # No bbox param
+        self.assertFalse(jres['result'])
+        self.assertEqual(jres['error'], "'bbox' parameter must not be empty")
+
+        # Bbox not by 4 value
+        data = {
+            "bbox": "-180,-90,180"
+        }
+        response = self.client.post(url, data=data)
+        self.assertEqual(response.status_code, 200)
+        jres = json.loads(response.content)
+
+        # No bbox param
+        self.assertFalse(jres['result'])
+        self.assertEqual(jres['error'], "Error on bbox parameter: not enough values to unpack (expected 4, got 3)")
+
+        # No image param
+        data = {
+            "bbox": "-180,-90,180,90"
+        }
+        response = self.client.post(url, data=data)
+        self.assertEqual(response.status_code, 200)
+        jres = json.loads(response.content)
+
+        self.assertFalse(jres['result'])
+        self.assertEqual(jres['error'], "No FILES are uploaded!")
+
+        # Test add image
+        with open(os.path.join(
+                CURRENT_PATH + TEST_BASE_PATH, 'getmap.png'), 'rb') as f:
+            image = f.read()
+
+        data = {
+            "bbox": "-30.989057980518826,15.114289975164386,64.27868033577403,68.99820820756442",
+            "image2": SimpleUploadedFile('getmap.png', image, content_type="image/png")
+
+        }
+
+        response = self.client.post(url, data=data)
+        self.assertEqual(response.status_code, 200)
+        jres = json.loads(response.content)
+
+        self.assertFalse(jres['result'])
+        self.assertEqual(jres['error'], "'image' parameter must not be empty")
+
+        # Generate GeoTiff
+        # ------------------------------------------
+
+        data = {
+            "bbox": "-30.989057980518826,15.114289975164386,64.27868033577403,68.99820820756442",
+            "image": SimpleUploadedFile('getmap.png', image, content_type="image/png")
+
+        }
+
+        response = self.client.post(url, data=data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'application/x-geotiff')
+        self.assertEqual(response['Content-Disposition'], 'attachment; filename="map.tif"')
+
+        temp = QTemporaryDir()
+        fname = temp.path() + '/map.tif'
+        with open(fname, 'wb+') as f:
+            f.write(response.content)
+
+        vl = QgsRasterLayer(fname)
+        self.assertTrue(vl.isValid())
+        self.assertEqual(vl.bandCount(), 4)
+        self.assertEqual(vl.height(), 888)
+        self.assertEqual(vl.width(), 1570)
+        self.assertEqual(vl.extent().toString(), "-30.9890579805188260,38.5211894875827454 : 137.4460198985124464,68.9982082075644172")
+
+        os.remove(fname)
+
+      #"http://192.168.1.137:8006/it/map/test-pippo/qdjango/100/?map_extent=-30.989057980518826%2C15.114289975164386%2C64.27868033577403%2C68.99820820756442"
+
+
+
+
 
 
 class TestQdjangoLayersAPI(QdjangoTestBase):
