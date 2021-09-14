@@ -19,6 +19,7 @@ from core.utils.response import send_file
 from rest_framework.response import Response
 from guardian.shortcuts import get_anonymous_user
 from core.api.base.views import G3WAPIView
+from qdjango.apps import get_qgs_project
 from qdjango.models import Project
 from qdjango.signals import reading_layer_model
 
@@ -189,5 +190,72 @@ class QdjangoAsGeoTiffAPIview(G3WAPIView):
         return Response(self.results.results)
 
 
+class QdjangoPrjThemeAPIview(G3WAPIView):
+    """
+    API to get layers tree based on a selected theme.
+    Give a project_id and a view/theme name.
+    """
+
+    def get(self, request, **kwargs):
+        return self.layerstree(request, **kwargs)
+
+    def post(self, request, **kwargs):
+        return self.layerstree(request, **kwargs)
+
+    def layerstree(self, request, **kwargs):
 
 
+        try:
+
+            # Retrieve project qdjando instance and qgsproject instance
+            project = get_object_or_404(Project, pk=kwargs['project_id'])
+            qgs_project = get_qgs_project(project.qgis_file.path)
+
+            # Validation theme name
+            theme_collections = qgs_project.mapThemeCollection()
+            map_themes = theme_collections.mapThemes()
+            theme_name = kwargs['theme_name']
+
+            if len(map_themes) == 0:
+                raise Exception(f"Themes are not available for project {project.title}")
+
+            if theme_name not in map_themes:
+                raise Exception(f"Theme name '{theme_name}' is not available!")
+
+            map_theme = theme_collections.mapThemeState(theme_name)
+
+            # Get node group expanded anche checked
+            node_group_expanded = map_theme.expandedGroupNodes()
+            node_group_checked = map_theme.checkedGroupNodes()
+            node_layer_checked = theme_collections.mapThemeVisibleLayerIds(theme_name)
+
+            # Iterate over layers tree
+            def readLeaf(layer, container):
+
+                # Case node group
+                if 'nodes' in layer:
+                    layer['expanded'] = True if layer['name'] in node_group_expanded else False
+                    layer['checked'] = True if layer['name'] in node_group_checked else False
+
+                    for node in layer['nodes']:
+                        readLeaf(node, layer['nodes'])
+                else:
+                    layer['visible'] = True if layer['name'] in node_layer_checked else False
+
+            layers_tree = eval(project.layers_tree)
+            for l in layers_tree:
+                readLeaf(l, layers_tree)
+
+            self.results.results.update({
+                'data': layers_tree
+            })
+
+        except Exception as e:
+            self.results.error = str(e)
+            self.results.result = False
+
+        except Http404 as e:
+            self.results.error = str(e)
+            self.results.result = False
+
+        return Response(self.results.results)
