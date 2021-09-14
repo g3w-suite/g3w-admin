@@ -419,8 +419,6 @@ class TestQdjangoProjectsAPI(QdjangoTestBase):
 
         os.remove(fname)
 
-      #"http://192.168.1.137:8006/it/map/test-pippo/qdjango/100/?map_extent=-30.989057980518826%2C15.114289975164386%2C64.27868033577403%2C68.99820820756442"
-
 
 
 
