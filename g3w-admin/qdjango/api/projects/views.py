@@ -24,6 +24,7 @@ from qdjango.signals import reading_layer_model
 
 from osgeo import gdal, osr
 import tempfile
+import time
 
 import logging
 
@@ -139,7 +140,8 @@ class QdjangoAsGeoTiffAPIview(G3WAPIView):
             src_filename = tmp_dir.name + filename
 
             filename = 'map.tif'
-            out_filename = tmp_dir.name + '/' + filename
+            #out_filename = tmp_dir.name + '/' + filename
+            out_filename = f'/tmp/map_{str(time.time())}.tif'
 
             with open(src_filename, 'w+b') as file:
                 for chunk in image.chunks():
@@ -173,7 +175,7 @@ class QdjangoAsGeoTiffAPIview(G3WAPIView):
                 out.GetRasterBand(n).WriteArray(band_data[n])
             out.FlushCache()
 
-            return send_file(output_filename=filename, file=out_filename, content_type='application/x-geotiff')
+            return send_file(output_filename=filename, file=out_filename, content_type='image/tiff')
 
 
         except Exception as e:
