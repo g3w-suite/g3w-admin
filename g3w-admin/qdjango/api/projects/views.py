@@ -227,7 +227,14 @@ class QdjangoPrjThemeAPIview(G3WAPIView):
             # Get node group expanded anche checked
             node_group_expanded = map_theme.expandedGroupNodes()
             node_group_checked = map_theme.checkedGroupNodes()
-            node_layerids_checked = theme_collections.mapThemeVisibleLayerIds(theme_name)
+
+            # Layers checked are layers into mapTheme layerRecords
+            node_layerids_checked = []
+            for r in map_theme.layerRecords():
+                id = r.layer().id()
+                if id not in node_layerids_checked:
+                    node_layerids_checked.append(id)
+
 
             def build_group_name_by_parents(node):
 
