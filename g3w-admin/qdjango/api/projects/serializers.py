@@ -273,15 +273,11 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
                 'styles': {}
             }
 
-            # styles management
-            styles = qgs_project.mapThemeCollection().mapThemeStyleOverrides(map_theme)
-            for qgs_layer_id, style in styles.items():
-                qgs_layer = qgs_project.mapLayer(qgs_layer_id)
-                sm = qgs_layer.styleManager()
-                for s in sm.styles():
-                    qgs_style = sm.style(s)
-                    if qgs_style.xmlData() == style:
-                        theme['styles'][qgs_layer_id] = s
+            for r in qgs_project.mapThemeCollection().mapThemeState(map_theme).layerRecords():
+                theme['styles'].update({
+                    r.layer().id(): r.currentStyle
+                })
+
 
             ret['map_themes'].append(theme)
 
