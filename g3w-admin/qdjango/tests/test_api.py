@@ -402,13 +402,13 @@ class TestQdjangoProjectsAPI(QdjangoTestBase):
 
         response = self.client.post(url, data=data)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response['Content-Type'], 'application/x-geotiff')
+        self.assertEqual(response['Content-Type'], 'image/tiff')
         self.assertEqual(response['Content-Disposition'], 'attachment; filename="map.tif"')
 
         temp = QTemporaryDir()
         fname = temp.path() + '/map.tif'
         with open(fname, 'wb+') as f:
-            f.write(response.content)
+            f.write(b''.join(response.streaming_content))
 
         vl = QgsRasterLayer(fname)
         self.assertTrue(vl.isValid())
@@ -418,11 +418,6 @@ class TestQdjangoProjectsAPI(QdjangoTestBase):
         self.assertEqual(vl.extent().toString(), "-30.9890579805188260,38.5211894875827454 : 137.4460198985124464,68.9982082075644172")
 
         os.remove(fname)
-
-
-
-
-
 
 class TestQdjangoLayersAPI(QdjangoTestBase):
     """ Test qdjango layer API """
