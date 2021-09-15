@@ -194,7 +194,7 @@ class CoreUtilsTest(CoreTestBase):
         self.assertEqual(countAllProjects(), pcount)
 
     def test_send_file(self):
-        """ Test function utils with same name """
+        """ Test function utils send_file """
 
         file = f'{CURRENT_PATH}{TEST_BASE_PATH}g3wsuite_logo.png'
 
@@ -202,6 +202,8 @@ class CoreUtilsTest(CoreTestBase):
                              'image/png', file, attachment=True)
         self.assertEqual(response.status_code, 200)
 
-        fobj = File(open(file, 'rb'))
-        self.assertEqual(fobj.read(), response.content)
+        fobj = open(file, 'rb')
+        self.assertEqual(response.filename, 'test_send_file.png')
+        self.assertTrue(response.as_attachment)
+        self.assertEqual(fobj.read(), b''.join(response.streaming_content))
         fobj.close()
