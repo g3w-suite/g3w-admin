@@ -101,9 +101,6 @@ class QdjangoAsGeoTiffAPIview(G3WAPIView):
         CsrfExemptSessionAuthentication,
     )
 
-    def get(self, request, **kwargs):
-        return send_file(output_filename='pippo.tif', file='/tmp/map.tif', content_type='application/x-geotiff')
-
     def post(self, request, **kwargs):
 
         # Only POST for this API
@@ -142,8 +139,7 @@ class QdjangoAsGeoTiffAPIview(G3WAPIView):
             src_filename = tmp_dir.name + filename
 
             filename = 'map.tif'
-            #out_filename = tmp_dir.name + '/' + filename
-            out_filename = '/tmp/' + filename
+            out_filename = tmp_dir.name + '/' + filename
 
             with open(src_filename, 'w+b') as file:
                 for chunk in image.chunks():
