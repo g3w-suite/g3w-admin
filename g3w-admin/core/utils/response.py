@@ -11,7 +11,7 @@ def send_file(output_filename, content_type, file, attachment=True):
     :param attachment: True default, to set Content-Disposition http header.
     :return: Django HttpResponse instance.
     """
-    response = HttpResponse(File(open(file, 'rb')), content_type=content_type)
+    response = HttpResponse(File(open(file, 'r+b')), content_type=content_type)
     if attachment:
         response['Content-Disposition'] = 'attachment; filename="{}"'.format(output_filename)
 
