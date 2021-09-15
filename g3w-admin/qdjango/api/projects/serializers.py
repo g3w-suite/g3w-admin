@@ -258,7 +258,7 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         Set QGIS map themes if they are into project
 
         :param ret: dict to return in to_representation
-        :param qgs_project: QgsProject instamce
+        :param qgs_project: QgsProject instance
         :return: None
         """
 
