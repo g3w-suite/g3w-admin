@@ -12,12 +12,7 @@ def send_file(output_filename, content_type, file, attachment=True):
     :param attachment: True default, to set Content-Disposition http header.
     :return: Django HttpResponse instance.
     """
-
-    response = FileResponse(open(file, 'rb'))
-    if attachment:
-        response['Content-Disposition'] = 'attachment; filename="{}"'.format(output_filename)
-
-    return response
+    return FileResponse(open(file, 'rb'), filename=output_filename, as_attachment=attachment)
 
 
 class G3WFileFormUploadBackend(FileFormUploadBackend):
