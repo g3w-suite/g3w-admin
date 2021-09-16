@@ -31,6 +31,7 @@ QGS2_FILE = 'gruppo-1_un-progetto.qgs'
 QGS_FILE = 'gruppo-1_un-progetto_qgis310.qgs'
 QGS310_FILE = 'g3wsuite_project_test_qgis310.qgs'
 QGS310_WIDGET_FILE = 'qgis_attributes_widget_test_prj.qgs'
+QGS316_THEME_FILE = 'project_themes_qgis316.qgs'
 
 
 @override_settings(

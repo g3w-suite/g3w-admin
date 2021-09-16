@@ -281,11 +281,11 @@ class QdjangoPrjThemeAPIview(G3WAPIView):
                 'data': layers_tree
             })
 
-        except Exception as e:
-            self.results.error = str(e)
+        except Http404 as e:
+            self.results.error = f"Project with id {kwargs['project_id']} not found!"
             self.results.result = False
 
-        except Http404 as e:
+        except Exception as e:
             self.results.error = str(e)
             self.results.result = False
 
