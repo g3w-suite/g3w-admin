@@ -21,6 +21,10 @@ RUN apt-get update && apt install -y \
 	libsqlite3-mod-spatialite \
     dirmngr \
     git
+
+# Set pip version
+RUN python3 -m pip install pip==20.3.4
+
 # PyQGIS 3.16
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-key 46B5721DBBD2996A && \
     echo "deb [arch=amd64] https://qgis.org/ubuntu-ltr bionic main" >> /etc/apt/sources.list && \
