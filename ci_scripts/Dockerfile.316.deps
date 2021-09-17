@@ -23,7 +23,7 @@ RUN apt-get update && apt install -y \
     git
 
 # Set pip version
-RUN python3 -m pip install pip==20.3.4
+RUN python3 -m pip install pip==20.0.2
 
 # PyQGIS 3.16
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-key 46B5721DBBD2996A && \
