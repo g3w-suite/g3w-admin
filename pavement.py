@@ -101,6 +101,7 @@ def install_yarn_components():
 def requirements():
     info("Installing Python modules...")
     sh('pip install -r requirements.txt')
+    sh('pip install -r requirements_huey.txt')
     info("Python modules installed.")
 
 
@@ -145,6 +146,6 @@ def start():
 @task
 def stop():
     """
-    Stop the GeoNode Django application
+    Stop the Django application
     """
     kill('python', 'runserver')
