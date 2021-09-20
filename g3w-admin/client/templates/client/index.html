@@ -11,7 +11,7 @@
   {% with client_default|add:"/css/vendor.5f29f02faeb1cc6d78bbb41fd7979815.min.css" as vendor_css %}
     <link rel="stylesheet" href="{% static vendor_css %}">
   {% endwith %}
-  {% with client_default|add:"/css/app.e3b391d0752a3143ddeebf4f4c762e20.min.css" as app_css %}
+  {% with client_default|add:"/css/app.e78d97542f5156a597e084c714454617.min.css" as app_css %}
     <link rel="stylesheet" href="{% static app_css %}">
   {% endwith %}
   <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -35,13 +35,13 @@
   <div id="app">
     <app></app>
   </div>
-  {% with client_default|add:"/js/vendor.374b616657a445a3ccd81eceba839e3c.min.js" as vendor_js %}
+  {% with client_default|add:"/js/vendor.a74acef6c1ecebde4a905f2a77c311cc.min.js" as vendor_js %}
       <script src="{% static vendor_js %}"></script>
   {% endwith %}
   <script>
     {{ group_config|safe }}
   </script>
-  {% with client_default|add:"/js/app.45e83ac2dc1bcdeb11a24b217390eeea.min.js" as app_js %}
+  {% with client_default|add:"/js/app.7c579c62c7b6d13d646b8f898c61c179.min.js" as app_js %}
     <script src="{% static app_js %}"></script>
   {% endwith %}
 </body>
