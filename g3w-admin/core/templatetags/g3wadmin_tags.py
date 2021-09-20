@@ -70,6 +70,26 @@ def g3wadmin_layer_actions(layer, app_name, user):
     """
     actions = load_layer_actions.send(user, layer=layer, app_name=app_name)
 
+    order_actions = (
+        'caching_layer_action',
+        'editing_layer_actions',
+        'qplottly_layer_action',
+        'filter_by_user_layer_action'
+    )
+
+    no = {}
+    no1 = []
+    no2 = []
+    for action in actions:
+        fname = action[0].__name__
+        no[fname] = action
+        if fname not in order_actions:
+            no2.append(action)
+    for oaction in order_actions:
+            no1.append(no[oaction])
+
+    actions = no1 + no2
+
     template_actions = []
     for action in actions:
         if actions and action[1]:
