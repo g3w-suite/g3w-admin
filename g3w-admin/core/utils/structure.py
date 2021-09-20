@@ -304,15 +304,16 @@ def mapLayerAttributesFromQgisLayer(qgis_layer, **kwargs):
                         toRes[field.name()].update({
                             'uploadurl': reverse('editing-upload')
                         })
-                    if fieldType == FIELD_TYPE_BOOLEAN:
-                        toRes[field.name()]['input']['options'].update({
-                            'values': [{'key': _('Yes'), 'value': True}, {'key': 'No', 'value': False}]
-                        })
 
                 # update with fields configs data
                 if 'fields' in kwargs and field.name() in kwargs['fields']:
                     deepupdate(toRes[field.name()],
                                kwargs['fields'][field.name()])
+                    if fieldType == FIELD_TYPE_BOOLEAN:
+                        toRes[field.name()]['input']['options']['values'] = [
+                                {'checked': True, 'value': True},
+                                {'checked': False, 'value': False}
+                            ]
 
         field_index += 1
 
