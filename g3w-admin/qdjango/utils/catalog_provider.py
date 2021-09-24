@@ -12,6 +12,7 @@ __author__ = 'elpaso@itopen.it'
 __date__ = '2019-01-15'
 __copyright__ = 'Copyright 2019, Gis3W'
 
+import json
 
 from qdjango.api.projects.serializers import ProjectSerializer, LayerSerializer
 from qdjango.models import Layer, Project
@@ -75,6 +76,13 @@ def catalog_provider(groups=[]):
             layer_metadata = project_data['metadata']
             layer_metadata.update(layer_data)
             layer = Layer.objects.get(qgs_layer_id=layer_data['id'], project=project)
+
+            try:
+                crs = layer_metadata['crs']['epsg']
+            except Exception as e:
+                logger.error(f"Getting Layer CRS {layer_metadata['crs']}, error: {e}")
+                crs = ''
+
             # Full list of Record fields
             rec = {
                 # Maps to pycsw:Identifier
@@ -99,8 +107,8 @@ def catalog_provider(groups=[]):
                 #'date': layer_metadata['date'],  # Maps to pycsw:Date, pycsw:Modified, pycsw:RevisionData, pycsw:CreationDate and pycsw:PublicationDate
                 'type': 'dataset',  # Maps to pycsw:Type
                 # Maps to pycsw:BoundingBox
-                'bounding_box': 'MULTIPOINT({1} {0}, {3} {2})'.format(*list(layer_metadata['bbox'].values())),
-                'crs': layer_metadata['crs'],  # Maps to pycsw:CRS
+                'bounding_box': '({1} {0}, {3} {2})'.format(*list(layer_metadata['bbox'].values())),
+                'crs': crs,  # Maps to pycsw:CRS
                 #'alternate_title': layer_metadata['alternate_title'],  # Maps to pycsw:AlternateTitle
                 # From caller 'organization_name': layer_metadata['organization_name'],  # Maps to pycsw:OrganizationName
                 # From caller 'security_constraints': layer_metadata['security_constraints'],  # Maps to pycsw:SecurityConstraints
@@ -136,6 +144,7 @@ def catalog_provider(groups=[]):
                 #'relation': layer_metadata['relation'],  # Maps to pycsw:Relation
                 'links': "WMS,WMS Server,OGC:WMS,%s" % _get_url(layer.project), # Maps to pycsw:Links - format: name,description,protocol,url
             }
+
 
             if not _is_raster(layer):
                 rec['links'] += "^WFS,WFS Server,OGC:WFS,%s" % _get_url(layer.project)
