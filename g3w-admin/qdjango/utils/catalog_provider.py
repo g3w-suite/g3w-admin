@@ -21,6 +21,11 @@ from guardian.shortcuts import assign_perm, get_objects_for_user
 from django.contrib.auth.models import AnonymousUser
 from django.urls import reverse
 
+from qgis.core import QgsGeometry, \
+    QgsCoordinateReferenceSystem, \
+    QgsCoordinateTransform, \
+    QgsCoordinateTransformContext
+
 import copy
 import logging
 logger = logging.getLogger('catalog')
@@ -83,6 +88,20 @@ def catalog_provider(groups=[]):
                 logger.error(f"Getting Layer CRS {layer_metadata['crs']}, error: {e}")
                 crs = ''
 
+            # Reproject bounding_box
+            try:
+                geometry = QgsGeometry.fromWkt('MULTIPOINT({1} {0}, {3} {2})'.format(*list(layer_metadata['bbox'].values())))
+                to_srid = QgsCoordinateReferenceSystem(f'EPSG:{4326}')
+                from_srid = QgsCoordinateReferenceSystem(f'EPSG:{crs}')
+                ct = QgsCoordinateTransform(
+                    from_srid, to_srid, QgsCoordinateTransformContext())
+                geometry.transform(ct)
+                bounding_box = geometry.asWkt()
+            except Exception as e:
+                print(e)
+                logger.error(f"Getting bbox {layer_metadata['bbox']} error: {e}")
+                bounding_box = ''
+
             # Full list of Record fields
             rec = {
                 # Maps to pycsw:Identifier
@@ -107,7 +126,7 @@ def catalog_provider(groups=[]):
                 #'date': layer_metadata['date'],  # Maps to pycsw:Date, pycsw:Modified, pycsw:RevisionData, pycsw:CreationDate and pycsw:PublicationDate
                 'type': 'dataset',  # Maps to pycsw:Type
                 # Maps to pycsw:BoundingBox
-                'bounding_box': '({1} {0}, {3} {2})'.format(*list(layer_metadata['bbox'].values())),
+                'bounding_box': bounding_box,
                 'crs': crs,  # Maps to pycsw:CRS
                 #'alternate_title': layer_metadata['alternate_title'],  # Maps to pycsw:AlternateTitle
                 # From caller 'organization_name': layer_metadata['organization_name'],  # Maps to pycsw:OrganizationName
