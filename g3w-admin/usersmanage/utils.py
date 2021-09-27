@@ -123,7 +123,7 @@ def get_fields_by_user(user, form, **kwargs):
 def get_users_for_object(object, permission, group=None, with_anonymous = False, with_group_users=False):
     """
     Returns list of users(worn:not QuerySet) with specific permission for this object
-    :param obejct: model object to check permission
+    :param object: model object to check permission
     :param permission: permission string
     :param group: group name for filter
     :param with_anonimous: add anonimous user to return value if it has permission on object, if group is set
