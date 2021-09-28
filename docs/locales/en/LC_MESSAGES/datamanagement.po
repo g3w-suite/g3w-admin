@@ -8,14 +8,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: G3W-SUITE 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-07 17:33+0200\n"
+"POT-Creation-Date: 2021-08-23 12:50+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.4.0\n"
+"Generated-By: Babel 2.8.0\n"
 
 #: ../../datamanagement.md:1
 msgid "Management and organization of geographic data and QGIS projects"
@@ -59,148 +59,148 @@ msgstr ""
 msgid "ShapeFile"
 msgstr ""
 
-#: ../../datamanagement.md:14
+#: ../../datamanagement.md:13
 msgid "reading mode"
 msgstr ""
 
-#: ../../datamanagement.md:15
+#: ../../datamanagement.md:14
 msgid "SQL Server"
 msgstr ""
 
-#: ../../datamanagement.md:16
-msgid "Virtal layer"
+#: ../../datamanagement.md:15
+msgid "Virtual layer"
 msgstr ""
 
-#: ../../datamanagement.md:18
+#: ../../datamanagement.md:17
 msgid "The suite also allows you to manage in consultation ed editing:"
 msgstr ""
 
-#: ../../datamanagement.md:19
+#: ../../datamanagement.md:18
 msgid "simple join data"
 msgstr ""
 
-#: ../../datamanagement.md:20
+#: ../../datamanagement.md:19
 msgid "1:N relation data"
 msgstr ""
 
-#: ../../datamanagement.md:22
+#: ../../datamanagement.md:21
 msgid "Data on DB Server"
 msgstr ""
 
-#: ../../datamanagement.md:24
+#: ../../datamanagement.md:23
 msgid ""
 "If your geographical data are stored on Server DB, it will be sufficient "
 "to allow access to the DB from the IP address on which the application is"
 " installed."
 msgstr ""
 
-#: ../../datamanagement.md:26
+#: ../../datamanagement.md:25
 msgid "Data on SpatiaLite or OGR format"
 msgstr ""
 
-#: ../../datamanagement.md:27
+#: ../../datamanagement.md:26
 msgid ""
 "If your geographical data are stored on SpatiaLite or on physical files "
 "(.gpkg, .shp, .kml, .tif...) located on your local PC, you will need:"
 msgstr ""
 
-#: ../../datamanagement.md:28
+#: ../../datamanagement.md:27
 msgid ""
 "organize data and projects in predefined localy directories and "
 "subdirectories"
 msgstr ""
 
-#: ../../datamanagement.md:29
+#: ../../datamanagement.md:28
 msgid ""
 "upload/synchronize geographic data to the corresponding folder located on"
 " the server where the application is installed"
 msgstr ""
 
-#: ../../datamanagement.md:31
+#: ../../datamanagement.md:30
 msgid ""
 "Of course, mixed solutions with geographical data on PostGreSQL/PostGis, "
 "SpatiaLite and other formats will also be possible."
 msgstr ""
 
-#: ../../datamanagement.md:33
+#: ../../datamanagement.md:32
 msgid "Organization of data and projects"
 msgstr ""
 
-#: ../../datamanagement.md:35
+#: ../../datamanagement.md:34
 msgid ""
 "Data on physical files and / or on GeoDB SpatiaLite and QGIS cartographic"
 " projects must be organized in compliance with the following indications:"
 msgstr ""
 
-#: ../../datamanagement.md:36
+#: ../../datamanagement.md:35
 msgid "a main directory named and positioned in according to need's user"
 msgstr ""
 
-#: ../../datamanagement.md:37
+#: ../../datamanagement.md:36
 msgid ""
 "a project_data sub-directory that must contain the geographic data used "
 "for the various cartographic projects, such data can also be organized in"
 " subdirectories with no nesting limits."
 msgstr ""
 
-#: ../../datamanagement.md:38
+#: ../../datamanagement.md:37
 msgid ""
 "a projects sub-directory that must contain the QGIS cartographic projects"
 " (.qgz or .qgs files)"
 msgstr ""
 
-#: ../../datamanagement.md:42
+#: ../../datamanagement.md:41
 msgid ""
 "NB: The name of the local directory dedicated to geographic data must "
 "correspond to the name defined for the DATASOURCE_PATH variable set "
 "during installation. See dedicated paragraph."
 msgstr ""
 
-#: ../../datamanagement.md:45
+#: ../../datamanagement.md:44
 msgid ""
 "That directory is also used to contain images used in the print layouts "
 "associated with the QGIS cartographic projects."
 msgstr ""
 
-#: ../../datamanagement.md:47
+#: ../../datamanagement.md:46
 msgid "Geographic data synchronization on the server"
 msgstr ""
 
-#: ../../datamanagement.md:49
+#: ../../datamanagement.md:48
 msgid ""
 "The data stored in the local project_data directory must be synchronized "
 "on the server where the G3W-SUITE application is installed."
 msgstr ""
 
-#: ../../datamanagement.md:51
+#: ../../datamanagement.md:50
 msgid ""
 "The geographic data stored in the local project_data folder must be "
 "loaded, reflecting any subdirectory structure."
 msgstr ""
 
-#: ../../datamanagement.md:53
+#: ../../datamanagement.md:52
 msgid ""
 "To synchronize your data access to the Administration panel of G3W-ADMIN "
 "and click on the Configurations icon  located in the upper right corner."
 msgstr ""
 
-#: ../../datamanagement.md:55
+#: ../../datamanagement.md:54
 msgid "Choose the File Manager item in the linked menu."
 msgstr ""
 
-#: ../../datamanagement.md:61
+#: ../../datamanagement.md:60
 msgid ""
 "Using this tool it is possible to manage the physical geographic data on "
 "the server in a simple and intuitive way."
 msgstr ""
 
-#: ../../datamanagement.md:63
+#: ../../datamanagement.md:62
 msgid ""
 "The root directory of the File Manager corresponds to the local "
 "project_data directory"
 msgstr ""
 
-#: ../../datamanagement.md:65
+#: ../../datamanagement.md:64
 msgid ""
 "It will therefore be necessary, in the case of using geographic files on "
 "the file system, to synchronize the contents of the local project_data "
@@ -208,33 +208,33 @@ msgid ""
 "publication of QGIS projects."
 msgstr ""
 
-#: ../../datamanagement.md:67
+#: ../../datamanagement.md:66
 msgid ""
 "Two specific directories can also be created within the root directory of"
 " the File Manager:"
 msgstr ""
 
-#: ../../datamanagement.md:69
+#: ../../datamanagement.md:68
 msgid "media_user: a directory exposed on the web, to store your multimedia files"
 msgstr ""
 
-#: ../../datamanagement.md:70
+#: ../../datamanagement.md:69
 msgid "svg: a directory to store extra SVG icons used your QGIS projects"
 msgstr ""
 
-#: ../../datamanagement.md:72
+#: ../../datamanagement.md:71
 msgid ""
 "All the directories can be organized in subdirectories with no nesting "
 "limits."
 msgstr ""
 
-#: ../../datamanagement.md:74
+#: ../../datamanagement.md:73
 msgid ""
 "NB: The names of these directories are defined by the basic settings set "
 "during the installation of the suite. See dedicated paragraph."
 msgstr ""
 
-#: ../../datamanagement.md:79
+#: ../../datamanagement.md:78
 msgid ""
 "The example shows the case in which in the local project_data directory "
 "there are two directories (geopackage and spatialite) in addition to the "
@@ -289,5 +289,8 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "The suite also allows you to manage 1:N relational editing."
+#~ msgstr ""
+
+#~ msgid "Virtal layer"
 #~ msgstr ""
 

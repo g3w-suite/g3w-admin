@@ -8,14 +8,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: G3W-SUITE 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-07 17:33+0200\n"
+"POT-Creation-Date: 2021-09-28 17:50+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.4.0\n"
+"Generated-By: Babel 2.8.0\n"
 
 #: ../../g3wsuite_administration.md:1
 msgid "G3W-ADMIN: the Administration panel"
@@ -195,7 +195,7 @@ msgstr ""
 
 #: ../../g3wsuite_administration.md:57 ../../g3wsuite_administration.md:66
 #: ../../g3wsuite_administration.md:75 ../../g3wsuite_administration.md:84
-#: ../../g3wsuite_administration.md:93 ../../g3wsuite_administration.md:462
+#: ../../g3wsuite_administration.md:93 ../../g3wsuite_administration.md:469
 msgid "ATTENTION: contents marked with * are mandatory."
 msgstr ""
 
@@ -248,7 +248,7 @@ msgid ""
 msgstr ""
 
 #: ../../g3wsuite_administration.md:108 ../../g3wsuite_administration.md:136
-#: ../../g3wsuite_administration.md:364 ../../g3wsuite_administration.md:466
+#: ../../g3wsuite_administration.md:367 ../../g3wsuite_administration.md:473
 msgid ""
 "After filling in the various form, click on the Save button to confirm "
 "your choices."
@@ -764,7 +764,7 @@ msgid ""
 " active this options takes precendence)"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:296 ../../g3wsuite_administration.md:406
+#: ../../g3wsuite_administration.md:296 ../../g3wsuite_administration.md:409
 msgid "ACL Users"
 msgstr ""
 
@@ -854,7 +854,7 @@ msgid "N.B. All projects loaded into the group must be associated with this SRID
 msgstr ""
 
 #: ../../g3wsuite_administration.md:326
-msgid "Base layers and Map default features"
+msgid "Base layers and Map interaction tools"
 msgstr ""
 
 #: ../../g3wsuite_administration.md:327
@@ -883,17 +883,17 @@ msgstr ""
 
 #: ../../g3wsuite_administration.md:333
 msgid ""
-"querybbox: query via bounding box (N.B. for the layers to be queried "
-"according to this method it is necessary that they are published as WFS "
-"services on the QGIS project)"
+"querybbox: query via bounding box (N.B. it is necessary that the layers "
+"are published as WFS services on the QGIS project)"
 msgstr ""
 
 #: ../../g3wsuite_administration.md:334
 msgid ""
 "querybypolygon: it will be possible to automatically query the features "
 "of one or more layers that fall inside a polygonal element of a guide "
-"layer. (Eg what's inside a cadastral parcel?). - N.B. searchable layers "
-"must be published as WFS services on the QGIS project"
+"layer. (Eg what's inside a cadastral parcel?). - N.B. it is necessary "
+"that the all the layers involved in this kind of query are published as "
+"WFS services on the QGIS project"
 msgstr ""
 
 #: ../../g3wsuite_administration.md:335
@@ -936,136 +936,149 @@ msgstr ""
 
 #: ../../g3wsuite_administration.md:344
 msgid ""
-"addlayers: tool for temporarily uploading GeoJson, KML and SHP (zipped) "
-"vector layers to WebGis"
+"addlayers: tool for temporarily uploading GML, GeoJson, KML, GPX, SHP "
+"(zipped) and CSV with coordinate to WebGis. These layers will remain "
+"until the end of the work session"
 msgstr ""
 
 #: ../../g3wsuite_administration.md:345
-msgid "screenshot: tool to take a screenshot of the map area"
+msgid "screenshot:* tool to take a screenshot of the map area"
 msgstr ""
 
 #: ../../g3wsuite_administration.md:346
+msgid "GeoScreenshot:* tool to create a GeoTif of the map area"
+msgstr ""
+
+#: ../../g3wsuite_administration.md:347
 msgid ""
 "Baselayer: choice of the base maps that will be available on the WebGis "
 "client"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:347
+#: ../../g3wsuite_administration.md:348
 msgid ""
 "Background color: choice of the background color of the maps (default "
 "white)"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:351
+#: ../../g3wsuite_administration.md:350
+msgid ""
+"*NB: the security protocols prevent the creation of screenshots if OGC "
+"services (such as WMS) with domains other than the publication one are "
+"present on the map. In this case the icons will not be present on the "
+"client even if the MapControl is selected."
+msgstr ""
+
+#: ../../g3wsuite_administration.md:354
 msgid ""
 "With regard to the Base Layers, it is specified that the external "
 "services available by default are:"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:352
+#: ../../g3wsuite_administration.md:355
 msgid "OSM"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:353
+#: ../../g3wsuite_administration.md:356
 msgid "Bing Street"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:354
+#: ../../g3wsuite_administration.md:357
 msgid "Bing Aerial"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:356
+#: ../../g3wsuite_administration.md:359
 msgid ""
 "It is possible to create/add customized Base Layers starting from the "
 "cache of the single layers present in published webgis"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:358
+#: ../../g3wsuite_administration.md:361
 msgid "See Caching layer paragraph in the Widget management session."
 msgstr ""
 
-#: ../../g3wsuite_administration.md:360
+#: ../../g3wsuite_administration.md:363
 msgid "Copyrigth"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:361
+#: ../../g3wsuite_administration.md:364
 msgid ""
 "Terms of use: description of the terms of use of the map and any other "
 "info Link to terms: link to text"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:368
+#: ../../g3wsuite_administration.md:371
 msgid "Groups List"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:369
+#: ../../g3wsuite_administration.md:372
 msgid "From this item you can access the list of the created cartographic groups."
 msgstr ""
 
-#: ../../g3wsuite_administration.md:371
+#: ../../g3wsuite_administration.md:374
 msgid ""
 "For each group, the Title and Subtitle defined at the time of creation "
 "are shown."
 msgstr ""
 
-#: ../../g3wsuite_administration.md:373
+#: ../../g3wsuite_administration.md:376
 msgid "There are also a series of icons to access specific functions:"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:374
+#: ../../g3wsuite_administration.md:377
 msgid "Add a new project to be published on the WebGis service"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:375
+#: ../../g3wsuite_administration.md:378
 msgid "Number and links to projects published within the Group"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:376
+#: ../../g3wsuite_administration.md:379
 msgid "Show group details"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:377
+#: ../../g3wsuite_administration.md:380
 msgid "Change group characteristics"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:378
+#: ../../g3wsuite_administration.md:381
 msgid "Delete group"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:380
+#: ../../g3wsuite_administration.md:383
 msgid "ATTENTION: the removal of the cartographic group will involve:"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:381
+#: ../../g3wsuite_administration.md:384
 msgid "the removal of all the WebGis services contained therein"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:382
+#: ../../g3wsuite_administration.md:385
 msgid ""
 "the removal of all widgets (eg searches) that would be orphaned after the"
 " removal of the WebGis services contained in the group. See the Widget "
 "chapter for more information."
 msgstr ""
 
-#: ../../g3wsuite_administration.md:384
+#: ../../g3wsuite_administration.md:387
 msgid "A large + icon is available to access the form for creating a new group."
 msgstr ""
 
-#: ../../g3wsuite_administration.md:388 ../../g3wsuite_administration.md:476
+#: ../../g3wsuite_administration.md:391 ../../g3wsuite_administration.md:483
 msgid "Define the Groups order on the FrontEnd"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:389
+#: ../../g3wsuite_administration.md:392
 msgid ""
 "Using the Drag & Drop function it is possible to define the order of the "
 "Groups in the list."
 msgstr ""
 
-#: ../../g3wsuite_administration.md:391
+#: ../../g3wsuite_administration.md:394
 msgid "This order will be reflected within the belonging MacroGroups."
 msgstr ""
 
-#: ../../g3wsuite_administration.md:393
+#: ../../g3wsuite_administration.md:396
 msgid ""
 "NB: currently in the list of Groups it is not present in the subdivision "
 "in the belonging MacroGroups but the fact that a Group can be associated "
@@ -1073,78 +1086,78 @@ msgid ""
 " be the complessive display order."
 msgstr ""
 
-#: ../../g3wsuite_administration.md:395
+#: ../../g3wsuite_administration.md:398
 msgid "Publication of new WebGis services"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:396
+#: ../../g3wsuite_administration.md:399
 msgid "To publish a new QGIS cartographic project"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:397
+#: ../../g3wsuite_administration.md:400
 msgid "It is possible to publish new QGIS projects:"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:398
+#: ../../g3wsuite_administration.md:401
 msgid ""
 "from the list of cartographic groups: click on the icon  located under "
 "the box of the cartographic group in which you want to publish the "
 "project."
 msgstr ""
 
-#: ../../g3wsuite_administration.md:399
+#: ../../g3wsuite_administration.md:402
 msgid ""
 "from the list of cartographic projects published within a group: by "
 "clicking on the the buttom"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:401
+#: ../../g3wsuite_administration.md:404
 msgid ""
 "In the dedicated form we could define the charatteristicsof the project "
 "being published:"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:403
+#: ../../g3wsuite_administration.md:406
 msgid "QGIS project"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:404
+#: ../../g3wsuite_administration.md:407
 msgid ""
 "QGIS file*: load the QGIS cartographic project to be published (.qgz or "
 ".qgs file)"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:407
+#: ../../g3wsuite_administration.md:410
 msgid "Management of access and/or modification permissions"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:409
+#: ../../g3wsuite_administration.md:412
 msgid ""
 "The options present will vary according to the type of user (Admin, "
 "Editor1 or Editor2) who creates / manages the WebGis service."
 msgstr ""
 
-#: ../../g3wsuite_administration.md:410
+#: ../../g3wsuite_administration.md:413
 msgid "Editor1 user: defines the user (Editor1) manager of the WebGis service."
 msgstr ""
 
-#: ../../g3wsuite_administration.md:412
+#: ../../g3wsuite_administration.md:415
 msgid ""
 "The entry is present only when the WebGis service is created by Admin or "
 "Editor1 user."
 msgstr ""
 
-#: ../../g3wsuite_administration.md:414
+#: ../../g3wsuite_administration.md:417
 msgid ""
 "In the event that the WebGis service is published by a user of type "
 "Editor1, the WebGis service is associated directly with that user"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:415
+#: ../../g3wsuite_administration.md:418
 msgid "Editor2 User: defines the user (Editor2) manager of the WebGis service."
 msgstr ""
 
-#: ../../g3wsuite_administration.md:417
+#: ../../g3wsuite_administration.md:420
 msgid ""
 "The item is present only when the user of the Admin or Editor1 type "
 "creates the service WebGis. In the event that the WebGis service is "
@@ -1152,102 +1165,102 @@ msgid ""
 "directly with that user"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:421
+#: ../../g3wsuite_administration.md:424
 msgid ""
 "Viewers users: define the individual users (Viewers) who have the "
 "credentials to view the WebGis service. By choosing the anonymous user "
 "(AnonymusUser) the group will be freely accessible."
 msgstr ""
 
-#: ../../g3wsuite_administration.md:422
+#: ../../g3wsuite_administration.md:425
 msgid ""
 "Editor user groups: define the user groups (Editor2) who manage the "
 "service."
 msgstr ""
 
-#: ../../g3wsuite_administration.md:423
+#: ../../g3wsuite_administration.md:426
 msgid ""
 "Viewer user groups: you define the user groups (Viewer) which have the "
 "credentials to view the content of the service."
 msgstr ""
 
-#: ../../g3wsuite_administration.md:427
+#: ../../g3wsuite_administration.md:430
 msgid "Default base layer"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:428
+#: ../../g3wsuite_administration.md:431
 msgid "In this session you define which base layer should be active at startup."
 msgstr ""
 
-#: ../../g3wsuite_administration.md:430
+#: ../../g3wsuite_administration.md:433
 msgid ""
 "The choice is limited to the list of base layers activated for the "
 "cartographic group in which you work."
 msgstr ""
 
-#: ../../g3wsuite_administration.md:432
+#: ../../g3wsuite_administration.md:435
 msgid "It is also possible not to define any active base layer at startup."
 msgstr ""
 
-#: ../../g3wsuite_administration.md:434
+#: ../../g3wsuite_administration.md:437
 msgid "Description data"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:435
+#: ../../g3wsuite_administration.md:438
 msgid ""
 "Public title: title of the WebGis service, it will appear at the font end"
 " level and in the header of the client."
 msgstr ""
 
-#: ../../g3wsuite_administration.md:436
+#: ../../g3wsuite_administration.md:439
 msgid ""
 "Description: Description of the project, it will appear at the public "
 "portal level."
 msgstr ""
 
-#: ../../g3wsuite_administration.md:437
+#: ../../g3wsuite_administration.md:440
 msgid ""
 "Thumbnail (Logo): logo to associate with the project. This image will be "
 "viewable in the list of projects within the cartographic group"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:438
+#: ../../g3wsuite_administration.md:441
 msgid ""
 "URL alias: a human readable URL for the map. Only alphanumeric "
 "characters, not white space or special characters."
 msgstr ""
 
-#: ../../g3wsuite_administration.md:441
+#: ../../g3wsuite_administration.md:443
 msgid ""
 "The title associated with the WebGis service follows this definition "
 "logic:"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:442
+#: ../../g3wsuite_administration.md:444
 msgid "Public title: if set"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:443
+#: ../../g3wsuite_administration.md:445
 msgid ""
 "QGIS project title: if set on the General session of QGIS project "
 "properties"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:444
+#: ../../g3wsuite_administration.md:446
 msgid "Name of the QGIS project file"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:446
+#: ../../g3wsuite_administration.md:448
 msgid "Options and actions"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:448
+#: ../../g3wsuite_administration.md:450
 msgid ""
 "User QGIS project map start extent as webgis init extent: check this "
 "control if you want set initial extent from QGSI project initial extent"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:450
+#: ../../g3wsuite_administration.md:452
 msgid ""
 "Otherwise the initial extension will correspond to the maximum one "
 "defined on the basis of the extension associated with the WMS "
@@ -1255,161 +1268,177 @@ msgid ""
 "WMS capabilities (Advertised extent))"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:452
+#: ../../g3wsuite_administration.md:454
 msgid ""
 "Tab's TOC active as default: set tab's TOC (Layers, Base layers, Legend) "
 "open by default on startup of webgis service"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:454
+#: ../../g3wsuite_administration.md:456
+msgid ""
+"Legend position rendering: this option allows to set legend rendering "
+"position:"
+msgstr ""
+
+#: ../../g3wsuite_administration.md:457
+msgid ""
+"In a separate TAB: default value, the legend is rendered into a separate "
+"tab"
+msgstr ""
+
+#: ../../g3wsuite_administration.md:458
+msgid "Into TOC layers: the legend is rendered inside layers toc"
+msgstr ""
+
+#: ../../g3wsuite_administration.md:461
 msgid ""
 "Automatic zoom to query result features: if in the results of a search "
 "there are only features of a layer, the webgis automatic zoom on their "
 "extension"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:456
+#: ../../g3wsuite_administration.md:463
 msgid ""
 "The next options allow you to define the type of WMS / WFS query to be "
 "carried out and the maximum number of results obtainable following a "
 "query."
 msgstr ""
 
-#: ../../g3wsuite_administration.md:457
+#: ../../g3wsuite_administration.md:464
 msgid ""
 "Max feature to get for query*: max number of feature to get for single or"
 " multiple mode"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:458
+#: ../../g3wsuite_administration.md:465
 msgid "Query control mode*: single or multiple"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:459
+#: ../../g3wsuite_administration.md:466
 msgid "Query by bbox control mode*: single or multiple"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:460
+#: ../../g3wsuite_administration.md:467
 msgid "Query by polygon control mode*: single or multiple"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:470
+#: ../../g3wsuite_administration.md:477
 msgid ""
 "If the operation is successful we will see the new project appear in the "
 "list of projects in in the working Cartographic Group."
 msgstr ""
 
-#: ../../g3wsuite_administration.md:477
+#: ../../g3wsuite_administration.md:484
 msgid ""
 "The individual WebGis services will be arranged, within the Thematic "
 "Groups to which they belong, in alphabetical order based on the title of "
 "the service."
 msgstr ""
 
-#: ../../g3wsuite_administration.md:479
+#: ../../g3wsuite_administration.md:486
 msgid "Update/ Manage WebGis services"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:480
+#: ../../g3wsuite_administration.md:487
 msgid ""
 "To update a published WebGis service, access the list of projects in the "
 "Cartographic Group."
 msgstr ""
 
-#: ../../g3wsuite_administration.md:482
+#: ../../g3wsuite_administration.md:489
 msgid ""
 "Click on the Edit  icon placed at the top of the WebGis service and "
 "reload the QGIS file with the changes made in the relevant form."
 msgstr ""
 
-#: ../../g3wsuite_administration.md:484
+#: ../../g3wsuite_administration.md:491
 msgid "Click on the SAVE button to confirm the change."
 msgstr ""
 
-#: ../../g3wsuite_administration.md:486
+#: ../../g3wsuite_administration.md:493
 msgid ""
 "Always starting from the list of WebGis services, it is possible to "
 "manage numerous functional aspects associated with them."
 msgstr ""
 
-#: ../../g3wsuite_administration.md:490
+#: ../../g3wsuite_administration.md:497
 msgid "Basic tools"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:492
+#: ../../g3wsuite_administration.md:499
 msgid ""
 "In this section it is therefore possible to view the list of cartographic"
 " projects present, view them, manage them and create new ones."
 msgstr ""
 
-#: ../../g3wsuite_administration.md:494
+#: ../../g3wsuite_administration.md:501
 msgid ""
 "Through the single icons, placed at the level of each project, it is "
 "possible to:"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:495
+#: ../../g3wsuite_administration.md:502
 msgid ""
 "Display the cartographic project on the WebGis interface: to check the "
 "display by the user"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:496
+#: ../../g3wsuite_administration.md:503
 msgid ""
 "Access the list of layers present within the project and define their "
 "functional aspects"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:497
+#: ../../g3wsuite_administration.md:504
 msgid "View the project specifications"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:498
+#: ../../g3wsuite_administration.md:505
 msgid "Test the WMS Capabilities of the project"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:499
+#: ../../g3wsuite_administration.md:506
 msgid ""
 "Update a project: update of the QGIS file and other options related to "
 "the project"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:500
+#: ../../g3wsuite_administration.md:507
 msgid ""
 "Remove a cartographic project Warning: removing a project also removes "
 "all the widgets (e.g. searches) that would be orphaned after the project "
 "has been removed"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:502
+#: ../../g3wsuite_administration.md:509
 msgid "Download of the QGIS project"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:503
+#: ../../g3wsuite_administration.md:510
 msgid "List of OGC services associated with the project"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:506
+#: ../../g3wsuite_administration.md:512
 msgid "Setting up the overview map for WebGis services"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:507
+#: ../../g3wsuite_administration.md:513
 msgid ""
 "In this session it is also possible to define which of the cartographic "
 "projects loaded within the group will be used as a panoramic map."
 msgstr ""
 
-#: ../../g3wsuite_administration.md:509
+#: ../../g3wsuite_administration.md:515
 msgid ""
 "To set the panoramic map, choose the projects and tick the check box in "
 "the Overview column."
 msgstr ""
 
-#: ../../g3wsuite_administration.md:511
+#: ../../g3wsuite_administration.md:517
 msgid "Widget management"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:512
+#: ../../g3wsuite_administration.md:518
 msgid ""
 "Once a cartographic project has been published, thougth the icon  it is "
 "possible to access the list of the geographical states that compose it "
@@ -1417,25 +1446,25 @@ msgid ""
 "cartographic client level."
 msgstr ""
 
-#: ../../g3wsuite_administration.md:516
+#: ../../g3wsuite_administration.md:522
 msgid "Next to each layer are a series of icons and checkboxes:"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:517
+#: ../../g3wsuite_administration.md:523
 msgid "Label: layer alias applied at the QGIS project level"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:518
+#: ../../g3wsuite_administration.md:524
 msgid "Name: name of the layer (file or DB table)"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:519
+#: ../../g3wsuite_administration.md:525
 msgid ""
 "Type: illustrates the type of data (WMS, PostGis, SpatiaLite, GDAL / OGR "
 "...)"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:520
+#: ../../g3wsuite_administration.md:526
 msgid ""
 "WMS external: to speed up loading, the WMS layers present in a QGIS "
 "project are managed directly by Django and not by QGIS-Server. However, "
@@ -1445,189 +1474,193 @@ msgid ""
 " the associated styling is applied."
 msgstr ""
 
-#: ../../g3wsuite_administration.md:521
+#: ../../g3wsuite_administration.md:527
 msgid ""
 "WFS: a check mark shows whether the layer is published as a WFS service "
 "or not"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:522
+#: ../../g3wsuite_administration.md:528
 msgid "Actions: a series of icons dedicated to various functions"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:523
+#: ../../g3wsuite_administration.md:529
 msgid ""
 "Caching Layer: allows you to activate and manage the cache of the single "
 "layer at the project level"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:524
+#: ../../g3wsuite_administration.md:530
 msgid ""
 "Editing layer: shows if the online editing function is active on the "
 "layer and allows you to activate and define it"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:525
-msgid ""
-"Manage alphanumric constraints: create or manage editing and "
-"visualization alphanumeric-constraints"
-msgstr ""
-
-#: ../../g3wsuite_administration.md:526
-msgid "Manage geo-contsraints: create or manage editing geo-constraints"
-msgstr ""
-
-#: ../../g3wsuite_administration.md:527
+#: ../../g3wsuite_administration.md:531
 msgid "QPlotly widget: add or manage plots created with DataPlotly QGIS plugin"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:528
+#: ../../g3wsuite_administration.md:532
 msgid ""
-"List of widgets: shows how many widgets (eg searches) are associated with"
-" this layer and allows you to activate new ones"
+"Hide layer by user/groups: hide specific layers from the TOC based on "
+"specific users or groups of users"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:529
+#: ../../g3wsuite_administration.md:533
+msgid ""
+"Geo-constraints by user/group: create or manage editing and visualization"
+" geo-constraints based on poligonal layers"
+msgstr ""
+
+#: ../../g3wsuite_administration.md:534
+msgid ""
+"Alphanumeric and QGIS expressions constraints by user/groups: create or "
+"manage editing and visualization constraints based on SLQ language or "
+"QGIS expressions"
+msgstr ""
+
+#: ../../g3wsuite_administration.md:535
+msgid ""
+"Widgets list: shows how many widgets (eg searches) are associated with "
+"this layer and allows you to activate new ones"
+msgstr ""
+
+#: ../../g3wsuite_administration.md:536
 msgid "Manage layer styles: manage multi-style layer"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:530
+#: ../../g3wsuite_administration.md:537
+msgid ""
+"Not show attributes table: hide attributes table of the layer for every "
+"users"
+msgstr ""
+
+#: ../../g3wsuite_administration.md:538
 msgid ""
 "No legend: it allows to define if the layer must have published the "
 "legend at TOC level of the WebGis client"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:531
+#: ../../g3wsuite_administration.md:539
 msgid ""
 "Download: allows the download of the geographic and not geographic layers"
 " in various formats"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:532
+#: ../../g3wsuite_administration.md:540
 msgid "Download as shp: for geographic (shp) or not geographic (dbf) layers"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:533
+#: ../../g3wsuite_administration.md:541
 msgid "Download as GPK: for geographic or not geographic layers"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:534
+#: ../../g3wsuite_administration.md:542
 msgid "Download as xls: for all types of layers, in .xls format"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:535
+#: ../../g3wsuite_administration.md:543
 msgid "Download as csv: for all types of layers, in .csv format"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:536
+#: ../../g3wsuite_administration.md:544
 msgid "Download as gpx: for geographic layers, in .gpx format"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:538
+#: ../../g3wsuite_administration.md:546
 msgid ""
 "The number above each Action icon shows if and how many related objects "
 "are present."
 msgstr ""
 
-#: ../../g3wsuite_administration.md:540
+#: ../../g3wsuite_administration.md:548
 msgid "The functions present in the Actions session are described below."
 msgstr ""
 
-#: ../../g3wsuite_administration.md:543
+#: ../../g3wsuite_administration.md:550
+msgid "Caching layer (Base Map)"
+msgstr ""
+
+#: ../../g3wsuite_administration.md:552
+msgid ""
+"With this icon it is possible to activate/manage the cache of the single "
+"layers and create XYZ Tiles layer"
+msgstr ""
+
+#: ../../g3wsuite_administration.md:554
+msgid "The form allows you to:"
+msgstr ""
+
+#: ../../g3wsuite_administration.md:555
+msgid "enable cache on the layer"
+msgstr ""
+
+#: ../../g3wsuite_administration.md:556
+msgid "reset the cache of the single layer"
+msgstr ""
+
+#: ../../g3wsuite_administration.md:557
+msgid "reset the cache of all the layers of the project"
+msgstr ""
+
+#: ../../g3wsuite_administration.md:558
+msgid ""
+"create an XYZ Tiles layer (to use as a base layer for your projects) "
+"starting from the cached layer"
+msgstr ""
+
+#: ../../g3wsuite_administration.md:560
+msgid "In this last case you have to set:"
+msgstr ""
+
+#: ../../g3wsuite_administration.md:561
+msgid "Base layer title"
+msgstr ""
+
+#: ../../g3wsuite_administration.md:562
+msgid "Base layer description"
+msgstr ""
+
+#: ../../g3wsuite_administration.md:563
+msgid "Base layer attribution"
+msgstr ""
+
+#: ../../g3wsuite_administration.md:565
+msgid ""
+"The newly created base layer will be available to be associated with "
+"those available for the various Cartographic Groups."
+msgstr ""
+
+#: ../../g3wsuite_administration.md:567
 msgid "Editing layer"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:545
+#: ../../g3wsuite_administration.md:569
 msgid ""
 "Through this icon it is possible to activate the online editing function "
 "on the individual layers and define the permissions for individual / "
 "groups of users"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:547 ../../g3wsuite_administration.md:553
+#: ../../g3wsuite_administration.md:571 ../../g3wsuite_administration.md:610
 msgid "See the dedicated paragraph in the Editing on line session."
 msgstr ""
 
-#: ../../g3wsuite_administration.md:549
-msgid "Display and editing constraints"
+#: ../../g3wsuite_administration.md:573
+msgid "QPlotly widget"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:551
-msgid ""
-"Through the Manage geo-contsraints and Manage alphanumric constraints "
-"widgets it is possible to define editing and display filters for users "
-"authorized to consult/edit the project."
-msgstr ""
-
-#: ../../g3wsuite_administration.md:555
-msgid "Caching layer (Base Map)"
-msgstr ""
-
-#: ../../g3wsuite_administration.md:557
-msgid ""
-"With this icon it is possible to activate/manage the cache of the single "
-"layers and create XYZ Tiles layer"
-msgstr ""
-
-#: ../../g3wsuite_administration.md:559
-msgid "The form allows you to:"
-msgstr ""
-
-#: ../../g3wsuite_administration.md:560
-msgid "enable cache on the layer"
-msgstr ""
-
-#: ../../g3wsuite_administration.md:561
-msgid "reset the cache of the single layer"
-msgstr ""
-
-#: ../../g3wsuite_administration.md:562
-msgid "reset the cache of all the layers of the project"
-msgstr ""
-
-#: ../../g3wsuite_administration.md:563
-msgid ""
-"create an XYZ Tiles layer (to use as a base layer for your projects) "
-"starting from the cached layer"
-msgstr ""
-
-#: ../../g3wsuite_administration.md:565
-msgid "In this last case you have to set:"
-msgstr ""
-
-#: ../../g3wsuite_administration.md:566
-msgid "Base layer title"
-msgstr ""
-
-#: ../../g3wsuite_administration.md:567
-msgid "Base layer description"
-msgstr ""
-
-#: ../../g3wsuite_administration.md:568
-msgid "Base layer attribution"
-msgstr ""
-
-#: ../../g3wsuite_administration.md:570
-msgid ""
-"The newly created base layer will be available to be associated with "
-"those available for the various Cartographic Groups."
-msgstr ""
-
-#: ../../g3wsuite_administration.md:572
-msgid "Plots from DataPlotly QGIS plugin"
-msgstr ""
-
-#: ../../g3wsuite_administration.md:574
+#: ../../g3wsuite_administration.md:575
 msgid ""
 "View plots created using QGIS DataPlotly (a great plugin developed by "
 "Matteo Ghetta) in the cartographic client."
 msgstr ""
 
-#: ../../g3wsuite_administration.md:576
+#: ../../g3wsuite_administration.md:577
 msgid "The module, based on the Plotly library, manages plots saved as xml."
 msgstr ""
 
-#: ../../g3wsuite_administration.md:578
+#: ../../g3wsuite_administration.md:579
 msgid ""
 "The plots are connected to the layers defined on the QGIS project, in "
 "this way, as for the searches and the constraints, it is possible to "
@@ -1635,178 +1668,206 @@ msgid ""
 "services in which the reference layer is present."
 msgstr ""
 
-#: ../../g3wsuite_administration.md:580
+#: ../../g3wsuite_administration.md:581
 msgid "It is also possible:"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:581
+#: ../../g3wsuite_administration.md:582
 msgid "download the plot XML file to reuse it in QGIS"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:582
+#: ../../g3wsuite_administration.md:583
 msgid ""
 "define the activation status of the plots when the WebGis service is "
 "started"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:586
+#: ../../g3wsuite_administration.md:587
 msgid ""
 "The title of the chart, defined at the plugin level, will be the unique "
 "identifier."
 msgstr ""
 
-#: ../../g3wsuite_administration.md:592
+#: ../../g3wsuite_administration.md:589
 msgid ""
-"It will be possible to filter plots based on the geometries visible on "
-"the map and/or selected by the user."
+"At client level, it will be possible to filter plots based on the "
+"geometries visible on the map and/or selected by the user."
 msgstr ""
 
 #: ../../g3wsuite_administration.md:594
-msgid "Manage layer styles"
+msgid "Charts based on 1:N data relation (child layer)"
 msgstr ""
 
 #: ../../g3wsuite_administration.md:596
 msgid ""
-"If multi styles have been associated with the same layer in the QGIS "
-"project, they will be exposed."
+"If the chart is linked to a child layer in a 1:N relation, it can also be"
+" displayed at the information level of the individual parent features"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:598
+#: ../../g3wsuite_administration.md:600
+msgid "Hide layer by user/groups"
+msgstr ""
+
+#: ../../g3wsuite_administration.md:602
 msgid ""
-"It will be possible to associate new layers by loading related QML files "
-"and set the style to be used as default."
-msgstr ""
-
-#: ../../g3wsuite_administration.md:603
-msgid "Search widget setting"
-msgstr ""
-
-#: ../../g3wsuite_administration.md:604
-msgid "In G3W-SUITE it is possible to create search widgets."
+"With this icon it will be possible to define the list of users (single "
+"and/or groups) who will be enabled to view this layer at the TOC and map "
+"level."
 msgstr ""
 
 #: ../../g3wsuite_administration.md:606
+msgid "Display and editing constraints"
+msgstr ""
+
+#: ../../g3wsuite_administration.md:608
+msgid ""
+"Through the Geo-constraints by user/group and Alphanumeric and QGIS "
+"expressions constraints by user/groups  widgets it is possible to define "
+"editing and display filters for users authorized to consult/edit the "
+"project."
+msgstr ""
+
+#: ../../g3wsuite_administration.md:612
+msgid "Widget setting - Search tools"
+msgstr ""
+
+#: ../../g3wsuite_administration.md:614
+msgid ""
+"Using this icon it is possible to associate a series of widgets to the "
+"layer. The basic widget allows you to define search tools that will be "
+"available in the webgis."
+msgstr ""
+
+#: ../../g3wsuite_administration.md:616
+msgid "Basic settings"
+msgstr ""
+
+#: ../../g3wsuite_administration.md:618
+msgid "In G3W-SUITE it is possible to create search widgets."
+msgstr ""
+
+#: ../../g3wsuite_administration.md:620
 msgid ""
 "By default, searches can be built on individual vector layers based on "
 "the fields of the table associated with the layer."
 msgstr ""
 
-#: ../../g3wsuite_administration.md:608
+#: ../../g3wsuite_administration.md:622
 msgid ""
-"NB: it is possible to create searches based on fields derived from simple"
-" joins (1:1/n:1) switching form WMS to QGIS API method. See dedicated "
-"paragraph."
+"NB: to create searches based on fields derived from simple joins (1: 1 / "
+"N: 1) or from 1: N relation, you have to change the setting of the method"
+" used (from WMS to QGIS API). See dedicated paragraph.**"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:611
+#: ../../g3wsuite_administration.md:625
 msgid ""
 "Every search widget will be saved by referring to the layer identifiers "
 "(for example the DB parameters: IP, DB name, schema, layer name)."
 msgstr ""
 
-#: ../../g3wsuite_administration.md:613
+#: ../../g3wsuite_administration.md:627
 msgid ""
 "This aspect allows, once a search widget for a layer has been created, to"
 " have it available on all the projects in which the layer is present, "
 "without having to rebuild the widget from scratch each time."
 msgstr ""
 
-#: ../../g3wsuite_administration.md:615
+#: ../../g3wsuite_administration.md:629
 msgid ""
 "In the list of layers present within the project, identify the layer on "
 "which to create and associate the search widget and click on the icon"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:619
+#: ../../g3wsuite_administration.md:633
 msgid ""
 "By clicking on the icon, the list of already active (or activatable) "
 "widgets associated with the layer will be shown."
 msgstr ""
 
-#: ../../g3wsuite_administration.md:621
+#: ../../g3wsuite_administration.md:635
 msgid ""
 "These widgets can be modified, deleted or disconnected using the "
 "appropriate icons."
 msgstr ""
 
-#: ../../g3wsuite_administration.md:623
+#: ../../g3wsuite_administration.md:637
 msgid ""
 "ATTENTION: deleting a search will delete it from all projects in which "
 "that search is active."
 msgstr ""
 
-#: ../../g3wsuite_administration.md:625
+#: ../../g3wsuite_administration.md:639
 msgid ""
 "To deactivate a search from a project, simply disconnect it using the "
 "check-box on the right."
 msgstr ""
 
-#: ../../g3wsuite_administration.md:627
+#: ../../g3wsuite_administration.md:641
 msgid "To create a new search, click on the link New widget."
 msgstr ""
 
-#: ../../g3wsuite_administration.md:629
+#: ../../g3wsuite_administration.md:643
 msgid "In the pop-up that appears, the Search type have to be chosen."
 msgstr ""
 
-#: ../../g3wsuite_administration.md:633
+#: ../../g3wsuite_administration.md:647
 msgid "In the related form we can define:"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:634
+#: ../../g3wsuite_administration.md:648
 msgid "Form Title"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:635
+#: ../../g3wsuite_administration.md:649
 msgid "Type: \"Search\""
 msgstr ""
 
-#: ../../g3wsuite_administration.md:636
+#: ../../g3wsuite_administration.md:650
 msgid ""
 "Name: name that G3W-SUITE will use to internally register the search "
 "widget."
 msgstr ""
 
-#: ../../g3wsuite_administration.md:637
+#: ../../g3wsuite_administration.md:651
 msgid "General configuration of research and results"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:638
+#: ../../g3wsuite_administration.md:652
 msgid ""
 "Search title: title that will become available in the 'Research' panel of"
 " the WebGis interface"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:639
+#: ../../g3wsuite_administration.md:653
 msgid "Search fields settings"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:640
+#: ../../g3wsuite_administration.md:654
 msgid "Field: field on which to carry out the research"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:641
+#: ../../g3wsuite_administration.md:655
 msgid ""
 "Widget: method of entering the value to be searched InputBox: manual "
 "compilation SelectBox: values ​​shown via drop-down menu AutoCompleteBox:"
 " values ​​shown through auto-complete mode"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:645
+#: ../../g3wsuite_administration.md:659
 msgid "Alias: alias assigned to the field that will appear in the search form"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:646
+#: ../../g3wsuite_administration.md:660
 msgid "Description: description assigned to the field"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:647
+#: ../../g3wsuite_administration.md:661
 msgid ""
 "Comparison operator: comparison operator (=, <,>,> <,> =, <=, LIKE, "
 "ILIKE) through which the search query will be carried out."
 msgstr ""
 
-#: ../../g3wsuite_administration.md:648
+#: ../../g3wsuite_administration.md:662
 msgid ""
 "Dependency: this parameter (optional) allows, only in the case of "
 "SelectBox widgets, to list the list of values ​​of a field filtered "
@@ -1817,189 +1878,257 @@ msgid ""
 "SpatiaLite layers."
 msgstr ""
 
-#: ../../g3wsuite_administration.md:650
+#: ../../g3wsuite_administration.md:664
 msgid ""
 "Warning: in the case of fields with more than 100 unique values, the WMS "
 "service does not allow to obtain the complete list of values. In this "
 "case it is recommended not to use the SelectBox method"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:652
+#: ../../g3wsuite_administration.md:666
 msgid ""
 "Alternatively, you can use the QGIS API as a search method to overcome "
 "this limitation. See dedicated paragraph."
 msgstr ""
 
-#: ../../g3wsuite_administration.md:654
+#: ../../g3wsuite_administration.md:668
 msgid ""
 "The button  allows you to add additional fields for the construction of "
 "the search query currently manageable through AND/OR operators."
 msgstr ""
 
-#: ../../g3wsuite_administration.md:657
+#: ../../g3wsuite_administration.md:670
 msgid ""
 "The example below shows the compilation of the form for creating a search"
 " widget dedicated to a cadastral cartography layer."
 msgstr ""
 
-#: ../../g3wsuite_administration.md:661
+#: ../../g3wsuite_administration.md:674
 msgid ""
 "Once the form has been filled in, click on the OK button to save the "
 "settings."
 msgstr ""
 
-#: ../../g3wsuite_administration.md:663
+#: ../../g3wsuite_administration.md:676
 msgid ""
 "Once the settings are saved, the created widget will appear in the list "
 "of Widgets associated with the layer."
 msgstr ""
 
-#: ../../g3wsuite_administration.md:665
+#: ../../g3wsuite_administration.md:678
 msgid ""
 "The widget will already be connected and therefore available in the "
 "WebGis interface."
 msgstr ""
 
-#: ../../g3wsuite_administration.md:670
+#: ../../g3wsuite_administration.md:682
 msgid ""
 "IMPORTANT: the created search widget will now be available (disconnected)"
 " for all projects in which the layer with which it has been associated "
 "will be present."
 msgstr ""
 
-#: ../../g3wsuite_administration.md:672
+#: ../../g3wsuite_administration.md:684
 msgid ""
 "This will allow you not to have to recreate the widget several times and "
 "to decide in which projects to activate the search and in which not."
 msgstr ""
 
-#: ../../g3wsuite_administration.md:675
+#: ../../g3wsuite_administration.md:686
+msgid "Multiple layers search"
+msgstr ""
+
+#: ../../g3wsuite_administration.md:688
+msgid ""
+"The Other searching layers option allows you to extend the search carried"
+" out to other layers."
+msgstr ""
+
+#: ../../g3wsuite_administration.md:690
+msgid ""
+"If the additional layers have homologous fields (same name and type) the "
+"search will be extended to them."
+msgstr ""
+
+#: ../../g3wsuite_administration.md:692
+msgid "The results will be differentiated according to the corresponding layer."
+msgstr ""
+
+#: ../../g3wsuite_administration.md:694
+msgid "Especially useful in the case of multigeometric layers."
+msgstr ""
+
+#: ../../g3wsuite_administration.md:698
+msgid "Search based on 1:N relation data"
+msgstr ""
+
+#: ../../g3wsuite_administration.md:699
+msgid ""
+"The option allows you to create a search based on the fields of a table "
+"(child in a 1:N relation) and obtain results relating to the parent layer"
+" of the relation."
+msgstr ""
+
+#: ../../g3wsuite_administration.md:701
+msgid ""
+"N.B. to create searches based on fields derived from simple joins (1: 1 /"
+" N: 1) or from 1: N relation, you have to change the setting of the "
+"method used (from WMS to QGIS API). See dedicated paragraph."
+msgstr ""
+
+#: ../../g3wsuite_administration.md:704
+msgid ""
+"The Relations option allows you to to define the relationship to be used "
+"(if present) to identify the parent layer whose results will be shown."
+msgstr ""
+
+#: ../../g3wsuite_administration.md:708
+msgid "Manage layer styles"
+msgstr ""
+
+#: ../../g3wsuite_administration.md:710
+msgid ""
+"If multi styles have been associated with the same layer in the QGIS "
+"project, they will be exposed."
+msgstr ""
+
+#: ../../g3wsuite_administration.md:712
+msgid ""
+"It will be possible to associate new layers by loading related QML files "
+"and set the style to be used as default."
+msgstr ""
+
+#: ../../g3wsuite_administration.md:716
 msgid "Multilinguage"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:676
-msgid "y default the suite manages four languages:"
+#: ../../g3wsuite_administration.md:717
+msgid "By default the suite manages four languages:"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:677
+#: ../../g3wsuite_administration.md:718
 msgid "English"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:678
+#: ../../g3wsuite_administration.md:719
+msgid "French"
+msgstr ""
+
+#: ../../g3wsuite_administration.md:720
 msgid "Italian"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:679
+#: ../../g3wsuite_administration.md:721
 msgid "Finnish"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:680
+#: ../../g3wsuite_administration.md:722
 msgid "Swedish"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:682
+#: ../../g3wsuite_administration.md:724
 msgid "Other languages ​​can be added."
 msgstr ""
 
-#: ../../g3wsuite_administration.md:684
+#: ../../g3wsuite_administration.md:726
 msgid "Map client"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:685
+#: ../../g3wsuite_administration.md:727
 msgid ""
 "On the top bar you can choose, through a drop-down menu, the language of "
 "the entire client interface."
 msgstr ""
 
-#: ../../g3wsuite_administration.md:689
+#: ../../g3wsuite_administration.md:731
 msgid "Administration"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:690
+#: ../../g3wsuite_administration.md:732
 msgid ""
 "Also for the Administration panel, through the same drop-down menu, it is"
 " possible to define the language of the entire interface of the console."
 msgstr ""
 
-#: ../../g3wsuite_administration.md:694
+#: ../../g3wsuite_administration.md:736
 msgid "Front end"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:695
+#: ../../g3wsuite_administration.md:737
 msgid "Fixed front end content is already available in the four basic languages."
 msgstr ""
 
-#: ../../g3wsuite_administration.md:697
+#: ../../g3wsuite_administration.md:739
 msgid "Variable contents, i.e. user-definable contents, are instead translated:"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:699
+#: ../../g3wsuite_administration.md:741
 msgid ""
 "Sessions Home, About, Maps and Login: content that can be defined and "
 "translated in the Edit General Data session of the Control Panel "
 "Administration"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:700
+#: ../../g3wsuite_administration.md:742
 msgid ""
 "Sessions MacroGroups Cartogarfici, Groups Cartogarfici and WebGis "
 "Services: contents definable and translatable in the form defining these "
 "elements, limited to the items:"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:701
+#: ../../g3wsuite_administration.md:743
 msgid "Public Title"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:702
+#: ../../g3wsuite_administration.md:744
 msgid "Description"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:704
+#: ../../g3wsuite_administration.md:746
 msgid "To carry out the translation of these contents, proceed as follows:"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:705
+#: ../../g3wsuite_administration.md:747
 msgid ""
 "access to the form for creating the element (MacroGroup, Group or WebGis "
 "Service)"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:706
+#: ../../g3wsuite_administration.md:748
 msgid ""
 "define one of the available languages from the drop-down menu at the top "
 "right"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:707
+#: ../../g3wsuite_administration.md:749
 msgid "fill in the form in the chosen language"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:708
+#: ../../g3wsuite_administration.md:750
 msgid "save the settings"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:712
+#: ../../g3wsuite_administration.md:754
 msgid "Then:"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:713
+#: ../../g3wsuite_administration.md:755
 msgid "access the form again in modification"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:714
+#: ../../g3wsuite_administration.md:756
 msgid "change the language"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:715
+#: ../../g3wsuite_administration.md:757
 msgid "fill in the translatable content in the new language"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:716
+#: ../../g3wsuite_administration.md:758
 msgid "save the new settings"
 msgstr ""
 
-#: ../../g3wsuite_administration.md:718
+#: ../../g3wsuite_administration.md:760
 msgid ""
 "Titles and Descriptions of the various elements in the defined languages "
 "​​will be available on the front."
@@ -2107,5 +2236,92 @@ msgstr ""
 #~ "additional fields for the construction "
 #~ "of the search query currently manageable"
 #~ " through AND/OR operators."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "addlayers: tool for temporarily uploading "
+#~ "GeoJson, KML and SHP (zipped) vector "
+#~ "layers to WebGis"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Manage alphanumric constraints: create or "
+#~ "manage editing and visualization "
+#~ "alphanumeric-constraints"
+#~ msgstr ""
+
+#~ msgid "Manage geo-contsraints: create or manage editing geo-constraints"
+#~ msgstr ""
+
+#~ msgid "y default the suite manages four languages:"
+#~ msgstr ""
+
+#~ msgid "Base layers and Map default features"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "querybbox: query via bounding box (N.B."
+#~ " for the layers to be queried "
+#~ "according to this method it is "
+#~ "necessary that they are published as "
+#~ "WFS services on the QGIS project)"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "querybypolygon: it will be possible to"
+#~ " automatically query the features of "
+#~ "one or more layers that fall "
+#~ "inside a polygonal element of a "
+#~ "guide layer. (Eg what's inside a "
+#~ "cadastral parcel?). - N.B. searchable "
+#~ "layers must be published as WFS "
+#~ "services on the QGIS project"
+#~ msgstr ""
+
+#~ msgid "screenshot: tool to take a screenshot of the map area"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Legend position renderingt: this option "
+#~ "allows to set legend rendering position:"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "List of widgets: shows how many "
+#~ "widgets (eg searches) are associated "
+#~ "with this layer and allows you to"
+#~ " activate new ones"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Through the Manage geo-contsraints and"
+#~ " Manage alphanumric constraints widgets it"
+#~ " is possible to define editing and"
+#~ " display filters for users authorized "
+#~ "to consult/edit the project."
+#~ msgstr ""
+
+#~ msgid "Plots from DataPlotly QGIS plugin"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "It will be possible to filter "
+#~ "plots based on the geometries visible"
+#~ " on the map and/or selected by "
+#~ "the user."
+#~ msgstr ""
+
+#~ msgid "Search widget setting"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "NB: it is possible to create "
+#~ "searches based on fields derived from"
+#~ " simple joins (1:1/n:1) switching form "
+#~ "WMS to QGIS API method. See "
+#~ "dedicated paragraph."
+#~ msgstr ""
+
+#~ msgid "Frenc"
 #~ msgstr ""
 

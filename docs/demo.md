@@ -18,7 +18,7 @@ Through the tutorials it will be possible to:
 
 # Download demo data
 
-The tutorial is based on predefined data and QGIS 3.16.x LTR project **downloadable from <a href="https://drive.google.com/file/d/1eVGlexZaKSOLGphEyE59_tX3frDb06NS/view?usp=sharing" target="_blank">this link</a>**.
+The tutorial is based on predefined data and QGIS 3.16.x LTR project **downloadable from <a href="https://drive.google.com/file/d/1F_j1wCbWtV-2ebtUzQZZz0r3SMl69noD/view?usp=sharing" target="_blank">this link</a>**.
 
 The .zip file contains the **`G3W-SUITE`** directory with three sub directories:
 * **`projects`:** containing a QGIS project (**`buildings_management.qgz`**) already optimized for the tutorial
@@ -55,13 +55,13 @@ The publication system provides for the use of the **title of the project** as t
 
 # Access the online service
 
-To publish the project, you can **access the G3W-SUITE test application** via the following URL: [**`https://v32.g3wsuite.it`**](https://v32.g3wsuite.it)
+To publish the project, you can **access the G3W-SUITE test application** via the following URL: [**`https://v33.g3wsuite.it`**](https://v33.g3wsuite.it)
 
 To access the **Administration Panel** it is necessary to log in using the following credentials:
 * user: **`demo`**
 * password: **`G3wsuite!`**
  
-**In case of login problems, report the problem to `info@gis3w.it`**
+**In case of login fails, report the problem to `info@gis3w.it`**
  
 # Publish the QGIS project as a WebGis service
 
@@ -333,7 +333,7 @@ Once the editing function is activated, updating the service, the **`Tools menu`
 
 ![](images/manual/editing_form2.png)
 
-For **further information** on the web editing function, read the [**dedicated chapter on the manual**](https://g3w-suite.readthedocs.io/en/3.2.x/g3wsuite_editing.html#online-editing-tools-at-cartographic-client-level)
+For **further information** on the web editing function, read the [**dedicated chapter on the manual**](https://g3w-suite.readthedocs.io/en/v.3.3.x/g3wsuite_editing.html#online-editing-tools-at-cartographic-client-level)
 
 # Personalize your demo
 
@@ -341,6 +341,6 @@ For **further information** on the web editing function, read the [**dedicated c
 
 Redefine attribute forms, aliases and editing widgets associated with the individual fields and reload the project to check the new settings.
 
-**It is advisable to consult the [paragraph dedicated](https://g3w-suite.readthedocs.io/en/3.2.x/g3wsuite_editing.html#activation-and-configuration) to the list and limitations of the individual editing widgets inheritable from the QGIS project.**
+**It is advisable to consult the** [paragraph dedicated](https://g3w-suite.readthedocs.io/en/v.3.3.x/g3wsuite_editing.html#activation-and-configuration) **to the list and limitations of the individual editing widgets inheritable from the QGIS project.**
 
 
