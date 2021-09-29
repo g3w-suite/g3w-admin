@@ -8,18 +8,18 @@ In the QGIS cartographic projects you can set some parameters and options that a
 * the **webgis service identification name**
 * the associated **basic metadata**
 * the **capabilities of the service**
-* the **geographical extension** displayed when the WebGis service starts
-* the **projection systems** for which the OGC services are available
 * the possibility to **exclude some associated print layouts** on the WebGis service
 * which layers are **queryable and searchable**
-* which vector layers can be **queried using WFS**
-* which **fields** (for each vector data) and with which **aliases** are made visible following interrogation on the WebGis service
+* which layers to expose with the different **OGC services (WMTS, WFS, WCS)**
+* which **fields** (for each vector data) are exposed as WMS and/or WFS
+* the **Themes (Views)** defined at the project level
 * the **structure of the query form** visible on the WebGis service
-* the associated print layouts
+* the **editing widget**, constraints** and **default values** dor every fields of vector layers
+* the associated **print layouts, report included**
 
 The following paragraphs describe which QGIS project settings are more relevant in relation to the published WebGis service.
 
-## QGIS: project property
+## Project property
 From the **`Project → Properties`** menu, you can access the **`Project Properties`** window and the three submenus of our interest:
  * **General**
  * **Data sources**
@@ -46,8 +46,8 @@ The option **`Automatically create transaction group where possible`** is automa
  * Check the **`Searchable`** column if you want that the layer will be querable on the WebGis
  
 
-**NB: this differentiation is only possible by using the QGIS APIs such as Search URL endpoint.
-See [dedicated paragraph](https://g3w-suite.readthedocs.io/en/3.2.x/settings.html#g3w-client-search-endpoint).**
+**NB: this differentiation is only possible by using the QGIS APIs such as Search URL endpoint.**
+See [dedicated paragraph](https://g3w-suite.readthedocs.io/en/v.3.3.x/settings.html#g3w-client-search-endpoint)
 
 
 ![](images/manual/datasources.png)
@@ -59,7 +59,7 @@ See [dedicated paragraph](https://g3w-suite.readthedocs.io/en/3.2.x/settings.htm
 
 This information, together with info about the structure of the attribute tables of the layers present in the project, will be displayed in the **Metadata session** of the cartographic client.
 
-See also [dedicated paragraph](https://g3w-suite.readthedocs.io/en/3.2.x/g3wsuite_client.html#metadata)
+See also [dedicated paragraph](https://g3w-suite.readthedocs.io/en/v.3.3.x/g3wsuite_client.html#metadata)
 
 ![](images/manual/qgisservercapabilities.png)
 
@@ -109,18 +109,28 @@ It is sufficient to check only the **`Published`** column
 **In this section it is possible to define which `rasters are exposed as WCS services`**
 
 
-## Print layouts
-Any print layouts associated with the published QGIS project will automatically be associated with the published WebGis service.
+## General aspects
 
-**Print layouts can contain more than one `Map` items and panoramic maps.**
+### Themes (Views)
 
-**Atlas and report are also supported.**
+The creation of **Themes** (combination of off / on layers and differentiated simbology styles) is managed at the WebGis service level.
 
-Any images present in the print layouts must be placed in the local **`project_data`** folder (in any subdirectory) and synchronized on the server.
+A specific menu on the webgis will allow you to choose the Theme to be displayed.
 
-See also the dedicated paragraph [Geographic data synchronization on the server](https://g3w-suite.readthedocs.io/it/3.2.x/datamanagement.html#geographic-data-synchronization-on-the-server).
+### Layer order
 
-## QGIS: layer properties
+The option to define the layer order different from the order in the TOC on the QGIS project is automatically supported.
+
+
+### Legend
+
+The activation of the **`Filter legend by Map content`** option on the QGIS project is automatically applied to the derived WebGis service.
+
+### Groups of layers
+
+The activation on the QGIS project of the **`Mutually exclusive group`** option for the layers groups is automatically applied to the derived WebGis service.
+
+## Layers properties
 ### Simbology
 The rendering style associated with the individual layers is replicated autonomously on the WebGis service.
 
@@ -152,11 +162,11 @@ Through this tool it is possible to manage SVG icons on the server in a simple a
 The SVG folder on the server must reflect the structure in any subfolders present locally.
 
 **NB:** The name of this directory is defined by the basic settings set during the installation of the suite.
-[See dedicated paragraph.](https://g3w-suite.readthedocs.io/en/3.2.x/settings.html#base-settings)
+[See dedicated paragraph.](https://g3w-suite.readthedocs.io/en/v.3.3.x/settings.html#base-settings)
 
 **PS:** remember that the **`File Manager`** tool also allows you to manage the synchronization of geographical data (in the case of using physical files) and the management of multimedia files.
 
-See also [dedicated paragraph](https://g3w-suite.readthedocs.io/en/3.2.x/projectsettings.html#viewing-multimedia-content)
+See also [dedicated paragraph](https://g3w-suite.readthedocs.io/en/v.3.3.x/projectsettings.html#viewing-multimedia-content)
 
 ### Definition of the fields that can be consulted for each layer
 Within the QGIS project it is also possible to define, for each layer, which fields are available following query on the WebGis service.
@@ -169,13 +179,7 @@ The check box relating to the **`WMS`** column defines whether or not the values
 
  ![](images/manual/qgislayerproperties_wmsfields.png)
 
-### Legend
 
-The activation of the **`Filter legend by Map content`** option on the QGIS project is automatically applied to the derived WebGis service.
-
-### Groups of layers
-
-The activation on the QGIS project of the **`Mutually exclusive group`** option for the layers groups is automatically applied to the derived WebGis service.
 
 ### Viewing multimedia content
 Multimedia contents (images, pdf, web URL ...) can be viewed interactively on the map client following publication of the QGIS project.
@@ -208,6 +212,17 @@ On QGIS we can build a personalized form (query form) by creating thematic tabs 
 This structural organization will be replicated directly on the query form on the WebGis service.
 
  ![](images/manual/qgislayerproperties_displayform.png)
+ 
+ ## Print layouts
+Any print layouts associated with the published QGIS project will automatically be associated with the published WebGis service.
+
+**Print layouts can contain more than one `Map` items and panoramic maps.**
+
+**Atlas and report are also supported.**
+
+Any images present in the print layouts must be placed in the local **`project_data`** folder (in any subdirectory) and synchronized on the server.
+
+See also the dedicated paragraph [Geographic data synchronization on the server](https://g3w-suite.readthedocs.io/it/v.3.3.x/datamanagement.html#geographic-data-synchronization-on-the-server).
 
 ## Performances optimization
 

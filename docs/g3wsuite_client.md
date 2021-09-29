@@ -1,4 +1,4 @@
-# G3W-CLIENT: the cartographic viewer
+# G3W-CLIENT: the cartographic client
 ## Generic aspects
 
 The application has a responsive interface consisting of expandable and reducible sessions.
@@ -32,7 +32,11 @@ The **`Tools panel`** is located on the left and containing the following object
 
 ![](images/manual/g3wclient_tool_panel.png)
 
-The centrally located **`map area`** presents the various navigation and map interaction controls, this controls are defined at the Cartographic Group level.
+In the event that **Themes (Views) are defined in the QGIS project**, a specific choice menu will be available in the Layers session of the TOC.
+
+The choice of a Theme will determine the **automatic activation of the layers and related styles**, defined in the Theme itself.
+
+![](images/manual/g3wclient_theme.png)
 
 ## Navigation and interaction with the map
 
@@ -44,8 +48,6 @@ At the base of the map area there is an information bar showing:
  * **project projection system**
  * **icon to copy the URL with the references to the extension currently displayed**
  
-![](images/manual/g3wclient_tool_panel.png)
-
 ![](images/manual/g3wclient_footer2.png)
 
  
@@ -64,8 +66,11 @@ At the base of the map area there is an information bar showing:
  * ![ ](images/manual/icon_navigation_streetview.png) **`streetview`:** Google StreetView on your map
  * ![ ](images/manual/icon_navigation_lunghezza.png) **`length`:** linear measuring instrument
  * ![ ](images/manual/icon_navigation_area.png) **`area`:** tool for measuring surfaces
- * ![ ](images/manual/icon_navigation_addlayer.png) **`addlayers`:** tool for temporarily uploading GeoJson ,KML and SHP (zipped) vector layers to WebGis
+ * ![ ](images/manual/icon_navigation_addlayer.png) **`addlayers`:** tool for temporarily uploading GML, GeoJson, KML, GPX, SHP (zipped) and CSV with coordinate to WebGis. These layers will remain until the end of the work session
  * ![ ](images/manual/icon_navigation_snapshot.png) **`snapshot`:** tool for taking snapshots of the map area
+ * ![ ](images/manual/icon_navigation_geosnapshot.png) **`GeoSnapshot`:** tool to export a GeoTIFF of the map area
+
+**Query type**
 
 It should be noted that the query function acts, by default, with the coring method, providing information relating to all the layers underlying the point where you click with the mouse or draw a box.
 
@@ -75,31 +80,53 @@ Remember that query modes based on **querybbox** and **querybypolygon** require 
 
 **NB:** Remember that, after viewing the results, it will be possible to zoom on the feature associated with the individual results only if the option **`Add geometry to object response`** has been activated at the QGIS project level (**`Project → Properties, QGIS Server session`**).
 
-### Attributes form
+### Map query
 
 In the QGIS project (**`Vector properties → Attributes Form`**), you can create custom attribute forms (tabs, groups ...)
 
-The same structured form will be reported at the query level on the cartographic client.
-
-The window is resizable.
+Upon querying a geometry, the form structure will be replicated at the client level.
 
 ![](images/manual/g3wclient_attribute_view.png)
 
 Any links to photos will determine the display of a clickable preview, any links to links or other multimedia content will determine the display of the Open button that will allow consultation of the link.
 
-For further information on this point, see the [**dedicated paragraph**](https://g3w-suite.readthedocs.io/it/3.2.x/projectsettings.html#viewing-multimedia-content).
+For further information on this point, see the [**dedicated paragraph**](https://g3w-suite.readthedocs.io/it/v.3.3.x/projectsettings.html#viewing-multimedia-content).
 
-The orange bar above the query results shows the following icons:
+#### Single result
+
+In case the query provides one single result, the attributes will be displayed according to the form defined in the QGIS project or as a column list
+
+ ![](images/manual/g3wclient_fomr_1N_plots.png)
+
+
+The bar above the query results shows the following icons:
 ![](images/manual/g3wclient_attribute_icons.png)
 
- * **Zoom to features:** if the function is activated on the Properties of the QGIS project
+ * **Zoom to feature:** if the function is activated on the Properties of the QGIS project
  * **Show relations (1: N):** if present on the QGIS project
  * **Show relation charts:** display of plots related to 1: N related data. Only if 1: N relationships are associated with the interrogated layer and plots have been activated on the referencing tables.
- * **Download Shapefile, GPK, GPX, CSV, XLS:** if activated in the administration session
- * **Print Atlas:** prints the atlas sheet (if set on QGIS project) related to the queried feature
+ * **Print Atlas:** prints the reports (atlas) (if set on QGIS project) related to the queried feature
+ * **Download single results (Shapefile, GPK, GPX, CSV, XLS):** if activated in the administration session
+ * **Remove feature from result:** remove the feature to the current list of results (useful to choose manually the list of objects to select/download)
  * **Add/Remove selection:** add/remove the features to the current selection
+ * **Copy map URL pointing to the geometry :** to create a URL which starts with the extension of the geometry in question 
  
-![](images/manual/g3wclient_attribute_view_plots.png)
+
+#### Multiple result
+
+In case the query provides more results these will be listed as a list with the possibility to expand the detailed information.
+
+![](images/manual/g3wclient_attribute_list.png)
+
+A series of icons, relating to the list of resulting features, will allow you to:
+ ![](images/manual/g3wclient_attribute_list_icons.png)
+
+ * **Zoom to features result extent:** if the function is activated on the Properties of the QGIS project
+ * **Print Atlas:** prints the reports (atlas) (if set on QGIS project) related to all the features result
+ * **Download all the features results (Shapefile, GPK, GPX, CSV, XLS):** if activated in the administration session
+ * **Add feature on result:** add features (clicking on the map) to the current list of results (useful to choose manually the list of objects to select/download)
+ * **Add/Remove selection:** add/remove the list of features result to the current selection
+ 
 
 
 ### Display of 1:n relation data
@@ -153,6 +180,12 @@ The plots will automatically update after pan and zoom operations on the map
 If activated, the **filter based on the selected features** is automatically activated on all related plots (associated with the same layer and with the 1:N relationed tables)
 
 Appropriate **messages** at the single plots level will indicate the activation of these filters.
+
+#### Charts based on 1:N data relation (child layer)
+
+If the **chart is linked to a child layer in a 1:N relation**, it can also be displayed at the information level of the individual parent features
+
+![](images/manual/g3wclient_fomr_1N_plots.png)
 
 
 ### Print
@@ -224,6 +257,10 @@ In the list of layers, right click on the name of the single layer shows the fol
 
 ![](images/manual/g3wclient_layer_function.png)
 
+It is possible to hide, automatically, layers from the TOC when they have no records. 
+
+Useful when using filters on layers or geographic views. 
+
 ##### Attribute table
 
 The attribute table (resizable) is equipped with **paging function, highligth function and zooming** to the associated features.
@@ -281,7 +318,10 @@ The list shows the active base layers at the cartographic group level.
 If the user has created base layers starting from cached layers, these may also be present.
 
 #### Legend
-if the option is activated on the QGIS project, the legend is filtered on the map content.
+
+If at the publication level of the QGIS project, the **Legend position** option i setted as TOC, this panel will be not present and the legend will be rendered inside layers TOC.
+
+If the option is activated on the QGIS project, the **legend is filtered on the map content**.
 
 
 

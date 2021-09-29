@@ -6,12 +6,13 @@ Thanks to the integration with the APIs of QGIS it is now possible to manage the
  * **reading and editing mode**
    * PostGreSQL/PostGis
    * SQLite/SpatiaLite
+   * Oracle Spatial
    * GeoPackage (not recommended for multi-user editing)
    * ShapeFile
 
  * **reading mode**
    * SQL Server
-   * Virtal layer
+   * Virtual layer
 
 The suite also allows you to manage **`1:N relational editing`**.
 
@@ -66,6 +67,14 @@ In the **`Attribute Form`** section of the **`Layer Properties`** it is also pos
  * **mandatory and/or unique constraints**
  * **range of acceptable values** through the **Range** widget
  * **default values**
+ 
+#### QGIS expressions and default values
+
+**All the QGIS expressions can be used as default values.**
+
+In this case, at the online edit level, the form relating to the field thus defined will be self-calculated and not editable by the user.
+
+Very useful in all cases where we want the values of a field to be calculated automatically through the potential of QGIS expressions.
 
 #### Definition of 1:n relations
 In the event that, at the QGIS project level, one or more 1: n type relationships have been associated with a layer (**`Project menu → Properties…`, `Relations` section**), it will be possible to carry out relational editing also on the webgis platform.
@@ -87,10 +96,6 @@ When working with layers with the same source (es. layer from the same PostGreSQ
 #### Activation of layer editing
 To activate the online editing functions, access the **`Layer list`** section of the project within the administration panel of G3W-ADMIN.
 
-Identify the layer on which you want to activate the editing function and click on the **`Editing layer` icon** ![](images/manual/icon_editing.png) located on the left.
-
-**Attention:** check the list of formats supported by QGIS for editing.
-
 ![](images/manual/g3wsuite_administration_project_layer_list.png)
 
 Identify the layer on which you want to activate the editing function and click on the **`Editing layer` icon** ![](images/manual/icon_editing.png) located on the left 
@@ -101,11 +106,19 @@ Clicking on the icon will open a modal window that will allow you to:
  * **define the editing activation scale** (only for geometric tables)
  * **define the Viewer users** (individuals or groups) **enabled** for online editing
 
-With regard to the last aspect, it should be noted that:
+For each user (single or group) it is possible to discriminate the editing powers:
+ * **Add:** add feature, copy feature, add part to multipart
+ * **Update geometry:** update vertex feature, move feature, add part to multipart, delete part from multipart, split features, dissolve features
+ * **Update attributes:** update feature attributes, update attributes of selected features
+ * **Delete:** delete features
+
+I should be noted that:
  * **Viewers users** (individuals or groups) **available** in the drop-down menu **will be limited to those who have allowed access in consultation to the WebGis project**
  * **Editor1 and Editor2 users**, **owners** of the project, are **enabled by default** to the online editing function
 
 ![](images/manual/editing_setting.png)
+
+**NB: In case a user belongs to a user group, the permissions set will be added together.**
 
 #### 1:N relational editing
 To allow editing on the related table in mode 1: n , the **editing function must also be activated** (always in the same way) **also for the related table** present in the project layers list.
@@ -113,11 +126,15 @@ To allow editing on the related table in mode 1: n , the **editing function must
 #### Constraints setting
 
 **G3W-SUITE allows you to manage two types of constraints:**
- * **alphanumeric / QGIS expressions constraints** that operate both in terms of visualization and editing
- * **geographic constraints** that operate only at the editing level
+ * **alphanumeric (SQL) / QGIS expressions constraints**
+ * **geographic constraints**
+ 
+Both work in terms of visualization and/or editing
 
-##### Alphanumeric / QGIS expressions Constraints
-**Alphanumeric / QGIS expression constraints allow you to define, for each published layer, the subset of features that can be viewed and edited by individual users and/or groups of users.**
+##### Alphanumeric (SQL) / QGIS expressions Constraints
+**Alphanumeric (SQL) / QGIS expression constraints allow you to define, for each published layer, the subset of features that can be viewed and/or edited by individual users and/or groups of users.**
+
+This setting is also available for the AnonymousUser user
 
 To activate this type of constraint, you must click, always at the level of the list of project layers, on the **`Alphanumeric constraints list` icon** ![](images/manual/icon_alpha_constraints.png).
 
@@ -129,7 +146,7 @@ Clicking on the item **`+ New constraint`** will open a modal window which will 
 
 In the form it is possible to specify whether this filter will act at the level:
  * display only
- * of editing only
+ * editing only
  * in both cases
  
 ![](images/manual/editing_alpha_constrain_layer_init.png)
@@ -174,7 +191,9 @@ In the dedicated panel it will be possible to check, modify and delete the defin
 
 
 ##### Geo-constraints
-**The online editing function also allows you to manage geo-constraints that allow the user to insert/modify features only if they intersect or are contained within specific features of a second polygonal layer.**
+**The online editing function also allows you to manage geo-constraints that allow the user to view and/or edit features only if they intersect or are contained within specific features of a second polygonal layer.**
+
+This setting is also available for the AnonymousUser user
 
 To activate a geographical constraint, you must click, always at the level of the list of project layers, on the **`Manage Geo-Constraints` icon** ![](images/manual/icon_constraints.png) which will appear once the online editing function is activated.
 
@@ -186,7 +205,7 @@ Clicking on the item **`+ New geo-constraint`** will open a modal window which w
 
 In the form it is possible to specify whether this filter will act at the level:
  * display only
- * of editing only
+ * editing only
  * in both cases
 
 ![](images/manual/geo_constrain_layer_init.png)

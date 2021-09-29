@@ -8,14 +8,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: G3W-SUITE 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-07 17:33+0200\n"
+"POT-Creation-Date: 2021-09-28 17:50+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.4.0\n"
+"Generated-By: Babel 2.8.0\n"
 
 #: ../../projectsettings.md:1
 msgid "QGIS: project settings"
@@ -54,39 +54,39 @@ msgid "the capabilities of the service"
 msgstr ""
 
 #: ../../projectsettings.md:11
-msgid "the geographical extension displayed when the WebGis service starts"
-msgstr ""
-
-#: ../../projectsettings.md:12
-msgid "the projection systems for which the OGC services are available"
-msgstr ""
-
-#: ../../projectsettings.md:13
 msgid ""
 "the possibility to exclude some associated print layouts on the WebGis "
 "service"
 msgstr ""
 
-#: ../../projectsettings.md:14
+#: ../../projectsettings.md:12
 msgid "which layers are queryable and searchable"
 msgstr ""
 
+#: ../../projectsettings.md:13
+msgid "which layers to expose with the different OGC services (WMTS, WFS, WCS)"
+msgstr ""
+
+#: ../../projectsettings.md:14
+msgid "which fields (for each vector data) are exposed as WMS and/or WFS"
+msgstr ""
+
 #: ../../projectsettings.md:15
-msgid "which vector layers can be queried using WFS"
+msgid "the Themes (Views) defined at the project level"
 msgstr ""
 
 #: ../../projectsettings.md:16
-msgid ""
-"which fields (for each vector data) and with which aliases are made "
-"visible following interrogation on the WebGis service"
-msgstr ""
-
-#: ../../projectsettings.md:17
 msgid "the structure of the query form visible on the WebGis service"
 msgstr ""
 
+#: ../../projectsettings.md:17
+msgid ""
+"the editing widget, constraints** and default values dor every fields of "
+"vector layers"
+msgstr ""
+
 #: ../../projectsettings.md:18
-msgid "the associated print layouts"
+msgid "the associated print layouts, report included"
 msgstr ""
 
 #: ../../projectsettings.md:20
@@ -96,7 +96,7 @@ msgid ""
 msgstr ""
 
 #: ../../projectsettings.md:22
-msgid "QGIS: project property"
+msgid "Project property"
 msgstr ""
 
 #: ../../projectsettings.md:23
@@ -172,190 +172,211 @@ msgstr ""
 #: ../../projectsettings.md:49
 msgid ""
 "NB: this differentiation is only possible by using the QGIS APIs such as "
-"Search URL endpoint. See dedicated paragraph."
+"Search URL endpoint. See dedicated paragraph"
 msgstr ""
 
-#: ../../projectsettings.md:55
+#: ../../projectsettings.md:54
 msgid "QGIS Server"
 msgstr ""
 
-#: ../../projectsettings.md:57
+#: ../../projectsettings.md:56
 msgid "Service capabilities"
 msgstr ""
 
-#: ../../projectsettings.md:58
+#: ../../projectsettings.md:57
 msgid "In this section it is possible to define the capabilities of the service."
 msgstr ""
 
-#: ../../projectsettings.md:60
+#: ../../projectsettings.md:59
 msgid ""
 "This information, together with info about the structure of the attribute"
 " tables of the layers present in the project, will be displayed in the "
 "Metadata session of the cartographic client."
 msgstr ""
 
-#: ../../projectsettings.md:62 ../../projectsettings.md:159
+#: ../../projectsettings.md:61 ../../projectsettings.md:165
 msgid "See also dedicated paragraph"
 msgstr ""
 
-#: ../../projectsettings.md:66
+#: ../../projectsettings.md:65
 msgid "Capabilities WMS - Advertised extent"
 msgstr ""
 
-#: ../../projectsettings.md:67
+#: ../../projectsettings.md:66
 msgid ""
 "In this section it is possible to define the geographical extension "
 "displayed when the WebGis service starts."
 msgstr ""
 
-#: ../../projectsettings.md:69
+#: ../../projectsettings.md:68
 msgid ""
 "To define it, set the desired geographical view on the map and then click"
 " on the 'Use Current Canvas Extent' button."
 msgstr ""
 
-#: ../../projectsettings.md:73
+#: ../../projectsettings.md:72
 msgid "WMS Capabilities - CSR restrictions"
 msgstr ""
 
-#: ../../projectsettings.md:74
+#: ../../projectsettings.md:73
 msgid ""
 "In this section it is possible to define the projection systems for which"
 " the project is available in relation to OGC services."
 msgstr ""
 
-#: ../../projectsettings.md:76
+#: ../../projectsettings.md:75
 msgid ""
 "It is clearly necessary to insert the projection system on which the "
 "project was made, this SR is added by clicking on the 'Used' button."
 msgstr ""
 
-#: ../../projectsettings.md:78
+#: ../../projectsettings.md:77
 msgid ""
 "Other geographic reference systems can be implemented by clicking on the "
 "'+' button and choosing from the list of reference systems."
 msgstr ""
 
-#: ../../projectsettings.md:82
+#: ../../projectsettings.md:81
 msgid "Capabilities WMS - Exclude layouts"
 msgstr ""
 
-#: ../../projectsettings.md:83
+#: ../../projectsettings.md:82
 msgid ""
 "In this section it is possible to exclude some of the print layouts that "
 "are associated with the cartographic project from the availability of the"
 " WebGis service."
 msgstr ""
 
-#: ../../projectsettings.md:87
+#: ../../projectsettings.md:86
 msgid "Capabilities WMS - General aspects"
 msgstr ""
 
-#: ../../projectsettings.md:88
+#: ../../projectsettings.md:87
 msgid "Two further aspects are manageable with regard to WMS capabilities"
 msgstr ""
 
-#: ../../projectsettings.md:89
+#: ../../projectsettings.md:88
 msgid "in general it is recommended to check use the layer ids as names option"
 msgstr ""
 
-#: ../../projectsettings.md:90
+#: ../../projectsettings.md:89
 msgid ""
 "the option Add geometry to feature response must be checked to activate "
 "the zoom to the features on the WebGis service"
 msgstr ""
 
-#: ../../projectsettings.md:94
+#: ../../projectsettings.md:93
 msgid "WMTS Capabilities"
 msgstr ""
 
-#: ../../projectsettings.md:95
+#: ../../projectsettings.md:94
 msgid ""
 "In this section it is possible to define which layers are exposed as WMTS"
 " services defining the various options"
 msgstr ""
 
-#: ../../projectsettings.md:97
+#: ../../projectsettings.md:96
 msgid "WFS Capabilities"
 msgstr ""
 
-#: ../../projectsettings.md:98
+#: ../../projectsettings.md:97
 msgid ""
 "In this section it is possible to define which layers are exposed as WFS "
 "services."
 msgstr ""
 
-#: ../../projectsettings.md:100
+#: ../../projectsettings.md:99
 msgid "The WFS service is needed if you want activate following types of query:"
 msgstr ""
 
-#: ../../projectsettings.md:101
+#: ../../projectsettings.md:100
 msgid "bbox query"
 msgstr ""
 
-#: ../../projectsettings.md:102
+#: ../../projectsettings.md:101
 msgid "bypolygon query"
 msgstr ""
 
-#: ../../projectsettings.md:104
+#: ../../projectsettings.md:103
 msgid "It is sufficient to check only the Published column"
 msgstr ""
 
-#: ../../projectsettings.md:108
+#: ../../projectsettings.md:107
 msgid "WCS Capabilities"
 msgstr ""
 
-#: ../../projectsettings.md:109
+#: ../../projectsettings.md:108
 msgid ""
 "In this section it is possible to define which rasters are exposed as WCS"
 " services"
 msgstr ""
 
+#: ../../projectsettings.md:110
+msgid "General aspects"
+msgstr ""
+
 #: ../../projectsettings.md:112
-msgid "Print layouts"
+msgid "Themes (Views)"
 msgstr ""
 
-#: ../../projectsettings.md:113
+#: ../../projectsettings.md:114
 msgid ""
-"Any print layouts associated with the published QGIS project will "
-"automatically be associated with the published WebGis service."
+"The creation of Themes (combination of off / on layers and differentiated"
+" simbology styles) is managed at the WebGis service level."
 msgstr ""
 
-#: ../../projectsettings.md:115
-msgid "Print layouts can contain more than one Map items and panoramic maps."
-msgstr ""
-
-#: ../../projectsettings.md:117
-msgid "Atlas and report are also supported."
-msgstr ""
-
-#: ../../projectsettings.md:119
+#: ../../projectsettings.md:116
 msgid ""
-"Any images present in the print layouts must be placed in the local "
-"project_data folder (in any subdirectory) and synchronized on the server."
+"A specific menu on the webgis will allow you to choose the Theme to be "
+"displayed."
 msgstr ""
 
-#: ../../projectsettings.md:121
+#: ../../projectsettings.md:118
+msgid "Layer order"
+msgstr ""
+
+#: ../../projectsettings.md:120
 msgid ""
-"See also the dedicated paragraph Geographic data synchronization on the "
-"server."
+"The option to define the layer order different from the order in the TOC "
+"on the QGIS project is automatically supported."
 msgstr ""
 
-#: ../../projectsettings.md:123
-msgid "QGIS: layer properties"
+#: ../../projectsettings.md:122
+msgid "Legend"
 msgstr ""
 
 #: ../../projectsettings.md:124
+msgid ""
+"The activation of the Filter legend by Map content option on the QGIS "
+"project is automatically applied to the derived WebGis service."
+msgstr ""
+
+#: ../../projectsettings.md:126
+msgid "Groups of layers"
+msgstr ""
+
+#: ../../projectsettings.md:128
+msgid ""
+"The activation on the QGIS project of the Mutually exclusive group option"
+" for the layers groups is automatically applied to the derived WebGis "
+"service."
+msgstr ""
+
+#: ../../projectsettings.md:130
+msgid "Layers properties"
+msgstr ""
+
+#: ../../projectsettings.md:131
 msgid "Simbology"
 msgstr ""
 
-#: ../../projectsettings.md:125
+#: ../../projectsettings.md:132
 msgid ""
 "The rendering style associated with the individual layers is replicated "
 "autonomously on the WebGis service."
 msgstr ""
 
-#: ../../projectsettings.md:127
+#: ../../projectsettings.md:134
 msgid ""
 "If external SVG icons are used (added to the basic ones of QGIS, via the "
 "Settings -> Options -> System -> SVG paths), these must be uploaded to "
@@ -363,268 +384,277 @@ msgid ""
 "Server."
 msgstr ""
 
-#: ../../projectsettings.md:129
+#: ../../projectsettings.md:136
 msgid "Layer style"
 msgstr ""
 
-#: ../../projectsettings.md:130
+#: ../../projectsettings.md:137
 msgid "The suite manages the presence of multiple styles associated with a layer."
 msgstr ""
 
-#: ../../projectsettings.md:132
+#: ../../projectsettings.md:139
 msgid ""
 "It will be possible to dynamically choose the style on the cartographic "
 "client."
 msgstr ""
 
-#: ../../projectsettings.md:134
+#: ../../projectsettings.md:141
 msgid ""
 "It will be possible to manage the styles associated with a layer from the"
 " Administration component, also by loading .qml file styles and setting "
 "the default style among those present."
 msgstr ""
 
-#: ../../projectsettings.md:137
+#: ../../projectsettings.md:143
 msgid "Manage custom SVG icons"
 msgstr ""
 
-#: ../../projectsettings.md:138
+#: ../../projectsettings.md:144
 msgid ""
 "In the installation procedure of the G3W-SUITE application, an svg named "
 "directory is created on the server."
 msgstr ""
 
-#: ../../projectsettings.md:140
+#: ../../projectsettings.md:146
 msgid ""
 "Within this directory it is therefore possible to store SVG icons, also "
 "organized in subdirecory."
 msgstr ""
 
-#: ../../projectsettings.md:142
+#: ../../projectsettings.md:148
 msgid ""
 "The Configurations icon , located in the upper right corner of the "
 "Administration Panel, allows you to access a menu that includes the File "
 "Manager item."
 msgstr ""
 
-#: ../../projectsettings.md:148
+#: ../../projectsettings.md:154
 msgid ""
 "Through this tool it is possible to manage SVG icons on the server in a "
 "simple and intuitive way."
 msgstr ""
 
-#: ../../projectsettings.md:152
+#: ../../projectsettings.md:158
 msgid ""
 "The SVG folder on the server must reflect the structure in any subfolders"
 " present locally."
 msgstr ""
 
-#: ../../projectsettings.md:154
+#: ../../projectsettings.md:160
 msgid ""
 "NB: The name of this directory is defined by the basic settings set "
 "during the installation of the suite. See dedicated paragraph."
 msgstr ""
 
-#: ../../projectsettings.md:157
+#: ../../projectsettings.md:163
 msgid ""
 "PS: remember that the File Manager tool also allows you to manage the "
 "synchronization of geographical data (in the case of using physical "
 "files) and the management of multimedia files."
 msgstr ""
 
-#: ../../projectsettings.md:161
+#: ../../projectsettings.md:167
 msgid "Definition of the fields that can be consulted for each layer"
 msgstr ""
 
-#: ../../projectsettings.md:162
+#: ../../projectsettings.md:168
 msgid ""
 "Within the QGIS project it is also possible to define, for each layer, "
 "which fields are available following query on the WebGis service."
 msgstr ""
 
-#: ../../projectsettings.md:164
+#: ../../projectsettings.md:170
 msgid ""
 "To define these settings, you access the properties of one of the vectors"
 " previously defined as searchable and choose the Source Fields submenu in"
 " the Layer Properties window."
 msgstr ""
 
-#: ../../projectsettings.md:166
+#: ../../projectsettings.md:172
 msgid "This submenu lists the fields associated to the table of the vector."
 msgstr ""
 
-#: ../../projectsettings.md:168
+#: ../../projectsettings.md:174
 msgid ""
 "The check box relating to the WMS column defines whether or not the "
 "values contained in this field will be available following the query on "
 "the WebGis service."
 msgstr ""
 
-#: ../../projectsettings.md:172
-msgid "Legend"
-msgstr ""
-
-#: ../../projectsettings.md:174
-msgid ""
-"The activation of the Filter legend by Map content option on the QGIS "
-"project is automatically applied to the derived WebGis service."
-msgstr ""
-
-#: ../../projectsettings.md:176
-msgid "Groups of layers"
-msgstr ""
-
 #: ../../projectsettings.md:178
-msgid ""
-"The activation on the QGIS project of the Mutually exclusive group option"
-" for the layers groups is automatically applied to the derived WebGis "
-"service."
-msgstr ""
-
-#: ../../projectsettings.md:180
 msgid "Viewing multimedia content"
 msgstr ""
 
-#: ../../projectsettings.md:181
+#: ../../projectsettings.md:179
 msgid ""
 "Multimedia contents (images, pdf, web URL ...) can be viewed "
 "interactively on the map client following publication of the QGIS "
 "project."
 msgstr ""
 
-#: ../../projectsettings.md:183
+#: ../../projectsettings.md:181
 msgid ""
 "In the case of web links, simply insert them (preceded by the prefix "
 "http:// or https://) within the dedicated attribute fields"
 msgstr ""
 
-#: ../../projectsettings.md:185
+#: ../../projectsettings.md:183
 msgid "In the case of multimedia files it is necessary:"
 msgstr ""
 
-#: ../../projectsettings.md:186
+#: ../../projectsettings.md:184
 msgid ""
 "upload the media file to the media_user folder (folder exposed on the "
 "web) accessible through the File Manager tool in the Suite Administration"
 " Panel"
 msgstr ""
 
-#: ../../projectsettings.md:187
+#: ../../projectsettings.md:185
 msgid "insert the web link to this file in the dedicated attribute field"
 msgstr ""
 
-#: ../../projectsettings.md:189
+#: ../../projectsettings.md:187
 msgid "The link to the file can be obtained in the following way:"
 msgstr ""
 
-#: ../../projectsettings.md:190
+#: ../../projectsettings.md:188
 msgid "application domain + media_user + path of the file + file name"
 msgstr ""
 
-#: ../../projectsettings.md:192
+#: ../../projectsettings.md:190
 msgid "Example:"
 msgstr ""
 
-#: ../../projectsettings.md:193
+#: ../../projectsettings.md:191
 msgid "application domain: https://dev.g3wsuite.it"
 msgstr ""
 
-#: ../../projectsettings.md:194
+#: ../../projectsettings.md:192
 msgid "file file_A.pdf located in the folder /media_user/form/"
 msgstr ""
 
-#: ../../projectsettings.md:195
+#: ../../projectsettings.md:193
 msgid "web link: https://dev.g3wsuite.it/media_user/form/file_A.pdf"
 msgstr ""
 
-#: ../../projectsettings.md:197
+#: ../../projectsettings.md:195
 msgid ""
 "Following queries at the cartographic client level, we will have "
 "different behaviors based on the type of content:"
 msgstr ""
 
-#: ../../projectsettings.md:198
+#: ../../projectsettings.md:196
 msgid ""
 "image: preview display in the form, click on the preview to display the "
 "image in real size"
 msgstr ""
 
-#: ../../projectsettings.md:199
+#: ../../projectsettings.md:197
 msgid ""
 "web link or other multimedia file: display of an Open orange button to "
 "allow consultation of the content"
 msgstr ""
 
-#: ../../projectsettings.md:203
+#: ../../projectsettings.md:201
 msgid "Definition of the attribute display form"
 msgstr ""
 
-#: ../../projectsettings.md:204
+#: ../../projectsettings.md:202
 msgid ""
 "For each layer it is possible to define the structure of the attributes "
 "form associated with displaying the results following query operations."
 msgstr ""
 
-#: ../../projectsettings.md:206
+#: ../../projectsettings.md:204
 msgid ""
 "On QGIS we can build a personalized form (query form) by creating "
 "thematic tabs and groups and defining the distribution of the individual "
 "fields and their aliases."
 msgstr ""
 
-#: ../../projectsettings.md:208
+#: ../../projectsettings.md:206
 msgid ""
 "This structural organization will be replicated directly on the query "
 "form on the WebGis service."
 msgstr ""
 
-#: ../../projectsettings.md:212
+#: ../../projectsettings.md:210
+msgid "Print layouts"
+msgstr ""
+
+#: ../../projectsettings.md:211
+msgid ""
+"Any print layouts associated with the published QGIS project will "
+"automatically be associated with the published WebGis service."
+msgstr ""
+
+#: ../../projectsettings.md:213
+msgid "Print layouts can contain more than one Map items and panoramic maps."
+msgstr ""
+
+#: ../../projectsettings.md:215
+msgid "Atlas and report are also supported."
+msgstr ""
+
+#: ../../projectsettings.md:217
+msgid ""
+"Any images present in the print layouts must be placed in the local "
+"project_data folder (in any subdirectory) and synchronized on the server."
+msgstr ""
+
+#: ../../projectsettings.md:219
+msgid ""
+"See also the dedicated paragraph Geographic data synchronization on the "
+"server."
+msgstr ""
+
+#: ../../projectsettings.md:221
 msgid "Performances optimization"
 msgstr ""
 
-#: ../../projectsettings.md:214
+#: ../../projectsettings.md:223
 msgid "Mandatory rules"
 msgstr ""
 
-#: ../../projectsettings.md:216
+#: ../../projectsettings.md:225
 msgid ""
 "PostGreSQL/PostGis, SQLite/Spatialite and GeoPKG layers must have a "
 "primary key"
 msgstr ""
 
-#: ../../projectsettings.md:217
+#: ../../projectsettings.md:226
 msgid "not use numeric type field in PostGreSQL/PostGis layer"
 msgstr ""
 
-#: ../../projectsettings.md:218
+#: ../../projectsettings.md:227
 msgid ""
 "the primary key field and all fields involved in search, join, 1:n "
 "relation or editing function have to be published as WMS"
 msgstr ""
 
-#: ../../projectsettings.md:219
+#: ../../projectsettings.md:228
 msgid "don't use commas for aliases associated with layers"
 msgstr ""
 
-#: ../../projectsettings.md:220
+#: ../../projectsettings.md:229
 msgid "style settings defined at the auxiliary data level are not supported"
 msgstr ""
 
-#: ../../projectsettings.md:222
+#: ../../projectsettings.md:231
 msgid "Tips"
 msgstr ""
 
-#: ../../projectsettings.md:223
+#: ../../projectsettings.md:232
 msgid ""
 "when using rule-based/categorized classification create indexes on the "
 "column(s) involved in the rule expression"
 msgstr ""
 
-#: ../../projectsettings.md:224
+#: ../../projectsettings.md:233
 msgid "start the project with only a few layers turned on by default"
 msgstr ""
 
-#: ../../projectsettings.md:225
+#: ../../projectsettings.md:234
 msgid ""
 "do not exceed three nesting levels in the groups of layers defined in the"
 " TOC"
@@ -646,5 +676,40 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "style settings defined at the auxiliary data level are not managed."
+#~ msgstr ""
+
+#~ msgid "the geographical extension displayed when the WebGis service starts"
+#~ msgstr ""
+
+#~ msgid "the projection systems for which the OGC services are available"
+#~ msgstr ""
+
+#~ msgid "which vector layers can be queried using WFS"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "which fields (for each vector data) "
+#~ "and with which aliases are made "
+#~ "visible following interrogation on the "
+#~ "WebGis service"
+#~ msgstr ""
+
+#~ msgid "the associated print layouts"
+#~ msgstr ""
+
+#~ msgid "QGIS: project property"
+#~ msgstr ""
+
+#~ msgid "QGIS: layer properties"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "NB: this differentiation is only "
+#~ "possible by using the QGIS APIs "
+#~ "such as Search URL endpoint. See "
+#~ "dedicated paragraph."
+#~ msgstr ""
+
+#~ msgid "Geneal aspect"
 #~ msgstr ""
 
