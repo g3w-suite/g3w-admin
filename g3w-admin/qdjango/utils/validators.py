@@ -70,8 +70,15 @@ def feature_validator(feature, layer):
 
     # Check geometry type
     if not geometry.isNull() and geometry.wkbType() != layer.wkbType():
-        errors['geometry'] = _('Feature geometry type %s does not match layer type: %s') % (
-            QgsWkbTypes.displayString(geometry.wkbType()), QgsWkbTypes.displayString(layer.wkbType()))
+        if not (geometry.wkbType() == QgsWkbTypes.Point25D and layer.wkbType() == QgsWkbTypes.PointZ or \
+                geometry.wkbType() == QgsWkbTypes.Polygon25D and layer.wkbType() == QgsWkbTypes.PolygonZ or \
+                geometry.wkbType() == QgsWkbTypes.LineString25D and layer.wkbType() == QgsWkbTypes.LineStringZ or \
+                geometry.wkbType() == QgsWkbTypes.MultiPoint25D and layer.wkbType() == QgsWkbTypes.MultiPointZ or \
+                geometry.wkbType() == QgsWkbTypes.MultiPolygon25D and layer.wkbType() == QgsWkbTypes.MultiPolygonZ or \
+                geometry.wkbType() == QgsWkbTypes.MultiLineString25D and layer.wkbType() == QgsWkbTypes.MultiLineStringZ):
+
+            errors['geometry'] = _('Feature geometry type %s does not match layer type: %s') % (
+                QgsWkbTypes.displayString(geometry.wkbType()), QgsWkbTypes.displayString(layer.wkbType()))
 
     def _set_error(field_name, error):
         if not field_name in errors:
