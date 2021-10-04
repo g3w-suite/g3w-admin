@@ -269,7 +269,7 @@ def mapLayerAttributesFromQgisLayer(qgis_layer, **kwargs):
                     expression = field.constraints().constraintExpression()
 
                 # Check for defaultValueDefinition with expression
-                # 2021/10/04 snippet by Alsessandro Pasotti (elpaso)
+                # 2021/10/04 snippet by Alessandro Pasotti (elpaso)
                 has_default_value_expression = False
                 if field.defaultValueDefinition().expression() != '':
                     exp = QgsExpression(field.defaultValueDefinition().expression())
