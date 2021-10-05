@@ -273,7 +273,7 @@ def mapLayerAttributesFromQgisLayer(qgis_layer, **kwargs):
                 has_default_value_expression = False
                 if field.defaultValueDefinition().expression() != '':
                     exp = QgsExpression(field.defaultValueDefinition().expression())
-                    has_default_value_expression = exp.rootNode().nodeType() == QgsExpressionNode.NodeType.ntLiteral
+                    has_default_value_expression = exp.rootNode().nodeType() != QgsExpressionNode.ntLiteral
 
                 if not_null and unique and default_clause or has_default_value_expression:
                     editable = False
