@@ -11,7 +11,9 @@ __copyright__ = 'Copyright 2019, GIS3W'
 
 from django.test.client import RequestFactory, Client
 from django.urls import reverse, NoReverseMatch
+from guardian.shortcuts import assign_perm
 from qdjango.models import Project
+from qdjango.views import QdjangoProjectUpdateView
 from core.models import ProjectMapUrlAlias
 from .base import QdjangoTestBase, CoreGroup, G3WSpatialRefSys
 from .utils import create_dff_project
@@ -226,33 +228,46 @@ class QdjangoViewsTest(QdjangoTestBase):
         self.assertTrue(self.test_viewer1_3.has_perm('qdjango.view_layer', layer_cities))
 
 
+    def test_initial_user_qdjango_view(self):
+        """Test for initial user roles into QdjangoProjectUpdateView"""
+
+        view = QdjangoProjectUpdateView()
+        view.kwargs = {'group_slug': self.project310.instance.group.slug,
+                      'slug': self.project310.instance.slug}
+        url = reverse('qdjango-project-update', args=[self.project310.instance.group.slug,
+                                                      self.project310.instance.slug])
+        factory = RequestFactory()
+        request = factory.get(url)
+
+        # As admin01
+        request.user = self.test_user1
+
+        view.request = request
+        view.object = view.get_object()
+        view.group = self.project310.instance.group
+        form = view.get_form()
+
+        # Without permissions
+        self.assertFalse('editor_user' in form.initial)
+        self.assertFalse('editor2_user' in form.initial)
+        self.assertEqual(form.initial['viewer_users'], [])
+        self.assertEqual(form.initial['editor_user_groups'], [])
+        self.assertEqual(form.initial['viewer_user_groups'], [])
+
+        # With permissions
+        assign_perm('change_project', self.test_editor1, self.project310.instance)
+        assign_perm('view_project', self.test_editor2, self.project310.instance)
+        assign_perm('view_project', self.test_viewer1_2, self.project310.instance)
+        assign_perm('view_project', self.test_viewer1, self.project310.instance)
+
+        form = view.get_form()
+
+        self.assertTrue('editor_user' in form.initial)
+        self.assertTrue('editor2_user' in form.initial)
+        self.assertEqual(form.initial['editor_user'], self.test_editor1.pk)
+        self.assertEqual(form.initial['editor2_user'], self.test_editor2.pk)
+        self.assertEqual(form.initial['viewer_users'], [self.test_viewer1.pk, self.test_viewer1_2.pk])
+        self.assertEqual(form.initial['editor_user_groups'], [])
+        self.assertEqual(form.initial['viewer_user_groups'], [])
 
 
-
-    '''
-    def test_create_qdjango_project_view(self):
-
-        uf = create_dff_project('qgis_file')
-
-        client = Client()
-        self.assertTrue(client.login(username=self.test_user1.username, password=self.test_user1.username))
-
-        url = reverse('qdjango-project-add', args=[
-            self.project_group.slug
-        ])
-
-        post_data = {
-            'form_id': uf.form_id
-        }
-
-        response = client.post(url, post_data)
-        self.assertEqual(response.status_code, 200)
-
-        # Check project saved
-
-        self.assertEqual(len(Project.objects.all()), 1)
-
-
-
-        client.logout()
-    '''

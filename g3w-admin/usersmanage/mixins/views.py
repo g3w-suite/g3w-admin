@@ -16,7 +16,7 @@ class G3WACLViewMixin(object):
 
         # get editor level 1 users
         editor_user_pk = None
-        editor_users = get_users_for_object(self.object, self.editor_permission, [G3W_EDITOR2, G3W_EDITOR1])
+        editor_users = get_users_for_object(self.object, self.editor_permission, [G3W_EDITOR1])
         if editor_users:
             editor_user_pk = editor_users[0].id
             if self.request.user.is_superuser:
