@@ -5,7 +5,7 @@ from django.utils.translation import ugettext, ugettext_lazy as _
 from collections import OrderedDict
 import copy
 
-from qgis.core import QgsFieldConstraints, Qgis
+from qgis.core import QgsFieldConstraints, Qgis, QgsExpression, QgsExpressionNode
 from qgis.PyQt.QtCore import QVariant, QDate, QDateTime
 
 # relations data type
@@ -269,7 +269,11 @@ def mapLayerAttributesFromQgisLayer(qgis_layer, **kwargs):
                     expression = field.constraints().constraintExpression()
 
                 # Check for defaultValueDefinition with expression
-                has_default_value_expression = True if field.defaultValueDefinition().expression() != '' else False
+                # 2021/10/04 snippet by Alessandro Pasotti (elpaso)
+                has_default_value_expression = False
+                if field.defaultValueDefinition().expression() != '':
+                    exp = QgsExpression(field.defaultValueDefinition().expression())
+                    has_default_value_expression = exp.rootNode().nodeType() != QgsExpressionNode.ntLiteral
 
                 if not_null and unique and default_clause or has_default_value_expression:
                     editable = False

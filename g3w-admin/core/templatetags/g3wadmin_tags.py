@@ -1,4 +1,5 @@
 
+from django.conf import settings
 from django import template
 from django.apps import apps
 from django.conf.urls.static import static
@@ -70,12 +71,16 @@ def g3wadmin_layer_actions(layer, app_name, user):
     """
     actions = load_layer_actions.send(user, layer=layer, app_name=app_name)
 
-    order_actions = (
+    order_actions = [
         'caching_layer_action',
-        'editing_layer_actions',
+    ]
+    if 'editing' in settings.INSTALLED_APPS:
+        order_actions.append('editing_layer_actions')
+
+    order_actions += [
         'qplottly_layer_action',
         'filter_by_user_layer_action'
-    )
+    ]
 
     no = {}
     no1 = []
