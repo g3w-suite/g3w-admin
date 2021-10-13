@@ -333,11 +333,13 @@ class QdjangoLayerWidgetsMixin(object):
         :return type: dict
         """
 
-        relations = eval(layer.project.relations)
         toret = []
-        for relation in relations:
-            if relation['referencingLayer'] == layer.qgs_layer_id:
-                toret.append(relation)
+
+        if layer.project.relations:
+            relations = eval(layer.project.relations)
+            for relation in relations:
+                if relation['referencingLayer'] == layer.qgs_layer_id:
+                    toret.append(relation)
         return toret
 
     def get_context_data(self, **kwargs):
