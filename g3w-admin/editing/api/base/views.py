@@ -13,7 +13,8 @@ from qgis.core import \
     QgsJsonUtils, \
     QgsJsonExporter, \
     QgsExpression, \
-    QgsExpressionContextUtils
+    QgsExpressionContextUtils, \
+    QgsExpressionNode
 from rest_framework.exceptions import ValidationError
 
 from core.api.base.vector import MetadataVectorLayer
@@ -253,7 +254,7 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
                         for qgis_field in qgis_layer.fields():
                             if qgis_field.defaultValueDefinition().expression():
                                 exp = QgsExpression(qgis_field.defaultValueDefinition().expression())
-                                if not exp.hasParserError():
+                                if exp.rootNode().nodeType() != QgsExpressionNode.ntLiteral and not exp.hasParserError():
                                     context = QgsExpressionContextUtils.createFeatureBasedContext(
                                         feature, qgis_layer.fields())
                                     context.appendScopes(
