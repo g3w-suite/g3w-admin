@@ -71,9 +71,11 @@ def g3wadmin_layer_actions(layer, app_name, user):
     """
     actions = load_layer_actions.send(user, layer=layer, app_name=app_name)
 
-    order_actions = [
-        'caching_layer_action',
-    ]
+    order_actions = []
+
+    if 'caching' in settings.INSTALLED_APPS:
+        order_actions.append('caching_layer_action')
+
     if 'editing' in settings.INSTALLED_APPS:
         order_actions.append('editing_layer_actions')
 
