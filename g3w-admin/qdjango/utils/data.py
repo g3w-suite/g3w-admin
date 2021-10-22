@@ -93,14 +93,19 @@ def makeComposerPictureFile(file):
     :param file:
     :return:
     """
-    new_file = None
-    # Path and folder name
-    basePath = settings.DATASOURCE_PATH.rstrip('/')  # eg: /home/sit/charts
-    folder = os.path.basename(basePath)  # eg: charts
 
-    new_file = re.sub(r'(.*?)%s(.*)' % folder, r'%s\2' %
-                      basePath, file)  # ``?`` means ungreedy
-    return new_file.split('|')[0]
+    if file.startswith('base64'):
+        return file
+    else:
+        new_file = None
+
+        # Path and folder name
+        basePath = settings.DATASOURCE_PATH.rstrip('/')  # eg: /home/sit/charts
+        folder = os.path.basename(basePath)  # eg: charts
+
+        new_file = re.sub(r'(.*?)%s(.*)' % folder, r'%s\2' %
+                       basePath, file)  # ``?`` means ungreedy
+        return new_file.split('|')[0]
 
 
 class QgisProjectLayer(XmlData):
