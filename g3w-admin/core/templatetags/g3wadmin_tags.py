@@ -79,8 +79,10 @@ def g3wadmin_layer_actions(layer, app_name, user):
     if 'editing' in settings.INSTALLED_APPS:
         order_actions.append('editing_layer_actions')
 
+    if 'qplottly' in settings.INSTALLED_APPS:
+        order_actions.append('qplottly_layer_action')
+
     order_actions += [
-        'qplottly_layer_action',
         'filter_by_user_layer_action'
     ]
 
