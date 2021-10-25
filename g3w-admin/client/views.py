@@ -11,6 +11,7 @@ from django.contrib.auth.views import redirect_to_login
 from django.apps import apps
 from django.core.exceptions import PermissionDenied
 from rest_framework.renderers import JSONRenderer
+from base.version import get_version
 from core.api.serializers import GroupSerializer, Group
 from core.api.views import USERMEDIAHANDLER_CLASSES
 from core.models import GeneralSuiteData, ProjectMapUrlAlias
@@ -155,8 +156,8 @@ class ClientView(TemplateView):
         # add baseUrl property
         contextData['group_config'] = 'var initConfig ={{ "i18n": {}, "staticurl":"{}", "client":"{}", ' \
                                       '"mediaurl":"{}", "user":{}, "group":{}, "baseurl":"{}", "vectorurl":"{}", ' \
-                                      '"main_map_title":{}, "g3wsuite_logo_img": "{}", "credits": "{}"' \
-                                      ' {} }}'.\
+                                      '"main_map_title":{}, "g3wsuite_logo_img": "{}", "credits": "{}", ' \
+                                      '"version": "{}" {} }}'.\
             format(json.dumps(settings.LANGUAGES),
                    settings.STATIC_URL,
                    "{}/".format(settings.CLIENT_DEFAULT),
@@ -166,6 +167,7 @@ class ClientView(TemplateView):
                    '"' + generaldata.main_map_title + '"' if generaldata.main_map_title else 'null',
                    settings.CLIENT_G3WSUITE_LOGO,
                    reverse('client-credits'),
+                   get_version(),
                    frontendurl)
 
         # project by type(app)
