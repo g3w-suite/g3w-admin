@@ -96,6 +96,14 @@ def makeComposerPictureFile(file):
 
     if file.startswith('base64'):
         return file
+
+    new_file = None
+    # Path and folder name
+    basePath = settings.DATASOURCE_PATH.rstrip('/')  # eg: /home/sit/charts
+    folder = os.path.basename(basePath)  # eg: charts
+
+    if file.startswith('base64'):
+        return file
     else:
         new_file = None
 
