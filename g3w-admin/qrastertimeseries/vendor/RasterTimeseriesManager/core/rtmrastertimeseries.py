@@ -6,6 +6,7 @@ from qgis.core import QgsRasterLayer, QgsMultiBandColorRenderer, QgsPalettedRast
 from qgis.PyQt.QtCore import QDate
 from osgeo import gdal
 
+
 class RtmRasterTimeseries(object):
 
     def __init__(self, layer):
