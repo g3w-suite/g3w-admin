@@ -18,6 +18,8 @@ from core.utils.qgisapi import get_qgs_project, expression_from_server_fids
 from django.conf import settings
 from qdjango.models import SessionTokenFilter
 
+from qgis.core import QgsFeatureRequest, QgsExpression
+
 logger = logging.getLogger('module_qdjango')
 
 
@@ -42,13 +44,13 @@ class RelationOneToManyFilter(BaseFilterBackend):
             return
         else:
             try:
-                relation_id, parent_fid = request.GET[FILTER_RELATIONONETOMANY_PARAM].split(
+                relation_id, parent_serverFid = request.GET[FILTER_RELATIONONETOMANY_PARAM].split(
                     '|')
             except ValueError as e:
                 logger.error('RelationOneToManyFilter: %s' % (e,))
                 return
 
-        if not relation_id or not parent_fid:
+        if not relation_id or not parent_serverFid:
             return
 
         # get QgsRelation object
@@ -59,10 +61,16 @@ class RelationOneToManyFilter(BaseFilterBackend):
             return
 
         # get expression
-        expression_text = qgs_relation.getRelatedFeaturesFilter(qgs_relation.referencedLayer().
-                                                                getFeature(int(parent_fid)))
+        try:
+            expression = expression_from_server_fids([parent_serverFid], qgs_relation.referencedLayer().dataProvider())
+            feature = next(qgs_relation.referencedLayer().getFeatures(QgsFeatureRequest(QgsExpression(expression))))
+            expression_text = qgs_relation.getRelatedFeaturesFilter(feature)
+        except StopIteration:
+            logger.error('RelationOneToManyFilter: error finding related feature from expression')
+            return
 
         if not expression_text:
+            logger.error('RelationOneToManyFilter: empty related feature expression filter')
             return
 
         original_expression = qgis_feature_request.filterExpression(
