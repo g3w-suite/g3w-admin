@@ -28,29 +28,30 @@ class QRTSSerieView(G3WAPIView):
 
         try:
             layer = Layer.objects.get(project_id=project_id, qgs_layer_id=qgs_layer_id)
+
+            rts = RTS(get_qgis_layer(layer))
+
+            if not rts.isValid():
+                self.results.result = False
+                self.results.error = f'{qgs_layer_id} is not a instance of QgsRasterLayer'
+
+            # translate Qdate to python date
+            pydate = []
+            for d in rts.dates():
+                pydate.append(d.toPyDate())
+
+            self.results.results.update({
+                'dates': pydate,
+                'names': rts.bands(),
+                'wavelength': rts.wavelength(),
+                'numberofbands': rts.numberOfBands(),
+                'numberofobservations': rts.numberOfObservations()
+            })
+
         except Exception as e:
             logger.error(f'[QRTSeries] {e}')
             self.results.result = False
             self.results.error = str(e)
-
-        rts = RTS(get_qgis_layer(layer))
-
-        if not rts.isValid():
-            self.results.result = False
-            self.results.error = f'{qgs_layer_id} is not a instance of QgsRasterLayer'
-
-        # translate Qdate to python date
-        pydate = []
-        for d in rts.dates():
-            pydate.append(d.toPyDate())
-
-        self.results.results.update({
-            'dates': pydate,
-            'names': rts.bands(),
-            'wavelength': rts.wavelength(),
-            'numberofbands': rts.numberOfBands(),
-            'numberofobservations': rts.numberOfObservations()
-        })
 
         return Response(self.results.results)
 

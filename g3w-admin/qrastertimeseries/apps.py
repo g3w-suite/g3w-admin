@@ -1,5 +1,9 @@
 from django.apps import AppConfig
 
 
-class QrastertimeseriesConfig(AppConfig):
+class QRasterTimeSeriesConfig(AppConfig):
     name = 'qrastertimeseries'
+
+    def ready(self):
+
+        from . import server_filters
