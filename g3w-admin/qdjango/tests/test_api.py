@@ -415,7 +415,7 @@ class TestQdjangoProjectsAPI(QdjangoTestBase):
         self.assertEqual(vl.bandCount(), 4)
         self.assertEqual(vl.height(), 888)
         self.assertEqual(vl.width(), 1570)
-        self.assertEqual(vl.extent().toString(), "-30.9890579805188260,38.5211894875827454 : 137.4460198985124464,68.9982082075644172")
+        self.assertEqual(vl.extent().toString(), "-30.9890579805188260,15.1142899751643824 : 64.2786803357740268,68.9982082075644172")
 
         os.remove(fname)
 
