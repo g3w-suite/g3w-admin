@@ -156,10 +156,10 @@ class QdjangoAsGeoTiffAPIview(G3WAPIView):
                 band_data[n] = src.GetRasterBand(n).ReadAsArray()
                 assert (band_data[n][0][0] == 0, 'band {} failure'.format(n))
 
-            [cols, rows] = band_data[1].shape
+            [rows, cols] = band_data[1].shape
 
             driver = gdal.GetDriverByName("GTiff")
-            out = driver.Create(out_filename, rows, cols, src.RasterCount)
+            out = driver.Create(out_filename, cols, rows, src.RasterCount)
 
             xres = (xmax - xmin) / float(cols)
             yres = (ymax - ymin) / float(rows)
