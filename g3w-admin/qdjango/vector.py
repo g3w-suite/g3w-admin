@@ -5,7 +5,14 @@ import zipfile
 
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseForbidden
-from qgis.core import QgsVectorFileWriter, QgsFeatureRequest, QgsJsonUtils, Qgis, QgsFieldConstraints, QgsWkbTypes
+from qgis.core import \
+    QgsVectorFileWriter, \
+    QgsFeatureRequest, \
+    QgsJsonUtils, \
+    Qgis, \
+    QgsFieldConstraints, \
+    QgsWkbTypes, \
+    QgsVectorLayer
 
 from core.api.base.vector import MetadataVectorLayer
 from core.api.base.views import (MODE_CONFIG, MODE_DATA, MODE_SHP, MODE_XLS, MODE_GPX, MODE_CSV, MODE_FILTER_TOKEN,
@@ -392,51 +399,6 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
             )
             save_options.onlySelectedFeatures = True
 
-    def _get_vectorlayer_to_use(self, request):
-        """
-        Return vector layer to use for export (shp, cvs, etc.)
-        Choose made by request GET param
-        """
-
-        # check for fields data in GET OR POST
-        if request.method == 'POST':
-            request_data = request.data
-        else:
-            request_data = request.query_params
-
-        if 'sbp_qgs_layer_id' in request_data and 'sbp_fid' in request_data:
-
-            try:
-                cloned_layer = self.metadata_layer.qgis_layer.clone()
-
-                # Try to add the layer feature of SearchByPolygon widget
-                sbp_layer = get_qgis_layer(
-                    self.layer.project.layer_set.filter(qgs_layer_id=request_data['sbp_qgs_layer_id'])[0])
-                sbp_feature = sbp_layer.getFeature(int(request_data['sbp_fid']))
-
-                cloned_layer.startEditing()
-
-                # Add prefix to field name to avoid repeated names
-                # Use 'p' as polygon
-                prefix = 'p_'
-                for f in sbp_feature.fields():
-
-                    f.setName(prefix + f.name())
-                    cloned_layer.addAttribute(f)
-
-                # Add values to new fields
-                for feature in cloned_layer.getSelectedFeatures():
-                    for f in sbp_feature.fields():
-                        feature.setAttribute(feature.fieldNameIndex(prefix + f.name()), sbp_feature[f.name()])
-                        cloned_layer.updateFeature(feature)
-
-                return cloned_layer, True
-            except Exception as e:
-                logger.error(e)
-                return self.metadata_layer.qgis_layer, False
-        else:
-            return self.metadata_layer.qgis_layer, False
-
     def _build_download_filename(self, request):
         """Build file name on filter context"""
 
@@ -453,6 +415,85 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
             filename += f"_{request.GET[FILTER_FIDS_PARAM]}"
 
         return filename
+
+    def _add_extrafields(self, request, filepath, filename):
+        """
+        Add extra fields to layer properties if sbp parameters are in http query parameters.
+        """
+
+        # check for fields data in GET OR POST
+        if request.method == 'POST':
+            request_data = request.data
+        else:
+            request_data = request.query_params
+
+        if 'sbp_qgs_layer_id' in request_data and 'sbp_fid' in request_data:
+
+            try:
+                vlayer = QgsVectorLayer(filepath+'.shp', filename, "ogr")
+
+                if not vlayer:
+                    raise Exception(f'Failed to load layer {filepath}')
+
+                # Try to add the layer feature of SearchByPolygon widget
+                sbp_layer = get_qgis_layer(
+                    self.layer.project.layer_set.filter(qgs_layer_id=request_data['sbp_qgs_layer_id'])[0])
+                sbp_feature = sbp_layer.getFeature(int(request_data['sbp_fid']))
+
+                original_attributes_count = len(vlayer.fields())
+
+                assert vlayer.startEditing()
+
+                # Add prefix to field name to avoid repeated names
+                # Use 'p' as polygon
+                prefix = 'p_'
+                for f in sbp_feature.fields():
+
+                    f.setName(prefix + f.name())
+                    vlayer.addAttribute(f)
+
+                # Save attributes
+                if not vlayer.commitChanges():
+
+                    # OGR returns an error if fields were renamed (for example when they are too long)
+                    # ignore the error in that case
+                    if 'ERROR: field with index' in str(vlayer.commitErrors()):
+                        vlayer.commitChanges()
+                    else:
+                        err_msg = f'Commit error for layer {filepath}'
+                        # Check for commit errors
+                        errs = vlayer.commitErrors()
+                        if len(errs) > 0:
+                            errs_msg = ', '.join(errs)
+                            err_msg = err_msg + f': {errs_msg}'
+
+                        raise Exception(err_msg)
+
+                # Now add new attribute values
+                assert vlayer.startEditing()
+
+                # Add values to new fields
+                features = [f for f in  vlayer.getFeatures()]
+                for feature in features:
+                    added_fields = {}
+                    field_index = original_attributes_count
+                    for f in sbp_feature.fields():
+                        added_fields.update({field_index: sbp_feature[f.name()]})
+                        field_index += 1
+                    vlayer.changeAttributeValues(feature.id(), added_fields)
+
+                # Commit new fields and exit from editing
+                if not vlayer.commitChanges():
+
+                    err_msg = f'Commit error for layer {filepath}'
+                    # Check for commit errors
+                    errs = vlayer.commitErrors()
+                    if len(errs) > 0:
+                        errs_msg = ', '.join(errs)
+                        err_msg = err_msg + f': {errs_msg}'
+
+            except Exception as e:
+                logger.error(e)
 
     def response_shp_mode(self, request):
         """
