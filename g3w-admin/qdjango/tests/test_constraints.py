@@ -1599,8 +1599,8 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
         #
         # self.assertTrue('p_name' in fields_name)
         # self.assertTrue('a point' in fields_values)
-
-        os.remove(fname)
+        #
+        #os.remove(fname)
 
     def test_bbox_filter(self):
         """Test a rule with geometry filter"""
