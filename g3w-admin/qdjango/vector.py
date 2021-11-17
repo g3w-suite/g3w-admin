@@ -5,7 +5,14 @@ import zipfile
 
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseForbidden
-from qgis.core import QgsVectorFileWriter, QgsFeatureRequest, QgsJsonUtils, Qgis, QgsFieldConstraints, QgsWkbTypes
+from qgis.core import \
+    QgsVectorFileWriter, \
+    QgsFeatureRequest, \
+    QgsJsonUtils, \
+    Qgis, \
+    QgsFieldConstraints, \
+    QgsWkbTypes, \
+    QgsVectorLayer
 
 from core.api.base.vector import MetadataVectorLayer
 from core.api.base.views import (MODE_CONFIG, MODE_DATA, MODE_SHP, MODE_XLS, MODE_GPX, MODE_CSV, MODE_FILTER_TOKEN,
@@ -392,10 +399,26 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
             )
             save_options.onlySelectedFeatures = True
 
-    def _get_vectorlayer_to_use(self, request):
+    def _build_download_filename(self, request):
+        """Build file name on filter context"""
+
+        filename = self.metadata_layer.qgis_layer.name()
+
+        # With FilterFid add feature ids sent with request
+        FILTER_FIDS_PARAM = f'{FILTER_FID_PARAM}s'
+
+        if FILTER_FIDS_PARAM in request.GET and request.GET[FILTER_FIDS_PARAM] != '':
+            if len(request.GET[FILTER_FIDS_PARAM].split(',')) == 1:
+                filename += f"_{request.GET[FILTER_FIDS_PARAM].replace(',', '_')}"
+
+        if FILTER_FID_PARAM in request.GET and request.GET[FILTER_FID_PARAM] == '':
+            filename += f"_{request.GET[FILTER_FIDS_PARAM]}"
+
+        return filename
+
+    def _add_extrafields(self, request, filepath, filename):
         """
-        Return vector layer to use for export (shp, cvs, etc.)
-        Choose made by request GET param
+        Add extra fields to layer properties if sbp parameters are in http query parameters.
         """
 
         # check for fields data in GET OR POST
@@ -407,14 +430,19 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         if 'sbp_qgs_layer_id' in request_data and 'sbp_fid' in request_data:
 
             try:
-                cloned_layer = self.metadata_layer.qgis_layer.clone()
+                vlayer = QgsVectorLayer(filepath+'.shp', filename, "ogr")
+
+                if not vlayer:
+                    raise Exception(f'Failed to load layer {filepath}')
 
                 # Try to add the layer feature of SearchByPolygon widget
                 sbp_layer = get_qgis_layer(
                     self.layer.project.layer_set.filter(qgs_layer_id=request_data['sbp_qgs_layer_id'])[0])
                 sbp_feature = sbp_layer.getFeature(int(request_data['sbp_fid']))
 
-                cloned_layer.startEditing()
+                original_attributes_count = len(vlayer.fields())
+
+                assert vlayer.startEditing()
 
                 # Add prefix to field name to avoid repeated names
                 # Use 'p' as polygon
@@ -422,7 +450,27 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
                 for f in sbp_feature.fields():
 
                     f.setName(prefix + f.name())
-                    cloned_layer.addAttribute(f)
+                    vlayer.addAttribute(f)
+
+                # Save attributes
+                if not vlayer.commitChanges():
+
+                    # OGR returns an error if fields were renamed (for example when they are too long)
+                    # ignore the error in that case
+                    if 'ERROR: field with index' in str(vlayer.commitErrors()):
+                        vlayer.commitChanges()
+                    else:
+                        err_msg = f'Commit error for layer {filepath}'
+                        # Check for commit errors
+                        errs = vlayer.commitErrors()
+                        if len(errs) > 0:
+                            errs_msg = ', '.join(errs)
+                            err_msg = err_msg + f': {errs_msg}'
+
+                        raise Exception(err_msg)
+
+                # Now add new attribute values
+                assert vlayer.startEditing()
 
                 # Add values to new fields
                 for feature in cloned_layer.getSelectedFeatures():
