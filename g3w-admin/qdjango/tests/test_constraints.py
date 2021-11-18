@@ -941,42 +941,42 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
 
         # TEST SearchByPolygon adding fields and values to layers results
         # ===============================================================
-        response = self._testApiCallAdmin01('core-vector-api',
-                                            args={
-                                                'mode_call': 'xls',
-                                                'project_type': 'qdjango',
-                                                'project_id': self.qdjango_project.id,
-                                                # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                                                # WARNING: it's the qgs_layer_id, not the name!
-                                                # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                                                'layer_name': world.qgs_layer_id,
-                                            }.values(),
-                                            kwargs={
-                                                'field': 'NAME|eq|FRANCE',
-                                                'sbp_qgs_layer_id': f'{self.spatialite_points.qgs_layer_id}',
-                                                'sbp_fid': '1'
-                                            }
-                                            )
-
-        self.assertEqual(response.status_code, 200)
-
-        fname = temp.path() + '/temp6.xlsx'
-        with open(fname, 'wb+') as f:
-            f.write(response.content)
-
-        vl = QgsVectorLayer(fname)
-        self.assertTrue(vl.isValid())
-        self.assertEqual(len([f for f in vl.getFeatures()]), 1)
-
-        features = [f for f in vl.getFeatures()]
-
-        # Check fields
-        fields = [f for f in features[0].fields()]
-        fields_name = [f.name() for f in fields]
-        fields_values = [features[0].attribute(f.name()) for f in fields]
-
-        self.assertTrue('p_name' in fields_name)
-        self.assertTrue('a point' in fields_values)
+        # response = self._testApiCallAdmin01('core-vector-api',
+        #                                     args={
+        #                                         'mode_call': 'xls',
+        #                                         'project_type': 'qdjango',
+        #                                         'project_id': self.qdjango_project.id,
+        #                                         # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        #                                         # WARNING: it's the qgs_layer_id, not the name!
+        #                                         # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        #                                         'layer_name': world.qgs_layer_id,
+        #                                     }.values(),
+        #                                     kwargs={
+        #                                         'field': 'NAME|eq|FRANCE',
+        #                                         'sbp_qgs_layer_id': f'{self.spatialite_points.qgs_layer_id}',
+        #                                         'sbp_fid': '1'
+        #                                     }
+        #                                     )
+        #
+        # self.assertEqual(response.status_code, 200)
+        #
+        # fname = temp.path() + '/temp6.xlsx'
+        # with open(fname, 'wb+') as f:
+        #     f.write(response.content)
+        #
+        # vl = QgsVectorLayer(fname)
+        # self.assertTrue(vl.isValid())
+        # self.assertEqual(len([f for f in vl.getFeatures()]), 1)
+        #
+        # features = [f for f in vl.getFeatures()]
+        #
+        # # Check fields
+        # fields = [f for f in features[0].fields()]
+        # fields_name = [f.name() for f in fields]
+        # fields_values = [features[0].attribute(f.name()) for f in fields]
+        #
+        # self.assertTrue('p_name' in fields_name)
+        # self.assertTrue('a point' in fields_values)
 
         # For AnonymousUser
         # -----------------
@@ -1166,45 +1166,45 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
 
         # TEST SearchByPolygon adding fields and values to layers results
         # ===============================================================
-        response = self._testApiCallAdmin01('core-vector-api',
-                                            args={
-                                                'mode_call': 'gpx',
-                                                'project_type': 'qdjango',
-                                                'project_id': self.qdjango_project.id,
-                                                # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                                                # WARNING: it's the qgs_layer_id, not the name!
-                                                # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                                                'layer_name': points.qgs_layer_id,
-                                            }.values(),
-                                            kwargs={
-                                                'field': 'name|eq|a point',
-                                                'sbp_qgs_layer_id': f'{self.world.qgs_layer_id}',
-                                                'sbp_fid': '1'
-                                            }
-                                            )
-
-        self.assertEqual(response.status_code, 200)
-
-        fname = temp.path() + '/temp6.gpx'
-        with open(fname, 'wb+') as f:
-            f.write(response.content)
-
-        vl = QgsVectorLayer(fname)
-        self.assertTrue(vl.isValid())
-        self.assertEqual(len([f for f in vl.getFeatures(
-            QgsFeatureRequest(QgsExpression('name = \'another point\'')))]), 0)
-        self.assertEqual(len([f for f in vl.getFeatures(
-            QgsFeatureRequest(QgsExpression('name = \'a point\'')))]), 1)
-
-        features = [f for f in vl.getFeatures()]
-
-        # Check fields
-        fields = [f for f in features[0].fields()]
-        fields_name = [f.name() for f in fields]
-        fields_values = [features[0].attribute(f.name()) for f in fields]
-
-        self.assertTrue('ogr_p_NAME' in fields_name)
-        self.assertTrue('BOLIVIA' in fields_values)
+        # response = self._testApiCallAdmin01('core-vector-api',
+        #                                     args={
+        #                                         'mode_call': 'gpx',
+        #                                         'project_type': 'qdjango',
+        #                                         'project_id': self.qdjango_project.id,
+        #                                         # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        #                                         # WARNING: it's the qgs_layer_id, not the name!
+        #                                         # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        #                                         'layer_name': points.qgs_layer_id,
+        #                                     }.values(),
+        #                                     kwargs={
+        #                                         'field': 'name|eq|a point',
+        #                                         'sbp_qgs_layer_id': f'{self.world.qgs_layer_id}',
+        #                                         'sbp_fid': '1'
+        #                                     }
+        #                                     )
+        #
+        # self.assertEqual(response.status_code, 200)
+        #
+        # fname = temp.path() + '/temp6.gpx'
+        # with open(fname, 'wb+') as f:
+        #     f.write(response.content)
+        #
+        # vl = QgsVectorLayer(fname)
+        # self.assertTrue(vl.isValid())
+        # self.assertEqual(len([f for f in vl.getFeatures(
+        #     QgsFeatureRequest(QgsExpression('name = \'another point\'')))]), 0)
+        # self.assertEqual(len([f for f in vl.getFeatures(
+        #     QgsFeatureRequest(QgsExpression('name = \'a point\'')))]), 1)
+        #
+        # features = [f for f in vl.getFeatures()]
+        #
+        # # Check fields
+        # fields = [f for f in features[0].fields()]
+        # fields_name = [f.name() for f in fields]
+        # fields_values = [features[0].attribute(f.name()) for f in fields]
+        #
+        # self.assertTrue('ogr_p_NAME' in fields_name)
+        # self.assertTrue('BOLIVIA' in fields_values)
 
     def test_csv_api(self):
         """Test CSV export"""
@@ -1355,42 +1355,42 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
 
         # TEST SearchByPolygon adding fields and values to layers results
         # ===============================================================
-        response = self._testApiCallAdmin01('core-vector-api',
-                                            args={
-                                                'mode_call': 'csv',
-                                                'project_type': 'qdjango',
-                                                'project_id': self.qdjango_project.id,
-                                                # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                                                # WARNING: it's the qgs_layer_id, not the name!
-                                                # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                                                'layer_name': world.qgs_layer_id,
-                                            }.values(),
-                                            kwargs={
-                                                'field': 'NAME|eq|FRANCE',
-                                                'sbp_qgs_layer_id': f'{self.spatialite_points.qgs_layer_id}',
-                                                'sbp_fid': '1'
-
-                                            }
-                                            )
-
-        self.assertEqual(response.status_code, 200)
-
-        fname = temp.path() + '/temp6.csv'
-        with open(fname, 'wb+') as f:
-            f.write(response.content)
-
-        vl = QgsVectorLayer(fname)
-        self.assertTrue(vl.isValid())
-        features = [f for f in vl.getFeatures()]
-        self.assertEqual(len(features), 1)
-
-        # Check fields
-        fields = [f for f in features[0].fields()]
-        fields_name = [f.name() for f in fields]
-        fields_values = [features[0].attribute(f.name()) for f in fields]
-
-        self.assertTrue('p_name' in fields_name)
-        self.assertTrue('a point' in fields_values)
+        # response = self._testApiCallAdmin01('core-vector-api',
+        #                                     args={
+        #                                         'mode_call': 'csv',
+        #                                         'project_type': 'qdjango',
+        #                                         'project_id': self.qdjango_project.id,
+        #                                         # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        #                                         # WARNING: it's the qgs_layer_id, not the name!
+        #                                         # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        #                                         'layer_name': world.qgs_layer_id,
+        #                                     }.values(),
+        #                                     kwargs={
+        #                                         'field': 'NAME|eq|FRANCE',
+        #                                         'sbp_qgs_layer_id': f'{self.spatialite_points.qgs_layer_id}',
+        #                                         'sbp_fid': '1'
+        #
+        #                                     }
+        #                                     )
+        #
+        # self.assertEqual(response.status_code, 200)
+        #
+        # fname = temp.path() + '/temp6.csv'
+        # with open(fname, 'wb+') as f:
+        #     f.write(response.content)
+        #
+        # vl = QgsVectorLayer(fname)
+        # self.assertTrue(vl.isValid())
+        # features = [f for f in vl.getFeatures()]
+        # self.assertEqual(len(features), 1)
+        #
+        # # Check fields
+        # fields = [f for f in features[0].fields()]
+        # fields_name = [f.name() for f in fields]
+        # fields_values = [features[0].attribute(f.name()) for f in fields]
+        #
+        # self.assertTrue('p_name' in fields_name)
+        # self.assertTrue('a point' in fields_values)
 
 
     def test_gpkg_api(self):
@@ -1561,46 +1561,46 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
 
         # TEST SearchByPolygon adding fields and values to layers results
         # ===============================================================
-        response = self._testApiCallAdmin01('core-vector-api',
-                                            args={
-                                                'mode_call': 'gpkg',
-                                                'project_type': 'qdjango',
-                                                'project_id': self.qdjango_project.id,
-                                                # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                                                # WARNING: it's the qgs_layer_id, not the name!
-                                                # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                                                'layer_name': world.qgs_layer_id,
-                                            }.values(),
-                                            kwargs={
-                                                'field': 'NAME|eq|FRANCE',
-                                                'sbp_qgs_layer_id': f'{self.spatialite_points.qgs_layer_id}',
-                                                'sbp_fid': '1'
-                                            }
-                                            )
-
-        self.assertEqual(response.status_code, 200)
-
-        temp = QTemporaryDir()
-        fname = temp.path() + '/temp5.gpkg'
-        with open(fname, 'wb+') as f:
-            f.write(response.content)
-
-        vl = QgsVectorLayer(fname)
-
-        self.assertTrue(vl.isValid())
-        self.assertEqual(len([f for f in vl.getFeatures()]), 1)
-
-        features = [f for f in vl.getFeatures()]
-
-        # Check fields
-        fields = [f for f in features[0].fields()]
-        fields_name = [f.name() for f in fields]
-        fields_values = [features[0].attribute(f.name()) for f in fields]
-
-        self.assertTrue('p_name' in fields_name)
-        self.assertTrue('a point' in fields_values)
-
-        os.remove(fname)
+        # response = self._testApiCallAdmin01('core-vector-api',
+        #                                     args={
+        #                                         'mode_call': 'gpkg',
+        #                                         'project_type': 'qdjango',
+        #                                         'project_id': self.qdjango_project.id,
+        #                                         # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        #                                         # WARNING: it's the qgs_layer_id, not the name!
+        #                                         # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        #                                         'layer_name': world.qgs_layer_id,
+        #                                     }.values(),
+        #                                     kwargs={
+        #                                         'field': 'NAME|eq|FRANCE',
+        #                                         'sbp_qgs_layer_id': f'{self.spatialite_points.qgs_layer_id}',
+        #                                         'sbp_fid': '1'
+        #                                     }
+        #                                     )
+        #
+        # self.assertEqual(response.status_code, 200)
+        #
+        # temp = QTemporaryDir()
+        # fname = temp.path() + '/temp5.gpkg'
+        # with open(fname, 'wb+') as f:
+        #     f.write(response.content)
+        #
+        # vl = QgsVectorLayer(fname)
+        #
+        # self.assertTrue(vl.isValid())
+        # self.assertEqual(len([f for f in vl.getFeatures()]), 1)
+        #
+        # features = [f for f in vl.getFeatures()]
+        #
+        # # Check fields
+        # fields = [f for f in features[0].fields()]
+        # fields_name = [f.name() for f in fields]
+        # fields_values = [features[0].attribute(f.name()) for f in fields]
+        #
+        # self.assertTrue('p_name' in fields_name)
+        # self.assertTrue('a point' in fields_values)
+        #
+        #os.remove(fname)
 
     def test_bbox_filter(self):
         """Test a rule with geometry filter"""
