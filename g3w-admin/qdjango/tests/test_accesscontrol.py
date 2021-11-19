@@ -46,5 +46,5 @@ class AccessControlTest(QdjangoTestBase):
         # Check that the layer is not there
         self.assertTrue(b'WMS_Capabilities' in response.content)
         self.assertFalse(b'<Name>bluemarble</Name>' in response.content)
-        self.assertFalse(b'<Name>world</Name>' in response.content)
+        self.assertTrue(b'<Name>world</Name>' in response.content)
 
