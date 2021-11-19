@@ -5,6 +5,7 @@ LABEL maintainer="Gis3w" Description="This image is used to prepare build requir
 ENV DEBIAN_FRONTEND=noninteractive
 RUN chown root:root /tmp && chmod ugo+rwXt /tmp
 RUN apt-get update && apt install -y \
+    git \
     libxml2-dev \
     libxslt-dev \
     postgresql-server-dev-all \
