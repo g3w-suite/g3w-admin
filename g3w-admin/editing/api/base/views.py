@@ -370,7 +370,8 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
         if EDITING_POST_DATA_DELETED in post_layer_data:
 
             # get feature fids from server fids from client.
-            fids = get_layer_fids_from_server_fids(post_layer_data[EDITING_POST_DATA_DELETED], qgis_layer)
+            fids = get_layer_fids_from_server_fids([str(id) for id in post_layer_data[EDITING_POST_DATA_DELETED]],
+                                                   qgis_layer)
 
             for feature_id in fids:
 
