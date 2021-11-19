@@ -1,0 +1,103 @@
+name: G3W-Suite CI tests
+
+on: [push, pull_request]
+
+jobs:
+
+  ci_tests:
+
+    runs-on: ubuntu-20.04
+
+    strategy:
+      matrix:
+        qgis_version: ['316', 'latest']
+
+    steps:
+
+    - uses: actions/checkout@v2
+
+    - name: Extract branch name
+      shell: bash
+      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+      id: extract_branch
+
+    - name: Starting Docker compose
+      run: docker-compose -f docker-compose.${{ matrix.qgis_version }}.yml up -d
+
+    - name: Copying code into the container
+      run: |
+          docker cp ./ "$(docker-compose -f docker-compose.${{ matrix.qgis_version }}.yml ps -q g3w-suite)":/code
+
+    - name: Installing Python requirements
+      run: |
+        docker-compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "cd /code/ && python3 -m pip install pip==20.0.2 && pip3 install -r requirements_docker.txt && pip3 install -r requirements_huey.txt"
+
+    - name: Installing Caching Python requirements
+      run: |
+        docker-compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "cd /code/ && pip3 install -r g3w-admin/caching/requirements.txt"
+
+    - name: Installing Filemanager Python requirements
+      run: |
+        docker-compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "cd /code/ && pip3 install -r g3w-admin/filemanager/requirements.txt"
+
+    - name: Installing Openrouteservice Python requirements
+      run: |
+        docker-compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "cd /code/ && pip3 install -r g3w-admin/openrouteservice/requirements.txt && pip3 install -r g3w-admin/openrouteservice/requirements_testing.txt"
+
+    - name: Building g3w-suite
+      run: |
+        docker-compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "/code/ci_scripts/build_suite.sh"
+
+    - name: Setting up g3w-suite
+      run: |
+        docker-compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "/code/ci_scripts/setup_suite.sh"
+
+    - name: Starting Django
+      run: |
+        docker-compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py runserver 0.0.0.0:8000" &
+
+    - name: Waiting for Django
+      run: |
+        docker-compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "wait-for-it -h localhost -p 8000 -t 240"
+
+    - name:  Running g3w-admin core tests
+      run: |
+        docker-compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test core"
+
+    - name:  Running g3w-admin qdjango tests
+      run: |
+        docker-compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test qdjango"
+
+    - name:  Running g3w-admin usersmanage tests
+      run: |
+        docker-compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test usersmanage"
+
+    - name:  Running g3w-admin client tests
+      run: |
+        docker-compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test client"
+
+    - name:  Running g3w-admin editing tests
+      run: |
+        docker-compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test editing.tests"
+
+    - name:  Running g3w-admin caching tests
+      run: |
+        docker-compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test caching"
+
+    - name:  Running g3w-admin filemanager tests
+      run: |
+        docker-compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test filemanager"
+
+    - name:  Running g3w-admin qplotly tests
+      run: |
+        docker-compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test qplotly"
+
+    - name:  Running g3w-admin openrouteservice tests
+      run: |
+        docker-compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test openrouteservice"
+
+    - name: Setup tmate session
+      if: ${{ failure() }}
+      uses: mxschmitt/action-tmate@v3
+      with:
+        limit-access-to-actor: true

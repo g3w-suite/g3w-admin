@@ -1,5 +1,4 @@
-[![CircleCI](https://circleci.com/gh/g3w-suite/g3w-admin.svg?style=svg)](https://circleci.com/gh/g3w-suite/g3w-admin)
-
+![G3W-Suite CI Tests](https://github.com/github/docs/actions/workflows/test_runner.yml/badge.svg)
 
 # G3W-SUITE
 
