@@ -1,4 +1,4 @@
-![G3W-Suite CI Tests](https://github.com/github/docs/actions/workflows/test_runner.yml/badge.svg)
+![G3W-Suite CI Tests](https://github.com/g3w-suite/g3w-admin/actions/workflows/test_runner.yml/badge.svg)
 
 # G3W-SUITE
 
