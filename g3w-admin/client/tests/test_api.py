@@ -285,16 +285,16 @@ class ClientApiTest(CoreTestBase):
                             }
                         ],
                         "crs": [
-                            
+
                         ],
                         "dataurl": {
-                            
+
                         },
                         "metadataurl": {
-                            
+
                         },
                         "attribution": {
-                            
+
                         }
                 }
 
@@ -663,8 +663,8 @@ class ClientApiTest(CoreTestBase):
                                      [self.extent_group.slug, 'qdjango', self.project_extent310_2.instance.pk])
         resp = json.loads(response.content)
 
-        self.assertEqual(resp['extent'],
-                         [166021.44308054161956534, 0, 534994.65506113646551967, 9329005.18244743719696999])
+        self.assertEqual([int(i) for i in resp['extent']],
+                         [166021, 0, 534994, 9329005])
 
         self.assertEqual(resp['toc_tab_default'], 'legend')
 
