@@ -520,7 +520,7 @@ class TransactionGroupTest(TestCase):
         }, format='json')
 
         self.assertTrue(json.loads(response.content)
-                        ['result'], response.content)
+                        ['result'], response.content, json.loads(response.content))
 
         # Delete the parent
         response = client.post(commit_path, {
