@@ -191,6 +191,7 @@ class LayerStylesApiTest(QdjangoTestBase):
     def test_style_replace(self):
         """Test style(name) and QML replace"""
 
+        self.qdjango_layer.set_current_style('style2')
         style2_xml = self.qdjango_layer.style('style2').xmlData()
         self.assertTrue(self.qdjango_layer.replace_style('style1', style2_xml))
         style1_xml = self.qdjango_layer.style('style1').xmlData()

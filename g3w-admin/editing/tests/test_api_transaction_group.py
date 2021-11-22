@@ -512,21 +512,23 @@ class TransactionGroupTest(TestCase):
         self.assertEqual(self.test.qgis_layer.getFeature(
             child_id).attributes(), [5, 'my name', 77777, QDate(2021, 1, 2), True, 3])
 
-        # Delete the parent
-        response = client.post(commit_path, {
-            "delete": [parent_id_server],
-            "lockids": jresult['response']['new_lockids']
-        }, format='json')
-        self.assertTrue(json.loads(response.content)['result'])
 
-        # There is no cascade here! Delete the child as well.
+        # There is no cascade here! Delete the child.
         response = client.post(child_commit_path, {
             "delete": [child_id_server],
             "lockids": jresult['response']['new_relations']['test_afb61649_1fb2_426e_b588_04217314f0c4']['new_lockids']
         }, format='json')
 
-        self.assertTrue(json.loads(response.content)
-                        ['result'], response.content)
+        self.assertTrue(json.loads(response.content)['result'])
+
+        # Delete the parent
+        response = client.post(commit_path, {
+            "delete": [parent_id_server],
+            "lockids": jresult['response']['new_lockids']
+        }, format='json')
+
+        self.assertTrue(json.loads(response.content)['result'])
+
 
         # Verify
         self.assertFalse(
