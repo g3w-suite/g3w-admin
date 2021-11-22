@@ -519,8 +519,7 @@ class TransactionGroupTest(TestCase):
             "lockids": jresult['response']['new_relations']['test_afb61649_1fb2_426e_b588_04217314f0c4']['new_lockids']
         }, format='json')
 
-        self.assertTrue(json.loads(response.content)
-                        ['result'], response.content, json.loads(response.content))
+        self.assertTrue(json.loads(response.content)['result'])
 
         # Delete the parent
         response = client.post(commit_path, {
