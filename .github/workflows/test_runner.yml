@@ -41,8 +41,8 @@ jobs:
         docker-compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "cd /code/ && pip3 install -r g3w-admin/filemanager/requirements.txt"
 
     - name: Installing Qplotly Python requirements
-        run: |
-          docker-compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "cd /code/ && pip3 install -r g3w-admin/qplotly/requirements.txt"
+      run: |
+        docker-compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "cd /code/ && pip3 install -r g3w-admin/qplotly/requirements.txt"
 
     - name: Installing Openrouteservice Python requirements
       run: |
