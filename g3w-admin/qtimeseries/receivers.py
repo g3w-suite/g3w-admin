@@ -15,7 +15,10 @@ from django.apps import apps
 from qdjango.models import Layer
 from django.dispatch import receiver
 from django.template import loader
-from core.signals import load_layer_actions, initconfig_plugin_start
+from core.signals import \
+    load_layer_actions, \
+    initconfig_plugin_start, \
+    after_serialized_project_layer
 from .models import QRasterTimeSeriesLayer
 from osgeo import gdal
 
@@ -105,3 +108,19 @@ def set_initconfig_value(sender, **kwargs):
     }
 
     return toret
+
+
+@receiver(after_serialized_project_layer)
+def add_qtimeseries(sender, **kwargs):
+    """
+    Receiver to add 'qtimeseries' boolean property.
+    """
+
+    data = {
+        'operation_type': 'update',
+        'values': {},
+    }
+
+    if QRasterTimeSeriesLayer.is_activated(kwargs['layer']):
+            data['values'] = {'qtimeseries': True}
+    return data
