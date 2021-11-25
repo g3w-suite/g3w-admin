@@ -31,5 +31,5 @@ class QRasterTimeSeriesLayer(models.Model):
         :return type: boolean
         """
 
-        return cls.objects.exists(layer=layer)
+        return cls.objects.filter(layer=layer).exists()
 
