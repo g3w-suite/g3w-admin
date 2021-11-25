@@ -14,7 +14,8 @@ from rest_framework.response import Response
 from core.api.base.views import G3WAPIView
 from core.utils.qgisapi import get_qgis_layer
 from qdjango.models import Layer
-from qrastertimeseries.vendor.RasterTimeseriesManager.core.rtmrastertimeseries import RtmRasterTimeseries as RTS
+from qtimeseries.vendor.RasterTimeseriesManager.core.rtmrastertimeseries import RtmRasterTimeseries as RTS
+from qtimeseries.models import QRasterTimeSeriesLayer
 
 import logging
 
@@ -31,9 +32,18 @@ class QRTSSerieView(G3WAPIView):
 
             rts = RTS(get_qgis_layer(layer))
 
+            # Check if is valid
             if not rts.isValid():
                 self.results.result = False
                 self.results.error = f'{qgs_layer_id} is not a instance of QgsRasterLayer'
+                return Response(self.results.results)
+
+            # Check if layer raster time series is activated
+            if not QRasterTimeSeriesLayer.is_activated(layer):
+                self.results.result = False
+                self.results.error = f'{qgs_layer_id} is not activated for time serie'
+                return Response(self.results.results)
+
 
             # translate Qdate to python date
             pydate = []

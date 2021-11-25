@@ -13,10 +13,10 @@ __copyright__ = 'Copyright 2015 - 2021, Gis3w'
 from django.conf.urls import url
 from .api.views import QRTSSerieView
 
-BASE_URLS = 'qrastertimeseries'
+BASE_URLS = 'qtimeseries'
 
 urlpatterns = [
-    url(r'^api/serie/(?P<project_id>[0-9]+)/(?P<qgs_layer_id>[-_\w\d]+)/$', QRTSSerieView.as_view(),
-        name=f'{BASE_URLS}-vector-api'),
+    url(r'^api/raster/serie/(?P<project_id>[0-9]+)/(?P<qgs_layer_id>[-_\w\d]+)/$', QRTSSerieView.as_view(),
+        name=f'{BASE_URLS}-raster-serie-api'),
 
 ]

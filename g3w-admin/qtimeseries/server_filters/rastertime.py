@@ -12,7 +12,7 @@ __copyright__ = 'Copyright 2015 - 2021, Gis3w'
 
 from qdjango.apps import QGS_SERVER
 from qdjango.models import Layer
-from qrastertimeseries.vendor.RasterTimeseriesManager.core.rtmrastertimeseries import RtmRasterTimeseries as RTS
+from qtimeseries.vendor.RasterTimeseriesManager.core.rtmrastertimeseries import RtmRasterTimeseries as RTS
 
 from qgis.core import QgsMessageLog, Qgis
 from qgis.server import QgsServerFilter
