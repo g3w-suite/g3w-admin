@@ -62,20 +62,30 @@ def set_initconfig_value(sender, **kwargs):
     Set base qtimeseries data for initconfig
     """
     Project = apps.get_app_config(kwargs['projectType']).get_model('project')
-    project_layers = {pl.pk: pl for pl in Project.objects.get(pk=kwargs['project']).layer_set.all()}
+    project_layers = {}
+
+    # VECTOR TIME SERIES (temporal properties from QGIS project)
+    # ==========================================================
+    vector_layers = 0
+
+    for pl in Project.objects.get(pk=kwargs['project']).layer_set.all():
+        project_layers.update({
+            pl.pk: pl
+        })
+        if pl.temporal_properties:
+            vector_layers += 1
 
 
     # RASTER TIME SERIES
     # =======================================
-    # get every raster layer foir time series
+    # get every raster layer for time series
     raster_layers = QRasterTimeSeriesLayer.objects.all()
     raster_layers_id = []
 
     for rl in raster_layers:
 
         # check for permissions
-        if rl.layer.pk in project_layers and \
-                sender.request.user.has_perm('change_layer', project_layers[rl.layer.pk]):
+        if rl.layer.pk in project_layers:
             raster_layers_id.append({
                 'type': 'raster',
                 'id': rl.layer.qgs_layer_id,
@@ -83,7 +93,9 @@ def set_initconfig_value(sender, **kwargs):
                 'end_date': rl.end_date,
             })
 
-    if len(raster_layers_id) == 0:
+
+
+    if len(raster_layers_id) + vector_layers == 0:
         return None
 
     # 'layers': [
