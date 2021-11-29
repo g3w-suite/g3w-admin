@@ -513,7 +513,7 @@ class LayerSerializer(serializers.ModelSerializer):
             'download_csv',
             'download_gpkg',
             'editor_form_structure',
-            'styles',
+            'styles'
         )
 
     def get_servertype(self, instance):
@@ -686,6 +686,10 @@ class LayerSerializer(serializers.ModelSerializer):
 
         # add ows
         ret['ows'] = self.get_ows(instance)
+
+        # For temporal properties
+        if instance.temporal_properties:
+            ret['qtimeseries'] = json.loads(instance.temporal_properties)
 
         return ret
 

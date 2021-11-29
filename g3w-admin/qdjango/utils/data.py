@@ -21,6 +21,8 @@ from qgis.core import (
     QgsAttributeEditorElement,
     QgsRectangle,
     QgsMapLayerType,
+    QgsVectorLayerTemporalProperties,
+    QgsUnitTypes
 )
 
 from qgis.gui import QgsMapCanvas
@@ -136,7 +138,8 @@ class QgisProjectLayer(XmlData):
         'editTypes',
         'editorlayout',
         'editorformstructure',
-        'extent'
+        'extent',
+        'temporalproperties'
     ]
 
     _pre_exception_message = 'Layer'
@@ -620,6 +623,78 @@ class QgisProjectLayer(XmlData):
 
         return self.qgs_layer.extent().asWktPolygon()
 
+    def _getDataTemporalproperties(self):
+        """
+        Get layer temporal properties for vector layer.
+        Only 3 modes are available:
+        - FeatureDateTimeInstantFromField
+        - ModeFeatureDateTimeStartAndEndFromFields
+        - ModeFeatureDateTimeStartAndDurationFromFields
+        """
+
+        if self.qgs_layer.type() != QgsMapLayer.VectorLayer:
+            return None
+
+        tp = self.qgs_layer.temporalProperties()
+        toret = None
+
+            # {
+            #   switch ( unit )
+            #   {
+            #     case TemporalSeconds:
+            #       return QStringLiteral( "s" );
+            #     case TemporalMilliseconds:
+            #       return QStringLiteral( "ms" );
+            #     case TemporalMinutes:
+            #       return QStringLiteral( "min" );
+            #     case TemporalHours:
+            #       return QStringLiteral( "h" );
+            #     case TemporalDays:
+            #       return QStringLiteral( "d" );
+            #     case TemporalWeeks:
+            #       return QStringLiteral( "wk" );
+            #     case TemporalMonths:
+            #       return QStringLiteral( "mon" );
+            #     case TemporalYears:
+            #       return QStringLiteral( "y" );
+            #     case TemporalDecades:
+            #       return QStringLiteral( "dec" );
+            #     case TemporalCenturies:
+            #       return QStringLiteral( "c" );
+            #     case TemporalIrregularStep:
+            #       return QStringLiteral( "xxx" );
+            #     case TemporalUnknownUnit:
+            #       return QStringLiteral( "<unknown>" );
+            #   }
+            #   return QString();
+            # }
+
+
+        if tp.isActive():
+            if tp.mode() == QgsVectorLayerTemporalProperties.ModeFeatureDateTimeInstantFromField:
+                toret = {
+                    'mode': 'FeatureDateTimeInstantFromField',
+                    'field': tp.startField(),
+                    'units': QgsUnitTypes.encodeUnit(tp.durationUnits()),
+                    'duration': tp.fixedDuration()
+                }
+            elif tp.mode == QgsVectorLayerTemporalProperties.ModeFeatureDateTimeStartAndEndFromFields:
+                toret = {
+                    'mode': 'ModeFeatureDateTimeStartAndEndFromFields',
+                    'start_field': tp.startField(),
+                    'end_field': tp.endField(),
+
+                }
+            elif tp.mode == QgsVectorLayerTemporalProperties.ModeFeatureDateTimeStartAndDurationFromFields:
+                toret = {
+                    'mode': 'ModeFeatureDateTimeStartAndDurationFromFields',
+                    'start_field': tp.startField(),
+                    'end_field': tp.endField(),
+                    'duration_field': tp.durationField()
+                }
+
+        return json.dumps(toret)
+
     def clean(self):
         for validator in self.validators:
             validator.clean()
@@ -662,7 +737,8 @@ class QgisProjectLayer(XmlData):
                 'edittypes': self.editTypes,
                 'editor_layout': self.editorlayout,
                 'editor_form_structure': self.editorformstructure,
-                'extent': self.extent
+                'extent': self.extent,
+                'temporal_properties': self.temporalproperties
             }
         )
 
@@ -689,6 +765,7 @@ class QgisProjectLayer(XmlData):
             self.instance.editor_layout = self.editorlayout
             self.instance.editor_form_structure = self.editorformstructure
             self.instance.extent = self.extent
+            self.instance.temporal_properties = self.temporalproperties
 
         # Save self.instance
         self.instance.save()
