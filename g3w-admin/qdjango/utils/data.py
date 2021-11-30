@@ -671,7 +671,13 @@ class QgisProjectLayer(XmlData):
 
 
         if tp.isActive():
-            if tp.mode() == QgsVectorLayerTemporalProperties.ModeFeatureDateTimeInstantFromField:
+            if tp.mode() == QgsVectorLayerTemporalProperties.ModeFixedTemporalRange:
+                toret = {
+                    'mode': 'FixedTemporalRange',
+                    'begin': str(tp.fixedTemporalRange().begin().toPyDateTime()),
+                    'end': str(tp.fixedTemporalRange().end().toPyDateTime())
+                }
+            elif tp.mode() == QgsVectorLayerTemporalProperties.ModeFeatureDateTimeInstantFromField:
                 toret = {
                     'mode': 'FeatureDateTimeInstantFromField',
                     'field': tp.startField(),
@@ -680,14 +686,14 @@ class QgisProjectLayer(XmlData):
                 }
             elif tp.mode == QgsVectorLayerTemporalProperties.ModeFeatureDateTimeStartAndEndFromFields:
                 toret = {
-                    'mode': 'ModeFeatureDateTimeStartAndEndFromFields',
+                    'mode': 'FeatureDateTimeStartAndEndFromFields',
                     'start_field': tp.startField(),
                     'end_field': tp.endField(),
 
                 }
             elif tp.mode == QgsVectorLayerTemporalProperties.ModeFeatureDateTimeStartAndDurationFromFields:
                 toret = {
-                    'mode': 'ModeFeatureDateTimeStartAndDurationFromFields',
+                    'mode': 'FeatureDateTimeStartAndDurationFromFields',
                     'start_field': tp.startField(),
                     'end_field': tp.endField(),
                     'duration_field': tp.durationField()
