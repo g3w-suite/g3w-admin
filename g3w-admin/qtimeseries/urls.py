@@ -19,6 +19,6 @@ urlpatterns = [
 
     # For projects
     # ------------
-    path('<int:layer_id>/activate/', login_required(ActiveRasterTimeSeriesLayerView.as_view()),
+    path('<str:project_id>/<int:layer_id>/activate/', login_required(ActiveRasterTimeSeriesLayerView.as_view()),
          name='qtimeseries-raster-layer-activate'),
 ]

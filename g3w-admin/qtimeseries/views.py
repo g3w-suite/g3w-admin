@@ -12,10 +12,10 @@ __copyright__ = 'Copyright 2015 - 2021, Gis3w'
 
 from django.views.generic import FormView
 from django.utils.decorators import method_decorator
+from guardian.decorators import permission_required
 from core.utils.qgisapi import get_qgis_layer
 from core.mixins.views import AjaxableFormResponseMixin, G3WRequestViewMixin, G3WProjectViewMixin
-from core.utils.decorators import project_type_permission_required
-from qdjango.models import Layer
+from qdjango.models import Layer, Project
 from .vendor.RasterTimeseriesManager.core.rtmrastertimeseries import RtmRasterTimeseries as RTS
 from .models import QRasterTimeSeriesLayer
 from .forms import ActiveRasterTimeSeriesLayerForm
@@ -29,8 +29,8 @@ class ActiveRasterTimeSeriesLayerView(AjaxableFormResponseMixin, G3WRequestViewM
     form_class = ActiveRasterTimeSeriesLayerForm
     template_name = 'qtimeseries/raster_layer_active_form.html'
 
-    #@method_decorator(project_type_permission_required('change_project', ('project_type', 'project_slug'),
-    #                                                   return_403=True))
+    @method_decorator(permission_required('qdjango.change_project', (Project, 'pk', 'project_id'),
+                                          raise_exception=True))
     def dispatch(self, request, *args, **kwargs):
         self.layer_id = kwargs['layer_id']
 
