@@ -533,6 +533,10 @@ class Layer(G3WACLModelMixins, models.Model):
     external = models.BooleanField(
         _('Get WMS/WMS externally'), default=False, blank=True)
 
+    # For temporal properties
+    temporal_properties = models.TextField(_('Temporal properties'), null=True, blank=True)
+
+
     @property
     def qgis_layer(self):
         """Returns the QgsMapLayer instance corresponding to this Layer, or None in case of errors

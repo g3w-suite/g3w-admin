@@ -40,13 +40,16 @@ from qdjango.models import SessionTokenFilter, SessionTokenFilterLayer
 from core.tests.base import CoreTestBase
 from core.utils.qgisapi import get_qgs_project
 
-from .base import QdjangoTestBase, CURRENT_PATH, TEST_BASE_PATH, QGS310_WIDGET_FILE
+from .base import QdjangoTestBase, CURRENT_PATH, TEST_BASE_PATH, QGS310_WIDGET_FILE, CoreGroup, G3WSpatialRefSys
 from qgis.core import QgsFeatureRequest, QgsRasterLayer
 from qgis.PyQt.QtCore import QTemporaryDir
 import time
 import six
 import os
 
+
+QGS_FILE_TEMPORAL_VECTOR_WITH_FIELD = 'test_temporal_vector_layer_316_ModeFeatureDateTimeInstantFromField.qgs'
+QGS_FILE_TEMPORAL_VECTOR_WITH_NOT_ACTIVE = 'test_temporal_vector_layer_316_not_active.qgs'
 
 
 class BaseConstraintsApiTests():
@@ -1207,3 +1210,93 @@ class TestGeoConstraintVectorAPIFilter(QdjangoTestBase):
         self.assertEqual(jres['vector']['count'], 1)
         feature = jres['vector']['data']['features'][0]
         self.assertEqual(feature['properties']['name'], 'another point')
+
+
+class QgisTemporalVectorProject(QdjangoTestBase):
+    """ Test for temporal vector layer """
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.client = APIClient()
+
+    @classmethod
+    def setUpTestData(cls):
+
+        # main project group
+        cls.project_group = CoreGroup(name='GroupTemporal', title='GroupTemporal', header_logo_img='',
+                                      srid=G3WSpatialRefSys.objects.get(auth_srid=4326))
+        cls.project_group.save()
+
+        # Test data for temporal vector layer
+        qgis_project_file = File(
+            open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_FILE_TEMPORAL_VECTOR_WITH_FIELD), 'r',
+                 encoding='utf-8'))
+        qgis_project_file.name = qgis_project_file.name.split('/')[-1]
+        cls.project_temporal_vector_field = QgisProject(qgis_project_file)
+        cls.project_temporal_vector_field.group = cls.project_group
+        cls.project_temporal_vector_field.save()
+        qgis_project_file.close()
+
+        qgis_project_file = File(
+            open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_FILE_TEMPORAL_VECTOR_WITH_NOT_ACTIVE), 'r',
+                 encoding='utf-8'))
+        qgis_project_file.name = qgis_project_file.name.split('/')[-1]
+        cls.project_temporal_vector_not_active = QgisProject(qgis_project_file)
+        cls.project_temporal_vector_not_active.group = cls.project_group
+        cls.project_temporal_vector_not_active.save()
+        qgis_project_file.close()
+
+
+    def test_qgs_project_temporal_vector(self):
+        """ Test properties into qgsproject object and models """
+
+        # Not active
+        self.assertEqual(self.project_temporal_vector_not_active.layers[0].temporalproperties, 'null')
+        self.assertEqual(self.project_temporal_vector_not_active.instance.layer_set.all()[0].temporal_properties,
+                         'null')
+
+        # Active with field
+        self.assertEqual(self.project_temporal_vector_field.layers[0].temporalproperties,
+             '{"mode": "FeatureDateTimeInstantFromField", "field": "dateofocc", "units": "d", "duration": 1.0}')
+        self.assertEqual(self.project_temporal_vector_field.instance.layer_set.all()[0].temporal_properties,
+             '{"mode": "FeatureDateTimeInstantFromField", "field": "dateofocc", "units": "d", "duration": 1.0}')
+
+    def test_client_map_config(self):
+        """ Test for client config API """
+
+        # Not active
+        url = reverse('group-project-map-config',
+                           args=[self.project_group.slug, 'qdjango',
+                                 self.project_temporal_vector_not_active.instance.pk])
+
+
+        assert self.client.login(username=self.test_admin1.username, password=self.test_admin1.username)
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        jcontent = json.loads(response.content)
+
+        self.assertIsNone(jcontent['layers'][0]['qtimeseries'])
+
+        # Active
+        url = reverse('group-project-map-config',
+                      args=[self.project_group.slug, 'qdjango',
+                            self.project_temporal_vector_field.instance.pk])
+
+        assert self.client.login(username=self.test_admin1.username, password=self.test_admin1.username)
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        jcontent = json.loads(response.content)
+
+        self.assertEqual(jcontent['layers'][0]['qtimeseries']['mode'], 'FeatureDateTimeInstantFromField')
+        self.assertEqual(jcontent['layers'][0]['qtimeseries']['field'], 'dateofocc')
+        self.assertEqual(jcontent['layers'][0]['qtimeseries']['units'], 'd')
+        self.assertEqual(jcontent['layers'][0]['qtimeseries']['duration'], 1.0)
+
+
+
+
+
+
