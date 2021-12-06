@@ -638,66 +638,35 @@ class QgisProjectLayer(XmlData):
         tp = self.qgs_layer.temporalProperties()
         toret = None
 
-            # {
-            #   switch ( unit )
-            #   {
-            #     case TemporalSeconds:
-            #       return QStringLiteral( "s" );
-            #     case TemporalMilliseconds:
-            #       return QStringLiteral( "ms" );
-            #     case TemporalMinutes:
-            #       return QStringLiteral( "min" );
-            #     case TemporalHours:
-            #       return QStringLiteral( "h" );
-            #     case TemporalDays:
-            #       return QStringLiteral( "d" );
-            #     case TemporalWeeks:
-            #       return QStringLiteral( "wk" );
-            #     case TemporalMonths:
-            #       return QStringLiteral( "mon" );
-            #     case TemporalYears:
-            #       return QStringLiteral( "y" );
-            #     case TemporalDecades:
-            #       return QStringLiteral( "dec" );
-            #     case TemporalCenturies:
-            #       return QStringLiteral( "c" );
-            #     case TemporalIrregularStep:
-            #       return QStringLiteral( "xxx" );
-            #     case TemporalUnknownUnit:
-            #       return QStringLiteral( "<unknown>" );
-            #   }
-            #   return QString();
-            # }
-
-
+        # Manage only ModeFeatureDateTimeInstantFromField at 2021-12-06
         if tp.isActive():
-            if tp.mode() == QgsVectorLayerTemporalProperties.ModeFixedTemporalRange:
-                toret = {
-                    'mode': 'FixedTemporalRange',
-                    'begin': str(tp.fixedTemporalRange().begin().toPyDateTime()),
-                    'end': str(tp.fixedTemporalRange().end().toPyDateTime())
-                }
-            elif tp.mode() == QgsVectorLayerTemporalProperties.ModeFeatureDateTimeInstantFromField:
+            # if tp.mode() == QgsVectorLayerTemporalProperties.ModeFixedTemporalRange:
+            #     toret = {
+            #         'mode': 'FixedTemporalRange',
+            #         'begin': str(tp.fixedTemporalRange().begin().toPyDateTime()),
+            #         'end': str(tp.fixedTemporalRange().end().toPyDateTime())
+            #     }
+            if tp.mode() == QgsVectorLayerTemporalProperties.ModeFeatureDateTimeInstantFromField:
                 toret = {
                     'mode': 'FeatureDateTimeInstantFromField',
                     'field': tp.startField(),
                     'units': QgsUnitTypes.encodeUnit(tp.durationUnits()),
                     'duration': tp.fixedDuration()
                 }
-            elif tp.mode == QgsVectorLayerTemporalProperties.ModeFeatureDateTimeStartAndEndFromFields:
-                toret = {
-                    'mode': 'FeatureDateTimeStartAndEndFromFields',
-                    'start_field': tp.startField(),
-                    'end_field': tp.endField(),
-
-                }
-            elif tp.mode == QgsVectorLayerTemporalProperties.ModeFeatureDateTimeStartAndDurationFromFields:
-                toret = {
-                    'mode': 'FeatureDateTimeStartAndDurationFromFields',
-                    'start_field': tp.startField(),
-                    'end_field': tp.endField(),
-                    'duration_field': tp.durationField()
-                }
+            # elif tp.mode == QgsVectorLayerTemporalProperties.ModeFeatureDateTimeStartAndEndFromFields:
+            #     toret = {
+            #         'mode': 'FeatureDateTimeStartAndEndFromFields',
+            #         'start_field': tp.startField(),
+            #         'end_field': tp.endField(),
+            #
+            #     }
+            # elif tp.mode == QgsVectorLayerTemporalProperties.ModeFeatureDateTimeStartAndDurationFromFields:
+            #     toret = {
+            #         'mode': 'FeatureDateTimeStartAndDurationFromFields',
+            #         'start_field': tp.startField(),
+            #         'end_field': tp.endField(),
+            #         'duration_field': tp.durationField()
+            #     }
 
         return json.dumps(toret)
 
