@@ -44,5 +44,10 @@
   {% with client_default|add:"/js/app.350112ccd26c77bc7b06ada6e99714fe.min.js" as app_js %}
     <script src="{% static app_js %}"></script>
   {% endwith %}
+  {% if SETTINGS.G3WSUITE_CUSTOM_STATIC_URL %}
+     {% for js in SETTINGS.G3WSUITE_CUSTOM_JS %}
+      <script src="{{ js }}"></script>
+     {% endfor %}
+  {% endif %}
 </body>
 </html>
