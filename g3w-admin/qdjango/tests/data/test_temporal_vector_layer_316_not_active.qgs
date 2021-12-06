@@ -1,7 +1,7 @@
 <!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
-<qgis saveUser="walter" saveDateTime="2021-12-06T10:43:06" saveUserFull="Walter Lorenzetti" version="3.16.14-Hannover" projectname="Test project for verctor layer">
+<qgis saveUser="walter" saveDateTime="2021-12-06T11:39:03" saveUserFull="Walter Lorenzetti" version="3.16.14-Hannover" projectname="Test project for verctor layer not active">
   <homePath path=""/>
-  <title>Test project for verctor layer</title>
+  <title>Test project for verctor layer not active</title>
   <autotransaction active="0"/>
   <evaluateDefaultValues active="0"/>
   <trust active="0"/>
@@ -724,7 +724,7 @@ def my_form_open(dialog, layer, feature):
     <parentidentifier></parentidentifier>
     <language></language>
     <type></type>
-    <title>Test project for verctor layer</title>
+    <title>Test project for verctor layer not active</title>
     <abstract></abstract>
     <contact>
       <name></name>

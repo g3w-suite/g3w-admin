@@ -1261,3 +1261,42 @@ class QgisTemporalVectorProject(QdjangoTestBase):
              '{"mode": "FeatureDateTimeInstantFromField", "field": "dateofocc", "units": "d", "duration": 1.0}')
         self.assertEqual(self.project_temporal_vector_field.instance.layer_set.all()[0].temporal_properties,
              '{"mode": "FeatureDateTimeInstantFromField", "field": "dateofocc", "units": "d", "duration": 1.0}')
+
+    def test_client_map_config(self):
+        """ Test for client config API """
+
+        # Not active
+        url = reverse('group-project-map-config',
+                           args=[self.project_group.slug, 'qdjango',
+                                 self.project_temporal_vector_not_active.instance.pk])
+
+
+        assert self.client.login(username=self.test_admin1.username, password=self.test_admin1.username)
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        jcontent = json.loads(response.content)
+
+        self.assertIsNone(jcontent['layers'][0]['qtimeseries'])
+
+        # Active
+        url = reverse('group-project-map-config',
+                      args=[self.project_group.slug, 'qdjango',
+                            self.project_temporal_vector_field.instance.pk])
+
+        assert self.client.login(username=self.test_admin1.username, password=self.test_admin1.username)
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        jcontent = json.loads(response.content)
+
+        self.assertEqual(jcontent['layers'][0]['qtimeseries']['mode'], 'FeatureDateTimeInstantFromField')
+        self.assertEqual(jcontent['layers'][0]['qtimeseries']['field'], 'dateofocc')
+        self.assertEqual(jcontent['layers'][0]['qtimeseries']['units'], 'd')
+        self.assertEqual(jcontent['layers'][0]['qtimeseries']['duration'], 1.0)
+
+
+
+
+
+
