@@ -95,9 +95,16 @@ class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         # add crs:
         crs = QgsCoordinateReferenceSystem(f'EPSG:{self.instance.srid.srid}')
 
+        # Patch for Proj4 > 4.9.3 version
+        if self.instance.srid.srid == 3003:
+            proj4 = "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=1500000 +y_0=0 +ellps=intl " \
+                    "+towgs84=-104.1,-49.1,-9.9,0.971,-2.917,0.714,-11.68 +units=m +no_defs"
+        else:
+            proj4 = crs.toProj4()
+
         ret['crs'] = {
             'epsg': crs.postgisSrid(),
-            'proj4': crs.toProj4(),
+            'proj4': proj4,
             'geographic': crs.isGeographic(),
             'axisinverted': crs.hasAxisInverted()
         }
