@@ -104,7 +104,7 @@ class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
         ret['crs'] = {
             'epsg': crs.postgisSrid(),
-            'proj4': crs.toProj4(),
+            'proj4': proj4,
             'geographic': crs.isGeographic(),
             'axisinverted': crs.hasAxisInverted()
         }
