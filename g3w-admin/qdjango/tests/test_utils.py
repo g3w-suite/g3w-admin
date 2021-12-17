@@ -36,7 +36,8 @@ class QgisProjectTest(TestCase):
     @override_settings(DATASOURCE_PATH=DATASOURCE_PATH)
     def setUp(self):
 
-        qgis_project_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_FILE), 'r', encoding='utf-8'))
+        qgis_project_file = File(open('{}{}{}'.format(
+            CURRENT_PATH, TEST_BASE_PATH, QGS_FILE), 'r', encoding='utf-8'))
 
         # Replace name property with only file name without path to simulate UploadedFileWithId instance.
         qgis_project_file.name = qgis_project_file.name.split('/')[-1]
@@ -65,7 +66,8 @@ class QgisProjectTest(TestCase):
         }
 
         for k in test_initial_extent_data.keys():
-            self.assertAlmostEqual(self.project.initialExtent[k], test_initial_extent_data[k], 1)
+            self.assertAlmostEqual(
+                self.project.initialExtent[k], test_initial_extent_data[k], 1)
 
         # check maxExtent
         # -----------------------------------------
@@ -77,7 +79,8 @@ class QgisProjectTest(TestCase):
         }
 
         for k in test_max_extent_data.keys():
-            self.assertAlmostEqual(self.project.maxExtent[k], test_max_extent_data[k], 3)
+            self.assertAlmostEqual(
+                self.project.maxExtent[k], test_max_extent_data[k], 3)
 
         # check wms use layer ids:
         # -----------------------------------------
@@ -106,10 +109,14 @@ class QgisProjectTest(TestCase):
         # test_layersTree
         # -----------------------------------------
         test_layersTree_data = [
-            {'visible': True, 'expanded': True, 'name': 'Rivers', 'id': 'rivers20171228095726368'},
-            {'visible': True, 'expanded': True, 'name': 'Cities', 'id': 'cities10000eu20171228095720113'},
-            {'visible': True, 'expanded': True, 'name': 'Countries', 'id': 'countries_simpl20171228095706310'},
-            {'visible': True, 'expanded': True, 'name': 'Dem', 'id': 'europa_dem20171228095729169'},
+            {'visible': True, 'expanded': True, 'name': 'Rivers',
+                'id': 'rivers20171228095726368'},
+            {'visible': True, 'expanded': True, 'name': 'Cities',
+                'id': 'cities10000eu20171228095720113'},
+            {'visible': True, 'expanded': True, 'name': 'Countries',
+                'id': 'countries_simpl20171228095706310'},
+            {'visible': True, 'expanded': True, 'name': 'Dem',
+                'id': 'europa_dem20171228095729169'},
             {'name': 'Blue Marble World Elevation and Bathymetry Raster', 'expanded': True,
              'id': 'Blue_Marble_World_Elevation_and_Bathymetry_Raster_3597b571_68a3_4344_867c_8dcd1d44eaf2',
              'visible': True},
@@ -122,16 +129,18 @@ class QgisProjectTest(TestCase):
         # check layerRelations
         # ------------------------------------------
         layer_relations_to_check = '[{"referencingLayer": "cities10000eu20171228095720113", "strength": "Association", "referencedLayer": "countries_simpl20171228095706310", "name": "countries-citites", "id": "cities1000_ISO2_CODE_countries__ISOCODE", "fieldRef": {"referencingField": "ISO2_CODE", "referencedField": "ISOCODE"}}]'
-        self.assertEqual(self.project.layerRelations, json.loads(layer_relations_to_check))
+        self.assertEqual(self.project.layerRelations,
+                         json.loads(layer_relations_to_check))
 
         # check layouts
         # -------------------------------------------
         layouts_to_check = '[' \
-                           '{"name": "A4", "w": 297.0, "h": 210.0, "maps": [{"name": "map0", "displayname": "Map 1", "w": 189.53, "h": 117.75944852941177, "overview": false, "scale": 24651341.004171893, "extent": {"xmin": -33.650906640076606, "ymin": 20.637462798706206, "xmax": 60.849040859923356, "ymax": 79.35250370863265}}]},' \
-                           '{"name": "atlas_test", "w": 297.0, "h": 210.0, "atlas": {"qgs_layer_id": "countries_simpl20171228095706310", "field_name": "ISOCODE"}, "maps": [{"name": "map0", "displayname": "Map 1", "w": 117.063, "h": 76.29999107142858, "overview": false, "scale": 2621775.4915320138, "extent": {"xmin": 17.62596823561644, "ymin": 39.497494100000004, "xmax": 22.71810776438356, "ymax": 42.8164779}}]}' \
+                           '{"name": "A4", "w": 297.0, "h": 210.0, "labels": [{"id": "Print", "text": "Print"}], "maps": [{"name": "map0", "displayname": "Map 1", "w": 189.53, "h": 117.75944852941177, "overview": false, "scale": 24651341.004171893, "extent": {"xmin": -33.650906640076606, "ymin": 20.637462798706206, "xmax": 60.849040859923356, "ymax": 79.35250370863265}}]},' \
+                           '{"name": "atlas_test", "w": 297.0, "h": 210.0, "labels": [], "atlas": {"qgs_layer_id": "countries_simpl20171228095706310", "field_name": "ISOCODE"}, "maps": [{"name": "map0", "displayname": "Map 1", "w": 117.063, "h": 76.29999107142858, "overview": false, "scale": 2621775.4915320138, "extent": {"xmin": 17.62596823561644, "ymin": 39.497494100000004, "xmax": 22.71810776438356, "ymax": 42.8164779}}]}' \
                            ']'
 
-        self.assertEqual(json.loads(self.project.layouts), json.loads(layouts_to_check))
+        self.assertEqual(json.loads(self.project.layouts),
+                         json.loads(layouts_to_check))
 
     def test_layers(self):
 
@@ -156,7 +165,8 @@ class QgisProjectTest(TestCase):
 
                 # important check datasource, main for shp and raster data
                 # --------------------------------------------------------
-                self.assertEqual(layer.datasource, DATASOURCE_PATH + 'geodata/countries.shp')
+                self.assertEqual(layer.datasource,
+                                 DATASOURCE_PATH + 'geodata/countries.shp')
 
                 # check alias fields
                 # --------------------------------------------------------
@@ -201,7 +211,6 @@ class QgisProjectTest(TestCase):
 
                 self.assertEqual(layer.aliases, aliases_to_check)
 
-
                 # check columns
                 # --------------------------------------------------------
                 columns_to_check = '[{"name": "ISOCODE", "type": "QSTRING", "label": "ISOCODE"}, {"name": "NAME_LOCAL", "type": "QSTRING", "label": "NAME_LOCAL"}, {"name": "NAME_EN", "type": "QSTRING", "label": "NAME_EN"}, {"name": "CAPITAL_EN", "type": "QSTRING", "label": "CAPITAL_EN"}, {"name": "NAME_DE", "type": "QSTRING", "label": "NAME_DE"}, {"name": "CAPITAL_DE", "type": "QSTRING", "label": "CAPITAL_DE"}, {"name": "NAME_IT", "type": "QSTRING", "label": "NAME_IT"}, {"name": "CAPITAL_IT", "type": "QSTRING", "label": "CAPITAL_IT"}, {"name": "NAME_FR", "type": "QSTRING", "label": "NAME_FR"}, {"name": "CAPITAL_FR", "type": "QSTRING", "label": "CAPITAL_FR"}, {"name": "NAME_BR", "type": "QSTRING", "label": "NAME_BR"}, {"name": "CAPITAL_BR", "type": "QSTRING", "label": "CAPITAL_BR"}, {"name": "NAME_ES", "type": "QSTRING", "label": "NAME_ES"}, {"name": "CAPITAL_ES", "type": "QSTRING", "label": "CAPITAL_ES"}, {"name": "POPULATION", "type": "QLONGLONG", "label": "POPULATION"}, {"name": "AREA_KM2", "type": "QLONGLONG", "label": "AREA_KM2"}, {"name": "ISO_NUM", "type": "INT", "label": "ISO_NUM"}]'
@@ -229,7 +238,8 @@ class QgisProjectTest(TestCase):
 
                 edit_types_to_check = '{"ISOCODE": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "NAME_LOCAL": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "NAME_EN": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "CAPITAL_EN": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "NAME_DE": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "CAPITAL_DE": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "NAME_IT": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "CAPITAL_IT": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "NAME_FR": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "CAPITAL_FR": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "NAME_BR": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "CAPITAL_BR": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "NAME_ES": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "CAPITAL_ES": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "POPULATION": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "AREA_KM2": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}, "ISO_NUM": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}}'
 
-                self.assertEqual(layer.editTypes, json.loads(edit_types_to_check))
+                self.assertEqual(
+                    layer.editTypes, json.loads(edit_types_to_check))
 
                 # check editorlayout
                 # --------------------------------------------------------
@@ -252,14 +262,14 @@ class QgisProjectTest(TestCase):
                 # --------------------------------------------------------
 
                 editor_form_structure_to_check = '[{"name": "Folder 1", "showlabel": true, "groupbox": false, "columncount":1, "nodes": [{"showlabel": true, "index":0, "field_name": "GEONAMEID", "alias": "Geo named"}, {"showlabel": true, "index":1, "field_name": "NAME", "alias": "Name"}, {"showlabel": true, "index":2, "field_name": "ASCIINAME", "alias": "Ascii name"}]}, {"name": "Folder 2", "showlabel": true, "groupbox": false, "columncount":1, "nodes": [{"showlabel": true, "index":4, "field_name": "POPULATION", "alias": "POPULATION"}, {"showlabel": true, "index":5, "field_name": "GTOPO30", "alias": "GTOPO30"}, {"showlabel": true, "index":3, "field_name": "ISO2_CODE", "alias": "ISO Code"}]}]'
-                self.assertEqual(layer.editorformstructure, json.loads(editor_form_structure_to_check))
+                self.assertEqual(layer.editorformstructure,
+                                 json.loads(editor_form_structure_to_check))
 
                 # check editTypes
                 # --------------------------------------------------------
                 edit_types_to_check = '{"GEONAMEID": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": false, "UseHtml": false}, "NAME": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": false, "UseHtml": false}, "ASCIINAME": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": false, "UseHtml": false}, "ISO2_CODE": {"widgetv2type": "UniqueValues", "fieldEditable": "1", "values": [], "Editable": false}, "POPULATION": {"widgetv2type": "Range", "fieldEditable": "1", "values": [], "AllowNull": true, "Max": 2147483647, "Min": -2147483648, "Precision": 0, "Step": 1, "Style": "SpinBox"}, "GTOPO30": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}}'
-                self.assertEqual(layer.editTypes, json.loads(edit_types_to_check))
-
-
+                self.assertEqual(
+                    layer.editTypes, json.loads(edit_types_to_check))
 
     def test_get_schema_table(self):
 
@@ -273,13 +283,14 @@ class QgisProjectTest(TestCase):
             ('"sche.ma"."tab.le"', ('sche.ma', 'tab.le')),
             ('"tab.le"', ('public', 'tab.le')),
             ('"table"', ('public', 'table')),
-            ('"public"."net_datacenter_hyperscale_v0.1_ch_190321"', ('public', 'net_datacenter_hyperscale_v0.1_ch_190321')),
-            ('"link"."Fbr Chain: HY.OS.001.0001..212.000.31..16 B -- PLTN"', ('link', 'Fbr Chain: HY.OS.001.0001..212.000.31..16 B -- PLTN'))
+            ('"public"."net_datacenter_hyperscale_v0.1_ch_190321"',
+             ('public', 'net_datacenter_hyperscale_v0.1_ch_190321')),
+            ('"link"."Fbr Chain: HY.OS.001.0001..212.000.31..16 B -- PLTN"',
+             ('link', 'Fbr Chain: HY.OS.001.0001..212.000.31..16 B -- PLTN'))
         ]
 
         for check in checks:
             self.assertEqual(get_schema_table(check[0]), check[1])
-
 
     def test_dataSourceToDict(self):
 
@@ -292,10 +303,12 @@ class QgisProjectTest(TestCase):
         self.assertEqual(res['sslmode'], 'require')
         self.assertEqual(res['password'], '#\\\'$%?@^&rX43#/')
         self.assertEqual(res['user'], 'testing@webgis')
-        self.assertEqual(res['table'], "\"public\".\"net_datacenter_hyperscale_v0.1_ch_190321\"")
+        self.assertEqual(
+            res['table'], "\"public\".\"net_datacenter_hyperscale_v0.1_ch_190321\"")
 
         res = datasource2dict('dbname=\'data_testing\' user=\'xxx\' password=\'xxx\' host=localhost port=5432 sslmode=disable key=\'id\' srid=4326 type=LineStringZ checkPrimaryKeyUnicity=\'0\' table="centurylink"."Fbr Chain: HY.OS.001.0001..212.000.31..16 B -- PLTN" (geom) sql=')
-        self.assertEqual(res['table'], "\"centurylink\".\"Fbr Chain: HY.OS.001.0001..212.000.31..16 B -- PLTN\"")
+        self.assertEqual(
+            res['table'], "\"centurylink\".\"Fbr Chain: HY.OS.001.0001..212.000.31..16 B -- PLTN\"")
         self.assertEqual(res['checkPrimaryKeyUnicity'], '0')
         self.assertEqual(res['dbname'], 'data_testing')
         self.assertEqual(res['host'], 'localhost')
@@ -344,12 +357,14 @@ class QgisWMSProjectSettingsTest(TestCase):
     def setUp(self):
 
         # build service url and get response
-        self.qgs_prj_file_path = '{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_FILE)
+        self.qgs_prj_file_path = '{}{}{}'.format(
+            CURRENT_PATH, TEST_BASE_PATH, QGS_FILE)
 
         with File(open('{}{}{}'.format(
             CURRENT_PATH, TEST_BASE_PATH, 'getProjectSettings_g3wsuite_project_test_qgis310.xml'
         ), 'r')) as project_settings_file:
-            self.project_settings = QgisProjectSettingsWMS(bytes(project_settings_file.read(), 'utf-8'))
+            self.project_settings = QgisProjectSettingsWMS(
+                bytes(project_settings_file.read(), 'utf-8'))
 
     def test_metadata(self):
 
@@ -359,8 +374,7 @@ class QgisWMSProjectSettingsTest(TestCase):
         self.assertEqual(metadata['accessconstraints'], 'None')
         self.assertEqual(metadata['keywords'], ['infoMapAccessService'])
 
-
-        #FIXME: look bettr to metadata iformations
+        # FIXME: look bettr to metadata iformations
 
     def test_composertemplates(self):
 
@@ -375,9 +389,6 @@ class QgisWMSProjectSettingsTest(TestCase):
         self.assertEqual(tmap['name'], 'map0')
         self.assertEqual(tmap['w'], 189.53)
         self.assertEqual(tmap['h'], 117.7594485294118)
-
-
-
 
 
 class QdjangoUtilsTest(QdjangoTestBase):
@@ -446,9 +457,9 @@ class QdjangoUtilsTest(QdjangoTestBase):
     def test_get_capabilities4layer(self):
         """ Test same name util func """
 
-        layer = self.project310.instance.layer_set.get(qgs_layer_id='countries_simpl20171228095706310')
+        layer = self.project310.instance.layer_set.get(
+            qgs_layer_id='countries_simpl20171228095706310')
         self.assertEqual(get_capabilities4layer(None, layer=layer), 3)
-
 
 
 class QdjangoUtilsDataValidators(QdjangoTestBase):
@@ -458,7 +469,8 @@ class QdjangoUtilsDataValidators(QdjangoTestBase):
         """ Test layer exception for validator DataSourceNotExists"""
 
         qgis_filename = 'test_wrong_geodata_gdal_type_path.qgs'
-        qgis_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, qgis_filename), 'r', encoding='utf-8'))
+        qgis_file = File(open('{}{}{}'.format(
+            CURRENT_PATH, TEST_BASE_PATH, qgis_filename), 'r', encoding='utf-8'))
 
         # DatasourceExists
         project = QgisProject(qgis_file)
@@ -470,7 +482,8 @@ class QdjangoUtilsDataValidators(QdjangoTestBase):
 
         # indirect datasource validator into getDataFields for ogr layer
         qgis_filename = 'test_wrong_geodata_org_type_path.qgs'
-        qgis_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, qgis_filename), 'r', encoding='utf-8'))
+        qgis_file = File(open('{}{}{}'.format(
+            CURRENT_PATH, TEST_BASE_PATH, qgis_filename), 'r', encoding='utf-8'))
 
         # Project is not valid
         with self.assertRaises(Exception) as exc:
