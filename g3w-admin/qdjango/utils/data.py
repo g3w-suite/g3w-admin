@@ -22,7 +22,8 @@ from qgis.core import (
     QgsRectangle,
     QgsMapLayerType,
     QgsVectorLayerTemporalProperties,
-    QgsUnitTypes
+    QgsUnitTypes,
+    QgsLayoutItemLabel,
 )
 
 from qgis.gui import QgsMapCanvas
@@ -114,7 +115,7 @@ def makeComposerPictureFile(file):
         folder = os.path.basename(basePath)  # eg: charts
 
         new_file = re.sub(r'(.*?)%s(.*)' % folder, r'%s\2' %
-                       basePath, file)  # ``?`` means ungreedy
+                          basePath, file)  # ``?`` means ungreedy
         return new_file.split('|')[0]
 
 
@@ -221,7 +222,8 @@ class QgisProjectLayer(XmlData):
             except:
 
                 # For very complex QueryLayer
-                logger.warning(f"Postgres datasource very complex: {self.datasource}")
+                logger.warning(
+                    f"Postgres datasource very complex: {self.datasource}")
                 name = self.name
 
         elif self.layerType == Layer.TYPES.wms:
@@ -1066,7 +1068,9 @@ class QgisProject(XmlData):
                 p_playout = {
                     'name': qgs_layout.name(),
                     'w': first_page_size.width(),
-                    'h': first_page_size.height()
+                    'h': first_page_size.height(),
+                    # Label ids for print substitution
+                    'labels': [{'id': label.id(), 'text': label.text()} for label in qgs_layout.items() if isinstance(label, QgsLayoutItemLabel) and label.id()]
                 }
 
                 # Check if is a ATLAS print
