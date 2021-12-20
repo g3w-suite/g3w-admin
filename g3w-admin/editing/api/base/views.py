@@ -99,16 +99,6 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
             'featurelocks': features_locked
         })
 
-    def add_crs_to_feature(self, geojson_feature):
-        """
-        Add to geometry crs param if it's not set.
-        :param geojson_feature: str
-        :param metadata_layer: object
-        :return:
-        """
-        if geojson_feature['geometry'] and 'crs' not in geojson_feature['geometry']:
-            geojson_feature['geometry']['crs'] = self.layer.srid
-
     def add_media_property(self, geojson_feature, metadata_layer):
         """
         Add to properties image/file object uploaded before
@@ -197,7 +187,8 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
 
                     # for GEOSGeometry of Django 2.2 it must add crs to feature if is not set if a geo feature
                     if metadata_layer.geometry_type != QGIS_LAYER_TYPE_NO_GEOM:
-                        self.add_crs_to_feature(geojson_feature)
+                        if geojson_feature['geometry'] and 'crs' not in geojson_feature['geometry']:
+                            geojson_feature['geometry']['crs'] = "{}:{}".format(self.layer.project.group.srid.auth_name, self.layer.project.group.srid.auth_srid)
 
                     # reproject data if necessary
                     if self.reproject:
@@ -248,7 +239,7 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
                         for name, value in geojson_feature['properties'].items():
                             feature.setAttribute(name, value)
 
-                        # Lop again for set expressions value:
+                        # Loop again for set expressions value:
                         # For update store expression result to use later into update condition
                         field_expresion_values = {}
                         for qgis_field in qgis_layer.fields():
