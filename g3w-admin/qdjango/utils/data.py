@@ -21,6 +21,7 @@ from qgis.core import (
     QgsAttributeEditorElement,
     QgsRectangle,
     QgsMapLayerType,
+    QgsLayoutItemLabel
 )
 
 from qgis.gui import QgsMapCanvas
@@ -1006,7 +1007,9 @@ class QgisProject(XmlData):
                 p_playout = {
                     'name': qgs_layout.name(),
                     'w': first_page_size.width(),
-                    'h': first_page_size.height()
+                    'h': first_page_size.height(),
+                    # Label ids for print substitution
+                    'labels': [{'id': label.id(), 'text': label.text()} for label in qgs_layout.items() if isinstance(label, QgsLayoutItemLabel) and label.id()]
                 }
 
                 # Check if is a ATLAS print
