@@ -30,6 +30,7 @@ from qgis.core import QgsCoordinateReferenceSystem, QgsCoordinateTransformContex
 PROJECTS_PATH = os.path.join(os.getcwd(), 'qdjango', 'tests', 'data')
 DATASOURCE_PATH = f'{PROJECTS_PATH}/geodata'
 QGS310_FILE = 'g3wsuite_project_test_qgis310.qgs'
+QGS310_FILE_1A = 'g3wsuite_project_test_qgis310_2.qgs'
 QGS310_FILE_1 = 'edit-widget_g3w-suite-project-test.qgs'
 QGS310_FILE_2 = 'init_extent_max_extent test_qgis310.qgs'
 QGS310_FILE_3 = 'gruppo-1_custom_layer_order_qgis316.qgs'
@@ -68,6 +69,11 @@ class ClientApiTest(CoreTestBase):
         cls.project_print310 = QgisProject(qgis_project_file_print)
         cls.project_print310.group = cls.print_group
         cls.project_print310.save()
+
+        qgis_project_file_print_1a = File(open('{}/{}'.format(PROJECTS_PATH, QGS310_FILE_1A), 'r'))
+        cls.project_print310_1a = QgisProject(qgis_project_file_print_1a)
+        cls.project_print310_1a.group = cls.print_group
+        cls.project_print310_1a.save()
 
         cache_key = settings.QDJANGO_PRJ_CACHE_KEY.format(cls.prj_test.pk)
         cache = caches['qdjango']
@@ -680,6 +686,10 @@ class ClientApiTest(CoreTestBase):
         self.project_print310.instance.addPermissionsToViewers([self.test_viewer1.pk])
         self.project_print310.instance.add_permissions_to_viewer_user_groups([self.test_gu_viewer2.pk])
 
+        # grant to viewer_1 to project 1a with same layer ids
+        self.project_print310_1a.instance.addPermissionsToViewers([self.test_viewer1.pk])
+        self.project_print310_1a.instance.add_permissions_to_viewer_user_groups([self.test_gu_viewer2.pk])
+
         self.client.login(username=self.test_viewer1.username, password=self.test_viewer1.username)
         res = self.client.get(path)
 
@@ -719,6 +729,27 @@ class ClientApiTest(CoreTestBase):
 
         self.client.logout()
 
+        # Check vs other project with same layer ids
+        path_1a = reverse('group-project-map-config',
+                          args=[self.project_print310_1a.group.slug, 'qdjango', self.project_print310_1a.instance.pk])
+
+        self.client.login(username=self.test_viewer1.username, password=self.test_viewer1.username)
+        res = self.client.get(path_1a)
+
+        self.assertEqual(res.status_code, 200)
+        jres = json.loads(res.content)
+
+        layers = [l['name'] for l in jres['layers']]
+
+        self.assertTrue("Cities" in layers)
+        self.assertTrue("Countries" in layers)
+
+        # check
+        self.assertTrue("Rivers" in layers)
+
+        self.client.logout()
+
+
         # login as viewer1.3 inside group gu_viewer2
         self.client.login(username=self.test_viewer1_3.username, password=self.test_viewer1_3.username)
         res = self.client.get(path)
@@ -730,6 +761,23 @@ class ClientApiTest(CoreTestBase):
 
         self.assertFalse("Cities" in layers)
         self.assertFalse("Countries" in layers)
+
+        # check
+        self.assertTrue("Rivers" in layers)
+
+        self.client.logout()
+
+        # Check vs other project with same layer ids for user groups
+        self.client.login(username=self.test_viewer1_3.username, password=self.test_viewer1_3.username)
+        res = self.client.get(path_1a)
+
+        self.assertEqual(res.status_code, 200)
+        jres = json.loads(res.content)
+
+        layers = [l['name'] for l in jres['layers']]
+
+        self.assertTrue("Cities" in layers)
+        self.assertTrue("Countries" in layers)
 
         # check
         self.assertTrue("Rivers" in layers)
