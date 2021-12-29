@@ -172,12 +172,38 @@ class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
         ret['plugins'] = {}
 
-        # plugins/module data
-        dataPlugins = initconfig_plugin_start.send(sender=self, project=self.projectId, projectType=self.projectType)
-        for dataPlugin in dataPlugins:
-            if dataPlugin[1]:
+        # Plugins/Module data
+        # Data from plugins can be instance of dict or list
+        # - dict results are used only for update 'plugins' API return data
+        # - list results are more verbose and action on 'plugins' API section is declared, ie:
+        # {
+        #     'mode': 'delete',
+        #     'data': [<list_plugins_section_to_remove>]
+        #  },
+        # {
+        #     'mode': 'update',
+        #     'data': {
+        #         '<lugins_name>: {
+        #             ...
+        #         }
+        #     }
+        # }
+
+        plugins = initconfig_plugin_start.send(sender=self, project=self.projectId, projectType=self.projectType)
+        for data_plugin in plugins:
+            if data_plugin[1] and isinstance(data_plugin[1], dict):
                 ret['plugins'] = copy(ret['plugins'])
-                ret['plugins'].update(dataPlugin[1])
+                ret['plugins'].update(data_plugin[1])
+            elif data_plugin[1] and isinstance(data_plugin[1], list):
+                for dp in data_plugin[1]:
+                    if dp['mode'] == 'delete':
+                        ret['plugins'] = copy(ret['plugins'])
+                        for k in dp['data']:
+                            ret['plugins'].pop(k)
+                    elif dp['mode'] == 'update':
+                        ret['plugins'] = copy(ret['plugins'])
+                        ret['plugins'].update(dp['data'])
+
 
         # powerd_by
         ret['powered_by'] = settings.G3WSUITE_POWERD_BY
