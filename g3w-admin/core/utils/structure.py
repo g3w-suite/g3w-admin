@@ -220,7 +220,7 @@ def mapLayerAttributesFromQgisLayer(qgis_layer, **kwargs):
     if 'exclude' in kwargs:
         _fieldsMapped = []
         for field in fields:
-            if field.name not in kwargs['exclude']:
+            if field.name() not in kwargs['exclude']:
                 _fieldsMapped.append(field)
         fields = _fieldsMapped
 
