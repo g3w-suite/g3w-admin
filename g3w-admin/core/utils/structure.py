@@ -208,21 +208,13 @@ def mapLayerAttributesFromQgisLayer(qgis_layer, **kwargs):
     only concrete field not virtual field and many2many
     """
 
-    fieldsToExclude = kwargs['fieldsToExclude'] if 'fieldsToExclude' in kwargs else [
-    ]
+    # Set fields to exclude
+    fieldsToExclude = kwargs['exclude'] if 'exclude' in kwargs else []
 
     toRes = OrderedDict()
     fields = qgis_layer.fields()
 
     data_provider = qgis_layer.dataProvider()
-
-    # exclude if set:
-    if 'exclude' in kwargs:
-        _fieldsMapped = []
-        for field in fields:
-            if field.name() not in kwargs['exclude']:
-                _fieldsMapped.append(field)
-        fields = _fieldsMapped
 
     field_index = 0
 
