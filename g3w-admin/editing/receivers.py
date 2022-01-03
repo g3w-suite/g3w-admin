@@ -217,9 +217,18 @@ def validate_constraint(**kwargs):
     geom_type = kwargs['data']['feature']['geometry']['type']
     geom_class = getattr(geos, geom_type)
 
+    # For multi geometry type
     if geom_type == 'MultiPolygon':
         Polygon = getattr(geos, 'Polygon')
         coords = [Polygon(p) for p in coords[0]]
+
+    if geom_type == 'MultiLineString':
+        LineString = getattr(geos, 'LineString')
+        coords = [LineString(p) for p in coords]
+
+    if geom_type == 'MultiPoint':
+        Point = getattr(geos, 'Point')
+        coords = [Point(p) for p in coords]
 
     # set spatial predicate for validation
     spatial_predicate = getattr(settings, 'EDITING_CONSTRAINT_SPATIAL_PREDICATE', 'contains')
