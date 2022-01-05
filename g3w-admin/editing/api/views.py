@@ -10,7 +10,7 @@ from qdjango.vector import QGISLayerVectorViewMixin
 from qdjango.api.constraints.filters import SingleLayerSubsetStringConstraintFilter, \
     SingleLayerExpressionConstraintFilter, \
     GeoConstraintsFilter
-from qdjango.api.layers.filters import RelationOneToManyFilter, SingleLayerSessionTokenFilter
+from qdjango.api.layers.filters import RelationOneToManyFilter, SingleLayerSessionTokenFilter, FidFilter
 from django.views.decorators.csrf import csrf_exempt
 
 
@@ -28,7 +28,8 @@ class QGISEditingLayerVectorView(QGISLayerVectorViewMixin, BaseEditingVectorOnMo
         IntersectsBBoxFilter,
         FieldFilterBackend,
         RelationOneToManyFilter,
-        SingleLayerSessionTokenFilter
+        SingleLayerSessionTokenFilter,
+        FidFilter
     )
 
     def add_media_property(self, geojson_feature, metadata_layer):
