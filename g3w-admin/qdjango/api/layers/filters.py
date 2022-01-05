@@ -95,19 +95,19 @@ class FidFilter(BaseFilterBackend):
         multiple = True
         FILTER_FIDS_PARAM = f'{FILTER_FID_PARAM}s'
 
-        if FILTER_FIDS_PARAM not in request.GET or request.GET[FILTER_FIDS_PARAM] == '':
-            if FILTER_FID_PARAM not in request.GET or request.GET[FILTER_FID_PARAM] == '':
+        if not request.GET.get(FILTER_FIDS_PARAM, request.POST.get(FILTER_FIDS_PARAM)):
+            if not request.GET.get(FILTER_FID_PARAM, request.POST.get(FILTER_FID_PARAM)):
                 return
             else:
                 multiple = False
 
         try:
             if multiple:
-                fids = [f for f in request.GET[FILTER_FIDS_PARAM].split(',')]
+                fids = [f for f in request.GET.get(FILTER_FIDS_PARAM, request.POST.get(FILTER_FIDS_PARAM)).split(',')]
                 if len(fids) == 0:
                     return
             else:
-                fid = request.GET[FILTER_FID_PARAM]
+                fid = request.GET.get(FILTER_FID_PARAM, request.POST.get(FILTER_FID_PARAM))
                 if not fid:
                     return
 
