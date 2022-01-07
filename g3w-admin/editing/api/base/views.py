@@ -262,7 +262,11 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
                                     result = exp.evaluate(context)
                                     if not exp.hasEvalError():
                                         feature.setAttribute(qgis_field.name(), result)
-                                        field_expresion_values[qgis_field.name()] = result
+
+                                        # Check update if expression default value has to run also on update e not
+                                        # only on insert newone
+                                        if qgis_field.defaultValueDefinition().applyOnUpdate():
+                                            field_expresion_values[qgis_field.name()] = result
 
 
                         # Call validator!
