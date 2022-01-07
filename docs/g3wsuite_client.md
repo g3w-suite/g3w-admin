@@ -323,6 +323,28 @@ If at the publication level of the QGIS project, the **Legend position** option 
 
 If the option is activated on the QGIS project, the **legend is filtered on the map content**.
 
+## URL parameters
+
+The follow parameters ca be used to perform actions on the map
+
+#### map_extent (Zoom to map extent):
+
+This parameter is useful set starting project map extent to a specific Map extent
+
+*<map_url>?map_extent=<Xmin>,<Ymin>,<Xmax>,<Ymax>*
+
+#### zoom_to_fid (Zoom to a one feature only) 
+
+This parameter is used to zoom to a specific feature of a layer:
+
+*<map_url>?zoom_to_fid=<layer_id>|<fid value>*
+
+#### ztf (Zoom to Features) 
+
+This parameter is used to zoom to Feature of a specific layer:
+
+*<map_url>?zft=<layer_id or layer name>:<field name>=<field value>*
+
 
 
 
