@@ -3,7 +3,7 @@ from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 from rest_framework import serializers
 from rest_framework.fields import empty
-from guardian.shortcuts import get_objects_for_user
+from guardian.shortcuts import get_objects_for_user, get_anonymous_user
 
 from qdjango.models import Project, Layer, Widget, SessionTokenFilter
 from qdjango.utils.data import QGIS_LAYER_TYPE_NO_GEOM
@@ -299,10 +299,14 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
         # Get layer which request.user can view:
         if self.request:
-            view_layer_ids = [
-                l.qgs_layer_id for l in get_objects_for_user(self.request.user, 'qdjango.view_layer', Layer).
-                    filter(project=instance)
-            ]
+            view_layer_ids = list(
+                set([l.qgs_layer_id for l in get_objects_for_user(self.request.user, 'qdjango.view_layer', Layer).
+                    filter(project=instance)]).union(set(
+                    [l.qgs_layer_id for l in get_objects_for_user(get_anonymous_user(), 'qdjango.view_layer', Layer).
+                        filter(project=instance)]
+                ))
+            )
+
 
         # add layers data, widgets
         # init properties
