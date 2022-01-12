@@ -13,7 +13,7 @@ from django.views.generic.detail import SingleObjectMixin
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from guardian.decorators import permission_required
-from guardian.shortcuts import get_objects_for_user
+from guardian.shortcuts import get_objects_for_user, get_anonymous_user
 from usersmanage.mixins.views import G3WACLViewMixin
 from usersmanage.decorators import user_passes_test_or_403
 from usersmanage.utils import get_users_for_object
@@ -60,8 +60,10 @@ class DashboardView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(DashboardView, self).get_context_data(**kwargs)
         # add number groups
-        groups = get_objects_for_user(self.request.user, 'core.view_group', Group)
-        context['n_groups'] = len(groups)
+        qs = get_objects_for_user(self.request.user, 'core.view_group', Group) | \
+             get_objects_for_user(get_anonymous_user(), 'core.view_group', Group)
+        qs = qs.order_by('order')
+        context['n_groups'] = len(qs)
         context['widgets'] = []
 
         dashboard_widgets = load_dashboard_widgets.send(self)
@@ -99,7 +101,11 @@ class SearchAdminView(TemplateView):
 class GroupListView(ListView):
     """List group view."""
     def get_queryset(self):
-        return get_objects_for_user(self.request.user, 'core.view_group', Group).order_by('order')
+
+        qs = get_objects_for_user(self.request.user, 'core.view_group', Group) | \
+             get_objects_for_user(get_anonymous_user(), 'core.view_group', Group)
+        qs = qs.order_by('order')
+        return qs
 
 
 class GroupDetailView(G3WRequestViewMixin, DetailView):
