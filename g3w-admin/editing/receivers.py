@@ -23,7 +23,9 @@ from .models import G3WEditingFeatureLock, \
     G3WEditingLayer, \
     G3WEditingLog, \
     EDITING_POST_DATA_DELETED, \
-    EDITING_ATOMIC_PERMISSIONS
+    EDITING_ATOMIC_PERMISSIONS, \
+    EDITING_POST_DATA_UPDATED, \
+    EDITING_POST_DATA_ADDED
 
 
 from .utils import LayerLock
@@ -201,7 +203,7 @@ def validate_constraint(**kwargs):
     """
 
     mode = kwargs['mode']
-    if mode not in ('update', 'add'):
+    if mode not in (EDITING_POST_DATA_UPDATED, EDITING_POST_DATA_ADDED):
         return
 
     editing_layer = Layer.objects.get(pk=kwargs['layer_metadata'].layer_id)

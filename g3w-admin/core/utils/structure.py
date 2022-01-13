@@ -253,8 +253,11 @@ def mapLayerAttributesFromQgisLayer(qgis_layer, **kwargs):
                     default_value = kwargs['default']
 
                 if isinstance(default_value, QDate) or isinstance(default_value, QDateTime):
-                    default_value = default_value.toString(
-                        kwargs['fields'][field.name()]['input']['options']['formats'][0]['displayformat'])
+                    try:
+                        default_value = default_value.toString(
+                            kwargs['fields'][field.name()]['input']['options']['formats'][0]['displayformat'])
+                    except Exception as e:
+                        default_value = ''
 
                 expression = ''
                 if has_expression:

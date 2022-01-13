@@ -33,6 +33,7 @@ from .models import Userdata, Department, Userbackend, GroupRole, USER_BACKEND_T
 from core.mixins.forms import G3WRequestFormMixin, G3WFormMixin
 from usersmanage.configs import *
 from .utils import getUserGroups, userHasGroups
+from .signals import after_init_user_form, after_save_user_form
 import logging
 
 logger = logging.getLogger('django_auth_ldap')
@@ -338,7 +339,6 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
         if G3W_EDITOR1 in getUserGroups(self.request.user):
             self._set_editor1_queryset()
 
-
         self.helper = FormHelper(self)
         self.helper.form_tag = False
 
@@ -448,6 +448,9 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
             ))
 
         self.helper.layout = Layout(*args)
+
+        # To alter form from other module send signal
+        after_init_user_form.send(self)
 
     def __authrole_fields(self):
         """ Get fields for ACL box if they are into self.fields """
@@ -582,6 +585,9 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
             else:
                 user.user_permissions.remove(add_group)
 
+            # To save extra data for user send signal
+            after_save_user_form.send(self, user=user)
+
         return user
 
     def clean_groups(self):
@@ -657,7 +663,7 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
             'department',
             'avatar',
             'user_groups_editor',
-            'user_groups_viewer'
+            'user_groups_viewer',
         )
 
         widgets = {
