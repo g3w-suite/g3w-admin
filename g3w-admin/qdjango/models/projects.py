@@ -196,6 +196,9 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
     wms_use_layer_ids = models.BooleanField(
         _('WMS use layer ids'), default=False)
 
+    original_name = models.CharField(
+        _('Qgis project original name'), max_length=256, default='', editable=False)
+
     # client options:
     # ============================================
 
@@ -448,6 +451,11 @@ class Layer(G3WACLModelMixins, models.Model):
     # Project
     project = models.ForeignKey(Project, verbose_name=_(
         'Project'), on_delete=models.CASCADE)
+
+    parent_project = models.ForeignKey(Project, verbose_name=_(
+        'Parent Project for Embedded layers'), blank=True, null=True,
+        on_delete=models.CASCADE, editable=False, related_name='parent_project')
+
     # Type and content
     layer_type = models.CharField(_('Type'), choices=TYPES, max_length=255)
     datasource = models.TextField(_('Datasource'))
@@ -534,8 +542,8 @@ class Layer(G3WACLModelMixins, models.Model):
         _('Get WMS/WMS externally'), default=False, blank=True)
 
     # For temporal properties
-    temporal_properties = models.TextField(_('Temporal properties'), null=True, blank=True)
-
+    temporal_properties = models.TextField(
+        _('Temporal properties'), null=True, blank=True)
 
     @property
     def qgis_layer(self):

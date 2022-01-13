@@ -42,7 +42,7 @@ from .exceptions import QgisProjectException
 from .structure import *
 from .validators import (CheckMaxExtent, ColumnName, DatasourceExists, ProjectExists,
                          IsGroupCompatibleValidator, ProjectTitleExists,
-                         UniqueLayername)
+                         UniqueLayername, EmbeddedLayersValidator)
 
 from qdjango.apps import get_qgs_project
 
@@ -148,7 +148,8 @@ class QgisProjectLayer(XmlData):
         'editorlayout',
         'editorformstructure',
         'extent',
-        'temporalproperties'
+        'temporalproperties',
+        'embedded',
     ]
 
     _pre_exception_message = 'Layer'
@@ -194,6 +195,20 @@ class QgisProjectLayer(XmlData):
         if not name:
             name = self.qgs_layer.name()
         return name
+
+    def _getDataEmbedded(self):
+        """
+        Returns the name of the project which contains the embedded layer, an empty string if the layer is not embedded.
+        :return: project name or an empty string
+        :rtype: str
+        """
+
+        embedded_source = self.qgisProject.qgs_project.layerIsEmbedded(
+            self.layerId)
+        if embedded_source != '':
+            return os.path.basename(embedded_source)
+
+        return ''
 
     def _getDataOrigname(self):
         """
@@ -784,7 +799,8 @@ class QgisProject(XmlData):
         ProjectExists,
         ProjectTitleExists,
         UniqueLayername,
-        CheckMaxExtent
+        CheckMaxExtent,
+        EmbeddedLayersValidator,
     ]
 
     _pre_exception_message = 'Project'
@@ -998,15 +1014,29 @@ class QgisProject(XmlData):
 
     def _getDataLayers(self):
         """
-        Get QGIS project layers
+        Get QGIS project layers, embedded layers are not returned, see embeddedLayers()
         :return: list of QgsProjectLayer instances
         :rtype: list
         """
         layers = []
 
         for layerid, layer in self.qgs_project.mapLayers().items():
-            layers.append(self._qgisprojectlayer_class(
-                layer, qgisProject=self))
+            if self.qgs_project.layerIsEmbedded(layerid) == '':
+                layers.append(self._qgisprojectlayer_class(
+                    layer, qgisProject=self))
+        return layers
+
+    def embeddedLayers(self):
+        """Returns a list of embedded layers as dictionaries with layer 'id' and 'project' basename"""
+
+        # Extract from XML because the layers may be invalid at this point
+        layers = []
+        for layer in self.qgisProjectTree.xpath('//maplayer[@embedded=1]'):
+            layers.append({
+                'id': layer.attrib['id'],
+                'project': os.path.basename(layer.attrib['project'])
+            })
+
         return layers
 
     def _getDataLayerRelations(self):
@@ -1203,6 +1233,7 @@ class QgisProject(XmlData):
 
                 self.instance = self._project_model.objects.create(
                     qgis_file=self.qgisProjectFile,
+                    original_name=self.qgisProjectFile.name,
                     group=self.group,
                     title=self.title,
                     initial_extent=self.initialExtent,
@@ -1220,6 +1251,7 @@ class QgisProject(XmlData):
             else:
                 if instance:
                     self.instance = instance
+                self.instance.original_name = self.qgisProjectFile.name
                 self.instance.qgis_file = self.qgisProjectFile
                 self.instance.title = self.title
                 self.instance.qgis_version = self.qgisVersion
@@ -1238,9 +1270,36 @@ class QgisProject(XmlData):
             for l in self.layers:
                 l.save()
 
+            newLayerNameList = []
+
+            # Create or update embedded layers (they should already been validated in form clean)
+            for embedded in self.embeddedLayers():
+                try:
+                    embedded_layer = Layer.objects.get(
+                        project__original_name=embedded['project'], qgs_layer_id=embedded['id'])
+                    newLayerNameList.append(
+                        (embedded_layer.name, embedded_layer.qgs_layer_id, embedded_layer.datasource))
+                    try:
+                        existing_layer = self.instance.layer_set.get(
+                            qgs_layer_id=embedded['id'])
+
+                        embedded_layer.pk = existing_layer.pk
+
+                    except Layer.DoesNotExist:
+
+                        embedded_layer.pk = None
+
+                    embedded_layer.parent_project = embedded_layer.project
+                    embedded_layer.project = self.instance
+                    embedded_layer.save()
+
+                except Layer.DoesNotExist:
+                    pass
+
             # Pre-existing layers that have not been updated must be dropped
-            newLayerNameList = [
+            newLayerNameList += [
                 (layer.name, layer.layerId, layer.datasource) for layer in self.layers]
+
             for layer in self.instance.layer_set.all():
                 if (layer.name, layer.qgs_layer_id, layer.datasource) not in newLayerNameList:
                     layer.delete()
@@ -1248,10 +1307,27 @@ class QgisProject(XmlData):
             # Update qgis file datasource for SpatiaLite and OGR layers
             self.updateQgisFileDatasource()
 
+            # Update the project path of the embedded layers
+            linked_projects = [l.project for l in Layer.objects.filter(
+                parent_project=self.instance)]
+            linked_projects = list(dict.fromkeys(linked_projects))
+
+            for linked_project in linked_projects:
+                changed = False
+                tree = etree.parse(linked_project.qgis_file.file.name)
+                for embedded_layer in linked_project.layer_set.filter(parent_project=self.instance):
+                    layer_id = embedded_layer.qgs_layer_id
+                    for element in tree.xpath('//maplayer[@id="{}"]'.format(layer_id)):
+                        element.attrib['project'] = self.instance.qgis_file.path
+                        changed = True
+                if changed:
+                    tree.write(linked_project.qgis_file.file.name,
+                               encoding='UTF-8')
+
             post_save_qdjango_project_file.send(self)
 
     def updateQgisFileDatasource(self):
-        """Update qgis file datasource for SpatiaLite and OGR layers.
+        """Update qgis file datasource for SpatiaLite, OGR and embedded layers.
 
         SpatiaLite and OGR layers need their datasource string to be
         modified at import time so that the original path is replaced with
@@ -1287,6 +1363,16 @@ class QgisProject(XmlData):
                 # Update layer
                 if newDatasource:
                     layer.find('datasource').text = newDatasource
+            elif 'embedded' in layer.attrib and layer.attrib['embedded'] == '1':
+                project_name = os.path.basename(layer.attrib['project'])
+                layer_id = os.path.basename(layer.attrib['id'])
+                try:
+                    layer_object = Layer.objects.get(
+                        project__original_name=project_name, qgs_layer_id=layer_id)
+                    layer.attrib['project'] = layer_object.project.qgis_file.path
+                except Layer.DoesNotExist:
+                    raise Exception(
+                        _('The project contains an embedded layer {} from a project that could not be found {}'.format(layer_id, project_name)))
 
         # update file of print composers
         for composer in tree.xpath(self._regexXmlComposer):
