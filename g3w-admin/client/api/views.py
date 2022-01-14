@@ -134,6 +134,7 @@ class GroupConfigApiView(APIView):
         }
         if not u.is_anonymous:
             initconfig['user'].update({
+                'id': u.pk,
                 'username': u.username,
                 'first_name': u.first_name,
                 'last_name': u.last_name,
