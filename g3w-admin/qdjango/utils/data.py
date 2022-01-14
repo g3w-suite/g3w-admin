@@ -1318,7 +1318,7 @@ class QgisProject(XmlData):
                 for embedded_layer in linked_project.layer_set.filter(parent_project=self.instance):
                     layer_id = embedded_layer.qgs_layer_id
                     for element in tree.xpath('//maplayer[@id="{}"]'.format(layer_id)):
-                        element.attrib['project'] = self.instance.qgis_file.path
+                        element.attrib['project'] = makeDatasource(self.instance.qgis_file.path, Layer.TYPES.ogr)
                         changed = True
                 if changed:
                     tree.write(linked_project.qgis_file.file.name,
@@ -1369,7 +1369,7 @@ class QgisProject(XmlData):
                 try:
                     layer_object = Layer.objects.get(
                         project__original_name=project_name, qgs_layer_id=layer_id)
-                    layer.attrib['project'] = layer_object.project.qgis_file.path
+                    layer.attrib['project'] = makeDatasource(layer_object.project.qgis_file.path, Layer.TYPES.ogr)
                 except Layer.DoesNotExist:
                     raise Exception(
                         _('The project contains an embedded layer {} from a project that could not be found {}'.format(layer_id, project_name)))

@@ -22,12 +22,12 @@
     <customproperties>
       <Option/>
     </customproperties>
-    <layer-tree-layer patch_size="-1,-1" legend_exp="" name="aeroporti_3857" source="./geodata/aeroporti_3857.shp" providerKey="ogr" expanded="1" legend_split_behavior="0" checked="Qt::Checked" id="aeroporti_3857_1f9f0d73_10bd_47f8_a082_39f2916da681">
+    <layer-tree-layer patch_size="-1,-1" legend_exp="" name="aeroporti_3857" source="./project_data/aeroporti_3857.shp" providerKey="ogr" expanded="1" legend_split_behavior="0" checked="Qt::Checked" id="aeroporti_3857_1f9f0d73_10bd_47f8_a082_39f2916da681">
       <customproperties>
         <Option/>
       </customproperties>
     </layer-tree-layer>
-    <layer-tree-layer patch_size="-1,-1" legend_exp="" name="countries" source="./geodata/countries.shp" providerKey="ogr" expanded="1" legend_split_behavior="0" checked="Qt::Checked" id="countries_9108e75d_3238_4293_bc56_6847d9ae4927">
+    <layer-tree-layer patch_size="-1,-1" legend_exp="" name="countries" source="./project_data/countries.shp" providerKey="ogr" expanded="1" legend_split_behavior="0" checked="Qt::Checked" id="countries_9108e75d_3238_4293_bc56_6847d9ae4927">
       <customproperties>
         <Option type="Map">
           <Option name="embedded" type="int" value="1"/>
@@ -177,7 +177,7 @@
         <ymax>74.71818609875940354</ymax>
       </wgs84extent>
       <id>aeroporti_3857_1f9f0d73_10bd_47f8_a082_39f2916da681</id>
-      <datasource>./geodata/aeroporti_3857.shp</datasource>
+      <datasource>./project_data/aeroporti_3857.shp</datasource>
       <keywordList>
         <value></value>
       </keywordList>

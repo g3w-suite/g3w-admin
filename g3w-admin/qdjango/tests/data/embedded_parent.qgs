@@ -22,7 +22,7 @@
     <customproperties>
       <Option/>
     </customproperties>
-    <layer-tree-layer patch_size="-1,-1" legend_exp="" name="countries" source="./geodata/countries.shp" providerKey="ogr" expanded="1" legend_split_behavior="0" checked="Qt::Checked" id="countries_9108e75d_3238_4293_bc56_6847d9ae4927">
+    <layer-tree-layer patch_size="-1,-1" legend_exp="" name="countries" source="./project_data/countries.shp" providerKey="ogr" expanded="1" legend_split_behavior="0" checked="Qt::Checked" id="countries_9108e75d_3238_4293_bc56_6847d9ae4927">
       <customproperties>
         <Option/>
       </customproperties>
@@ -162,7 +162,7 @@
         <ymax>81.85736800000000812</ymax>
       </wgs84extent>
       <id>countries_9108e75d_3238_4293_bc56_6847d9ae4927</id>
-      <datasource>./geodata/countries.shp</datasource>
+      <datasource>./project_data/countries.shp</datasource>
       <keywordList>
         <value></value>
       </keywordList>

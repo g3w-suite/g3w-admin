@@ -32,3 +32,4 @@ def execute_search(sender, request, search_text, **kwargs):
         GroupSearch(search_text, user=request.user),
         MacroGroupSearch(search_text, user=request.user),
     ]
+

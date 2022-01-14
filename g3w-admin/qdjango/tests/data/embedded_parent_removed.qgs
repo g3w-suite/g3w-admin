@@ -22,7 +22,7 @@
     <customproperties>
       <Option/>
     </customproperties>
-    <layer-tree-layer patch_size="-1,-1" legend_exp="" name="aeroporti_3857" source="./geodata/aeroporti_3857.shp" providerKey="ogr" expanded="1" legend_split_behavior="0" checked="Qt::Checked" id="aeroporti_3857_998a36a8_441b_465e_9467_b0e043419fe7">
+    <layer-tree-layer patch_size="-1,-1" legend_exp="" name="aeroporti_3857" source="./project_data/aeroporti_3857.shp" providerKey="ogr" expanded="1" legend_split_behavior="0" checked="Qt::Checked" id="aeroporti_3857_998a36a8_441b_465e_9467_b0e043419fe7">
       <customproperties>
         <Option/>
       </customproperties>
@@ -162,7 +162,7 @@
         <ymax>74.71818609875940354</ymax>
       </wgs84extent>
       <id>aeroporti_3857_998a36a8_441b_465e_9467_b0e043419fe7</id>
-      <datasource>./geodata/aeroporti_3857.shp</datasource>
+      <datasource>./project_data/aeroporti_3857.shp</datasource>
       <keywordList>
         <value></value>
       </keywordList>

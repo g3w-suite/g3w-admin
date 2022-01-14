@@ -13,6 +13,8 @@ __copyright__ = 'Copyright 2022, Gis3W'
 import json
 import logging
 import os
+import shutil
+import glob
 from unittest import skipIf
 
 from core.models import G3WSpatialRefSys
@@ -28,12 +30,35 @@ from lxml import etree as et
 from qdjango.apps import QGS_SERVER, get_qgs_project
 from qdjango.forms import QdjangoProjectForm
 from qdjango.models import Layer, Project
-
+from qgis.PyQt.QtCore import QTemporaryDir
 from .base import CURRENT_PATH, TEST_BASE_PATH, QdjangoTestBase
 
 logger = logging.getLogger(__name__)
 
+# Run the whole test in a temp MEDIA_ROOT and DATASOURCE_PATH to make sure
+# paths are rewritten correctly and without interferences with the existing
+# data
 
+TEMP_DIR = QTemporaryDir()
+TEMP_PATH = TEMP_DIR.path()
+# Directories are separate
+DATASOURCE_PATH = os.path.join(TEMP_PATH, 'project_data')
+MEDIA_ROOT = os.path.join(TEMP_PATH, 'media_root')
+FILE_UPLOAD_TEMP_DIR = os.path.join(TEMP_PATH, 'temp_uploads')
+os.mkdir(DATASOURCE_PATH)
+os.mkdir(MEDIA_ROOT)
+os.mkdir(FILE_UPLOAD_TEMP_DIR)
+
+# Copy all required data
+for file in glob.glob(os.path.join(CURRENT_PATH + TEST_BASE_PATH, 'project_data') + '/*.*'):
+    shutil.copy(file, DATASOURCE_PATH)
+
+
+@override_settings(
+    DATASOURCE_PATH=DATASOURCE_PATH,
+    MEDIA_ROOT=MEDIA_ROOT,
+    FILE_UPLOAD_TEMP_DIR=FILE_UPLOAD_TEMP_DIR,
+)
 class TestEmbeddedLayers(QdjangoTestBase):
 
     @classmethod
@@ -303,3 +328,15 @@ class TestEmbeddedLayers(QdjangoTestBase):
 
         self.assertTrue(project.qgis_project.mapLayer(
             'countries_9108e75d_3238_4293_bc56_6847d9ae4927').isValid())
+
+        # Test delete parent also deletes embedded layer
+        # This is at the model level: check must also be enforced at the view level
+
+        parent_project.delete()
+        project = Project.objects.get(original_name='embedded.qgs')
+
+        # Check that embedded layer is gone
+        self.assertEqual(project.layer_set.filter(
+            qgs_layer_id='countries_9108e75d_3238_4293_bc56_6847d9ae4927').count(), 0)
+        tree = et.parse(project.qgis_file.path)
+        self.assertEqual(len(tree.xpath('//maplayer[@embedded=1]')), 0)
