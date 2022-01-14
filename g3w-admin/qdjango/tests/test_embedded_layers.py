@@ -96,6 +96,12 @@ class TestEmbeddedLayers(QdjangoTestBase):
         cls.viewer1_group.user_set.remove(cls.test_user1)
 
     def tearDown(self):
+        """Remove all test projects"""
+
+        for original_name in ('embedded.qgs', 'embedded_parent.qgs', 'embedded_parent_removed.qgs', 'embedded_parent_new_title.qgs'):
+            Project.objects.filter(original_name=original_name).delete()
+
+    def tearDown(self):
         super().tearDown()
 
     def _testApiCallAdmin01(self, view_name, args, kwargs={}):
@@ -116,11 +122,13 @@ class TestEmbeddedLayers(QdjangoTestBase):
         self.client.logout()
         return response
 
-    def test_form(self, login=True):
-        """Test the form with embedded layers"""
+    def _make_form(self, project_path, instance=None, name=None):
 
-        payload = open(self.project_path, 'rb').read()
-        qgis_file = TemporaryUploadedFile('embedded.qgs', 'application/xml',
+        payload = open(project_path, 'rb').read()
+        if name is None:
+            name = os.path.basename(project_path)
+
+        qgis_file = TemporaryUploadedFile(name, 'application/xml',
                                           len(payload), 'utf-8')
         qgis_file.file.write(payload)
         qgis_file.file.seek(0)
@@ -139,35 +147,23 @@ class TestEmbeddedLayers(QdjangoTestBase):
                 'qgis_file': qgis_file
             },
             group=self.project_group,
-            request=type('', (object,), {'user': self.test_user1})()
+            request=type('', (object,), {'user': self.test_user1})(),
+            instance=instance,
+            initial={}
         )
+
+        return form
+
+    def test_form(self, login=True):
+        """Test the form with embedded layers"""
+
+        form = self._make_form(self.project_path)
 
         self.assertFalse(form.is_valid())
         self.assertIn('project does not exist', form.errors['qgis_file'][0])
 
         # Load parent layer
-        payload = open(self.parent_project_path, 'rb').read()
-        qgis_file = TemporaryUploadedFile('embedded_parent.qgs', 'application/xml',
-                                          len(payload), 'utf-8')
-        qgis_file.file.write(payload)
-        qgis_file.file.seek(0)
-
-        form = QdjangoProjectForm(
-            data={
-                'feature_count_wms': 10,
-                'group_slug': self.project_group.slug,
-                'toc_tab_default': 'layers',
-                'legend_position': 'tab',
-                'multilayer_query': 'single',
-                'multilayer_querybybbox': 'single',
-                'multilayer_querybypolygon': 'single'
-            },
-            files={
-                'qgis_file': qgis_file
-            },
-            group=self.project_group,
-            request=type('', (object,), {'user': self.test_user1})()
-        )
+        form = self._make_form(self.parent_project_path)
 
         self.assertTrue(form.is_valid(), form.errors)
 
@@ -175,35 +171,15 @@ class TestEmbeddedLayers(QdjangoTestBase):
         form.qgisProject.save(**form.cleaned_data)
 
         # Store temporary file to avoid error on test exit (because the temp file was moved)
-        open(qgis_file.file.name, 'a').close()
+        open(form.qgisProject.qgisProjectFile.file.name, 'a').close()
 
         # Verify
         project = Project.objects.get(original_name='embedded_parent.qgs')
         self.assertIsNotNone(project)
 
         # Reload embedded, this time it should pass
-        payload = open(self.project_path, 'rb').read()
-        qgis_file = TemporaryUploadedFile('embedded.qgs', 'application/xml',
-                                          len(payload), 'utf-8')
-        qgis_file.file.write(payload)
-        qgis_file.file.seek(0)
 
-        form = QdjangoProjectForm(
-            data={
-                'feature_count_wms': 10,
-                'group_slug': self.project_group.slug,
-                'toc_tab_default': 'layers',
-                'legend_position': 'tab',
-                'multilayer_query': 'single',
-                'multilayer_querybybbox': 'single',
-                'multilayer_querybypolygon': 'single'
-            },
-            files={
-                'qgis_file': qgis_file
-            },
-            group=self.project_group,
-            request=type('', (object,), {'user': self.test_user1})()
-        )
+        form = self._make_form(self.project_path)
 
         self.assertTrue(form.is_valid())
 
@@ -211,7 +187,7 @@ class TestEmbeddedLayers(QdjangoTestBase):
         form.qgisProject.save(**form.cleaned_data)
 
         # Store temporary file to avoid error on test exit (because the temp file was moved)
-        open(qgis_file.file.name, 'a').close()
+        open(form.qgisProject.qgisProjectFile.file.name, 'a').close()
 
         project = Project.objects.get(original_name='embedded.qgs')
         self.assertIsNotNone(project)
@@ -245,30 +221,9 @@ class TestEmbeddedLayers(QdjangoTestBase):
         # Check if removing the parent layer is permitted
         # Use case 1: the user uploads a new version of the parent project without the embedded layer
         # Load parent layer
-        payload = open(self.parent_project_removed_path, 'rb').read()
-        qgis_file = TemporaryUploadedFile('embedded_parent.qgs', 'application/xml',
-                                          len(payload), 'utf-8')
-        qgis_file.file.write(payload)
-        qgis_file.file.seek(0)
 
-        form = QdjangoProjectForm(
-            data={
-                'feature_count_wms': 10,
-                'group_slug': self.project_group.slug,
-                'toc_tab_default': 'layers',
-                'legend_position': 'tab',
-                'multilayer_query': 'single',
-                'multilayer_querybybbox': 'single',
-                'multilayer_querybypolygon': 'single'
-            },
-            files={
-                'qgis_file': qgis_file
-            },
-            group=self.project_group,
-            request=type('', (object,), {'user': self.test_user1})(),
-            instance=Project.objects.get(original_name='embedded_parent.qgs'),
-            initial={},
-        )
+        form = self._make_form(self.parent_project_removed_path, Project.objects.get(
+            original_name='embedded_parent.qgs'))
 
         self.assertFalse(form.is_valid())
         self.assertIn('is embedded by the project',
@@ -277,31 +232,8 @@ class TestEmbeddedLayers(QdjangoTestBase):
         # Use case 2: the project tile or group changes and so changes the QGS file path:
         # the embedded layers project must be updated accordingly
 
-        payload = open(
-            self.parent_project_new_title_path, 'rb').read()
-        qgis_file = TemporaryUploadedFile('embedded_parent.qgs', 'application/xml',
-                                          len(payload), 'utf-8')
-        qgis_file.file.write(payload)
-        qgis_file.file.seek(0)
-
-        form = QdjangoProjectForm(
-            data={
-                'feature_count_wms': 10,
-                'group_slug': self.project_group.slug,
-                'toc_tab_default': 'layers',
-                'legend_position': 'tab',
-                'multilayer_query': 'single',
-                'multilayer_querybybbox': 'single',
-                'multilayer_querybypolygon': 'single'
-            },
-            files={
-                'qgis_file': qgis_file
-            },
-            group=self.project_group,
-            request=type('', (object,), {'user': self.test_user1})(),
-            instance=Project.objects.get(original_name='embedded_parent.qgs'),
-            initial={},
-        )
+        form = self._make_form(self.parent_project_new_title_path, Project.objects.get(
+            original_name='embedded_parent.qgs'), 'embedded_parent.qgs')
 
         self.assertTrue(form.is_valid())
 
@@ -313,7 +245,7 @@ class TestEmbeddedLayers(QdjangoTestBase):
         self.assertEqual(parent_project.title, 'parent_new_title')
 
         # Store temporary file to avoid error on test exit (because the temp file was moved)
-        open(qgis_file.file.name, 'a').close()
+        open(form.qgisProject.qgisProjectFile.file.name, 'a').close()
 
         # Check that the project embedded layer points to the renamed parent file path
         project = Project.objects.get(original_name='embedded.qgs')
@@ -340,3 +272,4 @@ class TestEmbeddedLayers(QdjangoTestBase):
             qgs_layer_id='countries_9108e75d_3238_4293_bc56_6847d9ae4927').count(), 0)
         tree = et.parse(project.qgis_file.path)
         self.assertEqual(len(tree.xpath('//maplayer[@embedded=1]')), 0)
+

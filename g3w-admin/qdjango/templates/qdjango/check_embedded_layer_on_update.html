@@ -1,0 +1,10 @@
+{% load i18n %}
+<div class="callout callout-warning">
+    <p>{% trans 'This project contains layers embedded from other projects. Be careful when updating this project: if the embedded layers are removed from the project they will be also deleted from the projects that embed them!' %}</p>
+    <h4>{% trans 'Embedded layers' %}:</h4>
+    <ul>
+    {% for embedded_layer in embedded_layers %}
+        <li><b>{{ embedded_layer.name }}</b> {% trans 'is embedded by project' %} <b>{{ embedded_layer.project.title }}</b></li>
+    {% endfor %}
+    </ul>
+</div>
