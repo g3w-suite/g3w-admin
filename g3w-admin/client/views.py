@@ -129,6 +129,7 @@ class ClientView(TemplateView):
         }
         if not u.is_anonymous:
             user_data.update({
+                'id': u.pk,
                 'username': u.username,
                 'first_name': u.first_name,
                 'last_name': u.last_name,
