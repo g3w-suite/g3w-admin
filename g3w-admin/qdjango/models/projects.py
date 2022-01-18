@@ -582,6 +582,11 @@ class Layer(G3WACLModelMixins, models.Model):
 
         return styles
 
+    def is_embedded(self):
+        """Returns true if the layer is embedded from another project"""
+
+        return self.parent_project is not None
+
     def style(self, name):
         """Returns the style from name
 
