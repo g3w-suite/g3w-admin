@@ -199,7 +199,10 @@ class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
                     if dp['mode'] == 'delete':
                         ret['plugins'] = copy(ret['plugins'])
                         for k in dp['data']:
-                            ret['plugins'].pop(k)
+                            try:
+                                ret['plugins'].pop(k)
+                            except:
+                                pass
                     elif dp['mode'] == 'update':
                         ret['plugins'] = copy(ret['plugins'])
                         ret['plugins'].update(dp['data'])
