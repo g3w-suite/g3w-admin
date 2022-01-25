@@ -184,11 +184,13 @@
                                             <span class="label label-info label-action-layer">{{ object.getWidgetsNumber }}</span></a>
 
                                     </span>
+                                    {% if not object.is_embedded %}
                                     <span class="col-xs-1 icon">
                                         <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Manage layer styles' %}" data-widget-type="styleManagerList" data-stylemanager-layer-pk="{{ object.pk }}" data-stylemanager-list-url="{% url 'qdjango-style-list-api' object.pk %}" ><i class="fa fa-paint-brush"></i>
                                             <span class="label label-info label-action-layer">{{ object.styles_count }}</span>
                                         </a>
                                     </span>
+                                    {% endif %}
                                     {% endif %}
                                 </span>
                             </td>

@@ -4,13 +4,15 @@ from django.conf import settings
 from django.core.cache import caches
 from django.template import loader
 from django.contrib.auth.signals import user_logged_out
-from core.signals import execute_search_on_models, load_layer_actions
+from core.signals import execute_search_on_models, load_layer_actions, pre_delete_project, pre_update_project
 from core.models import ProjectMapUrlAlias
 from .models import Project, Layer, SessionTokenFilter
 from .signals import post_save_qdjango_project_file
 from .searches import ProjectSearch
+from .views import QdjangoProjectListView, QdjangoProjectUpdateView
 import os
 import logging
+from qgis.core import QgsProject
 
 logger = logging.getLogger('django.request')
 
@@ -67,6 +69,23 @@ def delete_cache_project_settings(sender, **kwargs):
     instance = kwargs['instance']
 
 
+@receiver(post_delete, sender=Layer)
+def remove_embedded_layers(sender, **kwargs):
+    """
+    Checks for layers embedded from the deleted layer,
+    deletes them accordingly and remove the whole project if empty
+    """
+
+    layer = kwargs['instance']
+    # If it is embedded make sure it is removed from the project
+    # because it may be a cascade
+    if layer.parent_project is not None:
+        project = QgsProject()
+        assert project.read(layer.project.qgis_file.file.name)
+        project.removeMapLayers([layer.qgs_layer_id])
+        assert project.write()
+
+
 @receiver(post_save, sender=Layer)
 def update_widget(sender, **kwargs):
     """
@@ -120,3 +139,45 @@ def filter_by_user_layer_action(sender, **kwargs):
 
     template = loader.get_template('qdjango/layer_actions/filter_by_user.html')
     return template.render(kwargs)
+
+
+@receiver(pre_delete_project)
+def check_embedded_layer_on_delete(sender, **kwargs):
+    """
+    Check project for embedded layers from other projects.
+    """
+
+    if isinstance(sender, QdjangoProjectListView):
+
+        # get config data
+        projects = kwargs['projects']
+
+        messages = []
+        for project in projects:
+            for embedded_layer in Layer.objects.filter(parent_project=project):
+                msg = loader.get_template(
+                    'qdjango/check_embedded_layer_on_delete.html')
+                messages.append(
+                    {'project': project, 'message': msg.render({'project': project, 'embedded_layer': embedded_layer})})
+        if len(messages):
+            return messages
+
+
+@receiver(pre_update_project)
+def check_embedded_layer_on_update(sender, **kwargs):
+    """
+    Check project for embedded layers from other projects.
+    """
+
+    if isinstance(sender, QdjangoProjectUpdateView):
+
+        # get config data
+        project = kwargs['project']
+
+        embedded_layers = Layer.objects.filter(parent_project=project)
+
+        if embedded_layers.count() > 0:
+            msg = loader.get_template(
+                'qdjango/check_embedded_layer_on_update.html')
+            return msg.render({'embedded_layers': embedded_layers})
+

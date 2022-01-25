@@ -7,7 +7,7 @@ from django.dispatch import receiver
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.db.models.signals import post_migrate
-from qgis.core import QgsApplication, QgsProject
+from qgis.core import QgsApplication, QgsProject, QgsPathResolver
 from qgis.server import QgsServer, QgsServerSettings, QgsConfigCache
 from usersmanage.configs import *
 
@@ -249,6 +249,12 @@ class QdjangoConfig(AppConfig):
             Catalog.register_catalog_record_provider(catalog_provider,
                                                      scope=Catalog.SCOPE.GROUP,
                                                      senders=[Layer, Project])
+
+        # Set a path resolver to find data in DATASOURCE_PATH
+        # def datasource_processor(path):
+        #    return path.replace('./', settings.DATASOURCE_PATH if not settings.DATASOURCE_PATH.endswith('/') else (settings.DATASOURCE_PATH + '/'))
+
+        # QgsPathResolver.setPathPreprocessor(datasource_processor)
 
         # Load all QGIS server filter plugins, apps can load additional filters
         # by registering them directly to QGS_SERVER
