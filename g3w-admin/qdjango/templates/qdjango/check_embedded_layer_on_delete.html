@@ -1,0 +1,5 @@
+{% load i18n %}
+<div class="callout callout-warning">
+    <p><b>{{ project }}</b> {% trans 'contains layer' %} <b>{{ embedded_layer.name }}</b> {% trans 'which is embedded from project' %} <b> {{ embedded_layer.project.title }}</b></p>
+    <p>{% trans "Deleting this project all embedded layer will also be deleted!" %}</p>
+</div>

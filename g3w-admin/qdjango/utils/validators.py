@@ -70,11 +70,11 @@ def feature_validator(feature, layer):
 
     # Check geometry type
     if not geometry.isNull() and geometry.wkbType() != layer.wkbType():
-        if not (geometry.wkbType() == QgsWkbTypes.Point25D and layer.wkbType() == QgsWkbTypes.PointZ or \
-                geometry.wkbType() == QgsWkbTypes.Polygon25D and layer.wkbType() == QgsWkbTypes.PolygonZ or \
-                geometry.wkbType() == QgsWkbTypes.LineString25D and layer.wkbType() == QgsWkbTypes.LineStringZ or \
-                geometry.wkbType() == QgsWkbTypes.MultiPoint25D and layer.wkbType() == QgsWkbTypes.MultiPointZ or \
-                geometry.wkbType() == QgsWkbTypes.MultiPolygon25D and layer.wkbType() == QgsWkbTypes.MultiPolygonZ or \
+        if not (geometry.wkbType() == QgsWkbTypes.Point25D and layer.wkbType() == QgsWkbTypes.PointZ or
+                geometry.wkbType() == QgsWkbTypes.Polygon25D and layer.wkbType() == QgsWkbTypes.PolygonZ or
+                geometry.wkbType() == QgsWkbTypes.LineString25D and layer.wkbType() == QgsWkbTypes.LineStringZ or
+                geometry.wkbType() == QgsWkbTypes.MultiPoint25D and layer.wkbType() == QgsWkbTypes.MultiPointZ or
+                geometry.wkbType() == QgsWkbTypes.MultiPolygon25D and layer.wkbType() == QgsWkbTypes.MultiPolygonZ or
                 geometry.wkbType() == QgsWkbTypes.MultiLineString25D and layer.wkbType() == QgsWkbTypes.MultiLineStringZ):
 
             errors['geometry'] = _('Feature geometry type %s does not match layer type: %s') % (
@@ -84,8 +84,6 @@ def feature_validator(feature, layer):
         if not field_name in errors:
             errors[field_name] = []
         errors[field_name].append(error)
-
-
 
     # Check fields "hard" constraints
     for field_index in range(layer.fields().count()):
@@ -204,13 +202,44 @@ class QgisProjectValidator(QgisValidator):
 
 class IsGroupCompatibleValidator(QgisProjectValidator):
     """
-    Check il project is compatible with own group
+    Check if project is compatible with own group
     """
 
     def clean(self):
         if self.qgisProject.group.srid.srid != self.qgisProject.srid:
             raise QgisProjectException(_('Project SRID (%s) and group SRID (%s) must be the same') % (
                 self.qgisProject.srid, self.qgisProject.group.srid.srid))
+
+
+class EmbeddedLayersValidator(QgisProjectValidator):
+    """Check embedded layers are available"""
+
+    def clean(self):
+
+        embedded_layers = self.qgisProject.embeddedLayers()
+        for layer in embedded_layers:
+            project_name = layer['project']
+            layer_id = layer['id']
+            # Check if the project exists and if it contains the layer id
+            if Layer.objects.filter(project__original_name=project_name).count() == 0:
+                raise QgisProjectException(_('Layer "%s" is embedded from project "%s" but the project does not exist') % (
+                    layer_id, project_name))
+            if Layer.objects.filter(qgs_layer_id=layer_id, project__original_name=project_name).count() == 0:
+                raise QgisProjectException(_('Layer "%s" is embedded from project "%s" but the project does not contain this layer') % (
+                    layer_id, project_name))
+
+        # For parent projects (i.e. projects that contain layers embedded in other projects,
+        # check if embedded layers from this project are still available.
+        if self.qgisProject.instance:
+            layer_ids = [l.layerId for l in self.qgisProject.layers]
+            # for update
+            for linked_embedded_layer in Layer.objects.filter(parent_project=self.qgisProject.instance):
+                if linked_embedded_layer.qgs_layer_id not in layer_ids:
+                    raise QgisProjectException(_('Layer "%s" is embedded by the project "%s" but the uploaded project file does not contain this layer anymore') % (
+                        linked_embedded_layer.qgs_layer_id, linked_embedded_layer.project.title))
+        else:
+            # new project: skip because we cannot have any embedded layer to be checked
+            pass
 
 
 class ProjectExists(QgisProjectValidator):
@@ -239,7 +268,8 @@ class ProjectTitleExists(QgisProjectValidator):
     def clean(self):
         if not self.qgisProject.title:
             if self.qgisProject.qgisProjectFile.name:
-                self.qgisProject.title = os.path.basename(self.qgisProject.qgisProjectFile.name)
+                self.qgisProject.title = os.path.basename(
+                    self.qgisProject.qgisProjectFile.name)
             else:
                 raise QgisProjectException(_('Title project not empty'))
 
@@ -313,9 +343,9 @@ class DatasourceExists(QgisProjectLayerValidator):
 
     def clean(self):
         if self.qgisProjectLayer.layerType in [
-            Layer.TYPES.gdal,
-            Layer.TYPES.ogr,
-            Layer.TYPES.raster] and not isXML(self.qgisProjectLayer.datasource):
+                Layer.TYPES.gdal,
+                Layer.TYPES.ogr,
+                Layer.TYPES.raster] and not isXML(self.qgisProjectLayer.datasource):
 
             # try PostGis raster layer
             if self.qgisProjectLayer.datasource.startswith("PG:"):
