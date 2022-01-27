@@ -5,6 +5,7 @@ import logging
 
 logger = logging.getLogger('qdjango')
 
+
 @qgsfunction(args='auto', group='Custom', referenced_columns=[])
 def get_first_checked_layer_from_group(legend_group, feature, parent):
     """
@@ -13,7 +14,6 @@ def get_first_checked_layer_from_group(legend_group, feature, parent):
     try:
         p = QgsProject.instance()
         r = p.layerTreeRoot()
-        r.findGroup(legend_group)
         g = r.findGroup(legend_group)
         logger.debug('QGIS function get_first_checked_layer_from_group returned {}'.format(g.checkedLayers()[0].name(
         )))
