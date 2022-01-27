@@ -1,5 +1,7 @@
 import logging
 import os
+import glob
+import importlib
 
 from core.utils.general import getAuthPermissionContentType
 from django.apps import AppConfig, apps
@@ -261,3 +263,12 @@ class QdjangoConfig(AppConfig):
         # Load all QGIS server services plugins, apps can load additional services
         # by registering them directly to QGS_SERVER
         from . import server_filters, server_services
+
+        # Load custom QGIS functions from qdjango/qgis_functions directory
+        functions_folder = os.path.join(
+            os.path.dirname(__file__), 'qgis_functions')
+
+        for f in glob.glob(functions_folder + '/*.py'):
+            if '__init__.py' not in f:
+                basename = os.path.basename(f)[:-3]
+                importlib.import_module('qdjango.qgis_functions.' + basename)
