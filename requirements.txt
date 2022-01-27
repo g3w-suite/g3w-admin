@@ -1,4 +1,4 @@
-Django==2.2.24
+Django==2.2.26
 django-autoslug==1.9.6
 django-formtools==2.2
 django-crispy-forms==1.8.1
@@ -29,7 +29,7 @@ django-import-export==2.0.2
 coverage
 urllib3
 python-magic
-celery==3.1.26.post2
+celery==4.4.7
 deprecation
 huey==2.3.1
 redis==3.5.3
