@@ -25,6 +25,11 @@ G3W-SUITE accessory modules:
 ^^^^^^^^^^^^^^^^^^^
 Path to geo data directory (shp, Spatialite, raster, etc..).
 
+``G3WFILE_FORM_UPLOAD_FORMATS``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+List of formats file that `file form ajax uploader` can manage at global level.
+Default is `['qgs', 'qgz', 'png', 'jpg', 'jpeg', 'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ods']`
+
 .. Important::
     Last part of path could be common with QGIS project datasource path. I.e.:
 

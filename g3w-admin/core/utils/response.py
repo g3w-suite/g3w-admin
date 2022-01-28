@@ -1,6 +1,8 @@
+from django.conf import settings
 from django.http.response import HttpResponse
 from django.http import FileResponse
 from django.core.files import File
+from django.core.exceptions import PermissionDenied
 from django_file_form.uploader import FileFormUploadBackend
 import os
 
@@ -27,4 +29,8 @@ class G3WFileFormUploadBackend(FileFormUploadBackend):
         ext = os.path.splitext(filename)
         if ext[1]:
             hh += ext[1]
+
+        if ext[1][1:].lower() not in settings.G3WFILE_FORM_UPLOAD_FORMATS:
+            raise PermissionDenied()
+
         return hh

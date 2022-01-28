@@ -180,4 +180,3 @@ def check_embedded_layer_on_update(sender, **kwargs):
             msg = loader.get_template(
                 'qdjango/check_embedded_layer_on_update.html')
             return msg.render({'embedded_layers': embedded_layers})
-
