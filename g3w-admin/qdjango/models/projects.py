@@ -20,7 +20,7 @@ from model_utils import Choices
 from model_utils.models import TimeStampedModel
 from qdjango.utils.models import get_constraints4layer, get_widgets4layer
 from qdjango.utils.storage import QgisFileOverwriteStorage
-from qgis.core import QgsMapLayerStyle, QgsRectangle
+from qgis.core import QgsMapLayerStyle, QgsRectangle, QgsVectorLayer
 from qgis.PyQt.QtXml import QDomDocument
 from usersmanage.configs import *
 from usersmanage.utils import (get_groups_for_object, get_users_for_object,
@@ -545,6 +545,9 @@ class Layer(G3WACLModelMixins, models.Model):
     temporal_properties = models.TextField(
         _('Temporal properties'), null=True, blank=True)
 
+    has_column_acl = models.BooleanField(
+        _('Has column ACL constraints'), default=False, editable=False)
+
     @property
     def qgis_layer(self):
         """Returns the QgsMapLayer instance corresponding to this Layer, or None in case of errors
@@ -581,6 +584,23 @@ class Layer(G3WACLModelMixins, models.Model):
                 })
 
         return styles
+
+    def visible_fields_for_user(self, user):
+        """Returns a list of field names visible by the user
+        according to ColumnAcl"""
+
+        if isinstance(self.qgis_layer, QgsVectorLayer):
+
+            attributes = self.qgis_layer.fields().names()
+
+            if self.has_column_acl:
+                for acl in self.columnacl_set.filter(models.Q(user=user) | models.Q(group__in=user.groups.all())):
+                    attributes = list(set(attributes) -
+                                      set(acl.restricted_fields))
+
+            return attributes
+        else:
+            return []
 
     def is_embedded(self):
         """Returns true if the layer is embedded from another project"""

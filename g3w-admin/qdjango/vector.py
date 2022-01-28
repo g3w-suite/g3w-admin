@@ -30,13 +30,17 @@ from qdjango.api.constraints.filters import SingleLayerSubsetStringConstraintFil
     SingleLayerExpressionConstraintFilter, \
     GeoConstraintsFilter
 
-from qdjango.api.layers.filters import RelationOneToManyFilter, FidFilter, SingleLayerSessionTokenFilter, \
+from qdjango.api.layers.filters import (
+    RelationOneToManyFilter,
+    FidFilter,
+    SingleLayerSessionTokenFilter,
+    ColumnAclFilter,
     FILTER_FID_PARAM
+)
 
 from .models import Layer, SessionTokenFilter, SessionTokenFilterLayer
 from .utils.data import QGIS_LAYER_TYPE_NO_GEOM
 from .utils.edittype import MAPPING_EDITTYPE_QGISEDITTYPE
-
 
 import json
 import logging
@@ -81,7 +85,8 @@ class QGISLayerVectorViewMixin(object):
             joins = eval(self.layer.vectorjoins)
             for n, join in enumerate(joins):
                 try:
-                    self._layer_model.objects.get(qgs_layer_id=join['joinLayerId'], project=self.layer.project)
+                    self._layer_model.objects.get(
+                        qgs_layer_id=join['joinLayerId'], project=self.layer.project)
 
                     name = '{}_vectorjoin_{}'.format(
                         self.layer.qgs_layer_id, n)
@@ -96,7 +101,8 @@ class QGISLayerVectorViewMixin(object):
                         }
                     }
                 except Exception as e:
-                    logger.error(f"Layer vector join: a problem occur during reading layer joins {join['joinLayerId']}")
+                    logger.error(
+                        f"Layer vector join: a problem occur during reading layer joins {join['joinLayerId']}")
 
     def set_metadata_relations(self, request, **kwargs):
 
@@ -183,7 +189,8 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         GeoConstraintsFilter,
         RelationOneToManyFilter,
         FidFilter,
-        SingleLayerSessionTokenFilter
+        SingleLayerSessionTokenFilter,
+        ColumnAclFilter,
     )
 
     ordering_fields = '__all__'
@@ -197,7 +204,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         MODE_XLS,   # get XLS
         MODE_GPX,    # get GPX
         MODE_CSV,  # get CSV
-        MODE_GPKG, # get GeoPackage
+        MODE_GPKG,  # get GeoPackage
         MODE_FILTER_TOKEN  # get session filter token
     ]
 
@@ -252,12 +259,13 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
                             qet.input_form)
 
                 # add editable property:
-                #FIXME: find better way for layer join 1:1 managment
+                # FIXME: find better way for layer join 1:1 managment
                 try:
                     fields[self.layer_name]['fields'][field]['editable'] = True \
                         if edittypes[field]['fieldEditable'] == '1' else False
                 except KeyError:
-                    logger.error(f'Not field {field} into layer {self.layer_name}')
+                    logger.error(
+                        f'Not field {field} into layer {self.layer_name}')
 
         return fields
 
@@ -281,12 +289,12 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
             )
             tores = []
             for u in uniques:
-                try :
+                try:
                     tores.append(json.loads(QgsJsonUtils.encodeValue(u)))
                 except Exception as e:
                     logger.error(f'Response vector widget unique: {e}')
                     continue
-                    
+
             res[field] = tores
 
         return res
@@ -334,10 +342,12 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
 
         if mode == 'create_update':
             if not fidsin and not fidsout:
-                raise APIException("'fidsin' or 'fidsout' parameter is required.")
+                raise APIException(
+                    "'fidsin' or 'fidsout' parameter is required.")
 
             if fidsin and fidsout:
-                raise APIException("'fidsin' only or 'fidsout' only parameter is required.")
+                raise APIException(
+                    "'fidsin' only or 'fidsout' only parameter is required.")
 
         s, created = SessionTokenFilter.objects.get_or_create(
             sessionid=sessionid,
@@ -347,14 +357,14 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         token_data = {}
 
         if mode == 'delete' and not s:
-            raise APIException("Session filter token doesn't exists for current session")
+            raise APIException(
+                "Session filter token doesn't exists for current session")
 
         def _create_qgs_expr(s, fidsin=None, fidsout=None):
             """ Create qgs expression to save in db """
 
             expr = f'$id IN ({fidsin})' if fidsin else f'$id NOT IN ({fidsout})'
             return f'{s.qgs_expr} AND {expr}' if s else expr
-
 
         if mode == 'create_update':
 
@@ -366,7 +376,6 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
             if not created:
                 l.qgs_expr = _create_qgs_expr(l, fidsin, fidsout)
                 l.save()
-
 
             token_data.update({
                 'filtertoken': s.token
@@ -438,7 +447,8 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
                 # Try to add the layer feature of SearchByPolygon widget
                 sbp_layer = get_qgis_layer(
                     self.layer.project.layer_set.filter(qgs_layer_id=request_data['sbp_qgs_layer_id'])[0])
-                sbp_feature = sbp_layer.getFeature(int(request_data['sbp_fid']))
+                sbp_feature = sbp_layer.getFeature(
+                    int(request_data['sbp_fid']))
 
                 original_attributes_count = len(vlayer.fields())
 
@@ -473,12 +483,13 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
                 assert vlayer.startEditing()
 
                 # Add values to new fields
-                features = [f for f in  vlayer.getFeatures()]
+                features = [f for f in vlayer.getFeatures()]
                 for feature in features:
                     added_fields = {}
                     field_index = original_attributes_count
                     for f in sbp_feature.fields():
-                        added_fields.update({field_index: sbp_feature[f.name()]})
+                        added_fields.update(
+                            {field_index: sbp_feature[f.name()]})
                         field_index += 1
                     vlayer.changeAttributeValues(feature.id(), added_fields)
 
@@ -514,7 +525,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         original_subset_string = self.metadata_layer.qgis_layer.subsetString()
         if hasattr(self, 'filter_backends'):
             for backend in self.filter_backends:
-                backend().apply_filter(request, self.metadata_layer.qgis_layer, qgs_request, self)
+                backend().apply_filter(request, self.metadata_layer, qgs_request, self)
 
         save_options = QgsVectorFileWriter.SaveVectorOptions()
         save_options.driverName = 'ESRI Shapefile'
@@ -592,7 +603,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         original_subset_string = self.metadata_layer.qgis_layer.subsetString()
         if hasattr(self, 'filter_backends'):
             for backend in self.filter_backends:
-                backend().apply_filter(request, self.metadata_layer.qgis_layer, qgs_request, self)
+                backend().apply_filter(request, self.metadata_layer, qgs_request, self)
 
         save_options = QgsVectorFileWriter.SaveVectorOptions()
         save_options.driverName = 'GPX'
@@ -646,7 +657,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         original_subset_string = self.metadata_layer.qgis_layer.subsetString()
         if hasattr(self, 'filter_backends'):
             for backend in self.filter_backends:
-                backend().apply_filter(request, self.metadata_layer.qgis_layer, qgs_request, self)
+                backend().apply_filter(request, self.metadata_layer, qgs_request, self)
 
         save_options = QgsVectorFileWriter.SaveVectorOptions()
         save_options.driverName = 'xlsx'
@@ -697,7 +708,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         original_subset_string = self.metadata_layer.qgis_layer.subsetString()
         if hasattr(self, 'filter_backends'):
             for backend in self.filter_backends:
-                backend().apply_filter(request, self.metadata_layer.qgis_layer, qgs_request, self)
+                backend().apply_filter(request, self.metadata_layer, qgs_request, self)
 
         save_options = QgsVectorFileWriter.SaveVectorOptions()
         save_options.driverName = 'gpkg'
@@ -733,7 +744,6 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         response.set_cookie('fileDownload', 'true')
         return response
 
-
     def response_csv_mode(self, request):
         """
         Download csv of data
@@ -749,7 +759,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         original_subset_string = self.metadata_layer.qgis_layer.subsetString()
         if hasattr(self, 'filter_backends'):
             for backend in self.filter_backends:
-                backend().apply_filter(request, self.metadata_layer.qgis_layer, qgs_request, self)
+                backend().apply_filter(request, self.metadata_layer, qgs_request, self)
 
         save_options = QgsVectorFileWriter.SaveVectorOptions()
         save_options.driverName = 'csv'
@@ -777,7 +787,6 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         if error_code != QgsVectorFileWriter.NoError:
             tmp_dir.cleanup()
             return HttpResponse(status=500, reason=error_message)
-
 
         response = HttpResponse(
             open(xls_tmp_path, 'rb').read(), content_type='text/csv')

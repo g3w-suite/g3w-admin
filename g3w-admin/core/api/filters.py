@@ -24,15 +24,15 @@ from urllib.parse import unquote
 class BaseFilterBackend():
     """Base class for QGIS request filters"""
 
-    def apply_filter(self, request, qgis_layer, qgis_feature_request, view):
+    def apply_filter(self, request, metadata_layer, qgis_feature_request, view):
         """Apply the filter to the QGIS feature request or the layer's subset string.
         Warning: if the filter alters the layer instance (for example by settings a subset
         string) make sure to restore the original state or to work on a clone.
 
         :param request: Django request
         :type request: HttRequest
-        :param qgis_layer: QGIS vector layer
-        :type qgis_layer: QgsVectorLayer
+        :param layer: MetadataVectorLayer instance
+        :type layer: Layer
         :param qgis_feature_request: QGIS feature request
         :type qgis_feature_request: QgsFeatureRequest
         :param view: Django view, optional
@@ -74,7 +74,9 @@ class BaseFilterBackend():
 class SearchFilter(BaseFilterBackend):
     """A filter backend that does an ILIKE string search in all fields"""
 
-    def apply_filter(self, request, qgis_layer, qgis_feature_request, view):
+    def apply_filter(self, request, metadata_layer, qgis_feature_request, view):
+
+        qgis_layer = metadata_layer.qgis_layer
 
         if request.query_params.get('search'):
 
@@ -111,7 +113,9 @@ class SearchFilter(BaseFilterBackend):
 class OrderingFilter(BaseFilterBackend):
     """A filter backend that defines ordering"""
 
-    def apply_filter(self, request, qgis_layer, qgis_feature_request, view):
+    def apply_filter(self, request, metadata_layer, qgis_feature_request, view):
+
+        qgis_layer = metadata_layer.qgis_layer
 
         if request.query_params.get('ordering') is not None:
 
@@ -127,7 +131,7 @@ class OrderingFilter(BaseFilterBackend):
                     continue
 
                 ordering_rules.append(QgsFeatureRequest.OrderByClause(
-                   ordering, ascending))
+                    ordering, ascending))
 
             if ordering_rules:
                 order_by = QgsFeatureRequest.OrderBy(ordering_rules)
@@ -157,11 +161,14 @@ class IntersectsBBoxFilter(BaseFilterBackend):
         try:
             p1x, p1y, p2x, p2y = (float(n) for n in bbox_string.split(','))
         except ValueError:
-            raise ParseError('Invalid bbox string supplied for parameter in_bbox')
+            raise ParseError(
+                'Invalid bbox string supplied for parameter in_bbox')
 
         return QgsRectangle(p1x, p1y, p2x, p2y)
 
-    def apply_filter(self, request, qgis_layer, qgis_feature_request, view):
+    def apply_filter(self, request, metadata_layer, qgis_feature_request, view):
+
+        qgis_layer = metadata_layer.qgis_layer
 
         # only for layer with geometry
         if not qgis_layer.isSpatial():
@@ -176,7 +183,8 @@ class IntersectsBBoxFilter(BaseFilterBackend):
 
             if not include_overlapping:
                 # FIXME: IntersectsBBoxFilter within operator
-                raise NotImplementedError('IntersectsBBoxFilter within operator not yet implemented')
+                raise NotImplementedError(
+                    'IntersectsBBoxFilter within operator not yet implemented')
 
             if hasattr(view, 'reproject') and view.reproject:
                 from_srid = view.layer.project.group.srid.auth_srid
@@ -206,7 +214,9 @@ class CentroidBBoxFilter(IntersectsBBoxFilter):
 class SuggestFilterBackend(BaseFilterBackend):
     """Backend filter that returns ILIKE matches for a field|value tuple"""
 
-    def apply_filter(self, request, qgis_layer, qgis_feature_request, view):
+    def apply_filter(self, request, metadata_layer, qgis_feature_request, view):
+
+        qgis_layer = metadata_layer.qgis_layer
 
         suggest_value = request.query_params.get('suggest')
 
@@ -223,7 +233,7 @@ class SuggestFilterBackend(BaseFilterBackend):
                 search_expression = '{field_name} ILIKE {field_value}'.format(
                     field_name=self._quote_identifier(field_name),
                     field_value=self._quote_value('%' + field_value + '%')
-                    )
+                )
 
                 current_expression = qgis_feature_request.filterExpression()
 
@@ -248,7 +258,9 @@ class FieldFilterBackend(BaseFilterBackend):
         'ilike': 'ILIKE'
     }
 
-    def apply_filter(self, request, qgis_layer, qgis_feature_request, view):
+    def apply_filter(self, request, metadata_layer, qgis_feature_request, view):
+
+        qgis_layer = metadata_layer.qgis_layer
 
         # Try to get param from GET
         suggest_value = request.query_params.get('field')
@@ -273,26 +285,32 @@ class FieldFilterBackend(BaseFilterBackend):
 
             for field in fields:
                 try:
-                    field_name, field_operator, field_value, field_logicop = field.split('|')
+                    field_name, field_operator, field_value, field_logicop = field.split(
+                        '|')
                     field_logicop = field_logicop.upper()
                 except ValueError as e:
                     try:
-                        field_name, field_operator, field_value = field.split('|')
+                        field_name, field_operator, field_value = field.split(
+                            '|')
                         field_logicop = 'AND'
                     except ValueError:
-                        raise ParseError('Invalid field string supplied for parameter field')
+                        raise ParseError(
+                            'Invalid field string supplied for parameter field')
 
                 if not self._is_valid_field(qgis_layer, field_name):
-                    raise Exception(f"{field_name} doesn't belongs from layer {qgis_layer.name()}!")
+                    raise Exception(
+                        f"{field_name} doesn't belong from layer {qgis_layer.name()}!")
 
                 if field_name and field_value:
 
-                    pre_post_operator = '%' if field_operator in ('like', 'ilike') else ''
+                    pre_post_operator = '%' if field_operator in (
+                        'like', 'ilike') else ''
                     single_search_expression = '{field_name} {field_operator} {field_value}'.format(
                         field_name=self._quote_identifier(field_name),
                         field_operator=self.COMPARATORS_MAP[field_operator],
-                        field_value=self._quote_value(f'{pre_post_operator}{unquote(field_value)}{pre_post_operator}')
-                        )
+                        field_value=self._quote_value(
+                            f'{pre_post_operator}{unquote(field_value)}{pre_post_operator}')
+                    )
 
                     search_expression = f'{search_expression} {single_search_expression}'
 
@@ -309,4 +327,3 @@ class FieldFilterBackend(BaseFilterBackend):
 
             if search_expression != '':
                 qgis_feature_request.setFilterExpression(search_expression)
-

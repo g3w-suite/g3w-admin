@@ -444,7 +444,7 @@ class BaseVectorOnModelApiView(G3WAPIView):
         if hasattr(self, 'filter_backends'):
             try:
                 for backend in self.filter_backends:
-                    backend().apply_filter(request, self.metadata_layer.qgis_layer, qgis_feature_request, self)
+                    backend().apply_filter(request, self.metadata_layer, qgis_feature_request, self)
             except Exception as e:
                 raise APIException(e)
 

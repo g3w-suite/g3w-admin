@@ -33,13 +33,14 @@ from core.api.filters import IntersectsBBoxFilter
 
 from qdjango.api.layers.filters import (
     SingleLayerSessionTokenFilter,
-    RelationOneToManyFilter
+    RelationOneToManyFilter,
+    ColumnAclFilter,
 )
 
 from qdjango.api.constraints.filters import (
     SingleLayerSubsetStringConstraintFilter,
     SingleLayerExpressionConstraintFilter,
-    GeoConstraintsFilter
+    GeoConstraintsFilter,
 )
 
 
@@ -51,7 +52,8 @@ class QplotlyFactoring(PlotFactory):
         SingleLayerExpressionConstraintFilter,
         SingleLayerSessionTokenFilter,
         GeoConstraintsFilter,
-        RelationOneToManyFilter
+        RelationOneToManyFilter,
+        ColumnAclFilter,
     )
 
     def __init__(self, *args, **kwargs):
@@ -100,13 +102,15 @@ class QplotlyFactoring(PlotFactory):
 
         if not self.context_generator:
             context = QgsExpressionContext()
-            context.appendScopes(QgsExpressionContextUtils.globalProjectLayerScopes(self.source_layer))
+            context.appendScopes(
+                QgsExpressionContextUtils.globalProjectLayerScopes(self.source_layer))
         else:
             context = self.context_generator.createExpressionContext()
             # add a new scope corresponding to the source layer -- this will potentially overwrite any other
             # layer scopes which may be present in the context (e.g. from atlas layers), but we need to ensure
             # that source layer fields and attributes are present in the context
-            context.appendScope(self.source_layer.createExpressionContextScope())
+            context.appendScope(
+                self.source_layer.createExpressionContextScope())
 
         self.settings.data_defined_properties.prepare(context)
 
@@ -144,7 +148,8 @@ class QplotlyFactoring(PlotFactory):
         request = QgsFeatureRequest()
 
         if self.settings.data_defined_properties.property(PlotSettings.PROPERTY_FILTER).isActive():
-            expression = self.settings.data_defined_properties.property(PlotSettings.PROPERTY_FILTER).asExpression()
+            expression = self.settings.data_defined_properties.property(
+                PlotSettings.PROPERTY_FILTER).asExpression()
             request.setFilterExpression(expression)
             request.setExpressionContext(context)
 
@@ -156,8 +161,7 @@ class QplotlyFactoring(PlotFactory):
                 and self.djrequest \
                 and self.layer:
             for backend in self.filter_backends:
-                backend().apply_filter(self.djrequest, self.source_layer, request, self)
-
+                backend().apply_filter(self.djrequest, self.layer, request, self)
 
         request.setSubsetOfAttributes(attrs, self.source_layer.fields())
 
@@ -177,21 +181,23 @@ class QplotlyFactoring(PlotFactory):
             ct = QgsCoordinateTransform(self.polygon_filter.crs(), self.source_layer.crs(),
                                         QgsProject.instance().transformContext())
             try:
-                rect = ct.transformBoundingBox(self.polygon_filter.geometry.boundingBox())
+                rect = ct.transformBoundingBox(
+                    self.polygon_filter.geometry.boundingBox())
                 request.setFilterRect(rect)
                 g = self.polygon_filter.geometry
                 g.transform(ct)
 
-                visible_geom_engine = QgsGeometry.createGeometryEngine(g.constGet())
+                visible_geom_engine = QgsGeometry.createGeometryEngine(
+                    g.constGet())
                 visible_geom_engine.prepareGeometry()
             except QgsCsException:
                 pass
 
         # self.selected_features_only is not used into qplotly module !
         # -------------------------------------------------------------
-        #if self.selected_features_only:
+        # if self.selected_features_only:
         #    it = self.source_layer.getSelectedFeatures(request)
-        #else:
+        # else:
         it = self.source_layer.getFeatures(request)
 
         self.qgsrequest = request
@@ -248,9 +254,11 @@ class QplotlyFactoring(PlotFactory):
                     continue
 
             if additional_info_expression:
-                additional_hover_text.append(additional_info_expression.evaluate(context))
+                additional_hover_text.append(
+                    additional_info_expression.evaluate(context))
             elif self.settings.layout['additional_info_expression']:
-                additional_hover_text.append(f[self.settings.layout['additional_info_expression']])
+                additional_hover_text.append(
+                    f[self.settings.layout['additional_info_expression']])
 
             if x is not None:
                 xx.append(x)
@@ -282,8 +290,10 @@ class QplotlyFactoring(PlotFactory):
                 else:
                     try:
                         # Attempt to interpret the value as a list of color specifications
-                        value_list = self.settings.data_defined_properties.value(PlotSettings.PROPERTY_COLOR, context)
-                        color_list = [QgsSymbolLayerUtils.decodeColor(item).name() for item in value_list]
+                        value_list = self.settings.data_defined_properties.value(
+                            PlotSettings.PROPERTY_COLOR, context)
+                        color_list = [QgsSymbolLayerUtils.decodeColor(
+                            item).name() for item in value_list]
                         colors.extend(color_list)
                     except TypeError:
                         # Not a list of color specifications, use the default color instead
@@ -299,8 +309,10 @@ class QplotlyFactoring(PlotFactory):
                 else:
                     try:
                         # Attempt to interpret the value as a list of color specifications
-                        value_list = self.settings.data_defined_properties.value(PlotSettings.PROPERTY_STROKE_COLOR, context)
-                        color_list = [QgsSymbolLayerUtils.decodeColor(item).name() for item in value_list]
+                        value_list = self.settings.data_defined_properties.value(
+                            PlotSettings.PROPERTY_STROKE_COLOR, context)
+                        color_list = [QgsSymbolLayerUtils.decodeColor(
+                            item).name() for item in value_list]
                         stroke_colors.extend(color_list)
                     except TypeError:
                         # Not a list of color specifications, use the default color instead
@@ -328,7 +340,8 @@ class QplotlyFactoring(PlotFactory):
 class QplotlyFactoringRelation(QplotlyFactoring):
     """Inherit form QplotlyFactoring and is specific for relations"""
 
-    filter_backends = QplotlyFactoring.filter_backends + (ByFatherFeatursFilter, )
+    filter_backends = QplotlyFactoring.filter_backends + \
+        (ByFatherFeatursFilter, )
 
     def set_father_features_expresion(self, qgs_relation=None, fsource_layer=None, ffiltered_features=None):
         """
@@ -345,16 +358,9 @@ class QplotlyFactoringRelation(QplotlyFactoring):
         expressions = []
         for f in features:
             expressions.append(qgs_relation.getRelatedFeaturesFilter(qgs_relation.referencedLayer().
-                                                                    getFeature(int(f.id()))))
+                                                                     getFeature(int(f.id()))))
 
         if expressions:
             self.father_features_expresion = ' OR '.join(expressions)
         else:
             self.father_features_expresion = 'false'
-
-
-
-
-
-
-

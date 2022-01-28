@@ -21,6 +21,7 @@ class ProjectAdmin(GuardedModelAdmin):
         'group'
     )
 
+
 @admin.register(Layer)
 class LayerAdmin(GuardedModelAdmin):
     search_fields = (
@@ -34,6 +35,23 @@ class LayerAdmin(GuardedModelAdmin):
         'title',
         'project'
     )
+
+
+@admin.register(ColumnAcl)
+class ColumnAclAdmin(GuardedModelAdmin):
+
+    list_display = (
+        'layer',
+        'project',
+        'user',
+        'group',
+        'restricted_fields'
+    )
+
+    def project(self, obj):
+        return obj.layer.project.title
+
+    project.short_description = _('Project')
 
 
 @admin.register(Widget)
@@ -132,7 +150,7 @@ class QgisAuthAdmin(GuardedModelAdmin):
         if obj is not None and Layer.objects.filter(
                 datasource__contains=obj.id).count() > 0:
             msg = _("Authentication configuration {} can not be deleted because one or more layers are using it: {}").format(obj.id,
-                ', '.join([l.name for l in Layer.objects.filter(datasource__contains=obj.id)]))
+                                                                                                                             ', '.join([l.name for l in Layer.objects.filter(datasource__contains=obj.id)]))
             self.message_user(request, msg, messages.WARNING)
         return super(QgisAuthAdmin, self).has_delete_permission(request, obj) and (
             not obj or Layer.objects.filter(
@@ -166,4 +184,5 @@ class ConstraintSubsetStringRuleAdmin(admin.ModelAdmin):
 
 admin.site.register(SingleLayerConstraint, SingleLayerConstraintAdmin)
 admin.site.register(ConstraintExpressionRule, ConstraintExpressionRuleAdmin)
-admin.site.register(ConstraintSubsetStringRule, ConstraintSubsetStringRuleAdmin)
+admin.site.register(ConstraintSubsetStringRule,
+                    ConstraintSubsetStringRuleAdmin)

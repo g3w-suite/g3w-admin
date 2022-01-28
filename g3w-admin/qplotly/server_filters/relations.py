@@ -16,11 +16,13 @@ from core.api.filters import BaseFilterBackend
 class ByFatherFeatursFilter(BaseFilterBackend):
     """A filter backend that applies a QgsExpression to QplotlyFactory"""
 
-    def apply_filter(self, request, qgis_layer, qgis_feature_request, view=None):
+    def apply_filter(self, request, metadata_layer, qgis_feature_request, view=None):
         """Apply the filter to the QGIS feature request or the layer's subset string
         Warning: if the filter alters the layer instance (for example by settings a subset
         string) make sure to restore the original state or to work on a clone.
         """
+
+        qgis_layer = metadata_layer.qgis_layer
 
         expression_text = getattr(view, 'father_features_expresion', None)
 
