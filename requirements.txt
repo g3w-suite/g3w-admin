@@ -29,7 +29,7 @@ django-import-export==2.0.2
 coverage
 urllib3
 python-magic
-celery==4.4.7
+celery==5.2.2
 deprecation
 huey==2.3.1
 redis==3.5.3
