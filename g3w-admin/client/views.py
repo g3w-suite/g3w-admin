@@ -133,6 +133,8 @@ class ClientView(TemplateView):
                 'username': u.username,
                 'first_name': u.first_name,
                 'last_name': u.last_name,
+                'is_superuser': u.is_superuser,
+                'is_staff': u.is_staff,
                 'groups': [g.name for g in u.groups.all()],
                 'logout_url': logout_url
 

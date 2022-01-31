@@ -79,7 +79,7 @@ class ClientSearchApiView(APIView):
 
 class GroupConfigApiView(APIView):
     """
-    APIView to get data Project and layers
+    APIView to get data Project and layers, used by client into development status.
     """
 
     permission_classes = (ProjectPermission,)
@@ -138,6 +138,8 @@ class GroupConfigApiView(APIView):
                 'username': u.username,
                 'first_name': u.first_name,
                 'last_name': u.last_name,
+                'is_superuser': u.is_superuser,
+                'is_staff': u.is_staff,
                 'groups': [g.name for g in u.groups.all()],
                 'logout_url': logout_url,
                 'admin_url': reverse('home')
