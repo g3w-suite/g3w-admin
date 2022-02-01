@@ -45,7 +45,6 @@ class ColumnAclAdminForm(ModelForm):
             choices=self.fields_choices)
         self.fields['layer'].queryset = Layer.vectors.all()
 
-
     def fields_choices(self):
 
         try:
@@ -69,6 +68,9 @@ class ColumnAclAdmin(GuardedModelAdmin):
 
     def project(self, obj):
         return obj.layer.project.title
+
+    def has_add_permission(self, request, obj=None):
+        return False
 
     project.short_description = _('Project')
 
