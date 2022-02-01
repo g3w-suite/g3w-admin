@@ -200,7 +200,7 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
                         self.add_crs_to_feature(geojson_feature)
 
                     # reproject data if necessary
-                    if self.reproject:
+                    if kwargs['reproject'] and metadata_layer.geometry_type != QGIS_LAYER_TYPE_NO_GEOM:
                         self.reproject_feature(geojson_feature, to_layer=True)
 
                     # case relation data ADD, if father referenced field is pk
@@ -443,7 +443,7 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
 
 
             ref_insert_ids, ref_lock_ids = self.save_vector_data(
-                self.metadata_layer, post_layer_data, has_transactions)
+                self.metadata_layer, post_layer_data, has_transactions, reproject=self.reproject)
 
             # get every relationsedits
             post_relations_data = dict()
@@ -471,9 +471,14 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
                         sessionid=self.sessionid
                     )
 
+                    # Check reproject status of referencing layer
+                    reproject = not self.layer.project.group.srid.auth_srid == self.metadata_relations[referencing_layer].layer.srid
+
+
                     insert_ids, lock_ids = self.save_vector_data(self.metadata_relations[referencing_layer],
                                                                  post_relation_data, has_transactions,
-                                                                 referenced_layer_insert_ids=ref_insert_ids)
+                                                                 referenced_layer_insert_ids=ref_insert_ids,
+                                                                 reproject=reproject)
                     new_relations[referencing_layer] = {
                         'new': insert_ids,
                         'new_lockids': lock_ids
