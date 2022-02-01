@@ -38,6 +38,13 @@ from .api.projects.views import (
     QdjangoAsGeoTiffAPIview,
     QdjangoPrjThemeAPIview
 )
+
+from .api.column_acl.views import (
+    ColumnAclList,
+    ColumnAclDetail,
+    ColumnAclFields,
+)
+
 from rest_framework.urlpatterns import format_suffix_patterns
 
 # Single layer Constraints
@@ -97,6 +104,29 @@ urlpatterns = [
     # All Constraint(s)
     url(r'^api/constraint/$',
         login_required(SingleLayerConstraintList.as_view()), name='qdjango-constraint-api-list'),
+
+    #############################################################
+    # ColumnAcl
+
+    # Detail of a ColumnAcl
+    url(r'^api/column_acl/detail/(?P<pk>\d+)/$',
+        login_required(ColumnAclDetail.as_view()), name='qdjango-column-acl-api-detail'),
+    # All (s) ColumnAcl filtered by layer qdjango layer pk
+    url(r'^api/column_acl/layer/(?P<layer_id>\d+)/$',
+        login_required(ColumnAclList.as_view()), name='qdjango-column-acl-api-filter-by-layer-id'),
+    # All Constraint(s) filtered by user
+    url(r'^api/column_acl/user/(?P<user_id>\d+)/$',
+        login_required(ColumnAclList.as_view()), name='qdjango-column-acl-api-filter-by-user'),
+    # All Constraint(s) filtered by group
+    url(r'^api/column_acl/group/(?P<group_id>\d+)/$',
+        login_required(ColumnAclList.as_view()), name='qdjango-column-acl-api-filter-by-group'),
+    # List field names for a vector layer
+    url(r'^api/column_acl/fields/(?P<layer_id>\d+)$',
+        login_required(ColumnAclFields.as_view()), name='qdjango-column-acl-api-fields'),
+    # All Constraint(s)
+    url(r'^api/column_acl/$',
+        login_required(ColumnAclList.as_view()), name='qdjango-column-acl-api-list'),
+
 
     #############################################################
     # GeoConstraints
@@ -160,7 +190,7 @@ urlpatterns += [
         login_required(LayerPolygonView.as_view()), name='qdjango-api-info-layer-polygon'),
     # Viewers users can editing on editing layer id
     url(r'^api/info/layer/user/(?P<layer_id>[-_\w\d]+)/$',
-        login_required(LayerUserInfoAPIView.as_view()), name='qjango-api-info-layer-user'),
+        login_required(LayerUserInfoAPIView.as_view()), name='qdjango-api-info-layer-user'),
     # Viewers users groups viewer can editing on editing layer id
     url(r'^api/info/layer/authgroup/(?P<layer_id>[-_\w\d]+)/$',
         login_required(LayerAuthGroupInfoAPIView.as_view()), name='qdjango-api-info-layer-authgroup'),

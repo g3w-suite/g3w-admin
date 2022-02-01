@@ -416,6 +416,13 @@ def get_layer_data_file_path(instance, filename):
     return settings.DATASOURCE_PATH
 
 
+class VectorLayersManager(models.Manager):
+    """Returns only vector layers"""
+
+    def get_queryset(self):
+        return super().get_queryset().exclude(layer_type__in=('gdal', 'wms', 'arcgismapserver', 'vector-tile'))
+
+
 class Layer(G3WACLModelMixins, models.Model):
     """A QGIS layer."""
 
@@ -546,7 +553,10 @@ class Layer(G3WACLModelMixins, models.Model):
         _('Temporal properties'), null=True, blank=True)
 
     has_column_acl = models.BooleanField(
-        _('Has column ACL constraints'), default=False, editable=False)
+        _('Has column ACL constraints'), default=False, editable=False, db_index=True)
+
+    objects = models.Manager()  # The default manager.
+    vectors = VectorLayersManager()
 
     @property
     def qgis_layer(self):
@@ -846,6 +856,14 @@ class Layer(G3WACLModelMixins, models.Model):
         """
 
         return len(get_constraints4layer(self))
+
+    def getColumnAclNumber(self):
+        """
+        Count ColumnAcl for self layer
+        :return: integer
+        """
+
+        return self.columnacl_set.count() if self.has_column_acl else 0
 
     def _permissionsToEditor(self, user, mode='add'):
         setPermissionUserObject(user, self, permissions=[

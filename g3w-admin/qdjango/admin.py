@@ -1,13 +1,13 @@
 import ast
 
 from django.contrib import admin, messages
-from django.forms import CharField, ModelForm, TextInput
+from django.forms import CharField, ModelForm, TextInput, MultipleChoiceField, ChoiceField
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.utils.translation import gettext
 from django.utils.translation import gettext_lazy as _
 from guardian.admin import GuardedModelAdmin
-
+from qgis.core import QgsVectorLayer
 from .models import *
 
 
@@ -37,8 +37,27 @@ class LayerAdmin(GuardedModelAdmin):
     )
 
 
+class ColumnAclAdminForm(ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['restricted_fields'] = MultipleChoiceField(
+            choices=self.fields_choices)
+        self.fields['layer'].queryset = Layer.vectors.all()
+
+
+    def fields_choices(self):
+
+        try:
+            return [(n, n) for n in self.instance.layer.qgis_layer.fields().names()]
+        except:
+            return []
+
+
 @admin.register(ColumnAcl)
 class ColumnAclAdmin(GuardedModelAdmin):
+
+    form = ColumnAclAdminForm
 
     list_display = (
         'layer',

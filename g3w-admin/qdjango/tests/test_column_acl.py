@@ -17,13 +17,13 @@ import zipfile
 from io import BytesIO
 
 from django.conf import settings
-from django.contrib.auth.models import Group as UserGroup
 from django.contrib.auth.models import User
 from django.test import Client
 from django.urls import reverse
 from guardian.shortcuts import assign_perm, get_anonymous_user
 from qgis.core import QgsVectorLayer, QgsFeatureRequest, QgsExpression, Qgis
-
+from django.db import IntegrityError
+from django.core.exceptions import ValidationError
 
 from qdjango.apps import QGS_SERVER, get_qgs_project
 from qdjango.models import (
@@ -38,6 +38,8 @@ from qdjango.models import (
     Project,
     ColumnAcl
 )
+from django.contrib.auth.models import Group as AuthGroup
+
 from unittest import skipIf
 from .base import QdjangoTestBase
 
@@ -125,6 +127,25 @@ class TestColumnAcl(QdjangoTestBase):
         self.client.logout()
         return response
 
+    def _testApiCallAdmin01Post(self, view_name, payload, args, kwargs={}):
+        """Utility to make test calls for admin01 user, returns the response"""
+
+        path = reverse(view_name, args=args)
+        if kwargs:
+            path += '?'
+            parts = []
+            for k, v in kwargs.items():
+                parts.append(k + '=' + v)
+            path += '&'.join(parts)
+
+        # Auth
+        self.assertTrue(self.client.login(
+            username='admin01', password='admin01'))
+
+        response = self.client.post(path, payload, format='json')
+        self.client.logout()
+        return response
+
     def test_user_column_acl_model(self):
         """Test model soft triggers"""
 
@@ -172,6 +193,45 @@ class TestColumnAcl(QdjangoTestBase):
         ColumnAcl.objects.all().delete()
         self.cloned_layer = Layer.objects.get(pk=self.cloned_layer.pk)
         self.assertFalse(self.cloned_layer.has_column_acl)
+
+    def test_model_constraints(self):
+        """Test model validation"""
+
+        acl = ColumnAcl(layer=self.cloned_layer,
+                        restricted_fields=['APPROX', 'AREA'])
+
+        with self.assertRaises(IntegrityError):
+            acl.save()
+
+    def test_model_constraints_group(self):
+        """Test model validation with both group and user"""
+
+        acl = ColumnAcl(layer=self.cloned_layer,
+                        user=self.test_user1,
+                        group=self.test_user1.groups.all()[0],
+                        restricted_fields=['APPROX', 'AREA'])
+
+        with self.assertRaises(IntegrityError):
+            acl.save()
+
+    def test_model_constraints_nogroup(self):
+        """Test model validation with no group and user"""
+
+        acl = ColumnAcl(layer=self.cloned_layer,
+                        restricted_fields=['APPROX', 'AREA'])
+
+        with self.assertRaises(IntegrityError):
+            acl.save()
+
+    def test_model_validation_layer_type(self):
+        """Test model validation: only accept vector layers"""
+
+        acl = ColumnAcl(layer=Layer.objects.filter(layer_type='gdal')[0],
+                        user=self.test_user1,
+                        restricted_fields=['APPROX', 'AREA'])
+
+        with self.assertRaises(ValidationError):
+            acl.full_clean()
 
     def test_user_column_acl_data(self):
         """Test data retrieval"""
@@ -274,3 +334,162 @@ class TestColumnAcl(QdjangoTestBase):
 
         self.assertFalse(fields['AREA'])
         self.assertFalse(fields['SOURCETHM'])
+
+    def test_api(self):
+        """Test api"""
+
+        response = self._testApiCallAdmin01(
+            'qdjango-column-acl-api-list', [])
+
+        resp = json.loads(response.content)
+
+        self.assertEqual(resp['count'], 0)
+
+        acl = ColumnAcl(layer=self.world, user=self.test_user1,
+                        restricted_fields=['APPROX', 'AREA'])
+        acl.save()
+
+        response = self._testApiCallAdmin01(
+            'qdjango-column-acl-api-list', [])
+
+        resp = json.loads(response.content)
+
+        self.assertEqual(resp['count'], 1)
+        self.assertEqual(resp['results'][0]
+                         ['restricted_fields'], ['APPROX', 'AREA'])
+        self.assertEqual(resp['results'][0]
+                         ['user'], self.test_user1.pk)
+        self.assertIsNone(resp['results'][0]
+                          ['group'])
+
+        # Second acl, for group viewer 2
+
+        viewer2_group = AuthGroup.objects.get(name='Viewer Level 2')
+
+        acl2 = ColumnAcl(layer=self.cloned_layer, group=viewer2_group,
+                         restricted_fields=['AREA'])
+        acl2.save()
+
+        response = self._testApiCallAdmin01(
+            'qdjango-column-acl-api-list', [])
+
+        resp = json.loads(response.content)
+        self.assertEqual(resp['count'], 2)
+        self.assertEqual(resp['results'][0]
+                         ['restricted_fields'], ['AREA'])
+        self.assertIsNone(resp['results'][0]
+                          ['user'])
+        self.assertEqual(resp['results'][0]
+                         ['group'], viewer2_group.pk)
+
+        # Test filter by layer id
+        response = self._testApiCallAdmin01(
+            'qdjango-column-acl-api-filter-by-layer-id', [self.world.pk])
+
+        resp = json.loads(response.content)
+        self.assertEqual(resp['count'], 1)
+        self.assertEqual(resp['results'][0]
+                         ['restricted_fields'], ['APPROX', 'AREA'])
+        self.assertEqual(resp['results'][0]
+                         ['user'], self.test_user1.pk)
+        self.assertIsNone(resp['results'][0]
+                          ['group'])
+
+        # Test filter by user
+        response = self._testApiCallAdmin01(
+            'qdjango-column-acl-api-filter-by-user', [self.test_user1.pk])
+
+        resp = json.loads(response.content)
+        self.assertEqual(resp['count'], 1)
+        self.assertEqual(resp['results'][0]
+                         ['restricted_fields'], ['APPROX', 'AREA'])
+        self.assertEqual(resp['results'][0]
+                         ['user'], self.test_user1.pk)
+        self.assertIsNone(resp['results'][0]
+                          ['group'])
+
+        # Test filter by group
+        response = self._testApiCallAdmin01(
+            'qdjango-column-acl-api-filter-by-group', [viewer2_group.pk])
+
+        resp = json.loads(response.content)
+        self.assertEqual(resp['count'], 1)
+        self.assertEqual(resp['results'][0]
+                         ['restricted_fields'], ['AREA'])
+        self.assertIsNone(resp['results'][0]
+                          ['user'])
+        self.assertEqual(resp['results'][0]
+                         ['group'], viewer2_group.pk)
+
+        # Test detail
+        response = self._testApiCallAdmin01(
+            'qdjango-column-acl-api-detail', [acl2.pk])
+
+        resp_detail = json.loads(response.content)
+        self.assertEqual(resp_detail, resp['results'][0])
+
+        # Test POST
+        payload = {
+            'layer': self.world.pk,
+            'group': viewer2_group.pk,
+            'user': '',
+            'restricted_fields': ['NAME']
+        }
+
+        response = self._testApiCallAdmin01Post(
+            'qdjango-column-acl-api-list', payload, [])
+
+        self.assertEqual(response.status_code, 201)
+
+        resp = json.loads(response.content)
+
+        acl_pk = resp['pk']
+        acl3 = ColumnAcl.objects.get(pk=acl_pk)
+        self.assertEqual(acl3.group, viewer2_group)
+        self.assertEqual(acl3.layer, self.world)
+        self.assertEqual(acl3.restricted_fields, ['NAME'])
+        self.assertIsNone(acl3.user)
+        self.assertEqual(resp['groupname'], 'Viewer Level 2')
+
+        # Test errors: field does not exist
+
+        payload = {
+            'layer': self.world.pk,
+            'group': viewer2_group.pk,
+            'user': '',
+            'restricted_fields': ['I_DONT_EXIST']
+        }
+
+        response = self._testApiCallAdmin01Post(
+            'qdjango-column-acl-api-list', payload, [])
+
+        self.assertEqual(response.status_code, 400)
+        resp = json.loads(response.content)
+        self.assertFalse(resp['result'])
+
+        # Test errors: raster layer
+
+        payload = {
+            'layer': Layer.objects.filter(layer_type='gdal')[0].pk,
+            'group': viewer2_group.pk,
+            'user': '',
+            'restricted_fields': ['I_DONT_EXIST']
+        }
+
+        response = self._testApiCallAdmin01Post(
+            'qdjango-column-acl-api-list', payload, [])
+
+        self.assertEqual(response.status_code, 400)
+        resp = json.loads(response.content)
+        self.assertFalse(resp['result'])
+
+    def test_fields_api(self):
+
+        response = self._testApiCallAdmin01(
+            'qdjango-column-acl-api-fields', [self.world.pk ])
+
+        self.assertEqual(response.status_code, 200)
+        resp = json.loads(response.content)
+
+        self.assertEqual(resp, {'field_names': ['NAME', 'CAPITAL', 'APPROX', 'AREA', 'SOURCETHM']})
+

@@ -1911,7 +1911,7 @@ class TestGeoConstraintsServerFilters(TestSingleLayerConstraintsBase):
         self.assertFalse(b'another point' in response.content)
         c.logout()
 
-        #For user group GU_VIEWER1: as user VIWER1.2
+        #For user group GU_VIEWER1: as user VIEWER1.2
 
         rule_algeria.user = None
         rule_algeria.group = self.test_gu_viewer1
