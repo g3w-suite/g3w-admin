@@ -1,12 +1,12 @@
 from django.dispatch import receiver
-from django.db.models.signals import post_delete, post_save
+from django.db.models.signals import post_delete, post_save, pre_save, pre_delete
 from django.conf import settings
 from django.core.cache import caches
 from django.template import loader
 from django.contrib.auth.signals import user_logged_out
 from core.signals import execute_search_on_models, load_layer_actions, pre_delete_project, pre_update_project
 from core.models import ProjectMapUrlAlias
-from .models import Project, Layer, SessionTokenFilter
+from .models import Project, Layer, SessionTokenFilter, ColumnAcl
 from .signals import post_save_qdjango_project_file
 from .searches import ProjectSearch
 from .views import QdjangoProjectListView, QdjangoProjectUpdateView
@@ -180,3 +180,38 @@ def check_embedded_layer_on_update(sender, **kwargs):
             msg = loader.get_template(
                 'qdjango/check_embedded_layer_on_update.html')
             return msg.render({'embedded_layers': embedded_layers})
+
+
+@receiver(pre_save, sender=ColumnAcl)
+def set_layer_acl_flag_save(sender, **kwargs):
+    """Updates has_column_acl flag in the layers"""
+
+    if not kwargs.get('raw', True):
+        column_acl = kwargs['instance']
+        try:
+            old_acl = ColumnAcl.objects.get(pk=column_acl.pk)
+            if old_acl.layer != column_acl.layer and ColumnAcl.objects.filter(layer=old_acl.layer).count() == 1:
+                old_acl.layer.has_column_acl = False
+                old_acl.layer.save()
+
+        except ColumnAcl.DoesNotExist:
+            pass
+
+        column_acl = kwargs['instance']
+        column_acl.layer.has_column_acl = True
+        column_acl.layer.save()
+
+
+@receiver(post_delete, sender=ColumnAcl)
+def set_layer_acl_flag_delete(sender, **kwargs):
+    """Updates has_column_acl flag in the layers"""
+
+    column_acl = kwargs['instance']
+
+    try:
+        layer = column_acl.layer
+        layer.has_column_acl = ColumnAcl.objects.filter(
+            layer=layer).count() > 0
+        layer.save()
+    except ColumnAcl.DoesNotExist:
+        pass

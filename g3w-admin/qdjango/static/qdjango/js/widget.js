@@ -6,21 +6,21 @@
 ga.Qdjango = {
   urls: {
     constraint: {
-        list: "/" + SITE_PREFIX_URL + "qdjango/api/constraint/",
-        detail: "/" + SITE_PREFIX_URL + "qdjango/api/constraint/detail/",
-      },
+      list: "/" + SITE_PREFIX_URL + "qdjango/api/constraint/",
+      detail: "/" + SITE_PREFIX_URL + "qdjango/api/constraint/detail/",
+    },
     layer: {
-        user: "/" + SITE_PREFIX_URL + "qdjango/api/info/layer/user/",
-        authgroup: "/" + SITE_PREFIX_URL + "qdjango/api/info/layer/authgroup/",
+      user: "/" + SITE_PREFIX_URL + "qdjango/api/info/layer/user/",
+      authgroup: "/" + SITE_PREFIX_URL + "qdjango/api/info/layer/authgroup/",
     },
     rule: {
       subset: {
-          list: "/" + SITE_PREFIX_URL + "qdjango/api/subsetstringrule/constraint/",
-          detail: "/" + SITE_PREFIX_URL + "qdjango/api/subsetstringrule/detail/",
+        list: "/" + SITE_PREFIX_URL + "qdjango/api/subsetstringrule/constraint/",
+        detail: "/" + SITE_PREFIX_URL + "qdjango/api/subsetstringrule/detail/",
       },
       expression: {
-          list: "/" + SITE_PREFIX_URL + "qdjango/api/expressionrule/constraint/",
-          detail: "/" + SITE_PREFIX_URL + "qdjango/api/expressionrule/detail/",
+        list: "/" + SITE_PREFIX_URL + "qdjango/api/expressionrule/constraint/",
+        detail: "/" + SITE_PREFIX_URL + "qdjango/api/expressionrule/detail/",
       },
     },
   },
@@ -138,11 +138,10 @@ ga.Qdjango.widgetEditor = {
         })
 
         // add otherlayers
-        obj['otherlayers'] = $(".rightCol").find('.cmpPlusLayersSearch').find('select').val();
+        obj["otherlayers"] = $(".rightCol").find(".cmpPlusLayersSearch").find("select").val()
 
         // add relations
-        obj['relations'] = $(".rightCol").find('.cmpRelations').find('select').val();
-
+        obj["relations"] = $(".rightCol").find(".cmpRelations").find("select").val()
 
         $.each($(".rightCol").find(".bloccoGenerale").find(".resultFields").find(".row"), function (i, v) {
           v = $(v)
@@ -332,8 +331,6 @@ ga.Qdjango.widgetEditor = {
       cmpOperatorSelect.append('<option value="ILIKE">ILIKE (' + gettext("like not case sensitive") + ")</option>")
     }
 
-
-
     if (that.isset(values) && that.isset(values.filterop)) cmpOperatorSelect.val($("<div/>").html(values.filterop).text())
 
     // add control on cmpOperatorSelect for field type:
@@ -438,10 +435,12 @@ ga.Qdjango.widgetEditor = {
 								<option value="and">AND</option>\
 								<option value="or">OR</option>\
 							</select>\
-							<div class="help-block invisible">' + gettext("Logical join") + '</div>\
+							<div class="help-block invisible">' +
+        gettext("Logical join") +
+        "</div>\
 						</div>\
 						</div>\
-					</div>'
+					</div>"
     )
 
     div.find(".close").click(function () {
@@ -500,8 +499,8 @@ ga.Qdjango.widgetEditor = {
     widgetSelect.trigger("change")
     if (that.isset(values) && that.isset(values.input.options["dependance"])) cmpDependanceSelect.val($("<div/>").html(values.input.options["dependance"]).text())
 
-    if (that.isset(values) && that.isset(values.logicop)) var logicopselect = div.find("select.logic_operator");
-    if (that.isset(logicopselect)) logicopselect.val(values.logicop);
+    if (that.isset(values) && that.isset(values.logicop)) var logicopselect = div.find("select.logic_operator")
+    if (that.isset(logicopselect)) logicopselect.val(values.logicop)
   },
 
   generateTooltipRow: function (values) {
@@ -721,40 +720,49 @@ ga.Qdjango.widgetEditor = {
         return
     }
     if (el.val() != "law") {
-
       // for plusLayers
-      if (el.val() == 'search') {
-        var pluslayers = $('<div class="row pluslayers" style="margin-bottom:20px;">\
+      if (el.val() == "search") {
+        var pluslayers = $(
+          '<div class="row pluslayers" style="margin-bottom:20px;">\
         <div class="col-md-offset-2 col-md-8">\
             <div class="controls cmpPlusLayersSearch">\
-                <label class="control-label">' + gettext("Other searching layers") + '</label>\
+                <label class="control-label">' +
+            gettext("Other searching layers") +
+            '</label>\
             </div>\
-            <div class="help-block">' + gettext("Select one or more additional layers to search on") + '</div>\
+            <div class="help-block">' +
+            gettext("Select one or more additional layers to search on") +
+            "</div>\
         </div>\
-        </div>');
+        </div>"
+        )
 
         // for relations
         if (this.relations.length > 0) {
-            var relations = $('<div class="row relations" style="margin-bottom:20px;">\
+          var relations = $(
+            '<div class="row relations" style="margin-bottom:20px;">\
             <div class="col-md-12">\
                 <div class="controls cmpRelations">\
-                    <label class="control-label">' + gettext("Relations") + '</label>\
+                    <label class="control-label">' +
+              gettext("Relations") +
+              '</label>\
                 </div>\
-                <div class="help-block">' + gettext("This layer is a child in a relation, if you want to excute the search on father layer of relation, select the relative relation") + '</div>\
+                <div class="help-block">' +
+              gettext("This layer is a child in a relation, if you want to excute the search on father layer of relation, select the relative relation") +
+              "</div>\
             </div>\
-            </div>');
+            </div>"
+          )
 
-            var relation_select = $('<select class="form-control" name="relation" style="width: 570px">' +
-                '<option value="">---</option>' +
-                '</select>')
+          var relation_select = $('<select class="form-control" name="relation" style="width: 570px">' + '<option value="">---</option>' + "</select>")
 
-            $.each(this.relations, function (i, v) {
-              var selected = ""
-              var option = $('<option value="' + v['id'] + '" ' + selected + ">" + v['name'] + "</option>")
-              relation_select.append(option)
-            });
+          $.each(this.relations, function (i, v) {
+            var selected = ""
+            var option = $('<option value="' + v["id"] + '" ' + selected + ">" + v["name"] + "</option>")
+            relation_select.append(option)
+          })
 
-            relations.find(".cmpRelations").append(relation_select);
+          relations.find(".cmpRelations").append(relation_select)
         }
 
         var cmpPlusLayersSearch = $('<select class="form-control" multiple="multiple" name="pluslayer_field" style="width: 570px"></select>')
@@ -767,10 +775,7 @@ ga.Qdjango.widgetEditor = {
         })
 
         pluslayers.find(".cmpPlusLayersSearch").append(cmpPlusLayersSearch)
-
-
       }
-
 
       var addDiv = $(
         '<div class="row text-center">\
@@ -779,23 +784,21 @@ ga.Qdjango.widgetEditor = {
       )
       addDiv.find(".addRow").click(function () {
         var div = $(this).parents("div").first()
-        that.onAddCallback();
+        that.onAddCallback()
 
-        div.appendTo($(".rightCol"));
-        if (el.val() == 'search') {
-
+        div.appendTo($(".rightCol"))
+        if (el.val() == "search") {
           $(this).parents().find(".pluslayers").appendTo($(".rightCol"))
         }
-
       })
       $(".rightCol").append(addDiv)
 
-      if (el.val() == 'search') {
+      if (el.val() == "search") {
         if (this.relations.length > 0) {
-          $(".bloccoGenerale").append(relations);
+          $(".bloccoGenerale").append(relations)
         }
-        $(".rightCol").append(pluslayers);
-        cmpPlusLayersSearch.select2();
+        $(".rightCol").append(pluslayers)
+        cmpPlusLayersSearch.select2()
       }
     }
   },
@@ -837,23 +840,28 @@ ga.Qdjango.widgetEditor = {
     }
     if (this.widget.widget_type != "law") {
       // for plusLayers
-      if (this.widget.widget_type == 'search') {
-        var pluslayers = $('<div class="row pluslayers" style="margin-bottom:20px;">\
+      if (this.widget.widget_type == "search") {
+        var pluslayers = $(
+          '<div class="row pluslayers" style="margin-bottom:20px;">\
         <div class="col-md-offset-2 col-md-8">\
             <div class="controls cmpPlusLayersSearch">\
-                <label class="control-label">' + gettext("Other searching layers") + '</label>\
+                <label class="control-label">' +
+            gettext("Other searching layers") +
+            '</label>\
             </div>\
-            <div class="help-block">' + gettext("Select one or more additional layers to search on") + '</div>\
+            <div class="help-block">' +
+            gettext("Select one or more additional layers to search on") +
+            "</div>\
         </div>\
-        </div>');
+        </div>"
+        )
 
         var cmpPlusLayersSearch = $('<select class="form-control" multiple="multiple" name="pluslayer_field" style="width: 570px;"></select>')
 
         $.each(this.projectLayers, function (i, v) {
-
-          var selected = "";
-          if (that.isset(that.widget.body.otherlayers) && _.indexOf(that.widget.body.otherlayers, i) != -1){
-            selected = "selected";
+          var selected = ""
+          if (that.isset(that.widget.body.otherlayers) && _.indexOf(that.widget.body.otherlayers, i) != -1) {
+            selected = "selected"
           }
           var option = $('<option value="' + i + '" ' + selected + ">" + v + "</option>")
           cmpPlusLayersSearch.append(option)
@@ -863,33 +871,35 @@ ga.Qdjango.widgetEditor = {
 
         // for relations
         if (this.relations.length > 0) {
-            var relations = $('<div class="row relations" style="margin-bottom:20px;">\
+          var relations = $(
+            '<div class="row relations" style="margin-bottom:20px;">\
             <div class="col-md-12">\
                 <div class="controls cmpRelations">\
-                    <label class="control-label">' + gettext("Relations") + '</label>\
+                    <label class="control-label">' +
+              gettext("Relations") +
+              '</label>\
                 </div>\
-                <div class="help-block">' + gettext("This layer is a child in a relation, if you want to excute the search on father layer of relation, select the relative relation") + '</div>\
+                <div class="help-block">' +
+              gettext("This layer is a child in a relation, if you want to excute the search on father layer of relation, select the relative relation") +
+              "</div>\
             </div>\
-            </div>');
+            </div>"
+          )
 
-            var relation_select = $('<select class="form-control" name="relation" style="width: 570px">' +
-                '<option value="">---</option>' +
-                '</select>')
+          var relation_select = $('<select class="form-control" name="relation" style="width: 570px">' + '<option value="">---</option>' + "</select>")
 
-            $.each(this.relations, function (i, v) {
-              var selected = ""
-              if (that.isset(that.widget.body.relations) && that.widget.body.relations == v['id']){
-                selected = "selected";
-              }
-              var option = $('<option value="' + v['id'] + '" ' + selected + ">" + v['name'] + "</option>")
-              relation_select.append(option)
-            });
+          $.each(this.relations, function (i, v) {
+            var selected = ""
+            if (that.isset(that.widget.body.relations) && that.widget.body.relations == v["id"]) {
+              selected = "selected"
+            }
+            var option = $('<option value="' + v["id"] + '" ' + selected + ">" + v["name"] + "</option>")
+            relation_select.append(option)
+          })
 
-            relations.find(".cmpRelations").append(relation_select);
+          relations.find(".cmpRelations").append(relation_select)
         }
-
       }
-
 
       var addDiv = $(
         '<div class="row text-center">\
@@ -898,22 +908,22 @@ ga.Qdjango.widgetEditor = {
       )
       addDiv.find(".addRow").click(function () {
         var div = $(this).parents("div").first()
-        that.onAddCallback();
-        div.appendTo($(".rightCol"));
+        that.onAddCallback()
+        div.appendTo($(".rightCol"))
 
-        if (that.widget.widget_type == 'search') {;
+        if (that.widget.widget_type == "search") {
           $(this).parents().find(".pluslayers").appendTo($(".rightCol"))
         }
       })
 
-      $(".rightCol").append(addDiv);
+      $(".rightCol").append(addDiv)
 
       if (this.widget.widget_type != "law") {
         if (this.relations.length > 0) {
-          $(".bloccoGenerale").append(relations);
+          $(".bloccoGenerale").append(relations)
         }
-        $(".rightCol").append(pluslayers);
-        cmpPlusLayersSearch.select2();
+        $(".rightCol").append(pluslayers)
+        cmpPlusLayersSearch.select2()
       }
     }
   },
@@ -929,11 +939,11 @@ ga.Qdjango.widgetEditor = {
   init: function () {
     var that = this
     this.setLayerData(
-        ga.Qdjango.localVars["layer_columns"],
-        ga.Qdjango.localVars["layer_name"],
-        ga.Qdjango.localVars["layer_type"],
-        ga.Qdjango.localVars["project_layers"],
-        ga.Qdjango.localVars["relations"]
+      ga.Qdjango.localVars["layer_columns"],
+      ga.Qdjango.localVars["layer_name"],
+      ga.Qdjango.localVars["layer_type"],
+      ga.Qdjango.localVars["project_layers"],
+      ga.Qdjango.localVars["relations"]
     )
     this.lawslist = ga.Qdjango.localVars["laws_list"]
     if (ga.Qdjango.localVars["update"]) {
@@ -970,10 +980,7 @@ ga.Qdjango.widgetEditor = {
 // Add SingleLayer Constraint widget
 // --------------------------------
 _.extend(g3wadmin.widget, {
-  _singlelayerConstraintsListParams: [
-      "singlelayerconstraints-list-url",
-      "singlelayerconstraints-layer-pk"
-  ],
+  _singlelayerConstraintsListParams: ["singlelayerconstraints-list-url", "singlelayerconstraints-layer-pk"],
 
   _singlelayerConstraintsUrls: {},
 
@@ -1129,9 +1136,9 @@ _.extend(g3wadmin.widget, {
     ga.ui.initRadioCheckbox(modal.$modal.find("form"))
 
     // remove for_view and for_editing checkbox if 'editing' module is not active
-    if (_.indexOf(ga.settings.G3WADMIN_LOCAL_MORE_APPS, 'editing') == -1){
-        modal.$modal.find("#div_id_for_view").hide();
-        modal.$modal.find("#div_id_for_editing").hide();
+    if (_.indexOf(ga.settings.G3WADMIN_LOCAL_MORE_APPS, "editing") == -1) {
+      modal.$modal.find("#div_id_for_view").hide()
+      modal.$modal.find("#div_id_for_editing").hide()
     }
 
     modal.show()
@@ -1247,84 +1254,74 @@ _.extend(g3wadmin.widget, {
         parent_click: $(this),
       })
     })
-    $div.append($newConstraint);
+    $div.append($newConstraint)
 
     // add table contraints saved
-    var $table = $('<table class="table">');
-    var $tbody = $table.append($("<tbody>"));
-    var thead = "<thead>\n" +
-        "            <tr>\n" +
-        '                <th style="width:180px;">' + gettext("Actions") + "</th>\n" +
-        "                <th>" + gettext("Name") + "</th>\n" +
-        "                <th>" +
-        gettext("Description") +
-        "</th>\n";
+    var $table = $('<table class="table">')
+    var $tbody = $table.append($("<tbody>"))
+    var thead =
+      "<thead>\n" +
+      "            <tr>\n" +
+      '                <th style="width:180px;">' +
+      gettext("Actions") +
+      "</th>\n" +
+      "                <th>" +
+      gettext("Name") +
+      "</th>\n" +
+      "                <th>" +
+      gettext("Description") +
+      "</th>\n"
 
-        if (_.indexOf(ga.settings.G3WADMIN_LOCAL_MORE_APPS, 'editing') != -1) {
-          thead += "                <th>"+
-          gettext("For visualization") +
-          "</th>\n" +
-          "                <th>" +
-          gettext("For editing") +
-          "</th>\n";
-        }
+    if (_.indexOf(ga.settings.G3WADMIN_LOCAL_MORE_APPS, "editing") != -1) {
+      thead += "                <th>" + gettext("For visualization") + "</th>\n" + "                <th>" + gettext("For editing") + "</th>\n"
+    }
 
-        thead += "                <th>" +
-        gettext("Subset rules count") +
-        "</th>\n" +
-        "                <th>" +
-        gettext("Expression rules count") +
-        "</th>\n" +
-        "            </tr>\n" +
-        "        </thead>";
+    thead +=
+      "                <th>" +
+      gettext("Subset rules count") +
+      "</th>\n" +
+      "                <th>" +
+      gettext("Expression rules count") +
+      "</th>\n" +
+      "            </tr>\n" +
+      "        </thead>"
 
-    $table.append(thead);
-
+    $table.append(thead)
 
     // add constraints
-    var constraint_res = {};
+    var constraint_res = {}
     $.each(res["results"], function (k, v) {
       constraint_res[v["pk"]] = v
       var editDisplay = v["rule_count"] > 0 ? "none" : "display"
       var for_view = v["for_view"] ? '<span class="fa fa-check-circle" style="color: orange"></span>' : ""
       var for_editing = v["for_editing"] ? '<span class="fa fa-check-circle" style="color: orange"></span>' : ""
-      var constraintContext = "";
-      if (for_view != "") constraintContext += "v";
-      if (for_editing != "") constraintContext += "e";
-      var tr = '<tr id="singlelayerconstraint-item-' +
-          v["pk"] +
-          '">\n' +
-          "                <td>" +
-          ga.tpl.singlelayerConstraintActions({
-            layerId: layer_pk,
-            constraintPk: v["pk"],
-            constraintContext: constraintContext,
-            editDisplay: editDisplay,
-            expressionIcon: ga.ui.expression_svg,
-          }) +
-          "</td>\n" +
-          "                <td>" +
-          v["name"] +
-          "</td>\n" +
-          "                <td>" +
-          v["description"] +
-          "</td>\n";
-          if (_.indexOf(ga.settings.G3WADMIN_LOCAL_MORE_APPS, 'editing') != -1) {
-            tr += "                <td>" +
-                for_view +
-                "</td>\n" +
-                "                <td>" +
-                for_editing +
-                "</td>\n";
-          }
-          tr += "                <td>" +
-          v["subset_rule_count"] +
-          "</td>\n" +
-          "                <td>" +
-          v["expression_rule_count"] +
-          "</td>\n" +
-          "            </tr>\n"
-      $tbody.append(tr);
+      var constraintContext = ""
+      if (for_view != "") constraintContext += "v"
+      if (for_editing != "") constraintContext += "e"
+      var tr =
+        '<tr id="singlelayerconstraint-item-' +
+        v["pk"] +
+        '">\n' +
+        "                <td>" +
+        ga.tpl.singlelayerConstraintActions({
+          layerId: layer_pk,
+          constraintPk: v["pk"],
+          constraintContext: constraintContext,
+          editDisplay: editDisplay,
+          expressionIcon: ga.ui.expression_svg,
+        }) +
+        "</td>\n" +
+        "                <td>" +
+        v["name"] +
+        "</td>\n" +
+        "                <td>" +
+        v["description"] +
+        "</td>\n"
+      if (_.indexOf(ga.settings.G3WADMIN_LOCAL_MORE_APPS, "editing") != -1) {
+        tr += "                <td>" + for_view + "</td>\n" + "                <td>" + for_editing + "</td>\n"
+      }
+      tr += "                <td>" + v["subset_rule_count"] + "</td>\n" + "                <td>" + v["expression_rule_count"] + "</td>\n" + "            </tr>\n"
+      $tbody.append(tr)
     })
 
     // add actions to elements action
@@ -1587,17 +1584,15 @@ _.extend(g3wadmin.tpl, {
 		</span>\
     '
   ),
-
 })
 
 // activate widget: append to ga.ui.before_datatable_callbacks for to cala it before DatTable init
-ga.ui.before_datatable_callbacks.push(function($widgetItem){
+ga.ui.before_datatable_callbacks.push(function ($widgetItem) {
   $widgetItem.find('[data-widget-type="singlelayerConstraintsList"]').on("click", function (e) {
     var $datatable = $(this).parents("table").DataTable()
     ga.widget.singlelayerConstraintsList($datatable, $(this))
-  });
-});
-
+  })
+})
 
 // Add GeoConstraint widget
 // --------------------------------
@@ -1605,35 +1600,30 @@ ga.ui.before_datatable_callbacks.push(function($widgetItem){
 _.extend(ga.Qdjango, {
   geoconstraint_urls: {
     constraint: {
-        list: '/' + SITE_PREFIX_URL + 'qdjango/api/geoconstraint/',
-        detail: '/' + SITE_PREFIX_URL + 'qdjango/api/geoconstraint/detail/',
+      list: "/" + SITE_PREFIX_URL + "qdjango/api/geoconstraint/",
+      detail: "/" + SITE_PREFIX_URL + "qdjango/api/geoconstraint/detail/",
     },
     layer: {
-        info: '/' + SITE_PREFIX_URL + 'qdjango/api/info/layer/polygon/',
-        user: '/' + SITE_PREFIX_URL + 'qdjango/api/info/layer/user/',
-        authgroup: '/' + SITE_PREFIX_URL + 'qdjango/api/info/layer/authgroup/',
+      info: "/" + SITE_PREFIX_URL + "qdjango/api/info/layer/polygon/",
+      user: "/" + SITE_PREFIX_URL + "qdjango/api/info/layer/user/",
+      authgroup: "/" + SITE_PREFIX_URL + "qdjango/api/info/layer/authgroup/",
     },
     rule: {
-        list: '/' + SITE_PREFIX_URL + 'qdjango/api/georule/geoconstraint/',
-        detail: '/' + SITE_PREFIX_URL + 'qdjango/api/georule/detail/'
-    }
+      list: "/" + SITE_PREFIX_URL + "qdjango/api/georule/geoconstraint/",
+      detail: "/" + SITE_PREFIX_URL + "qdjango/api/georule/detail/",
+    },
   },
   geoconstraint_data: {
     viewers: [],
     group_viewers: [],
     current_rules: [],
-    layer_types: [
-        'spatialite',
-        'postgres',
-        'ogr',
-        'oracle'
-    ]
+    layer_types: ["spatialite", "postgres", "ogr", "oracle"],
   },
-});
+})
 
 _.extend(g3wadmin.tpl, {
-
-  geoConstraintRules: _.template('\
+  geoConstraintRules: _.template(
+    '\
       <div class="row">\
           <div class="col-md-12 rules-list">\
           </div>\
@@ -1642,14 +1632,18 @@ _.extend(g3wadmin.tpl, {
           <div class="col-md-12">\
               <div class="row text-center">\
                   <div class="col-md-12">\
-                      <button type="button" class="btn btn-success add-rule"><i class="glyphicon glyphicon-plus"></i> '+gettext('Add')+'</button>\
+                      <button type="button" class="btn btn-success add-rule"><i class="glyphicon glyphicon-plus"></i> ' +
+      gettext("Add") +
+      "</button>\
                   </div>\
               </div>\
           </div>\
       </div>\
-  '),
+  "
+  ),
 
-  geoConstraintRule: _.template('\
+  geoConstraintRule: _.template(
+    '\
   <div class="row rule-form" style="border-top: 1px solid gray;">\
       <div class="col-md-12 form-errors" style="color: #ff0000;"></div>\
       <div class="col-md-10 rule-fields">\
@@ -1701,27 +1695,39 @@ _.extend(g3wadmin.tpl, {
       <div class="col-md-2 rule-actions">\
           <div class="row" style="font-size: 24px;">\
               <span class="col-xs-2 icon">\
-                  <a href="#" class="bt-rule-save" data-toggle="tooltip" data-placement="top" title="'+gettext('Save')+'"><i class="fa fa-save"></i></a>\
+                  <a href="#" class="bt-rule-save" data-toggle="tooltip" data-placement="top" title="' +
+      gettext("Save") +
+      '"><i class="fa fa-save"></i></a>\
               </span>\
               <span class="col-xs-2 icon">\
-                  <a href="#" class="bt-rule-delete" data-toggle="tooltip" data-placement="top" title="'+gettext('Delete')+'"><i class="ion ion-trash-b"></i></a>\
+                  <a href="#" class="bt-rule-delete" data-toggle="tooltip" data-placement="top" title="' +
+      gettext("Delete") +
+      '"><i class="ion ion-trash-b"></i></a>\
               </span>\
           </div>\
       </div>\
   </div>\
-  '),
+  '
+  ),
 
-  geoConstraintForm: _.template('\
+  geoConstraintForm: _.template(
+    '\
       <form action="<%= action %>" id="form-constraint-<%= layerId %>">\
           <input type="hidden" name="layer" value="<%= layerId %>" />\
           <input type="hidden" name="active" value="1" />\
-          <div class="info"><h4>'+gettext('Select the constraint layer, only Polygon or MultiPolygon geomentry')+':</h4></div>\
+          <div class="info"><h4>' +
+      gettext("Select the constraint layer, only Polygon or MultiPolygon geomentry") +
+      ':</h4></div>\
           <div class="controls">\
-              <label>'+gettext('Constraint layer')+'</label>\
+              <label>' +
+      gettext("Constraint layer") +
+      '</label>\
               <select name="constraint_layer" class="select form-control"></select>\
           </div>\
           <div class="form-group">\
-              <label class="control-label ">'+gettext("Description") +'</label>\
+              <label class="control-label ">' +
+      gettext("Description") +
+      '</label>\
               <div class="controls ">\
                  <textarea class="form-control" name="description" style="width:100%;"></textarea>\
               </div>\
@@ -1730,7 +1736,9 @@ _.extend(g3wadmin.tpl, {
               <div id="div_id_for_view" class="checkbox">\
                   <label for="id_for_view" class="">\
                       <input type="checkbox" name="icheck_for_view" id="id_for_view" checked="checked" class="checkboxinput">\
-                      ' + gettext("Active for visualization") +'\
+                      ' +
+      gettext("Active for visualization") +
+      '\
                   </label>\
               </div>\
               <input type="hidden" name="for_view" value="true">\
@@ -1739,7 +1747,9 @@ _.extend(g3wadmin.tpl, {
               <div id="div_id_for_editing" class="checkbox">\
                   <label for="id_for_editing" class="">\
                       <input type="checkbox" name="icheck_for_editing" id="id_for_editing" class="checkboxinput">\
-                      ' + gettext("Active for editing") +'\
+                      ' +
+      gettext("Active for editing") +
+      '\
                   </label>\
               </div>\
               <input type="hidden" name="for_editing">\
@@ -1747,9 +1757,12 @@ _.extend(g3wadmin.tpl, {
       </form>'
   ),
 
-  geoConstraintActions: _.template('\
+  geoConstraintActions: _.template(
+    '\
       <span class="col-xs-2 icon">\
-          <a href="#" data-toggle="tooltip" data-placement="top" title="'+gettext('Manage geo-constaints')+'" data-geoconstraint-action-mode="rules" data-geoconstraint-context="<%= constraintContext %>" data-geoconstraint-pk="<%= constraintPk %>"><i class="fa fa-cubes"></i></a>\
+          <a href="#" data-toggle="tooltip" data-placement="top" title="' +
+      gettext("Manage geo-constaints") +
+      '" data-geoconstraint-action-mode="rules" data-geoconstraint-context="<%= constraintContext %>" data-geoconstraint-pk="<%= constraintPk %>"><i class="fa fa-cubes"></i></a>\
       </span>\
       <span class="col-xs-2 icon" style="display:<%= editDisplay %>">\
           <a href="#" data-geoconstraint-action-mode="update" data-geoconstraint-pk="<%= constraintPk %>" data-geoconstraint-layer-id="<%= layerId %>" data-geoconstraint-context="<%= constraintContext %>"><i class="ion ion-edit"></i></a>\
@@ -1757,460 +1770,814 @@ _.extend(g3wadmin.tpl, {
       <span class="col-xs-2 icon">\
           <a href="#" \
           data-widget-type="deleteItem" \
-          data-delete-url="'+ga.Qdjango.geoconstraint_urls.constraint.detail+'<%= constraintPk %>/"\
+          data-delete-url="' +
+      ga.Qdjango.geoconstraint_urls.constraint.detail +
+      '<%= constraintPk %>/"\
           data-item-selector="#constraint-item-<%= constraintPk %>"\
           data-delete-method="delete"\
           ><i class="ion ion-trash-b"></i></a>\
       </span>\
-  '),
-});
-
+  '
+  ),
+})
 
 _.extend(g3wadmin.widget, {
+  _geoConstrantsListParams: ["geoconstraints-list-url", "geoconstraints-layer-pk"],
 
-    _geoConstrantsListParams: [
-        'geoconstraints-list-url',
-        'geoconstraints-layer-pk'
-    ],
+  _geoConstraintsUrls: {},
 
-    _geoConstraintsUrls: {},
+  _buildGeoContraintRuleForm: function (constraint_pk, rules_list, res, new_rule) {
+    var actions = {
+      post: ga.Qdjango.geoconstraint_urls.rule.list + constraint_pk + "/",
+      put: _.isNull(res) ? "" : ga.Qdjango.geoconstraint_urls.rule.detail + res["pk"] + "/",
+    }
 
-    _buildGeoContraintRuleForm: function(constraint_pk, rules_list, res, new_rule){
+    // instance ne form rule
+    var form_options = {
+      rulePk: _.isNull(res) ? "new" : res["pk"],
+      constraintPk: constraint_pk,
+      action: _.isNull(res) ? actions.post : actions.put,
+    }
+    var form_rule = $(ga.tpl.geoConstraintRule(form_options))
+    var ga_form = new ga.forms.form(form_rule.find("form"))
 
-        var actions = {
-            post: ga.Qdjango.geoconstraint_urls.rule.list+constraint_pk+'/',
-            put: _.isNull(res) ? '' : ga.Qdjango.geoconstraint_urls.rule.detail+res['pk']+'/'
+    // populate selects user and group
+    var sl_user = form_rule.find('[name="user"]')
+    var sl_group = form_rule.find('[name="group"]')
+    var ta_rule = form_rule.find('[name="rule"]')
+    var in_pk = form_rule.find('[name="pk"]')
+
+    // ser on success action
+    ga_form.setOnSuccesAction(function (fres) {
+      var $ediv = form_rule.find(".form-errors")
+      $ediv.html("")
+      var $saved_msg = $('<h4 class="badge bg-green">' + gettext("Saved") + "</h4>")
+      $ediv.append($saved_msg)
+      $saved_msg.fadeOut(1200)
+
+      // transform in a update mode, update pk put value and action
+      if (_.isNull(res)) {
+        ga_form.setAction(ga.Qdjango.geoconstraint_urls.rule.detail + fres["pk"] + "/")
+        in_pk.val(fres["pk"])
+      }
+    })
+
+    // set error form action
+    ga_form.setOnErrorAction(function (xhr, msg) {
+      var err_data = xhr.responseJSON["error"]
+      var $ediv = form_rule.find(".form-errors")
+      $ediv.html("")
+      $ediv.append('<h4 class="badge bg-red">' + err_data["message"] + "</h4>")
+
+      // add field errors message:
+      if (!_.isUndefined(err_data["data"]["non_field_errors"])) {
+        for (n in err_data["data"]["non_field_errors"]) {
+          $ediv.append("<br /><span>" + err_data["data"]["non_field_errors"][n] + "</span>")
         }
+      }
+    })
 
-        // instance ne form rule
-        var form_options = {
-            rulePk: _.isNull(res) ? 'new' : res['pk'],
-            constraintPk: constraint_pk,
-            action: _.isNull(res) ? actions.post : actions.put,
-        }
-        var form_rule = $(ga.tpl.geoConstraintRule(form_options));
-        var ga_form = new ga.forms.form(form_rule.find('form'));
+    // populate rule
+    if (!_.isNull(res)) {
+      ta_rule.val(res["rule"])
+    }
 
-        // populate selects user and group
-        var sl_user = form_rule.find('[name="user"]');
-        var sl_group = form_rule.find('[name="group"]');
-        var ta_rule = form_rule.find('[name="rule"]');
-        var in_pk = form_rule.find('[name="pk"]');
+    $.each(ga.Qdjango.geoconstraint_data.viewers, function (k, v) {
+      v["selected"] = !_.isNull(res) && res["user"] == v["pk"] ? 'selected="selected"' : ""
+      sl_user.append(_.template('<option value="<%= pk %>" <%= selected %>><%= first_name %> <%= last_name %>(<%= username %>)</option>')(v))
+    })
 
+    $.each(ga.Qdjango.geoconstraint_data.group_viewers, function (k, v) {
+      v["selected"] = !_.isNull(res) && res["group"] == v["pk"] ? 'selected="selected"' : ""
+      sl_group.append(_.template('<option value="<%= pk %>" <%= selected %>><%= name %></option>')(v))
+    })
 
-         // ser on success action
-        ga_form.setOnSuccesAction(function(fres){
-            var $ediv = form_rule.find('.form-errors');
-            $ediv.html('');
-            var $saved_msg = $('<h4 class="badge bg-green">'+gettext('Saved')+'</h4>');
-            $ediv.append($saved_msg);
-            $saved_msg.fadeOut(1200);
+    rules_list.append(form_rule)
 
-
-            // transform in a update mode, update pk put value and action
-            if(_.isNull(res)){
-                ga_form.setAction(ga.Qdjango.geoconstraint_urls.rule.detail+fres['pk']+'/');
-                in_pk.val(fres['pk']);
-            }
-        });
-
-         // set error form action
-        ga_form.setOnErrorAction(function(xhr, msg){
-            var err_data = xhr.responseJSON['error'];
-            var $ediv = form_rule.find('.form-errors');
-            $ediv.html('');
-            $ediv.append('<h4 class="badge bg-red">'+err_data['message']+'</h4>');
-
-            // add field errors message:
-            if (!_.isUndefined(err_data['data']['non_field_errors'])){
-                for (n in err_data['data']['non_field_errors']) {
-                    $ediv.append('<br /><span>'+err_data['data']['non_field_errors'][n]+'</span>');
-                }
-            }
-
-        });
-
-
-        // populate rule
-        if (!_.isNull(res)){
-            ta_rule.val(res['rule']);
-        }
-
-        $.each(ga.Qdjango.geoconstraint_data.viewers, function (k,v){
-            v['selected'] = (!_.isNull(res) && res['user']==v['pk']) ? 'selected="selected"' : '';
-            sl_user.append(_.template('<option value="<%= pk %>" <%= selected %>><%= first_name %> <%= last_name %>(<%= username %>)</option>')(v));
-        });
-
-        $.each(ga.Qdjango.geoconstraint_data.group_viewers, function (k,v){
-            v['selected'] = (!_.isNull(res) && res['group']==v['pk']) ? 'selected="selected"' : '';
-            sl_group.append(_.template('<option value="<%= pk %>" <%= selected %>><%= name %></option>')(v));
-        });
-
-
-
-        rules_list.append(form_rule);
-
-        // action for delete btn
-        var bt_rule_delete = form_rule.find('.bt-rule-delete');
-        bt_rule_delete.on('click', function(e){
-            var $self = $(this).parents('.rule-form');
-            if(_.isNull(res) && form_rule.find('[name="pk"]').val() == 'new'){
-                $self.remove();
-            } else {
-                $.ajax({
-                    method: 'delete',
-                    url: ga.Qdjango.geoconstraint_urls.rule.detail+form_rule.find('[name="pk"]').val()+'/',
-                    success: function (res) {
-                        $self.remove();
-                    },
-                    error: function (xhr, textStatus, errorMessage) {
-
-                    }
-                });
-            }
-
-
-        });
-
-        // action for save btn
-        var bt_rule_save = form_rule.find('.bt-rule-save');
-        bt_rule_save.on('click', function(e){
-            if(_.isNull(res) && form_rule.find('[name="pk"]').val() == 'new'){
-                ga_form.sendData();
-            } else {
-                ga_form.sendData(e, 'put');
-            }
-        });
-
-
-    },
-
-    _refreshGeoConstraintList: function($item){
-        /**
-         * Refresh tr main table layer contraints list
-         */
-        return function(){;
-            var $datatable = $item.parents('table').DataTable();
-            ga.widget.geoConstraintsList($datatable, $item, true);
-        };
-    },
-
-    _geoConstraintRulesForm: function($item, res, params){
-        /**
-         * Build form for constraint rules CRUD
-         */
-
-        var that = this;
-
-        // build moodal
-        var modal_options = {
-
-        };
-        var modal = ga.ui.buildDefaultModal({
-            modalTitle: params['modal-title'],
-            modalBody: ga.tpl.geoConstraintRules(modal_options),
-            modalSize: 'modal-lg',
-            confirmButton: false
-        });
-
-        // set action con close modal refresh constraints list
-        var $item = $(params['parent_click'].parents('table')[0]).parents('tr').prev().find('[data-widget-type="geoConstraintsList"]')
-        //modal.setCloseButtonAction(this._refreshGeoConstraintList($item));
-        modal.$modal.on('hidden.bs.modal',this._refreshGeoConstraintList($item));
-
-        // get viewers and users groups viewers for layer
-        ga.Qdjango.geoconstraint_data.viewers = [];
-        ga.Qdjango.geoconstraint_data.group_viewers = [];
-
-        $.ajaxSetup({async:false});
-        $.getJSON(ga.Qdjango.geoconstraint_urls.layer.user+params['layer_pk']+"/?context=" + params["constraint_context"], function( data ) {
-            ga.Qdjango.geoconstraint_data.viewers = data['results'];
-        });
-
-        $.getJSON(ga.Qdjango.geoconstraint_urls.layer.authgroup+params['layer_pk']+"/?context=" + params["constraint_context"], function( data ) {
-            ga.Qdjango.geoconstraint_data.group_viewers = data['results'];
-        });
-        $.ajaxSetup({async:true});
-
-        // get current rules
-        var current_rules = [];
-        var jqxhr = $.getJSON(ga.Qdjango.geoconstraint_urls.rule.list+params['constraint_pk']+"/", function( data ) {
-            ga.Qdjango.geoconstraint_data.current_rules = data['results'];
-        }).done(function(){
-            $.each(ga.Qdjango.geoconstraint_data.current_rules, function (k, v){
-                that._buildGeoContraintRuleForm(params['constraint_pk'], rules_list, v, false);
-            });
-        });
-
-
-
-
-        // rule list section
-        var rules_list =  modal.$modal.find('.rules-list');
-
-        // rule actions for new rule
-        var $bt_add_rule = modal.$modal.find('.add-rule');
-        $bt_add_rule.on('click', function(e){
-            that._buildGeoContraintRuleForm(params['constraint_pk'], rules_list, null, true);
-        });
-
-
-        modal.show();
-    },
-
-    _geoConstraintForm: function($item, res, params){
-
-        // set urls
-
-        form_action = (params['new']) ? ga.Qdjango.geoconstraint_urls.constraint.list : ga.Qdjango.geoconstraint_urls.constraint.detail+res['pk']+'/'
-
-
-        // open modal to show list of add links
-        modal_options = {
-            'layerId': params['layer_pk'],
-            'action': form_action
-        };
-        var modal = ga.currentModal = ga.ui.buildDefaultModal({
-            modalTitle: ((_.isUndefined(params['modal-title']) ? gettext('Form title') : params['modal-title'])),
-            modalBody: ga.tpl.geoConstraintForm(modal_options),
-            modalSize: (_.isUndefined(params['modal-size']) ? '' : params['modal-size'])
-        });
-
-        modal.data.$evoker = $item;
-
-        // parent_click based on new or update
-        if (params['new']){
-            var $item = params['parent_click'].parents('tr').prev().find('[data-widget-type="geoConstraintsList"]');
-        } else {
-            var $item = $(params['parent_click'].parents('table')[0]).parents('tr').prev().find('[data-widget-type="geoConstraintsList"]');
-        }
-
-        modal.$modal.find("#id_for_view").on("ifChanged", function (e) {
-          if (e.target.checked) {
-            modal.$modal.find("[name='for_view']").val("true")
-          } else {
-            modal.$modal.find("[name='for_view']").val("false")
-          }
+    // action for delete btn
+    var bt_rule_delete = form_rule.find(".bt-rule-delete")
+    bt_rule_delete.on("click", function (e) {
+      var $self = $(this).parents(".rule-form")
+      if (_.isNull(res) && form_rule.find('[name="pk"]').val() == "new") {
+        $self.remove()
+      } else {
+        $.ajax({
+          method: "delete",
+          url: ga.Qdjango.geoconstraint_urls.rule.detail + form_rule.find('[name="pk"]').val() + "/",
+          success: function (res) {
+            $self.remove()
+          },
+          error: function (xhr, textStatus, errorMessage) {},
         })
+      }
+    })
 
-        modal.$modal.find("#id_for_editing").on("ifChanged", function (e) {
-          if (e.target.checked) {
-            modal.$modal.find("[name='for_editing']").val("true")
+    // action for save btn
+    var bt_rule_save = form_rule.find(".bt-rule-save")
+    bt_rule_save.on("click", function (e) {
+      if (_.isNull(res) && form_rule.find('[name="pk"]').val() == "new") {
+        ga_form.sendData()
+      } else {
+        ga_form.sendData(e, "put")
+      }
+    })
+  },
+
+  _refreshGeoConstraintList: function ($item) {
+    /**
+     * Refresh tr main table layer contraints list
+     */
+    return function () {
+      var $datatable = $item.parents("table").DataTable()
+      ga.widget.geoConstraintsList($datatable, $item, true)
+    }
+  },
+
+  _geoConstraintRulesForm: function ($item, res, params) {
+    /**
+     * Build form for constraint rules CRUD
+     */
+
+    var that = this
+
+    // build modal
+    var modal_options = {}
+    var modal = ga.ui.buildDefaultModal({
+      modalTitle: params["modal-title"],
+      modalBody: ga.tpl.geoConstraintRules(modal_options),
+      modalSize: "modal-lg",
+      confirmButton: false,
+    })
+
+    // set action con close modal refresh constraints list
+    var $item = $(params["parent_click"].parents("table")[0]).parents("tr").prev().find('[data-widget-type="geoConstraintsList"]')
+    //modal.setCloseButtonAction(this._refreshGeoConstraintList($item));
+    modal.$modal.on("hidden.bs.modal", this._refreshGeoConstraintList($item))
+
+    // get viewers and users groups viewers for layer
+    ga.Qdjango.geoconstraint_data.viewers = []
+    ga.Qdjango.geoconstraint_data.group_viewers = []
+
+    $.ajaxSetup({ async: false })
+    $.getJSON(ga.Qdjango.geoconstraint_urls.layer.user + params["layer_pk"] + "/?context=" + params["constraint_context"], function (data) {
+      ga.Qdjango.geoconstraint_data.viewers = data["results"]
+    })
+
+    $.getJSON(ga.Qdjango.geoconstraint_urls.layer.authgroup + params["layer_pk"] + "/?context=" + params["constraint_context"], function (data) {
+      ga.Qdjango.geoconstraint_data.group_viewers = data["results"]
+    })
+    $.ajaxSetup({ async: true })
+
+    // get current rules
+    var current_rules = []
+    var jqxhr = $.getJSON(ga.Qdjango.geoconstraint_urls.rule.list + params["constraint_pk"] + "/", function (data) {
+      ga.Qdjango.geoconstraint_data.current_rules = data["results"]
+    }).done(function () {
+      $.each(ga.Qdjango.geoconstraint_data.current_rules, function (k, v) {
+        that._buildGeoContraintRuleForm(params["constraint_pk"], rules_list, v, false)
+      })
+    })
+
+    // rule list section
+    var rules_list = modal.$modal.find(".rules-list")
+
+    // rule actions for new rule
+    var $bt_add_rule = modal.$modal.find(".add-rule")
+    $bt_add_rule.on("click", function (e) {
+      that._buildGeoContraintRuleForm(params["constraint_pk"], rules_list, null, true)
+    })
+
+    modal.show()
+  },
+
+  _geoConstraintForm: function ($item, res, params) {
+    // set urls
+
+    form_action = params["new"] ? ga.Qdjango.geoconstraint_urls.constraint.list : ga.Qdjango.geoconstraint_urls.constraint.detail + res["pk"] + "/"
+
+    // open modal to show list of add links
+    modal_options = {
+      layerId: params["layer_pk"],
+      action: form_action,
+    }
+    var modal = (ga.currentModal = ga.ui.buildDefaultModal({
+      modalTitle: _.isUndefined(params["modal-title"]) ? gettext("Form title") : params["modal-title"],
+      modalBody: ga.tpl.geoConstraintForm(modal_options),
+      modalSize: _.isUndefined(params["modal-size"]) ? "" : params["modal-size"],
+    }))
+
+    modal.data.$evoker = $item
+
+    // parent_click based on new or update
+    if (params["new"]) {
+      var $item = params["parent_click"].parents("tr").prev().find('[data-widget-type="geoConstraintsList"]')
+    } else {
+      var $item = $(params["parent_click"].parents("table")[0]).parents("tr").prev().find('[data-widget-type="geoConstraintsList"]')
+    }
+
+    modal.$modal.find("#id_for_view").on("ifChanged", function (e) {
+      if (e.target.checked) {
+        modal.$modal.find("[name='for_view']").val("true")
+      } else {
+        modal.$modal.find("[name='for_view']").val("false")
+      }
+    })
+
+    modal.$modal.find("#id_for_editing").on("ifChanged", function (e) {
+      if (e.target.checked) {
+        modal.$modal.find("[name='for_editing']").val("true")
+      } else {
+        modal.$modal.find("[name='for_editing']").val("false")
+      }
+    })
+
+    // set action for confirm btn
+    var form = new ga.forms.form(modal.$modal.find("form"))
+    var that = this
+    form.setOnSuccesAction(function (e) {
+      that._refreshGeoConstraintList($item)()
+      modal.hide()
+    })
+    modal.setConfirmButtonAction(function (e) {
+      form.sendData(e, params["new"] ? "post" : "put")
+    })
+
+    ga.ui.initRadioCheckbox(modal.$modal.find("form"))
+
+    // remove for_view and for_editing checkbox if 'editing' module is not active
+    if (_.indexOf(ga.settings.G3WADMIN_LOCAL_MORE_APPS, "editing") == -1) {
+      modal.$modal.find("#div_id_for_view").hide()
+      modal.$modal.find("#div_id_for_editing").hide()
+    }
+
+    modal.show()
+
+    // populate layer select
+    $.getJSON(ga.Qdjango.geoconstraint_urls.layer.info + params["layer_pk"] + "/", function (data) {
+      var $select = modal.$modal.find('[name="constraint_layer"]')
+      $.each(data["results"], function (key, val) {
+        var $option = $('<option value="' + val["pk"] + '">' + val["name"] + "</option>")
+        if (!_.isNull(res)) {
+          if (val["pk"] == res["constraint_layer"] && _.indexOf(ga.Qdjango.geoconstraint_data.layer_types, val["layer_type"]) != -1) $option.attr("selected", "selected")
+        }
+        $select.append($option)
+      })
+    })
+
+    // populate form in update
+    if (!params["new"]) {
+      $.each(res, function (key, val) {
+        modal.$modal.find("[name=" + key + "]").val(val)
+        // init icheck
+        if (key == "for_view" || key == "for_editing") {
+          if (val) {
+            modal.$modal.find("#id_" + key).iCheck("check")
           } else {
-            modal.$modal.find("[name='for_editing']").val("false")
+            modal.$modal.find("#id_" + key).iCheck("uncheck")
           }
-        })
-
-        // set action for confirm btn
-        var form = new ga.forms.form(modal.$modal.find('form'));
-        var that = this;
-        form.setOnSuccesAction(function(e){
-            that._refreshGeoConstraintList($item)();
-            modal.hide();
-        });
-        modal.setConfirmButtonAction(function(e){
-            form.sendData(e, params['new'] ? 'post' : 'put');
-        });
-
-        ga.ui.initRadioCheckbox(modal.$modal.find("form"))
-
-        // remove for_view and for_editing checkbox if 'editing' module is not active
-        if (_.indexOf(ga.settings.G3WADMIN_LOCAL_MORE_APPS, 'editing') == -1){
-            modal.$modal.find("#div_id_for_view").hide();
-            modal.$modal.find("#div_id_for_editing").hide();
         }
+      })
+    }
+  },
 
-        modal.show();
-
-        // populate layer select
-        $.getJSON(ga.Qdjango.geoconstraint_urls.layer.info+params['layer_pk']+"/", function( data ) {
-            var $select = modal.$modal.find('[name="constraint_layer"]');
-            $.each(data['results'], function(key, val){
-                var $option = $('<option value="'+val['pk']+'">'+val['name']+'</option>');
-                if (!_.isNull(res)) {
-                    if (val['pk'] == res['constraint_layer'] && _.indexOf(ga.Qdjango.geoconstraint_data.layer_types, val['layer_type']) != -1)
-                        $option.attr('selected','selected');
-                }
-               $select.append($option);
-            });
-        });
-
-        // populate form in update
-        if (!params["new"]) {
-          $.each(res, function (key, val) {
-            modal.$modal.find("[name=" + key + "]").val(val)
-            // init icheck
-            if (key == "for_view" || key == "for_editing") {
-              if (val) {
-                modal.$modal.find("#id_" + key).iCheck("check")
-              } else {
-                modal.$modal.find("#id_" + key).iCheck("uncheck")
-              }
-            }
-          })
-        }
-    },
-
-    /*
+  /*
     Build constraints table
      */
-    _geoConstraintsTable: function(layer_pk, res){
-        var $div = $('<div style="margin-left:40px;">');
+  _geoConstraintsTable: function (layer_pk, res) {
+    var $div = $('<div style="margin-left:40px;">')
 
-        // add new constraint btn
-        $newConstraint = $('<a href="#" class="btn btn-default btn-sm"><i class="ion ion-plus-circled"></i> '+gettext('New geo constraint')+'</a>');
-        $newConstraint.on('click', function(){
-            ga.widget._geoConstraintForm($newConstraint, null,
-                {
-                    'modal-title': gettext('New constraint'),
-                    'layer_pk': layer_pk,
-                    'new': true,
-                    'parent_click': $(this)
-                });
-        });
-        $div.append($newConstraint);
+    // add new constraint btn
+    $newConstraint = $('<a href="#" class="btn btn-default btn-sm"><i class="ion ion-plus-circled"></i> ' + gettext("New geo constraint") + "</a>")
+    $newConstraint.on("click", function () {
+      ga.widget._geoConstraintForm($newConstraint, null, {
+        "modal-title": gettext("New constraint"),
+        layer_pk: layer_pk,
+        new: true,
+        parent_click: $(this),
+      })
+    })
+    $div.append($newConstraint)
 
-        // add table contraints saved
-        var $table = $('<table class="table">');
-        var $tbody = $table.append($('<tbody>'));
-        var thead = '<thead>\n' +
-            '            <tr>\n' +
-            '                <th style="width:180px;">'+gettext('Actions')+'</th>\n' +
-            '                <th>'+gettext('Layer constraint')+'</th>\n' +
-            '                <th>'+gettext('Description')+'</th>\n';
-            if (_.indexOf(ga.settings.G3WADMIN_LOCAL_MORE_APPS, 'editing') != -1) {
-              thead += '                <th>' + gettext('For visualization') + '</th>\n' +
-              '                <th>' + gettext('For editing') + '</th>\n';
-            }
-            thead += '                <th>'+gettext('Rules count')+'</th>\n' +
-            '            </tr>\n' +
-            '        </thead>'
-
-        $table.append(thead);
-
-        // add constraints
-        var constraint_res = {};
-        $.each(res['results'], function(k, v){
-            constraint_res[v['pk']] = v;
-            var editDisplay = v['constraint_rule_count'] > 0 ? 'none': 'display';
-            var for_view = v["for_view"] ? '<span class="fa fa-check-circle" style="color: orange"></span>' : ""
-            var for_editing = v["for_editing"] ? '<span class="fa fa-check-circle" style="color: orange"></span>' : ""
-            var constraintContext = ""
-            if (for_view != "") constraintContext += "v";
-            if (for_editing != "") constraintContext += "e";
-            var tr = '<tr id="constraint-item-'+v['pk']+'">\n' +
-            '                <td>'+ga.tpl.geoConstraintActions({
-                    'layerId': layer_pk,
-                    'constraintPk': v['pk'],
-                    'constraintContext': constraintContext,
-                    'editDisplay': editDisplay
-            })+'</td>\n' +
-            '                <td>'+v['constraint_layer_name']+'</td>\n' +
-            '                <td>'+v['description']+'</td>\n';
-            if (_.indexOf(ga.settings.G3WADMIN_LOCAL_MORE_APPS, 'editing') != -1) {
-              tr += '                <td>' + for_view + '</td>\n' +
-                  '                <td>' + for_editing + '</td>\n';
-            }
-            tr += '                <td>'+v['constraint_rule_count']+'</td>\n' +
-            '            </tr>\n'
-            $tbody.append(tr);
-        });
-
-        // add actions to elements action
-        $tbody.find('[data-geoconstraint-action-mode="update"]').on('click', function(e){
-            ga.widget._geoConstraintForm($newConstraint, constraint_res[$(this).attr('data-geoconstraint-pk')],
-                {
-                    'modal-title': gettext('Update constraint'),
-                    'layer_pk': layer_pk,
-                    //'constraint_pk': $(this).attr('data-contraint-pk'),
-                    'constraint_context': $(this).attr("data-geoconstraint-context"),
-                    'new': false,
-                    'parent_click': $(this)
-                });
-        });
-
-        $tbody.find('[data-geoconstraint-action-mode="rules"]').on('click', function(e){
-            ga.widget._geoConstraintRulesForm($newConstraint, null,
-                {
-                    'modal-title': gettext('Geo Constraint Rules'),
-                    'constraint_pk': $(this).attr('data-geoconstraint-pk'),
-                    'constraint_context': $(this).attr("data-geoconstraint-context"),
-                    'layer_pk': layer_pk,
-                    'parent_click': $(this)
-                });
-        });
-
-        $div.append($table);
-
-
-        return $div;
-    },
-
-    geoConstraintsList: function($datatable, $item, refresh){
-
-        try {
-
-            var params = ga.utils.getDataAttrs($item, this._geoConstrantsListParams);
-            if (_.isUndefined(params['geoconstraints-list-url'])) {
-                throw new Error('Attribute data-geoconstraints-list-url not defined');
-            }
-
-            // get tr row parent
-            refresh = _.isUndefined(refresh) ? false : true;
-
-            var tr = $item.closest('tr');
-            var row = $datatable.row(tr);
-            var idx = $.inArray( tr.attr('id'), [] );
-
-            var getDetail = function(){
-                $.ajax({
-                     method: 'get',
-                     url: params['geoconstraints-list-url'],
-                     success: function (res) {
-                        row.child(g3wadmin.widget._geoConstraintsTable(params['geoconstraints-layer-pk'],res)).show();
-                     },
-                     complete: function(){
-                         var status = arguments[1];
-                         if (status == 'success') {
-                            ga.ui.initRadioCheckbox(row.child());
-                         }
-                     },
-                     error: function (xhr, textStatus, errorMessage) {
-                         ga.widget.showError(ga.utils.buildAjaxErrorMessage(xhr.status, errorMessage));
-                     }
-                });
-            }
-
-            if (refresh){
-                getDetail();
-            } else {
-                if ( row.child.isShown() ) {
-                    tr.removeClass( 'details' );
-                    row.child.hide();
-                } else {
-                    tr.addClass( 'details' );
-
-                    // ajax call to get deatail data
-                    getDetail();
-                }
-            }
-
-
-
-        } catch (e) {
-            this.showError(e.message);
-        }
+    // add table contraints saved
+    var $table = $('<table class="table">')
+    var $tbody = $table.append($("<tbody>"))
+    var thead =
+      "<thead>\n" +
+      "            <tr>\n" +
+      '                <th style="width:180px;">' +
+      gettext("Actions") +
+      "</th>\n" +
+      "                <th>" +
+      gettext("Layer constraint") +
+      "</th>\n" +
+      "                <th>" +
+      gettext("Description") +
+      "</th>\n"
+    if (_.indexOf(ga.settings.G3WADMIN_LOCAL_MORE_APPS, "editing") != -1) {
+      thead += "                <th>" + gettext("For visualization") + "</th>\n" + "                <th>" + gettext("For editing") + "</th>\n"
     }
-});
+    thead += "                <th>" + gettext("Rules count") + "</th>\n" + "            </tr>\n" + "        </thead>"
+
+    $table.append(thead)
+
+    // add constraints
+    var constraint_res = {}
+    $.each(res["results"], function (k, v) {
+      constraint_res[v["pk"]] = v
+      var editDisplay = v["constraint_rule_count"] > 0 ? "none" : "display"
+      var for_view = v["for_view"] ? '<span class="fa fa-check-circle" style="color: orange"></span>' : ""
+      var for_editing = v["for_editing"] ? '<span class="fa fa-check-circle" style="color: orange"></span>' : ""
+      var constraintContext = ""
+      if (for_view != "") constraintContext += "v"
+      if (for_editing != "") constraintContext += "e"
+      var tr =
+        '<tr id="constraint-item-' +
+        v["pk"] +
+        '">\n' +
+        "                <td>" +
+        ga.tpl.geoConstraintActions({
+          layerId: layer_pk,
+          constraintPk: v["pk"],
+          constraintContext: constraintContext,
+          editDisplay: editDisplay,
+        }) +
+        "</td>\n" +
+        "                <td>" +
+        v["constraint_layer_name"] +
+        "</td>\n" +
+        "                <td>" +
+        v["description"] +
+        "</td>\n"
+      if (_.indexOf(ga.settings.G3WADMIN_LOCAL_MORE_APPS, "editing") != -1) {
+        tr += "                <td>" + for_view + "</td>\n" + "                <td>" + for_editing + "</td>\n"
+      }
+      tr += "                <td>" + v["constraint_rule_count"] + "</td>\n" + "            </tr>\n"
+      $tbody.append(tr)
+    })
+
+    // add actions to elements action
+    $tbody.find('[data-geoconstraint-action-mode="update"]').on("click", function (e) {
+      ga.widget._geoConstraintForm($newConstraint, constraint_res[$(this).attr("data-geoconstraint-pk")], {
+        "modal-title": gettext("Update constraint"),
+        layer_pk: layer_pk,
+        //'constraint_pk': $(this).attr('data-contraint-pk'),
+        constraint_context: $(this).attr("data-geoconstraint-context"),
+        new: false,
+        parent_click: $(this),
+      })
+    })
+
+    $tbody.find('[data-geoconstraint-action-mode="rules"]').on("click", function (e) {
+      ga.widget._geoConstraintRulesForm($newConstraint, null, {
+        "modal-title": gettext("Geo Constraint Rules"),
+        constraint_pk: $(this).attr("data-geoconstraint-pk"),
+        constraint_context: $(this).attr("data-geoconstraint-context"),
+        layer_pk: layer_pk,
+        parent_click: $(this),
+      })
+    })
+
+    $div.append($table)
+
+    return $div
+  },
+
+  geoConstraintsList: function ($datatable, $item, refresh) {
+    try {
+      var params = ga.utils.getDataAttrs($item, this._geoConstrantsListParams)
+      if (_.isUndefined(params["geoconstraints-list-url"])) {
+        throw new Error("Attribute data-geoconstraints-list-url not defined")
+      }
+
+      // get tr row parent
+      refresh = _.isUndefined(refresh) ? false : true
+
+      var tr = $item.closest("tr")
+      var row = $datatable.row(tr)
+      var idx = $.inArray(tr.attr("id"), [])
+
+      var getDetail = function () {
+        $.ajax({
+          method: "get",
+          url: params["geoconstraints-list-url"],
+          success: function (res) {
+            row.child(g3wadmin.widget._geoConstraintsTable(params["geoconstraints-layer-pk"], res)).show()
+          },
+          complete: function () {
+            var status = arguments[1]
+            if (status == "success") {
+              ga.ui.initRadioCheckbox(row.child())
+            }
+          },
+          error: function (xhr, textStatus, errorMessage) {
+            ga.widget.showError(ga.utils.buildAjaxErrorMessage(xhr.status, errorMessage))
+          },
+        })
+      }
+
+      if (refresh) {
+        getDetail()
+      } else {
+        if (row.child.isShown()) {
+          tr.removeClass("details")
+          row.child.hide()
+        } else {
+          tr.addClass("details")
+
+          // ajax call to get deatail data
+          getDetail()
+        }
+      }
+    } catch (e) {
+      this.showError(e.message)
+    }
+  },
+})
 
 // activate widget: append to ga.ui.before_datatable_callbacks for to call it before DatTable init
-ga.ui.before_datatable_callbacks.push(function($widgetItem){
-  $widgetItem.find('[data-widget-type="geoConstraintsList"]').on('click', function (e) {
-        var $datatable = $(this).parents('table').DataTable();
-        ga.widget.geoConstraintsList($datatable, $(this));
-    });
-});
+ga.ui.before_datatable_callbacks.push(function ($widgetItem) {
+  $widgetItem.find('[data-widget-type="geoConstraintsList"]').on("click", function (e) {
+    var $datatable = $(this).parents("table").DataTable()
+    ga.widget.geoConstraintsList($datatable, $(this))
+  })
+})
 
+// Add ColumnACL manager widget
+// --------------------------------
+_.extend(g3wadmin.widget, {
+  _columnAclManagerParams: ["column-acl-list-url", "column-acl-layer-pk", "column-acl-fields-url", "info-layer-user", "info-layer-authgroup"],
+  _columnAclDetailUrl: "/" + SITE_PREFIX_URL + "qdjango/api/column_acl/detail/",
+  /**
+   * Creates the columns acl table
+   */
+  _columnAclTable: function (res, $datatable, $item) {
+    var params = ga.utils.getDataAttrs($item, this._columnAclManagerParams)
+    let column_acl_list_url = params["column-acl-list-url"]
+    if (_.isUndefined(params["column-acl-layer-pk"])) {
+      throw new Error("Attribute column-acl-layer-pk not defined")
+    }
+
+    let $div = $('<div style="margin-left:40px;">')
+
+    // add new acl btn
+    $newColumnAcl = $('<a href="#" class="btn btn-sm btn-default"><i class="ion ion-plus-circled"></i> ' + gettext("Create New Column Level Constraint") + "</a>")
+    $newColumnAcl.on("click", function () {
+      ga.widget._newColumnAclForm($datatable, $newColumnAcl, params, {
+        "modal-title": gettext("New Column Level Constraint"),
+        new: true,
+        parent_click: $(this),
+      })
+    })
+    $div.append($newColumnAcl)
+
+    let $table = $('<table class="table">')
+    $table.append(
+      `<thead>
+        <tr>
+            <th style="width:180px;">${gettext("Actions")}</th>
+            <th>${gettext("User")}</th>
+            <th>${gettext("Group")}</th>
+            <th>${gettext("Restricted Fields")}</th>
+        </tr>
+      </thead>`
+    )
+    let $tbody = $table.append($("<tbody>"))
+    let columnAclCount = res["results"].length
+
+    $.each(res["results"], function (k, v) {
+      let actions =  `<span class="col-xs-2 icon">
+            <a href="#"
+                data-toggle="tooltip" data-placement="top"
+                title="${gettext("Delete Column Level Constraint from the layer.")}"
+                data-column-acl-pk="${v["pk"]}"
+                data-column-acl-action-mode="delete"
+            >
+                <i class="ion ion-fa ion-trash-b"></i>
+            </a>
+        </span>`
+      actions += `
+            <span class="col-xs-2 icon">
+                <a href="#" data-column-acl-pk="${v["pk"]}"
+                    data-toggle="tooltip" data-placement="top"
+                    title="${gettext("Edit Column Level Constraint.")}"
+                    data-column-acl-action-mode="edit"
+                    data-column-acl-record='${JSON.stringify(v).replaceAll("'", "'")}'
+                >
+                    <i class="ion ion-edit"></i>
+                </a>
+            </span>
+             `
+
+      $tbody.append(`
+            <tr>
+                <td>${actions}</td>
+                <td>${v["username"]}</td>
+                <td>${v["groupname"]}</td>
+                <td>${v["restricted_fields"]}</td>
+            </tr>`)
+    })
+
+    let that = this
+
+    // Add events to actions
+    $tbody.find('[data-column-acl-action-mode="delete"]').on("click", function (e) {
+      let column_acl = $(e.currentTarget).attr("data-column-acl-pk")
+      let actionDelete = function () {
+        $.ajax({
+          method: "delete",
+          url: ga.widget._columnAclDetailUrl + column_acl + "/",
+          success: function (res) {
+            ga.widget.showColumnAclManagerList($datatable, $item, true)
+            modal.hide()
+          },
+          complete: function () {
+            // Nothing to do
+          },
+          error: function (xhr, textStatus, errorMessage) {
+            try {
+              errorMessage = xhr.responseJSON["error"]["message"]
+            } catch (error) {
+              // Ignore
+            }
+            ga.widget.showError(ga.utils.buildAjaxErrorMessage(xhr.status, errorMessage))
+          },
+        })
+      }
+      // open modal to confirm delete
+      var modal = ga.ui.buildDefaultModal({
+        modalTitle: gettext("Delete Column Level Constraint"),
+        modalBody: `${gettext("Are you sure to delete column constraint")} #<strong>${column_acl}</strong>?`,
+        closeButtonText: "No",
+      })
+
+      modal.setConfirmButtonAction(actionDelete)
+      modal.show()
+    })
+
+    $tbody.find('[data-column-acl-action-mode="edit"]').on("click", function (e) {
+      let column_acl = $(e.currentTarget).attr("data-column-acl-pk")
+      let column_acl_record = $(e.currentTarget).data("column-acl-record")
+      ga.widget._newColumnAclForm($datatable, $newColumnAcl, params, {
+        "modal-title": gettext("Edit Column Level Constraint") + " " + column_acl,
+        new: false,
+        column_acl_record: column_acl_record,
+        parent_click: $(this),
+      })
+    })
+
+    $div.append($table)
+    return $div
+  },
+
+  /**
+   * Display the column ACL list
+   */
+  showColumnAclManagerList: function ($datatable, $item, refresh) {
+    try {
+      var params = ga.utils.getDataAttrs($item, this._columnAclManagerParams)
+      if (_.isUndefined(params["column-acl-list-url"])) {
+        throw new Error("Attribute column-acl-list-url not defined")
+      }
+
+      // get tr row parent
+      refresh = _.isUndefined(refresh) ? false : true
+
+      var tr = $item.closest("tr")
+      var row = $datatable.row(tr)
+      var idx = $.inArray(tr.attr("id"), [])
+
+      var getDetail = function () {
+        $.ajax({
+          method: "get",
+          url: params["column-acl-list-url"],
+          success: function (res) {
+            res["column-acl-list"]
+            row.child(g3wadmin.widget._columnAclTable(res, $datatable, $item)).show()
+          },
+          complete: function () {
+            var status = arguments[1]
+            if (status == "success") {
+              ga.ui.initRadioCheckbox(row.child())
+            }
+          },
+          error: function (xhr, textStatus, errorMessage) {
+            ga.widget.showError(ga.utils.buildAjaxErrorMessage(xhr.status, errorMessage))
+          },
+        })
+      }
+
+      if (refresh) {
+        getDetail()
+      } else {
+        if (row.child.isShown()) {
+          tr.removeClass("details")
+          row.child.hide()
+        } else {
+          tr.addClass("details")
+
+          // ajax call to get detail data
+          getDetail()
+        }
+      }
+    } catch (e) {
+      this.showError(e.message)
+    }
+    },
+
+  /**
+   * Creates the add new/edit column ACL form
+   *
+   */
+  _newColumnAclForm: function ($datatable, $item, params, form_params) {
+    let isNew = form_params["new"]
+    params["layerId"] = params["column-acl-layer-pk"]
+
+    if (isNew) {
+      params["form_action"] = params["column-acl-list-url"]
+      params["title"] = gettext("Define hidden columns for a user or a group.")
+      params["modal_title"] = gettext("Create a new Column Level Constraint.")
+      params["columnAclPk"] = ""
+    } else {
+      params["form_action"] = ga.widget._columnAclDetailUrl + form_params["column_acl_record"]["pk"] + "/"
+      params["title"] = gettext("Edit Column Level Constraint.")
+      params["modal_title"] = params["title"] + "#" + form_params["column_acl_record"]["pk"]
+      params["columnAclPk"] = form_params["column_acl_record"]["pk"]
+    }
+
+    let modal = (ga.currentModal = ga.ui.buildDefaultModal({
+      modalTitle: params["modal_title"],
+      modalBody: ga.tpl._newColumnAclForm(params),
+      modalSize: _.isUndefined(params["modal-size"]) ? "" : params["modal-size"],
+    }))
+
+    modal.data.$evoker = $item
+
+    // Populate selects
+    $.ajax({
+      method: "get",
+      url: params["column-acl-fields-url"],
+      success: function (res) {
+        let field_names = res["field_names"]
+        let $el = $('[name="restricted_fields"]')
+        $el.empty() // remove old options
+        $.each(field_names, function (key, value) {
+          $el.append($("<option></option>").attr("value", value).text(value))
+        })
+        if (!isNew) {
+          if (form_params["column_acl_record"]["restricted_fields"].length != 0) {
+            $el.val(form_params["column_acl_record"]["restricted_fields"])
+          }
+        }
+      },
+      complete: function () {},
+      error: function (xhr, textStatus, errorMessage) {
+        ga.widget.showError(ga.utils.buildAjaxErrorMessage(xhr.status, errorMessage))
+      },
+    })
+
+    $.ajax({
+      method: "get",
+      url: params["info-layer-user"],
+      success: function (res) {
+        let users = res["results"]
+        let $el = $('[name="user"]')
+        $el.empty() // remove old options
+        $el.append($("<option></option>").attr("value", "").text("--"))
+        $.each(users, function (key, value) {
+          $el.append($("<option></option>").attr("value", value["pk"]).text(value["username"]))
+        })
+        if (!isNew) {
+          if (form_params["column_acl_record"]["user"] != "") {
+            $el.val(form_params["column_acl_record"]["user"])
+          }
+        }
+      },
+      complete: function () {},
+      error: function (xhr, textStatus, errorMessage) {
+        ga.widget.showError(ga.utils.buildAjaxErrorMessage(xhr.status, errorMessage))
+      },
+    })
+
+    $.ajax({
+      method: "get",
+      url: params["info-layer-authgroup"],
+      success: function (res) {
+        let groups = res["results"]
+        let $el = $('[name="group"]')
+        $el.empty() // remove old options
+        $el.append($("<option></option>").attr("value", "").text("--"))
+        $.each(groups, function (key, value) {
+          $el.append($("<option></option>").attr("value", value["pk"]).text(value["name"]))
+        })
+        if (!isNew) {
+          if (form_params["column_acl_record"]["group"] != "") {
+            $el.val(form_params["column_acl_record"]["group"])
+          }
+        }
+      },
+      complete: function () {},
+      error: function (xhr, textStatus, errorMessage) {
+        ga.widget.showError(ga.utils.buildAjaxErrorMessage(xhr.status, errorMessage))
+      },
+    })
+
+    // parent_click based on new or update
+    if (isNew) {
+      var $item = form_params["parent_click"].parents("tr").prev().find('[data-widget-type="columnAclManagerList"]')
+    } else {
+      var $item = $(form_params["parent_click"].parents("table")[0]).parents("tr").prev().find('[data-widget-type="columnAclManagerList"]')
+    }
+
+    // set action for confirm btn
+    var form = new ga.forms.form(modal.$modal.find("form"))
+    var that = this
+    form.setOnSuccesAction(function (e) {
+      ga.widget.showColumnAclManagerList($datatable, $item, true)
+      modal.hide()
+    })
+
+    modal.setConfirmButtonAction(function (e) {
+      let dt = form.getData("array")
+      // Validate
+      if (dt["user"] == "" && dt["group"] == "") {
+        let $ediv = form.$form.find(".form-errors")
+        $ediv.html("")
+        $ediv.append(`<h4 class="badge bg-red">${gettext("You must select a 'group' or a 'user'!")}</h4>`)
+        return
+      }
+
+      if (dt["user"] != "" && dt["group"] != "") {
+        let $ediv = form.$form.find(".form-errors")
+        $ediv.html("")
+        $ediv.append(`<h4 class="badge bg-red">${gettext("You cannot select both a 'group' and a 'user': they are mutually exclusive!")}</h4>`)
+        return
+      }
+
+      dt["restricted_fields"] = Array()
+
+      $.each(form.$form.serializeArray(), function (k, v) {
+        if (v["name"] == "restricted_fields") {
+          dt["restricted_fields"].push(v["value"])
+        }
+      })
+
+      if (dt["restricted_fields"].length == 0) {
+        let $ediv = form.$form.find(".form-errors")
+        $ediv.html("")
+        $ediv.append(`<h4 class="badge bg-red">${gettext("Hidden Fields is required!")}</h4>`)
+        return
+      }
+
+      form.sendData(e, form_params["new"] ? "post" : "patch", JSON.stringify(dt), "application/json; charset=UTF-8")
+    })
+
+    modal.show()
+  },
+})
+
+// activate widget: append to ga.ui.before_datatable_callbacks for to cala it before DatTable init
+ga.ui.before_datatable_callbacks.push(function ($widgetItem) {
+  $widgetItem.find('[data-widget-type="columnAclManagerList"]').on("click", function (e) {
+    var $datatable = $(this).parents("table").DataTable()
+    ga.widget.showColumnAclManagerList($datatable, $(this))
+  })
+})
+
+_.extend(g3wadmin.tpl, {
+  _newColumnAclForm: _.template(`
+        <form action="<%= form_action %>" id="form-new-column-acl-<%= layerId %>">
+        <input type="hidden" name="pk" value="<%= columnAclPk %>">
+        <input type="hidden" name="layer" value="<%= layerId %>">
+        <div class="form-errors"></div>
+            <div class="row">
+				<div class="col-md-12">
+					<div class="info"><%= title %></div>
+					<div class="form-group">
+						<label class="control-label ">${gettext("User (required if group is not set)")}</label>
+						<div class="controls ">
+							<select class="form-select" name="user" style="width:100%;"/>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label class="control-label ">${gettext("Group (required if user is not set)")}</label>
+						<div class="controls ">
+                        <select class="form-select" name="group" style="width:100%;" />
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label class="control-label ">${gettext("Hidden Fields (required)")}</label>
+						<div class="controls ">
+							<select class="form-select" multiple placeholder="${gettext("Select the hidden fields")}" required name="restricted_fields" style="width:100%;">
+                            </select>
+						</div>
+					</div>
+
+				</div>
+			</div>
+        </form>`),
+})
 
 // Add Style manager widget
 // --------------------------------
@@ -2511,12 +2878,12 @@ _.extend(g3wadmin.widget, {
 })
 
 // activate widget: append to ga.ui.before_datatable_callbacks for to cala it before DatTable init
-ga.ui.before_datatable_callbacks.push(function($widgetItem){
+ga.ui.before_datatable_callbacks.push(function ($widgetItem) {
   $widgetItem.find('[data-widget-type="styleManagerList"]').on("click", function (e) {
     var $datatable = $(this).parents("table").DataTable()
     ga.widget.showStyleManagerList($datatable, $(this))
   })
-});
+})
 
 _.extend(g3wadmin.tpl, {
   _newStyleForm: _.template(`

@@ -170,7 +170,6 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         options['legend_position'] = getattr(
             instance, 'legend_position', 'tab')
 
-
         return options
 
     def _set_ows_method(self, instance):
@@ -278,7 +277,6 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
                     r.layer().id(): r.currentStyle
                 })
 
-
             ret['map_themes'].append(theme)
 
     def to_representation(self, instance):
@@ -301,12 +299,11 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         if self.request:
             view_layer_ids = list(
                 set([l.qgs_layer_id for l in get_objects_for_user(self.request.user, 'qdjango.view_layer', Layer).
-                    filter(project=instance)]).union(set(
-                    [l.qgs_layer_id for l in get_objects_for_user(get_anonymous_user(), 'qdjango.view_layer', Layer).
-                        filter(project=instance)]
-                ))
+                     filter(project=instance)]).union(set(
+                         [l.qgs_layer_id for l in get_objects_for_user(get_anonymous_user(), 'qdjango.view_layer', Layer).
+                          filter(project=instance)]
+                     ))
             )
-
 
         # add layers data, widgets
         # init properties
@@ -345,7 +342,7 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
                 try:
                     layer_serialized = LayerSerializer(
-                        layers[layer['id']], qgs_project=qgs_project)
+                        layers[layer['id']], qgs_project=qgs_project, request=self.request)
                 except KeyError:
                     logger.error(
                         'Layer %s is missing from QGIS project!' % layer['id'])
@@ -373,7 +370,8 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
                 del(layer_serialized_data['vectorjoins'])
 
                 if qgs_project.layerTreeRoot().hasCustomLayerOrder():
-                    ret['layers'].update({layer_serialized_data['id']: layer_serialized_data})
+                    ret['layers'].update(
+                        {layer_serialized_data['id']: layer_serialized_data})
                 else:
                     ret['layers'].append(layer_serialized_data)
 
@@ -413,7 +411,8 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
                     new_order.append(lsd)
 
             # get layers not in customLayerOrder to add an the end of return layers list
-            to_add_to_end = set(ret['layers'].keys()) - set(custom_layer_order_ids)
+            to_add_to_end = set(ret['layers'].keys()) - \
+                set(custom_layer_order_ids)
             for qgs_layer_id in list(to_add_to_end):
                 lsd = ret['layers'][qgs_layer_id]
                 lsd['multilayer'] = meta_layer.getCurrentByLayer(
@@ -464,7 +463,6 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         # ----------------------------------
         self.set_map_themes(ret, qgs_project)
 
-
         # reset tokenfilter by session
         self.reset_filtertoken()
 
@@ -482,7 +480,7 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         )
 
 
-class LayerSerializer(serializers.ModelSerializer):
+class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
     id = serializers.CharField(source='qgs_layer_id')
     minscale = serializers.IntegerField(source='min_scale')
@@ -535,11 +533,14 @@ class LayerSerializer(serializers.ModelSerializer):
         columns = mapLayerAttributes(
             instance) if instance.database_columns else []
 
-        # evalute fields to show or not by qgis project
+        # evaluate fields to show or not by qgis project
         column_to_exclude = eval(
             instance.exclude_attribute_wms) if instance.exclude_attribute_wms else []
+
+        visible_columns = instance.visible_fields_for_user(self.request.user)
         for column in columns:
-            column['show'] = False if column['name'] in column_to_exclude else True
+            column['show'] = (column['name'] in visible_columns) and (
+                column['name'] not in column_to_exclude)
         return columns
 
     def get_ows(self, instance):
@@ -722,7 +723,6 @@ class WidgetSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         ret = super(WidgetSerializer, self).to_representation(instance)
         ret['type'] = instance.widget_type
-
 
         # get edittype
         edittypes = eval(self.layer.edittypes)

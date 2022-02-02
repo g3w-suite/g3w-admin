@@ -179,6 +179,19 @@
                                             <span class="label label-info label-action-layer">{{ object.getConstraintsNumber }}</span>
                                         </a>
                                     </span>
+
+                                    {% comment %} Add Column ACL management {% endcomment %}
+                                    <span class="col-xs-1 icon">
+                                        <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Hide columns by User/Groups' %}" data-widget-type="columnAclManagerList" data-column-acl-layer-pk="{{ object.pk }}"
+                                        data-column-acl-list-url="{% url 'qdjango-column-acl-api-filter-by-layer-id' object.pk %}"
+                                        data-column-acl-fields-url="{% url 'qdjango-column-acl-api-fields' object.pk %}"
+                                        data-info-layer-user="{% url 'qdjango-api-info-layer-user' object.pk %}"
+                                        data-info-layer-authgroup="{% url 'qdjango-api-info-layer-authgroup' object.pk %}"
+                                         ><i class="fa fa-filter"></i>
+                                            <span class="label label-info label-action-layer">{{ object.getColumnAclNumber }}</span>
+                                        </a>
+                                    </span>
+
                                     <span class="col-xs-1 icon">
                                         <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Widgets list' %}" data-widget-type="detailItemDataTable" data-detail-url="{% url 'qdjango-project-layer-widgets' group.slug object.project.slug object.slug %}" ><i class="ion ion-gear-b"></i>
                                             <span class="label label-info label-action-layer">{{ object.getWidgetsNumber }}</span></a>

@@ -10,7 +10,7 @@ from qdjango.vector import QGISLayerVectorViewMixin
 from qdjango.api.constraints.filters import SingleLayerSubsetStringConstraintFilter, \
     SingleLayerExpressionConstraintFilter, \
     GeoConstraintsFilter
-from qdjango.api.layers.filters import RelationOneToManyFilter, SingleLayerSessionTokenFilter, FidFilter
+from qdjango.api.layers.filters import RelationOneToManyFilter, SingleLayerSessionTokenFilter, FidFilter, ColumnAclFilter
 from django.views.decorators.csrf import csrf_exempt
 
 
@@ -29,6 +29,7 @@ class QGISEditingLayerVectorView(QGISLayerVectorViewMixin, BaseEditingVectorOnMo
         FieldFilterBackend,
         RelationOneToManyFilter,
         SingleLayerSessionTokenFilter,
+        ColumnAclFilter,
         FidFilter
     )
 
@@ -41,7 +42,7 @@ class QGISEditingLayerVectorView(QGISLayerVectorViewMixin, BaseEditingVectorOnMo
 
         # build new url to save into db
         user_media = USERMEDIAHANDLER_CLASSES['qdjango'](layer=self.layer, metadata_layer=metadata_layer,
-                                      feature=geojson_feature, request=self.request)
+                                                         feature=geojson_feature, request=self.request)
         user_media.new_value()
 
 
@@ -49,12 +50,12 @@ LAYERCOMMITVECTORVIEW_CLASSES = {
     'qdjango': QGISEditingLayerVectorView
 }
 
+
 @csrf_exempt  # put exempt here because as_view method is outside url bootstrap declaration
 def layer_commit_vector_view(request, project_type, project_id, layer_name, *args, **kwargs):
 
     # instance module vector view
     view = LAYERCOMMITVECTORVIEW_CLASSES[project_type].as_view()
-    kwargs.update({'project_type': project_type, 'project_id': project_id, 'layer_name': layer_name})
+    kwargs.update({'project_type': project_type,
+                   'project_id': project_id, 'layer_name': layer_name})
     return view(request, *args, **kwargs)
-
-
