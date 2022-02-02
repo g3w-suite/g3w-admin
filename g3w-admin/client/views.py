@@ -10,6 +10,7 @@ from django.urls import reverse
 from django.contrib.auth.views import redirect_to_login
 from django.apps import apps
 from django.core.exceptions import PermissionDenied
+from django.shortcuts import resolve_url
 from rest_framework.renderers import JSONRenderer
 from core.api.serializers import GroupSerializer, Group
 from core.api.views import USERMEDIAHANDLER_CLASSES
@@ -92,7 +93,7 @@ class ClientView(TemplateView):
         # login_url
         login_url = None
         try:
-            login_url = reverse('login') + '?next={}'.format(reverse('group-project-map', kwargs={
+            login_url = resolve_url(settings.LOGIN_URL) + '?next={}'.format(reverse('group-project-map', kwargs={
                 'group_slug': kwargs['group_slug'],
                 'project_type': kwargs['project_type'],
                 'project_id': self.project.pk
