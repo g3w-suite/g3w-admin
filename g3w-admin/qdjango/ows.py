@@ -10,13 +10,14 @@
 
 import os
 import logging
+import urllib.parse
 from django.http import HttpResponse, Http404, HttpResponseServerError
 from django.conf import settings
 from django.http.request import QueryDict
 from django.db.models import Q
 from django.core.cache import cache
 
-from qgis.server import QgsBufferServerRequest, QgsBufferServerResponse
+from qgis.server import QgsBufferServerRequest, QgsBufferServerResponse, QgsServerProjectUtils
 
 from qdjango.apps import QGS_SERVER, get_qgs_project
 
@@ -115,6 +116,39 @@ class OWSRequestHandler(OWSRequestHandlerBase):
         QGS_SERVER.djrequest = request
         QGS_SERVER.user = request.user
         QGS_SERVER.project = self.project
+
+
+        # For GetPrint QGIS functions that rely on layers visibility, we need to check
+        # the layers from LAYERS
+        use_ids = QgsServerProjectUtils.wmsUseLayerIds(qgs_project)
+        tree_root = qgs_project.layerTreeRoot()
+
+        # Loop through the layers and make them visible
+        for layer_name in qgs_request.queryParameter('LAYERS').split(','):
+            layer_name = urllib.parse.unquote(layer_name)
+            layer = None
+            if use_ids:
+                layer = qgs_project.mapLayer(layer_name)
+            else:
+                try:
+                    layer = qgs_project.mapLayersByName(layer_name)[0]
+                except:  # short name?
+                    for l in qgs_project.mapLayers().values():
+                        if l.shortName() == layer_name:
+                            layer = l
+                            break
+
+            if layer is None:
+                logger.warning(
+                    'Could not find layer "{}" when configuring OWS call'.format(layer_name))
+            else:
+                layer_node = tree_root.findLayer(layer)
+                if layer_node is not None:
+                    layer_node.setItemVisibilityCheckedParentRecursive(True)
+                else:
+                    logger.warning(
+                        'Could not find layer tree node "{}" when configuring OWS call'.format(layer_name))
+
 
         qgs_response = QgsBufferServerResponse()
         try:
