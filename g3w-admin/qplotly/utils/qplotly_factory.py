@@ -102,11 +102,12 @@ class QplotlyFactoring(PlotFactory):
 
         # Note: we keep things nice and efficient and only iterate a single time over the layer!
 
-        self.metadata_layer = MetadataVectorLayer(
-            self.source_layer,
-            self.layer.origname,
-            layer_id=self.layer.pk
-        )
+        if self.layer:
+            self.metadata_layer = MetadataVectorLayer(
+                self.source_layer,
+                self.layer.origname,
+                layer_id=self.layer.pk
+            )
 
         if not self.context_generator:
             context = QgsExpressionContext()
