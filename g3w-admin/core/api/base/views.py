@@ -18,6 +18,7 @@ from qgis.core import (
     QgsWkbTypes,
     QgsVectorLayer,
     QgsJsonUtils,
+    QgsJsonExporter,
     QgsFeature
 )
 from rest_framework import exceptions, status
@@ -300,6 +301,8 @@ class BaseVectorOnModelApiView(G3WAPIView):
         :param kwargs:
         """
 
+        pass
+
     def reproject_feature(self, feature, to_layer=False):
         """
         Reproject single geometry feature
@@ -316,20 +319,22 @@ class BaseVectorOnModelApiView(G3WAPIView):
             from_srid = self.layer.srid
             to_srid = self.layer.project.group.srid.auth_srid
 
+        to_srid = QgsCoordinateReferenceSystem(f'EPSG:{to_srid}')
+        from_srid = QgsCoordinateReferenceSystem(f'EPSG:{from_srid}')
+        ct = QgsCoordinateTransform(
+            from_srid, to_srid, QgsCoordinateTransformContext())
+
         # Use QGIS APi for QgsFeature instance
         if isinstance(feature, QgsFeature):
-            to_srid = QgsCoordinateReferenceSystem(f'EPSG:{to_srid}')
-            from_srid = QgsCoordinateReferenceSystem(f'EPSG:{from_srid}')
-            ct = QgsCoordinateTransform(
-                from_srid, to_srid, QgsCoordinateTransformContext())
             geometry = feature.geometry()
             geometry.transform(ct)
             feature.setGeometry(geometry)
         else:
-            geometry = GEOSGeometry(GEOSGeometry(json.dumps(
-                feature['geometry'])).wkt, srid=int(from_srid))
-            geometry.transform(to_srid)
-            feature['geometry'] = json.loads(geometry.json)
+            qgis_feature = QgsJsonUtils.stringToFeatureList(json.dumps(feature))[
+                0]
+            geometry = qgis_feature.geometry()
+            geometry.transform(ct)
+            feature['geometry'] = json.loads(geometry.asJson())
 
     def reproject_featurecollection(self, featurecollection, to_layer=False):
         """
@@ -453,7 +458,6 @@ class BaseVectorOnModelApiView(G3WAPIView):
             kwargs['page'] = request.query_params.get('page')
             kwargs['page_size'] = request.query_params.get('page_size', 10)
 
-
         # Make sure we have all attrs we need to build the server FID
         provider = self.metadata_layer.qgis_layer.dataProvider()
         if qgis_feature_request.flags() & QgsFeatureRequest.SubsetOfAttributes:
@@ -492,7 +496,8 @@ class BaseVectorOnModelApiView(G3WAPIView):
             res = pr.addFeatures(self.features)
 
             uniques = vl.uniqueValues(
-                self.metadata_layer.qgis_layer.fields().indexOf(request.query_params.get('unique'))
+                self.metadata_layer.qgis_layer.fields().indexOf(
+                    request.query_params.get('unique'))
             )
 
             values = []
@@ -528,7 +533,8 @@ class BaseVectorOnModelApiView(G3WAPIView):
                     export_features = True
 
             if export_features:
-                feature_collection = json.loads(ex.exportFeatures(self.features))
+                feature_collection = json.loads(
+                    ex.exportFeatures(self.features))
             else:
 
                 # to exclude QgsFormater used into QgsJsonjExporter is necessary build by hand single json feature
@@ -542,7 +548,8 @@ class BaseVectorOnModelApiView(G3WAPIView):
                 for feature in self.features:
                     fnames = [f.name() for f in feature.fields()]
                     feature_collection['features'].append(
-                        json.loads(ex.exportFeature(feature, dict(zip(fnames, feature.attributes()))))
+                        json.loads(ex.exportFeature(feature, dict(
+                            zip(fnames, feature.attributes()))))
                     )
 
             # Change media
