@@ -31,8 +31,8 @@ class BaseFilterBackend():
 
         :param request: Django request
         :type request: HttRequest
-        :param layer: MetadataVectorLayer instance
-        :type layer: Layer
+        :param metadata_layer: MetadataVectorLayer instance
+        :type metadata_layer: Layer
         :param qgis_feature_request: QGIS feature request
         :type qgis_feature_request: QgsFeatureRequest
         :param view: Django view, optional

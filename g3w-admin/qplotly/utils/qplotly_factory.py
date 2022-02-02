@@ -30,6 +30,7 @@ from qplotly.vendor.DataPlotly.core.plot_factory import (
 from qplotly.server_filters import ByFatherFeatursFilter
 
 from core.api.filters import IntersectsBBoxFilter
+from core.api.base.vector import MetadataVectorLayer
 
 from qdjango.api.layers.filters import (
     SingleLayerSessionTokenFilter,
@@ -62,6 +63,7 @@ class QplotlyFactoring(PlotFactory):
         del(kwargs['request'])
 
         self.layer = kwargs['layer']
+
         del (kwargs['layer'])
 
         # set data have to reproject
@@ -99,6 +101,12 @@ class QplotlyFactoring(PlotFactory):
         """
 
         # Note: we keep things nice and efficient and only iterate a single time over the layer!
+
+        self.metadata_layer = MetadataVectorLayer(
+            self.source_layer,
+            self.layer.origname,
+            layer_id=self.layer.pk
+        )
 
         if not self.context_generator:
             context = QgsExpressionContext()
@@ -161,7 +169,7 @@ class QplotlyFactoring(PlotFactory):
                 and self.djrequest \
                 and self.layer:
             for backend in self.filter_backends:
-                backend().apply_filter(self.djrequest, self.layer, request, self)
+                backend().apply_filter(self.djrequest, self.metadata_layer, request, self)
 
         request.setSubsetOfAttributes(attrs, self.source_layer.fields())
 
