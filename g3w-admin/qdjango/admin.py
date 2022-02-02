@@ -1,13 +1,13 @@
 import ast
 
 from django.contrib import admin, messages
-from django.forms import CharField, ModelForm, TextInput
+from django.forms import CharField, ModelForm, TextInput, MultipleChoiceField, ChoiceField
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.utils.translation import gettext
 from django.utils.translation import gettext_lazy as _
 from guardian.admin import GuardedModelAdmin
-
+from qgis.core import QgsVectorLayer
 from .models import *
 
 
@@ -20,6 +20,7 @@ class ProjectAdmin(GuardedModelAdmin):
         'title',
         'group'
     )
+
 
 @admin.register(Layer)
 class LayerAdmin(GuardedModelAdmin):
@@ -34,6 +35,44 @@ class LayerAdmin(GuardedModelAdmin):
         'title',
         'project'
     )
+
+
+class ColumnAclAdminForm(ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['restricted_fields'] = MultipleChoiceField(
+            choices=self.fields_choices)
+        self.fields['layer'].queryset = Layer.vectors.all()
+
+    def fields_choices(self):
+
+        try:
+            return [(n, n) for n in self.instance.layer.qgis_layer.fields().names()]
+        except:
+            return []
+
+
+@admin.register(ColumnAcl)
+class ColumnAclAdmin(GuardedModelAdmin):
+
+    form = ColumnAclAdminForm
+
+    list_display = (
+        'layer',
+        'project',
+        'user',
+        'group',
+        'restricted_fields'
+    )
+
+    def project(self, obj):
+        return obj.layer.project.title
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+    project.short_description = _('Project')
 
 
 @admin.register(Widget)
@@ -132,7 +171,7 @@ class QgisAuthAdmin(GuardedModelAdmin):
         if obj is not None and Layer.objects.filter(
                 datasource__contains=obj.id).count() > 0:
             msg = _("Authentication configuration {} can not be deleted because one or more layers are using it: {}").format(obj.id,
-                ', '.join([l.name for l in Layer.objects.filter(datasource__contains=obj.id)]))
+                                                                                                                             ', '.join([l.name for l in Layer.objects.filter(datasource__contains=obj.id)]))
             self.message_user(request, msg, messages.WARNING)
         return super(QgisAuthAdmin, self).has_delete_permission(request, obj) and (
             not obj or Layer.objects.filter(
@@ -166,4 +205,5 @@ class ConstraintSubsetStringRuleAdmin(admin.ModelAdmin):
 
 admin.site.register(SingleLayerConstraint, SingleLayerConstraintAdmin)
 admin.site.register(ConstraintExpressionRule, ConstraintExpressionRuleAdmin)
-admin.site.register(ConstraintSubsetStringRule, ConstraintSubsetStringRuleAdmin)
+admin.site.register(ConstraintSubsetStringRule,
+                    ConstraintSubsetStringRuleAdmin)

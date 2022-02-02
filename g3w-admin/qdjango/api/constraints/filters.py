@@ -17,11 +17,13 @@ from qdjango.models import ConstraintSubsetStringRule, ConstraintExpressionRule,
 class SingleLayerSubsetStringConstraintFilter(BaseFilterBackend):
     """A filter backend that applies a subset string"""
 
-    def apply_filter(self, request, qgis_layer, qgis_feature_request, view):
+    def apply_filter(self, request, metadata_layer, qgis_feature_request, view):
         """Apply the filter to the QGIS feature request or the layer's subset string
         Warning: if the filter alters the layer instance (for example by settings a subset
         string) make sure to restore the original state or to work on a clone.
         """
+
+        qgis_layer = metadata_layer.qgis_layer
 
         # get context from view, default 'v (view)'
         subset_string = ConstraintSubsetStringRule.get_rule_definition_for_user(request.user, view.layer.pk,
@@ -32,8 +34,8 @@ class SingleLayerSubsetStringConstraintFilter(BaseFilterBackend):
         original_subset_string = qgis_layer.subsetString()
         if original_subset_string:
             qgis_layer.setSubsetString("({original_subset_string}) AND ({extra_subset_string})"
-                .format(original_subset_string=original_subset_string,
-                        extra_subset_string=subset_string))
+                                       .format(original_subset_string=original_subset_string,
+                                               extra_subset_string=subset_string))
         else:
             qgis_layer.setSubsetString(subset_string)
 
@@ -41,22 +43,25 @@ class SingleLayerSubsetStringConstraintFilter(BaseFilterBackend):
 class SingleLayerExpressionConstraintFilter(BaseFilterBackend):
     """A filter backend that applies a QgsExpression"""
 
-    def apply_filter(self, request, qgis_layer, qgis_feature_request, view=None):
+    def apply_filter(self, request, metadata_layer, qgis_feature_request, view=None):
         """Apply the filter to the QGIS feature request or the layer's subset string
         Warning: if the filter alters the layer instance (for example by settings a subset
         string) make sure to restore the original state or to work on a clone.
         """
+
+        qgis_layer = metadata_layer.qgis_layer
 
         expression_text = ConstraintExpressionRule.get_rule_definition_for_user(request.user, view.layer.pk,
                                                                                 context=getattr(view, 'context', 'v'))
         if not expression_text:
             return
 
-        original_expression = qgis_feature_request.filterExpression() if qgis_feature_request is not None else None
+        original_expression = qgis_feature_request.filterExpression(
+        ) if qgis_feature_request is not None else None
         if original_expression is not None:
             qgis_feature_request.setFilterExpression("({original_expression}) AND ({extra_expression})"
-                .format(original_expression=original_expression.expression(),
-                        extra_expression=expression_text))
+                                                     .format(original_expression=original_expression.expression(),
+                                                             extra_expression=expression_text))
         else:
             qgis_feature_request.setFilterExpression(expression_text)
 
@@ -64,7 +69,9 @@ class SingleLayerExpressionConstraintFilter(BaseFilterBackend):
 class GeoConstraintsFilter(BaseFilterBackend):
     """A filter backend that applies constraints to the editing data request"""
 
-    def apply_filter(self, request, qgis_layer, qgis_feature_request, view):
+    def apply_filter(self, request, metadata_layer, qgis_feature_request, view):
+
+        qgis_layer = metadata_layer.qgis_layer
 
         rule_parts = []
 

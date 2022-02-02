@@ -84,17 +84,19 @@ class BaseConstraintsApiTests():
         self.constraint = SingleLayerConstraint(layer=world, active=True)
         self.constraint.save()
 
-        self.rule = self._rule_class(constraint=self.constraint, user=admin01, rule="NAME != 'ITALY'")
+        self.rule = self._rule_class(
+            constraint=self.constraint, user=admin01, rule="NAME != 'ITALY'")
         self.rule.save()
 
         # Another rule on a different layer, bound to the group
         spatialite_points = Layer.objects.get(name='spatialite_points')
-        self.constraint2 = SingleLayerConstraint(layer=spatialite_points, active=True)
+        self.constraint2 = SingleLayerConstraint(
+            layer=spatialite_points, active=True)
         self.constraint2.save()
 
-        self.rule2 = self._rule_class(constraint=self.constraint2, group=self.viewer1_group, rule="NAME != 'something'")
+        self.rule2 = self._rule_class(
+            constraint=self.constraint2, group=self.viewer1_group, rule="NAME != 'something'")
         self.rule2.save()
-
 
     def tearDown(self):
         super().tearDown()
@@ -107,7 +109,7 @@ class BaseConstraintsApiTests():
         if kwargs:
             path += '?'
             parts = []
-            for k,v in kwargs.items():
+            for k, v in kwargs.items():
                 parts.append(k + '=' + v)
             path += '&'.join(parts)
 
@@ -116,12 +118,12 @@ class BaseConstraintsApiTests():
         self.assertIn(response.status_code, [302, 403])
 
         # Auth
-        self.assertTrue(self.client.login(username='admin01', password='admin01'))
+        self.assertTrue(self.client.login(
+            username='admin01', password='admin01'))
         response = self.client.get(path)
         self.assertEqual(response.status_code, 200)
         self.client.logout()
         return response
-
 
     def _testApiCallViewer1(self, view_name, args, kwargs={}):
         """Utility to make test calls for viewer1 user, returns the response"""
@@ -130,18 +132,20 @@ class BaseConstraintsApiTests():
         if kwargs:
             path += '?'
             parts = []
-            for k,v in kwargs.items():
+            for k, v in kwargs.items():
                 parts.append(k + '=' + v)
             path += '&'.join(parts)
 
         # Auth
-        self.assertTrue(self.client.login(username='viewer1', password='viewer1'))
+        self.assertTrue(self.client.login(
+            username='viewer1', password='viewer1'))
         response = self.client.get(path)
         self.client.logout()
         return response
 
     def _check_constraints(self, jcontent):
-        self.assertEqual(jcontent['results'][0]['qgs_layer_id'], 'world20181008111156525')
+        self.assertEqual(jcontent['results'][0]
+                         ['qgs_layer_id'], 'world20181008111156525')
         self.assertEqual(jcontent['results'][0]['layer_name'], 'world')
         self.assertEqual(jcontent['results'][0]['rule_count'], 1)
         self.assertTrue(jcontent['results'][0]['active'])
@@ -162,46 +166,54 @@ class BaseConstraintsApiTests():
     def test_constraints(self):
         """ Test api"""
 
-        jcontent = json.loads(self._testApiCall('qdjango-constraint-api-list', [], {}).content)
+        jcontent = json.loads(self._testApiCall(
+            'qdjango-constraint-api-list', [], {}).content)
         self.assertEqual(jcontent['count'], 2)
         self._check_constraints(jcontent)
         layer_pk = jcontent['results'][0]['layer']
 
-
-        jcontent = json.loads(self._testApiCall('qdjango-constraint-api-filter-by-layer-id', [layer_pk], {}).content)
+        jcontent = json.loads(self._testApiCall(
+            'qdjango-constraint-api-filter-by-layer-id', [layer_pk], {}).content)
         self.assertEqual(jcontent['count'], 1)
         self._check_constraints(jcontent)
 
         constraint_pk = jcontent['results'][0]['pk']
 
-        jcontent = json.loads(self._testApiCall('qdjango-constraint-api-detail', [constraint_pk], {}).content)
+        jcontent = json.loads(self._testApiCall(
+            'qdjango-constraint-api-detail', [constraint_pk], {}).content)
         self._check_constraint(jcontent)
 
-        jcontent = json.loads(self._testApiCall('qdjango-{rule_view_basename}-api-list'.format(rule_view_basename=self._rule_view_name), [], {}).content)
+        jcontent = json.loads(self._testApiCall(
+            'qdjango-{rule_view_basename}-api-list'.format(rule_view_basename=self._rule_view_name), [], {}).content)
         self.assertEqual(jcontent['count'], 2)
         self._check_constraint_rules(jcontent)
 
         viewer1 = User.objects.get(username='viewer1')
-        jcontent = json.loads(self._testApiCall('qdjango-{rule_view_basename}-api-filter-by-user'.format(rule_view_basename=self._rule_view_name), [viewer1.pk], {}).content)
+        jcontent = json.loads(self._testApiCall('qdjango-{rule_view_basename}-api-filter-by-user'.format(
+            rule_view_basename=self._rule_view_name), [viewer1.pk], {}).content)
         self.assertEqual(jcontent['count'], 1)
         self.assertEqual(jcontent['results'][0]['rule'], self.rule2.rule)
 
-        jcontent = json.loads(self._testApiCall('qdjango-{rule_view_basename}-api-filter-by-constraint'.format(rule_view_basename=self._rule_view_name), [constraint_pk], {}).content)
+        jcontent = json.loads(self._testApiCall('qdjango-{rule_view_basename}-api-filter-by-constraint'.format(
+            rule_view_basename=self._rule_view_name), [constraint_pk], {}).content)
         self.assertEqual(jcontent['count'], 1)
         self._check_constraint_rules(jcontent)
 
         admin01 = self.test_user1
-        jcontent = json.loads(self._testApiCall('qdjango-{rule_view_basename}-api-filter-by-user'.format(rule_view_basename=self._rule_view_name), [admin01.pk], {}).content)
+        jcontent = json.loads(self._testApiCall('qdjango-{rule_view_basename}-api-filter-by-user'.format(
+            rule_view_basename=self._rule_view_name), [admin01.pk], {}).content)
         self.assertEqual(jcontent['count'], 2)
         self._check_constraint_rules(jcontent)
 
-        jcontent = json.loads(self._testApiCall('qdjango-{rule_view_basename}-api-filter-by-layer-id'.format(rule_view_basename=self._rule_view_name), [layer_pk], {}).content)
+        jcontent = json.loads(self._testApiCall('qdjango-{rule_view_basename}-api-filter-by-layer-id'.format(
+            rule_view_basename=self._rule_view_name), [layer_pk], {}).content)
         self.assertEqual(jcontent['count'], 1)
         self._check_constraint_rules(jcontent)
 
         rule_pk = jcontent['results'][0]['pk']
 
-        jcontent = json.loads(self._testApiCall('qdjango-{rule_view_basename}-api-detail'.format(rule_view_basename=self._rule_view_name), [rule_pk], {}).content)
+        jcontent = json.loads(self._testApiCall('qdjango-{rule_view_basename}-api-detail'.format(
+            rule_view_basename=self._rule_view_name), [rule_pk], {}).content)
         self._check_constraint_rule(jcontent)
 
     def test_constraints_permissions(self):
@@ -209,57 +221,71 @@ class BaseConstraintsApiTests():
 
         viewer1 = User.objects.get(username='viewer1')
 
-        response = jcontent = json.loads(self._testApiCallViewer1('qdjango-constraint-api-list', [], {}).content)
+        response = jcontent = json.loads(self._testApiCallViewer1(
+            'qdjango-constraint-api-list', [], {}).content)
         self.assertFalse(response['result'])
 
-        response = jcontent = json.loads(self._testApiCallViewer1('qdjango-constraint-api-filter-by-layer-id', [self.constraint.layer.pk], {}).content)
+        response = jcontent = json.loads(self._testApiCallViewer1(
+            'qdjango-constraint-api-filter-by-layer-id', [self.constraint.layer.pk], {}).content)
         self.assertFalse(response['result'])
 
         # Admin only!
-        response = jcontent = json.loads(self._testApiCallViewer1('qdjango-constraint-api-filter-by-user', [viewer1.pk], {}).content)
+        response = jcontent = json.loads(self._testApiCallViewer1(
+            'qdjango-constraint-api-filter-by-user', [viewer1.pk], {}).content)
         self.assertFalse(response['result'])
 
-        response = jcontent = json.loads(self._testApiCallViewer1('qdjango-constraint-api-detail', [self.constraint.pk], {}).content)
+        response = jcontent = json.loads(self._testApiCallViewer1(
+            'qdjango-constraint-api-detail', [self.constraint.pk], {}).content)
         self.assertFalse(response['result'])
 
         # Grant permissions to change the layer to viewer1
-        assign_perm('change_project', viewer1, Layer.objects.get(name='world').project)
+        assign_perm('change_project', viewer1,
+                    Layer.objects.get(name='world').project)
         # Still false, only admin can list all constraints
         self.assertFalse(response['result'])
 
         # Admin only!
-        response = jcontent = json.loads(self._testApiCallViewer1('qdjango-constraint-api-filter-by-user', [viewer1.pk], {}).content)
+        response = jcontent = json.loads(self._testApiCallViewer1(
+            'qdjango-constraint-api-filter-by-user', [viewer1.pk], {}).content)
         self.assertFalse(response['result'])
 
         layer_pk = Layer.objects.get(name='world').pk
 
-        jcontent = json.loads(self._testApiCallViewer1('qdjango-constraint-api-filter-by-layer-id', [layer_pk], {}).content)
+        jcontent = json.loads(self._testApiCallViewer1(
+            'qdjango-constraint-api-filter-by-layer-id', [layer_pk], {}).content)
         self.assertEqual(jcontent['count'], 1)
         self._check_constraints(jcontent)
 
         constraint_pk = jcontent['results'][0]['pk']
 
-        jcontent = json.loads(self._testApiCallViewer1('qdjango-constraint-api-detail', [constraint_pk], {}).content)
+        jcontent = json.loads(self._testApiCallViewer1(
+            'qdjango-constraint-api-detail', [constraint_pk], {}).content)
         self._check_constraint(jcontent)
 
-        jcontent = json.loads(self._testApiCallViewer1('qdjango-{rule_view_basename}-api-list'.format(rule_view_basename=self._rule_view_name), [], {}).content)
+        jcontent = json.loads(self._testApiCallViewer1(
+            'qdjango-{rule_view_basename}-api-list'.format(rule_view_basename=self._rule_view_name), [], {}).content)
         # Still false, only admin can list all constraints
         self.assertFalse(response['result'])
 
-        jcontent = json.loads(self._testApiCall('qdjango-{rule_view_basename}-api-filter-by-constraint'.format(rule_view_basename=self._rule_view_name), [constraint_pk], {}).content)
+        jcontent = json.loads(self._testApiCall('qdjango-{rule_view_basename}-api-filter-by-constraint'.format(
+            rule_view_basename=self._rule_view_name), [constraint_pk], {}).content)
         self.assertEqual(jcontent['count'], 1)
         self._check_constraint_rules(jcontent)
 
-        jcontent = json.loads(self._testApiCallViewer1('qdjango-{rule_view_basename}-api-filter-by-layer-id'.format(rule_view_basename=self._rule_view_name), [layer_pk], {}).content)
+        jcontent = json.loads(self._testApiCallViewer1('qdjango-{rule_view_basename}-api-filter-by-layer-id'.format(
+            rule_view_basename=self._rule_view_name), [layer_pk], {}).content)
         self.assertEqual(jcontent['count'], 1)
         self._check_constraint_rules(jcontent)
 
         rule_pk = self.rule2.pk
 
-        jcontent = json.loads(self._testApiCallViewer1('qdjango-{rule_view_basename}-api-detail'.format(rule_view_basename=self._rule_view_name), [rule_pk], {}).content)
+        jcontent = json.loads(self._testApiCallViewer1(
+            'qdjango-{rule_view_basename}-api-detail'.format(rule_view_basename=self._rule_view_name), [rule_pk], {}).content)
         self.assertEqual(jcontent['rule'], self.rule2.rule)
 
-        remove_perm('change_project', viewer1, Layer.objects.get(name='world').project)
+        remove_perm('change_project', viewer1,
+                    Layer.objects.get(name='world').project)
+
 
 class TestSubsetStringRules(BaseConstraintsApiTests, QdjangoTestBase):
     """Test subset string rules"""
@@ -291,7 +317,7 @@ class TestQdjangoProjectsAPI(QdjangoTestBase):
         if kwargs:
             path += '?'
             parts = []
-            for k,v in kwargs.items():
+            for k, v in kwargs.items():
                 parts.append(k + '=' + v)
             path += '&'.join(parts)
 
@@ -300,7 +326,8 @@ class TestQdjangoProjectsAPI(QdjangoTestBase):
         self.assertIn(response.status_code, [302, 403])
 
         # Auth
-        self.assertTrue(self.client.login(username='admin01', password='admin01'))
+        self.assertTrue(self.client.login(
+            username='admin01', password='admin01'))
         response = self.client.get(path)
         self.assertEqual(response.status_code, 200)
         self.client.logout()
@@ -310,28 +337,34 @@ class TestQdjangoProjectsAPI(QdjangoTestBase):
         """ Test webservices api """
 
         # project not exixts
-        resp = json.loads(self._testApiCall('qdjango-webservice-api-list', [1111]).content)
+        resp = json.loads(self._testApiCall(
+            'qdjango-webservice-api-list', [1111]).content)
         self.assertFalse(resp['result'])
 
         # project exist locked
-        resp = json.loads(self._testApiCall('qdjango-webservice-api-list', [self.project310.instance.pk]).content)
+        resp = json.loads(self._testApiCall(
+            'qdjango-webservice-api-list', [self.project310.instance.pk]).content)
 
         self.assertEqual(resp['data']['WMS']['access'], 'locked')
-        ows_url = reverse('OWS:ows', args=[self.project310.instance.group.slug, 'qdjango', self.project310.instance.pk])
+        ows_url = reverse('OWS:ows', args=[
+                          self.project310.instance.group.slug, 'qdjango', self.project310.instance.pk])
         self.assertEqual(resp['data']['WMS']['url'], ows_url)
         self.assertTrue('WFS' in resp['data'])
         self.assertEqual(resp['data']['WFS']['url'], ows_url)
 
         # project exist free
-        assign_perm('view_project', get_anonymous_user(), self.project310.instance)
+        assign_perm('view_project', get_anonymous_user(),
+                    self.project310.instance)
         # project exist locked
-        resp = json.loads(self._testApiCall('qdjango-webservice-api-list', [self.project310.instance.pk]).content)
+        resp = json.loads(self._testApiCall(
+            'qdjango-webservice-api-list', [self.project310.instance.pk]).content)
         self.assertEqual(resp['data']['WMS']['access'], 'free')
 
     def test_asgeotiff_api(self):
         """ Test asgeotiff projects api"""
 
-        url = reverse('qdjango-asgeotiff-api', kwargs={'project_id': self.project.instance.pk})
+        url = reverse('qdjango-asgeotiff-api',
+                      kwargs={'project_id': self.project.instance.pk})
 
         # Only POST request
         # -----------------------------
@@ -363,7 +396,8 @@ class TestQdjangoProjectsAPI(QdjangoTestBase):
 
         # No bbox param
         self.assertFalse(jres['result'])
-        self.assertEqual(jres['error'], "Error on bbox parameter: not enough values to unpack (expected 4, got 3)")
+        self.assertEqual(
+            jres['error'], "Error on bbox parameter: not enough values to unpack (expected 4, got 3)")
 
         # No image param
         data = {
@@ -406,7 +440,8 @@ class TestQdjangoProjectsAPI(QdjangoTestBase):
         response = self.client.post(url, data=data)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response['Content-Type'], 'image/tiff')
-        self.assertEqual(response['Content-Disposition'], 'attachment; filename="map.tif"')
+        self.assertEqual(response['Content-Disposition'],
+                         'attachment; filename="map.tif"')
 
         temp = QTemporaryDir()
         fname = temp.path() + '/map.tif'
@@ -418,9 +453,11 @@ class TestQdjangoProjectsAPI(QdjangoTestBase):
         self.assertEqual(vl.bandCount(), 4)
         self.assertEqual(vl.height(), 888)
         self.assertEqual(vl.width(), 1570)
-        self.assertEqual(vl.extent().toString(), "-30.9890579805188260,15.1142899751643824 : 64.2786803357740268,68.9982082075644172")
+        self.assertEqual(vl.extent().toString(
+        ), "-30.9890579805188260,15.1142899751643824 : 64.2786803357740268,68.9982082075644172")
 
         os.remove(fname)
+
 
 class TestQdjangoLayersAPI(QdjangoTestBase):
     """ Test qdjango layer API """
@@ -431,7 +468,8 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         super().setUpClass()
         cls.client = APIClient()
 
-        qgis_project_file_widget = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS310_WIDGET_FILE), 'r'))
+        qgis_project_file_widget = File(open('{}{}{}'.format(
+            CURRENT_PATH, TEST_BASE_PATH, QGS310_WIDGET_FILE), 'r'))
         cls.project_widget310 = QgisProject(qgis_project_file_widget)
         cls.project_widget310.title = 'A project with widget QGIS 3.10'
         cls.project_widget310.group = cls.project_group
@@ -449,7 +487,7 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         if kwargs:
             path += '?'
             parts = []
-            for k,v in kwargs.items():
+            for k, v in kwargs.items():
                 parts.append(k + '=' + v)
             path += '&'.join(parts)
 
@@ -460,7 +498,8 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
 
         # Auth
         if login:
-            self.assertTrue(self.client.login(username='admin01', password='admin01'))
+            self.assertTrue(self.client.login(
+                username='admin01', password='admin01'))
         response = self.client.get(path)
         self.assertEqual(response.status_code, status_auth)
         if logout:
@@ -469,12 +508,14 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
 
     def test_user_info_api(self):
 
-        url = reverse('qjango-api-info-layer-user', args=[self.fake_layer1.pk])
+        url = reverse('qdjango-api-info-layer-user',
+                      args=[self.fake_layer1.pk])
         res = self.client.get(url)
         self.assertEqual(res.status_code, 302)
 
         # login as admin01
-        self.client.login(username=self.test_admin1.username, password=self.test_admin1.username)
+        self.client.login(username=self.test_admin1.username,
+                          password=self.test_admin1.username)
         res = self.client.get(url)
         self.assertEqual(res.status_code, 200)
         jres = json.loads(res.content)
@@ -547,19 +588,22 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         self.client.logout()
 
         # As user without permissions
-        self.client.login(username=self.test_editor1.username, password=self.test_editor1.username)
+        self.client.login(username=self.test_editor1.username,
+                          password=self.test_editor1.username)
         res = self.client.get(url)
         self.assertEqual(res.status_code, 403)
         self.client.logout()
 
     def test_authgroup_info_api(self):
 
-        url = reverse('qdjango-api-info-layer-authgroup', args=[self.fake_layer1.pk])
+        url = reverse('qdjango-api-info-layer-authgroup',
+                      args=[self.fake_layer1.pk])
         res = self.client.get(url)
         self.assertEqual(res.status_code, 302)
 
         # login as admin01
-        self.client.login(username=self.test_admin1.username, password=self.test_admin1.username)
+        self.client.login(username=self.test_admin1.username,
+                          password=self.test_admin1.username)
         res = self.client.get(url)
         self.assertEqual(res.status_code, 200)
         jres = json.loads(res.content)
@@ -567,7 +611,8 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         self.assertCountEqual(jres['results'], [])
 
         # give view_projest to GU-VIEWER2
-        assign_perm('view_project', self.test_gu_viewer2, self.project.instance)
+        assign_perm('view_project', self.test_gu_viewer2,
+                    self.project.instance)
 
         # without context
         # =======================================
@@ -625,7 +670,8 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         self.client.logout()
 
         # As user without permissions
-        self.client.login(username=self.test_editor1.username, password=self.test_editor1.username)
+        self.client.login(username=self.test_editor1.username,
+                          password=self.test_editor1.username)
         res = self.client.get(url)
         self.assertEqual(res.status_code, 403)
         self.client.logout()
@@ -633,31 +679,35 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
     def test_relationonetomany_api(self):
         """ Test relationonetomany filter """
 
-        cities = Layer.objects.get(project_id=self.project310.instance.pk, origname='cities10000eu')
+        cities = Layer.objects.get(
+            project_id=self.project310.instance.pk, origname='cities10000eu')
         qgis_project = get_qgs_project(cities.project.qgis_file.path)
         qgis_layer = qgis_project.mapLayer(cities.qgs_layer_id)
 
         total_count = qgis_layer.featureCount()
 
         resp = json.loads(self._testApiCall('core-vector-api',
-            ['data', 'qdjango', self.project310.instance.pk, cities.qgs_layer_id],
-            {
-                FILTER_RELATIONONETOMANY_PARAM: ''
-            }).content)
+                                            ['data', 'qdjango', self.project310.instance.pk,
+                                                cities.qgs_layer_id],
+                                            {
+                                                FILTER_RELATIONONETOMANY_PARAM: ''
+                                            }).content)
 
         self.assertEqual(resp['vector']['count'], total_count)
 
         # check filter by relations
 
         resp = json.loads(self._testApiCall('core-vector-api',
-            ['data', 'qdjango', self.project310.instance.pk, cities.qgs_layer_id],
-            {
-                FILTER_RELATIONONETOMANY_PARAM: 'cities1000_ISO2_CODE_countries__ISOCODE|18'
-            }).content)
+                                            ['data', 'qdjango', self.project310.instance.pk,
+                                                cities.qgs_layer_id],
+                                            {
+                                                FILTER_RELATIONONETOMANY_PARAM: 'cities1000_ISO2_CODE_countries__ISOCODE|18'
+                                            }).content)
 
         qgs_request = QgsFeatureRequest()
         qgs_request.setFilterExpression('"ISO2_CODE" = \'IT\'')
-        qgis_layer.selectByExpression(qgs_request.filterExpression().expression())
+        qgis_layer.selectByExpression(
+            qgs_request.filterExpression().expression())
 
         features = qgis_layer.getFeatures(qgs_request)
         self.assertEqual(resp['vector']['count'], len([f for f in features]))
@@ -665,12 +715,13 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
     def test_tokenfilter_mode_api(self):
         """ Test tokenfilter mode vector api layer """
 
-        cities = Layer.objects.get(project_id=self.project310.instance.pk, origname='cities10000eu')
-        countries = Layer.objects.get(project_id=self.project310.instance.pk, qgs_layer_id='countries_simpl20171228095706310')
+        cities = Layer.objects.get(
+            project_id=self.project310.instance.pk, origname='cities10000eu')
+        countries = Layer.objects.get(
+            project_id=self.project310.instance.pk, qgs_layer_id='countries_simpl20171228095706310')
 
         session_filters = SessionTokenFilter.objects.all()
         self.assertEqual(len(session_filters), 0)
-
 
         # test check filtertoken
         resp = json.loads(self._testApiCall('core-vector-api',
@@ -678,20 +729,22 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
                                              cities.qgs_layer_id], status_auth=500).content)
 
         self.assertFalse(resp['result'])
-        self.assertEqual(resp['error']['data'], "'fidsin' or 'fidsout' parameter is required.")
+        self.assertEqual(resp['error']['data'],
+                         "'fidsin' or 'fidsout' parameter is required.")
 
         session_filters = SessionTokenFilter.objects.all()
         self.assertEqual(len(session_filters), 0)
 
         resp = json.loads(self._testApiCall('core-vector-api',
                                             ['filtertoken', 'qdjango', self.project310.instance.pk,
-                                             cities.qgs_layer_id],{
+                                             cities.qgs_layer_id], {
                                                 'fidsin': '1,2,3,4',
                                                 'fidsout': '2,3,4'
                                             }, status_auth=500).content)
 
         self.assertFalse(resp['result'])
-        self.assertEqual(resp['error']['data'], "'fidsin' only or 'fidsout' only parameter is required.")
+        self.assertEqual(
+            resp['error']['data'], "'fidsin' only or 'fidsout' only parameter is required.")
 
         session_filters = SessionTokenFilter.objects.all()
         self.assertEqual(len(session_filters), 0)
@@ -699,10 +752,11 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         # test create filtertoken
         # -----------------------
         resp = json.loads(self._testApiCall('core-vector-api',
-                            ['filtertoken', 'qdjango', self.project310.instance.pk, cities.qgs_layer_id],
-                            {
-                                'fidsin': '1,2,3,4'
-                            }, logout=False).content)
+                                            ['filtertoken', 'qdjango',
+                                                self.project310.instance.pk, cities.qgs_layer_id],
+                                            {
+                                                'fidsin': '1,2,3,4'
+                                            }, logout=False).content)
 
         session_filters = SessionTokenFilter.objects.all()
         self.assertEqual(len(session_filters), 1)
@@ -778,11 +832,13 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         self.assertEqual(SessionTokenFilter.objects.count(), 0)
 
         # give grant to Anonymous user
-        assign_perm('view_project', get_anonymous_user(), self.project310.instance)
+        assign_perm('view_project', get_anonymous_user(),
+                    self.project310.instance)
 
         # test filtertoken for Anonymous user
         # create cfrtoken
-        self.client.cookies = SimpleCookie({'csrftoken': 'wtegdnfj5736sgreth57Tg5473'})
+        self.client.cookies = SimpleCookie(
+            {'csrftoken': 'wtegdnfj5736sgreth57Tg5473'})
         resp = json.loads(self._testApiCall('core-vector-api',
                                             ['filtertoken', 'qdjango', self.project310.instance.pk,
                                              cities.qgs_layer_id], {
@@ -831,7 +887,7 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
                 'qdjango',
                 self.project_widget310.instance.pk,
                 'main_layer_e867d371_3388_4e2d_a214_95adbb56165c'],
-             {'formatter': '1'})
+            {'formatter': '1'})
 
         # check for value relation
         resp = json.loads(response.content)
@@ -849,7 +905,7 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
                 'main_layer_e867d371_3388_4e2d_a214_95adbb56165c'],
             {'formatter': 'randomvalue'})
 
-        #check for value relation
+        # check for value relation
         resp = json.loads(response.content)
         properties = resp["vector"]["data"]["features"][0]["properties"]
         self.assertEqual(properties['type'], 'TYPE A')
@@ -875,7 +931,8 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
     def test_server_filters_combination_api(self):
         """ Test server filter combination: i.e. FieldFilterBacked + SuggestFilterBackend """
 
-        cities = Layer.objects.get(project_id=self.project310.instance.pk, origname='cities10000eu')
+        cities = Layer.objects.get(
+            project_id=self.project310.instance.pk, origname='cities10000eu')
         qgis_project = get_qgs_project(cities.project.qgis_file.path)
         qgis_layer = qgis_project.mapLayer(cities.qgs_layer_id)
 
@@ -886,19 +943,22 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         total_count = len([f for f in qgis_layer.getFeatures(qgs_request)])
 
         resp = json.loads(self._testApiCall('core-vector-api',
-            ['data', 'qdjango', self.project310.instance.pk, cities.qgs_layer_id],
-            {
-                'field': 'ISO2_CODE|eq|IT'
-            }).content)
+                                            ['data', 'qdjango', self.project310.instance.pk,
+                                                cities.qgs_layer_id],
+                                            {
+                                                'field': 'ISO2_CODE|eq|IT'
+                                            }).content)
 
         self.assertEqual(resp['vector']['count'], total_count)
 
         qgs_request = QgsFeatureRequest()
-        qgs_request.setFilterExpression('"ISO2_CODE" = \'IT\' OR "ISO2_CODE" = \'FR\'')
+        qgs_request.setFilterExpression(
+            '"ISO2_CODE" = \'IT\' OR "ISO2_CODE" = \'FR\'')
         total_count = len([f for f in qgis_layer.getFeatures(qgs_request)])
 
         resp = json.loads(self._testApiCall('core-vector-api',
-                                            ['data', 'qdjango', self.project310.instance.pk, cities.qgs_layer_id],
+                                            ['data', 'qdjango', self.project310.instance.pk,
+                                                cities.qgs_layer_id],
                                             {
                                                 'field': 'ISO2_CODE|eq|IT|OR,ISO2_CODE|eq|FR'
                                             }).content)
@@ -906,11 +966,13 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         self.assertEqual(resp['vector']['count'], total_count)
 
         qgs_request = QgsFeatureRequest()
-        qgs_request.setFilterExpression('"ISO2_CODE" = \'IT\' AND "POPULATION" > 10000 OR "ISO2_CODE" = \'FR\'')
+        qgs_request.setFilterExpression(
+            '"ISO2_CODE" = \'IT\' AND "POPULATION" > 10000 OR "ISO2_CODE" = \'FR\'')
         total_count = len([f for f in qgis_layer.getFeatures(qgs_request)])
 
         resp = json.loads(self._testApiCall('core-vector-api',
-                                            ['data', 'qdjango', self.project310.instance.pk, cities.qgs_layer_id],
+                                            ['data', 'qdjango', self.project310.instance.pk,
+                                                cities.qgs_layer_id],
                                             {
                                                 'field': 'ISO2_CODE|eq|IT|AND,POPULATION|gt|10000|OR,ISO2_CODE|eq|FR',
                                             }).content)
@@ -922,7 +984,8 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         total_count = len([f for f in qgis_layer.getFeatures(qgs_request)])
 
         resp = json.loads(self._testApiCall('core-vector-api',
-                                            ['data', 'qdjango', self.project310.instance.pk, cities.qgs_layer_id],
+                                            ['data', 'qdjango', self.project310.instance.pk,
+                                                cities.qgs_layer_id],
                                             {
                                                 'field': 'NAME|like|Flo'
                                             }).content)
@@ -934,7 +997,8 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         total_count = len([f for f in qgis_layer.getFeatures(qgs_request)])
 
         resp = json.loads(self._testApiCall('core-vector-api',
-                                            ['data', 'qdjango', self.project310.instance.pk, cities.qgs_layer_id],
+                                            ['data', 'qdjango', self.project310.instance.pk,
+                                                cities.qgs_layer_id],
                                             {
                                                 'field': 'NAME|ilike|flo'
                                             }).content)
@@ -942,17 +1006,18 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         self.assertEqual(resp['vector']['count'], total_count)
 
         qgs_request = QgsFeatureRequest()
-        qgs_request.setFilterExpression('"ISO2_CODE" = \'IT\' AND "NAME" = \'Florence\'')
+        qgs_request.setFilterExpression(
+            '"ISO2_CODE" = \'IT\' AND "NAME" = \'Florence\'')
         total_count = len([f for f in qgis_layer.getFeatures(qgs_request)])
 
         resp = json.loads(self._testApiCall('core-vector-api',
-                                            ['data', 'qdjango', self.project310.instance.pk, cities.qgs_layer_id],
+                                            ['data', 'qdjango', self.project310.instance.pk,
+                                                cities.qgs_layer_id],
                                             {
                                                 'field': 'ISO2_CODE|eq|IT,NAME|eq|Florence'
                                             }).content)
 
         self.assertEqual(resp['vector']['count'], total_count)
-
 
         # check SuggestFilterBackend
         # --------------------------
@@ -961,7 +1026,8 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         total_count = len([f for f in qgis_layer.getFeatures(qgs_request)])
 
         resp = json.loads(self._testApiCall('core-vector-api',
-                                            ['data', 'qdjango', self.project310.instance.pk, cities.qgs_layer_id],
+                                            ['data', 'qdjango', self.project310.instance.pk,
+                                                cities.qgs_layer_id],
                                             {
                                                 'suggest': 'NAME|flo'
                                             }).content)
@@ -971,11 +1037,13 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         # check SuggestFilterBackend + FieldFilterBackend
         # -----------------------------------------------
         qgs_request = QgsFeatureRequest()
-        qgs_request.setFilterExpression('"NAME" ILIKE \'%flo%\' AND "ISO2_CODE" = \'IT\'')
+        qgs_request.setFilterExpression(
+            '"NAME" ILIKE \'%flo%\' AND "ISO2_CODE" = \'IT\'')
         total_count = len([f for f in qgis_layer.getFeatures(qgs_request)])
 
         resp = json.loads(self._testApiCall('core-vector-api',
-                                            ['data', 'qdjango', self.project310.instance.pk, cities.qgs_layer_id],
+                                            ['data', 'qdjango', self.project310.instance.pk,
+                                                cities.qgs_layer_id],
                                             {
                                                 'suggest': 'NAME|flo',
                                                 'field': 'ISO2_CODE|eq|IT'
@@ -985,11 +1053,13 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         self.assertEqual(resp['vector']['count'], 2)
 
         qgs_request = QgsFeatureRequest()
-        qgs_request.setFilterExpression('"NAME" ILIKE \'%flo%\' AND "ISO2_CODE" = \'IT\' AND "NAME" = \'Florence\'')
+        qgs_request.setFilterExpression(
+            '"NAME" ILIKE \'%flo%\' AND "ISO2_CODE" = \'IT\' AND "NAME" = \'Florence\'')
         total_count = len([f for f in qgis_layer.getFeatures(qgs_request)])
 
         resp = json.loads(self._testApiCall('core-vector-api',
-                                            ['data', 'qdjango', self.project310.instance.pk, cities.qgs_layer_id],
+                                            ['data', 'qdjango', self.project310.instance.pk,
+                                                cities.qgs_layer_id],
                                             {
                                                 'suggest': 'NAME|flo',
                                                 'field': 'ISO2_CODE|eq|IT,NAME|eq|Florence'
@@ -1001,7 +1071,8 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
     def test_unique_request_api_param(self):
         """ Test 'unique' url request param for 'data' vector API """
 
-        cities = Layer.objects.get(project_id=self.project310.instance.pk, origname='cities10000eu')
+        cities = Layer.objects.get(
+            project_id=self.project310.instance.pk, origname='cities10000eu')
         qgis_project = get_qgs_project(cities.project.qgis_file.path)
         qgis_layer = qgis_project.mapLayer(cities.qgs_layer_id)
 
@@ -1011,7 +1082,8 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         ))
 
         resp = json.loads(self._testApiCall('core-vector-api',
-                                            ['data', 'qdjango', self.project310.instance.pk, cities.qgs_layer_id],
+                                            ['data', 'qdjango', self.project310.instance.pk,
+                                                cities.qgs_layer_id],
                                             {
                                                 'unique': 'ISO2_CODE'
                                             }).content)
@@ -1022,7 +1094,8 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         # -----------------------------------------------
 
         resp = json.loads(self._testApiCall('core-vector-api',
-                                            ['data', 'qdjango', self.project310.instance.pk, cities.qgs_layer_id],
+                                            ['data', 'qdjango', self.project310.instance.pk,
+                                                cities.qgs_layer_id],
                                             {
                                                 'suggest': 'NAME|flo',
                                                 'field': 'ISO2_CODE|eq|IT',
@@ -1034,22 +1107,23 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
     def test_filtertoken_api(self):
         """ Test vector layer api data with 'filtertoken' param """
 
-        cities = Layer.objects.get(project_id=self.project310.instance.pk, origname='cities10000eu')
+        cities = Layer.objects.get(
+            project_id=self.project310.instance.pk, origname='cities10000eu')
         qgis_project = get_qgs_project(cities.project.qgis_file.path)
         qgis_layer = qgis_project.mapLayer(cities.qgs_layer_id)
 
         # create a token filter
         admin01 = self.test_user1
         session_token = SessionTokenFilter.objects.create(user=admin01)
-        session_filter = session_token.stf_layers.create(layer=cities, qgs_expr="ISO2_CODE = 'IT'")
-
+        session_filter = session_token.stf_layers.create(
+            layer=cities, qgs_expr="ISO2_CODE = 'IT'")
 
         resp = json.loads(self._testApiCall('core-vector-api',
-                                            ['data', 'qdjango', self.project310.instance.pk, cities.qgs_layer_id],
+                                            ['data', 'qdjango', self.project310.instance.pk,
+                                                cities.qgs_layer_id],
                                             {
                                                 'filtertoken': session_token.token
                                             }).content)
-
 
         self.assertEqual(resp['vector']['count'], 1124)
 
@@ -1058,7 +1132,8 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         session_filter.save()
 
         resp = json.loads(self._testApiCall('core-vector-api',
-                                            ['data', 'qdjango', self.project310.instance.pk, cities.qgs_layer_id],
+                                            ['data', 'qdjango', self.project310.instance.pk,
+                                                cities.qgs_layer_id],
                                             {
                                                 'filtertoken': session_token.token
                                             }).content)
@@ -1067,7 +1142,8 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
 
         # submit a fake token/ filter token of other layer
         resp = json.loads(self._testApiCall('core-vector-api',
-                                            ['data', 'qdjango', self.project310.instance.pk, cities.qgs_layer_id],
+                                            ['data', 'qdjango', self.project310.instance.pk,
+                                                cities.qgs_layer_id],
                                             {
                                                 'filtertoken': 'xxxxxxxxxxxxxx'
                                             }).content)
@@ -1081,7 +1157,6 @@ class TestGeoConstraintVectorAPIFilter(QdjangoTestBase):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
-
 
     @classmethod
     def tearDownClass(cls):
@@ -1103,20 +1178,22 @@ class TestGeoConstraintVectorAPIFilter(QdjangoTestBase):
         assign_perm('view_project', self.test_viewer1_2, self.qdjango_project)
         assign_perm('view_project', self.test_gu_viewer2, self.qdjango_project)
 
-        self.geoconstraint = GeoConstraint(layer=self.spatialite_points, constraint_layer=self.world, active=True)
+        self.geoconstraint = GeoConstraint(
+            layer=self.spatialite_points, constraint_layer=self.world, active=True)
         self.geoconstraint.save()
 
-        self.rule_italy = GeoConstraintRule(constraint=self.geoconstraint, user=self.test_viewer1, rule="NAME='ITALY'")
+        self.rule_italy = GeoConstraintRule(
+            constraint=self.geoconstraint, user=self.test_viewer1, rule="NAME='ITALY'")
         self.rule_italy.save()
 
         # bind rule to a users group.
         self.rule_algeria = GeoConstraintRule(constraint=self.geoconstraint, group=self.test_gu_viewer2,
-                                                   rule="NAME='ALGERIA'")
+                                              rule="NAME='ALGERIA'")
         self.rule_algeria.save()
 
         # bind rule to a users group.
         self.rule_france = GeoConstraintRule(constraint=self.geoconstraint, user=self.test_viewer1_2,
-                                              rule="NAME='FRANCE'")
+                                             rule="NAME='FRANCE'")
         self.rule_france.save()
 
         self.client = APIClient()
@@ -1130,7 +1207,8 @@ class TestGeoConstraintVectorAPIFilter(QdjangoTestBase):
 
         # Make a request to the server
 
-        self.assertTrue(self.client.login(username='admin01', password='admin01'))
+        self.assertTrue(self.client.login(
+            username='admin01', password='admin01'))
         url = reverse('core-vector-api',
                       args=['data', 'qdjango', self.qdjango_project.pk, self.spatialite_points.qgs_layer_id])
         response = self.client.get(url)
@@ -1143,7 +1221,8 @@ class TestGeoConstraintVectorAPIFilter(QdjangoTestBase):
 
         # as viewer1
         # ------------------------
-        self.assertTrue(self.client.login(username='viewer1', password='viewer1'))
+        self.assertTrue(self.client.login(
+            username='viewer1', password='viewer1'))
         url = reverse('core-vector-api',
                       args=['data', 'qdjango', self.qdjango_project.pk, self.spatialite_points.qgs_layer_id])
         response = self.client.get(url)
@@ -1157,7 +1236,8 @@ class TestGeoConstraintVectorAPIFilter(QdjangoTestBase):
         self.client.logout()
 
         # User without users group.
-        self.assertTrue(self.client.login(username='viewer1.2', password='viewer1.2'))
+        self.assertTrue(self.client.login(
+            username='viewer1.2', password='viewer1.2'))
         url = reverse('core-vector-api',
                       args=['data', 'qdjango', self.qdjango_project.pk, self.spatialite_points.qgs_layer_id])
         response = self.client.get(url)
@@ -1169,7 +1249,8 @@ class TestGeoConstraintVectorAPIFilter(QdjangoTestBase):
         self.client.logout()
 
         # User group viewer GU-VIEWER1 by Viewer1.3.
-        self.assertTrue(self.client.login(username='viewer1.3', password='viewer1.3'))
+        self.assertTrue(self.client.login(
+            username='viewer1.3', password='viewer1.3'))
         url = reverse('core-vector-api',
                       args=['data', 'qdjango', self.qdjango_project.pk, self.spatialite_points.qgs_layer_id])
         response = self.client.get(url)
@@ -1198,7 +1279,7 @@ class TestGeoConstraintVectorAPIFilter(QdjangoTestBase):
 
         # bind rule to a users group.
         rule_anonymoususer = GeoConstraintRule(constraint=self.geoconstraint, user=get_anonymous_user(),
-                                             rule="NAME='ITALY'", anonymoususer=True)
+                                               rule="NAME='ITALY'", anonymoususer=True)
         rule_anonymoususer.save()
 
         url = reverse('core-vector-api',
@@ -1247,31 +1328,31 @@ class QgisTemporalVectorProject(QdjangoTestBase):
         cls.project_temporal_vector_not_active.save()
         qgis_project_file.close()
 
-
     def test_qgs_project_temporal_vector(self):
         """ Test properties into qgsproject object and models """
 
         # Not active
-        self.assertEqual(self.project_temporal_vector_not_active.layers[0].temporalproperties, 'null')
+        self.assertEqual(
+            self.project_temporal_vector_not_active.layers[0].temporalproperties, 'null')
         self.assertEqual(self.project_temporal_vector_not_active.instance.layer_set.all()[0].temporal_properties,
                          'null')
 
         # Active with field
         self.assertEqual(self.project_temporal_vector_field.layers[0].temporalproperties,
-             '{"mode": "FeatureDateTimeInstantFromField", "field": "dateofocc", "units": "d", "duration": 1.0}')
+                         '{"mode": "FeatureDateTimeInstantFromField", "field": "dateofocc", "units": "d", "duration": 1.0}')
         self.assertEqual(self.project_temporal_vector_field.instance.layer_set.all()[0].temporal_properties,
-             '{"mode": "FeatureDateTimeInstantFromField", "field": "dateofocc", "units": "d", "duration": 1.0}')
+                         '{"mode": "FeatureDateTimeInstantFromField", "field": "dateofocc", "units": "d", "duration": 1.0}')
 
     def test_client_map_config(self):
         """ Test for client config API """
 
         # Not active
         url = reverse('group-project-map-config',
-                           args=[self.project_group.slug, 'qdjango',
-                                 self.project_temporal_vector_not_active.instance.pk])
+                      args=[self.project_group.slug, 'qdjango',
+                            self.project_temporal_vector_not_active.instance.pk])
 
-
-        assert self.client.login(username=self.test_admin1.username, password=self.test_admin1.username)
+        assert self.client.login(
+            username=self.test_admin1.username, password=self.test_admin1.username)
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, 200)
@@ -1284,19 +1365,16 @@ class QgisTemporalVectorProject(QdjangoTestBase):
                       args=[self.project_group.slug, 'qdjango',
                             self.project_temporal_vector_field.instance.pk])
 
-        assert self.client.login(username=self.test_admin1.username, password=self.test_admin1.username)
+        assert self.client.login(
+            username=self.test_admin1.username, password=self.test_admin1.username)
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, 200)
         jcontent = json.loads(response.content)
 
-        self.assertEqual(jcontent['layers'][0]['qtimeseries']['mode'], 'FeatureDateTimeInstantFromField')
-        self.assertEqual(jcontent['layers'][0]['qtimeseries']['field'], 'dateofocc')
+        self.assertEqual(jcontent['layers'][0]['qtimeseries']
+                         ['mode'], 'FeatureDateTimeInstantFromField')
+        self.assertEqual(jcontent['layers'][0]
+                         ['qtimeseries']['field'], 'dateofocc')
         self.assertEqual(jcontent['layers'][0]['qtimeseries']['units'], 'd')
         self.assertEqual(jcontent['layers'][0]['qtimeseries']['duration'], 1.0)
-
-
-
-
-
-

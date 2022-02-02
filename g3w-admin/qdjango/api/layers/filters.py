@@ -16,7 +16,7 @@ import logging
 from core.api.filters import BaseFilterBackend
 from core.utils.qgisapi import get_qgs_project, expression_from_server_fids
 from django.conf import settings
-from qdjango.models import SessionTokenFilter
+from qdjango.models import SessionTokenFilter, Layer
 
 from qgis.core import QgsFeatureRequest, QgsExpression
 
@@ -32,11 +32,13 @@ FILTER_SESSION_PARAM = 'filtertoken'
 class RelationOneToManyFilter(BaseFilterBackend):
     """A filter backend that applies a QgsExpression"""
 
-    def apply_filter(self, request, qgis_layer, qgis_feature_request, view=None):
+    def apply_filter(self, request, metadata_layer, qgis_feature_request, view=None):
         """Apply the filter to the QGIS feature request or the layer's subset string
         Warning: if the filter alters the layer instance (for example by settings a subset
         string) make sure to restore the original state or to work on a clone.
         """
+
+        qgis_layer = metadata_layer.qgis_layer
 
         expression_text = None
         if FILTER_RELATIONONETOMANY_PARAM not in request.GET \
@@ -62,15 +64,19 @@ class RelationOneToManyFilter(BaseFilterBackend):
 
         # get expression
         try:
-            expression = expression_from_server_fids([parent_serverFid], qgs_relation.referencedLayer().dataProvider())
-            feature = next(qgs_relation.referencedLayer().getFeatures(QgsFeatureRequest(QgsExpression(expression))))
+            expression = expression_from_server_fids(
+                [parent_serverFid], qgs_relation.referencedLayer().dataProvider())
+            feature = next(qgs_relation.referencedLayer().getFeatures(
+                QgsFeatureRequest(QgsExpression(expression))))
             expression_text = qgs_relation.getRelatedFeaturesFilter(feature)
         except StopIteration:
-            logger.error('RelationOneToManyFilter: error finding related feature from expression')
+            logger.error(
+                'RelationOneToManyFilter: error finding related feature from expression')
             return
 
         if not expression_text:
-            logger.error('RelationOneToManyFilter: empty related feature expression filter')
+            logger.error(
+                'RelationOneToManyFilter: empty related feature expression filter')
             return
 
         original_expression = qgis_feature_request.filterExpression(
@@ -86,11 +92,13 @@ class RelationOneToManyFilter(BaseFilterBackend):
 class FidFilter(BaseFilterBackend):
     """A filter backend that applies a QgsExpression for server fid (<pk1>@@<pk2>...)"""
 
-    def apply_filter(self, request, qgis_layer, qgis_feature_request, view=None):
+    def apply_filter(self, request, metadata_layer, qgis_feature_request, view=None):
         """Apply the filter to the QGIS feature request or the layer's subset string
         Warning: if the filter alters the layer instance (for example by settings a subset
         string) make sure to restore the original state or to work on a clone.
         """
+
+        qgis_layer = metadata_layer.qgis_layer
 
         multiple = True
         FILTER_FIDS_PARAM = f'{FILTER_FID_PARAM}s'
@@ -103,11 +111,13 @@ class FidFilter(BaseFilterBackend):
 
         try:
             if multiple:
-                fids = [f for f in request.GET.get(FILTER_FIDS_PARAM, request.POST.get(FILTER_FIDS_PARAM)).split(',')]
+                fids = [f for f in request.GET.get(
+                    FILTER_FIDS_PARAM, request.POST.get(FILTER_FIDS_PARAM)).split(',')]
                 if len(fids) == 0:
                     return
             else:
-                fid = request.GET.get(FILTER_FID_PARAM, request.POST.get(FILTER_FID_PARAM))
+                fid = request.GET.get(
+                    FILTER_FID_PARAM, request.POST.get(FILTER_FID_PARAM))
                 if not fid:
                     return
 
@@ -126,11 +136,13 @@ class FidFilter(BaseFilterBackend):
 class SingleLayerSessionTokenFilter(BaseFilterBackend):
     """A filter backend that applies a QgsExpression"""
 
-    def apply_filter(self, request, qgis_layer, qgis_feature_request, view=None):
+    def apply_filter(self, request, metadata_layer, qgis_feature_request, view=None):
         """Apply the filter to the QGIS feature request or the layer's subset string
         Warning: if the filter alters the layer instance (for example by settings a subset
         string) make sure to restore the original state or to work on a clone.
         """
+
+        qgis_layer = metadata_layer.qgis_layer
 
         if request.method == 'POST':
             request_data = request.data
@@ -143,17 +155,55 @@ class SingleLayerSessionTokenFilter(BaseFilterBackend):
             return
 
         try:
-            expression_text = SessionTokenFilter.get_expr_for_token(filtertoken, view.layer)
+            expression_text = SessionTokenFilter.get_expr_for_token(
+                filtertoken, view.layer)
         except Exception:
             return
 
         if not expression_text:
             return
 
-        original_expression = qgis_feature_request.filterExpression() if qgis_feature_request is not None else None
+        original_expression = qgis_feature_request.filterExpression(
+        ) if qgis_feature_request is not None else None
         if original_expression is not None:
             qgis_feature_request.setFilterExpression("({original_expression}) AND ({extra_expression})"
-                .format(original_expression=original_expression.expression(),
-                        extra_expression=expression_text))
+                                                     .format(original_expression=original_expression.expression(),
+                                                             extra_expression=expression_text))
         else:
             qgis_feature_request.setFilterExpression(expression_text)
+
+
+class ColumnAclFilter(BaseFilterBackend):
+    """A filter backend that applies a ColumnAcl to restrict visible attributes"""
+
+    def apply_filter(self, request, metadata_layer, qgis_feature_request, view=None):
+        """Apply the filter to the QGIS feature request or the layer's subset string
+        Warning: if the filter alters the layer instance (for example by settings a subset
+        string) make sure to restore the original state or to work on a clone.
+        """
+
+        qgis_layer = metadata_layer.qgis_layer
+
+        if request.method == 'POST':
+            request_data = request.data
+        else:
+            request_data = request.query_params
+
+        try:
+            layer = Layer.objects.get(pk=metadata_layer.layer_id)
+            if layer.has_column_acl:
+                visible_attributes = layer.visible_fields_for_user(request.user)
+                subset = qgis_feature_request.subsetOfAttributes()
+                # We need attribute index here
+                attr_idx = []
+                for attr in visible_attributes:
+                    idx = qgis_layer.fields().lookupField(attr)
+                    if idx >= 0 and (not subset or idx in subset):
+                        attr_idx.append(idx)
+
+                qgis_feature_request.setSubsetOfAttributes(attr_idx)
+
+        except Layer.DoesNotExist:
+            logger.warning('ColumnAclFilter layer not found: {}'.format(
+                metadata_layer.layer_id))
+
