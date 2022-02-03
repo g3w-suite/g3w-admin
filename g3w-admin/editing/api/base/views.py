@@ -323,15 +323,19 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
         # erasing feature if to do
         if EDITING_POST_DATA_DELETED in post_layer_data:
 
+            fids = post_layer_data[EDITING_POST_DATA_DELETED]
+
+            for fid in fids:
+                # control feature locked
+                if not metadata_layer.lock.checkFeatureLocked(fid):
+                    raise Exception(self.no_more_lock_feature_msg.format(
+                        fid, metadata_layer.client_var))
+
             # get feature fids from server fids from client.
-            fids = get_layer_fids_from_server_fids(post_layer_data[EDITING_POST_DATA_DELETED], qgis_layer)
+            fids = get_layer_fids_from_server_fids([str(id) for id in post_layer_data[EDITING_POST_DATA_DELETED]],
+                                                   qgis_layer)
 
             for feature_id in fids:
-
-                # control feature locked
-                if not metadata_layer.lock.checkFeatureLocked(feature_id):
-                    raise Exception(self.no_more_lock_feature_msg.format(
-                        feature_id, metadata_layer.client_var))
 
                 # FIXME: pre_delete_maplayer
                 # pre_delete_maplayer.send(metadata_layer.serializer, layer=metadata_layer.layer_id, # data=serializer.data, user=self.request.user)
