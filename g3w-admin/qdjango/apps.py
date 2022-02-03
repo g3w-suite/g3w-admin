@@ -228,12 +228,12 @@ class QdjangoConfig(AppConfig):
         if 'catalog' in settings.INSTALLED_APPS:
             from catalog.models import Catalog
 
-            from .models import Layer, Project
+            from .models import Project
             from .utils.catalog_provider import catalog_provider
 
             Catalog.register_catalog_record_provider(catalog_provider,
                                                      scope=Catalog.SCOPE.GROUP,
-                                                     senders=[Layer, Project])
+                                                     senders=[Project])
 
         # Load all QGIS server filter plugins, apps can load additional filters
         # by registering them directly to QGS_SERVER
