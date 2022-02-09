@@ -4,8 +4,8 @@ import django.dispatch
 # data plugin to config api client from modules
 initconfig_plugin_start = django.dispatch.Signal(providing_args=["projectType", "project"])
 
-# signal to add extra maplayers attribute: i.e. iternet
-post_create_maplayerattributes = django.dispatch.Signal(providing_args=["layer"])
+# signal to add extra maplayers attribute/modify maplayer attributes
+post_create_maplayerattributes = django.dispatch.Signal(providing_args=["layer", "vector_params"])
 
 # signal to add extra maplayers attribute: i.e. iternet
 post_save_maplayer = django.dispatch.Signal(providing_args=["layer", "mode", "data", "user"])

@@ -420,12 +420,9 @@ class BaseVectorOnModelApiView(G3WAPIView):
         }
 
         # post_create_maplayerattributes signal
-        extra_fields = post_create_maplayerattributes.send(
-            self, layer=self.layer)
-        for extra_field in extra_fields:
-            if extra_field[1]:
-                vector_params['fields'] = vector_params['fields'] + \
-                    extra_field[1]
+        post_create_maplayerattributes.send(
+            self, layer=self.layer, vector_params=vector_params)
+
 
         self.results.update(APIVectorLayerStructure(**vector_params).as_dict())
 
