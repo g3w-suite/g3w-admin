@@ -2532,6 +2532,10 @@ _.extend(g3wadmin.widget, {
     })
 
     modal.show()
+
+    modal.$modal.find('[name="user"]').select2();
+    modal.$modal.find('[name="group"]').select2();
+    modal.$modal.find('[name="restricted_fields"]').select2();
   },
 })
 
