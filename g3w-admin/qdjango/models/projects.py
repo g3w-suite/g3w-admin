@@ -823,9 +823,22 @@ class Layer(G3WACLModelMixins, models.Model):
 
     def _permissionsToViewers(self, users_id, mode='add'):
 
+        # If user_id is in LayerAcl not add view_layer permission
+        l_acl_users = [la.user.pk for la in self.layeracl_set.filter(user__isnull=False)]
+
         for user_id in users_id:
-            setPermissionUserObject(User.objects.get(
-                pk=user_id), self, permissions='view_layer', mode=mode)
+            execute = True
+            if l_acl_users and user_id in l_acl_users and mode == 'add':
+                execute = False
+
+            if user_id in l_acl_users and mode != 'add':
+
+                # Remove layer from LayerAcl
+                self.layeracl_set.filter(user_id=user_id).delete()
+
+            if execute:
+                setPermissionUserObject(User.objects.get(
+                    pk=user_id), self, permissions='view_layer', mode=mode)
 
     def _permissions_to_user_groups_editor(self, groups_id, mode='add'):
         for group_id in groups_id:
@@ -840,10 +853,24 @@ class Layer(G3WACLModelMixins, models.Model):
             ], mode=mode)
 
     def _permissions_to_user_groups_viewer(self, groups_id, mode='add'):
+
+        # If group_id is in LayerAcl not add view_layer permission
+        l_acl_groups = [la.group.pk for la in self.layeracl_set.filter(group__isnull=False)]
+
         for group_id in groups_id:
-            setPermissionUserObject(AuthGroup.objects.get(pk=group_id), self, permissions=[
-                'view_layer'
-            ], mode=mode)
+            execute = True
+            if l_acl_groups and group_id in l_acl_groups and mode == 'add':
+                execute = False
+
+            if group_id in l_acl_groups and mode != 'add':
+
+                # Remove layer from LayerAcl
+                self.layeracl_set.filter(user_id=group_id).delete()
+
+            if execute:
+                setPermissionUserObject(AuthGroup.objects.get(pk=group_id), self, permissions=[
+                    'view_layer'
+                ], mode=mode)
 
 
 class Widget(G3WACLModelMixins, models.Model):

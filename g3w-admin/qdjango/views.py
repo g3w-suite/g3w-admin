@@ -26,7 +26,7 @@ from usersmanage.models import Group as AuthGroup
 from .signals import load_qdjango_widgets_data
 from .mixins.views import *
 from .forms import *
-from .models import TYPE_LAYER_FOR_WIDGET, TYPE_LAYER_FOR_DOWNLOAD
+from .models import TYPE_LAYER_FOR_WIDGET, TYPE_LAYER_FOR_DOWNLOAD, LayerAcl
 from .api.utils import serialize_vectorjoin
 from .utils.models import get_widgets4layer, comparedbdatasource
 import json
@@ -496,9 +496,13 @@ class FilterByUserLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3WR
         # get viewer users
         viewers = get_viewers_for_object(self.layer, self.request.user, 'view_layer', with_anonymous=True)
 
-        editor_pk = self.layer.project.editor.pk if self.layer.project.editor else None
+        editor_pks = []
+        if self.layer.project.editor:
+            editor_pks.append(self.layer.project.editor.pk)
+        if self.layer.project.editor2:
+            editor_pks.append(self.layer.project.editor2.pk)
         self.initial_viewer_users = kwargs['initial']['viewer_users'] = [int(o.id) for o in viewers
-                                                                         if o.id != editor_pk]
+                                                                         if o.id not in editor_pks]
         group_viewers = get_user_groups_for_object(self.layer, self.request.user, 'view_layer', 'viewer')
         self.initial_viewer_user_groups = kwargs['initial']['user_groups_viewer'] = [o.id for o in group_viewers]
 
@@ -517,9 +521,16 @@ class FilterByUserLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3WR
             for uid in toAdd:
                 setPermissionUserObject(User.objects.get(pk=uid), self.layer, ['view_layer'])
 
+                # Remove from Layer Acls if exists
+                LayerAcl.manage_user(uid, self.layer, mode='remove')
+
         if toRemove:
             for uid in toRemove:
                 setPermissionUserObject(User.objects.get(pk=uid), self.layer, ['view_layer'], mode='remove')
+
+                # Add user to LayerAcl model
+                LayerAcl.manage_user(uid, self.layer, mode='add')
+
 
         # give permission to user groups viewers:
         to_add = to_remove = None

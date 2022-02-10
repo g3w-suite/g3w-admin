@@ -166,4 +166,18 @@ class ConstraintSubsetStringRuleAdmin(admin.ModelAdmin):
 
 admin.site.register(SingleLayerConstraint, SingleLayerConstraintAdmin)
 admin.site.register(ConstraintExpressionRule, ConstraintExpressionRuleAdmin)
-admin.site.register(ConstraintSubsetStringRule, ConstraintSubsetStringRuleAdmin)
+admin.site.register(ConstraintSubsetStringRule,
+                    ConstraintSubsetStringRuleAdmin)
+
+
+class LayerAclAdmin(admin.ModelAdmin):
+    model = LayerAcl
+
+    list_display = (
+        'layer',
+        'user',
+        'group'
+    )
+
+
+admin.site.register(LayerAcl, LayerAclAdmin)
