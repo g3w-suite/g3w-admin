@@ -320,8 +320,12 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
 
                         if mode_editing == EDITING_POST_DATA_ADDED:
 
+                            # to exclude QgsFormater used into QgsJsonjExporter is necessary build by hand single json feature
                             ex = QgsJsonExporter(qgis_layer)
-                            jfeature = json.loads(ex.exportFeature(feature))
+                            ex.setIncludeAttributes(False)
+
+                            fnames = [f.name() for f in feature.fields()]
+                            jfeature = json.loads(ex.exportFeature(feature, dict(zip(fnames, feature.attributes()))))
 
                             to_res.update({
                                 'clientid': geojson_feature['id'],
