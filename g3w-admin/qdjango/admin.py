@@ -207,3 +207,10 @@ admin.site.register(SingleLayerConstraint, SingleLayerConstraintAdmin)
 admin.site.register(ConstraintExpressionRule, ConstraintExpressionRuleAdmin)
 admin.site.register(ConstraintSubsetStringRule,
                     ConstraintSubsetStringRuleAdmin)
+
+
+class LayerAclAdmin(admin.ModelAdmin):
+    model = LayerAcl
+
+
+admin.site.register(LayerAcl, LayerAclAdmin)

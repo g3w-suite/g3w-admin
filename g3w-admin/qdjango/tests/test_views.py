@@ -12,7 +12,7 @@ __copyright__ = 'Copyright 2019, GIS3W'
 from django.test.client import RequestFactory, Client
 from django.urls import reverse, NoReverseMatch
 from guardian.shortcuts import assign_perm
-from qdjango.models import Project
+from qdjango.models import Project, LayerAcl
 from qdjango.views import QdjangoProjectUpdateView
 from core.models import ProjectMapUrlAlias
 from .base import QdjangoTestBase, CoreGroup, G3WSpatialRefSys
@@ -205,16 +205,41 @@ class QdjangoViewsTest(QdjangoTestBase):
         self.assertFalse(self.test_viewer1.has_perm('qdjango.view_layer', layer_cities))
         self.assertFalse(self.test_viewer1_3.has_perm('qdjango.view_layer', layer_cities))
 
+        # Try to reassign permission to project,
+        # check if permission is not added if layer acls is active on layer by user/group
+
+        self.project310.instance.addPermissionsToViewers([self.test_viewer1.pk])
+        self.project310.instance.add_permissions_to_viewer_user_groups([self.test_gu_viewer2.pk])
+
+        # Continue to be false
+        self.assertFalse(self.test_viewer1.has_perm('qdjango.view_layer', layer_cities))
+        self.assertFalse(self.test_viewer1_3.has_perm('qdjango.view_layer', layer_cities))
+
+        # Test remove permission to user by project and check if LayerAcl record is deleted
+        self.project310.instance.removePermissionsToViewers([self.test_viewer1.pk])
+
+        self.assertFalse(self.test_viewer1.has_perm('qdjango.view_layer', layer_cities))
+        self.assertFalse(self.test_viewer1_3.has_perm('qdjango.view_layer', layer_cities))
+
+        # Record LayerAcl is not exists
+        self.assertFalse(LayerAcl.objects.filter(layer=layer_cities, user=self.test_viewer1).exists())
+
+        # Restore initial condition
+        self.project310.instance.addPermissionsToViewers([self.test_viewer1.pk])
+
+
         response = client.post(url, data={
             'viewer_users': [self.test_viewer1.pk],
             'user_groups_viewer': []
         })
+
 
         # Redirect to None
         self.assertEqual(response.status_code, 302)
 
         self.assertTrue(self.test_viewer1.has_perm('qdjango.view_layer', layer_cities))
         self.assertFalse(self.test_viewer1_3.has_perm('qdjango.view_layer', layer_cities))
+
 
         response = client.post(url, data={
             'viewer_users': [self.test_viewer1.pk],
