@@ -212,5 +212,11 @@ admin.site.register(ConstraintSubsetStringRule,
 class LayerAclAdmin(admin.ModelAdmin):
     model = LayerAcl
 
+    list_display = [
+        'layer',
+        'user',
+        'group'
+    ]
+
 
 admin.site.register(LayerAcl, LayerAclAdmin)
