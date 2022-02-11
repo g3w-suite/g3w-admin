@@ -217,6 +217,7 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
                     # Validate and save
                     try:
 
+                        original_feature = None
                         feature = QgsFeature(qgis_layer.fields())
                         if mode_editing == EDITING_POST_DATA_UPDATED:
 
@@ -224,6 +225,9 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
                             # path to fix into QGIS api
                             geojson_feature['id'] = get_layer_fids_from_server_fids([str(geojson_feature['id'])], qgis_layer)[0]
                             feature.setId(geojson_feature['id'])
+
+                            # Get feature from data provider before update
+                            original_feature = qgis_layer.getFeature(geojson_feature['id'])
 
                         # We use this feature for geometry parsing only:
                         imported_feature = QgsJsonUtils.stringToFeatureList(
@@ -344,6 +348,13 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
                             insert_ids.append(to_res)
                         if bool(to_res_lock):
                             lock_ids.append(to_res_lock)
+
+                        # Send post vase signal
+                        post_save_maplayer.send(
+                            self,
+                            layer_metadata=metadata_layer, mode=mode_editing, data=data_extra_fields,
+                            user=self.request.user, original_feature=original_feature
+                        )
 
                     except ValidationError as ex:
                         raise ValidationError({
