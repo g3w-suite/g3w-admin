@@ -159,8 +159,8 @@ class QgisProjectLayer(XmlData):
         # ColumnName
     ]
 
-    def __repr__(self):
-        return '<qdjango.utils.data.QgisProjectLayer "{}">'.format(self.name)
+    def __str__(self):
+        return self.name
 
     _layer_model = Layer
 
@@ -627,6 +627,7 @@ class QgisProjectLayer(XmlData):
                             to_ret_node['visibility_expression'] = {
                                 'expression': expression.expression(),
                                 'referenced_columns': list(expression.referencedColumns()),
+                                'referenced_functions': list(expression.referencedFunctions()),
                             }
                     except:
                         to_ret_node['visibility_expression'] = None

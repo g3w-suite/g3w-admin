@@ -261,9 +261,47 @@ class QgisProjectTest(TestCase):
                 # check editorformstructure
                 # --------------------------------------------------------
 
-                editor_form_structure_to_check = '[{"name": "Folder 1", "showlabel": true, "groupbox": false, "columncount":1, "nodes": [{"showlabel": true, "index":0, "field_name": "GEONAMEID", "alias": "Geo named"}, {"showlabel": true, "index":1, "field_name": "NAME", "alias": "Name"}, {"showlabel": true, "index":2, "field_name": "ASCIINAME", "alias": "Ascii name"}]}, {"name": "Folder 2", "showlabel": true, "groupbox": false, "columncount":1, "nodes": [{"showlabel": true, "index":4, "field_name": "POPULATION", "alias": "POPULATION"}, {"showlabel": true, "index":5, "field_name": "GTOPO30", "alias": "GTOPO30"}, {"showlabel": true, "index":3, "field_name": "ISO2_CODE", "alias": "ISO Code"}]}]'
+                editor_form_structure_to_check = [{'name': 'Folder 1',
+                                                   'showlabel': True,
+                                                   'groupbox': False,
+                                                   'columncount': 1,
+                                                   'nodes': [{'showlabel': True,
+                                                              'visibility_expression': None,
+                                                              'index': 0,
+                                                              'field_name': 'GEONAMEID',
+                                                              'alias': 'Geo named'},
+                                                             {'showlabel': True,
+                                                              'visibility_expression': None,
+                                                              'index': 1,
+                                                              'field_name': 'NAME',
+                                                              'alias': 'Name'},
+                                                             {'showlabel': True,
+                                                              'visibility_expression': None,
+                                                              'index': 2,
+                                                              'field_name': 'ASCIINAME',
+                                                              'alias': 'Ascii name'}]},
+                                                  {'name': 'Folder 2',
+                                                   'showlabel': True,
+                                                   'groupbox': False,
+                                                   'columncount': 1,
+                                                   'nodes': [{'showlabel': True,
+                                                              'visibility_expression': None,
+                                                              'index': 4,
+                                                              'field_name': 'POPULATION',
+                                                              'alias': 'POPULATION'},
+                                                             {'showlabel': True,
+                                                              'visibility_expression': None,
+                                                              'index': 5,
+                                                              'field_name': 'GTOPO30',
+                                                              'alias': 'GTOPO30'},
+                                                             {'showlabel': True,
+                                                              'visibility_expression': None,
+                                                              'index': 3,
+                                                              'field_name': 'ISO2_CODE',
+                                                              'alias': 'ISO Code'}]}]
+
                 self.assertEqual(layer.editorformstructure,
-                                 json.loads(editor_form_structure_to_check))
+                                 editor_form_structure_to_check)
 
                 # check editTypes
                 # --------------------------------------------------------

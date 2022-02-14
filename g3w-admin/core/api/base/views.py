@@ -423,7 +423,6 @@ class BaseVectorOnModelApiView(G3WAPIView):
         post_create_maplayerattributes.send(
             self, layer=self.layer, vector_params=vector_params)
 
-
         self.results.update(APIVectorLayerStructure(**vector_params).as_dict())
 
     def response_data_mode(self, request, export_features=False):

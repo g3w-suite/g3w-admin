@@ -16,6 +16,7 @@ import os
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.cache import caches
+from django.core.files import File
 from django.test import override_settings
 from django.urls import reverse
 from qgis.core import QgsFieldConstraints
@@ -24,6 +25,7 @@ from rest_framework.test import APIClient, APITestCase
 from qdjango.apps import get_qgs_project
 from qdjango.models import Layer, Project
 from base.version import get_version
+from qdjango.utils.data import QgisProject
 
 from .base import CoreTestBase
 
@@ -89,6 +91,26 @@ class CoreApiTest(CoreTestBase):
         self.assertIsNone(resp["vector"]["data"])
         self.assertTrue(resp["result"])
         self.assertIsNone(resp["featurelocks"])
+
+    def testCoreVectorApiConfigValueRelationExpression(self):
+
+        qgis_project_file = File(open(os.path.join(
+            DATASOURCE_PATH, 'projects', 'conditional_forms.qgs'), 'r', encoding='UTF8'))
+        project = QgisProject(qgis_project_file)
+        project.title = 'A form value relation project'
+        from IPython import embed; embed(using=False)
+        project.group = self.project_group
+        project.save()
+        qgis_project_file.close()
+
+        project = Project.objects.get(title__icontains='Value Relation')
+
+        response = self._testApiCall(
+            'core-vector-api', ['data', 'qdjango', project.pk, 'punti_875480ec_e33b_450c_b56c_8954a3d7429f'])
+
+        from IPython import embed
+        embed(using=False)
+
 
     def testCoreVectorApiData(self):
         """Test core-vector-api data"""

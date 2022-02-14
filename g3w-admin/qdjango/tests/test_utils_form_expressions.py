@@ -54,7 +54,9 @@ class QgisProjectTest(TestCase):
                     'showlabel': True,
                     'visibility_expression': {
                         'expression': 'check=1',
-                        'referenced_columns': ['check']},
+                        'referenced_columns': ['check'],
+                        'referenced_functions': []
+                    },
                     'groupbox': True,
                     'columncount': 1,
                     'nodes': [{
