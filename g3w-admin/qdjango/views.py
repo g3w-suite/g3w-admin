@@ -544,8 +544,14 @@ class FilterByUserLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3WR
             for aid in to_add:
                 setPermissionUserObject(AuthGroup.objects.get(pk=aid), self.layer, ['view_layer'])
 
+                # Remove from Layer Acls if exists
+                LayerAcl.manage_group(aid, self.layer, mode='remove')
+
         if to_remove:
             for aid in to_remove:
                 setPermissionUserObject(AuthGroup.objects.get(pk=aid), self.layer, ['view_layer'], mode='remove')
+
+                # Add group to LayerAcl model
+                LayerAcl.manage_group(aid, self.layer, mode='add')
 
         return super().form_valid(form)

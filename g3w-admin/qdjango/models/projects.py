@@ -865,7 +865,7 @@ class Layer(G3WACLModelMixins, models.Model):
             if group_id in l_acl_groups and mode != 'add':
 
                 # Remove layer from LayerAcl
-                self.layeracl_set.filter(user_id=group_id).delete()
+                self.layeracl_set.filter(group_id=group_id).delete()
 
             if execute:
                 setPermissionUserObject(AuthGroup.objects.get(pk=group_id), self, permissions=[
