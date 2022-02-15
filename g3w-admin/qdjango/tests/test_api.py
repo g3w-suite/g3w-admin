@@ -1150,6 +1150,18 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
 
         self.assertEqual(resp['vector']['count'], 8965)
 
+    def testCoreVectorApiFilterExpression(self):
+        """Test core-vector-api data with a QgsExpression and form data, to be used in wigets like ValueRelation"""
+
+        response = self._testApiCall(
+            'core-vector-api', [
+                'data',
+                'qdjango',
+                self.project_widget310.instance.pk,
+                'main_layer_e867d371_3388_4e2d_a214_95adbb56165c'])
+        resp = json.loads(response.content)
+        
+
 
 class TestGeoConstraintVectorAPIFilter(QdjangoTestBase):
     """Test GeoConstraint Vector API Filters"""

@@ -26,7 +26,7 @@ from qgis.core import (
     QgsExpressionContextUtils,
     QgsExpressionContext,
     QgsFeature,
-    QgsJsonUtils
+    QgsJsonUtils,
 )
 
 from django.utils.translation import ugettext_lazy as _
