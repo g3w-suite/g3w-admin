@@ -159,9 +159,6 @@ class QgisProjectLayer(XmlData):
         # ColumnName
     ]
 
-    def __str__(self):
-        return self.name
-
     _layer_model = Layer
 
     def __init__(self, layer, **kwargs):

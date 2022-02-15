@@ -16,7 +16,8 @@ from .api.layers.views import (
     LayerAuthGroupInfoAPIView,
     LayerStyleListView,
     LayerStyleDetailView,
-    LayerPolygonView
+    LayerPolygonView,
+    QgsExpressionLayerContextEvalView,
 )
 from .api.constraints.views import (
     ConstraintExpressionRuleDetail,
@@ -38,6 +39,7 @@ from .api.projects.views import (
     QdjangoAsGeoTiffAPIview,
     QdjangoPrjThemeAPIview
 )
+
 
 from .api.column_acl.views import (
     ColumnAclList,
@@ -87,6 +89,10 @@ urlpatterns = [
     # All expressionrule(s)
     url(r'^api/expressionrule/$',
         login_required(ConstraintExpressionRuleList.as_view()), name='qdjango-expressionrule-api-list'),
+
+    # QGIS Expressions API evaluated in Layer context
+    url(r'^api/expression_eval/(?P<layer_id>[\d]+)/$',
+        login_required(QgsExpressionLayerContextEvalView.as_view()), name='qdjango-api-layer-expression-eval'),
 
 
     #############################################################
@@ -173,6 +179,7 @@ urlpatterns = [
         QdjangoAsGeoTiffAPIview.as_view(), name='qdjango-asgeotiff-api'),
     url(r'^api/prjtheme/(?P<project_id>\d+)/(?P<theme_name>[-_\w\d\s]+)/$',
         QdjangoPrjThemeAPIview.as_view(), name='qdjango-prjtheme-api'),
+
 ]
 
 # Layer style manager

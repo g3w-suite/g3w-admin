@@ -1378,3 +1378,17 @@ class QgisTemporalVectorProject(QdjangoTestBase):
                          ['qtimeseries']['field'], 'dateofocc')
         self.assertEqual(jcontent['layers'][0]['qtimeseries']['units'], 'd')
         self.assertEqual(jcontent['layers'][0]['qtimeseries']['duration'], 1.0)
+
+    def test_layer_expression_eval(self):
+
+        layer = Layer.objects.all()[0]
+        url = reverse('qdjango-api-layer-expression-eval',
+                      args=[layer.pk])
+
+        assert self.client.login(
+            username=self.test_admin1.username, password=self.test_admin1.username)
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        from IPython import embed; embed(using=False)
+        jcontent = json.loads(response.content)
