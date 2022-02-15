@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-""""QGIS Utils
+""""Test QGIS Expressions Utils
 
 .. note:: This program is free software; you can redistribute it and/or modify
     it under the terms of the Mozilla Public License 2.0.
@@ -13,9 +13,18 @@ __copyright__ = 'Copyright 2022, Gis3w'
 
 import json
 from .base import QdjangoTestBase
-from qdjango.utils.qgis import *
+from core.utils.qgisapi import (
+    expression_eval,
+    ExpressionForbiddenError,
+    ExpressionFormDataError,
+    ExpressionLayerError,
+    ExpressionEvalError,
+    ExpressionParseError,
+)
+
 from qdjango.models import Layer
 from qgis.core import QgsJsonExporter
+
 
 class TestQgisUtils(QdjangoTestBase):
 
@@ -64,6 +73,3 @@ class TestQgisUtils(QdjangoTestBase):
 
         self.assertEqual(expression_eval('APPROX = 99999',
                                          layer_id=layer.pk, form_data=json.loads(form_data)), False)
-
-
-

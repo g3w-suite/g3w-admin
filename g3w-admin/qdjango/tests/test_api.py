@@ -1379,16 +1379,60 @@ class QgisTemporalVectorProject(QdjangoTestBase):
         self.assertEqual(jcontent['layers'][0]['qtimeseries']['units'], 'd')
         self.assertEqual(jcontent['layers'][0]['qtimeseries']['duration'], 1.0)
 
+
+class LayerExpressionEval(QdjangoTestBase):
+    """ Test for temporal vector layer """
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.client = APIClient()
+
+    def _expression_evaluate(self, url, expression, expected, form_data=None):
+
+        assert self.client.login(
+            username=self.test_admin1.username, password=self.test_admin1.username)
+
+        data = {
+            'expression': expression
+        }
+
+        if form_data is not None:
+            data['form_data'] = form_data
+
+        response = self.client.post(
+            url, data, format='json', content_type='application/json')
+
+        self.assertEqual(response.status_code, 200)
+        jcontent = json.loads(response.content)
+        self.assertEqual(jcontent, expected)
+
     def test_layer_expression_eval(self):
 
         layer = Layer.objects.all()[0]
         url = reverse('qdjango-api-layer-expression-eval',
                       args=[layer.pk])
 
-        assert self.client.login(
-            username=self.test_admin1.username, password=self.test_admin1.username)
-        response = self.client.get(url)
+        self._expression_evaluate(url, '1', 1)
 
-        self.assertEqual(response.status_code, 200)
-        from IPython import embed; embed(using=False)
-        jcontent = json.loads(response.content)
+        form_data = {
+            'bbox': [-92.28845, 13.7392, -88.23725, 17.783133],
+            'geometry': {
+                'coordinates': [[[[
+                    -92.22255, 14.519233],
+                    [-90.0424, 13.887533],
+                    [-91.6125, 14.1068],
+                    [-91.6343, 14.121333],
+                    [-91.64955, 14.121333],
+                    [-91.667, 14.114067],
+                    [-91.68875, 14.114067],
+                    [-91.81295, 14.215733],
+                    [-91.9524, 14.327567],
+                    [-92.22255, 14.519233]
+                ]]],
+                'type': 'MultiPolygon'}, 'id': 0,
+            'properties': {'APPROX': 9705000, 'AREA': 109727.89624587, 'CAPITAL': 'GUATEMALA', 'NAME': 'GUATEMALA', 'SOURCETHM': 'Country_col_regi'},
+            'type': 'Feature'}
+
+        self._expression_evaluate(
+            url, 'current_value(\'CAPITAL\')', "GUATEMALA", form_data)

@@ -32,7 +32,13 @@ from usersmanage.utils import (get_user_groups_for_object,
 from .permissions import LayerInfoPermission, LayerStylesManagePermission
 from .serializers import LayerInfoAuthGroupSerializer, LayerInfoUserSerializer, LayerInfoSerializer
 from qgis.core import QgsExpression, QgsExpressionContextUtils, QgsExpressionContext, QgsFeature, QgsJsonUtils
-from qdjango.utils.qgis import expression_eval, ExpressionEvalError, ExpressionFormDataError, ExpressionParseError, ExpressionLayerError
+from core.utils.qgisapi import (
+    expression_eval,
+    ExpressionEvalError,
+    ExpressionFormDataError,
+    ExpressionParseError,
+    ExpressionLayerError
+)
 
 
 class APIExpressionEvalError(APIException):

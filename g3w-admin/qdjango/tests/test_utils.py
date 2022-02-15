@@ -542,3 +542,4 @@ class TestTemplateTags(QdjangoTestBase):
 
         self.assertTrue(is_geom_type_gpx_compatible(spatialite_points))
         self.assertFalse(is_geom_type_gpx_compatible(world))
+
