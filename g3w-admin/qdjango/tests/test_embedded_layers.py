@@ -50,7 +50,7 @@ os.mkdir(MEDIA_ROOT)
 os.mkdir(FILE_UPLOAD_TEMP_DIR)
 
 # Copy all required data
-for file in glob.glob(os.path.join(CURRENT_PATH + TEST_BASE_PATH, 'project_data') + '/*.*'):
+for file in glob.glob(os.path.join(CURRENT_PATH + TEST_BASE_PATH, 'geodata') + '/*.*'):
     shutil.copy(file, DATASOURCE_PATH)
 
 
