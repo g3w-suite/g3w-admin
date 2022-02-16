@@ -29,7 +29,7 @@ import requests
 CURRENT_PATH = os.getcwd()
 TEST_BASE_PATH = '/qdjango/tests/data/'
 DATASOURCE_PATH = '{}{}'.format(CURRENT_PATH, TEST_BASE_PATH)
-QGS_FILE = os.path.join('projects', 'conditional_forms.qgs')
+QGS_FILE = os.path.join('conditional_forms.qgs')
 
 
 class QgisProjectTest(TestCase):
