@@ -255,6 +255,51 @@ class CoreApiTest(CoreTestBase):
         ])
         self.assertTrue(resp["result"])
 
+    def testCoreVectorApiFilterExpression(self):
+        """Test core-vector-api data with a QgsExpression and form data, to be used in wigets like ValueRelation"""
+
+        layer = Layer.objects.get(title='world')
+        other_layer = Layer.objects.get(title='spatialite_points')
+
+        response = self._testPostApiCall(
+            'core-vector-api', [
+                'data',
+                'qdjango',
+                layer.project.pk,
+                layer.qgs_layer_id])
+
+        resp = json.loads(response.content)
+
+        self.assertEqual(resp["vector"]["count"], 244)
+
+        # Set an expression filter
+
+        data = {
+            'layer_id': other_layer.pk,
+            'form_data': {
+                "type": "Feature",
+                "properties": {
+                    "name": "GUATEMALA",
+                },
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [-90.35368448325509405, 15.68342749654157053]
+                }
+            },
+            'expression': "NAME=current_value('name')"
+        }
+
+        response = self._testPostApiCall(
+            'core-vector-api', [
+                'data',
+                'qdjango',
+                layer.project.pk,
+                layer.qgs_layer_id], data=data)
+
+        resp = json.loads(response.content)
+
+        self.assertEqual(resp["vector"]["count"], 1)
+
     def testCoreVectorApiSuggest(self):
         """Test core-vector-api Suggest"""
 

@@ -181,7 +181,7 @@ class GeoConstraintRule(models.Model):
 
         # Get the geometries from constraint layer and rule
         qgis_feature_request = QgsFeatureRequest()
-        qgis_feature_request.setFilterExpression(self.rule)
+        qgis_feature_request.combineFilterExpression(self.rule)
 
         features = get_qgis_features(constraint_layer, qgis_feature_request, exclude_fields='__all__')
 

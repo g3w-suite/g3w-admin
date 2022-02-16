@@ -19,10 +19,7 @@ from qgis.core import (
     QgsVectorLayer,
     QgsJsonUtils,
     QgsFeature,
-    QgsExpressionContextUtils,
 )
-
-from qdjango.models import Layer
 
 from rest_framework import exceptions, status
 from rest_framework.exceptions import APIException
@@ -466,21 +463,6 @@ class BaseVectorOnModelApiView(G3WAPIView):
                     attrs.append(attr_idx)
             qgis_feature_request.setSubsetOfAttributes(attrs)
 
-        # Handle QgsExpression filters
-        if request.data and request.data.get('expression'):
-            qgis_feature_request.combineFilterExpression(
-                request.data.get('expression'))
-            if request.data.get('form_data') and request.data.get('layer_id'):
-                layer = Layer.objects.get(pk=request.data.get('layer_id'))
-                fields = layer.qgis_layer.fields()
-                form_data = request.data.get('form_data')
-                form_feature = QgsJsonUtils.stringToFeatureList(
-                    json.dumps(form_data), fields, None)[0]
-                for k, v in form_data['properties'].items():
-                    form_feature.setAttribute(k, v)
-                qgis_feature_request.expressionContext().appendScope(
-                    QgsExpressionContextUtils.formScope(form_feature))
-
         self.features = get_qgis_features(
             self.metadata_layer.qgis_layer, qgis_feature_request, **kwargs)
 
@@ -551,7 +533,7 @@ class BaseVectorOnModelApiView(G3WAPIView):
                     ex.exportFeatures(self.features))
             else:
 
-                # to exclude QgsFormater used into QgsJsonjExporter is necessary build by hand single json feature
+                # to exclude QgsFormater used into QgsJsonExporter is necessary build by hand single json feature
                 ex.setIncludeAttributes(False)
 
                 feature_collection = {

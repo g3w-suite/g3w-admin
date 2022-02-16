@@ -416,6 +416,12 @@ class LayerPolygonView(generics.ListAPIView):
 
 
 class QgsExpressionLayerContextEvalView(G3WAPIView):
+    """This POST only API accepts a QgsExpression, a qdjango layer_id and an optional GeoJSON
+        feature data and returns the evaluated QgsExpression in the feature form context.
+
+    `form_data`: GeoJSON representation of the feature currently being edited.
+
+    """
 
     def post(self, request, layer_id, format=None):
         """

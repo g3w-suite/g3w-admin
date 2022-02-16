@@ -10,16 +10,19 @@ __author__ = 'elpaso@itopen.it'
 __date__ = '2020-02-10'
 __copyright__ = 'Copyright 2020, Gis3w'
 
+import json
 from qgis.core import (
     QgsCoordinateReferenceSystem,
     QgsCoordinateTransform,
     QgsFeatureRequest,
     QgsRectangle,
     QgsCoordinateTransformContext,
+    QgsExpressionContextUtils,
+    QgsJsonUtils,
 )
 from rest_framework.exceptions import ParseError
 from urllib.parse import unquote
-
+from qdjango.models import Layer
 
 class BaseFilterBackend():
     """Base class for QGIS request filters"""
@@ -101,13 +104,7 @@ class SearchFilter(BaseFilterBackend):
             if search_parts:
 
                 search_expression = '(' + ' AND '.join(search_parts) + ')'
-                current_expression = qgis_feature_request.filterExpression()
-
-                if current_expression:
-                    search_expression = '( %s ) AND ( %s )' % (
-                        current_expression.dump(), search_expression)
-
-                qgis_feature_request.setFilterExpression(search_expression)
+                qgis_feature_request.combineFilterExpression(search_expression)
 
 
 class OrderingFilter(BaseFilterBackend):
@@ -235,13 +232,7 @@ class SuggestFilterBackend(BaseFilterBackend):
                     field_value=self._quote_value('%' + field_value + '%')
                 )
 
-                current_expression = qgis_feature_request.filterExpression()
-
-                if current_expression:
-                    search_expression = '( %s ) AND ( %s )' % (
-                        current_expression.dump(), search_expression)
-
-                qgis_feature_request.setFilterExpression(search_expression)
+                qgis_feature_request.combineFilterExpression(search_expression)
 
 
 class FieldFilterBackend(BaseFilterBackend):
@@ -319,11 +310,41 @@ class FieldFilterBackend(BaseFilterBackend):
 
                 count += 1
 
-            current_expression = qgis_feature_request.filterExpression()
-
-            if current_expression and search_expression != '':
-                search_expression = '( %s ) AND ( %s )' % (
-                    current_expression.dump(), search_expression)
-
             if search_expression != '':
-                qgis_feature_request.setFilterExpression(search_expression)
+                qgis_feature_request.combineFilterExpression(search_expression)
+
+
+class QgsExpressionFilterBackend(BaseFilterBackend):
+    """QgisExpression filter: sets a QgsExpression based filter and optionally
+    adds a form feature to the expression context (`form_data` and `layer_id`
+    are used in this case).
+
+    Setting a form feature in the context allow using `current_value(<attr_name>)`
+    and similar functions in the expression.
+
+    Accepts POST data only:
+
+    'expression': the QgsExpression text
+
+    Optionally, a form feature can be added to the expression context:
+
+    'form_data': GeoJSON representation of the feature currently begin edited in the form
+    'layer_id': the qdjango layer id for the `form_data` feature
+
+    """
+
+    def apply_filter(self, request, metadata_layer, qgis_feature_request, view):
+
+        if request.data and request.data.get('expression'):
+            qgis_feature_request.combineFilterExpression(
+                request.data.get('expression'))
+            if request.data.get('form_data') and request.data.get('layer_id'):
+                layer = Layer.objects.get(pk=request.data.get('layer_id'))
+                fields = layer.qgis_layer.fields()
+                form_data = request.data.get('form_data')
+                form_feature = QgsJsonUtils.stringToFeatureList(
+                    json.dumps(form_data), fields, None)[0]
+                for k, v in form_data['properties'].items():
+                    form_feature.setAttribute(k, v)
+                qgis_feature_request.expressionContext().appendScope(
+                    QgsExpressionContextUtils.formScope(form_feature))

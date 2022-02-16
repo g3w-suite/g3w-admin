@@ -221,7 +221,7 @@ def __get_qgis_features(qgis_layer,
 
     # Fetch features
     if expression_parts:
-        qgis_feature_request.setFilterExpression('(' + ') AND ('.join(expression_parts) + ')')
+        qgis_feature_request.combineFilterExpression('(' + ') AND ('.join(expression_parts) + ')')
 
 
     logger.debug('Fetching features from layer {layer_name} - filter expression: {filter} - BBOX: {bbox}'.format(

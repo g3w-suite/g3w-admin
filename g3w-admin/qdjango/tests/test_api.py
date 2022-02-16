@@ -1160,7 +1160,6 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
                 self.project_widget310.instance.pk,
                 'main_layer_e867d371_3388_4e2d_a214_95adbb56165c'])
         resp = json.loads(response.content)
-        
 
 
 class TestGeoConstraintVectorAPIFilter(QdjangoTestBase):
@@ -1393,14 +1392,14 @@ class QgisTemporalVectorProject(QdjangoTestBase):
 
 
 class LayerExpressionEval(QdjangoTestBase):
-    """ Test for temporal vector layer """
+    """ Test for QgsExpression evaluation API"""
 
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
         cls.client = APIClient()
 
-    def _expression_evaluate(self, url, expression, expected, form_data=None):
+    def _expression_evaluate(self, url, expression, expected, form_data=None, layer_id=None):
 
         assert self.client.login(
             username=self.test_admin1.username, password=self.test_admin1.username)
@@ -1411,6 +1410,7 @@ class LayerExpressionEval(QdjangoTestBase):
 
         if form_data is not None:
             data['form_data'] = form_data
+            data['layer_id'] = form_data
 
         response = self.client.post(
             url, data, format='json', content_type='application/json')
@@ -1447,4 +1447,4 @@ class LayerExpressionEval(QdjangoTestBase):
             'type': 'Feature'}
 
         self._expression_evaluate(
-            url, 'current_value(\'CAPITAL\')', "GUATEMALA", form_data)
+            url, 'current_value(\'CAPITAL\')', "GUATEMALA", form_data, layer.pk)
