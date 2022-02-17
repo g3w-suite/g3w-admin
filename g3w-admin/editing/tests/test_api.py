@@ -42,7 +42,7 @@ from .test_models import DATASOURCE_PATH, ConstraintsTestsBase
     DATASOURCE_PATH=DATASOURCE_PATH,
     G3WADMIN_LOCAL_MORE_APPS=[
         'editing',
-    ],
+],
     EDITING_ANONYMOUS=True,
     LANGUAGE_CODE='en',
     LANGUAGES=(
@@ -124,7 +124,7 @@ class EditingApiTests(ConstraintsTestsBase):
         constraint.save()
 
         rule = GeoConstraintRule(constraint=constraint,
-                              user=self.test_user3, rule='name=\'bagnolo\'')
+                                 user=self.test_user3, rule='name=\'bagnolo\'')
         rule.save()
 
         self.assertTrue(client.login(
@@ -181,7 +181,7 @@ class EditingApiTests(ConstraintsTestsBase):
             actual['vector']['fields'][0]['editable'] = False
             try:
                 self.assertEqual(actual, res_expected)
-            except: # QGIS 3.16 code
+            except:  # QGIS 3.16 code
                 actual = json.loads(response.content)
                 res_expected['vector']['fields'][7]['pk'] = False
                 self.assertEqual(actual, res_expected)
@@ -193,7 +193,8 @@ class EditingApiTests(ConstraintsTestsBase):
             username=self.test_user3.username, password=self.test_user3.username))
 
         # give grant `view` to project
-        assign_perm('view_project', self.test_user3, self.editing_project.instance)
+        assign_perm('view_project', self.test_user3,
+                    self.editing_project.instance)
 
         url = reverse('core-vector-api', args=['config', 'qdjango', self.editing_project.instance.pk,
                                                          cities_layer_id])
@@ -230,7 +231,8 @@ class EditingApiTests(ConstraintsTestsBase):
             username=self.test_user4.username, password=self.test_user4.username))
 
         # give grant `view` to project
-        assign_perm('view_project', self.test_user4, self.editing_project.instance)
+        assign_perm('view_project', self.test_user4,
+                    self.editing_project.instance)
 
         url = reverse('core-vector-api', args=['config', 'qdjango', self.editing_project.instance.pk,
                                                cities_layer_id])
@@ -272,7 +274,7 @@ class EditingApiTests(ConstraintsTestsBase):
         # Test for Anonymous user
         # -----------------------
         path = reverse('editing-commit-vector-api', args=['editing', 'qdjango', self.editing_project.instance.pk,
-                                      cities_layer_id])
+                                                          cities_layer_id])
 
         response = self.client.get(path)
 
@@ -287,7 +289,6 @@ class EditingApiTests(ConstraintsTestsBase):
 
         # check features
         self.assertEqual(len(jres['vector']['data']['features']), 481)
-
 
     def test_editing_api_with_constraint_by_user(self):
         """Test editing mode with contraint to single user"""
@@ -526,11 +527,6 @@ class EditingApiTests(ConstraintsTestsBase):
         # check features
         self.assertEqual(len(jres['vector']['data']['features']), 481)
 
-
-
-
-
-
     def test_editing_commit_mode_api(self):
         """ Test Editing API mode: MODE_COMMIT"""
 
@@ -583,7 +579,7 @@ class EditingApiTests(ConstraintsTestsBase):
 
         # check total feauture
         data_path = reverse('core-vector-api',
-                              args=['data', 'qdjango', self.editing_project.instance.pk, cities_layer_id])
+                            args=['data', 'qdjango', self.editing_project.instance.pk, cities_layer_id])
 
         response = self.client.get(data_path, format='json')
         self.assertEqual(response.status_code, 200)
@@ -859,10 +855,12 @@ class EditingApiTests(ConstraintsTestsBase):
         jresult = json.loads(response.content)
         self.assertFalse(jresult['result'])
 
-        self.assertEqual(jresult['errors'], ["Sorry but your user doesn't has 'Add Feature' capability"])
+        self.assertEqual(jresult['errors'], [
+                         "Sorry but your user doesn't has 'Add Feature' capability"])
 
         # give add_feature permission
-        assign_perm('view_project', self.test_user3, self.editing_project.instance)
+        assign_perm('view_project', self.test_user3,
+                    self.editing_project.instance)
         assign_perm('add_feature', self.test_user3, cities_layer)
 
         response = self.client.post(commit_path, payload, format='json')
@@ -921,8 +919,8 @@ class EditingApiTests(ConstraintsTestsBase):
         jresult = json.loads(response.content)
         self.assertFalse(jresult['result'])
 
-        self.assertEqual(jresult['errors'], ["Sorry but your user doesn't has 'Change or Change Attributes Features' capability"])
-
+        self.assertEqual(jresult['errors'], [
+                         "Sorry but your user doesn't has 'Change or Change Attributes Features' capability"])
 
         # give change_attr_feature permission
         assign_perm('change_attr_feature', self.test_user3, cities_layer)
@@ -1072,7 +1070,8 @@ class ConstraintsApiTests(ConstraintsTestsBase):
         self.assertEqual(jcontent['count'], 0)
 
         # Get by pk
-        url = reverse('geoconstraint-api-detail',  kwargs={'pk': constraint.pk})
+        url = reverse('geoconstraint-api-detail',
+                      kwargs={'pk': constraint.pk})
         response = client.get(url, {}, format='json')
         self.assertEqual(response.status_code, 200)
         jcontent = json.loads(response.content)
@@ -1082,7 +1081,8 @@ class ConstraintsApiTests(ConstraintsTestsBase):
                          jcontent['constraint_layer'])
 
         # Update the constraint (must fail because it's self linked)
-        url = reverse('geoconstraint-api-detail',  kwargs={'pk': constraint.pk})
+        url = reverse('geoconstraint-api-detail',
+                      kwargs={'pk': constraint.pk})
         response = client.put(url, {
             'layer': constraint_layer.pk,
             'constraint_layer': constraint_layer.pk,
@@ -1093,7 +1093,8 @@ class ConstraintsApiTests(ConstraintsTestsBase):
         self.assertTrue('error' in jcontent)
 
         # Delete
-        url = reverse('geoconstraint-api-detail',  kwargs={'pk': constraint.pk})
+        url = reverse('geoconstraint-api-detail',
+                      kwargs={'pk': constraint.pk})
         response = client.delete(url, {}, format='json')
         self.assertEqual(GeoConstraint.objects.count(), 0)
 
@@ -1407,7 +1408,8 @@ class ConstraintsApiTests(ConstraintsTestsBase):
 
         editing_layer = Layer.objects.get(name='editing_layer')
         constraint_layer = Layer.objects.get(name='constraint_layer')
-        constraint_layer_multi = Layer.objects.get(name='constraint_layer_multi')
+        constraint_layer_multi = Layer.objects.get(
+            name='constraint_layer_multi')
 
         # testing editing-api-info-layer
         # Retrieve the layers
@@ -1415,7 +1417,7 @@ class ConstraintsApiTests(ConstraintsTestsBase):
         response = client.get(url_layer, {}, format='json')
         self.assertEqual(response.status_code, 200)
 
-        print (json.loads(response.content)['results'])
+        print(json.loads(response.content)['results'])
 
         jcontent = json.loads(response.content)['results']
         self.assertEqual(len(jcontent), 2)

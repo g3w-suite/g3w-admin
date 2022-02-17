@@ -56,14 +56,7 @@ class SingleLayerExpressionConstraintFilter(BaseFilterBackend):
         if not expression_text:
             return
 
-        original_expression = qgis_feature_request.filterExpression(
-        ) if qgis_feature_request is not None else None
-        if original_expression is not None:
-            qgis_feature_request.setFilterExpression("({original_expression}) AND ({extra_expression})"
-                                                     .format(original_expression=original_expression.expression(),
-                                                             extra_expression=expression_text))
-        else:
-            qgis_feature_request.setFilterExpression(expression_text)
+        qgis_feature_request.combineFilterExpression(expression_text)
 
 
 class GeoConstraintsFilter(BaseFilterBackend):
@@ -85,9 +78,5 @@ class GeoConstraintsFilter(BaseFilterBackend):
 
         if rule_parts:
             expression = ' AND '.join(rule_parts)
-            current_expression = qgis_feature_request.filterExpression()
 
-            if current_expression:
-                expression = f'({current_expression.expression()}) AND ({expression})'
-
-            qgis_feature_request.setFilterExpression(expression)
+            qgis_feature_request.combineFilterExpression(expression)

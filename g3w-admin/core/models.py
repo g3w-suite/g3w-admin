@@ -174,7 +174,7 @@ class Group(TimeStampedModel, OrderedModel):
         )
 
     def __str__(self):
-        return self.name
+        return self.name, self.srid
 
     def get_absolute_url(self):
         return reverse('group-detail', kwargs={'slug': self.slug})

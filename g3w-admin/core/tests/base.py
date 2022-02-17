@@ -108,3 +108,21 @@ class CoreTestBase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.client.logout()
         return response
+
+    def _testPostApiCall(self, view_name, args, kwargs={}, data=None):
+        """Utility to make test calls"""
+
+        path = self._getPath(view_name, args, kwargs)
+
+        # No auth
+        response = self.client.post(
+            path, data, content_type='application/json')
+        self.assertEqual(response.status_code, 403)
+
+        # Auth
+        self.assertTrue(self.client.login(
+            username=self.test_admin1.username, password=self.test_admin1.username))
+        response = self.client.post(path, data, content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+        self.client.logout()
+        return response

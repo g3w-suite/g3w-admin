@@ -18,9 +18,9 @@ from qgis.core import (
     QgsWkbTypes,
     QgsVectorLayer,
     QgsJsonUtils,
-    QgsJsonExporter,
-    QgsFeature
+    QgsFeature,
 )
+
 from rest_framework import exceptions, status
 from rest_framework.exceptions import APIException
 from rest_framework.pagination import PageNumberPagination
@@ -423,7 +423,6 @@ class BaseVectorOnModelApiView(G3WAPIView):
         post_create_maplayerattributes.send(
             self, layer=self.layer, vector_params=vector_params)
 
-
         self.results.update(APIVectorLayerStructure(**vector_params).as_dict())
 
     def response_data_mode(self, request, export_features=False):
@@ -534,7 +533,7 @@ class BaseVectorOnModelApiView(G3WAPIView):
                     ex.exportFeatures(self.features))
             else:
 
-                # to exclude QgsFormater used into QgsJsonjExporter is necessary build by hand single json feature
+                # to exclude QgsFormater used into QgsJsonExporter is necessary build by hand single json feature
                 ex.setIncludeAttributes(False)
 
                 feature_collection = {

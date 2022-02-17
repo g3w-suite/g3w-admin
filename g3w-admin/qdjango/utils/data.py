@@ -614,8 +614,21 @@ class QgisProjectLayer(XmlData):
 
                     to_ret_node = {
                         'name': element.name(),
-                        'showlabel': element.showLabel()
+                        'showlabel': element.showLabel(),
                     }
+
+                    try:
+                        visibility_expression = element.visibilityExpression()
+                        if visibility_expression.enabled():
+                            expression = visibility_expression.data()
+                            to_ret_node['visibility_expression'] = {
+                                'expression': expression.expression(),
+                                'referenced_columns': list(expression.referencedColumns()),
+                                'referenced_functions': list(expression.referencedFunctions()),
+                            }
+                    except:
+                        to_ret_node['visibility_expression'] = None
+                        visibility_expression = None
 
                     if element.type() == QgsAttributeEditorElement.AeTypeContainer:
 
@@ -1318,7 +1331,8 @@ class QgisProject(XmlData):
                 for embedded_layer in linked_project.layer_set.filter(parent_project=self.instance):
                     layer_id = embedded_layer.qgs_layer_id
                     for element in tree.xpath('//maplayer[@id="{}"]'.format(layer_id)):
-                        element.attrib['project'] = makeDatasource(self.instance.qgis_file.path, Layer.TYPES.ogr)
+                        element.attrib['project'] = makeDatasource(
+                            self.instance.qgis_file.path, Layer.TYPES.ogr)
                         changed = True
                 if changed:
                     tree.write(linked_project.qgis_file.file.name,
@@ -1369,7 +1383,8 @@ class QgisProject(XmlData):
                 try:
                     layer_object = Layer.objects.get(
                         project__original_name=project_name, qgs_layer_id=layer_id)
-                    layer.attrib['project'] = makeDatasource(layer_object.project.qgis_file.path, Layer.TYPES.ogr)
+                    layer.attrib['project'] = makeDatasource(
+                        layer_object.project.qgis_file.path, Layer.TYPES.ogr)
                 except Layer.DoesNotExist:
                     raise Exception(
                         _('The project contains an embedded layer {} from a project that could not be found {}'.format(layer_id, project_name)))

@@ -19,7 +19,7 @@ from core.api.base.views import (MODE_CONFIG, MODE_DATA, MODE_SHP, MODE_XLS, MOD
                                  APIException, BaseVectorOnModelApiView, MODE_GPKG,
                                  IntersectsBBoxFilter)
 from core.api.filters import (IntersectsBBoxFilter, OrderingFilter,
-                              SearchFilter, SuggestFilterBackend, FieldFilterBackend)
+                              SearchFilter, SuggestFilterBackend, FieldFilterBackend, QgsExpressionFilterBackend)
 from core.api.permissions import ProjectPermission
 
 from core.utils.qgisapi import get_qgis_layer
@@ -175,6 +175,41 @@ class QGISLayerVectorViewMixin(object):
 
 
 class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
+    """
+    Returns a list of GeoJSON vector features from a layer.
+
+    Features can be filtered in different ways using the BaseFilterBackend implementations.
+
+    QgsExpression filters are supported in POST only with the following JSON payload:
+
+    `expression`: the QgsExpression text
+
+    Optionally a form feature context can be added, allowing to use form functions
+    like `current_value(<field name>)`:
+
+    `layer_id`: the qdjango Layer id (pk of the Layer instance) for the `form_data`, note that
+                this can be a different layer than the one being queried, it is the layer
+                which contains the `form_data` feature.
+    `form_data`: a GeoJSON representation of the the feature belonging to `layer_id` Layer
+
+    Example payload to filter by expression in a form context on Layer pk=2
+
+    {
+        'layer_id': 2,
+        'form_data': {
+            "type": "Feature",
+            "properties": {
+                "name": "GUATEMALA",
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [-90.35368448325509405, 15.68342749654157053]
+            }
+        },
+        'expression': "NAME=current_value('name')"
+    }
+
+    """
 
     permission_classes = (ProjectPermission,)
 
@@ -191,6 +226,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
         FidFilter,
         SingleLayerSessionTokenFilter,
         ColumnAclFilter,
+        QgsExpressionFilterBackend,
     )
 
     ordering_fields = '__all__'
