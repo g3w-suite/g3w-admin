@@ -11,6 +11,8 @@ from core.api.base.views import APIException
 from django.utils.translation import ugettext_lazy as _
 from rest_framework import status
 
+import json
+
 from qgis.core import (
     QgsExpression,
     QgsExpressionContext,
