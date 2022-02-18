@@ -423,6 +423,10 @@ class QgsExpressionLayerContextEvalView(G3WAPIView):
 
     """
 
+    authentication_classes = (
+        CsrfExemptSessionAuthentication,
+    )
+
     def post(self, request, layer_id, format=None):
         """
         This method accepts a QgsExpression, a qdjango layer_id and an optional geojson
@@ -432,7 +436,7 @@ class QgsExpressionLayerContextEvalView(G3WAPIView):
         layer = Layer.objects.get(pk=layer_id)
         expression_text = request.data.get('expression')
         if expression_text is None:
-            raise ExpressionEmptyError()
+            raise APIExpressionEmptyError()
 
         expression = QgsExpression(expression_text)
         expression_context = QgsExpressionContext(QgsExpressionContextUtils.globalProjectLayerScopes(
