@@ -1,6 +1,6 @@
 from django.conf.urls import url
 from django.contrib.auth.decorators import login_required
-from .api.views import layer_vector_view, G3WSUITEInfoAPIView
+from .api.views import layer_vector_view, G3WSUITEInfoAPIView, QgsExpressionLayerContextEvalView
 from .views import GroupSetOrderView, MacroGroupSetOrderView
 
 
@@ -26,5 +26,11 @@ urlpatterns = [
     url(r'^jx/macrogroups/(?P<group_id>[0-9]+)/setorder/$',
         login_required(MacroGroupSetOrderView.as_view()), name='macrogroup-set-order'),
 
-    url(r'^api/deploy/info/$', G3WSUITEInfoAPIView.as_view(), name='deploy-info-api')
+    url(r'^api/deploy/info/$', G3WSUITEInfoAPIView.as_view(), name='deploy-info-api'),
+
+    # POST only method to return QGIS Expressions evaluated in Project an optional Layer/Form context
+    # (passing form_data and qgs_layer_id in the post body)
+    url(r'^api/expression_eval/(?P<project_id>[0-9]+)//$',
+        login_required(QgsExpressionLayerContextEvalView.as_view()), name='layer-expression-eval'),
+
 ]

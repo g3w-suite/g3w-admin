@@ -32,43 +32,6 @@ from usersmanage.utils import (get_user_groups_for_object,
 from .permissions import LayerInfoPermission, LayerStylesManagePermission
 from .serializers import LayerInfoAuthGroupSerializer, LayerInfoUserSerializer, LayerInfoSerializer
 from qgis.core import QgsExpression, QgsExpressionContextUtils, QgsExpressionContext, QgsFeature, QgsJsonUtils
-from core.utils.qgisapi import (
-    expression_eval,
-    ExpressionEvalError,
-    ExpressionFormDataError,
-    ExpressionParseError,
-    ExpressionLayerError
-)
-
-
-class APIExpressionEvalError(APIException):
-    status_code = status.HTTP_400_BAD_REQUEST
-    default_detail = _('Expression evaluation error.')
-    default_code = 'expression_eval_error'
-
-
-class APIExpressionParseError(APIException):
-    status_code = status.HTTP_400_BAD_REQUEST
-    default_detail = _('Expression parse error.')
-    default_code = 'expression_parse_error'
-
-
-class APIExpressionEmptyError(APIException):
-    status_code = status.HTTP_400_BAD_REQUEST
-    default_detail = _('Expression empty error.')
-    default_code = 'expression_empty_error'
-
-
-class APIExpressionFormDataError(APIException):
-    status_code = status.HTTP_400_BAD_REQUEST
-    default_detail = _('Expression form data error.')
-    default_code = 'expression_form_data_error'
-
-
-class APIExpressionLayerError(APIException):
-    status_code = status.HTTP_400_BAD_REQUEST
-    default_detail = _('Layer error.')
-    default_code = 'expression_layer_error'
 
 
 class StyleNotFoundError(NotFound):
@@ -413,55 +376,3 @@ class LayerPolygonView(generics.ListAPIView):
                 geometrytype__in=['Polygon', 'MultiPolygon']
             )
         return qs
-
-
-class QgsExpressionLayerContextEvalView(G3WAPIView):
-    """This POST only API accepts a QgsExpression, a qdjango layer_id and an optional GeoJSON
-        feature data and returns the evaluated QgsExpression in the feature form context.
-
-    `form_data`: GeoJSON representation of the feature currently being edited.
-
-    """
-
-    authentication_classes = (
-        CsrfExemptSessionAuthentication,
-    )
-
-    def post(self, request, layer_id, format=None):
-        """
-        This method accepts a QgsExpression, a qdjango layer_id and an optional geojson
-        feature data and returns the evaluated QgsExpression in the feature form context.
-        """
-
-        layer = Layer.objects.get(pk=layer_id)
-
-        if request.content_type != 'application/json':
-            try:
-                data = json.loads(request.data.get('_content'))
-                expression_text =data.get('expression')
-                form_data = data.get('form_data')
-            except:
-                raise APIExpressionEmptyError()
-        else:
-            expression_text = request.data.get('expression')
-            form_data = request.data.get('form_data')
-
-        if expression_text is None:
-            raise APIExpressionEmptyError()
-
-        expression = QgsExpression(expression_text)
-        expression_context = QgsExpressionContext(QgsExpressionContextUtils.globalProjectLayerScopes(
-            layer.qgis_layer))
-
-        try:
-            result = expression_eval(expression_text, form_data, layer_id)
-        except ExpressionFormDataError as ex:
-            raise APIExpressionFormDataError(str(ex))
-        except ExpressionEvalError as ex:
-            raise APIExpressionEvalError(str(ex))
-        except ExpressionParseError as ex:
-            raise APIExpressionParseError(str(ex))
-        except ExpressionLayerError as ex:
-            raise APIExpressionLayerError(str(ex))
-
-        return Response(result)

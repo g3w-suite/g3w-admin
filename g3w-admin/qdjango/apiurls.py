@@ -16,8 +16,7 @@ from .api.layers.views import (
     LayerAuthGroupInfoAPIView,
     LayerStyleListView,
     LayerStyleDetailView,
-    LayerPolygonView,
-    QgsExpressionLayerContextEvalView,
+    LayerPolygonView
 )
 from .api.constraints.views import (
     ConstraintExpressionRuleDetail,
@@ -89,10 +88,6 @@ urlpatterns = [
     # All expressionrule(s)
     url(r'^api/expressionrule/$',
         login_required(ConstraintExpressionRuleList.as_view()), name='qdjango-expressionrule-api-list'),
-
-    # QGIS Expressions API evaluated in Layer context
-    url(r'^api/expression_eval/(?P<layer_id>[\d]+)/$',
-        login_required(QgsExpressionLayerContextEvalView.as_view()), name='qdjango-api-layer-expression-eval'),
 
 
     #############################################################

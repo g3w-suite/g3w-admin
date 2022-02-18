@@ -316,7 +316,7 @@ class FieldFilterBackend(BaseFilterBackend):
 
 class QgsExpressionFilterBackend(BaseFilterBackend):
     """QgisExpression filter: sets a QgsExpression based filter and optionally
-    adds a form feature to the expression context (`form_data` and `layer_id`
+    adds a form feature to the expression context (`form_data` and `qgs_layer_id`
     are used in this case).
 
     Setting a form feature in the context allow using `current_value(<attr_name>)`
@@ -329,7 +329,7 @@ class QgsExpressionFilterBackend(BaseFilterBackend):
     Optionally, a form feature can be added to the expression context:
 
     'form_data': GeoJSON representation of the feature currently begin edited in the form
-    'layer_id': the qdjango layer id for the `form_data` feature
+    'qgs_layer_id': the QGIS layer id for the `form_data` feature
 
     """
 
@@ -338,13 +338,20 @@ class QgsExpressionFilterBackend(BaseFilterBackend):
         if request.data and request.data.get('expression'):
             qgis_feature_request.combineFilterExpression(
                 request.data.get('expression'))
-            if request.data.get('form_data') and request.data.get('layer_id'):
-                layer = Layer.objects.get(pk=request.data.get('layer_id'))
-                fields = layer.qgis_layer.fields()
-                form_data = request.data.get('form_data')
-                form_feature = QgsJsonUtils.stringToFeatureList(
-                    json.dumps(form_data), fields, None)[0]
-                for k, v in form_data['properties'].items():
-                    form_feature.setAttribute(k, v)
-                qgis_feature_request.expressionContext().appendScope(
-                    QgsExpressionContextUtils.formScope(form_feature))
+
+            if request.data.get('form_data') and request.data.get('qgs_layer_id'):
+                try:
+                    project = Layer.objects.get(pk=metadata_layer.layer_id).project
+                    layer = Layer.objects.get(
+                        project=project, qgs_layer_id=request.data.get('qgs_layer_id'))
+                    fields = layer.qgis_layer.fields()
+                    form_data = request.data.get('form_data')
+                    form_feature = QgsJsonUtils.stringToFeatureList(
+                        json.dumps(form_data), fields, None)[0]
+                    for k, v in form_data['properties'].items():
+                        form_feature.setAttribute(k, v)
+                    qgis_feature_request.expressionContext().appendScope(
+                        QgsExpressionContextUtils.formScope(form_feature))
+                except:
+                    raise Exception("Layer or project could not be found!")
+

@@ -17,7 +17,7 @@ import json
 
 from qgis.core import QgsFeatureRequest, QgsRectangle, QgsVectorLayer
 
-from qdjango.models import Layer
+from qdjango.models import Project
 from qgis.core import (
     QgsFeatureRequest,
     QgsRectangle,
@@ -31,6 +31,7 @@ from qgis.core import (
 
 from django.utils.translation import ugettext_lazy as _
 from qdjango.apps import get_qgs_project
+from qdjango.models import Layer, Project
 
 logger = logging.getLogger(__file__)
 
@@ -408,7 +409,11 @@ class ExpressionFormDataError(Exception):
 
 
 class ExpressionLayerError(Exception):
-    """Raised when the Layer corresponding to layer_id could not be found"""
+    """Raised when the Layer corresponding to qgs_layer_id could not be found"""
+    pass
+
+class ExpressionProjectError(Exception):
+    """Raised when the Project corresponding to project_id could not be found"""
     pass
 
 
@@ -422,19 +427,23 @@ class ExpressionForbiddenError(Exception):
     pass
 
 
-def expression_eval(expression_text, form_data=None, layer_id=None):
+def expression_eval(expression_text, project_id=None, qgs_layer_id=None, form_data=None,):
     """Evaluates a QgsExpression and returns the result
 
-    :param expression_text: The QgsExprssion text
+    :param expression_text: The QgsExpression text
     :type expression_text: str
+    :param project_id: ID of the qdjango project, defaults to None
+    :type project_id: int, optional
+    :param qgs_layer_id: ID of the QGIS Layer, defaults to None
+    :type qgslayer_id: str, optional
     :param form_data: A dictionary that maps to a GeoJSON representation of the feature currently edited in the form
     :type form_data: dict, optional
-    :param layer_id: ID of the qdjango Layer, defaults to None
-    :type layer_id: int, optional
     """
 
     expression = QgsExpression(expression_text)
     expression_context = QgsExpressionContext()
+
+    layer = None
 
     for func_name in expression.referencedFunctions():
         if func_name in FORBIDDEN_FUNCTIONS:
@@ -446,19 +455,40 @@ def expression_eval(expression_text, form_data=None, layer_id=None):
             raise ExpressionForbiddenError(
                 _('Variable "{}" is not allowed for security reasons!').format(var_name))
 
-    if layer_id is not None:
-        try:
-            layer = Layer.objects.get(pk=layer_id)
-        except Layer.DoesNotExist:
-            raise ExpressionLayerError(
-                _('QDjango Layer with id "{}" could not be found!').format(layer_id))
+    if project_id is not None:
 
-        expression_contex = QgsExpressionContextUtils.globalProjectLayerScopes(
-            layer.qgis_layer)
+        try:
+            project = Project.objects.get(pk=project_id)
+
+            if qgs_layer_id is not None:
+                try:
+                    layer = project.layer_set.get(qgs_layer_id=qgs_layer_id)
+                except Layer.DoesNotExist:
+                    raise ExpressionLayerError(
+                        _('QGIS layer with id "{}" could not be found!').format(qgs_layer_id))
+
+                expression_contex = QgsExpressionContextUtils.globalProjectLayerScopes(
+                    layer.qgis_layer)
+
+            else:
+                expression_contex = QgsExpressionContextUtils.globalScope()
+                expression_context.appendScope(
+                    QgsExpressionContextUtils.projectScope(project.qgis_project))
+
+        except Project.DoesNotExist:
+            raise ExpressionProjectError(
+                _('QDjango project with id "{}" could not be found!').format(project_id))
+
+
     else:
         expression_contex = QgsExpressionContextUtils.globalScope()
 
     if form_data is not None:
+
+        if layer is None:
+            raise ExpressionLayerError(
+                _('A valid QGIS layer is required to process form data!'))
+
         try:
             fields = layer.qgis_layer.fields()
             form_feature = QgsJsonUtils.stringToFeatureList(
