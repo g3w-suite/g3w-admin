@@ -30,7 +30,7 @@ urlpatterns = [
 
     # POST only method to return QGIS Expressions evaluated in Project an optional Layer/Form context
     # (passing form_data and qgs_layer_id in the post body)
-    url(r'^api/expression_eval/(?P<project_id>[0-9]+)//$',
+    url(r'^api/expression_eval/(?P<project_id>[0-9]+)/$',
         login_required(QgsExpressionLayerContextEvalView.as_view()), name='layer-expression-eval'),
 
 ]
