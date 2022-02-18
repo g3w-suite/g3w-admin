@@ -434,15 +434,24 @@ class QgsExpressionLayerContextEvalView(G3WAPIView):
         """
 
         layer = Layer.objects.get(pk=layer_id)
-        expression_text = request.data.get('expression')
+
+        if request.content_type != 'application/json':
+            try:
+                data = json.loads(request.data.get('_content'))
+                expression_text =data.get('expression')
+                form_data = data.get('form_data')
+            except:
+                raise APIExpressionEmptyError()
+        else:
+            expression_text = request.data.get('expression')
+            form_data = request.data.get('form_data')
+
         if expression_text is None:
             raise APIExpressionEmptyError()
 
         expression = QgsExpression(expression_text)
         expression_context = QgsExpressionContext(QgsExpressionContextUtils.globalProjectLayerScopes(
             layer.qgis_layer))
-
-        form_data = request.data.get('form_data')
 
         try:
             result = expression_eval(expression_text, form_data, layer_id)
