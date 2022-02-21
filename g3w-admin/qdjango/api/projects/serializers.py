@@ -25,7 +25,8 @@ from qgis.core import (
     QgsMapLayer,
     QgsCoordinateReferenceSystem,
     QgsCoordinateTransform,
-    QgsCoordinateTransformContext
+    QgsCoordinateTransformContext,
+    QgsExpression
 )
 from qgis.server import QgsServerProjectUtils
 from qgis.PyQt.QtCore import QVariant
@@ -585,7 +586,6 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
                 metadata['attributes'].append(attribute)
 
-        # FIXME: ask to elapso where to find CRS getprojectsettings layer list.
         metadata['crs'] = []
 
         metadata['dataurl'] = {}
@@ -750,40 +750,57 @@ class WidgetSerializer(serializers.ModelSerializer):
                 # if widgettype is selectbox, get values
                 if 'widgettype' in field and field['widgettype'] == 'selectbox':
 
-                    qgis_layer = get_qgis_layer(self.layer)
-
-                    uniques = qgis_layer.uniqueValues(
-                        qgis_layer.fields().indexOf(field['name'])
-                    )
-                    values = []
-                    for u in uniques:
-                        try:
-                            values.append(json.loads(
-                                QgsJsonUtils.encodeValue(u)))
-                        except Exception as e:
-                            logger.error(f'Response vector widget unique: {e}')
-                            continue
-
-                    # sort values for selectbox
-                    try:
-                        values = sorted(set(values))
-                    except:
-                        values = set(values)
-
-                    values = list(values)
+                    # qgis_layer = get_qgis_layer(self.layer)
+                    #
+                    # uniques = qgis_layer.uniqueValues(
+                    #     qgis_layer.fields().indexOf(field['name'])
+                    # )
+                    # values = []
+                    # for u in uniques:
+                    #     try:
+                    #         values.append(json.loads(
+                    #             QgsJsonUtils.encodeValue(u)))
+                    #     except Exception as e:
+                    #         logger.error(f'Response vector widget unique: {e}')
+                    #         continue
+                    #
+                    # # sort values for selectbox
+                    # try:
+                    #     values = sorted(set(values))
+                    # except:
+                    #     values = set(values)
+                    #
+                    # values = list(values)
 
                     field['input']['type'] = 'selectfield'
+                    field['input']['options']['values'] = []
                     if 'dependance' not in field['input']['options']:
 
+                        edittype = edittypes[field['name']]
+
                         # check if field has a widget edit type
-                        # todo: add 'ValueRelation' case
-                        if field['name'] in edittypes and \
-                                edittypes[field['name']]['widgetv2type'] in ('ValueMap',):
-                            field['input']['options']['values'] = edittypes[field['name']]['values']
-                        else:
-                            field['input']['options']['values'] = values
-                    else:
-                        field['input']['options']['values'] = []
+                        widget_type = edittype['widgetv2type']
+                        if field['name'] in edittypes and widget_type in ('ValueMap', 'ValueRelation'):
+                            if widget_type == 'ValueMap':
+                                field['input']['options']['values'] = edittype['values']
+                            else:
+
+                                # Add layer params
+                                field['input']['options']['key'] = edittype['Value']
+                                field['input']['options']['value'] = edittype['Key']
+                                field['input']['options']['layer_id'] = edittype['Layer']
+
+                                # Add data for ValueRelation
+                                if edittypes[field['name']]['FilterExpression'] != '':
+                                    exp = QgsExpression(edittype['FilterExpression'])
+                                    field['input']['options']['filter_expression'] = {
+                                        'expression': exp.expression(),
+                                        'referenced_columns': list(exp.referencedColumns()),
+                                        'referenced_functions': list(exp.referencedFunctions())
+                                    }
+
+
+
 
                 # For AutoccOmpleteBox imput type
                 if 'widgettype' in field and field['widgettype'] == 'autocompletebox':
