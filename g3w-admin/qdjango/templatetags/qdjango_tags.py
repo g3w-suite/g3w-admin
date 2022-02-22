@@ -20,7 +20,8 @@ def can_set_external(layer):
     """
 
     cando = False
-    if layer.layer_type in [Layer.TYPES.wms, Layer.TYPES.arcgismapserver]:
+    if layer.layer_type in [Layer.TYPES.wms, Layer.TYPES.arcgismapserver] and \
+            layer.srid == layer.project.group.srid.srid:
         if ('username' not in layer.datasource or 'password' not in layer.datasource) and 'type=xyz' \
                 not in layer.datasource:
             cando = True
