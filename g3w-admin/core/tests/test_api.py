@@ -461,4 +461,5 @@ class CoreApiTest(CoreTestBase):
         self.assertEqual(jcontent['vector']['fields'][2]['input']['options']['filter_expression'],
                          {'expression': '"id_reg" = current_value(\'value1\')',
                           'referenced_columns': ['id_reg'],
-                          'referenced_functions': ['current_value']})
+                          'referenced_functions': ['current_value'],
+                          'referencing_fields': ['value1']})

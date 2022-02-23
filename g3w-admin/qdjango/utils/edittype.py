@@ -9,6 +9,8 @@ FORM_FIELD_TYPE_QGIS_RANGE = 'range'
 FORM_FIELD_TYPE_QGIS_UNIQUE_VALUE = 'unique'
 FORM_FIELD_TYPE_QGIS_EXTERNAL_RESOURCE = 'media'
 
+import re
+
 
 class QgisEditType(object):
     """
@@ -148,6 +150,12 @@ class QgisEditTypeValueRelation(QgisEditTypeValueMap):
                 'referenced_columns': list(exp.referencedColumns()),
                 'referenced_functions': list(exp.referencedFunctions())
             }
+
+            # For current_values function in filter expression get parameter field fo it
+            if "current_value" in filter_expression['referenced_functions']:
+                groups = re.findall(r'current_value\(\'(.*?)\'\)|(\w+=\w+)', filter_expression['expression'])
+                filter_expression['referencing_fields'] = [g[0] for g in groups]
+
         else:
             filter_expression = None
 
