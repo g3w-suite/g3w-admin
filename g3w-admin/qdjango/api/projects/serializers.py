@@ -790,18 +790,6 @@ class WidgetSerializer(serializers.ModelSerializer):
                                 field['input']['options']['value'] = edittype['Key']
                                 field['input']['options']['layer_id'] = edittype['Layer']
 
-                                # Add data for ValueRelation
-                                if edittypes[field['name']]['FilterExpression'] != '':
-                                    exp = QgsExpression(edittype['FilterExpression'])
-                                    field['input']['options']['filter_expression'] = {
-                                        'expression': exp.expression(),
-                                        'referenced_columns': list(exp.referencedColumns()),
-                                        'referenced_functions': list(exp.referencedFunctions())
-                                    }
-
-
-
-
                 # For AutoccOmpleteBox imput type
                 if 'widgettype' in field and field['widgettype'] == 'autocompletebox':
                     field['input']['type'] = 'autocompletefield'
