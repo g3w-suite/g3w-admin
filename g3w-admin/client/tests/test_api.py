@@ -537,8 +537,7 @@ class ClientApiTest(CoreTestBase):
         self.assertEqual(resp_serach['name'], 'Test selectbox')
         self.assertEqual(resp_serach['type'], 'search')
         self.assertEqual(resp_serach['options']['filter'][0]['input']['type'], 'selectfield')
-        self.assertEqual(set(resp_serach['options']['filter'][0]['input']['options']['values']),
-                         set(['a point', 'another point']))
+        self.assertEqual(resp_serach['options']['filter'][0]['input']['options']['values'], [])
         self.assertEqual(resp_serach['options']['filter'][0]['logicop'], 'AND')
 
         # create a search widget with autocompletebox
