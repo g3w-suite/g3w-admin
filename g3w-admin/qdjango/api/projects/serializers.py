@@ -676,7 +676,10 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
             if instance.external and instance.layer_type == Layer.TYPES.wms:
                 try:
                     wms = WebMapService(ret['source']['url'], version='1.3.0')
-                    ret['infoformat'] = wms.getOperationByName('GetFeatureInfo').formatOptions
+                    format_options = wms.getOperationByName('GetFeatureInfo').formatOptions
+                    if format_options:
+                        ret['infoformat'] = format_options[0]
+                        ret['infoformats'] = format_options
                 except Exception as e:
                     logger.debug(f'WMS layer GetFeatureInfo formats available: {e}')
 
