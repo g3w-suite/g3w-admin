@@ -469,7 +469,6 @@ ga.Qdjango.widgetEditor = {
     widgetSelect.on("change", function () {
       var $select = div.find(".cmpDependanceSelect")
       var $numdigaut = div.find(".cmpNumDigAutocomplete")
-      var $advise = div.find(".advise")
       if ($(this).val() == "selectbox" || $(this).val() == "autocompletebox") {
         div.find(".cmpDependanceSelectLabel").removeClass("invisible")
         $select.removeClass("invisible")
@@ -482,17 +481,13 @@ ga.Qdjango.widgetEditor = {
         if ($(this).val() == "selectbox") {
           // show advise msg
           $numdigaut.hide()
-          $advise.show()
-          $advise.find("div").html("<strong>" + gettext("Attention") + "!</strong><br>" + gettext("Fields with many unique values can create slow map loading behavior"))
         } else {
           $numdigaut.show()
-          $advise.hide()
         }
       } else {
         div.find(".cmpDependanceSelectLabel").addClass("invisible")
         $select.addClass("invisible")
         $numdigaut.hide()
-        $advise.hide()
       }
     })
 
