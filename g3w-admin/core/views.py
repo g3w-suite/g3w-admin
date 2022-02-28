@@ -411,6 +411,8 @@ class InterfaceProxy(View):
         if not method:
             return HttpResponseBadRequest("'method' parameter must be provided.")
 
+        method = method.lower()
+
         # Check for standard methods:
         try:
             req_method = getattr(requests, method)
