@@ -1,6 +1,7 @@
 from django.conf.urls import url
+from django.urls import re_path
 from django.contrib.auth.decorators import login_required
-from .api.views import layer_vector_view, G3WSUITEInfoAPIView, QgsExpressionLayerContextEvalView
+from .api.views import layer_vector_view, G3WSUITEInfoAPIView, QgsExpressionLayerContextEvalView, layer_raster_view
 from .views import GroupSetOrderView, MacroGroupSetOrderView
 
 
@@ -32,5 +33,11 @@ urlpatterns = [
     # (passing form_data and qgs_layer_id in the post body)
     url(r'^api/expression_eval/(?P<project_id>[0-9]+)/$',
         login_required(QgsExpressionLayerContextEvalView.as_view()), name='layer-expression-eval'),
+
+    # For raster data
+    # ---------------
+    re_path(r'^raster/api/(?P<mode_call>geotiff)/(?P<project_type>[-_\w\d]+)/(?P<project_id>[0-9]+)/'
+        r'(?P<layer_name>[-_\w\d]+)/$',
+        layer_raster_view, name='core-raster-api'),
 
 ]

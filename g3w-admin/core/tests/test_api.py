@@ -30,6 +30,9 @@ from qdjango.utils.data import QgisProject
 
 from .base import CoreTestBase
 
+from qgis.core import QgsRasterLayer
+from qgis.PyQt.QtCore import QTemporaryDir
+
 # Re-use test data from qdjango module
 DATASOURCE_PATH = os.path.join(os.getcwd(), 'qdjango', 'tests', 'data')
 
@@ -463,3 +466,54 @@ class CoreApiTest(CoreTestBase):
                           'referenced_columns': ['id_reg'],
                           'referenced_functions': ['current_value'],
                           'referencing_fields': ['value1']})
+
+    def testCoreRasterApiGeotiff(self):
+        """Test core-raster-api geotiff"""
+
+        path_err = self._getPath('core-raster-api', ['geotiff', 'qdjango', '1', 'world20181008111156525'])
+        path = self._getPath('core-raster-api', ['geotiff', 'qdjango', '1', 'bluemarble20181008111156906'])
+
+        # Only raster layer
+        response = self.api_client.get(path_err)
+        self.assertEqual(response.status_code, 500)
+        jresponse = json.loads(response.content)
+
+        self.assertFalse(jresponse['result'])
+        self.assertEqual(jresponse['error']['data'], "Layer with id world20181008111156525: is not a raster layer")
+
+
+        # Export
+        response = self.api_client.get(path)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'image/tif')
+        self.assertTrue('bluemarble.tif' in response['Content-Disposition'])
+
+        temp = QTemporaryDir()
+        fname = temp.path() + '/temp.tif'
+        with open(fname, 'wb+') as f:
+            f.write(response.content)
+
+        rl = QgsRasterLayer(fname)
+        self.assertTrue(rl.isValid())
+        self.assertEqual(rl.height(), 720)
+        self.assertEqual(rl.width(), 1440)
+
+        # With map_extent parameter
+        path = self._getPath('core-raster-api', ['geotiff', 'qdjango', '1', 'bluemarble20181008111156906'], {
+            'map_extent': '1.07707156376701,34.84554059116634,24.894006142840222,48.28618010521657'
+        })
+
+        response = self.api_client.get(path)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'image/tif')
+        self.assertTrue('bluemarble.tif' in response['Content-Disposition'])
+
+        temp = QTemporaryDir()
+        fname = temp.path() + '/temp1.tif'
+        with open(fname, 'wb+') as f:
+            f.write(response.content)
+
+        rl = QgsRasterLayer(fname)
+        self.assertTrue(rl.isValid())
+        self.assertEqual(rl.height(), 53)
+        self.assertEqual(rl.width(), 95)
