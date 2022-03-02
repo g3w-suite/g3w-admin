@@ -216,9 +216,9 @@
                             <td>
                                 <input type="checkbox" data-widget-type="noLegendLayer" data-ajax-url="{% url 'qdjango-project-layers-data-editing' project.group.slug project.slug object.pk %}" name="no_legend_{{ object.pk }}" {% if object.exclude_from_legend %}checked="checked"{% endif %}>
                             </td>
-                            {% if 'shp' in SETTINGS.G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS %}
+                            {% if 'shp' in SETTINGS.G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS or 'geotiff' in SETTINGS.G3WADMIN_RASTER_LAYER_DOWNLOAD_FORMATS %}
                             <td>
-                                {% if object.layer_type in type_layer_for_download %}
+                                {% if object.layer_type in type_layer_for_download or object.layer_type in type_raster_layer_for_download %}
                                 <input type="checkbox" data-widget-type="downloadLayer" data-ajax-url="{% url 'qdjango-project-layers-data-editing' project.group.slug project.slug object.pk %}" name="download_{{ object.pk }}" {% if object.download %}checked="checked"{% endif %}>
                                 {% endif %}
                             </td>

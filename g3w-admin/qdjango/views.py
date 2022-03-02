@@ -229,6 +229,7 @@ class QdjangoLayersListView(G3WRequestViewMixin, G3WGroupViewMixin, QdjangoProje
 
         context['type_layer_for_widget'] = TYPE_LAYER_FOR_WIDGET
         context['type_layer_for_download'] = TYPE_LAYER_FOR_DOWNLOAD
+        context['type_raster_layer_for_download'] = TYPE_RASTER_LAYER_FOR_DOWNLOAD
 
         return context
 

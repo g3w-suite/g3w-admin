@@ -48,6 +48,12 @@ TYPE_LAYER_FOR_DOWNLOAD = (
     'oracle'
 )
 
+TYPE_RASTER_LAYER_FOR_DOWNLOAD = (
+    'gdal',
+    'raster'
+)
+
+
 
 def buildLayerTreeNodeObject(layerTreeNode):
     """Creates a dictionary that represents the QGIS Project layer tree

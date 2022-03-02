@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.conf.urls import url
 from django.urls import re_path
 from django.contrib.auth.decorators import login_required
@@ -6,16 +7,16 @@ from .views import GroupSetOrderView, MacroGroupSetOrderView
 
 
 urlpatterns = [
-    url(r'^vector/api/(?P<mode_call>data|config|shp|xls|gpkg|gpx|csv|filtertoken)/(?P<project_type>[-_\w\d]+)/(?P<project_id>[0-9]+)/'
+    url(r'^' + settings.VECTOR_URL[1:] + r'(?P<mode_call>data|config|shp|xls|gpkg|gpx|csv|filtertoken)/(?P<project_type>[-_\w\d]+)/(?P<project_id>[0-9]+)/'
         r'(?P<layer_name>[-_\w\d]+)/$',
         layer_vector_view, name='core-vector-api'),
 
     # with extention
-    url(r'^vector/api/(?P<mode_call>shp|xls|gpx|csv|gpkg)/(?P<project_type>[-_\w\d]+)/(?P<project_id>[0-9]+)/'
+    url(r'^' + settings.VECTOR_URL[1:] + r'(?P<mode_call>shp|xls|gpx|csv|gpkg)/(?P<project_type>[-_\w\d]+)/(?P<project_id>[0-9]+)/'
         r'(?P<layer_name>[-_\w\d]+).(?P<ext>zip|xls|gpx|csv|gpkg)$',
         layer_vector_view, name='core-vector-api-ext'),
 
-    url(r'^vector/api/(?P<mode_call>widget)/(?P<widget_type>[-_\w\d]+)/data/'
+    url(r'^' + settings.VECTOR_URL[1:] + r'(?P<mode_call>widget)/(?P<widget_type>[-_\w\d]+)/data/'
         r'(?P<project_type>[-_\w\d]+)/(?P<project_id>[0-9]+)/'
         r'(?P<layer_name>[-_\w\d]+)/$',
         layer_vector_view, name='core-vector-api-widget'),
@@ -36,7 +37,7 @@ urlpatterns = [
 
     # For raster data
     # ---------------
-    re_path(r'^raster/api/(?P<mode_call>geotiff)/(?P<project_type>[-_\w\d]+)/(?P<project_id>[0-9]+)/'
+    re_path(r'^' + settings.RASTER_URL[1:] + r'(?P<mode_call>geotiff)/(?P<project_type>[-_\w\d]+)/(?P<project_id>[0-9]+)/'
         r'(?P<layer_name>[-_\w\d]+)/$',
         layer_raster_view, name='core-raster-api'),
 

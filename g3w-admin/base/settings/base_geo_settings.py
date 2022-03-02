@@ -5,6 +5,7 @@ EDITABLE = 4
 WFS = 4
 
 VECTOR_URL = '/vector/api/'
+RASTER_URL = '/raster/api/'
 
 # Layer edit options, , for bitwise operations
 INSERT = 1
