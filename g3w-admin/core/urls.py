@@ -1,3 +1,6 @@
+from django.urls import path
+
+# TODO: following import to remove on migration to Django 3.2
 from django.conf.urls import url
 from django.contrib.auth.decorators import login_required
 from django.views.static import serve
@@ -44,7 +47,8 @@ urlpatterns = [
         name='project-list'),
 
     url(r'^generalsuitedata/$', login_required(GeneralSuiteDataUpdateView.as_view()), name='generaldata-update'),
-    url(r'^search/$', login_required(SearchAdminView.as_view()), name='search-admin'),
+    url(r'^search/$', login_required(SearchAdminView.as_view()), name='search-admin')
+
 
 
 ]

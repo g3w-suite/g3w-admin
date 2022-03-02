@@ -160,14 +160,14 @@ class ClientView(TemplateView):
         # add baseUrl property
         contextData['group_config'] = 'var initConfig ={{ "i18n": {}, "staticurl":"{}", "client":"{}", ' \
                                       '"mediaurl":"{}", "user":{}, "group":{}, "baseurl":"{}", "vectorurl":"{}", ' \
-                                      '"main_map_title":{}, "g3wsuite_logo_img": "{}", "credits": "{}", ' \
+                                      '"proxyurl": "{}", "main_map_title":{}, "g3wsuite_logo_img": "{}", "credits": "{}", ' \
                                       '"version": "{}" {} }}'.\
             format(json.dumps(settings.LANGUAGES),
                    settings.STATIC_URL,
                    "{}/".format(settings.CLIENT_DEFAULT),
                    settings.MEDIA_URL,
                    user_data.decode('UTF-8'),
-                   serializedGroup, baseurl, settings.VECTOR_URL,
+                   serializedGroup, baseurl, settings.VECTOR_URL, reverse('interface-proxy'),
                    '"' + generaldata.main_map_title + '"' if generaldata.main_map_title else 'null',
                    settings.CLIENT_G3WSUITE_LOGO,
                    reverse('client-credits'),

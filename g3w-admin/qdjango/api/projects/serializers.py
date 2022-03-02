@@ -4,7 +4,7 @@ from django.utils.translation import ugettext_lazy as _
 from rest_framework import serializers
 from rest_framework.fields import empty
 from guardian.shortcuts import get_objects_for_user, get_anonymous_user
-
+from owslib.wms import WebMapService
 from qdjango.models import Project, Layer, Widget, SessionTokenFilter
 from qdjango.utils.data import QGIS_LAYER_TYPE_NO_GEOM
 from qdjango.utils.models import get_capabilities4layer
@@ -673,6 +673,17 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
                     ret['source'].update(datasource_wms)
 
             ret['source']['external'] = instance.external
+            if instance.external and instance.layer_type == Layer.TYPES.wms:
+                try:
+                    wms = WebMapService(ret['source']['url'], version='1.3.0')
+                    format_options = wms.getOperationByName('GetFeatureInfo').formatOptions
+                    if format_options:
+                        ret['infoformat'] = format_options[0]
+                        ret['infoformats'] = format_options
+                except Exception as e:
+                    logger.debug(f'WMS layer GetFeatureInfo formats available: {e}')
+
+
 
         # replace crs property if is not none with dict structure
 

@@ -152,6 +152,7 @@ class QgsExpressionLayerContextEvalView(G3WAPIView):
             except:
                 raise APIExpressionEmptyError()
         else:
+            print(request.data)
             expression_text = request.data.get('expression')
             form_data = request.data.get('form_data')
             form_data = request.data.get('form_data')

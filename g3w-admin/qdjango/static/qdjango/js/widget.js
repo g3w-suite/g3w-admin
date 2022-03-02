@@ -119,7 +119,9 @@ ga.Qdjango.widgetEditor = {
           var options = {}
           var dependance = v.find(".cmpDependanceSelect").find("select").val()
           if (dependance) {
-            options["dependance"] = dependance
+            options["dependance"] = dependance;
+            // Add strict options
+            options["dependance_strict"] = v.find(".cmpDependanceStrict").find("input").prop("checked");
           }
           options["numdigaut"] = v.find(".cmpNumDigAutocomplete").find("input").val()
 
@@ -319,6 +321,7 @@ ga.Qdjango.widgetEditor = {
 
     var cmpDependanceSelect = $('<select class="form-control" name="dependence_field">' + '<option value=""> ----- </option>' + "</select>")
 
+
     var options = that.widgettype
 
     var widgetSelect = $('<select class="form-control" name="widget_type"></select>')
@@ -423,9 +426,19 @@ ga.Qdjango.widgetEditor = {
         '</label>\
 										</div>\
 									</div>\
+									<div class="col-md-3">\
+										<div class="controls cmpDependanceStrictLabel invisible">\
+											<label class="control-label">' +
+        gettext("Strictly dependent") +
+        '</label>\
+										</div>\
+									</div>\
 								</div>\
 								<div class="row">\
 									<div class="col-md-3 invisible cmpDependanceSelect"></div>\
+									<div class="col-md-3 invisible cmpDependanceStrict">\
+									  <input type="checkbox" name="dependent_strict" value="1" />\
+									</div>\
 								</div>\
 							</div>\
 					</div>\
@@ -466,12 +479,25 @@ ga.Qdjango.widgetEditor = {
 
     div.fadeIn(this.fadeNumber)
 
+    var $dependence_strict = div.find(".cmpDependanceStrict");
+
     widgetSelect.on("change", function () {
-      var $select = div.find(".cmpDependanceSelect")
+      var $select = div.find(".cmpDependanceSelect");
       var $numdigaut = div.find(".cmpNumDigAutocomplete")
       if ($(this).val() == "selectbox" || $(this).val() == "autocompletebox") {
         div.find(".cmpDependanceSelectLabel").removeClass("invisible")
-        $select.removeClass("invisible")
+        $select.removeClass("invisible");
+
+        // On select dependance change
+        $select.find("select").on("change", function(){
+          if($(this).val() != ""){
+            $dependence_strict.removeClass("invisible");
+            div.find(".cmpDependanceStrictLabel").removeClass("invisible")
+          } else {
+            $dependence_strict.addClass("invisible");
+            div.find(".cmpDependanceStrictLabel").addClass("invisible")
+          }
+        });
 
         $.each($(".rightCol").find(".blocco"), function (i, v) {
           var f = $(v).find(".fieldSelect").find("select").val()
@@ -479,20 +505,29 @@ ga.Qdjango.widgetEditor = {
         })
 
         if ($(this).val() == "selectbox") {
-          // show advise msg
           $numdigaut.hide()
         } else {
           $numdigaut.show()
         }
       } else {
         div.find(".cmpDependanceSelectLabel").addClass("invisible")
+        div.find(".cmpDependanceStrictLabel").addClass("invisible")
         $select.addClass("invisible")
+        $dependence_strict.addClass("invisible");
         $numdigaut.hide()
       }
     })
 
     widgetSelect.trigger("change")
     if (that.isset(values) && that.isset(values.input.options["dependance"])) cmpDependanceSelect.val($("<div/>").html(values.input.options["dependance"]).text())
+    if (that.isset(values) && that.isset(values.input.options["dependance_strict"])){
+      $dependence_strict.find("input").prop("checked","checked");
+      if (that.isset(values.input.options["dependance"])) {
+        $dependence_strict.removeClass("invisible");
+        div.find(".cmpDependanceStrictLabel").removeClass("invisible");
+      }
+
+    }
 
     if (that.isset(values) && that.isset(values.logicop)) var logicopselect = div.find("select.logic_operator")
     if (that.isset(logicopselect)) logicopselect.val(values.logicop)

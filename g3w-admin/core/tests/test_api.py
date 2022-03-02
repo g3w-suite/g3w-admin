@@ -18,6 +18,7 @@ from django.contrib.auth.models import User
 from django.core.cache import caches
 from django.core.files import File
 from django.test import override_settings
+from django.test.client import JSON_CONTENT_TYPE_RE
 from django.urls import reverse
 from qgis.core import QgsFieldConstraints
 from rest_framework.test import APIClient, APITestCase
@@ -463,3 +464,65 @@ class CoreApiTest(CoreTestBase):
                           'referenced_columns': ['id_reg'],
                           'referenced_functions': ['current_value'],
                           'referencing_fields': ['value1']})
+
+    def testCoreInterfaceProxyView(self):
+        """ Test for general proxy view for client """
+
+        url = reverse('interface-proxy')
+
+        # Only post method is available
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, 405)
+
+        # Check validations data
+
+        data = {
+
+        }
+        res = self.client.post(url, data=data, content_type='application/json')
+        self.assertEqual(res.status_code, 400)
+        self.assertEqual(res.content, "'url' parameter must be provided.".encode())
+
+        data = {
+            'url': 'gis3w.it',
+        }
+        res = self.client.post(url, data=data, content_type='application/json')
+        self.assertEqual(res.status_code, 400)
+        self.assertEqual(res.content, "'method' parameter must be provided.".encode())
+
+        data = {
+            'url': 'gis3w.it',
+            'method': 'no_method'
+        }
+        res = self.client.post(url, data=data, content_type='application/json')
+        self.assertEqual(res.status_code, 400)
+        self.assertEqual(res.content, "method 'no_method' is not available.".encode())
+
+        # Check requests module exception
+        data = {
+            'url': 'gis3w.it',
+            'method': 'get'
+        }
+
+        res = self.client.post(url, data=data, content_type='application/json')
+        self.assertEqual(res.status_code, 400)
+        self.assertEqual(res.content, "Invalid URL 'gis3w.it': No schema supplied. Perhaps you meant http://gis3w.it?".encode())
+
+        data = {
+            'url': 'https://google.com',
+            'method': 'get'
+        }
+
+        res = self.client.post(url, data=data, content_type='application/json')
+        self.assertEqual(res.status_code, 200)
+
+        data = {
+            'url': 'https://gis3w.it',
+            'method': 'post',
+            'params': {
+                'search': 'pippo'
+            }
+        }
+
+        res = self.client.post(url, data=data, content_type='application/json')
+        self.assertEqual(res.status_code, 200)

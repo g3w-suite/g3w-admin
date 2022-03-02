@@ -1,5 +1,5 @@
 from django.template.response import HttpResponse
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseBadRequest, HttpResponse, HttpResponseServerError
 from django.views.generic import (
     CreateView,
     UpdateView,
@@ -12,6 +12,7 @@ from core.signals import load_dashboard_widgets
 from django.views.generic.detail import SingleObjectMixin
 from django.urls import reverse
 from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 from guardian.decorators import permission_required
 from guardian.shortcuts import get_objects_for_user, get_anonymous_user
 from usersmanage.mixins.views import G3WACLViewMixin
@@ -23,6 +24,8 @@ from .models import Group, GroupProjectPanoramic, MapControl, GeneralSuiteData, 
 from .mixins.views import G3WRequestViewMixin, G3WAjaxDeleteViewMixin, G3WAjaxSetOrderViewMixin
 from .utils.decorators import check_madd
 from .signals import after_update_group, execute_search_on_models
+import requests
+import json
 
 
 #class NotFoundView(TemplateView):
@@ -381,3 +384,79 @@ class MacroGroupSetOrderView(G3WAjaxSetOrderViewMixin, View):
     @method_decorator(user_passes_test_or_403(lambda u: u.is_superuser))
     def dispatch(self, *args, **kwargs):
         return super(MacroGroupSetOrderView, self).dispatch(*args, **kwargs)
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class InterfaceProxy(View):
+    """
+    Proxy interface view for client. used to call external service to avoid problems of cross domains (COORS)
+    Only POST request are available on this view.
+    """
+
+    def post(self, request, **kwargs):
+
+        # Check for content type accept only 'application/json'
+
+        if request.content_type != 'application/json':
+            return HttpResponseBadRequest("proxy accept only 'application/json request'")
+
+        post_data = json.loads(request.body)
+
+        # Required
+        url = post_data.get('url')
+        if not url:
+            return HttpResponseBadRequest("'url' parameter must be provided.")
+
+        method = post_data.get('method')
+        if not method:
+            return HttpResponseBadRequest("'method' parameter must be provided.")
+
+        method = method.lower()
+
+        # Check for standard methods:
+        try:
+            req_method = getattr(requests, method)
+        except:
+            return HttpResponseBadRequest(f"method '{method}' is not available.")
+
+        # No required parameters
+        params = post_data.get('params')
+        headers = post_data.get('headers')
+
+        req_kwargs = {}
+        if method in ('post', 'put'):
+            req_kwargs.update({
+                'data': params
+            })
+
+        if headers:
+            req_kwargs.update({
+                'headers': headers
+            })
+
+        try:
+            res = req_method(url, **req_kwargs)
+        except Exception as e:
+            return HttpResponseBadRequest(str(e))
+
+        djres = HttpResponse(content=res.content, status=res.status_code)
+
+        # Add headers Content-Type from requests
+        djres['Content-Type'] = res.headers['Content-Type']
+
+        return djres
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
