@@ -18,7 +18,7 @@ from qgis.core import \
 from rest_framework.exceptions import ValidationError
 
 from core.api.base.vector import MetadataVectorLayer
-from core.api.base.views import BaseVectorOnModelApiView
+from core.api.base.views import BaseVectorApiView
 from core.signals import (post_save_maplayer, pre_delete_maplayer,
                           pre_save_maplayer)
 from core.utils.qgisapi import server_fid, get_layer_fids_from_server_fids
@@ -43,7 +43,7 @@ MAPPING_DJANGO_MODEL_FIELD_FILE_OBJECT = {
     FileField: File
 }
 
-class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
+class BaseEditingVectorOnModelApiView(BaseVectorApiView):
 
     app_name = 'editing'
 

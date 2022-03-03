@@ -16,7 +16,7 @@ from qgis.core import \
 
 from core.api.base.vector import MetadataVectorLayer
 from core.api.base.views import (MODE_CONFIG, MODE_DATA, MODE_SHP, MODE_XLS, MODE_GPX, MODE_CSV, MODE_FILTER_TOKEN,
-                                 APIException, BaseVectorOnModelApiView, MODE_GPKG,
+                                 APIException, BaseVectorApiView, MODE_GPKG,
                                  IntersectsBBoxFilter)
 from core.api.filters import (IntersectsBBoxFilter, OrderingFilter,
                               SearchFilter, SuggestFilterBackend, FieldFilterBackend, QgsExpressionFilterBackend)
@@ -174,7 +174,7 @@ class QGISLayerVectorViewMixin(object):
         )
 
 
-class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorOnModelApiView):
+class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
     """
     Returns a list of GeoJSON vector features from a layer.
 

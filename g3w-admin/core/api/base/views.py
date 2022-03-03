@@ -185,7 +185,7 @@ class G3WAPIPaginator(PageNumberPagination):
     page_size_query_param = 'page_size'
 
 
-class BaseVectorOnModelApiView(G3WAPIView):
+class BaseVectorApiView(G3WAPIView):
     """
     View base to get layer data
     """
@@ -363,7 +363,7 @@ class BaseVectorOnModelApiView(G3WAPIView):
                                  feature=feature).new_value(change=True)
 
     def initial(self, request, *args, **kwargs):
-        super(BaseVectorOnModelApiView, self).initial(request, *args, **kwargs)
+        super(BaseVectorApiView, self).initial(request, *args, **kwargs)
 
         self.set_app_name(request, **kwargs)
 
@@ -638,7 +638,7 @@ class BaseVectorOnModelApiView(G3WAPIView):
         return self.get_response(request, mode_call=mode_call, project_type=project_type, layer_id=layer_id, **kwargs)
 
 
-class BaseRasterApiView(BaseVectorOnModelApiView):
+class BaseRasterApiView(BaseVectorApiView):
     """
     View base for raster layer
     """
