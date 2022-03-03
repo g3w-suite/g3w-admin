@@ -499,9 +499,14 @@ ga.Qdjango.widgetEditor = {
           }
         });
 
+        // No current bloc fieldSelect value
+        var current_f = $select.parents(".blocco").find(".fieldSelect").find("select").val();
         $.each($(".rightCol").find(".blocco"), function (i, v) {
+
+
           var f = $(v).find(".fieldSelect").find("select").val()
-          $select.find("select").append('<option value="' + f + '">' + f + "</option>")
+          if (f != current_f)
+            $select.find("select").append('<option value="' + f + '">' + f + "</option>");
         })
 
         if ($(this).val() == "selectbox") {
