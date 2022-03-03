@@ -678,8 +678,12 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
                     wms = WebMapService(ret['source']['url'], version='1.3.0')
                     format_options = wms.getOperationByName('GetFeatureInfo').formatOptions
                     if format_options:
-                        ret['infoformat'] = format_options[0]
-                        ret['infoformats'] = format_options
+
+                        # Filter format by supported by G3W-CLIENT
+                        formats = list(set(format_options).intersection(set(settings.EXTERNAL_WMS_INFOFORMATS_SUPPORTED)))
+                        if formats:
+                            ret['infoformat'] = formats[0]
+                            ret['infoformats'] = formats
                 except Exception as e:
                     logger.debug(f'WMS layer GetFeatureInfo formats available: {e}')
 

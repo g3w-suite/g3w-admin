@@ -6,6 +6,11 @@ WFS = 4
 
 VECTOR_URL = '/vector/api/'
 
+EXTERNAL_WMS_INFOFORMATS_SUPPORTED = [
+  'text/gml',
+  'text/plain',
+  'text/html'
+]
 # Layer edit options, , for bitwise operations
 INSERT = 1
 UPDATE = 2
