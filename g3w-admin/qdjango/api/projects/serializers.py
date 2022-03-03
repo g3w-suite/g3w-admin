@@ -765,45 +765,22 @@ class WidgetSerializer(serializers.ModelSerializer):
                 # if widgettype is selectbox, get values
                 if 'widgettype' in field and field['widgettype'] == 'selectbox':
 
-                    # qgis_layer = get_qgis_layer(self.layer)
-                    #
-                    # uniques = qgis_layer.uniqueValues(
-                    #     qgis_layer.fields().indexOf(field['name'])
-                    # )
-                    # values = []
-                    # for u in uniques:
-                    #     try:
-                    #         values.append(json.loads(
-                    #             QgsJsonUtils.encodeValue(u)))
-                    #     except Exception as e:
-                    #         logger.error(f'Response vector widget unique: {e}')
-                    #         continue
-                    #
-                    # # sort values for selectbox
-                    # try:
-                    #     values = sorted(set(values))
-                    # except:
-                    #     values = set(values)
-                    #
-                    # values = list(values)
-
                     field['input']['type'] = 'selectfield'
                     field['input']['options']['values'] = []
-                    if 'dependance' not in field['input']['options']:
 
-                        edittype = edittypes[field['name']]
+                    edittype = edittypes[field['name']]
 
-                        # check if field has a widget edit type
-                        widget_type = edittype['widgetv2type']
-                        if field['name'] in edittypes and widget_type in ('ValueMap', 'ValueRelation'):
-                            if widget_type == 'ValueMap':
-                                field['input']['options']['values'] = edittype['values']
-                            else:
+                    # check if field has a widget edit type
+                    widget_type = edittype['widgetv2type']
+                    if field['name'] in edittypes and widget_type in ('ValueMap', 'ValueRelation'):
+                        if widget_type == 'ValueMap':
+                            field['input']['options']['values'] = edittype['values']
+                        else:
 
-                                # Add layer params
-                                field['input']['options']['key'] = edittype['Value']
-                                field['input']['options']['value'] = edittype['Key']
-                                field['input']['options']['layer_id'] = edittype['Layer']
+                            # Add layer params
+                            field['input']['options']['key'] = edittype['Value']
+                            field['input']['options']['value'] = edittype['Key']
+                            field['input']['options']['layer_id'] = edittype['Layer']
 
                 # For AutoccOmpleteBox imput type
                 if 'widgettype' in field and field['widgettype'] == 'autocompletebox':
