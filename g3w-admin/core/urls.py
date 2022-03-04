@@ -1,7 +1,4 @@
-from django.urls import path
-
-# TODO: following import to remove on migration to Django 3.2
-from django.conf.urls import url
+from django.urls import path, re_path
 from django.contrib.auth.decorators import login_required
 from django.views.static import serve
 from django.conf import settings
@@ -16,38 +13,35 @@ def protected_serve(request, path, document_root=None, show_indexes=False):
 
 
 urlpatterns = [
-    url(r'^$', login_required(DashboardView.as_view()), name='home'),
-
-    #url(r'^test/$', login_required(TestView.as_view()), name='test'),
-    #url(r'^404/$', NotFoundView.as_view(), name='404'),
+    path('', login_required(DashboardView.as_view()), name='home'),
 
     # macrogroups urls
-    url(r'^macrogroups/$', login_required(MacroGroupListView.as_view()), name='macrogroup-list'),
-    url(r'^macrogroups/add/$', login_required(MacroGroupCreateView.as_view()), name='macrogroup-add'),
-    url(r'^macrogroups/update/(?P<slug>[-_\w\d]+)/$', login_required(MacroGroupUpdateView.as_view()),
+    path('macrogroups/', login_required(MacroGroupListView.as_view()), name='macrogroup-list'),
+    path('macrogroups/add/', login_required(MacroGroupCreateView.as_view()), name='macrogroup-add'),
+    path('macrogroups/update/<slug:slug>/', login_required(MacroGroupUpdateView.as_view()),
         name='macrogroup-update'),
-    url(r'^macrogroups/delete/(?P<slug>[-_\w\d]+)/$', login_required(MacroGroupDeleteView.as_view()),
+    path('macrogroups/delete/<slug:slug>/', login_required(MacroGroupDeleteView.as_view()),
         name='macrogroup-delete'),
-    url(r'^macrogroups/(?P<slug>[-_\w\d]+)/$', login_required(MacroGroupDetailView.as_view()),
+    path('macrogroups/<slug:slug>/', login_required(MacroGroupDetailView.as_view()),
         name='macrogroup-detail'),
 
     # group urls
-    url(r'^groups/$', login_required(GroupListView.as_view()), name='group-list'),
-    url(r'^groups/add/$', login_required(GroupCreateView.as_view()), name='group-add'),
-    url(r'^groups/update/(?P<slug>[-_\w\d]+)/$', login_required(GroupUpdateView.as_view()), name='group-update'),
-    url(r'^groups/delete/(?P<slug>[-_\w\d]+)/$', login_required(GroupDeleteView.as_view()), name='group-delete'),
-    url(r'^groups/(?P<slug>[-_\w\d]+)/$', login_required(GroupDetailView.as_view()), name='group-detail'),
-    url(r'^jx/groups/(?P<slug>[-_\w\d]+)/setpanoramic/(?P<project_type>[-_\w\d]+)/(?P<project_id>[0-9]+)/$',
+    path('groups/', login_required(GroupListView.as_view()), name='group-list'),
+    path('groups/add/', login_required(GroupCreateView.as_view()), name='group-add'),
+    path('groups/update/<slug:slug>/', login_required(GroupUpdateView.as_view()), name='group-update'),
+    path('groups/delete/<slug:slug>/', login_required(GroupDeleteView.as_view()), name='group-delete'),
+    path('groups/<slug:slug>/', login_required(GroupDetailView.as_view()), name='group-detail'),
+    path('jx/groups/<slug:slug>/setpanoramic/<project_type>/<int:project_id>/',
         login_required(GroupSetProjectPanoramicView.as_view()), name='group-set-project-panoramic'),
-    url(r'^jx/groups/(?P<slug>[-_\w\d]+)/setpanoramic/(?P<project_type>[-_\w\d]+)/(?P<project_id>[-_\w\d]+)/$',
+    path('jx/groups/<slug:slug>/setpanoramic/<project_type>/<project_id>/',
         login_required(GroupSetProjectPanoramicView.as_view()), name='group-set-project-panoramic'),
 
     # project urls
-    url(r'^groups/(?P<group_slug>[-_\w\d]+)/projects/$', login_required(ProjectListView.as_view()),
+    path('groups/<slug:group_slug>/projects/', login_required(ProjectListView.as_view()),
         name='project-list'),
 
-    url(r'^generalsuitedata/$', login_required(GeneralSuiteDataUpdateView.as_view()), name='generaldata-update'),
-    url(r'^search/$', login_required(SearchAdminView.as_view()), name='search-admin')
+    path('generalsuitedata/', login_required(GeneralSuiteDataUpdateView.as_view()), name='generaldata-update'),
+    path('search/', login_required(SearchAdminView.as_view()), name='search-admin')
 
 
 
