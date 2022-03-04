@@ -59,24 +59,6 @@ class ClientConfigApiView(APIView):
         return Response(ps_data)
 
 
-class ClientSearchApiView(APIView):
-    """
-    APIView to perform a search on a project layer
-    """
-
-    permission_classes = (ProjectPermission,)
-
-    def get(self, request, format=None, group_slug=None, project_type=None, project_id=None, widget_id=None):
-
-        resSearch = perform_client_search.send(request, app_name=project_type, project_id=project_id,
-                                               widget_id=widget_id)
-
-        # build response from modules
-        # todo:: to build response
-        response = [res[1].asJSON() for res in resSearch]
-        return Response(response)
-
-
 class GroupConfigApiView(APIView):
     """
     APIView to get data Project and layers, used by client into development status.
