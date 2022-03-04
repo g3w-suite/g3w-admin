@@ -11,16 +11,17 @@ __date__ = '2020-09-15'
 __copyright__ = 'Copyright 2015 - 2020, Gis3w'
 
 from django.conf.urls import url
+from django.urls import path
 from django.contrib.auth.decorators import login_required
 
 from .views import QplotlyLinkWidget2LayerView, QplotlyDownloadView, QplotlyWidgetShowOnStartClientView
 
 urlpatterns = [
-    url(r'^layer/(?P<layer_pk>\d+)/widgets/link/(?P<pk>\d+)/$',
+    path('layer/<int:layer_pk>/widgets/link/<int:pk>/',
         login_required(QplotlyLinkWidget2LayerView.as_view()), name='qplotly-project-layer-widget-link'),
-    url(r'^showonstartclient/(?P<pk>\d+)/$',
+    path('showonstartclient/<int:pk>/',
         login_required(QplotlyWidgetShowOnStartClientView.as_view()),
         name='qplotly-project-layer-widget-showonstartclient'),
-    url(r'^download/xml/(?P<pk>\d+)/$', login_required(QplotlyDownloadView.as_view()),
+    path('^download/xml/<int:pk>/', login_required(QplotlyDownloadView.as_view()),
         name='qplotly-download-xml')
 ]
