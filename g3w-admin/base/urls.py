@@ -1,8 +1,7 @@
 """
 G3W-ADMIN URL Configuration
 """
-from django.conf.urls import url, include
-from django.urls import path
+from django.urls import path, include
 from django.contrib import admin, auth
 from django.conf import settings
 from django.conf.urls.static import static
@@ -37,18 +36,18 @@ urlpatterns = [
 
     path('__debug__/', include(debug_toolbar.urls)),
 
-    url(r'^i18n/', include('django.conf.urls.i18n')),
-    url(r'^django-admin/', admin.site.urls),
-    url(r'^{}'.format(BASE_ADMIN_URLPATH), include('core.urls')),
-    url(r'^{}'.format(BASE_ADMIN_URLPATH), include('usersmanage.urls')),
-    url(r'^upload/', include('django_file_form.urls')),
-    url(r'^', include('client.urls')),
-    url(r'^login/$', auth.views.LoginView.as_view(template_name='login.html', extra_context=extra_context_login_page),
+    path('i18n/', include('django.conf.urls.i18n')),
+    path('django-admin/', admin.site.urls),
+    path('{}'.format(BASE_ADMIN_URLPATH), include('core.urls')),
+    path('{}'.format(BASE_ADMIN_URLPATH), include('usersmanage.urls')),
+    path('upload/', include('django_file_form.urls')),
+    path('', include('client.urls')),
+    path('login/', auth.views.LoginView.as_view(template_name='login.html', extra_context=extra_context_login_page),
         name='login'),
-    url(r'^logout/$', auth.views.LogoutView.as_view(
+    path('logout/', auth.views.LogoutView.as_view(
         next_page=settings.LOGOUT_NEXT_PAGE + '{}'.format(BASE_ADMIN_URLPATH)), name='logout'),
-    url(r'^jsi18n/$', JavaScriptCatalog.as_view(), name='javascript-catalog'),
-    url(r'^ajax_select/', include(ajax_select_urls))
+    path('jsi18n/', JavaScriptCatalog.as_view(), name='javascript-catalog'),
+    path('ajax_select/', include(ajax_select_urls))
 ]
 
 # Add path/url for user password rest by email
@@ -70,20 +69,20 @@ if settings.RESET_USER_PASSWORD:
     ]
 
 apiUrlpatterns = [
-    url(r'^', include('client.apiurls')),
-    url(r'^', include('core.apiurls'))
+    path('', include('client.apiurls')),
+    path('', include('core.apiurls'))
 ]
 
 if BASE_ADMIN_URLPATH == 'admin/':
-    urlpatterns.append(url(r'^', include('{}.urls'.format(settings.FRONTEND_APP))))
+    urlpatterns.append(path('', include('{}.urls'.format(settings.FRONTEND_APP))))
 
 #adding projects app
 #if BASE_ADMIN_URLPATH:
     #base = BASE_ADMIN_URLPATH[0:-1]
 for app in settings.G3WADMIN_PROJECT_APPS:
-    urlpatterns.append(url(r'^{}{}/'.format(BASE_ADMIN_URLPATH, app), include('{}.urls'.format(app))))
+    urlpatterns.append(path('{}{}/'.format(BASE_ADMIN_URLPATH, app), include('{}.urls'.format(app))))
     try:
-        apiUrlpatterns.append(url(r'^{}/'.format(app), include('{}.apiurls'.format(app))))
+        apiUrlpatterns.append(path('{}/'.format(app), include('{}.apiurls'.format(app))))
     except Exception as e:
         pass
 
@@ -97,14 +96,14 @@ for app in settings.G3WADMIN_LOCAL_MORE_APPS:
             base_url_app = urlconf_module.BASE_URLS
         except:
             base_url_app = app
-        urlpatterns.append(url(r'^{}{}/'.format(BASE_ADMIN_URLPATH, base_url_app), app_urls))
+        urlpatterns.append(path('{}{}/'.format(BASE_ADMIN_URLPATH, base_url_app), app_urls))
     try:
         app_urls = (urlconf_module, app_name, namespace) = include('{}.apiurls'.format(app))
         try:
             base_url_app = urlconf_module.BASE_URLS
         except:
             base_url_app = app
-        apiUrlpatterns.append(url(r'^{}/'.format(base_url_app), app_urls))
+        apiUrlpatterns.append(path('{}/'.format(base_url_app), app_urls))
     except Exception as e:
         print(e)
         pass
@@ -115,7 +114,7 @@ if settings.DEBUG:
 
 if settings.SITE_PREFIX_URL:
     urlpatterns = [
-        url(r'^{}'.format(settings.SITE_PREFIX_URL), include(urlpatterns))
+        path('{}'.format(settings.SITE_PREFIX_URL), include(urlpatterns))
     ]
 
 urlpatterns = i18n_patterns(*urlpatterns, prefix_default_language=settings.PREFIX_DEFAULT_LANGUAGE)
@@ -123,18 +122,18 @@ urlpatterns = i18n_patterns(*urlpatterns, prefix_default_language=settings.PREFI
 
 if settings.SITE_PREFIX_URL:
     apiUrlpatterns = [
-        url(r'^{}'.format(settings.SITE_PREFIX_URL), include(apiUrlpatterns))
+        path('{}'.format(settings.SITE_PREFIX_URL), include(apiUrlpatterns))
     ]
 
 
 urlpatterns += apiUrlpatterns
 
-urlows = [url(r'^', include('OWS.urls'))]
+urlows = [path('', include('OWS.urls'))]
 
 
 if settings.SITE_PREFIX_URL:
     urlows = [
-        url(r'^{}'.format(settings.SITE_PREFIX_URL), include(urlows))
+        path('{}'.format(settings.SITE_PREFIX_URL), include(urlows))
     ]
 
 
