@@ -10,13 +10,13 @@ __author__ = 'lorenzetti@gis3w.it'
 __date__ = '2021-10-29'
 __copyright__ = 'Copyright 2015 - 2021, Gis3w'
 
-from django.conf.urls import url
+from django.urls import re_path
 from .api.views import QRTSSerieView
 
 BASE_URLS = 'qtimeseries'
 
 urlpatterns = [
-    url(r'^api/raster/serie/(?P<project_id>[0-9]+)/(?P<qgs_layer_id>[-_\w\d]+)/$', QRTSSerieView.as_view(),
+    re_path(r'^api/raster/serie/(?P<project_id>[0-9]+)/(?P<qgs_layer_id>[-_\w\d]+)/$', QRTSSerieView.as_view(),
         name=f'{BASE_URLS}-raster-serie-api'),
 
 ]
