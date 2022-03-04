@@ -20,19 +20,19 @@ urlpatterns = [
         r'(?P<layer_name>[-_\w\d]+)/$',
         layer_vector_view, name='core-vector-api-widget'),
 
-    # changing order
-    re_path(r'^jx/groups/(?P<group_id>[0-9]+)/setorder/$',
-        login_required(GroupSetOrderView.as_view()), name='group-set-order'),
+    # Changing order
+    path('jx/groups/<int:group_id>/setorder/', login_required(GroupSetOrderView.as_view()),
+         name='group-set-order'),
 
-    re_path(r'^jx/macrogroups/(?P<group_id>[0-9]+)/setorder/$',
-        login_required(MacroGroupSetOrderView.as_view()), name='macrogroup-set-order'),
+    path('jx/macrogroups/<int:group_id>/setorder/', login_required(MacroGroupSetOrderView.as_view()),
+         name='macrogroup-set-order'),
 
-    re_path(r'^api/deploy/info/$', G3WSUITEInfoAPIView.as_view(), name='deploy-info-api'),
+    path('api/deploy/info/', G3WSUITEInfoAPIView.as_view(), name='deploy-info-api'),
 
     # POST only method to return QGIS Expressions evaluated in Project an optional Layer/Form context
     # (passing form_data and qgs_layer_id in the post body)
-    re_path(r'^api/expression_eval/(?P<project_id>[0-9]+)/$',
-        login_required(QgsExpressionLayerContextEvalView.as_view()), name='layer-expression-eval'),
+    path('api/expression_eval/<int:project_id>/', login_required(QgsExpressionLayerContextEvalView.as_view()),
+         name='layer-expression-eval'),
 
     # General proxy view for Client external calls, i.e. for COORS.
     # =============================================================
