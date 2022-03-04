@@ -15,7 +15,7 @@ from django.db.models import Q
 from osgeo import gdal
 
 from core.utils.data import isXML
-from qdjango.models import Layer
+from qdjango.models import Layer, Project
 
 from .exceptions import (
     QgisProjectException,
@@ -221,10 +221,16 @@ class EmbeddedLayersValidator(QgisProjectValidator):
             project_name = layer['project']
             layer_id = layer['id']
             # Check if the project exists and if it contains the layer id
-            if Layer.objects.filter(project__original_name=project_name).count() == 0:
+            parent_project = None
+            for p in Project.objects.all():
+                if p.original_name == project_name or os.path.basename(p.qgis_file.name) == project_name:
+                    parent_project = p
+                    break
+            if parent_project is None:
                 raise QgisProjectException(_('Layer "%s" is embedded from project "%s" but the project does not exist') % (
                     layer_id, project_name))
-            if Layer.objects.filter(qgs_layer_id=layer_id, project__original_name=project_name).count() == 0:
+
+            if parent_project.layer_set.filter(qgs_layer_id=layer_id).count() == 0:
                 raise QgisProjectException(_('Layer "%s" is embedded from project "%s" but the project does not contain this layer') % (
                     layer_id, project_name))
 
