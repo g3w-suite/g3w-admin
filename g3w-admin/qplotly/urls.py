@@ -10,7 +10,6 @@ __author__ = 'lorenzetti@gis3w.it'
 __date__ = '2020-09-15'
 __copyright__ = 'Copyright 2015 - 2020, Gis3w'
 
-from django.conf.urls import url
 from django.urls import path
 from django.contrib.auth.decorators import login_required
 
