@@ -21,6 +21,6 @@ urlpatterns = [
     path('showonstartclient/<int:pk>/',
         login_required(QplotlyWidgetShowOnStartClientView.as_view()),
         name='qplotly-project-layer-widget-showonstartclient'),
-    path('^download/xml/<int:pk>/', login_required(QplotlyDownloadView.as_view()),
+    path('download/xml/<int:pk>/', login_required(QplotlyDownloadView.as_view()),
         name='qplotly-download-xml')
 ]
