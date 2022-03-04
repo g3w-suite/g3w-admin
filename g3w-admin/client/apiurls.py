@@ -1,13 +1,12 @@
-from django.conf.urls import url
+from django.urls import path
 from .api.views import *
 from .views import ClientView
 
 urlpatterns = [
 
-    # api urls
-    #test djangorest framework
-    url(r'^api/initconfig/(?P<group_slug>[-_\w\d]+)/(?P<project_type>[-_\w\d]+)/(?P<project_id>[-_\w\d]+)$',
+    #Main init client API rest initialization
+    path('api/initconfig/<slug:group_slug>/<project_type>/<int:project_id>',
         GroupConfigApiView.as_view(), name='group-map-config'),
-    url(r'^api/config/(?P<group_slug>[-_\w\d]+)/(?P<project_type>[-_\w\d]+)/(?P<project_id>[-_\w\d]+)$',
+    path('api/config/<slug:group_slug>/<project_type>/<int:project_id>',
         ClientConfigApiView.as_view(), name='group-project-map-config'),
 ]
