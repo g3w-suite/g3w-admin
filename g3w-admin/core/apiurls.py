@@ -5,7 +5,8 @@ from .views import GroupSetOrderView, MacroGroupSetOrderView, InterfaceProxy
 
 
 urlpatterns = [
-    re_path(r'^vector/api/(?P<mode_call>data|config|shp|xls|gpkg|gpx|csv|filtertoken)/(?P<project_type>[-_\w\d]+)/(?P<project_id>[0-9]+)/'
+    re_path(r'^vector/api/(?P<mode_call>data|config|shp|xls|gpkg|gpx|csv|filtertoken)/(?P<project_type>[-_\w\d]+)/'
+            r'(?P<project_id>[0-9]+)/'
         r'(?P<layer_name>[-_\w\d]+)/$',
         layer_vector_view, name='core-vector-api'),
 
