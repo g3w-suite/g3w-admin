@@ -10,6 +10,7 @@
 
 
 from django.conf.urls import url
+from django.urls import path, re_path
 from django.contrib.auth.decorators import login_required
 from .api.layers.views import (
     LayerUserInfoAPIView,
@@ -55,77 +56,93 @@ urlpatterns = [
     # Subset string rules
 
     # Detail of a subsetstringrule
-    url(r'^api/subsetstringrule/detail/(?P<pk>\d+)/$',
-        login_required(ConstraintSubsetStringRuleDetail.as_view()), name='qdjango-subsetstringrule-api-detail'),
+    path('api/subsetstringrule/detail/<int:pk>/',
+         login_required(ConstraintSubsetStringRuleDetail.as_view()), name='qdjango-subsetstringrule-api-detail'),
+
     # All subsetstringrule(s) filtered by layer qdjango layer pk
-    url(r'^api/subsetstringrule/layer/(?P<layer_id>[\d]+)/$',
-        login_required(ConstraintSubsetStringRuleList.as_view()), name='qdjango-subsetstringrule-api-filter-by-layer-id'),
+    path('api/subsetstringrule/layer/<int:layer_id>/', login_required(ConstraintSubsetStringRuleList.as_view()),
+         name='qdjango-subsetstringrule-api-filter-by-layer-id'),
+
     # All subsetstringrule(s) filtered by User pk
-    url(r'^api/subsetstringrule/user/(?P<user_id>\d+)/$',
-        login_required(ConstraintSubsetStringRuleList.as_view()), name='qdjango-subsetstringrule-api-filter-by-user'),
+    path('api/subsetstringrule/user/<int:user_id>/', login_required(ConstraintSubsetStringRuleList.as_view()),
+         name='qdjango-subsetstringrule-api-filter-by-user'),
+
     # All subsetstringrule(s) filtered by Constraint pk
-    url(r'^api/subsetstringrule/constraint/(?P<constraint_id>\d+)/$',
-        login_required(ConstraintSubsetStringRuleList.as_view()), name='qdjango-subsetstringrule-api-filter-by-constraint'),
+    path('api/subsetstringrule/constraint/<int:constraint_id>/',
+         login_required(ConstraintSubsetStringRuleList.as_view()),
+         name='qdjango-subsetstringrule-api-filter-by-constraint'),
+
     # All subsetstringrule(s)
-    url(r'^api/subsetstringrule/$',
-        login_required(ConstraintSubsetStringRuleList.as_view()), name='qdjango-subsetstringrule-api-list'),
+    path('api/subsetstringrule/', login_required(ConstraintSubsetStringRuleList.as_view()),
+         name='qdjango-subsetstringrule-api-list'),
 
     #############################################################
     # Expression rules
 
     # Detail of a expression rule
-    url(r'^api/expressionrule/detail/(?P<pk>\d+)/$',
-        login_required(ConstraintExpressionRuleDetail.as_view()), name='qdjango-expressionrule-api-detail'),
+    path('api/expressionrule/detail/<int:pk>/', login_required(ConstraintExpressionRuleDetail.as_view()),
+         name='qdjango-expressionrule-api-detail'),
+
     # All expressionrule(s) filtered by layer qdjango layer pk
-    url(r'^api/expressionrule/layer/(?P<layer_id>[\d]+)/$',
-        login_required(ConstraintExpressionRuleList.as_view()), name='qdjango-expressionrule-api-filter-by-layer-id'),
+    path('api/expressionrule/layer/<int:layer_id>/', login_required(ConstraintExpressionRuleList.as_view()),
+         name='qdjango-expressionrule-api-filter-by-layer-id'),
+
     # All expressionrule(s) filtered by User pk
-    url(r'^api/expressionrule/user/(?P<user_id>\d+)/$',
-        login_required(ConstraintExpressionRuleList.as_view()), name='qdjango-expressionrule-api-filter-by-user'),
+    path('api/expressionrule/user/<int:user_id>/', login_required(ConstraintExpressionRuleList.as_view()),
+         name='qdjango-expressionrule-api-filter-by-user'),
+
     # All expressionrule(s) filtered by Constraint pk
-    url(r'^api/expressionrule/constraint/(?P<constraint_id>\d+)/$',
-        login_required(ConstraintExpressionRuleList.as_view()), name='qdjango-expressionrule-api-filter-by-constraint'),
+    path('api/expressionrule/constraint/<int:constraint_id>)/', login_required(ConstraintExpressionRuleList.as_view()),
+         name='qdjango-expressionrule-api-filter-by-constraint'),
+
     # All expressionrule(s)
-    url(r'^api/expressionrule/$',
-        login_required(ConstraintExpressionRuleList.as_view()), name='qdjango-expressionrule-api-list'),
+    path('api/expressionrule/', login_required(ConstraintExpressionRuleList.as_view()),
+         name='qdjango-expressionrule-api-list'),
 
 
     #############################################################
     # Constraints
 
     # Detail of a Constraint
-    url(r'^api/constraint/detail/(?P<pk>\d+)/$',
-        login_required(SingleLayerConstraintDetail.as_view()), name='qdjango-constraint-api-detail'),
+    path('api/constraint/detail/<int:pk>/', login_required(SingleLayerConstraintDetail.as_view()),
+         name='qdjango-constraint-api-detail'),
+
     # All Constraint(s) filtered by layer qdjango layer pk
-    url(r'^api/constraint/layer/(?P<layer_id>\d+)/$',
-        login_required(SingleLayerConstraintList.as_view()), name='qdjango-constraint-api-filter-by-layer-id'),
+    path('api/constraint/layer/<int:layer_id>/', login_required(SingleLayerConstraintList.as_view()),
+         name='qdjango-constraint-api-filter-by-layer-id'),
+
     # All Constraint(s) filtered by user
-    url(r'^api/constraint/user/(?P<user_id>\d+)/$',
-        login_required(SingleLayerConstraintList.as_view()), name='qdjango-constraint-api-filter-by-user'),
+    path('api/constraint/user/<int:user_id>/', login_required(SingleLayerConstraintList.as_view()),
+         name='qdjango-constraint-api-filter-by-user'),
+
     # All Constraint(s)
-    url(r'^api/constraint/$',
-        login_required(SingleLayerConstraintList.as_view()), name='qdjango-constraint-api-list'),
+    path('api/constraint/', login_required(SingleLayerConstraintList.as_view()), name='qdjango-constraint-api-list'),
 
     #############################################################
     # ColumnAcl
 
     # Detail of a ColumnAcl
-    url(r'^api/column_acl/detail/(?P<pk>\d+)/$',
-        login_required(ColumnAclDetail.as_view()), name='qdjango-column-acl-api-detail'),
+    path('api/column_acl/detail/<int:pk>/', login_required(ColumnAclDetail.as_view()),
+         name='qdjango-column-acl-api-detail'),
+
     # All (s) ColumnAcl filtered by layer qdjango layer pk
-    url(r'^api/column_acl/layer/(?P<layer_id>\d+)/$',
+    path('api/column_acl/layer/<int:layer_id>/',
         login_required(ColumnAclList.as_view()), name='qdjango-column-acl-api-filter-by-layer-id'),
+
     # All Constraint(s) filtered by user
-    url(r'^api/column_acl/user/(?P<user_id>\d+)/$',
+    path('api/column_acl/user/<int:user_id>/',
         login_required(ColumnAclList.as_view()), name='qdjango-column-acl-api-filter-by-user'),
+
     # All Constraint(s) filtered by group
-    url(r'^api/column_acl/group/(?P<group_id>\d+)/$',
+    path('api/column_acl/group/<int:group_id>/',
         login_required(ColumnAclList.as_view()), name='qdjango-column-acl-api-filter-by-group'),
+
     # List field names for a vector layer
-    url(r'^api/column_acl/fields/(?P<layer_id>\d+)$',
+    path('api/column_acl/fields/<int:layer_id>/',
         login_required(ColumnAclFields.as_view()), name='qdjango-column-acl-api-fields'),
+
     # All Constraint(s)
-    url(r'^api/column_acl/$',
+    path('api/column_acl/',
         login_required(ColumnAclList.as_view()), name='qdjango-column-acl-api-list'),
 
 
@@ -133,31 +150,39 @@ urlpatterns = [
     # GeoConstraints
 
     # Detail of a GeoConstraintRule
-    url(r'^api/georule/detail/(?P<pk>\d+)/$',
+    path('api/georule/detail/<int:pk>/',
         login_required(GeoConstraintRuleDetail.as_view()), name='geoconstraintrule-api-detail'),
+
     # All ConstraintRule(s) filtered by editing layer id
-    url(r'^api/georule/layer/(?P<layer_id>[-_\w\d]+)/$',
+    re_path(r'^api/georule/layer/(?P<layer_id>[-_\w\d]+)/$',
         login_required(GeoConstraintRuleList.as_view()), name='geoconstraintrule-api-filter-by-layer'),
+
     # All ConstraintRule(s) filtered by User pk
-    url(r'^api/georule/user/(?P<user_id>\d+)/$',
+    path('api/georule/user/<int:user_id>/',
         login_required(GeoConstraintRuleList.as_view()), name='geoconstraintrule-api-filter-by-user'),
+
     # All ConstraintRule(s) filtered by Constraint pk
-    url(r'^api/georule/geoconstraint/(?P<constraint_id>\d+)/$',
+    path('api/georule/geoconstraint/<int:constraint_id>/',
         login_required(GeoConstraintRuleList.as_view()), name='geoconstraintrule-api-filter-by-constraint'),
+
     # All ConstraintRule(s)
-    url(r'^api/georule/$',
+    path('api/georule/',
         login_required(GeoConstraintRuleList.as_view()), name='geoconstraintrule-api-list'),
+
     # Constraint geometry
-    url(r'^api/geoconstraint/geometry/(?P<layer_id>[-_\w\d]+)/$',
+    re_path(r'^api/geoconstraint/geometry/(?P<layer_id>[-_\w\d]+)/$',
         login_required(GeoConstraintGEOFeatureAPIView.as_view()), name='geoconstraint-api-geometry'),
+
     # Detail of a Constraint
-    url(r'^api/geoconstraint/detail/(?P<pk>\d+)/$',
+    path('api/geoconstraint/detail/<int:pk>/',
         login_required(GeoConstraintDetail.as_view()), name='geoconstraint-api-detail'),
+
     # All Constraint(s) filtered by editing layer id
-    url(r'^api/geoconstraint/(?P<layer_id>[-_\w\d]+)/$',
+    re_path(r'^api/geoconstraint/(?P<layer_id>[-_\w\d]+)/$',
         login_required(GeoConstraintList.as_view()), name='geoconstraint-api-filter-by-layer'),
+
     # All Constraint(s)
-    url(r'^api/geoconstraint/$',
+    path('api/geoconstraint/',
         login_required(GeoConstraintList.as_view()), name='geoconstraint-api-list'),
 
 
@@ -165,35 +190,35 @@ urlpatterns = [
     # OGC (web) services
 
     # All Service(s)
-    url(r'^api/webservice/(?P<project_id>\d+)/$',
+    path('api/webservice/<int:project_id>/',
         login_required(QdjangoWebServicesAPIview.as_view()), name='qdjango-webservice-api-list'),
 
     #############################################################
     # General API
-    url(r'^api/asgeotiff/(?P<project_id>\d+)/$',
+    path('api/asgeotiff/<int:project_id>/',
         QdjangoAsGeoTiffAPIview.as_view(), name='qdjango-asgeotiff-api'),
-    url(r'^api/prjtheme/(?P<project_id>\d+)/(?P<theme_name>[-_\w\d\s]+)/$',
+    re_path(r'^api/prjtheme/(?P<project_id>\d+)/(?P<theme_name>[-_\w\d\s]+)/$',
         QdjangoPrjThemeAPIview.as_view(), name='qdjango-prjtheme-api'),
 
 ]
 
 # Layer style manager
 urlpatterns += [
-    url(r'^api/layerstyles/(?P<layer_id>\d+)/$',
+    path('api/layerstyles/<int:layer_id>/',
         login_required(LayerStyleListView.as_view()), name='qdjango-style-list-api'),
-    url(r'^api/layerstyles/(?P<layer_id>\d+)/(?P<style_name>[\w\s%-]+)/$',
+    re_path(r'^api/layerstyles/(?P<layer_id>\d+)/(?P<style_name>[\w\s%-]+)/$',
         login_required(LayerStyleDetailView.as_view()), name='qdjango-style-detail-api'),
 ]
 
 # API info
 urlpatterns += [
     # Other vector layers in project get by qdjango layer id
-    url(r'^api/info/layer/polygon/(?P<layer_id>[-_\w\d]+)/$',
+    re_path(r'^api/info/layer/polygon/(?P<layer_id>[-_\w\d]+)/$',
         login_required(LayerPolygonView.as_view()), name='qdjango-api-info-layer-polygon'),
     # Viewers users can editing on editing layer id
-    url(r'^api/info/layer/user/(?P<layer_id>[-_\w\d]+)/$',
+    re_path(r'^api/info/layer/user/(?P<layer_id>[-_\w\d]+)/$',
         login_required(LayerUserInfoAPIView.as_view()), name='qdjango-api-info-layer-user'),
     # Viewers users groups viewer can editing on editing layer id
-    url(r'^api/info/layer/authgroup/(?P<layer_id>[-_\w\d]+)/$',
+    re_path(r'^api/info/layer/authgroup/(?P<layer_id>[-_\w\d]+)/$',
         login_required(LayerAuthGroupInfoAPIView.as_view()), name='qdjango-api-info-layer-authgroup'),
 ]
