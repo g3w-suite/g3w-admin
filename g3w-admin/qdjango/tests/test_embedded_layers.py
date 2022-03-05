@@ -326,3 +326,5 @@ class TestEmbeddedLayers(QdjangoTestBase):
         resp = json.loads(response.content)
         layer_ids = [l['id'] for l in resp['layers']]
         self.assertEqual(len(layer_ids), 2)
+
+        

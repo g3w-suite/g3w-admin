@@ -1324,14 +1324,20 @@ class QgisProject(XmlData):
             # Create or update embedded layers (they should already been validated in form clean)
             for embedded in self.embeddedLayers():
                 try:
-                    embedded_layer = Layer.objects.get(
-                        project__original_name=embedded['project'], qgs_layer_id=embedded['id'])
+
+                    try:
+                        embedded_layer = Layer.objects.get(
+                            project__original_name=embedded['project'], qgs_layer_id=embedded['id'])
+                    except Layer.DoesNotExist:
+                            parent_project = [p for p in Project.objects.all() if os.path.basename(p.qgis_file.name) == embedded['project']][0]
+                            embedded_layer = parent_project.layer_set.get(
+                                qgs_layer_id=embedded['id'])
+
                     newLayerNameList.append(
                         (embedded_layer.name, embedded_layer.qgs_layer_id, embedded_layer.datasource))
                     try:
                         existing_layer = self.instance.layer_set.get(
                             qgs_layer_id=embedded['id'])
-
                         embedded_layer.pk = existing_layer.pk
 
                     except Layer.DoesNotExist:
@@ -1342,7 +1348,7 @@ class QgisProject(XmlData):
                     embedded_layer.project = self.instance
                     embedded_layer.save()
 
-                except Layer.DoesNotExist:
+                except (Layer.DoesNotExist, IndexError):
                     pass
 
             # Pre-existing layers that have not been updated must be dropped
@@ -1445,8 +1451,12 @@ class QgisProject(XmlData):
             project_name = os.path.basename(embedded_group.attrib['project'])
             group_name = os.path.basename(embedded_group.attrib['name'])
             try:
-                parent_project = Project.objects.filter(
-                    original_name=project_name)[0]
+                try:
+                    parent_project = Project.objects.filter(
+                        original_name=project_name)[0]
+                except IndexError:
+                    parent_project = [p for p in Project.objects.all(
+                    ) if os.path.basename(p.qgis_file.name) == project_name][0]
                 embedded_group.attrib['project'] = makeDatasource(
                     parent_project.qgis_file.path, Layer.TYPES.ogr)
                 # Update the key="embedded_project"
@@ -1457,7 +1467,7 @@ class QgisProject(XmlData):
                     embedded_project_property.attrib['value'] = embedded_group.attrib['project']
             except IndexError:
                 raise Exception(
-                    _('The project contains an embedded group {} from a project that could not be found {}'.format(embedded_group, project_name)))
+                    _('The project contains an embedded group {} from a project that could not be found {}'.format(group_name, project_name)))
 
         # update file of print composers
         for composer in tree.xpath(self._regexXmlComposer):
