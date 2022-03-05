@@ -16,6 +16,7 @@ from django.db import models
 from django.db.models.signals import post_delete
 from django.utils.translation import ugettext_lazy as _
 from guardian.shortcuts import get_perms
+from guardian.utils import get_anonymous_user
 from model_utils import Choices
 from model_utils.models import TimeStampedModel
 from qdjango.utils.models import get_constraints4layer, get_widgets4layer
@@ -605,6 +606,10 @@ class Layer(G3WACLModelMixins, models.Model):
             attributes = self.qgis_layer.fields().names()
 
             if self.has_column_acl:
+
+                if user.is_anonymous:
+                    user = get_anonymous_user()
+
                 for acl in self.columnacl_set.filter(models.Q(user=user) | models.Q(group__in=user.groups.all())):
                     attributes = list(set(attributes) -
                                       set(acl.restricted_fields))
