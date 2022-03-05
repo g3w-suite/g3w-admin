@@ -74,6 +74,10 @@ class TestEmbeddedLayers(QdjangoTestBase):
             CURRENT_PATH + TEST_BASE_PATH, 'embedded.qgs')
         cls.parent_project_path = os.path.join(
             CURRENT_PATH + TEST_BASE_PATH, 'embedded_parent.qgs')
+        cls.project_group_path = os.path.join(
+            CURRENT_PATH + TEST_BASE_PATH, 'embedded_group.qgs')
+        cls.parent_project_group_path = os.path.join(
+            CURRENT_PATH + TEST_BASE_PATH, 'embedded_parent_group.qgs')
         # This one has no embedded layer:
         cls.parent_project_removed_path = os.path.join(
             CURRENT_PATH + TEST_BASE_PATH, 'embedded_parent_removed.qgs')
@@ -98,7 +102,13 @@ class TestEmbeddedLayers(QdjangoTestBase):
     def tearDown(self):
         """Remove all test projects"""
 
-        for original_name in ('embedded.qgs', 'embedded_parent.qgs', 'embedded_parent_removed.qgs', 'embedded_parent_new_title.qgs'):
+        for original_name in (
+            'embedded.qgs',
+            'embedded_parent.qgs',
+            'embedded_group.qgs',
+            'embedded_parent_group.qgs',
+            'embedded_parent_removed.qgs',
+                'embedded_parent_new_title.qgs'):
             Project.objects.filter(original_name=original_name).delete()
 
     def tearDown(self):
@@ -273,3 +283,46 @@ class TestEmbeddedLayers(QdjangoTestBase):
         tree = et.parse(project.qgis_file.path)
         self.assertEqual(len(tree.xpath('//maplayer[@embedded=1]')), 0)
 
+    def test_embedded_group(self):
+
+        # Load parent layer
+        form = self._make_form(self.parent_project_group_path)
+
+        self.assertTrue(form.is_valid(), form.errors)
+
+        # Save embedded project
+        form.qgisProject.save(**form.cleaned_data)
+
+        # Store temporary file to avoid error on test exit (because the temp file was moved)
+        open(form.qgisProject.qgisProjectFile.file.name, 'a').close()
+
+        # Verify
+        project = Project.objects.get(
+            original_name='embedded_parent_group.qgs')
+        self.assertIsNotNone(project)
+
+        # Reload embedded, this time it should pass
+
+        form = self._make_form(self.project_group_path)
+
+        self.assertTrue(form.is_valid())
+
+        # Save the embedded project
+        form.qgisProject.save(**form.cleaned_data)
+
+        # Store temporary file to avoid error on test exit (because the temp file was moved)
+        open(form.qgisProject.qgisProjectFile.file.name, 'a').close()
+
+        project = Project.objects.get(original_name='embedded_group.qgs')
+        self.assertIsNotNone(project)
+
+        self.assertEqual(project.layer_set.all().count(), 2)
+        self.assertEqual(project.layer_set.filter(parent_project=Project.objects.get(
+            original_name='embedded_parent_group.qgs')).count(), 1)
+
+        # Test API call for embedded groups
+        response = self._testApiCallAdmin01(
+            'group-project-map-config', ['gruppo-1', 'qdjango', project.pk])
+        resp = json.loads(response.content)
+        layer_ids = [l['id'] for l in resp['layers']]
+        self.assertEqual(len(layer_ids), 2)

@@ -40,6 +40,11 @@ class QdjangoProjectFormMixin(object):
         try:
             qgis_file = self.cleaned_data['qgis_file']
 
+            kwargs = {
+                'group': self.group,
+                'original_name': qgis_file.name
+            }
+
             # validate extension
             file_extension = os.path.splitext(qgis_file.name)[1]
             if file_extension.lower() not in ('.qgs', '.qgz'):
@@ -59,7 +64,6 @@ class QdjangoProjectFormMixin(object):
                 # Update path property for QGIS api
                 qgis_file.path = self.cleaned_data['qgis_file'].file.path
 
-            kwargs = {'group': self.group}
             if self.instance.pk:
                 kwargs['instance'] = self.instance
 
@@ -115,7 +119,6 @@ class QdjangoProjectFormMixin(object):
                   f"if Tab's TOC active as default is set to \"{Project.CLIENT_TOC_TABS['legend']}\""))
 
         return self.cleaned_data['legend_position']
-
 
     def _save_url_alias(self):
         """
@@ -353,7 +356,6 @@ class QdjangoProjectForm(TranslationModelForm, QdjangoProjectFormMixin, G3WFormM
         self.fields['viewer_user_groups'].queryset = AuthGroup.objects.filter(
             pk__in=[v.pk for v in viewer_user_groups])
 
-
     def save(self, commit=True):
         self._ACLPolicy()
 
@@ -435,7 +437,8 @@ class FitlerByUserLayerForm(G3WRequestFormMixin, G3WProjectFormMixin, forms.Form
         self.helper = FormHelper(self)
         self.helper.form_tag = False
         self.helper.layout = Layout(
-            HTML(_('Select viewers with \'view permission\' on project that can view layer:')),
+            HTML(
+                _('Select viewers with \'view permission\' on project that can view layer:')),
             Field('viewer_users', css_class='select2', style="width:100%;"),
             Field('user_groups_viewer', css_class='select2', style="width:100%;"),
         )
@@ -445,7 +448,8 @@ class FitlerByUserLayerForm(G3WRequestFormMixin, G3WProjectFormMixin, forms.Form
         Set choices for viewer_users select by permission on project and by user main role
         """
 
-        viewers = get_viewers_for_object(self.project, self.request.user, 'view_project', with_anonymous=True)
+        viewers = get_viewers_for_object(
+            self.project, self.request.user, 'view_project', with_anonymous=True)
 
         # get Editor Level 1 and Editor level 2 to clear from list
         editor_pk = self.project.editor.pk if self.project.editor else None
@@ -460,13 +464,16 @@ class FitlerByUserLayerForm(G3WRequestFormMixin, G3WProjectFormMixin, forms.Form
         """
 
         # add user_groups_viewer choices
-        user_groups_viewers = get_groups_for_object(self.project, 'view_project', grouprole='viewer')
+        user_groups_viewers = get_groups_for_object(
+            self.project, 'view_project', grouprole='viewer')
 
         # for Editor level filter by his groups
         if userHasGroups(self.request.user, [G3W_EDITOR1]):
             editor1_user_gorups_viewers = get_objects_for_user(self.request.user, 'auth.change_group',
-                                 AuthGroup).order_by('name').filter(grouprole__role='viewer')
+                                                               AuthGroup).order_by('name').filter(grouprole__role='viewer')
 
-            user_groups_viewers = list(set(user_groups_viewers).intersection(set(editor1_user_gorups_viewers)))
+            user_groups_viewers = list(set(user_groups_viewers).intersection(
+                set(editor1_user_gorups_viewers)))
 
-        self.fields['user_groups_viewer'].choices = [(v.pk, v) for v in user_groups_viewers]
+        self.fields['user_groups_viewer'].choices = [
+            (v.pk, v) for v in user_groups_viewers]

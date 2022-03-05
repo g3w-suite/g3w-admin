@@ -843,6 +843,11 @@ class QgisProject(XmlData):
         if 'instance' in kwargs:
             self.instance = kwargs['instance']
 
+        if 'original_name' in kwargs:
+            self.original_name = kwargs['original_name']
+        else:
+            self.original_name = qgis_file.name
+
         if 'group' in kwargs:
             self.group = kwargs['group']
 
@@ -1050,6 +1055,34 @@ class QgisProject(XmlData):
                 'project': os.path.basename(layer.attrib['project'])
             })
 
+        for group in self.qgisProjectTree.xpath('//legend/legendgroup[@embedded=1]'):
+
+            parent_project_path = os.path.basename(group.attrib['project'])
+            group_name = group.attrib['name']
+
+            parent_project = None
+            try:
+                parent_project = Project.objects.get(
+                    original_name=parent_project_path)
+            except Project.DoesNotExist:
+                try:
+                    parent_project = [p for p in Project.objects.all() if os.path.basename(
+                        p.qgis_file.name) == parent_project_path][0]
+                except IndexError:
+                    pass
+
+            if parent_project is None:
+                raise Exception(
+                    _('The project contains an embedded group {} from a project that could not be found {}'.format(group_name, parent_project_path)))
+
+            tr = parent_project.qgis_project.layerTreeRoot()
+            group = tr.findGroup(group_name)
+            for layer in group.findLayers():
+                layers.append({
+                    'id': layer.layerId(),
+                    'project': parent_project_path
+                })
+
         return layers
 
     def _getDataLayerRelations(self):
@@ -1237,6 +1270,9 @@ class QgisProject(XmlData):
         :param instance: Project instance
         """
 
+        old_project_name = os.path.basename(
+            instance.qgis_file.name) if instance is not None else None
+
         with transaction.atomic():
             if not instance and not self.instance:
 
@@ -1246,7 +1282,7 @@ class QgisProject(XmlData):
 
                 self.instance = self._project_model.objects.create(
                     qgis_file=self.qgisProjectFile,
-                    original_name=self.qgisProjectFile.name,
+                    original_name=self.original_name,
                     group=self.group,
                     title=self.title,
                     initial_extent=self.initialExtent,
@@ -1264,7 +1300,7 @@ class QgisProject(XmlData):
             else:
                 if instance:
                     self.instance = instance
-                self.instance.original_name = self.qgisProjectFile.name
+                self.instance.original_name = self.original_name
                 self.instance.qgis_file = self.qgisProjectFile
                 self.instance.title = self.title
                 self.instance.qgis_version = self.qgisVersion
@@ -1334,9 +1370,24 @@ class QgisProject(XmlData):
                         element.attrib['project'] = makeDatasource(
                             self.instance.qgis_file.path, Layer.TYPES.ogr)
                         changed = True
+                    # Handle embedded groups
+                    if old_project_name is not None:
+                        for embedded_group in tree.xpath('//legend/legendgroup[@project="{}"]').format(old_project_name):
+                            element.attrib['project'] = makeDatasource(
+                                self.instance.qgis_file.path, Layer.TYPES.ogr)
+                            changed = True
+
                 if changed:
                     tree.write(linked_project.qgis_file.file.name,
                                encoding='UTF-8')
+
+            # This is tricky: if we have embedded layers, we need to recreate the layers_tree
+            # because when it was initially calculated the paths were not yet rewritten to point
+            # to the parent project and the embedded layers were not added correctly to the tree
+            if self.instance.layer_set.filter(parent_project__isnull=False).count() > 0:
+                self.instance.layers_tree = str(buildLayerTreeNodeObject(
+                    self.instance.qgis_project.layerTreeRoot()))
+                self.instance.save()
 
             post_save_qdjango_project_file.send(self)
 
@@ -1388,6 +1439,25 @@ class QgisProject(XmlData):
                 except Layer.DoesNotExist:
                     raise Exception(
                         _('The project contains an embedded layer {} from a project that could not be found {}'.format(layer_id, project_name)))
+
+        # Update embedded group project path
+        for embedded_group in tree.xpath('//legend/legendgroup[@embedded="1"]'):
+            project_name = os.path.basename(embedded_group.attrib['project'])
+            group_name = os.path.basename(embedded_group.attrib['name'])
+            try:
+                parent_project = Project.objects.filter(
+                    original_name=project_name)[0]
+                embedded_group.attrib['project'] = makeDatasource(
+                    parent_project.qgis_file.path, Layer.TYPES.ogr)
+                # Update the key="embedded_project"
+                for embedded_project_property in tree.xpath('//layer-tree-group[@name="{}"]/customproperties/property[@key="embedded_project"]'.format(group_name)):
+                    embedded_project_property.attrib['value'] = embedded_group.attrib['project']
+                # Recent projects have a different way to express this option in the XML tree:
+                for embedded_project_property in tree.xpath('//layer-tree-group[@name="{}"]/customproperties/Option/Option[@name="embedded_project"]'.format(group_name)):
+                    embedded_project_property.attrib['value'] = embedded_group.attrib['project']
+            except IndexError:
+                raise Exception(
+                    _('The project contains an embedded group {} from a project that could not be found {}'.format(embedded_group, project_name)))
 
         # update file of print composers
         for composer in tree.xpath(self._regexXmlComposer):

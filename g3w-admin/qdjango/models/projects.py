@@ -83,6 +83,7 @@ def buildLayerTreeNodeObject(layerTreeNode):
             })
 
         toRetLayers.append(toRetLayer)
+
     return toRetLayers
 
 
