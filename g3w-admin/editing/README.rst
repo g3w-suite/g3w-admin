@@ -40,3 +40,6 @@ Settings for module:
 
     # set spatila predicate for (Multi)Polygon predicate
     EDITING_CONSTRAINT_SPATIAL_PREDICATE = 'contains' | 'intersects' (contains default)
+
+    # Periodic features unlock task crontab time (in hours), defaults to 4
+    EDITING_CHECK_FEATURES_LOCKED_CRONTAB_HOURS
