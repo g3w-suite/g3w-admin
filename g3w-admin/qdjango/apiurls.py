@@ -45,6 +45,7 @@ from .api.column_acl.views import (
     ColumnAclFields,
 )
 
+from .views import ProjectSetOrderView
 from rest_framework.urlpatterns import format_suffix_patterns
 
 # Single layer Constraints
@@ -197,6 +198,11 @@ urlpatterns = [
         QdjangoAsGeoTiffAPIview.as_view(), name='qdjango-asgeotiff-api'),
     re_path(r'^api/prjtheme/(?P<project_id>\d+)/(?P<theme_name>[-_\w\d\s]+)/$',
         QdjangoPrjThemeAPIview.as_view(), name='qdjango-prjtheme-api'),
+
+    # Order
+    # ============================================================
+    path('jx/project/<int:project_id>/setorder/', login_required(ProjectSetOrderView.as_view()),
+         name='qdjango-project-set-order'),
 
 ]
 

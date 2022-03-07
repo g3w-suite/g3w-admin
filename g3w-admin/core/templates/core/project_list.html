@@ -13,6 +13,40 @@
       </h1>
 {% endblock %}
 
+{% block custom_js_links_page %}
+{% if user.is_superuser %}
+<script>
+
+    $( document ).ajaxComplete(function() {
+        if (this.URL) {
+            var $sort = $('table').find('tbody').sortable({
+                placeholder: "sort-highlight-group",
+                update: function(e, ui){
+                    new_order = $(e.target).sortable("toArray");
+
+                    // get current id of group moved
+                    var gid = ui.item.attr('id').substring(16)
+                    var url = _.template("/qdjango/jx/project/<%= gid %>/setorder/")({gid: gid});
+                    var data = {
+                        new_order: new_order
+                    }
+                    ga.utils.addCsfrtokenData(data);
+
+                    $.post(url, data, function(res){});
+
+                },
+            });
+
+            $('table').find('tbody').find('tr').hover(function() {
+                $(this).css('cursor','move');
+            });
+        }
+
+    });
+</script>
+{% endif %}
+{% endblock %}
+
 
 {% block main_content %}
 {% get_obj_perms user for group as "userObj_perms" %}

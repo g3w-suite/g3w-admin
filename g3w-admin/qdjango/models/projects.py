@@ -3,6 +3,7 @@ import os
 import time
 from autoslug import AutoSlugField
 from autoslug.utils import slugify
+from ordered_model.models import OrderedModel
 from core.configs import *
 from core.mixins.models import G3WACLModelMixins, G3WProjectMixins
 from core.models import (BaseLayer, Group, GroupProjectPanoramic,
@@ -238,6 +239,9 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
 
     is_locked = models.BooleanField(_('Mutex to lock the project when it is being written by the G3W-Suite application. This field is used internally by the suite through a context manager'), editable=False,
                                     default=False)
+
+    order = models.PositiveIntegerField(_('Fields to se order'), default=0, blank=True, null=True)
+
 
     class Meta:
         verbose_name = _('Project')

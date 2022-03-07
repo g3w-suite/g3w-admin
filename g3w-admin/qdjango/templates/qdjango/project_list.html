@@ -12,7 +12,7 @@
     </div>
     <div class="box-body">
         {% if object_list|length > 0 %}
-        <table class="table table-hover table-striped">
+        <table class="table table-hover table-striped projects-list">
             <thead>
                 <tr>
                     {% if perms.qdjango.add_project %}
@@ -24,13 +24,13 @@
                     <th>{% trans 'Public title' %}</th>
                     <th>{% trans 'URL alias' %}</th>
                     <th>{% trans 'Created/Modified' %}</th>
-                    <th>{% trans 'Widgets' %}</th>
+                    {% comment %}<th>{% trans 'Widgets' %}</th>{% endcomment %}
                 </tr>
             </thead>
             <tbody>
                 {% for object in object_list %}
                 {% get_obj_perms user for object as "userObj_perms" %}
-                <tr id="qdjango_project_{{ object.slug }}">
+                <tr id="qdjangoproject_{{ object.pk }}">
                     {% if perms.qdjango.add_project %}
                     <td>
                         <input type="radio" name="panoramic_map" {% if object.id == projectPanoramic.0.project_id %} checked="checked" {% endif %} value="{{ object.id }}" data-widget-type="setProjectPanoramic" data-ajax-url="{% url 'group-set-project-panoramic' group.slug 'qdjango' object.id %}"/>
@@ -67,7 +67,7 @@
 
                         {% if "delete_project" in userObj_perms %}
                         <span class="col-xs-2 icon">
-                            <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Delete' %}" data-widget-type="deleteItem" data-delete-url="{% url 'qdjango-project-delete' group.slug object.slug %}" data-item-selector="#qdjango_project_{{ object.slug }}"><i class="ion ion-trash-b"></i></a>
+                            <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Delete' %}" data-widget-type="deleteItem" data-delete-url="{% url 'qdjango-project-delete' group.slug object.slug %}" data-item-selector="#qdjangoproject_{{ object.pk }}"><i class="ion ion-trash-b"></i></a>
                             {% if object.pk in pre_delete_messages %}
                             <div class="hidden pre-delete-message">
                                 {{ pre_delete_messages|lookup:object.pk }}
@@ -121,12 +121,14 @@
                             {% trans 'modified' %}: {{ object.modified }}
                         {% endif %}
                     </td>
+                    {% comment %}
                     <td>
                         {% g3wadmin_project_widgets object 'qdjango' user as widgets %}
                         {% for widget in widgets %}
                             {{ widget }}
                         {% endfor %}
                     </td>
+                    {% endcomment %}
                 </tr>
                 {% endfor %}
             </tbody>

@@ -23,6 +23,7 @@ from django_downloadview import ObjectDownloadView
 from rest_framework.response import Response
 from usersmanage.mixins.views import G3WACLViewMixin
 from usersmanage.models import Group as AuthGroup
+from usersmanage.decorators import user_passes_test_or_403
 from .signals import load_qdjango_widgets_data
 from .mixins.views import *
 from .forms import *
@@ -47,7 +48,7 @@ class QdjangoProjectListView(G3WRequestViewMixin, G3WGroupViewMixin, ListView):
 
     def get_queryset(self):
         return get_objects_for_user(self.request.user, 'qdjango.view_project', Project)\
-            .filter(group=self.group).order_by('title')
+            .filter(group=self.group).order_by('order')
         # return self.group.qdjango_project.all().order_by('title')
 
     def get_context_data(self, **kwargs):
@@ -555,3 +556,26 @@ class FilterByUserLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3WR
                 LayerAcl.manage_group(aid, self.layer, mode='add')
 
         return super().form_valid(form)
+
+
+class ProjectSetOrderView(View):
+    '''
+    Set order view list projects
+    '''
+
+    model = Project
+
+    # only user with change_group for this group can change overview map.
+    @method_decorator(user_passes_test_or_403(lambda u: u.is_superuser))
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
+    def post(self, *args, **kwargs):
+        # get new order save value for group
+        new_order = self.request.POST.getlist('new_order[]')
+        for oindex, gid in enumerate(new_order):
+            p = self.model.objects.get(pk=gid.split('_')[1])
+            p.order = oindex
+            p.save()
+
+        return JsonResponse({'Saved': 'ok'})
