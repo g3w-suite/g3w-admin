@@ -107,6 +107,11 @@ h5 small {
     height: 192px;
 }
 
+.sort-highlight-project {
+    background: #ced4da;
+    height: 112px;
+}
+
 .widget-user .widget-user-username {
     font-weight: 400;
 }

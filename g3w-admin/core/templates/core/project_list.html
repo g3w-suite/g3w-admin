@@ -20,7 +20,7 @@
     $( document ).ajaxComplete(function() {
         if (this.URL) {
             var $sort = $('table').find('tbody').sortable({
-                placeholder: "sort-highlight-group",
+                placeholder: "sort-highlight-project",
                 update: function(e, ui){
                     new_order = $(e.target).sortable("toArray");
 
@@ -35,6 +35,12 @@
                     $.post(url, data, function(res){});
 
                 },
+                start: function(e, ui){
+                    $(ui.item).css('border', '1px solid grey');
+                },
+                stop: function(e, ui){
+                    $(ui.item).css('border', 'none');
+                }
             });
 
             $('table').find('tbody').find('tr').hover(function() {
