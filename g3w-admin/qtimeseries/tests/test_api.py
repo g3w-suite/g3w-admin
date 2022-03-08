@@ -70,7 +70,7 @@ class QTimeSeriesAPITestAPI(QTimeSeriesBaseTest):
         jcontent = json.loads(response.content)
 
         self.assertFalse(jcontent['result'])
-        self.assertEqual(jcontent['error'], 'air_sig995_2012_bb4a605a_1b9c_46d5_89bf_df42b0172643 is not activated for time serie')
+        self.assertEqual(jcontent['error'], 'air_sig995_2012_bb4a605a_1b9c_46d5_89bf_df42b0172643 is not activated for time series')
 
         # Activate layer fo qtimeseries
         QRasterTimeSeriesLayer.objects.create(
