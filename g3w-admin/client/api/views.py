@@ -81,6 +81,7 @@ class GroupConfigApiView(APIView):
           "mediaurl": settings.MEDIA_URL,
           "baseurl": baseurl,
           "vectorurl": settings.VECTOR_URL,
+          "rasterurl": settings.RASTER_URL,
           "group": groupSerializer.data,
           "g3wsuite_logo_img": settings.CLIENT_G3WSUITE_LOGO,
           "credits": reverse('client-credits'),
