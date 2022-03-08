@@ -2,9 +2,9 @@
 {% load staticfiles %}
 
 <span class="col-xs-1 icon">
-<a href="#" {% if active %}style="color: green;"{% endif %} data-toggle="tooltip" title="{% trans 'Time serie' %}" data-widget-type="ajaxForm"
+<a href="#" {% if active %}style="color: green;"{% endif %} data-toggle="tooltip" title="{% trans 'Time series' %}" data-widget-type="ajaxForm"
    data-form-url="{% url 'qtimeseries-raster-layer-activate' layer.project.pk layer.id %}"
-   data-modal-title="{% trans 'Activation raster time serie' %}">
+   data-modal-title="{% trans 'Activation raster time series' %}">
     <i class="fa fa-clock-o"></i>
 </a>
 </span>

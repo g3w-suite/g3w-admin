@@ -41,7 +41,7 @@ class QRTSSerieView(G3WAPIView):
             # Check if layer raster time series is activated
             if not QRasterTimeSeriesLayer.is_activated(layer):
                 self.results.result = False
-                self.results.error = f'{qgs_layer_id} is not activated for time serie'
+                self.results.error = f'{qgs_layer_id} is not activated for time series'
                 return Response(self.results.results)
 
 
