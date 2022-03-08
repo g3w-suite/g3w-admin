@@ -545,6 +545,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
     def response_shp_mode(self, request):
         """
         Download Shapefile of data
+
         :param request: Http Django request object
         :return: http response with attached file
         """

@@ -49,6 +49,7 @@ MODE_GPX = 'gpx'
 MODE_CSV = 'csv'
 MODE_GPKG = 'gpkg'
 MODE_FILTER_TOKEN = 'filtertoken'
+MODE_GEOTIFF = 'geotiff' # For raster layers
 
 MIME_TYPES_MOD = {
     MODE_SHP: {
@@ -70,6 +71,10 @@ MIME_TYPES_MOD = {
     MODE_GPKG: {
         'mime_type': 'application/geopackage+vnd.sqlite3',
         'ext': 'gpkg'
+    },
+    MODE_GEOTIFF: {
+        'mime_type': 'image/tiff',
+        'ext': 'tif'
     }
 }
 
@@ -631,3 +636,40 @@ class BaseVectorApiView(G3WAPIView):
     def post(self, request, mode_call=None, project_type=None, layer_id=None, **kwargs):
 
         return self.get_response(request, mode_call=mode_call, project_type=project_type, layer_id=layer_id, **kwargs)
+
+
+class BaseRasterApiView(BaseVectorApiView):
+    """
+    View base for raster layer
+    """
+
+    authentication_classes = (
+        CsrfExemptSessionAuthentication,
+    )
+
+    # Modes call available
+    modes_call_available = [
+        MODE_GEOTIFF
+    ]
+
+    def get_response(self, request, mode_call=None, project_type=None, layer_id=None, **kwargs):
+
+        # set layer model object to work
+        if not hasattr(self, 'layer'):
+            self.layer = self.get_layer_by_name(layer_id)
+
+        # set reprojecting status
+        self.set_reprojecting_status()
+
+        # get results
+        response = self.get_response_data(request)
+
+        if response is None:
+
+            # before to send response
+            #extra_data = before_return_raster_data_layer.send(self)
+
+            # response a APIVectorLayer
+            return Response(self.results.results)
+        else:
+            return response

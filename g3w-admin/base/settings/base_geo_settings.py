@@ -5,6 +5,7 @@ EDITABLE = 4
 WFS = 4
 
 VECTOR_URL = '/vector/api/'
+RASTER_URL = '/raster/api/'
 
 EXTERNAL_WMS_INFOFORMATS_SUPPORTED = [
   'text/gml',
