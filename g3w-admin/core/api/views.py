@@ -2,6 +2,7 @@ from django import get_version as dj_get_version
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.response import Response
+from owslib.wms import WebMapService
 from base.version import get_version
 from .base.views import G3WAPIView
 from core.api.authentication import CsrfExemptSessionAuthentication
@@ -163,7 +164,6 @@ class QgsExpressionLayerContextEvalView(G3WAPIView):
             except:
                 raise APIExpressionEmptyError()
         else:
-            print(request.data)
             expression_text = request.data.get('expression')
             form_data = request.data.get('form_data')
             form_data = request.data.get('form_data')
@@ -185,3 +185,70 @@ class QgsExpressionLayerContextEvalView(G3WAPIView):
             raise APIExpressionLayerError(str(ex))
 
         return Response(result)
+
+
+class InterfaceOws(G3WAPIView):
+    """
+    API interface view for client. Retrieve information about ows (i.e. wms) service
+    Only POST request are available on this view.
+    """
+
+    _service_available = {
+        'wms': WebMapService
+    }
+
+    authentication_classes = (
+        CsrfExemptSessionAuthentication,
+    )
+
+    def post(self, request, **kwargs):
+
+        # Check for content type accept only 'application/json'
+
+        if request.content_type != 'application/json':
+            return APIException("Interface OWS accept only 'application/json request'")
+
+        post_data = json.loads(request.body)
+
+        # Required
+        url = post_data.get('url')
+        if not url:
+            return APIException("'url' parameter must be provided.")
+
+        service = post_data.get('service').lower()
+        if not service:
+            return APIException("'service' parameter must be provided.")
+
+        if service not in self._service_available.keys():
+            return APIException(f"Service '{service}' is not available.")
+
+        # Not required:
+        version = post_data.get('version', '1.3.0')
+
+        ows = self._service_available[service](url, version=version)
+
+        # Map formats
+        # -----------------------------------
+        self.results.results.update({'map_formats': ows.getOperationByName('GetMap').formatOptions})
+
+        # Info formats
+        # -----------------------------------
+        self.results.results.update({'info_formats': ows.getOperationByName('GetFeatureInfo').formatOptions})
+
+        # Layers
+        # -----------------------------------
+        available_layers = list(ows.contents)
+
+        # add styles for every layer
+        layers = []
+        for al in available_layers:
+            layers.append({
+                'name': al,
+                'styles': ows[al].styles,
+                'parent': ows[al].parent.id if ows[al].parent else None
+            })
+
+        self.results.results.update({'layer': layers})
+
+        return Response(self.results.results)
+

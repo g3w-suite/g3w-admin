@@ -2,7 +2,12 @@ from django.conf import settings
 from django.urls import path, re_path
 from django.contrib.auth.decorators import login_required
 from .views import InterfaceProxy
-from .api.views import layer_vector_view, G3WSUITEInfoAPIView, QgsExpressionLayerContextEvalView, layer_raster_view
+from .api.views import \
+    layer_vector_view, \
+    G3WSUITEInfoAPIView, \
+    QgsExpressionLayerContextEvalView, \
+    layer_raster_view, \
+    InterfaceOws
 from .views import GroupSetOrderView, MacroGroupSetOrderView
 
 
@@ -38,6 +43,10 @@ urlpatterns = [
     # General proxy view for Client external calls, i.e. for COORS.
     # =============================================================
     path('interface/proxy/', InterfaceProxy.as_view(), name="interface-proxy"),
+
+    # Interface API to get informations, layer, styles to a ows services
+    # ==================================================================
+    path('interface/ows/', InterfaceOws.as_view(), name="interface-ows"),
 
     # For raster data
     # ---------------

@@ -398,7 +398,7 @@ class InterfaceProxy(View):
         # Check for content type accept only 'application/json'
 
         if request.content_type != 'application/json':
-            return HttpResponseBadRequest("proxy accept only 'application/json request'")
+            return HttpResponseBadRequest("Proxy accept only 'application/json request'")
 
         post_data = json.loads(request.body)
 
@@ -445,7 +445,6 @@ class InterfaceProxy(View):
         djres['Content-Type'] = res.headers['Content-Type']
 
         return djres
-
 
 
 
