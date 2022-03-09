@@ -248,7 +248,7 @@ class InterfaceOws(G3WAPIView):
                 'parent': ows[al].parent.id if ows[al].parent else None
             })
 
-        self.results.results.update({'layer': layers})
+        self.results.results.update({'layers': layers})
 
         return Response(self.results.results)
 
