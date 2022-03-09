@@ -41,6 +41,9 @@ def clean_for_json(json_string):
     """Clean a raw python dict string for json.loads"""
 
     return json_string.replace("False", "false").\
-                        replace("True", "true").\
-                        replace("'", "\"")
+        replace("True", "true").\
+        replace(": '", ": \""). \
+        replace("',", "\","). \
+        replace("'}", "\"}"). \
+        replace("\'", "'")
 
