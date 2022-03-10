@@ -213,14 +213,15 @@ class InterfaceOws(G3WAPIView):
         # Required
         url = post_data.get('url')
         if not url:
-            return APIException("'url' parameter must be provided.")
+            raise APIException("'url' parameter must be provided.")
 
-        service = post_data.get('service').lower()
+        service = post_data.get('service')
         if not service:
-            return APIException("'service' parameter must be provided.")
+            raise APIException("'service' parameter must be provided.")
+        service = service.lower()
 
         if service not in self._service_available.keys():
-            return APIException(f"Service '{service}' is not available.")
+            raise APIException(f"Service '{service}' is not available.")
 
         # Not required:
         version = post_data.get('version', '1.3.0')
