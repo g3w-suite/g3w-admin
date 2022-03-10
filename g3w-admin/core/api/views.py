@@ -23,6 +23,7 @@ import platform
 
 from qgis.core import (
     Qgis,
+    QgsCoordinateReferenceSystem
 )
 
 from core.utils.qgisapi import (
@@ -228,6 +229,10 @@ class InterfaceOws(G3WAPIView):
 
         ows = self._service_available[service](url, version=version)
 
+        # Identification
+        # -----------------------------------
+        self.results.results.update({'title': ows.identification.title, 'abstract': ows.identification.abstract})
+
         # Map formats
         # -----------------------------------
         self.results.results.update({'map_formats': ows.getOperationByName('GetMap').formatOptions})
@@ -243,8 +248,31 @@ class InterfaceOws(G3WAPIView):
         # add styles for every layer
         layers = []
         for al in available_layers:
+
+            # Build crs
+            crss = []
+            for srid in ows[al].crsOptions:
+                crs = QgsCoordinateReferenceSystem(srid)
+
+                if crs.postgisSrid() == 3003:
+                    proj4 = settings.PROJ4_EPSG_3003
+                else:
+                    proj4 = crs.toProj4()
+
+                crss.append({
+                    'epsg': crs.postgisSrid(),
+                    'proj4': proj4,
+                    'geographic': crs.isGeographic(),
+                    'axisinverted': crs.hasAxisInverted()
+
+                })
+
+
             layers.append({
                 'name': al,
+                'title': ows[al].title,
+                'abstract': ows[al].abstract,
+                'crss': crss,
                 'styles': ows[al].styles,
                 'parent': ows[al].parent.id if ows[al].parent else None
             })
