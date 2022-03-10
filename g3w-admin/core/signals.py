@@ -7,7 +7,7 @@ initconfig_plugin_start = django.dispatch.Signal(providing_args=["projectType", 
 # signal to add extra maplayers attribute/modify maplayer attributes
 post_create_maplayerattributes = django.dispatch.Signal(providing_args=["layer", "vector_params"])
 
-# signal to add extra maplayers attribute: i.e. iternet
+# signal to add extra maplayers attribute
 post_save_maplayer = django.dispatch.Signal(providing_args=["layer", "mode", "data", "user"])
 
 """Signal sent before edited features are sent to the backend for saving.
