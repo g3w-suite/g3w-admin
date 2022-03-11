@@ -191,7 +191,7 @@ def log_editing_layer(sender, **kwargs):
         kwargs['mode'] = EDITING_POST_DATA_DELETED
 
     G3WEditingLog(user=kwargs['user'], mode=kwargs['mode'], msg=kwargs['data'], app_name='qdjango',
-                  layer_id=kwargs['layer']).save()
+                  layer_id=sender.layer.pk).save()
 
 
 @receiver(pre_save_maplayer)
