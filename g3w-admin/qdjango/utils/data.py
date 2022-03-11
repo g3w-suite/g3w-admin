@@ -68,9 +68,13 @@ def makeDatasource(datasource, layerType):
     # OGR example datasource:
     # Original: <datasource>\\SIT-SERVER\sit\charts\definitivo\d262120.shp</datasource>
     # Modified: <datasource>/home/sit/charts\definitivo\d262120.shp</datasource>
-    if layerType == Layer.TYPES.ogr or layerType == Layer.TYPES.gdal:
+    if layerType in (Layer.TYPES.ogr, Layer.TYPES.gdal):
         newDatasource = re.sub(r'(.*?)%s(.*)' % folder, r'%s\2' %
                                basePath, datasource)  # ``?`` means ungreedy
+        # Remove possible double quote or singlequote
+        # i.e. for mdal layers: 'NETCDF:"C:/Users/l.lami/Documents/G3WSUITE_DEV/', '/temporal/runof.sfc.mon.mean.nc"'
+        newDatasource = newDatasource.replace("\"", "").replace("'", "")
+
 
     if layerType == Layer.TYPES.delimitedtext:
         oldPath = re.sub(r"(.*)file:(.*?)", r"\2", datasource)

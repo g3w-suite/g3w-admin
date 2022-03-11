@@ -2,7 +2,13 @@ from typing import Dict, List
 
 import numpy as np
 from os.path import basename, splitext
-from qgis.core import QgsRasterLayer, QgsMultiBandColorRenderer, QgsPalettedRasterRenderer, QgsSingleBandGrayRenderer, QgsSingleBandPseudoColorRenderer, QgsHillshadeRenderer
+from qgis.core import \
+    QgsRasterLayer, \
+    QgsMultiBandColorRenderer, \
+    QgsPalettedRasterRenderer, \
+    QgsSingleBandGrayRenderer, \
+    QgsSingleBandPseudoColorRenderer, \
+    QgsHillshadeRenderer
 from qgis.PyQt.QtCore import QDate
 from osgeo import gdal
 
