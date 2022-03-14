@@ -397,8 +397,14 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                     raise Exception(self.no_more_lock_feature_msg.format(
                         feature_id, metadata_layer.client_var))
 
-                # FIXME: pre_delete_maplayer
-                # pre_delete_maplayer.send(metadata_layer.serializer, layer=metadata_layer.layer_id, # data=serializer.data, user=self.request.user)
+                # Get feature to delete
+                ex = QgsJsonExporter(qgis_layer)
+                deleted_feature = ex.exportFeature(qgis_layer.getFeature(feature_id))
+
+                pre_delete_maplayer.send(self,
+                                         layer_metatada=metadata_layer,
+                                         data=deleted_feature,
+                                         user=self.request.user)
 
                 qgis_layer.dataProvider().clearErrors()
 
