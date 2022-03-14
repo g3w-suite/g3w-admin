@@ -305,3 +305,5 @@ VENDOR_KEYS = {}
 
 # sessionid value for AnonymousUser to us i.e. for editing module
 ANONYMOUS_USER_SESSIONID = '_anonymous_g3w_suite_sessionid_'
+
+SITE_DOMAIN = None
