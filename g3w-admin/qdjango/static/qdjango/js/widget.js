@@ -2453,7 +2453,7 @@ _.extend(g3wadmin.widget, {
       url: params["column-acl-fields-url"],
       success: function (res) {
         let field_names = res["field_names"]
-        let $el = $('[name="restricted_fields"]')
+        let $el = modal.$modal.find('[name="restricted_fields"]')
         $el.empty() // remove old options
         $.each(field_names, function (key, value) {
           $el.append($("<option></option>").attr("value", value).text(value))
@@ -2475,7 +2475,7 @@ _.extend(g3wadmin.widget, {
       url: params["info-layer-user"],
       success: function (res) {
         let users = res["results"]
-        let $el = $('[name="user"]')
+        let $el = modal.$modal.find('[name="user"]')
         $el.empty() // remove old options
         $el.append($("<option></option>").attr("value", "").text("--"))
         $.each(users, function (key, value) {
@@ -2498,7 +2498,8 @@ _.extend(g3wadmin.widget, {
       url: params["info-layer-authgroup"],
       success: function (res) {
         let groups = res["results"]
-        let $el = $('[name="group"]')
+        //let $el = $('[name="group"]')
+        let $el = modal.$modal.find('[name="group"]')
         $el.empty() // remove old options
         $el.append($("<option></option>").attr("value", "").text("--"))
         $.each(groups, function (key, value) {
@@ -2568,9 +2569,9 @@ _.extend(g3wadmin.widget, {
 
     modal.show()
 
-    modal.$modal.find('[name="user"]').select2();
-    modal.$modal.find('[name="group"]').select2();
-    modal.$modal.find('[name="restricted_fields"]').select2();
+    modal.$modal.find('[name="user"]').select2()
+    modal.$modal.find('[name="group"]').select2()
+    modal.$modal.find('[name="restricted_fields"]').select2()
   },
 })
 
