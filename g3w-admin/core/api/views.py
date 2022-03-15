@@ -167,7 +167,6 @@ class QgsExpressionLayerContextEvalView(G3WAPIView):
         else:
             expression_text = request.data.get('expression')
             form_data = request.data.get('form_data')
-            form_data = request.data.get('form_data')
             qgs_layer_id = request.data.get('qgs_layer_id')
             formatter = request.data.get('formatter', '0')
 

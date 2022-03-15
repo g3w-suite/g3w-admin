@@ -504,7 +504,10 @@ def expression_eval(expression_text, project_id=None, qgs_layer_id=None, form_da
                 for k, v in form_data['properties'].items():
                     form_feature.setAttribute(k, v)
             else:
-                form_feature = layer.qgis_layer.getFeature(str(form_data['id']))
+                qgis_feature_request = QgsFeatureRequest()
+                exp = expression_from_server_fids([form_data['id']], layer.qgis_layer.dataProvider())
+                qgis_feature_request.combineFilterExpression(exp)
+                form_feature = get_qgis_features(layer.qgis_layer, qgis_feature_request)[0]
 
             expression_context.appendScope(
                 QgsExpressionContextUtils.formScope(form_feature))
