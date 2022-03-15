@@ -427,7 +427,7 @@ class ExpressionForbiddenError(Exception):
     pass
 
 
-def expression_eval(expression_text, project_id=None, qgs_layer_id=None, form_data=None,):
+def expression_eval(expression_text, project_id=None, qgs_layer_id=None, form_data=None, formatter=0):
     """Evaluates a QgsExpression and returns the result
 
     :param expression_text: The QgsExpression text
@@ -438,6 +438,8 @@ def expression_eval(expression_text, project_id=None, qgs_layer_id=None, form_da
     :type qgslayer_id: str, optional
     :param form_data: A dictionary that maps to a GeoJSON representation of the feature currently edited in the form
     :type form_data: dict, optional
+    :param formatter: Indicate if form_data values contains formatter values or original features value.
+    :type formatter: int, optional
     """
 
     expression = QgsExpression(expression_text)
@@ -490,12 +492,20 @@ def expression_eval(expression_text, project_id=None, qgs_layer_id=None, form_da
                 _('A valid QGIS layer is required to process form data!'))
 
         try:
-            fields = layer.qgis_layer.fields()
-            form_feature = QgsJsonUtils.stringToFeatureList(
-                json.dumps(form_data), fields, None)[0]
-            # Set attributes manually because QgsJsonUtils does not respect order
-            for k, v in form_data['properties'].items():
-                form_feature.setAttribute(k, v)
+            # Case by formatter
+            # formatter == 1 : get featureid from layer, usually must be used with formatter form_data
+            # formatter == 0 : default behavior
+            if formatter == 0:
+                fields = layer.qgis_layer.fields()
+                form_feature = QgsJsonUtils.stringToFeatureList(
+                    json.dumps(form_data), fields, None)[0]
+
+                # Set attributes manually because QgsJsonUtils does not respect order
+                for k, v in form_data['properties'].items():
+                    form_feature.setAttribute(k, v)
+            else:
+                form_feature = layer.qgis_layer.getFeature(str(form_data['id']))
+
             expression_context.appendScope(
                 QgsExpressionContextUtils.formScope(form_feature))
             expression_context.setFeature(form_feature)

@@ -6,7 +6,6 @@ from owslib.wms import WebMapService
 from base.version import get_version
 from .base.views import G3WAPIView
 from core.api.authentication import CsrfExemptSessionAuthentication
-from core.utils.qgisapi import expression_eval
 from qdjango.models import Project
 from core.api.base.views import APIException
 from django.utils.translation import ugettext_lazy as _
@@ -162,6 +161,7 @@ class QgsExpressionLayerContextEvalView(G3WAPIView):
                 expression_text = data.get('expression')
                 form_data = data.get('form_data')
                 qgs_layer_id = data.get('qgs_layer_id')
+                formatter = data.get('formatter', '0')
             except:
                 raise APIExpressionEmptyError()
         else:
@@ -169,13 +169,14 @@ class QgsExpressionLayerContextEvalView(G3WAPIView):
             form_data = request.data.get('form_data')
             form_data = request.data.get('form_data')
             qgs_layer_id = request.data.get('qgs_layer_id')
+            formatter = request.data.get('formatter', '0')
 
         if expression_text is None:
             raise APIExpressionEmptyError()
 
         try:
             result = expression_eval(
-                expression_text, project_id, qgs_layer_id, form_data)
+                expression_text, project_id, qgs_layer_id, form_data, int(formatter))
         except ExpressionFormDataError as ex:
             raise APIExpressionFormDataError(str(ex))
         except ExpressionEvalError as ex:
