@@ -83,6 +83,7 @@ class GroupConfigApiView(APIView):
           "vectorurl": settings.VECTOR_URL,
           "rasterurl": settings.RASTER_URL,
           "proxyurl": reverse('interface-proxy'),
+          "interfaceowsurl": reverse('interface-ows'),
           "group": groupSerializer.data,
           "g3wsuite_logo_img": settings.CLIENT_G3WSUITE_LOGO,
           "credits": reverse('client-credits'),

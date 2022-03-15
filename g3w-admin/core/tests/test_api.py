@@ -580,3 +580,60 @@ class CoreApiTest(CoreTestBase):
         self.assertTrue(rl.isValid())
         self.assertEqual(rl.height(), 53)
         self.assertEqual(rl.width(), 95)
+
+    def testCoreInterfaceOwsView(self):
+        """ Test for interface ows view """
+
+        url = reverse('interface-ows')
+        ows_url = 'http://www502.regione.toscana.it/ows_catasto/com.rt.wms.RTmap/ows?map=owscatasto'
+
+        # Only post method is available
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, 405)
+
+        # Check validations data
+
+        data = {
+
+        }
+        res = self.client.post(url, data=data, content_type='application/json')
+        self.assertEqual(res.status_code, 500)
+        jres = json.loads(res.content)
+        self.assertEqual(jres['error']['data'], "'url' parameter must be provided.")
+
+        data = {
+            'url': ows_url,
+        }
+        res = self.client.post(url, data=data, content_type='application/json')
+        self.assertEqual(res.status_code, 500)
+        jres = json.loads(res.content)
+        self.assertEqual(jres['error']['data'], "'service' parameter must be provided.")
+
+        data = {
+            'url': ows_url,
+            'service': 'csw'
+        }
+        res = self.client.post(url, data=data, content_type='application/json')
+        self.assertEqual(res.status_code, 500)
+        jres = json.loads(res.content)
+        self.assertEqual(jres['error']['data'], "Service 'csw' is not available.")
+
+        data = {
+            'url': ows_url,
+            'service': 'wms'
+        }
+
+        res = self.client.post(url, data=data, content_type='application/json')
+        self.assertEqual(res.status_code, 200)
+        jres = json.loads(res.content)
+
+        self.assertTrue(jres['result'])
+        self.assertEqual('Geoscopio_wms catasto', jres['title'])
+        self.assertTrue('image/png' in jres['map_formats'])
+        self.assertTrue('text/html' in jres['info_formats'])
+        self.assertEqual(len(jres['layers']), 21)
+
+        self.assertEqual(jres['layers'][1]['title'], 'Acque - AdT Catasto Terreni')
+        self.assertEqual(len(jres['layers'][1]['crss']), 19)
+
+

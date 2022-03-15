@@ -2,6 +2,7 @@ from django import get_version as dj_get_version
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.response import Response
+from owslib.wms import WebMapService
 from base.version import get_version
 from .base.views import G3WAPIView
 from core.api.authentication import CsrfExemptSessionAuthentication
@@ -22,6 +23,7 @@ import platform
 
 from qgis.core import (
     Qgis,
+    QgsCoordinateReferenceSystem
 )
 
 from core.utils.qgisapi import (
@@ -163,7 +165,6 @@ class QgsExpressionLayerContextEvalView(G3WAPIView):
             except:
                 raise APIExpressionEmptyError()
         else:
-            print(request.data)
             expression_text = request.data.get('expression')
             form_data = request.data.get('form_data')
             form_data = request.data.get('form_data')
@@ -185,3 +186,98 @@ class QgsExpressionLayerContextEvalView(G3WAPIView):
             raise APIExpressionLayerError(str(ex))
 
         return Response(result)
+
+
+class InterfaceOws(G3WAPIView):
+    """
+    API interface view for client. Retrieve information about ows (i.e. wms) service
+    Only POST request are available on this view.
+    """
+
+    _service_available = {
+        'wms': WebMapService
+    }
+
+    authentication_classes = (
+        CsrfExemptSessionAuthentication,
+    )
+
+    def post(self, request, **kwargs):
+
+        # Check for content type accept only 'application/json'
+
+        if request.content_type != 'application/json':
+            return APIException("Interface OWS accept only 'application/json request'")
+
+        post_data = json.loads(request.body)
+
+        # Required
+        url = post_data.get('url')
+        if not url:
+            raise APIException("'url' parameter must be provided.")
+
+        service = post_data.get('service')
+        if not service:
+            raise APIException("'service' parameter must be provided.")
+        service = service.lower()
+
+        if service not in self._service_available.keys():
+            raise APIException(f"Service '{service}' is not available.")
+
+        # Not required:
+        version = post_data.get('version', '1.3.0')
+
+        ows = self._service_available[service](url, version=version)
+
+        # Identification
+        # -----------------------------------
+        self.results.results.update({'title': ows.identification.title, 'abstract': ows.identification.abstract})
+
+        # Map formats
+        # -----------------------------------
+        self.results.results.update({'map_formats': ows.getOperationByName('GetMap').formatOptions})
+
+        # Info formats
+        # -----------------------------------
+        self.results.results.update({'info_formats': ows.getOperationByName('GetFeatureInfo').formatOptions})
+
+        # Layers
+        # -----------------------------------
+        available_layers = list(ows.contents)
+
+        # add styles for every layer
+        layers = []
+        for al in available_layers:
+
+            # Build crs
+            crss = []
+            for srid in ows[al].crsOptions:
+                crs = QgsCoordinateReferenceSystem(srid)
+
+                if crs.postgisSrid() == 3003:
+                    proj4 = settings.PROJ4_EPSG_3003
+                else:
+                    proj4 = crs.toProj4()
+
+                crss.append({
+                    'epsg': crs.postgisSrid(),
+                    'proj4': proj4,
+                    'geographic': crs.isGeographic(),
+                    'axisinverted': crs.hasAxisInverted()
+
+                })
+
+
+            layers.append({
+                'name': al,
+                'title': ows[al].title,
+                'abstract': ows[al].abstract,
+                'crss': crss,
+                'styles': ows[al].styles,
+                'parent': ows[al].parent.id if ows[al].parent else None
+            })
+
+        self.results.results.update({'layers': layers})
+
+        return Response(self.results.results)
+
