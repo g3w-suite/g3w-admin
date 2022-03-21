@@ -168,21 +168,23 @@
                                     {% endfor %}
                                     {% if object.layer_type in type_layer_for_widget %}
                                     {% comment %} Add geoconstraints management {% endcomment %}
+                                    {% if object.geometrytype != NOGEOMETRY %}
                                     <span class="col-xs-1 icon">
-                                        <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Geo-constraints by User/Groups' %}" data-widget-type="geoConstraintsList" data-geoconstraints-layer-pk="{{ object.pk }}" data-geoconstraints-list-url="{% url 'geoconstraint-api-filter-by-layer' object.pk %}" ><i class="fa fa-object-ungroup"></i>
+                                        <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Geo-constraints by Users/Groups' %}" data-widget-type="geoConstraintsList" data-geoconstraints-layer-pk="{{ object.pk }}" data-geoconstraints-list-url="{% url 'geoconstraint-api-filter-by-layer' object.pk %}" ><i class="fa fa-object-ungroup"></i>
                                         <span class="label label-info label-action-layer">{% geoconstraitnswidget4layer object %}</span>
                                         </a>
                                     </span>
+                                    {% endif %}
                                     {% comment %} Add singlelayerconstraints management {% endcomment %}
                                     <span class="col-xs-1 icon">
-                                        <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Alphanumeric and QGIS expressions constraints by User/Groups' %}" data-widget-type="singlelayerConstraintsList" data-singlelayerconstraints-layer-pk="{{ object.pk }}" data-singlelayerconstraints-list-url="{% url 'qdjango-constraint-api-filter-by-layer-id' object.pk %}" ><i class="fa fa-filter"></i>
+                                        <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Alphanumeric and QGIS expressions constraints by Users/Groups' %}" data-widget-type="singlelayerConstraintsList" data-singlelayerconstraints-layer-pk="{{ object.pk }}" data-singlelayerconstraints-list-url="{% url 'qdjango-constraint-api-filter-by-layer-id' object.pk %}" ><i class="fa fa-filter"></i>
                                             <span class="label label-info label-action-layer">{{ object.getConstraintsNumber }}</span>
                                         </a>
                                     </span>
 
                                     {% comment %} Add Column ACL management {% endcomment %}
                                     <span class="col-xs-1 icon">
-                                        <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Hide columns by User/Groups' %}" data-widget-type="columnAclManagerList" data-column-acl-layer-pk="{{ object.pk }}"
+                                        <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Hide columns by Users/Groups' %}" data-widget-type="columnAclManagerList" data-column-acl-layer-pk="{{ object.pk }}"
                                         data-column-acl-list-url="{% url 'qdjango-column-acl-api-filter-by-layer-id' object.pk %}"
                                         data-column-acl-fields-url="{% url 'qdjango-column-acl-api-fields' object.pk %}"
                                         data-info-layer-user="{% url 'qdjango-api-info-layer-user' object.pk %}"

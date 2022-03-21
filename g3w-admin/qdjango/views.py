@@ -30,6 +30,7 @@ from .forms import *
 from .models import TYPE_LAYER_FOR_WIDGET, TYPE_LAYER_FOR_DOWNLOAD, LayerAcl
 from .api.utils import serialize_vectorjoin
 from .utils.models import get_widgets4layer, comparedbdatasource
+from .utils.data import QGIS_LAYER_TYPE_NO_GEOM
 import json
 from collections import OrderedDict
 
@@ -231,6 +232,9 @@ class QdjangoLayersListView(G3WRequestViewMixin, G3WGroupViewMixin, QdjangoProje
         context['type_layer_for_widget'] = TYPE_LAYER_FOR_WIDGET
         context['type_layer_for_download'] = TYPE_LAYER_FOR_DOWNLOAD
         context['type_raster_layer_for_download'] = TYPE_RASTER_LAYER_FOR_DOWNLOAD
+
+        # Add no geometry constant
+        context['NOGEOMETRY'] = QGIS_LAYER_TYPE_NO_GEOM
 
         return context
 
