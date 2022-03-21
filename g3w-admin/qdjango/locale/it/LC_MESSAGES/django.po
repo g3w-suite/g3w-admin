@@ -820,7 +820,6 @@ msgid "is embedded by project"
 msgstr ""
 
 #: templates/qdjango/layer_actions/filter_by_user.html:5
-#, fuzzy
 #| msgid "Viewer user groups"
 msgid "Hide layer by Users/Groups"
 msgstr "Gruppi utenti viewer"
@@ -910,19 +909,16 @@ msgid "Download as gpx"
 msgstr "Scarica come gpx"
 
 #: templates/qdjango/layers_list.html:175
-#, fuzzy
 #| msgid "Geo-constraints by User/Groups"
 msgid "Geo-constraints by Users/Groups"
 msgstr "Geo-constranit per Utenti/Gruppi"
 
 #: templates/qdjango/layers_list.html:183
-#, fuzzy
 #| msgid "Alphanumeric and QGIS expressions constraints by User/Groups"
 msgid "Alphanumeric and QGIS expressions constraints by Users/Groups"
 msgstr "Constraint di espressioni alfanumeriche e di QGIS per Utente/gruppi"
 
 #: templates/qdjango/layers_list.html:191
-#, fuzzy
 #| msgid "Viewer user groups"
 msgid "Hide columns by Users/Groups"
 msgstr "Gruppi utenti viewer"
