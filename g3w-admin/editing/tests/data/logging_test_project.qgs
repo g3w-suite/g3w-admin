@@ -125,7 +125,7 @@
         <ymax>29987.95361345380661078</ymax>
       </extent>
       <id>layer_for_logging_f6713cb4_fdf5_4414_98b6_4fa9553211c3</id>
-      <datasource>dbname='./logging_test.db' table="layer_for_logging" (geom)</datasource>
+      <datasource>dbname='../data/logging_test.db' table="layer_for_logging" (geom)</datasource>
       <keywordList>
         <value></value>
       </keywordList>

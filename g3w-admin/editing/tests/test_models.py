@@ -43,6 +43,9 @@ QGS_FILE = 'constraints_test_project.qgs'
 QGS_EDITING_DB = 'editing_test.db'
 QGS_EDITING_DB_BACKUP = 'editing_test_backup.db'
 QGS_EDITING_FILE = 'editing_test_qgis310.qgs'
+QGS_LOGGING_FILE = 'logging_test_project.qgs'
+QGS_LOGGING_DB = 'logging_test.db'
+QGS_LOGGING_DB_BACKUP = 'logging_test_backup.db'
 
 
 @override_settings(CACHES={
@@ -81,6 +84,9 @@ class ConstraintsTestsBase(TestCase):
 
         shutil.copy('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_EDITING_DB_BACKUP),
                     '{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_EDITING_DB))
+
+        shutil.copy('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_LOGGING_DB_BACKUP),
+                    '{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_LOGGING_DB))
 
     @classmethod
     def setUpTestData(cls):
@@ -163,6 +169,14 @@ class ConstraintsTestsBase(TestCase):
         cls.editing_project = QgisProject(qgis_project_file)
         cls.editing_project.group = cls.project_group
         cls.editing_project.save()
+        qgis_project_file.close()
+
+        # load QGIS LOGGING project
+        qgis_project_file = File(open('{}{}{}'.format(
+            CURRENT_PATH, TEST_BASE_PATH, QGS_LOGGING_FILE), 'r', encoding='UTF8'))
+        cls.logging_project = QgisProject(qgis_project_file)
+        cls.logging_project.group = cls.project_group
+        cls.logging_project.save()
         qgis_project_file.close()
 
     def tearDown(self):
