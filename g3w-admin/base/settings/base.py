@@ -91,8 +91,9 @@ MIDDLEWARE = [
 ]
 
 
-
-G3WADMIN_MIDDLEWARE = []
+G3WADMIN_MIDDLEWARE = [
+    'qdjango.process_events_middleware.process_events_middleware',
+]
 
 ROOT_URLCONF = 'base.urls'
 
