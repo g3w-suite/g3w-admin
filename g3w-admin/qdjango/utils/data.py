@@ -634,6 +634,11 @@ class QgisProjectLayer(XmlData):
                         to_ret_node['visibility_expression'] = None
                         visibility_expression = None
 
+                    if element.type() == QgsAttributeEditorElement.AeTypeRelation:
+                        to_ret_node.update({
+                            'nmRelationId': element.nmRelationId()
+                        })
+
                     if element.type() == QgsAttributeEditorElement.AeTypeContainer:
 
                         to_ret_node.update({
