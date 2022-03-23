@@ -200,7 +200,7 @@ class ClientApiTest(CoreTestBase):
         self.assertEqual(resp["extent"], [-189.0, -130.14542038524587, 189.0, 123.92015338524588])
         self.assertEqual(resp["ows_method"], "GET")
         self.assertEqual(resp["print"], [])
-        self.assertEqual(resp["querymultilayers"], [])
+        self.assertEqual(resp["querymultilayers"], ['query', 'querybbox', 'querybypolygon'])
         self.assertFalse(resp["context_base_legend"])
         self.assertEqual(resp["initbaselayer"], 3)
         self.assertEqual(resp["metadata"]["accessconstraints"], "copyright")
