@@ -193,7 +193,14 @@ def qplottly_layer_action(sender, **kwargs):
     """
 
     # only admin and editor1 or editor2:
-    if sender.has_perm('change_project', kwargs['layer'].project):
+    if sender.has_perm('change_project', kwargs['layer'].project) and \
+                kwargs['layer'].layer_type in (
+                Layer.TYPES.postgres,
+                Layer.TYPES.spatialite,
+                Layer.TYPES.ogr,
+                Layer.TYPES.mssql,
+                Layer.TYPES.oracle
+        ):
 
         try:
             app_configs = apps.get_app_config(kwargs['app_name']).configs

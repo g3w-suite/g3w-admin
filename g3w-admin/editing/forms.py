@@ -1,5 +1,6 @@
 from django import forms
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from guardian.shortcuts import get_users_with_perms, get_objects_for_user
@@ -12,6 +13,8 @@ from usersmanage.utils import get_users_for_object, get_groups_for_object, userH
 from usersmanage.forms import label_users
 from usersmanage.configs import *
 
+from qgis.PyQt.QtCore import QVariant
+
 
 class ActiveEditingLayerForm(G3WRequestFormMixin, G3WProjectFormMixin, forms.Form):
 
@@ -23,14 +26,34 @@ class ActiveEditingLayerForm(G3WRequestFormMixin, G3WProjectFormMixin, forms.For
         choices=[], required=False,  help_text=_('Select VIEWER groups can do editing on layer'),
         label=_('User viewer groups')
     )
+    add_user_field = forms.ChoiceField(choices=[], label=_('User adding data field'), required=False,
+                                       help_text=_('Optional: select layer field to store '
+                                                   'username that entered the data. '
+                                                   'Showed only string field. <br>'
+                                                   #'more than 200 characters long.<br>'
+                                                   'Value stored into the field it will be so structured: '
+                                                   '<i>[username]|[timestamp_operation]</i>'))
+    edit_user_field = forms.ChoiceField(choices=[], label=_('User editing data field'), required=False,
+                                        help_text=_('Optional: select layer field to store '
+                                                    'username that updated the data. '
+                                                    'Showed only string field. <br>'
+                                                    #' more than 200 characters long.<br>'
+                                                    'Value stored into the field it will be so structured: '
+                                                    '<i>[username]|[timestamp_operation]</i>'))
 
     def __init__(self, *args, **kwargs):
+
+        # get layer object from kwargs
+        if 'layer' in kwargs:
+            self.layer = kwargs['layer']
+            del (kwargs['layer'])
 
         super(ActiveEditingLayerForm, self).__init__(*args, **kwargs)
 
         # set choices
         self._set_viewer_users_choices()
         self._set_viewer_user_groups_choices()
+        self._set_add_edit_user_field_choices()
 
         self.helper = FormHelper(self)
         self.helper.form_tag = False
@@ -38,12 +61,23 @@ class ActiveEditingLayerForm(G3WRequestFormMixin, G3WProjectFormMixin, forms.For
             HTML(_('Check on uncheck to attive/deactive editing layer capabilities:')),
             'active',
             'scale',
+            Field('add_user_field', css_class='select2', style="width:100%;"),
+            Field('edit_user_field', css_class='select2', style="width:100%;"),
             HTML(_('Select viewers with \'view permission\' on project that can edit layer:')),
             Field('viewer_users', css_class='select2', style="width:100%;"),
             Div(css_class='users_atomic_capabilities'),
             Field('user_groups_viewer', css_class='select2', style="width:100%;"),
             Div(css_class='user_groups_atomic_capabilities')
         )
+
+    def clean_edit_user_field(self):
+
+        if self.cleaned_data['edit_user_field'] and self.cleaned_data['add_user_field']:
+            if self.cleaned_data['edit_user_field'] == self.cleaned_data['add_user_field']:
+                raise ValidationError(_("'User adding data field' and 'User editing data field' "
+                                        "cannot assume the same value."))
+
+        return self.cleaned_data['edit_user_field']
 
     def _set_viewer_users_choices(self):
         """
@@ -76,3 +110,19 @@ class ActiveEditingLayerForm(G3WRequestFormMixin, G3WProjectFormMixin, forms.For
             user_groups_viewers = list(set(user_groups_viewers).intersection(set(editor1_user_gorups_viewers)))
 
         self.fields['user_groups_viewer'].choices = [(v.pk, v) for v in user_groups_viewers]
+
+    def _set_add_edit_user_field_choices(self):
+        """
+        Set choices for add_user_field select and edit_user_field select
+        """
+
+        touse = []
+        fields = self.layer.qgis_layer.fields()
+
+        for f in fields:
+            type = QVariant.typeToName(f.type()).upper()
+            if type == 'QSTRING': # and f.length() > 200:
+                touse.append(f.name())
+
+        self.fields['edit_user_field'].choices = \
+            self.fields['add_user_field'].choices = [(None, '--------')] + [(f, f) for f in touse]

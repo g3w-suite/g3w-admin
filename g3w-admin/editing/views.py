@@ -133,11 +133,17 @@ class ActiveEditingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3W
         # get model by app
         Layer = apps.get_app_config(self.app_name).get_model('layer')
         self.layer = Layer.objects.get(pk=self.layer_id)
+
+        # Add project for form
+        kwargs['layer'] = self.layer
+
         # try to find notes config
         try:
             self.activated = G3WEditingLayer.objects.get(app_name=self.app_name, layer_id=self.layer_id)
             kwargs['initial']['active'] = True
             kwargs['initial']['scale'] = self.activated.scale
+            kwargs['initial']['add_user_field'] = self.activated.add_user_field
+            kwargs['initial']['edit_user_field'] = self.activated.edit_user_field
         except:
             self.activated = None
             kwargs['initial']['active'] = False
@@ -231,12 +237,18 @@ class ActiveEditingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3W
     @transaction.atomic
     def form_valid(self, form):
         scale = form.cleaned_data['scale']
+        add_user_field = form.cleaned_data['add_user_field']
+        edit_user_field = form.cleaned_data['edit_user_field']
+
         if form.cleaned_data['active']:
             if not self.activated:
                 self.activated = G3WEditingLayer.objects.create(app_name=self.app_name, layer_id=self.layer_id,
-                                                                scale=scale)
+                                                                scale=scale, add_user_field=add_user_field,
+                                                                edit_user_field=edit_user_field)
             else:
                 self.activated.scale = scale
+                self.activated.add_user_field = add_user_field
+                self.activated.edit_user_field = edit_user_field
                 self.activated.save()
         else:
             if self.activated:
@@ -286,5 +298,7 @@ class ActiveEditingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3W
 
         # ADD/REMOVE atomic permissions
         self.add_remove_atomic_permissions()
+
+
 
         return super(ActiveEditingLayerView, self).form_valid(form)
