@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.urls import reverse
 from django_filters.rest_framework import DjangoFilterBackend
-from .base.views import BaseEditingVectorOnModelApiView
+from django.views.decorators.csrf import csrf_exempt
 from core.utils.db import build_dango_connection_name
 from core.api.views import USERMEDIAHANDLER_CLASSES
 from core.api.filters import IntersectsBBoxFilter, FieldFilterBackend
@@ -10,8 +10,11 @@ from qdjango.vector import QGISLayerVectorViewMixin
 from qdjango.api.constraints.filters import SingleLayerSubsetStringConstraintFilter, \
     SingleLayerExpressionConstraintFilter, \
     GeoConstraintsFilter
-from qdjango.api.layers.filters import RelationOneToManyFilter, SingleLayerSessionTokenFilter, FidFilter, ColumnAclFilter
-from django.views.decorators.csrf import csrf_exempt
+from qdjango.api.layers.filters import \
+    RelationOneToManyFilter, \
+    SingleLayerSessionTokenFilter, FidFilter, \
+    ColumnAclFilter
+from .base.views import BaseEditingVectorOnModelApiView
 
 
 class QGISEditingLayerVectorView(QGISLayerVectorViewMixin, BaseEditingVectorOnModelApiView):

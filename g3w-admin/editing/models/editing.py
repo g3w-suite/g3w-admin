@@ -39,6 +39,8 @@ class G3WEditingLayer(models.Model):
     app_name = models.CharField(max_length=255)
     layer_id = models.IntegerField()
     scale = models.IntegerField(null=True, blank=True)
+    add_user_field = models.CharField(null=True, blank=True, max_length=255)
+    edit_user_field = models.CharField(null=True, blank=True, max_length=255)
 
     class Meta:
         app_label = 'editing'
