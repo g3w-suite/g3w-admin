@@ -215,13 +215,13 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
         _('Max feature to get for query'), default=5)
 
     multilayer_query = models.CharField(
-        _('Query control mode'), max_length=20, choices=QUERY_TYPE, default='single')
+        _('Query control mode'), max_length=20, choices=QUERY_TYPE, default='multiple')
 
     multilayer_querybybbox = models.CharField(_('Query by bbox control mode'), max_length=20, choices=QUERY_TYPE,
-                                              default='single')
+                                              default='multiple')
 
     multilayer_querybypolygon = models.CharField(_('Query by polygon control mode'), max_length=20, choices=QUERY_TYPE,
-                                                 default='single')
+                                                 default='multiple')
 
     context_base_legend = models.BooleanField(_('Context base legend'), default=False,
                                               help_text='Show only the symbols for the features falling into the requested area')
