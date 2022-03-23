@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-03-21 15:22+0000\n"
+"POT-Creation-Date: 2022-03-23 10:43+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -944,27 +944,27 @@ msgstr ""
 msgid "Current datasource is {}"
 msgstr ""
 
-#: utils/data.py:889
+#: utils/data.py:894
 msgid "The project file is malformed: {}"
 msgstr ""
 
-#: utils/data.py:910 utils/data.py:926
+#: utils/data.py:915 utils/data.py:931
 msgid "Could not read QGIS project file: {}"
 msgstr ""
 
-#: utils/data.py:1080 utils/data.py:1474
+#: utils/data.py:1085 utils/data.py:1479
 msgid ""
 "The project contains an embedded group {} from a project that could not be "
 "found {}"
 msgstr ""
 
-#: utils/data.py:1451
+#: utils/data.py:1456
 msgid ""
 "The project contains an embedded layer {} from a project that could not be "
 "found {}"
 msgstr ""
 
-#: utils/data.py:1528
+#: utils/data.py:1533
 msgid "The project settings is malformed: {} ----- {}"
 msgstr ""
 
