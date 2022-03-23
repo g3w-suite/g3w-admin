@@ -32,6 +32,8 @@ from editing.models import G3WEditingLayer
 
 from .test_models import DATASOURCE_PATH, ConstraintsTestsBase
 
+from datetime import date
+
 
 @override_settings(CACHES={
     'default': {
@@ -987,6 +989,106 @@ class EditingApiTests(ConstraintsTestsBase):
 
         # check features
         self.assertEqual(len(jresult['vector']['data']['features']), 481)
+
+    def test_editing_fields_loggin_commit_mode_api(self):
+        """ Test Editing API mode: MODE_COMMIT with fields logging activated """
+
+        editing_layer = self.logging_project.instance.layer_set.all()[0]
+
+        # Activate logging field
+        G3WEditingLayer.objects.create(app_name='qdjango', layer_id=editing_layer.pk,
+                                       add_user_field='insert_log', edit_user_field='update_log')
+
+        # ADD
+        # ===
+        commit_path = reverse('editing-commit-vector-api',
+                              args=['commit', 'qdjango', self.logging_project.instance.pk, editing_layer.qgs_layer_id])
+
+        self.assertTrue(
+            self.client.login(username=self.test_user_admin1.username, password=self.test_user_admin1.username))
+
+        payload = {
+                   "add": [
+                      {
+                         "type": "Feature",
+                         "geometry": {
+                            "type": "Point",
+                            "coordinates": [
+                               -18219.126089871206,
+                               -9298.036763106677
+                            ]
+                         },
+                         "properties": {
+                            "name": "test data 1",
+                            "insert_log": None,
+                            "update_log": None
+                         },
+                         "id": "_new_76_1648018518851"
+                      }
+                   ],
+                   "update": [],
+                   "delete": [],
+                   "relations": {},
+                   "lockids": []
+                }
+
+        response = self.client.post(commit_path, payload, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        jresult = json.loads(response.content)
+        self.assertTrue(jresult['result'])
+
+        newid = jresult['response']['new'][0]['id']
+        newlockid = jresult['response']['new_lockids'][0]['lockid']
+
+        qgs_feature = editing_layer.qgis_layer.getFeature(int(newid))
+
+        self.assertTrue(f'admin01|{date.today()}' in qgs_feature.attribute('insert_log'))
+        self.assertFalse(qgs_feature.attribute('update_log'))
+
+        # UPDATE
+        # ======
+
+        payload = {
+            "update": [
+                {
+                    "type": "Feature",
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [
+                            -18219.126089871206,
+                            -9298.036763106677
+                        ]
+                    },
+                    "properties": {
+                        "name": "test data 1",
+                        "insert_log": None,
+                        "update_log": None
+                    },
+                    "id": newid
+                }
+            ],
+            "add": [],
+            "delete": [],
+            "relations": {},
+            "lockids": [
+                {
+                    "featureid": newid,
+                    "lockid": newlockid
+                }
+            ],
+        }
+
+        response = self.client.post(commit_path, payload, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        jresult = json.loads(response.content)
+        self.assertTrue(jresult['result'])
+
+        qgs_feature = editing_layer.qgis_layer.getFeature(int(newid))
+
+        self.assertTrue(f'admin01|{date.today()}' in qgs_feature.attribute('insert_log'))
+        self.assertTrue(f'admin01|{date.today()}' in qgs_feature.attribute('update_log'))
 
 
 class ConstraintsApiTests(ConstraintsTestsBase):

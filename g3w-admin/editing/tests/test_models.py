@@ -172,10 +172,15 @@ class ConstraintsTestsBase(TestCase):
         qgis_project_file.close()
 
         # load QGIS LOGGING project
+        cls.project_logging_group = CoreGroup(
+            name='GroupLogging', title='GroupLogging', header_logo_img='',
+            srid=G3WSpatialRefSys.objects.get(auth_srid=3857))
+        cls.project_logging_group.save()
+
         qgis_project_file = File(open('{}{}{}'.format(
             CURRENT_PATH, TEST_BASE_PATH, QGS_LOGGING_FILE), 'r', encoding='UTF8'))
         cls.logging_project = QgisProject(qgis_project_file)
-        cls.logging_project.group = cls.project_group
+        cls.logging_project.group = cls.project_logging_group
         cls.logging_project.save()
         qgis_project_file.close()
 

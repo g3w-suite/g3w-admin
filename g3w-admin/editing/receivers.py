@@ -259,8 +259,16 @@ def fill_logging_fields(sender, **kwargs):
         el = G3WEditingLayer.objects.get(app_name='qdjango', layer_id=kwargs['layer_metadata'].layer_id)
         if el.add_user_field and  mode == EDITING_POST_DATA_ADDED:
             kwargs['data']['feature']['properties'][el.add_user_field] = f"{user.username}|{datetime.now()}"
+
+            # Remove edit_suer_field property if is active
+            if el.edit_user_field:
+                del(kwargs['data']['feature']['properties'][el.edit_user_field])
         if el.edit_user_field and mode == EDITING_POST_DATA_UPDATED:
             kwargs['data']['feature']['properties'][el.edit_user_field] = f"{user.username}|{datetime.now()}"
+
+            # Remove add_user_field property if is active
+            if el.add_user_field:
+                del(kwargs['data']['feature']['properties'][el.add_user_field])
     except Exception as e:
         logger.error(f"[EDITING] - FILL LOGGING FIELDS: {e}")
 
