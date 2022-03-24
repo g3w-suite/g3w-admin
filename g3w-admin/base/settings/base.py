@@ -88,12 +88,11 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.contrib.sites.middleware.CurrentSiteMiddleware',
+    'qdjango.process_events_middleware.process_events_middleware'
 ]
 
 
-G3WADMIN_MIDDLEWARE = [
-    'qdjango.process_events_middleware.process_events_middleware',
-]
+G3WADMIN_MIDDLEWARE = []
 
 ROOT_URLCONF = 'base.urls'
 
