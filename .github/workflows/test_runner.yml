@@ -10,7 +10,7 @@ jobs:
 
     strategy:
       matrix:
-        qgis_version: ['316', 'latest']
+        qgis_version: ['322', 'latest']
 
     steps:
 
