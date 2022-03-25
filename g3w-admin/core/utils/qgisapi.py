@@ -359,6 +359,10 @@ def count_qgis_features(qgis_layer,
     :rtype: QgsFeature list
     """
 
+    # Remove no_filters condition because featureCount()
+    # is cached,  so it could fail on multi-processes deploy
+    # ------------------------------------------------------
+
     # Fast track for no filters
     # no_filters = (attribute_filters is None
     #     and (bbox_filter is None or bbox_filter.isEmpty()) and
