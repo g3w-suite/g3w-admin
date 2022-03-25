@@ -360,17 +360,18 @@ def count_qgis_features(qgis_layer,
     """
 
     # Fast track for no filters
-    no_filters = (attribute_filters is None
-        and (bbox_filter is None or bbox_filter.isEmpty()) and
-        attribute_filters is None and
-        extra_expression is None and
-        extra_subset_string is None)
-
-    if qgis_feature_request is not None:
-        no_filters = (no_filters and
-            qgis_feature_request.filterRect().isEmpty() and
-            qgis_feature_request.filterType() == QgsFeatureRequest.FilterNone)
-    else:
+    # no_filters = (attribute_filters is None
+    #     and (bbox_filter is None or bbox_filter.isEmpty()) and
+    #     attribute_filters is None and
+    #     extra_expression is None and
+    #     extra_subset_string is None)
+    #
+    # if qgis_feature_request is not None:
+    #     no_filters = (no_filters and
+    #         qgis_feature_request.filterRect().isEmpty() and
+    #         qgis_feature_request.filterType() == QgsFeatureRequest.FilterNone)
+    # else:
+    if not qgis_feature_request:
         qgis_feature_request = QgsFeatureRequest()
 
     # if no_filters:
