@@ -521,9 +521,7 @@ class BaseVectorApiView(G3WAPIView):
 
         else:
 
-            # patch for return GeoJson feature with CRS different from WGS84
-            # TODO: use .setTransformGeometries( false ) with QGIS >= 3.12
-            ex.setSourceCrs(QgsCoordinateReferenceSystem('EPSG:4326'))
+            ex.setTransformGeometries(False)
 
             # check for formatter query url param and check if != 0
             if 'formatter' in request.query_params:
