@@ -373,11 +373,11 @@ def count_qgis_features(qgis_layer,
     else:
         qgis_feature_request = QgsFeatureRequest()
 
-    if no_filters:
-        # Try to patch a possible Oracle views QGIS featureCount bug.
-        qgs_fc = qgis_layer.featureCount()
-        if qgs_fc != -1:
-            return qgis_layer.featureCount()
+    # if no_filters:
+    #     # Try to patch a possible Oracle views QGIS featureCount bug.
+    #     qgs_fc = qgis_layer.featureCount()
+    #     if qgs_fc != -1:
+    #         return qgis_layer.featureCount()
 
     qgis_feature_request.setNoAttributes()
     if qgis_feature_request.limit() != -1:
