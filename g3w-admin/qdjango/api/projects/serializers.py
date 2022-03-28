@@ -734,8 +734,8 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
                         QDate.isoformat = lambda d: d.toString(Qt.ISODate)
                     if not hasattr(QDateTime, 'isoformat'):
                         QDateTime.isoformat = lambda d: d.toString(Qt.ISODateWithMs)
-                    ret['qtimeseries']['start_date'] = ret['start_date'].isoformat()
-                    ret['qtimeseries']['end_date'] = ret['end_date'].isoformat()
+                    ret['qtimeseries']['start_date'] = ret['qtimeseries']['start_date'].isoformat()
+                    ret['qtimeseries']['end_date'] = ret['qtimeseries']['end_date'].isoformat()
 
 
         return ret
