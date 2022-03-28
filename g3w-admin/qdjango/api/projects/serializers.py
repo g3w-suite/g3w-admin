@@ -29,7 +29,7 @@ from qgis.core import (
     QgsExpression
 )
 from qgis.server import QgsServerProjectUtils
-from qgis.PyQt.QtCore import QVariant
+from qgis.PyQt.QtCore import QVariant, QDate, QDateTime
 
 from ..utils import serialize_vectorjoin
 from collections import OrderedDict
@@ -721,6 +721,18 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         # For temporal properties
         if instance.temporal_properties:
             ret['qtimeseries'] = json.loads(instance.temporal_properties)
+
+            if ret['qtimeseries']['mode'] == 'FeatureDateTimeInstantFromField':
+
+                # Add start_date end end_date:
+                findex = qgs_maplayer.dataProvider().fieldNameIndex(ret['qtimeseries']['field'])
+
+                ret['start_date'] = qgs_maplayer.minimumValue(findex)
+                ret['end_date'] = qgs_maplayer.maximumValue(findex)
+                if isinstance(ret['start_date'], QDate) or isinstance(ret['start_date'], QDateTime):
+                    ret['start_date'] = ret['start_date'].isoformat()
+                    ret['end_date'] = ret['end_date'].isoformat()
+
 
         return ret
 
