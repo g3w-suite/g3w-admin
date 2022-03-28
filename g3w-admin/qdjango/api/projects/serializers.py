@@ -722,7 +722,7 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         if instance.temporal_properties:
             ret['qtimeseries'] = json.loads(instance.temporal_properties)
 
-            if ret['qtimeseries']['mode'] == 'FeatureDateTimeInstantFromField':
+            if ret['qtimeseries'] and ret['qtimeseries']['mode'] == 'FeatureDateTimeInstantFromField':
 
                 # Add start_date end end_date:
                 findex = qgs_maplayer.dataProvider().fieldNameIndex(ret['qtimeseries']['field'])
