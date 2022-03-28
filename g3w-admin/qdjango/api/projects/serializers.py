@@ -729,7 +729,7 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
                 ret['qtimeseries']['start_date'] = qgs_maplayer.minimumValue(findex)
                 ret['qtimeseries']['end_date'] = qgs_maplayer.maximumValue(findex)
-                if isinstance(ret['start_date'], QDate) or isinstance(ret['start_date'], QDateTime):
+                if isinstance(ret['qtimeseries']['start_date'], QDate) or isinstance(ret['qtimeseries']['start_date'], QDateTime):
                     if not hasattr(QDate, 'isoformat'):
                         QDate.isoformat = lambda d: d.toString(Qt.ISODate)
                     if not hasattr(QDateTime, 'isoformat'):
