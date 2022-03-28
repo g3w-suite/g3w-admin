@@ -727,15 +727,15 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
                 # Add start_date end end_date:
                 findex = qgs_maplayer.dataProvider().fieldNameIndex(ret['qtimeseries']['field'])
 
-                ret['start_date'] = qgs_maplayer.minimumValue(findex)
-                ret['end_date'] = qgs_maplayer.maximumValue(findex)
+                ret['qtimeseries']['start_date'] = qgs_maplayer.minimumValue(findex)
+                ret['qtimeseries']['end_date'] = qgs_maplayer.maximumValue(findex)
                 if isinstance(ret['start_date'], QDate) or isinstance(ret['start_date'], QDateTime):
                     if not hasattr(QDate, 'isoformat'):
                         QDate.isoformat = lambda d: d.toString(Qt.ISODate)
                     if not hasattr(QDateTime, 'isoformat'):
                         QDateTime.isoformat = lambda d: d.toString(Qt.ISODateWithMs)
-                    ret['start_date'] = ret['start_date'].isoformat()
-                    ret['end_date'] = ret['end_date'].isoformat()
+                    ret['qtimeseries']['start_date'] = ret['start_date'].isoformat()
+                    ret['qtimeseries']['end_date'] = ret['end_date'].isoformat()
 
 
         return ret
