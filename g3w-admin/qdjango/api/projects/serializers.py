@@ -29,6 +29,7 @@ from qgis.core import (
     QgsExpression
 )
 from qgis.server import QgsServerProjectUtils
+from qgis.PyQt import Qt
 from qgis.PyQt.QtCore import QVariant, QDate, QDateTime
 
 from ..utils import serialize_vectorjoin
@@ -730,6 +731,10 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
                 ret['start_date'] = qgs_maplayer.minimumValue(findex)
                 ret['end_date'] = qgs_maplayer.maximumValue(findex)
                 if isinstance(ret['start_date'], QDate) or isinstance(ret['start_date'], QDateTime):
+                    if not hasattr(QDate, 'isoformat'):
+                        QDate.isoformat = lambda d: d.toString(Qt.ISODate)
+                    if not hasattr(QDateTime, 'isoformat'):
+                        QDateTime.isoformat = lambda d: d.toString(Qt.ISODate)
                     ret['start_date'] = ret['start_date'].isoformat()
                     ret['end_date'] = ret['end_date'].isoformat()
 
