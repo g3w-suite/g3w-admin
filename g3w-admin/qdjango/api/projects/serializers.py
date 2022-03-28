@@ -29,8 +29,7 @@ from qgis.core import (
     QgsExpression
 )
 from qgis.server import QgsServerProjectUtils
-from qgis.PyQt import Qt
-from qgis.PyQt.QtCore import QVariant, QDate, QDateTime
+from qgis.PyQt.QtCore import QVariant, QDate, QDateTime, Qt
 
 from ..utils import serialize_vectorjoin
 from collections import OrderedDict
@@ -734,7 +733,7 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
                     if not hasattr(QDate, 'isoformat'):
                         QDate.isoformat = lambda d: d.toString(Qt.ISODate)
                     if not hasattr(QDateTime, 'isoformat'):
-                        QDateTime.isoformat = lambda d: d.toString(Qt.ISODate)
+                        QDateTime.isoformat = lambda d: d.toString(Qt.ISODateWithMs)
                     ret['start_date'] = ret['start_date'].isoformat()
                     ret['end_date'] = ret['end_date'].isoformat()
 
