@@ -2,7 +2,6 @@
 
 This repository contains scripts and recipes for deploy of the G3W-SUITE web-gis application with Docker and Docker compose .
 
-
 ## Deploy
 
 Follow steps to deploy G3W-SUITE on a Ubuntu Server (20.04)
@@ -27,23 +26,9 @@ G3WSUITE_POSTGRES_PASS=<your_password>
 G3WSUITE_POSTGRES_DBNAME=g3wsuite
 G3WSUITE_POSTGRES_HOST=postgis
 G3WSUITE_POSTGRES_PORT=5432
-
-# Caching
-G3WSUITE_TILECACHE_PATH=/shared-volume/tile_cache/
-TILESTACHE_CACHE_BUFFER_SIZE=256
-TILESTACHE_CACHE_TOKEN=374h5g96831hsgetvmkdel
-
-# URL of the QGIS Server
-G3WSUITE_QDJANGO_SERVER_URL=http://qgisserver/ows/
-
-# Set G3W-SUITE debug state
-G3WSUITE_DEBUG = 1 (0 default)
-
-# Gunicorn workers (default to 8)
-G3WSUITE_GUNICORN_NUM_WORKERS=8
-
-
 ```
+
+Description of other *environment variables* that can be used, are available on [Docker environment variables](./docker_env.rst)
 
 ### Run
 
@@ -53,9 +38,16 @@ docker-compose up -d
 
 If all went well, G3W-SUITE run on http://localhost:8080
 
-![](images/install/login_page.png)
+![Login Page](images/install/login_page.png)
 
-### Builds
+## G3W-SUITE with consumer image
+G3W-SUITE use `huey` for bach processing (https://github.com/coleifer/huey), so if you want to use it,
+use `docker-compose-consumer.yml` file on deploy:
+```bash
+docker-compose -f docker-compose-consumer.yml up -d
+```
+
+## Builds
 
 Docker compose will download images from docker hub (https://hub.docker.com/u/g3wsuite), 
 but is also possible build main image of G3W-SUITE and other docker-compose images. 
@@ -87,6 +79,13 @@ docker build -f Dockerfile.postgis.dockerfile -t g3wsuite/postgis:11.0-2.5 .
 
 The Docker hub name for this image is `g3wsuite/postgis:11.0-2.5`
 
+## Setups
+
+### PG_SERVICE
+
+To use of PostgreSql Service, put your service setups into `./scripts/pg_service.conf file`, 
+the conf file will be mounted into docker container at runtime to PGSERVICEFILE path position.
+
 ### HTTPS additional setup
 
 To active https with LetsEncrypt just follow the following instructions:
@@ -102,23 +101,42 @@ To active https with LetsEncrypt just follow the following instructions:
 - if you disabled HTTPS, you can move `config/nginx/django_ssl.conf` back to its original location now, and restart the Docker compose to finally enable HTTPS
 
 
-## Volumes
+### Volumes
 
 Data, projects, uploads and the database are stored in a shared mounted volume `shared-volume`, the volume should be on a persistent storage device and a backup
 policy must be enforced.
 
+Currently, the volume is mounted in `/tmp/shared-volume-g3wsuite-dev`. In production
+environments it is encouraged to change this to a permanent location.
+This can be done by modifying the `.env` file.
 
-## First time setup
+### First time setup
 
-+ log into the application web administation panel using default credentials (*admin/admin*)
-+ change the password for the admin user and for any other example user that may be present
+- log into the application web administation panel using default credentials (_admin/admin_)
+- change the password for the admin user and for any other example user that may be present
 
-## Caching
+### Caching
 
 Tile cache can be configured and cleared per-layer through the webgis admin panel and lasts forever until it is disabled or cleared.
 
 > Tip: enable cache on linestring and polygon layers.
 
+### Editing
+
+Editing module is active by default, to avoid simultaneous feature editing by two or more users, the editing module works with a feature lock system.
+This locking system can remain active if users do not exit the editing state correctly, to avoid this it is advisable to activate a cron job on host machine that checks the features that have been locked for more than 4 hours and frees them:
+
+```
+0 */1 * * * docker exec -e DISPLAY=:99 g3w-suite-docker_g3w-suite_1 python3 /code/g3w-admin/manage.py check_features_locked
+```
+
+## Front-end App
+
+Set the environment variable
+```
+FRONTEND=True
+```
+This will set the front end app as the default app
 
 ## Style customization
 
@@ -127,7 +145,6 @@ Templates can now be overridden by placing the overrides in the `config/g3w-suit
 The logo is also overridden (through `config/g3w-suite/settings_docker.py` which is mounted as a volume), changes to the settings file require the Docker service to be restarted.
 
 A custom CSS is added to the pages, the file is located in `config/g3w-suite/overrides/static/style.css` and can be modified directly, changes are effective immediately.
-
 
 ## Performances optimization
 
@@ -175,4 +192,17 @@ Type "help" for help.
 postgres=#
 ```
 
+## Portainer
+Portainer(https://www.portainer.io) is a software for build and manage Docker environments in an easy and graphical way.
 
+For Portainer use `docker-compose-portainer.yml` file and in plus of env vars before, set the follow mandatory env vars:
+
+* G3WSUITE_DOCKER_INSTALL_DIR: host directory where this code is.
+* PG_PUBLIC_PORT: host port to map Docker PostgreSql default port (5432).
+* WEBGIS_HTTP_PORT: host port to map Docker Nginx port (8080).
+* WEBGIS_HTTPS_PORT: host port to map Docker Nginx port (443).
+
+### Contributors
+* Walter Lorenzetti - Gis3W ([@wlorenzetti](https://github.com/wlorenzetti))
+* Alessandro Pasotti - ItOpen ([@elpaso](https://github.com/elpaso))
+* Mazano - Kartoza ([@NyakudyaA](https://github.com/NyakudyaA))
