@@ -374,6 +374,10 @@ class QgisProjectLayer(XmlData):
 
                     }
                 )
+
+                # For join 1to1
+                self.qgisProject.relation_1to1_layers.append(self.layerId)
+
         except:
             pass
         return ret
@@ -843,6 +847,10 @@ class QgisProject(XmlData):
 
     _qgisprojectlayer_class = QgisProjectLayer
 
+    # Store layer with relations 1to1 for reload two times:
+    # this is done to avoid loss of relation fields on first project read
+    relation_1to1_layers = []
+
     def __init__(self, qgis_file, **kwargs):
         self.qgisProjectFile = qgis_file
         self.validators = []
@@ -1045,13 +1053,16 @@ class QgisProject(XmlData):
         :return: list of QgsProjectLayer instances
         :rtype: list
         """
-        layers = []
+        layers = OrderedDict()
 
         for layerid, layer in self.qgs_project.mapLayers().items():
             if self.qgs_project.layerIsEmbedded(layerid) == '':
-                layers.append(self._qgisprojectlayer_class(
-                    layer, qgisProject=self))
-        return layers
+                layers[layerid] = self._qgisprojectlayer_class(layer, qgisProject=self)
+
+        # For layers with join 1to1
+        for layerid in self.relation_1to1_layers:
+            layers[layerid].columns = layers[layerid]._getDataColumns()
+        return list(layers.values())
 
     def embeddedLayers(self):
         """Returns a list of embedded layers as dictionaries with layer 'id' and 'project' basename"""
@@ -1119,7 +1130,6 @@ class QgisProject(XmlData):
                 'referencingLayer': relation.referencingLayerId(),
             }
             # get only first pair relation
-            # FIXME: save every field pair
             field_refs = []
             for referencingField, referencedField in relation.fieldPairs().items():
                 field_refs.append([referencingField, referencedField])
