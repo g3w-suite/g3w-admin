@@ -101,11 +101,8 @@ The following varaible are just set into docker-compose files:
 
 ``PGSERVICEFILE``
 ^^^^^^^^^^^^^^^^^
-Put your pg service into ./scripts/pg_service.conf file, the conf file will be mounted into
-docker container at runtime a the PGSERVICEFILE
-
-``QGIS_SERVER_PARALLEL_RENDERING``
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Put your pg services into `./scripts/pg_service.conf file`, the conf file will be mounted into
+docker container at runtime to PGSERVICEFILE path position.
 
 ``QGIS_SERVER_LOG_FILE``
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -118,7 +115,8 @@ Openrouteservice
 
 ``ORS_API_ENDPOINT``
 ^^^^^^^^^^^^^^^^^^^^
-='https://api.openrouteservice.org/v2'
+Openrouteservice API end point.
+Default: 'https://api.openrouteservice.org/v2'.
 
 ``ORS_API_KEY``
 ^^^^^^^^^^^^^^^
@@ -128,11 +126,12 @@ Optional, can be blank if the key is not required by the endpoint
 ``ORS_MAX_RANGES``
 ^^^^^^^^^^^^^^^^^^
 Max number of ranges (it depends on the server configuration)
-
+Default: 6.
 
 ``ORS_MAX_LOCATIONS``
 ^^^^^^^^^^^^^^^^^^^^^
 Max number of locations(it depends on the server configuration)
+Default: 2.
 
 Frontend module
 ---------------
