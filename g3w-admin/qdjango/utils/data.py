@@ -1059,9 +1059,10 @@ class QgisProject(XmlData):
             if self.qgs_project.layerIsEmbedded(layerid) == '':
                 layers[layerid] = self._qgisprojectlayer_class(layer, qgisProject=self)
 
-        # For layers with join 1to1
+        # For layers with join 1to1 reload fields(columns)
         for layerid in self.relation_1to1_layers:
-            layers[layerid].columns = layers[layerid]._getDataColumns()
+            if layerid in layers:
+                layers[layerid].columns = layers[layerid]._getDataColumns()
         return list(layers.values())
 
     def embeddedLayers(self):
