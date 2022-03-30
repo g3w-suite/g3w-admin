@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-07-08 07:51+0000\n"
+"POT-Creation-Date: 2022-03-30 05:39+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,103 +18,153 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: editing/api/base/views.py:60
+#: api/base/views.py:61
 msgid ""
 "The feature id {} of layer {} cannot be modified because it is not locked "
 "anymore"
 msgstr ""
 
-#: editing/api/base/views.py:257 editing/api/base/views.py:260
+#: api/base/views.py:143
+msgid "Sorry but your user doesn't has 'Add Feature' capability"
+msgstr ""
+
+#: api/base/views.py:147
+msgid "Sorry but your user doesn't has 'Delete Feature' capability"
+msgstr ""
+
+#: api/base/views.py:153
+msgid ""
+"Sorry but your user doesn't has 'Change or Change Attributes Features' "
+"capability"
+msgstr ""
+
+#: api/base/views.py:278 api/base/views.py:281
 #, python-format
 msgid "Error adding feature: %s"
 msgstr ""
 
-#: editing/api/base/views.py:267
+#: api/base/views.py:288
 msgid "Error adding feature on Spatialite provider: "
 msgstr ""
 
-#: editing/api/base/views.py:284 editing/api/base/views.py:295
+#: api/base/views.py:305 api/base/views.py:316
 #, python-format
 msgid "Error changing attribute values: %s"
 msgstr ""
 
-#: editing/api/base/views.py:290 editing/api/base/views.py:298
+#: api/base/views.py:311 api/base/views.py:319
 #, python-format
 msgid "Error changing geometry: %s"
 msgstr ""
 
-#: editing/api/base/views.py:367 editing/api/base/views.py:371
+#: api/base/views.py:407 api/base/views.py:411
 #, python-format
 msgid "Cannot delete feature: %s"
 msgstr ""
 
-#: editing/api/base/views.py:412
+#: api/base/views.py:452
 #, python-format
 msgid "Layer %s is not editable!"
 msgstr ""
 
-#: editing/api/base/views.py:462
+#: api/base/views.py:507
 #, python-format
 msgid "Backend error saving layer %s: %s"
 msgstr ""
 
-#: editing/forms.py:18
+#: forms.py:21
 msgid "Active"
 msgstr "Attiva"
 
-#: editing/forms.py:19
+#: forms.py:22
 msgid "Scale"
 msgstr "Scala"
 
-#: editing/forms.py:19
+#: forms.py:22
 msgid "Scale after that editing mode is active"
 msgstr "Valore di scala oltre la quale la modalità di editing si attiva"
 
-#: editing/forms.py:20
+#: forms.py:23
 msgid "Viewers"
 msgstr ""
 
-#: editing/forms.py:21
+#: forms.py:24
 msgid "Select user with viewer role can do editing on layer"
 msgstr "Selezione l'utente viewer che può editare i layer"
 
-#: editing/forms.py:23
+#: forms.py:26
 msgid "Select VIEWER groups can do editing on layer"
 msgstr "Seleziona il viewer groups che può editare il layer"
 
-#: editing/forms.py:24
+#: forms.py:27
 msgid "User viewer groups"
 msgstr ""
 
-#: editing/forms.py:38
+#: forms.py:29
+msgid "User adding data field"
+msgstr "Campo di log per inserimento"
+
+#: forms.py:30
+msgid ""
+"Optional: select layer field to store username that entered the data. Showed "
+"only string field. <br>Value stored into the field it will be so structured: "
+"<i>[username]</i>"
+msgstr ""
+"Opzionale: seleziona il campo in cui salvare lo username che ha inserito i dati. Sono "
+"mostrate solo i campi stringa. <br>Il valore salvato nel campo sarà cosi strutturato: "
+"<i>[username]</i>"
+
+#: forms.py:36
+msgid "User editing data field"
+msgstr "Campo di log per aggiornamento"
+
+#: forms.py:37
+msgid ""
+"Optional: select layer field to store username that updated the data. Showed "
+"only string field. <br>Value stored into the field it will be so structured: "
+"<i>[username]</i>"
+msgstr ""
+"Opzionale: seleziona il campo in cui salvare lo username che ha aggiornato dati. Sono "
+"mostrate solo i campi stringa. <br>Il valore salvato nel campo sarà cosi strutturato: "
+"<i>[username]</i>"
+
+#: forms.py:61
 msgid "Check on uncheck to attive/deactive editing layer capabilities:"
 msgstr ""
 "Spunta o despunta per attivare/deattivare la possibilità di editare il layer"
 
-#: editing/forms.py:41
+#: forms.py:66
 msgid "Select viewers with 'view permission' on project that can edit layer:"
 msgstr ""
 "Seleziona i viewer con 'permesso di visualizzazione' del progetto che "
 "possono editare il layer:"
 
-#: editing/receivers.py:227
+#: forms.py:77
+msgid ""
+"'User adding data field' and 'User editing data field' cannot assume the "
+"same value."
+msgstr ""
+"'Campo di log per inserimento' e 'Campo di log per aggiornamento' non possono assumero lo stesso valore."
+
+
+#: receivers.py:246
 #, python-format
 msgid "Constraint validation failed for geometry: %s"
 msgstr "La geometria non ricade all'interno dell'area di lavoro assegnata: %s"
 
-#: editing/templates/editing/editing_layer_active_form.html:7
+#: templates/editing/editing_layer_active_form.html:7
 msgid "Alert"
 msgstr "Attenzione"
 
-#: editing/templates/editing/editing_layer_active_form.html:8
+#: templates/editing/editing_layer_active_form.html:8
 msgid "Some errors on form. Check it and send again."
 msgstr "Alcuni errori, controlla e riprova"
 
-#: editing/templates/editing/layer_action.html:5
+#: templates/editing/layer_action.html:5
 msgid "Editing layer"
 msgstr ""
 
-#: editing/templates/editing/layer_action.html:7
+#: templates/editing/layer_action.html:7
 msgid "Activation layer_editing"
 msgstr "Atttivazione del layer di editing"
 

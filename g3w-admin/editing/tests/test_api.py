@@ -32,8 +32,6 @@ from editing.models import G3WEditingLayer
 
 from .test_models import DATASOURCE_PATH, ConstraintsTestsBase
 
-from datetime import date
-
 
 @override_settings(CACHES={
     'default': {
@@ -1043,7 +1041,7 @@ class EditingApiTests(ConstraintsTestsBase):
 
         qgs_feature = editing_layer.qgis_layer.getFeature(int(newid))
 
-        self.assertTrue(f'admin01|{date.today()}' in qgs_feature.attribute('insert_log'))
+        self.assertTrue(f'admin01' in qgs_feature.attribute('insert_log'))
         self.assertFalse(qgs_feature.attribute('update_log'))
 
         # UPDATE
@@ -1087,8 +1085,8 @@ class EditingApiTests(ConstraintsTestsBase):
 
         qgs_feature = editing_layer.qgis_layer.getFeature(int(newid))
 
-        self.assertTrue(f'admin01|{date.today()}' in qgs_feature.attribute('insert_log'))
-        self.assertTrue(f'admin01|{date.today()}' in qgs_feature.attribute('update_log'))
+        self.assertTrue(f'admin01' in qgs_feature.attribute('insert_log'))
+        self.assertTrue(f'admin01' in qgs_feature.attribute('update_log'))
 
 
 class ConstraintsApiTests(ConstraintsTestsBase):

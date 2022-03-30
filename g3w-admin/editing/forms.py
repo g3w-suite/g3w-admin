@@ -32,14 +32,14 @@ class ActiveEditingLayerForm(G3WRequestFormMixin, G3WProjectFormMixin, forms.For
                                                    'Showed only string field. <br>'
                                                    #'more than 200 characters long.<br>'
                                                    'Value stored into the field it will be so structured: '
-                                                   '<i>[username]|[timestamp_operation]</i>'))
+                                                   '<i>[username]</i>'))
     edit_user_field = forms.ChoiceField(choices=[], label=_('User editing data field'), required=False,
                                         help_text=_('Optional: select layer field to store '
                                                     'username that updated the data. '
                                                     'Showed only string field. <br>'
                                                     #' more than 200 characters long.<br>'
                                                     'Value stored into the field it will be so structured: '
-                                                    '<i>[username]|[timestamp_operation]</i>'))
+                                                    '<i>[username]</i>'))
 
     def __init__(self, *args, **kwargs):
 
