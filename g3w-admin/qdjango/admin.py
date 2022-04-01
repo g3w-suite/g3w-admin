@@ -77,7 +77,10 @@ class ColumnAclAdmin(GuardedModelAdmin):
 
 @admin.register(Widget)
 class WidgetAdmin(GuardedModelAdmin):
-    pass
+    list_display = (
+        'name',
+        'widget_type'
+    )
 
 
 class SessionTokenFilterLayerAdminInline(admin.TabularInline):
