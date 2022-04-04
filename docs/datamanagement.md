@@ -16,15 +16,16 @@ Thanks to the integration with the APIs of QGIS it is now possible to manage the
   * Virtual layer
 
 The suite also allows you to manage in consultation ed editing:
- * **simple join data**
+ * **simple join data with no nesting limits**
  * **1:N relation data**
+ * **N:M relation data**
 
 ## Data on DB Server
 
 If your geographical data are stored on `Server DB`, it will be sufficient to allow access to the DB from the IP address on which the application is installed.
 
-## Data on SpatiaLite or OGR format
-If your geographical data are stored on `SpatiaLite` or on physical files (`.gpkg`, `.shp`, `.kml`, `.tif`...) located on your local PC, you will need:
+## Data on SpatiaLite/GeoPackage or OGR format
+If your geographical data are stored on `SpatiaLite`, `GeoPackage` or an other physical files (`.shp`, `.kml`, `.tif`...) located on your local PC, you will need:
 * **organize data and projects** in predefined localy directories and subdirectories
 * **upload/synchronize geographic data to the corresponding folder located on the server** where the application is installed
 

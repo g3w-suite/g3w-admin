@@ -12,9 +12,7 @@ The following aspects will be analyzed within the manual:
 * **publishing and managing QGIS projects as WebGis services**
 * **creation of searches, visualization of graphics created with the DataPlotly plugin and definition of constraints (geographic and alphanumeric) on visualization and editing permissions**
 
-**The current release (3.3) is compatible with `QGIS 3.16.x LTR` (Server and Desktop).**
-
-**NB: The filter function (based on features selection) at the print level is supported only with QGIS 3.18**
+**The current release (3.4) is compatible with `QGIS 3.22.x LTR` (Server and Desktop).**
 
 ![](images/manual/demo_qgis_project.png)
 
@@ -26,13 +24,12 @@ At the moment it's not used a classic versioning system for the suite, this bran
 
 | Branch   | Python version | Django version | QGIS        | QGIS API | Status                 |
 |----------|----------------|----------------|-------------|----------|------------------------|
-| dev      | 3.6            | 2.2            | 3.16 (3.18) | Used     | Continuous development |
-| v3.3     | 3.6            | 2.2            | 3.16 (3.18) | Used     | Bug fixing             |
-| v3.2     | 3.6            | 2.2            | 3.16 (3.18) | Used     | Bug fixing             |
+| dev      | 3.6            | 2.2            | 3.22        | Used     | Continuous development |
+| v3.4     | 3.6            | 2.2            | 3.22        | Used     | Bug fixing             |
+| v3.3     | 3.6            | 2.2            | 3.16        | Used     | Bug fixing             |
+| v3.2     | 3.6            | 2.2            | 3.16        | Used     | Not longer supported   |
 | v3.1     | 3.6            | 2.2            | 3.10        | Used     | Not longer supported   |
 | v3.0     | 3.6            | 2.2            | 3.10        | Used     | Not longer supported   |
-| dj22-py3 | 3.6            | 2.2            | 3.10        | Not used | Not longer supported   |
-| py2      | 2.7            | 1.11           | 3.10        | Not used | Not longer supported   |        
 
 ### Main contributors
 * Walter Lorenzetti - Gis3W ([@wlorenzetti](https://github.com/wlorenzetti))
