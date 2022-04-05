@@ -14,11 +14,15 @@ Thanks to the integration with the APIs of QGIS it is now possible to manage the
    * SQL Server
    * Virtual layer
 
-The suite also allows you to manage **`1:N relational editing`**.
+The suite also allows you to manage **`1:N and N:M relational editing`**.
 
-**Be careful: in this release editing is not available on simple join (1:1/n:1) data**
+**Attention:** the management of the editing of the N: M relations is limited to the management of the 1:N relationship between the parent layer and the intermediate table.
 
-The **editing settings** are defined partly at the **QGIS project level** (**editing form structure, widgets associated with individual attributes, 1:n relationships**) and partly at the **Administration level** (users with editing power, activation scale, alpha and geo constraints).
+This means that currently it is not possible to create new records in table M but only:
+ * modify the current relationships present
+ * create new relationships between new elements of layer N and pre-existing records of layer M
+
+The **editing settings** are defined partly at the **QGIS project level** (**editing form structure, widgets associated with individual attributes, 1:n  and N:M relationsrelations**) and partly at the **Administration level** (users with editing power, activation scale, alpha and geo constraints).
 
 It should be noted that this function manages **`multi-user editing`** through a **features-lock system**.
 
@@ -27,6 +31,7 @@ When an enabled user activates the editing function at the map client level, the
 This block will be deactivated when the user exits the editing mode.
 
 ### QGIS project settings
+
 #### Definition of the attribute editing form
 In the QGIS project, for each layer it is possible to **define the structure of the attribute display module**.
 
@@ -35,6 +40,20 @@ The same structure will be used in the cartographic client when editing attribut
 The definition of the form structure can be managed, on QGIS, from the **`Properties of the vector`, in the `Attributes Form section`**.
 
 ![](images/manual/editing_qgis_form_widget.png)
+
+##### Conditionals forms based on QGIS expressions
+
+Conditional forms based on QGIS expressions are supported and implemented for online editing/consulting.
+
+It is therefore possible to define the visibility of a forms (form or group) and of the fields it contains, on the basis of the values defined on further fields when filling in the attributes.
+
+##### Drill-down (cascading) forms
+
+Drill-down (cascading) forms **based on QGIS expressions** are supported and implemented for online editing.
+
+The functionality can be used to implement “drill-down” within editing forms, where the values available in one field depend on the values of other fields.
+
+This function will be reflected in the consultation side.
 
 #### Definition of editing widgets associated with individual attributes
 At the QGIS project level (always from **`Vector Properties`**, **`Attribute Form`** section) it is possible to define an alias and an editing widget for each attribute.
@@ -119,6 +138,16 @@ I should be noted that:
 ![](images/manual/editing_setting.png)
 
 **NB: In case a user belongs to a user group, the permissions set will be added together.**
+
+##### Ability to associate references to create/update G3W-SUITE users
+
+Through these two optional settings it is possible to define two fields of the table of the layer being edited automatically filled in.
+
+These two fields will contain references to G3W-SUITE users who creators or modifiers of the individual features edited.
+
+All settings defined at the QGIS level for these fields (eg default values) will no longer be considered.
+
+It is recommended that these fields be set as non-editable at the project level.
 
 #### 1:N relational editing
 To allow editing on the related table in mode 1: n , the **editing function must also be activated** (always in the same way) **also for the related table** present in the project layers list.
@@ -235,6 +264,8 @@ In the alphanumeric constraints list you can see a summary of the setted rules.
 
 **Once the online editing function has been activated and configured on one or more layers of a WebGis project, the `Editing` item, inside the `Tools` menu of the cartoographic client, will be shown.**
 
+If the editing function is activated at the Admin level, it is also possible to start the online editing also through the Editing icon that appears at the level of the search and query results form of a vector layer.
+
 ![](images/manual/editing_client_start.png) 
 
 ![](images/manual/editing_client_tool.png)
@@ -260,9 +291,13 @@ The tools available are the following:
  * ![](images/manual/icon_feature_dissolve.png) **Dissolve features:** to dissolve two or more features
  * ![](images/manual/icon_feature_split.png) **Split features:** to split one or more features
 
-Activating the **Add features** and **Update feature vertex** tools allows you to activate the snap intralayer function.
-
 A help panel will describe the steps to take for copy, dissolve and split operations.
+
+##### Snap and other available function
+Activating the Add features and Update feature vertex tools allows you to:
+ * activate the **intralayer snap** function
+ * activate the **snap between layers**, but only if both layers are in editing mode
+ * activate the **interactive area and length measure** function
 
 **Alphanumeric layer**
  * ![](images/manual/icon_record_add.png) **Add feature:** to add a record to the alphanumeric table
@@ -292,15 +327,17 @@ By deactivating the editing function, a modal window will be displayed which wil
 Remember that during the editing phase the **`undo/redo icons`** ![](images/manual/icon_undoredo.png) allow you to delete/restore the latest changes made.
 
 
-### 1:N related tables editing
+### 1:N and N:M related tables editing
 **G3W-SUITE allows for relational editing**; for this to be possible it is necessary that:
- * on the published QGIS project there are one or more geographic layers related (1: n) with one or more alphanumeric tables
+ * on the published QGIS project there are one or more geographic layers related (1:n or N:M) with one or more alphanumeric tables
  * on the administration panel the editing function has been activated both on the parent layer and on the child layers
  * the operator user is enabled for the editing function on these layers
 
 **The activation, at the cartographic client level, of the editing mode on the parent layer automatically determines the possibility of also managing the information on the related table.**
 
-The insertion of a new geometry or the modification of an existing one determines the display of the attribute form divided into two or more macro tabs, one for the parent layer and the other for the child layers
+**Important:** to be able to edit related data, the relations must be inserted in the form of the parent layer, defined using the Drag and Drop designer method in the Layer Properties.
+
+After the editing has been activated on a record in the parent table, an editing icon (pen) will appears at the level of the relations references.
 
 ![](images/manual/editing_form2.png)
 
@@ -308,8 +345,7 @@ Moving on the macro tab relating to one of the child layers, the list of records
 
 ![](images/manual/editing_form_relations.png)
 
-In this macro tab it will be possible to:
- * **create and add a new records** related to the edited feature
+Clicking on it the form switch in a session dedicated to the edit of the relationated table where it will be possible: * **create and add a new records** related to the edited feature
  * **associate an existing records** (linked to other features or orphan) to the edited feature
  * **modify the records** currently associated with the edited feature
 

@@ -158,9 +158,12 @@ single feature by FID
 single/list features by value of a field 
 
 Here the URL paramters available:
- * **map_extent (Zoom to map extent)** - Ex: <url_project>?map_extent=Xmin, Ymin,Xmax,Ymax
- * **zoom_to_fid (Zoom to a specific feature by FID)** - Ex: <url_project>?zoom_to_fid=<layer_id>|<fid value>
- * **ztf (Zoom to features defined on the basis of attribute values)** - Ex: <url_project>?ztf=<layer_id or layer name>:<field name>=<field value>
+ * **map_extent (Zoom to map extent)**
+   * Ex: <url_project>?map_extent=Xmin, Ymin,Xmax,Ymax
+ * **zoom_to_fid (Zoom to a specific feature by FID)**
+   * Ex: <url_project>?zoom_to_fid=<layer_id>|<fid value>
+ * **ztf (Zoom to features defined on the basis of attribute values)**
+   * Ex: <url_project>?ztf=<layer_id or layer name>:<field name>=<field value>
 
 ## Tools panel
 ### Metadata
@@ -233,8 +236,12 @@ The user can add one or more WMS URL and, for each of them, define:
  * the projection system to be associated
  * a custom name
 
+![](images/manual/g3wclient_wms_tool.png)
+
 
 When the first custom WMS is added, a new tab (WMS) appears in the TOC; here you can switch on/off or delete the individual added WMS layers.
+
+![](images/manual/g3wclient_wms_tool_layer.png)
 
 The added WMS layer cannot not be queried.
 
@@ -359,28 +366,36 @@ If at the publication level of the QGIS project, the **Legend position** option 
 
 If the option is activated on the QGIS project, the **legend is filtered on the map content**.
 
-## URL parameters
-
-The follow parameters ca be used to perform actions on the map
-
-#### map_extent (Zoom to map extent):
-
-This parameter is useful set starting project map extent to a specific Map extent
-
-*<map_url>?map_extent=<Xmin>,<Ymin>,<Xmax>,<Ymax>*
-
-#### zoom_to_fid (Zoom to a one feature only) 
-
-This parameter is used to zoom to a specific feature of a layer:
-
-*<map_url>?zoom_to_fid=<layer_id>|<fid value>*
-
-#### ztf (Zoom to Features) 
-
-This parameter is used to zoom to Feature of a specific layer:
-
-*<map_url>?zft=<layer_id or layer name>:<field name>=<field value>*
 
 
+## Time series
+
+This version of G3W-SUITE manages the temporal aspects for both vector and raster layers but with limitations:
+ * **vector layers:** limited to the **Single field with Date/Time** configuration
+ * **raster layers:** only for **NetCDF** file upload as raster (no Mesh)
+
+If in the QGIS project  a temporal vector/raster layer on which the **Dynamic temporal control** property has been activated is present, the client will show an additional panel called **Time series**.
+
+This panel will allow you to:
+ * define the start/end date of the time series
+ * define the step of the animation
+ * start and manage the temporal animation
+
+![](images/manual/g3wclient_timeseries_tool.png)
+
+The modification of the start date of the series will determine the updating of the map with the visualization of the layer in coherence with the chosen date.
+
+**Pay attention: to use the Time series function for raster data, it must also be activated at the level of the G3W-ADMIN layer properties.**
+
+![](images/manual/g3wclient_timeseries_admin.png)
 
 
+## Temporal raster charts
+
+If in the QGIS project  a temporal raster layer on which the **Dynamic temporal control** property has been activated is present, the **Time series** panel .
+
+The panel will show an additional button called **Show Charts**.
+
+By clicking on it it will be possible to click on the map in different points obtaining, for each of them, a time chart that will show the variation of the values of the individual cells over time.
+
+![](images/manual/g3wclient_timecharts_tool.png)
