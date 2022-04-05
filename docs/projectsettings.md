@@ -122,14 +122,20 @@ A specific menu on the webgis will allow you to choose the Theme to be displayed
 
 The option to define the layer order different from the order in the TOC on the QGIS project is automatically supported.
 
-
 ### Legend
 
 The activation of the **`Filter legend by Map content`** option on the QGIS project is automatically applied to the derived WebGis service.
 
-### Groups of layers
+### Mutually exclusive groups
 
 The activation on the QGIS project of the **`Mutually exclusive group`** option for the layers groups is automatically applied to the derived WebGis service.
+
+### 1:N and N:M relations
+
+ATTENTION: to correctly manage these types of relations it is NECESSARY to insert the reference to the relations in the customized form
+
+![](images/manual/qgislayerproperties_displayform_relations.png)
+
 
 ### Embedded project
 **It is possible to publish QGIS projects that contain layers or groups of layers deriving from embedded projects.**
@@ -138,18 +144,11 @@ An update of the embedded project will result in a consequent modification of al
 The request to delete the basic embedded project causes a warning message as this operation will cause problems on all derived projects.
 
 ## Layers properties
+
 ### Simbology
 The rendering style associated with the individual layers is replicated autonomously on the WebGis service.
 
 If external SVG icons are used (added to the basic ones of QGIS, via the **`Settings -> Options -> System -> SVG paths`**), these must be uploaded to the server (through the **`File Manager`** tool) in order to be used by QGIS Server.
-
-#### Layer style
-**The suite manages the presence of multiple styles associated with a layer.**
-
-It will be possible to dynamically choose the style on the cartographic client.
-
-It will be possible to manage the styles associated with a layer from the Administration component, also by **loading .qml file styles** and **setting the default style** among those present.
-
 
 #### Manage custom SVG icons
 In the installation procedure of the G3W-SUITE application, an **`svg`** named directory is created on the server.
@@ -175,6 +174,17 @@ The SVG folder on the server must reflect the structure in any subfolders presen
 
 See also [dedicated paragraph](https://g3w-suite.readthedocs.io/en/v.3.4.x/projectsettings.html#viewing-multimedia-content)
 
+
+
+### Multi-style layer
+**The suite manages the presence of multiple styles associated with a layer.**
+
+It will be possible to dynamically choose the style on the cartographic client.
+
+It will be possible to manage the styles associated with a layer from the Administration component, also by **loading .qml file styles** and **setting the default style** among those present.
+
+
+
 ### Definition of the fields that can be consulted for each layer
 Within the QGIS project it is also possible to define, for each layer, which fields are available following query on the WebGis service.
 
@@ -187,8 +197,28 @@ The check box relating to the **`WMS`** column defines whether or not the values
  ![](images/manual/qgislayerproperties_wmsfields.png)
 
 
+### Definition of the attribute display form
+For each layer it is possible to define the structure of the attributes form associated with displaying the results following query operations.
 
-### Viewing multimedia content
+On QGIS we can build a personalized form (query form) by creating thematic tabs and groups and defining the distribution of the individual fields and their aliases.
+
+This structural organization will be replicated directly on the query form on the WebGis service.
+
+The current version of QGIS also handles conditional forms and cascade drill-downs
+
+
+### Temporal settings
+
+This version of G3W-SUITE manages the temporal aspects for both vector and raster layers but with limitations:
+
+ * vector layers: limited to the Single filed with Date/Time configuration
+ * raster layers: only for NetCDF file upload as raster (no Mesh)
+
+![](images/manual/qgislayerproperties_displayform_relations.png)
+
+
+
+#### Viewing multimedia content
 Multimedia contents (images, pdf, web URL ...) can be viewed interactively on the map client following publication of the QGIS project.
 
 In the case of web links, simply insert them (preceded by the prefix **`http://`** or **`https://`**) within the dedicated attribute fields
@@ -211,21 +241,15 @@ Following queries at the cartographic client level, we will have different behav
 
  ![](images/manual/qgis_form_attribute.png)
 
-### Definition of the attribute display form
-For each layer it is possible to define the structure of the attributes form associated with displaying the results following query operations.
-
-On QGIS we can build a personalized form (query form) by creating thematic tabs and groups and defining the distribution of the individual fields and their aliases.
-
-This structural organization will be replicated directly on the query form on the WebGis service.
 
  ![](images/manual/qgislayerproperties_displayform.png)
  
- ## Print layouts
+## Print layouts
 Any print layouts associated with the published QGIS project will automatically be associated with the published WebGis service.
 
 **Print layouts can contain more than one `Map` items and panoramic maps.**
 
-You can set also a custom title (definible in the WebGis side) setting an Item ID at a Lebel item.
+You can set also a **custom title** (definible in the WebGis side) setting an **Item ID** at a **Label** item.
 
 **Atlas and report are also supported.**
 

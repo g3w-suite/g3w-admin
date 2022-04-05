@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: G3W-SUITE 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-04-01 17:22+0200\n"
+"POT-Creation-Date: 2022-04-04 14:29+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -115,7 +115,7 @@ msgstr ""
 msgid "Map: containing:"
 msgstr ""
 
-#: ../../g3wsuite_client.md:30 ../../g3wsuite_client.md:252
+#: ../../g3wsuite_client.md:30 ../../g3wsuite_client.md:272
 msgid "Layers: structured list of layers, defined on the QGIS project"
 msgstr ""
 
@@ -481,21 +481,27 @@ msgid "Here the URL paramters available:"
 msgstr ""
 
 #: ../../g3wsuite_client.md:158
-msgid ""
-"map_extent (Zoom to map extent) Ex: <url_project>?map_extent=Xmin, "
-"Ymin,Xmax,Ymax"
+msgid "map_extent (Zoom to map extent)"
+msgstr ""
+
+#: ../../g3wsuite_client.md:159
+msgid "Ex: <url_project>?map_extent=Xmin, Ymin,Xmax,Ymax"
 msgstr ""
 
 #: ../../g3wsuite_client.md:160
-msgid ""
-"zoom_to_fid (Zoom to a specific feature by FID) Ex: "
-"<url_project>?zoom_to_fid=<layer_id>|<fid value>"
+msgid "zoom_to_fid (Zoom to a specific feature by FID)"
+msgstr ""
+
+#: ../../g3wsuite_client.md:161
+msgid "Ex: <url_project>?zoom_to_fid=<layer_id>|<fid value>"
 msgstr ""
 
 #: ../../g3wsuite_client.md:162
-msgid ""
-"ztf (Zoom to features defined on the basis of attribute values) "
-"<url_project>?ztf=<layer_id or layer name>:<field name>=<field value>"
+msgid "ztf (Zoom to features defined on the basis of attribute values)"
+msgstr ""
+
+#: ../../g3wsuite_client.md:163
+msgid "Ex: <url_project>?ztf=<layer_id or layer name>:<field name>=<field value>"
 msgstr ""
 
 #: ../../g3wsuite_client.md:165
@@ -639,320 +645,464 @@ msgstr ""
 msgid "Format: print to PDF or JPEG"
 msgstr ""
 
-#: ../../g3wsuite_client.md:214
+#: ../../g3wsuite_client.md:213
 msgid ""
-"On the map, a lit rectangular area will allow you to define the print "
+"Custom title: using the ItemIDs at the print layout level of the QGIS "
+"project it is possible to insert one or more labels with customized "
+"content in the print from WebGis"
+msgstr ""
+
+#: ../../g3wsuite_client.md:215
+msgid ""
+"On the map, a light rectangular area will allow you to define the print "
 "area."
 msgstr ""
 
-#: ../../g3wsuite_client.md:218
+#: ../../g3wsuite_client.md:219
 msgid ""
 "If an Atlas type print layout is associated in the QGIS project, the "
 "layout reference will be available. The cards to be printed are defined "
 "by referring to the atlas identifier defined in the print layout."
 msgstr ""
 
-#: ../../g3wsuite_client.md:223
-msgid "Search and Query Builder"
+#: ../../g3wsuite_client.md:224
+msgid "WMS"
 msgstr ""
 
 #: ../../g3wsuite_client.md:225
+msgid ""
+"Through this tool the user can add custom WMS layers to the WebGis "
+"service."
+msgstr ""
+
+#: ../../g3wsuite_client.md:227
+msgid "The user can add one or more WMS URL and, for each of them, define:"
+msgstr ""
+
+#: ../../g3wsuite_client.md:228
+msgid ""
+"the position (top or buttom) with respect to the other layers of the "
+"project"
+msgstr ""
+
+#: ../../g3wsuite_client.md:229
+msgid "the layer to load"
+msgstr ""
+
+#: ../../g3wsuite_client.md:230
+msgid "the projection system to be associated"
+msgstr ""
+
+#: ../../g3wsuite_client.md:231
+msgid "a custom name"
+msgstr ""
+
+#: ../../g3wsuite_client.md:235
+msgid ""
+"When the first custom WMS is added, a new tab (WMS) appears in the TOC; "
+"here you can switch on/off or delete the individual added WMS layers."
+msgstr ""
+
+#: ../../g3wsuite_client.md:239
+msgid "The added WMS layer cannot not be queried."
+msgstr ""
+
+#: ../../g3wsuite_client.md:241
+msgid ""
+"The list of WMS services and the specific WMS layers added will remain "
+"available to the user until the browser cache is cleared."
+msgstr ""
+
+#: ../../g3wsuite_client.md:243
+msgid "Search and Query Builder"
+msgstr ""
+
+#: ../../g3wsuite_client.md:245
 msgid ""
 "A classic Query Builder is present at the Search menu level. Through this"
 " tool it is possible to:"
 msgstr ""
 
-#: ../../g3wsuite_client.md:227
+#: ../../g3wsuite_client.md:247
 msgid "carry out alphanumeric searches on geometric layers"
 msgstr ""
 
-#: ../../g3wsuite_client.md:228
+#: ../../g3wsuite_client.md:248
 msgid "save the query to reuse it until the end of the work session"
 msgstr ""
 
-#: ../../g3wsuite_client.md:229
+#: ../../g3wsuite_client.md:249
 msgid "edit a previously saved query"
 msgstr ""
 
-#: ../../g3wsuite_client.md:231
+#: ../../g3wsuite_client.md:251
 msgid "The saved query will be available until the browser cache is cleared"
 msgstr ""
 
-#: ../../g3wsuite_client.md:235
+#: ../../g3wsuite_client.md:255
 msgid ""
 "The Search menu contains the list of search tools defined through the "
 "Administration panel and custom searches created with the Query Builder."
 msgstr ""
 
-#: ../../g3wsuite_client.md:239
+#: ../../g3wsuite_client.md:259
 msgid ""
 "You choose the search you are interested in, fill in the required fields "
 "and click on the Search button."
 msgstr ""
 
-#: ../../g3wsuite_client.md:241
+#: ../../g3wsuite_client.md:261
 msgid ""
 "The panel with the list of results will open on the right side of the "
 "client, for each result the first three fields of the associated table "
 "will be displayed."
 msgstr ""
 
-#: ../../g3wsuite_client.md:243
+#: ../../g3wsuite_client.md:263
 msgid ""
 "By positioning on the individual results, the corresponding features will"
 " be highlighted on the map; clicking on the individual results you can "
 "consult all the attributes."
 msgstr ""
 
-#: ../../g3wsuite_client.md:245
+#: ../../g3wsuite_client.md:265
 msgid ""
 "Zoom to features and download icons are available for results (single or "
 "cumulative)"
 msgstr ""
 
-#: ../../g3wsuite_client.md:249
+#: ../../g3wsuite_client.md:269
 msgid "Map"
 msgstr ""
 
-#: ../../g3wsuite_client.md:251
+#: ../../g3wsuite_client.md:271
 msgid "This session has three tabs:"
 msgstr ""
 
-#: ../../g3wsuite_client.md:253
+#: ../../g3wsuite_client.md:273
 msgid ""
 "Base: choice of the base map from those defined at the Cartographic Group"
 " creation level"
 msgstr ""
 
-#: ../../g3wsuite_client.md:254
+#: ../../g3wsuite_client.md:274
 msgid "Legend: graphic legend"
 msgstr ""
 
-#: ../../g3wsuite_client.md:256
+#: ../../g3wsuite_client.md:276
 msgid "Layers"
 msgstr ""
 
-#: ../../g3wsuite_client.md:258
+#: ../../g3wsuite_client.md:278
 msgid ""
 "In the list of layers, right click on the name of the single layer shows "
 "the following items:"
 msgstr ""
 
-#: ../../g3wsuite_client.md:259
+#: ../../g3wsuite_client.md:279
+msgid "Name and kind of geometry of the layer"
+msgstr ""
+
+#: ../../g3wsuite_client.md:280
 msgid ""
 "Styles: to choose the style to be applied to the layer, in the case of "
 "multi-style layers"
 msgstr ""
 
-#: ../../g3wsuite_client.md:260
-msgid "Name and kind of geometry of the layer"
+#: ../../g3wsuite_client.md:281
+msgid ""
+"Abstract:  a text (also html) defined in the Layer Properties, Metadata "
+"session, Identification tab, Abstract form."
 msgstr ""
 
-#: ../../g3wsuite_client.md:261
+#: ../../g3wsuite_client.md:282
 msgid "Zoom to layer: to zoom in on the extension of the layer"
 msgstr ""
 
-#: ../../g3wsuite_client.md:262
+#: ../../g3wsuite_client.md:283
 msgid "Open attribute table: to consult the associated attribute table"
 msgstr ""
 
-#: ../../g3wsuite_client.md:263
+#: ../../g3wsuite_client.md:284
 msgid ""
 "Download shapefile: to download the layer as a shapefile; function "
-"activable from the administration panel"
+"activatable from the administration panel"
 msgstr ""
 
-#: ../../g3wsuite_client.md:264
+#: ../../g3wsuite_client.md:285
+msgid ""
+"Download GEOTIFF: to download a raster in GeoTiff format, full layer or "
+"clipped to the extent of the canvas; function activatable from the "
+"administration panel"
+msgstr ""
+
+#: ../../g3wsuite_client.md:286
 msgid ""
 "Download GeoPackage: to download the layer as a GeoPackage; function "
-"activable from the administration panel"
+"activatable from the administration panel"
 msgstr ""
 
-#: ../../g3wsuite_client.md:265
+#: ../../g3wsuite_client.md:287
 msgid ""
-"Download CSV: to download the layer as a CSV; function activable from the"
-" administration panel"
+"Download CSV: to download the layer as a CSV; function activatable from "
+"the administration panel"
 msgstr ""
 
-#: ../../g3wsuite_client.md:266
+#: ../../g3wsuite_client.md:288
 msgid ""
-"Download XLS: to download the layer as a XLS; function activable from the"
-" administration panel"
+"Download XLS: to download the layer as a XLS; function activatable from "
+"the administration panel"
 msgstr ""
 
-#: ../../g3wsuite_client.md:267
+#: ../../g3wsuite_client.md:289
 msgid ""
 "WMS URL: URL of the WMS service relative to the project or URL of the "
 "external WMS"
 msgstr ""
 
-#: ../../g3wsuite_client.md:271
+#: ../../g3wsuite_client.md:293
 msgid ""
 "It is possible to hide, automatically, layers from the TOC when they have"
 " no records."
 msgstr ""
 
-#: ../../g3wsuite_client.md:273
+#: ../../g3wsuite_client.md:295
 msgid "Useful when using filters on layers or geographic views."
 msgstr ""
 
-#: ../../g3wsuite_client.md:275
+#: ../../g3wsuite_client.md:297
 msgid "Attribute table"
 msgstr ""
 
-#: ../../g3wsuite_client.md:277
+#: ../../g3wsuite_client.md:299
 msgid ""
 "The attribute table (resizable) is equipped with paging function, "
 "highligth function and zooming to the associated features."
 msgstr ""
 
-#: ../../g3wsuite_client.md:279
+#: ../../g3wsuite_client.md:301
 msgid ""
 "In the case of links to multimedia content, the previews of the images "
 "and/or the Open button will be displayed for consultation of different "
 "types of content."
 msgstr ""
 
-#: ../../g3wsuite_client.md:281
+#: ../../g3wsuite_client.md:303
 msgid "The window is resizable."
 msgstr ""
 
-#: ../../g3wsuite_client.md:285
+#: ../../g3wsuite_client.md:307
 msgid ""
 "A generic filter, positioned at the top right, is applied generically to "
 "the contents of all the fields and it will allow you to filter the list "
 "of displayed records."
 msgstr ""
 
-#: ../../g3wsuite_client.md:287
+#: ../../g3wsuite_client.md:309
 msgid ""
 "Filters based on the contents of the individual fields are available at "
 "the top of each column."
 msgstr ""
 
-#: ../../g3wsuite_client.md:289
+#: ../../g3wsuite_client.md:311
 msgid ""
 "The Show features visible on the map icon  allows you to filter the "
 "records of the table according to the features visible in the map."
 msgstr ""
 
-#: ../../g3wsuite_client.md:291
+#: ../../g3wsuite_client.md:313
 msgid ""
 "From this version it is possible to select the features of the individual"
 " layers and apply filters that will affect:"
 msgstr ""
 
-#: ../../g3wsuite_client.md:292 ../../g3wsuite_client.md:321
+#: ../../g3wsuite_client.md:314 ../../g3wsuite_client.md:343
 msgid "on the map content"
 msgstr ""
 
-#: ../../g3wsuite_client.md:293 ../../g3wsuite_client.md:322
+#: ../../g3wsuite_client.md:315 ../../g3wsuite_client.md:344
 msgid "on the attribute table content"
 msgstr ""
 
-#: ../../g3wsuite_client.md:294
+#: ../../g3wsuite_client.md:316
 msgid "on the contents of the plots"
 msgstr ""
 
-#: ../../g3wsuite_client.md:295
+#: ../../g3wsuite_client.md:317
 msgid "on print contents (only with QGIS 3.18)"
 msgstr ""
 
-#: ../../g3wsuite_client.md:297
+#: ../../g3wsuite_client.md:319
 msgid "The selection of features can be made:"
 msgstr ""
 
-#: ../../g3wsuite_client.md:298
+#: ../../g3wsuite_client.md:320
 msgid ""
 "at the attribute table level (through the checkboxes on the left of each "
 "records)"
 msgstr ""
 
-#: ../../g3wsuite_client.md:299 ../../g3wsuite_client.md:300
+#: ../../g3wsuite_client.md:321 ../../g3wsuite_client.md:322
 msgid "on the results of a query (add / remove from current selection)"
 msgstr ""
 
-#: ../../g3wsuite_client.md:302
+#: ../../g3wsuite_client.md:324
 msgid "At the same time, additional icons appear:"
 msgstr ""
 
-#: ../../g3wsuite_client.md:303
+#: ../../g3wsuite_client.md:325
 msgid "on the layer attribute table"
 msgstr ""
 
-#: ../../g3wsuite_client.md:304
+#: ../../g3wsuite_client.md:326
 msgid "to the right of the layer on the TOC"
 msgstr ""
 
-#: ../../g3wsuite_client.md:305
+#: ../../g3wsuite_client.md:327
 msgid "at the level of the relevant plots"
 msgstr ""
 
-#: ../../g3wsuite_client.md:307
+#: ../../g3wsuite_client.md:329
 msgid ""
 "Aggiungi immagine: g3wclient_selection.png The icons in the attribute "
 "table allow you to:"
 msgstr ""
 
-#: ../../g3wsuite_client.md:309 ../../g3wsuite_client.md:314
+#: ../../g3wsuite_client.md:331 ../../g3wsuite_client.md:336
 msgid "Clear selection"
 msgstr ""
 
-#: ../../g3wsuite_client.md:310
+#: ../../g3wsuite_client.md:332
 msgid "Invert selection"
 msgstr ""
 
-#: ../../g3wsuite_client.md:311 ../../g3wsuite_client.md:315
+#: ../../g3wsuite_client.md:333 ../../g3wsuite_client.md:337
 msgid "Add/Remove filter"
 msgstr ""
 
-#: ../../g3wsuite_client.md:313
+#: ../../g3wsuite_client.md:335
 msgid "The icons to the right of the layer on the TOC allow you to:"
 msgstr ""
 
-#: ../../g3wsuite_client.md:319
+#: ../../g3wsuite_client.md:341
 msgid ""
 "When one or more features are selected, they appear highlighted in red on"
 " the map. Activation of the filter is reflected:"
 msgstr ""
 
-#: ../../g3wsuite_client.md:323
+#: ../../g3wsuite_client.md:345
 msgid "on the data displayed by plots"
 msgstr ""
 
-#: ../../g3wsuite_client.md:324
+#: ../../g3wsuite_client.md:346
 msgid "on the print contents (only with QGIS 3.18)"
 msgstr ""
 
-#: ../../g3wsuite_client.md:326
+#: ../../g3wsuite_client.md:348
 msgid "Base layer"
 msgstr ""
 
-#: ../../g3wsuite_client.md:327
+#: ../../g3wsuite_client.md:349
 msgid "The list shows the active base layers at the cartographic group level."
 msgstr ""
 
-#: ../../g3wsuite_client.md:329
+#: ../../g3wsuite_client.md:351
 msgid ""
 "If the user has created base layers starting from cached layers, these "
 "may also be present."
 msgstr ""
 
-#: ../../g3wsuite_client.md:331
+#: ../../g3wsuite_client.md:353
 msgid "Legend"
 msgstr ""
 
-#: ../../g3wsuite_client.md:333
+#: ../../g3wsuite_client.md:355
 msgid ""
 "If at the publication level of the QGIS project, the Legend position "
 "option i setted as TOC, this panel will be not present and the legend "
 "will be rendered inside layers TOC."
 msgstr ""
 
-#: ../../g3wsuite_client.md:335
+#: ../../g3wsuite_client.md:357
 msgid ""
 "If the option is activated on the QGIS project, the legend is filtered on"
 " the map content."
+msgstr ""
+
+#: ../../g3wsuite_client.md:359
+msgid "Time series"
+msgstr ""
+
+#: ../../g3wsuite_client.md:361
+msgid ""
+"This version of G3W-SUITE manages the temporal aspects for both vector "
+"and raster layers but with limitations:"
+msgstr ""
+
+#: ../../g3wsuite_client.md:362
+msgid "vector layers: limited to the Single field with Date/Time configuration"
+msgstr ""
+
+#: ../../g3wsuite_client.md:363
+msgid "raster layers: only for NetCDF file upload as raster (no Mesh)"
+msgstr ""
+
+#: ../../g3wsuite_client.md:365
+msgid ""
+"If in the QGIS project  a temporal vector/raster layer on which the "
+"Dynamic temporal control property has been activated is present, the "
+"client will show an additional panel called Time series."
+msgstr ""
+
+#: ../../g3wsuite_client.md:367
+msgid "This panel will allow you to:"
+msgstr ""
+
+#: ../../g3wsuite_client.md:368
+msgid "define the start/end date of the time series"
+msgstr ""
+
+#: ../../g3wsuite_client.md:369
+msgid "define the step of the animation"
+msgstr ""
+
+#: ../../g3wsuite_client.md:370
+msgid "start and manage the temporal animation"
+msgstr ""
+
+#: ../../g3wsuite_client.md:374
+msgid ""
+"The modification of the start date of the series will determine the "
+"updating of the map with the visualization of the layer in coherence with"
+" the chosen date."
+msgstr ""
+
+#: ../../g3wsuite_client.md:376
+msgid ""
+"Pay attention: to use the Time series function for raster data, it must "
+"also be activated at the level of the G3W-ADMIN layer properties."
+msgstr ""
+
+#: ../../g3wsuite_client.md:380
+msgid "Temporal raster charts"
+msgstr ""
+
+#: ../../g3wsuite_client.md:382
+msgid ""
+"If in the QGIS project  a temporal raster layer on which the Dynamic "
+"temporal control property has been activated is present, the Time series "
+"panel ."
+msgstr ""
+
+#: ../../g3wsuite_client.md:384
+msgid "The panel will show an additional button called Show Charts."
+msgstr ""
+
+#: ../../g3wsuite_client.md:386
+msgid ""
+"By clicking on it it will be possible to click on the map in different "
+"points obtaining, for each of them, a time chart that will show the "
+"variation of the values of the individual cells over time."
 msgstr ""
 
 #~ msgid "Download Shapefile: if activated in the administration session"
@@ -1082,5 +1232,165 @@ msgstr ""
 #~ "geometry : to create a URL which"
 #~ " starts with the extension of the "
 #~ "geometry in question"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "map_extent (Zoom to map extent) Ex: "
+#~ "<url_project>?map_extent=Xmin, Ymin,Xmax,Ymax"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "zoom_to_fid (Zoom to a specific feature"
+#~ " by FID) Ex: "
+#~ "<url_project>?zoom_to_fid=<layer_id>|<fid value>"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "ztf (Zoom to features defined on "
+#~ "the basis of attribute values) "
+#~ "<url_project>?ztf=<layer_id or layer name>:<field"
+#~ " name>=<field value>"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "On the map, a lit rectangular area"
+#~ " will allow you to define the "
+#~ "print area."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Download shapefile: to download the "
+#~ "layer as a shapefile; function activable"
+#~ " from the administration panel"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Download GeoPackage: to download the "
+#~ "layer as a GeoPackage; function "
+#~ "activable from the administration panel"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Download CSV: to download the layer "
+#~ "as a CSV; function activable from "
+#~ "the administration panel"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Download XLS: to download the layer "
+#~ "as a XLS; function activable from "
+#~ "the administration panel"
+#~ msgstr ""
+
+#~ msgid "<map_url>?zft=<layer_id or layer name>:<field name>=<field value>"
+#~ msgstr ""
+
+#~ msgid "<map_url>?zft=<layer_id or layer name>:<field name>=<field value>*"
+#~ msgstr ""
+
+#~ msgid "<map_url>?map_extent=<Xmin>,<Ymin>,<Xmax>,<Ymax>"
+#~ msgstr ""
+
+#~ msgid "<map_url>?zft=<layer_id or layer name>: <field name>=<field value>"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "This version of G3W-SUITE manages "
+#~ "the temporal aspects for both vector "
+#~ "and raster layers but with limitations:"
+#~ " vector layers: limited to the Single"
+#~ " filed with Date/Time configuration raster"
+#~ " layers: only for NetCDF file upload"
+#~ " as raster (no Mesh)"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "If in the QGIS project  a temporal"
+#~ " vector/raster layer on which the "
+#~ "Dynamic temporal control property has "
+#~ "been activated is present, the client"
+#~ " will show an additional panel called"
+#~ " Time series. This panel will allow"
+#~ " you to: define the start/end date"
+#~ " of the time series define the "
+#~ "step of the animation start and "
+#~ "manage the temporal animation AGGIUNGERE "
+#~ "SCREENSHOT (g3wclient_timeseries_tool.png)"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "The modification of the start date "
+#~ "of the series will determine the "
+#~ "updating of the map with the "
+#~ "visualization of the layer in coherence"
+#~ " with the chosen date. Pay attention:"
+#~ " to use the Time series function "
+#~ "for raster data, it must also be"
+#~ " activated at the level of the "
+#~ "G3W-ADMIN layer properties. AGGIUNGERE "
+#~ "SCREENSHOT (g3wclient_timeseries_admin.png)"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "map_extent (Zoom to map extent) - "
+#~ "Ex: <url_project>?map_extent=Xmin, Ymin,Xmax,Ymax"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "zoom_to_fid (Zoom to a specific feature"
+#~ " by FID) - Ex: "
+#~ "<url_project>?zoom_to_fid=<layer_id>|<fid value>"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "ztf (Zoom to features defined on "
+#~ "the basis of attribute values) - "
+#~ "Ex: <url_project>?ztf=<layer_id or layer "
+#~ "name>:<field name>=<field value>"
+#~ msgstr ""
+
+#~ msgid "URL parameters"
+#~ msgstr ""
+
+#~ msgid "The follow parameters ca be used to perform actions on the map"
+#~ msgstr ""
+
+#~ msgid "map_extent (Zoom to map extent):"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "This parameter is useful set starting"
+#~ " project map extent to a specific "
+#~ "Map extent"
+#~ msgstr ""
+
+#~ msgid "<map_url>?map_extent=<Xmin>,<Ymin>,<Xmax>,<Ymax>*"
+#~ msgstr ""
+
+#~ msgid "zoom_to_fid (Zoom to a one feature only)"
+#~ msgstr ""
+
+#~ msgid "This parameter is used to zoom to a specific feature of a layer:"
+#~ msgstr ""
+
+#~ msgid "<map_url>?zoom_to_fid=<layer_id>|<fid value>"
+#~ msgstr ""
+
+#~ msgid "ztf (Zoom to Features)"
+#~ msgstr ""
+
+#~ msgid "This parameter is used to zoom to Feature of a specific layer:"
+#~ msgstr ""
+
+#~ msgid "map_extent (Zoom to map extent)"
+#~ msgstr ""
+
+#~ msgid "Ex: <url_project>?map_extent=Xmin, Ymin,Xmax,Ymax"
+#~ msgstr ""
+
+#~ msgid "zoom_to_fid (Zoom to a specific feature by FID)"
+#~ msgstr ""
+
+#~ msgid "Ex: <url_project>?zoom_to_fid=<layer_id>|<fid value>"
 #~ msgstr ""
 

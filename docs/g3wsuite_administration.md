@@ -533,6 +533,7 @@ Once a cartographic project has been published, thougth the icon ![](images/manu
 
 Next to each layer are a series of icons and checkboxes:
  * **Label:** layer alias applied at the QGIS project level
+   * The eye icon allows you to know the ID associated with the layer at the project level, this ID will be useful for creating parameterized URLs
  * **Name:** name of the layer (file or DB table)
  * ![](images/manual/icon_layertype.png) **Type:** illustrates the type of data (WMS, PostGis, SpatiaLite, GDAL / OGR ...)
  * **WMS external:** to speed up loading, the WMS layers present in a QGIS project are managed directly by Django and not by QGIS-Server. However, this method prevents the application of any styling  (e.g. opacity level) defined at the project level. The choice of the external WMS option means that the WMS layer is managed directly by QGIS-Server and therefore the associated styling is applied.
@@ -544,7 +545,7 @@ Next to each layer are a series of icons and checkboxes:
    * ![](images/manual/icon_dataplotly.png) **QPlotly widget:** add or manage plots created with DataPlotly QGIS plugin
    * ![](images/manual/icon_geoconstraints.png) **Geo-constraints by user/group:** create or manage editing and visualization geo-constraints based on poligonal layers
    * ![](images/manual/icon_alpha_constraints.png) **Alphanumeric and QGIS expressions constraints by user/groups:** create or manage editing and visualization constraints based on SLQ language or QGIS expressions
-   * **Hide columns by User/Groups:** create or manage constraints on one or more fields of a layer based on single or group user/s
+   * ![](images/manual/icon_hide_columns.png) **Hide columns by User/Groups:** create or manage constraints on one or more fields of a layer based on single or group user/s
    * ![](images/manual/icon_widget.png) **Widgets list:** shows how many widgets (eg searches) are associated with this layer and allows you to activate new ones
    * ![](images/manual/icon_styles.png) **Manage layer styles:** manage multi-style layer
  * **Not show attributes table:** hide attributes table of the layer for every users
@@ -629,15 +630,16 @@ Through the **Geo-constraints by user/group** and **Alphanumeric and QGIS expres
 See the dedicated paragraph in the [Editing on line session](https://g3w-suite.readthedocs.io/en/v.3.4.x/g3wsuite_editing.html#constraints-setting).
 
 
-### Hide columns by User/Groups
+### ![](images/manual/icon_hide_columns.png) Hide columns by User/Groups
 **Thanks to this function it is possible to hide specific fields of a layer for consultation. This constraint can be differentiated for individual users or groups of users.**
 
 This setting is also available for the AnonymousUser user
 
-To activate this type of constraint, you must click, at the level of the layer of interest, on the Hide columns by User/Groups icon.
+To activate this type of constraint, you must click, at the level of the layer of interest, on the Hide columns by User/Groups icon ![](images/manual/icon_hide_columns.png).
 
 Clicking on the icon will show the list of any existing alphanumeric column constraints and the item `+ Create New Column Level constraints` to create a new one.
-SCREENSHOT
+
+![](images/manual/g3wsuite_administration_hide_columns_new.png)
 
 Clicking on the item will open a modal window which will allow you to define:
  * **user or group of user**
@@ -657,7 +659,7 @@ In G3W-SUITE it is possible to create search widgets.
 
 By default, searches can be built on individual vector layers based on the fields of the table associated with the layer.
 
-**NB: to create searches based on fields derived from simple joins (1: 1 / N: 1) or from 1: N relation, you have to change the setting of the method used (from WMS to QGIS API).**
+**NB: to create searches based on fields derived from simple joins (1:1/N:1) or from 1:N relation, you have to change the setting of the method used (from WMS to QGIS API).**
 See [dedicated paragraph](https://g3w-suite.readthedocs.io/en/v.3.4.x/settings.html#g3w-client-search-endpoint).**
 
 Every search widget will be saved by referring to the layer identifiers (for example the DB parameters: IP, DB name, schema, layer name).
@@ -704,6 +706,8 @@ Now it is possible to **define the dependence more or less strong** (strictly).
 In case of **strictly dependence**, the values of the dependent fields will be loaded **only after** the choice of the value of the field on which the dependency depends.
 
 Otherwise it will be possible to define the values of the individual fields freely and **without a specific order**. The values available for the other fields will in any case depend on the choice made.
+
+![](images/manual/g3wsuite_administration_project_search_form.png)
 
 
 **Warning: in the case of fields with more than 100 unique values, the WMS service does not allow to obtain the complete list of values. In this case it is recommended not to use the `SelectBox` method**

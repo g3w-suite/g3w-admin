@@ -18,24 +18,26 @@ Through the tutorials it will be possible to:
 
 # Download demo data
 
-The tutorial is based on predefined data and QGIS 3.16.x LTR project **downloadable from <a href="https://drive.google.com/file/d/1F_j1wCbWtV-2ebtUzQZZz0r3SMl69noD/view?usp=sharing" target="_blank">this link</a>**.
+The tutorial is based on predefined data and QGIS 3.22.x LTR project **downloadable from <a href="https://drive.google.com/file/d/14s9FHuME0sI69VV7kxJb-P6n7aGqfbzi/view?usp=sharing" target="_blank">this link</a>**.
 
 The .zip file contains the **`G3W-SUITE`** directory with three sub directories:
-* **`projects`:** containing a QGIS project (**`buildings_management.qgz`**) already optimized for the tutorial
-* **`project_data/spatialite`**: containing a SpatiaLite DB with basic data (**`build_management.sqlite`**)
+* **`projects`:** containing a QGIS project (**`buildings_management.qgs`**) already optimized for the tutorial
+* **`project_data/spatialite`**: containing a SpatiaLite DB with basic data (**`build_management_demo.sqlite`**)
 * **`plots`**: containing a a series of plots created with the **DataPlotly** plugin and saved in xml format
 
 ![](images/manual/demo_zip_file.png)
 
-Inside the **`build_management.sqlite` SpatiaLite DB** there are the following layers:
+Inside the **`build_management_demo.sqlite` SpatiaLite DB** there are the following layers:
 * **`buildings` (polygon layer):** reference layer for editing aspects
 * **`maintenance_works` (alphanumeric table):** with the maintenance interventions associated with the individual buildings
 * **`buildings_rating` (alphanumeric table):** with the annual assessments relating to individual buildings
+* **`roads` (linear layer):** layer to define the address associated to any buildings
 * **`work_areas` (polygon layer):** with the perimeter of work areas to be used to define any geo-constraints
+* **`type_subtype` (alphanumeric table):** a decoding table of the type and subtype values associated with the individual buildings
 
 **IMPORTANT: a copy of this data are present on the server, you can not change your local data copy**
 
-The project (**based on QGIS LTR 3.16.x**) foresees:
+The project (**based on QGIS LTR 3.22.x**) foresees:
 * a **dressing categorized by the `buildings` layer** based on the categorical field **`type`**
 * the presence of a **1: n relationship** between the **`buildings`** layer and the alphanumeric **`maintenance_works`** and **`buildings_rating`** tables
 * pre-developed **query forms** for the **`buildings`** layer and the **`maintenance_works`** table
@@ -108,16 +110,14 @@ If left blank, the title associated with the QGIS project will be used or, in th
 
 ## Options and actions
 
-* **`User QGIS project map start extent as webgis init extent `**: check this control if you want set initial extent from QGSI project initial extent
- 
-Otherwise the initial extension will correspond to the maximum one defined on the basis of the extension associated with the WMS capabilities of the QGIS project (**Project properties -> QGIS Server -> WMS capabilities (Advertised extent)**)
- 
-The next options allow you to define the type of WMS / WFS query to be carried out and the maximum number of results obtainable following a query.
-* **`Max feature to get for query`***: max number of feature to get for single or multiple mode
-* **`Query control mode`***: single or multiple
-* **`Query by bbox control mode`***: single or multiple
-* **`Query by polygon control mode`***: single or multiple
+Choose your preferred options regarding the following options:
 
+ * **`User QGIS project map start extent as webgis init extent:`** check this control if you want set initial extent from QGSI project initial extent, **Project properties -> QGIS Server -> WMS capabilities (Advertised extent)**
+ * **`Tab's TOC active as default:`** set tab’s TOC (Layers, Base layers, Legend) open by default on startup of webgis service
+ * **`Legend position rendering:`** this option allows to set legend rendering position:
+   * **In a separate TAB:** default value, the legend is rendered into a separate tab
+   * **Into TOC layers:** the legend is rendered inside layers toc
+ * **`Automatic zoom to query result features:`** if in the results of a search there are only features of a layer, the webgis automatic zoom on their extension
 
 ![](images/manual/g3wsuite_administration_project_add_option.png)
 
@@ -150,25 +150,30 @@ The new session will show you the **list of the layer** present in the published
 
 ![](images/manual/g3wsuite_administration_project_layer_list.png)
 
-* **Label:** layer alias applied at the QGIS project level
-* **Name:** name of the layer (file or DB table)
-* ![](images/manual/icon_layertype.png) **Type:** illustrates the type of data (WMS, PostGis, SpatiaLite, GDAL / OGR ...)
-* **WMS external:** to speed up loading, the WMS layers present in a QGIS project are managed directly by Django and not by QGIS-Server. However, this method prevents the application of any styling  (e.g. opacity level) defined at the project level. The choice of the external WMS option means that the WMS layer is managed directly by QGIS-Server and therefore the associated styling is applied.
-* **WFS:** a check mark shows whether the layer is published as a WFS service or not
-* **Actions:** a series of icons dedicated to various functions
-  * ![](images/manual/icon_cache.png) **Caching Layer:** allows you to activate and manage the cache of the single layer at the project level
-  * ![](images/manual/icon_editing.png) **Editing layer:** shows if the online editing function is active on the layer and allows you to activate and define it
-  * ![](images/manual/icon_geoconstraints.png) **Manage geo-contsraints:** create or manage editing geo-constraints
-  * ![](images/manual/icon_dataplotly.png) **QPlotly widget:** add or manage plots created with DataPlotly QGIS plugin
-  * ![](images/manual/icon_alpha_constraints.png) **Manage alphanumric constraints:** create or manage editing and visualization alphanumeric-constraints
-  * ![](images/manual/icon_widget.png) **List of widgets:** shows how many widgets (eg searches) are associated with this layer and allows you to activate new ones
-* **No legend:** it allows to define if the layer must have published the legend at TOC level of the WebGis client
-* **Download:** allows the download of the geographic and not geographic layers in various formats
-  * **Download as shp:** for geographic (shp) or not geographic (dbf) layers
-  * **Download as GPK:** for geographic or not geographic layers
-  * **Download as xls:** for all types of layers, in .xls format
-  * **Download as csv:** for all types of layers, in .csv format
-  * **Download as gpx:** for geographic layers, in .gpx format
+ * **Label:** layer alias applied at the QGIS project level
+   * The eye icon allows you to know the ID associated with the layer at the project level, this ID will be useful for creating parameterized URLs
+ * **Name:** name of the layer (file or DB table)
+ * ![](images/manual/icon_layertype.png) **Type:** illustrates the type of data (WMS, PostGis, SpatiaLite, GDAL / OGR ...)
+ * **WMS external:** to speed up loading, the WMS layers present in a QGIS project are managed directly by Django and not by QGIS-Server. However, this method prevents the application of any styling  (e.g. opacity level) defined at the project level. The choice of the external WMS option means that the WMS layer is managed directly by QGIS-Server and therefore the associated styling is applied.
+ * **WFS:** a check mark shows whether the layer is published as a WFS service or not
+ * **Actions:** a series of icons dedicated to various functions
+   * ![](images/manual/icon_cache.png) **Caching Layer:** allows you to activate and manage the cache of the single layer at the project level
+   * ![](images/manual/icon_editing.png) **Editing layer:** shows if the online editing function is active on the layer and allows you to activate and define it
+   * ![](images/manual/icon_filter_layer.png) **Hide layer by user/groups:** hide specific layers from the TOC based on specific users or groups of users
+   * ![](images/manual/icon_dataplotly.png) **QPlotly widget:** add or manage plots created with DataPlotly QGIS plugin
+   * ![](images/manual/icon_geoconstraints.png) **Geo-constraints by user/group:** create or manage editing and visualization geo-constraints based on poligonal layers
+   * ![](images/manual/icon_alpha_constraints.png) **Alphanumeric and QGIS expressions constraints by user/groups:** create or manage editing and visualization constraints based on SLQ language or QGIS expressions
+   * ![](images/manual/icon_hide_columns.png) **Hide columns by User/Groups:** create or manage constraints on one or more fields of a layer based on single or group user/s
+   * ![](images/manual/icon_widget.png) **Widgets list:** shows how many widgets (eg searches) are associated with this layer and allows you to activate new ones
+   * ![](images/manual/icon_styles.png) **Manage layer styles:** manage multi-style layer
+ * **Not show attributes table:** hide attributes table of the layer for every users
+ * **No legend:** it allows to define if the layer must have published the legend at TOC level of the WebGis client
+ * **Download:** allows the download of the geographic and not geographic layers in various formats
+   * **Download as shp/geotiff:** for vector and raster layers
+   * **Download as GPK:** for geographic or not geographic layers
+   * **Download as xls:** for all types of layers, in .xls format
+   * **Download as csv:** for all types of layers, in .csv format
+   * **Download as gpx:** for geographic layers, in .gpx format
 
 The number above each Action icon shows if and how many related objects are present.
 
@@ -205,11 +210,15 @@ In the related form we can define:
   * **`Comparison operator`:** comparison operator (**=, <,>,> <,> =, <=, LIKE, ILIKE**) through which the search query will be carried out. The LIKE and ILIKE operators will only be available for PostGis or SpatiaLite layers
   * **`Dependency`:** this parameter (optional) allows, only in the case of SelectBox widgets, to list the list of values ​​of a field filtered according to the value defined for the previous fields. The tool allows, for example, to display, in the drop-down menu dedicated to the choice of cadastral particles, only the particles connected to the sheet chosen in the previous option. This function is only available for PostGis or SpatiaLite layers.
 
-**Warning: in the case of fields with more than 100 unique values, the WMS service does not allow to obtain the complete list of values. In this case it is recommended not to use the `SelectBox` method**
+Now it is possible to **define the dependence more or less strong** (strictly).
 
-The button allows you to add additional fields for the construction of the search query currently manageable through AND/OR operators.
+In case of **strictly dependence**, the values of the dependent fields will be loaded **only after** the choice of the value of the field on which the dependency depends.
 
-![](images/manual/button_add.png)
+Otherwise it will be possible to define the values of the individual fields freely and **without a specific order**. The values available for the other fields will in any case depend on the choice made.
+
+
+The button ![](images/manual/button_add.png) allows you to add additional fields for the construction of the search query currently manageable through **AND/OR operators**.
+
 
 The example below shows the compilation of the form for creating a search widget dedicated to a cadastral cartography layer.
 
@@ -276,10 +285,15 @@ _**Forms and editing widgets are already defined on the project associated with 
   * **id** (integer - primary key): autogenerate
   * **name** (text NOT NULL): text edit
   * **address** (text): Value relation (roads layer - code/name fileds)
-  * **year** (integer NOT NULL): unique values (2015,2016,2017,2018,2019,2020)
+  * **zone** (text): text edit (with default values based on a QGIS expression to for association with the intersecting works area)
+  * **type** (text NOT NULL): unique values (Administrative, Commercial, Residential)
+  * **subtype** (text NOT NULL): value relation (based on type_subtype table for a drill-down cascading forms)
+  * **attachment** (integer): check box 1/0 (the visibility of the conditional form Documents is based on this field)
   * **photo** (text): attachment
   * **link** (text): text edit
   * **form** (text): attachment
+  * **user** (text): text edit (automatically filled in with the G3W-SUITE  username creator of the feature)
+  * **year** (integer NOT NULL): unique values (2015,2016,2017,2018,2019,2020)
   * **high** (integer NOT NULL): range (10-30 step 2)
   * **volume** (integer): range (50-200 step 10)
   * **surface** (integer): text edit
@@ -289,7 +303,6 @@ _**Forms and editing widgets are already defined on the project associated with 
   * **date_exits** (date): date (yyyy/MM/dd)
   * **fire_system** (text): Checkbox (Checked - Not checked)
   * **date_fire** (date): date (yyyy/MM/dd)
-  * **type** (text NOT NULL): unique values (Administrative, Commercial, Residential)
 
 
 * **`Maintenance_works`**
@@ -333,7 +346,7 @@ Once the editing function is activated, updating the service, the **`Tools menu`
 
 ![](images/manual/editing_form2.png)
 
-For **further information** on the web editing function, read the [**dedicated chapter on the manual**](https://g3w-suite.readthedocs.io/en/v.3.3.x/g3wsuite_editing.html#online-editing-tools-at-cartographic-client-level)
+For **further information** on the web editing function, read the [**dedicated chapter on the manual**](https://g3w-suite.readthedocs.io/en/v.3.4.x/g3wsuite_editing.html#online-editing-tools-at-cartographic-client-level)
 
 # Personalize your demo
 
@@ -341,6 +354,6 @@ For **further information** on the web editing function, read the [**dedicated c
 
 Redefine attribute forms, aliases and editing widgets associated with the individual fields and reload the project to check the new settings.
 
-**It is advisable to consult the** [paragraph dedicated](https://g3w-suite.readthedocs.io/en/v.3.3.x/g3wsuite_editing.html#activation-and-configuration) **to the list and limitations of the individual editing widgets inheritable from the QGIS project.**
+**It is advisable to consult the** [paragraph dedicated](https://g3w-suite.readthedocs.io/en/v.3.4.x/g3wsuite_editing.html#activation-and-configuration) **to the list and limitations of the individual editing widgets inheritable from the QGIS project.**
 
 
