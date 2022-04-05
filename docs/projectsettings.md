@@ -13,8 +13,9 @@ In the QGIS cartographic projects you can set some parameters and options that a
 * which layers to expose with the different **OGC services (WMTS, WFS, WCS)**
 * which **fields** (for each vector data) are exposed as WMS and/or WFS
 * the **Themes (Views)** defined at the project level
+* layer/group management from **embedded projects**
 * the **structure of the query form** visible on the WebGis service
-* the **editing widget**, constraints** and **default values** dor every fields of vector layers
+* the **editing widget**, **constraints** and **default values** (also based on QGIS expressions) for every fields of vector layers
 * the associated **print layouts, report included**
 
 The following paragraphs describe which QGIS project settings are more relevant in relation to the published WebGis service.
@@ -47,7 +48,7 @@ The option **`Automatically create transaction group where possible`** is automa
  
 
 **NB: this differentiation is only possible by using the QGIS APIs such as Search URL endpoint.**
-See [dedicated paragraph](https://g3w-suite.readthedocs.io/en/v.3.3.x/settings.html#g3w-client-search-endpoint)
+See [dedicated paragraph](https://g3w-suite.readthedocs.io/en/v.3.4.x/settings.html#g3w-client-search-endpoint)
 
 
 ![](images/manual/datasources.png)
@@ -59,7 +60,7 @@ See [dedicated paragraph](https://g3w-suite.readthedocs.io/en/v.3.3.x/settings.h
 
 This information, together with info about the structure of the attribute tables of the layers present in the project, will be displayed in the **Metadata session** of the cartographic client.
 
-See also [dedicated paragraph](https://g3w-suite.readthedocs.io/en/v.3.3.x/g3wsuite_client.html#metadata)
+See also [dedicated paragraph](https://g3w-suite.readthedocs.io/en/v.3.4.x/g3wsuite_client.html#metadata)
 
 ![](images/manual/qgisservercapabilities.png)
 
@@ -121,28 +122,33 @@ A specific menu on the webgis will allow you to choose the Theme to be displayed
 
 The option to define the layer order different from the order in the TOC on the QGIS project is automatically supported.
 
-
 ### Legend
 
 The activation of the **`Filter legend by Map content`** option on the QGIS project is automatically applied to the derived WebGis service.
 
-### Groups of layers
+### Mutually exclusive groups
 
 The activation on the QGIS project of the **`Mutually exclusive group`** option for the layers groups is automatically applied to the derived WebGis service.
 
+### 1:N and N:M relations
+
+ATTENTION: to correctly manage these types of relations it is NECESSARY to insert the reference to the relations in the customized form
+
+![](images/manual/qgislayerproperties_displayform_relations.png)
+
+
+### Embedded project
+**It is possible to publish QGIS projects that contain layers or groups of layers deriving from embedded projects.**
+It is clearly necessary to publish the embedded project first and then those derived from it.
+An update of the embedded project will result in a consequent modification of all derived projects.
+The request to delete the basic embedded project causes a warning message as this operation will cause problems on all derived projects.
+
 ## Layers properties
+
 ### Simbology
 The rendering style associated with the individual layers is replicated autonomously on the WebGis service.
 
 If external SVG icons are used (added to the basic ones of QGIS, via the **`Settings -> Options -> System -> SVG paths`**), these must be uploaded to the server (through the **`File Manager`** tool) in order to be used by QGIS Server.
-
-#### Layer style
-**The suite manages the presence of multiple styles associated with a layer.**
-
-It will be possible to dynamically choose the style on the cartographic client.
-
-It will be possible to manage the styles associated with a layer from the Administration component, also by **loading .qml file styles** and **setting the default style** among those present.
-
 
 #### Manage custom SVG icons
 In the installation procedure of the G3W-SUITE application, an **`svg`** named directory is created on the server.
@@ -162,11 +168,22 @@ Through this tool it is possible to manage SVG icons on the server in a simple a
 The SVG folder on the server must reflect the structure in any subfolders present locally.
 
 **NB:** The name of this directory is defined by the basic settings set during the installation of the suite.
-[See dedicated paragraph.](https://g3w-suite.readthedocs.io/en/v.3.3.x/settings.html#base-settings)
+[See dedicated paragraph.](https://g3w-suite.readthedocs.io/en/v.3.4.x/settings.html#base-settings)
 
 **PS:** remember that the **`File Manager`** tool also allows you to manage the synchronization of geographical data (in the case of using physical files) and the management of multimedia files.
 
-See also [dedicated paragraph](https://g3w-suite.readthedocs.io/en/v.3.3.x/projectsettings.html#viewing-multimedia-content)
+See also [dedicated paragraph](https://g3w-suite.readthedocs.io/en/v.3.4.x/projectsettings.html#viewing-multimedia-content)
+
+
+
+### Multi-style layer
+**The suite manages the presence of multiple styles associated with a layer.**
+
+It will be possible to dynamically choose the style on the cartographic client.
+
+It will be possible to manage the styles associated with a layer from the Administration component, also by **loading .qml file styles** and **setting the default style** among those present.
+
+
 
 ### Definition of the fields that can be consulted for each layer
 Within the QGIS project it is also possible to define, for each layer, which fields are available following query on the WebGis service.
@@ -180,8 +197,28 @@ The check box relating to the **`WMS`** column defines whether or not the values
  ![](images/manual/qgislayerproperties_wmsfields.png)
 
 
+### Definition of the attribute display form
+For each layer it is possible to define the structure of the attributes form associated with displaying the results following query operations.
 
-### Viewing multimedia content
+On QGIS we can build a personalized form (query form) by creating thematic tabs and groups and defining the distribution of the individual fields and their aliases.
+
+This structural organization will be replicated directly on the query form on the WebGis service.
+
+The current version of QGIS also handles conditional forms and cascade drill-downs
+
+
+### Temporal settings
+
+This version of G3W-SUITE manages the temporal aspects for both vector and raster layers but with limitations:
+
+ * vector layers: limited to the Single filed with Date/Time configuration
+ * raster layers: only for NetCDF file upload as raster (no Mesh)
+
+![](images/manual/qgislayerproperties_displayform_relations.png)
+
+
+
+#### Viewing multimedia content
 Multimedia contents (images, pdf, web URL ...) can be viewed interactively on the map client following publication of the QGIS project.
 
 In the case of web links, simply insert them (preceded by the prefix **`http://`** or **`https://`**) within the dedicated attribute fields
@@ -204,33 +241,28 @@ Following queries at the cartographic client level, we will have different behav
 
  ![](images/manual/qgis_form_attribute.png)
 
-### Definition of the attribute display form
-For each layer it is possible to define the structure of the attributes form associated with displaying the results following query operations.
-
-On QGIS we can build a personalized form (query form) by creating thematic tabs and groups and defining the distribution of the individual fields and their aliases.
-
-This structural organization will be replicated directly on the query form on the WebGis service.
 
  ![](images/manual/qgislayerproperties_displayform.png)
  
- ## Print layouts
+## Print layouts
 Any print layouts associated with the published QGIS project will automatically be associated with the published WebGis service.
 
 **Print layouts can contain more than one `Map` items and panoramic maps.**
+
+You can set also a **custom title** (definible in the WebGis side) setting an **Item ID** at a **Label** item.
 
 **Atlas and report are also supported.**
 
 Any images present in the print layouts must be placed in the local **`project_data`** folder (in any subdirectory) and synchronized on the server.
 
-See also the dedicated paragraph [Geographic data synchronization on the server](https://g3w-suite.readthedocs.io/it/v.3.3.x/datamanagement.html#geographic-data-synchronization-on-the-server).
+See also the dedicated paragraph [Geographic data synchronization on the server](https://g3w-suite.readthedocs.io/en/v.3.4.x/datamanagement.html#geographic-data-synchronization-on-the-server).
 
 ## Performances optimization
 
 ### Mandatory rules
 
 * PostGreSQL/PostGis, SQLite/Spatialite and GeoPKG layers must have a **primary key**
-* **not use numeric type** field in PostGreSQL/PostGis layer
-* the primary key field and all fields involved in search, join, 1:n relation or editing function have to be **published as WMS**
+* the primary key field and all fields involved in search, join, 1:n or N:M relations or editing function have to be **published as WMS**
 * **don't use commas for aliases** associated with layers
 * style settings defined at the auxiliary data level are not supported
 

@@ -387,6 +387,12 @@ class QdjangoWidgetForm(QdjangoProjectFormMixin, G3WFormMixin, G3WGroupFormMixin
 
     def __init__(self, *args, **kwargs):
         super(QdjangoWidgetForm, self).__init__(*args, **kwargs)
+
+        self.fields['widget_type'].choices = Choices(
+                ('', '--------'),
+                *((w['value'], w['name']) for w in list(WIDGET_TYPES.values()))
+            )
+
         self.helper = FormHelper(self)
         self.helper.form_tag = False
         self.helper.layout = Layout(

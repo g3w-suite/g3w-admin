@@ -179,7 +179,13 @@ ga.Qdjango.widgetEditor = {
         })
         break
       default:
-        return
+        $(this).trigger('onsubmitform:default')
+        if (this.isset(this.onsubmitform_obj)) {
+          obj = this.onsubmitform_obj
+        } else {
+          return
+        }
+
     }
     $("#id_body").val(JSON.stringify(obj))
   },
@@ -871,6 +877,7 @@ ga.Qdjango.widgetEditor = {
         this.onAddCallback = this.generateLawRow
         break
       default:
+        $(this).trigger('showstoredvalues:default')
         return
     }
     if (this.widget.widget_type != "law") {
@@ -1009,6 +1016,9 @@ ga.Qdjango.widgetEditor = {
     $("#id_widget_type").change(function () {
       that.onWidgetTypeChange($(this))
     })
+
+    // Add event on init
+    $(this).trigger('init:after')
   },
 }
 

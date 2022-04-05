@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: G3W-SUITE 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-08-23 12:45+0200\n"
+"POT-Creation-Date: 2022-04-01 16:44+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -73,51 +73,45 @@ msgstr ""
 
 #: ../../introduction.md:15
 msgid ""
-"The current release (3.3) is compatible with QGIS 3.16.x LTR (Server and "
+"The current release (3.4) is compatible with QGIS 3.22.x LTR (Server and "
 "Desktop)."
 msgstr ""
 
-#: ../../introduction.md:17
-msgid ""
-"NB: The filter function (based on features selection) at the print level "
-"is supported only with QGIS 3.18"
-msgstr ""
-
-#: ../../introduction.md:23
+#: ../../introduction.md:21
 msgid "Version"
 msgstr ""
 
-#: ../../introduction.md:25
+#: ../../introduction.md:23
 msgid ""
 "At the moment it's not used a classic versioning system for the suite, "
 "this branches are avialable."
 msgstr ""
 
-#: ../../introduction.md:98
+#: ../../introduction.md:88
 msgid "Main contributors"
 msgstr ""
 
-#: ../../introduction.md:99
+#: ../../introduction.md:89
 msgid "Walter Lorenzetti - Gis3W (@wlorenzetti)"
 msgstr ""
 
-#: ../../introduction.md:100
+#: ../../introduction.md:90
 msgid "Leonardo Lami - Gis3W (@leolami)"
 msgstr ""
 
-#: ../../introduction.md:101
+#: ../../introduction.md:91
 msgid "Francesco Boccacci - Gis3W (@volterra79)"
 msgstr ""
 
-#: ../../introduction.md:102
+#: ../../introduction.md:92
 msgid "Alessandro Pasotti - QCooperative (@elpaso)"
 msgstr ""
 
-#: ../../introduction.md:103
+#: ../../introduction.md:93
 msgid "Luigi Pirelli - QCooperative (@luipir)"
 msgstr ""
 
-#: ../../introduction.md:104
+#: ../../introduction.md:94
 msgid "Mazano - Kartoza (@NyakudyaA) (Dockerization refactoring)"
 msgstr ""
 
@@ -146,5 +140,17 @@ msgstr ""
 #~ "The current release (3.2) is compatible"
 #~ " with QGIS 3.16.x LTR (Server and "
 #~ "Desktop)."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "The current release (3.3) is compatible"
+#~ " with QGIS 3.16.x LTR (Server and "
+#~ "Desktop)."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "NB: The filter function (based on "
+#~ "features selection) at the print level"
+#~ " is supported only with QGIS 3.18"
 #~ msgstr ""
 

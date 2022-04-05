@@ -16,15 +16,16 @@ Thanks to the integration with the APIs of QGIS it is now possible to manage the
   * Virtual layer
 
 The suite also allows you to manage in consultation ed editing:
- * **simple join data**
+ * **simple join data with no nesting limits**
  * **1:N relation data**
+ * **N:M relation data**
 
 ## Data on DB Server
 
 If your geographical data are stored on `Server DB`, it will be sufficient to allow access to the DB from the IP address on which the application is installed.
 
-## Data on SpatiaLite or OGR format
-If your geographical data are stored on `SpatiaLite` or on physical files (`.gpkg`, `.shp`, `.kml`, `.tif`...) located on your local PC, you will need:
+## Data on SpatiaLite/GeoPackage or OGR format
+If your geographical data are stored on `SpatiaLite`, `GeoPackage` or an other physical files (`.shp`, `.kml`, `.tif`...) located on your local PC, you will need:
 * **organize data and projects** in predefined localy directories and subdirectories
 * **upload/synchronize geographic data to the corresponding folder located on the server** where the application is installed
 
@@ -40,7 +41,7 @@ Data on physical files and / or on GeoDB SpatiaLite and QGIS cartographic projec
 ![](images/manual/datamanagement.png)
 
 **NB:** The name of the local directory dedicated to geographic data must correspond to the name defined for the **`DATASOURCE_PATH`** variable set during installation.
-[See dedicated paragraph.](https://g3w-suite.readthedocs.io/en/v.3.3.x/settings.html#base-settings)
+[See dedicated paragraph.](https://g3w-suite.readthedocs.io/en/v.3.4.x/settings.html#base-settings)
 
 That directory is also used to contain **images used in the print layouts** associated with the QGIS cartographic projects.
 
@@ -72,7 +73,7 @@ Two specific directories can also be created within the root directory of the Fi
 All the directories can be organized in subdirectories with no nesting limits.
 
 **NB:** The names of these directories are defined by the basic settings set during the installation of the suite.
-[See dedicated paragraph.](https://g3w-suite.readthedocs.io/en/v.3.3.x/settings.html#base-settings)
+[See dedicated paragraph.](https://g3w-suite.readthedocs.io/en/v.3.4.x/settings.html#base-settings)
 
 ![](images/manual/g3wsuite_administration_file_manager.png)
 
