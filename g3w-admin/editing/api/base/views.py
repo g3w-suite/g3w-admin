@@ -30,6 +30,9 @@ from qdjango.apps import get_qgs_project
 from qdjango.models import Layer
 from qdjango.utils.data import QGIS_LAYER_TYPE_NO_GEOM
 from qdjango.utils.validators import feature_validator
+
+from qgis.PyQt.QtCore import QDateTime, QDate, QTime
+
 import logging
 
 logger = logging.getLogger('module_editing')
@@ -263,6 +266,25 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                                         if qgis_field.defaultValueDefinition().applyOnUpdate():
                                             field_expresion_values[qgis_field.name()] = result
 
+                            elif qgis_field.typeName() in ('date', 'datetime', 'time'):
+
+                                if qgis_field.typeName() == 'date':
+                                    qtype = QDate
+                                elif qgis_field.typeName() == 'datetime':
+                                    qtype = QDateTime
+                                else:
+                                    qtype = QTime
+
+                                field_idx = qgis_layer.fields().indexFromName(qgis_field.name())
+                                options = qgis_layer.editorWidgetSetup(field_idx).config()
+
+                                if 'field_iso_format' in options and not options['field_iso_format']:
+                                    if geojson_feature['properties'][qgis_field.name()]:
+                                        value = qtype.fromString(geojson_feature['properties'][qgis_field.name()],
+                                                                 options['display_format'])
+                                        feature.setAttribute(qgis_field.name(), value)
+
+
 
                         # Call validator!
                         errors = feature_validator(
@@ -353,7 +375,7 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                         post_save_maplayer.send(
                             self,
                             layer_metadata=metadata_layer, mode=mode_editing, data=data_extra_fields,
-                            user=self.request.user, original_feature=original_feature
+                            user=self.request.user, original_feature=original_feature, to_res=to_res
                         )
 
                     except ValidationError as ex:
