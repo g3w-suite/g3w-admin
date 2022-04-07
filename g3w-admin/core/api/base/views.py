@@ -540,10 +540,29 @@ class BaseVectorOnModelApiView(G3WAPIView):
                 }
 
                 for feature in self.features:
-                    fnames = [f.name() for f in feature.fields()]
-                    feature_collection['features'].append(
-                        json.loads(ex.exportFeature(feature, dict(zip(fnames, feature.attributes()))))
-                    )
+                    fnames = []
+                    date_fields = []
+                    for f in feature.fields():
+                        fnames.append(f.name())
+                        if f.typeName() in ('date', 'datetime', 'time'):
+                            date_fields.append(f)
+
+                    jsonfeature = json.loads(ex.exportFeature(feature, dict(zip(fnames, feature.attributes()))))
+
+                    # Update date and datetime fields value if widget is active
+                    if len(date_fields) > 0:
+                        for f in date_fields:
+                            field_idx = self.metadata_layer.qgis_layer.fields().indexFromName(f.name())
+                            options = self.metadata_layer.qgis_layer.editorWidgetSetup(field_idx).config()
+                            if 'field_iso_format' in options and not options['field_iso_format']:
+                                try:
+                                    jsonfeature['properties'][f.name()] = feature.attribute(f.name())\
+                                        .toString(options['display_format'])
+                                except:
+                                    pass
+
+
+                    feature_collection['features'].append(jsonfeature)
 
             # Change media
             self.change_media(feature_collection)

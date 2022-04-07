@@ -23,6 +23,9 @@ from qdjango.apps import get_qgs_project
 from qdjango.models import Layer
 from qdjango.utils.data import QGIS_LAYER_TYPE_NO_GEOM
 from qdjango.utils.validators import feature_validator
+
+from qgis.PyQt.QtCore import QDateTime, QDate, QTime
+
 import logging
 
 logger = logging.getLogger('module_editing')
@@ -220,6 +223,27 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
                         # so, better loop through the fields and set attributes individually
                         for name, value in geojson_feature['properties'].items():
                             feature.setAttribute(name, value)
+
+                        for qgis_field in qgis_layer.fields():
+                            if qgis_field.typeName() in ('date', 'datetime', 'time'):
+
+                                if qgis_field.typeName() == 'date':
+                                    qtype = QDate
+                                elif qgis_field.typeName() == 'datetime':
+                                    qtype = QDateTime
+                                else:
+                                    qtype = QTime
+
+                                field_idx = qgis_layer.fields().indexFromName(qgis_field.name())
+                                options = qgis_layer.editorWidgetSetup(field_idx).config()
+
+                                if 'field_iso_format' in options and not options['field_iso_format']:
+                                    if geojson_feature['properties'][qgis_field.name()]:
+                                        value = qtype.fromString(geojson_feature['properties'][qgis_field.name()],
+                                                                 options['display_format'])
+                                        feature.setAttribute(qgis_field.name(), value)
+
+
 
                         # Call validator!
                         errors = feature_validator(
