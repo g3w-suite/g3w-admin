@@ -538,10 +538,13 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         column_to_exclude = eval(
             instance.exclude_attribute_wms) if instance.exclude_attribute_wms else []
 
-        visible_columns = instance.visible_fields_for_user(self.request.user)
-        for column in columns:
-            column['show'] = (column['name'] in visible_columns) and (
-                column['name'] not in column_to_exclude)
+
+        if self.request:
+            visible_columns = instance.visible_fields_for_user(self.request.user)
+            for column in columns:
+                column['show'] = (column['name'] in visible_columns) and (
+                    column['name'] not in column_to_exclude)
+
         return columns
 
     def get_ows(self, instance):
