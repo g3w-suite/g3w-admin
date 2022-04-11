@@ -544,6 +544,9 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
             for column in columns:
                 column['show'] = (column['name'] in visible_columns) and (
                     column['name'] not in column_to_exclude)
+        else:
+            for column in columns:
+                column['show'] = False if column['name'] in column_to_exclude else True
 
         return columns
 
