@@ -2,6 +2,7 @@
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User, Group
 from django.db import models
+from model_utils.models import TimeStampedModel
 from core.utils.models import G3WChoices
 from .configs import USER_BACKEND_DEFAULT
 
@@ -44,7 +45,7 @@ GROUP_ROLES = G3WChoices(
     )
 
 
-class GroupRole(models.Model):
+class GroupRole(TimeStampedModel):
     """
     Model to add main user group role
     """

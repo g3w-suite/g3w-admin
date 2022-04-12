@@ -28,6 +28,7 @@
                         <th>{% trans 'Name' %}</th>
                         <th>{% trans 'Role' %}</th>
                         <th>{% trans 'Users' %}</th>
+                        <th>{% trans 'Created' %}</th>
                     </tr>
                 </thead>
                 {% for object in object_list %}
@@ -61,6 +62,7 @@
                             <a href="{% url 'user-update' u.pk %}">{{ u.first_name }} {{ u.last_name }} ({{ u }})</a> {% if not forloop.last %} | {% endif %}
                             {% endfor %}
                         </td>
+                        <td class="hidden-sm hidden-xs" data-order="{{ object.grouprole.created.timestamp|floatformat:"0" }}">{{ object.grouprole.created|date:"SHORT_DATE_FORMAT" }}</td>
                     </tr>
 
                 {% endfor %}
