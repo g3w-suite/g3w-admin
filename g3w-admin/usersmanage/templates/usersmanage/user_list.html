@@ -114,7 +114,7 @@
                         <td class="hidden-sm hidden-xs">{{ object.email }}</td>
                         <td class="hidden-sm hidden-xs">{{ object.first_name }}</td>
                         <td class="hidden-sm hidden-xs">{{ object.last_name }}</td>
-                        <td class="hidden-sm hidden-xs">{{ object.date_joined|date:"SHORT_DATE_FORMAT" }}</td>
+                        <td class="hidden-sm hidden-xs" data-order="{{ object.date_joined.timestamp|floatformat:"0" }}">{{ object.date_joined|date:"SHORT_DATE_FORMAT" }}</td>
                         {% if user.is_staff %}
                         <td class="hidden-sm hidden-xs">{{ object.userbackend.backend }}</td>
                         {% endif %}
