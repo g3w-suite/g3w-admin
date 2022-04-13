@@ -281,7 +281,7 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                                 if 'field_iso_format' in options and not options['field_iso_format']:
                                     if geojson_feature['properties'][qgis_field.name()]:
                                         value = qtype.fromString(geojson_feature['properties'][qgis_field.name()],
-                                                                 options['display_format'])
+                                                                 options['field_format'])
                                         feature.setAttribute(qgis_field.name(), value)
 
 

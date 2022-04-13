@@ -562,7 +562,7 @@ class BaseVectorApiView(G3WAPIView):
                             if 'field_iso_format' in options and not options['field_iso_format']:
                                 try:
                                     jsonfeature['properties'][f.name()] = feature.attribute(f.name())\
-                                        .toString(options['display_format'])
+                                        .toString(options['field_format'])
                                 except:
                                     pass
 
