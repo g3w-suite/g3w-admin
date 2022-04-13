@@ -16,7 +16,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #: qplotly/static/qplotly/js/plugin.js:3
 msgid "&"
@@ -29,11 +29,11 @@ msgstr ""
 #: qplotly/static/qplotly/js/widget.js:90
 #: qplotly/static/qplotly/js/widget.js:94
 msgid "New qplotly widget"
-msgstr "Nuovo widget grafico"
+msgstr ""
 
 #: qplotly/static/qplotly/js/widget.js:108
 msgid "Actions"
-msgstr "Azioni"
+msgstr ""
 
 #: qplotly/static/qplotly/js/widget.js:109
 msgid "Active on startup"
@@ -41,19 +41,19 @@ msgstr ""
 
 #: qplotly/static/qplotly/js/widget.js:110
 msgid "Title"
-msgstr "Titolo"
+msgstr ""
 
 #: qplotly/static/qplotly/js/widget.js:111
 msgid "Type"
-msgstr "Tipo"
+msgstr ""
 
 #: qplotly/static/qplotly/js/widget.js:112
 msgid "From project"
-msgstr "Dal progetto"
+msgstr ""
 
 #: qplotly/static/qplotly/js/widget.js:113
 msgid "Linked"
-msgstr "Collegato"
+msgstr ""
 
 #: qplotly/static/qplotly/js/widget.js:130
 msgid "Edit"
@@ -69,15 +69,15 @@ msgstr ""
 
 #: qplotly/static/qplotly/js/widget.js:152
 msgid "Update widget"
-msgstr "Aggiorna widget"
+msgstr ""
 
 #: qplotly/static/qplotly/js/widget.js:204
 msgid "Form title"
-msgstr "Titolo del form"
+msgstr ""
 
 #: qplotly/static/qplotly/js/widget.js:338
 msgid "Upload DataPlotly configuration xml file"
-msgstr "Carica file di configurazione xml di DataPlotly"
+msgstr ""
 
 #: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "index2"

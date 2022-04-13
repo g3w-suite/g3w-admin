@@ -16,24 +16,31 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: editing/static/editing/js/widget.js:112
-msgid "User"
-msgstr ""
-
-#: editing/static/editing/js/widget.js:113
+#: br_service/static/br_service/js/widget.js:74
 msgid "Add"
 msgstr ""
 
-#: editing/static/editing/js/widget.js:114
-msgid "Update geometry"
+#: br_service/static/br_service/js/widget.js:115
+msgid "BR Service field settings"
 msgstr ""
 
-#: editing/static/editing/js/widget.js:115
-msgid "Delete"
+#: br_service/static/br_service/js/widget.js:127
+msgid "Field"
 msgstr ""
 
-#: editing/static/editing/js/widget.js:116
-msgid "Update attributes"
+#: br_service/static/br_service/js/widget.js:132
+msgid "Service endpoint"
+msgstr ""
+
+#: br_service/static/br_service/js/widget.js:139
+msgid "Fields value to send"
+msgstr ""
+
+#: openrouteservice/static/openrouteservice/js/plugin.js:3
+msgid "&"
+msgstr ""
+
+#: openrouteservice/static/openrouteservice/js/plugin.js:3
+msgid "-enter"
 msgstr ""

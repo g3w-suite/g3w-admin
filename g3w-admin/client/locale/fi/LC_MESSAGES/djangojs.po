@@ -3,13 +3,12 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#: client/static/client/js/app.1604068150931.min.js:19
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-04 09:21+0000\n"
+"POT-Creation-Date: 2022-04-13 09:17+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,6 +17,11 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-#: client/static/client/js/vendor.1596811994040.min.js:13
+
+#: client/static/client/js/vendor.a74acef6c1ecebde4a905f2a77c311cc.min.js:13
 msgid "'"
+msgstr ""
+
+#: client/static/client/js/vendor.a74acef6c1ecebde4a905f2a77c311cc.min.js:23135
+msgid "utf-8"
 msgstr ""

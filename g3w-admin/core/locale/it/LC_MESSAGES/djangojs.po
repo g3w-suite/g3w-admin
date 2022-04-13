@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-24 15:51+0000\n"
+"POT-Creation-Date: 2022-04-13 09:17+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -27,38 +27,47 @@ msgid "Content"
 msgstr "Contenuto"
 
 #: core/static/dist/js/g3wadmin.min.js:1 core/static/js/g3wadmin/tpl.js:19
-#: core/static/js/g3wadmin/widget.js:156
+#: core/static/js/g3wadmin/widget.js:166 core/static/js/g3wadmin/widget.js:872
 msgid "Close"
 msgstr "Chiudi"
 
-#: core/static/dist/js/g3wadmin.min.js:1 core/static/js/g3wadmin/widget.js:154
-msgid "Detail object"
-msgstr "Dettagli"
-
-#: core/static/dist/js/g3wadmin.min.js:1 core/static/js/g3wadmin/widget.js:290
-msgid "Form title"
-msgstr "Titolo del form"
-
-#: core/static/dist/js/g3wadmin.min.js:1 core/static/js/g3wadmin/widget.js:358
-msgid "Upload file"
-msgstr "Carica file"
-
-#: core/static/dist/js/g3wadmin.min.js:1 core/static/js/g3wadmin/widget.js:390
-msgid "Drag&Drop files here"
-msgstr "Trascina i file da caricare qui"
-
-#: core/static/dist/js/g3wadmin.min.js:1 core/static/js/g3wadmin/widget.js:391
-msgid "Browse Files"
-msgstr "Scegli i file"
-
-#: core/static/dist/js/g3wadmin.min.js:1 core/static/js/g3wadmin/widget.js:470
-msgid "ERROR"
-msgstr "ERRORE"
-
-#: core/static/js/g3wadmin/widget.js:98
+#: core/static/dist/js/g3wadmin.min.js:1 core/static/js/g3wadmin/widget.js:107
 msgid "Delete item"
 msgstr "Elimina elemento"
 
-#: core/static/js/g3wadmin/widget.js:99
+#: core/static/dist/js/g3wadmin.min.js:1 core/static/js/g3wadmin/widget.js:108
 msgid "Are you sure to delete this Item"
 msgstr "Sei sicuro di voler eleminare questo elemento"
+
+#: core/static/dist/js/g3wadmin.min.js:1 core/static/js/g3wadmin/widget.js:163
+msgid "Detail object"
+msgstr "Dettagli"
+
+#: core/static/dist/js/g3wadmin.min.js:1 core/static/js/g3wadmin/widget.js:300
+msgid "Form title"
+msgstr "Titolo del form"
+
+#: core/static/dist/js/g3wadmin.min.js:1 core/static/js/g3wadmin/widget.js:368
+msgid "Upload file"
+msgstr "Carica file"
+
+#: core/static/dist/js/g3wadmin.min.js:1 core/static/js/g3wadmin/widget.js:400
+msgid "Drag&Drop files here"
+msgstr "Trascina i file da caricare qui"
+
+#: core/static/dist/js/g3wadmin.min.js:1 core/static/js/g3wadmin/widget.js:401
+msgid "Browse Files"
+msgstr "Scegli i file"
+
+#: core/static/dist/js/g3wadmin.min.js:1 core/static/js/g3wadmin/widget.js:480
+msgid "ERROR"
+msgstr "ERRORE"
+
+#: core/static/dist/js/g3wadmin.min.js:1 core/static/js/g3wadmin/widget.js:842
+#: core/static/js/g3wadmin/widget.js:860
+msgid "Access"
+msgstr ""
+
+#: core/static/dist/js/g3wadmin.min.js:1 core/static/js/g3wadmin/widget.js:869
+msgid "WEB Services"
+msgstr ""

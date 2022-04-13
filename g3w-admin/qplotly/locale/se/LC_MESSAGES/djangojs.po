@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-11 09:35+0000\n"
+"POT-Creation-Date: 2022-04-13 09:17+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,190 +17,207 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: static/qplotly/js/plugin.js:3
+#: qplotly/static/qplotly/js/plugin.js:3
 msgid "&"
 msgstr ""
 
-#: static/qplotly/js/plugin.js:3
+#: qplotly/static/qplotly/js/plugin.js:3
 msgid "-enter"
 msgstr ""
 
-#: static/qplotly/js/widget.js:35 static/qplotly/js/widget.js:39
+#: qplotly/static/qplotly/js/widget.js:90
+#: qplotly/static/qplotly/js/widget.js:94
 msgid "New qplotly widget"
 msgstr ""
 
-#: static/qplotly/js/widget.js:53
+#: qplotly/static/qplotly/js/widget.js:108
 msgid "Actions"
 msgstr ""
 
-#: static/qplotly/js/widget.js:54
+#: qplotly/static/qplotly/js/widget.js:109
+msgid "Active on startup"
+msgstr ""
+
+#: qplotly/static/qplotly/js/widget.js:110
 msgid "Title"
 msgstr ""
 
-#: static/qplotly/js/widget.js:55
+#: qplotly/static/qplotly/js/widget.js:111
 msgid "Type"
 msgstr ""
 
-#: static/qplotly/js/widget.js:56
+#: qplotly/static/qplotly/js/widget.js:112
 msgid "From project"
 msgstr ""
 
-#: static/qplotly/js/widget.js:57
+#: qplotly/static/qplotly/js/widget.js:113
 msgid "Linked"
 msgstr ""
 
-#: static/qplotly/js/widget.js:88
+#: qplotly/static/qplotly/js/widget.js:130
+msgid "Edit"
+msgstr ""
+
+#: qplotly/static/qplotly/js/widget.js:131
+msgid "Delete"
+msgstr ""
+
+#: qplotly/static/qplotly/js/widget.js:132
+msgid "Download"
+msgstr ""
+
+#: qplotly/static/qplotly/js/widget.js:152
 msgid "Update widget"
 msgstr ""
 
-#: static/qplotly/js/widget.js:139
+#: qplotly/static/qplotly/js/widget.js:204
 msgid "Form title"
 msgstr ""
 
-#: static/qplotly/js/widget.js:273
+#: qplotly/static/qplotly/js/widget.js:338
 msgid "Upload DataPlotly configuration xml file"
 msgstr ""
 
-#: static/qplotly/plotly-1.52.2.min.js:7
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "index2"
 msgstr ""
 
-#: static/qplotly/plotly-1.52.2.min.js:7
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "index4"
 msgstr ""
 
-#: static/qplotly/plotly-1.52.2.min.js:7
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "uirevision"
 msgstr ""
 
-#: static/qplotly/plotly-1.52.2.min.js:7
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "bgcolor"
 msgstr ""
 
-#: static/qplotly/plotly-1.52.2.min.js:7
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "bordercolor"
 msgstr ""
 
-#: static/qplotly/plotly-1.52.2.min.js:7
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "borderwidth"
 msgstr ""
 
-#: static/qplotly/plotly-1.52.2.min.js:7
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "orientation"
 msgstr ""
 
-#: static/qplotly/plotly-1.52.2.min.js:7
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "traceorder"
 msgstr ""
 
-#: static/qplotly/plotly-1.52.2.min.js:7
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "tracegroupgap"
 msgstr ""
 
-#: static/qplotly/plotly-1.52.2.min.js:7
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "itemsizing"
 msgstr ""
 
-#: static/qplotly/plotly-1.52.2.min.js:7
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "itemclick"
 msgstr ""
 
-#: static/qplotly/plotly-1.52.2.min.js:7
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "itemdoubleclick"
 msgstr ""
 
-#: static/qplotly/plotly-1.52.2.min.js:7
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "x"
 msgstr ""
 
-#: static/qplotly/plotly-1.52.2.min.js:7
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "xanchor"
 msgstr ""
 
-#: static/qplotly/plotly-1.52.2.min.js:7
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "y"
 msgstr ""
 
-#: static/qplotly/plotly-1.52.2.min.js:7
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "yanchor"
 msgstr ""
 
-#: static/qplotly/plotly-1.52.2.min.js:7
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "valign"
 msgstr ""
 
-#: static/qplotly/plotly-1.52.2.min.js:7
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "title.text"
 msgstr ""
 
-#: static/qplotly/plotly-1.52.2.min.js:7
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "title.side"
 msgstr ""
 
-#: static/qplotly/plotly-1.52.2.min.js:7
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "visible"
 msgstr ""
 
-#: static/qplotly/plotly-1.52.2.min.js:7
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "thickness"
 msgstr ""
 
-#: static/qplotly/plotly-1.52.2.min.js:7
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "autorange"
 msgstr ""
 
-#: static/qplotly/plotly-1.52.2.min.js:7
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "range"
 msgstr ""
 
-#: static/qplotly/plotly-1.52.2.min.js:7
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "bingroup"
 msgstr ""
 
-#: static/qplotly/plotly-1.52.2.min.js:7
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "label"
 msgstr ""
 
-#: static/qplotly/plotly-1.52.2.min.js:7
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "source"
 msgstr ""
 
-#: static/qplotly/plotly-1.52.2.min.js:7
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "target"
 msgstr ""
 
-#: static/qplotly/plotly-1.52.2.min.js:7
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "value"
 msgstr ""
 
-#: static/qplotly/plotly-1.52.2.min.js:7
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "line.color"
 msgstr ""
 
-#: static/qplotly/plotly-1.52.2.min.js:7
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "line.width"
 msgstr ""
 
-#: static/qplotly/plotly-1.52.2.min.js:7
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "hoverinfo"
 msgstr ""
 
-#: static/qplotly/plotly-1.52.2.min.js:7
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "hovertemplate"
 msgstr ""
 
-#: static/qplotly/plotly-1.52.2.min.js:7
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "color"
 msgstr ""
 
-#: static/qplotly/plotly-1.52.2.min.js:7
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "final"
 msgstr ""
 
-#: static/qplotly/plotly-1.52.2.min.js:7
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "delta"
 msgstr ""
 
-#: static/qplotly/plotly-1.52.2.min.js:7
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
 msgid "initial"
 msgstr ""

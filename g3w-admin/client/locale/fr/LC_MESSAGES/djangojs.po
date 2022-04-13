@@ -16,24 +16,12 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: editing/static/editing/js/widget.js:112
-msgid "User"
+#: client/static/client/js/vendor.a74acef6c1ecebde4a905f2a77c311cc.min.js:13
+msgid "'"
 msgstr ""
 
-#: editing/static/editing/js/widget.js:113
-msgid "Add"
-msgstr ""
-
-#: editing/static/editing/js/widget.js:114
-msgid "Update geometry"
-msgstr ""
-
-#: editing/static/editing/js/widget.js:115
-msgid "Delete"
-msgstr ""
-
-#: editing/static/editing/js/widget.js:116
-msgid "Update attributes"
+#: client/static/client/js/vendor.a74acef6c1ecebde4a905f2a77c311cc.min.js:23135
+msgid "utf-8"
 msgstr ""

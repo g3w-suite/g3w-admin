@@ -1,0 +1,158 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-03-30 05:39+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: api/base/views.py:61
+msgid ""
+"The feature id {} of layer {} cannot be modified because it is not locked "
+"anymore"
+msgstr ""
+
+#: api/base/views.py:143
+msgid "Sorry but your user doesn't has 'Add Feature' capability"
+msgstr ""
+
+#: api/base/views.py:147
+msgid "Sorry but your user doesn't has 'Delete Feature' capability"
+msgstr ""
+
+#: api/base/views.py:153
+msgid ""
+"Sorry but your user doesn't has 'Change or Change Attributes Features' "
+"capability"
+msgstr ""
+
+#: api/base/views.py:278 api/base/views.py:281
+#, python-format
+msgid "Error adding feature: %s"
+msgstr ""
+
+#: api/base/views.py:288
+msgid "Error adding feature on Spatialite provider: "
+msgstr ""
+
+#: api/base/views.py:305 api/base/views.py:316
+#, python-format
+msgid "Error changing attribute values: %s"
+msgstr ""
+
+#: api/base/views.py:311 api/base/views.py:319
+#, python-format
+msgid "Error changing geometry: %s"
+msgstr ""
+
+#: api/base/views.py:407 api/base/views.py:411
+#, python-format
+msgid "Cannot delete feature: %s"
+msgstr ""
+
+#: api/base/views.py:452
+#, python-format
+msgid "Layer %s is not editable!"
+msgstr ""
+
+#: api/base/views.py:507
+#, python-format
+msgid "Backend error saving layer %s: %s"
+msgstr ""
+
+#: forms.py:21
+msgid "Active"
+msgstr ""
+
+#: forms.py:22
+msgid "Scale"
+msgstr ""
+
+#: forms.py:22
+msgid "Scale after that editing mode is active"
+msgstr ""
+
+#: forms.py:23
+msgid "Viewers"
+msgstr ""
+
+#: forms.py:24
+msgid "Select user with viewer role can do editing on layer"
+msgstr ""
+
+#: forms.py:26
+msgid "Select VIEWER groups can do editing on layer"
+msgstr ""
+
+#: forms.py:27
+msgid "User viewer groups"
+msgstr ""
+
+#: forms.py:29
+msgid "User adding data field"
+msgstr ""
+
+#: forms.py:30
+msgid ""
+"Optional: select layer field to store username that entered the data. Showed "
+"only string field. <br>Value stored into the field it will be so structured: "
+"<i>[username]</i>"
+msgstr ""
+
+#: forms.py:36
+msgid "User editing data field"
+msgstr ""
+
+#: forms.py:37
+msgid ""
+"Optional: select layer field to store username that updated the data. Showed "
+"only string field. <br>Value stored into the field it will be so structured: "
+"<i>[username]</i>"
+msgstr ""
+
+#: forms.py:61
+msgid "Check on uncheck to attive/deactive editing layer capabilities:"
+msgstr ""
+
+#: forms.py:66
+msgid "Select viewers with 'view permission' on project that can edit layer:"
+msgstr ""
+
+#: forms.py:77
+msgid ""
+"'User adding data field' and 'User editing data field' cannot assume the "
+"same value."
+msgstr ""
+
+#: receivers.py:246
+#, python-format
+msgid "Constraint validation failed for geometry: %s"
+msgstr ""
+
+#: templates/editing/editing_layer_active_form.html:7
+msgid "Alert"
+msgstr ""
+
+#: templates/editing/editing_layer_active_form.html:8
+msgid "Some errors on form. Check it and send again."
+msgstr ""
+
+#: templates/editing/layer_action.html:5
+msgid "Editing layer"
+msgstr ""
+
+#: templates/editing/layer_action.html:7
+msgid "Activation layer_editing"
+msgstr ""

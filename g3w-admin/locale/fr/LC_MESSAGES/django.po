@@ -1,0 +1,81 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-11-10 10:07+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: forms.py:63
+msgid "Project setting"
+msgstr ""
+
+#: models.py:25
+msgid "HTML API endpoint"
+msgstr ""
+
+#: models.py:26
+msgid "CSV API endpoint"
+msgstr ""
+
+#: templates/ws_trento/project.html:38
+msgid "Project"
+msgstr ""
+
+#: templates/ws_trento/project_list.html:10
+msgid "projects"
+msgstr ""
+
+#: templates/ws_trento/project_list.html:21
+msgid ""
+"Add, update or delete porjects: indicate what projects can use WS endpoints"
+msgstr ""
+
+#: templates/ws_trento/project_list.html:30
+msgid "Projects"
+msgstr ""
+
+#: templates/ws_trento/project_list.html:38
+msgid "Group"
+msgstr ""
+
+#: templates/ws_trento/project_list.html:39
+msgid "Qdjango project"
+msgstr ""
+
+#: templates/ws_trento/project_list.html:40
+msgid "HTML API e.p."
+msgstr ""
+
+#: templates/ws_trento/project_list.html:41
+msgid "CSV API e.p."
+msgstr ""
+
+#: templates/ws_trento/project_list.html:42
+msgid "Viewer users"
+msgstr ""
+
+#: templates/ws_trento/project_list.html:43
+msgid "Viewer user groups"
+msgstr ""
+
+#: templates/ws_trento/project_list.html:51
+#: templates/ws_trento/project_list.html:61
+msgid "Edit"
+msgstr ""
+
+#: templates/ws_trento/project_list.html:54
+msgid "Delete"
+msgstr ""
