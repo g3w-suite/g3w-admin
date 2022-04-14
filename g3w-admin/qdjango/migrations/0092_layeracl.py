@@ -7,6 +7,44 @@ import django.utils.timezone
 import model_utils.fields
 
 
+def pre_layer_acl(apps, schema_editor):
+    """
+    Check if table qdjango_layeracl exists.
+    If it exists rename it to __django_layeracl.
+    This is a fix for upgrade from version 3.3.x to 3.4.x
+    """
+    conn = schema_editor.connection
+
+    try:
+        with conn.cursor() as cursor:
+            cursor.execute("select * from qdjango_layeracl;")
+    except:
+        return
+
+    with conn.cursor() as cursor:
+        cursor.execute("alter table qdjango_layeracl rename to __qdjango_layeracl;")
+
+
+def post_layer_acl(apps, schema_editor):
+    """
+    Check if table __qdjango_layeracl exists.
+    If it exists drop qdjango_layeracl and rename __django_layeracl to django_layeracl.
+    This is a fix for upgrade from version 3.3.x to 3.4.x
+    """
+    conn = schema_editor.connection
+
+    try:
+        with conn.cursor() as cursor:
+            cursor.execute("select * from __qdjango_layeracl;")
+    except:
+        return
+
+    with conn.cursor() as cursor:
+        cursor.execute("drop table qdjango_layeracl ;")
+        cursor.execute("alter table __qdjango_layeracl rename to qdjango_layeracl;")
+
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -16,6 +54,7 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        migrations.RunPython(pre_layer_acl),
         migrations.CreateModel(
             name='LayerAcl',
             fields=[
@@ -30,4 +69,6 @@ class Migration(migrations.Migration):
                 'abstract': False,
             },
         ),
+        migrations.RunPython(post_layer_acl),
     ]
+
