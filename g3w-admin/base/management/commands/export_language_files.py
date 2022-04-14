@@ -10,7 +10,8 @@ class Command(BaseCommand):
         parser.add_argument('-p', '--outpath', type=str, help='The path to the folder to which to export the files to.')
 
     def handle(self, *args, **options):
-    
+        separator = "___"
+
         output_folder_path = options['outpath']
         if not output_folder_path:
             self.stderr.write("The ouput folder path is mandatory!")
@@ -23,9 +24,9 @@ class Command(BaseCommand):
         for (dir_path, dir_names, file_names) in os.walk(base_folder):
             for file_name in file_names:
                 if file_name.endswith(".po"):
-                    rel_path = dir_path.split("G3WSUITE/g3w-admin/g3w-admin/")[1].replace('/','_')
+                    rel_path = dir_path.split("G3WSUITE/g3w-admin/g3w-admin/")[1].replace('/', separator)
 
-                    new_filename = rel_path + "_" + file_name
+                    new_filename = rel_path + separator + file_name
 
                     from_path = os.path.join(dir_path, file_name)
                     to_path = os.path.join(output_folder_path, new_filename)
