@@ -12,14 +12,16 @@ def pre_layer_acl(apps, schema_editor):
     Check if table qdjango_layeracl exists.
     If it exists rename it to __django_layeracl.
     This is a fix for upgrade from version 3.3.x to 3.4.x
-    0083_layeracl.py in v.3.3.x == 0092_layeracl.py in v.3.4.x
     """
     conn = schema_editor.connection
 
-    try:
-        with conn.cursor() as cursor:
-            cursor.execute("select * from qdjango_layeracl;")
-    except:
+    with conn.cursor() as cursor:
+        cursor.execute("SELECT EXISTS ("
+                       "SELECT FROM pg_tables WHERE schemaname = 'public' AND tablename  = 'qdjango_layeracl'"
+                       ");")
+        row = cursor.fetchone()
+
+    if not row[0]:
         return
 
     with conn.cursor() as cursor:
@@ -49,28 +51,23 @@ def post_layer_acl(apps, schema_editor):
     Check if table __qdjango_layeracl exists.
     If it exists drop qdjango_layeracl and rename __django_layeracl to django_layeracl.
     This is a fix for upgrade from version 3.3.x to 3.4.x
-    0083_layeracl.py in v.3.3.x == 0092_layeracl.py in v.3.4.x
     """
     conn = schema_editor.connection
 
-    print('post migration')
+    with conn.cursor() as cursor:
+        cursor.execute("SELECT EXISTS ("
+                       "SELECT FROM pg_tables WHERE schemaname = 'public' AND tablename  = '__qdjango_layeracl'"
+                       ");")
+        row = cursor.fetchone()
 
-    try:
-        with conn.cursor() as cursor:
-            cursor.execute("select * from __qdjango_layeracl;")
-    except:
-        print('__qdjango_layeraxcl not exists')
+    if not row[0]:
         return
 
     with conn.cursor() as cursor:
 
-        print('cancellazione tabella')
-
         cursor.execute("drop table qdjango_layeracl ;")
-        print('rianomina tabella')
 
         cursor.execute("alter table __qdjango_layeracl rename to qdjango_layeracl;")
-
 
 
 class Migration(migrations.Migration):
