@@ -12,6 +12,7 @@ def pre_layer_acl(apps, schema_editor):
     Check if table qdjango_layeracl exists.
     If it exists rename it to __django_layeracl.
     This is a fix for upgrade from version 3.3.x to 3.4.x
+    0083_layeracl.py in v.3.3.x == 0092_layeracl.py in v.3.4.x
     """
     conn = schema_editor.connection
 
@@ -22,7 +23,25 @@ def pre_layer_acl(apps, schema_editor):
         return
 
     with conn.cursor() as cursor:
+        cursor.execute(
+            "ALTER TABLE public.qdjango_layeracl DROP CONSTRAINT qdjango_layeracl_group_id_0081b644_fk_auth_group_id;"
+        )
+        cursor.execute(
+            "ALTER TABLE public.qdjango_layeracl DROP CONSTRAINT qdjango_layeracl_layer_id_2d225da8_fk_qdjango_layer_id;"
+        )
+        cursor.execute(
+            "ALTER TABLE public.qdjango_layeracl DROP CONSTRAINT qdjango_layeracl_user_id_413d5dc8_fk_auth_user_id;"
+        )
+        cursor.execute(
+            "ALTER TABLE public.qdjango_layeracl DROP CONSTRAINT qdjango_layeracl_pkey;"
+        )
+
+        cursor.execute("DROP INDEX public.qdjango_layeracl_group_id_0081b644;")
+        cursor.execute("DROP INDEX public.qdjango_layeracl_layer_id_2d225da8;")
+        cursor.execute("DROP INDEX public.qdjango_layeracl_user_id_413d5dc8;")
+
         cursor.execute("alter table qdjango_layeracl rename to __qdjango_layeracl;")
+
 
 
 def post_layer_acl(apps, schema_editor):
@@ -30,17 +49,26 @@ def post_layer_acl(apps, schema_editor):
     Check if table __qdjango_layeracl exists.
     If it exists drop qdjango_layeracl and rename __django_layeracl to django_layeracl.
     This is a fix for upgrade from version 3.3.x to 3.4.x
+    0083_layeracl.py in v.3.3.x == 0092_layeracl.py in v.3.4.x
     """
     conn = schema_editor.connection
+
+    print('post migration')
 
     try:
         with conn.cursor() as cursor:
             cursor.execute("select * from __qdjango_layeracl;")
     except:
+        print('__qdjango_layeraxcl not exists')
         return
 
     with conn.cursor() as cursor:
+
+        print('cancellazione tabella')
+
         cursor.execute("drop table qdjango_layeracl ;")
+        print('rianomina tabella')
+
         cursor.execute("alter table __qdjango_layeracl rename to qdjango_layeracl;")
 
 
