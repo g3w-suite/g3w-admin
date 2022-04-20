@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.apps import apps
+from django.urls import reverse
 from django.contrib.gis.geos import GEOSGeometry, GEOSException
 from django.contrib.gis.gdal import GDALException
 from django.core.exceptions import ValidationError
@@ -134,6 +135,13 @@ class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
                 # project thumbnail
                 project_thumb = project.thumbnail.name if bool(project.thumbnail.name) \
                     else '{}client/images/FakeProjectThumb.png'.format(settings.STATIC_URL)
+
+                # Get project url
+                if project.url_alias:
+                    url = reverse('group-project-map-alias', args=[project.url_alias])
+                else:
+                    url = reverse('group-project-map', args=[project.group.slug, g3wProjectApp, project.pk])
+
                 ret['projects'].append({
                     'id': project.id,
                     'title': project.title,
@@ -142,7 +150,7 @@ class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
                     'type': g3wProjectApp,
                     'gid': "{}:{}".format(g3wProjectApp, project.id),
                     'modified': project.modified.timestamp() if hasattr(project, 'modified') else 0,
-                    'aliasUrl': project.url_alias
+                    'url': url
                 })
 
         # baselayers
