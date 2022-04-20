@@ -141,7 +141,8 @@ class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
                     'thumbnail': project_thumb,
                     'type': g3wProjectApp,
                     'gid': "{}:{}".format(g3wProjectApp, project.id),
-                    'modified': project.modified.timestamp() if hasattr(project, 'modified') else 0
+                    'modified': project.modified.timestamp() if hasattr(project, 'modified') else 0,
+                    'aliasUrl': project.url_alias
                 })
 
         # baselayers
