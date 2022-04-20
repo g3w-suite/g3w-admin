@@ -138,9 +138,9 @@ class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
                 # Get project url
                 if project.url_alias:
-                    url = reverse('group-project-map-alias', args=[project.url_alias])
+                    url = reverse('group-project-map-alias', args=[project.url_alias])[1:]
                 else:
-                    url = reverse('group-project-map', args=[project.group.slug, g3wProjectApp, project.pk])
+                    url = reverse('group-project-map', args=[project.group.slug, g3wProjectApp, project.pk])[1:]
 
                 ret['projects'].append({
                     'id': project.id,
