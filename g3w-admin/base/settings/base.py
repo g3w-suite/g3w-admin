@@ -157,6 +157,9 @@ CRISPY_TEMPLATE_PACK = 'bootstrap3'
 SITETREE_MODEL_TREE = 'core.G3W2Tree'
 SITETREE_MODEL_TREE_ITEM = 'core.G3W2TreeItem'
 
+# FOR PRIMARY KEY
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
 
 LOGIN_URL = 'login'
 LOGOUT_NEXT_PAGE = '/'

@@ -1,6 +1,6 @@
 from django.utils.decorators import wraps
 from django.core.signing import Signer
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from django.template import RequestContext
 from django.conf import settings
 from django.shortcuts import get_object_or_404
@@ -32,7 +32,7 @@ def check_madd(var, model, **kwargs):
 
             if objects >= int(globalSigner.unsign(var_value)):
                 template_name = 'core/403_{}.html'.format(var)
-                response = render_to_response(template_name, {}, RequestContext(request))
+                response = render(template_name, {}, RequestContext(request))
                 response.status_code = 403
                 return response
             return view_func(request, *args, **kwargs)
