@@ -23,7 +23,7 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=255, verbose_name='Name')),
                 ('title', models.CharField(blank=True, max_length=255, verbose_name='Title')),
                 ('description', models.TextField(blank=True, verbose_name='Description')),
-                ('slug', autoslug.fields.AutoSlugField(always_update=True, editable=False, populate_from=b'name', unique=True, verbose_name='Slug')),
+                ('slug', autoslug.fields.models.SlugField(always_update=True, editable=False, populate_from=b'name', unique=True, verbose_name='Slug')),
                 ('is_active', models.BooleanField(default=1, verbose_name='Is active')),
                 ('layer_type', models.CharField(choices=[(b'postgres', 'Postgres'), (b'spatialite', 'SpatiaLite'), (b'wfs', 'WFS'), (b'wms', 'WMS'), (b'ogr', 'OGR'), (b'gdal', 'GDAL')], max_length=255, verbose_name='Type')),
                 ('datasource', models.TextField(verbose_name='Datasource')),

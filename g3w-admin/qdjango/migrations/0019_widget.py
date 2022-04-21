@@ -21,7 +21,7 @@ class Migration(migrations.Migration):
                 ('body', models.TextField(verbose_name='Body')),
                 ('datasource', models.TextField(verbose_name='datasource')),
                 ('widget_type', models.CharField(choices=[(b'search', 'Search'), (b'tooltip', 'Tooltip'), (b'law', 'Law')], max_length=255, verbose_name='Type')),
-                ('slug', autoslug.fields.AutoSlugField(always_update=True, editable=False, populate_from=b'name', unique=True, verbose_name='Slug')),
+                ('slug', autoslug.fields.models.SlugField(always_update=True, editable=False, populate_from=b'name', unique=True, verbose_name='Slug')),
                 ('layers', models.ManyToManyField(to='qdjango.Layer')),
             ],
             options={
