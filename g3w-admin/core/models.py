@@ -5,6 +5,7 @@ from django.utils.translation import ugettext, ugettext_lazy as _
 from django.urls import reverse
 from django.db import models
 from django.apps import apps
+from django_extensions.db.fields import AutoSlugField
 from guardian.shortcuts import get_objects_for_user
 from guardian.compat import get_user_model
 from ordered_model.models import OrderedModel
@@ -129,8 +130,8 @@ class Group(TimeStampedModel, OrderedModel):
     name = models.CharField(_('Name'), max_length=255, unique=True)
     title = models.CharField(_('Title'), max_length=255)
     description = models.TextField(_('Description'), blank=True)
-    slug = models.SlugField(
-        _('Slug')
+    slug = AutoSlugField(
+        _('Slug'), populate_from=['name']
         )
     is_active = models.BooleanField(_('Is active'), default=1)
 
