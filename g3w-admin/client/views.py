@@ -1,5 +1,4 @@
 
-from django.utils import six
 from django.utils.translation import get_language
 from django.views.generic import TemplateView
 from django.template import loader
@@ -149,8 +148,8 @@ class ClientView(TemplateView):
         user_data = JSONRenderer().render(user_data)
 
         serializedGroup = JSONRenderer().render(groupData)
-        if six.PY3:
-            serializedGroup = str(serializedGroup, 'utf-8')
+        #if six.PY3:
+        serializedGroup = str(serializedGroup, 'utf-8')
 
         baseurl = "/{}".format(settings.SITE_PREFIX_URL if settings.SITE_PREFIX_URL else '')
         frontendurl = ',"frontendurl":"{}"'.format(baseurl) if settings.FRONTEND else ''
