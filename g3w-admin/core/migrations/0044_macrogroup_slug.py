@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='macrogroup',
             name='slug',
-            field=autoslug.fields.AutoSlugField(always_update=True, default=None, editable=False, populate_from='title', unique=True, verbose_name='Slug'),
+            field=autoslug.fields.models.SlugField(always_update=True, default=None, editable=False, populate_from='title', unique=True, verbose_name='Slug'),
             preserve_default=False,
         ),
     ]

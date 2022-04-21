@@ -27,7 +27,7 @@ class Migration(migrations.Migration):
                 ('qgis_file', models.FileField(upload_to=b'', verbose_name='QGIS project file')),
                 ('title', models.CharField(max_length=255, verbose_name='Title')),
                 ('description', models.TextField(blank=True, verbose_name='Description')),
-                ('slug', autoslug.fields.AutoSlugField(always_update=True, editable=False, populate_from=b'title', unique=True, verbose_name='Slug')),
+                ('slug', autoslug.fields.models.SlugField(always_update=True, editable=False, populate_from=b'title', unique=True, verbose_name='Slug')),
                 ('is_active', models.BooleanField(default=1, verbose_name='Is active')),
                 ('thumbnail', models.ImageField(blank=True, null=True, upload_to=b'', verbose_name='Thumbnail')),
                 ('initial_extent', models.CharField(max_length=255, verbose_name='Initial extent')),

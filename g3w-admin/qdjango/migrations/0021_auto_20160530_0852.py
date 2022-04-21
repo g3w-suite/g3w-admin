@@ -33,7 +33,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='layer',
             name='slug',
-            field=autoslug.fields.AutoSlugField(always_update=True, editable=False, populate_from='name', unique=True, verbose_name='Slug'),
+            field=autoslug.fields.models.SlugField(always_update=True, editable=False, populate_from='name', unique=True, verbose_name='Slug'),
         ),
         migrations.AlterField(
             model_name='project',
@@ -43,7 +43,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='project',
             name='slug',
-            field=autoslug.fields.AutoSlugField(always_update=True, editable=False, populate_from='title', unique=True, verbose_name='Slug'),
+            field=autoslug.fields.models.SlugField(always_update=True, editable=False, populate_from='title', unique=True, verbose_name='Slug'),
         ),
         migrations.AlterField(
             model_name='project',
@@ -53,7 +53,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='widget',
             name='slug',
-            field=autoslug.fields.AutoSlugField(always_update=True, editable=False, populate_from='name', unique=True, verbose_name='Slug'),
+            field=autoslug.fields.models.SlugField(always_update=True, editable=False, populate_from='name', unique=True, verbose_name='Slug'),
         ),
         migrations.AlterField(
             model_name='widget',
