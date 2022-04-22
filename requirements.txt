@@ -19,7 +19,7 @@ django-filter
 django-extensions==2.2.5
 pathlib2
 lxml
-psycopg2
+#psycopg2
 psycopg2-binary
 pillow
 owslib
