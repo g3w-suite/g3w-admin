@@ -11,6 +11,7 @@ from guardian.compat import get_user_model
 from ordered_model.models import OrderedModel
 from model_utils.models import TimeStampedModel
 from model_utils import Choices
+from django_extensions.db.fields import AutoSlugField
 from sitetree.models import TreeItemBase, TreeBase
 from django.contrib.auth.models import User, Group as AuthGroup
 from usersmanage.utils import setPermissionUserObject, getUserGroups, get_users_for_object, get_groups_for_object
@@ -100,8 +101,8 @@ class MacroGroup(TimeStampedModel, OrderedModel):
     use_title_client = models.BooleanField(_('Use title for client'), default=False)
     use_logo_client = models.BooleanField(_('Use logo image for client'), default=False)
 
-    slug = models.SlugField(
-        _('Slug'), unique=True)
+    slug = AutoSlugField(
+        _('Slug'), unique=True, populate_from=['name'])
 
     def __str__(self):
         return self.title
@@ -131,7 +132,7 @@ class Group(TimeStampedModel, OrderedModel):
     title = models.CharField(_('Title'), max_length=255)
     description = models.TextField(_('Description'), blank=True)
     slug = AutoSlugField(
-        _('Slug'), populate_from=['name']
+        _('Slug'), populate_from=['name'], unique=True
         )
     is_active = models.BooleanField(_('Is active'), default=1)
 

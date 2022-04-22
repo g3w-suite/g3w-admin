@@ -16,7 +16,7 @@ django-ordered-model==3.3.0
 django-ajax-selects==2.2.0
 django-modeltranslation==0.17.5
 django-filter
-django-extensions==1.16.0
+django-extensions==2.2.5
 pathlib
 lxml
 psycopg2

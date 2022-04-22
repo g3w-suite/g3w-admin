@@ -6,6 +6,7 @@ from django.db import migrations, models
 import django.db.models.deletion
 import django.utils.timezone
 import model_utils.fields
+import django_extensions.db.fields
 
 
 class Migration(migrations.Migration):
@@ -26,7 +27,7 @@ class Migration(migrations.Migration):
                 ('qgis_file', models.FileField(upload_to=b'', verbose_name='QGIS project file')),
                 ('title', models.CharField(max_length=255, verbose_name='Title')),
                 ('description', models.TextField(blank=True, verbose_name='Description')),
-                ('slug', models.SlugField(editable=False, unique=True, verbose_name='Slug')),
+                ('slug', django_extensions.db.fields.AutoSlugField(editable=False, unique=True, populate_from=['title'],verbose_name='Slug')),
                 ('is_active', models.BooleanField(default=1, verbose_name='Is active')),
                 ('thumbnail', models.ImageField(blank=True, null=True, upload_to=b'', verbose_name='Thumbnail')),
                 ('initial_extent', models.CharField(max_length=255, verbose_name='Initial extent')),

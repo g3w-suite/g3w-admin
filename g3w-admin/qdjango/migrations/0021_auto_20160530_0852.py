@@ -4,6 +4,7 @@
 
 from django.db import migrations, models
 import django.db.models.deletion
+import django_extensions.db.fields
 
 
 class Migration(migrations.Migration):
@@ -32,7 +33,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='layer',
             name='slug',
-            field=models.SlugField(editable=False, unique=True, verbose_name='Slug'),
+            field=django_extensions.db.fields.AutoSlugField(editable=False, unique=True, verbose_name='Slug', populate_from=['name']),
         ),
         migrations.AlterField(
             model_name='project',
@@ -42,7 +43,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='project',
             name='slug',
-            field=models.SlugField(editable=False, unique=True, verbose_name='Slug'),
+            field=django_extensions.db.fields.AutoSlugField(editable=False, unique=True, verbose_name='Slug', populate_from=['title']),
         ),
         migrations.AlterField(
             model_name='project',

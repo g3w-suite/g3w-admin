@@ -6,6 +6,7 @@ from django.db import migrations, models
 import django.db.models.deletion
 import qdjango.models
 import qdjango.utils.storage
+import django_extensions.db.fields
 
 
 class Migration(migrations.Migration):
@@ -22,7 +23,7 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=255, verbose_name='Name')),
                 ('title', models.CharField(blank=True, max_length=255, verbose_name='Title')),
                 ('description', models.TextField(blank=True, verbose_name='Description')),
-                ('slug', models.SlugField(editable=False, unique=True, verbose_name='Slug')),
+                ('slug', django_extensions.db.fields.AutoSlugField(editable=False, unique=True, populate_from=['name'], verbose_name='Slug')),
                 ('is_active', models.BooleanField(default=1, verbose_name='Is active')),
                 ('layer_type', models.CharField(choices=[(b'postgres', 'Postgres'), (b'spatialite', 'SpatiaLite'), (b'wfs', 'WFS'), (b'wms', 'WMS'), (b'ogr', 'OGR'), (b'gdal', 'GDAL')], max_length=255, verbose_name='Type')),
                 ('datasource', models.TextField(verbose_name='Datasource')),

@@ -3,6 +3,7 @@ import os
 import time
 
 from django.utils.text import slugify
+from django_extensions.db.fields import AutoSlugField
 from ordered_model.models import OrderedModel
 from core.configs import *
 from core.mixins.models import G3WACLModelMixins, G3WProjectMixins
@@ -180,8 +181,8 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
     title_ur = models.CharField(
         _('Public title'), max_length=255, null=True, blank=True)
     description = models.TextField(_('Description'), blank=True, null=True)
-    slug = models.SlugField(
-        _('Slug'), unique=True
+    slug = AutoSlugField(
+        _('Slug'), populate_from=['title'], unique=True
     )
     is_active = models.BooleanField(_('Is active'), default=1)
 
@@ -486,8 +487,8 @@ class Layer(G3WACLModelMixins, models.Model):
     qgs_layer_id = models.CharField(
         _('Qgis Layer Project ID'), max_length=255, blank=True, null=True)
     description = models.TextField(_('Description'), blank=True)
-    slug = models.SlugField(
-        _('Slug'), unique=True
+    slug = AutoSlugField(
+        _('Slug'), populate_from=['name'], unique=True
     )
     is_active = models.BooleanField(_('Is active'), default=1)
     # Project
@@ -979,8 +980,8 @@ class Widget(G3WACLModelMixins, models.Model):
     body = models.TextField(_('Body'))
     datasource = models.TextField(_('datasource'))
     widget_type = models.CharField(_('Type'), choices=TYPES, max_length=255)
-    slug = models.SlugField(
-        _('Slug'), unique=True
+    slug = AutoSlugField(
+        _('Slug'), populate_from=['name'], unique=True
     )
     layers = models.ManyToManyField(Layer)
 

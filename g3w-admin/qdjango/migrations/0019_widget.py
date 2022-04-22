@@ -3,6 +3,7 @@
 
 
 from django.db import migrations, models
+import django_extensions.db.fields
 
 
 class Migration(migrations.Migration):
@@ -20,7 +21,7 @@ class Migration(migrations.Migration):
                 ('body', models.TextField(verbose_name='Body')),
                 ('datasource', models.TextField(verbose_name='datasource')),
                 ('widget_type', models.CharField(choices=[(b'search', 'Search'), (b'tooltip', 'Tooltip'), (b'law', 'Law')], max_length=255, verbose_name='Type')),
-                ('slug', models.SlugField(editable=False, unique=True, verbose_name='Slug')),
+                ('slug', django_extensions.db.fields.AutoSlugField(editable=False, unique=True, verbose_name='Slug', populate_from=['name'])),
                 ('layers', models.ManyToManyField(to='qdjango.Layer')),
             ],
             options={

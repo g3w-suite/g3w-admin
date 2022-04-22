@@ -16,7 +16,7 @@ from django.test import override_settings
 from django.test.client import Client
 from qdjango.tests.base import QdjangoTestBase, CoreGroup, File, G3WSpatialRefSys, QgisProject
 from django_downloadview.test import assert_download_response
-from autoslug.utils import slugify
+from django.utils.text import slugify
 from qplotly.models import QplotlyWidget
 
 from .test_utils import CURRENT_PATH, QGS_FILE, TEST_BASE_PATH, get_data_plotly_settings_from_file, DATASOURCE_PATH
