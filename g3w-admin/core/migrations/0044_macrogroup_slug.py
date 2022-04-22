@@ -3,6 +3,7 @@
 
 
 from django.db import migrations, models
+import django_extensions.db.fields
 
 
 class Migration(migrations.Migration):
@@ -15,7 +16,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='macrogroup',
             name='slug',
-            field=models.SlugField(default=None, editable=False, unique=True, verbose_name='Slug'),
+            field=django_extensions.db.fields.AutoSlugField(default=None, editable=False, unique=True, populate_from=['title'],verbose_name='Slug'),
             preserve_default=False,
         ),
     ]
