@@ -148,6 +148,8 @@ class TestEmbeddedLayers(QdjangoTestBase):
                 'feature_count_wms': 10,
                 'group_slug': self.project_group.slug,
                 'toc_tab_default': 'layers',
+                'toc_layers_init_status': 'not_collapsed',
+                'toc_themes_init_status': 'collapsed',
                 'legend_position': 'tab',
                 'multilayer_query': 'single',
                 'multilayer_querybybbox': 'single',
