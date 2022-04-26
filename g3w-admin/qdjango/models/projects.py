@@ -152,6 +152,16 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
         ('legend', _('Legend'))
     )
 
+    CLIENT_TOC_LAYERS_INIT_STATUS = Choices(
+        ('collapsed', _('Collapsed')),
+        ('not_collapsed', _('Not collapsed'))
+    )
+
+    CLIENT_MAP_THEMES_INIT_STATUS = Choices(
+        ('collapsed', _('Collapsed')),
+        ('not_collapsed', _('Not collapsed'))
+    )
+
     CLIENT_LEGEND_POSITION = Choices(
         ('tab', _('In a separate TAB')),
         ('toc', _('Into TOC layers'))
@@ -228,6 +238,18 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
 
     toc_tab_default = models.CharField(_("Tab's TOC active as default"), choices=CLIENT_TOC_TABS, max_length=40,
                                        default='layers', help_text="Set tab's TOC open by default on init client")
+
+    toc_layers_init_status = models.CharField(_("Tab's TOC layer initial status"),
+                                              choices=CLIENT_TOC_LAYERS_INIT_STATUS, max_length=40,
+                                              default='not_collapsed',
+                                              help_text="Set tab's TOC layers initials state: 'Collapsed (close)'"
+                                                        "or 'Not collapsed (open)'")
+
+    toc_themes_init_status = models.CharField(_("Map themes list initial status"),
+                                              choices=CLIENT_MAP_THEMES_INIT_STATUS, max_length=40,
+                                              default='collapsed',
+                                              help_text="Set map themes list initials state: 'Collapsed (close)'"
+                                                        "or 'Not collapsed (open)'")
 
     legend_position = models.CharField(_("Legend position rendering"), choices=CLIENT_LEGEND_POSITION, max_length=20,
                                        default='tab', help_text="Set legend position rendering")
