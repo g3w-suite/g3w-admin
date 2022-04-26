@@ -477,7 +477,9 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
             'layerstree',
             'thumbnail',
             'wms_use_layer_ids',
-            'qgis_version'
+            'qgis_version',
+            'toc_layers_init_status',
+            'toc_themes_init_status'
         )
 
 

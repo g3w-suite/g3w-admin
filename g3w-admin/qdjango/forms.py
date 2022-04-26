@@ -246,6 +246,8 @@ class QdjangoProjectForm(TranslationModelForm, QdjangoProjectFormMixin, G3WFormM
                         Div(
                             'use_map_extent_as_init_extent',
                             'toc_tab_default',
+                            'toc_layers_init_status',
+                            'toc_themes_init_status',
                             'legend_position',
                             'autozoom_query',
                             'feature_count_wms',
@@ -295,6 +297,8 @@ class QdjangoProjectForm(TranslationModelForm, QdjangoProjectFormMixin, G3WFormM
             'baselayer',
             'feature_count_wms',
             'toc_tab_default',
+            'toc_layers_init_status',
+            'toc_themes_init_status',
             'legend_position',
             'autozoom_query',
             'multilayer_query',
