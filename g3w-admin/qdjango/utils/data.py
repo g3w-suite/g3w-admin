@@ -73,7 +73,7 @@ def makeDatasource(datasource, layerType):
                                basePath, datasource)  # ``?`` means ungreedy
         # Remove possible double quote or singlequote
         # i.e. for mdal layers: 'NETCDF:"C:/Users/l.lami/Documents/G3WSUITE_DEV/', '/temporal/runof.sfc.mon.mean.nc"'
-        newDatasource = newDatasource.replace("\"", "").replace("'", "")
+        #newDatasource = newDatasource.replace("\"", "").replace("'", "")
 
 
     if layerType == Layer.TYPES.delimitedtext:
