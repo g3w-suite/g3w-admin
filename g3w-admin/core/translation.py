@@ -26,6 +26,7 @@ class GeneralSuiteDataTranslationOptions(TranslationOptions):
         'about_name',
         'groups_title',
         'groups_map_description',
+        'login_title',
         'login_description',
         'credits',
         'main_map_title',
