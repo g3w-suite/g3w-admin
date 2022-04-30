@@ -19,5 +19,11 @@ sitetrees = (
         item('Files', 'filemanager-home', icon_css_class='fa fa-database',
              description='Allez dans l\'application du gestionnaire de fichiers...'),
     ]),
+
+    G3Wtree('filemanager_sidebar_right_ro', title='STRESS navabar', module='filemanager', items=[
+        item('Gestionare fișiere', '#', type_header=True),
+        item('Fișiere', 'filemanager-home', icon_css_class='fa fa-database',
+             description='Deschide aplicația de gestionare fișiere ...'),
+    ]),
 )
 

@@ -48,4 +48,19 @@ sitetrees = (
                access_by_perms=['auth.add_user'])
       ]),
   ]),
+
+  G3Wtree('acl_ro', title='ACL', module='usermanage', items=[
+      # Then define items and their children with `item` function.
+      item('ACL', '#', type_header=True),
+      item('Utilizatori', '#', icon_css_class='fa fa-users', children=[
+          item('Add user', 'user-add', url_as_pattern=True, icon_css_class='fa fa-user-plus',
+               access_by_perms=['auth.add_user']),
+          item('Lista utilizatori', 'user-list', url_as_pattern=True, icon_css_class='fa fa-users'),
+          item('Actualizare utilizatori', 'user-update object.pk', url_as_pattern=True, icon_css_class='fa fa-edit', in_menu=False),
+          item('Adaugă utilizatori la grup', 'user-group-add', url_as_pattern=True, icon_css_class='fa fa-plus',
+               access_by_perms=['auth.add_user']),
+          item('Lista grupuri de utilizatori', 'user-group-list', url_as_pattern=True, icon_css_class='fa fa-list',
+               access_by_perms=['auth.add_user'])
+      ]),
+  ]),
 )
