@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-03-08 08:15+0000\n"
+"POT-Creation-Date: 2022-05-02 05:55+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -130,11 +130,11 @@ msgstr ""
 msgid "Group"
 msgstr ""
 
-#: usersmanage/models.py:20
+#: usersmanage/models.py:21
 msgid "Avatar"
 msgstr ""
 
-#: usersmanage/models.py:52
+#: usersmanage/models.py:53
 msgid "Group role"
 msgstr ""
 
@@ -184,17 +184,22 @@ msgstr ""
 msgid "Users"
 msgstr ""
 
-#: usersmanage/templates/usersmanage/user_group_list.html:38
+#: usersmanage/templates/usersmanage/user_group_list.html:31
+#: usersmanage/templates/usersmanage/user_list.html:44
+msgid "Created"
+msgstr ""
+
+#: usersmanage/templates/usersmanage/user_group_list.html:39
 #: usersmanage/templates/usersmanage/user_list.html:57
 msgid "Show detail"
 msgstr ""
 
-#: usersmanage/templates/usersmanage/user_group_list.html:42
+#: usersmanage/templates/usersmanage/user_group_list.html:43
 #: usersmanage/templates/usersmanage/user_list.html:62
 msgid "Edit"
 msgstr ""
 
-#: usersmanage/templates/usersmanage/user_group_list.html:47
+#: usersmanage/templates/usersmanage/user_group_list.html:48
 #: usersmanage/templates/usersmanage/user_list.html:67
 msgid "Delete"
 msgstr ""
@@ -225,10 +230,6 @@ msgstr ""
 
 #: usersmanage/templates/usersmanage/user_list.html:43
 msgid "Last name"
-msgstr ""
-
-#: usersmanage/templates/usersmanage/user_list.html:44
-msgid "Created"
 msgstr ""
 
 #: usersmanage/templates/usersmanage/user_list.html:46

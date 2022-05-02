@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-07-08 07:55+0000\n"
+"POT-Creation-Date: 2022-05-02 05:55+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,57 +17,58 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-#: usersmanage/forms.py:95
+
+#: usersmanage/forms.py:96
 msgid "Editor1 user"
 msgstr ""
 
-#: usersmanage/forms.py:96
+#: usersmanage/forms.py:97
 msgid "Set Editor Level 1 owner"
 msgstr ""
 
-#: usersmanage/forms.py:99
+#: usersmanage/forms.py:100
 msgid "Editor2 user"
 msgstr ""
 
-#: usersmanage/forms.py:102
+#: usersmanage/forms.py:103
 msgid "Viewer users"
 msgstr ""
 
-#: usersmanage/forms.py:109
+#: usersmanage/forms.py:110
 msgid "Editor user groups"
 msgstr ""
 
-#: usersmanage/forms.py:116
+#: usersmanage/forms.py:117
 msgid "Viewer user groups"
 msgstr ""
 
-#: usersmanage/forms.py:122
+#: usersmanage/forms.py:123
 msgid "Propagate <b>NEW</b> viewers and new viewers user groups permissions"
 msgstr ""
 
-#: usersmanage/forms.py:293
+#: usersmanage/forms.py:294
 msgid "Select roles for this user"
 msgstr ""
 
-#: usersmanage/forms.py:294
+#: usersmanage/forms.py:295
 msgid "Main roles"
 msgstr ""
 
-#: usersmanage/forms.py:301
+#: usersmanage/forms.py:302
 msgid ""
 "Select <b>EDITOR groups</b> for this user, only Editor Level 2 can be added"
 msgstr ""
 
-#: usersmanage/forms.py:302
+#: usersmanage/forms.py:303
 msgid "User editor groups"
 msgstr ""
 
-#: usersmanage/forms.py:309
+#: usersmanage/forms.py:310
 msgid ""
 "Select <b>VIEWER groups</b> for this user, only Viewer Level 1 can be added"
 msgstr ""
 
-#: usersmanage/forms.py:310
+#: usersmanage/forms.py:311
 msgid "User viewer groups"
 msgstr ""
 
@@ -91,49 +92,49 @@ msgstr ""
 msgid "User backend"
 msgstr ""
 
-#: usersmanage/forms.py:596
+#: usersmanage/forms.py:602
 msgid "User can't be Editor level 1 and at same time Editor level 2"
 msgstr ""
 
-#: usersmanage/forms.py:610
+#: usersmanage/forms.py:616
 msgid "User can't belong a **editor groups** if he isn't a Editor level 2"
 msgstr ""
 
-#: usersmanage/forms.py:624
+#: usersmanage/forms.py:630
 msgid "User can't belong a **viewer groups** if he isn't a Viewer level 1"
 msgstr ""
 
-#: usersmanage/forms.py:642
+#: usersmanage/forms.py:648
 msgid "Avatar is no a valid image"
 msgstr ""
 
-#: usersmanage/forms.py:670
+#: usersmanage/forms.py:676
 msgid "Password"
 msgstr ""
 
-#: usersmanage/forms.py:672
+#: usersmanage/forms.py:678
 msgid "Password confirmation"
 msgstr ""
 
-#: usersmanage/forms.py:674
+#: usersmanage/forms.py:680
 msgid "Enter the same password as above, for verification."
 msgstr ""
 
-#: usersmanage/forms.py:700
+#: usersmanage/forms.py:706
 #: usersmanage/templates/usersmanage/user_group_list.html:29
 msgid "Role"
 msgstr ""
 
-#: usersmanage/forms.py:714
+#: usersmanage/forms.py:720
 #: usersmanage/templates/usersmanage/ajax/user_group_detail.html:5
 msgid "Group"
 msgstr ""
 
-#: usersmanage/models.py:20
+#: usersmanage/models.py:21
 msgid "Avatar"
 msgstr ""
 
-#: usersmanage/models.py:52
+#: usersmanage/models.py:53
 msgid "Group role"
 msgstr ""
 
@@ -183,17 +184,22 @@ msgstr ""
 msgid "Users"
 msgstr ""
 
-#: usersmanage/templates/usersmanage/user_group_list.html:38
+#: usersmanage/templates/usersmanage/user_group_list.html:31
+#: usersmanage/templates/usersmanage/user_list.html:44
+msgid "Created"
+msgstr ""
+
+#: usersmanage/templates/usersmanage/user_group_list.html:39
 #: usersmanage/templates/usersmanage/user_list.html:57
 msgid "Show detail"
 msgstr ""
 
-#: usersmanage/templates/usersmanage/user_group_list.html:42
+#: usersmanage/templates/usersmanage/user_group_list.html:43
 #: usersmanage/templates/usersmanage/user_list.html:62
 msgid "Edit"
 msgstr ""
 
-#: usersmanage/templates/usersmanage/user_group_list.html:47
+#: usersmanage/templates/usersmanage/user_group_list.html:48
 #: usersmanage/templates/usersmanage/user_list.html:67
 msgid "Delete"
 msgstr ""
@@ -224,10 +230,6 @@ msgstr ""
 
 #: usersmanage/templates/usersmanage/user_list.html:43
 msgid "Last name"
-msgstr ""
-
-#: usersmanage/templates/usersmanage/user_list.html:44
-msgid "Created"
 msgstr ""
 
 #: usersmanage/templates/usersmanage/user_list.html:46

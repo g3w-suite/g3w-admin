@@ -1,0 +1,224 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-05-02 06:01+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1?0:(((n%100>19)||((n%100==0)&&(n!=0)))?"
+"2:1));\n"
+#: qplotly/static/qplotly/js/plugin.js:3
+msgid "&"
+msgstr ""
+
+#: qplotly/static/qplotly/js/plugin.js:3
+msgid "-enter"
+msgstr ""
+
+#: qplotly/static/qplotly/js/widget.js:90
+#: qplotly/static/qplotly/js/widget.js:94
+msgid "New qplotly widget"
+msgstr ""
+
+#: qplotly/static/qplotly/js/widget.js:108
+msgid "Actions"
+msgstr ""
+
+#: qplotly/static/qplotly/js/widget.js:109
+msgid "Active on startup"
+msgstr ""
+
+#: qplotly/static/qplotly/js/widget.js:110
+msgid "Title"
+msgstr ""
+
+#: qplotly/static/qplotly/js/widget.js:111
+msgid "Type"
+msgstr ""
+
+#: qplotly/static/qplotly/js/widget.js:112
+msgid "From project"
+msgstr ""
+
+#: qplotly/static/qplotly/js/widget.js:113
+msgid "Linked"
+msgstr ""
+
+#: qplotly/static/qplotly/js/widget.js:130
+msgid "Edit"
+msgstr ""
+
+#: qplotly/static/qplotly/js/widget.js:131
+msgid "Delete"
+msgstr ""
+
+#: qplotly/static/qplotly/js/widget.js:132
+msgid "Download"
+msgstr ""
+
+#: qplotly/static/qplotly/js/widget.js:152
+msgid "Update widget"
+msgstr ""
+
+#: qplotly/static/qplotly/js/widget.js:204
+msgid "Form title"
+msgstr ""
+
+#: qplotly/static/qplotly/js/widget.js:338
+msgid "Upload DataPlotly configuration xml file"
+msgstr ""
+
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+msgid "index2"
+msgstr ""
+
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+msgid "index4"
+msgstr ""
+
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+msgid "uirevision"
+msgstr ""
+
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+msgid "bgcolor"
+msgstr ""
+
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+msgid "bordercolor"
+msgstr ""
+
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+msgid "borderwidth"
+msgstr ""
+
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+msgid "orientation"
+msgstr ""
+
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+msgid "traceorder"
+msgstr ""
+
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+msgid "tracegroupgap"
+msgstr ""
+
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+msgid "itemsizing"
+msgstr ""
+
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+msgid "itemclick"
+msgstr ""
+
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+msgid "itemdoubleclick"
+msgstr ""
+
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+msgid "x"
+msgstr ""
+
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+msgid "xanchor"
+msgstr ""
+
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+msgid "y"
+msgstr ""
+
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+msgid "yanchor"
+msgstr ""
+
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+msgid "valign"
+msgstr ""
+
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+msgid "title.text"
+msgstr ""
+
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+msgid "title.side"
+msgstr ""
+
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+msgid "visible"
+msgstr ""
+
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+msgid "thickness"
+msgstr ""
+
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+msgid "autorange"
+msgstr ""
+
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+msgid "range"
+msgstr ""
+
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+msgid "bingroup"
+msgstr ""
+
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+msgid "label"
+msgstr ""
+
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+msgid "source"
+msgstr ""
+
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+msgid "target"
+msgstr ""
+
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+msgid "value"
+msgstr ""
+
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+msgid "line.color"
+msgstr ""
+
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+msgid "line.width"
+msgstr ""
+
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+msgid "hoverinfo"
+msgstr ""
+
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+msgid "hovertemplate"
+msgstr ""
+
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+msgid "color"
+msgstr ""
+
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+msgid "final"
+msgstr ""
+
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+msgid "delta"
+msgstr ""
+
+#: qplotly/static/qplotly/plotly-1.52.2.min.js:7
+msgid "initial"
+msgstr ""

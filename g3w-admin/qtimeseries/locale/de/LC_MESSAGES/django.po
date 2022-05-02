@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-03-08 08:21+0000\n"
+"POT-Creation-Date: 2022-05-02 05:55+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,26 +18,26 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: forms.py:22
+#: qtimeseries/forms.py:22
 msgid "Active"
 msgstr ""
 
-#: forms.py:31
+#: qtimeseries/forms.py:31
 msgid "Check on uncheck to attive/deactive time series layer capabilities:"
 msgstr ""
 
-#: templates/qtimeseries/layer_action.html:5
+#: qtimeseries/templates/qtimeseries/layer_action.html:5
 msgid "Time series"
 msgstr ""
 
-#: templates/qtimeseries/layer_action.html:7
+#: qtimeseries/templates/qtimeseries/layer_action.html:7
 msgid "Activation raster time series"
 msgstr ""
 
-#: templates/qtimeseries/raster_layer_active_form.html:7
+#: qtimeseries/templates/qtimeseries/raster_layer_active_form.html:7
 msgid "Alert"
 msgstr ""
 
-#: templates/qtimeseries/raster_layer_active_form.html:8
+#: qtimeseries/templates/qtimeseries/raster_layer_active_form.html:8
 msgid "Some errors on form. Check it and send again."
 msgstr ""

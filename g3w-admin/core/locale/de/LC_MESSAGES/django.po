@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-03-08 08:15+0000\n"
+"POT-Creation-Date: 2022-05-02 05:55+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -34,39 +34,39 @@ msgstr ""
 msgid "Additional settings"
 msgstr ""
 
-#: core/api/base/views.py:138
+#: core/api/base/views.py:143
 msgid "Data are not correct or insufficent!"
 msgstr ""
 
-#: core/api/base/views.py:144
+#: core/api/base/views.py:149
 msgid "A error server is occured!"
 msgstr ""
 
-#: core/api/base/views.py:152
+#: core/api/base/views.py:157
 msgid "Not found"
 msgstr ""
 
-#: core/api/base/views.py:158
+#: core/api/base/views.py:163
 msgid "Permission denied"
 msgstr ""
 
-#: core/api/views.py:38
+#: core/api/views.py:39
 msgid "Expression evaluation error."
 msgstr ""
 
-#: core/api/views.py:43
+#: core/api/views.py:44
 msgid "Expression parse error."
 msgstr ""
 
-#: core/api/views.py:49
+#: core/api/views.py:50
 msgid "Expression empty error."
 msgstr ""
 
-#: core/api/views.py:55
+#: core/api/views.py:56
 msgid "Expression form data error."
 msgstr ""
 
-#: core/api/views.py:61
+#: core/api/views.py:62
 msgid "Layer error."
 msgstr ""
 
@@ -78,7 +78,7 @@ msgstr ""
 msgid "Law"
 msgstr ""
 
-#: core/forms.py:42 core/forms.py:363
+#: core/forms.py:42 core/forms.py:364
 msgid "General data"
 msgstr ""
 
@@ -114,23 +114,23 @@ msgstr ""
 msgid "Frontend login data"
 msgstr ""
 
-#: core/forms.py:274
+#: core/forms.py:275
 msgid "Frontend social data"
 msgstr ""
 
-#: core/forms.py:296
+#: core/forms.py:297
 msgid "Map client data"
 msgstr ""
 
-#: core/forms.py:322
+#: core/forms.py:323
 msgid "Editor users"
 msgstr ""
 
-#: core/forms.py:340
+#: core/forms.py:341
 msgid "ACL Users"
 msgstr ""
 
-#: core/forms.py:370
+#: core/forms.py:371
 msgid ""
 "<b>Attention!</b> This settigns are valid only for map groups with only one "
 "MacroGroup"
@@ -262,50 +262,54 @@ msgid "Groups map description"
 msgstr ""
 
 #: core/models.py:420
-msgid "Login description"
+msgid "Login title"
 msgstr ""
 
 #: core/models.py:421
-msgid "Suite logo"
+msgid "Login description"
 msgstr ""
 
 #: core/models.py:422
+msgid "Suite logo"
+msgstr ""
+
+#: core/models.py:423
 msgid "Suite logo URL"
 msgstr ""
 
-#: core/models.py:425
+#: core/models.py:426
 msgid "Credits"
 msgstr ""
 
-#: core/models.py:428
+#: core/models.py:429
 msgid "Main map title"
 msgstr ""
 
-#: core/models.py:430
+#: core/models.py:431
 msgid "Facebook link"
 msgstr ""
 
-#: core/models.py:431
+#: core/models.py:432
 msgid "Twitter link"
 msgstr ""
 
-#: core/models.py:432
+#: core/models.py:433
 msgid "Google+ link"
 msgstr ""
 
-#: core/models.py:433
+#: core/models.py:434
 msgid "Youtube link"
 msgstr ""
 
-#: core/models.py:434
+#: core/models.py:435
 msgid "Instagram link"
 msgstr ""
 
-#: core/models.py:435
+#: core/models.py:436
 msgid "Flickr link"
 msgstr ""
 
-#: core/models.py:436
+#: core/models.py:437
 msgid "Tripadvisor link"
 msgstr ""
 
@@ -592,23 +596,23 @@ msgstr ""
 msgid "MACRO Groups"
 msgstr ""
 
-#: core/utils/qgisapi.py:451
+#: core/utils/qgisapi.py:458
 msgid "Function \"{}\" is not allowed for security reasons!"
 msgstr ""
 
-#: core/utils/qgisapi.py:456
+#: core/utils/qgisapi.py:463
 msgid "Variable \"{}\" is not allowed for security reasons!"
 msgstr ""
 
-#: core/utils/qgisapi.py:468
+#: core/utils/qgisapi.py:475
 msgid "QGIS layer with id \"{}\" could not be found!"
 msgstr ""
 
-#: core/utils/qgisapi.py:480
+#: core/utils/qgisapi.py:487
 msgid "QDjango project with id \"{}\" could not be found!"
 msgstr ""
 
-#: core/utils/qgisapi.py:490
+#: core/utils/qgisapi.py:497
 msgid "A valid QGIS layer is required to process form data!"
 msgstr ""
 
