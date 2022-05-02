@@ -258,6 +258,7 @@ class GeneralSuiteDataForm(TranslationModelForm, FileFormMixin, ModelForm):
                             css_class='box-header with-border'
                         ),
                         Div(
+                            'login_title',
                             Field('login_description', css_class='wys5', style="width:100%;"),
                             css_class='box-body',
 

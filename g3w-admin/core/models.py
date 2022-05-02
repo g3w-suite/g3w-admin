@@ -417,6 +417,7 @@ class GeneralSuiteData(models.Model):
     about_address = models.CharField(_('About address'), max_length=255, null=True, blank=True)
     groups_title = models.CharField(_('Groups title'), max_length=255)
     groups_map_description = models.TextField(_('Groups map description'), null=True, blank=True)
+    login_title = models.CharField(_('Login title'), max_length=255, null=True, blank=True)
     login_description = models.TextField(_('Login description'), null=True, blank=True)
     suite_logo = models.ImageField(_('Suite logo'), null=True, blank=True)
     url_suite_logo = models.URLField(_('Suite logo URL'), null=True, blank=True)
