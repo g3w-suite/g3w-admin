@@ -187,7 +187,8 @@ LANGUAGES = (
     ('fr', 'French'),
     ('fi', 'Finnish'),
     ('se', 'Swedish'),
-#    ('de', 'Deutsch') # TODO: it'll be added in the future release
+    # ('ro', 'Romanian')  # For compatibility with future version
+    # ('de', 'Deutsch')  # TODO: it'll be added in the future release
 )
 
 MODELTRANSLATION_DEFAULT_LANGUAGE = 'it'
