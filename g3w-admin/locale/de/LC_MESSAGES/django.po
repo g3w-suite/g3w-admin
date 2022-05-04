@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-05-02 05:55+0000\n"
+"POT-Creation-Date: 2022-05-04 07:57+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -58,7 +58,9 @@ msgstr ""
 #: bforest/templates/bforest/admin/project_list.html:24 eleprofile/forms.py:44
 #: eleprofile/templates/eleprofile/project_form.html:14
 #: eleprofile/templates/eleprofile/projects_list.html:18
-#: eleprofile/templates/eleprofile/projects_list.html:26
+#: eleprofile/templates/eleprofile/projects_list.html:26 fsimulator/forms.py:43
+#: fsimulator/templates/fsimulator/projects_list.html:18
+#: fsimulator/templates/fsimulator/projects_list.html:26
 #: openrouteservice/forms.py:41
 #: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:19
 #: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:27
@@ -86,6 +88,7 @@ msgstr ""
 #: bforest/templates/bforest/admin/uploadscsv_list.html:28
 #: eleprofile/templates/eleprofile/dtms_list.html:35
 #: eleprofile/templates/eleprofile/projects_list.html:27
+#: fsimulator/templates/fsimulator/projects_list.html:27
 msgid "Note"
 msgstr ""
 
@@ -130,6 +133,7 @@ msgstr ""
 #: bforest/templates/bforest/admin/project_form.html:14
 #: eleprofile/templates/eleprofile/dtm_form.html:14
 #: eleprofile/templates/eleprofile/project_form.html:14
+#: fsimulator/templates/fsimulator/project_form.html:14
 #: portal/templates/portal/picture_form.html:14
 msgid "New"
 msgstr ""
@@ -138,6 +142,7 @@ msgstr ""
 #: bforest/templates/bforest/admin/uploadscsv_add.html:19
 #: eleprofile/templates/eleprofile/dtm_form.html:27
 #: eleprofile/templates/eleprofile/project_form.html:27
+#: fsimulator/templates/fsimulator/project_form.html:27
 #: openrouteservice/templates/openrouteservice/openrouteserviceproject_form.html:25
 #: portal/templates/portal/picture_form.html:27
 msgid "Alert"
@@ -147,6 +152,7 @@ msgstr ""
 #: bforest/templates/bforest/admin/uploadscsv_add.html:20
 #: eleprofile/templates/eleprofile/dtm_form.html:28
 #: eleprofile/templates/eleprofile/project_form.html:28
+#: fsimulator/templates/fsimulator/project_form.html:28
 #: openrouteservice/templates/openrouteservice/openrouteserviceproject_form.html:26
 #: portal/templates/portal/picture_form.html:28
 msgid "Some errors on form. Check it and send again."
@@ -160,6 +166,7 @@ msgstr ""
 #: bforest/templates/bforest/admin/uploadscsv_list.html:25
 #: eleprofile/templates/eleprofile/dtms_list.html:32
 #: eleprofile/templates/eleprofile/projects_list.html:25
+#: fsimulator/templates/fsimulator/projects_list.html:25
 #: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:26
 msgid "Actions"
 msgstr ""
@@ -167,6 +174,7 @@ msgstr ""
 #: bforest/templates/bforest/admin/project_list.html:32
 #: eleprofile/templates/eleprofile/dtms_list.html:43
 #: eleprofile/templates/eleprofile/projects_list.html:34
+#: fsimulator/templates/fsimulator/projects_list.html:35
 #: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:36
 #: portal/templates/portal/picture_list.html:50
 msgid "Edit"
@@ -176,6 +184,7 @@ msgstr ""
 #: bforest/templates/bforest/admin/uploadscsv_list.html:38
 #: eleprofile/templates/eleprofile/dtms_list.html:46
 #: eleprofile/templates/eleprofile/projects_list.html:37
+#: fsimulator/templates/fsimulator/projects_list.html:38
 #: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:39
 #: portal/templates/portal/picture_list.html:53
 msgid "Delete"
@@ -344,6 +353,19 @@ msgstr ""
 
 #: eleprofile/templates/eleprofile/projects_list.html:8
 msgid "Elevation Profile Projects"
+msgstr ""
+
+#: fsimulator/models.py:42
+msgid "This project is just set for FSimulator"
+msgstr ""
+
+#: fsimulator/templates/fsimulator/project_form.html:11
+#: fsimulator/templates/fsimulator/project_form.html:14
+msgid "FSimulator Project"
+msgstr ""
+
+#: fsimulator/templates/fsimulator/projects_list.html:8
+msgid "FSimulator Projects"
 msgstr ""
 
 #: iam_bari/templates/_login.html:30
