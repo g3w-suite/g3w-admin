@@ -211,7 +211,7 @@ class BaseEditingVectorOnModelApiView(BaseVectorOnModelApiView):
 
                     if mode_editing == EDITING_POST_DATA_UPDATED:
                         # control feature locked
-                        if not metadata_layer.lock.checkFeatureLocked(geojson_feature['id']):
+                        if not metadata_layer.lock.checkFeatureLocked(str(geojson_feature['id'])):
                             raise Exception(self.no_more_lock_feature_msg.format(geojson_feature['id'],
                                                                                  metadata_layer.client_var))
 
