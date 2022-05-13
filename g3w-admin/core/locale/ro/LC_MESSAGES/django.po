@@ -20,447 +20,447 @@ msgstr ""
 "2:1));\n"
 #: core/admin.py:16
 msgid "Basic settings"
-msgstr ""
+msgstr "Setări de bază"
 
 #: core/admin.py:19
 msgid "Access settings"
-msgstr ""
+msgstr "Setări acces"
 
 #: core/admin.py:23
 msgid "Display settings"
-msgstr ""
+msgstr "Setări afișare"
 
 #: core/admin.py:27
 msgid "Additional settings"
-msgstr ""
+msgstr "Setări adiționale"
 
 #: core/api/base/views.py:143
 msgid "Data are not correct or insufficent!"
-msgstr ""
+msgstr "Datele nu sunt corecte sau insuficiente"
 
 #: core/api/base/views.py:149
 msgid "A error server is occured!"
-msgstr ""
+msgstr "Avem o eroare de server"
 
 #: core/api/base/views.py:157
 msgid "Not found"
-msgstr ""
+msgstr "Negăsit"
 
 #: core/api/base/views.py:163
 msgid "Permission denied"
-msgstr ""
+msgstr "Nepermis"
 
 #: core/api/views.py:39
 msgid "Expression evaluation error."
-msgstr ""
+msgstr "Eroare în evaluarea expresiei."
 
 #: core/api/views.py:44
 msgid "Expression parse error."
-msgstr ""
+msgstr "Eroare în parsarea expresiei."
 
 #: core/api/views.py:50
 msgid "Expression empty error."
-msgstr ""
+msgstr "Eroare de expresie goală"
 
 #: core/api/views.py:56
 msgid "Expression form data error."
-msgstr ""
+msgstr "Eroare de expresie formular date"
 
 #: core/api/views.py:62
 msgid "Layer error."
-msgstr ""
+msgstr "Eroare de strat"
 
 #: core/configs.py:11
 msgid "Search"
-msgstr ""
+msgstr "Căutare"
 
 #: core/configs.py:28
 msgid "Law"
-msgstr ""
+msgstr "Lege"
 
 #: core/forms.py:42 core/forms.py:364
 msgid "General data"
-msgstr ""
+msgstr "Date generale"
 
 #: core/forms.py:65
 msgid "GEO data"
-msgstr ""
+msgstr "Date GEO"
 
 #: core/forms.py:86
 msgid "Base Layers and Map default features"
-msgstr ""
+msgstr "Straturi de bază și caracteristici implicite ale hărții"
 
 #: core/forms.py:113
 msgid "Logo/Picture"
-msgstr ""
+msgstr "Logo/Imagine"
 
 #: core/forms.py:141
 msgid "Copyright"
-msgstr ""
+msgstr "Drepturi de autor"
 
 #: core/forms.py:195
 msgid "Frontend home data"
-msgstr ""
+msgstr "Frontend Locație date"
 
 #: core/forms.py:220
 msgid "Frontend about data"
-msgstr ""
+msgstr "Frontend Date despre"
 
 #: core/forms.py:241
 msgid "Frontend groups map data"
-msgstr ""
+msgstr "Frontend date grupuri de hărți"
 
 #: core/forms.py:257
 msgid "Frontend login data"
-msgstr ""
+msgstr "Frontend date login"
 
 #: core/forms.py:275
 msgid "Frontend social data"
-msgstr ""
+msgstr "Frontend date sociale"
 
 #: core/forms.py:297
 msgid "Map client data"
-msgstr ""
+msgstr "Date client hartă"
 
 #: core/forms.py:323
 msgid "Editor users"
-msgstr ""
+msgstr "Editori"
 
 #: core/forms.py:341
 msgid "ACL Users"
-msgstr ""
+msgstr "Utilizatori ACL"
 
 #: core/forms.py:371
 msgid ""
-"<b>Attention!</b> This settigns are valid only for map groups with only one "
+"<b>Attention!</b> These settings are valid only for map groups with only one "
 "MacroGroup"
-msgstr ""
+msgstr ""<b>Atenție!</b> Aceste setări sunt valide doar pentru grupuri de hartă cu doar un/o "
 
 #: core/models.py:84
 msgid "Map control"
-msgstr ""
+msgstr "Control hartă"
 
 #: core/models.py:85
 msgid "Map controls"
-msgstr ""
+msgstr "Controluri hartă"
 
 #: core/models.py:93
 msgid "Identification name"
-msgstr ""
+msgstr "Nume identificare"
 
 #: core/models.py:94
 msgid "Internal identification Macrogroup name"
-msgstr ""
+msgstr "Nume identificare internă Macrogrup"
 
 #: core/models.py:95 core/models.py:132 core/models.py:409
 #: core/templates/core/ajax/macrogroup_detail.html:7
 #: core/templates/core/macrogroup_list_table.html:28
 msgid "Title"
-msgstr ""
+msgstr "Titlu"
 
 #: core/models.py:96 core/models.py:133
 #: core/templates/core/ajax/macrogroup_detail.html:9
 msgid "Description"
-msgstr ""
+msgstr "Descriere"
 
 #: core/models.py:97 core/models.py:140
 msgid "Logo image"
-msgstr ""
+msgstr "Imagine Logo"
 
 #: core/models.py:98 core/models.py:141
 msgid "Logo link"
-msgstr ""
+msgstr "Link Logo"
 
 #: core/models.py:99 core/models.py:142
 msgid "Enter link with http:// or https//"
-msgstr ""
+msgstr "Introdu link cu http:// or https//"
 
 #: core/models.py:100
 msgid "Use title for client"
-msgstr ""
+msgstr "Folosește titlu pentru client"
 
 #: core/models.py:101 core/models.py:166
 msgid "Use logo image for client"
-msgstr ""
+msgstr "Folosește imagine logo pentru client"
 
 #: core/models.py:104 core/models.py:135
 msgid "Slug"
-msgstr ""
+msgstr "Terminația/Slug"
 
 #: core/models.py:131
 msgid "Name"
-msgstr ""
+msgstr "Nume"
 
 #: core/models.py:137
 msgid "Is active"
-msgstr ""
+msgstr "Activ"
 
 #: core/models.py:158
 msgid "Terms of use text"
-msgstr ""
+msgstr "Termeni de utilizare"
 
 #: core/models.py:161
 msgid "Terms of use link"
-msgstr ""
+msgstr "Termeni de utilizare link"
 
 #: core/models.py:167
 msgid ""
 "As for MacroGroup options is possible to use current logo group as client "
 "logo, if MacroGroup option is active this options takes precendence"
-msgstr ""
+msgstr "Pentru opțiuni Macrogrup se poate folosi logoul de grup ca logo de client"
 
 #: core/models.py:400 core/templates/core/group_form.html:11
 msgid "Group"
-msgstr ""
+msgstr "Grup"
 
-#: core/models.py:401
+#: core/models.py:401b
 msgid "Project type"
-msgstr ""
+msgstr "Tip proiect"
 
 #: core/models.py:402
 msgid "Project type id"
-msgstr ""
+msgstr "id tip proiect"
 
 #: core/models.py:410
 msgid "Subtitle"
-msgstr ""
+msgstr "Subtitlu"
 
 #: core/models.py:411
 msgid "Home description"
-msgstr ""
+msgstr "Descriere Acasă"
 
 #: core/models.py:412
 msgid "About title"
-msgstr ""
+msgstr "Titlu Despre"
 
 #: core/models.py:413
 msgid "About description"
-msgstr ""
+msgstr "Descriere Despre"
 
 #: core/models.py:414
 msgid "About name"
-msgstr ""
+msgstr "Nume Despre"
 
 #: core/models.py:415
 msgid "About phone"
-msgstr ""
+msgstr "Telefon Despre"
 
 #: core/models.py:416
 msgid "About email"
-msgstr ""
+msgstr "email Despre"
 
 #: core/models.py:417
 msgid "About address"
-msgstr ""
+msgstr "Adresă Despre"
 
 #: core/models.py:418
 msgid "Groups title"
-msgstr ""
+msgstr "Titlu Grupuri"
 
 #: core/models.py:419
 msgid "Groups map description"
-msgstr ""
+msgstr "Descriere hartă Grupuri"
 
 #: core/models.py:420
 msgid "Login title"
-msgstr ""
+msgstr "Titlu autentificare"
 
 #: core/models.py:421
 msgid "Login description"
-msgstr ""
+msgstr "Descriere autentificare"
 
 #: core/models.py:422
 msgid "Suite logo"
-msgstr ""
+msgstr "Logo suită"
 
 #: core/models.py:423
 msgid "Suite logo URL"
-msgstr ""
+msgstr "URL logo suită"
 
 #: core/models.py:426
 msgid "Credits"
-msgstr ""
+msgstr "Creditare"
 
 #: core/models.py:429
 msgid "Main map title"
-msgstr ""
+msgstr "Titlu hartă principală"
 
 #: core/models.py:431
 msgid "Facebook link"
-msgstr ""
+msgstr "Link Facebook"
 
 #: core/models.py:432
 msgid "Twitter link"
-msgstr ""
+msgstr "Link Twitter"
 
 #: core/models.py:433
 msgid "Google+ link"
-msgstr ""
+msgstr "Link Google+"
 
 #: core/models.py:434
 msgid "Youtube link"
-msgstr ""
+msgstr "Link Youtube"
 
 #: core/models.py:435
 msgid "Instagram link"
-msgstr ""
+msgstr "Instagram link"
 
 #: core/models.py:436
 msgid "Flickr link"
-msgstr ""
+msgstr "Link Flickr"
 
 #: core/models.py:437
 msgid "Tripadvisor link"
-msgstr ""
+msgstr "Link Tripadvisor"
 
 #: core/templates/core/403_MGC.html:7 core/templates/core/403_MPC.html:7
 msgid "error page"
-msgstr ""
+msgstr "pagină eroare"
 
 #: core/templates/core/403_MGC.html:15 core/templates/core/403_MPC.html:15
 msgid "Access denied"
-msgstr ""
+msgstr "Acces refuzat"
 
 #: core/templates/core/403_MGC.html:17
 msgid "You can't add new Group"
-msgstr ""
+msgstr "Nu poți adăuga grup nou"
 
 #: core/templates/core/403_MPC.html:17
 msgid "You can't add new Project"
-msgstr ""
+msgstr "Nu poți adăuga proiect nou"
 
 #: core/templates/core/ajax/group_detail.html:5
 msgid "Geografic component"
-msgstr ""
+msgstr "Componentă geografică"
 
 #: core/templates/core/ajax/group_detail.html:7
 msgid "Geographic coordinate system"
-msgstr ""
+msgstr "Sistem de coordonate"
 
 #: core/templates/core/ajax/group_detail.html:8
 msgid "SRID"
-msgstr ""
+msgstr "SRID"
 
 #: core/templates/core/ajax/group_detail.html:9
 msgid "Units"
-msgstr ""
+msgstr "Unități"
 
 #: core/templates/core/ajax/group_detail.html:10
 msgid "Principal map"
-msgstr ""
+msgstr "Hartă principală"
 
 #: core/templates/core/ajax/group_detail.html:11
 msgid "Max scale"
-msgstr ""
+msgstr "Scară maximă"
 
 #: core/templates/core/ajax/group_detail.html:12
 msgid "Min scale"
-msgstr ""
+msgstr "Scară minimă"
 
 #: core/templates/core/ajax/group_detail.html:13
 msgid "Overview Map"
-msgstr ""
+msgstr "Hartă de ansamblu"
 
 #: core/templates/core/ajax/group_detail.html:14
 msgid "Panoramic max scale"
-msgstr ""
+msgstr "Scară maximă hartă ansamblu"
 
 #: core/templates/core/ajax/group_detail.html:15
 msgid "Panoramic min scale"
-msgstr ""
+msgstr "Scara minimă hartă ansamblu"
 
 #: core/templates/core/ajax/group_detail.html:18
 msgid "Users"
-msgstr ""
+msgstr "Utilizatori"
 
 #: core/templates/core/ajax/group_detail.html:21
 msgid "Editor level 1 user"
-msgstr ""
+msgstr "utilizator 'Editor nivelul 1'"
 
 #: core/templates/core/ajax/group_detail.html:25
 msgid "Editor level 2 user"
-msgstr ""
+msgstr "utilizator 'Editor nivelul 2'"
 
 #: core/templates/core/ajax/group_detail.html:26
 msgid "Viewer users"
-msgstr ""
+msgstr "Utilizatori de vizualizare"
 
 #: core/templates/core/ajax/group_detail.html:27
 msgid "Editor user groups"
-msgstr ""
+msgstr "Grupuri de utilizatori Editori"
 
 #: core/templates/core/ajax/group_detail.html:28
 msgid "Viewer user groups"
-msgstr ""
+msgstr "Grupuri de utilizatori de Vizualizare"
 
 #: core/templates/core/ajax/group_detail.html:35
 msgid "Interface component"
-msgstr ""
+msgstr "Componentă interfață"
 
 #: core/templates/core/ajax/group_detail.html:37
 msgid "Interface language"
-msgstr ""
+msgstr "Limbaj interfață"
 
 #: core/templates/core/ajax/group_detail.html:38
 msgid "Language"
-msgstr ""
+msgstr "Limbă"
 
 #: core/templates/core/ajax/group_detail.html:39
 msgid "Associated logo"
-msgstr ""
+msgstr "Logo asociat"
 
 #: core/templates/core/ajax/group_detail.html:40
 msgid "HeaderLogoImg"
-msgstr ""
+msgstr "Imagine Logo Header"
 
 #: core/templates/core/ajax/group_detail.html:48
 msgid "HeaderLogoHeight"
-msgstr ""
+msgstr "Înălțime Logo Header"
 
 #: core/templates/core/ajax/group_detail.html:49
 msgid "HeaderLogoLink"
-msgstr ""
+msgstr "Link Logo Header"
 
 #: core/templates/core/ajax/group_detail.html:50
 msgid "Terms of use"
-msgstr ""
+msgstr "Termeni de utilizare"
 
 #: core/templates/core/ajax/group_detail.html:51
 msgid "HeaderTermsOfUseText"
-msgstr ""
+msgstr "Header Text Termeni de Utilizare"
 
 #: core/templates/core/ajax/group_detail.html:52
 msgid "HeaderTermsOfUseLink"
-msgstr ""
+msgstr "Header link termeni de utilizare"
 
 #: core/templates/core/ajax/macrogroup_detail.html:5
 msgid "Data"
-msgstr ""
+msgstr "Date"
 
 #: core/templates/core/ajax/macrogroup_detail.html:11
 #: core/templates/core/macrogroup_list_table.html:29
 msgid "Groups"
-msgstr ""
+msgstr "Grupuri"
 
 #: core/templates/core/django_file_form/upload_template.html:5
 msgid "Drop files here to upload"
-msgstr ""
+msgstr "Lasă fișierele aici pentru Încărcare"
 
 #: core/templates/core/django_file_form/upload_template.html:8
 msgid "Click or Drag file to Upload"
-msgstr ""
+msgstr "Click sau Lasă fșierele aici pentru Încărcare"
 
 #: core/templates/core/django_file_form/upload_template.html:11
 msgid "Processing dropped files..."
-msgstr ""
+msgstr "Procesăm fișierele de încărcat..."
 
 #: core/templates/core/django_file_form/upload_template.html:24
 msgid "Cancel"
-msgstr ""
+msgstr "Anulare"
 
 #: core/templates/core/django_file_form/upload_template.html:25
 msgid "Retry"
-msgstr ""
+msgstr "Reîncercați"
 
 #: core/templates/core/django_file_form/upload_template.html:26
 #: core/templates/core/group_list.html:103
@@ -468,47 +468,47 @@ msgstr ""
 #: core/templates/core/macrogroup_list_table.html:43
 #: core/templates/core/project_list.html:71
 msgid "Delete"
-msgstr ""
+msgstr "Elimină"
 
 #: core/templates/core/generalsuitedata_form.html:11
 msgid "General suite data"
-msgstr ""
+msgstr "Date generale"
 
 #: core/templates/core/generalsuitedata_form.html:24
 #: core/templates/core/group_form.html:45
 #: core/templates/core/macrogroup_form.html:51
 msgid "Alert"
-msgstr ""
+msgstr "Alertă"
 
 #: core/templates/core/generalsuitedata_form.html:25
 #: core/templates/core/group_form.html:46
 #: core/templates/core/macrogroup_form.html:52
 msgid "Some errors on form. Check it and send again."
-msgstr ""
+msgstr "Erori în formular. Reverifică și retrimite."
 
 #: core/templates/core/group_form.html:33
 msgid "Current"
-msgstr ""
+msgstr "Curent"
 
 #: core/templates/core/group_form.html:33
 #: core/templates/core/group_list.html:78
 #: core/templates/core/project_list.html:11
 msgid "Projects"
-msgstr ""
+msgstr "Proiecte"
 
 #: core/templates/core/group_list.html:10
 #: core/templates/core/search/group.html:9
 msgid "Cartographic groups"
-msgstr ""
+msgstr "Grupuri cartografice"
 
 #: core/templates/core/group_list.html:66
 msgid "Add new project"
-msgstr ""
+msgstr "Adaugă proiect nou"
 
 #: core/templates/core/group_list.html:78
 #: core/templates/core/search/group.html:25
 msgid "Group projects"
-msgstr ""
+msgstr "Proiecte grup"
 
 #: core/templates/core/group_list.html:85
 #: core/templates/core/macrogroup_list.html:66
@@ -517,7 +517,7 @@ msgstr ""
 #: core/templates/core/search/group.html:24
 #: core/templates/core/search/macrogroup.html:22
 msgid "Show detail"
-msgstr ""
+msgstr "Arată detalii"
 
 #: core/templates/core/group_list.html:94
 #: core/templates/core/macrogroup_list.html:74
@@ -526,96 +526,96 @@ msgstr ""
 #: core/templates/core/search/group.html:28
 #: core/templates/core/search/macrogroup.html:24
 msgid "Edit"
-msgstr ""
+msgstr "Modifică"
 
 #: core/templates/core/group_list.html:106
 msgid "Warning: deleting the group will delete the projects it contains!"
-msgstr ""
+msgstr "Atenție: eliminarea grupului va elimina proiectele conținute"
 
 #: core/templates/core/include/add_project.html:4
 msgid "Add project"
-msgstr ""
+msgstr "Adaugă proiect"
 
 #: core/templates/core/include/add_project.html:10
-msgid "Select project type do add:"
-msgstr ""
+msgid "Select project type to add:"
+msgstr "Selectează tipul de proiect de adăugat"
 
 #: core/templates/core/include/cookieconsent.html:11
 msgid ""
 "This website uses cookies to ensure you get the best experience on our "
 "website"
-msgstr ""
+msgstr "Acest site web folosește cookie-uri pentru a îmbunătăți experiența"
 
 #: core/templates/core/include/cookieconsent.html:12
 msgid "Got it"
-msgstr ""
+msgstr "Am înțeles"
 
 #: core/templates/core/include/form_buttons.html:7
 msgid "Save"
-msgstr ""
+msgstr "Salvează"
 
 #: core/templates/core/include/form_buttons.html:13
 msgid "Redo/Back"
-msgstr ""
+msgstr "Refă/Înapoi"
 
 #: core/templates/core/macrogroup_form.html:10
 msgid "Macro Group"
-msgstr ""
+msgstr "Grup Macro"
 
 #: core/templates/core/macrogroup_form.html:24
 msgid "Current groups"
-msgstr ""
+msgstr "Grupuri curente"
 
 #: core/templates/core/macrogroup_list.html:10
 #: core/templates/core/macrogroup_list_table.html:10
 #: core/templates/core/search/macrogroup.html:8
 msgid "Cartographic macro groups"
-msgstr ""
+msgstr "Macro grupuri cartografice"
 
 #: core/templates/core/macrogroup_list_table.html:21
 msgid "Macro group"
-msgstr ""
+msgstr "Grup macro"
 
 #: core/templates/core/tags/add_layer.html:3
 msgid "Layer"
-msgstr ""
+msgstr "Strat"
 
 #: core/templates/core/tags/add_project.html:7
 msgid "Project"
-msgstr ""
+msgstr "Proiect"
 
 #: core/utils/data.py:24
 msgid "[{} error on {}({})]-- {}"
-msgstr ""
+msgstr "[{} eroare la {}({})]-- {}"
 
 #: core/utils/forms.py:23
 msgid "Default base layer"
-msgstr ""
+msgstr "Stratul bază implicit"
 
 #: core/utils/forms.py:50
 msgid "MACRO Groups"
-msgstr ""
+msgstr "Grupuri MACRO"
 
 #: core/utils/qgisapi.py:458
 msgid "Function \"{}\" is not allowed for security reasons!"
-msgstr ""
+msgstr "Funcția \"{}\" e nepermisă din motive de securitate!"
 
 #: core/utils/qgisapi.py:463
 msgid "Variable \"{}\" is not allowed for security reasons!"
-msgstr ""
+msgstr "Variabila \"{}\" e nepermisă din motive de securitate!"
 
 #: core/utils/qgisapi.py:475
 msgid "QGIS layer with id \"{}\" could not be found!"
-msgstr ""
+msgstr "Stratul QGIS cu id \"{}\" e negăsit!"
 
 #: core/utils/qgisapi.py:487
 msgid "QDjango project with id \"{}\" could not be found!"
-msgstr ""
+msgstr "Proiectul QDjango cu id \"{}\" e negăsit!"
 
 #: core/utils/qgisapi.py:497
 msgid "A valid QGIS layer is required to process form data!"
-msgstr ""
+msgstr "Un strat de QGIS valid este necesar pentru a procesa datele din formular!"
 
 #: core/utils/structure.py:183
 msgid "Yes"
-msgstr ""
+msgstr "Da"
