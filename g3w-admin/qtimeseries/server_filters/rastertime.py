@@ -14,10 +14,10 @@ from qdjango.apps import QGS_SERVER
 from qdjango.models import Layer
 from qtimeseries.vendor.RasterTimeseriesManager.core.rtmrastertimeseries import RtmRasterTimeseries as RTS
 
-from qgis.core import QgsMessageLog, Qgis
+from qgis.core import QgsMessageLog, Qgis, QgsDateTimeRange
 from qgis.server import QgsServerFilter
 from qgis.server import QgsServerProjectUtils
-
+from qgis.PyQt.QtCore import QDateTime, QDate
 
 
 class QRasterTimeSeriesFilter(QgsServerFilter):
@@ -45,7 +45,7 @@ class QRasterTimeSeriesFilter(QgsServerFilter):
                 if use_qgs_layer_id:
                     qlayer = project.mapLayer(layer)
                 else:
-                    qlayer = project.mapLayerByName(layer)
+                    qlayer = project.mapLayersByName(layer)[0]
 
                 if qlayer.dataProvider().name() == Layer.TYPES.gdal and rlayer == qlayer.id():
 
