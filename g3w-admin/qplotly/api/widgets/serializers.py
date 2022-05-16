@@ -77,7 +77,7 @@ class QplotlyWidgetSerializer(serializers.ModelSerializer):
         settings.read_from_model(QplotlyWidget(xml=validate_data['xml']))
 
         if 'datasource' not in validate_data:
-            validate_data['datasource'] = Layer.objects.filter(qgs_layer_id=settings.source_layer_id)[0].datasource
+            validate_data['datasource'] = validate_data['layers'][0].datasource
 
         if 'type' not in validate_data:
             validate_data['type'] = settings.plot_type
