@@ -134,7 +134,7 @@ msgstr "Utilizatori ACL"
 msgid ""
 "<b>Attention!</b> These settings are valid only for map groups with only one "
 "MacroGroup"
-msgstr ""<b>Atenție!</b> Aceste setări sunt valide doar pentru grupuri de hartă cu doar un/o "
+msgstr "<b>Atenție!</b> Aceste setări sunt valide doar pentru grupuri de hartă cu doar un/o "
 
 #: core/models.py:84
 msgid "Map control"
