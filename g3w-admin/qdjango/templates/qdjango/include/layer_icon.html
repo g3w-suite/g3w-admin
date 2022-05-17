@@ -1,57 +1,57 @@
 {% load staticfiles %}
 {% if object.layer_type == 'postgres' %}
-  <svg {% if "change_project" in userPrj_perms %} data-toggle="tooltip" data-placement="top" title="{{ object.datasource }}" {% endif %}
+  <svg data-toggle="tooltip" data-placement="top" title="{{ object.layer_type }}"
        id="circle" height="16" width="16" viewBox="0 0 32 32"
      xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" >
   <image x="0" y="0" height="100%" width="100%"  xlink:href="{% static 'svg/pg32.svg' %}" />
   </svg>
 {% elif object.layer_type == 'spatialite' %}
-  <svg id="circle" height="16" width="16" viewBox="0 0 32 32"
+  <svg id="circle" height="16" width="16" data-toggle="tooltip" data-placement="top" title="{{ object.layer_type }}" viewBox="0 0 32 32"
      xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" >
   <image x="0" y="0" height="100%" width="100%"  xlink:href="{% static 'svg/mIconSpatialite.svg' %}" />
   </svg>
 {% elif object.layer_type == 'ogr' %}
-  <svg id="circle" height="16" width="16" viewBox="0 0 32 32"
+  <svg id="circle" height="16" width="16" data-toggle="tooltip" data-placement="top" title="{{ object.layer_type }}" viewBox="0 0 32 32"
      xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" >
   <image x="0" y="0" height="100%" width="100%"  xlink:href="{% static 'svg/mActionOgrLayer.svg' %}" />
   </svg>
 {% elif object.layer_type == 'gdal' %}
-  <svg id="circle" height="16" width="16" viewBox="0 0 32 32"
+  <svg id="circle" height="16" width="16" data-toggle="tooltip" data-placement="top" title="{{ object.layer_type }}" viewBox="0 0 32 32"
      xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" >
   <image x="0" y="0" height="100%" width="100%"  xlink:href="{% static 'svg/mIconRaster.svg' %}" />
   </svg>
 {% elif object.layer_type == 'wms' %}
-  <svg id="circle" height="16" width="16" vviewBox="0 0 32 32"
+  <svg id="circle" height="16" width="16" data-toggle="tooltip" data-placement="top" title="{{ object.layer_type }}" vviewBox="0 0 32 32"
      xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" >
   <image x="0" y="0" height="100%" width="100%"  xlink:href="{% static 'svg/mIconWms.svg' %}" />
   </svg>
 {% elif object.layer_type == 'delimitedtext' %}
-  <svg id="circle" height="16" width="16" vviewBox="0 0 32 32"
+  <svg id="circle" height="16" width="16" data-toggle="tooltip" data-placement="top" title="{{ object.layer_type }}" vviewBox="0 0 32 32"
      xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" >
   <image x="0" y="0" height="100%" width="100%"  xlink:href="{% static 'svg/mIconTableLayer.svg' %}" />
   </svg>
 {% elif object.layer_type == 'arcgismapserver' %}
-  <svg id="circle" height="16" width="16" vviewBox="0 0 32 32"
+  <svg id="circle" height="16" width="16" data-toggle="tooltip" data-placement="top" title="{{ object.layer_type }}" vviewBox="0 0 32 32"
      xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" >
   <image x="0" y="0" height="100%" width="100%"  xlink:href="{% static 'svg/mIconAms.svg' %}" />
   </svg>
 {% elif object.layer_type == 'mssql' %}
-  <svg id="circle" height="16" width="16" vviewBox="0 0 32 32"
+  <svg id="circle" height="16" width="16" data-toggle="tooltip" data-placement="top" title="{{ object.layer_type }}" vviewBox="0 0 32 32"
      xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" >
   <image x="0" y="0" height="100%" width="100%"  xlink:href="{% static 'svg/mIconMssql.svg' %}" />
   </svg>
 {% elif object.layer_type == 'virtual' %}
-  <svg id="circle" height="16" width="16" vviewBox="0 0 32 32"
+  <svg id="circle" height="16" width="16" data-toggle="tooltip" data-placement="top" title="{{ object.layer_type }}" vviewBox="0 0 32 32"
      xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" >
   <image x="0" y="0" height="100%" width="100%"  xlink:href="{% static 'svg/mIconVirtualLayer.svg' %}" />
   </svg>
 {% elif object.layer_type == 'oracle' %}
-  <svg id="circle" height="16" width="16" vviewBox="0 0 32 32"
+  <svg id="circle" height="16" width="16" data-toggle="tooltip" data-placement="top" title="{{ object.layer_type }}" vviewBox="0 0 32 32"
      xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" >
   <image x="0" y="0" height="100%" width="100%"  xlink:href="{% static 'svg/mIconOracle.svg' %}" />
   </svg>
 {% else %}
-  <svg id="circle" height="16" width="16" viewBox="0 0 32 32"
+  <svg id="circle" height="16" width="16" data-toggle="tooltip" data-placement="top" title="{{ object.layer_type }}" viewBox="0 0 32 32"
      xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" >
   <image x="0" y="0" height="100%" width="100%"  xlink:href="{% static 'svg/mIconWfs.svg' %}" />
   </svg>

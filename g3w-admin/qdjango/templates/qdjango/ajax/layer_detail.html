@@ -1,5 +1,6 @@
 {% load i18n %}
 {% load auth_extras %}
+
 <div class="row">
     <div class="col-md-12">
         <ul class="list-unstyled">
@@ -15,6 +16,11 @@
                   <h4>{% trans 'QGIS layer ID' %}:</h4>
                   <span>{{ object.qgs_layer_id }}</span>
             </li>
+            <li>
+                  <h4>{% trans 'Datasoruce' %}:</h4>
+                  <span>{{ object.datasource }}</span>
+            </li>
+
         </ul>
     </div>
 </div>
