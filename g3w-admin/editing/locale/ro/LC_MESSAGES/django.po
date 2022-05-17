@@ -22,87 +22,87 @@ msgstr ""
 msgid ""
 "The feature id {} of layer {} cannot be modified because it is not locked "
 "anymore"
-msgstr ""
+msgstr "Entitatea cu id {} din stratul {} nu se poate modifica pentru că nu este blocată/locked"
 
 #: editing/api/base/views.py:146
 msgid "Sorry but your user doesn't has 'Add Feature' capability"
-msgstr ""
+msgstr "Utilizatorul nu are permisiunea de a folosi 'Adaugă entitate'"
 
 #: editing/api/base/views.py:150
 msgid "Sorry but your user doesn't has 'Delete Feature' capability"
-msgstr ""
+msgstr "Utilizatorul nu are permisiunea de a folosi 'Elimină entitate'"
 
 #: editing/api/base/views.py:156
 msgid ""
 "Sorry but your user doesn't has 'Change or Change Attributes Features' "
 "capability"
-msgstr ""
+msgstr "Utilizatorul nu are permisiunea de a folosi 'Modifică sau Modifică atribute entități'"
 
 #: editing/api/base/views.py:300 editing/api/base/views.py:303
 #, python-format
 msgid "Error adding feature: %s"
-msgstr ""
+msgstr "Eroare la adăugarea entității: %s"
 
 #: editing/api/base/views.py:310
 msgid "Error adding feature on Spatialite provider: "
-msgstr ""
+msgstr "Eroare adaugare entitate Spatialite"
 
 #: editing/api/base/views.py:327 editing/api/base/views.py:338
 #, python-format
 msgid "Error changing attribute values: %s"
-msgstr ""
+msgstr "Eroare la schimbarea valorii atribut: %s"
 
 #: editing/api/base/views.py:333 editing/api/base/views.py:341
 #, python-format
 msgid "Error changing geometry: %s"
-msgstr ""
+msgstr "Eroare la schimbarea geometrii: %s"
 
 #: editing/api/base/views.py:429 editing/api/base/views.py:433
 #, python-format
 msgid "Cannot delete feature: %s"
-msgstr ""
+msgstr "Nu se poate elimina entitatea: %s"
 
 #: editing/api/base/views.py:474
 #, python-format
 msgid "Layer %s is not editable!"
-msgstr ""
+msgstr "Stratul %s nu este editabil!"
 
 #: editing/api/base/views.py:529
 #, python-format
 msgid "Backend error saving layer %s: %s"
-msgstr ""
+msgstr "Eroare de backend la salvarea stratului %s: %s"
 
 #: editing/forms.py:21
 msgid "Active"
-msgstr ""
+msgstr "Activă"
 
 #: editing/forms.py:22
 msgid "Scale"
-msgstr ""
+msgstr "Scara"
 
 #: editing/forms.py:22
 msgid "Scale after that editing mode is active"
-msgstr ""
+msgstr "Scara la care modul modificare este activ"
 
 #: editing/forms.py:23
 msgid "Viewers"
-msgstr ""
+msgstr "Vizualizatori"
 
 #: editing/forms.py:24
 msgid "Select user with viewer role can do editing on layer"
-msgstr ""
+msgstr "Selectează utilizator cu drept de vizualizare care poate să modifice stratul"
 
 #: editing/forms.py:26
 msgid "Select VIEWER groups can do editing on layer"
-msgstr ""
+msgstr "Select grupuri de Vizualizare care pot să modifice stratul"
 
 #: editing/forms.py:27
 msgid "User viewer groups"
-msgstr ""
+msgstr "Grupuri de vizualizare utilizator"
 
 #: editing/forms.py:29
 msgid "User adding data field"
-msgstr ""
+msgstr "Câmp utilizator ce adaugă date"
 
 #: editing/forms.py:30
 msgid ""
@@ -110,10 +110,12 @@ msgid ""
 "only string field. <br>Value stored into the field it will be so structured: "
 "<i>[username]</i>"
 msgstr ""
+"Opțional: selectează câmpul de stocare al utilizatorului ce introduce date. Se arată doar "
+"câmpurile string/text. <br>Valoarea introdusă are structura: <i>[username]</i>"
 
 #: editing/forms.py:36
 msgid "User editing data field"
-msgstr ""
+msgstr "Câmp utilizator ce modifică date"
 
 #: editing/forms.py:37
 msgid ""
@@ -121,38 +123,42 @@ msgid ""
 "only string field. <br>Value stored into the field it will be so structured: "
 "<i>[username]</i>"
 msgstr ""
+"Opțional: selectează câmpul de stocare al utilizatorului ce actualizează date. Se arată doar "
+"câmpurile string/text. <br>Valoarea introdusă are structura: <i>[username]</i>"
 
 #: editing/forms.py:61
 msgid "Check on uncheck to attive/deactive editing layer capabilities:"
-msgstr ""
+msgstr "Bifează dau debifează capabilitatea de modificare strat"
 
 #: editing/forms.py:66
 msgid "Select viewers with 'view permission' on project that can edit layer:"
-msgstr ""
+msgstr "Selectează utilizatorii cu 'permisiuni de vizualizare' ce pot modifica stratul:"
 
 #: editing/forms.py:77
 msgid ""
 "'User adding data field' and 'User editing data field' cannot assume the "
 "same value."
 msgstr ""
+"'Câmp utilizator ce adaugă date' și 'Câmp utilizator ce modifică date' nu au "
+"neapărat aceeași valoare."
 
 #: editing/receivers.py:244
 #, python-format
 msgid "Constraint validation failed for geometry: %s"
-msgstr ""
+msgstr "Validare constrângere eșuată pentru geometria: %s"
 
 #: editing/templates/editing/editing_layer_active_form.html:7
 msgid "Alert"
-msgstr ""
+msgstr "Alertă"
 
 #: editing/templates/editing/editing_layer_active_form.html:8
 msgid "Some errors on form. Check it and send again."
-msgstr ""
+msgstr "Erori în formular. Verifică și retrimite."
 
 #: editing/templates/editing/layer_action.html:5
 msgid "Editing layer"
-msgstr ""
+msgstr "Modificare strat"
 
 #: editing/templates/editing/layer_action.html:7
 msgid "Activation layer_editing"
-msgstr ""
+msgstr "Activare modificare_strat"

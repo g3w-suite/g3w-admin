@@ -7,7 +7,7 @@
 {% endif %}
 
 <div class="hidden add-links">
-  <p>{% trans 'Select project type do add:' %}</p>
+  <p>{% trans 'Select project type to add:' %}</p>
   {% for app in SETTINGS.G3WADMIN_PROJECT_APPS %}
       {% g3wadmin_add_project app object %}
   {% endfor %}

@@ -24,223 +24,225 @@ msgstr ""
 
 #: usersmanage/forms.py:97
 msgid "Set Editor Level 1 owner"
-msgstr ""
+msgstr "Alege utilizatorul Modificare1 proprietar"
 
 #: usersmanage/forms.py:100
 msgid "Editor2 user"
-msgstr ""
+msgstr "Utilizator Modificare2"
 
 #: usersmanage/forms.py:103
 msgid "Viewer users"
-msgstr ""
+msgstr "Utilizatori Vizualizare"
 
 #: usersmanage/forms.py:110
 msgid "Editor user groups"
-msgstr ""
+msgstr "Grupuri utilizatori Modificare"
 
 #: usersmanage/forms.py:117
 msgid "Viewer user groups"
-msgstr ""
+msgstr "Grupuri utilizatori Vizualizare"
 
 #: usersmanage/forms.py:123
 msgid "Propagate <b>NEW</b> viewers and new viewers user groups permissions"
-msgstr ""
+msgstr "Propagă  permisiunile <b>NOI</b> utilizatori/grupuri vizualizare"
 
 #: usersmanage/forms.py:294
 msgid "Select roles for this user"
-msgstr ""
+msgstr "Alege roluri utilizator"
 
 #: usersmanage/forms.py:295
 msgid "Main roles"
-msgstr ""
+msgstr "Roluri primare"
 
 #: usersmanage/forms.py:302
 msgid ""
 "Select <b>EDITOR groups</b> for this user, only Editor Level 2 can be added"
 msgstr ""
+"Alege <b>grupurile Modificare</b> utilizator, doar Modificator2 se poate adăuga"
 
 #: usersmanage/forms.py:303
 msgid "User editor groups"
-msgstr ""
+msgstr "Grupuri Modificare"
 
 #: usersmanage/forms.py:310
 msgid ""
 "Select <b>VIEWER groups</b> for this user, only Viewer Level 1 can be added"
 msgstr ""
+"Alege <b>grupuri Vizualizare</b> utilizator, doar Vizualizare1 se poate adăuga"
 
 #: usersmanage/forms.py:311
 msgid "User viewer groups"
-msgstr ""
+msgstr "Grupuri Utilizator Vizualizare"
 
 #: usersmanage/forms.py:351
 msgid "Anagraphic"
-msgstr ""
+msgstr "Anagrafic"
 
 #: usersmanage/forms.py:370
 msgid "ACL/Roles"
-msgstr ""
+msgstr "Roluri ACL"
 
 #: usersmanage/forms.py:389
 msgid "Login data"
-msgstr ""
+msgstr "Date Logare"
 
 #: usersmanage/forms.py:407
 msgid "User data"
-msgstr ""
+msgstr "Date utilizator"
 
 #: usersmanage/forms.py:435
 msgid "User backend"
-msgstr ""
+msgstr "Backend utilizator"
 
 #: usersmanage/forms.py:602
 msgid "User can't be Editor level 1 and at same time Editor level 2"
-msgstr ""
+msgstr "Utilizatorul nu poate să fie Modificator1 și Modificator2 în același timp"
 
 #: usersmanage/forms.py:616
 msgid "User can't belong a **editor groups** if he isn't a Editor level 2"
-msgstr ""
+msgstr "Utilizatorul nu poate fi în **grupuri Modificare** fără drept de Editor2"
 
 #: usersmanage/forms.py:630
 msgid "User can't belong a **viewer groups** if he isn't a Viewer level 1"
-msgstr ""
+msgstr "Utilizatorul nu poate fi în **grupuri Vizualizare** fără drept de Vizualizare1"
 
 #: usersmanage/forms.py:648
 msgid "Avatar is no a valid image"
-msgstr ""
+msgstr "Avatarul nu este imagine validă"
 
 #: usersmanage/forms.py:676
 msgid "Password"
-msgstr ""
+msgstr "Parola"
 
 #: usersmanage/forms.py:678
 msgid "Password confirmation"
-msgstr ""
+msgstr "Confirmare parolă"
 
 #: usersmanage/forms.py:680
 msgid "Enter the same password as above, for verification."
-msgstr ""
+msgstr "Introdu pentru verificare aceeași parolă"
 
 #: usersmanage/forms.py:706
 #: usersmanage/templates/usersmanage/user_group_list.html:29
 msgid "Role"
-msgstr ""
+msgstr "Rol"
 
 #: usersmanage/forms.py:720
 #: usersmanage/templates/usersmanage/ajax/user_group_detail.html:5
 msgid "Group"
-msgstr ""
+msgstr "Grup"
 
 #: usersmanage/models.py:21
 msgid "Avatar"
-msgstr ""
+msgstr "Avatar"
 
 #: usersmanage/models.py:53
 msgid "Group role"
-msgstr ""
+msgstr "Rol Grup"
 
 #: usersmanage/templates/usersmanage/ajax/user_detail.html:5
 #: usersmanage/templates/usersmanage/user_list.html:20
 msgid "User"
-msgstr ""
+msgstr "Utilizator"
 
 #: usersmanage/templates/usersmanage/user_form.html:81
 msgid "System users"
-msgstr ""
+msgstr "Utilizatori de Sistem"
 
 #: usersmanage/templates/usersmanage/user_form.html:92
 #: usersmanage/templates/usersmanage/user_group_form.html:20
 msgid "Alert"
-msgstr ""
+msgstr "Altertă"
 
 #: usersmanage/templates/usersmanage/user_form.html:93
 #: usersmanage/templates/usersmanage/user_group_form.html:21
 msgid "Some errors on form. Check it and send again."
-msgstr ""
+msgstr "Erori formular. Verifică și retrimite."
 
 #: usersmanage/templates/usersmanage/user_group_form.html:9
 msgid "System user groups"
-msgstr ""
+msgstr "Grupuri utilizatori de Sistem"
 
 #: usersmanage/templates/usersmanage/user_group_list.html:10
 #: usersmanage/templates/usersmanage/user_list.html:31
 msgid "User groups"
-msgstr ""
+msgstr "Grupuri utilizatori"
 
 #: usersmanage/templates/usersmanage/user_group_list.html:20
 msgid "User group"
-msgstr ""
+msgstr "Grup utilizator"
 
 #: usersmanage/templates/usersmanage/user_group_list.html:27
 #: usersmanage/templates/usersmanage/user_list.html:27
 msgid "Actions"
-msgstr ""
+msgstr "Acțiuni"
 
 #: usersmanage/templates/usersmanage/user_group_list.html:28
 msgid "Name"
-msgstr ""
+msgstr "Nume"
 
 #: usersmanage/templates/usersmanage/user_group_list.html:30
 #: usersmanage/templates/usersmanage/user_list.html:10
 msgid "Users"
-msgstr ""
+msgstr "Utilizatori"
 
 #: usersmanage/templates/usersmanage/user_group_list.html:31
 #: usersmanage/templates/usersmanage/user_list.html:44
 msgid "Created"
-msgstr ""
+msgstr "Creat"
 
 #: usersmanage/templates/usersmanage/user_group_list.html:39
 #: usersmanage/templates/usersmanage/user_list.html:57
 msgid "Show detail"
-msgstr ""
+msgstr "Arată detalii"
 
 #: usersmanage/templates/usersmanage/user_group_list.html:43
 #: usersmanage/templates/usersmanage/user_list.html:62
 msgid "Edit"
-msgstr ""
+msgstr "Modificare"
 
 #: usersmanage/templates/usersmanage/user_group_list.html:48
 #: usersmanage/templates/usersmanage/user_list.html:67
 msgid "Delete"
-msgstr ""
+msgstr "Eliminare"
 
 #: usersmanage/templates/usersmanage/user_list.html:28
 msgid "Username"
-msgstr ""
+msgstr "Utilizator"
 
 #: usersmanage/templates/usersmanage/user_list.html:30
 msgid "Roles"
-msgstr ""
+msgstr "Rol"
 
 #: usersmanage/templates/usersmanage/user_list.html:33
 msgid " Macro groups"
-msgstr ""
+msgstr "Grup macro"
 
 #: usersmanage/templates/usersmanage/user_list.html:38
 msgid "Superuser"
-msgstr ""
+msgstr "Superutilizator"
 
 #: usersmanage/templates/usersmanage/user_list.html:39
 msgid "Staff"
-msgstr ""
+msgstr "Personal"
 
 #: usersmanage/templates/usersmanage/user_list.html:42
 msgid "First name"
-msgstr ""
+msgstr "Prenume"
 
 #: usersmanage/templates/usersmanage/user_list.html:43
 msgid "Last name"
-msgstr ""
+msgstr "Nume"
 
 #: usersmanage/templates/usersmanage/user_list.html:46
 msgid "Backend"
-msgstr ""
+msgstr "Backend"
 
 #: usersmanage/utils.py:231
 msgid "ACL Users"
-msgstr ""
+msgstr "Utilizatori ACL"
 
 #: usersmanage/views.py:228
 #, python-format
 msgid "No %(verbose_name)s found matching the query"
-msgstr ""
+msgstr "Niciun  %(verbose_name) găsit care să corespundă interogării"

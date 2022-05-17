@@ -24,61 +24,61 @@ msgstr ""
 
 #: qdjango/static/qdjango/js/widget.js:220
 msgid "Search title"
-msgstr ""
+msgstr "Titlu căutare"
 
 #: qdjango/static/qdjango/js/widget.js:264
 msgid "Client search title identification"
-msgstr ""
+msgstr "Identificare titlu căutare client"
 
 #: qdjango/static/qdjango/js/widget.js:303
 msgid "equal"
-msgstr ""
+msgstr "egal"
 
 #: qdjango/static/qdjango/js/widget.js:306
 msgid "greater than"
-msgstr ""
+msgstr "mai mare ca"
 
 #: qdjango/static/qdjango/js/widget.js:309
 msgid "lower than"
-msgstr ""
+msgstr "mai mic ca"
 
 #: qdjango/static/qdjango/js/widget.js:312
 msgid "not equal"
-msgstr ""
+msgstr "diferit"
 
 #: qdjango/static/qdjango/js/widget.js:315
 msgid "greater than equal"
-msgstr ""
+msgstr "mai mare sau egal"
 
 #: qdjango/static/qdjango/js/widget.js:318
 msgid "lower than equal"
-msgstr ""
+msgstr "mai mic sau egal"
 
 #: qdjango/static/qdjango/js/widget.js:321
 #: qdjango/static/qdjango/js/widget.js:356
 msgid "like case sensitive"
-msgstr ""
+msgstr "nu ignoră majusculele/case sensitive"
 
 #: qdjango/static/qdjango/js/widget.js:340
 #: qdjango/static/qdjango/js/widget.js:357
 msgid "like not case sensitive"
-msgstr ""
+msgstr "ignoră majusculele"
 
 #: qdjango/static/qdjango/js/widget.js:368
 msgid "Search field settings"
-msgstr ""
+msgstr "Setări câmp căutare"
 
 #: qdjango/static/qdjango/js/widget.js:383
 msgid "Field"
-msgstr ""
+msgstr "Câmp"
 
 #: qdjango/static/qdjango/js/widget.js:390
 msgid "Widget"
-msgstr ""
+msgstr "Widget"
 
 #: qdjango/static/qdjango/js/widget.js:397
 msgid "Alias"
-msgstr ""
+msgstr "Alias"
 
 #: qdjango/static/qdjango/js/widget.js:404
 #: qdjango/static/qdjango/js/widget.js:1317
@@ -86,46 +86,46 @@ msgstr ""
 #: qdjango/static/qdjango/js/widget.js:1774
 #: qdjango/static/qdjango/js/widget.js:2119
 msgid "Description"
-msgstr ""
+msgstr "Descriere"
 
 #: qdjango/static/qdjango/js/widget.js:413
 msgid "Number of digits"
-msgstr ""
+msgstr "Numărul de cifre"
 
 #: qdjango/static/qdjango/js/widget.js:422
 msgid "Comparison operator"
-msgstr ""
+msgstr "Operator comparare"
 
 #: qdjango/static/qdjango/js/widget.js:431
 msgid "Dependency"
-msgstr ""
+msgstr "Dependință"
 
 #: qdjango/static/qdjango/js/widget.js:438
 msgid "Strictly dependent"
-msgstr ""
+msgstr "Dependent strict"
 
 #: qdjango/static/qdjango/js/widget.js:458
 msgid "Logical join"
-msgstr ""
+msgstr "Join/Alăturare logică"
 
 #: qdjango/static/qdjango/js/widget.js:477
 msgid "Alias field name for client search input"
-msgstr ""
+msgstr "Alias câmp pentru căutare client"
 
 #: qdjango/static/qdjango/js/widget.js:771
 #: qdjango/static/qdjango/js/widget.js:891
 msgid "Other searching layers"
-msgstr ""
+msgstr "Alte straturi de căutare"
 
 #: qdjango/static/qdjango/js/widget.js:775
 #: qdjango/static/qdjango/js/widget.js:895
 msgid "Select one or more additional layers to search on"
-msgstr ""
+msgstr "Selectează unul sau mai multe straturi de căutat"
 
 #: qdjango/static/qdjango/js/widget.js:788
 #: qdjango/static/qdjango/js/widget.js:921
 msgid "Relations"
-msgstr ""
+msgstr "Relații"
 
 #: qdjango/static/qdjango/js/widget.js:792
 #: qdjango/static/qdjango/js/widget.js:925
@@ -133,236 +133,242 @@ msgid ""
 "This layer is a child in a relation, if you want to excute the search on "
 "father layer of relation, select the relative relation"
 msgstr ""
+"Acest strat este copil într-o relație, dacă vrei să cauți pe "
+"stratul tată al relației, selectează relația"
 
 #: qdjango/static/qdjango/js/widget.js:823
 #: qdjango/static/qdjango/js/widget.js:948
 #: qdjango/static/qdjango/js/widget.js:1475
 #: qdjango/static/qdjango/js/widget.js:1681
 msgid "Add"
-msgstr ""
+msgstr "Adaugă"
 
 #: qdjango/static/qdjango/js/widget.js:1043
 msgid "QGIS Expression"
-msgstr ""
+msgstr "Expresie QGIS"
 
 #: qdjango/static/qdjango/js/widget.js:1058
 #: qdjango/static/qdjango/js/widget.js:1859
 msgid "Saved"
-msgstr ""
+msgstr "Salvat"
 
 #: qdjango/static/qdjango/js/widget.js:1141
 #: qdjango/static/qdjango/js/widget.js:2009
 #: qdjango/static/qdjango/js/widget.js:2803
 msgid "Form title"
-msgstr ""
+msgstr "Titlu formular"
 
 #: qdjango/static/qdjango/js/widget.js:1217
 msgid ""
 "Define, for each user and/or group of users, viewing/editing rules based on "
 "the QGIS expressions."
 msgstr ""
+"Definește, pentru fiecare utilizator/grupuri, regulile de vizualizare modificare"
+"bazate pe expresii QGIS"
 
 #: qdjango/static/qdjango/js/widget.js:1221
 msgid ""
 "Define, for each user and/or group of users, viewing/editing rules based on "
 "the language or SQL dialect of the associated provider."
 msgstr ""
+"Definește, pentru fiecare utilizator/grupuri, regulile de vizualizare modificare""
+"bazate pe limbajul sau dialectul SQL asociat sursei de date."
 
 #: qdjango/static/qdjango/js/widget.js:1293
 #: qdjango/static/qdjango/js/widget.js:1296
 msgid "New alphanumeric constraints"
-msgstr ""
+msgstr "Noi constrângeri alfanumerice"
 
 #: qdjango/static/qdjango/js/widget.js:1311
 #: qdjango/static/qdjango/js/widget.js:2113
 #: qdjango/static/qdjango/js/widget.js:2282
 #: qdjango/static/qdjango/js/widget.js:2667
 msgid "Actions"
-msgstr ""
+msgstr "Acțiuni"
 
 #: qdjango/static/qdjango/js/widget.js:1314
 #: qdjango/static/qdjango/js/widget.js:1564
 msgid "Name"
-msgstr ""
+msgstr "Denumire"
 
 #: qdjango/static/qdjango/js/widget.js:1321
 #: qdjango/static/qdjango/js/widget.js:2122
 msgid "For visualization"
-msgstr ""
+msgstr "Pentru vizualizare"
 
 #: qdjango/static/qdjango/js/widget.js:1321
 #: qdjango/static/qdjango/js/widget.js:2122
 msgid "For editing"
-msgstr ""
+msgstr "Pentru modificare"
 
 #: qdjango/static/qdjango/js/widget.js:1326
 msgid "Subset rules count"
-msgstr ""
+msgstr "Număr de reguli de tip subset"
 
 #: qdjango/static/qdjango/js/widget.js:1329
 msgid "Expression rules count"
-msgstr ""
+msgstr "Nr. de reguli de expresii"
 
 #: qdjango/static/qdjango/js/widget.js:1375
 msgid "Update alphanumeric constraint"
-msgstr ""
+msgstr "Actualizează constrângerile alfanumerice"
 
 #: qdjango/static/qdjango/js/widget.js:1385
 msgid "Constraint Rules based on provider's language / SQL dialect"
-msgstr ""
+msgstr "Reguli de constrângere bazate pe limbajul / dialectul SQL al sursei de date"
 
 #: qdjango/static/qdjango/js/widget.js:1396
 msgid "Constraint Rules based on QGIS Expression"
-msgstr ""
+msgstr "Reguli de constrângere bazate pe expresii QGIS"
 
 #: qdjango/static/qdjango/js/widget.js:1538
 #: qdjango/static/qdjango/js/widget.js:1744
 msgid "Save"
-msgstr ""
+msgstr "Salvează"
 
 #: qdjango/static/qdjango/js/widget.js:1543
 #: qdjango/static/qdjango/js/widget.js:1749
 msgid "Delete"
-msgstr ""
+msgstr "Elimină"
 
 #: qdjango/static/qdjango/js/widget.js:1560
 msgid "Set a name and a possible description for the alphanumeric constraint"
-msgstr ""
+msgstr "Setează denumire/descriere constrângerii alfanumerice""
 
 #: qdjango/static/qdjango/js/widget.js:1583
 #: qdjango/static/qdjango/js/widget.js:1785
 msgid "Active for visualization"
-msgstr ""
+msgstr "Activă la vizualizare"
 
 #: qdjango/static/qdjango/js/widget.js:1594
 #: qdjango/static/qdjango/js/widget.js:1796
 msgid "Active for editing"
-msgstr ""
+msgstr "Activă la modificări"
 
 #: qdjango/static/qdjango/js/widget.js:1609
 msgid "Provider's language / SQL dialect Rules"
-msgstr ""
+msgstr "Regulile de limbaj / dialect SQL pe surse de date"
 
 #: qdjango/static/qdjango/js/widget.js:1614
 msgid "QGIS Expression Rules"
-msgstr ""
+msgstr "Reguli Expresii QGIS"
 
 #: qdjango/static/qdjango/js/widget.js:1764
 msgid "Select the constraint layer, only Polygon or MultiPolygon geomentry"
-msgstr ""
+msgstr "Selectează stratul de constrângere (Poligon sau MultiPoligon)"
 
 #: qdjango/static/qdjango/js/widget.js:1768
 msgid "Constraint layer"
-msgstr ""
+msgstr "Strat de constrângere"
 
 #: qdjango/static/qdjango/js/widget.js:1809
 msgid "Manage geo-constaints"
-msgstr ""
+msgstr "Gestionați constrângerile geografice"
 
 #: qdjango/static/qdjango/js/widget.js:2095
 msgid "New geo constraint"
-msgstr ""
+msgstr "Constrângere geografică nouă"
 
 #: qdjango/static/qdjango/js/widget.js:2098
 msgid "New constraint"
-msgstr ""
+msgstr "Constrângere nouă"
 
 #: qdjango/static/qdjango/js/widget.js:2116
 msgid "Layer constraint"
-msgstr ""
+msgstr "Constrângere strat"
 
 #: qdjango/static/qdjango/js/widget.js:2124
 msgid "Rules count"
-msgstr ""
+msgstr "Număr reguli"
 
 #: qdjango/static/qdjango/js/widget.js:2166
 msgid "Update constraint"
-msgstr ""
+msgstr "Actualizare constrângere"
 
 #: qdjango/static/qdjango/js/widget.js:2177
 msgid "Geo Constraint Rules"
-msgstr ""
+msgstr "Reguli constrângere geofrafică"
 
 #: qdjango/static/qdjango/js/widget.js:2268
 msgid "Create New Column Level Constraint"
-msgstr ""
+msgstr "Creare constrângere nouă coloană"
 
 #: qdjango/static/qdjango/js/widget.js:2271
 msgid "New Column Level Constraint"
-msgstr ""
+msgstr "Constrângere nouă coloană"
 
 #: qdjango/static/qdjango/js/widget.js:2284
 msgid "Group"
-msgstr ""
+msgstr "Grup"
 
 #: qdjango/static/qdjango/js/widget.js:2353
 msgid "Delete Column Level Constraint"
-msgstr ""
+msgstr "Elimină constrângere coloană"
 
 #: qdjango/static/qdjango/js/widget.js:2354
 msgid "Are you sure to delete column constraint"
-msgstr ""
+msgstr "Ești sigur că vrei să elimini constrângerea"
 
 #: qdjango/static/qdjango/js/widget.js:2447
 msgid "Edit Column Level Constraint."
-msgstr ""
+msgstr "Monifică constrângere coloană"
 
 #: qdjango/static/qdjango/js/widget.js:2551
 msgid "You must select a 'group' or a 'user'!"
-msgstr ""
+msgstr "Selectează un'grup' sau un 'utilizator'!"
 
 #: qdjango/static/qdjango/js/widget.js:2573
 msgid "Hidden Fields is required!"
-msgstr ""
+msgstr "Câmp ascuns necesar!"
 
 #: qdjango/static/qdjango/js/widget.js:2606
 msgid "User (required if group is not set)"
-msgstr ""
+msgstr "Utilizator (necesar dacă nu e setat grupul)"
 
 #: qdjango/static/qdjango/js/widget.js:2613
 msgid "Group (required if user is not set)"
-msgstr ""
+msgstr "Grup (necesar dacă nu e setat utilizatorul)"
 
 #: qdjango/static/qdjango/js/widget.js:2620
 msgid "Hidden Fields (required)"
-msgstr ""
+msgstr "Câmp ascuns (necesar)"
 
 #: qdjango/static/qdjango/js/widget.js:2652
 msgid "New Style From QML"
-msgstr ""
+msgstr "Stil nou din QML"
 
 #: qdjango/static/qdjango/js/widget.js:2669
 msgid "Current"
-msgstr ""
+msgstr "Actual"
 
 #: qdjango/static/qdjango/js/widget.js:2738
 msgid "Delete Style"
-msgstr ""
+msgstr "Elimină stil"
 
 #: qdjango/static/qdjango/js/widget.js:2739
 msgid "Are you sure to delete style"
-msgstr ""
+msgstr "Ești sigur că vrei să elimini stilul"
 
 #: qdjango/static/qdjango/js/widget.js:2797
 msgid "Create a new style from an uploaded QML file."
-msgstr ""
+msgstr "Creează un nou stil dintr-un fișier QML"
 
 #: qdjango/static/qdjango/js/widget.js:2799
 msgid "Edit style name or replace the style from an uploaded QML file."
-msgstr ""
+msgstr "Modifică nume sau înlocuiește stilul dintr-un fișier QML încărcat"
 
 #: qdjango/static/qdjango/js/widget.js:2833
 msgid "Style name is required!"
-msgstr ""
+msgstr "Numele stilului e necesar!"
 
 #: qdjango/static/qdjango/js/widget.js:2847
 msgid "A style with this name already exists!"
-msgstr ""
+msgstr "Există deja stil cu acest nume!"
 
 #: qdjango/static/qdjango/js/widget.js:2948
 msgid "Style name (required)"
-msgstr ""
+msgstr "Nume stil (necesar)"
 
 #: qdjango/static/qdjango/js/widget.js:2957
 msgid "Upload layer style QML file"
-msgstr ""
+msgstr "Încarcă fișier QML strat"

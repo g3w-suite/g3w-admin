@@ -63,5 +63,24 @@ sitetrees = (
             item('Liste des groupes MACRO', 'macrogroup-list', url_as_pattern=True, icon_css_class='fa fa-globe',
                  alias='macrogroup-list', in_breadcrumbs=True),
             ]),
+    ]),
+
+    G3Wtree('core_ro', title='Menu', module='core', items=[
+      # Then define items and their children with `item` function.
+        item('MENU', '#', type_header=True),
+        item('Tablou de bord', 'home', url_as_pattern=True, icon_css_class='fa fa-dashboard'),
+        item('Grupuri cartografice', 'group-list', icon_css_class='fa fa-globe', children=[
+          item('Adaugă grup', 'group-add', url_as_pattern=True, icon_css_class='fa fa-plus', access_by_perms=['core.add_group']),
+          item('Listă grupuri', 'group-list', url_as_pattern=True, icon_css_class='fa fa-globe', alias='group-list', in_breadcrumbs=False),
+          item('Groups update {{ object.title}}', 'group-update object.slug', url_as_pattern=True, icon_css_class='fa fa-edit', in_menu=False, alias='group-update'),
+          item('Lista proiecte {{ group.name }}', 'project-list group.slug', url_as_pattern=True, icon_css_class='fa fa-list', in_menu=False, alias='project-list')
+        ]),
+        item('Grupuri MACRO Cartografice', 'macrogroup-list', access_by_perms=['core.add_macrogroup'],
+            icon_css_class='fa fa-globe', children=[
+            item('Adaugă grup MACRO', 'macrogroup-add', url_as_pattern=True, icon_css_class='fa fa-plus',
+                 access_by_perms=['core.add_macrogroup']),
+            item('Lista grupuri MACRO', 'macrogroup-list', url_as_pattern=True, icon_css_class='fa fa-globe',
+                 alias='macrogroup-list', in_breadcrumbs=True),
+            ]),
     ])
 )

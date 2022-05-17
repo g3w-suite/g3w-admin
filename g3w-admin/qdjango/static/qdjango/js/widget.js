@@ -1761,7 +1761,7 @@ _.extend(g3wadmin.tpl, {
           <input type="hidden" name="layer" value="<%= layerId %>" />\
           <input type="hidden" name="active" value="1" />\
           <div class="info"><h4>' +
-      gettext("Select the constraint layer, only Polygon or MultiPolygon geomentry") +
+      gettext("Select the constraint layer, only Polygon or MultiPolygon geometry") +
       ':</h4></div>\
           <div class="controls">\
               <label>' +
