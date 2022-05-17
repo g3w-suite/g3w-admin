@@ -171,7 +171,7 @@ msgid ""
 "Define, for each user and/or group of users, viewing/editing rules based on "
 "the language or SQL dialect of the associated provider."
 msgstr ""
-"Definește, pentru fiecare utilizator/grupuri, regulile de vizualizare modificare""
+"Definește, pentru fiecare utilizator/grupuri, regulile de vizualizare modificare"
 "bazate pe limbajul sau dialectul SQL asociat sursei de date."
 
 #: qdjango/static/qdjango/js/widget.js:1293
@@ -233,7 +233,7 @@ msgstr "Elimină"
 
 #: qdjango/static/qdjango/js/widget.js:1560
 msgid "Set a name and a possible description for the alphanumeric constraint"
-msgstr "Setează denumire/descriere constrângerii alfanumerice""
+msgstr "Setează denumire/descriere constrângerii alfanumerice"
 
 #: qdjango/static/qdjango/js/widget.js:1583
 #: qdjango/static/qdjango/js/widget.js:1785

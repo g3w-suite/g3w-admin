@@ -148,7 +148,7 @@ msgstr "Controllo di mappa"
 
 #: core/models.py:85
 msgid "Map controls"
-msgstr "Cantrolli di mappa"
+msgstr "Controlli di mappa"
 
 #: core/models.py:93
 msgid "Identification name"
