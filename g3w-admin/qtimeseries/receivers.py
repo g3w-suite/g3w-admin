@@ -72,6 +72,9 @@ def set_initconfig_value(sender, **kwargs):
         project_layers.update({
             pl.pk: pl
         })
+
+        # Add layer with temporal_properties
+        # todo: change to qgis layer temporal properties also for NetCDF raster layer type.
         if pl.temporal_properties:
             vector_layers += 1
 
@@ -92,8 +95,6 @@ def set_initconfig_value(sender, **kwargs):
                 'start_date': rl.start_date,
                 'end_date': rl.end_date,
             })
-
-
 
     if len(raster_layers_id) + vector_layers == 0:
         return None
