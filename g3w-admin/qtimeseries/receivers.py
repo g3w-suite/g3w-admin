@@ -76,7 +76,8 @@ def set_initconfig_value(sender, **kwargs):
         # Add layer with temporal_properties
         # todo: change to qgis layer temporal properties also for NetCDF raster layer type.
         if pl.temporal_properties:
-            vector_layers += 1
+            if pl.type != Layer.TYPES.wms or pl.external:
+                vector_layers += 1
 
 
     # RASTER TIME SERIES

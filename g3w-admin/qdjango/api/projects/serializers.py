@@ -755,6 +755,8 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
                     ret['qtimeseries']['start_date'] = ret['qtimeseries']['range'][0]
                     ret['qtimeseries']['end_date'] = ret['qtimeseries']['range'][1]
                     del(ret['qtimeseries']['range'])
+                else:
+                    del(ret['qtimeseries'])
 
 
         return ret
