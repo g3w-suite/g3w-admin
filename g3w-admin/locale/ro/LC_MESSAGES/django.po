@@ -21,38 +21,38 @@ msgstr ""
 
 #: OWS/utils/data.py:125
 msgid "The GetFeatureResponse response is malformed: {}"
-msgstr ""
+msgstr "GetFeatureResponse este malformat: {}"
 
 #: bforest/forms/admin.py:61
 #: bforest/templates/bforest/admin/uploadscsv_add.html:9
 msgid "Upload CSV data file"
-msgstr ""
+msgstr "Încarcă fișier CSV"
 
 #: bforest/forms/admin.py:97
 msgid "This file must have a '.csv' extension!"
-msgstr ""
+msgstr "Acest fișier trebuie să aibă extensia '.csv'"
 
 #: bforest/forms/admin.py:109
 msgid "Input data has not HEADERS column."
-msgstr ""
+msgstr "Datele de input nu au coloană de antet HEADERS"
 
 #: bforest/forms/admin.py:121
 msgid "The follows fields are required: {\", \".join(field_intersect)}"
-msgstr ""
+msgstr "Următoarele câmpuri sunt obligatorii: {\", \".join(field_intersect)}"
 
 #: bforest/forms/admin.py:161
 msgid "Sorry but only one user's data for CSV file: {\", \".join(users)}"
-msgstr ""
+msgstr "Trebuie numai datele unui user pentru CSV-ul: {\", \".join(users)}"
 
 #: bforest/forms/admin.py:165
 #, python-brace-format
 msgid "Sorry but user's data {users[0]} is not present into DB."
-msgstr ""
+msgstr "Datele utilizatorului {users[0]} nu sunt prezente în baza de date"
 
 #: bforest/forms/admin.py:168
 #, python-brace-format
 msgid "Sorry but user's data {users[0]} is not your current username."
-msgstr ""
+msgstr "Datele utilizatorului {users[0]} nu reprezintă utilizatorul curent"
 
 #: bforest/forms/admin.py:250
 #: bforest/templates/bforest/admin/project_list.html:17
@@ -64,23 +64,23 @@ msgstr ""
 #: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:19
 #: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:27
 msgid "Project"
-msgstr ""
+msgstr "Proiect"
 
 #: bforest/models/admin.py:31
 msgid "CSV file type"
-msgstr ""
+msgstr "Tip fișier CSV"
 
 #: bforest/models/admin.py:33
 msgid "ADS DETECTED"
-msgstr ""
+msgstr "Reclame detectate"
 
 #: bforest/models/admin.py:34
 msgid "TREES"
-msgstr ""
+msgstr "Copaci"
 
 #: bforest/models/admin.py:37
 msgid "CSV file to upload"
-msgstr ""
+msgstr "Fișiser CSV de încărcat"
 
 #: bforest/models/admin.py:38
 #: bforest/templates/bforest/admin/project_list.html:25
@@ -88,52 +88,52 @@ msgstr ""
 #: eleprofile/templates/eleprofile/dtms_list.html:35
 #: eleprofile/templates/eleprofile/projects_list.html:27
 msgid "Note"
-msgstr ""
+msgstr "Notă"
 
 #: bforest/models/admin.py:43
 msgid "CSV rows"
-msgstr ""
+msgstr "Rânduri CSV"
 
 #: bforest/models/admin.py:44
 msgid "DB rows imported"
-msgstr ""
+msgstr "Rânduri încărcate în bază de date"
 
 #: bforest/models/admin.py:45
 msgid "Import ID"
-msgstr ""
+msgstr "ID import"
 
 #: bforest/templates/bforest/admin/__raster_recalculation_analysis.html:6
 #: bforest/templates/bforest/admin/raster_storic_analysis.html:6
 #: bforest/templates/bforest/admin/uploadscsv_list.html:31
 msgid "Date"
-msgstr ""
+msgstr "Data"
 
 #: bforest/templates/bforest/admin/__raster_recalculation_analysis.html:7
 #: bforest/templates/bforest/admin/raster_storic_analysis.html:7
 msgid "Result"
-msgstr ""
+msgstr "Rezultat"
 
 #: bforest/templates/bforest/admin/__raster_recalculation_analysis.html:8
 #: bforest/templates/bforest/admin/raster_storic_analysis.html:8
 msgid "Result Log"
-msgstr ""
+msgstr "Jurnat rezultate"
 
 #: bforest/templates/bforest/admin/__raster_recalculation_analysis.html:21
 #: bforest/templates/bforest/admin/raster_storic_analysis.html:27
 msgid "No storic analyzes."
-msgstr ""
+msgstr "Nu sunt analize storice"
 
 #: bforest/templates/bforest/admin/project_form.html:11
 #: bforest/templates/bforest/admin/project_form.html:14
 msgid "BForest Project"
-msgstr ""
+msgstr "Proiect BForest"
 
 #: bforest/templates/bforest/admin/project_form.html:14
 #: eleprofile/templates/eleprofile/dtm_form.html:14
 #: eleprofile/templates/eleprofile/project_form.html:14
 #: portal/templates/portal/picture_form.html:14
 msgid "New"
-msgstr ""
+msgstr "Nou"
 
 #: bforest/templates/bforest/admin/project_form.html:27
 #: bforest/templates/bforest/admin/uploadscsv_add.html:19
@@ -142,7 +142,7 @@ msgstr ""
 #: openrouteservice/templates/openrouteservice/openrouteserviceproject_form.html:25
 #: portal/templates/portal/picture_form.html:27
 msgid "Alert"
-msgstr ""
+msgstr "Alertă"
 
 #: bforest/templates/bforest/admin/project_form.html:28
 #: bforest/templates/bforest/admin/uploadscsv_add.html:20
@@ -151,11 +151,11 @@ msgstr ""
 #: openrouteservice/templates/openrouteservice/openrouteserviceproject_form.html:26
 #: portal/templates/portal/picture_form.html:28
 msgid "Some errors on form. Check it and send again."
-msgstr ""
+msgstr "Erori în formular. Verifică și retrimite"
 
 #: bforest/templates/bforest/admin/project_list.html:8
 msgid "BForest Projects"
-msgstr ""
+msgstr "Proiecte BForest"
 
 #: bforest/templates/bforest/admin/project_list.html:23
 #: bforest/templates/bforest/admin/uploadscsv_list.html:25
@@ -163,7 +163,7 @@ msgstr ""
 #: eleprofile/templates/eleprofile/projects_list.html:25
 #: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:26
 msgid "Actions"
-msgstr ""
+msgstr "Acțiuni"
 
 #: bforest/templates/bforest/admin/project_list.html:32
 #: eleprofile/templates/eleprofile/dtms_list.html:43
@@ -171,7 +171,7 @@ msgstr ""
 #: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:36
 #: portal/templates/portal/picture_list.html:50
 msgid "Edit"
-msgstr ""
+msgstr "Modifică"
 
 #: bforest/templates/bforest/admin/project_list.html:35
 #: bforest/templates/bforest/admin/uploadscsv_list.html:38
@@ -180,128 +180,128 @@ msgstr ""
 #: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:39
 #: portal/templates/portal/picture_list.html:53
 msgid "Delete"
-msgstr ""
+msgstr "Elimină"
 
 #: bforest/templates/bforest/admin/raster_analysis.html:38
 msgid "BForest Raster Analyzes"
-msgstr ""
+msgstr "Analize raster BForest"
 
 #: bforest/templates/bforest/admin/raster_analysis.html:48
 msgid "RUN ZONAL ANALISYS"
-msgstr ""
+msgstr "Rulează Analiză Zonală"
 
 #: bforest/templates/bforest/admin/raster_analysis.html:50
 msgid "Click to run Zonal Statistics Analysis"
-msgstr ""
+msgstr "Click pentru a rula Analiză Zonală Statistică"
 
 #: bforest/templates/bforest/admin/raster_analysis.html:51
 #: bforest/templates/bforest/admin/raster_analysis.html:69
 msgid "Last 5 analysys done"
-msgstr ""
+msgstr "Ultimele 5 analize rulate"
 
 #: bforest/templates/bforest/admin/raster_analysis.html:66
 msgid "RUN RECALCULATION ANALISYS"
-msgstr ""
+msgstr "Rulează analiză recalculare"
 
 #: bforest/templates/bforest/admin/raster_analysis.html:68
 msgid "Click to recalculate rasters"
-msgstr ""
+msgstr "Click pentru recalcurare rastere"
 
 #: bforest/templates/bforest/admin/uploadscsv_info.html:5
 msgid "General aspects"
-msgstr ""
+msgstr "Aspecte generale"
 
 #: bforest/templates/bforest/admin/uploadscsv_info.html:6
 msgid "File extention support: .csv"
-msgstr ""
+msgstr "Suport fișier extensie: .csv"
 
 #: bforest/templates/bforest/admin/uploadscsv_info.html:10
 msgid "Important"
-msgstr ""
+msgstr "Important"
 
 #: bforest/templates/bforest/admin/uploadscsv_info.html:10
 msgid "CSV file must have \"comma (,)\"  as field separator"
-msgstr ""
+msgstr "Fișierul CSV trebuie să aibă \"comma (,)\" ca separator de câmpuri" 
 
 #: bforest/templates/bforest/admin/uploadscsv_info.html:11
 msgid "The order and position of columns is not mandatory"
-msgstr ""
+msgstr "Ordinea și poziția coloanelor nu este importantă"
 
 #: bforest/templates/bforest/admin/uploadscsv_list.html:10
 msgid "Uploaded CSV data files"
-msgstr ""
+msgstr "Fișiere CSV încărcate"
 
 #: bforest/templates/bforest/admin/uploadscsv_list.html:19
 msgid "CSV file"
-msgstr ""
+msgstr "Fișier CSV"
 
 #: bforest/templates/bforest/admin/uploadscsv_list.html:26
 msgid "Type"
-msgstr ""
+msgstr "Tip"
 
 #: bforest/templates/bforest/admin/uploadscsv_list.html:27
 msgid "CSV File"
-msgstr ""
+msgstr "Fișier CSV"
 
 #: bforest/templates/bforest/admin/uploadscsv_list.html:29
 msgid "CSV records"
-msgstr ""
+msgstr "Rânduri CSV"
 
 #: bforest/templates/bforest/admin/uploadscsv_list.html:30
 msgid "DB records imported"
-msgstr ""
+msgstr "Înregistrări BD importate"
 
 #: bforest/templates/bforest/include/admin/form_buttons.html:6
 msgid "Upload and load into DB"
-msgstr ""
+msgstr "Încarcă datele în BD"
 
 #: bforest/templates/bforest/include/admin/form_buttons.html:10
 msgid "Redo/Back"
-msgstr ""
+msgstr "Refă/Înapoi"
 
 #: bforest/templates/bforest/include/admin/form_buttons.html:12
 msgid "Data structure for uploading"
-msgstr ""
+msgstr "Structura datelor de încărcat"
 
 #: bforest/templates/bforest/widgets/dashboard.html:17
 msgid "BForest CSV management module"
-msgstr ""
+msgstr "Modul management CSV BForest"
 
 #: bforest/templates/bforest/widgets/dashboard.html:26
 msgid "Import CSV"
-msgstr ""
+msgstr "Import CSV"
 
 #: bforest/templates/bforest/widgets/dashboard.html:34
 msgid "CSV imported"
-msgstr ""
+msgstr "CSV importat"
 
 #: br_service/apps.py:21
 msgid "BR service"
-msgstr ""
+msgstr "Serviciu BR"
 
 #: eleprofile/forms.py:92
 msgid "DTM Layer and pth layers"
-msgstr ""
+msgstr "Straturi DTP și path/cale"
 
 #: eleprofile/models.py:33
 msgid "Select DTM project layer to use for sampling"
-msgstr ""
+msgstr "Alege stratul proiect DTM pentru sampling"
 
 #: eleprofile/models.py:34
 msgid "Sampling DTM step"
-msgstr ""
+msgstr "Pas Sampling DTM"
 
 #: eleprofile/models.py:35
 msgid "Sampling step in map units, default 10"
-msgstr ""
+msgstr "Pas Sampling în unități de hartă, implicit 10"
 
 #: eleprofile/models.py:36
 msgid "Select one or more path layers"
-msgstr ""
+msgstr "Alege unul sau mai multe straturi de tip path/cale"
 
 #: eleprofile/models.py:44
 msgid "Layer must be a 'raster' or 'gdal' type"
-msgstr ""
+msgstr "Stratul trebuie să fie de tip 'raster' sau 'gdal'"
 
 #: eleprofile/models.py:51
 #, python-brace-format
@@ -309,6 +309,7 @@ msgid ""
 "Layer {layer.name} must be one of 'postgres', 'spatialite', 'ogr' or 'mssql' "
 "type"
 msgstr ""
+"Stratul {layer.name} trebuie să fie de tip 'postgres', 'spatialite', 'ogr' sau 'mssql'"
 
 #: eleprofile/models.py:57
 #, python-brace-format
@@ -316,364 +317,371 @@ msgid ""
 "Layer {layer.name} must be one geometry type of 'LineString' or "
 "'MultiLineString"
 msgstr ""
+"Stratul {layer.name} trebuie să fie de tip 'Linie' sau "
+"MultiLinie"
 
 #: eleprofile/templates/eleprofile/dtm_form.html:11
 #: eleprofile/templates/eleprofile/dtm_form.html:14
 msgid "DTM Layer and Path layers"
-msgstr ""
+msgstr "Straturi DTM și Path/Cale"
 
 #: eleprofile/templates/eleprofile/dtms_list.html:11
 msgid "DTM layer and path layers of project "
-msgstr ""
+msgstr "Straturile DTM și de cale/path ale proiectului"
 
 #: eleprofile/templates/eleprofile/dtms_list.html:23
 #: eleprofile/templates/eleprofile/projects_list.html:40
 msgid "DTM layer and Path layers"
-msgstr ""
+msgstr "Straturile DTM și Path/Cale"
 
 #: eleprofile/templates/eleprofile/dtms_list.html:33
 msgid "DTM layer"
-msgstr ""
+msgstr "Strat DTM"
 
 #: eleprofile/templates/eleprofile/dtms_list.html:34
 msgid "Path layers"
-msgstr ""
+msgstr "Straturi Path/Cale"
 
 #: eleprofile/templates/eleprofile/project_form.html:11
 msgid "Elevation Profile Project"
-msgstr ""
+msgstr "Proiect profil elevație"
 
 #: eleprofile/templates/eleprofile/projects_list.html:8
 msgid "Elevation Profile Projects"
-msgstr ""
+msgstr "Proiecte profile elevație"
 
 #: iam_bari/templates/_login.html:30
 msgid "Sign Out"
-msgstr ""
+msgstr "Deconectează-te"
 
 #: iam_bari/templates/_login.html:35 templates/login.html:41
 msgid "Sign In"
-msgstr ""
+msgstr "Autentificare"
 
 #: openrouteservice/api/views.py:138
 msgid "Input layer is not a point or multipoint layer."
-msgstr ""
+msgstr "Stratul de intrare nu este de tip punct/multipunct"
 
 #: openrouteservice/api/views.py:156
 msgid "Missing \"qgis_layer_id\", \"new_layer_name\" or \"connection_id\"."
-msgstr ""
+msgstr "Lipsește \"qgis_layer_id\", \"new_layer_name\" sau \"connection_id\"."
 
 #: openrouteservice/api/views.py:171 openrouteservice/api/views.py:176
 msgid ""
 "Wrong color parameter, color must be a list of three integers (red, green, "
 "blue)."
 msgstr ""
+"Parametru de culoare greșit, culoarea trebuie să fie listă de integere "
+" numere întregi (r,g,b)"
 
 #: openrouteservice/api/views.py:182
 msgid ""
 "Missing tranparency parameter, because color was specified transparency is "
 "required."
 msgstr ""
+"Lipsește parametrul de transparență obligatoriu la culoare"
 
 #: openrouteservice/api/views.py:190
 msgid "Wrong tranparency parameter, transparency must be between 0 and 1."
-msgstr ""
+msgstr "Parametrul de transparență trebuie să fie între 0 și 1"
 
 #: openrouteservice/api/views.py:196
 msgid "Missing stroke_width from style definition."
-msgstr ""
+msgstr "Lipsește stroke_width din definiția stilului"
 
 #: openrouteservice/api/views.py:212
 msgid "Layer is not compatible with ORS data."
-msgstr ""
+msgstr "Stratul nu este compatibil cu datele ORS"
 
 #: openrouteservice/api/views.py:225
 msgid "Wrong connection_id."
-msgstr ""
+msgstr "Id conexiune greșit"
 
 #: openrouteservice/api/views.py:229
 msgid "Either qgis_layer_id or connection_id + layer_name must have a value."
-msgstr ""
+msgstr "Trebuie să fie completat qgis_layer_id sau connection_id"
 
 #: openrouteservice/api/views.py:236
 #, python-format
 msgid "Profile not found, available profiles: %s"
-msgstr ""
+msgstr "Profil negăsit, profile disponibile: %s"
 
 #: openrouteservice/api/views.py:246
 msgid "Missing \"locations\" array."
-msgstr ""
+msgstr "Lipsește șirul de \"locations\""
 
 #: openrouteservice/api/views.py:250
 #, python-format
 msgid "Max allowed locations: %s"
-msgstr ""
+msgstr "Nr. maxim Locații permise: %s"
 
 #: openrouteservice/api/views.py:254
 msgid "Malformed locations array."
-msgstr ""
+msgstr "Șir/array malformat de locații"
 
 #: openrouteservice/api/views.py:259
 msgid "Missing \"range\" array."
-msgstr ""
+msgstr "Lipsește șirul/array-ul de intervale - \"range\""
 
 #: openrouteservice/api/views.py:263
 #, python-format
 msgid "Max allowed ranges: %s"
-msgstr ""
+msgstr "Nr. max de intervaluri (range) permise"
 
 #: openrouteservice/api/views.py:267
 msgid "Malformed range array."
-msgstr ""
+msgstr "Șir malformat de range-uri/intervaluri "
 
 #: openrouteservice/api/views.py:394
 msgid "Task not found!"
-msgstr ""
+msgstr "Task negăsit"
 
 #: openrouteservice/models.py:38
 msgid "Isochrones"
-msgstr ""
+msgstr "Izocronuri"
 
 #: openrouteservice/templates/openrouteservice/openrouteserviceproject_form.html:13
 msgid "Openrouteservice Project"
-msgstr ""
+msgstr "Proiect Openrouteservice"
 
 #: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:8
 msgid "Openrouteservice Projects"
-msgstr ""
+msgstr "Proiecte Openrouteservice"
 
 #: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:28
 msgid "Services"
-msgstr ""
+msgstr "Servicii"
 
 #: openrouteservice/utils.py:494
 msgid "Cannot create temporary layer for isochrone result."
-msgstr ""
+msgstr "Nu se poate crea strat temporar pentru rezultatul de izocron"
 
 #: openrouteservice/utils.py:512
 msgid ""
 "Cannot save isochrone result to destination layer: layer already exists (use "
 "\"qgis_layer_id\" instead)!"
 msgstr ""
+"Nu se poate salva rezultatul izocron în stratul destinație: strat deja "
+"existent (folosește \"qgis_layer_id\" ca înlocuitor)!"
 
 #: openrouteservice/utils.py:525
 msgid "Cannot save isochrone result to destination layer: "
-msgstr ""
+msgstr "Nu pot salva rezultatul izocron în stratul destinație"
 
 #: openrouteservice/utils.py:553
 msgid "Wrong connection id."
-msgstr ""
+msgstr "ID conexiune greșit"
 
 #: openrouteservice/utils.py:585
 msgid "Error creating destination layer connection."
-msgstr ""
+msgstr "Eroare creare conexiune strat destinație."
 
 #: openrouteservice/utils.py:592
 msgid "Error creating destination layer: "
-msgstr ""
+msgstr "Eroare creare strat destinație"
 
 #: openrouteservice/utils.py:606
 msgid "Error creating destination layer: layer is not valid!"
-msgstr ""
+msgstr "Eroare creare strat destinație: strat invalid!"
 
 #: openrouteservice/utils.py:619
 msgid "Error saving the destination layer: could not write project!"
-msgstr ""
+msgstr "Eroare salvare strat destinație: proiectul nu se poate scrie!"
 
 #: openrouteservice/utils.py:643
 msgid "Error adding destination Layer to the project: layer already exists."
-msgstr ""
+msgstr "Eroare adăugare strat destinație în proiect: strat deja existent."
 
 #: openrouteservice/utils.py:653
 #, python-format
 msgid "Error opening destination layer %s: layer not found in QGIS project!"
-msgstr ""
+msgstr "Eroare deschidere strat destinație %s: strat negăsit în proiectul QGIS"
 
 #: openrouteservice/utils.py:670
 msgid "Error transforming geometry from 4326 to destination layer CRS."
-msgstr ""
+msgstr "Eroare transformare geometrie din 4326 în CRS-ul destinație"
 
 #: openrouteservice/utils.py:674
 msgid "No compatible features returned from isochrone."
-msgstr ""
+msgstr "Izocronul nu a returnat entități compatibile"
 
 #: openrouteservice/utils.py:677
 msgid "Destination layer is not editable."
-msgstr ""
+msgstr "Stratul destinație nu este modificabil"
 
 #: openrouteservice/utils.py:681
 msgid "Error adding features to the destination layer."
-msgstr ""
+msgstr "Eroare adăugare entități în strat destinație"
 
 #: openrouteservice/utils.py:685
 msgid "Error committing features to the destination layer."
-msgstr ""
+msgstr "Eroare salvare entități în strat destinație"
 
 #: openrouteservice/utils.py:793
 #, python-format
 msgid "Error generating isochrone: %s."
-msgstr ""
+msgstr "Eroare generare izocron: %s."
 
 #: openrouteservice/utils.py:822
 msgid "Unknown error adding results to the destination layer."
-msgstr ""
+msgstr "Eroare la adăugare rezultate în strat destinație"
 
 #: portal/forms.py:45
 msgid "Picture data"
-msgstr ""
+msgstr "Date Imagine"
 
 #: portal/forms.py:67
 msgid "Author and style data"
-msgstr ""
+msgstr "Autor și date stilizare"
 
 #: portal/models.py:20 portal/templates/portal/picture_form.html:11
 #: portal/templates/portal/picture_form.html:14
 msgid "Picture"
-msgstr ""
+msgstr "Imagine"
 
 #: portal/models.py:21
 msgid "Main color"
-msgstr ""
+msgstr "Culoare principală"
 
 #: portal/models.py:22
 msgid "Main title color"
-msgstr ""
+msgstr "Culoare titlu principal"
 
 #: portal/models.py:23
 msgid "Subtitle color"
-msgstr ""
+msgstr "Culoare subtitrare"
 
 #: portal/models.py:24 portal/templates/portal/picture_list.html:41
 msgid "Author"
-msgstr ""
+msgstr "Autor"
 
 #: portal/models.py:25
 msgid "Author URL"
-msgstr ""
+msgstr "URL autor"
 
 #: portal/templates/portal/picture_list.html:10
 msgid "Portal pictures"
-msgstr ""
+msgstr "Imagini portal"
 
 #: portal/templates/portal/picture_list.html:21
 msgid "Add, update or delete portal picture"
-msgstr ""
+msgstr "Adaugă, modifică sau elimină imagine portal"
 
 #: portal/templates/portal/picture_list.html:31
 msgid "Pictures"
-msgstr ""
+msgstr "Imagini"
 
 #: portal/templates/portal/picture_list.html:40
 msgid "Image"
-msgstr ""
+msgstr "Imagine"
 
 #: portal/templates/portal/picture_list.html:42
 msgid "Author url"
-msgstr ""
+msgstr "URL autor"
 
 #: templates/403.html:7
 msgid "error page"
-msgstr ""
+msgstr "pagină eroare"
 
 #: templates/403.html:15
 msgid "Access denied"
-msgstr ""
+msgstr "Acces interzis"
 
 #: templates/403.html:17
 msgid "You don't have grant to access this section"
-msgstr ""
+msgstr "Nu ai privilegii de acces în această secțiune"
 
 #: templates/404.html:11
 msgid "Oops! Page not found."
-msgstr ""
+msgstr "Hopaa! Nu am găsit pagina."
 
 #: templates/404.html:13
 msgid "We could not find the page you were looking for."
-msgstr ""
+msgstr "Pagina căutată nu există."
 
 #: templates/base.html:193 templates/index.html:6
 msgid "Dashboard"
-msgstr ""
+msgstr "Tablou de bord"
 
 #: templates/base.html:232
 msgid "Version"
-msgstr ""
+msgstr "Versiune"
 
 #: templates/include/navbar_right_menu.html:10
 msgid "Search"
-msgstr ""
+msgstr "Căutare"
 
 #: templates/include/navbar_right_menu.html:24
 msgid "Frontend"
-msgstr ""
+msgstr "Frontend"
 
 #: templates/include/navbar_right_menu.html:45
 msgid "Registered on"
-msgstr ""
+msgstr "Înregistrat la"
 
 #: templates/include/navbar_right_menu.html:46
 msgid "Last login"
-msgstr ""
+msgstr "Ultima autentificare"
 
 #: templates/include/navbar_right_menu.html:53
 msgid "Profile"
-msgstr ""
+msgstr "Profil"
 
 #: templates/include/navbar_right_menu.html:56
 msgid "Logout"
-msgstr ""
+msgstr "Deconectare"
 
 #: templates/include/sidebar_right.html:9
 msgid "Configurations"
-msgstr ""
+msgstr "Configurări"
 
 #: templates/include/sidebar_right.html:15
 msgid "Edit general data"
-msgstr ""
+msgstr "Modifică date generale"
 
 #: templates/include/sidebar_right.html:16
 msgid "Frontend data and other"
-msgstr ""
+msgstr "Date Frontent ș.a.m.d."
 
 #: templates/include/sidebar_right.html:25
 msgid "Django administration"
-msgstr ""
+msgstr "Administrare Django"
 
 #: templates/include/sidebar_right.html:26
 msgid "Go to staff administration section"
-msgstr ""
+msgstr "Secțiune administrare personal"
 
 #: templates/index.html:7
 msgid "Current situation"
-msgstr ""
+msgstr "Situația curentă"
 
 #: templates/index.html:19
 msgid "Groups"
-msgstr ""
+msgstr "Grupuri"
 
 #: templates/index.html:26
 msgid "Show"
-msgstr ""
+msgstr "Arată"
 
 #: templates/index.html:32
 msgid "Module widgets"
-msgstr ""
+msgstr "Widget-uri modul"
 
 #: templates/login.html:21
 msgid "Sign in to start your session"
-msgstr ""
+msgstr "Autentifică-te pentru a porni sesiunea"
 
 #: templates/login.html:25 templates/registration/password_reset_form.html:24
 msgid "LOGIN ERROR"
-msgstr ""
+msgstr "Eroare autentificare"
 
 #: templates/login.html:26
 msgid "Username and/or password uncorrect"
-msgstr ""
+msgstr "Utilizatorul sau parola incorectă"
 
 #: templates/login.html:47 templates/registration/password_reset_form.html:31
 msgid "Forgot your password?"
-msgstr ""
+msgstr "Parolă uitată?"
 
 #: templates/login.html:53
 #: templates/registration/password_reset_complete.html:26
@@ -681,78 +689,82 @@ msgstr ""
 #: templates/registration/password_reset_done.html:26
 #: templates/registration/password_reset_form.html:45
 msgid " Version"
-msgstr ""
+msgstr "Versiune"
 
 #: templates/registration/password_reset_complete.html:22
 msgid "Password reset complete"
-msgstr ""
+msgstr "Resetare parolă completă"
 
 #: templates/registration/password_reset_complete.html:23
 msgid "Your new password has been set. You can log in now on the"
-msgstr ""
+msgstr "Parolă nou creată. Te poți autentifica în"
 
 #: templates/registration/password_reset_complete.html:23
 msgid "log in page"
-msgstr ""
+msgstr "pagina de autentificare"
 
 #: templates/registration/password_reset_confirm.html:22
 msgid "Enter new password"
-msgstr ""
+msgstr "Introdu parolă nouă"
 
 #: templates/registration/password_reset_confirm.html:29
 msgid "New password"
-msgstr ""
+msgstr "Parolă nouă"
 
 #: templates/registration/password_reset_confirm.html:34
 msgid "Repeat password"
-msgstr ""
+msgstr "Repetă parola"
 
 #: templates/registration/password_reset_confirm.html:39
 msgid "Change my password"
-msgstr ""
+msgstr "Schimbă parola"
 
 #: templates/registration/password_reset_confirm.html:44
 msgid ""
 "The password reset link <strong>was invalid</strong>, possibly because it "
 "has already been used.  Please request a new password reset."
 msgstr ""
+"Link resetare parolă <strong>invalid</strong>, e posibil să mai fi "
+"fost folosit. Efectează o nouă resetare de parolă."
 
 #: templates/registration/password_reset_done.html:22
 msgid "Check your inbox."
-msgstr ""
+msgstr "Verifică căsuța de email"
 
 #: templates/registration/password_reset_done.html:23
 msgid ""
 "We've emailed you instructions for setting your password. You should receive "
 "the email shortly!"
 msgstr ""
+"Am trimis email cu instrucțiunile de setare parolă."
 
 #: templates/registration/password_reset_form.html:25
 msgid "Email no present into database"
-msgstr ""
+msgstr "Nu am găsit email-ul în baza de date"
 
 #: templates/registration/password_reset_form.html:32
 msgid ""
 "Enter your email address below, and we'll email instructions for setting a "
 "new one."
 msgstr ""
+"Introdu adresa email pentru a primi instrucțiunile de setare"
 
 #: templates/registration/password_reset_form.html:40
 msgid "Send me instruction"
-msgstr ""
+msgstr "Trimite-mi instrucțiunile"
 
 #: templates/search.html:6
 msgid "Search results for"
-msgstr ""
+msgstr "Rezultate căutare pentru"
 
 #: templates/search.html:14
 msgid "Not results found!"
-msgstr ""
+msgstr "Lipsă rezultate!"
 
 #: templates/search.html:16
 msgid "Found "
-msgstr ""
+msgstr "Găsit"
 
 #: templates/search.html:16
 msgid " results."
-msgstr ""
+msgstr " rezultate"
