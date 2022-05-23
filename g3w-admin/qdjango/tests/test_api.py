@@ -51,6 +51,9 @@ import os
 QGS_FILE_TEMPORAL_VECTOR_WITH_FIELD = 'test_temporal_vector_layer_316_ModeFeatureDateTimeInstantFromField.qgs'
 QGS_FILE_TEMPORAL_VECTOR_WITH_NOT_ACTIVE = 'test_temporal_vector_layer_316_not_active.qgs'
 
+# Temporal raster layer wmst
+QGS_FILE_WMST = 'test_WMST.qgs'
+
 
 class BaseConstraintsApiTests():
 
@@ -1330,6 +1333,16 @@ class QgisTemporalVectorProject(QdjangoTestBase):
         cls.project_temporal_vector_field.save()
         qgis_project_file.close()
 
+        # Test WMST
+        qgis_project_file = File(
+            open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_FILE_WMST), 'r',
+                 encoding='utf-8'))
+        qgis_project_file.name = qgis_project_file.name.split('/')[-1]
+        cls.project_wmst = QgisProject(qgis_project_file)
+        cls.project_wmst.group = cls.project_group
+        cls.project_wmst.save()
+        qgis_project_file.close()
+
         qgis_project_file = File(
             open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_FILE_TEMPORAL_VECTOR_WITH_NOT_ACTIVE), 'r',
                  encoding='utf-8'))
@@ -1353,6 +1366,15 @@ class QgisTemporalVectorProject(QdjangoTestBase):
                          '{"mode": "FeatureDateTimeInstantFromField", "field": "dateofocc", "units": "d", "duration": 1.0}')
         self.assertEqual(self.project_temporal_vector_field.instance.layer_set.all()[0].temporal_properties,
                          '{"mode": "FeatureDateTimeInstantFromField", "field": "dateofocc", "units": "d", "duration": 1.0}')
+
+    def test_qgs_project_wmst(self):
+        """ Test properties into qgsproject object and models """
+
+        # Active
+        self.assertEqual(self.project_wmst.layers[0].temporalproperties,
+                         '{"mode": "RasterTemporalRangeFromDataProvider", "range": ["1981-01-01T00:00:00", "2022-03-01T00:00:00"]}')
+        self.assertEqual(self.project_wmst.instance.layer_set.all()[0].temporal_properties,
+                         '{"mode": "RasterTemporalRangeFromDataProvider", "range": ["1981-01-01T00:00:00", "2022-03-01T00:00:00"]}')
 
     def test_client_map_config(self):
         """ Test for client config API """
@@ -1389,4 +1411,37 @@ class QgisTemporalVectorProject(QdjangoTestBase):
                          ['qtimeseries']['field'], 'dateofocc')
         self.assertEqual(jcontent['layers'][0]['qtimeseries']['units'], 'd')
         self.assertEqual(jcontent['layers'][0]['qtimeseries']['duration'], 1.0)
+
+        # WMST
+        url = reverse('group-project-map-config',
+                      args=[self.project_wmst.group.slug, 'qdjango', self.project_wmst.instance.pk])
+
+        assert self.client.login(
+            username=self.test_admin1.username, password=self.test_admin1.username)
+
+        # WMST not external
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        jcontent = json.loads(response.content)
+
+
+        self.assertFalse('qtimeseries' in jcontent['layers'][0])
+
+        # WMST external
+        # Set external
+        l = self.project_wmst.instance.layer_set.all()[0]
+        l.external = True
+        l.save()
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        jcontent = json.loads(response.content)
+
+        self.assertEqual(jcontent['layers'][0]['qtimeseries']
+                         ['mode'], 'RasterTemporalRangeFromDataProvider')
+
+        self.assertEqual(jcontent['layers'][0]['qtimeseries']['start_date'], '1981-01-01T00:00:00')
+        self.assertEqual(jcontent['layers'][0]['qtimeseries']['end_date'], '2022-03-01T00:00:00')
 
