@@ -289,9 +289,10 @@ INTERNAL_IPS = [
 ]
 
 
+# TODO: to remove after refactorign for Django 3.2
 # DJANGO-FILE-FORM SETTINGS
 # -------------------------
-FILE_FORM_UPLOAD_BACKEND = 'core.utils.response.G3WFileFormUploadBackend'
+#FILE_FORM_UPLOAD_BACKEND = 'core.utils.response.G3WFileFormUploadBackend'
 
 # Extentions file can be uploaded by django-file-form ajax uploader
 G3WFILE_FORM_UPLOAD_FORMATS = ['qgs', 'qgz', 'png', 'jpg', 'jpeg', 'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ods']

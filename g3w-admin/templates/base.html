@@ -74,8 +74,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
         <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 
-    <!-- Django-file-form: fieluploader -->
-    <link rel="stylesheet" href="{% static "ajaxuploader/css/fileuploader.css" %}">
+    <!-- Django-file-form -->
+    <link rel="stylesheet" href="{% static "file_form/file_form.css" %}">
 
 
     {% block custom_css_links_page %}
@@ -306,13 +306,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
     {% else %}
     <script src="{% static "dist/js/vendor.min.js" %}"></script>
     {% endif %}
-
     <!-- AdminLTE App -->
     <script src="{% static "adminlte/js/app.min.js" %}"></script>
-
-
-    <!-- Django-file-form: fileuploader -->
-    <script src="{% static "ajaxuploader/js/fileuploader.js" %}"></script>
     <!-- Django-file-form -->
     <script src="{% static "file_form/file_form.js" %}"></script>
 

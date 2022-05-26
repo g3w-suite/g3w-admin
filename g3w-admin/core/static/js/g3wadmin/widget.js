@@ -537,7 +537,7 @@ _.extend(g3wadmin.widget, {
 
         //options['deleteFile'] = {'enabled': false};
 
-        initUploadFields($item, options);
+        initUploadFields($item[0], options);
 
         var $uploader = $item.find(".file-uploader-container");
         $uploader.on('complete', function(e, id, name, resJSON, xhr){
