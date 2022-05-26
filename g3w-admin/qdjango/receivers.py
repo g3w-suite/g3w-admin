@@ -1,38 +1,25 @@
-from django.dispatch import receiver
-from django.db.models.signals import post_delete, post_save, pre_save, pre_delete
-from django.conf import settings
-from django.core.cache import caches
-from django.template import loader
-from django.contrib.auth.signals import user_logged_out
-from core.signals import execute_search_on_models, load_layer_actions, pre_delete_project, pre_update_project
-from core.models import ProjectMapUrlAlias
-from .models import Project, Layer, SessionTokenFilter, ColumnAcl
-from .signals import post_save_qdjango_project_file
-from .searches import ProjectSearch
-from .views import QdjangoProjectListView, QdjangoProjectUpdateView
-import os
 import logging
+import os
+from pathlib import Path
+
+from core.models import ProjectMapUrlAlias
+from core.signals import (execute_search_on_models, load_layer_actions,
+                          pre_delete_project, pre_update_project)
+from django.conf import settings
+from django.contrib.auth.signals import user_logged_out
+from django.core.cache import caches
+from django.db.models.signals import (post_delete, post_save, pre_delete,
+                                      pre_save)
+from django.dispatch import receiver
+from django.template import loader
 from qgis.core import QgsProject
 
+from .models import ColumnAcl, Layer, Project, SessionTokenFilter
+from .searches import ProjectSearch
+from .signals import post_save_qdjango_project_file
+from .views import QdjangoProjectListView, QdjangoProjectUpdateView
+
 logger = logging.getLogger('django.request')
-
-
-# Method to invalidate QGIS Server internal caches in development mode:
-# this happens automatically in production servers but it doesn't work
-# with Django's runserver due to threading issues and automatic reload"""
-if settings.DEBUG:
-    @receiver(post_save_qdjango_project_file)
-    def remove_project_from_cache(sender, **kwargs):
-        from qdjango.apps import QGS_SERVER, QgsConfigCache
-        from qdjango.utils.data import QgisProject
-        if not isinstance(sender, QgisProject):
-            return
-        path = sender.instance.qgis_file.path
-        QgsConfigCache.instance().removeEntry(path)
-        QGS_SERVER.serverInterface().capabilitiesCache().removeCapabilitiesDocument(path)
-        logging.getLogger('g3wadmin.debug').warning(
-            'settings.DEBUG is True: QGIS Server cached project invalidated: %s' % path)
-
 
 @receiver(post_delete, sender=Project)
 def delete_project_file(sender, **kwargs):
@@ -84,6 +71,28 @@ def remove_embedded_layers(sender, **kwargs):
         assert project.read(layer.project.qgis_file.file.name)
         project.removeMapLayers([layer.qgs_layer_id])
         assert project.write()
+
+
+@receiver(post_save, sender=Project)
+def remove_parent_project_from_cache(sender, **kwargs):
+    """Triggers a cache invalidation in parent projects from embedded layers"""
+
+    # only for update
+    if kwargs['created']:
+        return
+
+    project = kwargs['instance']
+
+    updated_parents = []
+    for l in Layer.objects.filter(parent_project=project):
+        path = l.project.qgis_file.file.name
+        if path in updated_parents:
+            continue
+        updated_parents.append(path)
+        p = Path(path)
+        p.touch()
+        logging.getLogger('g3wadmin.debug').debug(
+            'QGIS Server parent project touched to invalidate cache: %s' % path)
 
 
 @receiver(post_save, sender=Layer)
