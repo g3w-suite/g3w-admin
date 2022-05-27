@@ -122,15 +122,19 @@ class ProjectCacheInvalidator():
             return
 
         mtime = stat_info.st_mtime
+        pid = os.getpid()
         try:
             if cls.__CACHED_PROJECTS[path] < mtime:
-                logger.warning(
-                    'QGIS Server cached project mtime has changed, clearing cache: %s' % path)
+                logger.debug(
+                    'pid: %s mtime: %s QGIS Server cached project mtime has changed, clearing cache: %s' % (pid, mtime, path))
                 remove_project_from_cache(path)
                 del(cls.__CACHED_PROJECTS[path])
+            else:
+                logger.debug(
+                    'pid: %s mtime: %s QGIS Server cached project mtime has not changed: %s' % (pid, mtime, path))
         except KeyError:
-            logger.warning(
-                'QGIS Server project added to mtime cache: %s' % path)
+            logger.debug(
+                'pid: %s mtime: %s QGIS Server project added to mtime cache: %s' % (pid, mtime, path))
             cls.__CACHED_PROJECTS[path] = mtime
 
 
@@ -147,6 +151,8 @@ def get_qgs_project(path):
     """
 
     try:
+        QgsApplication.instance().processEvents()
+
         # Call process events in case the project has been updated and the cache
         # needs rebuilt. This triggers the QGIS server internal cache manager that
         # invalidates the cache if the file has changed. QGIS internal implementation

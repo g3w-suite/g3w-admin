@@ -1,13 +1,14 @@
 """
 G3W-ADMIN URL Configuration
 """
-from django.urls import path, include
+from django.urls import path, include, re_path
 from django.contrib import admin, auth
 from django.conf import settings
 from django.conf.urls.static import static
 from django.conf.urls.i18n import i18n_patterns
 from django.views.i18n import JavaScriptCatalog
 from ajax_select import urls as ajax_select_urls
+from django.contrib.staticfiles import views
 
 import debug_toolbar
 
@@ -143,6 +144,7 @@ from sitetree.sitetreeapp import register_i18n_trees
 
 register_i18n_trees(G3W_SITETREE_I18N_ALIAS)
 
-
-
-
+if settings.DEBUG:
+    urlpatterns += [
+        re_path(r'^static/(?P<path>.*)$', views.serve),
+    ]
