@@ -316,6 +316,11 @@ def mapLayerAttributesFromQgisLayer(qgis_layer, **kwargs):
                 if 'fields' in kwargs and field.name() in kwargs['fields']:
                     deepupdate(toRes[field.name()],
                                kwargs['fields'][field.name()])
+
+                    # For default value priority to `default_value`
+                    if default_value:
+                        toRes[field.name()]['input']['options']['default'] = default_value
+
                     if fieldType == FIELD_TYPE_BOOLEAN:
                         toRes[field.name()]['input']['options']['values'] = [
                                 {'checked': True, 'value': True},
