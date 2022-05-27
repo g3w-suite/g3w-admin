@@ -15,15 +15,16 @@ G3W-SUITE works with **QGIS-Server LTR versions**.
 
 At the moment is not used a classic versioning system for the suite, there are main 3 branches.
 
-| Branch | Python version | Django version | QGIS API |Status |
-|--------|----------------|----------------|----------|-------|
-| dev | 3.6 | 2.2 | Used | Continue developing |
-| v.3.3.x | 3.6 | 2.2 | Used | Bug fixing |
-| v.3.2.x | 3.6 | 2.2 | Used | Bug fixing |
-| v.3.1.x | 3.6 | 2.2 | Used | No longer supported |
-| v.3.0.x | 3.6 | 2.2 | Used | No longer supported |
-| dj22-py3 | 3.6 | 2.2 | Not used | No longer supported  |
-| py2 | 2.7 | 1.11 | Not used |No longer supported  |
+| Branch   | Python version | Django version | QGIS API | Status              |
+|----------|----------------|----------------|----------|---------------------|
+| dev      | 3.10           | 2.2 | Used | Continue developing |
+ | v.3.4.x  | 3.8            | 2.2 | Used | Bug fixing          |
+ | v.3.3.x  | 3.6            | 2.2 | Used | Bug fixing          |
+ | v.3.2.x  | 3.6            | 2.2 | Used | No longer suppoeted |
+ | v.3.1.x  | 3.6            | 2.2 | Used | No longer supported |
+ | v.3.0.x  | 3.6            | 2.2 | Used | No longer supported |
+ | dj22-py3 | 3.6            | 2.2 | Not used | No longer supported |
+ | py2      | 2.7            | 1.11 | Not used | No longer supported |
 
 The following instructions are for a Ubuntu 18.04 LTS.
 
