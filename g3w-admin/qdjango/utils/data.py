@@ -1402,6 +1402,11 @@ class QgisProject(XmlData):
                             element.attrib['project'] = makeDatasource(
                                 self.instance.qgis_file.path, Layer.TYPES.ogr)
                             changed = True
+                    # Handle editor_form_structure
+                    structure = self.instance.layer_set.get(qgs_layer_id=layer_id).editor_form_structure
+                    if structure != embedded_layer.editor_form_structure:
+                        embedded_layer.editor_form_structure = structure
+                        embedded_layer.save()
 
                 if changed:
                     tree.write(linked_project.qgis_file.file.name,
