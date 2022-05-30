@@ -286,7 +286,7 @@ msgstr ""
 
 #: qdjango/models/geoconstraints.py:129
 msgid "SQL WHERE clause for the constraint layer"
-msgstr ""
+msgstr "Clauza SQL WHERE pentru stratul de constrângeri"
 
 #: qdjango/models/geoconstraints.py:142
 msgid "Geoconstraint rule"
@@ -294,60 +294,60 @@ msgstr ""
 
 #: qdjango/models/geoconstraints.py:143
 msgid "Geoconstraint rules"
-msgstr ""
+msgstr "Reguli de geoconstrângere"
 
 #: qdjango/models/projects.py:145
 msgid "Single"
-msgstr ""
+msgstr "Singur"
 
 #: qdjango/models/projects.py:146
 msgid "Multiple"
-msgstr ""
+msgstr "Multiplu"
 
 #: qdjango/models/projects.py:150 qdjango/models/projects.py:870
 #: qdjango/templates/qdjango/project_form.html:44
 #: qdjango/templates/qdjango/project_list.html:48
 #: qdjango/templates/qdjango/search/project.html:38
 msgid "Layers"
-msgstr ""
+msgstr "Straturi"
 
 #: qdjango/models/projects.py:151
 msgid "Base layers"
-msgstr ""
+msgstr "Straturi de bază"
 
 #: qdjango/models/projects.py:152
 msgid "Legend"
-msgstr ""
+msgstr "Legendă"
 
 #: qdjango/models/projects.py:156 qdjango/models/projects.py:161
 msgid "Collapsed"
-msgstr ""
+msgstr "S-a prăbușit"
 
 #: qdjango/models/projects.py:157 qdjango/models/projects.py:162
 msgid "Not collapsed"
-msgstr ""
+msgstr "Not collapsed"
 
 #: qdjango/models/projects.py:166
 msgid "In a separate TAB"
-msgstr ""
+msgstr "Într-un TAB separat"
 
 #: qdjango/models/projects.py:167
 msgid "Into TOC layers"
-msgstr ""
+msgstr "În straturi TOC"
 
 #: qdjango/models/projects.py:172
 msgid "QGIS project file"
-msgstr ""
+msgstr "Fișierul de proiect QGIS"
 
 #: qdjango/models/projects.py:179 qdjango/models/projects.py:483
 #: qdjango/templates/qdjango/ajax/layer_detail.html:7
 msgid "Title"
-msgstr ""
+msgstr "Ttlu"
 
 #: qdjango/models/projects.py:181
 #: qdjango/templates/qdjango/project_list.html:24
 msgid "Public title"
-msgstr ""
+msgstr "Titlu public"
 
 #: qdjango/models/projects.py:184 qdjango/models/projects.py:490
 #: qdjango/models/projects.py:983
@@ -356,7 +356,7 @@ msgstr ""
 
 #: qdjango/models/projects.py:186 qdjango/models/projects.py:492
 msgid "Is active"
-msgstr ""
+msgstr "Este activ"
 
 #: qdjango/models/projects.py:189
 #: qdjango/templates/qdjango/ajax/project_detail.html:30
