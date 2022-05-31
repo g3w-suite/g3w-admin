@@ -21,54 +21,56 @@ msgstr ""
 #: qdjango/admin.py:75 qdjango/models/projects.py:275
 #: qdjango/models/projects.py:495 qdjango/templates/qdjango/layers_list.html:73
 msgid "Project"
-msgstr ""
+msgstr "Proiect"
 
 #: qdjango/admin.py:149
 msgid "{} can not be deleted because: {}"
-msgstr ""
+msgstr "{} nu poate fi șters deoarece: {}"
 
 #: qdjango/admin.py:164
 #, python-format
 msgid "This object can not be deleted because: %s."
-msgstr ""
+msgstr "Acest obiect nu poate fi șters deoarece: %s."
 
 #: qdjango/admin.py:176
 msgid ""
 "Authentication configuration {} can not be deleted because one or more "
 "layers are using it: {}"
 msgstr ""
+"Configurația de autentificare {} nu poate fi ștearsă deoarece "
+"unul sau mai multe straturi o folosesc: {}"
 
 #: qdjango/api/layers/views.py:39 qdjango/api/layers/views.py:154
 msgid "Style not found."
-msgstr ""
+msgstr "Stilul nu a fost găsit."
 
 #: qdjango/api/layers/views.py:45
 msgid "A style with this name already exists."
-msgstr ""
+msgstr "Un stil cu acest nume există deja."
 
 #: qdjango/api/layers/views.py:207 qdjango/api/layers/views.py:304
 msgid "Error parsing QML"
-msgstr ""
+msgstr "Eroare la analizarea QML"
 
 #: qdjango/api/layers/views.py:212
 msgid "Error parsing style name"
-msgstr ""
+msgstr "Eroare la analizarea numelui stilului"
 
 #: qdjango/api/layers/views.py:220
 msgid "Error creating new style"
-msgstr ""
+msgstr "Eroare la crearea unui stil nou"
 
 #: qdjango/api/layers/views.py:288
 msgid "Error renaming the style"
-msgstr ""
+msgstr "Eroare la redenumirea stilului"
 
 #: qdjango/api/layers/views.py:310
 msgid "Either \"name\" or \"current\" or \"qml\" needs to be specified."
-msgstr ""
+msgstr "Trebuie specificat fie \"nume\", fie \"curent\" fie \"qml\"."
 
 #: qdjango/api/layers/views.py:336 qdjango/api/layers/views.py:358
 msgid "Unknown error while modifying the style."
-msgstr ""
+msgstr "Eroare necunoscută la modificarea stilului."
 
 #: qdjango/forms.py:51
 msgid "File must have 'qgs' or 'qgz' extension"
@@ -76,21 +78,23 @@ msgstr ""
 
 #: qdjango/forms.py:91
 msgid "Url alias can contains only numbers, letters, - or _"
-msgstr ""
+msgstr "Fișierul trebuie să aibă extensia 'qgs' sau 'qgz'."
 
 #: qdjango/forms.py:96
 msgid "This alias is used by another project/map"
-msgstr ""
+msgstr "Acest alias este folosit de un alt proiect/hartă"
 
 #: qdjango/forms.py:109
 msgid "Max extent is smaller than init map extent"
-msgstr ""
+msgstr "Extinderea maximă este mai mică decât extinderea hărții init"
 
 #: qdjango/forms.py:118
 msgid ""
 "Is not possible set Legend position rendering to \"{Project."
 "CLIENT_LEGEND_POSITION['toc']}\" "
 msgstr ""
+"Nu este posibil să setați redarea poziției legendei la \"{Proiect."
+" CLIENT_LEGEND_POSITION['toc']}\""
 
 #: qdjango/forms.py:138 qdjango/templates/qdjango/project_list.html:25
 msgid "URL alias"
@@ -101,6 +105,8 @@ msgid ""
 "You can set a human readable URL for the map. Only alphanumeric characters, "
 "not white space or special characters"
 msgstr ""
+"Puteți seta o adresă URL care poate fi citită de oameni pentru hartă. Doar caractere "
+" alfanumerice, nu spații albe sau caractere speciale"
 
 #: qdjango/forms.py:144
 msgid "QGIS Authentication ID"
@@ -108,7 +114,7 @@ msgstr ""
 
 #: qdjango/forms.py:145 qdjango/models/qgisauth.py:97
 msgid "7 alphanumeric ASCII chars"
-msgstr ""
+msgstr "7 caractere alfanumerice ASCII"
 
 #: qdjango/forms.py:147
 msgid "Username"
@@ -126,22 +132,25 @@ msgid ""
 "correct by browinsg the URL<a target=_new href=\"{admin_url}\">{admin_url}</"
 "a>"
 msgstr ""
+"Avertisment: un strat nevalid utilizează o configurație de autentificare existentă"
+" ({authentication_id}). Solicitați unui administrator să verifice dacă configurația"
+" este corectă, răsfoind adresa URL<a target=_new href=\"{admin_url}\">{admin_url}</a>"
 
 #: qdjango/forms.py:193
 msgid "Qgis Project"
-msgstr ""
+msgstr "Proiectul Qgis"
 
 #: qdjango/forms.py:219
 msgid "Description data"
-msgstr ""
+msgstr "Date de descriere"
 
 #: qdjango/forms.py:243
 msgid "Options and actions"
-msgstr ""
+msgstr "Opțiuni și acțiuni"
 
 #: qdjango/forms.py:276 qdjango/models/qgisauth.py:115
 msgid "QGIS Authentication"
-msgstr ""
+msgstr "Autentificare QGIS"
 
 #: qdjango/forms.py:432
 msgid "Viewers"
@@ -149,11 +158,11 @@ msgstr ""
 
 #: qdjango/forms.py:433
 msgid "Select/Unselect user with viewer role can view the layer"
-msgstr ""
+msgstr "Selectați/Deselectați utilizatorul cu rol de vizualizator poate vizualiza stratul"
 
 #: qdjango/forms.py:435
 msgid "Select/Unselect viewer groups can view the layer"
-msgstr ""
+msgstr "Selectați/Deselectați grupurile de vizualizatori pot vizualiza stratul"
 
 #: qdjango/forms.py:436
 msgid "User viewer groups"
@@ -161,28 +170,29 @@ msgstr ""
 
 #: qdjango/forms.py:451
 msgid "Select viewers with 'view permission' on project that can view layer:"
-msgstr ""
+msgstr "Selectați vizualizatori cu 'permisiune de vizualizare' pe proiect"
+" care pot vizualiza stratul:"
 
 #: qdjango/models/column_acl.py:40
 #, python-format
 msgid "%(value)s is not a vector layer"
-msgstr ""
+msgstr "%(value)s nu este un strat vectorial"
 
 #: qdjango/models/column_acl.py:56
 msgid "Restricted fields"
-msgstr ""
+msgstr "Câmpuri restricționate"
 
 #: qdjango/models/column_acl.py:70
 msgid "Column level constraint"
-msgstr ""
+msgstr "Constrângere la nivel de coloană"
 
 #: qdjango/models/column_acl.py:72
 msgid "Column level constraints"
-msgstr ""
+msgstr "Constrângeri la nivel de coloană"
 
 #: qdjango/models/column_acl.py:83
 msgid "Field \"{}\" is not available in layer {}."
-msgstr ""
+msgstr "Câmpul \"{}\" nu este disponibil în stratul {}."
 
 #: qdjango/models/constraints.py:45 qdjango/models/projects.py:482
 #: qdjango/models/projects.py:978 qdjango/models/qgisauth.py:98
@@ -190,36 +200,37 @@ msgstr ""
 #: qdjango/templates/qdjango/ajax/layer_widgets.html:9
 #: qdjango/templates/qdjango/layers_list.html:109
 msgid "Name"
-msgstr ""
+msgstr "Nume"
 
 #: qdjango/models/constraints.py:46 qdjango/models/geoconstraints.py:54
 #: qdjango/models/projects.py:182 qdjango/models/projects.py:488
 msgid "Description"
-msgstr ""
+msgstr "Descriere"
 
 #: qdjango/models/constraints.py:48 qdjango/models/geoconstraints.py:58
 msgid "Active for visualization"
-msgstr ""
+msgstr "Activ pentru vizualizare"
 
 #: qdjango/models/constraints.py:50 qdjango/models/geoconstraints.py:60
 msgid "Active this constraint for users have viewing grant on layer/project"
-msgstr ""
+msgstr "activați această constrângere pentru utilizatorii care au "
+"acordarea de vizualizare pe strat/proiect""
 
 #: qdjango/models/constraints.py:51 qdjango/models/geoconstraints.py:61
 msgid "Active for editing"
-msgstr ""
+msgstr "Activ pentru editare"
 
 #: qdjango/models/constraints.py:53 qdjango/models/geoconstraints.py:63
 msgid "Active this constraint for users have editing grant on layer/project"
-msgstr ""
+msgstr "Activează această constrângere pentru utilizatorii care au acordarea de editare pe strat/proiect"
 
 #: qdjango/models/constraints.py:89 qdjango/models/geoconstraints.py:106
 msgid "Almonst one of fields for_view and for_editing it must be True"
-msgstr ""
+msgstr "Aproape unul dintre câmpurile for_view și for_editing trebuie să fie True"
 
 #: qdjango/models/constraints.py:96
 msgid "Layer constraint"
-msgstr ""
+msgstr "Constrângere de strat"
 
 #: qdjango/models/constraints.py:97
 msgid "Layer constraints"
@@ -227,13 +238,15 @@ msgstr ""
 
 #: qdjango/models/constraints.py:111
 msgid "Rule definition"
-msgstr ""
+msgstr "Constrângeri de straturi"
 
 #: qdjango/models/constraints.py:112
 msgid ""
 "Definition of the rule, either an SQL WHERE condition or a QgsExpression "
 "definition depending on the rule type"
 msgstr ""
+"Definiția regulii, fie o condiție SQL WHERE, fie o definiție QgsExpression, "
+"în funcție de tipul regulii"
 
 #: qdjango/models/constraints.py:143 qdjango/models/geoconstraints.py:161
 msgid "You cannot define a user and a group at the same time"
