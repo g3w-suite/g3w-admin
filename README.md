@@ -252,3 +252,8 @@ The dependency image is built from the [Dockerfile.deps](ci_scripts/Dockerfile).
 * Alessandro Pasotti - QCooperative ([@elpaso](https://github.com/elpaso))
 * Luigi Pirelli - QCooperative ([@luipir](https://github.com/luipir))
 * Mazano - Kartoza ([@NyakudyaA](https://github.com/NyakudyaA)) (Dockerization refactoring)
+
+## Translation
+* Tudor Barascu - ([@tudorbarascu](https://github.com/tudorbarascu)) - Romanian
+* R3Gis - (https://www.r3gis.com) - German (Only G3W-CLIENT)
+* Democracy Essentials (www.democracy-essentials.eu) - French (Only G3W-CLIENT)
