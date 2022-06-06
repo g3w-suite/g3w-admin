@@ -52,8 +52,10 @@ if [ ! -e ${SETUP_DONE_FILE} ]; then
     popd
 
     cd ${DJANGO_DIRECTORY}
-    rm -rf ${STATIC_ROOT}
-    python3 manage.py collectstatic --noinput -v 0
+    if [[ -z ${G3WSUITE_DEBUG} || ${G3WSUITE_DEBUG} != "True" ]]; then
+      rm -rf ${STATIC_ROOT}
+      python3 manage.py collectstatic --noinput -v 0
+    fi
     python3 manage.py migrate --noinput
 
     echo "Installing fixtures ..."
@@ -79,7 +81,9 @@ else
 
     rm -rf ${STATIC_ROOT}
     cd ${DJANGO_DIRECTORY}
-    python3 manage.py collectstatic --noinput -v 0
+    if [[ -z ${G3WSUITE_DEBUG} || ${G3WSUITE_DEBUG} != "True" ]]; then
+      python3 manage.py collectstatic --noinput -v 0
+    fi
     python3 manage.py migrate --noinput
     python3 manage.py sitetree_resync_apps
 fi
