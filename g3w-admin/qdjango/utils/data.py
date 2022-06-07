@@ -1306,10 +1306,8 @@ class QgisProject(XmlData):
         :param instance: Project instance
         """
 
-        old_project_name = os.path.basename(
-            instance.qgis_file.name) if instance is not None else None
-
         with transaction.atomic():
+
             if not instance and not self.instance:
 
                 thumbnail = kwargs.get('thumbnail')
@@ -1398,35 +1396,102 @@ class QgisProject(XmlData):
             # Update qgis file datasource for SpatiaLite and OGR layers
             self.updateQgisFileDatasource()
 
-            # Update the project path of the embedded layers
+            # Update the project path of the embedded layers in the linked project
+            # linked project are projects that embed layers or groups from the project
+            # that is being saved
             linked_projects = [l.project for l in Layer.objects.filter(
                 parent_project=self.instance)]
             linked_projects = list(dict.fromkeys(linked_projects))
 
             for linked_project in linked_projects:
+
                 changed = False
                 tree = etree.parse(linked_project.qgis_file.file.name)
+
+                # Loop through layers
                 for embedded_layer in linked_project.layer_set.filter(parent_project=self.instance):
                     layer_id = embedded_layer.qgs_layer_id
                     for element in tree.xpath('//maplayer[@id="{}"]'.format(layer_id)):
                         element.attrib['project'] = makeDatasource(
                             self.instance.qgis_file.path, Layer.TYPES.ogr)
                         changed = True
-                    # Handle embedded groups
-                    if old_project_name is not None:
-                        for embedded_group in tree.xpath('//legend/legendgroup[@project="{}"]').format(old_project_name):
-                            element.attrib['project'] = makeDatasource(
-                                self.instance.qgis_file.path, Layer.TYPES.ogr)
-                            changed = True
-                    # Handle editor_form_structure
-                    structure = self.instance.layer_set.get(qgs_layer_id=layer_id).editor_form_structure
-                    if structure != embedded_layer.editor_form_structure:
-                        embedded_layer.editor_form_structure = structure
-                        embedded_layer.save()
+
+                    # Updates editor_form_structure
+                    try:
+                        structure = self.instance.layer_set.get(qgs_layer_id=layer_id).editor_form_structure
+                        if structure != embedded_layer.editor_form_structure:
+                            embedded_layer.editor_form_structure = structure
+                            embedded_layer.save()
+                    except Layer.DoesNotExist:
+                        # Layer is gone
+                        pass
+
+                # Handle embedded groups
+                project_name = self.instance.qgis_file.name
+                current_embedded_group_layer_ids = []
+                new_embedded_group_layer_ids = []
+
+                new_embedded_layer_ids = []
+                for embedded_layer in tree.xpath('//maplayer[contains(@project, \'{}\')]'.format(project_name)):
+                    if not embedded_layer.attrib['project'].endswith(project_name):
+                        continue
+                    else:
+                        new_embedded_layer_ids.append(embedded_layer.attrib['id'])
+
+                tr = self.instance.qgis_project.layerTreeRoot()
+
+                for embedded_group in tree.xpath('//legend/legendgroup[contains(@project, \'{}\')]'.format(project_name)):
+                    if not embedded_group.attrib['project'].endswith(project_name):
+                        continue
+
+                    old_project_name = embedded_group.attrib['project']
+                    new_project_name = makeDatasource(self.instance.qgis_file.path, Layer.TYPES.ogr)
+
+                    if new_project_name != old_project_name:
+                        embedded_group.attrib['project'] =new_project_name
+                        changed = True
+
+                    # Now collect all layers from the group and make sure that the linked project has all the layers
+                    current_embedded_group_layer_ids.extend([l.qgs_layer_id for l in linked_project.layer_set.filter(parent_project=self.instance) if l.qgs_layer_id not in new_embedded_layer_ids])
+
+                    group = tr.findGroup(embedded_group.attrib['name'])
+
+                    if group:
+                        new_embedded_group_layer_ids.extend(group.findLayerIds())
+
+                # Delete old layers unless they do not belong to the group and they are still available
+                deleted, what = linked_project.layer_set.filter(qgs_layer_id__in=set(current_embedded_group_layer_ids) - set(new_embedded_group_layer_ids)).delete()
+
+                if deleted > 0:
+                    logger.debug("Deleting embedded group layers: {}".format(what))
+                    changed = True
+
+                # Create new layers
+                for l in self.instance.layer_set.filter(qgs_layer_id__in=set(new_embedded_group_layer_ids) - set(current_embedded_group_layer_ids)):
+                    embedded_layer = l
+                    embedded_layer.parent_project = self.instance
+                    embedded_layer.project = linked_project
+                    embedded_layer.pk = None
+                    embedded_layer.save()
+                    changed = True
+                    logger.debug("Creating embedded group layer: {}".format(embedded_layer.qgs_layer_id))
+
+                # Update existing layers
+                for l in linked_project.layer_set.filter(qgs_layer_id__in=set(new_embedded_group_layer_ids) & set(current_embedded_group_layer_ids)):
+                    embedded_layer = l
+                    embedded_layer.parent_project = self.instance
+                    embedded_layer.project = linked_project
+                    embedded_layer.save()
+                    changed = True
 
                 if changed:
                     tree.write(linked_project.qgis_file.file.name,
                                encoding='UTF-8')
+                    # Reload from file or we will probably get the cached one
+                    p = QgsProject()
+                    p.read(linked_project.qgis_project.fileName())
+                    linked_project.layers_tree = str(buildLayerTreeNodeObject(p.layerTreeRoot()))
+                    linked_project.save()
 
             # This is tricky: if we have embedded layers, we need to recreate the layers_tree
             # because when it was initially calculated the paths were not yet rewritten to point
