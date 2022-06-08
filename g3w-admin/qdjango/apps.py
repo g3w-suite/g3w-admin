@@ -151,7 +151,6 @@ def get_qgs_project(path):
     """
 
     try:
-        QgsApplication.instance().processEvents()
 
         # Call process events in case the project has been updated and the cache
         # needs rebuilt. This triggers the QGIS server internal cache manager that
