@@ -234,18 +234,20 @@ class EmbeddedLayersValidator(QgisProjectValidator):
                 raise QgisProjectException(_('Layer "%s" is embedded from project "%s" but the project does not contain this layer') % (
                     layer_id, project_name))
 
+        # Note: this is disabled now!
+
         # For parent projects (i.e. projects that contain layers embedded in other projects,
         # check if embedded layers from this project are still available.
-        if self.qgisProject.instance:
-            layer_ids = [l.layerId for l in self.qgisProject.layers]
+        #if self.qgisProject.instance:
+        #    layer_ids = [l.layerId for l in self.qgisProject.layers]
             # for update
-            for linked_embedded_layer in Layer.objects.filter(parent_project=self.qgisProject.instance):
-                if linked_embedded_layer.qgs_layer_id not in layer_ids:
-                    raise QgisProjectException(_('Layer "%s" is embedded by the project "%s" but the uploaded project file does not contain this layer anymore') % (
-                        linked_embedded_layer.qgs_layer_id, linked_embedded_layer.project.title))
-        else:
+        #    for linked_embedded_layer in Layer.objects.filter(parent_project=self.qgisProject.instance):
+        #        if linked_embedded_layer.qgs_layer_id not in layer_ids:
+        #            raise QgisProjectException(_('Layer "%s" is embedded by the project "%s" but the uploaded project file does not contain this layer anymore') % (
+        #                linked_embedded_layer.qgs_layer_id, linked_embedded_layer.project.title))
+        #else:
             # new project: skip because we cannot have any embedded layer to be checked
-            pass
+        #    pass
 
 
 class ProjectExists(QgisProjectValidator):
