@@ -13,7 +13,13 @@ __copyright__ = 'Copyright 2015 - 2021, Gis3w'
 from django.urls import reverse
 from django.core.files import File
 from qdjango.models import Project
-from .base import QdjangoTestBase, QGS316_THEME_FILE, TEST_BASE_PATH, CURRENT_PATH, QgisProject
+from .base import \
+    QdjangoTestBase, \
+    QGS316_THEME_FILE, \
+    QGS322_PRINT_LAYOUT_THEME_FILE, \
+    TEST_BASE_PATH, \
+    CURRENT_PATH, \
+    QgisProject
 
 import json
 
@@ -29,6 +35,12 @@ class QdjangoThemeTest(QdjangoTestBase):
         cls.project_theme316.title = 'A project with themes QGIS 3.16'
         cls.project_theme316.group = cls.project_group
         cls.project_theme316.save()
+
+        cls.project_layout_theme322 = QgisProject(
+            File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS322_PRINT_LAYOUT_THEME_FILE), 'r')))
+        cls.project_layout_theme322.title = 'A project with layout with preset theme QGIS 3.22'
+        cls.project_layout_theme322.group = cls.project_group
+        cls.project_layout_theme322.save()
 
     def _testApiCall(self, view_name, args, kwargs={}, data=None, method='POST', username='admin01'):
         """Utility to make test calls for admin01 user"""
@@ -150,6 +162,20 @@ class QdjangoThemeTest(QdjangoTestBase):
         view3 = json.loads(
             '[{"name":"countries_3857","id":"countries_3857_4f885888_b0df_4f87_88ed_17c907315fad","visible":true},{"name":"natural","mutually-exclusive":false,"nodes":[{"name":"rivers_3857","id":"rivers_3857_c2f3813e_18fd_40e3_b970_b8dcdd120794","visible":false}],"checked":false,"expanded":false},{"name":"municipal","mutually-exclusive":false,"nodes":[{"name":"cities10000eu_3857","id":"cities10000eu_3857_728999c2_0883_4627_8df2_25224f71e3ea","visible":true},{"name":"important","mutually-exclusive":false,"nodes":[{"name":"aeroporti_3857","id":"aeroporti_3857_e9d2f842_0851_437e_9dfe_7b30a1bb4160","visible":false}],"checked":true,"expanded":true}],"checked":false,"expanded":true},{"name":"natural","mutually-exclusive":false,"nodes":[],"checked":false,"expanded":false}]')
         self.assertEqual(jres['data'], view3)
+
+    def test_map_config_api_layout_preset_theme(self):
+        """ Test client settings for project layer with preset theme """
+
+        response = self._testApiCall('group-project-map-config',
+                                     args=[self.project_group.slug, 'qdjango',
+                                           self.project_layout_theme322.instance.pk])
+
+        jcontent = json.loads(response.content)
+
+        self.assertTrue('preset_theme' in jcontent['print'][0]['maps'][0])
+        self.assertFalse('preset_theme' in jcontent['print'][0]['maps'][1])
+        self.assertEqual(jcontent['print'][0]['maps'][0]['preset_theme'], 'reference')
+
 
 
 

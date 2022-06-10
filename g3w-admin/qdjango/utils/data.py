@@ -493,7 +493,7 @@ class QgisProjectLayer(XmlData):
         for f in self.qgs_layer.fields():
             columns.append({
                 'name': f.name(),
-                'type': QVariant.typeToName(f.type()).upper(),
+                'type': QVariant.typeToName(f.type()).upper() if  QVariant.typeToName(f.type()) else None,
                 'label': f.displayName(),
             })
 
@@ -1226,6 +1226,14 @@ class QgisProject(XmlData):
                                 'ymax': extent.yMaximum()
                             }
                         }
+
+                        # Check for preset theme
+                        if item.followVisibilityPreset():
+                            map.update(
+                                {
+                                    'preset_theme': item.followVisibilityPresetName()
+                                }
+                            )
 
                         maps.append(map)
 
