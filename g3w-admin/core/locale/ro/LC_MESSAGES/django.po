@@ -570,7 +570,7 @@ msgstr "Grupuri curente"
 #: core/templates/core/macrogroup_list_table.html:10
 #: core/templates/core/search/macrogroup.html:8
 msgid "Cartographic macro groups"
-msgstr "Macro grupuri cartografice"
+msgstr "Grupuri Macro Cartografice"
 
 #: core/templates/core/macrogroup_list_table.html:21
 msgid "Macro group"
