@@ -1,10 +1,10 @@
 #  Management and organization of geographic data and QGIS projects
 _**This section describes how to organize QGIS data and projects locally and how to synchronize them on the server environment for publication purposes**_
 
-Thanks to the integration with the APIs of QGIS it is now possible to manage the main formats (geographically and not) supported by QGIS Server:
+Thanks to the integration with the APIs of QGIS it is now possible to manage the main formats (geographic or not) supported by QGIS Server:
 
 * **reading and editing mode**
-  * PostGreSQL/PostGis
+  * PostGreSQL/PostGIS
   * Oracle Spatial (compiling QGIS Server)
   * SQLite/SpatiaLite
   * GeoPackage
@@ -15,21 +15,21 @@ Thanks to the integration with the APIs of QGIS it is now possible to manage the
   * SQL Server
   * Virtual layer
 
-The suite also allows you to manage in consultation ed editing:
+The suite also allows you to manage the consultation and editing of:
  * **simple join data with no nesting limits**
  * **1:N relation data**
  * **N:M relation data**
 
 ## Data on DB Server
 
-If your geographical data are stored on `Server DB`, it will be sufficient to allow access to the DB from the IP address on which the application is installed.
+If your geographic data is stored on `Server DB`, it will be sufficient to allow access to the DB from the IP address on which the application is installed.
 
 ## Data on SpatiaLite/GeoPackage or OGR format
 If your geographical data are stored on `SpatiaLite`, `GeoPackage` or an other physical files (`.shp`, `.kml`, `.tif`...) located on your local PC, you will need:
-* **organize data and projects** in predefined localy directories and subdirectories
+* **organize data and projects** in predefined local directories and subdirectories
 * **upload/synchronize geographic data to the corresponding folder located on the server** where the application is installed
 
-**Of course, mixed solutions with geographical data on PostGreSQL/PostGis, SpatiaLite and other formats will also be possible.**
+**Of course, mixed solutions with geographical data on PostGreSQL/PostGIS, SpatiaLite and other formats will also be possible.**
 
 ### Organization of data and projects
 
