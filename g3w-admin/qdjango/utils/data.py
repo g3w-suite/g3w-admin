@@ -1402,10 +1402,11 @@ class QgisProject(XmlData):
 
                     # Updates editor_form_structure
                     try:
-                        structure = self.instance.layer_set.get(qgs_layer_id=layer_id).editor_form_structure
-                        if structure != embedded_layer.editor_form_structure:
-                            embedded_layer.editor_form_structure = structure
-                            embedded_layer.save()
+                        layer_instance = self.instance.layer_set.get(qgs_layer_id=layer_id)
+                        embedded_layer.editor_form_structure = layer_instance.editor_form_structure
+                        embedded_layer.extent = layer_instance.extent
+                        embedded_layer.database_columns = layer_instance.database_columns
+                        embedded_layer.save()
                     except Layer.DoesNotExist:
                         # Layer is gone
                         pass
