@@ -32,6 +32,8 @@ from editing.models import G3WEditingLayer
 
 from .test_models import DATASOURCE_PATH, ConstraintsTestsBase
 
+from datetime import date
+
 
 @override_settings(CACHES={
     'default': {
@@ -1087,6 +1089,145 @@ class EditingApiTests(ConstraintsTestsBase):
 
         self.assertTrue(f'admin01' in qgs_feature.attribute('insert_log'))
         self.assertTrue(f'admin01' in qgs_feature.attribute('update_log'))
+
+    def test_editing_provider_default_value(self):
+        """ Test Editing API mode: MODE_COMMIT with fields having provider default values """
+
+        editing_layer = self.editing_provider_default_value_project.instance.layer_set.all()[0]
+
+        # ADD
+        # =========================
+        commit_path = reverse('editing-commit-vector-api',
+                              args=['commit', 'qdjango', self.editing_provider_default_value_project.instance.pk,
+                                    editing_layer.qgs_layer_id])
+
+        self.assertTrue(
+            self.client.login(username=self.test_user_admin1.username, password=self.test_user_admin1.username))
+
+        payload = {
+            "add": [
+                {
+                    "type": "Feature",
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [
+                            12.233363736473278,
+                            42.60540309842133
+                        ]
+                    },
+                    "properties": {
+                        "name": "for test 1111",
+                        "num": 10
+                    },
+                    "id": "_new_158_1655470270666"
+                }
+            ],
+            "update": [],
+            "delete": [],
+            "relations": {},
+            "lockids": []
+        }
+
+        response = self.client.post(commit_path, payload, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        jresult = json.loads(response.content)
+        self.assertTrue(jresult['result'])
+
+        newid = jresult['response']['new'][0]['id']
+        newlockid = jresult['response']['new_lockids'][0]['lockid']
+
+
+        qgs_feature = editing_layer.qgis_layer.getFeature(int(newid))
+
+        self.assertEqual(qgs_feature['ai_num'], date.today().year)
+
+        # Overrride provider default value.
+        payload = {
+            "add": [
+                {
+                    "type": "Feature",
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [
+                            12.233363736473278,
+                            42.60540309842133
+                        ]
+                    },
+                    "properties": {
+                        "name": "for test 2222",
+                        "ai_num": 20244,
+                        "num": 123
+                    },
+                    "id": "_new_158_1655470270555"
+                }
+            ],
+            "update": [],
+            "delete": [],
+            "relations": {},
+            "lockids": []
+        }
+
+        response = self.client.post(commit_path, payload, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        jresult = json.loads(response.content)
+        self.assertTrue(jresult['result'])
+
+        newid = jresult['response']['new'][0]['id']
+        newlockid = jresult['response']['new_lockids'][0]['lockid']
+
+
+        qgs_feature = editing_layer.qgis_layer.getFeature(int(newid))
+
+        self.assertEqual(qgs_feature['name'], "for test 2222")
+        self.assertEqual(qgs_feature['ai_num'], 20244)
+        self.assertEqual(qgs_feature['num'], 123)
+
+        # Update
+        # =========================
+
+        # Overrride provider default value.
+        payload = {
+            "update": [
+                {
+                    "type": "Feature",
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [
+                            12.233363736473278,
+                            42.60540309842133
+                        ]
+                    },
+                    "properties": {
+                        "name": "for test 3333",
+                    },
+                    "id": newid
+                }
+            ],
+            "add": [],
+            "delete": [],
+            "relations": {},
+            "lockids": [
+                {
+                    "featureid": str(newid),
+                    "lockid": newlockid
+                }
+            ],
+        }
+
+        response = self.client.post(commit_path, payload, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        jresult = json.loads(response.content)
+        self.assertTrue(jresult['result'])
+
+        qgs_feature = editing_layer.qgis_layer.getFeature(int(newid))
+
+        self.assertEqual(qgs_feature['name'], "for test 3333")
+        self.assertEqual(qgs_feature['ai_num'], 20244)
+        self.assertEqual(qgs_feature['num'], 123)
+
 
 
 class ConstraintsApiTests(ConstraintsTestsBase):
