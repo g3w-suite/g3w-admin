@@ -246,10 +246,19 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                         for name, value in geojson_feature['properties'].items():
                             feature.setAttribute(name, value)
 
-                        # Loop again for set expressions value:
+                        #feature.setAttribute('fk_num', "nextval('g3w_suite.with_tr_fk_num_seq'::regclass)")
+                        #feature.setAttribute('num', 124)
+
+                        # Loop again for set expressions value and default value by provider:
                         # For update store expression result to use later into update condition
+                        # =====================================================================
                         field_expresion_values = {}
                         for qgis_field in qgis_layer.fields():
+
+                            field_idx = qgis_layer.fields().indexFromName(qgis_field.name())
+
+                            # Look for expression/value by default
+                            # ------------------------------------
                             if qgis_field.defaultValueDefinition().expression():
                                 exp = QgsExpression(qgis_field.defaultValueDefinition().expression())
                                 if exp.rootNode().nodeType() != QgsExpressionNode.ntLiteral and not exp.hasParserError():
@@ -266,6 +275,17 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                                         if qgis_field.defaultValueDefinition().applyOnUpdate():
                                             field_expresion_values[qgis_field.name()] = result
 
+                            # Look for dataprovider default clause/value:
+                            # only for fields no pk with defaultValueClause by provider
+                            # and NULL value into feature on new add feature
+                            # ---------------------------------------------------------
+                            elif mode_editing == EDITING_POST_DATA_ADDED and \
+                                    field_idx not in qgis_layer.primaryKeyAttributes() and \
+                                    qgis_layer.dataProvider().defaultValueClause(field_idx) and \
+                                    not feature[qgis_field.name()]:
+                                feature.setAttribute(qgis_field.name(),
+                                                     qgis_layer.dataProvider().defaultValueClause(field_idx))
+
                             elif qgis_field.typeName() in ('date', 'datetime', 'time'):
 
                                 if qgis_field.typeName() == 'date':
@@ -275,7 +295,6 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                                 else:
                                     qtype = QTime
 
-                                field_idx = qgis_layer.fields().indexFromName(qgis_field.name())
                                 options = qgis_layer.editorWidgetSetup(field_idx).config()
 
                                 if 'field_iso_format' in options and not options['field_iso_format']:
@@ -283,6 +302,8 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                                         value = qtype.fromString(geojson_feature['properties'][qgis_field.name()],
                                                                  options['field_format'])
                                         feature.setAttribute(qgis_field.name(), value)
+
+
 
 
 
