@@ -30,6 +30,9 @@ from qdjango.apps import get_qgs_project
 from qdjango.models import Layer
 from qdjango.utils.data import QGIS_LAYER_TYPE_NO_GEOM
 from qdjango.utils.validators import feature_validator
+
+from qgis.PyQt.QtCore import QDateTime, QDate, QTime
+
 import logging
 
 logger = logging.getLogger('module_editing')
@@ -247,6 +250,11 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                         # For update store expression result to use later into update condition
                         field_expresion_values = {}
                         for qgis_field in qgis_layer.fields():
+
+                            field_idx = qgis_layer.fields().indexFromName(qgis_field.name())
+
+                            # Look for expression/value by default
+                            # ------------------------------------
                             if qgis_field.defaultValueDefinition().expression():
                                 exp = QgsExpression(qgis_field.defaultValueDefinition().expression())
                                 if exp.rootNode().nodeType() != QgsExpressionNode.ntLiteral and not exp.hasParserError():
@@ -262,6 +270,37 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                                         # only on insert newone
                                         if qgis_field.defaultValueDefinition().applyOnUpdate():
                                             field_expresion_values[qgis_field.name()] = result
+
+                            # Look for dataprovider default clause/value:
+                            # only for fields no pk with defaultValueClause by provider
+                            # and NULL value into feature on new add feature
+                            # ---------------------------------------------------------
+                            elif mode_editing == EDITING_POST_DATA_ADDED and \
+                                    field_idx not in qgis_layer.primaryKeyAttributes() and \
+                                    qgis_layer.dataProvider().defaultValueClause(field_idx) and \
+                                    not feature[qgis_field.name()]:
+                                feature.setAttribute(qgis_field.name(),
+                                                     qgis_layer.dataProvider().defaultValueClause(field_idx))
+
+                            elif qgis_field.typeName() in ('date', 'datetime', 'time'):
+
+                                if qgis_field.typeName() == 'date':
+                                    qtype = QDate
+                                elif qgis_field.typeName() == 'datetime':
+                                    qtype = QDateTime
+                                else:
+                                    qtype = QTime
+
+                                options = qgis_layer.editorWidgetSetup(field_idx).config()
+
+                                if 'field_iso_format' in options and not options['field_iso_format']:
+                                    if geojson_feature['properties'][qgis_field.name()]:
+                                        value = qtype.fromString(geojson_feature['properties'][qgis_field.name()],
+                                                                 options['field_format'])
+                                        feature.setAttribute(qgis_field.name(), value)
+
+
+
 
 
                         # Call validator!
@@ -289,7 +328,8 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                                                           f'layer {qgis_layer.id()} has more than one pk column'))
 
                                     # update pk attribute:
-                                    feature.setAttribute(pks[0], server_fid(feature, qgis_layer.dataProvider()))
+                                    if len(pks) > 0:
+                                        feature.setAttribute(pks[0], server_fid(feature, qgis_layer.dataProvider()))
 
                         elif mode_editing == EDITING_POST_DATA_UPDATED:
                             attr_map = {}
