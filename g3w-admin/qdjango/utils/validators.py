@@ -114,9 +114,12 @@ def feature_validator(feature, layer):
         # to check for unique or type compatibility on NULLs
         if value is not None and value != QVariant():
 
-            if not QVariant(value).convert(field.type()):
-                _set_error(field.name(), _(
-                    'Field value \'%s\' cannot be converted to %s') % (value, QVariant.typeToName(field.type())))
+            if value != data_provider.defaultValueClause(field_index) and \
+                value != data_provider.defaultValue(field_index):
+
+                if not QVariant(value).convert(field.type()):
+                    _set_error(field.name(), _(
+                        'Field value \'%s\' cannot be converted to %s') % (value, QVariant.typeToName(field.type())))
 
             unique = (field.constraints().constraintOrigin(
                 QgsFieldConstraints.ConstraintUnique) != QgsFieldConstraints.ConstraintOriginNotSet and
