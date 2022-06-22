@@ -697,7 +697,7 @@ msgstr "Scarica in formato shp"
 
 #: models/projects.py:571
 #, fuzzy
-#| msgid "Donwload"
+#| msgid "Download"
 msgid "Download data in xls format"
 msgstr "Scarica in formato xls"
 
@@ -707,7 +707,7 @@ msgstr "Scarica in formato gpx"
 
 #: models/projects.py:575
 #, fuzzy
-#| msgid "Donwload"
+#| msgid "Download"
 msgid "Download data in csv format"
 msgstr "Scarica in formato xls"
 
@@ -1031,7 +1031,7 @@ msgid "Test WMS capabilities"
 msgstr ""
 
 #: templates/qdjango/project_list.html:81
-msgid "Donwload"
+msgid "Download"
 msgstr "Scarica"
 
 #: templates/qdjango/project_list.html:86
@@ -1247,7 +1247,7 @@ msgstr "Il progetto è stato modificato da G3W-Suite dopo il caricamento."
 #~ msgstr "Lista dei widget"
 
 #, fuzzy
-#~| msgid "Donwload"
+#~| msgid "Download"
 #~ msgid "Download"
 #~ msgstr "Scarica"
 

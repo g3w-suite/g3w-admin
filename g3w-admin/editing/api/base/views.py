@@ -332,7 +332,8 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                                                           f'layer {qgis_layer.id()} has more than one pk column'))
 
                                     # update pk attribute:
-                                    feature.setAttribute(pks[0], server_fid(feature, qgis_layer.dataProvider()))
+                                    if len(pks) > 0:
+                                        feature.setAttribute(pks[0], server_fid(feature, qgis_layer.dataProvider()))
 
                         elif mode_editing == EDITING_POST_DATA_UPDATED:
                             attr_map = {}
@@ -384,7 +385,7 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                             # lock news:
                             to_res_lock = metadata_layer.lock.modelLock2dict(
                                 metadata_layer.lock.lockFeature(
-                                    server_fid(feature, metadata_layer.qgis_layer.dataProvider()), save=True)
+                                    str(server_fid(feature, metadata_layer.qgis_layer.dataProvider())), save=True)
                             )
 
                         if bool(to_res):

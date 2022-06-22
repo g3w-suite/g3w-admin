@@ -46,6 +46,9 @@ QGS_EDITING_FILE = 'editing_test_qgis310.qgs'
 QGS_LOGGING_FILE = 'logging_test_project.qgs'
 QGS_LOGGING_DB = 'logging_test.db'
 QGS_LOGGING_DB_BACKUP = 'logging_test_backup.db'
+QGS_EDITING_PROVIDER_DEFAULT_VALUE_DB = 'provider_default_value.sqlite'
+QGS_EDITING_PROVIDER_DEFAULT_VALUE_DB_BACKUP = 'provider_default_value_backup.sqlite'
+QGS_EDITING_PROVIDER_DEFAULT_VALUE_FILE = 'editing_test_provider_default_value.qgs'
 
 
 @override_settings(CACHES={
@@ -84,6 +87,9 @@ class ConstraintsTestsBase(TestCase):
 
         shutil.copy('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_EDITING_DB_BACKUP),
                     '{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_EDITING_DB))
+
+        shutil.copy('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_EDITING_PROVIDER_DEFAULT_VALUE_DB_BACKUP),
+                    '{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_EDITING_PROVIDER_DEFAULT_VALUE_DB))
 
         shutil.copy('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_LOGGING_DB_BACKUP),
                     '{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_LOGGING_DB))
@@ -182,6 +188,14 @@ class ConstraintsTestsBase(TestCase):
         cls.logging_project = QgisProject(qgis_project_file)
         cls.logging_project.group = cls.project_logging_group
         cls.logging_project.save()
+        qgis_project_file.close()
+
+        # load QGIS editing provider default data project
+        qgis_project_file = File(open('{}{}{}'.format(
+            CURRENT_PATH, TEST_BASE_PATH, QGS_EDITING_PROVIDER_DEFAULT_VALUE_FILE), 'r', encoding='UTF8'))
+        cls.editing_provider_default_value_project = QgisProject(qgis_project_file)
+        cls.editing_provider_default_value_project.group = cls.project_group
+        cls.editing_provider_default_value_project.save()
         qgis_project_file.close()
 
     def tearDown(self):

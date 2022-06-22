@@ -955,19 +955,19 @@ msgstr "Creat/Modificat"
 
 #: qdjango/templates/qdjango/project_list.html:59
 msgid "Test WMS capabilities"
-msgstr "Testați capabilitățile WMS"
+msgstr "Testează capabilitățile WMS"
 
 #: qdjango/templates/qdjango/project_list.html:81
-msgid "Donwload"
-msgstr "Descarca"
+msgid "Download"
+msgstr "Descarcă"
 
 #: qdjango/templates/qdjango/project_list.html:86
 msgid "Upload"
-msgstr "Încărcați"
+msgstr "Încarcă"
 
 #: qdjango/templates/qdjango/project_list.html:86
 msgid "Upload qgis project file"
-msgstr "Încărcați fișierul proiect qgis"
+msgstr "Încarcă fișierul proiect qgis"
 
 #: qdjango/templates/qdjango/project_list.html:92
 msgid "WEB services available"

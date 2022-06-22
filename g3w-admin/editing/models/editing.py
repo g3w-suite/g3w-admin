@@ -44,6 +44,7 @@ class G3WEditingLayer(models.Model):
 
     class Meta:
         app_label = 'editing'
+        unique_together = ['layer_id', 'app_name']
 
 
 class G3WEditingLog(models.Model):
