@@ -935,7 +935,7 @@ msgid "Test WMS capabilities"
 msgstr ""
 
 #: qdjango/templates/qdjango/project_list.html:81
-msgid "Donwload"
+msgid "Download"
 msgstr ""
 
 #: qdjango/templates/qdjango/project_list.html:86
