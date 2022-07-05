@@ -32,7 +32,7 @@ from qgis.PyQt.QtCore import QVariant, Qt
 from qgis.core import QgsMasterLayoutInterface, QgsLayoutItemMap, QgsLayout
 
 from core.utils.data import XmlData, isXML
-from core.utils.qgisapi import count_qgis_features
+from core.utils.qgisapi import count_qgis_features, get_qgis_version
 from qdjango.models import Project, buildLayerTreeNodeObject
 from qdjango.signals import load_qdjango_project_file, post_save_qdjango_project_file
 
@@ -274,7 +274,7 @@ class QgisProjectLayer(XmlData):
             layer_type = self.qgs_layer.dataProvider().name()
             layer_type = layer_type.lower()
         except Exception as e:
-            if self.qgs_layer.type() == QgsMapLayerType.VectorTileLayer:
+            if get_qgis_version() >= 3.14 and self.qgs_layer.type() == QgsMapLayerType.VectorTileLayer:
                 layer_type = 'vector-tile'
 
         if not layer_type in availableTypes:

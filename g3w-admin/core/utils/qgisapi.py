@@ -14,7 +14,7 @@ __copyright__ = 'Copyright 2020, Gis3W'
 
 import logging
 
-from qgis.core import QgsFeatureRequest, QgsRectangle, QgsVectorLayer
+from qgis.core import QgsFeatureRequest, QgsRectangle, QgsVectorLayer, Qgis
 
 from qdjango.apps import get_qgs_project
 
@@ -364,3 +364,14 @@ def count_qgis_features(qgis_layer,
                       extra_expression,
                       extra_subset_string))
 
+
+def get_qgis_version() -> float:
+    """
+    Get string Qgis version and return main version as float.
+    I.e.: froma version '3.22.8-Białowieża' return 3.22
+    :return: Main qgis version as float
+    :return type: float
+    """
+
+    qv = Qgis.QGIS_VERSION.split('.')
+    return float(f"{qv[0]}.{qv[1]}")
