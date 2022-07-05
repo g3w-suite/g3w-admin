@@ -1358,6 +1358,18 @@ class QgisProject(XmlData):
                             qgs_layer_id=embedded['id'])
                         embedded_layer.pk = existing_layer.pk
 
+                        # Update g3w-suite properties like exclude_from_legend, download
+                        for p in ('exclude_from_legend',
+                             'download',
+                             'download_xls',
+                             'download_gpx',
+                             'download_csv',
+                             'download_gpkg',
+                             'external',
+                             'not_show_attributes_table'):
+                            print(embedded['id'], p, getattr(existing_layer, p))
+                            setattr(embedded_layer, p, getattr(existing_layer, p))
+
                     except Layer.DoesNotExist:
 
                         embedded_layer.pk = None
