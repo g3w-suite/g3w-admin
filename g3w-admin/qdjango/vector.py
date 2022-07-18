@@ -572,7 +572,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
         self._selection_responde_download_mode(qgs_request, save_options)
 
         file_path = os.path.join(tmp_dir.name, filename)
-        error_code, error_message = QgsVectorFileWriter.writeAsVectorFormatV2(
+        error_code, error_message, new_file_path, new_layer_name = QgsVectorFileWriter.writeAsVectorFormatV3(
             self.metadata_layer.qgis_layer,
             file_path,
             self.metadata_layer.qgis_layer.transformContext(),
@@ -657,7 +657,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
         self._selection_responde_download_mode(qgs_request, save_options)
 
         gpx_tmp_path = os.path.join(tmp_dir.name, filename)
-        error_code, error_message = QgsVectorFileWriter.writeAsVectorFormatV2(
+        error_code, error_message, new_file_path, new_layer_name = QgsVectorFileWriter.writeAsVectorFormatV3(
             self.metadata_layer.qgis_layer,
             gpx_tmp_path,
             self.metadata_layer.qgis_layer.transformContext(),
@@ -708,7 +708,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
         self._selection_responde_download_mode(qgs_request, save_options)
 
         xls_tmp_path = os.path.join(tmp_dir.name, filename)
-        error_code, error_message = QgsVectorFileWriter.writeAsVectorFormatV2(
+        error_code, error_message, new_file_path, new_layer_name = QgsVectorFileWriter.writeAsVectorFormatV3(
             self.metadata_layer.qgis_layer,
             xls_tmp_path,
             self.metadata_layer.qgis_layer.transformContext(),
@@ -759,7 +759,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
         self._selection_responde_download_mode(qgs_request, save_options)
 
         gpkg_tmp_path = os.path.join(tmp_dir.name, filename)
-        error_code, error_message = QgsVectorFileWriter.writeAsVectorFormatV2(
+        error_code, error_message, new_file_path, new_layer_name = QgsVectorFileWriter.writeAsVectorFormatV3(
             self.metadata_layer.qgis_layer,
             gpkg_tmp_path,
             self.metadata_layer.qgis_layer.transformContext(),
@@ -810,7 +810,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
         self._selection_responde_download_mode(qgs_request, save_options)
 
         xls_tmp_path = os.path.join(tmp_dir.name, filename)
-        error_code, error_message = QgsVectorFileWriter.writeAsVectorFormatV2(
+        error_code, error_message, new_file_path, new_layer_name = QgsVectorFileWriter.writeAsVectorFormatV3(
             self.metadata_layer.qgis_layer,
             xls_tmp_path,
             self.metadata_layer.qgis_layer.transformContext(),
