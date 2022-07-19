@@ -40,7 +40,8 @@ from qdjango.models import SessionTokenFilter, SessionTokenFilterLayer
 from core.tests.base import CoreTestBase
 from core.utils.qgisapi import get_qgs_project
 
-from .base import QdjangoTestBase, CURRENT_PATH, TEST_BASE_PATH, QGS310_WIDGET_FILE, CoreGroup, G3WSpatialRefSys
+from .base import QdjangoTestBase, CURRENT_PATH, TEST_BASE_PATH, QGS310_WIDGET_FILE, CoreGroup, G3WSpatialRefSys, \
+    QGS322_FILE
 from qgis.core import QgsFeatureRequest, QgsRasterLayer, QgsVectorLayer
 from qgis.PyQt.QtCore import QTemporaryDir
 import time
@@ -480,9 +481,17 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         cls.project_widget310.group = cls.project_group
         cls.project_widget310.save()
 
+        # Add new project for fields excluded from WMS service
+        qgis_project_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS322_FILE), 'r'))
+        cls.project322 = QgisProject(qgis_project_file)
+        cls.project322.title = 'A project QGIS 3.22 - fields selected for WMS service'
+        cls.project322.group = cls.project_group
+        cls.project322.save()
+
     @classmethod
     def tearDownClass(cls):
         cls.project_widget310.instance.delete()
+        cls.project322.instance.delete()
         super().tearDownClass()
 
     def _testApiCall(self, view_name, args, kwargs={}, status_auth=200, login=True, logout=True):

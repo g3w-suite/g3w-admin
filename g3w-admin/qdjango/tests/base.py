@@ -137,12 +137,6 @@ class QdjangoTestBase(TestCase):
         cls.project310.group = cls.project_group
         cls.project310.save()
 
-        # Add new project for fields excluded from WMS service
-        qgis_project_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS322_FILE), 'r'))
-        cls.project322 = QgisProject(qgis_project_file)
-        cls.project322.title = 'A project QGIS 3.22 - fields selected for WMS service'
-        cls.project322.group = cls.project_group
-        cls.project322.save()
 
 
     def tearDown(self):
