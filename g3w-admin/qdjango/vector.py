@@ -542,6 +542,20 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
             except Exception as e:
                 logger.error(e)
 
+    def _set_download_attributes(self, save_options):
+        """
+        Set attributes for QgsVectorFileWriter.SaveVectorOptions instance.
+        Check for fields excluded for WMS service into QGIS project.
+        """
+
+        column_to_exclude = eval(
+            self.layer.exclude_attribute_wms) if self.layer.exclude_attribute_wms else []
+
+        # Only if fields to exclude are present
+        if column_to_exclude:
+            column_to_exclude = [self.metadata_layer.qgis_layer.fields().indexFromName(f) for f in column_to_exclude]
+            save_options.attributes = list(set(self.metadata_layer.qgis_layer.attributeList()) - set(column_to_exclude))
+
     def response_shp_mode(self, request):
         """
         Download Shapefile of data
@@ -567,6 +581,9 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
         save_options = QgsVectorFileWriter.SaveVectorOptions()
         save_options.driverName = 'ESRI Shapefile'
         save_options.fileEncoding = 'utf-8'
+
+        # Set attributes
+        self._set_download_attributes(save_options)
 
         # Make a selection based on the request
         self._selection_responde_download_mode(qgs_request, save_options)
@@ -651,6 +668,9 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
             "GPX_EXTENSIONS_NS=ogr"
         ]
 
+        # Set attributes
+        self._set_download_attributes(save_options)
+
         filename = self._build_download_filename(request) + '.gpx'
 
         # Make a selection based on the request
@@ -699,6 +719,9 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
         save_options = QgsVectorFileWriter.SaveVectorOptions()
         save_options.driverName = 'xlsx'
         save_options.fileEncoding = 'utf-8'
+
+        # Set attributes
+        self._set_download_attributes(save_options)
 
         tmp_dir = tempfile.TemporaryDirectory()
 
@@ -751,6 +774,9 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
         save_options.driverName = 'gpkg'
         save_options.fileEncoding = 'utf-8'
 
+        # Set attributes
+        self._set_download_attributes(save_options)
+
         tmp_dir = tempfile.TemporaryDirectory()
 
         filename = self._build_download_filename(request) + '.gpkg'
@@ -801,6 +827,9 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
         save_options = QgsVectorFileWriter.SaveVectorOptions()
         save_options.driverName = 'csv'
         save_options.fileEncoding = 'utf-8'
+
+        # Set attributes
+        self._set_download_attributes(save_options)
 
         tmp_dir = tempfile.TemporaryDirectory()
 

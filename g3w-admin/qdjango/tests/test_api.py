@@ -41,11 +41,13 @@ from core.tests.base import CoreTestBase
 from core.utils.qgisapi import get_qgs_project
 
 from .base import QdjangoTestBase, CURRENT_PATH, TEST_BASE_PATH, QGS310_WIDGET_FILE, CoreGroup, G3WSpatialRefSys
-from qgis.core import QgsFeatureRequest, QgsRasterLayer
+from qgis.core import QgsFeatureRequest, QgsRasterLayer, QgsVectorLayer
 from qgis.PyQt.QtCore import QTemporaryDir
 import time
 import six
 import os
+import zipfile
+from io import BytesIO
 
 
 QGS_FILE_TEMPORAL_VECTOR_WITH_FIELD = 'test_temporal_vector_layer_316_ModeFeatureDateTimeInstantFromField.qgs'
@@ -855,6 +857,125 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
 
         # reset token table
         sf.delete()
+
+    def test_download_vector_api_selected_wms_fields(self):
+        """ Test vector download api for every type of download with fields selected for wms service """
+
+        world = Layer.objects.get(
+            project_id=self.project322.instance.pk, qgs_layer_id='world20181008111156525')
+
+        world.download = True
+        world.download_gpkg = True
+        world.download_xls = True
+        world.download_csv = True
+        world.save()
+
+        # TEST API SHP DOWNLOAD
+        # ==============================================
+        response = self._testApiCall('core-vector-api',
+                                           ['shp', 'qdjango', self.project322.instance.pk, world.qgs_layer_id])
+
+        self.assertEqual(response.status_code, 200)
+
+        z = zipfile.ZipFile(BytesIO(response.content))
+        temp = QTemporaryDir()
+        z.extractall(temp.path())
+        vl = QgsVectorLayer(temp.path())
+        self.assertTrue(vl.isValid())
+
+        fields = [f for f in vl.fields()]
+
+        self.assertEqual(len(fields), 1)
+        self.assertEqual(fields[0].name(), 'NAME')
+
+        # TEST API GPKG DOWNLOAD
+        # ==============================================
+        response = self._testApiCall('core-vector-api',
+                                     ['gpkg', 'qdjango', self.project322.instance.pk, world.qgs_layer_id])
+
+        self.assertEqual(response.status_code, 200)
+
+        temp = QTemporaryDir()
+        fname = temp.path() + '/temp.gpkg'
+        with open(fname, 'wb') as f:
+            f.write(response.content)
+
+        vl = QgsVectorLayer(fname)
+        self.assertTrue(vl.isValid())
+
+        fields = [f for f in vl.fields()]
+
+        # Now fields are 2 because gpkg provider add also a unique pk fid field.
+        self.assertEqual(len(fields), 2)
+        self.assertEqual(fields[0].name(), 'fid')
+        self.assertEqual(fields[1].name(), 'NAME')
+
+        # TEST API XLS DOWNLOAD
+        # ==============================================
+        response = self._testApiCall('core-vector-api',
+                                     ['xls', 'qdjango', self.project322.instance.pk, world.qgs_layer_id])
+
+        self.assertEqual(response.status_code, 200)
+        temp = QTemporaryDir()
+        fname = temp.path() + '/temp.xlsx'
+        with open(fname, 'wb+') as f:
+            f.write(response.content)
+
+        vl = QgsVectorLayer(fname)
+        self.assertTrue(vl.isValid())
+
+        fields = [f for f in vl.fields()]
+
+        self.assertEqual(len(fields), 1)
+        self.assertEqual(fields[0].name(), 'Field1')
+
+        # TEST API CSV DOWNLOAD
+        # ==============================================
+        response = self._testApiCall('core-vector-api',
+                                     ['csv', 'qdjango', self.project322.instance.pk, world.qgs_layer_id])
+
+        self.assertEqual(response.status_code, 200)
+        temp = QTemporaryDir()
+        fname = temp.path() + '/temp.csv'
+        with open(fname, 'wb+') as f:
+            f.write(response.content)
+
+        vl = QgsVectorLayer(fname)
+        self.assertTrue(vl.isValid())
+
+        fields = [f for f in vl.fields()]
+
+        self.assertEqual(len(fields), 1)
+        self.assertEqual(fields[0].name(), 'NAME')
+
+        # TEST API GPX DOWNLOAD
+        # ==============================================
+
+        points = Layer.objects.get(
+            project_id=self.project322.instance.pk, qgs_layer_id='spatialite_points20190604101052075')
+
+        points.download_gpx = True
+        points.save()
+
+        response = self._testApiCall('core-vector-api',
+                                     ['gpx', 'qdjango', self.project322.instance.pk, points.qgs_layer_id])
+
+        self.assertEqual(response.status_code, 200)
+        temp = QTemporaryDir()
+        fname = temp.path() + '/temp.gpx'
+        with open(fname, 'wb+') as f:
+            f.write(response.content)
+
+        fields = [f for f in vl.fields()]
+
+        vl = QgsVectorLayer(fname)
+        self.assertTrue(vl.isValid())
+
+        fields = [f for f in vl.fields()]
+
+        # Now fields are 2 because gpx provider add also a unique pk fid field.
+        self.assertEqual(len(fields), 24)
+        self.assertEqual(fields[23].name(), 'ogr_pkuid')
 
     def testCoreVectorApiDataFormatter(self):
         """Test core-vector-api data with qgis formatter enabled"""

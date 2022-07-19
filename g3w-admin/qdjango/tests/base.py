@@ -33,7 +33,7 @@ QGS310_FILE = 'g3wsuite_project_test_qgis310.qgs'
 QGS310_WIDGET_FILE = 'qgis_attributes_widget_test_prj.qgs'
 QGS316_THEME_FILE = 'project_themes_qgis316.qgs'
 QGS322_PRINT_LAYOUT_THEME_FILE = 'test_print_layout_with_preset_theme.qgs'
-
+QGS322_FILE = 'gruppo-1_un-progetto_qgis322.qgs'
 
 @override_settings(
     CACHES={
@@ -136,6 +136,13 @@ class QdjangoTestBase(TestCase):
         cls.project310.title = 'A project QGIS 3.10'
         cls.project310.group = cls.project_group
         cls.project310.save()
+
+        # Add new project for fields excluded from WMS service
+        qgis_project_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS322_FILE), 'r'))
+        cls.project322 = QgisProject(qgis_project_file)
+        cls.project322.title = 'A project QGIS 3.22 - fields selected for WMS service'
+        cls.project322.group = cls.project_group
+        cls.project322.save()
 
 
     def tearDown(self):
