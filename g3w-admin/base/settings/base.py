@@ -187,7 +187,7 @@ LANGUAGES = (
     ('fr', 'French'),
     ('fi', 'Finnish'),
     ('se', 'Swedish'),
-    # ('ro', 'Romanian')  # For compatibility with future version
+    ('ro', 'Romanian'),
     ('de', 'Deutsch')
 )
 
