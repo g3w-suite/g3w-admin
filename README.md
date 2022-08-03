@@ -13,18 +13,18 @@ G3W-SUITE works with **QGIS-Server LTR versions**.
 
 ### Version
 
-At the moment is not used a classic versioning system for the suite, there are main 3 branches.
+At the moment is not used a classic versioning system for the suite, these are the main branches.
 
-| Branch   | Python version | Django version | QGIS API | Status              |
-|----------|----------------|----------------|----------|---------------------|
-| dev      | 3.10           | 2.2 | Used | Continue developing |
- | v.3.4.x  | 3.8            | 2.2 | Used | Bug fixing          |
- | v.3.3.x  | 3.6            | 2.2 | Used | Bug fixing          |
- | v.3.2.x  | 3.6            | 2.2 | Used | No longer suppoeted |
- | v.3.1.x  | 3.6            | 2.2 | Used | No longer supported |
- | v.3.0.x  | 3.6            | 2.2 | Used | No longer supported |
- | dj22-py3 | 3.6            | 2.2 | Not used | No longer supported |
- | py2      | 2.7            | 1.11 | Not used | No longer supported |
+| Branch     | Python version | Django version | Client version  | QGIS API | First release | Status         |
+|------------|----------------|----------------|-----------------|----------|---------------|----------------|
+| dev        | 3.10           | 2.2            | dev             | ✔️       | Unreleased    | ⚠️ Unstable   |
+| v.3.4.x    | 3.8            | 2.2            | 3.4.x           | ✔️       | Mar 2022      | 🪲 Bug fixing  |
+| v.3.3.x    | 3.6            | 2.2            | 3.3.x           | ✔️       | Sep 2021      | 🪲 Bug fixing  | 
+| v.3.2.x    | 3.6            | 2.2            | 3.2.x           | ✔️       | Apr 2021      | 🚨 End of Life |
+| v.3.1.x    | 3.6            | 2.2            | 3.1.x           | ✔️       | Nov 2020      | 🚨 End of Life |
+| v.3.0.x    | 3.6            | 2.2            | 3.0.x           | ✔️       | Nov 2020      | 🚨 End of Life |
+| dj22-py3   | 3.6            | 2.2            |                 |          |               | 🚨 End of Life |
+| py2        | 2.7            | 1.11           |                 |          |               | 🚨 End of Life |
 
 The following instructions are for a Ubuntu 18.04 LTS.
 
