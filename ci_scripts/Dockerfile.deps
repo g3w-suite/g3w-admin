@@ -24,7 +24,7 @@ RUN apt-get update && apt install -y \
     xvfb
 
 # PyQGIS latest version
-RUN wget -qO - https://qgis.org/downloads/qgis-2021.gpg.key | gpg --no-default-keyring --keyring gnupg-ring:/etc/apt/trusted.gpg.d/qgis-archive.gpg --import && \
+RUN wget -qO - https://qgis.org/downloads/qgis-2022.gpg.key | gpg --no-default-keyring --keyring gnupg-ring:/etc/apt/trusted.gpg.d/qgis-archive.gpg --import &&  \
     chmod a+r /etc/apt/trusted.gpg.d/qgis-archive.gpg && \
     echo "deb [arch=amd64] https://qgis.org/ubuntu focal main" >> /etc/apt/sources.list && \
     apt update && apt install -y python3-qgis qgis-server
