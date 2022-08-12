@@ -319,6 +319,12 @@ class TestColumnAcl(QdjangoTestBase):
         self.assertTrue(fields['AREA'])
         self.assertTrue(fields['SOURCETHM'])
 
+        # Check metadata attributes
+        metas = [f['name'] for f in [l for l in resp['layers'] if l['name'] == 'world'][0]['metadata']['attributes']]
+
+        self.assertTrue('AREA' in metas)
+        self.assertTrue('SOURCETHM' in metas)
+
         acl = ColumnAcl(layer=self.world, user=self.test_user1,
                         restricted_fields=['AREA', 'SOURCETHM'])
         acl.save()
@@ -334,6 +340,12 @@ class TestColumnAcl(QdjangoTestBase):
 
         self.assertFalse(fields['AREA'])
         self.assertFalse(fields['SOURCETHM'])
+
+        # Check metadata attributes
+        metas = [f['name'] for f in [l for l in resp['layers'] if l['name'] == 'world'][0]['metadata']['attributes']]
+
+        self.assertFalse('AREA' in metas)
+        self.assertFalse('SOURCETHM' in metas)
 
     def test_api(self):
         """Test api"""

@@ -524,6 +524,16 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
             'styles'
         )
 
+    def column_to_exclude(self, instance):
+        """
+        Return field names to exclude from visualization by qgis project settings.
+        :param instance: model qdjango.layer instance
+        :return: List of field names to esclude.
+        :return type: list
+        """
+
+        return eval(instance.exclude_attribute_wms) if instance.exclude_attribute_wms else []
+
     def get_servertype(self, instance):
         return MSTYPES_QGIS
 
@@ -537,9 +547,7 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
             instance) if instance.database_columns else []
 
         # evaluate fields to show or not by qgis project
-        column_to_exclude = eval(
-            instance.exclude_attribute_wms) if instance.exclude_attribute_wms else []
-
+        column_to_exclude = self.column_to_exclude(instance)
 
         if self.request:
             visible_columns = instance.visible_fields_for_user(self.request.user)
@@ -581,18 +589,26 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         metadata['attributes'] = []
         if instance.database_columns:
 
-            for f in qgs_maplayer.fields():
-                attribute = {}
-                attribute['name'] = f.name()
-                # attribute['editType'] = f.editType()
-                attribute['typeName'] = f.typeName()
-                attribute['comment'] = f.comment()
-                attribute['length'] = f.length()
-                attribute['precision'] = f.precision()
-                attribute['type'] = QVariant.typeToName(f.type())
-                attribute['alias'] = f.alias()
+            if self.request:
+                visible_columns = instance.visible_fields_for_user(self.request.user)
+            else:
+                visible_columns = [f.name() for f in qgs_maplayer.fields()]
 
-                metadata['attributes'].append(attribute)
+            column_to_exclude = self.column_to_exclude(instance)
+
+            for f in qgs_maplayer.fields():
+                if f.name() not in column_to_exclude and f.name() in visible_columns:
+                    attribute = {}
+                    attribute['name'] = f.name()
+                    # attribute['editType'] = f.editType()
+                    attribute['typeName'] = f.typeName()
+                    attribute['comment'] = f.comment()
+                    attribute['length'] = f.length()
+                    attribute['precision'] = f.precision()
+                    attribute['type'] = QVariant.typeToName(f.type())
+                    attribute['alias'] = f.alias()
+
+                    metadata['attributes'].append(attribute)
 
         metadata['crs'] = []
 

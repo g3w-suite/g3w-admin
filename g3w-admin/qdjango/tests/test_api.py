@@ -316,6 +316,18 @@ class TestQdjangoProjectsAPI(QdjangoTestBase):
         super().setUpClass()
         cls.client = APIClient()
 
+        # Add new project for fields excluded from WMS service
+        qgis_project_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS322_FILE), 'r'))
+        cls.project322 = QgisProject(qgis_project_file)
+        cls.project322.title = 'A project QGIS 3.22 - fields selected for WMS service'
+        cls.project322.group = cls.project_group
+        cls.project322.save()
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.project322.instance.delete()
+        super().tearDownClass()
+
     def _testApiCall(self, view_name, args, kwargs={}):
         """Utility to make test calls for admin01 user"""
 
@@ -463,6 +475,24 @@ class TestQdjangoProjectsAPI(QdjangoTestBase):
         ), "-30.9890579805188260,15.1142899751643824 : 64.2786803357740268,68.9982082075644172")
 
         os.remove(fname)
+
+    def test_metadata_layer_info_with_fields_excluded_wms(self):
+        """
+        Test metadata info for layers with fields excluded from WMS GetFeatureInfo.
+        """
+
+        response = self._testApiCall(
+            'group-project-map-config', [self.project322.instance.group.slug, 'qdjango', self.project322.instance.pk])
+
+        resp = json.loads(response.content)
+
+        # get world layer:
+        # Check metadata attributes
+        metas = [f['name'] for f in [l for l in resp['layers'] if l['name'] == 'world'][0]['metadata']['attributes']]
+
+        self.assertEqual(len(metas), 1)
+        self.assertTrue('NAME' in metas)
+        self.assertFalse('CAPITAL' in metas)
 
 
 class TestQdjangoLayersAPI(QdjangoTestBase):
