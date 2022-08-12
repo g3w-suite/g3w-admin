@@ -1076,7 +1076,8 @@ class QgisProject(XmlData):
                 'project': os.path.basename(layer.attrib['project'])
             })
 
-        for group in self.qgisProjectTree.xpath('//legend/legendgroup[@embedded=1]'):
+        # Note the double slash in xpath, this is to catch nested embedded groups
+        for group in self.qgisProjectTree.xpath('//legend//legendgroup[@embedded=1]'):
 
             parent_project_path = os.path.basename(group.attrib['project'])
             group_name = group.attrib['name']
@@ -1437,7 +1438,8 @@ class QgisProject(XmlData):
 
                 tr = self.instance.qgis_project.layerTreeRoot()
 
-                for embedded_group in tree.xpath('//legend/legendgroup[contains(@project, \'{}\')]'.format(project_name)):
+                # Note the double slash in xpath, this is to catch nested embedded groups
+                for embedded_group in tree.xpath('//legend//legendgroup[contains(@project, \'{}\')]'.format(project_name)):
                     if not embedded_group.attrib['project'].endswith(project_name):
                         continue
 
