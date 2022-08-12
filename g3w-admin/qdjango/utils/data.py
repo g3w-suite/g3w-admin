@@ -1551,7 +1551,8 @@ class QgisProject(XmlData):
                     raise Exception(
                         _('The project contains an embedded layer {} from a project that could not be found {}'.format(layer_id, project_name)))
 
-        # Update embedded group project path
+        # Update embedded group project path, note the double slash in xpath,
+        # this is to catch nested embedded groups
         for embedded_group in tree.xpath('//legend//legendgroup[@embedded="1"]'):
             project_name = os.path.basename(embedded_group.attrib['project'])
             group_name = os.path.basename(embedded_group.attrib['name'])
