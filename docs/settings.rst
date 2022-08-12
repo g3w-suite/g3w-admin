@@ -270,3 +270,19 @@ Openrouteservice API key, optional, can be blank if the key is not required by t
 ^^^^^^^^^^^^^^^^
 List of available Openrouteservice profiles, default: ``("driving-car", "driving-hgv")``
 
+Vendors settings
+****************
+Settings variables about third part services, i.e. Google API etc..
+
+``VENDOR_KEYS``
+^^^^^^^^^^^^^^^
+A list with services API keys.
+I.e.::
+
+    VENDOR_KEYS = {
+     'google': 'fhgnrjwipòflsjhjjdhjdhashhabs',
+     'bing': 'agbsgtrkADgstejaaklkklkds8irncdfk'
+    }
+
+At the moment only `Google` and `Bing` services are supported, for background base map and for google geoconding
+service plus of `Nominatim` default service.
