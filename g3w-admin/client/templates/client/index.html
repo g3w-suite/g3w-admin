@@ -11,7 +11,7 @@
   {% with client_default|add:"/css/vendor.da15e897cf01e02670039f8dd50e2763.min.css" as vendor_css %}
     <link rel="stylesheet" href="{% static vendor_css %}">
   {% endwith %}
-  {% with client_default|add:"/css/app.4b983a6fd958623a2997d8d4aa8a89ba.min.css" as app_css %}
+  {% with client_default|add:"/css/app.ace6b5c9ea3603221324c74557613450.min.css" as app_css %}
     <link rel="stylesheet" href="{% static app_css %}">
   {% endwith %}
   <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -41,7 +41,7 @@
   <script>
     {{ group_config|safe }}
   </script>
-  {% with client_default|add:"/js/app.e6408bfc049884c41d24a100e2057c03.min.js" as app_js %}
+  {% with client_default|add:"/js/app.71859913e45ada911750ee5f677acecc.min.js" as app_js %}
     <script src="{% static app_js %}"></script>
   {% endwith %}
   {% if SETTINGS.G3WSUITE_CUSTOM_STATIC_URL %}
