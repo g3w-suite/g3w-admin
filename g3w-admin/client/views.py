@@ -1,4 +1,3 @@
-
 from django.utils import six
 from django.utils.translation import get_language
 from django.views.generic import TemplateView
