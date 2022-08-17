@@ -21,6 +21,7 @@ from qdjango.models import Layer
 from qplotly.models import QplotlyWidget
 from qplotly.utils.qplotly_settings import QplotlySettings
 from qplotly.utils.qplotly_factory import QplotlyFactoring, QplotlyFactoringRelation
+import plotly.graph_objects as go
 
 import logging
 
@@ -120,8 +121,11 @@ class QplotlyTraceAPIView(G3WAPIView):
                                                                     project_id=kwargs['project_id']))
         factory.rebuild()
 
+        fig = go.Figure()
+        fig.add_trace(factory.trace[0])
+
         res = {
-            'data': factory.trace
+            'data': fig.to_dict()['data']
 
         }
 
@@ -137,7 +141,7 @@ class QplotlyTraceAPIView(G3WAPIView):
             self._get_relations(
                 with_relations=with_relations.split(','),
                 flayer=layer,
-                ffactory = factory,
+                ffactory=factory,
                 request=request,
                 res=res,
             )
