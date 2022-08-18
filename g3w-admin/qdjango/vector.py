@@ -360,7 +360,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
         """
 
         sessionid = request.COOKIES[settings.SESSION_COOKIE_NAME] \
-            if not request.user.is_anonymous else settings.ANONYMOUS_USER_SESSIONID
+            if not request.user.is_anonymous else request.COOKIES[settings.G3W_CLIENT_COOKIE_SESSION_TOKEN]
 
         if request.method == 'POST':
             request_data = request.data

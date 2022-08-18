@@ -20,6 +20,7 @@ from usersmanage.utils import get_users_for_object, get_user_model
 from usersmanage.configs import *
 from copy import deepcopy
 import json
+import secrets
 
 
 def client_map_alias_view(request, map_name_alias, *args, **kwargs):
@@ -204,6 +205,14 @@ class ClientView(TemplateView):
             except:
                 return settings.CLIENT_DEFAULT
         return settings.CLIENT_DEFAULT
+
+    def render_to_response(self, context, **response_kwargs):
+
+        # Add G3W_CLIENT_COOKIE_SESSION_TOKEN cookie to response
+        response = super().render_to_response(context)
+        response.set_cookie(settings.G3W_CLIENT_COOKIE_SESSION_TOKEN, secrets.token_hex(16))
+
+        return response
 
 
 def user_media_view(request, project_type, layer_id, file_name, *args, **kwargs):
