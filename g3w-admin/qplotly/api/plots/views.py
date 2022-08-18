@@ -21,7 +21,10 @@ from qdjango.models import Layer
 from qplotly.models import QplotlyWidget
 from qplotly.utils.qplotly_settings import QplotlySettings
 from qplotly.utils.qplotly_factory import QplotlyFactoring, QplotlyFactoringRelation
-import plotly.graph_objects as go
+import plotly
+if plotly.__version__ != '2.5.1':
+    import plotly.graph_objects as go
+
 
 import logging
 
@@ -33,6 +36,23 @@ WITH_RELATIONS_PARAM = 'withrelations'
 
 class QplotlyTraceAPIView(G3WAPIView):
     """API return plotly trace data"""
+
+    def _get_trace(self, factory):
+        """
+        Private method to get trace data by plotly version
+        :param factory: QplotlyFactoring or QplotlyFactoringRelation instance
+        :return: Trace data as dict
+        :return type: dict
+        """
+
+        if plotly.__version__ != '2.5.1':
+            fig = go.Figure(layout=factory.layout)
+            fig.add_trace(factory.trace[0])
+            data = fig.to_dict()['data']
+        else:
+            data = factory.trace
+
+        return data
 
     def _get_relations(self, with_relations=[], flayer=None, ffactory=None, request=None, res={}):
         """
@@ -86,7 +106,7 @@ class QplotlyTraceAPIView(G3WAPIView):
 
                 relations[relation_id].append({
                     'id': qplotly.pk,
-                    'data': factory.trace
+                    'data': self._get_trace(factory)
                 })
 
             if 'relations' not in res and relations:
@@ -121,12 +141,8 @@ class QplotlyTraceAPIView(G3WAPIView):
                                                                     project_id=kwargs['project_id']))
         factory.rebuild()
 
-        fig = go.Figure()
-        fig.add_trace(factory.trace[0])
-
         res = {
-            'data': fig.to_dict()['data']
-
+            'data': self._get_trace(factory)
         }
 
         # if withrelations was sent add relations trace values

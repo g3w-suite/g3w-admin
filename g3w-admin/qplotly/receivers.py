@@ -32,6 +32,11 @@ from .utils.qplotly_settings import QplotlySettings
 from .utils.qplotly_factory import QplotlyFactoring
 from .models import QplotlyWidget
 
+import plotly
+
+if plotly.__version__ != '2.5.1':
+    import plotly.graph_objects as go
+
 import logging
 
 logger = logging.getLogger('django.request')
@@ -144,6 +149,12 @@ def set_initconfig_value(sender, **kwargs):
             factory = QplotlyFactoring(settings, request=None, layer=None)
             factory.build_layout()
 
+            if plotly.__version__ != '2.5.1':
+                fig = go.Figure(layout=factory.layout)
+                layout = fig.to_dict()['layout']
+            else:
+                layout = factory.layout
+
             plots.append({
                 'id': qplotly_widget.pk,
                 'qgs_layer_id': layer.qgs_layer_id,
@@ -153,7 +164,7 @@ def set_initconfig_value(sender, **kwargs):
 
                 'plot': {
                     'type': settings.plot_type,
-                    'layout': factory.layout,
+                    'layout': layout,
                     'config': plot_config
                 }
 
