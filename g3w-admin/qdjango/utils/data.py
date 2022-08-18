@@ -493,7 +493,7 @@ class QgisProjectLayer(XmlData):
         for f in self.qgs_layer.fields():
             columns.append({
                 'name': f.name(),
-                'type': QVariant.typeToName(f.type()).upper() if  QVariant.typeToName(f.type()) else None,
+                'type': QVariant.typeToName(f.type()).upper() if QVariant.typeToName(f.type()) else None,
                 'label': f.displayName(),
             })
 
