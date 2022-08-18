@@ -794,6 +794,10 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
 
         # test create second filtertoken
         # ------------------------------
+
+        # Set cookie for Anonymous user
+        self.client.cookies[settings.G3W_CLIENT_COOKIE_SESSION_TOKEN] = 'skdjlaskdjlaksdjlaksdj'
+
         resp = json.loads(self._testApiCall('core-vector-api',
                                             ['filtertoken', 'qdjango', self.project310.instance.pk,
                                              countries.qgs_layer_id],
@@ -839,6 +843,7 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         # create cfrtoken
         self.client.cookies = SimpleCookie(
             {'csrftoken': 'wtegdnfj5736sgreth57Tg5473'})
+        self.client.cookies[settings.G3W_CLIENT_COOKIE_SESSION_TOKEN] = 'sdhdfnfkkreorto'
         resp = json.loads(self._testApiCall('core-vector-api',
                                             ['filtertoken', 'qdjango', self.project310.instance.pk,
                                              cities.qgs_layer_id], {
