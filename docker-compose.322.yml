@@ -12,6 +12,7 @@ services:
       - shared-volume:/shared-volume
 
   g3w-suite:
+    image: g3w_suite_test:322
     build:
       context: ./ci_scripts
       dockerfile: Dockerfile.322.deps
