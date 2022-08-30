@@ -13,6 +13,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='layer',
             name='layer_type',
-            field=models.CharField(choices=[('postgres', 'Postgres'), ('spatialite', 'SpatiaLite'), ('raster', 'Raster'), ('wfs', 'WFS'), ('wms', 'WMS'), ('ogr', 'OGR'), ('gdal', 'GDAL'), ('delimitedtext', 'CSV'), ('arcgismapserver', 'ArcGisMapServer'), ('arcgisfeatureserver', 'ArcGisFeatureServer'), ('mssql', 'MSSQL'), ('virtual', 'VirtualLayer'), ('oracle', 'Oracle'), ('vector-tile', 'Vector Tile')], max_length=255, verbose_name='Type'),
+            field=models.CharField(choices=[('postgres', 'Postgres'), ('spatialite', 'SpatiaLite'), ('raster', 'Raster'), ('wfs', 'WFS'), ('wms', 'WMS'), ('ogr', 'OGR'), ('gdal', 'GDAL'), ('delimitedtext', 'CSV'), ('arcgismapserver', 'ArcGisMapServer'), ('arcgisfeatureserver', 'ArcGisFeatureServer'), ('mssql', 'MSSQL'), ('virtual', 'VirtualLayer'), ('oracle', 'Oracle'), ('vector-tile', 'Vector Tile'), ('vectortile', 'Vector Tile')], max_length=255, verbose_name='Type'),
         ),
     ]

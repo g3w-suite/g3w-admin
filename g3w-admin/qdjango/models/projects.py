@@ -474,7 +474,8 @@ class Layer(G3WACLModelMixins, models.Model):
         ('mssql', _('MSSQL')),
         ('virtual', _('VirtualLayer')),
         ('oracle', _('Oracle')),
-        ('vector-tile', _('Vector Tile'))
+        ('vector-tile', _('Vector Tile')),
+        ('vectortile', _('Vector Tile'))
     )
 
     # General info
