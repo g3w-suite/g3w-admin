@@ -475,7 +475,8 @@ class Layer(G3WACLModelMixins, models.Model):
         ('virtual', _('VirtualLayer')),
         ('oracle', _('Oracle')),
         ('vector-tile', _('Vector Tile')),
-        ('wcs', _('WCS'))
+        ('wcs', _('WCS')),
+        ('vectortile', _('Vector Tile'))
     )
 
     # General info
