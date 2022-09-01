@@ -1,4 +1,3 @@
-
 {
     "ALLOWED_FILE_TYPE": "Sunt permise numai următoarele fișiere: %s",
     "AUTHORIZATION_REQUIRED": "Nu sunteți autorizat să utilizați managerul de fișiere.",
@@ -85,7 +84,7 @@
     "filter_archive": "Arhive",
     "filter_image": "Imagini",
     "filter_media": "Fișiere media",
-    "filter_office": "Documente"
+    "filter_office": "Documente",
     "filter_reset": "Toate Fișierele",
     "filter_video": "Fișiere Video",
     "grid_view": "Schimbați pe grid view",
@@ -153,5 +152,4 @@
     "version": "versiune",
     "yes": "Da"
 }
-
 
