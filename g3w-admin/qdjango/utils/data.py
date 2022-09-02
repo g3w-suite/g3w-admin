@@ -69,11 +69,29 @@ def makeDatasource(datasource, layerType):
     # Original: <datasource>\\SIT-SERVER\sit\charts\definitivo\d262120.shp</datasource>
     # Modified: <datasource>/home/sit/charts\definitivo\d262120.shp</datasource>
     if layerType in (Layer.TYPES.ogr, Layer.TYPES.gdal):
+        # Case NETCDF
+        # split by ':'
+        if datasource.startswith('NETCDF:'):
+            subdt = datasource.split(':')
+            pre = subdt[0] + ':"'
+            datasource = subdt[1]
+            if len(subdt) == 3:
+                post = ":" + subdt[2]
+
         newDatasource = re.sub(r'(.*?)%s(.*)' % folder, r'%s\2' %
                                basePath, datasource)  # ``?`` means ungreedy
         # Remove possible double quote or singlequote
         # i.e. for mdal layers: 'NETCDF:"C:/Users/l.lami/Documents/G3WSUITE_DEV/', '/temporal/runof.sfc.mon.mean.nc"'
         #newDatasource = newDatasource.replace("\"", "").replace("'", "")
+
+        try:
+            newDatasource = pre + newDatasource
+            try:
+                newDatasource = newDatasource + post
+            except:
+                pass
+        except:
+            pass
 
 
     if layerType == Layer.TYPES.delimitedtext:
