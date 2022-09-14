@@ -367,7 +367,9 @@ class DatasourceExists(QgisProjectLayerValidator):
                     err = ugettext('Cannot connect to Postgis raster layer {} '.format(
                         self.qgisProjectLayer.name))
                     raise QgisProjectLayerException(err)
-
+            # TODO: make a validation routine for NETCDF
+            elif self.qgisProjectLayer.datasource.startswith("NETCDF:"):
+                pass
             else:
                 if not os.path.exists(self.qgisProjectLayer.datasource.split('|')[0]):
                     err = ugettext('Missing data file for layer {} '.format(
