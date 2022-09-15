@@ -10,7 +10,7 @@ body:
       Please confirm the following:
     options:
     - label: I've searched through the existing [issues](https://github.com/g3w-suite/g3w-admin/issues) and this bug has never been reported before
-      required: true
+      required: false
 - type: textarea
   attributes:
     label: Subject of the issue
