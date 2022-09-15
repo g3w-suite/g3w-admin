@@ -32,5 +32,6 @@ body:
     attributes:
       label: Alternatives considered
       description: Please describe any alternative solutions or features you've considered.
+      placeholder: Screenshots, video, links, etc.
     validations:
       required: false
