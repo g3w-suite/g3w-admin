@@ -68,7 +68,7 @@ def makeDatasource(datasource, layerType):
     # OGR example datasource:
     # Original: <datasource>\\SIT-SERVER\sit\charts\definitivo\d262120.shp</datasource>
     # Modified: <datasource>/home/sit/charts\definitivo\d262120.shp</datasource>
-    if layerType in (Layer.TYPES.ogr, Layer.TYPES.gdal):
+    if layerType in (Layer.TYPES.ogr, Layer.TYPES.gdal, Layer.TYPES.mdal):
         # Case NETCDF
         # split by ':'
         if datasource.startswith('NETCDF:'):
