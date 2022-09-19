@@ -35,13 +35,13 @@
   <div id="app">
     <app></app>
   </div>
-  {% with client_default|add:"/js/vendor.29c355dd3bd2b752f102c0e94298fa39.min.js" as vendor_js %}
+  {% with client_default|add:"/js/vendor.2902582ba88de7585561d091ccbf860a.min.js" as vendor_js %}
       <script src="{% static vendor_js %}"></script>
   {% endwith %}
   <script>
     {{ group_config|safe }}
   </script>
-  {% with client_default|add:"/js/app.e946723f2ce1c7ce7985f1a63502bfe8.min.js" as app_js %}
+  {% with client_default|add:"/js/app.5c1560e5426e81cd0e030eeca503c0de.min.js" as app_js %}
     <script src="{% static app_js %}"></script>
   {% endwith %}
   {% if SETTINGS.G3WSUITE_CUSTOM_STATIC_URL %}
