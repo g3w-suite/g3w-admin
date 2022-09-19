@@ -426,7 +426,7 @@ class BaseVectorApiView(G3WAPIView):
 
         # post_create_maplayerattributes signal
         post_create_maplayerattributes.send(
-            self, layer=self.layer, vector_params=vector_params)
+            self, layer=self.layer, vector_params=vector_params, user=request.user)
 
         self.results.update(APIVectorLayerStructure(**vector_params).as_dict())
 
