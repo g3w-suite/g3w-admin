@@ -1329,6 +1329,26 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
                 'main_layer_e867d371_3388_4e2d_a214_95adbb56165c'])
         resp = json.loads(response.content)
 
+    def test_config_with_multiline_conf(self):
+        """
+        Test input->options->type with TextEdit Editing widget
+        IsMultiline -> type: 'textarea'
+        UseHtml -> type: 'texthtml'
+        """
+
+        response = self._testApiCall(
+            'core-vector-api', [
+                'config',
+                'qdjango',
+                self.project322.instance.pk,
+                self.project322.instance.layer_set.get(name='world').qgs_layer_id])
+        jres = json.loads(response.content)
+
+        self.assertEqual(jres['vector']['fields'][0]['name'], 'NAME')
+        self.assertEqual(jres['vector']['fields'][0]['input']['type'], 'textarea')
+        self.assertEqual(jres['vector']['fields'][1]['name'], 'CAPITAL')
+        self.assertEqual(jres['vector']['fields'][1]['input']['type'], 'texthtml')
+
 
 class TestGeoConstraintVectorAPIFilter(QdjangoTestBase):
     """Test GeoConstraint Vector API Filters"""
