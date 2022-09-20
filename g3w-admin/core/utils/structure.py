@@ -226,7 +226,8 @@ def mapLayerAttributesFromQgisLayer(qgis_layer, **kwargs):
     # FIXME: find better way for layer join 1:1 managment
     for field in fields:
         if field.name() not in fieldsToExclude and field.name() in kwargs['fields']:
-            #internal_typename = field.typeName().split('(')[0]
+
+            editor_widget_setup = field.editorWidgetSetup()
             internal_typename = QVariant.typeToName(field.type()).upper()
             if internal_typename in FIELD_TYPES_MAPPING:
 
@@ -286,6 +287,8 @@ def mapLayerAttributesFromQgisLayer(qgis_layer, **kwargs):
                 else:
                     is_pk = (field_index in pk_attributes)
 
+                #
+
                 toRes[field.name()] = editingFormField(
                     field.name(),
                     required=not_null,
@@ -321,6 +324,14 @@ def mapLayerAttributesFromQgisLayer(qgis_layer, **kwargs):
                                 {'checked': True, 'value': True},
                                 {'checked': False, 'value': False}
                             ]
+
+                    # Add multiline and html capabilities for TextEdit widget
+                    if editor_widget_setup.type() == 'TextEdit':
+                        config = editor_widget_setup.config()
+                        if 'IsMultiline' in config and config['IsMultiline']:
+                            toRes[field.name()]['input']['type'] = 'textarea'
+                        if 'UseHtml' in config and config['UseHtml']:
+                            toRes[field.name()]['input']['type'] = 'texthtml'
 
         field_index += 1
 
