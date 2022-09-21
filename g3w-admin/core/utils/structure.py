@@ -328,9 +328,9 @@ def mapLayerAttributesFromQgisLayer(qgis_layer, **kwargs):
                     # Add multiline and html capabilities for TextEdit widget
                     if editor_widget_setup.type() == 'TextEdit':
                         config = editor_widget_setup.config()
-                        if 'IsMultiline' in config and config['IsMultiline']:
+                        if 'IsMultiline' in config and config['IsMultiline'] is True:
                             toRes[field.name()]['input']['type'] = 'textarea'
-                        if 'UseHtml' in config and config['UseHtml']:
+                        if 'UseHtml' in config and config['UseHtml'] is True:
                             toRes[field.name()]['input']['type'] = 'texthtml'
 
         field_index += 1

@@ -91,7 +91,7 @@ class CoreApiTest(CoreTestBase):
                                                      'editable': True,
                                                      'validate': {'expression': '"name" != \'my name is no name\''}, 'pk': False,
                                                      'default': '',
-                                                     'input': {'type': 'texthtml', 'options': {}}}])
+                                                     'input': {'type': 'text', 'options': {}}}])
         self.assertEqual(resp["vector"]["geometrytype"], "Point")
         self.assertIsNone(resp["vector"]["data"])
         self.assertTrue(resp["result"])
