@@ -11,6 +11,7 @@ __copyright__ = 'Copyright 2019, GIS3W'
 
 
 from .base import QdjangoTestBase
+from django.urls import reverse
 from django.test import TestCase, override_settings
 from django.core.files import File
 from django.conf import settings
@@ -29,6 +30,7 @@ CURRENT_PATH = os.getcwd()
 TEST_BASE_PATH = '/qdjango/tests/data/'
 DATASOURCE_PATH = '{}{}'.format(CURRENT_PATH, TEST_BASE_PATH)
 QGS_FILE = 'g3wsuite_project_test_qgis310.qgs'
+QGIS_FILE_MDAL = 'mdal_layer_qgis_322.qgs'
 
 
 class QgisProjectTest(TestCase):
@@ -43,6 +45,10 @@ class QgisProjectTest(TestCase):
         qgis_project_file.name = qgis_project_file.name.split('/')[-1]
         self.project = QgisProject(qgis_project_file)
         qgis_project_file.close()
+
+        qgis_project_file = File(open('{}{}{}'.format(
+            CURRENT_PATH, TEST_BASE_PATH, QGIS_FILE_MDAL), 'r', encoding='utf-8'))
+
 
     def test_qgis_project(self):
 
@@ -430,7 +436,23 @@ class QgisWMSProjectSettingsTest(TestCase):
 
 
 class QdjangoUtilsTest(QdjangoTestBase):
-    """ Test for utils methods and functions with QGIS 3.4.x project """
+    """ Test for utils methods and functions"""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+
+        qgis_project_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGIS_FILE_MDAL), 'r'))
+        cls.project_mdal = QgisProject(qgis_project_file)
+        cls.project_mdal.title = 'A project with mdal layer'
+        cls.project_mdal.group = cls.project_group
+        cls.project_mdal.save()
+
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+
+
 
     def test_get_widget4layer(self):
         """ Test same name util func """
@@ -498,6 +520,25 @@ class QdjangoUtilsTest(QdjangoTestBase):
         layer = self.project310.instance.layer_set.get(
             qgs_layer_id='countries_simpl20171228095706310')
         self.assertEqual(get_capabilities4layer(None, layer=layer), 3)
+
+    def test_loaded_mdal_layer(self):
+        """
+        Test loading/loaded mdal layer
+        """
+
+        url = reverse('group-project-map-config', args=[self.project_group.slug, 'qdjango', self.project_mdal.instance.pk])
+
+        self.client.login(username=self.test_user1.username, password=self.test_user1.username)
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, 200)
+
+        jres = json.loads(res.content)
+
+        self.assertEqual(len(jres['layers']), 1)
+        self.assertEqual(jres['layers'][0]['source']['type'], 'mdal')
+        self.assertIsNone(jres['layers'][0]['geometrytype'])
+
+        self.client.logout()
 
 
 class QdjangoUtilsDataValidators(QdjangoTestBase):

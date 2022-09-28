@@ -356,7 +356,9 @@ class DatasourceExists(QgisProjectLayerValidator):
         if self.qgisProjectLayer.layerType in [
                 Layer.TYPES.gdal,
                 Layer.TYPES.ogr,
-                Layer.TYPES.raster] and not isXML(self.qgisProjectLayer.datasource):
+                Layer.TYPES.raster,
+                Layer.TYPES.mdal
+        ] and not isXML(self.qgisProjectLayer.datasource):
 
             # try PostGis raster layer
             if self.qgisProjectLayer.datasource.startswith("PG:"):
@@ -367,9 +369,19 @@ class DatasourceExists(QgisProjectLayerValidator):
                     err = ugettext('Cannot connect to Postgis raster layer {} '.format(
                         self.qgisProjectLayer.name))
                     raise QgisProjectLayerException(err)
-            # TODO: make a validation routine for NETCDF
+
             elif self.qgisProjectLayer.datasource.startswith("NETCDF:"):
-                pass
+
+                subdt = self.qgisProjectLayer.datasource.split(':')
+                pre = subdt[0] + ':"'
+                datasource = subdt[1][1:-1]
+                if not os.path.exists(datasource):
+                    err = ugettext('Missing data file for MESH layer {} '.format(
+                        self.qgisProjectLayer.name))
+                    err += ugettext('which should be located at {}'.format(
+                        self.qgisProjectLayer.datasource))
+                    raise QgisProjectLayerException(err)
+                    
             else:
                 if not os.path.exists(self.qgisProjectLayer.datasource.split('|')[0]):
                     err = ugettext('Missing data file for layer {} '.format(
