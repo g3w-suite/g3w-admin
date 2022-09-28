@@ -381,6 +381,7 @@ class DatasourceExists(QgisProjectLayerValidator):
                     err += ugettext('which should be located at {}'.format(
                         self.qgisProjectLayer.datasource))
                     raise QgisProjectLayerException(err)
+                    
             else:
                 if not os.path.exists(self.qgisProjectLayer.datasource.split('|')[0]):
                     err = ugettext('Missing data file for layer {} '.format(
