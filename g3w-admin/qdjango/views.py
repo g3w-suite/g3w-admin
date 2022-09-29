@@ -352,6 +352,7 @@ class QdjangoLayerWidgetsMixin(object):
         context = super().get_context_data()
         context['layer'] = self.layer
         context['project_layers'] = json.dumps(project_layers4search_widget(self.layer))
+        context['layer_edittypes'] = json.dumps(eval(self.layer.edittypes))
 
         # Get every relations were layer is child
         context['relations'] = json.dumps(self.get_relations(self.layer))
