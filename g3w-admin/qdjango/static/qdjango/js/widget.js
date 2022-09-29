@@ -48,6 +48,9 @@ ga.Qdjango.widgetEditor = {
     selectbox: "SelectBox",
     autocompletebox: "AutoCompleteBox",
   },
+  datetime_widgettype: {
+    datetimebox: "DatetimeBox"
+  },
   /*widget: [
 		{
 			'type': 'unique_value_select',
@@ -125,12 +128,30 @@ ga.Qdjango.widgetEditor = {
           }
           options["numdigaut"] = v.find(".cmpNumDigAutocomplete").find("input").val()
 
+
+          fieldname = v.find(".fieldSelect").find("select").val();
+          fieldwidgettype = v.find(".widgetType").find("select").val();
+          // Case QDATETIME and QDATE
+
+          fieldtype = v.find(".fieldSelect").find("select").find("option:selected").data().type;
+          if (fieldwidgettype == 'datetimebox'){
+            options['format'] = {
+              "date": true ? _.indexOf(['QDATETIME', 'QDATE'], fieldtype) != -1 : false,
+              "time": true ? _.indexOf(['QDATETIME', 'QTIME'], fieldtype) != -1 : false,
+              "fieldformat": ga.Qdjango.localVars.layer_edittypes[fieldname].field_format,
+              "displayformat": ga.Qdjango.localVars.layer_edittypes[fieldname].field_format,
+              "default": null
+            }
+          }
+
+
+
           obj.fields.push({
             name: v.find(".fieldSelect").find("select").val(), // NOME DEL CAMPO DB
             label: v.find(".textInput").find("input").val(), // ETICHETTA DEL CAMPO DI RICERCA
             blanktext: v.find(".descriptionInput").find("input").val(), // TESTO INIZIALE NEL CAMPO
             filterop: v.find(".cmpOperatorSelect").find("select").val(), // OPERATORE DI CONFRONTO (=,&lt;,&gt;,=&lt;,&gt;=,&lt;&gt;)
-            widgettype: v.find(".widgetType").find("select").val(), // widgettype
+            widgettype: fieldwidgettype, // widgettype
             input: {
               type: that.getType(v.find(".fieldSelect").find("select").find("option:selected").data().type), // TIPO DI CAMPO //
               options: options,
@@ -344,6 +365,7 @@ ga.Qdjango.widgetEditor = {
 
     // add control on cmpOperatorSelect for field type:
     fieldSelect.on("change", function () {
+
       var likeopts = cmpOperatorSelect.find("option[value='LIKE']")
       var ilikeopts = cmpOperatorSelect.find("option[value='ILIKE']")
       var field_type = that.getType($(this).find("option:selected").data().type)
@@ -356,7 +378,19 @@ ga.Qdjango.widgetEditor = {
         if (likeopts.length == 0) cmpOperatorSelect.append('<option value="LIKE">LIKE (' + gettext("like case sensitive") + ")</option>")
         if (ilikeopts.length == 0) cmpOperatorSelect.append('<option value="ILIKE">ILIKE (' + gettext("like not case sensitive") + ")</option>")
       }
+
+      // Case QDATETIME
+      //if (_.indexOf(['QDATETIME', 'QDATE'], $(this).find("option:selected").data().type) != -1 &&
+      widgetSelect.find('[value="datetimebox"]').remove();
+      if (_.indexOf(['DateTime'], ga.Qdjango.localVars.layer_edittypes[$(this).val()].widgetv2type) != -1) {
+        // Append 'DatetimBox' to widget selectbox
+        widgetSelect.append('<option value="datetimebox">' + that.datetime_widgettype.datetimebox + '</option>');
+      }
+
     })
+
+      // Trigger change for fieldselect
+    fieldSelect.trigger('change');
 
     if (that.isset(values) && that.isset(values.widgettype)) widgetSelect.val($("<div/>").html(values.widgettype).text())
 
@@ -542,6 +576,7 @@ ga.Qdjango.widgetEditor = {
 
     if (that.isset(values) && that.isset(values.logicop)) var logicopselect = div.find("select.logic_operator")
     if (that.isset(logicopselect)) logicopselect.val(values.logicop)
+
   },
 
   generateTooltipRow: function (values) {
