@@ -66,7 +66,7 @@ ga.Qdjango.widgetEditor = {
   },
 
   getType: function (str) {
-    if (str.indexOf("QSTRING") !== -1 || str.indexOf("QDATE") !== -1 || str.indexOf("STRING") !== -1 || str.indexOf("TEXT") !== -1) return "textfield"
+    if (str.indexOf("QSTRING") !== -1 || str.indexOf("STRING") !== -1 || str.indexOf("TEXT") !== -1) return "textfield"
     if (
       str.indexOf("NUMERIC") !== -1 ||
       str.indexOf("DOUBLE PRECISION") !== -1 ||
@@ -77,6 +77,13 @@ ga.Qdjango.widgetEditor = {
       str.indexOf("DOUBLE") !== -1
     )
       return "numberfield"
+
+    if (
+        str.indexOf("QDATE") !== -1 ||
+        str.indexOf("QDATETIME") !== -1 ||
+        str.indexOf("QTIME") !== -1
+    )
+      return "datetimefield"
   },
 
   onFormSubmit: function () {
