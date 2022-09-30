@@ -146,7 +146,7 @@ ga.Qdjango.widgetEditor = {
               "date": true ? _.indexOf(['QDATETIME', 'QDATE'], fieldtype) != -1 : false,
               "time": true ? _.indexOf(['QDATETIME', 'QTIME'], fieldtype) != -1 : false,
               "fieldformat": ga.Qdjango.localVars.layer_edittypes[fieldname].field_format,
-              "displayformat": ga.Qdjango.localVars.layer_edittypes[fieldname].field_format,
+              "displayformat": ga.Qdjango.localVars.layer_edittypes[fieldname].display_format,
               "default": null
             }
           }
