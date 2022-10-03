@@ -141,6 +141,7 @@ ga.Qdjango.widgetEditor = {
           // Case QDATETIME and QDATE
 
           fieldtype = v.find(".fieldSelect").find("select").find("option:selected").data().type;
+          inputtype = that.getType(fieldtype);
           if (fieldwidgettype == 'datetimebox'){
             options['format'] = {
               "date": true ? _.indexOf(['QDATETIME', 'QDATE'], fieldtype) != -1 : false,
@@ -149,6 +150,9 @@ ga.Qdjango.widgetEditor = {
               "displayformat": ga.Qdjango.localVars.layer_edittypes[fieldname].display_format,
               "default": null
             }
+
+            // Force type do 'datetimefield'
+            inputtype = 'datetimefield'
           }
 
 
@@ -160,7 +164,7 @@ ga.Qdjango.widgetEditor = {
             filterop: v.find(".cmpOperatorSelect").find("select").val(), // OPERATORE DI CONFRONTO (=,&lt;,&gt;,=&lt;,&gt;=,&lt;&gt;)
             widgettype: fieldwidgettype, // widgettype
             input: {
-              type: that.getType(v.find(".fieldSelect").find("select").find("option:selected").data().type), // TIPO DI CAMPO //
+              type: inputtype, // TIPO DI CAMPO //
               options: options,
             },
             logicop: v.find("select.logic_operator").val(),
