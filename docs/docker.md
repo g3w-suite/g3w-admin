@@ -192,15 +192,11 @@ Type "help" for help.
 postgres=#
 ```
 
-## Portainer
-Portainer(https://www.portainer.io) is a software for build and manage Docker environments in an easy and graphical way.
+## Portainer usage
 
-For Portainer use `docker-compose-portainer.yml` file and in plus of env vars before, set the follow mandatory env vars:
+Portainer (https://www.portainer.io) is a docker-based web application used to edit and manage Docker applications in a simple and intuitive way.
 
-* G3WSUITE_DOCKER_INSTALL_DIR: host directory where this code is.
-* PG_PUBLIC_PORT: host port to map Docker PostgreSql default port (5432).
-* WEBGIS_HTTP_PORT: host port to map Docker Nginx port (8080).
-* WEBGIS_HTTPS_PORT: host port to map Docker Nginx port (443).
+Plese refer to the [Add new stack](https://docs.portainer.io/v/ce-2.9/user/docker/stacks/add) section to learn how to deploy the `docker-compose-consumer.yml` stack with Portainer (>= v2.1.1).
 
 ### Contributors
 * Walter Lorenzetti - Gis3W ([@wlorenzetti](https://github.com/wlorenzetti))
