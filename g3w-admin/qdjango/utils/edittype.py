@@ -1,7 +1,7 @@
 from django.urls import reverse
 import re
 from core.utils.structure import FORM_FIELD_TYPE_CHECK, FORM_FIELD_TYPE_SELECT, FORM_FIELD_TYPE_SELECT_AUTOCOMPLETE
-from qgis.core import QgsExpression
+from .qgis import explode_expression
 
 # add form input type based on qgis edittypes
 FORM_FIELD_TYPE_QGIS_DATETIME = 'datetimepicker'
@@ -143,21 +143,8 @@ class QgisEditTypeValueRelation(QgisEditTypeValueMap):
 
         input_form = super(QgisEditTypeValueRelation, self).input_form
 
-        if self.FilterExpression != '':
-            exp = QgsExpression(self.FilterExpression)
-            filter_expression = {
-                'expression': exp.expression(),
-                'referenced_columns': list(exp.referencedColumns()),
-                'referenced_functions': list(exp.referencedFunctions())
-            }
-
-            # For current_values function in filter expression get parameter field fo it
-            if "current_value" in filter_expression['referenced_functions']:
-                groups = re.findall(r'current_value\(\'(.*?)\'\)|(\w+=\w+)', filter_expression['expression'])
-                filter_expression['referencing_fields'] = [g[0] for g in groups]
-
-        else:
-            filter_expression = None
+        # Explode Filter Expression
+        filter_expression = explode_expression(self.FilterExpression) if self.FilterExpression != '' else None
 
         # add params for get value
         input_form['input']['options'].update({
