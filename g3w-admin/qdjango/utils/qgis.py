@@ -12,6 +12,7 @@ __copyright__ = 'Copyright 2015 - 2022, Gis3w'
 
 from qgis.core import QgsExpression
 
+
 def explode_expression(expression):
     """
     Give a string expression return metadata information like column names and qgis expression functions
