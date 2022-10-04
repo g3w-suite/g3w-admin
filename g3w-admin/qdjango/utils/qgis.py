@@ -11,6 +11,7 @@ __date__ = '2022-10-04'
 __copyright__ = 'Copyright 2015 - 2022, Gis3w'
 
 from qgis.core import QgsExpression
+import re
 
 
 def explode_expression(expression):
