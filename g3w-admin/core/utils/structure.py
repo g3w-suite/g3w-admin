@@ -334,7 +334,7 @@ def mapLayerAttributesFromQgisLayer(qgis_layer, **kwargs):
                 if field.defaultValueDefinition().expression() != '':
                     exp = QgsExpression(field.defaultValueDefinition().expression())
                     if exp.rootNode().nodeType() != QgsExpressionNode.ntLiteral:
-                        toRes[field.name()]['input']['default_expression'] = \
+                        toRes[field.name()]['input']['options']['default_expression'] = \
                             explode_expression(field.defaultValueDefinition().expression())
 
         field_index += 1
