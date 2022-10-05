@@ -17,7 +17,7 @@ import re
 def explode_expression(expression):
     """
     Give a string expression return metadata information like column names and qgis expression functions
-    :param expression: Strim QGIS expression
+    :param expression: String QGIS expression
     :return type: dict
     :return: Dict of QGIS expression metadata info.
     """
