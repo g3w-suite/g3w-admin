@@ -33,3 +33,5 @@ def explode_expression(expression):
     if "current_value" in filter_expression['referenced_functions']:
         groups = re.findall(r'current_value\(\'(.*?)\'\)|(\w+=\w+)', filter_expression['expression'])
         filter_expression['referencing_fields'] = [g[0] for g in groups]
+
+    return filter_expression
