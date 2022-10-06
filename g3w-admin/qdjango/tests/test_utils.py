@@ -20,6 +20,7 @@ from qdjango.utils.data import QgisProject, QgisPgConnection, QgisProjectSetting
 from qdjango.utils.exceptions import QgisProjectLayerException, QgisProjectException
 from qdjango.utils.structure import get_schema_table, datasource2dict, datasourcearcgis2dict
 from qdjango.utils.models import get_widgets4layer, comparedbdatasource, get_capabilities4layer
+from qdjango.utils.qgis import explode_expression
 from qdjango.templatetags.qdjango_tags import is_geom_type_gpx_compatible
 from collections import OrderedDict
 import os
@@ -583,4 +584,68 @@ class TestTemplateTags(QdjangoTestBase):
 
         self.assertTrue(is_geom_type_gpx_compatible(spatialite_points))
         self.assertFalse(is_geom_type_gpx_compatible(world))
+
+
+class TestQdjangoUtilsQgis(QdjangoTestBase):
+    """ Test for qdjango.utils.qgis moduele and functions """
+
+    def test_explode_expression(self):
+        """
+        Test qdjango.utils.qgis -> explode_espression function
+        """
+        expr = "$area  * 2 + 10"
+
+        expected = {
+            'expression': expr,
+            'referenced_columns': [],
+            'referenced_functions': ['$area']
+        }
+
+        self.assertEqual(explode_expression(expr), expected)
+
+        expr = "$area  * 2 +  \"gid\""
+
+        expected = {
+            'expression': expr,
+            'referenced_columns': ['gid'],
+            'referenced_functions': ['$area']
+        }
+
+        self.assertEqual(explode_expression(expr), expected)
+
+        expr = "sqrt( $area )  *2 + \"gid\" "
+
+        expected = {
+            'expression': expr,
+            'referenced_columns': ['gid'],
+            'referenced_functions': ['$area', 'sqrt']
+        }
+
+        ee = explode_expression(expr)
+
+        self.assertEqual(ee['expression'], expected['expression'])
+        self.assertEqual(ee['referenced_columns'].sort(), expected['referenced_columns'].sort())
+        self.assertEqual(ee['referenced_functions'].sort(), expected['referenced_functions'].sort())
+        self.assertFalse('referencing_fields' in ee)
+
+
+        expr = "sqrt(  $area )  *2 + \"gid\" + current_value(\"ntest\")"
+
+        expected = {
+            'expression': expr,
+            'referenced_columns': ['gid', 'ntest'],
+            'referenced_functions': ['sqrt', '$area', 'current_value'],
+            'referencing_fields': ['ntest']
+        }
+
+        ee = explode_expression(expr)
+
+        self.assertEqual(ee['expression'], expected['expression'])
+        self.assertEqual(ee['referenced_columns'].sort(), expected['referenced_columns'].sort())
+        self.assertEqual(ee['referenced_functions'].sort(), expected['referenced_functions'].sort())
+        self.assertTrue('referencing_fields' in ee)
+        self.assertEqual(ee['referencing_fields'].sort(), expected['referencing_fields'].sort())
+
+
+
 
