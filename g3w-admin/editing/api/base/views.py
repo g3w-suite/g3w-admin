@@ -257,29 +257,11 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
 
                             field_idx = qgis_layer.fields().indexFromName(qgis_field.name())
 
-                            # Look for expression/value by default
-                            # ------------------------------------
-                            if qgis_field.defaultValueDefinition().expression():
-                                exp = QgsExpression(qgis_field.defaultValueDefinition().expression())
-                                if exp.rootNode().nodeType() != QgsExpressionNode.ntLiteral and not exp.hasParserError():
-                                    context = QgsExpressionContextUtils.createFeatureBasedContext(
-                                        feature, qgis_layer.fields())
-                                    context.appendScopes(
-                                        QgsExpressionContextUtils.globalProjectLayerScopes(qgis_layer))
-                                    result = exp.evaluate(context)
-                                    if not exp.hasEvalError():
-                                        feature.setAttribute(qgis_field.name(), result)
-
-                                        # Check update if expression default value has to run also on update e not
-                                        # only on insert newone
-                                        if qgis_field.defaultValueDefinition().applyOnUpdate():
-                                            field_expresion_values[qgis_field.name()] = result
-
                             # Look for dataprovider default clause/value:
                             # only for fields no pk with defaultValueClause by provider
                             # and NULL value into feature on new add feature
                             # ---------------------------------------------------------
-                            elif mode_editing == EDITING_POST_DATA_ADDED and \
+                            if mode_editing == EDITING_POST_DATA_ADDED and \
                                     field_idx not in qgis_layer.primaryKeyAttributes() and \
                                     qgis_layer.dataProvider().defaultValueClause(field_idx) and \
                                     not feature[qgis_field.name()]:
