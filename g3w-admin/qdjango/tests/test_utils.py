@@ -588,7 +588,7 @@ class TestTemplateTags(QdjangoTestBase):
 
 
 class QdjangoTestUtilsQgis(QdjangoTestBase):
-    """ Test for qdjango.utils.qgis moduele and functions """
+    """ Test for qdjango.utils.qgis module and functions """
 
     @classmethod
     def setUpClass(cls):
