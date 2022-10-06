@@ -32,6 +32,7 @@ TEST_BASE_PATH = '/qdjango/tests/data/'
 DATASOURCE_PATH = '{}{}'.format(CURRENT_PATH, TEST_BASE_PATH)
 QGS_FILE = 'g3wsuite_project_test_qgis310.qgs'
 QGIS_FILE_MDAL = 'mdal_layer_qgis_322.qgs'
+QGIS_FILE_EXPRESSION_DEFAULT = 'test_default_field_expression_322.qgs'
 
 
 class QgisProjectTest(TestCase):
@@ -586,8 +587,17 @@ class TestTemplateTags(QdjangoTestBase):
         self.assertFalse(is_geom_type_gpx_compatible(world))
 
 
-class TestQdjangoUtilsQgis(QdjangoTestBase):
+class QdjangoTestUtilsQgis(QdjangoTestBase):
     """ Test for qdjango.utils.qgis moduele and functions """
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+
+        qgis_project_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGIS_FILE_EXPRESSION_DEFAULT), 'r'))
+        cls.project_dexp = QgisProject(qgis_project_file)
+        cls.project_dexp.group = cls.project_group
+        cls.project_dexp.save()
 
     def test_explode_expression(self):
         """
@@ -645,6 +655,49 @@ class TestQdjangoUtilsQgis(QdjangoTestBase):
         self.assertEqual(ee['referenced_functions'].sort(), expected['referenced_functions'].sort())
         self.assertTrue('referencing_fields' in ee)
         self.assertEqual(ee['referencing_fields'].sort(), expected['referencing_fields'].sort())
+
+    def test_expression_default_api_layer_config(self):
+        """
+        Test Layer API REST config with expression default value
+        """
+
+        qdjango_layer = self.project_dexp.instance.layer_set.get(name='points')
+
+        url = reverse('core-vector-api',
+                      args=['config', 'qdjango', self.project_dexp.instance.pk, qdjango_layer.qgs_layer_id])
+
+        self.client.login(username=self.test_user1.username, password=self.test_user1.username)
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, 200)
+
+        jres = json.loads(res.content)
+
+        dfields = {f['name']: f for f in jres['vector']['fields']}
+
+        # Check fields with default value not expression
+        self.assertTrue('default_expression' not in dfields['name']['input']['options'])
+        self.assertEqual(dfields['name']['input']['options']['default'], 'default_name')
+
+        self.assertTrue('default_expression' not in dfields['subname']['input']['options'])
+        self.assertTrue('default' not in dfields['subname']['input']['options'])
+
+        # Check fields with default expressions
+        self.assertTrue('default_expression' in dfields['length']['input']['options'])
+        self.assertEqual(dfields['length']['input']['options']['default_expression']['expression'], ' $length  + 25')
+        self.assertEqual(dfields['length']['input']['options']['default_expression']['referenced_columns'], [])
+        self.assertEqual(dfields['length']['input']['options']['default_expression']['referenced_functions'],
+                         ['$length'])
+        self.assertFalse('referencong_fields' in dfields['length']['input']['options']['default_expression'])
+
+        self.assertTrue('default_expression' in dfields['area']['input']['options'])
+        self.assertEqual(dfields['area']['input']['options']['default_expression']['expression'],
+                         '$area + current_value("length")')
+        self.assertEqual(dfields['area']['input']['options']['default_expression']['referenced_columns'], ['length'])
+        self.assertEqual(dfields['area']['input']['options']['default_expression']['referenced_functions'].sort(),
+                         ['$length', 'current_value'].sort())
+        self.assertTrue('referencing_fields' in dfields['area']['input']['options']['default_expression'])
+        self.assertEqual(dfields['area']['input']['options']['default_expression']['referencing_fields'], ['length'])
+
 
 
 
