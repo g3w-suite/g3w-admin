@@ -6,10 +6,9 @@ G3W-ADMIN admin server module for G3W-SUITE. (Django 2.2 and Python 3.6, current
 
 G3W-SUITE works with **QGIS-Server LTR versions**.
 
-![Admin GUI](docs/images/install/en/admin.jpg)
+![Admin GUI](docs/images/install/en/admin.png)
 
-![Webgis GUI](docs/images/install/en/client.jpg
-)
+![Webgis GUI](docs/images/install/en/client.png)
 
 ### Version
 

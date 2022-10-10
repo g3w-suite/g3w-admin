@@ -44,8 +44,8 @@ Through the web interface of the G3W-SUITE framework it is possible to:
 
 - **define permissions to access services and to use functional modules** at the individual user level
 
-.. image:: images/install/admin.jpg
-.. image:: images/install/client.jpg
+.. image:: images/install/admin.png
+.. image:: images/install/client.png
 
 .. toctree::
    :maxdepth: 2
