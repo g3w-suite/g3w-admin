@@ -11,6 +11,8 @@ from core.api.base.views import APIException
 from django.utils.translation import ugettext_lazy as _
 from rest_framework import status
 
+from qgis.core import NULL
+
 import json
 
 from qgis.core import (
@@ -176,6 +178,11 @@ class QgsExpressionLayerContextEvalView(G3WAPIView):
         try:
             result = expression_eval(
                 expression_text, project_id, qgs_layer_id, form_data, int(formatter))
+
+            # Case Qvariant NULL
+            if result == NULL:
+                result = ''
+
         except ExpressionFormDataError as ex:
             raise APIExpressionFormDataError(str(ex))
         except ExpressionEvalError as ex:
