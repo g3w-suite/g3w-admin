@@ -733,6 +733,7 @@ class QdjangoTestUtilsQgis(QdjangoTestBase):
                          ['$length', 'current_value'].sort())
         self.assertTrue('referencing_fields' in dfields['area']['input']['options']['default_expression'])
         self.assertEqual(dfields['area']['input']['options']['default_expression']['referencing_fields'], ['length'])
+        self.assertEqual(dfields['area']['input']['options']['default_expression']['apply_on_update'], False)
 
 
 

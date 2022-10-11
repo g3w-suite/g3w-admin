@@ -337,6 +337,11 @@ def mapLayerAttributesFromQgisLayer(qgis_layer, **kwargs):
                         toRes[field.name()]['input']['options']['default_expression'] = \
                             explode_expression(field.defaultValueDefinition().expression())
 
+                        # Check update if expression default value has to run also on update e not
+                        # only on insert newone
+                        toRes[field.name()]['input']['options']['default_expression']['apply_on_update'] = True \
+                            if field.defaultValueDefinition().applyOnUpdate() else False
+
         field_index += 1
 
     return toRes
