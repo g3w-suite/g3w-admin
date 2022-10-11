@@ -61,6 +61,11 @@ class GeoConstraint(models.Model):
     for_editing = models.BooleanField(_('Active for editing'), default=False, null=True,
                                       help_text=_(
                                           'Active this constraint for users have editing grant on layer/project'))
+    autozoom = models.BooleanField(_('Autozoom on map boostrap'), default=False, null=True,
+                                      help_text=_(
+                                          'Active this to make possible auto zoom on geometric constraint '
+                                          '(combining every rule) for user on map boostrap'))
+
 
     @property
     def layer_qgs_layer_id(self):
