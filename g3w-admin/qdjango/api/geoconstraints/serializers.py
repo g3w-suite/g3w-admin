@@ -53,7 +53,8 @@ class GeoConstraintSerializer(serializers.ModelSerializer):
             'active',
             'constraint_rule_count',
             'for_view',
-            'for_editing'
+            'for_editing',
+            'autozoom'
         ]
         validators = [GeoConstraintCleanValidator()]
 
