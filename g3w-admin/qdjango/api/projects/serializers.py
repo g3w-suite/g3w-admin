@@ -5,7 +5,7 @@ from rest_framework import serializers
 from rest_framework.fields import empty
 from guardian.shortcuts import get_objects_for_user, get_anonymous_user
 from owslib.wms import WebMapService
-from qdjango.models import Project, Layer, Widget, SessionTokenFilter
+from qdjango.models import Project, Layer, Widget, SessionTokenFilter, GeoConstraintRule
 from qdjango.utils.data import QGIS_LAYER_TYPE_NO_GEOM
 from qdjango.utils.models import get_capabilities4layer
 from qdjango.signals import load_qdjango_widget_layer
@@ -292,6 +292,15 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
         # set init and map extent
         ret['initextent'], ret['extent'] = self.get_map_extent(instance)
+
+        # Check Geoconstraint rule whit autozoom flagged and calculate new initentext
+        initextent_by_geoconstraint = GeoConstraintRule.get_max_extent_on_project_for_user(
+            self.instance,
+            self.request.user
+        )
+
+        if initextent_by_geoconstraint:
+            ret['initextent'] = initextent_by_geoconstraint
 
         ret['print'] = json.loads(clean_for_json(
             instance.layouts)) if instance.layouts else []
