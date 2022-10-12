@@ -1697,12 +1697,10 @@ class TestInitextentByGeoconstraint(QdjangoTestBase):
         userarea_qgs_layer.selectByExpression(expr)
         ext = userarea_qgs_layer.boundingBoxOfSelected()
 
-        self.assertEqual(jres['initextent'], [
-            ext.xMinimum(),
-            ext.yMinimum(),
-            ext.xMaximum(),
-            ext.yMaximum()
-        ])
+        self.assertAlmostEqual(jres['initextent'][0], ext.xMinimum(), 4)
+        self.assertAlmostEqual(jres['initextent'][1], ext.yMinimum(), 4)
+        self.assertAlmostEqual(jres['initextent'][2], ext.xMaximum(), 4)
+        self.assertAlmostEqual(jres['initextent'][3], ext.yMaximum(), 4)
 
         self.client.logout()
 
