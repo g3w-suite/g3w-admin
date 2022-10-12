@@ -37,13 +37,15 @@ from qdjango.models.geoconstraints import GeoConstraint, GeoConstraintRule
 from qdjango.api.layers.filters import FILTER_RELATIONONETOMANY_PARAM
 from qdjango.utils.data import QgisProject
 from qdjango.models import SessionTokenFilter, SessionTokenFilterLayer
+from usersmanage.models import Group as UserGroup
 from core.tests.base import CoreTestBase
-from core.utils.qgisapi import get_qgs_project
+from core.utils.qgisapi import get_qgs_project, get_qgis_layer
 
 from .base import QdjangoTestBase, CURRENT_PATH, TEST_BASE_PATH, QGS310_WIDGET_FILE, CoreGroup, G3WSpatialRefSys, \
-    QGS322_FILE
+    QGS322_FILE, QGS322_INITEXTENT_GEOCONSTRAINT_FILE
 from qgis.core import QgsFeatureRequest, QgsRasterLayer, QgsVectorLayer
 from qgis.PyQt.QtCore import QTemporaryDir
+from qgis.server import QgsServerProjectUtils
 import time
 import six
 import os
@@ -1630,3 +1632,120 @@ class QgisTemporalVectorProject(QdjangoTestBase):
         self.assertEqual(jcontent['layers'][0]['qtimeseries']['start_date'], '1981-01-01T00:00:00')
         self.assertEqual(jcontent['layers'][0]['qtimeseries']['end_date'], '2022-03-01T00:00:00')
 
+
+class TestInitextentByGeoconstraint(QdjangoTestBase):
+    """
+    Test changing initextent property of initconfig API REST by user geoconstraint rules.
+    """
+
+    @classmethod
+    def setUpTestData(cls):
+        # main project group
+        cls.project_group = CoreGroup(name='GroupInitExtentGeoconstraint', title='GroupInitExtentGeoconstraint', header_logo_img='',
+                                      srid=G3WSpatialRefSys.objects.get(auth_srid=3857))
+        cls.project_group.save()
+
+        # Load project
+        qgis_project_file = File(open(f'{CURRENT_PATH}{TEST_BASE_PATH}{QGS322_INITEXTENT_GEOCONSTRAINT_FILE}', 'r'))
+        cls.project = QgisProject(qgis_project_file)
+        cls.project.title = 'Test project for initextent by geoconstraint'
+        cls.project.group = cls.project_group
+        cls.project.save()
+
+        group_viewer = UserGroup.objects.get(name='Viewer Level 1')
+
+        # Viewer level 1: viewer2
+        cls.test_viewer2 = User.objects.create_user(username='viewer2', password='viewer2')
+        cls.test_viewer2.groups.add(group_viewer)
+        cls.test_viewer2.save()
+
+        # Viewer level 1: viewer3
+        cls.test_viewer3 = User.objects.create_user(username='viewer3', password='viewer3')
+        cls.test_viewer3.groups.add(group_viewer)
+        cls.test_viewer3.save()
+
+    def _make_request_with_geocontraints(self, url, u, expr):
+        """
+        Build request geocontraint by user and expression and test it initconfig api
+        """
+
+        userpoints_layer = self.project.instance.layer_set.get(name='userpoints')
+        userarea_layer = self.project.instance.layer_set.get(name='userarea')
+        userarea_qgs_layer = get_qgis_layer(userarea_layer)
+
+        self.client.login(username=u.username, password=u.username)
+
+        # Grant on project to viewer1
+        assign_perm('view_project', u, self.project.instance)
+
+        constraint = GeoConstraint(
+            layer=userpoints_layer, constraint_layer=userarea_layer, active=True, autozoom=True)
+        constraint.save()
+
+        rule_viewer = GeoConstraintRule(
+            constraint=constraint, user=u, group=None, rule=expr)
+        rule_viewer.save()
+
+        # Make get request
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, 200)
+
+        jres = json.loads(res.content)
+
+        # Get extent
+        request = QgsFeatureRequest().setFilterExpression(expr)
+        userarea_qgs_layer.selectByExpression(expr)
+        ext = userarea_qgs_layer.boundingBoxOfSelected()
+
+        self.assertEqual(jres['initextent'], [
+            ext.xMinimum(),
+            ext.yMinimum(),
+            ext.xMaximum(),
+            ext.yMaximum()
+        ])
+
+        self.client.logout()
+
+    def test_init_map_extent_by_geoconstraints(self):
+        """
+        Test init map extent into map config api for user with geoconstrains:
+        admin1 -> no geoconstrains -> initmap extent as defined into qgis project
+        viewer1 -> one or more geoconstraints -> initmap extent as result of geoconstraints expresion
+        ...
+        """
+
+        qgsprj = get_qgs_project(self.project.instance.qgis_file.path)
+
+        url = reverse('group-project-map-config', args=[self.project_group.slug, 'qdjango', self.project.instance.pk])
+
+        # Login ad admin01
+        # --------------------------------------------------------
+        self.client.login(username='admin01', password='admin01')
+
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, 200)
+
+        jres = json.loads(res.content)
+
+        ext = QgsServerProjectUtils.wmsExtent(qgsprj)
+
+        self.assertEqual(jres['extent'], [
+            ext.xMinimum(),
+            ext.yMinimum(),
+            ext.xMaximum(),
+            ext.yMaximum()
+        ])
+
+        self.client.logout()
+
+        # Login ad viewer1
+        # --------------------------------------------------------
+        self._make_request_with_geocontraints(url, self.test_viewer1, "name='AREA1'")
+
+        # Login ad viewer2
+        # --------------------------------------------------------
+        self._make_request_with_geocontraints(url, self.test_viewer2, "name='AREA2'")
+
+        # Login ad viewer3
+        # --------------------------------------------------------
+        self._make_request_with_geocontraints(url, self.test_viewer3, "name='AREA2' OR name='AREA3'")
