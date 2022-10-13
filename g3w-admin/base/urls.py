@@ -9,7 +9,6 @@ from django.conf.urls.i18n import i18n_patterns
 from django.views.i18n import JavaScriptCatalog
 from ajax_select import urls as ajax_select_urls
 
-import debug_toolbar
 
 try:
     from qgis.core import *
@@ -33,9 +32,6 @@ extra_context_login_page = {
         }
 
 urlpatterns = [
-
-    path('__debug__/', include(debug_toolbar.urls)),
-
     path('i18n/', include('django.conf.urls.i18n')),
     path('django-admin/', admin.site.urls),
     path('{}'.format(BASE_ADMIN_URLPATH), include('core.urls')),
