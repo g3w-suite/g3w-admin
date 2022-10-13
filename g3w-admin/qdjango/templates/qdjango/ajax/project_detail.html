@@ -12,47 +12,46 @@
         <div id="general" class="panel-collapse collapse in">
             <div class="box-body">
                 <div class="row">
-            <div class="col-md-6">
-            <ul class="list-unstyled">
-            <li>
-            <h4>{% trans 'Initial extent' %}</h4>
-            </li>
-            </ul>
-            {%if user.is_superuser %}
-            <h3>{%trans 'Users' %}:</h3>
-            <ul class="list-unstyled">
-            {% if user.is_superuser %}
-            <li><strong>{%trans 'Editor level 1 user'%}</strong>: {% if object.editor %}{{object.editor|safe}}{% endif %}</li>
-            {% endif %}
-            {% if user.is_superuser or user|has_group:"Editor Maps Groups" %}
-            <li><strong>{%trans 'Editor level 2 user'%}</strong>: {% if object.editor2 %}{{object.editor2|safe}}{% endif %}</li>
-            <li><strong>{%trans 'Viewer users'%}</strong>: {{object.viewers|safeseq|join:", "}}</li>
-            <li><strong>{%trans 'Editor user groups'%}</strong>: {{object.editor_user_groups|safeseq|join:", "}}</li>
-            <li><strong>{%trans 'Viewer user groups'%}</strong>: {{object.viewer_user_groups|safeseq|join:", "}}</li>
-            {% endif %}
-
-            </ul>
-            {% endif %}
-            </br>
-            </div>
-            <div class="col-md-6">
-            <ul class="list-unstyled">
-            <li>
-            <h4>{% trans 'Thumbnail' %}</h4>
-            {% if object.thumbnail %}
-            <a href="{{ MEDIA_URL }}{{ object.thumbnail }}"><img style="height: 120px;" src="{{ MEDIA_URL }}{{ object.thumbnail }}" /></a>
-            {% else %}
-            <img src="http://placehold.it/160x120" />
-            {% endif %}
-            </li>
-            <li>
-            <h4>{% trans 'Qgis project Version:' %}</h4>
-            <span>{{ object.qgis_version }}</span>
-            </li>
-            </ul>
-            </div>
-            </div>
-            </div>
+                    <div class="col-md-6">
+                        <ul class="list-unstyled">
+                            <li>
+                                <h4>{% trans 'Initial extent' %}</h4>
+                            </li>
+                        </ul>
+                        {%if user.is_superuser %}
+                        <h3>{%trans 'Users' %}:</h3>
+                        <ul class="list-unstyled">
+                            {% if user.is_superuser %}
+                                <li><strong>{%trans 'Editor level 1 user'%}</strong>: {% if object.editor %}{{object.editor|safe}}{% endif %}</li>
+                            {% endif %}
+                            {% if user.is_superuser or user|has_group:"Editor Maps Groups" %}
+                                <li><strong>{%trans 'Editor level 2 user'%}</strong>: {% if object.editor2 %}{{object.editor2|safe}}{% endif %}</li>
+                                <li><strong>{%trans 'Viewer users'%}</strong>: {{object.viewers|safeseq|join:", "}}</li>
+                                <li><strong>{%trans 'Editor user groups'%}</strong>: {{object.editor_user_groups|safeseq|join:", "}}</li>
+                                <li><strong>{%trans 'Viewer user groups'%}</strong>: {{object.viewer_user_groups|safeseq|join:", "}}</li>
+                            {% endif %}
+                        </ul>
+                        {% endif %}
+                    </br>
+                </div>
+                    <div class="col-md-6">
+                <ul class="list-unstyled">
+                <li>
+                <h4>{% trans 'Thumbnail' %}</h4>
+                {% if object.thumbnail %}
+                <a href="{{ MEDIA_URL }}{{ object.thumbnail }}"><img style="height: 120px;" src="{{ MEDIA_URL }}{{ object.thumbnail }}" /></a>
+                {% else %}
+                <img src="http://placehold.it/160x120" />
+                {% endif %}
+                </li>
+                <li>
+                <h4>{% trans 'Qgis project Version:' %}</h4>
+                <span>{{ object.qgis_version }}</span>
+                </li>
+                </ul>
+                </div>
+                </div>
+                </div>
         </div>
     </div>
     <div class="panel box box-primary">
