@@ -206,17 +206,17 @@ class QdjangoProjectDetailView(G3WRequestViewMixin, DetailView):
                     }
 
                     # Get User/Groups
-                    users = get_users_for_object(ellayer, 'change_layer', with_anonymous=True)
-                    ugropus = get_groups_for_object(ellayer, 'change_layer', grouprole='viewer')
+                    with_anonymous = getattr(settings, 'EDITING_ANONYMOUS', False)
+                    viewers = get_viewers_for_object(self.layer, self.request.user, 'change_layer',
+                                                     with_anonymous=with_anonymous)
 
-                    # Get Atomic permissions
+                    editor_pk = ellayer.project.editor.pk if ellayer.project.editor else None
+
+                    group_viewers = get_user_groups_for_object(self.layer, self.request.user, 'change_layer', 'viewer')
                     for ap in EDITING_ATOMIC_PERMISSIONS:
-                        viewers = get_viewers_for_object(self.layer, self.request.user, ap,
-                                                         with_anonymous=True)
-                        self.initial_atomic_capabilitites['user'][ap] = [int(o.id) for o in viewers
-                                                                         if o.id != editor_pk]
+
                         group_viewers = get_user_groups_for_object(self.layer, self.request.user, ap, 'viewer')
-                        self.initial_atomic_capabilitites['group'][ap] = [o.id for o in group_viewers]
+
 
 
                     for u in users:
