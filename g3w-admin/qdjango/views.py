@@ -28,7 +28,7 @@ from usersmanage.utils import userHasGroups, get_groups_for_object, get_users_fo
 from usersmanage.configs import G3W_EDITOR1, G3W_EDITOR2, G3W_VIEWER1
 
 if 'editing' in settings.INSTALLED_APPS:
-    from editing.models import G3WEditingLayer
+    from editing.models import G3WEditingLayer, EDITING_ATOMIC_PERMISSIONS
 
 from .signals import load_qdjango_widgets_data
 from .mixins.views import *
@@ -197,18 +197,57 @@ class QdjangoProjectDetailView(G3WRequestViewMixin, DetailView):
                 editings = []
                 elayers = G3WEditingLayer.objects.filter(app_name='qdjango', layer_id__in=[l.pk for l in players])
                 for el in elayers:
+                    ellayer = el.layer
                     editing = {
-                        'lname': el.layer.name,
-                        'scale': elayers.scale,
-                        'user_groups': [],
+                        'lname': ellayer.name,
+                        'scale': el.scale,
+                        'users': [],
+                        'ugroups': [],
                     }
 
                     # Get User/Groups
-                    users = get_users_for_object(l, 'change_layer', with_anonymous=True)
+                    users = get_users_for_object(ellayer, 'change_layer', with_anonymous=True)
+                    ugropus = get_groups_for_object(ellayer, 'change_layer', grouprole='viewer')
+
+                    # Get Atomic permissions
+                    for ap in EDITING_ATOMIC_PERMISSIONS:
+                        viewers = get_viewers_for_object(self.layer, self.request.user, ap,
+                                                         with_anonymous=True)
+                        self.initial_atomic_capabilitites['user'][ap] = [int(o.id) for o in viewers
+                                                                         if o.id != editor_pk]
+                        group_viewers = get_user_groups_for_object(self.layer, self.request.user, ap, 'viewer')
+                        self.initial_atomic_capabilitites['group'][ap] = [o.id for o in group_viewers]
+
+
+                    for u in users:
+
+                        uediting = {
+                            'username': u.username,
+                            'permissions': []
+                        }
+                        # Get atomic permission
+                        for ap in EDITING_ATOMIC_PERMISSIONS:
+                            if u.has_perm(ap, ellayer):
+                                uediting['permissions'].append(ap)
+
+                        editing['users'].append(uediting)
+
+                    for ug in ugropus:
+
+                        ugediting = {
+                            'name': ug.name,
+                            'permissions': []
+                        }
+                        # Get atomic permission
+                        for ap in EDITING_ATOMIC_PERMISSIONS:
+                            if ug.has_perm(ap, ellayer):
+                                ugediting['permissions'].append(ap)
+
+                        editing['groups'].append(ugediting)
 
 
 
-
+                print(editing)
 
 
         return ctx
