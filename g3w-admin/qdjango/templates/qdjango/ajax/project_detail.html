@@ -60,7 +60,25 @@
         </div>
         <div id="widget" class="panel-collapse collapse">
             <div class="box-body">
-                widget
+                <div>
+                <p>Search widgets:</p>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>{% trans 'Layer name' %}</th>
+                            <th>{% trans 'Search name' %}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for w in widgets %}
+                        <tr>
+                            <td>{{ w.0 }}</td>
+                            <td>{{ w.1 }}</td>
+                        </tr>
+                    {%  endfor %}
+                    </tbody>
+                </table>
+                </div>
             </div>
         </div>
     </div>
