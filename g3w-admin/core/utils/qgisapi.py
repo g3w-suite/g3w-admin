@@ -474,11 +474,11 @@ def expression_eval(expression_text, project_id=None, qgs_layer_id=None, form_da
                     raise ExpressionLayerError(
                         _('QGIS layer with id "{}" could not be found!').format(qgs_layer_id))
 
-                expression_contex = QgsExpressionContextUtils.globalProjectLayerScopes(
-                    layer.qgis_layer)
+                expression_context.appendScopes(QgsExpressionContextUtils.globalProjectLayerScopes(
+                    layer.qgis_layer))
 
             else:
-                expression_contex = QgsExpressionContextUtils.globalScope()
+                expression_context.appendScope(QgsExpressionContextUtils.globalScope())
                 expression_context.appendScope(
                     QgsExpressionContextUtils.projectScope(project.qgis_project))
 
@@ -488,7 +488,7 @@ def expression_eval(expression_text, project_id=None, qgs_layer_id=None, form_da
 
 
     else:
-        expression_contex = QgsExpressionContextUtils.globalScope()
+        expression_context.appendScope(QgsExpressionContextUtils.globalScope())
 
     if form_data is not None:
 
