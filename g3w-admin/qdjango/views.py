@@ -24,6 +24,12 @@ from rest_framework.response import Response
 from usersmanage.mixins.views import G3WACLViewMixin
 from usersmanage.models import Group as AuthGroup
 from usersmanage.decorators import user_passes_test_or_403
+from usersmanage.utils import userHasGroups, get_groups_for_object, get_users_for_object
+from usersmanage.configs import G3W_EDITOR1, G3W_EDITOR2, G3W_VIEWER1
+
+if 'editing' in settings.INSTALLED_APPS:
+    from editing.models import G3WEditingLayer
+
 from .signals import load_qdjango_widgets_data
 from .mixins.views import *
 from .forms import *
@@ -160,6 +166,52 @@ class QdjangoProjectDetailView(G3WRequestViewMixin, DetailView):
     @method_decorator(permission_required('qdjango.view_project', (Project, 'slug', 'slug'), raise_exception=True))
     def dispatch(self, *args, **kwargs):
         return super(QdjangoProjectDetailView, self).dispatch(*args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+
+        user = self.request.user
+
+        # Get other informations only if user != viewer
+        if userHasGroups(user, [G3W_EDITOR1, G3W_EDITOR2]) or user.is_superuser:
+
+            players = [l for l in self.object.layer_set.all()]
+
+            # Widgets
+            # =============================================
+            widgets = []
+            for l in self.object.layer_set.all():
+                for l in players:
+                    for w in get_widgets4layer(l):
+                        if w.widget_type == 'search':
+                            widgets.append((l.name, w.name))
+
+            if widgets:
+                ctx['widgets'] = widgets
+
+            # Editings
+            # =============================================
+
+            # Only if module `editing` is activated
+            if 'editing' in settings.INSTALLED_APPS:
+                editings = []
+                elayers = G3WEditingLayer.objects.filter(app_name='qdjango', layer_id__in=[l.pk for l in players])
+                for el in elayers:
+                    editing = {
+                        'lname': el.layer.name,
+                        'scale': elayers.scale,
+                        'user_groups': [],
+                    }
+
+                    # Get User/Groups
+                    users = get_users_for_object(l, 'change_layer', with_anonymous=True)
+
+
+
+
+
+
+        return ctx
 
 
 class QdjangoProjectDeleteView(G3WAjaxDeleteViewMixin, SingleObjectMixin, View):
