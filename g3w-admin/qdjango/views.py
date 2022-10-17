@@ -217,8 +217,6 @@ class QdjangoProjectDetailView(G3WRequestViewMixin, DetailView):
 
                         group_viewers = get_user_groups_for_object(self.layer, self.request.user, ap, 'viewer')
 
-
-
                     for u in users:
 
                         uediting = {
