@@ -253,6 +253,7 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                         # For update store expression result to use later into update condition
                         # =====================================================================
                         field_expresion_values = {}
+                        field_datetime_values = {}
                         for qgis_field in qgis_layer.fields():
 
                             field_idx = qgis_layer.fields().indexFromName(qgis_field.name())
@@ -285,9 +286,7 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                                         value = qtype.fromString(geojson_feature['properties'][qgis_field.name()],
                                                                  options['field_format'])
                                         feature.setAttribute(qgis_field.name(), value)
-
-
-
+                                        field_datetime_values[qgis_field.name()] = value
 
 
                         # Call validator!
@@ -324,6 +323,8 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                                 if name in qgis_layer.dataProvider().fieldNameMap():
                                     if name in field_expresion_values:
                                         value = field_expresion_values[name]
+                                    if name in field_datetime_values:
+                                        value = field_datetime_values[name]
                                     attr_map[qgis_layer.dataProvider().fieldNameMap()[name]] = value
 
                             if has_transactions:
