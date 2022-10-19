@@ -143,10 +143,23 @@ ga.Qdjango.widgetEditor = {
           fieldtype = v.find(".fieldSelect").find("select").find("option:selected").data().type;
           inputtype = that.getType(fieldtype);
           if (fieldwidgettype == 'datetimebox'){
+
+            // Switch to ISO Format for DATE TIME and DATETIME
+            if (fieldtype == 'QDATE'){
+              field_format = 'yyyy-MM-dd'
+            } else if (fieldtype == 'QDATETIME') {
+              field_format = 'yyyy-MM-dd HH:mm:ss+t'
+            } else if (fieldtype == 'QTIME') {
+              field_format = 'HH:mm:ss'
+            } else {
+              field_format = ga.Qdjango.localVars.layer_edittypes[fieldname].field_format
+            }
+
+
             options['format'] = {
               "date": true ? _.indexOf(['QDATETIME', 'QDATE'], fieldtype) != -1 : false,
               "time": true ? _.indexOf(['QDATETIME', 'QTIME'], fieldtype) != -1 : false,
-              "fieldformat": ga.Qdjango.localVars.layer_edittypes[fieldname].field_format,
+              "fieldformat": field_format,
               "displayformat": ga.Qdjango.localVars.layer_edittypes[fieldname].display_format,
               "default": null
             }
