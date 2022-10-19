@@ -548,14 +548,14 @@ def expression_eval(expression_text, project_id=None, qgs_layer_id=None, form_da
                 raise ExpressionLayerError(
                     _('A valid QGIS layer (parent layer) is required to process form data!'))
 
-        try:
-            parent_form_feature = _get_form_feature(parent_layer, parent['formatter'], parent['form_data'])
+            try:
+                parent_form_feature = _get_form_feature(parent_layer, parent['formatter'], parent['form_data'])
 
-            expression_context.appendScope(QgsExpressionContextUtils.parentFormScope(parent_form_feature))
-            #expression_context.setFeature(form_feature)
+                expression_context.appendScope(QgsExpressionContextUtils.parentFormScope(parent_form_feature))
+                #expression_context.setFeature(form_feature)
 
-        except:
-            raise ExpressionFormDataError()
+            except:
+                raise ExpressionFormDataError()
 
 
 
