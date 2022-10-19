@@ -432,7 +432,7 @@ class ExpressionForbiddenError(Exception):
     pass
 
 
-def expression_eval(expression_text, project_id=None, qgs_layer_id=None, form_data=None, formatter=0):
+def expression_eval(expression_text, project_id=None, qgs_layer_id=None, form_data=None, formatter=0, parent=None):
     """Evaluates a QgsExpression and returns the result
 
     :param expression_text: The QgsExpression text
@@ -445,7 +445,34 @@ def expression_eval(expression_text, project_id=None, qgs_layer_id=None, form_da
     :type form_data: dict, optional
     :param formatter: Indicate if form_data values contains formatter values or original features value.
     :type formatter: int, optional
+    :param parent: A dictionary that maps to a GeoJSON representation of the parent feature of feature currently edited
+    in the form and parent QGIS Layer, default to None
+    :type parent: dict, optional
     """
+
+    def _get_form_feature(layer, formatter, form_data):
+        """
+        Internal function to build form feature for expression scopes
+        """
+
+        # Case by formatter
+        # formatter == 1 : get featureid from layer, usually must be used with formatter form_data
+        # formatter == 0 : default behavior
+        if formatter == 0:
+            fields = layer.qgis_layer.fields()
+            form_feature = QgsJsonUtils.stringToFeatureList(
+                json.dumps(form_data), fields, None)[0]
+
+            # Set attributes manually because QgsJsonUtils does not respect order
+            for k, v in form_data['properties'].items():
+                form_feature.setAttribute(k, v)
+        else:
+            qgis_feature_request = QgsFeatureRequest()
+            exp = expression_from_server_fids([form_data['id']], layer.qgis_layer.dataProvider())
+            qgis_feature_request.combineFilterExpression(exp)
+            form_feature = get_qgis_features(layer.qgis_layer, qgis_feature_request)[0]
+
+        return form_feature
 
     expression = QgsExpression(expression_text)
     expression_context = QgsExpressionContext()
@@ -482,6 +509,17 @@ def expression_eval(expression_text, project_id=None, qgs_layer_id=None, form_da
                 expression_context.appendScope(
                     QgsExpressionContextUtils.projectScope(project.qgis_project))
 
+            # For parent is set
+            if parent:
+                if parent['qgs_layer_id'] is not None:
+                    try:
+                        parent_layer = project.layer_set.get(qgs_layer_id=parent['qgs_layer_id'])
+                    except Layer.DoesNotExist:
+                        raise ExpressionLayerError(
+                            _('QGIS layer with id "{}" could not be found!').format(qgs_layer_id))
+
+                    # TODO: ask if necessary to add scoper for parent layer
+
         except Project.DoesNotExist:
             raise ExpressionProjectError(
                 _('QDjango project with id "{}" could not be found!').format(project_id))
@@ -497,28 +535,30 @@ def expression_eval(expression_text, project_id=None, qgs_layer_id=None, form_da
                 _('A valid QGIS layer is required to process form data!'))
 
         try:
-            # Case by formatter
-            # formatter == 1 : get featureid from layer, usually must be used with formatter form_data
-            # formatter == 0 : default behavior
-            if formatter == 0:
-                fields = layer.qgis_layer.fields()
-                form_feature = QgsJsonUtils.stringToFeatureList(
-                    json.dumps(form_data), fields, None)[0]
+            form_feature = _get_form_feature(layer, formatter, form_data)
 
-                # Set attributes manually because QgsJsonUtils does not respect order
-                for k, v in form_data['properties'].items():
-                    form_feature.setAttribute(k, v)
-            else:
-                qgis_feature_request = QgsFeatureRequest()
-                exp = expression_from_server_fids([form_data['id']], layer.qgis_layer.dataProvider())
-                qgis_feature_request.combineFilterExpression(exp)
-                form_feature = get_qgis_features(layer.qgis_layer, qgis_feature_request)[0]
-
-            expression_context.appendScope(
-                QgsExpressionContextUtils.formScope(form_feature))
+            expression_context.appendScope(QgsExpressionContextUtils.formScope(form_feature))
             expression_context.setFeature(form_feature)
+
         except:
             raise ExpressionFormDataError()
+
+        if parent and parent['form_data']:
+            if parent_layer is None:
+                raise ExpressionLayerError(
+                    _('A valid QGIS layer (parent layer) is required to process form data!'))
+
+        try:
+            parent_form_feature = _get_form_feature(parent_layer, parent['formatter'], parent['form_data'])
+
+            expression_context.appendScope(QgsExpressionContextUtils.parentFormScope(parent_form_feature))
+            #expression_context.setFeature(form_feature)
+
+        except:
+            raise ExpressionFormDataError()
+
+
+
 
     valid, errors = expression.checkExpression(
         expression_text, expression_context)
