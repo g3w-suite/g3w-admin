@@ -253,6 +253,7 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                         # For update store expression result to use later into update condition
                         # =====================================================================
                         field_datetime_values = {}
+                        field_datetime_field_formats = {}
                         for qgis_field in qgis_layer.fields():
 
                             field_idx = qgis_layer.fields().indexFromName(qgis_field.name())
@@ -286,6 +287,7 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                                                                  options['field_format'])
                                         feature.setAttribute(qgis_field.name(), value)
                                         field_datetime_values[qgis_field.name()] = value
+                                        field_datetime_field_formats[qgis_field.name()] = options['field_format']
 
                         # Call validator!
                         errors = feature_validator(
@@ -354,6 +356,16 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
 
                             fnames = [f.name() for f in feature.fields()]
                             jfeature = json.loads(ex.exportFeature(feature, dict(zip(fnames, feature.attributes()))))
+
+                            # Fore date and datetime and time fields:
+                            if field_datetime_values:
+                                for fname, fvalue in jfeature['properties'].items():
+                                    try:
+                                        jfeature['properties'][fname] = \
+                                            field_datetime_values[fname].toString(field_datetime_field_formats[fname])
+                                    except:
+                                        pass
+
 
                             to_res.update({
                                 'clientid': geojson_feature['id'],
