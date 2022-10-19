@@ -252,7 +252,6 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                         # Loop again for set expressions value and default value by provider:
                         # For update store expression result to use later into update condition
                         # =====================================================================
-                        field_expresion_values = {}
                         field_datetime_values = {}
                         for qgis_field in qgis_layer.fields():
 
@@ -288,7 +287,6 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                                         feature.setAttribute(qgis_field.name(), value)
                                         field_datetime_values[qgis_field.name()] = value
 
-
                         # Call validator!
                         errors = feature_validator(
                             feature, metadata_layer.qgis_layer)
@@ -321,8 +319,6 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                             attr_map = {}
                             for name, value in geojson_feature['properties'].items():
                                 if name in qgis_layer.dataProvider().fieldNameMap():
-                                    if name in field_expresion_values:
-                                        value = field_expresion_values[name]
                                     if name in field_datetime_values:
                                         value = field_datetime_values[name]
                                     attr_map[qgis_layer.dataProvider().fieldNameMap()[name]] = value
