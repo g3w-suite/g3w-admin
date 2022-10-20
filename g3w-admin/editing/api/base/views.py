@@ -257,7 +257,6 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                         for qgis_field in qgis_layer.fields():
 
                             field_idx = qgis_layer.fields().indexFromName(qgis_field.name())
-
                             # Look for dataprovider default clause/value:
                             # only for fields no pk with defaultValueClause by provider
                             # and NULL value into feature on new add feature
@@ -269,11 +268,11 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                                 feature.setAttribute(qgis_field.name(),
                                                      qgis_layer.dataProvider().defaultValueClause(field_idx))
 
-                            elif qgis_field.typeName() in ('date', 'datetime', 'time'):
+                            elif qgis_field.typeName().lower() in ('date', 'datetime', 'time'):
 
-                                if qgis_field.typeName() == 'date':
+                                if qgis_field.typeName().lower() == 'date':
                                     qtype = QDate
-                                elif qgis_field.typeName() == 'datetime':
+                                elif qgis_field.typeName().lower() == 'datetime':
                                     qtype = QDateTime
                                 else:
                                     qtype = QTime
@@ -288,6 +287,8 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                                         feature.setAttribute(qgis_field.name(), value)
                                         field_datetime_values[qgis_field.name()] = value
                                         field_datetime_field_formats[qgis_field.name()] = options['field_format']
+
+
 
                         # Call validator!
                         errors = feature_validator(

@@ -526,7 +526,7 @@ class BaseVectorApiView(G3WAPIView):
             # Search for fields date datetime and time
             date_fields = []
             for f in self.metadata_layer.qgis_layer.fields():
-                if f.typeName() in ('date', 'datetime', 'time'):
+                if f.typeName().lower() in ('date', 'datetime', 'time'):
                     date_fields.append(f)
 
 
