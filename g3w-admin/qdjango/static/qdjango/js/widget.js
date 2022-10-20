@@ -145,6 +145,7 @@ ga.Qdjango.widgetEditor = {
           if (fieldwidgettype == 'datetimebox'){
 
             // Switch to ISO Format for DATE TIME and DATETIME
+            // WMS FILTER paramenter only works with ISO date/time formats.
             if (fieldtype == 'QDATE'){
               field_format = 'yyyy-MM-dd'
             } else if (fieldtype == 'QDATETIME') {
