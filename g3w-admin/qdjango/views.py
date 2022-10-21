@@ -30,6 +30,8 @@ from usersmanage.configs import G3W_EDITOR1, G3W_EDITOR2, G3W_VIEWER1
 if 'editing' in settings.INSTALLED_APPS:
     from editing.models import G3WEditingLayer, EDITING_ATOMIC_PERMISSIONS
 
+from qdjango.models import GeoConstraint
+
 from .signals import load_qdjango_widgets_data
 from .mixins.views import *
 from .forms import *
@@ -194,6 +196,7 @@ class QdjangoProjectDetailView(G3WRequestViewMixin, DetailView):
 
             # Only if module `editing` is activated
             if 'editing' in settings.INSTALLED_APPS:
+
                 editings = []
                 elayers = G3WEditingLayer.objects.filter(app_name='qdjango', layer_id__in=[l.pk for l in players])
                 for el in elayers:
@@ -223,10 +226,10 @@ class QdjangoProjectDetailView(G3WRequestViewMixin, DetailView):
                                 if uvap not in atomic_user_permissions:
                                     atomic_user_permissions[uvap] = {
                                         'username': uvap.username,
-                                        'permissions': [ap]
+                                        'permissions': [_(ap)]
                                     }
                                 else:
-                                    atomic_user_permissions[uvap]['permissions'].append(ap)
+                                    atomic_user_permissions[uvap]['permissions'].append(_(ap))
 
                     editing['users'] = list(atomic_user_permissions.values())
 
@@ -241,16 +244,54 @@ class QdjangoProjectDetailView(G3WRequestViewMixin, DetailView):
                                 if gvap not in atomic_group_permissions:
                                     atomic_group_permissions[gvap] = {
                                         'name': gvap.name,
-                                        'permissions': [ap]
+                                        'permissions': [_(ap)]
                                     }
                                 else:
-                                    atomic_group_permissions[gvap]['permissions'].append(ap)
+                                    atomic_group_permissions[gvap]['permissions'].append(_(ap))
 
                     editing['ugroups'] = list(atomic_group_permissions.values())
 
                     editings.append(editing)
 
             ctx['editings'] = editings
+
+            # Geoconstraints
+            # =============================================
+
+            for l in self.object.layer_set.all():
+
+                # Get geoconstraints by layer id
+                geoconstraints = GeoConstraint.objects.filter(layer=l)
+
+                gc = {
+                    'layer': l,
+                    'constraints': [],
+                }
+
+                for geoc in geoconstraints:
+                    c = {
+                        'constraint': geoc,
+                        'rules': []
+                    }
+
+                    # Get rules
+                    for r in geoc.geoconstraintrule_set.all():
+                        rule = (
+                            r.user.username if r.user else r.group.name,
+                            r.rule
+                        )
+                        c['rules'].append(rule)
+
+                    gc['constraints'].append(c)
+
+
+                if 'geoconstrains' not in ctx:
+                    ctx['geoconstraints'] = [gc]
+                else:
+                    ctx['geoconstraints'].append(gc)
+
+
+
 
 
         return ctx
