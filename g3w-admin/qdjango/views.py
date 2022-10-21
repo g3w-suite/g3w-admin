@@ -207,45 +207,50 @@ class QdjangoProjectDetailView(G3WRequestViewMixin, DetailView):
 
                     # Get User/Groups
                     with_anonymous = getattr(settings, 'EDITING_ANONYMOUS', False)
-                    viewers = get_viewers_for_object(self.layer, self.request.user, 'change_layer',
+                    viewers = get_viewers_for_object(el.layer, self.request.user, 'change_layer',
                                                      with_anonymous=with_anonymous)
 
-                    editor_pk = ellayer.project.editor.pk if ellayer.project.editor else None
+                    editors = (ellayer.project.editor.pk if ellayer.project.editor else None,
+                               ellayer.project.editor2.pk if ellayer.project.editor2 else None)
 
-                    group_viewers = get_user_groups_for_object(self.layer, self.request.user, 'change_layer', 'viewer')
+                    atomic_user_permissions = {}
+                    for ap in EDITING_ATOMIC_PERMISSIONS:
+                        user_viewers_ap = get_viewers_for_object(el.layer, self.request.user, ap,
+                                                                       with_anonymous=with_anonymous)
+
+                        for uvap in user_viewers_ap:
+                            if uvap in viewers and uvap.pk not in editors:
+                                if uvap not in atomic_user_permissions:
+                                    atomic_user_permissions[uvap] = {
+                                        'username': uvap.username,
+                                        'permissions': [ap]
+                                    }
+                                else:
+                                    atomic_user_permissions[uvap]['permissions'].append(ap)
+
+                    editing['users'] = list(atomic_user_permissions.values())
+
+                    group_viewers = get_user_groups_for_object(el.layer, self.request.user, 'change_layer', 'viewer')
+
+                    atomic_group_permissions = {}
                     for ap in EDITING_ATOMIC_PERMISSIONS:
 
-                        group_viewers = get_user_groups_for_object(self.layer, self.request.user, ap, 'viewer')
+                        group_viewers_ap = get_user_groups_for_object(el.layer, self.request.user, ap, 'viewer')
+                        for gvap in group_viewers_ap:
+                            if gvap in group_viewers:
+                                if gvap not in atomic_group_permissions:
+                                    atomic_group_permissions[gvap] = {
+                                        'name': gvap.name,
+                                        'permissions': [ap]
+                                    }
+                                else:
+                                    atomic_group_permissions[gvap]['permissions'].append(ap)
 
-                    for u in users:
+                    editing['ugroups'] = list(atomic_group_permissions.values())
 
-                        uediting = {
-                            'username': u.username,
-                            'permissions': []
-                        }
-                        # Get atomic permission
-                        for ap in EDITING_ATOMIC_PERMISSIONS:
-                            if u.has_perm(ap, ellayer):
-                                uediting['permissions'].append(ap)
+                    editings.append(editing)
 
-                        editing['users'].append(uediting)
-
-                    for ug in ugropus:
-
-                        ugediting = {
-                            'name': ug.name,
-                            'permissions': []
-                        }
-                        # Get atomic permission
-                        for ap in EDITING_ATOMIC_PERMISSIONS:
-                            if ug.has_perm(ap, ellayer):
-                                ugediting['permissions'].append(ap)
-
-                        editing['groups'].append(ugediting)
-
-
-
-                print(editing)
+            ctx['editings'] = editings
 
 
         return ctx

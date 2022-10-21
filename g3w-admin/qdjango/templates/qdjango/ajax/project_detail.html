@@ -94,7 +94,50 @@
         </div>
         <div id="editing" class="panel-collapse collapse">
             <div class="box-body">
-                widget
+                {% for e in editings %}
+                    <div class="box-body bg-gray"  style="margin-top: 40px;">
+                        <h5>Layer: <strong>{{ e.lname }}</strong></h5>
+                        {% if e.scale %}
+                        <h5>Scale: 1:{{ e.scale }}</h5>
+                        {% endif %}
+                    </div>
+                    {% if e.users %}
+                        <table class="table" style="margin-bottom: 40px;">
+                            <thead>
+                                <tr>
+                                    <th>{% trans 'Username' %}</th>
+                                    <th>{% trans 'Permissions' %}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for u in e.users %}
+                                <tr>
+                                    <td>{{ u.username }}</td>
+                                    <td>{{ u.permissions|join:' | ' }}</td>
+                                </tr>
+                            {%  endfor %}
+                            </tbody>
+                        </table>
+                    {% endif %}
+                    {% if e.ugroups %}
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>{% trans 'User Group Name' %}</th>
+                                    <th>{% trans 'Permissions' %}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for g in e.ugroups %}
+                                <tr>
+                                    <td>{{ g.name }}</td>
+                                    <td>{{ g.permissions|join:' | ' }}</td>
+                                </tr>
+                            {%  endfor %}
+                            </tbody>
+                        </table>
+                    {% endif %}
+                {% endfor %}
             </div>
         </div>
     </div>
