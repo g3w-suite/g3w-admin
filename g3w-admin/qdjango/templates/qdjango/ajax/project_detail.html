@@ -199,7 +199,38 @@
         </div>
         <div id="expconstraint" class="panel-collapse collapse">
             <div class="box-body">
+                {% for e in expconstraints %}
+                    <div class="box-body bg-gray"  {% if not forloop.first %}style="margin-top: 40px;"{% endif %}>
+                        <h5>Layer: <strong>{{ g.layer.name }}</strong></h5>
+                    </div>
+                    {% for c in e.constraints %}
+                    <div>
+                        <h5>{% trans 'Description' %}: {{ c.constraint.description }}</h5>
+                        <h5>{% trans 'For view' %}: {% if c.constraint.for_view %}{% trans 'Yes' %}{% else %}{% trans 'No' %}{% endif %}</h5>
+                        <h5>{% trans 'For editing' %}: {% if c.constraint.for_editing %}{% trans 'Yes' %}{% else %}{% trans 'No' %}{% endif %}</h5>
+                        <hr>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>{% trans 'User / User Group' %}</th>
+                                    <th>{% trans 'Type' %}</th>
+                                    <th>{% trans 'Rule' %}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for r in c.rules %}
+                                <tr>
+                                    <td>{{ r.0 }}</td>
+                                    <td>{{ r.1 }}</td>
+                                    <td>{{ r.2 }}</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
 
+                    {% endfor %}
+                {% endfor %}
             </div>
         </div>
     </div>

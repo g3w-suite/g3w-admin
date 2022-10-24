@@ -30,7 +30,7 @@ from usersmanage.configs import G3W_EDITOR1, G3W_EDITOR2, G3W_VIEWER1
 if 'editing' in settings.INSTALLED_APPS:
     from editing.models import G3WEditingLayer, EDITING_ATOMIC_PERMISSIONS
 
-from qdjango.models import GeoConstraint
+from qdjango.models import GeoConstraint, SingleLayerConstraint
 
 from .signals import load_qdjango_widgets_data
 from .mixins.views import *
@@ -41,6 +41,7 @@ from .utils.models import get_widgets4layer, comparedbdatasource
 from .utils.data import QGIS_LAYER_TYPE_NO_GEOM
 import json
 from collections import OrderedDict
+
 
 
 class QdjangoProjectDownloadView(ObjectDownloadView):
@@ -255,15 +256,21 @@ class QdjangoProjectDetailView(G3WRequestViewMixin, DetailView):
 
             ctx['editings'] = editings
 
-            # Geoconstraints
+            # Geoconstraints, Expconstraints
             # =============================================
 
             for l in self.object.layer_set.all():
 
                 # Get geoconstraints by layer id
                 geoconstraints = GeoConstraint.objects.filter(layer=l)
+                expconstraints = SingleLayerConstraint.objects.filter(layer=l)
 
                 gc = {
+                    'layer': l,
+                    'constraints': [],
+                }
+
+                ec = {
                     'layer': l,
                     'constraints': [],
                 }
@@ -284,11 +291,44 @@ class QdjangoProjectDetailView(G3WRequestViewMixin, DetailView):
 
                     gc['constraints'].append(c)
 
+                if len(gc['constraints']) > 0:
+                    if 'geoconstrains' not in ctx:
+                        ctx['geoconstraints'] = [gc]
+                    else:
+                        ctx['geoconstraints'].append(gc)
 
-                if 'geoconstrains' not in ctx:
-                    ctx['geoconstraints'] = [gc]
-                else:
-                    ctx['geoconstraints'].append(gc)
+                for expc in expconstraints:
+                    c = {
+                        'constraint': expc,
+                        'rules': [],
+                    }
+
+                    # Subsetrule
+                    # ------------------------------------
+                    for r in expc.constraintsubsetstringrule_set.all():
+                        rule = (
+                            r.user.username if r.user else r.group.name,
+                            'subset',
+                            r.rule
+                        )
+                        c['rules'].append(rule)
+                    for r in expc.constraintexpressionrule_set.all():
+                        rule = (
+                            r.user.username if r.user else r.group.name,
+                            'expression',
+                            r.rule
+                        )
+                        c['rules'].append(rule)
+
+                    ec['constraints'].append(c)
+
+                if len(ec['constraints']) > 0:
+                    if 'expconstraints' not in ctx:
+                        ctx['expconstraints'] = [ec]
+                    else:
+                        ctx['expconstraints'].append(ec)
+
+
 
 
 
