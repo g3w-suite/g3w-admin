@@ -221,7 +221,7 @@
                             {% for r in c.rules %}
                                 <tr>
                                     <td>{{ r.0 }}</td>
-                                    <td>{{ r.1 }}</td>
+                                    <td>{% trans r.1 %}</td>
                                     <td>{{ r.2 }}</td>
                                 </tr>
                             {% endfor %}
@@ -262,7 +262,29 @@
         </div>
         <div id="hiddenfield" class="panel-collapse collapse">
             <div class="box-body">
-
+                {% for hf in hiddenfields %}
+                    <div class="box-body bg-gray"  {% if not forloop.first %}style="margin-top: 40px;"{% endif %}>
+                        <h5>Layer: <strong>{{ hf.layer.name }}</strong></h5>
+                    </div>
+                    <div>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>{% trans 'User / User Group' %}</th>
+                                    <th>{% trans 'Hidden fields' %}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for h in hf.hiddenfields %}
+                                <tr>
+                                    <td>{{ h.0 }}</td>
+                                    <td>{{ h.1|join:' | ' }}</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% endfor %}
             </div>
         </div>
     </div>

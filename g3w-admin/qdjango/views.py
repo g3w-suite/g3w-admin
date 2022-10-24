@@ -30,7 +30,7 @@ from usersmanage.configs import G3W_EDITOR1, G3W_EDITOR2, G3W_VIEWER1
 if 'editing' in settings.INSTALLED_APPS:
     from editing.models import G3WEditingLayer, EDITING_ATOMIC_PERMISSIONS
 
-from qdjango.models import GeoConstraint, SingleLayerConstraint
+from qdjango.models import GeoConstraint, SingleLayerConstraint, ColumnAcl, LayerAcl
 
 from .signals import load_qdjango_widgets_data
 from .mixins.views import *
@@ -256,23 +256,64 @@ class QdjangoProjectDetailView(G3WRequestViewMixin, DetailView):
 
             ctx['editings'] = editings
 
-            # Geoconstraints, Expconstraints
-            # =============================================
+            # Geoconstraints, Expconstraints, Hiddenfields, Hiddenlayers
+            # ==========================================================
+
+            # For hiddenlayers: get users and user groups by with permission on project
+            project_viewers = get_viewers_for_object(
+                self.object, self.request.user, 'view_project', with_anonymous=True)
+
+            # get Editor Level 1 and Editor level 2 to clear from list
+            editor_pk = self.object.editor.pk if self.object.editor else None
+            editor2_pk = self.object.editor2.pk if self.object.editor2 else None
+
+            project_viewers = [v for v in project_viewers if v.pk not in (editor_pk, editor2_pk)]
+
+            project_user_groups_viewers = get_groups_for_object(
+                self.project, 'view_project', grouprole='viewer')
+
+            # for Editor level filter by his groups
+            if userHasGroups(self.request.user, [G3W_EDITOR1]):
+                editor1_user_groups_viewers = get_objects_for_user(self.request.user, 'auth.change_group',
+                                                                   AuthGroup).order_by('name').filter(
+                    grouprole__role='viewer')
+
+                project_user_groups_viewers = list(set(project_user_groups_viewers).intersection(
+                    set(editor1_user_groups_viewers)))
+
+            project_user_groups_viewers = [v for v in project_user_groups_viewers]
 
             for l in self.object.layer_set.all():
 
                 # Get geoconstraints by layer id
                 geoconstraints = GeoConstraint.objects.filter(layer=l)
                 expconstraints = SingleLayerConstraint.objects.filter(layer=l)
+                hiddenlayers = LayerAcl.objects.filter(layer=l)
+                hiddenfields = ColumnAcl.objects.filter(layer=l)
 
+                # Geoconstrain
                 gc = {
                     'layer': l,
                     'constraints': [],
                 }
 
+                # Expconstraint
                 ec = {
                     'layer': l,
                     'constraints': [],
+                }
+
+                # Hiddenfield
+                hf = {
+                    'layer': l,
+                    'hiddenfields': [],
+                }
+
+                # Hiddenlayer
+                hl = {
+                    'layer': l,
+                    'users': [],
+                    'ugroups': []
                 }
 
                 for geoc in geoconstraints:
@@ -308,14 +349,14 @@ class QdjangoProjectDetailView(G3WRequestViewMixin, DetailView):
                     for r in expc.constraintsubsetstringrule_set.all():
                         rule = (
                             r.user.username if r.user else r.group.name,
-                            'subset',
+                            'Subset',
                             r.rule
                         )
                         c['rules'].append(rule)
                     for r in expc.constraintexpressionrule_set.all():
                         rule = (
                             r.user.username if r.user else r.group.name,
-                            'expression',
+                            'Expression',
                             r.rule
                         )
                         c['rules'].append(rule)
@@ -328,8 +369,25 @@ class QdjangoProjectDetailView(G3WRequestViewMixin, DetailView):
                     else:
                         ctx['expconstraints'].append(ec)
 
+                for hidef in hiddenfields:
+
+                    hf['hiddenfields'].append((
+                        hidef.user.username if hidef.user else hidef.group.name,
+                        hidef.restricted_fields
+                    ))
+
+                if len(hf['hiddenfields']) > 0:
+                    if 'hiddenfields' not in ctx:
+                        ctx['hiddenfields'] = [hf]
+                    else:
+                        ctx['hiddenfields'].append(hf)
 
 
+                for hidel in hiddenlayers:
+                    if hidel.user and hidel.user not in project_viewers:
+                        hl['users'].append(hidel.user.username)
+                    if hidel.group and hidel.group not in project_user_groups_viewers:
+                        hl['ugroups'].append(hidel.group.name)
 
 
 
