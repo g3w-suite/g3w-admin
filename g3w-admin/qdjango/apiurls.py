@@ -91,7 +91,7 @@ urlpatterns = [
          name='qdjango-expressionrule-api-filter-by-user'),
 
     # All expressionrule(s) filtered by Constraint pk
-    path('api/expressionrule/constraint/<int:constraint_id>)/', login_required(ConstraintExpressionRuleList.as_view()),
+    path('api/expressionrule/constraint/<int:constraint_id>/', login_required(ConstraintExpressionRuleList.as_view()),
          name='qdjango-expressionrule-api-filter-by-constraint'),
 
     # All expressionrule(s)
