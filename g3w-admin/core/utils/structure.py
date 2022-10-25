@@ -2,7 +2,9 @@ from django.conf import settings
 from django.apps import apps
 from django.urls import reverse
 from django.utils.translation import ugettext, ugettext_lazy as _
+from qdjango.utils.qgis import explode_expression
 from collections import OrderedDict
+
 import copy
 
 from qgis.core import QgsFieldConstraints, Qgis, QgsExpression, QgsExpressionNode
@@ -264,14 +266,7 @@ def mapLayerAttributesFromQgisLayer(qgis_layer, **kwargs):
                 if has_expression:
                     expression = field.constraints().constraintExpression()
 
-                # Check for defaultValueDefinition with expression
-                # 2021/10/04 snippet by Alessandro Pasotti (elpaso)
-                has_default_value_expression = False
-                if field.defaultValueDefinition().expression() != '':
-                    exp = QgsExpression(field.defaultValueDefinition().expression())
-                    has_default_value_expression = exp.rootNode().nodeType() != QgsExpressionNode.ntLiteral
-
-                if not_null and unique and default_clause or has_default_value_expression:
+                if not_null and unique and default_clause:
                     editable = False
                 else:
                     editable = kwargs['fields'][field.name()]['editable']
@@ -332,6 +327,20 @@ def mapLayerAttributesFromQgisLayer(qgis_layer, **kwargs):
                             toRes[field.name()]['input']['type'] = 'textarea'
                         if 'UseHtml' in config and config['UseHtml'] is True:
                             toRes[field.name()]['input']['type'] = 'texthtml'
+
+                # Check for defaultValueDefinition with expression
+                # 2021/10/04 snippet by Alessandro Pasotti (elpaso)
+                has_default_value_expression = False
+                if field.defaultValueDefinition().expression() != '':
+                    exp = QgsExpression(field.defaultValueDefinition().expression())
+                    if exp.rootNode().nodeType() != QgsExpressionNode.ntLiteral:
+                        toRes[field.name()]['input']['options']['default_expression'] = \
+                            explode_expression(field.defaultValueDefinition().expression())
+
+                        # Check update if expression default value has to run also on update e not
+                        # only on insert newone
+                        toRes[field.name()]['input']['options']['default_expression']['apply_on_update'] = True \
+                            if field.defaultValueDefinition().applyOnUpdate() else False
 
         field_index += 1
 

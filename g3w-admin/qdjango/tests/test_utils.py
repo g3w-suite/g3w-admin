@@ -20,6 +20,7 @@ from qdjango.utils.data import QgisProject, QgisPgConnection, QgisProjectSetting
 from qdjango.utils.exceptions import QgisProjectLayerException, QgisProjectException
 from qdjango.utils.structure import get_schema_table, datasource2dict, datasourcearcgis2dict
 from qdjango.utils.models import get_widgets4layer, comparedbdatasource, get_capabilities4layer
+from qdjango.utils.qgis import explode_expression
 from qdjango.templatetags.qdjango_tags import is_geom_type_gpx_compatible
 from collections import OrderedDict
 import os
@@ -31,6 +32,7 @@ TEST_BASE_PATH = '/qdjango/tests/data/'
 DATASOURCE_PATH = '{}{}'.format(CURRENT_PATH, TEST_BASE_PATH)
 QGS_FILE = 'g3wsuite_project_test_qgis310.qgs'
 QGIS_FILE_MDAL = 'mdal_layer_qgis_322.qgs'
+QGIS_FILE_EXPRESSION_DEFAULT = 'test_default_field_expression_322.qgs'
 
 
 class QgisProjectTest(TestCase):
@@ -583,4 +585,157 @@ class TestTemplateTags(QdjangoTestBase):
 
         self.assertTrue(is_geom_type_gpx_compatible(spatialite_points))
         self.assertFalse(is_geom_type_gpx_compatible(world))
+
+
+class QdjangoTestUtilsQgis(QdjangoTestBase):
+    """ Test for qdjango.utils.qgis module and functions """
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+
+        qgis_project_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGIS_FILE_EXPRESSION_DEFAULT), 'r'))
+        cls.project_dexp = QgisProject(qgis_project_file)
+        cls.project_dexp.group = cls.project_group
+        cls.project_dexp.save()
+
+    def test_explode_expression(self):
+        """
+        Test qdjango.utils.qgis -> explode_espression function
+        """
+        expr = "$area  * 2 + 10"
+
+        expected = {
+            'expression': expr,
+            'referenced_columns': [],
+            'referenced_functions': ['$area']
+        }
+
+        self.assertEqual(explode_expression(expr), expected)
+
+        expr = "$area  * 2 +  \"gid\""
+
+        expected = {
+            'expression': expr,
+            'referenced_columns': ['gid'],
+            'referenced_functions': ['$area']
+        }
+
+        self.assertEqual(explode_expression(expr), expected)
+
+        expr = "sqrt( $area )  *2 + \"gid\" "
+
+        expected = {
+            'expression': expr,
+            'referenced_columns': ['gid'],
+            'referenced_functions': ['$area', 'sqrt']
+        }
+
+        ee = explode_expression(expr)
+
+        self.assertEqual(ee['expression'], expected['expression'])
+        self.assertEqual(ee['referenced_columns'].sort(), expected['referenced_columns'].sort())
+        self.assertEqual(ee['referenced_functions'].sort(), expected['referenced_functions'].sort())
+        self.assertFalse('referencing_fields' in ee)
+
+
+        expr = "sqrt(  $area )  *2 + \"gid\" + current_value(\"ntest\")"
+
+        expected = {
+            'expression': expr,
+            'referenced_columns': ['gid', 'ntest'],
+            'referenced_functions': ['sqrt', '$area', 'current_value'],
+            'referencing_fields': ['ntest']
+        }
+
+        ee = explode_expression(expr)
+
+        self.assertEqual(ee['expression'], expected['expression'])
+        self.assertEqual(ee['referenced_columns'].sort(), expected['referenced_columns'].sort())
+        self.assertEqual(ee['referenced_functions'].sort(), expected['referenced_functions'].sort())
+        self.assertTrue('referencing_fields' in ee)
+        self.assertEqual(ee['referencing_fields'].sort(), expected['referencing_fields'].sort())
+
+        # Test current_value with spaces before 'field_name'
+        expr = "sqrt(  $area )  *2 + \"gid\" + current_value( \"onespace\" )"
+
+        expected = {
+            'expression': expr,
+            'referenced_columns': ['gid', 'onespace'],
+            'referenced_functions': ['sqrt', '$area', 'current_value'],
+            'referencing_fields': ['onespace']
+        }
+
+        ee = explode_expression(expr)
+
+        self.assertEqual(ee['expression'], expected['expression'])
+        self.assertEqual(ee['referenced_columns'].sort(), expected['referenced_columns'].sort())
+        self.assertEqual(ee['referenced_functions'].sort(), expected['referenced_functions'].sort())
+        self.assertTrue('referencing_fields' in ee)
+        self.assertEqual(ee['referencing_fields'].sort(), expected['referencing_fields'].sort())
+
+        # Test current_value with spaces before 'field_name'
+        expr = "sqrt(  $area )  *2 + \"gid\" + current_value( \"doublespace\"  )"
+
+        expected = {
+            'expression': expr,
+            'referenced_columns': ['gid', 'doublespace'],
+            'referenced_functions': ['sqrt', '$area', 'current_value'],
+            'referencing_fields': ['doublespace']
+        }
+
+        ee = explode_expression(expr)
+
+        self.assertEqual(ee['expression'], expected['expression'])
+        self.assertEqual(ee['referenced_columns'].sort(), expected['referenced_columns'].sort())
+        self.assertEqual(ee['referenced_functions'].sort(), expected['referenced_functions'].sort())
+        self.assertTrue('referencing_fields' in ee)
+        self.assertEqual(ee['referencing_fields'].sort(), expected['referencing_fields'].sort())
+
+    def test_expression_default_api_layer_config(self):
+        """
+        Test Layer API REST config with expression default value
+        """
+
+        qdjango_layer = self.project_dexp.instance.layer_set.get(name='points')
+
+        url = reverse('core-vector-api',
+                      args=['config', 'qdjango', self.project_dexp.instance.pk, qdjango_layer.qgs_layer_id])
+
+        self.client.login(username=self.test_user1.username, password=self.test_user1.username)
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, 200)
+
+        jres = json.loads(res.content)
+
+        dfields = {f['name']: f for f in jres['vector']['fields']}
+
+        # Check fields with default value not expression
+        self.assertTrue('default_expression' not in dfields['name']['input']['options'])
+        self.assertEqual(dfields['name']['input']['options']['default'], 'default_name')
+
+        self.assertTrue('default_expression' not in dfields['subname']['input']['options'])
+        self.assertTrue('default' not in dfields['subname']['input']['options'])
+
+        # Check fields with default expressions
+        self.assertTrue('default_expression' in dfields['length']['input']['options'])
+        self.assertEqual(dfields['length']['input']['options']['default_expression']['expression'], ' $length  + 25')
+        self.assertEqual(dfields['length']['input']['options']['default_expression']['referenced_columns'], [])
+        self.assertEqual(dfields['length']['input']['options']['default_expression']['referenced_functions'],
+                         ['$length'])
+        self.assertFalse('referencong_fields' in dfields['length']['input']['options']['default_expression'])
+
+        self.assertTrue('default_expression' in dfields['area']['input']['options'])
+        self.assertEqual(dfields['area']['input']['options']['default_expression']['expression'],
+                         '$area + current_value("length")')
+        self.assertEqual(dfields['area']['input']['options']['default_expression']['referenced_columns'], ['length'])
+        self.assertEqual(dfields['area']['input']['options']['default_expression']['referenced_functions'].sort(),
+                         ['$length', 'current_value'].sort())
+        self.assertTrue('referencing_fields' in dfields['area']['input']['options']['default_expression'])
+        self.assertEqual(dfields['area']['input']['options']['default_expression']['referencing_fields'], ['length'])
+        self.assertEqual(dfields['area']['input']['options']['default_expression']['apply_on_update'], False)
+
+
+
+
 
