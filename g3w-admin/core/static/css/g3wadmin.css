@@ -129,6 +129,15 @@ h5 small {
     opacity: 80%;
 }
 
+.color-red {
+    color: #bf2d2d;
+}
+
+.color-red:hover {
+    color: #bf2d2d;
+    opacity: 80%;
+}
+
 .label-action-layer {
     position: absolute;
     top: -9px;

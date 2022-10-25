@@ -204,7 +204,7 @@ def get_objects_by_perm(obj, perm):
 
     :param obj: Django model object to recover.
     :param perm: Permission to check
-    :return: Listo of Guardian userobjectpermission model objects.
+    :return: List of Guardian userobjectpermission model objects.
     """
     ctype = ContentType.objects.get_for_model(obj)
     Perm = Permission.objects.get(codename=perm, content_type=ctype)

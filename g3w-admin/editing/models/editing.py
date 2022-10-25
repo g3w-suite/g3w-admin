@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.postgres.fields import JSONField
 from django.contrib.auth.models import User
+from qdjango.models import Layer
 from model_utils.fields import AutoCreatedField
 
 EDITING_POST_DATA_ADDED = 'add'
@@ -45,6 +46,11 @@ class G3WEditingLayer(models.Model):
     class Meta:
         app_label = 'editing'
         unique_together = ['layer_id', 'app_name']
+
+    @property
+    def layer(self):
+        return Layer.objects.get(pk=self.layer_id)
+
 
 
 class G3WEditingLog(models.Model):
