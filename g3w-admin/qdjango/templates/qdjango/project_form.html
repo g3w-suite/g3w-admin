@@ -38,11 +38,18 @@
                             <h3 class="box-title">{% trans 'Shortcuts' %}</h3>
                         </div>
                         <div class="box-body">
-                            <h4>
-                                <a href="{% url 'group-project-map' group.slug 'qdjango' form.instance.pk %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Show map' %}" target="_blank"><i class="ion ion-map"></i> {% trans 'Show map' %}</a>  |
-                                <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-detail-url="{% url 'qdjango-project-detail' group.slug form.instance.slug %}" ><i class="ion ion-eye"></i> {% trans 'Show detail' %}</a> |
-                                <a href="{% url 'qdjango-project-layers-list' group.slug form.instance.slug %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Layers' %}" ><i class="ion ion-navicon-round"></i> {% trans 'Layers' %}</a>
-                            </h4>
+                                <a href="{% url 'group-project-map' group.slug 'qdjango' form.instance.pk %}" class="btn btn-app color-orange" data-toggle="tooltip" data-placement="top" title="{% trans 'Show map' %}" target="_blank">
+                                    <i class="ion ion-map"></i>
+                                    {% trans 'Show map' %}
+                                </a>
+                                <a href="#" data-toggle="tooltip" class="btn btn-app" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-detail-url="{% url 'qdjango-project-detail' group.slug form.instance.slug %}" >
+                                    <i class="ion ion-eye"></i>
+                                    {% trans 'Show detail' %}
+                                </a>
+                                <a href="{% url 'qdjango-project-layers-list' group.slug form.instance.slug %}" class="btn btn-app" data-toggle="tooltip" data-placement="top" title="{% trans 'Layers' %}" >
+                                    <i class="ion ion-navicon-round"></i>
+                                    {% trans 'Layers' %}
+                                </a>
                         </div>
                     </div>
                 </div>

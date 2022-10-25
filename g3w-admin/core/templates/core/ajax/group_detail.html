@@ -40,7 +40,7 @@
       <li><strong>{%trans 'HeaderLogoImg'%}</strong>:
         {% if object.header_logo_img %}
 	<br />
-        <img style="height: 120px;" src="{{ MEDIA_URL }}{{ object.header_logo_img }}" />
+        <img class="thumbnail" style="width: 100%;" src="{{ MEDIA_URL }}{{ object.header_logo_img }}" />
         {% else %}
         Not set
         {% endif %}
