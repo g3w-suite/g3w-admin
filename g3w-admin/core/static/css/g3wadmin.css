@@ -188,3 +188,16 @@ h5 small {
 .result-search-item-links {
     font-size: 150%;
 }
+
+div.vector-download  li {
+    list-style: none;
+    box-sizing: border-box;
+    display: list-item;
+    padding: 10px;
+    padding-bottom: 6px;
+    padding-top: 6px;
+}
+
+div.vector-download > ul.menu {
+    padding: 0;
+}
