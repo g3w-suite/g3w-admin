@@ -1859,6 +1859,17 @@ _.extend(g3wadmin.tpl, {
               </div>\
               <input type="hidden" name="for_editing">\
           </div>\
+          <div class="form-group">\
+              <div id="div_id_autozoom" class="checkbox">\
+                  <label for="id_autozoom" class="">\
+                      <input type="checkbox" name="icheck_autozoom" id="id_autozoom" class="checkboxinput">\
+                      ' +
+      gettext("Autozoom on map bootstrap") +
+      '\
+                  </label>\
+              </div>\
+              <input type="hidden" name="autozoom">\
+          </div>\
       </form>'
   ),
 
@@ -2096,6 +2107,14 @@ _.extend(g3wadmin.widget, {
       }
     })
 
+    modal.$modal.find("#id_autozoom").on("ifChanged", function (e) {
+      if (e.target.checked) {
+        modal.$modal.find("[name='autozoom']").val("true")
+      } else {
+        modal.$modal.find("[name='autozoom']").val("false")
+      }
+    })
+
     // set action for confirm btn
     var form = new ga.forms.form(modal.$modal.find("form"))
     var that = this
@@ -2134,7 +2153,7 @@ _.extend(g3wadmin.widget, {
       $.each(res, function (key, val) {
         modal.$modal.find("[name=" + key + "]").val(val)
         // init icheck
-        if (key == "for_view" || key == "for_editing") {
+        if (key == "for_view" || key == "for_editing" || key == "autozoom") {
           if (val) {
             modal.$modal.find("#id_" + key).iCheck("check")
           } else {
@@ -2181,6 +2200,7 @@ _.extend(g3wadmin.widget, {
     if (_.indexOf(ga.settings.G3WADMIN_LOCAL_MORE_APPS, "editing") != -1) {
       thead += "                <th>" + gettext("For visualization") + "</th>\n" + "                <th>" + gettext("For editing") + "</th>\n"
     }
+    thead += "                <th>" + gettext("Autozoom") + "</th>\n"
     thead += "                <th>" + gettext("Rules count") + "</th>\n" + "            </tr>\n" + "        </thead>"
 
     $table.append(thead)
@@ -2192,6 +2212,7 @@ _.extend(g3wadmin.widget, {
       var editDisplay = v["constraint_rule_count"] > 0 ? "none" : "display"
       var for_view = v["for_view"] ? '<span class="fa fa-check-circle" style="color: orange"></span>' : ""
       var for_editing = v["for_editing"] ? '<span class="fa fa-check-circle" style="color: orange"></span>' : ""
+      var autozoom = v["autozoom"] ? '<span class="fa fa-check-circle" style="color: orange"></span>' : ""
       var constraintContext = ""
       if (for_view != "") constraintContext += "v"
       if (for_editing != "") constraintContext += "e"
@@ -2214,8 +2235,10 @@ _.extend(g3wadmin.widget, {
         v["description"] +
         "</td>\n"
       if (_.indexOf(ga.settings.G3WADMIN_LOCAL_MORE_APPS, "editing") != -1) {
-        tr += "                <td>" + for_view + "</td>\n" + "                <td>" + for_editing + "</td>\n"
+        tr += "                <td>" + for_view + "</td>\n"
+        tr += "                <td>" + for_editing + "</td>\n"
       }
+      tr += "                <td>" + autozoom + "</td>\n"
       tr += "                <td>" + v["constraint_rule_count"] + "</td>\n" + "            </tr>\n"
       $tbody.append(tr)
     })

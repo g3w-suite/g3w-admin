@@ -26,8 +26,8 @@ from qgis.core import (
     QgsCoordinateReferenceSystem,
     QgsCoordinateTransform,
     QgsCoordinateTransformContext,
-    QgsGeometry,
     QgsExpression,
+    QgsRectangle
 )
 
 from core.utils.qgisapi import get_qgis_features, get_qgis_layer
@@ -61,6 +61,11 @@ class GeoConstraint(models.Model):
     for_editing = models.BooleanField(_('Active for editing'), default=False, null=True,
                                       help_text=_(
                                           'Active this constraint for users have editing grant on layer/project'))
+    autozoom = models.BooleanField(_('Autozoom on map boostrap'), default=False, null=True,
+                                      help_text=_(
+                                          'Active this to make possible auto zoom on geometric constraint '
+                                          '(combining every rule) for user on map boostrap'))
+
 
     @property
     def layer_qgs_layer_id(self):
@@ -360,4 +365,75 @@ class GeoConstraintRule(models.Model):
         logger.debug("Returning rule definition for user %s and layer %s: %s" % (
             user, layer.pk, subset_string))
         return subset_string
+
+    @classmethod
+    def get_max_extent_on_project_for_user(cls, project, user):
+        """
+        Calculate for a user in a qdjango project instance the max cumulative extent of features
+        derived from geoconstraint rules.
+
+        :param project: qdjango.Project instance
+        :type project: Django model
+        :param user: The Request user
+        :type user: Django model
+        :return: A list of minx, miny, maxx, maxy
+        :rtype: list
+        """
+
+        # For every project layer get user roles
+        xmin = None
+        ymin = None
+        xmax = None
+        ymax = None
+        for layer in project.layer_set.all():
+            rules = cls.get_active_constraints_for_user(user, layer)
+            if rules:
+                for rule in rules:
+
+                    # Check if Geoconstraint has `autozoom` activated
+                    if not rule.constraint.autozoom:
+                        continue
+
+                    # Check if CRS layer != Project CRS
+                    if project.group.srid.auth_srid == layer.srid:
+                        rect = QgsRectangle.fromWkt(rule.get_constraint_geometry()[0].envelope.wkt)
+                    else:
+                        geom = QgsMultiPolygon.fromWkt(rule.get_constraint_geometry()[0].wkt)
+                        ct = QgsCoordinateTransform(QgsCoordinateReferenceSystem(f'EPSG:{layer.srid}'),
+                                                    QgsCoordinateReferenceSystem(
+                                                        f'EPSG:{project.group.srid.auth_srid}'),
+                                                    QgsCoordinateTransformContext())
+                        geom.transform(ct)
+                        rect = geom.caolculateBoundingBox()
+
+                    if xmin is None:
+                        xmin = rect.xMinimum()
+                    else:
+                        if rect.xMinimum() < xmin:
+                            xmin = rect.xMinimum()
+
+                    if ymin is None:
+                        ymin = rect.yMinimum()
+                    else:
+                        if rect.yMinimum() < ymin:
+                            ymin = rect.yMinimum()
+
+                    if xmax is None:
+                        xmax = rect.xMaximum()
+                    else:
+                        if rect.xMaximum() > xmax:
+                            xmax = rect.xMaximum()
+
+                    if ymax is None:
+                        ymax = rect.yMaximum()
+                    else:
+                        if rect.yMaximum() > ymax:
+                            ymax = rect.yMaximum()
+
+        if xmin and ymin and xmax and ymax:
+            return [xmin, ymin, xmax, ymax]
+        else:
+            return None
+
+
 
