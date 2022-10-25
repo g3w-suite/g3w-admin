@@ -61,7 +61,6 @@
         <div id="widget" class="panel-collapse collapse">
             <div class="box-body">
                 <div>
-                <p>Search widgets:</p>
                 <table class="table">
                     <thead>
                         <tr>
@@ -95,12 +94,13 @@
         <div id="editing" class="panel-collapse collapse">
             <div class="box-body">
                 {% for e in editings %}
-                    <div class="box-body bg-gray"  style="margin-top: 40px;">
-                        <h5>Layer: <strong>{{ e.lname }}</strong></h5>
-                        {% if e.scale %}
-                        <h5>Scale: 1:{{ e.scale }}</h5>
-                        {% endif %}
+                    <div class="box-body bg-gray"  {% if not forloop.first %}style="margin-top: 40px;"{% endif %}>
+                        <h4>Layer: <strong>{{ e.elayer.layer.name }}</strong></h4>
                     </div>
+                    <div>
+                    <h5>{% trans 'Scale' %}: {% if e.elayer.scale %}<i>1:{{ e.elayer.scale }}</i>{% endif %}</h5>
+                    <h5>{% trans 'User adding data field'%}: {% if e.elayer.add_user_field %}{{ e.elayer.add_user_field }}{% endif %}</h5>
+                    <h5>{% trans 'User editing data field '%}: {% if e.elayer.edit_user_field %}{{ e.elayer.edit_user_field }}{% endif %}</h5>
                     {% if e.users %}
                         <table class="table" style="margin-bottom: 40px;">
                             <thead>
@@ -137,6 +137,7 @@
                             </tbody>
                         </table>
                     {% endif %}
+                    </div>
                 {% endfor %}
             </div>
         </div>
@@ -155,14 +156,15 @@
             <div class="box-body">
                 {% for g in geoconstraints %}
                     <div class="box-body bg-gray"  {% if not forloop.first %}style="margin-top: 40px;"{% endif %}>
-                        <h5>Layer: <strong>{{ g.layer.name }}</strong></h5>
+                        <h4>Layer: <strong>{{ g.layer.name }}</strong></h4>
                     </div>
                     {% for c in g.constraints %}
                     <div>
-                        <h5>{% trans 'Description' %}: {{ c.constraint.description }}</h5>
-                        <h5>{% trans 'For view' %}: {% if c.constraint.for_view %}{% trans 'Yes' %}{% else %}{% trans 'No' %}{% endif %}</h5>
-                        <h5>{% trans 'For editing' %}: {% if c.constraint.for_editing %}{% trans 'Yes' %}{% else %}{% trans 'No' %}{% endif %}</h5>
-                        <h5>{% trans 'Autozoom' %}: {% if c.constraint.autozoom %}{% trans 'Yes' %}{% else %}{% trans 'No' %}{% endif %}</h5>
+                        <h5>{% trans 'Constraint Layer' %}: <strong>{{ c.constraint.constraint_layer.name }}</strong></h5>
+                        <h5>{% trans 'Description' %}: <i>{{ c.constraint.description }}</i></h5>
+                        <h5>{% trans 'For view' %}: {% if c.constraint.for_view %}<span style="color:green">{% trans 'Yes' %}</span>{% else %}<span style="color:red">{% trans 'No' %}</span>{% endif %}</h5>
+                        <h5>{% trans 'For editing' %}: {% if c.constraint.for_editing %}{<span style="color:green">{% trans 'Yes' %}</span>{% else %}<span style="color:red">{% trans 'No' %}</span>{% endif %}</h5>
+                        <h5>{% trans 'Autozoom' %}: {% if c.constraint.autozoom %}<span style="color:green">{% trans 'Yes' %}</span>{% else %}<span style="color:red">{% trans 'No' %}</span>{% endif %}</h5>
                         <hr>
                         <table class="table">
                             <thead>
@@ -201,13 +203,13 @@
             <div class="box-body">
                 {% for e in expconstraints %}
                     <div class="box-body bg-gray"  {% if not forloop.first %}style="margin-top: 40px;"{% endif %}>
-                        <h5>Layer: <strong>{{ g.layer.name }}</strong></h5>
+                        <h4>Layer: <strong>{{ e.layer.name }}</strong></h4>
                     </div>
                     {% for c in e.constraints %}
                     <div>
-                        <h5>{% trans 'Description' %}: {{ c.constraint.description }}</h5>
-                        <h5>{% trans 'For view' %}: {% if c.constraint.for_view %}{% trans 'Yes' %}{% else %}{% trans 'No' %}{% endif %}</h5>
-                        <h5>{% trans 'For editing' %}: {% if c.constraint.for_editing %}{% trans 'Yes' %}{% else %}{% trans 'No' %}{% endif %}</h5>
+                        <h5>{% trans 'Description' %}: <i>{{ c.constraint.description }}</i></h5>
+                        <h5>{% trans 'For view' %}: {% if c.constraint.for_view %}<span style="color:green">{% trans 'Yes' %}</span>{% else %}<span style="color:red">{% trans 'No' %}</span>{% endif %}</h5>
+                        <h5>{% trans 'For editing' %}: {% if c.constraint.for_editing %}<span style="color:green">{% trans 'Yes' %}</span>{% else %}<span style="color:red">{% trans 'No' %}</span>{% endif %}</h5>
                         <hr>
                         <table class="table">
                             <thead>
@@ -246,7 +248,26 @@
         </div>
         <div id="hiddenlayer" class="panel-collapse collapse">
             <div class="box-body">
-
+                    <div>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>{% trans 'Layers' %}</th>
+                                    <th>{% trans 'Users' %}</th>
+                                    <th>{% trans 'User Groups' %}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for hl in hiddenlayers %}
+                                <tr>
+                                    <td>{{ hl.layer }}</td>
+                                    <td>{{ hl.users|join:' | ' }}</td>
+                                    <td>{{ hl.ugroups|join:' | ' }}</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
             </div>
         </div>
     </div>
@@ -264,7 +285,7 @@
             <div class="box-body">
                 {% for hf in hiddenfields %}
                     <div class="box-body bg-gray"  {% if not forloop.first %}style="margin-top: 40px;"{% endif %}>
-                        <h5>Layer: <strong>{{ hf.layer.name }}</strong></h5>
+                        <h4>Layer: <strong>{{ hf.layer.name }}</strong></h4>
                     </div>
                     <div>
                         <table class="table">

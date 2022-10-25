@@ -180,18 +180,6 @@ class QdjangoProjectDetailView(G3WRequestViewMixin, DetailView):
 
             players = [l for l in self.object.layer_set.all()]
 
-            # Widgets
-            # =============================================
-            widgets = []
-            for l in self.object.layer_set.all():
-                for l in players:
-                    for w in get_widgets4layer(l):
-                        if w.widget_type == 'search':
-                            widgets.append((l.name, w.name))
-
-            if widgets:
-                ctx['widgets'] = widgets
-
             # Editings
             # =============================================
 
@@ -203,8 +191,7 @@ class QdjangoProjectDetailView(G3WRequestViewMixin, DetailView):
                 for el in elayers:
                     ellayer = el.layer
                     editing = {
-                        'lname': ellayer.name,
-                        'scale': el.scale,
+                        'elayer': el,
                         'users': [],
                         'ugroups': [],
                     }
@@ -256,8 +243,8 @@ class QdjangoProjectDetailView(G3WRequestViewMixin, DetailView):
 
             ctx['editings'] = editings
 
-            # Geoconstraints, Expconstraints, Hiddenfields, Hiddenlayers
-            # ==========================================================
+            # Geoconstraints, Expconstraints, Hiddenfields, Hiddenlayers, Widgets
+            # ===================================================================
 
             # For hiddenlayers: get users and user groups by with permission on project
             project_viewers = get_viewers_for_object(
@@ -270,7 +257,7 @@ class QdjangoProjectDetailView(G3WRequestViewMixin, DetailView):
             project_viewers = [v for v in project_viewers if v.pk not in (editor_pk, editor2_pk)]
 
             project_user_groups_viewers = get_groups_for_object(
-                self.project, 'view_project', grouprole='viewer')
+                self.object, 'view_project', grouprole='viewer')
 
             # for Editor level filter by his groups
             if userHasGroups(self.request.user, [G3W_EDITOR1]):
@@ -283,6 +270,7 @@ class QdjangoProjectDetailView(G3WRequestViewMixin, DetailView):
 
             project_user_groups_viewers = [v for v in project_user_groups_viewers]
 
+            widgets = []
             for l in self.object.layer_set.all():
 
                 # Get geoconstraints by layer id
@@ -315,6 +303,11 @@ class QdjangoProjectDetailView(G3WRequestViewMixin, DetailView):
                     'users': [],
                     'ugroups': []
                 }
+
+                # Widgets
+                for w in get_widgets4layer(l):
+                    if w.widget_type == 'search':
+                        widgets.append((l.name, w.name))
 
                 for geoc in geoconstraints:
                     c = {
@@ -382,15 +375,20 @@ class QdjangoProjectDetailView(G3WRequestViewMixin, DetailView):
                     else:
                         ctx['hiddenfields'].append(hf)
 
-
                 for hidel in hiddenlayers:
-                    if hidel.user and hidel.user not in project_viewers:
-                        hl['users'].append(hidel.user.username)
-                    if hidel.group and hidel.group not in project_user_groups_viewers:
-                        hl['ugroups'].append(hidel.group.name)
+                    if hidel.user:
+                        hl['users'].append(hidel.user)
+                    if hidel.group:
+                        hl['groups'].append(hidel.group)
 
+                if len(hl['users']) > 0 or len(hl['ugroups']) > 0:
+                    if 'hiddenlayers' not in ctx:
+                        ctx['hiddenlayers'] = [hl]
+                    else:
+                        ctx['hiddenlayers'].append(hl)
 
-
+                if widgets:
+                    ctx['widgets'] = widgets
 
         return ctx
 
