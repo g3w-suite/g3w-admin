@@ -8,7 +8,7 @@
         {% if perms.qdjango.add_project and "add_project_to_group" in userObj_group_perms  %}
         {% g3wadmin_add_project 'qdjango' group %}
         {% endif %}
-        <h4 class="description">{% trans 'Qgis project type' %}</h4>
+
     </div>
     <div class="box-body">
         {% if object_list|length > 0 %}
