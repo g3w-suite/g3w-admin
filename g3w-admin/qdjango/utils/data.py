@@ -1338,7 +1338,7 @@ class QgisProject(XmlData):
             if not instance and not self.instance:
                 
                 data = {
-                    'gis_file': self.qgisProjectFile,
+                    'qgis_file': self.qgisProjectFile,
                     'original_name': self.original_name,
                     'group': self.group,
                     'title': self.title,
