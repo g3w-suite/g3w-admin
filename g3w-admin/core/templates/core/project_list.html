@@ -60,31 +60,36 @@
     <div class="col-md-12 col-xs-12">
         <div class="box">
             <div class="box-header">
-                <h3 class="box-title">Group {{ group.name }}</h3>
+                <h3 class="box-title">Group</h3>
             </div>
             <div class="box-body">
-                {% if "view_group" in userObj_perms %}
-                <a href="#" data-toggle="tooltip" class="btn btn-app" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-detail-url="{% url 'group-detail' group.slug %}">
-                    <i class="ion ion-eye"></i>
-                    {% trans 'Show detail' %}
-                </a>
-                {% endif %}
-                {% if "change_group" in userObj_perms %}
-                <a href="{% url 'group-update' group.slug %}" class="btn-app btn" data-toggle="tooltip" data-placement="top" title="{% trans 'Edit' %}" >
-                    <i class="ion ion-edit"></i>
-                    {% trans 'Edit' %}
-                </a>
-                {% endif %}
-                {% if "delete_group" in userObj_perms %}
-                <a href="#" data-toggle="tooltip"class="color-red btn btn-app" data-placement="top" title="{% trans 'Delete' %}"  data-widget-type="deleteItem" data-delete-url="{% url 'group-delete' group.slug %}" data-item-selector="#group_{{ group.slug }}">
-                    <i class="ion ion-trash-b"></i>
-                    {% trans 'Delete' %}
-                </a>
-                {% endif %}
-            </div>
-            <div class="box-body">
-                {{ group.description|safe }}
-
+                <div class="attachment-block clearfix">
+                    <img class="attachment-img" src="{{ MEDIA_URL }}{{ group.header_logo_img }}">
+                    <div class="attachment-pushed">
+                        <div class="attachment-heading"><h4>{{ group.name }}</h4></div>
+                        <div class="attachment-text">{{ group.description|safe }}</div>
+                    </div>
+                </div>
+                <div class="group-abstract-action">
+                    {% if "view_group" in userObj_perms %}
+                    <a href="#" data-toggle="tooltip" class="btn btn-app" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-detail-url="{% url 'group-detail' group.slug %}">
+                        <i class="ion ion-eye"></i>
+                        {% trans 'Show detail' %}
+                    </a>
+                    {% endif %}
+                    {% if "change_group" in userObj_perms %}
+                    <a href="{% url 'group-update' group.slug %}" class="btn-app btn" data-toggle="tooltip" data-placement="top" title="{% trans 'Edit' %}" >
+                        <i class="ion ion-edit"></i>
+                        {% trans 'Edit' %}
+                    </a>
+                    {% endif %}
+                    {% if "delete_group" in userObj_perms %}
+                    <a href="#" data-toggle="tooltip"class="color-red btn btn-app" data-placement="top" title="{% trans 'Delete' %}"  data-widget-type="deleteItem" data-delete-url="{% url 'group-delete' group.slug %}" data-item-selector="#group_{{ group.slug }}">
+                        <i class="ion ion-trash-b"></i>
+                        {% trans 'Delete' %}
+                    </a>
+                    {% endif %}
+                </div>
             </div>
         </div>
     </div>
