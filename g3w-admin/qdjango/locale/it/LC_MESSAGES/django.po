@@ -373,16 +373,14 @@ msgid "Layers"
 msgstr "Livelli"
 
 #: models/projects.py:151
-#, fuzzy
 #| msgid "Base Layer"
 msgid "Base layers"
 msgstr "Layer di base"
 
 #: models/projects.py:152
-#, fuzzy
 #| msgid "No legend"
 msgid "Legend"
-msgstr "No legenda"
+msgstr "Legenda"
 
 #: models/projects.py:156 models/projects.py:161
 msgid "Collapsed"
