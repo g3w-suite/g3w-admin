@@ -1336,35 +1336,42 @@ class QgisProject(XmlData):
         with transaction.atomic():
 
             if not instance and not self.instance:
+                
+                data = {
+                    'gis_file': self.qgisProjectFile,
+                    'original_name': self.original_name,
+                    'group': self.group,
+                    'title': self.title,
+                    'initial_extent': self.initialExtent,
+                    'max_extent': self.maxExtent,
+                    'wms_use_layer_ids': self.wmsuselayerids,
+                    'thumbnail': kwargs.get('thumbnail'),
+                    'description': kwargs.get('description'),
+                    'baselayer': kwargs.get('baselayer'),
+                    'qgis_version': self.qgisVersion,
+                    'layers_tree': self.layersTree,
+                    'relations': self.layerRelations,
+                    'layouts': self.layouts,
+                    'title_ur': kwargs.get('title_ur'),
+                    'context_base_legend': self.contextbaselegend
+                }
 
-                self.instance = self._project_model.objects.create(
-                    qgis_file=self.qgisProjectFile,
-                    original_name=self.original_name,
-                    group=self.group,
-                    title=self.title,
-                    initial_extent=self.initialExtent,
-                    max_extent=self.maxExtent,
-                    wms_use_layer_ids=self.wmsuselayerids,
-                    thumbnail=kwargs.get('thumbnail'),
-                    description=kwargs.get('description'),
-                    baselayer=kwargs.get('baselayer'),
-                    qgis_version=self.qgisVersion,
-                    layers_tree=self.layersTree,
-                    relations=self.layerRelations,
-                    layouts=self.layouts,
-                    title_ur=kwargs.get('title_ur'),
-                    toc_layers_init_status=kwargs.get('baselayer'),
-                    toc_tab_default=kwargs.get('toc_tab_default'),
-                    toc_themes_init_status=kwargs.get('toc_themes_init_status'),
-                    legend_position=kwargs.get('legend_position'),
-                    use_map_extent_as_init_extent=kwargs.get('use_map_extent_as_init_extent'),
-                    feature_count_wms=kwargs.get('feature_count_wms'),
-                    multilayer_query=kwargs.get('multilayer_query'),
-                    multilayer_querybybbox=kwargs.get('multilayer_querybybbox'),
-                    multilayer_querybypolygon=kwargs.get('multilayer_querybypolygon'),
-                    autozoom_query=kwargs.get('autozoom_query'),
-                    context_base_legend=self.contextbaselegend
-                )
+                for p in (
+                    'toc_layers_init_status',
+                    'toc_tab_default',
+                    'toc_themes_init_status',
+                    'legend_position',
+                    'use_map_extent_as_init_extent',
+                    'feature_count_wms',
+                    'multilayer_query',
+                    'multilayer_querybybbox',
+                    'multilayer_querybypolygon',
+                    'autozoom_query'
+                ):
+                    if kwargs.get(p):
+                        data[p] = kwargs.get(p)
+
+                self.instance = self._project_model.objects.create(**data)
             else:
                 if instance:
                     self.instance = instance
