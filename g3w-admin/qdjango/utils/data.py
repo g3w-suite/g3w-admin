@@ -1337,10 +1337,6 @@ class QgisProject(XmlData):
 
             if not instance and not self.instance:
 
-                thumbnail = kwargs.get('thumbnail')
-                description = kwargs.get('description')
-                baselayer = kwargs.get('baselayer')
-
                 self.instance = self._project_model.objects.create(
                     qgis_file=self.qgisProjectFile,
                     original_name=self.original_name,
@@ -1349,13 +1345,24 @@ class QgisProject(XmlData):
                     initial_extent=self.initialExtent,
                     max_extent=self.maxExtent,
                     wms_use_layer_ids=self.wmsuselayerids,
-                    thumbnail=thumbnail,
-                    description=description,
-                    baselayer=baselayer,
+                    thumbnail=kwargs.get('thumbnail'),
+                    description=kwargs.get('description'),
+                    baselayer=kwargs.get('baselayer'),
                     qgis_version=self.qgisVersion,
                     layers_tree=self.layersTree,
                     relations=self.layerRelations,
                     layouts=self.layouts,
+                    title_ur=kwargs.get('title_ur'),
+                    toc_layers_init_status=kwargs.get('baselayer'),
+                    toc_tab_default=kwargs.get('toc_tab_default'),
+                    toc_themes_init_status=kwargs.get('toc_themes_init_status'),
+                    legend_position=kwargs.get('legend_position'),
+                    use_map_extent_as_init_extent=kwargs.get('use_map_extent_as_init_extent'),
+                    feature_count_wms=kwargs.get('feature_count_wms'),
+                    multilayer_query=kwargs.get('multilayer_query'),
+                    multilayer_querybybbox=kwargs.get('multilayer_querybybbox'),
+                    multilayer_querybypolygon=kwargs.get('multilayer_querybypolygon'),
+                    autozoom_query=kwargs.get('autozoom_query'),
                     context_base_legend=self.contextbaselegend
                 )
             else:
