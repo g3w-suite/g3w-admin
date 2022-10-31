@@ -27,15 +27,21 @@ class GetLegendGraphicFilter(QgsServerFilter):
 
     def __init__(self, server_iface):
 
-        super(GetLegendGraphicFilter, self).__init__(server_iface)
+        super().__init__(server_iface)
         self.server_iface = server_iface
 
     def responseComplete(self):
 
         handler = self.server_iface.requestHandler()
+
+        if not handler:
+            logger.critical(
+                'GetLegendGraphicFilter plugin cannot be run in multithreading mode, skipping.')
+            return
+
         params = handler.parameterMap()
 
-        if 'LAYER' in params and 'SERVICE' in params and 'REQUEST' in params and params['SERVICE'].upper() == 'WMS' and params['REQUEST'].upper() == 'GETLEGENDGRAPHIC':
+        if 'FORMAT' in params and params['FORMAT'] == 'application/json' and 'LAYER' in params and 'SERVICE' in params and 'REQUEST' in params and params['SERVICE'].upper() == 'WMS' and params['REQUEST'].upper() == 'GETLEGENDGRAPHIC':
             qgs_project = QGS_SERVER.project.qgis_project
             use_ids = QgsServerProjectUtils.wmsUseLayerIds(qgs_project)
             layer_id = params['LAYER']
@@ -67,5 +73,5 @@ class GetLegendGraphicFilter(QgsServerFilter):
                     'Error getting layer "{}" when setting up legend graphic for json output when configuring OWS call: {}'.format(layer_id, ex))
 
 
-legend_filter = GetLegendGraphicFilter(QGS_SERVER.serverInterface())
-QGS_SERVER.serverInterface().registerFilter(legend_filter, 50)
+legend_graphic_filter = GetLegendGraphicFilter(QGS_SERVER.serverInterface())
+QGS_SERVER.serverInterface().registerFilter(legend_graphic_filter, 50)
