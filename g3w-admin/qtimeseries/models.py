@@ -26,7 +26,7 @@ class QRasterTimeSeriesLayer(models.Model):
     @classmethod
     def is_activated(cls, layer):
         """
-        Check if layer if into table
+        Check if layer is into table
         :param layer: qdjango Layer model instance
         :return type: boolean
         """
