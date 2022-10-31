@@ -164,7 +164,7 @@ class GroupUpdateView(G3WRequestViewMixin, G3WACLViewMixin, UpdateView):
         # send after_save
         after_update_group.send(self, group=form.instance)
 
-        # delete tempory file form files
+        # delete temporary file form files
         form.delete_temporary_files()
         return res
 
