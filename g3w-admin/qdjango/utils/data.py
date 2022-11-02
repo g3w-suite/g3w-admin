@@ -23,6 +23,7 @@ from qgis.core import (
     QgsMapLayerType,
     QgsUnitTypes,
     QgsLayoutItemLabel,
+    QgsMeshLayerTemporalProperties,
     Qgis
 )
 
@@ -701,8 +702,8 @@ class QgisProjectLayer(XmlData):
         - ModeFeatureDateTimeStartAndDurationFromFields
         """
 
-        if self.qgs_layer.type() != QgsMapLayer.VectorLayer and self.qgs_layer.dataProvider().name() != 'wms':
-            return None
+        #if self.qgs_layer.dataProvider().name() != 'wms':
+        #    return None
 
         self.qgs_layer.dataProvider().name()
 
@@ -711,6 +712,7 @@ class QgisProjectLayer(XmlData):
 
         # Manage only ModeFeatureDateTimeInstantFromField at 2021-12-06
         if tp.isActive():
+                #and (isinstance(tp.mode(), Qgis.VectorTemporalMode) or isinstance(tp.mode(), Qgis.RasterTemporalMode)):
             # if tp.mode() == QgsVectorLayerTemporalProperties.ModeFixedTemporalRange:
             #     toret = {
             #         'mode': 'FixedTemporalRange',
@@ -718,16 +720,24 @@ class QgisProjectLayer(XmlData):
             #         'end': str(tp.fixedTemporalRange().end().toPyDateTime())
             #     }
 
-            if isinstance(tp.mode(), Qgis.VectorTemporalMode) and \
-                    tp.mode() == Qgis.VectorTemporalMode.FeatureDateTimeInstantFromField:
+            if isinstance(tp, QgsMeshLayerTemporalProperties):
+                tc = self.qgs_layer.dataProvider().temporalCapabilities()
+                toret = {
+                    'mode': 'MeshTemporalRangeFromDataProvider',
+                    'range': [
+                        tc.timeExtent().begin().isoformat(),
+                        tc.timeExtent().end().isoformat()
+                    ],
+                }
+
+            elif tp.mode() == Qgis.VectorTemporalMode.FeatureDateTimeInstantFromField:
                 toret = {
                     'mode': 'FeatureDateTimeInstantFromField',
                     'field': tp.startField(),
                     'units': QgsUnitTypes.encodeUnit(tp.durationUnits()),
                     'duration': tp.fixedDuration()
                 }
-            elif isinstance(tp.mode(), Qgis.RasterTemporalMode) and \
-                    tp.mode() == Qgis.RasterTemporalMode.TemporalRangeFromDataProvider:
+            elif tp.mode() == Qgis.RasterTemporalMode.TemporalRangeFromDataProvider:
 
                 tc = self.qgs_layer.dataProvider().temporalCapabilities()
                 toret = {
@@ -737,6 +747,16 @@ class QgisProjectLayer(XmlData):
                         tc.availableTemporalRange().end().isoformat()
                     ],
                 }
+            # elif tp.mode() == Qgis.RasterTemporalMode.FixedTemporalRange:
+            #
+            #     tc = self.qgs_layer.dataProvider()
+            #     toret = {
+            #         'mode': 'RasterTemporalRangeFromDataProvider',
+            #         'range': [
+            #             tc.availableTemporalRange().begin().isoformat(),
+            #             tc.availableTemporalRange().end().isoformat()
+            #         ],
+            #     }
 
             # elif tp.mode == QgsVectorLayerTemporalProperties.ModeFeatureDateTimeStartAndEndFromFields:
             #     toret = {

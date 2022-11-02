@@ -770,7 +770,8 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
                     ret['qtimeseries']['start_date'] = ret['qtimeseries']['start_date'].isoformat()
                     ret['qtimeseries']['end_date'] = ret['qtimeseries']['end_date'].isoformat()
 
-            if ret['qtimeseries'] and ret['qtimeseries']['mode'] == 'RasterTemporalRangeFromDataProvider':
+            if ret['qtimeseries'] and ret['qtimeseries']['mode'] in ('RasterTemporalRangeFromDataProvider',
+                                                                     'MeshTemporalRangeFromDataProvider'):
 
                 # If layer is a wms only for external
                 if instance.layer_type != Layer.TYPES.wms or \
