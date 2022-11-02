@@ -159,12 +159,19 @@ class GroupUpdateView(G3WRequestViewMixin, G3WACLViewMixin, UpdateView):
         return super(GroupUpdateView, self).dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
+
+        # When edit form from project list view
+        # If `name` field changed an 404 error happens because old
+        # `self.request.session['http_referer']` holds the url with the old url
+        # build with old group `name` instance.
+        if 'name' in form.changed_data:
+            del(self.request.session['http_referer'])
         res = super(GroupUpdateView, self).form_valid(form)
 
         # send after_save
         after_update_group.send(self, group=form.instance)
 
-        # delete tempory file form files
+        # delete temporary file form files
         form.delete_temporary_files()
         return res
 
