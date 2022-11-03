@@ -69,30 +69,38 @@
     <div class="col-md-12 col-xs-12">
         <div class="box">
             <div class="box-header">
-                <h3 class="box-title">{% trans 'Project' %} {{ project.title }}</h3>
+                <h3 class="box-title">{% trans 'Project' %}</h3>
             </div>
             <div class="box-body">
-                {% if "view_project" in userPrj_perms %}
-                <a href="{% url 'group-project-map' group.slug 'qdjango' project.pk %}" class="color-orange btn btn-app" data-toggle="tooltip" data-placement="top" title="{% trans 'Show map' %}" target="_blank">
-                    <i class="ion ion-map"></i>
-                    {% trans 'Show map' %}
-                </a>
-                {% endif %}
-                {% if "view_project" in userPrj_perms %}
-                <a href="#" class="btn btn-app" data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-detail-url="{% url 'qdjango-project-detail' group.slug project.slug %}" >
-                    <i class="ion ion-eye"></i>
-                    {% trans 'Show detail' %}
-                </a>
-                {% endif %}
-                {% if "change_project" in userPrj_perms %}
-                <a href="{% url 'qdjango-project-update' group.slug project.slug %}" class="btn btn-app" data-toggle="tooltip" data-placement="top" title="{% trans 'Edit' %}" >
-                    <i class="ion ion-edit"></i>
-                    {% trans 'Edit' %}
-                </a>
-                {% endif %}
-            </div>
-            <div class="box-body">
-                {{ project.description|safe }}
+                <div class="attachment-block clearfix">
+                    {% if project.thumbnail %}
+                    <img class="attachment-img" src="{{ MEDIA_URL }}{{ project.thumbnail }}">
+                    {% endif %}
+                    <div class="{% if project.thumbnail %}attachment-pushed{% else %}attachement{% endif %}">
+                        <div class=" attachment-heading"><h4>{{ project.title }}</h4></div>
+                        <div class="attachment-text">{{ project.description|safe }}</div>
+                    </div>
+                </div>
+                <div class="project-abstract-action">
+                    {% if "view_project" in userPrj_perms %}
+                    <a href="{% url 'group-project-map' group.slug 'qdjango' project.pk %}" class="color-orange btn btn-app" data-toggle="tooltip" data-placement="top" title="{% trans 'Show map' %}" target="_blank">
+                        <i class="ion ion-map"></i>
+                        {% trans 'Show map' %}
+                    </a>
+                    {% endif %}
+                    {% if "view_project" in userPrj_perms %}
+                    <a href="#" class="btn btn-app" data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-detail-url="{% url 'qdjango-project-detail' group.slug project.slug %}" >
+                        <i class="ion ion-eye"></i>
+                        {% trans 'Show detail' %}
+                    </a>
+                    {% endif %}
+                    {% if "change_project" in userPrj_perms %}
+                    <a href="{% url 'qdjango-project-update' group.slug project.slug %}" class="btn btn-app" data-toggle="tooltip" data-placement="top" title="{% trans 'Edit' %}" >
+                        <i class="ion ion-edit"></i>
+                        {% trans 'Edit' %}
+                    </a>
+                    {% endif %}
+                </div>
             </div>
         </div>
     </div>
@@ -120,23 +128,24 @@
                             <th style="width: 40px">WFS</th>
                             <th style="min-width:200px; width:240px;">{% trans 'Actions'%}</th>
                             {% if "change_project" in userPrj_perms %}
+                            <th style="width:100px">{% trans 'Download capabilities' %}</th>
                             <th style="width:40px">{% trans 'Not show attributes table' %}</th>
                             <th style="width:40px">{% trans 'No legend' %}</th>
-                            {% if 'shp' in SETTINGS.G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS %}
-                            <th style="width:100px"><input type="checkbox" name="check_every_download" />{% trans 'Download as shp/geotiff' %}</th>
-                            {% endif %}
-                            {% if 'gpkg' in SETTINGS.G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS %}
-                            <th style="width:100px"><input type="checkbox" name="check_every_download_gpkg" />{% trans 'Download as gpkg' %}</th>
-                            {% endif %}
-                            {% if 'xls' in SETTINGS.G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS %}
-                            <th style="width:100px"><input type="checkbox" name="check_every_download_xls" />{% trans 'Download as xls' %}</th>
-                            {% endif %}
-                            {% if 'csv' in SETTINGS.G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS %}
-                            <th style="width:100px"><input type="checkbox" name="check_every_download_csv" />{% trans 'Download as csv' %}</th>
-                            {% endif %}
-                            {% if 'gpx' in SETTINGS.G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS %}
-                            <th style="width:100px"><input type="checkbox" name="check_every_download_gpx" />{% trans 'Download as gpx' %}</th>
-                            {% endif %}
+{#                            {% if 'shp' in SETTINGS.G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS %}#}
+{#                            <th style="width:100px"><input type="checkbox" name="check_every_download" />{% trans 'Download as shp/geotiff' %}</th>#}
+{#                            {% endif %}#}
+{#                            {% if 'gpkg' in SETTINGS.G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS %}#}
+{#                            <th style="width:100px"><input type="checkbox" name="check_every_download_gpkg" />{% trans 'Download as gpkg' %}</th>#}
+{#                            {% endif %}#}
+{#                            {% if 'xls' in SETTINGS.G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS %}#}
+{#                            <th style="width:100px"><input type="checkbox" name="check_every_download_xls" />{% trans 'Download as xls' %}</th>#}
+{#                            {% endif %}#}
+{#                            {% if 'csv' in SETTINGS.G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS %}#}
+{#                            <th style="width:100px"><input type="checkbox" name="check_every_download_csv" />{% trans 'Download as csv' %}</th>#}
+{#                            {% endif %}#}
+{#                            {% if 'gpx' in SETTINGS.G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS %}#}
+{#                            <th style="width:100px"><input type="checkbox" name="check_every_download_gpx" />{% trans 'Download as gpx' %}</th>#}
+{#                            {% endif %}#}
                             {% endif %}
                         </tr>
                     </thead>
@@ -216,6 +225,61 @@
                                     {% endif %}
                                 </span>
                             </td>
+                            {% if 'shp' in SETTINGS.G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS or 'geotiff' in SETTINGS.G3WADMIN_RASTER_LAYER_DOWNLOAD_FORMATS %}
+                            <td>
+
+{#                                <input type="checkbox" data-widget-type="downloadLayer" data-ajax-url="{% url 'qdjango-project-layers-data-editing' project.group.slug project.slug object.pk %}" name="download_{{ object.pk }}" {% if object.download %}checked="checked"{% endif %}>#}
+                                <div class="dropdown">
+                                <a href="#" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                  <i class="fa fa-download"></i>
+                                    {% trans 'Download' %}
+                                </a>
+                                <ul class="dropdown-menu" style="hoverflow: hidden; width:100%; min-width: 200px;">
+                                    <li>
+                                        <div class="slimScrollDiv vector-download">
+                                            <ul class="menu">
+                                                {% if 'shp' in SETTINGS.G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS or 'geotiff' in SETTINGS.G3WADMIN_RASTER_LAYER_DOWNLOAD_FORMATS %}
+                                                {% if object.layer_type in type_layer_for_download or object.layer_type in type_raster_layer_for_download %}
+                                                <li>
+                                                    <input type="checkbox" data-widget-type="downloadLayer" data-ajax-url="{% url 'qdjango-project-layers-data-editing' project.group.slug project.slug object.pk %}" name="download_{{ object.pk }}" {% if object.download %}checked="checked"{% endif %}>
+                                                    {% trans 'Download as shp/geotiff' %}
+                                                </li>
+                                                {% endif %}
+                                                {% endif %}
+                                                {% if 'gpkg' in SETTINGS.G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS and object.layer_type in type_layer_for_download %}
+                                                <li>
+                                                    <input type="checkbox" data-widget-type="downloadLayergpkg" data-ajax-url="{% url 'qdjango-project-layers-data-editing' project.group.slug project.slug object.pk %}" name="download_gpkg_{{ object.pk }}" {% if object.download_gpkg %}checked="checked"{% endif %}>
+                                                    {% trans 'Download as gpkg' %}
+                                                </li>
+                                                {% endif %}
+                                                {% if 'xls' in SETTINGS.G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS and object.layer_type in type_layer_for_download %}
+                                                <li>
+                                                    <input type="checkbox" data-widget-type="downloadLayerxls" data-ajax-url="{% url 'qdjango-project-layers-data-editing' project.group.slug project.slug object.pk %}" name="download_xls_{{ object.pk }}" {% if object.download_xls %}checked="checked"{% endif %}>
+                                                    {% trans 'Download as xls' %}
+                                                </li>
+                                                {% endif %}
+                                                {% if 'csv' in SETTINGS.G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS and object.layer_type in type_layer_for_download %}
+                                                <li>
+                                                     <input type="checkbox" data-widget-type="downloadLayercsv" data-ajax-url="{% url 'qdjango-project-layers-data-editing' project.group.slug project.slug object.pk %}" name="download_csv_{{ object.pk }}" {% if object.download_csv %}checked="checked"{% endif %}>
+                                                    {% trans 'Download as csv' %}
+                                                </li>
+                                                {% endif %}
+
+
+                                                {% if 'gpx' in SETTINGS.G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS and object.layer_type in type_layer_for_download and object|is_geom_type_gpx_compatible %}
+                                                <li>
+                                                     <input type="checkbox" data-widget-type="downloadLayergpx" data-ajax-url="{% url 'qdjango-project-layers-data-editing' project.group.slug project.slug object.pk %}" name="download_gpx_{{ object.pk }}" {% if object.download_gpx %}checked="checked"{% endif %}>
+                                                    {% trans 'Download as gpx' %}
+                                                </li>
+                                                {% endif %}
+                                            </ul>
+                                        </div>
+                                    </li>
+                                </ul>
+                                </div>
+
+                            </td>
+                            {% endif %}
                             {% if "change_project" in userPrj_perms %}
                             <td>
                             {% if object.layer_type in type_layer_for_download %}
@@ -225,41 +289,34 @@
                             <td>
                                 <input type="checkbox" data-widget-type="noLegendLayer" data-ajax-url="{% url 'qdjango-project-layers-data-editing' project.group.slug project.slug object.pk %}" name="no_legend_{{ object.pk }}" {% if object.exclude_from_legend %}checked="checked"{% endif %}>
                             </td>
-                            {% if 'shp' in SETTINGS.G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS or 'geotiff' in SETTINGS.G3WADMIN_RASTER_LAYER_DOWNLOAD_FORMATS %}
-                            <td>
-                                {% if object.layer_type in type_layer_for_download or object.layer_type in type_raster_layer_for_download %}
-                                <input type="checkbox" data-widget-type="downloadLayer" data-ajax-url="{% url 'qdjango-project-layers-data-editing' project.group.slug project.slug object.pk %}" name="download_{{ object.pk }}" {% if object.download %}checked="checked"{% endif %}>
-                                {% endif %}
-                            </td>
-                            {% endif %}
-                            {% if 'gpkg' in SETTINGS.G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS %}
-                            <td>
-                                {% if object.layer_type in type_layer_for_download %}
-                                <input type="checkbox" data-widget-type="downloadLayergpkg" data-ajax-url="{% url 'qdjango-project-layers-data-editing' project.group.slug project.slug object.pk %}" name="download_gpkg_{{ object.pk }}" {% if object.download_gpkg %}checked="checked"{% endif %}>
-                                {% endif %}
-                            </td>
-                            {% endif %}
-                            {% if 'xls' in SETTINGS.G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS %}
-                            <td>
-                                {% if object.layer_type in type_layer_for_download %}
-                                <input type="checkbox" data-widget-type="downloadLayerxls" data-ajax-url="{% url 'qdjango-project-layers-data-editing' project.group.slug project.slug object.pk %}" name="download_xls_{{ object.pk }}" {% if object.download_xls %}checked="checked"{% endif %}>
-                                {% endif %}
-                            </td>
-                            {% endif %}
-                            {% if 'csv' in SETTINGS.G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS%}
-                            <td>
-                                {% if object.layer_type in type_layer_for_download %}
-                                <input type="checkbox" data-widget-type="downloadLayercsv" data-ajax-url="{% url 'qdjango-project-layers-data-editing' project.group.slug project.slug object.pk %}" name="download_csv_{{ object.pk }}" {% if object.download_csv %}checked="checked"{% endif %}>
-                                {% endif %}
-                            </td>
-                            {% endif %}
-                            {% if 'gpx' in SETTINGS.G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS%}
-                            <td>
-                                {% if object.layer_type in type_layer_for_download and object|is_geom_type_gpx_compatible %}
-                                <input type="checkbox" data-widget-type="downloadLayergpx" data-ajax-url="{% url 'qdjango-project-layers-data-editing' project.group.slug project.slug object.pk %}" name="download_gpx_{{ object.pk }}" {% if object.download_gpx %}checked="checked"{% endif %}>
-                                {% endif %}
-                            </td>
-                            {% endif %}
+{#                            {% if 'gpkg' in SETTINGS.G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS %}#}
+{#                            <td>#}
+{#                                {% if object.layer_type in type_layer_for_download %}#}
+{#                                <input type="checkbox" data-widget-type="downloadLayergpkg" data-ajax-url="{% url 'qdjango-project-layers-data-editing' project.group.slug project.slug object.pk %}" name="download_gpkg_{{ object.pk }}" {% if object.download_gpkg %}checked="checked"{% endif %}>#}
+{#                                {% endif %}#}
+{#                            </td>#}
+{#                            {% endif %}#}
+{#                            {% if 'xls' in SETTINGS.G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS %}#}
+{#                            <td>#}
+{#                                {% if object.layer_type in type_layer_for_download %}#}
+{#                                <input type="checkbox" data-widget-type="downloadLayerxls" data-ajax-url="{% url 'qdjango-project-layers-data-editing' project.group.slug project.slug object.pk %}" name="download_xls_{{ object.pk }}" {% if object.download_xls %}checked="checked"{% endif %}>#}
+{#                                {% endif %}#}
+{#                            </td>#}
+{#                            {% endif %}#}
+{#                            {% if 'csv' in SETTINGS.G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS%}#}
+{#                            <td>#}
+{#                                {% if object.layer_type in type_layer_for_download %}#}
+{#                                <input type="checkbox" data-widget-type="downloadLayercsv" data-ajax-url="{% url 'qdjango-project-layers-data-editing' project.group.slug project.slug object.pk %}" name="download_csv_{{ object.pk }}" {% if object.download_csv %}checked="checked"{% endif %}>#}
+{#                                {% endif %}#}
+{#                            </td>#}
+{#                            {% endif %}#}
+{#                            {% if 'gpx' in SETTINGS.G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS%}#}
+{#                            <td>#}
+{#                                {% if object.layer_type in type_layer_for_download and object|is_geom_type_gpx_compatible %}#}
+{#                                <input type="checkbox" data-widget-type="downloadLayergpx" data-ajax-url="{% url 'qdjango-project-layers-data-editing' project.group.slug project.slug object.pk %}" name="download_gpx_{{ object.pk }}" {% if object.download_gpx %}checked="checked"{% endif %}>#}
+{#                                {% endif %}#}
+{#                            </td>#}
+{#                            {% endif %}#}
                             {% endif %}
 
                         </tr>

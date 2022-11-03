@@ -153,8 +153,9 @@ class ActiveEditingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3W
         viewers = get_viewers_for_object(self.layer, self.request.user, 'change_layer', with_anonymous=with_anonymous)
 
         editor_pk = self.layer.project.editor.pk if self.layer.project.editor else None
+        editor2_pk = self.layer.project.editor2.pk if self.layer.project.editor2 else None
         self.initial_viewer_users = kwargs['initial']['viewer_users'] = [int(o.id) for o in viewers
-                                                                         if o.id != editor_pk]
+                                                                         if o.id not in (editor_pk, editor2_pk)]
 
         self.initial_atomic_capabilitites['user']['change_layer'] = self.initial_viewer_users
 
@@ -164,7 +165,7 @@ class ActiveEditingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3W
         self.initial_atomic_capabilitites['group']['change_layer'] = self.initial_viewer_user_groups
 
         # Get atomic editing capabilities for users and user_groups form data
-        self.get_initial_atomic_capabilitites(with_anonymous, editor_pk)
+        self.get_initial_atomic_capabilitites(with_anonymous, editor_pk, editor2_pk)
         if 'data' in kwargs:
             self.get_atomic_capabilities(kwargs['data'])
 
@@ -178,13 +179,13 @@ class ActiveEditingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3W
 
         return context
 
-    def get_initial_atomic_capabilitites(self, with_anonymous, editor_pk):
+    def get_initial_atomic_capabilitites(self, with_anonymous, editor_pk, editor2_pk):
         """Set initial users and user_groups atomic capabilities"""
 
         for ap in EDITING_ATOMIC_PERMISSIONS:
             viewers = get_viewers_for_object(self.layer, self.request.user, ap, with_anonymous=with_anonymous)
             self.initial_atomic_capabilitites['user'][ap] = [int(o.id) for o in viewers
-                                                                             if o.id != editor_pk]
+                                                                             if o.id not in (editor_pk, editor2_pk)]
             group_viewers = get_user_groups_for_object(self.layer, self.request.user, ap, 'viewer')
             self.initial_atomic_capabilitites['group'][ap] = [o.id for o in group_viewers]
 

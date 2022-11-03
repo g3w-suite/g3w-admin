@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-25 13:53+0000\n"
+"POT-Creation-Date: 2022-10-27 09:22+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: admin.py:75 models/projects.py:275 models/projects.py:497
+#: admin.py:75 models/projects.py:276 models/projects.py:498
 #: templates/qdjango/layers_list.html:73
 msgid "Project"
 msgstr "Progetto"
@@ -214,7 +214,7 @@ msgstr "Relazioni del layer"
 msgid "Field \"{}\" is not available in layer {}."
 msgstr "Campo \"{}\" non è disponibile nel livello {}."
 
-#: models/constraints.py:45 models/projects.py:484 models/projects.py:980
+#: models/constraints.py:45 models/projects.py:485 models/projects.py:981
 #: models/qgisauth.py:98 templates/qdjango/ajax/layer_detail.html:12
 #: templates/qdjango/ajax/layer_widgets.html:9
 #: templates/qdjango/layers_list.html:116
@@ -222,7 +222,7 @@ msgid "Name"
 msgstr "Nome"
 
 #: models/constraints.py:46 models/geoconstraints.py:54 models/projects.py:182
-#: models/projects.py:490 templates/qdjango/ajax/project_detail.html:164
+#: models/projects.py:491 templates/qdjango/ajax/project_detail.html:164
 #: templates/qdjango/ajax/project_detail.html:210
 msgid "Description"
 msgstr "Descrizione"
@@ -364,7 +364,7 @@ msgstr "Singola"
 msgid "Multiple"
 msgstr "Multipla"
 
-#: models/projects.py:150 models/projects.py:872
+#: models/projects.py:150 models/projects.py:873
 #: templates/qdjango/project_form.html:49
 #: templates/qdjango/project_form.html:51
 #: templates/qdjango/project_list.html:48
@@ -373,24 +373,22 @@ msgid "Layers"
 msgstr "Livelli"
 
 #: models/projects.py:151
-#, fuzzy
 #| msgid "Base Layer"
 msgid "Base layers"
 msgstr "Layer di base"
 
 #: models/projects.py:152
-#, fuzzy
 #| msgid "No legend"
 msgid "Legend"
-msgstr "No legenda"
+msgstr "Legenda"
 
 #: models/projects.py:156 models/projects.py:161
 msgid "Collapsed"
-msgstr ""
+msgstr "Collassato"
 
 #: models/projects.py:157 models/projects.py:162
 msgid "Not collapsed"
-msgstr ""
+msgstr "Non collassato"
 
 #: models/projects.py:166
 msgid "In a separate TAB"
@@ -404,7 +402,7 @@ msgstr "Nei livelli TOC"
 msgid "QGIS project file"
 msgstr "File progetto QGIS"
 
-#: models/projects.py:179 models/projects.py:485
+#: models/projects.py:179 models/projects.py:486
 #: templates/qdjango/ajax/layer_detail.html:8
 msgid "Title"
 msgstr "Titolo"
@@ -413,11 +411,11 @@ msgstr "Titolo"
 msgid "Public title"
 msgstr "Titolo pubblico"
 
-#: models/projects.py:184 models/projects.py:492 models/projects.py:985
+#: models/projects.py:184 models/projects.py:493 models/projects.py:986
 msgid "Slug"
 msgstr "Slug"
 
-#: models/projects.py:186 models/projects.py:494
+#: models/projects.py:186 models/projects.py:495
 msgid "Is active"
 msgstr "Attivo"
 
@@ -449,7 +447,7 @@ msgstr "Albero dei layer"
 msgid "Base Layer"
 msgstr "Layer di base"
 
-#: models/projects.py:212 models/projects.py:550
+#: models/projects.py:212 models/projects.py:551
 msgid "Layer relations"
 msgstr "Relazioni del layer"
 
@@ -483,39 +481,68 @@ msgstr "Tipo di controllo per le query per poligono"
 msgid "Context base legend"
 msgstr "Legenda di base del contesto"
 
-#: models/projects.py:239
+#: models/projects.py:237
+msgid "Show only the symbols for the features falling into the requested area"
+msgstr "Mostra solo i simboli degli elementi geometrici che ricadono nell'area richiesta"
+
+#: models/projects.py:240
 msgid "Tab's TOC active as default"
 msgstr "TOC della scheda attivo come predefinito"
 
-#: models/projects.py:242
+#: models/projects.py:241
+msgid "Set tab's TOC open by default on init client"
+msgstr "Imposta la modalità di default di aperturadella TOC"
+
+#: models/projects.py:243
 msgid "Tab's TOC layer initial status"
-msgstr ""
+msgstr "Stato iniziale dello strato nella TOC"
 
-#: models/projects.py:248
+#: models/projects.py:246
+msgid ""
+"Set tab's TOC layers initials state: 'Collapsed (close)'or 'Not collapsed "
+"(open)'"
+msgstr "Imposta lo stato iniziale degli strati nella TOC: 'Collassato(chiuso)' o 'Non collassato'(aperto)"
+
+#: models/projects.py:249
 msgid "Map themes list initial status"
-msgstr ""
+msgstr "Stato iniziale della lista dei Temi di mappa"
 
-#: models/projects.py:254
+#: models/projects.py:252
+msgid ""
+"Set map themes list initials state: 'Collapsed (close)'or 'Not collapsed "
+"(open)'"
+msgstr "Imposta lo stato iniziale della lista dei tempi di mappa: 'Collassato(chiuso)' o 'Non collassato'(aperto)"
+
+#: models/projects.py:255
 msgid "Legend position rendering"
 msgstr "Rendering della posizione della legenda"
 
-#: models/projects.py:257
+#: models/projects.py:256
+#| msgid "Legend position rendering"
+msgid "Set legend position rendering"
+msgstr "Rendering della posizione della legenda"
+
+#: models/projects.py:258
 msgid "Automatic zoom to query result features"
 msgstr "Zoom automatico per interrogare le funzioni dei risultati"
 
-#: models/projects.py:260
-#, fuzzy
+#: models/projects.py:259
+#| msgid "Automatic zoom on query result features for only one layer"
+msgid "Automatic zoom on query result features for only one layer"
+msgstr "Zoom automatico sugli elementi di un risultato di una interrogazione per un solo strato"
+
+#: models/projects.py:261
 #| msgid "Projects"
 msgid "Project layouts"
 msgstr "Progetti"
 
-#: models/projects.py:262
+#: models/projects.py:263
 msgid "User QGIS project map start extent as webgis init extent"
 msgstr ""
 "L'estensione della mappa del progetto QGIS dell'utente inizia come "
 "estensione init di webgis"
 
-#: models/projects.py:265
+#: models/projects.py:266
 msgid ""
 "The project has been modified by the G3W-Suite application after it was "
 "uploaded."
@@ -523,7 +550,7 @@ msgstr ""
 "Il progetto è stato modificato dall'applicazione G3W-Suite dopo che "
 "eracaricato."
 
-#: models/projects.py:268
+#: models/projects.py:269
 msgid ""
 "Mutex to lock the project when it is being written by the G3W-Suite "
 "application. This field is used internally by the suite through a context "
@@ -533,236 +560,236 @@ msgstr ""
 "Suiteapplicazione. Questo campo viene utilizzato internamente dalla suite "
 "tramite un contesto manager"
 
-#: models/projects.py:271
+#: models/projects.py:272
 msgid "Fields to se order"
 msgstr "Campi in cui ordinare"
 
-#: models/projects.py:276 templates/qdjango/search/project.html:8
+#: models/projects.py:277 templates/qdjango/search/project.html:8
 msgid "Projects"
 msgstr "Progetti"
 
-#: models/projects.py:464
+#: models/projects.py:465
 msgid "Postgres"
 msgstr ""
 
-#: models/projects.py:465
+#: models/projects.py:466
 msgid "SpatiaLite"
 msgstr ""
 
-#: models/projects.py:466
+#: models/projects.py:467
 msgid "Raster"
 msgstr ""
 
-#: models/projects.py:467
+#: models/projects.py:468
 msgid "WFS"
 msgstr ""
 
-#: models/projects.py:468
+#: models/projects.py:469
 msgid "WMS"
 msgstr ""
 
-#: models/projects.py:469
+#: models/projects.py:470
 msgid "OGR"
 msgstr ""
 
-#: models/projects.py:470
+#: models/projects.py:471
 msgid "GDAL"
 msgstr ""
 
-#: models/projects.py:471
+#: models/projects.py:472
 msgid "CSV"
 msgstr ""
 
-#: models/projects.py:472
+#: models/projects.py:473
 msgid "ArcGisMapServer"
 msgstr ""
 
-#: models/projects.py:473
+#: models/projects.py:474
 msgid "ArcGisFeatureServer"
 msgstr ""
 
-#: models/projects.py:474
+#: models/projects.py:475
 msgid "MSSQL"
 msgstr ""
 
-#: models/projects.py:475
+#: models/projects.py:476
 msgid "VirtualLayer"
 msgstr ""
 
-#: models/projects.py:476
+#: models/projects.py:477
 msgid "Oracle"
 msgstr ""
 
-#: models/projects.py:477 models/projects.py:479
+#: models/projects.py:478 models/projects.py:480
 msgid "Vector Tile"
 msgstr ""
 
-#: models/projects.py:478
+#: models/projects.py:479
 msgid "WCS"
 msgstr ""
 
-#: models/projects.py:480
+#: models/projects.py:481
 #, fuzzy
 #| msgid "Base Layer"
 msgid "Mesh layer"
 msgstr "Layer di base"
 
-#: models/projects.py:487
+#: models/projects.py:488
 msgid "Original Name"
 msgstr "Nome originale"
 
-#: models/projects.py:489
+#: models/projects.py:490
 #, fuzzy
 #| msgid "Qgis Layer Porject ID"
 msgid "Qgis Layer Project ID"
 msgstr "ID Layer progetto QGIS"
 
-#: models/projects.py:500
+#: models/projects.py:501
 msgid "Parent Project for Embedded layers"
 msgstr "Progetto padre per livelli incorporati"
 
-#: models/projects.py:504 models/projects.py:983
+#: models/projects.py:505 models/projects.py:984
 #: templates/qdjango/ajax/layer_widgets.html:10
 #: templates/qdjango/ajax/project_detail.html:218
 #: templates/qdjango/layers_list.html:117
 msgid "Type"
 msgstr "Tipo"
 
-#: models/projects.py:505
+#: models/projects.py:506
 msgid "Datasource"
 msgstr "Sorgente dati"
 
-#: models/projects.py:506
+#: models/projects.py:507
 msgid "Is visible"
 msgstr "Visibile"
 
-#: models/projects.py:507
+#: models/projects.py:508
 msgid "Order"
 msgstr "Ordine"
 
-#: models/projects.py:510
+#: models/projects.py:511
 msgid "Associated data file"
 msgstr "File dati associato"
 
-#: models/projects.py:519
+#: models/projects.py:520
 msgid "Database columns"
 msgstr "Colonne databse"
 
-#: models/projects.py:523
+#: models/projects.py:524
 msgid "Layer Min Scale visibility"
 msgstr "Scala minima di visibilità"
 
-#: models/projects.py:525
+#: models/projects.py:526
 msgid "Layer Max Scale visibility"
 msgstr "Scala massima di visibilità"
 
-#: models/projects.py:527
+#: models/projects.py:528
 msgid "Layer scale based visibility"
 msgstr "Scala di visibilità del layer"
 
-#: models/projects.py:530
+#: models/projects.py:531
 msgid "Layer SRID"
 msgstr ""
 
-#: models/projects.py:534
+#: models/projects.py:535
 msgid "Bitwise capabilities"
 msgstr "Capacità bit a bit"
 
-#: models/projects.py:536
+#: models/projects.py:537
 msgid "Bitwise edit options"
 msgstr "Opzioni modifica bit a bit"
 
-#: models/projects.py:538
+#: models/projects.py:539
 msgid "Bitwise wfs options"
 msgstr "Opzioni wfs bit a bit"
 
-#: models/projects.py:542
+#: models/projects.py:543
 msgid "Geometry type"
 msgstr "Tipo di geometria"
 
-#: models/projects.py:545
+#: models/projects.py:546
 msgid "Attributes excluded from wms"
 msgstr "Attributi da esludere dal WMS"
 
-#: models/projects.py:547
+#: models/projects.py:548
 msgid "Attributes excluded from wfs"
 msgstr "Attributi dsa escludere dal WFS"
 
-#: models/projects.py:554
+#: models/projects.py:555
 msgid "Columns layer widgets"
 msgstr "Colonne del layer con widgets"
 
-#: models/projects.py:558 templates/qdjango/layers_list.html:124
+#: models/projects.py:559 templates/qdjango/layers_list.html:124
 msgid "Not show attributes table"
 msgstr "Tabella attributi non visibile"
 
-#: models/projects.py:562
+#: models/projects.py:563
 msgid "Exclude to legend"
 msgstr "Escludi dalla legenda"
 
-#: models/projects.py:566
+#: models/projects.py:567
 msgid "Form editor layout"
 msgstr "Layout dell'editor di moduli"
 
-#: models/projects.py:568
+#: models/projects.py:569
 #, fuzzy
 #| msgid "Layers tree structure"
 msgid "Editor form structure"
 msgstr "Albero dei layer"
 
-#: models/projects.py:571
+#: models/projects.py:572
 msgid "Download data"
 msgstr "Scarica in formato shp"
 
-#: models/projects.py:573
+#: models/projects.py:574
 #, fuzzy
 #| msgid "Download"
 msgid "Download data in xls format"
 msgstr "Scarica in formato xls"
 
-#: models/projects.py:575
+#: models/projects.py:576
 msgid "Download data in gpx format"
 msgstr "Scarica in formato gpx"
 
-#: models/projects.py:577
+#: models/projects.py:578
 #, fuzzy
 #| msgid "Download"
 msgid "Download data in csv format"
 msgstr "Scarica in formato xls"
 
-#: models/projects.py:579
+#: models/projects.py:580
 msgid "Download data in gpkg format"
 msgstr "Scarica in formato gpkg"
 
-#: models/projects.py:582
+#: models/projects.py:583
 #, fuzzy
 #| msgid "Layer relations"
 msgid "Layer extension"
 msgstr "Relazioni del layer"
 
-#: models/projects.py:586
+#: models/projects.py:587
 msgid "Get WMS/WMS externally"
 msgstr "Ottieni WMS/WMS esternamente"
 
-#: models/projects.py:590
+#: models/projects.py:591
 msgid "Temporal properties"
 msgstr "Prorietà temporali"
 
-#: models/projects.py:593
+#: models/projects.py:594
 #, fuzzy
 #| msgid "Layer relations"
 msgid "Has column ACL constraints"
 msgstr "Relazioni del layer"
 
-#: models/projects.py:871 templates/qdjango/ajax/project_detail.html:255
+#: models/projects.py:872 templates/qdjango/ajax/project_detail.html:255
 msgid "Layer"
 msgstr ""
 
-#: models/projects.py:981
+#: models/projects.py:982
 msgid "Body"
 msgstr "Corpo"
 
-#: models/projects.py:982
+#: models/projects.py:983
 msgid "datasource"
 msgstr "Sorgente dati"
 
