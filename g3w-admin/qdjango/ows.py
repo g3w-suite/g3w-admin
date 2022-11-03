@@ -125,7 +125,7 @@ class OWSRequestHandler(OWSRequestHandlerBase):
 
         # Loop through the layers and make them visible
         for layer_name in qgs_request.queryParameter('LAYERS').split(','):
-            layer_name = urllib.parse.unquote(layer_name)
+            layer_name = urllib.parse.unquote(layer_name.replace('+', ' '))
             layer = None
             if use_ids:
                 layer = qgs_project.mapLayer(layer_name)

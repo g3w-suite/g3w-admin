@@ -21,11 +21,18 @@ class TestAccessControlFilter(QgsAccessControlFilter):
 
     def __init__(self, server_iface):
         super().__init__(server_iface)
+        self.server_iface = server_iface
 
     def layerPermissions(self, layer):
         """Return the layer rights canRead, canInsert, canUpdate, canDelete """
 
-        rh = self.serverInterface().requestHandler()
+        rh = self.server_iface.requestHandler()
+
+        if not rh:
+            logger.critical(
+                'TestAccessControlFilter plugin cannot be run in multithreading mode, skipping.')
+            return
+
         if rh.parameterMap().get("TEST_ACCESS_CONTROL", "") == layer.name():
             permissions = QgsAccessControlFilter.LayerPermissions()
             permissions.canRead = False
