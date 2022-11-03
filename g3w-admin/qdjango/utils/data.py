@@ -721,12 +721,11 @@ class QgisProjectLayer(XmlData):
             #     }
 
             if isinstance(tp, QgsMeshLayerTemporalProperties):
-                tc = self.qgs_layer.dataProvider().temporalCapabilities()
                 toret = {
                     'mode': 'MeshTemporalRangeFromDataProvider',
                     'range': [
-                        tc.timeExtent().begin().isoformat(),
-                        tc.timeExtent().end().isoformat()
+                        tp.timeExtent().begin().isoformat(),
+                        tp.timeExtent().end().isoformat()
                     ],
                 }
 
