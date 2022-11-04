@@ -729,14 +729,16 @@ class QgisProjectLayer(XmlData):
                     ],
                 }
 
-            elif tp.mode() == Qgis.VectorTemporalMode.FeatureDateTimeInstantFromField:
+            elif isinstance(tp.mode(), Qgis.VectorTemporalMode) and \
+                    tp.mode() == Qgis.VectorTemporalMode.FeatureDateTimeInstantFromField:
                 toret = {
                     'mode': 'FeatureDateTimeInstantFromField',
                     'field': tp.startField(),
                     'units': QgsUnitTypes.encodeUnit(tp.durationUnits()),
                     'duration': tp.fixedDuration()
                 }
-            elif tp.mode() == Qgis.RasterTemporalMode.TemporalRangeFromDataProvider:
+            elif isinstance(tp.mode(), Qgis.RasterTemporalMode) and \
+                    tp.mode() == Qgis.RasterTemporalMode.TemporalRangeFromDataProvider:
 
                 tc = self.qgs_layer.dataProvider().temporalCapabilities()
                 toret = {
