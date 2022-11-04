@@ -14,6 +14,10 @@ __copyright__ = 'Copyright 2020, Gis3W'
 from qgis.server import QgsAccessControlFilter
 from qdjango.apps import QGS_SERVER
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 class TestAccessControlFilter(QgsAccessControlFilter):
     """A filter that denies the layer == TEST_ACCESS_CONTROL
@@ -31,7 +35,7 @@ class TestAccessControlFilter(QgsAccessControlFilter):
         if not rh:
             logger.critical(
                 'TestAccessControlFilter plugin cannot be run in multithreading mode, skipping.')
-            return
+            return super().layerPermissions(layer)
 
         if rh.parameterMap().get("TEST_ACCESS_CONTROL", "") == layer.name():
             permissions = QgsAccessControlFilter.LayerPermissions()

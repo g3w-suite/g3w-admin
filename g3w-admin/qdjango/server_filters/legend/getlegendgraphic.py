@@ -56,18 +56,23 @@ class GetLegendGraphicFilter(QgsServerFilter):
                     categories = [{'label': item.label(), 'ruleKey': item.ruleKey(), 'checked': renderer.legendSymbolItemChecked(
                         item.ruleKey())} for item in renderer.legendSymbolItems()]
                     symbols = json_data['nodes'][0]['symbols']
-                    if len(categories) == len(symbols):
-                        new_symbols = []
-                        for idx in range(len(symbols)):
-                            symbol = symbols[idx]
+                    new_symbols = []
+
+                    for idx in range(len(symbols)):
+                        symbol = symbols[idx]
+                        try:
                             category = categories[idx]
                             symbol['ruleKey'] = category['ruleKey']
                             symbol['checked'] = category['checked']
-                            new_symbols.append(symbol)
-                        json_data['nodes'][0]['symbols'] = new_symbols
-                        handler.clearBody()
-                        handler.appendBody(json.dumps(
-                            json_data).encode('utf8'))
+                        except:
+                            pass
+
+                        new_symbols.append(symbol)
+
+                    json_data['nodes'][0]['symbols'] = new_symbols
+                    handler.clearBody()
+                    handler.appendBody(json.dumps(
+                        json_data).encode('utf8'))
             except Exception as ex:
                 logger.warning(
                     'Error getting layer "{}" when setting up legend graphic for json output when configuring OWS call: {}'.format(layer_id, ex))
