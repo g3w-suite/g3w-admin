@@ -249,6 +249,8 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                         # Loop again for set expressions value:
                         # For update store expression result to use later into update condition
                         field_expresion_values = {}
+                        field_datetime_values = {}
+                        field_datetime_field_formats = {}
                         for qgis_field in qgis_layer.fields():
 
                             field_idx = qgis_layer.fields().indexFromName(qgis_field.name())
@@ -282,11 +284,11 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                                 feature.setAttribute(qgis_field.name(),
                                                      qgis_layer.dataProvider().defaultValueClause(field_idx))
 
-                            elif qgis_field.typeName() in ('date', 'datetime', 'time'):
+                            elif qgis_field.typeName().lower() in ('date', 'datetime', 'time'):
 
-                                if qgis_field.typeName() == 'date':
+                                if qgis_field.typeName().lower() == 'date':
                                     qtype = QDate
-                                elif qgis_field.typeName() == 'datetime':
+                                elif qgis_field.typeName().lower() == 'datetime':
                                     qtype = QDateTime
                                 else:
                                     qtype = QTime
@@ -299,8 +301,8 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                                         value = qtype.fromString(geojson_feature['properties'][qgis_field.name()],
                                                                  options['field_format'])
                                         feature.setAttribute(qgis_field.name(), value)
-
-
+                                        field_datetime_values[qgis_field.name()] = value
+                                        field_datetime_field_formats[qgis_field.name()] = options['field_format']
 
 
 
@@ -338,6 +340,8 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                                 if name in qgis_layer.dataProvider().fieldNameMap():
                                     if name in field_expresion_values:
                                         value = field_expresion_values[name]
+                                    if name in field_datetime_values:
+                                        value = field_datetime_values[name]
                                     attr_map[qgis_layer.dataProvider().fieldNameMap()[name]] = value
 
                             if has_transactions:
@@ -372,6 +376,16 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                             fnames = [f.name() for f in feature.fields()]
                             jfeature = json.loads(ex.exportFeature(feature, dict(zip(fnames, feature.attributes()))))
 
+                            # Fore date and datetime and time fields:
+                            if field_datetime_values:
+                                for fname, fvalue in jfeature['properties'].items():
+                                    try:
+                                        jfeature['properties'][fname] = \
+                                            field_datetime_values[fname].toString(field_datetime_field_formats[fname])
+                                    except:
+                                        pass
+
+
                             to_res.update({
                                 'clientid': geojson_feature['id'],
                                 # This might be the internal QGIS feature id (< 0)
@@ -382,7 +396,7 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                             # lock news:
                             to_res_lock = metadata_layer.lock.modelLock2dict(
                                 metadata_layer.lock.lockFeature(
-                                    server_fid(feature, metadata_layer.qgis_layer.dataProvider()), save=True)
+                                    str(server_fid(feature, metadata_layer.qgis_layer.dataProvider())), save=True)
                             )
 
                         if bool(to_res):
