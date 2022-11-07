@@ -222,28 +222,25 @@ python manage.py sitetree_resync_apps
 
 Can be installed the follow module accessories.
 
-## Caching module
-Module to cache on disk layers WMS map. To install and usd please read his [caching/README.md](caching/README.md)
+## Frontend module
+G3W-ADMIN fronted portal for G3W-SUITE. To install/active and use please read his [caching/README.md](g3w-admin/caching/README.md)
 
 ## Filemanager module
-Module to manage on disk geo data files. To install and use please read his [filemanager/README.md](filemanager/README.md)
+Module to manage on disk geo data files. To install and use please read his [filemanager/README.md](g3w-admin/filemanager/README.md)
 
 ## Continuous integration testing
 
 CI tests are automatically run on CircleCI for the `dev` branch only.
 
-The Docker compose configuration used in the CI tests is available at [docker-compose.yml](docker-compose.yml).
+The Docker compose configuration used in the CI tests is available at [docker-compose.322.yml](docker-compose.322.yml),
+for current QGIS LTR (3.22).
 
-Another configuration for running local tests is provided with [docker-compose-local.yml](docker-compose-local.yml)
- and can also be used for local testing by running:
+The dependency image is built from the [Dockerfile.322.deps](ci_scripts/Dockerfile.322.deps).
 
-```bash
-docker-compose -f docker-compose-local.yml up
-```
+Th current docker compose and dockerfile are for the latest QGIS version:
+ - [docker-compose.yml](docker-compose.yml)
+ - [Dockerfile.deps](ci_scripts/Dockerfile.deps)
 
-The testing image is built from the dependency image and it will run all install and build steps from the local repository.
-
-The dependency image is built from the [Dockerfile.deps](ci_scripts/Dockerfile).
 
 ### Contributors
 * Walter Lorenzetti - Gis3W ([@wlorenzetti](https://github.com/wlorenzetti))
