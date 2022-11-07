@@ -254,7 +254,7 @@ Th current docker compose and dockerfile are for the latest QGIS version:
 * Alessandro Pasotti - QCooperative ([@elpaso](https://github.com/elpaso))
 * Luigi Pirelli - QCooperative ([@luipir](https://github.com/luipir))
 * Mazano - Kartoza ([@NyakudyaA](https://github.com/NyakudyaA)) (Dockerization refactoring)
-* Matteo
+* Matteo Tosi - Gis3W ([@Raruto](https://github.com/Raruto))
 
 ## Translation
 * Tudor Barascu - ([@tudorbarascu](https://github.com/tudorbarascu)) - Romanian
