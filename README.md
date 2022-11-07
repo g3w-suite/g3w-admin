@@ -11,6 +11,11 @@ G3W-SUITE works with **QGIS-Server LTR versions**.
 ![Webgis GUI](docs/images/install/en/client.jpg
 )
 
+### Documentation
+
+Documentation about install/deploy and use is available [here](https://g3w-suite.readthedocs.io/en/latest/).
+
+
 ### Version
 
 At the moment is not used a classic versioning system for the suite, these are the main branches.
@@ -249,6 +254,7 @@ Th current docker compose and dockerfile are for the latest QGIS version:
 * Alessandro Pasotti - QCooperative ([@elpaso](https://github.com/elpaso))
 * Luigi Pirelli - QCooperative ([@luipir](https://github.com/luipir))
 * Mazano - Kartoza ([@NyakudyaA](https://github.com/NyakudyaA)) (Dockerization refactoring)
+* Matteo
 
 ## Translation
 * Tudor Barascu - ([@tudorbarascu](https://github.com/tudorbarascu)) - Romanian
