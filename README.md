@@ -194,7 +194,7 @@ ln -s "../../../node_modules/@bower_components" bower_components
 Possibily within a virtual env:
 
 ```bash
-pip install -r requirements.tx
+pip install -r requirements.txt
 ```
 
 ### Django setup
