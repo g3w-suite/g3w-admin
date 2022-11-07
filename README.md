@@ -250,6 +250,7 @@ Th current docker compose and dockerfile are for the latest QGIS version:
 ### Contributors
 * Walter Lorenzetti - Gis3W ([@wlorenzetti](https://github.com/wlorenzetti))
 * Leonardo Lami - Gis3W ([@leolami](https://github.com/leolami/))
+* Giovanni Allegri ([@giohappy](https://github.com/giohappy))
 * Francesco Boccacci - Gis3W ([@volterra79](https://github.com/volterra79))
 * Alessandro Pasotti - QCooperative ([@elpaso](https://github.com/elpaso))
 * Luigi Pirelli - QCooperative ([@luipir](https://github.com/luipir))
