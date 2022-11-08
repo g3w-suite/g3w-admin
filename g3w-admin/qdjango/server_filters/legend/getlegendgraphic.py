@@ -45,9 +45,18 @@ class GetLegendGraphicFilter(QgsServerFilter):
             qgs_project = QGS_SERVER.project.qgis_project
             use_ids = QgsServerProjectUtils.wmsUseLayerIds(qgs_project)
             layer_id = params['LAYER']
+
+            style = params['STYLES'] if 'STYLES' in params else ''
+            current_style = ''
+            layer = None
+
             try:
                 layer = qgs_project.mapLayer(
                     layer_id) if use_ids else qgs_project.mapLayersByName(layer_id)[0]
+
+                current_style = layer.styleManager().currentStyle()
+                if style:
+                    layer.styleManager().setCurrentStyle(style)
 
                 renderer = layer.renderer()
                 if renderer.type() in ("categorizedSymbol", "ruleBased", "graduatedSymbol"):
@@ -76,6 +85,10 @@ class GetLegendGraphicFilter(QgsServerFilter):
             except Exception as ex:
                 logger.warning(
                     'Error getting layer "{}" when setting up legend graphic for json output when configuring OWS call: {}'.format(layer_id, ex))
+            finally:
+                if layer and style and  current_style and style != current_style:
+                    layer.styleManager().setCurrentStyle(current_style)
+
 
 
 legend_graphic_filter = GetLegendGraphicFilter(QGS_SERVER.serverInterface())
