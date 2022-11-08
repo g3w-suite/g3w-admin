@@ -1,0 +1,40 @@
+changelog:
+  exclude:
+    labels:
+      - ignore-for-release
+    authors:
+      - octocat
+  categories:
+    - title: 🚀 New Features
+      labels:
+        - feature
+    - title: 🐞 Bug fixed
+      labels:
+        - bug
+    - title: ✨ Improvements
+      labels:
+        - ux
+    - title: 📝 Documentation
+      labels:
+        - docs
+    - title: 👨‍🚀 Translations
+      labels:
+        - i18n
+    - title: 🐙 Github
+      labels:
+        - github
+    - title: 🧪 Tests
+      labels:
+        - tests
+    - title: 🛠️ Config
+      labels:
+        - config
+    - title: ♻️ API changes
+      labels:
+        - refactoring
+    - title: ⚠️ Breaking changes
+      labels:
+        - breaking
+    - title: ⚓ Other changes
+      labels:
+        - "*"
