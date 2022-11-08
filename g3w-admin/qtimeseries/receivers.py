@@ -20,6 +20,7 @@ from core.signals import \
 from core.utils.qgisapi import get_qgis_layer
 
 from qgis.PyQt.QtCore import QDate, QDateTime, Qt
+from datetime import datetime
 import json
 
 
@@ -80,12 +81,23 @@ def add_qtimeseries(sender, **kwargs):
             data['values']['qtimeseries']['end_date'] = qgs_maplayer.maximumValue(findex)
             if isinstance(data['values']['qtimeseries']['start_date'], QDate) or isinstance(data['values']['qtimeseries']['start_date'],
                                                                                  QDateTime):
+                isdate = isinstance(data['values']['qtimeseries']['start_date'], QDate)
                 if not hasattr(QDate, 'isoformat'):
                     QDate.isoformat = lambda d: d.toString(Qt.ISODate)
                 if not hasattr(QDateTime, 'isoformat'):
                     QDateTime.isoformat = lambda d: d.toString(Qt.ISODateWithMs)
                 data['values']['qtimeseries']['start_date'] = data['values']['qtimeseries']['start_date'].isoformat()
                 data['values']['qtimeseries']['end_date'] = data['values']['qtimeseries']['end_date'].isoformat()
+
+                # Rebuild as iso format date with minutes and seconds
+                if isdate:
+                    data['values']['qtimeseries']['start_date'] = datetime.fromisoformat(
+                        data['values']['qtimeseries']['start_date']
+                    ).isoformat()
+
+                    data['values']['qtimeseries']['end_date'] = datetime.fromisoformat(
+                        data['values']['qtimeseries']['end_date']
+                    ).isoformat()
 
         if data['values']['qtimeseries'] and data['values']['qtimeseries']['mode'] in ('RasterTemporalRangeFromDataProvider',
                                                                  'MeshTemporalRangeFromDataProvider'):
