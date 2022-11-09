@@ -1,107 +1,96 @@
 ![G3W-Suite CI Tests](https://github.com/g3w-suite/g3w-admin/actions/workflows/test_runner.yml/badge.svg)
 
-# G3W-SUITE
+# G3W-ADMIN
 
-G3W-ADMIN admin server module for G3W-SUITE. (Django 2.2 and Python 3.6, current branch)
+G3W-SUITE admin server based on Python - Django (v2.2) and QGIS Server LTR (v3.22)
 
-G3W-SUITE works with **QGIS-Server LTR versions**.
+![Admin GUI](https://user-images.githubusercontent.com/9614886/189155796-6feff629-b500-4e38-b7c2-d98b53ae7564.png)
 
-![Admin GUI](docs/images/install/en/admin.jpg)
+---
 
-![Webgis GUI](docs/images/install/en/client.jpg
-)
+## Versions and Branches
 
-### Documentation
-
-Documentation about install/deploy and use is available [here](https://g3w-suite.readthedocs.io/en/latest/).
-
-
-### Version
-
-At the moment is not used a classic versioning system for the suite, these are the main branches.
+Software releases follow theese main branches as described in the compatibility table:
 
 | Branch     | Python version | Django version | Client version  | QGIS API | First release | Status         |
 |------------|----------------|----------------|-----------------|----------|---------------|----------------|
-| dev        | 3.10           | 2.2            | dev             | ✔️       | Unreleased    | ⚠️ Unstable   |
-| v.3.4.x    | 3.8            | 2.2            | 3.4.x           | ✔️       | Mar 2022      | 🪲 Bug fixing  |
-| v.3.3.x    | 3.6            | 2.2            | 3.3.x           | ✔️       | Sep 2021      | 🪲 Bug fixing  | 
-| v.3.2.x    | 3.6            | 2.2            | 3.2.x           | ✔️       | Apr 2021      | 🚨 End of Life |
-| v.3.1.x    | 3.6            | 2.2            | 3.1.x           | ✔️       | Nov 2020      | 🚨 End of Life |
-| v.3.0.x    | 3.6            | 2.2            | 3.0.x           | ✔️       | Nov 2020      | 🚨 End of Life |
-| dj22-py3   | 3.6            | 2.2            |                 |          |               | 🚨 End of Life |
-| py2        | 2.7            | 1.11           |                 |          |               | 🚨 End of Life |
+| [dev]      | 3.10           | 2.2            | dev             | ✔️       | Unreleased    | ⚠️ Unstable   |
+| [v.3.4.x]  | 3.8            | 2.2            | 3.4.x           | ✔️       | Mar 2022      | 🪲 Bug fixing  |
+| [v.3.3.x]  | 3.6            | 2.2            | 3.3.x           | ✔️       | Sep 2021      | 🪲 Bug fixing  | 
+| [v.3.2.x]  | 3.6            | 2.2            | 3.2.x           | ✔️       | Apr 2021      | 🚨 End of Life |
+| [v.3.1.x]  | 3.6            | 2.2            | 3.1.x           | ✔️       | Nov 2020      | 🚨 End of Life |
+| [v.3.0.x]  | 3.6            | 2.2            | 3.0.x           | ✔️       | Nov 2020      | 🚨 End of Life |
+| [dj22-py3] | 3.6            | 2.2            |                 |          |               | 🚨 End of Life |
+| [py2]      | 2.7            | 1.11           |                 |          |               | 🚨 End of Life |
 
-The following instructions are for a Ubuntu 18.04 LTS.
+[dev]: https://github.com/g3w-suite/g3w-admin/tree/dev
+[v.3.4.x]: https://github.com/g3w-suite/g3w-admin/tree/v.3.4.x
+[v.3.3.x]: https://github.com/g3w-suite/g3w-admin/tree/v.3.3.x
+[v.3.2.x]: https://github.com/g3w-suite/g3w-admin/tree/v.3.2.x
+[v.3.1.x]: https://github.com/g3w-suite/g3w-admin/tree/v.3.1.x
+[v.3.0.x]: https://github.com/g3w-suite/g3w-admin/tree/v.3.0.x
+[dj22-py3]: https://github.com/g3w-suite/g3w-admin/tree/dj22-py3
+[py2]: https://github.com/g3w-suite/g3w-admin/tree/py2
 
-## Installation of node.js and Yarn
-G3W-ADMIN use javacript package manager [**Yarn**](https://yarnpkg.com/) and [**Node.js**](https://nodejs.org/it/)
+---
 
-```bash
-sudo apt-get install -y nodejs-legacy npm
+## Project setup
+
+### Docker Compose
+
+It's strongly recommended to follow the [**g3w-suite-docker**](https://github.com/g3w-suite/g3w-suite-docker) installation instructions (which already bundles a full blown NGINX + PostgreSQL setup), as such installation method speed up development and deployment and would cause you fewer issues in terms of compatibility and portability in the short and long term.
+
+### Barebone server
+
+If you will opt for the [**raw installation**](https://g3w-suite.readthedocs.io/en/latest/install.html#raw-installation) you will need to configure your own web server in order to run a Django project, some common setups are:
+
+* [Apache + mod_wsgi](https://docs.djangoproject.com/en/2.2/howto/deployment/wsgi/modwsgi/)
+* [Apache](https://httpd.apache.org/) + [mod_proxy](https://httpd.apache.org/docs/2.4/mod/mod_proxy.html) + [Uwsgi](https://uwsgi-docs.readthedocs.io/en/latest/)
+* [Apache](https://httpd.apache.org/) + [mod_proxy](https://httpd.apache.org/docs/2.4/mod/mod_proxy.html) + [Gunicorn](http://gunicorn.org/)
+* [Nginx](https://nginx.org/) + [Uwsgi](https://uwsgi-docs.readthedocs.io/en/latest/)
+* [Nginx](https://nginx.org/) + [Gunicorn](http://gunicorn.org/)
+
+To figure out which to choose, see also: [deploying django](https://docs.djangoproject.com/en/2.2/howto/deployment/)
+
+Then in your development environment:
+
+1. download and install [**Node.js**](https://nodejs.org/en/download/) and [**Yarn**](https://yarnpkg.com/en/docs/install)
+3. get a [**Python**](https://www.python.org/downloads/) version that is compatible with the [table](#versions-and-branches) above
+4. install and activate [**virtualenv**](https://g3w-suite.readthedocs.io/en/latest/install.html#create-virtualenv) on system login
+5. install and activate a [**database**](https://docs.djangoproject.com/en/2.2/ref/databases/) that fits your needs
+6. (optional) install [**Paver**](https://pythonhosted.org/Paver/#installation) for developing locally
+
+After that you can clone this repository:
+
+```sh
+cd /path/to/your/development/workspace
+
+git clone https://github.com/g3w-suite/g3w-admin.git --single-branch --branch dev ./g3w-admin
 ```
 
-for install Yarn follow main installation instructions:
+Create a [**virtualenv**](https://g3w-suite.readthedocs.io/en/latest/install.html#create-virtualenv) from within your g3w-admin local repository:
 
-https://yarnpkg.com/en/docs/install#debian-stable
-
-## Create virtualenv
-
-[**Virtualenv**](https://virtualenv.pypa.io/en/stable/)
-
-The following instructions are for python 3.6
-
-Install python pip
-
-```bash
-sudo apt-get install python3-pip
+```sh
+cd ./g3w-admin
 ```
 
-now we can install virtualenvwrapper
-```bash
-sudo pip3 install virtualenvwrapper
+```sh
+mkvirtualenv --system-site-packages .
 ```
 
-To activate virtuenvwrapper on system login, add follow lines to 'bashrc' config file of your user
-```bash
-nano ~/.bashrc
-....
-export WORKON_HOME=<path_to_virtualenvs_directory>
-source /usr/local/bin/virtualenvwrapper.sh
-```
+Create the following configuration file from the available template:
 
-## Virtualenv creation
-To create a virtualnenv is sufficent call mkvirtualenv commando follow by the identification name for virtualenv (to use QGIS API into a virtualenv only solution is to give access python system site-packages to it using *--system-site-packages* option)
-```bash
-mkvirtualenv --system-site-packages g3wsuite
-```
+- `/g3w-admin/g3w-admin/base/settings/local_settings.py` ← [local_settings_example.py](g3w-admin/base/settings/local_settings_example.py)
 
-## Install G3W-SUITE
+And check that the following parameters are set accordingly:
 
-First step is install dev libraries packages for python module to install with requiriments.txt
+```py
+# /g3w-admin/g3w-admin/base/settings/local_settings.py
 
-```bash
-sudo apt-get install -y \
-    libxml2-dev \
-    libxslt-dev \
-    postgresql-server-dev-all \
-    libgdal-dev \
-    python-dev
-```
-
-
-### Set local_config.py file
-G3W-ADMIN is a Django application, and to work is necessary set a config.py file. To start copy local_settings.example.py and set the databse and other:
-```bash
-cd g3w-admin/g3w-admin/base/settings
-cp local_settings_example.py local_settings.py
-```
-
-set database, media root and session cookies name:
-
-```python
-...
-
-DATABASES = {
+DATASOURCE_PATH     = '<static_path_to_gis_data_source>'
+MEDIA_ROOT          = '<path_to_media_root>'
+SESSION_COOKIE_NAME = '<unique_session_id>'
+DATABASES           = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': '<db_name>',
@@ -111,153 +100,114 @@ DATABASES = {
         'PORT': '<db_port>',
     }
 }
-
-...
-
-DATASOURCE_PATH = '<static_path_to_gis_data_source>'
-
-...
-
-MEDIA_ROOT = '<path_to_media_root>'
-
-...
-
-SESSION_COOKIE_NAME = '<unique_session_id>'
 ```
 
-### With paver commands
+Complete installation process by download all python and javascript dependencies and finalizing the django database setup:
 
-G3W-ADMIN has a series of [paver](http://pythonhosted.org/Paver/) CLI commands to administrate the suite.
-After prepared environment if sufficient invoce paver *install* task
-
-```bash
+```sh
 paver install
 ```
 
-### Run G3W-SUITE
+If you don't want to use Paver, see also: [manual installation steps](https://g3w-suite.readthedocs.io/en/latest/install.html#manual-installation-steps)
 
-To run the application with paver
+---
 
-```bash
+## How to develop
+
+You can start the built-in development server by using the following:
+
+```sh
 paver start
 ```
 
-and for stop
-```bash
+```sh
 paver stop
 ```
 
+If everything went fine, you can now visit your local development server URL to see changes:
 
-G3W-ADMIN is a django application so is possibile run app by standard django manage.py commands
-
-```bash
-./manage.py runserver
+```sh
+http://localhost:8000
 ```
 
-## Deploy G3W-SUITE
+If you don't want to use Paver, see also: [run g3w-suite](https://g3w-suite.readthedocs.io/en/latest/install.html#run-g3w-suite)
 
-As other Django application, G3W-SUITE can be deployed by its wsgi capabilities.
-On the web if simple to find tutorial for deploy a Django application.
+---
 
-The simpler way is to use [Apache2](https://httpd.apache.org/) as server WEB and its [mod_wsgi](https://en.wikipedia.org/wiki/Mod_wsgi) module.
+## Plugins
 
-Alternative solutions are:
+Add-on modules are released according to django's python specifications on [reusable apps](https://docs.djangoproject.com/en/2.2/intro/reusable-apps/).
 
+The following packages are released as core applications:
 
-* [Apache2](https://httpd.apache.org/) + [mod_proxy](https://httpd.apache.org/docs/2.4/mod/mod_proxy.html) + [Uwsgi](https://uwsgi-docs.readthedocs.io/en/latest/)
-* [Apache2](https://httpd.apache.org/) + [mod_proxy](https://httpd.apache.org/docs/2.4/mod/mod_proxy.html) + [Gunicorn](http://gunicorn.org/)
-* [Nginx](https://nginx.org/) + [Uwsgi](https://uwsgi-docs.readthedocs.io/en/latest/)
-* [Nginx](https://nginx.org/) + [Gunicorn](http://gunicorn.org/)
+- [caching](./g3w-admin/caching)
+- [editing](./g3w-admin/editing)
+- [filemanager](./g3w-admin/filemanager)
+- [openrouteservice](./g3w-admin/openrouteservice)
+- [OWS](./g3w-admin/OWS)
+- [qdjango](./g3w-admin/qdjango)
+- [qplotly](./g3w-admin/qplotly)
+- [qtimeseries](./g3w-admin/qtimeseries)
+- [usersmanage](./g3w-admin/usersmanage)
 
+Any additional package must be placed into the [`/g3w-admin/g3w-admin`](./g3w-admin) folder.
 
-## Manual installation steps
+---
 
-The preferred installation is by using the `paver` script as mentioned above, but in case you need to customize the installation process, here are the build and setup steps:
+## Testing
 
-### Build static js code
+Automated tests are performed on both latest QGIS release and current QGIS LTR (v3.22) for any push event involving the [`dev`](https://github.com/g3w-suite/g3w-admin/tree/dev) branch.
 
+The Dockerfile and docker-compose.yml files used to perform these tests are:
 
-```bash
-# Install yarn (requires root):
-curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
-echo "deb https://dl.yarnpkg.com/debian/ stable main" | \
-    tee /etc/apt/sources.list.d/yarn.list
-apt-get update && sudo apt install -y yarn
-# Back to unprivileged user, from the repository directory, run:
-yarn --ignore-engines --ignore-scripts --prod
-nodejs -e "try { require('fs').symlinkSync(require('path').resolve('node_modules/@bower_components'), 'g3w-admin/core/static/bower_components', 'junction') } catch (e) { }"
-```
+- [Dockerfile.deps](ci_scripts/Dockerfile.deps) + [docker-compose.yml](docker-compose.yml) → latest QGIS release
+- [Dockerfile.322.deps](ci_scripts/Dockerfile.322.deps) + [docker-compose.322.yml](docker-compose.322.yml) → current QGIS LTR (v3.22)
 
-Make sure build components are available in static and collected later
-```
-cd g3w-admin/core/static
-ln -s "../../../node_modules/@bower_components" bower_components
-```
+Execution log: [github.com/g3w-suite/g3w-admin/actions](https://github.com/g3w-suite/g3w-admin/actions)
 
-### Install requirements
+More info: [test_runner.yml](./.github/workflows/test_runner.yml) + [build_suite.sh](./ci_scripts/build_suite.sh)
 
-Possibily within a virtual env:
+---
 
-```bash
-pip install -r requirements.txt
-```
+## FAQ
 
-### Django setup
+<details>
 
-```bash
-python manage.py collectstatic --noinput
-python manage.py migrate --noinput
-```
+<summary>1. How can I translate this project?</summary>
 
-Install some fixtures for EPSG and other suite options:
+Translations management is a part of the Django framework, all available translations are located in the [/g3w-admin/locale](./g3w-admin/locale) folder.
 
-```bash
-for FIXTURE in 'BaseLayer.json' 'G3WGeneralDataSuite.json' 'G3WMapControls.json' 'G3WSpatialRefSys.json'; do
-    python manage.py loaddata  core/fixtures/${FIXTURE}
-done
-```
+Depending on the component you want to translate you can start by consulting one of the following:
 
-Sync menu tree items (re-run this command in case you installed optional modules and they are not visible in the admin menu tree):
+- [how to create language files?](https://docs.djangoproject.com/en/2.2/topics/i18n/translation/#localization-how-to-create-language-files)
+- [translating Python](https://docs.djangoproject.com/en/2.2/topics/i18n/translation/#internationalization-in-python-code)
+- [translating Templates](https://docs.djangoproject.com/en/2.2/topics/i18n/translation/#internationalization-in-template-code)
+- [translating Javascript](https://docs.djangoproject.com/en/2.2/topics/i18n/translation/#internationalization-in-javascript-code)
+- [translating URLs](https://docs.djangoproject.com/en/2.2/topics/i18n/translation/#module-django.conf.urls.i18n)
+- [implementation notes](https://docs.djangoproject.com/en/2.2/topics/i18n/translation/#implementation-notes) and [miscellaneous](https://docs.djangoproject.com/en/2.2/topics/i18n/translation/#miscellaneous)
 
-```bash
-python manage.py sitetree_resync_apps
-```
+</details>
 
-## Module accessories
-
-Can be installed the follow module accessories.
-
-## Frontend module
-G3W-ADMIN fronted portal for G3W-SUITE. To install/active and use please read his [caching/README.md](g3w-admin/caching/README.md)
-
-## Filemanager module
-Module to manage on disk geo data files. To install and use please read his [filemanager/README.md](g3w-admin/filemanager/README.md)
-
-## Continuous integration testing
-
-CI tests are automatically run on CircleCI for the `dev` branch only.
-
-The Docker compose configuration used in the CI tests is available at [docker-compose.322.yml](docker-compose.322.yml),
-for current QGIS LTR (3.22).
-
-The dependency image is built from the [Dockerfile.322.deps](ci_scripts/Dockerfile.322.deps).
-
-Th current docker compose and dockerfile are for the latest QGIS version:
- - [docker-compose.yml](docker-compose.yml)
- - [Dockerfile.deps](ci_scripts/Dockerfile.deps)
-
+---
 
 ### Contributors
-* Walter Lorenzetti - Gis3W ([@wlorenzetti](https://github.com/wlorenzetti))
-* Leonardo Lami - Gis3W ([@leolami](https://github.com/leolami/))
-* Giovanni Allegri ([@giohappy](https://github.com/giohappy))
-* Francesco Boccacci - Gis3W ([@volterra79](https://github.com/volterra79))
-* Alessandro Pasotti - QCooperative ([@elpaso](https://github.com/elpaso))
-* Luigi Pirelli - QCooperative ([@luipir](https://github.com/luipir))
-* Mazano - Kartoza ([@NyakudyaA](https://github.com/NyakudyaA)) (Dockerization refactoring)
-* Matteo Tosi - Gis3W ([@Raruto](https://github.com/Raruto))
 
-## Translation
-* Tudor Barascu - ([@tudorbarascu](https://github.com/tudorbarascu)) - Romanian
-* R3Gis - (https://www.r3gis.com) - German (Only G3W-CLIENT)
-* Democracy Essentials (www.democracy-essentials.eu) - French (Only G3W-CLIENT)
+* GIS3W: [wlorenzetti](https://github.com/wlorenzetti), [leolami](https://github.com/leolami/), [volterra79](https://github.com/volterra79), [raruto](https://github.com/Raruto), [giohappy](https://github.com/giohappy)
+* QCooperative: [elpaso](https://github.com/elpaso), [luipir](https://github.com/luipir)
+* Kartoza: [NyakudyaA](https://github.com/NyakudyaA)
+
+### Translators
+
+* Romanian: [tudorbarascu](https://github.com/tudorbarascu)
+* German: [r3gis](https://www.r3gis.com)
+* French: [democracy essentials](https://www.democracy-essentials.eu)
+
+---
+
+**Compatibile with:**
+[![Django version](https://img.shields.io/badge/Django-2.2-1EB300.svg?style=flat)](https://www.djangoproject.com/download/)
+[![QGIS version](https://img.shields.io/badge/QGIS%20LTR-3.22-1EB300.svg?style=flat)](https://www.qgis.org/en/site/forusers/download.html)
+
+---
+
+**License:** MPL-2
