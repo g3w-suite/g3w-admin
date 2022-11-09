@@ -23,6 +23,7 @@ logger = logging.getLogger(__name__)
 
 class GetLegendGraphicFilter(QgsServerFilter):
     """add ruleKey to GetLegendGraphic for categorized and rule-based
+    only works for single LAYER and STYLE(S) and json format.
     """
 
     def __init__(self, server_iface):
@@ -47,6 +48,10 @@ class GetLegendGraphicFilter(QgsServerFilter):
             layer_id = params['LAYER']
 
             style = params['STYLES'] if 'STYLES' in params else ''
+
+            if not style:
+                style = params['STYLE'] if 'STYLE' in params else ''
+
             current_style = ''
             layer = None
 
@@ -55,22 +60,26 @@ class GetLegendGraphicFilter(QgsServerFilter):
                     layer_id) if use_ids else qgs_project.mapLayersByName(layer_id)[0]
 
                 current_style = layer.styleManager().currentStyle()
-                if style:
+
+                if current_style and style and style != current_style:
                     layer.styleManager().setCurrentStyle(style)
 
                 renderer = layer.renderer()
+
                 if renderer.type() in ("categorizedSymbol", "ruleBased", "graduatedSymbol"):
                     body = handler.body()
                     json_data = json.loads(bytes(body))
-                    categories = [{'label': item.label(), 'ruleKey': item.ruleKey(), 'checked': renderer.legendSymbolItemChecked(
-                        item.ruleKey())} for item in renderer.legendSymbolItems()]
-                    symbols = json_data['nodes'][0]['symbols']
+                    categories = {item.label(): {'ruleKey': item.ruleKey(), 'checked': renderer.legendSymbolItemChecked(
+                        item.ruleKey())} for item in renderer.legendSymbolItems()}
+
+                    symbols = json_data['nodes'][0]['symbols'] if 'symbols' in json_data['nodes'][0] else json_data['nodes']
+
                     new_symbols = []
 
                     for idx in range(len(symbols)):
                         symbol = symbols[idx]
                         try:
-                            category = categories[idx]
+                            category = categories[symbol['title']]
                             symbol['ruleKey'] = category['ruleKey']
                             symbol['checked'] = category['checked']
                         except:
@@ -78,18 +87,21 @@ class GetLegendGraphicFilter(QgsServerFilter):
 
                         new_symbols.append(symbol)
 
-                    json_data['nodes'][0]['symbols'] = new_symbols
+                    if 'symbols' in json_data['nodes'][0]:
+                        json_data['nodes'][0]['symbols'] = new_symbols
+                    else:
+                        json_data['nodes'] = new_symbols
+
                     handler.clearBody()
                     handler.appendBody(json.dumps(
                         json_data).encode('utf8'))
             except Exception as ex:
                 logger.warning(
-                    'Error getting layer "{}" when setting up legend graphic for json output when configuring OWS call: {}'.format(layer_id, ex))
+                    'Error getting layer "{}" when setting up legend graphic for json output when configuring OWS call: {}'.format(layer_id, str(ex)))
             finally:
-                if layer and style and  current_style and style != current_style:
+                if layer and style and current_style and style != current_style:
                     layer.styleManager().setCurrentStyle(current_style)
 
 
-
 legend_graphic_filter = GetLegendGraphicFilter(QGS_SERVER.serverInterface())
-QGS_SERVER.serverInterface().registerFilter(legend_graphic_filter, 50)
+QGS_SERVER.serverInterface().registerFilter(legend_graphic_filter, 150)
