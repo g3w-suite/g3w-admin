@@ -1,0 +1,6 @@
+blank_issues_enabled: true
+
+contact_links:
+  - name: 📄 Improve documentation 
+    url: https://github.com/g3w-suite/g3w-suite-documentation/issues
+    about: Suggest new additions or updates to existing documentation related to https://g3w-suite.readthedocs.io/
