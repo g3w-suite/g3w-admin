@@ -751,39 +751,6 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         # add ows
         ret['ows'] = self.get_ows(instance)
 
-        # For temporal properties
-        if instance.temporal_properties:
-            ret['qtimeseries'] = json.loads(instance.temporal_properties)
-
-            if ret['qtimeseries'] and ret['qtimeseries']['mode'] == 'FeatureDateTimeInstantFromField':
-
-                # Add start_date end end_date:
-                findex = qgs_maplayer.dataProvider().fieldNameIndex(ret['qtimeseries']['field'])
-
-                ret['qtimeseries']['start_date'] = qgs_maplayer.minimumValue(findex)
-                ret['qtimeseries']['end_date'] = qgs_maplayer.maximumValue(findex)
-                if isinstance(ret['qtimeseries']['start_date'], QDate) or isinstance(ret['qtimeseries']['start_date'], QDateTime):
-                    if not hasattr(QDate, 'isoformat'):
-                        QDate.isoformat = lambda d: d.toString(Qt.ISODate)
-                    if not hasattr(QDateTime, 'isoformat'):
-                        QDateTime.isoformat = lambda d: d.toString(Qt.ISODateWithMs)
-                    ret['qtimeseries']['start_date'] = ret['qtimeseries']['start_date'].isoformat()
-                    ret['qtimeseries']['end_date'] = ret['qtimeseries']['end_date'].isoformat()
-
-            if ret['qtimeseries'] and ret['qtimeseries']['mode'] == 'RasterTemporalRangeFromDataProvider':
-
-                # If layer is a wms only for external
-                if instance.layer_type != Layer.TYPES.wms or \
-                        instance.layer_type == Layer.TYPES.wms and instance.external:
-
-                    # Add start_date end end_date:
-                    ret['qtimeseries']['start_date'] = ret['qtimeseries']['range'][0]
-                    ret['qtimeseries']['end_date'] = ret['qtimeseries']['range'][1]
-                    del(ret['qtimeseries']['range'])
-                else:
-                    del(ret['qtimeseries'])
-
-
         return ret
 
 
