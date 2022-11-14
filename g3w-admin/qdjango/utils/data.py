@@ -1110,8 +1110,11 @@ class QgisProject(XmlData):
         """
         layers = OrderedDict()
 
+        # Get layer not showed within WNS service
+        restricted_layers = QgsServerProjectUtils.wmsRestrictedLayers(self.qgs_project)
+
         for layerid, layer in self.qgs_project.mapLayers().items():
-            if self.qgs_project.layerIsEmbedded(layerid) == '':
+            if self.qgs_project.layerIsEmbedded(layerid) == '' and layer.name() not in restricted_layers:
                 layers[layerid] = self._qgisprojectlayer_class(layer, qgisProject=self)
 
         # For layers with join 1to1 reload fields(columns)
