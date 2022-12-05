@@ -10,6 +10,7 @@ from django.conf import settings
 from django.db import transaction
 from django.http.request import QueryDict
 from django.utils.translation import ugettext_lazy as _
+from autoslug.utils import slugify
 from lxml import etree
 
 from qgis.core import (
@@ -1627,8 +1628,17 @@ class QgisProject(XmlData):
                     layer.attrib['project'] = makeDatasource(
                         layer_object.project.qgis_file.path, Layer.TYPES.ogr)
                 except Layer.DoesNotExist:
-                    raise Exception(
-                        _('The project contains an embedded layer {} from a project that could not be found {}'.format(layer_id, project_name)))
+
+                    # Try to get project by his layer.attrib['project'].
+                    # This case happen when project with embedded layer must be update without re-upload the
+                    # QGIS project file.
+                    try:
+                        Layer.objects.get(
+                            project__qgis_file__exact=f'projects/{project_name}', qgs_layer_id=layer_id)
+                    except Layer.DoesNotExist:
+                        raise Exception(
+                            _('The project contains an embedded layer {} from a project that could not be found '
+                              '{}'.format(layer_id, project_name)))
 
         # Update embedded group project path, note the double slash in xpath,
         # this is to catch nested embedded groups
