@@ -31,7 +31,7 @@ import os
 
 class LayerRasterView(BaseRasterApiView):
     """
-    Qdjango class for ratser layer api rest
+    Qdjango class for raster layer api rest
     """
 
     _layer_model = Layer
