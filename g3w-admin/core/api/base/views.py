@@ -26,6 +26,7 @@ from rest_framework.exceptions import APIException
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.generics import ListAPIView
 
 from core.api.authentication import CsrfExemptSessionAuthentication
 from core.api.filters import IntersectsBBoxFilter
@@ -701,3 +702,75 @@ class BaseRasterApiView(BaseVectorApiView):
             return Response(self.results.results)
         else:
             return response
+
+class G3WDTListAPIView(ListAPIView):
+    """ List API view for ajax data call of DataTable"""
+
+    ## ADD ACL CLASSES INTO INHERIT CLASS.
+    # -----------------------------------------------------
+
+    def get_dtable_filter_class(self):
+        """
+        Create a DataTable filter object for build query rest
+        """
+
+        ## TO IMPLEMENT INTO INHERIT G3WDTListAPIView CLASS.
+        # --------------------------------------------------
+
+        return object()
+
+    def filter_for_datatable(self, queryset):
+
+        serializer = self.get_serializer_class()
+        fields = copy.copy(serializer.Meta.fields)
+
+        # Filtering
+        # -----------------------------
+        filter = self.get_dtable_filter_class().factory(self.signal_type, fields, self.request)
+        queryset = queryset.filter(**filter.ksearchargs)
+
+        # Ordering
+        # -----------------------------
+        ordering_column = self.request.query_params.get('order[0][column]')
+        ordering_direction = self.request.query_params.get('order[0][dir]')
+        ordering = fields[int(ordering_column)]
+
+        if ordering and ordering_direction == 'desc':
+            ordering = f"-{ordering}"
+        if ordering:
+            queryset = queryset.order_by(ordering)
+        return queryset
+
+    def list(self, request, *args, **kwargs):
+
+        # Set signal type
+        self.signal_type = kwargs['type']
+
+        draw = request.query_params.get('draw')
+        queryset = self.filter_queryset(self.get_queryset())
+        records_total = queryset.count()
+        filtered_queryset = self.filter_for_datatable(queryset)
+
+        try:
+            start = int(request.query_params.get('start'))
+        except ValueError:
+            start = 0
+        except TypeError:
+            start = 0
+
+        try:
+            length = int(request.query_params.get('length'))
+        except ValueError:
+            length = 10
+        except TypeError:
+            length = 10
+
+        end = length + start
+        serializer = self.get_serializer(filtered_queryset[start:end], many=True, request=self.request)
+        response = {
+            'draw': draw,
+            'recordsTotal': records_total,
+            'recordsFiltered': filtered_queryset.count(),
+            'data': serializer.data
+        }
+        return Response(response)
