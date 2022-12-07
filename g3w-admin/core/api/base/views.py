@@ -726,7 +726,7 @@ class G3WDTListAPIView(ListAPIView):
 
         # Filtering
         # -----------------------------
-        filter = self.get_dtable_filter_class().factory(self.signal_type, fields, self.request)
+        filter = self.get_dtable_filter_class()(fields, self.request)
         queryset = queryset.filter(**filter.ksearchargs)
 
         # Ordering
