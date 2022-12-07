@@ -66,7 +66,8 @@ if settings.RESET_USER_PASSWORD:
 
 apiUrlpatterns = [
     path('', include('client.apiurls')),
-    path('', include('core.apiurls'))
+    path('', include('core.apiurls')),
+    path('', include('usersmanage.apiurls'))
 ]
 
 if BASE_ADMIN_URLPATH == 'admin/':
