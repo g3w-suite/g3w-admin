@@ -358,7 +358,8 @@ class DatasourceExists(QgisProjectLayerValidator):
                 Layer.TYPES.ogr,
                 Layer.TYPES.raster,
                 Layer.TYPES.mdal
-        ] and not isXML(self.qgisProjectLayer.datasource):
+        ] and not isXML(self.qgisProjectLayer.datasource) \
+                and not self.qgisProjectLayer.datasource.startswith('/vsicurl/'):
 
             # try PostGis raster layer
             if self.qgisProjectLayer.datasource.startswith("PG:"):
