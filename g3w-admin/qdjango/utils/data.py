@@ -1368,8 +1368,8 @@ class QgisProject(XmlData):
                              'download_csv',
                              'download_gpkg',
                              'external',
-                             'not_show_attributes_table'):
-                            print(embedded['id'], p, getattr(existing_layer, p))
+                             'not_show_attributes_table',
+                             'has_column_acl'):
                             setattr(embedded_layer, p, getattr(existing_layer, p))
 
                     except Layer.DoesNotExist:
