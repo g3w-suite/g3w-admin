@@ -25,11 +25,6 @@ class DTableUsersFilter(object):
         """ Initiaize ksearchargs with common fields between signal tupes """
 
 
-        try:
-            del (self.fields[self.fields.index('map_link')])
-        except:
-            pass
-
         # Filtering
         # -----------------------------
 

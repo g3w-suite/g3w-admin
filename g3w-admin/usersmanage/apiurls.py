@@ -11,10 +11,10 @@ __copyright__ = 'Copyright 2015 - 2022, Gis3w'
 
 from django.urls import re_path, path
 from django.contrib.auth.decorators import login_required
-from .api.views import G3WDTListAPIView
+from .api.views import DTUsersAPIView
 
 
 urlpatterns = [
-    path('api/users/', login_required(G3WDTListAPIView.as_view()), name='users-list-api'),
+    path('api/users/', login_required(DTUsersAPIView.as_view()), name='users-list-api'),
 ]
 

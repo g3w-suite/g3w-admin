@@ -11,6 +11,7 @@ __copyright__ = 'Copyright 2015 - 2022, Gis3w'
 
 
 from rest_framework.serializers import ModelSerializer
+from rest_framework.fields import empty
 from usersmanage.models import User
 
 
@@ -20,3 +21,21 @@ class G3WUserSerializer(ModelSerializer):
     class Meta():
         model = User
         fields = '__all__'
+
+
+    def __init__(self, instance=None, data=empty, **kwargs):
+
+        if 'request' in kwargs:
+            self.request = kwargs['request']
+            del (kwargs['request'])
+
+        super().__init__(instance=instance, data=data, **kwargs)
+
+    def to_representation(self, instance):
+
+        ret = super().to_representation(instance)
+
+        # Remove password
+        del (ret['password'])
+
+        return ret

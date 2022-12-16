@@ -15,23 +15,27 @@ from usersmanage.models import User
 from guardian.compat import get_user_model
 from guardian.shortcuts import get_objects_for_user
 from .serializers import G3WUserSerializer
+from .filters import DTableUsersFilter
 
 
 class DTUsersAPIView(G3WDTListAPIView):
     """ List API view of Users for DataTable"""
 
     def get_queryset(self):
-        def get_queryset(self):
-            anonymous_user = get_user_model().get_anonymous()
-            queryset = User.objects.order_by('username')
-            if self.request.user.is_superuser:
-                queryset = queryset.exclude(pk=anonymous_user.pk)
-                if not self.request.user.is_staff:
-                    queryset = queryset.exclude(is_staff=True)
-            else:
 
-                queryset = get_objects_for_user(self.request.user, 'auth.change_user', User).order_by('username')
-            return queryset
+        anonymous_user = get_user_model().get_anonymous()
+        queryset = User.objects.order_by('username')
+        if self.request.user.is_superuser:
+            queryset = queryset.exclude(pk=anonymous_user.pk)
+            if not self.request.user.is_staff:
+                queryset = queryset.exclude(is_staff=True)
+        else:
+
+            queryset = get_objects_for_user(self.request.user, 'auth.change_user', User).order_by('username')
+        return queryset
 
     def get_serializer_class(self):
         return G3WUserSerializer
+
+    def get_datable_filter_class(self):
+        return DTableUsersFilter
