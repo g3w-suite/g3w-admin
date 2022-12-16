@@ -709,7 +709,7 @@ class G3WDTListAPIView(ListAPIView):
     ## ADD ACL CLASSES INTO INHERIT CLASS.
     # -----------------------------------------------------
 
-    def get_dtable_filter_class(self):
+    def get_datable_filter_class(self):
         """
         Create a DataTable filter object for build query rest
         """
@@ -717,34 +717,33 @@ class G3WDTListAPIView(ListAPIView):
         ## TO IMPLEMENT INTO INHERIT G3WDTListAPIView CLASS.
         # --------------------------------------------------
 
-        return object()
+        return object
 
     def filter_for_datatable(self, queryset):
 
         serializer = self.get_serializer_class()
-        fields = copy.copy(serializer.Meta.fields)
+        fields = copy(serializer.Meta.fields)
 
         # Filtering
         # -----------------------------
-        filter = self.get_dtable_filter_class()(fields, self.request)
+        filter = self.get_datable_filter_class()(fields, self.request)
         queryset = queryset.filter(**filter.ksearchargs)
 
         # Ordering
         # -----------------------------
         ordering_column = self.request.query_params.get('order[0][column]')
         ordering_direction = self.request.query_params.get('order[0][dir]')
-        ordering = fields[int(ordering_column)]
 
-        if ordering and ordering_direction == 'desc':
-            ordering = f"-{ordering}"
-        if ordering:
-            queryset = queryset.order_by(ordering)
+        if ordering_column:
+            ordering = fields[int(ordering_column)]
+            if ordering and ordering_direction == 'desc':
+                ordering = f"-{ordering}"
+            if ordering:
+                queryset = queryset.order_by(ordering)
+                
         return queryset
 
     def list(self, request, *args, **kwargs):
-
-        # Set signal type
-        self.signal_type = kwargs['type']
 
         draw = request.query_params.get('draw')
         queryset = self.filter_queryset(self.get_queryset())
