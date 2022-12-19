@@ -741,7 +741,8 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
                 'epsg': crs.postgisSrid(),
                 'proj4': proj4,
                 'geographic': crs.isGeographic(),
-                'axisinverted': crs.hasAxisInverted()
+                'axisinverted': crs.hasAxisInverted(),
+                'extent': get_crs_bbox(crs)
             }
 
         # add metadata
