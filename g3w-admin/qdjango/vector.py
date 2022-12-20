@@ -448,7 +448,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
     def _build_download_filename(self, request):
         """Build file name on filter context"""
 
-        filename = re.sub(r"[^a-zA-Z0-9 ]", "-", self.metadata_layer.qgis_layer.name())
+        filename = re.sub(r"[^a-zA-Z0-9_]", "-", self.metadata_layer.qgis_layer.name())
 
         # With FilterFid add feature ids sent with request
         FILTER_FIDS_PARAM = f'{FILTER_FID_PARAM}s'
