@@ -8,6 +8,7 @@ from .base.views import G3WAPIView
 from core.api.authentication import CsrfExemptSessionAuthentication
 from qdjango.models import Project
 from core.api.base.views import APIException
+from core.utils.geo import get_crs_bbox
 from django.utils.translation import ugettext_lazy as _
 from rest_framework import status
 
@@ -290,3 +291,31 @@ class InterfaceOws(G3WAPIView):
 
         return Response(self.results.results)
 
+
+class CRSInfoAPIView(G3WAPIView):
+    """
+    API REST service for info about CRS ask by ESPG code
+    """
+
+    def get(self, request, **kwargs):
+
+        crs = QgsCoordinateReferenceSystem(f"EPSG:{kwargs['epsg']}")
+
+        # Patch for Proj4 > 4.9.3 version
+        if int(kwargs['epsg']) == 3003:
+            proj4 = "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=1500000 +y_0=0 +ellps=intl " \
+                    "+towgs84=-104.1,-49.1,-9.9,0.971,-2.917,0.714,-11.68 +units=m +no_defs"
+        else:
+            proj4 = crs.toProj4()
+
+        self.results.results.update({
+            'data': {
+                'epsg': crs.postgisSrid(),
+                'proj4': proj4,
+                'geographic': crs.isGeographic(),
+                'axisinverted': crs.hasAxisInverted(),
+                'extent': get_crs_bbox(crs)
+            }
+        })
+
+        return Response(self.results.results)

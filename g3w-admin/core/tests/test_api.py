@@ -637,3 +637,74 @@ class CoreApiTest(CoreTestBase):
         self.assertEqual(len(jres['layers'][1]['crss']), 19)
 
 
+    def test_crs_api_rest(self):
+        """
+        Test for core-crs-api
+        """
+
+        url = reverse('core-crs-api', args=['4326'])
+
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, 200)
+
+        jres = json.loads(res.content)
+        self.assertEqual(jres['data'], {
+            'epsg': 4326,
+            'proj4': '+proj=longlat +datum=WGS84 +no_defs',
+            'geographic': True,
+            'axisinverted': True,
+            'extent': [-180.0, -90.0, 180.0, 90.0]
+        })
+
+        url = reverse('core-crs-api', args=['3003'])
+
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, 200)
+
+        jres = json.loads(res.content)
+        self.assertEqual(jres['data'], {
+            'epsg': 3003,
+            'proj4': "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=1500000 +y_0=0 +ellps=intl " \
+                    "+towgs84=-104.1,-49.1,-9.9,0.971,-2.917,0.714,-11.68 +units=m +no_defs",
+            'geographic': False,
+            'axisinverted': False,
+            'extent': [1226046.6820902952, 4047095.260762165, 1727931.8998958569, 5214000.012210975]
+        })
+
+        url = reverse('core-crs-api', args=['3857'])
+
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, 200)
+
+        jres = json.loads(res.content)
+        self.assertEqual(jres['data'], {
+            "epsg": 3857,
+            "proj4": "+proj=merc +a=6378137 +b=6378137 +lat_ts=0 +lon_0=0 +x_0=0 +y_0=0 +k=1 +units=m +nadgrids=@null +wktext +no_defs",
+            "geographic": False,
+            "axisinverted": False,
+            "extent": [
+                -20037508.342789244,
+                -20048966.104014594,
+                20037508.342789244,
+                20048966.104014594
+            ]
+        })
+
+        url = reverse('core-crs-api', args=['32633'])
+
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, 200)
+
+        jres = json.loads(res.content)
+        self.assertEqual(jres['data'], {
+            "epsg": 32633,
+            "proj4": "+proj=utm +zone=33 +datum=WGS84 +units=m +no_defs",
+            "geographic": False,
+            "axisinverted": False,
+            "extent": [
+                166021.44308054162,
+                0.0,
+                534994.6550611365,
+                9329005.182447437
+            ]
+        })

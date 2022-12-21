@@ -7,8 +7,11 @@ from .api.views import \
     G3WSUITEInfoAPIView, \
     QgsExpressionLayerContextEvalView, \
     layer_raster_view, \
-    InterfaceOws
-from .views import GroupSetOrderView, MacroGroupSetOrderView
+    InterfaceOws, \
+    CRSInfoAPIView
+from .views import \
+    GroupSetOrderView, \
+    MacroGroupSetOrderView
 
 
 urlpatterns = [
@@ -53,5 +56,9 @@ urlpatterns = [
     re_path(r'^' + settings.RASTER_URL[1:] + r'(?P<mode_call>geotiff)/(?P<project_type>[-_\w\d]+)/(?P<project_id>[0-9]+)/'
         r'(?P<layer_name>[-_\w\d]+)/$',
         layer_raster_view, name='core-raster-api'),
+
+    # CRS API info
+    # ------------
+    path('crs/<int:epsg>/', CRSInfoAPIView.as_view(), name='core-crs-api')
 
 ]
