@@ -671,25 +671,6 @@ class CoreApiTest(CoreTestBase):
             'extent': [1226046.6820902952, 4047095.260762165, 1727931.8998958569, 5214000.012210975]
         })
 
-        url = reverse('core-crs-api', args=['3857'])
-
-        res = self.client.get(url)
-        self.assertEqual(res.status_code, 200)
-
-        jres = json.loads(res.content)
-        self.assertAlmostEquals(jres['data'], {
-            "epsg": 3857,
-            "proj4": "+proj=merc +a=6378137 +b=6378137 +lat_ts=0 +lon_0=0 +x_0=0 +y_0=0 +k=1 +units=m +nadgrids=@null +wktext +no_defs",
-            "geographic": False,
-            "axisinverted": False,
-            "extent": [
-                -20037508.342789244,
-                -20048966.104014594,
-                20037508.342789244,
-                20048966.104014594
-            ]
-        })
-
         url = reverse('core-crs-api', args=['32633'])
 
         res = self.client.get(url)
