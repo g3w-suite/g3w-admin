@@ -153,7 +153,7 @@ class ClientView(TemplateView):
             serializedGroup = str(serializedGroup, 'utf-8')
 
         baseurl = "{}/{}".format(
-            settings.SITE_DOMAIN if settings.SITE_DOMAIN else '',
+            settings.SITE_DOMAIN if hasattr(settings, 'SITE_DOMAIN') else '',
             settings.SITE_PREFIX_URL if settings.SITE_PREFIX_URL else ''
         )
 
