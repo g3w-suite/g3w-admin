@@ -662,14 +662,15 @@ class CoreApiTest(CoreTestBase):
         self.assertEqual(res.status_code, 200)
 
         jres = json.loads(res.content)
-        self.assertEqual(jres['data'], {
-            'epsg': 3003,
-            'proj4': "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=1500000 +y_0=0 +ellps=intl " \
-                    "+towgs84=-104.1,-49.1,-9.9,0.971,-2.917,0.714,-11.68 +units=m +no_defs",
-            'geographic': False,
-            'axisinverted': False,
-            'extent': [1226046.6820902952, 4047095.260762165, 1727931.8998958569, 5214000.012210975]
-        })
+
+        self.assertEqual(jres['data']['epsg'], 3003)
+        self.assertEqual(jres['data']['proj4'], "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=1500000 +y_0=0 "
+                                                "+ellps=intl +towgs84=-104.1,-49.1,-9.9,0.971,-2.917,0.714,-11.68 "
+                                                "+units=m +no_defs")
+        self.assertEqual(jres['data']['geographic'], False)
+        self.assertEqual(jres['data']['axisinverted'], False)
+        self.assertAlmostEqual(jres['data']['extent'], [1226046.6820902952, 4047095.260762165, 1727931.8998958569, 5214000.012210975], 4)
+
 
         url = reverse('core-crs-api', args=['32633'])
 
@@ -677,15 +678,16 @@ class CoreApiTest(CoreTestBase):
         self.assertEqual(res.status_code, 200)
 
         jres = json.loads(res.content)
-        self.assertEqual(jres['data'], {
-            "epsg": 32633,
-            "proj4": "+proj=utm +zone=33 +datum=WGS84 +units=m +no_defs",
-            "geographic": False,
-            "axisinverted": False,
-            "extent": [
-                166021.44308054162,
-                0.0,
-                534994.6550611365,
-                9329005.182447437
-            ]
-        })
+
+        self.assertEqual(jres['data']['epsg'], 32633)
+        self.assertEqual(jres['data']['proj4'], "+proj=utm +zone=33 +datum=WGS84 +units=m +no_defs")
+        self.assertEqual(jres['data']['geographic'], False)
+        self.assertEqual(jres['data']['axisinverted'], False)
+        self.assertAlmostEqual(jres['data']['extent'],
+                               [
+                                   166021.44308054162,
+                                   0.0,
+                                   534994.6550611365,
+                                   9329005.182447437
+                               ]
+                               , 4)
