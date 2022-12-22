@@ -669,7 +669,10 @@ class CoreApiTest(CoreTestBase):
                                                 "+units=m +no_defs")
         self.assertEqual(jres['data']['geographic'], False)
         self.assertEqual(jres['data']['axisinverted'], False)
-        self.assertAlmostEqual(jres['data']['extent'], [1226046.6820902952, 4047095.260762165, 1727931.8998958569, 5214000.012210975], 4)
+
+        to_compare = enumerate([1226046.6820902952, 4047095.260762165, 1727931.8998958569, 5214000.012210975])
+        for c in to_compare:
+            self.assertAlmostEqual(jres['data']['extent'][c[0]],  c[1], 4)
 
 
         url = reverse('core-crs-api', args=['32633'])
@@ -683,11 +686,7 @@ class CoreApiTest(CoreTestBase):
         self.assertEqual(jres['data']['proj4'], "+proj=utm +zone=33 +datum=WGS84 +units=m +no_defs")
         self.assertEqual(jres['data']['geographic'], False)
         self.assertEqual(jres['data']['axisinverted'], False)
-        self.assertAlmostEqual(jres['data']['extent'],
-                               [
-                                   166021.44308054162,
-                                   0.0,
-                                   534994.6550611365,
-                                   9329005.182447437
-                               ]
-                               , 4)
+
+        to_compare = enumerate([166021.44308054162, 0.0, 534994.6550611365, 9329005.182447437])
+        for c in to_compare:
+            self.assertAlmostEqual(jres['data']['extent'][c[0]],  c[1], 4)
