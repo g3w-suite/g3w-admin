@@ -27,41 +27,89 @@ G3W_SITETREE_I18N_ALIAS = ['core', 'acl']
 #}
 
 extra_context_login_page = {
-            'adminlte_skin': 'login-page',
-            'adminlte_layout_option': None
-        }
+    'adminlte_skin': 'login-page',
+    'adminlte_layout_option': None
+}
 
 urlpatterns = [
-    path('i18n/', include('django.conf.urls.i18n')),
-    path('django-admin/', admin.site.urls),
-    path('{}'.format(BASE_ADMIN_URLPATH), include('core.urls')),
-    path('{}'.format(BASE_ADMIN_URLPATH), include('usersmanage.urls')),
-    path('upload/', include('django_file_form.urls')),
-    path('', include('client.urls')),
-    path('login/', auth.views.LoginView.as_view(template_name='login.html', extra_context=extra_context_login_page),
-        name='login'),
-    path('logout/', auth.views.LogoutView.as_view(
-        next_page=settings.LOGOUT_NEXT_PAGE + '{}'.format(BASE_ADMIN_URLPATH)), name='logout'),
-    path('jsi18n/', JavaScriptCatalog.as_view(), name='javascript-catalog'),
-    path('ajax_select/', include(ajax_select_urls))
+    path(
+        'i18n/',
+        include('django.conf.urls.i18n')
+    ),
+    path(
+        'django-admin/',
+        admin.site.urls
+    ),
+    path(
+        '{}'.format(BASE_ADMIN_URLPATH),
+        include('core.urls')
+    ),
+    path(
+        '{}'.format(BASE_ADMIN_URLPATH),
+        include('usersmanage.urls')
+    ),
+    path(
+        'upload/',
+        include('django_file_form.urls')
+    ),
+    path(
+        '',
+        include('client.urls')
+    ),
+    path(
+        'login/',
+        auth.views.LoginView.as_view(template_name='login.html', extra_context=extra_context_login_page),
+        name='login'
+    ),
+    path(
+        'logout/',
+        auth.views.LogoutView.as_view(next_page=settings.LOGOUT_NEXT_PAGE + '{}'.format(BASE_ADMIN_URLPATH)),
+        name='logout'
+    ),
+    path(
+        'jsi18n/',
+        JavaScriptCatalog.as_view(),
+        name='javascript-catalog'
+    ),
+    path(
+        'ajax_select/',
+        include(ajax_select_urls)
+    )
 ]
 
 # Add path/url for user password rest by email
 if settings.RESET_USER_PASSWORD:
     urlpatterns += [
-        path('password_change/', auth.views.PasswordChangeView.as_view(extra_context=extra_context_login_page),
-             name='password_change'),
-        path('password_change/done/', auth.views.PasswordChangeDoneView.as_view(extra_context=extra_context_login_page),
-             name='password_change_done'),
-        path('password_reset/', auth.views.PasswordResetView.as_view(extra_context=extra_context_login_page),
-             name='password_reset'),
-        path('password_reset/done/', auth.views.PasswordResetDoneView.as_view(extra_context=extra_context_login_page),
-             name='password_reset_done'),
-        path('reset/<uidb64>/<token>/',
-             auth.views.PasswordResetConfirmView.as_view(extra_context=extra_context_login_page),
-             name='password_reset_confirm'),
-        path('reset/done/', auth.views.PasswordResetCompleteView.as_view(extra_context=extra_context_login_page),
-             name='password_reset_complete'),
+        path(
+            'password_change/',
+            auth.views.PasswordChangeView.as_view(extra_context=extra_context_login_page),
+            name='password_change'
+        ),
+        path(
+            'password_change/done/',
+            auth.views.PasswordChangeDoneView.as_view(extra_context=extra_context_login_page),
+            name='password_change_done'
+        ),
+        path(
+            'password_reset/',
+            auth.views.PasswordResetView.as_view(extra_context=extra_context_login_page),
+            name='password_reset'
+        ),
+        path(
+            'password_reset/done/',
+            auth.views.PasswordResetDoneView.as_view(extra_context=extra_context_login_page),
+            name='password_reset_done'
+        ),
+        path(
+            'reset/<uidb64>/<token>/',
+            auth.views.PasswordResetConfirmView.as_view(extra_context=extra_context_login_page),
+            name='password_reset_confirm'
+        ),
+        path(
+            'reset/done/',
+            auth.views.PasswordResetCompleteView.as_view(extra_context=extra_context_login_page),
+            name='password_reset_complete'
+        ),
     ]
 
 apiUrlpatterns = [
@@ -75,6 +123,7 @@ if BASE_ADMIN_URLPATH == 'admin/':
 #adding projects app
 #if BASE_ADMIN_URLPATH:
     #base = BASE_ADMIN_URLPATH[0:-1]
+
 for app in settings.G3WADMIN_PROJECT_APPS:
     urlpatterns.append(path('{}{}/'.format(BASE_ADMIN_URLPATH, app), include('{}.urls'.format(app))))
     try:
