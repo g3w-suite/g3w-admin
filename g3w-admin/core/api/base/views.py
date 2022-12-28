@@ -724,6 +724,11 @@ class G3WDTListAPIView(ListAPIView):
         serializer = self.get_serializer_class()
         fields = copy(serializer.Meta.fields)
 
+
+        # TODO: add condition with serializer Meta.fields declaration to all
+        #if fields == '__all__':
+        #    fields = serializer.Meta.model.Meta.fields
+
         # Filtering
         # -----------------------------
         filter = self.get_datable_filter_class()(fields, self.request)

@@ -12,7 +12,10 @@ __copyright__ = 'Copyright 2015 - 2022, Gis3w'
 
 from rest_framework.serializers import ModelSerializer
 from rest_framework.fields import empty
+from core.models import MacroGroup
 from usersmanage.models import User
+from usersmanage.utils import get_roles, get_user_groups, get_objects_for_user
+
 
 
 
@@ -20,7 +23,20 @@ class G3WUserSerializer(ModelSerializer):
 
     class Meta():
         model = User
-        fields = '__all__'
+        fields = [
+            "id",
+            "last_login",
+            "is_superuser",
+            "username",
+            "first_name",
+            "last_name",
+            "email",
+            "is_staff",
+            "is_active",
+            "date_joined",
+            "groups",
+            "user_permissions"
+            ]
 
 
     def __init__(self, instance=None, data=empty, **kwargs):
@@ -35,7 +51,18 @@ class G3WUserSerializer(ModelSerializer):
 
         ret = super().to_representation(instance)
 
-        # Remove password
-        del (ret['password'])
+        if self.request.user.is_superuser:
+            ret['backend'] = instance.userbackend.backend
+
+        # Set roles
+        ret['roles'] = [g.name for g in get_roles(instance)]
+
+        # Set Groups
+        ret['groups'] = [g.name for g in get_user_groups(instance)]
+
+
+        # Set Macrogroups
+        ret['macrogroups'] = [] if instance.is_superuser else \
+            [mg.slug for mg in get_objects_for_user(instance, 'core.view_macrogroup', MacroGroup)]
 
         return ret

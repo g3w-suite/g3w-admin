@@ -1,5 +1,6 @@
 from django.urls import reverse
 from django.views.generic import (
+    TemplateView,
     ListView,
     CreateView,
     UpdateView,
@@ -16,14 +17,14 @@ from guardian.shortcuts import assign_perm, get_objects_for_user
 from guardian.decorators import permission_required_or_403
 from core.mixins.views import G3WRequestViewMixin, G3WAjaxDeleteViewMixin
 from .decorators import permission_required_by_backend_or_403
-from .utils import getUserGroups, get_user_groups
+from .utils import getUserGroups, get_user_groups, get_roles
 from .configs import *
 from .forms import *
 import json
 
-class UserListView(G3WRequestViewMixin, ListView):
+class UserListViewOLD(G3WRequestViewMixin, ListView):
     """List users view."""
-    template_name = 'usersmanage/user_list.html'
+    template_name = 'usersmanage/user_list_old.html'
 
     def get_queryset(self):
         anonymous_user = get_user_model().get_anonymous()
@@ -37,6 +38,21 @@ class UserListView(G3WRequestViewMixin, ListView):
             queryset = get_objects_for_user(self.request.user, 'auth.change_user', User).order_by('username')
             #queryset = queryset.filter(groups__name__in=(G3W_VIEWER1, G3W_VIEWER2))
         return queryset
+
+class UserListView(G3WRequestViewMixin, TemplateView):
+    """List users view."""
+    template_name = 'usersmanage/user_list.html'
+
+    def get_context_data(self, **kwargs):
+
+        ctx = super().get_context_data(**kwargs)
+
+        # Get data anda metadata of user
+        ctx['user_roles'] = ','.join([f'{g.name}' for g in get_roles(self.request.user)])
+
+        return ctx
+
+
 
 
 class UserCreateView(G3WRequestViewMixin, CreateView):
