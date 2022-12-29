@@ -27,10 +27,10 @@
         columns = [
                     {
                         data: 'id',
-                        orderable: true,
+                        orderable: false,
                          render: function ( data, type, row, meta ) {
                             if (row['backend'] == 'g3wsuite') {
-                            return '<span class="col-xs-4 icon"><a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Edit' %}" ><i class="ion ion-edit"></i></a></span>' +
+                            return '<span class="col-xs-4 icon"><a href="{% url 'user-list' %}'+data+'/" data-toggle="tooltip" data-placement="top" title="{% trans 'Edit' %}" ><i class="ion ion-edit"></i></a></span>' +
                                     '<span class="col-xs-4 icon"><a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Delete' %}"><i class="ion ion-trash-b"></i></a></span>'
                             } else {
                                 return ''
@@ -68,7 +68,7 @@
                         },
                         {
                             data:'groups',
-                            orderable: true,
+                            orderable: false,
                             render: function ( data, type, row, meta ) {
                                 ret = ''
                                 for (let i = 0; i < data.length; i++) {

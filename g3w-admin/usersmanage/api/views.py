@@ -39,3 +39,33 @@ class DTUsersAPIView(G3WDTListAPIView):
 
     def get_datable_filter_class(self):
         return DTableUsersFilter
+
+    def get_filter_fields(self):
+        return [
+            'actions',
+            'id',
+            'username',
+            'roles',
+            'groups',
+            'macrogorups',
+            'is_superuser',
+            'is_staff',
+            'email',
+            'first_name',
+            'last_name'
+        ]
+
+    def get_order_fields(self):
+        return [
+            None,
+            'id',
+            'username',
+            'roles',
+            'groups',
+            None,
+            None,
+            None,
+            'email',
+            'first_name',
+            'last_name'
+        ]
