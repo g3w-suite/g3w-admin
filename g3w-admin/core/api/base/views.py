@@ -719,10 +719,31 @@ class G3WDTListAPIView(ListAPIView):
 
         return object
 
+    def get_filter_fields(self):
+        """
+        Return a list of fields to use for filtering
+        """
+
+        ## TO IMPLEMENT INTO INHERIT G3WDTListAPIView CLASS.
+        # --------------------------------------------------
+        return None
+
+    def get_filter_fields(self):
+        """
+        Return a list of fields to use for ordering
+        If you don't want a field for ordering, set with `None` the realtive position into list.
+        """
+
+        ## TO IMPLEMENT INTO INHERIT G3WDTListAPIView CLASS.
+        # --------------------------------------------------
+        return None
+
     def filter_for_datatable(self, queryset):
 
         serializer = self.get_serializer_class()
-        fields = copy(serializer.Meta.fields)
+
+        filter_fields = self.get_filter_fields()
+        fields = filter_fields if filter_fields else copy(serializer.Meta.fields)
 
 
         # TODO: add condition with serializer Meta.fields declaration to all
@@ -736,11 +757,12 @@ class G3WDTListAPIView(ListAPIView):
 
         # Ordering
         # -----------------------------
+        order_fields = self.get_order_fields() if self.get_order_fields() else fields
         ordering_column = self.request.query_params.get('order[0][column]')
         ordering_direction = self.request.query_params.get('order[0][dir]')
 
         if ordering_column:
-            ordering = fields[int(ordering_column)]
+            ordering = order_fields[int(ordering_column)]
             if ordering and ordering_direction == 'desc':
                 ordering = f"-{ordering}"
             if ordering:
