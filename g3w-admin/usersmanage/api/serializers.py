@@ -10,7 +10,8 @@ __date__ = '2022-12-06'
 __copyright__ = 'Copyright 2015 - 2022, Gis3w'
 
 
-from rest_framework.serializers import ModelSerializer
+from django.utils import formats
+from rest_framework.serializers import ModelSerializer, DateTimeField
 from rest_framework.fields import empty
 from core.models import MacroGroup
 from usersmanage.models import User
@@ -64,5 +65,8 @@ class G3WUserSerializer(ModelSerializer):
         # Set Macrogroups
         ret['macrogroups'] = [] if instance.is_superuser else \
             [mg.slug for mg in get_objects_for_user(instance, 'core.view_macrogroup', MacroGroup)]
+
+        # Set date_joined localized
+        ret['date_joined'] = formats.localize(instance.date_joined)
 
         return ret

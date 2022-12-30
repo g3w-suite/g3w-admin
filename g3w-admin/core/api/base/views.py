@@ -753,7 +753,7 @@ class G3WDTListAPIView(ListAPIView):
         # Filtering
         # -----------------------------
         filter = self.get_datable_filter_class()(fields, self.request)
-        queryset = queryset.filter(**filter.ksearchargs)
+        queryset = queryset.filter(*filter.asearchargs, **filter.ksearchargs)
 
         # Ordering
         # -----------------------------

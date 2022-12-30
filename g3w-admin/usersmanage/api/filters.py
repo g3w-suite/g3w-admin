@@ -9,6 +9,10 @@ __author__ = 'lorenzetti@gis3w.it'
 __date__ = '2022-12-06'
 __copyright__ = 'Copyright 2015 - 2022, Gis3w'
 
+from django.db.models import Q
+from usersmanage.models import Group as AuthGroup
+from usersmanage.configs import G3W_EDITOR1, G3W_EDITOR2, G3W_VIEWER1, G3W_VIEWER2
+
 
 class DTableUsersFilter(object):
 
@@ -19,6 +23,7 @@ class DTableUsersFilter(object):
 
         # Initialize ksearchargs
         self.ksearchargs = {}
+        self.asearchargs = []
         self.initialize_args()
 
     def initialize_args(self):
@@ -43,7 +48,20 @@ class DTableUsersFilter(object):
 
                             # No results if is not integer
                             self.ksearchargs[f] = -1
-                    # elif f == 'passaggio':
+                    elif f == 'roles':
+                        self.ksearchargs['groups__name__icontains'] = value
+                        self.ksearchargs['groups__name__in'] = [G3W_VIEWER1, G3W_VIEWER2, G3W_EDITOR2, G3W_EDITOR1]
+                    elif f == 'groups':
+                        groups = AuthGroup.objects.filter(~Q(name__in=[G3W_VIEWER1, G3W_VIEWER2, G3W_EDITOR2, G3W_EDITOR1]),
+                                                  name__icontains=value)
+
+                        self.ksearchargs['groups__name__in'] = [g.name for g in groups]
+                        #self.ksearchargs['groups__name__icontains'] = value
+                        #self.asearchargs.append(~Q(groups__name__in=[G3W_VIEWER1, G3W_VIEWER2, G3W_EDITOR2, G3W_EDITOR1]))
+
+
+
+                        # elif f == 'passaggio':
                     #
                     #     # Filter before state model
                     #     states = [s.value for s in Stati.objects.filter(desc__icontains=value)]

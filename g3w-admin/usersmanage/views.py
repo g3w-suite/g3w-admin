@@ -48,7 +48,7 @@ class UserListView(G3WRequestViewMixin, TemplateView):
         ctx = super().get_context_data(**kwargs)
 
         # Get data anda metadata of user
-        ctx['user_roles'] = ','.join([f'{g.name}' for g in get_roles(self.request.user)])
+        ctx['user_roles'] = ",".join([f"'{g.name}'" for g in get_roles(self.request.user)])
 
         return ctx
 

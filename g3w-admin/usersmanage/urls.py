@@ -18,8 +18,8 @@ urlpatterns = [
         name='user-group-by-user-role'),
 
     # user management
-    path('users/', login_required(UserListView.as_view()), name='user-list-new'),
-    path('users_old/', login_required(UserListViewOLD.as_view()), name='user-list'),
+    path('users/', login_required(UserListView.as_view()), name='user-list'),
+    path('users_old/', login_required(UserListViewOLD.as_view()), name='user-list-old'),
     path('users/add/', login_required(UserCreateView.as_view()), name='user-add'),
     path('users/<int:pk>/', login_required(UserDetailView.as_view()), name='user-detail'),
     path('users/update/<int:pk>/', login_required(UserUpdateView.as_view()), name='user-update'),

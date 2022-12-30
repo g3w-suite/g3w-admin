@@ -63,9 +63,10 @@ class DTUsersAPIView(G3WDTListAPIView):
             'roles',
             'groups',
             None,
-            None,
-            None,
+            'is_superuser',
+            'is_staff',
             'email',
             'first_name',
-            'last_name'
+            'last_name',
+            'date_joined'
         ]

@@ -4,13 +4,16 @@
 {% load guardian_tags %}
 {% load auth_extras %}
 {% load i18n %}
+{% load l10n %}
+
+{{ pippo|localize }}
 
 {% block custom_js_links_page %}
     <script>
         let data_url = '{% url "users-list-api" %}';
         let user_is_superuser = '{{ user.is_superuser }}';
         let user_is_staff = '{{ user.is_staff }}';
-        let user_roles = [{{ user_roles }}];
+        let user_roles = [{{ user_roles|safe }}];
 
         // General roles
         const G3W_EDITOR1 = '{{ G3W_EDITOR1 }}';
@@ -30,7 +33,7 @@
                         orderable: false,
                          render: function ( data, type, row, meta ) {
                             if (row['backend'] == 'g3wsuite') {
-                            return '<span class="col-xs-4 icon"><a href="{% url 'user-list' %}'+data+'/" data-toggle="tooltip" data-placement="top" title="{% trans 'Edit' %}" ><i class="ion ion-edit"></i></a></span>' +
+                            return '<span class="col-xs-4 icon"><a href="{% url 'user-list' %}update/'+data+'/" data-toggle="tooltip" data-placement="top" title="{% trans 'Edit' %}" ><i class="ion ion-edit"></i></a></span>' +
                                     '<span class="col-xs-4 icon"><a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Delete' %}"><i class="ion ion-trash-b"></i></a></span>'
                             } else {
                                 return ''
@@ -45,71 +48,78 @@
                         data: 'username',
                         orderable: true
                     }
-                    ]
+                ]
 
-        if (user_is_superuser == 'True' || 'Editor Level 1' in user_roles ){
-            columns = columns.concat([{
-                            data:'roles',
-                            orderable: false,
-                            render: function ( data, type, row, meta ) {
-                                ret = ''
-                                for (let i=0; i < data.length; i++){
-                                    if (data[i] == '{{ G3W_EDITOR1  }}') {
-                                        ret += '<span class="label label-danger">'+data[i]+'</span> ';
-                                    } else if (data[i] == '{{ G3W_EDITOR2  }}') {
-                                        ret += '<span class="label bg-purple">'+data[i]+'</span> ';
-                                    } else {
-                                        ret += '<span class="label label-success">'+data[i]+'</span> ';
-                                    }
-                                }
-                                return ret;
+
+
+            if (user_is_superuser == 'True' || _.indexOf(user_roles, 'Editor Level 1') != -1) {
+                columns = columns.concat([{
+                    data: 'roles',
+                    orderable: false,
+                    render: function (data, type, row, meta) {
+
+                        ret = ''
+                        for (let i = 0; i < data.length; i++) {
+                            if (data[i] == '{{ G3W_EDITOR1  }}') {
+                                ret += '<span class="label label-danger">' + data[i] + '</span> ';
+                            } else if (data[i] == '{{ G3W_EDITOR2  }}') {
+                                ret += '<span class="label bg-purple">' + data[i] + '</span> ';
+                            } else {
+                                ret += '<span class="label label-success">' + data[i] + '</span> ';
                             }
+                        }
+                        return ret;
+                    }
 
-                        },
-                        {
-                            data:'groups',
-                            orderable: false,
-                            render: function ( data, type, row, meta ) {
-                                ret = ''
-                                for (let i = 0; i < data.length; i++) {
-                                    ret += '<span class="label label-warning">'+data[i]+'</span> ';
-                                }
-                                return ret;
-                            }
-                        }])
+                },
+                {
+                    data: 'groups',
+                    orderable: false,
+                    render: function (data, type, row, meta) {
+                        ret = ''
+                        for (let i = 0; i < data.length; i++) {
+                            ret += '<span class="label label-warning">' + data[i] + '</span> ';
+                        }
+                        return ret;
+                    }
+                }])
 
-            if (user_is_superuser == 'True')
-                columns = columns.concat([
+                if (user_is_superuser == 'True') {
+                    columns = columns.concat([
                         {
-                            data:'macrogroups',
+                            data: 'macrogroups',
                             orderable: true
                         }])
-        }
+                 }
+            }
 
+
+            if (user_is_superuser == 'True' || user_is_staff == 'True') {
+                columns = columns.concat([{
+                            data:'is_superuser',
+                            orderable: true,
+                            render: function( data, type, row, meta ){
+                                ret = '';
+                                if (data)
+                                    ret = '<span class="fa fa-check-circle" style="color: orange"></span>';
+
+                                return ret;
+                            }
+                        },
+                        {
+                            data: 'is_staff',
+                            orderable: true,
+                            render: function( data, type, row, meta ){
+                                ret = '';
+                                if (data)
+                                    ret = '<span class="fa fa-check-circle" style="color: orange"></span>';
+
+                                return ret;
+                            }
+                        }])
+            }
 
             columns = columns.concat([{
-                        data:'is_superuser',
-                        orderable: true,
-                        render: function( data, type, row, meta ){
-                            ret = '';
-                            if (data)
-                                ret = '<span class="fa fa-check-circle" style="color: orange"></span>';
-
-                            return ret;
-                        }
-                    },
-                    {
-                        data: 'is_staff',
-                        orderable: true,
-                        render: function( data, type, row, meta ){
-                            ret = '';
-                            if (data)
-                                ret = '<span class="fa fa-check-circle" style="color: orange"></span>';
-
-                            return ret;
-                        }
-                    },
-                    {
                         data: 'email',
                         orderable: true
                     },
@@ -127,22 +137,25 @@
                     }
                 ])
 
-        if (user_is_superuser == 'True')
+        if (user_is_superuser == 'True') {
             columns = columns.concat([{
-                        data: 'backend',
-                        orderable: true
-                    }]);
+                data: 'backend',
+                orderable: false
+            }]);
+        }
 
+        console.log(columns);
 
         $(document).ready(function () {
             const dataTable = $('#users_table').DataTable({
-                'order': [[0, 'desc']],
+                'order': [[1, 'desc']],
                 'processing': false,
                 'serverSide': true,
-                'searching': true,
+                'searching': false,
                 "scrollX": true,
 
                 "initComplete": function () {
+
 
                     var api = this.api();
 
@@ -151,7 +164,6 @@
                         .columns()
                         .eq(0)
                         .each(function (colIdx) {
-                            console.log(colIdx);
                             // Set the header cell to contain the input element
                             var cell = $('.filters th').eq(
                                 $(api.column(colIdx).header()).index()
@@ -204,7 +216,6 @@
                 'ajax': {
                     url: data_url,
                     dataSrc: 'data',
-
                 },
 
                 'columns': columns
