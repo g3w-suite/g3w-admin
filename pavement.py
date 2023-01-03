@@ -17,13 +17,6 @@ BASE_PATH = 'g3w-admin'
 CURRENT_DIR = os.getcwd()
 sys.path.insert(0, CURRENT_DIR+'/'+BASE_PATH)
 
-FIXTURES = [
-    'BaseLayer.json',
-    'G3WGeneralDataSuite.json',
-    'G3WMapControls.json',
-    'G3WSpatialRefSys.json'
-]
-
 
 # take from geonode pavement.py: https://github.com/GeoNode/geonode/blob/master/pavement.py
 def kill(arg1, arg2):
@@ -73,61 +66,57 @@ def kill(arg1, arg2):
                         'Running processes are\n%s'
                         % (arg1, '\n'.join([l.strip() for l in lines])))
 
-
 @task
-@needs([
-    'install_yarn_components',
-    'requirements',
-    'sync',
-    'createsuperuser'
-])
+def deprecation_notice():
+    info("WARNING: pavement.py")
+    info("-------------------------------------------------")
+    info("")
+    info("this file will be removed in next major release,")
+    info("start using Makefile tasks as alternative solution")
+    info("")
+    info("-------------------------------------------------")
+
+
+@needs(['deprecation_notice'])
+@task
 def install():
     """
     Install G3W-SUITE
     """
-    info('G3W-SUITE installed with success')
+    sh("make install")
 
 
+@needs(['deprecation_notice'])
 @task
 def install_yarn_components():
-    info("Installing Yarn/Bower components...")
-    sh('yarn --ignore-engines --ignore-scripts --prod')
-    sh('node -e "try { require(\'fs\').symlinkSync(require(\'path\').resolve(\'node_modules/@bower_components\'), '
-       '\'g3w-admin/core/static/bower_components\', \'junction\') } catch (e) { }"')
-    info("Yarn/Bower components installed.")
+    sh("make install-node-requirements")
 
 
+@needs(['deprecation_notice'])
 @task
 def requirements():
-    info("Installing Python modules...")
-    sh('pip install -r requirements.txt')
-    sh('pip install -r requirements_huey.txt')
-    info("Python modules installed.")
+    sh("make install-python-requirements")
 
 
+@needs(['deprecation_notice'])
 @task
 def sync():
     """
     Run migrate for every modules
     """
-    sh("python {}/manage.py migrate --noinput".format(BASE_PATH))
-
-    # load fixture
-    for fixture in FIXTURES:
-        sh("python {}/manage.py loaddata {}".format(BASE_PATH, fixture))
-
-    # sync menu tree items
-    sh("python {}/manage.py sitetree_resync_apps".format(BASE_PATH))
+    sh("make migrations")
 
 
+@needs(['deprecation_notice'])
 @task
 def createsuperuser():
     """
     Create super user app
     """
-    sh("python {}/manage.py createsuperuser".format(BASE_PATH))
+    sh("make createsuperuser")
 
 
+@needs(['deprecation_notice'])
 @task
 @cmdopts([
     ('bind=', 'b', 'Bind server to provided IP address and port number.'),
@@ -137,10 +126,10 @@ def start():
     """
     Start G3W-SUITE
     """
-    bind = options.get('bind', '')
-    foreground = '' if options.get('foreground', False) else '&'
-    sh('python {}/manage.py runserver {} {}'.format(BASE_PATH, bind, foreground))
-    info("G3W-SUITE is now available.")
+    sh('make runserver bind={} foreground={}'.format(
+        options.get('bind', '0.0.0.0:8000'),
+        '' if options.get('foreground', False) else '&')
+    )
 
 
 @task

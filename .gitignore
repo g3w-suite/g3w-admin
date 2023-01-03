@@ -75,3 +75,6 @@ run_local*.sh
 /pymast
 
 /shared-volume
+
+Makefile.semver.mk
+Makefile.venv.mk

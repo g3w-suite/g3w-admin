@@ -7,6 +7,16 @@ var gulp = require('gulp'),
     flatten = require('gulp-flatten'),
     del = require('del');
 
+function deprecation_notice() {
+    console.log("WARNING: gulpfile.js")
+    console.log("-------------------------------------------------")
+    console.log("")
+    console.log("this file will be removed in next major release,")
+    console.log("start using Makefile tasks as alternative solution")
+    console.log("")
+    console.log("-------------------------------------------------")
+}
+
 gulp.task('build', function () {
     return gulp.src('g3w-admin/templates/base.html')
         .pipe(replace(/"{% static /g,''))
@@ -25,32 +35,17 @@ gulp.task('build', function () {
 });
 
 gulp.task('icheck_png', function () {
-  return gulp.src(['g3w-admin/core/static/bower_components/icheck/skins/flat/green*.png',
-                    'g3w-admin/core/static/bower_components/icheck/skins/flat/blue*.png'
-  ])
-    .pipe(flatten())
-    .pipe(gulp.dest('g3w-admin/core/static/dist/css/'))
+    deprecation_notice(); return require('child_process').exec('make icheck_png');
 });
 
 gulp.task('fonts', function () {
-  return gulp.src([
-      'g3w-admin/core/static/bower_components/**/*.{eot,ttf,woff,woff2}',
-      'g3w-admin/core/static/modules/**/*.{eot,ttf,woff,woff2}'
-  ])
-    .pipe(flatten())
-    .pipe(gulp.dest('g3w-admin/core/static/dist/fonts/'))
+    deprecation_notice(); return require('child_process').exec('make fonts');
 });
 
 gulp.task('font-summernote', function () {
-  return gulp.src([
-      'g3w-admin/core/static/modules/summernote/font/*.{eot,ttf,woff,woff2}'
-  ])
-    .pipe(flatten())
-    .pipe(gulp.dest('g3w-admin/core/static/dist/css/font/'))
+    deprecation_notice(); return require('child_process').exec('make font-summernote');
 });
 
-gulp.task('default', ['build', 'icheck_png', 'fonts', 'font-summernote'], function(){
-    return del([
-      'g3w-admin/core/static/dist/base.html'
-    ]);
+gulp.task('default', function(){
+    deprecation_notice(); return require('child_process').exec('make build-assets');
 });
