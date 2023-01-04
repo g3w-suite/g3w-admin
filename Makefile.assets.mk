@@ -3,6 +3,14 @@
 ##
 
 ##
+# Common files and folder paths
+##
+BOWER_COMPONENTS_FOLDER = g3w-admin/core/static/bower_components
+LOCAL_SETTINGS_FILE =     g3w-admin/base/settings/local_settings.py
+SHARED_VOLUME =           /shared-volume
+APPS_FOLDER =            g3w-admin
+
+##
 # TODO: find out how to remove gulp as dependency (ref: gulp-useref, gulp-uglify, gulp-clean-css)
 #
 # Generate CSS an JS bundles:
@@ -51,3 +59,51 @@ fonts-summernote: DEST_FOLDER = g3w-admin/core/static/dist/css/font/
 fonts-summernote:
 	cp -vi ${INPUT_FILES} ${DEST_FOLDER}
 
+##
+# Symlink folders:
+#
+# node_modules/@bower_components <--> g3w-admin/core/static/bower_components
+##
+$(BOWER_COMPONENTS_FOLDER):
+	yarn --ignore-engines --ignore-scripts --prod ;\
+	nodejs -e "try { require('fs').symlinkSync(require('path').resolve('node_modules/@bower_components'), $(BOWER_COMPONENTS_FOLDER), 'junction') } catch (e) { console.log(e); }"
+
+##
+# Copy file:
+#
+# docker_settings.py --> g3w-admin/base/settings/local_settings.py
+##
+$(LOCAL_SETTINGS_FILE):
+	cp ./settings_docker.py ./g3w-admin/base/settings/local_settings.py
+
+##
+# Make folder:
+#
+# /shared-volume/media
+##
+$(SHARED_VOLUME)/media:
+	cd $(SHARED_VOLUME) && mkdir media
+
+##
+# Make folder:
+#
+# /shared-volume/static
+##
+$(SHARED_VOLUME)/static: $(SHARED_VOLUME)/media
+	cd $(SHARED_VOLUME) && ln -s media static
+
+##
+# Make folder:
+#
+# /shared-volume/media/projects
+##
+$(SHARED_VOLUME)/media/projects: $(SHARED_VOLUME)/media
+	cd $(SHARED_VOLUME)/media && mkdir projects
+
+##
+# Make folder: 
+#
+# /shared-volume/project_data
+##
+$(SHARED_VOLUME)/project_data:
+	cd $(SHARED_VOLUME) && mkdir project_data

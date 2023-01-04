@@ -3,17 +3,14 @@
 ##
 
 ##
+# Add here common files and folder paths
+##
+include Makefile.assets.mk
+
+##
 # Initial database structure
 ##
 G3W_ADMIN_FIXTURES =      BaseLayer.json G3WGeneralDataSuite.json G3WMapControls.json G3WSpatialRefSys.json
-
-##
-# Common files and folder paths
-##
-BOWER_COMPONENTS_FOLDER = g3w-admin/core/static/bower_components
-LOCAL_SETTINGS_FILE =     g3w-admin/base/settings/local_settings.py
-SHARED_VOLUME =           /shared-volume
-APPS_FOLDER ?=            g3w-admin
 
 ##
 # Shell commands
@@ -86,43 +83,6 @@ install-node-requirements:
 ##
 install-suite: install-node-requirements install-python-requirements migrations createsuperuser
 	@echo G3W-SUITE installed with success!
-
-##
-# Symlink folders: "node_modules/@bower_components" <--> "g3w-admin/core/static/bower_components"
-##
-$(BOWER_COMPONENTS_FOLDER):
-	yarn --ignore-engines --ignore-scripts --prod ;\
-	nodejs -e "try { require('fs').symlinkSync(require('path').resolve('node_modules/@bower_components'), $(BOWER_COMPONENTS_FOLDER), 'junction') } catch (e) { console.log(e); }"
-
-##
-# Copy file: "docker_settings.py --> g3w-admin/base/settings/local_settings.py"
-##
-$(LOCAL_SETTINGS_FILE):
-	cp ./settings_docker.py ./g3w-admin/base/settings/local_settings.py
-
-##
-# Make folder: "/shared-volume/media"
-##
-$(SHARED_VOLUME)/media:
-	cd $(SHARED_VOLUME) && mkdir media
-
-##
-# Make folder: "/shared-volume/static"
-##
-$(SHARED_VOLUME)/static: $(SHARED_VOLUME)/media
-	cd $(SHARED_VOLUME) && ln -s media static
-
-##
-# Make folder: "/shared-volume/media/projects"
-##
-$(SHARED_VOLUME)/media/projects: $(SHARED_VOLUME)/media
-	cd $(SHARED_VOLUME)/media && mkdir projects
-
-##
-# Make folder: "/shared-volume/project_data"
-##
-$(SHARED_VOLUME)/project_data:
-	cd $(SHARED_VOLUME) && mkdir project_data
 
 ##
 # Setup G3W-SUITE (run this inside a docker container)

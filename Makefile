@@ -50,5 +50,4 @@ list-tasks:
 ##
 # Include here any project specific tasks
 ##
-include Makefile.assets.mk
-include Makefile.server.mk
+include Makefile.tasks.mk
