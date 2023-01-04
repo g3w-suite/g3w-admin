@@ -201,35 +201,35 @@ tests:
 
 	# Copy current code into the container
 	@echo "---------------------------------"
-	$(DOCKER_COMPOSE) cp . g3w-suite:/code/
+	docker cp ./ "$$($(DOCKER_COMPOSE) ps -q g3w-suite)":/code
 
 	# Install Python requirements
 	@echo "---------------------------------"
-	$(DOCKER_COMPOSE) exec g3w-suite sh -c "cd /code/ && python3 -m pip install pip==20.0.2 && pip3 install -r requirements_docker.txt && pip3 install -r requirements_huey.txt"
-	$(DOCKER_COMPOSE) exec g3w-suite sh -c "cd /code/ && pip3 install -r g3w-admin/caching/requirements.txt"
-	$(DOCKER_COMPOSE) exec g3w-suite sh -c "cd /code/ && pip3 install -r g3w-admin/filemanager/requirements.txt"
-	$(DOCKER_COMPOSE) exec g3w-suite sh -c "cd /code/ && pip3 install -r g3w-admin/qplotly/requirements.txt"
-	$(DOCKER_COMPOSE) exec g3w-suite sh -c "cd /code/ && pip3 install -r g3w-admin/openrouteservice/requirements.txt && pip3 install -r g3w-admin/openrouteservice/requirements_testing.txt"
+	$(DOCKER_COMPOSE) exec --no-TTY g3w-suite sh -c "cd /code/ && python3 -m pip install pip==20.0.2 && pip3 install -r requirements_docker.txt && pip3 install -r requirements_huey.txt"
+	$(DOCKER_COMPOSE) exec --no-TTY g3w-suite sh -c "cd /code/ && pip3 install -r g3w-admin/caching/requirements.txt"
+	$(DOCKER_COMPOSE) exec --no-TTY g3w-suite sh -c "cd /code/ && pip3 install -r g3w-admin/filemanager/requirements.txt"
+	$(DOCKER_COMPOSE) exec --no-TTY g3w-suite sh -c "cd /code/ && pip3 install -r g3w-admin/qplotly/requirements.txt"
+	$(DOCKER_COMPOSE) exec --no-TTY g3w-suite sh -c "cd /code/ && pip3 install -r g3w-admin/openrouteservice/requirements.txt && pip3 install -r g3w-admin/openrouteservice/requirements_testing.txt"
 
 	# Symlink bower components folder
 	@echo "----------------------"
-	$(DOCKER_COMPOSE) exec g3w-suite sh -c "$(MAKE) --no-print-directory $(BOWER_COMPONENTS_FOLDER)"
+	$(DOCKER_COMPOSE) exec --no-TTY g3w-suite sh -c "$(MAKE) --no-print-directory $(BOWER_COMPONENTS_FOLDER)"
 
 	# Setup suite
 	@echo "----------------------"
-	$(DOCKER_COMPOSE) exec g3w-suite sh -c "$(MAKE) --no-print-directory setup-suite"
+	$(DOCKER_COMPOSE) exec --no-TTY g3w-suite sh -c "$(MAKE) --no-print-directory setup-suite"
 
 	if [ "$(mode)" = "test" ]; then \
-		$(DOCKER_COMPOSE) exec g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test core" ;\
-		$(DOCKER_COMPOSE) exec g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test qdjango" ;\
-		$(DOCKER_COMPOSE) exec g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test usersmanage" ;\
-		$(DOCKER_COMPOSE) exec g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test client" ;\
-		$(DOCKER_COMPOSE) exec g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test editing.tests" ;\
-		$(DOCKER_COMPOSE) exec g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test caching" ;\
-		$(DOCKER_COMPOSE) exec g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test filemanager" ;\
-		$(DOCKER_COMPOSE) exec g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test qplolty" ;\
-		$(DOCKER_COMPOSE) exec g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test openrouteservice" ;\
-		$(DOCKER_COMPOSE) exec g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test qtimeseries" ;\
+		$(DOCKER_COMPOSE) exec --no-TTY g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test core" ;\
+		$(DOCKER_COMPOSE) exec --no-TTY g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test qdjango" ;\
+		$(DOCKER_COMPOSE) exec --no-TTY g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test usersmanage" ;\
+		$(DOCKER_COMPOSE) exec --no-TTY g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test client" ;\
+		$(DOCKER_COMPOSE) exec --no-TTY g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test editing.tests" ;\
+		$(DOCKER_COMPOSE) exec --no-TTY g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test caching" ;\
+		$(DOCKER_COMPOSE) exec --no-TTY g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test filemanager" ;\
+		$(DOCKER_COMPOSE) exec --no-TTY g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test qplolty" ;\
+		$(DOCKER_COMPOSE) exec --no-TTY g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test openrouteservice" ;\
+		$(DOCKER_COMPOSE) exec --no-TTY g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test qtimeseries" ;\
 	else \
-		$(DOCKER_COMPOSE) exec g3w-suite bash ;\
+		$(DOCKER_COMPOSE) exec --no-TTY g3w-suite bash ;\
 	fi
