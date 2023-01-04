@@ -19,7 +19,7 @@ help: list-tasks
 ##
 # Download required packages
 ##
-install: clean $(INCLUDE_MAKEFILES) venv install-reqs
+install: $(INCLUDE_MAKEFILES) venv install-reqs
 	@:
 
 ##
