@@ -23,7 +23,10 @@ jobs:
 
     - name:  Running g3w-admin tests
       run: |
-        make tests q=${{ matrix.qgis_version }} mode=test
+        make tests \
+          q=${{ matrix.qgis_version }} \
+          mode=test \
+          DOCKER_COMPOSE="docker-compose -f docker-compose.${{ matrix.qgis_version }}.yml"
 
     - name: Setup tmate session
       if: ${{ failure() }}

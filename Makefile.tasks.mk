@@ -175,6 +175,8 @@ tests: q = 322
 tests: mode = build
 tests: DOCKER_COMPOSE := "docker compose -f docker-compose.$(q).yml"
 tests:
+	docker-compose version
+
 	# Launch the docker compose locally
 	# and a shell to run tests from local
 	# repo mounted as /code in the container
