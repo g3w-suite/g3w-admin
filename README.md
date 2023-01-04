@@ -1,6 +1,6 @@
-![G3W-Suite CI Tests](https://github.com/g3w-suite/g3w-admin/actions/workflows/test_runner.yml/badge.svg)
-
 # G3W-ADMIN
+
+![G3W-Suite CI Tests](https://github.com/g3w-suite/g3w-admin/actions/workflows/test_runner.yml/badge.svg)
 
 G3W-SUITE admin server based on Python - Django (v2.2) and QGIS Server LTR (v3.22)
 
