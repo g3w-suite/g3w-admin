@@ -192,16 +192,16 @@ tests:
 
 	cp settings_docker.py ./g3w-admin/base/settings/local_settings.py
 
-	# Start containers
+	# Start Docker container
 	@echo "------------------------------"
 	$(DOCKER_COMPOSE) down
 	$(DOCKER_COMPOSE) up -d
 
-	# Copy current code into containers
+	# Copy current code into the container
 	@echo "---------------------------------"
 	$(DOCKER_COMPOSE) cp . g3w-suite:/code/
 
-	# Execute pip3 install requirements
+	# Install Python requirements
 	@echo "---------------------------------"
 	$(DOCKER_COMPOSE) exec g3w-suite sh -c "cd /code/ && python3 -m pip install pip==20.0.2 && pip3 install -r requirements_docker.txt && pip3 install -r requirements_huey.txt"
 	$(DOCKER_COMPOSE) exec g3w-suite sh -c "cd /code/ && pip3 install -r g3w-admin/caching/requirements.txt"
@@ -209,13 +209,13 @@ tests:
 	$(DOCKER_COMPOSE) exec g3w-suite sh -c "cd /code/ && pip3 install -r g3w-admin/qplotly/requirements.txt"
 	$(DOCKER_COMPOSE) exec g3w-suite sh -c "cd /code/ && pip3 install -r g3w-admin/openrouteservice/requirements.txt && pip3 install -r g3w-admin/openrouteservice/requirements_testing.txt"
 
-	# Execute build_suite.sh
+	# Symlink bower components folder
 	@echo "----------------------"
-	$(DOCKER_COMPOSE) exec g3w-suite sh -c "/code/ci_scripts/build_suite.sh"
+	$(DOCKER_COMPOSE) exec g3w-suite sh -c "$(MAKE) --no-print-directory $(BOWER_COMPONENTS_FOLDER)"
 
-	# Execute setup_suite.sh
+	# Setup suite
 	@echo "----------------------"
-	$(DOCKER_COMPOSE) exec g3w-suite sh -c "/code/ci_scripts/setup_suite.sh"
+	$(DOCKER_COMPOSE) exec g3w-suite sh -c "$(MAKE) --no-print-directory setup-suite"
 
 	if [ $(mode) == "test" ]; then \
 		$(DOCKER_COMPOSE) exec g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test core" ;\
