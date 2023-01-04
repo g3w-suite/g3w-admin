@@ -728,7 +728,7 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
             crs = QgsCoordinateReferenceSystem(f'EPSG:{ret["crs"]}')
 
             # Patch for Proj4 > 4.9.3 version
-            if ret["crs"] in settings.G3W_PROJ4_EPSG.KEY():
+            if ret["crs"] in settings.G3W_PROJ4_EPSG.keys():
                 proj4 = settings.G3W_PROJ4_EPSG[ret["crs"]]
             else:
                 proj4 = crs.toProj4()
