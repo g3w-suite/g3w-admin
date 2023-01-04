@@ -175,7 +175,7 @@ tests: q = 322
 tests: mode = build
 tests: DOCKER_COMPOSE := "docker compose -f docker-compose.$(q).yml"
 tests:
-	docker-compose version
+	@docker-compose version
 
 	# Launch the docker compose locally
 	# and a shell to run tests from local
@@ -205,11 +205,12 @@ tests:
 
 	# Install Python requirements
 	@echo "---------------------------------"
-	$(DOCKER_COMPOSE) exec --no-TTY g3w-suite sh -c "cd /code/ && python3 -m pip install pip==20.0.2 && pip3 install -r requirements_docker.txt && pip3 install -r requirements_huey.txt"
-	$(DOCKER_COMPOSE) exec --no-TTY g3w-suite sh -c "cd /code/ && pip3 install -r g3w-admin/caching/requirements.txt"
-	$(DOCKER_COMPOSE) exec --no-TTY g3w-suite sh -c "cd /code/ && pip3 install -r g3w-admin/filemanager/requirements.txt"
-	$(DOCKER_COMPOSE) exec --no-TTY g3w-suite sh -c "cd /code/ && pip3 install -r g3w-admin/qplotly/requirements.txt"
-	$(DOCKER_COMPOSE) exec --no-TTY g3w-suite sh -c "cd /code/ && pip3 install -r g3w-admin/openrouteservice/requirements.txt && pip3 install -r g3w-admin/openrouteservice/requirements_testing.txt"
+	DOCKER_EXEC="$(DOCKER_COMPOSE) exec --no-TTY --workdir /code g3w-suite" ;\
+	$${DOCKER_EXEC} sh -c "python3 -m pip install pip==20.0.2 && pip3 install -r requirements_docker.txt && pip3 install -r requirements_huey.txt" ;\
+	$${DOCKER_EXEC} sh -c "pip3 install -r g3w-admin/caching/requirements.txt" ;\
+	$${DOCKER_EXEC} sh -c "pip3 install -r g3w-admin/filemanager/requirements.txt" ;\
+	$${DOCKER_EXEC} sh -c "pip3 install -r g3w-admin/qplotly/requirements.txt" ;\
+	$${DOCKER_EXEC} sh -c "pip3 install -r g3w-admin/openrouteservice/requirements.txt && pip3 install -r g3w-admin/openrouteservice/requirements_testing.txt"
 
 	# Symlink bower components folder
 	@echo "----------------------"
@@ -220,16 +221,17 @@ tests:
 	$(DOCKER_COMPOSE) exec --no-TTY g3w-suite sh -c "$(MAKE) --no-print-directory setup-suite"
 
 	if [ "$(mode)" = "test" ]; then \
-		$(DOCKER_COMPOSE) exec --no-TTY g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test core" ;\
-		$(DOCKER_COMPOSE) exec --no-TTY g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test qdjango" ;\
-		$(DOCKER_COMPOSE) exec --no-TTY g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test usersmanage" ;\
-		$(DOCKER_COMPOSE) exec --no-TTY g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test client" ;\
-		$(DOCKER_COMPOSE) exec --no-TTY g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test editing.tests" ;\
-		$(DOCKER_COMPOSE) exec --no-TTY g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test caching" ;\
-		$(DOCKER_COMPOSE) exec --no-TTY g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test filemanager" ;\
-		$(DOCKER_COMPOSE) exec --no-TTY g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test qplolty" ;\
-		$(DOCKER_COMPOSE) exec --no-TTY g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test openrouteservice" ;\
-		$(DOCKER_COMPOSE) exec --no-TTY g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test qtimeseries" ;\
+		DOCKER_EXEC="$(DOCKER_COMPOSE) exec --no-TTY --workdir /code/g3w-admin g3w-suite" ;\
+		$${DOCKER_EXEC} sh -c "python3 manage.py test core" ;\
+		$${DOCKER_EXEC} sh -c "python3 manage.py test qdjango" ;\
+		$${DOCKER_EXEC} sh -c "python3 manage.py test usersmanage" ;\
+		$${DOCKER_EXEC} sh -c "python3 manage.py test client" ;\
+		$${DOCKER_EXEC} sh -c "python3 manage.py test editing.tests" ;\
+		$${DOCKER_EXEC} sh -c "python3 manage.py test caching" ;\
+		$${DOCKER_EXEC} sh -c "python3 manage.py test filemanager" ;\
+		$${DOCKER_EXEC} sh -c "python3 manage.py test qplolty" ;\
+		$${DOCKER_EXEC} sh -c "python3 manage.py test openrouteservice" ;\
+		$${DOCKER_EXEC} sh -c "python3 manage.py test qtimeseries" ;\
 	else \
 		$(DOCKER_COMPOSE) exec --no-TTY g3w-suite bash ;\
 	fi
