@@ -21,7 +21,7 @@ jobs:
       run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
       id: extract_branch
 
-    - name:  Running g3w-admin qtimeseries tests
+    - name:  Running g3w-admin tests
       run: |
         make tests q=${{ matrix.qgis_version }} mode=test
 

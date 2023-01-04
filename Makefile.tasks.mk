@@ -113,7 +113,7 @@ setup-suite: \
 	rm -rf $(SHARED_VOLUME)/static
 
 	# Collect static assets
-	if [[ -z $${G3WSUITE_DEBUG} || $${G3WSUITE_DEBUG} != "True" ]]; then \
+	if [ -z $${G3WSUITE_DEBUG} ] || [ $${G3WSUITE_DEBUG} != "True" ]; then \
 		$(PYTHON) $(APPS_FOLDER)/manage.py collectstatic --noinput -v 0 ;\
 	fi
 
@@ -179,7 +179,7 @@ tests:
 	# and a shell to run tests from local
 	# repo mounted as /code in the container
 
-	if [ $(mode) == "down" ]; then \
+	if [ "$(mode)" = "down" ]; then \
 		$(DOCKER_COMPOSE) down ;\
 		exit 1 ;\
 	fi
@@ -217,7 +217,7 @@ tests:
 	@echo "----------------------"
 	$(DOCKER_COMPOSE) exec g3w-suite sh -c "$(MAKE) --no-print-directory setup-suite"
 
-	if [ $(mode) == "test" ]; then \
+	if [ "$(mode)" = "test" ]; then \
 		$(DOCKER_COMPOSE) exec g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test core" ;\
 		$(DOCKER_COMPOSE) exec g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test qdjango" ;\
 		$(DOCKER_COMPOSE) exec g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test usersmanage" ;\
