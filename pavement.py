@@ -50,7 +50,7 @@ def kill(arg1, arg2):
         running = False
         for line in lines:
             # this kills all java.exe and python including self in windows
-            if ('%s' % arg2 in line) or (os.name == 'nt' and '%s' % arg1 in line):
+            if (bytes(arg2,'UTF-8') in line) or (os.name == 'nt' and bytes(arg2,'UTF-8') in line):
                 running = True
 
                 # Get pid
@@ -102,6 +102,26 @@ def requirements():
     info("Installing Python modules...")
     sh('pip install -r requirements.txt')
     sh('pip install -r requirements_huey.txt')
+    try:
+        sh('pip install -r g3w-admin/caching/requirements.txt')
+    except:
+        info("`Caching` module not active")
+
+    try:
+        sh('pip install -r g3w-admin/filemanager/requirements.txt')
+    except:
+        info("`Filemanager` module not active")
+
+    try:
+        sh('pip install -r g3w-admin/qplotly/requirements.txt')
+    except:
+        info("`Qplotly` module not active")
+
+    try:
+        sh('pip install -r g3w-admin/openrouteservice/requirements.txt')
+    except:
+        info("`Openrouteservice` module not active")
+
     info("Python modules installed.")
 
 

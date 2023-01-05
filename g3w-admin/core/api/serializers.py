@@ -98,8 +98,8 @@ class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         crs = QgsCoordinateReferenceSystem(f'EPSG:{self.instance.srid.srid}')
 
         # Patch for Proj4 > 4.9.3 version
-        if self.instance.srid.srid == 3003:
-            proj4 = settings.PROJ4_EPSG_3003
+        if self.instance.srid.srid in settings.G3W_PROJ4_EPSG.keys():
+            proj4 = settings.G3W_PROJ4_EPSG[self.instance.srid.srid]
         else:
             proj4 = crs.toProj4()
 

@@ -264,8 +264,8 @@ class InterfaceOws(G3WAPIView):
             for srid in ows[al].crsOptions:
                 crs = QgsCoordinateReferenceSystem(f"EPSG:{srid}")
 
-                if crs.postgisSrid() == 3003:
-                    proj4 = settings.PROJ4_EPSG_3003
+                if crs.postgisSrid() in settings.G3W_PROJ4_EPSG.keys():
+                    proj4 = settings.G3W_PROJ4_EPSG[crs.postgisSrid()]
                 else:
                     proj4 = crs.toProj4()
 
