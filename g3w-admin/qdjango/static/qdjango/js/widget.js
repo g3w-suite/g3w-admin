@@ -591,8 +591,9 @@ ga.Qdjango.widgetEditor = {
     widgetSelect.trigger("change")
     if (that.isset(values) && that.isset(values.input.options["dependance"])) cmpDependanceSelect.val($("<div/>").html(values.input.options["dependance"]).text())
     if (that.isset(values) && that.isset(values.input.options["dependance_strict"])){
-      $dependence_strict.find("input").prop("checked","checked");
-      if (that.isset(values.input.options["dependance"])) {
+      if (values.input.options["dependance_strict"])
+        $dependence_strict.find("input").prop("checked","checked");
+      if (values.input.options["dependance"]) {
         $dependence_strict.removeClass("invisible");
         div.find(".cmpDependanceStrictLabel").removeClass("invisible");
       }
