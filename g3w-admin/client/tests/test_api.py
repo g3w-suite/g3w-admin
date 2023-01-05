@@ -130,7 +130,8 @@ class ClientApiTest(CoreTestBase):
             'epsg': 4326,
             'proj4': '+proj=longlat +datum=WGS84 +no_defs',
             'geographic': True,
-            'axisinverted': True
+            'axisinverted': True,
+            'extent': [-180.0, -90.0, 180.0, 90.0]
         })
         self.assertEqual(resp["group"]["mapcontrols"], ['zoomtoextent', 'zoom', 'zoombox', 'query', 'querybbox', 'querybypolygon', 'overview', 'scaleline', 'geolocation', 'streetview', 'nominatim', 'addlayers', 'length', 'area', 'mouseposition', 'scale'])
         self.assertEqual(resp["group"]["header_logo_img"], "logo_img/qgis-logo.png")
@@ -314,7 +315,8 @@ class ClientApiTest(CoreTestBase):
                             'epsg': 4326,
                             'proj4': '+proj=longlat +datum=WGS84 +no_defs',
                             'geographic': True,
-                            'axisinverted': True
+                            'axisinverted': True,
+                            'extent': [-180.0, -90.0, 180.0, 90.0]
                         })
 
             if l['id'] == 'spatialite_points20190604101052075':
@@ -371,7 +373,8 @@ class ClientApiTest(CoreTestBase):
                     'epsg': 4326,
                     'proj4': '+proj=longlat +datum=WGS84 +no_defs',
                     'geographic': True,
-                    'axisinverted': True
+                    'axisinverted': True,
+                    'extent': [-180.0, -90.0, 180.0, 90.0]
                 })
 
             if l['id'] == 'bluemarble20181008111156906':
@@ -391,7 +394,8 @@ class ClientApiTest(CoreTestBase):
                     'epsg': 4326,
                     'proj4': '+proj=longlat +datum=WGS84 +no_defs',
                     'geographic': True,
-                    'axisinverted': True
+                    'axisinverted': True,
+                    'extent': [-180.0, -90.0, 180.0, 90.0]
                 })
 
     def test_custom_layer_order(self):
