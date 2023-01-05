@@ -1,4 +1,4 @@
-from pyproj import Proj, transform
+
 
 def camel_geometry_type(geometry_type):
     """
