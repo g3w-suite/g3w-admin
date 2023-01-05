@@ -262,7 +262,7 @@ class InterfaceOws(G3WAPIView):
             # Build crs
             crss = []
             for srid in ows[al].crsOptions:
-                crs = QgsCoordinateReferenceSystem(srid)
+                crs = QgsCoordinateReferenceSystem(f"EPSG:{srid}")
 
                 if crs.postgisSrid() == 3003:
                     proj4 = settings.PROJ4_EPSG_3003
@@ -273,7 +273,8 @@ class InterfaceOws(G3WAPIView):
                     'epsg': crs.postgisSrid(),
                     'proj4': proj4,
                     'geographic': crs.isGeographic(),
-                    'axisinverted': crs.hasAxisInverted()
+                    'axisinverted': crs.hasAxisInverted(),
+                    'extent': get_crs_bbox(crs)
 
                 })
 
