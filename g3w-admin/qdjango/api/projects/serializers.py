@@ -403,7 +403,12 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
                             self, layer=layer, ret=ret, widget=widget)
 
         for l in ret['layerstree']:
-            readLeaf(l, ret['layerstree'])
+            try:
+                readLeaf(l, ret['layerstree'])
+            except KeyError as ex:
+                logger.error(
+                   'Layer %s is missing from QGIS project!' % l['id'])
+
 
         # remove layers from layerstree
         for to_remove in to_remove_from_layerstree:
