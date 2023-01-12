@@ -144,8 +144,6 @@
             }]);
         }
 
-        console.log(columns);
-
         $(document).ready(function () {
             const dataTable = $('#users_table').DataTable({
                 'order': [[1, 'desc']],
@@ -204,6 +202,9 @@
                                     $(this)
                                         .focus()[0]
                                         .setSelectionRange(cursorPosition, cursorPosition);
+                                })
+                                .on('click', function (e) {
+                                    e.stopPropagation();
                                 });
                         });
 
