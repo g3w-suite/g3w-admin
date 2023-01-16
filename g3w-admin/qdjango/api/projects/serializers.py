@@ -294,13 +294,16 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         ret['initextent'], ret['extent'] = self.get_map_extent(instance)
 
         # Check Geoconstraint rule whit autozoom flagged and calculate new initentext
-        initextent_by_geoconstraint = GeoConstraintRule.get_max_extent_on_project_for_user(
-            self.instance,
-            self.request.user
-        )
+        try:
+            initextent_by_geoconstraint = GeoConstraintRule.get_max_extent_on_project_for_user(
+                self.instance,
+                self.request.user
+            )
 
-        if initextent_by_geoconstraint:
-            ret['initextent'] = initextent_by_geoconstraint
+            if initextent_by_geoconstraint:
+                ret['initextent'] = initextent_by_geoconstraint
+        except Exception as e:
+            logger.error(f'[Project serializer] Initextent by geocontraint error: {str(e)}')
 
         ret['print'] = json.loads(clean_for_json(
             instance.layouts)) if instance.layouts else []
