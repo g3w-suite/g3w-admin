@@ -526,16 +526,15 @@ class BaseVectorApiView(G3WAPIView):
             # Search for fields date datetime and time
             date_fields = []
             for f in self.metadata_layer.qgis_layer.fields():
-                if f.typeName().lower() in ('date', 'datetime', 'time'):
+                if f.typeName().lower() in ('date', 'datetime', 'time', 'timestamp'):
                     date_fields.append(f)
 
 
             # check for formatter query url param and check if != 0
+            export_features = False
             if 'formatter' in request.query_params:
                 formatter = request.query_params.get('formatter')
-                if formatter.isnumeric() and int(formatter) == 0:
-                    export_features = False
-                else:
+                if formatter.isnumeric() and int(formatter) == 1:
                     export_features = True
 
             if export_features:
@@ -567,16 +566,18 @@ class BaseVectorApiView(G3WAPIView):
                     for f in date_fields:
                         field_idx = self.metadata_layer.qgis_layer.fields().indexFromName(f.name())
                         options = self.metadata_layer.qgis_layer.editorWidgetSetup(field_idx).config()
-                        if 'field_iso_format' in options and not options['field_iso_format']:
+                        if 'field_iso_format' in options:
                             try:
 
                                 # Formatter 0
                                 if export_features:
                                     jfeature['properties'][f.name()] = feature.attribute(f.name()) \
-                                        .toString(options['field_format'])
-                                else:
-                                    jfeature['properties'][f.name()] = feature.attribute(f.name()) \
                                         .toString(options['display_format'])
+                                else:
+                                    if not options['field_iso_format']:
+                                        jfeature['properties'][f.name()] = feature.attribute(f.name()) \
+                                            .toString(options['field_format'])
+
                             except:
                                 pass
 
