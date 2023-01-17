@@ -42,7 +42,7 @@ from core.tests.base import CoreTestBase
 from core.utils.qgisapi import get_qgs_project, get_qgis_layer
 
 from .base import QdjangoTestBase, CURRENT_PATH, TEST_BASE_PATH, QGS310_WIDGET_FILE, CoreGroup, G3WSpatialRefSys, \
-    QGS322_FILE, QGS322_INITEXTENT_GEOCONSTRAINT_FILE
+    QGS322_FILE, QGS322_INITEXTENT_GEOCONSTRAINT_FILE, QGS322_FORMATTING_DATE
 from qgis.core import QgsFeatureRequest, QgsRasterLayer, QgsVectorLayer
 from qgis.PyQt.QtCore import QTemporaryDir
 from qgis.server import QgsServerProjectUtils
@@ -519,6 +519,12 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         cls.project322.title = 'A project QGIS 3.22 - fields selected for WMS service'
         cls.project322.group = cls.project_group
         cls.project322.save()
+
+        # Add new project for date datetime formatting
+        qgis_project_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS322_FORMATTING_DATE), 'r'))
+        cls.project322_datewidget = QgisProject(qgis_project_file)
+        cls.project322_datewidget.group = cls.project_group
+        cls.project322_datewidget.save()
 
     @classmethod
     def tearDownClass(cls):
@@ -1048,7 +1054,6 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         properties = resp["vector"]["data"]["features"][1]["properties"]
         self.assertEqual(properties['type'], 'B')
 
-        # FIXME: a possibile bug of QGIS 3.10.10, ask Elpaso.
         # add fromatter query url param
         # formatter=1
         response = self._testApiCall(
@@ -1066,7 +1071,7 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         properties = resp["vector"]["data"]["features"][1]["properties"]
         self.assertEqual(properties['type'], 'TYPE B')
 
-        # formatter=string
+        # formatter=string like formatter=0
         response = self._testApiCall(
             'core-vector-api', [
                 'data',
@@ -1078,9 +1083,9 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         # check for value relation
         resp = json.loads(response.content)
         properties = resp["vector"]["data"]["features"][0]["properties"]
-        self.assertEqual(properties['type'], 'TYPE A')
+        self.assertEqual(properties['type'], 'A')
         properties = resp["vector"]["data"]["features"][1]["properties"]
-        self.assertEqual(properties['type'], 'TYPE B')
+        self.assertEqual(properties['type'], 'B')
 
         # formatter=0
         response = self._testApiCall(
@@ -1097,6 +1102,74 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         self.assertEqual(properties['type'], 'A')
         properties = resp["vector"]["data"]["features"][1]["properties"]
         self.assertEqual(properties['type'], 'B')
+
+        # TESTING FOR DATE AND DATETIME WIDGET
+        # ---------------------------------------------------------------
+
+        # Formatter not sent
+        response = self._testApiCall(
+            'core-vector-api', [
+                'data',
+                'qdjango',
+                self.project322_datewidget.instance.pk,
+                'point_b6dd0a53_98fb_47d7_b110_200496711f86'])
+
+        resp = json.loads(response.content)
+        properties = resp["vector"]["data"]["features"][0]["properties"]
+        self.assertEqual(properties['date_n'], '17/01/23')
+        self.assertEqual(properties['date_y'], '17/01/23')
+        self.assertEqual(properties['datetime_n'], '17/01/23 08:40:04')
+        self.assertEqual(properties['datetime_y'], '2023-01-17T08:39:58.000')
+
+        properties = resp["vector"]["data"]["features"][1]["properties"]
+        self.assertEqual(properties['date_n'], '18/02/23')
+        self.assertEqual(properties['date_y'], '17/01/25')
+        self.assertEqual(properties['datetime_n'], '18/02/23 08:40:40')
+        self.assertEqual(properties['datetime_y'], '2026-01-17T08:40:47.000')
+
+        # Formatter = 0
+        response = self._testApiCall(
+            'core-vector-api', [
+                'data',
+                'qdjango',
+                self.project322_datewidget.instance.pk,
+                'point_b6dd0a53_98fb_47d7_b110_200496711f86'],
+        {'formatter': '0'})
+
+        resp = json.loads(response.content)
+        properties = resp["vector"]["data"]["features"][0]["properties"]
+        self.assertEqual(properties['date_n'], '17/01/23')
+        self.assertEqual(properties['date_y'], '17/01/23')
+        self.assertEqual(properties['datetime_n'], '17/01/23 08:40:04')
+        self.assertEqual(properties['datetime_y'], '2023-01-17T08:39:58.000')
+
+        properties = resp["vector"]["data"]["features"][1]["properties"]
+        self.assertEqual(properties['date_n'], '18/02/23')
+        self.assertEqual(properties['date_y'], '17/01/25')
+        self.assertEqual(properties['datetime_n'], '18/02/23 08:40:40')
+        self.assertEqual(properties['datetime_y'], '2026-01-17T08:40:47.000')
+
+        # Formatter = 1
+        response = self._testApiCall(
+            'core-vector-api', [
+                'data',
+                'qdjango',
+                self.project322_datewidget.instance.pk,
+                'point_b6dd0a53_98fb_47d7_b110_200496711f86'],
+            {'formatter': '1'})
+
+        resp = json.loads(response.content)
+        properties = resp["vector"]["data"]["features"][0]["properties"]
+        self.assertEqual(properties['date_n'], '17/01/23')
+        self.assertEqual(properties['date_y'], '2023')
+        self.assertEqual(properties['datetime_n'], '17/01/23 08:40:04')
+        self.assertEqual(properties['datetime_y'], '2023')
+
+        properties = resp["vector"]["data"]["features"][1]["properties"]
+        self.assertEqual(properties['date_n'], '18/02/23')
+        self.assertEqual(properties['date_y'], '2025')
+        self.assertEqual(properties['datetime_n'], '18/02/23 08:40:40')
+        self.assertEqual(properties['datetime_y'], '2026')
 
     def test_server_filters_combination_api(self):
         """ Test server filter combination: i.e. FieldFilterBacked + SuggestFilterBackend """
