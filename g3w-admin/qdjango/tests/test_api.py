@@ -1066,7 +1066,7 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         properties = resp["vector"]["data"]["features"][1]["properties"]
         self.assertEqual(properties['type'], 'TYPE B')
 
-        # formatter=string
+        # formatter=string like formatter=0
         response = self._testApiCall(
             'core-vector-api', [
                 'data',
@@ -1078,9 +1078,9 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         # check for value relation
         resp = json.loads(response.content)
         properties = resp["vector"]["data"]["features"][0]["properties"]
-        self.assertEqual(properties['type'], 'TYPE A')
+        self.assertEqual(properties['type'], 'A')
         properties = resp["vector"]["data"]["features"][1]["properties"]
-        self.assertEqual(properties['type'], 'TYPE B')
+        self.assertEqual(properties['type'], 'B')
 
         # formatter=0
         response = self._testApiCall(
