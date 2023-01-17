@@ -149,7 +149,7 @@
                 'order': [[1, 'desc']],
                 'processing': false,
                 'serverSide': true,
-                'searching': false,
+                'searching': true,
                 "scrollX": true,
 
                 "initComplete": function () {
@@ -254,7 +254,7 @@
                         <th>{% trans 'Roles' %}</th>
                         <th>{% trans 'User groups' %}</th>
                         {% if user.is_superuser %}
-                        <th>{% trans ' Macro groups' %}</th>
+                        <th>{% trans 'Macro groups' %}</th>
                         {% endif %}
                         {% endif %}
 
