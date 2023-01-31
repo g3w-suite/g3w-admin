@@ -1623,18 +1623,18 @@ class QgisTemporalVectorProject(QdjangoTestBase):
 
         # Active with field
         self.assertEqual(self.project_temporal_vector_field.layers[0].temporalproperties,
-                         '{"mode": "FeatureDateTimeInstantFromField", "field": "dateofocc", "units": "d", "duration": 1.0}')
+                         '{"mode": "FeatureDateTimeInstantFromField", "field": "dateofocc", "units": "d", "duration": 1.0, "step": 1.0}')
         self.assertEqual(self.project_temporal_vector_field.instance.layer_set.all()[0].temporal_properties,
-                         '{"mode": "FeatureDateTimeInstantFromField", "field": "dateofocc", "units": "d", "duration": 1.0}')
+                         '{"mode": "FeatureDateTimeInstantFromField", "field": "dateofocc", "units": "d", "duration": 1.0, "step": 1.0}')
 
     def test_qgs_project_wmst(self):
         """ Test properties into qgsproject object and models """
 
         # Active
         self.assertEqual(self.project_wmst.layers[0].temporalproperties,
-                         '{"mode": "RasterTemporalRangeFromDataProvider", "range": ["1981-01-01T00:00:00", "2022-03-01T00:00:00"]}')
+                         '{"mode": "RasterTemporalRangeFromDataProvider", "range": ["1981-01-01T00:00:00", "2022-03-01T00:00:00"], "step": 1.0, "units": "xxx"}')
         self.assertEqual(self.project_wmst.instance.layer_set.all()[0].temporal_properties,
-                         '{"mode": "RasterTemporalRangeFromDataProvider", "range": ["1981-01-01T00:00:00", "2022-03-01T00:00:00"]}')
+                         '{"mode": "RasterTemporalRangeFromDataProvider", "range": ["1981-01-01T00:00:00", "2022-03-01T00:00:00"], "step": 1.0, "units": "xxx"}')
 
     def test_client_map_config(self):
         """ Test for client config API """
