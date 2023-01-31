@@ -775,6 +775,20 @@ class QgisProjectLayer(XmlData):
             #         'duration_field': tp.durationField()
             #     }
 
+        # Get step and set-unit from ProjectTimeSettings property
+        # QGIS desktop save last temporal settings
+        if toret:
+            ts = self.qgisProject.qgs_project.timeSettings()
+            toret.update({
+                'step': ts.timeStep()
+            })
+
+            if toret['mode'] != 'FeatureDateTimeInstantFromField':
+                toret.update({
+                    'units': QgsUnitTypes.encodeUnit(ts.timeStepUnit())
+                })
+
+
         return json.dumps(toret)
 
     def clean(self):
