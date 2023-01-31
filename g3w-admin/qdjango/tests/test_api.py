@@ -1623,9 +1623,9 @@ class QgisTemporalVectorProject(QdjangoTestBase):
 
         # Active with field
         self.assertEqual(self.project_temporal_vector_field.layers[0].temporalproperties,
-                         '{"mode": "FeatureDateTimeInstantFromField", "field": "dateofocc", "units": "h", "duration": 1.0, "step": 10}')
+                         '{"mode": "FeatureDateTimeInstantFromField", "field": "dateofocc", "units": "d", "duration": 1.0, "step": 1.0}')
         self.assertEqual(self.project_temporal_vector_field.instance.layer_set.all()[0].temporal_properties,
-                         '{"mode": "FeatureDateTimeInstantFromField", "field": "dateofocc", "units": "h", "duration": 1.0, "step": 10}')
+                         '{"mode": "FeatureDateTimeInstantFromField", "field": "dateofocc", "units": "d", "duration": 1.0, "step": 1.0}')
 
     def test_qgs_project_wmst(self):
         """ Test properties into qgsproject object and models """
