@@ -1632,9 +1632,9 @@ class QgisTemporalVectorProject(QdjangoTestBase):
 
         # Active
         self.assertEqual(self.project_wmst.layers[0].temporalproperties,
-                         '{"mode": "RasterTemporalRangeFromDataProvider", "range": ["1981-01-01T00:00:00", "2022-03-01T00:00:00"], "step": 1.0, "units": "xxx"}}')
+                         '{"mode": "RasterTemporalRangeFromDataProvider", "range": ["1981-01-01T00:00:00", "2022-03-01T00:00:00"], "step": 1.0, "units": "xxx"}')
         self.assertEqual(self.project_wmst.instance.layer_set.all()[0].temporal_properties,
-                         '{"mode": "RasterTemporalRangeFromDataProvider", "range": ["1981-01-01T00:00:00", "2022-03-01T00:00:00"], "step": 1.0, "units": "xxx"}}')
+                         '{"mode": "RasterTemporalRangeFromDataProvider", "range": ["1981-01-01T00:00:00", "2022-03-01T00:00:00"], "step": 1.0, "units": "xxx"}')
 
     def test_client_map_config(self):
         """ Test for client config API """
