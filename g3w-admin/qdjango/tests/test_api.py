@@ -496,6 +496,104 @@ class TestQdjangoProjectsAPI(QdjangoTestBase):
         self.assertTrue('NAME' in metas)
         self.assertFalse('CAPITAL' in metas)
 
+    def test_bookmarks_project(self):
+        """
+        Test project bookmarks into /api/config API REST
+        """
+
+        response = self._testApiCall(
+            'group-project-map-config', [self.project322.instance.group.slug, 'qdjango', self.project322.instance.pk])
+
+        resp = json.loads(response.content)
+
+        self.assertEqual(resp['bookmarks'], [
+   {
+      "name":"Gbook1",
+      "expanded":False,
+      "nodes":[
+         {
+            "id":"{dfe1c3a0-1ed8-4042-943c-0f820f10429a}",
+            "name":"Book1",
+            "crs":{
+               "epsg":3003
+            },
+            "extent":[
+               1727644.7707,
+               4856430.948,
+               1728651.4597,
+               4857251.2131
+            ]
+         },
+         {
+            "id":"{49513492-609b-41e1-87c5-e99b13d359a5}",
+            "name":"Book3",
+            "crs":{
+               "epsg":3003
+            },
+            "extent":[
+               1718435.4312,
+               4847184.3237,
+               1740974.0779,
+               4864204.8237
+            ]
+         }
+      ]
+   },
+   {
+      "name":"",
+      "expanded":False,
+      "nodes":[
+         {
+            "id":"{4f63af2b-cbb0-4673-a319-f05f9939b89e}",
+            "name":"Book2",
+            "crs":{
+               "epsg":3003
+            },
+            "extent":[
+               1727178.711,
+               4859059.5247,
+               1728483.6782,
+               4859861.1474
+            ]
+         }
+      ]
+   },
+   {
+      "name":"GBook2",
+      "expanded":False,
+      "nodes":[
+         {
+            "id":"{46764496-faa9-4d9f-bfef-594c097ab6f6}",
+            "name":"Book4",
+            "crs":{
+               "epsg":3003
+            },
+            "extent":[
+               1718435.4312,
+               4847184.3237,
+               1740974.0779,
+               4864204.8237
+            ]
+         }
+      ]
+   },
+   {
+      "id":"{4f63af2b-cbb0-4673-a319-f05f9939b89e}",
+      "name":"Book2",
+      "crs":{
+         "epsg":3003
+      },
+      "extent":[
+         1727178.711,
+         4859059.5247,
+         1728483.6782,
+         4859861.1474
+      ]
+   }
+])
+
+
+
 
 class TestQdjangoLayersAPI(QdjangoTestBase):
     """ Test qdjango layer API """
