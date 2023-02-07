@@ -283,12 +283,62 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
             ret['map_themes'].append(theme)
 
+
+    def get_bookmarks(self, qgs_project):
+        """
+        Get bookmarks from QgsProject instance
+        :param qgs_project: QgsProject instance
+        :return: Structured tree bookmarks
+        """
+
+        def format_bookmark(bmark):
+
+            bbox = bmark.extent()
+            return {
+                "id": bmark.id(),
+                "name": bmark.name(),
+                "crs": {
+                    "epsg": bbox.crs().postgisSrid()
+                },
+                "extent": [
+                    bbox.xMinimum(),
+                    bbox.yMinimum(),
+                    bbox.xMaximum(),
+                    bbox.yMaximum()
+                ]
+
+            }
+
+        bmarks = qgs_project.bookmarkManager().bookmarks()
+        bgroups = qgs_project.bookmarkManager().groups()
+
+        toret = []
+
+        for bgroup in bgroups:
+            to_add = {
+                'name': bgroup,
+                'expanded': False,
+                'nodes': []
+            }
+
+            for bmark in qgs_project.bookmarkManager().bookmarksByGroup(bgroup):
+                to_add['nodes'].append(format_bookmark(bmark))
+
+            toret.append(to_add)
+
+        # Add bookmarks without group
+        for bmark in bmarks:
+            if not bmark.group():
+                toret.append(format_bookmark(bmark))
+
+        return toret
+
     def to_representation(self, instance):
         logging.warning('Serializer')
         ret = super(ProjectSerializer, self).to_representation(instance)
         logging.warning('Before reading project')
 
-        # add a QGSMapLayer instance
+        # add a QgsProject instance
         qgs_project = get_qgs_project(instance.qgis_file.path)
 
         logging.warning('Got project: %s' % qgs_project.fileName())
@@ -479,6 +529,10 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
             pass
 
         ret['search_endpoint'] = settings.G3W_CLIENT_SEARCH_ENDPOINT
+
+        # Add bookmarks:
+        # ---------------------------------
+        ret['bookmarks'] = self.get_bookmarks(qgs_project)
 
         # QGIS project themes
         # ----------------------------------
