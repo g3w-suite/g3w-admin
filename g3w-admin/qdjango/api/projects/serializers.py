@@ -315,16 +315,19 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         toret = []
 
         for bgroup in bgroups:
-            to_add = {
-                'name': bgroup,
-                'expanded': False,
-                'nodes': []
-            }
 
-            for bmark in qgs_project.bookmarkManager().bookmarksByGroup(bgroup):
-                to_add['nodes'].append(format_bookmark(bmark))
+            # Only GroupBookmark name set
+            if bgroup:
+                to_add = {
+                    'name': bgroup,
+                    'expanded': False,
+                    'nodes': []
+                }
 
-            toret.append(to_add)
+                for bmark in qgs_project.bookmarkManager().bookmarksByGroup(bgroup):
+                    to_add['nodes'].append(format_bookmark(bmark))
+
+                toret.append(to_add)
 
         # Add bookmarks without group
         for bmark in bmarks:

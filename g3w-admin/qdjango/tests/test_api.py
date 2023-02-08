@@ -540,25 +540,6 @@ class TestQdjangoProjectsAPI(QdjangoTestBase):
       ]
    },
    {
-      "name":"",
-      "expanded":False,
-      "nodes":[
-         {
-            "id":"{4f63af2b-cbb0-4673-a319-f05f9939b89e}",
-            "name":"Book2",
-            "crs":{
-               "epsg":3003
-            },
-            "extent":[
-               1727178.711,
-               4859059.5247,
-               1728483.6782,
-               4859861.1474
-            ]
-         }
-      ]
-   },
-   {
       "name":"GBook2",
       "expanded":False,
       "nodes":[
