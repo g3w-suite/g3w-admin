@@ -53,6 +53,7 @@ THIRD_PARTY_APPS = [
     'rest_framework',
     'rest_framework_gis',
     'rest_framework.authtoken',
+    'drf_spectacular',
     'import_export',
     'mptt',
     'ordered_model',
@@ -205,7 +206,8 @@ REST_FRAMEWORK = {
     'EXCEPTION_HANDLER': 'core.api.base.views.G3WExceptionHandler',
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 100,
-    'UNICODE_JSON': False
+    'UNICODE_JSON': False,
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema'
 }
 
 # FOR MEDIA
