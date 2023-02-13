@@ -60,13 +60,12 @@ class G3WEditingLog(models.Model):
     created = AutoCreatedField()
     app_name = models.CharField(max_length=255)
     layer_id = models.IntegerField()
-    user = models.ForeignKey(User, null=True, blank=True, on_delete=models.DO_NOTHING)
+    user = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
     mode = models.CharField(max_length=10, default=EDITING_POST_DATA_ADDED, choices=(
         (EDITING_POST_DATA_ADDED, EDITING_POST_DATA_ADDED),
         (EDITING_POST_DATA_UPDATED, EDITING_POST_DATA_UPDATED),
         (EDITING_POST_DATA_DELETED, EDITING_POST_DATA_DELETED)))
     msg = models.TextField()
-    #msg = JSONField()
 
     class Meta:
         app_label = 'editing'
