@@ -58,7 +58,7 @@ class QdjangoProjectListView(G3WRequestViewMixin, G3WGroupViewMixin, ListView):
 
     def get_queryset(self):
         return get_objects_for_user(self.request.user, 'qdjango.view_project', Project)\
-            .filter(group=self.group).order_by('order')
+            .filter(group=self.group, is_active=1).order_by('order')
         # return self.group.qdjango_project.all().order_by('title')
 
     def get_context_data(self, **kwargs):
