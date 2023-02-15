@@ -18,3 +18,12 @@ class ProjectRelationPermission(BasePermission):
         return request.user.has_perm('qdjango.view_project', project) or \
             get_anonymous_user().has_perm('qdjango.view_project', project)
 
+
+class ProjectIsActivePermission(BasePermission):
+    """
+    Allows access only to projects where model property `is_active` is 1.
+    """
+
+    def has_permission(self, request, view):
+        unc, args, kwargs = resolve(request.get_full_path())
+        return bool(Project.objects.get(pk=kwargs['project_id']).is_active)
