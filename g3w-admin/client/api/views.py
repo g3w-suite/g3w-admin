@@ -9,6 +9,7 @@ from core.api.serializers import GroupSerializer, Group, update_serializer_data
 from core.api.permissions import ProjectPermission
 from core.signals import perform_client_search, post_serialize_project
 from core.models import GeneralSuiteData
+from qdjango.api.projects.permissions import ProjectIsActivePermission
 from usersmanage.utils import get_roles, G3W_VIEWER1, G3W_VIEWER2, G3W_EDITOR2, G3W_EDITOR1
 
 
@@ -17,7 +18,10 @@ class ClientConfigApiView(APIView):
     APIView to get data Project and layers
     """
 
-    permission_classes = (ProjectPermission,)
+    permission_classes = (
+        ProjectPermission,
+        ProjectIsActivePermission
+    )
 
     def get(self, request, format=None, group_slug=None, project_type=None, project_id=None):
 
