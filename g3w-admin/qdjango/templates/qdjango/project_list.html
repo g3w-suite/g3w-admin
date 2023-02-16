@@ -67,7 +67,7 @@
 
                         {% if "delete_project" in userObj_perms %}
                         <span class="col-xs-2 icon">
-                            <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Delete' %}" data-widget-type="deleteItem" data-delete-url="{% url 'qdjango-project-delete' group.slug object.slug %}" data-item-selector="#qdjangoproject_{{ object.pk }}"><i class="ion ion-trash-b"></i></a>
+                            <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Delete' %}" data-widget-type="deleteItem" data-delete-url="{% url 'qdjango-project-deactive' group.slug object.slug %}" data-item-selector="#qdjangoproject_{{ object.pk }}"><i class="ion ion-trash-b"></i></a>
                             {% if object.pk in pre_delete_messages %}
                             <div class="hidden pre-delete-message">
                                 {{ pre_delete_messages|lookup:object.pk }}

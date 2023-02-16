@@ -392,6 +392,37 @@ class QdjangoProjectDetailView(G3WRequestViewMixin, DetailView):
 
         return ctx
 
+class QdjangoProjectDeActiveView(SingleObjectMixin, View):
+    '''
+    DeActive Qdjango project Ajax view
+    '''
+    model = Project
+
+    @method_decorator(permission_required('qdjango.delete_project', (Project, 'slug', 'slug'), raise_exception=True))
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+
+        # send before project delete signal
+        self.object = self.get_object()
+        before_delete_project.send(
+            self, app_name='qdjango', project=self.object)
+
+        # clear cache
+        if 'qdjango' in settings.CACHES:
+            caches['qdjango'].delete(
+                settings.QDJANGO_PRJ_CACHE_KEY.format(self.object.pk))
+
+        if not hasattr(self, 'object'):
+            self.object = self.get_object()
+
+        # delete object
+        self.object.is_active = 0
+        self.object.save()
+
+        return JsonResponse({'status': 'ok', 'message': 'Project deactivated!'})
+
 
 class QdjangoProjectDeleteView(G3WAjaxDeleteViewMixin, SingleObjectMixin, View):
     '''
