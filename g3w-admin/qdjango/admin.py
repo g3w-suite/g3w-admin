@@ -18,6 +18,7 @@ class ProjectAdmin(GuardedModelAdmin):
     )
     list_display = (
         'title',
+        'is_active',
         'group'
     )
 
