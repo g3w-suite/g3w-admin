@@ -59,7 +59,6 @@ class QdjangoProjectListView(G3WRequestViewMixin, G3WGroupViewMixin, ListView):
     def get_queryset(self):
         return get_objects_for_user(self.request.user, 'qdjango.view_project', Project)\
             .filter(group=self.group, is_active=1).order_by('order')
-        # return self.group.qdjango_project.all().order_by('title')
 
     def get_context_data(self, **kwargs):
         context = super(QdjangoProjectListView,
@@ -74,6 +73,11 @@ class QdjangoProjectListView(G3WRequestViewMixin, G3WGroupViewMixin, ListView):
             if msg:
                 for m in msg:
                     context['pre_delete_messages'][m['project'].pk] = m['message']
+
+        # Get inactive projects
+        context['inactive_project_list'] = get_objects_for_user(self.request.user, 'qdjango.view_project', Project) \
+            .filter(group=self.group, is_active=0).order_by('order')
+
         return context
 
 
@@ -397,10 +401,17 @@ class QdjangoProjectDeActiveView(SingleObjectMixin, View):
     DeActive Qdjango project Ajax view
     '''
     model = Project
+    ok_message = 'Project deactivated!'
 
     @method_decorator(permission_required('qdjango.delete_project', (Project, 'slug', 'slug'), raise_exception=True))
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
+
+    def _set_is_active(self):
+        """ Set is_active and save model instance"""
+
+        self.object.is_active = 0
+        self.object.save()
 
     def post(self, request, *args, **kwargs):
 
@@ -417,12 +428,22 @@ class QdjangoProjectDeActiveView(SingleObjectMixin, View):
         if not hasattr(self, 'object'):
             self.object = self.get_object()
 
-        # delete object
-        self.object.is_active = 0
+        self._set_is_active()
+
+        return JsonResponse({'status': 'ok', 'message': self.ok_message})
+
+class QdjangoProjectActiveView(QdjangoProjectDeActiveView):
+    '''
+    Active Qdjango project Ajax view
+    '''
+
+    ok_message = 'Project activated!'
+
+    def _set_is_active(self):
+        """ Set is_active and save model instance"""
+
+        self.object.is_active = 1
         self.object.save()
-
-        return JsonResponse({'status': 'ok', 'message': 'Project deactivated!'})
-
 
 class QdjangoProjectDeleteView(G3WAjaxDeleteViewMixin, SingleObjectMixin, View):
     '''

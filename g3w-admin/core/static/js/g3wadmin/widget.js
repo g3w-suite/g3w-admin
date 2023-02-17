@@ -19,6 +19,17 @@ _.extend(g3wadmin.widget, {
     ],
 
     /**
+     * Data-<param> DOM attributes to find in item (jqeury object) for deleteItem widget.
+     */
+    _activeDeactiveItemParams: [
+        'active-deactive-url',
+        'item-selector',
+        'modal-title',
+        'active-deactive-method',
+        'active-deactive-action'
+    ],
+
+    /**
      * Data-<param> DOM attributes to find in item (jquery object) for detailItem widget.
      */
     _detailItemParams: [
@@ -84,6 +95,7 @@ _.extend(g3wadmin.widget, {
         'crs',
     ],
 
+
     /**
      * Widget to delete a item from database by ajax call.
      * @param $item jquery object
@@ -132,6 +144,72 @@ _.extend(g3wadmin.widget, {
                 });
             }
             modal.setConfirmButtonAction(actionDelete);
+            modal.show();
+
+        } catch (e) {
+            this.showError(e.message);
+        }
+
+    },
+
+
+    /**
+     * Widget to active/deactive a item from database by ajax call.
+     * @param $item jquery object
+     */
+    activeDeactiveItem: function($item){
+
+        try {
+            // search into $item attrs
+            var params = ga.utils.getDataAttrs($item, this._activeDeactiveItemParams);
+            if (_.isUndefined(params['active-deactive-url'])) {
+                throw new Error('Attribute data-active-deactive-url not defined');
+            }
+
+            // Action
+            var action = _.isUndefined(params['active-deactive-action']) ? 'active': params['active-deactive-action'];
+
+            // check for pre-delete-message
+            var preMessage = $item.parent().find('.pre-active-deactive-message').html();
+            if (_.isUndefined(preMessage))
+                preMessage = '';
+
+            // open modal to confirm delete
+            var modal = ga.ui.buildDefaultModal({
+                modalTitle: gettext(action.charAt(0).toUpperCase()+ action.slice(1) +' item'),
+                modalBody: gettext('Are you sure to '+ action +' this Item')+ '?' + preMessage ,
+                closeButtonText: 'No'
+            });
+
+            //call ajax delete url
+            var actionActiveDeactive = function () {
+                var data = {};
+                ga.utils.addCsfrtokenData(data);
+                $.ajax({
+                    method: _.isUndefined(params['active-deactive-method']) ? 'post': params['active-decative-method'],
+                    url: params['active-deactive-url'],
+                    data: data,
+                    success: function (res) {
+                        var $itemToDelete = $(params['item-selector']);
+                        var $htmlLoads = $itemToDelete.parents('[data-widget-type="htmlItem"]');
+                        $itemToDelete.toggle(300,function(){
+                            $(this).remove();
+                        })
+                        modal.hide();
+
+                        // Reload every htmlItem widget i.e for projects list.
+                        $.each($htmlLoads,function(){
+                            g3wadmin.widget.loadHtmlItem($(this));
+                        });
+                    },
+                    error: function (xhr, textStatus, errorMessage) {
+                        ga.widget.showError(ga.utils.buildAjaxErrorMessage(xhr.status, errorMessage));
+                    }
+
+
+                });
+            }
+            modal.setConfirmButtonAction(actionActiveDeactive);
             modal.show();
 
         } catch (e) {

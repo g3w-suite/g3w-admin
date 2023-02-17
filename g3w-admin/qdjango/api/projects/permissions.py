@@ -25,5 +25,5 @@ class ProjectIsActivePermission(BasePermission):
     """
 
     def has_permission(self, request, view):
-        unc, args, kwargs = resolve(request.get_full_path())
+        func, args, kwargs = request.resolver_match
         return bool(Project.objects.get(pk=kwargs['project_id']).is_active)

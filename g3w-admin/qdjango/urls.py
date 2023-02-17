@@ -30,6 +30,12 @@ urlpatterns = [
         name='qdjango-project-deactive'
     ),
 
+re_path(
+        r'^(?P<group_slug>[-_\w\d]+)/projects/active/(?P<slug>[-_\w\d]+)/$',
+        login_required(QdjangoProjectActiveView.as_view()),
+        name='qdjango-project-active'
+    ),
+
     re_path(
         r'^(?P<group_slug>[-_\w\d]+)/projects/delete/(?P<slug>[-_\w\d]+)/$',
         login_required(QdjangoProjectDeleteView.as_view()),

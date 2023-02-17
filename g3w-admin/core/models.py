@@ -208,9 +208,9 @@ class Group(TimeStampedModel, OrderedModel):
             Project = apps.get_app_config(g3wProjectApp).get_model('project')
             if user:
                 groupProjects +=len(get_objects_for_user(user, '{}.view_project'.format(g3wProjectApp), Project) \
-                    .filter(group=self))
+                    .filter(group=self, is_active=1))
             else:
-                groupProjects += len(Project.objects.filter(group=self))
+                groupProjects += len(Project.objects.filter(group=self, is_active=1))
         return groupProjects
 
     def addPermissionsToEditor(self, user):
