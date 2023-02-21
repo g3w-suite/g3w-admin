@@ -168,20 +168,15 @@
                     {% get_obj_perms user for object as "userObj_perms" %}
                     <tr id="inactive_qdjangoproject_{{ object.pk }}">
                         <td>
-                            {% if "change_project" in userObj_perms %}
+                             {% if "change_project" in userObj_perms %}
                             <span class="col-xs-2 icon">
-                                <a href="{% url 'qdjango-project-layers-list' group.slug object.slug %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Layers' %}" ><i class="ion ion-navicon-round"></i></a>
-                            </span>
-                            {% endif %}
-                            {% if "view_project" in userObj_perms %}
-                            <span class="col-xs-2 icon">
-                                <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-detail-url="{% url 'qdjango-project-detail' group.slug object.slug %}" ><i class="ion ion-eye"></i></a>
+                                <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Redo/Active' %}" data-widget-type="activeDeactiveItem" data-active-deactive-url="{% url 'qdjango-project-active' group.slug object.slug %}" data-item-selector="#inactive_qdjangoproject_{{ object.pk }}"><i class="ion ion-arrow-return-left"></i></a>
                             </span>
                             {% endif %}
 
-                            {% if "change_project" in userObj_perms %}
+                            {% if "view_project" in userObj_perms %}
                             <span class="col-xs-2 icon">
-                                <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Redo/Active' %}" data-widget-type="activeDeactiveItem" data-active-deactive-url="{% url 'qdjango-project-active' group.slug object.slug %}" data-item-selector="#inactive_qdjangoproject_{{ object.pk }}"><i class="ion ion-arrow-return-left"></i></a>
+                                <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-detail-url="{% url 'qdjango-project-detail' group.slug object.slug %}" ><i class="ion ion-eye"></i></a>
                             </span>
                             {% endif %}
 

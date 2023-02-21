@@ -18,7 +18,7 @@ from guardian.decorators import permission_required
 from guardian.shortcuts import get_objects_for_user
 from core.mixins.views import *
 from core.signals import pre_update_project, pre_delete_project, after_update_project, before_delete_project
-from core.utils.decorators import check_madd, project_type_permission_required
+from core.utils.decorators import check_madd, project_type_permission_required, is_active_required
 from django_downloadview import ObjectDownloadView
 from rest_framework.response import Response
 from usersmanage.mixins.views import G3WACLViewMixin
@@ -425,9 +425,6 @@ class QdjangoProjectDeActiveView(SingleObjectMixin, View):
             caches['qdjango'].delete(
                 settings.QDJANGO_PRJ_CACHE_KEY.format(self.object.pk))
 
-        if not hasattr(self, 'object'):
-            self.object = self.get_object()
-
         self._set_is_active()
 
         return JsonResponse({'status': 'ok', 'message': self.ok_message})
@@ -474,6 +471,7 @@ class QdjangoProjectDeleteView(G3WAjaxDeleteViewMixin, SingleObjectMixin, View):
 class QdjangoLayersListView(G3WRequestViewMixin, G3WGroupViewMixin, QdjangoProjectViewMixin, ListView):
     template_name = 'qdjango/layers_list.html'
 
+    @method_decorator(is_active_required((Project, 'slug', 'project_slug')))
     @method_decorator(permission_required('qdjango.change_project', (Project, 'slug', 'project_slug'),
                                           raise_exception=True))
     def dispatch(self, *args, **kwargs):
