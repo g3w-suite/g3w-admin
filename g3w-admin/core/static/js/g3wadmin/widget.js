@@ -167,7 +167,7 @@ _.extend(g3wadmin.widget, {
             }
 
             // Action
-            var action = _.isUndefined(params['active-deactive-action']) ? 'active': params['active-deactive-action'];
+            var action = _.isUndefined(params['active-deactive-action']) ? 'activate': params['active-deactive-action'];
 
             // check for pre-delete-message
             var preMessage = $item.parent().find('.pre-active-deactive-message').html();
@@ -197,7 +197,7 @@ _.extend(g3wadmin.widget, {
                         })
                         modal.hide();
 
-                        // Reload every htmlItem widget i.e for projects list.
+                        // Reload every htmlItem widget i.e. for projects list.
                         $.each($htmlLoads,function(){
                             g3wadmin.widget.loadHtmlItem($(this));
                         });

@@ -180,6 +180,58 @@ class GroupUpdateView(G3WRequestViewMixin, G3WACLViewMixin, UpdateView):
             return self.request.session['http_referer']
         return reverse('group-list')
 
+class GroupDeActiveView(G3WAjaxDeleteViewMixin, G3WRequestViewMixin, SingleObjectMixin, View):
+    '''
+    Deactivate group Ajax view
+    '''
+    model = Group
+    ok_message = 'Cartographic group deactivated!'
+
+    @method_decorator(permission_required('core.delete_group', (Group, 'slug', 'slug'), return_403=True))
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
+    def _set_is_active(self):
+        """ Set is_active and save model instance"""
+
+        self.object.is_active = 0
+        self.object.save()
+
+        # Deactivate every project's group:
+        for app, p in self.object.getProjects():
+            p.is_active = 0
+            p.save()
+
+    def post(self, request, *args, **kwargs):
+
+        self.object = self.get_object()
+        # delete ovwerviewmap if is set
+        try:
+            group_project_panoramics = GroupProjectPanoramic.objects.get(group=self.object)
+            group_project_panoramics.delete()
+        except Exception:
+            pass
+
+        self._set_is_active()
+
+        return JsonResponse({'status': 'ok', 'message': self.ok_message})
+
+class GroupActiveView(GroupDeActiveView):
+    """
+    Activate group and relative projects.
+    """
+    ok_message = 'Cartographic group activated!'
+
+    def _set_is_active(self):
+        """ Set is_active and save model instance"""
+
+        self.object.is_active = 1
+        self.object.save()
+
+        # Deactivate every project's group:
+        for app, p in self.object.getProjects():
+            p.is_active = 1
+            p.save()
 
 class GroupDeleteView(G3WAjaxDeleteViewMixin, G3WRequestViewMixin, SingleObjectMixin, View):
     '''

@@ -392,7 +392,7 @@ class Group(TimeStampedModel, OrderedModel):
         elif attr == 'viewer_user_groups':
             return get_groups_for_object(self, 'view_group', 'viewer')
 
-        return super(Group, self).__getattr__(attr)
+        return super(Group, self).__getattribute__(attr)
 
 
 class GroupProjectPanoramic(models.Model):

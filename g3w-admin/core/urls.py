@@ -70,6 +70,18 @@ urlpatterns = [
     ),
 
     path(
+        'groups/deactive/<slug:slug>/',
+        login_required(GroupDeActiveView.as_view()),
+        name='group-deactive'
+    ),
+
+path(
+        'groups/active/<slug:slug>/',
+        login_required(GroupActiveView.as_view()),
+        name='group-active'
+    ),
+
+    path(
         'groups/delete/<slug:slug>/',
         login_required(GroupDeleteView.as_view()),
         name='group-delete'
