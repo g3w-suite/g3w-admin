@@ -268,11 +268,11 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                                 feature.setAttribute(qgis_field.name(),
                                                      qgis_layer.dataProvider().defaultValueClause(field_idx))
 
-                            elif qgis_field.typeName().lower() in ('date', 'datetime', 'time'):
+                            elif qgis_field.typeName().lower() in ('date', 'datetime', 'time', 'timestamp'):
 
                                 if qgis_field.typeName().lower() == 'date':
                                     qtype = QDate
-                                elif qgis_field.typeName().lower() == 'datetime':
+                                elif qgis_field.typeName().lower() in ('datetime', 'timestamp'):
                                     qtype = QDateTime
                                 else:
                                     qtype = QTime
