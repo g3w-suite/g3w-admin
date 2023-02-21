@@ -1,5 +1,6 @@
 from django.utils.decorators import wraps
 from django.core.signing import Signer
+from django.http.response import HttpResponseForbidden
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.conf import settings
@@ -116,4 +117,36 @@ def project_type_permission_required(perm, lookup_variables=None, **kwargs):
             return view_func(request, *args, **kwargs)
         return wraps(view_func)(_wrapped_view)
     return decorator
+
+def is_active_required(lookup_variables=None, **kwargs):
+    """
+    Decorator for views that checks whether a model object is_active = 1.
+    """
+
+    def decorator(view_func):
+        def _wrapped_view(request, *args, **kwargs):
+
+            model, lookups = lookup_variables[0], lookup_variables[1:]
+            project_type, project_key = lookup_variables[0], lookup_variables[1]
+
+            # Parse lookups
+            if len(lookups) % 2 != 0:
+                raise GuardianError("Lookup variables must be provided "
+                                    "as pairs of lookup_string and view_arg")
+            lookup_dict = {}
+            for lookup, view_arg in zip(lookups[::2], lookups[1::2]):
+                if view_arg not in kwargs:
+                    raise GuardianError("Argument %s was not passed "
+                                        "into view function" % view_arg)
+                lookup_dict[lookup] = kwargs[view_arg]
+            obj = get_object_or_404(model, **lookup_dict)
+
+            if not obj.is_active:
+                return HttpResponseForbidden()
+
+            return view_func(request, *args, **kwargs)
+        return wraps(view_func)(_wrapped_view)
+
+    return decorator
+
 
