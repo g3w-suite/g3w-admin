@@ -706,9 +706,13 @@ class ClientApiTest(CoreTestBase):
 
         self.assertTrue("Cities" in layers)
         self.assertTrue("Countries" in layers)
-
-        # check
         self.assertTrue("Rivers" in layers)
+
+        layerstree = json.dumps(jres['layerstree'])
+
+        self.assertTrue('"name": "Cities"' in layerstree)
+        self.assertTrue('"name": "Countries"' in layerstree)
+        self.assertTrue('"name": "Rivers"' in layerstree)
 
         layer_cities = self.project_print310.instance.layer_set.filter(name="Cities")
         layer_countries = self.project_print310.instance.layer_set.filter(name="Countries")
@@ -729,9 +733,13 @@ class ClientApiTest(CoreTestBase):
 
         self.assertFalse("Cities" in layers)
         self.assertTrue("Countries" in layers)
-
-        #check
         self.assertTrue("Rivers" in layers)
+
+        layerstree = json.dumps(jres['layerstree'])
+
+        self.assertFalse('"name": "Cities"' in layerstree)
+        self.assertTrue('"name": "Countries"' in layerstree)
+        self.assertTrue('"name": "Rivers"' in layerstree)
 
         self.client.logout()
 
@@ -749,12 +757,15 @@ class ClientApiTest(CoreTestBase):
 
         self.assertTrue("Cities" in layers)
         self.assertTrue("Countries" in layers)
-
-        # check
         self.assertTrue("Rivers" in layers)
 
-        self.client.logout()
+        layerstree = json.dumps(jres['layerstree'])
 
+        self.assertTrue('"name": "Cities"' in layerstree)
+        self.assertTrue('"name": "Countries"' in layerstree)
+        self.assertTrue('"name": "Rivers"' in layerstree)
+
+        self.client.logout()
 
         # login as viewer1.3 inside group gu_viewer2
         self.client.login(username=self.test_viewer1_3.username, password=self.test_viewer1_3.username)
@@ -767,9 +778,13 @@ class ClientApiTest(CoreTestBase):
 
         self.assertFalse("Cities" in layers)
         self.assertFalse("Countries" in layers)
-
-        # check
         self.assertTrue("Rivers" in layers)
+
+        layerstree = json.dumps(jres['layerstree'])
+
+        self.assertFalse('"name": "Cities"' in layerstree)
+        self.assertFalse('"name": "Countries"' in layerstree)
+        self.assertTrue('"name": "Rivers"' in layerstree)
 
         self.client.logout()
 
@@ -784,8 +799,12 @@ class ClientApiTest(CoreTestBase):
 
         self.assertTrue("Cities" in layers)
         self.assertTrue("Countries" in layers)
-
-        # check
         self.assertTrue("Rivers" in layers)
+
+        layerstree = json.dumps(jres['layerstree'])
+
+        self.assertTrue('"name": "Cities"' in layerstree)
+        self.assertTrue('"name": "Countries"' in layerstree)
+        self.assertTrue('"name": "Rivers"' in layerstree)
 
 
