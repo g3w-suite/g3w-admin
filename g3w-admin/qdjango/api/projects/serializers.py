@@ -347,10 +347,12 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
                 # Check for empty vector layer
                 if settings.G3W_CLIENT_NOT_SHOW_EMPTY_VECTORLAYER and self.layer_is_empty(layers[layer['id']]):
+                    to_remove_from_layerstree.append((container, layer))
                     return
 
                 # Check if layer is visible for user
                 if self.request and not layer['id'] in view_layer_ids:
+                    to_remove_from_layerstree.append((container, layer))
                     return
 
                 try:
