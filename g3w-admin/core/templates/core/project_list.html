@@ -78,16 +78,25 @@
                     </a>
                     {% endif %}
                     {% if "change_group" in userObj_perms %}
+                    {% if group.is_active == 1 %}
                     <a href="{% url 'group-update' group.slug %}" class="btn-app btn" data-toggle="tooltip" data-placement="top" title="{% trans 'Edit' %}" >
                         <i class="ion ion-edit"></i>
                         {% trans 'Edit' %}
                     </a>
                     {% endif %}
+                    {% endif %}
                     {% if "delete_group" in userObj_perms %}
-                    <a href="#" data-toggle="tooltip"class="color-red btn btn-app" data-placement="top" title="{% trans 'Delete' %}"  data-widget-type="deleteItem" data-delete-url="{% url 'group-delete' group.slug %}" data-item-selector="#group_{{ group.slug }}">
+                    {% if group.is_active == 1 %}
+                    <a href="#" data-toggle="tooltip" class="color-red btn btn-app" data-placement="top" title="{% trans 'Delete/Deactivate' %}"  data-widget-type="activeDeactiveItem" data-active-deactive-action="deactivate" data-active-deactive-url="{% url 'group-deactive' group.slug %}" data-item-selector="#group_{{ group.slug }}">
+                        <i class="ion ion-trash-b"></i>
+                        {% trans 'Delete/Deactivate' %}
+                    </a>
+                    {% else %}
+                    <a href="#" data-toggle="tooltip" class="color-red btn btn-app" data-placement="top" title="{% trans 'Delete' %}"  data-widget-type="deleteItem" data-delete-url="{% url 'group-delete' group.slug %}" data-item-selector="#group_{{ group.slug }}">
                         <i class="ion ion-trash-b"></i>
                         {% trans 'Delete' %}
                     </a>
+                    {% endif %}
                     {% endif %}
                 </div>
             </div>
