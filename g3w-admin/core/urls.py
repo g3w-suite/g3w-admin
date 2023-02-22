@@ -58,6 +58,12 @@ urlpatterns = [
     ),
 
     path(
+        'groups/deactivated/',
+        login_required(GroupDeactiveListView.as_view()),
+        name='group-deactive-list'
+    ),
+
+    path(
         'groups/add/',
         login_required(GroupCreateView.as_view()),
         name='group-add'

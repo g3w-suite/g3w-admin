@@ -1,6 +1,6 @@
 from django_file_form.forms import FileFormMixin, UploadedFileField
 from django.forms import Form, ModelForm, ValidationError
-from django.forms.fields import CharField
+from django.forms.fields import CharField, HiddenInput
 from django.forms.models import ModelMultipleChoiceField
 from django.db.models import Q
 from django.utils.translation import ugettext, ugettext_lazy as _
@@ -31,6 +31,9 @@ class GroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, G3WRequestFor
         # add MacroGroups by users
         self.fields['macrogroups'].queryset = get_objects_for_user(self.request.user, 'view_macrogroup',
                                                                         MacroGroup)
+
+        # Remove is_active from field
+        del(self.fields['is_active'])
 
 
         self.helper = FormHelper(self)

@@ -65,7 +65,7 @@ class DashboardView(TemplateView):
         # add number groups
         qs = get_objects_for_user(self.request.user, 'core.view_group', Group) | \
              get_objects_for_user(get_anonymous_user(), 'core.view_group', Group)
-        qs = qs.order_by('order')
+        qs = qs.filter(is_active=1).order_by('order')
         context['n_groups'] = len(qs)
         context['widgets'] = []
 
@@ -103,13 +103,25 @@ class SearchAdminView(TemplateView):
 
 class GroupListView(ListView):
     """List group view."""
+
+    def _is_active(self, qs):
+        """ Add a filter fo is_active property """
+        return qs.filter(is_active=1)
     def get_queryset(self):
 
         qs = get_objects_for_user(self.request.user, 'core.view_group', Group) | \
              get_objects_for_user(get_anonymous_user(), 'core.view_group', Group)
+        qs = self._is_active(qs)
         qs = qs.order_by('order')
         return qs
 
+class GroupDeactiveListView(GroupListView):
+    """ ListView to show map groups with is_active=0"""
+
+    template_name = 'core/group_deactive_list.html'
+    def _is_active(self, qs):
+        """ Add a filter fo is_active property """
+        return qs.filter(is_active=0)
 
 class GroupDetailView(G3WRequestViewMixin, DetailView):
     """Detail view."""

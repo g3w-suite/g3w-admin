@@ -7,43 +7,10 @@
 {% load g3wadmin_tags %}
 
 {% block page_header %}
-    <h1>{% trans 'Cartographic groups' %}</h1>
-{% endblock %}
-
-{% block custom_js_links_page %}
-{% if user.is_superuser %}
-<script>
-    $("#groups_list").sortable({
-        placeholder: "col-md-3 col-sm-6 sort-highlight-group",
-        handle: ".handle",
-        update: function(e, ui){
-            new_order = $(e.target).sortable("toArray");
-
-            // get current id of group moved
-            var gid = ui.item.attr('id').substring(6)
-            var url = _.template("/jx/groups/<%= gid %>/setorder/")({gid: gid});
-            var data = {
-                new_order: new_order
-            }
-            ga.utils.addCsfrtokenData(data);
-
-            $.post(url, data, function(res){
-                console.log(res);
-            });
-
-        },
-    });
-    $("#groups_list").disableSelection();
-    $('.handle').hover(function() {
-        $(this).css('cursor','move');
-    });
-</script>
-{% endif %}
+    <h1>{% trans 'Cartographic groups deactivated' %}</h1>
 {% endblock %}
 
 {% block main_content %}
-
-
 <div id="groups_list" class="row">
 {% for object in object_list %}
     {% get_obj_perms user for object as "userObj_perms" %}
@@ -61,21 +28,10 @@
                 <div class="box-footer">
                   <div class="row">
                    <div class="col-sm-2 col-xs-2">
-                      <div class="description-block">
-                        {% if "change_group" in userObj_perms %}
-                        <div class="icon" data-toggle="tooltip" data-placement="top" title="{% trans 'Add new project' %}" >
-                        {% if SETTINGS.G3WADMIN_PROJECT_APPS|length == 1 %}
-                            <a href="{% url 'qdjango-project-add' object.slug %}" ><i class="ion ion-plus-circled"></i></a>
-                        {% else %}
-                            {% include 'core/include/add_project.html' %}
-                        {% endif %}
-                        </div>
-                        {% endif %}
-                      </div><!-- /.description-block -->
                     </div><!-- /.col -->
                     <div class="col-sm-4 col-xs-4">
                       <div class="description-block projects-group">
-                        <h5 class="description-header"  data-toggle="tooltip" data-placement="top" title="{% trans 'Group projects' %}" ><a href="{% url 'project-list' object.slug %}">{% g3wadmin_get_projects_number object user 1 %} {% trans 'Projects' %}</a></h5>
+                        <h5 class="description-header"  data-toggle="tooltip" data-placement="top" title="{% trans 'Group projects' %}" ><a href="{% url 'project-list' object.slug %}">{% g3wadmin_get_projects_number object user %} {% trans 'Projects' %}</a></h5>
                       </div><!-- /.description-block -->
                     </div><!-- /.col -->
                     <div class="col-sm-2 col-xs-2">
@@ -91,7 +47,7 @@
                       <div class="description-block">
                         <div class="icon">
                         {% if "change_group" in userObj_perms %}
-                          <a href="{% url 'group-update' object.slug %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Edit' %}" ><i class="ion ion-edit"></i></a>
+                          <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Redo/Active' %}" data-widget-type="activeDeactiveItem" data-active-deactive-url="{% url 'group-active' object.slug %}" data-item-selector="#group_{{ object.slug }}"><i class="ion ion-arrow-return-left"></i></a>
                         {% endif %}
                         </div>
                       </div><!-- /.description-block -->
@@ -114,12 +70,4 @@
     </div>
 {% endfor %}
 </div>
-{% if perms.core.add_group %}
-<div class="row">
-{% with 'group-add' as object_add_url_name %}
-    {% include 'core/include/widget_add_box.html' %}
-{% endwith %}
-</div>
-{% endif %}
-
 {% endblock %}
