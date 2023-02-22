@@ -81,25 +81,6 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
 
             map_extent = get_crs_bbox(instance.group.srid.auth_srid)
-            # set max extent to CRS bounds
-            # if instance.group.srid.auth_srid == '4326':
-            #     rectangle = QgsCoordinateReferenceSystem('EPSG:4326').bounds()
-            # else:
-            #
-            #     # reproject CRS bounds
-            #     to_srid = QgsCoordinateReferenceSystem(
-            #         f'EPSG:{instance.group.srid.auth_srid}')
-            #     from_srid = QgsCoordinateReferenceSystem('EPSG:4326')
-            #     ct = QgsCoordinateTransform(
-            #         from_srid, to_srid, QgsCoordinateTransformContext())
-            #     rectangle = ct.transform(to_srid.bounds())
-            #
-            # map_extent = [
-            #     rectangle.xMinimum(),
-            #     rectangle.yMinimum(),
-            #     rectangle.xMaximum(),
-            #     rectangle.yMaximum()
-            # ]
 
         # if use_map_extent_as_init_extent is not flaged set init_map_extent as map_extent
         if not instance.use_map_extent_as_init_extent:
@@ -403,10 +384,12 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
                 # Check for empty vector layer
                 if settings.G3W_CLIENT_NOT_SHOW_EMPTY_VECTORLAYER and self.layer_is_empty(layers[layer['id']]):
+                    to_remove_from_layerstree.append((container, layer))
                     return
 
                 # Check if layer is visible for user
                 if self.request and not layer['id'] in view_layer_ids:
+                    to_remove_from_layerstree.append((container, layer))
                     return
 
                 try:
