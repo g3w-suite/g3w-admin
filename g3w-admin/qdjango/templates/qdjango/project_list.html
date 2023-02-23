@@ -5,10 +5,9 @@
 {% get_obj_perms user for group as "userObj_group_perms" %}
 <div class="box">
     <div class="box-header">
-        {% if perms.qdjango.add_project and "add_project_to_group" in userObj_group_perms  %}
+        {% if perms.qdjango.add_project and "add_project_to_group" in userObj_group_perms and group.is_active  %}
         {% g3wadmin_add_project 'qdjango' group %}
         {% endif %}
-
     </div>
     <div class="box-body">
         <div class="nav-tabs-custom">
@@ -168,7 +167,7 @@
                     {% get_obj_perms user for object as "userObj_perms" %}
                     <tr id="inactive_qdjangoproject_{{ object.pk }}">
                         <td>
-                             {% if "change_project" in userObj_perms %}
+                             {% if "change_project" in userObj_perms and group.is_active %}
                             <span class="col-xs-2 icon">
                                 <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Redo/Active' %}" data-widget-type="activeDeactiveItem" data-active-deactive-url="{% url 'qdjango-project-active' group.slug object.slug %}" data-item-selector="#inactive_qdjangoproject_{{ object.pk }}"><i class="ion ion-arrow-return-left"></i></a>
                             </span>

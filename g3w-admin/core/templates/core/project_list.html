@@ -85,6 +85,7 @@
                     </a>
                     {% endif %}
                     {% endif %}
+                    {% comment %}
                     {% if "delete_group" in userObj_perms %}
                     {% if group.is_active == 1 %}
                     <a href="#" data-toggle="tooltip" class="color-red btn btn-app" data-placement="top" title="{% trans 'Delete/Deactivate' %}"  data-widget-type="activeDeactiveItem" data-active-deactive-action="deactivate" data-active-deactive-url="{% url 'group-deactive' group.slug %}" data-item-selector="#group_{{ group.slug }}">
@@ -98,6 +99,7 @@
                     </a>
                     {% endif %}
                     {% endif %}
+                    {% endcomment %}
                 </div>
             </div>
         </div>

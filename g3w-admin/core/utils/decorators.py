@@ -118,7 +118,7 @@ def project_type_permission_required(perm, lookup_variables=None, **kwargs):
         return wraps(view_func)(_wrapped_view)
     return decorator
 
-def is_active_required(lookup_variables=None, **kwargs):
+def is_active_required(lookup_variables=None, is_active=1):
     """
     Decorator for views that checks whether a model object is_active = 1.
     """
@@ -141,7 +141,7 @@ def is_active_required(lookup_variables=None, **kwargs):
                 lookup_dict[lookup] = kwargs[view_arg]
             obj = get_object_or_404(model, **lookup_dict)
 
-            if not obj.is_active:
+            if not obj.is_active == is_active:
                 return HttpResponseForbidden()
 
             return view_func(request, *args, **kwargs)

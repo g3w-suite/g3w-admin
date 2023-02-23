@@ -89,6 +89,7 @@ class QdjangoProjectCreateView(QdjangoProjectCUViewMixin, G3WGroupViewMixin, G3W
 
     @method_decorator(permission_required('core.add_project_to_group', (Group, 'slug', 'group_slug'), return_403=True))
     @method_decorator(permission_required('qdjango.add_project', return_403=True))
+    @method_decorator(is_active_required((Group, 'slug', 'group_slug')))
     @method_decorator(check_madd('MPC:XYamtBJA_JgFGmFvEa9x193rnLg', Project))
     def dispatch(self, *args, **kwargs):
         return super(QdjangoProjectCreateView, self).dispatch(*args, **kwargs)
@@ -105,6 +106,8 @@ class QdjangoProjectUpdateView(QdjangoProjectCUViewMixin, G3WGroupViewMixin, G3W
     editor2_permission = 'view_project'
     viewer_permission = 'view_project'
 
+    @method_decorator(is_active_required((Group, 'slug', 'group_slug')))
+    @method_decorator(is_active_required((Project, 'slug', 'slug')))
     @method_decorator(permission_required('qdjango.change_project', (Project, 'slug', 'slug'), raise_exception=True))
     def dispatch(self, *args, **kwargs):
         return super(QdjangoProjectUpdateView, self).dispatch(*args, **kwargs)
@@ -403,6 +406,7 @@ class QdjangoProjectDeActiveView(SingleObjectMixin, View):
     model = Project
     ok_message = 'Project deactivated!'
 
+    @method_decorator(is_active_required((Group, 'slug', 'group_slug')))
     @method_decorator(permission_required('qdjango.delete_project', (Project, 'slug', 'slug'), raise_exception=True))
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
@@ -448,6 +452,7 @@ class QdjangoProjectDeleteView(G3WAjaxDeleteViewMixin, SingleObjectMixin, View):
     '''
     model = Project
 
+    @method_decorator(is_active_required((Group, 'slug', 'group_slug'), is_active=0))
     @method_decorator(permission_required('qdjango.delete_project', (Project, 'slug', 'slug'), raise_exception=True))
     def dispatch(self, *args, **kwargs):
         return super(QdjangoProjectDeleteView, self).dispatch(*args, **kwargs)
