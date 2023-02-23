@@ -258,7 +258,6 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                         numeric_nullable_field_values = {}
                         for qgis_field in qgis_layer.fields():
 
-                            print(QVariant.typeToName(qgis_field.type()).lower())
                             field_idx = qgis_layer.fields().indexFromName(qgis_field.name())
                             # Look for dataprovider default clause/value:
                             # only for fields no pk with defaultValueClause by provider
