@@ -452,7 +452,7 @@ class QdjangoProjectDeleteView(G3WAjaxDeleteViewMixin, SingleObjectMixin, View):
     '''
     model = Project
 
-    @method_decorator(is_active_required((Group, 'slug', 'group_slug'), is_active=0))
+    @method_decorator(is_active_required((Project, 'slug', 'slug'), is_active=0))
     @method_decorator(permission_required('qdjango.delete_project', (Project, 'slug', 'slug'), raise_exception=True))
     def dispatch(self, *args, **kwargs):
         return super(QdjangoProjectDeleteView, self).dispatch(*args, **kwargs)
