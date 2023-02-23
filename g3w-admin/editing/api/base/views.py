@@ -14,7 +14,8 @@ from qgis.core import \
     QgsJsonExporter, \
     QgsExpression, \
     QgsExpressionContextUtils, \
-    QgsExpressionNode
+    QgsExpressionNode, \
+    QgsFieldConstraints
 from rest_framework.exceptions import ValidationError
 
 from core.api.base.vector import MetadataVectorLayer
@@ -31,7 +32,7 @@ from qdjango.models import Layer
 from qdjango.utils.data import QGIS_LAYER_TYPE_NO_GEOM
 from qdjango.utils.validators import feature_validator
 
-from qgis.PyQt.QtCore import QDateTime, QDate, QTime
+from qgis.PyQt.QtCore import QDateTime, QDate, QTime, QVariant, NULL
 
 import logging
 
@@ -254,6 +255,7 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                         # =====================================================================
                         field_datetime_values = {}
                         field_datetime_field_formats = {}
+                        numeric_nullable_field_values = {}
                         for qgis_field in qgis_layer.fields():
 
                             field_idx = qgis_layer.fields().indexFromName(qgis_field.name())
@@ -268,6 +270,8 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                                 feature.setAttribute(qgis_field.name(),
                                                      qgis_layer.dataProvider().defaultValueClause(field_idx))
 
+                            # Formatting data if field's type is date, datetime or time
+                            # ----------------------------------------------------------
                             elif qgis_field.typeName().lower() in ('date', 'datetime', 'time', 'timestamp'):
 
                                 if qgis_field.typeName().lower() == 'date':
@@ -287,6 +291,19 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                                         feature.setAttribute(qgis_field.name(), value)
                                         field_datetime_values[qgis_field.name()] = value
                                         field_datetime_field_formats[qgis_field.name()] = options['field_format']
+
+                            # For PostGis provider or oder provider with type int or double and with field can be null
+                            # ----------------------------------------------------------------------------------------
+                            elif QVariant.typeToName(qgis_field.type()).lower() in ('int', 'double') and \
+                                    geojson_feature['properties'][qgis_field.name()] == '':
+
+                                # Check for not_null constraint
+                                constraints = qgis_layer.fieldConstraints(field_idx)
+                                if not (bool(constraints & QgsFieldConstraints.ConstraintNotNull) and \
+                                qgis_field.constraints().constraintStrength(
+                                    QgsFieldConstraints.ConstraintNotNull) == QgsFieldConstraints.ConstraintStrengthHard):
+                                    feature.setAttribute(qgis_field.name(), NULL)
+                                    numeric_nullable_field_values[qgis_field.name()] = NULL
 
 
 
@@ -324,6 +341,8 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                                 if name in qgis_layer.dataProvider().fieldNameMap():
                                     if name in field_datetime_values:
                                         value = field_datetime_values[name]
+                                    if name in numeric_nullable_field_values:
+                                        value = numeric_nullable_field_values[name]
                                     attr_map[qgis_layer.dataProvider().fieldNameMap()[name]] = value
 
                             if has_transactions:
