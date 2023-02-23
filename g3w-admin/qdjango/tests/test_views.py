@@ -125,12 +125,17 @@ class QdjangoViewsTest(QdjangoTestBase):
         dbprojects = Project.objects.all()
         self.assertEqual(len(dbprojects), 3)
 
-        url = reverse('qdjango-project-delete', args=[self.project_group.slug, mproject.slug])
 
         client = Client()
         self.assertTrue(client.login(username=self.test_user1.username, password=self.test_user1.username))
-        response = client.post(url)
 
+        # Before to delete a project is necessary deactivate it
+        url = reverse('qdjango-project-deactive', args=[self.project_group.slug, mproject.slug])
+        response = client.post(url)
+        self.assertEqual(response.status_code, 200)
+
+        url = reverse('qdjango-project-delete', args=[self.project_group.slug, mproject.slug])
+        response = client.post(url)
         self.assertEqual(response.status_code, 200)
 
         # check only one project into db
