@@ -20,7 +20,6 @@ class ClientConfigApiView(APIView):
 
     permission_classes = (
         ProjectPermission,
-        GroupIsActivePermission,
         ProjectIsActivePermission
     )
 
