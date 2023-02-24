@@ -178,6 +178,25 @@ class ClientApiTest(CoreTestBase):
         self.assertEqual(resp["g3wsuite_logo_img"], "g3wsuite_logo_h40.png")
         self.assertEqual(resp['i18n'], json.loads(json.dumps(settings.LANGUAGES)))
 
+        # Test GroupIsActivePermission
+        # ------------------------------------------------------------
+
+        g = Group.objects.get(slug='gruppo-1')
+        g.is_active = False
+        g.save()
+
+        self.client.login(username=self.test_admin1.username, password=self.test_admin1.username)
+        url = reverse('group-map-config', args=['gruppo-1', 'qdjango', '1'])
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 403)
+
+        self.client.logout()
+
+        # Restore group
+        g.is_active = True
+        g.save()
+
 
     def testClientConfigApiView(self):
         """Test call to project config"""
@@ -397,6 +416,26 @@ class ClientApiTest(CoreTestBase):
                     'axisinverted': True,
                     'extent': [-180.0, -90.0, 180.0, 90.0]
                 })
+
+        # Test ProjectIsActivePermission
+        # ------------------------------------------------------------
+
+        p = Project.objects.get(pk=1)
+        p.is_active = False
+        p.save()
+
+        self.client.login(username=self.test_admin1.username, password=self.test_admin1.username)
+        url = reverse('group-project-map-config', args=['gruppo-1', 'qdjango', '1'])
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 403)
+
+        self.client.logout()
+
+        # Restore group
+        p.is_active = True
+        p.save()
+
 
     def test_custom_layer_order(self):
         """Testing qgis custom layer order"""
