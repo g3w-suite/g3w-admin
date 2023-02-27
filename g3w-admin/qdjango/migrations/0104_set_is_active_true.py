@@ -16,11 +16,11 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
     dependencies = [
-        ('core', '0078_auto_20220504_0756'),
+        ('qdjango', '0103_geoconstraint_autozoom'),
     ]
 
     operations = [
         migrations.RunSQL(
-            "UPDATE core_group SET is_active=true"
+            "UPDATE qdjango_project SET is_active=true"
         ),
     ]
