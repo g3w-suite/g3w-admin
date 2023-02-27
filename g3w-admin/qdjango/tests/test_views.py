@@ -103,6 +103,36 @@ class QdjangoViewsTest(QdjangoTestBase):
 
         client.logout()
 
+    def test_activate_deactivate_project_view(self):
+        """ Testing activation/deactivation project """
+
+        client = Client()
+        self.assertTrue(client.login(username=self.test_user1.username, password=self.test_user1.username))
+
+        self.assertTrue(Project.objects.get(slug=self.project.instance.slug).is_active)
+
+        # Deactivate
+        url = reverse('qdjango-project-deactive', args=[self.project_group.slug, self.project.instance.slug])
+        response = client.post(url)
+        self.assertEqual(response.status_code, 200)
+
+        self.assertFalse(Project.objects.get(slug=self.project.instance.slug).is_active)
+
+        # Check for double deactivation
+        url = reverse('qdjango-project-deactive', args=[self.project_group.slug, self.project.instance.slug])
+        response = client.post(url)
+        self.assertEqual(response.status_code, 200)
+
+        self.assertFalse(Project.objects.get(slug=self.project.instance.slug).is_active)
+
+        # Activate
+        url = reverse('qdjango-project-active', args=[self.project_group.slug, self.project.instance.slug])
+        response = client.post(url)
+        self.assertEqual(response.status_code, 200)
+
+        self.assertTrue(Project.objects.get(slug=self.project.instance.slug).is_active)
+
+        client.logout()
     def test_delete_project_view(self):
         """ Testing delete project """
 
