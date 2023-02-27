@@ -16,7 +16,7 @@
                 <a href="#tab-active-projects" data-toggle="tab"><span class="ion ion-ios-list"></span> {% trans 'Projects' %}</a>
             </li>
             <li>
-                <a href="#tab-deactivated-projects" data-toggle="tab"><span class="ion ion-trash-a"></span> {% trans 'Bucket' %} ({{ inactive_project_list|length  }})</a>
+                <a href="#tab-deactivated-projects" data-toggle="tab"><span class="ion ion-trash-a"></span> {% trans 'Trash' %} ({{ inactive_project_list|length  }})</a>
             </li>
         </ul>
         <div class="tab-content">
@@ -223,7 +223,7 @@
                 </tbody>
             </table>
             {% else %}
-            {% trans 'The bucket is empty.' %}
+            {% trans 'The thash is empty.' %}
             {% endif %}
             </div>
         </div>

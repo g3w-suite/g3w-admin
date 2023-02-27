@@ -36,7 +36,7 @@ sitetrees = (
         item('Cartographic groups', 'group-list', icon_css_class='fa fa-globe', children=[
           item('Add group', 'group-add', url_as_pattern=True, icon_css_class='fa fa-plus', access_by_perms=['core.add_group']),
           item('Groups list', 'group-list', url_as_pattern=True, icon_css_class='fa fa-globe', alias='group-list', in_breadcrumbs=False),
-          item('Bucket', 'group-deactive-list', url_as_pattern=True, icon_css_class='fa fa-trash', alias='group-deactive-list', in_breadcrumbs=True),
+          item('Trash', 'group-deactive-list', url_as_pattern=True, icon_css_class='fa fa-trash', alias='group-deactive-list', in_breadcrumbs=True),
           item('Groups update {{ object.title}}', 'group-update object.slug', url_as_pattern=True, icon_css_class='fa fa-edit', in_menu=False, alias='group-update'),
           item('Projects list {{ group.name }}', 'project-list group.slug', url_as_pattern=True, icon_css_class='fa fa-list', in_menu=False, alias='project-list')
         ]),
