@@ -10,6 +10,7 @@ from rest_framework.fields import empty
 from core.models import Group, BaseLayer
 from core.signals import initconfig_plugin_start
 from core.mixins.api.serializers import G3WRequestSerializer
+from core.utils.geo import get_crs_bbox
 
 from qgis.core import QgsCoordinateReferenceSystem
 from copy import copy
@@ -106,7 +107,8 @@ class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
             'epsg': crs.postgisSrid(),
             'proj4': proj4,
             'geographic': crs.isGeographic(),
-            'axisinverted': crs.hasAxisInverted()
+            'axisinverted': crs.hasAxisInverted(),
+            'extent': get_crs_bbox(crs)
         }
 
         # map controls

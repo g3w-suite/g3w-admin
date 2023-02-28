@@ -1,4 +1,8 @@
-
+from qgis.core import \
+    QgsCoordinateReferenceSystem,  \
+    QgsCoordinateReferenceSystem, \
+    QgsCoordinateTransformContext, \
+    QgsCoordinateTransform
 
 def camel_geometry_type(geometry_type):
     """
@@ -18,3 +22,28 @@ def camel_geometry_type(geometry_type):
     }
 
     return trans[geometry_type.lower()]
+
+
+def get_crs_bbox(crs):
+    """
+    Give a instance of QgsCoordinateReferenceSystem (crs) return bounds of this crs as list as map units
+
+    :param crs: A QgsCoordinateReferenceSystem instance
+    :return: CRS bounds as list as map units
+    """
+
+    if not isinstance(crs, QgsCoordinateReferenceSystem):
+        crs = QgsCoordinateReferenceSystem(f'EPSG:{crs}')
+
+    if crs.postgisSrid() == '4326':
+        bbox = crs.bounds()
+    else:
+        from_srid = QgsCoordinateReferenceSystem('EPSG:4326')
+        ct = QgsCoordinateTransform(from_srid, crs, QgsCoordinateTransformContext())
+        bbox = ct.transform(crs.bounds())
+    return [
+        bbox.xMinimum(),
+        bbox.yMinimum(),
+        bbox.xMaximum(),
+        bbox.yMaximum()
+    ]
