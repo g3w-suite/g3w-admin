@@ -58,6 +58,12 @@ urlpatterns = [
     ),
 
     path(
+        'groups/deactivated/',
+        login_required(GroupDeactiveListView.as_view()),
+        name='group-deactive-list'
+    ),
+
+    path(
         'groups/add/',
         login_required(GroupCreateView.as_view()),
         name='group-add'
@@ -67,6 +73,18 @@ urlpatterns = [
         'groups/update/<slug:slug>/',
         login_required(GroupUpdateView.as_view()),
         name='group-update'
+    ),
+
+    path(
+        'groups/deactive/<slug:slug>/',
+        login_required(GroupDeActiveView.as_view()),
+        name='group-deactive'
+    ),
+
+path(
+        'groups/active/<slug:slug>/',
+        login_required(GroupActiveView.as_view()),
+        name='group-active'
     ),
 
     path(

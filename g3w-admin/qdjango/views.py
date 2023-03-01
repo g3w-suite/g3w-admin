@@ -18,7 +18,7 @@ from guardian.decorators import permission_required
 from guardian.shortcuts import get_objects_for_user
 from core.mixins.views import *
 from core.signals import pre_update_project, pre_delete_project, after_update_project, before_delete_project
-from core.utils.decorators import check_madd, project_type_permission_required
+from core.utils.decorators import check_madd, project_type_permission_required, is_active_required
 from django_downloadview import ObjectDownloadView
 from rest_framework.response import Response
 from usersmanage.mixins.views import G3WACLViewMixin
@@ -58,8 +58,7 @@ class QdjangoProjectListView(G3WRequestViewMixin, G3WGroupViewMixin, ListView):
 
     def get_queryset(self):
         return get_objects_for_user(self.request.user, 'qdjango.view_project', Project)\
-            .filter(group=self.group).order_by('order')
-        # return self.group.qdjango_project.all().order_by('title')
+            .filter(group=self.group, is_active=1).order_by('order')
 
     def get_context_data(self, **kwargs):
         context = super(QdjangoProjectListView,
@@ -74,6 +73,11 @@ class QdjangoProjectListView(G3WRequestViewMixin, G3WGroupViewMixin, ListView):
             if msg:
                 for m in msg:
                     context['pre_delete_messages'][m['project'].pk] = m['message']
+
+        # Get inactive projects
+        context['inactive_project_list'] = get_objects_for_user(self.request.user, 'qdjango.view_project', Project) \
+            .filter(group=self.group, is_active=0).order_by('order')
+
         return context
 
 
@@ -85,6 +89,7 @@ class QdjangoProjectCreateView(QdjangoProjectCUViewMixin, G3WGroupViewMixin, G3W
 
     @method_decorator(permission_required('core.add_project_to_group', (Group, 'slug', 'group_slug'), return_403=True))
     @method_decorator(permission_required('qdjango.add_project', return_403=True))
+    @method_decorator(is_active_required((Group, 'slug', 'group_slug')))
     @method_decorator(check_madd('MPC:XYamtBJA_JgFGmFvEa9x193rnLg', Project))
     def dispatch(self, *args, **kwargs):
         return super(QdjangoProjectCreateView, self).dispatch(*args, **kwargs)
@@ -101,6 +106,8 @@ class QdjangoProjectUpdateView(QdjangoProjectCUViewMixin, G3WGroupViewMixin, G3W
     editor2_permission = 'view_project'
     viewer_permission = 'view_project'
 
+    @method_decorator(is_active_required((Group, 'slug', 'group_slug')))
+    @method_decorator(is_active_required((Project, 'slug', 'slug')))
     @method_decorator(permission_required('qdjango.change_project', (Project, 'slug', 'slug'), raise_exception=True))
     def dispatch(self, *args, **kwargs):
         return super(QdjangoProjectUpdateView, self).dispatch(*args, **kwargs)
@@ -392,6 +399,52 @@ class QdjangoProjectDetailView(G3WRequestViewMixin, DetailView):
 
         return ctx
 
+class QdjangoProjectDeActiveView(SingleObjectMixin, View):
+    '''
+    DeActive Qdjango project Ajax view
+    '''
+    model = Project
+    ok_message = 'Project deactivated!'
+
+    @method_decorator(is_active_required((Group, 'slug', 'group_slug')))
+    @method_decorator(permission_required('qdjango.delete_project', (Project, 'slug', 'slug'), raise_exception=True))
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
+    def _set_is_active(self):
+        """ Set is_active and save model instance"""
+
+        self.object.is_active = 0
+        self.object.save()
+
+    def post(self, request, *args, **kwargs):
+
+        # send before project delete signal
+        self.object = self.get_object()
+        before_delete_project.send(
+            self, app_name='qdjango', project=self.object)
+
+        # clear cache
+        if 'qdjango' in settings.CACHES:
+            caches['qdjango'].delete(
+                settings.QDJANGO_PRJ_CACHE_KEY.format(self.object.pk))
+
+        self._set_is_active()
+
+        return JsonResponse({'status': 'ok', 'message': self.ok_message})
+
+class QdjangoProjectActiveView(QdjangoProjectDeActiveView):
+    '''
+    Active Qdjango project Ajax view
+    '''
+
+    ok_message = 'Project activated!'
+
+    def _set_is_active(self):
+        """ Set is_active and save model instance"""
+
+        self.object.is_active = 1
+        self.object.save()
 
 class QdjangoProjectDeleteView(G3WAjaxDeleteViewMixin, SingleObjectMixin, View):
     '''
@@ -399,6 +452,7 @@ class QdjangoProjectDeleteView(G3WAjaxDeleteViewMixin, SingleObjectMixin, View):
     '''
     model = Project
 
+    @method_decorator(is_active_required((Project, 'slug', 'slug'), is_active=0))
     @method_decorator(permission_required('qdjango.delete_project', (Project, 'slug', 'slug'), raise_exception=True))
     def dispatch(self, *args, **kwargs):
         return super(QdjangoProjectDeleteView, self).dispatch(*args, **kwargs)
@@ -422,6 +476,7 @@ class QdjangoProjectDeleteView(G3WAjaxDeleteViewMixin, SingleObjectMixin, View):
 class QdjangoLayersListView(G3WRequestViewMixin, G3WGroupViewMixin, QdjangoProjectViewMixin, ListView):
     template_name = 'qdjango/layers_list.html'
 
+    @method_decorator(is_active_required((Project, 'slug', 'project_slug')))
     @method_decorator(permission_required('qdjango.change_project', (Project, 'slug', 'project_slug'),
                                           raise_exception=True))
     def dispatch(self, *args, **kwargs):

@@ -192,6 +192,12 @@ _.extend(g3wadmin.ui, {
 
     },
 
+    initActiveDeactiveWidget: function() {
+        $(document).on('click', '[data-widget-type="activeDeactiveItem"]', function(e){
+            ga.widget.activeDeactiveItem($(this));
+        });
+    },
+
     initCrudDeleteWidget: function() {
         $(document).on('click', '[data-widget-type="deleteItem"]', function(e){
             ga.widget.deleteItem($(this));

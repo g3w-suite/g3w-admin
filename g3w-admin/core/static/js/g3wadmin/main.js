@@ -27,6 +27,9 @@ _.extend(g3wadmin,{
         // Delete Widget
         this.ui.initCrudDeleteWidget();
 
+        // Active/deactive Widget
+        this.ui.initActiveDeactiveWidget();
+
         // Load Html Widget
         var $htmlLoads = $('[data-widget-type="htmlItem"]');
         $.each($htmlLoads,function(){

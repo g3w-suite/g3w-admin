@@ -13,6 +13,8 @@ sitetrees = (
                  access_by_perms=['core.add_group']),
             item('Lista gruppi', 'group-list', url_as_pattern=True, icon_css_class='fa fa-globe', alias='group-list',
                  in_breadcrumbs=True),
+            item('Cestino', 'group-deactive-list', url_as_pattern=True, icon_css_class='fa fa-trash',
+                 alias='group-deactive-list', in_breadcrumbs=True),
             item('Agg. gruppo {{ object.title}}', 'group-update object.slug', url_as_pattern=True,
                  icon_css_class='fa fa-edit', in_menu=False, alias='group-update'),
             item('Lista progetti {{ group.name }}', 'project-list group.slug', url_as_pattern=True,
@@ -34,6 +36,7 @@ sitetrees = (
         item('Cartographic groups', 'group-list', icon_css_class='fa fa-globe', children=[
           item('Add group', 'group-add', url_as_pattern=True, icon_css_class='fa fa-plus', access_by_perms=['core.add_group']),
           item('Groups list', 'group-list', url_as_pattern=True, icon_css_class='fa fa-globe', alias='group-list', in_breadcrumbs=False),
+          item('Trash', 'group-deactive-list', url_as_pattern=True, icon_css_class='fa fa-trash', alias='group-deactive-list', in_breadcrumbs=True),
           item('Groups update {{ object.title}}', 'group-update object.slug', url_as_pattern=True, icon_css_class='fa fa-edit', in_menu=False, alias='group-update'),
           item('Projects list {{ group.name }}', 'project-list group.slug', url_as_pattern=True, icon_css_class='fa fa-list', in_menu=False, alias='project-list')
         ]),
@@ -53,6 +56,7 @@ sitetrees = (
         item('Groupes cartographiques', 'group-list', icon_css_class='fa fa-globe', children=[
           item('Ajouter un groupe', 'group-add', url_as_pattern=True, icon_css_class='fa fa-plus', access_by_perms=['core.add_group']),
           item('Liste des groupes', 'group-list', url_as_pattern=True, icon_css_class='fa fa-globe', alias='group-list', in_breadcrumbs=False),
+          item('Pouble', 'group-deactive-list', url_as_pattern=True, icon_css_class='fa fa-trash', alias='group-deactive-list', in_breadcrumbs=True),
           item('Mise à jour du groupe {{ object.title}}', 'group-update object.slug', url_as_pattern=True, icon_css_class='fa fa-edit', in_menu=False, alias='group-update'),
           item('Liste des projets {{ group.name }}', 'project-list group.slug', url_as_pattern=True, icon_css_class='fa fa-list', in_menu=False, alias='project-list')
         ]),
@@ -72,6 +76,7 @@ sitetrees = (
         item('Grupuri cartografice', 'group-list', icon_css_class='fa fa-globe', children=[
           item('Adaugă grup', 'group-add', url_as_pattern=True, icon_css_class='fa fa-plus', access_by_perms=['core.add_group']),
           item('Listă grupuri', 'group-list', url_as_pattern=True, icon_css_class='fa fa-globe', alias='group-list', in_breadcrumbs=False),
+          item('Coș de gunoi', 'group-deactive-list', url_as_pattern=True, icon_css_class='fa fa-trash', alias='group-deactive-list', in_breadcrumbs=True),
           item('Groups update {{ object.title}}', 'group-update object.slug', url_as_pattern=True, icon_css_class='fa fa-edit', in_menu=False, alias='group-update'),
           item('Lista proiecte {{ group.name }}', 'project-list group.slug', url_as_pattern=True, icon_css_class='fa fa-list', in_menu=False, alias='project-list')
         ]),

@@ -35,6 +35,9 @@ class G3WAdminSearch(object):
     # Perms with user setting
     _perms = None
 
+    # QuerySet fitlers
+    _qs_filters = None
+
     def __init__(self, search_text=None, user=None):
 
         # update search fields with_language
@@ -84,6 +87,9 @@ class G3WAdminSearch(object):
             if self.user and self._perms:
                 self._results = get_objects_for_user(self.user, self._perms, self._results)
 
+            if self._qs_filters:
+                self._results = self.results.filter(**self._qs_filters)
+
 
 class GroupSearch(G3WAdminSearch):
     """Group search class for map group model"""
@@ -101,6 +107,8 @@ class GroupSearch(G3WAdminSearch):
     _template = 'core/search/group.html'
 
     _perms = 'core.view_group'
+
+    _qs_filters = {'is_active': True}
 
 
 class MacroGroupSearch(G3WAdminSearch):

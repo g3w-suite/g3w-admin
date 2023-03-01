@@ -61,6 +61,10 @@ class ClientView(TemplateView):
         except Project.DoesNotExist:
             raise Http404('Map not found')
 
+        # Check for is_active
+        if not self.project.is_active:
+            raise PermissionDenied()
+
         grant_users = get_users_for_object(self.project, "view_project", with_group_users=True)
 
         anonymous_user = get_user_model().get_anonymous()

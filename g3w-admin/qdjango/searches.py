@@ -28,3 +28,5 @@ class ProjectSearch(G3WAdminSearch):
     _template = 'qdjango/search/project.html'
 
     _perms = 'qdjango.view_project'
+
+    _qs_filters = {'is_active': True}
