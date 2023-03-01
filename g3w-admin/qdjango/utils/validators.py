@@ -32,6 +32,7 @@ from qgis.core import (
 )
 
 from qgis.PyQt.QtCore import QVariant, Qt
+import string, random
 
 
 def feature_validator(feature, layer):
@@ -281,6 +282,16 @@ class ProjectTitleExists(QgisProjectValidator):
             if self.qgisProject.qgisProjectFile.name:
                 self.qgisProject.title = os.path.basename(
                     self.qgisProject.qgisProjectFile.name)
+
+                # If a project with same title exists add slug suffix
+                if self.qgisProject.instance:
+                    # for update
+                    args = [~Q(pk=self.qgisProject.instance.pk)]
+                else:
+                    args = []
+                if Project.objects.filter(*args, title=self.qgisProject.title).exists():
+                    self.qgisProject.title += f"-{''.join(random.choices(string.ascii_lowercase, k=6))}"
+
             else:
                 raise QgisProjectException(_('Title project not empty'))
 
