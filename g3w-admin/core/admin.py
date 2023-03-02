@@ -1,12 +1,21 @@
+from django.conf import settings
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.admin import ModelAdmin
+from django.utils.html import format_html
 from ordered_model.admin import OrderedModelAdmin
 from sitetree.admin import TreeItemAdmin, override_item_admin
 from .ie.admin import G3WImportExportModelAdmin
-from .models import Group, BaseLayer, MapControl, MacroGroup, G3WSpatialRefSys, ProjectMapUrlAlias
+from .models import Group, \
+    BaseLayer, \
+    MapControl, \
+    MacroGroup, \
+    G3WSpatialRefSys, \
+    ProjectMapUrlAlias, \
+    StatusLog
 from guardian.admin import GuardedModelAdmin
 
+import logging
 
 # And our custom tree item admin model.
 class G3WTreeItemAdmin(TreeItemAdmin):
@@ -65,6 +74,32 @@ class ProjectMapUrlAliasAdmin(ModelAdmin):
     model = ProjectMapUrlAlias
     list_display = ('app_name', 'project_id', 'alias')
 admin.site.register(ProjectMapUrlAlias, ProjectMapUrlAliasAdmin)
+
+class StatusLogAdmin(admin.ModelAdmin):
+    list_display = ('logger_name','colored_msg', 'traceback', 'create_datetime_format')
+    list_display_links = ('colored_msg', )
+    list_filter = ('level', )
+    list_per_page = settings.DB_LOGGER_ADMIN_LIST_PER_PAGE
+
+    def colored_msg(self, instance):
+        if instance.level in [logging.NOTSET, logging.INFO]:
+            color = 'green'
+        elif instance.level in [logging.WARNING, logging.DEBUG]:
+            color = 'orange'
+        else:
+            color = 'red'
+        return format_html('<span style="color: {color};">{msg}</span>', color=color, msg=instance.msg)
+    colored_msg.short_description = 'Message'
+
+    def traceback(self, instance):
+        return format_html('<pre><code>{content}</code></pre>', content=instance.trace if instance.trace else '')
+
+    def create_datetime_format(self, instance):
+        return instance.create_datetime.strftime('%Y-%m-%d %X')
+    create_datetime_format.short_description = 'Created at'
+
+
+admin.site.register(StatusLog, StatusLogAdmin)
 
 
 # Tweak admin site settings like title, header, 'View Site' URL, etc
