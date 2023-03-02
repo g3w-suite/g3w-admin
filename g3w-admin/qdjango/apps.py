@@ -14,6 +14,7 @@ from qgis.server import QgsServer, QgsServerSettings, QgsConfigCache
 from usersmanage.configs import *
 
 logger = logging.getLogger(__name__)
+logger_qgis_server = logging.getLogger('qgis.server')
 
 if settings.DEBUG:
     os.environ['QGIS_SERVER_LOG_LEVEL'] = '0'
@@ -47,6 +48,13 @@ if hasattr(settings, 'QGIS_AUTH_PASSWORD_FILE') and settings.QGIS_AUTH_PASSWORD_
 QGS_APPLICATION = None
 QGS_SERVER_SETTINGS = None
 QGS_SERVER = None
+
+def get_qgis_log(msg, tag, level):
+    """
+    Function to get QGIS server log message and send to specific python logger
+    """
+    print(msg, tag, level)
+
 
 
 def init_qgis():
@@ -85,6 +93,8 @@ def init_qgis():
     # may be a little faster than creating a new instance every time we handle
     # a request
     QGS_SERVER = QgsServer()
+
+    QGS_APPLICATION.messageLog().messageReceived.connect(get_qgis_log)
 
 
 def remove_project_from_cache(path):
