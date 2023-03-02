@@ -105,8 +105,8 @@ class GroupListView(ListView):
     """List group view."""
     def get_queryset(self):
 
-        qs = get_objects_for_user(self.request.user, 'core.view_group', Group) | \
-             get_objects_for_user(get_anonymous_user(), 'core.view_group', Group)
+        qs = get_objects_for_user(self.request.user, 'core.view_group', Group) \
+             #| get_objects_for_user(get_anonymous_user(), 'core.view_group', Group)
         qs = qs.order_by('order')
         return qs
 
