@@ -42,7 +42,13 @@ class GetLegendGraphicFilter(QgsServerFilter):
 
         params = handler.parameterMap()
 
-        if 'FORMAT' in params and params['FORMAT'] == 'application/json' and 'LAYER' in params and 'SERVICE' in params and 'REQUEST' in params and params['SERVICE'].upper() == 'WMS' and params['REQUEST'].upper() == 'GETLEGENDGRAPHIC':
+        if 'FORMAT' in params and \
+                params['FORMAT'] == 'application/json' and \
+                'LAYER' in params and \
+                'SERVICE' in params and \
+                'REQUEST' in params and \
+                params['SERVICE'].upper() == 'WMS' and \
+                params['REQUEST'].upper() == 'GETLEGENDGRAPHIC':
             qgs_project = QGS_SERVER.project.qgis_project
             use_ids = QgsServerProjectUtils.wmsUseLayerIds(qgs_project)
             layer_id = params['LAYER']
