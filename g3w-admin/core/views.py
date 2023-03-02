@@ -109,8 +109,8 @@ class GroupListView(ListView):
         return qs.filter(is_active=1)
     def get_queryset(self):
 
-        qs = get_objects_for_user(self.request.user, 'core.view_group', Group) | \
-             get_objects_for_user(get_anonymous_user(), 'core.view_group', Group)
+        qs = get_objects_for_user(self.request.user, 'core.view_group', Group)
+             #| get_objects_for_user(get_anonymous_user(), 'core.view_group', Group)
         qs = self._is_active(qs)
         qs = qs.order_by('order')
         return qs
