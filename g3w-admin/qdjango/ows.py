@@ -25,12 +25,6 @@ from OWS.ows import OWSRequestHandlerBase
 from .models import Project, Layer
 from copy import copy
 
-try:
-    from ModestMaps.Core import Coordinate
-    from TileStache import getTile, Config, parseConfigfile
-except:
-    pass
-
 from .auth import QdjangoProjectAuthorizer
 
 logger = logging.getLogger(__name__)
