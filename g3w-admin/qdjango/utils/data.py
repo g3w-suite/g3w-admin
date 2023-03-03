@@ -10,6 +10,7 @@ from django.conf import settings
 from django.db import transaction
 from django.http.request import QueryDict
 from django.utils.translation import ugettext_lazy as _
+from autoslug.utils import slugify
 from lxml import etree
 
 from qgis.core import (
@@ -23,6 +24,7 @@ from qgis.core import (
     QgsMapLayerType,
     QgsUnitTypes,
     QgsLayoutItemLabel,
+    QgsMeshLayerTemporalProperties,
     Qgis
 )
 
@@ -68,12 +70,30 @@ def makeDatasource(datasource, layerType):
     # OGR example datasource:
     # Original: <datasource>\\SIT-SERVER\sit\charts\definitivo\d262120.shp</datasource>
     # Modified: <datasource>/home/sit/charts\definitivo\d262120.shp</datasource>
-    if layerType in (Layer.TYPES.ogr, Layer.TYPES.gdal):
+    if layerType in (Layer.TYPES.ogr, Layer.TYPES.gdal, Layer.TYPES.mdal):
+        # Case NETCDF
+        # split by ':'
+        if datasource.startswith('NETCDF:'):
+            subdt = datasource.split(':')
+            pre = subdt[0] + ':"'
+            datasource = subdt[1]
+            if len(subdt) == 3:
+                post = ":" + subdt[2]
+
         newDatasource = re.sub(r'(.*?)%s(.*)' % folder, r'%s\2' %
                                basePath, datasource)  # ``?`` means ungreedy
         # Remove possible double quote or singlequote
         # i.e. for mdal layers: 'NETCDF:"C:/Users/l.lami/Documents/G3WSUITE_DEV/', '/temporal/runof.sfc.mon.mean.nc"'
         #newDatasource = newDatasource.replace("\"", "").replace("'", "")
+
+        try:
+            newDatasource = pre + newDatasource
+            try:
+                newDatasource = newDatasource + post
+            except:
+                pass
+        except:
+            pass
 
 
     if layerType == Layer.TYPES.delimitedtext:
@@ -493,7 +513,7 @@ class QgisProjectLayer(XmlData):
         for f in self.qgs_layer.fields():
             columns.append({
                 'name': f.name(),
-                'type': QVariant.typeToName(f.type()).upper() if  QVariant.typeToName(f.type()) else None,
+                'type': QVariant.typeToName(f.type()).upper() if QVariant.typeToName(f.type()) else None,
                 'label': f.displayName(),
             })
 
@@ -683,8 +703,8 @@ class QgisProjectLayer(XmlData):
         - ModeFeatureDateTimeStartAndDurationFromFields
         """
 
-        if self.qgs_layer.type() != QgsMapLayer.VectorLayer and self.qgs_layer.dataProvider().name() != 'wms':
-            return None
+        #if self.qgs_layer.dataProvider().name() != 'wms':
+        #    return None
 
         self.qgs_layer.dataProvider().name()
 
@@ -693,6 +713,7 @@ class QgisProjectLayer(XmlData):
 
         # Manage only ModeFeatureDateTimeInstantFromField at 2021-12-06
         if tp.isActive():
+                #and (isinstance(tp.mode(), Qgis.VectorTemporalMode) or isinstance(tp.mode(), Qgis.RasterTemporalMode)):
             # if tp.mode() == QgsVectorLayerTemporalProperties.ModeFixedTemporalRange:
             #     toret = {
             #         'mode': 'FixedTemporalRange',
@@ -700,7 +721,16 @@ class QgisProjectLayer(XmlData):
             #         'end': str(tp.fixedTemporalRange().end().toPyDateTime())
             #     }
 
-            if isinstance(tp.mode(), Qgis.VectorTemporalMode) and \
+            if isinstance(tp, QgsMeshLayerTemporalProperties):
+                toret = {
+                    'mode': 'MeshTemporalRangeFromDataProvider',
+                    'range': [
+                        tp.timeExtent().begin().isoformat(),
+                        tp.timeExtent().end().isoformat()
+                    ],
+                }
+
+            elif isinstance(tp.mode(), Qgis.VectorTemporalMode) and \
                     tp.mode() == Qgis.VectorTemporalMode.FeatureDateTimeInstantFromField:
                 toret = {
                     'mode': 'FeatureDateTimeInstantFromField',
@@ -719,6 +749,16 @@ class QgisProjectLayer(XmlData):
                         tc.availableTemporalRange().end().isoformat()
                     ],
                 }
+            # elif tp.mode() == Qgis.RasterTemporalMode.FixedTemporalRange:
+            #
+            #     tc = self.qgs_layer.dataProvider()
+            #     toret = {
+            #         'mode': 'RasterTemporalRangeFromDataProvider',
+            #         'range': [
+            #             tc.availableTemporalRange().begin().isoformat(),
+            #             tc.availableTemporalRange().end().isoformat()
+            #         ],
+            #     }
 
             # elif tp.mode == QgsVectorLayerTemporalProperties.ModeFeatureDateTimeStartAndEndFromFields:
             #     toret = {
@@ -734,6 +774,20 @@ class QgisProjectLayer(XmlData):
             #         'end_field': tp.endField(),
             #         'duration_field': tp.durationField()
             #     }
+
+        # Get step and set-unit from ProjectTimeSettings property
+        # QGIS desktop save last temporal settings
+        if toret:
+            ts = self.qgisProject.qgs_project.timeSettings()
+            toret.update({
+                'step': ts.timeStep()
+            })
+
+            if toret['mode'] != 'FeatureDateTimeInstantFromField':
+                toret.update({
+                    'units': QgsUnitTypes.encodeUnit(ts.timeStepUnit())
+                })
+
 
         return json.dumps(toret)
 
@@ -1071,8 +1125,11 @@ class QgisProject(XmlData):
         """
         layers = OrderedDict()
 
+        # Get layer not showed within WNS service
+        restricted_layers = QgsServerProjectUtils.wmsRestrictedLayers(self.qgs_project)
+
         for layerid, layer in self.qgs_project.mapLayers().items():
-            if self.qgs_project.layerIsEmbedded(layerid) == '':
+            if self.qgs_project.layerIsEmbedded(layerid) == '' and layer.name() not in restricted_layers:
                 layers[layerid] = self._qgisprojectlayer_class(layer, qgisProject=self)
 
         # For layers with join 1to1 reload fields(columns)
@@ -1092,7 +1149,8 @@ class QgisProject(XmlData):
                 'project': os.path.basename(layer.attrib['project'])
             })
 
-        for group in self.qgisProjectTree.xpath('//legend/legendgroup[@embedded=1]'):
+        # Note the double slash in xpath, this is to catch nested embedded groups
+        for group in self.qgisProjectTree.xpath('//legend//legendgroup[@embedded=1]'):
 
             parent_project_path = os.path.basename(group.attrib['project'])
             group_name = group.attrib['name']
@@ -1317,28 +1375,42 @@ class QgisProject(XmlData):
         with transaction.atomic():
 
             if not instance and not self.instance:
+                
+                data = {
+                    'qgis_file': self.qgisProjectFile,
+                    'original_name': self.original_name,
+                    'group': self.group,
+                    'title': self.title,
+                    'initial_extent': self.initialExtent,
+                    'max_extent': self.maxExtent,
+                    'wms_use_layer_ids': self.wmsuselayerids,
+                    'thumbnail': kwargs.get('thumbnail'),
+                    'description': kwargs.get('description'),
+                    'baselayer': kwargs.get('baselayer'),
+                    'qgis_version': self.qgisVersion,
+                    'layers_tree': self.layersTree,
+                    'relations': self.layerRelations,
+                    'layouts': self.layouts,
+                    'title_ur': kwargs.get('title_ur'),
+                    'context_base_legend': self.contextbaselegend
+                }
 
-                thumbnail = kwargs.get('thumbnail')
-                description = kwargs.get('description')
-                baselayer = kwargs.get('baselayer')
+                for p in (
+                    'toc_layers_init_status',
+                    'toc_tab_default',
+                    'toc_themes_init_status',
+                    'legend_position',
+                    'use_map_extent_as_init_extent',
+                    'feature_count_wms',
+                    'multilayer_query',
+                    'multilayer_querybybbox',
+                    'multilayer_querybypolygon',
+                    'autozoom_query'
+                ):
+                    if kwargs.get(p):
+                        data[p] = kwargs.get(p)
 
-                self.instance = self._project_model.objects.create(
-                    qgis_file=self.qgisProjectFile,
-                    original_name=self.original_name,
-                    group=self.group,
-                    title=self.title,
-                    initial_extent=self.initialExtent,
-                    max_extent=self.maxExtent,
-                    wms_use_layer_ids=self.wmsuselayerids,
-                    thumbnail=thumbnail,
-                    description=description,
-                    baselayer=baselayer,
-                    qgis_version=self.qgisVersion,
-                    layers_tree=self.layersTree,
-                    relations=self.layerRelations,
-                    layouts=self.layouts,
-                    context_base_legend=self.contextbaselegend
-                )
+                self.instance = self._project_model.objects.create(**data)
             else:
                 if instance:
                     self.instance = instance
@@ -1390,7 +1462,8 @@ class QgisProject(XmlData):
                              'download_csv',
                              'download_gpkg',
                              'external',
-                             'not_show_attributes_table'):
+                             'not_show_attributes_table',
+                             'has_column_acl'):
                             setattr(embedded_layer, p, getattr(existing_layer, p))
 
                     except Layer.DoesNotExist:
@@ -1460,7 +1533,8 @@ class QgisProject(XmlData):
 
                 tr = self.instance.qgis_project.layerTreeRoot()
 
-                for embedded_group in tree.xpath('//legend/legendgroup[contains(@project, \'{}\')]'.format(project_name)):
+                # Note the double slash in xpath, this is to catch nested embedded groups
+                for embedded_group in tree.xpath('//legend//legendgroup[contains(@project, \'{}\')]'.format(project_name)):
                     if not embedded_group.attrib['project'].endswith(project_name):
                         continue
 
@@ -1569,11 +1643,21 @@ class QgisProject(XmlData):
                     layer.attrib['project'] = makeDatasource(
                         layer_object.project.qgis_file.path, Layer.TYPES.ogr)
                 except Layer.DoesNotExist:
-                    raise Exception(
-                        _('The project contains an embedded layer {} from a project that could not be found {}'.format(layer_id, project_name)))
 
-        # Update embedded group project path
-        for embedded_group in tree.xpath('//legend/legendgroup[@embedded="1"]'):
+                    # Try to get project by his layer.attrib['project'].
+                    # This case happen when project with embedded layer must be update without re-upload the
+                    # QGIS project file.
+                    try:
+                        Layer.objects.get(
+                            project__qgis_file__exact=f'projects/{project_name}', qgs_layer_id=layer_id)
+                    except Layer.DoesNotExist:
+                        raise Exception(
+                            _('The project contains an embedded layer {} from a project that could not be found '
+                              '{}'.format(layer_id, project_name)))
+
+        # Update embedded group project path, note the double slash in xpath,
+        # this is to catch nested embedded groups
+        for embedded_group in tree.xpath('//legend//legendgroup[@embedded="1"]'):
             project_name = os.path.basename(embedded_group.attrib['project'])
             group_name = os.path.basename(embedded_group.attrib['name'])
             try:

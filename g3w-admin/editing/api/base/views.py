@@ -14,7 +14,8 @@ from qgis.core import \
     QgsJsonExporter, \
     QgsExpression, \
     QgsExpressionContextUtils, \
-    QgsExpressionNode
+    QgsExpressionNode, \
+    QgsFieldConstraints
 from rest_framework.exceptions import ValidationError
 
 from core.api.base.vector import MetadataVectorLayer
@@ -31,7 +32,7 @@ from qdjango.models import Layer
 from qdjango.utils.data import QGIS_LAYER_TYPE_NO_GEOM
 from qdjango.utils.validators import feature_validator
 
-from qgis.PyQt.QtCore import QDateTime, QDate, QTime
+from qgis.PyQt.QtCore import QDateTime, QDate, QTime, QVariant, NULL
 
 import logging
 
@@ -252,45 +253,30 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                         # Loop again for set expressions value and default value by provider:
                         # For update store expression result to use later into update condition
                         # =====================================================================
-                        field_expresion_values = {}
+                        field_datetime_values = {}
+                        field_datetime_field_formats = {}
+                        numeric_nullable_field_values = {}
                         for qgis_field in qgis_layer.fields():
 
                             field_idx = qgis_layer.fields().indexFromName(qgis_field.name())
-
-                            # Look for expression/value by default
-                            # ------------------------------------
-                            if qgis_field.defaultValueDefinition().expression():
-                                exp = QgsExpression(qgis_field.defaultValueDefinition().expression())
-                                if exp.rootNode().nodeType() != QgsExpressionNode.ntLiteral and not exp.hasParserError():
-                                    context = QgsExpressionContextUtils.createFeatureBasedContext(
-                                        feature, qgis_layer.fields())
-                                    context.appendScopes(
-                                        QgsExpressionContextUtils.globalProjectLayerScopes(qgis_layer))
-                                    result = exp.evaluate(context)
-                                    if not exp.hasEvalError():
-                                        feature.setAttribute(qgis_field.name(), result)
-
-                                        # Check update if expression default value has to run also on update e not
-                                        # only on insert newone
-                                        if qgis_field.defaultValueDefinition().applyOnUpdate():
-                                            field_expresion_values[qgis_field.name()] = result
-
                             # Look for dataprovider default clause/value:
                             # only for fields no pk with defaultValueClause by provider
                             # and NULL value into feature on new add feature
                             # ---------------------------------------------------------
-                            elif mode_editing == EDITING_POST_DATA_ADDED and \
+                            if mode_editing == EDITING_POST_DATA_ADDED and \
                                     field_idx not in qgis_layer.primaryKeyAttributes() and \
                                     qgis_layer.dataProvider().defaultValueClause(field_idx) and \
                                     not feature[qgis_field.name()]:
                                 feature.setAttribute(qgis_field.name(),
                                                      qgis_layer.dataProvider().defaultValueClause(field_idx))
 
-                            elif qgis_field.typeName() in ('date', 'datetime', 'time'):
+                            # Formatting data if field's type is date, datetime or time
+                            # ----------------------------------------------------------
+                            elif qgis_field.typeName().lower() in ('date', 'datetime', 'time', 'timestamp'):
 
-                                if qgis_field.typeName() == 'date':
+                                if qgis_field.typeName().lower() == 'date':
                                     qtype = QDate
-                                elif qgis_field.typeName() == 'datetime':
+                                elif qgis_field.typeName().lower() in ('datetime', 'timestamp'):
                                     qtype = QDateTime
                                 else:
                                     qtype = QTime
@@ -303,8 +289,21 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                                         value = qtype.fromString(geojson_feature['properties'][qgis_field.name()],
                                                                  options['field_format'])
                                         feature.setAttribute(qgis_field.name(), value)
+                                        field_datetime_values[qgis_field.name()] = value
+                                        field_datetime_field_formats[qgis_field.name()] = options['field_format']
 
+                            # For PostGis provider or oder provider with type int or double and with field can be null
+                            # ----------------------------------------------------------------------------------------
+                            elif QVariant.typeToName(qgis_field.type()).lower() in ('int', 'double') and \
+                                    geojson_feature['properties'][qgis_field.name()] == '':
 
+                                # Check for not_null constraint
+                                constraints = qgis_layer.fieldConstraints(field_idx)
+                                if not (bool(constraints & QgsFieldConstraints.ConstraintNotNull) and \
+                                qgis_field.constraints().constraintStrength(
+                                    QgsFieldConstraints.ConstraintNotNull) == QgsFieldConstraints.ConstraintStrengthHard):
+                                    feature.setAttribute(qgis_field.name(), NULL)
+                                    numeric_nullable_field_values[qgis_field.name()] = NULL
 
 
 
@@ -340,8 +339,10 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                             attr_map = {}
                             for name, value in geojson_feature['properties'].items():
                                 if name in qgis_layer.dataProvider().fieldNameMap():
-                                    if name in field_expresion_values:
-                                        value = field_expresion_values[name]
+                                    if name in field_datetime_values:
+                                        value = field_datetime_values[name]
+                                    if name in numeric_nullable_field_values:
+                                        value = numeric_nullable_field_values[name]
                                     attr_map[qgis_layer.dataProvider().fieldNameMap()[name]] = value
 
                             if has_transactions:
@@ -375,6 +376,16 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
 
                             fnames = [f.name() for f in feature.fields()]
                             jfeature = json.loads(ex.exportFeature(feature, dict(zip(fnames, feature.attributes()))))
+
+                            # Fore date and datetime and time fields:
+                            if field_datetime_values:
+                                for fname, fvalue in jfeature['properties'].items():
+                                    try:
+                                        jfeature['properties'][fname] = \
+                                            field_datetime_values[fname].toString(field_datetime_field_formats[fname])
+                                    except:
+                                        pass
+
 
                             to_res.update({
                                 'clientid': geojson_feature['id'],

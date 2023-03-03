@@ -37,13 +37,15 @@ from qdjango.models.geoconstraints import GeoConstraint, GeoConstraintRule
 from qdjango.api.layers.filters import FILTER_RELATIONONETOMANY_PARAM
 from qdjango.utils.data import QgisProject
 from qdjango.models import SessionTokenFilter, SessionTokenFilterLayer
+from usersmanage.models import Group as UserGroup
 from core.tests.base import CoreTestBase
-from core.utils.qgisapi import get_qgs_project
+from core.utils.qgisapi import get_qgs_project, get_qgis_layer
 
 from .base import QdjangoTestBase, CURRENT_PATH, TEST_BASE_PATH, QGS310_WIDGET_FILE, CoreGroup, G3WSpatialRefSys, \
-    QGS322_FILE
+    QGS322_FILE, QGS322_INITEXTENT_GEOCONSTRAINT_FILE, QGS322_FORMATTING_DATE
 from qgis.core import QgsFeatureRequest, QgsRasterLayer, QgsVectorLayer
 from qgis.PyQt.QtCore import QTemporaryDir
+from qgis.server import QgsServerProjectUtils
 import time
 import six
 import os
@@ -316,6 +318,18 @@ class TestQdjangoProjectsAPI(QdjangoTestBase):
         super().setUpClass()
         cls.client = APIClient()
 
+        # Add new project for fields excluded from WMS service
+        qgis_project_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS322_FILE), 'r'))
+        cls.project322 = QgisProject(qgis_project_file)
+        cls.project322.title = 'A project QGIS 3.22 - fields selected for WMS service'
+        cls.project322.group = cls.project_group
+        cls.project322.save()
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.project322.instance.delete()
+        super().tearDownClass()
+
     def _testApiCall(self, view_name, args, kwargs={}):
         """Utility to make test calls for admin01 user"""
 
@@ -464,6 +478,103 @@ class TestQdjangoProjectsAPI(QdjangoTestBase):
 
         os.remove(fname)
 
+    def test_metadata_layer_info_with_fields_excluded_wms(self):
+        """
+        Test metadata info for layers with fields excluded from WMS GetFeatureInfo.
+        """
+
+        response = self._testApiCall(
+            'group-project-map-config', [self.project322.instance.group.slug, 'qdjango', self.project322.instance.pk])
+
+        resp = json.loads(response.content)
+
+        # get world layer:
+        # Check metadata attributes
+        metas = [f['name'] for f in [l for l in resp['layers'] if l['name'] == 'world'][0]['metadata']['attributes']]
+
+        self.assertEqual(len(metas), 1)
+        self.assertTrue('NAME' in metas)
+        self.assertFalse('CAPITAL' in metas)
+
+    def test_bookmarks_project(self):
+        """
+        Test project bookmarks into /api/config API REST
+        """
+
+        response = self._testApiCall(
+            'group-project-map-config', [self.project322.instance.group.slug, 'qdjango', self.project322.instance.pk])
+
+        resp = json.loads(response.content)
+
+        self.assertEqual(resp['bookmarks'], [
+   {
+      "name":"Gbook1",
+      "expanded":False,
+      "nodes":[
+         {
+            "id":"{dfe1c3a0-1ed8-4042-943c-0f820f10429a}",
+            "name":"Book1",
+            "crs":{
+               "epsg":3003
+            },
+            "extent":[
+               1727644.7707,
+               4856430.948,
+               1728651.4597,
+               4857251.2131
+            ]
+         },
+         {
+            "id":"{49513492-609b-41e1-87c5-e99b13d359a5}",
+            "name":"Book3",
+            "crs":{
+               "epsg":3003
+            },
+            "extent":[
+               1718435.4312,
+               4847184.3237,
+               1740974.0779,
+               4864204.8237
+            ]
+         }
+      ]
+   },
+   {
+      "name":"GBook2",
+      "expanded":False,
+      "nodes":[
+         {
+            "id":"{46764496-faa9-4d9f-bfef-594c097ab6f6}",
+            "name":"Book4",
+            "crs":{
+               "epsg":3003
+            },
+            "extent":[
+               1718435.4312,
+               4847184.3237,
+               1740974.0779,
+               4864204.8237
+            ]
+         }
+      ]
+   },
+   {
+      "id":"{4f63af2b-cbb0-4673-a319-f05f9939b89e}",
+      "name":"Book2",
+      "crs":{
+         "epsg":3003
+      },
+      "extent":[
+         1727178.711,
+         4859059.5247,
+         1728483.6782,
+         4859861.1474
+      ]
+   }
+])
+
+
+
 
 class TestQdjangoLayersAPI(QdjangoTestBase):
     """ Test qdjango layer API """
@@ -487,6 +598,12 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         cls.project322.title = 'A project QGIS 3.22 - fields selected for WMS service'
         cls.project322.group = cls.project_group
         cls.project322.save()
+
+        # Add new project for date datetime formatting
+        qgis_project_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS322_FORMATTING_DATE), 'r'))
+        cls.project322_datewidget = QgisProject(qgis_project_file)
+        cls.project322_datewidget.group = cls.project_group
+        cls.project322_datewidget.save()
 
     @classmethod
     def tearDownClass(cls):
@@ -808,6 +925,10 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
 
         # test create second filtertoken
         # ------------------------------
+
+        # Set cookie for Anonymous user
+        self.client.cookies[settings.G3W_CLIENT_COOKIE_SESSION_TOKEN] = 'skdjlaskdjlaksdjlaksdj'
+
         resp = json.loads(self._testApiCall('core-vector-api',
                                             ['filtertoken', 'qdjango', self.project310.instance.pk,
                                              countries.qgs_layer_id],
@@ -853,6 +974,7 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         # create cfrtoken
         self.client.cookies = SimpleCookie(
             {'csrftoken': 'wtegdnfj5736sgreth57Tg5473'})
+        self.client.cookies[settings.G3W_CLIENT_COOKIE_SESSION_TOKEN] = 'sdhdfnfkkreorto'
         resp = json.loads(self._testApiCall('core-vector-api',
                                             ['filtertoken', 'qdjango', self.project310.instance.pk,
                                              cities.qgs_layer_id], {
@@ -1011,7 +1133,6 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         properties = resp["vector"]["data"]["features"][1]["properties"]
         self.assertEqual(properties['type'], 'B')
 
-        # FIXME: a possibile bug of QGIS 3.10.10, ask Elpaso.
         # add fromatter query url param
         # formatter=1
         response = self._testApiCall(
@@ -1029,7 +1150,7 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         properties = resp["vector"]["data"]["features"][1]["properties"]
         self.assertEqual(properties['type'], 'TYPE B')
 
-        # formatter=string
+        # formatter=string like formatter=0
         response = self._testApiCall(
             'core-vector-api', [
                 'data',
@@ -1041,9 +1162,9 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         # check for value relation
         resp = json.loads(response.content)
         properties = resp["vector"]["data"]["features"][0]["properties"]
-        self.assertEqual(properties['type'], 'TYPE A')
+        self.assertEqual(properties['type'], 'A')
         properties = resp["vector"]["data"]["features"][1]["properties"]
-        self.assertEqual(properties['type'], 'TYPE B')
+        self.assertEqual(properties['type'], 'B')
 
         # formatter=0
         response = self._testApiCall(
@@ -1060,6 +1181,74 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         self.assertEqual(properties['type'], 'A')
         properties = resp["vector"]["data"]["features"][1]["properties"]
         self.assertEqual(properties['type'], 'B')
+
+        # TESTING FOR DATE AND DATETIME WIDGET
+        # ---------------------------------------------------------------
+
+        # Formatter not sent
+        response = self._testApiCall(
+            'core-vector-api', [
+                'data',
+                'qdjango',
+                self.project322_datewidget.instance.pk,
+                'point_b6dd0a53_98fb_47d7_b110_200496711f86'])
+
+        resp = json.loads(response.content)
+        properties = resp["vector"]["data"]["features"][0]["properties"]
+        self.assertEqual(properties['date_n'], '17/01/23')
+        self.assertEqual(properties['date_y'], '17/01/23')
+        self.assertEqual(properties['datetime_n'], '17/01/23 08:40:04')
+        self.assertEqual(properties['datetime_y'], '2023-01-17T08:39:58.000')
+
+        properties = resp["vector"]["data"]["features"][1]["properties"]
+        self.assertEqual(properties['date_n'], '18/02/23')
+        self.assertEqual(properties['date_y'], '17/01/25')
+        self.assertEqual(properties['datetime_n'], '18/02/23 08:40:40')
+        self.assertEqual(properties['datetime_y'], '2026-01-17T08:40:47.000')
+
+        # Formatter = 0
+        response = self._testApiCall(
+            'core-vector-api', [
+                'data',
+                'qdjango',
+                self.project322_datewidget.instance.pk,
+                'point_b6dd0a53_98fb_47d7_b110_200496711f86'],
+        {'formatter': '0'})
+
+        resp = json.loads(response.content)
+        properties = resp["vector"]["data"]["features"][0]["properties"]
+        self.assertEqual(properties['date_n'], '17/01/23')
+        self.assertEqual(properties['date_y'], '17/01/23')
+        self.assertEqual(properties['datetime_n'], '17/01/23 08:40:04')
+        self.assertEqual(properties['datetime_y'], '2023-01-17T08:39:58.000')
+
+        properties = resp["vector"]["data"]["features"][1]["properties"]
+        self.assertEqual(properties['date_n'], '18/02/23')
+        self.assertEqual(properties['date_y'], '17/01/25')
+        self.assertEqual(properties['datetime_n'], '18/02/23 08:40:40')
+        self.assertEqual(properties['datetime_y'], '2026-01-17T08:40:47.000')
+
+        # Formatter = 1
+        response = self._testApiCall(
+            'core-vector-api', [
+                'data',
+                'qdjango',
+                self.project322_datewidget.instance.pk,
+                'point_b6dd0a53_98fb_47d7_b110_200496711f86'],
+            {'formatter': '1'})
+
+        resp = json.loads(response.content)
+        properties = resp["vector"]["data"]["features"][0]["properties"]
+        self.assertEqual(properties['date_n'], '17/01/23')
+        self.assertEqual(properties['date_y'], '2023')
+        self.assertEqual(properties['datetime_n'], '17/01/23 08:40:04')
+        self.assertEqual(properties['datetime_y'], '2023')
+
+        properties = resp["vector"]["data"]["features"][1]["properties"]
+        self.assertEqual(properties['date_n'], '18/02/23')
+        self.assertEqual(properties['date_y'], '2025')
+        self.assertEqual(properties['datetime_n'], '18/02/23 08:40:40')
+        self.assertEqual(properties['datetime_y'], '2026')
 
     def test_server_filters_combination_api(self):
         """ Test server filter combination: i.e. FieldFilterBacked + SuggestFilterBackend """
@@ -1294,6 +1483,26 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
                 'main_layer_e867d371_3388_4e2d_a214_95adbb56165c'])
         resp = json.loads(response.content)
 
+    def test_config_with_multiline_conf(self):
+        """
+        Test input->options->type with TextEdit Editing widget
+        IsMultiline -> type: 'textarea'
+        UseHtml -> type: 'texthtml'
+        """
+
+        response = self._testApiCall(
+            'core-vector-api', [
+                'config',
+                'qdjango',
+                self.project322.instance.pk,
+                self.project322.instance.layer_set.get(name='world').qgs_layer_id])
+        jres = json.loads(response.content)
+
+        self.assertEqual(jres['vector']['fields'][0]['name'], 'NAME')
+        self.assertEqual(jres['vector']['fields'][0]['input']['type'], 'textarea')
+        self.assertEqual(jres['vector']['fields'][1]['name'], 'CAPITAL')
+        self.assertEqual(jres['vector']['fields'][1]['input']['type'], 'texthtml')
+
 
 class TestGeoConstraintVectorAPIFilter(QdjangoTestBase):
     """Test GeoConstraint Vector API Filters"""
@@ -1493,18 +1702,18 @@ class QgisTemporalVectorProject(QdjangoTestBase):
 
         # Active with field
         self.assertEqual(self.project_temporal_vector_field.layers[0].temporalproperties,
-                         '{"mode": "FeatureDateTimeInstantFromField", "field": "dateofocc", "units": "d", "duration": 1.0}')
+                         '{"mode": "FeatureDateTimeInstantFromField", "field": "dateofocc", "units": "d", "duration": 1.0, "step": 1.0}')
         self.assertEqual(self.project_temporal_vector_field.instance.layer_set.all()[0].temporal_properties,
-                         '{"mode": "FeatureDateTimeInstantFromField", "field": "dateofocc", "units": "d", "duration": 1.0}')
+                         '{"mode": "FeatureDateTimeInstantFromField", "field": "dateofocc", "units": "d", "duration": 1.0, "step": 1.0}')
 
     def test_qgs_project_wmst(self):
         """ Test properties into qgsproject object and models """
 
         # Active
         self.assertEqual(self.project_wmst.layers[0].temporalproperties,
-                         '{"mode": "RasterTemporalRangeFromDataProvider", "range": ["1981-01-01T00:00:00", "2022-03-01T00:00:00"]}')
+                         '{"mode": "RasterTemporalRangeFromDataProvider", "range": ["1981-01-01T00:00:00", "2022-03-01T00:00:00"], "step": 1.0, "units": "xxx"}')
         self.assertEqual(self.project_wmst.instance.layer_set.all()[0].temporal_properties,
-                         '{"mode": "RasterTemporalRangeFromDataProvider", "range": ["1981-01-01T00:00:00", "2022-03-01T00:00:00"]}')
+                         '{"mode": "RasterTemporalRangeFromDataProvider", "range": ["1981-01-01T00:00:00", "2022-03-01T00:00:00"], "step": 1.0, "units": "xxx"}')
 
     def test_client_map_config(self):
         """ Test for client config API """
@@ -1575,3 +1784,118 @@ class QgisTemporalVectorProject(QdjangoTestBase):
         self.assertEqual(jcontent['layers'][0]['qtimeseries']['start_date'], '1981-01-01T00:00:00')
         self.assertEqual(jcontent['layers'][0]['qtimeseries']['end_date'], '2022-03-01T00:00:00')
 
+
+class TestInitextentByGeoconstraint(QdjangoTestBase):
+    """
+    Test changing initextent property of initconfig API REST by user geoconstraint rules.
+    """
+
+    @classmethod
+    def setUpTestData(cls):
+        # main project group
+        cls.project_group = CoreGroup(name='GroupInitExtentGeoconstraint', title='GroupInitExtentGeoconstraint', header_logo_img='',
+                                      srid=G3WSpatialRefSys.objects.get(auth_srid=3857))
+        cls.project_group.save()
+
+        # Load project
+        qgis_project_file = File(open(f'{CURRENT_PATH}{TEST_BASE_PATH}{QGS322_INITEXTENT_GEOCONSTRAINT_FILE}', 'r'))
+        cls.project = QgisProject(qgis_project_file)
+        cls.project.title = 'Test project for initextent by geoconstraint'
+        cls.project.group = cls.project_group
+        cls.project.save()
+
+        group_viewer = UserGroup.objects.get(name='Viewer Level 1')
+
+        # Viewer level 1: viewer2
+        cls.test_viewer2 = User.objects.create_user(username='viewer2', password='viewer2')
+        cls.test_viewer2.groups.add(group_viewer)
+        cls.test_viewer2.save()
+
+        # Viewer level 1: viewer3
+        cls.test_viewer3 = User.objects.create_user(username='viewer3', password='viewer3')
+        cls.test_viewer3.groups.add(group_viewer)
+        cls.test_viewer3.save()
+
+    def _make_request_with_geocontraints(self, url, u, expr):
+        """
+        Build request geocontraint by user and expression and test it initconfig api
+        """
+
+        userpoints_layer = self.project.instance.layer_set.get(name='userpoints')
+        userarea_layer = self.project.instance.layer_set.get(name='userarea')
+        userarea_qgs_layer = get_qgis_layer(userarea_layer)
+
+        self.client.login(username=u.username, password=u.username)
+
+        # Grant on project to viewer1
+        assign_perm('view_project', u, self.project.instance)
+
+        constraint = GeoConstraint(
+            layer=userpoints_layer, constraint_layer=userarea_layer, active=True, autozoom=True)
+        constraint.save()
+
+        rule_viewer = GeoConstraintRule(
+            constraint=constraint, user=u, group=None, rule=expr)
+        rule_viewer.save()
+
+        # Make get request
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, 200)
+
+        jres = json.loads(res.content)
+
+        # Get extent
+        request = QgsFeatureRequest().setFilterExpression(expr)
+        userarea_qgs_layer.selectByExpression(expr)
+        ext = userarea_qgs_layer.boundingBoxOfSelected()
+
+        self.assertAlmostEqual(jres['initextent'][0], ext.xMinimum(), 4)
+        self.assertAlmostEqual(jres['initextent'][1], ext.yMinimum(), 4)
+        self.assertAlmostEqual(jres['initextent'][2], ext.xMaximum(), 4)
+        self.assertAlmostEqual(jres['initextent'][3], ext.yMaximum(), 4)
+
+        self.client.logout()
+
+    def test_init_map_extent_by_geoconstraints(self):
+        """
+        Test init map extent into map config api for user with geoconstrains:
+        admin1 -> no geoconstrains -> initmap extent as defined into qgis project
+        viewer1 -> one or more geoconstraints -> initmap extent as result of geoconstraints expresion
+        ...
+        """
+
+        qgsprj = get_qgs_project(self.project.instance.qgis_file.path)
+
+        url = reverse('group-project-map-config', args=[self.project_group.slug, 'qdjango', self.project.instance.pk])
+
+        # Login ad admin01
+        # --------------------------------------------------------
+        self.client.login(username='admin01', password='admin01')
+
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, 200)
+
+        jres = json.loads(res.content)
+
+        ext = QgsServerProjectUtils.wmsExtent(qgsprj)
+
+        self.assertEqual(jres['extent'], [
+            ext.xMinimum(),
+            ext.yMinimum(),
+            ext.xMaximum(),
+            ext.yMaximum()
+        ])
+
+        self.client.logout()
+
+        # Login ad viewer1
+        # --------------------------------------------------------
+        self._make_request_with_geocontraints(url, self.test_viewer1, "name='AREA1'")
+
+        # Login ad viewer2
+        # --------------------------------------------------------
+        self._make_request_with_geocontraints(url, self.test_viewer2, "name='AREA2'")
+
+        # Login ad viewer3
+        # --------------------------------------------------------
+        self._make_request_with_geocontraints(url, self.test_viewer3, "name='AREA2' OR name='AREA3'")

@@ -1,6 +1,6 @@
 from django_file_form.forms import FileFormMixin, UploadedFileField
-from django.forms import Form, ModelForm
-from django.forms.fields import CharField
+from django.forms import Form, ModelForm, ValidationError
+from django.forms.fields import CharField, HiddenInput
 from django.forms.models import ModelMultipleChoiceField
 from django.db.models import Q
 from django.utils.translation import ugettext, ugettext_lazy as _
@@ -15,6 +15,7 @@ from guardian.shortcuts import get_objects_for_user
 from .utils.forms import crispyBoxMacroGroups
 from usersmanage.utils import get_fields_by_user, crispyBoxACL, userHasGroups, get_users_for_object
 from usersmanage.forms import G3WACLForm, UsersChoiceField
+from qdjango.models import Project
 from core.mixins.forms import *
 from usersmanage.configs import *
 
@@ -30,6 +31,9 @@ class GroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, G3WRequestFor
         # add MacroGroups by users
         self.fields['macrogroups'].queryset = get_objects_for_user(self.request.user, 'view_macrogroup',
                                                                         MacroGroup)
+
+        # Remove is_active from field
+        del(self.fields['is_active'])
 
 
         self.helper = FormHelper(self)
@@ -169,6 +173,23 @@ class GroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, G3WRequestFor
             return self.cleaned_data['macrogroups'] | \
                    self.instance.macrogroups.filter(~Q(pk__in=self.fields['macrogroups'].queryset))
         return self.cleaned_data['macrogroups']
+
+    def clean_srid(self):
+        """
+        For not new group or existing not empty item, check if NEW srid is different from projects SRID
+        """
+
+        projects = Project.objects.filter(group=self.instance)
+        if self.instance.pk and len(projects) > 0:
+            srid = self.cleaned_data['srid'].auth_srid
+            layer_srid = projects[0].qgis_project.crs().postgisSrid()
+            if srid != layer_srid:
+                raise ValidationError(
+                    _(f"SRID EPSG:{srid} is not equal to current projects srid EPSG:{layer_srid}"))
+
+        return self.cleaned_data['srid']
+
+
 
     def save(self, commit=True):
         super(GroupForm, self).save()

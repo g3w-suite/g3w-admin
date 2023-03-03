@@ -48,6 +48,9 @@ ga.Qdjango.widgetEditor = {
     selectbox: "SelectBox",
     autocompletebox: "AutoCompleteBox",
   },
+  datetime_widgettype: {
+    datetimebox: "DatetimeBox"
+  },
   /*widget: [
 		{
 			'type': 'unique_value_select',
@@ -63,7 +66,7 @@ ga.Qdjango.widgetEditor = {
   },
 
   getType: function (str) {
-    if (str.indexOf("QSTRING") !== -1 || str.indexOf("QDATE") !== -1 || str.indexOf("STRING") !== -1 || str.indexOf("TEXT") !== -1) return "textfield"
+    if (str.indexOf("QSTRING") !== -1 || str.indexOf("STRING") !== -1 || str.indexOf("TEXT") !== -1) return "textfield"
     if (
       str.indexOf("NUMERIC") !== -1 ||
       str.indexOf("DOUBLE PRECISION") !== -1 ||
@@ -74,6 +77,13 @@ ga.Qdjango.widgetEditor = {
       str.indexOf("DOUBLE") !== -1
     )
       return "numberfield"
+
+    if (
+        str.indexOf("QDATE") !== -1 ||
+        str.indexOf("QDATETIME") !== -1 ||
+        str.indexOf("QTIME") !== -1
+    )
+      return "datetimefield"
   },
 
   onFormSubmit: function () {
@@ -125,14 +135,50 @@ ga.Qdjango.widgetEditor = {
           }
           options["numdigaut"] = v.find(".cmpNumDigAutocomplete").find("input").val()
 
+
+          fieldname = v.find(".fieldSelect").find("select").val();
+          fieldwidgettype = v.find(".widgetType").find("select").val();
+          // Case QDATETIME and QDATE
+
+          fieldtype = v.find(".fieldSelect").find("select").find("option:selected").data().type;
+          inputtype = that.getType(fieldtype);
+          if (fieldwidgettype == 'datetimebox'){
+
+            // Switch to ISO Format for DATE TIME and DATETIME
+            // WMS FILTER paramenter only works with ISO date/time formats.
+            if (fieldtype == 'QDATE'){
+              field_format = 'yyyy-MM-dd'
+            } else if (fieldtype == 'QDATETIME') {
+              field_format = 'yyyy-MM-dd HH:mm:ss+t'
+            } else if (fieldtype == 'QTIME') {
+              field_format = 'HH:mm:ss'
+            } else {
+              field_format = ga.Qdjango.localVars.layer_edittypes[fieldname].field_format
+            }
+
+
+            options['format'] = {
+              "date": true ? _.indexOf(['QDATETIME', 'QDATE'], fieldtype) != -1 : false,
+              "time": true ? _.indexOf(['QDATETIME', 'QTIME'], fieldtype) != -1 : false,
+              "fieldformat": field_format,
+              "displayformat": ga.Qdjango.localVars.layer_edittypes[fieldname].display_format,
+              "default": null
+            }
+
+            // Force type do 'datetimefield'
+            inputtype = 'datetimefield'
+          }
+
+
+
           obj.fields.push({
             name: v.find(".fieldSelect").find("select").val(), // NOME DEL CAMPO DB
             label: v.find(".textInput").find("input").val(), // ETICHETTA DEL CAMPO DI RICERCA
             blanktext: v.find(".descriptionInput").find("input").val(), // TESTO INIZIALE NEL CAMPO
             filterop: v.find(".cmpOperatorSelect").find("select").val(), // OPERATORE DI CONFRONTO (=,&lt;,&gt;,=&lt;,&gt;=,&lt;&gt;)
-            widgettype: v.find(".widgetType").find("select").val(), // widgettype
+            widgettype: fieldwidgettype, // widgettype
             input: {
-              type: that.getType(v.find(".fieldSelect").find("select").find("option:selected").data().type), // TIPO DI CAMPO //
+              type: inputtype, // TIPO DI CAMPO //
               options: options,
             },
             logicop: v.find("select.logic_operator").val(),
@@ -344,6 +390,7 @@ ga.Qdjango.widgetEditor = {
 
     // add control on cmpOperatorSelect for field type:
     fieldSelect.on("change", function () {
+
       var likeopts = cmpOperatorSelect.find("option[value='LIKE']")
       var ilikeopts = cmpOperatorSelect.find("option[value='ILIKE']")
       var field_type = that.getType($(this).find("option:selected").data().type)
@@ -356,7 +403,19 @@ ga.Qdjango.widgetEditor = {
         if (likeopts.length == 0) cmpOperatorSelect.append('<option value="LIKE">LIKE (' + gettext("like case sensitive") + ")</option>")
         if (ilikeopts.length == 0) cmpOperatorSelect.append('<option value="ILIKE">ILIKE (' + gettext("like not case sensitive") + ")</option>")
       }
+
+      // Case QDATETIME
+      //if (_.indexOf(['QDATETIME', 'QDATE'], $(this).find("option:selected").data().type) != -1 &&
+      widgetSelect.find('[value="datetimebox"]').remove();
+      if (_.indexOf(['DateTime'], ga.Qdjango.localVars.layer_edittypes[$(this).val()].widgetv2type) != -1) {
+        // Append 'DatetimBox' to widget selectbox
+        widgetSelect.append('<option value="datetimebox">' + that.datetime_widgettype.datetimebox + '</option>');
+      }
+
     })
+
+      // Trigger change for fieldselect
+    fieldSelect.trigger('change');
 
     if (that.isset(values) && that.isset(values.widgettype)) widgetSelect.val($("<div/>").html(values.widgettype).text())
 
@@ -532,8 +591,9 @@ ga.Qdjango.widgetEditor = {
     widgetSelect.trigger("change")
     if (that.isset(values) && that.isset(values.input.options["dependance"])) cmpDependanceSelect.val($("<div/>").html(values.input.options["dependance"]).text())
     if (that.isset(values) && that.isset(values.input.options["dependance_strict"])){
-      $dependence_strict.find("input").prop("checked","checked");
-      if (that.isset(values.input.options["dependance"])) {
+      if (values.input.options["dependance_strict"])
+        $dependence_strict.find("input").prop("checked","checked");
+      if (values.input.options["dependance"]) {
         $dependence_strict.removeClass("invisible");
         div.find(".cmpDependanceStrictLabel").removeClass("invisible");
       }
@@ -542,6 +602,7 @@ ga.Qdjango.widgetEditor = {
 
     if (that.isset(values) && that.isset(values.logicop)) var logicopselect = div.find("select.logic_operator")
     if (that.isset(logicopselect)) logicopselect.val(values.logicop)
+
   },
 
   generateTooltipRow: function (values) {
@@ -1799,6 +1860,17 @@ _.extend(g3wadmin.tpl, {
               </div>\
               <input type="hidden" name="for_editing">\
           </div>\
+          <div class="form-group">\
+              <div id="div_id_autozoom" class="checkbox">\
+                  <label for="id_autozoom" class="">\
+                      <input type="checkbox" name="icheck_autozoom" id="id_autozoom" class="checkboxinput">\
+                      ' +
+      gettext("Autozoom on map bootstrap") +
+      '\
+                  </label>\
+              </div>\
+              <input type="hidden" name="autozoom">\
+          </div>\
       </form>'
   ),
 
@@ -2036,6 +2108,14 @@ _.extend(g3wadmin.widget, {
       }
     })
 
+    modal.$modal.find("#id_autozoom").on("ifChanged", function (e) {
+      if (e.target.checked) {
+        modal.$modal.find("[name='autozoom']").val("true")
+      } else {
+        modal.$modal.find("[name='autozoom']").val("false")
+      }
+    })
+
     // set action for confirm btn
     var form = new ga.forms.form(modal.$modal.find("form"))
     var that = this
@@ -2074,7 +2154,7 @@ _.extend(g3wadmin.widget, {
       $.each(res, function (key, val) {
         modal.$modal.find("[name=" + key + "]").val(val)
         // init icheck
-        if (key == "for_view" || key == "for_editing") {
+        if (key == "for_view" || key == "for_editing" || key == "autozoom") {
           if (val) {
             modal.$modal.find("#id_" + key).iCheck("check")
           } else {
@@ -2121,6 +2201,7 @@ _.extend(g3wadmin.widget, {
     if (_.indexOf(ga.settings.G3WADMIN_LOCAL_MORE_APPS, "editing") != -1) {
       thead += "                <th>" + gettext("For visualization") + "</th>\n" + "                <th>" + gettext("For editing") + "</th>\n"
     }
+    thead += "                <th>" + gettext("Autozoom") + "</th>\n"
     thead += "                <th>" + gettext("Rules count") + "</th>\n" + "            </tr>\n" + "        </thead>"
 
     $table.append(thead)
@@ -2132,6 +2213,7 @@ _.extend(g3wadmin.widget, {
       var editDisplay = v["constraint_rule_count"] > 0 ? "none" : "display"
       var for_view = v["for_view"] ? '<span class="fa fa-check-circle" style="color: orange"></span>' : ""
       var for_editing = v["for_editing"] ? '<span class="fa fa-check-circle" style="color: orange"></span>' : ""
+      var autozoom = v["autozoom"] ? '<span class="fa fa-check-circle" style="color: orange"></span>' : ""
       var constraintContext = ""
       if (for_view != "") constraintContext += "v"
       if (for_editing != "") constraintContext += "e"
@@ -2154,8 +2236,10 @@ _.extend(g3wadmin.widget, {
         v["description"] +
         "</td>\n"
       if (_.indexOf(ga.settings.G3WADMIN_LOCAL_MORE_APPS, "editing") != -1) {
-        tr += "                <td>" + for_view + "</td>\n" + "                <td>" + for_editing + "</td>\n"
+        tr += "                <td>" + for_view + "</td>\n"
+        tr += "                <td>" + for_editing + "</td>\n"
       }
+      tr += "                <td>" + autozoom + "</td>\n"
       tr += "                <td>" + v["constraint_rule_count"] + "</td>\n" + "            </tr>\n"
       $tbody.append(tr)
     })

@@ -32,6 +32,7 @@ from qgis.core import (
 )
 
 from qgis.PyQt.QtCore import QVariant, Qt
+import string, random
 
 
 def feature_validator(feature, layer):
@@ -281,6 +282,16 @@ class ProjectTitleExists(QgisProjectValidator):
             if self.qgisProject.qgisProjectFile.name:
                 self.qgisProject.title = os.path.basename(
                     self.qgisProject.qgisProjectFile.name)
+
+                # If a project with same title exists add slug suffix
+                if self.qgisProject.instance:
+                    # for update
+                    args = [~Q(pk=self.qgisProject.instance.pk)]
+                else:
+                    args = []
+                if Project.objects.filter(*args, title=self.qgisProject.title).exists():
+                    self.qgisProject.title += f"-{''.join(random.choices(string.ascii_lowercase, k=6))}"
+
             else:
                 raise QgisProjectException(_('Title project not empty'))
 
@@ -356,7 +367,10 @@ class DatasourceExists(QgisProjectLayerValidator):
         if self.qgisProjectLayer.layerType in [
                 Layer.TYPES.gdal,
                 Layer.TYPES.ogr,
-                Layer.TYPES.raster] and not isXML(self.qgisProjectLayer.datasource):
+                Layer.TYPES.raster,
+                Layer.TYPES.mdal
+        ] and not isXML(self.qgisProjectLayer.datasource) \
+                and not self.qgisProjectLayer.datasource.startswith('/vsicurl/'):
 
             # try PostGis raster layer
             if self.qgisProjectLayer.datasource.startswith("PG:"):
@@ -368,6 +382,18 @@ class DatasourceExists(QgisProjectLayerValidator):
                         self.qgisProjectLayer.name))
                     raise QgisProjectLayerException(err)
 
+            elif self.qgisProjectLayer.datasource.startswith("NETCDF:"):
+
+                subdt = self.qgisProjectLayer.datasource.split(':')
+                pre = subdt[0] + ':"'
+                datasource = subdt[1][1:-1]
+                if not os.path.exists(datasource):
+                    err = ugettext('Missing data file for MESH layer {} '.format(
+                        self.qgisProjectLayer.name))
+                    err += ugettext('which should be located at {}'.format(
+                        self.qgisProjectLayer.datasource))
+                    raise QgisProjectLayerException(err)
+                    
             else:
                 if not os.path.exists(self.qgisProjectLayer.datasource.split('|')[0]):
                     err = ugettext('Missing data file for layer {} '.format(

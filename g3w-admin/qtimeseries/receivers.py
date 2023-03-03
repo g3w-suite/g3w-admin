@@ -14,46 +14,14 @@ from django.conf import settings
 from django.apps import apps
 from qdjango.models import Layer
 from django.dispatch import receiver
-from django.template import loader
 from core.signals import \
-    load_layer_actions, \
-    initconfig_plugin_start, \
-    after_serialized_project_layer
-from .models import QRasterTimeSeriesLayer
-from osgeo import gdal
+    after_serialized_project_layer, \
+    initconfig_plugin_start
+from core.utils.qgisapi import get_qgis_layer
 
-
-@receiver(load_layer_actions)
-def rastertime_layer_actions(sender, **kwargs):
-    """
-    Return html raster time series for project layer.
-    """
-
-    # only admin and editor1 or editor2:
-    if sender.has_perm('change_project', kwargs['layer'].project) and kwargs['app_name'] == 'qdjango' and \
-                    kwargs['layer'].layer_type in (
-                        Layer.TYPES.gdal,
-                        Layer.TYPES.raster
-                    ):
-
-        # Check for netCDF files dshow tools only for netCDF
-        # ==================================================
-        ds = gdal.Open(kwargs['layer'].datasource)
-        dssn = ds.GetDriver().ShortName
-        if dssn in ['netCDF']:
-
-            # add if is active
-            try:
-                QRasterTimeSeriesLayer.objects.get(layer_id=kwargs['layer'].pk)
-                kwargs['active'] = True
-            except:
-                kwargs['active'] = False
-
-            template = loader.get_template('qtimeseries/layer_action.html')
-            return template.render(kwargs)
-
-    template = loader.get_template('qtimeseries/layer_action_blank.html')
-    return template.render(kwargs)
+from qgis.PyQt.QtCore import QDate, QDateTime, Qt
+from datetime import datetime
+import json
 
 
 @receiver(initconfig_plugin_start)
@@ -66,68 +34,33 @@ def set_initconfig_value(sender, **kwargs):
 
     # VECTOR TIME SERIES (temporal properties from QGIS project)
     # ==========================================================
-    vector_layers = 0
+    temporal_layers = 0
 
     for pl in Project.objects.get(pk=kwargs['project']).layer_set.all():
         project_layers.update({
             pl.pk: pl
         })
 
-        # Add layer with temporal_properties
-        # todo: change to qgis layer temporal properties also for NetCDF raster layer type.
         if pl.temporal_properties:
             if pl.layer_type != Layer.TYPES.wms or pl.external:
-                vector_layers += 1
+                temporal_layers += 1
 
-
-    # RASTER TIME SERIES
-    # =======================================
-    # get every raster layer for time series
-    raster_layers = QRasterTimeSeriesLayer.objects.all()
-    raster_layers_id = []
-
-    for rl in raster_layers:
-
-        # check for permissions
-        if rl.layer.pk in project_layers:
-            raster_layers_id.append({
-                'type': 'raster',
-                'id': rl.layer.qgs_layer_id,
-                'start_date': rl.start_date,
-                'end_date': rl.end_date,
-            })
-
-    if len(raster_layers_id) + vector_layers == 0:
+    if temporal_layers == 0:
         return None
-
-    # 'layers': [
-    #     {
-    #         'type': 'raster',
-    #         'id': ''
-    #     },
-    #     {
-    #         'type': 'vector',
-    #         'id': '',
-    #         'options': {
-    #
-    #         }
-    #     }
-    # ]
 
     toret = {
         'qtimeseries': {
             'gid': "{}:{}".format(kwargs['projectType'], kwargs['project']),
-            'layers': raster_layers_id
+            'layers': [] #TODO: to remove  and tell to g3w-client developers
         },
     }
 
     return toret
 
-
 @receiver(after_serialized_project_layer)
 def add_qtimeseries(sender, **kwargs):
     """
-    Receiver to add 'qtimeseries' boolean property.
+    Receiver to add 'qtimeseries' layer property
     """
 
     data = {
@@ -135,6 +68,49 @@ def add_qtimeseries(sender, **kwargs):
         'values': {},
     }
 
-    if QRasterTimeSeriesLayer.is_activated(kwargs['layer']):
-            data['values'] = {'qtimeseries': True}
+    if kwargs['layer'].temporal_properties:
+        qgs_maplayer = get_qgis_layer(kwargs['layer'])
+        data['values']['qtimeseries'] = json.loads(kwargs['layer'].temporal_properties)
+
+        if data['values']['qtimeseries'] and data['values']['qtimeseries']['mode'] == 'FeatureDateTimeInstantFromField':
+
+            # Add start_date end end_date:
+            findex = qgs_maplayer.dataProvider().fieldNameIndex(data['values']['qtimeseries']['field'])
+
+            data['values']['qtimeseries']['start_date'] = qgs_maplayer.minimumValue(findex)
+            data['values']['qtimeseries']['end_date'] = qgs_maplayer.maximumValue(findex)
+            if isinstance(data['values']['qtimeseries']['start_date'], QDate) or isinstance(data['values']['qtimeseries']['start_date'],
+                                                                                 QDateTime):
+                isdate = isinstance(data['values']['qtimeseries']['start_date'], QDate)
+                if not hasattr(QDate, 'isoformat'):
+                    QDate.isoformat = lambda d: d.toString(Qt.ISODate)
+                if not hasattr(QDateTime, 'isoformat'):
+                    QDateTime.isoformat = lambda d: d.toString(Qt.ISODateWithMs)
+                data['values']['qtimeseries']['start_date'] = data['values']['qtimeseries']['start_date'].isoformat()
+                data['values']['qtimeseries']['end_date'] = data['values']['qtimeseries']['end_date'].isoformat()
+
+                # Rebuild as iso format date with minutes and seconds
+                if isdate:
+                    data['values']['qtimeseries']['start_date'] = datetime.fromisoformat(
+                        data['values']['qtimeseries']['start_date']
+                    ).isoformat()
+
+                    data['values']['qtimeseries']['end_date'] = datetime.fromisoformat(
+                        data['values']['qtimeseries']['end_date']
+                    ).isoformat()
+
+        if data['values']['qtimeseries'] and data['values']['qtimeseries']['mode'] in ('RasterTemporalRangeFromDataProvider',
+                                                                 'MeshTemporalRangeFromDataProvider'):
+
+            # If layer is a wms only for external
+            if kwargs['layer'].layer_type != Layer.TYPES.wms or \
+                    kwargs['layer'].layer_type == Layer.TYPES.wms and kwargs['layer'].external:
+
+                # Add start_date end end_date:
+                data['values']['qtimeseries']['start_date'] = data['values']['qtimeseries']['range'][0]
+                data['values']['qtimeseries']['end_date'] = data['values']['qtimeseries']['range'][1]
+                del (data['values']['qtimeseries']['range'])
+            else:
+                del (data['values']['qtimeseries'])
+
     return data

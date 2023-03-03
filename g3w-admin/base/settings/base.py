@@ -53,6 +53,7 @@ THIRD_PARTY_APPS = [
     'rest_framework',
     'rest_framework_gis',
     'rest_framework.authtoken',
+    'drf_spectacular',
     'import_export',
     'mptt',
     'ordered_model',
@@ -208,7 +209,8 @@ REST_FRAMEWORK = {
     'EXCEPTION_HANDLER': 'core.api.base.views.G3WExceptionHandler',
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 100,
-    'UNICODE_JSON': False
+    'UNICODE_JSON': False,
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema'
 }
 
 # FOR MEDIA
@@ -267,8 +269,6 @@ MPC = '-99:dodfEz3K2rziGayGnw_FyOuWdCM'
 FRONTEND = False
 FRONTEND_APP = 'frontend'
 
-SENTRY = False
-
 SITE_PREFIX_URL = None
 
 # CLIENT SETTINGS
@@ -315,3 +315,6 @@ VENDOR_KEYS = {}
 
 # sessionid value for AnonymousUser to us i.e. for editing module
 ANONYMOUS_USER_SESSIONID = '_anonymous_g3w_suite_sessionid_'
+
+# Custom token session client cookie name
+G3W_CLIENT_COOKIE_SESSION_TOKEN = 'g3wclientsessiontoken'

@@ -1,0 +1,3 @@
+# Auto detect text files and perform LF normalization,
+# when the file has been committed with CRLF, no conversion is done.
+* text=auto 

@@ -65,7 +65,7 @@ class DashboardView(TemplateView):
         # add number groups
         qs = get_objects_for_user(self.request.user, 'core.view_group', Group) | \
              get_objects_for_user(get_anonymous_user(), 'core.view_group', Group)
-        qs = qs.order_by('order')
+        qs = qs.filter(is_active=1).order_by('order')
         context['n_groups'] = len(qs)
         context['widgets'] = []
 
@@ -103,13 +103,25 @@ class SearchAdminView(TemplateView):
 
 class GroupListView(ListView):
     """List group view."""
+
+    def _is_active(self, qs):
+        """ Add a filter fo is_active property """
+        return qs.filter(is_active=1)
     def get_queryset(self):
 
-        qs = get_objects_for_user(self.request.user, 'core.view_group', Group) | \
-             get_objects_for_user(get_anonymous_user(), 'core.view_group', Group)
+        qs = get_objects_for_user(self.request.user, 'core.view_group', Group)
+             #| get_objects_for_user(get_anonymous_user(), 'core.view_group', Group)
+        qs = self._is_active(qs)
         qs = qs.order_by('order')
         return qs
 
+class GroupDeactiveListView(GroupListView):
+    """ ListView to show map groups with is_active=0"""
+
+    template_name = 'core/group_deactive_list.html'
+    def _is_active(self, qs):
+        """ Add a filter fo is_active property """
+        return qs.filter(is_active=0)
 
 class GroupDetailView(G3WRequestViewMixin, DetailView):
     """Detail view."""
@@ -159,12 +171,19 @@ class GroupUpdateView(G3WRequestViewMixin, G3WACLViewMixin, UpdateView):
         return super(GroupUpdateView, self).dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
+
+        # When edit form from project list view
+        # If `name` field changed an 404 error happens because old
+        # `self.request.session['http_referer']` holds the url with the old url
+        # build with old group `name` instance.
+        if 'name' in form.changed_data:
+            del(self.request.session['http_referer'])
         res = super(GroupUpdateView, self).form_valid(form)
 
         # send after_save
         after_update_group.send(self, group=form.instance)
 
-        # delete tempory file form files
+        # delete temporary file form files
         form.delete_temporary_files()
         return res
 
@@ -173,6 +192,58 @@ class GroupUpdateView(G3WRequestViewMixin, G3WACLViewMixin, UpdateView):
             return self.request.session['http_referer']
         return reverse('group-list')
 
+class GroupDeActiveView(G3WAjaxDeleteViewMixin, G3WRequestViewMixin, SingleObjectMixin, View):
+    '''
+    Deactivate group Ajax view
+    '''
+    model = Group
+    ok_message = 'Cartographic group deactivated!'
+
+    @method_decorator(permission_required('core.delete_group', (Group, 'slug', 'slug'), return_403=True))
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
+    def _set_is_active(self):
+        """ Set is_active and save model instance"""
+
+        self.object.is_active = 0
+        self.object.save()
+
+        # Deactivate every project's group:
+        for app, p in self.object.getProjects():
+            p.is_active = 0
+            p.save()
+
+    def post(self, request, *args, **kwargs):
+
+        self.object = self.get_object()
+        # delete ovwerviewmap if is set
+        try:
+            group_project_panoramics = GroupProjectPanoramic.objects.get(group=self.object)
+            group_project_panoramics.delete()
+        except Exception:
+            pass
+
+        self._set_is_active()
+
+        return JsonResponse({'status': 'ok', 'message': self.ok_message})
+
+class GroupActiveView(GroupDeActiveView):
+    """
+    Activate group and relative projects.
+    """
+    ok_message = 'Cartographic group activated!'
+
+    def _set_is_active(self):
+        """ Set is_active and save model instance"""
+
+        self.object.is_active = 1
+        self.object.save()
+
+        # Deactivate every project's group:
+        for app, p in self.object.getProjects():
+            p.is_active = 1
+            p.save()
 
 class GroupDeleteView(G3WAjaxDeleteViewMixin, G3WRequestViewMixin, SingleObjectMixin, View):
     '''

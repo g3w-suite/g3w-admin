@@ -262,6 +262,10 @@ class OpenrouteServiceIsochroneBaseView(G3WAPIView):
             raise ValidationError(_(
                 'Max allowed ranges: %s') % ORS_MAX_RANGES)
 
+        # Fix interval for time (the interval is sent in minutes instead of seconds)
+        if 'interval' in ors and ors["range_type"] == "time":
+            ors['interval'] = ors['interval'] * 60
+
         for rang in ranges:
             if type(rang) != int:
                 raise ValidationError(_('Malformed range array.'))

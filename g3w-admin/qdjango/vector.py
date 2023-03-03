@@ -44,6 +44,7 @@ from .utils.edittype import MAPPING_EDITTYPE_QGISEDITTYPE
 
 import json
 import logging
+import re
 
 MODE_WIDGET = 'widget'
 
@@ -360,7 +361,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
         """
 
         sessionid = request.COOKIES[settings.SESSION_COOKIE_NAME] \
-            if not request.user.is_anonymous else settings.ANONYMOUS_USER_SESSIONID
+            if not request.user.is_anonymous else request.COOKIES[settings.G3W_CLIENT_COOKIE_SESSION_TOKEN]
 
         if request.method == 'POST':
             request_data = request.data
@@ -447,7 +448,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
     def _build_download_filename(self, request):
         """Build file name on filter context"""
 
-        filename = self.metadata_layer.qgis_layer.name()
+        filename = re.sub(r"[^a-zA-Z0-9_]", "-", self.metadata_layer.qgis_layer.name())
 
         # With FilterFid add feature ids sent with request
         FILTER_FIDS_PARAM = f'{FILTER_FID_PARAM}s'

@@ -57,10 +57,19 @@ class ActiveEditingLayerForm(G3WRequestFormMixin, G3WProjectFormMixin, forms.For
 
         self.helper = FormHelper(self)
         self.helper.form_tag = False
-        self.helper.layout = Layout(
+
+        layout_args = [
             HTML(_('Check on uncheck to attive/deactive editing layer capabilities:')),
-            'active',
-            'scale',
+            'active'
+        ]
+
+        # Check if layer ha geometry or not
+        if self.layer.geometrytype != 'NoGeometry':
+            layout_args.append(
+                'scale'
+            )
+
+        layout_args += [
             Field('add_user_field', css_class='select2', style="width:100%;"),
             Field('edit_user_field', css_class='select2', style="width:100%;"),
             HTML(_('Select viewers with \'view permission\' on project that can edit layer:')),
@@ -68,7 +77,9 @@ class ActiveEditingLayerForm(G3WRequestFormMixin, G3WProjectFormMixin, forms.For
             Div(css_class='users_atomic_capabilities'),
             Field('user_groups_viewer', css_class='select2', style="width:100%;"),
             Div(css_class='user_groups_atomic_capabilities')
-        )
+        ]
+
+        self.helper.layout = Layout(*layout_args)
 
     def clean_edit_user_field(self):
 

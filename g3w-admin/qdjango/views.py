@@ -18,12 +18,20 @@ from guardian.decorators import permission_required
 from guardian.shortcuts import get_objects_for_user
 from core.mixins.views import *
 from core.signals import pre_update_project, pre_delete_project, after_update_project, before_delete_project
-from core.utils.decorators import check_madd, project_type_permission_required
+from core.utils.decorators import check_madd, project_type_permission_required, is_active_required
 from django_downloadview import ObjectDownloadView
 from rest_framework.response import Response
 from usersmanage.mixins.views import G3WACLViewMixin
 from usersmanage.models import Group as AuthGroup
 from usersmanage.decorators import user_passes_test_or_403
+from usersmanage.utils import userHasGroups, get_groups_for_object, get_users_for_object
+from usersmanage.configs import G3W_EDITOR1, G3W_EDITOR2, G3W_VIEWER1
+
+if 'editing' in settings.INSTALLED_APPS:
+    from editing.models import G3WEditingLayer, EDITING_ATOMIC_PERMISSIONS
+
+from qdjango.models import GeoConstraint, SingleLayerConstraint, ColumnAcl, LayerAcl
+
 from .signals import load_qdjango_widgets_data
 from .mixins.views import *
 from .forms import *
@@ -33,6 +41,7 @@ from .utils.models import get_widgets4layer, comparedbdatasource
 from .utils.data import QGIS_LAYER_TYPE_NO_GEOM
 import json
 from collections import OrderedDict
+
 
 
 class QdjangoProjectDownloadView(ObjectDownloadView):
@@ -49,8 +58,7 @@ class QdjangoProjectListView(G3WRequestViewMixin, G3WGroupViewMixin, ListView):
 
     def get_queryset(self):
         return get_objects_for_user(self.request.user, 'qdjango.view_project', Project)\
-            .filter(group=self.group).order_by('order')
-        # return self.group.qdjango_project.all().order_by('title')
+            .filter(group=self.group, is_active=1).order_by('order')
 
     def get_context_data(self, **kwargs):
         context = super(QdjangoProjectListView,
@@ -65,6 +73,11 @@ class QdjangoProjectListView(G3WRequestViewMixin, G3WGroupViewMixin, ListView):
             if msg:
                 for m in msg:
                     context['pre_delete_messages'][m['project'].pk] = m['message']
+
+        # Get inactive projects
+        context['inactive_project_list'] = get_objects_for_user(self.request.user, 'qdjango.view_project', Project) \
+            .filter(group=self.group, is_active=0).order_by('order')
+
         return context
 
 
@@ -76,6 +89,7 @@ class QdjangoProjectCreateView(QdjangoProjectCUViewMixin, G3WGroupViewMixin, G3W
 
     @method_decorator(permission_required('core.add_project_to_group', (Group, 'slug', 'group_slug'), return_403=True))
     @method_decorator(permission_required('qdjango.add_project', return_403=True))
+    @method_decorator(is_active_required((Group, 'slug', 'group_slug')))
     @method_decorator(check_madd('MPC:XYamtBJA_JgFGmFvEa9x193rnLg', Project))
     def dispatch(self, *args, **kwargs):
         return super(QdjangoProjectCreateView, self).dispatch(*args, **kwargs)
@@ -92,6 +106,8 @@ class QdjangoProjectUpdateView(QdjangoProjectCUViewMixin, G3WGroupViewMixin, G3W
     editor2_permission = 'view_project'
     viewer_permission = 'view_project'
 
+    @method_decorator(is_active_required((Group, 'slug', 'group_slug')))
+    @method_decorator(is_active_required((Project, 'slug', 'slug')))
     @method_decorator(permission_required('qdjango.change_project', (Project, 'slug', 'slug'), raise_exception=True))
     def dispatch(self, *args, **kwargs):
         return super(QdjangoProjectUpdateView, self).dispatch(*args, **kwargs)
@@ -161,6 +177,274 @@ class QdjangoProjectDetailView(G3WRequestViewMixin, DetailView):
     def dispatch(self, *args, **kwargs):
         return super(QdjangoProjectDetailView, self).dispatch(*args, **kwargs)
 
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+
+        user = self.request.user
+
+        # Get other informations only if user != viewer
+        if userHasGroups(user, [G3W_EDITOR1, G3W_EDITOR2]) or user.is_superuser:
+
+            players = [l for l in self.object.layer_set.all()]
+
+            # Editings
+            # =============================================
+
+            # Only if module `editing` is activated
+            if 'editing' in settings.INSTALLED_APPS:
+
+                editings = []
+                elayers = G3WEditingLayer.objects.filter(app_name='qdjango', layer_id__in=[l.pk for l in players])
+                for el in elayers:
+                    ellayer = el.layer
+                    editing = {
+                        'elayer': el,
+                        'users': [],
+                        'ugroups': [],
+                    }
+
+                    # Get User/Groups
+                    with_anonymous = getattr(settings, 'EDITING_ANONYMOUS', False)
+                    viewers = get_viewers_for_object(el.layer, self.request.user, 'change_layer',
+                                                     with_anonymous=with_anonymous)
+
+                    editors = (ellayer.project.editor.pk if ellayer.project.editor else None,
+                               ellayer.project.editor2.pk if ellayer.project.editor2 else None)
+
+                    atomic_user_permissions = {}
+                    for ap in EDITING_ATOMIC_PERMISSIONS:
+                        user_viewers_ap = get_viewers_for_object(el.layer, self.request.user, ap,
+                                                                       with_anonymous=with_anonymous)
+
+                        for uvap in user_viewers_ap:
+                            if uvap in viewers and uvap.pk not in editors:
+                                if uvap not in atomic_user_permissions:
+                                    atomic_user_permissions[uvap] = {
+                                        'username': uvap.username,
+                                        'permissions': [_(ap)]
+                                    }
+                                else:
+                                    atomic_user_permissions[uvap]['permissions'].append(_(ap))
+
+                    editing['users'] = list(atomic_user_permissions.values())
+
+                    group_viewers = get_user_groups_for_object(el.layer, self.request.user, 'change_layer', 'viewer')
+
+                    atomic_group_permissions = {}
+                    for ap in EDITING_ATOMIC_PERMISSIONS:
+
+                        group_viewers_ap = get_user_groups_for_object(el.layer, self.request.user, ap, 'viewer')
+                        for gvap in group_viewers_ap:
+                            if gvap in group_viewers:
+                                if gvap not in atomic_group_permissions:
+                                    atomic_group_permissions[gvap] = {
+                                        'name': gvap.name,
+                                        'permissions': [_(ap)]
+                                    }
+                                else:
+                                    atomic_group_permissions[gvap]['permissions'].append(_(ap))
+
+                    editing['ugroups'] = list(atomic_group_permissions.values())
+
+                    editings.append(editing)
+
+            ctx['editings'] = editings
+
+            # Geoconstraints, Expconstraints, Hiddenfields, Hiddenlayers, Widgets
+            # ===================================================================
+
+            # For hiddenlayers: get users and user groups by with permission on project
+            project_viewers = get_viewers_for_object(
+                self.object, self.request.user, 'view_project', with_anonymous=True)
+
+            # get Editor Level 1 and Editor level 2 to clear from list
+            editor_pk = self.object.editor.pk if self.object.editor else None
+            editor2_pk = self.object.editor2.pk if self.object.editor2 else None
+
+            project_viewers = [v for v in project_viewers if v.pk not in (editor_pk, editor2_pk)]
+
+            project_user_groups_viewers = get_groups_for_object(
+                self.object, 'view_project', grouprole='viewer')
+
+            # for Editor level filter by his groups
+            if userHasGroups(self.request.user, [G3W_EDITOR1]):
+                editor1_user_groups_viewers = get_objects_for_user(self.request.user, 'auth.change_group',
+                                                                   AuthGroup).order_by('name').filter(
+                    grouprole__role='viewer')
+
+                project_user_groups_viewers = list(set(project_user_groups_viewers).intersection(
+                    set(editor1_user_groups_viewers)))
+
+            project_user_groups_viewers = [v for v in project_user_groups_viewers]
+
+            widgets = []
+            for l in self.object.layer_set.all():
+
+                # Get geoconstraints by layer id
+                geoconstraints = GeoConstraint.objects.filter(layer=l)
+                expconstraints = SingleLayerConstraint.objects.filter(layer=l)
+                hiddenlayers = LayerAcl.objects.filter(layer=l)
+                hiddenfields = ColumnAcl.objects.filter(layer=l)
+
+                # Geoconstrain
+                gc = {
+                    'layer': l,
+                    'constraints': [],
+                }
+
+                # Expconstraint
+                ec = {
+                    'layer': l,
+                    'constraints': [],
+                }
+
+                # Hiddenfield
+                hf = {
+                    'layer': l,
+                    'hiddenfields': [],
+                }
+
+                # Hiddenlayer
+                hl = {
+                    'layer': l,
+                    'users': [],
+                    'ugroups': []
+                }
+
+                # Widgets
+                for w in get_widgets4layer(l):
+                    if w.widget_type == 'search':
+                        widgets.append((l.name, w.name))
+
+                for geoc in geoconstraints:
+                    c = {
+                        'constraint': geoc,
+                        'rules': []
+                    }
+
+                    # Get rules
+                    for r in geoc.geoconstraintrule_set.all():
+                        rule = (
+                            r.user.username if r.user else r.group.name,
+                            r.rule
+                        )
+                        c['rules'].append(rule)
+
+                    gc['constraints'].append(c)
+
+                if len(gc['constraints']) > 0:
+                    if 'geoconstrains' not in ctx:
+                        ctx['geoconstraints'] = [gc]
+                    else:
+                        ctx['geoconstraints'].append(gc)
+
+                for expc in expconstraints:
+                    c = {
+                        'constraint': expc,
+                        'rules': [],
+                    }
+
+                    # Subsetrule
+                    # ------------------------------------
+                    for r in expc.constraintsubsetstringrule_set.all():
+                        rule = (
+                            r.user.username if r.user else r.group.name,
+                            'Subset',
+                            r.rule
+                        )
+                        c['rules'].append(rule)
+                    for r in expc.constraintexpressionrule_set.all():
+                        rule = (
+                            r.user.username if r.user else r.group.name,
+                            'Expression',
+                            r.rule
+                        )
+                        c['rules'].append(rule)
+
+                    ec['constraints'].append(c)
+
+                if len(ec['constraints']) > 0:
+                    if 'expconstraints' not in ctx:
+                        ctx['expconstraints'] = [ec]
+                    else:
+                        ctx['expconstraints'].append(ec)
+
+                for hidef in hiddenfields:
+
+                    hf['hiddenfields'].append((
+                        hidef.user.username if hidef.user else hidef.group.name,
+                        hidef.restricted_fields
+                    ))
+
+                if len(hf['hiddenfields']) > 0:
+                    if 'hiddenfields' not in ctx:
+                        ctx['hiddenfields'] = [hf]
+                    else:
+                        ctx['hiddenfields'].append(hf)
+
+                for hidel in hiddenlayers:
+                    if hidel.user:
+                        hl['users'].append(hidel.user)
+                    if hidel.group:
+                        hl['groups'].append(hidel.group)
+
+                if len(hl['users']) > 0 or len(hl['ugroups']) > 0:
+                    if 'hiddenlayers' not in ctx:
+                        ctx['hiddenlayers'] = [hl]
+                    else:
+                        ctx['hiddenlayers'].append(hl)
+
+                if widgets:
+                    ctx['widgets'] = widgets
+
+        return ctx
+
+class QdjangoProjectDeActiveView(SingleObjectMixin, View):
+    '''
+    DeActive Qdjango project Ajax view
+    '''
+    model = Project
+    ok_message = 'Project deactivated!'
+
+    @method_decorator(is_active_required((Group, 'slug', 'group_slug')))
+    @method_decorator(permission_required('qdjango.delete_project', (Project, 'slug', 'slug'), raise_exception=True))
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
+    def _set_is_active(self):
+        """ Set is_active and save model instance"""
+
+        self.object.is_active = 0
+        self.object.save()
+
+    def post(self, request, *args, **kwargs):
+
+        # send before project delete signal
+        self.object = self.get_object()
+        before_delete_project.send(
+            self, app_name='qdjango', project=self.object)
+
+        # clear cache
+        if 'qdjango' in settings.CACHES:
+            caches['qdjango'].delete(
+                settings.QDJANGO_PRJ_CACHE_KEY.format(self.object.pk))
+
+        self._set_is_active()
+
+        return JsonResponse({'status': 'ok', 'message': self.ok_message})
+
+class QdjangoProjectActiveView(QdjangoProjectDeActiveView):
+    '''
+    Active Qdjango project Ajax view
+    '''
+
+    ok_message = 'Project activated!'
+
+    def _set_is_active(self):
+        """ Set is_active and save model instance"""
+
+        self.object.is_active = 1
+        self.object.save()
 
 class QdjangoProjectDeleteView(G3WAjaxDeleteViewMixin, SingleObjectMixin, View):
     '''
@@ -168,6 +452,7 @@ class QdjangoProjectDeleteView(G3WAjaxDeleteViewMixin, SingleObjectMixin, View):
     '''
     model = Project
 
+    @method_decorator(is_active_required((Project, 'slug', 'slug'), is_active=0))
     @method_decorator(permission_required('qdjango.delete_project', (Project, 'slug', 'slug'), raise_exception=True))
     def dispatch(self, *args, **kwargs):
         return super(QdjangoProjectDeleteView, self).dispatch(*args, **kwargs)
@@ -191,6 +476,7 @@ class QdjangoProjectDeleteView(G3WAjaxDeleteViewMixin, SingleObjectMixin, View):
 class QdjangoLayersListView(G3WRequestViewMixin, G3WGroupViewMixin, QdjangoProjectViewMixin, ListView):
     template_name = 'qdjango/layers_list.html'
 
+    @method_decorator(is_active_required((Project, 'slug', 'project_slug')))
     @method_decorator(permission_required('qdjango.change_project', (Project, 'slug', 'project_slug'),
                                           raise_exception=True))
     def dispatch(self, *args, **kwargs):
@@ -352,6 +638,7 @@ class QdjangoLayerWidgetsMixin(object):
         context = super().get_context_data()
         context['layer'] = self.layer
         context['project_layers'] = json.dumps(project_layers4search_widget(self.layer))
+        context['layer_edittypes'] = json.dumps(eval(self.layer.edittypes))
 
         # Get every relations were layer is child
         context['relations'] = json.dumps(self.get_relations(self.layer))

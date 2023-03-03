@@ -14,6 +14,7 @@ services:
       - shared-volume:/shared-volume
 
   g3w-suite:
+    image: g3w_suite_test:latest
     build:
       context: ./ci_scripts
       dockerfile: Dockerfile.deps

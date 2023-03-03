@@ -172,7 +172,7 @@ class QplotlyTestAPI(QdjangoTestBase):
 
         self.assertEqual(plugin_plot['plot']['type'], 'histogram')
         self.assertTrue('layout' in plugin_plot['plot'])
-        self.assertEqual(plugin_plot['plot']['layout']['title'], '')
+        self.assertEqual(plugin_plot['plot']['layout']['title'], {'text': ''})
 
     def test_trace_api(self):
         """/qplotly/api/trace API"""

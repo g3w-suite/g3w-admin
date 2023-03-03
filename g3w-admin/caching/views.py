@@ -12,6 +12,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from core.mixins.views import AjaxableFormResponseMixin, G3WRequestViewMixin, G3WProjectViewMixin
 from core.utils.decorators import project_type_permission_required
+from core.utils.geo import get_crs_bbox
 from core.models import BaseLayer
 from .forms import ActiveCachingLayerForm
 from .models import G3WCachingLayer
@@ -119,7 +120,8 @@ class ActiveCachingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3W
                         "epsg": self.layer.project.group.srid.srid,
                         "proj4": crs.toProj4(),
                         "geographic": crs.isGeographic(),
-                        "axisinverted": crs.hasAxisInverted()
+                        "axisinverted": crs.hasAxisInverted(),
+                        "extent": get_crs_bbox(crs)
                     },
                     "url": f"/caching/api/{self.layer._meta.app_label}{self.layer.pk}/"+"{z}/{x}/{y}.png",
                     "servertype": "TMS",

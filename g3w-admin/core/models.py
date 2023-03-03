@@ -198,7 +198,7 @@ class Group(TimeStampedModel, OrderedModel):
             groupProjects += [(g3wProjectApp, project) for project in projects]
         return groupProjects
 
-    def getProjectsNumber(self, user=None):
+    def getProjectsNumber(self, user=None, is_active=None):
         """
         Count total number of serveral type project
         :return: integer
@@ -207,10 +207,16 @@ class Group(TimeStampedModel, OrderedModel):
         for g3wProjectApp in settings.G3WADMIN_PROJECT_APPS:
             Project = apps.get_app_config(g3wProjectApp).get_model('project')
             if user:
-                groupProjects +=len(get_objects_for_user(user, '{}.view_project'.format(g3wProjectApp), Project) \
-                    .filter(group=self))
+                qs = get_objects_for_user(user, '{}.view_project'.format(g3wProjectApp), Project) \
+                    .filter(group=self)
             else:
-                groupProjects += len(Project.objects.filter(group=self))
+                qs = Project.objects.filter(group=self)
+
+            if is_active and is_active in (0, 1):
+                qs = qs.filter(is_active=is_active)
+
+            groupProjects += len(qs)
+
         return groupProjects
 
     def addPermissionsToEditor(self, user):
@@ -392,7 +398,7 @@ class Group(TimeStampedModel, OrderedModel):
         elif attr == 'viewer_user_groups':
             return get_groups_for_object(self, 'view_group', 'viewer')
 
-        return super(Group, self).__getattr__(attr)
+        return super(Group, self).__getattribute__(attr)
 
 
 class GroupProjectPanoramic(models.Model):

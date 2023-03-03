@@ -235,28 +235,29 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
                                                  default='multiple')
 
     context_base_legend = models.BooleanField(_('Context base legend'), default=False,
-                                              help_text='Show only the symbols for the features falling into the requested area')
+                                              help_text=_('Show only the symbols for the features falling into '
+                                                          'the requested area'))
 
     toc_tab_default = models.CharField(_("Tab's TOC active as default"), choices=CLIENT_TOC_TABS, max_length=40,
-                                       default='layers', help_text="Set tab's TOC open by default on init client")
+                                       default='layers', help_text=_("Set tab's TOC open by default on init client"))
 
     toc_layers_init_status = models.CharField(_("Tab's TOC layer initial status"),
                                               choices=CLIENT_TOC_LAYERS_INIT_STATUS, max_length=40,
                                               default='not_collapsed',
-                                              help_text="Set tab's TOC layers initials state: 'Collapsed (close)'"
-                                                        "or 'Not collapsed (open)'")
+                                              help_text=_("Set tab's TOC layers initials state: 'Collapsed (close)'"
+                                                        "or 'Not collapsed (open)'"))
 
     toc_themes_init_status = models.CharField(_("Map themes list initial status"),
                                               choices=CLIENT_MAP_THEMES_INIT_STATUS, max_length=40,
                                               default='collapsed',
-                                              help_text="Set map themes list initials state: 'Collapsed (close)'"
-                                                        "or 'Not collapsed (open)'")
+                                              help_text=_("Set map themes list initials state: 'Collapsed (close)'"
+                                                        "or 'Not collapsed (open)'"))
 
     legend_position = models.CharField(_("Legend position rendering"), choices=CLIENT_LEGEND_POSITION, max_length=20,
-                                       default='tab', help_text="Set legend position rendering")
+                                       default='tab', help_text=_("Set legend position rendering"))
 
     autozoom_query = models.BooleanField(_('Automatic zoom to query result features'), default=False,
-                                         help_text='Automatic zoom on query result features for only one layer')
+                                         help_text=_('Automatic zoom on query result features for only one layer'))
 
     layouts = models.TextField(_('Project layouts'), null=True, blank=True)
 
@@ -476,7 +477,9 @@ class Layer(G3WACLModelMixins, models.Model):
         ('virtual', _('VirtualLayer')),
         ('oracle', _('Oracle')),
         ('vector-tile', _('Vector Tile')),
-        ('wcs', _('WCS'))
+        ('wcs', _('WCS')),
+        ('vectortile', _('Vector Tile')),
+        ('mdal', _('Mesh layer'))
     )
 
     # General info

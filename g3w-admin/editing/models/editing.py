@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.postgres.fields import JSONField
 from django.contrib.auth.models import User
+from qdjango.models import Layer
 from model_utils.fields import AutoCreatedField
 
 EDITING_POST_DATA_ADDED = 'add'
@@ -46,6 +47,11 @@ class G3WEditingLayer(models.Model):
         app_label = 'editing'
         unique_together = ['layer_id', 'app_name']
 
+    @property
+    def layer(self):
+        return Layer.objects.get(pk=self.layer_id)
+
+
 
 class G3WEditingLog(models.Model):
     """
@@ -54,13 +60,12 @@ class G3WEditingLog(models.Model):
     created = AutoCreatedField()
     app_name = models.CharField(max_length=255)
     layer_id = models.IntegerField()
-    user = models.ForeignKey(User, null=True, blank=True, on_delete=models.DO_NOTHING)
+    user = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
     mode = models.CharField(max_length=10, default=EDITING_POST_DATA_ADDED, choices=(
         (EDITING_POST_DATA_ADDED, EDITING_POST_DATA_ADDED),
         (EDITING_POST_DATA_UPDATED, EDITING_POST_DATA_UPDATED),
         (EDITING_POST_DATA_DELETED, EDITING_POST_DATA_DELETED)))
     msg = models.TextField()
-    #msg = JSONField()
 
     class Meta:
         app_label = 'editing'

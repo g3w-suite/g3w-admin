@@ -8,8 +8,11 @@ from .base.views import G3WAPIView
 from core.api.authentication import CsrfExemptSessionAuthentication
 from qdjango.models import Project
 from core.api.base.views import APIException
+from core.utils.geo import get_crs_bbox
 from django.utils.translation import ugettext_lazy as _
 from rest_framework import status
+
+from qgis.core import NULL
 
 import json
 
@@ -162,6 +165,7 @@ class QgsExpressionLayerContextEvalView(G3WAPIView):
                 form_data = data.get('form_data')
                 qgs_layer_id = data.get('qgs_layer_id')
                 formatter = data.get('formatter', '0')
+                parent = data.get('parent', None)
             except:
                 raise APIExpressionEmptyError()
         else:
@@ -169,13 +173,19 @@ class QgsExpressionLayerContextEvalView(G3WAPIView):
             form_data = request.data.get('form_data')
             qgs_layer_id = request.data.get('qgs_layer_id')
             formatter = request.data.get('formatter', '0')
+            parent = request.data.get('parent', None)
 
         if expression_text is None:
             raise APIExpressionEmptyError()
 
         try:
             result = expression_eval(
-                expression_text, project_id, qgs_layer_id, form_data, int(formatter))
+                expression_text, project_id, qgs_layer_id, form_data, int(formatter), parent)
+
+            # Case Qvariant NULL
+            if result == NULL:
+                result = ''
+
         except ExpressionFormDataError as ex:
             raise APIExpressionFormDataError(str(ex))
         except ExpressionEvalError as ex:
@@ -252,10 +262,10 @@ class InterfaceOws(G3WAPIView):
             # Build crs
             crss = []
             for srid in ows[al].crsOptions:
-                crs = QgsCoordinateReferenceSystem(srid)
+                crs = QgsCoordinateReferenceSystem(f"EPSG:{srid}")
 
-                if crs.postgisSrid() == 3003:
-                    proj4 = settings.PROJ4_EPSG_3003
+                if crs.postgisSrid() in settings.G3W_PROJ4_EPSG.keys():
+                    proj4 = settings.G3W_PROJ4_EPSG[crs.postgisSrid()]
                 else:
                     proj4 = crs.toProj4()
 
@@ -263,7 +273,8 @@ class InterfaceOws(G3WAPIView):
                     'epsg': crs.postgisSrid(),
                     'proj4': proj4,
                     'geographic': crs.isGeographic(),
-                    'axisinverted': crs.hasAxisInverted()
+                    'axisinverted': crs.hasAxisInverted(),
+                    'extent': get_crs_bbox(crs)
 
                 })
 
@@ -281,3 +292,31 @@ class InterfaceOws(G3WAPIView):
 
         return Response(self.results.results)
 
+
+class CRSInfoAPIView(G3WAPIView):
+    """
+    API REST service for info about CRS ask by ESPG code
+    """
+
+    def get(self, request, **kwargs):
+
+        crs = QgsCoordinateReferenceSystem(f"EPSG:{kwargs['epsg']}")
+
+        # Patch for Proj4 > 4.9.3 version
+        if int(kwargs['epsg']) == 3003:
+            proj4 = "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=1500000 +y_0=0 +ellps=intl " \
+                    "+towgs84=-104.1,-49.1,-9.9,0.971,-2.917,0.714,-11.68 +units=m +no_defs"
+        else:
+            proj4 = crs.toProj4()
+
+        self.results.results.update({
+            'data': {
+                'epsg': crs.postgisSrid(),
+                'proj4': proj4,
+                'geographic': crs.isGeographic(),
+                'axisinverted': crs.hasAxisInverted(),
+                'extent': get_crs_bbox(crs)
+            }
+        })
+
+        return Response(self.results.results)

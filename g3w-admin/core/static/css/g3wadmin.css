@@ -129,6 +129,15 @@ h5 small {
     opacity: 80%;
 }
 
+.color-red {
+    color: #bf2d2d;
+}
+
+.color-red:hover {
+    color: #bf2d2d;
+    opacity: 80%;
+}
+
 .label-action-layer {
     position: absolute;
     top: -9px;
@@ -178,4 +187,21 @@ h5 small {
 
 .result-search-item-links {
     font-size: 150%;
+}
+
+div.vector-download  li {
+    list-style: none;
+    box-sizing: border-box;
+    display: list-item;
+    padding: 10px;
+    padding-bottom: 6px;
+    padding-top: 6px;
+}
+
+div.vector-download > ul.menu {
+    padding: 0;
+}
+
+.group-abstract-action, .project-abstract-action {
+    margin-left:-10px;
 }

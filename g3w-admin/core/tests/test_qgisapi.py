@@ -434,3 +434,7 @@ class LayerExpressionEval(CoreTestBase):
 
         self._expression_evaluate(
             url, 'current_value(\'CAPITAL\')', "GUATEMALA", form_data, world.qgs_layer_id)
+
+        # Test QVariant NULL result
+        self._expression_evaluate(
+            url, 'current_value(\'CAPITALA\')', "", form_data, world.qgs_layer_id)

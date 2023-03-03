@@ -335,6 +335,19 @@ class QgsExpressionFilterBackend(BaseFilterBackend):
 
     def apply_filter(self, request, metadata_layer, qgis_feature_request, view):
 
+        def _get_form_feature(layer, form_data):
+            """
+            Internal function to build form feature for expression scopes
+            """
+
+            fields = layer.qgis_layer.fields()
+            form_feature = QgsJsonUtils.stringToFeatureList(
+                json.dumps(form_data), fields, None)[0]
+            for k, v in form_data['properties'].items():
+                form_feature.setAttribute(k, v)
+
+            return form_feature
+
         if request.data and request.data.get('expression'):
             qgis_feature_request.combineFilterExpression(
                 request.data.get('expression'))
@@ -344,14 +357,23 @@ class QgsExpressionFilterBackend(BaseFilterBackend):
                     project = Layer.objects.get(pk=metadata_layer.layer_id).project
                     layer = Layer.objects.get(
                         project=project, qgs_layer_id=request.data.get('qgs_layer_id'))
-                    fields = layer.qgis_layer.fields()
-                    form_data = request.data.get('form_data')
-                    form_feature = QgsJsonUtils.stringToFeatureList(
-                        json.dumps(form_data), fields, None)[0]
-                    for k, v in form_data['properties'].items():
-                        form_feature.setAttribute(k, v)
+
+                    # Append global, project ,layer context
+                    qgis_feature_request.expressionContext().appendScopes(
+                        QgsExpressionContextUtils.globalProjectLayerScopes(layer.qgis_layer))
+
                     qgis_feature_request.expressionContext().appendScope(
-                        QgsExpressionContextUtils.formScope(form_feature))
+                        QgsExpressionContextUtils.formScope(_get_form_feature(layer, request.data.get('form_data'))))
+
+                    # Add ParteFormScope if parent is set
+                    if request.data.get('parent'):
+                        parent = request.data.get('parent')
+                        parent_layer = project.layer_set.get(qgs_layer_id=parent['qgs_layer_id'])
+
+                        qgis_feature_request.expressionContext().appendScope(
+                            QgsExpressionContextUtils.parentFormScope(_get_form_feature(parent_layer,
+                                                                                        parent['form_data'])))
+
                 except:
                     raise Exception("Layer or project could not be found!")
 

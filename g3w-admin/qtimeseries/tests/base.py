@@ -14,7 +14,7 @@ from django.test import override_settings
 from django.urls import reverse
 from qdjango.tests.base import QdjangoTestBase, CoreGroup, File, G3WSpatialRefSys, QgisProject
 from rest_framework.test import APIClient
-from .test_utils import CURRENT_PATH, QGS_FILE_RASTER, TEST_BASE_PATH
+from .test_utils import CURRENT_PATH, QGS_FILE_RASTER, TEST_BASE_PATH, QGS_FILE_RASTER_2
 
 
 DATASOURCE_PATH = '{}{}geodata'.format(CURRENT_PATH, TEST_BASE_PATH)
@@ -51,6 +51,16 @@ class QTimeSeriesBaseTest(QdjangoTestBase):
         cls.project_raster = QgisProject(qgis_project_file)
         cls.project_raster.group = cls.project_group
         cls.project_raster.save()
+        qgis_project_file.close()
+
+        qgis_project_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_FILE_RASTER_2), 'r',
+                                      encoding='utf-8'))
+
+        # Replace name property with only file name without path to simulate UploadedFileWithId instance.
+        qgis_project_file.name = qgis_project_file.name.split('/')[-1]
+        cls.project_raster_2 = QgisProject(qgis_project_file)
+        cls.project_raster_2.group = cls.project_group
+        cls.project_raster_2.save()
         qgis_project_file.close()
 
     @classmethod

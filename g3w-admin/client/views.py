@@ -1,4 +1,4 @@
-
+from django.utils import six
 from django.utils.translation import get_language
 from django.views.generic import TemplateView
 from django.template import loader
@@ -20,6 +20,7 @@ from usersmanage.utils import get_users_for_object, get_user_model
 from usersmanage.configs import *
 from copy import deepcopy
 import json
+import secrets
 
 
 def client_map_alias_view(request, map_name_alias, *args, **kwargs):
@@ -59,6 +60,10 @@ class ClientView(TemplateView):
                 Project.objects.get(slug=kwargs['project_slug'])
         except Project.DoesNotExist:
             raise Http404('Map not found')
+
+        # Check for is_active
+        if not self.project.is_active:
+            raise PermissionDenied()
 
         grant_users = get_users_for_object(self.project, "view_project", with_group_users=True)
 
@@ -148,10 +153,14 @@ class ClientView(TemplateView):
         user_data = JSONRenderer().render(user_data)
 
         serializedGroup = JSONRenderer().render(groupData)
-        #if six.PY3:
-        serializedGroup = str(serializedGroup, 'utf-8')
+        if six.PY3:
+            serializedGroup = str(serializedGroup, 'utf-8')
 
-        baseurl = "/{}".format(settings.SITE_PREFIX_URL if settings.SITE_PREFIX_URL else '')
+        baseurl = "{}/{}".format(
+            settings.SITE_DOMAIN if hasattr(settings, 'SITE_DOMAIN') else '',
+            settings.SITE_PREFIX_URL if settings.SITE_PREFIX_URL else ''
+        )
+
         frontendurl = ',"frontendurl":"{}"'.format(baseurl) if settings.FRONTEND else ''
 
         generaldata = GeneralSuiteData.objects.get()
@@ -204,6 +213,14 @@ class ClientView(TemplateView):
             except:
                 return settings.CLIENT_DEFAULT
         return settings.CLIENT_DEFAULT
+
+    def render_to_response(self, context, **response_kwargs):
+
+        # Add G3W_CLIENT_COOKIE_SESSION_TOKEN cookie to response
+        response = super().render_to_response(context)
+        response.set_cookie(settings.G3W_CLIENT_COOKIE_SESSION_TOKEN, secrets.token_hex(16))
+
+        return response
 
 
 def user_media_view(request, project_type, layer_id, file_name, *args, **kwargs):
