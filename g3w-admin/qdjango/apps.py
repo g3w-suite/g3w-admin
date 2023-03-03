@@ -53,7 +53,9 @@ def get_qgis_log(msg, tag, level):
     """
     Function to get QGIS server log message and send to specific python logger
     """
-    print(msg, tag, level)
+
+    with open('/tmp/dj_qgis_log.txt', 'a') as f:
+        f.write(f'{msg} | {tag} | {level} \n')
 
 
 
