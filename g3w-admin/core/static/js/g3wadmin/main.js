@@ -42,7 +42,9 @@ _.extend(g3wadmin,{
         });
 
         // Ajax upload form
-        that.widget.ajaxUpload($('[data-widget-type="ajaxUpload"]'));
+        var $ajaxUploadWidgets = $('[data-widget-type="ajaxUpload"]');
+        if ($ajaxUploadWidgets.length > 0)
+            that.widget.ajaxUpload($('[data-widget-type="ajaxUpload"]'));
 
 
         // start bootstrap3-wysihtml5

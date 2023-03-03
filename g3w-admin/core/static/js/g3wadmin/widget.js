@@ -615,6 +615,7 @@ _.extend(g3wadmin.widget, {
 
         //options['deleteFile'] = {'enabled': false};
 
+        // TODO: review callback with new file_form.js
         options['callbacks'] = {
             'onSuccess': function(upload){
                 var $thumb = $(this).parents('.box-body').find('.img-thumbnail');
@@ -623,9 +624,9 @@ _.extend(g3wadmin.widget, {
                     $thumb.show();
 
                 // for clear value
-                var $form_group = $(this).parents('.form-group');
+                /*var $form_group = $(this).parents('.form-group');
                 var clear_name = $form_group.attr('id').substring(7) + "-clear";
-                $form_group.find("input[name=" + clear_name + "]").remove();
+                $form_group.find("input[name=" + clear_name + "]").remove();*/
             }
         }
 
