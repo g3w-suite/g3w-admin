@@ -54,10 +54,19 @@ def get_qgis_log(msg, tag, level):
     Function to get QGIS server log message and send to specific python logger
     """
 
-    with open('/tmp/dj_qgis_log.txt', 'a') as f:
-        f.write(f'{msg} | {tag} | {level} \n')
+    # Mapping Python logging levels to QGIS logging levels
+    # 0 -> INFO
+    # 1 -> WARNING
+    # 2 -> CRITICAL
 
+    map_log_level = {
+        '0': logging.DEBUG,
+        '1': logging.WARNING,
+        '2': logging.ERROR
+    }
 
+    # Put QGIS message log into python logggin system
+    logger_qgis_server.log(map_log_level[str(level)], f'[{tag}] - {msg}')
 
 def init_qgis():
     """QGIS Initialization
