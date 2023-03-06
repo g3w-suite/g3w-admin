@@ -20,7 +20,7 @@ try:
     from osgeo import osr
 except:
     pass
-
+import logging
 
 class G3W2Tree(TreeBase):
     module = models.CharField('Qdjango2 Module', max_length=50, null=True, blank=True)
@@ -451,3 +451,29 @@ class ProjectMapUrlAlias(models.Model):
     app_name = models.CharField(max_length=255)
     project_id = models.IntegerField()
     alias =models.CharField(max_length=512, unique=True)
+
+
+LOG_LEVELS = (
+    (logging.NOTSET, _('NotSet')),
+    (logging.INFO, _('Info')),
+    (logging.WARNING, _('Warning')),
+    (logging.DEBUG, _('Debug')),
+    (logging.ERROR, _('Error')),
+    (logging.FATAL, _('Fatal')),
+)
+class StatusLog(models.Model):
+    """
+    Model to store log's row inside DB
+    """
+    logger_name = models.CharField(max_length=100)
+    level = models.PositiveSmallIntegerField(choices=LOG_LEVELS, default=logging.ERROR, db_index=True)
+    msg = models.TextField()
+    trace = models.TextField(blank=True, null=True)
+    create_datetime = models.DateTimeField(auto_now_add=True, verbose_name='Created at')
+
+    def __str__(self):
+        return self.msg
+
+    class Meta:
+        ordering = ('-create_datetime',)
+        verbose_name_plural = verbose_name = 'Logging'

@@ -14,6 +14,7 @@ from qgis.server import QgsServer, QgsServerSettings, QgsConfigCache
 from usersmanage.configs import *
 
 logger = logging.getLogger(__name__)
+logger_qgis_server = logging.getLogger('qgis.server')
 
 if settings.DEBUG:
     os.environ['QGIS_SERVER_LOG_LEVEL'] = '0'
@@ -48,6 +49,24 @@ QGS_APPLICATION = None
 QGS_SERVER_SETTINGS = None
 QGS_SERVER = None
 
+def get_qgis_log(msg, tag, level):
+    """
+    Function to get QGIS server log message and send to specific python logger
+    """
+
+    # Mapping Python logging levels to QGIS logging levels
+    # 0 -> INFO
+    # 1 -> WARNING
+    # 2 -> CRITICAL
+
+    map_log_level = {
+        '0': logging.DEBUG,
+        '1': logging.WARNING,
+        '2': logging.ERROR
+    }
+
+    # Put QGIS message log into python loggging system
+    logger_qgis_server.log(map_log_level[str(level)], f'[{tag}] - {msg}')
 
 def init_qgis():
     """QGIS Initialization
@@ -85,6 +104,8 @@ def init_qgis():
     # may be a little faster than creating a new instance every time we handle
     # a request
     QGS_SERVER = QgsServer()
+
+    QGS_APPLICATION.messageLog().messageReceived.connect(get_qgis_log)
 
 
 def remove_project_from_cache(path):
