@@ -65,7 +65,7 @@ def get_qgis_log(msg, tag, level):
         '2': logging.ERROR
     }
 
-    # Put QGIS message log into python logggin system
+    # Put QGIS message log into python loggging system
     logger_qgis_server.log(map_log_level[str(level)], f'[{tag}] - {msg}')
 
 def init_qgis():
