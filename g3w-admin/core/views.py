@@ -66,7 +66,6 @@ class DashboardView(TemplateView):
         qs = get_objects_for_user(self.request.user, 'core.view_group', Group)
              #| get_objects_for_user(get_anonymous_user(), 'core.view_group', Group)
 
-        qs = qs.filter(is_active=1).order_by('order')
         context['n_groups'] = len(qs)
         context['widgets'] = []
 
