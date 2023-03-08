@@ -44,10 +44,6 @@ _.extend(g3wadmin,{
         // Ajax upload form
         that.widget.ajaxUpload($('[data-widget-type="ajaxUpload"]'));
 
-
-        // start bootstrap3-wysihtml5
-        //$('.wys5').wysihtml5();
-
         // start summernote
         var summernote_options = {
             height: 240,
