@@ -374,7 +374,7 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
                             *self.__authrole_fields(),
                             css_class='box-body'
                         ),
-                        css_class='box box-solid bg-teal-gradient'
+                        css_class='box box-solid bg-purple acl-box'
                     ),
                     css_class='col-md-6 {}'.format(self.checkFieldsVisible('is_superuser', 'is_staff', 'groups'))
                 ),
