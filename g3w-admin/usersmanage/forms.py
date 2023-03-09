@@ -457,10 +457,14 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
 
         fields = []
         if 'is_superuser' in self.fields:
-            fields.append('is_superuser')
+            fields.append(
+                Field('is_superuser', **{'data_icheck_skin': 'yellow'})
+            )
 
         if 'is_staff' in self.fields:
-            fields.append('is_staff')
+            fields.append(
+                Field('is_staff', **{'data_icheck_skin': 'yellow'})
+            )
 
         if 'groups' in self.fields:
             fields.append(
