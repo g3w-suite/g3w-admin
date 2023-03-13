@@ -394,7 +394,7 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
                 try:
                     layer_serialized = LayerSerializer(
-                        layers[layer['id']], qgs_project=qgs_project, request=self.request)
+                        layers[layer['id']], qgs_project=qgs_project, request=self.request, layertreenode=layer)
                 except KeyError:
                     logger.error(
                         'Layer %s is missing from QGIS project!' % layer['id'])
@@ -556,6 +556,8 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         # set QsgMapLayer instance
         self.qgs_project = kwargs['qgs_project']
         del (kwargs['qgs_project'])
+        self.layertreenode = kwargs['layertreenode']
+        del (kwargs['layertreenode'])
 
         super(LayerSerializer, self).__init__(instance, data, **kwargs)
 
@@ -801,6 +803,18 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
         # add ows
         ret['ows'] = self.get_ows(instance)
+
+        # Add `featurecount` property if `showfeaturecount` property is present inside layertreenode:
+        if 'showfeaturecount' in self.layertreenode and self.layertreenode['showfeaturecount']:
+
+            current_style = qgs_maplayer.styleManager().currentStyle()
+            renderer = qgs_maplayer.renderer()
+
+            counter = qgs_maplayer.countSymbolFeatures()
+            counter.run()
+
+            ret['featurecount'] = [{item.ruleKey(): counter.featureCount(item.ruleKey())}
+                                   for item in renderer.legendSymbolItems()]
 
         return ret
 
