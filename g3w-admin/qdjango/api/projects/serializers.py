@@ -816,6 +816,9 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
                 ret['featurecount'] = [{item.ruleKey(): counter.featureCount(item.ruleKey())}
                                        for item in renderer.legendSymbolItems()]
+            else:
+                ret['featurecount'] = [{item.ruleKey(): qgs_maplayer.featureCount(item.ruleKey())}
+                                       for item in renderer.legendSymbolItems()]
 
         return ret
 
