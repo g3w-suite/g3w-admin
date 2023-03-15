@@ -807,18 +807,21 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         # Add `featurecount` property if `showfeaturecount` property is present inside layertreenode:
         if 'showfeaturecount' in self.layertreenode and self.layertreenode['showfeaturecount']:
 
-            current_style = qgs_maplayer.styleManager().currentStyle()
-            renderer = qgs_maplayer.renderer()
+            if instance.geometrytype != QGIS_LAYER_TYPE_NO_GEOM:
+                current_style = qgs_maplayer.styleManager().currentStyle()
+                renderer = qgs_maplayer.renderer()
 
-            counter = qgs_maplayer.countSymbolFeatures()
-            if counter:
-                counter.run()
+                counter = qgs_maplayer.countSymbolFeatures()
+                if counter:
+                    counter.run()
 
-                ret['featurecount'] = {item.ruleKey(): counter.featureCount(item.ruleKey())
-                                       for item in renderer.legendSymbolItems()}
+                    ret['featurecount'] = {item.ruleKey(): counter.featureCount(item.ruleKey())
+                                           for item in renderer.legendSymbolItems()}
+                else:
+                    ret['featurecount'] = {item.ruleKey(): qgs_maplayer.featureCount(item.ruleKey())
+                                           for item in renderer.legendSymbolItems()}
             else:
-                ret['featurecount'] = {item.ruleKey(): qgs_maplayer.featureCount(item.ruleKey())
-                                       for item in renderer.legendSymbolItems()}
+                ret['featurecount'] = {'0': qgs_maplayer.featureCount()}
 
         return ret
 
