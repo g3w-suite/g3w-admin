@@ -12,10 +12,10 @@ services:
       - shared-volume:/shared-volume
 
   g3w-suite:
-    image: g3w_suite_test:322
+    image: g3w_suite_test:ltr
     build:
       context: ./ci_scripts
-      dockerfile: Dockerfile.322.deps
+      dockerfile: Dockerfile.ltr.deps
     command: "tail -f /dev/null"
     ports:
     - "8000:8000"

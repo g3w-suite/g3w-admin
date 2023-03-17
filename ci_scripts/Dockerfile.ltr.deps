@@ -1,4 +1,4 @@
-FROM ubuntu:focal
+FROM ubuntu:jammy
 # This image is available as g3wsuite/g3w-suite-deps-py3:latest
 LABEL maintainer="Gis3w" Description="This image is used to prepare build requirements for g3w-suite CI testing" Vendor="Gis3w" Version="1.3"
 
@@ -11,7 +11,7 @@ RUN apt-get update && apt install -y \
     postgresql-server-dev-all \
     libgdal-dev \
     python3-dev \
-    libgdal26 \
+    libgdal30 \
     python3-gdal \
     python3-pip \
     curl \
@@ -23,7 +23,7 @@ RUN apt-get update && apt install -y \
     dirmngr \
     xvfb
 
-# PyQGIS 3.22
+# PyQGIS 3.28
 RUN wget -qO - https://qgis.org/downloads/qgis-2022.gpg.key | gpg --no-default-keyring --keyring gnupg-ring:/etc/apt/trusted.gpg.d/qgis-archive.gpg --import &&  \
     chmod a+r /etc/apt/trusted.gpg.d/qgis-archive.gpg && \
     echo "deb [arch=amd64] https://qgis.org/ubuntu-ltr focal main" >> /etc/apt/sources.list && \
