@@ -42,7 +42,7 @@ from core.tests.base import CoreTestBase
 from core.utils.qgisapi import get_qgs_project, get_qgis_layer
 
 from .base import QdjangoTestBase, CURRENT_PATH, TEST_BASE_PATH, QGS310_WIDGET_FILE, CoreGroup, G3WSpatialRefSys, \
-    QGS322_FILE, QGS322_INITEXTENT_GEOCONSTRAINT_FILE, QGS322_FORMATTING_DATE
+    QGS322_FILE, QGS322_INITEXTENT_GEOCONSTRAINT_FILE, QGS322_FORMATTING_DATE, QGS328_FILE
 from qgis.core import QgsFeatureRequest, QgsRasterLayer, QgsVectorLayer
 from qgis.PyQt.QtCore import QTemporaryDir
 from qgis.server import QgsServerProjectUtils
@@ -325,9 +325,16 @@ class TestQdjangoProjectsAPI(QdjangoTestBase):
         cls.project322.group = cls.project_group
         cls.project322.save()
 
+        qgis_project_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS328_FILE), 'r'))
+        cls.project328 = QgisProject(qgis_project_file)
+        cls.project328.title = 'A project QGIS 3.28'
+        cls.project328.group = cls.project_group
+        cls.project328.save()
+
     @classmethod
     def tearDownClass(cls):
         cls.project322.instance.delete()
+        cls.project328.instance.delete()
         super().tearDownClass()
 
     def _testApiCall(self, view_name, args, kwargs={}):
@@ -573,8 +580,41 @@ class TestQdjangoProjectsAPI(QdjangoTestBase):
    }
 ])
 
+    def test_feature_count_project(self):
+        """
+        Test project layers feature count property inside /api/config API REST
+        """
 
+        response = self._testApiCall(
+            'group-project-map-config',
+            [self.project328.instance.group.slug, 'qdjango', self.project328.instance.pk])
 
+        resp = json.loads(response.content)
+
+        to_compare = [{
+            'name': 'spatialite_points',
+            'expanded': True,
+            'id': 'spatialite_points20190604101052075',
+            'visible': True,
+            'showfeaturecount': True
+        }, {
+            'name': 'world',
+            'expanded': False,
+            'id': 'world20181008111156525',
+            'visible': True,
+            'showfeaturecount': True
+        }, {
+            'name': 'bluemarble',
+            'expanded': True,
+            'id': 'bluemarble20181008111156906',
+            'visible': True
+        }]
+        self.assertEqual(resp['layerstree'], to_compare)
+
+        self.assertEqual(resp['layers'][0]['featurecount'], {'0': 2})
+
+        for s  in list(resp['layers'][1]['featurecount'].values()):
+            self.assertTrue(s > 0 and s <= 10)
 
 class TestQdjangoLayersAPI(QdjangoTestBase):
     """ Test qdjango layer API """
