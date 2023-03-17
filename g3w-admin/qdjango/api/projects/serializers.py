@@ -810,15 +810,15 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
             if instance.geometrytype != QGIS_LAYER_TYPE_NO_GEOM:
 
                 renderer = qgs_maplayer.renderer()
-                #
-                # counter = qgs_maplayer.countSymbolFeatures()
-                # if counter:
-                #     counter.run()
-                #
-                #     ret['featurecount'] = {item.ruleKey(): counter.featureCount(item.ruleKey())
-                #                            for item in renderer.legendSymbolItems()}
-                # else:
-                ret['featurecount'] = {item.ruleKey(): qgs_maplayer.featureCount(item.ruleKey())
+
+                counter = qgs_maplayer.countSymbolFeatures()
+                if counter:
+                    counter.run()
+
+                    ret['featurecount'] = {item.ruleKey(): counter.featureCount(item.ruleKey())
+                                           for item in renderer.legendSymbolItems()}
+                else:
+                    ret['featurecount'] = {item.ruleKey(): qgs_maplayer.featureCount(item.ruleKey())
                                            for item in renderer.legendSymbolItems()}
             else:
                 ret['featurecount'] = {'0': qgs_maplayer.featureCount()}
