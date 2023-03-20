@@ -81,6 +81,12 @@ def buildLayerTreeNodeObject(layerTreeNode):
                 'visible': node.itemVisibilityChecked()
             })
 
+            # Add `showFeatureCount` custom property per Vector layer only
+            if 'showFeatureCount' in node.customProperties():
+                toRetLayer.update({
+                    'showfeaturecount': True
+                })
+
         except:
 
             toRetLayer.update({
