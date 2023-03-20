@@ -810,7 +810,7 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
             if instance.geometrytype != QGIS_LAYER_TYPE_NO_GEOM:
 
                 renderer = qgs_maplayer.renderer()
-
+                qgs_maplayer.featureCount()
                 counter = qgs_maplayer.countSymbolFeatures()
                 if counter:
                     counter.run()
