@@ -20,8 +20,6 @@ from usersmanage.configs import G3W_VIEWER1, \
     G3W_EDITOR2, \
     G3W_EDITOR1
 import os
-import ogr
-import gdal
 
 
 class BaseUsermanageTestCase(TestCase):
