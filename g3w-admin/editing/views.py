@@ -3,7 +3,7 @@ from django.conf import settings
 from django.apps import apps
 from django.db import transaction
 from django.views.generic import View, FormView
-from django.http.response import HttpResponseServerError
+from django.http.response import HttpResponseServerError, HttpResponseForbidden
 from django.http import JsonResponse
 from django.core.files import File
 from django.core.files.images import ImageFile
@@ -11,6 +11,8 @@ from django.core.files.storage import default_storage
 from django.contrib.auth.models import User, Group as AuhtGroup
 from django.utils.decorators import method_decorator
 from django.db.models import ImageField, FileField
+from django.views.decorators.csrf import csrf_exempt
+from django.core.exceptions import PermissionDenied
 from core.mixins.views import AjaxableFormResponseMixin, G3WRequestViewMixin, G3WProjectViewMixin
 from core.utils.decorators import project_type_permission_required
 from core.utils import file_path_mime
@@ -33,6 +35,9 @@ MAPPING_DJANGO_MODEL_FIELD_FILE_OBJECT = {
     FileField: File
 }
 
+class JsonResponseForbidden(JsonResponse):
+    status_code = 403
+
 class UploadFileView(View):
     """
     Generic view for upload multimedia file e store inside MEDIA_DIR/users/<user_id>
@@ -53,6 +58,7 @@ class UploadFileView(View):
         else:
             request.session[SESSION_KEY] = [path]
 
+    @method_decorator(csrf_exempt)
     def post(self, request, *args, **kwargs):
 
         if not request.FILES:
@@ -61,8 +67,11 @@ class UploadFileView(View):
         to_ret = {}
 
         # get files
-        for file_field, file in request.FILES.items():
-            to_ret[file_field] = self.handle_file(file)
+        try:
+            for file_field, file in request.FILES.items():
+                to_ret[file_field] = self.handle_file(file)
+        except Exception as e:
+            return JsonResponseForbidden({'result': False, 'error': str(e)})
 
         self.save_session(request, to_ret[file_field]['value'])
 
@@ -77,8 +86,14 @@ class UploadFileView(View):
         else:
             sub_path_to_save = 'temp_uploads/{}'.format(str(self.request.user.pk))
 
-        # add user id directory
+        # Check file ext:
+        ext = os.path.splitext(f.name)[-1][1:].lower()
+        if ext not in settings.G3WFILE_FORM_UPLOAD_FORMATS:
+            raise Exception(f'File type not allowed: {ext}. '
+                            f'Allowed formats are: {", ".join(settings.G3WFILE_FORM_UPLOAD_FORMATS)}')
 
+
+        # add user id directory
         path_to_save = '{}{}/'.format(settings.MEDIA_ROOT, sub_path_to_save);
 
         if not os.path.isdir(path_to_save):
