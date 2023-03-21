@@ -45,6 +45,10 @@ class UploadFileView(View):
 
     sub_dir_upload = ''
 
+    @method_decorator(csrf_exempt)
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
     def save_session(self, request, path):
         """Save file path uploaded into session"""
         path = BaseUserMediaHandler.build_fs_path(path)
@@ -58,7 +62,6 @@ class UploadFileView(View):
         else:
             request.session[SESSION_KEY] = [path]
 
-    @method_decorator(csrf_exempt)
     def post(self, request, *args, **kwargs):
 
         if not request.FILES:
