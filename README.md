@@ -2,7 +2,7 @@
 
 # G3W-ADMIN
 
-G3W-SUITE admin server based on Python - Django (v2.2) and QGIS Server LTR (v3.22)
+G3W-SUITE admin server based on Python - Django (v2.2) and QGIS Server LTR (v3.28)
 
 ![Admin GUI](https://user-images.githubusercontent.com/9614886/189155796-6feff629-b500-4e38-b7c2-d98b53ae7564.png)
 
