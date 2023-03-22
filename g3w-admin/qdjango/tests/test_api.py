@@ -325,7 +325,7 @@ class TestQdjangoProjectsAPI(QdjangoTestBase):
         cls.project322.group = cls.project_group
         cls.project322.save()
 
-        qgis_project_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS322_FILE), 'r'))
+        qgis_project_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS328_FILE), 'r'))
         cls.project328 = QgisProject(qgis_project_file)
         cls.project328.title = 'A project QGIS 3.28'
         cls.project328.group = cls.project_group
