@@ -25,7 +25,7 @@
                     new_order = $(e.target).sortable("toArray");
 
                     // get current id of group moved
-                    var gid = ui.item.attr('id').substring(16)
+                    var gid = ui.item.attr('id').substring(15)
                     var url = _.template("/qdjango/jx/project/<%= gid %>/setorder/")({gid: gid});
                     var data = {
                         new_order: new_order
