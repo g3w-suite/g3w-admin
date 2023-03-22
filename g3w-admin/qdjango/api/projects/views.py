@@ -154,7 +154,6 @@ class QdjangoAsGeoTiffAPIview(G3WAPIView):
             for n in range(1, src.RasterCount + 1):
                 logger.debug('Reading band {}'.format(n))
                 band_data[n] = src.GetRasterBand(n).ReadAsArray()
-                assert (band_data[n][0][0] == 0, 'band {} failure'.format(n))
 
             [rows, cols] = band_data[1].shape
 
