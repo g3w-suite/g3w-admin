@@ -454,6 +454,7 @@ def expression_eval(expression_text, project_id=None, qgs_layer_id=None, form_da
     :param formatter: Indicate if form_data values contains formatter values or original features value.
     :type formatter: int, optional
     :param parent: A dictionary that maps to a GeoJSON representation of the parent feature of feature currently edited
+    :param field_name: A string with field name to which the expression belongs.
     in the form and parent QGIS Layer, default to None
     :type parent: dict, optional
     """
