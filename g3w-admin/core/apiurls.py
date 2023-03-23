@@ -1,20 +1,29 @@
+"""
+Add your API routes here.
+"""
+# API ROOT: /core/
+
 from django.conf import settings
 from django.urls import path, re_path
 from django.contrib.auth.decorators import login_required
-from .views import InterfaceProxy
-from .api.views import \
-    layer_vector_view, \
-    G3WSUITEInfoAPIView, \
-    QgsExpressionLayerContextEvalView, \
-    layer_raster_view, \
-    InterfaceOws, \
-    CRSInfoAPIView
-from .views import \
-    GroupSetOrderView, \
-    MacroGroupSetOrderView
+
+from .views import(
+    InterfaceProxy,
+    GroupSetOrderView,
+    MacroGroupSetOrderView,
+) 
+from .api.views import(
+    layer_vector_view,
+    G3WSUITEInfoAPIView,
+    QgsExpressionLayerContextEvalView,
+    layer_raster_view,
+    InterfaceOws,
+    CRSInfoAPIView,
+)
 
 
 urlpatterns = [
+
     re_path(
         r'^' + settings.VECTOR_URL[1:] + r'(?P<mode_call>data|config|shp|xls|gpkg|gpx|csv|filtertoken)/(?P<project_type>[-_\w\d]+)/(?P<project_id>[0-9]+)/'
         r'(?P<layer_name>[-_\w\d]+)/$',
@@ -22,7 +31,7 @@ urlpatterns = [
         name='core-vector-api'
     ),
 
-    # with extention
+    # with extension
     re_path(
         r'^' + settings.VECTOR_URL[1:] + r'(?P<mode_call>shp|xls|gpx|csv|gpkg)/(?P<project_type>[-_\w\d]+)/(?P<project_id>[0-9]+)/'
         r'(?P<layer_name>[-_\w\d]+).(?P<ext>zip|xls|gpx|csv|gpkg)$',
@@ -57,24 +66,26 @@ urlpatterns = [
         name='deploy-info-api'
     ),
 
-    # POST only method to return QGIS Expressions evaluated in Project an optional Layer/Form context
-    # (passing form_data and qgs_layer_id in the post body)
+    # POST only method to return QGIS Expressions
+    # evaluated in Project an optional Layer/Form
+    # context (passing form_data and qgs_layer_id
+    # in the post body)
     path(
         'api/expression_eval/<int:project_id>/',
         login_required(QgsExpressionLayerContextEvalView.as_view()),
         name='layer-expression-eval'
     ),
 
-    # General proxy view for Client external calls, i.e. for COORS.
-    # =============================================================
+    # General proxy view for Client external calls,
+    # i.e. for COORS.
     path(
         'interface/proxy/',
         InterfaceProxy.as_view(),
         name="interface-proxy"
     ),
 
-    # Interface API to get informations, layer, styles to a ows services
-    # ==================================================================
+    # Interface API to get informations, layer,
+    # styles to a ows services
     path(
         'interface/ows/',
         InterfaceOws.as_view(),
@@ -82,7 +93,6 @@ urlpatterns = [
     ),
 
     # For raster data
-    # ---------------
     re_path(
         r'^' + settings.RASTER_URL[1:] + r'(?P<mode_call>geotiff)/(?P<project_type>[-_\w\d]+)/(?P<project_id>[0-9]+)/'
         r'(?P<layer_name>[-_\w\d]+)/$',
@@ -91,7 +101,10 @@ urlpatterns = [
     ),
 
     # CRS API info
-    # ------------
-    path('crs/<int:epsg>/', CRSInfoAPIView.as_view(), name='core-crs-api')
+    path(
+        'crs/<int:epsg>/',
+        CRSInfoAPIView.as_view(),
+        name='core-crs-api'
+    )
 
 ]

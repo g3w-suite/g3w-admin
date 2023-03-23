@@ -1,8 +1,19 @@
+"""
+Add your API routes here.
+"""
+# API ROOT: /:lang/admin/
+
 from django.urls import path, re_path
 from django.contrib.auth.decorators import login_required
-from .views import UploadFileView, ActiveEditingLayerView
+
+from .views import (
+    UploadFileView,
+    ActiveEditingLayerView,
+)
+
 
 urlpatterns = [
+
     path(
         'upload/',
         UploadFileView.as_view(),
@@ -15,4 +26,5 @@ urlpatterns = [
         login_required(ActiveEditingLayerView.as_view()),
         name='editing-layer-active'
     ),
+
 ]

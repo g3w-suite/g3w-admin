@@ -1,9 +1,17 @@
-from .views import *
+"""
+Add your API routes here.
+"""
+# API ROOT: /:lang/admin/
+
 from django.urls import re_path
+
+from .views import *
+
 
 app_name = 'OWS'
 
 urlpatterns = [
+
     # url working for qgis wms client
     re_path(
         r'^ows/(?P<map_name_alias>[-_\w\d]+)/&?$',
@@ -16,4 +24,5 @@ urlpatterns = [
         OWSView.as_view(),
         name='ows'
     ),
+
 ]
