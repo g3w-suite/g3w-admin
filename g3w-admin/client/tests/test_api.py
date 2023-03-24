@@ -133,7 +133,8 @@ class ClientApiTest(CoreTestBase):
             'axisinverted': True,
             'extent': [-180.0, -90.0, 180.0, 90.0]
         })
-        self.assertEqual(resp["group"]["mapcontrols"], ['zoomtoextent', 'zoom', 'zoombox', 'query', 'querybbox', 'querybypolygon', 'overview', 'scaleline', 'geolocation', 'streetview', 'nominatim', 'addlayers', 'length', 'area', 'mouseposition', 'scale'])
+        print(resp["group"]["mapcontrols"])
+        self.assertEqual(resp["group"]["mapcontrols"], ['zoom', 'zoombox', 'zoomtoextent', 'query', 'querybbox', 'querybypolygon', 'overview', 'scaleline', 'geolocation', 'streetview', 'nominatim', 'addlayers', 'length', 'area', 'mouseposition', 'scale'])
         self.assertEqual(resp["group"]["header_logo_img"], "logo_img/qgis-logo.png")
         self.assertEqual(resp["group"]["name"], "Gruppo 1")
         self.assertIsNone(resp["group"]["header_logo_link"])
