@@ -164,7 +164,7 @@ Automated tests are performed on both latest QGIS release and current QGIS LTR (
 The Dockerfile and docker-compose.yml files used to perform these tests are:
 
 - [Dockerfile.deps](ci_scripts/Dockerfile.deps) + [docker-compose.yml](docker-compose.yml) → latest QGIS release
-- [Dockerfile.322.deps](ci_scripts/Dockerfile.ltr.deps) + [docker-compose.322.yml](docker-compose.ltr.yml) → current QGIS LTR (v3.28)
+- [Dockerfile.ltr.deps](ci_scripts/Dockerfile.ltr.deps) + [docker-compose.ltr.yml](docker-compose.ltr.yml) → current QGIS LTR (v3.28)
 
 Execution log: [github.com/g3w-suite/g3w-admin/actions](https://github.com/g3w-suite/g3w-admin/actions)
 
