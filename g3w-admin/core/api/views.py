@@ -166,6 +166,7 @@ class QgsExpressionLayerContextEvalView(G3WAPIView):
                 qgs_layer_id = data.get('qgs_layer_id')
                 formatter = data.get('formatter', '0')
                 parent = data.get('parent', None)
+                field_name = data.get('field_name', None)
             except:
                 raise APIExpressionEmptyError()
         else:
@@ -174,13 +175,14 @@ class QgsExpressionLayerContextEvalView(G3WAPIView):
             qgs_layer_id = request.data.get('qgs_layer_id')
             formatter = request.data.get('formatter', '0')
             parent = request.data.get('parent', None)
+            field_name = request.data.get('field_name', None)
 
         if expression_text is None:
             raise APIExpressionEmptyError()
 
         try:
             result = expression_eval(
-                expression_text, project_id, qgs_layer_id, form_data, int(formatter), parent)
+                expression_text, project_id, qgs_layer_id, form_data, int(formatter), parent, field_name)
 
             # Case Qvariant NULL
             if result == NULL:
