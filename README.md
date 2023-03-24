@@ -1,4 +1,5 @@
 ![G3W-Suite CI Tests](https://github.com/g3w-suite/g3w-admin/actions/workflows/test_runner.yml/badge.svg)
+[![License](https://img.shields.io/badge/license-MPL%202-blue.svg?style=flat)](LICENSE)
 
 # G3W-ADMIN
 
