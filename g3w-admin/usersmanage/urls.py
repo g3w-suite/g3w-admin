@@ -1,3 +1,12 @@
+"""
+Add your API routes here.
+"""
+# API ROOT: /:lang/admin/
+
+__author__    = 'lorenzetti@gis3w.it'
+__copyright__ = 'Copyright 2015 - 2023, Gis3w'
+__license__   = "MPL 2.0"
+
 from django.urls import path
 from django.contrib.auth.decorators import login_required
 from usersmanage.views import *
@@ -5,7 +14,9 @@ from usersmanage.views import *
 
 urlpatterns = [
 
-    # user groups managment
+    #############################################################
+    # User groups management
+    #############################################################
     path(
         'users/groups/',
         login_required(UserGroupListView.as_view()),
@@ -42,7 +53,9 @@ urlpatterns = [
         name='user-group-by-user-role'
     ),
 
-    # user management
+    #############################################################
+    # User management
+    #############################################################
     path(
         'users/',
         login_required(UserListView.as_view()),

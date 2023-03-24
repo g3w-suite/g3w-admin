@@ -3,6 +3,10 @@ Add your API routes here.
 """
 # API ROOT: /editing/
 
+__author__    = 'lorenzetti@gis3w.it'
+__copyright__ = 'Copyright 2015 - 2023, Gis3w'
+__license__   = "MPL 2.0"
+
 from django.urls import re_path
 from django.contrib.auth.decorators import login_required
 
@@ -23,23 +27,27 @@ urlpatterns = [
 
     #############################################################
     # EDITING info
-    #############################################################
-
+    #
     # Other vector layers in project get by qdjango layer id
+    #############################################################
     re_path(
         r'^api/info/layer/(?P<editing_layer_id>[-_\w\d]+)/$',
         login_required(EditingLayerInfo.as_view()),
         name='editing-api-info-layer'
     ),
 
-    # Viewers users can editing on editing layer id
+    #############################################################
+    # Viewers users can edit on editing layer id
+    #############################################################
     re_path(
         r'^api/info/layer/user/(?P<editing_layer_id>[-_\w\d]+)/$',
         login_required(EditingLayerUserInfo.as_view()),
         name='editing-api-info-layer-user'
     ),
 
-    # Viewers users groups viewer can editing on editing layer id
+    #############################################################
+    # Viewers users groups viewer can edit on editing layer id
+    #############################################################
     re_path(
         r'^api/info/layer/authgroup/(?P<editing_layer_id>[-_\w\d]+)/$',
         login_required(EditingLayerAuthGroupInfo.as_view()),

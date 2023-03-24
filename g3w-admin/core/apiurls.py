@@ -3,6 +3,10 @@ Add your API routes here.
 """
 # API ROOT: /core/
 
+__author__    = 'lorenzetti@gis3w.it'
+__copyright__ = 'Copyright 2015 - 2023, Gis3w'
+__license__   = "MPL 2.0"
+
 from django.conf import settings
 from django.urls import path, re_path
 from django.contrib.auth.decorators import login_required
@@ -24,6 +28,9 @@ from .api.views import(
 
 urlpatterns = [
 
+    #############################################################
+    # Vector data API management
+    #############################################################
     re_path(
         r'^' + settings.VECTOR_URL[1:] + r'(?P<mode_call>data|config|shp|xls|gpkg|gpx|csv|filtertoken)/(?P<project_type>[-_\w\d]+)/(?P<project_id>[0-9]+)/'
         r'(?P<layer_name>[-_\w\d]+)/$',
@@ -31,7 +38,6 @@ urlpatterns = [
         name='core-vector-api'
     ),
 
-    # with extension
     re_path(
         r'^' + settings.VECTOR_URL[1:] + r'(?P<mode_call>shp|xls|gpx|csv|gpkg)/(?P<project_type>[-_\w\d]+)/(?P<project_id>[0-9]+)/'
         r'(?P<layer_name>[-_\w\d]+).(?P<ext>zip|xls|gpx|csv|gpkg)$',
@@ -47,7 +53,9 @@ urlpatterns = [
         name='core-vector-api-widget'
     ),
 
-    # Changing order
+    #############################################################
+    # G3W-ADMIN api for change ordering of gorup and macrogorup
+    #############################################################
     path(
         'jx/groups/<int:group_id>/setorder/',
         login_required(GroupSetOrderView.as_view()),
@@ -60,39 +68,52 @@ urlpatterns = [
         name='macrogroup-set-order'
     ),
 
+    #############################################################
+    # G3W-ADMIN DEPLOY INFO
+    #############################################################
     path(
         'api/deploy/info/',
         G3WSUITEInfoAPIView.as_view(),
         name='deploy-info-api'
     ),
 
+    #############################################################
+    # QGIS EXPRESSION EVALUATION API
+    #
     # POST only method to return QGIS Expressions
     # evaluated in Project an optional Layer/Form
     # context (passing form_data and qgs_layer_id
     # in the post body)
+    #############################################################
     path(
         'api/expression_eval/<int:project_id>/',
         login_required(QgsExpressionLayerContextEvalView.as_view()),
         name='layer-expression-eval'
     ),
 
+    #############################################################
     # General proxy view for Client external calls,
     # i.e. for COORS.
+    #############################################################
     path(
         'interface/proxy/',
         InterfaceProxy.as_view(),
         name="interface-proxy"
     ),
 
-    # Interface API to get informations, layer,
+    #############################################################
+    # Interface API to get information, layer,
     # styles to a ows services
+    #############################################################
     path(
         'interface/ows/',
         InterfaceOws.as_view(),
         name="interface-ows"
     ),
 
-    # For raster data
+    #############################################################
+    # For raster data: export as geotiff
+    #############################################################
     re_path(
         r'^' + settings.RASTER_URL[1:] + r'(?P<mode_call>geotiff)/(?P<project_type>[-_\w\d]+)/(?P<project_id>[0-9]+)/'
         r'(?P<layer_name>[-_\w\d]+)/$',
@@ -100,7 +121,9 @@ urlpatterns = [
         name='core-raster-api'
     ),
 
+    #############################################################
     # CRS API info
+    #############################################################
     path(
         'crs/<int:epsg>/',
         CRSInfoAPIView.as_view(),

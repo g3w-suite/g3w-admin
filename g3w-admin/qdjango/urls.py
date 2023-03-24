@@ -3,6 +3,10 @@ Add your API routes here.
 """
 # API ROOT: /:lang/admin/
 
+__author__    = 'lorenzetti@gis3w.it'
+__copyright__ = 'Copyright 2015 - 2023, Gis3w'
+__license__   = "MPL 2.0"
+
 from django.urls import re_path
 from django.contrib.auth.decorators import login_required
 from base.urls import G3W_SITETREE_I18N_ALIAS
@@ -12,6 +16,9 @@ G3W_SITETREE_I18N_ALIAS.append('qdjango')
 
 urlpatterns = [
 
+    #############################################################
+    # Projects
+    #############################################################
     re_path(
         r'^(?P<group_slug>[-_\w\d]+)/projects/$',
         login_required(QdjangoProjectListView.as_view()),
@@ -60,13 +67,14 @@ urlpatterns = [
         name='qdjango-project-download'
     ),
 
-    # for ajaxFiler
-    re_path(r'^(?P<group_slug>[-_\w\d]+)/projects/fast/update/(?P<slug>[-_\w\d]+)/$',
-        login_required(QdjangoProjectFastUpdateView.as_view()), name='qdjango-project-fast-update'),
+    # For fast project update
+    # TODO: try to reactivate
+    #re_path(r'^(?P<group_slug>[-_\w\d]+)/projects/fast/update/(?P<slug>[-_\w\d]+)/$',
+    #    login_required(QdjangoProjectFastUpdateView.as_view()), name='qdjango-project-fast-update'),
 
 
     #############################################################
-    # Layers re_paths
+    # Layers
     #############################################################
 
     re_path(
@@ -95,7 +103,7 @@ urlpatterns = [
 
 
     #############################################################
-    # for data layer by ajax
+    # Data layer by ajax
     #############################################################
 
     re_path(
@@ -106,7 +114,7 @@ urlpatterns = [
 
 
     #############################################################
-    # Widget re_paths
+    # Widgets
     #############################################################
 
     re_path(
@@ -135,7 +143,7 @@ urlpatterns = [
 
 
     #############################################################
-    # Filter by user/group re_paths
+    # Filter by user/group
     #############################################################
 
     re_path(
