@@ -93,50 +93,30 @@ class FilemanagerApiTest(BaseFilemanagerTestCase):
         self.assertEqual(res.status_code, 200)
         jres = json.loads(res.content)
 
-        to_compare = {
-           "data":[
-                  {
-                     "id":"/folder_broken/img_broken.jpg",
-                     "type":"file",
-                     "attributes":{
-                        "name":"img_broken.jpg",
-                        "readable":1,
-                        "writable":1,
-                        "extension":"jpg",
-                        "height":0,
-                        "width":0,
-                        "size":0,
-                        "path":"/home/walter/PycharmProjects/g3w_suite_qgis_api/g3w-admin/filemanager/tests/data/folder_broken/img_broken.jpg",
-                        "created":1679899483,
-                        "modified":1679899483,
-                        "timestamp":1679899483
-                     }
-                  },
-                  {
-                     "id":"/folder_broken/g3wsuite_logo_rid.png",
-                     "type":"file",
-                     "attributes":{
-                        "name":"g3wsuite_logo_rid.png",
-                        "readable":1,
-                        "writable":1,
-                        "extension":"png",
-                        "height":100,
-                        "width":100,
-                        "size":4536,
-                        "path":"/home/walter/PycharmProjects/g3w_suite_qgis_api/g3w-admin/filemanager/tests/data/folder_broken/g3wsuite_logo_rid.png",
-                        "created":1679899704,
-                        "modified":1517672222,
-                        "timestamp":1517672222
-                     }
-                  }
-               ]
-            }
-
         for d in jres['data']:
             if d['id'] == "/folder_broken/g3wsuite_logo_rid.png":
-                self.assertEqual(d, to_compare['data'][1])
+                self.assertEqual(d['id'], "/folder_broken/g3wsuite_logo_rid.png")
+                self.assertEqual(d['type'], "file")
+                self.assertEqual(d['attributes']['name'], "g3wsuite_logo_rid.png")
+                self.assertEqual(d['attributes']['readable'], 1)
+                self.assertEqual(d['attributes']['writable'], 1)
+                self.assertEqual(d['attributes']['extension'], "png")
+                self.assertEqual(d['attributes']["height"], 100)
+                self.assertEqual(d['attributes']["width"], 100)
+                self.assertEqual(d['attributes']["size"], 4536)
+                self.assertEqual(d['attributes']['path'], f"{CURRENT_PATH}{TEST_BASE_PATH}folder_broken/g3wsuite_logo_rid.png")
             else:
-                self.assertEqual(d, to_compare['data'][0])
+                self.assertEqual(d['id'], '/folder_broken/img_broken.jpg')
+                self.assertEqual(d['type'], "file")
+                self.assertEqual(d['attributes']['name'], "img_broken.jpg")
+                self.assertEqual(d['attributes']['readable'], 1)
+                self.assertEqual(d['attributes']['writable'], 1)
+                self.assertEqual(d['attributes']['extension'], "jpg")
+                self.assertEqual(d['attributes']["height"], 0)
+                self.assertEqual(d['attributes']["width"], 0)
+                self.assertEqual(d['attributes']["size"], 0)
+                self.assertEqual(d['attributes']['path'],
+                                 f"{CURRENT_PATH}{TEST_BASE_PATH}folder_broken/img_broken.jpg")
 
         client.logout()
 
