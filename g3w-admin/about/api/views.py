@@ -59,6 +59,15 @@ class MacroGroupsApiView(AboutApiViewMixin, generics.ListAPIView):
     queryset = MacroGroup.objects.all()
     serializer_class = MacroGroupSerializer
 
+class InfoDataApiView(generics.RetrieveAPIView):
+    """
+    API for Generic suite data
+    """
 
+    queryset = GeneralSuiteData.objects.all()
+    serializer_class = GenericSuiteDataSerializer
+
+    def get_object(self):
+        return self.get_queryset()[0]
 
 

@@ -1,7 +1,7 @@
 """
 Add your API routes here.
 """
-# API ROOT: /:lang/about/
+# API ROOT: /:lang/
 
 __author__    = 'lorenzetti@gis3w.it'
 __copyright__ = 'Copyright 2015 - 2023, Gis3w'
@@ -16,12 +16,20 @@ from .api.views import (
     GroupsApiView,
     MacroGroupsApiView,
     ProjectsApiView,
+    InfoDataApiView
 )
 
 urlpatterns = [
 
     # MOVE EVERY API URLS HERE TO USER I18N CAPABILITIES
     # --------------------------------------------------
+
+    # Generic suite data
+    path(
+        'about/api/infodata/',
+        InfoDataApiView.as_view(),
+        name='about-infodata-api-list'
+    ),
 
     # All Groups (filtered by user role)
     path(

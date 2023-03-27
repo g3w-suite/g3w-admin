@@ -153,3 +153,33 @@ class GetUnlanguageFieldsMixin(object):
             self.Meta.fields = cleared_meta_fields
 
         return super(GetUnlanguageFieldsMixin, self).get_field_names(declared_fields, info)
+
+
+class GenericSuiteDataSerializer(GetUnlanguageFieldsMixin, serializers.ModelSerializer):
+    """
+    Generic suite data
+    """
+
+    def to_representation(self, instance):
+
+        ret = super(GenericSuiteDataSerializer, self).to_representation(instance)
+
+        # set picture to MEDIA_URL
+        media_url = getattr(settings, 'MEDIA_URL', '/media/')
+        ret['suite_logo'] = '%s%s' % (media_url, instance.suite_logo)
+
+        # Add reset password is settings.RESET_USER_PASSWORD
+        if settings.RESET_USER_PASSWORD:
+            ret['reset_password_url'] = reverse('password_reset')
+
+        # add login_url and logout_url to view
+        login_url = getattr(settings, 'LOGIN_URL')
+        if login_url:
+            ret['login_url'] = settings.LOGIN_URL
+            ret['logout_url'] = reverse('logout')
+
+        return ret
+
+    class Meta:
+        model = GeneralSuiteData
+        fields = '__all__'
