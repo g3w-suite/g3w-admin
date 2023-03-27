@@ -1,36 +1,50 @@
 """
-G3W-ADMIN URL Configuration
+G3W-ADMIN URL configuration
 """
-from django.urls import path, include, re_path
-from django.contrib import admin, auth
+
+__author__    = 'lorenzetti@gis3w.it'
+__copyright__ = 'Copyright 2015 - 2023, Gis3w'
+__license__   = "MPL 2.0"
+
 from django.conf import settings
 from django.conf.urls.static import static
 from django.conf.urls.i18n import i18n_patterns
-from django.views.i18n import JavaScriptCatalog
-from ajax_select import urls as ajax_select_urls
+from django.contrib import admin, auth
 from django.contrib.staticfiles import views
+from django.urls import path, include, re_path
+from django.views.i18n import JavaScriptCatalog
 
-try:
-    from qgis.core import *
-except:
-    pass
+from ajax_select import urls as ajax_select_urls
 
-
-# if frontend is set
-base = BASE_ADMIN_URLPATH = 'admin/' if hasattr(settings, 'FRONTEND') and settings.FRONTEND else ''
-
-G3W_SITETREE_I18N_ALIAS = ['core', 'acl']
-
-#jsInfoDict = {
+# jsInfoDict = {
 #    'domain': 'djangojs',
 #    'packages': ('core', 'usersmanage', 'client', 'editing'),
-#}
+# }
+
+G3W_SITETREE_I18N_ALIAS = ['core', 'acl']
 
 extra_context_login_page = {
     'adminlte_skin': 'login-page',
     'adminlte_layout_option': None
 }
 
+#############################################################
+# QGIS API
+#############################################################
+try:
+    from qgis.core import *
+except:
+    pass
+
+#############################################################
+# HOME PAGE (frontend app)
+#############################################################
+# TODO: remove duplicate variable assignment? ( base = BASE_ADMIN_URLPATH )
+base = BASE_ADMIN_URLPATH = 'admin/' if hasattr(settings, 'FRONTEND') and settings.FRONTEND else ''
+
+#############################################################
+# DEFAULT ROUTES
+#############################################################
 urlpatterns = [
     path(
         'i18n/',
@@ -77,7 +91,9 @@ urlpatterns = [
     )
 ]
 
-# Add path/url for user password rest by email
+#############################################################
+# PASSWORD RESET (user password reset by email)
+#############################################################
 if settings.RESET_USER_PASSWORD:
     urlpatterns += [
         path(
@@ -112,6 +128,9 @@ if settings.RESET_USER_PASSWORD:
         ),
     ]
 
+#############################################################
+# API URLs
+#############################################################
 apiUrlpatterns = [
     path('', include('client.apiurls')),
     path('', include('core.apiurls'))
@@ -120,9 +139,12 @@ apiUrlpatterns = [
 if BASE_ADMIN_URLPATH == 'admin/':
     urlpatterns.append(path('', include('{}.urls'.format(settings.FRONTEND_APP))))
 
-#adding projects app
-#if BASE_ADMIN_URLPATH:
-    #base = BASE_ADMIN_URLPATH[0:-1]
+#############################################################
+# BUILT-IN PLUGINS (project apps)
+#############################################################
+
+# if BASE_ADMIN_URLPATH:
+#    base = BASE_ADMIN_URLPATH[0:-1]
 
 for app in settings.G3WADMIN_PROJECT_APPS:
     urlpatterns.append(path('{}{}/'.format(BASE_ADMIN_URLPATH, app), include('{}.urls'.format(app))))
@@ -131,7 +153,9 @@ for app in settings.G3WADMIN_PROJECT_APPS:
     except Exception as e:
         pass
 
-# adding local_more_apps
+#############################################################
+# CUSTOM PLUGINS (local more apps)
+#############################################################
 for app in settings.G3WADMIN_LOCAL_MORE_APPS:
     if app == settings.FRONTEND_APP:
         pass
@@ -153,42 +177,43 @@ for app in settings.G3WADMIN_LOCAL_MORE_APPS:
         print(e)
         pass
 
+# TODO: move this section at the bottom of the file
+#############################################################
+# DEV ROUTES
+#############################################################
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
-
+#############################################################
+# ROOT FOLDER (site prefix)
+#############################################################
 if settings.SITE_PREFIX_URL:
-    urlpatterns = [
-        path('{}'.format(settings.SITE_PREFIX_URL), include(urlpatterns))
-    ]
+    urlpatterns    = [ path('{}'.format(settings.SITE_PREFIX_URL), include(urlpatterns)) ]
+    apiUrlpatterns = [ path('{}'.format(settings.SITE_PREFIX_URL), include(apiUrlpatterns)) ]
 
+#############################################################
+# LOCALIZE ROUTES (urls translations)
+#############################################################
 urlpatterns = i18n_patterns(*urlpatterns, prefix_default_language=settings.PREFIX_DEFAULT_LANGUAGE)
 
+#############################################################
+# OWS ROUTES
+#############################################################
+urlows = [ path('', include('OWS.urls')) ]
 
 if settings.SITE_PREFIX_URL:
-    apiUrlpatterns = [
-        path('{}'.format(settings.SITE_PREFIX_URL), include(apiUrlpatterns))
-    ]
-
+    urlows = [ path('{}'.format(settings.SITE_PREFIX_URL), include(urlows)) ]
 
 urlpatterns += apiUrlpatterns
-
-urlows = [path('', include('OWS.urls'))]
-
-
-if settings.SITE_PREFIX_URL:
-    urlows = [
-        path('{}'.format(settings.SITE_PREFIX_URL), include(urlows))
-    ]
-
-
 urlpatterns += urlows
 
+# TODO: move this include dependency at the top of the file
 from sitetree.sitetreeapp import register_i18n_trees
 
+# TODO: move this setting under LOCALIZE ROUTES section
 register_i18n_trees(G3W_SITETREE_I18N_ALIAS)
 
+
+# TODO: move this setting under DEV ROUTES section
 if settings.DEBUG:
-    urlpatterns += [
-        re_path(r'^static/(?P<path>.*)$', views.serve),
-    ]
+    urlpatterns += [ re_path(r'^static/(?P<path>.*)$', views.serve) ]
