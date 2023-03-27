@@ -59,7 +59,7 @@ class FilemanagerApiTest(BaseFilemanagerTestCase):
         self.assertEqual(res.status_code, 200)
         jres = json.loads(res.content)
 
-        self.assertEqual(len(jres['data']), 3)
+        self.assertEqual(len(jres['data']), 4)
         for d in jres['data']:
             if d['id'] == '/file2_test.txt':
                 self.assertEqual(d['id'], "/file2_test.txt")
