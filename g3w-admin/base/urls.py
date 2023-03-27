@@ -162,6 +162,7 @@ for app in settings.G3WADMIN_PROJECT_APPS:
 # CUSTOM PLUGINS (local more apps)
 #############################################################
 for app in settings.G3WADMIN_LOCAL_MORE_APPS:
+
     if app == settings.FRONTEND_APP:
         pass
     else:
@@ -171,6 +172,7 @@ for app in settings.G3WADMIN_LOCAL_MORE_APPS:
         except:
             base_url_app = app
         urlpatterns.append(path('{}{}/'.format(BASE_ADMIN_URLPATH, base_url_app), app_urls))
+
     try:
         app_urls = (urlconf_module, app_name, namespace) = include('{}.apiurls'.format(app))
         try:
@@ -183,7 +185,7 @@ for app in settings.G3WADMIN_LOCAL_MORE_APPS:
         pass
 
 #############################################################
-# ROOT FOLDER (site prefix)
+# SITE PREFIX
 #############################################################
 if settings.SITE_PREFIX_URL:
     urlpatterns    = [ path('{}'.format(settings.SITE_PREFIX_URL), include(urlpatterns)) ]
@@ -197,7 +199,7 @@ if settings.DEBUG:
     urlpatterns += [ re_path(r'^static/(?P<path>.*)$', views.serve) ]
 
 #############################################################
-# LOCALIZE ROUTES (urls translations)
+# LOCALIZED ROUTES
 #############################################################
 urlpatterns = i18n_patterns(*urlpatterns, prefix_default_language=settings.PREFIX_DEFAULT_LANGUAGE)
 
