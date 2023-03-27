@@ -154,11 +154,21 @@ if BASE_ADMIN_URLPATH == 'admin/':
 for app in settings.G3WADMIN_PROJECT_APPS:
 
     # urls.py
-    urlpatterns.append(path('{}{}/'.format(BASE_ADMIN_URLPATH, app), include('{}.urls'.format(app))))
+    urlpatterns.append(
+        path(
+            '{}{}/'.format(BASE_ADMIN_URLPATH, app),
+             include('{}.urls'.format(app))
+        )
+    )
 
     # apiurls.py
     try:
-        apiUrlpatterns.append(path('{}/'.format(app), include('{}.apiurls'.format(app))))
+        apiUrlpatterns.append(
+            path(
+                '{}/'.format(app),
+                include('{}.apiurls'.format(app))
+            )
+        )
     except Exception as e:
         pass
 
@@ -170,22 +180,23 @@ for app in settings.G3WADMIN_LOCAL_MORE_APPS:
     # urls.py
     if app != settings.FRONTEND_APP:
         app_urls = (urlconf_module, app_name, namespace) = include('{}.urls'.format(app))
-        try:
-            base_url_app = urlconf_module.BASE_URLS
-        except:
-            base_url_app = app
-        urlpatterns.append(path('{}{}/'.format(BASE_ADMIN_URLPATH, base_url_app), app_urls))
+        urlpatterns.append(
+            path(
+                '{}{}/'.format(BASE_ADMIN_URLPATH, app if not hasattr(urlconf_module, 'BASE_URLS') else urlconf_module.BASE_URLS),
+                app_urls
+            )
+        )
 
     # apiurls.py
     try:
         app_urls = (urlconf_module, app_name, namespace) = include('{}.apiurls'.format(app))
-        try:
-            base_url_app = urlconf_module.BASE_URLS
-        except:
-            base_url_app = app
-        apiUrlpatterns.append(path('{}/'.format(base_url_app), app_urls))
+        apiUrlpatterns.append(
+            path(
+                '{}/'.format(app if not hasattr(urlconf_module, 'BASE_URLS') else urlconf_module.BASE_URLS),
+                app_urls
+            )
+        )
     except Exception as e:
-        print(e)
         pass
 
 #############################################################
