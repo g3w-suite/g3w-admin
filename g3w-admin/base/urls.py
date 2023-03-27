@@ -17,6 +17,12 @@ from django.views.i18n import JavaScriptCatalog
 from ajax_select import urls as ajax_select_urls
 from sitetree.sitetreeapp import register_i18n_trees
 
+# urls.py
+urlpatterns    = []
+
+# apiurls.py
+apiUrlpatterns = []
+
 # jsInfoDict = {
 #    'domain': 'djangojs',
 #    'packages': ('core', 'usersmanage', 'client', 'editing'),
@@ -43,10 +49,13 @@ except:
 # TODO: remove duplicate variable assignment? ( base = BASE_ADMIN_URLPATH )
 base = BASE_ADMIN_URLPATH = 'admin/' if hasattr(settings, 'FRONTEND') and settings.FRONTEND else ''
 
+if BASE_ADMIN_URLPATH == 'admin/':
+    urlpatterns += [ path('', include('{}.urls'.format(settings.FRONTEND_APP))) ]
+
 #############################################################
 # DEFAULT ROUTES
 #############################################################
-urlpatterns = [
+urlpatterns += [
     path(
         'i18n/',
         include('django.conf.urls.i18n')
@@ -136,13 +145,10 @@ if settings.RESET_USER_PASSWORD:
 #############################################################
 # API URLs
 #############################################################
-apiUrlpatterns = [
+apiUrlpatterns += [
     path('', include('client.apiurls')),
     path('', include('core.apiurls'))
 ]
-
-if BASE_ADMIN_URLPATH == 'admin/':
-    urlpatterns.append(path('', include('{}.urls'.format(settings.FRONTEND_APP))))
 
 #############################################################
 # BUILT-IN PLUGINS (project apps)
