@@ -1,4 +1,5 @@
 ![G3W-Suite CI Tests](https://github.com/g3w-suite/g3w-admin/actions/workflows/test_runner.yml/badge.svg)
+[![License](https://img.shields.io/badge/license-MPL%202-blue.svg?style=flat)](LICENSE)
 
 # G3W-ADMIN
 
@@ -158,12 +159,12 @@ Any additional package must be placed into the [`/g3w-admin/g3w-admin`](./g3w-ad
 
 ## Testing
 
-Automated tests are performed on both latest QGIS release and current QGIS LTR (v3.22) for any push event involving the [`dev`](https://github.com/g3w-suite/g3w-admin/tree/dev) branch.
+Automated tests are performed on both latest QGIS release and current QGIS LTR (v3.28) for any push event involving the [`dev`](https://github.com/g3w-suite/g3w-admin/tree/dev) branch.
 
 The Dockerfile and docker-compose.yml files used to perform these tests are:
 
 - [Dockerfile.deps](ci_scripts/Dockerfile.deps) + [docker-compose.yml](docker-compose.yml) → latest QGIS release
-- [Dockerfile.322.deps](ci_scripts/Dockerfile.322.deps) + [docker-compose.322.yml](docker-compose.322.yml) → current QGIS LTR (v3.22)
+- [Dockerfile.ltr.deps](ci_scripts/Dockerfile.ltr.deps) + [docker-compose.ltr.yml](docker-compose.ltr.yml) → current QGIS LTR (v3.28)
 
 Execution log: [github.com/g3w-suite/g3w-admin/actions](https://github.com/g3w-suite/g3w-admin/actions)
 
@@ -208,7 +209,7 @@ Depending on the component you want to translate you can start by consulting one
 
 **Compatibile with:**
 [![Django version](https://img.shields.io/badge/Django-2.2-1EB300.svg?style=flat)](https://www.djangoproject.com/download/)
-[![QGIS version](https://img.shields.io/badge/QGIS%20LTR-3.22-1EB300.svg?style=flat)](https://www.qgis.org/en/site/forusers/download.html)
+[![QGIS version](https://img.shields.io/badge/QGIS%20LTR-3.28-1EB300.svg?style=flat)](https://www.qgis.org/en/site/forusers/download.html)
 
 ---
 
