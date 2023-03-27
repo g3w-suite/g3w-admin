@@ -19,13 +19,13 @@
   </projectCrs>
   <layer-tree-group>
     <customproperties/>
-    <layer-tree-layer source="dbname='../data/portal_test_project.sqlite' table=&quot;layer1&quot; (geometry) sql=" id="layer1_c0145e37_dfa9_4dbc_bdcb_0e16b892c454" expanded="1" providerKey="spatialite" checked="Qt::Checked" name="layer1">
+    <layer-tree-layer source="dbname='../data/about_test_project.sqlite' table=&quot;layer1&quot; (geometry) sql=" id="layer1_c0145e37_dfa9_4dbc_bdcb_0e16b892c454" expanded="1" providerKey="spatialite" checked="Qt::Checked" name="layer1">
       <customproperties/>
     </layer-tree-layer>
-    <layer-tree-layer source="dbname='../data/portal_test_project.sqlite' table=&quot;layer2&quot; (geometry) sql=" id="layer2_8bd7df51_1eb1_4a00_9026_90ebf858ddb8" expanded="1" providerKey="spatialite" checked="Qt::Checked" name="layer2">
+    <layer-tree-layer source="dbname='../data/about_test_project.sqlite' table=&quot;layer2&quot; (geometry) sql=" id="layer2_8bd7df51_1eb1_4a00_9026_90ebf858ddb8" expanded="1" providerKey="spatialite" checked="Qt::Checked" name="layer2">
       <customproperties/>
     </layer-tree-layer>
-    <layer-tree-layer source="dbname='../data/portal_test_project.sqlite' table=&quot;layer3&quot; (geometry) sql=" id="layer3_20816618_977f_442a_9270_e95ee0c5202a" expanded="1" providerKey="spatialite" checked="Qt::Checked" name="layer3">
+    <layer-tree-layer source="dbname='../data/about_test_project.sqlite' table=&quot;layer3&quot; (geometry) sql=" id="layer3_20816618_977f_442a_9270_e95ee0c5202a" expanded="1" providerKey="spatialite" checked="Qt::Checked" name="layer3">
       <customproperties/>
     </layer-tree-layer>
     <custom-order enabled="0">
@@ -156,7 +156,7 @@
   <projectlayers>
     <maplayer labelsEnabled="0" geometry="Point" minScale="1e+08" autoRefreshTime="0" styleCategories="AllStyleCategories" type="vector" readOnly="0" hasScaleBasedVisibilityFlag="0" maxScale="0" simplifyLocal="1" simplifyDrawingTol="1" simplifyMaxScale="1" refreshOnNotifyEnabled="0" simplifyDrawingHints="1" autoRefreshEnabled="0" refreshOnNotifyMessage="" simplifyAlgorithm="0">
       <id>layer1_c0145e37_dfa9_4dbc_bdcb_0e16b892c454</id>
-      <datasource>dbname='../data/portal_test_project.sqlite' table="layer1" (geometry) sql=</datasource>
+      <datasource>dbname='../data/about_test_project.sqlite' table="layer1" (geometry) sql=</datasource>
       <keywordList>
         <value></value>
       </keywordList>
@@ -312,7 +312,7 @@
         <ymax>0.32307692307692304</ymax>
       </extent>
       <id>layer2_8bd7df51_1eb1_4a00_9026_90ebf858ddb8</id>
-      <datasource>dbname='../data/portal_test_project.sqlite' table="layer2" (geometry) sql=</datasource>
+      <datasource>dbname='../data/about_test_project.sqlite' table="layer2" (geometry) sql=</datasource>
       <keywordList>
         <value></value>
       </keywordList>
@@ -464,7 +464,7 @@
         <ymax>0.7367521367521368</ymax>
       </extent>
       <id>layer3_20816618_977f_442a_9270_e95ee0c5202a</id>
-      <datasource>dbname='../data/portal_test_project.sqlite' table="layer3" (geometry) sql=</datasource>
+      <datasource>dbname='../data/about_test_project.sqlite' table="layer3" (geometry) sql=</datasource>
       <keywordList>
         <value></value>
       </keywordList>
