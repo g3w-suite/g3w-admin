@@ -57,6 +57,10 @@ urlpatterns = [
         include('client.urls')
     ),
     path(
+        '',
+        include('about.urls')
+    ),
+    path(
         'login/',
         auth.views.LoginView.as_view(template_name='login.html', extra_context=extra_context_login_page),
         name='login'

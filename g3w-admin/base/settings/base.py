@@ -62,6 +62,7 @@ THIRD_PARTY_APPS = [
     'huey.contrib.djhuey',
     'bx_py_utils',  # required by huey_monitor
     'huey_monitor',
+    'about'
 ]
 
 G3WADMIN_APPS = [
