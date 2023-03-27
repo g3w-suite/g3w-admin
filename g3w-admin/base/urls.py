@@ -15,6 +15,7 @@ from django.urls import path, include, re_path
 from django.views.i18n import JavaScriptCatalog
 
 from ajax_select import urls as ajax_select_urls
+from sitetree.sitetreeapp import register_i18n_trees
 
 # jsInfoDict = {
 #    'domain': 'djangojs',
@@ -88,7 +89,11 @@ urlpatterns = [
     path(
         'ajax_select/',
         include(ajax_select_urls)
-    )
+    ),
+    path(
+        '{}'.format(settings.SITE_PREFIX_URL if settings.SITE_PREFIX_URL else ''),
+        include('OWS.urls')
+    ),
 ]
 
 #############################################################
@@ -177,13 +182,6 @@ for app in settings.G3WADMIN_LOCAL_MORE_APPS:
         print(e)
         pass
 
-# TODO: move this section at the bottom of the file
-#############################################################
-# DEV ROUTES
-#############################################################
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
 #############################################################
 # ROOT FOLDER (site prefix)
 #############################################################
@@ -192,28 +190,17 @@ if settings.SITE_PREFIX_URL:
     apiUrlpatterns = [ path('{}'.format(settings.SITE_PREFIX_URL), include(apiUrlpatterns)) ]
 
 #############################################################
+# DEV ROUTES
+#############################################################
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += [ re_path(r'^static/(?P<path>.*)$', views.serve) ]
+
+#############################################################
 # LOCALIZE ROUTES (urls translations)
 #############################################################
 urlpatterns = i18n_patterns(*urlpatterns, prefix_default_language=settings.PREFIX_DEFAULT_LANGUAGE)
 
-#############################################################
-# OWS ROUTES
-#############################################################
-urlows = [ path('', include('OWS.urls')) ]
-
-if settings.SITE_PREFIX_URL:
-    urlows = [ path('{}'.format(settings.SITE_PREFIX_URL), include(urlows)) ]
-
 urlpatterns += apiUrlpatterns
-urlpatterns += urlows
 
-# TODO: move this include dependency at the top of the file
-from sitetree.sitetreeapp import register_i18n_trees
-
-# TODO: move this setting under LOCALIZE ROUTES section
 register_i18n_trees(G3W_SITETREE_I18N_ALIAS)
-
-
-# TODO: move this setting under DEV ROUTES section
-if settings.DEBUG:
-    urlpatterns += [ re_path(r'^static/(?P<path>.*)$', views.serve) ]
