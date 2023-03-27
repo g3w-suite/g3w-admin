@@ -106,10 +106,10 @@ class FilemanagerApiTest(BaseFilemanagerTestCase):
                         "height":0,
                         "width":0,
                         "size":0,
-                        "path":"/home/walter/PycharmProjects/g3w_suite_qgis_api/g3w-admin/filemanager/tests/data/folder_broken/img_broken.jpg",
-                        "created":1679899483,
-                        "modified":1679899483,
-                        "timestamp":1679899483
+                        "path":f"{CURRENT_PATH}{TEST_BASE_PATH}folder_broken/img_broken.jpg",
+                        "created":1679904629,
+                        "modified":1679904629,
+                        "timestamp":1679904629
                      }
                   },
                   {
@@ -123,10 +123,10 @@ class FilemanagerApiTest(BaseFilemanagerTestCase):
                         "height":100,
                         "width":100,
                         "size":4536,
-                        "path":"/home/walter/PycharmProjects/g3w_suite_qgis_api/g3w-admin/filemanager/tests/data/folder_broken/g3wsuite_logo_rid.png",
-                        "created":1679899704,
-                        "modified":1517672222,
-                        "timestamp":1517672222
+                        "path":f"{CURRENT_PATH}{TEST_BASE_PATH}folder_broken/g3wsuite_logo_rid.png",
+                        "created":1679904629,
+                        "modified":1679904629,
+                        "timestamp":1679904629
                      }
                   }
                ]
