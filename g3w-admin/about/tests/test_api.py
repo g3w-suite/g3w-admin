@@ -18,7 +18,6 @@ from rest_framework.test import APIClient
 from usersmanage.models import User, Group as UserGroup
 from core.models import Group as CoreGroup, G3WSpatialRefSys, MacroGroup, GroupProjectPanoramic
 from qdjango.utils.data import QgisProject
-from portal.models import Picture
 import os
 import json
 
