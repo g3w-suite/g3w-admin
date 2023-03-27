@@ -75,3 +75,66 @@ class FilemanagerApiTest(BaseFilemanagerTestCase):
 
         client.logout()
 
+    def test_broken_image_folder(self):
+        """
+        With a broken image, the reading fo a folder fail with a NOTALLOWED response.
+        Test the fix.
+        """
+
+        client = Client()
+        client.login(username=self.test_admin1.username, password=self.test_admin1.username)
+
+        # TEST GET FILES
+        # --------------
+        url = reverse('filemanager-logic')
+        url = f'{url}?mode=readfolder&path=/folder_broken/'
+
+        res = client.get(url)
+        self.assertEqual(res.status_code, 200)
+        jres = json.loads(res.content)
+
+        to_compare = {
+           "data":[
+                  {
+                     "id":"/folder_broken/img_broken.jpg",
+                     "type":"file",
+                     "attributes":{
+                        "name":"img_broken.jpg",
+                        "readable":1,
+                        "writable":1,
+                        "extension":"jpg",
+                        "height":0,
+                        "width":0,
+                        "size":0,
+                        "path":"/home/walter/PycharmProjects/g3w_suite_qgis_api/g3w-admin/filemanager/tests/data/folder_broken/img_broken.jpg",
+                        "created":1679899483,
+                        "modified":1679899483,
+                        "timestamp":1679899483
+                     }
+                  },
+                  {
+                     "id":"/folder_broken/g3wsuite_logo_rid.png",
+                     "type":"file",
+                     "attributes":{
+                        "name":"g3wsuite_logo_rid.png",
+                        "readable":1,
+                        "writable":1,
+                        "extension":"png",
+                        "height":100,
+                        "width":100,
+                        "size":4536,
+                        "path":"/home/walter/PycharmProjects/g3w_suite_qgis_api/g3w-admin/filemanager/tests/data/folder_broken/g3wsuite_logo_rid.png",
+                        "created":1679899704,
+                        "modified":1517672222,
+                        "timestamp":1517672222
+                     }
+                  }
+               ]
+            }
+
+        self.assertEqual(jres, to_compare)
+
+        client.logout()
+
+
+
