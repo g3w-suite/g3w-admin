@@ -54,7 +54,7 @@ urlpatterns = [
     ),
 
     #############################################################
-    # G3W-ADMIN api for change ordering of gorup and macrogorup
+    # G3W-ADMIN api for change ordering of group and macrogorup
     #############################################################
     path(
         'jx/groups/<int:group_id>/setorder/',
@@ -80,10 +80,9 @@ urlpatterns = [
     #############################################################
     # QGIS EXPRESSION EVALUATION API
     #
-    # POST only method to return QGIS Expressions
-    # evaluated in Project an optional Layer/Form
-    # context (passing form_data and qgs_layer_id
-    # in the post body)
+    # POST only method to return QGIS Expressions evaluated in
+    # Project an optional Layer/Form context (passing form_data
+    # and qgs_layer_id in the post body)
     #############################################################
     path(
         'api/expression_eval/<int:project_id>/',
@@ -92,8 +91,7 @@ urlpatterns = [
     ),
 
     #############################################################
-    # General proxy view for Client external calls,
-    # i.e. for COORS.
+    # General proxy view for Client external calls, i.e. for CORS
     #############################################################
     path(
         'interface/proxy/',
@@ -102,8 +100,8 @@ urlpatterns = [
     ),
 
     #############################################################
-    # Interface API to get information, layer,
-    # styles to a ows services
+    # Interface API to get information, layer, styles to OWS
+    # services
     #############################################################
     path(
         'interface/ows/',
