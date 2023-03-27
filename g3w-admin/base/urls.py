@@ -153,6 +153,11 @@ apiUrlpatterns += [
 #############################################################
 # BUILT-IN PLUGINS (project apps)
 #############################################################
+# Mapping rules:
+#
+# qdjango/urls.py      -->   admin/qdjango/*
+# qdjango/apiurls.py   -->   qdjango/*
+#############################################################
 
 # if BASE_ADMIN_URLPATH:
 #    base = BASE_ADMIN_URLPATH[0:-1]
@@ -180,6 +185,11 @@ for app in settings.G3WADMIN_PROJECT_APPS:
 
 #############################################################
 # CUSTOM PLUGINS (local more apps)
+#############################################################
+# Mapping rules:
+#
+# editing/urls.py      -->   admin/editing/*
+# editing/apiurls.py   -->   editing/*
 #############################################################
 for app in settings.G3WADMIN_LOCAL_MORE_APPS:
 
