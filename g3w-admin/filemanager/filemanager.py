@@ -92,7 +92,7 @@ class FileManager:
         folder_path     = os.path.join(self.root, folder)
         data            = []
 
-        # check fro projects, not ALLOWED
+        # check for projects, not ALLOWED
         if folder_path == PROJECTS_PATH:
             return self.fileManagerError(path=folder, title="NOT_ALLOWED")
 

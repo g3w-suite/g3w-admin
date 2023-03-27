@@ -59,7 +59,7 @@ class FilemanagerApiTest(BaseFilemanagerTestCase):
         self.assertEqual(res.status_code, 200)
         jres = json.loads(res.content)
 
-        self.assertEqual(len(jres['data']), 3)
+        self.assertEqual(len(jres['data']), 4)
         for d in jres['data']:
             if d['id'] == '/file2_test.txt':
                 self.assertEqual(d['id'], "/file2_test.txt")
@@ -74,4 +74,51 @@ class FilemanagerApiTest(BaseFilemanagerTestCase):
                 self.assertEqual(d['type'], "folder")
 
         client.logout()
+
+    def test_broken_image_folder(self):
+        """
+        With a broken image, the reading fo a folder fail with a NOTALLOWED response.
+        Test the fix.
+        """
+
+        client = Client()
+        client.login(username=self.test_admin1.username, password=self.test_admin1.username)
+
+        # TEST GET FILES
+        # --------------
+        url = reverse('filemanager-logic')
+        url = f'{url}?mode=readfolder&path=/folder_broken/'
+
+        res = client.get(url)
+        self.assertEqual(res.status_code, 200)
+        jres = json.loads(res.content)
+
+        for d in jres['data']:
+            if d['id'] == "/folder_broken/g3wsuite_logo_rid.png":
+                self.assertEqual(d['id'], "/folder_broken/g3wsuite_logo_rid.png")
+                self.assertEqual(d['type'], "file")
+                self.assertEqual(d['attributes']['name'], "g3wsuite_logo_rid.png")
+                self.assertEqual(d['attributes']['readable'], 1)
+                self.assertEqual(d['attributes']['writable'], 1)
+                self.assertEqual(d['attributes']['extension'], "png")
+                self.assertEqual(d['attributes']["height"], 100)
+                self.assertEqual(d['attributes']["width"], 100)
+                self.assertEqual(d['attributes']["size"], 4536)
+                self.assertEqual(d['attributes']['path'], f"{CURRENT_PATH}{TEST_BASE_PATH}folder_broken/g3wsuite_logo_rid.png")
+            else:
+                self.assertEqual(d['id'], '/folder_broken/img_broken.jpg')
+                self.assertEqual(d['type'], "file")
+                self.assertEqual(d['attributes']['name'], "img_broken.jpg")
+                self.assertEqual(d['attributes']['readable'], 1)
+                self.assertEqual(d['attributes']['writable'], 1)
+                self.assertEqual(d['attributes']['extension'], "jpg")
+                self.assertEqual(d['attributes']["height"], 0)
+                self.assertEqual(d['attributes']["width"], 0)
+                self.assertEqual(d['attributes']["size"], 0)
+                self.assertEqual(d['attributes']['path'],
+                                 f"{CURRENT_PATH}{TEST_BASE_PATH}folder_broken/img_broken.jpg")
+
+        client.logout()
+
+
 
