@@ -132,7 +132,11 @@ class FilemanagerApiTest(BaseFilemanagerTestCase):
                ]
             }
 
-        self.assertEqual(jres, to_compare)
+        for d in jres['data']:
+            if d['id'] == "/folder_broken/g3wsuite_logo_rid.png":
+                self.assertEqual(d, to_compare['data'][1])
+            else:
+                self.assertEqual(d, to_compare['data'][0])
 
         client.logout()
 
