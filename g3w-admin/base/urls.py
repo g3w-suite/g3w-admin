@@ -152,7 +152,9 @@ if BASE_ADMIN_URLPATH == 'admin/':
 #    base = BASE_ADMIN_URLPATH[0:-1]
 
 for app in settings.G3WADMIN_PROJECT_APPS:
+
     urlpatterns.append(path('{}{}/'.format(BASE_ADMIN_URLPATH, app), include('{}.urls'.format(app))))
+
     try:
         apiUrlpatterns.append(path('{}/'.format(app), include('{}.apiurls'.format(app))))
     except Exception as e:
@@ -163,9 +165,7 @@ for app in settings.G3WADMIN_PROJECT_APPS:
 #############################################################
 for app in settings.G3WADMIN_LOCAL_MORE_APPS:
 
-    if app == settings.FRONTEND_APP:
-        pass
-    else:
+    if app != settings.FRONTEND_APP:
         app_urls = (urlconf_module, app_name, namespace) = include('{}.urls'.format(app))
         try:
             base_url_app = urlconf_module.BASE_URLS
