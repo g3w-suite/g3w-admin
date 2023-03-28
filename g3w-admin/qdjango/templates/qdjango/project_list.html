@@ -91,12 +91,6 @@
                                 <a href="{% url 'qdjango-project-download' group.slug object.slug %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Download' %}" ><i class="ion ion-android-download"></i></a>
                             </span>
 
-                            <!-- TODO: write better qgis project file update
-                            <span class="col-xs-2 icon">
-                                <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Upload' %}" data-widget-type="ajaxFiler" data-modal-title="{% trans 'Upload qgis project file' %}" data-action-url="{% url 'qdjango-project-fast-update' group.slug object.slug %}"  ><i class="ion ion-android-upload"></i></a>
-                            </span>
-                            -->
-
                             {% endif %}
                             <span class="col-xs-2 icon">
                                 <a href="#" data-widget-type="showWEBServices" data-api-url="{% url 'qdjango-webservice-api-list' object.pk %}" data-toggle="tooltip" data-placement="top" title="{% trans 'WEB services available' %}" ><i class="ion ion-android-globe"></i></a>

@@ -1,24 +1,21 @@
-
-# coding=utf-8
-""""URLs for Openrouteservice admin views (see apiurls for APIs)
-
-.. note:: This program is free software; you can redistribute it and/or modify
-          it under the terms of the Mozilla Public License 2.0.
-
 """
+Add your API routes here.
+"""
+# API ROOT: /:lang/admin/
 
-__author__ = 'elpaso@itopen.it'
-__date__ = '2021-03-30'
-__copyright__ = 'Copyright 2021, Gis3W'
-
-
+__author__    = 'elpaso@itopen.it'
+__date__      = '2021-03-30'
+__copyright__ = 'Copyright 2021, ItOpen'
+__license__   = "MPL 2.0"
 
 from django.urls import path
-from .views import *
 from django.contrib.auth.decorators import login_required
+
+from .views import *
 
 
 urlpatterns = [
+
     path(
         'openrouteservice/projects/',
          login_required(OpenrouteserviceProjectList.as_view()),
@@ -42,4 +39,5 @@ urlpatterns = [
         login_required(OpenrouteserviceProjectDelete.as_view()),
         name='ors-project-delete'
     ),
+
 ]
