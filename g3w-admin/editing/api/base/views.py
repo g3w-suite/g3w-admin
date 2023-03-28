@@ -377,7 +377,7 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                             fnames = [f.name() for f in feature.fields()]
                             jfeature = json.loads(ex.exportFeature(feature, dict(zip(fnames, feature.attributes()))))
 
-                            # Fore date and datetime and time fields:
+                            # For date and datetime and time fields:
                             if field_datetime_values:
                                 for fname, fvalue in jfeature['properties'].items():
                                     try:
