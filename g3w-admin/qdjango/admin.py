@@ -224,3 +224,8 @@ class LayerAclAdmin(admin.ModelAdmin):
 
 
 admin.site.register(LayerAcl, LayerAclAdmin)
+
+class MesaageAdmin(admin.ModelAdmin):
+    model = Message
+
+admin.site.register(Message, MesaageAdmin)
