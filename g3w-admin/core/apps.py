@@ -12,5 +12,9 @@ class CoreConfig(AppConfig):
     f = settings.CLIENT_G3WSUITE_LOGO
     frm = f"{os.path.dirname(__file__)}/static/img/{f}"
     dst = f"{settings.MEDIA_ROOT}logo_img/"
+
     if not os.path.exists(f"{dst}{f}"):
+        # Before check if directory `logo_img` exists
+        if not os.path.exists(dst):
+            os.mkdir(dst)
         shutil.copy(frm, dst)
