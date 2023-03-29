@@ -104,6 +104,10 @@ jobs:
       run: |
         docker-compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test qtimeseries"
 
+    - name:  Running g3w-admin about tests
+      run: |
+        docker-compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test about"
+
     - name: Setup tmate session
       if: ${{ failure() }}
       uses: mxschmitt/action-tmate@v3
