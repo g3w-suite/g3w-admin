@@ -153,6 +153,15 @@ urlpatterns = [
         name='fitler-by-user-layer'
     ),
 
+    #############################################################
+    # Messages CRUD
+    #############################################################
+
+    re_path(
+        r'^(?P<group_slug>[-_\w\d]+)/projects/(?P<project_slug>[-_\w\d]+)/messages/$',
+        login_required(QdjangoMessageListView.as_view()),
+        name='qdjango-project-messages-list'
+    ),
 ]
 
 
