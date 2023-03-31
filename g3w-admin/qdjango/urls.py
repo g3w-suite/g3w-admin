@@ -162,6 +162,21 @@ urlpatterns = [
         login_required(QdjangoMessageListView.as_view()),
         name='qdjango-project-messages-list'
     ),
+    re_path(
+        r'^(?P<group_slug>[-_\w\d]+)/projects/(?P<project_slug>[-_\w\d]+)/messages/add/$',
+        login_required(QdjangoMessageListView.as_view()),
+        name='qdjango-project-messages-update'
+    ),
+    re_path(
+        r'^(?P<group_slug>[-_\w\d]+)/projects/(?P<project_slug>[-_\w\d]+)/messages/update/(?P<pk>[0-9]+)/$',
+        login_required(QdjangoMessageListView.as_view()),
+        name='qdjango-project-messages-update'
+    ),
+    re_path(
+        r'^(?P<group_slug>[-_\w\d]+)/projects/(?P<project_slug>[-_\w\d]+)/messages/delete/(?P<pk>[0-9]+)/$',
+        login_required(QdjangoMessageListView.as_view()),
+        name='qdjango-project-messages-delete'
+    ),
 ]
 
 
