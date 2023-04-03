@@ -29,6 +29,13 @@ from qgis.core import (
     QgsJsonUtils,
 )
 
+
+from qgis.PyQt.QtCore import (
+    QDate,
+    QDateTime,
+    QTime
+)
+
 from django.utils.translation import ugettext_lazy as _
 from qdjango.apps import get_qgs_project
 from qdjango.models import Layer, Project
@@ -432,7 +439,8 @@ class ExpressionForbiddenError(Exception):
     pass
 
 
-def expression_eval(expression_text, project_id=None, qgs_layer_id=None, form_data=None, formatter=0, parent=None):
+def expression_eval(expression_text, project_id=None, qgs_layer_id=None, form_data=None, formatter=0, parent=None,
+                    field_name=None):
     """Evaluates a QgsExpression and returns the result
 
     :param expression_text: The QgsExpression text
@@ -446,6 +454,7 @@ def expression_eval(expression_text, project_id=None, qgs_layer_id=None, form_da
     :param formatter: Indicate if form_data values contains formatter values or original features value.
     :type formatter: int, optional
     :param parent: A dictionary that maps to a GeoJSON representation of the parent feature of feature currently edited
+    :param field_name: A string with field name to which the expression belongs.
     in the form and parent QGIS Layer, default to None
     :type parent: dict, optional
     """
@@ -570,5 +579,14 @@ def expression_eval(expression_text, project_id=None, qgs_layer_id=None, form_da
 
     if expression.hasEvalError():
         raise ExpressionEvalError(expression.evalErrorString())
+
+    # Formatting result if it is instance of QDate, QDateTime, QTime
+    if isinstance(result, (QDate, QDateTime, QTime)):
+        try:
+            options = layer.qgis_layer.editorWidgetSetup(layer.qgis_layer.fields().indexFromName(field_name)).config()
+            result = result.toString(options['field_format'])
+        except:
+            result = result.toString()
+
 
     return result
