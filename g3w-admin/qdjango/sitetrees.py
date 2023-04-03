@@ -11,7 +11,9 @@ sitetrees = (
       item('Agg. progetto QGIS {{ group.slug }} {{ object.slug }}', 'qdjango-project-update group.slug object.slug',
            in_menu=False, url_as_pattern=True, icon_css_class='fa fa-edit'),
       item('Lista strati progetto QGIS {{ group.slug }} {{ object.slug }}', 'qdjango-project-layers-list group.slug project_slug',
-           in_menu=False, url_as_pattern=True, icon_css_class='fa fa-edit')
+           in_menu=False, url_as_pattern=True, icon_css_class='fa fa-edit'),
+      item('Lista messaggi progetto QGIS {{ group.slug }} {{ object.slug }}', 'qdjango-project-messages-list group.slug project_slug',
+           in_menu=False, url_as_pattern=True, icon_css_class='fa fa-list')
   ]),
 
   G3Wtree('qdjango_en', title='Qdjango', module='qdjango', items=[
@@ -21,7 +23,9 @@ sitetrees = (
       item('Update QGIS project {{ group.slug }} {{ object.slug }}', 'qdjango-project-update group.slug object.slug',
            url_as_pattern=True, in_menu=False, icon_css_class='fa fa-edit'),
       item('Layer list QGIS project {{ group.slug }} {{ object.slug }}',
-           'qdjango-project-layers-list group.slug project_slug', in_menu=False, url_as_pattern=True, icon_css_class='fa fa-edit')
+           'qdjango-project-layers-list group.slug project_slug', in_menu=False, url_as_pattern=True, icon_css_class='fa fa-edit'),
+      item('QGIS project\'s messages list {{ group.slug }} {{ object.slug }}', 'qdjango-project-messages-list group.slug project_slug',
+           in_menu=False, url_as_pattern=True, icon_css_class='fa fa-list')
   ]),
 
 
