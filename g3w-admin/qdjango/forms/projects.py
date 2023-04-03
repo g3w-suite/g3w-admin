@@ -24,11 +24,9 @@ from usersmanage.utils import (crispyBoxACL, get_fields_by_user,
                                get_user_groups_for_object,
                                get_viewers_for_object, userHasGroups)
 
-from qdjango.models import QgisAuth, default_authid
-
-from .models import *
-from .utils.data import QgisProject
-from .utils.validators import ProjectExists
+from qdjango.models import *
+from qdjango.utils.data import QgisProject
+from qdjango.utils.validators import ProjectExists
 
 
 class QdjangoProjectFormMixin(object):

@@ -164,12 +164,12 @@ urlpatterns = [
     ),
     re_path(
         r'^(?P<group_slug>[-_\w\d]+)/projects/(?P<project_slug>[-_\w\d]+)/messages/add/$',
-        login_required(QdjangoMessageListView.as_view()),
-        name='qdjango-project-messages-update'
+        login_required(QdjangoMessageCreateView.as_view()),
+        name='qdjango-project-messages-add'
     ),
     re_path(
         r'^(?P<group_slug>[-_\w\d]+)/projects/(?P<project_slug>[-_\w\d]+)/messages/update/(?P<pk>[0-9]+)/$',
-        login_required(QdjangoMessageListView.as_view()),
+        login_required(QdjangoMessageUpdateView.as_view()),
         name='qdjango-project-messages-update'
     ),
     re_path(

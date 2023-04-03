@@ -59,6 +59,11 @@
 </div>
 
 <div class="box">
+    <div class="box-header">
+        <div class="box-header">
+            <a href="{% url 'qdjango-project-messages-add' group.slug project.slug %}" class="btn btn-info" id="btn-add-project"><i class="ion ion-plus-circled"></i> {% trans 'Message' %}</a>
+        </div>
+    </div>
     <div class="box-body">
         <table id="project_message_table" class="table table-hover table-striped" data-widget-type="dataTable">
             <thead>
@@ -74,7 +79,14 @@
             <tbody>
                 {% for object in object_list %}
                 <tr id="qdjango_project_message_{{ object.slug }}">
-                    <td></td>
+                    <td>
+                        <span class="col-xs-2 icon">
+                            <a href="{% url 'qdjango-project-messages-update' group.slug project.slug object.pk %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Edit' %}" ><i class="ion ion-edit"></i></a>
+                        </span>
+                        <span class="col-xs-4 icon">
+                            <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Delete' %}" data-widget-type="deleteItem" data-delete-url="{% url 'qdjango-project-messages-delete' group.slug project.slug object.pk %}" data-item-selector="#qdjango_project_message_{{ object.slug }}" ><i class="ion ion-trash-b"></i></a>
+                        </span>
+                    </td>
                     <td>{{ object.title }}</td>
                     <td>{{ object.body }}</td>
                     <td>{{ object.level }}</td>
