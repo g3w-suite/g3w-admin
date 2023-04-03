@@ -102,11 +102,7 @@ urlpatterns += [
     path(
         'ajax_select/',
         include(ajax_select_urls)
-    ),
-    path(
-        '{}'.format(settings.SITE_PREFIX_URL if settings.SITE_PREFIX_URL else ''),
-        include('OWS.urls')
-    ),
+    )
 ]
 
 #############################################################
@@ -218,6 +214,15 @@ for app in settings.G3WADMIN_LOCAL_MORE_APPS:
         )
     except Exception as e:
         pass
+
+
+#############################################################
+# OWS SERVICES
+#############################################################
+apiUrlpatterns.append(path(
+    '{}'.format(settings.SITE_PREFIX_URL if settings.SITE_PREFIX_URL else ''),
+    include('OWS.urls')
+))
 
 #############################################################
 # SITE PREFIX
