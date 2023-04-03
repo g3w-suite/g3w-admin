@@ -174,7 +174,7 @@ urlpatterns = [
     ),
     re_path(
         r'^(?P<group_slug>[-_\w\d]+)/projects/(?P<project_slug>[-_\w\d]+)/messages/delete/(?P<pk>[0-9]+)/$',
-        login_required(QdjangoMessageListView.as_view()),
+        login_required(QdjangoMessageDeleteView.as_view()),
         name='qdjango-project-messages-delete'
     ),
 ]

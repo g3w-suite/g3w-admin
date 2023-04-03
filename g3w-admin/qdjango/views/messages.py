@@ -10,12 +10,17 @@ __date__ = '2023-03-29'
 __copyright__ = 'Copyright 2015 - 2023, Gis3w'
 __license__ = 'MPL 2.0'
 
-from django.views.generic import ListView, CreateView, UpdateView
+from django.views.generic import \
+    ListView, \
+    CreateView, \
+    UpdateView, \
+    View
+from django.views.generic.detail import SingleObjectMixin
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from guardian.decorators import permission_required
 from core.utils.decorators import is_active_required
-from core.mixins.views import G3WRequestViewMixin, G3WGroupViewMixin, G3WProjectViewMixin
+from core.mixins.views import G3WRequestViewMixin, G3WGroupViewMixin, G3WAjaxDeleteViewMixin
 from qdjango.mixins.views import QdjangoProjectViewMixin
 from qdjango.models import Project, Message
 from qdjango.forms import MessageForm
@@ -71,6 +76,12 @@ class QdjangoMessageUpdateView(MessageACLMixin, G3WRequestViewMixin, G3WGroupVie
     template_name = 'qdjango/message/form.html'
     model = Message
     form_class = MessageForm
+
+class QdjangoMessageDeleteView(MessageACLMixin, G3WAjaxDeleteViewMixin, SingleObjectMixin, View):
+    '''
+    Delete message for a project Ajax view
+    '''
+    model = Message
 
 
 
