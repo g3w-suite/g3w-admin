@@ -22,7 +22,7 @@ from usersmanage.configs import *
 
 class GroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, G3WRequestFormMixin, G3WACLForm, ModelForm):
     """Group form."""
-    header_logo_img = UploadedFileField(required=False)
+    header_logo_img = UploadedFileField(required=True)
     propagate = True
 
     def __init__(self, *args, **kwargs):
