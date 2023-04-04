@@ -259,6 +259,13 @@ class QdjangoPrjThemeAPIview(G3WAPIView):
                             'visible': True if node.layerId() in node_layerids_checked else False
                         })
 
+                        # Add `showFeatureCount` custom property per Vector layer only
+                        if 'showFeatureCount' in node.customProperties() and node.customProperty(
+                                'showFeatureCount') == 1:
+                            toRetLayer.update({
+                                'showfeaturecount': True
+                            })
+
                     except:
 
                         # Try to build by parent

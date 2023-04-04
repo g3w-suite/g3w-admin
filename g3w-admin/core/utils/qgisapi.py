@@ -27,6 +27,7 @@ from qgis.core import (
     QgsExpressionContext,
     QgsFeature,
     QgsJsonUtils,
+    QgsWkbTypes
 )
 
 
@@ -39,6 +40,7 @@ from qgis.PyQt.QtCore import (
 from django.utils.translation import ugettext_lazy as _
 from qdjango.apps import get_qgs_project
 from qdjango.models import Layer, Project
+
 
 logger = logging.getLogger(__file__)
 
@@ -590,3 +592,49 @@ def expression_eval(expression_text, project_id=None, qgs_layer_id=None, form_da
 
 
     return result
+
+
+def get_qgis_featurecount(qgis_layer, style=None):
+    """
+    Given a QGIS layer, return feature counted for every style category.
+
+    I.e.:
+
+    {
+        "0": 688,
+        "1": 296,
+        "2": 524,
+        "3": 613,
+        "4": 336
+    }
+
+    :param qgis_layer: QgsVectorLayer instance.
+    :param style: String with style name.
+    :return: A dict key:value for every style rule-key
+    """
+
+    if style:
+        current_style = qgis_layer.styleManager().currentStyle()
+
+        if current_style and style and style != current_style:
+            qgis_layer.styleManager().setCurrentStyle(style)
+
+    if qgis_layer.wkbType() != QgsWkbTypes.NoGeometry:
+
+        renderer = qgis_layer.renderer()
+        counter = qgis_layer.countSymbolFeatures()
+
+        if counter:
+            counter.waitForFinished()
+            ret = {item.ruleKey(): counter.featureCount(item.ruleKey())
+                   for item in renderer.legendSymbolItems()}
+        else:
+            ret = {item.ruleKey(): qgis_layer.featureCount(item.ruleKey())
+                   for item in renderer.legendSymbolItems()}
+    else:
+        ret = {'0': qgis_layer.featureCount()}
+
+    if style and current_style and style != current_style:
+        qgis_layer.styleManager().setCurrentStyle(current_style)
+
+    return ret
