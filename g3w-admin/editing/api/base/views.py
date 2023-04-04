@@ -34,6 +34,7 @@ from qdjango.utils.validators import feature_validator
 
 from qgis.PyQt.QtCore import QDateTime, QDate, QTime, QVariant, NULL
 
+import re
 import logging
 
 logger = logging.getLogger('module_editing')
@@ -288,6 +289,13 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                                             geojson_feature['properties'][qgis_field.name()]:
                                         value = qtype.fromString(geojson_feature['properties'][qgis_field.name()],
                                                                  options['field_format'])
+
+                                        if re.search("yy[^y]+|[^y]+yy[^y]+|[^y]+yy|yy", options['field_format']):
+                                            if qtype == QDate and value.year() != QDate.currentDate().year():
+                                                value = QDate(QDate.currentDate().year(), value.month(), value.day())
+                                            if qtype == QDateTime and value.date().year() != QDate.currentDate().year():
+                                                value.setDate(QDate.currentDate().year(), value.month(), value.day())
+
                                         feature.setAttribute(qgis_field.name(), value)
                                         field_datetime_values[qgis_field.name()] = value
                                         field_datetime_field_formats[qgis_field.name()] = options['field_format']
@@ -377,7 +385,7 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                             fnames = [f.name() for f in feature.fields()]
                             jfeature = json.loads(ex.exportFeature(feature, dict(zip(fnames, feature.attributes()))))
 
-                            # Fore date and datetime and time fields:
+                            # For date and datetime and time fields:
                             if field_datetime_values:
                                 for fname, fvalue in jfeature['properties'].items():
                                     try:
