@@ -290,11 +290,21 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                                         value = qtype.fromString(geojson_feature['properties'][qgis_field.name()],
                                                                  options['field_format'])
 
+
                                         if re.search("^yy[^y]|[^y]+yy[^y]+|[^y]+yy$|^yy$", options['field_format']):
-                                            if qtype == QDate and value.year() != QDate.currentDate().year():
-                                                value = QDate(QDate.currentDate().year(), value.month(), value.day())
-                                            if qtype == QDateTime and value.date().year() != QDate.currentDate().year():
-                                                value.setDate(QDate.currentDate().year(), value.month(), value.day())
+                                            current_century = int(str(QDate.currentDate().year())[0:2])
+                                            if qtype == QDate:
+                                                value_century = int(str(value.year())[0:2])
+                                                value_yy = str(value.year())[0:2]
+                                            else:
+                                                value_century = int(str(value.date().year())[0:2])
+                                                value_yy = str(value.date().year())[0:2]
+                                            value_year = int(f"{current_century}{value_yy}")
+                                            if value_century != current_century:
+                                                if qtype == QDate:
+                                                    value = QDate(value_year, value.month(), value.day())
+                                                if qtype == QDateTime:
+                                                    value.setDate(value_year, value.month(), value.day())
 
                                         feature.setAttribute(qgis_field.name(), value)
                                         field_datetime_values[qgis_field.name()] = value
