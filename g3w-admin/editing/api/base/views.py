@@ -295,10 +295,10 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                                             current_century = int(str(QDate.currentDate().year())[0:2])
                                             if qtype == QDate:
                                                 value_century = int(str(value.year())[0:2])
-                                                value_yy = str(value.year())[0:2]
+                                                value_yy = str(value.year())[2:4]
                                             else:
                                                 value_century = int(str(value.date().year())[0:2])
-                                                value_yy = str(value.date().year())[0:2]
+                                                value_yy = str(value.date().year())[2:4]
                                             value_year = int(f"{current_century}{value_yy}")
                                             if value_century != current_century:
                                                 if qtype == QDate:
