@@ -35,10 +35,6 @@ from core.utils.qgisapi import (
     ExpressionLayerError
 )
 
-import logging
-
-logger = logging.getLogger(__name__)
-
 
 class APIExpressionEvalError(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
@@ -254,12 +250,7 @@ class InterfaceOws(G3WAPIView):
 
         # Info formats
         # -----------------------------------
-        try:
-            self.results.results.update({'info_formats': ows.getOperationByName('GetFeatureInfo').formatOptions})
-        except Exception as e:
-
-            # Case where OWS service doesn't support GetFeatureInfo
-            logger.debug(f'The service {url} doesn\'t support GetFeatureInfo, err: {str(e)}')
+        self.results.results.update({'info_formats': ows.getOperationByName('GetFeatureInfo').formatOptions})
 
         # Layers
         # -----------------------------------
