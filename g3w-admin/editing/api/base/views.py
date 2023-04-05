@@ -290,7 +290,7 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                                         value = qtype.fromString(geojson_feature['properties'][qgis_field.name()],
                                                                  options['field_format'])
 
-                                        if re.search("yy[^y]+|[^y]+yy[^y]+|[^y]+yy|yy", options['field_format']):
+                                        if re.search("^yy[^y]|[^y]+yy[^y]+|[^y]+yy$|^yy$", options['field_format']):
                                             if qtype == QDate and value.year() != QDate.currentDate().year():
                                                 value = QDate(QDate.currentDate().year(), value.month(), value.day())
                                             if qtype == QDateTime and value.date().year() != QDate.currentDate().year():
