@@ -273,7 +273,11 @@ class InterfaceOws(G3WAPIView):
             # Build crs
             crss = []
             for srid in ows[al].crsOptions:
-                crs = QgsCoordinateReferenceSystem(f"EPSG:{srid}")
+                if srid.startswith('EPSG:') or srid.startswith('CRS:'):
+                    crs = QgsCoordinateReferenceSystem()
+                    crs.createFromOgcWmsCrs(srid)
+                else:
+                    crs = QgsCoordinateReferenceSystem(f"EPSG:{srid}")
 
                 if crs.postgisSrid() in settings.G3W_PROJ4_EPSG.keys():
                     proj4 = settings.G3W_PROJ4_EPSG[crs.postgisSrid()]
