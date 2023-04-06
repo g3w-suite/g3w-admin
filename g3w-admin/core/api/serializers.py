@@ -123,9 +123,9 @@ class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         for g3wProjectApp in settings.G3WADMIN_PROJECT_APPS:
             Project = apps.get_app_config(g3wProjectApp).get_model('project')
             projects = get_objects_for_user(self.request.user, '{}.view_project'.format(g3wProjectApp), Project) \
-                .filter(group=instance)
+                .filter(group=instance, is_active=True)
             projects_anonymous = get_objects_for_user(anonymous_user, '{}.view_project'.format(g3wProjectApp),
-                                                      Project).filter(group=instance)
+                                                      Project).filter(group=instance, is_active=True)
             projects = list(set(projects) | set(projects_anonymous))
 
             for project in projects:
