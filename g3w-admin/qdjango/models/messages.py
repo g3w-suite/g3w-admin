@@ -13,6 +13,7 @@ __license__ = 'MPL 2.0'
 
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from ordered_model.models import OrderedModel
 from model_utils.models import TimeStampedModel
 from qdjango.models import Project
 
@@ -23,7 +24,7 @@ MSG_LEVELS = (
     (50, _('Critical')),
 )
 
-class Message(TimeStampedModel):
+class Message(TimeStampedModel, OrderedModel):
     """
     Main model for project messaging system
     """
@@ -36,4 +37,7 @@ class Message(TimeStampedModel):
     valid_to = models.DateField(null=True, blank=True, help_text=_('Ending date of message display'))
 
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.title
 
