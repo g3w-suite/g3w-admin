@@ -18,10 +18,10 @@ from model_utils.models import TimeStampedModel
 from qdjango.models import Project
 
 MSG_LEVELS = (
-    (20, _('Info')),
-    (30, _('Warning')),
-    (40, _('Error')),
-    (50, _('Critical')),
+    (20, 'Info'),
+    (30, 'Warning'),
+    (40, 'Error'),
+    (50, 'Critical'),
 )
 
 class Message(TimeStampedModel, OrderedModel):

@@ -5,7 +5,7 @@ from rest_framework import serializers
 from rest_framework.fields import empty
 from guardian.shortcuts import get_objects_for_user, get_anonymous_user
 from owslib.wms import WebMapService
-from qdjango.models import Project, Layer, Widget, SessionTokenFilter, GeoConstraintRule
+from qdjango.models import Project, Layer, Widget, SessionTokenFilter, GeoConstraintRule, MSG_LEVELS
 from qdjango.utils.data import QGIS_LAYER_TYPE_NO_GEOM
 from qdjango.utils.models import get_capabilities4layer
 from qdjango.signals import load_qdjango_widget_layer
@@ -317,6 +317,23 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
         return toret
 
+    def get_messages(self, instance):
+        """
+        Get message for qdjango Project model instance
+        :param instance: qdjango Project model instance
+        :return: dict
+        """
+
+        return {
+            'levels': {l[1]: l[0] for l in MSG_LEVELS},
+            'items': [{
+                'id': m.pk,
+                'title': m.title,
+                'body': m.body,
+                'level': m.level
+            } for m in instance.messages]
+        }
+
     def to_representation(self, instance):
         logging.warning('Serializer')
         ret = super(ProjectSerializer, self).to_representation(instance)
@@ -523,6 +540,10 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         # QGIS project themes
         # ----------------------------------
         self.set_map_themes(ret, qgs_project)
+
+        # Add messages:
+        # ----------------------------------
+        ret['messages'] = self.get_messages(instance)
 
         # reset tokenfilter by session
         self.reset_filtertoken()
