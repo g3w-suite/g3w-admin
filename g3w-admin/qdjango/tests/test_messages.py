@@ -11,6 +11,8 @@ __date__ = '2023-04-06'
 __copyright__ = 'Copyright 2015 - 2023, Gis3w'
 __license__ = 'MPL 2.0'
 
+import json
+
 from django.urls import reverse
 from qdjango.models import Message
 from .base import QdjangoTestBase
@@ -99,4 +101,100 @@ class QdjangoProjectMessagesViewsTest(QdjangoTestBase):
         self.assertEqual(Message.objects.filter(project=self.project.instance).count(), 0)
 
         self.client.logout()
+
+class QdjangoProjectMessagesAPITest(QdjangoTestBase):
+    """
+    Test messages section inside response fo /api/config/
+    """
+    def test_api_message_list(self):
+
+        url = reverse('group-project-map-config', args=[self.project_group.slug, 'qdjango', self.project310.instance.pk])
+
+        # Login
+        self.assertTrue(self.client.login(username=self.test_user1.username, password=self.test_user1.username))
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        jres = json.loads(response.content)
+
+        self.assertEqual(jres['messages'], {'levels': {'Info': 20, 'Warning': 30, 'Error': 40, 'Critical': 50}, 'items': []})
+
+        # Create a message
+
+        message_data = {
+            'title': 'Test message',
+            'body': '<p>Test message body</p>',
+            'level': 20
+        }
+
+        msg1 = Message(project=self.project310.instance, **message_data)
+        msg1.save()
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        jres = json.loads(response.content)
+
+        self.assertEqual(jres['messages'],
+                         {'levels': {'Info': 20, 'Warning': 30, 'Error': 40, 'Critical': 50}, 'items': [
+                             {
+                                 'id': 1,
+                                 'title': 'Test message',
+                                 'body': '<p>Test message body</p>',
+                                 'level': 20
+                             }
+                         ]})
+
+        message_data = {
+            'title': 'Test message 2',
+            'body': '<p>Test message body 2</p>',
+            'level': 40
+        }
+
+        msg2 = Message(project=self.project310.instance, **message_data)
+        msg2.save()
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        jres = json.loads(response.content)
+
+        self.assertEqual(jres['messages'],
+                         {'levels': {'Info': 20, 'Warning': 30, 'Error': 40, 'Critical': 50}, 'items': [
+                             {
+                                 'id': 1,
+                                 'title': 'Test message',
+                                 'body': '<p>Test message body</p>',
+                                 'level': 20
+                             },
+                             {
+                                 'id': 2,
+                                 'title': 'Test message 2',
+                                 'body': '<p>Test message body 2</p>',
+                                 'level': 40
+                             }
+                         ]})
+
+
+        msg1.delete()
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        jres = json.loads(response.content)
+
+        self.assertEqual(jres['messages'],
+                         {'levels': {'Info': 20, 'Warning': 30, 'Error': 40, 'Critical': 50}, 'items': [
+                             {
+                                 'id': 2,
+                                 'title': 'Test message 2',
+                                 'body': '<p>Test message body 2</p>',
+                                 'level': 40
+                             }
+                         ]})
+
+        self.client.logout()
+
+
 
