@@ -162,6 +162,8 @@ class QdjangoProjectMessagesAPITest(QdjangoTestBase):
 
         jres = json.loads(response.content)
 
+        print(jres['messages'])
+
         self.assertEqual(jres['messages'],
                          {'levels': {'Info': 20, 'Warning': 30, 'Error': 40, 'Critical': 50}, 'items': [
                              {
