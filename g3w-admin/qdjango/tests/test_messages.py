@@ -167,17 +167,17 @@ class QdjangoProjectMessagesAPITest(QdjangoTestBase):
         self.assertEqual(jres['messages'],
                          {'levels': {'Info': 20, 'Warning': 30, 'Error': 40, 'Critical': 50}, 'items': [
                              {
+                                 'id': msg2.pk,
+                                 'title': 'Test message 2',
+                                 'body': '<p>Test message body 2</p>',
+                                 'level': 40
+                             },
+                             {
                                  'id': msg1.pk,
                                  'title': 'Test message',
                                  'body': '<p>Test message body</p>',
                                  'level': 20
                              },
-                             {
-                                 'id': msg2.pk,
-                                 'title': 'Test message 2',
-                                 'body': '<p>Test message body 2</p>',
-                                 'level': 40
-                             }
                          ]})
 
 
