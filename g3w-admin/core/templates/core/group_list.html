@@ -50,7 +50,7 @@
     <div class="col-md-3 col-sm-6" id="group_{{ object.pk }}">
      <div class="box box-widget widget-user" id="group_{{ object.slug }}">
                 <!-- Add the bg color to the header using any of the bg-* classes -->
-                <div class="widget-user-header bg-aqua-active col-sm-12" style="background: url('{{ MEDIA_URL }}{{ object.header_logo_img }}') center center;">
+                <div class="widget-user-header bg-aqua-active col-sm-12" style="background: url('{{ MEDIA_URL }}{{ object.header_logo_img }}') center center; background-repeat: no-repeat;">
                 <div class="row">
                     <div class="col-sm-12 widget-group-title handle">
                         <h3 class="widget-user-username">{{ object.name }}</h3>
