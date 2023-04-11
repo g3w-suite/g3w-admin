@@ -106,6 +106,8 @@ class QdjangoProjectMessagesAPITest(QdjangoTestBase):
     """
     Test messages section inside response fo /api/config/
     """
+
+    maxDiff = None
     def test_api_message_list(self):
 
         url = reverse('group-project-map-config', args=[self.project_group.slug, 'qdjango', self.project310.instance.pk])
