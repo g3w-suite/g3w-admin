@@ -157,12 +157,12 @@ class QdjangoProjectMessagesAPITest(QdjangoTestBase):
         msg2 = Message(project=self.project310.instance, **message_data)
         msg2.save()
 
+        self.assertEqual(len(Message.objects.all()), 2)
+
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
         jres = json.loads(response.content)
-
-        print(jres['messages'])
 
         self.assertEqual(jres['messages'],
                          {'levels': {'Info': 20, 'Warning': 30, 'Error': 40, 'Critical': 50}, 'items': [
