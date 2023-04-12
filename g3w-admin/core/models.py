@@ -137,7 +137,8 @@ class Group(TimeStampedModel, OrderedModel):
     is_active = models.BooleanField(_('Is active'), default=1)
 
     # Company logo
-    header_logo_img = models.FileField(_('Logo image'), upload_to='logo_img')
+    header_logo_img = models.FileField(_('Logo image'), upload_to='logo_img',
+                                       default=f'logo_img/{settings.CLIENT_G3WSUITE_LOGO}')
     header_logo_link = models.URLField(_('Logo link'), blank=True, null=True,
                                        help_text=_('Enter link with http:// or https//'))
 

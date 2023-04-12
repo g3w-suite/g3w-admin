@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.template.response import HttpResponse
 from django.http import JsonResponse, HttpResponseBadRequest, HttpResponse, HttpResponseServerError
 from django.views.generic import (
@@ -145,7 +146,13 @@ class GroupCreateView(G3WRequestViewMixin, CreateView):
         return super(GroupCreateView, self).dispatch(*args, **kwargs)
 
     def get_initial(self):
-        return {'mapcontrols': MapControl.objects.all()}
+
+        # Fake group for build a initial default header_logo_img for new groups.
+        g = Group(name='fake', title='fake', srid_id=1, header_logo_img=f'logo_img/{settings.CLIENT_G3WSUITE_LOGO}')
+
+        return {'mapcontrols': MapControl.objects.all(),
+                'header_logo_img': g.header_logo_img
+        }
 
     def get_success_url(self):
         return reverse('group-list')
