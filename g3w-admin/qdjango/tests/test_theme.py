@@ -16,6 +16,7 @@ from qdjango.models import Project
 from .base import \
     QdjangoTestBase, \
     QGS316_THEME_FILE, \
+    QGS328_THEME_FILE, \
     QGS322_PRINT_LAYOUT_THEME_FILE, \
     TEST_BASE_PATH, \
     CURRENT_PATH, \
@@ -41,6 +42,12 @@ class QdjangoThemeTest(QdjangoTestBase):
         cls.project_layout_theme322.title = 'A project with layout with preset theme QGIS 3.22'
         cls.project_layout_theme322.group = cls.project_group
         cls.project_layout_theme322.save()
+
+        cls.project_theme328 = QgisProject(
+            File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS328_THEME_FILE), 'r')))
+        cls.project_theme328.title = 'A project with themes QGIS 3.28'
+        cls.project_theme328.group = cls.project_group
+        cls.project_theme328.save()
 
     def _testApiCall(self, view_name, args, kwargs={}, data=None, method='POST', username='admin01'):
         """Utility to make test calls for admin01 user"""
@@ -176,6 +183,68 @@ class QdjangoThemeTest(QdjangoTestBase):
         self.assertFalse('preset_theme' in jcontent['print'][0]['maps'][1])
         self.assertEqual(jcontent['print'][0]['maps'][0]['preset_theme'], 'reference')
 
+    def test_vector_api_featurecount(self):
+        """
+        Test for /vector/api/featurecount/
+        """
+
+        response = self._testApiCall('core-vector-api',
+                                     args=[
+                                         'featurecount',
+                                         'qdjango',
+                                         self.project_theme328.instance.pk,
+                                         'countries_3857_4f885888_b0df_4f87_88ed_17c907315fad'
+                                     ])
+
+        jcontent = json.loads(response.content)
+
+        self.assertEqual(jcontent, {'result': True, 'data': {'0': 54},
+                                    'capabilities': [
+                                        'add_feature',
+                                        'change_feature',
+                                        'delete_feature',
+                                        'change_attr_feature']
+                                    })
+
+        response = self._testApiCall('core-vector-api',
+                                     args=[
+                                         'featurecount',
+                                         'qdjango',
+                                         self.project_theme328.instance.pk,
+                                         'cities10000eu_3857_728999c2_0883_4627_8df2_25224f71e3ea'
+                                     ], kwargs={'style': 'style_red_square'})
+
+        jcontent = json.loads(response.content)
+
+        self.assertEqual(jcontent, {'result': True, 'data': {'0': 8965},
+                                    'capabilities': [
+                                        'add_feature',
+                                        'change_feature',
+                                        'delete_feature',
+                                        'change_attr_feature'
+                                    ]})
+
+        response = self._testApiCall('core-vector-api',
+                                     args=[
+                                         'featurecount',
+                                         'qdjango',
+                                         self.project_theme328.instance.pk,
+                                         'cities10000eu_3857_728999c2_0883_4627_8df2_25224f71e3ea'
+                                     ], kwargs={'style': 'category_style'})
+
+        jcontent = json.loads(response.content)
+
+        self.assertEqual(jcontent, {'result': True, 'data': {
+            '{44302153-ea36-4167-835f-91fb250887f2}': 630,
+            '{a9ee0316-8513-48cd-a41a-623594d71129}': 8298,
+            '{e217c565-ee1f-4148-8186-bc359b16d68b}': 37
+        },
+        'capabilities': [
+            'add_feature',
+            'change_feature',
+            'delete_feature',
+            'change_attr_feature'
+        ]})
 
 
 

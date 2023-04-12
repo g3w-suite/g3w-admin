@@ -17,7 +17,7 @@ from core.signals import after_serialized_project_layer
 from core.mixins.api.serializers import G3WRequestSerializer
 from core.api.serializers import update_serializer_data
 from core.utils.structure import RELATIONS_ONE_TO_MANY
-from core.utils.qgisapi import get_qgis_layer, count_qgis_features
+from core.utils.qgisapi import get_qgis_layer, count_qgis_features, get_qgis_featurecount
 from core.utils.general import clean_for_json
 from core.utils.geo import get_crs_bbox
 
@@ -827,21 +827,7 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
         # Add `featurecount` property if `showfeaturecount` property is present inside layertreenode:
         if 'showfeaturecount' in self.layertreenode and self.layertreenode['showfeaturecount']:
-
-            if instance.geometrytype != QGIS_LAYER_TYPE_NO_GEOM:
-
-                renderer = qgs_maplayer.renderer()
-                counter = qgs_maplayer.countSymbolFeatures()
-
-                if counter:
-                    counter.waitForFinished()
-                    ret['featurecount'] = {item.ruleKey(): counter.featureCount(item.ruleKey())
-                                           for item in renderer.legendSymbolItems()}
-                else:
-                    ret['featurecount'] = {item.ruleKey(): qgs_maplayer.featureCount(item.ruleKey())
-                                           for item in renderer.legendSymbolItems()}
-            else:
-                ret['featurecount'] = {'0': qgs_maplayer.featureCount()}
+            ret['featurecount'] = get_qgis_featurecount(qgs_maplayer)
 
         return ret
 

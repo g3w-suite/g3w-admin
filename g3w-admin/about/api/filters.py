@@ -21,7 +21,7 @@ from qdjango.models import Project
 
 
 class UserGroupFilter(BaseFilterBackend):
-    """A filter backend for portal module"""
+    """A filter backend for about module"""
 
     def filter_queryset(self, request, queryset, view):
         """
@@ -86,3 +86,12 @@ class PanoramicProjectFilter(BaseFilterBackend):
             queryset = queryset.filter(~Q(pk__in=[g.project_id for g in GroupProjectPanoramic.objects.all()]))
 
         return queryset
+
+class ActiveFilter(BaseFilterBackend):
+    """A filter backend: filter active group or project"""
+
+    def filter_queryset(self, request, queryset, view):
+        """
+        Return a filtered queryset by guardian grant
+        """
+        return queryset.filter(is_active=True)
