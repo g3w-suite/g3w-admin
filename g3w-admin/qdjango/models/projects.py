@@ -82,6 +82,12 @@ def buildLayerTreeNodeObject(layerTreeNode):
                 'visible': node.itemVisibilityChecked()
             })
 
+            # Add `showFeatureCount` custom property per Vector layer only
+            if 'showFeatureCount' in node.customProperties() and node.customProperty('showFeatureCount') == 1:
+                toRetLayer.update({
+                    'showfeaturecount': True
+                })
+
         except:
 
             toRetLayer.update({
@@ -280,6 +286,11 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
 
     def __str__(self):
         return self.title
+
+    @property
+    def messages(self):
+        """ Returns the message queryset corresponding to this Project, or empty queryset """
+        return self.message_set.all()
 
     @property
     def qgis_project(self):

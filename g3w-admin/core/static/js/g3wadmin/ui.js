@@ -232,9 +232,23 @@ _.extend(g3wadmin.ui, {
         else {
             var $widgetItem = $('input[type="checkbox"], input[type="radio"]');
         }
-        $widgetItem.iCheck({
-          checkboxClass: 'icheckbox_flat-green',
-          radioClass: 'iradio_flat-green'
+
+        /* Get skin if is set */
+
+
+        _.each($widgetItem, function(item){
+            var skin = 'green';
+            $item = $(item);
+            var paramskin = $item.attr('data-icheck-skin');
+            if (paramskin)
+                skin = paramskin;
+
+
+            $item.iCheck({
+              checkboxClass: 'icheckbox_flat-' + skin,
+              radioClass: 'iradio_flat-' + skin
+            });
+
         });
     },
 

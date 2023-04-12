@@ -1,8 +1,15 @@
-from django.urls import path, re_path
+"""
+Add your API routes here.
+"""
+# API ROOT: /:lang/admin/
+
+__author__    = 'lorenzetti@gis3w.it'
+__copyright__ = 'Copyright 2015 - 2023, Gis3w'
+__license__   = "MPL 2.0"
+
+from django.urls import path
 from django.contrib.auth.decorators import login_required
 from django.views.static import serve
-from django.conf import settings
-from sitetree.sitetreeapp import register_i18n_trees
 
 from client.api.views import *
 from .views import *
@@ -13,13 +20,31 @@ def protected_serve(request, path, document_root=None, show_indexes=False):
 
 
 urlpatterns = [
+
+    #############################################################
+    # General
+    #############################################################
     path(
         '',
         login_required(DashboardView.as_view()),
         name='home'
     ),
 
-    # macrogroups urls
+    path(
+        'generalsuitedata/',
+        login_required(GeneralSuiteDataUpdateView.as_view()),
+        name='generaldata-update'
+    ),
+
+    path(
+        'search/',
+        login_required(SearchAdminView.as_view()),
+        name='search-admin'
+    ),
+
+    #############################################################
+    # Macro Groups
+    #############################################################
     path(
         'macrogroups/',
         login_required(MacroGroupListView.as_view()),
@@ -50,7 +75,9 @@ urlpatterns = [
         name='macrogroup-detail'
     ),
 
-    # group urls
+    #############################################################
+    # Groups
+    #############################################################
     path(
         'groups/',
         login_required(GroupListView.as_view()),
@@ -81,7 +108,7 @@ urlpatterns = [
         name='group-deactive'
     ),
 
-path(
+    path(
         'groups/active/<slug:slug>/',
         login_required(GroupActiveView.as_view()),
         name='group-active'
@@ -111,23 +138,13 @@ path(
         name='group-set-project-panoramic'
     ),
 
-    # project urls
+    #############################################################
+    # Projects
+    #############################################################
     path(
         'groups/<slug:group_slug>/projects/',
         login_required(ProjectListView.as_view()),
         name='project-list'
     ),
-
-    path(
-        'generalsuitedata/',
-        login_required(GeneralSuiteDataUpdateView.as_view()),
-        name='generaldata-update'
-    ),
-
-    path(
-        'search/',
-        login_required(SearchAdminView.as_view()),
-        name='search-admin'
-    )
 
 ]

@@ -62,6 +62,7 @@ THIRD_PARTY_APPS = [
     'huey.contrib.djhuey',
     'bx_py_utils',  # required by huey_monitor
     'huey_monitor',
+    'about'
 ]
 
 G3WADMIN_APPS = [
@@ -261,6 +262,11 @@ LOGGING = {
         },
     },
 }
+
+# DEFAULT DB LOGGING SETTINGS:
+# ----------------------------
+DB_LOGGER_ADMIN_LIST_PER_PAGE = 10
+DB_LOGGER_ENABLE_FORMATTER = False
 
 
 MGC = '-99:dodfEz3K2rziGayGnw_FyOuWdCM'

@@ -3,7 +3,9 @@ import re
 import datetime
 from PIL import Image
 
+import logging
 
+logger = logging.getLogger(__name__)
 class FileManagerResponse(object):
 
     def __init__(self, path, root=None):
@@ -44,8 +46,11 @@ class FileManagerResponse(object):
             height                  = 0
             width                   = 0
             if attributes['extension'] in ['gif','jpg','jpeg','png']:
-                im = Image.open(self.path)
-                height,width = im.size
+                try:
+                    im = Image.open(self.path)
+                    height,width = im.size
+                except Exception as e:
+                    logger.error(f'[FILEMANAGER] - {str(e)}')
             attributes['height']    = height
             attributes['width']     = width
             attributes['size']      = os.path.getsize(self.path)

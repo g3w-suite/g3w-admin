@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.template.response import HttpResponse
 from django.http import JsonResponse, HttpResponseBadRequest, HttpResponse, HttpResponseServerError
 from django.views.generic import (
@@ -63,8 +64,9 @@ class DashboardView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(DashboardView, self).get_context_data(**kwargs)
         # add number groups
-        qs = get_objects_for_user(self.request.user, 'core.view_group', Group) | \
-             get_objects_for_user(get_anonymous_user(), 'core.view_group', Group)
+        qs = get_objects_for_user(self.request.user, 'core.view_group', Group)
+             #| get_objects_for_user(get_anonymous_user(), 'core.view_group', Group)
+
         qs = qs.filter(is_active=1).order_by('order')
         context['n_groups'] = len(qs)
         context['widgets'] = []
@@ -144,7 +146,13 @@ class GroupCreateView(G3WRequestViewMixin, CreateView):
         return super(GroupCreateView, self).dispatch(*args, **kwargs)
 
     def get_initial(self):
-        return {'mapcontrols': MapControl.objects.all()}
+
+        # Fake group for build a initial default header_logo_img for new groups.
+        g = Group(name='fake', title='fake', srid_id=1, header_logo_img=f'logo_img/{settings.CLIENT_G3WSUITE_LOGO}')
+
+        return {'mapcontrols': MapControl.objects.all(),
+                'header_logo_img': g.header_logo_img
+        }
 
     def get_success_url(self):
         return reverse('group-list')

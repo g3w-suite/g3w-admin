@@ -49,6 +49,7 @@ MODE_CSV = 'csv'
 MODE_GPKG = 'gpkg'
 MODE_FILTER_TOKEN = 'filtertoken'
 MODE_GEOTIFF = 'geotiff' # For raster layers
+MODE_FEATURE_COUNT = 'featurecount'
 
 MIME_TYPES_MOD = {
     MODE_SHP: {

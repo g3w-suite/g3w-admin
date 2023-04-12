@@ -143,8 +143,8 @@ def feature_validator(feature, layer):
                     request.setFilterExpression('to_date("%s") = \'%s\'' % (
                         field.name().replace('"', '\\"'), value.toString(Qt.ISODate)))
                 elif field.type() == QVariant.DateTime:
-                    request.setFilterExpression('to_datetime("{field_name}") = \'{date_time_string}\' OR to_datetime("{field_name}") = \'{date_time_string}.000\''.format(
-                        field_name=field.name().replace('"', '\\"'), date_time_string=value.toString(Qt.ISODate)))
+                    request.setFilterExpression('to_datetime("{field_name}") = \'{date_time_string}\' OR to_datetime("{field_name}") = \'{date_time_string_ms}\''.format(
+                        field_name=field.name().replace('"', '\\"'), date_time_string=value.toString(Qt.ISODate), date_time_string_ms=value.toString(Qt.ISODateWithMs)))
                 elif field.type() == QVariant.Bool:  # This does not make any sense, but still
                     request.setFilterExpression('"%s" = %s' % (
                         field.name().replace('"', '\\"'), 'true' if value else 'false'))
@@ -252,7 +252,7 @@ class EmbeddedLayersValidator(QgisProjectValidator):
         #else:
             # new project: skip because we cannot have any embedded layer to be checked
         #    pass
-        
+
 
 class ProjectExists(QgisProjectValidator):
     """
@@ -393,7 +393,7 @@ class DatasourceExists(QgisProjectLayerValidator):
                     err += ugettext('which should be located at {}'.format(
                         self.qgisProjectLayer.datasource))
                     raise QgisProjectLayerException(err)
-                    
+
             else:
                 if not os.path.exists(self.qgisProjectLayer.datasource.split('|')[0]):
                     err = ugettext('Missing data file for layer {} '.format(

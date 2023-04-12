@@ -5,7 +5,7 @@ from rest_framework import serializers
 from rest_framework.fields import empty
 from guardian.shortcuts import get_objects_for_user, get_anonymous_user
 from owslib.wms import WebMapService
-from qdjango.models import Project, Layer, Widget, SessionTokenFilter, GeoConstraintRule
+from qdjango.models import Project, Layer, Widget, SessionTokenFilter, GeoConstraintRule, MSG_LEVELS
 from qdjango.utils.data import QGIS_LAYER_TYPE_NO_GEOM
 from qdjango.utils.models import get_capabilities4layer
 from qdjango.signals import load_qdjango_widget_layer
@@ -17,7 +17,7 @@ from core.signals import after_serialized_project_layer
 from core.mixins.api.serializers import G3WRequestSerializer
 from core.api.serializers import update_serializer_data
 from core.utils.structure import RELATIONS_ONE_TO_MANY
-from core.utils.qgisapi import get_qgis_layer, count_qgis_features
+from core.utils.qgisapi import get_qgis_layer, count_qgis_features, get_qgis_featurecount
 from core.utils.general import clean_for_json
 from core.utils.geo import get_crs_bbox
 
@@ -317,6 +317,23 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
         return toret
 
+    def get_messages(self, instance):
+        """
+        Get message for qdjango Project model instance
+        :param instance: qdjango Project model instance
+        :return: dict
+        """
+
+        return {
+            'levels': {l[1]: l[0] for l in MSG_LEVELS},
+            'items': [{
+                'id': m.pk,
+                'title': m.title,
+                'body': m.body,
+                'level': m.level
+            } for m in instance.messages]
+        }
+
     def to_representation(self, instance):
         logging.warning('Serializer')
         ret = super(ProjectSerializer, self).to_representation(instance)
@@ -394,7 +411,7 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
                 try:
                     layer_serialized = LayerSerializer(
-                        layers[layer['id']], qgs_project=qgs_project, request=self.request)
+                        layers[layer['id']], qgs_project=qgs_project, request=self.request, layertreenode=layer)
                 except KeyError:
                     logger.error(
                         'Layer %s is missing from QGIS project!' % layer['id'])
@@ -524,6 +541,10 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         # ----------------------------------
         self.set_map_themes(ret, qgs_project)
 
+        # Add messages:
+        # ----------------------------------
+        ret['messages'] = self.get_messages(instance)
+
         # reset tokenfilter by session
         self.reset_filtertoken()
 
@@ -556,6 +577,8 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         # set QsgMapLayer instance
         self.qgs_project = kwargs['qgs_project']
         del (kwargs['qgs_project'])
+        self.layertreenode = kwargs['layertreenode']
+        del (kwargs['layertreenode'])
 
         super(LayerSerializer, self).__init__(instance, data, **kwargs)
 
@@ -801,6 +824,10 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
         # add ows
         ret['ows'] = self.get_ows(instance)
+
+        # Add `featurecount` property if `showfeaturecount` property is present inside layertreenode:
+        if 'showfeaturecount' in self.layertreenode and self.layertreenode['showfeaturecount']:
+            ret['featurecount'] = get_qgis_featurecount(qgs_maplayer)
 
         return ret
 

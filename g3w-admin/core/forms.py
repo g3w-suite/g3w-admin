@@ -22,7 +22,7 @@ from usersmanage.configs import *
 
 class GroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, G3WRequestFormMixin, G3WACLForm, ModelForm):
     """Group form."""
-    header_logo_img = UploadedFileField()
+    header_logo_img = UploadedFileField(required=True)
     propagate = True
 
     def __init__(self, *args, **kwargs):
@@ -120,7 +120,7 @@ class GroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, G3WRequestFor
                                         Div(
                                             Div(
                                                 'header_logo_img',
-                                                HTML("""<img {% if not form.header_logo_img.value %}style="display:none;"{% endif %} class="img-responsive img-thumbnail" src="{{ MEDIA_URL }}{{ form.header_logo_img.value }}">""", ),
+                                                HTML("""{% load staticfiles %}<img class="img-responsive img-thumbnail" src={% if not form.header_logo_img.value %}"{% static 'img/'|add:SETTINGS.CLIENT_G3WSUITE_LOGO %}"{% else %}"{{ MEDIA_URL }}{{ form.header_logo_img.value }}"{% endif %}>"""),
                                                 'use_logo_client',
                                                 'form_id',
                                                 'upload_url',
