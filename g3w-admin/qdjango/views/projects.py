@@ -32,13 +32,13 @@ if 'editing' in settings.INSTALLED_APPS:
 
 from qdjango.models import GeoConstraint, SingleLayerConstraint, ColumnAcl, LayerAcl
 
-from .signals import load_qdjango_widgets_data
-from .mixins.views import *
-from .forms import *
-from .models import TYPE_LAYER_FOR_WIDGET, TYPE_LAYER_FOR_DOWNLOAD, LayerAcl
-from .api.utils import serialize_vectorjoin
-from .utils.models import get_widgets4layer, comparedbdatasource
-from .utils.data import QGIS_LAYER_TYPE_NO_GEOM
+from qdjango.signals import load_qdjango_widgets_data
+from qdjango.mixins.views import *
+from qdjango.forms import *
+from qdjango.models import TYPE_LAYER_FOR_WIDGET, TYPE_LAYER_FOR_DOWNLOAD, LayerAcl
+from qdjango.api.utils import serialize_vectorjoin
+from qdjango.utils.models import get_widgets4layer, comparedbdatasource
+from qdjango.utils.data import QGIS_LAYER_TYPE_NO_GEOM
 import json
 from collections import OrderedDict
 

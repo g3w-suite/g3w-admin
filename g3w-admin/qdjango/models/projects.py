@@ -287,6 +287,11 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
         return self.title
 
     @property
+    def messages(self):
+        """ Returns the message queryset corresponding to this Project, or empty queryset """
+        return self.message_set.all()
+
+    @property
     def qgis_project(self):
         """Returns the QgsProject instance corresponding to this Project, or None in case of errors
 
