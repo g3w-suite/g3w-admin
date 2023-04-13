@@ -618,10 +618,15 @@ _.extend(g3wadmin.widget, {
         // TODO: review callback with new file_form.js
         options['callbacks'] = {
             'onSuccess': function(upload){
+                console.log($item);
+                console.log($(this));
+                console.log(upload);
+                /**
                 var $thumb = $(this).parents('.box-body').find('.img-thumbnail');
                 $thumb.attr('src', resJSON.path);
                 if ($thumb.is(':hidden'))
                     $thumb.show();
+                 **/
 
                 // for clear value
                 /*var $form_group = $(this).parents('.form-group');
@@ -632,9 +637,10 @@ _.extend(g3wadmin.widget, {
 
 
         initUploadFields($item[0], options);
+        //initUploadFields($item[0]);
 
 
-
+        /**
         var $uploader = $item.find(".file-uploader-container");
         $uploader.on('complete', function(e, id, name, resJSON, xhr){
             var $thumb = $(this).parents('.box-body').find('.img-thumbnail');
@@ -692,6 +698,7 @@ _.extend(g3wadmin.widget, {
                 }
             }
         });
+         **/
 
     },
 
