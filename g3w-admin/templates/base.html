@@ -337,7 +337,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <script>
         _.extend(g3wadmin,{
             'settings': {
-                'G3WADMIN_LOCAL_MORE_APPS': ['{{ SETTINGS.G3WADMIN_LOCAL_MORE_APPS|join:"','" }}']
+                'G3WADMIN_LOCAL_MORE_APPS': ['{{ SETTINGS.G3WADMIN_LOCAL_MORE_APPS|join:"','" }}'],
+                'FILE_FORM_UPLOAD_TEMP_URL': '{{ SETTINGS.MEDIA_URL }}{% if SETTINGS.FILE_FORM_UPLOAD_DIR %}{{ FILE_FORM_UPLOAD_DIR }}{% else %}temp_uploads{% endif %}/'
             }
         });
     </script>

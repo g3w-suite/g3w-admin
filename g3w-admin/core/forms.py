@@ -22,7 +22,7 @@ from usersmanage.configs import *
 
 class GroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, G3WRequestFormMixin, G3WACLForm, ModelForm):
     """Group form."""
-    header_logo_img = UploadedFileField(required=True)
+
     propagate = True
 
     def __init__(self, *args, **kwargs):
@@ -165,6 +165,9 @@ class GroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, G3WRequestFor
     class Meta:
         model = Group
         fields = '__all__'
+        field_classes = dict(
+            header_logo_img=UploadedFileField
+        )
 
     def clean_macrogroups(self):
 
@@ -339,7 +342,7 @@ class GeneralSuiteDataForm(TranslationModelForm, FileFormMixin, ModelForm):
 
 class MacroGroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, ModelForm):
     """MacroGroup form."""
-    logo_img = UploadedFileField()
+
     initial_editor_users = []
     editor_users = UsersChoiceField(label=_('Editor users'),
                                     queryset=User.objects.filter(groups__name__in=[G3W_EDITOR1])
@@ -412,6 +415,9 @@ class MacroGroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, ModelFor
     class Meta:
         model = MacroGroup
         fields = '__all__'
+        field_classes = dict(
+            logo_img=UploadedFileField
+        )
 
     def save(self, commit=True):
         instance = super(MacroGroupForm, self).save(commit)
