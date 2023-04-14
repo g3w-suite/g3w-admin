@@ -38,7 +38,7 @@ def create_dff_image(field_name, original_filename=None):
         file_id=file_id,
         field_name=field_name,
         original_filename=original_filename if original_filename else field_name,
-        uploaded_file=File(image)
+        uploaded_file=File(image, name='g3wsuite_logo.png')
     )
     uf.save()
 
