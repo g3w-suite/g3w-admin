@@ -241,9 +241,9 @@ class QdjangoProjectMessagesAPITest(QdjangoTestBase):
         self.assertEqual(jres['messages'],
                          {'levels': {'Info': 20, 'Warning': 30, 'Error': 40, 'Critical': 50}, 'items': [
                              {
-                                 'id': msg2.pk,
-                                 'title': 'Test message 2',
-                                 'body': '<p>Test message body 2</p>',
+                                 'id': msg_valid_from_tomorrow.pk,
+                                 'title': 'Tomorrow',
+                                 'body': '<p>Test message body valid_from</p>',
                                  'level': 40
                              },
                              {
@@ -253,11 +253,12 @@ class QdjangoProjectMessagesAPITest(QdjangoTestBase):
                                  'level': 40
                              },
                              {
-                                 'id': msg_valid_from_tomorrow.pk,
-                                 'title': 'Tomorrow',
-                                 'body': '<p>Test message body valid_from</p>',
+                                 'id': msg2.pk,
+                                 'title': 'Test message 2',
+                                 'body': '<p>Test message body 2</p>',
                                  'level': 40
-                             }
+                             },
+
                          ]})
 
         message_data = {
@@ -273,7 +274,7 @@ class QdjangoProjectMessagesAPITest(QdjangoTestBase):
 
         message_data = {
             'title': 'Valid to Tomorrow',
-            'body': '<p>Test message body valid_from</p>',
+            'body': '<p>Test message body valid_to</p>',
             'level': 40,
             'valid_from': date.today() + timedelta(days=1)
 
@@ -290,14 +291,26 @@ class QdjangoProjectMessagesAPITest(QdjangoTestBase):
         self.assertEqual(jres['messages'],
                          {'levels': {'Info': 20, 'Warning': 30, 'Error': 40, 'Critical': 50}, 'items': [
                              {
-                                 'id': msg_valid_from_today.pk,
-                                 'title': 'Today',
-                                 'body': '<p>Test message body valid_from</p>',
+                                 'id': msg_valid_to_tomorrow.pk,
+                                 'title': 'Valid to Tomorrow',
+                                 'body': '<p>Test message body valid_to</p>',
+                                 'level': 40
+                             },
+                             {
+                                 'id': msg_valid_to_today.pk,
+                                 'title': 'Valid to Today',
+                                 'body': '<p>Test message body valid_to</p>',
                                  'level': 40
                              },
                              {
                                  'id': msg_valid_from_tomorrow.pk,
                                  'title': 'Tomorrow',
+                                 'body': '<p>Test message body valid_from</p>',
+                                 'level': 40
+                             },
+                             {
+                                 'id': msg_valid_from_today.pk,
+                                 'title': 'Today',
                                  'body': '<p>Test message body valid_from</p>',
                                  'level': 40
                              },
