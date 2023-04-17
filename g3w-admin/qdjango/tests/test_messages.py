@@ -265,7 +265,7 @@ class QdjangoProjectMessagesAPITest(QdjangoTestBase):
             'title': 'Valid to Today',
             'body': '<p>Test message body valid_to</p>',
             'level': 40,
-            'valid_from': date.today()
+            'valid_to': date.today()
 
         }
 
@@ -276,11 +276,54 @@ class QdjangoProjectMessagesAPITest(QdjangoTestBase):
             'title': 'Valid to Tomorrow',
             'body': '<p>Test message body valid_to</p>',
             'level': 40,
-            'valid_from': date.today() + timedelta(days=1)
+            'valid_to': date.today() + timedelta(days=1)
 
         }
 
         msg_valid_to_tomorrow = Message(project=self.project310.instance, **message_data)
+        msg_valid_to_tomorrow.save()
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        jres = json.loads(response.content)
+
+        self.assertEqual(jres['messages'],
+                         {'levels': {'Info': 20, 'Warning': 30, 'Error': 40, 'Critical': 50}, 'items': [
+                             {
+                                 'id': msg_valid_to_tomorrow.pk,
+                                 'title': 'Valid to Tomorrow',
+                                 'body': '<p>Test message body valid_to</p>',
+                                 'level': 40
+                             },
+                             {
+                                 'id': msg_valid_to_today.pk,
+                                 'title': 'Valid to Today',
+                                 'body': '<p>Test message body valid_to</p>',
+                                 'level': 40
+                             },
+                             {
+                                 'id': msg_valid_from_today.pk,
+                                 'title': 'Today',
+                                 'body': '<p>Test message body valid_from</p>',
+                                 'level': 40
+                             },
+                             {
+                                 'id': msg_valid_from_yesterday.pk,
+                                 'title': 'Yesterday',
+                                 'body': '<p>Test message body valid_from</p>',
+                                 'level': 40
+                             },
+                             {
+                                 'id': msg2.pk,
+                                 'title': 'Test message 2',
+                                 'body': '<p>Test message body 2</p>',
+                                 'level': 40
+                             },
+                         ]})
+
+        msg_valid_to_tomorrow.valid_from = date.today() + timedelta(days=2)
+        msg_valid_to_tomorrow.valid_to = date.today() + timedelta(days=3)
         msg_valid_to_tomorrow.save()
 
         response = self.client.get(url)
