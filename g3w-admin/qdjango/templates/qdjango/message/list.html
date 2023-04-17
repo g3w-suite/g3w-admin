@@ -70,7 +70,6 @@
                 <tr>
                     <th>{%  trans 'Actions' %}</th>
                     <th>{%  trans 'Title' %}</th>
-                    <th>{%  trans 'Body' %}</th>
                     <th style="width: 40px">{% trans 'level' %}</th>
                     <th style="width:100px">{% trans 'Availble from' %}</th>
                     <th style="width:40px">{% trans 'Available to' %}</th>
@@ -88,10 +87,9 @@
                         </span>
                     </td>
                     <td>{{ object.title }}</td>
-                    <td>{{ object.body }}</td>
-                    <td>{{ object.level }}</td>
-                    <td>{{ object.valid_from }}</td>
-                    <td>{{ object.valid_to }}</td>
+                    <td>{{ object.level|message_level }}</td>
+                    <td>{% if object.valid_from %}{{ object.valid_from }}{% endif %}</td>
+                    <td>{% if object.valid_to %}{{ object.valid_to }}{% endif %}</td>
                 </tr>
                 {% endfor %}
             </tbody>
