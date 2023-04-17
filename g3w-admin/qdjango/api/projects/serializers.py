@@ -348,7 +348,7 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
                 'title': m.title,
                 'body': m.body,
                 'level': m.level
-            } for m in instance.messages]
+            } for m in messages]
         }
 
     def to_representation(self, instance):
