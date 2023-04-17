@@ -35,6 +35,7 @@ from qgis.PyQt.QtCore import QVariant, QDate, QDateTime, Qt
 from ..utils import serialize_vectorjoin
 from collections import OrderedDict
 import json
+from datetime import date
 
 import logging
 logger = logging.getLogger(__name__)
@@ -324,6 +325,22 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         :return: dict
         """
 
+        # Check meddages by validate_from and validate_to
+        messages = []
+
+        for m in instance.messages:
+            today = date.today()
+            cond_f = True
+            cond_t = True
+            if m.valid_from:
+                cond_f = today >= m.valid_from
+            if m.valid_to:
+                cond_t = today <= m.valid_to
+
+            if cond_f and cond_t:
+                messages.append(m)
+
+
         return {
             'levels': {l[1]: l[0] for l in MSG_LEVELS},
             'items': [{
@@ -331,7 +348,7 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
                 'title': m.title,
                 'body': m.body,
                 'level': m.level
-            } for m in instance.messages]
+            } for m in messages]
         }
 
     def to_representation(self, instance):
