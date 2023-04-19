@@ -618,11 +618,6 @@ _.extend(g3wadmin.widget, {
         // TODO: review callback with new file_form.js
         options['callbacks'] = {
             'onSuccess': function(upload){
-                console.log($item[0]);
-                console.log($(this));
-                console.log(upload);
-
-                console.log()
                 var $thumb = $('span:contains('+upload.name+')').parents('.box-body').find('.img-thumbnail');
                 $thumb.attr('src', g3wadmin.settings.FILE_FORM_UPLOAD_TEMP_URL+upload.id);
                 if ($thumb.is(':hidden'))

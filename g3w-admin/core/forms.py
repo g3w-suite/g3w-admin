@@ -124,7 +124,6 @@ class GroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, G3WRequestFor
                                                 'use_logo_client',
                                                 'form_id',
                                                 'upload_url',
-                                                #'delete_url',
                                                 css_class='col-md-12'
                                             ),
                                             Div(

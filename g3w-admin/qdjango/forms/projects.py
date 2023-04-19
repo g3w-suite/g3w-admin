@@ -191,6 +191,7 @@ class QdjangoProjectForm(TranslationModelForm, QdjangoProjectFormMixin, G3WFormM
                         ),
                         Div(
                             'qgis_file',
+                            'qgis_file-uploads',
                             'form_id',
                             'upload_url',
                             'delete_url',
