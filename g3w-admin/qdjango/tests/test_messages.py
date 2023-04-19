@@ -16,6 +16,7 @@ import json
 from django.urls import reverse
 from qdjango.models import Message
 from .base import QdjangoTestBase
+from datetime import date, timedelta
 
 
 class QdjangoProjectMessagesViewsTest(QdjangoTestBase):
@@ -196,6 +197,166 @@ class QdjangoProjectMessagesAPITest(QdjangoTestBase):
                                  'body': '<p>Test message body 2</p>',
                                  'level': 40
                              }
+                         ]})
+
+        # Test valid_from and valid_to
+
+        message_data = {
+            'title': 'Yesterday',
+            'body': '<p>Test message body valid_from</p>',
+            'level': 40,
+            'valid_from': date.today() - timedelta(days=1)
+        }
+
+        msg_valid_from_yesterday = Message(project=self.project310.instance, **message_data)
+        msg_valid_from_yesterday.save()
+
+        message_data = {
+            'title': 'Today',
+            'body': '<p>Test message body valid_from</p>',
+            'level': 40,
+            'valid_from': date.today()
+
+        }
+
+        msg_valid_from_today = Message(project=self.project310.instance, **message_data)
+        msg_valid_from_today.save()
+
+        message_data = {
+            'title': 'Tomorrow',
+            'body': '<p>Test message body valid_from</p>',
+            'level': 40,
+            'valid_from': date.today() + timedelta(days=1)
+
+        }
+
+        msg_valid_from_tomorrow = Message(project=self.project310.instance, **message_data)
+        msg_valid_from_tomorrow.save()
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        jres = json.loads(response.content)
+
+        self.assertEqual(jres['messages'],
+                         {'levels': {'Info': 20, 'Warning': 30, 'Error': 40, 'Critical': 50}, 'items': [
+                             {
+                                 'id': msg_valid_from_today.pk,
+                                 'title': 'Today',
+                                 'body': '<p>Test message body valid_from</p>',
+                                 'level': 40
+                             },
+                             {
+                                 'id': msg_valid_from_yesterday.pk,
+                                 'title': 'Yesterday',
+                                 'body': '<p>Test message body valid_from</p>',
+                                 'level': 40
+                             },
+                             {
+                                 'id': msg2.pk,
+                                 'title': 'Test message 2',
+                                 'body': '<p>Test message body 2</p>',
+                                 'level': 40
+                             },
+
+                         ]})
+
+        message_data = {
+            'title': 'Valid to Today',
+            'body': '<p>Test message body valid_to</p>',
+            'level': 40,
+            'valid_to': date.today()
+
+        }
+
+        msg_valid_to_today = Message(project=self.project310.instance, **message_data)
+        msg_valid_to_today.save()
+
+        message_data = {
+            'title': 'Valid to Tomorrow',
+            'body': '<p>Test message body valid_to</p>',
+            'level': 40,
+            'valid_to': date.today() + timedelta(days=1)
+
+        }
+
+        msg_valid_to_tomorrow = Message(project=self.project310.instance, **message_data)
+        msg_valid_to_tomorrow.save()
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        jres = json.loads(response.content)
+
+        self.assertEqual(jres['messages'],
+                         {'levels': {'Info': 20, 'Warning': 30, 'Error': 40, 'Critical': 50}, 'items': [
+                             {
+                                 'id': msg_valid_to_tomorrow.pk,
+                                 'title': 'Valid to Tomorrow',
+                                 'body': '<p>Test message body valid_to</p>',
+                                 'level': 40
+                             },
+                             {
+                                 'id': msg_valid_to_today.pk,
+                                 'title': 'Valid to Today',
+                                 'body': '<p>Test message body valid_to</p>',
+                                 'level': 40
+                             },
+                             {
+                                 'id': msg_valid_from_today.pk,
+                                 'title': 'Today',
+                                 'body': '<p>Test message body valid_from</p>',
+                                 'level': 40
+                             },
+                             {
+                                 'id': msg_valid_from_yesterday.pk,
+                                 'title': 'Yesterday',
+                                 'body': '<p>Test message body valid_from</p>',
+                                 'level': 40
+                             },
+                             {
+                                 'id': msg2.pk,
+                                 'title': 'Test message 2',
+                                 'body': '<p>Test message body 2</p>',
+                                 'level': 40
+                             },
+                         ]})
+
+        msg_valid_to_tomorrow.valid_from = date.today() + timedelta(days=2)
+        msg_valid_to_tomorrow.valid_to = date.today() + timedelta(days=3)
+        msg_valid_to_tomorrow.save()
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        jres = json.loads(response.content)
+
+        self.assertEqual(jres['messages'],
+                         {'levels': {'Info': 20, 'Warning': 30, 'Error': 40, 'Critical': 50}, 'items': [
+                             {
+                                 'id': msg_valid_to_today.pk,
+                                 'title': 'Valid to Today',
+                                 'body': '<p>Test message body valid_to</p>',
+                                 'level': 40
+                             },
+                             {
+                                 'id': msg_valid_from_today.pk,
+                                 'title': 'Today',
+                                 'body': '<p>Test message body valid_from</p>',
+                                 'level': 40
+                             },
+                             {
+                                 'id': msg_valid_from_yesterday.pk,
+                                 'title': 'Yesterday',
+                                 'body': '<p>Test message body valid_from</p>',
+                                 'level': 40
+                             },
+                             {
+                                 'id': msg2.pk,
+                                 'title': 'Test message 2',
+                                 'body': '<p>Test message body 2</p>',
+                                 'level': 40
+                             },
                          ]})
 
         self.client.logout()
