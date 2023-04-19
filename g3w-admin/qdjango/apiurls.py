@@ -1,15 +1,15 @@
-# coding=utf-8
-""""qdjango API URLs
-
-.. note:: This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
 """
+Add your API routes here.
+"""
+# API ROOT: /qdjango/
+
+__author__    = 'lorenzetti@gis3w.it'
+__copyright__ = 'Copyright 2015 - 2023, Gis3w'
+__license__   = "MPL 2.0"
 
 from django.urls import path, re_path
 from django.contrib.auth.decorators import login_required
+
 from .api.layers.views import (
     LayerUserInfoAPIView,
     LayerAuthGroupInfoAPIView,
@@ -37,22 +37,19 @@ from .api.projects.views import (
     QdjangoAsGeoTiffAPIview,
     QdjangoPrjThemeAPIview
 )
-
-
 from .api.column_acl.views import (
     ColumnAclList,
     ColumnAclDetail,
     ColumnAclFields,
 )
-
 from .views import ProjectSetOrderView
-from rest_framework.urlpatterns import format_suffix_patterns
 
-# Single layer Constraints
+
 urlpatterns = [
 
     #############################################################
-    # Subset string rules
+    # Subset string rules (Single layer)
+    #############################################################
 
     # Detail of a subsetstringrule
     path(
@@ -89,8 +86,10 @@ urlpatterns = [
         name='qdjango-subsetstringrule-api-list'
     ),
 
+
     #############################################################
-    # Expression rules
+    # Expression rules (Single layer)
+    #############################################################
 
     # Detail of a expression rule
     path(
@@ -129,7 +128,8 @@ urlpatterns = [
 
 
     #############################################################
-    # Constraints
+    # Constraints (Single layer)
+    #############################################################
 
     # Detail of a Constraint
     path(
@@ -159,8 +159,10 @@ urlpatterns = [
         name='qdjango-constraint-api-list'
     ),
 
+
     #############################################################
-    # ColumnAcl
+    # ColumnAcl (Single layer)
+    #############################################################
 
     # Detail of a ColumnAcl
     path(
@@ -206,7 +208,8 @@ urlpatterns = [
 
 
     #############################################################
-    # GeoConstraints
+    # GeoConstraints (Single layer)
+    #############################################################
 
     # Detail of a GeoConstraintRule
     path(
@@ -274,6 +277,7 @@ urlpatterns = [
 
     #############################################################
     # OGC (web) services
+    #############################################################
 
     # All Service(s)
     path(
@@ -282,8 +286,11 @@ urlpatterns = [
         name='qdjango-webservice-api-list'
     ),
 
+
     #############################################################
     # General API
+    #############################################################
+
     path(
         'api/asgeotiff/<int:project_id>/',
         QdjangoAsGeoTiffAPIview.as_view(),
@@ -295,18 +302,22 @@ urlpatterns = [
         name='qdjango-prjtheme-api'
     ),
 
+
+    #############################################################
     # Order
-    # ============================================================
+    #############################################################
+
     path(
         'jx/project/<int:project_id>/setorder/',
         login_required(ProjectSetOrderView.as_view()),
         name='qdjango-project-set-order'
     ),
 
-]
 
-# Layer style manager
-urlpatterns += [
+    #############################################################
+    # Layer style manager
+    #############################################################
+
     path(
         'api/layerstyles/<int:layer_id>/',
         login_required(LayerStyleListView.as_view()),
@@ -318,10 +329,11 @@ urlpatterns += [
         login_required(LayerStyleDetailView.as_view()),
         name='qdjango-style-detail-api'
     ),
-]
 
-# API info
-urlpatterns += [
+    #############################################################
+    # API Info
+    #############################################################
+
     # Other vector layers in project get by qdjango layer id
     re_path(
         r'^api/info/layer/polygon/(?P<layer_id>[-_\w\d]+)/$',
@@ -342,4 +354,5 @@ urlpatterns += [
         login_required(LayerAuthGroupInfoAPIView.as_view()),
         name='qdjango-api-info-layer-authgroup'
     ),
+
 ]

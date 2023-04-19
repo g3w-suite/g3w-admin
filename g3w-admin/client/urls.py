@@ -1,12 +1,24 @@
-from django.conf.urls import url
+"""
+Add your API routes here.
+"""
+# API ROOT: /:lang/admin/
+
+__author__    = 'lorenzetti@gis3w.it'
+__copyright__ = 'Copyright 2015 - 2023, Gis3w'
+__license__   = "MPL 2.0"
+
 from django.urls import path, re_path
+
 from .views import *
+
 
 USER_MEDIA_PREFIX = 'me'
 
 urlpatterns = [
 
-    # g3w-client bootstrap
+    #############################################################
+    # G3W-CLIENT bootstrap
+    #############################################################
     re_path(
         r'^map/(?P<map_name_alias>[-_\w\d]+)/$',
         client_map_alias_view,
@@ -25,11 +37,13 @@ urlpatterns = [
         name='group-project-slug-map'
     ),
 
-    # url for media reading upload
+    #############################################################
+    # Media reading upload
+    #############################################################
     re_path(
-        r'^{}/(?P<project_type>[-_\w\d]+)/(?P<layer_id>[0-9]+)/(?P<file_name>[\(\)-_. \w\d]+)'
-        .format(USER_MEDIA_PREFIX),
-        user_media_view, name='user-media'
+        r'^{}/(?P<project_type>[-_\w\d]+)/(?P<layer_id>[0-9]+)/(?P<file_name>[\(\)"\'-_. \w\d]+)'.format(USER_MEDIA_PREFIX),
+        user_media_view,
+        name='user-media'
     ),
 
     path(

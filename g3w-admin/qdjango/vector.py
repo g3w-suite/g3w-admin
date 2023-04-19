@@ -15,14 +15,34 @@ from qgis.core import \
     QgsVectorLayer
 
 from core.api.base.vector import MetadataVectorLayer
-from core.api.base.views import (MODE_CONFIG, MODE_DATA, MODE_SHP, MODE_XLS, MODE_GPX, MODE_CSV, MODE_FILTER_TOKEN,
-                                 APIException, BaseVectorApiView, MODE_GPKG,
-                                 IntersectsBBoxFilter)
-from core.api.filters import (IntersectsBBoxFilter, OrderingFilter,
-                              SearchFilter, SuggestFilterBackend, FieldFilterBackend, QgsExpressionFilterBackend)
+from core.api.base.views import (
+    MODE_CONFIG,
+    MODE_DATA,
+    MODE_SHP,
+    MODE_XLS,
+    MODE_GPX,
+    MODE_CSV,
+    MODE_FILTER_TOKEN,
+    APIException,
+    BaseVectorApiView,
+    MODE_GPKG,
+    IntersectsBBoxFilter,
+    MODE_FEATURE_COUNT
+)
+from core.api.filters import (
+    IntersectsBBoxFilter,
+    OrderingFilter,
+    SearchFilter,
+    SuggestFilterBackend,
+    FieldFilterBackend,
+    QgsExpressionFilterBackend
+)
 from core.api.permissions import ProjectPermission
 
-from core.utils.qgisapi import get_qgis_layer
+from core.utils.qgisapi import (
+    get_qgis_layer,
+    get_qgis_featurecount
+)
 from core.utils.structure import mapLayerAttributesFromQgisLayer
 from core.utils.vector import BaseUserMediaHandler
 
@@ -242,7 +262,8 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
         MODE_GPX,    # get GPX
         MODE_CSV,  # get CSV
         MODE_GPKG,  # get GeoPackage
-        MODE_FILTER_TOKEN  # get session filter token
+        MODE_FILTER_TOKEN,  # get session filter token
+        MODE_FEATURE_COUNT # return the number of feature for every style category
     ]
 
     mapping_layer_attributes_function = mapLayerAttributesFromQgisLayer
@@ -423,6 +444,17 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
             s.delete()
 
         self.results.update({'data': token_data})
+
+    def response_featurecount_mode(self, request):
+        """ Return the feature count value for every layer style category """
+
+        if request.method == 'POST':
+            request_data = request.data
+        else:
+            request_data = request.query_params
+
+        self.results.update({'data': get_qgis_featurecount(self.metadata_layer.qgis_layer,
+                                                           request_data.get('style', None))})
 
     def _selection_responde_download_mode(self, qgs_request, save_options):
         """ Filter download response mode: shp, xls, gpx.."""

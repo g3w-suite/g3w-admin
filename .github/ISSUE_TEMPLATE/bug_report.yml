@@ -36,7 +36,7 @@ body:
      Please provide as much information as possible in order to resolve your issue. Need help? [Find out your version](https://github.com/g3w-suite/g3w-admin#version).
     value: |
      - g3w-admin: __version__
-     - g3-client: __version__
+     - g3w-client: __version__
      - browser: __name__
      - operating system: __name and version (desktop or mobile)__
   validations:

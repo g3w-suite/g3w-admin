@@ -34,6 +34,7 @@ from qdjango.utils.validators import feature_validator
 
 from qgis.PyQt.QtCore import QDateTime, QDate, QTime, QVariant, NULL
 
+import re
 import logging
 
 logger = logging.getLogger('module_editing')
@@ -288,6 +289,23 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                                             geojson_feature['properties'][qgis_field.name()]:
                                         value = qtype.fromString(geojson_feature['properties'][qgis_field.name()],
                                                                  options['field_format'])
+
+
+                                        if re.search("^yy[^y]|[^y]+yy[^y]+|[^y]+yy$|^yy$", options['field_format']):
+                                            current_century = int(str(QDate.currentDate().year())[0:2])
+                                            if qtype == QDate:
+                                                value_century = int(str(value.year())[0:2])
+                                                value_yy = str(value.year())[2:4]
+                                            else:
+                                                value_century = int(str(value.date().year())[0:2])
+                                                value_yy = str(value.date().year())[2:4]
+                                            value_year = int(f"{current_century}{value_yy}")
+                                            if value_century != current_century:
+                                                if qtype == QDate:
+                                                    value = QDate(value_year, value.month(), value.day())
+                                                if qtype == QDateTime:
+                                                    value.setDate(value_year, value.month(), value.day())
+
                                         feature.setAttribute(qgis_field.name(), value)
                                         field_datetime_values[qgis_field.name()] = value
                                         field_datetime_field_formats[qgis_field.name()] = options['field_format']
@@ -377,7 +395,7 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                             fnames = [f.name() for f in feature.fields()]
                             jfeature = json.loads(ex.exportFeature(feature, dict(zip(fnames, feature.attributes()))))
 
-                            # Fore date and datetime and time fields:
+                            # For date and datetime and time fields:
                             if field_datetime_values:
                                 for fname, fvalue in jfeature['properties'].items():
                                     try:
@@ -437,15 +455,17 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
 
             fids = post_layer_data[EDITING_POST_DATA_DELETED]
 
-            # get feature fids from server fids from client.
-            fids = get_layer_fids_from_server_fids([str(id) for id in fids], qgis_layer)
-
             for feature_id in fids:
 
                 # control feature locked
                 if not metadata_layer.lock.checkFeatureLocked(str(feature_id)):
                     raise Exception(self.no_more_lock_feature_msg.format(
                         feature_id, metadata_layer.client_var))
+
+            # get feature fids from server fids from client.
+            fids = get_layer_fids_from_server_fids([str(id) for id in fids], qgis_layer)
+
+            for feature_id in fids:
 
                 # Get feature to delete
                 ex = QgsJsonExporter(qgis_layer)

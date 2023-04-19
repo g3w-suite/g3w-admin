@@ -116,6 +116,7 @@ h5 small {
     font-weight: 400;
 }
 
+/* For WCAG guidelines */
 .acl-box .help-block {
     color: #ffffff;
 }

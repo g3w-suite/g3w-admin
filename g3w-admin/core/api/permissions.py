@@ -28,5 +28,7 @@ class GroupIsActivePermission(BasePermission):
 
     def has_permission(self, request, view):
         func, args, kwargs = request.resolver_match
-        kkargs = {'pk': kwargs['group_slug']} if kwargs['group_slug'].isnumeric() else {'slug': kwargs['group_slug']}
+        kkargs = {'pk': kwargs['group_slug']} \
+            if (kwargs['group_slug'].isnumeric() and func.__name__ != 'GroupConfigApiView') \
+            else {'slug': kwargs['group_slug']}
         return bool(Group.objects.get(**kkargs).is_active)

@@ -36,6 +36,10 @@ from core.utils.qgisapi import (
     ExpressionLayerError
 )
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 class APIExpressionEvalError(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
@@ -166,6 +170,7 @@ class QgsExpressionLayerContextEvalView(G3WAPIView):
                 qgs_layer_id = data.get('qgs_layer_id')
                 formatter = data.get('formatter', '0')
                 parent = data.get('parent', None)
+                field_name = data.get('field_name', None)
             except:
                 raise APIExpressionEmptyError()
         else:
@@ -174,13 +179,14 @@ class QgsExpressionLayerContextEvalView(G3WAPIView):
             qgs_layer_id = request.data.get('qgs_layer_id')
             formatter = request.data.get('formatter', '0')
             parent = request.data.get('parent', None)
+            field_name = request.data.get('field_name', None)
 
         if expression_text is None:
             raise APIExpressionEmptyError()
 
         try:
             result = expression_eval(
-                expression_text, project_id, qgs_layer_id, form_data, int(formatter), parent)
+                expression_text, project_id, qgs_layer_id, form_data, int(formatter), parent, field_name)
 
             # Case Qvariant NULL
             if result == NULL:
@@ -249,7 +255,12 @@ class InterfaceOws(G3WAPIView):
 
         # Info formats
         # -----------------------------------
-        self.results.results.update({'info_formats': ows.getOperationByName('GetFeatureInfo').formatOptions})
+        try:
+            self.results.results.update({'info_formats': ows.getOperationByName('GetFeatureInfo').formatOptions})
+        except Exception as e:
+
+            # Case where OWS service doesn't support GetFeatureInfo
+            logger.debug(f'The service {url} doesn\'t support GetFeatureInfo, err: {str(e)}')
 
         # Layers
         # -----------------------------------
@@ -262,7 +273,11 @@ class InterfaceOws(G3WAPIView):
             # Build crs
             crss = []
             for srid in ows[al].crsOptions:
-                crs = QgsCoordinateReferenceSystem(f"EPSG:{srid}")
+                if srid.startswith('EPSG:') or srid.startswith('CRS:'):
+                    crs = QgsCoordinateReferenceSystem()
+                    crs.createFromOgcWmsCrs(srid)
+                else:
+                    crs = QgsCoordinateReferenceSystem(f"EPSG:{srid}")
 
                 if crs.postgisSrid() in settings.G3W_PROJ4_EPSG.keys():
                     proj4 = settings.G3W_PROJ4_EPSG[crs.postgisSrid()]

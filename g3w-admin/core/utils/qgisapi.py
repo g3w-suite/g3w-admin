@@ -27,11 +27,20 @@ from qgis.core import (
     QgsExpressionContext,
     QgsFeature,
     QgsJsonUtils,
+    QgsWkbTypes
+)
+
+
+from qgis.PyQt.QtCore import (
+    QDate,
+    QDateTime,
+    QTime
 )
 
 from django.utils.translation import ugettext_lazy as _
 from qdjango.apps import get_qgs_project
 from qdjango.models import Layer, Project
+
 
 logger = logging.getLogger(__file__)
 
@@ -432,7 +441,8 @@ class ExpressionForbiddenError(Exception):
     pass
 
 
-def expression_eval(expression_text, project_id=None, qgs_layer_id=None, form_data=None, formatter=0, parent=None):
+def expression_eval(expression_text, project_id=None, qgs_layer_id=None, form_data=None, formatter=0, parent=None,
+                    field_name=None):
     """Evaluates a QgsExpression and returns the result
 
     :param expression_text: The QgsExpression text
@@ -446,6 +456,7 @@ def expression_eval(expression_text, project_id=None, qgs_layer_id=None, form_da
     :param formatter: Indicate if form_data values contains formatter values or original features value.
     :type formatter: int, optional
     :param parent: A dictionary that maps to a GeoJSON representation of the parent feature of feature currently edited
+    :param field_name: A string with field name to which the expression belongs.
     in the form and parent QGIS Layer, default to None
     :type parent: dict, optional
     """
@@ -571,4 +582,59 @@ def expression_eval(expression_text, project_id=None, qgs_layer_id=None, form_da
     if expression.hasEvalError():
         raise ExpressionEvalError(expression.evalErrorString())
 
+    # Formatting result if it is instance of QDate, QDateTime, QTime
+    if isinstance(result, (QDate, QDateTime, QTime)):
+        try:
+            options = layer.qgis_layer.editorWidgetSetup(layer.qgis_layer.fields().indexFromName(field_name)).config()
+            result = result.toString(options['field_format'])
+        except:
+            result = result.toString()
+
+
     return result
+
+
+def get_qgis_featurecount(qgis_layer, style=None):
+    """
+    Given a QGIS layer, return feature counted for every style category.
+
+    I.e.:
+
+    {
+        "0": 688,
+        "1": 296,
+        "2": 524,
+        "3": 613,
+        "4": 336
+    }
+
+    :param qgis_layer: QgsVectorLayer instance.
+    :param style: String with style name.
+    :return: A dict key:value for every style rule-key
+    """
+
+    if style:
+        current_style = qgis_layer.styleManager().currentStyle()
+
+        if current_style and style and style != current_style:
+            qgis_layer.styleManager().setCurrentStyle(style)
+
+    if qgis_layer.wkbType() != QgsWkbTypes.NoGeometry:
+
+        renderer = qgis_layer.renderer()
+        counter = qgis_layer.countSymbolFeatures()
+
+        if counter:
+            counter.waitForFinished()
+            ret = {item.ruleKey(): counter.featureCount(item.ruleKey())
+                   for item in renderer.legendSymbolItems()}
+        else:
+            ret = {item.ruleKey(): qgis_layer.featureCount(item.ruleKey())
+                   for item in renderer.legendSymbolItems()}
+    else:
+        ret = {'0': qgis_layer.featureCount()}
+
+    if style and current_style and style != current_style:
+        qgis_layer.styleManager().setCurrentStyle(current_style)
+
+    return ret
