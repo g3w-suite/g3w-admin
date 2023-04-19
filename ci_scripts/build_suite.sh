@@ -24,6 +24,11 @@ if [ ! -e ${BUILD_DONE_FILE} ]; then
     echo "Building javascript code ..."
     yarn --ignore-engines --ignore-scripts --prod
     nodejs -e "try { require('fs').symlinkSync(require('path').resolve('node_modules/@bower_components'), 'g3w-admin/core/static/bower_components', 'junction') } catch (e) { console.log(e); }"
+
+    echo "Create unique django SECRET_KEY"
+    SECRET_KEY=$(python3 -c "from django.core.management.utils import get_random_secret_key;sk=get_random_secret_key();print (sk)")
+    echo "SECRET_KEY = '${SECRET_KEY}'" >> /code/g3w-admin/base/settings/base.py
+
     touch ${BUILD_DONE_FILE}
 else
     echo "Build was already done, skipping ..."
