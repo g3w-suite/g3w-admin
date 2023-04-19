@@ -265,10 +265,6 @@ LOGGING = {
 DB_LOGGER_ADMIN_LIST_PER_PAGE = 10
 DB_LOGGER_ENABLE_FORMATTER = False
 
-
-MGC = '-99:dodfEz3K2rziGayGnw_FyOuWdCM'
-MPC = '-99:dodfEz3K2rziGayGnw_FyOuWdCM'
-
 FRONTEND = False
 FRONTEND_APP = 'frontend'
 

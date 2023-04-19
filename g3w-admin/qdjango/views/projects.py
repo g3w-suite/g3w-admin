@@ -90,7 +90,6 @@ class QdjangoProjectCreateView(QdjangoProjectCUViewMixin, G3WGroupViewMixin, G3W
     @method_decorator(permission_required('core.add_project_to_group', (Group, 'slug', 'group_slug'), return_403=True))
     @method_decorator(permission_required('qdjango.add_project', return_403=True))
     @method_decorator(is_active_required((Group, 'slug', 'group_slug')))
-    @method_decorator(check_madd('MPC:XYamtBJA_JgFGmFvEa9x193rnLg', Project))
     def dispatch(self, *args, **kwargs):
         return super(QdjangoProjectCreateView, self).dispatch(*args, **kwargs)
 
