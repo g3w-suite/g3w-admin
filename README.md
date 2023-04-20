@@ -72,7 +72,7 @@ cd /path/to/your/development/workspace
 git clone https://github.com/g3w-suite/g3w-admin.git --single-branch --branch dev ./g3w-admin
 ```
 
-Create and activate [**virtualenv**](https://g3w-suite.readthedocs.io/en/latest/install.html#create-virtualenv) within your g3w-admin local repository:
+Create and activate [**virtualenv**](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/#creating-a-virtual-environment) within your g3w-admin local repository:
 
 ```sh
 cd ./g3w-admin
