@@ -39,6 +39,6 @@ if TESTING:
 # Read SECRET_KEY from SECRET_KEY_FILE environment variable
 try:
     with open(os.getenv('SECRET_KEY_FILE', '/shared-volume/.secret_key')) as f:
-        SECRET_KEY = f.read()
+        SECRET_KEY = f.read().strip()
 except:
     pass
