@@ -60,10 +60,9 @@ To figure out which to choose, see also: [deploying django](https://docs.djangop
 Then in your development environment:
 
 1. download and install [**Node.js**](https://nodejs.org/en/download/) and [**Yarn**](https://yarnpkg.com/en/docs/install)
-3. get a [**Python**](https://www.python.org/downloads/) version that is compatible with the [table](#versions-and-branches) above
-4. install and activate [**virtualenv**](https://g3w-suite.readthedocs.io/en/latest/install.html#create-virtualenv) on system login
-5. install and activate a [**database**](https://docs.djangoproject.com/en/2.2/ref/databases/) that fits your needs
-6. (optional) install [**Paver**](https://pythonhosted.org/Paver/#installation) for developing locally
+2. get a [**Python**](https://www.python.org/downloads/) version that is compatible with the [table](#versions-and-branches) above
+3. install and activate a [**database**](https://docs.djangoproject.com/en/2.2/ref/databases/) that fits your needs
+4. (optional) install [**Paver**](https://pythonhosted.org/Paver/#installation) for developing locally
 
 After that you can clone this repository:
 
@@ -73,14 +72,20 @@ cd /path/to/your/development/workspace
 git clone https://github.com/g3w-suite/g3w-admin.git --single-branch --branch dev ./g3w-admin
 ```
 
-Create a [**virtualenv**](https://g3w-suite.readthedocs.io/en/latest/install.html#create-virtualenv) from within your g3w-admin local repository:
+Create and activate [**virtualenv**](https://g3w-suite.readthedocs.io/en/latest/install.html#create-virtualenv) within your g3w-admin local repository:
 
 ```sh
 cd ./g3w-admin
+
+python3 -m venv --system-site-packages [--prompt g3w-admin] venv
 ```
 
 ```sh
-mkvirtualenv --system-site-packages .
+# Linux / Mac OS
+source venv/bin/activate
+
+# Windows
+.\venv\Scripts\activate
 ```
 
 Create the following configuration file from the available template:
