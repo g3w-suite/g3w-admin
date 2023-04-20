@@ -21,7 +21,7 @@ Software releases follow theese main branches as described in the compatibility 
 | [v.3.3.x]  | 3.6            | 2.2            | 3.16          | 3.3           | Sep 2021      | 🚨 End of Life | 
 | [v.3.2.x]  | 3.6            | 2.2            | 3.16          | 3.2           | Apr 2021      | 🚨 End of Life |
 | [v.3.1.x]  | 3.6            | 2.2            | 3.10          | 3.1           | Nov 2020      | 🚨 End of Life |
-| [v.3.0.x]  | 3.6            | 2.2            | 3.1           | 3.0           | Nov 2020      | 🚨 End of Life |
+| [v.3.0.x]  | 3.6            | 2.2            | 3.10           | 3.0           | Nov 2020      | 🚨 End of Life |
 | [dj22-py3] | 3.6            | 2.2            | [🔗]         |               |               | 🚨 End of Life |
 | [py2]      | 2.7            | 1.11           | [🔗]         |               |               | 🚨 End of Life |
 
