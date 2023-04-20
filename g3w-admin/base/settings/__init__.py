@@ -4,6 +4,7 @@ from .base import *
 from .base_layout_settings import *
 from .base_geo_settings import *
 from .local_settings import *
+import os
 
 # Determine if we are running a test and import the tests.py at the the end of
 # this init
@@ -34,3 +35,10 @@ if TESTING:
         from .tests_settings import *
     except ImportError:
         pass
+
+# Read SECRET_KEY from SECRET_KEY_FILE environment variable
+try:
+    with open(os.getenv('SECRET_KEY_FILE', '/shared-volume/.secret_key')) as f:
+        SECRET_KEY = f.read()
+except:
+    pass

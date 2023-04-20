@@ -14,6 +14,7 @@ MEDIA_ROOT='/shared-volume/media'
 PROJECTS_DIR="${MEDIA_ROOT}/projects"
 BUILD_DONE_FILE='/shared-volume/build_done'
 DJANGO_DIRECTORY="${CODE_DIRECTORY}/g3w-admin"
+SECRET_KEY_FILE='/shared-volume/.secret_key'
 
 cd '/code/'
 
@@ -27,7 +28,8 @@ if [ ! -e ${BUILD_DONE_FILE} ]; then
 
     echo "Create unique django SECRET_KEY"
     SECRET_KEY=$(python3 -c "from django.core.management.utils import get_random_secret_key;sk=get_random_secret_key();print (sk)")
-    echo "SECRET_KEY = '${SECRET_KEY}'" >> /code/g3w-admin/base/settings/base.py
+    touch ${BUILD_DONE_FILE}
+    echo "SECRET_KEY = '${SECRET_KEY}'" >> ${SECRET_KEY_FILE}
 
     touch ${BUILD_DONE_FILE}
 else
