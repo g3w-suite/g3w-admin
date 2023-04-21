@@ -259,6 +259,11 @@ _.extend(g3wadmin.ui, {
         else {
             var $widgetItem = $('.datepicker');
         }
+
+        // Fix dataformat form django i18n
+        $.fn.datepicker.dates['en']['format'] = 'yyyy-mm-dd';
+        $.fn.datepicker.dates['ro']['format'] = 'dd.mm.yyyy';
+
         $widgetItem.datepicker({
             language:CURRENT_LANGUAGE_CODE
         });
