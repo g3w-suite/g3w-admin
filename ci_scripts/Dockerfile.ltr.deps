@@ -1,5 +1,4 @@
 FROM ubuntu:jammy
-# This image is available as g3wsuite/g3w-suite-deps-py3:latest
 LABEL maintainer="Gis3w" Description="This image is used to prepare build requirements for g3w-suite CI testing" Vendor="Gis3w" Version="1.3"
 
 ENV DEBIAN_FRONTEND=noninteractive
