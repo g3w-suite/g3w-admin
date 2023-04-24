@@ -17,6 +17,7 @@
 <script type="text/javascript" src="{% static "qdjango/js/widget.js" %}"></script>
 <script type="text/javascript">
     $('#tree').treeview({data:{{ layers_tree|safe }}});
+
     ga.ui.initNotShowAtrrtibutesTableCheckBox();
     ga.ui.initNolegendLayerCheckBox();
     ga.ui.initDownloadLayerCheckBox();
@@ -26,27 +27,10 @@
     ga.ui.initDownloadLayerGpkgCheckBox();
     ga.ui.initExternalLayerCheckBox();
 
-    // on check of every download
-    $(document).on('ifChanged', '[name="check_every_download"]', function(e){
-        var state = e.target.checked ? 'check' : 'uncheck';
-        $('[data-widget-type="downloadLayer"]').iCheck(state);
-    });
-    $(document).on('ifChanged', '[name="check_every_download_xls"]', function(e){
-        var state = e.target.checked ? 'check' : 'uncheck';
-        $('[data-widget-type="downloadLayerxls"]').iCheck(state);
-    });
-    $(document).on('ifChanged', '[name="check_every_download_csv"]', function(e){
-        var state = e.target.checked ? 'check' : 'uncheck';
-        $('[data-widget-type="downloadLayercsv"]').iCheck(state);
-    });
-    $(document).on('ifChanged', '[name="check_every_download_gpx"]', function(e){
-        var state = e.target.checked ? 'check' : 'uncheck';
-        $('[data-widget-type="downloadLayergpx"]').iCheck(state);
-    });
-    $(document).on('ifChanged', '[name="check_every_download_gpkg"]', function(e){
-        var state = e.target.checked ? 'check' : 'uncheck';
-        $('[data-widget-type="downloadLayergpkg"]').iCheck(state);
-    });
+    ga.ui.__bindiCheckAttr('[name="check_every_download"]',      '[data-widget-type="downloadLayer"]');
+    ga.ui.__bindiCheckAttr('[name="check_every_download_xls"]',  '[data-widget-type="downloadLayerxls"]');
+    ga.ui.__bindiCheckAttr('[name="check_every_download_csv"]',  '[data-widget-type="downloadLayercsv"]');
+    ga.ui.__bindiCheckAttr('[name="check_every_download_gpkg"]', '[data-widget-type="downloadLayergpkg"]');
 
     // add expression svg
     ga.ui.expression_svg = '<svg id="expressioniconsvg" height="20" width="20" viewBox="0 0 32 32"\n' +

@@ -338,6 +338,12 @@ _.extend(g3wadmin.ui, {
         });
     },
 
+    __bindiCheckAttr: function(selector, attr) {
+       $(document).on('ifChanged', selector, function(e) {
+           $(attr).iCheck(e.target.checked ? 'check' : 'uncheck');
+       });
+    },
+
     __onClick: function(selector, callback) {
         return $(document).on('click', selector, callback);
     },
