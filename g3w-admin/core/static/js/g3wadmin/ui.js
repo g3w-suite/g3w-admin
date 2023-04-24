@@ -226,16 +226,9 @@ _.extend(g3wadmin.ui, {
     },
 
     initRadioCheckbox: function(context) {
-        if (!_.isUndefined(context)) {
-            var $widgetItem = $(context).find('input[type="checkbox"], input[type="radio"]');
-        }
-        else {
-            var $widgetItem = $('input[type="checkbox"], input[type="radio"]');
-        }
+        const $widgetItem = this.__$widgetItem(context, 'input[type="checkbox"], input[type="radio"]');
 
         /* Get skin if is set */
-
-
         _.each($widgetItem, function(item){
             var skin = 'green';
             $item = $(item);
@@ -253,56 +246,25 @@ _.extend(g3wadmin.ui, {
     },
 
     initBootstrapDatepicker: function(context) {
-        if (!_.isUndefined(context)) {
-            var $widgetItem = $(context).find('.datepicker');
-        }
-        else {
-            var $widgetItem = $('.datepicker');
-        }
-
-        // Fix dataformat form django i18n
-        $.fn.datepicker.dates['en']['format'] = 'yyyy-mm-dd';
-        $.fn.datepicker.dates['ro']['format'] = 'dd.mm.yyyy';
-
-        $widgetItem.datepicker({
+        this.__$widgetItem(context, '.datepicker').datepicker({
             language:CURRENT_LANGUAGE_CODE
         });
     },
 
     initBootstrapTimepicker: function(context) {
-        if (!_.isUndefined(context)) {
-            var $widgetItem = $(context).find('.timepicker');
-        }
-        else {
-            var $widgetItem = $('.timepicker');
-        }
-        $widgetItem.timepicker({
+        this.__$widgetItem(context, '.timepicker').timepicker({
             showMeridian: false,
             showInputs: true,
             //appendWidgetTo:$widgetItem
-
         });
     },
 
     initBootstrapColorpicker: function(context) {
-        if (!_.isUndefined(context)) {
-            var $widgetItem = $(context).find('.colorpicker');
-        }
-        else {
-            var $widgetItem = $('.colorpicker');
-        }
-        $widgetItem.parent().addClass('colorpicker-component').colorpicker();
+        this.__$widgetItem(context, '.colorpicker').parent().addClass('colorpicker-component').colorpicker();
     },
 
     initSelect2: function(context) {
-        if (!_.isUndefined(context)) {
-            var $widgetItem = $(context).find('.select2');
-        }
-        else {
-            var $widgetItem = $('.select2');
-        }
-
-        $widgetItem.select2();
+        this.__$widgetItem(context, '.select2').select2();
     },
 
     initBackHistory: function() {
@@ -366,16 +328,10 @@ _.extend(g3wadmin.ui, {
     },
 
     showMessageOnLoad: function(context) {
-        if (!_.isUndefined(context)) {
-            var $widgetItem = $(context).find('[data-widget-type="showMessageOnLoad"]');
+        const $widgetItem = this.__$widgetItem(context, '[data-widget-type="showMessageOnLoad"]');
+        if ($widgetItem.length > 0){
+            ga.widget.showMessageOnLoad($widgetItem);
         }
-        else {
-            var $widgetItem = $('[data-widget-type="showMessageOnLoad"]');
-        }
-            if ($widgetItem.length > 0){
-                ga.widget.showMessageOnLoad($widgetItem);
-            }
-
     },
 
     initPushMenu: function(){
@@ -408,12 +364,7 @@ _.extend(g3wadmin.ui, {
             context = undefined;
         }
 
-        if (!_.isUndefined(context)) {
-            var $widgetItem = $(context).find('[data-widget-type="dataTable"]');
-        }
-        else {
-            var $widgetItem = $('[data-widget-type="dataTable"]');
-        }
+        const $widgetItem = this.__$widgetItem(context, '[data-widget-type="dataTable"]');
 
         // add widget for details
         // before init datatable because it will work only on first page
@@ -426,13 +377,11 @@ _.extend(g3wadmin.ui, {
         })
 
 
-
         /*if (CURRENT_LANGUAGE_CODE != 'en') {
             options['language'] = DATATABLE_LANGS[CURRENT_LANGUAGE_CODE]
         }*/
 
         var $dataTable = $widgetItem.DataTable(options);
-
 
     },
 
@@ -559,10 +508,8 @@ _.extend(g3wadmin.ui, {
         });
     },
 
-
-
-
-
-
+    __$widgetItem: function(ctx, selector) {
+        return _.isUndefined(ctx) ? $(selector) : $(ctx).find(selector)
+    },
 
 });
