@@ -1,7 +1,7 @@
 /**
  * @file
  * @author    Walter Lorenzetti <lorenzetti@gis3w.it>
- * @copyright 18/02/16, Gis3w
+ * @copyright 2016-02-18, Gis3w
  * @license   MPL 2.0
  */
 
@@ -166,6 +166,11 @@ _.extend(g3wadmin.ui, {
     },
 
     initBootstrapDatepicker: function(context) {
+
+        // Fix dataformat form django i18n
+        $.fn.datepicker.dates['en']['format'] = 'yyyy-mm-dd';
+        // $.fn.datepicker.dates['ro']['format'] = 'dd.mm.yyyy';
+
         this.__$widgetItem(context, '.datepicker').datepicker({ language:CURRENT_LANGUAGE_CODE });
     },
 
@@ -191,7 +196,7 @@ _.extend(g3wadmin.ui, {
                 return state.text;
               }
 
-              var $state = $('<span><img class="img-flag" /> <span></span></span>');
+              const $state = $('<span><img class="img-flag" /> <span></span></span>');
 
               // Use .text() instead of HTML string concatenation to avoid script injection issues
               $state.find("span").text(state.text);

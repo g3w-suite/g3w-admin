@@ -274,9 +274,13 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <script src="{% static "bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js" %}"></script>
     <!-- Bootstrap-datepicker-locals -->
     {% for l in SETTINGS.LANGUAGES %}
-        {% with "bower_components/bootstrap-datepicker/dist/locales/bootstrap-datepicker."|add:l.0|add:".min.js" as datapicker_lang %}
-            <script src="{% static datapicker_lang %}"></script>
-        {% endwith %}
+      {% if l.0 == 'en'  %}
+        <script src="{% static "bower_components/bootstrap-datepicker/dist/locales/bootstrap-datepicker.en-GB.min.js" %}"></script>
+      {% elif l.0 == 'se' %}
+        <script src="{% static "bower_components/bootstrap-datepicker/dist/locales/bootstrap-datepicker.sw.min.js" %}"></script>
+      {% else %}
+        <script src="{% static "bower_components/bootstrap-datepicker/dist/locales/bootstrap-datepicker."|add:l.0|add:".min.js" %}"></script>
+      {% endif %}
     {% endfor %}
     <script src="{% static "bower_components/bootstrap-datepicker/dist/locales/bootstrap-datepicker.ro.min.js" %}"></script>
     <script src="{% static "bower_components/bootstrap-datepicker/dist/locales/bootstrap-datepicker.fr.min.js" %}"></script>
