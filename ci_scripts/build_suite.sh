@@ -27,7 +27,7 @@ if [ ! -e ${BUILD_DONE_FILE} ]; then
     nodejs -e "try { require('fs').symlinkSync(require('path').resolve('node_modules/@bower_components'), 'g3w-admin/core/static/bower_components', 'junction') } catch (e) { console.log(e); }"
 
     echo "Create unique django SECRET_KEY"
-    python3 g3w-admin/manage.py generate_secret_key_file --file_path=${SECRET_KEY_FILE}
+    python3 ci_scripts/generate_secret_key_file.py -o ${SECRET_KEY_FILE}
 
     touch ${BUILD_DONE_FILE}
 else
