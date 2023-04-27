@@ -277,35 +277,60 @@ _.extend(g3wadmin.ui, {
         $widgetItem.DataTable(options);
     },
 
+    /**
+     * @deprecated since v3.6.0. Will be removed in v3.8.0. Use `ga.ui.__bindCheckboxAttr(selector, name)` instead.
+     */
     initNotShowAtrrtibutesTableCheckBox: function() {
         this.__bindCheckboxAttr('[data-widget-type="noShowAttributesTable"]', 'not_show_attributes_table');
     },
 
+    /**
+     * @deprecated since v3.6.0. Will be removed in v3.8.0. Use `ga.ui.__bindCheckboxAttr(selector, name)` instead.
+     */
     initNolegendLayerCheckBox: function() {
         this.__bindCheckboxAttr('[data-widget-type="noLegendLayer"]', 'exclude_from_legend');
     },
 
+    /**
+     * @deprecated since v3.6.0. Will be removed in v3.8.0. Use `ga.ui.__bindCheckboxAttr(selector, name)` instead.
+     */
     initDownloadLayerCheckBox: function() {
         this.__bindCheckboxAttr('[data-widget-type="downloadLayer"]', 'download_layer');
     },
 
+    /**
+     * @deprecated since v3.6.0. Will be removed in v3.8.0. Use `ga.ui.__bindCheckboxAttr(selector, name)` instead.
+     */
     initDownloadLayerXlsCheckBox: function() {
         this.__bindCheckboxAttr('[data-widget-type="downloadLayerxls"]', 'download_layer_xls');
     },
 
+    /**
+     * @deprecated since v3.6.0. Will be removed in v3.8.0. Use `ga.ui.__bindCheckboxAttr(selector, name)` instead.
+     */
     initDownloadLayerGpxCheckBox: function() {
         this.__bindCheckboxAttr('[data-widget-type="downloadLayergpx"]', 'download_layer_gpx');
     },
 
+    /**
+     * @deprecated since v3.6.0. Will be removed in v3.8.0. Use `ga.ui.__bindCheckboxAttr(selector, name)` instead.
+     */
     initDownloadLayerGpkgCheckBox: function() {
         this.__bindCheckboxAttr('[data-widget-type="downloadLayergpkg"]', 'download_layer_gpkg');
     },
 
+    /**
+     * @deprecated since v3.6.0. Will be removed in v3.8.0. Use `ga.ui.__bindCheckboxAttr(selector, name)` instead.
+     */
     initDownloadLayerCsvCheckBox: function() {
         this.__bindCheckboxAttr('[data-widget-type="downloadLayercsv"]', 'download_layer_csv');
     },
 
-    // Init wms/wmst/arcgiserver external/internal calls
+    /**
+     * Init wms/wmst/arcgiserver external/internal calls
+     * 
+     * @deprecated since v3.6.0. Will be removed in v3.8.0. Use `ga.ui.__bindCheckboxAttr(selector, name)` instead.
+     */
     initExternalLayerCheckBox: function() {
         this.__bindCheckboxAttr('[data-widget-type="externalLayer"]', 'external');
     },

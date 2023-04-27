@@ -18,14 +18,14 @@
 <script type="text/javascript">
     $('#tree').treeview({data:{{ layers_tree|safe }}});
 
-    ga.ui.initNotShowAtrrtibutesTableCheckBox();
-    ga.ui.initNolegendLayerCheckBox();
-    ga.ui.initDownloadLayerCheckBox();
-    ga.ui.initDownloadLayerXlsCheckBox();
-    ga.ui.initDownloadLayerGpxCheckBox();
-    ga.ui.initDownloadLayerCsvCheckBox();
-    ga.ui.initDownloadLayerGpkgCheckBox();
-    ga.ui.initExternalLayerCheckBox();
+    ga.ui.__bindCheckboxAttr('[data-widget-type="noShowAttributesTable"]', 'not_show_attributes_table');
+    ga.ui.__bindCheckboxAttr('[data-widget-type="noLegendLayer"]',         'exclude_from_legend');
+    ga.ui.__bindCheckboxAttr('[data-widget-type="downloadLayer"]',         'download_layer');
+    ga.ui.__bindCheckboxAttr('[data-widget-type="downloadLayerxls"]',      'download_layer_xls');
+    ga.ui.__bindCheckboxAttr('[data-widget-type="downloadLayergpx"]',      'download_layer_gpx');
+    ga.ui.__bindCheckboxAttr('[data-widget-type="downloadLayercsv"]',      'download_layer_csv');
+    ga.ui.__bindCheckboxAttr('[data-widget-type="downloadLayergpkg"]',     'download_layer_gpkg');
+    ga.ui.__bindCheckboxAttr('[data-widget-type="externalLayer"]',         'external');
 
     ga.ui.__bindiCheckAttr('[name="check_every_download"]',      '[data-widget-type="downloadLayer"]');
     ga.ui.__bindiCheckAttr('[name="check_every_download_xls"]',  '[data-widget-type="downloadLayerxls"]');
