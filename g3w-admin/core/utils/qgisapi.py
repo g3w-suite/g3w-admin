@@ -27,7 +27,10 @@ from qgis.core import (
     QgsExpressionContext,
     QgsFeature,
     QgsJsonUtils,
-    QgsWkbTypes
+    QgsWkbTypes,
+    QgsCoordinateTransform,
+    QgsCoordinateReferenceSystem,
+    QgsCoordinateTransformContext
 )
 
 
@@ -482,6 +485,18 @@ def expression_eval(expression_text, project_id=None, qgs_layer_id=None, form_da
             exp = expression_from_server_fids([form_data['id']], layer.qgis_layer.dataProvider())
             qgis_feature_request.combineFilterExpression(exp)
             form_feature = get_qgis_features(layer.qgis_layer, qgis_feature_request)[0]
+
+        # Reprojection
+        if layer.project.group.srid.auth_srid != layer.srid:
+
+            to_srid = QgsCoordinateReferenceSystem(f'EPSG:{layer.srid}')
+            from_srid = QgsCoordinateReferenceSystem(f'EPSG:{layer.project.group.srid.auth_srid}')
+            ct = QgsCoordinateTransform(
+                from_srid, to_srid, QgsCoordinateTransformContext())
+
+            geometry = form_feature.geometry()
+            geometry.transform(ct)
+            form_feature.setGeometry(geometry)
 
         return form_feature
 
