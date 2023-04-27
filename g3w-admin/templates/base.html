@@ -238,19 +238,10 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
     <!-- REQUIRED JS SCRIPTS -->
     <script>
-        var CURRENT_LANGUAGE_CODE = '{{ lang }}';
-        {% if SETTINGS.FRONTEND %}
-        var FRONTEND = true;
-        {% else %}
-        var FRONTEND = false;
-        {% endif %}
-        {% if SETTINGS.SITE_PREFIX_URL %}
-        var SITE_PREFIX_URL = '{{ SETTINGS.SITE_PREFIX_URL }}';
-        {% else %}
-        var SITE_PREFIX_URL = '';
-        {% endif %}
-        var STATIC_BASE_URL = '{% static "" %}';
-
+        const CURRENT_LANGUAGE_CODE = '{{ lang }}';
+        const FRONTEND              = {% if SETTINGS.FRONTEND %}true{% else %}false{% endif %}
+        const SITE_PREFIX_URL       = {% if SETTINGS.SITE_PREFIX_URL %}'{{ SETTINGS.SITE_PREFIX_URL }}'{% else %}''{% endif %}
+        const STATIC_BASE_URL       = '{% static "" %}';
     </script>
     {% if SETTINGS.DEBUG %}
     <!-- build:js js/vendor.min.js -->
@@ -274,11 +265,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <script src="{% static "bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js" %}"></script>
     <!-- Bootstrap-datepicker-locals -->
     {% for l in SETTINGS.LANGUAGES %}
-      {% if l.0 == 'en'  %}
-        <script src="{% static "bower_components/bootstrap-datepicker/dist/locales/bootstrap-datepicker.en-GB.min.js" %}"></script>
-      {% elif l.0 == 'se' %}
-        <script src="{% static "bower_components/bootstrap-datepicker/dist/locales/bootstrap-datepicker.sw.min.js" %}"></script>
-      {% else %}
+      {% if l.0 == 'se' %}
+        <script src="{% static "bower_components/bootstrap-datepicker/dist/locales/bootstrap-datepicker.sv.min.js" %}"></script>
+      {% elif not l.0 == 'en' %}
         <script src="{% static "bower_components/bootstrap-datepicker/dist/locales/bootstrap-datepicker."|add:l.0|add:".min.js" %}"></script>
       {% endif %}
     {% endfor %}
