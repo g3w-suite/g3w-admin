@@ -8,9 +8,9 @@
   dependencies:
     jquery ">=1.10"
 
-"@bower_components/bootstrap-datepicker@eternicode/bootstrap-datepicker#1.8.0":
-  version "1.8.0"
-  resolved "https://codeload.github.com/eternicode/bootstrap-datepicker/tar.gz/0d32bc5d91da11d9a3587537c3c36ce7ee815c94"
+"@bower_components/bootstrap-datepicker@eternicode/bootstrap-datepicker#1.9.0":
+  version "1.9.0"
+  resolved "https://codeload.github.com/eternicode/bootstrap-datepicker/tar.gz/fb8776d65825068b9f914ab37d6fd847c951f488"
   dependencies:
     jquery ">=1.7.1 <4.0.0"
 
