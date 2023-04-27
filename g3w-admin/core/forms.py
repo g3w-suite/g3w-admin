@@ -12,6 +12,7 @@ from crispy_forms.layout import Layout, Div, Submit, HTML, Button, Row, Field
 from crispy_forms.bootstrap import AppendedText, PrependedText
 from modeltranslation.forms import TranslationModelForm
 from guardian.shortcuts import get_objects_for_user
+from django_bleach.forms import BleachField
 from .utils.forms import crispyBoxMacroGroups
 from usersmanage.utils import get_fields_by_user, crispyBoxACL, userHasGroups, get_users_for_object
 from usersmanage.forms import G3WACLForm, UsersChoiceField
@@ -24,6 +25,7 @@ class GroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, G3WRequestFor
     """Group form."""
 
     propagate = True
+    description = BleachField()
 
     def __init__(self, *args, **kwargs):
         super(GroupForm, self).__init__(*args, **kwargs)
