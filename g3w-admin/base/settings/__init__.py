@@ -4,7 +4,6 @@ from .base import *
 from .base_layout_settings import *
 from .base_geo_settings import *
 from .local_settings import *
-import os
 
 # Determine if we are running a test and import the tests.py at the the end of
 # this init

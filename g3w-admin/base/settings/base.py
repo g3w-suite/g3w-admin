@@ -29,7 +29,7 @@ if not hasattr(__import__(__name__), 'SECRET_KEY'):
         with open(os.getenv('SECRET_KEY_FILE', '/shared-volume/.secret_key')) as f:
             SECRET_KEY = f.read().strip()
     except:
-        print('[WARNING] SECRET_KEY not found, fallback to a temporary random secret key')
+        print('[SECRET_KEY] setting not provided, fallback to a temporary random key')
         # Generate a temporary secret key (on each reboot) until you
         # provide a SECRET_KEY or SECRET_KEY_FILE variable 
         from django.core.management.utils import get_random_secret_key

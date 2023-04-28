@@ -50,4 +50,4 @@ class Command(BaseCommand):
         secret_file.write(key)
         secret_file.close()
 
-        self.stdout.write(self.style.SUCCESS(f"SECRET_KEY '{blankout(key, s=5)}' saved inside {output_file}"))
+        self.stdout.write(self.style.SUCCESS(f"[SECRET_KEY] write '{blankout(key, s=5)}' into {output_file}"))
