@@ -207,6 +207,12 @@ class GroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, G3WRequestFor
 class GeneralSuiteDataForm(TranslationModelForm, FileFormMixin, ModelForm):
     """General suite data form."""
     suite_logo = UploadedFileField(required=False)
+    home_description = BleachField()
+    about_description = BleachField()
+    groups_map_description = BleachField()
+    login_description = BleachField()
+    credits = BleachField()
+
 
     def __init__(self, *args, **kwargs):
         super(GeneralSuiteDataForm, self).__init__(*args, **kwargs)
@@ -348,6 +354,8 @@ class MacroGroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, ModelFor
     editor_users = UsersChoiceField(label=_('Editor users'),
                                     queryset=User.objects.filter(groups__name__in=[G3W_EDITOR1])
                                     .order_by('last_name'), required=False)
+
+    description = BleachField()
 
     def __init__(self, *args, **kwargs):
 
