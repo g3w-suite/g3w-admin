@@ -19,6 +19,7 @@ DATASOURCE_PATH='/shared-volume/project_data'
 MEDIA_ROOT='/shared-volume/media'
 STATIC_ROOT='/shared-volume/static'
 PROJECTS_DIR="${MEDIA_ROOT}/projects"
+SECRET_KEY_FILE='/shared-volume/.secret_key'
 SETUP_DONE_FILE='/shared-volume/setup_done'
 
 cd "${CODE_DIRECTORY}"
@@ -31,6 +32,9 @@ if [ ! -e ${SETUP_DONE_FILE} ]; then
         echo "Copying docker_settings.py to base/settings/local_settings.py"
         cp ./settings_docker.py ./g3w-admin/base/settings/local_settings.py
     fi
+
+    echo "Creating a unique SECRET_KEY file ..."
+    python3 "${DJANGO_DIRECTORY}/manage.py" generate_secret_key_file -o ${SECRET_KEY_FILE}
 
     echo "Cleaning up some dirs before collecting statics ..."
     ls ${MEDIA_ROOT} || mkdir ${MEDIA_ROOT}

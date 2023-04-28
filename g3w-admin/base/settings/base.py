@@ -197,7 +197,7 @@ LANGUAGES = (
     ('en', 'English'),
     ('fr', 'French'),
     ('fi', 'Finnish'),
-    ('se', 'Swedish'), # FIXME: correct language should be "sv"
+    ('se', 'Swedish'), # FIXME: correct language code should be "sv"
     ('ro', 'Romanian'),
     ('de', 'Deutsch'),
 )

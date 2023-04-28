@@ -26,13 +26,7 @@ if [ ! -e ${BUILD_DONE_FILE} ]; then
     yarn --ignore-engines --ignore-scripts --prod
     nodejs -e "try { require('fs').symlinkSync(require('path').resolve('node_modules/@bower_components'), 'g3w-admin/core/static/bower_components', 'junction') } catch (e) { console.log(e); }"
 
-    cd "${DJANGO_DIRECTORY}"
-    echo "Creating a unique SECRET_KEY file ..."
-    python3 manage.py generate_secret_key_file -o ${SECRET_KEY_FILE}
-
     touch ${BUILD_DONE_FILE}
-
-    cd "${CODE_DIRECTORY}"
 else
     echo "Build already done, skipping ..."
 fi
