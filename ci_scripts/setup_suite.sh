@@ -33,9 +33,6 @@ if [ ! -e ${SETUP_DONE_FILE} ]; then
         cp ./settings_docker.py ./g3w-admin/base/settings/local_settings.py
     fi
 
-    echo "Creating a unique SECRET_KEY file ..."
-    python3 "${DJANGO_DIRECTORY}/manage.py" generate_secret_key_file -o ${SECRET_KEY_FILE}
-
     echo "Cleaning up some dirs before collecting statics ..."
     ls ${MEDIA_ROOT} || mkdir ${MEDIA_ROOT}
     pushd .
@@ -54,6 +51,9 @@ if [ ! -e ${SETUP_DONE_FILE} ]; then
     rm -rf bower_components
     ln -s "/code/node_modules/@bower_components" bower_components
     popd
+
+    echo "Creating a unique SECRET_KEY file ..."
+    python3 "${DJANGO_DIRECTORY}/manage.py" generate_secret_key_file -o ${SECRET_KEY_FILE}
 
     cd ${DJANGO_DIRECTORY}
     if [[ -z ${G3WSUITE_DEBUG} || ${G3WSUITE_DEBUG} != "True" ]]; then
