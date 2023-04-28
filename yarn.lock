@@ -26,10 +26,6 @@
     express "3.4.x"
     phantomjs "1.9.x"
 
-"@bower_components/bootstrap3-wysihtml5-bower@Waxolunist/bootstrap3-wysihtml5-bower#0.3.3":
-  version "0.3.3"
-  resolved "https://codeload.github.com/Waxolunist/bootstrap3-wysihtml5-bower/tar.gz/f1b9b218bf2587303167f0c4ab5bc0c08c9f2da4"
-
 "@bower_components/bootstrap@twbs/bootstrap#3.3.7":
   version "3.3.7"
   resolved "https://codeload.github.com/twbs/bootstrap/tar.gz/0b9c4a4007c44201dce9a6cc1a38407005c26c86"
@@ -105,14 +101,6 @@
   resolved "https://codeload.github.com/vakata/jstree/tar.gz/a6a0d0dfb784d5ef0b3415d847ac7b6bfbab1f16"
   dependencies:
     jquery ">=1.9.1"
-
-"@bower_components/leaflet-draw@Leaflet/Leaflet.draw#1.0.2":
-  version "1.0.2"
-  resolved "https://codeload.github.com/Leaflet/Leaflet.draw/tar.gz/59f658a2f5bbe1232ac85dc50c475f8acc5cb9e7"
-
-"@bower_components/leaflet@Leaflet/Leaflet#1.0.0":
-  version "1.0.0"
-  resolved "https://codeload.github.com/Leaflet/Leaflet/tar.gz/b346bb8bf7bb80899baa1f4fc1536bae58e7e3e6"
 
 "@bower_components/pace@HubSpot/pace#1.0.2":
   version "1.0.2"
