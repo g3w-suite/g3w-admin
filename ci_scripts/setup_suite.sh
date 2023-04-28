@@ -14,14 +14,14 @@
 set -e
 
 CODE_DIRECTORY='/code'
+DJANGO_DIRECTORY="${CODE_DIRECTORY}/g3w-admin"
 DATASOURCE_PATH='/shared-volume/project_data'
 MEDIA_ROOT='/shared-volume/media'
 STATIC_ROOT='/shared-volume/static'
 PROJECTS_DIR="${MEDIA_ROOT}/projects"
 SETUP_DONE_FILE='/shared-volume/setup_done'
-DJANGO_DIRECTORY="${CODE_DIRECTORY}/g3w-admin"
 
-cd '/code/'
+cd "${CODE_DIRECTORY}"
 
 
 if [ ! -e ${SETUP_DONE_FILE} ]; then
