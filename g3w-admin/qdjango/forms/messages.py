@@ -15,6 +15,7 @@ from django.utils.translation import ugettext_lazy as _
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Div, HTML, Row, Field
 from crispy_forms.bootstrap import PrependedText
+from django_bleach.forms import BleachField
 from core.mixins.forms import G3WRequestFormMixin, G3WFormMixin, G3WProjectFormMixin, G3WGroupFormMixin
 from qdjango.models import Message
 
@@ -23,6 +24,8 @@ class MessageForm(G3WFormMixin, G3WRequestFormMixin, G3WGroupFormMixin, G3WProje
     """
     Form for project message
     """
+
+    body = BleachField()
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
