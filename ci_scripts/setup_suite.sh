@@ -14,14 +14,15 @@
 set -e
 
 CODE_DIRECTORY='/code'
+DJANGO_DIRECTORY="${CODE_DIRECTORY}/g3w-admin"
 DATASOURCE_PATH='/shared-volume/project_data'
 MEDIA_ROOT='/shared-volume/media'
 STATIC_ROOT='/shared-volume/static'
 PROJECTS_DIR="${MEDIA_ROOT}/projects"
+SECRET_KEY_FILE='/shared-volume/.secret_key'
 SETUP_DONE_FILE='/shared-volume/setup_done'
-DJANGO_DIRECTORY="${CODE_DIRECTORY}/g3w-admin"
 
-cd '/code/'
+cd "${CODE_DIRECTORY}"
 
 
 if [ ! -e ${SETUP_DONE_FILE} ]; then
@@ -50,6 +51,9 @@ if [ ! -e ${SETUP_DONE_FILE} ]; then
     rm -rf bower_components
     ln -s "/code/node_modules/@bower_components" bower_components
     popd
+
+    echo "Creating a unique SECRET_KEY file ..."
+    python3 "${DJANGO_DIRECTORY}/manage.py" generate_secret_key_file -o ${SECRET_KEY_FILE}
 
     cd ${DJANGO_DIRECTORY}
     if [[ -z ${G3WSUITE_DEBUG} || ${G3WSUITE_DEBUG} != "True" ]]; then

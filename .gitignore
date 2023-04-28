@@ -28,6 +28,7 @@ docs/locales/**/*.mo
 
 # Bower components
 /g3w-admin/core/static/bower_components/
+/g3w-admin/core/static/bower_components
 
 # Coverage html test result reports
 /g3w-admin/htmlcov/
