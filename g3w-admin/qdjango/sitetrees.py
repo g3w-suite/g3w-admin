@@ -4,6 +4,7 @@ from core.utils.tree import G3Wtree
 
 # Define each available `tree` within `sitetrees` variable.
 # Then define each `items` through the `item` function.
+
 sitetrees = (
 
     # ITALIAN
