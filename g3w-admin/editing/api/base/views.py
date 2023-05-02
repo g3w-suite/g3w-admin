@@ -34,6 +34,8 @@ from qdjango.utils.validators import feature_validator
 
 from qgis.PyQt.QtCore import QDateTime, QDate, QTime, QVariant, NULL
 
+import bleach
+
 import re
 import logging
 
@@ -260,6 +262,7 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                         for qgis_field in qgis_layer.fields():
 
                             field_idx = qgis_layer.fields().indexFromName(qgis_field.name())
+                            options = qgis_layer.editorWidgetSetup(field_idx).config()
                             # Look for dataprovider default clause/value:
                             # only for fields no pk with defaultValueClause by provider
                             # and NULL value into feature on new add feature
@@ -281,8 +284,6 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                                     qtype = QDateTime
                                 else:
                                     qtype = QTime
-
-                                options = qgis_layer.editorWidgetSetup(field_idx).config()
 
                                 if 'field_iso_format' in options and not options['field_iso_format']:
                                     if qgis_field.name() in geojson_feature['properties'] and \
@@ -322,6 +323,23 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                                     QgsFieldConstraints.ConstraintNotNull) == QgsFieldConstraints.ConstraintStrengthHard):
                                     feature.setAttribute(qgis_field.name(), NULL)
                                     numeric_nullable_field_values[qgis_field.name()] = NULL
+
+                            # For fields with UseHtml options, filter content with bleach
+                            # -----------------------------------------------------------
+                            elif 'UseHtml' in options and options['UseHtml']:
+                                css_sanitizer = bleach.css_sanitizer.CSSSanitizer(
+                                    allowed_css_properties=settings.BLEACH_ALLOWED_STYLES)
+                                feature.setAttribute(qgis_field.name(),
+                                                     bleach.clean(
+                                                         geojson_feature['properties'][qgis_field.name()],
+                                                         tags=settings.BLEACH_ALLOWED_TAGS,
+                                                         attributes=settings.BLEACH_ALLOWED_ATTRIBUTES,
+                                                         strip=settings.BLEACH_STRIP_TAGS,
+                                                         css_sanitizer=css_sanitizer
+                                                     )
+                                                 )
+
+
 
 
 
