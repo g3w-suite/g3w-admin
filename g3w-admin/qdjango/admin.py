@@ -8,7 +8,6 @@ from django.utils.translation import gettext
 from django.utils.translation import gettext_lazy as _
 from ordered_model.admin import OrderedModelAdmin
 from guardian.admin import GuardedModelAdmin
-from qgis.core import QgsVectorLayer
 from .models import *
 
 

@@ -129,8 +129,6 @@ class QdjangoProjectFormMixin(object):
 class QdjangoProjectForm(TranslationModelForm, QdjangoProjectFormMixin, G3WFormMixin, G3WGroupFormMixin,
                          G3WGroupBaseLayerFormMixin, G3WRequestFormMixin, G3WACLForm, FileFormMixin, forms.ModelForm):
 
-    qgis_file = UploadedFileField(required=True)
-    thumbnail = UploadedFileField(required=False)
     url_alias = forms.CharField(
         required=False,
         label=_('URL alias'),
@@ -193,6 +191,7 @@ class QdjangoProjectForm(TranslationModelForm, QdjangoProjectFormMixin, G3WFormM
                         ),
                         Div(
                             'qgis_file',
+                            'qgis_file-uploads',
                             'form_id',
                             'upload_url',
                             'delete_url',
@@ -305,6 +304,10 @@ class QdjangoProjectForm(TranslationModelForm, QdjangoProjectFormMixin, G3WFormM
             'use_map_extent_as_init_extent',
             'context_base_legend',
             'title_ur',
+        )
+        field_classes = dict(
+            qgis_file=UploadedFileField,
+            thumbnail=UploadedFileField
         )
 
     def _setEditorUserQueryset(self):

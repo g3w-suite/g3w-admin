@@ -10,7 +10,7 @@ __author__ = 'lorenzetti@gis3w.it'
 __date__ = '2020-04-03'
 __copyright__ = 'Copyright 2015 - 2020, Gis3w'
 
-from django_file_form.models import UploadedFile
+from django_file_form.models import TemporaryUploadedFile as UploadedFile
 from django.core.files import File
 import uuid
 import os
@@ -38,7 +38,7 @@ def create_dff_image(field_name, original_filename=None):
         file_id=file_id,
         field_name=field_name,
         original_filename=original_filename if original_filename else field_name,
-        uploaded_file=File(image)
+        uploaded_file=File(image, name='g3wsuite_logo.png')
     )
     uf.save()
 

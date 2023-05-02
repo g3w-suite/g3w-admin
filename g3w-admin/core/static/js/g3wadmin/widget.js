@@ -560,6 +560,10 @@ _.extend(g3wadmin.widget, {
      */
     ajaxUpload: function($item) {
 
+        // No item selected, exit.
+        if ($item.length == 0)
+            return;
+
         /*var params =*/ ga.utils.getDataAttrs($item, this._ajaxUploadParams);
 
         const options = {}

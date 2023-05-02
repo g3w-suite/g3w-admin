@@ -10,7 +10,7 @@ __author__ = 'lorenzetti@gis3w.it'
 __date__ = '2020-04-03'
 __copyright__ = 'Copyright 2015 - 2020, Gis3w'
 
-from django_file_form.models import UploadedFile
+from django_file_form.models import TemporaryUploadedFile as UploadedFile
 from django.core.files import File
 import uuid
 import os
@@ -38,7 +38,7 @@ def create_dff_project(field_name, original_filename=None):
         file_id=file_id,
         field_name=field_name,
         original_filename=original_filename if original_filename else 'gruppo-1_un-progetto_qgis34_no_title.qgs',
-        uploaded_file=File(project)
+        uploaded_file=File(project, name='gruppo-1_un-progetto_qgis34_no_title.qgs')
     )
     uf.save()
 

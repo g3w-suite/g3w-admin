@@ -1,5 +1,6 @@
 from django.utils.decorators import wraps
 from django.http.response import HttpResponseForbidden
+from django.shortcuts import render
 from django.template import RequestContext
 from django.conf import settings
 from django.shortcuts import get_object_or_404

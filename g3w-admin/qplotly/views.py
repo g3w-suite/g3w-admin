@@ -17,7 +17,7 @@ from django.core.files.base import ContentFile
 from django.http.response import JsonResponse
 from django_downloadview import VirtualDownloadView
 from qdjango.utils.models import comparedbdatasource
-from autoslug.utils import slugify
+from django.utils.text import slugify
 from .models import QplotlyWidget
 
 
