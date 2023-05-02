@@ -36,5 +36,5 @@ python-magic
 celery==4.4.7
 deprecation
 huey==2.4.3
-redis==4.2.2
+redis==4.5.4
 
