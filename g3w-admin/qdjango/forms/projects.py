@@ -145,7 +145,7 @@ class QdjangoProjectForm(TranslationModelForm, QdjangoProjectFormMixin, G3WFormM
     authentication_password = forms.CharField(
         label=_("Password"), required=False, widget=forms.PasswordInput())
 
-    description = BleachField()
+    description = BleachField(required=False)
 
     def __init__(self, *args, **kwargs):
 
