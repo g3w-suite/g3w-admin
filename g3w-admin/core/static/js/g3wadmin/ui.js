@@ -260,7 +260,12 @@ _.extend(g3wadmin.ui, {
             context = undefined;
         }
 
+        /*if (CURRENT_LANGUAGE_CODE != 'en') {
+            options['language'] = DATATABLE_LANGS[CURRENT_LANGUAGE_CODE]
+        }*/
+
         const $widgetItem = this.__$widgetItem(context, '[data-widget-type="dataTable"]');
+        const $dataTable  = $widgetItem.DataTable(options);
 
         // add widget for details
         // before init datatable because it will work only on first page
@@ -269,12 +274,6 @@ _.extend(g3wadmin.ui, {
         });
 
         _.each(ga.ui.before_datatable_callbacks, function(f) { f($widgetItem); })
-
-        /*if (CURRENT_LANGUAGE_CODE != 'en') {
-            options['language'] = DATATABLE_LANGS[CURRENT_LANGUAGE_CODE]
-        }*/
-
-        $widgetItem.DataTable(options);
     },
 
     /**
