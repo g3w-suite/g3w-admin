@@ -73,7 +73,7 @@ if [ ! -e ${SETUP_DONE_FILE} ]; then
     python3 manage.py set_passwords --password admin
 
     # For django-file-form: create <media_directory>/temp_uploads if not exists
-    ls ${MEDIA_ROOT}/temp_uploads || mkdir ${PROJECTS_DIR}/temp_uploads
+    ls ${MEDIA_ROOT}/temp_uploads || mkdir ${MEDIA_ROOT}/temp_uploads
 
 
     touch ${SETUP_DONE_FILE}
