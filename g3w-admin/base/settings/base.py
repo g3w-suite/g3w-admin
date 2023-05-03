@@ -329,3 +329,6 @@ ANONYMOUS_USER_SESSIONID = '_anonymous_g3w_suite_sessionid_'
 
 # Custom token session client cookie name
 G3W_CLIENT_COOKIE_SESSION_TOKEN = 'g3wclientsessiontoken'
+
+# For reverse proxy
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
