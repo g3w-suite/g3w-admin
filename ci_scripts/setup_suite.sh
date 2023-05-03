@@ -71,6 +71,11 @@ if [ ! -e ${SETUP_DONE_FILE} ]; then
     python3 manage.py createsuperuser --noinput --username admin --email admin@email.com || true
     # Set fake password for all users
     python3 manage.py set_passwords --password admin
+
+    # For django-file-form: create <media_directory>/temp_uploads if not exists
+    ls ${MEDIA_ROOT}/temp_uploads || mkdir ${PROJECTS_DIR}/temp_uploads
+
+
     touch ${SETUP_DONE_FILE}
     echo "Setup completed ..."
 else
