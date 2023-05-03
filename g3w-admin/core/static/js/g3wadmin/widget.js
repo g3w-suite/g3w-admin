@@ -573,67 +573,17 @@ _.extend(g3wadmin.widget, {
             options['validation'] = window.ajaxUploadValidation;
         }
 
-        // options['deleteFile'] = {'enabled': false};
+        options['callbacks'] = {
+            'onSuccess': function(upload){
+                var $thumb = $('span:contains('+upload.name+')').parents('.box-body').find('.img-thumbnail');
+                $thumb.attr('src', g3wadmin.settings.FILE_FORM_UPLOAD_TEMP_URL+upload.id);
+                if ($thumb.is(':hidden'))
+                    $thumb.show();
+            }
+        }
+
 
         initUploadFields($item[0], options);
-
-        const $uploader = $item.find(".file-uploader-container");
-
-        $uploader
-            .on('complete', function(e, id, name, resJSON, xhr) {
-                const $thumb = $(this).parents('.box-body').find('.img-thumbnail');
-                $thumb.attr('src', resJSON.path);
-                if ($thumb.is(':hidden')) {
-                    $thumb.show();
-                }
-                // for clear value
-                const $form_group = $(this).parents('.form-group');
-                $form_group.find("input[name=" + $form_group.attr('id').substring(7) + "-clear" + "]").remove();
-            })
-            .on('deleteComplete', function(e, id, name, xhr) {
-                $(this).parents('.box-body').find('.img-thumbnail').hide();
-            });
-
-        $.each($uploader, function(i, ele) {
-            const $ele = $(ele);
-
-            const data_files = eval($ele.attr('data-files'));
-            if (!data_files.length) {
-                return;
-            }
-
-            const del_btn = $ele.find(".qq-upload-delete-selector");
-            del_btn.addClass('qq-hide');
-
-            // check if required:
-            const $required = $ele.parents('.form-group').find('.requiredField');
-            if (!$required.length) {
-                return;
-            }
-
-            const new_del_btn = del_btn.clone(false).removeClass('qq-hide').removeClass('qq-upload-delete-selector');
-            del_btn.parent().append(new_del_btn);
-
-            // retry input_field_name
-            const field_name = $ele.parents('.form-group').attr('id').substring(7);
-
-            // add lick on delete
-            new_del_btn.on('click', function (e) {
-                const $form_group = $(this).parents('.form-group');
-                const $thumb = $(this).parents('.box-body').find('.img-thumbnail');
-                $thumb.hide();
-
-                // add input hidden for delete file on post
-                const clear_name = field_name + "-clear";
-                const $clear = $form_group.find("input[name=" + clear_name + "]")
-                if ($clear.length == 0) {
-                    const $hidden_clear = $('<input type="hidden" name="' + clear_name + '">');
-                    $hidden_clear.val('1');
-                    $form_group.append($hidden_clear);
-                    new_del_btn.addClass('qq-hide')
-                }
-            });
-        });
 
     },
 
