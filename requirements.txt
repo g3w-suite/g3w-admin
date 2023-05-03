@@ -23,7 +23,6 @@ django-modeltranslation==0.17.5
 django-filter
 pathlib2
 lxml
-#psycopg2
 psycopg2-binary
 pillow
 owslib
@@ -37,4 +36,5 @@ celery==4.4.7
 deprecation
 huey==2.4.3
 redis==4.5.4
+django-redis==5.2.0
 
