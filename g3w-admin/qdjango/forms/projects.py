@@ -1,3 +1,5 @@
+import os
+
 from qgis.core import QgsProject
 import re
 import zipfile
@@ -27,6 +29,8 @@ from usersmanage.utils import (crispyBoxACL, get_fields_by_user,
 from qdjango.models import *
 from qdjango.utils.data import QgisProject
 from qdjango.utils.validators import ProjectExists
+
+import shutil
 
 
 class QdjangoProjectFormMixin(object):
@@ -59,8 +63,12 @@ class QdjangoProjectFormMixin(object):
                 qgis_file = ContentFile(zfile.open(
                     qzfile, 'r').read(), name=qzfile)
 
-                # Update path property for QGIS api
-                qgis_file.path = self.cleaned_data['qgis_file'].file.path
+                # For QGIS Python API to recognize a .qgz file type, the file must have the extension `.qgz`
+                # So with current django-file-form version (3.5.0) is necessary make a copy of temporary file uploaded
+                # adding the .qgz extension
+                qgis_file.path = f"{self.cleaned_data['qgis_file'].file.path}.qgz"
+                shutil.copy(self.cleaned_data['qgis_file'].file.path, qgis_file.path)
+
 
             if self.instance.pk:
                 kwargs['instance'] = self.instance
@@ -75,6 +83,10 @@ class QdjangoProjectFormMixin(object):
 
             self.qgisProject = QgisProject(qgis_file, **kwargs)
             self.qgisProject.clean()
+
+            # Delete the .qgz copy
+            os.remove(qgis_file.path)
+
         except Exception as e:
             raise ValidationError(str(e))
         return qgis_file
