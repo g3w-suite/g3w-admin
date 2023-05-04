@@ -19,7 +19,7 @@ from core.tests.utils import create_dff_image
 from core.models import MapControl, ProjectMapUrlAlias
 from core.forms import GroupForm
 from .base import QdjangoTestBase, G3W_VIEWER1
-from .utils import create_dff_project
+from .utils import create_dff_project, create_dff_project_qgz
 from editing.models import EDITING_ATOMIC_PERMISSIONS
 from copy import copy
 
@@ -253,4 +253,29 @@ class QdjangoFormsTest(QdjangoTestBase):
 
         self.assertTrue(new_viewer.has_perm('qdjango.view_project', p))
 
+
+        # TEST UPLOAD QGZ PROJECT FILE
+        # =================================================
+
+        # upload qgis_file
+        uf = create_dff_project_qgz('qgis_file')
+
+        # Test Create
+        # =========================================
+
+        form_data = {
+            'form_id': uf.form_id,
+            'feature_count_wms': 10,
+            'multilayer_query': 'single',
+            'multilayer_querybybbox': 'single',
+            'multilayer_querybypolygon': 'single',
+            'toc_tab_default': 'layers',
+            'toc_layers_init_status': 'not_collapsed',
+            'toc_themes_init_status': 'collapsed',
+            'legend_position': 'tab',
+            'url_alias': 'test_url_alias_name'
+        }
+
+        form = QdjangoProjectForm(request=self.request, group=self.project_group, data=form_data)
+        self.assertTrue(form.is_valid())
 
