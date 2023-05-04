@@ -206,7 +206,6 @@ class QdjangoProjectForm(TranslationModelForm, QdjangoProjectFormMixin, G3WFormM
                             'qgis_file-uploads',
                             'form_id',
                             'upload_url',
-                            'delete_url',
                             css_class='box-body',
 
                         ),

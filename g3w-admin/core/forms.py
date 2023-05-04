@@ -225,7 +225,6 @@ class GeneralSuiteDataForm(TranslationModelForm, FileFormMixin, ModelForm):
                             'suite_logo',
                             'form_id',
                             'upload_url',
-                            'delete_url',
                             HTML(
                                 """{% if form.suite_logo.value %}<img class="img-responsive img-thumbnail" src="{{ MEDIA_URL }}{{ form.suite_logo.value }}">{% endif %}""", ),
                             PrependedText('url_suite_logo', '<i class="fa fa-link"></i>'),
