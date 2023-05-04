@@ -147,7 +147,9 @@ if settings.RESET_USER_PASSWORD:
 #############################################################
 apiUrlpatterns += [
     path('', include('client.apiurls')),
-    path('', include('core.apiurls'))
+    path('', include('core.apiurls')),
+    # TODO find out why we cannot include('OWS.apiurls') instead
+    path('', include('OWS.urls')),
 ]
 
 #############################################################
@@ -215,15 +217,6 @@ for app in settings.G3WADMIN_LOCAL_MORE_APPS:
     except Exception as e:
         pass
 
-
-#############################################################
-# OWS SERVICES
-#############################################################
-apiUrlpatterns.append(path(
-    '{}'.format(settings.SITE_PREFIX_URL if settings.SITE_PREFIX_URL else ''),
-    include('OWS.urls')
-))
-
 #############################################################
 # SITE PREFIX
 #############################################################
@@ -232,16 +225,16 @@ if settings.SITE_PREFIX_URL:
     apiUrlpatterns = [ path('{}'.format(settings.SITE_PREFIX_URL), include(apiUrlpatterns)) ]
 
 #############################################################
+# LOCALIZED ROUTES
+#############################################################
+urlpatterns = i18n_patterns(*urlpatterns, prefix_default_language=settings.PREFIX_DEFAULT_LANGUAGE)
+
+#############################################################
 # DEV ROUTES
 #############################################################
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += [ re_path(r'^static/(?P<path>.*)$', views.serve) ]
-
-#############################################################
-# LOCALIZED ROUTES
-#############################################################
-urlpatterns = i18n_patterns(*urlpatterns, prefix_default_language=settings.PREFIX_DEFAULT_LANGUAGE)
 
 urlpatterns += apiUrlpatterns
 

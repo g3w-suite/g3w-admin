@@ -1,5 +1,4 @@
 from django.utils.decorators import wraps
-from django.core.signing import Signer
 from django.http.response import HttpResponseForbidden
 from django.shortcuts import render
 from django.template import RequestContext
@@ -9,36 +8,6 @@ from django.apps import apps
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from guardian.exceptions import GuardianError
 from guardian.utils import get_40x_or_None
-from .projects import countAllProjects
-
-globalSigner = Signer()
-
-
-def check_madd(var, model, **kwargs):
-    var = globalSigner.unsign(var)
-    var_value = getattr(settings, var)
-    if not var_value:
-        raise Exception('MGC or MPC is not set!')
-
-    def decorator(view_func):
-        def _wrapped_view(request, *args, **kwargs):
-
-            if var_value == '-99:dodfEz3K2rziGayGnw_FyOuWdCM':
-                return view_func(request, *args, **kwargs)
-
-            if var == 'MPC:XYamtBJA_JgFGmFvEa9x193rnLg':
-                objects = countAllProjects()
-            else:
-                objects = model.objects.count()
-
-            if objects >= int(globalSigner.unsign(var_value)):
-                template_name = 'core/403_{}.html'.format(var)
-                response = render(template_name, {}, RequestContext(request))
-                response.status_code = 403
-                return response
-            return view_func(request, *args, **kwargs)
-        return wraps(view_func)(_wrapped_view)
-    return decorator
 
 
 def project_type_permission_required(perm, lookup_variables=None, **kwargs):
@@ -148,4 +117,5 @@ def is_active_required(lookup_variables=None, is_active=1):
         return wraps(view_func)(_wrapped_view)
 
     return decorator
+
 
