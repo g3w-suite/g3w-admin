@@ -214,12 +214,13 @@
     <!-- endbuild -->
     {% endif %}
 
-    <script src="{% static "adminlte/js/app.min.js" %}"></script>
-    <!-- <script src="{% static "file_form/file_form.js" %}"></script> -->
     <script src="{% static "file_form/file_form.debug.js" %}"></script>
     {% for l in SETTINGS.LANGUAGES %}
     <script src="{% if l.0 == 'se' %}{% static "bower_components/bootstrap-datepicker/dist/locales/bootstrap-datepicker.sv.min.js" %}{% elif not l.0 == 'en' %}{% static "bower_components/bootstrap-datepicker/dist/locales/bootstrap-datepicker."|add:l.0|add:".min.js" %}{% endif %}"></script>
     {% endfor %}
+
+    <script src="{% static "adminlte/js/app.min.js" %}"></script>
+    <!-- <script src="{% static "file_form/file_form.js" %}"></script> -->
     <script src="{% url 'javascript-catalog' %}"></script>
 
     <!-- g3wadmin.js -->
@@ -237,7 +238,7 @@
     <!-- endbuild -->
     {% endif %}
 
-    {# Extend `ga` globale variable with generated settings  #}
+    {# Extend `g3wadmin` global variable  #}
     <script>_.extend(g3wadmin,{ 'settings': {
       'G3WADMIN_LOCAL_MORE_APPS':  ['{{ SETTINGS.G3WADMIN_LOCAL_MORE_APPS|join:"','" }}'],
       'FILE_FORM_UPLOAD_TEMP_URL': '{{ SETTINGS.MEDIA_URL }}{% if SETTINGS.FILE_FORM_UPLOAD_DIR %}{{ FILE_FORM_UPLOAD_DIR }}{% else %}temp_uploads{% endif %}/',
