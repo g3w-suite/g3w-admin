@@ -23,7 +23,6 @@ from usersmanage.configs import G3W_EDITOR1
 from .forms import GroupForm, GeneralSuiteDataForm, MacroGroupForm
 from .models import Group, GroupProjectPanoramic, MapControl, GeneralSuiteData, MacroGroup
 from .mixins.views import G3WRequestViewMixin, G3WAjaxDeleteViewMixin, G3WAjaxSetOrderViewMixin
-from .utils.decorators import check_madd
 from .signals import after_update_group, execute_search_on_models
 import requests
 import json
@@ -141,7 +140,6 @@ class GroupCreateView(G3WRequestViewMixin, CreateView):
     form_class = GroupForm
 
     @method_decorator(permission_required('core.add_group', return_403=True))
-    @method_decorator(check_madd('MGC:kTccysDKRCPgT5M5y6sv-OSWlck', Group))
     def dispatch(self, *args, **kwargs):
         return super(GroupCreateView, self).dispatch(*args, **kwargs)
 

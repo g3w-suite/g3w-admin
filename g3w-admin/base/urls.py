@@ -73,7 +73,7 @@ urlpatterns += [
         include('usersmanage.urls')
     ),
     path(
-        'upload/',
+        'dff/',
         include('django_file_form.urls')
     ),
     path(

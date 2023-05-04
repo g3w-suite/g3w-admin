@@ -1,4 +1,4 @@
-{% load staticfiles %}
+{% load static %}
 {% load sitetree %}
 {% load i18n %}
 {% get_current_language as lang %}
@@ -56,6 +56,7 @@
     <link rel="stylesheet" href="{% static "adminlte/css/AdminLTE.min.css" %}">
     <link rel="stylesheet" href="{% static "adminlte/css/skins/"%}{{ adminlte_skin }}.min.css">
     <link rel="stylesheet" href="{% static "ajaxuploader/css/fileuploader.css" %}">
+    <link rel="stylesheet" href="{% static "file_form/file_form.css" %}">
 
     {% block custom_css_links_page %}{% endblock %}
     
@@ -200,9 +201,6 @@
     <script src="{% static "bower_components/underscore/underscore-min.js" %}"></script>
     <script src="{% static "bower_components/select2/dist/js/select2.full.min.js" %}"></script>
     <script src="{% static "bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js" %}"></script>
-    {% for l in SETTINGS.LANGUAGES %}
-    <script src="{% if l.0 == 'se' %}{% static "bower_components/bootstrap-datepicker/dist/locales/bootstrap-datepicker.sv.min.js" %}{% elif not l.0 == 'en' %}{% static "bower_components/bootstrap-datepicker/dist/locales/bootstrap-datepicker."|add:l.0|add:".min.js" %}{% endif %}"></script>
-    {% endfor %}
     <script src="{% static "bower_components/bootstrap-timepicker/js/bootstrap-timepicker.js" %}"></script>
     <script src="{% static "modules/jquery.filer/js/jquery.filer.min.js" %}"></script>
     <script src="{% static "bower_components/datatables/media/js/jquery.dataTables.min.js" %}"></script>
@@ -219,7 +217,11 @@
 
     <script src="{% static "adminlte/js/app.min.js" %}"></script>
     <script src="{% static "ajaxuploader/js/fileuploader.js" %}"></script>
-    <script src="{% static "file_form/file_form.js" %}"></script>
+    <!-- <script src="{% static "file_form/file_form.js" %}"></script> -->
+    <script src="{% static "file_form/file_form.debug.js" %}"></script>
+    {% for l in SETTINGS.LANGUAGES %}
+    <script src="{% if l.0 == 'se' %}{% static "bower_components/bootstrap-datepicker/dist/locales/bootstrap-datepicker.sv.min.js" %}{% elif not l.0 == 'en' %}{% static "bower_components/bootstrap-datepicker/dist/locales/bootstrap-datepicker."|add:l.0|add:".min.js" %}{% endif %}"></script>
+    {% endfor %}
     <script src="{% url 'javascript-catalog' %}"></script>
 
     <!-- g3wadmin.js -->
@@ -238,7 +240,10 @@
     {% endif %}
 
     {# Extend `ga` globale variable with generated settings  #}
-    <script>_.extend(g3wadmin,{ 'settings': { 'G3WADMIN_LOCAL_MORE_APPS': ['{{ SETTINGS.G3WADMIN_LOCAL_MORE_APPS|join:"','" }}'] } });</script>
+    <script>_.extend(g3wadmin,{ 'settings': {
+      'G3WADMIN_LOCAL_MORE_APPS':  ['{{ SETTINGS.G3WADMIN_LOCAL_MORE_APPS|join:"','" }}'],
+      'FILE_FORM_UPLOAD_TEMP_URL': '{{ SETTINGS.MEDIA_URL }}{% if SETTINGS.FILE_FORM_UPLOAD_DIR %}{{ FILE_FORM_UPLOAD_DIR }}{% else %}temp_uploads{% endif %}/',
+    } });</script>
 
     {% for js_module in js_modules %}{% if js_module %}
     <script src="{% static js_module %}"></script>

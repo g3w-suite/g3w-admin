@@ -22,7 +22,7 @@ from usersmanage.configs import *
 
 class GroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, G3WRequestFormMixin, G3WACLForm, ModelForm):
     """Group form."""
-    header_logo_img = UploadedFileField(required=True)
+
     propagate = True
 
     def __init__(self, *args, **kwargs):
@@ -120,11 +120,10 @@ class GroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, G3WRequestFor
                                         Div(
                                             Div(
                                                 'header_logo_img',
-                                                HTML("""{% load staticfiles %}<img class="img-responsive img-thumbnail" src={% if not form.header_logo_img.value %}"{% static 'img/'|add:SETTINGS.CLIENT_G3WSUITE_LOGO %}"{% else %}"{{ MEDIA_URL }}{{ form.header_logo_img.value }}"{% endif %}>"""),
+                                                HTML("""{% load static %}<img class="img-responsive img-thumbnail" src={% if not form.header_logo_img.value %}"{% static 'img/'|add:SETTINGS.CLIENT_G3WSUITE_LOGO %}"{% else %}"{{ MEDIA_URL }}{{ form.header_logo_img.value }}"{% endif %}>"""),
                                                 'use_logo_client',
                                                 'form_id',
                                                 'upload_url',
-                                                'delete_url',
                                                 css_class='col-md-12'
                                             ),
                                             Div(
@@ -165,6 +164,9 @@ class GroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, G3WRequestFor
     class Meta:
         model = Group
         fields = '__all__'
+        field_classes = dict(
+            header_logo_img=UploadedFileField
+        )
 
     def clean_macrogroups(self):
 
@@ -339,7 +341,7 @@ class GeneralSuiteDataForm(TranslationModelForm, FileFormMixin, ModelForm):
 
 class MacroGroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, ModelForm):
     """MacroGroup form."""
-    logo_img = UploadedFileField()
+
     initial_editor_users = []
     editor_users = UsersChoiceField(label=_('Editor users'),
                                     queryset=User.objects.filter(groups__name__in=[G3W_EDITOR1])
@@ -412,6 +414,9 @@ class MacroGroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, ModelFor
     class Meta:
         model = MacroGroup
         fields = '__all__'
+        field_classes = dict(
+            logo_img=UploadedFileField
+        )
 
     def save(self, commit=True):
         instance = super(MacroGroupForm, self).save(commit)
