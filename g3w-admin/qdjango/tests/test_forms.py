@@ -273,7 +273,7 @@ class QdjangoFormsTest(QdjangoTestBase):
             'toc_layers_init_status': 'not_collapsed',
             'toc_themes_init_status': 'collapsed',
             'legend_position': 'tab',
-            'url_alias': 'test_url_alias_name'
+            'url_alias': 'test_url_alias_name_qgz'
         }
 
         form = QdjangoProjectForm(request=self.request, group=self.project_group, data=form_data)

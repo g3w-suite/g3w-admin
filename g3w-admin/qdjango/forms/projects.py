@@ -85,7 +85,8 @@ class QdjangoProjectFormMixin(object):
             self.qgisProject.clean()
 
             # Delete the .qgz copy
-            os.remove(qgis_file.path)
+            if file_extension.lower() == '.qgz':
+                os.remove(qgis_file.path)
 
         except Exception as e:
             raise ValidationError(str(e))

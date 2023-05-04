@@ -52,7 +52,7 @@ def create_dff_project_qgz(field_name, original_filename=None):
     :return: UploadedFile model object
     """
 
-    project = open('{}test_qgz_project_328.qgz'.format(CURRENT_PATH + TEST_BASE_PATH), 'r')
+    project = open('{}test_qgz_project_328.qgz'.format(CURRENT_PATH + TEST_BASE_PATH), 'rb')
 
     form_id = uuid.uuid4()
     file_id=uuid.uuid4()
