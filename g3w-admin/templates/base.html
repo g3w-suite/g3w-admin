@@ -55,7 +55,6 @@
 
     <link rel="stylesheet" href="{% static "adminlte/css/AdminLTE.min.css" %}">
     <link rel="stylesheet" href="{% static "adminlte/css/skins/"%}{{ adminlte_skin }}.min.css">
-    <link rel="stylesheet" href="{% static "ajaxuploader/css/fileuploader.css" %}">
     <link rel="stylesheet" href="{% static "file_form/file_form.css" %}">
 
     {% block custom_css_links_page %}{% endblock %}
@@ -216,7 +215,6 @@
     {% endif %}
 
     <script src="{% static "adminlte/js/app.min.js" %}"></script>
-    <script src="{% static "ajaxuploader/js/fileuploader.js" %}"></script>
     <!-- <script src="{% static "file_form/file_form.js" %}"></script> -->
     <script src="{% static "file_form/file_form.debug.js" %}"></script>
     {% for l in SETTINGS.LANGUAGES %}
