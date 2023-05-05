@@ -1,0 +1,8 @@
+# Requirements for to use huey inside G3W-SUITE
+# For new pip import requirements system VCS repository order install policy,
+# it was necessary put follow requirements into a separate requirements file.
+# 2021-09-17
+
+git+https://github.com/boxine/bx_py_utils.git@v36
+git+https://github.com/g3w-suite/django-huey-monitor.git
+# to fix compatibility con huey_monitor
