@@ -13,19 +13,21 @@ Admin server for G3W-SUITE written in Python, based on **Django** LTS (v3.2) and
 
 Software releases follow theese main branches as described in the compatibility table:
 
-| Branch     | Python         | Django         | QGIS          | [client]        | First release | Status         |
-|------------|----------------|----------------|---------------|---------------|---------------|----------------|
-| [dev]      | 3.10           | 3.2            | 3.28          | dev           | Unreleased    | ⚠️️ Unstable    |
-| [v.3.5.x]  | 3.10           | 2.2            | 3.22          | 3.7           | Nov 2022      | 🪲️ Bug fixing  |
-| [v.3.4.x]  | 3.8            | 2.2            | 3.22          | 3.4           | Mar 2022      | 🪲 Bug fixing  |
-| [v.3.3.x]  | 3.6            | 2.2            | 3.16          | 3.3           | Sep 2021      | 🚨 End of Life | 
-| [v.3.2.x]  | 3.6            | 2.2            | 3.16          | 3.2           | Apr 2021      | 🚨 End of Life |
-| [v.3.1.x]  | 3.6            | 2.2            | 3.10          | 3.1           | Nov 2020      | 🚨 End of Life |
-| [v.3.0.x]  | 3.6            | 2.2            | 3.10           | 3.0           | Nov 2020      | 🚨 End of Life |
-| [dj22-py3] | 3.6            | 2.2            | [🔗]         |               |               | 🚨 End of Life |
-| [py2]      | 2.7            | 1.11           | [🔗]         |               |               | 🚨 End of Life |
+| Branch     | Python         | Django         | QGIS          | [client] | First release | Status         |
+|------------|----------------|----------------|---------------|----------|---------------|----------------|
+| [dev]      | 3.10           | 3.2            | 3.28          | dev      | Unreleased    | ⚠️️ Unstable    |
+| [v.3.6.x]  | 3.10           | 3.2            | 3.28          | 3.8      | May 2023      | 🪲️ Bug fixing  |
+| [v.3.5.x]  | 3.10           | 2.2            | 3.22          | 3.7      | Nov 2022      | 🪲️ Bug fixing  |
+| [v.3.4.x]  | 3.8            | 2.2            | 3.22          | 3.4      | Mar 2022      | 🚨 End of Life |
+| [v.3.3.x]  | 3.6            | 2.2            | 3.16          | 3.3      | Sep 2021      | 🚨 End of Life | 
+| [v.3.2.x]  | 3.6            | 2.2            | 3.16          | 3.2      | Apr 2021      | 🚨 End of Life |
+| [v.3.1.x]  | 3.6            | 2.2            | 3.10          | 3.1      | Nov 2020      | 🚨 End of Life |
+| [v.3.0.x]  | 3.6            | 2.2            | 3.10           | 3.0      | Nov 2020      | 🚨 End of Life |
+| [dj22-py3] | 3.6            | 2.2            | [🔗]         |          |               | 🚨 End of Life |
+| [py2]      | 2.7            | 1.11           | [🔗]         |          |               | 🚨 End of Life |
 
 [dev]: https://github.com/g3w-suite/g3w-admin/tree/dev
+[v.3.6.x]: https://github.com/g3w-suite/g3w-admin/tree/v.3.6.x
 [v.3.5.x]: https://github.com/g3w-suite/g3w-admin/tree/v.3.5.x
 [v.3.4.x]: https://github.com/g3w-suite/g3w-admin/tree/v.3.4.x
 [v.3.3.x]: https://github.com/g3w-suite/g3w-admin/tree/v.3.3.x
