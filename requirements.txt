@@ -3,7 +3,7 @@ django-formtools==2.2
 django-crispy-forms==1.8.1
 django-extensions==3.1.5
 #---------------------------------------------------------------------------
-# django-file-form: to replace with PyPi version where thi patch is present:
+# django-file-form: to replace with PyPi version where this patch is present:
 # https://github.com/mbraak/django-file-form/pull/638
 git+https://github.com/gis3w/django-file-form.git@fix_filefield_not_required
 #---------------------------------------------------------------------------
