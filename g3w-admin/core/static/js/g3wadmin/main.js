@@ -1,56 +1,68 @@
 /**
- * Created by walter on 18/02/16.
- */
-
-/**
- * Use of https://github.com/sinkswim/javascript-style-guide for javascript coding style.
+ * @file
+ * @author    Walter Lorenzetti <lorenzetti@gis3w.it>
+ * @copyright 2016-02-18, Gis3w
+ * @license   MPL 2.0
  */
 
 window.g3wadmin = {};
 
-_.extend(g3wadmin,{
-    tpl: {}, // templates space
-    widget: {}, //  widget space
-    ui: {}, // UI
-    forms: {}, // forms related
-    utils: {},
-    currentModal: null,
-    currentForm: null,
-    
-    bootstrap: function(){
+_.extend(g3wadmin, {
 
-        var that = this;
-        //Initialize widgets
+    /**
+     * templates space
+     */
+    tpl: {},
+
+    /**
+     * widget space
+     */
+    widget: {}, 
+
+    /**
+     * UI
+     */
+    ui: {},
+    
+    /**
+     * forms related
+     */
+    forms: {},
+
+    utils: {},
+
+    currentModal: null,
+
+    currentForm: null,
+
+    /**
+     * Initialize widgets
+     */
+    bootstrap: function() {
+
+        const self = this;
+
         // Detail Widget
         this.ui.initCrudDetailWidget();
 
         // Delete Widget
         this.ui.initCrudDeleteWidget();
 
-        // Active/deactive Widget
+        // Active / Deactive Widget
         this.ui.initActiveDeactiveWidget();
 
         // Load Html Widget
-        var $htmlLoads = $('[data-widget-type="htmlItem"]');
-        $.each($htmlLoads,function(){
-            that.widget.loadHtmlItem($(this));
-        });
+        $.each($('[data-widget-type="htmlItem"]'), function() { self.widget.loadHtmlItem($(this)); });
 
-        // Add projects modal Widget
-        $('[data-widget-type="addProjectGroup"]').click(function(e){
-            that.widget.addProjectGroup($(this));
-        });
+        // Add projects Modal
+        $('[data-widget-type="addProjectGroup"]').click(function(e) { self.widget.addProjectGroup($(this)); });
 
-        // Ajax upload form
-        that.widget.ajaxUpload($('[data-widget-type="ajaxUpload"]'));
+        // Ajax Upload form
+        this.widget.ajaxUpload($('[data-widget-type="ajaxUpload"]'));
 
-
-        // start bootstrap3-wysihtml5
-        //$('.wys5').wysihtml5();
-
-        // start summernote
-        var summernote_options = {
-            height: 240,
+        // Summernote
+        $('.wys5').summernote({
+            lang: ('it' === CURRENT_LANGUAGE_CODE ? 'it-IT' : undefined),
             toolbar: [
                 ['magic', ['style']],
                 ['font', ['bold', 'underline', 'italic', 'clear']],
@@ -61,77 +73,72 @@ _.extend(g3wadmin,{
                 ['insert', ['link']],
                 ['view', ['fullscreen', 'codeview', 'undo', 'redo', 'help']]
             ],
-        };
+        });
 
-        if (CURRENT_LANGUAGE_CODE == 'it') {
-            summernote_options['lang'] = 'it-IT'
-        }
-        $('.wys5').summernote(summernote_options);
-
-        //Flat red color scheme for iCheck
+        // iCheck
         this.ui.initRadioCheckbox();
 
-        //Init bootstrap-datepicker
+        // Date picker
         this.ui.initBootstrapDatepicker();
 
-        //Init bootstrap-datepicker
+        // Time picker
         this.ui.initBootstrapTimepicker();
 
-        //Init bootstrap-datepicker
+        // Color picker
         this.ui.initBootstrapColorpicker();
         
-        //Init select2 plugin
+        // Select2
         this.ui.initSelect2();
 
-        //Init language select
+        // Language select
         this.ui.initLanguageSelect();
 
-        //Init button back history
+        // Back history button
         this.ui.initBackHistory();
 
-        //Init formWidget
+        // Ajax form Widget
         this.ui.initAjaxFormWidget();
 
-        //Init filerWidget
+        // Ajax filter Widget
         this.ui.initAjaxFilerWidget();
 
-        //Init ajaxDownload
+        // Ajax download
         this.ui.initAjaxDownload();
 
-        //Init PushMenu
+        // Push menu
         this.ui.initPushMenu();
 
-        //Init showMessageOnLoad
+        // On Load messages
         this.ui.showMessageOnLoad();
 
-        //  INIT SetProjectPanoramicWidget
+        // Panoramic Project Widget
         this.ui.initSetProjectPanoramicWidget();
 
-        // INIT initMapSetExtent
+        // Map Extent
         this.ui.initMapSetExtent();
 
-        // INIT Datatable
+        // Data Table
         this.ui.initDataTable();
 
-        // close every messages on top page
+        // Close every messages on top page
         this.ui.closeMessages();
 
-        // init ShowWEBService widget
+        // WEB Service widget
         this.ui.initShowWEBServicesWidget();
 
-        /*
-        TODO: try to perfom this issue server side
-        //If form present che collapsed box
-        var $formsInContent = $('.content').find('form');
-        if ($formsInContent.length > 0) {
+        /**
+         * @TODO try to perfom this issue server side
+         */
+        // // If form present che collapsed box
+        // var $formsInContent = $('.content').find('form');
+        // if ($formsInContent.length > 0) {
 
-            //check box to open
-            $formBoxes = $formsInContent.find('.collapsed-box > .box-body');
-            $.each($formBoxes, function(index, item){
-                that.forms.checkBoxToOpen($(item));
-            });
-        }
-        */
+        //     //check box to open
+        //     $formBoxes = $formsInContent.find('.collapsed-box > .box-body');
+        //     $.each($formBoxes, function(index, item) {
+        //         that.forms.checkBoxToOpen($(item));
+        //     });
+        // }
     }
 });
 

@@ -33,7 +33,8 @@ class ProjectsApiView(AboutApiViewMixin, generics.ListAPIView):
     filter_backends = (
         UserProjectFilter,
         GroupProjectFilter,
-        PanoramicProjectFilter
+        PanoramicProjectFilter,
+        ActiveFilter
     )
 
 
@@ -47,7 +48,8 @@ class GroupsApiView(AboutApiViewMixin, generics.ListAPIView):
 
     filter_backends = (
         UserGroupFilter,
-        MacroGroupGroupFilter
+        MacroGroupGroupFilter,
+        ActiveFilter
     )
 
 

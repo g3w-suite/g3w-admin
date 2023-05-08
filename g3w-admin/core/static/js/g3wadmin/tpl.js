@@ -1,15 +1,17 @@
 /**
- * Created by walter on 18/02/16.
+ * @file
+ * @author    Walter Lorenzetti <lorenzetti@gis3w.it>
+ * @copyright 2016-02-18, Gis3w
+ * @license   MPL 2.0
  */
 
 /**
- * Use of https://github.com/sinkswim/javascript-style-guide for javascript coding style.
+ * @TODO make use of Template string literals: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals
  */
-
 _.extend(g3wadmin.tpl, {
 
     tplDefValues: {
-        dialog :{
+        dialog: {
             modalTitle: gettext('Title'),
             modalBody: gettext('Content'),
             modalClass: '',
@@ -32,8 +34,6 @@ _.extend(g3wadmin.tpl, {
             title: 'OK',
             body: ''
         },
-
-
     },
 
     dialog : _.template('\

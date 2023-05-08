@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.template.response import HttpResponse
 from django.http import JsonResponse, HttpResponseBadRequest, HttpResponse, HttpResponseServerError
 from django.views.generic import (
@@ -22,7 +23,6 @@ from usersmanage.configs import G3W_EDITOR1
 from .forms import GroupForm, GeneralSuiteDataForm, MacroGroupForm
 from .models import Group, GroupProjectPanoramic, MapControl, GeneralSuiteData, MacroGroup
 from .mixins.views import G3WRequestViewMixin, G3WAjaxDeleteViewMixin, G3WAjaxSetOrderViewMixin
-from .utils.decorators import check_madd
 from .signals import after_update_group, execute_search_on_models
 import requests
 import json
@@ -140,12 +140,17 @@ class GroupCreateView(G3WRequestViewMixin, CreateView):
     form_class = GroupForm
 
     @method_decorator(permission_required('core.add_group', return_403=True))
-    @method_decorator(check_madd('MGC:kTccysDKRCPgT5M5y6sv-OSWlck', Group))
     def dispatch(self, *args, **kwargs):
         return super(GroupCreateView, self).dispatch(*args, **kwargs)
 
     def get_initial(self):
-        return {'mapcontrols': MapControl.objects.all()}
+
+        # Fake group for build a initial default header_logo_img for new groups.
+        g = Group(name='fake', title='fake', srid_id=1, header_logo_img=f'logo_img/{settings.CLIENT_G3WSUITE_LOGO}')
+
+        return {'mapcontrols': MapControl.objects.all(),
+                'header_logo_img': g.header_logo_img
+        }
 
     def get_success_url(self):
         return reverse('group-list')
@@ -153,7 +158,7 @@ class GroupCreateView(G3WRequestViewMixin, CreateView):
     def form_valid(self, form):
         res = super(GroupCreateView, self).form_valid(form)
 
-        # delete tempory file form files
+        # delete temporary file form files
         form.delete_temporary_files()
         return res
 
@@ -346,6 +351,14 @@ class GeneralSuiteDataUpdateView(UpdateView):
 
     def get_success_url(self):
         return reverse('home')
+
+    def form_valid(self, form):
+        res = super().form_valid(form)
+
+        # Delete django-file-form temporary files
+        form.delete_temporary_files()
+
+        return res
 
 
 # for MACROGROUPS

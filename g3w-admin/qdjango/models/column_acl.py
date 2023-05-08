@@ -59,9 +59,9 @@ class ColumnAcl(TimeStampedModel):
 
         constraints = [
             models.CheckConstraint(check=models.Q(user__isnull=False) | models.Q(
-                group__isnull=False), name='user_or_group_mutex'),
+                group__isnull=False), name='user_or_group_mutex_column'),
             models.CheckConstraint(check=models.Q(user__isnull=True) | models.Q(
-                group__isnull=True), name='user_or_group_is_set'),
+                group__isnull=True), name='user_or_group_is_set_column'),
         ]
 
         ordering = ['-id']

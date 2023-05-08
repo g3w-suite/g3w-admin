@@ -9,8 +9,10 @@ __license__   = "MPL 2.0"
 
 from django.urls import re_path
 from django.contrib.auth.decorators import login_required
+from sitetree.sitetreeapp import register_dynamic_trees, compose_dynamic_tree
 from base.urls import G3W_SITETREE_I18N_ALIAS
 from .views import *
+from .sitetrees import sitetrees
 
 G3W_SITETREE_I18N_ALIAS.append('qdjango')
 
@@ -153,13 +155,35 @@ urlpatterns = [
         name='fitler-by-user-layer'
     ),
 
+    #############################################################
+    # Messages CRUD
+    #############################################################
+
+    re_path(
+        r'^(?P<group_slug>[-_\w\d]+)/projects/(?P<project_slug>[-_\w\d]+)/messages/$',
+        login_required(QdjangoMessageListView.as_view()),
+        name='qdjango-project-messages-list'
+    ),
+    re_path(
+        r'^(?P<group_slug>[-_\w\d]+)/projects/(?P<project_slug>[-_\w\d]+)/messages/add/$',
+        login_required(QdjangoMessageCreateView.as_view()),
+        name='qdjango-project-messages-add'
+    ),
+    re_path(
+        r'^(?P<group_slug>[-_\w\d]+)/projects/(?P<project_slug>[-_\w\d]+)/messages/update/(?P<pk>[0-9]+)/$',
+        login_required(QdjangoMessageUpdateView.as_view()),
+        name='qdjango-project-messages-update'
+    ),
+    re_path(
+        r'^(?P<group_slug>[-_\w\d]+)/projects/(?P<project_slug>[-_\w\d]+)/messages/delete/(?P<pk>[0-9]+)/$',
+        login_required(QdjangoMessageDeleteView.as_view()),
+        name='qdjango-project-messages-delete'
+    ),
 ]
 
 
 try:
     # encaspulate in a try except procedure for migration
-    from sitetree.sitetreeapp import register_dynamic_trees, compose_dynamic_tree
-
     # get qdjango sitetree and add items to core sitetree:
 
     register_dynamic_trees(
@@ -171,15 +195,21 @@ try:
         ),
         reset_cache=True
     )
-    register_dynamic_trees(
-        compose_dynamic_tree(
-            'qdjango',
-            target_tree_alias='core_en',
-            parent_tree_item_alias='project-list',
-            include_trees=('qdjango_en',)
-        ),
-        reset_cache=True
-    )
 
+    tree_lang = [s.alias for s in sitetrees]
+
+    # Other language
+    for lang, lang_extended in settings.LANGUAGES:
+        alias = f'qdjango_{lang}'
+        alias = alias if alias in tree_lang else 'qdjango'
+        register_dynamic_trees(
+            compose_dynamic_tree(
+                'qdjango',
+                target_tree_alias=f'core_{lang}',
+                parent_tree_item_alias='project-list',
+                include_trees=(alias,)
+            ),
+            reset_cache=True
+        )
 except:
     pass

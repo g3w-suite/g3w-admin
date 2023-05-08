@@ -41,7 +41,7 @@ urlpatterns = [
     # Media reading upload
     #############################################################
     re_path(
-        r'^{}/(?P<project_type>[-_\w\d]+)/(?P<layer_id>[0-9]+)/(?P<file_name>[\(\)-_. \w\d]+)'.format(USER_MEDIA_PREFIX),
+        r'^{}/(?P<project_type>[-_\w\d]+)/(?P<layer_id>[0-9]+)/(?P<file_name>[\(\)"\'-_. \w\d]+)'.format(USER_MEDIA_PREFIX),
         user_media_view,
         name='user-media'
     ),
