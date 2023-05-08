@@ -1,4 +1,3 @@
-from django.utils import six
 from django.utils.translation import get_language
 from django.views.generic import TemplateView
 from django.template import loader
@@ -153,8 +152,7 @@ class ClientView(TemplateView):
         user_data = JSONRenderer().render(user_data)
 
         serializedGroup = JSONRenderer().render(groupData)
-        if six.PY3:
-            serializedGroup = str(serializedGroup, 'utf-8')
+        serializedGroup = str(serializedGroup, 'utf-8')
 
         baseurl = "{}/{}".format(
             settings.SITE_DOMAIN if hasattr(settings, 'SITE_DOMAIN') else '',

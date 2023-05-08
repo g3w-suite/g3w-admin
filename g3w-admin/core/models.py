@@ -5,12 +5,13 @@ from django.utils.translation import ugettext, ugettext_lazy as _
 from django.urls import reverse
 from django.db import models
 from django.apps import apps
+from django_extensions.db.fields import AutoSlugField
 from guardian.shortcuts import get_objects_for_user
 from guardian.compat import get_user_model
 from ordered_model.models import OrderedModel
 from model_utils.models import TimeStampedModel
 from model_utils import Choices
-from autoslug import AutoSlugField
+from django_extensions.db.fields import AutoSlugField
 from sitetree.models import TreeItemBase, TreeBase
 from django.contrib.auth.models import User, Group as AuthGroup
 from usersmanage.utils import setPermissionUserObject, getUserGroups, get_users_for_object, get_groups_for_object
@@ -101,8 +102,7 @@ class MacroGroup(TimeStampedModel, OrderedModel):
     use_logo_client = models.BooleanField(_('Use logo image for client'), default=False)
 
     slug = AutoSlugField(
-        _('Slug'), populate_from='name', unique=True, always_update=True
-    )
+        _('Slug'), unique=True, populate_from=['name'])
 
     def __str__(self):
         return self.title
@@ -132,12 +132,13 @@ class Group(TimeStampedModel, OrderedModel):
     title = models.CharField(_('Title'), max_length=255)
     description = models.TextField(_('Description'), blank=True)
     slug = AutoSlugField(
-        _('Slug'), populate_from='name', unique=True, always_update=True
+        _('Slug'), populate_from=['name'], unique=True
         )
     is_active = models.BooleanField(_('Is active'), default=1)
 
     # Company logo
-    header_logo_img = models.FileField(_('Logo image'), upload_to='logo_img')
+    header_logo_img = models.FileField(_('Logo image'), upload_to='logo_img',
+                                       default=f'logo_img/{settings.CLIENT_G3WSUITE_LOGO}')
     header_logo_link = models.URLField(_('Logo link'), blank=True, null=True,
                                        help_text=_('Enter link with http:// or https//'))
 

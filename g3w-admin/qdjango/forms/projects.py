@@ -1,3 +1,5 @@
+import os
+
 from qgis.core import QgsProject
 import re
 import zipfile
@@ -24,11 +26,11 @@ from usersmanage.utils import (crispyBoxACL, get_fields_by_user,
                                get_user_groups_for_object,
                                get_viewers_for_object, userHasGroups)
 
-from qdjango.models import QgisAuth, default_authid
+from qdjango.models import *
+from qdjango.utils.data import QgisProject
+from qdjango.utils.validators import ProjectExists
 
-from .models import *
-from .utils.data import QgisProject
-from .utils.validators import ProjectExists
+import shutil
 
 
 class QdjangoProjectFormMixin(object):
@@ -61,8 +63,12 @@ class QdjangoProjectFormMixin(object):
                 qgis_file = ContentFile(zfile.open(
                     qzfile, 'r').read(), name=qzfile)
 
-                # Update path property for QGIS api
-                qgis_file.path = self.cleaned_data['qgis_file'].file.path
+                # For QGIS Python API to recognize a .qgz file type, the file must have the extension `.qgz`
+                # So with current django-file-form version (3.5.0) is necessary make a copy of temporary file uploaded
+                # adding the .qgz extension
+                qgis_file.path = f"{self.cleaned_data['qgis_file'].file.path}.qgz"
+                shutil.copy(self.cleaned_data['qgis_file'].file.path, qgis_file.path)
+
 
             if self.instance.pk:
                 kwargs['instance'] = self.instance
@@ -77,6 +83,11 @@ class QdjangoProjectFormMixin(object):
 
             self.qgisProject = QgisProject(qgis_file, **kwargs)
             self.qgisProject.clean()
+
+            # Delete the .qgz copy
+            if file_extension.lower() == '.qgz':
+                os.remove(qgis_file.path)
+
         except Exception as e:
             raise ValidationError(str(e))
         return qgis_file
@@ -131,8 +142,6 @@ class QdjangoProjectFormMixin(object):
 class QdjangoProjectForm(TranslationModelForm, QdjangoProjectFormMixin, G3WFormMixin, G3WGroupFormMixin,
                          G3WGroupBaseLayerFormMixin, G3WRequestFormMixin, G3WACLForm, FileFormMixin, forms.ModelForm):
 
-    qgis_file = UploadedFileField(required=True)
-    thumbnail = UploadedFileField(required=False)
     url_alias = forms.CharField(
         required=False,
         label=_('URL alias'),
@@ -195,9 +204,9 @@ class QdjangoProjectForm(TranslationModelForm, QdjangoProjectFormMixin, G3WFormM
                         ),
                         Div(
                             'qgis_file',
+                            'qgis_file-uploads',
                             'form_id',
                             'upload_url',
-                            'delete_url',
                             css_class='box-body',
 
                         ),
@@ -307,6 +316,10 @@ class QdjangoProjectForm(TranslationModelForm, QdjangoProjectFormMixin, G3WFormM
             'use_map_extent_as_init_extent',
             'context_base_legend',
             'title_ur',
+        )
+        field_classes = dict(
+            qgis_file=UploadedFileField,
+            thumbnail=UploadedFileField
         )
 
     def _setEditorUserQueryset(self):

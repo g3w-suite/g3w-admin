@@ -1,4 +1,4 @@
-{% load staticfiles %}
+{% load static %}
 {% load i18n %}
 {% load g3wadmin_tags %}
 <!DOCTYPE html>
@@ -6,48 +6,33 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>{{ page_title }}</title>
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no" name="viewport">
-  {% with client_default|add:"/css/vendor.min.css" as vendor_css %}
-    <link rel="stylesheet" href="{% static vendor_css %}">
-  {% endwith %}
-  {% with client_default|add:"/css/app.min.css" as app_css %}
-    <link rel="stylesheet" href="{% static app_css %}">
-  {% endwith %}
+  <title>{{ page_title }}</title>
+  <link rel="icon" href="{% if SETTINGS.G3WSUITE_CUSTOM_STATIC_URL and SETTINGS.G3WSUITE_FAVICON %}{{ SETTINGS.G3WSUITE_FAVICON }}{% else %}{% static '/img/favicon.ico' %}{% endif %}">
+  <link rel="stylesheet" href="{% with client_default|add:"/css/vendor.min.css" as vendor_css %}{% static vendor_css %}{% endwith %}">
+  <link rel="stylesheet" href="{% with client_default|add:"/css/app.min.css" as app_css %}{% static app_css %}{% endwith %}">
+  {% if SETTINGS.G3WSUITE_CUSTOM_STATIC_URL %}{% for css in SETTINGS.G3WSUITE_CUSTOM_CSS %}
+  <link rel="stylesheet" type="text/css" href="{{ css }}" />
+  {% endfor %}{% endif %}
   <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
   <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
   <!--[if lt IE 9]>
   <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
   <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
   <![endif]-->
-  {% if SETTINGS.G3WSUITE_CUSTOM_STATIC_URL and SETTINGS.G3WSUITE_FAVICON %}
-    <link rel="icon" href="{{ SETTINGS.G3WSUITE_FAVICON }}">
-  {% else %}
-    <link rel="icon" href="{% static '/img/favicon.ico' %}">
-  {% endif %}
-  {% if SETTINGS.G3WSUITE_CUSTOM_STATIC_URL %}
-     {% for css in SETTINGS.G3WSUITE_CUSTOM_CSS %}
-      <link rel="stylesheet" type="text/css" href="{{ css }}" />
-     {% endfor %}
-  {% endif %}
 </head>
-<body class="hold-transition skin-{{ skin_class|default:'blue' }} fixed {% if sidebar_collapse %} sidebar-collapse {% endif %}" >
+<body class="hold-transition skin-{{ skin_class|default:'blue' }} fixed {% if sidebar_collapse %} sidebar-collapse {% endif %}">
+  {% if SETTINGS.SENTRY_JS %}
+    {{ SETTINGS.SENTRY_JS | safe }}
+  {% endif %}
   <div id="app">
     <app></app>
   </div>
-  {% with client_default|add:"/js/vendor.min.js" as vendor_js %}
-      <script src="{% static vendor_js %}"></script>
-  {% endwith %}
-  <script>
-    {{ group_config|safe }}
-  </script>
-  {% with client_default|add:"/js/app.min.js" as app_js %}
-    <script src="{% static app_js %}"></script>
-  {% endwith %}
-  {% if SETTINGS.G3WSUITE_CUSTOM_STATIC_URL %}
-     {% for js in SETTINGS.G3WSUITE_CUSTOM_JS %}
-      <script src="{{ js }}"></script>
-     {% endfor %}
-  {% endif %}
+  <script src="{% with client_default|add:"/js/vendor.min.js" as vendor_js %}{% static vendor_js %}{% endwith %}"></script>
+  <script>{{ group_config | safe }}</script>
+  <script src="{% with client_default|add:"/js/app.min.js" as app_js %}{% static app_js %}{% endwith %}"></script>
+  {% if SETTINGS.G3WSUITE_CUSTOM_STATIC_URL %}{% for js in SETTINGS.G3WSUITE_CUSTOM_JS %}
+  <script src="{{ js }}"></script>
+  {% endfor %}{% endif %}
 </body>
 </html>

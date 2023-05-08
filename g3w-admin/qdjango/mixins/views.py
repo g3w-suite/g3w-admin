@@ -17,6 +17,10 @@ class QdjangoProjectCUViewMixin(object):
         form.qgisProject.save(**form.cleaned_data)
         if not form.instance.pk:
             form.instance = form.qgisProject.instance
+
+        # Delete django-file-form temporary files
+        form.delete_temporary_files()
+
         form.save()
         return HttpResponseRedirect(self.get_success_url())
 

@@ -3,14 +3,12 @@ from django.views.generic import (
     UpdateView,
     ListView,
     DetailView,
-    TemplateView,
     FormView,
     View,
 )
 from django.views.generic.detail import SingleObjectMixin
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponse
 from django.utils.decorators import method_decorator
-from django.db import connections
 from django.conf import settings
 from django.core.cache import caches
 from django.utils.translation import gettext_lazy as _
@@ -18,7 +16,7 @@ from guardian.decorators import permission_required
 from guardian.shortcuts import get_objects_for_user
 from core.mixins.views import *
 from core.signals import pre_update_project, pre_delete_project, after_update_project, before_delete_project
-from core.utils.decorators import check_madd, project_type_permission_required, is_active_required
+from core.utils.decorators import project_type_permission_required, is_active_required
 from django_downloadview import ObjectDownloadView
 from rest_framework.response import Response
 from usersmanage.mixins.views import G3WACLViewMixin
@@ -30,17 +28,21 @@ from usersmanage.configs import G3W_EDITOR1, G3W_EDITOR2, G3W_VIEWER1
 if 'editing' in settings.INSTALLED_APPS:
     from editing.models import G3WEditingLayer, EDITING_ATOMIC_PERMISSIONS
 
-from qdjango.models import GeoConstraint, SingleLayerConstraint, ColumnAcl, LayerAcl
-
-from .signals import load_qdjango_widgets_data
-from .mixins.views import *
-from .forms import *
-from .models import TYPE_LAYER_FOR_WIDGET, TYPE_LAYER_FOR_DOWNLOAD, LayerAcl
-from .api.utils import serialize_vectorjoin
-from .utils.models import get_widgets4layer, comparedbdatasource
-from .utils.data import QGIS_LAYER_TYPE_NO_GEOM
+from qdjango.signals import load_qdjango_widgets_data
+from qdjango.mixins.views import *
+from qdjango.forms import *
+from qdjango.models import (
+    TYPE_LAYER_FOR_WIDGET,
+    TYPE_LAYER_FOR_DOWNLOAD,
+    LayerAcl,
+    GeoConstraint,
+    SingleLayerConstraint,
+    ColumnAcl
+)
+from qdjango.utils.models import get_widgets4layer, comparedbdatasource
+from qdjango.utils.data import QGIS_LAYER_TYPE_NO_GEOM
 import json
-from collections import OrderedDict
+
 
 
 
@@ -90,7 +92,6 @@ class QdjangoProjectCreateView(QdjangoProjectCUViewMixin, G3WGroupViewMixin, G3W
     @method_decorator(permission_required('core.add_project_to_group', (Group, 'slug', 'group_slug'), return_403=True))
     @method_decorator(permission_required('qdjango.add_project', return_403=True))
     @method_decorator(is_active_required((Group, 'slug', 'group_slug')))
-    @method_decorator(check_madd('MPC:XYamtBJA_JgFGmFvEa9x193rnLg', Project))
     def dispatch(self, *args, **kwargs):
         return super(QdjangoProjectCreateView, self).dispatch(*args, **kwargs)
 

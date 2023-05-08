@@ -6,7 +6,6 @@ from django.conf import settings
 from django.contrib.gis.geos import GEOSGeometry
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
-from django.utils import six
 from django.utils.translation import ugettext
 from django.utils.translation import ugettext_lazy as _
 from qgis.core import (
@@ -50,6 +49,7 @@ MODE_CSV = 'csv'
 MODE_GPKG = 'gpkg'
 MODE_FILTER_TOKEN = 'filtertoken'
 MODE_GEOTIFF = 'geotiff' # For raster layers
+MODE_FEATURE_COUNT = 'featurecount'
 
 MIME_TYPES_MOD = {
     MODE_SHP: {
@@ -155,13 +155,13 @@ def G3WExceptionHandler(exc, context):
 
     elif isinstance(exc, Http404):
         msg = _('Not found')
-        data.error = six.text_type(msg)
+        data.error = msg
 
         return Response(data.results, status=status.HTTP_404_NOT_FOUND)
 
     elif isinstance(exc, PermissionDenied):
         msg = _('Permission denied')
-        data.error = six.text_type(msg)
+        data.error = msg
 
         return Response(data.results, status=status.HTTP_403_FORBIDDEN)
 
