@@ -3,66 +3,49 @@
 {% load i18n %}
 {% get_current_language as lang %}
 <!DOCTYPE html>
-<!--
-This is a starter template page. Use this page to start your new project from
-scratch. This page gets rid of all links and provides the needed markup only.
--->
-<html>
+<html> {# This is the starter template page. Gets rid of all content and provides only the needed markup. #}
   <head>
+
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>{{ admin_page_title }}</title>
-    <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-    {% if SETTINGS.G3WSUITE_CUSTOM_STATIC_URL and SETTINGS.G3WSUITE_FAVICON %}
-    <link rel="icon" href="{{ SETTINGS.G3WSUITE_FAVICON }}">
-    {% else %}
-    <link rel="icon" href="{% static '/img/favicon.ico' %}">
+
+    <title>{{ admin_page_title }}</title>
+
+    <link rel="icon" href="{% if SETTINGS.G3WSUITE_CUSTOM_STATIC_URL and SETTINGS.G3WSUITE_FAVICON %}{{ SETTINGS.G3WSUITE_FAVICON }}{% else %}{% static '/img/favicon.ico' %}{% endif %}">
+   
+    {% if SETTINGS.SENTRY_JS %}
+    {{ SETTINGS.SENTRY_JS | safe }}
     {% endif %}
-    <!-- Pace -->
+
     <script src="{% static "bower_components/pace/pace.min.js" %}"></script>
-    {% if SETTINGS.DEBUG %}
+
+    <!-- vendor.css -->
+    {% if not SETTINGS.DEBUG %}
+    <link rel="stylesheet" href="{% static "dist/css/vendor.min.css"%}">
+    {% else %}
     <!-- build:css css/vendor.min.css -->
-    <!-- Bootstrap 3.3.7 -->
     <link rel="stylesheet" href="{% static "bower_components/bootstrap/dist/css/bootstrap.min.css" %}">
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="{% static "bower_components/font-awesome/css/font-awesome.min.css" %}">
-    <!-- Ionicons -->
     <link rel="stylesheet" href="{% static "bower_components/ionicons/css/ionicons.min.css" %}">
-    <!-- Select2 -->
     <link rel="stylesheet" href="{% static "bower_components/select2/dist/css/select2.min.css" %}">
-    <!-- Pace -->
     <link rel="stylesheet" href="{% static "bower_components/pace/themes/yellow/pace-theme-loading-bar.css" %}">
-    <!-- Bootstrap-datepicker -->
     <link rel="stylesheet" href="{% static "bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker3.min.css" %}">
-    <!-- Bootstrap-colorpicker -->
     <link rel="stylesheet" href="{% static "bower_components/bootstrap-colorpicker/dist/css/bootstrap-colorpicker.min.css" %}">
-    <!-- Jquery.Filer -->
     <link rel="stylesheet" href="{% static "modules/jquery.filer/css/jquery.filer.css" %}">
     <link rel="stylesheet" href="{% static "modules/jquery.filer/assets/fonts/jquery.filer-icons/jquery-filer.css" %}">
-    <!-- Jquery.Filer Theme -->
     <link rel="stylesheet" href="{% static "modules/jquery.filer/css/themes/jquery.filer-dragdropbox-theme.css" %}">
-    <!-- DataTables -->
     <link rel="stylesheet" href="{% static "bower_components/datatables/media/css/dataTables.bootstrap.min.css" %}">
-    <!-- icheck -->
     <link rel="stylesheet" href="{% static "bower_components/icheck/skins/flat/green.css" %}">
     <link rel="stylesheet" href="{% static "bower_components/icheck/skins/flat/blue.css" %}">
     <link rel="stylesheet" href="{% static "bower_components/icheck/skins/flat/yellow.css" %}">
-    <!-- JsTree -->
     <link rel="stylesheet" href="{% static "bower_components/jstree/dist/themes/default/style.css" %}">
     <link rel="stylesheet" href="{% static "bower_components/jstree-bootstrap-theme/dist/themes/proton/style.min.css" %}">
-    <!-- Summernote -->
     <link rel="stylesheet" href="{% static "modules/summernote/summernote.css" %}">
     <!-- endbuild -->
-
-    {% else %}
-    <link rel="stylesheet" href="{% static "dist/css/vendor.min.css"%}">
     {% endif %}
 
-    <link rel="stylesheet" href="{% static "adminlte/css/AdminLTE.min.css" %}">
-    <!-- Theme style -->
-    <link rel="stylesheet" href="{% static "adminlte/css/skins/"%}{{ adminlte_skin }}.min.css">
-
+    {# TODO: deprecate Shim and Respond.js #}
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -70,97 +53,71 @@ scratch. This page gets rid of all links and provides the needed markup only.
         <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 
-    <!-- Django-file-form -->
+    <link rel="stylesheet" href="{% static "adminlte/css/AdminLTE.min.css" %}">
+    <link rel="stylesheet" href="{% static "adminlte/css/skins/"%}{{ adminlte_skin }}.min.css">
     <link rel="stylesheet" href="{% static "file_form/file_form.css" %}">
 
-
-    {% block custom_css_links_page %}
-    {% endblock %}
-    {% if SETTINGS.DEBUG %}
+    {% block custom_css_links_page %}{% endblock %}
+    
+    <!-- g3wadmin.css -->
+    {% if not SETTINGS.DEBUG %}
+    <link rel="stylesheet" href="{% static "dist/css/g3wadmin.min.css"%}">
+    {% else %}
     <!-- build:css css/g3wadmin.min.css -->
     <link rel="stylesheet" href="{% static "css/g3wadmin.css"%}">
     <link rel="stylesheet" href="{% static "css/g3wadmin_dashboard_widget.css"%}">
     <link rel="stylesheet" href="{% static "css/g3wadmin_placeholder.css" %}">
     <!-- endbuild -->
-    {% else %}
-    <link rel="stylesheet" href="{% static "dist/css/g3wadmin.min.css"%}">
     {% endif %}
+    
     <link rel="stylesheet" type="text/css" href="{% static 'bower_components/cookieconsent/build/cookieconsent.min.css' %}" />
+    
     {% for css in css_modules %}
     <link rel="stylesheet" type="text/css" href="{% static css %}" />
     {% endfor %}
 
-    {% if SETTINGS.G3WSUITE_CUSTOM_STATIC_URL %}
-    {% for css in SETTINGS.G3WSUITE_CUSTOM_CSS %}
+    {% if SETTINGS.G3WSUITE_CUSTOM_STATIC_URL %}{% for css in SETTINGS.G3WSUITE_CUSTOM_CSS %}
     <link rel="stylesheet" type="text/css" href="{{ css }}" />
-    {% endfor %}
-    {% endif %}
+    {% endfor %}{% endif %}
 
-
-    {% if analytics_js_code %}
-        {{ analytics_js_code|safe }}
-    {% endif %}
+    {% if analytics_js_code %}{{ analytics_js_code|safe }}{% endif %}
   </head>
-  <!--
-  BODY TAG OPTIONS:
-  =================
-  Apply one or more of the following classes to get the
-  desired effect
-  |---------------------------------------------------------|
-  | SKINS         | skin-blue                               |
-  |               | skin-black                              |
-  |               | skin-purple                             |
-  |               | skin-yellow                             |
-  |               | skin-red                                |
-  |               | skin-green                              |
-  |---------------------------------------------------------|
-  |LAYOUT OPTIONS | fixed                                   |
-  |               | layout-boxed                            |
-  |               | layout-top-nav                          |
-  |               | sidebar-collapse                        |
-  |               | sidebar-mini                            |
-  |---------------------------------------------------------|
-  -->
+  {% comment %}
+    BODY TAG OPTIONS:
+    =================
+    Apply one or more of the following classes to get the desired effect
+    |------------------------------------------------------------------|
+    | SKINS         | skin-blue                                        |
+    |               | skin-black                                       |
+    |               | skin-purple                                      |
+    |               | skin-yellow                                      |
+    |               | skin-red                                         |
+    |               | skin-green                                       |
+    |------------------------------------------------------------------|
+    |LAYOUT OPTIONS | fixed                                            |
+    |               | layout-boxed                                     |
+    |               | layout-top-nav                                   |
+    |               | sidebar-collapse                                 |
+    |               | sidebar-mini                                     |
+    |------------------------------------------------------------------|
+  {% endcomment %}
   <body class="hold-transition {{ adminlte_skin }} {{ adminlte_layout_option }} {{ sidebar_status }}">
-  {% block body_content %}
+    {% block body_content %}
     <div class="wrapper">
 
-      <!-- Main Header -->
       <header class="main-header">
-
-        <!-- Logo -->
         <a href="#" class="logo">
-          {% if SETTINGS.G3WSUITE_CUSTOM_STATIC_URL %}
-              <!-- mini logo for sidebar mini 50x50 pixels -->
-              <span class="logo-mini"><img src="{{ SETTINGS.G3WSUITE_RID_LOGO }}"></span>
-              <!-- logo for regular state and mobile devices -->
-              <!--<span class="logo-lg"><b>G3W-A</b>dmin</span>-->
-              <span class="logo-lg"><img src="{{ SETTINGS.G3WSUITE_MAIN_LOGO }}"></span>
-          {% else %}
-              <!-- mini logo for sidebar mini 50x50 pixels -->
-              <span class="logo-mini"><img src="{% static SETTINGS.G3WSUITE_RID_LOGO %}"></span>
-              <!-- logo for regular state and mobile devices -->
-              <!--<span class="logo-lg"><b>G3W-A</b>dmin</span>-->
-              <span class="logo-lg"><img src="{% static SETTINGS.G3WSUITE_MAIN_LOGO %}"></span>
-          {% endif %}
+          <span class="logo-mini"><img src="{% if SETTINGS.G3WSUITE_CUSTOM_STATIC_URL %}{{ SETTINGS.G3WSUITE_RID_LOGO }}{% else %}{% static SETTINGS.G3WSUITE_RID_LOGO %}{% endif %}"></span>
+          <span class="logo-lg"><img src="{% if SETTINGS.G3WSUITE_CUSTOM_STATIC_URL %}{{ SETTINGS.G3WSUITE_MAIN_LOGO }}{% else %}{% static SETTINGS.G3WSUITE_MAIN_LOGO %}{% endif %}"></span>
         </a>
-
-        <!-- Header Navbar -->
         <nav class="navbar navbar-static-top" role="navigation">
-          <!-- Sidebar toggle button-->
-          <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
-            <span class="sr-only">Toggle navigation</span>
-          </a>
-          <!-- Navbar Right Menu -->
-
+          <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button"><span class="sr-only">Toggle navigation</span></a>
           {% include 'include/navbar_right_menu.html' %}
         </nav>
       </header>
-      <!-- Left side column. contains the logo and sidebar -->
-      <aside class="main-sidebar">
 
-        <!-- sidebar: style can be found in sidebar.less -->
-        <section class="sidebar">
+      <aside class="main-sidebar">
+        <section class="sidebar"> {# sidebar styles can be found in sidebar.less #}
         {% sitetree_menu from "core" include "trunk" template "sitetree/sidebar.html" %}
         {% sitetree_menu from "acl" include "trunk" template "sitetree/sidebar.html" %}
         {% for module in SETTINGS.G3WADMIN_LOCAL_MORE_APPS %}
@@ -170,20 +127,12 @@ scratch. This page gets rid of all links and provides the needed markup only.
         {% sitetree_menu from module include "trunk" template "sitetree/sidebar.html" %}
         {% endfor %}
         </section>
-        <!-- /.sidebar -->
       </aside>
 
-      <!-- Content Wrapper. Contains page content -->
       <div class="content-wrapper">
-        <!-- Content Header (Page header) -->
-        <section class="content-header">
-          {% block page_header %}
-          <h1>
-            Page Header
-            <small>Optional description</small>
-          </h1>
-          {% endblock %}
 
+        <section class="content-header">
+          {% block page_header %}<h1>Page Header <small>Optional description</small></h1>{% endblock %}
           {% block breadcrumb %}
           <ol class="breadcrumb">
             <li><i class="fa fa-dashboard"></i> <a href="{% url 'home' %}">{% trans 'Dashboard' %}</a></li>
@@ -196,114 +145,88 @@ scratch. This page gets rid of all links and provides the needed markup only.
           {% endblock %}
         </section>
 
-        <!-- Main content --> 
         <section class="content">
-
-        {% if messages %}
+          {% if messages %}
           <div id="page_user_messages" class="row">
             <div class="col-md-12">
             {% for message in messages %}
-                <div class="alert alert-{% if message.tags %}{{ message.tags|lower }}{% else %}default{% endif %} alert-dismissible">
-                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                    <h4><i class="icon fa fa-check"></i> Ok!</h4>
-                    {{ message }}
-                </div>
+              <div class="alert alert-{% if message.tags %}{{ message.tags|lower }}{% else %}default{% endif %} alert-dismissible">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                <h4><i class="icon fa fa-check"></i> Ok!</h4>
+                {{ message }}
+              </div>
             {% endfor %}
             </div>
           </div>
-        {% endif %}
+          {% endif %}
+          {% block main_content %}{% endblock %}
+        </section>
 
-          {% block main_content %}
-          {% endblock %}
+      </div>
 
-        </section><!-- /.content -->
-      </div><!-- /.content-wrapper -->
-
-      <!-- Main Footer -->
       <footer class="main-footer">
         {% if powerd_by %}
-        <!-- To the right -->
         <div class="pull-right hidden-xs">
-        {% block footer-right %}
-          <strong>G3W-SUITE {% trans 'Version' %} {{ VERSION }}</strong>: administration GIS application.
-        {% endblock %}
+          {% block footer-right %}<strong>G3W-SUITE {% trans 'Version' %} {{ VERSION }}</strong>: administration GIS application.{% endblock %}
         </div>
-        <!-- Default to the left -->
         <strong>Copyright &copy; 2015 - {{ today.year }} <a href="http://www.gis3w.it">GIS3W</a>.</strong> All rights reserved.
         {% endif %}
       </footer>
+
       {% include 'include/sidebar_right.html' %}
-    </div><!-- ./wrapper -->
-  {% endblock %}
+
+    </div>
+    {% endblock %}
 
     <!-- REQUIRED JS SCRIPTS -->
     <script>
-        const CURRENT_LANGUAGE_CODE = '{{ lang }}';
-        const FRONTEND              = {% if SETTINGS.FRONTEND %}true{% else %}false{% endif %}
-        const SITE_PREFIX_URL       = {% if SETTINGS.SITE_PREFIX_URL %}'{{ SETTINGS.SITE_PREFIX_URL }}'{% else %}''{% endif %}
-        const STATIC_BASE_URL       = '{% static "" %}';
+      const CURRENT_LANGUAGE_CODE = '{{ lang }}';
+      const FRONTEND              = {% if SETTINGS.FRONTEND %}true{% else %}false{% endif %};
+      const SITE_PREFIX_URL       = {% if SETTINGS.SITE_PREFIX_URL %}'{{ SETTINGS.SITE_PREFIX_URL }}'{% else %}''{% endif %}
+      const STATIC_BASE_URL       = '{% static "" %}';
     </script>
-    {% if SETTINGS.DEBUG %}
+
+    <!-- vendor.js -->
+    {% if not SETTINGS.DEBUG %}
+    <script src="{% static "dist/js/vendor.min.js" %}"></script>
+    {% else %}
     <!-- build:js js/vendor.min.js -->
-    <!-- jQuery 2.1.4 -->
     <script src="{% static "bower_components/jquery/dist/jquery.min.js" %}"></script>
-    <!-- jQuery-ui 1.11.4 -->
     <script src="{% static "bower_components/jquery-ui/jquery-ui.min.js" %}"></script>
-    <!-- jquery-cookie -->
     <script src="{% static "bower_components/jquery-cookie/jquery.cookie.js" %}"></script>
-    <!-- jquery-file-download -->
     <script src="{% static "bower_components/jquery-file-download/src/Scripts/jquery.fileDownload.js" %}"></script>
-    <!-- Bootstrap 3.3.5 -->
     <script src="{% static "bower_components/bootstrap/dist/js/bootstrap.min.js" %}"></script>
-    <!-- Bootstrap-colorpicker -->
     <script src="{% static "bower_components/bootstrap-colorpicker/dist/js/bootstrap-colorpicker.min.js" %}"></script>
-    <!-- Underscore -->
     <script src="{% static "bower_components/underscore/underscore-min.js" %}"></script>
-    <!-- Select2 -->
     <script src="{% static "bower_components/select2/dist/js/select2.full.min.js" %}"></script>
-    <!-- Bootstrap-datepicker -->
     <script src="{% static "bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js" %}"></script>
-    <!-- Bootstrap-timepicker -->
     <script src="{% static "bower_components/bootstrap-timepicker/js/bootstrap-timepicker.js" %}"></script>
-    <!-- Jquery.Filer -->
     <script src="{% static "modules/jquery.filer/js/jquery.filer.min.js" %}"></script>
-    <!-- DataTables -->
     <script src="{% static "bower_components/datatables/media/js/jquery.dataTables.min.js" %}"></script>
     <script src="{% static "bower_components/datatables/media/js/dataTables.bootstrap.min.js" %}"></script>
     <script src="{% static "modules/jquery.datatable/lang.js" %}"></script>
-    <!-- Bootstrap Tree View -->
     <script src="{% static "bower_components/bootstrap-treeview/dist/bootstrap-treeview.min.js" %}"></script>
-    <!-- icheck -->
     <script src="{% static "bower_components/icheck/icheck.min.js" %}"></script>
-    <!-- Proj4 -->
     <script src="{% static "bower_components/proj4/dist/proj4.js" %}"></script>
-    <!-- jsTree -->
     <script src="{% static "bower_components/jstree/dist/jstree.min.js" %}"></script>
-    <!-- Summernote -->
     <script src="{% static "modules/summernote/summernote.min.js" %}"></script>
     <script src="{% static "modules/summernote/lang/summernote-it-IT.min.js" %}"></script>
     <!-- endbuild -->
-    {% else %}
-    <script src="{% static "dist/js/vendor.min.js" %}"></script>
     {% endif %}
-    <!-- Bootstrap-datepicker-locals -->
-    {% for l in SETTINGS.LANGUAGES %}
-      {% if l.0 == 'se' %}
-        <script src="{% static "bower_components/bootstrap-datepicker/dist/locales/bootstrap-datepicker.sv.min.js" %}"></script>
-      {% elif not l.0 == 'en' %}
-        <script src="{% static "bower_components/bootstrap-datepicker/dist/locales/bootstrap-datepicker."|add:l.0|add:".min.js" %}"></script>
-      {% endif %}
-    {% endfor %}
-    <!-- AdminLTE App -->
-    <script src="{% static "adminlte/js/app.min.js" %}"></script>
-    <!-- Django-file-form -->
-    <!--<script src="{% static "file_form/file_form.js" %}"></script>-->
+
     <script src="{% static "file_form/file_form.debug.js" %}"></script>
-    <!-- g3wadmin javascript catalog -->
+    {% for l in SETTINGS.LANGUAGES %}
+    <script src="{% if l.0 == 'se' %}{% static "bower_components/bootstrap-datepicker/dist/locales/bootstrap-datepicker.sv.min.js" %}{% elif not l.0 == 'en' %}{% static "bower_components/bootstrap-datepicker/dist/locales/bootstrap-datepicker."|add:l.0|add:".min.js" %}{% endif %}"></script>
+    {% endfor %}
+
+    <script src="{% static "adminlte/js/app.min.js" %}"></script>
+    <!-- <script src="{% static "file_form/file_form.js" %}"></script> -->
     <script src="{% url 'javascript-catalog' %}"></script>
 
-    <!-- g3w-admin -->
-    {% if SETTINGS.DEBUG %}
+    <!-- g3wadmin.js -->
+    {% if not SETTINGS.DEBUG %}
+    <script src="{% static "dist/js/g3wadmin.min.js" %}"></script>
+    {% else %}
     <!-- build:js  js/g3wadmin.min.js -->
     <script src="{% static "js/g3wadmin/main.js" %}"></script>
     <script src="{% static "js/g3wadmin/tpl.js" %}"></script>
@@ -313,41 +236,26 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <script src="{% static "js/g3wadmin/forms.js" %}"></script>
     <script src="{% static "js/g3wadmin.js" %}"></script>
     <!-- endbuild -->
-    {% else %}
-    <script src="{% static "dist/js/g3wadmin.min.js" %}"></script>
     {% endif %}
 
-    {% comment  %}
-    Extentend ga space with genera settings
-    {% endcomment %}
+    {# Extend `g3wadmin` global variable  #}
+    <script>_.extend(g3wadmin,{ 'settings': {
+      'G3WADMIN_LOCAL_MORE_APPS':  ['{{ SETTINGS.G3WADMIN_LOCAL_MORE_APPS|join:"','" }}'],
+      'FILE_FORM_UPLOAD_TEMP_URL': '{{ SETTINGS.MEDIA_URL }}{% if SETTINGS.FILE_FORM_UPLOAD_DIR %}{{ FILE_FORM_UPLOAD_DIR }}{% else %}temp_uploads{% endif %}/',
+    } });</script>
 
-    <script>
-        _.extend(g3wadmin,{
-            'settings': {
-                'G3WADMIN_LOCAL_MORE_APPS': ['{{ SETTINGS.G3WADMIN_LOCAL_MORE_APPS|join:"','" }}'],
-                'FILE_FORM_UPLOAD_TEMP_URL': '{{ SETTINGS.MEDIA_URL }}{% if SETTINGS.FILE_FORM_UPLOAD_DIR %}{{ FILE_FORM_UPLOAD_DIR }}{% else %}temp_uploads{% endif %}/'
-            }
-        });
-    </script>
-
-    {% for js_module in js_modules %}
-    {%  if js_module %}
+    {% for js_module in js_modules %}{% if js_module %}
     <script src="{% static js_module %}"></script>
-    {% endif %}
-    {% endfor %}
+    {% endif %}{% endfor %}
 
-    {% if SETTINGS.G3WSUITE_CUSTOM_STATIC_URL %}
-    {% for js in SETTINGS.G3WSUITE_CUSTOM_JS %}
+    {% if SETTINGS.G3WSUITE_CUSTOM_STATIC_URL %}{% for js in SETTINGS.G3WSUITE_CUSTOM_JS %}
     <script src="{{ js }}"></script>
-    {% endfor %}
-    {% endif %}
+    {% endfor %}{% endif %}
 
-    <!-- coockieconset -->
     <script type="text/javascript" src="{% static 'bower_components/cookieconsent/build/cookieconsent.min.js' %}"></script>
     {% include 'core/include/cookieconsent.html' %}
 
-    {% block custom_js_links_page %}
-    {% endblock %}
+    {% block custom_js_links_page %}{% endblock %}
 
   </body>
 
