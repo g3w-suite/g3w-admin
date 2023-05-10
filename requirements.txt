@@ -14,8 +14,6 @@ djangorestframework==3.11.2
 djangorestframework-gis==0.15
 drf-spectacular==0.25.1
 django-downloadview==1.9
-django-debug-toolbar==3.2.1
-django-debug-panel==0.8.3
 django-mptt==0.13.4
 django-ordered-model==3.3.0
 django-ajax-selects==2.2.0
