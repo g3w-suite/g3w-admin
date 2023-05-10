@@ -20,7 +20,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <link rel="icon" href="{% static '/img/favicon.ico' %}">
     {% endif %}
     <!-- Pace -->
-    <script src="{% static "bower_components/pace/pace.min.js" %}"></script>
+    <script src="{% static "bower_components/pace/pace.min.js" %}" data-pace-options='{ "eventLag": false }'></script>
     {% if SETTINGS.DEBUG %}
     <!-- build:css css/vendor.min.css -->
     <!-- Bootstrap 3.3.7 -->
