@@ -203,6 +203,7 @@ LANGUAGES = (
     ('se', 'Swedish'), # FIXME: correct language code should be "sv"
     ('ro', 'Romanian'),
     ('de', 'Deutsch'),
+    ('pt', 'Portuguese'),
 )
 
 MODELTRANSLATION_DEFAULT_LANGUAGE = 'it'
