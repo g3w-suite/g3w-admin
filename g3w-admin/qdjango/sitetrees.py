@@ -162,4 +162,56 @@ sitetrees = (
                )
           ]
      ),
+
+     # PORTUGUESE
+     G3Wtree(
+          'qdjango_pt',
+          title='Qdjango',
+          module='qdjango',
+          items=[
+               item(
+                    'Add QGIS project {{ group.slug }}',
+                    'qdjango-project-add group.slug',
+                    url_as_pattern=True,
+                    icon_css_class='fa fa-plus',
+                    in_menu=False,
+                    access_by_perms=['qdjango.add_project']
+               ),
+               item(
+                    'Update QGIS project {{ group.slug }} {{ object.slug }}',
+                    'qdjango-project-update group.slug object.slug',
+                    url_as_pattern=True,
+                    in_menu=False,
+                    icon_css_class='fa fa-edit'
+               ),
+               item(
+                    'Layer list QGIS project {{ group.slug }} {{ object.slug }}',
+                    'qdjango-project-layers-list group.slug project_slug',
+                    in_menu=False,
+                    url_as_pattern=True,
+                    icon_css_class='fa fa-edit'
+               ),
+               item(
+                    'QGIS project\'s messages list {{ group.slug }} {{ project.slug }}',
+                    'qdjango-project-messages-list group.slug project.slug',
+                    in_menu=False,
+                    url_as_pattern=True,
+                    icon_css_class='fa fa-edit'
+               ),
+               item(
+                    'Add QGIS project\'s message {{ group.slug }} {{ project.slug }}',
+                    'qdjango-project-messages-add group.slug project.slug',
+                    in_menu=False,
+                    url_as_pattern=True,
+                    icon_css_class='fa fa-edit'
+               ),
+               item(
+                    'Update QGIS project\'s message {{ group.slug }} {{ project.slug }}',
+                    'qdjango-project-messages-update group.slug project.slug object.pk',
+                    in_menu=False,
+                    url_as_pattern=True,
+                    icon_css_class='fa fa-edit'
+               )
+          ]
+     ),
 )
