@@ -421,7 +421,9 @@ _.extend(g3wadmin.widget, {
                 onModalShow: ((_.isUndefined(params['on-modal-show']) ? false : params['on-modal-show']))
             });
 
-            modal.setCloseButtonAction(function(e) {
+            var filerDom = $(modal.$modal.find('#filer_input'));
+
+            modal.setCloseButtonAction(function(e){
                 modal.hide();
                 const jFiler = $(modal.$modal.find('#filer_input')).prop('jFiler');
                 if (!_.isNull(jFiler.current_file) && jFiler.current_file.uploaded) {
