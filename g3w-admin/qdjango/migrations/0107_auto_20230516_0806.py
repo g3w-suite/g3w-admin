@@ -13,11 +13,11 @@ class Migration(migrations.Migration):
     operations = [
         migrations.RemoveConstraint(
             model_name='columnacl',
-            name='user_or_group_mutex_column',
+            name='user_or_group_mutex',
         ),
         migrations.RemoveConstraint(
             model_name='columnacl',
-            name='user_or_group_is_set_column',
+            name='user_or_group_is_set',
         ),
         migrations.AddField(
             model_name='message',
