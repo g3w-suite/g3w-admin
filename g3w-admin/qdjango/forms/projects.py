@@ -203,6 +203,8 @@ class QdjangoProjectForm(TranslationModelForm, QdjangoProjectFormMixin, G3WFormM
                             css_class='box-header with-border'
                         ),
                         Div(
+                            HTML(
+                                f"<p><b>{_('Translatable fields')}</b>: <span class='translate translatable_fields'></span></p>"),
                             'qgis_file',
                             'qgis_file-uploads',
                             'form_id',
@@ -229,9 +231,9 @@ class QdjangoProjectForm(TranslationModelForm, QdjangoProjectFormMixin, G3WFormM
                             css_class='box-header with-border'
                         ),
                         Div(
-                            'title_ur',
+                            Field('title_ur', css_class='translate'),
                             Field('description',
-                                  css_class='wys5'),
+                                  css_class='wys5 translate'),
                             'thumbnail',
                             HTML("""<img
                                             {% if not form.thumbnail.value %}style="display:none;"{% endif %}
