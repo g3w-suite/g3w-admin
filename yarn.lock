@@ -102,9 +102,9 @@
   dependencies:
     jquery ">=1.9.1"
 
-"@bower_components/pace@HubSpot/pace#1.0.2":
-  version "1.0.2"
-  resolved "https://codeload.github.com/HubSpot/pace/tar.gz/c6846cbf6b928e9903b569269fa9fbf32f2554f4"
+"@bower_components/pace@HubSpot/pace#1.2.4":
+  version "1.2.4"
+  resolved "https://codeload.github.com/HubSpot/pace/tar.gz/f7910422b155e57f81ade87c7a45cb1708d935b7"
 
 "@bower_components/proj4@proj4js/proj4js#2.4.4":
   version "2.4.4-alpha"

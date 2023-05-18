@@ -41,8 +41,8 @@ class MessageForm(G3WFormMixin, G3WRequestFormMixin, G3WGroupFormMixin, G3WProje
                                                 css_class='box-header with-border'
                                             ),
                                             Div(
-                                                'title',
-                                                Field('body', css_class='wys5'),
+                                                Field('title', css_class='translate'),
+                                                Field('body', css_class='wys5 translate'),
                                                 'level',
                                                 css_class='box-body',
                                             ),

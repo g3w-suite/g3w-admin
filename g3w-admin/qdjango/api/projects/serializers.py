@@ -1,6 +1,6 @@
 from django.http.request import QueryDict
 from django.conf import settings
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext_lazy as _, get_language
 from rest_framework import serializers
 from rest_framework.fields import empty
 from guardian.shortcuts import get_objects_for_user, get_anonymous_user
@@ -325,6 +325,14 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         :return: dict
         """
 
+        # Patch for using fo `Accept-Language` requests paramenter.
+        if self.request.META.get('HTTP_ACCEPT_LANGUAGE'):
+            title_col = f"title_{self.request.META.get('HTTP_ACCEPT_LANGUAGE')}"
+            body_col = f"body_{self.request.META.get('HTTP_ACCEPT_LANGUAGE')}"
+        else:
+            title_col = "title"
+            body_col = "body"
+
         # Check meddages by validate_from and validate_to
         messages = []
 
@@ -345,8 +353,8 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
             'levels': {l[1]: l[0] for l in MSG_LEVELS},
             'items': [{
                 'id': m.pk,
-                'title': m.title,
-                'body': m.body,
+                'title': getattr(m, title_col) if hasattr(m, title_col) else m.title,
+                'body': getattr(m, body_col) if hasattr(m, body_col) else m.body,
                 'level': m.level
             } for m in messages]
         }

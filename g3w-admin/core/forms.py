@@ -49,9 +49,11 @@ class GroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, G3WRequestFor
                                             css_class='box-header with-border'
                                         ),
                                         Div(
+                                            HTML(
+                                                f"<p><b>{_('Translatable fields')}</b>: <span class='translate translatable_fields'></span></p>"),
                                             'name',
-                                            'title',
-                                            Field('description', css_class='wys5', style="width:100%;"),
+                                            Field('title', css_class='translate'),
+                                            Field('description', css_class='wys5 translate', style="width:100%;"),
                                             css_class='box-body',
 
                                         ),
@@ -151,7 +153,7 @@ class GroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, G3WRequestFor
                                             css_class='box-header with-border'
                                         ),
                                         Div(
-                                            'header_terms_of_use_text',
+                                            Field('header_terms_of_use_text', css_class='translate'),
                                             'header_terms_of_use_link',
                                             css_class='box-body'
                                         ),
@@ -227,13 +229,13 @@ class GeneralSuiteDataForm(TranslationModelForm, FileFormMixin, ModelForm):
                             css_class='box-header with-border'
                         ),
                         Div(
-                            'title',
-                            'sub_title',
-                            Field('home_description', css_class='wys5', style="width:100%;"),
+                            HTML(f"<p><b>{_('Translatable fields')}</b>: <span class='translate translatable_fields'></span></p>"),
+                            Field('title', css_class='translate'),
+                            Field('sub_title', css_class='translate'),
+                            Field('home_description', css_class='wys5 translate', style="width:100%;"),
                             'suite_logo',
                             'form_id',
                             'upload_url',
-                            'delete_url',
                             HTML(
                                 """{% if form.suite_logo.value %}<img class="img-responsive img-thumbnail" src="{{ MEDIA_URL }}{{ form.suite_logo.value }}">{% endif %}""", ),
                             PrependedText('url_suite_logo', '<i class="fa fa-link"></i>'),
@@ -252,12 +254,12 @@ class GeneralSuiteDataForm(TranslationModelForm, FileFormMixin, ModelForm):
                             css_class='box-header with-border'
                         ),
                         Div(
-                            'about_title',
-                            'about_name',
+                            Field('about_title', css_class='translate'),
+                            Field('about_name', css_class='translate'),
                             'about_tel',
                             'about_email',
                             'about_address',
-                            Field('about_description', css_class='wys5', style="width:100%;"),
+                            Field('about_description', css_class='wys5 translate', style="width:100%;"),
                             css_class='box-body',
 
                         ),
@@ -273,8 +275,8 @@ class GeneralSuiteDataForm(TranslationModelForm, FileFormMixin, ModelForm):
                             css_class='box-header with-border'
                         ),
                         Div(
-                            'groups_title',
-                            Field('groups_map_description', css_class='wys5', style="width:100%;"),
+                            Field('groups_title', css_class='translate'),
+                            Field('groups_map_description', css_class='wys5 translate', style="width:100%;"),
                             css_class='box-body',
                         ),
                         css_class='box box-default'
@@ -289,8 +291,8 @@ class GeneralSuiteDataForm(TranslationModelForm, FileFormMixin, ModelForm):
                             css_class='box-header with-border'
                         ),
                         Div(
-                            'login_title',
-                            Field('login_description', css_class='wys5', style="width:100%;"),
+                            Field('login_title', css_class='translate'),
+                            Field('login_description', css_class='wys5 translate', style="width:100%;"),
                             css_class='box-body',
 
                         ),
@@ -329,8 +331,8 @@ class GeneralSuiteDataForm(TranslationModelForm, FileFormMixin, ModelForm):
                             css_class='box-header with-border'
                         ),
                         Div(
-                            'main_map_title',
-                            Field('credits', css_class='wys5', style="width:100%;"),
+                            Field('main_map_title', css_class='translate'),
+                            Field('credits', css_class='wys5 translate', style="width:100%;"),
                             css_class='box-body',
 
                         ),
@@ -398,13 +400,15 @@ class MacroGroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, ModelFor
                                             css_class='box-header with-border'
                                         ),
                                         Div(
+                                            HTML(
+                                                f"<p><b>{_('Translatable fields')}</b>: <span class='translate translatable_fields'></span></p>"),
                                             'name',
-                                            'title',
+                                            Field('title', css_class='translate'),
                                             HTML(_(
                                                 '<b>Attention!</b> These settings are valid only for map groups with only one MacroGroup')),
                                             'use_title_client',
                                             'use_logo_client',
-                                            Field('description', css_class='wys5', style="width:100%;"),
+                                            Field('description', css_class='wys5 translate', style="width:100%;"),
                                             'logo_img',
                                             HTML(
                                                 """<img {% if not form.logo_img.value %}style="display:none;"{% endif %} class="img-responsive img-thumbnail" src="{{ MEDIA_URL }}{{ form.logo_img.value }}">""", ),

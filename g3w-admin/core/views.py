@@ -158,7 +158,7 @@ class GroupCreateView(G3WRequestViewMixin, CreateView):
     def form_valid(self, form):
         res = super(GroupCreateView, self).form_valid(form)
 
-        # delete tempory file form files
+        # delete temporary file form files
         form.delete_temporary_files()
         return res
 
@@ -351,6 +351,14 @@ class GeneralSuiteDataUpdateView(UpdateView):
 
     def get_success_url(self):
         return reverse('home')
+
+    def form_valid(self, form):
+        res = super().form_valid(form)
+
+        # Delete django-file-form temporary files
+        form.delete_temporary_files()
+
+        return res
 
 
 # for MACROGROUPS

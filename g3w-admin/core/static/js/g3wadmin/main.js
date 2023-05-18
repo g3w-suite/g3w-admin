@@ -62,6 +62,7 @@ _.extend(g3wadmin, {
 
         // Summernote
         $('.wys5').summernote({
+            disableDragAndDrop: true,
             lang: ('it' === CURRENT_LANGUAGE_CODE ? 'it-IT' : undefined),
             toolbar: [
                 ['magic', ['style']],
