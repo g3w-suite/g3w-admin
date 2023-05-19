@@ -326,7 +326,7 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
 
                             # For fields with UseHtml options, filter content with bleach
                             # -----------------------------------------------------------
-                            elif 'UseHtml' in options and options['UseHtml']:
+                            elif 'UseHtml' in options and options['UseHtml'] == '1':
                                 css_sanitizer = bleach.css_sanitizer.CSSSanitizer(
                                     allowed_css_properties=settings.BLEACH_ALLOWED_STYLES)
                                 feature.setAttribute(qgis_field.name(),
