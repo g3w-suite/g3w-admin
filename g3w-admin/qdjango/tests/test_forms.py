@@ -219,6 +219,7 @@ class QdjangoFormsTest(QdjangoTestBase):
         })
 
         form = GroupForm(request=self.request, data=form_data, instance=self.project_group, initial=initial_form_data)
+        print (form.errors)
         self.assertTrue(form.is_valid())
         form.save()
 
