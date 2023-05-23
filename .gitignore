@@ -27,8 +27,8 @@ docs/locales/**/*.mo
 /node_modules
 
 # Addons
-/addons
-/plugins
+/g3w-admin/addons
+/g3w-admin/plugins
 
 # Bower components
 /g3w-admin/core/static/bower_components/
