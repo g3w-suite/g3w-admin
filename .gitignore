@@ -26,6 +26,10 @@ docs/locales/**/*.mo
 # Node modules
 /node_modules
 
+# Addons
+/addons
+/plugins
+
 # Bower components
 /g3w-admin/core/static/bower_components/
 /g3w-admin/core/static/bower_components
