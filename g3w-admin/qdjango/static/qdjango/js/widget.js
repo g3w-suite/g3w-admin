@@ -2480,13 +2480,12 @@ _.extend(g3wadmin.widget, {
           method: "get",
           url: params["column-acl-list-url"],
           success: function (res) {
-            res["column-acl-list"]
             row.child(g3wadmin.widget._columnAclTable(res, $datatable, $item)).show()
           },
           complete: function () {
             var status = arguments[1]
             if (status == "success") {
-              ga.ui.initRadioCheckbox(row.child())
+              ga.ui.initRadioCheckbox(row.child());
             }
           },
           error: function (xhr, textStatus, errorMessage) {
