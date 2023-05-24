@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.template.response import HttpResponse
 from django.http import JsonResponse, HttpResponseBadRequest, HttpResponse, HttpResponseServerError
 from django.views.generic import (
@@ -22,7 +23,6 @@ from usersmanage.configs import G3W_EDITOR1
 from .forms import GroupForm, GeneralSuiteDataForm, MacroGroupForm
 from .models import Group, GroupProjectPanoramic, MapControl, GeneralSuiteData, MacroGroup
 from .mixins.views import G3WRequestViewMixin, G3WAjaxDeleteViewMixin, G3WAjaxSetOrderViewMixin
-from .utils.decorators import check_madd
 from .signals import after_update_group, execute_search_on_models
 import requests
 import json
@@ -63,9 +63,10 @@ class DashboardView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(DashboardView, self).get_context_data(**kwargs)
         # add number groups
-        qs = get_objects_for_user(self.request.user, 'core.view_group', Group) | \
-             get_objects_for_user(get_anonymous_user(), 'core.view_group', Group)
-        qs = qs.order_by('order')
+        qs = get_objects_for_user(self.request.user, 'core.view_group', Group)
+             #| get_objects_for_user(get_anonymous_user(), 'core.view_group', Group)
+
+        qs = qs.filter(is_active=1).order_by('order')
         context['n_groups'] = len(qs)
         context['widgets'] = []
 
@@ -103,13 +104,25 @@ class SearchAdminView(TemplateView):
 
 class GroupListView(ListView):
     """List group view."""
+
+    def _is_active(self, qs):
+        """ Add a filter fo is_active property """
+        return qs.filter(is_active=1)
     def get_queryset(self):
 
-        qs = get_objects_for_user(self.request.user, 'core.view_group', Group) | \
-             get_objects_for_user(get_anonymous_user(), 'core.view_group', Group)
+        qs = get_objects_for_user(self.request.user, 'core.view_group', Group)
+             #| get_objects_for_user(get_anonymous_user(), 'core.view_group', Group)
+        qs = self._is_active(qs)
         qs = qs.order_by('order')
         return qs
 
+class GroupDeactiveListView(GroupListView):
+    """ ListView to show map groups with is_active=0"""
+
+    template_name = 'core/group_deactive_list.html'
+    def _is_active(self, qs):
+        """ Add a filter fo is_active property """
+        return qs.filter(is_active=0)
 
 class GroupDetailView(G3WRequestViewMixin, DetailView):
     """Detail view."""
@@ -127,12 +140,17 @@ class GroupCreateView(G3WRequestViewMixin, CreateView):
     form_class = GroupForm
 
     @method_decorator(permission_required('core.add_group', return_403=True))
-    @method_decorator(check_madd('MGC:kTccysDKRCPgT5M5y6sv-OSWlck', Group))
     def dispatch(self, *args, **kwargs):
         return super(GroupCreateView, self).dispatch(*args, **kwargs)
 
     def get_initial(self):
-        return {'mapcontrols': MapControl.objects.all()}
+
+        # Fake group for build a initial default header_logo_img for new groups.
+        g = Group(name='fake', title='fake', srid_id=1, header_logo_img=f'logo_img/{settings.CLIENT_G3WSUITE_LOGO}')
+
+        return {'mapcontrols': MapControl.objects.all(),
+                'header_logo_img': g.header_logo_img
+        }
 
     def get_success_url(self):
         return reverse('group-list')
@@ -140,7 +158,7 @@ class GroupCreateView(G3WRequestViewMixin, CreateView):
     def form_valid(self, form):
         res = super(GroupCreateView, self).form_valid(form)
 
-        # delete tempory file form files
+        # delete temporary file form files
         form.delete_temporary_files()
         return res
 
@@ -180,6 +198,58 @@ class GroupUpdateView(G3WRequestViewMixin, G3WACLViewMixin, UpdateView):
             return self.request.session['http_referer']
         return reverse('group-list')
 
+class GroupDeActiveView(G3WAjaxDeleteViewMixin, G3WRequestViewMixin, SingleObjectMixin, View):
+    '''
+    Deactivate group Ajax view
+    '''
+    model = Group
+    ok_message = 'Cartographic group deactivated!'
+
+    @method_decorator(permission_required('core.delete_group', (Group, 'slug', 'slug'), return_403=True))
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
+    def _set_is_active(self):
+        """ Set is_active and save model instance"""
+
+        self.object.is_active = 0
+        self.object.save()
+
+        # Deactivate every project's group:
+        for app, p in self.object.getProjects():
+            p.is_active = 0
+            p.save()
+
+    def post(self, request, *args, **kwargs):
+
+        self.object = self.get_object()
+        # delete ovwerviewmap if is set
+        try:
+            group_project_panoramics = GroupProjectPanoramic.objects.get(group=self.object)
+            group_project_panoramics.delete()
+        except Exception:
+            pass
+
+        self._set_is_active()
+
+        return JsonResponse({'status': 'ok', 'message': self.ok_message})
+
+class GroupActiveView(GroupDeActiveView):
+    """
+    Activate group and relative projects.
+    """
+    ok_message = 'Cartographic group activated!'
+
+    def _set_is_active(self):
+        """ Set is_active and save model instance"""
+
+        self.object.is_active = 1
+        self.object.save()
+
+        # Deactivate every project's group:
+        for app, p in self.object.getProjects():
+            p.is_active = 1
+            p.save()
 
 class GroupDeleteView(G3WAjaxDeleteViewMixin, G3WRequestViewMixin, SingleObjectMixin, View):
     '''
@@ -281,6 +351,14 @@ class GeneralSuiteDataUpdateView(UpdateView):
 
     def get_success_url(self):
         return reverse('home')
+
+    def form_valid(self, form):
+        res = super().form_valid(form)
+
+        # Delete django-file-form temporary files
+        form.delete_temporary_files()
+
+        return res
 
 
 # for MACROGROUPS

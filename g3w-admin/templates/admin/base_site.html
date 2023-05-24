@@ -1,0 +1,14 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block branding %}
+<a href="#" class="logo">
+    {% if SETTINGS.G3WSUITE_CUSTOM_STATIC_URL %}
+        <span class="logo-lg"><img src="{{ SETTINGS.G3WSUITE_MAIN_LOGO }}"></span>
+    {% else %}
+        <span class="logo-lg"><img src="{% static SETTINGS.G3WSUITE_MAIN_LOGO %}"></span>
+    {% endif %}
+</a>
+<h1 id="site-name"><a href="{% url 'admin:index' %}">G3W-SUITE RAW ADMINISTRATION</a></h1>
+
+{% endblock %}

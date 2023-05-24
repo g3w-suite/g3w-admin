@@ -10,7 +10,7 @@
       "title": "Gruppo 1",
       "description": "<p>Gruppo 1<br></p>",
       "slug": "gruppo-1",
-      "is_active": false,
+      "is_active": true,
       "header_logo_img": "logo_img/qgis-logo.png",
       "header_logo_link": null,
       "srid": 4326,

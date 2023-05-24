@@ -6,7 +6,6 @@ from django.conf import settings
 from django.contrib.gis.geos import GEOSGeometry
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
-from django.utils import six
 from django.utils.translation import ugettext
 from django.utils.translation import ugettext_lazy as _
 from qgis.core import (
@@ -51,6 +50,7 @@ MODE_CSV = 'csv'
 MODE_GPKG = 'gpkg'
 MODE_FILTER_TOKEN = 'filtertoken'
 MODE_GEOTIFF = 'geotiff' # For raster layers
+MODE_FEATURE_COUNT = 'featurecount'
 
 MIME_TYPES_MOD = {
     MODE_SHP: {
@@ -156,13 +156,13 @@ def G3WExceptionHandler(exc, context):
 
     elif isinstance(exc, Http404):
         msg = _('Not found')
-        data.error = six.text_type(msg)
+        data.error = msg
 
         return Response(data.results, status=status.HTTP_404_NOT_FOUND)
 
     elif isinstance(exc, PermissionDenied):
         msg = _('Permission denied')
-        data.error = six.text_type(msg)
+        data.error = msg
 
         return Response(data.results, status=status.HTTP_403_FORBIDDEN)
 
@@ -527,16 +527,15 @@ class BaseVectorApiView(G3WAPIView):
             # Search for fields date datetime and time
             date_fields = []
             for f in self.metadata_layer.qgis_layer.fields():
-                if f.typeName().lower() in ('date', 'datetime', 'time'):
+                if f.typeName().lower() in ('date', 'datetime', 'time', 'timestamp'):
                     date_fields.append(f)
 
 
             # check for formatter query url param and check if != 0
+            export_features = False
             if 'formatter' in request.query_params:
                 formatter = request.query_params.get('formatter')
-                if formatter.isnumeric() and int(formatter) == 0:
-                    export_features = False
-                else:
+                if formatter.isnumeric() and int(formatter) == 1:
                     export_features = True
 
             if export_features:
@@ -568,16 +567,18 @@ class BaseVectorApiView(G3WAPIView):
                     for f in date_fields:
                         field_idx = self.metadata_layer.qgis_layer.fields().indexFromName(f.name())
                         options = self.metadata_layer.qgis_layer.editorWidgetSetup(field_idx).config()
-                        if 'field_iso_format' in options and not options['field_iso_format']:
+                        if 'field_iso_format' in options:
                             try:
 
                                 # Formatter 0
                                 if export_features:
                                     jfeature['properties'][f.name()] = feature.attribute(f.name()) \
-                                        .toString(options['field_format'])
-                                else:
-                                    jfeature['properties'][f.name()] = feature.attribute(f.name()) \
                                         .toString(options['display_format'])
+                                else:
+                                    if not options['field_iso_format']:
+                                        jfeature['properties'][f.name()] = feature.attribute(f.name()) \
+                                            .toString(options['field_format'])
+
                             except:
                                 pass
 

@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load staticfiles %}
+{% load static %}
 {% load crispy_forms_tags %}
 {% load g3wadmin_tags %}
 {% load i18n %}
@@ -72,6 +72,10 @@
 
     // for load page
     $(document).ready(checking_user_properties);
+
+    /*initUploadFields(
+      document.getElementById("user-form")
+   );*/
 </script>
 {% endblock %}
 
@@ -98,5 +102,4 @@
             {% crispy form %}
             {% g3wadmin_add_button_form %}
         </form>
-        {% include 'core/django_file_form/upload_template.html' %}
 {% endblock %}

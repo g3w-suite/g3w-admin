@@ -1,9 +1,8 @@
 /**
- * Created by walter on 26/02/16.
- */
-
-/**
- * Use of https://github.com/sinkswim/javascript-style-guide for javascript coding style.
+ * @file
+ * @author    Walter Lorenzetti <lorenzetti@gis3w.it>
+ * @copyright 2016-02-26, Gis3w
+ * @license   MPL 2.0
  */
 
 _.extend(g3wadmin.forms, {
@@ -11,6 +10,9 @@ _.extend(g3wadmin.forms, {
     INSERT_STATE: 0,
     UPDATE_STATE: 1,
 
+    /**
+     * @TODO check if deprecated 
+     */
     checkItemsEmpty: function($item) {
 
         $formElements = $item.find(':input');
@@ -37,6 +39,9 @@ _.extend(g3wadmin.forms, {
         })
     },
 
+    /**
+     * @TODO check if deprecated 
+     */
     checkBoxToOpen: function($item) {
 
         this.checkItemsEmpty($item);
@@ -44,81 +49,56 @@ _.extend(g3wadmin.forms, {
 
     form: function($form) {
 
-        var that = this;
+        const self = this;
         this.$form = $form;
 
-        var customEvents = [
-            'preSendForm',
-            'postSendForm'
-        ]
+        // var customEvents = [
+        //     'preSendForm',
+        //     'postSendForm'
+        // ]
 
-        /**
-         * Wrop jeyr on method on ga.form.form object
-         * @param event
-         * @param target
-         */
-        this.on = function(event, target){
-            that.$form.on(event, target);
-        }
+        // Wrap on method on ga.form.form object
+        this.on = function(event, target) { self.$form.on(event, target); }
 
-        /**
-         * Send dato form to action url
-         */
+        // Send form data to action url
         this.sendData = function(e, method, data, content_type) {
-            content_type = content_type ? content_type : 'application/x-www-form-urlencoded; charset=UTF-8';
-            that.$form.trigger('preSendForm');
+            self.$form.trigger('preSendForm');
             $.ajax({
-                method: _.isUndefined(method) ?'post' : method,
-                data: _.isUndefined(data) ? that.getData() : data,
-                contentType: content_type,
-                url: that.$form.attr('action'),
+                method: (_.isUndefined(method) ?'post' : method),
+                data: (_.isUndefined(data) ? self.getData() : data),
+                contentType: (content_type ? content_type : 'application/x-www-form-urlencoded; charset=UTF-8'),
+                url: self.$form.attr('action'),
                 success: function (res) {
-
-                    if(res.status == 'error') {
-                        if (_.has(res,'errors_form')) {
-                            that.showErrors(res.errors_form);
-                        } else {
-                            that.showErrors();
-                        }
-                    } else {
-                        if(!_.isUndefined(that.successAction)) {
-                            that.successAction(res);
-                        }
+                    if('error' === res.status) {
+                        self.showErrors(_.has(res,'errors_form') ? res.errors_form : undefined);
+                    } else if(!_.isUndefined(self.successAction)) {
+                        self.successAction(res);
                     }
                 },
-                complete: function(jqXHR, textStatus){
-                    that.$form.trigger('postSendForm');
+                complete: function(jqXHR, textStatus) {
+                    self.$form.trigger('postSendForm');
                 },
                 error: function (xhr, textStatus, errorMessage) {
-                    if (_.isUndefined(that.errorAction)){
+                    if (_.isUndefined(self.errorAction)) {
                         ga.widget.showError(ga.utils.buildAjaxErrorMessage(xhr.status, errorMessage));
                     } else {
-                        that.errorAction(xhr, errorMessage);
+                        self.errorAction(xhr, errorMessage);
                     }
-
-                    
                 }
             });
         };
 
-        /**
-         * Method to call on success form send data
-         */
+        // Called on form success (send data)
         this.setOnSuccesAction = function (func) {
             this.successAction = func;
         }
 
-        /**
-         * Method to call on error form send data
-         */
+        // Called on formerror form (send data)
         this.setOnErrorAction = function (func) {
             this.errorAction = func;
         }
 
-        /**
-         * Show error message on form and fields.
-         * @param errors array of error message by key field
-         */
+        // Show error messages on form and fields ("errors" = associative array of messages by key field).
         this.showErrors = function(errors) {
 
             // first remove error class
@@ -128,53 +108,39 @@ _.extend(g3wadmin.forms, {
             // show error form message
             this.$form.find('.error-form-message').removeClass('hidden');
             if (!_.isUndefined(errors) && _.isObject(errors)) {
-                _.mapObject(errors, function(val, key){
-                    var $input = that.$form.find('#div_id_'+key);
+                _.mapObject(errors, function(val, key) {
+                    const $input   = self.$form.find('#div_id_' + key);
+                    const $control = $input.find('.controls');
                     $input.addClass('has-error');
-                    var $control = $input.find('.controls');
-                    _.map(val, function(error){
-                        $control.append(ga.tpl.ajaxFormFieldError({errorId:'error_id_'+key, errorMessage: error}));
-                    });
+                    _.map(val, function(error) { $control.append(ga.tpl.ajaxFormFieldError({ errorId: 'error_id_' + key, errorMessage: error })); });
                 });
 
-                }
+            }
         };
 
-        /**
-         * Set action url form
-         * @param action string
-         */
+        // Set form action url ("action" = string) 
         this.setAction = function(action) {
             this.$form.attr('action',action);
         };
 
-
-        /**
-         * Get data from form for post send
-         * @returns Object
-         */
+        // Get data from form (post request)
         this.getData = function(type) {
-
             if (_.isUndefined(type)) {
                 return this.$form.serialize();
             }
-            else {
+            // refresh obejct form
+            var data = this.$form.serializeArray();
+            var post_data = {};
 
-                // refresh obejct form
-                var dataArray = this.$form.serializeArray();
-                var dataToRet = {};
-
-                // rebuild data for ajax post
-                for (i in dataArray) {
-                    var objData = dataArray[i];
-                    dataToRet[objData['name']] = objData['value'];
-                }
-
-                return dataToRet;
-
+            // rebuild data for ajax post
+            for (const key in data) {
+                post_data[data[key]['name']] = data[key]['value'];
             }
 
+            return post_data;
+
         };
-    }
+
+    },
 
 });

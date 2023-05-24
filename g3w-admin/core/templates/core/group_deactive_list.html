@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% load guardian_tags %}
+{% load auth_extras %}
+{% load i18n %}
+{% load g3wadmin_tags %}
+
+{% block page_header %}
+    <h1>{% trans 'Cartographic groups deactivated' %}</h1>
+{% endblock %}
+
+{% block main_content %}
+<div id="groups_list" class="row">
+{% for object in object_list %}
+    {% get_obj_perms user for object as "userObj_perms" %}
+    <div class="col-md-3 col-sm-6" id="group_{{ object.pk }}">
+     <div class="box box-widget widget-user" id="group_{{ object.slug }}">
+                <!-- Add the bg color to the header using any of the bg-* classes -->
+                <div class="widget-user-header bg-aqua-active col-sm-12" style="background: url('{{ MEDIA_URL }}{{ object.header_logo_img }}') center center;">
+                <div class="row">
+                    <div class="col-sm-12 widget-group-title handle">
+                        <h3 class="widget-user-username">{{ object.name }}</h3>
+                        <h5 class="widget-user-desc">{{ object.title }} <small>({{ object.srid }})</small></h5>
+                    </div>
+                </div>
+                </div>
+                <div class="box-footer">
+                  <div class="row">
+                   <div class="col-sm-2 col-xs-2">
+                    </div><!-- /.col -->
+                    <div class="col-sm-4 col-xs-4">
+                      <div class="description-block projects-group">
+                        <h5 class="description-header"  data-toggle="tooltip" data-placement="top" title="{% trans 'Group projects' %}" ><a href="{% url 'project-list' object.slug %}">{% g3wadmin_get_projects_number object user %} {% trans 'Projects' %}</a></h5>
+                      </div><!-- /.description-block -->
+                    </div><!-- /.col -->
+                    <div class="col-sm-2 col-xs-2">
+                      <div class="description-block">
+                         <div class="icon">
+                         {% if "view_group" in userObj_perms %}
+                          <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-detail-url="{% url 'group-detail' object.slug %}"><i class="ion ion-eye"></i></a>
+                         {% endif %}
+                        </div>
+                      </div><!-- /.description-block -->
+                    </div><!-- /.col -->
+                    <div class="col-sm-2 col-xs-2">
+                      <div class="description-block">
+                        <div class="icon">
+                        {% if "change_group" in userObj_perms %}
+                          <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Redo/Active' %}" data-widget-type="activeDeactiveItem" data-active-deactive-url="{% url 'group-active' object.slug %}" data-item-selector="#group_{{ object.slug }}"><i class="ion ion-arrow-return-left"></i></a>
+                        {% endif %}
+                        </div>
+                      </div><!-- /.description-block -->
+                    </div><!-- /.col -->
+                    <div class="col-sm-2 col-xs-2">
+                      <div class="description-block">
+                        <div class="icon">
+                        {% if "delete_group" in userObj_perms %}
+                          <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Delete' %}"  data-widget-type="deleteItem" data-delete-url="{% url 'group-delete' object.slug %}" data-item-selector="#group_{{ object.slug }}"><i class="ion ion-trash-b"></i></a>
+                        {% endif %}
+                            <div class="hidden pre-delete-message">
+                                <div>{% blocktrans %}Warning: deleting the group will delete the projects it contains!{% endblocktrans %}</div>
+                            </div>
+                        </div>
+                      </div><!-- /.description-block -->
+                    </div><!-- /.col -->
+                  </div><!-- /.row -->
+                </div>
+          </div><!-- /.widget-user -->
+    </div>
+{% endfor %}
+</div>
+{% endblock %}

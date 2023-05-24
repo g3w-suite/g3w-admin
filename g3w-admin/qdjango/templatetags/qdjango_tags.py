@@ -1,7 +1,7 @@
-
 from django import template
-from qdjango.models import Layer
+from qdjango.models import Layer, MSG_LEVELS
 from qdjango.utils.models import get_geoconstraints4layer
+
 
 register = template.Library()
 
@@ -47,3 +47,18 @@ def geoconstraitnswidget4layer(layer):
     """
 
     return len(get_geoconstraints4layer(layer))
+
+
+@register.filter
+def message_level(level:int) -> str:
+    """
+    Translate a message level to a string
+    :param level: int, message level
+    :return: string message level
+    :rtype: str
+    """
+
+    # From tuple list to dict
+    msg_level = {m[0]: m[1] for m in MSG_LEVELS}
+    return msg_level[level]
+

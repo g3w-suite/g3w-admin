@@ -112,4 +112,51 @@ class CoreViewsTest(CoreTestBase):
         self.assertEqual(response.status_code, 200)
 
 
+class CoreViewsActivateDeactivateTest(CoreTestBase):
 
+
+    # These are stored in core module
+    fixtures = CoreTestBase.fixtures + [
+        # except for this one which is in qdjango:
+        "G3WSampleProjectAndGroup.json",
+    ]
+
+    def test_activate_deactivate_group_view(self):
+
+        # Deactivate
+        # -------------------------------------------------
+        group = Group.objects.get(slug='gruppo-1')
+        self.assertTrue(group.is_active)
+
+        # Check every projects of the groups
+        for app, p in group.getProjects():
+            self.assertTrue(p.is_active)
+
+        url = reverse('group-deactive', args=['gruppo-1'])
+        self.assertTrue(self.client.login(username=self.test_user1.username, password=self.test_user1.username))
+        response = self.client.post(url)
+
+        self.assertEqual(response.status_code, 200)
+
+        group = Group.objects.get(slug='gruppo-1')
+        self.assertFalse(group.is_active)
+
+        # Check every projects of the groups
+        for app, p in group.getProjects():
+            self.assertFalse(p.is_active)
+
+        # Activate
+        # -------------------------------------------------
+        url = reverse('group-active', args=['gruppo-1'])
+        response = self.client.post(url)
+
+        self.assertEqual(response.status_code, 200)
+
+        group = Group.objects.get(slug='gruppo-1')
+        self.assertTrue(group.is_active)
+
+        # Check every projects of the groups
+        for app, p in group.getProjects():
+            self.assertTrue(p.is_active)
+
+        self.client.logout()

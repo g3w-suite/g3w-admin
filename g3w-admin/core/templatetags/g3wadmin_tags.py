@@ -116,11 +116,11 @@ def lookup(d, key):
 
 
 @register.simple_tag()
-def g3wadmin_get_projects_number(group, user):
+def g3wadmin_get_projects_number(group, user, is_active=None):
     """
-    Template tag to get projets number for group by user
+    Template tag to get projects(is_active=1) number for group by user
     """
-    return group.getProjectsNumber(user)
+    return group.getProjectsNumber(user, is_active)
 
 
 @register.filter

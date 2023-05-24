@@ -116,6 +116,7 @@ h5 small {
     font-weight: 400;
 }
 
+/* For WCAG guidelines */
 .acl-box .help-block {
     color: #ffffff;
 }
@@ -205,3 +206,33 @@ div.vector-download > ul.menu {
 .group-abstract-action, .project-abstract-action {
     margin-left:-10px;
 }
+
+input[type=file]::file-selector-button {
+  margin-right: 20px;
+  border: none;
+  background: #00c0ef;
+  padding: 10px 20px;
+  border-radius: 2px;
+  color: #fff;
+  cursor: pointer;
+  transition: background .2s ease-in-out;
+}
+
+input[type=file]::file-selector-button:hover {
+  background: #00acd6;
+}
+
+.translate {
+    border: 1px dashed #006699;
+
+}
+.translate + div.note-editor {
+    border: 1px dashed #006699;
+}
+
+.translatable_fields {
+    display: inline-block;
+    width: 40px;
+    height: 20px;
+}
+

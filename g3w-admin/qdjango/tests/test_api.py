@@ -42,7 +42,7 @@ from core.tests.base import CoreTestBase
 from core.utils.qgisapi import get_qgs_project, get_qgis_layer
 
 from .base import QdjangoTestBase, CURRENT_PATH, TEST_BASE_PATH, QGS310_WIDGET_FILE, CoreGroup, G3WSpatialRefSys, \
-    QGS322_FILE, QGS322_INITEXTENT_GEOCONSTRAINT_FILE
+    QGS322_FILE, QGS322_INITEXTENT_GEOCONSTRAINT_FILE, QGS322_FORMATTING_DATE, QGS328_FILE
 from qgis.core import QgsFeatureRequest, QgsRasterLayer, QgsVectorLayer
 from qgis.PyQt.QtCore import QTemporaryDir
 from qgis.server import QgsServerProjectUtils
@@ -325,9 +325,16 @@ class TestQdjangoProjectsAPI(QdjangoTestBase):
         cls.project322.group = cls.project_group
         cls.project322.save()
 
+        qgis_project_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS328_FILE), 'r'))
+        cls.project328 = QgisProject(qgis_project_file)
+        cls.project328.title = 'A project QGIS 3.28'
+        cls.project328.group = cls.project_group
+        cls.project328.save()
+
     @classmethod
     def tearDownClass(cls):
         cls.project322.instance.delete()
+        cls.project328.instance.delete()
         super().tearDownClass()
 
     def _testApiCall(self, view_name, args, kwargs={}):
@@ -496,6 +503,118 @@ class TestQdjangoProjectsAPI(QdjangoTestBase):
         self.assertTrue('NAME' in metas)
         self.assertFalse('CAPITAL' in metas)
 
+    def test_bookmarks_project(self):
+        """
+        Test project bookmarks into /api/config API REST
+        """
+
+        response = self._testApiCall(
+            'group-project-map-config', [self.project322.instance.group.slug, 'qdjango', self.project322.instance.pk])
+
+        resp = json.loads(response.content)
+
+        self.assertEqual(resp['bookmarks'], [
+   {
+      "name":"Gbook1",
+      "expanded":False,
+      "nodes":[
+         {
+            "id":"{dfe1c3a0-1ed8-4042-943c-0f820f10429a}",
+            "name":"Book1",
+            "crs":{
+               "epsg":3003
+            },
+            "extent":[
+               1727644.7707,
+               4856430.948,
+               1728651.4597,
+               4857251.2131
+            ]
+         },
+         {
+            "id":"{49513492-609b-41e1-87c5-e99b13d359a5}",
+            "name":"Book3",
+            "crs":{
+               "epsg":3003
+            },
+            "extent":[
+               1718435.4312,
+               4847184.3237,
+               1740974.0779,
+               4864204.8237
+            ]
+         }
+      ]
+   },
+   {
+      "name":"GBook2",
+      "expanded":False,
+      "nodes":[
+         {
+            "id":"{46764496-faa9-4d9f-bfef-594c097ab6f6}",
+            "name":"Book4",
+            "crs":{
+               "epsg":3003
+            },
+            "extent":[
+               1718435.4312,
+               4847184.3237,
+               1740974.0779,
+               4864204.8237
+            ]
+         }
+      ]
+   },
+   {
+      "id":"{4f63af2b-cbb0-4673-a319-f05f9939b89e}",
+      "name":"Book2",
+      "crs":{
+         "epsg":3003
+      },
+      "extent":[
+         1727178.711,
+         4859059.5247,
+         1728483.6782,
+         4859861.1474
+      ]
+   }
+])
+
+    def test_feature_count_project(self):
+        """
+        Test project layers feature count property inside /api/config API REST
+        """
+
+        response = self._testApiCall(
+            'group-project-map-config',
+            [self.project328.instance.group.slug, 'qdjango', self.project328.instance.pk])
+
+        resp = json.loads(response.content)
+
+        to_compare = [{
+            'name': 'spatialite_points',
+            'expanded': True,
+            'id': 'spatialite_points20190604101052075',
+            'visible': True,
+            'showfeaturecount': True
+        }, {
+            'name': 'world',
+            'expanded': False,
+            'id': 'world20181008111156525',
+            'visible': True,
+            'showfeaturecount': True
+        }, {
+            'name': 'bluemarble',
+            'expanded': True,
+            'id': 'bluemarble20181008111156906',
+            'visible': True
+        }]
+        self.assertEqual(resp['layerstree'], to_compare)
+
+        self.assertEqual(resp['layers'][0]['featurecount'], {'0': 2})
+
+        for s  in list(resp['layers'][1]['featurecount'].values()):
+            self.assertTrue(s > 0 and s <= 10)
 
 class TestQdjangoLayersAPI(QdjangoTestBase):
     """ Test qdjango layer API """
@@ -519,6 +638,12 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         cls.project322.title = 'A project QGIS 3.22 - fields selected for WMS service'
         cls.project322.group = cls.project_group
         cls.project322.save()
+
+        # Add new project for date datetime formatting
+        qgis_project_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS322_FORMATTING_DATE), 'r'))
+        cls.project322_datewidget = QgisProject(qgis_project_file)
+        cls.project322_datewidget.group = cls.project_group
+        cls.project322_datewidget.save()
 
     @classmethod
     def tearDownClass(cls):
@@ -1048,7 +1173,6 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         properties = resp["vector"]["data"]["features"][1]["properties"]
         self.assertEqual(properties['type'], 'B')
 
-        # FIXME: a possibile bug of QGIS 3.10.10, ask Elpaso.
         # add fromatter query url param
         # formatter=1
         response = self._testApiCall(
@@ -1066,7 +1190,7 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         properties = resp["vector"]["data"]["features"][1]["properties"]
         self.assertEqual(properties['type'], 'TYPE B')
 
-        # formatter=string
+        # formatter=string like formatter=0
         response = self._testApiCall(
             'core-vector-api', [
                 'data',
@@ -1078,9 +1202,9 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         # check for value relation
         resp = json.loads(response.content)
         properties = resp["vector"]["data"]["features"][0]["properties"]
-        self.assertEqual(properties['type'], 'TYPE A')
+        self.assertEqual(properties['type'], 'A')
         properties = resp["vector"]["data"]["features"][1]["properties"]
-        self.assertEqual(properties['type'], 'TYPE B')
+        self.assertEqual(properties['type'], 'B')
 
         # formatter=0
         response = self._testApiCall(
@@ -1097,6 +1221,74 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         self.assertEqual(properties['type'], 'A')
         properties = resp["vector"]["data"]["features"][1]["properties"]
         self.assertEqual(properties['type'], 'B')
+
+        # TESTING FOR DATE AND DATETIME WIDGET
+        # ---------------------------------------------------------------
+
+        # Formatter not sent
+        response = self._testApiCall(
+            'core-vector-api', [
+                'data',
+                'qdjango',
+                self.project322_datewidget.instance.pk,
+                'point_b6dd0a53_98fb_47d7_b110_200496711f86'])
+
+        resp = json.loads(response.content)
+        properties = resp["vector"]["data"]["features"][0]["properties"]
+        self.assertEqual(properties['date_n'], '17/01/23')
+        self.assertEqual(properties['date_y'], '17/01/23')
+        self.assertEqual(properties['datetime_n'], '17/01/23 08:40:04')
+        self.assertEqual(properties['datetime_y'], '2023-01-17T08:39:58.000')
+
+        properties = resp["vector"]["data"]["features"][1]["properties"]
+        self.assertEqual(properties['date_n'], '18/02/23')
+        self.assertEqual(properties['date_y'], '17/01/25')
+        self.assertEqual(properties['datetime_n'], '18/02/23 08:40:40')
+        self.assertEqual(properties['datetime_y'], '2026-01-17T08:40:47.000')
+
+        # Formatter = 0
+        response = self._testApiCall(
+            'core-vector-api', [
+                'data',
+                'qdjango',
+                self.project322_datewidget.instance.pk,
+                'point_b6dd0a53_98fb_47d7_b110_200496711f86'],
+        {'formatter': '0'})
+
+        resp = json.loads(response.content)
+        properties = resp["vector"]["data"]["features"][0]["properties"]
+        self.assertEqual(properties['date_n'], '17/01/23')
+        self.assertEqual(properties['date_y'], '17/01/23')
+        self.assertEqual(properties['datetime_n'], '17/01/23 08:40:04')
+        self.assertEqual(properties['datetime_y'], '2023-01-17T08:39:58.000')
+
+        properties = resp["vector"]["data"]["features"][1]["properties"]
+        self.assertEqual(properties['date_n'], '18/02/23')
+        self.assertEqual(properties['date_y'], '17/01/25')
+        self.assertEqual(properties['datetime_n'], '18/02/23 08:40:40')
+        self.assertEqual(properties['datetime_y'], '2026-01-17T08:40:47.000')
+
+        # Formatter = 1
+        response = self._testApiCall(
+            'core-vector-api', [
+                'data',
+                'qdjango',
+                self.project322_datewidget.instance.pk,
+                'point_b6dd0a53_98fb_47d7_b110_200496711f86'],
+            {'formatter': '1'})
+
+        resp = json.loads(response.content)
+        properties = resp["vector"]["data"]["features"][0]["properties"]
+        self.assertEqual(properties['date_n'], '17/01/23')
+        self.assertEqual(properties['date_y'], '2023')
+        self.assertEqual(properties['datetime_n'], '17/01/23 08:40:04')
+        self.assertEqual(properties['datetime_y'], '2023')
+
+        properties = resp["vector"]["data"]["features"][1]["properties"]
+        self.assertEqual(properties['date_n'], '18/02/23')
+        self.assertEqual(properties['date_y'], '2025')
+        self.assertEqual(properties['datetime_n'], '18/02/23 08:40:40')
+        self.assertEqual(properties['datetime_y'], '2026')
 
     def test_server_filters_combination_api(self):
         """ Test server filter combination: i.e. FieldFilterBacked + SuggestFilterBackend """
@@ -1550,18 +1742,18 @@ class QgisTemporalVectorProject(QdjangoTestBase):
 
         # Active with field
         self.assertEqual(self.project_temporal_vector_field.layers[0].temporalproperties,
-                         '{"mode": "FeatureDateTimeInstantFromField", "field": "dateofocc", "units": "d", "duration": 1.0}')
+                         '{"mode": "FeatureDateTimeInstantFromField", "field": "dateofocc", "units": "d", "duration": 1.0, "step": 1.0}')
         self.assertEqual(self.project_temporal_vector_field.instance.layer_set.all()[0].temporal_properties,
-                         '{"mode": "FeatureDateTimeInstantFromField", "field": "dateofocc", "units": "d", "duration": 1.0}')
+                         '{"mode": "FeatureDateTimeInstantFromField", "field": "dateofocc", "units": "d", "duration": 1.0, "step": 1.0}')
 
     def test_qgs_project_wmst(self):
         """ Test properties into qgsproject object and models """
 
         # Active
         self.assertEqual(self.project_wmst.layers[0].temporalproperties,
-                         '{"mode": "RasterTemporalRangeFromDataProvider", "range": ["1981-01-01T00:00:00", "2022-03-01T00:00:00"]}')
+                         '{"mode": "RasterTemporalRangeFromDataProvider", "range": ["1981-01-01T00:00:00", "2022-03-01T00:00:00"], "step": 1.0, "units": "xxx"}')
         self.assertEqual(self.project_wmst.instance.layer_set.all()[0].temporal_properties,
-                         '{"mode": "RasterTemporalRangeFromDataProvider", "range": ["1981-01-01T00:00:00", "2022-03-01T00:00:00"]}')
+                         '{"mode": "RasterTemporalRangeFromDataProvider", "range": ["1981-01-01T00:00:00", "2022-03-01T00:00:00"], "step": 1.0, "units": "xxx"}')
 
     def test_client_map_config(self):
         """ Test for client config API """

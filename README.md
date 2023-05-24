@@ -1,8 +1,9 @@
 ![G3W-Suite CI Tests](https://github.com/g3w-suite/g3w-admin/actions/workflows/test_runner.yml/badge.svg)
+[![License](https://img.shields.io/badge/license-MPL%202-blue.svg?style=flat)](LICENSE)
 
 # G3W-ADMIN
 
-G3W-SUITE admin server based on Python - Django (v2.2) and QGIS Server LTR (v3.22)
+Admin server for G3W-SUITE written in Python, based on **Django** LTS (v3.2) and **QGIS Server** LTR (v3.28)
 
 ![Admin GUI](https://user-images.githubusercontent.com/9614886/189155796-6feff629-b500-4e38-b7c2-d98b53ae7564.png)
 
@@ -12,19 +13,21 @@ G3W-SUITE admin server based on Python - Django (v2.2) and QGIS Server LTR (v3.2
 
 Software releases follow theese main branches as described in the compatibility table:
 
-| Branch     | Python version | Django version | Client version | QGIS API | First release | Status         |
-|------------|----------------|----------------|----------------|----------|--------------|----------------|
-| [dev]      | 3.10           | 2.2            | dev            | ✔️       | Unreleased   | ⚠️️ Unstable   |
-| [v.3.5.x]  | 3.10           | 2.2            | 3.7.0-beta1    | ✔️       | Nov 2022     | 🪲️ Bug fixing |
-| [v.3.4.x]  | 3.8            | 2.2            | 3.4.x          | ✔️       | Mar 2022     | 🪲 Bug fixing  |
-| [v.3.3.x]  | 3.6            | 2.2            | 3.3.x          | ✔️       | Sep 2021     | 🚨 End of Life | 
-| [v.3.2.x]  | 3.6            | 2.2            | 3.2.x          | ✔️       | Apr 2021     | 🚨 End of Life |
-| [v.3.1.x]  | 3.6            | 2.2            | 3.1.x          | ✔️       | Nov 2020     | 🚨 End of Life |
-| [v.3.0.x]  | 3.6            | 2.2            | 3.0.x          | ✔️       | Nov 2020     | 🚨 End of Life |
-| [dj22-py3] | 3.6            | 2.2            |                |          |              | 🚨 End of Life |
-| [py2]      | 2.7            | 1.11           |                |          |              | 🚨 End of Life |
+| Branch     | Python         | Django         | QGIS          | [client] | First release | Status         |
+|------------|----------------|----------------|---------------|----------|---------------|----------------|
+| [dev]      | 3.10           | 3.2            | 3.28          | dev      | Unreleased    | ⚠️️ Unstable    |
+| [v.3.6.x]  | 3.10           | 3.2            | 3.28          | 3.8.1    | May 2023      | 🪲️ Bug fixing  |
+| [v.3.5.x]  | 3.10           | 2.2            | 3.22          | 3.7      | Nov 2022      | 🪲️ Bug fixing  |
+| [v.3.4.x]  | 3.8            | 2.2            | 3.22          | 3.4      | Mar 2022      | 🚨 End of Life |
+| [v.3.3.x]  | 3.6            | 2.2            | 3.16          | 3.3      | Sep 2021      | 🚨 End of Life | 
+| [v.3.2.x]  | 3.6            | 2.2            | 3.16          | 3.2      | Apr 2021      | 🚨 End of Life |
+| [v.3.1.x]  | 3.6            | 2.2            | 3.10          | 3.1      | Nov 2020      | 🚨 End of Life |
+| [v.3.0.x]  | 3.6            | 2.2            | 3.10           | 3.0      | Nov 2020      | 🚨 End of Life |
+| [dj22-py3] | 3.6            | 2.2            | [🔗]         |          |               | 🚨 End of Life |
+| [py2]      | 2.7            | 1.11           | [🔗]         |          |               | 🚨 End of Life |
 
 [dev]: https://github.com/g3w-suite/g3w-admin/tree/dev
+[v.3.6.x]: https://github.com/g3w-suite/g3w-admin/tree/v.3.6.x
 [v.3.5.x]: https://github.com/g3w-suite/g3w-admin/tree/v.3.5.x
 [v.3.4.x]: https://github.com/g3w-suite/g3w-admin/tree/v.3.4.x
 [v.3.3.x]: https://github.com/g3w-suite/g3w-admin/tree/v.3.3.x
@@ -33,6 +36,8 @@ Software releases follow theese main branches as described in the compatibility 
 [v.3.0.x]: https://github.com/g3w-suite/g3w-admin/tree/v.3.0.x
 [dj22-py3]: https://github.com/g3w-suite/g3w-admin/tree/dj22-py3
 [py2]: https://github.com/g3w-suite/g3w-admin/tree/py2
+[🔗]: https://github.com/g3w-suite/g3w-suite-docker/issues/25
+[client]: https://github.com/g3w-suite/g3w-client
 
 ---
 
@@ -57,10 +62,9 @@ To figure out which to choose, see also: [deploying django](https://docs.djangop
 Then in your development environment:
 
 1. download and install [**Node.js**](https://nodejs.org/en/download/) and [**Yarn**](https://yarnpkg.com/en/docs/install)
-3. get a [**Python**](https://www.python.org/downloads/) version that is compatible with the [table](#versions-and-branches) above
-4. install and activate [**virtualenv**](https://g3w-suite.readthedocs.io/en/latest/install.html#create-virtualenv) on system login
-5. install and activate a [**database**](https://docs.djangoproject.com/en/2.2/ref/databases/) that fits your needs
-6. (optional) install [**Paver**](https://pythonhosted.org/Paver/#installation) for developing locally
+2. get a [**Python**](https://www.python.org/downloads/) version that is compatible with the [table](#versions-and-branches) above
+3. install and activate a [**database**](https://docs.djangoproject.com/en/2.2/ref/databases/) that fits your needs
+4. (optional) install [**Paver**](https://pythonhosted.org/Paver/#installation) for developing locally
 
 After that you can clone this repository:
 
@@ -70,14 +74,20 @@ cd /path/to/your/development/workspace
 git clone https://github.com/g3w-suite/g3w-admin.git --single-branch --branch dev ./g3w-admin
 ```
 
-Create a [**virtualenv**](https://g3w-suite.readthedocs.io/en/latest/install.html#create-virtualenv) from within your g3w-admin local repository:
+Create and activate [**virtualenv**](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/#creating-a-virtual-environment) within your g3w-admin local repository:
 
 ```sh
 cd ./g3w-admin
+
+python3 -m venv --system-site-packages [--prompt g3w-admin] venv
 ```
 
 ```sh
-mkvirtualenv --system-site-packages .
+# Linux / Mac OS
+source venv/bin/activate
+
+# Windows
+.\venv\Scripts\activate
 ```
 
 Create the following configuration file from the available template:
@@ -158,12 +168,12 @@ Any additional package must be placed into the [`/g3w-admin/g3w-admin`](./g3w-ad
 
 ## Testing
 
-Automated tests are performed on both latest QGIS release and current QGIS LTR (v3.22) for any push event involving the [`dev`](https://github.com/g3w-suite/g3w-admin/tree/dev) branch.
+Automated tests are performed on both latest QGIS release and current QGIS LTR (v3.28) for any push event involving the [`dev`](https://github.com/g3w-suite/g3w-admin/tree/dev) branch.
 
 The Dockerfile and docker-compose.yml files used to perform these tests are:
 
 - [Dockerfile.deps](ci_scripts/Dockerfile.deps) + [docker-compose.yml](docker-compose.yml) → latest QGIS release
-- [Dockerfile.322.deps](ci_scripts/Dockerfile.322.deps) + [docker-compose.322.yml](docker-compose.322.yml) → current QGIS LTR (v3.22)
+- [Dockerfile.ltr.deps](ci_scripts/Dockerfile.ltr.deps) + [docker-compose.ltr.yml](docker-compose.ltr.yml) → current QGIS LTR (v3.28)
 
 Execution log: [github.com/g3w-suite/g3w-admin/actions](https://github.com/g3w-suite/g3w-admin/actions)
 
@@ -208,7 +218,7 @@ Depending on the component you want to translate you can start by consulting one
 
 **Compatibile with:**
 [![Django version](https://img.shields.io/badge/Django-2.2-1EB300.svg?style=flat)](https://www.djangoproject.com/download/)
-[![QGIS version](https://img.shields.io/badge/QGIS%20LTR-3.22-1EB300.svg?style=flat)](https://www.qgis.org/en/site/forusers/download.html)
+[![QGIS version](https://img.shields.io/badge/QGIS%20LTR-3.28-1EB300.svg?style=flat)](https://www.qgis.org/en/site/forusers/download.html)
 
 ---
 

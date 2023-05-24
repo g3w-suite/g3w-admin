@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% load static %}
+{% load g3wadmin_tags %}
+{% load crispy_forms_tags %}
+{% load i18n %}
+
+
+{% block page_header %}
+    <h1>
+        {% if object.slug %}
+            {% trans 'Project message' %}
+            <small>{{ object.slug }}</small>
+        {% else %}
+        {% trans 'New' %} {% trans 'Message' %}
+        {% endif %}
+
+    </h1>
+{% endblock %}
+
+{% block main_content %}
+
+<form method="post" id="project-message-form">
+    {% if form.errors %}
+        <div class="row">
+            <div class="col-md-12">
+            <div class="alert alert-danger alert-dismissable">
+                <h4><i class="icon fa fa-ban"></i> {% trans 'Alert' %}!</h4>
+                    {% trans 'Some errors on form. Check it and send again.' %}
+              </div>
+            </div>
+        </div>
+    {% endif %}
+    {% crispy form %}
+    {% g3wadmin_add_button_form %}
+</form>
+{% endblock %}

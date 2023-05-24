@@ -27,8 +27,12 @@ def get_version(version=None):
     sub = ''
     git_changeset = get_git_changeset()
     git_branch = get_git_branch()
+    git_tag = get_git_tag()
     if version[3] == 'unstable':
-        if git_changeset:
+        if git_tag:
+            main = ''
+            sub = git_tag
+        elif git_changeset:
             dot = '.' if main else ''
             sub = '%s%s-%s' % (dot, git_branch, git_changeset)
 
@@ -76,3 +80,32 @@ def get_git_changeset():
     except ValueError:
         return None
     return timestamp.strftime('%Y%m%d%H%M%S')
+
+def get_git_tag():
+    """Returns the tag name if current HEAD is ath the same commit of a tag.
+    If no tag is found return None
+    """
+
+    repo_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    git_tags = subprocess.Popen('git show-ref --tags',
+                                  stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                  shell=True, cwd=repo_dir, universal_newlines=True)
+    tags = git_tags.communicate()[0].split('\n')
+
+    # Get CURRENT head commit hash
+    current_hash = subprocess.Popen('git rev-parse HEAD',
+                                  stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                  shell=True, cwd=repo_dir, universal_newlines=True)
+
+    current_hash = current_hash.communicate()[0].partition('\n')[0]
+
+    to_ret = ''
+    for tag in tags:
+        ht = tag.split(' ')
+        if len(ht) == 2:
+            h, t = tag.split(' ')
+            t = t.split('/')[2]
+            if h == current_hash:
+                to_ret = t
+
+    return to_ret

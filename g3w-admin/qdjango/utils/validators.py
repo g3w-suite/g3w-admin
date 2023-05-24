@@ -32,6 +32,7 @@ from qgis.core import (
 )
 
 from qgis.PyQt.QtCore import QVariant, Qt
+import string, random
 
 
 def feature_validator(feature, layer):
@@ -142,8 +143,8 @@ def feature_validator(feature, layer):
                     request.setFilterExpression('to_date("%s") = \'%s\'' % (
                         field.name().replace('"', '\\"'), value.toString(Qt.ISODate)))
                 elif field.type() == QVariant.DateTime:
-                    request.setFilterExpression('to_datetime("{field_name}") = \'{date_time_string}\' OR to_datetime("{field_name}") = \'{date_time_string}.000\''.format(
-                        field_name=field.name().replace('"', '\\"'), date_time_string=value.toString(Qt.ISODate)))
+                    request.setFilterExpression('to_datetime("{field_name}") = \'{date_time_string}\' OR to_datetime("{field_name}") = \'{date_time_string_ms}\''.format(
+                        field_name=field.name().replace('"', '\\"'), date_time_string=value.toString(Qt.ISODate), date_time_string_ms=value.toString(Qt.ISODateWithMs)))
                 elif field.type() == QVariant.Bool:  # This does not make any sense, but still
                     request.setFilterExpression('"%s" = %s' % (
                         field.name().replace('"', '\\"'), 'true' if value else 'false'))
@@ -251,7 +252,7 @@ class EmbeddedLayersValidator(QgisProjectValidator):
         #else:
             # new project: skip because we cannot have any embedded layer to be checked
         #    pass
-        
+
 
 class ProjectExists(QgisProjectValidator):
     """
@@ -281,6 +282,16 @@ class ProjectTitleExists(QgisProjectValidator):
             if self.qgisProject.qgisProjectFile.name:
                 self.qgisProject.title = os.path.basename(
                     self.qgisProject.qgisProjectFile.name)
+
+                # If a project with same title exists add slug suffix
+                if self.qgisProject.instance:
+                    # for update
+                    args = [~Q(pk=self.qgisProject.instance.pk)]
+                else:
+                    args = []
+                if Project.objects.filter(*args, title=self.qgisProject.title).exists():
+                    self.qgisProject.title += f"-{''.join(random.choices(string.ascii_lowercase, k=6))}"
+
             else:
                 raise QgisProjectException(_('Title project not empty'))
 
@@ -358,7 +369,8 @@ class DatasourceExists(QgisProjectLayerValidator):
                 Layer.TYPES.ogr,
                 Layer.TYPES.raster,
                 Layer.TYPES.mdal
-        ] and not isXML(self.qgisProjectLayer.datasource):
+        ] and not isXML(self.qgisProjectLayer.datasource) \
+                and not self.qgisProjectLayer.datasource.startswith('/vsicurl/'):
 
             # try PostGis raster layer
             if self.qgisProjectLayer.datasource.startswith("PG:"):
@@ -381,7 +393,7 @@ class DatasourceExists(QgisProjectLayerValidator):
                     err += ugettext('which should be located at {}'.format(
                         self.qgisProjectLayer.datasource))
                     raise QgisProjectLayerException(err)
-                    
+
             else:
                 if not os.path.exists(self.qgisProjectLayer.datasource.split('|')[0]):
                     err = ugettext('Missing data file for layer {} '.format(

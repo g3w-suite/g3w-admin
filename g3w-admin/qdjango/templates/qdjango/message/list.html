@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load g3wadmin_tags %}
+{% load guardian_tags %}
+{% load svg_icon %}
+{% load static %}
+{% load qdjango_tags %}
+
+
+
+{% block page_header %}
+<h1>
+{% trans 'QGIS Project Messages' %}
+    <small></small>
+</h1>
+{% endblock %}
+
+{% block main_content %}
+{% get_obj_perms user for project as "userPrj_perms" %}
+<div class="row">
+    <div class="col-md-12 col-xs-12">
+        <div class="box">
+            <div class="box-header">
+                <h3 class="box-title">{% trans 'Project' %}</h3>
+            </div>
+            <div class="box-body">
+                <div class="attachment-block clearfix">
+                    {% if project.thumbnail %}
+                    <img class="attachment-img" src="{{ MEDIA_URL }}{{ project.thumbnail }}">
+                    {% endif %}
+                    <div class="{% if project.thumbnail %}attachment-pushed{% else %}attachement{% endif %}">
+                        <div class=" attachment-heading"><h4>{{ project.title }}</h4></div>
+                        <div class="attachment-text">{{ project.description|safe }}</div>
+                    </div>
+                </div>
+                <div class="project-abstract-action">
+                    {% if "view_project" in userPrj_perms %}
+                    <a href="{% url 'group-project-map' group.slug 'qdjango' project.pk %}" class="color-orange btn btn-app" data-toggle="tooltip" data-placement="top" title="{% trans 'Show map' %}" target="_blank">
+                        <i class="ion ion-map"></i>
+                        {% trans 'Show map' %}
+                    </a>
+                    {% endif %}
+                    {% if "view_project" in userPrj_perms %}
+                    <a href="#" class="btn btn-app" data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-detail-url="{% url 'qdjango-project-detail' group.slug project.slug %}" >
+                        <i class="ion ion-eye"></i>
+                        {% trans 'Show detail' %}
+                    </a>
+                    {% endif %}
+                    {% if "change_project" in userPrj_perms %}
+                    <a href="{% url 'qdjango-project-update' group.slug project.slug %}" class="btn btn-app" data-toggle="tooltip" data-placement="top" title="{% trans 'Edit' %}" >
+                        <i class="ion ion-edit"></i>
+                        {% trans 'Edit' %}
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="box">
+    <div class="box-header">
+        <div class="box-header">
+            <a href="{% url 'qdjango-project-messages-add' group.slug project.slug %}" class="btn btn-info" id="btn-add-project"><i class="ion ion-plus-circled"></i> {% trans 'Message' %}</a>
+        </div>
+    </div>
+    <div class="box-body">
+        <table id="project_message_table" class="table table-hover table-striped" data-widget-type="dataTable">
+            <thead>
+                <tr>
+                    <th style="width: 80px" >{%  trans 'Actions' %}</th>
+                    <th>{%  trans 'Title' %}</th>
+                    <th style="width: 40px">{% trans 'level' %}</th>
+                    <th style="width:100px">{% trans 'Availble from' %}</th>
+                    <th style="width:40px">{% trans 'Available to' %}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for object in object_list %}
+                <tr id="qdjango_project_message_{{ object.slug }}">
+                    <td>
+                        <span class="col-xs-2 icon">
+                            <a href="{% url 'qdjango-project-messages-update' group.slug project.slug object.pk %}" data-toggle="tooltip" data-placement="top" title="{% trans 'Edit' %}" ><i class="ion ion-edit"></i></a>
+                        </span>
+                        <span class="col-xs-4 icon">
+                            <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Delete' %}" data-widget-type="deleteItem" data-delete-url="{% url 'qdjango-project-messages-delete' group.slug project.slug object.pk %}" data-item-selector="#qdjango_project_message_{{ object.slug }}" ><i class="ion ion-trash-b"></i></a>
+                        </span>
+                    </td>
+                    <td>{{ object.title }}</td>
+                    <td>{{ object.level|message_level }}</td>
+                    <td>{% if object.valid_from %}{{ object.valid_from }}{% endif %}</td>
+                    <td>{% if object.valid_to %}{{ object.valid_to }}{% endif %}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

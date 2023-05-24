@@ -10,8 +10,9 @@ from rest_framework.fields import empty
 from core.models import Group, BaseLayer
 from core.signals import initconfig_plugin_start
 from core.mixins.api.serializers import G3WRequestSerializer
+from core.utils.geo import get_crs_bbox
 
-from qgis.core import QgsCoordinateReferenceSystem
+from qgis.core import QgsCoordinateReferenceSystem, QgsCoordinateTransform, QgsCoordinateTransformContext
 from copy import copy
 
 
@@ -97,8 +98,8 @@ class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         crs = QgsCoordinateReferenceSystem(f'EPSG:{self.instance.srid.srid}')
 
         # Patch for Proj4 > 4.9.3 version
-        if self.instance.srid.srid == 3003:
-            proj4 = settings.PROJ4_EPSG_3003
+        if self.instance.srid.srid in settings.G3W_PROJ4_EPSG.keys():
+            proj4 = settings.G3W_PROJ4_EPSG[self.instance.srid.srid]
         else:
             proj4 = crs.toProj4()
 
@@ -106,7 +107,8 @@ class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
             'epsg': crs.postgisSrid(),
             'proj4': proj4,
             'geographic': crs.isGeographic(),
-            'axisinverted': crs.hasAxisInverted()
+            'axisinverted': crs.hasAxisInverted(),
+            'extent': get_crs_bbox(crs)
         }
 
         # map controls
@@ -121,9 +123,9 @@ class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         for g3wProjectApp in settings.G3WADMIN_PROJECT_APPS:
             Project = apps.get_app_config(g3wProjectApp).get_model('project')
             projects = get_objects_for_user(self.request.user, '{}.view_project'.format(g3wProjectApp), Project) \
-                .filter(group=instance)
+                .filter(group=instance, is_active=True)
             projects_anonymous = get_objects_for_user(anonymous_user, '{}.view_project'.format(g3wProjectApp),
-                                                      Project).filter(group=instance)
+                                                      Project).filter(group=instance, is_active=True)
             projects = list(set(projects) | set(projects_anonymous))
 
             for project in projects:

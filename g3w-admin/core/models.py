@@ -5,12 +5,13 @@ from django.utils.translation import ugettext, ugettext_lazy as _
 from django.urls import reverse
 from django.db import models
 from django.apps import apps
+from django_extensions.db.fields import AutoSlugField
 from guardian.shortcuts import get_objects_for_user
 from guardian.compat import get_user_model
 from ordered_model.models import OrderedModel
 from model_utils.models import TimeStampedModel
 from model_utils import Choices
-from autoslug import AutoSlugField
+from django_extensions.db.fields import AutoSlugField
 from sitetree.models import TreeItemBase, TreeBase
 from django.contrib.auth.models import User, Group as AuthGroup
 from usersmanage.utils import setPermissionUserObject, getUserGroups, get_users_for_object, get_groups_for_object
@@ -20,7 +21,7 @@ try:
     from osgeo import osr
 except:
     pass
-
+import logging
 
 class G3W2Tree(TreeBase):
     module = models.CharField('Qdjango2 Module', max_length=50, null=True, blank=True)
@@ -101,8 +102,7 @@ class MacroGroup(TimeStampedModel, OrderedModel):
     use_logo_client = models.BooleanField(_('Use logo image for client'), default=False)
 
     slug = AutoSlugField(
-        _('Slug'), populate_from='name', unique=True, always_update=True
-    )
+        _('Slug'), unique=True, populate_from=['name'])
 
     def __str__(self):
         return self.title
@@ -132,12 +132,13 @@ class Group(TimeStampedModel, OrderedModel):
     title = models.CharField(_('Title'), max_length=255)
     description = models.TextField(_('Description'), blank=True)
     slug = AutoSlugField(
-        _('Slug'), populate_from='name', unique=True, always_update=True
+        _('Slug'), populate_from=['name'], unique=True
         )
     is_active = models.BooleanField(_('Is active'), default=1)
 
     # Company logo
-    header_logo_img = models.FileField(_('Logo image'), upload_to='logo_img')
+    header_logo_img = models.FileField(_('Logo image'), upload_to='logo_img',
+                                       default=f'logo_img/{settings.CLIENT_G3WSUITE_LOGO}')
     header_logo_link = models.URLField(_('Logo link'), blank=True, null=True,
                                        help_text=_('Enter link with http:// or https//'))
 
@@ -198,7 +199,7 @@ class Group(TimeStampedModel, OrderedModel):
             groupProjects += [(g3wProjectApp, project) for project in projects]
         return groupProjects
 
-    def getProjectsNumber(self, user=None):
+    def getProjectsNumber(self, user=None, is_active=None):
         """
         Count total number of serveral type project
         :return: integer
@@ -207,10 +208,16 @@ class Group(TimeStampedModel, OrderedModel):
         for g3wProjectApp in settings.G3WADMIN_PROJECT_APPS:
             Project = apps.get_app_config(g3wProjectApp).get_model('project')
             if user:
-                groupProjects +=len(get_objects_for_user(user, '{}.view_project'.format(g3wProjectApp), Project) \
-                    .filter(group=self))
+                qs = get_objects_for_user(user, '{}.view_project'.format(g3wProjectApp), Project) \
+                    .filter(group=self)
             else:
-                groupProjects += len(Project.objects.filter(group=self))
+                qs = Project.objects.filter(group=self)
+
+            if is_active and is_active in (0, 1):
+                qs = qs.filter(is_active=is_active)
+
+            groupProjects += len(qs)
+
         return groupProjects
 
     def addPermissionsToEditor(self, user):
@@ -392,7 +399,7 @@ class Group(TimeStampedModel, OrderedModel):
         elif attr == 'viewer_user_groups':
             return get_groups_for_object(self, 'view_group', 'viewer')
 
-        return super(Group, self).__getattr__(attr)
+        return super(Group, self).__getattribute__(attr)
 
 
 class GroupProjectPanoramic(models.Model):
@@ -445,3 +452,29 @@ class ProjectMapUrlAlias(models.Model):
     app_name = models.CharField(max_length=255)
     project_id = models.IntegerField()
     alias =models.CharField(max_length=512, unique=True)
+
+
+LOG_LEVELS = (
+    (logging.NOTSET, _('NotSet')),
+    (logging.INFO, _('Info')),
+    (logging.WARNING, _('Warning')),
+    (logging.DEBUG, _('Debug')),
+    (logging.ERROR, _('Error')),
+    (logging.FATAL, _('Fatal')),
+)
+class StatusLog(models.Model):
+    """
+    Model to store log's row inside DB
+    """
+    logger_name = models.CharField(max_length=100)
+    level = models.PositiveSmallIntegerField(choices=LOG_LEVELS, default=logging.ERROR, db_index=True)
+    msg = models.TextField()
+    trace = models.TextField(blank=True, null=True)
+    create_datetime = models.DateTimeField(auto_now_add=True, verbose_name='Created at')
+
+    def __str__(self):
+        return self.msg
+
+    class Meta:
+        ordering = ('-create_datetime',)
+        verbose_name_plural = verbose_name = 'Logging'

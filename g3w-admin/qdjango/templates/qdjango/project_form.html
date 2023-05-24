@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load staticfiles %}
+{% load static %}
 {% load g3wadmin_tags %}
 {% load crispy_forms_tags %}
 {% load i18n %}
@@ -72,5 +72,4 @@
             {% crispy form %}
             {% g3wadmin_add_button_form %}
         </form>
-        {% include 'core/django_file_form/upload_template.html' %}
 {% endblock %}

@@ -130,9 +130,11 @@ class ClientApiTest(CoreTestBase):
             'epsg': 4326,
             'proj4': '+proj=longlat +datum=WGS84 +no_defs',
             'geographic': True,
-            'axisinverted': True
+            'axisinverted': True,
+            'extent': [-180.0, -90.0, 180.0, 90.0]
         })
-        self.assertEqual(resp["group"]["mapcontrols"], ['zoomtoextent', 'zoom', 'zoombox', 'query', 'querybbox', 'querybypolygon', 'overview', 'scaleline', 'geolocation', 'streetview', 'nominatim', 'addlayers', 'length', 'area', 'mouseposition', 'scale'])
+        print(resp["group"]["mapcontrols"])
+        self.assertEqual(resp["group"]["mapcontrols"], ['zoom', 'zoombox', 'zoomtoextent', 'query', 'querybbox', 'querybypolygon', 'overview', 'scaleline', 'geolocation', 'streetview', 'nominatim', 'addlayers', 'length', 'area', 'mouseposition', 'scale'])
         self.assertEqual(resp["group"]["header_logo_img"], "logo_img/qgis-logo.png")
         self.assertEqual(resp["group"]["name"], "Gruppo 1")
         self.assertIsNone(resp["group"]["header_logo_link"])
@@ -176,6 +178,25 @@ class ClientApiTest(CoreTestBase):
         self.assertEqual(resp["user"]["i18n"], "en")
         self.assertEqual(resp["g3wsuite_logo_img"], "g3wsuite_logo_h40.png")
         self.assertEqual(resp['i18n'], json.loads(json.dumps(settings.LANGUAGES)))
+
+        # Test GroupIsActivePermission
+        # ------------------------------------------------------------
+
+        g = Group.objects.get(slug='gruppo-1')
+        g.is_active = False
+        g.save()
+
+        self.client.login(username=self.test_admin1.username, password=self.test_admin1.username)
+        url = reverse('group-map-config', args=['gruppo-1', 'qdjango', '1'])
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 403)
+
+        self.client.logout()
+
+        # Restore group
+        g.is_active = True
+        g.save()
 
 
     def testClientConfigApiView(self):
@@ -314,7 +335,8 @@ class ClientApiTest(CoreTestBase):
                             'epsg': 4326,
                             'proj4': '+proj=longlat +datum=WGS84 +no_defs',
                             'geographic': True,
-                            'axisinverted': True
+                            'axisinverted': True,
+                            'extent': [-180.0, -90.0, 180.0, 90.0]
                         })
 
             if l['id'] == 'spatialite_points20190604101052075':
@@ -371,7 +393,8 @@ class ClientApiTest(CoreTestBase):
                     'epsg': 4326,
                     'proj4': '+proj=longlat +datum=WGS84 +no_defs',
                     'geographic': True,
-                    'axisinverted': True
+                    'axisinverted': True,
+                    'extent': [-180.0, -90.0, 180.0, 90.0]
                 })
 
             if l['id'] == 'bluemarble20181008111156906':
@@ -391,8 +414,29 @@ class ClientApiTest(CoreTestBase):
                     'epsg': 4326,
                     'proj4': '+proj=longlat +datum=WGS84 +no_defs',
                     'geographic': True,
-                    'axisinverted': True
+                    'axisinverted': True,
+                    'extent': [-180.0, -90.0, 180.0, 90.0]
                 })
+
+        # Test ProjectIsActivePermission
+        # ------------------------------------------------------------
+
+        p = Project.objects.get(pk=1)
+        p.is_active = False
+        p.save()
+
+        self.client.login(username=self.test_admin1.username, password=self.test_admin1.username)
+        url = reverse('group-project-map-config', args=['gruppo-1', 'qdjango', '1'])
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 403)
+
+        self.client.logout()
+
+        # Restore group
+        p.is_active = True
+        p.save()
+
 
     def test_custom_layer_order(self):
         """Testing qgis custom layer order"""
@@ -702,9 +746,13 @@ class ClientApiTest(CoreTestBase):
 
         self.assertTrue("Cities" in layers)
         self.assertTrue("Countries" in layers)
-
-        # check
         self.assertTrue("Rivers" in layers)
+
+        layerstree = json.dumps(jres['layerstree'])
+
+        self.assertTrue('"name": "Cities"' in layerstree)
+        self.assertTrue('"name": "Countries"' in layerstree)
+        self.assertTrue('"name": "Rivers"' in layerstree)
 
         layer_cities = self.project_print310.instance.layer_set.filter(name="Cities")
         layer_countries = self.project_print310.instance.layer_set.filter(name="Countries")
@@ -725,9 +773,13 @@ class ClientApiTest(CoreTestBase):
 
         self.assertFalse("Cities" in layers)
         self.assertTrue("Countries" in layers)
-
-        #check
         self.assertTrue("Rivers" in layers)
+
+        layerstree = json.dumps(jres['layerstree'])
+
+        self.assertFalse('"name": "Cities"' in layerstree)
+        self.assertTrue('"name": "Countries"' in layerstree)
+        self.assertTrue('"name": "Rivers"' in layerstree)
 
         self.client.logout()
 
@@ -745,12 +797,15 @@ class ClientApiTest(CoreTestBase):
 
         self.assertTrue("Cities" in layers)
         self.assertTrue("Countries" in layers)
-
-        # check
         self.assertTrue("Rivers" in layers)
 
-        self.client.logout()
+        layerstree = json.dumps(jres['layerstree'])
 
+        self.assertTrue('"name": "Cities"' in layerstree)
+        self.assertTrue('"name": "Countries"' in layerstree)
+        self.assertTrue('"name": "Rivers"' in layerstree)
+
+        self.client.logout()
 
         # login as viewer1.3 inside group gu_viewer2
         self.client.login(username=self.test_viewer1_3.username, password=self.test_viewer1_3.username)
@@ -763,9 +818,13 @@ class ClientApiTest(CoreTestBase):
 
         self.assertFalse("Cities" in layers)
         self.assertFalse("Countries" in layers)
-
-        # check
         self.assertTrue("Rivers" in layers)
+
+        layerstree = json.dumps(jres['layerstree'])
+
+        self.assertFalse('"name": "Cities"' in layerstree)
+        self.assertFalse('"name": "Countries"' in layerstree)
+        self.assertTrue('"name": "Rivers"' in layerstree)
 
         self.client.logout()
 
@@ -780,8 +839,12 @@ class ClientApiTest(CoreTestBase):
 
         self.assertTrue("Cities" in layers)
         self.assertTrue("Countries" in layers)
-
-        # check
         self.assertTrue("Rivers" in layers)
+
+        layerstree = json.dumps(jres['layerstree'])
+
+        self.assertTrue('"name": "Cities"' in layerstree)
+        self.assertTrue('"name": "Countries"' in layerstree)
+        self.assertTrue('"name": "Rivers"' in layerstree)
 
 

@@ -1,11 +1,11 @@
 from django.http.request import QueryDict
 from django.conf import settings
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext_lazy as _, get_language
 from rest_framework import serializers
 from rest_framework.fields import empty
 from guardian.shortcuts import get_objects_for_user, get_anonymous_user
 from owslib.wms import WebMapService
-from qdjango.models import Project, Layer, Widget, SessionTokenFilter, GeoConstraintRule
+from qdjango.models import Project, Layer, Widget, SessionTokenFilter, GeoConstraintRule, MSG_LEVELS
 from qdjango.utils.data import QGIS_LAYER_TYPE_NO_GEOM
 from qdjango.utils.models import get_capabilities4layer
 from qdjango.signals import load_qdjango_widget_layer
@@ -17,8 +17,9 @@ from core.signals import after_serialized_project_layer
 from core.mixins.api.serializers import G3WRequestSerializer
 from core.api.serializers import update_serializer_data
 from core.utils.structure import RELATIONS_ONE_TO_MANY
-from core.utils.qgisapi import get_qgis_layer, count_qgis_features
+from core.utils.qgisapi import get_qgis_layer, count_qgis_features, get_qgis_featurecount
 from core.utils.general import clean_for_json
+from core.utils.geo import get_crs_bbox
 
 from qgis.core import (
     QgsJsonUtils,
@@ -34,6 +35,7 @@ from qgis.PyQt.QtCore import QVariant, QDate, QDateTime, Qt
 from ..utils import serialize_vectorjoin
 from collections import OrderedDict
 import json
+from datetime import date
 
 import logging
 logger = logging.getLogger(__name__)
@@ -78,25 +80,8 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
             ]
         else:
 
-            # set max extent to CRS bounds
-            if instance.group.srid.auth_srid == '4326':
-                rectangle = QgsCoordinateReferenceSystem('EPSG:4326').bounds()
-            else:
 
-                # reproject CRS bounds
-                to_srid = QgsCoordinateReferenceSystem(
-                    f'EPSG:{instance.group.srid.auth_srid}')
-                from_srid = QgsCoordinateReferenceSystem('EPSG:4326')
-                ct = QgsCoordinateTransform(
-                    from_srid, to_srid, QgsCoordinateTransformContext())
-                rectangle = ct.transform(to_srid.bounds())
-
-            map_extent = [
-                rectangle.xMinimum(),
-                rectangle.yMinimum(),
-                rectangle.xMaximum(),
-                rectangle.yMaximum()
-            ]
+            map_extent = get_crs_bbox(instance.group.srid.auth_srid)
 
         # if use_map_extent_as_init_extent is not flaged set init_map_extent as map_extent
         if not instance.use_map_extent_as_init_extent:
@@ -280,12 +265,106 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
             ret['map_themes'].append(theme)
 
+
+    def get_bookmarks(self, qgs_project):
+        """
+        Get bookmarks from QgsProject instance
+        :param qgs_project: QgsProject instance
+        :return: Structured tree bookmarks
+        """
+
+        def format_bookmark(bmark):
+
+            bbox = bmark.extent()
+            return {
+                "id": bmark.id(),
+                "name": bmark.name(),
+                "crs": {
+                    "epsg": bbox.crs().postgisSrid()
+                },
+                "extent": [
+                    bbox.xMinimum(),
+                    bbox.yMinimum(),
+                    bbox.xMaximum(),
+                    bbox.yMaximum()
+                ]
+
+            }
+
+        bmarks = qgs_project.bookmarkManager().bookmarks()
+        bgroups = qgs_project.bookmarkManager().groups()
+
+        toret = []
+
+        for bgroup in bgroups:
+
+            # Only GroupBookmark name set
+            if bgroup:
+                to_add = {
+                    'name': bgroup,
+                    'expanded': False,
+                    'nodes': []
+                }
+
+                for bmark in qgs_project.bookmarkManager().bookmarksByGroup(bgroup):
+                    to_add['nodes'].append(format_bookmark(bmark))
+
+                toret.append(to_add)
+
+        # Add bookmarks without group
+        for bmark in bmarks:
+            if not bmark.group():
+                toret.append(format_bookmark(bmark))
+
+        return toret
+
+    def get_messages(self, instance):
+        """
+        Get message for qdjango Project model instance
+        :param instance: qdjango Project model instance
+        :return: dict
+        """
+
+        # Patch for using fo `Accept-Language` requests paramenter.
+        if self.request.META.get('HTTP_ACCEPT_LANGUAGE'):
+            title_col = f"title_{self.request.META.get('HTTP_ACCEPT_LANGUAGE')}"
+            body_col = f"body_{self.request.META.get('HTTP_ACCEPT_LANGUAGE')}"
+        else:
+            title_col = "title"
+            body_col = "body"
+
+        # Check meddages by validate_from and validate_to
+        messages = []
+
+        for m in instance.messages:
+            today = date.today()
+            cond_f = True
+            cond_t = True
+            if m.valid_from:
+                cond_f = today >= m.valid_from
+            if m.valid_to:
+                cond_t = today <= m.valid_to
+
+            if cond_f and cond_t:
+                messages.append(m)
+
+
+        return {
+            'levels': {l[1]: l[0] for l in MSG_LEVELS},
+            'items': [{
+                'id': m.pk,
+                'title': getattr(m, title_col) if hasattr(m, title_col) else m.title,
+                'body': getattr(m, body_col) if hasattr(m, body_col) else m.body,
+                'level': m.level
+            } for m in messages]
+        }
+
     def to_representation(self, instance):
         logging.warning('Serializer')
         ret = super(ProjectSerializer, self).to_representation(instance)
         logging.warning('Before reading project')
 
-        # add a QGSMapLayer instance
+        # add a QgsProject instance
         qgs_project = get_qgs_project(instance.qgis_file.path)
 
         logging.warning('Got project: %s' % qgs_project.fileName())
@@ -294,13 +373,16 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         ret['initextent'], ret['extent'] = self.get_map_extent(instance)
 
         # Check Geoconstraint rule whit autozoom flagged and calculate new initentext
-        initextent_by_geoconstraint = GeoConstraintRule.get_max_extent_on_project_for_user(
-            self.instance,
-            self.request.user
-        )
+        try:
+            initextent_by_geoconstraint = GeoConstraintRule.get_max_extent_on_project_for_user(
+                self.instance,
+                self.request.user
+            )
 
-        if initextent_by_geoconstraint:
-            ret['initextent'] = initextent_by_geoconstraint
+            if initextent_by_geoconstraint:
+                ret['initextent'] = initextent_by_geoconstraint
+        except Exception as e:
+            logger.error(f'[Project serializer] Initextent by geocontraint error: {str(e)}')
 
         ret['print'] = json.loads(clean_for_json(
             instance.layouts)) if instance.layouts else []
@@ -344,15 +426,17 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
                 # Check for empty vector layer
                 if settings.G3W_CLIENT_NOT_SHOW_EMPTY_VECTORLAYER and self.layer_is_empty(layers[layer['id']]):
+                    to_remove_from_layerstree.append((container, layer))
                     return
 
                 # Check if layer is visible for user
                 if self.request and not layer['id'] in view_layer_ids:
+                    to_remove_from_layerstree.append((container, layer))
                     return
 
                 try:
                     layer_serialized = LayerSerializer(
-                        layers[layer['id']], qgs_project=qgs_project, request=self.request)
+                        layers[layer['id']], qgs_project=qgs_project, request=self.request, layertreenode=layer)
                 except KeyError:
                     logger.error(
                         'Layer %s is missing from QGIS project!' % layer['id'])
@@ -400,7 +484,12 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
                             self, layer=layer, ret=ret, widget=widget)
 
         for l in ret['layerstree']:
-            readLeaf(l, ret['layerstree'])
+            try:
+                readLeaf(l, ret['layerstree'])
+            except KeyError as ex:
+                logger.error(
+                   'Layer %s is missing from QGIS project!' % l['id'])
+
 
         # remove layers from layerstree
         for to_remove in to_remove_from_layerstree:
@@ -469,9 +558,17 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
         ret['search_endpoint'] = settings.G3W_CLIENT_SEARCH_ENDPOINT
 
+        # Add bookmarks:
+        # ---------------------------------
+        ret['bookmarks'] = self.get_bookmarks(qgs_project)
+
         # QGIS project themes
         # ----------------------------------
         self.set_map_themes(ret, qgs_project)
+
+        # Add messages:
+        # ----------------------------------
+        ret['messages'] = self.get_messages(instance)
 
         # reset tokenfilter by session
         self.reset_filtertoken()
@@ -505,6 +602,8 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         # set QsgMapLayer instance
         self.qgs_project = kwargs['qgs_project']
         del (kwargs['qgs_project'])
+        self.layertreenode = kwargs['layertreenode']
+        del (kwargs['layertreenode'])
 
         super(LayerSerializer, self).__init__(instance, data, **kwargs)
 
@@ -728,9 +827,8 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
             crs = QgsCoordinateReferenceSystem(f'EPSG:{ret["crs"]}')
 
             # Patch for Proj4 > 4.9.3 version
-            if ret["crs"] == 3003:
-                proj4 = "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=1500000 +y_0=0 +ellps=intl " \
-                        "+towgs84=-104.1,-49.1,-9.9,0.971,-2.917,0.714,-11.68 +units=m +no_defs"
+            if ret["crs"] in settings.G3W_PROJ4_EPSG.keys():
+                proj4 = settings.G3W_PROJ4_EPSG[ret["crs"]]
             else:
                 proj4 = crs.toProj4()
 
@@ -738,7 +836,8 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
                 'epsg': crs.postgisSrid(),
                 'proj4': proj4,
                 'geographic': crs.isGeographic(),
-                'axisinverted': crs.hasAxisInverted()
+                'axisinverted': crs.hasAxisInverted(),
+                'extent': get_crs_bbox(crs)
             }
 
         # add metadata
@@ -750,6 +849,10 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
         # add ows
         ret['ows'] = self.get_ows(instance)
+
+        # Add `featurecount` property if `showfeaturecount` property is present inside layertreenode:
+        if 'showfeaturecount' in self.layertreenode and self.layertreenode['showfeaturecount']:
+            ret['featurecount'] = get_qgis_featurecount(qgs_maplayer)
 
         return ret
 

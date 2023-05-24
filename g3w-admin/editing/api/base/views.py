@@ -14,7 +14,8 @@ from qgis.core import \
     QgsJsonExporter, \
     QgsExpression, \
     QgsExpressionContextUtils, \
-    QgsExpressionNode
+    QgsExpressionNode, \
+    QgsFieldConstraints
 from rest_framework.exceptions import ValidationError
 
 from core.api.base.vector import MetadataVectorLayer
@@ -31,8 +32,11 @@ from qdjango.models import Layer
 from qdjango.utils.data import QGIS_LAYER_TYPE_NO_GEOM
 from qdjango.utils.validators import feature_validator
 
-from qgis.PyQt.QtCore import QDateTime, QDate, QTime
+from qgis.PyQt.QtCore import QDateTime, QDate, QTime, QVariant, NULL
 
+import bleach
+
+import re
 import logging
 
 logger = logging.getLogger('module_editing')
@@ -254,9 +258,11 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                         # =====================================================================
                         field_datetime_values = {}
                         field_datetime_field_formats = {}
+                        numeric_nullable_field_values = {}
                         for qgis_field in qgis_layer.fields():
 
                             field_idx = qgis_layer.fields().indexFromName(qgis_field.name())
+                            options = qgis_layer.editorWidgetSetup(field_idx).config()
                             # Look for dataprovider default clause/value:
                             # only for fields no pk with defaultValueClause by provider
                             # and NULL value into feature on new add feature
@@ -268,25 +274,72 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                                 feature.setAttribute(qgis_field.name(),
                                                      qgis_layer.dataProvider().defaultValueClause(field_idx))
 
-                            elif qgis_field.typeName().lower() in ('date', 'datetime', 'time'):
+                            # Formatting data if field's type is date, datetime or time
+                            # ----------------------------------------------------------
+                            elif qgis_field.typeName().lower() in ('date', 'datetime', 'time', 'timestamp'):
 
                                 if qgis_field.typeName().lower() == 'date':
                                     qtype = QDate
-                                elif qgis_field.typeName().lower() == 'datetime':
+                                elif qgis_field.typeName().lower() in ('datetime', 'timestamp'):
                                     qtype = QDateTime
                                 else:
                                     qtype = QTime
-
-                                options = qgis_layer.editorWidgetSetup(field_idx).config()
 
                                 if 'field_iso_format' in options and not options['field_iso_format']:
                                     if qgis_field.name() in geojson_feature['properties'] and \
                                             geojson_feature['properties'][qgis_field.name()]:
                                         value = qtype.fromString(geojson_feature['properties'][qgis_field.name()],
                                                                  options['field_format'])
+
+
+                                        if re.search("^yy[^y]|[^y]+yy[^y]+|[^y]+yy$|^yy$", options['field_format']):
+                                            current_century = int(str(QDate.currentDate().year())[0:2])
+                                            if qtype == QDate:
+                                                value_century = int(str(value.year())[0:2])
+                                                value_yy = str(value.year())[2:4]
+                                            else:
+                                                value_century = int(str(value.date().year())[0:2])
+                                                value_yy = str(value.date().year())[2:4]
+                                            value_year = int(f"{current_century}{value_yy}")
+                                            if value_century != current_century:
+                                                if qtype == QDate:
+                                                    value = QDate(value_year, value.month(), value.day())
+                                                if qtype == QDateTime:
+                                                    value.setDate(value_year, value.month(), value.day())
+
                                         feature.setAttribute(qgis_field.name(), value)
                                         field_datetime_values[qgis_field.name()] = value
                                         field_datetime_field_formats[qgis_field.name()] = options['field_format']
+
+                            # For PostGis provider or oder provider with type int or double and with field can be null
+                            # ----------------------------------------------------------------------------------------
+                            elif QVariant.typeToName(qgis_field.type()).lower() in ('int', 'double') and \
+                                    geojson_feature['properties'][qgis_field.name()] == '':
+
+                                # Check for not_null constraint
+                                constraints = qgis_layer.fieldConstraints(field_idx)
+                                if not (bool(constraints & QgsFieldConstraints.ConstraintNotNull) and \
+                                qgis_field.constraints().constraintStrength(
+                                    QgsFieldConstraints.ConstraintNotNull) == QgsFieldConstraints.ConstraintStrengthHard):
+                                    feature.setAttribute(qgis_field.name(), NULL)
+                                    numeric_nullable_field_values[qgis_field.name()] = NULL
+
+                            # For fields with UseHtml options, filter content with bleach
+                            # -----------------------------------------------------------
+                            elif 'UseHtml' in options and options['UseHtml'] == '1':
+                                css_sanitizer = bleach.css_sanitizer.CSSSanitizer(
+                                    allowed_css_properties=settings.BLEACH_ALLOWED_STYLES)
+                                feature.setAttribute(qgis_field.name(),
+                                                     bleach.clean(
+                                                         geojson_feature['properties'][qgis_field.name()],
+                                                         tags=settings.BLEACH_ALLOWED_TAGS,
+                                                         attributes=settings.BLEACH_ALLOWED_ATTRIBUTES,
+                                                         strip=settings.BLEACH_STRIP_TAGS,
+                                                         css_sanitizer=css_sanitizer
+                                                     )
+                                                 )
+
+
 
 
 
@@ -324,6 +377,8 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                                 if name in qgis_layer.dataProvider().fieldNameMap():
                                     if name in field_datetime_values:
                                         value = field_datetime_values[name]
+                                    if name in numeric_nullable_field_values:
+                                        value = numeric_nullable_field_values[name]
                                     attr_map[qgis_layer.dataProvider().fieldNameMap()[name]] = value
 
                             if has_transactions:
@@ -358,7 +413,7 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                             fnames = [f.name() for f in feature.fields()]
                             jfeature = json.loads(ex.exportFeature(feature, dict(zip(fnames, feature.attributes()))))
 
-                            # Fore date and datetime and time fields:
+                            # For date and datetime and time fields:
                             if field_datetime_values:
                                 for fname, fvalue in jfeature['properties'].items():
                                     try:
@@ -418,15 +473,17 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
 
             fids = post_layer_data[EDITING_POST_DATA_DELETED]
 
-            # get feature fids from server fids from client.
-            fids = get_layer_fids_from_server_fids([str(id) for id in fids], qgis_layer)
-
             for feature_id in fids:
 
                 # control feature locked
                 if not metadata_layer.lock.checkFeatureLocked(str(feature_id)):
                     raise Exception(self.no_more_lock_feature_msg.format(
                         feature_id, metadata_layer.client_var))
+
+            # get feature fids from server fids from client.
+            fids = get_layer_fids_from_server_fids([str(id) for id in fids], qgis_layer)
+
+            for feature_id in fids:
 
                 # Get feature to delete
                 ex = QgsJsonExporter(qgis_layer)

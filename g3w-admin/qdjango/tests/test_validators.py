@@ -83,7 +83,7 @@ class TestFeatureValidator(QdjangoTestBase):
             __file__), 'data'), os.path.join(cls.dir.path(), 'projects'))
         cls.project = QgsProject()
         assert cls.project.read(os.path.join(
-            cls.dir.path(), 'projects', 'validator_project_test.qgs'))
+            cls.dir.path(), 'projects', 'validator_project_test_328.qgs'))
         cls.validator_project_test = cls.project.mapLayersByName(
             'validator_project_test')[0]
         cls.validator_project_test_not_null = cls.project.mapLayersByName(

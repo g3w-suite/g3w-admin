@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load staticfiles %}
+{% load static %}
 {% load crispy_forms_tags %}
 {% load guardian_tags %}
 {% load auth_extras %}
@@ -19,13 +19,13 @@
 
     $( document ).ajaxComplete(function() {
         if (this.URL) {
-            var $sort = $('table').find('tbody').sortable({
+            var $sort = $('table.projects-list').find('tbody').sortable({
                 placeholder: "sort-highlight-project",
                 update: function(e, ui){
                     new_order = $(e.target).sortable("toArray");
 
                     // get current id of group moved
-                    var gid = ui.item.attr('id').substring(16)
+                    var gid = ui.item.attr('id').substring(15)
                     var url = _.template("/qdjango/jx/project/<%= gid %>/setorder/")({gid: gid});
                     var data = {
                         new_order: new_order
@@ -43,7 +43,7 @@
                 }
             });
 
-            $('table').find('tbody').find('tr').hover(function() {
+            $('table.projects-list').find('tbody').find('tr').hover(function() {
                 $(this).css('cursor','move');
             });
         }
@@ -78,17 +78,28 @@
                     </a>
                     {% endif %}
                     {% if "change_group" in userObj_perms %}
+                    {% if group.is_active == 1 %}
                     <a href="{% url 'group-update' group.slug %}" class="btn-app btn" data-toggle="tooltip" data-placement="top" title="{% trans 'Edit' %}" >
                         <i class="ion ion-edit"></i>
                         {% trans 'Edit' %}
                     </a>
                     {% endif %}
+                    {% endif %}
+                    {% comment %}
                     {% if "delete_group" in userObj_perms %}
-                    <a href="#" data-toggle="tooltip"class="color-red btn btn-app" data-placement="top" title="{% trans 'Delete' %}"  data-widget-type="deleteItem" data-delete-url="{% url 'group-delete' group.slug %}" data-item-selector="#group_{{ group.slug }}">
+                    {% if group.is_active == 1 %}
+                    <a href="#" data-toggle="tooltip" class="color-red btn btn-app" data-placement="top" title="{% trans 'Delete/Deactivate' %}"  data-widget-type="activeDeactiveItem" data-active-deactive-action="deactivate" data-active-deactive-url="{% url 'group-deactive' group.slug %}" data-item-selector="#group_{{ group.slug }}">
+                        <i class="ion ion-trash-b"></i>
+                        {% trans 'Delete/Deactivate' %}
+                    </a>
+                    {% else %}
+                    <a href="#" data-toggle="tooltip" class="color-red btn btn-app" data-placement="top" title="{% trans 'Delete' %}"  data-widget-type="deleteItem" data-delete-url="{% url 'group-delete' group.slug %}" data-item-selector="#group_{{ group.slug }}">
                         <i class="ion ion-trash-b"></i>
                         {% trans 'Delete' %}
                     </a>
                     {% endif %}
+                    {% endif %}
+                    {% endcomment %}
                 </div>
             </div>
         </div>

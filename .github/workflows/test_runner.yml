@@ -10,7 +10,7 @@ jobs:
 
     strategy:
       matrix:
-        qgis_version: ['322', 'latest']
+        qgis_version: ['ltr', 'latest']
 
     steps:
 
@@ -30,7 +30,7 @@ jobs:
 
     - name: Installing Python requirements
       run: |
-        docker-compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "cd /code/ && python3 -m pip install pip==20.0.2 && pip3 install -r requirements_docker.txt && pip3 install -r requirements_huey.txt"
+        docker-compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "cd /code/ && pip3 install -r requirements_docker.txt && pip3 install -r requirements_huey.txt"
 
     - name: Installing Caching Python requirements
       run: |
@@ -103,6 +103,10 @@ jobs:
     - name:  Running g3w-admin qtimeseries tests
       run: |
         docker-compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test qtimeseries"
+
+    - name:  Running g3w-admin about tests
+      run: |
+        docker-compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test about"
 
     - name: Setup tmate session
       if: ${{ failure() }}

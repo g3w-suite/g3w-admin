@@ -6,8 +6,8 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.utils.translation import gettext
 from django.utils.translation import gettext_lazy as _
+from ordered_model.admin import OrderedModelAdmin
 from guardian.admin import GuardedModelAdmin
-from qgis.core import QgsVectorLayer
 from .models import *
 
 
@@ -18,6 +18,7 @@ class ProjectAdmin(GuardedModelAdmin):
     )
     list_display = (
         'title',
+        'is_active',
         'group'
     )
 
@@ -223,3 +224,11 @@ class LayerAclAdmin(admin.ModelAdmin):
 
 
 admin.site.register(LayerAcl, LayerAclAdmin)
+
+class MessageAdmin(OrderedModelAdmin):
+    model = Message
+
+    list_display = ('title', 'level', 'move_up_down_links')
+    ordering = ('order',)
+
+admin.site.register(Message, MessageAdmin)

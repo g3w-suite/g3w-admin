@@ -283,7 +283,7 @@ def config(project):
                     'layer_id': layer.pk,
                     'qgis_layer_id': layer.qgs_layer_id,
                 })
-            if layer.qgis_layer.geometryType() == QgsWkbTypes.PointGeometry:
+            if layer.qgis_layer.type() == QgsMapLayerType.VectorLayer and layer.qgis_layer.geometryType() == QgsWkbTypes.PointGeometry:
                 pointlayers.append({
                     'layer_id': layer.pk,
                     'qgis_layer_id': layer.qgs_layer_id,

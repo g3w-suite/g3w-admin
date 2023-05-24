@@ -1,4 +1,4 @@
-{% load staticfiles %}
+{% load static %}
 {% load sitetree %}
 {% load i18n %}
 {% get_current_language as lang %}
@@ -20,10 +20,10 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <link rel="icon" href="{% static '/img/favicon.ico' %}">
     {% endif %}
     <!-- Pace -->
-    <script src="{% static "bower_components/pace/pace.min.js" %}"></script>
+    <script src="{% static "bower_components/pace/pace.min.js" %}" data-pace-options='{ "eventLag": false }'></script>
     {% if SETTINGS.DEBUG %}
     <!-- build:css css/vendor.min.css -->
-    <!-- Bootstrap 3.3.5 -->
+    <!-- Bootstrap 3.3.7 -->
     <link rel="stylesheet" href="{% static "bower_components/bootstrap/dist/css/bootstrap.min.css" %}">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="{% static "bower_components/font-awesome/css/font-awesome.min.css" %}">
@@ -33,8 +33,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <link rel="stylesheet" href="{% static "bower_components/select2/dist/css/select2.min.css" %}">
     <!-- Pace -->
     <link rel="stylesheet" href="{% static "bower_components/pace/themes/yellow/pace-theme-loading-bar.css" %}">
-    <!-- Bootstrap3-wysiwyg -->
-    <link rel="stylesheet" href="{% static "bower_components/bootstrap3-wysihtml5-bower/dist/bootstrap3-wysihtml5.min.css" %}">
     <!-- Bootstrap-datepicker -->
     <link rel="stylesheet" href="{% static "bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker3.min.css" %}">
     <!-- Bootstrap-colorpicker -->
@@ -49,9 +47,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <!-- icheck -->
     <link rel="stylesheet" href="{% static "bower_components/icheck/skins/flat/green.css" %}">
     <link rel="stylesheet" href="{% static "bower_components/icheck/skins/flat/blue.css" %}">
-    <!-- Leaflet -->
-    <link rel="stylesheet" href="{% static "bower_components/leaflet/dist/leaflet.css" %}">
-    <link rel="stylesheet" href="{% static "bower_components/leaflet-draw/dist/leaflet.draw.css" %}">
+    <link rel="stylesheet" href="{% static "bower_components/icheck/skins/flat/yellow.css" %}">
     <!-- JsTree -->
     <link rel="stylesheet" href="{% static "bower_components/jstree/dist/themes/default/style.css" %}">
     <link rel="stylesheet" href="{% static "bower_components/jstree-bootstrap-theme/dist/themes/proton/style.min.css" %}">
@@ -74,8 +70,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
         <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 
-    <!-- Django-file-form: fieluploader -->
-    <link rel="stylesheet" href="{% static "ajaxuploader/css/fileuploader.css" %}">
+    <!-- Django-file-form -->
+    <link rel="stylesheet" href="{% static "file_form/file_form.css" %}">
 
 
     {% block custom_css_links_page %}
@@ -242,19 +238,10 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
     <!-- REQUIRED JS SCRIPTS -->
     <script>
-        var CURRENT_LANGUAGE_CODE = '{{ lang }}';
-        {% if SETTINGS.FRONTEND %}
-        var FRONTEND = true;
-        {% else %}
-        var FRONTEND = false;
-        {% endif %}
-        {% if SETTINGS.SITE_PREFIX_URL %}
-        var SITE_PREFIX_URL = '{{ SETTINGS.SITE_PREFIX_URL }}';
-        {% else %}
-        var SITE_PREFIX_URL = '';
-        {% endif %}
-        var STATIC_BASE_URL = '{% static "" %}';
-
+        const CURRENT_LANGUAGE_CODE = '{{ lang }}';
+        const FRONTEND              = {% if SETTINGS.FRONTEND %}true{% else %}false{% endif %}
+        const SITE_PREFIX_URL       = {% if SETTINGS.SITE_PREFIX_URL %}'{{ SETTINGS.SITE_PREFIX_URL }}'{% else %}''{% endif %}
+        const STATIC_BASE_URL       = '{% static "" %}';
     </script>
     {% if SETTINGS.DEBUG %}
     <!-- build:js js/vendor.min.js -->
@@ -274,12 +261,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <script src="{% static "bower_components/underscore/underscore-min.js" %}"></script>
     <!-- Select2 -->
     <script src="{% static "bower_components/select2/dist/js/select2.full.min.js" %}"></script>
-    <!-- Bootstrap3-wysihtml5 -->
-    <script src="{% static "bower_components/bootstrap3-wysihtml5-bower/dist/bootstrap3-wysihtml5.all.min.js" %}"></script>
     <!-- Bootstrap-datepicker -->
     <script src="{% static "bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js" %}"></script>
-    <!-- Bootstrap-datepicker-locals -->
-    <script src="{% static "bower_components/bootstrap-datepicker/dist/locales/bootstrap-datepicker.it.min.js" %}"></script>
     <!-- Bootstrap-timepicker -->
     <script src="{% static "bower_components/bootstrap-timepicker/js/bootstrap-timepicker.js" %}"></script>
     <!-- Jquery.Filer -->
@@ -292,9 +275,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <script src="{% static "bower_components/bootstrap-treeview/dist/bootstrap-treeview.min.js" %}"></script>
     <!-- icheck -->
     <script src="{% static "bower_components/icheck/icheck.min.js" %}"></script>
-    <!-- Leaflet -->
-    <script src="{% static "bower_components/leaflet/dist/leaflet.js" %}"></script>
-    <script src="{% static "bower_components/leaflet-draw/dist/leaflet.draw.js" %}"></script>
     <!-- Proj4 -->
     <script src="{% static "bower_components/proj4/dist/proj4.js" %}"></script>
     <!-- jsTree -->
@@ -306,16 +286,19 @@ scratch. This page gets rid of all links and provides the needed markup only.
     {% else %}
     <script src="{% static "dist/js/vendor.min.js" %}"></script>
     {% endif %}
-
+    <!-- Bootstrap-datepicker-locals -->
+    {% for l in SETTINGS.LANGUAGES %}
+      {% if l.0 == 'se' %}
+        <script src="{% static "bower_components/bootstrap-datepicker/dist/locales/bootstrap-datepicker.sv.min.js" %}"></script>
+      {% elif not l.0 == 'en' %}
+        <script src="{% static "bower_components/bootstrap-datepicker/dist/locales/bootstrap-datepicker."|add:l.0|add:".min.js" %}"></script>
+      {% endif %}
+    {% endfor %}
     <!-- AdminLTE App -->
     <script src="{% static "adminlte/js/app.min.js" %}"></script>
-
-
-    <!-- Django-file-form: fileuploader -->
-    <script src="{% static "ajaxuploader/js/fileuploader.js" %}"></script>
     <!-- Django-file-form -->
-    <script src="{% static "file_form/file_form.js" %}"></script>
-
+    <!--<script src="{% static "file_form/file_form.js" %}"></script>-->
+    <script src="{% static "file_form/file_form.debug.js" %}"></script>
     <!-- g3wadmin javascript catalog -->
     <script src="{% url 'javascript-catalog' %}"></script>
 
@@ -341,7 +324,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <script>
         _.extend(g3wadmin,{
             'settings': {
-                'G3WADMIN_LOCAL_MORE_APPS': ['{{ SETTINGS.G3WADMIN_LOCAL_MORE_APPS|join:"','" }}']
+                'G3WADMIN_LOCAL_MORE_APPS': ['{{ SETTINGS.G3WADMIN_LOCAL_MORE_APPS|join:"','" }}'],
+                'FILE_FORM_UPLOAD_TEMP_URL': '{{ SETTINGS.MEDIA_URL }}{% if SETTINGS.FILE_FORM_UPLOAD_DIR %}{{ FILE_FORM_UPLOAD_DIR }}{% else %}temp_uploads{% endif %}/'
             }
         });
     </script>
