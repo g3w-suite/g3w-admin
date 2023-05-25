@@ -236,3 +236,6 @@ input[type=file]::file-selector-button:hover {
     height: 20px;
 }
 
+a.layer-action {
+    cursor: pointer;
+}
