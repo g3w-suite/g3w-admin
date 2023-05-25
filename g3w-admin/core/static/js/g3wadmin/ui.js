@@ -265,7 +265,7 @@ _.extend(g3wadmin.ui, {
         }*/
 
         const $widgetItem = this.__$widgetItem(context, '[data-widget-type="dataTable"]');
-        const $dataTable  = $widgetItem.DataTable(options);
+
 
         // add widget for details
         // before init datatable because it will work only on first page
@@ -274,6 +274,8 @@ _.extend(g3wadmin.ui, {
         });
 
         _.each(ga.ui.before_datatable_callbacks, function(f) { f($widgetItem); })
+
+         const $dataTable  = $widgetItem.DataTable(options);
     },
 
     /**
