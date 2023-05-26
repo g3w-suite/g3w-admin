@@ -138,6 +138,10 @@ class UserUpdateView(G3WRequestViewMixin, UpdateView):
         return c
 
     def get_success_url(self):
+
+        # for himself for self update
+        assign_perm('auth.change_user', self.object, self.object)
+
         return reverse('user-list')
 
 
