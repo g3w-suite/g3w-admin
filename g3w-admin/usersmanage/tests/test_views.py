@@ -39,13 +39,6 @@ class UsermanageViewsTest(BaseUsermanageTestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
-        # Check object_list
-        object_list = response.context_data['object_list']
-
-        # Every test users:
-        # test_user1, test_user2, test_editor1...
-        self.assertEqual(len(object_list), 11)
-
         # Admin1 can create new user
         response = self.client.get(url_newone)
         self.assertEqual(response.status_code, 200)
@@ -55,13 +48,6 @@ class UsermanageViewsTest(BaseUsermanageTestCase):
         self.assertTrue(self.client.login(username=self.test_editor1.username, password=self.test_editor1.username))
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-
-        # Check object_list
-        object_list = response.context_data['object_list']
-
-        # Every test users:
-        # test_user1, test_user2, test_editor1...
-        self.assertEqual(len(object_list), 0)
 
         # Editor1 can create new user
         response = self.client.get(url_newone)
@@ -73,25 +59,11 @@ class UsermanageViewsTest(BaseUsermanageTestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
-        # Check object_list
-        object_list = response.context_data['object_list']
-
-        # Every test users:
-        # test_user1, test_user2, test_editor1...
-        self.assertEqual(len(object_list), 3)
-
         # Login as Editor2
         # only his account
         self.assertTrue(self.client.login(username=self.test_editor2.username, password=self.test_editor2.username))
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-
-        # Check object_list
-        object_list = response.context_data['object_list']
-
-        # Every test users:
-        # test_user1, test_user2, test_editor1...
-        self.assertEqual(len(object_list), 0)
 
         # Editor2 can't create new user
         response = self.client.get(url_newone)

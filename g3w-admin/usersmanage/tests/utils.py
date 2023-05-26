@@ -106,14 +106,17 @@ def setup_testing_user(cls):
         user = User.objects.create_user(username=euser, password=euser)
         user.save()
         user.groups.add(cls.main_roles[G3W_EDITOR1])
+        assign_perm('auth.change_user', user, user)
         Userbackend(user=user, backend=USER_BACKEND_DEFAULT).save()
         setattr(cls, 'test_{}'.format(euser.replace('.', '_')), user)
+
 
     for euser in EU2:
         user = User.objects.create_user(username=euser, password=euser)
         user.save()
         user.groups.add(cls.main_roles[G3W_EDITOR2])
         Userbackend(user=user, backend=USER_BACKEND_DEFAULT).save()
+        assign_perm('auth.change_user', user, user)
         setattr(cls, 'test_{}'.format(euser.replace('.', '_')), user)
 
     for euser in VU1:
@@ -121,6 +124,7 @@ def setup_testing_user(cls):
         user.save()
         user.groups.add(cls.main_roles[G3W_VIEWER1])
         Userbackend(user=user, backend=USER_BACKEND_DEFAULT).save()
+        assign_perm('auth.change_user', user, user)
         setattr(cls, 'test_{}'.format(euser.replace('.', '_')), user)
 
     # create user groups
