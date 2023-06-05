@@ -185,7 +185,10 @@ def get_qgs_project(path: str):
         # volumes, in that case we need to use our own cache manager, enable it with
         # G3WADMIN_USE_CUSTOM_CACHE_INVALIDATOR=True
 
-        QgsApplication.instance().processEvents()
+        # For batch processing running with Huey or Celery, to avoid freezing of task running,
+        # is necessary skip the follow line.
+        if os.getenv('G3WSUITE_CONSUMER', '0') == '0':
+            QgsApplication.instance().processEvents()
 
         if USE_CUSTOM_CACHE_INVALIDATOR:
             ProjectCacheInvalidator.check_cache(path)
