@@ -37,7 +37,10 @@ def get_version(version=None):
             sub = '%s%s-%s' % (dot, git_branch, git_changeset)
 
     elif version[3] == 'stable':
-        if git_changeset:
+        if git_tag:
+            main = ''
+            sub = git_tag
+        elif git_changeset:
             dot = '.' if main else ''
             sub = '%sx-%s' % (dot, git_changeset)
 
