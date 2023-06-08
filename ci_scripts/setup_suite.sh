@@ -88,6 +88,12 @@ else
     rm -rf bower_components
     ln -s "/code/node_modules/@bower_components" bower_components
 
+    # Create SECRET_KEY value file if not exists
+    if [ ! -e ${SECRET_KEY_FILE} ]; then
+    echo "Creating a unique SECRET_KEY file ..."
+    python3 "${DJANGO_DIRECTORY}/manage.py" generate_secret_key_file -o ${SECRET_KEY_FILE}
+    fi
+
     rm -rf ${STATIC_ROOT}
     cd ${DJANGO_DIRECTORY}
     if [[ -z ${G3WSUITE_DEBUG} || ${G3WSUITE_DEBUG} != "True" ]]; then
