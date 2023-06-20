@@ -502,7 +502,7 @@ class Layer(G3WACLModelMixins, models.Model):
         _('Qgis Layer Project ID'), max_length=255, blank=True, null=True)
     description = models.TextField(_('Description'), blank=True)
     slug = AutoSlugField(
-        _('Slug'), populate_from=['name'], unique=True
+        _('Slug'), populate_from=['name'], unique=True, overwrite=True
     )
     is_active = models.BooleanField(_('Is active'), default=1)
     # Project
