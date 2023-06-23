@@ -86,7 +86,7 @@ urlpatterns = [
     #############################################################
     path(
         'api/expression_eval/<int:project_id>/',
-        login_required(QgsExpressionLayerContextEvalView.as_view()),
+        QgsExpressionLayerContextEvalView.as_view(),
         name='layer-expression-eval'
     ),
 

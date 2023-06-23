@@ -6,6 +6,7 @@ from owslib.wms import WebMapService
 from base.version import get_version
 from .base.views import G3WAPIView
 from core.api.authentication import CsrfExemptSessionAuthentication
+from core.api.permissions import ProjectPermission
 from qdjango.models import Project
 from core.api.base.views import APIException
 from core.utils.geo import get_crs_bbox
@@ -151,6 +152,8 @@ class QgsExpressionLayerContextEvalView(G3WAPIView):
     `qgs_layer_id`: QGIS layer id
 
     """
+
+    permission_classes = (ProjectPermission,)
 
     authentication_classes = (
         CsrfExemptSessionAuthentication,
