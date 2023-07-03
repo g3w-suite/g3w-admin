@@ -657,28 +657,53 @@ class QgisProjectLayer(XmlData):
                         to_ret_node['visibility_expression'] = None
                         visibility_expression = None
 
-                    if element.type() == QgsAttributeEditorElement.AeTypeRelation:
-                        to_ret_node.update({
-                            'nmRelationId': element.nmRelationId()
-                        })
+                    if Qgis.QGIS_VERSION_INT >= 33200:
+                            etype = element.type()
 
-                    if element.type() == QgsAttributeEditorElement.AeTypeContainer:
+                            if isinstance(etype, Qgis.AttributeEditorContainerType):
+                                to_ret_node.update({
+                                    'groupbox': element.isGroupBox(),
+                                    'columncount': element.columnCount(),
+                                    'nodes': build_form_tree_object(element.children())
+                                })
+                            else:
+                                if element.type() == Qgis.AttributeEditorType.Relation:
+                                    to_ret_node.update({
+                                        'nmRelationId': element.nmRelationId()
+                                    })
 
-                        to_ret_node.update({
-                            'groupbox': element.isGroupBox(),
-                            'columncount': element.columnCount(),
-                            'nodes': build_form_tree_object(element.children())
-                        })
+                                if element.type() == Qgis.AttributeEditorType.Field:
+                                    to_ret_node.update({
+                                        'index': element.idx(),
+                                        'field_name': element.name()
+                                    })
+                                    if to_ret_node['name'] in self.aliases:
+                                        to_ret_node.update(
+                                            {'alias': self.aliases[to_ret_node['name']]})
+                                    del (to_ret_node['name'])
+                    else:
+                        if element.type() == QgsAttributeEditorElement.AeTypeRelation:
+                            to_ret_node.update({
+                                'nmRelationId': element.nmRelationId()
+                            })
 
-                    if element.type() == QgsAttributeEditorElement.AeTypeField:
-                        to_ret_node.update({
-                            'index': element.idx(),
-                            'field_name': element.name()
-                        })
-                        if to_ret_node['name'] in self.aliases:
-                            to_ret_node.update(
-                                {'alias': self.aliases[to_ret_node['name']]})
-                        del(to_ret_node['name'])
+                        if element.type() == QgsAttributeEditorElement.AeTypeContainer:
+
+                            to_ret_node.update({
+                                'groupbox': element.isGroupBox(),
+                                'columncount': element.columnCount(),
+                                'nodes': build_form_tree_object(element.children())
+                            })
+
+                        if element.type() == QgsAttributeEditorElement.AeTypeField:
+                            to_ret_node.update({
+                                'index': element.idx(),
+                                'field_name': element.name()
+                            })
+                            if to_ret_node['name'] in self.aliases:
+                                to_ret_node.update(
+                                    {'alias': self.aliases[to_ret_node['name']]})
+                            del(to_ret_node['name'])
 
                     to_ret_form_structure.append(to_ret_node)
                 return to_ret_form_structure
