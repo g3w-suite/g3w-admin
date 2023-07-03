@@ -89,10 +89,9 @@ class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
         try:
             macrogroup = instance.macrogroups.get(use_title_client=True)
-            ret['name'] = macrogroup.title
+            ret['title'] = macrogroup.title
         except:
-            # change groupData name with title for i18n app
-            ret['name'] = instance.title
+            pass
 
         # add crs:
         crs = QgsCoordinateReferenceSystem(f'EPSG:{self.instance.srid.srid}')
@@ -260,6 +259,7 @@ class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         fields = (
             'id',
             'name',
+            'title',
             'slug',
             'minscale',
             'maxscale',
