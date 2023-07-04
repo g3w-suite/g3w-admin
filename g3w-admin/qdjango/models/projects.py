@@ -174,6 +174,13 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
         ('toc', _('Into TOC layers'))
     )
 
+    WMS_GETMAP_FORMAT = Choices(
+        ('image/png; mode=8bit', _('PNG 8bit Format')),
+        ('image/png; mode=16bit', _('PNG 16bit Format')),
+        ('image/png', _('PNG format')),
+        ('image/jpeg', _('JPEG format'))
+    )
+
     # Project file
     qgis_file = models.FileField(
         _('QGIS project file'),
@@ -277,6 +284,9 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
                                     default=False)
 
     order = models.PositiveIntegerField(_('Fields to se order'), default=0, blank=True, null=True)
+
+    wms_getmap_format = models.CharField(_('WMS GetMap image format'), default='image/png; mode=8bit', max_length=255,
+                                         blank=True, null=True, choices=WMS_GETMAP_FORMAT)
 
 
     class Meta:

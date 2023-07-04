@@ -264,6 +264,7 @@ class QdjangoProjectForm(TranslationModelForm, QdjangoProjectFormMixin, G3WFormM
                             'toc_themes_init_status',
                             'legend_position',
                             'autozoom_query',
+                            'wms_getmap_format',
                             'feature_count_wms',
                             'multilayer_query',
                             'multilayer_querybybbox',
@@ -321,6 +322,7 @@ class QdjangoProjectForm(TranslationModelForm, QdjangoProjectFormMixin, G3WFormM
             'use_map_extent_as_init_extent',
             'context_base_legend',
             'title_ur',
+            'wms_getmap_format'
         )
         field_classes = dict(
             qgis_file=UploadedFileField,
