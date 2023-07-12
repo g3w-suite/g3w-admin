@@ -107,7 +107,8 @@ class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
             'proj4': proj4,
             'geographic': crs.isGeographic(),
             'axisinverted': crs.hasAxisInverted(),
-            'extent': get_crs_bbox(crs)
+            #'extent': get_crs_bbox(crs)
+            'extent': [0,0,8388608,8388608]
         }
 
         # map controls
