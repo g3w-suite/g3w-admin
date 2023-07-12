@@ -98,17 +98,22 @@ class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
         # Patch for Proj4 > 4.9.3 version
         if self.instance.srid.srid in settings.G3W_PROJ4_EPSG.keys():
-            proj4 = settings.G3W_PROJ4_EPSG[self.instance.srid.srid]
+            proj4 = settings.G3W_PROJ4_EPSG[self.instance.srid.srid]['proj4']
+            extent = settings.G3W_PROJ4_EPSG[self.instance.srid.srid]['extent']
+
         else:
             proj4 = crs.toProj4()
+            if crs.postgisSrid() in (4326, 3857):
+                extent = get_crs_bbox(crs)
+            else:
+                extent = [0,0,8388608,8388608]
 
         ret['crs'] = {
             'epsg': crs.postgisSrid(),
             'proj4': proj4,
             'geographic': crs.isGeographic(),
             'axisinverted': crs.hasAxisInverted(),
-            #'extent': get_crs_bbox(crs)
-            'extent': [0,0,8388608,8388608]
+            'extent': extent
         }
 
         # map controls
