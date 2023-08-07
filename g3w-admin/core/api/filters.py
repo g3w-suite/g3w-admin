@@ -338,6 +338,7 @@ class FieldFilterBackend(BaseFilterBackend):
                             f'{pre_post_operator}{unquote(field_value)}{pre_post_operator}')
                     else:
                         quoted_field_value = field_value
+
                     single_search_expression = '{field_name} {field_operator} {field_value}'.format(
                         field_name=self._quote_identifier(field_name),
                         field_operator=self.COMPARATORS_MAP[field_operator],
