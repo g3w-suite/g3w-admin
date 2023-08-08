@@ -386,6 +386,8 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
         ret['print'] = json.loads(clean_for_json(
             instance.layouts)) if instance.layouts else []
+        # Ordering
+        ret['print'].sort(key=lambda x: x['name'])
 
         # Get layer which request.user can view:
         if self.request:
