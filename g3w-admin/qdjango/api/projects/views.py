@@ -19,9 +19,13 @@ from core.utils.response import send_file
 from rest_framework.response import Response
 from guardian.shortcuts import get_anonymous_user
 from core.api.base.views import G3WAPIView
+from core.api.permissions import ProjectPermission
+from qdjango.api.projects.permissions import ProjectIsActivePermission
 from qdjango.apps import get_qgs_project
 from qdjango.models import Project
 from qdjango.signals import reading_layer_model
+from qdjango.utils.models import get_view_layer_ids
+
 
 from osgeo import gdal, osr
 import tempfile
@@ -195,6 +199,11 @@ class QdjangoPrjThemeAPIview(G3WAPIView):
     Give a project_id and a view/theme name.
     """
 
+    permission_classes = (
+        ProjectPermission,
+        ProjectIsActivePermission
+    )
+
     def get(self, request, **kwargs):
         return self.layerstree(request, **kwargs)
 
@@ -234,6 +243,9 @@ class QdjangoPrjThemeAPIview(G3WAPIView):
                 if id not in node_layerids_checked:
                     node_layerids_checked.append(id)
 
+            # Get layer which request.user can view:
+            view_layer_ids = get_view_layer_ids(self.request.user, project)
+
 
             def build_group_name_by_parents(node):
 
@@ -253,6 +265,11 @@ class QdjangoPrjThemeAPIview(G3WAPIView):
                     }
 
                     try:
+
+                        # Check if layer is visible by user
+                        if self.request and not node.layerId() in view_layer_ids:
+                            continue
+
                         # try for layer node
                         toRetLayer.update({
                             'id': node.layerId(),
