@@ -11,6 +11,7 @@ __copyright__ = 'Copyright 2019, GIS3W'
 
 from django.db.models import Q
 from django.conf import settings
+from guardian.shortcuts import get_objects_for_user, get_anonymous_user
 from qdjango.apps import get_qgs_project
 
 from qgis.core import QgsMapLayer
@@ -145,3 +146,21 @@ def get_geoconstraints4layer(layer):
 
     from qdjango.models import GeoConstraint
     return GeoConstraint.objects.filter(layer=layer)
+
+def get_view_layer_ids(user, project):
+    """
+    Return list of qdjango Layer model pk witch user has 'qdjango.view_layer' permission.
+    :param user: Django User model instance.
+    :param project: Qdjango Project Model instance.
+    :return: List of qdjango.models.Project pk.
+    """
+
+    from qdjango.models import Layer
+
+    return list(
+        set([l.qgs_layer_id for l in get_objects_for_user(user, 'qdjango.view_layer', Layer).
+                     filter(project=project)]).union(
+            set([l.qgs_layer_id for l in get_objects_for_user(get_anonymous_user(), 'qdjango.view_layer', Layer).
+                filter(project=project)])
+        )
+    )

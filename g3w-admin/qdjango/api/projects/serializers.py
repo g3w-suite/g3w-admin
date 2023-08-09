@@ -3,11 +3,10 @@ from django.conf import settings
 from django.utils.translation import ugettext_lazy as _, get_language
 from rest_framework import serializers
 from rest_framework.fields import empty
-from guardian.shortcuts import get_objects_for_user, get_anonymous_user
 from owslib.wms import WebMapService
 from qdjango.models import Project, Layer, Widget, SessionTokenFilter, GeoConstraintRule, MSG_LEVELS
 from qdjango.utils.data import QGIS_LAYER_TYPE_NO_GEOM
-from qdjango.utils.models import get_capabilities4layer
+from qdjango.utils.models import get_capabilities4layer, get_view_layer_ids
 from qdjango.signals import load_qdjango_widget_layer
 from qdjango.apps import get_qgs_project
 from qdjango.utils.structure import QdjangoMetaLayer, datasourcearcgis2dict
@@ -386,16 +385,12 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
         ret['print'] = json.loads(clean_for_json(
             instance.layouts)) if instance.layouts else []
+        # Ordering
+        ret['print'].sort(key=lambda x: x['name'])
 
         # Get layer which request.user can view:
         if self.request:
-            view_layer_ids = list(
-                set([l.qgs_layer_id for l in get_objects_for_user(self.request.user, 'qdjango.view_layer', Layer).
-                     filter(project=instance)]).union(set(
-                         [l.qgs_layer_id for l in get_objects_for_user(get_anonymous_user(), 'qdjango.view_layer', Layer).
-                          filter(project=instance)]
-                     ))
-            )
+            view_layer_ids = get_view_layer_ids(self.request.user, instance)
 
         # add layers data, widgets
         # init properties
