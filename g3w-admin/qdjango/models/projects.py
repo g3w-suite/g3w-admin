@@ -862,6 +862,14 @@ class Layer(G3WACLModelMixins, models.Model):
 
         return result
 
+    def has_value_relation_widget(self, field_name: str) -> bool:
+        """
+        Check if a field_name has a QGIS Form ValueRelation Widget
+        """
+    
+        edittypes = eval(self.edittypes)
+        return edittypes[field_name]["widgetv2type"] == "ValueRelation"
+
     @property
     def extent_rect(self):
         """Return dict of coordinates extension string

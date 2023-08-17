@@ -42,7 +42,7 @@ from core.tests.base import CoreTestBase
 from core.utils.qgisapi import get_qgs_project, get_qgis_layer
 
 from .base import QdjangoTestBase, CURRENT_PATH, TEST_BASE_PATH, QGS310_WIDGET_FILE, CoreGroup, G3WSpatialRefSys, \
-    QGS322_FILE, QGS322_INITEXTENT_GEOCONSTRAINT_FILE, QGS322_FORMATTING_DATE, QGS328_FILE
+    QGS322_FILE, QGS322_INITEXTENT_GEOCONSTRAINT_FILE, QGS322_FORMATTING_DATE, QGS328_FILE, QGS328_VALUE_RELATION
 from qgis.core import QgsFeatureRequest, QgsRasterLayer, QgsVectorLayer
 from qgis.PyQt.QtCore import QTemporaryDir
 from qgis.server import QgsServerProjectUtils
@@ -331,6 +331,23 @@ class TestQdjangoProjectsAPI(QdjangoTestBase):
         cls.project328.group = cls.project_group
         cls.project328.save()
 
+        cls.project_group_3857 = CoreGroup(
+            name="Group3857",
+            title="Group3857",
+            header_logo_img="",
+            srid=G3WSpatialRefSys.objects.get(auth_srid=3857),
+        )
+
+        cls.project_group_3857.save()
+
+        qgis_project_file = File(
+            open("{}{}{}".format(CURRENT_PATH, TEST_BASE_PATH, QGS328_VALUE_RELATION), "r")
+        )
+        cls.project328_value_relation = QgisProject(qgis_project_file)
+        cls.project328_value_relation.title = "A project QGIS 3.28 fro value relation"
+        cls.project328_value_relation.group = cls.project_group_3857
+        cls.project328_value_relation.save()
+
     @classmethod
     def tearDownClass(cls):
         cls.project322.instance.delete()
@@ -615,6 +632,50 @@ class TestQdjangoProjectsAPI(QdjangoTestBase):
 
         for s  in list(resp['layers'][1]['featurecount'].values()):
             self.assertTrue(s > 0 and s <= 10)
+
+
+    def test_server_filters_value_relation_api(self):
+        """ Test server filter FieldFilterBacked  for fileds with ValueRelation QGIS form widget """
+
+        pois = Layer.objects.get(
+            project_id=self.project328_value_relation.instance.pk, qgs_layer_id='poi_2c470d17_a234_464c_83f8_416bcdedda17')
+        qgis_project = get_qgs_project(pois.project.qgis_file.path)
+        qgis_layer = qgis_project.mapLayer(pois.qgs_layer_id)
+
+        # check FieldFilterBacked
+        # -----------------------
+        qgs_request = QgsFeatureRequest()
+        qgs_request.setFilterExpression('"type" = \'A\'')
+        total_count = len([f for f in qgis_layer.getFeatures(qgs_request)])
+
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['data', 'qdjango', self.project328_value_relation.instance.pk,
+                                                pois.qgs_layer_id],
+                                            {
+                                                'field': 'type|eq|Apple',
+                                                'formatter': '1'
+                                            }).content)
+
+        self.assertEqual(resp['vector']['count'], total_count)
+
+        qgs_request = QgsFeatureRequest()
+        qgs_request.setFilterExpression("\"type\" IN ('B','B1')")
+        total_count = len([f for f in qgis_layer.getFeatures(qgs_request)])
+        
+        resp = json.loads(
+            self._testApiCall(
+                "core-vector-api",
+                [
+                    "data",
+                    "qdjango",
+                    self.project328_value_relation.instance.pk,
+                    pois.qgs_layer_id,
+                ],
+                {"field": "type|ilike|B", "formatter": "1"},
+            ).content
+        )
+        
+        self.assertEqual(resp["vector"]["count"], total_count)
 
 class TestQdjangoLayersAPI(QdjangoTestBase):
     """ Test qdjango layer API """
@@ -1542,6 +1603,8 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         self.assertEqual(jres['vector']['fields'][0]['input']['type'], 'textarea')
         self.assertEqual(jres['vector']['fields'][1]['name'], 'CAPITAL')
         self.assertEqual(jres['vector']['fields'][1]['input']['type'], 'texthtml')
+
+
 
 
 class TestGeoConstraintVectorAPIFilter(QdjangoTestBase):
