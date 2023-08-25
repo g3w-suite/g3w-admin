@@ -387,7 +387,7 @@ class QdjangoProjectDetailView(G3WRequestViewMixin, DetailView):
                     if hidel.user:
                         hl['users'].append(hidel.user)
                     if hidel.group:
-                        hl['groups'].append(hidel.group)
+                        hl['ugroups'].append(hidel.group)
 
                 if len(hl['users']) > 0 or len(hl['ugroups']) > 0:
                     if 'hiddenlayers' not in ctx:
