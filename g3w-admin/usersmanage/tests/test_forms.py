@@ -15,7 +15,6 @@ import os.path
 from django.test.client import RequestFactory
 from django.core.exceptions import ObjectDoesNotExist
 
-import settings_docker
 from usersmanage.forms import G3WUserForm, User, USER_BACKEND_DEFAULT, G3WUserGroupForm, AuthGroup
 from usersmanage.utils import userHasGroups
 from .utils import setup_testing_user_relations
