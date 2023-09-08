@@ -12,6 +12,7 @@ __copyright__ = 'Copyright 2015 - 2020, Gis3w'
 
 import os.path
 
+from django.conf import settings
 from django.test.client import RequestFactory
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -88,7 +89,7 @@ class UsermanageFormsTest(BaseUsermanageTestCase):
         self.assertTrue(u.is_staff)
 
         # Check creation oh a sub directory inside settings.DATASOURCE_PATH
-        self.assertFalse(os.path.exists(f"{settings_docker.DATASOURCE_PATH}/{u.username}"))
+        self.assertFalse(os.path.exists(f"{settings.DATASOURCE_PATH}/{u.username}"))
 
         # Update user
         initial_data = copy.copy(form_data)
@@ -159,7 +160,7 @@ class UsermanageFormsTest(BaseUsermanageTestCase):
         self.assertFalse(u.is_staff)
 
         # Check creation oh a sub directory inside settings.DATASOURCE_PATH
-        self.assertFalse(os.path.exists(f"{settings_docker.DATASOURCE_PATH}/{u.username}"))
+        self.assertFalse(os.path.exists(f"{settings.DATASOURCE_PATH}/{u.username}"))
 
         u.delete()
         del (u)
@@ -191,7 +192,7 @@ class UsermanageFormsTest(BaseUsermanageTestCase):
         self.assertFalse(u.is_staff)
 
         # Check creation oh a sub directory inside settings.DATASOURCE_PATH
-        self.assertTrue(os.path.exists(f"{settings_docker.DATASOURCE_PATH}/{u.username}"))
+        self.assertTrue(os.path.exists(f"{settings.DATASOURCE_PATH}/{u.username}"))
 
         u.delete()
         del (u)
