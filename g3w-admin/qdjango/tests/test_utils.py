@@ -136,7 +136,7 @@ class QgisProjectTest(TestCase):
 
         # check layerRelations
         # ------------------------------------------
-        layer_relations_to_check = '[{"referencingLayer": "cities10000eu20171228095720113", "strength": "Association", "referencedLayer": "countries_simpl20171228095706310", "name": "countries-citites", "id": "cities1000_ISO2_CODE_countries__ISOCODE", "fieldRef": {"referencingField": "ISO2_CODE", "referencedField": "ISOCODE"}}]'
+        layer_relations_to_check = '[{"referencingLayer": "cities10000eu20171228095720113", "strength": "Association", "referencedLayer": "countries_simpl20171228095706310", "name": "countries-citites", "id": "cities1000_ISO2_CODE_countries__ISOCODE", "fieldRef": {"referencingField": ["ISO2_CODE"], "referencedField": ["ISOCODE"]}}]'
         self.assertEqual(self.project.layerRelations,
                          json.loads(layer_relations_to_check))
 
