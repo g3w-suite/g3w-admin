@@ -1234,8 +1234,8 @@ class QgisProject(XmlData):
                 field_refs.append([referencingField, referencedField])
             attrib.update({
                 'fieldRef': {
-                    'referencingField': field_refs[0][0],
-                    'referencedField': field_refs[0][1]
+                    'referencingField': field_refs[0],
+                    'referencedField': field_refs[1]
                 }
             })
 
