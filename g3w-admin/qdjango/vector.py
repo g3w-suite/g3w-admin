@@ -144,7 +144,7 @@ class QGISLayerVectorViewMixin(object):
                 # qgis_layer is the referenced layer
                 qgis_layer = self.layer.qgis_layer
                 referenced_field_is_pk = [qgis_layer.fields().indexFromName(
-                    relation['fieldRef']['referencedField'])] == qgis_layer.primaryKeyAttributes()
+                    rf) for rf in relation['fieldRef']['referencedField']] == qgis_layer.primaryKeyAttributes()
 
                 # It's an old and buggy QGIS version so we cannot trust primaryKeyAttributes() and we go guessing
                 if IS_QGIS_3_10:
