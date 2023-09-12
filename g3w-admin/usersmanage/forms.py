@@ -414,7 +414,6 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
                                 """{% if form.avatar.value %}<img class="img-responsive img-thumbnail" src="{{ MEDIA_URL }}{{ form.avatar.value }}">{% endif %}""", ),
                             'form_id',
                             'upload_url',
-                            'delete_url',
                             css_class='box-body',
 
                         ),

@@ -38,6 +38,7 @@ QGS322_FILE = 'gruppo-1_un-progetto_qgis322.qgs'
 QGS328_FILE = 'gruppo-1_un-progetto_qgis328.qgs'
 QGS322_INITEXTENT_GEOCONSTRAINT_FILE = 'test_initextent_by_geoconstraint.qgs'
 QGS322_FORMATTING_DATE = 'Testing_Date_and_Datetime_formatting_322.qgs'
+QGS328_VALUE_RELATION = 'value_relation_qgis328.qgs'
 
 
 @override_settings(
