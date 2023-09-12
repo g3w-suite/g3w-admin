@@ -1,0 +1,2 @@
+
+<a href="{% url 'django_registration_activate' activation_key %}">{% url 'django_registration_activate' activation_key %}</a>

@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% load static %}
+{% load i18n %}
+{% block custom_css_links_page %}
+<!-- iCheck -->
+<link rel="stylesheet" href="{% static "bower_components/icheck/skins/square/blue.css" %}">
+{% endblock %}
+
+{% block body_content %}
+ <div class="login-box">
+  <div class="login-logo">
+    <span class="logo-lg">
+        {% if SETTINGS.G3WSUITE_CUSTOM_STATIC_URL %}
+            <img src="{{ SETTINGS.G3WSUITE_LOGIN_LOGO   }}">
+        {% else %}
+            <img src="{% static SETTINGS.G3WSUITE_LOGIN_LOGO %}">
+        {% endif %}
+    </span>
+  </div><!-- /.login-logo -->
+  <div class="register-box-body">
+    <p class="register-box-msg">{% comment %}Put her custom message for registration form{% endcomment %}</p>
+      {% if form.errors %}
+      <div class="alert alert-danger alert-dismissible">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+        <h4><i class="icon fa fa-ban"></i> {% trans 'ERROR' %}!</h4>
+        {{ form.errors }}
+      </div>
+      {% endif %}
+    <form method="post">
+      {% csrf_token %}
+        <div class="form-group has-feedback">
+            <input type="text" class="form-control" name="{{form.username.name}}" placeholder="{{form.username.label|capfirst}}">
+            <span class="glyphicon glyphicon-user form-control-feedback"></span>
+            {% if form.username.help_text %}
+            <p class="help">{{ form.username.help_text|safe }}</p>
+            {% endif %}
+        </div>
+        <div class="form-group has-feedback">
+            <input type="text" class="form-control" name="{{form.email.name}}" placeholder="{{form.email.label|capfirst}}">
+            <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+            {% if form.email.help_text %}
+            <p class="help">{{ form.email.help_text|safe }}</p>
+            {% endif %}
+        </div>
+        <div class="form-group has-feedback">
+            <input type="password" class="form-control" name="{{form.password1.name}}" placeholder="{{form.password1.label|capfirst}}">
+            <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+             {% if form.password1.help_text %}
+            <p class="help">{{ form.password1.help_text|safe }}</p>
+            {% endif %}
+        </div>
+        <div class="form-group has-feedback">
+            <input type="password" class="form-control" name="{{form.password2.name}}" placeholder="{{form.password2.label|capfirst}}">
+            <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+             {% if form.password2.help_text %}
+            <p class="help">{{ form.password2.help_text|safe }}</p>
+            {% endif %}
+        </div>
+      <div class="row">
+        <div class="col-xs-4">
+          <button type="submit" class="btn btn-primary btn-block btn-flat">{% trans 'Sign Up' %}</button>
+        </div><!-- /.col -->
+      </div>
+    </form>
+  </div><!-- /.login-box-body -->
+ <div style="text-align: center; color: grey; margin-top: 10px"><i>{% trans ' Version' %} {{ VERSION }}</i></div>
+</div><!-- /.login-box -->
+
+{% endblock %}
+
+
+{% block custom_js_links_page %}
+<!-- iCheck -->
+<script src="{% static "bower_components/icheck/icheck.min.js" %}"></script>
+<script>
+$(function () {
+    $('input').iCheck({
+      checkboxClass: 'icheckbox_square-blue',
+      radioClass: 'iradio_square-blue',
+      increaseArea: '20%' // optional
+    });
+});
+</script>
+{% endblock %}

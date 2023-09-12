@@ -13,7 +13,9 @@ from django.contrib import admin, auth
 from django.contrib.staticfiles import views
 from django.urls import path, include, re_path
 from django.views.i18n import JavaScriptCatalog
+from django.views.generic import TemplateView
 
+from django_registration.backends.activation import views as registration_views
 from ajax_select import urls as ajax_select_urls
 from sitetree.sitetreeapp import register_i18n_trees
 
@@ -103,6 +105,47 @@ urlpatterns += [
         'ajax_select/',
         include(ajax_select_urls)
     )
+]
+#############################################################
+# REGISTRATION USERS
+#############################################################
+
+#path('accounts/', include('django_registration.backends.activation.urls')),
+urlpatterns += [
+    path(
+        "accounts/activate/complete/",
+        TemplateView.as_view(
+            template_name="django_registration/activation_complete.html",
+            extra_context=extra_context_login_page,
+        ),
+        name="django_registration_activation_complete",
+    ),
+    path(
+        "accounts/activate/<str:activation_key>/",
+        registration_views.ActivationView.as_view(extra_context=extra_context_login_page,),
+        name="django_registration_activate",
+    ),
+    path(
+        "accounts/register/",
+        registration_views.RegistrationView.as_view(extra_context=extra_context_login_page,),
+        name="django_registration_register",
+    ),
+    path(
+        "accounts/register/complete/",
+        TemplateView.as_view(
+            template_name="django_registration/registration_complete.html",
+            extra_context=extra_context_login_page,
+        ),
+        name="django_registration_complete",
+    ),
+    path(
+        "accounts/register/closed/",
+        TemplateView.as_view(
+            template_name="django_registration/registration_closed.html",
+            extra_context=extra_context_login_page,
+        ),
+        name="django_registration_disallowed",
+    ),
 ]
 
 #############################################################

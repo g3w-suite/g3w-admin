@@ -74,6 +74,7 @@ THIRD_PARTY_APPS = [
     'huey_monitor',
     'about',
     'django_bleach',
+    'django_registration'
 ]
 
 G3WADMIN_APPS = [
@@ -314,6 +315,10 @@ G3WADMIN_RASTER_LAYER_DOWNLOAD_FORMATS = ['geotiff', 'xls', 'csv', 'gpkg']
 
 # Setting to activate/deactivate user password reset by email.
 RESET_USER_PASSWORD = False
+
+# REGUSTRATION ACCOUNTS
+# ---------------------
+ACCOUNT_ACTIVATION_DAYS = 2
 
 # QPLOTLY DEFAULT SETTINGS
 # ------------------------
