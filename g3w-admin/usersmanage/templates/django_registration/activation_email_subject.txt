@@ -1,1 +1,1 @@
-Registration done!
+[G3W-SUITE] {{user.username}} complete your registration

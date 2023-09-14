@@ -1,41 +1,14 @@
-{% extends "base.html" %}
+{% extends "base_login.html" %}
 {% load static %}
 {% load i18n %}
-{% block custom_css_links_page %}
-<!-- iCheck -->
-<link rel="stylesheet" href="{% static "bower_components/icheck/skins/square/blue.css" %}">
-{% endblock %}
 
-{% block body_content %}
- <div class="login-box">
-  <div class="login-logo">
-    <span class="logo-lg">
-        {% if SETTINGS.G3WSUITE_CUSTOM_STATIC_URL %}
-            <img src="{{ SETTINGS.G3WSUITE_LOGIN_LOGO   }}">
-        {% else %}
-            <img src="{% static SETTINGS.G3WSUITE_LOGIN_LOGO %}">
-        {% endif %}
-    </span>
-  </div><!-- /.login-logo -->
+{% block login_page_box_body %}
   <div class="register-box-body">
-    <p class="register-box-msg">{% trans 'Registration complete!' %}</p>
+    <h4 style="text-align: center">{% trans 'Registration complete!' %}</h4>
+    <p class="register-box-msg">
+        {% blocktrans %}
+            You will receive a mail with a link to activate you account and validate your email.
+        {% endblocktrans %}
+    </p>
   </div><!-- /.login-box-body -->
- <div style="text-align: center; color: grey; margin-top: 10px"><i>{% trans ' Version' %} {{ VERSION }}</i></div>
-</div><!-- /.login-box -->
-
-{% endblock %}
-
-
-{% block custom_js_links_page %}
-<!-- iCheck -->
-<script src="{% static "bower_components/icheck/icheck.min.js" %}"></script>
-<script>
-$(function () {
-    $('input').iCheck({
-      checkboxClass: 'icheckbox_square-blue',
-      radioClass: 'iradio_square-blue',
-      increaseArea: '20%' // optional
-    });
-});
-</script>
 {% endblock %}
