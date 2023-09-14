@@ -634,7 +634,7 @@ class CoreApiTest(CoreTestBase):
         self.assertEqual(len(jres['layers']), 21)
 
         self.assertEqual(jres['layers'][1]['title'], 'Acque - AdT Catasto Terreni')
-        self.assertEqual(len(jres['layers'][1]['crss']), 19)
+        self.assertEqual(len(jres['layers'][1]['crss']), 20)
 
 
     def test_crs_api_rest(self):
