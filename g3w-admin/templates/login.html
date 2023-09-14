@@ -36,8 +36,8 @@
         <input type="password" class="form-control" name="password" placeholder="Password">
         <span class="glyphicon glyphicon-lock form-control-feedback"></span>
       </div>
-      <div class="row">
-        <div class="col-xs-4">
+      <div class="row margin-bottom" >
+        <div class="col-xs-12">
           <button type="submit" class="btn btn-primary btn-block btn-flat">{% trans 'Sign In' %}</button>
         </div><!-- /.col -->
       </div>
@@ -45,6 +45,13 @@
       <div class="row">
           <div class="col-xs-12">
               <a href="{% url 'password_reset' %}">{% trans 'Forgot your password?' %}</a>
+          </div>
+      </div>
+      {% endif %}
+      {% if SETTINGS.REGISTRATION_OPEN %}
+      <div class="row">
+          <div class="col-xs-12">
+              <a href="{% url 'django_registration_register' %}">{% trans 'Sign up' %}</a>
           </div>
       </div>
       {% endif %}

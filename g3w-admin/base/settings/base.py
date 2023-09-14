@@ -316,9 +316,10 @@ G3WADMIN_RASTER_LAYER_DOWNLOAD_FORMATS = ['geotiff', 'xls', 'csv', 'gpkg']
 # Setting to activate/deactivate user password reset by email.
 RESET_USER_PASSWORD = False
 
-# REGUSTRATION ACCOUNTS
+# REGISTRATION ACCOUNTS
 # ---------------------
 ACCOUNT_ACTIVATION_DAYS = 2
+REGISTRATION_OPEN = False
 
 # QPLOTLY DEFAULT SETTINGS
 # ------------------------
