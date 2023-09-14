@@ -10,8 +10,12 @@ __author__ = 'lorenzetti@gis3w.it'
 __date__ = '2020-04-14'
 __copyright__ = 'Copyright 2015 - 2020, Gis3w'
 
+import os.path
+
+from django.conf import settings
 from django.test.client import RequestFactory
 from django.core.exceptions import ObjectDoesNotExist
+
 from usersmanage.forms import G3WUserForm, User, USER_BACKEND_DEFAULT, G3WUserGroupForm, AuthGroup
 from usersmanage.utils import userHasGroups
 from .utils import setup_testing_user_relations
@@ -84,6 +88,9 @@ class UsermanageFormsTest(BaseUsermanageTestCase):
         self.assertTrue(u.is_superuser)
         self.assertTrue(u.is_staff)
 
+        # Check creation oh a sub directory inside settings.DATASOURCE_PATH
+        self.assertFalse(os.path.exists(f"{settings.DATASOURCE_PATH}/{u.username}"))
+
         # Update user
         initial_data = copy.copy(form_data)
         form_data.update({
@@ -152,6 +159,9 @@ class UsermanageFormsTest(BaseUsermanageTestCase):
         self.assertTrue(u.is_superuser)
         self.assertFalse(u.is_staff)
 
+        # Check creation oh a sub directory inside settings.DATASOURCE_PATH
+        self.assertFalse(os.path.exists(f"{settings.DATASOURCE_PATH}/{u.username}"))
+
         u.delete()
         del (u)
 
@@ -180,6 +190,9 @@ class UsermanageFormsTest(BaseUsermanageTestCase):
         # Check Admin2 can't set a Admin1  but only another Admin2
         self.assertFalse(u.is_superuser)
         self.assertFalse(u.is_staff)
+
+        # Check creation oh a sub directory inside settings.DATASOURCE_PATH
+        self.assertTrue(os.path.exists(f"{settings.DATASOURCE_PATH}/{u.username}"))
 
         u.delete()
         del (u)
