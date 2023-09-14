@@ -8,6 +8,10 @@ class FilemanagerConfig(AppConfig):
     name = 'filemanager'
 
     def ready(self):
+
+        # Import signals receivers
+        import filemanager.receivers
+
         from django.conf import settings
         import filemanager.filemanager_settings
         for a in dir(filemanager.filemanager_settings):
