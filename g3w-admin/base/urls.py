@@ -16,6 +16,8 @@ from django.views.i18n import JavaScriptCatalog
 from django.views.generic import TemplateView
 
 from django_registration.backends.activation import views as registration_views
+from usersmanage.forms import G3WAuthenticationForm
+
 from ajax_select import urls as ajax_select_urls
 from sitetree.sitetreeapp import register_i18n_trees
 
@@ -88,7 +90,11 @@ urlpatterns += [
     ),
     path(
         'login/',
-        auth.views.LoginView.as_view(template_name='login.html', extra_context=extra_context_login_page),
+        auth.views.LoginView.as_view(
+            template_name='login.html',
+            form_class=G3WAuthenticationForm,
+            extra_context=extra_context_login_page
+        ),
         name='login'
     ),
     path(

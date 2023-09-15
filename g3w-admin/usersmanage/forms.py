@@ -14,6 +14,7 @@ from django.utils.translation import ugettext, ugettext_lazy as _
 from django.contrib.auth.forms import (
     UserCreationForm,
     ReadOnlyPasswordHashField,
+    AuthenticationForm
 )
 from django.contrib.auth import (
     password_validation,
@@ -28,6 +29,8 @@ from guardian.shortcuts import get_objects_for_user
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout,Div, HTML, Field
 from crispy_forms.bootstrap import AppendedText, PrependedText
+from captcha.fields import ReCaptchaField
+from captcha import widgets
 from PIL import Image
 from .models import Userdata, Department, Userbackend, GroupRole, USER_BACKEND_TYPES, GROUP_ROLES
 from core.mixins.forms import G3WRequestFormMixin, G3WFormMixin
@@ -764,3 +767,23 @@ class G3WUserGroupForm(G3WRequestFormMixin, G3WFormMixin, ModelForm):
 
 class G3WUserGroupUpdateForm(G3WUserGroupForm):
     pass
+
+class G3WAuthenticationForm(AuthenticationForm):
+
+    def __init__(self, *args, **kwargs):
+
+        super(G3WAuthenticationForm, self).__init__(*args, **kwargs)
+
+        if settings.RECAPTCHA:
+            if settings.RECAPTCHA_VERSION == '3':
+                self.fields['captcha'] = ReCaptchaField(widget=widgets.ReCaptchaV3())
+            else:
+                if settings.RECAPTCHA_VERSION2_TYPE == 'checkbox':
+                    self.fields["captcha"] = ReCaptchaField(widget=widgets.ReCaptchaV2Checkbox())
+                else:
+                    self.fields["captcha"] = ReCaptchaField(widget=widgets.ReCaptchaV2Invisible())
+
+
+
+
+
