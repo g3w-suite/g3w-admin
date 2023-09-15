@@ -14,7 +14,8 @@ from django.utils.translation import ugettext, ugettext_lazy as _
 from django.contrib.auth.forms import (
     UserCreationForm,
     ReadOnlyPasswordHashField,
-    AuthenticationForm
+    AuthenticationForm,
+    PasswordResetForm
 )
 from django.contrib.auth import (
     password_validation,
@@ -768,11 +769,14 @@ class G3WUserGroupForm(G3WRequestFormMixin, G3WFormMixin, ModelForm):
 class G3WUserGroupUpdateForm(G3WUserGroupForm):
     pass
 
-class G3WAuthenticationForm(AuthenticationForm):
+class G3WreCaptchaFormMixin():
+    """
+    Mixin to use for login, reset-password and registration forms
+    """
 
     def __init__(self, *args, **kwargs):
 
-        super(G3WAuthenticationForm, self).__init__(*args, **kwargs)
+        super(G3WreCaptchaFormMixin, self).__init__(*args, **kwargs)
 
         if settings.RECAPTCHA:
             if settings.RECAPTCHA_VERSION == '3':
@@ -782,6 +786,19 @@ class G3WAuthenticationForm(AuthenticationForm):
                     self.fields["captcha"] = ReCaptchaField(widget=widgets.ReCaptchaV2Checkbox())
                 else:
                     self.fields["captcha"] = ReCaptchaField(widget=widgets.ReCaptchaV2Invisible())
+
+
+class G3WAuthenticationForm(G3WreCaptchaFormMixin, AuthenticationForm):
+    """
+    Form custom login form
+    """
+    pass
+
+class G3WResetPasswordForm(G3WreCaptchaFormMixin, PasswordResetForm):
+    """
+    Form custom reset password form
+    """
+    pass
 
 
 

@@ -16,7 +16,7 @@ from django.views.i18n import JavaScriptCatalog
 from django.views.generic import TemplateView
 
 from django_registration.backends.activation import views as registration_views
-from usersmanage.forms import G3WAuthenticationForm
+from usersmanage.forms import G3WAuthenticationForm, G3WResetPasswordForm
 
 from ajax_select import urls as ajax_select_urls
 from sitetree.sitetreeapp import register_i18n_trees
@@ -171,7 +171,10 @@ if settings.RESET_USER_PASSWORD:
         ),
         path(
             'password_reset/',
-            auth.views.PasswordResetView.as_view(extra_context=extra_context_login_page),
+            auth.views.PasswordResetView.as_view(
+                extra_context=extra_context_login_page,
+                form_class=G3WResetPasswordForm
+            ),
             name='password_reset'
         ),
         path(
