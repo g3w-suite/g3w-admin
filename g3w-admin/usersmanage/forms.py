@@ -30,6 +30,7 @@ from guardian.shortcuts import get_objects_for_user
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout,Div, HTML, Field
 from crispy_forms.bootstrap import AppendedText, PrependedText
+from django_registration.forms import RegistrationForm
 from captcha.fields import ReCaptchaField
 from captcha import widgets
 from PIL import Image
@@ -797,6 +798,12 @@ class G3WAuthenticationForm(G3WreCaptchaFormMixin, AuthenticationForm):
 class G3WResetPasswordForm(G3WreCaptchaFormMixin, PasswordResetForm):
     """
     Form custom reset password form
+    """
+    pass
+
+class G3WRegistrationForm(G3WreCaptchaFormMixin, RegistrationForm):
+    """
+    Form custom for user registration form
     """
     pass
 

@@ -42,6 +42,7 @@
         <p class="help">{{ form.password2.help_text|safe }}</p>
         {% endif %}
     </div>
+    {{ form.captcha }}
   <div class="row">
     <div class="col-xs-4">
       <button type="submit" class="btn btn-primary btn-block btn-flat">{% trans 'Sign Up' %}</button>
