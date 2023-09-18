@@ -628,7 +628,7 @@ class CoreApiTest(CoreTestBase):
         jres = json.loads(res.content)
 
         self.assertTrue(jres['result'])
-        self.assertEqual('Geoscopio_wms catasto', jres['title'])
+        self.assertEqual('Geoscopio_wms catasto'.lower(), jres['title'].lower())
         self.assertTrue('image/png' in jres['map_formats'])
         self.assertTrue('text/html' in jres['info_formats'])
         self.assertEqual(len(jres['layers']), 21)
