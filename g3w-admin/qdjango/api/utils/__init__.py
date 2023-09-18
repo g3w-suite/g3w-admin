@@ -16,12 +16,9 @@ def serialize_vectorjoin(layer_id, n, join):
             'referencedField': join['targetFieldName'],
             'referencingField': join['joinFieldName']
         },
-        'editable': join['editable']
+        'editable': True if join['editable'] == '1' else False,
+        'prefix': join['prefix']
     }
-
-    # if 'customPrefix' is set:
-    if join['hasCustomPrefix'] and 'customPrefix' in join:
-        ret['customPrefix'] = join['customPrefix']
 
     return ret
 

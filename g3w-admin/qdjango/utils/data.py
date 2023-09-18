@@ -387,7 +387,22 @@ class QgisProjectLayer(XmlData):
         ret = []
         try:
             vectorjoins = self.qgs_layer.vectorJoins()
+
+
+
             for order, join in enumerate(vectorjoins):
+
+                # Prefix management
+                # If sert custom prefix and the value is '', continue for cycle to avoid relation save
+                if layer_tree_vectorjoins[order].get('hasCustomPrefix') == '1' and join.prefix() == '':
+                    continue
+                else:
+                    if layer_tree_vectorjoins[order].get("hasCustomPrefix") == "1":
+                        prefix = join.prefix()
+                    else:
+                        prefix = f"{join.joinLayer().name()}_"
+
+
                 ret.append(
                     {
                         "cascadedDelete": str(int(join.hasCascadedDelete())),
@@ -399,7 +414,7 @@ class QgisProjectLayer(XmlData):
                         "dynamicForm": str(int(join.isDynamicFormEnabled())),
                         "joinFieldName": join.joinFieldName(),
                         "hasCustomPrefix": True if layer_tree_vectorjoins[order].get('hasCustomPrefix') == '1' else False,
-                        "prefix": join.prefix()
+                        "prefix": prefix
                     }
                 )
 
