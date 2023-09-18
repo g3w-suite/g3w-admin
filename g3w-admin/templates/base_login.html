@@ -8,7 +8,7 @@
 {% endblock %}
 
 {% block body_content %}
- <div class="login-box">
+ <div class="{% block login-box-class %}login-box{% endblock %}">
   {% block login_page_logo %}
   <div class="login-logo">
     <span class="logo-lg">

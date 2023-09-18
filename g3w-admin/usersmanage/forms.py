@@ -7,7 +7,9 @@ from django.forms import (
     ModelMultipleChoiceField,
     ChoiceField,
     ModelForm,
-    ChoiceField
+    ChoiceField,
+    CharField,
+    Textarea
 )
 from django.utils.datastructures import MultiValueDict
 from django.utils.translation import ugettext, ugettext_lazy as _
@@ -805,7 +807,18 @@ class G3WRegistrationForm(G3WreCaptchaFormMixin, RegistrationForm):
     """
     Form custom for user registration form
     """
-    pass
+
+    other_info = CharField(label=_('Other informations'), widget=Textarea(), required=False)
+
+    # Add custom data: first and last name etc.
+    class Meta(RegistrationForm.Meta):
+        fields = RegistrationForm.Meta.fields + [
+            'first_name',
+            'last_name',
+            'other_info'
+        ]
+
+
 
 
 
