@@ -15,11 +15,12 @@ def serialize_vectorjoin(layer_id, n, join):
         'fieldRef': {
             'referencedField': join['targetFieldName'],
             'referencingField': join['joinFieldName']
-        }
+        },
+        'editable': join['editable']
     }
 
     # if 'customPrefix' is set:
-    if 'customPrefix' in join:
+    if join['hasCustomPrefix'] and 'customPrefix' in join:
         ret['customPrefix'] = join['customPrefix']
 
     return ret
