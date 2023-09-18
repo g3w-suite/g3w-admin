@@ -96,7 +96,8 @@ FIELD_TYPES_MAPPING = {
 
 
 def editingFormField(fieldName, type=FIELD_TYPE_STRING, editable=True, required=False, validate=None,
-                     fieldLabel=None, inputType=None, values=None, default_clause='', unique=False, expression='', pk=False, ** kwargs):
+                     fieldLabel=None, inputType=None, values=None, default_clause='', unique=False, expression='',
+                     pk=False, ** kwargs):
     """
     Build editing form field for client.
     """
@@ -222,6 +223,13 @@ def mapLayerAttributesFromQgisLayer(qgis_layer, **kwargs):
 
     pk_attributes = qgis_layer.primaryKeyAttributes()
 
+    # Get available Join's fields
+    join_fields = {}
+    for order, join in enumerate(qgis_layer.vectorJoins()):
+        join_id = f'{qgis_layer.id()}_vectorjoin_{order}'
+        for f in join.joinLayer().fields():
+            join_fields[join.prefixedFieldName(f)] = join_id
+
     # Determine if we are using an old and bugged version of QGIS
     IS_QGIS_3_10 = Qgis.QGIS_VERSION.startswith('3.10')
 
@@ -282,8 +290,6 @@ def mapLayerAttributesFromQgisLayer(qgis_layer, **kwargs):
                 else:
                     is_pk = (field_index in pk_attributes)
 
-                #
-
                 toRes[field.name()] = editingFormField(
                     field.name(),
                     required=not_null,
@@ -341,6 +347,12 @@ def mapLayerAttributesFromQgisLayer(qgis_layer, **kwargs):
                         # only on insert newone
                         toRes[field.name()]['input']['options']['default_expression']['apply_on_update'] = True \
                             if field.defaultValueDefinition().applyOnUpdate() else False
+
+                # Check for Join's field
+                try:
+                    toRes[field.name()]['vectorjoin_id'] = join_fields[field.name()]
+                except:
+                    pass
 
         field_index += 1
 
