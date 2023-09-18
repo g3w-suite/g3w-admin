@@ -228,7 +228,10 @@ def mapLayerAttributesFromQgisLayer(qgis_layer, **kwargs):
     for order, join in enumerate(qgis_layer.vectorJoins()):
         join_id = f'{qgis_layer.id()}_vectorjoin_{order}'
         for f in join.joinLayer().fields():
-            join_fields[join.prefixedFieldName(f)] = join_id
+            join_fields[join.prefixedFieldName(f)] = {
+                'editable': join.isEditable(),
+                'join_id': join_id}
+
 
     # Determine if we are using an old and bugged version of QGIS
     IS_QGIS_3_10 = Qgis.QGIS_VERSION.startswith('3.10')
@@ -348,9 +351,11 @@ def mapLayerAttributesFromQgisLayer(qgis_layer, **kwargs):
                         toRes[field.name()]['input']['options']['default_expression']['apply_on_update'] = True \
                             if field.defaultValueDefinition().applyOnUpdate() else False
 
-                # Check for Join's field
+                # Check for Join's field.
+                # About joins in QGIS control the join settings for editing.
                 try:
-                    toRes[field.name()]['vectorjoin_id'] = join_fields[field.name()]
+                    toRes[field.name()]['vectorjoin_id'] = join_fields[field.name()]['join_id']
+                    toRes[field.name()]["editable"] = join_fields[field.name()]["editable"]
                 except:
                     pass
 

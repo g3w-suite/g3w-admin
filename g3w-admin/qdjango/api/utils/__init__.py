@@ -16,7 +16,7 @@ def serialize_vectorjoin(layer_id, n, join):
             'referencedField': join['targetFieldName'],
             'referencingField': join['joinFieldName']
         },
-        'editable': True if join['editable'] == 1 else False,
+        'editable': join['editable'],
         'prefix': join['prefix']
     }
 

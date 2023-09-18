@@ -407,7 +407,7 @@ class QgisProjectLayer(XmlData):
                     {
                         "cascadedDelete": str(int(join.hasCascadedDelete())),
                         "targetFieldName": join.targetFieldName(),
-                        "editable": str(int(join.isEditable())),
+                        "editable": join.isEditable(),
                         "memoryCache": str(int(join.isUsingMemoryCache())),
                         "upsertOnEdit": str(int(join.hasUpsertOnEdit())),
                         "joinLayerId": join.joinLayerId(),
