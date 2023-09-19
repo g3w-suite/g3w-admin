@@ -227,9 +227,15 @@ def mapLayerAttributesFromQgisLayer(qgis_layer, **kwargs):
     join_fields = {}
     for order, join in enumerate(qgis_layer.vectorJoins()):
         join_id = f'{qgis_layer.id()}_vectorjoin_{order}'
-        for f in join.joinLayer().fields():
+        joinlayer_pk_attributes = join.joinLayer().primaryKeyAttributes()
+        for i, f in enumerate(join.joinLayer().fields()):
+            editable = join.isEditable()
+
+            # Check if referencing field is PK
+            if i in joinlayer_pk_attributes:
+                editable = False
             join_fields[join.prefixedFieldName(f)] = {
-                'editable': join.isEditable(),
+                'editable': editable,
                 'join_id': join_id}
 
 
