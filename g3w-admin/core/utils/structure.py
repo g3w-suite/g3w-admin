@@ -141,7 +141,7 @@ def editingFormField(fieldName, type=FIELD_TYPE_STRING, editable=True, required=
 
 def mapLayerAttributes(layer, formField=False, **kwargs):
     """
-    Map database columns data from layer by type for client editing
+    Map database columns data from layer by type for client
     """
 
     mappingData = FIELD_TYPES_MAPPING
