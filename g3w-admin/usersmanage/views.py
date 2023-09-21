@@ -14,7 +14,9 @@ from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.models import Group
 from guardian.shortcuts import assign_perm, get_objects_for_user
 from guardian.decorators import permission_required_or_403
+from django_registration.backends.activation import views as registration_views
 from core.mixins.views import G3WRequestViewMixin, G3WAjaxDeleteViewMixin
+from core.models import GeneralSuiteData
 from .decorators import permission_required_by_backend_or_403
 from .utils import getUserGroups, get_user_groups
 from .configs import *
@@ -263,3 +265,15 @@ class UserGroupByUserRoleView(View):
                                                'selected': ug in current_user_groups} for ug in user_groups]})
 
 
+class UserRegistrationView(registration_views.RegistrationView):
+    """
+    G3W-ADMIn custom registration view.
+    """
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+
+        # Add registration intro
+        ctx.update({
+            'registration_intro': GeneralSuiteData.objects.get().registration_intro
+        })
+        return ctx

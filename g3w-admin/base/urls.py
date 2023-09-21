@@ -21,6 +21,7 @@ from usersmanage.forms import (
     G3WResetPasswordForm,
     G3WRegistrationForm
 )
+from usersmanage.views import UserRegistrationView
 
 from ajax_select import urls as ajax_select_urls
 from sitetree.sitetreeapp import register_i18n_trees
@@ -137,7 +138,7 @@ urlpatterns += [
     ),
     path(
         "accounts/register/",
-        registration_views.RegistrationView.as_view(
+        UserRegistrationView.as_view(
             extra_context=extra_context_login_page,
             form_class=G3WRegistrationForm
         ),

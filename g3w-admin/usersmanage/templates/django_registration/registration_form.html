@@ -17,9 +17,11 @@
 <form method="post">
   {% csrf_token %}
     <div class="row">
+        {% if registration_intro %}
         <div class="col-md-12 col-xs-12">
         {{ registration_intro|safe }}
         </div>
+        {% endif %}
     </div>
     <div class="row">
         <div class="col-md-6 col-xs-12">
