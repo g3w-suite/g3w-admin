@@ -1,6 +1,8 @@
 
-Dear {{user.username}},
+Dear {{ user.username }},
 
 please got to the following link or copy it and paste in you browser to activate your account and validate your email.
 
-{% url 'django_registration_activate' activation_key %}
+{{ scheme }}://{{ site }}{% url 'django_registration_activate' activation_key %}
+
+The link will be active for {{ expiration_days }} days!

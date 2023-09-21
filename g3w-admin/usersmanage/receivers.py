@@ -13,7 +13,7 @@ __license__ = "MPL 2.0"
 from django.conf import settings
 from django.dispatch import receiver
 from django_registration.signals import user_registered
-from usersmanage.models import Userbackend, USER_BACKEND_DEFAULT, Group as AuthGroup
+from usersmanage.models import Userbackend, USER_BACKEND_DEFAULT, Group as AuthGroup, Userdata
 from usersmanage.configs import G3W_VIEWER1
 import logging
 
@@ -26,8 +26,20 @@ def set_user_backend(sender, **kwargs):
     """
 
     # Set default g3w-suite backend
-    Userbackend(user=kwargs['user'], backend=USER_BACKEND_DEFAULT).save()
-    logger.info(f"Assigned backend {USER_BACKEND_DEFAULT} to registered user {kwargs['user']}")
+    user = kwargs['user']
+    Userbackend(user=user, backend=USER_BACKEND_DEFAULT).save()
+    logger.info(f"Assigned backend {USER_BACKEND_DEFAULT} to registered user {user}")
+
+    # If set save `Other information`
+    if kwargs["request"].POST["other_info"] != "":
+        if hasattr(user, "userdata"):
+                user.userdata.other_info = kwargs["request"].POST["other_info"]
+                user.userdata.save()
+        else:
+            Userdata(
+                user=user,
+                other_info=kwargs["request"].POST["other_info"]
+            ).save()
 
     # Set default registration role
     if hasattr(settings, 'REGISTRATION_MAIN_ROLES'):
