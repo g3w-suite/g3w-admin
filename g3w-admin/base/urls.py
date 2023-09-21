@@ -22,8 +22,6 @@ from usersmanage.forms import (
     G3WRegistrationForm
 )
 
-from core.models import GeneralSuiteData
-
 from ajax_select import urls as ajax_select_urls
 from sitetree.sitetreeapp import register_i18n_trees
 
@@ -42,8 +40,7 @@ G3W_SITETREE_I18N_ALIAS = ['core', 'acl']
 
 extra_context_login_page = {
     'adminlte_skin': 'login-page',
-    'adminlte_layout_option': None,
-    'registration_intro': GeneralSuiteData.objects.get().registration_intro
+    'adminlte_layout_option': None
 }
 
 #############################################################

@@ -17,6 +17,11 @@
 <form method="post">
   {% csrf_token %}
     <div class="row">
+        <div class="col-md-12 col-xs-12">
+        {{ registration_intro|safe }}
+        </div>
+    </div>
+    <div class="row">
         <div class="col-md-6 col-xs-12">
             <div class="form-group has-feedback">
                 <input type="text" class="form-control" name="{{form.username.name}}" placeholder="{{form.username.label|capfirst}}">
