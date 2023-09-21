@@ -1,0 +1,7 @@
+
+Dear administrator,
+
+a new user has registered, to activate the new user, follow or copy the link in your browser:
+
+{{ scheme }}://{{ site }}{% url 'user-detail' user.pk %}
+

@@ -10,8 +10,11 @@ from django.http.response import JsonResponse, Http404
 from django.views.generic.detail import SingleObjectMixin
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
+from django.core.mail import send_mail
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.models import Group
+from django.contrib.sites.shortcuts import get_current_site
+from django.template.loader import render_to_string
 from guardian.shortcuts import assign_perm, get_objects_for_user
 from guardian.decorators import permission_required_or_403
 from django_registration.backends.activation import views as registration_views
@@ -269,6 +272,10 @@ class UserRegistrationView(registration_views.RegistrationView):
     """
     G3W-ADMIn custom registration view.
     """
+
+    admin_email_body_template = "django_registration/activation_admin_email_body.txt"
+    admin_email_subject_template = "django_registration/activation_admin_email_subject.txt"
+
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
 
@@ -277,3 +284,56 @@ class UserRegistrationView(registration_views.RegistrationView):
             'registration_intro': GeneralSuiteData.objects.get().registration_intro
         })
         return ctx
+
+    def send_activation_email(self, user):
+        """
+        Send the activation email.
+
+        """
+
+        if settings.REGISTRATION_ACTIVE_BY_ADMIN:
+            self.send_admin_activation_email(user)
+        else:
+            super().send_activation_email(user)
+
+    def get_admin_email_context(self):
+        """
+        Build the template context used for the activation email by administrator.
+
+        """
+        scheme = "https" if self.request.is_secure() else "http"
+        return {
+            "scheme": scheme,
+            "site": get_current_site(self.request),
+        }
+
+    def send_admin_activation_email(self, user):
+        """
+        Send the activation email, for site administrator.
+
+        """
+
+        context = self.get_admin_email_context()
+        context["user"] = user
+        subject = render_to_string(
+            template_name=self.admin_email_subject_template,
+            context=context,
+            request=self.request,
+        )
+        # Force subject to a single line to avoid header-injection
+        # issues.
+        subject = "".join(subject.splitlines())
+        message = render_to_string(
+            template_name=self.admin_email_body_template,
+            context=context,
+            request=self.request,
+        )
+
+        send_mail(
+            subject,
+            message,
+            settings.DEFAULT_FROM_EMAIL,
+            ["to@example.com"],
+            fail_silently=False,
+        )
+

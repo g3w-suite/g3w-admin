@@ -322,6 +322,10 @@ RESET_USER_PASSWORD = False
 ACCOUNT_ACTIVATION_DAYS = 2
 REGISTRATION_OPEN = False
 
+# Set to true if the activation of a registered user
+# must be done by the administrator
+REGISTRATION_ACTIVE_BY_ADMIN = False
+
 # QPLOTLY DEFAULT SETTINGS
 # ------------------------
 
