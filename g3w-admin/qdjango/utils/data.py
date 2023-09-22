@@ -1229,13 +1229,15 @@ class QgisProject(XmlData):
                 'referencingLayer': relation.referencingLayerId(),
             }
             # get only first pair relation
-            field_refs = []
+            fields_referenging = []
+            fields_referenced = []
             for referencingField, referencedField in relation.fieldPairs().items():
-                field_refs.append([referencingField, referencedField])
+                fields_referenging.append(referencingField)
+                fields_referenced.append(referencedField)
             attrib.update({
                 'fieldRef': {
-                    'referencingField': field_refs[0][0],
-                    'referencedField': field_refs[0][1]
+                    'referencingField': fields_referenging,
+                    'referencedField': fields_referenced
                 }
             })
 
