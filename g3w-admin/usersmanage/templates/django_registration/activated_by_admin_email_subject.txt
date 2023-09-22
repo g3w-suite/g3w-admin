@@ -1,0 +1,1 @@
+[G3W-SUITE] {{user.username}} your profile is active.

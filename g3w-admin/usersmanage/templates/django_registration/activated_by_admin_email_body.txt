@@ -1,0 +1,9 @@
+
+Dear {{user.username}},
+
+your profile was activated by administrators.
+
+Now you can make the login!
+
+{{ scheme }}://{{ site }}{% url 'login' %}
+

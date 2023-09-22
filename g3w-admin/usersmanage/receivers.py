@@ -13,8 +13,11 @@ __license__ = "MPL 2.0"
 from django.conf import settings
 from django.dispatch import receiver
 from django_registration.signals import user_registered
+from django.template.loader import render_to_string
+from django.contrib.sites.shortcuts import get_current_site
 from usersmanage.models import Userbackend, USER_BACKEND_DEFAULT, Group as AuthGroup, Userdata
 from usersmanage.configs import G3W_VIEWER1
+from usersmanage.signals import after_save_user_form
 import logging
 
 logger = logging.getLogger('django.request')
@@ -52,3 +55,46 @@ def set_user_backend(sender, **kwargs):
         # By default, add user to Viewer Level 1 group
         AuthGroup.objects.get(name=G3W_VIEWER1).user_set.add(kwargs['user'])
 
+
+@receiver(after_save_user_form)
+def send_email_to_user(sender, **kwargs):
+    """
+    Check if user is activated by administrator and send an email
+    of  `activation confirmation`
+    """
+
+    user = kwargs['user']
+
+    if (not hasattr(user, 'userdata') or
+            not sender.request.user.is_superuser or
+            user.userdata.activated_by_admin):
+        return
+
+    # Set activated by user
+    if user.is_active:
+        user.userdata.activated_by_admin = True
+        user.userdata.save()
+
+    # Send email to user
+    # ----------------------------------------------------------
+    scheme = "https" if sender.request.is_secure() else "http"
+    context =  {
+        "scheme": scheme,
+        "site": get_current_site(sender.request),
+        "user": user
+    }
+    subject = render_to_string(
+        template_name='django_registration/activated_by_admin_email_subject.txt',
+        context=context,
+        request=sender.request,
+    )
+    # Force subject to a single line to avoid header-injection
+    # issues.
+    subject = "".join(subject.splitlines())
+    message = render_to_string(
+        template_name='django_registration/activated_by_admin_email_body.txt',
+        context=context,
+        request=sender.request,
+    )
+
+    user.email_user(subject, message, settings.DEFAULT_FROM_EMAIL)
