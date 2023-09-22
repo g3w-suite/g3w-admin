@@ -31,15 +31,17 @@ def set_user_backend(sender, **kwargs):
     logger.info(f"Assigned backend {USER_BACKEND_DEFAULT} to registered user {user}")
 
     # If set save `Other information`
-    if kwargs["request"].POST["other_info"] != "":
-        if hasattr(user, "userdata"):
-                user.userdata.other_info = kwargs["request"].POST["other_info"]
-                user.userdata.save()
-        else:
-            Userdata(
-                user=user,
-                other_info=kwargs["request"].POST["other_info"]
-            ).save()
+
+    if hasattr(user, "userdata"):
+            user.userdata.other_info = kwargs["request"].POST["other_info"]
+            user.userdata.registered = True
+            user.userdata.save()
+    else:
+        Userdata(
+            user=user,
+            registered=True,
+            other_info=kwargs["request"].POST["other_info"]
+        ).save()
 
     # Set default registration role
     if hasattr(settings, 'REGISTRATION_MAIN_ROLES'):
