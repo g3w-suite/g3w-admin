@@ -1,1 +1,1 @@
-[G3W-SUITE] {{user.username}} complete your registration
+{{ SETTINGS.REGISTRATION_EMAIL_SUBJECT_PREFIX }} {{user.username}} active your account

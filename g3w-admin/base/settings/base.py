@@ -322,9 +322,15 @@ RESET_USER_PASSWORD = False
 ACCOUNT_ACTIVATION_DAYS = 2
 REGISTRATION_OPEN = False
 
+REGISTRATION_EMAIL_SUBJECT_PREFIX = '[G3W-SUITE]'
+REGISTRATION_EMAIL_BODY_SIGN = '''
+g3wsuite.it
+'''
+
 # Set to true if the activation of a registered user
 # must be done by the administrator
 REGISTRATION_ACTIVE_BY_ADMIN = False
+
 
 # QPLOTLY DEFAULT SETTINGS
 # ------------------------

@@ -5,3 +5,4 @@ a new user has registered, to activate the new user, follow or copy the link in 
 
 {{ scheme }}://{{ site }}{% url 'user-update' user.pk %}
 
+{{ SETTINGS.REGISTRATION_EMAIL_BODY_SIGN }}

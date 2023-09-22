@@ -7,3 +7,4 @@ Now you can make the login!
 
 {{ scheme }}://{{ site }}{% url 'login' %}
 
+{{ SETTINGS.REGISTRATION_EMAIL_BODY_SIGN }}

@@ -1,1 +1,1 @@
-[G3W-SUITE] {{user.username}} your profile is active.
+{{ SETTINGS.REGISTRATION_EMAIL_SUBJECT_PREFIX }} {{user.username}} your account is active.
