@@ -50,12 +50,19 @@ class OwsTest(QdjangoTestBase):
     def setUpTestData(cls):
 
         super().setUpTestData()
-        cls.qdjango_project = Project(
-            qgis_file=cls.project.qgisProjectFile,
-            title='Test qdjango project',
-            group=cls.project_group,
-        )
-        cls.qdjango_project.save()
+        #cls.qdjango_project = Project(
+        #    qgis_file=cls.project.qgisProjectFile,
+        #    title='Test qdjango project',
+        #    group=cls.project_group,
+        #)
+        #cls.qdjango_project.save()
+
+        cls.project2 = QgisProject(cls.project.qgisProjectFile)
+        cls.project2.title = "Test qdjango project"
+        cls.project2.group = cls.project_group
+        cls.project2.save()
+
+        cls.qdjango_project = cls.project2.instance
 
         qgis_project_file_widget = File(open('{}{}{}'.format(
             CURRENT_PATH, TEST_BASE_PATH, QGS310_WIDGET_FILE), 'r'))
@@ -174,6 +181,8 @@ class OwsTest(QdjangoTestBase):
 
         # give permission to user
         assign_perm('view_project', self.test_viewer1, self.qdjango_project)
+        for l in self.qdjango_project.layer_set.all():
+            assign_perm("view_layer", self.test_viewer1, l)
 
         response = c.get(ows_url, {
             'REQUEST': 'GetCapabilities',
