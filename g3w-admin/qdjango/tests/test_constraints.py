@@ -258,6 +258,9 @@ class SingleLayerSubsetStringConstraints(TestSingleLayerConstraintsBase):
 
         # For AnonymousUser
         assign_perm('view_project', get_anonymous_user(), self.qdjango_project)
+        for l in self.qdjango_project.layer_set.all():
+            assign_perm('view_layer', get_anonymous_user(), l)
+
         self.assertTrue(self._check_subset_string(login=False))
 
         constraint_anonymous = SingleLayerConstraint(layer=self.world, active=True)
