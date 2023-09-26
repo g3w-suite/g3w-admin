@@ -1773,12 +1773,12 @@ class TestGeoConstraintsServerFilters(TestSingleLayerConstraintsBase):
         constraint.save()
 
         # assign permissions
-        assign_perm('view_project', self.test_viewer1, self.qdjango_project)
-        assign_perm('view_project', self.test_viewer1_3, self.qdjango_project)
-        assign_perm('view_project', self.test_gu_viewer1, self.qdjango_project)
-
         # also to Anonymous user
-        assign_perm('view_project', get_anonymous_user(), self.qdjango_project)
+        for u in (self.test_viewer1, self.test_viewer1_3, self.test_gu_viewer1, get_anonymous_user()):
+            assign_perm('view_project', u, self.qdjango_project)
+            for l in self.qdjango_project.layer_set.all():
+                assign_perm("view_layer", u, l)
+
 
         ows_url = reverse('OWS:ows', kwargs={'group_slug': self.qdjango_project.group.slug,
                                              'project_type': 'qdjango', 'project_id': self.qdjango_project.id})
