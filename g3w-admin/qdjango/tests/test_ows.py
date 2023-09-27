@@ -231,7 +231,10 @@ class OwsTest(QdjangoTestBase):
         self.assertFalse(b"<Name>world</Name>" in response.content)
         self.assertTrue(b"<Name>spatialite_points</Name>" in response.content)
 
-        response = c.get(ows_url, {"REQUEST": "GetCapabilities", "SERVICE": "WFS"})
+        response = c.get(ows_url, {
+            "REQUEST": "GetCapabilities",
+            "SERVICE": "WFS"
+        })
         
         self.assertEqual(response.status_code, 200)
 
