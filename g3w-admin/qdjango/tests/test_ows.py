@@ -197,13 +197,55 @@ class OwsTest(QdjangoTestBase):
         # try basic authentication
         # for viewer1
         c = Client(HTTP_AUTHORIZATION='Basic dmlld2VyMTp2aWV3ZXIx')
-        esponse = c.get(ows_url, {
+        response = c.get(ows_url, {
             'REQUEST': 'GetCapabilities',
             'SERVICE': 'WMS'
         })
 
         self.assertEqual(response.status_code, 200)
         self.assertTrue(b'<Name>bluemarble</Name>' in response.content)
+
+        # Filter layer by user
+        for l in self.qdjango_project.layer_set.filter(name__in=['bluemarble', 'world']):
+            remove_perm("view_layer", self.test_viewer1, l)
+
+        response = c.get(ows_url, {
+            "REQUEST": "GetCapabilities",
+            "SERVICE": "WMS"
+        })
+
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(b'<Name>bluemarble</Name>' in response.content)
+        self.assertFalse(b"<Name>world</Name>" in response.content)
+        self.assertTrue(b"<Name>spatialite_points</Name>" in response.content)
+
+        # For WFS
+        response = c.get(ows_url, {
+            "REQUEST": "GetCapabilities",
+            "SERVICE": "WFS",
+            "VERSION": "1.1.0",
+            "TYPENAME": "world"
+        })
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(b"<Name>world</Name>" in response.content)
+        self.assertTrue(b"<Name>spatialite_points</Name>" in response.content)
+
+        response = c.get(ows_url, {"REQUEST": "GetCapabilities", "SERVICE": "WFS"})
+        
+        self.assertEqual(response.status_code, 200)
+
+        for l in self.qdjango_project.layer_set.filter(name='world'):
+            assign_perm("view_layer", self.test_viewer1, l)
+
+        response = c.get(ows_url, {
+            "REQUEST": "GetCapabilities",
+            "SERVICE": "WFS"
+        })
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(b"<Name>world</Name>" in response.content)
+
 
     def test_get_getfeatureinfo(self):
         """Test GetFeatureInfo for QGIS widget"""
