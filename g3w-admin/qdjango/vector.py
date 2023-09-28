@@ -298,7 +298,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
                     'label': data['label']}
 
                 # If fields has a comment, set it as 'help' property
-                if data['comment']:
+                if 'comment' in data and data['comment']:
                     fields[self.layer_name]['fields'][field].update({
                         "help": data["comment"]
                     })
