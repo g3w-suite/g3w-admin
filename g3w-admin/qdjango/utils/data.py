@@ -514,6 +514,7 @@ class QgisProjectLayer(XmlData):
                 'name': f.name(),
                 'type': QVariant.typeToName(f.type()).upper() if QVariant.typeToName(f.type()) else None,
                 'label': f.displayName(),
+                'comment': f.comment()
             })
 
         return columns
