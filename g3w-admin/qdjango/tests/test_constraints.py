@@ -164,6 +164,31 @@ class TestSingleLayerConstraintsBase(QdjangoTestBase):
 
         return is_rome
 
+    def _check_wfs_getfeature(self, login=True):
+        """Check for ROME in the returned content"""
+
+        ows_url = reverse('OWS:ows', kwargs={'group_slug': self.qdjango_project.group.slug,
+                                             'project_type': 'qdjango', 'project_id': self.qdjango_project.id})
+
+        c = Client()
+        if login:
+            self.assertTrue(c.login(username='admin01', password='admin01'))
+        response = c.get(ows_url, {
+            'REQUEST': 'GetFeature',
+            'SERVICE': 'WFS',
+            'VERSION': '1.1.0',
+            'TYPENAME': 'world'
+        })
+
+        is_rome = b"ROME" in response.content
+        # Now query another location to make sure the whole layer was not invalidated
+        assert b"BERLIN" in response.content
+
+        if login:
+            c.logout()
+
+        return is_rome
+
 
 class SingleLayerSubsetStringConstraints(TestSingleLayerConstraintsBase):
     """Test single layer subset string constraints"""
@@ -172,6 +197,7 @@ class SingleLayerSubsetStringConstraints(TestSingleLayerConstraintsBase):
         """Test model with user constraint"""
 
         self.assertTrue(self._check_subset_string())
+        self.assertTrue(self._check_wfs_getfeature())
 
         admin01 = self.test_user1
         constraint = SingleLayerConstraint(layer=self.world, active=True)
@@ -196,6 +222,7 @@ class SingleLayerSubsetStringConstraints(TestSingleLayerConstraintsBase):
             admin01, self.world.pk), "(NAME != 'ITALY')")
 
         self.assertFalse(self._check_subset_string())
+        self.assertFalse(self._check_wfs_getfeature())
 
         self.assertEqual(constraint.layer_name, 'world')
         self.assertEqual(constraint.qgs_layer_id, 'world20181008111156525')
@@ -222,6 +249,7 @@ class SingleLayerSubsetStringConstraints(TestSingleLayerConstraintsBase):
             admin01, self.world.pk), "(NAME != 'ITALY')")
 
         self.assertFalse(self._check_subset_string())
+        self.assertFalse(self._check_wfs_getfeature())
 
         self.assertEqual(constraint.layer_name, 'world')
         self.assertEqual(constraint.qgs_layer_id, 'world20181008111156525')
@@ -252,12 +280,16 @@ class SingleLayerSubsetStringConstraints(TestSingleLayerConstraintsBase):
 
         # for OGC service only in v an ve context
         self.assertTrue(self._check_subset_string())
+        self.assertTrue(self._check_wfs_getfeature())
 
     def test_anonymoususer_constraint(self):
         """Test for anonymous user"""
 
         # For AnonymousUser
         assign_perm('view_project', get_anonymous_user(), self.qdjango_project)
+        for l in self.qdjango_project.layer_set.all():
+            assign_perm('view_layer', get_anonymous_user(), l)
+
         self.assertTrue(self._check_subset_string(login=False))
 
         constraint_anonymous = SingleLayerConstraint(layer=self.world, active=True)
@@ -267,11 +299,13 @@ class SingleLayerSubsetStringConstraints(TestSingleLayerConstraintsBase):
         rule_anonymous.save()
 
         self.assertFalse(self._check_subset_string(login=False))
+        self.assertFalse(self._check_wfs_getfeature(login=False))
 
     def test_group_constraint(self):
         """Test model with group constraint"""
 
         self.assertTrue(self._check_subset_string())
+        self.assertTrue(self._check_wfs_getfeature())
 
         admin01 = self.test_user1
         group1 = admin01.groups.all()[0]
@@ -298,6 +332,7 @@ class SingleLayerSubsetStringConstraints(TestSingleLayerConstraintsBase):
             admin01, world.pk), "(NAME != 'ITALY')")
 
         self.assertFalse(self._check_subset_string())
+        self.assertFalse(self._check_wfs_getfeature())
 
     @skipIf(IS_QGIS_3_10, "In QGIS 3.10 setSubsetString() always returns True")
     def test_validate_sql(self):
@@ -395,6 +430,7 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
         """Test model with user constraint"""
 
         self.assertTrue(self._check_subset_string())
+        self.assertTrue(self._check_wfs_getfeature())
 
         admin01 = self.test_user1
         world = self.world
@@ -420,6 +456,7 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
             admin01, world.pk), "(NAME != 'ITALY')")
 
         self.assertFalse(self._check_subset_string())
+        self.assertFalse(self._check_wfs_getfeature())
 
         self.assertEqual(constraint.layer_name, 'world')
         self.assertEqual(constraint.qgs_layer_id, 'world20181008111156525')
@@ -438,6 +475,7 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
             admin01, world.pk, context='e'), "(NAME != 'ITALY')")
 
         self.assertFalse(self._check_subset_string())
+        self.assertFalse(self._check_wfs_getfeature())
 
         self.assertEqual(constraint.layer_name, 'world')
         self.assertEqual(constraint.qgs_layer_id, 'world20181008111156525')
@@ -458,6 +496,7 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
             admin01, world.pk, context='e'), "(NAME != 'ITALY')")
 
         self.assertTrue(self._check_subset_string())
+        self.assertTrue(self._check_wfs_getfeature())
 
         self.assertEqual(constraint.layer_name, 'world')
         self.assertEqual(constraint.qgs_layer_id, 'world20181008111156525')
@@ -468,7 +507,11 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
 
         # For AnonymousUser
         assign_perm('view_project', get_anonymous_user(), self.qdjango_project)
+        for l in self.qdjango_project.layer_set.all():
+            assign_perm('view_layer', get_anonymous_user(), l)
+
         self.assertTrue(self._check_subset_string(login=False))
+        self.assertTrue(self._check_wfs_getfeature(login=False))
 
         constraint_anonymous = SingleLayerConstraint(layer=self.world, active=True)
         constraint_anonymous.save()
@@ -477,11 +520,13 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
         rule_anonymous.save()
 
         self.assertFalse(self._check_subset_string(login=False))
+        self.assertFalse(self._check_wfs_getfeature(login=False))
 
     def test_group_constraint(self):
         """Test model with group constraint"""
 
         self.assertTrue(self._check_subset_string())
+        self.assertTrue(self._check_wfs_getfeature())
 
         admin01 = self.test_user1
         group1 = admin01.groups.all()[0]
@@ -508,6 +553,7 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
             admin01, world.pk), "(NAME != 'ITALY')")
 
         self.assertFalse(self._check_subset_string())
+        self.assertFalse(self._check_wfs_getfeature())
 
         # context view + editing ve
         # =========================
@@ -529,6 +575,7 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
             admin01, world.pk), "(NAME != 'ITALY')")
 
         self.assertFalse(self._check_subset_string())
+        self.assertFalse(self._check_wfs_getfeature())
 
         # context editing e
         # =========================
@@ -554,6 +601,7 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
 
         # for OWS service only for context v and ve
         self.assertTrue(self._check_subset_string())
+        self.assertTrue(self._check_wfs_getfeature())
 
 
     def test_validate_sql(self):
@@ -768,6 +816,8 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
         # =============================
 
         assign_perm('view_project', get_anonymous_user(), self.qdjango_project)
+        for l in self.qdjango_project.layer_set.all():
+            assign_perm('view_layer', get_anonymous_user(), l)
 
         rule = ConstraintExpressionRule(
             constraint=constraint, user=get_anonymous_user(), rule="NAME != 'ITALY'", anonymoususer=True)
@@ -982,6 +1032,8 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
         # -----------------
 
         assign_perm('view_project', get_anonymous_user(), self.qdjango_project)
+        for l in self.qdjango_project.layer_set.all():
+            assign_perm('view_layer', get_anonymous_user(), l)
 
         rule = ConstraintExpressionRule(
             constraint=constraint, user=get_anonymous_user(), rule="NAME != 'ITALY'", anonymoususer=True)
@@ -1614,6 +1666,7 @@ class SingleLayerExpressionConstraints(TestSingleLayerConstraintsBase):
                                         rule="intersects_bbox( $geometry,  geom_from_wkt( 'POLYGON((8 51, 11 51, 11 52, 11 52, 8 51))') )")
         rule.save()
         self.assertFalse(self._check_subset_string())
+        self.assertFalse(self._check_wfs_getfeature())
 
         rule.delete()
 
@@ -1773,12 +1826,12 @@ class TestGeoConstraintsServerFilters(TestSingleLayerConstraintsBase):
         constraint.save()
 
         # assign permissions
-        assign_perm('view_project', self.test_viewer1, self.qdjango_project)
-        assign_perm('view_project', self.test_viewer1_3, self.qdjango_project)
-        assign_perm('view_project', self.test_gu_viewer1, self.qdjango_project)
-
         # also to Anonymous user
-        assign_perm('view_project', get_anonymous_user(), self.qdjango_project)
+        for u in (self.test_viewer1, self.test_viewer1_3, self.test_gu_viewer1, get_anonymous_user()):
+            assign_perm('view_project', u, self.qdjango_project)
+            for l in self.qdjango_project.layer_set.all():
+                assign_perm("view_layer", u, l)
+
 
         ows_url = reverse('OWS:ows', kwargs={'group_slug': self.qdjango_project.group.slug,
                                              'project_type': 'qdjango', 'project_id': self.qdjango_project.id})
