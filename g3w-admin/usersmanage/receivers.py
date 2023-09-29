@@ -77,7 +77,7 @@ def send_email_to_user(sender, **kwargs):
 
     # Send email to user
     # ----------------------------------------------------------
-    scheme = "https" if sender.request.is_secure() else "http"
+    scheme = "https" if hasattr(sender.request, 'is_secure') and sender.request.is_secure() else "http"
     context =  {
         "scheme": scheme,
         "site": get_current_site(sender.request),
