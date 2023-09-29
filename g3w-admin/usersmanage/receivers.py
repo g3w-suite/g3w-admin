@@ -67,6 +67,7 @@ def send_email_to_user(sender, **kwargs):
 
     if (not hasattr(user, 'userdata') or
             not sender.request.user.is_superuser or
+            user.userdata.registered == False or
             user.userdata.activated_by_admin):
         return
 
@@ -78,9 +79,14 @@ def send_email_to_user(sender, **kwargs):
     # Send email to user
     # ----------------------------------------------------------
     scheme = "https" if hasattr(sender.request, 'is_secure') and sender.request.is_secure() else "http"
+    try:
+        site = get_current_site(sender.request)
+    except:
+        site = 'localhost'
+
     context =  {
         "scheme": scheme,
-        "site": get_current_site(sender.request),
+        "site": site,
         "user": user
     }
     subject = render_to_string(
