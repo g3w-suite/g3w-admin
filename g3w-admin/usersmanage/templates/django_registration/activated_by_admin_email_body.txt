@@ -1,9 +1,9 @@
+{% load i18n %}
+{% trans 'Dear' %} {{user.username}},
 
-Dear {{user.username}},
+{% trans 'your profile was activated by administrators' %}.
 
-your profile was activated by administrators.
-
-Now you can make the login!
+{% trans 'Now you can make the login' %}!
 
 {{ scheme }}://{{ site }}{% url 'login' %}
 

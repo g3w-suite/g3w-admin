@@ -1,1 +1,2 @@
-{{ SETTINGS.REGISTRATION_EMAIL_SUBJECT_PREFIX }} New registration by {{user.username}}
+{% load i18n %}
+{{ SETTINGS.REGISTRATION_EMAIL_SUBJECT_PREFIX }} {% trans 'New registration by' %} {{user.username}}

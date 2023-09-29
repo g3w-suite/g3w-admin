@@ -1,1 +1,2 @@
-{{ SETTINGS.REGISTRATION_EMAIL_SUBJECT_PREFIX }} {{user.username}} your account is active.
+{% load i18n %}
+{{ SETTINGS.REGISTRATION_EMAIL_SUBJECT_PREFIX }} {{user.username}} {% trans 'your account is active' %}.
