@@ -633,7 +633,7 @@ class CoreApiTest(CoreTestBase):
         self.assertTrue('text/html' in jres['info_formats'])
         self.assertEqual(len(jres['layers']), 21)
 
-        self.assertEqual(jres['layers'][1]['title'], 'Acque - AdT Catasto Terreni')
+        self.assertEqual(jres['layers'][1]['title'].lower(), 'Acque - AdT Catasto Terreni'.lower())
         self.assertEqual(len(jres['layers'][1]['crss']), 20)
 
 

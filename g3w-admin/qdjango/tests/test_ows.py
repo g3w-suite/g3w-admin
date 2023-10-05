@@ -50,12 +50,19 @@ class OwsTest(QdjangoTestBase):
     def setUpTestData(cls):
 
         super().setUpTestData()
-        cls.qdjango_project = Project(
-            qgis_file=cls.project.qgisProjectFile,
-            title='Test qdjango project',
-            group=cls.project_group,
-        )
-        cls.qdjango_project.save()
+        #cls.qdjango_project = Project(
+        #    qgis_file=cls.project.qgisProjectFile,
+        #    title='Test qdjango project',
+        #    group=cls.project_group,
+        #)
+        #cls.qdjango_project.save()
+
+        cls.project2 = QgisProject(cls.project.qgisProjectFile)
+        cls.project2.title = "Test qdjango project"
+        cls.project2.group = cls.project_group
+        cls.project2.save()
+
+        cls.qdjango_project = cls.project2.instance
 
         qgis_project_file_widget = File(open('{}{}{}'.format(
             CURRENT_PATH, TEST_BASE_PATH, QGS310_WIDGET_FILE), 'r'))
@@ -174,6 +181,8 @@ class OwsTest(QdjangoTestBase):
 
         # give permission to user
         assign_perm('view_project', self.test_viewer1, self.qdjango_project)
+        for l in self.qdjango_project.layer_set.all():
+            assign_perm("view_layer", self.test_viewer1, l)
 
         response = c.get(ows_url, {
             'REQUEST': 'GetCapabilities',
@@ -188,13 +197,58 @@ class OwsTest(QdjangoTestBase):
         # try basic authentication
         # for viewer1
         c = Client(HTTP_AUTHORIZATION='Basic dmlld2VyMTp2aWV3ZXIx')
-        esponse = c.get(ows_url, {
+        response = c.get(ows_url, {
             'REQUEST': 'GetCapabilities',
             'SERVICE': 'WMS'
         })
 
         self.assertEqual(response.status_code, 200)
         self.assertTrue(b'<Name>bluemarble</Name>' in response.content)
+
+        # Filter layer by user
+        for l in self.qdjango_project.layer_set.filter(name__in=['bluemarble', 'world']):
+            remove_perm("view_layer", self.test_viewer1, l)
+
+        response = c.get(ows_url, {
+            "REQUEST": "GetCapabilities",
+            "SERVICE": "WMS"
+        })
+
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(b'<Name>bluemarble</Name>' in response.content)
+        self.assertFalse(b"<Name>world</Name>" in response.content)
+        self.assertTrue(b"<Name>spatialite_points</Name>" in response.content)
+
+        # For WFS
+        response = c.get(ows_url, {
+            "REQUEST": "GetCapabilities",
+            "SERVICE": "WFS",
+            "VERSION": "1.1.0",
+            "TYPENAME": "world"
+        })
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(b"<Name>world</Name>" in response.content)
+        self.assertTrue(b"<Name>spatialite_points</Name>" in response.content)
+
+        response = c.get(ows_url, {
+            "REQUEST": "GetCapabilities",
+            "SERVICE": "WFS"
+        })
+        
+        self.assertEqual(response.status_code, 200)
+
+        for l in self.qdjango_project.layer_set.filter(name='world'):
+            assign_perm("view_layer", self.test_viewer1, l)
+
+        response = c.get(ows_url, {
+            "REQUEST": "GetCapabilities",
+            "SERVICE": "WFS"
+        })
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(b"<Name>world</Name>" in response.content)
+
 
     def test_get_getfeatureinfo(self):
         """Test GetFeatureInfo for QGIS widget"""
