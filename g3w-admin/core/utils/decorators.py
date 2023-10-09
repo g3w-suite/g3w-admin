@@ -2,6 +2,7 @@ from django.utils.decorators import wraps
 from django.http.response import HttpResponseForbidden
 from django.shortcuts import render
 from django.template import RequestContext
+from django.core.cache import cache
 from django.conf import settings
 from django.shortcuts import get_object_or_404
 from django.apps import apps
@@ -42,16 +43,18 @@ def project_type_permission_required(perm, lookup_variables=None, **kwargs):
         def my_view(request, username):
             ...
     """
-    login_url = kwargs.pop('login_url', settings.LOGIN_URL)
-    redirect_field_name = kwargs.pop('redirect_field_name', REDIRECT_FIELD_NAME)
-    return_403 = kwargs.pop('return_403', False)
-    accept_global_perms = kwargs.pop('accept_global_perms', False)
+    login_url = kwargs.pop("login_url", settings.LOGIN_URL)
+    redirect_field_name = kwargs.pop("redirect_field_name", REDIRECT_FIELD_NAME)
+    return_403 = kwargs.pop("return_403", False)
+    accept_global_perms = kwargs.pop("accept_global_perms", False)
 
     # Check if perm is given as string in order not to decorate
     # view function itself which makes debugging harder
     if not isinstance(perm, str):
-        raise GuardianError("First argument must be in format: "
-            "'app_label.codename or a callable which return similar string'")
+        raise GuardianError(
+            "First argument must be in format: "
+            "'app_label.codename or a callable which return similar string'"
+        )
 
     def decorator(view_func):
         def _wrapped_view(request, *args, **kwargs):
@@ -64,28 +67,40 @@ def project_type_permission_required(perm, lookup_variables=None, **kwargs):
                 project_type_value = kwargs[project_type]
                 # Parse model
                 if project_type_value in settings.G3WADMIN_PROJECT_APPS:
-                    model = apps.get_model(project_type_value, 'Project')
+                    model = apps.get_model(project_type_value, "Project")
                 else:
-                    raise GuardianError("{} no in G3W_PROJECT_APPS: "
-                                        .format(project_type_value, settings.G3WADMIN_PROJECT_APPS))
+                    raise GuardianError(
+                        "{} no in G3W_PROJECT_APPS: ".format(
+                            project_type_value, settings.G3WADMIN_PROJECT_APPS
+                        )
+                    )
 
                 if project_key_value.isdigit():
-                    lookup_dict = {'pk': int(project_key_value)}
+                    lookup_dict = {"pk": int(project_key_value)}
                 else:
-                    lookup_dict = {'slug': project_key_value}
+                    lookup_dict = {"slug": project_key_value}
                 obj = get_object_or_404(model, **lookup_dict)
 
             # ad app to perm
             perms = [project_type_value + "." + perm]
 
-            response = get_40x_or_None(request, perms=perms, obj=obj,
-                login_url=login_url, redirect_field_name=redirect_field_name,
-                return_403=return_403, accept_global_perms=accept_global_perms)
+            response = get_40x_or_None(
+                request,
+                perms=perms,
+                obj=obj,
+                login_url=login_url,
+                redirect_field_name=redirect_field_name,
+                return_403=return_403,
+                accept_global_perms=accept_global_perms,
+            )
             if response:
                 return response
             return view_func(request, *args, **kwargs)
+
         return wraps(view_func)(_wrapped_view)
+
     return decorator
+
 
 def is_active_required(lookup_variables=None, is_active=1):
     """
@@ -100,13 +115,16 @@ def is_active_required(lookup_variables=None, is_active=1):
 
             # Parse lookups
             if len(lookups) % 2 != 0:
-                raise GuardianError("Lookup variables must be provided "
-                                    "as pairs of lookup_string and view_arg")
+                raise GuardianError(
+                    "Lookup variables must be provided "
+                    "as pairs of lookup_string and view_arg"
+                )
             lookup_dict = {}
             for lookup, view_arg in zip(lookups[::2], lookups[1::2]):
                 if view_arg not in kwargs:
-                    raise GuardianError("Argument %s was not passed "
-                                        "into view function" % view_arg)
+                    raise GuardianError(
+                        "Argument %s was not passed " "into view function" % view_arg
+                    )
                 lookup_dict[lookup] = kwargs[view_arg]
             obj = get_object_or_404(model, **lookup_dict)
 
@@ -114,8 +132,43 @@ def is_active_required(lookup_variables=None, is_active=1):
                 return HttpResponseForbidden()
 
             return view_func(request, *args, **kwargs)
+
         return wraps(view_func)(_wrapped_view)
 
     return decorator
 
 
+def cache_page(timeout, key_args, key_prefix="", cache_alias=None):
+    """
+    Custom caching page decorator for g3w-suite pages.
+
+    :param timeout: Time to take the cache, None is infinite
+    :type timeout: int
+    :param key_args: A list of django urls parameters to use to make the cache key
+    :type key_args: list
+    :param key_prefix: A string to use for cache key prefix, default is empty string
+    :type key_prefix: str
+    :returns: Wrapped view method
+    """
+
+    def _decorator(view_func):
+        @wraps(view_func)
+        def _wrapped_view(request, *args, **kwargs):
+            key = f"{key_prefix}{'_'.join([str(kwargs[k]) for k in key_args])}"
+            response = cache.get(key)
+            if not response:
+                response = view_func(request, *args, **kwargs)
+                if hasattr(response, "render") and callable(response.render):
+
+                    def post_render(r):
+                        cache.set(key, r, timeout)
+                        return None
+
+                    response.add_post_render_callback(post_render)
+                else:
+                    cache.set(key, response, timeout)
+            return response
+
+        return _wrapped_view
+
+    return _decorator

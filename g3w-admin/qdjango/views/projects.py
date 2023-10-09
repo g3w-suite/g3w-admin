@@ -825,6 +825,9 @@ class FilterByUserLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3WR
                 # Add user to LayerAcl model
                 LayerAcl.manage_user(uid, self.layer, mode='add')
 
+        # invalidate project cache
+        if len(toAdd) > 0 or len(toRemove) > 0:
+            self.layer.project.invalidate_cache()
 
         # give permission to user groups viewers:
         to_add = to_remove = None
@@ -847,6 +850,10 @@ class FilterByUserLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3WR
 
                 # Add group to LayerAcl model
                 LayerAcl.manage_group(aid, self.layer, mode='add')
+
+        # invalidate project cache
+        if len(to_remove) > 0 or len(to_add) > 0:
+            self.layer.project.invalidate_cache()
 
         return super().form_valid(form)
 

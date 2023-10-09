@@ -247,7 +247,7 @@ SITE_TITLE = 'g3w-admin'
 
 # for qdjango module, this is the base URL for WMS/WFS visible by the client
 QDJANGO_SERVER_URL = 'http://localhost'
-QDJANGO_PRJ_CACHE_KEY = 'qdjango_prj_{}'
+QDJANGO_PRJ_CACHE_KEY = 'qdjango_prj_'
 
 # data for proxy server
 PROXY_SERVER = False

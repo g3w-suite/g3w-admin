@@ -126,3 +126,11 @@ def get_tms_services(sender, **kwargs):
                 'url': caching_url
             }
         }
+
+@receiver(post_save, sender=G3WCachingLayer)
+@receiver(pre_delete, sender=G3WCachingLayer)
+def invalid_prj_cache(**kwargs):
+    """Invalid the possible qdjango project cache"""
+
+    layer = Layer.objects.get(pk=kwargs["instance"].layer_id)
+    layer.project.invalidate_cache()
