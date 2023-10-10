@@ -909,7 +909,7 @@ class WidgetSerializer(serializers.ModelSerializer):
                             field['input']['options']['value'] = edittype['Key']
                             field['input']['options']['layer_id'] = edittype['Layer']
 
-                # For AutoccOmpleteBox imput type
+                # For AutoccOmpleteBox input type
                 if 'widgettype' in field and field['widgettype'] == 'autocompletebox':
                     field['input']['type'] = 'autocompletefield'
 
