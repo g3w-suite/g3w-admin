@@ -519,12 +519,21 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
 
         return super(Project, self).__getattribute__(attr)
 
-    def invalidate_cache(self):
+    def invalidate_cache(self, user=None):
         """Method to invalidate(delete) API REST /api/config"""
 
         # invalidate project cache
-        key = f"{settings.QDJANGO_PRJ_CACHE_KEY}{self.group.pk}_{'qdjango'}_{self.pk}"
-        cache.delete(key)
+        pre_key = f"{settings.QDJANGO_PRJ_CACHE_KEY}{self.group.pk}_{'qdjango'}_{self.pk}"
+        if user == None:
+
+            # Invalidate every cache for every user
+            users = User.objects.all()
+            for user in users:
+                cache.delete(f"{pre_key}_{str(user.pk)}")
+        else:
+
+            # Invalidate only for user
+            cache.delete(f"{pre_key}_{str(user.pk)}")
 
 
 post_delete.connect(check_overviewmap_project, sender=Project)
