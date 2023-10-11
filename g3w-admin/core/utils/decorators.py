@@ -10,6 +10,10 @@ from django.contrib.auth import REDIRECT_FIELD_NAME
 from guardian.exceptions import GuardianError
 from guardian.utils import get_40x_or_None
 
+import logging
+
+logger = logging.getLogger('g3wadmin.debug')
+
 
 def project_type_permission_required(perm, lookup_variables=None, **kwargs):
     """
@@ -155,6 +159,7 @@ def cache_page(timeout, key_args, key_prefix="", cache_alias=None):
         @wraps(view_func)
         def _wrapped_view(request, *args, **kwargs):
             key = f"{key_prefix}{'_'.join([str(kwargs[k]) for k in key_args]  + [str(request.user.pk)])}"
+            logger.debug(f"[CACHING /api/config]: Key {key}")
             response = cache.get(key)
             if not response:
                 response = view_func(request, *args, **kwargs)

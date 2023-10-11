@@ -33,7 +33,7 @@ from usersmanage.utils import (
     setPermissionUserObject,
 )
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('g3wadmin.debug')
 
 # Layer type with widget set capability
 TYPE_LAYER_FOR_WIDGET = ("postgres", "spatialite", "ogr", "mssql", "virtual", "oracle")
@@ -523,16 +523,24 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
         """Method to invalidate(delete) API REST /api/config"""
 
         # invalidate project cache
-        pre_key = f"{settings.QDJANGO_PRJ_CACHE_KEY}{self.group.pk}_{'qdjango'}_{self.pk}"
+        pre_key = (
+            f"{settings.QDJANGO_PRJ_CACHE_KEY}{self.group.pk}_{'qdjango'}_{self.pk}"
+        )
         if user == None:
 
             # Invalidate every cache for every user
             users = User.objects.all()
             for user in users:
+                logger.debug(
+                    f"[CACHING /api/config]: Ivalidate key {pre_key}_{str(user.pk)}"
+                )
                 cache.delete(f"{pre_key}_{str(user.pk)}")
         else:
 
             # Invalidate only for user
+            logger.debug(
+                f"[CACHING /api/config]: Ivalidate key {pre_key}_{str(user.pk)}"
+            )
             cache.delete(f"{pre_key}_{str(user.pk)}")
 
 
