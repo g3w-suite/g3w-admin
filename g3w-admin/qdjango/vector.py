@@ -611,6 +611,9 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
             except:
                 pass
 
+            if len(save_options.attributes) == 0:
+                save_options.attributes = [-1]
+
     def response_shp_mode(self, request):
         """
         Download Shapefile of data
