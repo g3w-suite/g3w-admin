@@ -599,7 +599,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
             try:
 
                 # Parse
-                fnames = self.fields_to_download.split(',')
+                fnames = self.fields_to_download.strip().split(',')
 
                 # Get fields index
                 findexes = [self.metadata_layer.qgis_layer.fields().indexFromName(f) for f in fnames]

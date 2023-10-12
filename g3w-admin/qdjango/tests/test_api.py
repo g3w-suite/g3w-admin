@@ -742,6 +742,32 @@ class TestQdjangoProjectsAPI(QdjangoTestBase):
         self.assertEqual(fields[0].name(), 'rif')
         self.assertEqual(fields[1].name(), 'type')
 
+        # Check backspaces
+        response = self._testApiCall('core-vector-api',
+                                     [
+                                         'csv',
+                                         'qdjango',
+                                         self.project328_value_relation.instance.pk,
+                                         'poi_2c470d17_a234_464c_83f8_416bcdedda17'
+                                     ],
+                                     {
+                                         'ftod': 'rif,type '
+                                     })
+        self.assertEqual(response.status_code, 200)
+        temp = QTemporaryDir()
+        fname = temp.path() + '/temp_ftod.csv'
+        with open(fname, 'wb') as f:
+            f.write(response.content)
+
+        vl = QgsVectorLayer(fname)
+        self.assertTrue(vl.isValid())
+
+        fields = [f for f in vl.fields()]
+
+        self.assertEqual(len(fields), 2)
+        self.assertEqual(fields[0].name(), 'rif')
+        self.assertEqual(fields[1].name(), 'type')
+
         response = self._testApiCall('core-vector-api',
                                      [
                                          'csv',
