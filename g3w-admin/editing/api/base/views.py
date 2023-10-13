@@ -275,6 +275,11 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                                 feature.setAttribute(qgis_field.name(),
                                                      qgis_layer.dataProvider().defaultValueClause(field_idx))
 
+                            #
+                            elif qgis_field.typeName().lower() in ('geometry', ):
+                                if geojson_feature['properties'][qgis_field.name()] == '':
+                                    geojson_feature['properties'][qgis_field.name()] = None
+
                             # Formatting data if field's type is date, datetime or time
                             # ----------------------------------------------------------
                             elif qgis_field.typeName().lower() in ('date', 'datetime', 'time', 'timestamp'):
