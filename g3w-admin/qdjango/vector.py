@@ -58,7 +58,7 @@ from qdjango.api.layers.filters import (
     FILTER_FID_PARAM
 )
 
-from .models import Layer, SessionTokenFilter, SessionTokenFilterLayer
+from .models import Layer, SessionTokenFilter, SessionTokenFilterLayer, FilterLayerSaved
 from .utils.data import QGIS_LAYER_TYPE_NO_GEOM
 from .utils.edittype import MAPPING_EDITTYPE_QGISEDITTYPE
 
@@ -438,6 +438,23 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
             token_data.update({
                 'filtertoken': s.token
             })
+
+        elif mode == 'save':
+
+            # Get qgs_expression from SessionTokenFilter
+            l, created = FilterLayerSaved.objects.update_or_create(
+                layer = self.layer,
+                user = request.user,
+                defaults={'qgs_expr': s.stf_layers.get(layer=self.layer).qgs_expr}
+            )
+
+        elif mode == 'delete_saved':
+
+            FilterLayerSaved.objects.get(
+                layer = self.layer,
+                user = request.user
+            ).delete()
+
         else:
 
             try:
