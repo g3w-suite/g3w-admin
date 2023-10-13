@@ -440,8 +440,20 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
             })
         else:
 
+            try:
+                l = s.stf_layers.get(layer=self.layer).delete()
+            except:
+                pass
+
+            token_data.update({
+                'filtertoken': s.token
+            })
+
             # delete session and
-            s.delete()
+            if len(s.stf_layers.all()) == 0:
+                token_data = {}
+                s.delete()
+
 
         self.results.update({'data': token_data})
 
