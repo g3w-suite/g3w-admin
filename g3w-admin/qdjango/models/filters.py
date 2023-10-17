@@ -94,6 +94,7 @@ class SessionTokenFilterLayer(models.Model):
     layer = models.ForeignKey(Layer, on_delete=models.CASCADE)
     qgs_expr = models.TextField()
 
+
     class Meta:
         app_label = 'qdjango'
 
@@ -106,6 +107,7 @@ class FilterLayerSaved(TimeStampedModel):
     user = models.ForeignKey(User, null=True, blank=True, on_delete=models.DO_NOTHING)
     layer = models.ForeignKey(Layer, on_delete=models.CASCADE)
     qgs_expr = models.TextField()
+    name = models.TextField(null=True, unique=True)
 
     class Meta:
         app_label = 'qdjango'

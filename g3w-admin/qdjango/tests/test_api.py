@@ -1090,6 +1090,30 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         # reset token table
         sf.delete()
 
+        # Test save filter by layer
+        # ---------------------------------------------
+
+        # Create toke
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['filtertoken', 'qdjango', self.project310.instance.pk,
+                                             cities.qgs_layer_id],
+                                            {
+                                                'fidsout': '6,8,9,0'
+                                            }, login=False, logout=False).content)
+
+        session_filters = SessionTokenFilter.objects.all()
+        self.assertEqual(len(session_filters), 1)
+        sf = session_filters[0]
+        self.assertEqual(sf.token, resp['data']['filtertoken'])
+
+        # Save filter for layer cities
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['filtertoken', 'qdjango', self.project310.instance.pk,
+                                             cities.qgs_layer_id],
+                                            {
+                                                'mode':'save'
+                                            }, login=False, logout=False).content)
+
     def test_download_vector_api_selected_wms_fields(self):
         """ Test vector download api for every type of download with fields selected for wms service """
 

@@ -389,6 +389,14 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
         else:
             request_data = request.query_params
 
+        def _get_sessiontokenfilter():
+            s, created = SessionTokenFilter.objects.get_or_create(
+                sessionid=sessionid,
+                defaults={'user': request.user if request.user.pk else None}
+            )
+
+            return s, created
+
         # parameters to check:
         # mode: create, update, delete
         # fidsin: fids list to filter
@@ -398,7 +406,18 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
         fidsin = request_data.get('fidsin')
         fidsout = request_data.get('fidsout')
 
+        token_data = {}
+
+
+        def _create_qgs_expr(s, fidsin=None, fidsout=None):
+            """ Create qgs expression to save in db """
+
+            expr = f'$id IN ({fidsin})' if fidsin else f'$id NOT IN ({fidsout})'
+            return f'{s.qgs_expr} AND {expr}' if s else expr
+
+
         if mode == 'create_update':
+
             if not fidsin and not fidsout:
                 raise APIException(
                     "'fidsin' or 'fidsout' parameter is required.")
@@ -407,24 +426,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
                 raise APIException(
                     "'fidsin' only or 'fidsout' only parameter is required.")
 
-        s, created = SessionTokenFilter.objects.get_or_create(
-            sessionid=sessionid,
-            defaults={'user': request.user if request.user.pk else None}
-        )
-
-        token_data = {}
-
-        if mode == 'delete' and not s:
-            raise APIException(
-                "Session filter token doesn't exists for current session")
-
-        def _create_qgs_expr(s, fidsin=None, fidsout=None):
-            """ Create qgs expression to save in db """
-
-            expr = f'$id IN ({fidsin})' if fidsin else f'$id NOT IN ({fidsout})'
-            return f'{s.qgs_expr} AND {expr}' if s else expr
-
-        if mode == 'create_update':
+            s, created = _get_sessiontokenfilter()
 
             l, created = s.stf_layers.get_or_create(
                 layer=self.layer,
@@ -442,20 +444,85 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
         elif mode == 'save':
 
             # Get qgs_expression from SessionTokenFilter
+            name = request_data.get('name')
+            if not name:
+                raise APIException(
+                    "'name' parameter is required for mode='save'.")
+
+            s, created = _get_sessiontokenfilter()
+
+            qgs_expr = s.stf_layers.get(layer=self.layer).qgs_expr
             l, created = FilterLayerSaved.objects.update_or_create(
                 layer = self.layer,
                 user = request.user,
-                defaults={'qgs_expr': s.stf_layers.get(layer=self.layer).qgs_expr}
+                name = name,
+                defaults={'qgs_expr': qgs_expr}
             )
+
+            token_data.update({
+                'layer': self.layer.qgs_layer_id,
+                'qgs_expression': qgs_expr,
+                'name': l.name,
+                'fid': l.pk,
+                'state': 'created' if created else 'updated'
+            })
+
+        elif mode == 'apply':
+
+            name = request_data.get('name')
+            fid = request_data.get('fid')
+            if not name and not fid:
+                raise APIException(
+                    "'name' or 'fid' parameter is required for mode='apply'.")
+
+            if fid:
+                kwargs = {'pk': fid}
+            else:
+                kwargs = {'name': name}
+
+            fls = FilterLayerSaved.objects.get(
+                layer = self.layer,
+                user = request.user,
+                **kwargs
+            )
+
+            s, created = _get_sessiontokenfilter()
+
+            # Check if a recordo for surrent layer is present for update or create it
+            s.stf_layers.update_or_create(
+                layer=fls.layer,
+                defaults={
+                    'qgs_expr': fls.qgs_expr
+                }
+            )
+
+            token_data.update({
+                'filtertoken': s.token
+            })
+
 
         elif mode == 'delete_saved':
 
+            name = request_data.get('name')
+            fid = request_data.get('fid')
+            if not name and not fid:
+                raise APIException(
+                    "'name' or 'fid' parameter is required for mode='delete_saved'.")
+            if fid:
+                kwargs = {'pk': fid}
+            else:
+                kwargs = {'name': name}
+
             FilterLayerSaved.objects.get(
                 layer = self.layer,
-                user = request.user
+                user = request.user,
+                **kwargs
             ).delete()
 
+        # mode='delete'
         else:
+
+            s, created = _get_sessiontokenfilter()
 
             try:
                 l = s.stf_layers.get(layer=self.layer).delete()
