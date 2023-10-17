@@ -276,8 +276,12 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
             self.widget_type = kwargs['widget_type']
 
         # Get requests_params
-        if "ftod" in request.query_params:
-            self.fields_to_download = request.query_params.get("ftod")
+        if request.method == 'POST':
+            request_data = request.data
+        else:
+            request_data = request.query_params
+        if "ftod" in request_data:
+            self.fields_to_download = request_data.get("ftod")
 
 
         super(LayerVectorView, self).initial(request, *args, **kwargs)
