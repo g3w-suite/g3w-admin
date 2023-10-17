@@ -661,7 +661,7 @@ class TestQdjangoProjectsAPI(QdjangoTestBase):
         qgs_request = QgsFeatureRequest()
         qgs_request.setFilterExpression("\"type\" IN ('B','B1')")
         total_count = len([f for f in qgis_layer.getFeatures(qgs_request)])
-        
+
         resp = json.loads(
             self._testApiCall(
                 "core-vector-api",
@@ -674,8 +674,143 @@ class TestQdjangoProjectsAPI(QdjangoTestBase):
                 {"field": "type|ilike|B", "formatter": "1"},
             ).content
         )
-        
+
         self.assertEqual(resp["vector"]["count"], total_count)
+
+    def test_vector_api_url_param_ftod(self):
+        """Test for URL Parameter for vecto api REST ftod (fields to download)"""
+
+        # Set download propteries
+        pois = Layer.objects.get(
+            project_id=self.project328_value_relation.instance.pk,
+            qgs_layer_id='poi_2c470d17_a234_464c_83f8_416bcdedda17')
+
+        pois.download = True
+        pois.download_csv = True
+        pois.download_xls = True
+        pois.download_gpx = True
+        pois.download_gpkg = True
+
+        pois.save()
+
+        response = self._testApiCall('core-vector-api',
+                                            [
+                                                'csv',
+                                                'qdjango',
+                                                self.project328_value_relation.instance.pk,
+                                                'poi_2c470d17_a234_464c_83f8_416bcdedda17'
+                                            ],
+                                            {
+                                                'ftod': ''
+                                            })
+        self.assertEqual(response.status_code, 200)
+        temp = QTemporaryDir()
+        fname = temp.path() + '/temp_ftod.csv'
+        with open(fname, 'wb') as f:
+            f.write(response.content)
+
+        vl = QgsVectorLayer(fname)
+        self.assertTrue(vl.isValid())
+
+        fields = [f for f in vl.fields()]
+
+        self.assertEqual(len(fields), 4)
+        self.assertEqual(fields[0].name(), 'pkuid')
+
+        response = self._testApiCall('core-vector-api',
+                                     [
+                                         'csv',
+                                         'qdjango',
+                                         self.project328_value_relation.instance.pk,
+                                         'poi_2c470d17_a234_464c_83f8_416bcdedda17'
+                                     ],
+                                     {
+                                         'ftod': 'rif,type'
+                                     })
+        self.assertEqual(response.status_code, 200)
+        temp = QTemporaryDir()
+        fname = temp.path() + '/temp_ftod.csv'
+        with open(fname, 'wb') as f:
+            f.write(response.content)
+
+        vl = QgsVectorLayer(fname)
+        self.assertTrue(vl.isValid())
+
+        fields = [f for f in vl.fields()]
+
+        self.assertEqual(len(fields), 2)
+        self.assertEqual(fields[0].name(), 'rif')
+        self.assertEqual(fields[1].name(), 'type')
+
+        # Check backspaces
+        response = self._testApiCall('core-vector-api',
+                                     [
+                                         'csv',
+                                         'qdjango',
+                                         self.project328_value_relation.instance.pk,
+                                         'poi_2c470d17_a234_464c_83f8_416bcdedda17'
+                                     ],
+                                     {
+                                         'ftod': 'rif,type '
+                                     })
+        self.assertEqual(response.status_code, 200)
+        temp = QTemporaryDir()
+        fname = temp.path() + '/temp_ftod.csv'
+        with open(fname, 'wb') as f:
+            f.write(response.content)
+
+        vl = QgsVectorLayer(fname)
+        self.assertTrue(vl.isValid())
+
+        fields = [f for f in vl.fields()]
+
+        self.assertEqual(len(fields), 2)
+        self.assertEqual(fields[0].name(), 'rif')
+        self.assertEqual(fields[1].name(), 'type')
+
+        response = self._testApiCall('core-vector-api',
+                                     [
+                                         'csv',
+                                         'qdjango',
+                                         self.project328_value_relation.instance.pk,
+                                         'poi_2c470d17_a234_464c_83f8_416bcdedda17'
+                                     ],
+                                     {
+                                         'ftod': 'goofy'
+                                     })
+        self.assertEqual(response.status_code, 200)
+        temp = QTemporaryDir()
+        fname = temp.path() + '/temp_ftod.csv'
+        with open(fname, 'wb') as f:
+            f.write(response.content)
+
+        vl = QgsVectorLayer(fname)
+        self.assertFalse(vl.isValid())
+
+        response = self._testApiCall('core-vector-api',
+                                     [
+                                         'csv',
+                                         'qdjango',
+                                         self.project328_value_relation.instance.pk,
+                                         'poi_2c470d17_a234_464c_83f8_416bcdedda17'
+                                     ],
+                                     {
+                                         'ftod': 'rif,goofy'
+                                     })
+        self.assertEqual(response.status_code, 200)
+        temp = QTemporaryDir()
+        fname = temp.path() + '/temp_ftod.csv'
+        with open(fname, 'wb') as f:
+            f.write(response.content)
+
+        vl = QgsVectorLayer(fname)
+        self.assertTrue(vl.isValid())
+
+        fields = [f for f in vl.fields()]
+
+        self.assertEqual(len(fields), 1)
+        self.assertEqual(fields[0].name(), 'rif')
+
 
 class TestQdjangoLayersAPI(QdjangoTestBase):
     """ Test qdjango layer API """

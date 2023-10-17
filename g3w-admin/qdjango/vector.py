@@ -275,6 +275,11 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
         if 'widget_type' in kwargs:
             self.widget_type = kwargs['widget_type']
 
+        # Get requests_params
+        if "ftod" in request.query_params:
+            self.fields_to_download = request.query_params.get("ftod")
+
+
         super(LayerVectorView, self).initial(request, *args, **kwargs)
 
     def get_forms(self):
@@ -588,6 +593,26 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
         if column_to_exclude:
             column_to_exclude = [self.metadata_layer.qgis_layer.fields().indexFromName(f) for f in column_to_exclude]
             save_options.attributes = list(set(self.metadata_layer.qgis_layer.attributeList()) - set(column_to_exclude))
+
+        # Filter by user selection: request parameter `ftod`(fields to download)
+        if hasattr(self, 'fields_to_download') and self.fields_to_download != '':
+            try:
+
+                # Parse
+                fnames = self.fields_to_download.strip().split(',')
+
+                # Get fields index
+                findexes = [self.metadata_layer.qgis_layer.fields().indexFromName(f) for f in fnames]
+
+                if save_options.attributes and len(save_options.attributes) > 0:
+                    save_options.attributes = list(set(save_options.attributes).intersection(set(findexes)))
+                else:
+                    save_options.attributes = findexes
+            except:
+                pass
+
+            if len(save_options.attributes) == 0:
+                save_options.attributes = [-1]
 
     def response_shp_mode(self, request):
         """
