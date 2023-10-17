@@ -240,7 +240,7 @@ class CommonConstraintRule(models.Model):
         if not constraints:
             return []
 
-        return cls.objects.filter(anonymoususer=True)
+        return cls.objects.filter(anonymoususer=True, constraint__in=constraints)
 
     @classmethod
     def get_rule_definition_for_user(cls, user, layer_id, context='v'):

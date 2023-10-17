@@ -176,6 +176,7 @@ class EditingApiTests(ConstraintsTestsBase):
 
         # In more recent QGIS versions ogc_fid will have a required constraint
         try:
+
             self.assertEqual(json.loads(response.content), res_expected)
         except AssertionError:
             actual = json.loads(response.content)
