@@ -36,7 +36,7 @@ from qdjango.models.constraints import (
 from qdjango.models.geoconstraints import GeoConstraint, GeoConstraintRule
 from qdjango.api.layers.filters import FILTER_RELATIONONETOMANY_PARAM
 from qdjango.utils.data import QgisProject
-from qdjango.models import SessionTokenFilter, SessionTokenFilterLayer
+from qdjango.models import SessionTokenFilter, SessionTokenFilterLayer, FilterLayerSaved
 from usersmanage.models import Group as UserGroup
 from core.tests.base import CoreTestBase
 from core.utils.qgisapi import get_qgs_project, get_qgis_layer
@@ -1106,7 +1106,7 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         sf = session_filters[0]
         self.assertEqual(sf.token, resp['data']['filtertoken'])
 
-        # Save filter for layer cities: CREATE
+        # Filter for layer cities: CREATE
         resp = json.loads(self._testApiCall('core-vector-api',
                                             ['filtertoken', 'qdjango', self.project310.instance.pk,
                                              cities.qgs_layer_id],
@@ -1123,7 +1123,7 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
                 'state': 'created'
             })
 
-        # Save filter for layer cities: UPDATE
+        # Filter for layer cities: UPDATE
         resp = json.loads(self._testApiCall('core-vector-api',
                                             ['filtertoken', 'qdjango', self.project310.instance.pk,
                                              cities.qgs_layer_id],
@@ -1140,7 +1140,7 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
             'state': 'updated'
         })
 
-        # Save filter for layer cities: CREATE newone
+        # Filter for layer cities: CREATE newone
 
         # Update filter
         resp = json.loads(self._testApiCall('core-vector-api',
@@ -1166,15 +1166,46 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
             'state': 'created'
         })
 
-        # Save filter for layer cities: DELETE
+        # Filter for layer cities: DELETE
         resp = json.loads(self._testApiCall('core-vector-api',
                                             ['filtertoken', 'qdjango', self.project310.instance.pk,
                                              cities.qgs_layer_id],
                                             {
                                                 'mode': 'delete_saved',
-                                                'fid': 2
+                                                'fid': '2'
                                             }, logout=False).content)
 
+
+        # Check the db
+        fls = FilterLayerSaved.objects.filter(layer=cities)
+        self.assertEqual(len(fls), 1)
+        self.assertEqual(fls[0].pk, 1)
+
+        # Filter for layer cities: APPLY
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['filtertoken', 'qdjango', self.project310.instance.pk,
+                                             cities.qgs_layer_id],
+                                            {
+                                                'mode': 'apply',
+                                                'fid': '1'
+                                            }, logout=False).content)
+
+        # Check inside the current fitlertoken
+        token = sf.token
+        self.assertEqual(sf.stf_layers.all()[0].qgs_expr, '$id NOT IN (6,8,9,0)')
+
+        # Delete fitler token and apply again to check for new fitler token value
+        SessionTokenFilter.objects.all().delete()
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['filtertoken', 'qdjango', self.project310.instance.pk,
+                                             cities.qgs_layer_id],
+                                            {
+                                                'mode': 'apply',
+                                                'fid': '1'
+                                            }, logout=False).content)
+        sf = SessionTokenFilter.objects.all()[0]
+        self.assertFalse(token == sf.token)
+        self.assertEqual(sf.stf_layers.all()[0].qgs_expr, '$id NOT IN (6,8,9,0)')
 
 
 
