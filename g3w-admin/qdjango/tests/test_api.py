@@ -1111,8 +1111,17 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
                                             ['filtertoken', 'qdjango', self.project310.instance.pk,
                                              cities.qgs_layer_id],
                                             {
-                                                'mode':'save'
+                                                'mode':'save',
+                                                'name': 'filter 1 layer cities'
                                             }, login=False, logout=False).content)
+
+        self.assertEqual(resp['data'], {
+                'layer': cities.qgs_layer_id,
+                'qgs_expression': '$id IN (6,8,9,0)',
+                'name': 'filter 1 layer cities',
+                'fid': 1,
+                'state': 'created'
+            })
 
     def test_download_vector_api_selected_wms_fields(self):
         """ Test vector download api for every type of download with fields selected for wms service """
