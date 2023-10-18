@@ -1093,35 +1093,90 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         # Test save filter by layer
         # ---------------------------------------------
 
-        # Create toke
+        # Create token
         resp = json.loads(self._testApiCall('core-vector-api',
                                             ['filtertoken', 'qdjango', self.project310.instance.pk,
                                              cities.qgs_layer_id],
                                             {
                                                 'fidsout': '6,8,9,0'
-                                            }, login=False, logout=False).content)
+                                            }, logout=False).content)
 
         session_filters = SessionTokenFilter.objects.all()
         self.assertEqual(len(session_filters), 1)
         sf = session_filters[0]
         self.assertEqual(sf.token, resp['data']['filtertoken'])
 
-        # Save filter for layer cities
+        # Save filter for layer cities: CREATE
         resp = json.loads(self._testApiCall('core-vector-api',
                                             ['filtertoken', 'qdjango', self.project310.instance.pk,
                                              cities.qgs_layer_id],
                                             {
                                                 'mode':'save',
                                                 'name': 'filter 1 layer cities'
-                                            }, login=False, logout=False).content)
+                                            }, logout=False).content)
 
         self.assertEqual(resp['data'], {
                 'layer': cities.qgs_layer_id,
-                'qgs_expression': '$id IN (6,8,9,0)',
+                'qgs_expression': '$id NOT IN (6,8,9,0)',
                 'name': 'filter 1 layer cities',
                 'fid': 1,
                 'state': 'created'
             })
+
+        # Save filter for layer cities: UPDATE
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['filtertoken', 'qdjango', self.project310.instance.pk,
+                                             cities.qgs_layer_id],
+                                            {
+                                                'mode': 'save',
+                                                'name': 'filter 1 layer cities'
+                                            }, logout=False).content)
+
+        self.assertEqual(resp['data'], {
+            'layer': cities.qgs_layer_id,
+            'qgs_expression': '$id NOT IN (6,8,9,0)',
+            'name': 'filter 1 layer cities',
+            'fid': 1,
+            'state': 'updated'
+        })
+
+        # Save filter for layer cities: CREATE newone
+
+        # Update filter
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['filtertoken', 'qdjango', self.project310.instance.pk,
+                                             cities.qgs_layer_id],
+                                            {
+                                                'fidsout': '1,2'
+                                            }, logout=False).content)
+
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['filtertoken', 'qdjango', self.project310.instance.pk,
+                                             cities.qgs_layer_id],
+                                            {
+                                                'mode': 'save',
+                                                'name': 'filter 2 layer cities'
+                                            }, logout=False).content)
+
+        self.assertEqual(resp['data'], {
+            'layer': cities.qgs_layer_id,
+            'qgs_expression': '$id NOT IN (6,8,9,0) AND $id NOT IN (1,2)',
+            'name': 'filter 2 layer cities',
+            'fid': 2,
+            'state': 'created'
+        })
+
+        # Save filter for layer cities: DELETE
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['filtertoken', 'qdjango', self.project310.instance.pk,
+                                             cities.qgs_layer_id],
+                                            {
+                                                'mode': 'delete_saved',
+                                                'fid': 2
+                                            }, logout=False).content)
+
+
+
 
     def test_download_vector_api_selected_wms_fields(self):
         """ Test vector download api for every type of download with fields selected for wms service """
