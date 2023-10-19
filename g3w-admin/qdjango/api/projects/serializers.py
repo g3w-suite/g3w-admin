@@ -454,7 +454,7 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
                         qgs_project=qgs_project,
                         request=self.request,
                         layertreenode=layer,
-                        filters=layer_filters[layer['id']]
+                        filters=layer_filters[layer['id']] if layer['id'] in layer_filters else []
                     )
                 except KeyError:
                     logger.error(
