@@ -1166,6 +1166,7 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
             'state': 'created'
         })
 
+
         # Filter for layer cities: DELETE
         resp = json.loads(self._testApiCall('core-vector-api',
                                             ['filtertoken', 'qdjango', self.project310.instance.pk,
@@ -1206,6 +1207,48 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         sf = SessionTokenFilter.objects.all()[0]
         self.assertFalse(token == sf.token)
         self.assertEqual(sf.stf_layers.all()[0].qgs_expr, '$id NOT IN (6,8,9,0)')
+
+        # Filter for layer check /api/config REST API:
+        resp = json.loads(self._testApiCall('group-project-map-config',
+                                            [
+                                                self.project310.instance.group.slug,
+                                                'qdjango',
+                                                self.project310.instance.pk], logout=False).content
+                          )
+
+        for l in resp['layers']:
+            if l['id'] == cities.qgs_layer_id:
+                self.assertTrue('filters' in l)
+                self.assertEqual(len(l['filters']), 1)
+            else:
+                self.assertFalse('filters' in l)
+
+        # Filter for layer cities: DELETE
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['filtertoken', 'qdjango', self.project310.instance.pk,
+                                             cities.qgs_layer_id],
+                                            {
+                                                'mode': 'delete_saved',
+                                                'fid': '1'
+                                            }, logout=False).content)
+
+        # Check the db
+        fls = FilterLayerSaved.objects.filter(layer=cities)
+        self.assertEqual(len(fls), 0)
+
+        resp = json.loads(self._testApiCall('group-project-map-config',
+                                            [
+                                                self.project310.instance.group.slug,
+                                                'qdjango',
+                                                self.project310.instance.pk], logout=False).content
+                          )
+
+        for l in resp['layers']:
+            if l['id'] == cities.qgs_layer_id:
+                self.assertFalse('filters' in l)
+            else:
+                self.assertFalse('filters' in l)
+
 
 
 
