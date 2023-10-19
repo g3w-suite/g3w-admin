@@ -107,8 +107,9 @@ class FilterLayerSaved(TimeStampedModel):
     user = models.ForeignKey(User, null=True, blank=True, on_delete=models.DO_NOTHING)
     layer = models.ForeignKey(Layer, on_delete=models.CASCADE)
     qgs_expr = models.TextField()
-    name = models.TextField(null=True, unique=True)
+    name = models.TextField(null=True)
 
     class Meta:
         app_label = 'qdjango'
+        unique_together = ['user', 'layer', 'name']
 
