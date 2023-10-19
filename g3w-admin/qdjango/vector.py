@@ -390,6 +390,12 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
             request_data = request.query_params
 
         def _get_sessiontokenfilter():
+            """
+            Get or create an instance of SessionTokeFilter model
+
+            :return: A tuple with the instance of SessioneTokeFilter model and a boolean state for created or retreive
+            :rtype: tuple
+            """
             s, created = SessionTokenFilter.objects.get_or_create(
                 sessionid=sessionid,
                 defaults={'user': request.user if request.user.pk else None}
@@ -410,10 +416,40 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
 
 
         def _create_qgs_expr(s, fidsin=None, fidsout=None):
-            """ Create qgs expression to save in db """
+            """
+            Create qgs expression to save in db
+
+            :param s: Instance of SessionTokenFilter model.
+            :param fidsin: String of features id to contain.
+            :param fidsout: String of features id to exlude.
+            :return: QGIS expression string
+            :rtype: str
+            """
 
             expr = f'$id IN ({fidsin})' if fidsin else f'$id NOT IN ({fidsout})'
             return f'{s.qgs_expr} AND {expr}' if s else expr
+
+        def _check_url_params_name_fid(mode):
+            """
+            Check for 'name' and 'fid' url parameters
+
+            :param mode: Value of 'mode' URL parameter
+            :return: Dict for model to save with fid or name key
+            :rtype: dict
+            """
+            name = request_data.get('name')
+            fid = request_data.get('fid')
+            if not name and not fid:
+                raise APIException(
+                    f"'name' or 'fid' parameter is required for mode='{mode}'.")
+            if fid and name:
+                raise APIException(
+                    f"'fid' only or 'name' only parameter is required for mode='{mode}'.")
+
+            # Return dict for model
+            return {'pk': fid} if fid else {'name': name}
+
+
 
 
         if mode == 'create_update':
@@ -469,16 +505,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
 
         elif mode == 'apply':
 
-            name = request_data.get('name')
-            fid = request_data.get('fid')
-            if not name and not fid:
-                raise APIException(
-                    "'name' or 'fid' parameter is required for mode='apply'.")
-
-            if fid:
-                kwargs = {'pk': fid}
-            else:
-                kwargs = {'name': name}
+            kwargs = _check_url_params_name_fid('apply')
 
             fls = FilterLayerSaved.objects.get(
                 layer = self.layer,
@@ -496,6 +523,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
                 }
             )
 
+            # Return newone of current filter token
             token_data.update({
                 'filtertoken': s.token
             })
@@ -503,15 +531,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
 
         elif mode == 'delete_saved':
 
-            name = request_data.get('name')
-            fid = request_data.get('fid')
-            if not name and not fid:
-                raise APIException(
-                    "'name' or 'fid' parameter is required for mode='delete_saved'.")
-            if fid:
-                kwargs = {'pk': fid}
-            else:
-                kwargs = {'name': name}
+            kwargs = _check_url_params_name_fid('delete_saved')
 
             FilterLayerSaved.objects.get(
                 layer = self.layer,
