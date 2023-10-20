@@ -204,8 +204,9 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                     # case relation data ADD, if father referenced field is pk
                     if is_referenced_field_is_pk:
                         for newid in kwargs['referenced_layer_insert_ids']:
-                            if geojson_feature['properties'][metadata_layer.referencing_field] == newid['clientid']:
-                                geojson_feature['properties'][metadata_layer.referencing_field] = newid['id']
+                            for referencing_field in metadata_layer.referencing_field:
+                                if geojson_feature['properties'][referencing_field] == newid['clientid']:
+                                    geojson_feature['properties'][referencing_field] = newid['id']
 
                     if mode_editing == EDITING_POST_DATA_UPDATED:
                         # control feature locked
@@ -273,6 +274,11 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                                     not feature[qgis_field.name()]:
                                 feature.setAttribute(qgis_field.name(),
                                                      qgis_layer.dataProvider().defaultValueClause(field_idx))
+
+                            #
+                            elif qgis_field.typeName().lower() in ('geometry', ):
+                                if geojson_feature['properties'][qgis_field.name()] == '':
+                                    geojson_feature['properties'][qgis_field.name()] = None
 
                             # Formatting data if field's type is date, datetime or time
                             # ----------------------------------------------------------
