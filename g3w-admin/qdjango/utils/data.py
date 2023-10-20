@@ -623,6 +623,19 @@ class QgisProjectLayer(XmlData):
                             for key, value in item.items():
                                 data['values'].append(
                                     {'key': key, 'value': value})
+
+            # If ewidget.type() is ReferenceValue, add DiplayExpression of referencedlayer
+            elif ewidget.type() == 'RelationReference':
+
+                # Remove from layer dotasource data
+                del(options['ReferencedLayerDataSource'],
+                    options['ReferencedLayerProviderKey'])
+
+                # Add DiplayExpression of ReferencedLayer
+                options['display_expression'] = self.qgisProject.qgs_project.mapLayer(
+                    options['ReferencedLayerId']).displayExpression()
+
+                data.update(options)
             else:
                 data.update(options)
 
