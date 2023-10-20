@@ -229,11 +229,10 @@ class QgisEditTypeRelationReference(QgisEditTypeValueMap):
 
         # add params for get value
         input_form['input']['options'].update({
-            'relation_id': self.Layer,
+            'relation_id': self.Relation,
             'loading': {
                 'state': None
             },
-            #'filter_expression': filter_expression,
         })
 
         return input_form
@@ -246,5 +245,5 @@ MAPPING_EDITTYPE_QGISEDITTYPE = {
     'UniqueValues': QgisEditTypeUniqueValue,
     'ExternalResource': QgisEditTypeExternalResource,
     'ValueRelation': QgisEditTypeValueRelation,
-    #'RelationReference': QgisEditTypeRelationReference
+    'RelationReference': QgisEditTypeRelationReference
 }
