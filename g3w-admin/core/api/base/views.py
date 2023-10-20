@@ -20,6 +20,8 @@ from qgis.core import (
     QgsFeature,
 )
 
+from qgis.PyQt.QtCore import QVariant
+
 from rest_framework import exceptions, status
 from rest_framework.exceptions import APIException
 from rest_framework.pagination import PageNumberPagination
@@ -35,6 +37,7 @@ from core.utils.structure import (APIVectorLayerStructure, mapLayerAttributes,
                                   mapLayerAttributesFromQgisLayer)
 from core.utils.vector import BaseUserMediaHandler as UserMediaHandler
 from core.utils.qgisapi import get_qgis_features, count_qgis_features, server_fid
+from qdjango.apps import QGS_APPLICATION
 
 import logging
 
@@ -481,10 +484,25 @@ class BaseVectorApiView(G3WAPIView):
         # If 'unique' request params is set,
         # api return a list of unique
         # field name sent with 'unique' param.
+        #
+        # If 'fformatter' request param is set,
+        # api return a list array [original_field_value, formatted_field_value]
+        # field name sent with 'fformatter' param.
         # --------------------------------------
         # IDEA:     for big data it'll be iterate over features to get unique
         #           c++ iteration is fast. Instead memory layer with too many features can be a problem.
-        if 'unique' in request.query_params:
+        if 'unique' in request.query_params or 'fformatter' in request.query_params:
+
+            pvalue = request.query_params.get('unique') if 'unique' in request.query_params else (
+                request.query_params.get('fformatter'))
+
+            qfieldidx = self.metadata_layer.qgis_layer.fields().indexOf(pvalue)
+
+            # Get QgsFieldFormatter
+            if 'fformatter' in request.query_params:
+                ewsetup = self.metadata_layer.qgis_layer.editorWidgetSetup(qfieldidx)
+                qfformatter = QGS_APPLICATION.fieldFormatterRegistry().fieldFormatter(ewsetup.type())
+
 
             vl = QgsVectorLayer(QgsWkbTypes.displayString(self.metadata_layer.qgis_layer.wkbType()),
                                 "temporary_vector", "memory")
@@ -496,16 +514,23 @@ class BaseVectorApiView(G3WAPIView):
 
             res = pr.addFeatures(self.features)
 
-            uniques = vl.uniqueValues(
-                self.metadata_layer.qgis_layer.fields().indexOf(
-                    request.query_params.get('unique'))
-            )
+            uniques = vl.uniqueValues(qfieldidx)
 
             values = []
             for u in uniques:
                 try:
                     if u:
-                        values.append(json.loads(QgsJsonUtils.encodeValue(u)))
+                        if 'unique' in request.query_params:
+                            values.append(json.loads(QgsJsonUtils.encodeValue(u)))
+                        else:
+                            fvalue = qfformatter.representValue(
+                                self.metadata_layer.qgis_layer,
+                                qfieldidx,
+                                ewsetup.config(),
+                                QVariant(),
+                                u
+                            )
+                            values.append([QgsJsonUtils.encodeValue(u), fvalue])
                 except Exception as e:
                     logger.error(f'Response vector widget unique: {e}')
                     continue
