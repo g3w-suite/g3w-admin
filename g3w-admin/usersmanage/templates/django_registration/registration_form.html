@@ -54,14 +54,12 @@
         <div class="col-md-6 col-xs-12">
             <div class="form-group has-feedback">
                 <input type="text" class="form-control" name="{{form.first_name.name}}" placeholder="{{form.first_name.label|capfirst}}">
-                <span class="glyphicon glyphicon-lock form-control-feedback"></span>
                  {% if form.first_lame.help_text %}
                 <p class="help">{{ form.first_name.help_text|safe }}</p>
                 {% endif %}
             </div>
             <div class="form-group has-feedback">
                 <input type="text" class="form-control" name="{{form.last_name.name}}" placeholder="{{form.last_name.label|capfirst}}">
-                <span class="glyphicon glyphicon-lock form-control-feedback"></span>
                  {% if form.first_lame.help_text %}
                 <p class="help">{{ form.last_name.help_text|safe }}</p>
                 {% endif %}

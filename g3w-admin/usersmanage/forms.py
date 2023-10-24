@@ -39,7 +39,7 @@ from PIL import Image
 from .models import Userdata, Department, Userbackend, GroupRole, USER_BACKEND_TYPES, GROUP_ROLES
 from core.mixins.forms import G3WRequestFormMixin, G3WFormMixin
 from usersmanage.configs import *
-from .utils import getUserGroups, userHasGroups
+from .utils import getUserGroups, userHasGroups, check_unique_email
 from .signals import after_init_user_form, after_save_user_form
 import logging
 
@@ -341,6 +341,9 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
 
         if 'user_groups' in self.initial and len(self.initial['user_groups']) > 0:
             self.initial['user_groups'] = self.initial['user_groups']
+
+        if settings.REGISTRATION_OPEN:
+            self.fields['email'].required = True
 
         # change queryset for editor1
         if G3W_EDITOR1 in getUserGroups(self.request.user):
@@ -645,7 +648,7 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
     def clean_avatar(self):
         """
         Check if upalod file is a valid image by pillow
-        :return: File object Cleaned data
+        :return: Cleaned data dict
         """
         avatar = self.cleaned_data['avatar']
         if avatar is None:
@@ -657,6 +660,20 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
         except Exception:
             raise ValidationError(_('Avatar is no a valid image'), code='image_invalid')
         return avatar
+
+    def clean_email(self):
+        """
+        Unique email is required
+
+        :return: Cleaned data email
+        """
+
+        email = self.cleaned_data['email']
+
+        if not check_unique_email(email, self.instance):
+            raise  ValidationError(_('A user with that email already exists.'), code='email_invalid')
+
+        return email
 
 
     class Meta(UserCreationForm.Meta):
@@ -817,6 +834,20 @@ class G3WRegistrationForm(G3WreCaptchaFormMixin, RegistrationForm):
             'last_name',
             'other_info'
         ]
+
+    def clean_email(self):
+        """
+        Unique email is required
+
+        :return: Cleaned data email
+        """
+
+        email = self.cleaned_data['email']
+
+        if not check_unique_email(email):
+            raise  ValidationError(_('A user with that email already exists.'), code='email_invalid')
+
+        return email
 
 
 
