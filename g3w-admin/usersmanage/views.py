@@ -276,6 +276,12 @@ class UserRegistrationView(registration_views.RegistrationView):
     admin_email_body_template = "django_registration/activation_admin_email_body.txt"
     admin_email_subject_template = "django_registration/activation_admin_email_subject.txt"
 
+    def registration_allowed(self):
+
+        # Check by settings
+        # and check if a user is logged in
+        return super().registration_allowed() and self.request.user.is_anonymous
+
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
 
