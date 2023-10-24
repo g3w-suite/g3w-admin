@@ -145,3 +145,23 @@ class UsermanageRegistrationViewTest(BaseUsermanageTestCase):
         self.assertEqual(ntu.userbackend.backend, USER_BACKEND_DEFAULT)
         self.assertEqual(ntu.userdata.other_info, 'Give you more information about me!!')
 
+        # Test Registration page with authenticated user
+        self.client.login(username=self.test_admin1.username, password=self.test_admin1.username)
+        res = self.client.get(rpath)
+
+        self.assertEqual(res.status_code, 302)
+        self.assertEqual(res.url, reverse('django_registration_disallowed'))
+
+        self.client.logout()
+
+
+    @override_settings(REGISTRATION_OPEN=False)
+    def test_registration_view_registration_not_active(self):
+
+        rpath = reverse('django_registration_register')
+        res = self.client.get(rpath)
+
+        self.assertEqual(res.status_code, 302)
+        self.assertEqual(res.url, reverse('django_registration_disallowed'))
+
+
