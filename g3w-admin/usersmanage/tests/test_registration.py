@@ -22,7 +22,8 @@ from .base import BaseUsermanageTestCase
     LANGUAGE_CODE='en',
     LANGUAGES = (
         ('en', 'English'),
-    )
+    ),
+    REGISTRATION_OPEN=True
 )
 class UsermanageRegistrationFormTest(BaseUsermanageTestCase):
 
