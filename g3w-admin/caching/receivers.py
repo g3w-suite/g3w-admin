@@ -9,6 +9,8 @@ from qdjango.models import Layer
 from caching.models import G3WCachingLayer
 from caching.utils import get_config
 
+import logging
+
 @receiver(load_layer_actions)
 def caching_layer_action(sender, **kwargs):
     """
@@ -134,3 +136,7 @@ def invalid_prj_cache(**kwargs):
 
     layer = Layer.objects.get(pk=kwargs["instance"].layer_id)
     layer.project.invalidate_cache()
+    logging.getLogger("g3wadmin.debug").debug(
+        f"Qdjango project /api/config invalidate on update/delete of a caching layer state: "
+        f"{layer.project}"
+    )

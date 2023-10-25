@@ -531,10 +531,11 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
             # Invalidate every cache for every user
             users = User.objects.all()
             for user in users:
-                logger.debug(
-                    f"[CACHING /api/config]: Ivalidate key {pre_key}_{str(user.pk)}"
-                )
-                cache.delete(f"{pre_key}_{str(user.pk)}")
+                d = cache.delete(f"{pre_key}_{str(user.pk)}")
+                if d:
+                    logger.debug(
+                        f"[CACHING /api/config]: Ivalidate key {pre_key}_{str(user.pk)}"
+                    )
         else:
 
             # Invalidate only for user

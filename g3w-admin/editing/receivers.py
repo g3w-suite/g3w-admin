@@ -389,4 +389,8 @@ def invalid_prj_cache(**kwargs):
 
     layer = Layer.objects.get(pk=kwargs["instance"].layer_id)
     layer.project.invalidate_cache()
+    logging.getLogger("g3wadmin.debug").debug(
+        f"Qdjango project /api/config invalidate on update/delete of a editing layer state: "
+        f"{layer.project}"
+    )
 

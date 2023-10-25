@@ -651,6 +651,19 @@ class QdjangoLayerWidgetsMixin(object):
     def get_success_url(self):
         return None
 
+    def form_valid(self, form):
+
+        ret = super().form_valid(form)
+
+        # Invalidate project cache
+        self.project.invalidate_cache()
+        logging.getLogger("g3wadmin.debug").debug(
+           f"Qdjango project /api/config invalidate cache after update layer widget: {self.project}"
+        )
+
+        return ret
+
+
 
 class QdjangoLayerWidgetsView(G3WGroupViewMixin, QdjangoProjectViewMixin, QdjangoLayerViewMixin, ListView):
     """
@@ -724,6 +737,18 @@ class QdjangoLayerWidgetDeleteView(G3WAjaxDeleteViewMixin, SingleObjectMixin, Vi
     # @method_decorator(permission_required('qdjango.delete_widget', (Widget, 'slug', 'slug'), raise_exception=True))
     def dispatch(self, *args, **kwargs):
         return super(QdjangoLayerWidgetDeleteView, self).dispatch(*args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+
+        # Invalidate /api/config project cache
+        for l in self.get_object().layers.all():
+            l.project.invalidate_cache()
+            logging.getLogger("g3wadmin.debug").debug(
+                f"Qdjango project /api/config invalidate cache after delate layer widget: {l.project}"
+            )
+
+        res = super().post(request, *args, **kwargs)
+        return res
 
 
 class QdjangoLinkWidget2LayerView(G3WRequestViewMixin, G3WGroupViewMixin, QdjangoProjectViewMixin, QdjangoLayerViewMixin, View):
@@ -854,6 +879,10 @@ class FilterByUserLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3WR
         # invalidate project cache
         if len(to_remove) > 0 or len(to_add) > 0:
             self.layer.project.invalidate_cache()
+            logging.getLogger("g3wadmin.debug").debug(
+                f"Qdjango project /api/config  invalidate cache after update of layer filter-by-user: "
+                f"{self.layer.project.project}"
+            )
 
         return super().form_valid(form)
 

@@ -231,3 +231,7 @@ def invalid_prj_cache(**kwargs):
 
     for layer in kwargs['instance'].layers.all():
         layer.project.invalidate_cache()
+        logging.getLogger("g3wadmin.debug").debug(
+            f"Qdjango project /api/config  invalidate cache after create/update/delete of layer qplotly widget: "
+            f"{layer.project}"
+        )

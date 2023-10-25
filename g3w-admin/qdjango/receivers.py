@@ -46,6 +46,9 @@ def delete_project_file(sender, **kwargs):
         logger.error(e)
 
     instance.invalidate_cache()
+    logging.getLogger("g3wadmin.debug").debug(
+        f"Qdjango project /api/config invalidate cache after delete it: {instance}"
+    )
 
     # delete ProjectMapUrlAlias related instance
     ProjectMapUrlAlias.objects.filter(
@@ -59,7 +62,11 @@ def delete_cache(sender, **kwargs):
     Perform deleting of key caches for getprojectsettings response.
     """
 
-    kwargs["instance"].invalidate_cache()
+    instance = kwargs["instance"]
+    instance.invalidate_cache()
+    logging.getLogger("g3wadmin.debug").debug(
+        f"Qdjango project /api/config invalidate cache after save it: {instance}"
+    )
 
 
 @receiver(post_delete, sender=Layer)
@@ -101,6 +108,13 @@ def remove_parent_project_from_cache(sender, **kwargs):
             "QGIS Server parent project touched to invalidate cache: %s" % path
         )
 
+        # Invalidate /api/config
+        l.project.invalidate_cache()
+        logging.getLogger("g3wadmin.debug").debug(
+            f"Parent qdjango project /api/config invalidate cache: {l.project}"
+        )
+
+
 
 @receiver(post_save, sender=Layer)
 def update_widget(sender, **kwargs):
@@ -121,9 +135,6 @@ def update_widget(sender, **kwargs):
         if widget.datasource != layer.datasource:
             widget.datasource = layer.datasource
             widget.save()
-
-    # invalidate project cache
-    layer.project.invalidate_cache()
 
 
 @receiver(user_logged_out)
@@ -251,6 +262,10 @@ def invalid_prj_cache(**kwargs):
     """Invalid the possible qdjango project cache"""
 
     kwargs['instance'].constraint.layer.project.invalidate_cache()
+    logging.getLogger("g3wadmin.debug").debug(
+        f"Parent qdjango project /api/config invalidate on create/update/delete of a layer constraint: "
+        f"{kwargs['instance'].constraint.layer.project}"
+    )
 
 @receiver(post_save, sender=ColumnAcl)
 @receiver(pre_delete, sender=ColumnAcl)
@@ -258,5 +273,9 @@ def invalid_prj_cache(**kwargs):
     """Invalid the possible qdjango project cache"""
 
     kwargs['instance'].layer.project.invalidate_cache()
+    logging.getLogger("g3wadmin.debug").debug(
+        f"Parent qdjango project /api/config invalidate on create/update/delete of a layer columnacl: "
+        f"{kwargs['instance'].layer.project}"
+    )
 
 
