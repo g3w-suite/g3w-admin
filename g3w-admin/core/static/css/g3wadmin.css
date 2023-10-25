@@ -244,3 +244,11 @@ a.layer-action {
     width: 720px;
     margin: 7% auto;
 }
+
+.recaptcha {
+    padding-left: 9px;
+}
+
+.recaptcha-registration {
+    padding-left: 11.5px;
+}
