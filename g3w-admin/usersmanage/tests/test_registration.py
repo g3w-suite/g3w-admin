@@ -22,8 +22,7 @@ from .base import BaseUsermanageTestCase
     LANGUAGE_CODE='en',
     LANGUAGES = (
         ('en', 'English'),
-    ),
-    REGISTRATION_OPEN=True
+    )
 )
 class UsermanageRegistrationFormTest(BaseUsermanageTestCase):
 
@@ -32,6 +31,7 @@ class UsermanageRegistrationFormTest(BaseUsermanageTestCase):
 
         cls.request = RequestFactory()
 
+    @override_settings(REGISTRATION_OPEN=True)
     def test_registration_form(self):
         """ Test Registration form insert/create new user """
 
