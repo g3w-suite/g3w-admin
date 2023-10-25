@@ -121,6 +121,7 @@ class UsermanageRegistrationFormTest(BaseUsermanageTestCase):
 class UsermanageRegistrationViewTest(BaseUsermanageTestCase):
     """ View for test registration view """
 
+    @override_settings(REGISTRATION_OPEN=True)
     def test_registration_view(self):
 
         view_data = {
