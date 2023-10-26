@@ -23,7 +23,8 @@ from .models import (
     SessionTokenFilter,
     GeoConstraintRule,
     ConstraintSubsetStringRule,
-    ConstraintExpressionRule
+    ConstraintExpressionRule,
+    Message
 )
 from .searches import ProjectSearch
 from .signals import post_save_qdjango_project_file
@@ -258,7 +259,7 @@ def set_layer_acl_flag_delete(sender, **kwargs):
 @receiver(pre_delete, sender=ConstraintExpressionRule)
 @receiver(post_save, sender=ConstraintSubsetStringRule)
 @receiver(pre_delete, sender=ConstraintSubsetStringRule)
-def invalid_prj_cache(**kwargs):
+def invalid_prj_cache_by_constraint(**kwargs):
     """Invalid the possible qdjango project cache"""
 
     kwargs['instance'].constraint.layer.project.invalidate_cache()
@@ -269,7 +270,7 @@ def invalid_prj_cache(**kwargs):
 
 @receiver(post_save, sender=ColumnAcl)
 @receiver(pre_delete, sender=ColumnAcl)
-def invalid_prj_cache(**kwargs):
+def invalid_prj_cache_by_columnacl(**kwargs):
     """Invalid the possible qdjango project cache"""
 
     kwargs['instance'].layer.project.invalidate_cache()
@@ -278,4 +279,13 @@ def invalid_prj_cache(**kwargs):
         f"{kwargs['instance'].layer.project}"
     )
 
+@receiver(post_save, sender=Message)
+@receiver(pre_delete, sender=Message)
+def invalid_prj_cache_by_message(**kwargs):
+    """Invalid the possible qdjango project cache"""
 
+    kwargs['instance'].project.invalidate_cache()
+    logging.getLogger("g3wadmin.debug").debug(
+        f"Parent qdjango project /api/config invalidate on create/update/delete of a project messages: "
+        f"{kwargs['instance'].project}"
+    )
