@@ -45,3 +45,10 @@ HUEY = {
         'worker_type': 'process',
     },
 }
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "LOCATION": "874uryeurejhf8347efjlksdjfiouo4",
+    }
+}
