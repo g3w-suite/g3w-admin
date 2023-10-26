@@ -522,31 +522,38 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
     def invalidate_cache(self, user=None):
         """Method to invalidate(delete) API REST /api/config"""
 
-        # invalidate project cache
-        pre_key = (
-            f"{settings.QDJANGO_PRJ_CACHE_KEY}{self.group.pk}_{'qdjango'}_{self.pk}"
-        )
-        if user == None:
+        try:
 
-            # Invalidate every cache for every user
-            users = User.objects.all()
-            for user in users:
+            # invalidate project cache
+            pre_key = (
+                f"{settings.QDJANGO_PRJ_CACHE_KEY}{self.group.pk}_{'qdjango'}_{self.pk}"
+            )
+            if user == None:
+
+                # Invalidate every cache for every user
+                users = User.objects.all()
+                for user in users:
+                    d = cache.delete(f"{pre_key}_{str(user.pk)}")
+                    if d:
+                        logger.debug(
+                            f"[CACHING /api/config]: Ivalidate key {pre_key}_{str(user.pk)}"
+                        )
+            else:
+
+                # Invalidate only for user
+                logger.debug(
+                    f"[CACHING /api/config]: Ivalidate key {pre_key}_{str(user.pk)}"
+                )
                 d = cache.delete(f"{pre_key}_{str(user.pk)}")
                 if d:
                     logger.debug(
                         f"[CACHING /api/config]: Ivalidate key {pre_key}_{str(user.pk)}"
                     )
-        else:
 
-            # Invalidate only for user
-            logger.debug(
-                f"[CACHING /api/config]: Ivalidate key {pre_key}_{str(user.pk)}"
+        except Exception as e:
+            logger.error(
+                f"[CACHING /api/config] - An error on cache invalidation: {e}"
             )
-            d = cache.delete(f"{pre_key}_{str(user.pk)}")
-            if d:
-                logger.debug(
-                    f"[CACHING /api/config]: Ivalidate key {pre_key}_{str(user.pk)}"
-                )
 
 
 post_delete.connect(check_overviewmap_project, sender=Project)
