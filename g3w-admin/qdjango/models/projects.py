@@ -542,7 +542,11 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
             logger.debug(
                 f"[CACHING /api/config]: Ivalidate key {pre_key}_{str(user.pk)}"
             )
-            cache.delete(f"{pre_key}_{str(user.pk)}")
+            d = cache.delete(f"{pre_key}_{str(user.pk)}")
+            if d:
+                logger.debug(
+                    f"[CACHING /api/config]: Ivalidate key {pre_key}_{str(user.pk)}"
+                )
 
 
 post_delete.connect(check_overviewmap_project, sender=Project)
