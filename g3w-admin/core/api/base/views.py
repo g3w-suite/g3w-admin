@@ -1,11 +1,9 @@
 import json
-from collections import OrderedDict
 from copy import copy
 
-from django.conf import settings
-from django.contrib.gis.geos import GEOSGeometry
 from django.core.exceptions import PermissionDenied
-from django.http import Http404
+from django.http import Http404, HttpRequest
+from django.urls import resolve, reverse
 from django.utils.translation import ugettext
 from django.utils.translation import ugettext_lazy as _
 from qgis.core import (
@@ -493,28 +491,66 @@ class BaseVectorApiView(G3WAPIView):
         #           c++ iteration is fast. Instead memory layer with too many features can be a problem.
         if 'unique' in request.query_params or 'fformatter' in request.query_params:
 
+            uniques = None
             pvalue = request.query_params.get('unique') if 'unique' in request.query_params else (
                 request.query_params.get('fformatter'))
 
             qfieldidx = self.metadata_layer.qgis_layer.fields().indexOf(pvalue)
+            r_qfieldidx = qfieldidx
+            qlayer = self.metadata_layer.qgis_layer
+            qfeatures = self.features
 
             # Get QgsFieldFormatter
             if 'fformatter' in request.query_params:
                 ewsetup = self.metadata_layer.qgis_layer.editorWidgetSetup(qfieldidx)
                 qfformatter = QGS_APPLICATION.fieldFormatterRegistry().fieldFormatter(ewsetup.type())
 
+                # Get information about referenced layer
+                wconfig = ewsetup.config()
+                if 'ReferencedLayerId' in wconfig:
+                    relation = None
+                    for r in eval(self.layer.project.relations):
+                        if r['id'] == wconfig['Relation']:
+                            relation = r
+                    if relation:
+                        r_pvalue = relation['fieldRef']['referencedField'][
+                            relation['fieldRef']['referencingField'].index(pvalue)]
 
-            vl = QgsVectorLayer(QgsWkbTypes.displayString(self.metadata_layer.qgis_layer.wkbType()),
-                                "temporary_vector", "memory")
-            pr = vl.dataProvider()
+                        # Get referenced layer uniques r_pvalue by api
 
-            # add fields
-            pr.addAttributes(self.metadata_layer.qgis_layer.fields())
-            vl.updateFields()  # tell the vector layer to fetch changes from the provider
+                        kwargs.update({'project_type': 'qdjango',
+                                       'project_id': self.layer.project.pk,
+                                       'layer_name': wconfig['ReferencedLayerId'],
+                                       'mode_call': 'data'
+                                       })
 
-            res = pr.addFeatures(self.features)
+                        # To avoid python circular import
+                        from qdjango.vector import LayerVectorView
 
-            uniques = vl.uniqueValues(qfieldidx)
+                        url = reverse('core-vector-api', kwargs=kwargs)
+                        req = HttpRequest()
+                        req.method = 'GET'
+                        req.user = request.user
+                        req.resolver_match = resolve(url)
+                        req.GET['unique'] = r_pvalue
+                        view = LayerVectorView.as_view()
+                        res = view(req, *[], **kwargs).render()
+                        uniques = json.loads(res.content)['data']
+
+
+            if not uniques:
+
+                vl = QgsVectorLayer(QgsWkbTypes.displayString(self.metadata_layer.qgis_layer.wkbType()),
+                                    "temporary_vector", "memory")
+                pr = vl.dataProvider()
+
+                # add fields
+                pr.addAttributes(self.metadata_layer.qgis_layer.fields())
+                vl.updateFields()  # tell the vector layer to fetch changes from the provider
+
+                res = pr.addFeatures(self.features)
+
+                uniques = vl.uniqueValues(qfieldidx)
 
             values = []
             for u in uniques:
@@ -542,7 +578,10 @@ class BaseVectorApiView(G3WAPIView):
                 'count': len(values)
             })
 
-            del(vl)
+            try:
+                del(vl)
+            except:
+                pass
 
         else:
 
