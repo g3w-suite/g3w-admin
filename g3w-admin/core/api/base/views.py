@@ -530,7 +530,7 @@ class BaseVectorApiView(G3WAPIView):
                                 QVariant(),
                                 u
                             )
-                            values.append([QgsJsonUtils.encodeValue(u), fvalue])
+                            values.append([json.loads(QgsJsonUtils.encodeValue(u)), fvalue])
                 except Exception as e:
                     logger.error(f'Response vector widget unique: {e}')
                     continue

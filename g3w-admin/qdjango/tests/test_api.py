@@ -41,8 +41,9 @@ from usersmanage.models import Group as UserGroup
 from core.tests.base import CoreTestBase
 from core.utils.qgisapi import get_qgs_project, get_qgis_layer
 
-from .base import QdjangoTestBase, CURRENT_PATH, TEST_BASE_PATH, QGS310_WIDGET_FILE, CoreGroup, G3WSpatialRefSys, \
-    QGS322_FILE, QGS322_INITEXTENT_GEOCONSTRAINT_FILE, QGS322_FORMATTING_DATE, QGS328_FILE, QGS328_VALUE_RELATION
+from .base import (QdjangoTestBase, CURRENT_PATH, TEST_BASE_PATH, QGS310_WIDGET_FILE, CoreGroup, G3WSpatialRefSys, \
+    QGS322_FILE, QGS322_INITEXTENT_GEOCONSTRAINT_FILE, QGS322_FORMATTING_DATE, QGS328_FILE, QGS328_VALUE_RELATION,
+                   QGS328_RELATION_REFERENCE)
 from qgis.core import QgsFeatureRequest, QgsRasterLayer, QgsVectorLayer
 from qgis.PyQt.QtCore import QTemporaryDir
 from qgis.server import QgsServerProjectUtils
@@ -706,10 +707,25 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         cls.project322_datewidget.group = cls.project_group
         cls.project322_datewidget.save()
 
+        # For RelationReference widget
+        qgis_project_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS328_RELATION_REFERENCE), 'r'))
+        cls.project328_rrwidget = QgisProject(qgis_project_file)
+        cls.project328_rrwidget.group = cls.project_group
+        cls.project328_rrwidget.save()
+
+        qgis_project_file = File(
+            open("{}{}{}".format(CURRENT_PATH, TEST_BASE_PATH, QGS328_VALUE_RELATION), "r")
+        )
+        cls.project328_value_relation = QgisProject(qgis_project_file)
+        cls.project328_value_relation.title = "A project QGIS 3.28 fro value relation"
+        cls.project328_value_relation.group = cls.project_group
+        cls.project328_value_relation.save()
+
     @classmethod
     def tearDownClass(cls):
         cls.project_widget310.instance.delete()
         cls.project322.instance.delete()
+        cls.project328_value_relation.instance.delete()
         super().tearDownClass()
 
     def _testApiCall(self, view_name, args, kwargs={}, status_auth=200, login=True, logout=True):
@@ -1526,6 +1542,58 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
                                             }).content)
 
         self.assertEqual(resp['count'], 1)
+
+    def test_field_formatter_api_param(self):
+        """
+        Test 'fformatter' url request parameter for 'data' vector API
+
+        Using this parameter with a /api/vector/data API return a list key-value of uniques formatted values.
+        This works fo ValueRelation ValueMap and RelationReference form widgets.
+        """
+
+        cities = Layer.objects.get(
+            project_id=self.project328_rrwidget.instance.pk, origname='cities10000eu')
+
+        # Test field without relative widget
+        # ----------------------------------
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['data', 'qdjango', self.project328_rrwidget.instance.pk,
+                                             cities.qgs_layer_id],
+                                            {
+                                                'fformatter': 'NAME'
+                                            }).content)
+
+        # item[0] and item[1] are identical
+        for item in resp['data']:
+            self.assertEqual(item[0], item[1])
+
+        # Test RelatioReference
+        # ---------------------
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['data', 'qdjango', self.project328_rrwidget.instance.pk,
+                                                cities.qgs_layer_id],
+                                            {
+                                                'fformatter': 'ISO2_CODE'
+                                            }).content)
+
+        self.assertEqual(resp['data'], [['AD', 'Andorra (AD)'], ['AL', 'Shqiperia (AL)'], ['AT', '�sterreich (AT)'], ['BA', 'Bosna i Hercegovina (BA)'], ['BE', 'Belgique/Belgie (BE)'], ['BG', 'Bulgaria (BG)'], ['BY', 'Byelarus (BY)'], ['CH', 'Schweiz (German), Suisse (French), Svizzera (Italian) (CH)'], ['CZ', 'Ceska Republika (CZ)'], ['DE', 'Deutschland (DE)'], ['DK', 'Danmark (DK)'], ['EE', 'Eesti Vabariik (EE)'], ['ES', 'Espa�a (ES)'], ['FI', 'Suomen Tasavalta (FI)'], ['FR', 'France (FR)'], ['GB', 'United Kingdom (GB)'], ['GI', 'Gibraltar (GI)'], ['GR', 'Ellas or Ellada (GR)'], ['HR', 'Hrvatska (HR)'], ['HU', 'Magyarorszag (HU)'], ['IE', '�ire (IE)'], ['IT', 'Italia (IT)'], ['LT', 'Lietuva (LT)'], ['LU', 'Luxembourg, Letzebuerg (LU)'], ['LV', 'Latvija (LV)'], ['MC', 'Monaco (MC)'], ['MD', ''], ['ME', 'Crna Gora (ME)'], ['MK', ''], ['MT', 'Malta (MT)'], ['NL', 'Nederland (NL)'], ['NO', 'Norge (NO)'], ['PL', 'Polska (PL)'], ['PT', 'Portugal (PT)'], ['RO', 'Romania (RO)'], ['RS', ''], ['RU', ''], ['SE', 'Sverige (SE)'], ['SI', 'Slovenija (SI)'], ['SK', ''], ['TR', 'Turkiye (TR)'], ['UA', 'Ukrayina (UA)']])
+
+        # Test ValueRelation
+        pois = Layer.objects.get(
+            project_id=self.project328_value_relation.instance.pk,
+            qgs_layer_id='poi_2c470d17_a234_464c_83f8_416bcdedda17')
+
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['data', 'qdjango', self.project328_value_relation.instance.pk,
+                                             pois.qgs_layer_id],
+                                            {
+                                                'fformatter': 'type'
+                                            }).content)
+
+        self.assertEqual(resp['data'], [['A', 'Apple'], ['B', 'Banana'], ['B1', 'Blueberry'], ['C', 'Coconut']])
+
+
+
 
     def test_filtertoken_api(self):
         """ Test vector layer api data with 'filtertoken' param """
