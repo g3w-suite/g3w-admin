@@ -171,7 +171,7 @@ ga.Qdjango.widgetEditor = {
           // Add relation_reference
           if (ga.Qdjango.localVars.layer_edittypes[fieldname]['widgetv2type'] == 'RelationReference' &&
               (fieldwidgettype == 'selectbox' || fieldwidgettype == 'autocompletebox')) {
-            options['relation_reference'] = v.find(".cmpRelationReference").find("select").val()
+            options['relation_reference'] = true ? v.find(".cmpRelationReference").find("select").val() == '1': false
           }
 
           obj.fields.push({
@@ -348,7 +348,7 @@ ga.Qdjango.widgetEditor = {
 
     var selected_yes = ""
     var selected_no = "selected"
-    if (that.isset(values.input.options.relation_reference) && values.input.options.relation_reference === "1"){
+    if (that.isset(values.input.options.relation_reference) && values.input.options.relation_reference === true){
       var selected_yes = "selected"
       var selected_no = ""
     }
