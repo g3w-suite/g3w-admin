@@ -190,6 +190,11 @@ class QgisProjectLayer(XmlData):
         if 'qgisProject' in kwargs:
             self.qgisProject = kwargs['qgisProject']
 
+        # Get XML tree instance
+        self.qgisLayerTree = self.qgisProject.qgisProjectTree.\
+                xpath(f"///maplayer/id[text()='{self.qgs_layer.id()}']")[0].\
+                getparent()
+
         # FIXME: check il order on layer is used
         self.order = kwargs['order'] if 'order' in kwargs else 0
 
@@ -375,22 +380,41 @@ class QgisProjectLayer(XmlData):
         :rtype: list, None
         """
 
+        # Get xml layer tree element to get property not available by Python API: hasCustomPrefix
+        layer_tree_vectorjoins = self.qgisLayerTree.find('vectorjoins')
+
         # get root of layer-tree-group
         ret = []
         try:
             vectorjoins = self.qgs_layer.vectorJoins()
+
+
+
             for order, join in enumerate(vectorjoins):
+
+                # Prefix management
+                # If sert custom prefix and the value is '', continue for cycle to avoid relation save
+                if layer_tree_vectorjoins[order].get('hasCustomPrefix') == '1' and join.prefix() == '':
+                    continue
+                else:
+                    if layer_tree_vectorjoins[order].get("hasCustomPrefix") == "1":
+                        prefix = join.prefix()
+                    else:
+                        prefix = f"{join.joinLayer().name()}_"
+
+
                 ret.append(
                     {
                         "cascadedDelete": str(int(join.hasCascadedDelete())),
                         "targetFieldName": join.targetFieldName(),
-                        "editable": str(int(join.isEditable())),
+                        "editable": join.isEditable(),
                         "memoryCache": str(int(join.isUsingMemoryCache())),
                         "upsertOnEdit": str(int(join.hasUpsertOnEdit())),
                         "joinLayerId": join.joinLayerId(),
                         "dynamicForm": str(int(join.isDynamicFormEnabled())),
-                        "joinFieldName": join.joinFieldName()
-
+                        "joinFieldName": join.joinFieldName(),
+                        "hasCustomPrefix": True if layer_tree_vectorjoins[order].get('hasCustomPrefix') == '1' else False,
+                        "prefix": prefix
                     }
                 )
 
