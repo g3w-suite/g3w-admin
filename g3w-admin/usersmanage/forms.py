@@ -785,8 +785,12 @@ class G3WUserGroupForm(G3WRequestFormMixin, G3WFormMixin, ModelForm):
 
         # Add gusers to the group
         # -----------------------
-        gusers_to_remove = list(set(self.initial['guser']) - set(self.cleaned_data['gusers']))
-        gusers_to_add = list(set(self.cleaned_data['gusers']) - set(self.initial['guser']))
+        gusers_to_remove = []
+        gusers_to_add = self.cleaned_data['gusers']
+        if 'gusers'in self.initial:
+            gusers_to_remove = list(set(self.initial['guser']) - set(self.cleaned_data['gusers']))
+            gusers_to_add = list(set(self.cleaned_data['gusers']) - set(self.initial['guser']))
+
         for gu in gusers_to_add:
             instance.user_set.add(User.objects.get(pk=gu))
         for gu in gusers_to_remove:
