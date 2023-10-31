@@ -14,6 +14,7 @@ from django.conf import settings
 from django.db import models
 from django.utils.http import int_to_base36
 from django.utils.crypto import salted_hmac
+from model_utils.models import TimeStampedModel
 from usersmanage.models import User
 from .projects import Layer
 from datetime import datetime
@@ -86,12 +87,29 @@ class SessionTokenFilter(models.Model):
 
 class SessionTokenFilterLayer(models.Model):
     """
-    Model to save qgis espresion for layer by session token filter.
+    Model to save qgis expression for layer by session token filter.
     """
 
     session_token_filter = models.ForeignKey(SessionTokenFilter, on_delete=models.CASCADE, related_name='stf_layers')
     layer = models.ForeignKey(Layer, on_delete=models.CASCADE)
     qgs_expr = models.TextField()
 
+
     class Meta:
         app_label = 'qdjango'
+
+
+class FilterLayerSaved(TimeStampedModel):
+    """
+    Model to save qgis expression for layer by user.
+    """
+
+    user = models.ForeignKey(User, null=True, blank=True, on_delete=models.DO_NOTHING)
+    layer = models.ForeignKey(Layer, on_delete=models.CASCADE)
+    qgs_expr = models.TextField()
+    name = models.TextField(null=True)
+
+    class Meta:
+        app_label = 'qdjango'
+        unique_together = ['user', 'layer', 'name']
+
