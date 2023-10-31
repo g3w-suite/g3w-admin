@@ -5,9 +5,9 @@ from django.forms import (
     ValidationError,
     ModelChoiceField,
     ModelMultipleChoiceField,
-    ChoiceField,
     ModelForm,
-    ChoiceField
+    ChoiceField,
+    MultipleChoiceField
 )
 from django.utils.datastructures import MultiValueDict
 from django.utils.translation import ugettext, ugettext_lazy as _
@@ -704,10 +704,33 @@ from django.forms.models import inlineformset_factory
 UserFormSet = inlineformset_factory(User, Userdata, fields ='__all__')
 
 
+class UserMultipleChoiceField(MultipleChoiceField):
+    """
+    Custom MultipleChoiceField for users.
+    When there are many users it is more useful to check the presence of only the users
+    sent to the form and not to load all the users of the system into the choices
+    """
+    def validate(self, value):
+        """Validate that the input is a list or tuple."""
+        if self.required and not value:
+            raise ValidationError(self.error_messages['required'], code='required')
+        # Validate that each value in the value list is in self.choices.
+
+        # Comparison with
+        users_exists = {str(u.pk): u for u in User.objects.filter(pk__in=value)}
+        users_diff = list(set(value) - set(users_exists.keys()))
+        if len(users_diff) > 0:
+            raise ValidationError(
+                self.error_messages['invalid_choice'],
+                code='invalid_choice',
+                params={'value': ', '.join(users_diff)},
+            )
+
+
 class G3WUserGroupForm(G3WRequestFormMixin, G3WFormMixin, ModelForm):
 
     role = ChoiceField(choices=GROUP_ROLES, label=_('Role'), required=True)
-    users = ChoiceField(choices=[], label=_('Users'), required=True)
+    gusers = UserMultipleChoiceField(choices=[], label=_('Users'), required=False)
 
     def __init__(self, *args, **kwargs):
         super(G3WUserGroupForm, self).__init__(*args, **kwargs)
@@ -727,7 +750,7 @@ class G3WUserGroupForm(G3WRequestFormMixin, G3WFormMixin, ModelForm):
                         Div(
                             'name',
                             'role',
-                            'users',
+                            'gusers',
                             css_class='box-body',
 
                         ),
@@ -759,6 +782,15 @@ class G3WUserGroupForm(G3WRequestFormMixin, G3WFormMixin, ModelForm):
         except:
             grouprole = GroupRole(group=instance, role=self.cleaned_data['role'])
         grouprole.save()
+
+        # Add gusers to the group
+        # -----------------------
+        gusers_to_remove = list(set(self.initial['guser']) - set(self.cleaned_data['gusers']))
+        gusers_to_add = list(set(self.cleaned_data['gusers']) - set(self.initial['guser']))
+        for gu in gusers_to_add:
+            instance.user_set.add(User.objects.get(pk=gu))
+        for gu in gusers_to_remove:
+            instance.user_set.remove(User.objects.get(pk=gu))
 
         return instance
 

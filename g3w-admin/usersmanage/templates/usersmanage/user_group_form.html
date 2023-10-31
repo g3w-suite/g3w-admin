@@ -4,6 +4,53 @@
 {% load g3wadmin_tags %}
 {% load i18n %}
 
+
+{% block custom_js_links_page %}
+<script>
+
+    var cleaned_data = {{ cleaned_data|safe }};
+    ga.$useRoleSelect = $('#id_role');
+    var MAPPING_ROLES = {
+        'viewer': 'Viewer Level 1',
+        'editor': 'Editor Level 2'
+    }
+    ga.$useRoleSelect.on('change', function(e){
+
+        var value = $(this).val();
+        var data = {role: MAPPING_ROLES[value]};
+        ga.utils.addCsfrtokenData(data);
+        var $users_select = $("#id_gusers");
+        if (value) {
+            $.ajax({
+                method: 'get',
+                url: '{% url 'usermanage-api-users' %}',
+                data: data,
+                success:function(res){
+
+                    users = []
+                    _.each(res.results, function(u){
+                        selected = true ? _.indexOf(cleaned_data['gusers'], u.id) != -1 : false
+                        users.push({
+                            id: u.id,
+                            text: u.username,
+                            selected: selected
+                        })
+                    })
+
+                    $users_select.html('');
+                    $users_select.select2({data: users});
+                }
+            });
+        }
+
+    });
+    // to start on update
+    ga.$useRoleSelect.trigger('change');
+
+
+</script>
+{% endblock %}
+
 {% block page_header %}
 <h1>
     {% trans 'System user groups' %}
