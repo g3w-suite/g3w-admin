@@ -520,7 +520,7 @@ class BaseVectorApiView(G3WAPIView):
 
                         kwargs.update({'project_type': 'qdjango',
                                        'project_id': self.layer.project.pk,
-                                       'layer_name': wconfig['ReferencedLayerId'],
+                                       'layer_name': relation['referencedLayer'],
                                        'mode_call': 'data'
                                        })
 
