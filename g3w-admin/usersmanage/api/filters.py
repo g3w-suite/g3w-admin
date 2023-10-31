@@ -15,7 +15,12 @@ from rest_framework import filters
 
 class ByMainRoleFilterBackend(filters.BaseFilterBackend):
     """
-    Filter by user main role
+    Filter by user main role, check for URL paramenter 'role'
     """
     def filter_queryset(self, request, queryset, view):
-        return queryset.filter(owner=request.user)
+
+        role = request.GET.get('role', None)
+        if role:
+            queryset = queryset.filter(groups__name=role)
+
+        return queryset

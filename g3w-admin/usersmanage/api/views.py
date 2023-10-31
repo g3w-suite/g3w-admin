@@ -19,16 +19,22 @@ from rest_framework import (
 
 from usersmanage.models import User
 from .serializers import UserSerializer
+from .filters import ByMainRoleFilterBackend
 
 
 class UserViewAPIListView(generics.ListAPIView):
 
-    permission_classes = [permissions.IsAdminUser]
+    permission_classes = [
+        permissions.IsAdminUser
+    ]
 
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
-    filter_backends = [filters.OrderingFilter]
+    filter_backends = [
+        filters.OrderingFilter,
+        ByMainRoleFilterBackend
+    ]
     ordering_fields = '__all__'
     ordering = ['id']
 
