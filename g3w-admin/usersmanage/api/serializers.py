@@ -16,7 +16,8 @@ from rest_framework import serializers
 from rest_framework.serializers import (
     CharField,
     EmailField,
-    SerializerMethodField
+    SerializerMethodField,
+    MultipleChoiceField
 )
 from usersmanage.models import (
     User,
@@ -34,7 +35,19 @@ from usersmanage.utils import (
 )
 
 
+class RoleSerializer(serializers.Serializer):
+    """
+    User Roles validation, for groups in 'roles' groups like 'Viewer Level 1' etc.
+    """
+    choices = [G3W_EDITOR1, G3W_EDITOR2, G3W_VIEWER1, G3W_VIEWER2]
+    choices += [f"-{c}" for c in choices]
+    roles = MultipleChoiceField(choices=choices)
+
+
 class UserSerializer(serializers.ModelSerializer):
+    """
+    User contrib.auth.model serializer
+    """
 
     password = CharField(required=False, write_only=True)
     email = EmailField(required=True)
