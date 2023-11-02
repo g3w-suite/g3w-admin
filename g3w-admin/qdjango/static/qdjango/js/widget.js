@@ -170,7 +170,7 @@ ga.Qdjango.widgetEditor = {
 
           // Add relation_reference
           if (ga.Qdjango.localVars.layer_edittypes[fieldname]['widgetv2type'] == 'RelationReference' &&
-              (fieldwidgettype == 'selectbox' || fieldwidgettype == 'autocompletebox')) {
+              (fieldwidgettype == 'selectbox')) {
             options['relation_reference'] = true ? v.find(".cmpRelationReference").find("select").val() == '1': false
           }
 
@@ -468,9 +468,12 @@ ga.Qdjango.widgetEditor = {
 											<label class="control-label">' + gettext("Comparison operator") + '</label>\
 										</div>\
 									</div>\
-									<div class="col-md-3">\
-										<div class="controls cmpRelationReference invisible">\
+									<div class="col-md-3 cmpRelationReference invisible">\
+										<div class="controls cmpRelationReferenceSelect ">\
 											<label class="control-label">' + gettext("Use Relation Reference") + '</label>\
+										</div>\
+										<div class="help-block">\
+										' + gettext("This field has a 'ReletaionReference' form widget active, do you want use if for searching?") + '\
 										</div>\
 									</div>\
 								</div>\
@@ -524,7 +527,7 @@ ga.Qdjango.widgetEditor = {
     div.find(".cmpOperatorSelect").append(cmpOperatorSelect)
     div.find(".cmpDependanceSelect").append(cmpDependanceSelect)
     div.find(".widgetType").append(widgetSelect)
-    div.find(".cmpRelationReference").append(relationReferenceSelect)
+    div.find(".cmpRelationReferenceSelect").append(relationReferenceSelect)
 
     $(".rightCol").append(div)
 
@@ -541,8 +544,10 @@ ga.Qdjango.widgetEditor = {
 
         // Check if field has RelationReference widget
         fieldname = div.find(".fieldSelect").find("select").val();
-        if (ga.Qdjango.localVars.layer_edittypes[fieldname]['widgetv2type'] == 'RelationReference') {
+        if (ga.Qdjango.localVars.layer_edittypes[fieldname]['widgetv2type'] == 'RelationReference' && $(this).val() == "selectbox") {
           div.find(".cmpRelationReference").removeClass("invisible")
+        } else {
+          div.find(".cmpRelationReference").addClass("invisible")
         }
 
         // On select dependance change
