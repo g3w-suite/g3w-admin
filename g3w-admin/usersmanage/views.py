@@ -197,7 +197,7 @@ class UserGroupUpdateView(G3WRequestViewMixin, UpdateView):
         # add group role
         try:
             initials['role'] = self.object.grouprole.role
-            initials['guser'] = [str(u.pk) for u in self.object.user_set.all()]
+            initials['gusers'] = [str(u.pk) for u in self.object.user_set.all()]
         except:
             pass
 

@@ -726,11 +726,17 @@ class UserMultipleChoiceField(MultipleChoiceField):
                 params={'value': ', '.join(users_diff)},
             )
 
+MAPPING_UG_ROLE_U_ROLE = {
+    'viewer' : G3W_VIEWER1,
+    'editor' : G3W_EDITOR2,
+}
 
 class G3WUserGroupForm(G3WRequestFormMixin, G3WFormMixin, ModelForm):
 
     role = ChoiceField(choices=GROUP_ROLES, label=_('Role'), required=True)
     gusers = UserMultipleChoiceField(choices=[], label=_('Users'), required=False)
+
+
 
     def __init__(self, *args, **kwargs):
         super(G3WUserGroupForm, self).__init__(*args, **kwargs)
@@ -772,6 +778,19 @@ class G3WUserGroupForm(G3WRequestFormMixin, G3WFormMixin, ModelForm):
         fields='__all__'
         model=AuthGroup
 
+    def clean_gusers(self):
+        """
+        Check user role by user group role
+        """
+
+        for u in self.cleaned_data['gusers']:
+            user = User.objects.get(pk=u)
+            cop_role = MAPPING_UG_ROLE_U_ROLE[self.cleaned_data['role']]
+            if not userHasGroups(user, [MAPPING_UG_ROLE_U_ROLE[self.cleaned_data['role']]]):
+                raise ValidationError(_(f"User {user} has not role {cop_role}"))
+
+        return self.cleaned_data['gusers']
+
     def save(self, commit=True):
         instance = super(G3WUserGroupForm, self).save(commit=commit)
 
@@ -788,8 +807,8 @@ class G3WUserGroupForm(G3WRequestFormMixin, G3WFormMixin, ModelForm):
         gusers_to_remove = []
         gusers_to_add = self.cleaned_data['gusers']
         if 'gusers'in self.initial:
-            gusers_to_remove = list(set(self.initial['guser']) - set(self.cleaned_data['gusers']))
-            gusers_to_add = list(set(self.cleaned_data['gusers']) - set(self.initial['guser']))
+            gusers_to_remove = list(set(self.initial['gusers']) - set(self.cleaned_data['gusers']))
+            gusers_to_add = list(set(self.cleaned_data['gusers']) - set(self.initial['gusers']))
 
         for gu in gusers_to_add:
             instance.user_set.add(User.objects.get(pk=gu))
