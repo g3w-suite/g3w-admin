@@ -851,7 +851,7 @@ class G3WRegistrationForm(G3WreCaptchaFormMixin, RegistrationForm):
 
 
 
-class G3WUsernameRecoveryForm(PasswordResetForm):
+class G3WUsernameRecoveryForm(G3WreCaptchaFormMixin, PasswordResetForm):
     pass
 
 

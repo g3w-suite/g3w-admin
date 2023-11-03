@@ -15,7 +15,7 @@ from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.models import Group
 from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
-from django.contrib.auth.views import PasswordResetView
+from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView
 from django.urls import reverse_lazy
 from guardian.shortcuts import assign_perm, get_objects_for_user
 from guardian.decorators import permission_required_or_403
@@ -346,14 +346,21 @@ class UserRegistrationView(registration_views.RegistrationView):
         )
 
 
-    class UsernameRecoveryView(PasswordResetView):
-        """
-        A view to recovery username by email, follow the same logic of Password reset.
-        """
+class UsernameRecoveryView(PasswordResetView):
+    """
+    A view to recovery username by email, follow the same logic of Password reset.
+    """
 
-        email_template_name = 'registration/username_recovery_email.html'
-        form_class = G3WUsernameRecoveryForm
-        subject_template_name = 'registration/username_recovery_subject.txt'
-        success_url = reverse_lazy('user_recovery_done')
-        template_name = 'registration/username_recovery_form.html'
-        title = _('Username recovery')
+    email_template_name = 'registration/username_recovery_email.html'
+    form_class = G3WUsernameRecoveryForm
+    subject_template_name = 'registration/username_recovery_subject.txt'
+    success_url = reverse_lazy('username_recovery_done')
+    template_name = 'registration/username_recovery_form.html'
+    title = _('Username recovery')
+
+class UsernameRecoveryDoneView(PasswordResetDoneView):
+    """
+    View for show message to the end user of emailing username.
+    """
+    template_name = 'registration/username_recovery_done.html'
+    title = _('Username sent')
