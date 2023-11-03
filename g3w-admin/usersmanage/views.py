@@ -12,6 +12,8 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.models import Group
+from django.contrib.auth.views import PasswordResetView
+from django.urls import reverse_lazy
 from guardian.shortcuts import assign_perm, get_objects_for_user
 from guardian.decorators import permission_required_or_403
 from core.mixins.views import G3WRequestViewMixin, G3WAjaxDeleteViewMixin
@@ -263,3 +265,15 @@ class UserGroupByUserRoleView(View):
                                                'selected': ug in current_user_groups} for ug in user_groups]})
 
 
+
+    class UsernameRecoveryView(PasswordResetView):
+        """
+        A view to recovery username by email, follow the same logic of Password reset.
+        """
+
+        email_template_name = 'registration/username_recovery_email.html'
+        form_class = G3WUsernameRecoveryForm
+        subject_template_name = 'registration/username_recovery_subject.txt'
+        success_url = reverse_lazy('user_recovery_done')
+        template_name = 'registration/username_recovery_form.html'
+        title = _('Username recovery')

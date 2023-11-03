@@ -14,6 +14,7 @@ from django.utils.translation import ugettext, ugettext_lazy as _
 from django.contrib.auth.forms import (
     UserCreationForm,
     ReadOnlyPasswordHashField,
+    PasswordResetForm
 )
 from django.contrib.auth import (
     password_validation,
@@ -762,4 +763,7 @@ class G3WUserGroupForm(G3WRequestFormMixin, G3WFormMixin, ModelForm):
 
 
 class G3WUserGroupUpdateForm(G3WUserGroupForm):
+    pass
+
+class G3WUsernameRecoveryForm(PasswordResetForm):
     pass
