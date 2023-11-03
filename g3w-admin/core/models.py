@@ -428,6 +428,7 @@ class GeneralSuiteData(models.Model):
     login_description = models.TextField(_('Login description'), null=True, blank=True)
     suite_logo = models.ImageField(_('Suite logo'), null=True, blank=True)
     url_suite_logo = models.URLField(_('Suite logo URL'), null=True, blank=True)
+    registration_intro = models.TextField(_('Registration introductory message'), null=True, blank=True)
 
     # custom credits
     credits = models.TextField(_('Credits'), null=True, blank=True)

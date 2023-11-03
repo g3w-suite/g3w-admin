@@ -335,3 +335,23 @@ def get_user_groups_for_object(object, user, permission, grouprole=None):
         user_groups = list(set(editor1_user_groups).intersection(set(user_groups)))
 
     return user_groups
+
+def check_unique_email(email, user=None) -> str:
+    """
+    Check if a User with same email is present in db: useful for Registration and CRUD User forms
+
+    :param email: Email address to check.
+    :return: True is email is not present for other users, False if a just a user has this email address
+    """
+    if email:
+        u = User.objects.filter(email=email)
+
+        if user:
+            u = u.exclude(pk=user.pk)
+
+        if len(u) > 0:
+            return False
+
+    return True
+
+

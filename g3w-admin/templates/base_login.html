@@ -1,9 +1,15 @@
-{% extends "base_login.html" %}
+{% extends "base.html" %}
 {% load static %}
 {% load i18n %}
 
+{% block custom_css_links_page %}
+<!-- iCheck -->
+<link rel="stylesheet" href="{% static "bower_components/icheck/skins/square/blue.css" %}">
+{% endblock %}
+
 {% block body_content %}
- <div class="login-box">
+ <div class="{% block login-box-class %}login-box{% endblock %}">
+  {% block login_page_logo %}
   <div class="login-logo">
     <span class="logo-lg">
         {% if SETTINGS.G3WSUITE_CUSTOM_STATIC_URL %}
@@ -13,6 +19,8 @@
         {% endif %}
     </span>
   </div><!-- /.login-logo -->
+  {% endblock %}
+  {% block login_page_box_body %}
   <div class="login-box-body">
     <p class="login-box-msg">{%  trans 'Sign in to start your session' %}</p>
       {% if form.errors %}
@@ -32,7 +40,6 @@
         <input type="password" class="form-control" name="password" placeholder="Password">
         <span class="glyphicon glyphicon-lock form-control-feedback"></span>
       </div>
-      <div class="form-group recaptcha">{{ form.captcha }}</div>
       <div class="row margin-bottom" >
         <div class="col-xs-12">
           <button type="submit" class="btn btn-primary btn-block btn-flat">{% trans 'Sign In' %}</button>
@@ -54,7 +61,23 @@
       {% endif %}
     </form>
   </div><!-- /.login-box-body -->
+  {% endblock %}
      {% include 'include/login_page_version.html' %}
 </div><!-- /.login-box -->
+{% endblock %}
 
+
+
+{% block custom_js_links_page %}
+<!-- iCheck -->
+<script src="{% static "bower_components/icheck/icheck.min.js" %}"></script>
+<script>
+$(function () {
+    $('input').iCheck({
+      checkboxClass: 'icheckbox_square-blue',
+      radioClass: 'iradio_square-blue',
+      increaseArea: '20%' // optional
+    });
+});
+</script>
 {% endblock %}
