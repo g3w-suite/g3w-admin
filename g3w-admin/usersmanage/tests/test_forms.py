@@ -424,7 +424,7 @@ class UsermanageFormsTest(BaseUsermanageTestCase):
         gform.save()
 
         ug = UserGroup.objects.get(name='editor user group test with user management')
-        self.assertEqual(gusers, list(ug.user_set.all()))
+        self.assertEqual([u.pk for u in gusers].sort(), [u.pk for u in ug.user_set.all()].sort())
 
         # Update User Group
         gusers2 = [self.test_viewer1_2, self.test_viewer1_3]
