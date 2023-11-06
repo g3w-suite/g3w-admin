@@ -57,6 +57,13 @@
           </div>
       </div>
       {% endif %}
+      {% if SETTINGS.REGISTRATION_OPEN %}
+      <div class="row">
+          <div class="col-xs-12">
+              <a href="{% url 'django_registration_register' %}">{% trans 'Sign up' %}</a>
+          </div>
+      </div>
+      {% endif %}
     </form>
   </div><!-- /.login-box-body -->
      {% include 'include/login_page_version.html' %}
