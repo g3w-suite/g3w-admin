@@ -21,7 +21,11 @@ from usersmanage.forms import (
     G3WResetPasswordForm,
     G3WRegistrationForm
 )
-from usersmanage.views import UserRegistrationView
+from usersmanage.views import (
+    UserRegistrationView,
+    UsernameRecoveryView,
+    UsernameRecoveryDoneView
+)
 
 from ajax_select import urls as ajax_select_urls
 from sitetree.sitetreeapp import register_i18n_trees
@@ -164,6 +168,7 @@ urlpatterns += [
 
 #############################################################
 # PASSWORD RESET (user password reset by email)
+# USERNAME RECOVERY (username recovery by email)
 #############################################################
 if settings.RESET_USER_PASSWORD:
     urlpatterns += [
@@ -199,6 +204,18 @@ if settings.RESET_USER_PASSWORD:
             'reset/done/',
             auth.views.PasswordResetCompleteView.as_view(extra_context=extra_context_login_page),
             name='password_reset_complete'
+        ),
+        path(
+            'username_recovery/',
+            UsernameRecoveryView.as_view(
+                extra_context=extra_context_login_page
+            ),
+            name='username_recovery'
+        ),
+        path(
+            'username_recovery/done/',
+            UsernameRecoveryDoneView.as_view(extra_context=extra_context_login_page),
+            name='username_recovery_done'
         ),
     ]
 
