@@ -35,4 +35,6 @@ deprecation
 huey==2.4.3
 redis==4.5.4
 django-redis==5.2.0
+django-registration==3.4
+django-recaptcha==3.0.0
 

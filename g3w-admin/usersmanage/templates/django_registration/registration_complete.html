@@ -1,0 +1,23 @@
+{% extends "base_login.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block login_page_box_body %}
+  <div class="register-box-body">
+    <h4 style="text-align: center">{% trans 'Registration complete!' %}</h4>
+   {% if SETTINGS.REGISTRATION_ACTIVE_BY_ADMIN %}
+       <p class="register-box-msg">
+        {% blocktrans %}
+            Your registration is being examined by the administrators, once your account
+            is activated you will receive an activation confirmation email.
+        {% endblocktrans %}
+    </p>
+   {% else %}
+    <p class="register-box-msg">
+        {% blocktrans %}
+            You will receive a mail with a link to activate you account and validate your email.
+        {% endblocktrans %}
+    </p>
+   {% endif %}
+  </div><!-- /.login-box-body -->
+{% endblock %}
