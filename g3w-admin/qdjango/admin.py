@@ -101,6 +101,16 @@ class SessionTokenFilterAdmin(admin.ModelAdmin):
     ]
 
 
+@admin.register(FilterLayerSaved)
+class FilterLayerSavedAdmin(admin.ModelAdmin):
+    list_display = (
+        'user',
+        'layer',
+        'qgs_expr',
+        'created',
+        'modified',
+    )
+
 class QgisAuthAdminForm(ModelForm):
 
     username = CharField()

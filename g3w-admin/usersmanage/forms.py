@@ -5,15 +5,19 @@ from django.forms import (
     ValidationError,
     ModelChoiceField,
     ModelMultipleChoiceField,
-    ModelForm,
     ChoiceField,
-    MultipleChoiceField
+    ModelForm,
+    MultipleChoiceField,
+    CharField,
+    Textarea
 )
 from django.utils.datastructures import MultiValueDict
 from django.utils.translation import ugettext, ugettext_lazy as _
 from django.contrib.auth.forms import (
     UserCreationForm,
     ReadOnlyPasswordHashField,
+    AuthenticationForm,
+    PasswordResetForm
 )
 from django.contrib.auth import (
     password_validation,
@@ -28,11 +32,14 @@ from guardian.shortcuts import get_objects_for_user
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout,Div, HTML, Field
 from crispy_forms.bootstrap import AppendedText, PrependedText
+from django_registration.forms import RegistrationForm
+from captcha.fields import ReCaptchaField
+from captcha import widgets
 from PIL import Image
 from .models import Userdata, Department, Userbackend, GroupRole, USER_BACKEND_TYPES, GROUP_ROLES
 from core.mixins.forms import G3WRequestFormMixin, G3WFormMixin
 from usersmanage.configs import *
-from .utils import getUserGroups, userHasGroups
+from .utils import getUserGroups, userHasGroups, check_unique_email
 from .signals import after_init_user_form, after_save_user_form
 import logging
 
@@ -335,6 +342,9 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
         if 'user_groups' in self.initial and len(self.initial['user_groups']) > 0:
             self.initial['user_groups'] = self.initial['user_groups']
 
+        if settings.REGISTRATION_OPEN:
+            self.fields['email'].required = True
+
         # change queryset for editor1
         if G3W_EDITOR1 in getUserGroups(self.request.user):
             self._set_editor1_queryset()
@@ -454,7 +464,7 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
     def __authrole_fields(self):
         """ Get fields for ACL box if they are into self.fields """
 
-        fields = []
+        fields = ['is_active']
         if 'is_superuser' in self.fields:
             fields.append(
                 Field('is_superuser', **{'data_icheck_skin': 'yellow'})
@@ -638,7 +648,7 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
     def clean_avatar(self):
         """
         Check if upalod file is a valid image by pillow
-        :return: File object Cleaned data
+        :return: Cleaned data dict
         """
         avatar = self.cleaned_data['avatar']
         if avatar is None:
@@ -651,6 +661,20 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
             raise ValidationError(_('Avatar is no a valid image'), code='image_invalid')
         return avatar
 
+    def clean_email(self):
+        """
+        Unique email is required
+
+        :return: Cleaned data email
+        """
+
+        email = self.cleaned_data['email']
+
+        if not check_unique_email(email, self.instance):
+            raise  ValidationError(_('A user with that email already exists.'), code='email_invalid')
+
+        return email
+
 
     class Meta(UserCreationForm.Meta):
         fields = (
@@ -660,6 +684,7 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
             'username',
             'password1',
             'password2',
+            'is_active',
             'is_superuser',
             'is_staff',
             'groups',
@@ -820,3 +845,71 @@ class G3WUserGroupForm(G3WRequestFormMixin, G3WFormMixin, ModelForm):
 
 class G3WUserGroupUpdateForm(G3WUserGroupForm):
     pass
+
+class G3WreCaptchaFormMixin():
+    """
+    Mixin to use for login, reset-password and registration forms
+    """
+
+    def __init__(self, *args, **kwargs):
+
+        super(G3WreCaptchaFormMixin, self).__init__(*args, **kwargs)
+
+        if settings.RECAPTCHA:
+            if settings.RECAPTCHA_VERSION == '3':
+                self.fields['captcha'] = ReCaptchaField(widget=widgets.ReCaptchaV3())
+            else:
+                if settings.RECAPTCHA_VERSION2_TYPE == 'checkbox':
+                    self.fields["captcha"] = ReCaptchaField(widget=widgets.ReCaptchaV2Checkbox())
+                else:
+                    self.fields["captcha"] = ReCaptchaField(widget=widgets.ReCaptchaV2Invisible())
+
+
+class G3WAuthenticationForm(G3WreCaptchaFormMixin, AuthenticationForm):
+    """
+    Form custom login form
+    """
+    pass
+
+class G3WResetPasswordForm(G3WreCaptchaFormMixin, PasswordResetForm):
+    """
+    Form custom reset password form
+    """
+    pass
+
+class G3WRegistrationForm(G3WreCaptchaFormMixin, RegistrationForm):
+    """
+    Form custom for user registration form
+    """
+
+    other_info = CharField(label=_('Other informations'), widget=Textarea(), required=False)
+
+    # Add custom data: first and last name etc.
+    class Meta(RegistrationForm.Meta):
+        fields = RegistrationForm.Meta.fields + [
+            'first_name',
+            'last_name',
+            'other_info'
+        ]
+
+    def clean_email(self):
+        """
+        Unique email is required
+
+        :return: Cleaned data email
+        """
+
+        email = self.cleaned_data['email']
+
+        if not check_unique_email(email):
+            raise  ValidationError(_('A user with that email already exists.'), code='email_invalid')
+
+        return email
+
+
+
+class G3WUsernameRecoveryForm(G3WreCaptchaFormMixin, PasswordResetForm):
+    pass
+
+
+

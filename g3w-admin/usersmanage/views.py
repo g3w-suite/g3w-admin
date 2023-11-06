@@ -10,11 +10,18 @@ from django.http.response import JsonResponse, Http404
 from django.views.generic.detail import SingleObjectMixin
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
+from django.core.mail import send_mail
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.models import Group
+from django.contrib.sites.shortcuts import get_current_site
+from django.template.loader import render_to_string
+from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView
+from django.urls import reverse_lazy
 from guardian.shortcuts import assign_perm, get_objects_for_user
 from guardian.decorators import permission_required_or_403
+from django_registration.backends.activation import views as registration_views
 from core.mixins.views import G3WRequestViewMixin, G3WAjaxDeleteViewMixin
+from core.models import GeneralSuiteData
 from .decorators import permission_required_by_backend_or_403
 from .utils import getUserGroups, get_user_groups
 from .configs import *
@@ -281,3 +288,100 @@ class UserGroupByUserRoleView(View):
                                                'selected': ug in current_user_groups} for ug in user_groups]})
 
 
+class UserRegistrationView(registration_views.RegistrationView):
+    """
+    G3W-ADMIn custom registration view.
+    """
+
+    admin_email_body_template = "django_registration/activation_admin_email_body.txt"
+    admin_email_subject_template = "django_registration/activation_admin_email_subject.txt"
+
+    def registration_allowed(self):
+
+        # Check by settings
+        # and check if a user is logged in
+        return super().registration_allowed() and self.request.user.is_anonymous
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+
+        # Add registration intro
+        ctx.update({
+            'registration_intro': GeneralSuiteData.objects.get().registration_intro
+        })
+        return ctx
+
+    def send_activation_email(self, user):
+        """
+        Send the activation email.
+
+        """
+
+        if settings.REGISTRATION_ACTIVE_BY_ADMIN:
+            self.send_admin_activation_email(user)
+        else:
+            super().send_activation_email(user)
+
+    def get_admin_email_context(self):
+        """
+        Build the template context used for the activation email by administrator.
+
+        """
+        scheme = "https" if self.request.is_secure() else "http"
+        return {
+            "scheme": scheme,
+            "site": get_current_site(self.request),
+        }
+
+    def send_admin_activation_email(self, user):
+        """
+        Send the activation email, for site administrator.
+
+        """
+
+        context = self.get_admin_email_context()
+        context["user"] = user
+        subject = render_to_string(
+            template_name=self.admin_email_subject_template,
+            context=context,
+            request=self.request,
+        )
+        # Force subject to a single line to avoid header-injection
+        # issues.
+        subject = "".join(subject.splitlines())
+        message = render_to_string(
+            template_name=self.admin_email_body_template,
+            context=context,
+            request=self.request,
+        )
+
+        # Get email of every admin users (Admin Level 1 and Admin Level 2)
+        admins = User.objects.filter(is_superuser=True)
+
+        send_mail(
+            subject,
+            message,
+            settings.DEFAULT_FROM_EMAIL,
+            [a.email for a in admins],
+            fail_silently=False,
+        )
+
+
+class UsernameRecoveryView(PasswordResetView):
+    """
+    A view to recovery username by email, follow the same logic of Password reset.
+    """
+
+    email_template_name = 'registration/username_recovery_email.html'
+    form_class = G3WUsernameRecoveryForm
+    subject_template_name = 'registration/username_recovery_subject.txt'
+    success_url = reverse_lazy('username_recovery_done')
+    template_name = 'registration/username_recovery_form.html'
+    title = _('Username recovery')
+
+class UsernameRecoveryDoneView(PasswordResetDoneView):
+    """
+    View for show message to the end user of emailing username.
+    """
+    template_name = 'registration/username_recovery_done.html'
+    title = _('Username sent')

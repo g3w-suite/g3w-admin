@@ -239,3 +239,16 @@ input[type=file]::file-selector-button:hover {
 a.layer-action {
     cursor: pointer;
 }
+
+.register-box {
+    width: 720px;
+    margin: 7% auto;
+}
+
+.recaptcha {
+    padding-left: 9px;
+}
+
+.recaptcha-registration {
+    padding-left: 11.5px;
+}
