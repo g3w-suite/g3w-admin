@@ -348,7 +348,7 @@ ga.Qdjango.widgetEditor = {
 
     var selected_yes = ""
     var selected_no = "selected"
-    if (that.isset(values.input.options.relation_reference) && values.input.options.relation_reference === true){
+    if (that.isset(values) && that.isset(values.input) && that.isset(values.input.options.relation_reference) && values.input.options.relation_reference === true){
       var selected_yes = "selected"
       var selected_no = ""
     }
