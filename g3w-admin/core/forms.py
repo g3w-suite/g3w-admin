@@ -214,6 +214,7 @@ class GeneralSuiteDataForm(TranslationModelForm, FileFormMixin, ModelForm):
     groups_map_description = BleachField(required=False)
     login_description = BleachField(required=False)
     credits = BleachField(required=False)
+    registration_intro = BleachField(required=False)
 
 
     def __init__(self, *args, **kwargs):
@@ -339,6 +340,24 @@ class GeneralSuiteDataForm(TranslationModelForm, FileFormMixin, ModelForm):
                         css_class='box box-default'
                     ),
                     css_class='col-md-6'
+                ),
+                Div(
+                    Div(
+                        Div(
+                            HTML(
+                                "<h3 class='box-title'><i class='fa fa-file'></i> {}</h3>".format(
+                                    _("Registration")
+                                )
+                            ),
+                            css_class="box-header with-border",
+                        ),
+                        Div(
+                            Field("registration_intro", css_class="wys5 translate", style="width:100%;"),
+                            css_class="box-body",
+                        ),
+                        css_class="box box-default",
+                    ),
+                    css_class="col-md-6",
                 ),
                 css_class='row'
             )

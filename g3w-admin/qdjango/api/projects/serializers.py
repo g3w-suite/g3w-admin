@@ -4,12 +4,21 @@ from django.utils.translation import ugettext_lazy as _, get_language
 from rest_framework import serializers
 from rest_framework.fields import empty
 from owslib.wms import WebMapService
-from qdjango.models import Project, Layer, Widget, SessionTokenFilter, GeoConstraintRule, MSG_LEVELS
+from qdjango.models import (
+    Project,
+    Layer,
+    Widget,
+    SessionTokenFilter,
+    GeoConstraintRule,
+    MSG_LEVELS,
+    FilterLayerSaved
+)
 from qdjango.utils.data import QGIS_LAYER_TYPE_NO_GEOM
 from qdjango.utils.models import get_capabilities4layer, get_view_layer_ids
 from qdjango.signals import load_qdjango_widget_layer
 from qdjango.apps import get_qgs_project
 from qdjango.utils.structure import QdjangoMetaLayer, datasourcearcgis2dict
+from qdjango.api.layers.serializers import FilterLayerSavedSerializer
 from core.utils.structure import mapLayerAttributes
 from core.configs import *
 from core.signals import after_serialized_project_layer
@@ -412,6 +421,16 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         meta_layer = QdjangoMetaLayer()
         to_remove_from_layerstree = []
 
+        # Get FilterToken layer filters saved:
+        # Build a layer_filters dict to pass FilterLayerSaved instance to LayerSerializer
+        layer_filters = {}
+        filters = FilterLayerSaved.objects.filter(user=self.request.user, layer__project=instance)
+        for f in filters:
+            if f.layer.qgs_layer_id not in layer_filters:
+                layer_filters[f.layer.qgs_layer_id] = []
+            layer_filters[f.layer.qgs_layer_id].append(f)
+
+
         def readLeaf(layer, container):
 
             if 'nodes' in layer:
@@ -431,7 +450,12 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
                 try:
                     layer_serialized = LayerSerializer(
-                        layers[layer['id']], qgs_project=qgs_project, request=self.request, layertreenode=layer)
+                        layers[layer['id']],
+                        qgs_project=qgs_project,
+                        request=self.request,
+                        layertreenode=layer,
+                        filters=layer_filters[layer['id']] if layer['id'] in layer_filters else []
+                    )
                 except KeyError:
                     logger.error(
                         'Layer %s is missing from QGIS project!' % layer['id'])
@@ -599,6 +623,10 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         del (kwargs['qgs_project'])
         self.layertreenode = kwargs['layertreenode']
         del (kwargs['layertreenode'])
+
+        # FilterLayerSaved
+        self.filters = kwargs['filters']
+        del (kwargs['filters'])
 
         super(LayerSerializer, self).__init__(instance, data, **kwargs)
 
@@ -848,6 +876,13 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         # Add `featurecount` property if `showfeaturecount` property is present inside layertreenode:
         if 'showfeaturecount' in self.layertreenode and self.layertreenode['showfeaturecount']:
             ret['featurecount'] = get_qgis_featurecount(qgs_maplayer)
+
+
+        # Set FilterLayerSaved instances
+        if len(self.filters) > 0:
+            ret['filters'] = []
+            for f in self.filters:
+                ret['filters'].append(FilterLayerSavedSerializer(f).data)
 
         return ret
 

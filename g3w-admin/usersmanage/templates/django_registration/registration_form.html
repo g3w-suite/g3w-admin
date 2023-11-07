@@ -1,0 +1,83 @@
+{% extends "base_login.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block login-box-class %}register-box{% endblock %}
+
+{% block login_page_box_body %}
+<div class="register-box-body">
+    <p class="register-box-msg">
+        {% if registration_intro %}
+            {{ registration_intro|safe }}
+        {% endif %}
+    </p>
+  {% if form.errors %}
+  <div class="alert alert-danger alert-dismissible">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+    <h4><i class="icon fa fa-ban"></i> {% trans 'ERROR' %}!</h4>
+    {{ form.errors }}
+  </div>
+  {% endif %}
+<form method="post">
+  {% csrf_token %}
+    <div class="row">
+        <div class="col-md-6 col-xs-12">
+            <div class="form-group has-feedback">
+                <input type="text" class="form-control" name="{{form.username.name}}" placeholder="{{form.username.label|capfirst}}">
+                <span class="glyphicon glyphicon-user form-control-feedback"></span>
+                {% if form.username.help_text %}
+                <p class="help">{{ form.username.help_text|safe }}</p>
+                {% endif %}
+            </div>
+            <div class="form-group has-feedback">
+                <input type="text" class="form-control" name="{{form.email.name}}" placeholder="{{form.email.label|capfirst}}">
+                <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+                {% if form.email.help_text %}
+                <p class="help">{{ form.email.help_text|safe }}</p>
+                {% endif %}
+            </div>
+            <div class="form-group has-feedback">
+                <input type="password" class="form-control" name="{{form.password1.name}}" placeholder="{{form.password1.label|capfirst}}">
+                <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+                 {% if form.password1.help_text %}
+                <p class="help">{{ form.password1.help_text|safe }}</p>
+                {% endif %}
+            </div>
+            <div class="form-group has-feedback">
+                <input type="password" class="form-control" name="{{form.password2.name}}" placeholder="{{form.password2.label|capfirst}}">
+                <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+                 {% if form.password2.help_text %}
+                <p class="help">{{ form.password2.help_text|safe }}</p>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-md-6 col-xs-12">
+            <div class="form-group has-feedback">
+                <input type="text" class="form-control" name="{{form.first_name.name}}" placeholder="{{form.first_name.label|capfirst}}">
+                 {% if form.first_lame.help_text %}
+                <p class="help">{{ form.first_name.help_text|safe }}</p>
+                {% endif %}
+            </div>
+            <div class="form-group has-feedback">
+                <input type="text" class="form-control" name="{{form.last_name.name}}" placeholder="{{form.last_name.label|capfirst}}">
+                 {% if form.first_lame.help_text %}
+                <p class="help">{{ form.last_name.help_text|safe }}</p>
+                {% endif %}
+            </div>
+            <div class="form-group has-feedback">
+                <textarea style="height: 200px" class="form-control" name="{{form.other_info.name}}" placeholder="{{form.other_info.label|capfirst}}"></textarea>
+                {% if form.other_info.help_text %}
+                <p class="help">{{ form.other_info.help_text|safe }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+  <div class="row">
+    <div class="col-md-offset-3 col-md-6 col-xs-offset-0 col-xs-12">
+      <div class="form-group recaptcha-registration">{{ form.captcha }}</div>
+      <button type="submit" class="btn btn-primary btn-block btn-flat">{% trans 'Sign Up' %}</button>
+    </div><!-- /.col -->
+  </div>
+</form>
+</div><!-- /.login-box-body -->
+{% endblock %}
