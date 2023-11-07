@@ -225,6 +225,7 @@ if settings.RESET_USER_PASSWORD:
 apiUrlpatterns += [
     path('', include('client.apiurls')),
     path('', include('core.apiurls')),
+    path('', include('usersmanage.apiurls')),
     # TODO find out why we cannot include('OWS.apiurls') instead
     path('', include('OWS.urls')),
 ]

@@ -177,6 +177,13 @@ class UserGroupCreateView(G3WRequestViewMixin, CreateView):
 
         return reverse('user-group-list')
 
+    def get_context_data(self, **kwargs):
+        c = super().get_context_data(**kwargs)
+
+        c['cleaned_data'] = {}
+
+        return c
+
 
 class UserGroupUpdateView(G3WRequestViewMixin, UpdateView):
     """
@@ -190,16 +197,27 @@ class UserGroupUpdateView(G3WRequestViewMixin, UpdateView):
     def dispatch(self, *args, **kwargs):
         return super(UserGroupUpdateView, self).dispatch(*args, **kwargs)
 
+
     def get_initial(self):
         initials = super(UserGroupUpdateView, self).get_initial()
 
         # add group role
         try:
             initials['role'] = self.object.grouprole.role
+            initials['gusers'] = [str(u.pk) for u in self.object.user_set.all()]
         except:
             pass
 
         return initials
+
+    def get_context_data(self, **kwargs):
+        c = super().get_context_data(**kwargs)
+
+        c['cleaned_data'] = {
+            'gusers': [u.pk for u in self.object.user_set.all()]
+        }
+
+        return c
 
     # todo: check group if not in base editor and viewer group
     def get_success_url(self):

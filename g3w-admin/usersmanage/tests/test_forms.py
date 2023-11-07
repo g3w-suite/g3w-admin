@@ -18,6 +18,7 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from usersmanage.forms import G3WUserForm, User, USER_BACKEND_DEFAULT, G3WUserGroupForm, AuthGroup
 from usersmanage.utils import userHasGroups
+from usersmanage.models import Group as UserGroup
 from .utils import setup_testing_user_relations
 from .base import BaseUsermanageTestCase, \
     G3W_EDITOR1, \
@@ -406,6 +407,60 @@ class UsermanageFormsTest(BaseUsermanageTestCase):
         self.assertFalse(gform.is_valid())
         self.assertIn('name', gform.errors)
         self.assertEqual(gform.errors['name'].data[0].code, 'unique')
+
+        # Users management by Users Group form
+        # =====================================
+
+        # Create a newone User Group
+        gusers =  [self.test_viewer1, self.test_viewer1_3]
+        form_data = {
+            'name': 'editor user group test with user management',
+            'role': 'viewer',
+            'gusers': [u.pk for u in gusers]
+        }
+
+        gform = G3WUserGroupForm(request=self.request, data=form_data)
+        self.assertTrue(gform.is_valid())
+        gform.save()
+
+        ug = UserGroup.objects.get(name='editor user group test with user management')
+        self.assertEqual([u.pk for u in gusers].sort(), [u.pk for u in ug.user_set.all()].sort())
+
+        # Update User Group
+        gusers2 = [self.test_viewer1_2, self.test_viewer1_3]
+        form_data = {
+            'name': 'editor user group test with user management',
+            'role': 'viewer',
+            'gusers': [u.pk for u in gusers2]
+        }
+
+        gform = G3WUserGroupForm(request=self.request, data=form_data, instance=ug, initial={
+            'name': 'editor user group test with user management',
+            'role': 'viewer',
+            'gusers': [str(u.pk) for u in gusers]
+        })
+        self.assertTrue(gform.is_valid())
+        gform.save()
+
+        self.assertEqual([gu.pk for gu in gusers2].sort(), [gu.pk for gu in ug.user_set.all()].sort())
+
+        # Update User Group with wrong user
+        gusers2 = [self.test_viewer1_2, self.test_viewer1_3, self.test_editor1]
+        form_data = {
+            'name': 'editor user group test with user management',
+            'role': 'viewer',
+            'gusers': [u.pk for u in gusers2]
+        }
+
+        gform = G3WUserGroupForm(request=self.request, data=form_data, instance=ug, initial={
+            'name': 'editor user group test with user management',
+            'role': 'viewer',
+            'gusers': [str(u.pk) for u in gusers]
+        })
+        self.assertFalse(gform.is_valid())
+
+
+
 
 
 
