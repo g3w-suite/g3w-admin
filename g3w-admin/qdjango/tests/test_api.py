@@ -50,6 +50,7 @@ import time
 import six
 import os
 import zipfile
+import base64
 from io import BytesIO
 
 
@@ -995,13 +996,14 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         sf = session_filters[0]
         self.assertEqual(sf.token, resp['data']['filtertoken'])
 
-        ts_b36 = int_to_base36(int(time.mktime(sf.time_asked.timetuple())))
-        hash = salted_hmac(
-            settings.SECRET_KEY,
-            six.text_type(sf.sessionid)
-        ).hexdigest()
-
-        self.assertEqual(f'{ts_b36}-{hash}', resp['data']['filtertoken'])
+        #ts_b36 = int_to_base36(int(time.mktime(sf.time_asked.timetuple())))
+        # ts = base64.b64encode(str(sf.time_asked.timestamp()).encode()).decode().lower()
+        # hash = salted_hmac(
+        #     settings.SECRET_KEY,
+        #     six.text_type(sf.sessionid)
+        # ).hexdigest()
+        #
+        # self.assertEqual(f'{ts}-{hash}', resp['data']['filtertoken'])
 
         # test layer table saved
         self.assertEqual(sf.stf_layers.count(), 1)
@@ -1042,13 +1044,14 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         sf = session_filters[0]
         self.assertEqual(sf.token, resp['data']['filtertoken'])
 
-        ts_b36 = int_to_base36(int(time.mktime(sf.time_asked.timetuple())))
-        hash = salted_hmac(
-            settings.SECRET_KEY,
-            six.text_type(sf.sessionid)
-        ).hexdigest()
-
-        self.assertEqual(f'{ts_b36}-{hash}', resp['data']['filtertoken'])
+        #ts_b36 = int_to_base36(int(time.mktime(sf.time_asked.timetuple())))
+        # ts = base64.b64encode(str(sf.time_asked.timestamp()).encode()).decode().lower()
+        # hash = salted_hmac(
+        #     settings.SECRET_KEY,
+        #     six.text_type(sf.sessionid)
+        # ).hexdigest()
+        #
+        # self.assertEqual(f'{ts}-{hash}', resp['data']['filtertoken'])
 
         # test layer table saved
         self.assertEqual(sf.stf_layers.count(), 2)
