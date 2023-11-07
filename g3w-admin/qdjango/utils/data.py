@@ -631,9 +631,15 @@ class QgisProjectLayer(XmlData):
                 del(options['ReferencedLayerDataSource'],
                     options['ReferencedLayerProviderKey'])
 
-                # Add DiplayExpression of ReferencedLayer
-                options['display_expression'] = self.qgisProject.qgs_project.mapLayer(
-                    options['ReferencedLayerId']).displayExpression()
+                # Add DisplayExpression of ReferencedLayer
+                # Set it into a try except routine for a possible bug of QGIS:
+                # If in QGIS project is set a RelationReference form widget, if the referenced layer is changed
+                # the ReferencedLayerId is not changed and was the old layer id not more present into the project
+                try:
+                    options['display_expression'] = self.qgisProject.qgs_project.mapLayer(
+                        options['ReferencedLayerId']).displayExpression()
+                except Exception as e:
+                    logger.debug(e)
 
                 data.update(options)
             else:
