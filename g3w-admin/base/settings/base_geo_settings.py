@@ -49,12 +49,12 @@ G3W_PROJ4_EPSG = {
 # Geocoding providers
 GEOCONDING_PROVIDERS = {
   "nominatim": {
-    "title": "Nominatim",
-    "url": ""
+    "label": "Nominatim (OSM)",
+    "url": "https://nominatim.openstreetmap.org/search"
   },
   "bing": {
-    "title": "Bing",
-    "url": ""
+    "label": "Bing",
+    "url": "https://dev.virtualearth.net/REST/v1/LocalSearch/"
   }
 }
 
