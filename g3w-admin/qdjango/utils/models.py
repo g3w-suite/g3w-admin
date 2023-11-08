@@ -164,3 +164,18 @@ def get_view_layer_ids(user, project):
                 filter(project=project)])
         )
     )
+
+def get_geocoding_providers():
+    """
+    Return al tuple for qdjango project form field geocoding_providers
+
+    :return: tuple of items for a django form select
+    """
+
+    ret = []
+    for gp, p in settings.GEOCONDING_PROVIDERS.items():
+        if gp == 'bing' and 'bing' not in settings.VENDOR_KEYS:
+            continue
+        ret.append((gp, p['label']))
+
+    return ret
