@@ -30,8 +30,10 @@ from usersmanage.utils import (crispyBoxACL, get_fields_by_user,
 from qdjango.models import *
 from qdjango.utils.data import QgisProject
 from qdjango.utils.validators import ProjectExists
+from qdjango.utils.models import get_geocoding_providers
 
 import shutil
+import json
 
 
 class QdjangoProjectFormMixin(object):
@@ -160,6 +162,8 @@ class QdjangoProjectForm(TranslationModelForm, QdjangoProjectFormMixin, G3WFormM
 
     description = BleachField(required=False)
 
+    geocoding_providers = forms.MultipleChoiceField(choices=get_geocoding_providers,required=False)
+
     def __init__(self, *args, **kwargs):
 
         if 'instance' in kwargs and hasattr(kwargs['instance'], 'url_alias'):
@@ -268,6 +272,7 @@ class QdjangoProjectForm(TranslationModelForm, QdjangoProjectFormMixin, G3WFormM
                             'multilayer_query',
                             'multilayer_querybybbox',
                             'multilayer_querybypolygon',
+                            Field('geocoding_providers', css_class='select2', style="width:100%;"),
                             css_class='box-body',
 
                         ),
@@ -321,11 +326,20 @@ class QdjangoProjectForm(TranslationModelForm, QdjangoProjectFormMixin, G3WFormM
             'use_map_extent_as_init_extent',
             'context_base_legend',
             'title_ur',
+            'geocoding_providers'
         )
         field_classes = dict(
             qgis_file=UploadedFileField,
             thumbnail=UploadedFileField
         )
+
+    def clean_geocoding_providers(self):
+        """
+        Make the cleaned data for geocoding_providers:
+        make it a Json serializable
+        """
+
+        return json.dumps(self.cleaned_data['geocoding_providers'])
 
     def _setEditorUserQueryset(self):
         """
@@ -382,6 +396,8 @@ class QdjangoProjectForm(TranslationModelForm, QdjangoProjectFormMixin, G3WFormM
         self._ACLPolicy()
 
         self._save_url_alias()
+
+
 
         # add permission to Editor level 1 and 2 if current user is Editor level 1 or 2
         if userHasGroups(self.request.user, [G3W_EDITOR1, G3W_EDITOR2]):
