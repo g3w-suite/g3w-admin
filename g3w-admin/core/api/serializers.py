@@ -260,7 +260,7 @@ class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         ret['mapcontrols'] = {}
         for mapcontrol in instance.mapcontrols.all():
             options = {}
-            if mapcontrol.name in ('nominatim', 'geolocation'):
+            if mapcontrol.name in ('nominatim', 'geolocation') and self.project.geocoding_providers:
                 for gp in json.loads(self.project.geocoding_providers):
                     if gp in settings.GEOCONDING_PROVIDERS:
                         options.update({
