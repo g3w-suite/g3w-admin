@@ -46,3 +46,15 @@ G3W_PROJ4_EPSG = {
   }
 }
 
+# Geocoding providers
+GEOCONDING_PROVIDERS = {
+  "nominatim": {
+    "title": "Nominatim",
+    "url": ""
+  },
+  "bing": {
+    "title": "Bing",
+    "url": ""
+  }
+}
+
