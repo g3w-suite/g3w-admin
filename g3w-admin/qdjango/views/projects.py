@@ -125,7 +125,8 @@ class QdjangoProjectUpdateView(QdjangoProjectCUViewMixin, G3WGroupViewMixin, G3W
         initial = super().get_initial()
 
         # Get intial for geocoding_providers
-        initial['geocoding_providers'] = json.loads(self.object.geocoding_providers)
+        if self.object.geocoding_providers:
+            initial['geocoding_providers'] = json.loads(self.object.geocoding_providers)
 
         return initial
 
