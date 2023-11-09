@@ -15,4 +15,7 @@ class Migration(migrations.Migration):
             name='geocoding_providers',
             field=models.TextField(blank=True, null=True, verbose_name='Geocoding providers'),
         ),
+        migrations.RunSQL(
+            "UPDATE qdjango_project SET geocoding_providers='[\"nominatim\"]'"
+        ),
     ]
