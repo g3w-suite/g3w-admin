@@ -275,7 +275,7 @@ class ActiveEditingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3W
 
         # give permission to viewers:
         toAdd = toRemove = None
-        if self.activated.pk:
+        if self.activated and self.activated.pk:
             currentViewerUsers = [int(i) for i in form.cleaned_data['viewer_users']]
             toRemove = list(set(self.initial_viewer_users) - set(currentViewerUsers))
             toAdd = list(set(currentViewerUsers) - set(self.initial_viewer_users))
@@ -296,7 +296,7 @@ class ActiveEditingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3W
 
         # give permission to user groups viewers:
         to_add = to_remove = None
-        if self.activated.pk:
+        if self.activated and self.activated.pk:
             current_user_groups_viewers = [int(i) for i in form.cleaned_data['user_groups_viewer']]
             to_remove = list(set(self.initial_viewer_user_groups) - set(current_user_groups_viewers))
             to_add = list(set(current_user_groups_viewers) - set(self.initial_viewer_user_groups))

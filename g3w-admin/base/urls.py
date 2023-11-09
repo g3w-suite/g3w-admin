@@ -13,6 +13,19 @@ from django.contrib import admin, auth
 from django.contrib.staticfiles import views
 from django.urls import path, include, re_path
 from django.views.i18n import JavaScriptCatalog
+from django.views.generic import TemplateView
+
+from django_registration.backends.activation import views as registration_views
+from usersmanage.forms import (
+    G3WAuthenticationForm,
+    G3WResetPasswordForm,
+    G3WRegistrationForm
+)
+from usersmanage.views import (
+    UserRegistrationView,
+    UsernameRecoveryView,
+    UsernameRecoveryDoneView
+)
 
 from ajax_select import urls as ajax_select_urls
 from sitetree.sitetreeapp import register_i18n_trees
@@ -86,7 +99,11 @@ urlpatterns += [
     ),
     path(
         'login/',
-        auth.views.LoginView.as_view(template_name='login.html', extra_context=extra_context_login_page),
+        auth.views.LoginView.as_view(
+            template_name='login.html',
+            form_class=G3WAuthenticationForm,
+            extra_context=extra_context_login_page
+        ),
         name='login'
     ),
     path(
@@ -104,9 +121,54 @@ urlpatterns += [
         include(ajax_select_urls)
     )
 ]
+#############################################################
+# REGISTRATION USERS
+#############################################################
+
+#path('accounts/', include('django_registration.backends.activation.urls')),
+urlpatterns += [
+    path(
+        "accounts/activate/complete/",
+        TemplateView.as_view(
+            template_name="django_registration/activation_complete.html",
+            extra_context=extra_context_login_page,
+        ),
+        name="django_registration_activation_complete",
+    ),
+    path(
+        "accounts/activate/<str:activation_key>/",
+        registration_views.ActivationView.as_view(extra_context=extra_context_login_page,),
+        name="django_registration_activate",
+    ),
+    path(
+        "accounts/register/",
+        UserRegistrationView.as_view(
+            extra_context=extra_context_login_page,
+            form_class=G3WRegistrationForm
+        ),
+        name="django_registration_register",
+    ),
+    path(
+        "accounts/register/complete/",
+        TemplateView.as_view(
+            template_name="django_registration/registration_complete.html",
+            extra_context=extra_context_login_page,
+        ),
+        name="django_registration_complete",
+    ),
+    path(
+        "accounts/register/closed/",
+        TemplateView.as_view(
+            template_name="django_registration/registration_closed.html",
+            extra_context=extra_context_login_page,
+        ),
+        name="django_registration_disallowed",
+    ),
+]
 
 #############################################################
 # PASSWORD RESET (user password reset by email)
+# USERNAME RECOVERY (username recovery by email)
 #############################################################
 if settings.RESET_USER_PASSWORD:
     urlpatterns += [
@@ -122,7 +184,10 @@ if settings.RESET_USER_PASSWORD:
         ),
         path(
             'password_reset/',
-            auth.views.PasswordResetView.as_view(extra_context=extra_context_login_page),
+            auth.views.PasswordResetView.as_view(
+                extra_context=extra_context_login_page,
+                form_class=G3WResetPasswordForm
+            ),
             name='password_reset'
         ),
         path(
@@ -140,6 +205,18 @@ if settings.RESET_USER_PASSWORD:
             auth.views.PasswordResetCompleteView.as_view(extra_context=extra_context_login_page),
             name='password_reset_complete'
         ),
+        path(
+            'username_recovery/',
+            UsernameRecoveryView.as_view(
+                extra_context=extra_context_login_page
+            ),
+            name='username_recovery'
+        ),
+        path(
+            'username_recovery/done/',
+            UsernameRecoveryDoneView.as_view(extra_context=extra_context_login_page),
+            name='username_recovery_done'
+        ),
     ]
 
 #############################################################
@@ -148,6 +225,7 @@ if settings.RESET_USER_PASSWORD:
 apiUrlpatterns += [
     path('', include('client.apiurls')),
     path('', include('core.apiurls')),
+    path('', include('usersmanage.apiurls')),
     # TODO find out why we cannot include('OWS.apiurls') instead
     path('', include('OWS.urls')),
 ]
