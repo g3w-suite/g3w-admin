@@ -5,6 +5,6 @@
 
 {{ scheme }}://{{ site }}{% url 'django_registration_activate' activation_key %}
 
-{% trans 'The link will be active for %} {{ expiration_days }} {% trans 'days' %}!
+{% trans 'The link will be active for' %} {{ expiration_days }} {% trans 'days' %}!
 
 {{ SETTINGS.REGISTRATION_EMAIL_BODY_SIGN }}
