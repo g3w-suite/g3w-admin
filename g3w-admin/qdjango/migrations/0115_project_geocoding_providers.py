@@ -15,6 +15,11 @@ class Migration(migrations.Migration):
             name='geocoding_providers',
             field=models.TextField(blank=True, null=True, verbose_name='Geocoding providers'),
         ),
+
+        # Rename map control nominatim in geocoding
+        migrations.RunSQL(
+            "UPDATE core_mapcontrol SET name='geocoding' WHERE name='nominatim'"
+        ),
         migrations.RunSQL(
             "UPDATE qdjango_project SET geocoding_providers='[\"nominatim\"]'"
         ),
