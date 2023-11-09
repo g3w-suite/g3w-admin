@@ -909,7 +909,18 @@ class G3WRegistrationForm(G3WreCaptchaFormMixin, RegistrationForm):
 
 
 class G3WUsernameRecoveryForm(G3WreCaptchaFormMixin, PasswordResetForm):
-    pass
+
+    def clean_email(self):
+        """
+        Email exists into db
+
+        :return: Cleaned data email
+        """
+
+        if not User.objects.filter(email=self.cleaned_data['email']).exists():
+            raise ValidationError(_('No user is available with this email.'), code='email_invalid')
+
+        return self.cleaned_data['email']
 
 
 
