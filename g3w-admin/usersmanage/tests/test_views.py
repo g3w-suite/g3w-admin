@@ -10,12 +10,20 @@ __author__ = 'lorenzetti@gis3w.it'
 __date__ = '2020-04-14'
 __copyright__ = 'Copyright 2015 - 2020, Gis3w'
 
+from django.test import override_settings
 from django.test import Client
-from django.urls import reverse
+from django.urls import reverse, resolve
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import Group as AuthGroup, User
+from usersmanage.models import Userdata
 from .base import BaseUsermanageTestCase
-from .utils import setup_testing_user_relations, assign_perm, G3W_EDITOR1
+from .utils import (
+    setup_testing_user_relations,
+    assign_perm, G3W_EDITOR1,
+    G3W_VIEWER1,
+    USER_BACKEND_DEFAULT,
+    Userbackend
+)
 
 
 class UsermanageViewsTest(BaseUsermanageTestCase):
@@ -269,6 +277,81 @@ class UsermanageViewsTest(BaseUsermanageTestCase):
         response = self.client.post(url)
         self.assertEqual(response.status_code, 404)
         self.client.logout()
+
+    @override_settings(PASSWORD_CHANGE_FIRST_LOGIN=True)
+    def test_change_password_first_login(self):
+        """ Test for change password first login workflow"""
+
+        # Create new user
+        new_user_data = {
+            'username': 'new_user',
+            'password': 'new_user'
+        }
+        new_user = User.objects.create_user(**new_user_data)
+        new_user.save()
+        new_user.groups.add(self.main_roles[G3W_VIEWER1])
+        Userbackend(user=new_user, backend=USER_BACKEND_DEFAULT).save()
+        Userdata.objects.create(user=new_user).save()
+
+
+        login_url = reverse('login')
+
+        # Test login
+        res = self.client.post(login_url, data=new_user_data)
+
+        # Redirect to reset_password page
+        self.assertEqual(res.status_code, 302)
+        self.assertTrue(resolve(res.url).view_name, 'password_reset_confirm')
+
+        # with /set-password/
+        res = self.client.get(res.url)
+        self.assertEqual(res.status_code, 302)
+        self.assertTrue(resolve(res.url).view_name, 'password_reset_confirm')
+
+        # Reset password
+        new_password_data = {
+            'new_password1': 'jaskjT678873u5@#',
+            'new_password2': 'jaskjT678873u5@#'
+        }
+
+
+        res = self.client.post(res.url, data=new_password_data)
+        self.assertEqual(res.status_code, 302)
+        self.assertEqual(resolve(res.url).view_name, "password_reset_complete")
+
+        # Check userdata of user
+        new_user.refresh_from_db()
+
+        self.assertEqual(new_user.userdata.change_password_first_login, True)
+
+        # Login again with new password
+        new_user_data = {
+            'username': 'new_user',
+            'password': 'jaskjT678873u5@#'
+        }
+
+        res = self.client.post(login_url, data=new_user_data)
+
+        self.assertEqual(res.status_code, 302)
+        self.assertEqual(res.url, "/")
+
+        # Admin user not redirect
+        # Create new user
+        new_admin_user_data = {
+            'username': 'new_admin_user',
+            'password': 'new_admin_user'
+        }
+        new_admin_user = User.objects.create_user(**new_admin_user_data)
+        new_admin_user.is_superuser = True
+        new_admin_user.save()
+        Userbackend(user=new_admin_user, backend=USER_BACKEND_DEFAULT).save()
+
+        res = self.client.post(login_url, data=new_admin_user_data)
+
+        self.assertEqual(res.status_code, 302)
+        self.assertEqual(res.url, "/")
+
+
 
 
 
