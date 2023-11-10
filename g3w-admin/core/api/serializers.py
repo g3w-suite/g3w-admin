@@ -264,7 +264,7 @@ class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
                 options = {'provider': {}}
                 for gp in json.loads(self.project.geocoding_providers):
                     if gp in settings.GEOCONDING_PROVIDERS:
-                        options['provider'].update({
+                        options['providers'].update({
                             gp: settings.GEOCONDING_PROVIDERS[gp]
                         })
 
