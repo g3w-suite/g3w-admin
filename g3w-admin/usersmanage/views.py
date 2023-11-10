@@ -288,7 +288,7 @@ class UserGroupByUserRoleView(View):
                                                'selected': ug in current_user_groups} for ug in user_groups]})
 
 
-class UserRegistrationView(registration_views.RegistrationView):
+class G3WUserRegistrationView(registration_views.RegistrationView):
     """
     G3W-ADMIn custom registration view.
     """
@@ -366,8 +366,23 @@ class UserRegistrationView(registration_views.RegistrationView):
             fail_silently=False,
         )
 
+class G3WUserPasswordRecoveryMixin(object):
+    """
+    A mixin to add SITTINGS paramenter inside the template
+    """
 
-class UsernameRecoveryView(PasswordResetView):
+    extra_email_context = {
+        'SETTINGS': settings
+    }
+
+class G3WPasswordResetView(G3WUserPasswordRecoveryMixin, PasswordResetView):
+    """
+    Class for G3W-SUITE of PasswordResetView
+    """
+    pass
+
+
+class G3WUsernameRecoveryView(G3WUserPasswordRecoveryMixin, PasswordResetView):
     """
     A view to recovery username by email, follow the same logic of Password reset.
     """
@@ -379,7 +394,7 @@ class UsernameRecoveryView(PasswordResetView):
     template_name = 'registration/username_recovery_form.html'
     title = _('Username recovery')
 
-class UsernameRecoveryDoneView(PasswordResetDoneView):
+class G3WUsernameRecoveryDoneView(PasswordResetDoneView):
     """
     View for show message to the end user of emailing username.
     """
