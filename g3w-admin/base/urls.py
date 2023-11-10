@@ -22,9 +22,10 @@ from usersmanage.forms import (
     G3WRegistrationForm
 )
 from usersmanage.views import (
-    UserRegistrationView,
-    UsernameRecoveryView,
-    UsernameRecoveryDoneView
+    G3WUserRegistrationView,
+    G3WUsernameRecoveryView,
+    G3WUsernameRecoveryDoneView,
+    G3WPasswordResetView
 )
 
 from ajax_select import urls as ajax_select_urls
@@ -142,7 +143,7 @@ urlpatterns += [
     ),
     path(
         "accounts/register/",
-        UserRegistrationView.as_view(
+        G3WUserRegistrationView.as_view(
             extra_context=extra_context_login_page,
             form_class=G3WRegistrationForm
         ),
@@ -184,7 +185,7 @@ if settings.RESET_USER_PASSWORD:
         ),
         path(
             'password_reset/',
-            auth.views.PasswordResetView.as_view(
+            G3WPasswordResetView.as_view(
                 extra_context=extra_context_login_page,
                 form_class=G3WResetPasswordForm
             ),
@@ -207,14 +208,14 @@ if settings.RESET_USER_PASSWORD:
         ),
         path(
             'username_recovery/',
-            UsernameRecoveryView.as_view(
+            G3WUsernameRecoveryView.as_view(
                 extra_context=extra_context_login_page
             ),
             name='username_recovery'
         ),
         path(
             'username_recovery/done/',
-            UsernameRecoveryDoneView.as_view(extra_context=extra_context_login_page),
+            G3WUsernameRecoveryDoneView.as_view(extra_context=extra_context_login_page),
             name='username_recovery_done'
         ),
     ]
