@@ -19,13 +19,15 @@ from django_registration.backends.activation import views as registration_views
 from usersmanage.forms import (
     G3WAuthenticationForm,
     G3WResetPasswordForm,
-    G3WRegistrationForm
+    G3WRegistrationForm,
+    G3WSetPasswordForm
 )
 from usersmanage.views import (
     G3WUserRegistrationView,
     G3WUsernameRecoveryView,
     G3WUsernameRecoveryDoneView,
-    G3WPasswordResetView
+    G3WPasswordResetView,
+    G3WLoginView
 )
 
 from ajax_select import urls as ajax_select_urls
@@ -100,7 +102,7 @@ urlpatterns += [
     ),
     path(
         'login/',
-        auth.views.LoginView.as_view(
+        G3WLoginView.as_view(
             template_name='login.html',
             form_class=G3WAuthenticationForm,
             extra_context=extra_context_login_page
@@ -198,7 +200,9 @@ if settings.RESET_USER_PASSWORD:
         ),
         path(
             'reset/<uidb64>/<token>/',
-            auth.views.PasswordResetConfirmView.as_view(extra_context=extra_context_login_page),
+            auth.views.PasswordResetConfirmView.as_view(
+                extra_context=extra_context_login_page,
+                form_class=G3WSetPasswordForm),
             name='password_reset_confirm'
         ),
         path(
