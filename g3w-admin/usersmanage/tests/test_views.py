@@ -278,7 +278,10 @@ class UsermanageViewsTest(BaseUsermanageTestCase):
         self.assertEqual(response.status_code, 404)
         self.client.logout()
 
-    @override_settings(PASSWORD_CHANGE_FIRST_LOGIN=True)
+    @override_settings(
+        PASSWORD_CHANGE_FIRST_LOGIN=True,
+        RESET_USER_PASSWORD=True
+    )
     def test_change_password_first_login(self):
         """ Test for change password first login workflow"""
 
