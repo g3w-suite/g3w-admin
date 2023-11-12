@@ -279,8 +279,7 @@ class UsermanageViewsTest(BaseUsermanageTestCase):
         self.client.logout()
 
     @override_settings(
-        PASSWORD_CHANGE_FIRST_LOGIN=True,
-        RESET_USER_PASSWORD=True
+        PASSWORD_CHANGE_FIRST_LOGIN=True
     )
     def test_change_password_first_login(self):
         """ Test for change password first login workflow"""
@@ -304,12 +303,12 @@ class UsermanageViewsTest(BaseUsermanageTestCase):
 
         # Redirect to reset_password page
         self.assertEqual(res.status_code, 302)
-        self.assertTrue(resolve(res.url).view_name, 'password_reset_confirm')
+        self.assertTrue(resolve(res.url).view_name, 'change_password_first_login_confirm')
 
         # with /set-password/
         res = self.client.get(res.url)
         self.assertEqual(res.status_code, 302)
-        self.assertTrue(resolve(res.url).view_name, 'password_reset_confirm')
+        self.assertTrue(resolve(res.url).view_name, 'change_password_first_login_confirm')
 
         # Reset password
         new_password_data = {
@@ -320,7 +319,7 @@ class UsermanageViewsTest(BaseUsermanageTestCase):
 
         res = self.client.post(res.url, data=new_password_data)
         self.assertEqual(res.status_code, 302)
-        self.assertEqual(resolve(res.url).view_name, "password_reset_complete")
+        self.assertEqual(resolve(res.url).view_name, "change_password_first_login_complete")
 
         # Check userdata of user
         new_user.refresh_from_db()

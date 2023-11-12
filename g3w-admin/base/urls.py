@@ -124,6 +124,7 @@ urlpatterns += [
         include(ajax_select_urls)
     )
 ]
+
 #############################################################
 # REGISTRATION USERS
 #############################################################
@@ -221,6 +222,26 @@ if settings.RESET_USER_PASSWORD:
             'username_recovery/done/',
             G3WUsernameRecoveryDoneView.as_view(extra_context=extra_context_login_page),
             name='username_recovery_done'
+        ),
+    ]
+
+#############################################################
+# CHANGE PASSWORD FIRST LOGIN
+#############################################################
+if settings.PASSWORD_CHANGE_FIRST_LOGIN:
+    urlpatterns += [
+        path(
+            'changepassword/<uidb64>/<token>/',
+            auth.views.PasswordResetConfirmView.as_view(
+                extra_context=extra_context_login_page,
+                form_class=G3WSetPasswordForm),
+            name='change_password_first_login_confirm'
+        ),
+        path(
+            'changepassword/done/',
+            auth.views.PasswordResetCompleteView.as_view(
+                extra_context=extra_context_login_page),
+            name='change_password_first_login_complete'
         ),
     ]
 

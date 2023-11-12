@@ -418,7 +418,7 @@ class G3WLoginView(LoginView):
                 not user.is_superuser and
                 not user.userdata.change_password_first_login and
                 not user.userdata.registered):
-            return HttpResponseRedirect(reverse('password_reset_confirm', args=[
+            return HttpResponseRedirect(reverse('change_password_first_login_confirm', args=[
                 urlsafe_base64_encode(force_bytes(user.pk)),
                 default_token_generator.make_token(user)
             ]))
