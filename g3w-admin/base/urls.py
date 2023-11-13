@@ -19,13 +19,16 @@ from django_registration.backends.activation import views as registration_views
 from usersmanage.forms import (
     G3WAuthenticationForm,
     G3WResetPasswordForm,
-    G3WRegistrationForm
+    G3WRegistrationForm,
+    G3WSetPasswordForm
 )
 from usersmanage.views import (
     G3WUserRegistrationView,
     G3WUsernameRecoveryView,
     G3WUsernameRecoveryDoneView,
-    G3WPasswordResetView
+    G3WPasswordResetView,
+    G3WLoginView,
+    G3WPasswordChangeFirstLoginConfirmView
 )
 
 from ajax_select import urls as ajax_select_urls
@@ -100,7 +103,7 @@ urlpatterns += [
     ),
     path(
         'login/',
-        auth.views.LoginView.as_view(
+        G3WLoginView.as_view(
             template_name='login.html',
             form_class=G3WAuthenticationForm,
             extra_context=extra_context_login_page
@@ -122,11 +125,11 @@ urlpatterns += [
         include(ajax_select_urls)
     )
 ]
+
 #############################################################
 # REGISTRATION USERS
 #############################################################
 
-#path('accounts/', include('django_registration.backends.activation.urls')),
 urlpatterns += [
     path(
         "accounts/activate/complete/",
@@ -198,7 +201,9 @@ if settings.RESET_USER_PASSWORD:
         ),
         path(
             'reset/<uidb64>/<token>/',
-            auth.views.PasswordResetConfirmView.as_view(extra_context=extra_context_login_page),
+            auth.views.PasswordResetConfirmView.as_view(
+                extra_context=extra_context_login_page,
+                form_class=G3WSetPasswordForm),
             name='password_reset_confirm'
         ),
         path(
@@ -217,6 +222,26 @@ if settings.RESET_USER_PASSWORD:
             'username_recovery/done/',
             G3WUsernameRecoveryDoneView.as_view(extra_context=extra_context_login_page),
             name='username_recovery_done'
+        ),
+    ]
+
+#############################################################
+# CHANGE PASSWORD FIRST LOGIN
+#############################################################
+if settings.PASSWORD_CHANGE_FIRST_LOGIN:
+    urlpatterns += [
+        path(
+            'changepassword/<uidb64>/<token>/',
+            G3WPasswordChangeFirstLoginConfirmView.as_view(
+                extra_context=extra_context_login_page,
+                form_class=G3WSetPasswordForm),
+            name='change_password_first_login_confirm'
+        ),
+        path(
+            'changepassword/done/',
+            auth.views.PasswordResetCompleteView.as_view(
+                extra_context=extra_context_login_page),
+            name='change_password_first_login_complete'
         ),
     ]
 

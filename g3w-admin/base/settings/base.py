@@ -331,6 +331,10 @@ g3wsuite.it
 # must be done by the administrator
 REGISTRATION_ACTIVE_BY_ADMIN = False
 
+# CHANGE PASSWORD AT FIRST LOGIN
+# ------------------------------
+PASSWORD_CHANGE_FIRST_LOGIN = False
+
 
 # QPLOTLY DEFAULT SETTINGS
 # ------------------------
