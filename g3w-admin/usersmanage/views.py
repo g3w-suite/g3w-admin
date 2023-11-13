@@ -6,16 +6,24 @@ from django.views.generic import (
     DetailView,
     View
 )
-from django.http.response import JsonResponse, Http404
+from django.http.response import JsonResponse, Http404, HttpResponseRedirect
 from django.views.generic.detail import SingleObjectMixin
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
 from django.core.mail import send_mail
+from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.models import Group
+from django.contrib.auth.views import (
+    PasswordResetView,
+    PasswordResetDoneView,
+    LoginView,
+    PasswordResetConfirmView
+)
 from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
-from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView
 from django.urls import reverse_lazy
 from guardian.shortcuts import assign_perm, get_objects_for_user
 from guardian.decorators import permission_required_or_403
@@ -23,7 +31,7 @@ from django_registration.backends.activation import views as registration_views
 from core.mixins.views import G3WRequestViewMixin, G3WAjaxDeleteViewMixin
 from core.models import GeneralSuiteData
 from .decorators import permission_required_by_backend_or_403
-from .utils import getUserGroups, get_user_groups
+from .utils import getUserGroups, get_user_groups, userHasGroups
 from .configs import *
 from .forms import *
 import json
@@ -381,6 +389,13 @@ class G3WPasswordResetView(G3WUserPasswordRecoveryMixin, PasswordResetView):
     """
     pass
 
+class G3WPasswordChangeFirstLoginConfirmView(G3WUserPasswordRecoveryMixin, PasswordResetConfirmView):
+    """
+    Class for G3W-SUITE for Password change at first login
+    """
+
+    success_url = reverse_lazy('change_password_first_login_complete')
+
 
 class G3WUsernameRecoveryView(G3WUserPasswordRecoveryMixin, PasswordResetView):
     """
@@ -400,3 +415,24 @@ class G3WUsernameRecoveryDoneView(PasswordResetDoneView):
     """
     template_name = 'registration/username_recovery_done.html'
     title = _('Username sent')
+
+class G3WLoginView(LoginView):
+    """
+    Custom Login View for G3W-SUITE
+    """
+
+    def form_valid(self, form):
+
+        # Check password at first login is active
+        # If true redirect to reset password form
+        user = form.get_user()
+        if (settings.PASSWORD_CHANGE_FIRST_LOGIN and
+                not user.is_superuser and
+                not user.userdata.change_password_first_login and
+                not user.userdata.registered):
+            return HttpResponseRedirect(reverse('change_password_first_login_confirm', args=[
+                urlsafe_base64_encode(force_bytes(user.pk)),
+                default_token_generator.make_token(user)
+            ]))
+
+        return super().form_valid(form)
