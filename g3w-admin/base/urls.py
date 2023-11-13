@@ -130,7 +130,6 @@ urlpatterns += [
 # REGISTRATION USERS
 #############################################################
 
-#path('accounts/', include('django_registration.backends.activation.urls')),
 urlpatterns += [
     path(
         "accounts/activate/complete/",
