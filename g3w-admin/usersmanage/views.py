@@ -16,7 +16,12 @@ from django.core.mail import send_mail
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.models import Group
-from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, LoginView, PasswordChangeView
+from django.contrib.auth.views import (
+    PasswordResetView,
+    PasswordResetDoneView,
+    LoginView,
+    PasswordResetConfirmView
+)
 from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
 from django.urls import reverse_lazy
@@ -383,6 +388,13 @@ class G3WPasswordResetView(G3WUserPasswordRecoveryMixin, PasswordResetView):
     Class for G3W-SUITE of PasswordResetView
     """
     pass
+
+class G3WPasswordChangeFirstLoginConfirmView(G3WUserPasswordRecoveryMixin, PasswordResetConfirmView):
+    """
+    Class for G3W-SUITE for Password change at first login
+    """
+
+    success_url = reverse_lazy('change_password_first_login_complete')
 
 
 class G3WUsernameRecoveryView(G3WUserPasswordRecoveryMixin, PasswordResetView):

@@ -27,7 +27,8 @@ from usersmanage.views import (
     G3WUsernameRecoveryView,
     G3WUsernameRecoveryDoneView,
     G3WPasswordResetView,
-    G3WLoginView
+    G3WLoginView,
+    G3WPasswordChangeFirstLoginConfirmView
 )
 
 from ajax_select import urls as ajax_select_urls
@@ -232,7 +233,7 @@ if settings.PASSWORD_CHANGE_FIRST_LOGIN:
     urlpatterns += [
         path(
             'changepassword/<uidb64>/<token>/',
-            auth.views.PasswordResetConfirmView.as_view(
+            G3WPasswordChangeFirstLoginConfirmView.as_view(
                 extra_context=extra_context_login_page,
                 form_class=G3WSetPasswordForm),
             name='change_password_first_login_confirm'
