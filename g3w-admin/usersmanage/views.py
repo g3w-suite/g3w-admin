@@ -6,17 +6,32 @@ from django.views.generic import (
     DetailView,
     View
 )
-from django.http.response import JsonResponse, Http404
+from django.http.response import JsonResponse, Http404, HttpResponseRedirect
 from django.views.generic.detail import SingleObjectMixin
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
+from django.core.mail import send_mail
+from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.models import Group
+from django.contrib.auth.views import (
+    PasswordResetView,
+    PasswordResetDoneView,
+    LoginView,
+    PasswordResetConfirmView
+)
+from django.contrib.sites.shortcuts import get_current_site
+from django.template.loader import render_to_string
+from django.urls import reverse_lazy
 from guardian.shortcuts import assign_perm, get_objects_for_user
 from guardian.decorators import permission_required_or_403
+from django_registration.backends.activation import views as registration_views
 from core.mixins.views import G3WRequestViewMixin, G3WAjaxDeleteViewMixin
+from core.models import GeneralSuiteData
 from .decorators import permission_required_by_backend_or_403
-from .utils import getUserGroups, get_user_groups
+from .utils import getUserGroups, get_user_groups, userHasGroups
 from .configs import *
 from .forms import *
 import json
@@ -170,6 +185,13 @@ class UserGroupCreateView(G3WRequestViewMixin, CreateView):
 
         return reverse('user-group-list')
 
+    def get_context_data(self, **kwargs):
+        c = super().get_context_data(**kwargs)
+
+        c['cleaned_data'] = {}
+
+        return c
+
 
 class UserGroupUpdateView(G3WRequestViewMixin, UpdateView):
     """
@@ -183,16 +205,27 @@ class UserGroupUpdateView(G3WRequestViewMixin, UpdateView):
     def dispatch(self, *args, **kwargs):
         return super(UserGroupUpdateView, self).dispatch(*args, **kwargs)
 
+
     def get_initial(self):
         initials = super(UserGroupUpdateView, self).get_initial()
 
         # add group role
         try:
             initials['role'] = self.object.grouprole.role
+            initials['gusers'] = [str(u.pk) for u in self.object.user_set.all()]
         except:
             pass
 
         return initials
+
+    def get_context_data(self, **kwargs):
+        c = super().get_context_data(**kwargs)
+
+        c['cleaned_data'] = {
+            'gusers': [u.pk for u in self.object.user_set.all()]
+        }
+
+        return c
 
     # todo: check group if not in base editor and viewer group
     def get_success_url(self):
@@ -263,3 +296,143 @@ class UserGroupByUserRoleView(View):
                                                'selected': ug in current_user_groups} for ug in user_groups]})
 
 
+class G3WUserRegistrationView(registration_views.RegistrationView):
+    """
+    G3W-ADMIn custom registration view.
+    """
+
+    admin_email_body_template = "django_registration/activation_admin_email_body.txt"
+    admin_email_subject_template = "django_registration/activation_admin_email_subject.txt"
+
+    def registration_allowed(self):
+
+        # Check by settings
+        # and check if a user is logged in
+        return super().registration_allowed() and self.request.user.is_anonymous
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+
+        # Add registration intro
+        ctx.update({
+            'registration_intro': GeneralSuiteData.objects.get().registration_intro
+        })
+        return ctx
+
+    def send_activation_email(self, user):
+        """
+        Send the activation email.
+
+        """
+
+        if settings.REGISTRATION_ACTIVE_BY_ADMIN:
+            self.send_admin_activation_email(user)
+        else:
+            super().send_activation_email(user)
+
+    def get_admin_email_context(self):
+        """
+        Build the template context used for the activation email by administrator.
+
+        """
+        scheme = "https" if self.request.is_secure() else "http"
+        return {
+            "scheme": scheme,
+            "site": get_current_site(self.request),
+        }
+
+    def send_admin_activation_email(self, user):
+        """
+        Send the activation email, for site administrator.
+
+        """
+
+        context = self.get_admin_email_context()
+        context["user"] = user
+        subject = render_to_string(
+            template_name=self.admin_email_subject_template,
+            context=context,
+            request=self.request,
+        )
+        # Force subject to a single line to avoid header-injection
+        # issues.
+        subject = "".join(subject.splitlines())
+        message = render_to_string(
+            template_name=self.admin_email_body_template,
+            context=context,
+            request=self.request,
+        )
+
+        # Get email of every admin users (Admin Level 1 and Admin Level 2)
+        admins = User.objects.filter(is_superuser=True)
+
+        send_mail(
+            subject,
+            message,
+            settings.DEFAULT_FROM_EMAIL,
+            [a.email for a in admins],
+            fail_silently=False,
+        )
+
+class G3WUserPasswordRecoveryMixin(object):
+    """
+    A mixin to add SITTINGS paramenter inside the template
+    """
+
+    extra_email_context = {
+        'SETTINGS': settings
+    }
+
+class G3WPasswordResetView(G3WUserPasswordRecoveryMixin, PasswordResetView):
+    """
+    Class for G3W-SUITE of PasswordResetView
+    """
+    pass
+
+class G3WPasswordChangeFirstLoginConfirmView(G3WUserPasswordRecoveryMixin, PasswordResetConfirmView):
+    """
+    Class for G3W-SUITE for Password change at first login
+    """
+
+    success_url = reverse_lazy('change_password_first_login_complete')
+
+
+class G3WUsernameRecoveryView(G3WUserPasswordRecoveryMixin, PasswordResetView):
+    """
+    A view to recovery username by email, follow the same logic of Password reset.
+    """
+
+    email_template_name = 'registration/username_recovery_email.html'
+    form_class = G3WUsernameRecoveryForm
+    subject_template_name = 'registration/username_recovery_subject.txt'
+    success_url = reverse_lazy('username_recovery_done')
+    template_name = 'registration/username_recovery_form.html'
+    title = _('Username recovery')
+
+class G3WUsernameRecoveryDoneView(PasswordResetDoneView):
+    """
+    View for show message to the end user of emailing username.
+    """
+    template_name = 'registration/username_recovery_done.html'
+    title = _('Username sent')
+
+class G3WLoginView(LoginView):
+    """
+    Custom Login View for G3W-SUITE
+    """
+
+    def form_valid(self, form):
+
+        # Check password at first login is active
+        # If true redirect to reset password form
+        user = form.get_user()
+        if (settings.PASSWORD_CHANGE_FIRST_LOGIN and
+                not user.is_superuser and
+                not user.userdata.change_password_first_login and
+                not user.userdata.registered):
+            return HttpResponseRedirect(reverse('change_password_first_login_confirm', args=[
+                urlsafe_base64_encode(force_bytes(user.pk)),
+                default_token_generator.make_token(user)
+            ]))
+
+        return super().form_valid(form)

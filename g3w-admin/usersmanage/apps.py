@@ -8,6 +8,7 @@ def GiveBaseGrant(sender, **kwargs):
     """
     Insert group base in to database, and give base permissions
     """
+
     if isinstance(sender, UsersmanageConfig):
         AuthGroup = apps.get_app_config('auth').get_model('Group')
         Permission = apps.get_app_config('auth').get_model('Permission')
@@ -38,4 +39,8 @@ class UsersmanageConfig(AppConfig):
     verbose_name = 'Users Manager'
 
     def ready(self):
+
+        # Activate signals receivers
+        import usersmanage.receivers
+
         post_migrate.connect(GiveBaseGrant, sender=self)

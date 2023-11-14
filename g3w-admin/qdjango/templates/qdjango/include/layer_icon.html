@@ -15,7 +15,7 @@
      xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" >
   <image x="0" y="0" height="100%" width="100%"  xlink:href="{% static 'svg/mActionOgrLayer.svg' %}" />
   </svg>
-{% elif object.layer_type == 'gdal' %}
+{% elif object.layer_type in 'gdal,postgresraster' %}
   <svg id="circle" height="16" width="16" data-toggle="tooltip" data-placement="top" title="{{ object.layer_type }}" viewBox="0 0 32 32"
      xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" >
   <image x="0" y="0" height="100%" width="100%"  xlink:href="{% static 'svg/mIconRaster.svg' %}" />

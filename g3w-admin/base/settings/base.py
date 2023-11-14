@@ -74,6 +74,8 @@ THIRD_PARTY_APPS = [
     'huey_monitor',
     'about',
     'django_bleach',
+    'django_registration',
+    'captcha'
 ]
 
 G3WADMIN_APPS = [
@@ -315,6 +317,25 @@ G3WADMIN_RASTER_LAYER_DOWNLOAD_FORMATS = ['geotiff', 'xls', 'csv', 'gpkg']
 # Setting to activate/deactivate user password reset by email.
 RESET_USER_PASSWORD = False
 
+# REGISTRATION ACCOUNTS
+# ---------------------
+ACCOUNT_ACTIVATION_DAYS = 2
+REGISTRATION_OPEN = False
+
+REGISTRATION_EMAIL_SUBJECT_PREFIX = '[G3W-SUITE]'
+REGISTRATION_EMAIL_BODY_SIGN = '''
+g3wsuite.it
+'''
+
+# Set to true if the activation of a registered user
+# must be done by the administrator
+REGISTRATION_ACTIVE_BY_ADMIN = False
+
+# CHANGE PASSWORD AT FIRST LOGIN
+# ------------------------------
+PASSWORD_CHANGE_FIRST_LOGIN = False
+
+
 # QPLOTLY DEFAULT SETTINGS
 # ------------------------
 
@@ -345,3 +366,19 @@ BLEACH_STRIP_COMMENTS = True
 
 # For reverse proxy
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# GOOGLE RECAPTCHA
+# ----------------
+
+# Activate/deactivate Google ReCaptcha system. Default False
+RECAPTCHA = False
+# Set Google ReCaptch version. Default 3
+RECAPTCHA_VERSION = '3'
+
+# Settings for ReCaptcha v3
+RECAPTCHA_REQUIRED_SCORE = 0.85
+
+# Settings for ReCaptcha v2. Default checkbox
+RECAPTCHA_VERSION2_TYPE = 'checkbox' # or 'invisible'
+
+SILENCED_SYSTEM_CHECKS = ['captcha.recaptcha_test_key_error']

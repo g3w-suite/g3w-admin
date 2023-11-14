@@ -1,0 +1,9 @@
+{% extends "base_login.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block login_page_box_body %}
+  <div class="register-box-body">
+    <p class="register-box-msg">{% trans 'Sorry but the registration is closed!' %}</p>
+  </div><!-- /.login-box-body -->
+{% endblock %}

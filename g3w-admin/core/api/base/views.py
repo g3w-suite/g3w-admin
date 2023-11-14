@@ -1,11 +1,9 @@
 import json
-from collections import OrderedDict
 from copy import copy
 
-from django.conf import settings
-from django.contrib.gis.geos import GEOSGeometry
 from django.core.exceptions import PermissionDenied
-from django.http import Http404
+from django.http import Http404, HttpRequest
+from django.urls import resolve, reverse
 from django.utils.translation import ugettext
 from django.utils.translation import ugettext_lazy as _
 from qgis.core import (
@@ -19,6 +17,8 @@ from qgis.core import (
     QgsJsonUtils,
     QgsFeature,
 )
+
+from qgis.PyQt.QtCore import QVariant
 
 from rest_framework import exceptions, status
 from rest_framework.exceptions import APIException
@@ -35,6 +35,7 @@ from core.utils.structure import (APIVectorLayerStructure, mapLayerAttributes,
                                   mapLayerAttributesFromQgisLayer)
 from core.utils.vector import BaseUserMediaHandler as UserMediaHandler
 from core.utils.qgisapi import get_qgis_features, count_qgis_features, server_fid
+from qdjango.apps import QGS_APPLICATION
 
 import logging
 
@@ -481,31 +482,91 @@ class BaseVectorApiView(G3WAPIView):
         # If 'unique' request params is set,
         # api return a list of unique
         # field name sent with 'unique' param.
+        #
+        # If 'fformatter' request param is set,
+        # api return a list array [original_field_value, formatted_field_value]
+        # field name sent with 'fformatter' param.
         # --------------------------------------
         # IDEA:     for big data it'll be iterate over features to get unique
         #           c++ iteration is fast. Instead memory layer with too many features can be a problem.
-        if 'unique' in request.query_params:
+        if 'unique' in request.query_params or 'fformatter' in request.query_params:
 
-            vl = QgsVectorLayer(QgsWkbTypes.displayString(self.metadata_layer.qgis_layer.wkbType()),
-                                "temporary_vector", "memory")
-            pr = vl.dataProvider()
+            uniques = None
+            pvalue = request.query_params.get('unique') if 'unique' in request.query_params else (
+                request.query_params.get('fformatter'))
 
-            # add fields
-            pr.addAttributes(self.metadata_layer.qgis_layer.fields())
-            vl.updateFields()  # tell the vector layer to fetch changes from the provider
+            qfieldidx = self.metadata_layer.qgis_layer.fields().indexOf(pvalue)
+            r_qfieldidx = qfieldidx
+            qlayer = self.metadata_layer.qgis_layer
+            qfeatures = self.features
 
-            res = pr.addFeatures(self.features)
+            # Get QgsFieldFormatter
+            if 'fformatter' in request.query_params:
+                ewsetup = self.metadata_layer.qgis_layer.editorWidgetSetup(qfieldidx)
+                qfformatter = QGS_APPLICATION.fieldFormatterRegistry().fieldFormatter(ewsetup.type())
 
-            uniques = vl.uniqueValues(
-                self.metadata_layer.qgis_layer.fields().indexOf(
-                    request.query_params.get('unique'))
-            )
+                # Get information about referenced layer
+                wconfig = ewsetup.config()
+                if 'ReferencedLayerId' in wconfig:
+                    relation = None
+                    for r in eval(self.layer.project.relations):
+                        if r['id'] == wconfig['Relation']:
+                            relation = r
+                    if relation:
+                        r_pvalue = relation['fieldRef']['referencedField'][
+                            relation['fieldRef']['referencingField'].index(pvalue)]
+
+                        # Get referenced layer uniques r_pvalue by api
+
+                        kwargs.update({'project_type': 'qdjango',
+                                       'project_id': self.layer.project.pk,
+                                       'layer_name': relation['referencedLayer'],
+                                       'mode_call': 'data'
+                                       })
+
+                        # To avoid python circular import
+                        from qdjango.vector import LayerVectorView
+
+                        url = reverse('core-vector-api', kwargs=kwargs)
+                        req = HttpRequest()
+                        req.method = 'GET'
+                        req.user = request.user
+                        req.resolver_match = resolve(url)
+                        req.GET['unique'] = r_pvalue
+                        view = LayerVectorView.as_view()
+                        res = view(req, *[], **kwargs).render()
+                        uniques = json.loads(res.content)['data']
+
+
+            if not uniques:
+
+                vl = QgsVectorLayer(QgsWkbTypes.displayString(self.metadata_layer.qgis_layer.wkbType()),
+                                    "temporary_vector", "memory")
+                pr = vl.dataProvider()
+
+                # add fields
+                pr.addAttributes(self.metadata_layer.qgis_layer.fields())
+                vl.updateFields()  # tell the vector layer to fetch changes from the provider
+
+                res = pr.addFeatures(self.features)
+
+                uniques = vl.uniqueValues(qfieldidx)
 
             values = []
             for u in uniques:
                 try:
                     if u:
-                        values.append(json.loads(QgsJsonUtils.encodeValue(u)))
+                        if 'unique' in request.query_params:
+                            values.append(json.loads(QgsJsonUtils.encodeValue(u)))
+                        else:
+                            fvalue = qfformatter.representValue(
+                                self.metadata_layer.qgis_layer,
+                                qfieldidx,
+                                ewsetup.config(),
+                                QVariant(),
+                                u
+                            )
+                            values.append([json.loads(QgsJsonUtils.encodeValue(u)), fvalue])
                 except Exception as e:
                     logger.error(f'Response vector widget unique: {e}')
                     continue
@@ -517,7 +578,10 @@ class BaseVectorApiView(G3WAPIView):
                 'count': len(values)
             })
 
-            del(vl)
+            try:
+                del(vl)
+            except:
+                pass
 
         else:
 
