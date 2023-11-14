@@ -1,5 +1,6 @@
 {% load i18n %}
 {% load staticfiles %}
+{% load auth_extras %}
 <div class="navbar-custom-menu">
     <ul class="nav navbar-nav">
 
@@ -77,12 +78,14 @@
         </form>
         </li>
         {% endif %}
-        {% if user.is_superuser %}
         <!-- Control Sidebar Toggle Button -->
         <li>
+        {% if user.is_superuser or user|has_group:G3W_EDITOR1 %}
         <a href="#" data-toggle="control-sidebar"><i class="fa fa-gears"></i></a>
-        </li>
+        {% else %}
+        <span style=" display:inline-block; width: 45px;"></span>
         {% endif %}
+        </li>
         {% endif %}
     </ul>
 </div>
