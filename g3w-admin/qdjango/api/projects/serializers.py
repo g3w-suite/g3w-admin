@@ -423,12 +423,14 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
         # Get FilterToken layer filters saved:
         # Build a layer_filters dict to pass FilterLayerSaved instance to LayerSerializer
+        # Only if user is not anonymous
         layer_filters = {}
-        filters = FilterLayerSaved.objects.filter(user=self.request.user, layer__project=instance)
-        for f in filters:
-            if f.layer.qgs_layer_id not in layer_filters:
-                layer_filters[f.layer.qgs_layer_id] = []
-            layer_filters[f.layer.qgs_layer_id].append(f)
+        if not self.request.user.is_anonymous:
+            filters = FilterLayerSaved.objects.filter(user=self.request.user, layer__project=instance)
+            for f in filters:
+                if f.layer.qgs_layer_id not in layer_filters:
+                    layer_filters[f.layer.qgs_layer_id] = []
+                layer_filters[f.layer.qgs_layer_id].append(f)
 
 
         def readLeaf(layer, container):
