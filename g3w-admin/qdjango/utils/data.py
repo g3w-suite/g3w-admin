@@ -624,7 +624,7 @@ class QgisProjectLayer(XmlData):
                                 data['values'].append(
                                     {'key': key, 'value': value})
 
-            # If ewidget.type() is ReferenceValue, add DiplayExpression of referencedlayer
+            # If ewidget.type() is ReferenceValue, add DisplayExpression of referencedlayer
             elif ewidget.type() == 'RelationReference':
 
                 # Remove from layer dotasource data
