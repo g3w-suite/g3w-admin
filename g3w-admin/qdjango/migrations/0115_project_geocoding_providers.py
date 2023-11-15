@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('qdjango', '0114_alter_sessiontokenfilter_token'),
+        ('qdjango', '0115_alter_layer_layer_type'),
     ]
 
     operations = [
