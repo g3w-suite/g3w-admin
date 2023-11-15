@@ -179,7 +179,8 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
         ('image/png; mode=8bit', _('PNG 8bit Format')),
         ('image/png; mode=16bit', _('PNG 16bit Format')),
         ('image/png', _('PNG format')),
-        ('image/jpeg', _('JPEG format'))
+        ('image/jpeg', _('JPEG format')),
+        ('image/webp', _('WEBP format'))
     )
 
     # Project file
