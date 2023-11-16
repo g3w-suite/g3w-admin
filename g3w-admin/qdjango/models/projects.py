@@ -490,7 +490,8 @@ class Layer(G3WACLModelMixins, models.Model):
         ('vector-tile', _('Vector Tile')),
         ('wcs', _('WCS')),
         ('vectortile', _('Vector Tile')),
-        ('mdal', _('Mesh layer'))
+        ('mdal', _('Mesh layer')),
+        ('postgresraster', _('PostGis raster'))
     )
 
     # General info

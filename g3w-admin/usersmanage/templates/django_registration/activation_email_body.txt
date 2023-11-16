@@ -1,0 +1,10 @@
+{% load i18n %}
+{% trans 'Dear' %} {{ user.username }},
+
+{% trans 'please got to the following link or copy it and paste in you browser to activate your account and validate your email' %}.
+
+{{ scheme }}://{{ site }}{% url 'django_registration_activate' activation_key %}
+
+{% trans 'The link will be active for' %} {{ expiration_days }} {% trans 'days' %}!
+
+{{ SETTINGS.REGISTRATION_EMAIL_BODY_SIGN }}
