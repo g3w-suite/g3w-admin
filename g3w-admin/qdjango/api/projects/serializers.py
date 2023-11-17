@@ -423,12 +423,14 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
         # Get FilterToken layer filters saved:
         # Build a layer_filters dict to pass FilterLayerSaved instance to LayerSerializer
+        # Only if user is not anonymous
         layer_filters = {}
-        filters = FilterLayerSaved.objects.filter(user=self.request.user, layer__project=instance)
-        for f in filters:
-            if f.layer.qgs_layer_id not in layer_filters:
-                layer_filters[f.layer.qgs_layer_id] = []
-            layer_filters[f.layer.qgs_layer_id].append(f)
+        if not self.request.user.is_anonymous:
+            filters = FilterLayerSaved.objects.filter(user=self.request.user, layer__project=instance)
+            for f in filters:
+                if f.layer.qgs_layer_id not in layer_filters:
+                    layer_filters[f.layer.qgs_layer_id] = []
+                layer_filters[f.layer.qgs_layer_id].append(f)
 
 
         def readLeaf(layer, container):
@@ -851,16 +853,22 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
             # Patch for Proj4 > 4.9.3 version
             if ret["crs"] in settings.G3W_PROJ4_EPSG.keys():
-                proj4 = settings.G3W_PROJ4_EPSG[ret["crs"]]
+                proj4 = settings.G3W_PROJ4_EPSG[ret["crs"]]['proj4']
+                extent = settings.G3W_PROJ4_EPSG[ret["crs"]]['extent']
+
             else:
                 proj4 = crs.toProj4()
+                if crs.postgisSrid() in (4326, 3857):
+                    extent = get_crs_bbox(crs)
+                else:
+                    extent = [0, 0, 8388608, 8388608]
 
             ret['crs'] = {
                 'epsg': crs.postgisSrid(),
                 'proj4': proj4,
                 'geographic': crs.isGeographic(),
                 'axisinverted': crs.hasAxisInverted(),
-                'extent': get_crs_bbox(crs)
+                'extent': extent
             }
 
         # add metadata
