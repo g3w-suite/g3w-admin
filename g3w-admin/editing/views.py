@@ -19,7 +19,7 @@ from core.utils import file_path_mime
 from core.utils.vector import BaseUserMediaHandler
 from usersmanage.utils import setPermissionUserObject, get_viewers_for_object, \
     get_user_groups_for_object
-from .forms import ActiveEditingLayerForm
+from .forms import ActiveEditingLayerForm, ActiveEditingMultiLayerForm
 from .models import G3WEditingLayer, EDITING_ATOMIC_PERMISSIONS
 import os
 import json
@@ -126,7 +126,7 @@ class ActiveEditingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3W
     @method_decorator(project_type_permission_required('change_project', ('project_type', 'project_slug'),
                                                        return_403=True))
     def dispatch(self, request, *args, **kwargs):
-        self.layer_id = kwargs['layer_id']
+        self.layer_id = kwargs.get('layer_id')
 
         # Instance user/groups atomic capabilitites
         _capabilities = {ap:[] for ap in EDITING_ATOMIC_PERMISSIONS}
@@ -321,3 +321,17 @@ class ActiveEditingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3W
 
 
         return super(ActiveEditingLayerView, self).form_valid(form)
+
+
+class ActiveEditingMultiLayerView(ActiveEditingLayerView):
+    """
+    Activate/deactivate editing multi layer
+    """
+
+    form_class = ActiveEditingMultiLayerForm
+
+    def get_form_kwargs(self):
+
+        kwargs = super(ActiveEditingLayerView, self).get_form_kwargs()
+
+        return kwargs
