@@ -173,7 +173,7 @@ def get_geocoding_providers():
     """
 
     ret = []
-    for gp, p in settings.GEOCONDING_PROVIDERS.items():
+    for gp, p in settings.GEOCODING_PROVIDERS.items():
         if gp == 'bing' and 'bing' not in settings.VENDOR_KEYS:
             continue
         ret.append((gp, p['label']))
