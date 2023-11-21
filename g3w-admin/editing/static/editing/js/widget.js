@@ -34,7 +34,7 @@ ga.Editing.widget = {
      */
     init_active_status: function () {
         $check = $("#editing_layer_form").find('#id_active');
-        $select = $("#editing_layer_form").find('.select2, #id_scale');
+        $select = $("#editing_layer_form").find('#id_scale, select:not(#id_layers)');
 
         var check_active_status = function (event) {
             if ($check.prop('checked')) {
