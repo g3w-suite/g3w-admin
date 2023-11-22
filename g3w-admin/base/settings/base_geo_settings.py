@@ -52,9 +52,5 @@ GEOCODING_PROVIDERS = {
     "label": "Nominatim (OSM)",
     "url": "https://nominatim.openstreetmap.org/search"
   },
-  "bing": {
-    "label": "Bing",
-    "url": "https://dev.virtualearth.net/REST/v1/LocalSearch/"
-  }
 }
 
