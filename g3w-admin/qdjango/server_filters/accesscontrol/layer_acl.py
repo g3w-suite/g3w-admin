@@ -10,7 +10,7 @@ __date__ = "2023-09-25"
 __copyright__ = "Copyright 2015 - 2023, Gis3w"
 __license__ = "MPL 2.0"
 
-from guardian.shortcuts import get_perms
+from guardian.shortcuts import get_perms, get_anonymous_user
 from qgis.server import QgsAccessControlFilter
 from qgis.core import QgsMessageLog, Qgis
 from qdjango.apps import QGS_SERVER
@@ -32,7 +32,10 @@ class LayerAclAccessControlFilter(QgsAccessControlFilter):
                 project=QGS_SERVER.project, qgs_layer_id=layer.id())
 
             # Check permission
-            perms = get_perms(QGS_SERVER.user, qdjango_layer)
+            perms = list(
+                set(get_perms(QGS_SERVER.user, qdjango_layer)) |
+                set(get_perms(get_anonymous_user(), qdjango_layer))
+            )
             rights.canRead = "view_layer" in perms
             rights.canInsert = "add_layer" in perms
             rights.canUpdate = "change_layer" in perms
