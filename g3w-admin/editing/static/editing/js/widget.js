@@ -224,11 +224,11 @@ ga.Editing.widget = {
                 method: "get",
                 url: ga.Editing.widget.layerinfobaseurl + data.id + "/",
                 success: function (res) {
-                    var fields = res.results[0].database_columns;
+                    var fields = res.database_columns;
 
                     // For selects
-                    var $add_field = $('#add_user_layer_' + data.id);
-                    var $edit_field = $('#edit_user_layer_' + data.id);
+                    var $add_field = $('#add_user_field_' + data.id);
+                    var $edit_field = $('#edit_user_field_' + data.id);
                     _.each(fields, function (field) {
                         $add_field.append($('<option value="' + field.name + '">' + field.name + '</option>'));
                         $edit_field.append($('<option value="' + field.name + '">' + field.name + '</option>'));
@@ -313,8 +313,8 @@ _.extend(ga.tpl, {
                 tablerow: _.template('\
                     <tr id="row_<%= layer_id %>">\
                         <td><%= layer_name %></td>\
-                        <td><select class="select2" name="add_user_layer_<%= layer_id %>" id="add_user_layer_<%= layer_id %>"><option value="">------</option></select></td>\
-                        <td><select class="select2" name="edit_user_layer_<%= layer_id %>" id="edit_user_layer_<%= layer_id %>"><option value="">------</option></select></td>\
+                        <td><select class="select2" name="add_user_field_<%= layer_id %>" id="add_user_field_<%= layer_id %>"><option value="">------</option></select></td>\
+                        <td><select class="select2" name="edit_user_field_<%= layer_id %>" id="edit_user_field_<%= layer_id %>"><option value="">------</option></select></td>\
                     </tr>\
                 ')
             }

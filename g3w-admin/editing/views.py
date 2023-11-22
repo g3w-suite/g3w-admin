@@ -417,13 +417,22 @@ class ActiveEditingMultiLayerView(ActiveEditingLayerView):
         scale = form.cleaned_data['scale']
 
         for layer_pk in layers:
+
+            add_user_field = self.request.POST.get(f'add_user_field_{layer_pk}', None)
+            edit_user_field = self.request.POST.get(f'edit_user_field_{layer_pk}', None)
+
             if form.cleaned_data['active']:
+
                 if layer_pk not in activated.keys():
                     activated[layer_pk] = G3WEditingLayer.objects.create(app_name=self.app_name,
                                                                          layer_id=layer_pk,
+                                                                         edit_user_field=edit_user_field,
+                                                                         add_user_field=add_user_field,
                                                                          scale=scale)
                 else:
                     activated[layer_pk].scale = scale
+                    activated[layer_pk].add_user_field = add_user_field
+                    activated[layer_pk].edit_user_field = edit_user_field
                     activated[layer_pk].save()
             else:
                 if layer_pk in activated.keys():

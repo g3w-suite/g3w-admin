@@ -376,3 +376,15 @@ class LayerPolygonView(generics.ListAPIView):
                 geometrytype__in=['Polygon', 'MultiPolygon']
             )
         return qs
+
+class LayerInfoView(generics.RetrieveAPIView):
+    """Return info about qdjango layer by pk"""
+
+    queryset = Layer.objects.all()
+    serializer_class = LayerInfoSerializer
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        if 'layer_id' in self.kwargs:
+            qs = Layer.objects.get(pk=self.kwargs['layer_id'])
+        return qs
