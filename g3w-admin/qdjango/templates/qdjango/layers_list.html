@@ -99,14 +99,19 @@
             </ul>
             <div class="tab-content">
               <div class="tab-pane active" id="tab_layers_data">
-              {% if 'editing' in SETTINGS.G3WADMIN_LOCAL_MORE_APPS %}
-              <a class="layer-action" {% if active %}style="color: green;"{% endif %} data-toggle="tooltip" title="{% trans 'Editing layer' %}"
-               data-widget-type="ajaxForm"
-               data-form-url="{% url 'editing-multi-layer-active' group.slug 'qdjango' project.slug %}"
-               data-modal-title="{% trans 'Activation layer_editing' %}">
-                <i class="fa {% if active %}fa-pencil-square{% else %}fa-pencil-square-o{% endif %}"></i>
-              {% endif %}
-              </a>
+              <div class="row project_layers_action-content">
+                <div class="col-md-2 col-md-offset-7">
+                    <b>{% trans 'Project layers actions' %}:</b>
+                </div>
+                <div class="col-md-3">
+              {% g3wadmin_project_layers_actions project 'qdjango' user as project_layers_actions %}
+
+                {% for action in project_layers_actions %}
+                    {{ action }}
+                {% endfor %}
+                </div>
+              </div>
+
                 <table id="layers_table" class="table table-hover table-striped" data-widget-type="dataTable">
                     <thead>
                         <tr>
