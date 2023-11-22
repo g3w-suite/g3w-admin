@@ -186,6 +186,7 @@ class ActiveEditingMultiLayerForm(ActiveEditingMixin, G3WRequestFormMixin, G3WPr
 
         layout_args += [
             Field('layers', css_class='select2', style="width:100%;"),
+            Div(css_class='add_edit_user_fields'),
             'scale',
             HTML(_('Select viewers with \'view permission\' on project that can edit layer:')),
             Field('viewer_users', css_class='select2', style="width:100%;"),

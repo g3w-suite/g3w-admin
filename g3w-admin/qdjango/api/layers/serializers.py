@@ -17,9 +17,18 @@ from usersmanage.models import User, Group as AuthGroup
 
 class LayerInfoSerializer(serializers.ModelSerializer):
 
+    def to_representation(self, instance):
+
+        ret = super().to_representation(instance)
+
+        # From str to python
+        ret['database_columns'] = eval(ret['database_columns'])
+
+        return ret
+
     class Meta:
         model = Layer
-        fields = ['pk', 'name', 'title', 'origname', 'qgs_layer_id', 'layer_type']
+        fields = ['pk', 'name', 'title', 'origname', 'qgs_layer_id', 'layer_type', 'database_columns']
 
 
 class LayerInfoUserSerializer(serializers.ModelSerializer):

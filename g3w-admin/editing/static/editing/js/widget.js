@@ -17,7 +17,8 @@ ga.Editing.widget = {
 
         this.selects = {
             'user': $("#editing_layer_form").find('#id_viewer_users'),
-            'group': $("#editing_layer_form").find('#id_user_groups_viewer')
+            'group': $("#editing_layer_form").find('#id_user_groups_viewer'),
+            'layer': $("#editing_layer_form").find('#id_layers')
         };
 
         this.capas = {
@@ -25,8 +26,12 @@ ga.Editing.widget = {
             'group': $("#editing_layer_form").find('.user_groups_atomic_capabilities')
         };
 
+        // For multilayer activation editing form
+        this.fields_add_edit_user = $("#editing_layer_form").find('.add_edit_user_fields');
+
         this.init_active_status();
         this.init_atomic_capabilities();
+        this.init_add_edit_user_fields();
     },
 
     /**
@@ -64,6 +69,21 @@ ga.Editing.widget = {
             _.each(that.selects[context].select2('data'), that.add_row(context));
 
         });
+    },
+
+    /**
+     * Initialize for mutli layer editing activation form
+     * the add/edit user fields
+     * @param context
+     * @returns {(function(*): void)|*}
+     */
+    init_add_edit_user_fields: function () {
+
+        var that = this;
+
+        that.selects['layer'].on('select2:select', that.add_edit_user_row());
+        that.selects['layer'].on('select2:unselect', that.remove_add_edit_user_row());
+
     },
 
     /**
@@ -150,7 +170,100 @@ ga.Editing.widget = {
             that.capas[context].find('#row_' + data.id).remove();
         }
 
-    }
+    },
+
+    /**
+     * Adds a new row for each layer selected in the layers field,
+     * in each row it allows the choice of the field to be used to save
+     * the user who created the new feature
+     *
+     * Not update only create form state
+     * @returns {(function(*): void)|*}
+     */
+    add_edit_user_row: function () {
+
+        var that = this;
+        return function (e) {
+
+            try {
+                var data = e.params.data;
+            } catch {
+                var data = e;
+            }
+
+            // check if table is rendered
+            var $table = that.fields_add_edit_user.find('table');
+
+            // build table row
+            var $row = ga.tpl.editing.userfields.choosingfields.tablerow({
+                layer_name: data.text,
+                layer_id: data.id
+            });
+            if ($table.length == 0) {
+
+                var $table = ga.tpl.editing.userfields.choosingfields.table({
+                    layer_name_title: gettext('Layer'),
+                    add_user_field_title: gettext('Add logging field'),
+                    edit_user_field_title: gettext('Update logging field'),
+                    body_table: $row
+                });
+
+                that.fields_add_edit_user.append($table);
+
+            } else {
+                $table.find('tbody').append($row);
+            }
+
+            that.fields_add_edit_user.find('select').select2({
+                    width: '100%',
+            });
+
+
+
+            $.ajax({
+                method: "get",
+                url: ga.Editing.widget.layerinfobaseurl + data.id + "/",
+                success: function (res) {
+                    var fields = res.results[0].database_columns;
+
+                    // For selects
+                    var $add_field = $('#add_user_layer_' + data.id);
+                    var $edit_field = $('#edit_user_layer_' + data.id);
+                    _.each(fields, function (field) {
+                        $add_field.append($('<option value="' + field.name + '">' + field.name + '</option>'));
+                        $edit_field.append($('<option value="' + field.name + '">' + field.name + '</option>'));
+                    })
+
+                },
+                error: function (xhr, textStatus, errorMessage) {
+                },
+            });
+
+        }
+    },
+
+    /**
+     * Remove row from table for choosing log user field
+     * @returns {(function(*): void)|*}
+     */
+    remove_add_edit_user_row: function () {
+
+
+        var that = this;
+        return function (e) {
+
+            try {
+                var data = e.params.data;
+            } catch {
+                var data = e;
+            }
+
+            that.fields_add_edit_user.find('#row_' + data.id).remove();
+        }
+
+    },
+
+
 };
 
 _.extend(ga.tpl, {
@@ -179,6 +292,29 @@ _.extend(ga.tpl, {
                         <td><input type="checkbox" name="<%= context %>_change_capability_<%= user_role_id %>" <%= ck_cha %>></td>\
                         <td><input type="checkbox" name="<%= context %>_changeattributes_capability_<%= user_role_id %>" <%= ck_cha_attr %>></td>\
                         <td><input type="checkbox" name="<%= context %>_delete_capability_<%= user_role_id %>" <%= ck_del %>></td>\
+                    </tr>\
+                ')
+            }
+        },
+        userfields: {
+            choosingfields: {
+                table: _.template('\
+                    <table class="table">\
+                        <thead>\
+                            <tr>\
+                                <th><%= layer_name_title %></th>\
+                                <th><%= add_user_field_title %></th> \
+                                <th><%= edit_user_field_title %></th> \
+                            </tr>\
+                        </thead>\
+                        <tbody><%= body_table %></tbody>\
+                    </table>\
+                    '),
+                tablerow: _.template('\
+                    <tr id="row_<%= layer_id %>">\
+                        <td><%= layer_name %></td>\
+                        <td><select class="select2" name="add_user_layer_<%= layer_id %>" id="add_user_layer_<%= layer_id %>"><option value="">------</option></select></td>\
+                        <td><select class="select2" name="edit_user_layer_<%= layer_id %>" id="edit_user_layer_<%= layer_id %>"><option value="">------</option></select></td>\
                     </tr>\
                 ')
             }
