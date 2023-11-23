@@ -434,8 +434,7 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
         if self.qgis_project.write():
             self.is_dirty = True
             # Update layers tree
-            self.layers_tree = str(buildLayerTreeNodeObject(
-                self.qgis_project.layerTreeRoot()))
+            self.layers_tree = str(buildLayerTreeNodeObject(self.qgis_project.layerTreeRoot()))
             self.save()
             return True
         else:
@@ -443,51 +442,73 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
 
     def _permissionsToEditor(self, user, mode='add'):
 
-        setPermissionUserObject(user, self, permissions=[
-            'change_project',
-            'delete_project',
-            'view_project'
-        ], mode=mode)
+        setPermissionUserObject(
+            user,
+            self,
+            permissions = ['change_project', 'delete_project', 'view_project'],
+            mode        = mode,
+        )
 
         # if editor not has permission on group give permission only view on parent group
         if not user.has_perm('core.view_group', self.group):
-            setPermissionUserObject(user, self.group, permissions=[
-                'core.view_group'
-            ], mode=mode)
+            setPermissionUserObject(
+                user,
+                self.group,
+                permissions = ['core.view_group'],
+                mode        = mode,
+            )
 
         layerAction = 'addPermissionsToEditor' if mode == 'add' else 'removePermissionsToEditor'
-        layers = self.layer_set.all()
+        layers      = self.layer_set.all()
         for layer in layers:
             getattr(layer, layerAction)(user)
 
     def _permissionsToViewers(self, users_id, mode='add'):
 
         for user_id in users_id:
+
             user = User.objects.get(pk=user_id)
+
             setPermissionUserObject(
-                user, self, permissions='view_project', mode=mode)
+                user,
+                self,
+                permissions = 'view_project',
+                mode       = mode
+            )
 
             layerAction = 'addPermissionsToViewers' if mode == 'add' else 'removePermissionsToViewers'
-            layers = self.layer_set.all()
+
+            layers      = self.layer_set.all()
+
             for layer in layers:
                 getattr(layer, layerAction)(users_id)
 
     def _permissions_to_user_groups_editor(self, groups_id, mode='add'):
 
         for group_id in groups_id:
+
             auth_group = AuthGroup.objects.get(pk=group_id)
-            setPermissionUserObject(auth_group, self,
-                                    permissions=['change_project', 'delete_project', 'view_project'], mode=mode)
+
+            setPermissionUserObject(
+                auth_group,
+                self,
+                permissions = ['change_project', 'delete_project', 'view_project'],
+                mode        = mode,
+            )
 
             # if viewer not has permission on group give permission only view on parent group
             if 'view_group' not in get_perms(auth_group, self.group):
-                setPermissionUserObject(auth_group, self.group, permissions=[
-                    'core.view_group'
-                ], mode=mode)
+                setPermissionUserObject(
+                    auth_group,
+                    self.group,
+                    permissions = ['core.view_group'],
+                    mode        = mode,
+                )
 
-            layerAction = 'add_permissions_to_editor_user_groups' if mode == 'add' \
-                else 'remove_permissions_to_editor_user_groups'
-            layers = self.layer_set.all()
+            layerAction = 'add_permissions_to_editor_user_groups' if mode == 'add' else 'remove_permissions_to_editor_user_groups'
+
+            layers      = self.layer_set.all()
+
             for layer in layers:
                 getattr(layer, layerAction)(groups_id)
 
@@ -496,11 +517,16 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
         for group_id in groups_id:
             auth_group = AuthGroup.objects.get(pk=group_id)
             setPermissionUserObject(
-                auth_group, self, permissions='view_project', mode=mode)
+                auth_group,
+                self,
+                permissions = 'view_project',
+                mode        = mode,
+            )
 
-            layerAction = 'add_permissions_to_viewer_user_groups' if mode == 'add' \
-                else 'remove_permissions_to_viewer_user_groups'
-            layers = self.layer_set.all()
+            layerAction = 'add_permissions_to_viewer_user_groups' if mode == 'add' else 'remove_permissions_to_viewer_user_groups'
+
+            layers      = self.layer_set.all()
+
             for layer in layers:
                 getattr(layer, layerAction)(groups_id)
 
@@ -516,8 +542,8 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
             else:
                 return [layers[layer['id']][0], layers[layer['id']][1]]
 
-        layers = self.layer_set.values_list('id', 'name', 'qgs_layer_id')
-        _layers = {l[2]: l for l in layers}
+        layers  = self.layer_set.values_list('id', 'name', 'qgs_layer_id')
+        _layers = { l[2]: l for l in layers }
 
         layers_tree = []
         for l in eval(self.layers_tree):
@@ -528,35 +554,43 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
     @property
     def url_alias(self):
         try:
-            return ProjectMapUrlAlias.objects.get(app_name='qdjango', project_id=self.pk).alias
+            return ProjectMapUrlAlias.objects.get(
+                app_name   = 'qdjango',
+                project_id = self.pk,
+            ).alias
         except:
             return None
 
     @url_alias.setter
     def url_alias(self, url_alias):
         if url_alias:
-            ProjectMapUrlAlias.objects.update_or_create(app_name='qdjango', project_id=self.pk,
-                                                        defaults={'alias': url_alias})
+            ProjectMapUrlAlias.objects.update_or_create(
+                app_name   = 'qdjango',
+                project_id = self.pk,
+                defaults   = { 'alias': url_alias },
+            )
         else:
             try:
                 ProjectMapUrlAlias.objects.get(
-                    app_name='qdjango', project_id=self.pk).delete()
+                    app_name   = 'qdjango',
+                    project_id = self.pk,
+                ).delete()
             except:
                 pass
 
     def __getattr__(self, attr):
         if attr == 'viewers':
             return get_users_for_object(self, 'view_project', [G3W_VIEWER1, G3W_VIEWER2], with_anonymous=True)
+
         elif attr == 'editor':
-            editors = get_users_for_object(
-                self, 'change_project', [G3W_EDITOR1])
+            editors = get_users_for_object(self, 'change_project', [G3W_EDITOR1])
             if len(editors) > 0:
                 return editors[0]
             else:
                 return None
+
         elif attr == 'editor2':
-            editors = get_users_for_object(
-                self, 'change_project', [G3W_EDITOR2])
+            editors = get_users_for_object(self, 'change_project', [G3W_EDITOR2])
             if len(editors) > 0:
                 return editors[0]
             else:
@@ -566,6 +600,7 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
         # ================
         elif attr == 'editor_user_groups':
             return get_groups_for_object(self, 'change_project', 'editor')
+
         elif attr == 'viewer_user_groups':
             return get_groups_for_object(self, 'view_project', 'viewer')
 
@@ -612,118 +647,267 @@ class Layer(G3WACLModelMixins, models.Model):
     )
 
     # General info
-    name = models.CharField(_('Name'), max_length=255)
-    title = models.CharField(_('Title'), max_length=255, blank=True)
-    origname = models.CharField(
-        _('Original Name'), max_length=256, null=True, blank=True)
-    qgs_layer_id = models.CharField(
-        _('Qgis Layer Project ID'), max_length=255, blank=True, null=True)
-    description = models.TextField(_('Description'), blank=True)
-    slug = AutoSlugField(
-        _('Slug'), populate_from=['name'], unique=True, overwrite=True
+    name = models.CharField(
+        _('Name'),
+        max_length = 255,
     )
-    is_active = models.BooleanField(_('Is active'), default=1)
-    # Project
-    project = models.ForeignKey(Project, verbose_name=_(
-        'Project'), on_delete=models.CASCADE)
 
-    parent_project = models.ForeignKey(Project, verbose_name=_(
-        'Parent Project for Embedded layers'), blank=True, null=True,
-        on_delete=models.CASCADE, editable=False, related_name='parent_project')
+    title = models.CharField(
+        _('Title'),
+        max_length = 255,
+        blank      = True,
+    )
+    origname = models.CharField(
+        _('Original Name'),
+        max_length = 256,
+        null      = True,
+        blank     = True,
+    )
+
+    qgs_layer_id = models.CharField(
+        _('Qgis Layer Project ID'),
+        max_length = 255,
+        blank      = True,
+        null       = True,
+    )
+
+    description = models.TextField(
+        _('Description'),
+        blank = True,
+    )
+
+    slug = AutoSlugField(
+        _('Slug'),
+        populate_from = ['name'],
+        unique        = True,
+        overwrite     = True,
+    )
+
+    is_active = models.BooleanField(
+        _('Is active'),
+        default = 1,
+    )
+
+    # Project
+    project = models.ForeignKey(
+        Project,
+        verbose_name = _('Project'),
+        on_delete    = models.CASCADE,
+    )
+
+    parent_project = models.ForeignKey(
+        Project,
+        verbose_name = _('Parent Project for Embedded layers'),
+        blank        = True,
+        null         = True,
+        on_delete    = models.CASCADE,
+        editable     = False,
+        related_name = 'parent_project',
+    )
 
     # Type and content
-    layer_type = models.CharField(_('Type'), choices=TYPES, max_length=255)
-    datasource = models.TextField(_('Datasource'))
-    is_visible = models.BooleanField(_('Is visible'), default=1)
-    order = models.IntegerField(_('Order'), default=1)
+    layer_type = models.CharField(
+        _('Type'),
+        choices    = TYPES,
+        max_length = 255,
+    )
+
+    datasource = models.TextField(
+        _('Datasource'),
+    )
+
+    is_visible = models.BooleanField(
+        _('Is visible'),
+        default = 1,
+    )
+
+    order = models.IntegerField(
+        _('Order'),
+        default = 1,
+    )
+
     # Optional data file (non-postgres layers need it)
     data_file = models.FileField(
         _('Associated data file'),
-        upload_to=get_layer_data_file_path,
-        blank=True,
-        null=True
+        upload_to = get_layer_data_file_path,
+        blank     = True,
+        null      = True,
     )
 
     # TODO: make this a property of the Layer object
     # Database columns (DB layers need it)
     database_columns = models.TextField(
-        _('Database columns'), blank=True, null=True)
+        _('Database columns'),
+        blank = True,
+        null  = True,
+    )
 
     # minscale and maxscale and scalebasedvisibility
     min_scale = models.IntegerField(
-        _('Layer Min Scale visibility'), blank=True, null=True)
+        _('Layer Min Scale visibility'),
+        blank = True,
+        null  = True,
+    )
+
     max_scale = models.IntegerField(
-        _('Layer Max Scale visibility'), blank=True, null=True)
+        _('Layer Max Scale visibility'),
+        blank = True,
+        null  = True,
+    )
+
     scalebasedvisibility = models.BooleanField(
-        _('Layer scale based visibility'), default=False)
+        _('Layer scale based visibility'),
+        default = False,
+    )
 
     # srid
-    srid = models.IntegerField(_('Layer SRID'), blank=True, null=True)
+    srid = models.IntegerField(
+        _('Layer SRID'),
+        blank = True,
+        null  = True,
+    )
 
     # for capabilities and edit opsions
     capabilities = models.IntegerField(
-        _('Bitwise capabilities'), blank=True, null=True)
+        _('Bitwise capabilities'),
+        blank = True,
+        null  = True,
+    )
+
     edit_options = models.IntegerField(
-        _('Bitwise edit options'), blank=True, null=True)
+        _('Bitwise edit options'),
+        blank = True,
+        null  = True,
+    )
+
     wfscapabilities = models.IntegerField(
-        _('Bitwise wfs options'), blank=True, null=True)
+        _('Bitwise wfs options'),
+        blank = True,
+        null  = True,
+    )
 
     # geometryType
     geometrytype = models.CharField(
-        _('Geometry type'), max_length=255, blank=True, null=True)
+        _('Geometry type'),
+        max_length = 255,
+        blank      = True,
+        null       = True,
+    )
 
     exclude_attribute_wms = models.TextField(
-        _('Attributes excluded from wms'), blank=True, null=True)
+        _('Attributes excluded from wms'),
+        blank = True,
+        null  = True,
+    )
+
     exclude_attribute_wfs = models.TextField(
-        _('Attributes excluded from wfs'), blank=True, null=True)
+        _('Attributes excluded from wfs'),
+        blank = True,
+        null  = True,
+    )
 
     # possible layer relations
-    vectorjoins = models.TextField(_('Layer relations'), blank=True, null=True)
+    vectorjoins = models.TextField(
+        _('Layer relations'),
+        blank = True,
+        null  = True,
+    )
 
     # editing widgets
     edittypes = models.TextField(
-        _('Columns layer widgets'), blank=True, null=True)
+        _('Columns layer widgets'),
+        blank = True,
+        null  = True,
+    )
 
     # not show attributes table
     not_show_attributes_table = models.BooleanField(
-        _('Not show attributes table'), default=False, blank=True)
+        _('Not show attributes table'),
+        default = False,
+        blank   = True,
+    )
 
     # exclude from legend
     exclude_from_legend = models.BooleanField(
-        _('Exclude to legend'), default=False, blank=True)
+        _('Exclude to legend'),
+        default = False,
+        blank   = True,
+    )
 
     # form editor layout
     editor_layout = models.CharField(
-        _('Form editor layout'), max_length=100, blank=True, null=True)
+        _('Form editor layout'),
+        max_length = 100,
+        blank      = True,
+        null       = True,
+    )
+
     editor_form_structure = models.TextField(
-        _('Editor form structure'), blank=True, null=True)
+        _('Editor form structure'),
+        blank = True,
+        null = True,
+    )
 
     download = models.BooleanField(
-        _('Download data'), default=False, blank=True)
+        _('Download data'),
+        default = False,
+        blank  = True,
+    )
+
     download_xls = models.BooleanField(
-        _('Download data in xls format'), default=False, blank=True)
+        _('Download data in xls format'),
+        default = False,
+        blank   = True,
+    )
+
     download_gpx = models.BooleanField(
-        _('Download data in gpx format'), default=False, blank=True)
+        _('Download data in gpx format'),
+        default = False,
+        blank   = True,
+    )
+
     download_csv = models.BooleanField(
-        _('Download data in csv format'), default=False, blank=True)
+        _('Download data in csv format'),
+        default = False,
+        blank   = True,
+    )
+
     download_gpkg = models.BooleanField(
-        _('Download data in gpkg format'), default=False, blank=True)
+        _('Download data in gpkg format'),
+        default = False,
+        blank   = True,
+    )
 
     # layer extension
-    extent = models.TextField(_('Layer extension'), null=True, blank=True)
+    extent = models.TextField(
+        _('Layer extension'),
+        null  = True,
+        blank = True,
+    )
 
     # for layer WMS/WMST: set if load direct from their servers or from local QGIS-server
     external = models.BooleanField(
-        _('Get WMS/WMS externally'), default=False, blank=True)
+        _('Get WMS/WMS externally'),
+        default = False,
+        blank   = True,
+    )
 
     # For temporal properties
     temporal_properties = models.TextField(
-        _('Temporal properties'), null=True, blank=True)
+        _('Temporal properties'),
+        null  = True,
+        blank = True,
+    )
 
     has_column_acl = models.BooleanField(
-        _('Has column ACL constraints'), default=False, editable=False, db_index=True)
+        _('Has column ACL constraints'),
+        default  = False,
+        editable = False,
+        db_index = True,
+    )
 
     objects = models.Manager()  # The default manager.
+
     vectors = VectorLayersManager()
 
     @property
@@ -756,10 +940,7 @@ class Layer(G3WACLModelMixins, models.Model):
         if not layer is None:
             sm = layer.styleManager()
             for style in sm.styles():
-                styles.append({
-                    'name': style,
-                    'current': style == sm.currentStyle()
-                })
+                styles.append({ 'name': style, 'current': style == sm.currentStyle() })
 
         return styles
 
@@ -777,8 +958,7 @@ class Layer(G3WACLModelMixins, models.Model):
                     user = get_anonymous_user()
 
                 for acl in self.columnacl_set.filter(models.Q(user=user) | models.Q(group__in=user.groups.all())):
-                    attributes = list(set(attributes) -
-                                      set(acl.restricted_fields))
+                    attributes = list(set(attributes) - set(acl.restricted_fields))
 
             return attributes
         else:
@@ -825,7 +1005,7 @@ class Layer(G3WACLModelMixins, models.Model):
             if layer is None:
                 return False
 
-            sm = layer.styleManager()
+            sm     = layer.styleManager()
             result = sm.setCurrentStyle(style)
 
             if result:
@@ -901,9 +1081,8 @@ class Layer(G3WACLModelMixins, models.Model):
                 return layer.importNamedStyle(doc)[0]
             else:
                 new_style = QgsMapLayerStyle(qml)
-                result = sm.addStyle(style, new_style)
-                result = sm.removeStyle(
-                    style) and sm.addStyle(style, new_style)
+                result    = sm.addStyle(style, new_style)
+                result    = sm.removeStyle(style) and sm.addStyle(style, new_style)
 
             if result:
                 assert self.style(style).xmlData() == new_style.xmlData()
@@ -928,8 +1107,7 @@ class Layer(G3WACLModelMixins, models.Model):
             if layer is None:
                 return False
 
-            sm = layer.styleManager()
-
+            sm     = layer.styleManager()
             result = sm.removeStyle(style)
 
             if result:
@@ -973,7 +1151,7 @@ class Layer(G3WACLModelMixins, models.Model):
             del(tmp_layer)
 
             new_style = QgsMapLayerStyle(qml)
-            result = sm.addStyle(style, new_style)
+            result    = sm.addStyle(style, new_style)
 
             if result:
                 result = result and project.update_qgis_project()
@@ -1007,14 +1185,14 @@ class Layer(G3WACLModelMixins, models.Model):
         return self.name
 
     class Meta:
-        verbose_name = _('Layer')
+        verbose_name        = _('Layer')
         verbose_name_plural = _('Layers')
-        unique_together = (('name', 'project', 'qgs_layer_id'),)
-        ordering = ['order']
+        unique_together     = (('name', 'project', 'qgs_layer_id'),)
+        ordering            = ['order']
         permissions = (
-            ('add_feature', 'Can add features to layer'),
-            ('change_feature', 'Can update features geometry of layer'),
-            ('delete_feature', 'Can delete features from layer'),
+            ('add_feature',         'Can add features to layer'),
+            ('change_feature',      'Can update features geometry of layer'),
+            ('delete_feature',      'Can delete features from layer'),
             ('change_attr_feature', 'Can update features attributes into layer'),
         )
 
@@ -1046,15 +1224,20 @@ class Layer(G3WACLModelMixins, models.Model):
         return self.columnacl_set.count() if self.has_column_acl else 0
 
     def _permissionsToEditor(self, user, mode='add'):
-        setPermissionUserObject(user, self, permissions=[
-            'change_layer',
-            'delete_layer',
-            'view_layer',
-            'add_feature',
-            'change_feature',
-            'change_attr_feature',
-            'delete_feature'
-        ], mode=mode)
+        setPermissionUserObject(
+            user,
+            self,
+            permissions = [
+                'change_layer',
+                'delete_layer',
+                'view_layer',
+                'add_feature',
+                'change_feature',
+                'change_attr_feature',
+                'delete_feature'
+            ],
+            mode        = mode,
+        )
 
     def _permissionsToViewers(self, users_id, mode='add'):
 
@@ -1072,20 +1255,29 @@ class Layer(G3WACLModelMixins, models.Model):
                 self.layeracl_set.filter(user_id=user_id).delete()
 
             if execute:
-                setPermissionUserObject(User.objects.get(
-                    pk=user_id), self, permissions='view_layer', mode=mode)
+                setPermissionUserObject(
+                    User.objects.get(pk=user_id),
+                    self,
+                    permissions = 'view_layer',
+                    mode        = mode,
+                )
 
     def _permissions_to_user_groups_editor(self, groups_id, mode='add'):
         for group_id in groups_id:
-            setPermissionUserObject(AuthGroup.objects.get(pk=group_id), self, permissions=[
-                'change_layer',
-                'delete_layer',
-                'view_layer',
-                'add_feature',
-                'change_feature',
-                'change_attr_feature',
-                'delete_feature'
-            ], mode=mode)
+            setPermissionUserObject(
+                AuthGroup.objects.get(pk=group_id),
+                self,
+                permissions = [
+                    'change_layer',
+                    'delete_layer',
+                    'view_layer',
+                    'add_feature',
+                    'change_feature',
+                    'change_attr_feature',
+                    'delete_feature',
+                ],
+                mode       = mode,
+            )
 
     def _permissions_to_user_groups_viewer(self, groups_id, mode='add'):
 
@@ -1103,9 +1295,12 @@ class Layer(G3WACLModelMixins, models.Model):
                 self.layeracl_set.filter(group_id=group_id).delete()
 
             if execute:
-                setPermissionUserObject(AuthGroup.objects.get(pk=group_id), self, permissions=[
-                    'view_layer'
-                ], mode=mode)
+                setPermissionUserObject(
+                    AuthGroup.objects.get(pk=group_id),
+                    self,
+                    permissions = ['view_layer'],
+                    mode        = mode,
+                )
 
 
 class Widget(G3WACLModelMixins, models.Model):
@@ -1116,13 +1311,32 @@ class Widget(G3WACLModelMixins, models.Model):
     TYPES = Choices(
         *((w['value'], w['name']) for w in list(WIDGET_TYPES.values()))
     )
-    name = models.CharField(_('Name'), max_length=255)
-    body = models.TextField(_('Body'))
-    datasource = models.TextField(_('datasource'))
-    widget_type = models.CharField(_('Type'), choices=TYPES, max_length=255)
-    slug = AutoSlugField(
-        _('Slug'), populate_from=['name'], unique=True
+
+    name = models.CharField(
+        _('Name'),
+        max_length = 255,
     )
+
+    body = models.TextField(
+        _('Body'),
+    )
+
+    datasource = models.TextField(
+        _('datasource'),
+    )
+
+    widget_type = models.CharField(
+        _('Type'),
+        choices    = TYPES,
+        max_length = 255,
+    )
+
+    slug = AutoSlugField(
+        _('Slug'),
+        populate_from = ['name'],
+        unique        = True,
+    )
+
     layers = models.ManyToManyField(Layer)
 
     def __str__(self):
@@ -1136,16 +1350,25 @@ class Widget(G3WACLModelMixins, models.Model):
         if G3W_EDITOR1 in getUserGroups(user):
             permissions += [
                 'qdjango.change_widget',
-                'qdjango.delete_widget'
+                'qdjango.delete_widget',
             ]
 
-        setPermissionUserObject(user, self, permissions=permissions, mode=mode)
+        setPermissionUserObject(
+            user,
+            self,
+            permissions = permissions,
+            mode        = mode,
+        )
 
     def _permissionsToViewers(self, users_id, mode='add'):
 
         for user_id in users_id:
-            setPermissionUserObject(User.objects.get(
-                pk=user_id), self, permissions='qdjango.view_widget', mode=mode)
+            setPermissionUserObject(
+                User.objects.get(pk=user_id),
+                self,
+                permissions = 'qdjango.view_widget',
+                mode        = mode,
+            )
 
     @staticmethod
     def get_by_type(type='search'):
