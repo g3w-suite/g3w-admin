@@ -100,7 +100,7 @@ class ActiveEditingLayerForm(ActiveEditingMixin, G3WRequestFormMixin, G3WProject
         self.helper.form_tag = False
 
         layout_args = [
-            HTML(_('Check on uncheck to attive/deactive editing layer capabilities:')),
+            HTML(_('Check on uncheck to active/deactive editing layer capabilities:')),
             'active'
         ]
 
