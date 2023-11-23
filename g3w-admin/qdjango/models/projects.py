@@ -145,6 +145,36 @@ class QgisProjectFileLocker():
 class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
     """A QGIS project."""
 
+    QUERY_TYPE = Choices(
+        ('single',   _('Single')),
+        ('multiple', _('Multiple'))
+    )
+    CLIENT_TOC_TABS = Choices(
+        ('layers',     _('Layers')),
+        ('baselayers', _('Base layers')),
+        ('legend',     _('Legend'))
+    )
+    CLIENT_TOC_LAYERS_INIT_STATUS = Choices(
+        ('collapsed',     _('Collapsed')),
+        ('not_collapsed', _('Not collapsed'))
+    )
+    CLIENT_MAP_THEMES_INIT_STATUS = Choices(
+        ('collapsed',     _('Collapsed')),
+        ('not_collapsed', _('Not collapsed'))
+    )
+    CLIENT_LEGEND_POSITION = Choices(
+        ('tab', _('In a separate TAB')),
+        ('toc', _('Into TOC layers'))
+    )
+    WMS_GETMAP_FORMAT = Choices(
+        ('image/png; mode=1bit',  _('PNG 1bit')),
+        ('image/png; mode=8bit',  _('PNG 8bit')),
+        ('image/png; mode=16bit', _('PNG 16bit')),
+        ('image/png',             _('PNG')),
+        ('image/jpeg',            _('JPEG')),
+        ('image/webp',            _('WEBP')),
+    )
+
     # Project file
     qgis_file = models.FileField(
         _('QGIS project file'),
@@ -258,11 +288,6 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
     # client options:
     # ============================================
 
-    QUERY_TYPE = Choices(
-        ('single',   _('Single')),
-        ('multiple', _('Multiple')),
-    )
-
     feature_count_wms = models.IntegerField(
         _('Max feature to get for query'),
         default = 5
@@ -297,11 +322,7 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
 
     toc_tab_default = models.CharField(
         _("Tab's TOC active as default"),
-        choices    = Choices(
-            ('layers',     _('Layers')),
-            ('baselayers', _('Base layers')),
-            ('legend',     _('Legend')),
-        ),
+        choices    = CLIENT_TOC_TABS,
         max_length = 40,
         default    = 'layers',
         help_text  = _("Set tab's TOC open by default on init client"),
@@ -309,10 +330,7 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
 
     toc_layers_init_status = models.CharField(
         _("Tab's TOC layer initial status"),
-        choices    = Choices(
-            ('collapsed',     _('Collapsed')),
-            ('not_collapsed', _('Not collapsed')),
-        ),
+        choices    = CLIENT_TOC_LAYERS_INIT_STATUS,
         max_length = 40,
         default    = 'not_collapsed',
         help_text  = _("Set tab's TOC layers initials state: 'Collapsed (close)' or 'Not collapsed (open)'"),
@@ -320,10 +338,7 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
 
     toc_themes_init_status = models.CharField(
         _("Map themes list initial status"),
-        choices    = Choices(
-            ('collapsed',     _('Collapsed')),
-            ('not_collapsed', _('Not collapsed')),
-        ),
+        choices    = CLIENT_MAP_THEMES_INIT_STATUS,
         max_length = 40,
         default    = 'collapsed',
         help_text  = _("Set map themes list initials state: 'Collapsed (close)' or 'Not collapsed (open)'"),
@@ -331,10 +346,7 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
 
     legend_position = models.CharField(
         _("Legend position rendering"),
-        choices    = Choices(
-            ('tab', _('In a separate TAB')),
-            ('toc', _('Into TOC layers'))
-        ),
+        choices    = CLIENT_LEGEND_POSITION,
         max_length = 20,
         default    = 'tab',
         help_text  = _("Set legend position rendering"),
@@ -381,14 +393,7 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
         default    = 'image/png; mode=8bit',
         max_length = 255,
         null       = True,
-        choices    = Choices(
-            ('image/png; mode=1bit',  _('PNG 1bit')),
-            ('image/png; mode=8bit',  _('PNG 8bit')),
-            ('image/png; mode=16bit', _('PNG 16bit')),
-            ('image/png',             _('PNG')),
-            ('image/jpeg',            _('JPEG')),
-            ('image/webp',            _('WEBP')),
-        ),
+        choices    = WMS_GETMAP_FORMAT,
     )
 
 
