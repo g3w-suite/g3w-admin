@@ -2,32 +2,30 @@ import logging
 import os
 import time
 
-from django.utils.text import slugify
+from django.utils.text           import slugify
 from django_extensions.db.fields import AutoSlugField
-from ordered_model.models import OrderedModel
-from core.configs import *
-from core.mixins.models import G3WACLModelMixins, G3WProjectMixins
-from core.models import (BaseLayer, Group, GroupProjectPanoramic,
-                         ProjectMapUrlAlias)
-from core.receivers import check_overviewmap_project
-from core.utils import unicode2ascii
-from django.conf import settings
-from django.contrib.auth.models import Group as AuthGroup
-from django.contrib.auth.models import User
-from django.db import models
-from django.db.models.signals import post_delete
-from django.utils.translation import ugettext_lazy as _
-from guardian.shortcuts import get_perms
-from guardian.utils import get_anonymous_user
-from model_utils import Choices
-from model_utils.models import TimeStampedModel
-from qdjango.utils.models import get_constraints4layer, get_widgets4layer
-from qdjango.utils.storage import QgisFileOverwriteStorage
-from qgis.core import QgsMapLayerStyle, QgsRectangle, QgsVectorLayer
-from qgis.PyQt.QtXml import QDomDocument
-from usersmanage.configs import *
-from usersmanage.utils import (get_groups_for_object, get_users_for_object,
-                               getUserGroups, setPermissionUserObject)
+from ordered_model.models        import OrderedModel
+from core.configs                import *
+from core.mixins.models          import G3WACLModelMixins, G3WProjectMixins
+from core.models                 import (BaseLayer, Group, GroupProjectPanoramic, ProjectMapUrlAlias)
+from core.receivers              import check_overviewmap_project
+from core.utils                  import unicode2ascii
+from django.conf                 import settings
+from django.contrib.auth.models  import Group as AuthGroup
+from django.contrib.auth.models  import User
+from django.db                   import models
+from django.db.models.signals    import post_delete
+from django.utils.translation    import ugettext_lazy as _
+from guardian.shortcuts          import get_perms
+from guardian.utils              import get_anonymous_user
+from model_utils                 import Choices
+from model_utils.models          import TimeStampedModel
+from qdjango.utils.models        import get_constraints4layer, get_widgets4layer
+from qdjango.utils.storage       import QgisFileOverwriteStorage
+from qgis.core                   import QgsMapLayerStyle, QgsRectangle, QgsVectorLayer
+from qgis.PyQt.QtXml             import QDomDocument
+from usersmanage.configs         import *
+from usersmanage.utils           import (get_groups_for_object, get_users_for_object, getUserGroups, setPermissionUserObject)
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +36,7 @@ TYPE_LAYER_FOR_WIDGET = (
     'ogr',
     'mssql',
     'virtual',
-    'oracle'
+    'oracle',
 )
 
 # Layer type with download capability
@@ -48,12 +46,12 @@ TYPE_LAYER_FOR_DOWNLOAD = (
     'ogr',
     'mssql',
     'virtual',
-    'oracle'
+    'oracle',
 )
 
 TYPE_RASTER_LAYER_FOR_DOWNLOAD = (
     'gdal',
-    'raster'
+    'raster',
 )
 
 
@@ -94,7 +92,6 @@ def buildLayerTreeNodeObject(layerTreeNode):
                 'mutually-exclusive': node.isMutuallyExclusive(),
                 'nodes': buildLayerTreeNodeObject(node),
                 'checked': node.itemVisibilityChecked(),
-
             })
 
         toRetLayers.append(toRetLayer)
@@ -105,18 +102,18 @@ def buildLayerTreeNodeObject(layerTreeNode):
 def get_project_file_path(instance, filename):
     """Custom name for uploaded project files."""
 
-    group_name = slugify(str(instance.group.name))
+    group_name   = slugify(str(instance.group.name))
     project_name = slugify(str(instance.title))
-    filename = '{}_{}.qgs'.format(group_name, project_name)
+    filename     = '{}_{}.qgs'.format(group_name, project_name)
     return os.path.join('projects', filename)
 
 
 def get_thumbnail_path(instance, filename):
     """Custom name for uploaded thumbnails."""
-    group_name = slugify(str(instance.group.name))
+    group_name   = slugify(str(instance.group.name))
     project_name = slugify(str(instance.title))
-    ext = filename.split('.')[-1]
-    filename = '{}_{}.{}'.format(group_name, project_name, ext)
+    ext          = filename.split('.')[-1]
+    filename     = '{}_{}.{}'.format(group_name, project_name, ext)
     return os.path.join('thumbnails', filename)
 
 
@@ -148,153 +145,257 @@ class QgisProjectFileLocker():
 class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
     """A QGIS project."""
 
-    QUERY_TYPE = Choices(
-        ('single', _('Single')),
-        ('multiple', _('Multiple'))
-    )
-
-    CLIENT_TOC_TABS = Choices(
-        ('layers', _('Layers')),
-        ('baselayers', _('Base layers')),
-        ('legend', _('Legend'))
-    )
-
-    CLIENT_TOC_LAYERS_INIT_STATUS = Choices(
-        ('collapsed', _('Collapsed')),
-        ('not_collapsed', _('Not collapsed'))
-    )
-
-    CLIENT_MAP_THEMES_INIT_STATUS = Choices(
-        ('collapsed', _('Collapsed')),
-        ('not_collapsed', _('Not collapsed'))
-    )
-
-    CLIENT_LEGEND_POSITION = Choices(
-        ('tab', _('In a separate TAB')),
-        ('toc', _('Into TOC layers'))
-    )
-
-    WMS_GETMAP_FORMAT = Choices(
-        ('image/png; mode=1bit',  _('PNG 1bit')),
-        ('image/png; mode=8bit',  _('PNG 8bit')),
-        ('image/png; mode=16bit', _('PNG 16bit')),
-        ('image/png',             _('PNG')),
-        ('image/jpeg',            _('JPEG')),
-        ('image/webp',            _('WEBP')),
-    )
-
     # Project file
     qgis_file = models.FileField(
         _('QGIS project file'),
-        max_length=400,
-        upload_to=get_project_file_path,
-        storage=QgisFileOverwriteStorage()
+        max_length = 400,
+        upload_to  = get_project_file_path,
+        storage    = QgisFileOverwriteStorage(),
     )
 
     # General info
-    title = models.CharField(_('Title'), max_length=255)
-    title_ur = models.CharField(
-        _('Public title'), max_length=255, null=True, blank=True)
-    description = models.TextField(_('Description'), blank=True, null=True)
-    slug = AutoSlugField(
-        _('Slug'), populate_from=['title'], unique=True
+    title = models.CharField(
+        _('Title'),
+        max_length = 255,
     )
-    is_active = models.BooleanField(_('Is active'), default=1)
+
+    title_ur = models.CharField(
+        _('Public title'),
+        max_length = 255,
+        null       = True,
+        blank      = True,
+    )
+
+    description = models.TextField(
+        _('Description'),
+        blank = True,
+        null  = True,
+    )
+
+    slug = AutoSlugField(
+        _('Slug'),
+        populate_from = ['title'],
+        unique        = True,
+    )
+
+    is_active = models.BooleanField(
+        _('Is active'),
+        default = 1
+    )
 
     # Thumbnail
-    thumbnail = models.ImageField(_('Thumbnail'), blank=True, null=True)
+    thumbnail = models.ImageField(
+        _('Thumbnail'),
+        blank = True,
+        null = True
+    )
 
     # Group
-    group = models.ForeignKey(Group, related_name='qdjango_project', verbose_name=_('Group'),
-                              on_delete=models.CASCADE)
+    group = models.ForeignKey(
+        Group,
+        related_name = 'qdjango_project',
+        verbose_name = _('Group'),
+        on_delete    = models.CASCADE,
+    )
 
     # Extent
-    initial_extent = models.CharField(_('Initial extent'), max_length=255)
+    initial_extent = models.CharField(
+        _('Initial extent'),
+        max_length = 255,
+    )
+
     max_extent = models.CharField(
-        _('Max extent'), max_length=255, null=True, blank=True)
+        _('Max extent'),
+        max_length = 255,
+        null       = True,
+        blank      = True,
+    )
 
     # Qgis version project
     qgis_version = models.CharField(
-        _('Qgis project version'), max_length=255, default='')
+        _('Qgis project version'),
+        max_length = 255,
+        default    = '',
+    )
 
     # LayersTree project structure
     layers_tree = models.TextField(
-        _('Layers tree structure'), blank=True, null=True)
+        _('Layers tree structure'),
+        blank = True,
+        null  = True,
+    )
 
     # BaseLayer
-    baselayer = models.ForeignKey(BaseLayer, verbose_name=_('Base Layer'), related_name='qdjango_project_baselayer',
-                                  null=True, blank=True, on_delete=models.DO_NOTHING)
+    baselayer = models.ForeignKey(
+        BaseLayer,
+        verbose_name = _('Base Layer'),
+        related_name = 'qdjango_project_baselayer',
+        null         = True,
+        blank        = True,
+        on_delete    = models.DO_NOTHING,
+    )
+
     # possible layer relations
-    relations = models.TextField(_('Layer relations'), blank=True, null=True)
+    relations = models.TextField(
+        _('Layer relations'),
+        blank = True,
+        null  = True,
+    )
 
     # WMSUseLayerIDs
     wms_use_layer_ids = models.BooleanField(
-        _('WMS use layer ids'), default=False)
+        _('WMS use layer ids'),
+        default = False
+    )
 
     original_name = models.CharField(
-        _('Qgis project original name'), max_length=256, default='', editable=False)
+        _('Qgis project original name'),
+        max_length = 256,
+        default    = '',
+        editable   = False,
+    )
 
     # client options:
     # ============================================
 
+    QUERY_TYPE = Choices(
+        ('single',   _('Single')),
+        ('multiple', _('Multiple')),
+    )
+
     feature_count_wms = models.IntegerField(
-        _('Max feature to get for query'), default=5)
+        _('Max feature to get for query'),
+        default = 5
+    )
 
     multilayer_query = models.CharField(
-        _('Query control mode'), max_length=20, choices=QUERY_TYPE, default='multiple')
+        _('Query control mode'),
+        max_length = 20,
+        choices    = QUERY_TYPE,
+        default    = 'multiple',
+    )
 
-    multilayer_querybybbox = models.CharField(_('Query by bbox control mode'), max_length=20, choices=QUERY_TYPE,
-                                              default='multiple')
+    multilayer_querybybbox = models.CharField(
+        _('Query by bbox control mode'),
+        max_length = 20,
+        choices    = QUERY_TYPE,
+        default    = 'multiple',
+    )
 
-    multilayer_querybypolygon = models.CharField(_('Query by polygon control mode'), max_length=20, choices=QUERY_TYPE,
-                                                 default='multiple')
+    multilayer_querybypolygon = models.CharField(
+        _('Query by polygon control mode'),
+        max_length = 20,
+        choices    = QUERY_TYPE,
+        default    = 'multiple',
+    )
 
-    context_base_legend = models.BooleanField(_('Context base legend'), default=False,
-                                              help_text=_('Show only the symbols for the features falling into '
-                                                          'the requested area'))
+    context_base_legend = models.BooleanField(
+        _('Context base legend'),
+        default   = False,
+        help_text = _('Show only the symbols for the features falling into the requested area'),
+    )
 
-    toc_tab_default = models.CharField(_("Tab's TOC active as default"), choices=CLIENT_TOC_TABS, max_length=40,
-                                       default='layers', help_text=_("Set tab's TOC open by default on init client"))
+    toc_tab_default = models.CharField(
+        _("Tab's TOC active as default"),
+        choices    = Choices(
+            ('layers',     _('Layers')),
+            ('baselayers', _('Base layers')),
+            ('legend',     _('Legend')),
+        ),
+        max_length = 40,
+        default    = 'layers',
+        help_text  = _("Set tab's TOC open by default on init client"),
+    )
 
-    toc_layers_init_status = models.CharField(_("Tab's TOC layer initial status"),
-                                              choices=CLIENT_TOC_LAYERS_INIT_STATUS, max_length=40,
-                                              default='not_collapsed',
-                                              help_text=_("Set tab's TOC layers initials state: 'Collapsed (close)'"
-                                                        "or 'Not collapsed (open)'"))
+    toc_layers_init_status = models.CharField(
+        _("Tab's TOC layer initial status"),
+        choices    = Choices(
+            ('collapsed',     _('Collapsed')),
+            ('not_collapsed', _('Not collapsed')),
+        ),
+        max_length = 40,
+        default    = 'not_collapsed',
+        help_text  = _("Set tab's TOC layers initials state: 'Collapsed (close)' or 'Not collapsed (open)'"),
+    )
 
-    toc_themes_init_status = models.CharField(_("Map themes list initial status"),
-                                              choices=CLIENT_MAP_THEMES_INIT_STATUS, max_length=40,
-                                              default='collapsed',
-                                              help_text=_("Set map themes list initials state: 'Collapsed (close)'"
-                                                        "or 'Not collapsed (open)'"))
+    toc_themes_init_status = models.CharField(
+        _("Map themes list initial status"),
+        choices    = Choices(
+            ('collapsed',     _('Collapsed')),
+            ('not_collapsed', _('Not collapsed')),
+        ),
+        max_length = 40,
+        default    = 'collapsed',
+        help_text  = _("Set map themes list initials state: 'Collapsed (close)' or 'Not collapsed (open)'"),
+    )
 
-    legend_position = models.CharField(_("Legend position rendering"), choices=CLIENT_LEGEND_POSITION, max_length=20,
-                                       default='tab', help_text=_("Set legend position rendering"))
+    legend_position = models.CharField(
+        _("Legend position rendering"),
+        choices    = Choices(
+            ('tab', _('In a separate TAB')),
+            ('toc', _('Into TOC layers'))
+        ),
+        max_length = 20,
+        default    = 'tab',
+        help_text  = _("Set legend position rendering"),
+    )
 
-    autozoom_query = models.BooleanField(_('Automatic zoom to query result features'), default=False,
-                                         help_text=_('Automatic zoom on query result features for only one layer'))
+    autozoom_query = models.BooleanField(
+        _('Automatic zoom to query result features'),
+        default   = False,
+        help_text = _('Automatic zoom on query result features for only one layer'),
+    )
 
-    layouts = models.TextField(_('Project layouts'), null=True, blank=True)
+    layouts = models.TextField(
+        _('Project layouts'),
+        null  = True,
+        blank = True,
+    )
 
-    use_map_extent_as_init_extent = models.BooleanField(_('User QGIS project map start extent as webgis init extent'),
-                                                        default=False)
+    use_map_extent_as_init_extent = models.BooleanField(
+        _('User QGIS project map start extent as webgis init extent'),
+        default = False,
+    )
 
-    is_dirty = models.BooleanField(_('The project has been modified by the G3W-Suite application after it was uploaded.'), editable=False,
-                                   default=False)
+    is_dirty = models.BooleanField(
+        _('The project has been modified by the G3W-Suite application after it was uploaded.'),
+        editable = False,
+        default  = False,
+    )
 
-    is_locked = models.BooleanField(_('Mutex to lock the project when it is being written by the G3W-Suite application. This field is used internally by the suite through a context manager'), editable=False,
-                                    default=False)
+    is_locked = models.BooleanField(
+        _('Mutex to lock the project when it is being written by the G3W-Suite application. This field is used internally by the suite through a context manager'),
+        editable = False,
+        default = False,
+    )
 
-    order = models.PositiveIntegerField(_('Fields to se order'), default=0, blank=True, null=True)
+    order = models.PositiveIntegerField(
+        _('Fields to se order'),
+        default = 0,
+        blank   = True,
+        null    = True,
+    )
 
-    wms_getmap_format = models.CharField(_('WMS GetMap image format'), default='image/png; mode=8bit', max_length=255,
-                                         null=True, choices=WMS_GETMAP_FORMAT)
+    wms_getmap_format = models.CharField(
+        _('WMS GetMap image format'),
+        default    = 'image/png; mode=8bit',
+        max_length = 255,
+        null       = True,
+        choices    = Choices(
+            ('image/png; mode=1bit',  _('PNG 1bit')),
+            ('image/png; mode=8bit',  _('PNG 8bit')),
+            ('image/png; mode=16bit', _('PNG 16bit')),
+            ('image/png',             _('PNG')),
+            ('image/jpeg',            _('JPEG')),
+            ('image/webp',            _('WEBP')),
+        ),
+    )
 
 
     class Meta:
-        verbose_name = _('Project')
+        verbose_name        = _('Project')
         verbose_name_plural = _('Projects')
-        unique_together = (('title', 'group'))
+        unique_together     = (('title', 'group'))
 
     def __str__(self):
         return self.title
@@ -486,23 +587,23 @@ class Layer(G3WACLModelMixins, models.Model):
     """A QGIS layer."""
 
     TYPES = Choices(
-        ('postgres', _('Postgres')),
-        ('spatialite', _('SpatiaLite')),
-        ('raster', _('Raster')),
-        ('wfs', _('WFS')),
-        ('wms', _('WMS')),
-        ('ogr', _('OGR')),
-        ('gdal', _('GDAL')),
-        ('delimitedtext', _('CSV')),
-        ('arcgismapserver', _('ArcGisMapServer')),
+        ('postgres',            _('Postgres')),
+        ('spatialite',          _('SpatiaLite')),
+        ('raster',              _('Raster')),
+        ('wfs',                 _('WFS')),
+        ('wms',                 _('WMS')),
+        ('ogr',                 _('OGR')),
+        ('gdal',                _('GDAL')),
+        ('delimitedtext',       _('CSV')),
+        ('arcgismapserver',     _('ArcGisMapServer')),
         ('arcgisfeatureserver', _('ArcGisFeatureServer')),
-        ('mssql', _('MSSQL')),
-        ('virtual', _('VirtualLayer')),
-        ('oracle', _('Oracle')),
-        ('vector-tile', _('Vector Tile')),
-        ('wcs', _('WCS')),
-        ('vectortile', _('Vector Tile')),
-        ('mdal', _('Mesh layer'))
+        ('mssql',               _('MSSQL')),
+        ('virtual',             _('VirtualLayer')),
+        ('oracle',              _('Oracle')),
+        ('vector-tile',         _('Vector Tile')),
+        ('wcs',                 _('WCS')),
+        ('vectortile',          _('Vector Tile')),
+        ('mdal',                _('Mesh layer')),
     )
 
     # General info
