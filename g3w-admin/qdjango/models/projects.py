@@ -175,12 +175,12 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
     )
 
     WMS_GETMAP_FORMAT = Choices(
-        ('image/png; mode=1bit', _('PNG 1bit Format')),
-        ('image/png; mode=8bit', _('PNG 8bit Format')),
-        ('image/png; mode=16bit', _('PNG 16bit Format')),
-        ('image/png', _('PNG format')),
-        ('image/jpeg', _('JPEG format')),
-        ('image/webp', _('WEBP format'))
+        ('image/png; mode=1bit',  _('PNG 1bit')),
+        ('image/png; mode=8bit',  _('PNG 8bit')),
+        ('image/png; mode=16bit', _('PNG 16bit')),
+        ('image/png',             _('PNG')),
+        ('image/jpeg',            _('JPEG')),
+        ('image/webp',            _('WEBP')),
     )
 
     # Project file

@@ -13,6 +13,20 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='project',
             name='wms_getmap_format',
-            field=models.CharField(blank=False, choices=[('image/png; mode=1bit', 'PNG 1bit Format'), ('image/png; mode=8bit', 'PNG 8bit Format'), ('image/png; mode=16bit', 'PNG 16bit Format'), ('image/png', 'PNG format'), ('image/jpeg', 'JPEG format'), ('image/webp', 'WEBP format')], default='image/png; mode=8bit', max_length=255, null=True, verbose_name='WMS GetMap image format'),
+            field=models.CharField(
+                blank        = False,
+                choices      = [
+                    ('image/png; mode=1bit', 'PNG 1bit'),
+                    ('image/png; mode=8bit', 'PNG 8bit'),
+                    ('image/png; mode=16bit', 'PNG 16bit'),
+                    ('image/png', 'PNG'),
+                    ('image/jpeg', 'JPEG'),
+                    ('image/webp', 'WEBP'),
+                ],
+                default      = 'image/png; mode=8bit',
+                max_length   = 255,
+                null         = True,
+                verbose_name = 'WMS GetMap image format'
+            ),
         ),
     ]
