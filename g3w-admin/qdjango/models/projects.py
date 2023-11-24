@@ -278,6 +278,7 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
 
     order = models.PositiveIntegerField(_('Fields to se order'), default=0, blank=True, null=True)
 
+    geocoding_providers = models.TextField(_('Geocoding providers'), blank=True, null=True)
 
     class Meta:
         verbose_name = _('Project')
