@@ -69,6 +69,36 @@ def delete_cache(sender, **kwargs):
         f"Qdjango project /api/config invalidate cache after save it: {instance}"
     )
 
+@receiver(pre_save, sender=Project)
+def get_old_instance(sender, **kwargs):
+    """
+    Get old instance before to update it
+    """
+
+    try:
+        kwargs['instance']._meta.old_instance = sender.objects.get(pk=kwargs['instance'].pk)
+    except:  # to handle initial object creation
+        return None  # just exiting from signal
+
+@receiver(post_save, sender=Project)
+def delete_project_file_on_update(sender, **kwargs):
+    """
+    On update delete old QGIS project file if is name changed
+    """
+
+    # Only for update
+    if not kwargs['created']:
+        try:
+            instance = kwargs['instance']
+            old_instance = instance._meta.old_instance
+
+            if old_instance.qgis_file.path != instance.qgis_file.path:
+                os.remove(old_instance.qgis_file.path)
+                del(old_instance)
+        except Exception as e:
+            logger.error(e)
+
+
 
 @receiver(post_delete, sender=Layer)
 def remove_embedded_layers(sender, **kwargs):

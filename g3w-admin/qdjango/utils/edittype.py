@@ -229,7 +229,7 @@ class QgisEditTypeRelationReference(QgisEditTypeValueMap):
 
         # add params for get value
         input_form['input']['options'].update({
-            'relation_id': self.Relation,
+            'relation_id': getattr(self, 'Relation', None), # Possible QGIS bug
             'relation_reference': True,
             'loading': {
                 'state': None

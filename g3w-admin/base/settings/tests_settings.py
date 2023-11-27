@@ -52,3 +52,8 @@ CACHES = {
         "LOCATION": "874uryeurejhf8347efjlksdjfiouo4",
     }
 }
+# LOGIN/REGISTRATION/RESET USER/PASSWORD
+# ======================================
+# Add this setting here because test override_settings decorator
+# does not work at django bootstrap i.e. inside main urls.py module.
+PASSWORD_CHANGE_FIRST_LOGIN = True

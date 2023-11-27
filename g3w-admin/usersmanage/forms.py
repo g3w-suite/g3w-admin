@@ -17,7 +17,8 @@ from django.contrib.auth.forms import (
     UserCreationForm,
     ReadOnlyPasswordHashField,
     AuthenticationForm,
-    PasswordResetForm
+    PasswordResetForm,
+    SetPasswordForm
 )
 from django.contrib.auth import (
     password_validation,
@@ -909,7 +910,34 @@ class G3WRegistrationForm(G3WreCaptchaFormMixin, RegistrationForm):
 
 
 class G3WUsernameRecoveryForm(G3WreCaptchaFormMixin, PasswordResetForm):
-    pass
 
+    def clean_email(self):
+        """
+        Email exists into db
+
+        :return: Cleaned data email
+        """
+
+        if not User.objects.filter(email=self.cleaned_data['email']).exists():
+            raise ValidationError(_('No user is available with this email.'), code='email_invalid')
+
+        return self.cleaned_data['email']
+
+
+class G3WSetPasswordForm(SetPasswordForm):
+    """
+    Custom SetPasswordForm for G3W-SUITE
+    """
+
+    def save(self, commit=True):
+
+        if (settings.PASSWORD_CHANGE_FIRST_LOGIN and
+                not self.user.is_superuser and
+                not self.user.userdata.change_password_first_login and
+                not self.user.userdata.registered):
+            self.user.userdata.change_password_first_login = True
+            self.user.userdata.save()
+
+        return super().save(commit=commit)
 
 

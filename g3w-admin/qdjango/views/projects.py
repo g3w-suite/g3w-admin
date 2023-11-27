@@ -95,6 +95,14 @@ class QdjangoProjectCreateView(QdjangoProjectCUViewMixin, G3WGroupViewMixin, G3W
     def dispatch(self, *args, **kwargs):
         return super(QdjangoProjectCreateView, self).dispatch(*args, **kwargs)
 
+    def get_initial(self):
+        initial = super().get_initial()
+
+        # Get intial for geocoding_providers: default 'nominatim'
+        initial['geocoding_providers'] = ["nominatim"]
+
+        return initial
+
 
 class QdjangoProjectUpdateView(QdjangoProjectCUViewMixin, G3WGroupViewMixin, G3WRequestViewMixin, G3WACLViewMixin,
                                UpdateView):
@@ -112,6 +120,15 @@ class QdjangoProjectUpdateView(QdjangoProjectCUViewMixin, G3WGroupViewMixin, G3W
     @method_decorator(permission_required('qdjango.change_project', (Project, 'slug', 'slug'), raise_exception=True))
     def dispatch(self, *args, **kwargs):
         return super(QdjangoProjectUpdateView, self).dispatch(*args, **kwargs)
+
+    def get_initial(self):
+        initial = super().get_initial()
+
+        # Get intial for geocoding_providers
+        if self.object.geocoding_providers:
+            initial['geocoding_providers'] = json.loads(self.object.geocoding_providers)
+
+        return initial
 
     def get_context_data(self, **kwargs):
         context = super(QdjangoProjectUpdateView,
