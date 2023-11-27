@@ -623,6 +623,26 @@ class QgisProjectLayer(XmlData):
                             for key, value in item.items():
                                 data['values'].append(
                                     {'key': key, 'value': value})
+
+            # If ewidget.type() is ReferenceValue, add DisplayExpression of referencedlayer
+            elif ewidget.type() == 'RelationReference':
+
+                # Add DisplayExpression of ReferencedLayer
+                # Set it into a try except routine for a possible bug of QGIS:
+                # If in QGIS project is set a RelationReference form widget, if the referenced layer is changed
+                # the ReferencedLayerId is not changed and was the old layer id not more present into the project
+                try:
+
+                    # Remove from layer dotasource data
+                    del (options['ReferencedLayerDataSource'],
+                         options['ReferencedLayerProviderKey'])
+
+                    options['display_expression'] = self.qgisProject.qgs_project.mapLayer(
+                        options['ReferencedLayerId']).displayExpression()
+                except Exception as e:
+                    logger.debug(e)
+
+                data.update(options)
             else:
                 data.update(options)
 

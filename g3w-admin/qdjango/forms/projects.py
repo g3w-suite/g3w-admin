@@ -33,8 +33,10 @@ from usersmanage.utils import (
 from qdjango.models import *
 from qdjango.utils.data import QgisProject
 from qdjango.utils.validators import ProjectExists
+from qdjango.utils.models import get_geocoding_providers
 
 import shutil
+import json
 
 
 class QdjangoProjectFormMixin(object):
@@ -165,23 +167,14 @@ class QdjangoProjectFormMixin(object):
         self.instance.url_alias = self.cleaned_data['url_alias']
 
 
-class QdjangoProjectForm(
-    TranslationModelForm,
-    QdjangoProjectFormMixin,
-    G3WFormMixin,
-    G3WGroupFormMixin,
-    G3WGroupBaseLayerFormMixin,
-    G3WRequestFormMixin,
-    G3WACLForm,
-    FileFormMixin,
-    forms.ModelForm,
-):
+class QdjangoProjectForm(TranslationModelForm, QdjangoProjectFormMixin, G3WFormMixin, G3WGroupFormMixin,
+                         G3WGroupBaseLayerFormMixin, G3WRequestFormMixin, G3WACLForm, FileFormMixin, forms.ModelForm):
+
     url_alias = forms.CharField(
         required=False,
         label=_('URL alias'),
-        help_text=_(
-            'You can set a human readable URL for the map. Only alphanumeric characters, not white space or special characters'
-        ),
+        help_text=_('You can set a human readable URL for the map. Only alphanumeric characters, not white space or '
+                    'special characters')
     )
 
     # QGIS Authentication extra fields
@@ -209,6 +202,8 @@ class QdjangoProjectForm(
         required=False,
     )
 
+    geocoding_providers = forms.MultipleChoiceField(choices=get_geocoding_providers,required=False)
+
     def __init__(self, *args, **kwargs):
         if 'instance' in kwargs and hasattr(kwargs['instance'], 'url_alias'):
             kwargs['initial']['url_alias'] = kwargs['instance'].url_alias
@@ -219,7 +214,7 @@ class QdjangoProjectForm(
         base_layers = self.group.baselayers.count()
         if not base_layers:
             nc = list(Project.CLIENT_TOC_TABS)
-            del nc[1]
+            del(nc[1])
             self.fields['toc_tab_default'].choices = nc
 
         # Check for authcfg errors
@@ -237,19 +232,8 @@ class QdjangoProjectForm(
                         else:  # This authcfg already exists but the error might be not related
                             if not '__all__' in self.errors:
                                 self.errors['__all__'] = []
-                            self.errors['__all__'].append(
-                                mark_safe(
-                                    _(
-                                        'Warning: an invalid layer is using an existing authentication configuration ({authentication_id}). Ask an administrator to check if the configuration is correct by browinsg the URL<a target=_new href="{admin_url}">{admin_url}</a>'
-                                    ).format(
-                                        authentication_id=authcfg,
-                                        admin_url=reverse(
-                                            'admin:qdjango_qgisauth_change',
-                                            args=(authcfg,),
-                                        ),
-                                    )
-                                )
-                            )
+                            self.errors['__all__'].append(mark_safe(_(
+                                'Warning: an invalid layer is using an existing authentication configuration ({authentication_id}). Ask an administrator to check if the configuration is correct by browinsg the URL<a target=_new href="{admin_url}">{admin_url}</a>').format(authentication_id=authcfg, admin_url=reverse('admin:qdjango_qgisauth_change', args=(authcfg,)))))
                     except:
                         pass
 
@@ -276,14 +260,17 @@ class QdjangoProjectForm(
                             'form_id',
                             'upload_url',
                             css_class='box-body',
+
                         ),
-                        css_class='box box-success',
+                        css_class='box box-success'
                     ),
-                    css_class='col-md-6',
+                    css_class='col-md-6'
                 ),
+
                 crispyBoxACL(self),
                 crispyBoxBaseLayer(self),
-                css_class='row',
+
+                css_class='row'
             ),
             Div(
                 Div(
@@ -298,7 +285,8 @@ class QdjangoProjectForm(
                         ),
                         Div(
                             Field('title_ur', css_class='translate'),
-                            Field('description', css_class='wys5 translate'),
+                            Field('description',
+                                  css_class='wys5 translate'),
                             'thumbnail',
                             HTML(
                                 """
@@ -312,10 +300,11 @@ class QdjangoProjectForm(
                             'url_alias',
                             css_class='box-body',
                         ),
-                        css_class='box box-success',
+                        css_class='box box-success'
                     ),
-                    css_class='col-md-6',
+                    css_class='col-md-6'
                 ),
+
                 Div(
                     Div(
                         Div(
@@ -338,13 +327,16 @@ class QdjangoProjectForm(
                             'multilayer_query',
                             'multilayer_querybybbox',
                             'multilayer_querybypolygon',
+                            Field('geocoding_providers', css_class='select2', style="width:100%;"),
                             css_class='box-body',
+
                         ),
-                        css_class='box box-success',
+                        css_class='box box-success'
                     ),
-                    css_class='col-md-6',
+                    css_class='col-md-6'
                 ),
-                css_class='row',
+
+                css_class='row'
             ),
         )
 
@@ -370,9 +362,9 @@ class QdjangoProjectForm(
                         'authentication_password',
                         css_class='box-body',
                     ),
-                    css_class='box box-success',
+                    css_class='box box-success'
                 ),
-                css_class='col-md-6',
+                css_class='col-md-6'
             )
             self.helper.layout.fields.insert(1, auth_box)
 
@@ -397,9 +389,18 @@ class QdjangoProjectForm(
             'context_base_legend',
             'title_ur',
             'wms_getmap_format',
+            'geocoding_providers'
         )
 
         field_classes = dict(qgis_file=UploadedFileField, thumbnail=UploadedFileField)
+
+    def clean_geocoding_providers(self):
+        """
+        Make the cleaned data for geocoding_providers:
+        make it a Json serializable
+        """
+
+        return json.dumps(self.cleaned_data['geocoding_providers'])
 
     def _setEditorUserQueryset(self):
         """
@@ -408,28 +409,16 @@ class QdjangoProjectForm(
         """
 
         # add filter by group permissions
-        editor_group = get_users_for_object(self.group, 'change_group', [G3W_EDITOR1])
+        editor_group = get_users_for_object(
+            self.group, 'change_group', [G3W_EDITOR1])
         editor2_group = get_users_for_object(
-            self.group, 'add_project_to_group', [G3W_EDITOR2]
-        )
+            self.group, 'add_project_to_group', [G3W_EDITOR2])
 
-        self.fields['editor_user'].queryset = get_objects_for_user(
-            self.request.user,
-            'auth.change_user',
-            User,
-        ).filter(
-            pk__in=[e.pk for e in editor_group],
-            groups__name__in=self.editor1_groups,
-        )
+        self.fields['editor_user'].queryset = get_objects_for_user(self.request.user, 'auth.change_user', User) \
+            .filter(pk__in=[e.pk for e in editor_group], groups__name__in=self.editor1_groups)
 
-        self.fields['editor2_user'].queryset = get_objects_for_user(
-            self.request.user,
-            'auth.change_user',
-            User,
-        ).filter(
-            pk__in=[e.pk for e in editor2_group],
-            groups__name__in=self.editor2_groups,
-        )
+        self.fields['editor2_user'].queryset = get_objects_for_user(self.request.user, 'auth.change_user', User) \
+            .filter(pk__in=[e.pk for e in editor2_group], groups__name__in=self.editor2_groups)
 
     def _setViewerUserQueryset(self, **kwargs):
         """
@@ -439,13 +428,11 @@ class QdjangoProjectForm(
         """
 
         # get viewers from groups
-        viewers = get_viewers_for_object(self.group, self.request.user, 'view_group')
-
+        viewers = get_viewers_for_object(
+            self.group, self.request.user, 'view_group')
         # get queryset
-        self.fields['viewer_users'].queryset = User.objects.filter(
-            groups__name__in=self.viewer_groups,
-            pk__in=[v.pk for v in viewers],
-        )
+        self.fields['viewer_users'].queryset = User.objects.filter(groups__name__in=self.viewer_groups,
+                                                                   pk__in=[v.pk for v in viewers])
 
     def _set_user_groups_queryset(self):
         """
@@ -457,25 +444,21 @@ class QdjangoProjectForm(
         super(QdjangoProjectForm, self)._set_user_groups_queryset()
 
         editor_user_groups = get_user_groups_for_object(
-            self.group, self.request.user, 'view_group', 'editor'
-        )
-
+            self.group, self.request.user, 'view_group', 'editor')
         self.fields['editor_user_groups'].queryset = AuthGroup.objects.filter(
-            pk__in=[v.pk for v in editor_user_groups]
-        )
+            pk__in=[v.pk for v in editor_user_groups])
 
         viewer_user_groups = get_user_groups_for_object(
-            self.group, self.request.user, 'view_group', 'viewer'
-        )
-
+            self.group, self.request.user, 'view_group', 'viewer')
         self.fields['viewer_user_groups'].queryset = AuthGroup.objects.filter(
-            pk__in=[v.pk for v in viewer_user_groups]
-        )
+            pk__in=[v.pk for v in viewer_user_groups])
 
     def save(self, commit=True):
         self._ACLPolicy()
 
         self._save_url_alias()
+
+
 
         # add permission to Editor level 1 and 2 if current user is Editor level 1 or 2
         if userHasGroups(self.request.user, [G3W_EDITOR1, G3W_EDITOR2]):
@@ -483,28 +466,20 @@ class QdjangoProjectForm(
 
             # give permission to Editor level 1 of group id user is Editor level 2
             if userHasGroups(self.request.user, [G3W_EDITOR2]):
+
                 # give permission to user groups of map group
                 user_editor_groups = get_groups_for_object(
-                    self.instance.group, 'view_group', 'editor'
-                )
+                    self.instance.group, 'view_group', 'editor')
                 self.instance.add_permissions_to_editor_user_groups(
-                    [uge.pk for uge in user_editor_groups]
-                )
+                    [uge.pk for uge in user_editor_groups])
 
                 editor_users = get_users_for_object(
-                    self.instance.group, 'view_group', [G3W_EDITOR1, G3W_EDITOR2]
-                )
+                    self.instance.group, 'view_group', [G3W_EDITOR1, G3W_EDITOR2])
                 for eu in editor_users:
                     self.instance.addPermissionsToEditor(eu)
 
 
-class QdjangoWidgetForm(
-    QdjangoProjectFormMixin,
-    G3WFormMixin,
-    G3WGroupFormMixin,
-    G3WRequestFormMixin,
-    forms.ModelForm,
-):
+class QdjangoWidgetForm(QdjangoProjectFormMixin, G3WFormMixin, G3WGroupFormMixin, G3WRequestFormMixin, forms.ModelForm):
     """
     Form object for Qdjango widget model.
     """
@@ -513,19 +488,25 @@ class QdjangoWidgetForm(
         super(QdjangoWidgetForm, self).__init__(*args, **kwargs)
 
         self.fields['widget_type'].choices = Choices(
-            ('', '--------'),
-            *((w['value'], w['name']) for w in list(WIDGET_TYPES.values())),
-        )
+                ('', '--------'),
+                *((w['value'], w['name']) for w in list(WIDGET_TYPES.values()))
+            )
 
         self.helper = FormHelper(self)
         self.helper.form_tag = False
         self.helper.layout = Layout(
             Div(
-                Div('widget_type', css_class='col-md-4'),
-                Div('name', css_class='col-md-8'),
-                css_class='row',
+                Div(
+                    'widget_type',
+                    css_class='col-md-4'
+                ),
+                Div(
+                    'name',
+                    css_class='col-md-8'
+                ),
+                css_class='row'
             ),
-            'body',
+            'body'
         )
 
     class Meta:
@@ -533,7 +514,7 @@ class QdjangoWidgetForm(
         fields = (
             'widget_type',
             'name',
-            'body',
+            'body'
         )
         widgets = {'body': widgets.HiddenInput}
 
@@ -556,6 +537,7 @@ class FitlerByUserLayerForm(G3WRequestFormMixin, G3WProjectFormMixin, forms.Form
     )
 
     def __init__(self, *args, **kwargs):
+
         super().__init__(*args, **kwargs)
 
         # set choices
@@ -566,10 +548,7 @@ class FitlerByUserLayerForm(G3WRequestFormMixin, G3WProjectFormMixin, forms.Form
         self.helper.form_tag = False
         self.helper.layout = Layout(
             HTML(
-                _(
-                    'Select viewers with \'view permission\' on project that can view layer:'
-                )
-            ),
+                _('Select viewers with \'view permission\' on project that can view layer:')),
             Field('viewer_users', css_class='select2', style="width:100%;"),
             Field('user_groups_viewer', css_class='select2', style="width:100%;"),
         )
@@ -580,8 +559,7 @@ class FitlerByUserLayerForm(G3WRequestFormMixin, G3WProjectFormMixin, forms.Form
         """
 
         viewers = get_viewers_for_object(
-            self.project, self.request.user, 'view_project', with_anonymous=True
-        )
+            self.project, self.request.user, 'view_project', with_anonymous=True)
 
         # get Editor Level 1 and Editor level 2 to clear from list
         editor_pk = self.project.editor.pk if self.project.editor else None
@@ -600,8 +578,7 @@ class FitlerByUserLayerForm(G3WRequestFormMixin, G3WProjectFormMixin, forms.Form
 
         # add user_groups_viewer choices
         user_groups_viewers = get_groups_for_object(
-            self.project, 'view_project', grouprole='viewer'
-        )
+            self.project, 'view_project', grouprole='viewer')
 
         # for Editor level filter by his groups
         if userHasGroups(self.request.user, [G3W_EDITOR1]):
@@ -611,10 +588,8 @@ class FitlerByUserLayerForm(G3WRequestFormMixin, G3WProjectFormMixin, forms.Form
                 .filter(grouprole__role='viewer')
             )
 
-            user_groups_viewers = list(
-                set(user_groups_viewers).intersection(set(editor1_user_gorups_viewers))
-            )
+            user_groups_viewers = list(set(user_groups_viewers).intersection(
+                set(editor1_user_gorups_viewers)))
 
         self.fields['user_groups_viewer'].choices = [
-            (v.pk, v) for v in user_groups_viewers
-        ]
+            (v.pk, v) for v in user_groups_viewers]

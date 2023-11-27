@@ -7,7 +7,8 @@ from django_extensions.db.fields import AutoSlugField
 from ordered_model.models import OrderedModel
 from core.configs import *
 from core.mixins.models import G3WACLModelMixins, G3WProjectMixins
-from core.models import BaseLayer, Group, GroupProjectPanoramic, ProjectMapUrlAlias
+from core.models import (BaseLayer, Group, GroupProjectPanoramic,
+                         ProjectMapUrlAlias)
 from core.receivers import check_overviewmap_project
 from core.utils import unicode2ascii
 from django.conf import settings
@@ -71,29 +72,33 @@ def buildLayerTreeNodeObject(layerTreeNode):
 
     toRetLayers = []
     for node in layerTreeNode.children():
-        toRetLayer = {'name': node.name(), 'expanded': node.isExpanded()}
+
+        toRetLayer = {
+            'name': node.name(),
+            'expanded': node.isExpanded()
+        }
 
         try:
             # try for layer node
-            toRetLayer.update(
-                {'id': node.layerId(), 'visible': node.itemVisibilityChecked()}
-            )
+            toRetLayer.update({
+                'id': node.layerId(),
+                'visible': node.itemVisibilityChecked()
+            })
 
             # Add `showFeatureCount` custom property per Vector layer only
-            if (
-                'showFeatureCount' in node.customProperties()
-                and node.customProperty('showFeatureCount') == 1
-            ):
-                toRetLayer.update({'showfeaturecount': True})
+            if 'showFeatureCount' in node.customProperties() and node.customProperty('showFeatureCount') == 1:
+                toRetLayer.update({
+                    'showfeaturecount': True
+                })
 
         except:
-            toRetLayer.update(
-                {
-                    'mutually-exclusive': node.isMutuallyExclusive(),
-                    'nodes': buildLayerTreeNodeObject(node),
-                    'checked': node.itemVisibilityChecked(),
-                }
-            )
+
+            toRetLayer.update({
+                'mutually-exclusive': node.isMutuallyExclusive(),
+                'nodes': buildLayerTreeNodeObject(node),
+                'checked': node.itemVisibilityChecked(),
+
+            })
 
         toRetLayers.append(toRetLayer)
 
@@ -118,7 +123,7 @@ def get_thumbnail_path(instance, filename):
     return os.path.join('thumbnails', filename)
 
 
-class QgisProjectFileLocker:
+class QgisProjectFileLocker():
     """Mutex to prevent multiple processes to write the same project concurrently"""
 
     def __init__(self, project):
@@ -146,18 +151,27 @@ class QgisProjectFileLocker:
 class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
     """A QGIS project."""
 
-    QUERY_TYPE = Choices(('single', _('Single')), ('multiple', _('Multiple')))
+    QUERY_TYPE = Choices(
+        ('single', _('Single')),
+        ('multiple', _('Multiple'))
+    )
+
     CLIENT_TOC_TABS = Choices(
         ('layers', _('Layers')),
         ('baselayers', _('Base layers')),
-        ('legend', _('Legend')),
+        ('legend', _('Legend'))
     )
+
     CLIENT_TOC_LAYERS_INIT_STATUS = Choices(
-        ('collapsed', _('Collapsed')), ('not_collapsed', _('Not collapsed'))
+        ('collapsed', _('Collapsed')),
+        ('not_collapsed', _('Not collapsed'))
     )
+
     CLIENT_MAP_THEMES_INIT_STATUS = Choices(
-        ('collapsed', _('Collapsed')), ('not_collapsed', _('Not collapsed'))
+        ('collapsed', _('Collapsed')),
+        ('not_collapsed', _('Not collapsed'))
     )
+
     CLIENT_LEGEND_POSITION = Choices(
         ('tab', _('In a separate TAB')), ('toc', _('Into TOC layers'))
     )
@@ -261,7 +275,8 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
     )
 
     # WMSUseLayerIDs
-    wms_use_layer_ids = models.BooleanField(_('WMS use layer ids'), default=False)
+    wms_use_layer_ids = models.BooleanField(
+        _('WMS use layer ids'), default=False)
 
     original_name = models.CharField(
         _('Qgis project original name'),
@@ -389,6 +404,7 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
         null=True,
         choices=WMS_GETMAP_FORMAT,
     )
+    geocoding_providers = models.TextField(_('Geocoding providers'), blank=True, null=True)
 
     class Meta:
         verbose_name = _('Project')
@@ -473,7 +489,6 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
             )
 
             layers = self.layer_set.all()
-
             for layer in layers:
                 getattr(layer, layerAction)(users_id)
 
@@ -620,11 +635,7 @@ class VectorLayersManager(models.Manager):
     """Returns only vector layers"""
 
     def get_queryset(self):
-        return (
-            super()
-            .get_queryset()
-            .exclude(layer_type__in=('gdal', 'wms', 'arcgismapserver', 'vector-tile'))
-        )
+        return super().get_queryset().exclude(layer_type__in=('gdal', 'wms', 'arcgismapserver', 'vector-tile'))
 
 
 class Layer(G3WACLModelMixins, models.Model):
@@ -648,6 +659,7 @@ class Layer(G3WACLModelMixins, models.Model):
         ('wcs', _('WCS')),
         ('vectortile', _('Vector Tile')),
         ('mdal', _('Mesh layer')),
+        ('postgresraster', _('PostGis raster'))
     )
 
     # General info
@@ -960,10 +972,9 @@ class Layer(G3WACLModelMixins, models.Model):
                 if user.is_anonymous:
                     user = get_anonymous_user()
 
-                for acl in self.columnacl_set.filter(
-                    models.Q(user=user) | models.Q(group__in=user.groups.all())
-                ):
-                    attributes = list(set(attributes) - set(acl.restricted_fields))
+                for acl in self.columnacl_set.filter(models.Q(user=user) | models.Q(group__in=user.groups.all())):
+                    attributes = list(set(attributes) -
+                                      set(acl.restricted_fields))
 
             return attributes
         else:
@@ -1076,7 +1087,7 @@ class Layer(G3WACLModelMixins, models.Model):
             if not tmp_layer.importNamedStyle(doc)[0]:
                 return False
 
-            del tmp_layer
+            del(tmp_layer)
 
             # If the style is current, just replace it in the layer
             if sm.currentStyle() == style:
@@ -1084,7 +1095,8 @@ class Layer(G3WACLModelMixins, models.Model):
             else:
                 new_style = QgsMapLayerStyle(qml)
                 result = sm.addStyle(style, new_style)
-                result = sm.removeStyle(style) and sm.addStyle(style, new_style)
+                result = sm.removeStyle(
+                    style) and sm.addStyle(style, new_style)
 
             if result:
                 assert self.style(style).xmlData() == new_style.xmlData()
@@ -1148,7 +1160,7 @@ class Layer(G3WACLModelMixins, models.Model):
             if not tmp_layer.importNamedStyle(doc)[0]:
                 return False
 
-            del tmp_layer
+            del(tmp_layer)
 
             new_style = QgsMapLayerStyle(qml)
             result = sm.addStyle(style, new_style)
@@ -1280,10 +1292,9 @@ class Layer(G3WACLModelMixins, models.Model):
             )
 
     def _permissions_to_user_groups_viewer(self, groups_id, mode='add'):
+
         # If group_id is in LayerAcl not add view_layer permission
-        l_acl_groups = [
-            la.group.pk for la in self.layeracl_set.filter(group__isnull=False)
-        ]
+        l_acl_groups = [la.group.pk for la in self.layeracl_set.filter(group__isnull=False)]
 
         for group_id in groups_id:
             execute = True
@@ -1291,6 +1302,7 @@ class Layer(G3WACLModelMixins, models.Model):
                 execute = False
 
             if group_id in l_acl_groups and mode != 'add':
+
                 # Remove layer from LayerAcl
                 self.layeracl_set.filter(group_id=group_id).delete()
 
@@ -1334,7 +1346,6 @@ class Widget(G3WACLModelMixins, models.Model):
         populate_from=['name'],
         unique=True,
     )
-
     layers = models.ManyToManyField(Layer)
 
     def __str__(self):
