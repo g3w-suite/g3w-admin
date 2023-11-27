@@ -596,8 +596,8 @@ class BaseVectorApiView(G3WAPIView):
 
             # check for formatter query url param and check if != 0
             export_features = False
-            if 'formatter' in request.query_params:
-                formatter = request.query_params.get('formatter')
+            formatter = str(request.query_params.get('formatter', request.data.get('formatter')))
+            if formatter:
                 if formatter.isnumeric() and int(formatter) == 1:
                     export_features = True
 
