@@ -2,30 +2,35 @@ import logging
 import os
 import time
 
-from django.utils.text           import slugify
+from django.utils.text import slugify
 from django_extensions.db.fields import AutoSlugField
-from ordered_model.models        import OrderedModel
-from core.configs                import *
-from core.mixins.models          import G3WACLModelMixins, G3WProjectMixins
-from core.models                 import (BaseLayer, Group, GroupProjectPanoramic, ProjectMapUrlAlias)
-from core.receivers              import check_overviewmap_project
-from core.utils                  import unicode2ascii
-from django.conf                 import settings
-from django.contrib.auth.models  import Group as AuthGroup
-from django.contrib.auth.models  import User
-from django.db                   import models
-from django.db.models.signals    import post_delete
-from django.utils.translation    import ugettext_lazy as _
-from guardian.shortcuts          import get_perms
-from guardian.utils              import get_anonymous_user
-from model_utils                 import Choices
-from model_utils.models          import TimeStampedModel
-from qdjango.utils.models        import get_constraints4layer, get_widgets4layer
-from qdjango.utils.storage       import QgisFileOverwriteStorage
-from qgis.core                   import QgsMapLayerStyle, QgsRectangle, QgsVectorLayer
-from qgis.PyQt.QtXml             import QDomDocument
-from usersmanage.configs         import *
-from usersmanage.utils           import (get_groups_for_object, get_users_for_object, getUserGroups, setPermissionUserObject)
+from ordered_model.models import OrderedModel
+from core.configs import *
+from core.mixins.models import G3WACLModelMixins, G3WProjectMixins
+from core.models import BaseLayer, Group, GroupProjectPanoramic, ProjectMapUrlAlias
+from core.receivers import check_overviewmap_project
+from core.utils import unicode2ascii
+from django.conf import settings
+from django.contrib.auth.models import Group as AuthGroup
+from django.contrib.auth.models import User
+from django.db import models
+from django.db.models.signals import post_delete
+from django.utils.translation import ugettext_lazy as _
+from guardian.shortcuts import get_perms
+from guardian.utils import get_anonymous_user
+from model_utils import Choices
+from model_utils.models import TimeStampedModel
+from qdjango.utils.models import get_constraints4layer, get_widgets4layer
+from qdjango.utils.storage import QgisFileOverwriteStorage
+from qgis.core import QgsMapLayerStyle, QgsRectangle, QgsVectorLayer
+from qgis.PyQt.QtXml import QDomDocument
+from usersmanage.configs import *
+from usersmanage.utils import (
+    get_groups_for_object,
+    get_users_for_object,
+    getUserGroups,
+    setPermissionUserObject,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -55,7 +60,6 @@ TYPE_RASTER_LAYER_FOR_DOWNLOAD = (
 )
 
 
-
 def buildLayerTreeNodeObject(layerTreeNode):
     """Creates a dictionary that represents the QGIS Project layer tree
 
@@ -67,32 +71,29 @@ def buildLayerTreeNodeObject(layerTreeNode):
 
     toRetLayers = []
     for node in layerTreeNode.children():
-
-        toRetLayer = {
-            'name': node.name(),
-            'expanded': node.isExpanded()
-        }
+        toRetLayer = {'name': node.name(), 'expanded': node.isExpanded()}
 
         try:
             # try for layer node
-            toRetLayer.update({
-                'id': node.layerId(),
-                'visible': node.itemVisibilityChecked()
-            })
+            toRetLayer.update(
+                {'id': node.layerId(), 'visible': node.itemVisibilityChecked()}
+            )
 
             # Add `showFeatureCount` custom property per Vector layer only
-            if 'showFeatureCount' in node.customProperties() and node.customProperty('showFeatureCount') == 1:
-                toRetLayer.update({
-                    'showfeaturecount': True
-                })
+            if (
+                'showFeatureCount' in node.customProperties()
+                and node.customProperty('showFeatureCount') == 1
+            ):
+                toRetLayer.update({'showfeaturecount': True})
 
         except:
-
-            toRetLayer.update({
-                'mutually-exclusive': node.isMutuallyExclusive(),
-                'nodes': buildLayerTreeNodeObject(node),
-                'checked': node.itemVisibilityChecked(),
-            })
+            toRetLayer.update(
+                {
+                    'mutually-exclusive': node.isMutuallyExclusive(),
+                    'nodes': buildLayerTreeNodeObject(node),
+                    'checked': node.itemVisibilityChecked(),
+                }
+            )
 
         toRetLayers.append(toRetLayer)
 
@@ -102,22 +103,22 @@ def buildLayerTreeNodeObject(layerTreeNode):
 def get_project_file_path(instance, filename):
     """Custom name for uploaded project files."""
 
-    group_name   = slugify(str(instance.group.name))
+    group_name = slugify(str(instance.group.name))
     project_name = slugify(str(instance.title))
-    filename     = '{}_{}.qgs'.format(group_name, project_name)
+    filename = '{}_{}.qgs'.format(group_name, project_name)
     return os.path.join('projects', filename)
 
 
 def get_thumbnail_path(instance, filename):
     """Custom name for uploaded thumbnails."""
-    group_name   = slugify(str(instance.group.name))
+    group_name = slugify(str(instance.group.name))
     project_name = slugify(str(instance.title))
-    ext          = filename.split('.')[-1]
-    filename     = '{}_{}.{}'.format(group_name, project_name, ext)
+    ext = filename.split('.')[-1]
+    filename = '{}_{}.{}'.format(group_name, project_name, ext)
     return os.path.join('thumbnails', filename)
 
 
-class QgisProjectFileLocker():
+class QgisProjectFileLocker:
     """Mutex to prevent multiple processes to write the same project concurrently"""
 
     def __init__(self, project):
@@ -145,269 +146,261 @@ class QgisProjectFileLocker():
 class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
     """A QGIS project."""
 
-    QUERY_TYPE = Choices(
-        ('single',   _('Single')),
-        ('multiple', _('Multiple'))
-    )
+    QUERY_TYPE = Choices(('single', _('Single')), ('multiple', _('Multiple')))
     CLIENT_TOC_TABS = Choices(
-        ('layers',     _('Layers')),
+        ('layers', _('Layers')),
         ('baselayers', _('Base layers')),
-        ('legend',     _('Legend'))
+        ('legend', _('Legend')),
     )
     CLIENT_TOC_LAYERS_INIT_STATUS = Choices(
-        ('collapsed',     _('Collapsed')),
-        ('not_collapsed', _('Not collapsed'))
+        ('collapsed', _('Collapsed')), ('not_collapsed', _('Not collapsed'))
     )
     CLIENT_MAP_THEMES_INIT_STATUS = Choices(
-        ('collapsed',     _('Collapsed')),
-        ('not_collapsed', _('Not collapsed'))
+        ('collapsed', _('Collapsed')), ('not_collapsed', _('Not collapsed'))
     )
     CLIENT_LEGEND_POSITION = Choices(
-        ('tab', _('In a separate TAB')),
-        ('toc', _('Into TOC layers'))
+        ('tab', _('In a separate TAB')), ('toc', _('Into TOC layers'))
     )
     WMS_GETMAP_FORMAT = Choices(
-        ('image/png; mode=1bit',  _('PNG 1bit')),
-        ('image/png; mode=8bit',  _('PNG 8bit')),
+        ('image/png; mode=1bit', _('PNG 1bit')),
+        ('image/png; mode=8bit', _('PNG 8bit')),
         ('image/png; mode=16bit', _('PNG 16bit')),
-        ('image/png',             _('PNG')),
-        ('image/jpeg',            _('JPEG')),
-        ('image/webp',            _('WEBP')),
+        ('image/png', _('PNG')),
+        ('image/jpeg', _('JPEG')),
+        ('image/webp', _('WEBP')),
     )
 
     # Project file
     qgis_file = models.FileField(
         _('QGIS project file'),
-        max_length = 400,
-        upload_to  = get_project_file_path,
-        storage    = QgisFileOverwriteStorage(),
+        max_length=400,
+        upload_to=get_project_file_path,
+        storage=QgisFileOverwriteStorage(),
     )
 
     # General info
     title = models.CharField(
         _('Title'),
-        max_length = 255,
+        max_length=255,
     )
 
     title_ur = models.CharField(
         _('Public title'),
-        max_length = 255,
-        null       = True,
-        blank      = True,
+        max_length=255,
+        null=True,
+        blank=True,
     )
 
     description = models.TextField(
         _('Description'),
-        blank = True,
-        null  = True,
+        blank=True,
+        null=True,
     )
 
     slug = AutoSlugField(
         _('Slug'),
-        populate_from = ['title'],
-        unique        = True,
+        populate_from=['title'],
+        unique=True,
     )
 
-    is_active = models.BooleanField(
-        _('Is active'),
-        default = 1
-    )
+    is_active = models.BooleanField(_('Is active'), default=1)
 
     # Thumbnail
-    thumbnail = models.ImageField(
-        _('Thumbnail'),
-        blank = True,
-        null = True
-    )
+    thumbnail = models.ImageField(_('Thumbnail'), blank=True, null=True)
 
     # Group
     group = models.ForeignKey(
         Group,
-        related_name = 'qdjango_project',
-        verbose_name = _('Group'),
-        on_delete    = models.CASCADE,
+        related_name='qdjango_project',
+        verbose_name=_('Group'),
+        on_delete=models.CASCADE,
     )
 
     # Extent
     initial_extent = models.CharField(
         _('Initial extent'),
-        max_length = 255,
+        max_length=255,
     )
 
     max_extent = models.CharField(
         _('Max extent'),
-        max_length = 255,
-        null       = True,
-        blank      = True,
+        max_length=255,
+        null=True,
+        blank=True,
     )
 
     # Qgis version project
     qgis_version = models.CharField(
         _('Qgis project version'),
-        max_length = 255,
-        default    = '',
+        max_length=255,
+        default='',
     )
 
     # LayersTree project structure
     layers_tree = models.TextField(
         _('Layers tree structure'),
-        blank = True,
-        null  = True,
+        blank=True,
+        null=True,
     )
 
     # BaseLayer
     baselayer = models.ForeignKey(
         BaseLayer,
-        verbose_name = _('Base Layer'),
-        related_name = 'qdjango_project_baselayer',
-        null         = True,
-        blank        = True,
-        on_delete    = models.DO_NOTHING,
+        verbose_name=_('Base Layer'),
+        related_name='qdjango_project_baselayer',
+        null=True,
+        blank=True,
+        on_delete=models.DO_NOTHING,
     )
 
     # possible layer relations
     relations = models.TextField(
         _('Layer relations'),
-        blank = True,
-        null  = True,
+        blank=True,
+        null=True,
     )
 
     # WMSUseLayerIDs
-    wms_use_layer_ids = models.BooleanField(
-        _('WMS use layer ids'),
-        default = False
-    )
+    wms_use_layer_ids = models.BooleanField(_('WMS use layer ids'), default=False)
 
     original_name = models.CharField(
         _('Qgis project original name'),
-        max_length = 256,
-        default    = '',
-        editable   = False,
+        max_length=256,
+        default='',
+        editable=False,
     )
 
     # client options:
     # ============================================
 
     feature_count_wms = models.IntegerField(
-        _('Max feature to get for query'),
-        default = 5
+        _('Max feature to get for query'), default=5
     )
 
     multilayer_query = models.CharField(
         _('Query control mode'),
-        max_length = 20,
-        choices    = QUERY_TYPE,
-        default    = 'multiple',
+        max_length=20,
+        choices=QUERY_TYPE,
+        default='multiple',
     )
 
     multilayer_querybybbox = models.CharField(
         _('Query by bbox control mode'),
-        max_length = 20,
-        choices    = QUERY_TYPE,
-        default    = 'multiple',
+        max_length=20,
+        choices=QUERY_TYPE,
+        default='multiple',
     )
 
     multilayer_querybypolygon = models.CharField(
         _('Query by polygon control mode'),
-        max_length = 20,
-        choices    = QUERY_TYPE,
-        default    = 'multiple',
+        max_length=20,
+        choices=QUERY_TYPE,
+        default='multiple',
     )
 
     context_base_legend = models.BooleanField(
         _('Context base legend'),
-        default   = False,
-        help_text = _('Show only the symbols for the features falling into the requested area'),
+        default=False,
+        help_text=_(
+            'Show only the symbols for the features falling into the requested area'
+        ),
     )
 
     toc_tab_default = models.CharField(
         _("Tab's TOC active as default"),
-        choices    = CLIENT_TOC_TABS,
-        max_length = 40,
-        default    = 'layers',
-        help_text  = _("Set tab's TOC open by default on init client"),
+        choices=CLIENT_TOC_TABS,
+        max_length=40,
+        default='layers',
+        help_text=_("Set tab's TOC open by default on init client"),
     )
 
     toc_layers_init_status = models.CharField(
         _("Tab's TOC layer initial status"),
-        choices    = CLIENT_TOC_LAYERS_INIT_STATUS,
-        max_length = 40,
-        default    = 'not_collapsed',
-        help_text  = _("Set tab's TOC layers initials state: 'Collapsed (close)' or 'Not collapsed (open)'"),
+        choices=CLIENT_TOC_LAYERS_INIT_STATUS,
+        max_length=40,
+        default='not_collapsed',
+        help_text=_(
+            "Set tab's TOC layers initials state: 'Collapsed (close)' or 'Not collapsed (open)'"
+        ),
     )
 
     toc_themes_init_status = models.CharField(
         _("Map themes list initial status"),
-        choices    = CLIENT_MAP_THEMES_INIT_STATUS,
-        max_length = 40,
-        default    = 'collapsed',
-        help_text  = _("Set map themes list initials state: 'Collapsed (close)' or 'Not collapsed (open)'"),
+        choices=CLIENT_MAP_THEMES_INIT_STATUS,
+        max_length=40,
+        default='collapsed',
+        help_text=_(
+            "Set map themes list initials state: 'Collapsed (close)' or 'Not collapsed (open)'"
+        ),
     )
 
     legend_position = models.CharField(
         _("Legend position rendering"),
-        choices    = CLIENT_LEGEND_POSITION,
-        max_length = 20,
-        default    = 'tab',
-        help_text  = _("Set legend position rendering"),
+        choices=CLIENT_LEGEND_POSITION,
+        max_length=20,
+        default='tab',
+        help_text=_("Set legend position rendering"),
     )
 
     autozoom_query = models.BooleanField(
         _('Automatic zoom to query result features'),
-        default   = False,
-        help_text = _('Automatic zoom on query result features for only one layer'),
+        default=False,
+        help_text=_('Automatic zoom on query result features for only one layer'),
     )
 
     layouts = models.TextField(
         _('Project layouts'),
-        null  = True,
-        blank = True,
+        null=True,
+        blank=True,
     )
 
     use_map_extent_as_init_extent = models.BooleanField(
         _('User QGIS project map start extent as webgis init extent'),
-        default = False,
+        default=False,
     )
 
     is_dirty = models.BooleanField(
-        _('The project has been modified by the G3W-Suite application after it was uploaded.'),
-        editable = False,
-        default  = False,
+        _(
+            'The project has been modified by the G3W-Suite application after it was uploaded.'
+        ),
+        editable=False,
+        default=False,
     )
 
     is_locked = models.BooleanField(
-        _('Mutex to lock the project when it is being written by the G3W-Suite application. This field is used internally by the suite through a context manager'),
-        editable = False,
-        default = False,
+        _(
+            'Mutex to lock the project when it is being written by the G3W-Suite application. This field is used internally by the suite through a context manager'
+        ),
+        editable=False,
+        default=False,
     )
 
     order = models.PositiveIntegerField(
         _('Fields to se order'),
-        default = 0,
-        blank   = True,
-        null    = True,
+        default=0,
+        blank=True,
+        null=True,
     )
 
     wms_getmap_format = models.CharField(
         _('WMS GetMap image format'),
-        default    = 'image/png; mode=8bit',
-        max_length = 255,
-        null       = True,
-        choices    = WMS_GETMAP_FORMAT,
+        default='image/png; mode=8bit',
+        max_length=255,
+        null=True,
+        choices=WMS_GETMAP_FORMAT,
     )
 
-
     class Meta:
-        verbose_name        = _('Project')
+        verbose_name = _('Project')
         verbose_name_plural = _('Projects')
-        unique_together     = (('title', 'group'))
+        unique_together = ('title', 'group')
 
     def __str__(self):
         return self.title
 
     @property
     def messages(self):
-        """ Returns the message queryset corresponding to this Project, or empty queryset """
+        """Returns the message queryset corresponding to this Project, or empty queryset"""
         return self.message_set.all()
 
     @property
@@ -419,6 +412,7 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
         """
 
         from qdjango.apps import get_qgs_project
+
         return get_qgs_project(self.qgis_file.path)
 
     def update_qgis_project(self):
@@ -434,19 +428,20 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
         if self.qgis_project.write():
             self.is_dirty = True
             # Update layers tree
-            self.layers_tree = str(buildLayerTreeNodeObject(self.qgis_project.layerTreeRoot()))
+            self.layers_tree = str(
+                buildLayerTreeNodeObject(self.qgis_project.layerTreeRoot())
+            )
             self.save()
             return True
         else:
             return False
 
     def _permissionsToEditor(self, user, mode='add'):
-
         setPermissionUserObject(
             user,
             self,
-            permissions = ['change_project', 'delete_project', 'view_project'],
-            mode        = mode,
+            permissions=['change_project', 'delete_project', 'view_project'],
+            mode=mode,
         )
 
         # if editor not has permission on group give permission only view on parent group
@@ -454,46 +449,43 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
             setPermissionUserObject(
                 user,
                 self.group,
-                permissions = ['core.view_group'],
-                mode        = mode,
+                permissions=['core.view_group'],
+                mode=mode,
             )
 
-        layerAction = 'addPermissionsToEditor' if mode == 'add' else 'removePermissionsToEditor'
-        layers      = self.layer_set.all()
+        layerAction = (
+            'addPermissionsToEditor' if mode == 'add' else 'removePermissionsToEditor'
+        )
+        layers = self.layer_set.all()
         for layer in layers:
             getattr(layer, layerAction)(user)
 
     def _permissionsToViewers(self, users_id, mode='add'):
-
         for user_id in users_id:
-
             user = User.objects.get(pk=user_id)
 
-            setPermissionUserObject(
-                user,
-                self,
-                permissions = 'view_project',
-                mode       = mode
+            setPermissionUserObject(user, self, permissions='view_project', mode=mode)
+
+            layerAction = (
+                'addPermissionsToViewers'
+                if mode == 'add'
+                else 'removePermissionsToViewers'
             )
 
-            layerAction = 'addPermissionsToViewers' if mode == 'add' else 'removePermissionsToViewers'
-
-            layers      = self.layer_set.all()
+            layers = self.layer_set.all()
 
             for layer in layers:
                 getattr(layer, layerAction)(users_id)
 
     def _permissions_to_user_groups_editor(self, groups_id, mode='add'):
-
         for group_id in groups_id:
-
             auth_group = AuthGroup.objects.get(pk=group_id)
 
             setPermissionUserObject(
                 auth_group,
                 self,
-                permissions = ['change_project', 'delete_project', 'view_project'],
-                mode        = mode,
+                permissions=['change_project', 'delete_project', 'view_project'],
+                mode=mode,
             )
 
             # if viewer not has permission on group give permission only view on parent group
@@ -501,37 +493,43 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
                 setPermissionUserObject(
                     auth_group,
                     self.group,
-                    permissions = ['core.view_group'],
-                    mode        = mode,
+                    permissions=['core.view_group'],
+                    mode=mode,
                 )
 
-            layerAction = 'add_permissions_to_editor_user_groups' if mode == 'add' else 'remove_permissions_to_editor_user_groups'
+            layerAction = (
+                'add_permissions_to_editor_user_groups'
+                if mode == 'add'
+                else 'remove_permissions_to_editor_user_groups'
+            )
 
-            layers      = self.layer_set.all()
+            layers = self.layer_set.all()
 
             for layer in layers:
                 getattr(layer, layerAction)(groups_id)
 
     def _permissions_to_user_groups_viewer(self, groups_id, mode='add'):
-
         for group_id in groups_id:
             auth_group = AuthGroup.objects.get(pk=group_id)
             setPermissionUserObject(
                 auth_group,
                 self,
-                permissions = 'view_project',
-                mode        = mode,
+                permissions='view_project',
+                mode=mode,
             )
 
-            layerAction = 'add_permissions_to_viewer_user_groups' if mode == 'add' else 'remove_permissions_to_viewer_user_groups'
+            layerAction = (
+                'add_permissions_to_viewer_user_groups'
+                if mode == 'add'
+                else 'remove_permissions_to_viewer_user_groups'
+            )
 
-            layers      = self.layer_set.all()
+            layers = self.layer_set.all()
 
             for layer in layers:
                 getattr(layer, layerAction)(groups_id)
 
     def tree(self):
-
         def readLeaf(layer, layers):
             if 'nodes' in layer:
                 children = []
@@ -542,8 +540,8 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
             else:
                 return [layers[layer['id']][0], layers[layer['id']][1]]
 
-        layers  = self.layer_set.values_list('id', 'name', 'qgs_layer_id')
-        _layers = { l[2]: l for l in layers }
+        layers = self.layer_set.values_list('id', 'name', 'qgs_layer_id')
+        _layers = {l[2]: l for l in layers}
 
         layers_tree = []
         for l in eval(self.layers_tree):
@@ -555,8 +553,8 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
     def url_alias(self):
         try:
             return ProjectMapUrlAlias.objects.get(
-                app_name   = 'qdjango',
-                project_id = self.pk,
+                app_name='qdjango',
+                project_id=self.pk,
             ).alias
         except:
             return None
@@ -565,22 +563,24 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
     def url_alias(self, url_alias):
         if url_alias:
             ProjectMapUrlAlias.objects.update_or_create(
-                app_name   = 'qdjango',
-                project_id = self.pk,
-                defaults   = { 'alias': url_alias },
+                app_name='qdjango',
+                project_id=self.pk,
+                defaults={'alias': url_alias},
             )
         else:
             try:
                 ProjectMapUrlAlias.objects.get(
-                    app_name   = 'qdjango',
-                    project_id = self.pk,
+                    app_name='qdjango',
+                    project_id=self.pk,
                 ).delete()
             except:
                 pass
 
     def __getattr__(self, attr):
         if attr == 'viewers':
-            return get_users_for_object(self, 'view_project', [G3W_VIEWER1, G3W_VIEWER2], with_anonymous=True)
+            return get_users_for_object(
+                self, 'view_project', [G3W_VIEWER1, G3W_VIEWER2], with_anonymous=True
+            )
 
         elif attr == 'editor':
             editors = get_users_for_object(self, 'change_project', [G3W_EDITOR1])
@@ -620,96 +620,100 @@ class VectorLayersManager(models.Manager):
     """Returns only vector layers"""
 
     def get_queryset(self):
-        return super().get_queryset().exclude(layer_type__in=('gdal', 'wms', 'arcgismapserver', 'vector-tile'))
+        return (
+            super()
+            .get_queryset()
+            .exclude(layer_type__in=('gdal', 'wms', 'arcgismapserver', 'vector-tile'))
+        )
 
 
 class Layer(G3WACLModelMixins, models.Model):
     """A QGIS layer."""
 
     TYPES = Choices(
-        ('postgres',            _('Postgres')),
-        ('spatialite',          _('SpatiaLite')),
-        ('raster',              _('Raster')),
-        ('wfs',                 _('WFS')),
-        ('wms',                 _('WMS')),
-        ('ogr',                 _('OGR')),
-        ('gdal',                _('GDAL')),
-        ('delimitedtext',       _('CSV')),
-        ('arcgismapserver',     _('ArcGisMapServer')),
+        ('postgres', _('Postgres')),
+        ('spatialite', _('SpatiaLite')),
+        ('raster', _('Raster')),
+        ('wfs', _('WFS')),
+        ('wms', _('WMS')),
+        ('ogr', _('OGR')),
+        ('gdal', _('GDAL')),
+        ('delimitedtext', _('CSV')),
+        ('arcgismapserver', _('ArcGisMapServer')),
         ('arcgisfeatureserver', _('ArcGisFeatureServer')),
-        ('mssql',               _('MSSQL')),
-        ('virtual',             _('VirtualLayer')),
-        ('oracle',              _('Oracle')),
-        ('vector-tile',         _('Vector Tile')),
-        ('wcs',                 _('WCS')),
-        ('vectortile',          _('Vector Tile')),
-        ('mdal',                _('Mesh layer')),
+        ('mssql', _('MSSQL')),
+        ('virtual', _('VirtualLayer')),
+        ('oracle', _('Oracle')),
+        ('vector-tile', _('Vector Tile')),
+        ('wcs', _('WCS')),
+        ('vectortile', _('Vector Tile')),
+        ('mdal', _('Mesh layer')),
     )
 
     # General info
     name = models.CharField(
         _('Name'),
-        max_length = 255,
+        max_length=255,
     )
 
     title = models.CharField(
         _('Title'),
-        max_length = 255,
-        blank      = True,
+        max_length=255,
+        blank=True,
     )
     origname = models.CharField(
         _('Original Name'),
-        max_length = 256,
-        null      = True,
-        blank     = True,
+        max_length=256,
+        null=True,
+        blank=True,
     )
 
     qgs_layer_id = models.CharField(
         _('Qgis Layer Project ID'),
-        max_length = 255,
-        blank      = True,
-        null       = True,
+        max_length=255,
+        blank=True,
+        null=True,
     )
 
     description = models.TextField(
         _('Description'),
-        blank = True,
+        blank=True,
     )
 
     slug = AutoSlugField(
         _('Slug'),
-        populate_from = ['name'],
-        unique        = True,
-        overwrite     = True,
+        populate_from=['name'],
+        unique=True,
+        overwrite=True,
     )
 
     is_active = models.BooleanField(
         _('Is active'),
-        default = 1,
+        default=1,
     )
 
     # Project
     project = models.ForeignKey(
         Project,
-        verbose_name = _('Project'),
-        on_delete    = models.CASCADE,
+        verbose_name=_('Project'),
+        on_delete=models.CASCADE,
     )
 
     parent_project = models.ForeignKey(
         Project,
-        verbose_name = _('Parent Project for Embedded layers'),
-        blank        = True,
-        null         = True,
-        on_delete    = models.CASCADE,
-        editable     = False,
-        related_name = 'parent_project',
+        verbose_name=_('Parent Project for Embedded layers'),
+        blank=True,
+        null=True,
+        on_delete=models.CASCADE,
+        editable=False,
+        related_name='parent_project',
     )
 
     # Type and content
     layer_type = models.CharField(
         _('Type'),
-        choices    = TYPES,
-        max_length = 255,
+        choices=TYPES,
+        max_length=255,
     )
 
     datasource = models.TextField(
@@ -718,192 +722,192 @@ class Layer(G3WACLModelMixins, models.Model):
 
     is_visible = models.BooleanField(
         _('Is visible'),
-        default = 1,
+        default=1,
     )
 
     order = models.IntegerField(
         _('Order'),
-        default = 1,
+        default=1,
     )
 
     # Optional data file (non-postgres layers need it)
     data_file = models.FileField(
         _('Associated data file'),
-        upload_to = get_layer_data_file_path,
-        blank     = True,
-        null      = True,
+        upload_to=get_layer_data_file_path,
+        blank=True,
+        null=True,
     )
 
     # TODO: make this a property of the Layer object
     # Database columns (DB layers need it)
     database_columns = models.TextField(
         _('Database columns'),
-        blank = True,
-        null  = True,
+        blank=True,
+        null=True,
     )
 
     # minscale and maxscale and scalebasedvisibility
     min_scale = models.IntegerField(
         _('Layer Min Scale visibility'),
-        blank = True,
-        null  = True,
+        blank=True,
+        null=True,
     )
 
     max_scale = models.IntegerField(
         _('Layer Max Scale visibility'),
-        blank = True,
-        null  = True,
+        blank=True,
+        null=True,
     )
 
     scalebasedvisibility = models.BooleanField(
         _('Layer scale based visibility'),
-        default = False,
+        default=False,
     )
 
     # srid
     srid = models.IntegerField(
         _('Layer SRID'),
-        blank = True,
-        null  = True,
+        blank=True,
+        null=True,
     )
 
     # for capabilities and edit opsions
     capabilities = models.IntegerField(
         _('Bitwise capabilities'),
-        blank = True,
-        null  = True,
+        blank=True,
+        null=True,
     )
 
     edit_options = models.IntegerField(
         _('Bitwise edit options'),
-        blank = True,
-        null  = True,
+        blank=True,
+        null=True,
     )
 
     wfscapabilities = models.IntegerField(
         _('Bitwise wfs options'),
-        blank = True,
-        null  = True,
+        blank=True,
+        null=True,
     )
 
     # geometryType
     geometrytype = models.CharField(
         _('Geometry type'),
-        max_length = 255,
-        blank      = True,
-        null       = True,
+        max_length=255,
+        blank=True,
+        null=True,
     )
 
     exclude_attribute_wms = models.TextField(
         _('Attributes excluded from wms'),
-        blank = True,
-        null  = True,
+        blank=True,
+        null=True,
     )
 
     exclude_attribute_wfs = models.TextField(
         _('Attributes excluded from wfs'),
-        blank = True,
-        null  = True,
+        blank=True,
+        null=True,
     )
 
     # possible layer relations
     vectorjoins = models.TextField(
         _('Layer relations'),
-        blank = True,
-        null  = True,
+        blank=True,
+        null=True,
     )
 
     # editing widgets
     edittypes = models.TextField(
         _('Columns layer widgets'),
-        blank = True,
-        null  = True,
+        blank=True,
+        null=True,
     )
 
     # not show attributes table
     not_show_attributes_table = models.BooleanField(
         _('Not show attributes table'),
-        default = False,
-        blank   = True,
+        default=False,
+        blank=True,
     )
 
     # exclude from legend
     exclude_from_legend = models.BooleanField(
         _('Exclude to legend'),
-        default = False,
-        blank   = True,
+        default=False,
+        blank=True,
     )
 
     # form editor layout
     editor_layout = models.CharField(
         _('Form editor layout'),
-        max_length = 100,
-        blank      = True,
-        null       = True,
+        max_length=100,
+        blank=True,
+        null=True,
     )
 
     editor_form_structure = models.TextField(
         _('Editor form structure'),
-        blank = True,
-        null = True,
+        blank=True,
+        null=True,
     )
 
     download = models.BooleanField(
         _('Download data'),
-        default = False,
-        blank  = True,
+        default=False,
+        blank=True,
     )
 
     download_xls = models.BooleanField(
         _('Download data in xls format'),
-        default = False,
-        blank   = True,
+        default=False,
+        blank=True,
     )
 
     download_gpx = models.BooleanField(
         _('Download data in gpx format'),
-        default = False,
-        blank   = True,
+        default=False,
+        blank=True,
     )
 
     download_csv = models.BooleanField(
         _('Download data in csv format'),
-        default = False,
-        blank   = True,
+        default=False,
+        blank=True,
     )
 
     download_gpkg = models.BooleanField(
         _('Download data in gpkg format'),
-        default = False,
-        blank   = True,
+        default=False,
+        blank=True,
     )
 
     # layer extension
     extent = models.TextField(
         _('Layer extension'),
-        null  = True,
-        blank = True,
+        null=True,
+        blank=True,
     )
 
     # for layer WMS/WMST: set if load direct from their servers or from local QGIS-server
     external = models.BooleanField(
         _('Get WMS/WMS externally'),
-        default = False,
-        blank   = True,
+        default=False,
+        blank=True,
     )
 
     # For temporal properties
     temporal_properties = models.TextField(
         _('Temporal properties'),
-        null  = True,
-        blank = True,
+        null=True,
+        blank=True,
     )
 
     has_column_acl = models.BooleanField(
         _('Has column ACL constraints'),
-        default  = False,
-        editable = False,
-        db_index = True,
+        default=False,
+        editable=False,
+        db_index=True,
     )
 
     objects = models.Manager()  # The default manager.
@@ -923,7 +927,8 @@ class Layer(G3WACLModelMixins, models.Model):
             return self.project.qgis_project.mapLayers()[self.qgs_layer_id]
         except:
             logger.warning(
-                'Cannot retrieve QgsMapLayer for QDjango layer %s' % self.qgs_layer_id)
+                'Cannot retrieve QgsMapLayer for QDjango layer %s' % self.qgs_layer_id
+            )
             return layer
 
     @property
@@ -940,7 +945,7 @@ class Layer(G3WACLModelMixins, models.Model):
         if not layer is None:
             sm = layer.styleManager()
             for style in sm.styles():
-                styles.append({ 'name': style, 'current': style == sm.currentStyle() })
+                styles.append({'name': style, 'current': style == sm.currentStyle()})
 
         return styles
 
@@ -949,15 +954,15 @@ class Layer(G3WACLModelMixins, models.Model):
         according to ColumnAcl"""
 
         if isinstance(self.qgis_layer, QgsVectorLayer):
-
             attributes = self.qgis_layer.fields().names()
 
             if self.has_column_acl:
-
                 if user.is_anonymous:
                     user = get_anonymous_user()
 
-                for acl in self.columnacl_set.filter(models.Q(user=user) | models.Q(group__in=user.groups.all())):
+                for acl in self.columnacl_set.filter(
+                    models.Q(user=user) | models.Q(group__in=user.groups.all())
+                ):
                     attributes = list(set(attributes) - set(acl.restricted_fields))
 
             return attributes
@@ -1000,12 +1005,11 @@ class Layer(G3WACLModelMixins, models.Model):
         """
 
         with QgisProjectFileLocker(self.project) as project:
-
             layer = self.qgis_layer
             if layer is None:
                 return False
 
-            sm     = layer.styleManager()
+            sm = layer.styleManager()
             result = sm.setCurrentStyle(style)
 
             if result:
@@ -1027,7 +1031,6 @@ class Layer(G3WACLModelMixins, models.Model):
         result = False
 
         with QgisProjectFileLocker(self.project) as project:
-
             layer = self.qgis_layer
             if layer is None:
                 return False
@@ -1058,7 +1061,6 @@ class Layer(G3WACLModelMixins, models.Model):
         result = False
 
         with QgisProjectFileLocker(self.project) as project:
-
             layer = self.qgis_layer
             if layer is None:
                 return False
@@ -1074,15 +1076,15 @@ class Layer(G3WACLModelMixins, models.Model):
             if not tmp_layer.importNamedStyle(doc)[0]:
                 return False
 
-            del(tmp_layer)
+            del tmp_layer
 
             # If the style is current, just replace it in the layer
             if sm.currentStyle() == style:
                 return layer.importNamedStyle(doc)[0]
             else:
                 new_style = QgsMapLayerStyle(qml)
-                result    = sm.addStyle(style, new_style)
-                result    = sm.removeStyle(style) and sm.addStyle(style, new_style)
+                result = sm.addStyle(style, new_style)
+                result = sm.removeStyle(style) and sm.addStyle(style, new_style)
 
             if result:
                 assert self.style(style).xmlData() == new_style.xmlData()
@@ -1102,12 +1104,11 @@ class Layer(G3WACLModelMixins, models.Model):
         result = False
 
         with QgisProjectFileLocker(self.project) as project:
-
             layer = self.qgis_layer
             if layer is None:
                 return False
 
-            sm     = layer.styleManager()
+            sm = layer.styleManager()
             result = sm.removeStyle(style)
 
             if result:
@@ -1133,7 +1134,6 @@ class Layer(G3WACLModelMixins, models.Model):
         result = False
 
         with QgisProjectFileLocker(self.project) as project:
-
             sm = layer.styleManager()
 
             if sm.currentStyle() == style:
@@ -1148,10 +1148,10 @@ class Layer(G3WACLModelMixins, models.Model):
             if not tmp_layer.importNamedStyle(doc)[0]:
                 return False
 
-            del(tmp_layer)
+            del tmp_layer
 
             new_style = QgsMapLayerStyle(qml)
-            result    = sm.addStyle(style, new_style)
+            result = sm.addStyle(style, new_style)
 
             if result:
                 result = result and project.update_qgis_project()
@@ -1162,7 +1162,7 @@ class Layer(G3WACLModelMixins, models.Model):
         """
         Check if a field_name has a QGIS Form ValueRelation Widget
         """
-    
+
         edittypes = eval(self.edittypes)
         return edittypes[field_name]["widgetv2type"] == "ValueRelation"
 
@@ -1178,21 +1178,21 @@ class Layer(G3WACLModelMixins, models.Model):
             'minx': rect.xMinimum(),
             'miny': rect.yMinimum(),
             'maxx': rect.xMaximum(),
-            'maxy': rect.yMaximum()
+            'maxy': rect.yMaximum(),
         }
 
     def __str__(self):
         return self.name
 
     class Meta:
-        verbose_name        = _('Layer')
+        verbose_name = _('Layer')
         verbose_name_plural = _('Layers')
-        unique_together     = (('name', 'project', 'qgs_layer_id'),)
-        ordering            = ['order']
+        unique_together = (('name', 'project', 'qgs_layer_id'),)
+        ordering = ['order']
         permissions = (
-            ('add_feature',         'Can add features to layer'),
-            ('change_feature',      'Can update features geometry of layer'),
-            ('delete_feature',      'Can delete features from layer'),
+            ('add_feature', 'Can add features to layer'),
+            ('change_feature', 'Can update features geometry of layer'),
+            ('delete_feature', 'Can delete features from layer'),
             ('change_attr_feature', 'Can update features attributes into layer'),
         )
 
@@ -1227,22 +1227,23 @@ class Layer(G3WACLModelMixins, models.Model):
         setPermissionUserObject(
             user,
             self,
-            permissions = [
+            permissions=[
                 'change_layer',
                 'delete_layer',
                 'view_layer',
                 'add_feature',
                 'change_feature',
                 'change_attr_feature',
-                'delete_feature'
+                'delete_feature',
             ],
-            mode        = mode,
+            mode=mode,
         )
 
     def _permissionsToViewers(self, users_id, mode='add'):
-
         # If user_id is in LayerAcl not add view_layer permission
-        l_acl_users = [la.user.pk for la in self.layeracl_set.filter(user__isnull=False)]
+        l_acl_users = [
+            la.user.pk for la in self.layeracl_set.filter(user__isnull=False)
+        ]
 
         for user_id in users_id:
             execute = True
@@ -1250,7 +1251,6 @@ class Layer(G3WACLModelMixins, models.Model):
                 execute = False
 
             if user_id in l_acl_users and mode != 'add':
-
                 # Remove layer from LayerAcl
                 self.layeracl_set.filter(user_id=user_id).delete()
 
@@ -1258,8 +1258,8 @@ class Layer(G3WACLModelMixins, models.Model):
                 setPermissionUserObject(
                     User.objects.get(pk=user_id),
                     self,
-                    permissions = 'view_layer',
-                    mode        = mode,
+                    permissions='view_layer',
+                    mode=mode,
                 )
 
     def _permissions_to_user_groups_editor(self, groups_id, mode='add'):
@@ -1267,7 +1267,7 @@ class Layer(G3WACLModelMixins, models.Model):
             setPermissionUserObject(
                 AuthGroup.objects.get(pk=group_id),
                 self,
-                permissions = [
+                permissions=[
                     'change_layer',
                     'delete_layer',
                     'view_layer',
@@ -1276,13 +1276,14 @@ class Layer(G3WACLModelMixins, models.Model):
                     'change_attr_feature',
                     'delete_feature',
                 ],
-                mode       = mode,
+                mode=mode,
             )
 
     def _permissions_to_user_groups_viewer(self, groups_id, mode='add'):
-
         # If group_id is in LayerAcl not add view_layer permission
-        l_acl_groups = [la.group.pk for la in self.layeracl_set.filter(group__isnull=False)]
+        l_acl_groups = [
+            la.group.pk for la in self.layeracl_set.filter(group__isnull=False)
+        ]
 
         for group_id in groups_id:
             execute = True
@@ -1290,7 +1291,6 @@ class Layer(G3WACLModelMixins, models.Model):
                 execute = False
 
             if group_id in l_acl_groups and mode != 'add':
-
                 # Remove layer from LayerAcl
                 self.layeracl_set.filter(group_id=group_id).delete()
 
@@ -1298,8 +1298,8 @@ class Layer(G3WACLModelMixins, models.Model):
                 setPermissionUserObject(
                     AuthGroup.objects.get(pk=group_id),
                     self,
-                    permissions = ['view_layer'],
-                    mode        = mode,
+                    permissions=['view_layer'],
+                    mode=mode,
                 )
 
 
@@ -1308,13 +1308,11 @@ class Widget(G3WACLModelMixins, models.Model):
     Widget data for project module Qdjango
     """
 
-    TYPES = Choices(
-        *((w['value'], w['name']) for w in list(WIDGET_TYPES.values()))
-    )
+    TYPES = Choices(*((w['value'], w['name']) for w in list(WIDGET_TYPES.values())))
 
     name = models.CharField(
         _('Name'),
-        max_length = 255,
+        max_length=255,
     )
 
     body = models.TextField(
@@ -1327,14 +1325,14 @@ class Widget(G3WACLModelMixins, models.Model):
 
     widget_type = models.CharField(
         _('Type'),
-        choices    = TYPES,
-        max_length = 255,
+        choices=TYPES,
+        max_length=255,
     )
 
     slug = AutoSlugField(
         _('Slug'),
-        populate_from = ['name'],
-        unique        = True,
+        populate_from=['name'],
+        unique=True,
     )
 
     layers = models.ManyToManyField(Layer)
@@ -1343,9 +1341,7 @@ class Widget(G3WACLModelMixins, models.Model):
         return self.name
 
     def _permissionsToEditor(self, user, mode='add'):
-        permissions = [
-            'qdjango.view_widget'
-        ]
+        permissions = ['qdjango.view_widget']
 
         if G3W_EDITOR1 in getUserGroups(user):
             permissions += [
@@ -1356,18 +1352,17 @@ class Widget(G3WACLModelMixins, models.Model):
         setPermissionUserObject(
             user,
             self,
-            permissions = permissions,
-            mode        = mode,
+            permissions=permissions,
+            mode=mode,
         )
 
     def _permissionsToViewers(self, users_id, mode='add'):
-
         for user_id in users_id:
             setPermissionUserObject(
                 User.objects.get(pk=user_id),
                 self,
-                permissions = 'qdjango.view_widget',
-                mode        = mode,
+                permissions='qdjango.view_widget',
+                mode=mode,
             )
 
     @staticmethod
