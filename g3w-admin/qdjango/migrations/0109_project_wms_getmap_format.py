@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('qdjango', '0109_filterlayersaved.py'),
+        ('qdjango', '0109_filterlayersaved'),
     ]
 
     operations = [
