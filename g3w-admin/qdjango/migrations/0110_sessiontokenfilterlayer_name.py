@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('qdjango', '0109_filterlayersaved'),
+        ('qdjango', '0109_project_wms_getmap_format'),
     ]
 
     operations = [
