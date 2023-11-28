@@ -12,8 +12,17 @@ from django.dispatch import receiver
 from django.contrib.auth.signals import user_logged_out
 from django.template import loader
 from django.db.models.signals import pre_delete
-from core.signals import load_layer_actions, initconfig_plugin_start, after_serialized_project_layer, \
-    pre_save_maplayer, post_save_maplayer, pre_delete_maplayer, load_js_modules, before_return_vector_data_layer
+from core.signals import (
+    load_layer_actions,
+    initconfig_plugin_start,
+    after_serialized_project_layer,
+    pre_save_maplayer,
+    post_save_maplayer,
+    pre_delete_maplayer,
+    load_js_modules,
+    before_return_vector_data_layer,
+    load_project_layers_actions
+)
 from core.utils.qgisapi import get_qgis_layer
 from qdjango.api.projects.serializers import QGIS_LAYER_TYPE_NO_GEOM
 from qdjango.vector import LayerVectorView, MODE_CONFIG
@@ -77,6 +86,21 @@ def editing_layer_actions(sender, **kwargs):
     else:
         template = loader.get_template('editing/layer_action_blank.html')
         return template.render(kwargs)
+
+@receiver(load_project_layers_actions)
+def editing_project_layers_actions(sender, **kwargs):
+    """
+    Return html actions editing for project layers list.
+    """
+
+    editing_button = getattr(settings, 'EDITING_SHOW_ACTIVE_BUTTON', True)
+
+    if (sender.has_perm('change_project', kwargs['project']) and
+            kwargs['app_name'] == 'qdjango'
+            and editing_button):
+        template = loader.get_template('editing/project_layers_action.html')
+        return template.render(kwargs)
+
 
 
 @receiver(initconfig_plugin_start)
