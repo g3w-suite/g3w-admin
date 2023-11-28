@@ -844,7 +844,7 @@ msgstr ""
 #: templates/qdjango/ajax/layer_detail.html:20
 #, fuzzy
 #| msgid "Datasource"
-msgid "Datasoruce"
+msgid "Datasource"
 msgstr "Sorgente dati"
 
 #: templates/qdjango/ajax/layer_widgets.html:4

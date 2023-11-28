@@ -8,6 +8,12 @@
                     {% trans 'Some errors on form. Check it and send again.' %}
             </div>
         </div>
+        <div class="col-md-12">
+            <div class="alert alert-warning">
+                <h4><i class="icon fa fa-warning"></i> {% trans 'Important' %}!</h4>
+                    {% trans 'The following settings will be applied to all the layers indicated and will overwrite the settings set at the single layer level' %}
+            </div>
+        </div>
     </div>
     <div class="row">
         <div class="col-md-12">
@@ -18,6 +24,8 @@
 
         /* Set for widget initial atomic capabilities */
         ga.Editing.widget.initial_atomic_capabilities = {{ initial_atomic_capabilities|safe }};
+        ga.Editing.widget.multilayer = {{ multilayer|lower }};
+        ga.Editing.widget.layerinfobaseurl= '/qdjango/api/info/layer/';
         ga.Editing.widget.init();
     </script>
 </form>

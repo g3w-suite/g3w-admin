@@ -3,7 +3,11 @@ from django.conf import settings
 from django import template
 from django.apps import apps
 from django.conf.urls.static import static
-from core.signals import load_project_widgets, load_layer_actions
+from core.signals import (
+    load_project_widgets,
+    load_layer_actions,
+    load_project_layers_actions
+)
 from core.models import GroupProjectPanoramic
 
 
@@ -106,6 +110,19 @@ def g3wadmin_layer_actions(layer, app_name, user):
 
     return template_actions
 
+@register.simple_tag()
+def g3wadmin_project_layers_actions(project, app_name, user):
+    """
+    Template tag to get actions from load_project_layers_actions signal
+    """
+    actions = load_project_layers_actions.send(user, project=project, app_name=app_name)
+
+    template_actions = []
+    for action in actions:
+        if actions and action[1]:
+            template_actions.append(action[1])
+
+    return template_actions
 
 @register.filter
 def lookup(d, key):
