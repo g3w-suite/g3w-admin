@@ -1253,6 +1253,10 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
 
         # Check the db
         fls = FilterLayerSaved.objects.filter(layer=cities)
+
+        # Invalidate cache
+        self.project310.instance.invalidate_cache()
+
         self.assertEqual(len(fls), 0)
 
         resp = json.loads(self._testApiCall('group-project-map-config',
@@ -2108,6 +2112,9 @@ class QgisTemporalVectorProject(QdjangoTestBase):
         l = self.project_wmst.instance.layer_set.all()[0]
         l.external = True
         l.save()
+
+        # Is necessary invalidate the cache
+        self.project_wmst.instance.invalidate_cache()
 
         response = self.client.get(url)
 
