@@ -460,31 +460,23 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
 
         try:
 
-            # invalidate project cache
-            pre_key = (
+            users = User.objects.all() if user == None else [user]
+
+            # Invalidate project cache
+            pre_keys = (
+                f"{settings.QDJANGO_PRJ_CACHE_KEY}{self.group.slug}_{'qdjango'}_{self.pk}",
                 f"{settings.QDJANGO_PRJ_CACHE_KEY}{self.group.pk}_{'qdjango'}_{self.pk}"
             )
-            if user == None:
 
-                # Invalidate every cache for every user
-                users = User.objects.all()
-                for user in users:
+            # Invalidate every cache for every user
+            users = User.objects.all()
+            for user in users:
+                for pre_key in pre_keys:
                     d = cache.delete(f"{pre_key}_{str(user.pk)}")
                     if d:
                         logger.debug(
                             f"[CACHING /api/config]: Ivalidate key {pre_key}_{str(user.pk)}"
                         )
-            else:
-
-                # Invalidate only for user
-                logger.debug(
-                    f"[CACHING /api/config]: Ivalidate key {pre_key}_{str(user.pk)}"
-                )
-                d = cache.delete(f"{pre_key}_{str(user.pk)}")
-                if d:
-                    logger.debug(
-                        f"[CACHING /api/config]: Ivalidate key {pre_key}_{str(user.pk)}"
-                    )
 
         except Exception as e:
             logger.error(
