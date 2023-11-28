@@ -230,6 +230,332 @@ class EditingViewsTests(ConstraintsTestsBase):
         self.assertFalse(self.test_user4.has_perm('qdjango.delete_feature', cities_layer))
         self.assertFalse(self.test_user4.has_perm('qdjango.change_attr_feature', cities_layer))
 
+    def test_editing_multi_layer_active(self):
+        """ Testing view for activation of editing capability on multi layer """
+
+        # Get qdjango layer instances
+        cities_layer_id = 'cities_54d40b01_2af8_4b17_8495_c5833485536e'
+        cities_layer = self.editing_project.instance.layer_set.get(
+            qgs_layer_id=cities_layer_id)
+
+        # Get layer
+        countries_layer_id = 'countries_63e59c18_a1d0_4e25_968a_ccbaecd11725'
+        countries_layer = self.editing_project.instance.layer_set.get(
+            qgs_layer_id=countries_layer_id)
+
+        # Not activated
+        with self.assertRaises(ObjectDoesNotExist) as ex:
+            G3WEditingLayer.objects.get(layer_id=cities_layer.pk)
+
+        with self.assertRaises(ObjectDoesNotExist) as ex:
+            G3WEditingLayer.objects.get(layer_id=countries_layer.pk)
+
+        # TEST activate/deactivate editing
+        url = reverse('editing-multi-layer-active', args=[
+            self.editing_project.instance.group.slug,
+            'qdjango',
+            self.editing_project.instance.slug
+        ])
+
+        data = {
+            'active': 'on',
+            'layers': [cities_layer.pk, countries_layer.pk],
+            'scale': 10000
+        }
+
+        self.assertTrue(
+            self.client.login(
+                username=self.test_user_admin1.username,
+                password=self.test_user_admin1.username
+            )
+        )
+
+        res = self.client.post(url, data)
+
+        # redirect on ok results
+        self.assertEqual(res.status_code, 302)
+
+        editing_layers = G3WEditingLayer.objects.filter(layer_id__in=[cities_layer.pk, countries_layer.pk])
+        self.assertTrue(len(editing_layers) == 2)
+        self.assertEqual(editing_layers[0].scale, 10000)
+        self.assertEqual(editing_layers[1].scale, 10000)
+
+        # Check ATOMIC permissions
+        # ========================
+
+        # Give permissions to viewers and user_groups viewers
+        assign_perm('view_project', self.test_user3, self.editing_project.instance)
+        assign_perm('view_project', self.test_user_group1, self.editing_project.instance)
+
+        data.update({
+            'viewer_users': [self.test_user3.pk],
+            'user_groups_viewer': [self.test_user_group1.pk]
+        })
+
+        res = self.client.post(url, data)
+
+        # redirect on ok results
+        self.assertEqual(res.status_code, 302)
+
+        # Users
+        self.assertTrue(self.test_user3.has_perm('qdjango.change_layer', cities_layer))
+        self.assertFalse(self.test_user3.has_perm('qdjango.add_feature', cities_layer))
+        self.assertFalse(self.test_user3.has_perm('qdjango.change_feature', cities_layer))
+        self.assertFalse(self.test_user3.has_perm('qdjango.delete_feature', cities_layer))
+        self.assertFalse(self.test_user3.has_perm('qdjango.change_attr_feature', cities_layer))
+
+        self.assertTrue(self.test_user3.has_perm('qdjango.change_layer', countries_layer))
+        self.assertFalse(self.test_user3.has_perm('qdjango.add_feature', countries_layer))
+        self.assertFalse(self.test_user3.has_perm('qdjango.change_feature', countries_layer))
+        self.assertFalse(self.test_user3.has_perm('qdjango.delete_feature', countries_layer))
+        self.assertFalse(self.test_user3.has_perm('qdjango.change_attr_feature', countries_layer))
+
+        # User_groups
+        self.assertTrue(self.test_user4.has_perm('qdjango.change_layer', cities_layer))
+        self.assertFalse(self.test_user4.has_perm('qdjango.add_feature', cities_layer))
+        self.assertFalse(self.test_user4.has_perm('qdjango.change_feature', cities_layer))
+        self.assertFalse(self.test_user4.has_perm('qdjango.delete_feature', cities_layer))
+        self.assertFalse(self.test_user4.has_perm('qdjango.change_attr_feature', cities_layer))
+
+        self.assertTrue(self.test_user4.has_perm('qdjango.change_layer', countries_layer))
+        self.assertFalse(self.test_user4.has_perm('qdjango.add_feature', countries_layer))
+        self.assertFalse(self.test_user4.has_perm('qdjango.change_feature', countries_layer))
+        self.assertFalse(self.test_user4.has_perm('qdjango.delete_feature', countries_layer))
+        self.assertFalse(self.test_user4.has_perm('qdjango.change_attr_feature', countries_layer))
+
+        data.update({
+            'layers': [cities_layer.pk],
+            'viewer_users': [self.test_user3.pk],
+            f'user_add_capability_{self.test_user3.pk}': 'on',
+            f'user_delete_capability_{self.test_user3.pk}': 'on',
+            'user_groups_viewer': [self.test_user_group1.pk],
+            f'group_add_capability_{self.test_user_group1.pk}': 'on',
+            f'group_change_capability_{self.test_user_group1.pk}': 'on',
+        })
+
+        res = self.client.post(url, data)
+
+        # redirect on ok results
+        self.assertEqual(res.status_code, 302)
+
+        # Users
+        self.assertTrue(self.test_user3.has_perm('qdjango.change_layer', cities_layer))
+        self.assertTrue(self.test_user3.has_perm('qdjango.add_feature', cities_layer))
+        self.assertFalse(self.test_user3.has_perm('qdjango.change_feature', cities_layer))
+        self.assertTrue(self.test_user3.has_perm('qdjango.delete_feature', cities_layer))
+        self.assertFalse(self.test_user3.has_perm('qdjango.change_attr_feature', cities_layer))
+
+        self.assertTrue(self.test_user3.has_perm('qdjango.change_layer', countries_layer))
+        self.assertFalse(self.test_user3.has_perm('qdjango.add_feature', countries_layer))
+        self.assertFalse(self.test_user3.has_perm('qdjango.change_feature', countries_layer))
+        self.assertFalse(self.test_user3.has_perm('qdjango.delete_feature', countries_layer))
+        self.assertFalse(self.test_user3.has_perm('qdjango.change_attr_feature', countries_layer))
+
+        # User_groups
+        self.assertTrue(self.test_user4.has_perm('qdjango.change_layer', cities_layer))
+        self.assertTrue(self.test_user4.has_perm('qdjango.add_feature', cities_layer))
+        self.assertTrue(self.test_user4.has_perm('qdjango.change_feature', cities_layer))
+        self.assertFalse(self.test_user4.has_perm('qdjango.delete_feature', cities_layer))
+        self.assertFalse(self.test_user4.has_perm('qdjango.change_attr_feature', cities_layer))
+
+        self.assertTrue(self.test_user4.has_perm('qdjango.change_layer', countries_layer))
+        self.assertFalse(self.test_user4.has_perm('qdjango.add_feature', countries_layer))
+        self.assertFalse(self.test_user4.has_perm('qdjango.change_feature', countries_layer))
+        self.assertFalse(self.test_user4.has_perm('qdjango.delete_feature', countries_layer))
+        self.assertFalse(self.test_user4.has_perm('qdjango.change_attr_feature', countries_layer))
+
+        data = {
+            'layers': [cities_layer.pk, countries_layer.pk],
+            'active': 'on',
+            'scale': 10000,
+            'viewer_users': [self.test_user3.pk],
+            'user_groups_viewer': [self.test_user_group1.pk],
+            f'user_add_capability_{self.test_user3.pk}': 'on',
+            f'user_change_capability_{self.test_user3.pk}': 'on',
+            f'group_add_capability_{self.test_user_group1.pk}': 'on',
+            f'group_changeattributes_capability_{self.test_user_group1.pk}': 'on',
+        }
+
+        res = self.client.post(url, data)
+
+        # redirect on ok results
+        self.assertEqual(res.status_code, 302)
+
+        # Users
+        self.assertTrue(self.test_user3.has_perm('qdjango.change_layer', cities_layer))
+        self.assertTrue(self.test_user3.has_perm('qdjango.add_feature', cities_layer))
+        self.assertTrue(self.test_user3.has_perm('qdjango.change_feature', cities_layer))
+        self.assertFalse(self.test_user3.has_perm('qdjango.delete_feature', cities_layer))
+        self.assertFalse(self.test_user3.has_perm('qdjango.change_attr_feature', cities_layer))
+
+        self.assertTrue(self.test_user3.has_perm('qdjango.change_layer', countries_layer))
+        self.assertTrue(self.test_user3.has_perm('qdjango.add_feature', countries_layer))
+        self.assertTrue(self.test_user3.has_perm('qdjango.change_feature', countries_layer))
+        self.assertFalse(self.test_user3.has_perm('qdjango.delete_feature', countries_layer))
+        self.assertFalse(self.test_user3.has_perm('qdjango.change_attr_feature', countries_layer))
+
+        # User_groups
+        self.assertTrue(self.test_user4.has_perm('qdjango.change_layer', cities_layer))
+        self.assertTrue(self.test_user4.has_perm('qdjango.add_feature', cities_layer))
+        self.assertFalse(self.test_user4.has_perm('qdjango.change_feature', cities_layer))
+        self.assertFalse(self.test_user4.has_perm('qdjango.delete_feature', cities_layer))
+        self.assertTrue(self.test_user4.has_perm('qdjango.change_attr_feature', cities_layer))
+
+        self.assertTrue(self.test_user4.has_perm('qdjango.change_layer', countries_layer))
+        self.assertTrue(self.test_user4.has_perm('qdjango.add_feature', countries_layer))
+        self.assertFalse(self.test_user4.has_perm('qdjango.change_feature', countries_layer))
+        self.assertFalse(self.test_user4.has_perm('qdjango.delete_feature', countries_layer))
+        self.assertTrue(self.test_user4.has_perm('qdjango.change_attr_feature', countries_layer))
+
+        # Deactive editing for countries_layer
+        data = {
+            'layers': [countries_layer.pk],
+        }
+
+        res = self.client.post(url, data)
+
+        # redirect on ok results
+        self.assertEqual(res.status_code, 302)
+
+        editing_layers = G3WEditingLayer.objects.filter(layer_id__in=[cities_layer.pk, countries_layer.pk])
+        self.assertTrue(len(editing_layers) == 1)
+
+        # Users
+        self.assertTrue(self.test_user3.has_perm('qdjango.change_layer', cities_layer))
+        self.assertTrue(self.test_user3.has_perm('qdjango.add_feature', cities_layer))
+        self.assertTrue(self.test_user3.has_perm('qdjango.change_feature', cities_layer))
+        self.assertFalse(self.test_user3.has_perm('qdjango.delete_feature', cities_layer))
+        self.assertFalse(self.test_user3.has_perm('qdjango.change_attr_feature', cities_layer))
+
+        self.assertFalse(self.test_user3.has_perm('qdjango.change_layer', countries_layer))
+        self.assertFalse(self.test_user3.has_perm('qdjango.add_feature', countries_layer))
+        self.assertFalse(self.test_user3.has_perm('qdjango.change_feature', countries_layer))
+        self.assertFalse(self.test_user3.has_perm('qdjango.delete_feature', countries_layer))
+        self.assertFalse(self.test_user3.has_perm('qdjango.change_attr_feature', countries_layer))
+
+        # User_groups
+        self.assertTrue(self.test_user4.has_perm('qdjango.change_layer', cities_layer))
+        self.assertTrue(self.test_user4.has_perm('qdjango.add_feature', cities_layer))
+        self.assertFalse(self.test_user4.has_perm('qdjango.change_feature', cities_layer))
+        self.assertFalse(self.test_user4.has_perm('qdjango.delete_feature', cities_layer))
+        self.assertTrue(self.test_user4.has_perm('qdjango.change_attr_feature', cities_layer))
+
+        self.assertFalse(self.test_user4.has_perm('qdjango.change_layer', countries_layer))
+        self.assertFalse(self.test_user4.has_perm('qdjango.add_feature', countries_layer))
+        self.assertFalse(self.test_user4.has_perm('qdjango.change_feature', countries_layer))
+        self.assertFalse(self.test_user4.has_perm('qdjango.delete_feature', countries_layer))
+        self.assertFalse(self.test_user4.has_perm('qdjango.change_attr_feature', countries_layer))
+
+        # Deactive editing for all 2 layers
+        data = {
+            'layers': [countries_layer.pk, cities_layer.pk],
+        }
+
+        res = self.client.post(url, data)
+
+        # redirect on ok results
+        self.assertEqual(res.status_code, 302)
+
+        editing_layers = G3WEditingLayer.objects.filter(layer_id__in=[cities_layer.pk, countries_layer.pk])
+        self.assertTrue(len(editing_layers) == 0)
+
+        # Users
+        self.assertFalse(self.test_user3.has_perm('qdjango.change_layer', cities_layer))
+        self.assertFalse(self.test_user3.has_perm('qdjango.add_feature', cities_layer))
+        self.assertFalse(self.test_user3.has_perm('qdjango.change_feature', cities_layer))
+        self.assertFalse(self.test_user3.has_perm('qdjango.delete_feature', cities_layer))
+        self.assertFalse(self.test_user3.has_perm('qdjango.change_attr_feature', cities_layer))
+
+        self.assertFalse(self.test_user3.has_perm('qdjango.change_layer', countries_layer))
+        self.assertFalse(self.test_user3.has_perm('qdjango.add_feature', countries_layer))
+        self.assertFalse(self.test_user3.has_perm('qdjango.change_feature', countries_layer))
+        self.assertFalse(self.test_user3.has_perm('qdjango.delete_feature', countries_layer))
+        self.assertFalse(self.test_user3.has_perm('qdjango.change_attr_feature', countries_layer))
+
+        # User_groups
+        self.assertFalse(self.test_user4.has_perm('qdjango.change_layer', cities_layer))
+        self.assertFalse(self.test_user4.has_perm('qdjango.add_feature', cities_layer))
+        self.assertFalse(self.test_user4.has_perm('qdjango.change_feature', cities_layer))
+        self.assertFalse(self.test_user4.has_perm('qdjango.delete_feature', cities_layer))
+        self.assertFalse(self.test_user4.has_perm('qdjango.change_attr_feature', cities_layer))
+
+        self.assertFalse(self.test_user4.has_perm('qdjango.change_layer', countries_layer))
+        self.assertFalse(self.test_user4.has_perm('qdjango.add_feature', countries_layer))
+        self.assertFalse(self.test_user4.has_perm('qdjango.change_feature', countries_layer))
+        self.assertFalse(self.test_user4.has_perm('qdjango.delete_feature', countries_layer))
+        self.assertFalse(self.test_user4.has_perm('qdjango.change_attr_feature', countries_layer))
+
+
+        # Test override of single layer editing property
+        # ----------------------------------------------
+
+        url_single_layer = reverse('editing-layer-active', args=[
+            self.editing_project.instance.group.slug,
+            'qdjango',
+            self.editing_project.instance.slug,
+            cities_layer.pk
+        ])
+
+        data = {
+            'active': 'on',
+            'scale': 10000,
+            'viewer_users': [self.test_user3.pk],
+            f'user_add_capability_{self.test_user3.pk}': 'on',
+            f'user_delete_capability_{self.test_user3.pk}': 'on',
+            'user_groups_viewer': [self.test_user_group1.pk],
+            f'group_add_capability_{self.test_user_group1.pk}': 'on',
+            f'group_change_capability_{self.test_user_group1.pk}': 'on',
+        }
+
+        res = self.client.post(url_single_layer, data)
+
+        # redirect on ok results
+        self.assertEqual(res.status_code, 302)
+
+        # Users
+        self.assertTrue(self.test_user3.has_perm('qdjango.change_layer', cities_layer))
+        self.assertTrue(self.test_user3.has_perm('qdjango.add_feature', cities_layer))
+        self.assertFalse(self.test_user3.has_perm('qdjango.change_feature', cities_layer))
+        self.assertTrue(self.test_user3.has_perm('qdjango.delete_feature', cities_layer))
+        self.assertFalse(self.test_user3.has_perm('qdjango.change_attr_feature', cities_layer))
+
+        # User_groups
+        self.assertTrue(self.test_user4.has_perm('qdjango.change_layer', cities_layer))
+        self.assertTrue(self.test_user4.has_perm('qdjango.add_feature', cities_layer))
+        self.assertTrue(self.test_user4.has_perm('qdjango.change_feature', cities_layer))
+        self.assertFalse(self.test_user4.has_perm('qdjango.delete_feature', cities_layer))
+        self.assertFalse(self.test_user4.has_perm('qdjango.change_attr_feature', cities_layer))
+
+        # Override
+        data = {
+            'active': 'on',
+            'layers': [cities_layer.pk],
+            'scale': 10000,
+            'viewer_users': [self.test_user3.pk],
+            f'user_add_capability_{self.test_user3.pk}': 'on',
+            'user_groups_viewer': [self.test_user_group1.pk],
+            f'group_add_capability_{self.test_user_group1.pk}': 'on',
+        }
+
+        res = self.client.post(url, data)
+
+        # redirect on ok results
+        self.assertEqual(res.status_code, 302)
+
+        # Users
+        self.assertTrue(self.test_user3.has_perm('qdjango.change_layer', cities_layer))
+        self.assertTrue(self.test_user3.has_perm('qdjango.add_feature', cities_layer))
+        self.assertFalse(self.test_user3.has_perm('qdjango.change_feature', cities_layer))
+        self.assertFalse(self.test_user3.has_perm('qdjango.delete_feature', cities_layer))
+        self.assertFalse(self.test_user3.has_perm('qdjango.change_attr_feature', cities_layer))
+
+        # User_groups
+        self.assertTrue(self.test_user4.has_perm('qdjango.change_layer', cities_layer))
+        self.assertTrue(self.test_user4.has_perm('qdjango.add_feature', cities_layer))
+        self.assertFalse(self.test_user4.has_perm('qdjango.change_feature', cities_layer))
+        self.assertFalse(self.test_user4.has_perm('qdjango.delete_feature', cities_layer))
+        self.assertFalse(self.test_user4.has_perm('qdjango.change_attr_feature', cities_layer))
+
     def test_editing_layer_active_logging_fields(self):
         """ Test active logging fields for insert and update """
 
