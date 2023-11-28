@@ -40,7 +40,7 @@ def get_schema_table(datasource_table):
     return schema, table
 
 
-def qgsdatasoruceuri2dict(datasource: str) -> dict:
+def qgsdatasourceuri2dict(datasource: str) -> dict:
     """
     From QgsDatasourceUri to dict
     At now only for postgres type layer
