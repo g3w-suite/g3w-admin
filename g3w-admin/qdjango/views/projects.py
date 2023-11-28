@@ -898,7 +898,7 @@ class FilterByUserLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3WR
             self.layer.project.invalidate_cache()
             logging.getLogger("g3wadmin.debug").debug(
                 f"Qdjango project /api/config  invalidate cache after update of layer filter-by-user: "
-                f"{self.layer.project.project}"
+                f"{self.layer.project}"
             )
 
         return super().form_valid(form)
