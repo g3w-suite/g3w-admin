@@ -606,7 +606,8 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
             'wms_use_layer_ids',
             'qgis_version',
             'toc_layers_init_status',
-            'toc_themes_init_status'
+            'toc_themes_init_status',
+            'wms_getmap_format'
         )
 
 
