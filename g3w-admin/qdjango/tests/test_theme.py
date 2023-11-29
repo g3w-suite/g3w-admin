@@ -134,6 +134,13 @@ class QdjangoThemeTest(QdjangoTestBase):
         self.assertFalse(jres['result'])
         self.assertEqual(jres['error'], f"Themes are not available for project {self.project.instance.title}")
 
+        # Test theme with special characters: :,.,=
+        response = self._testApiCall('qdjango-prjtheme-api',
+                                     args=[self.project.instance.pk, 'Tav.01: streets, points'])
+        jres = json.loads(response.content)
+        self.assertFalse(jres['result'])
+        self.assertEqual(jres['error'], f"Themes are not available for project {self.project.instance.title}")
+
         # Test view not into project
         response = self._testApiCall('qdjango-prjtheme-api',
                                      args=[self.project_theme316.instance.pk, 'Faketheme'])
