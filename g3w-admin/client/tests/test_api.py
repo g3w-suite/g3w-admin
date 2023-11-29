@@ -202,6 +202,7 @@ class ClientApiTest(CoreTestBase):
     def testClientConfigApiView(self):
         """Test call to project config"""
 
+        self.prj_test.invalidate_cache()
         response = self._testApiCall('group-project-map-config', ['gruppo-1', 'qdjango', '1'])
         resp = json.loads(response.content)
 
