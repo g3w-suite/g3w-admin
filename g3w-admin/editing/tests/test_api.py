@@ -1659,8 +1659,6 @@ class ConstraintsApiTests(ConstraintsTestsBase):
         response = client.get(url_layer, {}, format='json')
         self.assertEqual(response.status_code, 200)
 
-        print(json.loads(response.content)['results'])
-
         jcontent = json.loads(response.content)['results']
         self.assertEqual(len(jcontent), 2)
 
