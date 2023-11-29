@@ -16,7 +16,7 @@ from django.conf import settings
 from django.urls import reverse
 from django.test import override_settings
 from django.core.files import File
-from django.core.cache import caches
+from django.core.cache import cache
 from guardian.shortcuts import remove_perm
 from qdjango.models import Project
 from qdjango.utils.data import QgisProject
@@ -75,12 +75,11 @@ class ClientApiTest(CoreTestBase):
         cls.project_print310_1a.group = cls.print_group
         cls.project_print310_1a.save()
 
-        cache_key = settings.QDJANGO_PRJ_CACHE_KEY.format(cls.prj_test.pk)
-        cache = caches['qdjango']
+        cache_key = f"{settings.QDJANGO_PRJ_CACHE_KEY}_capabilities_{cls.prj_test.pk}"
         cache.set(cache_key, open(os.path.join(PROJECTS_PATH, 'getProjectSettings_gruppo-1_un-progetto_qgis310.xml'),
                                   'rb').read())
 
-        cache_key = settings.QDJANGO_PRJ_CACHE_KEY.format(cls.project_print310.instance.pk)
+        cache_key = f"{settings.QDJANGO_PRJ_CACHE_KEY}_capabilities_{cls.project_print310.instance.pk}"
         cache.set(cache_key, open(os.path.join(PROJECTS_PATH, 'getProjectSettings_g3wsuite_project_test_qgis310.xml'),
                                   'rb').read())
 
@@ -459,8 +458,11 @@ class ClientApiTest(CoreTestBase):
         # G3W_CLIENT_NOT_SHOW_EMPTY_VECTORLAYER = False
         # --------------------------------------------
         with self.settings(G3W_CLIENT_NOT_SHOW_EMPTY_VECTORLAYER=False):
-            response = self._testApiCall('group-project-map-config', ['empty_vector_layer_layer_group', 'qdjango',
-                                                                      self.project_extent316_2.instance.pk])
+            response = self._testApiCall('group-project-map-config', [
+                self.project_extent316_2.instance.group.slug,
+                'qdjango',
+                self.project_extent316_2.instance.pk
+            ])
             resp = json.loads(response.content)
             layers = [l['id'] for l in resp['layers']]
 
@@ -471,8 +473,11 @@ class ClientApiTest(CoreTestBase):
         with self.settings(G3W_CLIENT_NOT_SHOW_EMPTY_VECTORLAYER=True):
 
             self.project_extent316_2.instance.invalidate_cache()
-            response = self._testApiCall('group-project-map-config', ['empty_vector_layer_layer_group', 'qdjango',
-                                                                      self.project_extent316_2.instance.pk])
+            response = self._testApiCall('group-project-map-config', [
+                self.project_extent316_2.instance.group.slug,
+                'qdjango',
+                self.project_extent316_2.instance.pk
+            ])
             resp = json.loads(response.content)
             layers = [l['id'] for l in resp['layers']]
 

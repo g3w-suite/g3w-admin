@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.utils.decorators import wraps
 from django.http.response import HttpResponseForbidden
 from django.shortcuts import render
@@ -158,6 +159,11 @@ def cache_page(timeout, key_args, key_prefix="", cache_alias=None):
     def _decorator(view_func):
         @wraps(view_func)
         def _wrapped_view(request, *args, **kwargs):
+
+            # Check if caching is active
+            if not settings.QDJANGO_PRJ_CACHE:
+                return view_func(request, *args, **kwargs)
+
             key = f"{key_prefix}{'_'.join([str(kwargs[k]) for k in key_args]  + [str(request.user.pk)])}"
             logger.debug(f"[CACHING /api/config]: Key {key}")
             response = cache.get(key)
