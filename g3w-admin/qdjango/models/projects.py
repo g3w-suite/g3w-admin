@@ -458,6 +458,10 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
     def invalidate_cache(self, user=None):
         """Method to invalidate(delete) API REST /api/config"""
 
+        # Check if caching is activated
+        if not settings.QDJANGO_PRJ_CACHE:
+            return
+
         try:
 
             users = User.objects.all() if user == None else [user]
@@ -475,7 +479,7 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
                     d = cache.delete(f"{pre_key}_{str(user.pk)}")
                     if d:
                         logger.debug(
-                            f"[CACHING /api/config]: Ivalidate key {pre_key}_{str(user.pk)}"
+                            f"[CACHING /api/config]: Invalidate key {pre_key}_{str(user.pk)}"
                         )
 
         except Exception as e:
