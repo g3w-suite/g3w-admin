@@ -65,6 +65,8 @@ if [ ! -e ${SETUP_DONE_FILE} ]; then
     echo "Installing fixtures ..."
     for FIXTURE in 'BaseLayer.json' 'G3WGeneralDataSuite.json' 'G3WMapControls.json' 'G3WSpatialRefSys.json'; do
         python3 manage.py loaddata  core/fixtures/${FIXTURE}
+        # With v3.7 nominatim mapcontrol canghed to geocoding
+        python3 manage.py dbshell -- -c  "UPDATE mapcontrol SET type = 'geocoding' WHERE type = 'nominatim'"
     done
     # sync menu tree items
     python3 manage.py sitetree_resync_apps

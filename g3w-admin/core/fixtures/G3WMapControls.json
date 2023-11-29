@@ -94,7 +94,7 @@
    "pk": 11,
    "fields": {
       "order": 13,
-      "name": "geocoding",
+      "name": "nominatim",
       "description": ""
    }
 },
