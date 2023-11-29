@@ -16,7 +16,7 @@ from django.conf import settings
 from django.urls import reverse
 from django.test import override_settings
 from django.core.files import File
-from django.core.cache import caches
+from django.core.cache import cache
 from guardian.shortcuts import remove_perm
 from qdjango.models import Project
 from qdjango.utils.data import QgisProject
@@ -75,12 +75,11 @@ class ClientApiTest(CoreTestBase):
         cls.project_print310_1a.group = cls.print_group
         cls.project_print310_1a.save()
 
-        cache_key = settings.QDJANGO_PRJ_CACHE_KEY.format(cls.prj_test.pk)
-        cache = caches['qdjango']
+        cache_key = f"{settings.QDJANGO_PRJ_CACHE_KEY}_capabilities_{cls.prj_test.pk}"
         cache.set(cache_key, open(os.path.join(PROJECTS_PATH, 'getProjectSettings_gruppo-1_un-progetto_qgis310.xml'),
                                   'rb').read())
 
-        cache_key = settings.QDJANGO_PRJ_CACHE_KEY.format(cls.project_print310.instance.pk)
+        cache_key = f"{settings.QDJANGO_PRJ_CACHE_KEY}_capabilities_{cls.project_print310.instance.pk}"
         cache.set(cache_key, open(os.path.join(PROJECTS_PATH, 'getProjectSettings_g3wsuite_project_test_qgis310.xml'),
                                   'rb').read())
 
@@ -202,6 +201,7 @@ class ClientApiTest(CoreTestBase):
     def testClientConfigApiView(self):
         """Test call to project config"""
 
+        self.prj_test.invalidate_cache()
         response = self._testApiCall('group-project-map-config', ['gruppo-1', 'qdjango', '1'])
         resp = json.loads(response.content)
 
@@ -458,8 +458,11 @@ class ClientApiTest(CoreTestBase):
         # G3W_CLIENT_NOT_SHOW_EMPTY_VECTORLAYER = False
         # --------------------------------------------
         with self.settings(G3W_CLIENT_NOT_SHOW_EMPTY_VECTORLAYER=False):
-            response = self._testApiCall('group-project-map-config', ['empty_vector_layer_layer_group', 'qdjango',
-                                                                      self.project_extent316_2.instance.pk])
+            response = self._testApiCall('group-project-map-config', [
+                self.project_extent316_2.instance.group.slug,
+                'qdjango',
+                self.project_extent316_2.instance.pk
+            ])
             resp = json.loads(response.content)
             layers = [l['id'] for l in resp['layers']]
 
@@ -468,8 +471,13 @@ class ClientApiTest(CoreTestBase):
         # G3W_CLIENT_NOT_SHOW_EMPTY_VECTORLAYER = True
         # --------------------------------------------
         with self.settings(G3W_CLIENT_NOT_SHOW_EMPTY_VECTORLAYER=True):
-            response = self._testApiCall('group-project-map-config', ['empty_vector_layer_layer_group', 'qdjango',
-                                                                      self.project_extent316_2.instance.pk])
+
+            self.project_extent316_2.instance.invalidate_cache()
+            response = self._testApiCall('group-project-map-config', [
+                self.project_extent316_2.instance.group.slug,
+                'qdjango',
+                self.project_extent316_2.instance.pk
+            ])
             resp = json.loads(response.content)
             layers = [l['id'] for l in resp['layers']]
 
@@ -503,6 +511,9 @@ class ClientApiTest(CoreTestBase):
     def testClientConfigApiThumbnailView(self):
         """ Test api project config for thumbnail param """
 
+        # Get project instance for invalidate  it
+        #prj = Project.objects.get(pk=1)
+
         response = self._testApiCall('group-project-map-config', ['gruppo-1', 'qdjango', '1'])
         resp = json.loads(response.content)
         self.assertEqual(resp["thumbnail"], '/media/fake/project.png')
@@ -520,6 +531,8 @@ class ClientApiTest(CoreTestBase):
         macrogorup.use_logo_client = True
         macrogorup.save()
 
+        self.prj_test.invalidate_cache()
+
         response = self._testApiCall('group-project-map-config', ['gruppo-1', 'qdjango', '1'])
         resp = json.loads(response.content)
         self.assertEqual(resp["thumbnail"], '/media/fake/macrogroup.png')
@@ -527,6 +540,8 @@ class ClientApiTest(CoreTestBase):
         # Check use_logo_client by group
         self.prj_test.group.use_logo_client = True
         self.prj_test.group.save()
+
+        self.prj_test.invalidate_cache()
 
         response = self._testApiCall('group-project-map-config', ['gruppo-1', 'qdjango', '1'])
         resp = json.loads(response.content)
@@ -576,6 +591,8 @@ class ClientApiTest(CoreTestBase):
         widget.save()
         widget.layers.add(layer)
 
+        self.prj_test.invalidate_cache()
+
         response = self._testApiCall('group-project-map-config', ['gruppo-1', 'qdjango', '1'])
         resp = json.loads(response.content)
 
@@ -621,6 +638,8 @@ class ClientApiTest(CoreTestBase):
         )
         widget.save()
         widget.layers.add(layer)
+
+        self.prj_test.invalidate_cache()
 
         response = self._testApiCall('group-project-map-config', ['gruppo-1', 'qdjango', '1'])
         resp = json.loads(response.content)
@@ -763,6 +782,8 @@ class ClientApiTest(CoreTestBase):
         # remove Countries and Cities for group GU-VIEWER2
         remove_perm('qdjango.view_layer', self.test_gu_viewer2, layer_cities)
         remove_perm('qdjango.view_layer', self.test_gu_viewer2, layer_countries)
+
+        self.project_print310.instance.invalidate_cache()
 
         res = self.client.get(path)
 

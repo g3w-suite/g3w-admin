@@ -17,6 +17,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.signals import post_delete
 from django.utils.translation import ugettext_lazy as _
+from django.core.cache import cache
 from guardian.shortcuts import get_perms
 from guardian.utils import get_anonymous_user
 from model_utils import Choices
@@ -620,6 +621,38 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
             return get_groups_for_object(self, 'view_project', 'viewer')
 
         return super(Project, self).__getattribute__(attr)
+
+    def invalidate_cache(self, user=None):
+        """Method to invalidate(delete) API REST /api/config"""
+
+        # Check if caching is activated
+        if not settings.QDJANGO_PRJ_CACHE:
+            return
+
+        try:
+
+            users = User.objects.all() if user == None else [user]
+
+            # Invalidate project cache
+            pre_keys = (
+                f"{settings.QDJANGO_PRJ_CACHE_KEY}{self.group.slug}_{'qdjango'}_{self.pk}",
+                f"{settings.QDJANGO_PRJ_CACHE_KEY}{self.group.pk}_{'qdjango'}_{self.pk}"
+            )
+
+            # Invalidate every cache for every user
+            users = User.objects.all()
+            for user in users:
+                for pre_key in pre_keys:
+                    d = cache.delete(f"{pre_key}_{str(user.pk)}")
+                    if d:
+                        logger.debug(
+                            f"[CACHING /api/config]: Invalidate key {pre_key}_{str(user.pk)}"
+                        )
+
+        except Exception as e:
+            logger.error(
+                f"[CACHING /api/config] - An error on cache invalidation: {e}"
+            )
 
 
 post_delete.connect(check_overviewmap_project, sender=Project)
