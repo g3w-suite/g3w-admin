@@ -537,7 +537,7 @@ msgid "Project layouts"
 msgstr "Progetti"
 
 #: models/projects.py:263
-msgid "User QGIS project map start extent as webgis init extent"
+msgid "QGIS project extent as initial map extent"
 msgstr ""
 "L'estensione della mappa del progetto QGIS dell'utente inizia come "
 "estensione init di webgis"

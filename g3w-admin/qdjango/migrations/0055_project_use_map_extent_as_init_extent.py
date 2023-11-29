@@ -13,6 +13,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='project',
             name='use_map_extent_as_init_extent',
-            field=models.BooleanField(default=False, verbose_name='User QGIS project map start extent as webgis init extent'),
+            field=models.BooleanField(default=False, verbose_name='QGIS project extent as initial map extent'),
         ),
     ]

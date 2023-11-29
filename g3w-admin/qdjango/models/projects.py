@@ -370,8 +370,9 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
     )
 
     use_map_extent_as_init_extent = models.BooleanField(
-        _('User QGIS project map start extent as webgis init extent'),
-        default=False,
+        _('QGIS project extent as initial map extent'),
+        default=True,
+        help_text='Parse project view settings from provided <code>.qgs</code> file <a href="https://docs.qgis.org/3.28/en/docs/user_manual/introduction/qgis_configuration.html#view-settings" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a>'
     )
 
     is_dirty = models.BooleanField(

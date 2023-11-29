@@ -458,7 +458,7 @@ msgid "Project layouts"
 msgstr "Aspecte de proiect"
 
 #: qdjango/models/projects.py:262
-msgid "User QGIS project map start extent as webgis init extent"
+msgid "QGIS project extent as initial map extent"
 msgstr "Extensia de pornire a hărții de proiect QGIS de utilizator ca extindere de inițializare webgis"
 
 #: qdjango/models/projects.py:265

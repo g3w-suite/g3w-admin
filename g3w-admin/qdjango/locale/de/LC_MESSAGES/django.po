@@ -445,7 +445,7 @@ msgid "Project layouts"
 msgstr ""
 
 #: qdjango/models/projects.py:262
-msgid "User QGIS project map start extent as webgis init extent"
+msgid "QGIS project extent as initial map extent"
 msgstr ""
 
 #: qdjango/models/projects.py:265
