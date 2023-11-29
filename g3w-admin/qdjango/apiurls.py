@@ -298,7 +298,7 @@ urlpatterns = [
         name='qdjango-asgeotiff-api'
     ),
     re_path(
-        r'^api/prjtheme/(?P<project_id>\d+)/(?P<theme_name>[-_\w\d\s]+)/$',
+        r'^api/prjtheme/(?P<project_id>\d+)/(?P<theme_name>[-_\w\d\s:.=,]+)/$',
         QdjangoPrjThemeAPIview.as_view(),
         name='qdjango-prjtheme-api'
     ),
