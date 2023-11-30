@@ -3,20 +3,20 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-05-02 05:55+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"PO-Revision-Date: 2023-11-30 12:06+0100\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 3.4.1\n"
 
 #: core/admin.py:16
 msgid "Basic settings"
@@ -36,7 +36,7 @@ msgstr "Configurazioni accessorie"
 
 #: core/api/base/views.py:143
 msgid "Data are not correct or insufficent!"
-msgstr "I dati non sono corretti o insufficenti"
+msgstr "I dati non sono corretti o insufficienti!"
 
 #: core/api/base/views.py:149
 msgid "A error server is occured!"
@@ -52,23 +52,23 @@ msgstr "Permesso negato"
 
 #: core/api/views.py:39
 msgid "Expression evaluation error."
-msgstr ""
+msgstr "Errore nella valutazione dell'espressione."
 
 #: core/api/views.py:44
 msgid "Expression parse error."
-msgstr ""
+msgstr "Errore di analisi dell'espressione."
 
 #: core/api/views.py:50
 msgid "Expression empty error."
-msgstr ""
+msgstr "Errore di espressione vuota."
 
 #: core/api/views.py:56
 msgid "Expression form data error."
-msgstr ""
+msgstr "Errore nei dati del modulo di espressione."
 
 #: core/api/views.py:62
 msgid "Layer error."
-msgstr ""
+msgstr "Errore sul layer."
 
 #: core/configs.py:11
 msgid "Search"
@@ -120,19 +120,15 @@ msgstr "Dati social media"
 
 #: core/forms.py:297
 msgid "Map client data"
-msgstr ""
+msgstr "Dati del client di mappa"
 
 #: core/forms.py:323
-#, fuzzy
-#| msgid "Editor user"
 msgid "Editor users"
-msgstr "Utente Editor"
+msgstr "Utenti Editor"
 
 #: core/forms.py:341
-#, fuzzy
-#| msgid "Users"
 msgid "ACL Users"
-msgstr "Utenti"
+msgstr "ACL Utenti"
 
 #: core/forms.py:371
 msgid ""
@@ -214,6 +210,9 @@ msgid ""
 "As for MacroGroup options is possible to use current logo group as client "
 "logo, if MacroGroup option is active this options takes precendence"
 msgstr ""
+"Per quanto riguarda le opzioni MacroGruppo è possibile utilizzare il logo "
+"del gruppo corrente come logo del client, se l'opzione MacroGruppo è attiva "
+"questa opzione ha la precedenza"
 
 #: core/models.py:400 core/templates/core/group_form.html:11
 msgid "Group"
@@ -268,8 +267,6 @@ msgid "Groups map description"
 msgstr "Descrizione pagina gruppi cartografici"
 
 #: core/models.py:420
-#, fuzzy
-#| msgid "About title"
 msgid "Login title"
 msgstr "Titolo sezione 'Il progetto'"
 
@@ -282,10 +279,8 @@ msgid "Suite logo"
 msgstr "Logo del progetto"
 
 #: core/models.py:423
-#, fuzzy
-#| msgid "Suite logo"
 msgid "Suite logo URL"
-msgstr "Logo del progetto"
+msgstr "URL del logo della suite"
 
 #: core/models.py:426
 msgid "Credits"
@@ -293,7 +288,7 @@ msgstr ""
 
 #: core/models.py:429
 msgid "Main map title"
-msgstr ""
+msgstr "Titolo principale della mappa"
 
 #: core/models.py:431
 msgid "Facebook link"
@@ -333,11 +328,11 @@ msgstr "Accesso negato"
 
 #: core/templates/core/403_MGC.html:17
 msgid "You can't add new Group"
-msgstr "Non puoi aggiungere un nuovo gruppo"
+msgstr "Non puoi aggiungere un nuovo Gruppo"
 
 #: core/templates/core/403_MPC.html:17
 msgid "You can't add new Project"
-msgstr "Non puoi aggiungere un nuovo progetto"
+msgstr "Non puoi aggiungere un nuovo Progetto"
 
 #: core/templates/core/ajax/group_detail.html:5
 msgid "Geografic component"
@@ -373,11 +368,11 @@ msgstr "Mappa di riferimento"
 
 #: core/templates/core/ajax/group_detail.html:14
 msgid "Panoramic max scale"
-msgstr ""
+msgstr "Scala massima della mappa panoramica"
 
 #: core/templates/core/ajax/group_detail.html:15
 msgid "Panoramic min scale"
-msgstr ""
+msgstr "Scala minima della mappa panoramica"
 
 #: core/templates/core/ajax/group_detail.html:18
 msgid "Users"
@@ -449,10 +444,8 @@ msgstr ""
 
 #: core/templates/core/ajax/macrogroup_detail.html:11
 #: core/templates/core/macrogroup_list_table.html:29
-#, fuzzy
-#| msgid "Group"
 msgid "Groups"
-msgstr "Gruppo"
+msgstr "Gruppi"
 
 #: core/templates/core/django_file_form/upload_template.html:5
 msgid "Drop files here to upload"
@@ -547,8 +540,6 @@ msgstr ""
 "contenuti!"
 
 #: core/templates/core/include/add_project.html:4
-#, fuzzy
-#| msgid "Add new project"
 msgid "Add project"
 msgstr "Aggiungi un nuovo progetto"
 
@@ -577,10 +568,8 @@ msgid "Redo/Back"
 msgstr "Annulla/indietro"
 
 #: core/templates/core/macrogroup_form.html:10
-#, fuzzy
-#| msgid "Group"
 msgid "Macro Group"
-msgstr "Gruppo"
+msgstr "Macro Gruppo"
 
 #: core/templates/core/macrogroup_form.html:24
 msgid "Current groups"
@@ -589,16 +578,12 @@ msgstr "Gruppi cartografici"
 #: core/templates/core/macrogroup_list.html:10
 #: core/templates/core/macrogroup_list_table.html:10
 #: core/templates/core/search/macrogroup.html:8
-#, fuzzy
-#| msgid "Cartographic groups"
 msgid "Cartographic macro groups"
-msgstr "Gruppi cartografici"
+msgstr "Macro Gruppi cartografici"
 
 #: core/templates/core/macrogroup_list_table.html:21
-#, fuzzy
-#| msgid "Cartographic groups"
 msgid "Macro group"
-msgstr "Gruppi cartografici"
+msgstr "Macro Gruppo cartografico"
 
 #: core/templates/core/tags/add_layer.html:3
 msgid "Layer"
@@ -610,7 +595,7 @@ msgstr "Progetto"
 
 #: core/utils/data.py:24
 msgid "[{} error on {}({})]-- {}"
-msgstr ""
+msgstr "[{} errore su {}({})]-- {}"
 
 #: core/utils/forms.py:23
 msgid "Default base layer"
@@ -618,27 +603,27 @@ msgstr "Layer base di default"
 
 #: core/utils/forms.py:50
 msgid "MACRO Groups"
-msgstr ""
+msgstr "Macro Gruppi"
 
 #: core/utils/qgisapi.py:458
 msgid "Function \"{}\" is not allowed for security reasons!"
-msgstr ""
+msgstr "La funzione \"{}\" non è consentita per motivi di sicurezza!"
 
 #: core/utils/qgisapi.py:463
 msgid "Variable \"{}\" is not allowed for security reasons!"
-msgstr ""
+msgstr "La variabile \"{}\" non è consentita per motivi di sicurezza!"
 
 #: core/utils/qgisapi.py:475
 msgid "QGIS layer with id \"{}\" could not be found!"
-msgstr ""
+msgstr "Impossibile trovare il layer QGIS con ID \"{}\"!"
 
 #: core/utils/qgisapi.py:487
 msgid "QDjango project with id \"{}\" could not be found!"
-msgstr ""
+msgstr "Impossibile trovare il progetto QDjango con ID \"{}\"!"
 
 #: core/utils/qgisapi.py:497
 msgid "A valid QGIS layer is required to process form data!"
-msgstr ""
+msgstr "Per elaborare i dati del modulo è necessario un layer QGIS valido!"
 
 #: core/utils/structure.py:183
 msgid "Yes"
