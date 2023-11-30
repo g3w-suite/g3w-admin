@@ -407,7 +407,7 @@ msgstr "ACL Utenti"
 #: views.py:261
 #, python-format
 msgid "No %(verbose_name)s found matching the query"
-msgstr "Nessun %(verbose_name) trovato corrispondente alla query"
+msgstr "Nessun %(verbose_name)s trovato corrispondente alla query"
 
 #: views.py:410
 msgid "Username recovery"
