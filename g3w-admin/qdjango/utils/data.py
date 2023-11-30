@@ -1475,7 +1475,8 @@ class QgisProject(XmlData):
                     'multilayer_query',
                     'multilayer_querybybbox',
                     'multilayer_querybypolygon',
-                    'autozoom_query'
+                    'autozoom_query',
+                    'geocoding_providers'
                 ):
                     if kwargs.get(p):
                         data[p] = kwargs.get(p)
