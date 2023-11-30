@@ -3,68 +3,60 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-29 08:32+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"POT-Creation-Date: 2023-11-30 11:10+0000\n"
+"PO-Revision-Date: 2023-11-30 12:25+0100\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-
-#: forms.py:103
-#, fuzzy
-#| msgid "Editor user"
-msgid "Editor1 user"
-msgstr "Utente editor"
+"X-Generator: Poedit 3.4.1\n"
 
 #: forms.py:104
+msgid "Editor1 user"
+msgstr "Utente Editor1"
+
+#: forms.py:105
 msgid "Set Editor Level 1 owner"
-msgstr ""
+msgstr "Imposta  il proprietario dell'Editor1"
 
-#: forms.py:107
-#, fuzzy
-#| msgid "Editor user"
+#: forms.py:108
 msgid "Editor2 user"
-msgstr "Utente editor"
+msgstr "Utente Editor2"
 
-#: forms.py:110
+#: forms.py:111
 msgid "Viewer users"
-msgstr "Utenti viewers"
+msgstr "Utenti Viewers"
 
-#: forms.py:117
-#, fuzzy
-#| msgid "Editor user"
+#: forms.py:118
 msgid "Editor user groups"
-msgstr "Utente editor"
+msgstr "Gruppi di utenti Editor"
 
-#: forms.py:124
-#, fuzzy
-#| msgid "Viewer users"
+#: forms.py:125
 msgid "Viewer user groups"
-msgstr "Utenti viewers"
+msgstr "Gruppi di utenti Viewer"
 
-#: forms.py:130
+#: forms.py:131
 msgid "Propagate <b>NEW</b> viewers and new viewers user groups permissions"
 msgstr ""
 "Propaga i permessi dei <b>NUOVI</b> utenti viewer e gruppi di utenti viewer "
 "aggiunti"
 
-#: forms.py:301
+#: forms.py:302
 msgid "Select roles for this user"
 msgstr "Seleziona i gruppi principali per questo utente"
 
-#: forms.py:302
+#: forms.py:303
 msgid "Main roles"
 msgstr "Ruoli principali"
 
-#: forms.py:309
+#: forms.py:310
 #, fuzzy
 #| msgid ""
 #| "Select <b>EDITOR groups</b> for this user, <u>only <b>Editor Level 2</b> "
@@ -75,11 +67,11 @@ msgstr ""
 "Seleziona un <b>EDITOR groups</b> per questo utente, <u>solo se l'utente è "
 "un <b>Editor Level 2</b></u>"
 
-#: forms.py:310
+#: forms.py:311
 msgid "User editor groups"
 msgstr ""
 
-#: forms.py:317
+#: forms.py:318
 #, fuzzy
 #| msgid ""
 #| "Select <b>VIEWER groups</b> for this user, <u>only <b>Viewer Level 1</b> "
@@ -90,77 +82,91 @@ msgstr ""
 "Seleziona un <b>VIEWER groups</b> per questo utente, <u>solo se l'utente è "
 "un <b>Viewer Level 1</b></u>"
 
-#: forms.py:318
+#: forms.py:319
 msgid "User viewer groups"
-msgstr ""
+msgstr "Gruppi di utenti viewers"
 
-#: forms.py:358
+#: forms.py:362
 msgid "Anagraphic"
 msgstr "Anagrafica"
 
-#: forms.py:377
+#: forms.py:381
 msgid "ACL/Roles"
 msgstr "ACL/Ruoli"
 
-#: forms.py:396
+#: forms.py:400
 msgid "Login data"
 msgstr "Dati di accesso"
 
-#: forms.py:414
+#: forms.py:418
 msgid "User data"
 msgstr "Dati utente"
 
-#: forms.py:441
-#, fuzzy
-#| msgid "User"
+#: forms.py:445
 msgid "User backend"
-msgstr "Utente"
+msgstr "Backend utente"
 
-#: forms.py:612
+#: forms.py:616
 msgid "User can't be Editor level 1 and at same time Editor level 2"
 msgstr ""
 "L'utente non può essere allo stesso tempo Editor level 1 e Editor level 2</b>"
 
-#: forms.py:626
+#: forms.py:630
 msgid "User can't belong a **editor groups** if he isn't a Editor level 2"
 msgstr ""
 "L'utente non può appartenere ad un edito group se non è  un Editor level 2</"
 "b>"
 
-#: forms.py:640
+#: forms.py:644
 msgid "User can't belong a **viewer groups** if he isn't a Viewer level 1"
 msgstr ""
 "L'utente non può appartenere a un viewer group se non è un Viewer level 1</b>"
 
-#: forms.py:658
+#: forms.py:662
 msgid "Avatar is no a valid image"
 msgstr "Questo avatar non è una immagine"
 
-#: forms.py:687
+#: forms.py:675 forms.py:906
+msgid "A user with that email already exists."
+msgstr "Un utente con la stessa email è già presente."
+
+#: forms.py:705
 msgid "Password"
 msgstr ""
 
-#: forms.py:689
+#: forms.py:707
 msgid "Password confirmation"
 msgstr "Conferma password"
 
-#: forms.py:691
+#: forms.py:709
 msgid "Enter the same password as above, for verification."
-msgstr "Inserisci la stessa passoword indicata sopra per verifica"
+msgstr "Inserisci la stessa passoword indicata sopra per verifica."
 
-#: forms.py:717 templates/usersmanage/user_group_list.html:29
-#, fuzzy
-#| msgid "ACL/Roles"
+#: forms.py:762 templates/usersmanage/user_group_list.html:29
 msgid "Role"
-msgstr "ACL/Ruoli"
+msgstr "Ruolo"
 
-#: forms.py:731 templates/usersmanage/ajax/user_group_detail.html:5
+#: forms.py:763 templates/usersmanage/user_group_list.html:30
+#: templates/usersmanage/user_list.html:10
+msgid "Users"
+msgstr "Utenti"
+
+#: forms.py:779 templates/usersmanage/ajax/user_group_detail.html:5
 msgid "Group"
 msgstr "Gruppo"
 
-#: forms.py:811 models.py:22
+#: forms.py:816
+#, python-brace-format
+msgid "User {user} has not role {cop_role}"
+msgstr "L'utente {user} non il ruolo {cop_role}"
+
+#: forms.py:886 models.py:22
 msgid "Other informations"
-msgstr ""
+msgstr "Altre informazioni"
+
+#: forms.py:922
+msgid "No user is available with this email."
+msgstr "Nessun utente è disponibile con questa  email."
 
 #: models.py:21
 msgid "Avatar"
@@ -174,11 +180,13 @@ msgstr "Utente registrato"
 msgid "User activated by administrator"
 msgstr "Utente attivato dall'amministratore"
 
-#: models.py:57
-#, fuzzy
-#| msgid "Group"
+#: models.py:26
+msgid "User changed password at first login"
+msgstr "L'utente ha cambiato la password al primo accesso"
+
+#: models.py:59
 msgid "Group role"
-msgstr "Gruppo"
+msgstr "Ruolo del gruppo"
 
 #: templates/django_registration/activated_by_admin_email_body.txt:2
 #: templates/django_registration/activation_email_body.txt:2
@@ -206,7 +214,8 @@ msgid ""
 "a new user has registered, to activate the new user, follow or copy the link "
 "in your browser"
 msgstr ""
-"un nuovo utente si è registrato, per attivarlo segui o copia il seguente link su tuo browser"
+"un nuovo utente si è registrato, per attivarlo segui o copia il seguente "
+"link su tuo browser"
 
 #: templates/django_registration/activation_admin_email_subject.txt:2
 msgid "New registration by"
@@ -229,13 +238,16 @@ msgid ""
 "please got to the following link or copy it and paste in you browser to "
 "activate your account and validate your email"
 msgstr ""
-"per favore segui o copia il segutne link dentro al tuo browser per"
-"attivare il tuo account e validare la tua email"
-
+"per favore segui o copia il segutne link dentro al tuo browser perattivare "
+"il tuo account e validare la tua email"
 
 #: templates/django_registration/activation_email_body.txt:8
-msgid "The link will be active for {{ expiration_days }} days"
+msgid "The link will be active for"
 msgstr "Il link sarà attivo per {{ expiration_days }} giorni"
+
+#: templates/django_registration/activation_email_body.txt:8
+msgid "days"
+msgstr "giorni"
 
 #: templates/django_registration/activation_email_subject.txt:2
 msgid "active your account"
@@ -266,8 +278,8 @@ msgid ""
 "        "
 msgstr ""
 "\n"
-"            La tua registrazione sarà esaminata dagli amministratori, una volta che "
-"il tuo account\n"
+"            La tua registrazione sarà esaminata dagli amministratori, una "
+"volta che il tuo account\n"
 "            è attivo riceverai una email di conferma attivazione.\n"
 "        "
 
@@ -283,11 +295,11 @@ msgstr ""
 "validare la tua email.\n"
 "        "
 
-#: templates/django_registration/registration_form.html:14
+#: templates/django_registration/registration_form.html:17
 msgid "ERROR"
 msgstr "ERRORE"
 
-#: templates/django_registration/registration_form.html:84
+#: templates/django_registration/registration_form.html:78
 msgid "Sign Up"
 msgstr "Registrati"
 
@@ -301,16 +313,16 @@ msgid "System users"
 msgstr "Utenti di sistema"
 
 #: templates/usersmanage/user_form.html:96
-#: templates/usersmanage/user_group_form.html:20
+#: templates/usersmanage/user_group_form.html:67
 msgid "Alert"
 msgstr "Attenzione"
 
 #: templates/usersmanage/user_form.html:97
-#: templates/usersmanage/user_group_form.html:21
+#: templates/usersmanage/user_group_form.html:68
 msgid "Some errors on form. Check it and send again."
 msgstr "Si sono verificati alcuni errori. Controlla e reinvia."
 
-#: templates/usersmanage/user_group_form.html:9
+#: templates/usersmanage/user_group_form.html:56
 #, fuzzy
 #| msgid "System users"
 msgid "System user groups"
@@ -318,14 +330,12 @@ msgstr "Utenti di sistema"
 
 #: templates/usersmanage/user_group_list.html:10
 #: templates/usersmanage/user_list.html:31
-#, fuzzy
-#| msgid "Users"
 msgid "User groups"
-msgstr "Utenti"
+msgstr "Gruppi di utenti"
 
 #: templates/usersmanage/user_group_list.html:20
 msgid "User group"
-msgstr ""
+msgstr "Gruppo di utenti"
 
 #: templates/usersmanage/user_group_list.html:27
 #: templates/usersmanage/user_list.html:27
@@ -334,17 +344,12 @@ msgstr "Azioni"
 
 #: templates/usersmanage/user_group_list.html:28
 msgid "Name"
-msgstr ""
-
-#: templates/usersmanage/user_group_list.html:30
-#: templates/usersmanage/user_list.html:10
-msgid "Users"
-msgstr "Utenti"
+msgstr "Nome"
 
 #: templates/usersmanage/user_group_list.html:31
 #: templates/usersmanage/user_list.html:44
 msgid "Created"
-msgstr ""
+msgstr "Creato"
 
 #: templates/usersmanage/user_group_list.html:39
 #: templates/usersmanage/user_list.html:57
@@ -368,16 +373,12 @@ msgid "Username"
 msgstr "Utente"
 
 #: templates/usersmanage/user_list.html:30
-#, fuzzy
-#| msgid "ACL/Roles"
 msgid "Roles"
-msgstr "ACL/Ruoli"
+msgstr "Ruoli"
 
 #: templates/usersmanage/user_list.html:33
-#, fuzzy
-#| msgid "Users"
 msgid " Macro groups"
-msgstr "Utenti"
+msgstr "Macro gruppi "
 
 #: templates/usersmanage/user_list.html:38
 msgid "Superuser"
@@ -403,7 +404,15 @@ msgstr ""
 msgid "ACL Users"
 msgstr "ACL Utenti"
 
-#: views.py:233
+#: views.py:261
 #, python-format
 msgid "No %(verbose_name)s found matching the query"
-msgstr ""
+msgstr "Nessun %(verbose_name)s trovato corrispondente alla query"
+
+#: views.py:410
+msgid "Username recovery"
+msgstr "Recupero utente"
+
+#: views.py:417
+msgid "Username sent"
+msgstr "Utente inviato"
