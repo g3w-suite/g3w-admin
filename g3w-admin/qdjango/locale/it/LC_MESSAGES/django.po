@@ -1073,11 +1073,11 @@ msgstr "è incorporato nel progetto"
 
 #: templates/qdjango/layer_actions/filter_by_user.html:5
 msgid "Hide layer by Users/Groups"
-msgstr "Nascondi il layer per Utenti/ Gruppi di utenti"
+msgstr "Nascondi layer per Utenti/Gruppi di utenti"
 
 #: templates/qdjango/layer_actions/filter_by_user.html:7
 msgid "Hide layer by User/Groups"
-msgstr "Nascondi il layer per Utenti/ Gruppi di utenti"
+msgstr "Nascondi layer per Utenti/Gruppi di utenti"
 
 #: templates/qdjango/layer_actions/fitler_by_user_layer_form.html:7
 #: templates/qdjango/message/form.html:27
@@ -1166,7 +1166,7 @@ msgstr "Constraint di espressioni alfanumeriche e di QGIS per Utente/gruppi"
 
 #: templates/qdjango/layers_list.html:190
 msgid "Hide columns by Users/Groups"
-msgstr "Gruppi utenti viewer"
+msgstr "Nascondi colonne per Utenti/Gruppi di utenti"
 
 #: templates/qdjango/layers_list.html:201
 msgid "Widgets list"
