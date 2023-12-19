@@ -25,6 +25,7 @@ class QdjangoProjectAuthorizer(object):
             try:
                 ba = BasicAuthentication()
                 user, other = ba.authenticate(self.request)
+                self.request.user = user
                 return user.has_perm('qdjango.view_project', self.project)
             except Exception as e:
                 print(e)
