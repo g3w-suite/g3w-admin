@@ -9,7 +9,7 @@ from django.shortcuts import get_object_or_404
 from django.apps import apps
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from guardian.exceptions import GuardianError
-from guardian.utils import get_40x_or_None
+from guardian.utils import get_40x_or_None, get_anonymous_user
 
 import logging
 
@@ -164,7 +164,12 @@ def cache_page(timeout, key_args, key_prefix="", cache_alias=None):
             if not settings.QDJANGO_PRJ_CACHE:
                 return view_func(request, *args, **kwargs)
 
-            key = f"{key_prefix}{'_'.join([str(kwargs[k]) for k in key_args]  + [str(request.user.pk)])}"
+            if request.user.is_anonymous:
+                user_pk =  get_anonymous_user().pk
+            else:
+                user_pk = request.user.pk
+
+            key = f"{key_prefix}{'_'.join([str(kwargs[k]) for k in key_args]  + [str(user_pk)])}"
             logger.debug(f"[CACHING /api/config]: Key {key}")
             response = cache.get(key)
             if not response:
