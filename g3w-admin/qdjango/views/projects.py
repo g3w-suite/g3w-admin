@@ -615,6 +615,13 @@ class QdjangoLayerDataView(G3WGroupViewMixin, QdjangoProjectViewMixin, View):
         if 'external' in request.POST:
             layer.external = int(request.POST['external'])
         layer.save()
+
+        # Invalidate project cache
+        layer.project.invalidate_cache()
+        logging.getLogger("g3wadmin.debug").debug(
+            f"Qdjango project /api/config invalidate cache after update layer data: {layer.project}"
+        )
+
         return JsonResponse({'Saved': 'ok'})
 
 
