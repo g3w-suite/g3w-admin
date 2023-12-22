@@ -1,0 +1,15 @@
+{% load i18n %}
+{% load static %}
+
+{% if as_col %}
+<span class="col-xs-1 icon">
+{% endif %}
+<a class="layer-action" {% if active %}style="color: orangered;"{% endif %} data-toggle="tooltip" title="{% trans 'Mapproxy layer' %}" data-widget-type="ajaxForm"
+   data-form-url="{% url 'mapproxy-layer-active' layer.project.group.slug layer.project.slug layer.id %}"
+   data-modal-title="{{ layer.name }}: {% trans 'Cache Layer with MapProxy' %}">
+    <i class="fa fa-database"></i>
+</a>
+{% if as_col %}
+</span>
+<span class="label label-info col-xs-1"></span>
+{% endif %}

@@ -69,7 +69,10 @@ def project_type_permission_required(perm, lookup_variables=None, **kwargs):
             if lookup_variables:
                 project_type, project_key = lookup_variables[0], lookup_variables[1]
                 project_key_value = kwargs[project_key]
-                project_type_value = kwargs[project_type]
+                try:
+                    project_type_value = kwargs[project_type]
+                except KeyError:
+                    project_type_value = 'qdjango'
                 # Parse model
                 if project_type_value in settings.G3WADMIN_PROJECT_APPS:
                     model = apps.get_model(project_type_value, "Project")

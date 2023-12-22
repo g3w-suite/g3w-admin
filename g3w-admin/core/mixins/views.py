@@ -66,7 +66,10 @@ class G3WProjectViewMixin(object):
         """Populate group attribute."""
 
         if not self.projectModel:
-            self.app_name = kwargs['project_type']
+            try:
+                self.app_name = kwargs['project_type']
+            except KeyError:
+                self.app_name = 'qdjango'
             self.projectModel = apps.get_app_config(self.app_name).get_model('project')
 
         self.project_slug = kwargs.get('project_slug')

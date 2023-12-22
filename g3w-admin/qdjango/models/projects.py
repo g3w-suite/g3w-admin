@@ -626,6 +626,7 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
         """Method to invalidate(delete) API REST /api/config"""
 
         # Check if caching is activated
+        # TODO: remove this check and implement something more generic
         if not settings.QDJANGO_PRJ_CACHE:
             return
 
