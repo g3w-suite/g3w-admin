@@ -500,6 +500,11 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
         return fields
 
     def filterFieldsByRoles(self, **kwargs):
+
+        # When a module that provides a new user backend (i.e. authldap module) is added to G3W-SUITE
+        # is necessary declare again the choices of 'backend' field
+        self.fields['backend'].choices = USER_BACKEND_TYPES
+
         if self.request.user.is_superuser:
             if not self.request.user.is_staff:
                 self.fields.pop('is_staff')
