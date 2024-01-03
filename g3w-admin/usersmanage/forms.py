@@ -353,6 +353,10 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
         self.helper = FormHelper(self)
         self.helper.form_tag = False
 
+        # When a module that provides a new user backend (i.e. authldap module) is added to G3W-SUITE
+        # is necessary declare again the choices of 'backend' field
+        self.fields['backend'].choices = USER_BACKEND_TYPES
+
         args =[
             Div(
                 Div(
