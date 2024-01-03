@@ -232,7 +232,7 @@ class QgisEditTypeRelationReference(QgisEditTypeValueMap):
             'loading': {
                 'state': None
             },
-            'filter_expression': self.FilterExpression,
+            'filter_expression': self.FilterExpression if hasattr(self, 'FilterExpression') else None,
             'chain_filters': self.ChainFilters,
             'filter_fields': self.FilterFields
         })
