@@ -533,6 +533,12 @@ class BaseVectorApiView(G3WAPIView):
                         req.user = request.user
                         req.resolver_match = resolve(url)
                         req.GET['unique'] = r_pvalue
+
+                        # Add ffield if exists
+                        # 'ffield' is a proxy parameter for /vector/api/data filter parameter 'field'
+                        if 'ffield' in request.query_params:
+                            req.GET['field'] = request.query_params.get('ffield')
+
                         view = LayerVectorView.as_view()
                         res = view(req, *[], **kwargs).render()
                         uniques = json.loads(res.content)['data']
