@@ -22,9 +22,9 @@ configurations, is must be readable and writeable by Django.
 `MAPPROXY_SERVER_URL` this is required to construct the URL for the base TMS layers, it must be
 the full domain name (e.g "https://www.mydomain.com/mapproxy") of the mapproxy server.
 
-## Deployment
+## Testing
 
-To start the server you can use the following method:
+To start the MapProxy server for testing you can use the following method:
 
 1. change to the directory configured in `MAPPROXY_BRIDGE_SHARED_FOLDER_PATH`
 2. create a script:
