@@ -371,7 +371,7 @@ class Project(G3WProjectMixins, G3WACLModelMixins, TimeStampedModel):
     )
 
     use_map_extent_as_init_extent = models.BooleanField(
-        _('User QGIS project map start extent as webgis init extent'),
+        _('Use QGIS project map start extent as webgis init extent'),
         default=False,
     )
 
