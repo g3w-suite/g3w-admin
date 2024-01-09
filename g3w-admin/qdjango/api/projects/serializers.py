@@ -606,6 +606,13 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
                 'slug': instance.slug
             })
 
+        # add layers url if user has grant
+        if self.request.user.has_perm('qdjango.change_project', instance):
+            ret['layers_url'] = reverse('qdjango-project-layers-list', kwargs={
+                'group_slug': instance.group.slug,
+                'project_slug': instance.slug
+            })
+
         return ret
 
     class Meta:
