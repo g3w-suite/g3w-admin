@@ -599,10 +599,12 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         # reset tokenfilter by session
         self.reset_filtertoken()
 
-        ret['edit_url'] = reverse('qdjango-project-update', kwargs={
-            'group_slug': instance.group.slug,
-            'slug': instance.slug
-        })
+        # add edit url if user has grant
+        if self.request.user.has_perm('qdjango.change_project', instance):
+            ret['edit_url'] = reverse('qdjango-project-update', kwargs={
+                'group_slug': instance.group.slug,
+                'slug': instance.slug
+            })
 
         return ret
 
