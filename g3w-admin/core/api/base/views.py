@@ -373,6 +373,9 @@ class BaseVectorApiView(G3WAPIView):
         self.set_metadata_layer(request, **kwargs)
 
         self.metadata_relations = dict()
+
+        # Before read every relation in the project to avoid to call ita again in a recursive call
+        self.set_relations()
         self.set_metadata_relations(request, **kwargs)
 
     def _get_pk_field_name(self):
