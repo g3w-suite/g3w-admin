@@ -42,7 +42,7 @@ def mapproxy_layer_action(sender, **kwargs):
 
         # add if is active
         try:
-            G3WMapproxyLayer.objects.get(app_name=kwargs['app_name'], layer_id=kwargs['layer'].pk)
+            G3WMapproxyLayer.objects.get(layer_id=kwargs['layer'].pk)
             kwargs['active'] = True
         except:
             kwargs['active'] = False
@@ -53,7 +53,7 @@ def mapproxy_layer_action(sender, **kwargs):
         if hasattr(app_configs, 'MAPPROXY_LAYER_ACTION'):
             kwargs.update(app_configs.MAPPROXY_LAYER_ACTION)
 
-        template = loader.get_template('mapproxy/layer_action.html')
+        template = loader.get_template('qmapproxy/layer_action.html')
         return template.render(kwargs)
 
 
