@@ -40,7 +40,7 @@ def upsert_cached_layer(mapproxy_layer):
     has_localgrid = srs not in ['EPSG:900913', 'EPSG:4326', 'EPSG:3857']
 
     # Load template from file
-    template = loader.get_template('mapproxy/mapproxy_conf.yaml')
+    template = loader.get_template('qmapproxy/mapproxy_conf.yaml')
     context = {
         'layer': layer,
         'ows_url': settings.QDJANGO_SERVER_URL + reverse('OWS:ows', args=[layer.project.group.slug, 'qdjango', layer.project_id]),

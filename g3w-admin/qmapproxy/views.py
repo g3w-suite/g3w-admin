@@ -40,7 +40,7 @@ class ActiveMapproxyLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3
     """
 
     form_class = ActiveMapproxyLayerForm
-    template_name = 'mapproxy/mapproxy_layer_active_form.html'
+    template_name = 'qmapproxy/mapproxy_layer_active_form.html'
 
     @method_decorator(project_type_permission_required('change_project', ('project_type', 'project_slug'),
                                                        return_403=True))
