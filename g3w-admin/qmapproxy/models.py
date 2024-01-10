@@ -53,12 +53,12 @@ class G3WMapproxyLayer(models.Model):
 
     def invalidate_cache(self):
 
-        bridge_implementation = apps.get_app_config('mapproxy').bridge_implementation
+        bridge_implementation = apps.get_app_config('qmapproxy').bridge_implementation
         bridge_implementation.invalidate_cache(self)
 
     def delete_cache(self):
 
-        bridge_implementation = apps.get_app_config('mapproxy').bridge_implementation
+        bridge_implementation = apps.get_app_config('qmapproxy').bridge_implementation
         bridge_implementation.delete_cache(self)
 
 

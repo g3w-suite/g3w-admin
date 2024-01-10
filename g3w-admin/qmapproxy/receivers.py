@@ -18,7 +18,7 @@ from django.db.models.signals import pre_delete, post_save
 from core.signals import load_layer_actions, after_serialized_project_layer
 from qdjango.signals import reading_layer_model
 from qdjango.models import Layer
-from mapproxy.models import G3WMapproxyLayer
+from qmapproxy.models import G3WMapproxyLayer
 
 import logging
 

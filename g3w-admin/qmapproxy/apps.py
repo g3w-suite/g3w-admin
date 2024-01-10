@@ -19,13 +19,13 @@ import sys
 
 class MapproxyConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'mapproxy'
-    verbose_name = 'Mapproxy Caching'
+    name = 'qmapproxy'
+    verbose_name = 'Mapproxy Caching Integration'
 
     def ready(self):
 
         # import signal handlers
-        import mapproxy.receivers
+        import qmapproxy.receivers
 
         from django.conf import settings
 
@@ -50,7 +50,7 @@ class MapproxyConfig(AppConfig):
             if not os.access(settings.MAPPROXY_BRIDGE_SHARED_FOLDER_PATH, os.R_OK | os.W_OK):
                 raise ImproperlyConfigured('MAPPROXY_BRIDGE_SHARED_FOLDER_PATH setting is not readable and writeable')
 
-        spec = importlib.util.spec_from_file_location(module_name, "mapproxy/bridges/%s.py" % module_name)
+        spec = importlib.util.spec_from_file_location(module_name, "qmapproxy/bridges/%s.py" % module_name)
         module = importlib.util.module_from_spec(spec)
         sys.modules[module_name] = module
         spec.loader.exec_module(module)

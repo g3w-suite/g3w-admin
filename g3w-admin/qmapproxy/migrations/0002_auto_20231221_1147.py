@@ -8,7 +8,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('qdjango', '0115_project_geocoding_providers'),
-        ('mapproxy', '0001_initial'),
+        ('qmapproxy', '0001_initial'),
     ]
 
     operations = [
