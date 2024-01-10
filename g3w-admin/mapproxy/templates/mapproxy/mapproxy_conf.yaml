@@ -94,7 +94,7 @@ sources:
       featureinfo: True
     req:
       url: {{ows_url}}
-      layers: {{layer.name}}
+      layers: {% if layer.project.wms_use_layer_ids %}{{layer.qgs_layer_id}}{% else %}{{layer.name}}{% endif %}
       transparent: true
     supported_formats: [png,jpeg,tiff]
     coverage:

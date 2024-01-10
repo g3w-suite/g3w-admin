@@ -7,7 +7,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('qdjango', '0117_auto_20231219_1351'),
+        ('qdjango', '0115_project_geocoding_providers'),
         ('mapproxy', '0001_initial'),
     ]
 
