@@ -59,7 +59,7 @@ class ActiveMapproxyLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3
         Layer = apps.get_app_config(self.app_name).get_model('layer')
         self.layer = Layer.objects.get(pk=self.layer_id)
 
-        kwargs['initial']['reset_layer_cache_url'] = reverse('mapproxy-layer-reset', args=[
+        kwargs['initial']['reset_layer_cache_url'] = reverse('qmapproxy-layer-reset', args=[
             self.layer.project.group.slug,
             self.project_slug,
             self.layer.pk

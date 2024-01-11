@@ -78,7 +78,7 @@ caches:
 
   {{layer.name}}_{{layer.pk}}_cache:
     sources: [{{layer.name}}_{{layer.pk}}_wms]
-    grids: [{% if has_localgrid %}localgrid, {% endif %}GLOBAL_GEODETIC, GLOBAL_MERCATOR, GLOBAL_WEBMERCATOR]
+    grids: [{% if has_localgrid %}localgrid, {% endif %}GLOBAL_MERCATOR, GLOBAL_WEBMERCATOR]
     concurrent_tile_creators: 2
     cache:
       type: file

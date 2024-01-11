@@ -18,14 +18,14 @@ urlpatterns = [
         r'^(?P<group_slug>[-_\w\d]+)/(?P<project_slug>[-_\w\d]+)/(?P<layer_id>[0-9]+)/'
         r'active/$',
         login_required(ActiveMapproxyLayerView.as_view()),
-        name='mapproxy-layer-active'
+        name='qmapproxy-layer-active'
     ),
 
     re_path(
         r'^(?P<group_slug>[-_\w\d]+)/(?P<project_slug>[-_\w\d]+)/(?P<layer_id>[0-9]+)/'
         r'resetcache/$',
         login_required(ResetMapproxyLayerCacheView.as_view()),
-        name='mapproxy-layer-reset'
+        name='qmapproxy-layer-reset'
     ),
 
 ]
