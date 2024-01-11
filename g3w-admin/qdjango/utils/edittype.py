@@ -234,6 +234,9 @@ class QgisEditTypeRelationReference(QgisEditTypeValueMap):
             'loading': {
                 'state': None
             },
+            'filter_expression': self.FilterExpression if hasattr(self, 'FilterExpression') else None,
+            'chain_filters': self.ChainFilters if hasattr(self, 'ChainFilters') else None,
+            'filter_fields': self.FilterFields if hasattr(self, 'FilterFields') else None
         })
 
         return input_form
