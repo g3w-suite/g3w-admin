@@ -54,10 +54,8 @@ globals:
   http:
     ssl_no_cert_checks: true
 
-
-grids:
-
 {% if has_localgrid %}
+grids:
   localgrid:
     srs: '{{srs}}'
     bbox: [{{bbox_4326}}]
