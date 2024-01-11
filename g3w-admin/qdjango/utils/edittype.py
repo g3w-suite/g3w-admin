@@ -224,8 +224,6 @@ class QgisEditTypeRelationReference(QgisEditTypeValueMap):
 
         input_form = super(QgisEditTypeRelationReference, self).input_form
 
-        # Explode Filter Expression
-        #filter_expression = explode_expression(self.FilterExpression) if self.FilterExpression != '' else None
 
         # add params for get value
         input_form['input']['options'].update({
@@ -234,6 +232,9 @@ class QgisEditTypeRelationReference(QgisEditTypeValueMap):
             'loading': {
                 'state': None
             },
+            'filter_expression': self.FilterExpression if hasattr(self, 'FilterExpression') else None,
+            'chain_filters': self.ChainFilters if hasattr(self, 'ChainFilters') else None,
+            'filter_fields': self.FilterFields if hasattr(self, 'FilterFields') else None
         })
 
         return input_form

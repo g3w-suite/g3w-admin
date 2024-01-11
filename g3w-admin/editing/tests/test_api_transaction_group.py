@@ -206,7 +206,11 @@ class TransactionGroupTest(TestCase):
                                          'relation_reference': True,
                                          'loading': {
                                             'state': None
-                                            }
+                                            },
+                                         'filter_expression': None,
+                                         'chain_filters': None,
+                                         'filter_fields':None
+
                                         }
                                      }
                            }])
