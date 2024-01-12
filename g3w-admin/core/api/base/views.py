@@ -456,9 +456,9 @@ class BaseVectorApiView(G3WAPIView):
                 raise APIException(e)
 
         # Paging cannot be a backend filter
-        if 'page' in request.query_params:
-            kwargs['page'] = request.query_params.get('page')
-            kwargs['page_size'] = request.query_params.get('page_size', 10)
+        if 'page' in self.request_data:
+            kwargs['page'] = self.request_data.get('page')
+            kwargs['page_size'] = self.request_data.get('page_size', 10)
 
         # Make sure we have all attrs we need to build the server FID
         provider = self.metadata_layer.qgis_layer.dataProvider()
@@ -489,11 +489,16 @@ class BaseVectorApiView(G3WAPIView):
         # --------------------------------------
         # IDEA:     for big data it'll be iterate over features to get unique
         #           c++ iteration is fast. Instead memory layer with too many features can be a problem.
-        if 'unique' in request.query_params or 'fformatter' in request.query_params:
+        #
+        # Get parameter from GET or POST requests
+
+
+        if ('unique' in self.request_data or 'fformatter' in self.request_data):
 
             uniques = None
-            pvalue = request.query_params.get('unique') if 'unique' in request.query_params else (
-                request.query_params.get('fformatter'))
+
+            pvalue = self.request_data.get('unique') if 'unique' in self.request_data else (
+                self.request_data.get('fformatter'))
 
             qfieldidx = self.metadata_layer.qgis_layer.fields().indexOf(pvalue)
             r_qfieldidx = qfieldidx
@@ -501,7 +506,7 @@ class BaseVectorApiView(G3WAPIView):
             qfeatures = self.features
 
             # Get QgsFieldFormatter
-            if 'fformatter' in request.query_params:
+            if 'fformatter' in self.request_data:
                 ewsetup = self.metadata_layer.qgis_layer.editorWidgetSetup(qfieldidx)
                 qfformatter = QGS_APPLICATION.fieldFormatterRegistry().fieldFormatter(ewsetup.type())
 
@@ -533,6 +538,12 @@ class BaseVectorApiView(G3WAPIView):
                         req.user = request.user
                         req.resolver_match = resolve(url)
                         req.GET['unique'] = r_pvalue
+
+                        # Add ffield if exists
+                        # 'ffield' is a proxy parameter for /vector/api/data filter parameter 'field'
+                        if 'ffield' in self.request_data:
+                            req.GET['field'] = self.request_data.get('ffield')
+
                         view = LayerVectorView.as_view()
                         res = view(req, *[], **kwargs).render()
                         uniques = json.loads(res.content)['data']
@@ -556,7 +567,7 @@ class BaseVectorApiView(G3WAPIView):
             for u in uniques:
                 try:
                     if u:
-                        if 'unique' in request.query_params:
+                        if 'unique' in self.request_data:
                             values.append(json.loads(QgsJsonUtils.encodeValue(u)))
                         else:
                             fvalue = qfformatter.representValue(
@@ -596,7 +607,7 @@ class BaseVectorApiView(G3WAPIView):
 
             # check for formatter query url param and check if != 0
             export_features = False
-            formatter = str(request.query_params.get('formatter', request.data.get('formatter')))
+            formatter = str(self.request_data.get('formatter', request.data.get('formatter')))
             if formatter:
                 if formatter.isnumeric() and int(formatter) == 1:
                     export_features = True
@@ -705,6 +716,9 @@ class BaseVectorApiView(G3WAPIView):
 
         # set reprojecting status
         self.set_reprojecting_status()
+
+        # Get request data by GET or POST method
+        self.request_data = request.query_params if request.method == 'GET' else request.data
 
         # get results
         response = self.get_response_data(request)
