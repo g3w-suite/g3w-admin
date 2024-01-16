@@ -126,53 +126,57 @@ class QGISLayerVectorViewMixin(object):
                         f"Layer vector join: a problem occur during reading layer joins {join['joinLayerId']}")
 
     def set_metadata_relations(self, request, **kwargs):
+        """Find relations and set metadata"""
 
-        # init relations
-        self.set_relations()
+        level_metadata = 0
+        def build_metadata_relation(relation, qgis_layer, level=level_metadata):
 
-        # Determine if we are using an old and bugged version of QGIS
-        IS_QGIS_3_10 = Qgis.QGIS_VERSION.startswith('3.10')
+            # get relation layer object
+            relation_layer = self._layer_model.objects.get(qgs_layer_id=relation['referencingLayer'],
+                                                           project=self.layer.project)
 
-        for idr, relation in list(self.relations.items()):
+            # qgis_layer is the referenced layer
+            referenced_field_is_pk = [qgis_layer.fields().indexFromName(
+                rf) for rf in relation['fieldRef']['referencedField']] == qgis_layer.primaryKeyAttributes()
 
-            # check if in relation there is referencedLayer == self layer
-            if relation['referencedLayer'] == self.layer.qgs_layer_id:
-                # get relation layer object
-                relation_layer = self._layer_model.objects.get(qgs_layer_id=relation['referencingLayer'],
-                                                               project=self.layer.project)
+            kwargs = {
+                'layer': relation_layer,
+                'referencing_field': relation['fieldRef']['referencingField'],
+                'layer_id': relation_layer.pk,
+                'referenced_field_is_pk': referenced_field_is_pk,
+                'lavel': level
+            }
 
-                # qgis_layer is the referenced layer
-                qgis_layer = self.layer.qgis_layer
-                referenced_field_is_pk = [qgis_layer.fields().indexFromName(
-                    rf) for rf in relation['fieldRef']['referencedField']] == qgis_layer.primaryKeyAttributes()
+            # Add referenced layer od if level > 0
+            if level > 0:
+                kwargs.update({
+                    'referenced_layer': relation['referencedLayer']
+                })
 
-                # It's an old and buggy QGIS version so we cannot trust primaryKeyAttributes() and we go guessing
-                if IS_QGIS_3_10:
-                    field_index = qgis_layer.fields().indexFromName(
-                        relation['fieldRef']['referencedField'])
-                    # Safety check
-                    if field_index >= 0:
-                        field = qgis_layer.fields()[field_index]
-                        default_clause = qgis_layer.dataProvider().defaultValueClause(field_index)
-                        constraints = qgis_layer.fieldConstraints(
-                            field_index)
-                        not_null = bool(constraints & QgsFieldConstraints.ConstraintNotNull) and \
-                            field.constraints().constraintStrength(
-                            QgsFieldConstraints.ConstraintNotNull) == QgsFieldConstraints.ConstraintStrengthHard
-                        unique = bool(constraints & QgsFieldConstraints.ConstraintUnique) and \
-                            field.constraints().constraintStrength(
-                            QgsFieldConstraints.ConstraintUnique) == QgsFieldConstraints.ConstraintStrengthHard
-                        referenced_field_is_pk = unique and default_clause and not_null
 
-                self.metadata_relations[relation['referencingLayer']] = MetadataVectorLayer(
-                    get_qgis_layer(relation_layer),
-                    relation_layer.origname,
-                    idr,
-                    layer=relation_layer,
-                    referencing_field=relation['fieldRef']['referencingField'],
-                    layer_id=relation_layer.pk,
-                    referenced_field_is_pk=referenced_field_is_pk
-                )
+            self.metadata_relations[relation['referencingLayer']] = MetadataVectorLayer(
+                get_qgis_layer(relation_layer),
+                relation_layer.origname,
+                relation['id'],
+                **kwargs
+            )
+
+            # Check for cascading relations
+            if relation['referencingLayer'] in relations_qgsid:
+                level += 1
+                build_metadata_relation(
+                    relations_qgsid[relation['referencingLayer']],
+                    relation_layer.qgis_layer,
+                    level)
+
+
+        # Reorder relations by qgs_layer id
+        relations_qgsid = {r['referencedLayer']: r for r in self.relations.values()}
+
+        if self.layer.qgs_layer_id in relations_qgsid:
+            build_metadata_relation(relations_qgsid[self.layer.qgs_layer_id], self.layer.qgis_layer)
+
+
 
     def set_metadata_layer(self, request, **kwargs):
         """Set the metadata layer to a QgsVectorLayer instance
