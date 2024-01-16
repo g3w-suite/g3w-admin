@@ -332,6 +332,9 @@ class QgisProjectLayer(XmlData):
             if self.qgs_layer.type() == QgsMapLayerType.VectorTileLayer:
                 layer_type = 'vector-tile'
 
+        if layer_type == 'arcgisvectortilelayer':
+            layer_type = 'vector-tile'
+
         if not layer_type in availableTypes:
             raise Exception(
                 _('Missing or invalid type for layer')+' "%s"' % layer_type)
@@ -780,7 +783,7 @@ class QgisProjectLayer(XmlData):
         toret = None
 
         # Manage only ModeFeatureDateTimeInstantFromField at 2021-12-06
-        if tp.isActive():
+        if tp is not None and tp.isActive():
                 #and (isinstance(tp.mode(), Qgis.VectorTemporalMode) or isinstance(tp.mode(), Qgis.RasterTemporalMode)):
             # if tp.mode() == QgsVectorLayerTemporalProperties.ModeFixedTemporalRange:
             #     toret = {
