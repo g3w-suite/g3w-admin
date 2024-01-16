@@ -556,10 +556,58 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                 editing_layers.append(self.metadata_layer.qgis_layer)
 
 
+            # Save main layer
             ref_insert_ids, ref_lock_ids = self.save_vector_data(
                 self.metadata_layer, post_layer_data, has_transactions, reproject=self.reproject)
 
-            # get every relationsedits
+            # Save relations
+
+            def save_relation(post_relation_data, referencing_layer, ref_insert_ids) -> None:
+                """
+                Save relation data
+                :param post_relation_data: Post data
+                :param referencing_layer: Referencing layer
+                :return: None
+                """
+                if has_transactions:
+                    # Editing on related layers has already started because
+                    # it's part of a transaction group
+                    editing_layers.append(
+                        self.metadata_relations[referencing_layer].qgis_layer)
+
+                # instance lock for relation
+                self.metadata_relations[referencing_layer].lock = LayerLock(
+                    appName=self.app_name,
+                    layer=self.metadata_relations[referencing_layer].layer,
+                    user=request.user,
+                    sessionid=self.sessionid
+                )
+
+                # Check reproject status of referencing layer
+                reproject = not self.layer.project.group.srid.auth_srid == self.metadata_relations[
+                    referencing_layer].layer.srid
+
+                insert_ids, lock_ids = self.save_vector_data(self.metadata_relations[referencing_layer],
+                                                             post_relation_data, has_transactions,
+                                                             referenced_layer_insert_ids=ref_insert_ids,
+                                                             reproject=reproject)
+                new_relations[referencing_layer] = {
+                    'new': insert_ids,
+                    'new_lockids': lock_ids
+                }
+
+                # Check for cascading relations
+                if self.relations_data_key in post_relation_data and bool(post_relation_data[self.relations_data_key]):
+                    sub_post_relations_data = post_relation_data[self.relations_data_key]
+
+                    # Check in metadata_relations for referenced layer as referencing_layer
+                    for sub_referencing_layer, sub_metadata_relation in self.metadata_relations.items():
+                        if (hasattr(sub_metadata_relation, 'referenced_layer') and
+                                sub_metadata_relation.referenced_layer == referencing_layer):
+                            sub_post_relation_data = sub_post_relations_data[sub_referencing_layer]
+                            save_relation(sub_post_relation_data, sub_referencing_layer, insert_ids)
+
+
             post_relations_data = dict()
             if self.relations_data_key in post_layer_data and bool(post_layer_data[self.relations_data_key]):
                 post_relations_data = post_layer_data[self.relations_data_key]
@@ -568,35 +616,8 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
             for referencing_layer in self.metadata_relations.keys():
 
                 if referencing_layer in post_relations_data:
-
                     post_relation_data = post_relations_data[referencing_layer]
-
-                    if has_transactions:
-                        # Editing on related layers has already started because
-                        # it's part of a transaction group
-                        editing_layers.append(
-                            self.metadata_relations[referencing_layer].qgis_layer)
-
-                    # instance lock for relation
-                    self.metadata_relations[referencing_layer].lock = LayerLock(
-                        appName=self.app_name,
-                        layer=self.metadata_relations[referencing_layer].layer,
-                        user=request.user,
-                        sessionid=self.sessionid
-                    )
-
-                    # Check reproject status of referencing layer
-                    reproject = not self.layer.project.group.srid.auth_srid == self.metadata_relations[referencing_layer].layer.srid
-
-
-                    insert_ids, lock_ids = self.save_vector_data(self.metadata_relations[referencing_layer],
-                                                                 post_relation_data, has_transactions,
-                                                                 referenced_layer_insert_ids=ref_insert_ids,
-                                                                 reproject=reproject)
-                    new_relations[referencing_layer] = {
-                        'new': insert_ids,
-                        'new_lockids': lock_ids
-                    }
+                    save_relation(post_relation_data, referencing_layer, ref_insert_ids)
 
             if has_transactions:
                 # Commit changes on all editable layers
