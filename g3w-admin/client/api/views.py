@@ -19,15 +19,7 @@ from usersmanage.utils import (
 )
 
 from core.utils.decorators import cache_page
-from django.views.decorators.cache import never_cache
 from django.utils.decorators import method_decorator
-
-# never cache initconfig response when `DEBUG = true`
-production_cache = cache_page(
-    None,
-    ('group_slug', 'project_type', 'project_id'),
-    key_prefix=settings.QDJANGO_PRJ_CACHE_KEY,
-) if not settings.DEBUG else never_cache
 
 class ClientConfigApiView(APIView):
     """
@@ -39,7 +31,12 @@ class ClientConfigApiView(APIView):
         ProjectIsActivePermission
     )
 
-    @method_decorator(production_cache)
+    # @method_decorator(production_cache)
+    @method_decorator(cache_page(
+        None,
+        ('group_slug', 'project_type', 'project_id'),
+        key_prefix=settings.QDJANGO_PRJ_CACHE_KEY
+    ))
     def get(
         self, request, format=None, group_slug=None, project_type=None, project_id=None
     ):
