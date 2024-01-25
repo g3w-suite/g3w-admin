@@ -1,6 +1,7 @@
 from django.http.request import QueryDict
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _, get_language
+from django.urls import reverse
 from rest_framework import serializers
 from rest_framework.fields import empty
 from owslib.wms import WebMapService
@@ -597,6 +598,20 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
         # reset tokenfilter by session
         self.reset_filtertoken()
+
+        # add edit url if user has grant
+        if self.request.user.has_perm('qdjango.change_project', instance):
+            ret['edit_url'] = reverse('qdjango-project-update', kwargs={
+                'group_slug': instance.group.slug,
+                'slug': instance.slug
+            })
+
+        # add layers url if user has grant
+        if self.request.user.has_perm('qdjango.change_project', instance):
+            ret['layers_url'] = reverse('qdjango-project-layers-list', kwargs={
+                'group_slug': instance.group.slug,
+                'project_slug': instance.slug
+            })
 
         return ret
 
