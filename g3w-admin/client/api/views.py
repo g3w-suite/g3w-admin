@@ -21,6 +21,7 @@ from usersmanage.utils import (
 from core.utils.decorators import cache_page
 from django.utils.decorators import method_decorator
 
+
 class ClientConfigApiView(APIView):
     """
     APIView to get data Project and layers
@@ -31,7 +32,6 @@ class ClientConfigApiView(APIView):
         ProjectIsActivePermission
     )
 
-    # @method_decorator(production_cache)
     @method_decorator(cache_page(
         None,
         ('group_slug', 'project_type', 'project_id'),
