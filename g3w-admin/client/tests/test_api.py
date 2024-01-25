@@ -17,7 +17,7 @@ from django.urls import reverse
 from django.test import override_settings
 from django.core.files import File
 from django.core.cache import cache
-from guardian.shortcuts import remove_perm
+from guardian.shortcuts import remove_perm, assign_perm, get_anonymous_user
 from qdjango.models import Project
 from qdjango.utils.data import QgisProject
 from core.tests.base import CoreTestBase
@@ -38,6 +38,8 @@ QGS310_FILE_4 = 'gruppo-1_empty_vector_layer316.qgs'
 
 @override_settings(MEDIA_ROOT=PROJECTS_PATH)
 @override_settings(DATASOURCE_PATH=DATASOURCE_PATH)
+@override_settings(CLIENT_OWS_METHOD='GET')
+@override_settings(G3W_CLIENT_SEARCH_ENDPOINT='ows')
 class ClientApiTest(CoreTestBase):
     """Test client API"""
 
@@ -417,6 +419,52 @@ class ClientApiTest(CoreTestBase):
                     'axisinverted': True,
                     'extent': [-180.0, -90.0, 180.0, 90.0]
                 })
+
+        # Check for edit_url and layers_url
+        self.assertTrue('edit_url'in resp)
+        self.assertEqual(resp['edit_url'], '/en/qdjango/gruppo-1/projects/update/un-progetto/')
+        self.assertTrue('layers_url' in resp)
+        self.assertEqual(resp['layers_url'], '/en/qdjango/gruppo-1/projects/un-progetto/layers/')
+
+        # Test ProjectPermission
+        # ------------------------------------------------------------
+        url = reverse('group-project-map-config', args=['gruppo-1', 'qdjango', '1'])
+
+        # Anonymouse user
+        resp = self.client.get(url)
+        self.assertEqual(resp.status_code, 403)
+
+        assign_perm('view_project', get_anonymous_user(), self.prj_test)
+
+        resp = self.client.get(url)
+        self.assertEqual(resp.status_code, 200)
+
+        self.assertFalse('edit_url' in resp)
+        self.assertFalse('layers_url' in resp)
+
+        assign_perm('view_project', self.test_viewer1, self.prj_test)
+        self.client.login(username=self.test_viewer1.username, password=self.test_viewer1.username)
+
+        resp = self.client.get(url)
+        self.assertEqual(resp.status_code, 200)
+
+        self.assertFalse('edit_url' in resp)
+        self.assertFalse('layers_url' in resp)
+
+        self.client.logout()
+
+        assign_perm('view_project', self.test_editor1, self.prj_test)
+        assign_perm('change_project', self.test_editor1, self.prj_test)
+        self.client.login(username=self.test_editor1.username, password=self.test_editor1.username)
+
+        resp = self.client.get(url)
+        self.assertEqual(resp.status_code, 200)
+
+        self.assertFalse('edit_url' in resp)
+        self.assertFalse('layers_url' in resp)
+
+        self.client.logout()
+
 
         # Test ProjectIsActivePermission
         # ------------------------------------------------------------
