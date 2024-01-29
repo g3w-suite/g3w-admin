@@ -396,3 +396,379 @@ class OpenrouteServiceIsochroneFromLayerResultView(OpenrouteServiceIsochroneBase
                 return Response({'result': True, 'status': 'pending'})
 
             return Response({'result': False, 'error': _('Task not found!')}, status=status.HTTP_404_NOT_FOUND)
+
+class OpenrouteServiceVueConfigView(G3WAPIView):
+
+    def get(self, *args, **kwargs):
+
+        return Response({
+            'data': {                   # default params
+                # Append to existing layer
+                'qgis_layer_id': None,  # QGIS vector layer id, mutually exclusive with connection_id
+                # In case of new layer:
+                'connection_id': None,  # mutually exclusive with layer_id
+                'new_layer_name': None, # mutually exclusive with layer_id
+                'profile': None,
+                'color': None ,         # 0-255 RGB values ['Red', 'Green', 'Blue']
+                'transparency': 0,      # 0-1, 0: fully opaque, 1: fully transparent
+                'name' : '',
+                'stroke_width': 0.26,   # float, QGIS default is 0.26
+                # This goes straight to ORS API
+                'ors': {
+                    'locations': None,      # May be null in case of `layer_id`
+                    'range_type': 'time',   # Time or distance
+                    'range': [480],
+                    'interval': 60,
+                    # fixed
+                    'location_type': 'start',
+                    'attributes': [ 'area', 'reachfactor', 'total_pop' ]
+                }
+            },
+            'sidebar': {
+                'title': 'OPENROUTESERVICE',
+                'open': False,
+                'collapsible': False,
+                'iconConfig': {
+                    'color': 'purple',
+                    'icon': 'layers',
+                },
+                'mobile': True,
+                'sidebarOptions': {
+                    'position': 1
+                },
+            },
+            'api': {
+                'urls': {
+                'compatible_layers': '/openrouteservice/api/compatible_layers',        # TO ADD PROJECTID
+                'isochrone_mapcoordinates': '/openrouteservice/api/isochrone',         # TO ADD PROJECTID
+                'isochrone_from_layer':  '/openrouteservice/api/isochrone_from_layer', # TO ADD PROJECTID AND LAYER ID
+                'task': '/openrouteservice/api/isochrone_from_layer_result'            # TO ADD PROJECTID AND TASK ID RETURNED BY ABOVE API
+                },
+            },
+            'form': {
+                'isochrones': [
+                    {
+                        'visible': True,
+                        'name': 'name',
+                        'type': 'varchar',
+                        'i18n_label': 'openrouteservice.isochrones.label.name',
+                        'label': '',
+                        'editable': True,
+                        'validate': {
+                            'required': True,
+                            'valid': False
+                        },
+                        'pk': False,
+                        'default': '' ,
+                        'input': {
+                            'type': 'text',
+                            'options': {}
+                        },
+                        'value': None
+                    },
+                    {
+                        'visible': True,
+                        'name': 'profile',
+                        'type': 'varchar',
+                        'i18n_label': 'openrouteservice.isochrones.label.profile',
+                        'label': '',
+                        'dropdownParent': False,
+                        'nullOption': False,
+                        'editable': True,
+                        'validate': {
+                            'required': True,
+                            'valid': False
+                        },
+                        'pk': False,
+                        'default': '',
+                        'input': {
+                            'type': 'select',
+                            'options': {
+                                'values': [],
+                                'default': None
+                            }
+                        },
+                        'value': None
+                    },
+                    {
+                        'visible': True,
+                        'name': 'range_type',
+                        'type': 'varchar',
+                        'i18n_label': 'openrouteservice.isochrones.label.range_type',
+                        'label': '',
+                        'dropdownParent': False,
+                        'nullOption': False,
+                        'editable': True,
+                        'validate': {
+                            'required': True,
+                            'valid': True
+                        },
+                        'pk': False,
+                        'default': '',
+                        'input': {
+                        'type': 'select',
+                        'options': {
+                            'values': [
+                                { 'key': 'Time (minutes)', 'value': 'time' },
+                                { 'key': 'Distance (meters)', 'value': 'distance' }
+                            ],
+                            'value': 'time'
+                        },
+                        },
+                        'value': 'time'
+                    },
+                    {
+                        'visible': True,
+                        'name': 'range',
+                        'type': 'varchar',
+                        'i18n_label': 'openrouteservice.isochrones.label.range',
+                        'label': '',
+                        'info': '[MIN: 1 - MAX: 60]',
+                        'editable': True,
+                        'validate': {
+                            'required': True,
+                            'valid': False,
+                            'message': None
+                        },
+                        'pk': False,
+                        'default': '',
+                        'input': {
+                            'type': 'text',
+                            'options': {
+                                'min': 1
+                            }
+                        },
+                        'value': '1'
+                    },
+                    {
+                        'visible': True,
+                        'name': 'interval',
+                        'type': 'float',
+                        'i18n_label': 'openrouteservice.isochrones.label.interval',
+                        'label': '',
+                        'editable': False,
+                        'validate': {},
+                        'pk': False,
+                        'default': '',
+                        'input': {
+                            'type': 'slider',
+                            'options': {
+                                'min': 0,
+                                'max': 0,
+                                'step': 1
+                            }
+                        },
+                        'value': 0
+                    },
+                    {
+                        'visible': True,
+                        'name': 'stroke_width',
+                        'type': 'float',
+                        'i18n_label': 'openrouteservice.isochrones.label.stroke_width',
+                        'label': '',
+                        'editable': True,
+                        'step': 0.01,
+                        'validate': {
+                            'required': True,
+                            'valid': False
+                        },
+                        'pk': False,
+                        'default': '',
+                        'input': {
+                            'type': 'float',
+                            'options': {
+                                'min':0
+                            }
+                        },
+                        'value': 0.26
+                    },
+                    {
+                        'visible': True,
+                        'name': 'color',
+                        'type': 'varchar',
+                        'i18n_label': 'openrouteservice.isochrones.label.color',
+                        'label': 'Color',
+                        'editable': True,
+                        'validate': {},
+                        'pk': False,
+                        'default': '' ,
+                        'input': {
+                        'type': 'color',
+                        'options': {}
+                        },
+                        'value': '#FF0000'
+                    },
+                    {
+                        'visible': True,
+                        'name': 'transparency',
+                        'type': 'float',
+                        'i18n_label': 'openrouteservice.isochrones.label.transparency',
+                        'label': '',
+                        'editable': True,
+                        'validate': {
+                            'required': True,
+                            'valid': False
+                        },
+                        'pk': False,
+                        'default': '',
+                        'input': {
+                            'type': 'slider',
+                            'options': {
+                                'min': 0,
+                                'max': 1,
+                                'step': 0.1
+                            }
+                        },
+                        'value': 0.8
+                    },
+                ],
+                'inputs': {
+                    'mapcoordinates': [
+                        {
+                        'visible': True,
+                        'name': 'locations',
+                        'type': 'float',
+                        'i18n_labels': {
+                            'lon': 'openrouteservice.inputs.label.mapcoordinates.lon',
+                            'lat': 'openrouteservice.inputs.label.mapcoordinates.lat',
+                        },
+                        'labels': {
+                            'lon': '',
+                            'lat': ''
+                        },
+                        'epsg': 'EPSG:4326', # SET OUTPUTEPSG
+                        'dropdownParent': False,
+                        'nullOption': False,
+                        'editable': True,
+                        'validate': {
+                            'required': True,
+                            'valid': True
+                        },
+                        'pk': False,
+                        'default': '',
+                        'input': {
+                            'type': 'lonlat',
+                            'options': {},
+                        },
+                        'values': {
+                            'lon': 0,
+                            'lat': 0
+                        },
+                        'value': [[0, 0]]
+                        },
+                    ],
+                    'from_layer': [
+                        {
+                        'visible': True,
+                        'name': 'from_layer',
+                        'type': 'varchar',
+                        'i18n_label': 'openrouteservice.inputs.label.from_layer',
+                        'label': 'Layer',
+                        'dropdownParent': False,
+                        'nullOption': False,
+                        'editable': True,
+                        'validate': {
+                            'required': True,
+                            'valid': True
+                        },
+                        'pk': False,
+                        'default': '',
+                        'input': {
+                            'type': 'select',
+                            'options': {
+                                'values': [],
+                                'value': None
+                            },
+                        },
+                        'value': None
+                        },
+                    ]
+                },
+                'outputs': {
+                    'newlayer': [
+                        {
+                            'visible': True,
+                            'name': 'new_layer_name',
+                            'type': 'varchar',
+                            'i18n_label': 'openrouteservice.outputs.label.new_layer_name',
+                            'label': '',
+                            'editable': True,
+                            'validate': {
+                                'required': True,
+                                'valid': False
+                            },
+                            'pk': False,
+                            'default': '' ,
+                            'input': {
+                                'type': 'text',
+                                'options': {}
+                            },
+                            'value': None
+                        },
+                        {
+                            'visible': True,
+                            'name': 'connection_id',
+                            'type': 'varchar',
+                            'i18n_label': 'openrouteservice.outputs.label.connection_id',
+                            'label': '',
+                            'dropdownParent': False,
+                            'nullOption': False,
+                            'editable': True,
+                            'validate': {
+                                'required': True,
+                                'valid': True
+                            },
+                            'pk': False,
+                            'default': '',
+                            'input': {
+                                'type': 'select',
+                                'options': {
+                                    'values': [
+                                        {
+                                            'i18n_key': 'openrouteservice.outputs.label.input.select.__shapefile__',
+                                            'key': 'New Shapefile', # //'_', '', ''
+                                            'value': '__shapefile__'
+                                        },
+                                        {
+                                            'i18n_key': 'openrouteservice.outputs.label.input.select.__spatialite__',
+                                            'key': 'New Spatialite',
+                                            'value': '__spatialite__'
+                                        },
+                                        {
+                                            'i18n_key': 'openrouteservice.outputs.label.input.select.__geopackage__',
+                                            'key': 'New Geopackage',
+                                            'value': '__geopackage__'
+                                        }
+                                    ],
+                                },
+                            },
+                            'value': '__shapefile_'
+                        }
+                    ],
+                    'existinglayer': [
+                        {
+                        'visible': True,
+                        'name': 'qgis_layer_id',
+                        'type': 'varchar',
+                        'label': 'Existing Layer',
+                        'dropdownParent': False,
+                        'nullOption': False,
+                        'editable': True,
+                        'validate': {
+                            'required': True,
+                            'valid': True
+                        },
+                        'pk': False,
+                        'default': '',
+                        'input': {
+                            'type': 'select',
+                            'options': {
+                                'values': [],
+                            },
+                        },
+                        'value': None
+                        }
+                    ]
+                }
+            }
+        })
