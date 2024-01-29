@@ -434,11 +434,10 @@
 
     created() {
 
-      const APP           = this.state.APP;
       const project       = ProjectsRegistry.getCurrentProject();
-      const from_layer    = APP.form.inputs.from_layer[0];
-      const existinglayer = APP.form.outputs.existinglayer[0];
-      const newlayer      = APP.form.outputs.newlayer[1];
+      const from_layer    = this.form.inputs.from_layer[0];
+      const existinglayer = this.form.outputs.existinglayer[0];
+      const newlayer      = this.form.outputs.newlayer[1];
 
       Object
         .keys(this.config)
@@ -456,8 +455,8 @@
               from_layer.value = i ? from_layer.value : d.layer_id;
             });
             Object.keys(conf.profiles).forEach(d => {
-              APP.form[key][1].value = null === APP.form[key][1].value ? d : APP.form[key][1].value;
-              APP.form[key][1].input.options.values.push({ key: conf.profiles[d].name, value: d });
+              this.form[key][1].value = null === this.form[key][1].value ? d : this.form[key][1].value;
+              this.form[key][1].input.options.values.push({ key: conf.profiles[d].name, value: d });
             });
           }
 
