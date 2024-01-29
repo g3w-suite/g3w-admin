@@ -10,11 +10,10 @@
         <h5 class="openrouteservice-form-header skin-color" v-t-plugin="'openrouteservice.isochrones.title'"></h5>
         <form class="openrouteservice-form-inputs">
           <div
-            v-for = "input in _isochrones"
+            v-for = "input in form.isochrones"
             :key  = "input.name"
             class = "row"
           >
-          {{ input.validate.valid }}
             <component
               @changeinput = "validate"
               :is          = "`${input.input.type}_input`"
@@ -57,7 +56,7 @@
             </div>
           </div>
           <div
-            v-for = "input in _inputs"
+            v-for = "input in form.inputs[IN]"
             :key  = "input.name"
             class = "row"
           >
@@ -103,7 +102,7 @@
             </div>
           </div>
           <div
-            v-for = "input in _outputs"
+            v-for = "input in form.outputs[OUT]"
             :key  = "input.name"
             class = "row"
           >
@@ -172,19 +171,7 @@
     computed: {
 
       form() {
-        return JSON.parse(JSON.stringify(this.state.APP.form ?? {}));
-      },
-
-      _isochrones() {
-        return this.state.APP.form.isochrones;
-      },
-
-      _inputs() {
-        return this.state.APP.form.inputs[this.IN];
-      },
-
-      _outputs() {
-        return this.state.APP.form.outputs[this.OUT];
+        return this.state.APP.form;
       },
 
       // initialize API urls
@@ -202,9 +189,9 @@
 
       form_fields() {
         return [
-          ...this._isochrones,
-          ...this._inputs,
-          ...this._outputs,
+          ...this.form.isochrones,
+          ...this.form.inputs[this.IN],
+          ...this.form.outputs[this.OUT],
         ];
       },
 
@@ -287,8 +274,6 @@
         }
 
         this.is_valid = this.form_fields.reduce((acc, i) => acc && (i.validate.valid === undefined || i.validate.valid), true);
-
-        // console.log(this.is_valid, this.form_fields, this);
       },
 
       /**
