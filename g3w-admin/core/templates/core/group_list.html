@@ -43,7 +43,26 @@
 
 {% block main_content %}
 
-
+<div id="group_list_fitler_bar" class="row">
+<section class="col-lg-5">
+    <div class="box box-solid bg-green {% if collapsed_filter_form %}collapsed-box{% endif %}">
+            <div class="box-header ui-sortable-handle" style="cursor: move;">
+              <i class="fa fa-filter"></i>
+              <h3 class="box-title">{% trans 'Filter by' %}</h3>
+              <div class="box-tools pull-right">
+                <button type="button" class="btn bg-green btn-sm" data-widget="collapse"><i class="fa fa-minus"></i>
+                </button>
+              </div>
+            </div>
+            <div class="box-body border-radius-none">
+                <form method="get" id="group-filter">
+                {% crispy filter_form  %}
+                    <button class="btn btn-block btn-default">Filter</button>
+                </form>
+            </div>
+          </div>
+</section>
+</div>
 <div id="groups_list" class="row">
 {% for object in object_list %}
     {% get_obj_perms user for object as "userObj_perms" %}

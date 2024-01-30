@@ -20,7 +20,7 @@ from usersmanage.mixins.views import G3WACLViewMixin
 from usersmanage.decorators import user_passes_test_or_403
 from usersmanage.utils import get_users_for_object
 from usersmanage.configs import G3W_EDITOR1
-from .forms import GroupForm, GeneralSuiteDataForm, MacroGroupForm
+from .forms import GroupForm, GeneralSuiteDataForm, MacroGroupForm, GroupFilterForm
 from .models import Group, GroupProjectPanoramic, MapControl, GeneralSuiteData, MacroGroup
 from .mixins.views import G3WRequestViewMixin, G3WAjaxDeleteViewMixin, G3WAjaxSetOrderViewMixin
 from .signals import after_update_group, execute_search_on_models
@@ -105,16 +105,44 @@ class SearchAdminView(TemplateView):
 class GroupListView(ListView):
     """List group view."""
 
+    def setup(self, request, *args, **kwargs):
+        super(GroupListView, self).setup(request, *args, **kwargs)
+
+        # Set filter parameters
+        self.filter_parameters = {}
+        if 'macrogroup' in self.request.GET and self.request.GET['macrogroup']:
+            self.filter_parameters['macrogroup'] = {
+               'value': self.request.GET['macrogroup'],
+                'qs_filter': {'macrogroups__id': self.request.GET['macrogroup']}
+            }
+
     def _is_active(self, qs):
         """ Add a filter fo is_active property """
         return qs.filter(is_active=1)
+
     def get_queryset(self):
 
         qs = get_objects_for_user(self.request.user, 'core.view_group', Group)
              #| get_objects_for_user(get_anonymous_user(), 'core.view_group', Group)
         qs = self._is_active(qs)
         qs = qs.order_by('order')
+
+        # Check for filter GET parameters
+        for k, f in self.filter_parameters.items():
+            qs = qs.filter(**f['qs_filter'])
+
         return qs
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super(GroupListView, self).get_context_data(object_list=object_list, **kwargs)
+
+        # Set filter form
+        context['filter_form'] = GroupFilterForm(initial={k: f['value'] for k, f in self.filter_parameters.items()})
+
+        context['collapsed_filter_form'] = False if self.filter_parameters else True
+
+        return context
+
 
 class GroupDeactiveListView(GroupListView):
     """ ListView to show map groups with is_active=0"""

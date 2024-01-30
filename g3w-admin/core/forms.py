@@ -1,7 +1,7 @@
 from django_file_form.forms import FileFormMixin, UploadedFileField
 from django.forms import Form, ModelForm, ValidationError
 from django.forms.fields import CharField, HiddenInput
-from django.forms.models import ModelMultipleChoiceField
+from django.forms.models import ModelMultipleChoiceField, ModelChoiceField
 from django.db.models import Q
 from django.utils.translation import ugettext, ugettext_lazy as _
 from core.models import Group, GeneralSuiteData, MacroGroup
@@ -461,3 +461,24 @@ class MacroGroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, ModelFor
 
         return instance
 
+class GroupFilterForm(G3WFormMixin, Form):
+    """Group filter form."""
+
+    macrogroup = ModelChoiceField(queryset=MacroGroup.objects.all(), required=False)
+
+    def __init__(self, *args, **kwargs):
+        super(GroupFilterForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper(self)
+        self.helper.form_tag = False
+        self.helper.layout = Layout(
+            Div(
+                Div(
+                    'macrogroup',
+                    css_class='col-md-12'
+                ),
+                css_class='row'
+            )
+        )
+
+    class Meta:
+        fields = '__all__'
