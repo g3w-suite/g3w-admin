@@ -540,6 +540,8 @@ class QgisProjectLayer(XmlData):
             columns.append({
                 'name': f.name(),
                 'type': QVariant.typeToName(f.type()).upper() if QVariant.typeToName(f.type()) else None,
+                'length': f.length(),
+                'precision': f.precision(),
                 'label': f.displayName(),
             })
 
