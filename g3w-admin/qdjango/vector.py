@@ -299,7 +299,13 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
             fields_layer = self.layer.database_columns_by_name()
             for field, data in list(fields_layer.items()):
                 fields[self.layer_name]['fields'][field] = {
-                    'label': data['label']}
+                    'label': data['label'],
+                    'input': {
+                        'options': {
+                            'maxlength': data['length'] if data['length'] > 0 else -1,
+                        }
+                    }
+                }
 
         # add widgets
         if hasattr(self.layer, 'edittypes') and self.layer.edittypes:
@@ -311,6 +317,9 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
             for field, data in list(edittypes.items()):
                 if data['widgetv2type'] in allow_edittypes:
 
+                    # Get `maxlength` value to restore after
+                    maxlength = fields[self.layer_name]['fields'][field]['input']['options']['maxlength']
+
                     # instance of QgisEditType
                     qet = MAPPING_EDITTYPE_QGISEDITTYPE[data['widgetv2type']](
                         **data)
@@ -319,6 +328,14 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
                     else:
                         fields[self.layer_name]['fields'][field].update(
                             qet.input_form)
+
+                    # Restore maxlength by default
+                    if fields[self.layer_name]['fields'][field].get('input'):
+                        if fields[self.layer_name]['fields'][field]['input'].get('options'):
+                            fields[self.layer_name]['fields'][field]['input']['options'].update({
+                                'maxlength': maxlength
+                            })
+
 
                 # add editable property:
                 # FIXME: find better way for layer join 1:1 managment
