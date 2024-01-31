@@ -507,6 +507,9 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
                 'state': 'created' if created else 'updated'
             })
 
+            # Is necessary invalidate the config project
+            self.layer.project.invalidate_cache(user=request.user)
+
         elif mode == 'apply':
 
             kwargs = _check_url_params_name_fid('apply')
@@ -542,6 +545,8 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
                 user = request.user,
                 **kwargs
             ).delete()
+
+            self.layer.project.invalidate_cache(user=request.user)
 
         # mode='delete'
         else:
