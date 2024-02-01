@@ -7,6 +7,7 @@
     $script('https://unpkg.com/http-vue-loader@1.4.2/src/httpVueLoader.js');
   }
 
+  const { ApplicationState }      = g3wsdk.core;
   const { Plugin, PluginService } = g3wsdk.core.plugin;
   const { GUI }                   = g3wsdk.gui;
 
@@ -18,7 +19,11 @@
 
       super({ name: 'openrouteservice', service });
 
-      import(BASE_URL + '/i18n/index.js').then(m => this.setLocale(m.default));
+      // i18n
+      const VM = new Vue();
+      const i18n = (lang = ApplicationState.language) => import(BASE_URL + '/i18n/' + lang + '.js').then(m => this.setLocale({ [lang]: m.default }));      
+      VM.$watch(() => ApplicationState.language, i18n);
+      i18n();
 
       // initialize service
       service.clear  = this.unload = () => service.openFormPanel = null;

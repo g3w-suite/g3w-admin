@@ -2,10 +2,10 @@
 
   const BASE_URL                  = initConfig.group.plugins.qtimeseries.baseUrl + 'qtimeseries/js';
 
-  const { ApplicationService }    = g3wsdk.core;
-  const { Plugin, PluginService } = g3wsdk.core.plugin;
-  const { toRawType }             = g3wsdk.core.utils;
-  const { GUI }                   = g3wsdk.gui;
+  const { ApplicationService, ApplicationState } = g3wsdk.core;
+  const { Plugin, PluginService }                = g3wsdk.core.plugin;
+  const { toRawType }                            = g3wsdk.core.utils;
+  const { GUI }                                  = g3wsdk.gui;
 
   new (class extends Plugin {
 
@@ -15,7 +15,11 @@
 
       super({ name: 'qtimeseries', service });
 
-      import(BASE_URL + '/i18n/index.js').then(m => this.setLocale(m.default));
+      // i18n
+      const VM = new Vue();
+      const i18n = (lang = ApplicationState.language) => import(BASE_URL + '/i18n/' + lang + '.js').then(m => this.setLocale({ [lang]: m.default }));      
+      VM.$watch(() => ApplicationState.language, i18n);
+      i18n();
 
       const enabled = this.registerPlugin(this.config.gid);
 
@@ -67,6 +71,8 @@
 
       const show = this.config.layers.length > 0;
 
+      service.emit('ready', show);
+
       if (show) {
         service.open = false;
       }
@@ -102,8 +108,6 @@
       });
 
       this.setHookLoading({ loading: false });
-
-      service.emit('ready', show);
 
     }
 
