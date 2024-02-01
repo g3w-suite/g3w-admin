@@ -42,7 +42,7 @@
               />
               <label for="mapcoordinates" v-t-plugin="'openrouteservice.isochrones.label.mapcoordinates'"></label>
             </div>
-            <div>
+            <div v-if="form.inputs.from_layer">
               <input
                 id        = "pointlayer"
                 class     = "magic-radio"
@@ -88,7 +88,7 @@
               />
               <label for="newlayer" v-t-plugin="'openrouteservice.outputs.newlayer'"></label>
             </div>
-            <div>
+            <div v-if="form.outputs.existinglayer">
               <input
                 id        = "existinglayer"
                 class     = "magic-radio"
@@ -144,6 +144,7 @@
     time: 60,
     distance: 100000
   };
+
   module.exports = {
 
     name: 'ors_panel',
