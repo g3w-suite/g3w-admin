@@ -31,6 +31,8 @@
       service.state  = { APP };
       service.emit('ready');
 
+      console.log(service);
+
       // setup gui
       if (this.registerPlugin(this.config.gid)) {
         this.createSideBarComponent({}, {
@@ -40,7 +42,7 @@
             open: {
               when: 'before',
               // create panel and init start form 
-              cb: () => {
+              cb: bool => {
                 service.openFormPanel = service.openFormPanel || new g3wsdk.gui.Panel({
                   service,
                   title: 'OPENROUTESERVICE',
@@ -51,7 +53,8 @@
                   }))(),
                 });
                 GUI.closeContent();
-                service.openFormPanel.show()
+                if (bool) service.openFormPanel.show()
+                else service.openFormPanel.close()
               }
             }
           },
