@@ -14,6 +14,7 @@ from django.conf import settings
 from django.apps import apps
 from qdjango.models import Layer
 from django.dispatch import receiver
+from django.templatetags.static import static
 from core.signals import \
     after_serialized_project_layer, \
     initconfig_plugin_start
@@ -51,7 +52,31 @@ def set_initconfig_value(sender, **kwargs):
     toret = {
         'qtimeseries': {
             'gid': "{}:{}".format(kwargs['projectType'], kwargs['project']),
-            'layers': [] #TODO: to remove  and tell to g3w-client developers
+            'jsscripts': [
+                static('js/httpVueLoader.min.js'),
+            ],
+            'layers': [], #TODO: to remove  and tell to g3w-client developers
+            'sidebar': {
+                'title': 'plugins.qtimeseries.title',
+                'open': False,
+                'collapsible': True,
+                'closewhenshowviewportcontent': False,
+                'iconConfig': { 'color': '#25bce9', 'icon': 'time' },
+                'mobile': True,
+                'sidebarOptions': { 'position': 'catalog' },
+            },
+            'steps': [
+                { 'moment': '100:years', 'label': 'centuries', 'qgis': 'c' },
+                { 'moment': '10:years', 'label': 'decades', 'qgis': 'dec' },
+                { 'moment': 'years', 'label': 'years', 'qgis': 'y' },
+                { 'moment': 'months', 'label':  'months', 'qgis': 'mon' },
+                { 'moment': '7:days', 'label': 'weeks', 'qgis': 'wk' },
+                { 'moment': 'days', 'label': 'days', 'qgis': 'd' },
+                { 'moment': 'hours', 'label': 'hours', 'qgis': 'h' },
+                { 'moment': 'minutes', 'label': 'minutes', 'qgis': 'min' },
+                { 'moment': 'seconds', 'label': 'seconds', 'qgis': 's' },
+                { 'moment': 'milliseconds', 'label': 'milliseconds', 'qgis': 'ms' },
+            ],
         },
     }
 
