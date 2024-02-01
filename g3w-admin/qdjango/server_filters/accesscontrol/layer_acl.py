@@ -10,11 +10,14 @@ __date__ = "2023-09-25"
 __copyright__ = "Copyright 2015 - 2023, Gis3w"
 __license__ = "MPL 2.0"
 
+from django.conf import settings
 from guardian.shortcuts import get_perms, get_anonymous_user
 from qgis.server import QgsAccessControlFilter
 from qgis.core import QgsMessageLog, Qgis
 from qdjango.apps import QGS_SERVER
 from qdjango.models import Layer
+from urllib.parse import urlparse, parse_qs
+
 
 
 class LayerAclAccessControlFilter(QgsAccessControlFilter):
@@ -22,6 +25,8 @@ class LayerAclAccessControlFilter(QgsAccessControlFilter):
 
     def __init__(self, server_iface):
         super().__init__(server_iface)
+
+        self.server_iface = server_iface
 
     def layerPermissions(self, layer):
     
@@ -31,15 +36,30 @@ class LayerAclAccessControlFilter(QgsAccessControlFilter):
             qdjango_layer = Layer.objects.get(
                 project=QGS_SERVER.project, qgs_layer_id=layer.id())
 
-            # Check permission
-            perms = list(
-                set(get_perms(QGS_SERVER.user, qdjango_layer)) |
-                set(get_perms(get_anonymous_user(), qdjango_layer))
-            )
-            rights.canRead = "view_layer" in perms
-            rights.canInsert = "add_layer" in perms
-            rights.canUpdate = "change_layer" in perms
-            rights.canDelete = "delete_layer" in perms
+            # Check for caching
+            purl = urlparse(self.server_iface.requestHandler().url())
+            qs = parse_qs(purl.query)
+            arg = 'g3wsuite_caching_token'.upper()
+            if (('caching' in settings.G3WADMIN_LOCAL_MORE_APPS and
+                     arg in qs and
+                    settings.TILESTACHE_CACHE_TOKEN == qs[arg][0]) and
+                    f"{purl.scheme}://{purl.netloc}" == settings.QDJANGO_SERVER_URL):
+                rights.canRead = True
+                rights.canInsert = False
+                rights.canUpdate = False
+                rights.canDelete = False
+
+            else:
+
+                # Check permission
+                perms = list(
+                    set(get_perms(QGS_SERVER.user, qdjango_layer)) |
+                    set(get_perms(get_anonymous_user(), qdjango_layer))
+                )
+                rights.canRead = "view_layer" in perms
+                rights.canInsert = "add_layer" in perms
+                rights.canUpdate = "change_layer" in perms
+                rights.canDelete = "delete_layer" in perms
 
         except Layer.DoesNotExist:
             pass
