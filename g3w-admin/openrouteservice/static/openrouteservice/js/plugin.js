@@ -1,7 +1,6 @@
 (async function() { try {
 
   const BASE_URL = initConfig.group.plugins.openrouteservice.baseUrl + 'openrouteservice/js';
-  const APP      = await(await fetch(initConfig.baseurl + 'openrouteservice/api/vueconfig')).json();
 
   if (!globalThis.httpVueLoader) {
     $script('https://unpkg.com/http-vue-loader@1.4.2/src/httpVueLoader.js');
@@ -28,13 +27,12 @@
       // initialize service
       service.clear  = this.unload = () => service.openFormPanel = null;
       service.config = this.config;
-      service.state  = { APP };
       service.emit('ready');
 
       // setup gui
       if (this.registerPlugin(this.config.gid)) {
         this.createSideBarComponent({}, {
-          ...APP.sidebar,
+          ...this.config.sidebar,
           id: this.name,
           events: {
             open: {

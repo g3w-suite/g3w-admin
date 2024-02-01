@@ -36,6 +36,19 @@ def set_initconfig_value(sender, **kwargs):
             'gid': "{}:{}".format(kwargs['projectType'], kwargs['project']),
             'jsscripts': [
                 static('js/httpVueLoader.min.js'),
-            ]
+            ],
+            'sidebar': {
+                'title': 'OPENROUTESERVICE',
+                'open': False,
+                'collapsible': False,
+                'iconConfig': {
+                    'color': 'purple',
+                    'icon': 'layers',
+                },
+                'mobile': True,
+                'sidebarOptions': {
+                    'position': 1
+                },
+            },
         },
     }

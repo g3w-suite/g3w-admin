@@ -424,19 +424,6 @@ class OpenrouteServiceVueConfigView(G3WAPIView):
                     'attributes': [ 'area', 'reachfactor', 'total_pop' ]
                 }
             },
-            'sidebar': {
-                'title': 'OPENROUTESERVICE',
-                'open': False,
-                'collapsible': False,
-                'iconConfig': {
-                    'color': 'purple',
-                    'icon': 'layers',
-                },
-                'mobile': True,
-                'sidebarOptions': {
-                    'position': 1
-                },
-            },
             'api': {
                 'urls': {
                 'compatible_layers': '/openrouteservice/api/compatible_layers',        # TO ADD PROJECTID

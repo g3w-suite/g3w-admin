@@ -1,6 +1,6 @@
 (async function() { try {
 
-  const BASE_URL                  = initConfig.group.plugins.qtimeseries.baseUrl + 'qtimeseries/js';
+  const BASE_URL = initConfig.group.plugins.qtimeseries.baseUrl + 'qtimeseries/js';
 
   const { ApplicationService, ApplicationState } = g3wsdk.core;
   const { Plugin, PluginService }                = g3wsdk.core.plugin;

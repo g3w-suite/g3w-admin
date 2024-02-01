@@ -18,7 +18,7 @@
               @changeinput = "validate"
               :is          = "`${input.input.type}_input`"
               :state       = "input"
-            />
+            ></component>
           </div>
         </form>
       </div>
@@ -64,7 +64,7 @@
               @changeinput = "validate"
               :is          = "`${input.input.type}_input`"
               :state       = "input"
-            />
+            ></component>
           </div>
         </form>
       </div>
@@ -110,7 +110,7 @@
               @changeinput = "validate"
               :is          = "`${input.input.type}_input`"
               :state       = "input"
-            />
+            ></component>
           </div>
         </form>
       </div>
@@ -144,14 +144,13 @@
     time: 60,
     distance: 100000
   };
-
   module.exports = {
 
     name: 'ors_panel',
 
     data() {
       return {
-        state:          this.$props.service.state,
+        APP:            { form: { isochrones: [], inputs: {}, outputs: {} }, api: {} },
         config:         this.$props.service.config,
         is_valid:       false,
         IN:             'mapcoordinates',           // current inputs (mapcoordinates, from_layer)
@@ -171,12 +170,12 @@
     computed: {
 
       form() {
-        return this.state.APP.form;
+        return this.APP.form;
       },
 
       // initialize API urls
       api_urls() {
-        const { urls }  = this.state.APP.api;
+        const { urls }  = this.APP.api;
         const projectId = this.config.gid.split(":")[1];
         const api_urls = {};
         Object.keys(urls).forEach(key => api_urls[key] = `${urls[key]}/${projectId}/`);
@@ -223,6 +222,8 @@
       },
 
       validate(input) {
+
+        console.log(this.form.isochrones);
 
         /** @FIXME add description */
         if ('range' === input?.name) {
@@ -299,7 +300,6 @@
         GUI.disableSideBar(true);
 
         const api = this.IN;
-        const APP = this.state.APP;
         let url   = this.api_urls[`isochrone_${api}`];
 
         this.loading = true;
@@ -307,11 +307,11 @@
         // loop inputs
         this.form_fields.forEach(({name, value}) => {
           if ('range' === name) {
-            value = value.split(',').map(v => ('time' === APP.data.ors.range_type ? 60 : 1) * v);
+            value = value.split(',').map(v => ('time' === this.APP.data.ors.range_type ? 60 : 1) * v);
           }
           
           if ('interval' === name) {
-            value = APP.data.ors.range.length > 1 ? null : (1 * value);
+            value = this.APP.data.ors.range.length > 1 ? null : (1 * value);
           }
           
           if ('color' === name) {
@@ -322,25 +322,25 @@
             url = `${url}${value}`;
           }
 
-          if (undefined !== APP.data[name]) {
-            return APP.data[name] = value;
+          if (undefined !== this.APP.data[name]) {
+            return this.APP.data[name] = value;
           }
           
-          if (undefined !== APP.data.ors[name]) {
-            return APP.data.ors[name] = value
+          if (undefined !== this.APP.data.ors[name]) {
+            return this.APP.data.ors[name] = value
           }
         });
 
         try {
           const response = 'from_layer' !== api && await XHR.post({
             url,
-            data: JSON.stringify(APP.data),
+            data: JSON.stringify(this.APP.data),
             contentType: 'application/json'
           });
           let time; // timeout progress interval
 
           if ('from_layer' !== api && response.result) {
-            this.afterRun(APP.data.qgis_layer_id);
+            this.afterRun(this.APP.data.qgis_layer_id);
           }
 
           if ('from_layer' !== api && !response.result) {
@@ -356,7 +356,7 @@
               url,
               taskUrl: this.api_urls.task,
               params: {
-                data: JSON.stringify(APP.data),
+                data: JSON.stringify(this.APP.data),
                 contentType: 'application/json'
               },
               method: 'POST',
@@ -367,7 +367,7 @@
                 time               = 'executing' === response.status && (this.has_task || response.progress > this.task_progress) ? Date.now() : time;
 
                 if ('complete' === response.status) {
-                  this.afterRun(APP.data.qgis_layer_id);
+                  this.afterRun(this.APP.data.qgis_layer_id);
                 }
 
                 if (['complete', '500'].includes(response.status) || is_expired) {
@@ -432,7 +432,9 @@
 
     },
 
-    created() {
+    async created() {
+
+      this.APP = await(await fetch(initConfig.baseurl + 'openrouteservice/api/vueconfig')).json();
 
       const project       = ProjectsRegistry.getCurrentProject();
       const from_layer    = this.form.inputs.from_layer[0];
