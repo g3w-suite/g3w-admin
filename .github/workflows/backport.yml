@@ -25,7 +25,7 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           body_template: "Backport <%= mergeCommitSha %> from #<%= number %> to <%= base %>.\n\n<%= body %>"
-          label_pattern: "^backport (?<base>([^ ]+))$"
+          label_pattern: "^backport to (?<base>([^ ]+))$"
           # Include the original labels from the merged PR (minus any matching label_pattern)
           labels_template: "<% print(JSON.stringify(labels)) %>"
           title_template: "🔙 from #<%= number %> - <%= title %>"
