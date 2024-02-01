@@ -94,7 +94,7 @@
                 cb: bool => {
                   this._panel = this._panel || new (Vue.extend({
                     functional: true,
-                    components: { 'qts': httpVueLoader(BASE_URL + '/components/panel.vue')},
+                    components: { 'qts': httpVueLoader(BASE_URL + '/plugin.vue')},
                     render: h => h('qts', { props: { service } }),
                   }))().$mount(ApplicationService.getService('sidebar').getComponent('qtimeseries').getInternalComponent().$el);
                   service.toggle(bool);

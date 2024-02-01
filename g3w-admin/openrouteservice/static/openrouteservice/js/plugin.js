@@ -46,7 +46,7 @@
                   title: 'OPENROUTESERVICE',
                   panel: new (Vue.extend({
                     functional: true,
-                    components: { 'ors': httpVueLoader(BASE_URL + '/components/panel.vue')},
+                    components: { 'ors': httpVueLoader(BASE_URL + '/plugin.vue')},
                     render: h => h('ors', { props: { service } }),
                   }))(),
                 });
