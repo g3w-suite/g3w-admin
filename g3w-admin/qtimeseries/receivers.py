@@ -19,6 +19,7 @@ from core.signals import \
     after_serialized_project_layer, \
     initconfig_plugin_start
 from core.utils.qgisapi import get_qgis_layer
+from base.version import get_version
 
 from qgis.PyQt.QtCore import QDate, QDateTime, Qt
 from datetime import datetime
@@ -51,6 +52,7 @@ def set_initconfig_value(sender, **kwargs):
 
     toret = {
         'qtimeseries': {
+            'version': get_version(),
             'gid': "{}:{}".format(kwargs['projectType'], kwargs['project']),
             'jsscripts': [
                 static('js/httpVueLoader.min.js'),

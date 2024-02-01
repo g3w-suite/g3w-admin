@@ -18,6 +18,7 @@ from django.dispatch import receiver
 from .utils import config, check_user_permissions
 from django.apps import apps
 from django.templatetags.static import static
+from base.version import get_version
 
 
 @receiver(initconfig_plugin_start)
@@ -33,6 +34,7 @@ def set_initconfig_value(sender, **kwargs):
 
     return {
         'openrouteservice': config(project) | {
+            'version': get_version(),
             'gid': "{}:{}".format(kwargs['projectType'], kwargs['project']),
             'jsscripts': [
                 static('js/httpVueLoader.min.js'),
