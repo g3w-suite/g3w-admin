@@ -31,8 +31,6 @@
       service.state  = { APP };
       service.emit('ready');
 
-      console.log(service);
-
       // setup gui
       if (this.registerPlugin(this.config.gid)) {
         this.createSideBarComponent({}, {
