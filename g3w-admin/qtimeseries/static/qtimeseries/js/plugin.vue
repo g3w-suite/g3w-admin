@@ -157,25 +157,25 @@ module.exports = {
     const { layers=[] } = this.$props.service.config;
     return {
       layers,
-      open:                      this.$props.service.open,
-      step:                      layers[0].options.step,
+      open:             this.$props.service.open,
+      step:             layers[0].options.step,
       /** @TODO */
-      start_date:                layers[0].start_date,
-      end_date:                  layers[0].end_date,
-      step_multiplier:           layers[0].options.stepunitmultiplier,
+      start_date:       layers[0].start_date,
+      end_date:         layers[0].end_date,
+      step_multiplier:  layers[0].options.stepunitmultiplier,
       /** @TODO */
-      format:                    'YYYY-MM-DD HH:mm:ss',
-      min_date:                  layers[0].start_date,
-      max_date:                  layers[0].end_date,
-      step_units:                this.$props.service.config.steps,
-      step_unit:                 layers[0].options.stepunit,
-      change_step_unit:          false,
-      step_label:                this.$props.service.config.steps.find(u => u.moment === layers[0].options.stepunit).label,
-      range:                     { value: 0, min: 0, max: 0 },
-      changed_layer:             false,
-      current_layers:            layers.map((_, index) => index.toString()),
-      current_date:              null,
-      status:                    0, // status  [1: play, -1: back, 0: pause]
+      format:           'YYYY-MM-DD HH:mm:ss',
+      min_date:         layers[0].start_date,
+      max_date:         layers[0].end_date,
+      step_units:       this.$props.service.config.steps,
+      step_unit:        layers[0].options.stepunit,
+      change_step_unit: false,
+      step_label:       this.$props.service.config.steps.find(u => u.moment === layers[0].options.stepunit).label,
+      range:            { value: 0, min: 0, max: 0 },
+      changed_layer:    false,
+      current_layers:   layers.map((_, index) => index.toString()),
+      current_date:     null,
+      status:           0, // status  [1: play, -1: back, 0: pause]
     };
   },
 
