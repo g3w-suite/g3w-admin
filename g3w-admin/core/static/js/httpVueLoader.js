@@ -58,7 +58,7 @@
           if (ctx !== null && ctx.elt.hasAttribute('lang')) {
             const lang = ctx.elt.getAttribute('lang').toLowerCase();
             ctx.elt.removeAttribute('lang');
-            return (httpVueLoader.langProcessor[lang] || identity).call(this, content === null ? ctx.getContent() : content);
+            return (httpVueLoader.langProcessor[lang] || (v => v)).call(this, content === null ? ctx.getContent() : content);
           }
           return content;
         })
@@ -166,7 +166,7 @@
         throw new (ex.constructor)(ex.message, url, /* lineNubmer */ vueFile.substr(0, vueFile.indexOf(script)).split('\n').length + ex.lineNumber - 1);
       }
       return Promise.resolve(this.module.exports)
-        .then((httpVueLoader.scriptExportsHandler || identity).bind(this))
+        .then((httpVueLoader.scriptExportsHandler || (v => v)).bind(this))
         .then(exports => { this.module.exports = exports; });
     }
   }
@@ -192,10 +192,6 @@
     compile() {
       return Promise.resolve();
     }
-  }
-
-  function identity(value) {
-    return value;
   }
 
   function parseComponentURL(url) {
@@ -236,7 +232,7 @@
       const c = (await (await (await new Component(name).load(url)).normalize()).compile());
       const exports = null !== c.script ? c.script.module.exports : {};
       if (c.template !== null) exports.template = c.template.getContent();
-      if (c.name === undefined && c.name !== undefined) exports.name = c.name;
+      if (exports.name === undefined && c.name !== undefined) exports.name = c.name;
       exports._baseURI = c.baseURI;
       return exports;
     };
@@ -274,8 +270,7 @@
   };
 
   function httpVueLoader(url, name) {
-    const comp = parseComponentURL(url);
-    return httpVueLoader.load(comp.url, name);
+    return httpVueLoader.load(parseComponentURL(url).url, name);
   }
 
   return httpVueLoader;
