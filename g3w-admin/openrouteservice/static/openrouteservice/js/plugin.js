@@ -21,9 +21,9 @@
 
       // i18n
       const VM = new Vue();
-      const i18n = (lang = ApplicationState.language) => import(BASE_URL + '/i18n/' + lang + '.js').then(m => this.setLocale({ [lang]: m.default }));      
+      const i18n = async lang => this.setLocale({ [lang]: (await import(BASE_URL + '/i18n/' + lang + '.js')).default });
       VM.$watch(() => ApplicationState.language, i18n);
-      i18n();
+      i18n(ApplicationState.language);
 
       // initialize service
       service.clear  = this.unload = () => service.openFormPanel = null;
