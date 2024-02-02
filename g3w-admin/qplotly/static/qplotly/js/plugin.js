@@ -187,7 +187,7 @@
 
         const sidebar = this.createSideBarComponent(
           /*MultiPlotComponent*/
-          Vue.extend({
+          {
           template: `
 <ul
   id    = "chart_plot_multi_plot"
@@ -334,7 +334,7 @@
             })
           },
         },
-        }),
+        },
           {
             ...this.config.sidebar,
             id: this.name,
@@ -478,7 +478,7 @@
           if (!charts[plot.id]) {
             charts[plot.id] = [];
           }
-          charts.push({
+          charts[plot.id].push({
             filters: plot.filters,
             layout:  plot.plot.layout,
             tools:   plot.tools,
