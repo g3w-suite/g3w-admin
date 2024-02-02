@@ -263,7 +263,7 @@
               }
   
               // remove map Move end from plotids keys when there is a key moveend listener 
-              if (!plot.show && has_geo && self._moveend.key) {
+              if (!plot.show && has_geo && self.state._moveend.key) {
                 self.state._moveend.plotIds = self.state._moveend.plotIds.filter(plotId => plot.id !== plotId.id);
               }
   
