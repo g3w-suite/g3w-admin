@@ -19,6 +19,7 @@ from core.signals import load_layer_actions, after_serialized_project_layer
 from qdjango.signals import reading_layer_model
 from qdjango.models import Layer
 from qmapproxy.models import G3WMapproxyLayer
+from .utils import get_tms_base_url
 
 import logging
 
@@ -55,6 +56,31 @@ def mapproxy_layer_action(sender, **kwargs):
 
         template = loader.get_template('qmapproxy/layer_action.html')
         return template.render(kwargs)
+
+def _get_caching_ulr(layer):
+    """Check if layer is a caching layer and return caching url"""
+
+    caching_layers = {str(cl): cl for cl in G3WMapproxyLayer.objects.all()}
+    if layer.name in caching_layers.keys():
+        return get_tms_base_url(layer)
+
+
+@receiver(after_serialized_project_layer)
+def add_caching_urls(sender, **kwargs):
+    """
+    Receiver to add caching data and url.
+    """
+    layer = kwargs['layer']
+    data = {
+        'operation_type': 'update',
+        'values': {},
+    }
+
+    # get config if exists:
+    caching_url = _get_caching_ulr(layer)
+    if caching_url:
+        data['values'] = {'cache_url': caching_url}
+    return data
 
 
 @receiver(pre_delete, sender=Layer)
@@ -104,4 +130,16 @@ def delete_prj_cache(**kwargs):
 
     logging.getLogger("g3wadmin.debug").debug(
         f"MapProxy cache delete of: {kwargs['instance'].layer.name}, {kwargs['instance'].layer.project}"
+    )
+
+@receiver(post_save, sender=G3WMapproxyLayer)
+@receiver(pre_delete, sender=G3WMapproxyLayer)
+def invalid_prj_cache(**kwargs):
+    """Invalid the possible qdjango project cache"""
+
+    layer = kwargs["instance"].layer
+    layer.project.invalidate_cache()
+    logging.getLogger("g3wadmin.debug").debug(
+        f"Qdjango project /api/config invalidate on update/delete of a caching layer state: "
+        f"{layer.project}"
     )

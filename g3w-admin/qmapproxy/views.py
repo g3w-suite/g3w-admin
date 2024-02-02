@@ -27,6 +27,7 @@ from core.utils.geo import get_crs_bbox
 from core.models import BaseLayer
 from .forms import ActiveMapproxyLayerForm
 from .models import G3WMapproxyLayer
+from .utils import get_tms_base_url
 from django.core.cache import caches
 from qdjango.models import Layer as QdjangoLayer
 from qgis.core import QgsCoordinateReferenceSystem
@@ -108,17 +109,6 @@ class ActiveMapproxyLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3
 
                 crs = QgsCoordinateReferenceSystem(f'EPSG:{self.layer.project.group.srid.srid}')
 
-                grid_name = f'EPSG{self.layer.project.group.srid.srid}'
-
-                # Standard grid names provided by mapproxy
-                if self.layer.project.group.srid.srid == '4326':
-                    grid_name = 'GLOBAL_GEODETIC'
-                elif self.layer.project.group.srid.srid == '900913':
-                    grid_name = 'GLOBAL_MERCATOR'
-                elif self.layer.project.group.srid.srid == '3857':
-                    grid_name = 'GLOBAL_WEBMERCATOR'
-
-
                 property = {
                     "crs": {
                         "epsg": self.layer.project.group.srid.srid,
@@ -127,7 +117,7 @@ class ActiveMapproxyLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3
                         "axisinverted": crs.hasAxisInverted(),
                         "extent": get_crs_bbox(crs)
                     },
-                    "url": f"{settings.MAPPROXY_SERVER_URL}/mapproxy_conf_{self.layer.pk}/tms/{self.layer.name}/{grid_name}/"+r"{z}/{x}/{y}.png",
+                    "url": f"{get_tms_base_url(self.layer)}/"+r"{z}/{x}/{y}.png",
                     "servertype": "TMS",
                     "attributions": form.cleaned_data['base_layer_attr']
                 }
