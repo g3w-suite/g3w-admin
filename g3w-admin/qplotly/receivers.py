@@ -181,7 +181,20 @@ def set_initconfig_value(sender, **kwargs):
                 static('qplotly/polyfill.min.js'),
                 static('qplotly/plotly-1.52.2.min.js')
             ],
-            'plots': plots
+            'plots': plots,
+            'sidebar': {
+                'title': 'plugins.qplotly.title',
+                'open': False,
+                'collapsible': True,
+                'iconConfig': {
+                    'color': 'red',
+                    'icon':'chart-area',
+                },
+                'mobile': True,
+                'sidebarOptions': {
+                    'position': 1,
+                },
+            },
         }
     }
 
