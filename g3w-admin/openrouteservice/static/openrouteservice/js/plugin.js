@@ -31,7 +31,7 @@
       // setup gui
       GUI.isReady().then(async () => {
 
-        if (this.registerPlugin(this.config.gid)) {
+        if (!this.registerPlugin(this.config.gid)) {
           return;
         }
         
