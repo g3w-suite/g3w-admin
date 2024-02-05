@@ -1,6 +1,6 @@
 <template>
   <div
-    v-disabled = "state.loading"
+    v-disabled = "service.state.loading"
     :id        = "id"
     class      = "skin-color"
     :style     = "{
@@ -10,8 +10,8 @@
   >
 
       <bar-loader
-        v-if     = "insideCointainer"
-        :loading = "state.loading"
+        v-if     = "undefined !== ids"
+        :loading = "service.state.loading"
       ></bar-loader>
 
       <div
@@ -30,15 +30,6 @@
         >
 
           <template v-for="({chart, state}) in charts[plotId]">
-            <!-- <plotheader
-              @toggle-bbox-tool   = "handleBBoxTools"
-              @toggle-filter-tool = "handleToggleFilter"
-              :index              = "index"
-              :layerId            = "chart.layerId"
-              :tools              = "!relationData ? chart.tools : undefined"
-              :title              = "chart.title"
-              :filters            = "chart.filters"
-            /> -->
             <div class="g3w-chart-header">
 
               <div class="skin-background-color g3w-chart-header-flex">
@@ -124,52 +115,7 @@
   const { resizeMixin }                 = g3wsdk.gui.vue.Mixins;
   const { CatalogLayersStoresRegistry } = g3wsdk.core.catalog;
 
-  const NoDataComponent = {
-    props: {
-      title: {
-        type: String
-      }
-    },
-    render(h){
-      return h('div', {
-        style: {
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          height: '100%',
-          justifyContent: 'center'
-        }
-      }, [
-        h('h4',
-          {
-            style: {
-              fontWeight: 'bold',
-              textAlign: 'center'
-            },
-            class:{
-              'skin-color':true
-            }
-          },
-          `${this.$props.title}`
-        ),
-
-        h('div', {
-          directives: [{
-            name:'t-plugin',
-            value: 'qplotly.no_data'
-          }],
-          style: {
-            fontWeight: 'bold'
-          },
-          class: {
-            'skin-color': true
-          }
-        })
-      ])
-    }
-  };
-
-  const TYPE_VALUES = {
+  const TYPES = {
     'pie':            'values',
     'scatterternary': 'a',
     'scatterpolar':   'r',
@@ -183,19 +129,16 @@
 
     mixins: [resizeMixin],
 
-    props: ['ids', 'relationData', 'service',
-    ],
+    props: ['ids', 'relationData', 'service'],
 
     data() {
-      this.id               = getUniqueDomId();
-      this.insideCointainer = undefined !== this.$props.ids;
-      this.relationData     = this.$props.relationData;
       return {
-        state:     this.$props.service.state,
-        show:      true,
-        overflowY: 'none',
-        height:    100,
-        order:     [], //array of ordered plot id
+        show:         true,
+        overflowY:    'none',
+        height:       100,
+        order:        [], //array of ordered plot id
+        plots:        this.$props.service.config.plots,
+        id:           getUniqueDomId(),
       }
     },
 
@@ -223,7 +166,7 @@
        * @param filter.layerId
        */
       async handleToggleFilter(layerId) {
-        this.setLoading(true);
+        this.service.setLoading(true);
         // toggle filter token on project layer
         const layer = CatalogLayersStoresRegistry.getLayerById(layerId);
         if (undefined !== layer) {
@@ -240,58 +183,10 @@
        * @returns { Promise<void> }
        */
       async handleBBoxTools(chart, index) {
-        
         this.getTools(chart).geolayer.active = !this.getTools(chart).geolayer.active;
-
-        this.setLoading(true);
-
-        // call plugin service updateMapBBOXData method
-        const {charts, order} = await this.updateMapBBOXData();
-        // global map tool toggled status base on plot belong to geolayer show on charts
-        this.state.tools.map.toggled = Object
-          .values(this.order)
-          // return true or false based on map active geo tools
-          .reduce((accumulator, id) => accumulator && this.charts[id].reduce((accumulator, { chart }) => accumulator && (chart.tools.geolayer.show ? chart.tools.geolayer.show && chart.tools.geolayer.active : true), true), true);
+        this.service.setLoading(true);
         // call set Charts based on change map tool toggled
-        this.setCharts({ charts, order });
-      },
-
-      /**
-       * @FIXME add description
-       * 
-       * @returns { Promise<unknown> }
-       */
-      async updateMapBBOXData() {
-        let active = this.getTools(chart).geolayer.active;
-        // loop through order plotId
-        const id = this.order[index]; //plot id
-        const plotIds = [{ id, active }];
-        const plot    = this.$props.service.config.plots.find((plot) => plot.id === id);
-        this.$props.service.config.plots.filter(plot => true === plot.show)
-          .forEach((p) => {
-            if (p.id !== id && p.qgs_layer_id === plot.qgs_layer_id) {
-              p.tools.geolayer.active = active;
-              this.$props.service.clearData(p);
-              plotIds.push({ id: p.id, active })
-            }
-          });
-
-        // set bbox parameter to force
-        this.$props.service.state.bbox = GUI.getService('map').getMapBBOX().toString()
-
-        // handle moveend map event
-
-        // which plotIds need to trigger map moveend event
-        this.$props.service.state._moveend.plotIds = plotIds;
-
-        // get map moveend event just one time
-        if (null === this.$props.service.state._moveend.key) {
-          this.$props.service.state._moveend.key = GUI.getService('map').getMap().on('moveend', this.$props.service.changeCharts);
-        }
-
-        this.$props.service.clearData(plot);
-
-        return await this.$props.service.getCharts({ plotIds: plotIds.map(({ id }) => id) });
+        this.setCharts(await this.service.updateMapBBox(this.order[index], this.getTools(chart).geolayer.active, this.charts));
       },
 
       /**
@@ -311,7 +206,6 @@
         charts={},
         order=[],
         action,
-        filter,
       } = {}) {
 
         this.order = order;
@@ -320,26 +214,23 @@
 
         this.show = this.order.length > 0;
 
-        switch(action) {
+        if ('hide' === action) {
+          delete this.charts[plotId];
+        }
 
-          case 'hide':
-            // remove charts [plotId]
-            delete this.charts[plotId];
-            // this.charts[plotId].forEach(({chart}) => chart.filters = filter});
-            if (this.show) {
-              await this.setCharts({ charts, order });
-            } else {
-              await this.calculateHeigths(this.order.length);
-              await this.resizePlots();
-            }
-            break;
+        if ('hide' === action && this.show) {
+          await this.setCharts({ charts, order });
+        }
 
-          case 'show':
-            this.show = true;
-            await this.calculateHeigths(this.order.length);
-            await this.drawAllCharts();
-            break;
+        if ('hide' === action && !this.show) {
+          await this.calculateHeigths(this.order.length);
+          await this.resizePlots();
+        }
 
+        if ('show' === action) {
+          this.show = true;
+          await this.calculateHeigths(this.order.length);
+          await this.drawAllCharts();
         }
 
         // resize already shown charts 
@@ -355,25 +246,23 @@
       async resizePlots() {
 
         /** @FIXME add description */
-        if (false === this.insideCointainer) {
-          this.setLoading(true);
+        if (undefined === this.ids) {
+          this.service.setLoading(true);
         }
 
         const promises = [];
         this.order.forEach(plotId => {
-          this.charts[plotId].forEach((chart, index) => {
-            const domElement = this.$refs[`${plotId}`][0];
-            this.setChartPlotHeigth(domElement);
-            promises.push(new Promise(resolve => { Plotly.Plots.resize(domElement).then(() => { resolve(plotId); }); }))
+          this.charts[plotId].forEach(() => {
+            this.setChartPlotHeigth(this.$refs[`${plotId}`][0]);
+            promises.push(new Promise(resolve => { Plotly.Plots.resize(this.$refs[`${plotId}`][0]).then(() => { resolve(plotId); }); }))
           })
         });
 
-        const chartsPlotIds = await Promise.allSettled(promises);
-        chartsPlotIds.forEach(({ value }) => this.charts[value].forEach(({ chart, state }) => state.loading = false ));
+        (await Promise.allSettled(promises)).forEach(({ value }) => this.charts[value].forEach(({ state }) => state.loading = false ));
 
         /** @FIXME add description */
-        if (false === this.insideCointainer) {
-          this.setLoading(false);
+        if (undefined === this.ids) {
+          this.service.setLoading(false);
         }
 
       },
@@ -382,15 +271,34 @@
        * @returns { Promise<void> }
        */
       async drawAllCharts() {
-        this.setLoading(true);
+        this.service.setLoading(true);
 
         await this.$nextTick();
 
         const promises = [];
 
-        // loop through loop plot ids order
+        // loop through loop plot ids order and draw Plotly Chart
         this.order.forEach(plotId => {
-          const promise = this.drawPlotlyChart({ plotId });
+          let promise;
+          this.charts[plotId]
+            .forEach(({ chart, state }) => {
+              this.setChartPlotHeigth(this.$refs[`${plotId}`][0]);
+              const GIVE_ME_A_NAME = chart.data && Array.isArray(chart.data[TYPES[chart.data.type] || 'x']) && chart.data[TYPES[chart.data.type] || 'x'].length;
+              if (GIVE_ME_A_NAME) {
+                state.loading = !this.relationData;
+                promise = new Promise(resolve => { setTimeout(() => { Plotly.newPlot(this.$refs[`${plotId}`][0], [chart.data] , chart.layout, this.plots[0].config).then(() => resolve(plotId)); }) });
+              } else {
+                this.$refs[`${plotId}`][0].innerHTML = '';
+                // no data component
+                setTimeout(() => this.$refs[`${plotId}`][0].appendChild((new Vue.extend({ 
+                  template: `
+<div style="display: flex; flex-direction: column; align-items: center; height: 100%; justify-content: center;">
+  <h4 style="font-weight: bold;text-align: center;" class="skin-color">Plot [${plotId}] ${ chart.layout && chart.layout.title ? ' - ' + chart.layout.title : ''} </h4>
+  <div v-t-plugin="qplotly.no_data" style="font-weight: bold;" class="skin-color"></div>
+</div>`
+                })()).$mount().$el));
+              }
+            });
           if (promise) {
             promises.push(promise);
           }
@@ -398,11 +306,10 @@
 
         /** @FIXME add description */
         if (promises.length > 0) {
-          const chartPlotIds = await Promise.allSettled(promises);
-          chartPlotIds.forEach(({value}) => { this.charts[value].forEach((chart) => { chart.state.loading = false; }); });
+          (await Promise.allSettled(promises)).forEach(({ value }) => { this.charts[value].forEach((chart) => { chart.state.loading = false; }); });
         }
 
-        this.setLoading(false);
+        this.service.setLoading(false);
       },
 
       /**
@@ -416,18 +323,17 @@
         charts = {},
         order = [],
       } = {}) {
-        this.setLoading(true);
+        this.service.setLoading(true);
         this.order = order;                           // get new charts order
         this.show = this.order.length > 0;            // check if there are plot charts to show
+
         // loop through charts
         // TODO check other way
+        
+        // initialize chart with plotId and get chart (set reactive state by Vue.observable)
         Object.keys(charts).forEach((plotId) => {
-          // initialize chart with plotId
           this.charts[plotId] = [];
-          // get chart
-          charts[plotId].forEach((chart) => {
-            this.charts[plotId].push({ chart, state: Vue.observable({ loading: false }) /* set reactive state by Vue.observable */ });
-          })
+          charts[plotId].forEach((chart) => this.charts[plotId].push({ chart, state: Vue.observable({ loading: false }) }));
         });
 
         this.$nextTick();
@@ -437,7 +343,7 @@
           await this.drawAllCharts();
         }
 
-        setTimeout(() => this.setLoading(false))
+        setTimeout(() => this.service.setLoading(false))
       },
 
       /**
@@ -454,102 +360,22 @@
       /**
        * @param domElement
        */
-      setChartPlotHeigth(domElement){
-        setTimeout(() => {
-          domElement.style.height = ($(domElement).parent().outerHeight() - $(domElement).siblings().outerHeight()) + 'px';
-        })
+      setChartPlotHeigth(el) {
+        setTimeout(() => el.style.height = ($(el).parent().outerHeight() - $(el).siblings().outerHeight()) + 'px');
       },
 
       /**
-       * @returns {*}
-       */
-      getChartConfig() {
-        return this.$props.service.config.plots[0].config;
-      },
-
-      /**
-       * @param { Object } chart
-       * @param chart.plotId
-       * 
-       * @returns {*}
-       */
-      drawPlotlyChart({ plotId } = {}) {
-        let promise;
-        this.charts[plotId]
-          .forEach(({ chart, state }, index) => {
-            const config           = this.getChartConfig();
-            const domElement       = this.$refs[`${plotId}`][0];
-            const { data, layout } = chart;
-            this.setChartPlotHeigth(domElement);
-            const GIVE_ME_A_NAME = data && Array.isArray(data[TYPE_VALUES[data.type] || 'x']) && data[TYPE_VALUES[data.type] || 'x'].length;
-            if (GIVE_ME_A_NAME) {
-              state.loading = !this.relationData;
-              promise = new Promise(resolve => { setTimeout(() => { Plotly.newPlot(domElement, [data] , layout, config).then(() => resolve(plotId)); }) });
-            } else {
-              domElement.innerHTML = '';
-              let component = Vue.extend(NoDataComponent);
-              component     = new component({ propsData: { title: `Plot [${plotId}] ${layout && layout.title ? ' - ' + layout.title: ''} ` } });
-              setTimeout(() => domElement.appendChild(component.$mount().$el));
-            }
-          });
-        return promise;
-      },
-
-      /**
-       * @param { number } visibleCharts
+       * @param { number } visible visible charts
        * 
        * @returns { Promise<unknown> }
        */
-      async calculateHeigths(visibleCharts=0){
-        const addedHeight = (
-          (this.relationData && this.relationData.height)
-            ? (visibleCharts > 1 ? visibleCharts * 50 : 0)
-            : (visibleCharts > 2 ? visibleCharts - 2 : 0) * 50
-        );
-        this.height = 100 + addedHeight;
+      async calculateHeigths(visible=0){
+        this.height = 100 + (this.relationData && this.relationData.height ? (visible > 1 ? visible * 50 : 0) : (visible > 2 ? visible - 2 : 0) * 50);
 
         await this.$nextTick();
 
-        this.overflowY = addedHeight > 0 ? 'auto' : 'none';
+        this.overflowY = this.height > 100 ? 'auto' : 'none';
       },
-
-      /**
-       * @FIXME add description
-       */
-      clearLoadedPlots() {
-        this.$props.service.state.tools.map.toggled = false;
-        this.$props.service.state.bbox              = undefined;
-        // remove handler of map moveend and reset to empty
-        if (this.$props.service.state._moveend) {
-          ol.Observable.unByKey(this.$props.service.state._moveend.key);
-          this.$props.service.state._moveend.key     = null;
-          this.$props.service.state._moveend.plotIds = [];
-        }
-        this.$props.service.config.plots
-          .filter(plot => true === plot.show)
-          .forEach(plot => {
-          this.$props.service.clearData(plot);
-          if (true === plot.tools.geolayer.show) {
-            plot.tools.geolayer.active = false;
-          }
-          plot.filters = [];
-        });
-        this.$props.service.state.showCharts = false;
-      },
-
-      /**
-       * Show loading charts data (loading === true) is on going
-       * 
-       * @param   { boolean } loading
-       * @returns { undefined }
-       */
-      setLoading(loading) {
-        this.$props.service.state.loading = loading;
-        if (undefined === this.$props.service.state.relationData) {
-          GUI.disableSideBar(loading);
-          GUI.setLoadingContent(loading);
-        }
-      }
 
     },
 
@@ -573,12 +399,12 @@
 
       await this.$nextTick();
       
-      this.$props.service.on('change-charts', this.setCharts);
-      this.$props.service.on('show-hide-chart', this.showHideChart);
+      this.service.on('change-charts', this.setCharts);
+      this.service.on('show-hide-chart', this.showHideChart);
 
       // at mount time get Charts
-      const { charts, order } = await this.$props.service.getCharts({
-        layerIds:     this.$props.ids, // provided by query result service otherwise is undefined
+      const { charts, order } = await this.service.getCharts({
+        layerIds:     this.ids, // provided by query result service otherwise is undefined
         relationData: this.relationData, // provided by query result service otherwise is undefined
       });
 
@@ -600,12 +426,12 @@
      * un listen all events
      */
     beforeDestroy() {
-      this.$props.service.off('change-charts', this.setCharts);
-      this.$props.service.off('show-hide-chart', this.showHideChart);
+      this.service.off('change-charts', this.setCharts);
+      this.service.off('show-hide-chart', this.showHideChart);
       if (this.relationData) {
         GUI.off('pop-content', this.resize);
       }
-      this.clearLoadedPlots();
+      this.service.clearLoadedPlots();
       this.charts = null;
       this.order = null ;
     },
