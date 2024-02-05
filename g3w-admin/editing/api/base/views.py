@@ -117,13 +117,16 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                 if gproperty in geojson_feature['properties'] and \
                         geojson_feature['properties'][gproperty]:
                     media_property = self.media_properties[self.layer_name][gproperty]
-                    gproperty_path = geojson_feature['properties'][gproperty] \
-                        .replace(settings.MEDIA_URL, '')
-                    media_file = open('{}{}'.format(
-                        settings.MEDIA_ROOT, gproperty_path), 'r')
-                    geojson_feature['properties'][gproperty] = \
-                        MAPPING_DJANGO_MODEL_FIELD_FILE_OBJECT[type(
-                            media_property)](media_file)
+
+                    # Replace only the gproerty start withsettings.MEDIA_URL
+                    if geojson_feature['properties'][gproperty].staartswith(settings.MEDIA_URL):
+                        gproperty_path = geojson_feature['properties'][gproperty] \
+                            .replace(settings.MEDIA_URL, '')
+                        media_file = open('{}{}'.format(
+                            settings.MEDIA_ROOT, gproperty_path), 'r')
+                        geojson_feature['properties'][gproperty] = \
+                            MAPPING_DJANGO_MODEL_FIELD_FILE_OBJECT[type(
+                                media_property)](media_file)
 
     def save_vector_data(self, metadata_layer, post_layer_data, has_transactions, post_save_signal=True, **kwargs):
         """Save vector editing data
