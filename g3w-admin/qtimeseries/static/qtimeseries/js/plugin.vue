@@ -78,7 +78,7 @@
               :key         = "u.moment"
               :value       = "u.moment"
               :selected    = "step_unit == u.moment"
-              v-t-plugin   = "`qtimeseries.stepsunit.${step_unit.label}`"
+              v-t-plugin   = "`qtimeseries.stepsunit.${u.label}`"
             ></option>
           </select>
         </div>
