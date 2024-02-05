@@ -31,7 +31,6 @@
       const VM = new Vue();
       const i18n = async lang => this.setLocale({ [lang]: (await import(BASE_URL + '/i18n/' + lang + '.js')).default });
       VM.$watch(() => ApplicationState.language, i18n);
-      i18n(ApplicationState.language);
 
       // State of plugin (Vue.observable)
       this.state = Vue.observable({
@@ -67,10 +66,6 @@
 
       // loop over plots
       this.config.plots.forEach((plot, index) => {
-
-        // BACKCOMP (depend on which plotly version installed on server) 
-        const title = 'Object' === toRawType(plot.plot.layout.title) ? plot.plot.layout.title.text : plot.plot.layout.title;
-
         // add plot id
         this.state.positions.push(plot.id);
 
@@ -83,8 +78,8 @@
         plot.withrelations                = null;   // set relation to null
         plot.data                         = null;   // since 3.5.1
         plot.loaded                       = false;  // set already loaded false
-        plot.plot.layout._title           = title ;
-        plot.label                        = title || `Plot id [${plot.id}]`;
+        plot.plot.layout._title           = 'Object' === toRawType(plot.plot.layout.title) ? plot.plot.layout.title.text : plot.plot.layout.title; // BACKCOMP (depend on which plotly version installed on server) 
+        plot.label                        = plot.plot.layout._title || `Plot id [${plot.id}]`;
         plot.plot.layout.xaxis.automargin = true;   // set auto margin
         plot.plot.layout.yaxis.automargin = true;
         plot.filters                      = [];
@@ -133,7 +128,14 @@
       this.state.geolayer = undefined !== this.config.plots.find(p => true === p.show && p.tools.geolayer.show);
 
       // setup gui
-      if (this.registerPlugin(this.config.gid)) {
+      GUI.isReady().then(async () => {
+
+        if (!this.registerPlugin(this.config.gid)) {
+          return;
+        }
+
+        await i18n(ApplicationState.language);
+
         // multi plot component
         const sidebar = this.createSideBarComponent({
           data: () => ({ service: this }),
@@ -156,7 +158,8 @@
 
         GUI.on('closecontent', () => setTimeout(() => sidebar.getOpen() && sidebar.click()));
         this.setReady(true);
-      }
+
+      });
 
     }
 
@@ -408,14 +411,14 @@
             const chartsRelations = undefined !== this.state.relationData && this.state.relationData.relations.filter(r => plot.qgs_layer_id === r.referencingLayer).map(r => `${r.id}|${this.state.relationData.fid}`);
             []
               .concat(chartsRelations ? chartsRelations.length : undefined) // set initial to undefined
-              .forEach(relationonetomany => {
+              .forEach(r => {
               c_cache.push(plot);
               promise = true === plot.loaded
                 ? Promise.resolve({ data: plot.data })
-                : XHR.get({                                                        // request server data
+                : XHR.get({                                                 // request server data
                   url: `${API_URL}/${plot.qgs_layer_id}/${plot.id}/`,
                   params: {
-                    relationonetomany,
+                    relationonetomany: r,
                     // filtertoken paramater
                     filtertoken: ApplicationState.tokens.filtertoken || undefined,
                     // withrelations parameter (check if plot has relation child → default: undefined)

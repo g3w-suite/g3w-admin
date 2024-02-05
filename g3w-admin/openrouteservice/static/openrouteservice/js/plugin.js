@@ -22,7 +22,6 @@
       const VM = new Vue();
       const i18n = async lang => this.setLocale({ [lang]: (await import(BASE_URL + '/i18n/' + lang + '.js')).default });
       VM.$watch(() => ApplicationState.language, i18n);
-      i18n(ApplicationState.language);
 
       // initialize service
       service.clear  = this.unload = () => service.openFormPanel = null;
@@ -30,7 +29,14 @@
       service.emit('ready');
 
       // setup gui
-      if (this.registerPlugin(this.config.gid)) {
+      GUI.isReady().then(async () => {
+
+        if (this.registerPlugin(this.config.gid)) {
+          return;
+        }
+        
+        await i18n(ApplicationState.language);
+
         this.createSideBarComponent({}, {
           ...this.config.sidebar,
           id: this.name,
@@ -56,7 +62,7 @@
           },
         });
         this.setReady(true);
-      }
+      });
 
     }
 

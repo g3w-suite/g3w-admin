@@ -18,7 +18,6 @@
       const VM = new Vue();
       const i18n = async lang => this.setLocale({ [lang]: (await import(BASE_URL + '/i18n/' + lang + '.js')).default });
       VM.$watch(() => ApplicationState.language, i18n);
-      i18n(ApplicationState.language);
 
       const enabled = this.registerPlugin(this.config.gid);
 
@@ -77,13 +76,15 @@
       }
 
       // setup plugin interface
-      GUI.isReady().then(() => {
+      GUI.isReady().then(async () => {
         // skip when ...
         if(!enabled || !show) {
           return;
         }
 
-        this.createSideBarComponent({},
+        await i18n(ApplicationState.language);
+
+        const sidebar = this.createSideBarComponent({},
           {
             ...this.config.sidebar,
             id: this.name,
@@ -102,6 +103,8 @@
             }
           }
         );
+
+        console.log(sidebar);
 
         this.setReady(true);
       });
