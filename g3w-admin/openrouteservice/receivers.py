@@ -40,6 +40,7 @@ def set_initconfig_value(sender, **kwargs):
                 static('js/httpVueLoader.min.js'),
             ],
             'sidebar': {
+                'id': 'openrouteservice',
                 'title': 'OPENROUTESERVICE',
                 'open': False,
                 'collapsible': False,

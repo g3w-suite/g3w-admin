@@ -185,6 +185,7 @@ def set_initconfig_value(sender, **kwargs):
             ],
             'plots': plots,
             'sidebar': {
+                'id': 'qplotly',
                 'title': 'plugins.qplotly.title',
                 'open': False,
                 'collapsible': True,

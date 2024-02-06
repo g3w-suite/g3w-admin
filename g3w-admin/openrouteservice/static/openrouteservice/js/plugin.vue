@@ -224,8 +224,6 @@
 
       validate(input) {
 
-        console.log(this.form.isochrones);
-
         /** @FIXME add description */
         if ('range' === input?.name) {
           const range = this.form.isochrones[2];
@@ -411,7 +409,7 @@
       },
 
       onClose() {
-        this.$props.service.clear()
+        this.$props.service._panel = null;
       },
 
       updateFormValues(inputs) {

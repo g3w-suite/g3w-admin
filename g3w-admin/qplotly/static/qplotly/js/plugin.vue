@@ -5,7 +5,7 @@
     class      = "skin-color"
     :style     = "{
       overflowY: overflowY,
-      height: relationData && relationData.height ? `${relationData.height}px`: '100%',
+      height: rel?.height ? rel.height + 'px' : '100%',
     }"
   >
 
@@ -25,11 +25,11 @@
           :key   = "plotId"
           style  = "position:relative;"
           :style = "{
-            height: relationData && relationData.height ? `${relationData.height}px` : `${100/order.length}%`,
+            height: rel?.height ? rel.height + 'px' : 100 / order.length + '%',
           }"
         >
 
-          <template v-for="({chart, state}) in charts[plotId]">
+          <template v-for="({ chart }) in charts[plotId]">
             <div class="g3w-chart-header">
 
               <div class="skin-background-color g3w-chart-header-flex">
@@ -129,7 +129,7 @@
 
     mixins: [resizeMixin],
 
-    props: ['ids', 'relationData', 'service'],
+    props: ['ids', 'rel', 'service'],
 
     data() {
       return {
@@ -146,7 +146,7 @@
 
       getTools(chart) {
         if (cache[chart]) return cache[chart];
-        cache[chart] = (!this.relationData ? chart.tools : undefined) || {
+        cache[chart] = (this.rel ? undefined : chart.tools) || {
           filter: {
             active: false,
           },
@@ -285,7 +285,7 @@
               this.setChartPlotHeigth(this.$refs[`${plotId}`][0]);
               const GIVE_ME_A_NAME = chart.data && Array.isArray(chart.data[TYPES[chart.data.type] || 'x']) && chart.data[TYPES[chart.data.type] || 'x'].length;
               if (GIVE_ME_A_NAME) {
-                state.loading = !this.relationData;
+                state.loading = !this.rel;
                 promise = new Promise(resolve => { setTimeout(() => { Plotly.newPlot(this.$refs[`${plotId}`][0], [chart.data] , chart.layout, this.plots[0].config).then(() => resolve(plotId)); }) });
               } else {
                 this.$refs[`${plotId}`][0].innerHTML = '';
@@ -352,7 +352,7 @@
        * @returns { Promise<void> }
        */
       async resize(){
-        if (this.mounted) {
+        if (this._mounted) {
           await this.resizePlots();
         }
       },
@@ -370,7 +370,7 @@
        * @returns { Promise<unknown> }
        */
       async calculateHeigths(visible=0){
-        this.height = 100 + (this.relationData && this.relationData.height ? (visible > 1 ? visible * 50 : 0) : (visible > 2 ? visible - 2 : 0) * 50);
+        this.height = 100 + (this.rel?.height ? (visible > 1 ? visible * 50 : 0) : (visible > 2 ? visible - 2 : 0) * 50);
 
         await this.$nextTick();
 
@@ -395,7 +395,7 @@
     async mounted() {
 
       //set mounted false
-      this.mounted = false;
+      this._mounted = false;
 
       await this.$nextTick();
       
@@ -404,21 +404,21 @@
 
       // at mount time get Charts
       const { charts, order } = await this.service.getCharts({
-        layerIds:     this.ids, // provided by query result service otherwise is undefined
-        relationData: this.relationData, // provided by query result service otherwise is undefined
+        layerIds: this.ids, // provided by query result service otherwise is undefined
+        rel:      this.rel, // provided by query result service otherwise is undefined
       });
 
       // set charts
       await this.setCharts({ charts, order });
 
-      //this.relationData is passed by query result service
+      // this.rel is passed by query result service
       // when show feature charts or relation charts feature
-      if (undefined !== this.relationData) {
+      if (undefined !== this.rel) {
         GUI.on('pop-content', this.resize);
       }
 
       //set mounted true
-      this.mounted = true;
+      this._mounted = true;
 
     },
 
@@ -428,7 +428,7 @@
     beforeDestroy() {
       this.service.off('change-charts', this.setCharts);
       this.service.off('show-hide-chart', this.showHideChart);
-      if (this.relationData) {
+      if (this.rel) {
         GUI.off('pop-content', this.resize);
       }
       this.service.clearLoadedPlots();

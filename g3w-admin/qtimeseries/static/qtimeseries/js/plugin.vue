@@ -2,7 +2,7 @@
   <ul
     id    = "g3w_raster_timeseries_content"
     class = "treeview-menu"
-    style = "position:relative; padding: 10px;color:#FFFFFF"
+    style = ""
   >
     <li>
 
@@ -84,18 +84,16 @@
         </div>
       </form>
 
-      <div style="display: flex; justify-content: space-between; margin-top: 10px" >
+      <div class="qtimeseries-buttons">
         <button
           class       = "sidebar-button skin-button btn btn-block"
           v-disabled  = "!validRangeDates || range.value === 0"
-          style       = "margin: 2px;"
           @click.stop = "fastBackwardForward(-1)"
         ><span :class = "g3wtemplate.getFontClass('fast-backward')"></span></button>
         
         <button
           class       = "sidebar-button skin-button btn btn-block"
           v-disabled  = "!validRangeDates || range.value <= 0"
-          style       = "margin: 2px;"
           @click.stop = "stepBackwardForward(-1)"
         ><span :class = "g3wtemplate.getFontClass('step-backward')"></span></button>
         
@@ -103,14 +101,13 @@
           class       = "sidebar-button skin-button btn btn-block"
           :class      = "{ toggled: status === -1 }"
           v-disabled  = "!validRangeDates || range.value <= 0"
-          style       = "margin: 2px; transform: rotate(180deg)"
+          style       = "transform: rotate(180deg)"
           @click.stop = "run(-1)"
         ><span :class = "g3wtemplate.getFontClass('run')"></span></button>
         
         <button
           class       = "sidebar-button skin-button btn btn-block"
           :class      = "{ toggled: status === 0 }"
-          style       = "margin: 2px;"
           @click.stop = "pause"
         ><span :class = "g3wtemplate.getFontClass('pause')"></span></button>
         
@@ -118,21 +115,18 @@
           class       = "sidebar-button skin-button btn btn-block"
           :class      = "{toggled: status === 1}"
           v-disabled  = "!validRangeDates || range.value >= range.max"
-          style       = "margin: 2px;"
           @click.stop = "run(1)"
         ><span :class = "g3wtemplate.getFontClass('run')"></span></button>
         
         <button
           class       = "sidebar-button skin-button btn btn-block"
           v-disabled  = "!validRangeDates || range.value >= range.max"
-          style       = "margin: 2px;"
           @click.stop = "stepBackwardForward(1)"
         ><span :class = "g3wtemplate.getFontClass('step-forward')"></span></button>
         
         <button
           class       = "sidebar-button skin-button btn btn-block"
           v-disabled  = "!validRangeDates || range.value === range.max"
-          style       = "margin: 2px;"
           @click.stop = "fastBackwardForward(1)"
         ><span :class = "g3wtemplate.getFontClass('fast-forward')"></span></button>
 
@@ -211,7 +205,7 @@ module.exports = {
     /**
      * Initialize time series form (open and close)
      */
-    initLayerTimeseries() {
+    init() {
       this.status       = 0;
       this.start_date   = this.select_layers.length > 1 ? moment.min(this.select_layers.map(l => l.start_date)) : this.layers[this.current_layers[0]].start_date;
       this.end_date     = this.select_layers.length > 1 ? moment.max(this.select_layers.map(l => l.end_date))   : this.layers[this.current_layers[0]].end_date; 
@@ -537,7 +531,7 @@ module.exports = {
         this.change_step_unit        = true;
         this.select_layers.forEach(l => l.options.stepunit = step_unit);
         this.step_label = this.$props.service.config.steps.find(c => c.moment === step_unit).label;
-        this.initLayerTimeseries();
+        this.init();
         await this.$nextTick();
         this.change_step_unit = false; // set false to enforce changing translation of label
       },
@@ -554,7 +548,7 @@ module.exports = {
           this.hideSingleLayerSelectionClear();
         }
         this.resetTimeLayer(oldVal.map(index => this.layers[index]));
-        this.initLayerTimeseries();
+        this.init();
       }
     },
 
@@ -565,7 +559,7 @@ module.exports = {
      */
     open(bool) {
       if (bool) {
-        this.initLayerTimeseries();
+        this.init();
       } else {
         const layers = this.$props.service.config.layers.filter(l => l.timed);
         if (layers) {
@@ -597,8 +591,25 @@ module.exports = {
   },
 
   beforeDestroy() {
-    this.$props.service.close();
+    this.$props.service.open = false;
   },
 
 };
 </script>
+
+<style scoped>
+#g3w_raster_timeseries_content {
+  position: relative;
+  padding: 10px;
+  color:#FFF;
+}
+.qtimeseries-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px
+}
+
+.qtimeseries-buttons > .sidebar-button {
+  margin: 2px;
+}
+</style>

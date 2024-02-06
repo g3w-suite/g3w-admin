@@ -59,6 +59,7 @@ def set_initconfig_value(sender, **kwargs):
             ],
             'layers': [], #TODO: to remove  and tell to g3w-client developers
             'sidebar': {
+                'id': 'qtimeseries',
                 'title': 'plugins.qtimeseries.title',
                 'open': False,
                 'collapsible': True,
