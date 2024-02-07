@@ -6,7 +6,7 @@ from django.db import IntegrityError
 from django.urls import reverse
 from django.contrib.gis import geos
 from qdjango.models import Layer
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.conf import settings
 from django.dispatch import receiver
 from django.contrib.auth.signals import user_logged_out

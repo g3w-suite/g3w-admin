@@ -7,7 +7,7 @@ from guardian.shortcuts import get_users_with_perms, assign_perm, remove_perm, g
 from guardian.models import UserObjectPermission
 from guardian.compat import get_user_model
 from crispy_forms.layout import Div, HTML, Field
-from django.utils.translation import ugettext, ugettext_lazy as _
+from django.utils.translation import ugettext, gettext_lazy as _
 from django.contrib.sessions.models import Session
 from django.utils import timezone
 from .configs import *
