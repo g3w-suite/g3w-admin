@@ -32,8 +32,11 @@
         if (!this.registerPlugin(this.config.gid)) {
           return;
         }
+
         await i18n(ApplicationState.language);
+
         const sidebar = this._sidebar = this.createSideBarComponent({}, this.config.sidebar);
+
         sidebar.onbefore('setOpen', b => {
           this._panel = this._panel || new g3wsdk.gui.Panel({
             service: this,
@@ -48,6 +51,7 @@
           if (b) this._panel.show()
           else this._panel.close()
         });
+
         this.setReady(true);
       });
 

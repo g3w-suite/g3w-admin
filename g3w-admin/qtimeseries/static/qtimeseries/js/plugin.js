@@ -12,6 +12,7 @@
     constructor() {
 
       super({ name: 'qtimeseries' });
+
       // i18n
       const VM = new Vue();
       const i18n = async lang => {
@@ -76,8 +77,11 @@
         if(!enabled || !show) {
           return;
         }
+
         await i18n(ApplicationState.language);
+
         const sidebar = this._sidebar = this.createSideBarComponent({}, this.config.sidebar);
+
         sidebar.onbefore('setOpen', b => {
           this._panel = this._panel || new (Vue.extend({
             functional: true,
@@ -86,6 +90,7 @@
           }))().$mount(document.querySelector(`#${this.name} #g3w-sidebarcomponent-placeholder`));
           this.open = b ?? !this.open;
         });
+
         this.setReady(true);
       });
 
