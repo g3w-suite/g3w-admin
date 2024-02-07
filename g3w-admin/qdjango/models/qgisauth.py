@@ -21,7 +21,7 @@ from django.db import models
 from django.db.models.signals import post_delete, post_save, pre_save, pre_delete
 from django.dispatch import receiver
 from django.core.validators import RegexValidator
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from qdjango.utils.models import temp_disconnect_signal
 from qgis.core import QgsApplication, QgsAuthMethodConfig
 

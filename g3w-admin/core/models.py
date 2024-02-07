@@ -1,7 +1,7 @@
 
 from django.conf import settings
 from django.conf.global_settings import LANGUAGES
-from django.utils.translation import ugettext, ugettext_lazy as _
+from django.utils.translation import ugettext, gettext_lazy as _
 from django.urls import reverse
 from django.db import models
 from django.apps import apps
