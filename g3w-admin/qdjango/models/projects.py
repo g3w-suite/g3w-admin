@@ -16,7 +16,7 @@ from django.contrib.auth.models import Group as AuthGroup
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.signals import post_delete
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.core.cache import cache
 from guardian.shortcuts import get_perms
 from guardian.utils import get_anonymous_user

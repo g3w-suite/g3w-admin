@@ -22,7 +22,7 @@ import traceback
 import requests
 from django.conf import settings
 from django.shortcuts import get_object_or_404
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from huey.contrib import djhuey as huey
 from qdjango.apps import remove_project_from_cache
 from qdjango.models import Layer, Project, QgisProjectFileLocker

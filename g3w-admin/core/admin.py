@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.contrib import admin
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.contrib.admin import ModelAdmin
 from django.utils.html import format_html
 from ordered_model.admin import OrderedModelAdmin

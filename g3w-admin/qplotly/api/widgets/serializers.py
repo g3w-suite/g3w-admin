@@ -11,7 +11,7 @@ __date__ = '2020-09-23'
 __copyright__ = 'Copyright 2015 - 2020, Gis3w'
 
 from rest_framework import serializers
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from qdjango.models import Layer
 from qplotly.models import QplotlyWidget

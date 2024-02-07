@@ -40,7 +40,7 @@ from qgis.PyQt.QtCore import (
     QTime
 )
 
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from qdjango.apps import get_qgs_project
 from qdjango.models import Layer, Project
 

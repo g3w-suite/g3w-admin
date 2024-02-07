@@ -15,7 +15,7 @@ from django.db.models import Q
 from django.urls import reverse
 from django.forms import ValidationError, widgets
 from django.utils.translation import ugettext
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.utils.html import mark_safe
 from django_file_form.forms import FileFormMixin, UploadedFileField
 from guardian.shortcuts import get_objects_for_user
