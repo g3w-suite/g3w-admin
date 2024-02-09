@@ -156,19 +156,25 @@ def set_initconfig_value(sender, **kwargs):
             else:
                 layout = factory.layout
 
+            # TODO move into db ?
+            layout['xaxis'].update({ 'automargin': True })
+            layout['yaxis'].update({ 'automargin': True })
+
             plots.append({
                 'id': qplotly_widget.pk,
                 'qgs_layer_id': layer.qgs_layer_id,
                 'selected_features_only': qplotly_widget.selected_features_only,
                 'visible_features_only': qplotly_widget.visible_features_only,
                 'show': qplotly_widget.show_on_start_client,
-
                 'plot': {
                     'type': settings.plot_type,
                     'layout': layout,
-                    'config': plot_config
-                }
-
+                    'config': plot_config,
+                },
+                'data': None,    # since 3.5.1
+                'loaded': False, # whether is already loaded
+                'filters': [],
+                'label': (layout['title'] if '2.5.1' == plotly.__version__ else layout['title']['text']) or ('Plot id [' + qplotly_widget.pk + ']'),
             })
 
     # no plots no 'qplotly' section
@@ -189,10 +195,8 @@ def set_initconfig_value(sender, **kwargs):
                 'title': 'plugins.qplotly.title',
                 'open': False,
                 'collapsible': True,
-                'iconConfig': {
-                    'color': 'red',
-                    'icon':'chart-area',
-                },
+                'icon':'chart-area',
+                'iconColor': 'red',
                 'mobile': True,
                 'sidebarOptions': {
                     'position': 1,

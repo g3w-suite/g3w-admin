@@ -44,10 +44,8 @@ def set_initconfig_value(sender, **kwargs):
                 'title': 'OPENROUTESERVICE',
                 'open': False,
                 'collapsible': False,
-                'iconConfig': {
-                    'color': 'purple',
-                    'icon': 'layers',
-                },
+                'icon': 'layers',
+                'iconColor': 'purple',
                 'mobile': True,
                 'sidebarOptions': {
                     'position': 1
