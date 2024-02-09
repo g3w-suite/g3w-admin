@@ -174,7 +174,7 @@ def set_initconfig_value(sender, **kwargs):
                 'data': None,    # since 3.5.1
                 'loaded': False, # whether is already loaded
                 'filters': [],
-                'label': (layout['title'] if '2.5.1' == plotly.__version__ else layout['title']['text']) or ('Plot id [' + qplotly_widget.pk + ']'),
+                'label': (layout['title'] if '2.5.1' == plotly.__version__ else layout['title']['text']) or f'Plot id [{qplotly_widget.pk}]',
             })
 
     # no plots no 'qplotly' section
