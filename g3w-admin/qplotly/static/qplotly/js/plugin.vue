@@ -45,7 +45,7 @@
                     v-if               = "getTools(chart).selection.active"
                     style              = "margin: auto"
                     class              = "action-button skin-tooltip-bottom"
-                    @click.stop        = "handleToggleFilter(chart.layerId)"
+                    @click.stop        = "toggleFilter(chart.layerId)"
                     :class             = "{ 'toggled': getTools(chart).filter.active }"
                     data-placement     = "bottom"
                     data-toggle        = "tooltip"
@@ -62,7 +62,7 @@
                     style              = "margin: auto"
                     class              = "action-button skin-tooltip-bottom"
                     :class             = "{ 'toggled': getTools(chart).geolayer.active }"
-                    @click.stop        = "handleBBoxTools(chart, index)"
+                    @click.stop        = "toggleBBox(chart, index)"
                     data-placement     = "bottom"
                     data-toggle        = "tooltip"
                     v-t-tooltip.create = "'plugins.qplotly.tooltip.show_feature_on_map'"
@@ -133,12 +133,12 @@
 
     data() {
       return {
-        show:         true,
-        overflowY:    'none',
-        height:       100,
-        order:        [], //array of ordered plot id
-        plots:        this.$props.service.config.plots,
-        id:           getUniqueDomId(),
+        show:      true,
+        overflowY: 'none',
+        height:    100,
+        order:     [], //array of ordered plot id
+        plots:     this.$props.service.config.plots,
+        id:        getUniqueDomId(),
       }
     },
 
@@ -162,12 +162,13 @@
       },
 
       /**
+       * toggle filter token on project layer
+       * 
        * @param { Object } filter
        * @param filter.layerId
        */
-      async handleToggleFilter(layerId) {
+      async toggleFilter(layerId) {
         this.service.setLoading(true);
-        // toggle filter token on project layer
         const layer = CatalogLayersStoresRegistry.getLayerById(layerId);
         if (undefined !== layer) {
           await layer.toggleFilterToken();
@@ -182,7 +183,7 @@
        * 
        * @returns { Promise<void> }
        */
-      async handleBBoxTools(chart, index) {
+      async toggleBBox(chart, index) {
         this.getTools(chart).geolayer.active = !this.getTools(chart).geolayer.active;
         this.service.setLoading(true);
         // call set Charts based on change map tool toggled
@@ -190,7 +191,7 @@
       },
 
       /**
-       * Called from showPlot or hidePlot plugin service (check/uncheck) chart checkbox
+       * Toggle chart - called from showPlot or hidePlot plugin service (check/uncheck) chart checkbox
        * 
        * @param { Object } chart
        * @param chart.plotId
@@ -201,7 +202,7 @@
        * 
        * @returns { Promise<void> }
        */
-      async showHideChart({
+      async toggle({
         plotId,
         charts={},
         order=[],
@@ -212,29 +213,29 @@
 
         await this.$nextTick();
 
-        this.show = this.order.length > 0;
+        const show = this.show = this.order.length > 0;
 
         if ('hide' === action) {
           delete this.charts[plotId];
         }
 
-        if ('hide' === action && this.show) {
+        if ('hide' === action && show) {
           await this.setCharts({ charts, order });
         }
 
-        if ('hide' === action && !this.show) {
-          await this.calculateHeigths(this.order.length);
+        if ('hide' === action && !show) {
+          await this.calculateHeigths();
           await this.resizePlots();
         }
 
         if ('show' === action) {
           this.show = true;
-          await this.calculateHeigths(this.order.length);
-          await this.drawAllCharts();
+          await this.calculateHeigths();
+          await this.draw();
         }
 
         // resize already shown charts 
-        if (this.show) {
+        if (show) {
           this.resize();
         }
 
@@ -250,15 +251,14 @@
           this.service.setLoading(true);
         }
 
-        const promises = [];
-        this.order.forEach(plotId => {
-          this.charts[plotId].forEach(() => {
-            this.setChartPlotHeigth(this.$refs[`${plotId}`][0]);
-            promises.push(new Promise(resolve => { Plotly.Plots.resize(this.$refs[`${plotId}`][0]).then(() => { resolve(plotId); }); }))
-          })
-        });
-
-        (await Promise.allSettled(promises)).forEach(({ value }) => this.charts[value].forEach(({ state }) => state.loading = false ));
+        (
+          await Promise.allSettled(
+            this.order.flatMap(id => this.charts[id].map(() => {
+              this.setHeight(id);
+              return new Promise(resolve => Plotly.Plots.resize(this.$refs[`${id}`][0]).then(() => resolve(id)));
+            }))
+          )
+        ).forEach(r => this.charts[r.value].forEach(({ state }) => state.loading = false ));
 
         /** @FIXME add description */
         if (undefined === this.ids) {
@@ -268,21 +268,25 @@
       },
 
       /**
+       * Draw all charts
+       * 
        * @returns { Promise<void> }
        */
-      async drawAllCharts() {
+      async draw() {
         this.service.setLoading(true);
 
         await this.$nextTick();
 
         const promises = [];
 
+        console.log(this.charts, this.order)
+
         // loop through loop plot ids order and draw Plotly Chart
         this.order.forEach(plotId => {
           let promise;
           this.charts[plotId]
             .forEach(({ chart, state }) => {
-              this.setChartPlotHeigth(this.$refs[`${plotId}`][0]);
+              this.setHeight(plotId);
               const GIVE_ME_A_NAME = chart.data && Array.isArray(chart.data[TYPES[chart.data.type] || 'x']) && chart.data[TYPES[chart.data.type] || 'x'].length;
               if (GIVE_ME_A_NAME) {
                 state.loading = !this.rel;
@@ -324,23 +328,23 @@
         order = [],
       } = {}) {
         this.service.setLoading(true);
-        this.order = order;                           // get new charts order
-        this.show = this.order.length > 0;            // check if there are plot charts to show
+        this.order = order;                // get new charts order
+        this.show = this.order.length > 0; // check if there are plot charts to show
 
         // loop through charts
         // TODO check other way
-        
+
         // initialize chart with plotId and get chart (set reactive state by Vue.observable)
-        Object.keys(charts).forEach((plotId) => {
-          this.charts[plotId] = [];
-          charts[plotId].forEach((chart) => this.charts[plotId].push({ chart, state: Vue.observable({ loading: false }) }));
+        Object.keys(charts).forEach(id => {
+          this.charts[id] = [];
+          charts[id].forEach(c => this.charts[id].push({ chart: c, state: Vue.observable({ loading: false }) }));
         });
 
         this.$nextTick();
 
         if (this.show) {
-          await this.calculateHeigths(this.order.length);
-          await this.drawAllCharts();
+          await this.calculateHeigths();
+          await this.draw();
         }
 
         setTimeout(() => this.service.setLoading(false))
@@ -351,16 +355,19 @@
        * 
        * @returns { Promise<void> }
        */
-      async resize(){
+      async resize(check){
         if (this._mounted) {
           await this.resizePlots();
         }
       },
 
       /**
-       * @param domElement
+       * Set chart height
+       * 
+       * @param plotId of dom element
        */
-      setChartPlotHeigth(el) {
+      setHeight(plotId) {
+        const el = this.$refs[`${plotId}`][0];
         setTimeout(() => el.style.height = ($(el).parent().outerHeight() - $(el).siblings().outerHeight()) + 'px');
       },
 
@@ -369,7 +376,9 @@
        * 
        * @returns { Promise<unknown> }
        */
-      async calculateHeigths(visible=0){
+      async calculateHeigths() {
+        const visible = this.order.length ?? 0;
+
         this.height = 100 + (this.rel?.height ? (visible > 1 ? visible * 50 : 0) : (visible > 2 ? visible - 2 : 0) * 50);
 
         await this.$nextTick();
@@ -389,7 +398,7 @@
 
     /**
      * @listens service~change-charts
-     * @listens service~show-hide-chart
+     * @listens service~toggle-chart
      * @listens GUI~pop-content
      */
     async mounted() {
@@ -400,7 +409,7 @@
       await this.$nextTick();
       
       this.service.on('change-charts', this.setCharts);
-      this.service.on('show-hide-chart', this.showHideChart);
+      this.service.on('toggle-chart', this.toggle);
 
       // at mount time get Charts
       const { charts, order } = await this.service.getCharts({
@@ -427,7 +436,7 @@
      */
     beforeDestroy() {
       this.service.off('change-charts', this.setCharts);
-      this.service.off('show-hide-chart', this.showHideChart);
+      this.service.off('toggle-chart', this.toggle);
       if (this.rel) {
         GUI.off('pop-content', this.resize);
       }
