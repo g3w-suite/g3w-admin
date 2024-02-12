@@ -484,7 +484,8 @@ class BaseVectorApiView(G3WAPIView):
         # --------------------------------------
         # IDEA:     for big data it'll be iterate over features to get unique
         #           c++ iteration is fast. Instead memory layer with too many features can be a problem.
-        if 'unique' in request.query_params:
+        if 'unique' in self.request_data:
+
 
             vl = QgsVectorLayer(QgsWkbTypes.displayString(self.metadata_layer.qgis_layer.wkbType()),
                                 "temporary_vector", "memory")
@@ -498,7 +499,7 @@ class BaseVectorApiView(G3WAPIView):
 
             uniques = vl.uniqueValues(
                 self.metadata_layer.qgis_layer.fields().indexOf(
-                    request.query_params.get('unique'))
+                    self.request_data.get('unique'))
             )
 
             values = []
@@ -641,6 +642,9 @@ class BaseVectorApiView(G3WAPIView):
 
         # set reprojecting status
         self.set_reprojecting_status()
+
+        # Get request data by GET or POST method
+        self.request_data = request.query_params if request.method == 'GET' else request.data
 
         # get results
         response = self.get_response_data(request)
