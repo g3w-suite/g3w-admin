@@ -81,11 +81,18 @@ class SearchFilter(BaseFilterBackend):
 
         qgis_layer = metadata_layer.qgis_layer
 
-        if request.query_params.get('search'):
+        # Try to get param from GET
+        search_value = request.query_params.get('search')
+
+        if not search_value:
+            # Try to get from POST
+            search_value = request.data.get('search')
+
+        if search_value:
 
             search_parts = []
 
-            for search_term in request.query_params.get('search').split(','):
+            for search_term in search_value.split(','):
 
                 search_term = self._quote_value('%' + search_term + '%')
                 exp_template = '{field_name} ILIKE ' + search_term
@@ -114,11 +121,18 @@ class OrderingFilter(BaseFilterBackend):
 
         qgis_layer = metadata_layer.qgis_layer
 
-        if request.query_params.get('ordering') is not None:
+        # Try to get param from GET
+        ordering_value = request.query_params.get('ordering')
+
+        if not ordering_value:
+            # Try to get from POST
+            ordering_value = request.data.get('ordering')
+
+        if ordering_value is not None:
 
             ordering_rules = []
 
-            for ordering in request.query_params.get('ordering').split(','):
+            for ordering in ordering_value.split(','):
                 ascending = True
                 if ordering.startswith('-'):
                     ordering = ordering[1:]
@@ -215,7 +229,12 @@ class SuggestFilterBackend(BaseFilterBackend):
 
         qgis_layer = metadata_layer.qgis_layer
 
+        # Try to get param from GET
         suggest_value = request.query_params.get('suggest')
+
+        if not suggest_value:
+            # Try to get from POST
+            suggest_value = request.data.get('suggest')
 
         if suggest_value:
 
