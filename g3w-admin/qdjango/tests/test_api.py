@@ -1137,7 +1137,7 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
 
         self.assertEqual(resp['data'], {
                 'layer': cities.qgs_layer_id,
-                'qgs_expression': '$id NOT IN (6,8,9,0)',
+                'qgs_expression': '$id NOT IN (9,8,6,0)',
                 'name': 'filter 1 layer cities',
                 'fid': 1,
                 'state': 'created'
@@ -1154,7 +1154,7 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
 
         self.assertEqual(resp['data'], {
             'layer': cities.qgs_layer_id,
-            'qgs_expression': '$id NOT IN (6,8,9,0)',
+            'qgs_expression': '$id NOT IN (9,8,6,0)',
             'name': 'filter 1 layer cities',
             'fid': 1,
             'state': 'updated'
@@ -1180,7 +1180,7 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
 
         self.assertEqual(resp['data'], {
             'layer': cities.qgs_layer_id,
-            'qgs_expression': '$id NOT IN (6,8,9,0) AND $id NOT IN (1,2)',
+            'qgs_expression': '$id NOT IN (9,8,6,0) AND $id NOT IN (2,1)',
             'name': 'filter 2 layer cities',
             'fid': 2,
             'state': 'created'
@@ -1213,7 +1213,7 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
 
         # Check inside the current fitlertoken
         token = sf.token
-        self.assertEqual(sf.stf_layers.all()[0].qgs_expr, '$id NOT IN (6,8,9,0)')
+        self.assertEqual(sf.stf_layers.all()[0].qgs_expr, '$id NOT IN (9,8,6,0)')
 
         # Delete fitler token and apply again to check for new fitler token value
         SessionTokenFilter.objects.all().delete()
@@ -1226,7 +1226,7 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
                                             }, logout=False).content)
         sf = SessionTokenFilter.objects.all()[0]
         self.assertFalse(token == sf.token)
-        self.assertEqual(sf.stf_layers.all()[0].qgs_expr, '$id NOT IN (6,8,9,0)')
+        self.assertEqual(sf.stf_layers.all()[0].qgs_expr, '$id NOT IN (9,8,6,0)')
 
         # Filter for layer check /api/config REST API:
         resp = json.loads(self._testApiCall('group-project-map-config',

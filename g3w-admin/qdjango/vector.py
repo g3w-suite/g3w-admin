@@ -419,11 +419,15 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
 
         # Get layer fids from server fids
         if fidsin:
-            fidsin = [str(fid) for fid in fidsin.split(',')]
-            fidsin = ",".join(map(str ,get_layer_fids_from_server_fids(fidsin, self.metadata_layer.qgis_layer)))
+            fidsin = get_layer_fids_from_server_fids([str(fid) for fid in fidsin.split(',')],
+                                                     self.metadata_layer.qgis_layer)
+            fidsin.reverse()
+            fidsin = ",".join(map(str, fidsin))
         if fidsout:
-            fidsout = [str(fid) for fid in fidsout.split(',')]
-            fidsout = ",".join(map(str, get_layer_fids_from_server_fids(fidsout, self.metadata_layer.qgis_layer)))
+            fidsout = get_layer_fids_from_server_fids([str(fid) for fid in fidsout.split(',')],
+                                                     self.metadata_layer.qgis_layer)
+            fidsout.reverse()
+            fidsout = ",".join(map(str, fidsout))
 
         token_data = {}
 
