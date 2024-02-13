@@ -16,12 +16,14 @@ from django.utils.http import int_to_base36
 from django.utils.crypto import salted_hmac
 from model_utils.models import TimeStampedModel
 from usersmanage.models import User
+from core.utils.qgisapi import get_layer_fids_from_server_fids
 from .projects import Layer
 from datetime import datetime
 import time
 import six
 import base64
 import logging
+import re
 
 
 logger = logging.getLogger(__name__)
@@ -80,7 +82,15 @@ class SessionTokenFilter(models.Model):
                 f"More than one token or more expressions for this layer '{layer.qgs_layer_id}' exist: skipping filtering!")
             return ""
         else:
-            return stf_layers[0].qgs_expr
+
+            # Check for `postgres` layer
+            if layer.layer_type == 'postgres':
+                pattern = r'\((.*?)\)'
+                fids = re.findall(pattern, stf_layers[0].qgs_expr)[0].split(',')
+                fids = get_layer_fids_from_server_fids(map(str, fids), layer.qgis_layer)
+                return f"$id IN ({','.join(map(str, fids))})"
+            else:
+                return stf_layers[0].qgs_expr
 
     class Meta:
         app_label = 'qdjango'
