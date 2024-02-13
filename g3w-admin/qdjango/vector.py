@@ -41,7 +41,8 @@ from core.api.permissions import ProjectPermission
 
 from core.utils.qgisapi import (
     get_qgis_layer,
-    get_qgis_featurecount
+    get_qgis_featurecount,
+    get_layer_fids_from_server_fids
 )
 from core.utils.structure import mapLayerAttributesFromQgisLayer
 from core.utils.vector import BaseUserMediaHandler
@@ -416,8 +417,15 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
         fidsin = request_data.get('fidsin')
         fidsout = request_data.get('fidsout')
 
-        token_data = {}
+        # Get layer fids from server fids
+        if fidsin:
+            fidsin = [str(fid) for fid in fidsin.split(',')]
+            fidsin = ",".join(map(str ,get_layer_fids_from_server_fids(fidsin, self.metadata_layer.qgis_layer)))
+        if fidsout:
+            fidsout = [str(fid) for fid in fidsout.split(',')]
+            fidsout = ",".join(map(str, get_layer_fids_from_server_fids(fidsout, self.metadata_layer.qgis_layer)))
 
+        token_data = {}
 
         def _create_qgs_expr(s, fidsin=None, fidsout=None):
             """
