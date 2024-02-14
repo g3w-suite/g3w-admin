@@ -6,7 +6,7 @@ from django.core.files import File
 from django.core.files.images import ImageFile
 from django.db import IntegrityError, transaction
 from django.db.models import AutoField, FileField, ImageField
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from qgis.core import \
     QgsDataSourceUri, \
     QgsFeature, \
@@ -112,18 +112,10 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
         if layer model has a media filefield or a imagefield
         :param geojson_feature: geojson object feature
         """
-        if self.layer_name in self.media_properties.keys():
-            for gproperty in self.media_properties[self.layer_name].keys():
-                if gproperty in geojson_feature['properties'] and \
-                        geojson_feature['properties'][gproperty]:
-                    media_property = self.media_properties[self.layer_name][gproperty]
-                    gproperty_path = geojson_feature['properties'][gproperty] \
-                        .replace(settings.MEDIA_URL, '')
-                    media_file = open('{}{}'.format(
-                        settings.MEDIA_ROOT, gproperty_path), 'r')
-                    geojson_feature['properties'][gproperty] = \
-                        MAPPING_DJANGO_MODEL_FIELD_FILE_OBJECT[type(
-                            media_property)](media_file)
+
+        # To be implemented in subclasses
+        # -------------------------------
+        pass
 
     def save_vector_data(self, metadata_layer, post_layer_data, has_transactions, post_save_signal=True, **kwargs):
         """Save vector editing data

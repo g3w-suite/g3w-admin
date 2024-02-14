@@ -41,7 +41,8 @@ from core.api.permissions import ProjectPermission
 
 from core.utils.qgisapi import (
     get_qgis_layer,
-    get_qgis_featurecount
+    get_qgis_featurecount,
+    get_layer_fids_from_server_fids
 )
 from core.utils.structure import mapLayerAttributesFromQgisLayer
 from core.utils.vector import BaseUserMediaHandler
@@ -418,7 +419,6 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
 
         token_data = {}
 
-
         def _create_qgs_expr(s, fidsin=None, fidsout=None):
             """
             Create qgs expression to save in db
@@ -507,6 +507,9 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
                 'state': 'created' if created else 'updated'
             })
 
+            # Is necessary invalidate the config project
+            self.layer.project.invalidate_cache(user=request.user)
+
         elif mode == 'apply':
 
             kwargs = _check_url_params_name_fid('apply')
@@ -542,6 +545,8 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
                 user = request.user,
                 **kwargs
             ).delete()
+
+            self.layer.project.invalidate_cache(user=request.user)
 
         # mode='delete'
         else:

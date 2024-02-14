@@ -1,5 +1,5 @@
 from defusedxml import ElementTree as etree
-from django.utils.translation import ugettext, ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.contrib.gis.geos import GEOSGeometry
 from core.utils.data import XmlData
 import json

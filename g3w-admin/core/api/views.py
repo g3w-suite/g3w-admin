@@ -10,7 +10,7 @@ from core.api.permissions import ProjectPermission
 from qdjango.models import Project
 from core.api.base.views import APIException
 from core.utils.geo import get_crs_bbox
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from rest_framework import status
 
 from qgis.core import NULL
