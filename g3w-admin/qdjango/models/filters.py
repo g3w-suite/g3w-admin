@@ -83,14 +83,16 @@ class SessionTokenFilter(models.Model):
             return ""
         else:
 
-            # Check for `postgres` layer
-            if layer.layer_type == 'postgres':
-                pattern = r'\((.*?)\)'
-                fids = re.findall(pattern, stf_layers[0].qgs_expr)[0].split(',')
+            qgs_expr = stf_layers[0].qgs_expr
+            ids = re.findall(r'\((.*?)\)', stf_layers[0].qgs_expr)
+
+            # Check for `postgres` layer and qgis expression template '$id IN (...)'
+            if layer.layer_type == 'postgres' and len(ids) == 1:
+                fids = ids[0].split(',')
                 fids = get_layer_fids_from_server_fids(map(str, fids), layer.qgis_layer)
                 return f"$id IN ({','.join(map(str, fids))})"
             else:
-                return stf_layers[0].qgs_expr
+                return qgs_expr
 
     class Meta:
         app_label = 'qdjango'
