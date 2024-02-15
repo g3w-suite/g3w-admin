@@ -480,7 +480,7 @@
      * @fires change-charts
      */
     showChart(bool, ids, container, rel) {
-      return new Promise(resolve => {
+      return new Promise(async resolve => {
 
         /** @FIXME add description */
         if (!bool && !container) {
@@ -498,11 +498,12 @@
         }
 
         // internal g3w Component
-        const component = new (Vue.extend({
-          functional: true,
-          components: { 'qplotly': httpVueLoader(BASE_URL + '/plugin.vue')},
-          render: h => h('qplotly', { props: { ids, rel, service: this } }),
-        }))();
+        const component = new (Vue.extend((await import(BASE_URL + '/sidebar.js')).default))({ propsData: {
+            ids,
+            rel,
+            service: this
+          }
+        });
 
         const content = new Component({
           title: "qplotly",

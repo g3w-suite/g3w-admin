@@ -54,9 +54,6 @@ def set_initconfig_value(sender, **kwargs):
         'qtimeseries': {
             'version': get_version(),
             'gid': "{}:{}".format(kwargs['projectType'], kwargs['project']),
-            'jsscripts': [
-                static('js/httpVueLoader.min.js'),
-            ],
             'layers': [], #TODO: to remove  and tell to g3w-client developers
             'sidebar': {
                 'id': 'qtimeseries',

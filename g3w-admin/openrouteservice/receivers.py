@@ -36,9 +36,6 @@ def set_initconfig_value(sender, **kwargs):
         'openrouteservice': config(project) | {
             'version': get_version(),
             'gid': "{}:{}".format(kwargs['projectType'], kwargs['project']),
-            'jsscripts': [
-                static('js/httpVueLoader.min.js'),
-            ],
             'sidebar': {
                 'id': 'openrouteservice',
                 'title': 'OPENROUTESERVICE',

@@ -2,10 +2,6 @@
 
   const BASE_URL = initConfig.group.plugins.openrouteservice.baseUrl + 'openrouteservice/js';
 
-  if (!globalThis.httpVueLoader) {
-    $script('https://unpkg.com/http-vue-loader@1.4.2/src/httpVueLoader.js');
-  }
-
   const { ApplicationState } = g3wsdk.core;
   const { Plugin }           = g3wsdk.core.plugin;
   const { GUI }              = g3wsdk.gui;
@@ -37,15 +33,13 @@
 
         const sidebar = this._sidebar = this.createSideBarComponent({}, this.config.sidebar);
 
-        sidebar.onbefore('setOpen', b => {
+        sidebar.onbefore('setOpen', async b => {
           this._panel = this._panel || new g3wsdk.gui.Panel({
             service: this,
             title: 'OPENROUTESERVICE',
-            panel: new (Vue.extend({
-              functional: true,
-              components: { 'ors': httpVueLoader(BASE_URL + '/plugin.vue')},
-              render: h => h('ors', { props: { service: this } }),
-            }))(),
+            panel: new (Vue.extend((await import(BASE_URL + '/sidebar.js')).default))({
+              propsData: { service: this }
+            }),
           });
           GUI.closeContent();
           if (b) this._panel.show()

@@ -1,147 +1,145 @@
-<template>
-  <ul
-    id    = "g3w_raster_timeseries_content"
-    class = "treeview-menu"
-    style = ""
-  >
-    <li>
-
-      <form v-disabled="0 !== this.status">
-
-        <label style="display: block">Layer</label>
-
-        <select
-          id        = "timeserieslayer"
-          class     = "form-control"
-          ref       = "select-layers"
-          :multiple = "layers.length > 0"
-          v-select2 = "'current_layers'"
-          :search   = "false"
-        >
-          <option
-            v-for     = "(layer, index) in layers"
-            :key      = "layer.id"
-            :value    = "index"
-            :selected = "current_layers.indexOf(index.toString()) > -1"
-          >{{ layer.name }}</option>
-        </select>
-
-        <div v-if="!changed_layer">
-          <datetime
-            :label   = "'plugins.qtimeseries.startdate'"
-            :format  = "format"
-            :minDate = "min_date"
-            :maxDate = "end_date"
-            :type    = "'datetime'"
-            :value   = "start_date"
-            @change  = "changeStartDateTime"
-          ></datetime>
-          <datetime
-            :label   = "'plugins.qtimeseries.enddate'"
-            :format  = "format"
-            :minDate ="start_date"
-            :maxDate = "max_date"
-            :type    = "'datetime'"
-            :value   = "end_date"
-            @change  = "changeEndDateTime"
-          ></datetime>
-          <label
-            v-if           = "!change_step_unit"
-            v-t-plugin:pre = "'qtimeseries.step'"
-          > [<span v-t-plugin="`qtimeseries.stepsunit.${step_label}`"></span> ] </label>
-          <input
-            class   = "form-control"
-            type    = "number"
-            :min    = "range.min"
-            :max    = "range.max"
-            :step   = "step_multiplier"
-            v-model = "step"
-          />
-          <range
-            v-disabled    = "range.max === range.min "
-            label         = "plugins.qtimeseries.steps"
-            :max          = "range.max"
-            :value        = "range.value"
-            :min          = "range.min"
-            ref           = "rangecomponent"
-            @change-range = "changeRangeStep"
-          ></range>
-          <label style="display: block"></label>
-          <select
-            class     = "form-control"
-            id        = "g3w-timeseries-select-unit"
-            v-select2 = "'step_unit'"
-            :search   = "false"
-          >
-            <option
-              v-for        = "u in step_units"
-              :key         = "u.moment"
-              :value       = "u.moment"
-              :selected    = "step_unit == u.moment"
-              v-t-plugin   = "`qtimeseries.stepsunit.${u.label}`"
-            ></option>
-          </select>
-        </div>
-      </form>
-
-      <div class="qtimeseries-buttons">
-        <button
-          class       = "sidebar-button skin-button btn btn-block"
-          v-disabled  = "!validRangeDates || range.value === 0"
-          @click.stop = "fastBackwardForward(-1)"
-        ><span :class = "g3wtemplate.getFontClass('fast-backward')"></span></button>
-        
-        <button
-          class       = "sidebar-button skin-button btn btn-block"
-          v-disabled  = "!validRangeDates || range.value <= 0"
-          @click.stop = "stepBackwardForward(-1)"
-        ><span :class = "g3wtemplate.getFontClass('step-backward')"></span></button>
-        
-        <button
-          class       = "sidebar-button skin-button btn btn-block"
-          :class      = "{ toggled: status === -1 }"
-          v-disabled  = "!validRangeDates || range.value <= 0"
-          style       = "transform: rotate(180deg)"
-          @click.stop = "run(-1)"
-        ><span :class = "g3wtemplate.getFontClass('run')"></span></button>
-        
-        <button
-          class       = "sidebar-button skin-button btn btn-block"
-          :class      = "{ toggled: status === 0 }"
-          @click.stop = "pause"
-        ><span :class = "g3wtemplate.getFontClass('pause')"></span></button>
-        
-        <button
-          class       = "sidebar-button skin-button btn btn-block"
-          :class      = "{toggled: status === 1}"
-          v-disabled  = "!validRangeDates || range.value >= range.max"
-          @click.stop = "run(1)"
-        ><span :class = "g3wtemplate.getFontClass('run')"></span></button>
-        
-        <button
-          class       = "sidebar-button skin-button btn btn-block"
-          v-disabled  = "!validRangeDates || range.value >= range.max"
-          @click.stop = "stepBackwardForward(1)"
-        ><span :class = "g3wtemplate.getFontClass('step-forward')"></span></button>
-        
-        <button
-          class       = "sidebar-button skin-button btn btn-block"
-          v-disabled  = "!validRangeDates || range.value === range.max"
-          @click.stop = "fastBackwardForward(1)"
-        ><span :class = "g3wtemplate.getFontClass('fast-forward')"></span></button>
-
-      </div>
-
-    </li>
-  </ul>
-</template>
-
-<script>
-
 const { ApplicationService } = g3wsdk.core;
 const { GUI }                = g3wsdk.gui;
 
-module.exports = {
+export default ({
+
+  // language=html
+  template: /* html */`
+<ul
+  id    = "g3w_raster_timeseries_content"
+  class = "treeview-menu"
+  style = ""
+>
+  <li>
+
+    <form v-disabled="0 !== this.status">
+
+      <label style="display: block">Layer</label>
+
+      <select
+        id        = "timeserieslayer"
+        class     = "form-control"
+        ref       = "select-layers"
+        :multiple = "layers.length > 0"
+        v-select2 = "'current_layers'"
+        :search   = "false"
+      >
+        <option
+          v-for     = "(layer, index) in layers"
+          :key      = "layer.id"
+          :value    = "index"
+          :selected = "current_layers.indexOf(index.toString()) > -1"
+        >{{ layer.name }}</option>
+      </select>
+
+      <div v-if="!changed_layer">
+        <datetime
+          :label   = "'plugins.qtimeseries.startdate'"
+          :format  = "format"
+          :minDate = "min_date"
+          :maxDate = "end_date"
+          :type    = "'datetime'"
+          :value   = "start_date"
+          @change  = "changeStartDateTime"
+        ></datetime>
+        <datetime
+          :label   = "'plugins.qtimeseries.enddate'"
+          :format  = "format"
+          :minDate ="start_date"
+          :maxDate = "max_date"
+          :type    = "'datetime'"
+          :value   = "end_date"
+          @change  = "changeEndDateTime"
+        ></datetime>
+        <label
+          v-if           = "!change_step_unit"
+          v-t-plugin:pre = "'qtimeseries.step'"
+        > [<span v-t-plugin="'qtimeseries.stepsunit.' + step_label"></span> ] </label>
+        <input
+          class   = "form-control"
+          type    = "number"
+          :min    = "range.min"
+          :max    = "range.max"
+          :step   = "step_multiplier"
+          v-model = "step"
+        />
+        <range
+          v-disabled    = "range.max === range.min "
+          label         = "plugins.qtimeseries.steps"
+          :max          = "range.max"
+          :value        = "range.value"
+          :min          = "range.min"
+          ref           = "rangecomponent"
+          @change-range = "changeRangeStep"
+        ></range>
+        <label style="display: block"></label>
+        <select
+          class     = "form-control"
+          id        = "g3w-timeseries-select-unit"
+          v-select2 = "'step_unit'"
+          :search   = "false"
+        >
+          <option
+            v-for        = "u in step_units"
+            :key         = "u.moment"
+            :value       = "u.moment"
+            :selected    = "step_unit == u.moment"
+            v-t-plugin   = "'qtimeseries.stepsunit.'+ u.label"
+          ></option>
+        </select>
+      </div>
+    </form>
+
+    <div class="qtimeseries-buttons">
+      <button
+        class       = "sidebar-button skin-button btn btn-block"
+        v-disabled  = "!validRangeDates || range.value === 0"
+        @click.stop = "fastBackwardForward(-1)"
+      ><span :class = "g3wtemplate.getFontClass('fast-backward')"></span></button>
+      
+      <button
+        class       = "sidebar-button skin-button btn btn-block"
+        v-disabled  = "!validRangeDates || range.value <= 0"
+        @click.stop = "stepBackwardForward(-1)"
+      ><span :class = "g3wtemplate.getFontClass('step-backward')"></span></button>
+      
+      <button
+        class       = "sidebar-button skin-button btn btn-block"
+        :class      = "{ toggled: status === -1 }"
+        v-disabled  = "!validRangeDates || range.value <= 0"
+        style       = "transform: rotate(180deg)"
+        @click.stop = "run(-1)"
+      ><span :class = "g3wtemplate.getFontClass('run')"></span></button>
+      
+      <button
+        class       = "sidebar-button skin-button btn btn-block"
+        :class      = "{ toggled: status === 0 }"
+        @click.stop = "pause"
+      ><span :class = "g3wtemplate.getFontClass('pause')"></span></button>
+      
+      <button
+        class       = "sidebar-button skin-button btn btn-block"
+        :class      = "{toggled: status === 1}"
+        v-disabled  = "!validRangeDates || range.value >= range.max"
+        @click.stop = "run(1)"
+      ><span :class = "g3wtemplate.getFontClass('run')"></span></button>
+      
+      <button
+        class       = "sidebar-button skin-button btn btn-block"
+        v-disabled  = "!validRangeDates || range.value >= range.max"
+        @click.stop = "stepBackwardForward(1)"
+      ><span :class = "g3wtemplate.getFontClass('step-forward')"></span></button>
+      
+      <button
+        class       = "sidebar-button skin-button btn btn-block"
+        v-disabled  = "!validRangeDates || range.value === range.max"
+        @click.stop = "fastBackwardForward(1)"
+      ><span :class = "g3wtemplate.getFontClass('fast-forward')"></span></button>
+
+    </div>
+
+  </li>
+</ul>`,
 
   name: "SidebarItem",
 
@@ -587,6 +585,7 @@ module.exports = {
   },
 
   async mounted() {
+    await this.$nextTick();
     this.$el.parentElement.querySelector('a').click();
   },
 
@@ -594,10 +593,12 @@ module.exports = {
     this.$props.service.open = false;
   },
 
-};
-</script>
+});
 
-<style scoped>
+document.head.insertAdjacentHTML(
+  'beforeend',
+  /* css */`
+<style>
 #g3w_raster_timeseries_content {
   position: relative;
   padding: 10px;
@@ -608,8 +609,8 @@ module.exports = {
   justify-content: space-between;
   margin-top: 10px
 }
-
 .qtimeseries-buttons > .sidebar-button {
   margin: 2px;
 }
-</style>
+</style>`,
+);

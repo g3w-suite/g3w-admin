@@ -80,14 +80,11 @@
 
         await i18n(ApplicationState.language);
 
-        const sidebar = this._sidebar = this.createSideBarComponent({}, this.config.sidebar);
-
-        sidebar.onbefore('setOpen', b => {
-          this._panel = this._panel || new (Vue.extend({
-            functional: true,
-            components: { 'qts': httpVueLoader(BASE_URL + '/plugin.vue')},
-            render: h => h('qts', { props: { service: this } }),
-          }))().$mount(document.querySelector(`#${this.name} #g3w-sidebarcomponent-placeholder`));
+        this._sidebar = this.createSideBarComponent({}, this.config.sidebar);
+        this._sidebar.onbefore('setOpen', async b => {
+          this._panel = this._panel || new (Vue.extend((await import(BASE_URL + '/sidebar.js')).default))({ propsData: {
+            service: this
+          }}).$mount(document.querySelector(`#${this.name} #g3w-sidebarcomponent-placeholder`));
           this.open = b ?? !this.open;
         });
 
