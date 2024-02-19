@@ -273,6 +273,9 @@ class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
                 mapcontrol.name: options
             })
 
+        # Macrogroups
+        ret['macrogroup_id'] = [macrogroup.id for macrogroup in instance.macrogroups.all()]
+
         return ret
 
     class Meta:
