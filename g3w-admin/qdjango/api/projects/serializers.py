@@ -338,7 +338,7 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         """
 
         # Patch for using fo `Accept-Language` requests paramenter.
-        if self.request.META.get('HTTP_ACCEPT_LANGUAGE'):
+        if hasattr(self.request, 'META') and self.request.META.get('HTTP_ACCEPT_LANGUAGE'):
             title_col = f"title_{self.request.META.get('HTTP_ACCEPT_LANGUAGE')}"
             body_col = f"body_{self.request.META.get('HTTP_ACCEPT_LANGUAGE')}"
         else:
@@ -429,7 +429,7 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         # Build a layer_filters dict to pass FilterLayerSaved instance to LayerSerializer
         # Only if user is not anonymous
         layer_filters = {}
-        if not self.request.user.is_anonymous:
+        if hasattr(self.request, 'user') and not self.request.user.is_anonymous:
             filters = FilterLayerSaved.objects.filter(user=self.request.user, layer__project=instance)
             for f in filters:
                 if f.layer.qgs_layer_id not in layer_filters:
