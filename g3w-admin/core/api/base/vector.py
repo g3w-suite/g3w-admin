@@ -34,5 +34,5 @@ class MetadataVectorLayer(object):
         """
         Returns a (possibly invalid) single feature from QGIS layer
         """
-        pk = get_layer_fids_from_server_fids([pk], self.qgis_layer)[0]
+        pk = get_layer_fids_from_server_fids([str(pk)], self.qgis_layer)[0]
         return self.qgis_layer.getFeature(pk)
