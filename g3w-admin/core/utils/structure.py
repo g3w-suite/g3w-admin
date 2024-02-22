@@ -265,6 +265,7 @@ def mapLayerAttributesFromQgisLayer(qgis_layer, **kwargs):
                     field.constraints().constraintStrength(
                         QgsFieldConstraints.ConstraintExpression) == QgsFieldConstraints.ConstraintStrengthHard
                 default_clause = data_provider.defaultValueClause(field_index)
+                default_clause = default_clause if default_clause != 'nextval(NULL)' else ''
 
                 # default value for editing from qgis_layer
                 if 'default' not in kwargs:
