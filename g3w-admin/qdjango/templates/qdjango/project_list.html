@@ -13,10 +13,10 @@
         <div class="nav-tabs-custom">
         <ul class="nav nav-tabs">
             <li class="active">
-                <a href="#tab-active-projects" data-toggle="tab"><span class="ion ion-ios-list"></span> {% trans 'Projects' %}</a>
+                <a href="#tab-active-projects" data-toggle="tab"><span class="ion ion-ios-list"></span> <strong>{% trans 'Projects' %}</strong> ({{ object_list|length }})</a>
             </li>
             <li>
-                <a href="#tab-deactivated-projects" data-toggle="tab"><span class="ion ion-trash-a"></span> {% trans 'Trash' %} ({{ inactive_project_list|length  }})</a>
+                <a href="#tab-deactivated-projects" data-toggle="tab"><span class="ion ion-trash-a"></span> <strong>{% trans 'Trash' %}</strong> ({{ inactive_project_list|length  }})</a>
             </li>
         </ul>
         <div class="tab-content">

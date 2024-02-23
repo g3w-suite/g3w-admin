@@ -94,8 +94,8 @@
     <div class="box-body">
         <div class="nav-tabs-custom">
             <ul class="nav nav-tabs">
-              <li class="active"><a href="#tab_layers_data" data-toggle="tab"><i class="fa fa-file"></i> {% trans 'Data' %}</a></li>
-              <li><a href="#tab_layers_structure" data-toggle="tab"><i class="fa fa-list-alt"></i> {% trans 'Structure' %}</a></li>
+                <li class="active"><a href="#tab_layers_data" data-toggle="tab"><i class="fa fa-file"></i> <strong>{% trans 'Layers' %}</strong> ({{ object_list|length }})</a></li>
+                <li><a href="#tab_layers_structure" data-toggle="tab"><i class="fa fa-list-alt"></i> <strong>{% trans 'Structure' %}</strong></a></li>
             </ul>
             <div class="tab-content">
               <div class="tab-pane active project_layers_action-content" id="tab_layers_data">
@@ -137,7 +137,7 @@
                         <tr id="qdjango_project_layer_{{ object.slug }}">
 
 
-                            <td>{{ object.title }}</td>
+                            <td><strong>{{ object.title }}</strong></td>
                             <td>{{ object.origname }}
                                 {% if "change_project" in userPrj_perms %}
                                 <a data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-detail-url="{% url 'qdjango-layer-detail' group.slug project.slug object.pk %}" ><i class="ion ion-eye"></i></a>
