@@ -34,7 +34,7 @@ class UserGroupFilter(BaseFilterBackend):
 
 
 class UserProjectFilter(BaseFilterBackend):
-    """A filter backend for portal module for qdjango project"""
+    """A filter backend for about module for qdjango project"""
 
     def filter_queryset(self, request, queryset, view):
         """
@@ -47,7 +47,7 @@ class UserProjectFilter(BaseFilterBackend):
 
 
 class GroupProjectFilter(BaseFilterBackend):
-    """A filter backend for portal module for qdjango project , filter by group"""
+    """A filter backend for about module for qdjango project , filter by group"""
 
     def filter_queryset(self, request, queryset, view):
         """
@@ -64,7 +64,7 @@ class GroupProjectFilter(BaseFilterBackend):
 
 
 class MacroGroupGroupFilter(BaseFilterBackend):
-    """A filter backend for portal module for group, filter by macrogroup"""
+    """A filter backend for about module for group, filter by macrogroup"""
 
     def filter_queryset(self, request, queryset, view):
         """
@@ -81,7 +81,7 @@ class MacroGroupGroupFilter(BaseFilterBackend):
 
 
 class PanoramicProjectFilter(BaseFilterBackend):
-    """A filter backend for portal module for qdjango project , filter by not panoramic"""
+    """A filter backend for about module for qdjango project , filter by not panoramic"""
 
     def filter_queryset(self, request, queryset, view):
 
