@@ -57,7 +57,7 @@ class GroupProjectFilter(BaseFilterBackend):
         if 'group_id' in view.kwargs:
             queryset = queryset.filter(group_id=view.kwargs['group_id']).order_by('order')
 
-        if url_name == 'about-group-without-macrogroup-api-list':
+        if resolve(request.path_info).url_name == 'about-group-without-macrogroup-api-list':
             queryset = queryset.filter(macrogroups__pk=None)
 
         return queryset
