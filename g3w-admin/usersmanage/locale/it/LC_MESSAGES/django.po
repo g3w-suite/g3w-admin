@@ -243,7 +243,7 @@ msgstr ""
 
 #: templates/django_registration/activation_email_body.txt:8
 msgid "The link will be active for"
-msgstr "Il link sarà attivo per {{ expiration_days }} giorni"
+msgstr "Il link sarà attivo per"
 
 #: templates/django_registration/activation_email_body.txt:8
 msgid "days"
