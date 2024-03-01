@@ -207,6 +207,10 @@ class PlotSettings:  # pylint: disable=too-many-instance-attributes
         self.source_layer_id = res.get('source_layer_id', None)
         self.data_defined_properties.loadVariant(res.get('dynamic_properties', None), PlotSettings.DYNAMIC_PROPERTIES)
 
+        # With QGIS > 3.28 the QgsXmlutils.readVariant method has a new behavior for Qstring tipe parameters
+        if self.layout['title'] == None:
+            self.layout['title'] = ''
+
         return True
 
     def write_to_project(self, document: QDomDocument):
