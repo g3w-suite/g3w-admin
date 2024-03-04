@@ -258,23 +258,6 @@ class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         if layout_right_panel:
             ret['layout']['rightpanel'] = layout_right_panel
 
-        # Mapcontrols
-        ret['mapcontrols'] = {}
-        for mapcontrol in instance.mapcontrols.all():
-            options = {}
-            if mapcontrol.name in ('nominatim', 'geocoding'):
-                options = {'providers': {}}
-                if self.project.geocoding_providers:
-                    for gp in json.loads(self.project.geocoding_providers):
-                        if gp in settings.GEOCODING_PROVIDERS:
-                            options['providers'].update({
-                                gp: settings.GEOCODING_PROVIDERS[gp]
-                            })
-
-            ret['mapcontrols'].update({
-                mapcontrol.name: options
-            })
-
         # Macrogroups
         ret['macrogroup_id'] = [macrogroup.id for macrogroup in instance.macrogroups.all()]
 
