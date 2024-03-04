@@ -258,6 +258,9 @@ class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         if layout_right_panel:
             ret['layout']['rightpanel'] = layout_right_panel
 
+        # Macrogroups
+        ret['macrogroup_id'] = [macrogroup.id for macrogroup in instance.macrogroups.all()]
+
         return ret
 
     class Meta:
