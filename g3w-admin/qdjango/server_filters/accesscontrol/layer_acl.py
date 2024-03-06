@@ -40,7 +40,7 @@ class LayerAclAccessControlFilter(QgsAccessControlFilter):
             purl = urlparse(self.server_iface.requestHandler().url())
             qs = parse_qs(purl.query)
             arg = 'g3wsuite_caching_token'.upper()
-            if (('caching' in settings.G3WADMIN_LOCAL_MORE_APPS and
+            if ((len(set(settings.G3WADMIN_LOCAL_MORE_APPS).intersection(set(['caching', 'qmapproxy']))) > 0 and
                      arg in qs and
                     settings.TILESTACHE_CACHE_TOKEN == qs[arg][0]) and
                     f"{purl.scheme}://{purl.netloc}" == settings.QDJANGO_SERVER_URL):
