@@ -12,9 +12,11 @@ class QdjangoProjectAuthorizer(object):
 
     def auth_request(self, **kwargs):
 
-        # check for caching token
-        if 'caching' in settings.G3WADMIN_LOCAL_MORE_APPS and 'g3wsuite_caching_token' in self.request.GET and \
-                settings.TILESTACHE_CACHE_TOKEN == self.request.GET['g3wsuite_caching_token']:
+        # Check for caching token
+        # TODO: create pluggable authentication layers
+        if (len(set(settings.G3WADMIN_LOCAL_MORE_APPS).intersection(set(['caching', 'qmapproxy']))) > 0
+                and 'g3wsuite_caching_token' in self.request.GET and \
+                settings.TILESTACHE_CACHE_TOKEN == self.request.GET['g3wsuite_caching_token']):
                     return True
 
         if self.request.user.has_perm('qdjango.view_project', self.project) or\
