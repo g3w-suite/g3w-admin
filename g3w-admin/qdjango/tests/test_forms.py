@@ -61,7 +61,8 @@ class QdjangoFormsTest(QdjangoTestBase):
             'toc_layers_init_status': 'not_collapsed',
             'toc_themes_init_status': 'collapsed',
             'legend_position': 'tab',
-            'url_alias': 'test_url_alias_name'
+            'url_alias': 'test_url_alias_name',
+            'wms_getmap_format': 'image/png; mode=8bit'
         }
 
         form = QdjangoProjectForm(request=self.request, group=self.project_group, data=form_data)
@@ -219,6 +220,7 @@ class QdjangoFormsTest(QdjangoTestBase):
         })
 
         form = GroupForm(request=self.request, data=form_data, instance=self.project_group, initial=initial_form_data)
+        print (form.errors)
         self.assertTrue(form.is_valid())
         form.save()
 
@@ -273,7 +275,8 @@ class QdjangoFormsTest(QdjangoTestBase):
             'toc_layers_init_status': 'not_collapsed',
             'toc_themes_init_status': 'collapsed',
             'legend_position': 'tab',
-            'url_alias': 'test_url_alias_name_qgz'
+            'url_alias': 'test_url_alias_name_qgz',
+            'wms_getmap_format': 'image/png; mode=8bit'
         }
 
         form = QdjangoProjectForm(request=self.request, group=self.project_group, data=form_data)

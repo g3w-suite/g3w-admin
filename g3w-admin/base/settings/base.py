@@ -73,6 +73,9 @@ THIRD_PARTY_APPS = [
     'bx_py_utils',  # required by huey_monitor
     'huey_monitor',
     'about',
+    'django_bleach',
+    'django_registration',
+    'captcha'
 ]
 
 G3WADMIN_APPS = [
@@ -246,7 +249,8 @@ SITE_TITLE = 'g3w-admin'
 
 # for qdjango module, this is the base URL for WMS/WFS visible by the client
 QDJANGO_SERVER_URL = 'http://localhost'
-QDJANGO_PRJ_CACHE_KEY = 'qdjango_prj_{}'
+QDJANGO_PRJ_CACHE = True
+QDJANGO_PRJ_CACHE_KEY = 'qdjango_prj_'
 
 # data for proxy server
 PROXY_SERVER = False
@@ -314,6 +318,25 @@ G3WADMIN_RASTER_LAYER_DOWNLOAD_FORMATS = ['geotiff', 'xls', 'csv', 'gpkg']
 # Setting to activate/deactivate user password reset by email.
 RESET_USER_PASSWORD = False
 
+# REGISTRATION ACCOUNTS
+# ---------------------
+ACCOUNT_ACTIVATION_DAYS = 2
+REGISTRATION_OPEN = False
+
+REGISTRATION_EMAIL_SUBJECT_PREFIX = '[G3W-SUITE]'
+REGISTRATION_EMAIL_BODY_SIGN = '''
+g3wsuite.it
+'''
+
+# Set to true if the activation of a registered user
+# must be done by the administrator
+REGISTRATION_ACTIVE_BY_ADMIN = False
+
+# CHANGE PASSWORD AT FIRST LOGIN
+# ------------------------------
+PASSWORD_CHANGE_FIRST_LOGIN = False
+
+
 # QPLOTLY DEFAULT SETTINGS
 # ------------------------
 
@@ -330,5 +353,33 @@ ANONYMOUS_USER_SESSIONID = '_anonymous_g3w_suite_sessionid_'
 # Custom token session client cookie name
 G3W_CLIENT_COOKIE_SESSION_TOKEN = 'g3wclientsessiontoken'
 
+# BLEACH SETTINGS
+# ----------------
+# Which HTML tags are allowed
+BLEACH_ALLOWED_TAGS = ['p', 'b', 'i', 'u', 'em', 'strong', 'a', 'br', 'table', 'tr', 'td', 'th', 'b', 'ul', 'li', 'ol',
+                       'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'pre', 'blockquote', 'tbody', 'theader', 'tfooter', 'span']
+BLEACH_STRIP_TAGS = True
+BLEACH_ALLOWED_ATTRIBUTES = ['href', 'title', 'style', 'src']
+BLEACH_ALLOWED_STYLES = [
+    'background-color', 'color', 'font-size'
+]
+BLEACH_STRIP_COMMENTS = True
+
 # For reverse proxy
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# GOOGLE RECAPTCHA
+# ----------------
+
+# Activate/deactivate Google ReCaptcha system. Default False
+RECAPTCHA = False
+# Set Google ReCaptch version. Default 3
+RECAPTCHA_VERSION = '3'
+
+# Settings for ReCaptcha v3
+RECAPTCHA_REQUIRED_SCORE = 0.85
+
+# Settings for ReCaptcha v2. Default checkbox
+RECAPTCHA_VERSION2_TYPE = 'checkbox' # or 'invisible'
+
+SILENCED_SYSTEM_CHECKS = ['captcha.recaptcha_test_key_error']

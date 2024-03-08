@@ -73,7 +73,7 @@
                     </a>
                     {% endif %}
                     {% if "view_project" in userPrj_perms %}
-                    <a href="#" class="btn btn-app" data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-detail-url="{% url 'qdjango-project-detail' group.slug project.slug %}" >
+                    <a class="btn btn-app" data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-detail-url="{% url 'qdjango-project-detail' group.slug project.slug %}" >
                         <i class="ion ion-eye"></i>
                         {% trans 'Show detail' %}
                     </a>
@@ -98,7 +98,21 @@
               <li><a href="#tab_layers_structure" data-toggle="tab"><i class="fa fa-list-alt"></i> {% trans 'Structure' %}</a></li>
             </ul>
             <div class="tab-content">
-              <div class="tab-pane active" id="tab_layers_data">
+              <div class="tab-pane active project_layers_action-content" id="tab_layers_data">
+                <div class="row">
+                <div class="col-md-3 col-md-offset-6 col-xs-6" >
+                    <b>{% trans 'Project layers actions' %}:</b>
+                </div>
+                <div class="col-md-3 col-xs-6">
+                {% g3wadmin_project_layers_actions project 'qdjango' user as project_layers_actions %}
+
+                {% for action in project_layers_actions %}
+                    {{ action }}
+                {% endfor %}
+                </div>
+                </div>
+
+
                 <table id="layers_table" class="table table-hover table-striped" data-widget-type="dataTable">
                     <thead>
                         <tr>
@@ -126,7 +140,7 @@
                             <td>{{ object.title }}</td>
                             <td>{{ object.origname }}
                                 {% if "change_project" in userPrj_perms %}
-                                <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-detail-url="{% url 'qdjango-layer-detail' group.slug project.slug object.pk %}" ><i class="ion ion-eye"></i></a>
+                                <a data-toggle="tooltip" data-placement="top" title="{% trans 'Show detail' %}" data-widget-type="detailItem" data-detail-url="{% url 'qdjango-layer-detail' group.slug project.slug object.pk %}" ><i class="ion ion-eye"></i></a>
                                 {% endif %}
                             </td>
                             <td>
@@ -155,21 +169,21 @@
                                     {% comment %} Add geoconstraints management {% endcomment %}
                                     {% if object.geometrytype != NOGEOMETRY %}
                                     <span class="col-xs-1 icon">
-                                        <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Geo-constraints by Users/Groups' %}" data-widget-type="geoConstraintsList" data-geoconstraints-layer-pk="{{ object.pk }}" data-geoconstraints-list-url="{% url 'geoconstraint-api-filter-by-layer' object.pk %}" ><i class="fa fa-object-ungroup"></i>
+                                        <a class="layer-action" data-toggle="tooltip" data-placement="top" title="{% trans 'Geo-constraints by Users/Groups' %}" data-widget-type="geoConstraintsList" data-geoconstraints-layer-pk="{{ object.pk }}" data-geoconstraints-list-url="{% url 'geoconstraint-api-filter-by-layer' object.pk %}" ><i class="fa fa-object-ungroup"></i>
                                         <span class="label label-info label-action-layer">{% geoconstraitnswidget4layer object %}</span>
                                         </a>
                                     </span>
                                     {% endif %}
                                     {% comment %} Add singlelayerconstraints management {% endcomment %}
                                     <span class="col-xs-1 icon">
-                                        <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Alphanumeric and QGIS expressions constraints by Users/Groups' %}" data-widget-type="singlelayerConstraintsList" data-singlelayerconstraints-layer-pk="{{ object.pk }}" data-singlelayerconstraints-list-url="{% url 'qdjango-constraint-api-filter-by-layer-id' object.pk %}" ><i class="fa fa-filter"></i>
+                                        <a class="layer-action" data-toggle="tooltip" data-placement="top" title="{% trans 'Alphanumeric and QGIS expressions constraints by Users/Groups' %}" data-widget-type="singlelayerConstraintsList" data-singlelayerconstraints-layer-pk="{{ object.pk }}" data-singlelayerconstraints-list-url="{% url 'qdjango-constraint-api-filter-by-layer-id' object.pk %}" ><i class="fa fa-filter"></i>
                                             <span class="label label-info label-action-layer">{{ object.getConstraintsNumber }}</span>
                                         </a>
                                     </span>
 
                                     {% comment %} Add Column ACL management {% endcomment %}
                                     <span class="col-xs-1 icon">
-                                        <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Hide columns by Users/Groups' %}" data-widget-type="columnAclManagerList" data-column-acl-layer-pk="{{ object.pk }}"
+                                        <a class="layer-action" data-toggle="tooltip" data-placement="top" title="{% trans 'Hide columns by Users/Groups' %}" data-widget-type="columnAclManagerList" data-column-acl-layer-pk="{{ object.pk }}"
                                         data-column-acl-list-url="{% url 'qdjango-column-acl-api-filter-by-layer-id' object.pk %}"
                                         data-column-acl-fields-url="{% url 'qdjango-column-acl-api-fields' object.pk %}"
                                         data-info-layer-user="{% url 'qdjango-api-info-layer-user' object.pk %}"
@@ -180,13 +194,13 @@
                                     </span>
 
                                     <span class="col-xs-1 icon">
-                                        <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Widgets list' %}" data-widget-type="detailItemDataTable" data-detail-url="{% url 'qdjango-project-layer-widgets' group.slug object.project.slug object.slug %}" ><i class="ion ion-gear-b"></i>
+                                        <a class="layer-action" data-toggle="tooltip" data-placement="top" title="{% trans 'Widgets list' %}" data-widget-type="detailItemDataTable" data-detail-url="{% url 'qdjango-project-layer-widgets' group.slug object.project.slug object.slug %}" ><i class="ion ion-gear-b"></i>
                                             <span class="label label-info label-action-layer">{{ object.getWidgetsNumber }}</span></a>
 
                                     </span>
                                     {% if not object.is_embedded %}
                                     <span class="col-xs-1 icon">
-                                        <a href="#" data-toggle="tooltip" data-placement="top" title="{% trans 'Manage layer styles' %}" data-widget-type="styleManagerList" data-stylemanager-layer-pk="{{ object.pk }}" data-stylemanager-list-url="{% url 'qdjango-style-list-api' object.pk %}" ><i class="fa fa-paint-brush"></i>
+                                        <a class="layer-action" data-toggle="tooltip" data-placement="top" title="{% trans 'Manage layer styles' %}" data-widget-type="styleManagerList" data-stylemanager-layer-pk="{{ object.pk }}" data-stylemanager-list-url="{% url 'qdjango-style-list-api' object.pk %}" ><i class="fa fa-paint-brush"></i>
                                             <span class="label label-info label-action-layer">{{ object.styles_count }}</span>
                                         </a>
                                     </span>
@@ -199,7 +213,7 @@
 
 {#                                <input type="checkbox" data-widget-type="downloadLayer" data-ajax-url="{% url 'qdjango-project-layers-data-editing' project.group.slug project.slug object.pk %}" name="download_{{ object.pk }}" {% if object.download %}checked="checked"{% endif %}>#}
                                 <div class="dropdown">
-                                <a href="#" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                <a class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                                   <i class="fa fa-download"></i>
                                     {% trans 'Download' %}
                                 </a>

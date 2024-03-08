@@ -1,11 +1,10 @@
-Django==3.2.18
+Django==3.2.24
 django-formtools==2.2
 django-crispy-forms==1.8.1
 django-extensions==3.1.5
 #---------------------------------------------------------------------------
 # django-file-form: to replace with PyPi version where this patch is present:
-# https://github.com/mbraak/django-file-form/pull/638
-git+https://github.com/gis3w/django-file-form.git@fix_filefield_not_required
+git+https://github.com/gis3w/django-file-form.git@behind_proxy
 #---------------------------------------------------------------------------
 django-guardian==2.2.0
 django-model-utils==4.0.0
@@ -14,13 +13,12 @@ djangorestframework==3.11.2
 djangorestframework-gis==0.15
 drf-spectacular==0.25.1
 django-downloadview==1.9
-django-debug-toolbar==3.2.1
-django-debug-panel==0.8.3
 django-mptt==0.13.4
 django-ordered-model==3.3.0
 django-ajax-selects==2.2.0
 django-modeltranslation==0.17.5
 django-filter
+django-bleach
 pathlib2
 lxml
 psycopg2-binary
@@ -37,4 +35,6 @@ deprecation
 huey==2.4.3
 redis==4.5.4
 django-redis==5.2.0
+django-registration==3.4
+django-recaptcha==3.0.0
 

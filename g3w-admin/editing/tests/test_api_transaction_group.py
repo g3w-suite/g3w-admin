@@ -198,7 +198,22 @@ class TransactionGroupTest(TestCase):
                            'validate': {'required': True},
                              'pk': False,
                              'default': '',
-                           'input': {'type': 'text', 'options': {}}}])
+                           'input': {'type': 'select_autocomplete',
+                                     'options': {
+                                         'values': [],
+                                         'default': None,
+                                         'relation_id': 'test_afb61_pol_id_poligoni_5_fid',
+                                         'relation_reference': True,
+                                         'loading': {
+                                            'state': None
+                                            },
+                                         'filter_expression': None,
+                                         'chain_filters': None,
+                                         'filter_fields':None
+
+                                        }
+                                     }
+                           }])
 
     def test_add_feature_simple(self):
         """Test adding a test feature to an existing polygon"""

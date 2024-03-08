@@ -19,7 +19,7 @@ from core.api.views import G3WAPIView
 from django.conf import settings
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from qdjango.models import Layer
 from rest_framework import generics
 from rest_framework.exceptions import APIException, NotFound, ValidationError, ParseError
@@ -375,4 +375,16 @@ class LayerPolygonView(generics.ListAPIView):
                 ~Q(pk=self.kwargs['layer_id']),
                 geometrytype__in=['Polygon', 'MultiPolygon']
             )
+        return qs
+
+class LayerInfoView(generics.RetrieveAPIView):
+    """Return info about qdjango layer by pk"""
+
+    queryset = Layer.objects.all()
+    serializer_class = LayerInfoSerializer
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        if 'layer_id' in self.kwargs:
+            qs = Layer.objects.get(pk=self.kwargs['layer_id'])
         return qs

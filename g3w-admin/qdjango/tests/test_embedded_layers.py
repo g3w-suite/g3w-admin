@@ -160,7 +160,8 @@ class TestEmbeddedLayers(QdjangoTestBase):
                 'legend_position': 'tab',
                 'multilayer_query': 'single',
                 'multilayer_querybybbox': 'single',
-                'multilayer_querybypolygon': 'single'
+                'multilayer_querybypolygon': 'single',
+                'wms_getmap_format': 'image/png; mode=8bit'
             },
             files={
                 'qgis_file': qgis_file

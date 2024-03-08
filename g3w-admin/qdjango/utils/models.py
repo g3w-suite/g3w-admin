@@ -11,6 +11,7 @@ __copyright__ = 'Copyright 2019, GIS3W'
 
 from django.db.models import Q
 from django.conf import settings
+from guardian.shortcuts import get_objects_for_user, get_anonymous_user
 from qdjango.apps import get_qgs_project
 
 from qgis.core import QgsMapLayer
@@ -23,7 +24,7 @@ logger = logging.getLogger('django.request')
 def comparedbdatasource(ds1, ds2, layer_type='postgres'):
     """
     Compare postgis/sqlite datasource bosed on dbname, host and table name
-    :param ds1: qgis db datasoruce string from compare
+    :param ds1: qgis db datasource string from compare
     :param ds2: qgis db datasource string to compare
     :return: Boolean
     """
@@ -53,7 +54,7 @@ def get_widgets4layer(layer):
     :param layer: Qdjango Layer model instance
     :return: List or Querydict fo Widget models
     """
-    from .structure import datasource2dict, qgsdatasoruceuri2dict
+    from .structure import datasource2dict, qgsdatasourceuri2dict
     from qdjango.models import Widget
 
     # different by layer type
@@ -145,3 +146,36 @@ def get_geoconstraints4layer(layer):
 
     from qdjango.models import GeoConstraint
     return GeoConstraint.objects.filter(layer=layer)
+
+def get_view_layer_ids(user, project):
+    """
+    Return list of qdjango Layer model pk witch user has 'qdjango.view_layer' permission.
+    :param user: Django User model instance.
+    :param project: Qdjango Project Model instance.
+    :return: List of qdjango.models.Project pk.
+    """
+
+    from qdjango.models import Layer
+
+    return list(
+        set([l.qgs_layer_id for l in get_objects_for_user(user, 'qdjango.view_layer', Layer).
+                     filter(project=project)]).union(
+            set([l.qgs_layer_id for l in get_objects_for_user(get_anonymous_user(), 'qdjango.view_layer', Layer).
+                filter(project=project)])
+        )
+    )
+
+def get_geocoding_providers():
+    """
+    Return al tuple for qdjango project form field geocoding_providers
+
+    :return: tuple of items for a django form select
+    """
+
+    ret = []
+    for gp, p in settings.GEOCODING_PROVIDERS.items():
+        if gp == 'bing' and 'bing' not in settings.VENDOR_KEYS:
+            continue
+        ret.append((gp, p['label']))
+
+    return ret

@@ -3,7 +3,7 @@ from django.forms import Form, ModelForm, ValidationError
 from django.forms.fields import CharField, HiddenInput
 from django.forms.models import ModelMultipleChoiceField
 from django.db.models import Q
-from django.utils.translation import ugettext, ugettext_lazy as _
+from django.utils.translation import ugettext, gettext_lazy as _
 from core.models import Group, GeneralSuiteData, MacroGroup
 from django_file_form.forms import FileFormMixin
 from django.contrib.auth.models import User
@@ -12,6 +12,7 @@ from crispy_forms.layout import Layout, Div, Submit, HTML, Button, Row, Field
 from crispy_forms.bootstrap import AppendedText, PrependedText
 from modeltranslation.forms import TranslationModelForm
 from guardian.shortcuts import get_objects_for_user
+from django_bleach.forms import BleachField
 from .utils.forms import crispyBoxMacroGroups
 from usersmanage.utils import get_fields_by_user, crispyBoxACL, userHasGroups, get_users_for_object
 from usersmanage.forms import G3WACLForm, UsersChoiceField
@@ -24,6 +25,7 @@ class GroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, G3WRequestFor
     """Group form."""
 
     propagate = True
+    description = BleachField(required=False)
 
     def __init__(self, *args, **kwargs):
         super(GroupForm, self).__init__(*args, **kwargs)
@@ -47,9 +49,11 @@ class GroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, G3WRequestFor
                                             css_class='box-header with-border'
                                         ),
                                         Div(
+                                            HTML(
+                                                f"<p><b>{_('Translatable fields')}</b>: <span class='translate translatable_fields'></span></p>"),
                                             'name',
-                                            'title',
-                                            Field('description', css_class='wys5', style="width:100%;"),
+                                            Field('title', css_class='translate'),
+                                            Field('description', css_class='wys5 translate', style="width:100%;"),
                                             css_class='box-body',
 
                                         ),
@@ -149,7 +153,7 @@ class GroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, G3WRequestFor
                                             css_class='box-header with-border'
                                         ),
                                         Div(
-                                            'header_terms_of_use_text',
+                                            Field('header_terms_of_use_text', css_class='translate'),
                                             'header_terms_of_use_link',
                                             css_class='box-body'
                                         ),
@@ -205,6 +209,13 @@ class GroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, G3WRequestFor
 class GeneralSuiteDataForm(TranslationModelForm, FileFormMixin, ModelForm):
     """General suite data form."""
     suite_logo = UploadedFileField(required=False)
+    home_description = BleachField(required=False)
+    about_description = BleachField(required=False)
+    groups_map_description = BleachField(required=False)
+    login_description = BleachField(required=False)
+    credits = BleachField(required=False)
+    registration_intro = BleachField(required=False)
+
 
     def __init__(self, *args, **kwargs):
         super(GeneralSuiteDataForm, self).__init__(*args, **kwargs)
@@ -219,9 +230,10 @@ class GeneralSuiteDataForm(TranslationModelForm, FileFormMixin, ModelForm):
                             css_class='box-header with-border'
                         ),
                         Div(
-                            'title',
-                            'sub_title',
-                            Field('home_description', css_class='wys5', style="width:100%;"),
+                            HTML(f"<p><b>{_('Translatable fields')}</b>: <span class='translate translatable_fields'></span></p>"),
+                            Field('title', css_class='translate'),
+                            Field('sub_title', css_class='translate'),
+                            Field('home_description', css_class='wys5 translate', style="width:100%;"),
                             'suite_logo',
                             'form_id',
                             'upload_url',
@@ -243,12 +255,12 @@ class GeneralSuiteDataForm(TranslationModelForm, FileFormMixin, ModelForm):
                             css_class='box-header with-border'
                         ),
                         Div(
-                            'about_title',
-                            'about_name',
+                            Field('about_title', css_class='translate'),
+                            Field('about_name', css_class='translate'),
                             'about_tel',
                             'about_email',
                             'about_address',
-                            Field('about_description', css_class='wys5', style="width:100%;"),
+                            Field('about_description', css_class='wys5 translate', style="width:100%;"),
                             css_class='box-body',
 
                         ),
@@ -264,8 +276,8 @@ class GeneralSuiteDataForm(TranslationModelForm, FileFormMixin, ModelForm):
                             css_class='box-header with-border'
                         ),
                         Div(
-                            'groups_title',
-                            Field('groups_map_description', css_class='wys5', style="width:100%;"),
+                            Field('groups_title', css_class='translate'),
+                            Field('groups_map_description', css_class='wys5 translate', style="width:100%;"),
                             css_class='box-body',
                         ),
                         css_class='box box-default'
@@ -280,8 +292,8 @@ class GeneralSuiteDataForm(TranslationModelForm, FileFormMixin, ModelForm):
                             css_class='box-header with-border'
                         ),
                         Div(
-                            'login_title',
-                            Field('login_description', css_class='wys5', style="width:100%;"),
+                            Field('login_title', css_class='translate'),
+                            Field('login_description', css_class='wys5 translate', style="width:100%;"),
                             css_class='box-body',
 
                         ),
@@ -320,14 +332,32 @@ class GeneralSuiteDataForm(TranslationModelForm, FileFormMixin, ModelForm):
                             css_class='box-header with-border'
                         ),
                         Div(
-                            'main_map_title',
-                            Field('credits', css_class='wys5', style="width:100%;"),
+                            Field('main_map_title', css_class='translate'),
+                            Field('credits', css_class='wys5 translate', style="width:100%;"),
                             css_class='box-body',
 
                         ),
                         css_class='box box-default'
                     ),
                     css_class='col-md-6'
+                ),
+                Div(
+                    Div(
+                        Div(
+                            HTML(
+                                "<h3 class='box-title'><i class='fa fa-file'></i> {}</h3>".format(
+                                    _("Registration")
+                                )
+                            ),
+                            css_class="box-header with-border",
+                        ),
+                        Div(
+                            Field("registration_intro", css_class="wys5 translate", style="width:100%;"),
+                            css_class="box-body",
+                        ),
+                        css_class="box box-default",
+                    ),
+                    css_class="col-md-6",
                 ),
                 css_class='row'
             )
@@ -345,6 +375,8 @@ class MacroGroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, ModelFor
     editor_users = UsersChoiceField(label=_('Editor users'),
                                     queryset=User.objects.filter(groups__name__in=[G3W_EDITOR1])
                                     .order_by('last_name'), required=False)
+
+    description = BleachField(required=False)
 
     def __init__(self, *args, **kwargs):
 
@@ -387,13 +419,15 @@ class MacroGroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, ModelFor
                                             css_class='box-header with-border'
                                         ),
                                         Div(
+                                            HTML(
+                                                f"<p><b>{_('Translatable fields')}</b>: <span class='translate translatable_fields'></span></p>"),
                                             'name',
-                                            'title',
+                                            Field('title', css_class='translate'),
                                             HTML(_(
                                                 '<b>Attention!</b> These settings are valid only for map groups with only one MacroGroup')),
                                             'use_title_client',
                                             'use_logo_client',
-                                            Field('description', css_class='wys5', style="width:100%;"),
+                                            Field('description', css_class='wys5 translate', style="width:100%;"),
                                             'logo_img',
                                             HTML(
                                                 """<img {% if not form.logo_img.value %}style="display:none;"{% endif %} class="img-responsive img-thumbnail" src="{{ MEDIA_URL }}{{ form.logo_img.value }}">""", ),

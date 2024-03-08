@@ -6,10 +6,11 @@ from owslib.wms import WebMapService
 from base.version import get_version
 from .base.views import G3WAPIView
 from core.api.authentication import CsrfExemptSessionAuthentication
+from core.api.permissions import ProjectPermission
 from qdjango.models import Project
 from core.api.base.views import APIException
 from core.utils.geo import get_crs_bbox
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from rest_framework import status
 
 from qgis.core import NULL
@@ -152,6 +153,8 @@ class QgsExpressionLayerContextEvalView(G3WAPIView):
 
     """
 
+    permission_classes = (ProjectPermission,)
+
     authentication_classes = (
         CsrfExemptSessionAuthentication,
     )
@@ -249,18 +252,61 @@ class InterfaceOws(G3WAPIView):
         # -----------------------------------
         self.results.results.update({'title': ows.identification.title, 'abstract': ows.identification.abstract})
 
-        # Map formats
-        # -----------------------------------
-        self.results.results.update({'map_formats': ows.getOperationByName('GetMap').formatOptions})
+        # Add methods
+        methods = {}
 
-        # Info formats
-        # -----------------------------------
-        try:
-            self.results.results.update({'info_formats': ows.getOperationByName('GetFeatureInfo').formatOptions})
-        except Exception as e:
+        for method in ('GetMap', 'GetFeatureInfo', 'GetCapabilities'):
 
-            # Case where OWS service doesn't support GetFeatureInfo
-            logger.debug(f'The service {url} doesn\'t support GetFeatureInfo, err: {str(e)}')
+
+            if method == 'GetMap':
+
+                if method not in methods:
+                    methods[method] = {}
+
+                # GetMap
+                # -----------------------------------
+                methods[method].update({'formats': ows.getOperationByName('GetMap').formatOptions})
+
+                # Add methods
+                try:
+                    methods[method].update(
+                        {"urls": ows.getOperationByName("GetMap").methods}
+                    )
+                except Exception as e:
+
+                    # Case where OWS service doesn't support GetMap
+                    logger.debug(f'The service {url} doesn\'t support GetMap, err: {str(e)}')
+
+
+            if method == 'GetFeatureInfo':
+
+                # GetFeatureInfo
+                # -----------------------------------
+                try:
+                    if method not in methods:
+                        methods[method] = {}
+                    methods[method].update({'formats': ows.getOperationByName('GetFeatureInfo').formatOptions})
+                    methods[method].update({"methods": ows.getOperationByName("GetFeatureInfo").methods})
+                except Exception as e:
+
+                    # Case where OWS service doesn't support GetFeatureInfo
+                    logger.debug(f'The service {url} doesn\'t support GetFeatureInfo, err: {str(e)}')
+
+            if method == 'GetCapabilities':
+
+                # GetCapabilities
+                # -----------------------------------
+                try:
+                    if method not in methods:
+                        methods[method] = {}
+                    methods[method].update({'formats': ows.getOperationByName('GetCapabilities').formatOptions})
+                    methods[method].update({"methods": ows.getOperationByName("GetCapabilities").methods})
+                except Exception as e:
+
+                    # Case where OWS service doesn't support GetCapabilities
+                    logger.debug(f'The service {url} doesn\'t support GetCapabilities, err: {str(e)}')
+
+        self.results.results.update({'methods': methods})
 
         # Layers
         # -----------------------------------

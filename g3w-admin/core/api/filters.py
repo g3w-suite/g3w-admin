@@ -22,6 +22,7 @@ from qgis.core import (
 )
 from rest_framework.exceptions import ParseError
 from urllib.parse import unquote
+from core.utils.qgisapi import get_qgis_layer, get_qgis_features
 from qdjango.models import Layer
 
 class BaseFilterBackend():
@@ -81,11 +82,18 @@ class SearchFilter(BaseFilterBackend):
 
         qgis_layer = metadata_layer.qgis_layer
 
-        if request.query_params.get('search'):
+        # Try to get param from GET
+        search_value = request.query_params.get('search')
+
+        if not search_value:
+            # Try to get from POST
+            search_value = request.data.get('search')
+
+        if search_value:
 
             search_parts = []
 
-            for search_term in request.query_params.get('search').split(','):
+            for search_term in search_value.split(','):
 
                 search_term = self._quote_value('%' + search_term + '%')
                 exp_template = '{field_name} ILIKE ' + search_term
@@ -114,11 +122,18 @@ class OrderingFilter(BaseFilterBackend):
 
         qgis_layer = metadata_layer.qgis_layer
 
-        if request.query_params.get('ordering') is not None:
+        # Try to get param from GET
+        ordering_value = request.query_params.get('ordering')
+
+        if not ordering_value:
+            # Try to get from POST
+            ordering_value = request.data.get('ordering')
+
+        if ordering_value is not None:
 
             ordering_rules = []
 
-            for ordering in request.query_params.get('ordering').split(','):
+            for ordering in ordering_value.split(','):
                 ascending = True
                 if ordering.startswith('-'):
                     ordering = ordering[1:]
@@ -215,7 +230,12 @@ class SuggestFilterBackend(BaseFilterBackend):
 
         qgis_layer = metadata_layer.qgis_layer
 
+        # Try to get param from GET
         suggest_value = request.query_params.get('suggest')
+
+        if not suggest_value:
+            # Try to get from POST
+            suggest_value = request.data.get('suggest')
 
         if suggest_value:
 
@@ -246,7 +266,8 @@ class FieldFilterBackend(BaseFilterBackend):
         'gte': '>=',
         'lte': '<=',
         'like': 'LIKE',
-        'ilike': 'ILIKE'
+        'ilike': 'ILIKE',
+        'in': 'IN'
     }
 
     def apply_filter(self, request, metadata_layer, qgis_feature_request, view):
@@ -296,11 +317,51 @@ class FieldFilterBackend(BaseFilterBackend):
 
                     pre_post_operator = '%' if field_operator in (
                         'like', 'ilike') else ''
+
+                    if "formatter" in request.query_params:
+                        formatter = request.query_params.get("formatter")
+                        if (
+                            formatter.isnumeric()
+                            and int(formatter) == 1
+                            and view.layer.has_value_relation_widget(field_name)
+                        ):
+                            config = qgis_layer.editorWidgetSetup(
+                                qgis_layer.fields().indexFromName(field_name)
+                            ).config()
+                            relation_qgs_layer = get_qgis_layer(
+                                view.layer.project.layer_set.get(qgs_layer_id=config["Layer"])
+                            )
+
+                            qfr = QgsFeatureRequest()
+                            pre_post_operator = "%" if field_operator in ("like", "ilike") else ""
+                            vr_single_search_expression = (
+                                "{field_name} {field_operator} {field_value}".format(
+                                    field_name=self._quote_identifier(config["Value"]),
+                                    field_operator=self.COMPARATORS_MAP[field_operator],
+                                    field_value=self._quote_value(
+                                        f"{pre_post_operator}{unquote(field_value)}{pre_post_operator}"
+                                    ),
+                                )
+                            )
+                            qfr.combineFilterExpression(vr_single_search_expression)
+                            features = get_qgis_features(relation_qgs_layer, qfr)
+
+                            if len(features) > 0:
+                                field_operator = "in"
+                                in_content = ",".join(["'" + str(f[config["Key"]]) + "'" for f in features])
+                                field_value = f"({in_content})"
+
+                    pre_post_operator = "%" if field_operator in ("like", "ilike") else ""
+                    if field_operator != 'in':
+                        quoted_field_value = self._quote_value(
+                            f'{pre_post_operator}{unquote(field_value)}{pre_post_operator}')
+                    else:
+                        quoted_field_value = field_value
+
                     single_search_expression = '{field_name} {field_operator} {field_value}'.format(
                         field_name=self._quote_identifier(field_name),
                         field_operator=self.COMPARATORS_MAP[field_operator],
-                        field_value=self._quote_value(
-                            f'{pre_post_operator}{unquote(field_value)}{pre_post_operator}')
+                        field_value=quoted_field_value
                     )
 
                     search_expression = f'{search_expression} {single_search_expression}'

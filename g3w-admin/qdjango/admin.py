@@ -1,6 +1,6 @@
 import ast
 
-from django.contrib import admin, messages
+from django.contrib import admin, messages as django_messages
 from django.forms import CharField, ModelForm, TextInput, MultipleChoiceField, ChoiceField
 from django.http import HttpResponseRedirect
 from django.urls import reverse
@@ -101,6 +101,16 @@ class SessionTokenFilterAdmin(admin.ModelAdmin):
     ]
 
 
+@admin.register(FilterLayerSaved)
+class FilterLayerSavedAdmin(admin.ModelAdmin):
+    list_display = (
+        'user',
+        'layer',
+        'qgs_expr',
+        'created',
+        'modified',
+    )
+
 class QgisAuthAdminForm(ModelForm):
 
     username = CharField()
@@ -149,7 +159,7 @@ class QgisAuthAdmin(GuardedModelAdmin):
         except LayerDependenciesError as ex:
             msg = _("{} can not be deleted because: {}").format(
                 self.model.objects.get(id=object_id).name, ex)
-            self.message_user(request, msg, messages.ERROR)
+            self.message_user(request, msg, django_messages.ERROR)
             opts = self.model._meta
             return_url = reverse(
                 'admin:{}_{}_change'.format(opts.app_label, opts.model_name),
@@ -163,7 +173,7 @@ class QgisAuthAdmin(GuardedModelAdmin):
             return super().response_action(request, queryset)
         except LayerDependenciesError as ex:
             msg = _("This object can not be deleted because: %s.") % ex
-            self.message_user(request, msg, messages.ERROR)
+            self.message_user(request, msg, django_messages.ERROR)
             opts = self.model._meta
             return_url = reverse(
                 'admin:{}_{}_change'.format(opts.app_label, opts.model_name),
@@ -176,7 +186,7 @@ class QgisAuthAdmin(GuardedModelAdmin):
                 datasource__contains=obj.id).count() > 0:
             msg = _("Authentication configuration {} can not be deleted because one or more layers are using it: {}").format(obj.id,
                                                                                                                              ', '.join([l.name for l in Layer.objects.filter(datasource__contains=obj.id)]))
-            self.message_user(request, msg, messages.WARNING)
+            self.message_user(request, msg, django_messages.WARNING)
         return super(QgisAuthAdmin, self).has_delete_permission(request, obj) and (
             not obj or Layer.objects.filter(
                 datasource__contains=obj.id).count() == 0

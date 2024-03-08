@@ -95,6 +95,14 @@ class QdjangoProjectCreateView(QdjangoProjectCUViewMixin, G3WGroupViewMixin, G3W
     def dispatch(self, *args, **kwargs):
         return super(QdjangoProjectCreateView, self).dispatch(*args, **kwargs)
 
+    def get_initial(self):
+        initial = super().get_initial()
+
+        # Get intial for geocoding_providers: default 'nominatim'
+        initial['geocoding_providers'] = ["nominatim"]
+
+        return initial
+
 
 class QdjangoProjectUpdateView(QdjangoProjectCUViewMixin, G3WGroupViewMixin, G3WRequestViewMixin, G3WACLViewMixin,
                                UpdateView):
@@ -112,6 +120,15 @@ class QdjangoProjectUpdateView(QdjangoProjectCUViewMixin, G3WGroupViewMixin, G3W
     @method_decorator(permission_required('qdjango.change_project', (Project, 'slug', 'slug'), raise_exception=True))
     def dispatch(self, *args, **kwargs):
         return super(QdjangoProjectUpdateView, self).dispatch(*args, **kwargs)
+
+    def get_initial(self):
+        initial = super().get_initial()
+
+        # Get intial for geocoding_providers
+        if self.object.geocoding_providers:
+            initial['geocoding_providers'] = json.loads(self.object.geocoding_providers)
+
+        return initial
 
     def get_context_data(self, **kwargs):
         context = super(QdjangoProjectUpdateView,
@@ -387,7 +404,7 @@ class QdjangoProjectDetailView(G3WRequestViewMixin, DetailView):
                     if hidel.user:
                         hl['users'].append(hidel.user)
                     if hidel.group:
-                        hl['groups'].append(hidel.group)
+                        hl['ugroups'].append(hidel.group)
 
                 if len(hl['users']) > 0 or len(hl['ugroups']) > 0:
                     if 'hiddenlayers' not in ctx:
@@ -598,6 +615,13 @@ class QdjangoLayerDataView(G3WGroupViewMixin, QdjangoProjectViewMixin, View):
         if 'external' in request.POST:
             layer.external = int(request.POST['external'])
         layer.save()
+
+        # Invalidate project cache
+        layer.project.invalidate_cache()
+        logging.getLogger("g3wadmin.debug").debug(
+            f"Qdjango project /api/config invalidate cache after update layer data: {layer.project}"
+        )
+
         return JsonResponse({'Saved': 'ok'})
 
 
@@ -650,6 +674,19 @@ class QdjangoLayerWidgetsMixin(object):
 
     def get_success_url(self):
         return None
+
+    def form_valid(self, form):
+
+        ret = super().form_valid(form)
+
+        # Invalidate project cache
+        self.project.invalidate_cache()
+        logging.getLogger("g3wadmin.debug").debug(
+           f"Qdjango project /api/config invalidate cache after update layer widget: {self.project}"
+        )
+
+        return ret
+
 
 
 class QdjangoLayerWidgetsView(G3WGroupViewMixin, QdjangoProjectViewMixin, QdjangoLayerViewMixin, ListView):
@@ -724,6 +761,18 @@ class QdjangoLayerWidgetDeleteView(G3WAjaxDeleteViewMixin, SingleObjectMixin, Vi
     # @method_decorator(permission_required('qdjango.delete_widget', (Widget, 'slug', 'slug'), raise_exception=True))
     def dispatch(self, *args, **kwargs):
         return super(QdjangoLayerWidgetDeleteView, self).dispatch(*args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+
+        # Invalidate /api/config project cache
+        for l in self.get_object().layers.all():
+            l.project.invalidate_cache()
+            logging.getLogger("g3wadmin.debug").debug(
+                f"Qdjango project /api/config invalidate cache after delate layer widget: {l.project}"
+            )
+
+        res = super().post(request, *args, **kwargs)
+        return res
 
 
 class QdjangoLinkWidget2LayerView(G3WRequestViewMixin, G3WGroupViewMixin, QdjangoProjectViewMixin, QdjangoLayerViewMixin, View):
@@ -825,6 +874,9 @@ class FilterByUserLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3WR
                 # Add user to LayerAcl model
                 LayerAcl.manage_user(uid, self.layer, mode='add')
 
+        # invalidate project cache
+        if len(toAdd) > 0 or len(toRemove) > 0:
+            self.layer.project.invalidate_cache()
 
         # give permission to user groups viewers:
         to_add = to_remove = None
@@ -847,6 +899,14 @@ class FilterByUserLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3WR
 
                 # Add group to LayerAcl model
                 LayerAcl.manage_group(aid, self.layer, mode='add')
+
+        # invalidate project cache
+        if len(to_remove) > 0 or len(to_add) > 0:
+            self.layer.project.invalidate_cache()
+            logging.getLogger("g3wadmin.debug").debug(
+                f"Qdjango project /api/config  invalidate cache after update of layer filter-by-user: "
+                f"{self.layer.project}"
+            )
 
         return super().form_valid(form)
 

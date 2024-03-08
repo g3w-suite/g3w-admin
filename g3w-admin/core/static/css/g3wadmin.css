@@ -222,3 +222,47 @@ input[type=file]::file-selector-button:hover {
   background: #00acd6;
 }
 
+.translate {
+    border: 1px dashed #006699;
+
+}
+.translate + div.note-editor {
+    border: 1px dashed #006699;
+}
+
+.translatable_fields {
+    display: inline-block;
+    width: 40px;
+    height: 20px;
+}
+
+a.layer-action {
+    cursor: pointer;
+}
+
+.register-box {
+    width: 720px;
+    margin: 7% auto;
+}
+
+.recaptcha {
+    padding-left: 9px;
+}
+
+.recaptcha-registration {
+    padding-left: 11.5px;
+}
+
+.project_layers_action-content > div.row {
+    font-size: 16px;
+    margin: -10px;
+    margin-bottom: 20px;
+    margin-top: 20px;
+}
+
+.project_layers_action-content > div.row > div:first-child {
+    text-align: right;
+}
+.project_layers_action-content > div.row > div:last-child {
+    font-size: 22px;
+}

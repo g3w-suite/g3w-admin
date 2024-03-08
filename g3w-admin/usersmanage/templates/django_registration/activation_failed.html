@@ -1,0 +1,15 @@
+{% extends "base_login.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block login_page_box_body %}
+  <div class="register-box-body">
+    <h4 style="text-align: center">{% trans 'Activation Failed!' %}</h4>
+    <p class="register-box-msg">
+        {% trans 'An error occurred activation of your account' %}:
+    </p>
+    <p class="register-box-msg">
+        {{ activation_error.message }}
+    </p>
+  </div><!-- /.login-box-body -->
+{% endblock %}

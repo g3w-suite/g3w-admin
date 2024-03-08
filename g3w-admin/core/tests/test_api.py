@@ -628,13 +628,15 @@ class CoreApiTest(CoreTestBase):
         jres = json.loads(res.content)
 
         self.assertTrue(jres['result'])
-        self.assertEqual('Geoscopio_wms catasto', jres['title'])
-        self.assertTrue('image/png' in jres['map_formats'])
-        self.assertTrue('text/html' in jres['info_formats'])
+        self.assertEqual('Geoscopio_wms catasto'.lower(), jres['title'].lower())
+        self.assertTrue('GetMap' in jres['methods'] and 'GetFeatureInfo' in jres['methods'] and 'GetCapabilities' in jres['methods'])
+        self.assertTrue('image/png' in jres['methods']['GetMap']['formats'])
+        self.assertEqual(jres["methods"]["GetMap"]["urls"],[{'type': 'Get', 'url': 'https://www502.regione.toscana.it/ows_catasto/com.rt.wms.RTmap/ows?map=owscatasto&'}, {'type': 'Post', 'url': 'https://www502.regione.toscana.it/ows_catasto/com.rt.wms.RTmap/ows?map=owscatasto&'}])
+        self.assertTrue('text/html' in jres['methods']['GetFeatureInfo']['formats'])
         self.assertEqual(len(jres['layers']), 21)
 
-        self.assertEqual(jres['layers'][1]['title'], 'Acque - AdT Catasto Terreni')
-        self.assertEqual(len(jres['layers'][1]['crss']), 19)
+        self.assertEqual(jres['layers'][1]['title'].lower(), 'Acque - AdT Catasto Terreni'.lower())
+        self.assertEqual(len(jres['layers'][1]['crss']), 20)
 
 
     def test_crs_api_rest(self):
