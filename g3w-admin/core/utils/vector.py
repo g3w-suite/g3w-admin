@@ -108,13 +108,8 @@ class BaseUserMediaHandler(object):
                 path_file_to_save = '{}/{}'.format(path_to_save, file_name)
 
                 # Check if it is a user-media view
-                is_media_view = True
-                try:
-
-                    # Before is necessary remo domain
-                    resolve(urllib.parse.urlparse(self.feature_properties[field]).path)
-                except:
-                    is_media_view = False
+                url_path = urllib.parse.urlparse(self.feature_properties[field]).path
+                is_media_view = bool(url_path) and url_path.startswith('/media/temp_uploads/')
 
                 if change:
                     if self.feature_properties[field]:
