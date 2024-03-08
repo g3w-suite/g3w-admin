@@ -20,238 +20,242 @@ msgstr ""
 
 #: core/admin.py:16
 msgid "Basic settings"
-msgstr ""
+msgstr "Paramètres de base"
 
 #: core/admin.py:19
 msgid "Access settings"
-msgstr ""
+msgstr "Paramètres d'accès"
 
 #: core/admin.py:23
 msgid "Display settings"
-msgstr ""
+msgstr "Paramètres d'affichage"
 
 #: core/admin.py:27
 msgid "Additional settings"
-msgstr ""
+msgstr "Paramètres additionels"
 
 #: core/api/base/views.py:143
 msgid "Data are not correct or insufficent!"
-msgstr ""
+msgstr "Les données ne sont pas correctes ou inssufisantes!"
 
 #: core/api/base/views.py:149
 msgid "A error server is occured!"
-msgstr ""
+msgstr "Une erreur de serveur s'est produite !"
 
 #: core/api/base/views.py:157
 msgid "Not found"
-msgstr ""
+msgstr "Non trouvé"
 
 #: core/api/base/views.py:163
 msgid "Permission denied"
-msgstr ""
+msgstr "Permission refusée"
 
 #: core/api/views.py:39
 msgid "Expression evaluation error."
-msgstr ""
+msgstr "Erreur d'évaluation de l'expression."
 
 #: core/api/views.py:44
 msgid "Expression parse error."
-msgstr ""
+msgstr "Erreur d'analyse d'expression."
 
 #: core/api/views.py:50
 msgid "Expression empty error."
-msgstr ""
+msgstr "Erreur d'expression vide."
 
 #: core/api/views.py:56
 msgid "Expression form data error."
-msgstr ""
+msgstr "Erreur de données du formulaire d'expression."
 
 #: core/api/views.py:62
 msgid "Layer error."
-msgstr ""
+msgstr "Erreur de couche."
 
 #: core/configs.py:11
 msgid "Search"
-msgstr ""
+msgstr "Recherche"
 
 #: core/configs.py:28
 msgid "Law"
-msgstr ""
+msgstr "Loi"
 
 #: core/forms.py:42 core/forms.py:364
 msgid "General data"
-msgstr ""
+msgstr "Données générales"
 
 #: core/forms.py:65
 msgid "GEO data"
-msgstr ""
+msgstr "Données GEO"
 
 #: core/forms.py:86
 msgid "Base Layers and Map default features"
-msgstr ""
+msgstr "Couches de base et fonctionnalités par défaut de la carte"
 
 #: core/forms.py:113
 msgid "Logo/Picture"
-msgstr ""
+msgstr "Logo/Image"
 
 #: core/forms.py:141
 msgid "Copyright"
-msgstr ""
+msgstr "Droits d'auteur"
 
 #: core/forms.py:195
 msgid "Frontend home data"
-msgstr ""
+msgstr "Données de la section 'Accueil' du portail"
 
 #: core/forms.py:220
 msgid "Frontend about data"
-msgstr ""
+msgstr "Données de la section 'A Propos' du portail"
 
 #: core/forms.py:241
 msgid "Frontend groups map data"
-msgstr ""
+msgstr "Données des groupes de cartes du portail"
 
 #: core/forms.py:257
 msgid "Frontend login data"
-msgstr ""
+msgstr "Données de la section 'Connexion' du portail "
 
 #: core/forms.py:275
 msgid "Frontend social data"
-msgstr ""
+msgstr "Données des réseaux sociaux du portail"
 
 #: core/forms.py:297
 msgid "Map client data"
-msgstr ""
+msgstr "Données des cartes clients"
 
 #: core/forms.py:323
 msgid "Editor users"
-msgstr ""
+msgstr "Utilisateurs de l'éditeur"
 
 #: core/forms.py:341
 msgid "ACL Users"
-msgstr ""
+msgstr "Liste de controle d'accès des utilisateurs"
 
 #: core/forms.py:371
 msgid ""
 "<b>Attention!</b> This settigns are valid only for map groups with only one "
 "MacroGroup"
 msgstr ""
+"<b>Attention !</b> Ces paramètres ne sont valables que pour les groupes de cartes avec un seul "
+"MacroGroup"
 
 #: core/models.py:84
 msgid "Map control"
-msgstr ""
+msgstr "Controle de la carte"
 
 #: core/models.py:85
 msgid "Map controls"
-msgstr ""
+msgstr "Controles de la carte"
 
 #: core/models.py:93
 msgid "Identification name"
-msgstr ""
+msgstr "Nom d'identification"
 
 #: core/models.py:94
 msgid "Internal identification Macrogroup name"
-msgstr ""
+msgstr "Nom d'identification interne du Macrogroup"
 
 #: core/models.py:95 core/models.py:132 core/models.py:409
 #: core/templates/core/ajax/macrogroup_detail.html:7
 #: core/templates/core/macrogroup_list_table.html:28
 msgid "Title"
-msgstr ""
+msgstr "Titre"
 
 #: core/models.py:96 core/models.py:133
 #: core/templates/core/ajax/macrogroup_detail.html:9
 msgid "Description"
-msgstr ""
+msgstr "Description"
 
 #: core/models.py:97 core/models.py:140
 msgid "Logo image"
-msgstr ""
+msgstr "Image pour le logo"
 
 #: core/models.py:98 core/models.py:141
 msgid "Logo link"
-msgstr ""
+msgstr "Lien pour le logo"
 
 #: core/models.py:99 core/models.py:142
 msgid "Enter link with http:// or https//"
-msgstr ""
+msgstr "Entrer une adresse avec http:// ou https://"
 
 #: core/models.py:100
 msgid "Use title for client"
-msgstr ""
+msgstr "Utiliser un titre pour le client"
 
 #: core/models.py:101 core/models.py:166
 msgid "Use logo image for client"
-msgstr ""
+msgstr "Utiliser un logo pour le client"
 
 #: core/models.py:104 core/models.py:135
 msgid "Slug"
-msgstr ""
+msgstr "Identifiant texte unique (Slug)"
 
 #: core/models.py:131
 msgid "Name"
-msgstr ""
+msgstr "Nom"
 
 #: core/models.py:137
 msgid "Is active"
-msgstr ""
+msgstr "Actif"
 
 #: core/models.py:158
 msgid "Terms of use text"
-msgstr ""
+msgstr "Texte des conditions d'utilisation"
 
 #: core/models.py:161
 msgid "Terms of use link"
-msgstr ""
+msgstr "Lien vers les conditions d'utilisation"
 
 #: core/models.py:167
 msgid ""
 "As for MacroGroup options is possible to use current logo group as client "
 "logo, if MacroGroup option is active this options takes precendence"
 msgstr ""
+"En ce qui concerne les options MacroGroup, il est possible d'utiliser le groupe de logos actuel en tant que client"
+"logo, si l'option MacroGroup est active, cette option est prioritaire"
 
 #: core/models.py:400 core/templates/core/group_form.html:11
 msgid "Group"
-msgstr ""
+msgstr "Groupe"
 
 #: core/models.py:401
 msgid "Project type"
-msgstr ""
+msgstr "Type de projet"
 
 #: core/models.py:402
 msgid "Project type id"
-msgstr ""
+msgstr "Id du type de projet"
 
 #: core/models.py:410
 msgid "Subtitle"
-msgstr ""
+msgstr "Sous-titre"
 
 #: core/models.py:411
 msgid "Home description"
-msgstr ""
+msgstr "Description de l'accueil"
 
 #: core/models.py:412
 msgid "About title"
-msgstr ""
+msgstr "A propos : Titre"
 
 #: core/models.py:413
 msgid "About description"
-msgstr ""
+msgstr "A propos : description"
 
 #: core/models.py:414
 msgid "About name"
-msgstr ""
+msgstr "A propos : nom"
 
 #: core/models.py:415
 msgid "About phone"
-msgstr ""
+msgstr "A propos : Téléphone"
 
 #: core/models.py:416
 msgid "About email"
-msgstr ""
+msgstr "A propos : Email"
 
 #: core/models.py:417
 msgid "About address"
-msgstr ""
+msgstr "A propos : Adresse"
 
 #: core/models.py:418
 msgid "Groups title"
@@ -263,11 +267,11 @@ msgstr ""
 
 #: core/models.py:420
 msgid "Login title"
-msgstr ""
+msgstr "Connexion : Titre"
 
 #: core/models.py:421
 msgid "Login description"
-msgstr ""
+msgstr "Connexion : Description"
 
 #: core/models.py:422
 msgid "Suite logo"
