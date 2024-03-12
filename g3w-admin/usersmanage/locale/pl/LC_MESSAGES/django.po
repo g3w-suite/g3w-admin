@@ -1,0 +1,387 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-03-07 16:13+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n==1 ? 0 : (n%10>=2 && n%10<=4) && (n"
+"%100<12 || n%100>14) ? 1 : n!=1 && (n%10>=0 && n%10<=1) || (n%10>=5 && n"
+"%10<=9) || (n%100>=12 && n%100<=14) ? 2 : 3);\n"
+#: usersmanage/forms.py:104
+msgid "Editor1 user"
+msgstr ""
+
+#: usersmanage/forms.py:105
+msgid "Set Editor Level 1 owner"
+msgstr ""
+
+#: usersmanage/forms.py:108
+msgid "Editor2 user"
+msgstr ""
+
+#: usersmanage/forms.py:111
+msgid "Viewer users"
+msgstr ""
+
+#: usersmanage/forms.py:118
+msgid "Editor user groups"
+msgstr ""
+
+#: usersmanage/forms.py:125
+msgid "Viewer user groups"
+msgstr ""
+
+#: usersmanage/forms.py:131
+msgid "Propagate <b>NEW</b> viewers and new viewers user groups permissions"
+msgstr ""
+
+#: usersmanage/forms.py:302
+msgid "Select roles for this user"
+msgstr ""
+
+#: usersmanage/forms.py:303
+msgid "Main roles"
+msgstr ""
+
+#: usersmanage/forms.py:310
+msgid ""
+"Select <b>EDITOR groups</b> for this user, only Editor Level 2 can be added"
+msgstr ""
+
+#: usersmanage/forms.py:311
+msgid "User editor groups"
+msgstr ""
+
+#: usersmanage/forms.py:318
+msgid ""
+"Select <b>VIEWER groups</b> for this user, only Viewer Level 1 can be added"
+msgstr ""
+
+#: usersmanage/forms.py:319
+msgid "User viewer groups"
+msgstr ""
+
+#: usersmanage/forms.py:362
+msgid "Anagraphic"
+msgstr ""
+
+#: usersmanage/forms.py:381
+msgid "ACL/Roles"
+msgstr ""
+
+#: usersmanage/forms.py:400
+msgid "Login data"
+msgstr ""
+
+#: usersmanage/forms.py:418
+msgid "User data"
+msgstr ""
+
+#: usersmanage/forms.py:445
+msgid "User backend"
+msgstr ""
+
+#: usersmanage/forms.py:621
+msgid "User can't be Editor level 1 and at same time Editor level 2"
+msgstr ""
+
+#: usersmanage/forms.py:635
+msgid "User can't belong a **editor groups** if he isn't a Editor level 2"
+msgstr ""
+
+#: usersmanage/forms.py:649
+msgid "User can't belong a **viewer groups** if he isn't a Viewer level 1"
+msgstr ""
+
+#: usersmanage/forms.py:667
+msgid "Avatar is no a valid image"
+msgstr ""
+
+#: usersmanage/forms.py:680 usersmanage/forms.py:911
+msgid "A user with that email already exists."
+msgstr ""
+
+#: usersmanage/forms.py:710
+msgid "Password"
+msgstr ""
+
+#: usersmanage/forms.py:712
+msgid "Password confirmation"
+msgstr ""
+
+#: usersmanage/forms.py:714
+msgid "Enter the same password as above, for verification."
+msgstr ""
+
+#: usersmanage/forms.py:767
+#: usersmanage/templates/usersmanage/user_group_list.html:29
+msgid "Role"
+msgstr ""
+
+#: usersmanage/forms.py:768
+#: usersmanage/templates/usersmanage/user_group_list.html:30
+#: usersmanage/templates/usersmanage/user_list.html:10
+msgid "Users"
+msgstr ""
+
+#: usersmanage/forms.py:784
+#: usersmanage/templates/usersmanage/ajax/user_group_detail.html:5
+msgid "Group"
+msgstr ""
+
+#: usersmanage/forms.py:821
+#, python-brace-format
+msgid "User {user} has not role {cop_role}"
+msgstr ""
+
+#: usersmanage/forms.py:891 usersmanage/models.py:22
+msgid "Other informations"
+msgstr ""
+
+#: usersmanage/forms.py:927
+msgid "No user is available with this email."
+msgstr ""
+
+#: usersmanage/models.py:21
+msgid "Avatar"
+msgstr ""
+
+#: usersmanage/models.py:23
+msgid "Registered user"
+msgstr ""
+
+#: usersmanage/models.py:24
+msgid "User activated by administrator"
+msgstr ""
+
+#: usersmanage/models.py:26
+msgid "User changed password at first login"
+msgstr ""
+
+#: usersmanage/models.py:59
+msgid "Group role"
+msgstr ""
+
+#: usersmanage/templates/django_registration/activated_by_admin_email_body.txt:2
+#: usersmanage/templates/django_registration/activation_email_body.txt:2
+msgid "Dear"
+msgstr ""
+
+#: usersmanage/templates/django_registration/activated_by_admin_email_body.txt:4
+msgid "your profile was activated by administrators"
+msgstr ""
+
+#: usersmanage/templates/django_registration/activated_by_admin_email_body.txt:6
+msgid "Now you can make the login"
+msgstr ""
+
+#: usersmanage/templates/django_registration/activated_by_admin_email_subject.txt:2
+msgid "your account is active"
+msgstr ""
+
+#: usersmanage/templates/django_registration/activation_admin_email_body.txt:2
+msgid "Dear administrator"
+msgstr ""
+
+#: usersmanage/templates/django_registration/activation_admin_email_body.txt:4
+msgid ""
+"a new user has registered, to activate the new user, follow or copy the link "
+"in your browser"
+msgstr ""
+
+#: usersmanage/templates/django_registration/activation_admin_email_subject.txt:2
+msgid "New registration by"
+msgstr ""
+
+#: usersmanage/templates/django_registration/activation_complete.html:7
+msgid "Activation Complete!"
+msgstr ""
+
+#: usersmanage/templates/django_registration/activation_complete.html:9
+msgid "Your account is active"
+msgstr ""
+
+#: usersmanage/templates/django_registration/activation_complete.html:12
+msgid "Now you can make the"
+msgstr ""
+
+#: usersmanage/templates/django_registration/activation_email_body.txt:4
+msgid ""
+"please got to the following link or copy it and paste in you browser to "
+"activate your account and validate your email"
+msgstr ""
+
+#: usersmanage/templates/django_registration/activation_email_body.txt:8
+msgid "The link will be active for"
+msgstr ""
+
+#: usersmanage/templates/django_registration/activation_email_body.txt:8
+msgid "days"
+msgstr ""
+
+#: usersmanage/templates/django_registration/activation_email_subject.txt:2
+msgid "active your account"
+msgstr ""
+
+#: usersmanage/templates/django_registration/activation_failed.html:7
+msgid "Activation Failed!"
+msgstr ""
+
+#: usersmanage/templates/django_registration/activation_failed.html:9
+msgid "An error occurred activation of your account"
+msgstr ""
+
+#: usersmanage/templates/django_registration/registration_closed.html:7
+msgid "Sorry but the registration is closed!"
+msgstr ""
+
+#: usersmanage/templates/django_registration/registration_complete.html:7
+msgid "Registration complete!"
+msgstr ""
+
+#: usersmanage/templates/django_registration/registration_complete.html:10
+msgid ""
+"\n"
+"            Your registration is being examined by the administrators, once "
+"your account\n"
+"            is activated you will receive an activation confirmation email.\n"
+"        "
+msgstr ""
+
+#: usersmanage/templates/django_registration/registration_complete.html:17
+msgid ""
+"\n"
+"            You will receive a mail with a link to activate you account and "
+"validate your email.\n"
+"        "
+msgstr ""
+
+#: usersmanage/templates/django_registration/registration_form.html:17
+msgid "ERROR"
+msgstr ""
+
+#: usersmanage/templates/django_registration/registration_form.html:78
+msgid "Sign Up"
+msgstr ""
+
+#: usersmanage/templates/usersmanage/ajax/user_detail.html:5
+#: usersmanage/templates/usersmanage/user_list.html:20
+msgid "User"
+msgstr ""
+
+#: usersmanage/templates/usersmanage/user_form.html:85
+msgid "System users"
+msgstr ""
+
+#: usersmanage/templates/usersmanage/user_form.html:96
+#: usersmanage/templates/usersmanage/user_group_form.html:67
+msgid "Alert"
+msgstr ""
+
+#: usersmanage/templates/usersmanage/user_form.html:97
+#: usersmanage/templates/usersmanage/user_group_form.html:68
+msgid "Some errors on form. Check it and send again."
+msgstr ""
+
+#: usersmanage/templates/usersmanage/user_group_form.html:56
+msgid "System user groups"
+msgstr ""
+
+#: usersmanage/templates/usersmanage/user_group_list.html:10
+#: usersmanage/templates/usersmanage/user_list.html:31
+msgid "User groups"
+msgstr ""
+
+#: usersmanage/templates/usersmanage/user_group_list.html:20
+msgid "User group"
+msgstr ""
+
+#: usersmanage/templates/usersmanage/user_group_list.html:27
+#: usersmanage/templates/usersmanage/user_list.html:27
+msgid "Actions"
+msgstr ""
+
+#: usersmanage/templates/usersmanage/user_group_list.html:28
+msgid "Name"
+msgstr ""
+
+#: usersmanage/templates/usersmanage/user_group_list.html:31
+#: usersmanage/templates/usersmanage/user_list.html:44
+msgid "Created"
+msgstr ""
+
+#: usersmanage/templates/usersmanage/user_group_list.html:39
+#: usersmanage/templates/usersmanage/user_list.html:57
+msgid "Show detail"
+msgstr ""
+
+#: usersmanage/templates/usersmanage/user_group_list.html:43
+#: usersmanage/templates/usersmanage/user_list.html:62
+msgid "Edit"
+msgstr ""
+
+#: usersmanage/templates/usersmanage/user_group_list.html:48
+#: usersmanage/templates/usersmanage/user_list.html:67
+msgid "Delete"
+msgstr ""
+
+#: usersmanage/templates/usersmanage/user_list.html:28
+msgid "Username"
+msgstr ""
+
+#: usersmanage/templates/usersmanage/user_list.html:30
+msgid "Roles"
+msgstr ""
+
+#: usersmanage/templates/usersmanage/user_list.html:33
+msgid " Macro groups"
+msgstr ""
+
+#: usersmanage/templates/usersmanage/user_list.html:38
+msgid "Superuser"
+msgstr ""
+
+#: usersmanage/templates/usersmanage/user_list.html:39
+msgid "Staff"
+msgstr ""
+
+#: usersmanage/templates/usersmanage/user_list.html:42
+msgid "First name"
+msgstr ""
+
+#: usersmanage/templates/usersmanage/user_list.html:43
+msgid "Last name"
+msgstr ""
+
+#: usersmanage/templates/usersmanage/user_list.html:46
+msgid "Backend"
+msgstr ""
+
+#: usersmanage/utils.py:231
+msgid "ACL Users"
+msgstr ""
+
+#: usersmanage/views.py:261
+#, python-format
+msgid "No %(verbose_name)s found matching the query"
+msgstr ""
+
+#: usersmanage/views.py:410
+msgid "Username recovery"
+msgstr ""
+
+#: usersmanage/views.py:417
+msgid "Username sent"
+msgstr ""
