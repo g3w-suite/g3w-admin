@@ -109,7 +109,7 @@ class BaseUserMediaHandler(object):
 
                 # Check if it is a user-media view
                 url_path = urllib.parse.urlparse(self.feature_properties[field]).path
-                is_media_view = bool(url_path) and url_path.startswith('/media/temp_uploads/')
+                is_media_view = bool(url_path) and url_path.startswith(f'/media/temp_uploads/')
 
                 if change:
                     if self.feature_properties[field]:
