@@ -14,10 +14,12 @@ from django.conf import settings
 from django.apps import apps
 from qdjango.models import Layer
 from django.dispatch import receiver
+from django.templatetags.static import static
 from core.signals import \
     after_serialized_project_layer, \
     initconfig_plugin_start
 from core.utils.qgisapi import get_qgis_layer
+from base.version import get_version
 
 from qgis.PyQt.QtCore import QDate, QDateTime, Qt
 from datetime import datetime
@@ -50,8 +52,32 @@ def set_initconfig_value(sender, **kwargs):
 
     toret = {
         'qtimeseries': {
+            'version': get_version(),
             'gid': "{}:{}".format(kwargs['projectType'], kwargs['project']),
-            'layers': [] #TODO: to remove  and tell to g3w-client developers
+            'layers': [], #TODO: to remove  and tell to g3w-client developers
+            'sidebar': {
+                'id': 'qtimeseries',
+                'title': 'plugins.qtimeseries.title',
+                'open': False,
+                'collapsible': True,
+                'closewhenshowviewportcontent': False,
+                'icon': 'time',
+                'iconColor': '#25bce9',
+                'mobile': True,
+                'sidebarOptions': { 'position': 'catalog' },
+            },
+            'steps': [
+                { 'moment': '100:years', 'label': 'centuries', 'qgis': 'c' },
+                { 'moment': '10:years', 'label': 'decades', 'qgis': 'dec' },
+                { 'moment': 'years', 'label': 'years', 'qgis': 'y' },
+                { 'moment': 'months', 'label':  'months', 'qgis': 'mon' },
+                { 'moment': '7:days', 'label': 'weeks', 'qgis': 'wk' },
+                { 'moment': 'days', 'label': 'days', 'qgis': 'd' },
+                { 'moment': 'hours', 'label': 'hours', 'qgis': 'h' },
+                { 'moment': 'minutes', 'label': 'minutes', 'qgis': 'min' },
+                { 'moment': 'seconds', 'label': 'seconds', 'qgis': 's' },
+                { 'moment': 'milliseconds', 'label': 'milliseconds', 'qgis': 'ms' },
+            ],
         },
     }
 

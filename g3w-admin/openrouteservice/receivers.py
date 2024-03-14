@@ -17,6 +17,8 @@ from core.signals import initconfig_plugin_start
 from django.dispatch import receiver
 from .utils import config, check_user_permissions
 from django.apps import apps
+from django.templatetags.static import static
+from base.version import get_version
 
 
 @receiver(initconfig_plugin_start)
@@ -30,10 +32,21 @@ def set_initconfig_value(sender, **kwargs):
     if not check_user_permissions(sender.request.user, project):
         return None
 
-    init_config = config(project)
-    init_config['gid'] = "{}:{}".format(
-        kwargs['projectType'], kwargs['project'])
-
     return {
-        'openrouteservice': init_config,
+        'openrouteservice': config(project) | {
+            'version': get_version(),
+            'gid': "{}:{}".format(kwargs['projectType'], kwargs['project']),
+            'sidebar': {
+                'id': 'openrouteservice',
+                'title': 'OPENROUTESERVICE',
+                'open': False,
+                'collapsible': False,
+                'icon': 'layers',
+                'iconColor': 'purple',
+                'mobile': True,
+                'sidebarOptions': {
+                    'position': 1
+                },
+            },
+        },
     }

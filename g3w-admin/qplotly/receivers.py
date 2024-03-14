@@ -27,6 +27,7 @@ from qgis.PyQt.QtXml import QDomDocument
 from qgis.PyQt.QtCore import QFile
 
 from core.signals import initconfig_plugin_start
+from base.version import get_version
 
 from .utils.qplotly_settings import QplotlySettings
 from .utils.qplotly_factory import QplotlyFactoring
@@ -155,19 +156,25 @@ def set_initconfig_value(sender, **kwargs):
             else:
                 layout = factory.layout
 
+            # TODO move into db ?
+            layout['xaxis'].update({ 'automargin': True })
+            layout['yaxis'].update({ 'automargin': True })
+
             plots.append({
                 'id': qplotly_widget.pk,
                 'qgs_layer_id': layer.qgs_layer_id,
                 'selected_features_only': qplotly_widget.selected_features_only,
                 'visible_features_only': qplotly_widget.visible_features_only,
                 'show': qplotly_widget.show_on_start_client,
-
                 'plot': {
                     'type': settings.plot_type,
                     'layout': layout,
-                    'config': plot_config
-                }
-
+                    'config': plot_config,
+                },
+                'data': None,    # since 3.5.1
+                'loaded': False, # whether is already loaded
+                'filters': [],
+                'label': (layout['title'] if '2.5.1' == plotly.__version__ else layout['title']['text']) or f'Plot id [{qplotly_widget.pk}]',
             })
 
     # no plots no 'qplotly' section
@@ -176,12 +183,25 @@ def set_initconfig_value(sender, **kwargs):
 
     return {
         'qplotly': {
+            'version': get_version(),
             'gid': "{}:{}".format(kwargs['projectType'], kwargs['project']),
             'jsscripts': [
                 static('qplotly/polyfill.min.js'),
                 static('qplotly/plotly-1.52.2.min.js')
             ],
-            'plots': plots
+            'plots': plots,
+            'sidebar': {
+                'id': 'qplotly',
+                'title': 'plugins.qplotly.title',
+                'open': False,
+                'collapsible': True,
+                'icon':'chart-area',
+                'iconColor': 'red',
+                'mobile': True,
+                'sidebarOptions': {
+                    'position': 1,
+                },
+            },
         }
     }
 
