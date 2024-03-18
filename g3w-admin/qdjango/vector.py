@@ -145,10 +145,10 @@ class QGISLayerVectorViewMixin(object):
                 'referencing_field': relation['fieldRef']['referencingField'],
                 'layer_id': relation_layer.pk,
                 'referenced_field_is_pk': referenced_field_is_pk,
-                'lavel': level
+                'level': level
             }
 
-            # Add referenced layer od if level > 0
+            # Add referenced layer id if level > 0
             if level > 0:
                 kwargs.update({
                     'referenced_layer': relation['referencedLayer']
@@ -163,7 +163,9 @@ class QGISLayerVectorViewMixin(object):
             )
 
             # Check for cascading relations
-            if relation['referencingLayer'] in relations_qgsid:
+            # This condition is for avoid the recursive loop in cross layer relations
+            if (relation['referencingLayer'] in relations_qgsid and
+                    (level == 0 or relation['referencedLayer'] not in self.metadata_relations)):
                 level += 1
                 build_metadata_relation(
                     relations_qgsid[relation['referencingLayer']],
