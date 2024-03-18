@@ -897,6 +897,9 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
             for f in self.filters:
                 ret['filters'].append(FilterLayerSavedSerializer(f).data)
 
+        # Set current opacity translated to 0 - 100
+        ret['opacity'] = int(qgs_maplayer.opacity() * 100)
+
         return ret
 
 
