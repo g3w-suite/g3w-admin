@@ -935,7 +935,10 @@ class WidgetSerializer(serializers.ModelSerializer):
         # get edittype
         edittypes = eval(self.layer.edittypes)
 
-        if ret['type'] == 'search':
+        if ret['type'] != 'search':
+            ret['body'] = json.loads(instance.body)
+
+        else: 
             body = json.loads(instance.body)
 
             ret['options'] = {
@@ -995,8 +998,6 @@ class WidgetSerializer(serializers.ModelSerializer):
                 ret['options']['search_1n_relationid'] = body['relations']
                 del(body['relations'])
 
-        else:
-            ret['body'] = json.loads(instance.body)
         return ret
 
     class Meta:
