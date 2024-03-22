@@ -947,39 +947,33 @@ class WidgetSerializer(serializers.ModelSerializer):
                 'results': body['results'],
                 'filter': [],
                 'dozoomtoextent': body['dozoomtoextent'],
-                'otherquerylayerids': body['otherlayers'] if 'otherlayers' in body else [], # other layers
+                'otherquerylayerids': body.get('otherlayers', []), # other layers
                 # 'zoom': body['zoom']
             }
 
             for field in body['fields']:
 
-                # if widgettype is selectbox, get values
-                if 'widgettype' in field and field['widgettype'] == 'selectbox':
+                input = field['input']
 
-                    input = field['input']
+                # check if field has a widget edit type
+                etype = edittypes.get(field['name'], {})
+                widget_type = etype.get('widgetv2type')
 
-                    input['type'] = 'selectfield'
-                    input['options']['values'] = []
+                input['type'] = ({
+                    'autocompletebox': 'autocompletefield',
+                    'selectbox': 'selectfield'
+                }).get(field.get('widgettype'), input.get('type'))
 
-                    edittype = edittypes[field['name']]
+                input['options'].update({
+                    'values': etype.get('values', []),
+                    'blanktext': field.get('blanktext', ''),
+                })
 
-                    # check if field has a widget edit type
-                    widget_type = edittype['widgetv2type']
-                    if field['name'] in edittypes and widget_type in ('ValueMap', 'ValueRelation'):
-                        if widget_type == 'ValueMap':
-                            input['options']['values'] = edittype['values']
-                        else:
-
-                            # Add layer params
-                            input['options']['key'] = edittype['Value']
-                            input['options']['value'] = edittype['Key']
-                            input['options']['layer_id'] = edittype['Layer']
-
-                # For AutoccOmpleteBox input type
-                if 'widgettype' in field and field['widgettype'] == 'autocompletebox':
-                    input['type'] = 'autocompletefield'
-
-                input['options']['blanktext'] = field['blanktext']
+                # ValueRelation → add layer params
+                if 'ValueRelation' == widget_type:
+                    input['options']['key'] = etype['Value']
+                    input['options']['value'] = etype['Key']
+                    input['options']['layer_id'] = etype['Layer']
 
                 ret['options']['filter'].append({
                     'op': field['filterop'],
