@@ -948,7 +948,7 @@ class WidgetSerializer(serializers.ModelSerializer):
         if ret['type'] != 'search':
             ret['body'] = body
 
-        # TODO: reduce nesting level (there are too many nested 'options')
+        # TODO: reduce nesting level (there are too many things called 'options')
         else:
             ret['options'] = {
                 'queryurl': None,
