@@ -947,14 +947,11 @@ class WidgetSerializer(serializers.ModelSerializer):
                 'results': body['results'],
                 'filter': [],
                 'dozoomtoextent': body['dozoomtoextent'],
+                'otherquerylayerids': body['otherlayers'] if 'otherlayers' in body else [], # other layers
                 # 'zoom': body['zoom']
             }
 
-            # other layers
-            if 'otherlayers' in body:
-                ret['options'].update({
-                    'otherquerylayerids': body['otherlayers']
-                })
+            
 
             for field in body['fields']:
 
