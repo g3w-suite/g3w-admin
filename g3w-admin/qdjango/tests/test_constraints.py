@@ -301,6 +301,16 @@ class SingleLayerSubsetStringConstraints(TestSingleLayerConstraintsBase):
         self.assertFalse(self._check_subset_string(login=False))
         self.assertFalse(self._check_wfs_getfeature(login=False))
 
+        # Contraints on more than one layer
+        constraint_anonymous = SingleLayerConstraint(layer=self.spatialite_points, active=True)
+        constraint_anonymous.save()
+        rule_anonymous = ConstraintSubsetStringRule(
+            constraint=constraint_anonymous, user=get_anonymous_user(), rule="pkuid = 1", anonymoususer=True)
+        rule_anonymous.save()
+
+        self.assertFalse(self._check_subset_string(login=False))
+        self.assertFalse(self._check_wfs_getfeature(login=False))
+
     def test_group_constraint(self):
         """Test model with group constraint"""
 

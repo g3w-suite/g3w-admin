@@ -24,7 +24,7 @@ logger = logging.getLogger('django.request')
 def comparedbdatasource(ds1, ds2, layer_type='postgres'):
     """
     Compare postgis/sqlite datasource bosed on dbname, host and table name
-    :param ds1: qgis db datasoruce string from compare
+    :param ds1: qgis db datasource string from compare
     :param ds2: qgis db datasource string to compare
     :return: Boolean
     """
@@ -54,7 +54,7 @@ def get_widgets4layer(layer):
     :param layer: Qdjango Layer model instance
     :return: List or Querydict fo Widget models
     """
-    from .structure import datasource2dict, qgsdatasoruceuri2dict
+    from .structure import datasource2dict, qgsdatasourceuri2dict
     from qdjango.models import Widget
 
     # different by layer type
@@ -164,3 +164,18 @@ def get_view_layer_ids(user, project):
                 filter(project=project)])
         )
     )
+
+def get_geocoding_providers():
+    """
+    Return al tuple for qdjango project form field geocoding_providers
+
+    :return: tuple of items for a django form select
+    """
+
+    ret = []
+    for gp, p in settings.GEOCODING_PROVIDERS.items():
+        if gp == 'bing' and 'bing' not in settings.VENDOR_KEYS:
+            continue
+        ret.append((gp, p['label']))
+
+    return ret

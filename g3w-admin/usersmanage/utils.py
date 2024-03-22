@@ -7,7 +7,7 @@ from guardian.shortcuts import get_users_with_perms, assign_perm, remove_perm, g
 from guardian.models import UserObjectPermission
 from guardian.compat import get_user_model
 from crispy_forms.layout import Div, HTML, Field
-from django.utils.translation import ugettext, ugettext_lazy as _
+from django.utils.translation import ugettext, gettext_lazy as _
 from django.contrib.sessions.models import Session
 from django.utils import timezone
 from .configs import *
@@ -335,3 +335,23 @@ def get_user_groups_for_object(object, user, permission, grouprole=None):
         user_groups = list(set(editor1_user_groups).intersection(set(user_groups)))
 
     return user_groups
+
+def check_unique_email(email, user=None) -> str:
+    """
+    Check if a User with same email is present in db: useful for Registration and CRUD User forms
+
+    :param email: Email address to check.
+    :return: True is email is not present for other users, False if a just a user has this email address
+    """
+    if email:
+        u = User.objects.filter(email=email)
+
+        if user:
+            u = u.exclude(pk=user.pk)
+
+        if len(u) > 0:
+            return False
+
+    return True
+
+

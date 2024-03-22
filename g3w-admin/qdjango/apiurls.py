@@ -15,7 +15,8 @@ from .api.layers.views import (
     LayerAuthGroupInfoAPIView,
     LayerStyleListView,
     LayerStyleDetailView,
-    LayerPolygonView
+    LayerPolygonView,
+    LayerInfoView
 )
 from .api.constraints.views import (
     ConstraintExpressionRuleDetail,
@@ -297,7 +298,7 @@ urlpatterns = [
         name='qdjango-asgeotiff-api'
     ),
     re_path(
-        r'^api/prjtheme/(?P<project_id>\d+)/(?P<theme_name>[-_\w\d\s]+)/$',
+        r'^api/prjtheme/(?P<project_id>\d+)/(?P<theme_name>[-_\w\d\s:.=,]+)/$',
         QdjangoPrjThemeAPIview.as_view(),
         name='qdjango-prjtheme-api'
     ),
@@ -354,5 +355,10 @@ urlpatterns = [
         login_required(LayerAuthGroupInfoAPIView.as_view()),
         name='qdjango-api-info-layer-authgroup'
     ),
+
+    path('api/info/layer/<int:pk>/',
+         login_required(LayerInfoView.as_view()),
+         name='qdjango-api-info-layer'
+     ),
 
 ]

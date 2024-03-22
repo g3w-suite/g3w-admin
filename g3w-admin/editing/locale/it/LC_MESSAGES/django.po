@@ -3,74 +3,81 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR lorenzetti@gis3w.it, 2019.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-05-02 05:55+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"PO-Revision-Date: 2023-11-30 11:37+0100\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 3.4.1\n"
 
 #: editing/api/base/views.py:64
 msgid ""
 "The feature id {} of layer {} cannot be modified because it is not locked "
 "anymore"
 msgstr ""
+"L'ID elemento {} del layer {} non può essere modificato perché non è più "
+"bloccato"
 
 #: editing/api/base/views.py:146
 msgid "Sorry but your user doesn't has 'Add Feature' capability"
 msgstr ""
+"Siamo spiacenti ma il tuo utente non ha la funzionalità \"Aggiungi "
+"funzionalità\"."
 
 #: editing/api/base/views.py:150
 msgid "Sorry but your user doesn't has 'Delete Feature' capability"
 msgstr ""
+"Siamo spiacenti ma il tuo utente non ha la funzionalità \"Elimina funzione\"."
 
 #: editing/api/base/views.py:156
 msgid ""
 "Sorry but your user doesn't has 'Change or Change Attributes Features' "
 "capability"
 msgstr ""
+"Siamo spiacenti ma il tuo utente non ha la funzionalità \"Cambia o cambia "
+"funzionalità attributi\"."
 
 #: editing/api/base/views.py:300 editing/api/base/views.py:303
 #, python-format
 msgid "Error adding feature: %s"
-msgstr ""
+msgstr "Errore durante l'aggiunta della funzionalità: %s"
 
 #: editing/api/base/views.py:310
 msgid "Error adding feature on Spatialite provider: "
-msgstr ""
+msgstr "Errore durante l'aggiunta della funzionalità sul provider Spatialite:"
 
 #: editing/api/base/views.py:327 editing/api/base/views.py:338
 #, python-format
 msgid "Error changing attribute values: %s"
-msgstr ""
+msgstr "Errore durante la modifica dei valori degli attributi: %s"
 
 #: editing/api/base/views.py:333 editing/api/base/views.py:341
 #, python-format
 msgid "Error changing geometry: %s"
-msgstr ""
+msgstr "Errore durante la modifica della geometria: %s"
 
 #: editing/api/base/views.py:429 editing/api/base/views.py:433
 #, python-format
 msgid "Cannot delete feature: %s"
-msgstr ""
+msgstr "Impossibile eliminare la funzione: %s"
 
 #: editing/api/base/views.py:474
 #, python-format
 msgid "Layer %s is not editable!"
-msgstr ""
+msgstr "Il layer %s non è modificabile!"
 
 #: editing/api/base/views.py:529
 #, python-format
 msgid "Backend error saving layer %s: %s"
-msgstr ""
+msgstr "Errore backend durante il salvataggio del layer %s: %s"
 
 #: editing/forms.py:21
 msgid "Active"
@@ -98,7 +105,7 @@ msgstr "Seleziona il viewer groups che può editare il layer"
 
 #: editing/forms.py:27
 msgid "User viewer groups"
-msgstr ""
+msgstr "Gruppi di utenti viewers"
 
 #: editing/forms.py:29
 msgid "User adding data field"
@@ -131,7 +138,7 @@ msgstr ""
 #: editing/forms.py:61
 msgid "Check on uncheck to attive/deactive editing layer capabilities:"
 msgstr ""
-"Spunta o despunta per attivare/deattivare la possibilità di editare il layer"
+"Spunta o despunta per attivare/deattivare la possibilità di editare il layer:"
 
 #: editing/forms.py:66
 msgid "Select viewers with 'view permission' on project that can edit layer:"
@@ -158,11 +165,11 @@ msgstr "Attenzione"
 
 #: editing/templates/editing/editing_layer_active_form.html:8
 msgid "Some errors on form. Check it and send again."
-msgstr "Alcuni errori, controlla e riprova"
+msgstr "Alcuni errori, controlla e riprova."
 
 #: editing/templates/editing/layer_action.html:5
 msgid "Editing layer"
-msgstr ""
+msgstr "Layer editabile"
 
 #: editing/templates/editing/layer_action.html:7
 msgid "Activation layer_editing"

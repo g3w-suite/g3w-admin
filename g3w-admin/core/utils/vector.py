@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.urls import reverse
+from django.urls import reverse, resolve
 from . import file_path_mime
 from .response import send_file
 from .db import build_dango_connection_name
@@ -107,6 +107,10 @@ class BaseUserMediaHandler(object):
                 path_to_save = self.get_path_to_save()
                 path_file_to_save = '{}/{}'.format(path_to_save, file_name)
 
+                # Check if it is a user-media view
+                url_path = urllib.parse.urlparse(self.feature_properties[field]).path
+                is_media_view = bool(url_path) and url_path.startswith(f'{settings.MEDIA_URL}temp_uploads/')
+
                 if change:
                     if self.feature_properties[field]:
                         self.feature_properties[field] = {
@@ -129,13 +133,18 @@ class BaseUserMediaHandler(object):
 
                     if file_name:
                         if current_file_name:
+
+                            # Case update with new media file
                             if current_file_name != file_name:
                                 save, delete_old = True, True
                             else:
                                 save, delete_old = False, False
                         else:
-                            save, delete_old = True, False
+
+                            # Case newone media file
+                            save, delete_old = True if is_media_view else False, False
                     else:
+                        # No file submit: delete the old
                         save, delete_old = False, True
 
                     if save:

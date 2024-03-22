@@ -92,6 +92,11 @@ class AboutTestsBase(TestCase):
 
         cls.project_group2.save()
 
+        cls.project_group3 = CoreGroup(name='Group3', title='Group3', header_logo_img='',
+                                       srid=G3WSpatialRefSys.objects.get(auth_srid=3857))
+
+        cls.project_group3.save()
+
         # create macrogroups
         cls.macrogroup = MacroGroup(title='Macrogroup1', logo_img='macrogroup.png')
         cls.macrogroup.save()
@@ -173,7 +178,7 @@ class PortalTestAPI(AboutTestsBase):
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
         jcontent = json.loads(response.content)
-        self.assertEqual(len(jcontent), 2)
+        self.assertEqual(len(jcontent), 3)
         feature = jcontent[0]
         self.assertIn('edit_url', feature)
         group = CoreGroup.objects.filter(pk=feature['id'])[0]
@@ -318,7 +323,7 @@ class PortalTestAPI(AboutTestsBase):
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
         jcontent = json.loads(response.content)
-        self.assertEqual(len(jcontent), 2)
+        self.assertEqual(len(jcontent), 1)
 
         # ad new group without macrogroup
         new_group = CoreGroup(name='Group33', title='Group33', header_logo_img='',
@@ -328,8 +333,8 @@ class PortalTestAPI(AboutTestsBase):
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
         jcontent = json.loads(response.content)
-        self.assertEqual(len(jcontent), 3)
-        self.assertEqual(jcontent[2]['name'], 'Group33')
+        self.assertEqual(len(jcontent), 2)
+        self.assertEqual(jcontent[1]['name'], 'Group33')
 
         client.logout()
 

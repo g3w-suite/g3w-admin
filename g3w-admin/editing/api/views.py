@@ -41,7 +41,6 @@ class QGISEditingLayerVectorView(QGISLayerVectorViewMixin, BaseEditingVectorOnMo
         Custom media data based on ExternalResource qgis widget
         :param geojson_feature: geojson object feature
         """
-        #tocheck = '{}/{}'.format(self.request._request.META['HTTP_ORIGIN'], USER_MEDIA_PREFIX)
 
         # build new url to save into db
         user_media = USERMEDIAHANDLER_CLASSES['qdjango'](layer=self.layer, metadata_layer=metadata_layer,

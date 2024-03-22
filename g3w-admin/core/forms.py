@@ -3,7 +3,7 @@ from django.forms import Form, ModelForm, ValidationError
 from django.forms.fields import CharField, HiddenInput
 from django.forms.models import ModelMultipleChoiceField
 from django.db.models import Q
-from django.utils.translation import ugettext, ugettext_lazy as _
+from django.utils.translation import ugettext, gettext_lazy as _
 from core.models import Group, GeneralSuiteData, MacroGroup
 from django_file_form.forms import FileFormMixin
 from django.contrib.auth.models import User
@@ -214,6 +214,7 @@ class GeneralSuiteDataForm(TranslationModelForm, FileFormMixin, ModelForm):
     groups_map_description = BleachField(required=False)
     login_description = BleachField(required=False)
     credits = BleachField(required=False)
+    registration_intro = BleachField(required=False)
 
 
     def __init__(self, *args, **kwargs):
@@ -339,6 +340,24 @@ class GeneralSuiteDataForm(TranslationModelForm, FileFormMixin, ModelForm):
                         css_class='box box-default'
                     ),
                     css_class='col-md-6'
+                ),
+                Div(
+                    Div(
+                        Div(
+                            HTML(
+                                "<h3 class='box-title'><i class='fa fa-file'></i> {}</h3>".format(
+                                    _("Registration")
+                                )
+                            ),
+                            css_class="box-header with-border",
+                        ),
+                        Div(
+                            Field("registration_intro", css_class="wys5 translate", style="width:100%;"),
+                            css_class="box-body",
+                        ),
+                        css_class="box box-default",
+                    ),
+                    css_class="col-md-6",
                 ),
                 css_class='row'
             )

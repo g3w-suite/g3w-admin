@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.apps import apps
 from django.urls import reverse
-from django.utils.translation import ugettext, ugettext_lazy as _
+from django.utils.translation import ugettext, gettext_lazy as _
 from qdjango.utils.qgis import explode_expression
 from collections import OrderedDict
 
@@ -91,12 +91,14 @@ FIELD_TYPES_MAPPING = {
     'ULONG': FIELD_TYPE_FLOAT,
     'USHORT': FIELD_TYPE_FLOAT,
     'UCHAR': FIELD_TYPE_CHAR,
-    'FLOAT': FIELD_TYPE_FLOAT
+    'FLOAT': FIELD_TYPE_FLOAT,
+    'PYQT_PYOBJECT': FIELD_TYPE_VARCHAR, # For not main geometry field
 }
 
 
 def editingFormField(fieldName, type=FIELD_TYPE_STRING, editable=True, required=False, validate=None,
-                     fieldLabel=None, inputType=None, values=None, default_clause='', unique=False, expression='', pk=False, ** kwargs):
+                     fieldLabel=None, inputType=None, values=None, default_clause='', unique=False, expression='',
+                     pk=False, ** kwargs):
     """
     Build editing form field for client.
     """
@@ -140,7 +142,7 @@ def editingFormField(fieldName, type=FIELD_TYPE_STRING, editable=True, required=
 
 def mapLayerAttributes(layer, formField=False, **kwargs):
     """
-    Map database columns data from layer by type for client editing
+    Map database columns data from layer by type for client
     """
 
     mappingData = FIELD_TYPES_MAPPING
@@ -222,6 +224,22 @@ def mapLayerAttributesFromQgisLayer(qgis_layer, **kwargs):
 
     pk_attributes = qgis_layer.primaryKeyAttributes()
 
+    # Get available Join's fields
+    join_fields = {}
+    for order, join in enumerate(qgis_layer.vectorJoins()):
+        join_id = f'{qgis_layer.id()}_vectorjoin_{order}'
+        joinlayer_pk_attributes = join.joinLayer().primaryKeyAttributes()
+        for i, f in enumerate(join.joinLayer().fields()):
+            editable = join.isEditable()
+
+            # Check if referencing field is PK
+            if i in joinlayer_pk_attributes:
+                editable = False
+            join_fields[join.prefixedFieldName(f)] = {
+                'editable': editable,
+                'join_id': join_id}
+
+
     # Determine if we are using an old and bugged version of QGIS
     IS_QGIS_3_10 = Qgis.QGIS_VERSION.startswith('3.10')
 
@@ -247,6 +265,7 @@ def mapLayerAttributesFromQgisLayer(qgis_layer, **kwargs):
                     field.constraints().constraintStrength(
                         QgsFieldConstraints.ConstraintExpression) == QgsFieldConstraints.ConstraintStrengthHard
                 default_clause = data_provider.defaultValueClause(field_index)
+                default_clause = default_clause if default_clause != 'nextval(NULL)' else ''
 
                 # default value for editing from qgis_layer
                 if 'default' not in kwargs:
@@ -281,8 +300,6 @@ def mapLayerAttributesFromQgisLayer(qgis_layer, **kwargs):
                     is_pk = unique and default_clause and not_null
                 else:
                     is_pk = (field_index in pk_attributes)
-
-                #
 
                 toRes[field.name()] = editingFormField(
                     field.name(),
@@ -341,6 +358,14 @@ def mapLayerAttributesFromQgisLayer(qgis_layer, **kwargs):
                         # only on insert newone
                         toRes[field.name()]['input']['options']['default_expression']['apply_on_update'] = True \
                             if field.defaultValueDefinition().applyOnUpdate() else False
+
+                # Check for Join's field.
+                # About joins in QGIS control the join settings for editing.
+                try:
+                    toRes[field.name()]['vectorjoin_id'] = join_fields[field.name()]['join_id']
+                    toRes[field.name()]["editable"] = join_fields[field.name()]["editable"]
+                except:
+                    pass
 
         field_index += 1
 

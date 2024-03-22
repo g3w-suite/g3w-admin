@@ -46,3 +46,11 @@ G3W_PROJ4_EPSG = {
   }
 }
 
+# Geocoding providers
+GEOCODING_PROVIDERS = {
+  "nominatim": {
+    "label": "Nominatim (OSM)",
+    "url": "https://nominatim.openstreetmap.org/search"
+  },
+}
+

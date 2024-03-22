@@ -1,7 +1,7 @@
 
 from django.conf import settings
 from django.conf.global_settings import LANGUAGES
-from django.utils.translation import ugettext, ugettext_lazy as _
+from django.utils.translation import ugettext, gettext_lazy as _
 from django.urls import reverse
 from django.db import models
 from django.apps import apps
@@ -428,6 +428,7 @@ class GeneralSuiteData(models.Model):
     login_description = models.TextField(_('Login description'), null=True, blank=True)
     suite_logo = models.ImageField(_('Suite logo'), null=True, blank=True)
     url_suite_logo = models.URLField(_('Suite logo URL'), null=True, blank=True)
+    registration_intro = models.TextField(_('Registration introductory message'), null=True, blank=True)
 
     # custom credits
     credits = models.TextField(_('Credits'), null=True, blank=True)

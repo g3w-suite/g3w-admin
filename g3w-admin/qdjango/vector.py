@@ -41,7 +41,8 @@ from core.api.permissions import ProjectPermission
 
 from core.utils.qgisapi import (
     get_qgis_layer,
-    get_qgis_featurecount
+    get_qgis_featurecount,
+    get_layer_fids_from_server_fids
 )
 from core.utils.structure import mapLayerAttributesFromQgisLayer
 from core.utils.vector import BaseUserMediaHandler
@@ -58,7 +59,7 @@ from qdjango.api.layers.filters import (
     FILTER_FID_PARAM
 )
 
-from .models import Layer, SessionTokenFilter, SessionTokenFilterLayer
+from .models import Layer, SessionTokenFilter, SessionTokenFilterLayer, FilterLayerSaved
 from .utils.data import QGIS_LAYER_TYPE_NO_GEOM
 from .utils.edittype import MAPPING_EDITTYPE_QGISEDITTYPE
 
@@ -126,53 +127,59 @@ class QGISLayerVectorViewMixin(object):
                         f"Layer vector join: a problem occur during reading layer joins {join['joinLayerId']}")
 
     def set_metadata_relations(self, request, **kwargs):
+        """Find relations and set metadata"""
 
-        # init relations
-        self.set_relations()
+        level_metadata = 0
+        def build_metadata_relation(relation, qgis_layer, level=level_metadata):
 
-        # Determine if we are using an old and bugged version of QGIS
-        IS_QGIS_3_10 = Qgis.QGIS_VERSION.startswith('3.10')
+            # get relation layer object
+            relation_layer = self._layer_model.objects.get(qgs_layer_id=relation['referencingLayer'],
+                                                           project=self.layer.project)
 
-        for idr, relation in list(self.relations.items()):
+            # qgis_layer is the referenced layer
+            referenced_field_is_pk = [qgis_layer.fields().indexFromName(
+                rf) for rf in relation['fieldRef']['referencedField']] == qgis_layer.primaryKeyAttributes()
 
-            # check if in relation there is referencedLayer == self layer
-            if relation['referencedLayer'] == self.layer.qgs_layer_id:
-                # get relation layer object
-                relation_layer = self._layer_model.objects.get(qgs_layer_id=relation['referencingLayer'],
-                                                               project=self.layer.project)
+            kwargs = {
+                'layer': relation_layer,
+                'referencing_field': relation['fieldRef']['referencingField'],
+                'layer_id': relation_layer.pk,
+                'referenced_field_is_pk': referenced_field_is_pk,
+                'level': level
+            }
 
-                # qgis_layer is the referenced layer
-                qgis_layer = self.layer.qgis_layer
-                referenced_field_is_pk = [qgis_layer.fields().indexFromName(
-                    rf) for rf in relation['fieldRef']['referencedField']] == qgis_layer.primaryKeyAttributes()
+            # Add referenced layer id if level > 0
+            if level > 0:
+                kwargs.update({
+                    'referenced_layer': relation['referencedLayer']
+                })
 
-                # It's an old and buggy QGIS version so we cannot trust primaryKeyAttributes() and we go guessing
-                if IS_QGIS_3_10:
-                    field_index = qgis_layer.fields().indexFromName(
-                        relation['fieldRef']['referencedField'])
-                    # Safety check
-                    if field_index >= 0:
-                        field = qgis_layer.fields()[field_index]
-                        default_clause = qgis_layer.dataProvider().defaultValueClause(field_index)
-                        constraints = qgis_layer.fieldConstraints(
-                            field_index)
-                        not_null = bool(constraints & QgsFieldConstraints.ConstraintNotNull) and \
-                            field.constraints().constraintStrength(
-                            QgsFieldConstraints.ConstraintNotNull) == QgsFieldConstraints.ConstraintStrengthHard
-                        unique = bool(constraints & QgsFieldConstraints.ConstraintUnique) and \
-                            field.constraints().constraintStrength(
-                            QgsFieldConstraints.ConstraintUnique) == QgsFieldConstraints.ConstraintStrengthHard
-                        referenced_field_is_pk = unique and default_clause and not_null
 
-                self.metadata_relations[relation['referencingLayer']] = MetadataVectorLayer(
-                    get_qgis_layer(relation_layer),
-                    relation_layer.origname,
-                    idr,
-                    layer=relation_layer,
-                    referencing_field=relation['fieldRef']['referencingField'],
-                    layer_id=relation_layer.pk,
-                    referenced_field_is_pk=referenced_field_is_pk
-                )
+            self.metadata_relations[relation['referencingLayer']] = MetadataVectorLayer(
+                get_qgis_layer(relation_layer),
+                relation_layer.origname,
+                relation['id'],
+                **kwargs
+            )
+
+            # Check for cascading relations
+            # This condition is for avoid the recursive loop in cross layer relations
+            if (relation['referencingLayer'] in relations_qgsid and
+                    (level == 0 or relation['referencedLayer'] not in self.metadata_relations)):
+                level += 1
+                build_metadata_relation(
+                    relations_qgsid[relation['referencingLayer']],
+                    relation_layer.qgis_layer,
+                    level)
+
+
+        # Reorder relations by qgs_layer id
+        relations_qgsid = {r['referencedLayer']: r for r in self.relations.values()}
+
+        if self.layer.qgs_layer_id in relations_qgsid:
+            build_metadata_relation(relations_qgsid[self.layer.qgs_layer_id], self.layer.qgis_layer)
+
+
 
     def set_metadata_layer(self, request, **kwargs):
         """Set the metadata layer to a QgsVectorLayer instance
@@ -389,6 +396,20 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
         else:
             request_data = request.query_params
 
+        def _get_sessiontokenfilter():
+            """
+            Get or create an instance of SessionTokeFilter model
+
+            :return: A tuple with the instance of SessioneTokeFilter model and a boolean state for created or retreive
+            :rtype: tuple
+            """
+            s, created = SessionTokenFilter.objects.get_or_create(
+                sessionid=sessionid,
+                defaults={'user': request.user if request.user.pk else None}
+            )
+
+            return s, created
+
         # parameters to check:
         # mode: create, update, delete
         # fidsin: fids list to filter
@@ -398,7 +419,47 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
         fidsin = request_data.get('fidsin')
         fidsout = request_data.get('fidsout')
 
+        token_data = {}
+
+        def _create_qgs_expr(s, fidsin=None, fidsout=None):
+            """
+            Create qgs expression to save in db
+
+            :param s: Instance of SessionTokenFilter model.
+            :param fidsin: String of features id to contain.
+            :param fidsout: String of features id to exlude.
+            :return: QGIS expression string
+            :rtype: str
+            """
+
+            expr = f'$id IN ({fidsin})' if fidsin else f'$id NOT IN ({fidsout})'
+            return f'{s.qgs_expr} AND {expr}' if s else expr
+
+        def _check_url_params_name_fid(mode):
+            """
+            Check for 'name' and 'fid' url parameters
+
+            :param mode: Value of 'mode' URL parameter
+            :return: Dict for model to save with fid or name key
+            :rtype: dict
+            """
+            name = request_data.get('name')
+            fid = request_data.get('fid')
+            if not name and not fid:
+                raise APIException(
+                    f"'name' or 'fid' parameter is required for mode='{mode}'.")
+            if fid and name:
+                raise APIException(
+                    f"'fid' only or 'name' only parameter is required for mode='{mode}'.")
+
+            # Return dict for model
+            return {'pk': fid} if fid else {'name': name}
+
+
+
+
         if mode == 'create_update':
+
             if not fidsin and not fidsout:
                 raise APIException(
                     "'fidsin' or 'fidsout' parameter is required.")
@@ -407,24 +468,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
                 raise APIException(
                     "'fidsin' only or 'fidsout' only parameter is required.")
 
-        s, created = SessionTokenFilter.objects.get_or_create(
-            sessionid=sessionid,
-            defaults={'user': request.user if request.user.pk else None}
-        )
-
-        token_data = {}
-
-        if mode == 'delete' and not s:
-            raise APIException(
-                "Session filter token doesn't exists for current session")
-
-        def _create_qgs_expr(s, fidsin=None, fidsout=None):
-            """ Create qgs expression to save in db """
-
-            expr = f'$id IN ({fidsin})' if fidsin else f'$id NOT IN ({fidsout})'
-            return f'{s.qgs_expr} AND {expr}' if s else expr
-
-        if mode == 'create_update':
+            s, created = _get_sessiontokenfilter()
 
             l, created = s.stf_layers.get_or_create(
                 layer=self.layer,
@@ -438,10 +482,93 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
             token_data.update({
                 'filtertoken': s.token
             })
+
+        elif mode == 'save':
+
+            # Get qgs_expression from SessionTokenFilter
+            name = request_data.get('name')
+            if not name:
+                raise APIException(
+                    "'name' parameter is required for mode='save'.")
+
+            s, created = _get_sessiontokenfilter()
+
+            qgs_expr = s.stf_layers.get(layer=self.layer).qgs_expr
+            l, created = FilterLayerSaved.objects.update_or_create(
+                layer = self.layer,
+                user = request.user,
+                name = name,
+                defaults={'qgs_expr': qgs_expr}
+            )
+
+            token_data.update({
+                'layer': self.layer.qgs_layer_id,
+                'qgs_expression': qgs_expr,
+                'name': l.name,
+                'fid': l.pk,
+                'state': 'created' if created else 'updated'
+            })
+
+            # Is necessary invalidate the config project
+            self.layer.project.invalidate_cache(user=request.user)
+
+        elif mode == 'apply':
+
+            kwargs = _check_url_params_name_fid('apply')
+
+            fls = FilterLayerSaved.objects.get(
+                layer = self.layer,
+                user = request.user,
+                **kwargs
+            )
+
+            s, created = _get_sessiontokenfilter()
+
+            # Check if a recordo for surrent layer is present for update or create it
+            s.stf_layers.update_or_create(
+                layer=fls.layer,
+                defaults={
+                    'qgs_expr': fls.qgs_expr
+                }
+            )
+
+            # Return newone of current filter token
+            token_data.update({
+                'filtertoken': s.token
+            })
+
+
+        elif mode == 'delete_saved':
+
+            kwargs = _check_url_params_name_fid('delete_saved')
+
+            FilterLayerSaved.objects.get(
+                layer = self.layer,
+                user = request.user,
+                **kwargs
+            ).delete()
+
+            self.layer.project.invalidate_cache(user=request.user)
+
+        # mode='delete'
         else:
 
+            s, created = _get_sessiontokenfilter()
+
+            try:
+                l = s.stf_layers.get(layer=self.layer).delete()
+            except:
+                pass
+
+            token_data.update({
+                'filtertoken': s.token
+            })
+
             # delete session and
-            s.delete()
+            if len(s.stf_layers.all()) == 0:
+                token_data = {}
+                s.delete()
+
 
         self.results.update({'data': token_data})
 

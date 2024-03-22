@@ -82,5 +82,7 @@ before_return_vector_data_layer = django.dispatch.Signal()
 # signal send for execute model searches.
 execute_search_on_models = django.dispatch.Signal(providing_args=['request', 'search_text'])
 
+# signal to load actions for project layers pages
+load_project_layers_actions = django.dispatch.Signal(providing_args=["app_name", "project"])
 
 

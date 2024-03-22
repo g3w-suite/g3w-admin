@@ -13,7 +13,7 @@ __copyright__ = 'Copyright 2015 - 2020, Gis3w'
 from django.conf import settings as g3wsettings
 from django.dispatch import receiver
 from django.apps import apps
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, pre_delete
 from django.templatetags.static import static
 from django.template import loader
 
@@ -222,3 +222,16 @@ def qplottly_layer_action(sender, **kwargs):
 
         template = loader.get_template('qplotly/layer_action.html')
         return template.render(kwargs)
+
+
+@receiver(post_save, sender=QplotlyWidget)
+@receiver(pre_delete, sender=QplotlyWidget)
+def invalid_prj_cache(**kwargs):
+    """Invalid the possible qdjango project cache"""
+
+    for layer in kwargs['instance'].layers.all():
+        layer.project.invalidate_cache()
+        logging.getLogger("g3wadmin.debug").debug(
+            f"Qdjango project /api/config  invalidate cache after create/update/delete of layer qplotly widget: "
+            f"{layer.project}"
+        )

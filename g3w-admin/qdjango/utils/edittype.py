@@ -212,6 +212,33 @@ class QgisEditTypeExternalResource(QgisEditType):
         }
 
 
+class QgisEditTypeRelationReference(QgisEditTypeValueMap):
+    """
+    Class for Relation Reference and autocomplete.
+    """
+
+    field_type = FORM_FIELD_TYPE_SELECT_AUTOCOMPLETE
+
+    @property
+    def input_form(self):
+
+        input_form = super(QgisEditTypeRelationReference, self).input_form
+
+
+        # add params for get value
+        input_form['input']['options'].update({
+            'relation_id': getattr(self, 'Relation', None), # Possible QGIS bug
+            'relation_reference': True,
+            'loading': {
+                'state': None
+            },
+            'filter_expression': self.FilterExpression if hasattr(self, 'FilterExpression') else None,
+            'chain_filters': self.ChainFilters if hasattr(self, 'ChainFilters') else None,
+            'filter_fields': self.FilterFields if hasattr(self, 'FilterFields') else None
+        })
+
+        return input_form
+
 MAPPING_EDITTYPE_QGISEDITTYPE = {
     'CheckBox': QgisEditTypeCheckBox,
     'DateTime': QgisEditTypeDateTime,
@@ -219,5 +246,6 @@ MAPPING_EDITTYPE_QGISEDITTYPE = {
     'ValueMap': QgisEditTypeValueMap,
     'UniqueValues': QgisEditTypeUniqueValue,
     'ExternalResource': QgisEditTypeExternalResource,
-    'ValueRelation': QgisEditTypeValueRelation
+    'ValueRelation': QgisEditTypeValueRelation,
+    'RelationReference': QgisEditTypeRelationReference
 }

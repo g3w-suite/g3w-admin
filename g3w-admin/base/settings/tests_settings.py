@@ -45,3 +45,22 @@ HUEY = {
         'worker_type': 'process',
     },
 }
+
+# CACHES = {
+#     "default": {
+#         "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+#         "LOCATION": "874uryeurejhf8347efjlksdjfiouo4",
+#     }
+# }
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.filebased.FileBasedCache",
+        "LOCATION": "/tmp",
+    }
+}
+# LOGIN/REGISTRATION/RESET USER/PASSWORD
+# ======================================
+# Add this setting here because test override_settings decorator
+# does not work at django bootstrap i.e. inside main urls.py module.
+PASSWORD_CHANGE_FIRST_LOGIN = True
