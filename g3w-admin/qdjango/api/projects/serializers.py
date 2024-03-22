@@ -975,13 +975,11 @@ class WidgetSerializer(serializers.ModelSerializer):
                             'values': etype(field, 'values', []),
                             'blanktext': field.get('blanktext', ''),
                             # ValueRelation → add layer params
-                            **(
-                                {
+                            **({
                                 'key' : etype(field, 'Value'),
                                 'value': etype(field, 'Key'),
                                 'layer_id': etype(field, 'Layer'),
-                                } if 'ValueRelation' == etype(field, 'widgetv2type') else {}
-                            ),
+                            } if 'ValueRelation' == etype(field, 'widgetv2type') else {}),
                         },
                     },
                 } for field in body['fields']],
