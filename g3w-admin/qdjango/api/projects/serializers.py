@@ -951,15 +951,15 @@ class WidgetSerializer(serializers.ModelSerializer):
                 # 'zoom': body['zoom']
             }
 
-            
-
             for field in body['fields']:
 
                 # if widgettype is selectbox, get values
                 if 'widgettype' in field and field['widgettype'] == 'selectbox':
 
-                    field['input']['type'] = 'selectfield'
-                    field['input']['options']['values'] = []
+                    input = field['input']
+
+                    input['type'] = 'selectfield'
+                    input['options']['values'] = []
 
                     edittype = edittypes[field['name']]
 
@@ -967,20 +967,20 @@ class WidgetSerializer(serializers.ModelSerializer):
                     widget_type = edittype['widgetv2type']
                     if field['name'] in edittypes and widget_type in ('ValueMap', 'ValueRelation'):
                         if widget_type == 'ValueMap':
-                            field['input']['options']['values'] = edittype['values']
+                            input['options']['values'] = edittype['values']
                         else:
 
                             # Add layer params
-                            field['input']['options']['key'] = edittype['Value']
-                            field['input']['options']['value'] = edittype['Key']
-                            field['input']['options']['layer_id'] = edittype['Layer']
+                            input['options']['key'] = edittype['Value']
+                            input['options']['value'] = edittype['Key']
+                            input['options']['layer_id'] = edittype['Layer']
 
                 # For AutoccOmpleteBox input type
                 if 'widgettype' in field and field['widgettype'] == 'autocompletebox':
-                    field['input']['type'] = 'autocompletefield'
+                    input['type'] = 'autocompletefield'
 
-                input = field['input']
                 input['options']['blanktext'] = field['blanktext']
+
                 ret['options']['filter'].append({
                     'op': field['filterop'],
                     'attribute': field['name'],
