@@ -216,7 +216,7 @@ class ClientView(TemplateView):
 
         # Add G3W_CLIENT_COOKIE_SESSION_TOKEN cookie to response
         response = super().render_to_response(context)
-        response.set_cookie(settings.G3W_CLIENT_COOKIE_SESSION_TOKEN, secrets.token_hex(16))
+        response.set_cookie(settings.G3W_CLIENT_COOKIE_SESSION_TOKEN, secrets.token_hex(16), samesite='None')
 
         return response
 
