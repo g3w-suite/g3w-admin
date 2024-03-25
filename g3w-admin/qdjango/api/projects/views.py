@@ -79,8 +79,16 @@ class QdjangoWebServicesAPIview(G3WAPIView):
 
             if wfs:
                 res.update({
-                    'WFS': res['WMS']
+                    'WFS': res['WMS'],
+
+                    # Add OGC API - Features (WFS3)
+                    'OGC API - Feature (WFS3)': {
+                        'url': f"{res['WMS']['url']}wfs3/",
+                        'access': res['WMS']['access']
+                    }
+
                 })
+
 
             if len(tms_layers) > 0:
                 res.update({
