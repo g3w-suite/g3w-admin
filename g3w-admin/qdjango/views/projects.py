@@ -800,6 +800,10 @@ class QdjangoLinkWidget2LayerView(G3WRequestViewMixin, G3WGroupViewMixin, Qdjang
         else:
             self.widget.layers.remove(self.layer)
 
+        # Invalidate project cache
+        self.layer.project.invalidate_cache()
+
+
 
 class QdjangoLayerDetailView(G3WRequestViewMixin, DetailView):
     """Detail view for qdjango layer object"""
