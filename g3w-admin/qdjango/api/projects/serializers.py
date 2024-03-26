@@ -942,7 +942,7 @@ class WidgetSerializer(serializers.ModelSerializer):
         def etype(field, key, default=None):
             return edittypes.get(field['name'], {}).get(key, default)
 
-        if ret['type'] != 'search':
+        if ret['type'] not in ('search', 'search_1n'):
             ret['body'] = body
 
         # TODO: reduce nesting level (there are too many things called 'options')
