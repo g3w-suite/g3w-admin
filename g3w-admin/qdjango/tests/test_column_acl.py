@@ -43,6 +43,7 @@ from django.contrib.auth.models import Group as AuthGroup
 from unittest import skipIf
 from .base import QdjangoTestBase
 
+from qgis.PyQt.QtCore import QTemporaryDir
 import os
 
 logger = logging.getLogger(__name__)
@@ -304,6 +305,54 @@ class TestColumnAcl(QdjangoTestBase):
         record = resp['vector']['data']['features'][0]['properties']
         self.assertIsNone(record['AREA'])
         self.assertIsNone(record['SOURCETHM'])
+
+        # Test for download API
+        # -------------------------------------------------
+
+        self.world.download_csv = True
+        self.world.download = True
+        self.world.save()
+
+        response = self._testApiCallAdmin01(
+            'core-vector-api', [
+                'csv',
+                'qdjango',
+                self.world.project.pk,
+                self.world.qgis_layer.id()])
+
+        self.assertEqual(response.status_code, 200)
+
+        temp = QTemporaryDir()
+        fname = temp.path() + '/temp.csv'
+        with open(fname, 'wb+') as f:
+            f.write(response.content)
+
+        vl = QgsVectorLayer(fname)
+        self.assertTrue(vl.isValid())
+
+        self.assertEqual(['APPROX', 'CAPITAL', 'NAME'].sort(),
+                         [vl.attributeDisplayName(idx) for idx in vl.attributeList()].sort())
+
+        # SHP
+        response = self._testApiCallAdmin01(
+            'core-vector-api', [
+                'shp',
+                'qdjango',
+                self.world.project.pk,
+                self.world.qgis_layer.id()])
+
+        self.assertEqual(response.status_code, 200)
+
+        self.assertEqual(response.status_code, 200)
+        z = zipfile.ZipFile(BytesIO(response.content))
+        temp = QTemporaryDir()
+        z.extractall(temp.path())
+        vl = QgsVectorLayer(temp.path())
+        self.assertTrue(vl.isValid())
+
+        self.assertEqual(['APPROX', 'CAPITAL', 'NAME'].sort(),
+                         [vl.attributeDisplayName(idx) for idx in vl.attributeList()].sort())
+
 
     def test_init_config(self):
 

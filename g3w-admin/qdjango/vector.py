@@ -604,6 +604,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
             )
             save_options.onlySelectedFeatures = True
 
+
     def _build_download_filename(self, request):
         """Build file name on filter context"""
 
@@ -702,7 +703,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
             except Exception as e:
                 logger.error(e)
 
-    def _set_download_attributes(self, save_options):
+    def _set_download_attributes(self, qgs_request, save_options):
         """
         Set attributes for QgsVectorFileWriter.SaveVectorOptions instance.
         Check for fields excluded for WMS service into QGIS project.
@@ -715,6 +716,14 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
         if column_to_exclude:
             column_to_exclude = [self.metadata_layer.qgis_layer.fields().indexFromName(f) for f in column_to_exclude]
             save_options.attributes = list(set(self.metadata_layer.qgis_layer.attributeList()) - set(column_to_exclude))
+
+        # Integrate attributes removed by filters by intersection
+        if qgs_request.subsetOfAttributes():
+            if len(save_options.attributes) > 0:
+                save_options.attributes = list(
+                    set(qgs_request.subsetOfAttributes()).intersection(set(save_options.attributes)))
+            else:
+                save_options.attributes = qgs_request.subsetOfAttributes()
 
     def response_shp_mode(self, request):
         """
@@ -743,7 +752,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
         save_options.fileEncoding = 'utf-8'
 
         # Set attributes
-        self._set_download_attributes(save_options)
+        self._set_download_attributes(qgs_request, save_options)
 
         # Make a selection based on the request
         self._selection_responde_download_mode(qgs_request, save_options)
@@ -829,7 +838,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
         ]
 
         # Set attributes
-        self._set_download_attributes(save_options)
+        self._set_download_attributes(qgs_request, save_options)
 
         filename = self._build_download_filename(request) + '.gpx'
 
@@ -881,7 +890,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
         save_options.fileEncoding = 'utf-8'
 
         # Set attributes
-        self._set_download_attributes(save_options)
+        self._set_download_attributes(qgs_request, save_options)
 
         tmp_dir = tempfile.TemporaryDirectory()
 
@@ -935,7 +944,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
         save_options.fileEncoding = 'utf-8'
 
         # Set attributes
-        self._set_download_attributes(save_options)
+        self._set_download_attributes(qgs_request, save_options)
 
         tmp_dir = tempfile.TemporaryDirectory()
 
@@ -989,7 +998,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
         save_options.fileEncoding = 'utf-8'
 
         # Set attributes
-        self._set_download_attributes(save_options)
+        self._set_download_attributes(qgs_request, save_options)
 
         tmp_dir = tempfile.TemporaryDirectory()
 
