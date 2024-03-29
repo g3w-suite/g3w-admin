@@ -130,6 +130,19 @@ class QGISLayerVectorViewMixin(object):
         """Find relations and set metadata"""
 
         level_metadata = 0
+
+        def get_relations_by_refrend_layer(referenced_layer_id):
+            """
+            Return list of relations by referencing layer id
+            """
+            relations = []
+            for r in self.relations.values():
+                if referenced_layer_id in r['referencedLayer']:
+                    relations.append(r)
+
+            return relations
+
+
         def build_metadata_relation(relation, qgis_layer, level=level_metadata):
 
             # get relation layer object
@@ -154,7 +167,6 @@ class QGISLayerVectorViewMixin(object):
                     'referenced_layer': relation['referencedLayer']
                 })
 
-
             self.metadata_relations[relation['referencingLayer']] = MetadataVectorLayer(
                 get_qgis_layer(relation_layer),
                 relation_layer.origname,
@@ -164,20 +176,17 @@ class QGISLayerVectorViewMixin(object):
 
             # Check for cascading relations
             # This condition is for avoid the recursive loop in cross layer relations
-            if (relation['referencingLayer'] in relations_qgsid and
+            sub_relations = get_relations_by_refrend_layer(relation['referencingLayer'])
+            if ( sub_relations and
                     (level == 0 or relation['referencedLayer'] not in self.metadata_relations)):
                 level += 1
                 build_metadata_relation(
-                    relations_qgsid[relation['referencingLayer']],
+                    sub_relations[0],
                     relation_layer.qgis_layer,
                     level)
 
-
-        # Reorder relations by qgs_layer id
-        relations_qgsid = {r['referencedLayer']: r for r in self.relations.values()}
-
-        if self.layer.qgs_layer_id in relations_qgsid:
-            build_metadata_relation(relations_qgsid[self.layer.qgs_layer_id], self.layer.qgis_layer)
+        for r in get_relations_by_refrend_layer(self.layer.qgs_layer_id):
+            build_metadata_relation(r, self.layer.qgis_layer)
 
 
 
