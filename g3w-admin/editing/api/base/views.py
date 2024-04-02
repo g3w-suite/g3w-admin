@@ -593,7 +593,8 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                     # Check in metadata_relations for referenced layer as referencing_layer
                     for sub_referencing_layer, sub_metadata_relation in self.metadata_relations.items():
                         if (hasattr(sub_metadata_relation, 'referenced_layer') and
-                                sub_metadata_relation.referenced_layer == referencing_layer):
+                                sub_metadata_relation.referenced_layer == referencing_layer and
+                                sub_referencing_layer in sub_post_relations_data):
                             sub_post_relation_data = sub_post_relations_data[sub_referencing_layer]
                             save_relation(sub_post_relation_data, sub_referencing_layer, insert_ids)
 

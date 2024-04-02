@@ -131,9 +131,9 @@ class QGISLayerVectorViewMixin(object):
 
         level_metadata = 0
 
-        def get_relations_by_refrend_layer(referenced_layer_id):
+        def get_relations_by_layers(referenced_layer_id):
             """
-            Return list of relations by referencing layer id
+            Return list of relations by referencing layer id e/o referenced layer id
             """
             relations = []
             for r in self.relations.values():
@@ -141,7 +141,6 @@ class QGISLayerVectorViewMixin(object):
                     relations.append(r)
 
             return relations
-
 
         def build_metadata_relation(relation, qgis_layer, level=level_metadata):
 
@@ -176,16 +175,17 @@ class QGISLayerVectorViewMixin(object):
 
             # Check for cascading relations
             # This condition is for avoid the recursive loop in cross layer relations
-            sub_relations = get_relations_by_refrend_layer(relation['referencingLayer'])
+            sub_relations = get_relations_by_layers(relation['referencingLayer'])
             if ( sub_relations and
                     (level == 0 or relation['referencedLayer'] not in self.metadata_relations)):
                 level += 1
-                build_metadata_relation(
-                    sub_relations[0],
-                    relation_layer.qgis_layer,
-                    level)
+                for sub_relation in sub_relations:
+                    build_metadata_relation(
+                        sub_relation,
+                        relation_layer.qgis_layer,
+                        level)
 
-        for r in get_relations_by_refrend_layer(self.layer.qgs_layer_id):
+        for r in get_relations_by_layers(self.layer.qgs_layer_id):
             build_metadata_relation(r, self.layer.qgis_layer)
 
 
