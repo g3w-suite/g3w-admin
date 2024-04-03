@@ -26,7 +26,7 @@ jobs:
 
     - name: Copying code into the container
       run: |
-          docker cp ./ "$(docker-compose -f docker-compose.${{ matrix.qgis_version }}.yml ps -q g3w-suite)":/code
+          docker cp ./ "$(docker compose -f docker-compose.${{ matrix.qgis_version }}.yml ps -q g3w-suite)":/code
 
     - name: Installing Python requirements
       run: |
