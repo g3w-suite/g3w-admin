@@ -325,12 +325,13 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
 
                             # For fields with UseHtml options, filter content with bleach
                             # -----------------------------------------------------------
-                            elif 'UseHtml' in options and options['UseHtml'] == '1':
+                            elif 'UseHtml' in options and (options['UseHtml'] == '1' or options['UseHtml'] == True):
                                 css_sanitizer = bleach.css_sanitizer.CSSSanitizer(
                                     allowed_css_properties=settings.BLEACH_ALLOWED_STYLES)
+                                attr_value = geojson_feature['properties'][qgis_field.name()]
                                 feature.setAttribute(qgis_field.name(),
                                                      bleach.clean(
-                                                         geojson_feature['properties'][qgis_field.name()],
+                                                         attr_value if attr_value else '',
                                                          tags=settings.BLEACH_ALLOWED_TAGS,
                                                          attributes=settings.BLEACH_ALLOWED_ATTRIBUTES,
                                                          strip=settings.BLEACH_STRIP_TAGS,
@@ -592,7 +593,8 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                     # Check in metadata_relations for referenced layer as referencing_layer
                     for sub_referencing_layer, sub_metadata_relation in self.metadata_relations.items():
                         if (hasattr(sub_metadata_relation, 'referenced_layer') and
-                                sub_metadata_relation.referenced_layer == referencing_layer):
+                                sub_metadata_relation.referenced_layer == referencing_layer and
+                                sub_referencing_layer in sub_post_relations_data):
                             sub_post_relation_data = sub_post_relations_data[sub_referencing_layer]
                             save_relation(sub_post_relation_data, sub_referencing_layer, insert_ids)
 
