@@ -1229,7 +1229,536 @@ class EditingApiTests(ConstraintsTestsBase):
         self.assertEqual(qgs_feature['ai_num'], 20244)
         self.assertEqual(qgs_feature['num'], 123)
 
+    def test_editing_commit_mode_api_cascade_relations(self):
+        """
+        Test Editing API mode: MODE_COMMIT.
+        with cascade relations
+        """
 
+        building_layer_id = 'buildings_2f43dc1d_6725_42d2_a09b_dd446220104a'
+        building_layer = self.editing_cascade_relations_project.instance.layer_set.filter(
+            qgs_layer_id=building_layer_id)[0]
+
+        maintenance_works_id = 'maintenance_works_f8cbe34a_eebe_4cd1_9c78_5d420ab0af63'
+        maintenance_rel1_id = 'manitenance_rel1_3ce8bd5c_c62d_45bc_8f81_b301e6592128'
+        maintenance_rel2_id = 'manitenance_rel2_901a7140_96ed_4e9b_8d02_be865803ac5d'
+        buildings_rating_id = 'buildings_rating_3d535fae_fd04_4df6_b6ff_8cbd13df078f'
+        rating_rel1_id = 'rating_rel1_573d3e13_503e_4bc0_8e78_4759b630ff09'
+
+
+        # ADD
+        # ===
+        commit_path = reverse('editing-commit-vector-api',
+                              args=['commit', 'qdjango', self.editing_cascade_relations_project.instance.pk, building_layer_id])
+
+        self.assertTrue(
+            self.client.login(username=self.test_user_admin1.username, password=self.test_user_admin1.username))
+        
+        payload = {
+                "add": [
+                    {
+                        "type": "Feature",
+                        "geometry": {
+                            "type": "MultiPolygon",
+                            "coordinates": [
+                                [
+                                    [
+                                        [
+                                            1252205.5511815324,
+                                            5433368.859867321
+                                        ],
+                                        [
+                                            1252212.1707911787,
+                                            5433403.4946106495
+                                        ],
+                                        [
+                                            1252224.3461446355,
+                                            5433401.130464347
+                                        ],
+                                        [
+                                            1252220.799925182,
+                                            5433385.054269492
+                                        ],
+                                        [
+                                            1252237.2307419828,
+                                            5433381.744464668
+                                        ],
+                                        [
+                                            1252232.6206566934,
+                                            5433362.35846499
+                                        ],
+                                        [
+                                            1252205.5511815324,
+                                            5433368.859867321
+                                        ]
+                                    ]
+                                ]
+                            ]
+                        },
+                        "properties": {
+                            "fid": None,
+                            "name": "walter test 1",
+                            "address": "A103",
+                            "year": "2019",
+                            "photo": None,
+                            "link": None,
+                            "form": None,
+                            "high": None,
+                            "volume": None,
+                            "surface": 389.74,
+                            "architectural_barriers": None,
+                            "date_barriers": "2024-04-02",
+                            "safety_exits": None,
+                            "date_exits": None,
+                            "fire_system": None,
+                            "date_fire": None,
+                            "type": "Residential",
+                            "zone": "B",
+                            "attachment": "0",
+                            "subtype": None,
+                            "user": None,
+                            "description": None
+                        },
+                        "id": "_new_134_1712039316539"
+                    }
+                ],
+                "update": [
+
+                ],
+                "delete": [
+
+                ],
+                "relations": {
+                    "maintenance_works_f8cbe34a_eebe_4cd1_9c78_5d420ab0af63": {
+                        "lockids": [
+
+                        ],
+                        "add": [
+                            {
+                                "type": "Feature",
+                                "geometry": None,
+                                "properties": {
+                                    "fid": None,
+                                    "id_building": "_new_134_1712039316539",
+                                    "maintenance": "Insulation",
+                                    "date": "2024-04-10",
+                                    "form": None,
+                                    "value": None,
+                                    "outcome": None,
+                                    "responsible": None,
+                                    "cost": None,
+                                    "validation": None,
+                                    "test": None
+                                },
+                                "id": "_new_158_1712039337596"
+                            }
+                        ],
+                        "update": [
+
+                        ],
+                        "delete": [
+
+                        ],
+                        "relations": {
+                            "manitenance_rel1_3ce8bd5c_c62d_45bc_8f81_b301e6592128": {
+                                "lockids": [
+
+                                ],
+                                "add": [
+                                    {
+                                        "type": "Feature",
+                                        "geometry": None,
+                                        "properties": {
+                                            "fid": 13,
+                                            "id_mant": "_new_158_1712039337596",
+                                            "valure": "1234",
+                                            "nome": "1234"
+                                        },
+                                        "id": "_new_176_1712039346970"
+                                    }
+                                ],
+                                "update": [
+
+                                ],
+                                "delete": [
+
+                                ],
+                                "relations": {
+
+                                }
+                            },
+                            "manitenance_rel2_901a7140_96ed_4e9b_8d02_be865803ac5d": {
+                                "lockids": [
+
+                                ],
+                                "add": [
+                                    {
+                                        "type": "Feature",
+                                        "geometry": None,
+                                        "properties": {
+                                            "id": 9,
+                                            "id_mant": "_new_158_1712039337596",
+                                            "valore": "2345",
+                                            "nome": "2345"
+                                        },
+                                        "id": "_new_201_1712039360852"
+                                    }
+                                ],
+                                "update": [
+
+                                ],
+                                "delete": [
+
+                                ],
+                                "relations": {
+
+                                }
+                            }
+                        }
+                    },
+                    "buildings_rating_3d535fae_fd04_4df6_b6ff_8cbd13df078f": {
+                        "lockids": [
+
+                        ],
+                        "add": [
+                            {
+                                "type": "Feature",
+                                "geometry": None,
+                                "properties": {
+                                    "fid": None,
+                                    "id_buildings": "_new_134_1712039316539",
+                                    "date": "2024-04-18",
+                                    "value": None,
+                                    "year": "2020"
+                                },
+                                "id": "_new_235_1712039376619"
+                            }
+                        ],
+                        "update": [
+
+                        ],
+                        "delete": [
+
+                        ],
+                        "relations": {
+                            "rating_rel1_573d3e13_503e_4bc0_8e78_4759b630ff09": {
+                                "lockids": [
+
+                                ],
+                                "add": [
+                                    {
+                                        "type": "Feature",
+                                        "geometry": None,
+                                        "properties": {
+                                            "id": 6,
+                                            "id_rating": "_new_235_1712039376619",
+                                            "valore": "678",
+                                            "nome": "678"
+                                        },
+                                        "id": "_new_253_1712039385604"
+                                    }
+                                ],
+                                "update": [
+
+                                ],
+                                "delete": [
+
+                                ],
+                                "relations": {
+
+                                }
+                            }
+                        }
+                    }
+                },
+                "lockids": [
+                    {
+                        "featureid": "7",
+                        "lockid": "5a8eed7677e4bceca45af63d978a247a"
+                    }
+                ]
+        }
+
+        response = self.client.post(commit_path, payload, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        jresult = json.loads(response.content)
+        self.assertTrue(jresult['result'])
+
+        newid = jresult['response']['new'][0]['id']
+        newlockid = jresult['response']['new_lockids'][0]['lockid']
+
+        newid_mantaince_work = jresult['response']['new_relations'][maintenance_works_id]['new'][0]['id']
+        newlockid_mantaince_work = jresult['response']['new_relations'][maintenance_works_id]['new_lockids'][0]['lockid']
+
+        newid_mantaince_rel1 = jresult['response']['new_relations'][maintenance_rel1_id]['new'][0]['id']
+        newlockid_mantaince_rel1 = jresult['response']['new_relations'][maintenance_rel1_id]['new_lockids'][0][
+            'lockid']
+
+        newid_mantaince_rel2 = jresult['response']['new_relations'][maintenance_rel2_id]['new'][0]['id']
+        newlockid_mantaince_rel2 = jresult['response']['new_relations'][maintenance_rel2_id]['new_lockids'][0][
+            'lockid']
+
+        newid_rating = jresult['response']['new_relations'][buildings_rating_id]['new'][0]['id']
+        newlockid_reiting = jresult['response']['new_relations'][buildings_rating_id]['new_lockids'][0][
+            'lockid']
+
+        newid_rating_rel1 = jresult['response']['new_relations'][rating_rel1_id]['new'][0]['id']
+        newlockid_reiting_rel1 = jresult['response']['new_relations'][rating_rel1_id]['new_lockids'][0][
+            'lockid']
+
+
+        # Check for buildings layer
+        data_path = reverse('core-vector-api',
+                            args=['data', 'qdjango', self.editing_cascade_relations_project.instance.pk, building_layer_id])
+
+        data_path += '?page=1&page_size=1&ordering=-fid&formatter=1'
+
+        response = self.client.get(data_path, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        jresult = json.loads(response.content)
+        self.assertEqual(jresult['vector']['data']['features'][0]['properties']['name'], 'walter test 1')
+
+        # Check for mantaince works layer: maintenance_works_f8cbe34a_eebe_4cd1_9c78_5d420ab0af63
+        data_path = reverse('core-vector-api',
+                            args=['data', 'qdjango', self.editing_cascade_relations_project.instance.pk,
+                                  maintenance_works_id])
+
+        data_path += '?page=1&page_size=1&ordering=-fid&formatter=1'
+
+        response = self.client.get(data_path, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        jresult = json.loads(response.content)
+        self.assertEqual(jresult['vector']['data']['features'][0]['properties']['maintenance'], 'Insulation')
+        self.assertEqual(jresult['vector']['data']['features'][0]['properties']['date'], '2024-04-10')
+
+        # Check for mantaince rel1 layer: manitenance_rel1_3ce8bd5c_c62d_45bc_8f81_b301e6592128
+        data_path = reverse('core-vector-api',
+                            args=['data', 'qdjango', self.editing_cascade_relations_project.instance.pk,
+                                  maintenance_rel1_id])
+
+        data_path += '?page=1&page_size=1&ordering=-fid&formatter=1'
+
+        response = self.client.get(data_path, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        jresult = json.loads(response.content)
+        self.assertEqual(jresult['vector']['data']['features'][0]['properties']['valure'], 1234)
+
+        # Check for mantaince rel2 layer: manitenance_rel2_901a7140_96ed_4e9b_8d02_be865803ac5d
+        data_path = reverse('core-vector-api',
+                            args=['data', 'qdjango', self.editing_cascade_relations_project.instance.pk,
+                                  maintenance_rel2_id])
+
+        data_path += '?page=1&page_size=1&ordering=-id&formatter=1'
+
+        response = self.client.get(data_path, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        jresult = json.loads(response.content)
+        self.assertEqual(jresult['vector']['data']['features'][0]['properties']['valore'], 2345)
+
+        # Check for building rating layer: buildings_rating_3d535fae_fd04_4df6_b6ff_8cbd13df078f
+        data_path = reverse('core-vector-api',
+                            args=['data', 'qdjango', self.editing_cascade_relations_project.instance.pk,
+                                  buildings_rating_id])
+
+        data_path += '?page=1&page_size=1&ordering=-fid&formatter=1'
+
+        response = self.client.get(data_path, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        jresult = json.loads(response.content)
+
+        self.assertEqual(jresult['vector']['data']['features'][0]['properties']['year'], 2020)
+        self.assertEqual(jresult['vector']['data']['features'][0]['properties']['date'], '2024-04-18')
+
+        # Check for rating rel1 layer: rating_rel1_573d3e13_503e_4bc0_8e78_4759b630ff09
+        data_path = reverse('core-vector-api',
+                            args=['data', 'qdjango', self.editing_cascade_relations_project.instance.pk,
+                                  rating_rel1_id])
+
+        data_path += '?page=1&page_size=1&ordering=-id&formatter=1'
+
+        response = self.client.get(data_path, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        jresult = json.loads(response.content)
+        self.assertEqual(jresult['vector']['data']['features'][0]['properties']['valore'], 678)
+
+        # UPDATE
+        # ==================================================================
+
+
+        payload = {
+               "add":[
+                  
+               ],
+               "update":[
+                  {
+                     "type":"Feature",
+                     "geometry":{
+                        "type":"MultiPolygon",
+                        "coordinates":[
+                           [
+                              [
+                                 [
+                                    1252205.551182,
+                                    5433368.859867
+                                 ],
+                                 [
+                                    1252212.170791,
+                                    5433403.494611
+                                 ],
+                                 [
+                                    1252224.346145,
+                                    5433401.130464
+                                 ],
+                                 [
+                                    1252220.799925,
+                                    5433385.054269
+                                 ],
+                                 [
+                                    1252237.230742,
+                                    5433381.744465
+                                 ],
+                                 [
+                                    1252232.620657,
+                                    5433362.358465
+                                 ],
+                                 [
+                                    1252205.551182,
+                                    5433368.859867
+                                 ]
+                              ]
+                           ]
+                        ]
+                     },
+                     "properties":{
+                        "address":"A103",
+                        "architectural_barriers":None,
+                        "attachment":"0",
+                        "date_barriers":"2024-04-02",
+                        "date_exits":None,
+                        "date_fire":None,
+                        "description":"",
+                        "fid":newid,
+                        "fire_system":None,
+                        "form":None,
+                        "high":None,
+                        "link":None,
+                        "name":"walter test 1",
+                        "photo":None,
+                        "safety_exits":None,
+                        "subtype":None,
+                        "surface":389.74,
+                        "type":"Residential",
+                        "user":None,
+                        "volume":None,
+                        "year":2019,
+                        "zone":"B"
+                     },
+                     "id":str(newid)
+                  }
+               ],
+               "delete":[
+                  
+               ],
+               "relations":{
+                  "maintenance_works_f8cbe34a_eebe_4cd1_9c78_5d420ab0af63":{
+                     "lockids":[
+                        {
+                           "featureid":newid_mantaince_work,
+                           "lockid":newlockid_mantaince_work
+                        }
+                     ],
+                     "add":[
+                        
+                     ],
+                     "update":[
+                        {
+                           "type":"Feature",
+                           "geometry":None,
+                           "properties":{
+                              "cost":None,
+                              "date":"2024-04-10",
+                              "fid":newid_mantaince_work,
+                              "form":None,
+                              "id_building":str(newid),
+                              "maintenance":"Insulation",
+                              "outcome":None,
+                              "responsible":None,
+                              "test":None,
+                              "validation":None,
+                              "value":None
+                           },
+                           "id":str(newid_mantaince_work)
+                        }
+                     ],
+                     "delete":[
+                        
+                     ],
+                     "relations":{
+                        "manitenance_rel1_3ce8bd5c_c62d_45bc_8f81_b301e6592128":{
+                           "lockids":[
+                              {
+                                 "featureid": str(newid_mantaince_rel1),
+                                 "lockid": newlockid_mantaince_rel1
+                              }
+                           ],
+                           "add":[
+                              
+                           ],
+                           "update":[
+                              {
+                                 "type":"Feature",
+                                 "geometry":None,
+                                 "properties":{
+                                    "fid":newid_mantaince_rel1,
+                                    "id_mant":str(newid_mantaince_work),
+                                    "nome":"123467",
+                                    "valure":123489
+                                 },
+                                 "id": str(newid_mantaince_rel1)
+                              }
+                           ],
+                           "delete":[
+                              
+                           ],
+                           "relations":{
+                              
+                           }
+                        }
+                     }
+                  }
+               },
+               "lockids":[
+                  {
+                     "featureid": str(newid),
+                     "lockid": newlockid
+                  }
+               ]
+            }
+
+        response = self.client.post(commit_path, payload, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        # Check for mantaince rel1 layer: manitenance_rel1_3ce8bd5c_c62d_45bc_8f81_b301e6592128
+        data_path = reverse('core-vector-api',
+                            args=['data', 'qdjango', self.editing_cascade_relations_project.instance.pk,
+                                  maintenance_rel1_id])
+
+        data_path += '?page=1&page_size=1&ordering=-fid&formatter=1'
+
+        response = self.client.get(data_path, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        jresult = json.loads(response.content)
+        self.assertEqual(jresult['vector']['data']['features'][0]['properties']['valure'], 123489)
+
+        self.client.logout()
 
 class ConstraintsApiTests(ConstraintsTestsBase):
     """Constraints API tests"""
