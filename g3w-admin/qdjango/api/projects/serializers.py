@@ -498,10 +498,8 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
                 # get widgets for layer
                 widgets = layers[layer['id']].widget_set.all()
                 for widget in widgets:
-                    w_data = WidgetSerializer(widget, layer=layers[layer['id']]).data
+                    w_data = WidgetSerializer(widget, layer=layers[layer['id']], layerid=layer['id']).data
                     if w_data['type'] in ('search', 'search_1n'):
-                        w_data['options']['layerid'] = layer['id']
-                        w_data['options']['querylayerid'] = layer['id']
                         ret['search'].append(w_data)
                     else:
                         load_qdjango_widget_layer.send(self, layer=layer, ret=ret, widget=widget)
@@ -922,7 +920,9 @@ class WidgetSerializer(serializers.ModelSerializer):
 
     def __init__(self, instance=None, data=empty, **kwargs):
         self.layer = kwargs['layer']
+        self.layerid = kwargs['layerid']
         del(kwargs['layer'])
+        del(kwargs['layerid'])
         super(WidgetSerializer, self).__init__(instance, data, **kwargs)
 
     def to_representation(self, instance):
@@ -952,6 +952,8 @@ class WidgetSerializer(serializers.ModelSerializer):
                 'title': body['title'],
                 'results': body['results'],
                 'dozoomtoextent': body['dozoomtoextent'],
+                'layerid': self.layerid,
+                'querylayerid': self.layerid,
                 # other layers
                 'otherquerylayerids': body.get('otherlayers', []), 
                 # search inputs
