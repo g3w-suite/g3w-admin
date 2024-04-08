@@ -274,13 +274,11 @@ class FieldFilterBackend(BaseFilterBackend):
 
         qgis_layer = metadata_layer.qgis_layer
 
-        # Try to get param from GET
-        suggest_value = request.query_params.get('field')
+        # Check for field parameter
+        suggest_value = request.query_params.get('field', request.data.get('field'))
 
-        if not suggest_value:
-
-            # Try to get from POST
-            suggest_value = request.data.get('field')
+        # Check for formatter parameter
+        formatter = str(request.query_params.get('formatter', request.data.get('formatter')))
 
         if suggest_value:
 
@@ -318,38 +316,36 @@ class FieldFilterBackend(BaseFilterBackend):
                     pre_post_operator = '%' if field_operator in (
                         'like', 'ilike') else ''
 
-                    if "formatter" in request.query_params:
-                        formatter = request.query_params.get("formatter")
-                        if (
-                            formatter.isnumeric()
-                            and int(formatter) == 1
-                            and view.layer.has_value_relation_widget(field_name)
-                        ):
-                            config = qgis_layer.editorWidgetSetup(
-                                qgis_layer.fields().indexFromName(field_name)
-                            ).config()
-                            relation_qgs_layer = get_qgis_layer(
-                                view.layer.project.layer_set.get(qgs_layer_id=config["Layer"])
-                            )
+                    if (formatter
+                        and formatter.isnumeric()
+                        and int(formatter) == 1
+                        and view.layer.has_value_relation_widget(field_name)
+                    ):
+                        config = qgis_layer.editorWidgetSetup(
+                            qgis_layer.fields().indexFromName(field_name)
+                        ).config()
+                        relation_qgs_layer = get_qgis_layer(
+                            view.layer.project.layer_set.get(qgs_layer_id=config["Layer"])
+                        )
 
-                            qfr = QgsFeatureRequest()
-                            pre_post_operator = "%" if field_operator in ("like", "ilike") else ""
-                            vr_single_search_expression = (
-                                "{field_name} {field_operator} {field_value}".format(
-                                    field_name=self._quote_identifier(config["Value"]),
-                                    field_operator=self.COMPARATORS_MAP[field_operator],
-                                    field_value=self._quote_value(
-                                        f"{pre_post_operator}{unquote(field_value)}{pre_post_operator}"
-                                    ),
-                                )
+                        qfr = QgsFeatureRequest()
+                        pre_post_operator = "%" if field_operator in ("like", "ilike") else ""
+                        vr_single_search_expression = (
+                            "{field_name} {field_operator} {field_value}".format(
+                                field_name=self._quote_identifier(config["Value"]),
+                                field_operator=self.COMPARATORS_MAP[field_operator],
+                                field_value=self._quote_value(
+                                    f"{pre_post_operator}{unquote(field_value)}{pre_post_operator}"
+                                ),
                             )
-                            qfr.combineFilterExpression(vr_single_search_expression)
-                            features = get_qgis_features(relation_qgs_layer, qfr)
+                        )
+                        qfr.combineFilterExpression(vr_single_search_expression)
+                        features = get_qgis_features(relation_qgs_layer, qfr)
 
-                            if len(features) > 0:
-                                field_operator = "in"
-                                in_content = ",".join(["'" + str(f[config["Key"]]) + "'" for f in features])
-                                field_value = f"({in_content})"
+                        if len(features) > 0:
+                            field_operator = "in"
+                            in_content = ",".join(["'" + str(f[config["Key"]]) + "'" for f in features])
+                            field_value = f"({in_content})"
 
                     pre_post_operator = "%" if field_operator in ("like", "ilike") else ""
                     if field_operator != 'in':
