@@ -130,6 +130,18 @@ class QGISLayerVectorViewMixin(object):
         """Find relations and set metadata"""
 
         level_metadata = 0
+
+        def get_relations_by_layers(referenced_layer_id):
+            """
+            Return list of relations by referencing layer id e/o referenced layer id
+            """
+            relations = []
+            for r in self.relations.values():
+                if referenced_layer_id in r['referencedLayer']:
+                    relations.append(r)
+
+            return relations
+
         def build_metadata_relation(relation, qgis_layer, level=level_metadata):
 
             # get relation layer object
@@ -154,7 +166,6 @@ class QGISLayerVectorViewMixin(object):
                     'referenced_layer': relation['referencedLayer']
                 })
 
-
             self.metadata_relations[relation['referencingLayer']] = MetadataVectorLayer(
                 get_qgis_layer(relation_layer),
                 relation_layer.origname,
@@ -164,20 +175,18 @@ class QGISLayerVectorViewMixin(object):
 
             # Check for cascading relations
             # This condition is for avoid the recursive loop in cross layer relations
-            if (relation['referencingLayer'] in relations_qgsid and
+            sub_relations = get_relations_by_layers(relation['referencingLayer'])
+            if ( sub_relations and
                     (level == 0 or relation['referencedLayer'] not in self.metadata_relations)):
                 level += 1
-                build_metadata_relation(
-                    relations_qgsid[relation['referencingLayer']],
-                    relation_layer.qgis_layer,
-                    level)
+                for sub_relation in sub_relations:
+                    build_metadata_relation(
+                        sub_relation,
+                        relation_layer.qgis_layer,
+                        level)
 
-
-        # Reorder relations by qgs_layer id
-        relations_qgsid = {r['referencedLayer']: r for r in self.relations.values()}
-
-        if self.layer.qgs_layer_id in relations_qgsid:
-            build_metadata_relation(relations_qgsid[self.layer.qgs_layer_id], self.layer.qgis_layer)
+        for r in get_relations_by_layers(self.layer.qgs_layer_id):
+            build_metadata_relation(r, self.layer.qgis_layer)
 
 
 
@@ -604,6 +613,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
             )
             save_options.onlySelectedFeatures = True
 
+
     def _build_download_filename(self, request):
         """Build file name on filter context"""
 
@@ -702,7 +712,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
             except Exception as e:
                 logger.error(e)
 
-    def _set_download_attributes(self, save_options):
+    def _set_download_attributes(self, qgs_request, save_options):
         """
         Set attributes for QgsVectorFileWriter.SaveVectorOptions instance.
         Check for fields excluded for WMS service into QGIS project.
@@ -715,6 +725,14 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
         if column_to_exclude:
             column_to_exclude = [self.metadata_layer.qgis_layer.fields().indexFromName(f) for f in column_to_exclude]
             save_options.attributes = list(set(self.metadata_layer.qgis_layer.attributeList()) - set(column_to_exclude))
+
+        # Integrate attributes removed by filters by intersection
+        if qgs_request.subsetOfAttributes():
+            if len(save_options.attributes) > 0:
+                save_options.attributes = list(
+                    set(qgs_request.subsetOfAttributes()).intersection(set(save_options.attributes)))
+            else:
+                save_options.attributes = qgs_request.subsetOfAttributes()
 
     def response_shp_mode(self, request):
         """
@@ -743,7 +761,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
         save_options.fileEncoding = 'utf-8'
 
         # Set attributes
-        self._set_download_attributes(save_options)
+        self._set_download_attributes(qgs_request, save_options)
 
         # Make a selection based on the request
         self._selection_responde_download_mode(qgs_request, save_options)
@@ -829,7 +847,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
         ]
 
         # Set attributes
-        self._set_download_attributes(save_options)
+        self._set_download_attributes(qgs_request, save_options)
 
         filename = self._build_download_filename(request) + '.gpx'
 
@@ -881,7 +899,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
         save_options.fileEncoding = 'utf-8'
 
         # Set attributes
-        self._set_download_attributes(save_options)
+        self._set_download_attributes(qgs_request, save_options)
 
         tmp_dir = tempfile.TemporaryDirectory()
 
@@ -935,7 +953,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
         save_options.fileEncoding = 'utf-8'
 
         # Set attributes
-        self._set_download_attributes(save_options)
+        self._set_download_attributes(qgs_request, save_options)
 
         tmp_dir = tempfile.TemporaryDirectory()
 
@@ -989,7 +1007,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
         save_options.fileEncoding = 'utf-8'
 
         # Set attributes
-        self._set_download_attributes(save_options)
+        self._set_download_attributes(qgs_request, save_options)
 
         tmp_dir = tempfile.TemporaryDirectory()
 
