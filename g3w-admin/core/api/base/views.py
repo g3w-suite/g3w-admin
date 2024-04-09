@@ -547,6 +547,10 @@ class BaseVectorApiView(G3WAPIView):
                         if 'ffield' in self.request_data:
                             req.GET['field'] = self.request_data.get('ffield')
 
+                        # Add 'ordering'
+                        if 'ordering' in self.request_data:
+                            req.GET['ordering'] = self.request_data.get('ordering')
+
                         view = LayerVectorView.as_view()
                         res = view(req, *[], **kwargs).render()
                         uniques = json.loads(res.content)['data']
@@ -586,7 +590,13 @@ class BaseVectorApiView(G3WAPIView):
                     continue
 
             # sort values
-            values.sort()
+            if ('fformatter' in self.request_data
+                and 'ordering' in self.request_data
+                and self.request_data['fformatter'] in self.request_data['ordering']):
+                reverse = True if self.request_data['ordering'].startswith('-') else False
+                values.sort(reverse=reverse, key=lambda e: e[1])
+            else:
+                values.sort()
             self.results.update({
                 'data': values,
                 'count': len(values)
