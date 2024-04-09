@@ -577,7 +577,8 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         except:
             pass
 
-        ret['search_endpoint'] = settings.G3W_CLIENT_SEARCH_ENDPOINT
+        # deprecated since 3.8
+        ret['search_endpoint'] = 'api'
 
         # Add bookmarks:
         # ---------------------------------
