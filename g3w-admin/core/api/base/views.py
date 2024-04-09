@@ -593,8 +593,8 @@ class BaseVectorApiView(G3WAPIView):
             if ('fformatter' in self.request_data
                 and 'ordering' in self.request_data
                 and self.request_data['fformatter'] in self.request_data['ordering']):
-                reverse = True if self.request_data['ordering'].startswith('-') else False
-                values.sort(reverse=reverse, key=lambda e: e[1])
+                rev = True if self.request_data['ordering'].startswith('-') else False
+                values.sort(reverse=rev, key=lambda e: e[1])
             else:
                 values.sort()
             self.results.update({
