@@ -218,7 +218,7 @@ class ClientView(TemplateView):
         response = super().render_to_response(context)
 
         # Only with https set samesite='None' for cross-site requests, i.e. for cross-site iframe
-        kwargs = {'samesite': 'None'} if self.request.is_secure() else {'samesite': 'Strict'}
+        kwargs = {'samesite': 'None', 'secure': True} if self.request.is_secure() else {'samesite': 'Strict'}
         response.set_cookie(settings.G3W_CLIENT_COOKIE_SESSION_TOKEN, secrets.token_hex(16), **kwargs)
 
         return response
