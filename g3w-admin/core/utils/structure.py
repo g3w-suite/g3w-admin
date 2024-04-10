@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.apps import apps
 from django.urls import reverse
-from django.utils.translation import ugettext, ugettext_lazy as _
+from django.utils.translation import ugettext, gettext_lazy as _
 from qdjango.utils.qgis import explode_expression
 from collections import OrderedDict
 
@@ -91,7 +91,8 @@ FIELD_TYPES_MAPPING = {
     'ULONG': FIELD_TYPE_FLOAT,
     'USHORT': FIELD_TYPE_FLOAT,
     'UCHAR': FIELD_TYPE_CHAR,
-    'FLOAT': FIELD_TYPE_FLOAT
+    'FLOAT': FIELD_TYPE_FLOAT,
+    'PYQT_PYOBJECT': FIELD_TYPE_VARCHAR, # For not main geometry field
 }
 
 
@@ -264,6 +265,7 @@ def mapLayerAttributesFromQgisLayer(qgis_layer, **kwargs):
                     field.constraints().constraintStrength(
                         QgsFieldConstraints.ConstraintExpression) == QgsFieldConstraints.ConstraintStrengthHard
                 default_clause = data_provider.defaultValueClause(field_index)
+                default_clause = default_clause if default_clause != 'nextval(NULL)' else ''
 
                 # default value for editing from qgis_layer
                 if 'default' not in kwargs:

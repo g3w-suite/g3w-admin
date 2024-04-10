@@ -18,7 +18,7 @@ from core.api.authentication import CsrfExemptSessionAuthentication
 from core.api.views import G3WAPIView
 from django.conf import settings
 from django.shortcuts import Http404, get_object_or_404
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.views.generic import View
 from huey.contrib.djhuey import HUEY
 from huey.exceptions import TaskException

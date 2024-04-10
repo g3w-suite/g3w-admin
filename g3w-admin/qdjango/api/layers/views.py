@@ -19,7 +19,7 @@ from core.api.views import G3WAPIView
 from django.conf import settings
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from qdjango.models import Layer
 from rest_framework import generics
 from rest_framework.exceptions import APIException, NotFound, ValidationError, ParseError

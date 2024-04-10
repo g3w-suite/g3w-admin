@@ -49,6 +49,12 @@ QGS_LOGGING_DB_BACKUP = 'logging_test_backup.db'
 QGS_EDITING_PROVIDER_DEFAULT_VALUE_DB = 'provider_default_value.sqlite'
 QGS_EDITING_PROVIDER_DEFAULT_VALUE_DB_BACKUP = 'provider_default_value_backup.sqlite'
 QGS_EDITING_PROVIDER_DEFAULT_VALUE_FILE = 'editing_test_provider_default_value.qgs'
+QGS_EDITING_PROVIDER_DEFAULT_VALUE_LOGGING_FILE = 'logging_test_provider_default_value.qgs'
+QGS_EDITING_PROVIDER_DEFAULT_VALUE_LOGGING_DB = 'logging_test_provider_default_value.db'
+QGS_EDITING_PROVIDER_DEFAULT_VALUE_LOGGING_DB_BACKUP = 'logging_test_provider_default_value_backup.db'
+QGS_EDITING_CASCADE_RELATIONS_FILE = 'cascade-relations-test-334.qgs'
+QGS_EDITING_CASCADE_RELATIONS_DB = 'building_management_demo.sqlite'
+QGS_EDITING_CASCADE_RELATIONS_DB_BACKUP = 'building_management_demo_backup.sqlite'
 
 
 @override_settings(CACHES={
@@ -93,6 +99,9 @@ class ConstraintsTestsBase(TestCase):
 
         shutil.copy('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_LOGGING_DB_BACKUP),
                     '{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_LOGGING_DB))
+
+        shutil.copy('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_EDITING_CASCADE_RELATIONS_DB_BACKUP),
+                    '{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_EDITING_CASCADE_RELATIONS_DB))
 
     @classmethod
     def setUpTestData(cls):
@@ -196,6 +205,17 @@ class ConstraintsTestsBase(TestCase):
         cls.editing_provider_default_value_project = QgisProject(qgis_project_file)
         cls.editing_provider_default_value_project.group = cls.project_group
         cls.editing_provider_default_value_project.save()
+        qgis_project_file.close()
+
+        cls.project_group_3857= CoreGroup(
+            name='Group3857', title='Group3857', header_logo_img='', srid=G3WSpatialRefSys.objects.get(auth_srid=3857))
+        cls.project_group_3857.save()
+
+        qgis_project_file = File(open('{}{}{}'.format(
+            CURRENT_PATH, TEST_BASE_PATH, QGS_EDITING_CASCADE_RELATIONS_FILE), 'r', encoding='UTF8'))
+        cls.editing_cascade_relations_project = QgisProject(qgis_project_file)
+        cls.editing_cascade_relations_project.group = cls.project_group_3857
+        cls.editing_cascade_relations_project.save()
         qgis_project_file.close()
 
     def tearDown(self):

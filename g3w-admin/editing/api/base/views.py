@@ -6,7 +6,7 @@ from django.core.files import File
 from django.core.files.images import ImageFile
 from django.db import IntegrityError, transaction
 from django.db.models import AutoField, FileField, ImageField
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from qgis.core import \
     QgsDataSourceUri, \
     QgsFeature, \
@@ -112,18 +112,10 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
         if layer model has a media filefield or a imagefield
         :param geojson_feature: geojson object feature
         """
-        if self.layer_name in self.media_properties.keys():
-            for gproperty in self.media_properties[self.layer_name].keys():
-                if gproperty in geojson_feature['properties'] and \
-                        geojson_feature['properties'][gproperty]:
-                    media_property = self.media_properties[self.layer_name][gproperty]
-                    gproperty_path = geojson_feature['properties'][gproperty] \
-                        .replace(settings.MEDIA_URL, '')
-                    media_file = open('{}{}'.format(
-                        settings.MEDIA_ROOT, gproperty_path), 'r')
-                    geojson_feature['properties'][gproperty] = \
-                        MAPPING_DJANGO_MODEL_FIELD_FILE_OBJECT[type(
-                            media_property)](media_file)
+
+        # To be implemented in subclasses
+        # -------------------------------
+        pass
 
     def save_vector_data(self, metadata_layer, post_layer_data, has_transactions, post_save_signal=True, **kwargs):
         """Save vector editing data
@@ -333,12 +325,13 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
 
                             # For fields with UseHtml options, filter content with bleach
                             # -----------------------------------------------------------
-                            elif 'UseHtml' in options and options['UseHtml'] == '1':
+                            elif 'UseHtml' in options and (options['UseHtml'] == '1' or options['UseHtml'] == True):
                                 css_sanitizer = bleach.css_sanitizer.CSSSanitizer(
                                     allowed_css_properties=settings.BLEACH_ALLOWED_STYLES)
+                                attr_value = geojson_feature['properties'][qgis_field.name()]
                                 feature.setAttribute(qgis_field.name(),
                                                      bleach.clean(
-                                                         geojson_feature['properties'][qgis_field.name()],
+                                                         attr_value if attr_value else '',
                                                          tags=settings.BLEACH_ALLOWED_TAGS,
                                                          attributes=settings.BLEACH_ALLOWED_ATTRIBUTES,
                                                          strip=settings.BLEACH_STRIP_TAGS,
@@ -600,7 +593,8 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                     # Check in metadata_relations for referenced layer as referencing_layer
                     for sub_referencing_layer, sub_metadata_relation in self.metadata_relations.items():
                         if (hasattr(sub_metadata_relation, 'referenced_layer') and
-                                sub_metadata_relation.referenced_layer == referencing_layer):
+                                sub_metadata_relation.referenced_layer == referencing_layer and
+                                sub_referencing_layer in sub_post_relations_data):
                             sub_post_relation_data = sub_post_relations_data[sub_referencing_layer]
                             save_relation(sub_post_relation_data, sub_referencing_layer, insert_ids)
 

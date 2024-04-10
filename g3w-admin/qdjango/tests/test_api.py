@@ -57,6 +57,7 @@ from io import BytesIO
 
 QGS_FILE_TEMPORAL_VECTOR_WITH_FIELD = 'test_temporal_vector_layer_316_ModeFeatureDateTimeInstantFromField.qgs'
 QGS_FILE_TEMPORAL_VECTOR_WITH_NOT_ACTIVE = 'test_temporal_vector_layer_316_not_active.qgs'
+QGS_FILE_CASCADE_AUTORELATION = 'cascade_autorelation_334.qgs'
 
 # Temporal raster layer wmst
 QGS_FILE_WMST = 'test_WMST.qgs'
@@ -729,11 +730,11 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         cls.project328_value_relation.instance.delete()
         super().tearDownClass()
 
-    def _testApiCall(self, view_name, args, kwargs={}, status_auth=200, login=True, logout=True):
+    def _testApiCall(self, view_name, args, kwargs={}, status_auth=200, login=True, logout=True, method='get'):
         """Utility to make test calls for admin01 user"""
 
         path = reverse(view_name, args=args)
-        if kwargs:
+        if kwargs and method == 'get':
             path += '?'
             parts = []
             for k, v in kwargs.items():
@@ -749,7 +750,8 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         if login:
             self.assertTrue(self.client.login(
                 username='admin01', password='admin01'))
-        response = self.client.get(path)
+
+        response = getattr(self.client, method)(path, data=kwargs)
         self.assertEqual(response.status_code, status_auth)
         if logout:
             self.client.logout()
@@ -1550,12 +1552,24 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         qgs_request.setFilterExpression('"ISO2_CODE" = \'IT\'')
         total_count = len([f for f in qgis_layer.getFeatures(qgs_request)])
 
+        # Test http 'get' method:
         resp = json.loads(self._testApiCall('core-vector-api',
                                             ['data', 'qdjango', self.project310.instance.pk,
                                                 cities.qgs_layer_id],
                                             {
                                                 'field': 'ISO2_CODE|eq|IT'
                                             }).content)
+
+        self.assertEqual(resp['vector']['count'], total_count)
+
+        # Test http 'post' method:
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['data', 'qdjango', self.project310.instance.pk,
+                                             cities.qgs_layer_id],
+                                            {
+                                                'field': 'ISO2_CODE|eq|IT'
+                                            },
+                                            method='post').content)
 
         self.assertEqual(resp['vector']['count'], total_count)
 
@@ -1578,12 +1592,24 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
             '"ISO2_CODE" = \'IT\' AND "POPULATION" > 10000 OR "ISO2_CODE" = \'FR\'')
         total_count = len([f for f in qgis_layer.getFeatures(qgs_request)])
 
+        # Test http 'get' method:
         resp = json.loads(self._testApiCall('core-vector-api',
                                             ['data', 'qdjango', self.project310.instance.pk,
                                                 cities.qgs_layer_id],
                                             {
                                                 'field': 'ISO2_CODE|eq|IT|AND,POPULATION|gt|10000|OR,ISO2_CODE|eq|FR',
                                             }).content)
+
+        self.assertEqual(resp['vector']['count'], total_count)
+
+        # Test http 'post' method:
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['data', 'qdjango', self.project310.instance.pk,
+                                             cities.qgs_layer_id],
+                                            {
+                                                'field': 'ISO2_CODE|eq|IT|AND,POPULATION|gt|10000|OR,ISO2_CODE|eq|FR',
+                                            },
+                                            method='post').content)
 
         self.assertEqual(resp['vector']['count'], total_count)
 
@@ -1604,6 +1630,7 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         qgs_request.setFilterExpression('"NAME" ILIKE \'%flo%\'')
         total_count = len([f for f in qgis_layer.getFeatures(qgs_request)])
 
+        # Test http 'get' method:
         resp = json.loads(self._testApiCall('core-vector-api',
                                             ['data', 'qdjango', self.project310.instance.pk,
                                                 cities.qgs_layer_id],
@@ -1613,11 +1640,23 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
 
         self.assertEqual(resp['vector']['count'], total_count)
 
+        # Test http 'post' method:
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['data', 'qdjango', self.project310.instance.pk,
+                                             cities.qgs_layer_id],
+                                            {
+                                                'field': 'NAME|ilike|flo'
+                                            },
+                                            method='post').content)
+
+        self.assertEqual(resp['vector']['count'], total_count)
+
         qgs_request = QgsFeatureRequest()
         qgs_request.setFilterExpression(
             '"ISO2_CODE" = \'IT\' AND "NAME" = \'Florence\'')
         total_count = len([f for f in qgis_layer.getFeatures(qgs_request)])
 
+        # Test http 'get' method:
         resp = json.loads(self._testApiCall('core-vector-api',
                                             ['data', 'qdjango', self.project310.instance.pk,
                                                 cities.qgs_layer_id],
@@ -1627,18 +1666,41 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
 
         self.assertEqual(resp['vector']['count'], total_count)
 
+        # Test http 'post' method:
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['data', 'qdjango', self.project310.instance.pk,
+                                             cities.qgs_layer_id],
+                                            {
+                                                'field': 'ISO2_CODE|eq|IT,NAME|eq|Florence'
+                                            },
+                                            method='post').content)
+
+        self.assertEqual(resp['vector']['count'], total_count)
+
         # check SuggestFilterBackend
         # --------------------------
         qgs_request = QgsFeatureRequest()
         qgs_request.setFilterExpression('"NAME" ILIKE \'%flo%\'')
         total_count = len([f for f in qgis_layer.getFeatures(qgs_request)])
 
+        # Test http 'get' method:
         resp = json.loads(self._testApiCall('core-vector-api',
                                             ['data', 'qdjango', self.project310.instance.pk,
                                                 cities.qgs_layer_id],
                                             {
                                                 'suggest': 'NAME|flo'
                                             }).content)
+
+        self.assertEqual(resp['vector']['count'], total_count)
+
+        # Test http 'post' method:
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['data', 'qdjango', self.project310.instance.pk,
+                                             cities.qgs_layer_id],
+                                            {
+                                                'suggest': 'NAME|flo'
+                                            },
+                                            method='post').content)
 
         self.assertEqual(resp['vector']['count'], total_count)
 
@@ -1649,6 +1711,7 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
             '"NAME" ILIKE \'%flo%\' AND "ISO2_CODE" = \'IT\'')
         total_count = len([f for f in qgis_layer.getFeatures(qgs_request)])
 
+        # Test http 'get' method:
         resp = json.loads(self._testApiCall('core-vector-api',
                                             ['data', 'qdjango', self.project310.instance.pk,
                                                 cities.qgs_layer_id],
@@ -1660,11 +1723,25 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         self.assertEqual(resp['vector']['count'], total_count)
         self.assertEqual(resp['vector']['count'], 2)
 
+        # Test http 'post' method:
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['data', 'qdjango', self.project310.instance.pk,
+                                             cities.qgs_layer_id],
+                                            {
+                                                'suggest': 'NAME|flo',
+                                                'field': 'ISO2_CODE|eq|IT'
+                                            },
+                                            method='post').content)
+
+        self.assertEqual(resp['vector']['count'], total_count)
+        self.assertEqual(resp['vector']['count'], 2)
+
         qgs_request = QgsFeatureRequest()
         qgs_request.setFilterExpression(
             '"NAME" ILIKE \'%flo%\' AND "ISO2_CODE" = \'IT\' AND "NAME" = \'Florence\'')
         total_count = len([f for f in qgis_layer.getFeatures(qgs_request)])
 
+        # Test http 'get' method:
         resp = json.loads(self._testApiCall('core-vector-api',
                                             ['data', 'qdjango', self.project310.instance.pk,
                                                 cities.qgs_layer_id],
@@ -1672,6 +1749,19 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
                                                 'suggest': 'NAME|flo',
                                                 'field': 'ISO2_CODE|eq|IT,NAME|eq|Florence'
                                             }).content)
+
+        self.assertEqual(resp['vector']['count'], total_count)
+        self.assertEqual(resp['vector']['count'], 1)
+
+        # Test http 'post' method:
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['data', 'qdjango', self.project310.instance.pk,
+                                             cities.qgs_layer_id],
+                                            {
+                                                'suggest': 'NAME|flo',
+                                                'field': 'ISO2_CODE|eq|IT,NAME|eq|Florence'
+                                            },
+                                            method='post').content)
 
         self.assertEqual(resp['vector']['count'], total_count)
         self.assertEqual(resp['vector']['count'], 1)
@@ -2242,3 +2332,55 @@ class TestInitextentByGeoconstraint(QdjangoTestBase):
         # Login ad viewer3
         # --------------------------------------------------------
         self._make_request_with_geocontraints(url, self.test_viewer3, "name='AREA2' OR name='AREA3'")
+
+
+class TestVectorApiConfigCrossRelation(QdjangoTestBase):
+    """ Test /vector/api/config response with 2 layers in cross relation: avoid recursion !! """
+
+    @classmethod
+    def setUpTestData(cls):
+
+        cls.project_group_3857 = CoreGroup(name='GroupRelation3857', title='GroupRelation3857', header_logo_img='',
+                                          srid=G3WSpatialRefSys.objects.get(auth_srid=3857))
+        cls.project_group_3857.save()
+
+        qgis_project_file = File(
+            open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_FILE_CASCADE_AUTORELATION), 'r',
+                 encoding='utf-8'))
+        qgis_project_file.name = qgis_project_file.name.split('/')[-1]
+        cls.project_cascading_autorelation = QgisProject(qgis_project_file)
+        cls.project_cascading_autorelation.group = cls.project_group_3857
+        cls.project_cascading_autorelation.save()
+        qgis_project_file.close()
+
+    def test_vector_api_config(self):
+        """ Test /vector/api/config """
+
+        # civic_numbers_d8775c54_1762_4d44_ad2c_a14090ba3bb0
+        # buildings_56f242c4_c984_43a0_a163_ae774f62b839
+
+        self.client.login(username='admin01', password='admin01')
+        url = reverse('core-vector-api',
+                      args=[
+                          'config',
+                          'qdjango',
+                          self.project_cascading_autorelation.instance.pk,
+                          'civic_numbers_d8775c54_1762_4d44_ad2c_a14090ba3bb0'
+                      ])
+
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, 200)
+
+        url = reverse('core-vector-api',
+                      args=[
+                          'config',
+                          'qdjango',
+                          self.project_cascading_autorelation.instance.pk,
+                          'buildings_56f242c4_c984_43a0_a163_ae774f62b839'
+                      ])
+
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, 200)
+
+        self.client.logout()
+
