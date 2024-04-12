@@ -649,7 +649,8 @@ class ClientApiTest(CoreTestBase):
         self.assertEqual(resp_serach['name'], 'Test selectbox')
         self.assertEqual(resp_serach['type'], 'search')
         self.assertEqual(resp_serach['options']['filter'][0]['input']['type'], 'selectfield')
-        self.assertEqual(resp_serach['options']['filter'][0]['input']['options']['values'], [])
+        # removed in v3.8
+        # self.assertEqual(resp_serach['options']['filter'][0]['input']['options']['values'], [])
         self.assertEqual(resp_serach['options']['filter'][0]['logicop'], 'AND')
 
         # create a search widget with autocompletebox
@@ -745,13 +746,14 @@ class ClientApiTest(CoreTestBase):
         self.assertEqual(resp_serach['name'], 'Test selectbox for field with valuemap')
         self.assertEqual(resp_serach['type'], 'search')
         self.assertEqual(resp_serach['options']['filter'][0]['input']['type'], 'selectfield')
-        self.assertEqual(resp_serach['options']['filter'][0]['input']['options']['values'],
-                         [
-                             {"value": "1", "key": "LOW"},
-                             {"value": "2", "key": "MEDIUM"},
-                             {"value": "3", "key": "HIGHT"}
-                         ]
-                         )
+        # removed in v3.8
+        # self.assertEqual(resp_serach['options']['filter'][0]['input']['options']['values'],
+        #                  [
+        #                      {"value": "1", "key": "LOW"},
+        #                      {"value": "2", "key": "MEDIUM"},
+        #                      {"value": "3", "key": "HIGHT"}
+        #                  ]
+        #                  )
         self.assertEqual(resp_serach['options']['filter'][0]['logicop'], 'AND')
 
     def testClientConfigApiViewForPrint(self):

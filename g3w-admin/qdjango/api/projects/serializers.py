@@ -972,7 +972,7 @@ class WidgetSerializer(serializers.ModelSerializer):
                         }).get(field.get('widgettype'), field['input'].get('type')),
                         'options': {
                             **field['input'].get('options', {}),
-                            # 'values': etype(field, 'values', []),
+                            #'values': etype(field, 'values', []), # removed in v3.8
                             'blanktext': field.get('blanktext', ''),
                             # ValueRelation → add layer params
                             **({
