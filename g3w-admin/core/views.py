@@ -115,6 +115,11 @@ class GroupListView(ListView):
                'value': self.request.GET['macrogroup'],
                 'qs_filter': {'macrogroups__id': self.request.GET['macrogroup']}
             }
+        if 'epsg' in self.request.GET and self.request.GET['epsg']:
+            self.filter_parameters['epsg'] = {
+               'value': self.request.GET['epsg'],
+                'qs_filter': {'srid_id': self.request.GET['epsg']}
+            }
 
     def _is_active(self, qs):
         """ Add a filter fo is_active property """

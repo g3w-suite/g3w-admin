@@ -18,6 +18,7 @@ from usersmanage.utils import get_fields_by_user, crispyBoxACL, userHasGroups, g
 from usersmanage.forms import G3WACLForm, UsersChoiceField
 from qdjango.models import Project
 from core.mixins.forms import *
+from core.models import G3WSpatialRefSys
 from usersmanage.configs import *
 
 
@@ -461,10 +462,12 @@ class MacroGroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, ModelFor
 
         return instance
 
+
 class GroupFilterForm(G3WFormMixin, Form):
     """Group filter form."""
 
     macrogroup = ModelChoiceField(queryset=MacroGroup.objects.all(), required=False)
+    epsg = ModelChoiceField(queryset=G3WSpatialRefSys.objects.all(), required=False)
 
     def __init__(self, *args, **kwargs):
         super(GroupFilterForm, self).__init__(*args, **kwargs)
@@ -473,7 +476,8 @@ class GroupFilterForm(G3WFormMixin, Form):
         self.helper.layout = Layout(
             Div(
                 Div(
-                    'macrogroup',
+                    Field('macrogroup', css_class='select2', style='width:100%;'),
+                    Field('epsg', css_class='select2', style='width:100%;'),
                     css_class='col-md-12'
                 ),
                 css_class='row'
