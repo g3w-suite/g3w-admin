@@ -589,7 +589,7 @@ class BaseVectorApiView(G3WAPIView):
 
                             # 'suggest' (get/post) parameter used inside the QGIS SuggestFilterBackend
                             # must be applied to the formatted value (fvalue) because the result of formatted value
-                            # can come also from QgsExression
+                            # can also derive from QgsExression(s).
                             if 'suggest' in self.request_data:
 
                                 # Replace suggest file with r_pvalue if pvalue == suggest field
