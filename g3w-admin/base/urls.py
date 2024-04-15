@@ -13,6 +13,23 @@ from django.contrib import admin, auth
 from django.contrib.staticfiles import views
 from django.urls import path, include, re_path
 from django.views.i18n import JavaScriptCatalog
+from django.views.generic import TemplateView
+
+from django_registration.backends.activation import views as registration_views
+from usersmanage.forms import (
+    G3WAuthenticationForm,
+    G3WResetPasswordForm,
+    G3WRegistrationForm,
+    G3WSetPasswordForm
+)
+from usersmanage.views import (
+    G3WUserRegistrationView,
+    G3WUsernameRecoveryView,
+    G3WUsernameRecoveryDoneView,
+    G3WPasswordResetView,
+    G3WLoginView,
+    G3WPasswordChangeFirstLoginConfirmView
+)
 
 from ajax_select import urls as ajax_select_urls
 from sitetree.sitetreeapp import register_i18n_trees
@@ -86,7 +103,11 @@ urlpatterns += [
     ),
     path(
         'login/',
-        auth.views.LoginView.as_view(template_name='login.html', extra_context=extra_context_login_page),
+        G3WLoginView.as_view(
+            template_name='login.html',
+            form_class=G3WAuthenticationForm,
+            extra_context=extra_context_login_page
+        ),
         name='login'
     ),
     path(
@@ -106,7 +127,52 @@ urlpatterns += [
 ]
 
 #############################################################
+# REGISTRATION USERS
+#############################################################
+
+urlpatterns += [
+    path(
+        "accounts/activate/complete/",
+        TemplateView.as_view(
+            template_name="django_registration/activation_complete.html",
+            extra_context=extra_context_login_page,
+        ),
+        name="django_registration_activation_complete",
+    ),
+    path(
+        "accounts/activate/<str:activation_key>/",
+        registration_views.ActivationView.as_view(extra_context=extra_context_login_page,),
+        name="django_registration_activate",
+    ),
+    path(
+        "accounts/register/",
+        G3WUserRegistrationView.as_view(
+            extra_context=extra_context_login_page,
+            form_class=G3WRegistrationForm
+        ),
+        name="django_registration_register",
+    ),
+    path(
+        "accounts/register/complete/",
+        TemplateView.as_view(
+            template_name="django_registration/registration_complete.html",
+            extra_context=extra_context_login_page,
+        ),
+        name="django_registration_complete",
+    ),
+    path(
+        "accounts/register/closed/",
+        TemplateView.as_view(
+            template_name="django_registration/registration_closed.html",
+            extra_context=extra_context_login_page,
+        ),
+        name="django_registration_disallowed",
+    ),
+]
+
+#############################################################
 # PASSWORD RESET (user password reset by email)
+# USERNAME RECOVERY (username recovery by email)
 #############################################################
 if settings.RESET_USER_PASSWORD:
     urlpatterns += [
@@ -122,7 +188,10 @@ if settings.RESET_USER_PASSWORD:
         ),
         path(
             'password_reset/',
-            auth.views.PasswordResetView.as_view(extra_context=extra_context_login_page),
+            G3WPasswordResetView.as_view(
+                extra_context=extra_context_login_page,
+                form_class=G3WResetPasswordForm
+            ),
             name='password_reset'
         ),
         path(
@@ -132,13 +201,47 @@ if settings.RESET_USER_PASSWORD:
         ),
         path(
             'reset/<uidb64>/<token>/',
-            auth.views.PasswordResetConfirmView.as_view(extra_context=extra_context_login_page),
+            auth.views.PasswordResetConfirmView.as_view(
+                extra_context=extra_context_login_page,
+                form_class=G3WSetPasswordForm),
             name='password_reset_confirm'
         ),
         path(
             'reset/done/',
             auth.views.PasswordResetCompleteView.as_view(extra_context=extra_context_login_page),
             name='password_reset_complete'
+        ),
+        path(
+            'username_recovery/',
+            G3WUsernameRecoveryView.as_view(
+                extra_context=extra_context_login_page
+            ),
+            name='username_recovery'
+        ),
+        path(
+            'username_recovery/done/',
+            G3WUsernameRecoveryDoneView.as_view(extra_context=extra_context_login_page),
+            name='username_recovery_done'
+        ),
+    ]
+
+#############################################################
+# CHANGE PASSWORD FIRST LOGIN
+#############################################################
+if settings.PASSWORD_CHANGE_FIRST_LOGIN:
+    urlpatterns += [
+        path(
+            'changepassword/<uidb64>/<token>/',
+            G3WPasswordChangeFirstLoginConfirmView.as_view(
+                extra_context=extra_context_login_page,
+                form_class=G3WSetPasswordForm),
+            name='change_password_first_login_confirm'
+        ),
+        path(
+            'changepassword/done/',
+            auth.views.PasswordResetCompleteView.as_view(
+                extra_context=extra_context_login_page),
+            name='change_password_first_login_complete'
         ),
     ]
 
@@ -148,6 +251,7 @@ if settings.RESET_USER_PASSWORD:
 apiUrlpatterns += [
     path('', include('client.apiurls')),
     path('', include('core.apiurls')),
+    path('', include('usersmanage.apiurls')),
     # TODO find out why we cannot include('OWS.apiurls') instead
     path('', include('OWS.urls')),
 ]

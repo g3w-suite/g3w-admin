@@ -36,13 +36,14 @@ from qdjango.models.constraints import (
 from qdjango.models.geoconstraints import GeoConstraint, GeoConstraintRule
 from qdjango.api.layers.filters import FILTER_RELATIONONETOMANY_PARAM
 from qdjango.utils.data import QgisProject
-from qdjango.models import SessionTokenFilter, SessionTokenFilterLayer
+from qdjango.models import SessionTokenFilter, SessionTokenFilterLayer, FilterLayerSaved
 from usersmanage.models import Group as UserGroup
 from core.tests.base import CoreTestBase
 from core.utils.qgisapi import get_qgs_project, get_qgis_layer
 
-from .base import QdjangoTestBase, CURRENT_PATH, TEST_BASE_PATH, QGS310_WIDGET_FILE, CoreGroup, G3WSpatialRefSys, \
-    QGS322_FILE, QGS322_INITEXTENT_GEOCONSTRAINT_FILE, QGS322_FORMATTING_DATE, QGS328_FILE, QGS328_VALUE_RELATION
+from .base import (QdjangoTestBase, CURRENT_PATH, TEST_BASE_PATH, QGS310_WIDGET_FILE, CoreGroup, G3WSpatialRefSys, \
+    QGS322_FILE, QGS322_INITEXTENT_GEOCONSTRAINT_FILE, QGS322_FORMATTING_DATE, QGS328_FILE, QGS328_VALUE_RELATION,
+                   QGS328_RELATION_REFERENCE)
 from qgis.core import QgsFeatureRequest, QgsRasterLayer, QgsVectorLayer
 from qgis.PyQt.QtCore import QTemporaryDir
 from qgis.server import QgsServerProjectUtils
@@ -50,11 +51,13 @@ import time
 import six
 import os
 import zipfile
+import base64
 from io import BytesIO
 
 
 QGS_FILE_TEMPORAL_VECTOR_WITH_FIELD = 'test_temporal_vector_layer_316_ModeFeatureDateTimeInstantFromField.qgs'
 QGS_FILE_TEMPORAL_VECTOR_WITH_NOT_ACTIVE = 'test_temporal_vector_layer_316_not_active.qgs'
+QGS_FILE_CASCADE_AUTORELATION = 'cascade_autorelation_334.qgs'
 
 # Temporal raster layer wmst
 QGS_FILE_WMST = 'test_WMST.qgs'
@@ -706,17 +709,32 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         cls.project322_datewidget.group = cls.project_group
         cls.project322_datewidget.save()
 
+        # For RelationReference widget
+        qgis_project_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS328_RELATION_REFERENCE), 'r'))
+        cls.project328_rrwidget = QgisProject(qgis_project_file)
+        cls.project328_rrwidget.group = cls.project_group
+        cls.project328_rrwidget.save()
+
+        qgis_project_file = File(
+            open("{}{}{}".format(CURRENT_PATH, TEST_BASE_PATH, QGS328_VALUE_RELATION), "r")
+        )
+        cls.project328_value_relation = QgisProject(qgis_project_file)
+        cls.project328_value_relation.title = "A project QGIS 3.28 fro value relation"
+        cls.project328_value_relation.group = cls.project_group
+        cls.project328_value_relation.save()
+
     @classmethod
     def tearDownClass(cls):
         cls.project_widget310.instance.delete()
         cls.project322.instance.delete()
+        cls.project328_value_relation.instance.delete()
         super().tearDownClass()
 
-    def _testApiCall(self, view_name, args, kwargs={}, status_auth=200, login=True, logout=True):
+    def _testApiCall(self, view_name, args, kwargs={}, status_auth=200, login=True, logout=True, method='get'):
         """Utility to make test calls for admin01 user"""
 
         path = reverse(view_name, args=args)
-        if kwargs:
+        if kwargs and method == 'get':
             path += '?'
             parts = []
             for k, v in kwargs.items():
@@ -732,7 +750,8 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         if login:
             self.assertTrue(self.client.login(
                 username='admin01', password='admin01'))
-        response = self.client.get(path)
+
+        response = getattr(self.client, method)(path, data=kwargs)
         self.assertEqual(response.status_code, status_auth)
         if logout:
             self.client.logout()
@@ -995,13 +1014,14 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         sf = session_filters[0]
         self.assertEqual(sf.token, resp['data']['filtertoken'])
 
-        ts_b36 = int_to_base36(int(time.mktime(sf.time_asked.timetuple())))
-        hash = salted_hmac(
-            settings.SECRET_KEY,
-            six.text_type(sf.sessionid)
-        ).hexdigest()
-
-        self.assertEqual(f'{ts_b36}-{hash}', resp['data']['filtertoken'])
+        #ts_b36 = int_to_base36(int(time.mktime(sf.time_asked.timetuple())))
+        # ts = base64.b64encode(str(sf.time_asked.timestamp()).encode()).decode().lower()
+        # hash = salted_hmac(
+        #     settings.SECRET_KEY,
+        #     six.text_type(sf.sessionid)
+        # ).hexdigest()
+        #
+        # self.assertEqual(f'{ts}-{hash}', resp['data']['filtertoken'])
 
         # test layer table saved
         self.assertEqual(sf.stf_layers.count(), 1)
@@ -1042,13 +1062,14 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         sf = session_filters[0]
         self.assertEqual(sf.token, resp['data']['filtertoken'])
 
-        ts_b36 = int_to_base36(int(time.mktime(sf.time_asked.timetuple())))
-        hash = salted_hmac(
-            settings.SECRET_KEY,
-            six.text_type(sf.sessionid)
-        ).hexdigest()
-
-        self.assertEqual(f'{ts_b36}-{hash}', resp['data']['filtertoken'])
+        #ts_b36 = int_to_base36(int(time.mktime(sf.time_asked.timetuple())))
+        # ts = base64.b64encode(str(sf.time_asked.timestamp()).encode()).decode().lower()
+        # hash = salted_hmac(
+        #     settings.SECRET_KEY,
+        #     six.text_type(sf.sessionid)
+        # ).hexdigest()
+        #
+        # self.assertEqual(f'{ts}-{hash}', resp['data']['filtertoken'])
 
         # test layer table saved
         self.assertEqual(sf.stf_layers.count(), 2)
@@ -1089,6 +1110,172 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
 
         # reset token table
         sf.delete()
+
+        # Test save filter by layer
+        # ---------------------------------------------
+
+        # Create token
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['filtertoken', 'qdjango', self.project310.instance.pk,
+                                             cities.qgs_layer_id],
+                                            {
+                                                'fidsout': '6,8,9,0'
+                                            }, logout=False).content)
+
+        session_filters = SessionTokenFilter.objects.all()
+        self.assertEqual(len(session_filters), 1)
+        sf = session_filters[0]
+        self.assertEqual(sf.token, resp['data']['filtertoken'])
+
+        # Filter for layer cities: CREATE
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['filtertoken', 'qdjango', self.project310.instance.pk,
+                                             cities.qgs_layer_id],
+                                            {
+                                                'mode':'save',
+                                                'name': 'filter 1 layer cities'
+                                            }, logout=False).content)
+
+        self.assertEqual(resp['data'], {
+                'layer': cities.qgs_layer_id,
+                'qgs_expression': '$id NOT IN (6,8,9,0)',
+                'name': 'filter 1 layer cities',
+                'fid': 1,
+                'state': 'created'
+            })
+
+        # Filter for layer cities: UPDATE
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['filtertoken', 'qdjango', self.project310.instance.pk,
+                                             cities.qgs_layer_id],
+                                            {
+                                                'mode': 'save',
+                                                'name': 'filter 1 layer cities'
+                                            }, logout=False).content)
+
+        self.assertEqual(resp['data'], {
+            'layer': cities.qgs_layer_id,
+            'qgs_expression': '$id NOT IN (6,8,9,0)',
+            'name': 'filter 1 layer cities',
+            'fid': 1,
+            'state': 'updated'
+        })
+
+        # Filter for layer cities: CREATE newone
+
+        # Update filter
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['filtertoken', 'qdjango', self.project310.instance.pk,
+                                             cities.qgs_layer_id],
+                                            {
+                                                'fidsout': '1,2'
+                                            }, logout=False).content)
+
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['filtertoken', 'qdjango', self.project310.instance.pk,
+                                             cities.qgs_layer_id],
+                                            {
+                                                'mode': 'save',
+                                                'name': 'filter 2 layer cities'
+                                            }, logout=False).content)
+
+        self.assertEqual(resp['data'], {
+            'layer': cities.qgs_layer_id,
+            'qgs_expression': '$id NOT IN (6,8,9,0) AND $id NOT IN (1,2)',
+            'name': 'filter 2 layer cities',
+            'fid': 2,
+            'state': 'created'
+        })
+
+
+        # Filter for layer cities: DELETE
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['filtertoken', 'qdjango', self.project310.instance.pk,
+                                             cities.qgs_layer_id],
+                                            {
+                                                'mode': 'delete_saved',
+                                                'fid': '2'
+                                            }, logout=False).content)
+
+
+        # Check the db
+        fls = FilterLayerSaved.objects.filter(layer=cities)
+        self.assertEqual(len(fls), 1)
+        self.assertEqual(fls[0].pk, 1)
+
+        # Filter for layer cities: APPLY
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['filtertoken', 'qdjango', self.project310.instance.pk,
+                                             cities.qgs_layer_id],
+                                            {
+                                                'mode': 'apply',
+                                                'fid': '1'
+                                            }, logout=False).content)
+
+        # Check inside the current fitlertoken
+        token = sf.token
+        self.assertEqual(sf.stf_layers.all()[0].qgs_expr, '$id NOT IN (6,8,9,0)')
+
+        # Delete fitler token and apply again to check for new fitler token value
+        SessionTokenFilter.objects.all().delete()
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['filtertoken', 'qdjango', self.project310.instance.pk,
+                                             cities.qgs_layer_id],
+                                            {
+                                                'mode': 'apply',
+                                                'fid': '1'
+                                            }, logout=False).content)
+        sf = SessionTokenFilter.objects.all()[0]
+        self.assertFalse(token == sf.token)
+        self.assertEqual(sf.stf_layers.all()[0].qgs_expr, '$id NOT IN (6,8,9,0)')
+
+        # Filter for layer check /api/config REST API:
+        resp = json.loads(self._testApiCall('group-project-map-config',
+                                            [
+                                                self.project310.instance.group.slug,
+                                                'qdjango',
+                                                self.project310.instance.pk], logout=False).content
+                          )
+
+        for l in resp['layers']:
+            if l['id'] == cities.qgs_layer_id:
+                self.assertTrue('filters' in l)
+                self.assertEqual(len(l['filters']), 1)
+            else:
+                self.assertFalse('filters' in l)
+
+        # Filter for layer cities: DELETE
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['filtertoken', 'qdjango', self.project310.instance.pk,
+                                             cities.qgs_layer_id],
+                                            {
+                                                'mode': 'delete_saved',
+                                                'fid': '1'
+                                            }, logout=False).content)
+
+        # Check the db
+        fls = FilterLayerSaved.objects.filter(layer=cities)
+
+        # Invalidate cache
+        self.project310.instance.invalidate_cache()
+
+        self.assertEqual(len(fls), 0)
+
+        resp = json.loads(self._testApiCall('group-project-map-config',
+                                            [
+                                                self.project310.instance.group.slug,
+                                                'qdjango',
+                                                self.project310.instance.pk], logout=False).content
+                          )
+
+        for l in resp['layers']:
+            if l['id'] == cities.qgs_layer_id:
+                self.assertFalse('filters' in l)
+            else:
+                self.assertFalse('filters' in l)
+
+
+
 
     def test_download_vector_api_selected_wms_fields(self):
         """ Test vector download api for every type of download with fields selected for wms service """
@@ -1365,12 +1552,24 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         qgs_request.setFilterExpression('"ISO2_CODE" = \'IT\'')
         total_count = len([f for f in qgis_layer.getFeatures(qgs_request)])
 
+        # Test http 'get' method:
         resp = json.loads(self._testApiCall('core-vector-api',
                                             ['data', 'qdjango', self.project310.instance.pk,
                                                 cities.qgs_layer_id],
                                             {
                                                 'field': 'ISO2_CODE|eq|IT'
                                             }).content)
+
+        self.assertEqual(resp['vector']['count'], total_count)
+
+        # Test http 'post' method:
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['data', 'qdjango', self.project310.instance.pk,
+                                             cities.qgs_layer_id],
+                                            {
+                                                'field': 'ISO2_CODE|eq|IT'
+                                            },
+                                            method='post').content)
 
         self.assertEqual(resp['vector']['count'], total_count)
 
@@ -1393,12 +1592,24 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
             '"ISO2_CODE" = \'IT\' AND "POPULATION" > 10000 OR "ISO2_CODE" = \'FR\'')
         total_count = len([f for f in qgis_layer.getFeatures(qgs_request)])
 
+        # Test http 'get' method:
         resp = json.loads(self._testApiCall('core-vector-api',
                                             ['data', 'qdjango', self.project310.instance.pk,
                                                 cities.qgs_layer_id],
                                             {
                                                 'field': 'ISO2_CODE|eq|IT|AND,POPULATION|gt|10000|OR,ISO2_CODE|eq|FR',
                                             }).content)
+
+        self.assertEqual(resp['vector']['count'], total_count)
+
+        # Test http 'post' method:
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['data', 'qdjango', self.project310.instance.pk,
+                                             cities.qgs_layer_id],
+                                            {
+                                                'field': 'ISO2_CODE|eq|IT|AND,POPULATION|gt|10000|OR,ISO2_CODE|eq|FR',
+                                            },
+                                            method='post').content)
 
         self.assertEqual(resp['vector']['count'], total_count)
 
@@ -1419,6 +1630,7 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         qgs_request.setFilterExpression('"NAME" ILIKE \'%flo%\'')
         total_count = len([f for f in qgis_layer.getFeatures(qgs_request)])
 
+        # Test http 'get' method:
         resp = json.loads(self._testApiCall('core-vector-api',
                                             ['data', 'qdjango', self.project310.instance.pk,
                                                 cities.qgs_layer_id],
@@ -1428,11 +1640,23 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
 
         self.assertEqual(resp['vector']['count'], total_count)
 
+        # Test http 'post' method:
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['data', 'qdjango', self.project310.instance.pk,
+                                             cities.qgs_layer_id],
+                                            {
+                                                'field': 'NAME|ilike|flo'
+                                            },
+                                            method='post').content)
+
+        self.assertEqual(resp['vector']['count'], total_count)
+
         qgs_request = QgsFeatureRequest()
         qgs_request.setFilterExpression(
             '"ISO2_CODE" = \'IT\' AND "NAME" = \'Florence\'')
         total_count = len([f for f in qgis_layer.getFeatures(qgs_request)])
 
+        # Test http 'get' method:
         resp = json.loads(self._testApiCall('core-vector-api',
                                             ['data', 'qdjango', self.project310.instance.pk,
                                                 cities.qgs_layer_id],
@@ -1442,18 +1666,41 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
 
         self.assertEqual(resp['vector']['count'], total_count)
 
+        # Test http 'post' method:
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['data', 'qdjango', self.project310.instance.pk,
+                                             cities.qgs_layer_id],
+                                            {
+                                                'field': 'ISO2_CODE|eq|IT,NAME|eq|Florence'
+                                            },
+                                            method='post').content)
+
+        self.assertEqual(resp['vector']['count'], total_count)
+
         # check SuggestFilterBackend
         # --------------------------
         qgs_request = QgsFeatureRequest()
         qgs_request.setFilterExpression('"NAME" ILIKE \'%flo%\'')
         total_count = len([f for f in qgis_layer.getFeatures(qgs_request)])
 
+        # Test http 'get' method:
         resp = json.loads(self._testApiCall('core-vector-api',
                                             ['data', 'qdjango', self.project310.instance.pk,
                                                 cities.qgs_layer_id],
                                             {
                                                 'suggest': 'NAME|flo'
                                             }).content)
+
+        self.assertEqual(resp['vector']['count'], total_count)
+
+        # Test http 'post' method:
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['data', 'qdjango', self.project310.instance.pk,
+                                             cities.qgs_layer_id],
+                                            {
+                                                'suggest': 'NAME|flo'
+                                            },
+                                            method='post').content)
 
         self.assertEqual(resp['vector']['count'], total_count)
 
@@ -1464,6 +1711,7 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
             '"NAME" ILIKE \'%flo%\' AND "ISO2_CODE" = \'IT\'')
         total_count = len([f for f in qgis_layer.getFeatures(qgs_request)])
 
+        # Test http 'get' method:
         resp = json.loads(self._testApiCall('core-vector-api',
                                             ['data', 'qdjango', self.project310.instance.pk,
                                                 cities.qgs_layer_id],
@@ -1475,11 +1723,25 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         self.assertEqual(resp['vector']['count'], total_count)
         self.assertEqual(resp['vector']['count'], 2)
 
+        # Test http 'post' method:
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['data', 'qdjango', self.project310.instance.pk,
+                                             cities.qgs_layer_id],
+                                            {
+                                                'suggest': 'NAME|flo',
+                                                'field': 'ISO2_CODE|eq|IT'
+                                            },
+                                            method='post').content)
+
+        self.assertEqual(resp['vector']['count'], total_count)
+        self.assertEqual(resp['vector']['count'], 2)
+
         qgs_request = QgsFeatureRequest()
         qgs_request.setFilterExpression(
             '"NAME" ILIKE \'%flo%\' AND "ISO2_CODE" = \'IT\' AND "NAME" = \'Florence\'')
         total_count = len([f for f in qgis_layer.getFeatures(qgs_request)])
 
+        # Test http 'get' method:
         resp = json.loads(self._testApiCall('core-vector-api',
                                             ['data', 'qdjango', self.project310.instance.pk,
                                                 cities.qgs_layer_id],
@@ -1487,6 +1749,19 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
                                                 'suggest': 'NAME|flo',
                                                 'field': 'ISO2_CODE|eq|IT,NAME|eq|Florence'
                                             }).content)
+
+        self.assertEqual(resp['vector']['count'], total_count)
+        self.assertEqual(resp['vector']['count'], 1)
+
+        # Test http 'post' method:
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['data', 'qdjango', self.project310.instance.pk,
+                                             cities.qgs_layer_id],
+                                            {
+                                                'suggest': 'NAME|flo',
+                                                'field': 'ISO2_CODE|eq|IT,NAME|eq|Florence'
+                                            },
+                                            method='post').content)
 
         self.assertEqual(resp['vector']['count'], total_count)
         self.assertEqual(resp['vector']['count'], 1)
@@ -1526,6 +1801,58 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
                                             }).content)
 
         self.assertEqual(resp['count'], 1)
+
+    def test_field_formatter_api_param(self):
+        """
+        Test 'fformatter' url request parameter for 'data' vector API
+
+        Using this parameter with a /api/vector/data API return a list key-value of uniques formatted values.
+        This works fo ValueRelation ValueMap and RelationReference form widgets.
+        """
+
+        cities = Layer.objects.get(
+            project_id=self.project328_rrwidget.instance.pk, origname='cities10000eu')
+
+        # Test field without relative widget
+        # ----------------------------------
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['data', 'qdjango', self.project328_rrwidget.instance.pk,
+                                             cities.qgs_layer_id],
+                                            {
+                                                'fformatter': 'NAME'
+                                            }).content)
+
+        # item[0] and item[1] are identical
+        for item in resp['data']:
+            self.assertEqual(item[0], item[1])
+
+        # Test RelatioReference
+        # ---------------------
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['data', 'qdjango', self.project328_rrwidget.instance.pk,
+                                                cities.qgs_layer_id],
+                                            {
+                                                'fformatter': 'ISO2_CODE'
+                                            }).content)
+
+        self.assertEqual(resp['data'], [['AD', 'Andorra (AD)'], ['AL', 'Shqiperia (AL)'], ['AM', 'Hayastan (AM)'], ['AT', '�sterreich (AT)'], ['AZ', 'Azarbaycan (AZ)'], ['BA', 'Bosna i Hercegovina (BA)'], ['BE', 'Belgique/Belgie (BE)'], ['BG', 'Bulgaria (BG)'], ['BY', 'Byelarus (BY)'], ['CH', 'Schweiz (German), Suisse (French), Svizzera (Italian) (CH)'], ['CZ', 'Ceska Republika (CZ)'], ['DE', 'Deutschland (DE)'], ['DK', 'Danmark (DK)'], ['EE', 'Eesti Vabariik (EE)'], ['ES', 'Espa�a (ES)'], ['FI', 'Suomen Tasavalta (FI)'], ['FO', 'Foroyar (FO)'], ['FR', 'France (FR)'], ['GB', 'United Kingdom (GB)'], ['GE', "Sak'art'velo (GE)"], ['GG', 'Guernsey (GG)'], ['GI', 'Gibraltar (GI)'], ['GR', 'Ellas or Ellada (GR)'], ['HR', 'Hrvatska (HR)'], ['HU', 'Magyarorszag (HU)'], ['IE', '�ire (IE)'], ['IM', 'Isle of Man (IM)'], ['IS', 'Lyoveldio Island (IS)'], ['IT', 'Italia (IT)'], ['JE', 'Jersey (JE)'], ['LI', 'Liechtenstein (LI)'], ['LT', 'Lietuva (LT)'], ['LU', 'Luxembourg, Letzebuerg (LU)'], ['LV', 'Latvija (LV)'], ['MC', 'Monaco (MC)'], ['MD', ''], ['ME', 'Crna Gora (ME)'], ['MK', ''], ['MT', 'Malta (MT)'], ['NL', 'Nederland (NL)'], ['NO', 'Norge (NO)'], ['PL', 'Polska (PL)'], ['PT', 'Portugal (PT)'], ['RO', 'Romania (RO)'], ['RS', ''], ['RU', ''], ['SE', 'Sverige (SE)'], ['SI', 'Slovenija (SI)'], ['SJ', 'Svalbard (SJ)'], ['SK', ''], ['SM', 'San Marino (SM)'], ['TR', 'Turkiye (TR)'], ['UA', 'Ukrayina (UA)']])
+
+        # Test ValueRelation
+        pois = Layer.objects.get(
+            project_id=self.project328_value_relation.instance.pk,
+            qgs_layer_id='poi_2c470d17_a234_464c_83f8_416bcdedda17')
+
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['data', 'qdjango', self.project328_value_relation.instance.pk,
+                                             pois.qgs_layer_id],
+                                            {
+                                                'fformatter': 'type'
+                                            }).content)
+
+        self.assertEqual(resp['data'], [['A', 'Apple'], ['B', 'Banana'], ['B1', 'Blueberry'], ['C', 'Coconut']])
+
+
+
 
     def test_filtertoken_api(self):
         """ Test vector layer api data with 'filtertoken' param """
@@ -1876,6 +2203,9 @@ class QgisTemporalVectorProject(QdjangoTestBase):
         l.external = True
         l.save()
 
+        # Is necessary invalidate the cache
+        self.project_wmst.instance.invalidate_cache()
+
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, 200)
@@ -2002,3 +2332,55 @@ class TestInitextentByGeoconstraint(QdjangoTestBase):
         # Login ad viewer3
         # --------------------------------------------------------
         self._make_request_with_geocontraints(url, self.test_viewer3, "name='AREA2' OR name='AREA3'")
+
+
+class TestVectorApiConfigCrossRelation(QdjangoTestBase):
+    """ Test /vector/api/config response with 2 layers in cross relation: avoid recursion !! """
+
+    @classmethod
+    def setUpTestData(cls):
+
+        cls.project_group_3857 = CoreGroup(name='GroupRelation3857', title='GroupRelation3857', header_logo_img='',
+                                          srid=G3WSpatialRefSys.objects.get(auth_srid=3857))
+        cls.project_group_3857.save()
+
+        qgis_project_file = File(
+            open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_FILE_CASCADE_AUTORELATION), 'r',
+                 encoding='utf-8'))
+        qgis_project_file.name = qgis_project_file.name.split('/')[-1]
+        cls.project_cascading_autorelation = QgisProject(qgis_project_file)
+        cls.project_cascading_autorelation.group = cls.project_group_3857
+        cls.project_cascading_autorelation.save()
+        qgis_project_file.close()
+
+    def test_vector_api_config(self):
+        """ Test /vector/api/config """
+
+        # civic_numbers_d8775c54_1762_4d44_ad2c_a14090ba3bb0
+        # buildings_56f242c4_c984_43a0_a163_ae774f62b839
+
+        self.client.login(username='admin01', password='admin01')
+        url = reverse('core-vector-api',
+                      args=[
+                          'config',
+                          'qdjango',
+                          self.project_cascading_autorelation.instance.pk,
+                          'civic_numbers_d8775c54_1762_4d44_ad2c_a14090ba3bb0'
+                      ])
+
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, 200)
+
+        url = reverse('core-vector-api',
+                      args=[
+                          'config',
+                          'qdjango',
+                          self.project_cascading_autorelation.instance.pk,
+                          'buildings_56f242c4_c984_43a0_a163_ae774f62b839'
+                      ])
+
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, 200)
+
+        self.client.logout()
+

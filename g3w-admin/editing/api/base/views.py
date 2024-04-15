@@ -6,7 +6,7 @@ from django.core.files import File
 from django.core.files.images import ImageFile
 from django.db import IntegrityError, transaction
 from django.db.models import AutoField, FileField, ImageField
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from qgis.core import \
     QgsDataSourceUri, \
     QgsFeature, \
@@ -112,18 +112,10 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
         if layer model has a media filefield or a imagefield
         :param geojson_feature: geojson object feature
         """
-        if self.layer_name in self.media_properties.keys():
-            for gproperty in self.media_properties[self.layer_name].keys():
-                if gproperty in geojson_feature['properties'] and \
-                        geojson_feature['properties'][gproperty]:
-                    media_property = self.media_properties[self.layer_name][gproperty]
-                    gproperty_path = geojson_feature['properties'][gproperty] \
-                        .replace(settings.MEDIA_URL, '')
-                    media_file = open('{}{}'.format(
-                        settings.MEDIA_ROOT, gproperty_path), 'r')
-                    geojson_feature['properties'][gproperty] = \
-                        MAPPING_DJANGO_MODEL_FIELD_FILE_OBJECT[type(
-                            media_property)](media_file)
+
+        # To be implemented in subclasses
+        # -------------------------------
+        pass
 
     def save_vector_data(self, metadata_layer, post_layer_data, has_transactions, post_save_signal=True, **kwargs):
         """Save vector editing data
@@ -275,6 +267,11 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                                 feature.setAttribute(qgis_field.name(),
                                                      qgis_layer.dataProvider().defaultValueClause(field_idx))
 
+                            #
+                            elif qgis_field.typeName().lower() in ('geometry', ):
+                                if geojson_feature['properties'][qgis_field.name()] == '':
+                                    geojson_feature['properties'][qgis_field.name()] = None
+
                             # Formatting data if field's type is date, datetime or time
                             # ----------------------------------------------------------
                             elif qgis_field.typeName().lower() in ('date', 'datetime', 'time', 'timestamp'):
@@ -314,7 +311,8 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
 
                             # For PostGis provider or oder provider with type int or double and with field can be null
                             # ----------------------------------------------------------------------------------------
-                            elif QVariant.typeToName(qgis_field.type()).lower() in ('int', 'double') and \
+                            elif QVariant.typeToName(qgis_field.type()).lower() in ('int', 'double', 'qlonglong') and \
+                                    qgis_field.name() in geojson_feature['properties'] and \
                                     geojson_feature['properties'][qgis_field.name()] == '':
 
                                 # Check for not_null constraint
@@ -327,21 +325,19 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
 
                             # For fields with UseHtml options, filter content with bleach
                             # -----------------------------------------------------------
-                            elif 'UseHtml' in options and options['UseHtml'] == '1':
+                            elif 'UseHtml' in options and (options['UseHtml'] == '1' or options['UseHtml'] == True):
                                 css_sanitizer = bleach.css_sanitizer.CSSSanitizer(
                                     allowed_css_properties=settings.BLEACH_ALLOWED_STYLES)
+                                attr_value = geojson_feature['properties'][qgis_field.name()]
                                 feature.setAttribute(qgis_field.name(),
                                                      bleach.clean(
-                                                         geojson_feature['properties'][qgis_field.name()],
+                                                         attr_value if attr_value else '',
                                                          tags=settings.BLEACH_ALLOWED_TAGS,
                                                          attributes=settings.BLEACH_ALLOWED_ATTRIBUTES,
                                                          strip=settings.BLEACH_STRIP_TAGS,
                                                          css_sanitizer=css_sanitizer
                                                      )
                                                  )
-
-
-
 
 
                         # Call validator!
@@ -550,10 +546,59 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                 editing_layers.append(self.metadata_layer.qgis_layer)
 
 
+            # Save main layer
             ref_insert_ids, ref_lock_ids = self.save_vector_data(
                 self.metadata_layer, post_layer_data, has_transactions, reproject=self.reproject)
 
-            # get every relationsedits
+            # Save relations
+
+            def save_relation(post_relation_data, referencing_layer, ref_insert_ids) -> None:
+                """
+                Save relation data
+                :param post_relation_data: Post data
+                :param referencing_layer: Referencing layer
+                :return: None
+                """
+                if has_transactions:
+                    # Editing on related layers has already started because
+                    # it's part of a transaction group
+                    editing_layers.append(
+                        self.metadata_relations[referencing_layer].qgis_layer)
+
+                # instance lock for relation
+                self.metadata_relations[referencing_layer].lock = LayerLock(
+                    appName=self.app_name,
+                    layer=self.metadata_relations[referencing_layer].layer,
+                    user=request.user,
+                    sessionid=self.sessionid
+                )
+
+                # Check reproject status of referencing layer
+                reproject = not self.layer.project.group.srid.auth_srid == self.metadata_relations[
+                    referencing_layer].layer.srid
+
+                insert_ids, lock_ids = self.save_vector_data(self.metadata_relations[referencing_layer],
+                                                             post_relation_data, has_transactions,
+                                                             referenced_layer_insert_ids=ref_insert_ids,
+                                                             reproject=reproject)
+                new_relations[referencing_layer] = {
+                    'new': insert_ids,
+                    'new_lockids': lock_ids
+                }
+
+                # Check for cascading relations
+                if self.relations_data_key in post_relation_data and bool(post_relation_data[self.relations_data_key]):
+                    sub_post_relations_data = post_relation_data[self.relations_data_key]
+
+                    # Check in metadata_relations for referenced layer as referencing_layer
+                    for sub_referencing_layer, sub_metadata_relation in self.metadata_relations.items():
+                        if (hasattr(sub_metadata_relation, 'referenced_layer') and
+                                sub_metadata_relation.referenced_layer == referencing_layer and
+                                sub_referencing_layer in sub_post_relations_data):
+                            sub_post_relation_data = sub_post_relations_data[sub_referencing_layer]
+                            save_relation(sub_post_relation_data, sub_referencing_layer, insert_ids)
+
+
             post_relations_data = dict()
             if self.relations_data_key in post_layer_data and bool(post_layer_data[self.relations_data_key]):
                 post_relations_data = post_layer_data[self.relations_data_key]
@@ -562,35 +607,8 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
             for referencing_layer in self.metadata_relations.keys():
 
                 if referencing_layer in post_relations_data:
-
                     post_relation_data = post_relations_data[referencing_layer]
-
-                    if has_transactions:
-                        # Editing on related layers has already started because
-                        # it's part of a transaction group
-                        editing_layers.append(
-                            self.metadata_relations[referencing_layer].qgis_layer)
-
-                    # instance lock for relation
-                    self.metadata_relations[referencing_layer].lock = LayerLock(
-                        appName=self.app_name,
-                        layer=self.metadata_relations[referencing_layer].layer,
-                        user=request.user,
-                        sessionid=self.sessionid
-                    )
-
-                    # Check reproject status of referencing layer
-                    reproject = not self.layer.project.group.srid.auth_srid == self.metadata_relations[referencing_layer].layer.srid
-
-
-                    insert_ids, lock_ids = self.save_vector_data(self.metadata_relations[referencing_layer],
-                                                                 post_relation_data, has_transactions,
-                                                                 referenced_layer_insert_ids=ref_insert_ids,
-                                                                 reproject=reproject)
-                    new_relations[referencing_layer] = {
-                        'new': insert_ids,
-                        'new_lockids': lock_ids
-                    }
+                    save_relation(post_relation_data, referencing_layer, ref_insert_ids)
 
             if has_transactions:
                 # Commit changes on all editable layers

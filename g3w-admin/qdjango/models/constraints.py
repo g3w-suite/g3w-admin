@@ -16,7 +16,7 @@ from django.contrib.auth.models import Group as AuthGroup, User
 from django.core.exceptions import ValidationError
 from django.db import connection, models, transaction
 from django.db.models import Q
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from qgis.core import (
     QgsExpressionContext,
@@ -240,7 +240,7 @@ class CommonConstraintRule(models.Model):
         if not constraints:
             return []
 
-        return cls.objects.filter(anonymoususer=True)
+        return cls.objects.filter(anonymoususer=True, constraint__in=constraints)
 
     @classmethod
     def get_rule_definition_for_user(cls, user, layer_id, context='v'):

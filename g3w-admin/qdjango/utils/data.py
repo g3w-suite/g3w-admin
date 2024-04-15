@@ -9,7 +9,7 @@ from defusedxml import lxml
 from django.conf import settings
 from django.db import transaction
 from django.http.request import QueryDict
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from lxml import etree
 
 from qgis.core import (
@@ -190,6 +190,11 @@ class QgisProjectLayer(XmlData):
         if 'qgisProject' in kwargs:
             self.qgisProject = kwargs['qgisProject']
 
+        # Get XML tree instance
+        self.qgisLayerTree = self.qgisProject.qgisProjectTree.\
+                xpath(f"///maplayer/id[text()='{self.qgs_layer.id()}']")[0].\
+                getparent()
+
         # FIXME: check il order on layer is used
         self.order = kwargs['order'] if 'order' in kwargs else 0
 
@@ -327,6 +332,9 @@ class QgisProjectLayer(XmlData):
             if self.qgs_layer.type() == QgsMapLayerType.VectorTileLayer:
                 layer_type = 'vector-tile'
 
+        if layer_type == 'arcgisvectortilelayer':
+            layer_type = 'vector-tile'
+
         if not layer_type in availableTypes:
             raise Exception(
                 _('Missing or invalid type for layer')+' "%s"' % layer_type)
@@ -375,22 +383,41 @@ class QgisProjectLayer(XmlData):
         :rtype: list, None
         """
 
+        # Get xml layer tree element to get property not available by Python API: hasCustomPrefix
+        layer_tree_vectorjoins = self.qgisLayerTree.find('vectorjoins')
+
         # get root of layer-tree-group
         ret = []
         try:
             vectorjoins = self.qgs_layer.vectorJoins()
+
+
+
             for order, join in enumerate(vectorjoins):
+
+                # Prefix management
+                # If sert custom prefix and the value is '', continue for cycle to avoid relation save
+                if layer_tree_vectorjoins[order].get('hasCustomPrefix') == '1' and join.prefix() == '':
+                    continue
+                else:
+                    if layer_tree_vectorjoins[order].get("hasCustomPrefix") == "1":
+                        prefix = join.prefix()
+                    else:
+                        prefix = f"{join.joinLayer().name()}_"
+
+
                 ret.append(
                     {
                         "cascadedDelete": str(int(join.hasCascadedDelete())),
                         "targetFieldName": join.targetFieldName(),
-                        "editable": str(int(join.isEditable())),
+                        "editable": join.isEditable(),
                         "memoryCache": str(int(join.isUsingMemoryCache())),
                         "upsertOnEdit": str(int(join.hasUpsertOnEdit())),
                         "joinLayerId": join.joinLayerId(),
                         "dynamicForm": str(int(join.isDynamicFormEnabled())),
-                        "joinFieldName": join.joinFieldName()
-
+                        "joinFieldName": join.joinFieldName(),
+                        "hasCustomPrefix": True if layer_tree_vectorjoins[order].get('hasCustomPrefix') == '1' else False,
+                        "prefix": prefix
                     }
                 )
 
@@ -600,6 +627,26 @@ class QgisProjectLayer(XmlData):
                             for key, value in item.items():
                                 data['values'].append(
                                     {'key': key, 'value': value})
+
+            # If ewidget.type() is ReferenceValue, add DisplayExpression of referencedlayer
+            elif ewidget.type() == 'RelationReference':
+
+                # Add DisplayExpression of ReferencedLayer
+                # Set it into a try except routine for a possible bug of QGIS:
+                # If in QGIS project is set a RelationReference form widget, if the referenced layer is changed
+                # the ReferencedLayerId is not changed and was the old layer id not more present into the project
+                try:
+
+                    # Remove from layer dotasource data
+                    del (options['ReferencedLayerDataSource'],
+                         options['ReferencedLayerProviderKey'])
+
+                    options['display_expression'] = self.qgisProject.qgs_project.mapLayer(
+                        options['ReferencedLayerId']).displayExpression()
+                except Exception as e:
+                    logger.debug(e)
+
+                data.update(options)
             else:
                 data.update(options)
 
@@ -737,7 +784,7 @@ class QgisProjectLayer(XmlData):
         toret = None
 
         # Manage only ModeFeatureDateTimeInstantFromField at 2021-12-06
-        if tp.isActive():
+        if tp is not None and tp.isActive():
                 #and (isinstance(tp.mode(), Qgis.VectorTemporalMode) or isinstance(tp.mode(), Qgis.RasterTemporalMode)):
             # if tp.mode() == QgsVectorLayerTemporalProperties.ModeFixedTemporalRange:
             #     toret = {
@@ -1432,7 +1479,8 @@ class QgisProject(XmlData):
                     'multilayer_query',
                     'multilayer_querybybbox',
                     'multilayer_querybypolygon',
-                    'autozoom_query'
+                    'autozoom_query',
+                    'geocoding_providers'
                 ):
                     if kwargs.get(p):
                         data[p] = kwargs.get(p)

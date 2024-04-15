@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block custom_css_links_page %}
+<!-- iCheck -->
+<link rel="stylesheet" href="{% static "bower_components/icheck/skins/square/blue.css" %}">
+{% endblock %}
+
+{% block body_content %}
+ <div class="{% block login-box-class %}login-box{% endblock %}">
+  {% block login_page_logo %}
+  <div class="login-logo">
+    <span class="logo-lg">
+        {% if SETTINGS.G3WSUITE_CUSTOM_STATIC_URL %}
+            <img src="{{ SETTINGS.G3WSUITE_LOGIN_LOGO   }}">
+        {% else %}
+            <img src="{% static SETTINGS.G3WSUITE_LOGIN_LOGO %}">
+        {% endif %}
+    </span>
+  </div><!-- /.login-logo -->
+  {% endblock %}
+  {% block login_page_box_body %}
+  <div class="login-box-body">
+    <p class="login-box-msg">{%  trans 'Sign in to start your session' %}</p>
+      {% if form.errors %}
+      <div class="alert alert-danger alert-dismissible">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+        <h4><i class="icon fa fa-ban"></i> {% trans 'LOGIN ERROR' %}!</h4>
+        {% trans 'Username and/or password uncorrect' %}
+      </div>
+      {% endif %}
+    <form method="post">
+      {% csrf_token %}
+      <div class="form-group has-feedback">
+        <input type="text" class="form-control" name="username" placeholder="Username">
+        <span class="glyphicon glyphicon-user form-control-feedback"></span>
+      </div>
+      <div class="form-group has-feedback">
+        <input type="password" class="form-control" name="password" placeholder="Password">
+        <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+      </div>
+      <div class="row margin-bottom" >
+        <div class="col-xs-12">
+          <button type="submit" class="btn btn-primary btn-block btn-flat">{% trans 'Sign In' %}</button>
+        </div><!-- /.col -->
+      </div>
+      {% if SETTINGS.RESET_USER_PASSWORD %}
+      <div class="row">
+          <div class="col-xs-12">
+              <a href="{% url 'password_reset' %}">{% trans 'Forgot your password?' %}</a>
+          </div>
+      </div>
+      {% endif %}
+      {% if SETTINGS.REGISTRATION_OPEN %}
+      <div class="row">
+          <div class="col-xs-12">
+              <a href="{% url 'django_registration_register' %}">{% trans 'Sign up' %}</a>
+          </div>
+      </div>
+      {% endif %}
+    </form>
+  </div><!-- /.login-box-body -->
+  {% endblock %}
+     {% include 'include/login_page_version.html' %}
+</div><!-- /.login-box -->
+{% endblock %}
+
+
+
+{% block custom_js_links_page %}
+<!-- iCheck -->
+<script src="{% static "bower_components/icheck/icheck.min.js" %}"></script>
+<script>
+$(function () {
+    $('input').iCheck({
+      checkboxClass: 'icheckbox_square-blue',
+      radioClass: 'iradio_square-blue',
+      increaseArea: '20%' // optional
+    });
+});
+</script>
+{% endblock %}

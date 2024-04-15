@@ -19,7 +19,7 @@ import logging
 from django.contrib.auth.models import Group as AuthGroup
 from django.contrib.auth.models import User
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.contrib.postgres.fields import ArrayField
 from model_utils.models import TimeStampedModel
 from qdjango.models import Project, Layer

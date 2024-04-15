@@ -1,13 +1,11 @@
 import json
-from collections import OrderedDict
 from copy import copy
 
-from django.conf import settings
-from django.contrib.gis.geos import GEOSGeometry
 from django.core.exceptions import PermissionDenied
-from django.http import Http404
+from django.http import Http404, HttpRequest
+from django.urls import resolve, reverse
 from django.utils.translation import ugettext
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from qgis.core import (
     QgsJsonExporter,
     QgsCoordinateTransform,
@@ -19,6 +17,8 @@ from qgis.core import (
     QgsJsonUtils,
     QgsFeature,
 )
+
+from qgis.PyQt.QtCore import QVariant
 
 from rest_framework import exceptions, status
 from rest_framework.exceptions import APIException
@@ -35,6 +35,7 @@ from core.utils.structure import (APIVectorLayerStructure, mapLayerAttributes,
                                   mapLayerAttributesFromQgisLayer)
 from core.utils.vector import BaseUserMediaHandler as UserMediaHandler
 from core.utils.qgisapi import get_qgis_features, count_qgis_features, server_fid
+from qdjango.apps import QGS_APPLICATION
 
 import logging
 
@@ -372,6 +373,9 @@ class BaseVectorApiView(G3WAPIView):
         self.set_metadata_layer(request, **kwargs)
 
         self.metadata_relations = dict()
+
+        # Before read every relation in the project to avoid to call ita again in a recursive call
+        self.set_relations()
         self.set_metadata_relations(request, **kwargs)
 
     def _get_pk_field_name(self):
@@ -455,9 +459,9 @@ class BaseVectorApiView(G3WAPIView):
                 raise APIException(e)
 
         # Paging cannot be a backend filter
-        if 'page' in request.query_params:
-            kwargs['page'] = request.query_params.get('page')
-            kwargs['page_size'] = request.query_params.get('page_size', 10)
+        if 'page' in self.request_data:
+            kwargs['page'] = self.request_data.get('page')
+            kwargs['page_size'] = self.request_data.get('page_size', 10)
 
         # Make sure we have all attrs we need to build the server FID
         provider = self.metadata_layer.qgis_layer.dataProvider()
@@ -481,43 +485,127 @@ class BaseVectorApiView(G3WAPIView):
         # If 'unique' request params is set,
         # api return a list of unique
         # field name sent with 'unique' param.
+        #
+        # If 'fformatter' request param is set,
+        # api return a list array [original_field_value, formatted_field_value]
+        # field name sent with 'fformatter' param.
         # --------------------------------------
         # IDEA:     for big data it'll be iterate over features to get unique
         #           c++ iteration is fast. Instead memory layer with too many features can be a problem.
-        if 'unique' in request.query_params:
+        #
+        # Get parameter from GET or POST requests
 
-            vl = QgsVectorLayer(QgsWkbTypes.displayString(self.metadata_layer.qgis_layer.wkbType()),
-                                "temporary_vector", "memory")
-            pr = vl.dataProvider()
 
-            # add fields
-            pr.addAttributes(self.metadata_layer.qgis_layer.fields())
-            vl.updateFields()  # tell the vector layer to fetch changes from the provider
+        if ('unique' in self.request_data or 'fformatter' in self.request_data):
 
-            res = pr.addFeatures(self.features)
+            uniques = None
 
-            uniques = vl.uniqueValues(
-                self.metadata_layer.qgis_layer.fields().indexOf(
-                    request.query_params.get('unique'))
-            )
+            pvalue = self.request_data.get('unique') if 'unique' in self.request_data else (
+                self.request_data.get('fformatter'))
+
+            qfieldidx = self.metadata_layer.qgis_layer.fields().indexOf(pvalue)
+            r_qfieldidx = qfieldidx
+            qlayer = self.metadata_layer.qgis_layer
+            qfeatures = self.features
+
+            # Get QgsFieldFormatter
+            if 'fformatter' in self.request_data:
+                ewsetup = self.metadata_layer.qgis_layer.editorWidgetSetup(qfieldidx)
+                qfformatter = QGS_APPLICATION.fieldFormatterRegistry().fieldFormatter(ewsetup.type())
+
+                # Get information about referenced layer
+                wconfig = ewsetup.config()
+                if 'ReferencedLayerId' in wconfig:
+                    relation = None
+                    for r in eval(self.layer.project.relations):
+                        if r['id'] == wconfig['Relation']:
+                            relation = r
+                    if relation:
+                        r_pvalue = relation['fieldRef']['referencedField'][
+                            relation['fieldRef']['referencingField'].index(pvalue)]
+
+                        # Get referenced layer uniques r_pvalue by api
+
+                        kwargs.update({'project_type': 'qdjango',
+                                       'project_id': self.layer.project.pk,
+                                       'layer_name': relation['referencedLayer'],
+                                       'mode_call': 'data'
+                                       })
+
+                        # To avoid python circular import
+                        from qdjango.vector import LayerVectorView
+
+                        url = reverse('core-vector-api', kwargs=kwargs)
+                        req = HttpRequest()
+                        req.method = 'GET'
+                        req.user = request.user
+                        req.resolver_match = resolve(url)
+                        req.GET['unique'] = r_pvalue
+
+                        # Add ffield if exists
+                        # 'ffield' is a proxy parameter for /vector/api/data filter parameter 'field'
+                        if 'ffield' in self.request_data:
+                            req.GET['field'] = self.request_data.get('ffield')
+
+                        # Add 'ordering'
+                        if 'ordering' in self.request_data:
+                            req.GET['ordering'] = self.request_data.get('ordering')
+
+                        view = LayerVectorView.as_view()
+                        res = view(req, *[], **kwargs).render()
+                        uniques = json.loads(res.content)['data']
+
+
+            if not uniques:
+
+                vl = QgsVectorLayer(QgsWkbTypes.displayString(self.metadata_layer.qgis_layer.wkbType()),
+                                    "temporary_vector", "memory")
+                pr = vl.dataProvider()
+
+                # add fields
+                pr.addAttributes(self.metadata_layer.qgis_layer.fields())
+                vl.updateFields()  # tell the vector layer to fetch changes from the provider
+
+                res = pr.addFeatures(self.features)
+
+                uniques = vl.uniqueValues(qfieldidx)
 
             values = []
             for u in uniques:
                 try:
                     if u:
-                        values.append(json.loads(QgsJsonUtils.encodeValue(u)))
+                        if 'unique' in self.request_data:
+                            values.append(json.loads(QgsJsonUtils.encodeValue(u)))
+                        else:
+                            fvalue = qfformatter.representValue(
+                                self.metadata_layer.qgis_layer,
+                                qfieldidx,
+                                ewsetup.config(),
+                                QVariant(),
+                                u
+                            )
+                            values.append([json.loads(QgsJsonUtils.encodeValue(u)), fvalue])
                 except Exception as e:
                     logger.error(f'Response vector widget unique: {e}')
                     continue
 
             # sort values
-            values.sort()
+            if ('fformatter' in self.request_data
+                and 'ordering' in self.request_data
+                and self.request_data['fformatter'] in self.request_data['ordering']):
+                rev = True if self.request_data['ordering'].startswith('-') else False
+                values.sort(reverse=rev, key=lambda e: (e[1] is None, e[1]))
+            else:
+                values.sort()
             self.results.update({
                 'data': values,
                 'count': len(values)
             })
 
-            del(vl)
+            try:
+                del(vl)
+            except:
+                pass
 
         else:
 
@@ -532,8 +620,8 @@ class BaseVectorApiView(G3WAPIView):
 
             # check for formatter query url param and check if != 0
             export_features = False
-            if 'formatter' in request.query_params:
-                formatter = request.query_params.get('formatter')
+            formatter = str(self.request_data.get('formatter', request.data.get('formatter')))
+            if formatter:
                 if formatter.isnumeric() and int(formatter) == 1:
                     export_features = True
 
@@ -641,6 +729,9 @@ class BaseVectorApiView(G3WAPIView):
 
         # set reprojecting status
         self.set_reprojecting_status()
+
+        # Get request data by GET or POST method
+        self.request_data = request.query_params if request.method == 'GET' else request.data
 
         # get results
         response = self.get_response_data(request)

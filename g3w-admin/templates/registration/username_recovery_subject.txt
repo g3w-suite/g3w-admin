@@ -1,0 +1,3 @@
+{% load i18n %}{% autoescape off %}
+{{ SETTINGS.REGISTRATION_EMAIL_SUBJECT_PREFIX}} {% blocktranslate %}Username recovery on {{ site_name }}{% endblocktranslate %}
+{% endautoescape %}

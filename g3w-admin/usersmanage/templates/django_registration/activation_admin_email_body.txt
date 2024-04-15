@@ -1,0 +1,8 @@
+{% load i18n %}
+{% trans 'Dear administrator' %},
+
+{% trans 'a new user has registered, to activate the new user, follow or copy the link in your browser' %}:
+
+{{ scheme }}://{{ site }}{% url 'user-update' user.pk %}
+
+{{ SETTINGS.REGISTRATION_EMAIL_BODY_SIGN }}

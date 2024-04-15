@@ -156,7 +156,6 @@ ga.Qdjango.widgetEditor = {
               field_format = ga.Qdjango.localVars.layer_edittypes[fieldname].field_format
             }
 
-
             options['format'] = {
               "date": true ? _.indexOf(['QDATETIME', 'QDATE'], fieldtype) != -1 : false,
               "time": true ? _.indexOf(['QDATETIME', 'QTIME'], fieldtype) != -1 : false,
@@ -169,7 +168,11 @@ ga.Qdjango.widgetEditor = {
             inputtype = 'datetimefield'
           }
 
-
+          // Add relation_reference
+          if (ga.Qdjango.localVars.layer_edittypes[fieldname]['widgetv2type'] == 'RelationReference' &&
+              (fieldwidgettype == 'selectbox')) {
+            options['relation_reference'] = true ? v.find(".cmpRelationReference").find("select").val() == '1': false
+          }
 
           obj.fields.push({
             name: v.find(".fieldSelect").find("select").val(), // NOME DEL CAMPO DB
@@ -343,29 +346,26 @@ ga.Qdjango.widgetEditor = {
     var numDigAut = that.isset(values) && that.isset(values.input.options.numdigaut) ? values.input.options.numdigaut : "2"
     var cmpNumDigAutocomplete = $('<input class="form-control" type="text" name="num_dig_autcomplete" value="' + numDigAut + '" >')
 
+    var selected_yes = ""
+    var selected_no = "selected"
+    if (that.isset(values) && that.isset(values.input) && that.isset(values.input.options.relation_reference) && values.input.options.relation_reference === true){
+      var selected_yes = "selected"
+      var selected_no = ""
+    }
+    var relationReferenceSelect = $('<select class="form-control" name="use_relationreferance">' +
+        '<option value="0" ' + selected_no + '>'+ gettext("No") +'</option>' +
+        '<option value="1" ' + selected_yes + '>'+ gettext("Yes") +'</option>' +
+        '</select>')
+
     var cmpOperatorSelect = $(
       '<select class="form-control" name="comparison_operator">\
-										<option value="eq">= (' +
-        gettext("equal") +
-        ')</option>\
-										<option value="gt">&gt; (' +
-        gettext("greater than") +
-        ')</option>\
-										<option value="lt">&lt; (' +
-        gettext("lower than") +
-        ')</option>\
-										<option value="ltgt">&lt;&gt; (' +
-        gettext("not equal") +
-        ')</option>\
-										<option value="gte">&gt;= (' +
-        gettext("greater than equal") +
-        ')</option>\
-										<option value="lte">&lt;= (' +
-        gettext("lower than equal") +
-        ')</option>\
-										<option value="LIKE">LIKE (' +
-        gettext("like case sensitive") +
-        ")</option>\
+										<option value="eq">= (' + gettext("equal") + ')</option>\
+										<option value="gt">&gt; (' + gettext("greater than") + ')</option>\
+										<option value="lt">&lt; (' + gettext("lower than") + ')</option>\
+										<option value="ltgt">&lt;&gt; (' + gettext("not equal") + ')</option>\
+										<option value="gte">&gt;= (' + gettext("greater than equal") + ')</option>\
+										<option value="lte">&lt;= (' + gettext("lower than equal") + ')</option>\
+										<option value="LIKE">LIKE (' + gettext("like case sensitive") + ")</option>\
 									</select>"
     )
 
@@ -423,9 +423,7 @@ ga.Qdjango.widgetEditor = {
       '<div class="blocco" style="display: none">\
 					<div class="box box-success" >\
 							<div class="box-header with-border">\
-							<h3 class="box-title">' +
-        gettext("Search field settings") +
-        '</h3>\
+							<h3 class="box-title">' + gettext("Search field settings") + '</h3>\
 							<div class="box-tools pull-right">\
                     			<button class="btn btn-box-tool close"><i class="fa fa-times"></i></button>\
                   			</div>\
@@ -438,64 +436,56 @@ ga.Qdjango.widgetEditor = {
 								<div class="row">\
 									<div class="col-md-3">\
 										<div class="controls fieldSelect">\
-											<label class="control-label">' +
-        gettext("Field") +
-        '</label>\
+											<label class="control-label">' + gettext("Field") + '</label>\
 										</div>\
 									</div>\
 									<div class="col-md-2">\
 										<div class="controls widgetType">\
-											<label class="control-label">' +
-        gettext("Widget") +
-        '</label>\
+											<label class="control-label">' + gettext("Widget") + '</label>\
 										</div>\
 									</div>\
 									<div class="col-md-3">\
 										<div class="controls textInput">\
-											<label class="control-label">' +
-        gettext("Alias") +
-        '</label>\
+											<label class="control-label">' + gettext("Alias") + '</label>\
 										</div>\
 									</div>\
 									<div class="col-md-4">\
 										<div class="controls descriptionInput">\
-											<label class="control-label">' +
-        gettext("Description") +
-        '</label>\
+											<label class="control-label">' + gettext("Description") +'</label>\
 										</div>\
 									</div>\
 								</div>\
 								<div class="row">\
 									<div class="col-md-3">\
 										<div class="controls cmpNumDigAutocomplete" style="display: none;">\
-											<label class="control-label">' +
-        gettext("Number of digits") +
-        '</label>\
+											<label class="control-label">' + gettext("Number of digits") + '</label>\
 										</div>\
 									</div>\
 								</div>\
 								<div class="row">\
 									<div class="col-md-3">\
 										<div class="controls cmpOperatorSelect">\
-											<label class="control-label">' +
-        gettext("Comparison operator") +
-        '</label>\
+											<label class="control-label">' + gettext("Comparison operator") + '</label>\
+										</div>\
+									</div>\
+									<div class="col-md-3 cmpRelationReference invisible">\
+										<div class="controls cmpRelationReferenceSelect ">\
+											<label class="control-label">' + gettext("Use Relation Reference") + '</label>\
+										</div>\
+										<div class="help-block">\
+										' + gettext("This field has a 'ReletaionReference' form widget active, do you want use if for searching?") + '\
 										</div>\
 									</div>\
 								</div>\
 								<div class="row">\
 									<div class="col-md-3">\
 										<div class="controls cmpDependanceSelectLabel invisible">\
-											<label class="control-label">' +
-        gettext("Dependency") +
-        '</label>\
+											<label class="control-label">' + gettext("Dependency") + '</label>\
 										</div>\
 									</div>\
 									<div class="col-md-3">\
 										<div class="controls cmpDependanceStrictLabel invisible">\
-											<label class="control-label">' +
-        gettext("Strictly dependent") +
-        '</label>\
+											<label class="control-label">' + gettext("Strictly dependent") + '</label>\
 										</div>\
 									</div>\
 								</div>\
@@ -513,9 +503,7 @@ ga.Qdjango.widgetEditor = {
 								<option value="and">AND</option>\
 								<option value="or">OR</option>\
 							</select>\
-							<div class="help-block invisible">' +
-        gettext("Logical join") +
-        "</div>\
+							<div class="help-block invisible">' + gettext("Logical join") + "</div>\
 						</div>\
 						</div>\
 					</div>"
@@ -539,6 +527,7 @@ ga.Qdjango.widgetEditor = {
     div.find(".cmpOperatorSelect").append(cmpOperatorSelect)
     div.find(".cmpDependanceSelect").append(cmpDependanceSelect)
     div.find(".widgetType").append(widgetSelect)
+    div.find(".cmpRelationReferenceSelect").append(relationReferenceSelect)
 
     $(".rightCol").append(div)
 
@@ -552,6 +541,14 @@ ga.Qdjango.widgetEditor = {
       if ($(this).val() == "selectbox" || $(this).val() == "autocompletebox") {
         div.find(".cmpDependanceSelectLabel").removeClass("invisible")
         $select.removeClass("invisible");
+
+        // Check if field has RelationReference widget
+        fieldname = div.find(".fieldSelect").find("select").val();
+        if (ga.Qdjango.localVars.layer_edittypes[fieldname]['widgetv2type'] == 'RelationReference' && $(this).val() == "selectbox") {
+          div.find(".cmpRelationReference").removeClass("invisible")
+        } else {
+          div.find(".cmpRelationReference").addClass("invisible")
+        }
 
         // On select dependance change
         $select.find("select").on("change", function(){
@@ -581,7 +578,7 @@ ga.Qdjango.widgetEditor = {
         }
       } else {
         div.find(".cmpDependanceSelectLabel").addClass("invisible")
-        div.find(".cmpDependanceStrictLabel").addClass("invisible")
+        div.find(".cmpRelationReference").addClass("invisible")
         $select.addClass("invisible")
         $dependence_strict.addClass("invisible");
         $numdigaut.hide()
