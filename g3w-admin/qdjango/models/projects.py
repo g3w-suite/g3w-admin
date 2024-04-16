@@ -1412,3 +1412,17 @@ class Widget(G3WACLModelMixins, models.Model):
     @staticmethod
     def get_by_type(type='search'):
         return Widget.objects.filter(widget_type=type)
+
+
+class CustomerTheme(models.Model):
+    """
+    Model to store custom Map Theme
+    """
+
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    name = models.CharField(_('Theme name'), max_length=255)
+    theme = models.TextField(_('JSON theme structure'))
+
+    def __str__(self):
+        return self.name
