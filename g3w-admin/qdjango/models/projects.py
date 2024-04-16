@@ -1435,6 +1435,15 @@ class CustomerTheme(models.Model):
     def layerstree(self):
         return json.loads(self.theme)['layerstree']
 
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+
+        super().save(force_insert=force_insert, force_update=force_update, using=using,
+             update_fields=update_fields)
+
+        # Invalidate cache project
+        self.project.invalidate_cache(user=self.user)
+
     def __str__(self):
         return self.name
 
