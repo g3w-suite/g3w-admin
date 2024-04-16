@@ -210,7 +210,7 @@ class QdjangoThemeTest(QdjangoTestBase):
 
         self.assertFalse(self.test_viewer1.has_perm('qdjango.view_layer', self.project_theme316.instance.layer_set.get(qgs_layer_id='countries_3857_4f885888_b0df_4f87_88ed_17c907315fad')))
 
-    def test_prj_theme_crude(self):
+    def test_prj_theme_crud(self):
 
         # Test CRUD
         # ==============================================================================
