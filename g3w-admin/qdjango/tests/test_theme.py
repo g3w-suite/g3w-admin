@@ -12,7 +12,10 @@ __copyright__ = 'Copyright 2015 - 2021, Gis3w'
 
 from django.urls import reverse
 from django.core.files import File
-from qdjango.models import Project
+from django.core.exceptions import ObjectDoesNotExist
+from qdjango.models import (
+    Project, CustomerTheme
+)
 from guardian.shortcuts import assign_perm
 from .base import \
     QdjangoTestBase, \
@@ -91,29 +94,31 @@ class QdjangoThemeTest(QdjangoTestBase):
         self.assertTrue('map_themes' in jcontent)
 
         # Result to compare
-        map_themes = [
-            {
-                "theme": "View1",
-                "styles": {
-                    "countries_3857_4f885888_b0df_4f87_88ed_17c907315fad": "predefinito",
-                    "cities10000eu_3857_728999c2_0883_4627_8df2_25224f71e3ea": "predefinito"
+        map_themes ={
+            "project": [
+                {
+                    "theme": "View1",
+                    "styles": {
+                        "countries_3857_4f885888_b0df_4f87_88ed_17c907315fad": "predefinito",
+                        "cities10000eu_3857_728999c2_0883_4627_8df2_25224f71e3ea": "predefinito"
+                    }
+                },
+                {
+                    "theme": "View2",
+                    "styles": {
+                        "countries_3857_4f885888_b0df_4f87_88ed_17c907315fad": "predefinito",
+                        "cities10000eu_3857_728999c2_0883_4627_8df2_25224f71e3ea": "style_red_square"
+                    }
+                },
+                {
+                    "theme": "View3",
+                    "styles": {
+                        "countries_3857_4f885888_b0df_4f87_88ed_17c907315fad": "predefinito",
+                        "cities10000eu_3857_728999c2_0883_4627_8df2_25224f71e3ea": "style_red_square"
+                    }
                 }
-            },
-            {
-                "theme": "View2",
-                "styles": {
-                    "countries_3857_4f885888_b0df_4f87_88ed_17c907315fad": "predefinito",
-                    "cities10000eu_3857_728999c2_0883_4627_8df2_25224f71e3ea": "style_red_square"
-                }
-            },
-            {
-                "theme": "View3",
-                "styles": {
-                    "countries_3857_4f885888_b0df_4f87_88ed_17c907315fad": "predefinito",
-                    "cities10000eu_3857_728999c2_0883_4627_8df2_25224f71e3ea": "style_red_square"
-                }
-            }
-        ]
+            ]
+        }
 
         self.assertEqual(jcontent['map_themes'], map_themes)
 
@@ -205,8 +210,174 @@ class QdjangoThemeTest(QdjangoTestBase):
 
         self.assertFalse(self.test_viewer1.has_perm('qdjango.view_layer', self.project_theme316.instance.layer_set.get(qgs_layer_id='countries_3857_4f885888_b0df_4f87_88ed_17c907315fad')))
 
+    def test_prj_theme_crude(self):
+
+        # Test CRUD
+        # ==============================================================================
+
+        # Create new one custom theme 
+        post_data = {
+                "layerstree": 
+                    [
+                        {
+                            "name":"countries_3857",
+                            "id":"countries_3857_4f885888_b0df_4f87_88ed_17c907315fad",
+                            "visible":True
+                        },
+                        {
+                            "name":"natural",
+                            "mutually-exclusive":False,
+                            "nodes":[
+                                {
+                                    "name":"rivers_3857",
+                                    "id":"rivers_3857_c2f3813e_18fd_40e3_b970_b8dcdd120794",
+                                    "visible":False
+                                }
+                            ],
+                            "checked":False,
+                            "expanded":False
+                        },
+                        {
+                            "name":"municipal",
+                            "mutually-exclusive":False,
+                            "nodes":[
+                                {
+                                    "name":"cities10000eu_3857",
+                                    "id":"cities10000eu_3857_728999c2_0883_4627_8df2_25224f71e3ea",
+                                    "visible":True
+                                },
+                                {
+                                    "name":"important",
+                                    "mutually-exclusive":False,
+                                    "nodes":[
+                                    {
+                                        "name":"aeroporti_3857",
+                                        "id":"aeroporti_3857_e9d2f842_0851_437e_9dfe_7b30a1bb4160",
+                                        "visible":False
+                                    }
+                                    ],
+                                    "checked":True,
+                                    "expanded":True
+                                }
+                            ],
+                            "checked":False,
+                            "expanded":True
+                        },
+                        {
+                            "name":"natural",
+                            "mutually-exclusive":False,
+                            "nodes":[
+                                
+                            ],
+                            "checked":False,
+                            "expanded":False
+                        }
+                    ],
+            
+                "styles": {
+                    'cities10000eu_3857_728999c2_0883_4627_8df2_25224f71e3ea': 'style_red_square', 
+                    'countries_3857_4f885888_b0df_4f87_88ed_17c907315fad': 'predefinito'
+                }
+            }
+
+        # response = self._testApiCall(
+        #     "qdjango-prjtheme-api",
+        #     args=[self.project_theme316.instance.pk, "Custom theme 1"],
+        #     data=post_data
+        # )
+
+        self.client.login(username=self.test_admin1.username, password=self.test_admin1.username)
+        response = self.client.post(reverse("qdjango-prjtheme-api", args=[self.project_theme316.instance.pk, "Custom theme 1"]), data=post_data, content_type='application/json')
+
+        jres = json.loads(response.content)
+        self.assertEqual(jres["result"], True)
+
+        # Check for theme saved into db
+        c_theme = CustomerTheme.objects.get(project=self.project_theme316.instance, user=self.test_admin1, name= "Custom theme 1")
+
+        self.assertEqual(json.loads(c_theme.theme), post_data)
+
+        # Update the custom theme
+        # -----------------------
+
+        post_data['styles']['countries_3857_4f885888_b0df_4f87_88ed_17c907315fad'] = 'new_style'
+
+        response = self.client.post(
+            reverse("qdjango-prjtheme-api", args=[self.project_theme316.instance.pk, "Custom theme 1"]),
+            data=post_data,
+            content_type='application/json')
+
+        jres = json.loads(response.content)
+        self.assertEqual(jres["result"], True)
+
+        # Check for theme updated into db
+        c_theme = CustomerTheme.objects.get(project=self.project_theme316.instance, user=self.test_admin1,
+                                            name="Custom theme 1")
+
+        self.assertEqual(c_theme.styles['countries_3857_4f885888_b0df_4f87_88ed_17c907315fad'], 'new_style')
+        self.client.logout()
+
+        # Test Initconfig API
+        # --------------------
+
+        response = self._testApiCall('group-project-map-config',
+                                    args=[self.project_group.slug, 'qdjango', self.project_theme316.instance.pk])
+
+        jcontent = json.loads(response.content)
+
+        self.assertTrue('map_themes' in jcontent)
+
+        self.assertEqual(jcontent['map_themes']['custom'], [{
+                'theme': 'Custom theme 1',
+                'styles': {
+                    'cities10000eu_3857_728999c2_0883_4627_8df2_25224f71e3ea': 'style_red_square',
+                    'countries_3857_4f885888_b0df_4f87_88ed_17c907315fad': 'new_style'
+                }
+        }])
+
+        # Test viewer1
+        assign_perm('view_project', self.test_viewer1, self.project_theme316.instance)
+        response = self._testApiCall('group-project-map-config', username='viewer1',
+                                     args=[self.project_group.slug, 'qdjango', self.project_theme316.instance.pk])
+
+        jcontent = json.loads(response.content)
+
+        self.assertTrue('map_themes' in jcontent)
+
+        self.assertEqual(jcontent['map_themes']['custom'], [])
 
 
+        # Test prjtheme api
+        response = self._testApiCall('qdjango-prjtheme-api',
+                                     args=[self.project_theme316.instance.pk, 'Custom theme 1'])
+        jres = json.loads(response.content)
+
+        self.assertEqual(jres["data"], post_data['layerstree'])
+
+        # Test viewer1
+        response = self._testApiCall('qdjango-prjtheme-api', username='viewer1',
+                                     args=[self.project_theme316.instance.pk, 'Custom theme 1'])
+        jres = json.loads(response.content)
+
+        self.assertFalse(jres['result'])
+        self.assertEqual(jres['error'], "Theme name 'Custom theme 1' is not available!")
+
+
+        # Delete the custom theme
+        # -----------------------
+        self.client.login(username=self.test_admin1.username, password=self.test_admin1.username)
+        response = self.client.delete(
+            reverse("qdjango-prjtheme-api", args=[self.project_theme316.instance.pk, "Custom theme 1"]),
+            content_type='application/json')
+
+        jres = json.loads(response.content)
+        self.assertEqual(jres["result"], True)
+
+        with self.assertRaises(ObjectDoesNotExist):
+            CustomerTheme.objects.get(project=self.project_theme316.instance, user=self.test_admin1,
+                                      name="Custom theme 1")
+
+        self.client.logout()
 
     def test_map_config_api_layout_preset_theme(self):
         """ Test client settings for project layer with preset theme """

@@ -34,6 +34,8 @@ from usersmanage.utils import (
     setPermissionUserObject,
 )
 
+import json
+
 logger = logging.getLogger(__name__)
 
 # Layer type with widget set capability
@@ -1423,6 +1425,15 @@ class CustomerTheme(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(_('Theme name'), max_length=255)
     theme = models.TextField(_('JSON theme structure'))
+
+    @property
+    def styles(self):
+        return json.loads(self.theme)['styles']
+
+    @property
+    def layerstree(self):
+        return json.loads(self.theme)['layerstree']
+
 
     def __str__(self):
         return self.name

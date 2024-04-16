@@ -12,7 +12,8 @@ from qdjango.models import (
     SessionTokenFilter,
     GeoConstraintRule,
     MSG_LEVELS,
-    FilterLayerSaved
+    FilterLayerSaved,
+    CustomerTheme
 )
 from qdjango.utils.data import QGIS_LAYER_TYPE_NO_GEOM
 from qdjango.utils.models import get_capabilities4layer, get_view_layer_ids
@@ -260,7 +261,13 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         :return: None
         """
 
-        ret['map_themes'] = []
+        ret['map_themes'] = {
+            'project': [],
+            'custom': []
+        }
+
+        # Check for QGIS project themes
+        # -----------------------------
         map_themes = qgs_project.mapThemeCollection().mapThemes()
         if len(map_themes) == 0:
             return
@@ -276,7 +283,18 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
                     r.layer().id(): r.currentStyle
                 })
 
-            ret['map_themes'].append(theme)
+            ret['map_themes']['project'].append(theme)
+
+        # Check for custom themes
+        # -----------------------
+        if not self.request.user.is_anonymous:
+            c_themes = CustomerTheme.objects.filter(project_id=ret['id'], user=self.request.user)
+            for c_theme in c_themes:
+                ret['map_themes']['custom'].append({
+                    'theme': c_theme.name,
+                    'styles': c_theme.styles
+                })
+
 
 
     def get_bookmarks(self, qgs_project):
