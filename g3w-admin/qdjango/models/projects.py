@@ -4,6 +4,7 @@ import time
 
 from django.utils.text import slugify
 from django_extensions.db.fields import AutoSlugField
+from django.db.models import UniqueConstraint
 from ordered_model.models import OrderedModel
 from core.configs import *
 from core.mixins.models import G3WACLModelMixins, G3WProjectMixins
@@ -1434,6 +1435,13 @@ class CustomerTheme(models.Model):
     def layerstree(self):
         return json.loads(self.theme)['layerstree']
 
-
     def __str__(self):
         return self.name
+
+    class Meta:
+        constraints = [
+            UniqueConstraint(
+                name='unique_name_user',
+                fields=['project', 'user', 'name']
+            )
+        ]
