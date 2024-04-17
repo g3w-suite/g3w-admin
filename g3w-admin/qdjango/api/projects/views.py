@@ -219,6 +219,10 @@ class QdjangoPrjThemeAPIview(G3WAPIView):
         ProjectIsActivePermission
     )
 
+    authentication_classes = (
+        CsrfExemptSessionAuthentication,
+    )
+
     def _get_url_params(self, **kwargs):
         self.project_id = kwargs['project_id']
         self.theme_name = kwargs['theme_name']
@@ -228,6 +232,11 @@ class QdjangoPrjThemeAPIview(G3WAPIView):
         return self.layerstree(request, **kwargs)
 
     def post(self, request, **kwargs):
+        """
+        Post action view for custom theme data
+        """
+
+        # TODO: add theme data validation structure, use Pydantic?
         self._get_url_params(**kwargs)
 
         try:
