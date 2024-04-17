@@ -117,7 +117,8 @@ class QdjangoThemeTest(QdjangoTestBase):
                         "cities10000eu_3857_728999c2_0883_4627_8df2_25224f71e3ea": "style_red_square"
                     }
                 }
-            ]
+            ],
+            "custom": []
         }
 
         self.assertEqual(jcontent['map_themes'], map_themes)
