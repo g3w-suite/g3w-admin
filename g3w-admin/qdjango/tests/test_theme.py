@@ -378,6 +378,29 @@ class QdjangoThemeTest(QdjangoTestBase):
             CustomerTheme.objects.get(project=self.project_theme316.instance, user=self.test_admin1,
                                       name="Custom theme 1")
 
+        # Validation by Pydantic
+        del(post_data['layerstree'][1]['name'])
+
+
+        response = self.client.post(
+            reverse("qdjango-prjtheme-api", args=[self.project_theme316.instance.pk, "Custom theme 1"]),
+            data=post_data,
+            content_type='application/json')
+
+        jres = json.loads(response.content)
+        self.assertEqual(jres["result"], False)
+
+        del(post_data['styles'])
+
+        response = self.client.post(
+            reverse("qdjango-prjtheme-api", args=[self.project_theme316.instance.pk, "Custom theme 1"]),
+            data=post_data,
+            content_type='application/json')
+
+        jres = json.loads(response.content)
+        self.assertEqual(jres["result"], False)
+
+
         self.client.logout()
 
     def test_map_config_api_layout_preset_theme(self):

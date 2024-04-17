@@ -22,6 +22,7 @@ from django.core.files.storage import default_storage
 from core.api.authentication import CsrfExemptSessionAuthentication
 from core.utils.response import send_file
 from rest_framework.response import Response
+from rest_framework.exceptions import ValidationError
 from guardian.shortcuts import get_anonymous_user
 from core.api.base.views import G3WAPIView
 from core.api.permissions import ProjectPermission
@@ -32,6 +33,7 @@ from qdjango.models import (
 )
 from qdjango.signals import reading_layer_model
 from qdjango.utils.models import get_view_layer_ids
+from .danticmodels import ThemeProjectPDModel
 
 
 from osgeo import gdal, osr
@@ -239,7 +241,20 @@ class QdjangoPrjThemeAPIview(G3WAPIView):
         # TODO: add theme data validation structure, use Pydantic?
         self._get_url_params(**kwargs)
 
+        # Validate POST data
+
+
+
         try:
+
+            # Validate POST data
+            # ------------------
+            try:
+                ThemeProjectPDModel(**self.request.data)
+            except Exception as e:
+                logger.error(str(e))
+                raise ValidationError(str(e))
+
             # CRUD
             # ------------------------
 
