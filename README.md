@@ -219,7 +219,7 @@ Depending on the component you want to translate you can start by consulting one
 ---
 
 **Compatibile with:**
-[![Django version](https://img.shields.io/badge/Django-2.2-1EB300.svg?style=flat)](https://www.djangoproject.com/download/)
+[![Django version](https://img.shields.io/badge/Django-3.2-1EB300.svg?style=flat)](https://www.djangoproject.com/download/)
 [![QGIS version](https://img.shields.io/badge/QGIS%20LTR-3.28-1EB300.svg?style=flat)](https://www.qgis.org/en/site/forusers/download.html)
 
 ---

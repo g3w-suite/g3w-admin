@@ -289,6 +289,9 @@ def validate_constraint(**kwargs):
     geom_class = getattr(geos, geom_type)
 
     # For multi geometry type
+    if geom_type == "Polygon":
+        coords = coords[0]
+
     if geom_type == "MultiPolygon":
         Polygon = getattr(geos, "Polygon")
         coords = [Polygon(p) for p in coords[0]]
