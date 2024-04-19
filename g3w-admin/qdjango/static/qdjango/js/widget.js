@@ -378,7 +378,7 @@ ga.Qdjango.widgetEditor = {
 
     var widgetSelect = $('<select class="form-control" name="widget_type"></select>')
     $.each(options, function (k, i) {
-      widgetSelect.append('<option value="' + k + '">' + i + "</option>")
+        widgetSelect.append('<option value="' + k + '">' + i + "</option>")
     })
 
     // add widget types
@@ -410,6 +410,13 @@ ga.Qdjango.widgetEditor = {
       if (_.indexOf(['DateTime'], ga.Qdjango.localVars.layer_edittypes[$(this).val()].widgetv2type) != -1) {
         // Append 'DatetimBox' to widget selectbox
         widgetSelect.append('<option value="datetimebox">' + that.datetime_widgettype.datetimebox + '</option>');
+      }
+
+      // Remove `AutoCompleteBox` from widget type list
+      if (ga.Qdjango.localVars.layer_edittypes[$(this).val()].widgetv2type == 'ValueRelation') {
+        widgetSelect.find("option[value=\"autocompletebox\"]").hide();
+      } else {
+        widgetSelect.find("option[value=\"autocompletebox\"]").show();
       }
 
     })

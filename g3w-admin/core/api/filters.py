@@ -231,11 +231,7 @@ class SuggestFilterBackend(BaseFilterBackend):
         qgis_layer = metadata_layer.qgis_layer
 
         # Try to get param from GET
-        suggest_value = request.query_params.get('suggest')
-
-        if not suggest_value:
-            # Try to get from POST
-            suggest_value = request.data.get('suggest')
+        suggest_value = request.query_params.get('suggest', request.data.get('suggest'))
 
         if suggest_value:
 
