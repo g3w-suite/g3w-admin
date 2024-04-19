@@ -1299,9 +1299,15 @@ class QgisProject(XmlData):
         """
 
         layouts = []
+
+        # Get layouts excluded by WMS service
+        restricted_layouts = QgsServerProjectUtils.wmsRestrictedComposers(self.qgs_project)
+
         qgs_layouts = self.qgs_project.layoutManager().layouts()
+
         for qgs_layout in qgs_layouts:
-            if qgs_layout.layoutType() == QgsMasterLayoutInterface.PrintLayout:
+            if (qgs_layout.layoutType() == QgsMasterLayoutInterface.PrintLayout and
+                    qgs_layout.name() not in restricted_layouts):
 
                 # find first page into items
                 first_page_size = qgs_layout.pageCollection().pages()[
