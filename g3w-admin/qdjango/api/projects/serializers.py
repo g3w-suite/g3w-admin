@@ -513,19 +513,14 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
                 else:
                     ret['layers'].append(layer_serialized_data)
 
-                # get widgects for layer
+                # get widgets for layer
                 widgets = layers[layer['id']].widget_set.all()
                 for widget in widgets:
-                    widget_serializzer_data = WidgetSerializer(
-                        widget, layer=layers[layer['id']]).data
-                    if widget_serializzer_data['type'] in ('search', 'search_1n'):
-                        widget_serializzer_data['options']['layerid'] = layer['id']
-                        widget_serializzer_data['options']['querylayerid'] = layer['id']
-
-                        ret['search'].append(widget_serializzer_data)
+                    w_data = WidgetSerializer(widget, layer=layers[layer['id']], layerid=layer['id']).data
+                    if w_data['type'] in ('search', 'search_1n'):
+                        ret['search'].append(w_data)
                     else:
-                        load_qdjango_widget_layer.send(
-                            self, layer=layer, ret=ret, widget=widget)
+                        load_qdjango_widget_layer.send(self, layer=layer, ret=ret, widget=widget)
 
         for l in ret['layerstree']:
             try:
@@ -600,7 +595,8 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         except:
             pass
 
-        ret['search_endpoint'] = settings.G3W_CLIENT_SEARCH_ENDPOINT
+        # deprecated since 3.8
+        ret['search_endpoint'] = 'api'
 
         # Add bookmarks:
         # ---------------------------------
@@ -943,78 +939,72 @@ class WidgetSerializer(serializers.ModelSerializer):
 
     def __init__(self, instance=None, data=empty, **kwargs):
         self.layer = kwargs['layer']
+        self.layerid = kwargs['layerid']
         del(kwargs['layer'])
+        del(kwargs['layerid'])
         super(WidgetSerializer, self).__init__(instance, data, **kwargs)
 
     def to_representation(self, instance):
         ret = super(WidgetSerializer, self).to_representation(instance)
-        ret['type'] = instance.widget_type
+
+        body = json.loads(instance.body)
 
         # get edittype
         edittypes = eval(self.layer.edittypes)
 
-        if ret['type'] == 'search':
-            body = json.loads(instance.body)
+        has_relations = 'search' == instance.widget_type and '' != body.get('relations', '')
 
+        # rewrite type ('search' → 'search_1n' if has relations) 
+        ret['type'] = 'search_1n' if has_relations else instance.widget_type
+
+        # check if field has a widget edit type
+        def etype(field, key, default=None):
+            return edittypes.get(field['name'], {}).get(key, default)
+
+        if ret['type'] not in ('search', 'search_1n'):
+            ret['body'] = body
+
+        # TODO: reduce nesting level (there are too many things called 'options')
+        else:
             ret['options'] = {
                 'queryurl': None,
                 'title': body['title'],
                 'results': body['results'],
-                'filter': [],
                 'dozoomtoextent': body['dozoomtoextent'],
-                # 'zoom': body['zoom']
-            }
-
-            # other layers
-            if 'otherlayers' in body:
-                ret['options'].update({
-                    'otherquerylayerids': body['otherlayers']
-                })
-
-            for field in body['fields']:
-
-                # if widgettype is selectbox, get values
-                if 'widgettype' in field and field['widgettype'] == 'selectbox':
-
-                    field['input']['type'] = 'selectfield'
-                    field['input']['options']['values'] = []
-
-                    edittype = edittypes[field['name']]
-
-                    # check if field has a widget edit type
-                    widget_type = edittype['widgetv2type']
-                    if field['name'] in edittypes and widget_type in ('ValueMap', 'ValueRelation'):
-                        if widget_type == 'ValueMap':
-                            field['input']['options']['values'] = edittype['values']
-                        else:
-
-                            # Add layer params
-                            field['input']['options']['key'] = edittype['Value']
-                            field['input']['options']['value'] = edittype['Key']
-                            field['input']['options']['layer_id'] = edittype['Layer']
-
-                # For AutoccOmpleteBox input type
-                if 'widgettype' in field and field['widgettype'] == 'autocompletebox':
-                    field['input']['type'] = 'autocompletefield'
-
-                input = field['input']
-                input['options']['blanktext'] = field['blanktext']
-                ret['options']['filter'].append({
+                'layerid': self.layerid,
+                'querylayerid': self.layerid,
+                # other layers
+                'otherquerylayerids': body.get('otherlayers', []), 
+                # search inputs
+                'filter': [{
                     'op': field['filterop'],
                     'attribute': field['name'],
                     'label': field['label'],
-                    'input': input,
-                    'logicop': field.get('logicop', 'AND').upper()
-                })
+                    'logicop': field.get('logicop', 'AND').upper(),
+                    'input': {
+                        **field['input'],
+                        'widget_type': etype(field, 'widgetv2type'),
+                        'type': ({
+                            'autocompletebox': 'autocompletefield',
+                            'selectbox': 'selectfield'
+                        }).get(field.get('widgettype'), field['input'].get('type')),
+                        'options': {
+                            **field['input'].get('options', {}),
+                            #'values': etype(field, 'values', []),     # removed in v3.8
+                            'description': field.get('blanktext', ''), # FIXME incorrect field name: "blanktext" ?
+                            # ValueRelation → add layer params
+                            **({
+                                'key' : etype(field, 'Value'),
+                                'value': etype(field, 'Key'),
+                                'layer_id': etype(field, 'Layer'),
+                            } if 'ValueRelation' == etype(field, 'widgetv2type') else {}),
+                        },
+                    },
+                } for field in body['fields']],
+                # relation id
+                **({ 'search_1n_relationid': body['relations'] } if has_relations else {})
+            }
 
-            # rewrite type if relations is set relations
-            if 'relations' in body and body['relations'] != '':
-                ret['type'] = 'search_1n'
-                ret['options']['search_1n_relationid'] = body['relations']
-                del(body['relations'])
-
-        else:
-            ret['body'] = json.loads(instance.body)
         return ret
 
     class Meta:

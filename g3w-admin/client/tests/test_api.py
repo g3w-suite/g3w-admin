@@ -39,7 +39,7 @@ QGS310_FILE_4 = 'gruppo-1_empty_vector_layer316.qgs'
 @override_settings(MEDIA_ROOT=PROJECTS_PATH)
 @override_settings(DATASOURCE_PATH=DATASOURCE_PATH)
 @override_settings(CLIENT_OWS_METHOD='GET')
-@override_settings(G3W_CLIENT_SEARCH_ENDPOINT='ows')
+@override_settings(G3W_CLIENT_SEARCH_ENDPOINT='ows') # deprecated since 3.8, until permanent removal will be forced to 'api'
 class ClientApiTest(CoreTestBase):
     """Test client API"""
 
@@ -237,7 +237,7 @@ class ClientApiTest(CoreTestBase):
         self.assertEqual(resp["metadata"]["keywords"], ['keyword1', 'keyword2'])
         self.assertEqual(resp["thumbnail"], '/media/fake/project.png')
         self.assertEqual(resp["name"], "Un progetto")
-        self.assertEqual(resp["search_endpoint"], 'ows')
+        self.assertEqual(resp["search_endpoint"], 'api')
 
         # test for tab_toc_default
         self.assertTrue(resp["toc_tab_default"], 'layers')
@@ -649,7 +649,8 @@ class ClientApiTest(CoreTestBase):
         self.assertEqual(resp_serach['name'], 'Test selectbox')
         self.assertEqual(resp_serach['type'], 'search')
         self.assertEqual(resp_serach['options']['filter'][0]['input']['type'], 'selectfield')
-        self.assertEqual(resp_serach['options']['filter'][0]['input']['options']['values'], [])
+        # removed in v3.8
+        # self.assertEqual(resp_serach['options']['filter'][0]['input']['options']['values'], [])
         self.assertEqual(resp_serach['options']['filter'][0]['logicop'], 'AND')
 
         # create a search widget with autocompletebox
@@ -745,13 +746,14 @@ class ClientApiTest(CoreTestBase):
         self.assertEqual(resp_serach['name'], 'Test selectbox for field with valuemap')
         self.assertEqual(resp_serach['type'], 'search')
         self.assertEqual(resp_serach['options']['filter'][0]['input']['type'], 'selectfield')
-        self.assertEqual(resp_serach['options']['filter'][0]['input']['options']['values'],
-                         [
-                             {"value": "1", "key": "LOW"},
-                             {"value": "2", "key": "MEDIUM"},
-                             {"value": "3", "key": "HIGHT"}
-                         ]
-                         )
+        # removed in v3.8
+        # self.assertEqual(resp_serach['options']['filter'][0]['input']['options']['values'],
+        #                  [
+        #                      {"value": "1", "key": "LOW"},
+        #                      {"value": "2", "key": "MEDIUM"},
+        #                      {"value": "3", "key": "HIGHT"}
+        #                  ]
+        #                  )
         self.assertEqual(resp_serach['options']['filter'][0]['logicop'], 'AND')
 
     def testClientConfigApiViewForPrint(self):
