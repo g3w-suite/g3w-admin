@@ -291,7 +291,9 @@ CLIENTS_AVAILABLE = []
 CLIENT_DEFAULT = 'client'
 CLIENT_G3WSUITE_LOGO = 'g3wsuite_logo_h40.png'
 CLIENT_OWS_METHOD = 'GET'
-G3W_CLIENT_SEARCH_ENDPOINT = 'ows' #or 'api' for to use api layer vector with FieldFilterBackend
+
+# deprecated since 3.8
+G3W_CLIENT_SEARCH_ENDPOINT = 'api'
 
 # If True not show empty layer into toc and main map
 G3W_CLIENT_NOT_SHOW_EMPTY_VECTORLAYER = False
