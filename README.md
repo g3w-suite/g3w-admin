@@ -3,7 +3,7 @@
 
 # G3W-ADMIN
 
-Admin server for G3W-SUITE written in Python, based on **Django** LTS (v3.2) and **QGIS Server** LTR (v3.28)
+Admin server for G3W-SUITE written in Python, based on **Django** LTS (v3.2) and **QGIS Server** LTR (v3.34)
 
 ![Admin GUI](https://user-images.githubusercontent.com/9614886/189155796-6feff629-b500-4e38-b7c2-d98b53ae7564.png)
 
@@ -15,8 +15,8 @@ Software releases follow theese main branches as described in the compatibility 
 
 | Branch     | Python         | Django         | QGIS          | [client]     | First release | Status         |
 |------------|----------------|----------------|---------------|--------------|---------------|----------------|
-| [dev]      | 3.10           | 3.2            | 3.28          | dev          | Unreleased    | ⚠️️ Unstable     |
-| [v.3.7.x]  | 3.10           | 3.2            | 3.28          | 3.9.0        | Dec 2023      | 🪲️ Bug fixing   |
+| [dev]      | 3.10           | 3.2            | 3.34          | dev          | Unreleased    | ⚠️️ Unstable     |
+| [v.3.7.x]  | 3.10           | 3.2            | 3.34          | 3.9.6        | Dec 2023      | 🪲️ Bug fixing   |
 | [v.3.6.x]  | 3.10           | 3.2            | 3.28          | 3.8.15       | May 2023      | 🪲️ Bug fixing   |
 | [v.3.5.x]  | 3.10           | 2.2            | 3.22          | 3.7          | Nov 2022      | 🚨 End of Life |
 | [v.3.4.x]  | 3.8            | 2.2            | 3.22          | 3.4          | Mar 2022      | 🚨 End of Life |
@@ -170,12 +170,12 @@ Any additional package must be placed into the [`/g3w-admin/g3w-admin`](./g3w-ad
 
 ## Testing
 
-Automated tests are performed on both latest QGIS release and current QGIS LTR (v3.28) for any push event involving the [`dev`](https://github.com/g3w-suite/g3w-admin/tree/dev) branch.
+Automated tests are performed on both latest QGIS release and current QGIS LTR (v3.34) for any push event involving the [`dev`](https://github.com/g3w-suite/g3w-admin/tree/dev) branch.
 
 The Dockerfile and docker-compose.yml files used to perform these tests are:
 
 - [Dockerfile.deps](ci_scripts/Dockerfile.deps) + [docker-compose.yml](docker-compose.yml) → latest QGIS release
-- [Dockerfile.ltr.deps](ci_scripts/Dockerfile.ltr.deps) + [docker-compose.ltr.yml](docker-compose.ltr.yml) → current QGIS LTR (v3.28)
+- [Dockerfile.ltr.deps](ci_scripts/Dockerfile.ltr.deps) + [docker-compose.ltr.yml](docker-compose.ltr.yml) → current QGIS LTR (v3.34)
 
 Execution log: [github.com/g3w-suite/g3w-admin/actions](https://github.com/g3w-suite/g3w-admin/actions)
 
