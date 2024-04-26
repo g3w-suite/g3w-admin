@@ -142,7 +142,8 @@ class GroupListView(ListView):
         context = super(GroupListView, self).get_context_data(object_list=object_list, **kwargs)
 
         # Set filter form
-        context['filter_form'] = GroupFilterForm(initial={k: f['value'] for k, f in self.filter_parameters.items()})
+        context['filter_form'] = GroupFilterForm(request=self.request,
+                                                 initial={k: f['value'] for k, f in self.filter_parameters.items()})
 
         context['collapsed_filter_form'] = False if self.filter_parameters else True
 

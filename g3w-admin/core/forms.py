@@ -463,7 +463,7 @@ class MacroGroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, ModelFor
         return instance
 
 
-class GroupFilterForm(G3WFormMixin, Form):
+class GroupFilterForm(G3WFormMixin, G3WRequestFormMixin, Form):
     """Group filter form."""
 
     macrogroup = ModelChoiceField(queryset=MacroGroup.objects.all(), required=False)
@@ -471,6 +471,11 @@ class GroupFilterForm(G3WFormMixin, Form):
 
     def __init__(self, *args, **kwargs):
         super(GroupFilterForm, self).__init__(*args, **kwargs)
+
+        # For Editor Level 1 users
+        self.fields['macrogroup'].queryset = get_objects_for_user(self.request.user, 'view_macrogroup',
+                                                                   MacroGroup)
+
         self.helper = FormHelper(self)
         self.helper.form_tag = False
         self.helper.layout = Layout(
