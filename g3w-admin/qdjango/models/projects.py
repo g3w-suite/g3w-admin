@@ -4,6 +4,7 @@ import time
 
 from django.utils.text import slugify
 from django_extensions.db.fields import AutoSlugField
+from django.db.models import UniqueConstraint
 from ordered_model.models import OrderedModel
 from core.configs import *
 from core.mixins.models import G3WACLModelMixins, G3WProjectMixins
@@ -33,6 +34,8 @@ from usersmanage.utils import (
     getUserGroups,
     setPermissionUserObject,
 )
+
+import json
 
 logger = logging.getLogger(__name__)
 
@@ -1412,3 +1415,42 @@ class Widget(G3WACLModelMixins, models.Model):
     @staticmethod
     def get_by_type(type='search'):
         return Widget.objects.filter(widget_type=type)
+
+
+class CustomerTheme(models.Model):
+    """
+    Model to store custom Map Theme
+    """
+
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    name = models.CharField(_('Theme name'), max_length=255)
+    theme = models.TextField(_('JSON theme structure'))
+
+    @property
+    def styles(self):
+        return json.loads(self.theme)['styles']
+
+    @property
+    def layerstree(self):
+        return json.loads(self.theme)['layerstree']
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+
+        super().save(force_insert=force_insert, force_update=force_update, using=using,
+             update_fields=update_fields)
+
+        # Invalidate cache project
+        self.project.invalidate_cache(user=self.user)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        constraints = [
+            UniqueConstraint(
+                name='unique_name_user',
+                fields=['project', 'user', 'name']
+            )
+        ]
