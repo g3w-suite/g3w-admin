@@ -154,12 +154,8 @@ class ClientView(TemplateView):
         serializedGroup = JSONRenderer().render(groupData)
         serializedGroup = str(serializedGroup, 'utf-8')
 
-        baseurl = self.request.build_absolute_uri(
-            "{}/{}".format(
-            settings.SITE_DOMAIN if hasattr(settings, 'SITE_DOMAIN') else '',
-            settings.SITE_PREFIX_URL if settings.SITE_PREFIX_URL else ''
-            )
-        )
+        baseurl = "{}/{}".format(getattr(settings, 'SITE_DOMAIN', ''), getattr(settings, 'SITE_PREFIX_URL') or '')
+        baseurl = self.request.build_absolute_uri(baseurl) if baseurl.startswith('/') else baseurl
 
         frontendurl = ',"frontendurl":"{}"'.format(baseurl) if settings.FRONTEND else ''
 
