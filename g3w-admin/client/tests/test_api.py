@@ -162,7 +162,7 @@ class ClientApiTest(CoreTestBase):
         self.assertIsNone(resp["group"]["overviewproject"])
         self.assertIsNone(resp["main_map_title"])
         self.assertEqual(resp["mediaurl"], "/media/")
-        self.assertEqual(resp["baseurl"], "/")
+        self.assertFalse(resp["baseurl"].startswith('/'), 'baseurl is not an absolute URI')
         self.assertEqual(resp["vectorurl"], "/vector/api/")
         self.assertEqual(resp["rasterurl"], "/raster/api/")
         self.assertEqual(resp["proxyurl"], reverse('interface-proxy'))
