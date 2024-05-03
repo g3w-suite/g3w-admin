@@ -125,11 +125,11 @@ class GroupConfigApiView(APIView):
             "rasterurl": settings.RASTER_URL,
             "proxyurl": reverse("interface-proxy"),
             "interfaceowsurl": reverse("interface-ows"),
-            "group": groupSerializer.data,
             "g3wsuite_logo_img": settings.CLIENT_G3WSUITE_LOGO,
             "credits": reverse("client-credits"),
             "main_map_title": generaldata.main_map_title,
             "i18n": settings.LANGUAGES,
+            **groupSerializer.data,
         }
 
         # add frontendurl if frontend is set

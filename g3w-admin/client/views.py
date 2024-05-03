@@ -145,7 +145,6 @@ class ClientView(TemplateView):
                     'admin_url': reverse('home')
                 } if (u in get_users_for_object(self.project, "change_project", with_group_users=True) or u.is_superuser) and reverse('home') else {})
             },
-            "group": deepcopy(groupSerializer.data),
             "baseurl": baseurl,
             "vectorurl": settings.VECTOR_URL,
             "proxyurl": reverse('interface-proxy'),
@@ -156,6 +155,8 @@ class ClientView(TemplateView):
             "credits": reverse('client-credits'),
             "version": get_version(),
             "frontendurl": baseurl if settings.FRONTEND else '',
+            # project data
+            **deepcopy(groupSerializer.data)
         }).decode('UTF-8') + ';'
 
         # project by type(app)
