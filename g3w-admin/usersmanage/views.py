@@ -372,7 +372,7 @@ class G3WUserRegistrationView(registration_views.RegistrationView):
             message,
             settings.DEFAULT_FROM_EMAIL,
             [a.email for a in admins],
-            fail_silently=False,
+            fail_silently=True,
         )
 
 class G3WUserPasswordRecoveryMixin(object):
