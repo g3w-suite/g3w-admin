@@ -891,6 +891,7 @@ class Layer(G3WACLModelMixins, models.Model):
         _('Exclude to TOC'),
         default=False,
         blank=True,
+        null=True
     )
 
     # form editor layout
