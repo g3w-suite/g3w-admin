@@ -208,10 +208,10 @@ class ClientApiTest(CoreTestBase):
         resp = json.loads(response.content)
 
         self.assertEqual(resp["layerstree"], [
-            {'visible': True, 'expanded': False, 'name': 'spatialite_points',
+            {'toc': True, 'visible': True, 'expanded': False, 'name': 'spatialite_points',
              'id': 'spatialite_points20190604101052075'},
-            {'visible': True, 'expanded': False, 'name': 'world', 'id': 'world20181008111156525'},
-            {'visible': True, 'expanded': True, 'name': 'bluemarble', 'id': 'bluemarble20181008111156906'}])
+            {'toc': True, 'visible': True, 'expanded': False, 'name': 'world', 'id': 'world20181008111156525'},
+            {'toc': True, 'visible': True, 'expanded': True, 'name': 'bluemarble', 'id': 'bluemarble20181008111156906'}])
         self.assertEqual(resp["search"], [])
         self.assertFalse(resp["wms_use_layer_ids"])
         self.assertEqual(resp["qgis_version"], "2.18.16")
