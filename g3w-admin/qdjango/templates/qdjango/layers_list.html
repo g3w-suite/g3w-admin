@@ -280,6 +280,10 @@
                                                     <input type="checkbox" data-widget-type="noLegendLayer" data-ajax-url="{% url 'qdjango-project-layers-data-editing' project.group.slug project.slug object.pk %}" name="no_legend_{{ object.pk }}" {% if object.exclude_from_legend %}checked="checked"{% endif %}>
                                                     {% trans 'Not show in legend' %}
                                                 </li>
+                                                <li>
+                                                    <input type="checkbox" data-widget-type="noTocLayer" data-ajax-url="{% url 'qdjango-project-layers-data-editing' project.group.slug project.slug object.pk %}" name="no_toc_{{ object.pk }}" {% if object.exclude_from_toc %}checked="checked"{% endif %}>
+                                                    {% trans 'Not show in TOC' %}
+                                                </li>
                                                 {% endif %}
                                             </ul>
                                         </div>

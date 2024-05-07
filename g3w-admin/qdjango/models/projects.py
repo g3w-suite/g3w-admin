@@ -886,6 +886,13 @@ class Layer(G3WACLModelMixins, models.Model):
         blank=True,
     )
 
+    # exclude from toc
+    exclude_from_toc = models.BooleanField(
+        _('Exclude to TOC'),
+        default=False,
+        blank=True,
+    )
+
     # form editor layout
     editor_layout = models.CharField(
         _('Form editor layout'),
