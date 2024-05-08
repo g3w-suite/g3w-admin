@@ -768,9 +768,21 @@ msgstr "Attributi dsa escludere dal WFS"
 msgid "Columns layer widgets"
 msgstr "Colonne del layer con widgets"
 
+#: models/projects.py:874 templates/qdjango/layers_list.html
+msgid "Hide"
+msgstr "Nascondi"
+
 #: models/projects.py:874 templates/qdjango/layers_list.html:131
-msgid "Not show attributes table"
-msgstr "Tabella attributi non visibile"
+msgid "Attributes table"
+msgstr "Tabella attributi"
+
+#: models/projects.py:874 templates/qdjango/layers_list.html
+msgid "Legend categories"
+msgstr "Categorie legenda"
+
+#: models/projects.py:874 templates/qdjango/layers_list.html
+msgid "Legend item"
+msgstr "Elemento legenda"
 
 #: models/projects.py:881
 msgid "Exclude to legend"
