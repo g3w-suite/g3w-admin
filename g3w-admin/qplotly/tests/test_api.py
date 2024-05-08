@@ -150,9 +150,9 @@ class QplotlyTestAPI(QdjangoTestBase):
         jcontent = json.loads(response.content)
 
         # check qplotly into plugins section
-        self.assertTrue('qplotly' in jcontent['group']['plugins'])
+        self.assertTrue('qplotly' in jcontent['plugins'])
 
-        plugin = jcontent['group']['plugins']['qplotly']
+        plugin = jcontent['plugins']['qplotly']
 
         self.assertEqual(plugin['gid'], 'qdjango:{}'.format(
             self.project.instance.pk))

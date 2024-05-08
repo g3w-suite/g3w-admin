@@ -104,9 +104,9 @@ class EditingApiTests(ConstraintsTestsBase):
         jcontent = json.loads(response.content)
 
         # check editing into plugins section
-        self.assertTrue('editing' in jcontent['group']['plugins'])
+        self.assertTrue('editing' in jcontent['plugins'])
 
-        plugin = jcontent['group']['plugins']['editing']
+        plugin = jcontent['plugins']['editing']
 
         # check gid and TYPES
         self.assertEqual(plugin['gid'], 'qdjango:{}'.format(
@@ -137,9 +137,9 @@ class EditingApiTests(ConstraintsTestsBase):
         jcontent = json.loads(response.content)
 
         # check editing into plugins section
-        self.assertTrue('editing' in jcontent['group']['plugins'])
+        self.assertTrue('editing' in jcontent['plugins'])
 
-        plugin = jcontent['group']['plugins']['editing']
+        plugin = jcontent['plugins']['editing']
 
         # check gid and TYPES
         self.assertEqual(plugin['gid'], 'qdjango:{}'.format(
