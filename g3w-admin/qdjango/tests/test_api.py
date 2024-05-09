@@ -615,18 +615,21 @@ class TestQdjangoProjectsAPI(QdjangoTestBase):
             'name': 'spatialite_points',
             'expanded': True,
             'id': 'spatialite_points20190604101052075',
+            'toc': True,
             'visible': True,
             'showfeaturecount': True
         }, {
             'name': 'world',
             'expanded': False,
             'id': 'world20181008111156525',
+            'toc': True,
             'visible': True,
             'showfeaturecount': True
         }, {
             'name': 'bluemarble',
             'expanded': True,
             'id': 'bluemarble20181008111156906',
+            'toc': True,
             'visible': True
         }]
         self.assertEqual(resp['layerstree'], to_compare)

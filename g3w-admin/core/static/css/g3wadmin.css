@@ -190,7 +190,8 @@ h5 small {
     font-size: 150%;
 }
 
-div.vector-download  li {
+div.vector-download  li,
+div.not-show  li {
     list-style: none;
     box-sizing: border-box;
     display: list-item;
@@ -199,9 +200,16 @@ div.vector-download  li {
     padding-top: 6px;
 }
 
-div.vector-download > ul.menu {
+div.vector-download > ul.menu,
+div.not-show > ul.menu{
     padding: 0;
 }
+/*
+div.not-show > ul.menu {
+    width: 100px;
+}
+*/
+
 
 .group-abstract-action, .project-abstract-action {
     margin-left:-10px;
