@@ -404,7 +404,7 @@ class HTML2PDFAPIView(G3WAPIView):
 
         filename = request.data.get('filename', 'download.pdf')
         response = HttpResponse(pdf_document.write_pdf(), content_type='application/pdf')
-        response['Content-Disposition'] = f'attachment; filename="{filename}"'
+        response['Content-Disposition'] = f'attachment; filename={filename}'
 
         return response
 
