@@ -1,8 +1,10 @@
 from django import get_version as dj_get_version
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
+from django.http.response import HttpResponse
 from rest_framework.response import Response
 from owslib.wms import WebMapService
+from weasyprint import HTML as WeasyHTML
 from base.version import get_version
 from .base.views import G3WAPIView
 from core.api.authentication import CsrfExemptSessionAuthentication
@@ -381,3 +383,28 @@ class CRSInfoAPIView(G3WAPIView):
         })
 
         return Response(self.results.results)
+
+
+class HTML2PDFAPIView(G3WAPIView):
+    """
+    API REST service for HTML to PDF conversion
+    """
+
+    authentication_classes = (
+        CsrfExemptSessionAuthentication,
+    )
+
+    def post(self, request, **kwargs):
+
+        if 'html' not in request.data:
+            raise APIException('`html` parameter must be provided.')
+
+        pdf = WeasyHTML(string=request.data['html'])
+        pdf_document = pdf.render()
+
+        filename = request.data.get('filename', 'download.pdf')
+        response = HttpResponse(pdf_document.write_pdf(), content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="{filename}"'
+
+        return response
+
