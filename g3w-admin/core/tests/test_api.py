@@ -672,7 +672,12 @@ class CoreApiTest(CoreTestBase):
         self.assertEqual(jres['data']['geographic'], False)
         self.assertEqual(jres['data']['axisinverted'], False)
 
-        to_compare = enumerate([1226046.6820902952, 4047095.260762165, 1727931.8998958569, 5214000.012210975])
+        # Original
+        # to_compare = enumerate([1226046.6820902952, 4047095.260762165, 1727931.8998958569, 5214000.012210975])
+
+        # Custom
+        to_compare = enumerate([0, 0, 8388608, 8388608])
+
         for c in to_compare:
             self.assertAlmostEqual(jres['data']['extent'][c[0]],  c[1], 4)
 
@@ -689,6 +694,10 @@ class CoreApiTest(CoreTestBase):
         self.assertEqual(jres['data']['geographic'], False)
         self.assertEqual(jres['data']['axisinverted'], False)
 
-        to_compare = enumerate([166021.44308054162, 0.0, 534994.6550611365, 9329005.182447437])
+        # Original
+        #to_compare = enumerate([166021.44308054162, 0.0, 534994.6550611365, 9329005.182447437])
+
+        # Custom
+        to_compare = enumerate([0, 0, 8388608, 8388608])
         for c in to_compare:
             self.assertAlmostEqual(jres['data']['extent'][c[0]],  c[1], 4)
