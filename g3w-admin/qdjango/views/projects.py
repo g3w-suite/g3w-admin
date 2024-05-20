@@ -596,6 +596,10 @@ class QdjangoLayerDataView(G3WGroupViewMixin, QdjangoProjectViewMixin, View):
             layer.exclude_from_legend = int(
                 request.POST['exclude_from_legend'])
 
+        if 'exclude_from_toc' in request.POST:
+            layer.exclude_from_toc = int(
+                request.POST['exclude_from_toc'])
+
         if 'not_show_attributes_table' in request.POST:
             layer.not_show_attributes_table = int(
                 request.POST['not_show_attributes_table'])
