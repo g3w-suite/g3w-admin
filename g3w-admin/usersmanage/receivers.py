@@ -103,4 +103,4 @@ def send_email_to_user(sender, **kwargs):
         request=sender.request,
     )
 
-    user.email_user(subject, message, settings.DEFAULT_FROM_EMAIL)
+    user.email_user(subject, message, settings.DEFAULT_FROM_EMAIL, fail_silently=True)

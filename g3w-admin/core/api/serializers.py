@@ -138,7 +138,18 @@ class GroupSerializer(G3WRequestSerializer, serializers.ModelSerializer):
                     self.project = project
 
                 # project thumbnail
-                project_thumb = project.thumbnail.name if bool(project.thumbnail.name) \
+                thumbnail = project.thumbnail
+                try:
+                    if project.group.use_logo_client:
+                        thumbnail = project.group.header_logo_img
+                    else:
+                        macrogroup = project.group.macrogroups.get(
+                            use_logo_client=True)
+                        thumbnail = macrogroup.logo_img
+                except:
+                    pass
+
+                project_thumb = thumbnail.name if bool(thumbnail.name) \
                     else '{}client/images/FakeProjectThumb.png'.format(settings.STATIC_URL)
 
                 # Get project url
