@@ -127,42 +127,42 @@ class ClientApiTest(CoreTestBase):
         response = self._testApiCall('group-map-config', ['gruppo-1', 'qdjango', '1'])
         resp = json.loads(response.content)
         self.assertEqual(resp["vectorurl"], "/vector/api/")
-        self.assertEqual(resp["group"]["crs"], {
+        self.assertEqual(resp["crs"], {
             'epsg': 4326,
             'proj4': '+proj=longlat +datum=WGS84 +no_defs',
             'geographic': True,
             'axisinverted': True,
             'extent': [-180.0, -90.0, 180.0, 90.0]
         })
-        print(resp["group"]["mapcontrols"])
-        self.assertEqual(resp["group"]["mapcontrols"], {'zoom': {}, 'zoombox': {}, 'zoomtoextent': {}, 'query': {}, 'querybbox': {}, 'querybypolygon': {}, 'overview': {}, 'scaleline': {}, 'geolocation': {}, 'streetview': {}, 'geocoding': {'providers': {}}, 'addlayers': {}, 'length': {}, 'area': {}, 'mouseposition': {}, 'scale': {}})
-        self.assertEqual(resp["group"]["header_logo_img"], "logo_img/qgis-logo.png")
-        self.assertEqual(resp["group"]["name"], "Gruppo 1")
-        self.assertIsNone(resp["group"]["header_logo_link"])
-        self.assertEqual(resp["group"]["initproject"], "qdjango:1")
-        self.assertEqual(resp["group"]["header_terms_of_use_link"], "")
-        self.assertTrue(resp["group"]["powered_by"])
-        self.assertEqual(resp["group"]["baselayers"], [{'crs': {'epsg': 3857, 'proj4': '+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs', 'geographic': False, 'axisinverted': False}, 'servertype': 'OSM', 'attribution': "<a href='https://www.openstreetmap.org/copyright'>OpenStreetMap contributors</a>", 'name': 'OpenStreetMap', 'title': 'OSM', 'scalebasedvisibility': False, 'maxscale': 0, 'minscale': 100000000, 'id': 3, 'icon': None}])
-        self.assertEqual(resp["group"]["header_terms_of_use_text"], "")
-        self.assertEqual(resp["group"]["header_custom_links"], [])
-        self.assertEqual(resp["group"]["background_color"], "#ffffff")
-        self.assertEqual(resp["group"]["id"], 1)
-        self.assertEqual(resp["group"]["slug"], 'gruppo-1')
-        self.assertEqual(len(resp["group"]["projects"]), 1)
+        print(resp["mapcontrols"])
+        self.assertEqual(resp["mapcontrols"], {'zoom': {}, 'zoombox': {}, 'zoomtoextent': {}, 'query': {}, 'querybbox': {}, 'querybypolygon': {}, 'overview': {}, 'scaleline': {}, 'geolocation': {}, 'streetview': {}, 'geocoding': {'providers': {}}, 'addlayers': {}, 'length': {}, 'area': {}, 'mouseposition': {}, 'scale': {}})
+        self.assertEqual(resp["header_logo_img"], "logo_img/qgis-logo.png")
+        self.assertEqual(resp["name"], "Gruppo 1")
+        self.assertIsNone(resp["header_logo_link"])
+        self.assertEqual(resp["initproject"], "qdjango:1")
+        self.assertEqual(resp["header_terms_of_use_link"], "")
+        self.assertTrue(resp["powered_by"])
+        self.assertEqual(resp["baselayers"], [{'crs': {'epsg': 3857, 'proj4': '+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs', 'geographic': False, 'axisinverted': False}, 'servertype': 'OSM', 'attribution': "<a href='https://www.openstreetmap.org/copyright'>OpenStreetMap contributors</a>", 'name': 'OpenStreetMap', 'title': 'OSM', 'scalebasedvisibility': False, 'maxscale': 0, 'minscale': 100000000, 'id': 3, 'icon': None}])
+        self.assertEqual(resp["header_terms_of_use_text"], "")
+        self.assertEqual(resp["header_custom_links"], [])
+        self.assertEqual(resp["background_color"], "#ffffff")
+        self.assertEqual(resp["id"], 1)
+        self.assertEqual(resp["slug"], 'gruppo-1')
+        self.assertEqual(len(resp["projects"]), 1)
 
-        self.assertIn('vendorkeys', resp["group"])
-        self.assertEqual(resp["group"]["vendorkeys"], {'google': '123456789'})
+        self.assertIn('vendorkeys', resp)
+        self.assertEqual(resp["vendorkeys"], {'google': '123456789'})
 
-        project = resp["group"]["projects"][0]
+        project = resp["projects"][0]
         to_compare = {'description': '<p>progetto 1<br></p>', 'title': 'Un progetto',
           'thumbnail': '/fake/project.png', 'gid': 'qdjango:1', 'type': 'qdjango', 'id': 1}
         for k in list(to_compare.keys()):
             self.assertEqual(project[k], to_compare[k])
 
-        self.assertIsNone(resp["group"]["overviewproject"])
+        self.assertIsNone(resp["overviewproject"])
         self.assertIsNone(resp["main_map_title"])
         self.assertEqual(resp["mediaurl"], "/media/")
-        self.assertEqual(resp["baseurl"], "/")
+        self.assertFalse(resp["baseurl"].startswith('/'), 'baseurl is not an absolute URI')
         self.assertEqual(resp["vectorurl"], "/vector/api/")
         self.assertEqual(resp["rasterurl"], "/raster/api/")
         self.assertEqual(resp["proxyurl"], reverse('interface-proxy'))
@@ -208,10 +208,10 @@ class ClientApiTest(CoreTestBase):
         resp = json.loads(response.content)
 
         self.assertEqual(resp["layerstree"], [
-            {'visible': True, 'expanded': False, 'name': 'spatialite_points',
+            {'toc': True, 'visible': True, 'expanded': False, 'name': 'spatialite_points',
              'id': 'spatialite_points20190604101052075'},
-            {'visible': True, 'expanded': False, 'name': 'world', 'id': 'world20181008111156525'},
-            {'visible': True, 'expanded': True, 'name': 'bluemarble', 'id': 'bluemarble20181008111156906'}])
+            {'toc': True, 'visible': True, 'expanded': False, 'name': 'world', 'id': 'world20181008111156525'},
+            {'toc': True, 'visible': True, 'expanded': True, 'name': 'bluemarble', 'id': 'bluemarble20181008111156906'}])
         self.assertEqual(resp["search"], [])
         self.assertFalse(resp["wms_use_layer_ids"])
         self.assertEqual(resp["qgis_version"], "2.18.16")

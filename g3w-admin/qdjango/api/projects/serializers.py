@@ -498,6 +498,9 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
                 layer_serialized_data['multilayer'] = meta_layer.getCurrentByLayer(
                     layer_serialized_data)
 
+                # Check if layer is exclude from toc
+                layer['toc'] = not layer_serialized_data['exclude_from_toc']
+
                 # check for vectorjoins and add to project relations
                 if layer_serialized_data['vectorjoins']:
                     ret['relations'] += self.get_map_layers_relations_from_vectorjoins(
@@ -681,6 +684,7 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
             'servertype',
             'vectorjoins',
             'exclude_from_legend',
+            'exclude_from_toc',
             'not_show_attributes_table',
             'download',
             'download_xls',
