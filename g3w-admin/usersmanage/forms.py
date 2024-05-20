@@ -295,6 +295,7 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
     department = ModelChoiceField(queryset=Department.objects.all(), required=False)
     backend = ChoiceField(choices=USER_BACKEND_TYPES)
     avatar = UploadedFileField(required=False)
+    other_info = CharField(label=_('Other informations'), widget=Textarea(), required=False)
 
     groups = ModelMultipleChoiceField(
         queryset=AuthGroup.objects.filter(name__in=[G3W_EDITOR1, G3W_EDITOR2, G3W_VIEWER1]),
@@ -419,6 +420,7 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
                             css_class='box-header with-border'
                         ),
                         Div(
+                            'other_info',
                             'department',
                             'avatar',
                             HTML(
@@ -578,13 +580,20 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
             if hasattr(user, 'userdata'):
                 if 'department' in self.cleaned_data:
                     user.userdata.department = self.cleaned_data['department']
+                if 'other_info' in self.cleaned_data:
+                    user.userdata.other_info = self.cleaned_data['other_info']
                 if self.cleaned_data['avatar']:
                     user.userdata.avatar = self.cleaned_data['avatar']
                 else:
                     user.userdata.avatar = None
                 user.userdata.save()
             else:
-                Userdata(user=user, department=self.cleaned_data['department'],avatar=self.cleaned_data['avatar']).save()
+                Userdata(
+                    user=user,
+                    department=self.cleaned_data['department'],
+                    other_info=self.cleaned_data['other_info'],
+                    avatar=self.cleaned_data['avatar']
+                ).save()
 
             # add backend
             if 'backend' in self.cleaned_data:
@@ -695,6 +704,7 @@ class G3WUserForm(G3WRequestFormMixin, G3WFormMixin, FileFormMixin, UserCreation
             'is_staff',
             'groups',
             'department',
+            'other_info',
             'avatar',
             'user_groups_editor',
             'user_groups_viewer',
