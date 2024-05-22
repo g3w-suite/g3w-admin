@@ -476,6 +476,16 @@ class GroupFilterForm(G3WFormMixin, G3WRequestFormMixin, Form):
         self.fields['macrogroup'].queryset = get_objects_for_user(self.request.user, 'view_macrogroup',
                                                                    MacroGroup)
 
+        # Filter EPSG: only where available in current groups
+        self.fields['epsg'].queryset = (G3WSpatialRefSys.objects.filter(
+            srid__in=get_objects_for_user(self.request.user, 'view_group', Group).values('srid'))
+                                        .order_by('srid'))
+
+
+
+
+
+
         self.helper = FormHelper(self)
         self.helper.form_tag = False
         self.helper.layout = Layout(
