@@ -6,7 +6,7 @@ from django.db.models import Q
 from django.utils.translation import ugettext, gettext_lazy as _
 from core.models import Group, GeneralSuiteData, MacroGroup
 from django_file_form.forms import FileFormMixin
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group as AuthGroup
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Div, Submit, HTML, Button, Row, Field
 from crispy_forms.bootstrap import AppendedText, PrependedText
@@ -14,7 +14,13 @@ from modeltranslation.forms import TranslationModelForm
 from guardian.shortcuts import get_objects_for_user
 from django_bleach.forms import BleachField
 from .utils.forms import crispyBoxMacroGroups
-from usersmanage.utils import get_fields_by_user, crispyBoxACL, userHasGroups, get_users_for_object
+from usersmanage.utils import (
+    crispyBoxACL,
+    userHasGroups,
+    get_users_for_object,
+    get_groups_for_object,
+    get_roles
+)
 from usersmanage.forms import G3WACLForm, UsersChoiceField
 from qdjango.models import Project
 from core.mixins.forms import *
@@ -468,32 +474,79 @@ class GroupFilterForm(G3WFormMixin, G3WRequestFormMixin, Form):
 
     macrogroup = ModelChoiceField(queryset=MacroGroup.objects.all(), required=False)
     epsg = ModelChoiceField(queryset=G3WSpatialRefSys.objects.all(), required=False)
+    editor1 = ModelChoiceField(queryset=User.objects.all(), required=False)
+    editor2 = ModelChoiceField(queryset=User.objects.all(), required=False)
+    editorgroup = ModelChoiceField(queryset=AuthGroup.objects.all(), required=False)
+    viewergroup = ModelChoiceField(queryset=AuthGroup.objects.all(), required=False)
 
     def __init__(self, *args, **kwargs):
         super(GroupFilterForm, self).__init__(*args, **kwargs)
+
+        # Filter fields by user role
+        # Filter form colum
+        ffc = (4, 4, 4)
+        if not self.request.user.is_superuser:
+            user_roles = [r.name for r in get_roles(self.request.user)]
+            if not G3W_EDITOR1 in user_roles:
+                if not G3W_EDITOR2 in user_roles:
+
+                    ffc = (12, 0, 0)
+                    # Remove filter for viewer level 1
+                    for f in ('editor1', 'editor2', 'editorgroup', 'viewergroup'):
+                        del self.fields[f]
+                else:
+                    ffc = (12, 0, 0)
+                    for f in ('editor1', 'editor2', 'editorgroup', 'viewergroup'):
+                        del self.fields[f]
+
+            else:
+
+                # Remove filter for editor level 1
+                del self.fields['editor1']
+
 
         # For Editor Level 1 users
         self.fields['macrogroup'].queryset = get_objects_for_user(self.request.user, 'view_macrogroup',
                                                                    MacroGroup)
 
         # Filter EPSG: only where available in current groups
+        groups_by_user = get_objects_for_user(self.request.user, 'view_group', Group)
         self.fields['epsg'].queryset = (G3WSpatialRefSys.objects.filter(
-            srid__in=get_objects_for_user(self.request.user, 'view_group', Group).values('srid'))
-                                        .order_by('srid'))
+            srid__in=groups_by_user.values('srid')).order_by('srid'))
 
+        # Fit queryset for user role
+        aclfparams = {
+            'editor1': (User, G3W_EDITOR1, 'view_group', get_users_for_object),
+            'editor2': (User, G3W_EDITOR2, 'view_group', get_users_for_object),
+            'editorgroup': (AuthGroup, 'editor', 'view_group', get_groups_for_object),
+            'viewergroup': (AuthGroup, 'viewer', 'view_group', get_groups_for_object)
+        }
 
-
-
-
+        for fp, dt in aclfparams.items():
+            if fp in self.fields:
+                eqs = set()
+                for g in groups_by_user:
+                    eqs = eqs.union(set(dt[3](g, dt[2], dt[1])))
+                self.fields[fp].queryset = dt[0].objects.filter(pk__in=[u.pk for u in eqs])
 
         self.helper = FormHelper(self)
         self.helper.form_tag = False
         self.helper.layout = Layout(
             Div(
-                Div(
+        Div(
                     Field('macrogroup', css_class='select2', style='width:100%;'),
                     Field('epsg', css_class='select2', style='width:100%;'),
-                    css_class='col-md-12'
+                    css_class=f'col-md-{ffc[0]}'
+                ),
+                Div(
+                    Field('editor1', css_class='select2', style='width:100%;'),
+                    Field('editor2', css_class='select2', style='width:100%;'),
+                    css_class=f'col-md-{ffc[1]}'
+                ),
+                Div(
+                    Field('editorgroup', css_class='select2', style='width:100%;'),
+                    Field('viewergroup', css_class='select2', style='width:100%;'),
+                    css_class=f'col-md-{ffc[2]}'
                 ),
                 css_class='row'
             )
