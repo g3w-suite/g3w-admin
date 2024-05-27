@@ -472,12 +472,12 @@ class MacroGroupForm(TranslationModelForm, FileFormMixin, G3WFormMixin, ModelFor
 class GroupFilterForm(G3WFormMixin, G3WRequestFormMixin, Form):
     """Group filter form."""
 
-    macrogroup = ModelChoiceField(queryset=MacroGroup.objects.all(), required=False)
+    macrogroup = ModelChoiceField(label=_('Macro cartographic group'), queryset=MacroGroup.objects.all(), required=False)
     epsg = ModelChoiceField(queryset=G3WSpatialRefSys.objects.all(), required=False)
-    editor1 = ModelChoiceField(queryset=User.objects.all(), required=False)
-    editor2 = ModelChoiceField(queryset=User.objects.all(), required=False)
-    editorgroup = ModelChoiceField(queryset=AuthGroup.objects.all(), required=False)
-    viewergroup = ModelChoiceField(queryset=AuthGroup.objects.all(), required=False)
+    editor1 = ModelChoiceField(label=_('Editor level 1'), queryset=User.objects.all(), required=False)
+    editor2 = ModelChoiceField(label=_('Editor level 2'), queryset=User.objects.all(), required=False)
+    editorgroup = ModelChoiceField(label=_('User editor group'), queryset=AuthGroup.objects.all(), required=False)
+    viewergroup = ModelChoiceField(label=_('User viewer group'), queryset=AuthGroup.objects.all(), required=False)
 
     def __init__(self, *args, **kwargs):
         super(GroupFilterForm, self).__init__(*args, **kwargs)
