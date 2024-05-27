@@ -69,7 +69,7 @@ msgstr ""
 
 #: forms.py:311
 msgid "User editor groups"
-msgstr ""
+msgstr "Gruppi di utenti Viewers"
 
 #: forms.py:318
 #, fuzzy
