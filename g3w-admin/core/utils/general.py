@@ -1,5 +1,12 @@
 from django.apps import apps
+from django import __version__
 from usersmanage.configs import *
+from qgis.PyQt.QtCore import qVersion
+from qgis.core import Qgis
+from osgeo import __version__ as GDAL_version
+from pyproj import __version__ as PyProj_version, proj_version_str
+from django.contrib.gis import geos
+import sys
 
 def ucfirst(string):
     """
@@ -47,3 +54,84 @@ def clean_for_json(json_string):
         replace("'}", "\"}"). \
         replace("\'", "'")
 
+
+def get_system_info():
+    """
+    Return a tict with system and  libraries information
+    :return: list
+
+    I.e.
+    {'QGIS': {'version': "3.34.7-Prizren 'Prizren' (6f7d735cae3)"},
+     'Libraries': {
+      'Qt': {'version': '5.15.3'},
+      'GDAL/OGR': {'version': '3.4.1'},
+      'PROJ': {'version': '8.2.1'},
+      'EPSG Registry database': {'version': 'v10.041 (2021-12-03)'},
+      'GEOS': {'version': '3.10.2-CAPI-1.16.0'},
+      'SQLite': {'version': '3.37.2'}
+      },
+     'Python': {'version': '3.10.12'},
+     'OS': {'version': 'buntu 22.04.4 LTS'}
+     }
+    """
+
+
+    ret = {}
+
+    # Make data structure
+    for d in ('QGIS', 'Python', 'Libraries'):
+        if not ret.get(d):
+            ret.update({
+                d: {}
+            })
+    for d in ('General', 'Geo', 'Python'):
+        if not ret['Libraries'].get(d):
+            ret['Libraries'].update({
+                d: {}
+            })
+
+    # QGIS
+    # --
+    ret['QGIS'].update({
+        'v': Qgis.QGIS_VERSION
+    })
+
+    # Python
+    # --
+    ret['Python'].update({
+        'v': sys.version
+    })
+
+    # Libraries
+    # --
+    ret['Libraries']['General'].update({
+        'Qt': {
+            'v': qVersion()
+        }
+    })
+
+    ret['Libraries']['Python'].update({
+        'Django': {
+            'v': __version__
+        },
+        'GDAL/OGR': {
+            'v': GDAL_version
+        },
+        'PyProj': {
+            'v': PyProj_version
+        }
+    })
+
+    ret['Libraries']['Geo'].update({
+        'GDAL/OGR': {
+            'v': GDAL_version
+        },
+        'PROJ': {
+            'v': proj_version_str,
+        },
+        'GEOS': {
+            'v': geos.geos_version(),
+        },
+    })
+
+    return ret
