@@ -938,6 +938,12 @@ class Layer(G3WACLModelMixins, models.Model):
         blank=True,
     )
 
+    download_pdf = models.BooleanField(
+        _('Download single attributes row in pdf format'),
+        default=False,
+        blank=True,
+    )
+
     # layer extension
     extent = models.TextField(
         _('Layer extension'),

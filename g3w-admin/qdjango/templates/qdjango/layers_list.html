@@ -25,6 +25,7 @@
     ga.ui.__bindCheckboxAttr('[data-widget-type="downloadLayergpx"]',      'download_layer_gpx');
     ga.ui.__bindCheckboxAttr('[data-widget-type="downloadLayercsv"]',      'download_layer_csv');
     ga.ui.__bindCheckboxAttr('[data-widget-type="downloadLayergpkg"]',     'download_layer_gpkg');
+    ga.ui.__bindCheckboxAttr('[data-widget-type="downloadLayerpdf"]',     'download_layer_pdf');
     ga.ui.__bindCheckboxAttr('[data-widget-type="externalLayer"]',         'external');
 
     ga.ui.__bindCheckboxAttr('[data-widget-type="noShowAttributesTable"]', 'not_show_attributes_table');
@@ -250,6 +251,13 @@
                                                 <li>
                                                      <input type="checkbox" data-widget-type="downloadLayergpx" data-ajax-url="{% url 'qdjango-project-layers-data-editing' project.group.slug project.slug object.pk %}" name="download_gpx_{{ object.pk }}" {% if object.download_gpx %}checked="checked"{% endif %}>
                                                     {% trans 'Download as gpx' %}
+                                                </li>
+                                                {% endif %}
+                                            
+                                                 {% if 'pdf' in SETTINGS.G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS and object.layer_type in type_layer_for_download %}
+                                                <li>
+                                                    <input type="checkbox" data-widget-type="downloadLayerpdf" data-ajax-url="{% url 'qdjango-project-layers-data-editing' project.group.slug project.slug object.pk %}" name="download_pdf_{{ object.pk }}" {% if object.download_pdf %}checked="checked"{% endif %}>
+                                                    {% trans 'Download as pdf' %}
                                                 </li>
                                                 {% endif %}
                                             </ul>
