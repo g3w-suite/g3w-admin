@@ -82,8 +82,13 @@ class ClientView(TemplateView):
         contextData = super(ClientView, self).get_context_data(**kwargs)
 
         # group serializer
+        try:
+            group = self.project.group
+        except:
+            group = get_object_or_404(Group, slug=kwargs['group_slug'])
+
         groupSerializer = GroupSerializer(
-            getattr(self.project, 'group', get_object_or_404(Group, slug=kwargs['group_slug'])),
+            group,
             projectId=str(self.project.pk),
             projectType=kwargs['project_type'],
             request=self.request
