@@ -100,7 +100,6 @@ def get_system_info():
     db = []
     for c in connections:
         try:
-            print(connections)
             with connections[c].cursor() as cursor:
                 cursor.execute("SELECT version();")  # Here
                 pg_version = cursor.fetchone()[0]
