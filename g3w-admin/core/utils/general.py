@@ -114,7 +114,7 @@ def get_system_info():
         'Django': {
             'v': __version__
         },
-        'GDAL/OGR': {
+        'GDAL_OGR': {
             'v': GDAL_version
         },
         'PyProj': {
@@ -123,7 +123,7 @@ def get_system_info():
     })
 
     ret['Libraries']['Geo'].update({
-        'GDAL/OGR': {
+        'GDAL_OGR': {
             'v': GDAL_version
         },
         'PROJ': {
