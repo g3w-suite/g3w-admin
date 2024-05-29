@@ -6,7 +6,10 @@ from qgis.core import Qgis
 from osgeo import __version__ as GDAL_version
 from pyproj import __version__ as PyProj_version, proj_version_str
 from django.contrib.gis import geos
+from django.db import connections
+import distro
 import sys
+
 
 def ucfirst(string):
     """
@@ -57,29 +60,14 @@ def clean_for_json(json_string):
 
 def get_system_info():
     """
-    Return a tict with system and  libraries information
-    :return: list
-
-    I.e.
-    {'QGIS': {'version': "3.34.7-Prizren 'Prizren' (6f7d735cae3)"},
-     'Libraries': {
-      'Qt': {'version': '5.15.3'},
-      'GDAL/OGR': {'version': '3.4.1'},
-      'PROJ': {'version': '8.2.1'},
-      'EPSG Registry database': {'version': 'v10.041 (2021-12-03)'},
-      'GEOS': {'version': '3.10.2-CAPI-1.16.0'},
-      'SQLite': {'version': '3.37.2'}
-      },
-     'Python': {'version': '3.10.12'},
-     'OS': {'version': 'buntu 22.04.4 LTS'}
-     }
+    Return a dict with system and  libraries information
+    :return:
     """
-
 
     ret = {}
 
     # Make data structure
-    for d in ('QGIS', 'Python', 'Libraries'):
+    for d in ('QGIS', 'Python', 'OS', 'DB', 'Libraries'):
         if not ret.get(d):
             ret.update({
                 d: {}
@@ -100,6 +88,35 @@ def get_system_info():
     # --
     ret['Python'].update({
         'v': sys.version
+    })
+
+    # OS
+    # --
+    ret['OS'].update({
+        'v': distro.name(pretty=True)
+    })
+
+    # PostgreSQL/postgis
+    db = []
+    for c in connections:
+        try:
+            print(connections)
+            with connections[c].cursor() as cursor:
+                cursor.execute("SELECT version();")  # Here
+                pg_version = cursor.fetchone()[0]
+
+                if connections[c].settings_dict['ENGINE'] == 'django.contrib.gis.db.backends.postgis':
+                    cursor.execute("SELECT postgis_version();")
+                    pg_version = f"{pg_version} | PostGIS {cursor.fetchone()[0]}"
+                db.append({
+                    'db_name': c,
+                    'v': pg_version
+                })
+        except:
+            pass
+
+    ret['DB'].update({
+        'items': db
     })
 
     # Libraries

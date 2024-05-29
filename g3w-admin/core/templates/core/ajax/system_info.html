@@ -3,8 +3,15 @@
   <div class="col-md-12">
       <h3>{% trans 'General' %}</h3>
       <ul class="list-unstyled pdl10">
+          <li><strong>OS</strong>: {{ sysinfo.OS.v }}</li>
           <li><strong>QGIS Server</strong>: {{ sysinfo.QGIS.v }}</li>
           <li><strong>Python</strong>: {{ sysinfo.Python.v }}</li>
+      </ul>
+      <h3>{% trans 'DataBase' %}</h3>
+      <ul class="list-unstyled pdl10">
+          {% for db in sysinfo.DB.items %}
+              <li><strong>{{ db.db_name }}</strong>: {{ db.v }}</li>
+          {% endfor %}
       </ul>
       <h3>{% trans 'Libraries' %}</h3>
       <h4>{% trans 'General' %}</h4>

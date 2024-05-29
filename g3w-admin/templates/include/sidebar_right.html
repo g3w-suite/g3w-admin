@@ -6,6 +6,7 @@
 <div class="content">
   <!-- Home tab content -->
   <div class="tab-pane" id="control-sidebar-home-tab">
+    {% if user.is_staff %}
     <h3 class="control-sidebar-heading">{% trans 'Information' %}</h3>
     <ul class="control-sidebar-menu">
       <li>
@@ -18,6 +19,7 @@
         </a>
       </li>
     </ul>
+    {% endif %}
     <h3 class="control-sidebar-heading">{% trans 'Configurations' %}</h3>
     <ul class="control-sidebar-menu">
     {% if user.is_staff %}
