@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-05-02 05:55+0000\n"
+"POT-Creation-Date: 2024-05-30 07:41+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,18 +26,14 @@ msgstr "Attiva"
 msgid "Check on uncheck to attive/deactive time series layer capabilities:"
 msgstr "Spunt o despunta per attivare/disattivare il time series"
 
-#: qtimeseries/templates/qtimeseries/layer_action.html:5
-msgid "Time series"
-msgstr "Serie temporale"
+#~ msgid "Time series"
+#~ msgstr "Serie temporale"
 
-#: qtimeseries/templates/qtimeseries/layer_action.html:7
-msgid "Activation raster time series"
-msgstr "Attivazione ratser serie temporale"
+#~ msgid "Activation raster time series"
+#~ msgstr "Attivazione ratser serie temporale"
 
-#: qtimeseries/templates/qtimeseries/raster_layer_active_form.html:7
-msgid "Alert"
-msgstr "Attenzione"
+#~ msgid "Alert"
+#~ msgstr "Attenzione"
 
-#: qtimeseries/templates/qtimeseries/raster_layer_active_form.html:8
-msgid "Some errors on form. Check it and send again."
-msgstr "Alcuni errori. Controlle e reinvia"
+#~ msgid "Some errors on form. Check it and send again."
+#~ msgstr "Alcuni errori. Controlle e reinvia"
