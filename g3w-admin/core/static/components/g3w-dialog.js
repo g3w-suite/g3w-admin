@@ -4,6 +4,7 @@
  * @see https://developer.mozilla.org/en-US/docs/Web/API/Web_components
  * @see https://developer.mozilla.org/en-US/docs/Web/API/Popover_API
  * @see https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog
+ * @see https://docs.djangoproject.com/en/3.2/topics/i18n/translation/#internationalization-in-javascript-code
  */
 customElements.define('g3w-dialog', class extends HTMLElement {
   connectedCallback() {
