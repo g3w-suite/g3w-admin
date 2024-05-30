@@ -813,10 +813,9 @@ msgid "Logout"
 msgstr "Esci"
 
 #: templates/include/sidebar_right.html:10
-#, fuzzy
 #| msgid "Configurations"
 msgid "Information"
-msgstr "Configurazioni"
+msgstr "Informazioni"
 
 #: templates/include/sidebar_right.html:13
 msgid "System information"
