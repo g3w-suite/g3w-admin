@@ -274,10 +274,3 @@ a.layer-action {
 .project_layers_action-content > div.row > div:last-child {
     font-size: 22px;
 }
-
-/*
-For general layout
-*/
-.pdl10 {
-    padding-left: 10px;
-}
