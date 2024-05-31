@@ -29,6 +29,7 @@ from .forms import GroupForm, GeneralSuiteDataForm, MacroGroupForm, GroupFilterF
 from .models import Group, GroupProjectPanoramic, MapControl, GeneralSuiteData, MacroGroup
 from .mixins.views import G3WRequestViewMixin, G3WAjaxDeleteViewMixin, G3WAjaxSetOrderViewMixin
 from .signals import after_update_group, execute_search_on_models
+from .utils.general import get_system_info
 import requests
 import json
 
@@ -621,7 +622,17 @@ class InterfaceProxy(View):
         return djres
 
 
+class SystemInfoView(TemplateView):
+    """
+    View class to show system information
+    """
 
+    template_name = 'core/ajax/system_info.html'
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['sysinfo'] = get_system_info()
+        return ctx
 
 
 

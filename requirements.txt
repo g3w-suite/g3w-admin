@@ -39,4 +39,4 @@ django-registration==3.4
 django-recaptcha==3.0.0
 pydantic==2.6.3
 weasyprint==60.2
-
+distro==1.7.0

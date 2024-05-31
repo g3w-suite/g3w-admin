@@ -146,5 +146,12 @@ urlpatterns = [
         login_required(ProjectListView.as_view()),
         name='project-list'
     ),
-
+    #############################################################
+    # System
+    #############################################################
+    path(
+        'systeminfo/',
+        login_required(SystemInfoView.as_view()),
+        name='systeminfo'
+    ),
 ]
