@@ -694,6 +694,7 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
             'download_gpx',
             'download_csv',
             'download_gpkg',
+            'download_pdf',
             'editor_form_structure',
             'styles'
         )

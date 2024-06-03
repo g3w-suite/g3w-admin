@@ -317,7 +317,7 @@ INTERNAL_IPS = [
 # Extentions file can be uploaded by django-file-form ajax uploader
 G3WFILE_FORM_UPLOAD_FORMATS = ['qgs', 'qgz', 'png', 'jpg', 'jpeg', 'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ods']
 
-G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS = ['shp', 'xls', 'csv', 'gpkg']
+G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS = ['shp', 'xls', 'csv', 'gpkg', 'pdf']
 G3WADMIN_RASTER_LAYER_DOWNLOAD_FORMATS = ['geotiff', 'xls', 'csv', 'gpkg']
 
 # Setting to activate/deactivate user password reset by email.
