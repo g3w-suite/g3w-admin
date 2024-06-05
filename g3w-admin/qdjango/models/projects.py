@@ -701,7 +701,7 @@ class Layer(G3WACLModelMixins, models.Model):
     # General info
     name = models.CharField(
         _('Name'),
-        max_length=255,
+        max_length=1000,
     )
 
     title = models.CharField(
@@ -711,14 +711,14 @@ class Layer(G3WACLModelMixins, models.Model):
     )
     origname = models.CharField(
         _('Original Name'),
-        max_length=256,
+        max_length=1000,
         null=True,
         blank=True,
     )
 
     qgs_layer_id = models.CharField(
         _('Qgis Layer Project ID'),
-        max_length=255,
+        max_length=1000,
         blank=True,
         null=True,
     )
