@@ -1574,6 +1574,33 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         self.assertEqual(resp['vector']['count'], total_count)
 
         qgs_request = QgsFeatureRequest()
+        qgs_request.setFilterExpression('"ISO2_CODE" IN (\'IT\', \'FR\')')
+        total_count = len([f for f in qgis_layer.getFeatures(qgs_request)])
+
+        # For IN comparator
+        # .................
+        # Test http 'get' method:
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['data', 'qdjango', self.project310.instance.pk,
+                                             cities.qgs_layer_id],
+                                            {
+                                                'field': 'ISO2_CODE|in|(\'IT\', \'FR\')'
+                                            }).content)
+
+        self.assertEqual(resp['vector']['count'], total_count)
+
+        # Test http 'post' method:
+        resp = json.loads(self._testApiCall('core-vector-api',
+                                            ['data', 'qdjango', self.project310.instance.pk,
+                                             cities.qgs_layer_id],
+                                            {
+                                                'field': 'ISO2_CODE|in|(\'IT\', \'FR\')'
+                                            },
+                                            method='post').content)
+
+        self.assertEqual(resp['vector']['count'], total_count)
+
+        qgs_request = QgsFeatureRequest()
         qgs_request.setFilterExpression(
             '"ISO2_CODE" = \'IT\' OR "ISO2_CODE" = \'FR\'')
         total_count = len([f for f in qgis_layer.getFeatures(qgs_request)])
