@@ -313,6 +313,12 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
                 fields[self.layer_name]['fields'][field] = {
                     'label': data['label']}
 
+                # If fields has a comment, set it as 'help' property
+                if 'comment' in data and data['comment']:
+                    fields[self.layer_name]['fields'][field].update({
+                        "help": data["comment"]
+                    })
+
         # add widgets
         if hasattr(self.layer, 'edittypes') and self.layer.edittypes:
 
