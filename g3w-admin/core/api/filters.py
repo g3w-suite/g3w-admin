@@ -24,6 +24,7 @@ from rest_framework.exceptions import ParseError
 from urllib.parse import unquote
 from core.utils.qgisapi import get_qgis_layer, get_qgis_features
 from qdjango.models import Layer
+import re
 
 class BaseFilterBackend():
     """Base class for QGIS request filters"""
@@ -283,7 +284,8 @@ class FieldFilterBackend(BaseFilterBackend):
             # field can be multiple separated by ','
             # i.e. $field=name|eq|Rome,state|eq|Italy
 
-            fields = suggest_value.split(',')
+            pattern = r',(?=(?:[^()]*\([^()]*\))*[^()]*$)'
+            fields = re.split(pattern, suggest_value)
 
             count = 0
             nfields = len(fields)
@@ -303,6 +305,8 @@ class FieldFilterBackend(BaseFilterBackend):
                         raise ParseError(
                             'Invalid field string supplied for parameter field')
 
+                # Make lowercase field_operator
+                field_operator = field_operator.lower()
                 if not self._is_valid_field(qgis_layer, field_name):
                     raise Exception(
                         f"{field_name} doesn't belong from layer {qgis_layer.name()}!")
@@ -335,6 +339,8 @@ class FieldFilterBackend(BaseFilterBackend):
                                 ),
                             )
                         )
+
+
                         qfr.combineFilterExpression(vr_single_search_expression)
                         features = get_qgis_features(relation_qgs_layer, qfr)
 
@@ -348,7 +354,7 @@ class FieldFilterBackend(BaseFilterBackend):
                         quoted_field_value = self._quote_value(
                             f'{pre_post_operator}{unquote(field_value)}{pre_post_operator}')
                     else:
-                        quoted_field_value = field_value
+                        quoted_field_value = unquote(field_value)
 
                     single_search_expression = '{field_name} {field_operator} {field_value}'.format(
                         field_name=self._quote_identifier(field_name),
