@@ -298,6 +298,9 @@ G3W_CLIENT_SEARCH_ENDPOINT = 'api'
 # If True not show empty layer into toc and main map
 G3W_CLIENT_NOT_SHOW_EMPTY_VECTORLAYER = False
 
+# Set to show or not error ion loading layer in G3W-CLIENT
+G3W_CLIENT_SHOW_LOAD_LAYER_ERRORS = False
+
 SITE_ID = 1
 
 
