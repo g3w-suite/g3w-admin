@@ -630,6 +630,9 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
                 'project_slug': instance.slug
             })
 
+        # Add other settings:
+        ret['show_load_layer_error'] = settings.G3W_CLIENT_SHOW_LOAD_LAYER_ERRORS
+
         return ret
 
     class Meta:
