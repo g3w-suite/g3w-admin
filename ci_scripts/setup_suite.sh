@@ -44,7 +44,10 @@ if [ ! -e ${SETUP_DONE_FILE} ]; then
     ls ${PROJECTS_DIR} || mkdir ${PROJECTS_DIR}
     ls ${DATASOURCE_PATH} || mkdir ${DATASOURCE_PATH}
 
-    wait-for-it -h ${G3WSUITE_POSTGRES_HOST:-postgis} -p ${G3WSUITE_POSTGRES_PORT:-5432} -t 60
+    until pg_isready -h ${G3WSUITE_POSTGRES_HOST:-postgis} -p ${G3WSUITE_POSTGRES_PORT:-5432}; do
+      echo "wait 30s until is ready"
+      sleep 30;
+    done
 
     pushd .
     cd ${DJANGO_DIRECTORY}/core/static
