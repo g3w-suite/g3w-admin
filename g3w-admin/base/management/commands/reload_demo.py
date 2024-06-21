@@ -16,6 +16,8 @@ class Command(BaseCommand):
             subprocess.call("git config --global --add safe.directory /tmp/g3w-suite-demo-projects", shell=True)
             subprocess.call("git -C /tmp/g3w-suite-demo-projects pull https://github.com/g3w-suite/g3w-suite-demo-projects.git", shell=True)
 
+        shutil.copytree('/tmp/g3w-suite-demo-projects/project_data/', settings.DATASOURCE_PATH, dirs_exist_ok=True)
+
         # Load all qgis projects into DB
         for file in glob.glob('/tmp/g3w-suite-demo-projects/projects/*.qgs'):
             call_command('load_project', file=file, data="-1")

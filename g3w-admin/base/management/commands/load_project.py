@@ -33,7 +33,7 @@ class Command(BaseCommand):
             else:
                 subprocess.call("git config --global --add safe.directory /tmp/g3w-suite-demo-projects", shell=True)
                 subprocess.call("git -C /tmp/g3w-suite-demo-projects pull https://github.com/g3w-suite/g3w-suite-demo-projects.git", shell=True)
-            shutil.copytree('/tmp/g3w-suite-demo-projects/project_data/', '/shared-volume/project_data/', dirs_exist_ok=True)
+            shutil.copytree('/tmp/g3w-suite-demo-projects/project_data/', settings.DATASOURCE_PATH, dirs_exist_ok=True)
             options['file'] = f"/tmp/g3w-suite-demo-projects/projects/{ options['file'] }"
             options['data'] = '-1'
 
