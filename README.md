@@ -15,9 +15,10 @@ Software releases follow theese main branches as described in the compatibility 
 
 | Branch     | Python         | Django         | QGIS          | [client]     | First release | Status         |
 |------------|----------------|----------------|---------------|--------------|---------------|----------------|
-| [dev]      | 3.10           | 3.2            | 3.34          | dev          | Unreleased    | ⚠️️ Unstable     |
-| [v.3.7.x]  | 3.10           | 3.2            | 3.34          | 3.9.6        | Dec 2023      | 🪲️ Bug fixing   |
-| [v.3.6.x]  | 3.10           | 3.2            | 3.28          | 3.8.15       | May 2023      | 🪲️ Bug fixing   |
+| [dev]      | 3.10           | 3.2            | 3.34          | dev          | Unreleased    | ⚠️️ Unstable    |
+| [v.3.8.x]  | 3.10           | 3.2            | 3.34          | 3.10.0       | Jun 2024      | 🪲️ Bug fixing  |
+| [v.3.7.x]  | 3.10           | 3.2            | 3.34          | 3.9.6        | Dec 2023      | 🪲️ Bug fixing  |
+| [v.3.6.x]  | 3.10           | 3.2            | 3.28          | 3.8.15       | May 2023      | 🚨 End of Life |
 | [v.3.5.x]  | 3.10           | 2.2            | 3.22          | 3.7          | Nov 2022      | 🚨 End of Life |
 | [v.3.4.x]  | 3.8            | 2.2            | 3.22          | 3.4          | Mar 2022      | 🚨 End of Life |
 | [v.3.3.x]  | 3.6            | 2.2            | 3.16          | 3.3          | Sep 2021      | 🚨 End of Life | 
@@ -28,6 +29,7 @@ Software releases follow theese main branches as described in the compatibility 
 | [py2]      | 2.7            | 1.11           | [🔗]          |              |               | 🚨 End of Life |
 
 [dev]: https://github.com/g3w-suite/g3w-admin/tree/dev
+[v.3.8.x]: https://github.com/g3w-suite/g3w-admin/tree/v.3.8.x
 [v.3.7.x]: https://github.com/g3w-suite/g3w-admin/tree/v.3.7.x
 [v.3.6.x]: https://github.com/g3w-suite/g3w-admin/tree/v.3.6.x
 [v.3.5.x]: https://github.com/g3w-suite/g3w-admin/tree/v.3.5.x
@@ -220,7 +222,7 @@ Depending on the component you want to translate you can start by consulting one
 
 **Compatibile with:**
 [![Django version](https://img.shields.io/badge/Django-3.2-1EB300.svg?style=flat)](https://www.djangoproject.com/download/)
-[![QGIS version](https://img.shields.io/badge/QGIS%20LTR-3.28-1EB300.svg?style=flat)](https://www.qgis.org/en/site/forusers/download.html)
+[![QGIS version](https://img.shields.io/badge/QGIS%20LTR-3.34-1EB300.svg?style=flat)](https://www.qgis.org/en/site/forusers/download.html)
 
 ---
 
