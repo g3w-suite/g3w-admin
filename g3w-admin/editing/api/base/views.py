@@ -656,7 +656,9 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
         # Clear file uploaded and reset session
         clear_session_for_uploaded_files(request)
 
-        remove_project_from_cache(project.qgis_file.path)
+        # Invalidate /api/config cache e invalidate QGIS project cache
+        project.invalidate_cache()
+        qgis_project.read(project.qgis_file.path)
 
 
     def response_unlock_mode(self, request):
