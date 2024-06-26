@@ -27,7 +27,7 @@ from editing.models import (EDITING_POST_DATA_ADDED, EDITING_POST_DATA_DELETED,
                             EDITING_POST_DATA_UPDATED)
 from editing.utils import LayerLock
 from editing.utils.data import clear_session_for_uploaded_files
-from qdjango.apps import get_qgs_project
+from qdjango.apps import get_qgs_project, remove_project_from_cache
 from qdjango.models import Layer
 from qdjango.utils.data import QGIS_LAYER_TYPE_NO_GEOM
 from qdjango.utils.validators import feature_validator
@@ -526,8 +526,8 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
         qgis_layer = self.metadata_layer.qgis_layer
 
         # Get the project
-        qgis_project = get_qgs_project(Layer.objects.get(
-            pk=self.metadata_layer.layer_id).project.qgis_file.path)
+        project = Layer.objects.get(pk=self.metadata_layer.layer_id).project
+        qgis_project = get_qgs_project(project.qgis_file.path)
 
         # Check if we have transaction groups activated
         # Performs all operations in the editing buffer if we have transactions
@@ -653,8 +653,10 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
         except:
             pass
 
-        # clear file uploaded and reset session
+        # Clear file uploaded and reset session
         clear_session_for_uploaded_files(request)
+
+        remove_project_from_cache(project.qgis_file.path)
 
 
     def response_unlock_mode(self, request):
