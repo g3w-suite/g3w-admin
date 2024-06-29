@@ -22,7 +22,7 @@ RUN apt-get update && apt install -y \
     dirmngr \
     xvfb
 
-# PyQGIS 3.28
+# PyQGIS 3.34
 RUN wget -qO - https://qgis.org/downloads/qgis-2022.gpg.key | \
     gpg --no-default-keyring --keyring gnupg-ring:/etc/apt/trusted.gpg.d/qgis-archive.gpg --import && \
     chmod a+r /etc/apt/trusted.gpg.d/qgis-archive.gpg && \
