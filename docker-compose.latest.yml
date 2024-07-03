@@ -1,6 +1,4 @@
 # Use QGIS latest release
-
-version: "3"
 services:
   postgis:
     image: g3wsuite/postgis:11.0-2.5
