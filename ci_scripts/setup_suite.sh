@@ -73,7 +73,7 @@ if [ ! -e ${SETUP_DONE_FILE} ]; then
     python3 manage.py sitetree_resync_apps
     python3 manage.py createsuperuser --noinput --username ${G3WSUITE_ADMIN_USERNAME:-admin} --email admin@email.com || true
     # Set fake password for all users
-    python3 manage.py set_passwords --password ${G3WSUITE_ADMIN_PASSWORD}
+    python3 manage.py set_passwords --password ${G3WSUITE_ADMIN_PASSWORD:-admin}
 
     # For django-file-form: create <media_directory>/temp_uploads if not exists
     ls ${MEDIA_ROOT}/temp_uploads || mkdir ${MEDIA_ROOT}/temp_uploads
