@@ -395,16 +395,12 @@ class QgisProjectLayer(XmlData):
 
             for order, join in enumerate(vectorjoins):
 
-                # Prefix management
-                # If sert custom prefix and the value is '', continue for cycle to avoid relation save
-                if layer_tree_vectorjoins[order].get('hasCustomPrefix') == '1' and join.prefix() == '':
-                    continue
-                else:
-                    if layer_tree_vectorjoins[order].get("hasCustomPrefix") == "1":
-                        prefix = join.prefix()
-                    else:
-                        prefix = f"{join.joinLayer().name()}_"
 
+                # Prefix management
+                if layer_tree_vectorjoins[order].get("hasCustomPrefix") == "1":
+                    prefix = join.prefix()
+                else:
+                    prefix = f"{join.joinLayer().name()}_"
 
                 ret.append(
                     {
@@ -1023,7 +1019,7 @@ class QgisProject(XmlData):
 
         self.closeProject(**kwargs)
 
-        # register defaul validator
+        # register default validator
         for validator in self._defaultValidators:
             self.registerValidator(validator)
 
