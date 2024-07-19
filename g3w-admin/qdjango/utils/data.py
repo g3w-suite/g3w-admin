@@ -391,8 +391,6 @@ class QgisProjectLayer(XmlData):
         try:
             vectorjoins = self.qgs_layer.vectorJoins()
 
-
-
             for order, join in enumerate(vectorjoins):
 
 
