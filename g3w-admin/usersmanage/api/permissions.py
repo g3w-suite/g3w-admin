@@ -21,5 +21,5 @@ class IsAdminOrEditor1User(BasePermission):
     """
 
     def has_permission(self, request, view):
-        return (bool(request.user and request.user.is_staff) or
+        return (bool(request.user and request.user.is_superuser) or
                 userHasGroups(request.user, [G3W_EDITOR1]))
