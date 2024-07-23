@@ -34,6 +34,8 @@ QGS_FILE = 'g3wsuite_project_test_qgis310.qgs'
 QGIS_FILE_MDAL = 'mdal_layer_qgis_322.qgs'
 QGIS_FILE_EXPRESSION_DEFAULT = 'test_default_field_expression_322.qgs'
 
+from qgis.core import Qgis
+
 
 class QgisProjectTest(TestCase):
 
@@ -169,7 +171,8 @@ class QgisProjectTest(TestCase):
                 self.assertTrue(layer.isVisible)
                 self.assertEqual(layer.srid, 4030)
                 self.assertEqual(layer.editOptions, 1)
-                self.assertEqual(layer.extent, 'POLYGON((-31.26574700000000462 32.3974759999999975, 69.07032000000000949 32.3974759999999975, 69.07032000000000949 81.85736800000000812, -31.26574700000000462 81.85736800000000812, -31.26574700000000462 32.3974759999999975))')
+                if Qgis.QGIS_VERSION_INT < 33800:
+                    self.assertEqual(layer.extent, 'POLYGON((-31.26574700000000462 32.3974759999999975, 69.07032000000000949 32.3974759999999975, 69.07032000000000949 81.85736800000000812, -31.26574700000000462 81.85736800000000812, -31.26574700000000462 32.3974759999999975))')
 
                 # important check datasource, main for shp and raster data
                 # --------------------------------------------------------
@@ -260,7 +263,8 @@ class QgisProjectTest(TestCase):
             if layer.layerId == 'cities10000eu20171228095720113':
 
                 # check extent
-                self.assertEqual(layer.extent, 'POLYGON((-9.71666669999999932 35.00999999999999801, 57.35194440000000071 35.00999999999999801, 57.35194440000000071 69.96666670000000465, -9.71666669999999932 69.96666670000000465, -9.71666669999999932 35.00999999999999801))')
+                if Qgis.QGIS_VERSION_INT < 33800:
+                    self.assertEqual(layer.extent, 'POLYGON((-9.71666669999999932 35.00999999999999801, 57.35194440000000071 35.00999999999999801, 57.35194440000000071 69.96666670000000465, -9.71666669999999932 69.96666670000000465, -9.71666669999999932 35.00999999999999801))')
 
                 # check editorlayout
                 # --------------------------------------------------------
