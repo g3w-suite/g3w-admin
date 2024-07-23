@@ -364,7 +364,7 @@ G3W_CLIENT_COOKIE_SESSION_TOKEN = 'g3wclientsessiontoken'
 BLEACH_ALLOWED_TAGS = ['p', 'b', 'i', 'u', 'em', 'strong', 'a', 'br', 'table', 'tr', 'td', 'th', 'b', 'ul', 'li', 'ol',
                        'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'pre', 'blockquote', 'tbody', 'theader', 'tfooter', 'span']
 BLEACH_STRIP_TAGS = True
-BLEACH_ALLOWED_ATTRIBUTES = ['href', 'title', 'style', 'src']
+BLEACH_ALLOWED_ATTRIBUTES = ['href', 'title', 'style', 'src', 'target']
 BLEACH_ALLOWED_STYLES = [
     'background-color', 'color', 'font-size'
 ]
