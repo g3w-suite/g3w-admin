@@ -31,7 +31,8 @@ def explode_expression(expression):
 
     # For current_values function in filter expression get parameter field fo it
     if "current_value" in filter_expression['referenced_functions']:
-        groups = re.findall(r'current_value\([^\S]?[\'"](.*?)["\'][^\S]?\)|(\w+=\w+)', filter_expression['expression'])
+        groups = re.findall(r'current_value[^\S]+?\([^\S]?[\'"|\\\'](.*?)["\'|\\\'][^\S]?\)|(\w+=\w+)',
+                            filter_expression['expression'])
         filter_expression['referencing_fields'] = [g[0] for g in groups]
 
     return filter_expression
