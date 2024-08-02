@@ -1,12 +1,15 @@
 services:
   postgis:
-    image: g3wsuite/postgis:11.0-2.5
+    image: kartoza/postgis:16-3.4
     ports:
-    - "55432:5432"
+      - "55432:5432"
     environment:
-      POSTGRES_USER: docker
-      POSTGRES_PASS: docker
-      POSTGRES_DBNAME: g3w-suite
+      - POSTGRES_USER: docker
+      - POSTGRES_PASS: docker
+      - POSTGRES_DBNAME: g3w-suite
+      - ALLOW_IP_RANGE=0.0.0.0/0
+      - RUN_AS_ROOT=true
+      - FORCE_SSL=False
     volumes:
       - shared-volume:/shared-volume
 
