@@ -22,7 +22,7 @@ django-filter
 django-bleach
 pathlib2
 lxml
-psycopg2-binary
+psycopg[binary]
 pillow
 owslib
 defusedxml
