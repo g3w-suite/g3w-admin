@@ -58,7 +58,7 @@ TILESTACHE_CACHE_TOKEN = '1234567'
 # ===============================
 FILEMANAGER_ROOT_PATH = DATASOURCE_PATH
 
-ALLOWED_HOSTS = "*"
+ALLOWED_HOSTS = ["*"]
 
 LOGGING = {
     'version': 1,
