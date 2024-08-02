@@ -1,7 +1,7 @@
 Django==3.2.25
 django-formtools==2.2
 django-crispy-forms==2.3
-crispy-boostrap3
+crispy-bootstrap3==2024.1
 django-extensions==3.1.5
 #---------------------------------------------------------------------------
 # django-file-form: to replace with PyPi version where this patch is present:
