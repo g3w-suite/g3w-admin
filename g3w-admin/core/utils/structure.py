@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.apps import apps
 from django.urls import reverse
-from django.utils.translation import ugettext, gettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from qdjango.utils.qgis import explode_expression
 from collections import OrderedDict
 
