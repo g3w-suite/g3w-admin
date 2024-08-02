@@ -696,6 +696,60 @@ class QdjangoTestUtilsQgis(QdjangoTestBase):
         self.assertTrue('referencing_fields' in ee)
         self.assertEqual(ee['referencing_fields'].sort(), expected['referencing_fields'].sort())
 
+        # Test current_value with spaces before '(' after 'current_value'
+        expr = "sqrt(  $area )  *2 + \"gid\" + current_value ( \'doublespace\'  )"
+
+        expected = {
+            'expression': expr,
+            'referenced_columns': ['gid', 'doublespace'],
+            'referenced_functions': ['sqrt', '$area', 'current_value'],
+            'referencing_fields': ['doublespace']
+        }
+
+        ee = explode_expression(expr)
+
+        self.assertEqual(ee['expression'], expected['expression'])
+        self.assertEqual(ee['referenced_columns'].sort(), expected['referenced_columns'].sort())
+        self.assertEqual(ee['referenced_functions'].sort(), expected['referenced_functions'].sort())
+        self.assertTrue('referencing_fields' in ee)
+        self.assertEqual(ee['referencing_fields'].sort(), expected['referencing_fields'].sort())
+
+        # Test current_value with spaces before '(' after 'current_value'
+        expr = "sqrt(  $area )  *2 + \"gid\" + current_value  ( \'doublespace\'  )"
+
+        expected = {
+            'expression': expr,
+            'referenced_columns': ['gid', 'doublespace'],
+            'referenced_functions': ['sqrt', '$area', 'current_value'],
+            'referencing_fields': ['doublespace']
+        }
+
+        ee = explode_expression(expr)
+
+        self.assertEqual(ee['expression'], expected['expression'])
+        self.assertEqual(ee['referenced_columns'].sort(), expected['referenced_columns'].sort())
+        self.assertEqual(ee['referenced_functions'].sort(), expected['referenced_functions'].sort())
+        self.assertTrue('referencing_fields' in ee)
+        self.assertEqual(ee['referencing_fields'].sort(), expected['referencing_fields'].sort())
+
+        # Test current_value
+        expr = "sqrt(  $area )  *2 + \"gid\" + current_value  ( 'doublespace' )"
+
+        expected = {
+            'expression': expr,
+            'referenced_columns': ['gid', 'doublespace'],
+            'referenced_functions': ['sqrt', '$area', 'current_value'],
+            'referencing_fields': ['doublespace']
+        }
+
+        ee = explode_expression(expr)
+
+        self.assertEqual(ee['expression'], expected['expression'])
+        self.assertEqual(ee['referenced_columns'].sort(), expected['referenced_columns'].sort())
+        self.assertEqual(ee['referenced_functions'].sort(), expected['referenced_functions'].sort())
+        self.assertTrue('referencing_fields' in ee)
+        self.assertEqual(ee['referencing_fields'].sort(), expected['referencing_fields'].sort())
+
     def test_expression_default_api_layer_config(self):
         """
         Test Layer API REST config with expression default value
