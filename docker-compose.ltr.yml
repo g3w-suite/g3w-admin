@@ -6,7 +6,7 @@ services:
     environment:
       POSTGRES_USER: docker
       POSTGRES_PASS: docker
-      POSTGRES_DBNAME: g3w-suite
+      POSTGRES_DBNAME: g3w_suite
       ALLOW_IP_RANGE: 0.0.0.0/0
       RUN_AS_ROOT: true
       FORCE_SSL: False

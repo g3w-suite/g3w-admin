@@ -13,7 +13,7 @@ G3WADMIN_LOCAL_MORE_APPS = [
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': 'g3w-suite',
+        'NAME': 'g3w_suite',
         'USER': 'docker',
         'PASSWORD': 'docker',
         'HOST': 'postgis',
