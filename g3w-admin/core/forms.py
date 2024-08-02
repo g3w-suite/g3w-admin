@@ -3,7 +3,7 @@ from django.forms import Form, ModelForm, ValidationError
 from django.forms.fields import CharField, HiddenInput
 from django.forms.models import ModelMultipleChoiceField, ModelChoiceField
 from django.db.models import Q
-from django.utils.translation import ugettext, gettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from core.models import Group, GeneralSuiteData, MacroGroup
 from django_file_form.forms import FileFormMixin
 from django.contrib.auth.models import User, Group as AuthGroup

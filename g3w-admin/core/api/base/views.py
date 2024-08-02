@@ -4,7 +4,6 @@ from copy import copy
 from django.core.exceptions import PermissionDenied
 from django.http import Http404, HttpRequest
 from django.urls import resolve, reverse
-from django.utils.translation import ugettext
 from django.utils.translation import gettext_lazy as _
 from qgis.core import (
     QgsJsonExporter,

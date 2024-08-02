@@ -57,6 +57,7 @@ THIRD_PARTY_APPS = [
     'model_utils',
     'formtools',
     'crispy_forms',
+    'crispy_bootstrap3',
     'guardian',
     'sitetree',
     'django_extensions',
@@ -166,6 +167,7 @@ AUTHENTICATION_BACKENDS = (
 
 GUARDIAN_RAISE_403 = True
 
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap3"
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 SITETREE_MODEL_TREE = 'core.G3W2Tree'

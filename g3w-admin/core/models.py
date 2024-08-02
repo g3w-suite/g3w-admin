@@ -121,6 +121,9 @@ class MacroGroup(TimeStampedModel, OrderedModel):
         """
         self._permissions_to_editors(users_id, 'remove')
 
+    class Meta():
+        ordering = ("order",)
+
 
 class Group(TimeStampedModel, OrderedModel):
     """A group of projects."""
@@ -166,10 +169,12 @@ class Group(TimeStampedModel, OrderedModel):
                                                       'as client logo, if MacroGroup option is active this options takes '
                                                       'precendence'))
 
-    class Meta:
+    class Meta():
         permissions = (
             ('add_project_to_group', 'Can add project to the group'),
         )
+        ordering = ("order",)
+
 
     def __str__(self):
         return self.name

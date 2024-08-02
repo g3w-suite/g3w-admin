@@ -5,11 +5,6 @@
           it under the terms of the Mozilla Public License 2.0.
 
 """
-
-import os
-import re
-
-from django.utils.translation import ugettext
 from django.utils.translation import gettext_lazy as _
 from django.db.models import Q
 from osgeo import gdal
@@ -32,7 +27,10 @@ from qgis.core import (
 )
 
 from qgis.PyQt.QtCore import QVariant, Qt
-import string, random
+import string
+import random
+import os
+import re
 
 
 def feature_validator(feature, layer):
@@ -378,7 +376,7 @@ class DatasourceExists(QgisProjectLayerValidator):
                 # try to open postgis raster with gdal
                 raster = gdal.Open(self.qgisProjectLayer.datasource)
                 if raster is None:
-                    err = ugettext('Cannot connect to Postgis raster layer {} '.format(
+                    err = _('Cannot connect to Postgis raster layer {} '.format(
                         self.qgisProjectLayer.name))
                     raise QgisProjectLayerException(err)
 
@@ -388,17 +386,17 @@ class DatasourceExists(QgisProjectLayerValidator):
                 pre = subdt[0] + ':"'
                 datasource = subdt[1][1:-1]
                 if not os.path.exists(datasource):
-                    err = ugettext('Missing data file for MESH layer {} '.format(
+                    err = _('Missing data file for MESH layer {} '.format(
                         self.qgisProjectLayer.name))
-                    err += ugettext('which should be located at {}'.format(
+                    err += _('which should be located at {}'.format(
                         self.qgisProjectLayer.datasource))
                     raise QgisProjectLayerException(err)
 
             else:
                 if not os.path.exists(self.qgisProjectLayer.datasource.split('|')[0]):
-                    err = ugettext('Missing data file for layer {} '.format(
+                    err = _('Missing data file for layer {} '.format(
                         self.qgisProjectLayer.name))
-                    err += ugettext('which should be located at {}'.format(
+                    err += _('which should be located at {}'.format(
                         self.qgisProjectLayer.datasource))
                     raise QgisProjectLayerException(err)
 
@@ -418,8 +416,8 @@ class ColumnName(QgisProjectLayerValidator):
                 if re.search(rex, column['name']):
                     columns_err.append(column['name'])
             if columns_err:
-                err = ugettext('The follow fields name of layer {} contains '
+                err = _('The follow fields name of layer {} contains '
                                'white spaces and/or special characters: {}')\
                     .format(self.qgisProjectLayer.name, ', '.join(columns_err))
-                err += ugettext('Please use \'Alias\' fields in QGIS project')
+                err += _('Please use \'Alias\' fields in QGIS project')
                 raise QgisProjectLayerException(err)

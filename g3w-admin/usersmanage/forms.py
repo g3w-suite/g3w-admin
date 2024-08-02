@@ -12,7 +12,7 @@ from django.forms import (
     Textarea
 )
 from django.utils.datastructures import MultiValueDict
-from django.utils.translation import ugettext, gettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.forms import (
     UserCreationForm,
     ReadOnlyPasswordHashField,
@@ -26,7 +26,6 @@ from django.contrib.auth import (
 from django.contrib.auth.models import User, Group as AuthGroup, Permission
 from django_file_form.forms import FileFormMixin, UploadedFileField
 from django.db.models import Q
-from django.utils.functional import lazy
 from django.contrib.contenttypes.models import ContentType
 from guardian.compat import get_user_model
 from guardian.shortcuts import get_objects_for_user

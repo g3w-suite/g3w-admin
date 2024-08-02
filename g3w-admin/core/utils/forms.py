@@ -1,6 +1,4 @@
-from PIL import Image
-from django.forms import ValidationError
-from django.utils.translation import ugettext, gettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from crispy_forms.layout import Div, HTML, Field
 from usersmanage.utils import userHasGroups
 from usersmanage.configs import G3W_EDITOR1
