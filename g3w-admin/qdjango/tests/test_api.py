@@ -692,6 +692,10 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         super().setUpClass()
         cls.client = APIClient()
 
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+
         qgis_project_file_widget = File(open('{}{}{}'.format(
             CURRENT_PATH, TEST_BASE_PATH, QGS310_WIDGET_FILE), 'r'))
         cls.project_widget310 = QgisProject(qgis_project_file_widget)
@@ -2150,6 +2154,7 @@ class QgisTemporalVectorProject(QdjangoTestBase):
         cls.project_temporal_vector_not_active.group = cls.project_group
         cls.project_temporal_vector_not_active.save()
         qgis_project_file.close()
+
 
     def test_qgs_project_temporal_vector(self):
         """ Test properties into qgsproject object and models """

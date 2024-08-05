@@ -206,6 +206,11 @@ class QgisProjectLayer(XmlData):
         for validator in self._defaultValidators:
             self.registerValidator(validator)
 
+        # For deepcopy fix:
+        # Teardown
+        # ------------------------------------------------------
+        self.qgs_layer = None
+
     def __str__(self):
         """
         StrId Object for error
@@ -1670,6 +1675,12 @@ class QgisProject(XmlData):
                 self.instance.save()
 
             post_save_qdjango_project_file.send(self)
+
+            # For deepcopy fix:
+            # Teardown
+            # ------------------------------------------------------
+            self.qgisProjectFile = None
+            self.intialExtent = None
 
     def updateQgisFileDatasource(self):
         """Update qgis file datasource for SpatiaLite, OGR and embedded layers.
