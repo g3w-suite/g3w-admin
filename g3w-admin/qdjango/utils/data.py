@@ -536,16 +536,15 @@ class QgisProjectLayer(XmlData):
         columns = []
         qfields = self.qgs_layer.fields()
         qattrcolumns = self.qgs_layer.attributeTableConfig().columns()
-        for ac in qattrcolumns[0:-1]:
-            try:
-                f = qfields.field(qfields.indexFromName(ac.name))
+        for ac in qattrcolumns:
+            fidx = qfields.indexFromName(ac.name)
+            if fidx != -1:
+                f = qfields.field(fidx)
                 columns.append({
                     'name': f.name(),
                     'type': QVariant.typeToName(f.type()).upper() if QVariant.typeToName(f.type()) else None,
                     'label': f.displayName(),
                 })
-            except KeyError as e:
-                pass
 
         return columns
 
