@@ -532,17 +532,20 @@ class QgisProjectLayer(XmlData):
         # Display order are get from attributeTableConfig QgsVectorLayer method
         # QgsAttributeTableConfig.columns return a list of QgsAttributeTableConfig.ColumnConfig
         # the list follow the fields order set into QGIS project by 'Organize' property on layer attribute table.
-        # Usually the list ha a empty string at the end so we iterate over values less last one [0:-1]
+        # Usually the list has a empty string at the end or in the middle
         columns = []
         qfields = self.qgs_layer.fields()
         qattrcolumns = self.qgs_layer.attributeTableConfig().columns()
         for ac in qattrcolumns[0:-1]:
-            f = qfields.field(qfields.indexFromName(ac.name))
-            columns.append({
-                'name': f.name(),
-                'type': QVariant.typeToName(f.type()).upper() if QVariant.typeToName(f.type()) else None,
-                'label': f.displayName(),
-            })
+            try:
+                f = qfields.field(qfields.indexFromName(ac.name))
+                columns.append({
+                    'name': f.name(),
+                    'type': QVariant.typeToName(f.type()).upper() if QVariant.typeToName(f.type()) else None,
+                    'label': f.displayName(),
+                })
+            except KeyError as e:
+                pass
 
         return columns
 
