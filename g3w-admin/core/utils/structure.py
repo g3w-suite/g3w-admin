@@ -128,7 +128,7 @@ def editingFormField(fieldName, type=FIELD_TYPE_STRING, editable=True, required=
     if required:
         ret['validate']['required'] = True
 
-    if 'default' in kwargs and kwargs['default']:
+    if 'default' in kwargs and kwargs['default'] is not None:
         ret['input']['options']['default'] = kwargs['default']
 
     if inputType in (FORM_FIELD_TYPE_LAYERPICKER, ) and 'pickerdata' in kwargs:
@@ -269,7 +269,7 @@ def mapLayerAttributesFromQgisLayer(qgis_layer, **kwargs):
 
                 # default value for editing from qgis_layer
                 if 'default' not in kwargs:
-                    default_value = qgis_layer.defaultValue(field_index) if qgis_layer.defaultValue(field_index) \
+                    default_value = qgis_layer.defaultValue(field_index) if qgis_layer.defaultValue(field_index) is not None \
                         else None
                 else:
                     default_value = kwargs['default']
