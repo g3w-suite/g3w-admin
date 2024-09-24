@@ -141,8 +141,10 @@ class OrderingFilter(BaseFilterBackend):
                 if not self._is_valid_field(qgis_layer, ordering, view):
                     continue
 
+                # Because the fields inside a QGIS expression must be declared inside
+                # the expression string with the double brackets ("field_name")
                 ordering_rules.append(QgsFeatureRequest.OrderByClause(
-                    ordering, ascending))
+                    f'"{ordering}"', ascending))
 
             if ordering_rules:
                 order_by = QgsFeatureRequest.OrderBy(ordering_rules)
