@@ -30,10 +30,12 @@
                         <th>{% trans 'Roles' %}</th>
                         <th>{% trans 'User groups' %}</th>
                         {% if user.is_superuser %}
-                        <th>{% trans ' Macro groups' %}</th>
+                        <th>{% trans 'Macro groups' %}</th>
                         {% endif %}
                         {% endif %}
-
+                        {% if user.is_superuser or user|has_group:G3W_EDITOR1 %}
+                        <th>{% trans 'Active' %}</th>
+                        {% endif %}
                         {% if user.is_staff and user.is_superuser %}
                         <th>{% trans 'Superuser' %}</th>
                         <th>{% trans 'Staff' %}</th>
@@ -97,6 +99,13 @@
                             {% endfor %}
                         </td>
                         {% endif %}
+                        {% endif %}
+                        {% if user.is_superuser or user|has_group:G3W_EDITOR1 %}
+                        <td>
+                        {% if object.is_active %}
+                            <span class="fa fa-check-circle" style="color: green"></span>
+                        {% endif %}
+                        </td>
                         {% endif %}
 
                         {% if user.is_staff and user.is_superuser %}
