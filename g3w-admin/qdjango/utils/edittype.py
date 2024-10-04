@@ -151,6 +151,7 @@ class QgisEditTypeValueRelation(QgisEditTypeValueMap):
             'key': self.Value,
             'value': self.Key,
             'usecompleter': True if self.UseCompleter == '1' or self.UseCompleter == 'true' or self.UseCompleter is True else False,
+            'orderbyvalue': True if self.OrderByValue == '1' or self.OrderByValue == 'true' or self.OrderByValue is True else False,
             'layer_id': self.Layer,
             'loading': {
                 'state': None
