@@ -26,6 +26,17 @@ class QgisEditType(object):
     def input_form(self):
         return dict()
 
+    def make_bool_from_value(self, value)->bool:
+        """
+        From QGIS for widget parameters must be boolean for G3W-CLIENT.
+        Some time the values of widget parameter may be a boolean or a string/numeric
+        :param value: the value of a widget parameter
+        :return: bool
+        :rtype: bool
+        """
+
+        return True if value == '1' or value == 'true' or value is True else False,
+
 
 class QgisEditTypeCheckBox(QgisEditType):
     """
@@ -150,8 +161,8 @@ class QgisEditTypeValueRelation(QgisEditTypeValueMap):
         input_form['input']['options'].update({
             'key': self.Value,
             'value': self.Key,
-            'usecompleter': True if self.UseCompleter == '1' or self.UseCompleter == 'true' or self.UseCompleter is True else False,
-            'orderbyvalue': True if self.OrderByValue == '1' or self.OrderByValue == 'true' or self.OrderByValue is True else False,
+            'usecompleter': self.make_bool_from_value(self.UseCompleter),
+            'orderbyvalue': self.make_bool_from_value(self.OrderByValue),
             'layer_id': self.Layer,
             'loading': {
                 'state': None
