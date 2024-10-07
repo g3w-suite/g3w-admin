@@ -163,6 +163,7 @@ class QgisEditTypeValueRelation(QgisEditTypeValueMap):
             'value': self.Key,
             'usecompleter': self.make_bool_from_value(self.UseCompleter),
             'orderbyvalue': self.make_bool_from_value(self.OrderByValue),
+            'allowmulti': self.make_bool_from_value(self.AllowMulti),
             'layer_id': self.Layer,
             'loading': {
                 'state': None
