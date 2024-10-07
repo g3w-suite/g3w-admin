@@ -35,7 +35,7 @@ class QgisEditType(object):
         :rtype: bool
         """
 
-        return True if value == '1' or value == 'true' or value is True else False,
+        return True if value == '1' or value == 'true' or value is True else False
 
 
 class QgisEditTypeCheckBox(QgisEditType):
