@@ -14,20 +14,12 @@
   {% if SETTINGS.G3WSUITE_CUSTOM_STATIC_URL %}{% for css in SETTINGS.G3WSUITE_CUSTOM_CSS %}
   <link rel="stylesheet" type="text/css" href="{{ css }}" />
   {% endfor %}{% endif %}
-  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-  <!--[if lt IE 9]>
-  <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-  <![endif]-->
 </head>
-<body class="hold-transition skin-{{ skin_class|default:'blue' }} fixed {% if sidebar_collapse %} sidebar-collapse {% endif %}">
+<body class="skin-{{ skin_class|default:'blue' }} {% if sidebar_collapse %} sidebar-collapse {% endif %}">
   {% if SETTINGS.SENTRY_JS %}
     {{ SETTINGS.SENTRY_JS | safe }}
   {% endif %}
-  <div id="app">
-    <app></app>
-  </div>
+  <app id="app"></app>
   <script src="{% with client_default|add:"/js/vendor.min.js" as vendor_js %}{% static vendor_js %}{% endwith %}"></script>
   <script>{{ group_config | safe }}</script>
   <script src="{% with client_default|add:"/js/app.min.js" as app_js %}{% static app_js %}{% endwith %}"></script>
