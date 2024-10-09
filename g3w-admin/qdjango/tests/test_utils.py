@@ -33,6 +33,7 @@ DATASOURCE_PATH = '{}{}'.format(CURRENT_PATH, TEST_BASE_PATH)
 QGS_FILE = 'g3wsuite_project_test_qgis310.qgs'
 QGIS_FILE_MDAL = 'mdal_layer_qgis_322.qgs'
 QGIS_FILE_EXPRESSION_DEFAULT = 'test_default_field_expression_322.qgs'
+QGS_FILE_ORGANIZE_COLUMNS = 'g3wsuite_project_test_qgis334.qgs'
 
 from qgis.core import Qgis
 
@@ -51,7 +52,11 @@ class QgisProjectTest(TestCase):
         qgis_project_file.close()
 
         qgis_project_file = File(open('{}{}{}'.format(
-            CURRENT_PATH, TEST_BASE_PATH, QGIS_FILE_MDAL), 'r', encoding='utf-8'))
+            CURRENT_PATH, TEST_BASE_PATH, QGS_FILE_ORGANIZE_COLUMNS), 'r', encoding='utf-8'))
+
+        qgis_project_file.name = qgis_project_file.name.split('/')[-1]
+        self.project_organize_column = QgisProject(qgis_project_file)
+        qgis_project_file.close()
 
 
     def test_qgis_project(self):
@@ -320,6 +325,14 @@ class QgisProjectTest(TestCase):
                 edit_types_to_check = '{"GEONAMEID": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": false, "UseHtml": false}, "NAME": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": false, "UseHtml": false}, "ASCIINAME": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": false, "UseHtml": false}, "ISO2_CODE": {"widgetv2type": "UniqueValues", "fieldEditable": "1", "values": [], "Editable": false}, "POPULATION": {"widgetv2type": "Range", "fieldEditable": "1", "values": [], "AllowNull": true, "Max": 2147483647, "Min": -2147483648, "Precision": 0, "Step": 1, "Style": "SpinBox"}, "GTOPO30": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}}'
                 self.assertEqual(
                     layer.editTypes, json.loads(edit_types_to_check))
+
+
+        # Check orzanize columns new order
+        # Get cities layer
+        for layer in self.project_organize_column.layers:
+            if layer.layerId == 'cities10000eu20171228095720113':
+                expected_colums = [{'name': 'GEONAMEID', 'type': 'QLONGLONG', 'label': 'Geo named'}, {'name': 'GTOPO30', 'type': 'QLONGLONG', 'label': 'GTOPO30'}, {'name': 'POPULATION', 'type': 'QLONGLONG', 'label': 'POPULATION'}, {'name': 'NAME', 'type': 'QSTRING', 'label': 'Name'}, {'name': 'ASCIINAME', 'type': 'QSTRING', 'label': 'Ascii name'}, {'name': 'ISO2_CODE', 'type': 'QSTRING', 'label': 'ISO Code'}]
+                self.assertEqual(layer.columns, expected_colums)
 
     def test_get_schema_table(self):
 

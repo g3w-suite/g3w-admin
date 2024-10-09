@@ -529,13 +529,22 @@ class QgisProjectLayer(XmlData):
         if self.qgs_layer.type() != QgsMapLayer.VectorLayer:
             return None
 
+        # Display order are get from attributeTableConfig QgsVectorLayer method
+        # QgsAttributeTableConfig.columns return a list of QgsAttributeTableConfig.ColumnConfig
+        # the list follow the fields order set into QGIS project by 'Organize' property on layer attribute table.
+        # Usually the list has a empty string at the end or in the middle
         columns = []
-        for f in self.qgs_layer.fields():
-            columns.append({
-                'name': f.name(),
-                'type': QVariant.typeToName(f.type()).upper() if QVariant.typeToName(f.type()) else None,
-                'label': f.displayName(),
-            })
+        qfields = self.qgs_layer.fields()
+        qattrcolumns = self.qgs_layer.attributeTableConfig().columns()
+        for ac in qattrcolumns:
+            fidx = qfields.indexFromName(ac.name)
+            if fidx != -1:
+                f = qfields.field(fidx)
+                columns.append({
+                    'name': f.name(),
+                    'type': QVariant.typeToName(f.type()).upper() if QVariant.typeToName(f.type()) else None,
+                    'label': f.displayName(),
+                })
 
         return columns
 
