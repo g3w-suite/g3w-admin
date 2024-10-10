@@ -388,11 +388,28 @@ class QgisProjectLayer(XmlData):
 
         # get root of layer-tree-group
         ret = []
+
         try:
             vectorjoins = self.qgs_layer.vectorJoins()
+        except:
+            vectorjoins = []
 
-            for order, join in enumerate(vectorjoins):
+        for order, join in enumerate(vectorjoins):
 
+            try:
+                '''
+                Sometimes the the vectorjoins layer section ina QGIS project can contains old 'ghost' joins, i.e.:
+                <vectorjoins>
+                    <join dynamicForm="0" targetFieldName="id" memoryCache="1" joinFieldName="N. mappa" 
+                    joinLayerId="Sommarioni_Clauzetto_5c2f9be3_2266_4760_8840_165618815314" upsertOnEdit="0" 
+                    cascadedDelete="0" editable="0"/>
+                    <join dynamicForm="0" targetFieldName="id" memoryCache="1" joinFieldName="N_di_Mappa" 
+                    joinLayerId="Clauzetto_Sommarioni_dc968329_29b7_4f47_a79f_853c290a14cf" upsertOnEdit="0" 
+                    customPrefix="" cascadedDelete="0" hasCustomPrefix="1" editable="0"/>
+                </vectorjoins>
+                The layer Sommarioni_Clauzetto_5c2f9be3_2266_4760_8840_165618815314 is not present inside the project, 
+                may be it is a old layer removed from the project.    
+                '''
 
                 # Prefix management
                 if layer_tree_vectorjoins[order].get("hasCustomPrefix") == "1":
@@ -418,8 +435,8 @@ class QgisProjectLayer(XmlData):
                 # For join 1to1
                 self.qgisProject.relation_1to1_layers.append(self.layerId)
 
-        except:
-            pass
+            except:
+                pass
         return ret
 
     def _getDataCapabilities(self):
