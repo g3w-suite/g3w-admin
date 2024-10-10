@@ -159,8 +159,8 @@ class QgisEditTypeValueRelation(QgisEditTypeValueMap):
 
         # add params for get value
         input_form['input']['options'].update({
-            'key': self.Value,
-            'value': self.Key,
+            'key': self.Key,
+            'value': self.Value,
             'usecompleter': self.make_bool_from_value(self.UseCompleter),
             'orderbyvalue': self.make_bool_from_value(self.OrderByValue),
             'allowmulti': self.make_bool_from_value(self.AllowMulti),
