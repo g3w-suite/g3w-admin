@@ -13,16 +13,6 @@ from django.contrib.auth.signals import user_logged_out
 from django.template import loader
 from django.core.cache import cache
 from django.db.models.signals import pre_delete, post_save
-from core.signals import (
-    load_layer_actions,
-    initconfig_plugin_start,
-    after_serialized_project_layer,
-    pre_save_maplayer,
-    post_save_maplayer,
-    pre_delete_maplayer,
-    load_js_modules,
-    before_return_vector_data_layer,
-)
 from django.db.models.signals import pre_delete
 from core.signals import (
     load_layer_actions,
