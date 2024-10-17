@@ -39,13 +39,21 @@ ga.Editing.widget = {
      */
     init_active_status: function () {
         $check = $("#editing_layer_form").find('#id_active');
-        $select = $("#editing_layer_form").find('#id_scale, select:not(#id_layers)');
+        $select = $("#editing_layer_form").find('#id_scale, select:not(#id_layers), #id_visible');
 
         var check_active_status = function (event) {
+            $ichecks = $("#editing_layer_form").find('' +
+                'input[name^="user_add_capability_"],' +
+                'input[name^="user_change_capability_"],' +
+                'input[name^="user_changeattributes_capability_"],' +
+                'input[name^="user_delete_capability_"]');
+
             if ($check.prop('checked')) {
                 $select.prop('disabled', false);
+                $ichecks.iCheck('enable');
             } else {
                 $select.prop('disabled', true);
+                $ichecks.iCheck('disable');
             }
         }
 
