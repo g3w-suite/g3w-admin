@@ -176,12 +176,14 @@ class ActiveEditingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3W
         try:
             self.activated = G3WEditingLayer.objects.get(app_name=self.app_name, layer_id=self.layer_id)
             kwargs['initial']['active'] = True
+            kwargs['initial']['visible'] = self.activated.visible
             kwargs['initial']['scale'] = self.activated.scale
             kwargs['initial']['add_user_field'] = self.activated.add_user_field
             kwargs['initial']['edit_user_field'] = self.activated.edit_user_field
         except:
             self.activated = None
             kwargs['initial']['active'] = False
+            kwargs['initial']['visible'] = True
 
         # get viewer users
         with_anonymous, editor_pk, editor2_pk, kwargs['initial']['viewer_users'] = self.get_initial_viewer_users(self.layer)
@@ -270,15 +272,20 @@ class ActiveEditingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3W
     @transaction.atomic
     def form_valid(self, form):
         scale = form.cleaned_data['scale']
+        visible = form.cleaned_data['visible']
         add_user_field = form.cleaned_data['add_user_field']
         edit_user_field = form.cleaned_data['edit_user_field']
 
         if form.cleaned_data['active']:
             if not self.activated:
-                self.activated = G3WEditingLayer.objects.create(app_name=self.app_name, layer_id=self.layer_id,
-                                                                scale=scale, add_user_field=add_user_field,
+                self.activated = G3WEditingLayer.objects.create(app_name=self.app_name,
+                                                                layer_id=self.layer_id,
+                                                                scale=scale,
+                                                                visible=visible,
+                                                                add_user_field=add_user_field,
                                                                 edit_user_field=edit_user_field)
             else:
+                self.activated.visible = visible
                 self.activated.scale = scale
                 self.activated.add_user_field = add_user_field
                 self.activated.edit_user_field = edit_user_field

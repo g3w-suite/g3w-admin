@@ -60,8 +60,10 @@ class ActiveEditingLayerForm(ActiveEditingMixin, G3WRequestFormMixin, G3WProject
 
     active = forms.BooleanField(label=_('Active'), required=False)
     scale = forms.IntegerField(label=_('Scale'), required=False, help_text=_('Scale after that editing mode is active'))
+    visible = forms.BooleanField(label=_('Visible'), required=False)
     viewer_users = forms.MultipleChoiceField(choices=[], label=_('Viewers'), required=False,
                                              help_text=_('Select user with viewer role can do editing on layer'))
+
     user_groups_viewer = forms.MultipleChoiceField(
         choices=[], required=False, help_text=_('Select VIEWER groups can do editing on layer'),
         label=_('User viewer groups')
@@ -101,7 +103,9 @@ class ActiveEditingLayerForm(ActiveEditingMixin, G3WRequestFormMixin, G3WProject
 
         layout_args = [
             HTML(_('Check on uncheck to active/deactive editing layer capabilities:')),
-            'active'
+            'active',
+            HTML(_('Check on uncheck to show layer inside the list of layers to edit:')),
+            'visible'
         ]
 
         # Check if layer ha geometry or not
