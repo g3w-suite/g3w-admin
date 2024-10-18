@@ -164,6 +164,9 @@ class ActiveEditingMultiLayerForm(ActiveEditingMixin, G3WRequestFormMixin, G3WPr
     scale = forms.IntegerField(label=_('Scale'), required=False, help_text=_('Scale after that editing mode is active'))
 
     active = forms.BooleanField(label=_('Active'), required=False)
+
+    visible = forms.BooleanField(label=_('Visible'), required=False)
+
     viewer_users = forms.MultipleChoiceField(choices=[], label=_('Viewers'), required=False,
                                              help_text=_('Select user with viewer role can do editing on layer'))
     user_groups_viewer = forms.MultipleChoiceField(
@@ -185,7 +188,9 @@ class ActiveEditingMultiLayerForm(ActiveEditingMixin, G3WRequestFormMixin, G3WPr
 
         layout_args = [
             HTML(_('Check on uncheck to attive/deactive editing layers capabilities:')),
-            'active'
+            'active',
+            HTML(_('Check on uncheck to show layer inside the list of layers to edit:')),
+            'visible'
         ]
 
         layout_args += [

@@ -369,6 +369,9 @@ class ActiveEditingMultiLayerView(ActiveEditingLayerView):
         if 'data' in kwargs:
             self.get_atomic_capabilities(kwargs['data'])
 
+        # Set visibile to True
+        kwargs['initial']['visible'] = True
+
         return kwargs
 
     def add_remove_atomic_permissions(self, layer, with_anonymous=False, editor_pk=None, editor2_pk=None):
@@ -422,6 +425,7 @@ class ActiveEditingMultiLayerView(ActiveEditingLayerView):
         }
 
         scale = form.cleaned_data['scale']
+        visible = form.cleaned_data['visible']
 
         for layer_pk in layers:
 
@@ -435,8 +439,10 @@ class ActiveEditingMultiLayerView(ActiveEditingLayerView):
                                                                          layer_id=layer_pk,
                                                                          edit_user_field=edit_user_field,
                                                                          add_user_field=add_user_field,
-                                                                         scale=scale)
+                                                                         scale=scale,
+                                                                         visible=visible)
                 else:
+                    activated[layer_pk].visible = visible
                     activated[layer_pk].scale = scale
                     activated[layer_pk].add_user_field = add_user_field
                     activated[layer_pk].edit_user_field = edit_user_field
