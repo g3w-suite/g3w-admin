@@ -47,15 +47,24 @@ class QgisEditTypeCheckBox(QgisEditType):
 
     @property
     def input_form(self):
+        displaymethod = getattr(self, 'TextDisplayMethod', 0)
+        checkedstate = getattr(self, 'CheckedState','TRUE')
+        uncheckedstate = getattr(self, 'UncheckedState', 'TRUE')
         return {
             'input': {
                 'type': self.field_type,
                 'options': {
                     'values': [
-                        {'value': getattr(self, 'CheckedState',
-                                          'TRUE'), 'checked': True},
-                        {'value': getattr(
-                            self, 'UncheckedState', 'FALSE'), 'checked': False},
+                        {
+                            'value': checkedstate,
+                            'label': checkedstate if displaymethod == 1 else 'True',
+                            'checked': True
+                         },
+                        {
+                            'value': uncheckedstate,
+                            'label': uncheckedstate if displaymethod == 1 else 'False',
+                            'checked': False
+                        },
                     ]
                 }
             }
