@@ -393,6 +393,7 @@ class APIVectorLayerStructure(object):
     _featureLocks = None
     _geometryType = None
     _fields = None
+    _editing = None
 
     def __init__(self, **kwargs):
 
@@ -402,6 +403,7 @@ class APIVectorLayerStructure(object):
         self.featureLocks = kwargs.get('featureLocks', self._featureLocks)
         self.geometryType = kwargs.get('geometryType', self._geometryType)
         self.fields = kwargs.get('fields', self._fields)
+        self.editing = kwargs.get('editing', self._fields)
 
     def setPkField(self, pkField):
         self._pkField = pkField
@@ -415,6 +417,9 @@ class APIVectorLayerStructure(object):
     def setFields(self, fields):
         self.fields = fields
 
+    def setEditing(self, editing):
+        self.editing = editing
+
     def as_dict(self):
 
         res = {
@@ -427,6 +432,11 @@ class APIVectorLayerStructure(object):
             },
             'featurelocks': self.featureLocks,
         }
+
+        if self.editing:
+            res['vector'].update({
+                'editing': self.editing
+            })
 
         return res
 
