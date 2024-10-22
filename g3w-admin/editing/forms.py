@@ -83,6 +83,20 @@ class ActiveEditingLayerForm(ActiveEditingMixin, G3WRequestFormMixin, G3WProject
                                                     #' more than 200 characters long.<br>'
                                                     'Value stored into the field it will be so structured: '
                                                     '<i>[username]</i>'))
+    add_user_group_field = forms.ChoiceField(choices=[], label=_('User Groups adding data field'), required=False,
+                                       help_text=_('Optional: select layer field to store '
+                                                   'user groups name that entered the data. '
+                                                   'Showed only string field. <br>'
+                                                   # 'more than 200 characters long.<br>'
+                                                   'Value stored into the field it will be so structured: '
+                                                   '<i>[user group name 1, user group name 2, ...]</i>'))
+    edit_user_group_field = forms.ChoiceField(choices=[], label=_('User Groups editing data field'), required=False,
+                                        help_text=_('Optional: select layer field to store '
+                                                    'user groups name that updated the data. '
+                                                    'Showed only string field. <br>'
+                                                    # ' more than 200 characters long.<br>'
+                                                    'Value stored into the field it will be so structured: '
+                                                    '<i>[user group name 1, user group name 2, ...]</i>'))
 
     def __init__(self, *args, **kwargs):
 
@@ -117,6 +131,8 @@ class ActiveEditingLayerForm(ActiveEditingMixin, G3WRequestFormMixin, G3WProject
         layout_args += [
             Field('add_user_field', css_class='select2', style="width:100%;"),
             Field('edit_user_field', css_class='select2', style="width:100%;"),
+            Field('add_user_group_field', css_class='select2', style="width:100%;"),
+            Field('edit_user_group_field', css_class='select2', style="width:100%;"),
             HTML(_('Select viewers with \'view permission\' on project that can edit layer:')),
             Field('viewer_users', css_class='select2', style="width:100%;"),
             Div(css_class='users_atomic_capabilities'),
@@ -138,7 +154,8 @@ class ActiveEditingLayerForm(ActiveEditingMixin, G3WRequestFormMixin, G3WProject
 
     def _set_add_edit_user_field_choices(self):
         """
-        Set choices for add_user_field select and edit_user_field select
+        Set choices for add_user_field select and edit_user_field select and for
+        add_user_group_field, edit_user_group_field.
         """
 
         touse = []
@@ -151,6 +168,9 @@ class ActiveEditingLayerForm(ActiveEditingMixin, G3WRequestFormMixin, G3WProject
 
         self.fields['edit_user_field'].choices = \
             self.fields['add_user_field'].choices = [(None, '--------')] + [(f, f) for f in touse]
+
+        self.fields['edit_user_group_field'].choices = \
+            self.fields['add_user_group_field'].choices = [(None, '--------')] + [(f, f) for f in touse]
 
 
 class ActiveEditingMultiLayerForm(ActiveEditingMixin, G3WRequestFormMixin, G3WProjectFormMixin, forms.Form):
