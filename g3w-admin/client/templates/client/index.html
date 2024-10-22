@@ -15,7 +15,7 @@
   <link rel="stylesheet" type="text/css" href="{{ css }}" />
   {% endfor %}{% endif %}
 </head>
-<body class="skin-{{ skin_class|default:'blue' }} {% if sidebar_collapse %} sidebar-collapse {% endif %}">
+<body class="{% if sidebar_collapse %} sidebar-collapse {% endif %}">
   {% if SETTINGS.SENTRY_JS %}
     {{ SETTINGS.SENTRY_JS | safe }}
   {% endif %}
