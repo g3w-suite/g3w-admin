@@ -194,6 +194,7 @@ class ActiveEditingMultiLayerForm(ActiveEditingMixin, G3WRequestFormMixin, G3WPr
         label=_('User viewer groups')
     )
 
+
     def __init__(self, *args, **kwargs):
 
         super().__init__(*args, **kwargs)
