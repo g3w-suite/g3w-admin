@@ -150,9 +150,9 @@ class ActiveEditingLayerForm(ActiveEditingMixin, G3WRequestFormMixin, G3WProject
                                                        "must be unique."))
 
         if self.cleaned_data['add_user_field'] and self.cleaned_data['add_user_field'] in (
-                self.data['edit_user_field'],
-                self.data['add_user_group_field'],
-                self.data['edit_user_group_field']):
+                self.data.get('edit_user_field', None),
+                self.data.get('add_user_group_field', None),
+                self.data.get('edit_user_group_field', None)):
             raise self.logging_fields_except
 
         return self.cleaned_data['add_user_field']
@@ -160,9 +160,9 @@ class ActiveEditingLayerForm(ActiveEditingMixin, G3WRequestFormMixin, G3WProject
     def clean_edit_user_field(self):
 
         if self.cleaned_data['edit_user_field'] and self.cleaned_data['edit_user_field'] in (
-                self.data['add_user_field'],
-                self.data['add_user_group_field'],
-                self.data['edit_user_group_field']):
+                self.data.get('add_user_field', None),
+                self.data.get('add_user_group_field', None),
+                self.data.get('edit_user_group_field', None)):
             raise self.logging_fields_except
 
         return self.cleaned_data['edit_user_field']
@@ -170,9 +170,9 @@ class ActiveEditingLayerForm(ActiveEditingMixin, G3WRequestFormMixin, G3WProject
     def clean_add_user_group_field(self):
 
         if self.cleaned_data['add_user_group_field'] and self.cleaned_data['add_user_group_field'] in (
-                self.data['edit_user_field'],
-                self.data['add_user_field'],
-                self.data['edit_user_group_field']):
+                self.data.get('edit_user_field', None),
+                self.data.get('add_user_field', None),
+                self.data.get('edit_user_group_field', None)):
             raise self.logging_fields_except
 
         return self.cleaned_data['add_user_group_field']
@@ -180,9 +180,9 @@ class ActiveEditingLayerForm(ActiveEditingMixin, G3WRequestFormMixin, G3WProject
     def clean_edit_user_group_field(self):
 
         if self.cleaned_data['edit_user_group_field'] and self.cleaned_data['edit_user_group_field'] in (
-                self.data['edit_user_field'],
-                self.data['add_user_field'],
-                self.data['add_user_group_field']):
+                self.data.get('edit_user_field', None),
+                self.data.get('add_user_field', None),
+                self.data.get('add_user_group_field', None)):
             raise self.logging_fields_except
 
         return self.cleaned_data['edit_user_group_field']
