@@ -142,14 +142,50 @@ class ActiveEditingLayerForm(ActiveEditingMixin, G3WRequestFormMixin, G3WProject
 
         self.helper.layout = Layout(*layout_args)
 
+    def clean_add_user_field(self):
+
+        # Create general error message
+        self.logging_fields_except = ValidationError(_("'User adding data field' and 'User editing data field' and "
+                                                       "'User group adding data field' and 'User group editing data field' "
+                                                       "must be unique."))
+
+        if self.cleaned_data['add_user_field'] and self.cleaned_data['add_user_field'] in (
+                self.data['edit_user_field'],
+                self.data['add_user_group_field'],
+                self.data['edit_user_group_field']):
+            raise self.logging_fields_except
+
+        return self.cleaned_data['add_user_field']
+
     def clean_edit_user_field(self):
 
-        if self.cleaned_data['edit_user_field'] and self.cleaned_data['add_user_field']:
-            if self.cleaned_data['edit_user_field'] == self.cleaned_data['add_user_field']:
-                raise ValidationError(_("'User adding data field' and 'User editing data field' "
-                                        "cannot assume the same value."))
+        if self.cleaned_data['edit_user_field'] and self.cleaned_data['edit_user_field'] in (
+                self.data['add_user_field'],
+                self.data['add_user_group_field'],
+                self.data['edit_user_group_field']):
+            raise self.logging_fields_except
 
         return self.cleaned_data['edit_user_field']
+
+    def clean_add_user_group_field(self):
+
+        if self.cleaned_data['add_user_group_field'] and self.cleaned_data['add_user_group_field'] in (
+                self.data['edit_user_field'],
+                self.data['add_user_field'],
+                self.data['edit_user_group_field']):
+            raise self.logging_fields_except
+
+        return self.cleaned_data['add_user_group_field']
+
+    def clean_edit_user_group_field(self):
+
+        if self.cleaned_data['edit_user_group_field'] and self.cleaned_data['edit_user_group_field'] in (
+                self.data['edit_user_field'],
+                self.data['add_user_field'],
+                self.data['add_user_group_field']):
+            raise self.logging_fields_except
+
+        return self.cleaned_data['edit_user_group_field']
 
 
     def _set_add_edit_user_field_choices(self):
