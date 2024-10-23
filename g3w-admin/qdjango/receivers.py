@@ -350,7 +350,7 @@ def add_filter_token(**kwargs):
         isinstance(kwargs["sender"], LayerVectorView)
         and kwargs["sender"].mode_call == MODE_DATA
         and 'autofilter' in kwargs["sender"].request_data
-        and kwargs["sender"].request_data['autofilter'] == '1'
+        and str(kwargs["sender"].request_data['autofilter']) == '1'
     ):
         layer = kwargs["sender"].layer
 
