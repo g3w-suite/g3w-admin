@@ -1961,7 +1961,43 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
         self.assertEqual(jres['vector']['fields'][1]['name'], 'CAPITAL')
         self.assertEqual(jres['vector']['fields'][1]['input']['type'], 'texthtml')
 
+    def test_autofilter_parameter(self):
+        """
+        Test the 'autofilter' parameter for /vector/api/data REST API
+        """
 
+        response = self._testApiCall(
+            'core-vector-api', [
+                'data',
+                'qdjango',
+                self.project_widget310.instance.pk,
+                'main_layer_e867d371_3388_4e2d_a214_95adbb56165c'])
+        resp = json.loads(response.content)
+        self.assertFalse('filtertoken' in resp)
+
+        response = self._testApiCall(
+            'core-vector-api', [
+                'data',
+                'qdjango',
+                self.project_widget310.instance.pk,
+                'main_layer_e867d371_3388_4e2d_a214_95adbb56165c'],
+            kwargs={
+                'autofilter': 'true'
+            })
+        resp = json.loads(response.content)
+        self.assertFalse('filtertoken' in resp)
+
+        response = self._testApiCall(
+            'core-vector-api', [
+                'data',
+                'qdjango',
+                self.project_widget310.instance.pk,
+                'main_layer_e867d371_3388_4e2d_a214_95adbb56165c'],
+            kwargs={
+                'autofilter': '1'
+            })
+        resp = json.loads(response.content)
+        self.assertTrue('filtertoken' in resp)
 
 
 class TestGeoConstraintVectorAPIFilter(QdjangoTestBase):
