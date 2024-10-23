@@ -593,7 +593,9 @@ class EditingViewsTests(ConstraintsTestsBase):
         data = {
             'active': 'on',
             'add_user_field': 'insert_log',
-            'edit_user_field': 'insert_log'
+            'edit_user_field': 'insert_log',
+            'add_user_group_field': 'insert_log',
+            'edit_user_group_field': 'insert_log'
         }
 
         res = self.client.post(url, data)
@@ -605,11 +607,15 @@ class EditingViewsTests(ConstraintsTestsBase):
         self.assertTrue(len(editing_layers) == 1)
         self.assertFalse(editing_layers[0].add_user_field)
         self.assertFalse(editing_layers[0].edit_user_field)
+        self.assertFalse(editing_layers[0].add_user_group_field)
+        self.assertFalse(editing_layers[0].edit_user_group_field)
 
         data = {
             'active': 'on',
             'add_user_field': 'insert_log',
-            'edit_user_field': 'update_log'
+            'edit_user_field': 'update_log',
+            'add_user_group_field': '',
+            'edit_user_group_field': ''
         }
 
         res = self.client.post(url, data)
@@ -621,9 +627,13 @@ class EditingViewsTests(ConstraintsTestsBase):
         self.assertTrue(len(editing_layers) == 1)
         self.assertEqual(editing_layers[0].add_user_field, 'insert_log')
         self.assertEqual(editing_layers[0].edit_user_field, 'update_log')
+        self.assertFalse(editing_layers[0].add_user_group_field)
+        self.assertFalse(editing_layers[0].edit_user_group_field)
 
         data = {
             'active': 'on',
+            'add_user_group_field': 'insert_log',
+            'edit_user_group_field': 'update_log'
         }
 
         res = self.client.post(url, data)
@@ -635,6 +645,29 @@ class EditingViewsTests(ConstraintsTestsBase):
         self.assertTrue(len(editing_layers) == 1)
         self.assertFalse(editing_layers[0].add_user_field)
         self.assertFalse(editing_layers[0].edit_user_field)
+        self.assertEqual(editing_layers[0].add_user_group_field, 'insert_log')
+        self.assertEqual(editing_layers[0].edit_user_group_field, 'update_log')
+
+
+        data = {
+            'active': 'on',
+            'add_user_field': '',
+            'edit_user_field': '',
+            'add_user_group_field': '',
+            'edit_user_group_field': ''
+        }
+
+        res = self.client.post(url, data)
+
+        # redirect on ok results
+        self.assertEqual(res.status_code, 302)
+
+        editing_layers = G3WEditingLayer.objects.filter(layer_id=editing_layer.pk)
+        self.assertTrue(len(editing_layers) == 1)
+        self.assertFalse(editing_layers[0].add_user_field)
+        self.assertFalse(editing_layers[0].edit_user_field)
+        self.assertFalse(editing_layers[0].add_user_group_field)
+        self.assertFalse(editing_layers[0].edit_user_group_field)
 
 
 
