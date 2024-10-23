@@ -379,5 +379,6 @@ def add_filter_token(**kwargs):
                     res = view(req, *[], **rkwargs).render()
 
                     return json.loads(res.content)['data']
-        except:
+        except Exception as e:
+            logger.error(f'[ERROR]: Error on getting FILTERTOKEN: {e}')
             return None
