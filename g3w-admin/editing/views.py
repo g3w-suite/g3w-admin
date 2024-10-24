@@ -180,6 +180,8 @@ class ActiveEditingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3W
             kwargs['initial']['scale'] = self.activated.scale
             kwargs['initial']['add_user_field'] = self.activated.add_user_field
             kwargs['initial']['edit_user_field'] = self.activated.edit_user_field
+            kwargs['initial']['add_user_group_field'] = self.activated.add_user_group_field
+            kwargs['initial']['edit_user_group_field'] = self.activated.edit_user_group_field
         except:
             self.activated = None
             kwargs['initial']['active'] = False
@@ -275,6 +277,8 @@ class ActiveEditingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3W
         visible = form.cleaned_data['visible']
         add_user_field = form.cleaned_data['add_user_field']
         edit_user_field = form.cleaned_data['edit_user_field']
+        add_user_group_field = form.cleaned_data['add_user_group_field']
+        edit_user_group_field = form.cleaned_data['edit_user_group_field']
 
         if form.cleaned_data['active']:
             if not self.activated:
@@ -283,12 +287,17 @@ class ActiveEditingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3W
                                                                 scale=scale,
                                                                 visible=visible,
                                                                 add_user_field=add_user_field,
-                                                                edit_user_field=edit_user_field)
+                                                                edit_user_field=edit_user_field,
+                                                                add_user_group_field=add_user_group_field,
+                                                                edit_user_group_field=edit_user_group_field
+                                                                )
             else:
                 self.activated.visible = visible
                 self.activated.scale = scale
                 self.activated.add_user_field = add_user_field
                 self.activated.edit_user_field = edit_user_field
+                self.activated.add_user_group_field = add_user_group_field
+                self.activated.edit_user_group_field = edit_user_group_field
                 self.activated.save()
         else:
             if self.activated:
@@ -431,6 +440,8 @@ class ActiveEditingMultiLayerView(ActiveEditingLayerView):
 
             add_user_field = self.request.POST.get(f'add_user_field_{layer_pk}', None)
             edit_user_field = self.request.POST.get(f'edit_user_field_{layer_pk}', None)
+            add_user_group_field = self.request.POST.get(f'add_user_group_field_{layer_pk}', None)
+            edit_user_group_field = self.request.POST.get(f'edit_user_group_field_{layer_pk}', None)
 
             if form.cleaned_data['active']:
 
@@ -439,6 +450,8 @@ class ActiveEditingMultiLayerView(ActiveEditingLayerView):
                                                                          layer_id=layer_pk,
                                                                          edit_user_field=edit_user_field,
                                                                          add_user_field=add_user_field,
+                                                                         edit_user_group_field=edit_user_group_field,
+                                                                         add_user_group_field=add_user_group_field,
                                                                          scale=scale,
                                                                          visible=visible)
                 else:
@@ -446,6 +459,8 @@ class ActiveEditingMultiLayerView(ActiveEditingLayerView):
                     activated[layer_pk].scale = scale
                     activated[layer_pk].add_user_field = add_user_field
                     activated[layer_pk].edit_user_field = edit_user_field
+                    activated[layer_pk].add_user_group_field = add_user_group_field
+                    activated[layer_pk].edit_user_group_field = edit_user_group_field
                     activated[layer_pk].save()
             else:
                 if layer_pk in activated.keys():
