@@ -278,3 +278,32 @@ class ActiveEditingMultiLayerForm(ActiveEditingMixin, G3WRequestFormMixin, G3WPr
                     ))
         self.fields['layers'].choices = [(l.pk, l.name) for l in project_layers]
 
+
+class CopyEditingPermissionForm(ActiveEditingMixin, G3WRequestFormMixin, G3WProjectFormMixin, forms.Form):
+    """
+    Form for copy permissions from user to other users
+    """
+
+    from_user = forms.ChoiceField(choices=[], label=_('From User'), required=False,
+                                             help_text=_('Select the user from which to take the permissions to copy'))
+
+    to_users = forms.MultipleChoiceField(choices=[], label=_('To users'), required=False,
+                                             help_text=_('Select the users who will receive permissions'))
+
+    def __init__(self, *args, **kwargs):
+
+        super().__init__(*args, **kwargs)
+
+        # set choices
+        # self._set_from_user_choices()
+        # self._set_to_users_choices()
+
+        self.helper = FormHelper(self)
+        self.helper.form_tag = False
+
+        layout_args = [
+            Field('from_user', css_class='select2', style="width:100%;"),
+            Field('to_users', css_class='select2', style="width:100%;"),
+        ]
+
+        self.helper.layout = Layout(*layout_args)
