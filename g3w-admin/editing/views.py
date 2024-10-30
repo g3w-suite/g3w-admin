@@ -12,14 +12,24 @@ from django.contrib.auth.models import User, Group as AuhtGroup
 from django.utils.decorators import method_decorator
 from django.db.models import ImageField, FileField
 from django.views.decorators.csrf import csrf_exempt
-from django.core.exceptions import PermissionDenied
-from core.mixins.views import AjaxableFormResponseMixin, G3WRequestViewMixin, G3WProjectViewMixin
+from core.mixins.views import (
+    AjaxableFormResponseMixin,
+    G3WRequestViewMixin,
+    G3WProjectViewMixin
+)
 from core.utils.decorators import project_type_permission_required
 from core.utils import file_path_mime
 from core.utils.vector import BaseUserMediaHandler
-from usersmanage.utils import setPermissionUserObject, get_viewers_for_object, \
+from usersmanage.utils import (
+    setPermissionUserObject,
+    get_viewers_for_object,
     get_user_groups_for_object
-from .forms import ActiveEditingLayerForm, ActiveEditingMultiLayerForm
+)
+from .forms import (
+    ActiveEditingLayerForm,
+    ActiveEditingMultiLayerForm,
+    CopyEditingPermissionForm)
+
 from .models import G3WEditingLayer, EDITING_ATOMIC_PERMISSIONS
 import os
 import json
@@ -517,3 +527,13 @@ class ActiveEditingMultiLayerView(ActiveEditingLayerView):
             self.add_remove_atomic_permissions(layer, with_anonymous, editor_pk, edito2_pk)
 
         return super(ActiveEditingLayerView, self).form_valid(form)
+
+
+class CopyEditingPermissionView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3WRequestViewMixin, FormView):
+    """
+    View for copy the user permission to other users
+    """
+
+    form_class = CopyEditingPermissionForm
+    template_name = 'editing/copy_editing_permission_form.html'
+
