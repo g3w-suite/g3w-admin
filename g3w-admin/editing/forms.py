@@ -41,7 +41,7 @@ class ActiveEditingMixin(object):
         # add user_groups_viewer choices
         user_groups_viewers = get_groups_for_object(self.project, 'view_project', grouprole='viewer')
 
-        # for Editor level filter by his groups
+        # For Editor level filter by his groups
         if userHasGroups(self.request.user, [G3W_EDITOR1]):
             editor1_user_gorups_viewers = get_objects_for_user(self.request.user, 'auth.change_group',
                                                                AuthGroup).order_by('name').filter(
@@ -284,39 +284,62 @@ class CopyEditingPermissionForm(ActiveEditingMixin, G3WRequestFormMixin, G3WProj
     Form for copy permissions from user to other users
     """
 
-    from_user = forms.ChoiceField(choices=[], label=_('From User'), required=True,
+    from_user = forms.ChoiceField(choices=[], label=_('From User'), required=False,
                                              help_text=_('Select the user from which to take the permissions to copy'))
 
-    to_users = forms.MultipleChoiceField(choices=[], label=_('To users'), required=True,
+    to_users = forms.MultipleChoiceField(choices=[], label=_('To users'), required=False,
                                              help_text=_('Select the users who will receive permissions'))
+
+    from_group = forms.ChoiceField(choices=[], label=_('From Group of User'), required=False,
+                                  help_text=_('Select the group df user from which to take the permissions to copy'))
+
+    to_groups = forms.MultipleChoiceField(choices=[], label=_('To Groups of Users'), required=False,
+                                         help_text=_('Select the groups of users who will receive permissions'))
+
 
     def _set_choices(self):
         """
         Set choices for from_user and to_users fields
         """
-
-        with_anonymous = getattr(settings, 'EDITING_ANONYMOUS', False)
-        # Get for every layer the users
-        viewers = set()
-        for layer in self.project.layer_set.all():
-            viewers_for_layer = get_viewers_for_object(layer, self.request.user, [
+        permissions = [
                 'add_feature',
                 'change_feature',
                 'delete_feature',
                 'change_attr_feature'
-            ],with_anonymous=with_anonymous)
+            ]
+
+        with_anonymous = getattr(settings, 'EDITING_ANONYMOUS', False)
+
+        viewers = set()
+        viewers_groups = set()
+
+        # Get Editor Level 1 and Editor level 2 to clear from list
+        editor_pk = self.project.editor.pk if self.project.editor else None
+        editor2_pk = self.project.editor2.pk if self.project.editor2 else None
+
+        # Get for every layer the users
+        for layer in self.editing_layers:
+            viewers_for_layer = get_viewers_for_object(layer, self.request.user, permissions,
+                                                       with_anonymous=with_anonymous)
 
             viewers = viewers | set(viewers_for_layer)
 
-            # get Editor Level 1 and Editor level 2 to clear from list
-            editor_pk = self.project.editor.pk if self.project.editor else None
-            editor2_pk = self.project.editor2.pk if self.project.editor2 else None
+            user_groups_viewers_for_layer = get_groups_for_object(layer, permissions, grouprole='viewer')
+
+            viewers_groups = viewers_groups | set(user_groups_viewers_for_layer)
+
+
 
         viewers = [(v.pk, label_users(v)) for v in viewers if v.pk not in (editor_pk, editor2_pk)]
+
         self.fields['from_user'].choices = viewers
         self.fields['to_users'].choices = viewers
 
     def __init__(self, *args, **kwargs):
+
+        # Get editing layers of the project
+        self.editing_layers = kwargs['editing_layers']
+        del (kwargs['editing_layers'])
 
         super().__init__(*args, **kwargs)
 

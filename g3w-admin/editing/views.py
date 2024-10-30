@@ -35,7 +35,10 @@ from .forms import (
     ActiveEditingMultiLayerForm,
     CopyEditingPermissionForm)
 
-from .models import G3WEditingLayer, EDITING_ATOMIC_PERMISSIONS
+from .models import (
+    G3WEditingLayer,
+    EDITING_ATOMIC_PERMISSIONS
+)
 import os
 import json
 from copy import deepcopy
@@ -550,6 +553,22 @@ class CopyEditingPermissionView(AjaxableFormResponseMixin, G3WProjectViewMixin, 
     def get_success_url(self):
         return None
 
+    def get_editing_layers(self):
+        """
+        Get the layers fo the project with editing status active
+        """
+        if not hasattr(self, 'editing_layers') or not self.editing_layers:
+            editing_layer_ids = G3WEditingLayer.objects.values('layer_id').distinct()
+            self._editing_layers = self.project.layer_set.filter(pk__in=editing_layer_ids)
+        return self._editing_layers
+
+    def get_form_kwargs(self):
+
+        # Send editing layers to form
+        kwargs = super().get_form_kwargs()
+        kwargs['editing_layers'] = self.get_editing_layers()
+        return kwargs
+
     def form_valid(self, form):
         """
         Set the permissions to to_users
@@ -566,8 +585,7 @@ class CopyEditingPermissionView(AjaxableFormResponseMixin, G3WProjectViewMixin, 
             'change_attr_feature'
         ])
 
-        #TODO: get only layer with active editing
-        for layer in self.project.layer_set.all():
+        for layer in self.get_editing_layers():
             permissions_to_copy = set(get_perms(from_user, layer)).intersection(permissions)
             permissions_to_remove = permissions - permissions_to_copy
             for to_user in to_users:
