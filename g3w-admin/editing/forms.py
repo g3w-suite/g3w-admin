@@ -284,10 +284,10 @@ class CopyEditingPermissionForm(ActiveEditingMixin, G3WRequestFormMixin, G3WProj
     Form for copy permissions from user to other users
     """
 
-    from_user = forms.ChoiceField(choices=[], label=_('From User'), required=False,
+    from_user = forms.ChoiceField(choices=[], label=_('From User'), required=True,
                                              help_text=_('Select the user from which to take the permissions to copy'))
 
-    to_users = forms.MultipleChoiceField(choices=[], label=_('To users'), required=False,
+    to_users = forms.MultipleChoiceField(choices=[], label=_('To users'), required=True,
                                              help_text=_('Select the users who will receive permissions'))
 
     def _set_choices(self):
