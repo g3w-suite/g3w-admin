@@ -12,6 +12,11 @@ from django.contrib.auth.models import User, Group as AuhtGroup
 from django.utils.decorators import method_decorator
 from django.db.models import ImageField, FileField
 from django.views.decorators.csrf import csrf_exempt
+from guardian.shortcuts import (
+    get_perms,
+    assign_perm,
+    remove_perm
+)
 from core.mixins.views import (
     AjaxableFormResponseMixin,
     G3WRequestViewMixin,
@@ -536,4 +541,44 @@ class CopyEditingPermissionView(AjaxableFormResponseMixin, G3WProjectViewMixin, 
 
     form_class = CopyEditingPermissionForm
     template_name = 'editing/copy_editing_permission_form.html'
+
+    @method_decorator(project_type_permission_required('change_project', ('project_type', 'project_slug'),
+                                                       return_403=True))
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_success_url(self):
+        return None
+
+    def form_valid(self, form):
+        """
+        Set the permissions to to_users
+        """
+
+        from_user = User.objects.get(pk=form.cleaned_data['from_user'])
+        to_users = User.objects.filter(pk__in=form.cleaned_data['to_users'])
+
+        permissions = set([
+            'change_layer',
+            'add_feature',
+            'change_feature',
+            'delete_feature',
+            'change_attr_feature'
+        ])
+
+        #TODO: get only layer with active editing
+        for layer in self.project.layer_set.all():
+            permissions_to_copy = set(get_perms(from_user, layer)).intersection(permissions)
+            permissions_to_remove = permissions - permissions_to_copy
+            for to_user in to_users:
+                for permission in permissions_to_copy:
+                    assign_perm(permission, to_user, layer)
+                for permission in permissions_to_remove:
+                    remove_perm(permission, to_user, layer)
+
+
+        return super().form_valid(form)
+
+
+
 
