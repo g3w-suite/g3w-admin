@@ -1367,8 +1367,8 @@ class TestQdjangoLayersAPI(QdjangoTestBase):
 
         fields = [f for f in vl.fields()]
 
-        self.assertEqual(len(fields), 1)
-        self.assertEqual(fields[0].name(), 'NAME')
+        self.assertEqual(len(fields), 2)
+        self.assertEqual(fields[1].name(), 'NAME')
 
         # TEST API GPX DOWNLOAD
         # ==============================================

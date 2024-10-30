@@ -26,6 +26,7 @@ from core.signals import (
 )
 from qdjango.vector import LayerVectorView, MODE_CONFIG
 from qdjango.models import GeoConstraintRule
+from usersmanage.utils import get_user_groups
 from .models import (
     G3WEditingFeatureLock,
     G3WEditingLayer,
@@ -315,24 +316,52 @@ def fill_logging_fields(sender, **kwargs):
 
     mode = kwargs["mode"]
     user = kwargs["user"]
+    user_groups = ", ".join([g.name for g in get_user_groups(user)])
     try:
         el = G3WEditingLayer.objects.get(
             app_name="qdjango", layer_id=kwargs["layer_metadata"].layer_id
         )
-        if el.add_user_field and mode == EDITING_POST_DATA_ADDED:
-            kwargs["data"]["feature"]["properties"][
-                el.add_user_field
-            ] = f"{user.username}"
+        if mode == EDITING_POST_DATA_ADDED:
 
-            # Remove edit_suer_field property if is active
-            if el.edit_user_field:
-                del kwargs["data"]["feature"]["properties"][el.edit_user_field]
-        if el.edit_user_field and mode == EDITING_POST_DATA_UPDATED:
-            kwargs['data']['feature']['properties'][el.edit_user_field] = f"{user.username}"
-
-            # Remove add_user_field property if is active
+            # Set the user and user group
+            # ---------------------------
             if el.add_user_field:
-                del(kwargs['data']['feature']['properties'][el.add_user_field])
+                kwargs["data"]["feature"]["properties"][
+                    el.add_user_field
+                ] = f"{user.username}"
+
+                # Remove edit_user_field property if is active
+                if el.edit_user_field:
+                    del kwargs["data"]["feature"]["properties"][el.edit_user_field]
+
+            if el.add_user_group_field:
+                kwargs["data"]["feature"]["properties"][
+                    el.add_user_group_field
+                ] = f"{user_groups}"
+
+                # Remove edit_user_field property if is active
+                if el.edit_user_group_field:
+                    del kwargs["data"]["feature"]["properties"][el.edit_user_group_field]
+
+
+        if mode == EDITING_POST_DATA_UPDATED:
+
+            # Set the user and user group
+            # ---------------------------
+            if el.edit_user_field:
+                kwargs['data']['feature']['properties'][el.edit_user_field] = f"{user.username}"
+
+                # Remove add_user_field property if is active
+                if el.add_user_field:
+                    del(kwargs['data']['feature']['properties'][el.add_user_field])
+
+            if el.edit_user_group_field:
+                kwargs['data']['feature']['properties'][el.edit_user_group_field] = f"{user_groups}"
+
+                # Remove add_user_field property if is active
+                if el.add_user_group_field:
+                    del (kwargs['data']['feature']['properties'][el.add_user_group_field])
+
     except Exception as e:
         logger.error(f"[EDITING] - FILL LOGGING FIELDS: {e}")
 

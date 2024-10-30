@@ -1005,6 +1005,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
         save_options = QgsVectorFileWriter.SaveVectorOptions()
         save_options.driverName = 'csv'
         save_options.fileEncoding = 'utf-8'
+        save_options.layerOptions = ['GEOMETRY=AS_WKT']
 
         # Set attributes
         self._set_download_attributes(qgs_request, save_options)

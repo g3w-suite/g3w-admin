@@ -886,6 +886,9 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
                 except Exception as e:
                     logger.debug(f'WMS layer GetFeatureInfo formats available: {e}')
 
+            # Remove possibility to show attributes table for WMS and ARCGIS server type
+            ret['not_show_attributes_table'] = True
+
 
 
         # replace crs property if is not none with dict structure
