@@ -331,9 +331,12 @@ class CopyEditingPermissionForm(ActiveEditingMixin, G3WRequestFormMixin, G3WProj
 
 
         viewers = [(v.pk, label_users(v)) for v in viewers if v.pk not in (editor_pk, editor2_pk)]
+        viewers_groups = [(v.pk, v.name) for v in viewers_groups]
 
         self.fields['from_user'].choices = viewers
         self.fields['to_users'].choices = viewers
+        self.fields['from_group'].choices = viewers_groups
+        self.fields['to_groups'].choices = viewers_groups
 
     def __init__(self, *args, **kwargs):
 
@@ -345,7 +348,6 @@ class CopyEditingPermissionForm(ActiveEditingMixin, G3WRequestFormMixin, G3WProj
 
         # set choices
         self._set_choices()
-        # self._set_to_users_choices()
 
         self.helper = FormHelper(self)
         self.helper.form_tag = False
@@ -353,6 +355,8 @@ class CopyEditingPermissionForm(ActiveEditingMixin, G3WRequestFormMixin, G3WProj
         layout_args = [
             Field('from_user', css_class='select2', style="width:100%;"),
             Field('to_users', css_class='select2', style="width:100%;"),
+            Field('from_group', css_class='select2', style="width:100%;"),
+            Field('to_groups', css_class='select2', style="width:100%;"),
         ]
 
         self.helper.layout = Layout(*layout_args)
