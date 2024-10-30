@@ -290,12 +290,38 @@ class CopyEditingPermissionForm(ActiveEditingMixin, G3WRequestFormMixin, G3WProj
     to_users = forms.MultipleChoiceField(choices=[], label=_('To users'), required=False,
                                              help_text=_('Select the users who will receive permissions'))
 
+    def _set_choices(self):
+        """
+        Set choices for from_user and to_users fields
+        """
+
+        with_anonymous = getattr(settings, 'EDITING_ANONYMOUS', False)
+        # Get for every layer the users
+        viewers = set()
+        for layer in self.project.layer_set.all():
+            viewers_for_layer = get_viewers_for_object(layer, self.request.user, [
+                'add_feature',
+                'change_feature',
+                'delete_feature',
+                'change_attr_feature'
+            ],with_anonymous=with_anonymous)
+
+            viewers = viewers | set(viewers_for_layer)
+
+            # get Editor Level 1 and Editor level 2 to clear from list
+            editor_pk = self.project.editor.pk if self.project.editor else None
+            editor2_pk = self.project.editor2.pk if self.project.editor2 else None
+
+        viewers = [(v.pk, label_users(v)) for v in viewers if v.pk not in (editor_pk, editor2_pk)]
+        self.fields['from_user'].choices = viewers
+        self.fields['to_users'].choices = viewers
+
     def __init__(self, *args, **kwargs):
 
         super().__init__(*args, **kwargs)
 
         # set choices
-        # self._set_from_user_choices()
+        self._set_choices()
         # self._set_to_users_choices()
 
         self.helper = FormHelper(self)
