@@ -310,25 +310,13 @@ class CopyEditingPermissionForm(ActiveEditingMixin, G3WRequestFormMixin, G3WProj
 
         with_anonymous = getattr(settings, 'EDITING_ANONYMOUS', False)
 
-        viewers = set()
-        viewers_groups = set()
-
         # Get Editor Level 1 and Editor level 2 to clear from list
         editor_pk = self.project.editor.pk if self.project.editor else None
         editor2_pk = self.project.editor2.pk if self.project.editor2 else None
 
-        # Get for every layer the users
-        for layer in self.editing_layers:
-            viewers_for_layer = get_viewers_for_object(layer, self.request.user, permissions,
-                                                       with_anonymous=with_anonymous)
-
-            viewers = viewers | set(viewers_for_layer)
-
-            user_groups_viewers_for_layer = get_groups_for_object(layer, permissions, grouprole='viewer')
-
-            viewers_groups = viewers_groups | set(user_groups_viewers_for_layer)
-
-
+        viewers = get_viewers_for_object(self.project, self.request.user, 'view_project',
+                                         with_anonymous=with_anonymous)
+        viewers_groups = get_groups_for_object(self.project, 'view_project', grouprole='viewer')
 
         viewers = [(v.pk, label_users(v)) for v in viewers if v.pk not in (editor_pk, editor2_pk)]
         viewers_groups = [(v.pk, v.name) for v in viewers_groups]
