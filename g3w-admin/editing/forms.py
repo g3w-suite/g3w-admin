@@ -301,12 +301,6 @@ class CopyEditingPermissionForm(ActiveEditingMixin, G3WRequestFormMixin, G3WProj
         """
         Set choices for from_user and to_users fields
         """
-        permissions = [
-                'add_feature',
-                'change_feature',
-                'delete_feature',
-                'change_attr_feature'
-            ]
 
         with_anonymous = getattr(settings, 'EDITING_ANONYMOUS', False)
 

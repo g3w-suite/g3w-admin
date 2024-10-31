@@ -578,18 +578,10 @@ class CopyEditingPermissionView(AjaxableFormResponseMixin, G3WProjectViewMixin, 
 
             model, from_p, to_p = (User, 'from_user', 'to_users') if context == 'user' else (AuthGroup, 'from_group', 'to_groups')
 
-
             from_ug = model.objects.get(pk=form.cleaned_data[from_p])
             to_ugs = model.objects.filter(pk__in=form.cleaned_data[to_p])
 
-
-            permissions = set([
-                'change_layer',
-                'add_feature',
-                'change_feature',
-                'delete_feature',
-                'change_attr_feature'
-            ])
+            permissions = set(['change_layer'] + list(EDITING_ATOMIC_PERMISSIONS))
 
             for layer in self.get_editing_layers():
                 permissions_to_copy = set(get_perms(from_ug, layer)).intersection(permissions)
