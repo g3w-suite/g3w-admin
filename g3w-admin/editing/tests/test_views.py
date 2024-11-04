@@ -693,8 +693,8 @@ class EditingViewsTests(ConstraintsTestsBase):
             qgs_layer_id=countries_layer_id)
 
         # Activate editing
-        G3WEditingLayer.objects.create(app_name='qdjango', layer_id=cities_layer_id)
-        G3WEditingLayer.objects.create(app_name='qdjango', layer_id=countries_layer_id)
+        G3WEditingLayer.objects.create(app_name='qdjango', layer_id=cities_layer.pk)
+        G3WEditingLayer.objects.create(app_name='qdjango', layer_id=countries_layer.pk)
 
         # Give editing permissions
         # Give permissions to viewers and user_groups viewers
@@ -767,9 +767,38 @@ class EditingViewsTests(ConstraintsTestsBase):
 
         res = self.client.post(url, data)
 
+        # Check for cities_layer
         self.assertTrue(self.test_user5.has_perm('change_layer', cities_layer))
         for perm in EDITING_ATOMIC_PERMISSIONS:
             self.assertTrue(self.test_user5.has_perm(perm, cities_layer))
+
+        test_user_group2_perms = get_perms(self.test_user_group2, cities_layer)
+        test_user_group1_perms = get_perms(self.test_user_group1, cities_layer)
+        self.assertFalse('add_feature' in test_user_group2_perms)
+        self.assertFalse('add_feature' in test_user_group1_perms)
+        self.assertTrue('change_layer' in test_user_group2_perms)
+        self.assertTrue('change_layer' in test_user_group1_perms)
+        for perm in ('change_feature', 'delete_feature'):
+            self.assertTrue(perm in test_user_group2_perms)
+            self.assertTrue(perm in test_user_group1_perms)
+
+        # Check countries_layer
+        # Check the user3 permissions are unchanged
+        self.assertFalse(self.test_user3.has_perm('change_layer', countries_layer))
+        for perm in EDITING_ATOMIC_PERMISSIONS:
+            self.assertFalse(self.test_user3.has_perm(perm, countries_layer))
+
+        test_user_group3_perms = get_perms(self.test_user_group3, countries_layer)
+        self.assertFalse('change_layer' in test_user_group3_perms)
+        for perm in EDITING_ATOMIC_PERMISSIONS:
+            self.assertFalse(perm in test_user_group3_perms)
+
+        # test_user_group3 doesn't any permission on countries_layer
+        # so on copy action test_user_group1 loses every permission on the layer
+        test_user_group1_perms = get_perms(self.test_user_group1, countries_layer)
+        self.assertFalse('change_layer' in test_user_group1_perms)
+        for perm in EDITING_ATOMIC_PERMISSIONS:
+            self.assertFalse(perm in test_user_group1_perms)
 
         self.client.logout()
 
