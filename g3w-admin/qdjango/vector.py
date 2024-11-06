@@ -343,6 +343,18 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
 
         return fields
 
+    def _set_filename_cookie(self, response, filename):
+        """
+        Set filename and cookie in a HttpResponse for download of shp, csv , etc...
+        """
+
+        response['Content-Disposition'] = f'attachment; filename={filename}'
+
+        # Only with https set samesite='None' for cross-site requests, i.e. for cross-site iframe
+        kwargs = {'samesite': 'None', 'secure': True} if self.request.is_secure() else {'samesite': 'Strict'}
+        response.set_cookie('fileDownload', 'true', **kwargs)
+
+
     def response_widget_unique_data(self, request_data):
         """
         Execute a distinct query for unique editing qgis widget
@@ -810,8 +822,8 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
         # Grab ZIP file from in-memory, make response with correct MIME-type
         response = HttpResponse(
             s.getvalue(), content_type="application/x-zip-compressed")
-        response['Content-Disposition'] = 'attachment; filename=%s' % zip_filename
-        response.set_cookie('fileDownload', 'true')
+
+        self._set_filename_cookie(response, zip_filename)
         return response
 
     def response_gpx_mode(self, request):
@@ -873,8 +885,9 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
         response = HttpResponse(
             open(gpx_tmp_path, 'rb').read(), content_type='application/octet-stream')
         tmp_dir.cleanup()
-        response['Content-Disposition'] = f'attachment; filename={filename}'
-        response.set_cookie('fileDownload', 'true')
+
+        self._set_filename_cookie(response, filename)
+
         return response
 
     def response_xls_mode(self, request):
@@ -927,8 +940,9 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
         response = HttpResponse(
             open(xls_tmp_path, 'rb').read(), content_type='application/ms-excel')
         tmp_dir.cleanup()
-        response['Content-Disposition'] = f'attachment; filename={filename}'
-        response.set_cookie('fileDownload', 'true')
+
+        self._set_filename_cookie(response, filename)
+
         return response
 
     def response_gpkg_mode(self, request):
@@ -981,8 +995,9 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
         response = HttpResponse(
             open(gpkg_tmp_path, 'rb').read(), content_type='application/geopackage+vnd.sqlite3')
         tmp_dir.cleanup()
-        response['Content-Disposition'] = f'attachment; filename={filename}'
-        response.set_cookie('fileDownload', 'true')
+
+        self._set_filename_cookie(response, filename)
+
         return response
 
     def response_csv_mode(self, request):
@@ -1036,8 +1051,9 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
         response = HttpResponse(
             open(xls_tmp_path, 'rb').read(), content_type='text/csv')
         tmp_dir.cleanup()
-        response['Content-Disposition'] = f'attachment; filename={filename}'
-        response.set_cookie('fileDownload', 'true')
+
+        self._set_filename_cookie(response, filename)
+
         return response
 
 
