@@ -8,10 +8,20 @@ from core.signals import (
     load_layer_actions,
     pre_delete_project,
     pre_update_project,
+    before_return_vector_data_layer
 )
 from django.conf import settings
+from django.urls import (
+    reverse, resolve
+)
+from django.http import HttpRequest
 from django.contrib.auth.signals import user_logged_out
-from django.db.models.signals import post_delete, post_save, pre_delete, pre_save
+from django.db.models.signals import (
+    post_delete,
+    post_save,
+    pre_delete,
+    pre_save
+)
 from django.dispatch import receiver
 from django.template import loader
 from qgis.core import QgsProject
@@ -27,8 +37,15 @@ from .models import (
     Message
 )
 from .searches import ProjectSearch
-from .signals import post_save_qdjango_project_file
-from .views import QdjangoProjectListView, QdjangoProjectUpdateView
+from .views import (
+    QdjangoProjectListView,
+    QdjangoProjectUpdateView
+)
+from .vector import (
+    LayerVectorView,
+    MODE_DATA
+)
+import json
 
 logger = logging.getLogger("django.request")
 
@@ -319,3 +336,49 @@ def invalid_prj_cache_by_message(**kwargs):
         f"Parent qdjango project /api/config invalidate on create/update/delete of a project messages: "
         f"{kwargs['instance'].project}"
     )
+
+
+@receiver(before_return_vector_data_layer)
+def add_filter_token(**kwargs):
+    """
+    Add a 'filtertoken' to response if 'autofilter' is set to 1
+    :return: A dict with autofilter token
+    :rtype: dict, None
+    """
+    # check if is instance of layerVectorView
+    if (
+        isinstance(kwargs["sender"], LayerVectorView)
+        and kwargs["sender"].mode_call == MODE_DATA
+        and 'autofilter' in kwargs["sender"].request_data
+        and str(kwargs["sender"].request_data['autofilter']) == '1'
+    ):
+        layer = kwargs["sender"].layer
+
+        try:
+            # Get fids
+            results = kwargs["sender"].results.results
+            if results['result']:
+                fids = [f["id"] for f in results['vector']['data']['features']]
+
+                if fids:
+                    rkwargs = {'project_type': 'qdjango',
+                               'project_id': layer.project.pk,
+                               'layer_name': layer.qgs_layer_id,
+                               'mode_call': 'filtertoken'
+                               }
+
+                    url = reverse('core-vector-api', kwargs=rkwargs)
+                    req = HttpRequest()
+                    req.method = 'GET'
+                    req.COOKIES = kwargs["sender"].request.COOKIES
+                    req.user = kwargs["sender"].request.user
+                    req.resolver_match = resolve(url)
+                    req.GET['fidsin'] = ",".join(fids)
+
+                    view = LayerVectorView.as_view()
+                    res = view(req, *[], **rkwargs).render()
+
+                    return json.loads(res.content)['data']
+        except Exception as e:
+            logger.error(f'[ERROR]: Error on getting FILTERTOKEN: {e}')
+            return None
