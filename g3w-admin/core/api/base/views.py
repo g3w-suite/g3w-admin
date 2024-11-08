@@ -707,6 +707,17 @@ class BaseVectorApiView(G3WAPIView):
             # Cafe with 'autofilter' parameter: get every id from qgis_feature_request
             # ------------------------------------------------------------------------
             if 'autofilter' in self.request_data and str(self.request_data['autofilter']) == '1':
+
+                    # Remove pagination
+                    for k in ('page', 'page_size'):
+                        if k in kwargs:
+                            del(kwargs[k])
+
+                    # Reset limit
+                    if qgis_feature_request.limit() != -1:
+                        qgis_feature_request = QgsFeatureRequest(qgis_feature_request)
+                        qgis_feature_request.setLimit(-1)
+
                     self.total_feature_ids = [str(f.id()) for f in get_qgis_features(
                         self.metadata_layer.qgis_layer, qgis_feature_request, **kwargs)]
 
