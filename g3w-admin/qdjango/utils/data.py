@@ -332,7 +332,7 @@ class QgisProjectLayer(XmlData):
             if self.qgs_layer.type() == QgsMapLayerType.VectorTileLayer:
                 layer_type = 'vector-tile'
 
-        if layer_type == 'arcgisvectortilelayer':
+        if layer_type == 'arcgisvectortileservice':
             layer_type = 'vector-tile'
 
         if not layer_type in availableTypes:
