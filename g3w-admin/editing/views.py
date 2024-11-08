@@ -8,19 +8,37 @@ from django.http import JsonResponse
 from django.core.files import File
 from django.core.files.images import ImageFile
 from django.core.files.storage import default_storage
-from django.contrib.auth.models import User, Group as AuhtGroup
+from django.contrib.auth.models import User, Group as AuthGroup
 from django.utils.decorators import method_decorator
 from django.db.models import ImageField, FileField
 from django.views.decorators.csrf import csrf_exempt
-from django.core.exceptions import PermissionDenied
-from core.mixins.views import AjaxableFormResponseMixin, G3WRequestViewMixin, G3WProjectViewMixin
+from guardian.shortcuts import (
+    get_perms,
+    assign_perm,
+    remove_perm
+)
+from core.mixins.views import (
+    AjaxableFormResponseMixin,
+    G3WRequestViewMixin,
+    G3WProjectViewMixin
+)
 from core.utils.decorators import project_type_permission_required
 from core.utils import file_path_mime
 from core.utils.vector import BaseUserMediaHandler
-from usersmanage.utils import setPermissionUserObject, get_viewers_for_object, \
+from usersmanage.utils import (
+    setPermissionUserObject,
+    get_viewers_for_object,
     get_user_groups_for_object
-from .forms import ActiveEditingLayerForm, ActiveEditingMultiLayerForm
-from .models import G3WEditingLayer, EDITING_ATOMIC_PERMISSIONS
+)
+from .forms import (
+    ActiveEditingLayerForm,
+    ActiveEditingMultiLayerForm,
+    CopyEditingPermissionForm)
+
+from .models import (
+    G3WEditingLayer,
+    EDITING_ATOMIC_PERMISSIONS
+)
 import os
 import json
 from copy import deepcopy
@@ -249,7 +267,7 @@ class ActiveEditingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3W
         for context in self.contexts:
             for ap in EDITING_ATOMIC_PERMISSIONS:
 
-                model = User if context == 'user' else AuhtGroup
+                model = User if context == 'user' else AuthGroup
 
                 to_remove = list(set(self.initial_atomic_capabilitites[context][ap]) -
                                  set(self.atomic_capabilitites[context][ap]))
@@ -336,11 +354,11 @@ class ActiveEditingLayerView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3W
 
         if to_add:
             for aid in to_add:
-                setPermissionUserObject(AuhtGroup.objects.get(pk=aid), self.layer, ['change_layer'])
+                setPermissionUserObject(AuthGroup.objects.get(pk=aid), self.layer, ['change_layer'])
 
         if to_remove:
             for aid in to_remove:
-                setPermissionUserObject(AuhtGroup.objects.get(pk=aid), self.layer, ['change_layer'], mode='remove')
+                setPermissionUserObject(AuthGroup.objects.get(pk=aid), self.layer, ['change_layer'], mode='remove')
 
                 # remove from atomic_capabilities user id
                 self.remove_from_atomic_permissions('group', aid)
@@ -388,8 +406,6 @@ class ActiveEditingMultiLayerView(ActiveEditingLayerView):
 
         initial_atomic_capabilitites = {}
 
-
-
         for context in self.contexts:
 
             # Initializze initial_atomic_capabilitites
@@ -407,7 +423,7 @@ class ActiveEditingMultiLayerView(ActiveEditingLayerView):
                     group_viewers = get_user_groups_for_object(layer, self.request.user, ap, 'viewer')
                     initial_atomic_capabilitites['group'][ap] = [o.id for o in group_viewers]
 
-                model = User if context == 'user' else AuhtGroup
+                model = User if context == 'user' else AuthGroup
 
                 to_remove = list(set(initial_atomic_capabilitites[context][ap]) -
                                  set(self.atomic_capabilitites[context][ap]))
@@ -504,11 +520,11 @@ class ActiveEditingMultiLayerView(ActiveEditingLayerView):
 
             if to_add:
                 for aid in to_add:
-                    setPermissionUserObject(AuhtGroup.objects.get(pk=aid), layer, ['change_layer'])
+                    setPermissionUserObject(AuthGroup.objects.get(pk=aid), layer, ['change_layer'])
 
             if to_remove:
                 for aid in to_remove:
-                    setPermissionUserObject(AuhtGroup.objects.get(pk=aid), layer, ['change_layer'], mode='remove')
+                    setPermissionUserObject(AuthGroup.objects.get(pk=aid), layer, ['change_layer'], mode='remove')
 
             #         # remove from atomic_capabilities user id
             #         self.remove_from_atomic_permissions('group', aid)
@@ -517,3 +533,68 @@ class ActiveEditingMultiLayerView(ActiveEditingLayerView):
             self.add_remove_atomic_permissions(layer, with_anonymous, editor_pk, edito2_pk)
 
         return super(ActiveEditingLayerView, self).form_valid(form)
+
+
+class CopyEditingPermissionView(AjaxableFormResponseMixin, G3WProjectViewMixin, G3WRequestViewMixin, FormView):
+    """
+    View for copy the user permission to other users
+    """
+
+    form_class = CopyEditingPermissionForm
+    template_name = 'editing/copy_editing_permission_form.html'
+
+    context = ('user', 'group')
+
+    @method_decorator(project_type_permission_required('change_project', ('project_type', 'project_slug'),
+                                                       return_403=True))
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_success_url(self):
+        return None
+
+    def get_editing_layers(self):
+        """
+        Get the layers fo the project with editing status active
+        """
+        if not hasattr(self, 'editing_layers') or not self.editing_layers:
+            editing_layer_ids = G3WEditingLayer.objects.values('layer_id').distinct()
+            self._editing_layers = self.project.layer_set.filter(pk__in=editing_layer_ids)
+        return self._editing_layers
+
+    def get_form_kwargs(self):
+
+        # Send editing layers to form
+        kwargs = super().get_form_kwargs()
+        kwargs['editing_layers'] = self.get_editing_layers()
+        return kwargs
+
+    def form_valid(self, form):
+        """
+        Set the permissions to to_users
+        """
+
+        for context in self.context:
+
+            model, from_p, to_p = (User, 'from_user', 'to_users') if context == 'user' else (AuthGroup, 'from_group', 'to_groups')
+
+            from_ug = model.objects.get(pk=form.cleaned_data[from_p])
+            to_ugs = model.objects.filter(pk__in=form.cleaned_data[to_p])
+
+            permissions = set(['change_layer'] + list(EDITING_ATOMIC_PERMISSIONS))
+
+            for layer in self.get_editing_layers():
+                permissions_to_copy = set(get_perms(from_ug, layer)).intersection(permissions)
+                permissions_to_remove = permissions - permissions_to_copy
+                for to_ug in to_ugs:
+                    for permission in permissions_to_copy:
+                        assign_perm(permission, to_ug, layer)
+                    for permission in permissions_to_remove:
+                        remove_perm(permission, to_ug, layer)
+
+
+        return super().form_valid(form)
+
+
+
+

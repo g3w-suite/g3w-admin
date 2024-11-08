@@ -103,7 +103,7 @@
                 <div class="col-md-3 col-md-offset-6 col-xs-6" >
                     <b>{% trans 'Project layers actions' %}:</b>
                 </div>
-                <div class="col-md-3 col-xs-6">
+                <div class="col-md-3 col-xs-6" style="border-bottom: 1px solid #f4f4f4;">
                 {% g3wadmin_project_layers_actions project 'qdjango' user as project_layers_actions %}
 
                 {% for action in project_layers_actions %}

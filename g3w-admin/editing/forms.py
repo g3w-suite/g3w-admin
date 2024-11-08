@@ -41,7 +41,7 @@ class ActiveEditingMixin(object):
         # add user_groups_viewer choices
         user_groups_viewers = get_groups_for_object(self.project, 'view_project', grouprole='viewer')
 
-        # for Editor level filter by his groups
+        # For Editor level filter by his groups
         if userHasGroups(self.request.user, [G3W_EDITOR1]):
             editor1_user_gorups_viewers = get_objects_for_user(self.request.user, 'auth.change_group',
                                                                AuthGroup).order_by('name').filter(
@@ -278,3 +278,67 @@ class ActiveEditingMultiLayerForm(ActiveEditingMixin, G3WRequestFormMixin, G3WPr
                     ))
         self.fields['layers'].choices = [(l.pk, l.name) for l in project_layers]
 
+
+class CopyEditingPermissionForm(ActiveEditingMixin, G3WRequestFormMixin, G3WProjectFormMixin, forms.Form):
+    """
+    Form for copy permissions from user to other users
+    """
+
+    from_user = forms.ChoiceField(choices=[], label=_('From User'), required=False,
+                                             help_text=_('Select the user from which to take the permissions to copy'))
+
+    to_users = forms.MultipleChoiceField(choices=[], label=_('To users'), required=False,
+                                             help_text=_('Select the users who will receive permissions'))
+
+    from_group = forms.ChoiceField(choices=[], label=_('From Group of User'), required=False,
+                                  help_text=_('Select the group df user from which to take the permissions to copy'))
+
+    to_groups = forms.MultipleChoiceField(choices=[], label=_('To Groups of Users'), required=False,
+                                         help_text=_('Select the groups of users who will receive permissions'))
+
+
+    def _set_choices(self):
+        """
+        Set choices for from_user and to_users fields
+        """
+
+        with_anonymous = getattr(settings, 'EDITING_ANONYMOUS', False)
+
+        # Get Editor Level 1 and Editor level 2 to clear from list
+        editor_pk = self.project.editor.pk if self.project.editor else None
+        editor2_pk = self.project.editor2.pk if self.project.editor2 else None
+
+        viewers = get_viewers_for_object(self.project, self.request.user, 'view_project',
+                                         with_anonymous=with_anonymous)
+        viewers_groups = get_groups_for_object(self.project, 'view_project', grouprole='viewer')
+
+        viewers = [(v.pk, label_users(v)) for v in viewers if v.pk not in (editor_pk, editor2_pk)]
+        viewers_groups = [(v.pk, v.name) for v in viewers_groups]
+
+        self.fields['from_user'].choices = viewers
+        self.fields['to_users'].choices = viewers
+        self.fields['from_group'].choices = viewers_groups
+        self.fields['to_groups'].choices = viewers_groups
+
+    def __init__(self, *args, **kwargs):
+
+        # Get editing layers of the project
+        self.editing_layers = kwargs['editing_layers']
+        del (kwargs['editing_layers'])
+
+        super().__init__(*args, **kwargs)
+
+        # set choices
+        self._set_choices()
+
+        self.helper = FormHelper(self)
+        self.helper.form_tag = False
+
+        layout_args = [
+            Field('from_user', css_class='select2', style="width:100%;"),
+            Field('to_users', css_class='select2', style="width:100%;"),
+            Field('from_group', css_class='select2', style="width:100%;"),
+            Field('to_groups', css_class='select2', style="width:100%;"),
+        ]
+
+        self.helper.layout = Layout(*layout_args)
