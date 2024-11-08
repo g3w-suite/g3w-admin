@@ -980,6 +980,7 @@ class WidgetSerializer(serializers.ModelSerializer):
             ret['options'] = {
                 'queryurl': None,
                 'title': body['title'],
+                'paginate': body['paginate'] if 'paginate' in body else False,
                 'results': body['results'],
                 'dozoomtoextent': body['dozoomtoextent'],
                 'layerid': self.layerid,
