@@ -345,7 +345,7 @@ def add_filter_token(**kwargs):
     :return: A dict with autofilter token
     :rtype: dict, None
     """
-    # check if is instance of layerVectorView
+    # Check if is instance of layerVectorView
     if (
         isinstance(kwargs["sender"], LayerVectorView)
         and kwargs["sender"].mode_call == MODE_DATA
