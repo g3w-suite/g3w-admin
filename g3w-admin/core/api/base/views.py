@@ -707,10 +707,8 @@ class BaseVectorApiView(G3WAPIView):
             # Cafe with 'autofilter' parameter: get every id from qgis_feature_request
             # ------------------------------------------------------------------------
             if 'autofilter' in self.request_data and str(self.request_data['autofilter']) == '1':
-                api_vector_data.update({
-                    'total_ids': [f.id for f in get_qgis_features(
+                    self.total_feature_ids = [str(f.id()) for f in get_qgis_features(
                         self.metadata_layer.qgis_layer, qgis_feature_request, **kwargs)]
-                })
 
 
             self.results.update(APIVectorLayerStructure(**api_vector_data).as_dict())
