@@ -21,7 +21,6 @@ RUN apt-get update && apt install -y \
     dirmngr \
     xvfb \
     postgresql-client
-    wget
 
 # PyQGIS latest version
 RUN curl -sS https://download.qgis.org/downloads/qgis-archive-keyring.gpg > /etc/apt/keyrings/qgis-archive-keyring.gpg && \
