@@ -10,6 +10,7 @@ from django.apps import apps
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from guardian.exceptions import GuardianError
 from guardian.utils import get_40x_or_None, get_anonymous_user
+from qdjango.utils.session import reset_filtertoken
 
 import logging
 
@@ -168,6 +169,9 @@ def cache_page(timeout, key_args, key_prefix="", cache_alias=None):
                 user_pk =  get_anonymous_user().pk
             else:
                 user_pk = request.user.pk
+
+            # Reset sessiontokenfilter
+            reset_filtertoken(request)
 
             key = f"{key_prefix}{'_'.join([str(kwargs[k]) for k in key_args]  + [str(user_pk)])}"
             logger.debug(f"[CACHING /api/config]: Key {key}")
