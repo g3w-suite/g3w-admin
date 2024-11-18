@@ -287,7 +287,7 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
         # Check for custom themes
         # -----------------------
-        if not self.request.user.is_anonymous:
+        if self.request and not self.request.user.is_anonymous:
             c_themes = CustomerTheme.objects.filter(project_id=ret['id'], user=self.request.user)
             for c_theme in c_themes:
                 ret['map_themes']['custom'].append({
