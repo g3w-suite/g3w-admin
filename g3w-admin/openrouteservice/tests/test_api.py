@@ -144,6 +144,7 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
     """Test proxy to QgsServer"""
 
     def _get_vcr(self, **kwargs):
+
         myvcr = super()._get_vcr(**kwargs)
         myvcr.record_mode = RecordMode.NEW_EPISODES
         return myvcr
