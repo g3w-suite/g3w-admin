@@ -9,8 +9,7 @@
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no" name="viewport">
   <title>{{ page_title }}</title>
   <link rel="icon" href="{% if SETTINGS.G3WSUITE_CUSTOM_STATIC_URL and SETTINGS.G3WSUITE_FAVICON %}{{ SETTINGS.G3WSUITE_FAVICON }}{% else %}{% static '/img/favicon.ico' %}{% endif %}">
-  <link rel="stylesheet" href="{% with client_default|add:"/css/vendor.min.css" as vendor_css %}{% static vendor_css %}{% endwith %}">
-  <link rel="stylesheet" href="{% with client_default|add:"/css/app.min.css" as app_css %}{% static app_css %}{% endwith %}">
+  <link rel="stylesheet" href="{% with client_default|add:"/app.min.css" as app_css %}{% static app_css %}{% endwith %}">
   {% if SETTINGS.G3WSUITE_CUSTOM_STATIC_URL %}{% for css in SETTINGS.G3WSUITE_CUSTOM_CSS %}
   <link rel="stylesheet" type="text/css" href="{{ css }}" />
   {% endfor %}{% endif %}
@@ -20,9 +19,9 @@
     {{ SETTINGS.SENTRY_JS | safe }}
   {% endif %}
   <app id="app"></app>
-  <script src="{% with client_default|add:"/js/vendor.min.js" as vendor_js %}{% static vendor_js %}{% endwith %}"></script>
+  <script src="{% with client_default|add:"/vendor.min.js" as vendor_js %}{% static vendor_js %}{% endwith %}"></script>
   <script>{{ group_config | safe }}</script>
-  <script src="{% with client_default|add:"/js/app.min.js" as app_js %}{% static app_js %}{% endwith %}"></script>
+  <script src="{% with client_default|add:"/app.min.js" as app_js %}{% static app_js %}{% endwith %}"></script>
   {% if SETTINGS.G3WSUITE_CUSTOM_STATIC_URL %}{% for js in SETTINGS.G3WSUITE_CUSTOM_JS %}
   <script src="{{ js }}"></script>
   {% endfor %}{% endif %}

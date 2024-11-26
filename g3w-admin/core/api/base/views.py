@@ -472,6 +472,7 @@ class BaseVectorApiView(G3WAPIView):
                     attrs.append(attr_idx)
             qgis_feature_request.setSubsetOfAttributes(attrs)
 
+        # Get feature: apply pagination if 'page' parameters is set
         self.features = get_qgis_features(
             self.metadata_layer.qgis_layer, qgis_feature_request, **kwargs)
 
@@ -697,11 +698,31 @@ class BaseVectorApiView(G3WAPIView):
                 f = feature_collection['features'][i]
                 f['id'] = fids_map[f['id']]
 
-            self.results.update(APIVectorLayerStructure(**{
+            api_vector_data = {
                 'data': feature_collection,
                 'count': count_qgis_features(self.metadata_layer.qgis_layer, qgis_feature_request, **kwargs),
-                'geometryType': self.metadata_layer.geometry_type,
-            }).as_dict())
+                'geometryType': self.metadata_layer.geometry_type
+            }
+
+            # Cafe with 'autofilter' parameter: get every id from qgis_feature_request
+            # ------------------------------------------------------------------------
+            if 'autofilter' in self.request_data and str(self.request_data['autofilter']) == '1':
+
+                    # Remove pagination
+                    for k in ('page', 'page_size'):
+                        if k in kwargs:
+                            del(kwargs[k])
+
+                    # Reset limit
+                    if qgis_feature_request.limit() != -1:
+                        qgis_feature_request = QgsFeatureRequest(qgis_feature_request)
+                        qgis_feature_request.setLimit(-1)
+
+                    self.total_feature_ids = [str(f.id()) for f in get_qgis_features(
+                        self.metadata_layer.qgis_layer, qgis_feature_request, **kwargs)]
+
+
+            self.results.update(APIVectorLayerStructure(**api_vector_data).as_dict())
 
             # FIXME: add extra fields data by signals and receivers
             # FIXME: featurecollection = post_serialize_maplayer.send(layer_serializer, layer=self.layer_name)
