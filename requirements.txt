@@ -38,5 +38,5 @@ django-redis==5.2.0
 django-registration==3.4
 django-recaptcha==3.0.0
 pydantic==2.6.3
-weasyprint==62.3
+weasyprint==63.0
 distro==1.7.0
