@@ -345,7 +345,7 @@ def add_filter_token(**kwargs):
     :return: A dict with autofilter token
     :rtype: dict, None
     """
-    # check if is instance of layerVectorView
+    # Check if is instance of layerVectorView
     if (
         isinstance(kwargs["sender"], LayerVectorView)
         and kwargs["sender"].mode_call == MODE_DATA
@@ -357,8 +357,8 @@ def add_filter_token(**kwargs):
         try:
             # Get fids
             results = kwargs["sender"].results.results
-            if results['result']:
-                fids = [f["id"] for f in results['vector']['data']['features']]
+            if results['result'] and hasattr(kwargs["sender"], 'total_feature_ids'):
+                fids = kwargs["sender"].total_feature_ids
 
                 if fids:
                     rkwargs = {'project_type': 'qdjango',

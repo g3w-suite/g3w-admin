@@ -421,7 +421,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
             """
             Get or create an instance of SessionTokeFilter model
 
-            :return: A tuple with the instance of SessioneTokeFilter model and a boolean state for created or retreive
+            :return: A tuple with the instance of SessionTokeFilter model and a boolean state for created or retreive
             :rtype: tuple
             """
             s, created = SessionTokenFilter.objects.get_or_create(
@@ -545,7 +545,7 @@ class LayerVectorView(QGISLayerVectorViewMixin, BaseVectorApiView):
 
             s, created = _get_sessiontokenfilter()
 
-            # Check if a recordo for surrent layer is present for update or create it
+            # Check if a record for current layer is present for update or create it
             s.stf_layers.update_or_create(
                 layer=fls.layer,
                 defaults={
