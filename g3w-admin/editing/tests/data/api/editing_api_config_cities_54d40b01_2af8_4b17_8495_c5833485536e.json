@@ -316,7 +316,10 @@
 				"options": {}
 			},
 			"vectorjoin_id": "cities_54d40b01_2af8_4b17_8495_c5833485536e_vectorjoin_0"
-		}]
+		}],
+		"editing": {
+			"visible": true
+		}
 	},
 	"featurelocks": null,
 	"constraints": {},

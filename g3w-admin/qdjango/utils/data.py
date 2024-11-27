@@ -332,7 +332,7 @@ class QgisProjectLayer(XmlData):
             if self.qgs_layer.type() == QgsMapLayerType.VectorTileLayer:
                 layer_type = 'vector-tile'
 
-        if layer_type == 'arcgisvectortilelayer':
+        if layer_type == 'arcgisvectortileservice':
             layer_type = 'vector-tile'
 
         if not layer_type in availableTypes:
@@ -388,11 +388,28 @@ class QgisProjectLayer(XmlData):
 
         # get root of layer-tree-group
         ret = []
+
         try:
             vectorjoins = self.qgs_layer.vectorJoins()
+        except:
+            vectorjoins = []
 
-            for order, join in enumerate(vectorjoins):
+        for order, join in enumerate(vectorjoins):
 
+            try:
+                '''
+                Sometimes the the vectorjoins layer section ina QGIS project can contains old 'ghost' joins, i.e.:
+                <vectorjoins>
+                    <join dynamicForm="0" targetFieldName="id" memoryCache="1" joinFieldName="N. mappa" 
+                    joinLayerId="Sommarioni_Clauzetto_5c2f9be3_2266_4760_8840_165618815314" upsertOnEdit="0" 
+                    cascadedDelete="0" editable="0"/>
+                    <join dynamicForm="0" targetFieldName="id" memoryCache="1" joinFieldName="N_di_Mappa" 
+                    joinLayerId="Clauzetto_Sommarioni_dc968329_29b7_4f47_a79f_853c290a14cf" upsertOnEdit="0" 
+                    customPrefix="" cascadedDelete="0" hasCustomPrefix="1" editable="0"/>
+                </vectorjoins>
+                The layer Sommarioni_Clauzetto_5c2f9be3_2266_4760_8840_165618815314 is not present inside the project, 
+                may be it is a old layer removed from the project.    
+                '''
 
                 # Prefix management
                 if layer_tree_vectorjoins[order].get("hasCustomPrefix") == "1":
@@ -418,8 +435,8 @@ class QgisProjectLayer(XmlData):
                 # For join 1to1
                 self.qgisProject.relation_1to1_layers.append(self.layerId)
 
-        except:
-            pass
+            except:
+                pass
         return ret
 
     def _getDataCapabilities(self):
@@ -529,13 +546,22 @@ class QgisProjectLayer(XmlData):
         if self.qgs_layer.type() != QgsMapLayer.VectorLayer:
             return None
 
+        # Display order are get from attributeTableConfig QgsVectorLayer method
+        # QgsAttributeTableConfig.columns return a list of QgsAttributeTableConfig.ColumnConfig
+        # the list follow the fields order set into QGIS project by 'Organize' property on layer attribute table.
+        # Usually the list has a empty string at the end or in the middle
         columns = []
-        for f in self.qgs_layer.fields():
-            columns.append({
-                'name': f.name(),
-                'type': QVariant.typeToName(f.type()).upper() if QVariant.typeToName(f.type()) else None,
-                'label': f.displayName(),
-            })
+        qfields = self.qgs_layer.fields()
+        qattrcolumns = self.qgs_layer.attributeTableConfig().columns()
+        for ac in qattrcolumns:
+            fidx = qfields.indexFromName(ac.name)
+            if fidx != -1:
+                f = qfields.field(fidx)
+                columns.append({
+                    'name': f.name(),
+                    'type': QVariant.typeToName(f.type()).upper() if QVariant.typeToName(f.type()) else None,
+                    'label': f.displayName(),
+                })
 
         return columns
 

@@ -13,7 +13,8 @@ from django.contrib.auth.decorators import login_required
 from .views import (
     UploadFileView,
     ActiveEditingLayerView,
-    ActiveEditingMultiLayerView
+    ActiveEditingMultiLayerView,
+    CopyEditingPermissionView
 )
 
 
@@ -41,6 +42,11 @@ urlpatterns = [
         '^(?P<group_slug>[-_\w\d]+)/(?P<project_type>[-_\w\d]+)/(?P<project_slug>[-_\w\d]+)/layers/active/$',
         login_required(ActiveEditingMultiLayerView.as_view()),
         name='editing-multi-layer-active'
+    ),
+    re_path(
+        '^(?P<group_slug>[-_\w\d]+)/(?P<project_type>[-_\w\d]+)/(?P<project_slug>[-_\w\d]+)/copypermission/$',
+        login_required(CopyEditingPermissionView.as_view()),
+        name='editing-copy-permission'
     ),
 
 ]

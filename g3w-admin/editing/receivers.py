@@ -11,18 +11,7 @@ from django.conf import settings
 from django.dispatch import receiver
 from django.contrib.auth.signals import user_logged_out
 from django.template import loader
-from django.core.cache import cache
 from django.db.models.signals import pre_delete, post_save
-from core.signals import (
-    load_layer_actions,
-    initconfig_plugin_start,
-    after_serialized_project_layer,
-    pre_save_maplayer,
-    post_save_maplayer,
-    pre_delete_maplayer,
-    load_js_modules,
-    before_return_vector_data_layer,
-)
 from django.db.models.signals import pre_delete
 from core.signals import (
     load_layer_actions,
@@ -31,15 +20,13 @@ from core.signals import (
     pre_save_maplayer,
     post_save_maplayer,
     pre_delete_maplayer,
-    load_js_modules,
     before_return_vector_data_layer,
-    load_project_layers_actions
+    load_project_layers_actions,
+    post_create_maplayerattributes
 )
-from core.utils.qgisapi import get_qgis_layer
-from qdjango.api.projects.serializers import QGIS_LAYER_TYPE_NO_GEOM
 from qdjango.vector import LayerVectorView, MODE_CONFIG
 from qdjango.models import GeoConstraintRule
-from qdjango.utils.structure import datasource2dict
+from usersmanage.utils import get_user_groups
 from .models import (
     G3WEditingFeatureLock,
     G3WEditingLayer,
@@ -329,24 +316,52 @@ def fill_logging_fields(sender, **kwargs):
 
     mode = kwargs["mode"]
     user = kwargs["user"]
+    user_groups = ", ".join([g.name for g in get_user_groups(user)])
     try:
         el = G3WEditingLayer.objects.get(
             app_name="qdjango", layer_id=kwargs["layer_metadata"].layer_id
         )
-        if el.add_user_field and mode == EDITING_POST_DATA_ADDED:
-            kwargs["data"]["feature"]["properties"][
-                el.add_user_field
-            ] = f"{user.username}"
+        if mode == EDITING_POST_DATA_ADDED:
 
-            # Remove edit_suer_field property if is active
-            if el.edit_user_field:
-                del kwargs["data"]["feature"]["properties"][el.edit_user_field]
-        if el.edit_user_field and mode == EDITING_POST_DATA_UPDATED:
-            kwargs['data']['feature']['properties'][el.edit_user_field] = f"{user.username}"
-
-            # Remove add_user_field property if is active
+            # Set the user and user group
+            # ---------------------------
             if el.add_user_field:
-                del(kwargs['data']['feature']['properties'][el.add_user_field])
+                kwargs["data"]["feature"]["properties"][
+                    el.add_user_field
+                ] = f"{user.username}"
+
+                # Remove edit_user_field property if is active
+                if el.edit_user_field:
+                    del kwargs["data"]["feature"]["properties"][el.edit_user_field]
+
+            if el.add_user_group_field:
+                kwargs["data"]["feature"]["properties"][
+                    el.add_user_group_field
+                ] = f"{user_groups}"
+
+                # Remove edit_user_field property if is active
+                if el.edit_user_group_field:
+                    del kwargs["data"]["feature"]["properties"][el.edit_user_group_field]
+
+
+        if mode == EDITING_POST_DATA_UPDATED:
+
+            # Set the user and user group
+            # ---------------------------
+            if el.edit_user_field:
+                kwargs['data']['feature']['properties'][el.edit_user_field] = f"{user.username}"
+
+                # Remove add_user_field property if is active
+                if el.add_user_field:
+                    del(kwargs['data']['feature']['properties'][el.add_user_field])
+
+            if el.edit_user_group_field:
+                kwargs['data']['feature']['properties'][el.edit_user_group_field] = f"{user_groups}"
+
+                # Remove add_user_field property if is active
+                if el.add_user_group_field:
+                    del (kwargs['data']['feature']['properties'][el.add_user_group_field])
+
     except Exception as e:
         logger.error(f"[EDITING] - FILL LOGGING FIELDS: {e}")
 
@@ -422,3 +437,23 @@ def invalid_prj_cache(**kwargs):
         f"{layer.project}"
     )
 
+@receiver(post_create_maplayerattributes)
+def set_editing_visible_status(**kwargs):
+    """
+    Add status 'visible to layer definition in /vector/api/config'
+    """
+
+    # Check for layer editing capabilities are active
+    try:
+        el = G3WEditingLayer.objects.get(
+            app_name="qdjango", layer_id=kwargs["layer"].pk
+        )
+
+        kwargs['vector_params'].update({
+            'editing': {
+                'visible': el.visible
+            }
+        })
+
+    except:
+        return None

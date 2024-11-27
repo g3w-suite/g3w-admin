@@ -110,8 +110,12 @@ ga.Qdjango.widgetEditor = {
         })
         break
       case "search":
+
+        paginate = $(".rightCol").find("#paginate").prop('checked');
+
         obj = {
           title: $(".rightCol").find("#title").val(), // Search title
+          paginate: paginate,
           query: "simpleWmsSearch", // It can be removed?
           usewmsrequest: true, // Always set to true
           fields: [],
@@ -252,7 +256,12 @@ ga.Qdjango.widgetEditor = {
     var textInput = $('<input class="form-control" type="text" name="resultfield_text" value="' + alInVa + '">')
 
     var tiVa = that.isset(values) && that.isset(values.title) ? values.title : ""
+    var paVa = that.isset(values) && that.isset(values.paginate) ? values.paginate : false
     var title = $('<input class="form-control" type="text" name="title" id="title" value="' + tiVa + '">')
+    var paginate = $('<input type="checkbox" name="paginate" id="paginate" value="1">')
+    if (paVa) {
+      paginate.prop('checked', true);
+    }
 
     var div = $(
       '<div class="bloccoGenerale box box-danger">\
@@ -265,14 +274,21 @@ ga.Qdjango.widgetEditor = {
 							<div class="row">\
 								<div class="form-group col-md-12">\
 									<div class="controls title">\
-									<label class="control-label requiredField">' +
-        gettext("Search title") +
-        "</label>\
+									<label class="control-label requiredField">\
+									' + gettext("Search title") + '\
+                                    </label>\
+									</div>\
+								</div>\
+								<div class="form-group col-md-12">\
+									<div class="controls paginate">\
+									<label class="control-label requiredField">\
+									' + gettext("Paginate resutls") + '\
+                                    </label>\
 									</div>\
 								</div>\
 							</div>\
 						<div>\
-					</div>"
+					</div>'
     )
 
     var onAddAction = function (btn, values) {
@@ -311,6 +327,11 @@ ga.Qdjango.widgetEditor = {
       .find(".title")
       .append(title)
       .append('<div class="help-block">' + gettext("Client search title identification") + "</div>")
+
+    div
+      .find(".paginate")
+      .append(paginate)
+      .append('<div class="help-block">' + gettext("Check it if you want paginate the search results") + "</div>")
 
     div.find(".fieldSelect").first().append(fieldSelect)
     div.find(".textInput").first().append(textInput)

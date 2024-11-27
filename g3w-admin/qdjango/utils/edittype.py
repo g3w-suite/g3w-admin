@@ -26,6 +26,17 @@ class QgisEditType(object):
     def input_form(self):
         return dict()
 
+    def make_bool_from_value(self, value)->bool:
+        """
+        From QGIS for widget parameters must be boolean for G3W-CLIENT.
+        Some time the values of widget parameter may be a boolean or a string/numeric
+        :param value: the value of a widget parameter
+        :return: bool
+        :rtype: bool
+        """
+
+        return True if value == '1' or value == 'true' or value is True else False
+
 
 class QgisEditTypeCheckBox(QgisEditType):
     """
@@ -36,15 +47,24 @@ class QgisEditTypeCheckBox(QgisEditType):
 
     @property
     def input_form(self):
+        displaymethod = getattr(self, 'TextDisplayMethod', 0)
+        checkedstate = getattr(self, 'CheckedState','TRUE')
+        uncheckedstate = getattr(self, 'UncheckedState', 'TRUE')
         return {
             'input': {
                 'type': self.field_type,
                 'options': {
                     'values': [
-                        {'value': getattr(self, 'CheckedState',
-                                          'TRUE'), 'checked': True},
-                        {'value': getattr(
-                            self, 'UncheckedState', 'FALSE'), 'checked': False},
+                        {
+                            'value': checkedstate,
+                            'label': checkedstate if displaymethod == 1 else 'True',
+                            'checked': True
+                         },
+                        {
+                            'value': uncheckedstate,
+                            'label': uncheckedstate if displaymethod == 1 else 'False',
+                            'checked': False
+                        },
                     ]
                 }
             }
@@ -148,9 +168,11 @@ class QgisEditTypeValueRelation(QgisEditTypeValueMap):
 
         # add params for get value
         input_form['input']['options'].update({
-            'key': self.Value,
-            'value': self.Key,
-            'usecompleter': True if self.UseCompleter == '1' or self.UseCompleter == 'true' or self.UseCompleter is True else False,
+            'key': self.Key,
+            'value': self.Value,
+            'usecompleter': self.make_bool_from_value(self.UseCompleter),
+            'orderbyvalue': self.make_bool_from_value(self.OrderByValue),
+            'allowmulti': self.make_bool_from_value(self.AllowMulti),
             'layer_id': self.Layer,
             'loading': {
                 'state': None

@@ -20,38 +20,38 @@ msgstr ""
 
 #: OWS/utils/data.py:125
 msgid "The GetFeatureResponse response is malformed: {}"
-msgstr ""
+msgstr "La réponse de GetFeatureResponse est mal formée: {}"
 
 #: bforest/forms/admin.py:61
 #: bforest/templates/bforest/admin/uploadscsv_add.html:9
 msgid "Upload CSV data file"
-msgstr ""
+msgstr "Téléverser un fichier de données CSV"
 
 #: bforest/forms/admin.py:97
 msgid "This file must have a '.csv' extension!"
-msgstr ""
+msgstr "Ce fichier doit avoir une extension en '.csv'"
 
 #: bforest/forms/admin.py:109
 msgid "Input data has not HEADERS column."
-msgstr ""
+msgstr "Les données en entrées n'ont pas de colonne HEADERS."
 
 #: bforest/forms/admin.py:121
 msgid "The follows fields are required: {\", \".join(field_intersect)}"
-msgstr ""
+msgstr "Les champs suivants sont requis: {\", \".join(field_intersect)}"
 
 #: bforest/forms/admin.py:161
 msgid "Sorry but only one user's data for CSV file: {\", \".join(users)}"
-msgstr ""
+msgstr "Désolé le fichier CSV ne contient que les données pour un utilisateur: {\", \".join(users)}"
 
 #: bforest/forms/admin.py:165
 #, python-brace-format
 msgid "Sorry but user's data {users[0]} is not present into DB."
-msgstr ""
+msgstr "Désolé mais les données de l'utilisateur {users[0]} ne sont pas présentes en base."
 
 #: bforest/forms/admin.py:168
 #, python-brace-format
 msgid "Sorry but user's data {users[0]} is not your current username."
-msgstr ""
+msgstr "Désolé mais la donnée de l'utilisateur {users[0]} ne correspond pas à votre nom d'utilisateur actuel."
 
 #: bforest/forms/admin.py:250
 #: bforest/templates/bforest/admin/project_list.html:17
@@ -63,11 +63,11 @@ msgstr ""
 #: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:19
 #: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:27
 msgid "Project"
-msgstr ""
+msgstr "Projet"
 
 #: bforest/models/admin.py:31
 msgid "CSV file type"
-msgstr ""
+msgstr "Type de fichier CSV"
 
 #: bforest/models/admin.py:33
 msgid "ADS DETECTED"
@@ -75,11 +75,11 @@ msgstr ""
 
 #: bforest/models/admin.py:34
 msgid "TREES"
-msgstr ""
+msgstr "ARBRES"
 
 #: bforest/models/admin.py:37
 msgid "CSV file to upload"
-msgstr ""
+msgstr "FIchier CSV à téléverser"
 
 #: bforest/models/admin.py:38
 #: bforest/templates/bforest/admin/project_list.html:25
@@ -87,52 +87,52 @@ msgstr ""
 #: eleprofile/templates/eleprofile/dtms_list.html:35
 #: eleprofile/templates/eleprofile/projects_list.html:27
 msgid "Note"
-msgstr ""
+msgstr "Note"
 
 #: bforest/models/admin.py:43
 msgid "CSV rows"
-msgstr ""
+msgstr "Lignes CSV"
 
 #: bforest/models/admin.py:44
 msgid "DB rows imported"
-msgstr ""
+msgstr "Lignes BDD importées"
 
 #: bforest/models/admin.py:45
 msgid "Import ID"
-msgstr ""
+msgstr "ID import"
 
 #: bforest/templates/bforest/admin/__raster_recalculation_analysis.html:6
 #: bforest/templates/bforest/admin/raster_storic_analysis.html:6
 #: bforest/templates/bforest/admin/uploadscsv_list.html:31
 msgid "Date"
-msgstr ""
+msgstr "Date"
 
 #: bforest/templates/bforest/admin/__raster_recalculation_analysis.html:7
 #: bforest/templates/bforest/admin/raster_storic_analysis.html:7
 msgid "Result"
-msgstr ""
+msgstr "Résultat"
 
 #: bforest/templates/bforest/admin/__raster_recalculation_analysis.html:8
 #: bforest/templates/bforest/admin/raster_storic_analysis.html:8
 msgid "Result Log"
-msgstr ""
+msgstr "Log du résultat"
 
 #: bforest/templates/bforest/admin/__raster_recalculation_analysis.html:21
 #: bforest/templates/bforest/admin/raster_storic_analysis.html:27
 msgid "No storic analyzes."
-msgstr ""
+msgstr "Aucune analyse des storic."
 
 #: bforest/templates/bforest/admin/project_form.html:11
 #: bforest/templates/bforest/admin/project_form.html:14
 msgid "BForest Project"
-msgstr ""
+msgstr "Projet BForest"
 
 #: bforest/templates/bforest/admin/project_form.html:14
 #: eleprofile/templates/eleprofile/dtm_form.html:14
 #: eleprofile/templates/eleprofile/project_form.html:14
 #: portal/templates/portal/picture_form.html:14
 msgid "New"
-msgstr ""
+msgstr "Nouveau"
 
 #: bforest/templates/bforest/admin/project_form.html:27
 #: bforest/templates/bforest/admin/uploadscsv_add.html:19
@@ -141,7 +141,7 @@ msgstr ""
 #: openrouteservice/templates/openrouteservice/openrouteserviceproject_form.html:25
 #: portal/templates/portal/picture_form.html:27
 msgid "Alert"
-msgstr ""
+msgstr "Alerte"
 
 #: bforest/templates/bforest/admin/project_form.html:28
 #: bforest/templates/bforest/admin/uploadscsv_add.html:20
@@ -150,11 +150,11 @@ msgstr ""
 #: openrouteservice/templates/openrouteservice/openrouteserviceproject_form.html:26
 #: portal/templates/portal/picture_form.html:28
 msgid "Some errors on form. Check it and send again."
-msgstr ""
+msgstr "Le formulaire contient des erreurs. Veuillez vérifier et réessayer."
 
 #: bforest/templates/bforest/admin/project_list.html:8
 msgid "BForest Projects"
-msgstr ""
+msgstr "Projets BForest"
 
 #: bforest/templates/bforest/admin/project_list.html:23
 #: bforest/templates/bforest/admin/uploadscsv_list.html:25
@@ -162,7 +162,7 @@ msgstr ""
 #: eleprofile/templates/eleprofile/projects_list.html:25
 #: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:26
 msgid "Actions"
-msgstr ""
+msgstr "Actions"
 
 #: bforest/templates/bforest/admin/project_list.html:32
 #: eleprofile/templates/eleprofile/dtms_list.html:43
@@ -170,7 +170,7 @@ msgstr ""
 #: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:36
 #: portal/templates/portal/picture_list.html:50
 msgid "Edit"
-msgstr ""
+msgstr "Modifier"
 
 #: bforest/templates/bforest/admin/project_list.html:35
 #: bforest/templates/bforest/admin/uploadscsv_list.html:38
@@ -179,128 +179,128 @@ msgstr ""
 #: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:39
 #: portal/templates/portal/picture_list.html:53
 msgid "Delete"
-msgstr ""
+msgstr "Supprimer"
 
 #: bforest/templates/bforest/admin/raster_analysis.html:38
 msgid "BForest Raster Analyzes"
-msgstr ""
+msgstr "Analyses Raster BForest"
 
 #: bforest/templates/bforest/admin/raster_analysis.html:48
 msgid "RUN ZONAL ANALISYS"
-msgstr ""
+msgstr "Exécuter une analyse de zone"
 
 #: bforest/templates/bforest/admin/raster_analysis.html:50
 msgid "Click to run Zonal Statistics Analysis"
-msgstr ""
+msgstr "Cliquer pour exécuter une analyse statistique de zone"
 
 #: bforest/templates/bforest/admin/raster_analysis.html:51
 #: bforest/templates/bforest/admin/raster_analysis.html:69
 msgid "Last 5 analysys done"
-msgstr ""
+msgstr "5 dernières analyses faites"
 
 #: bforest/templates/bforest/admin/raster_analysis.html:66
 msgid "RUN RECALCULATION ANALISYS"
-msgstr ""
+msgstr "Exécuter une analyse de recalcul"
 
 #: bforest/templates/bforest/admin/raster_analysis.html:68
 msgid "Click to recalculate rasters"
-msgstr ""
+msgstr "Cliquer pour recalculer les rasters"
 
 #: bforest/templates/bforest/admin/uploadscsv_info.html:5
 msgid "General aspects"
-msgstr ""
+msgstr "Informations générales"
 
 #: bforest/templates/bforest/admin/uploadscsv_info.html:6
 msgid "File extention support: .csv"
-msgstr ""
+msgstr "Extension de fichier supportée: .csv"
 
 #: bforest/templates/bforest/admin/uploadscsv_info.html:10
 msgid "Important"
-msgstr ""
+msgstr "Important"
 
 #: bforest/templates/bforest/admin/uploadscsv_info.html:10
 msgid "CSV file must have \"comma (,)\"  as field separator"
-msgstr ""
+msgstr "Le fichier CSV doit avoir \"virgule (,)\" comme séparateur de fichier"
 
 #: bforest/templates/bforest/admin/uploadscsv_info.html:11
 msgid "The order and position of columns is not mandatory"
-msgstr ""
+msgstr "L'ordre et la position des colonnes n'est pas imposée"
 
 #: bforest/templates/bforest/admin/uploadscsv_list.html:10
 msgid "Uploaded CSV data files"
-msgstr ""
+msgstr "Fichiers de données CSV téléversés"
 
 #: bforest/templates/bforest/admin/uploadscsv_list.html:19
 msgid "CSV file"
-msgstr ""
+msgstr "Fichier CSV"
 
 #: bforest/templates/bforest/admin/uploadscsv_list.html:26
 msgid "Type"
-msgstr ""
+msgstr "Type"
 
 #: bforest/templates/bforest/admin/uploadscsv_list.html:27
 msgid "CSV File"
-msgstr ""
+msgstr "Fichier CSV"
 
 #: bforest/templates/bforest/admin/uploadscsv_list.html:29
 msgid "CSV records"
-msgstr ""
+msgstr "Enregistrements CSV"
 
 #: bforest/templates/bforest/admin/uploadscsv_list.html:30
 msgid "DB records imported"
-msgstr ""
+msgstr "Enregistrements BDD importés"
 
 #: bforest/templates/bforest/include/admin/form_buttons.html:6
 msgid "Upload and load into DB"
-msgstr ""
+msgstr "Téléverser et charger en BDD"
 
 #: bforest/templates/bforest/include/admin/form_buttons.html:10
 msgid "Redo/Back"
-msgstr ""
+msgstr "Refaire/Revenir"
 
 #: bforest/templates/bforest/include/admin/form_buttons.html:12
 msgid "Data structure for uploading"
-msgstr ""
+msgstr "Structure de la donnée pour les téléversements"
 
 #: bforest/templates/bforest/widgets/dashboard.html:17
 msgid "BForest CSV management module"
-msgstr ""
+msgstr "Module gestion CSV BForest"
 
 #: bforest/templates/bforest/widgets/dashboard.html:26
 msgid "Import CSV"
-msgstr ""
+msgstr "Import CSV"
 
 #: bforest/templates/bforest/widgets/dashboard.html:34
 msgid "CSV imported"
-msgstr ""
+msgstr "CSV importé"
 
 #: br_service/apps.py:21
 msgid "BR service"
-msgstr ""
+msgstr "Service BR"
 
 #: eleprofile/forms.py:92
 msgid "DTM Layer and pth layers"
-msgstr ""
+msgstr "Couche DTM et couches path"
 
 #: eleprofile/models.py:33
 msgid "Select DTM project layer to use for sampling"
-msgstr ""
+msgstr "Sélectionner une couche du projet DTM à utiliser pour l'échantillonnage"
 
 #: eleprofile/models.py:34
 msgid "Sampling DTM step"
-msgstr ""
+msgstr "Pas d'échantillonnage du DTM"
 
 #: eleprofile/models.py:35
 msgid "Sampling step in map units, default 10"
-msgstr ""
+msgstr "Pas d'échantillonnage en unité de carte, défaut 10"
 
 #: eleprofile/models.py:36
 msgid "Select one or more path layers"
-msgstr ""
+msgstr "Sélectionner une ou plusieurs couches path"
 
 #: eleprofile/models.py:44
 msgid "Layer must be a 'raster' or 'gdal' type"
-msgstr ""
+msgstr "La couche doit être de type 'raster' ou 'gdal'"
 
 #: eleprofile/models.py:51
 #, python-brace-format
@@ -308,6 +308,7 @@ msgid ""
 "Layer {layer.name} must be one of 'postgres', 'spatialite', 'ogr' or 'mssql' "
 "type"
 msgstr ""
+"La couche {layer.name} doit être d'un type parmi 'postgres', 'spatialite', 'ogr' ou 'mssql'"
 
 #: eleprofile/models.py:57
 #, python-brace-format
@@ -315,364 +316,371 @@ msgid ""
 "Layer {layer.name} must be one geometry type of 'LineString' or "
 "'MultiLineString"
 msgstr ""
+"La couche {layer.name} doit avoir une géomtrie de type 'LineString' ou "
+"'MultiLineString'"
 
 #: eleprofile/templates/eleprofile/dtm_form.html:11
 #: eleprofile/templates/eleprofile/dtm_form.html:14
 msgid "DTM Layer and Path layers"
-msgstr ""
+msgstr "Couche DTM et couches Path"
 
 #: eleprofile/templates/eleprofile/dtms_list.html:11
 msgid "DTM layer and path layers of project "
-msgstr ""
+msgstr "Couche DTM et couches Path du projet "
 
 #: eleprofile/templates/eleprofile/dtms_list.html:23
 #: eleprofile/templates/eleprofile/projects_list.html:40
 msgid "DTM layer and Path layers"
-msgstr ""
+msgstr "Couche DTM et couches Path"
 
 #: eleprofile/templates/eleprofile/dtms_list.html:33
 msgid "DTM layer"
-msgstr ""
+msgstr "Couche DTM"
 
 #: eleprofile/templates/eleprofile/dtms_list.html:34
 msgid "Path layers"
-msgstr ""
+msgstr "Couches Path"
 
 #: eleprofile/templates/eleprofile/project_form.html:11
 msgid "Elevation Profile Project"
-msgstr ""
+msgstr "Projet de profil d'élévation"
 
 #: eleprofile/templates/eleprofile/projects_list.html:8
 msgid "Elevation Profile Projects"
-msgstr ""
+msgstr "Projets de profile d'élévation"
 
 #: iam_bari/templates/_login.html:30
 msgid "Sign Out"
-msgstr ""
+msgstr "Se déconnecter"
 
 #: iam_bari/templates/_login.html:35 templates/login.html:41
 msgid "Sign In"
-msgstr ""
+msgstr "Se connecter"
 
 #: openrouteservice/api/views.py:138
 msgid "Input layer is not a point or multipoint layer."
-msgstr ""
+msgstr "La couche en entrée n'est pas une couche de point ou de multipoint."
 
 #: openrouteservice/api/views.py:156
 msgid "Missing \"qgis_layer_id\", \"new_layer_name\" or \"connection_id\"."
-msgstr ""
+msgstr "\"qgis_layer_id\", \"new_layer_name\" or \"connection_id\" manquant."
 
 #: openrouteservice/api/views.py:171 openrouteservice/api/views.py:176
 msgid ""
 "Wrong color parameter, color must be a list of three integers (red, green, "
 "blue)."
 msgstr ""
+"Mauvais paramètre couleur, la couleur doit être une liste de trois entiers (rouge, vert, "
+"bleu)."
 
 #: openrouteservice/api/views.py:182
 msgid ""
 "Missing tranparency parameter, because color was specified transparency is "
 "required."
 msgstr ""
+"Paramètre de transparence manquant, obligatoire en cas de définition d'une couleur."
 
 #: openrouteservice/api/views.py:190
 msgid "Wrong tranparency parameter, transparency must be between 0 and 1."
-msgstr ""
+msgstr "Mauvais paramètre de transparence, la valeur doit être entre 0 et 1."
 
 #: openrouteservice/api/views.py:196
 msgid "Missing stroke_width from style definition."
-msgstr ""
+msgstr "Le paramètre 'stroke_width' est manquant dans la définition du style."
 
 #: openrouteservice/api/views.py:212
 msgid "Layer is not compatible with ORS data."
-msgstr ""
+msgstr "La couche n'est pas compatible avec les données ORS."
 
 #: openrouteservice/api/views.py:225
 msgid "Wrong connection_id."
-msgstr ""
+msgstr "Mauvaise valeur pour 'connection_id'"
 
 #: openrouteservice/api/views.py:229
 msgid "Either qgis_layer_id or connection_id + layer_name must have a value."
-msgstr ""
+msgstr "Soit qgis_layer_id soit connection_id ET layer_name doivent avoir une valeur."
 
 #: openrouteservice/api/views.py:236
 #, python-format
 msgid "Profile not found, available profiles: %s"
-msgstr ""
+msgstr "Profil non trouvé, les profils disponibles sont: %s"
 
 #: openrouteservice/api/views.py:246
 msgid "Missing \"locations\" array."
-msgstr ""
+msgstr "Tableau \"locations\" absent"
 
 #: openrouteservice/api/views.py:250
 #, python-format
 msgid "Max allowed locations: %s"
-msgstr ""
+msgstr "Nombre maximum autorisé de lieux: %s"
 
 #: openrouteservice/api/views.py:254
 msgid "Malformed locations array."
-msgstr ""
+msgstr "Tableau de lieux mal formé"
 
 #: openrouteservice/api/views.py:259
 msgid "Missing \"range\" array."
-msgstr ""
+msgstr "Tableau \"range\" absent"
 
 #: openrouteservice/api/views.py:263
 #, python-format
 msgid "Max allowed ranges: %s"
-msgstr ""
+msgstr "Nombre maximum autorisé d'intervalles: %s"
 
 #: openrouteservice/api/views.py:267
 msgid "Malformed range array."
-msgstr ""
+msgstr "Tableau d'intervalles mal formé"
 
 #: openrouteservice/api/views.py:394
 msgid "Task not found!"
-msgstr ""
+msgstr "Tâche non trouvée!"
 
 #: openrouteservice/models.py:38
 msgid "Isochrones"
-msgstr ""
+msgstr "Isochrones"
 
 #: openrouteservice/templates/openrouteservice/openrouteserviceproject_form.html:13
 msgid "Openrouteservice Project"
-msgstr ""
+msgstr "Projet Openrouteservice"
 
 #: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:8
 msgid "Openrouteservice Projects"
-msgstr ""
+msgstr "Projets Openrouteservice"
 
 #: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:28
 msgid "Services"
-msgstr ""
+msgstr "Services"
 
 #: openrouteservice/utils.py:494
 msgid "Cannot create temporary layer for isochrone result."
-msgstr ""
+msgstr "Impossible de créer une couche temporaire pour le résultat d'isochrone."
 
 #: openrouteservice/utils.py:512
 msgid ""
 "Cannot save isochrone result to destination layer: layer already exists (use "
 "\"qgis_layer_id\" instead)!"
 msgstr ""
+"Impossible de sauvegarder le résultat de l'isochrone dans la couche de destination: la couche existe déjà (utiliser "
+"plutôt \"qgis_layer_id\")!"
 
 #: openrouteservice/utils.py:525
 msgid "Cannot save isochrone result to destination layer: "
-msgstr ""
+msgstr "Impossible de sauvegarder le résultat d'isochrone dans la couche de destination: "
 
 #: openrouteservice/utils.py:553
 msgid "Wrong connection id."
-msgstr ""
+msgstr "Mauvais id de connexion"
 
 #: openrouteservice/utils.py:585
 msgid "Error creating destination layer connection."
-msgstr ""
+msgstr "Erreur lors de la création de la connexion à la couche cible."
 
 #: openrouteservice/utils.py:592
 msgid "Error creating destination layer: "
-msgstr ""
+msgstr "Erreur lors de la création de la couche cible: "
 
 #: openrouteservice/utils.py:606
 msgid "Error creating destination layer: layer is not valid!"
-msgstr ""
+msgstr "Erreur lors de la création de la couche cible: la couche n'est pas valide!"
 
 #: openrouteservice/utils.py:619
 msgid "Error saving the destination layer: could not write project!"
-msgstr ""
+msgstr "Erreur à la sauvegarde de la couche cible: impossible d'écrire le projet!"
 
 #: openrouteservice/utils.py:643
 msgid "Error adding destination Layer to the project: layer already exists."
-msgstr ""
+msgstr "Erreur à l'ajout de la couche cible au projet: la couche existe déjà."
 
 #: openrouteservice/utils.py:653
 #, python-format
 msgid "Error opening destination layer %s: layer not found in QGIS project!"
-msgstr ""
+msgstr "Erreur à l'ouverture de la couche cible %s: la couche est absente du projet QGIS!"
 
 #: openrouteservice/utils.py:670
 msgid "Error transforming geometry from 4326 to destination layer CRS."
-msgstr ""
+msgstr "Erreur lors de la transformation de la géométrie du CRS 4326 vers le CRS de la couche cible."
 
 #: openrouteservice/utils.py:674
 msgid "No compatible features returned from isochrone."
-msgstr ""
+msgstr "Aucune entité compatible obtenue de l'isochrone."
 
 #: openrouteservice/utils.py:677
 msgid "Destination layer is not editable."
-msgstr ""
+msgstr "La couche cible n'est pas modifiable."
 
 #: openrouteservice/utils.py:681
 msgid "Error adding features to the destination layer."
-msgstr ""
+msgstr "Erreur lors de l'ajout d'entités à la couche cible."
 
 #: openrouteservice/utils.py:685
 msgid "Error committing features to the destination layer."
-msgstr ""
+msgstr "Erreur lors de l'écriture des entités dans la couche cible."
 
 #: openrouteservice/utils.py:793
 #, python-format
 msgid "Error generating isochrone: %s."
-msgstr ""
+msgstr "Error lors de la génération d'isochrone: %s."
 
 #: openrouteservice/utils.py:822
 msgid "Unknown error adding results to the destination layer."
-msgstr ""
+msgstr "Erreur inconnue lors de l'ajout des résultats à la couche cible."
 
 #: portal/forms.py:45
 msgid "Picture data"
-msgstr ""
+msgstr "Image"
 
 #: portal/forms.py:67
 msgid "Author and style data"
-msgstr ""
+msgstr "Auteur et Style"
 
 #: portal/models.py:20 portal/templates/portal/picture_form.html:11
 #: portal/templates/portal/picture_form.html:14
 msgid "Picture"
-msgstr ""
+msgstr "Image"
 
 #: portal/models.py:21
 msgid "Main color"
-msgstr ""
+msgstr "Couleur principale"
 
 #: portal/models.py:22
 msgid "Main title color"
-msgstr ""
+msgstr "Couleur du titre principal"
 
 #: portal/models.py:23
 msgid "Subtitle color"
-msgstr ""
+msgstr "Couleur du sous-titre"
 
 #: portal/models.py:24 portal/templates/portal/picture_list.html:41
 msgid "Author"
-msgstr ""
+msgstr "Auteur"
 
 #: portal/models.py:25
 msgid "Author URL"
-msgstr ""
+msgstr "URL auteur"
 
 #: portal/templates/portal/picture_list.html:10
 msgid "Portal pictures"
-msgstr ""
+msgstr "Images du portail"
 
 #: portal/templates/portal/picture_list.html:21
 msgid "Add, update or delete portal picture"
-msgstr ""
+msgstr "Ajouter, modifier ou effacer une image du portail"
 
 #: portal/templates/portal/picture_list.html:31
 msgid "Pictures"
-msgstr ""
+msgstr "Images"
 
 #: portal/templates/portal/picture_list.html:40
 msgid "Image"
-msgstr ""
+msgstr "Image"
 
 #: portal/templates/portal/picture_list.html:42
 msgid "Author url"
-msgstr ""
+msgstr "URL auteur"
 
 #: templates/403.html:7
 msgid "error page"
-msgstr ""
+msgstr "Page d'erreur"
 
 #: templates/403.html:15
 msgid "Access denied"
-msgstr ""
+msgstr "Accès refusé"
 
 #: templates/403.html:17
 msgid "You don't have grant to access this section"
-msgstr ""
+msgstr "Vous n'avez pas le droit d'accéder à cette section"
 
 #: templates/404.html:11
 msgid "Oops! Page not found."
-msgstr ""
+msgstr "Oups! Page non trouvée."
 
 #: templates/404.html:13
 msgid "We could not find the page you were looking for."
-msgstr ""
+msgstr "Nous ne pouvons pas trouver la page que vous recherchez."
 
 #: templates/base.html:193 templates/index.html:6
 msgid "Dashboard"
-msgstr ""
+msgstr "Tableau de bord"
 
 #: templates/base.html:232
 msgid "Version"
-msgstr ""
+msgstr "Version"
 
 #: templates/include/navbar_right_menu.html:10
 msgid "Search"
-msgstr ""
+msgstr "Rechercher"
 
 #: templates/include/navbar_right_menu.html:24
 msgid "Frontend"
-msgstr ""
+msgstr "Interface"
 
 #: templates/include/navbar_right_menu.html:45
 msgid "Registered on"
-msgstr ""
+msgstr "Enregistré le"
 
 #: templates/include/navbar_right_menu.html:46
 msgid "Last login"
-msgstr ""
+msgstr "Dernière connexion"
 
 #: templates/include/navbar_right_menu.html:53
 msgid "Profile"
-msgstr ""
+msgstr "Profil"
 
 #: templates/include/navbar_right_menu.html:56
 msgid "Logout"
-msgstr ""
+msgstr "Déconnexion"
 
 #: templates/include/sidebar_right.html:9
 msgid "Configurations"
-msgstr ""
+msgstr "Configurations"
 
 #: templates/include/sidebar_right.html:15
 msgid "Edit general data"
-msgstr ""
+msgstr "Modifier les données générales"
 
 #: templates/include/sidebar_right.html:16
 msgid "Frontend data and other"
-msgstr ""
+msgstr "Données IHM et autres"
 
 #: templates/include/sidebar_right.html:25
 msgid "Django administration"
-msgstr ""
+msgstr "Administration Django"
 
 #: templates/include/sidebar_right.html:26
 msgid "Go to staff administration section"
-msgstr ""
+msgstr "Aller à la section d'administration du personnel"
 
 #: templates/index.html:7
 msgid "Current situation"
-msgstr ""
+msgstr "Situation actuelle"
 
 #: templates/index.html:19
 msgid "Groups"
-msgstr ""
+msgstr "Groupes"
 
 #: templates/index.html:26
 msgid "Show"
-msgstr ""
+msgstr "Montrer"
 
 #: templates/index.html:32
 msgid "Module widgets"
-msgstr ""
+msgstr "Widgets du module"
 
 #: templates/login.html:21
 msgid "Sign in to start your session"
-msgstr ""
+msgstr "Connectez-vous pour démarrer votre session"
 
 #: templates/login.html:25 templates/registration/password_reset_form.html:24
 msgid "LOGIN ERROR"
-msgstr ""
+msgstr "Erreur de connexion"
 
 #: templates/login.html:26
 msgid "Username and/or password uncorrect"
-msgstr ""
+msgstr "Utilisateur et/ou mot de passe incorrect"
 
 #: templates/login.html:47 templates/registration/password_reset_form.html:31
 msgid "Forgot your password?"
-msgstr ""
+msgstr "Mot de passe oublié ?"
 
 #: templates/login.html:53
 #: templates/registration/password_reset_complete.html:26
@@ -680,19 +688,19 @@ msgstr ""
 #: templates/registration/password_reset_done.html:26
 #: templates/registration/password_reset_form.html:45
 msgid " Version"
-msgstr ""
+msgstr "Version"
 
 #: templates/registration/password_reset_complete.html:22
 msgid "Password reset complete"
-msgstr ""
+msgstr "Réinitialisation du mot de passe terminée"
 
 #: templates/registration/password_reset_complete.html:23
 msgid "Your new password has been set. You can log in now on the"
-msgstr ""
+msgstr "Votre nouveau mot de passe a été défini. Vous pouvez maintenant vous connecter sur"
 
 #: templates/registration/password_reset_complete.html:23
 msgid "log in page"
-msgstr ""
+msgstr "la page de connexion"
 
 #: templates/registration/password_reset_confirm.html:22
 msgid "Enter new password"
@@ -700,58 +708,64 @@ msgstr ""
 
 #: templates/registration/password_reset_confirm.html:29
 msgid "New password"
-msgstr ""
+msgstr "Nouveau mot de passe"
 
 #: templates/registration/password_reset_confirm.html:34
 msgid "Repeat password"
-msgstr ""
+msgstr "Répéter le mot de passe"
 
 #: templates/registration/password_reset_confirm.html:39
 msgid "Change my password"
-msgstr ""
+msgstr "Modifier mon mot de passe"
 
 #: templates/registration/password_reset_confirm.html:44
 msgid ""
 "The password reset link <strong>was invalid</strong>, possibly because it "
 "has already been used.  Please request a new password reset."
 msgstr ""
+"Le lien de réinitialisation du mot de passe <strong>est invalide</strong>, car il a été possiblement "
+"déjà utilisé. Merci de refaire une demande."
 
 #: templates/registration/password_reset_done.html:22
 msgid "Check your inbox."
-msgstr ""
+msgstr "Vérifiez votre boite de réception."
 
 #: templates/registration/password_reset_done.html:23
 msgid ""
 "We've emailed you instructions for setting your password. You should receive "
 "the email shortly!"
 msgstr ""
+"Nous vous avons envoyé un mail avec les instructions pour définir votre mot de passe. Vous devriez "
+"recevoir le mail rapidement!"
 
 #: templates/registration/password_reset_form.html:25
 msgid "Email no present into database"
-msgstr ""
+msgstr "Adresse mail non présente en base de données"
 
 #: templates/registration/password_reset_form.html:32
 msgid ""
 "Enter your email address below, and we'll email instructions for setting a "
 "new one."
 msgstr ""
+"Saisissez votre adresse mail ci-dessous, et nous vous enverrons les instructions pour en "
+"définir un nouveau."
 
 #: templates/registration/password_reset_form.html:40
 msgid "Send me instruction"
-msgstr ""
+msgstr "Envoyez moi les instructions"
 
 #: templates/search.html:6
 msgid "Search results for"
-msgstr ""
+msgstr "Résultats de recherche pour"
 
 #: templates/search.html:14
 msgid "Not results found!"
-msgstr ""
+msgstr "Aucun résultat trouvé!"
 
 #: templates/search.html:16
 msgid "Found "
-msgstr ""
+msgstr "Trouvé "
 
 #: templates/search.html:16
 msgid " results."
-msgstr ""
+msgstr " résultats."
