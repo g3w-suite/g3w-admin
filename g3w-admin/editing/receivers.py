@@ -455,5 +455,18 @@ def set_editing_visible_status(**kwargs):
             }
         })
 
+        # Filter fields by user
+        if kwargs['sender'].request.user:
+            visiblefields = kwargs["layer"].visible_fields_for_user(kwargs['sender'].request.user)
+            toremove = []
+            for f in kwargs['vector_params']['fields']:
+                if f['name'] not in visiblefields:
+                    toremove.append(kwargs['vector_params']['fields'].index(f))
+
+            if toremove:
+                for i in toremove:
+                    del kwargs['vector_params']['fields'][i]
+
+
     except:
         return None
