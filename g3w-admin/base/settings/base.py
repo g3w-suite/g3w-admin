@@ -199,8 +199,8 @@ LOCALE_PATHS = (
 
 gettext = lambda s: s
 LANGUAGES = (
-    ('it', 'Italian'),
     ('en', 'English'),
+    ('it', 'Italian'),
     ('fr', 'French'),
     ('fi', 'Finnish'),
     ('se', 'Swedish'), # FIXME: correct language code should be "sv"
