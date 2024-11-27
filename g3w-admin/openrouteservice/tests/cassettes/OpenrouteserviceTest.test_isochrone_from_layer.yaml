@@ -102,7 +102,7 @@ interactions:
     uri: http://localhost:8080/ors/v2/isochrones/driving-car
   response:
     body:
-      string: '{"error":{"code":3003,"message":"Parameter \'range_type\' has incorrect value of \'wrong\'."},"info":{"engine":{"version":"6.3.2","build_date":"2021-03-30T07:30:19Z"},"timestamp":1617346325652}}'
+      string: '{"error":{"code":3003,"message":"Parameter \u0027range_type\u0027 has incorrect value of \u0027wrong\u0027."},"info":{"engine":{"version":"6.3.2","build_date":"2021-03-30T07:30:19Z"},"timestamp":1617346325652}}'
     headers:
       Access-Control-Allow-Origin:
       - '*'
