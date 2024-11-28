@@ -428,6 +428,18 @@ class BaseVectorApiView(G3WAPIView):
             'fields': fields,
         }
 
+        # Filter fields by user
+        if self.request.user:
+            visiblefields = self.layer.visible_fields_for_user(self.request.user)
+            if len(visiblefields) != len(vector_params['fields']):
+                newfields = []
+                for f in vector_params['fields']:
+                    if f['name'] in visiblefields:
+                        newfields.append(f)
+
+                if newfields:
+                    vector_params['fields'] = newfields
+
         # post_create_maplayerattributes signal
         post_create_maplayerattributes.send(
             self, layer=self.layer, vector_params=vector_params)

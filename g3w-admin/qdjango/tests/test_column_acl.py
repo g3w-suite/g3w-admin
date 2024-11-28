@@ -288,6 +288,22 @@ class TestColumnAcl(QdjangoTestBase):
         self.assertIsNotNone(record['AREA'])
         self.assertIsNotNone(record['SOURCETHM'])
 
+        # Test for /api/vector/config
+        response = self._testApiCallAdmin01(
+            'core-vector-api', [
+                'config',
+                'qdjango',
+                self.world.project.pk,
+                self.world.qgis_layer.id()])
+
+        resp = json.loads(response.content)
+
+        fields = [f['name'] for f in resp['vector']['fields']]
+
+        self.assertTrue('AREA' in fields)
+        self.assertTrue('SOURCETHM' in fields)
+
+
         acl = ColumnAcl(layer=self.world, user=self.test_user1,
                         restricted_fields=['AREA', 'SOURCETHM'])
         acl.save()
@@ -305,6 +321,21 @@ class TestColumnAcl(QdjangoTestBase):
         record = resp['vector']['data']['features'][0]['properties']
         self.assertIsNone(record['AREA'])
         self.assertIsNone(record['SOURCETHM'])
+
+        # Test for /api/vector/config
+        response = self._testApiCallAdmin01(
+            'core-vector-api', [
+                'config',
+                'qdjango',
+                self.world.project.pk,
+                self.world.qgis_layer.id()])
+
+        resp = json.loads(response.content)
+
+        fields = [f['name'] for f in resp['vector']['fields']]
+
+        self.assertFalse('AREA' in fields)
+        self.assertFalse('SOURCETHM' in fields)
 
         # Test for download API
         # -------------------------------------------------
