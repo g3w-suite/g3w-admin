@@ -16,7 +16,7 @@ Software releases follow theese main branches as described in the compatibility 
 | Branch     | Python         | Django         | QGIS          | [client]     | First release | Status         |
 |------------|----------------|----------------|---------------|--------------|---------------|----------------|
 | [dev]      | 3.10           | 3.2            | 3.28          | dev          | Unreleased    | ⚠️️ Unstable     |
-| [v.3.7.x]  | 3.10           | 3.2            | 3.28          | 3.9.11       | July 2024     | 🪲️ Bug fixing   |
+| [v.3.7.x]  | 3.10           | 3.2            | 3.28          | 3.9.11       | Nov 2024      | 🪲️ Bug fixing   |
 | [v.3.6.x]  | 3.10           | 3.2            | 3.28          | 3.8.17       | May 2023      | 🪲️ Bug fixing   |
 | [v.3.5.x]  | 3.10           | 2.2            | 3.22          | 3.7          | Nov 2022      | 🚨 End of Life |
 | [v.3.4.x]  | 3.8            | 2.2            | 3.22          | 3.4          | Mar 2022      | 🚨 End of Life |
