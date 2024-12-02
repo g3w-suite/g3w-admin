@@ -783,6 +783,7 @@ def isochrone_from_layer(input_qgis_layer_id, profile, params, project_id, qgis_
         # Note: passing a range list is mutually exclusive
         # with "interval"
         result = isochrone(profile, params)
+
         if result.status_code != status.HTTP_200_OK:
             jcontent = json.loads(result.content.decode('utf-8'))
             try:

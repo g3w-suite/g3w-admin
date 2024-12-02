@@ -509,7 +509,7 @@ class CoreApiTest(CoreTestBase):
 
         res = self.client.post(url, data=data, content_type='application/json')
         self.assertEqual(res.status_code, 400)
-        self.assertEqual(res.content, "Invalid URL 'gis3w.it': No schema supplied. Perhaps you meant http://gis3w.it?".encode())
+        self.assertEqual(res.content, "Invalid URL 'gis3w.it': No scheme supplied. Perhaps you meant https://gis3w.it?".encode())
 
         data = {
             'url': 'https://google.com',

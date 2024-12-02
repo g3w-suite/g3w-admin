@@ -39,7 +39,7 @@ class UserViewAPIListView(generics.ListAPIView):
     ordering = ['id']
 
     lookup_field='username'
-    lookup_value_regex = '[a-z0-9\.@_\-\+]+'
+    lookup_value_regex = r'[a-z0-9\.@_\-\+]+'
 
     def get_queryset(self):
         qs = super().get_queryset()

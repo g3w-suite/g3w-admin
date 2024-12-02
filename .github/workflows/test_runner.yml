@@ -30,23 +30,23 @@ jobs:
 
     - name: Installing Python requirements
       run: |
-        docker compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "cd /code/ && pip3 install -r requirements_docker.txt && pip3 install -r requirements_huey.txt"
+        docker compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "cd /code/ && pip3 install -r requirements_docker.txt --break-system-packages && pip3 install -r requirements_huey.txt --break-system-packages"
 
     - name: Installing Caching Python requirements
       run: |
-        docker compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "cd /code/ && pip3 install -r g3w-admin/caching/requirements.txt"
+        docker compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "cd /code/ && pip3 install -r g3w-admin/caching/requirements.txt --break-system-packages"
 
     - name: Installing Filemanager Python requirements
       run: |
-        docker compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "cd /code/ && pip3 install -r g3w-admin/filemanager/requirements.txt"
+        docker compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "cd /code/ && pip3 install -r g3w-admin/filemanager/requirements.txt --break-system-packages"
 
     - name: Installing Qplotly Python requirements
       run: |
-        docker compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "cd /code/ && pip3 install -r g3w-admin/qplotly/requirements.txt"
+        docker compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "cd /code/ && pip3 install -r g3w-admin/qplotly/requirements.txt --break-system-packages"
 
     - name: Installing Openrouteservice Python requirements
       run: |
-        docker compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "cd /code/ && pip3 install -r g3w-admin/openrouteservice/requirements.txt && pip3 install -r g3w-admin/openrouteservice/requirements_testing.txt"
+        docker compose -f docker-compose.${{ matrix.qgis_version }}.yml exec -T g3w-suite sh -c "cd /code/ && pip3 install -r g3w-admin/openrouteservice/requirements.txt --break-system-packages && pip3 install -r g3w-admin/openrouteservice/requirements_testing.txt --break-system-packages"
 
     - name: Building g3w-suite
       run: |

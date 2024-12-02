@@ -33,18 +33,18 @@ urlpatterns = [
     # Activation/deactivation editing state
     #############################################################
     re_path(
-        '^(?P<group_slug>[-_\w\d]+)/(?P<project_type>[-_\w\d]+)/(?P<project_slug>[-_\w\d]+)/(?P<layer_id>[0-9]+)/'
+        r'^(?P<group_slug>[-_\w\d]+)/(?P<project_type>[-_\w\d]+)/(?P<project_slug>[-_\w\d]+)/(?P<layer_id>[0-9]+)/'
         r'active/$',
         login_required(ActiveEditingLayerView.as_view()),
         name='editing-layer-active'
     ),
     re_path(
-        '^(?P<group_slug>[-_\w\d]+)/(?P<project_type>[-_\w\d]+)/(?P<project_slug>[-_\w\d]+)/layers/active/$',
+        r'^(?P<group_slug>[-_\w\d]+)/(?P<project_type>[-_\w\d]+)/(?P<project_slug>[-_\w\d]+)/layers/active/$',
         login_required(ActiveEditingMultiLayerView.as_view()),
         name='editing-multi-layer-active'
     ),
     re_path(
-        '^(?P<group_slug>[-_\w\d]+)/(?P<project_type>[-_\w\d]+)/(?P<project_slug>[-_\w\d]+)/copypermission/$',
+        r'^(?P<group_slug>[-_\w\d]+)/(?P<project_type>[-_\w\d]+)/(?P<project_slug>[-_\w\d]+)/copypermission/$',
         login_required(CopyEditingPermissionView.as_view()),
         name='editing-copy-permission'
     ),

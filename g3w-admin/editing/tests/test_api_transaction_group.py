@@ -249,15 +249,15 @@ class TransactionGroupTest(TestCase):
 
         jresult = json.loads(response.content)
         self.assertTrue(jresult['result'])
-        self.assertEqual(jresult['response']['new'][0]['id'], '6')
+        self.assertEqual(jresult['response']['new'][0]['id'], '5')
         self.assertEqual(jresult['response']['new'][0]['properties']['name'], "name 1")
         self.assertEqual(jresult['response']['new'][0]['properties']['value'], 12345)
 
         # Retrieve the feature and check
         qgis_layer = self.test.qgis_layer
-        feature = qgis_layer.getFeature(6)
+        feature = qgis_layer.getFeature(5)
         self.assertEqual(feature.attributes(), [
-                         6, 'name 1', 12345, QDate(2021, 1, 2), True, 2])
+                         5, 'name 1', 12345, QDate(2021, 1, 2), True, 2])
 
         # Test error conditions:
         # 1: NULL pol_id
