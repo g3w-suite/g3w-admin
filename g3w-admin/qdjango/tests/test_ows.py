@@ -19,6 +19,7 @@ from qgis.PyQt.QtGui import QImage, QColor
 from qgis.PyQt.QtCore import QPoint
 from core.models import G3WSpatialRefSys
 from core.models import Group as CoreGroup
+from guardian.shortcuts import get_anonymous_user
 from django.core.files import File
 from django.core.management import call_command
 from django.test import Client, override_settings
@@ -179,7 +180,7 @@ class OwsTest(QdjangoTestBase):
 
         self.assertEqual(response.status_code, 403)
 
-        # give permission to user
+        # Give permission to user
         assign_perm('view_project', self.test_viewer1, self.qdjango_project)
         for l in self.qdjango_project.layer_set.all():
             assign_perm("view_layer", self.test_viewer1, l)
@@ -194,8 +195,8 @@ class OwsTest(QdjangoTestBase):
 
         c.logout()
 
-        # try basic authentication
-        # for viewer1
+        # Try basic authentication for viewer1
+        # ------------------------------------
         c = Client(HTTP_AUTHORIZATION='Basic dmlld2VyMTp2aWV3ZXIx')
         response = c.get(ows_url, {
             'REQUEST': 'GetCapabilities',
@@ -248,6 +249,29 @@ class OwsTest(QdjangoTestBase):
 
         self.assertEqual(response.status_code, 200)
         self.assertTrue(b"<Name>world</Name>" in response.content)
+
+        c.logout()
+
+        c = Client()
+
+        # Test for Anonymous user
+        # -----------------------
+        response = c.get(ows_url, {
+            'REQUEST': 'GetCapabilities',
+            'SERVICE': 'WMS'
+        })
+
+        self.assertEqual(response.status_code, 403)
+
+        # Give permission to Anonympus user
+        assign_perm('view_project', get_anonymous_user(), self.qdjango_project)
+
+        response = c.get(ows_url, {
+            'REQUEST': 'GetCapabilities',
+            'SERVICE': 'WMS'
+        })
+
+        self.assertEqual(response.status_code, 200)
 
 
     def test_get_getfeatureinfo(self):
