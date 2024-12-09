@@ -12,26 +12,36 @@ class QdjangoProjectAuthorizer(object):
 
     def auth_request(self, **kwargs):
 
+        anonymous_user = get_anonymous_user()
+
         # Check for caching token
-        # TODO: create pluggable authentication layers
+        # -----------------------
         if (len(set(settings.G3WADMIN_LOCAL_MORE_APPS).intersection(set(['caching', 'qmapproxy']))) > 0
                 and 'g3wsuite_caching_token' in self.request.GET and \
                 (settings.TILESTACHE_CACHE_TOKEN == self.request.GET['g3wsuite_caching_token'] or \
                         getattr('MAPPROXY_URL_TOKEN') == self.request.GET['g3wsuite_caching_token'])):
                     return True
 
-        if self.request.user.has_perm('qdjango.view_project', self.project) or\
-                get_anonymous_user().has_perm('qdjango.view_project', self.project):
+        # Check for user != Anonymous user
+        # User already authenticated (session, middleware, etc.)
+        if self.request.user != anonymous_user and self.request.user.has_perm('qdjango.view_project', self.project):
             return True
         else:
-            # try to authenticate by http basic authentication
+
+            # Try to authenticate by HTTP Basic Authentication
+            # ------------------------------------------------
             try:
                 ba = BasicAuthentication()
                 user, other = ba.authenticate(self.request)
                 self.request.user = user
                 return user.has_perm('qdjango.view_project', self.project)
             except Exception as e:
-                print(e)
+
+                # Check for Anonymous user
+                # -------------------------
+                if anonymous_user.has_perm('qdjango.view_project', self.project):
+                    return True
+
                 pass
 
             raise AuthForbiddenRequest()
