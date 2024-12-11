@@ -433,8 +433,8 @@ class LayerExpressionEval(CoreTestBase):
             'type': 'Feature'}
 
         self._expression_evaluate(
-            url, 'current_value(\'CAPITAL\')', "GUATEMALA", form_data, world.qgs_layer_id)
+            url, 'current_value(\'CAPITAL\')', {'result': True, 'value': "GUATEMALA"}, form_data, world.qgs_layer_id)
 
         # Test QVariant NULL result
         self._expression_evaluate(
-            url, 'current_value(\'CAPITALA\')', "", form_data, world.qgs_layer_id)
+            url, 'current_value(\'CAPITALA\')', {'result': True, 'value': ""}, form_data, world.qgs_layer_id)
