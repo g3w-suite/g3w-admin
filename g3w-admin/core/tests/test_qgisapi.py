@@ -411,7 +411,7 @@ class LayerExpressionEval(CoreTestBase):
         url = reverse('layer-expression-eval',
                       args=[project.pk])
 
-        self._expression_evaluate(url, {'result': True, 'value': 1}, 1)
+        self._expression_evaluate(url, '1', {'result': True, 'value': 1})
 
         form_data = {
             'bbox': [-92.28845, 13.7392, -88.23725, 17.783133],
