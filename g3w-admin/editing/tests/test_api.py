@@ -1596,23 +1596,23 @@ class EditingApiTests(ConstraintsTestsBase):
         newid = jresult['response']['new'][0]['id']
         newlockid = jresult['response']['new_lockids'][0]['lockid']
 
-        newid_mantaince_work = jresult['response']['new_relations'][maintenance_works_id]['new'][0]['id']
-        newlockid_mantaince_work = jresult['response']['new_relations'][maintenance_works_id]['new_lockids'][0]['lockid']
+        newid_mantaince_work = jresult['response']['relations'][maintenance_works_id]['new'][0]['id']
+        newlockid_mantaince_work = jresult['response']['relations'][maintenance_works_id]['new_lockids'][0]['lockid']
 
-        newid_mantaince_rel1 = jresult['response']['new_relations'][maintenance_rel1_id]['new'][0]['id']
-        newlockid_mantaince_rel1 = jresult['response']['new_relations'][maintenance_rel1_id]['new_lockids'][0][
+        newid_mantaince_rel1 = jresult['response']['relations'][maintenance_rel1_id]['new'][0]['id']
+        newlockid_mantaince_rel1 = jresult['response']['relations'][maintenance_rel1_id]['new_lockids'][0][
             'lockid']
 
-        newid_mantaince_rel2 = jresult['response']['new_relations'][maintenance_rel2_id]['new'][0]['id']
-        newlockid_mantaince_rel2 = jresult['response']['new_relations'][maintenance_rel2_id]['new_lockids'][0][
+        newid_mantaince_rel2 = jresult['response']['relations'][maintenance_rel2_id]['new'][0]['id']
+        newlockid_mantaince_rel2 = jresult['response']['relations'][maintenance_rel2_id]['new_lockids'][0][
             'lockid']
 
-        newid_rating = jresult['response']['new_relations'][buildings_rating_id]['new'][0]['id']
-        newlockid_reiting = jresult['response']['new_relations'][buildings_rating_id]['new_lockids'][0][
+        newid_rating = jresult['response']['relations'][buildings_rating_id]['new'][0]['id']
+        newlockid_reiting = jresult['response']['relations'][buildings_rating_id]['new_lockids'][0][
             'lockid']
 
-        newid_rating_rel1 = jresult['response']['new_relations'][rating_rel1_id]['new'][0]['id']
-        newlockid_reiting_rel1 = jresult['response']['new_relations'][rating_rel1_id]['new_lockids'][0][
+        newid_rating_rel1 = jresult['response']['relations'][rating_rel1_id]['new'][0]['id']
+        newlockid_reiting_rel1 = jresult['response']['relations'][rating_rel1_id]['new_lockids'][0][
             'lockid']
 
 

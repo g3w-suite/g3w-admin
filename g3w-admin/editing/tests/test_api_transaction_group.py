@@ -511,14 +511,14 @@ class TransactionGroupTest(TestCase):
         self.assertTrue('properties' in jresult['response']['new'][0])
         self.assertEqual(jresult['response']['new'][0]['properties']['name'], "name father")
         self.assertEqual(jresult['response']['new'][0]['properties']['value'], 4444)
-        self.assertNotEqual(jresult['response']['new_relations'], {})
+        self.assertNotEqual(jresult['response']['relations'], {})
 
         # Verify
         parent_id_server = jresult['response']['new'][0]['id']
         parent_id = get_layer_fids_from_server_fids([parent_id_server], self.poligoni.qgis_layer)[0]
         self.assertTrue(
             self.poligoni.qgis_layer.getFeature(parent_id).isValid())
-        child_id_server = jresult['response']['new_relations']['test_afb61649_1fb2_426e_b588_04217314f0c4']['new'][0]['id']
+        child_id_server = jresult['response']['relations']['test_afb61649_1fb2_426e_b588_04217314f0c4']['new'][0]['id']
         child_id = get_layer_fids_from_server_fids([child_id_server], self.test.qgis_layer)[0]
         self.assertTrue(
             self.test.qgis_layer.getFeature(child_id).isValid())
@@ -531,7 +531,7 @@ class TransactionGroupTest(TestCase):
         # There is no cascade here! Delete the child.
         response = client.post(child_commit_path, {
             "delete": [child_id_server],
-            "lockids": jresult['response']['new_relations']['test_afb61649_1fb2_426e_b588_04217314f0c4']['new_lockids']
+            "lockids": jresult['response']['relations']['test_afb61649_1fb2_426e_b588_04217314f0c4']['new_lockids']
         }, format='json')
 
         self.assertTrue(json.loads(response.content)['result'])
