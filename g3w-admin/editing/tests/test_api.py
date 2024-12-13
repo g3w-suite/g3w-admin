@@ -1853,6 +1853,17 @@ class EditingApiTests(ConstraintsTestsBase):
         response = self.client.post(commit_path, payload, format='json')
         self.assertEqual(response.status_code, 200)
 
+        jresult = json.loads(response.content)
+
+        self.assertTrue('update' in jresult['response'])
+        self.assertEqual(jresult['response']['update'][0]['id'], str(newid))
+        self.assertTrue('update' in jresult['response']['relations'][maintenance_works_id])
+        self.assertEqual(jresult['response']['relations'][maintenance_works_id]['update'][0]['id'],
+                         str(newid_mantaince_work))
+        self.assertEqual(jresult['response']['relations'][maintenance_rel1_id]['update'][0]['id'],
+                         str(newid_mantaince_rel1))
+
+
         # Check for mantaince rel1 layer: manitenance_rel1_3ce8bd5c_c62d_45bc_8f81_b301e6592128
         data_path = reverse('core-vector-api',
                             args=['data', 'qdjango', self.editing_cascade_relations_project.instance.pk,
