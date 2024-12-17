@@ -57,6 +57,12 @@
           </div>
       </div>
       {% endif %}
+
+    <a href="{% url 'account_login' %}" class="btn btn-outline-light">{% translate "Sign In" %}</a>
+    {% url 'account_signup' as signup_url %}
+    {% if signup_url %}
+        <a href="{{ signup_url }}" class="btn btn-success">{% translate "Sign Up" %}</a>
+    {% endif %}
     </form>
   </div><!-- /.login-box-body -->
      {% include 'include/login_page_version.html' %}
