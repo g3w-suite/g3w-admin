@@ -398,3 +398,7 @@ RECAPTCHA_REQUIRED_SCORE = 0.85
 RECAPTCHA_VERSION2_TYPE = 'checkbox' # or 'invisible'
 
 SILENCED_SYSTEM_CHECKS = ['captcha.recaptcha_test_key_error']
+
+# SOCIAL ACCOUNT LOGIN SETTINGS
+# -----------------------------
+SOCIALACCOUNT_LOGIN_ON_GET = True
