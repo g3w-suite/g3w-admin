@@ -1,4 +1,5 @@
 {% extends "base_login.html" %}
+{% load socialaccount %}
 {% load static %}
 {% load i18n %}
 
@@ -57,13 +58,9 @@
           </div>
       </div>
       {% endif %}
-
-    <a href="{% url 'account_login' %}" class="btn btn-outline-light">{% translate "Sign In" %}</a>
-    {% url 'account_signup' as signup_url %}
-    {% if signup_url %}
-        <a href="{{ signup_url }}" class="btn btn-success">{% translate "Sign Up" %}</a>
-    {% endif %}
     </form>
+    {% get_providers as socialaccount_providers %}
+    {% include "socialaccount/snippets/provider_list.html" with process="login" %}
   </div><!-- /.login-box-body -->
      {% include 'include/login_page_version.html' %}
 </div><!-- /.login-box -->
