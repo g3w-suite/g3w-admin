@@ -48,7 +48,7 @@ DJANGO_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.gis',
-    #'django.contrib.sites',
+    'django.contrib.sites',
 ]
 
 THIRD_PARTY_APPS = [
@@ -75,7 +75,15 @@ THIRD_PARTY_APPS = [
     'about',
     'django_bleach',
     'django_registration',
-    'captcha'
+    'captcha',
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    "allauth.mfa",
+    "allauth.socialaccount.providers.microsoft",
+    "allauth.socialaccount.providers.google",
+    #"allauth.socialaccount.providers.openid",
+    "allauth.usersessions"
 ]
 
 G3WADMIN_APPS = [
@@ -104,6 +112,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.contrib.sites.middleware.CurrentSiteMiddleware',
     'qdjango.process_events_middleware.process_events_middleware',
+    'allauth.account.middleware.AccountMiddleware'
 ]
 
 
@@ -160,6 +169,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 AUTHENTICATION_BACKENDS = (
+    'allauth.account.auth_backends.AuthenticationBackend',
     'django.contrib.auth.backends.ModelBackend',
     'guardian.backends.ObjectPermissionBackend',
 )
@@ -301,7 +311,7 @@ G3W_CLIENT_NOT_SHOW_EMPTY_VECTORLAYER = False
 # Set to show or not error ion loading layer in G3W-CLIENT
 G3W_CLIENT_SHOW_LOAD_LAYER_ERRORS = False
 
-SITE_ID = 1
+SITE_ID = 2
 
 
 INTERNAL_IPS = [
