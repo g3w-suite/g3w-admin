@@ -168,7 +168,10 @@ urlpatterns += [
         ),
         name="django_registration_disallowed",
     ),
+    path('allauthg/', include('allauth.urls')),
 ]
+
+
 
 #############################################################
 # PASSWORD RESET (user password reset by email)
