@@ -400,3 +400,4 @@ SOCIALACCOUNT_ADAPTER = 'usersmanage.vendors.allauth.adapter.G3WSocialAccountAda
 USERSESSIONS_TRACK_ACTIVITY = False
 
 SOCIALACCOUNT_ONLY = True
+SOCIALACCOUNT_USER_ROLE = 'Viewer Level 1'
