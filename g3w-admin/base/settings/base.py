@@ -398,3 +398,5 @@ SOCIALACCOUNT_ADAPTER = 'usersmanage.vendors.allauth.adapter.G3WSocialAccountAda
 
 # Activate/deactivate user login session tracking
 USERSESSIONS_TRACK_ACTIVITY = False
+
+SOCIALACCOUNT_ONLY = True
