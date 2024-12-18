@@ -163,3 +163,7 @@ HUEY = {
         'worker_type': 'process',
     },
 }
+
+# For social login
+# Activate/deactivate user login session tracking
+USERSESSIONS_TRACK_ACTIVITY = False
