@@ -167,6 +167,11 @@ class BaseUserMediaHandler(object):
                                         'layer_id': self.layer.pk,
                                         'file_name': file_name
                                 }))
+                    else:
+                        if is_media_view:
+
+                            # Restore to current_feature value
+                            self.feature_properties[field] = current_field_value
 
                     if delete_old:
                         to_delete = '{}/{}'.format(path_to_save, current_file_name)
