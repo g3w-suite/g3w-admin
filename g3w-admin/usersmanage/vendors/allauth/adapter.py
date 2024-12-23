@@ -17,11 +17,16 @@ from allauth.account.models import EmailAddress
 from usersmanage.models import User, Group as AuthGroup, Userbackend, USER_BACKEND_DEFAULT
 from usersmanage.configs import G3W_EDITOR1, G3W_EDITOR2, G3W_VIEWER1
 
+import logging
+
+logging = logging.getLogger('g3wadmin.debug')
+
 class G3WSocialAccountAdapter(DefaultSocialAccountAdapter):
 
     def _set_user_role_backend(self, user):
         """
         Set the role and the backend for the user login by social
+        Set up alse the group of user if the settings is set
         """
 
         # Role to se from settings
@@ -33,6 +38,22 @@ class G3WSocialAccountAdapter(DefaultSocialAccountAdapter):
         # Backend
         if not hasattr(user, 'userbackend'):
             Userbackend(user=user, backend=USER_BACKEND_DEFAULT).save()
+
+        # Add User group if is set
+        if hasattr(settings, 'SOCIALACCOUNT_USER_GROUP'):
+            try:
+                ugroup = AuthGroup.objects.get(name=settings.SOCIALACCOUNT_USER_GROUP)
+
+                # Test user role group compatibility
+                if role in (G3W_VIEWER1, ) and ugroup.grouprole.role != 'viewer':
+                    raise Exception(f"User role {G3W_VIEWER1} not compatible with user group {ugroup}")
+
+                # Assign user to group
+                ugroup.user_set.add(user)
+            except Exception as e:
+                logging.error("[SOCIAL AUTH] Error setting user group: {}".format(e))
+
+
 
     def pre_social_login(self, request, sociallogin):
 
