@@ -20,6 +20,7 @@ from qdjango.utils.models import get_capabilities4layer, get_view_layer_ids
 from qdjango.signals import load_qdjango_widget_layer
 from qdjango.apps import get_qgs_project
 from qdjango.utils.structure import QdjangoMetaLayer, datasourcearcgis2dict
+from qdjango.utils.session import reset_filtertoken
 from qdjango.api.layers.serializers import FilterLayerSavedSerializer
 from core.utils.structure import mapLayerAttributes
 from core.configs import *
@@ -224,19 +225,6 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
         return metadata
 
-    def reset_filtertoken(self):
-        """Check session token filter ad delete it"""
-
-        try:
-            if settings.SESSION_COOKIE_NAME in self.request.COOKIES:
-                stf = SessionTokenFilter.objects.get(
-                    sessionid=self.request.COOKIES[settings.SESSION_COOKIE_NAME])
-                stf.delete()
-        except AttributeError:
-            return None
-        except SessionTokenFilter.DoesNotExist:
-            return None
-
     def layer_is_empty(self, layer):
         """
         Check if a vector layer is empty (not data)
@@ -287,7 +275,7 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
 
         # Check for custom themes
         # -----------------------
-        if not self.request.user.is_anonymous:
+        if self.request and not self.request.user.is_anonymous:
             c_themes = CustomerTheme.objects.filter(project_id=ret['id'], user=self.request.user)
             for c_theme in c_themes:
                 ret['map_themes']['custom'].append({
@@ -614,7 +602,7 @@ class ProjectSerializer(G3WRequestSerializer, serializers.ModelSerializer):
         ret['messages'] = self.get_messages(instance)
 
         # reset tokenfilter by session
-        self.reset_filtertoken()
+        reset_filtertoken(self.request)
 
         # add edit url if user has grant
         if hasattr(self.request, 'user') and self.request.user.has_perm('qdjango.change_project', instance):
@@ -886,6 +874,9 @@ class LayerSerializer(G3WRequestSerializer, serializers.ModelSerializer):
                 except Exception as e:
                     logger.debug(f'WMS layer GetFeatureInfo formats available: {e}')
 
+            # Remove possibility to show attributes table for WMS and ARCGIS server type
+            ret['not_show_attributes_table'] = True
+
 
 
         # replace crs property if is not none with dict structure
@@ -977,6 +968,7 @@ class WidgetSerializer(serializers.ModelSerializer):
             ret['options'] = {
                 'queryurl': None,
                 'title': body['title'],
+                'paginate': body['paginate'] if 'paginate' in body else False,
                 'results': body['results'],
                 'dozoomtoextent': body['dozoomtoextent'],
                 'layerid': self.layerid,

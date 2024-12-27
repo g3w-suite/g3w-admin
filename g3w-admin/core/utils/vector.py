@@ -89,6 +89,15 @@ class BaseUserMediaHandler(object):
         else:
             return '{}://{}'.format(schema, self.request.get_host())
 
+    def _new_path(self, file_name):
+        """ Build new path to save media file """
+
+        return reverse('user-media', kwargs={
+                                'project_type': self.type,
+                                'layer_id': self.layer.pk,
+                                'file_name': file_name
+                                })
+
     def new_value(self, change=False):
         """ Build and save media value from client """
 
@@ -162,11 +171,17 @@ class BaseUserMediaHandler(object):
                         # build new value
 
                         self.feature_properties[field] = '{}{}'.format(self.get_domain(),
-                                    reverse('user-media', kwargs={
-                                        'project_type': self.type,
-                                        'layer_id': self.layer.pk,
-                                        'file_name': file_name
-                                }))
+                                                                       self._new_path(file_name))
+                    else:
+                        if is_media_view:
+
+                            value = current_field_value
+                            # Try to fix old record saved with temp_uploads path
+                            if os.path.exists(path_file_to_save):
+                                value = self._new_path(file_name)
+
+                            # Restore to current_feature value
+                            self.feature_properties[field] = value
 
                     if delete_old:
                         to_delete = '{}/{}'.format(path_to_save, current_file_name)

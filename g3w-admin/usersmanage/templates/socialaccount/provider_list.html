@@ -1,0 +1,22 @@
+{% load allauth socialaccount %}
+{% load i18n %}
+{% get_providers as socialaccount_providers %}
+{% if socialaccount_providers %}
+        <div class="col-xs-12" style="text-align: center;">
+            <p>- {% trans 'OR' %} -</p>
+        </div>
+        {% for provider in socialaccount_providers %}
+            {% if provider.id == "openid" %}
+                {% for brand in provider.get_brands %}
+                    {% provider_login_url provider openid=brand.openid_url process=process as href %}
+                    {% element provider name=brand.name provider_id=provider.id href=href %}
+                    {% endelement %}
+                {% endfor %}
+            {% endif %}
+            {% provider_login_url provider process=process scope=scope auth_params=auth_params as href %}
+            <div class="col-xs-12">
+                <a class="btn btn-default btn-block btn-flat" href="{{ href }}">{{ provider.name }}</a>
+            </div>
+        {% endfor %}
+        <div class="col-xs-12" style="margin-bottom: 20px;"></div>
+{% endif %}

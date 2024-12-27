@@ -161,6 +161,7 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
         # data for response
         insert_ids = list()
         lock_ids = list()
+        update_ids = list()
 
         # FIXME: check this out
         # for add check if is a metadata_layer and referenced field is a pk
@@ -346,6 +347,10 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                         if errors:
                             raise ValidationError(errors)
 
+                        to_res = {}
+                        to_res_lock = {}
+                        to_res_update = {}
+
                         # Save the feature
                         if mode_editing == EDITING_POST_DATA_ADDED:
                             if has_transactions:
@@ -398,10 +403,9 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                                     raise Exception(_('Error changing geometry: %s') % ', '.join(
                                         qgis_layer.dataProvider().errors()))
 
-                        to_res = {}
-                        to_res_lock = {}
 
-                        if mode_editing == EDITING_POST_DATA_ADDED:
+
+                        if mode_editing in (EDITING_POST_DATA_ADDED, EDITING_POST_DATA_UPDATED):
 
                             # to exclude QgsFormater used into QgsJsonjExporter is necessary build by hand single json feature
                             ex = QgsJsonExporter(qgis_layer)
@@ -409,6 +413,8 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
 
                             fnames = [f.name() for f in feature.fields()]
                             jfeature = json.loads(ex.exportFeature(feature, dict(zip(fnames, feature.attributes()))))
+
+                            self.change_media([jfeature])
 
                             # For date and datetime and time fields:
                             if field_datetime_values:
@@ -419,24 +425,34 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                                     except:
                                         pass
 
+                            if mode_editing == EDITING_POST_DATA_ADDED:
+                                to_res.update({
+                                    'clientid': geojson_feature['id'],
+                                    # This might be the internal QGIS feature id (< 0)
+                                    'id': server_fid(feature, metadata_layer.qgis_layer.dataProvider()),
+                                    'properties': jfeature['properties']
+                                })
 
-                            to_res.update({
-                                'clientid': geojson_feature['id'],
-                                # This might be the internal QGIS feature id (< 0)
-                                'id': server_fid(feature, metadata_layer.qgis_layer.dataProvider()),
-                                'properties': jfeature['properties']
-                            })
+                                # Locking features new:
+                                to_res_lock = metadata_layer.lock.modelLock2dict(
+                                    metadata_layer.lock.lockFeature(
+                                        str(server_fid(feature, metadata_layer.qgis_layer.dataProvider())), save=True)
+                                )
+                            else:
+                                to_res_update.update({
+                                    # This might be the internal QGIS feature id (< 0)
+                                    'id': server_fid(feature, metadata_layer.qgis_layer.dataProvider()),
+                                    'properties': jfeature['properties']
+                                })
 
-                            # lock news:
-                            to_res_lock = metadata_layer.lock.modelLock2dict(
-                                metadata_layer.lock.lockFeature(
-                                    str(server_fid(feature, metadata_layer.qgis_layer.dataProvider())), save=True)
-                            )
+
 
                         if bool(to_res):
                             insert_ids.append(to_res)
                         if bool(to_res_lock):
                             lock_ids.append(to_res_lock)
+                        if bool(to_res_update):
+                            update_ids.append(to_res_update)
 
                         # Send post vase signal
                         post_save_maplayer.send(
@@ -502,7 +518,7 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                         raise Exception(_('Cannot delete feature: %s') %
                                         ', '.join(qgis_layer.dataProvider().errors()))
 
-        return insert_ids, lock_ids
+        return insert_ids, lock_ids, update_ids
 
     def response_commit_mode(self, request):
         """
@@ -516,7 +532,7 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
         # post_layer_data = data[self.layer_name]
         post_layer_data = request.data
 
-        new_relations = dict()
+        relations = dict()
 
         # Store references to all layers that have been made editable,
         # used to commit/rollback at the end of the loop and on errors
@@ -547,7 +563,7 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
 
 
             # Save main layer
-            ref_insert_ids, ref_lock_ids = self.save_vector_data(
+            ref_insert_ids, ref_lock_ids, ref_update_ids = self.save_vector_data(
                 self.metadata_layer, post_layer_data, has_transactions, reproject=self.reproject)
 
             # Save relations
@@ -577,13 +593,14 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                 reproject = not self.layer.project.group.srid.auth_srid == self.metadata_relations[
                     referencing_layer].layer.srid
 
-                insert_ids, lock_ids = self.save_vector_data(self.metadata_relations[referencing_layer],
+                insert_ids, lock_ids, update_ids = self.save_vector_data(self.metadata_relations[referencing_layer],
                                                              post_relation_data, has_transactions,
                                                              referenced_layer_insert_ids=ref_insert_ids,
                                                              reproject=reproject)
-                new_relations[referencing_layer] = {
+                relations[referencing_layer] = {
                     'new': insert_ids,
-                    'new_lockids': lock_ids
+                    'new_lockids': lock_ids,
+                    'update': update_ids
                 }
 
                 # Check for cascading relations
@@ -647,7 +664,9 @@ class BaseEditingVectorOnModelApiView(BaseVectorApiView):
                 'response': {
                     'new': ref_insert_ids,
                     'new_lockids': ref_lock_ids,
-                    'new_relations': new_relations
+                    'relations': relations,
+                    'update': ref_update_ids,
+
                 }
             })
         except:

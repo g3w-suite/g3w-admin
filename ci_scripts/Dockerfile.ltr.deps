@@ -1,5 +1,5 @@
-FROM ubuntu:jammy
-LABEL maintainer="Gis3w" Description="This image is used to prepare build requirements for g3w-suite CI testing" Vendor="Gis3w" Version="1.3"
+FROM ubuntu:noble
+LABEL maintainer="Gis3w" Description="This image is used to prepare build requirements for g3w-suite CI testing" Vendor="Gis3w"
 
 ENV DEBIAN_FRONTEND=noninteractive
 RUN chown root:root /tmp && chmod ugo+rwXt /tmp
@@ -7,24 +7,24 @@ RUN apt-get update && apt install -y \
     git \
     libxml2-dev \
     libxslt-dev \
-    postgresql-server-dev-all \
     libgdal-dev \
     python3-dev \
-    libgdal30 \
+    libgdal34t64 \
     python3-gdal \
     python3-pip \
     curl \
+    wait-for-it \
     wget \
     vim \
-    wait-for-it \
     gdal-bin \
     libsqlite3-mod-spatialite \
     dirmngr \
-    xvfb
+    xvfb \
+    postgresql-client
 
 # PyQGIS
 RUN curl -sS https://download.qgis.org/downloads/qgis-archive-keyring.gpg > /etc/apt/keyrings/qgis-archive-keyring.gpg && \
-    echo "deb [signed-by=/etc/apt/keyrings/qgis-archive-keyring.gpg] https://qgis.org/ubuntu-ltr jammy main" | \
+    echo "deb [signed-by=/etc/apt/keyrings/qgis-archive-keyring.gpg] https://qgis.org/ubuntu-ltr noble main" | \
     tee /etc/apt/sources.list.d/qgis.list && \
     apt-get update && apt-get install -y python3-qgis qgis-server
 

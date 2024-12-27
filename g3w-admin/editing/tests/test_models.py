@@ -147,12 +147,24 @@ class ConstraintsTestsBase(TestCase):
         cls.test_user4 = User.objects.create_user(
             username='user04', password='user04')
         cls.test_user4.groups.add(cls.group)
-        cls.test_user3.save()
+
+        cls.test_user5 = User.objects.create_user(
+            username='user05', password='user05')
+        cls.test_user5.groups.add(cls.group)
+
 
         # Create a user_group
         cls.test_user_group1 = UserGroup.objects.create(name='Viewer user group1')
         GroupRole(group=cls.test_user_group1, role='viewer').save()
         cls.test_user4.groups.add(cls.test_user_group1)
+
+        cls.test_user_group2 = UserGroup.objects.create(name='Viewer user group2')
+        GroupRole(group=cls.test_user_group2, role='viewer').save()
+        cls.test_user4.groups.add(cls.test_user_group2)
+
+        cls.test_user_group3 = UserGroup.objects.create(name='Viewer user group3')
+        GroupRole(group=cls.test_user_group3, role='viewer').save()
+        cls.test_user4.groups.add(cls.test_user_group3)
 
         cls.project_group = CoreGroup(
             name='Group1', title='Group1', header_logo_img='', srid=G3WSpatialRefSys.objects.get(auth_srid=4326))

@@ -1,2 +1,2 @@
-requests
-django-multiselectfield
+requests==2.31.0
+django-multiselectfield==0.1.12

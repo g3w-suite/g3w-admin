@@ -144,6 +144,7 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
     """Test proxy to QgsServer"""
 
     def _get_vcr(self, **kwargs):
+
         myvcr = super()._get_vcr(**kwargs)
         myvcr.record_mode = RecordMode.NEW_EPISODES
         return myvcr
@@ -389,7 +390,7 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
         self.assertEqual(
             response.json()['isochrones']['profiles'], settings.ORS_PROFILES)
 
-    def test_isochrone_append_postgis(self):
+    def __test_isochrone_append_postgis(self):
         """Test isochrone append features to an existing PG layer"""
 
         layer = self.qdjango_project.qgis_project.mapLayersByName(

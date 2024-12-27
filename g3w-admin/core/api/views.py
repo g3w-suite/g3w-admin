@@ -206,7 +206,8 @@ class QgsExpressionLayerContextEvalView(G3WAPIView):
         except ExpressionLayerError as ex:
             raise APIExpressionLayerError(str(ex))
 
-        return Response(result)
+        self.results.results.update({'value': result})
+        return Response(self.results.results)
 
 
 class InterfaceOws(G3WAPIView):
