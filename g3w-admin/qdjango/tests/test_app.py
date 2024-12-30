@@ -41,8 +41,12 @@ class AppTest(QdjangoTestBase):
     def setUpTestData(cls):
 
         super().setUpTestData()
+
+        # For Django 4.2 inherit setUpTestData is not maintained the file object inside the models
+        qprj = Project.objects.get(pk=cls.project.instance.pk)
+
         cls.qdjango_project = Project(
-            qgis_file=cls.project.qgisProjectFile,
+            qgis_file=qprj.qgis_file,
             title='Test qdjango project',
             group=cls.project_group,
         )

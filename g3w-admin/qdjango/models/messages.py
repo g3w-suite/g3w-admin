@@ -42,5 +42,5 @@ class Message(TimeStampedModel, OrderedModel):
         return self.title
 
     class Meta():
-        ordering = ("order",)
+        ordering = ("-order",)
 

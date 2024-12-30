@@ -29,8 +29,14 @@ from qdjango.apps import QGS_SERVER, get_qgs_project
 from qdjango.models import Project, ProjectMapUrlAlias
 from qgis.core import QgsProject
 
-from .base import (CURRENT_PATH, QGS310_WIDGET_FILE, TEST_BASE_PATH,
-                   QdjangoTestBase, QgisProject)
+from .base import (
+    CURRENT_PATH,
+    QGS310_WIDGET_FILE,
+    TEST_BASE_PATH,
+    QGS_FILE,
+    QdjangoTestBase,
+    QgisProject
+)
 
 
 @override_settings(CACHES={
@@ -51,14 +57,11 @@ class OwsTest(QdjangoTestBase):
     def setUpTestData(cls):
 
         super().setUpTestData()
-        #cls.qdjango_project = Project(
-        #    qgis_file=cls.project.qgisProjectFile,
-        #    title='Test qdjango project',
-        #    group=cls.project_group,
-        #)
-        #cls.qdjango_project.save()
 
-        cls.project2 = QgisProject(cls.project.qgisProjectFile)
+        # For Django 4.2 inherit setUpTestData is not maintained the file object inside the models
+        qgis_project_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_FILE), 'r'))
+
+        cls.project2 = QgisProject(qgis_project_file)
         cls.project2.title = "Test qdjango project"
         cls.project2.group = cls.project_group
         cls.project2.save()
@@ -436,7 +439,7 @@ class OwsTest(QdjangoTestBase):
         self.assertTrue(c.login(username='admin01', password='admin01'))
 
         project = get_qgs_project(
-            self.project_widget310.qgisProjectFile.file.name)
+            self.project_widget310.instance.qgis_file.path)
         main_layer = project.mapLayersByName('main_layer')[0]
         renderer = main_layer.renderer()
         items = renderer.legendSymbolItems()
@@ -529,7 +532,7 @@ class OwsTest(QdjangoTestBase):
                                              'project_id': self.project_widget310_off.instance.id})
 
         project = get_qgs_project(
-            self.project_widget310_off.qgisProjectFile.file.name)
+            self.project_widget310_off.instance.qgis_file.path)
         main_layer = project.mapLayersByName('main_layer')[0]
         renderer = main_layer.renderer()
         self.assertFalse(renderer.legendSymbolItemChecked(key1))

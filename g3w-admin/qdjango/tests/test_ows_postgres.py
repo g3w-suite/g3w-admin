@@ -76,8 +76,11 @@ class OwsTestPostgres(QdjangoTestBase):
         project_path = os.path.join(
             CURRENT_PATH + TEST_BASE_PATH, 'pg_multiple_pks.qgs')
         cls.temp_dir = QTemporaryDir()
+
+        # For Djanog 4.2 and initial class serialization
+        cls.temp_dir_path = cls.temp_dir.path()
         cls.temp_project_path = os.path.join(
-            cls.temp_dir.path(), 'pg_multiple_pks.qgs')
+            cls.temp_dir_path, 'pg_multiple_pks.qgs')
 
         # Create test layer
         conn_str = "host={HOST} port={PORT} dbname={NAME} user={USER} password={PASSWORD}".format(
@@ -226,7 +229,7 @@ class OwsTestPostgres(QdjangoTestBase):
 
         self.assertEqual(response.status_code, 200)
 
-        result_path = os.path.join(self.temp_dir.path(), 'red.png')
+        result_path = os.path.join(self.temp_dir_path, 'red.png')
         with open(result_path, 'wb+') as f:
             f.write(response.content)
 
@@ -253,7 +256,7 @@ class OwsTestPostgres(QdjangoTestBase):
         # Test
         self.assertEqual(response.status_code, 200)
 
-        result_path = os.path.join(self.temp_dir.path(), 'white.png')
+        result_path = os.path.join(self.temp_dir_path, 'white.png')
         with open(result_path, 'wb+') as f:
             f.write(response.content)
 
