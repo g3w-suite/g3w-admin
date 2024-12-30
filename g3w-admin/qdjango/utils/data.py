@@ -209,7 +209,7 @@ class QgisProjectLayer(XmlData):
         # For deepcopy fix:
         # Teardown
         # ------------------------------------------------------
-        self.qgs_layer = None
+        #self.qgs_layer = None
 
     def __str__(self):
         """

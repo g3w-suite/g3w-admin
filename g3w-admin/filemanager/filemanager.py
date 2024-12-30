@@ -5,6 +5,7 @@ from django.http.response import JsonResponse
 from django.core.files.storage import default_storage, FileSystemStorage
 from django.core.files.base import ContentFile
 from core.utils.response import send_file
+from core.utils.request import is_ajax
 from qdjango.utils.storage import OverwriteStorage
 from .filemanagerresponse import FileManagerResponse
 import os
@@ -309,7 +310,7 @@ class FileManager:
         parts    = file.split('/')
         filename = parts.pop()
         # Check for AJAX request
-        if self.request.is_ajax():
+        if is_ajax(self.request):
             response = FileManagerResponse(path, root=self.root)
             response.set_response()
             return JsonResponse(response.response)
