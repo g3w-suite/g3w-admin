@@ -520,7 +520,7 @@ class CoreApiTest(CoreTestBase):
         self.assertEqual(res.status_code, 200)
 
         data = {
-            'url': 'https://gis3w.it',
+            'url': 'https://g3wsuite.it',
             'method': 'post',
             'params': {
                 'search': 'pippo'
