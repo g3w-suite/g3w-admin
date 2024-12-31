@@ -45,26 +45,25 @@ class QplotlyTestAPI(QdjangoTestBase):
 
         cls.client = APIClient()
 
-    @classmethod
-    def setUpTestData(cls):
-        # main project group
-        cls.project_group = CoreGroup(name='Group1', title='Group1', header_logo_img='',
+    def setUp(self):
+        # Main project group
+        self.project_group = CoreGroup(name='Group1', title='Group1', header_logo_img='',
                                       srid=G3WSpatialRefSys.objects.get(auth_srid=4326))
 
-        cls.project_group.save()
+        self.project_group.save()
 
-        cls.project_group_3857 = CoreGroup(name='Group3857', title='Group3857', header_logo_img='',
+        self.project_group_3857 = CoreGroup(name='Group3857', title='Group3857', header_logo_img='',
                                       srid=G3WSpatialRefSys.objects.get(auth_srid=3857))
 
-        cls.project_group_3857.save()
+        self.project_group_3857.save()
 
         qgis_project_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_FILE), 'r', encoding='utf-8'))
 
         # Replace name property with only file name without path to simulate UploadedFileWithId instance.
         qgis_project_file.name = qgis_project_file.name.split('/')[-1]
-        cls.project = QgisProject(qgis_project_file)
-        cls.project.group = cls.project_group
-        cls.project.save()
+        self.project = QgisProject(qgis_project_file)
+        self.project.group = self.project_group
+        self.project.save()
         qgis_project_file.close()
 
         qgis_project_file_3857 = File(
@@ -72,28 +71,28 @@ class QplotlyTestAPI(QdjangoTestBase):
 
         # Replace name property with only file name without path to simulate UploadedFileWithId instance.
         qgis_project_file_3857.name = qgis_project_file_3857.name.split('/')[-1]
-        cls.project_3857 = QgisProject(qgis_project_file_3857)
-        cls.project_3857.group = cls.project_group_3857
-        cls.project_3857.save()
+        self.project_3857 = QgisProject(qgis_project_file_3857)
+        self.project_3857.group = self.project_group_3857
+        self.project_3857.save()
         qgis_project_file_3857.close()
 
 
         file = File(open(f'{DATASOURCE_PATH}cities_scatter_plot_wrong_source_layer_id.xml', 'r'))
-        cls.wrong_settings_source_layer_id_xml = file.read()
+        self.wrong_settings_source_layer_id_xml = file.read()
         file.close()
 
         file = File(open(f'{DATASOURCE_PATH}countries_pie_plot_with_title.xml', 'r'))
-        cls.countries_plot_xml = file.read()
+        self.countries_plot_xml = file.read()
         file.close()
 
         file = File(open(f'{DATASOURCE_PATH}cities_histogram_plot.xml', 'r'))
-        cls.cities_histogram_plot_xml = file.read()
+        self.cities_histogram_plot_xml = file.read()
         file.close()
 
-    @classmethod
-    def tearDownClass(cls):
-        cls.project.instance.delete()
-        super().tearDownClass()
+
+    def tearDown(self):
+        self.project.instance.delete()
+        super().tearDown()
 
 
 

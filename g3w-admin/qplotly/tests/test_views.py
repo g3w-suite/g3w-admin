@@ -39,29 +39,28 @@ class QplotlyTestViews(QdjangoTestBase):
 
         cls.client = Client()
 
-    @classmethod
-    def setUpTestData(cls):
+    def setUp(self):
         # main project group
-        cls.project_group = CoreGroup(name='Group1', title='Group1', header_logo_img='',
+        self.project_group = CoreGroup(name='Group1', title='Group1', header_logo_img='',
                                       srid=G3WSpatialRefSys.objects.get(auth_srid=4326))
 
-        cls.project_group.save()
+        self.project_group.save()
 
         qgis_project_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_FILE), 'r', encoding='utf-8'))
 
         # Replace name property with only file name without path to simulate UploadedFileWithId instance.
         qgis_project_file.name = qgis_project_file.name.split('/')[-1]
-        cls.project = QgisProject(qgis_project_file)
-        cls.project.group = cls.project_group
-        cls.project.save()
+        self.project = QgisProject(qgis_project_file)
+        self.project.group = self.project_group
+        self.project.save()
         qgis_project_file.close()
 
         file = File(open(f'{DATASOURCE_PATH}countries_pie_plot_with_title.xml', 'r'))
-        cls.countries_plot_xml = file.read()
+        self.countries_plot_xml = file.read()
         file.close()
 
         file = File(open(f'{DATASOURCE_PATH}cities_histogram_plot.xml', 'r'))
-        cls.cities_histogram_plot_xml = file.read()
+        self.cities_histogram_plot_xml = file.read()
         file.close()
 
     def test_download_xml(self):

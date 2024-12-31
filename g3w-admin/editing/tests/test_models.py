@@ -108,10 +108,6 @@ class ConstraintsTestsBase(TestCase):
         So setUpTestData is changed in setUp calss method
         '''
 
-
-        #Restore test database
-        self.reset_db_data()
-
         call_command('loaddata', 'BaseLayer.json',
                      '--database=default', verbosity=0)
         call_command('loaddata', 'G3WMapControls.json',

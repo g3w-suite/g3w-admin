@@ -32,43 +32,41 @@ class QplotlyTestModel(QdjangoTestBase):
 
         cls.client = APIClient()
 
-    @classmethod
-    def setUpTestData(cls):
+    def setUp(self):
 
-        cls.project_group = CoreGroup(name='Group1', title='Group1', header_logo_img='',
+        self.project_group = CoreGroup(name='Group1', title='Group1', header_logo_img='',
                                       srid=G3WSpatialRefSys.objects.get(auth_srid=4326))
 
-        cls.project_group.save()
+        self.project_group.save()
 
         qgis_project_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_FILE), 'r', encoding='utf-8'))
 
         # Replace name property with only file name without path to simulate UploadedFileWithId instance.
         qgis_project_file.name = qgis_project_file.name.split('/')[-1]
-        cls.project = QgisProject(qgis_project_file)
-        cls.project.group = cls.project_group
-        cls.project.save()
+        self.project = QgisProject(qgis_project_file)
+        self.project.group = self.project_group
+        self.project.save()
         qgis_project_file.close()
 
         file = File(open(f'{DATASOURCE_PATH}data_plotly_settings.xml', 'r'))
-        cls.histogram_countries_xml = file.read()
+        self.histogram_countries_xml = file.read()
         file.close()
 
         file = File(open(f'{DATASOURCE_PATH}cities_scatter_plot.xml', 'r'))
-        cls.scatter_cities_xml = file.read()
+        self.scatter_cities_xml = file.read()
         file.close()
 
         file = File(open(f'{DATASOURCE_PATH}wrong_data_plotly_settings.xml', 'r'))
-        cls.wrong_settings_xml = file.read()
+        self.wrong_settings_xml = file.read()
         file.close()
 
         file = File(open(f'{DATASOURCE_PATH}cities_scatter_plot_wrong_source_layer_id.xml', 'r'))
-        cls.wrong_settings_source_layer_id_xml = file.read()
+        self.wrong_settings_source_layer_id_xml = file.read()
         file.close()
 
-    @classmethod
-    def tearDownClass(cls):
-        cls.project.instance.delete()
-        super().tearDownClass()
+    def tearDown(self):
+        self.project.instance.delete()
+        super().tearDown()
 
     def test_widget(self):
         """Test QplotlyWidget model"""
