@@ -206,11 +206,6 @@ class QgisProjectLayer(XmlData):
         for validator in self._defaultValidators:
             self.registerValidator(validator)
 
-        # For deepcopy fix:
-        # Teardown
-        # ------------------------------------------------------
-        #self.qgs_layer = None
-
     def __str__(self):
         """
         StrId Object for error
