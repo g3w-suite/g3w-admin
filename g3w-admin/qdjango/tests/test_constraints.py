@@ -52,32 +52,32 @@ IS_QGIS_3_10 = Qgis.QGIS_VERSION.startswith('3.10')
 class TestSingleLayerConstraintsBase(QdjangoTestBase):
     """Common code for subset string and expression rules"""
 
-    @classmethod
-    def setUpTestData(cls):
+    def setUp(self):
 
-        super().setUpTestData()
-        cls.qdjango_project = Project.objects.all()[0]
-        cls.world = cls.qdjango_project.layer_set.filter(
+        super().setUp()
+        
+        self.qdjango_project = Project.objects.all()[0]
+        self.world = self.qdjango_project.layer_set.filter(
             qgs_layer_id='world20181008111156525')[0]
-        cls.spatialite_points = cls.qdjango_project.layer_set.filter(
+        self.spatialite_points = self.qdjango_project.layer_set.filter(
             qgs_layer_id='spatialite_points20190604101052075')[0]
         # Make a cloned layer
-        cls.cloned_project = Project(
-            group=cls.qdjango_project.group, title='My Clone')
+        self.cloned_project = Project(
+            group=self.qdjango_project.group, title='My Clone')
 
-        cls.cloned_project.qgis_file = cls.qdjango_project.qgis_file
-        cls.cloned_project.save()
-        cls.cloned_layer = cls.qdjango_project.layer_set.filter(
+        self.cloned_project.qgis_file = self.qdjango_project.qgis_file
+        self.cloned_project.save()
+        self.cloned_layer = self.qdjango_project.layer_set.filter(
             qgs_layer_id='world20181008111156525')[0]
-        cls.cloned_layer.pk = None
-        cls.cloned_layer.project = cls.cloned_project
-        cls.cloned_layer.save()
+        self.cloned_layer.pk = None
+        self.cloned_layer.project = self.cloned_project
+        self.cloned_layer.save()
         assert Layer.objects.filter(
             qgs_layer_id='world20181008111156525').count() == 2
 
     @classmethod
     def setUpClass(cls):
-        super().setUpClass()
+        QdjangoTestBase.setUpClass()
 
         # Add admin01 to a group
         cls.viewer1_group = cls.main_roles['Viewer Level 1']
@@ -87,11 +87,11 @@ class TestSingleLayerConstraintsBase(QdjangoTestBase):
     def tearDownClass(cls):
         super().tearDownClass()
         cls.viewer1_group.user_set.remove(cls.test_user1)
-        cls.cloned_project.delete()
 
     def tearDown(self):
         super().tearDown()
         SingleLayerConstraint.objects.all().delete()
+        self.cloned_project.delete()
 
     def _testApiCallAdmin01(self, view_name, args, kwargs={}):
         """Utility to make test calls for admin01 user, returns the response"""

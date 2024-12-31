@@ -457,15 +457,14 @@ class QgisWMSProjectSettingsTest(TestCase):
 class QdjangoUtilsTest(QdjangoTestBase):
     """ Test for utils methods and functions"""
 
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
+    def setUp(self):
+        super().setUp()
 
         qgis_project_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGIS_FILE_MDAL), 'r'))
-        cls.project_mdal = QgisProject(qgis_project_file)
-        cls.project_mdal.title = 'A project with mdal layer'
-        cls.project_mdal.group = cls.project_group
-        cls.project_mdal.save()
+        self.project_mdal = QgisProject(qgis_project_file)
+        self.project_mdal.title = 'A project with mdal layer'
+        self.project_mdal.group = self.project_group
+        self.project_mdal.save()
 
     @classmethod
     def tearDownClass(cls):
@@ -607,14 +606,13 @@ class TestTemplateTags(QdjangoTestBase):
 class QdjangoTestUtilsQgis(QdjangoTestBase):
     """ Test for qdjango.utils.qgis module and functions """
 
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
+    def setUp(self):
+        super().setUp()
 
         qgis_project_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGIS_FILE_EXPRESSION_DEFAULT), 'r'))
-        cls.project_dexp = QgisProject(qgis_project_file)
-        cls.project_dexp.group = cls.project_group
-        cls.project_dexp.save()
+        self.project_dexp = QgisProject(qgis_project_file)
+        self.project_dexp.group = self.project_group
+        self.project_dexp.save()
 
     def test_explode_expression(self):
         """

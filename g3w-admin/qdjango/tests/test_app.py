@@ -37,20 +37,19 @@ from .base import (CURRENT_PATH, QGS310_WIDGET_FILE, TEST_BASE_PATH,
 class AppTest(QdjangoTestBase):
     """Test app's methods"""
 
-    @classmethod
-    def setUpTestData(cls):
+    def setUp(self):
 
-        super().setUpTestData()
+        super().setUp()
 
         # For Django 4.2 inherit setUpTestData is not maintained the file object inside the models
-        qprj = Project.objects.get(pk=cls.project.instance.pk)
+        qprj = Project.objects.get(pk=self.project.instance.pk)
 
-        cls.qdjango_project = Project(
+        self.qdjango_project = Project(
             qgis_file=qprj.qgis_file,
             title='Test qdjango project',
-            group=cls.project_group,
+            group=self.project_group,
         )
-        cls.qdjango_project.save()
+        self.qdjango_project.save()
 
     def test_get_qgs_project(self):
         """test get_qgs_project"""

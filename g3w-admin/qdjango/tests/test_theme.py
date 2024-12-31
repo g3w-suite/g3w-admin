@@ -32,26 +32,25 @@ import json
 class QdjangoThemeTest(QdjangoTestBase):
     """ Testing Project theme system """
 
-    @classmethod
-    def setUpTestData(cls):
-        super().setUpTestData()
+    def setUp(self):
+        super().setUp()
 
-        cls.project_theme316 = QgisProject(File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS316_THEME_FILE), 'r')))
-        cls.project_theme316.title = 'A project with themes QGIS 3.16'
-        cls.project_theme316.group = cls.project_group
-        cls.project_theme316.save()
+        self.project_theme316 = QgisProject(File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS316_THEME_FILE), 'r')))
+        self.project_theme316.title = 'A project with themes QGIS 3.16'
+        self.project_theme316.group = self.project_group
+        self.project_theme316.save()
 
-        cls.project_layout_theme322 = QgisProject(
+        self.project_layout_theme322 = QgisProject(
             File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS322_PRINT_LAYOUT_THEME_FILE), 'r')))
-        cls.project_layout_theme322.title = 'A project with layout with preset theme QGIS 3.22'
-        cls.project_layout_theme322.group = cls.project_group
-        cls.project_layout_theme322.save()
+        self.project_layout_theme322.title = 'A project with layout with preset theme QGIS 3.22'
+        self.project_layout_theme322.group = self.project_group
+        self.project_layout_theme322.save()
 
-        cls.project_theme328 = QgisProject(
+        self.project_theme328 = QgisProject(
             File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS328_THEME_FILE), 'r')))
-        cls.project_theme328.title = 'A project with themes QGIS 3.28'
-        cls.project_theme328.group = cls.project_group
-        cls.project_theme328.save()
+        self.project_theme328.title = 'A project with themes QGIS 3.28'
+        self.project_theme328.group = self.project_group
+        self.project_theme328.save()
 
     def _testApiCall(self, view_name, args, kwargs={}, data=None, method='POST', username='admin01', status_code=200):
         """Utility to make test calls for admin01 user"""

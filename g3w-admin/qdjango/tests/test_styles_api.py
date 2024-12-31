@@ -29,42 +29,9 @@ from .base import CURRENT_PATH, TEST_BASE_PATH, QdjangoTestBase
 
 class LayerStylesApiTest(QdjangoTestBase):
 
-    @classmethod
-    def setUpTestData(cls):
-        super().setUpTestData()
-
-        cls.project_path = os.path.join(
-            CURRENT_PATH + TEST_BASE_PATH, 'multiple_styles_manager_test.qgs')
-
-        Project.objects.filter(
-            title='Test qdjango postgres multiple styles manager project').delete()
-
-        project_file = File(open(cls.project_path, 'r'))
-        project = QgisProject(project_file)
-        project.title = 'Test qdjango postgres multiple styles manager project'
-        project.group = cls.project_group
-        project.save()
-
-        cls.qdjango_project = project.instance
-        cls.qdjango_layer = cls.qdjango_project.layer_set.all()[0]
-
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-
-        # Add admin01 to a group
-        cls.viewer1_group = cls.main_roles['Viewer Level 1']
-        cls.viewer1_group.user_set.add(cls.test_user1)
-
-    @classmethod
-    def tearDownClass(cls):
-        super().tearDownClass()
-        cls.viewer1_group.user_set.remove(cls.test_user1)
-
     def setUp(self):
-        """Setup test data"""
-
         super().setUp()
+
         self.project_path = os.path.join(
             CURRENT_PATH + TEST_BASE_PATH, 'multiple_styles_manager_test.qgs')
 
@@ -81,6 +48,20 @@ class LayerStylesApiTest(QdjangoTestBase):
         self.qdjango_layer = self.qdjango_project.layer_set.all()[0]
 
         self.client = APIClient()
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+
+        # Add admin01 to a group
+        cls.viewer1_group = cls.main_roles['Viewer Level 1']
+        cls.viewer1_group.user_set.add(cls.test_user1)
+
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        cls.viewer1_group.user_set.remove(cls.test_user1)
+
 
     def test_model_methods(self):
         """Test model style manager CRUD methods"""

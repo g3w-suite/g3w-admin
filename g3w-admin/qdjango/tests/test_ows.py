@@ -53,59 +53,58 @@ from .base import (
 class OwsTest(QdjangoTestBase):
     """Test proxy to QgsServer"""
 
-    @classmethod
-    def setUpTestData(cls):
+    def setUp(self):
 
-        super().setUpTestData()
+        super().setUp()
 
         # For Django 4.2 inherit setUpTestData is not maintained the file object inside the models
         qgis_project_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_FILE), 'r'))
 
-        cls.project2 = QgisProject(qgis_project_file)
-        cls.project2.title = "Test qdjango project"
-        cls.project2.group = cls.project_group
-        cls.project2.save()
+        self.project2 = QgisProject(qgis_project_file)
+        self.project2.title = "Test qdjango project"
+        self.project2.group = self.project_group
+        self.project2.save()
 
-        cls.qdjango_project = cls.project2.instance
+        self.qdjango_project = self.project2.instance
 
         qgis_project_file_widget = File(open('{}{}{}'.format(
             CURRENT_PATH, TEST_BASE_PATH, QGS310_WIDGET_FILE), 'r'))
-        cls.project_widget310 = QgisProject(qgis_project_file_widget)
-        cls.project_widget310.title = 'A project with widget QGIS 3.10'
-        cls.project_widget310.group = cls.project_group
-        cls.project_widget310.save()
+        self.project_widget310 = QgisProject(qgis_project_file_widget)
+        self.project_widget310.title = 'A project with widget QGIS 3.10'
+        self.project_widget310.group = self.project_group
+        self.project_widget310.save()
 
-        cls.project_off_temp_path = '{}{}{}'.format(
+        self.project_off_temp_path = '{}{}{}'.format(
             CURRENT_PATH, TEST_BASE_PATH, 'legend_off.qgs')
 
         shutil.copyfile('{}{}{}'.format(
-            CURRENT_PATH, TEST_BASE_PATH, QGS310_WIDGET_FILE), cls.project_off_temp_path)
+            CURRENT_PATH, TEST_BASE_PATH, QGS310_WIDGET_FILE), self.project_off_temp_path)
 
         p = QgsProject()
-        p.read(cls.project_off_temp_path)
+        p.read(self.project_off_temp_path)
         main_layer = p.mapLayersByName('main_layer')[0]
         renderer = main_layer.renderer()
         renderer.checkLegendSymbolItem('0', False)
         renderer.checkLegendSymbolItem('1', False)
         p.write()
 
-        p.read(cls.project_off_temp_path)
+        p.read(self.project_off_temp_path)
         main_layer = p.mapLayersByName('main_layer')[0]
         renderer = main_layer.renderer()
         assert not renderer.legendSymbolItemChecked('0')
         assert not renderer.legendSymbolItemChecked('1')
 
         qgis_project_file_widget_off = File(
-            open(cls.project_off_temp_path, 'r'))
-        cls.project_widget310_off = QgisProject(qgis_project_file_widget_off)
-        cls.project_widget310_off.title = 'A project with widget QGIS 3.10 and classes off'
-        cls.project_widget310_off.group = cls.project_group
-        cls.project_widget310_off.save()
+            open(self.project_off_temp_path, 'r'))
+        self.project_widget310_off = QgisProject(qgis_project_file_widget_off)
+        self.project_widget310_off.title = 'A project with widget QGIS 3.10 and classes off'
+        self.project_widget310_off.group = self.project_group
+        self.project_widget310_off.save()
 
         # Add Map Url Alias
-        ProjectMapUrlAlias.objects.create(app_name='qdjango', project_id=cls.project_widget310.instance.pk,
+        ProjectMapUrlAlias.objects.create(app_name='qdjango', project_id=self.project_widget310.instance.pk,
                                           alias='alias-map')
-        ProjectMapUrlAlias.objects.create(app_name='qdjango', project_id=cls.project_widget310_off.instance.pk,
+        ProjectMapUrlAlias.objects.create(app_name='qdjango', project_id=self.project_widget310_off.instance.pk,
                                           alias='alias-map-off')
 
     @classmethod

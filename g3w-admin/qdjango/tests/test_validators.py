@@ -74,47 +74,45 @@ class TestFeatureValidator(QdjangoTestBase):
 
     """
 
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
+    def setUp(self):
+        super().setUp()
 
-        cls.dir = QTemporaryDir()
+        self.dir = QTemporaryDir()
         shutil.copytree(os.path.join(os.path.dirname(
-            __file__), 'data'), os.path.join(cls.dir.path(), 'projects'))
-        cls.project = QgsProject()
-        assert cls.project.read(os.path.join(
-            cls.dir.path(), 'projects', 'validator_project_test_328.qgs'))
-        cls.validator_project_test = cls.project.mapLayersByName(
+            __file__), 'data'), os.path.join(self.dir.path(), 'projects'))
+        self.project = QgsProject()
+        assert self.project.read(os.path.join(
+            self.dir.path(), 'projects', 'validator_project_test_328.qgs'))
+        self.validator_project_test = self.project.mapLayersByName(
             'validator_project_test')[0]
-        cls.validator_project_test_not_null = cls.project.mapLayersByName(
+        self.validator_project_test_not_null = self.project.mapLayersByName(
             'validator_project_test_not_null')[0]
-        cls.validator_project_test_unique = cls.project.mapLayersByName(
+        self.validator_project_test_unique = self.project.mapLayersByName(
             'validator_project_test_unique')[0]
-        cls.validator_project_test_defaults = cls.project.mapLayersByName(
+        self.validator_project_test_defaults = self.project.mapLayersByName(
             'validator_project_test_defaults')[0]
-        cls.validator_project_test_expressions = cls.project.mapLayersByName(
+        self.validator_project_test_expressions = self.project.mapLayersByName(
             'validator_project_test_expressions')[0]
 
-        cls.not_nullable_fields = set(
-            [name for name in cls.validator_project_test.fields().names() if '_not_nullable' in name and name != 'integer_not_nullable_default'])
-        cls.nullable_fields = set(
-            [name for name in cls.validator_project_test.fields().names() if '_nullable' in name and '_not_nullable' not in name])
-        cls.unique_fields = set(('fid',)).union(
-            [name for name in cls.validator_project_test.fields().names() if '_unique' in name])
-        cls.unconstrained_fields = set([name for name in cls.validator_project_test.fields(
-        ).names() if name not in cls.not_nullable_fields.union(cls.unique_fields)])
+        self.not_nullable_fields = set(
+            [name for name in self.validator_project_test.fields().names() if '_not_nullable' in name and name != 'integer_not_nullable_default'])
+        self.nullable_fields = set(
+            [name for name in self.validator_project_test.fields().names() if '_nullable' in name and '_not_nullable' not in name])
+        self.unique_fields = set(('fid',)).union(
+            [name for name in self.validator_project_test.fields().names() if '_unique' in name])
+        self.unconstrained_fields = set([name for name in self.validator_project_test.fields(
+        ).names() if name not in self.not_nullable_fields.union(self.unique_fields)])
 
-    @classmethod
-    def tearDownClass(cls):
+    def tearDown(self):
         """Delete projects and layers"""
 
-        super().tearDownClass()
-        del(cls.validator_project_test_expressions)
-        del(cls.validator_project_test_unique)
-        del(cls.validator_project_test_defaults)
-        del(cls.validator_project_test_not_null)
-        del(cls.validator_project_test)
-        del(cls.project)
+        super().tearDown()
+        del(self.validator_project_test_expressions)
+        del(self.validator_project_test_unique)
+        del(self.validator_project_test_defaults)
+        del(self.validator_project_test_not_null)
+        del(self.validator_project_test)
+        del(self.project)
 
 
     def _feature_factory(self, attrs={}, geom='POINT(9, 45)'):

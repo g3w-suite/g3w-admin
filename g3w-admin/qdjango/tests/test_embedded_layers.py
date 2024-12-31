@@ -61,8 +61,7 @@ for file in glob.glob(os.path.join(CURRENT_PATH + TEST_BASE_PATH, 'geodata') + '
 )
 class TestEmbeddedLayers(QdjangoTestBase):
 
-    @classmethod
-    def setUpTestData(cls):
+    def setUp(cls):
 
         # main project group
         cls.project_group = CoreGroup(name='Group1', title='Group1', header_logo_img='',
@@ -107,19 +106,20 @@ class TestEmbeddedLayers(QdjangoTestBase):
     def tearDown(self):
         """Remove all test projects"""
 
-        for original_name in (
-            'embedded.qgs',
-            'embedded_parent.qgs',
-            'embedded_parent_ddform.qgs',
-            'embedded_group.qgs',
-            'embedded_parent_group.qgs',
-            'embedded_parent_removed.qgs',
-            'embedded_parent_group_wms_added.qgs',
-            'embedded_parent_new_title.qgs'):
-            Project.objects.filter(original_name=original_name).delete()
+        # for original_name in (
+        #     'embedded.qgs',
+        #     'embedded_parent.qgs',
+        #     'embedded_parent_ddform.qgs',
+        #     'embedded_group.qgs',
+        #     'embedded_parent_group.qgs',
+        #     'embedded_parent_removed.qgs',
+        #     'embedded_parent_group_wms_added.qgs',
+        #     'embedded_parent_new_title.qgs'):
+        #     Project.objects.filter(original_name=original_name).delete()
 
-    def tearDown(self):
         super().tearDown()
+
+
 
     def _testApiCallAdmin01(self, view_name, args, kwargs={}):
         """Utility to make test calls for admin01 user, returns the response"""

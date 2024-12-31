@@ -49,17 +49,17 @@ MASTER_PASSWORD_PATH = '/tmp/qgis_master_password.txt'
 class AuthDbTest(QdjangoTestBase):
     """Test QGIS Auth DB"""
 
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
+    def setUp(self):
+        super().setUp()
+
         # Prepare DB
         for path in (AUTH_DB_PATH, MASTER_PASSWORD_PATH):
             assert os.path.isfile(path)
 
-        cls.am = QgsApplication.instance().authManager()
-        assert cls.am.configIds() == []
-        assert cls.am.setMasterPassword(True)
-        assert cls.am.masterPasswordIsSet()
+        self.am = QgsApplication.instance().authManager()
+        assert self.am.configIds() == []
+        assert self.am.setMasterPassword(True)
+        assert self.am.masterPasswordIsSet()
 
         config = QgsAuthMethodConfig()
         config.setName("alice")
@@ -68,15 +68,15 @@ class AuthDbTest(QdjangoTestBase):
         config.setConfig("password", "my password" )
         assert config.isValid()
 
-        res, cfg = cls.am.storeAuthenticationConfig(config)
+        res, cfg = self.am.storeAuthenticationConfig(config)
         assert res
         assert config.id() != ''
         assert cfg.id() != ''
         assert cfg.id() == config.id()
 
         # Store fakelayer datasource
-        cls.fakelayer = Layer.objects.get(name='fakelayer')
-        cls.fakelayer_datasource = cls.fakelayer.datasource
+        self.fakelayer = Layer.objects.get(name='fakelayer')
+        self.fakelayer_datasource = self.fakelayer.datasource
 
 
     def tearDown(self):
