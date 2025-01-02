@@ -16,24 +16,15 @@ import os
 import zipfile
 from io import BytesIO
 
-from django.conf import settings
-from django.contrib.auth.models import User
+from django.db import transaction
 from django.test import Client
 from django.urls import reverse
-from guardian.shortcuts import assign_perm, get_anonymous_user
-from qgis.core import QgsVectorLayer, QgsFeatureRequest, QgsExpression, Qgis
+from qgis.core import QgsVectorLayer
 from django.db import IntegrityError
 from django.core.exceptions import ValidationError
 
 from qdjango.apps import QGS_SERVER, get_qgs_project
 from qdjango.models import (
-    ConstraintSubsetStringRule,
-    ConstraintExpressionRule,
-    SingleLayerConstraint,
-    SessionTokenFilter,
-    SessionTokenFilterLayer,
-    GeoConstraint,
-    GeoConstraintRule,
     Layer,
     Project,
     ColumnAcl
@@ -105,11 +96,12 @@ class TestColumnAcl(QdjangoTestBase):
     def tearDownClass(cls):
         super().tearDownClass()
         cls.viewer1_group.user_set.remove(cls.test_user1)
-        ColumnAcl.objects.all().delete()
 
     def tearDown(self):
-        self.cloned_project.delete()
         super().tearDown()
+        #self.cloned_project.delete()
+        #ColumnAcl.objects.all().delete()
+
 
 
     def _testApiCallAdmin01(self, view_name, args, kwargs={}):

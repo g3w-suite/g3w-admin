@@ -128,11 +128,10 @@ class OwsTestPostgres(QdjangoTestBase):
 
         self.client = APIClient()
 
-    @classmethod
-    def tearDownClass(cls):
+    def tearDown(self):
         super().tearDownClass()
         iface = QGS_SERVER.serverInterface()
-        iface.removeConfigCacheEntry(cls.qdjango_project.qgis_project.fileName())
+        iface.removeConfigCacheEntry(self.qdjango_project.qgis_project.fileName())
 
     def _testApiCall(self, view_name, args, kwargs={}, status_auth=200, login=True, logout=True):
         """Utility to make test calls for admin01 user"""
