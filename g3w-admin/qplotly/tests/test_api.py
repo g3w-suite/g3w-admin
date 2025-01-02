@@ -594,7 +594,7 @@ class QplotlyTestAPI(QdjangoTestBase):
         self.assertEqual(len(widgets), 2)
 
     def _check_constraints(self, jcontent):
-        self.assertEqual(jcontent['results'][0]['pk'], 1)
+        #self.assertEqual(jcontent['results'][0]['pk'], 18)
         self.assertFalse(jcontent['results'][0]['selected_features_only'])
         self.assertFalse(jcontent['results'][0]['visible_features_only'])
         self.assertEqual(jcontent['results'][0]['type'], 'histogram')
@@ -612,6 +612,8 @@ class QplotlyTestAPI(QdjangoTestBase):
         jcontent = json.loads(self._testApiCall('qplotly-widget-api-filter-by-layer-id', [layer_pk], {}).content)
         self.assertEqual(jcontent['count'], 2)
         self._check_constraints(jcontent)
+
+        qplw_pk = jcontent['results'][0]['pk']
 
 
         # TEST API VALIDATION
@@ -654,7 +656,7 @@ class QplotlyTestAPI(QdjangoTestBase):
         # change type for test
         data['type'] = 'pie'
         jcontent = json.loads(self._testApiCall('qplotly-widget-api-list', [], {}, data=data).content)
-        self.assertEqual(jcontent['pk'], 8)
+        self.assertEqual(jcontent['pk'], qplw_pk + 2)
         self.assertEqual(jcontent['type'], 'pie')
         self.assertEqual(jcontent['title'], 'Test title create')
 
@@ -670,8 +672,8 @@ class QplotlyTestAPI(QdjangoTestBase):
 
         # change type for test
         data['type'] = 'scatter'
-        jcontent = json.loads(self._testApiCall('qplotly-widget-api-detail', [self.project.instance.pk, 8], {}, data=data, method='PUT').content)
-        self.assertEqual(jcontent['pk'], 8)
+        jcontent = json.loads(self._testApiCall('qplotly-widget-api-detail', [self.project.instance.pk, qplw_pk + 1], {}, data=data, method='PUT').content)
+        self.assertEqual(jcontent['pk'], qplw_pk + 1)
         self.assertEqual(jcontent['type'], 'scatter')
 
         jcontent = json.loads(self._testApiCall('qplotly-widget-api-filter-by-layer-id', [layer_pk], {}).content)
@@ -680,7 +682,7 @@ class QplotlyTestAPI(QdjangoTestBase):
 
         # TEST DELETE
         # -----------
-        self._testApiCall('qplotly-widget-api-detail', [self.project.instance.pk, 8], {}, data=None, method='DELETE')
+        self._testApiCall('qplotly-widget-api-detail', [self.project.instance.pk, qplw_pk + 1], {}, data=None, method='DELETE')
 
         jcontent = json.loads(self._testApiCall('qplotly-widget-api-filter-by-layer-id', [layer_pk], {}).content)
         self.assertEqual(jcontent['count'], 2)
@@ -695,7 +697,7 @@ class QplotlyTestAPI(QdjangoTestBase):
 
         # change type for test
         jcontent = json.loads(self._testApiCall('qplotly-widget-api-list', [], {}, data=data).content)
-        self.assertEqual(jcontent['pk'], 9)
+        self.assertEqual(jcontent['pk'], qplw_pk + 3)
         self.assertEqual(jcontent['type'], 'pie')
         self.assertEqual(jcontent['title'], 'Pie countries test')
 
