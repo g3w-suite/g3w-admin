@@ -129,7 +129,7 @@ class OwsTestPostgres(QdjangoTestBase):
         self.client = APIClient()
 
     def tearDown(self):
-        super().tearDownClass()
+        super().tearDown()
         iface = QGS_SERVER.serverInterface()
         iface.removeConfigCacheEntry(self.qdjango_project.qgis_project.fileName())
 
