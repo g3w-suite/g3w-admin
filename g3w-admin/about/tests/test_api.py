@@ -50,87 +50,85 @@ class AboutTestsBase(TestCase):
                 'G3WGeneralDataSuite.json',
                 ]
 
-    @classmethod
-    def setUpTestData(cls):
+    def setUp(self):
 
         translation.activate(settings.LANGUAGE_CODE[:2])
 
         # Admin level 1
-        cls.test_user_admin1 = User.objects.create_user(username='admin01', password='admin01')
-        cls.test_user_admin1.is_superuser = True
-        cls.test_user_admin1.save()
+        self.test_user_admin1 = User.objects.create_user(username='admin01', password='admin01')
+        self.test_user_admin1.is_superuser = True
+        self.test_user_admin1.save()
 
         # Editor level 1
-        cls.test_user1 = User.objects.create_user(username='user01', password='user01')
-        cls.group = UserGroup.objects.get(name='Editor Level 1')
-        cls.test_user1.groups.add(cls.group)
-        cls.test_user1.save()
+        self.test_user1 = User.objects.create_user(username='user01', password='user01')
+        self.group = UserGroup.objects.get(name='Editor Level 1')
+        self.test_user1.groups.add(self.group)
+        self.test_user1.save()
 
         # Editor level 2
-        cls.test_user2 = User.objects.create_user(username='user02', password='user02')
-        cls.group = UserGroup.objects.get(name='Editor Level 2')
-        cls.test_user2.groups.add(cls.group)
-        cls.test_user2.save()
+        self.test_user2 = User.objects.create_user(username='user02', password='user02')
+        self.group = UserGroup.objects.get(name='Editor Level 2')
+        self.test_user2.groups.add(self.group)
+        self.test_user2.save()
 
-        cls.test_user3 = User.objects.create_user(username='user03', password='user03')
-        cls.group = UserGroup.objects.get(name='Viewer Level 1')
-        cls.test_user3.groups.add(cls.group)
-        cls.test_user3.save()
+        self.test_user3 = User.objects.create_user(username='user03', password='user03')
+        self.group = UserGroup.objects.get(name='Viewer Level 1')
+        self.test_user3.groups.add(self.group)
+        self.test_user3.save()
 
-        cls.test_user4 = User.objects.create_user(username='user04', password='user04')
-        cls.test_user4.groups.add(cls.group)
-        cls.test_user4.save()
+        self.test_user4 = User.objects.create_user(username='user04', password='user04')
+        self.test_user4.groups.add(self.group)
+        self.test_user4.save()
 
-        cls.project_group = CoreGroup(name='Group1', title='Group1', header_logo_img='',
+        self.project_group = CoreGroup(name='Group1', title='Group1', header_logo_img='',
                                       srid=G3WSpatialRefSys.objects.get(auth_srid=4326))
 
-        cls.project_group.save()
-        cls.project_group.addPermissionsToEditor(cls.test_user2)
+        self.project_group.save()
+        self.project_group.addPermissionsToEditor(self.test_user2)
 
-        cls.project_group2 = CoreGroup(name='Group2', title='Group2', header_logo_img='',
+        self.project_group2 = CoreGroup(name='Group2', title='Group2', header_logo_img='',
                                       srid=G3WSpatialRefSys.objects.get(auth_srid=4326))
 
-        cls.project_group2.save()
+        self.project_group2.save()
 
-        cls.project_group3 = CoreGroup(name='Group3', title='Group3', header_logo_img='',
+        self.project_group3 = CoreGroup(name='Group3', title='Group3', header_logo_img='',
                                        srid=G3WSpatialRefSys.objects.get(auth_srid=3857))
 
-        cls.project_group3.save()
+        self.project_group3.save()
 
         # create macrogroups
-        cls.macrogroup = MacroGroup(title='Macrogroup1', logo_img='macrogroup.png')
-        cls.macrogroup.save()
-        cls.project_group2.macrogroups.add(cls.macrogroup)
-        cls.project_group.macrogroups.add(cls.macrogroup)
+        self.macrogroup = MacroGroup(title='Macrogroup1', logo_img='macrogroup.png')
+        self.macrogroup.save()
+        self.project_group2.macrogroups.add(self.macrogroup)
+        self.project_group.macrogroups.add(self.macrogroup)
 
         # create macrogroups 2
-        cls.macrogroup2 = MacroGroup(title='Macrogroup2', logo_img='macrogroup2.png')
-        cls.macrogroup2.save()
-        cls.project_group.macrogroups.add(cls.macrogroup2)
+        self.macrogroup2 = MacroGroup(title='Macrogroup2', logo_img='macrogroup2.png')
+        self.macrogroup2.save()
+        self.project_group.macrogroups.add(self.macrogroup2)
 
         # add permission to anonymous and viewer
-        cls.project_group2.addPermissionsToViewers(users_id=[cls.test_user3.pk, get_user_model().get_anonymous().pk])
+        self.project_group2.addPermissionsToViewers(users_id=[self.test_user3.pk, get_user_model().get_anonymous().pk])
 
         #projects
         qgis_project_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_FILE), 'r'))
-        cls.project = QgisProject(qgis_project_file)
-        cls.project.title = 'A project'
-        cls.project.group = cls.project_group
-        cls.project.save()
+        self.project = QgisProject(qgis_project_file)
+        self.project.title = 'A project'
+        self.project.group = self.project_group
+        self.project.save()
 
         # projects
         qgis_project_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_FILE_2), 'r'))
-        cls.project2 = QgisProject(qgis_project_file)
-        cls.project2.group = cls.project_group
-        cls.project2.save()
+        self.project2 = QgisProject(qgis_project_file)
+        self.project2.group = self.project_group
+        self.project2.save()
 
         # add permission to anonumous and viewer
-        cls.project.instance.addPermissionsToViewers([cls.test_user3.pk])
+        self.project.instance.addPermissionsToViewers([self.test_user3.pk])
 
     @classmethod
     def tearDownClass(cls):
         """Cleanup """
-        # Cleanup
         super(AboutTestsBase, cls).tearDownClass()
 
 
