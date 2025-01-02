@@ -68,7 +68,6 @@ class AuthDbTest(QdjangoTestBase):
         config.setConfig("username", "my user")
         config.setConfig("password", "my password")
         assert config.isValid()
-
         res, cfg = cls.am.storeAuthenticationConfig(config)
         assert res
         assert config.id() != ''
@@ -83,12 +82,15 @@ class AuthDbTest(QdjangoTestBase):
         self.fakelayer = Layer.objects.get(name='fakelayer')
         self.fakelayer_datasource = self.fakelayer.datasource
 
+    def tearDown(self):
+        """Clear DB"""
+
+        self.am.removeAllAuthenticationConfigs()
 
     @classmethod
     def tearDownClass(cls):
         super().tearDownClass()
 
-        cls.am.removeAllAuthenticationConfigs()
         # Make sure there are no auth files left
         for path in (AUTH_DB_PATH, MASTER_PASSWORD_PATH):
             if os.path.isfile(path):
@@ -118,6 +120,7 @@ class AuthDbTest(QdjangoTestBase):
 
     def test_model(self):
         """Test QGIS Auth model"""
+
 
         self.assertEqual(QgisAuth.objects.count(), 0)
 

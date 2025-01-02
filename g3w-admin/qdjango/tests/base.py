@@ -41,7 +41,6 @@ QGS322_FORMATTING_DATE = 'Testing_Date_and_Datetime_formatting_322.qgs'
 QGS328_VALUE_RELATION = 'value_relation_qgis328.qgs'
 QGS328_RELATION_REFERENCE = 'g3wsuite_project_test_qgis328.qgs'
 
-
 @override_settings(
     CACHES={
         'default': {
@@ -70,6 +69,7 @@ class QdjangoTestBase(TestCase):
         # To load the fixtures
         super().setUpClass()
         setup_testing_user(cls)
+
 
     def setUp(self):
 
