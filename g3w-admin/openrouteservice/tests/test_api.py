@@ -149,20 +149,19 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
         myvcr.record_mode = RecordMode.NEW_EPISODES
         return myvcr
 
-    @classmethod
-    def setUpTestData(cls):
+    def setUp(self):
 
-        super().setUpTestData()
+        super().setUp()
 
-        cls.temp_dir = QTemporaryDir()
-        cls.temp_project_path = os.path.join(
-            cls.temp_dir.path(), 'pg_openrouteservice.qgs')
+        self.temp_dir = QTemporaryDir()
+        self.temp_project_path = os.path.join(
+            self.temp_dir.path(), 'pg_openrouteservice.qgs')
 
         # Create test layer
         conn_str = "dbname='{NAME}' host={HOST} port={PORT} user='{USER}' password='{PASSWORD}' sslmode=disable".format(
             **settings.DATABASES['default'])
 
-        cls.conn_uri = conn_str
+        self.conn_uri = conn_str
 
         md = QgsProviderRegistry.instance().providerMetadata('postgres')
 
@@ -201,7 +200,7 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
             ('SRID=3857;POINT (-8637126.514460787 4512741.157169087)'::geometry),
             ('SRID=3857;POINT (-8634109.572919691 4503916.603161385)'::geometry)""")
 
-        cls.layer_specs = {}
+        self.layer_specs = {}
 
         project = QgsProject()
 
@@ -217,19 +216,19 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
                 table_name=table_name, geometry_type=table_spec[0], srid=table_spec[1])
             layer = QgsVectorLayer(layer_uri, table_name, 'postgres')
             assert layer.isValid()
-            cls.layer_specs[table_name] = layer_uri
+            self.layer_specs[table_name] = layer_uri
             project.addMapLayers([layer])
 
-        assert project.write(cls.temp_project_path)
+        assert project.write(self.temp_project_path)
 
         Project.objects.filter(
             title='Test openrouteservice project').delete()
 
         toc = buildLayerTreeNodeObject(project.layerTreeRoot())
 
-        cls.qdjango_project = Project(
-            qgis_file=File(open(cls.temp_project_path, 'r')), title='Test openrouteservice project', group=cls.project_group, layers_tree=toc)
-        cls.qdjango_project.save()
+        self.qdjango_project = Project(
+            qgis_file=File(open(self.temp_project_path, 'r')), title='Test openrouteservice project', group=self.project_group, layers_tree=toc)
+        self.qdjango_project.save()
 
         for layer_id, layer in project.mapLayers().items():
             _, created = Layer.objects.get_or_create(
@@ -238,17 +237,15 @@ class OpenrouteserviceTest(VCRMixin, QdjangoTestBase):
                 origname=layer.name(),
                 qgs_layer_id=layer_id,
                 srid=layer.crs().postgisSrid(),
-                project=cls.qdjango_project,
+                project=self.qdjango_project,
                 layer_type='postgres',
-                datasource=cls.layer_specs[layer.name()]
+                datasource=self.layer_specs[layer.name()]
             )
             assert created
 
         OpenrouteserviceProject.objects.get_or_create(
-            project=cls.qdjango_project, services={OpenrouteserviceService.ISOCHRONE.value})
+            project=self.qdjango_project, services={OpenrouteserviceService.ISOCHRONE.value})
 
-    def setUp(self):
-        super().setUp()
         self.client = APIClient()
 
     def _check_layer(self, new_name, connection_id=None, qgis_layer_id=None, count=8, style=None, name=None, qdjango_layer_id=None):
