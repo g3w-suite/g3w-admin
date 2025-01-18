@@ -22,9 +22,4 @@ class OverwriteStorage(FileSystemStorage):
 
 
 class QgisFileOverwriteStorage(OverwriteStorage):
-
     pass
-    '''
-    def url(self, name):
-        return reverse('qdjango-project-download', args=(name,))
-    '''
