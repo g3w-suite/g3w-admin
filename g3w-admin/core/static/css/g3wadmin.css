@@ -281,3 +281,12 @@ For general layout
 .pdl10 {
     padding-left: 10px;
 }
+
+/*
+For to reset the .form-control class effect
+ */
+input.uploadwidget {
+    border: none;
+    padding: 0px;
+    height: auto;
+}
