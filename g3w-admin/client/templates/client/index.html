@@ -4,21 +4,28 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no" name="viewport">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no">
   <title>{{ page_title }}</title>
   <link rel="icon" href="{% if SETTINGS.G3WSUITE_CUSTOM_STATIC_URL and SETTINGS.G3WSUITE_FAVICON %}{{ SETTINGS.G3WSUITE_FAVICON }}{% else %}{% static '/img/favicon.ico' %}{% endif %}">
   <link rel="stylesheet" href="{% with client_default|add:"/app.min.css" as app_css %}{% static app_css %}{% endwith %}">
   {% if SETTINGS.G3WSUITE_CUSTOM_STATIC_URL %}{% for css in SETTINGS.G3WSUITE_CUSTOM_CSS %}
-  <link rel="stylesheet" type="text/css" href="{{ css }}" />
+  <link rel="stylesheet" href="{{ css }}" />
   {% endfor %}{% endif %}
+  <style>
+    @keyframes sk-bounce              { 0%, 100% { transform: scale(0.0); } 50% { transform: scale(1.0); } }
+    #startingspinner                  { position: fixed; z-index: 100000; height: 10em; width: 10em; overflow: show; margin: auto; inset: 0; }
+    #startingspinner .double-bounce1,
+    #startingspinner .double-bounce2  { width: 100%; height: 100%; border-radius: 50%; background-color: var(--skin-color); opacity: .6; position: absolute; top: 0; left: 0; animation: sk-bounce 2.0s infinite ease-in-out; }
+    #startingspinner .double-bounce2  { animation-delay: -1.0s; }
+  </style>
 </head>
 <body class="{% if sidebar_collapse %} sidebar-collapse {% endif %}">
   {% if SETTINGS.SENTRY_JS %}
     {{ SETTINGS.SENTRY_JS | safe }}
   {% endif %}
   <app id="app"></app>
+  <div id="startingspinner"><div class="double-bounce1"></div><div class="double-bounce2"></div></div>
   <script>{{ group_config | safe }}</script>
 
   <script src="{% with client_default|add:"/vendor.min.js" as vendor_js %}{% static vendor_js %}{% endwith %}"></script>
