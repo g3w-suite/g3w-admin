@@ -724,6 +724,12 @@ class G3WUserUpdateForm(G3WUserForm):
 
     password = ReadOnlyPasswordHashField()
 
+    def clean_username(self):
+        """Reject usernames that differ only in case."""
+        username = self.cleaned_data.get("username")
+
+        return username
+
     def clean_password(self):
         return self.initial['password']
 
