@@ -1,4 +1,3 @@
-const { ApplicationService } = g3wsdk.core;
 const { GUI }                = g3wsdk.gui;
 
 export default ({
@@ -298,7 +297,7 @@ export default ({
      */
     async getTimeLayer() {
       await this.$nextTick();
-      const project  = ApplicationService.getCurrentProject();
+      const project  = g3wsdk.core.project.ProjectsRegistry.getCurrentProject();
       const map      = GUI.getService('map');
       try {
         await (

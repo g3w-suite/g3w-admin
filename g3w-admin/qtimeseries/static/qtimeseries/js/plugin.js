@@ -2,10 +2,10 @@
 
   const BASE_URL = initConfig.group.plugins.qtimeseries.baseUrl + 'qtimeseries/js';
 
-  const { ApplicationService, ApplicationState } = g3wsdk.core;
-  const { Plugin }                               = g3wsdk.core.plugin;
-  const { toRawType }                            = g3wsdk.core.utils;
-  const { GUI }                                  = g3wsdk.gui;
+  const {  ApplicationState } = g3wsdk.core;
+  const { Plugin }            = g3wsdk.core.plugin;
+  const { toRawType }         = g3wsdk.core.utils;
+  const { GUI }               = g3wsdk.gui;
 
   new (class extends Plugin {
 
@@ -26,7 +26,7 @@
 
       this.setHookLoading({ loading: true });
 
-      const project = ApplicationService.getCurrentProject();
+      const project = g3wsdk.core.project.ProjectsRegistry.getCurrentProject();
 
       // add project layers from config
       project
