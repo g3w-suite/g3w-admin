@@ -1,4 +1,5 @@
 from django.contrib import admin
+from core.ie.admin import G3WImportExportModelAdmin
 from .models import *
 
 
@@ -14,7 +15,7 @@ class G3WEditingLayerAdmin(admin.ModelAdmin):
 admin.site.register(G3WEditingLayer, G3WEditingLayerAdmin)
 
 
-class G3WEditingFeatureLockAdmin(admin.ModelAdmin):
+class G3WEditingFeatureLockAdmin(G3WImportExportModelAdmin):
     model = G3WEditingFeatureLock
     list_display = (
         'id',
@@ -26,6 +27,9 @@ class G3WEditingFeatureLockAdmin(admin.ModelAdmin):
         'feature_lock_id',
         'time_locked'
     )
+    list_filter = ('user', 'layer_name')
+    search_fields = ('app_name', 'user__username', 'layer_name', 'time_locked')
+    list_per_page = 500
 
 
 admin.site.register(G3WEditingFeatureLock, G3WEditingFeatureLockAdmin)

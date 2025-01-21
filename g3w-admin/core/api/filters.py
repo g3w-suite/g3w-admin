@@ -24,6 +24,7 @@ from rest_framework.exceptions import ParseError
 from urllib.parse import unquote
 from core.utils.qgisapi import get_qgis_layer, get_qgis_features
 from qdjango.models import Layer
+import re
 
 class BaseFilterBackend():
     """Base class for QGIS request filters"""
@@ -142,8 +143,10 @@ class OrderingFilter(BaseFilterBackend):
                 if not self._is_valid_field(qgis_layer, ordering, view):
                     continue
 
+                # Because the fields inside a QGIS expression must be declared inside
+                # the expression string with the double brackets ("field_name")
                 ordering_rules.append(QgsFeatureRequest.OrderByClause(
-                    ordering, ascending))
+                    f'"{ordering}"', ascending))
 
             if ordering_rules:
                 order_by = QgsFeatureRequest.OrderBy(ordering_rules)
@@ -231,11 +234,7 @@ class SuggestFilterBackend(BaseFilterBackend):
         qgis_layer = metadata_layer.qgis_layer
 
         # Try to get param from GET
-        suggest_value = request.query_params.get('suggest')
-
-        if not suggest_value:
-            # Try to get from POST
-            suggest_value = request.data.get('suggest')
+        suggest_value = request.query_params.get('suggest', request.data.get('suggest'))
 
         if suggest_value:
 
@@ -274,13 +273,11 @@ class FieldFilterBackend(BaseFilterBackend):
 
         qgis_layer = metadata_layer.qgis_layer
 
-        # Try to get param from GET
-        suggest_value = request.query_params.get('field')
+        # Check for field parameter
+        suggest_value = request.query_params.get('field', request.data.get('field'))
 
-        if not suggest_value:
-
-            # Try to get from POST
-            suggest_value = request.data.get('field')
+        # Check for formatter parameter
+        formatter = str(request.query_params.get('formatter', request.data.get('formatter')))
 
         if suggest_value:
 
@@ -289,7 +286,8 @@ class FieldFilterBackend(BaseFilterBackend):
             # field can be multiple separated by ','
             # i.e. $field=name|eq|Rome,state|eq|Italy
 
-            fields = suggest_value.split(',')
+            pattern = r',(?=(?:[^()]*\([^()]*\))*[^()]*$)'
+            fields = re.split(pattern, suggest_value)
 
             count = 0
             nfields = len(fields)
@@ -309,6 +307,8 @@ class FieldFilterBackend(BaseFilterBackend):
                         raise ParseError(
                             'Invalid field string supplied for parameter field')
 
+                # Make lowercase field_operator
+                field_operator = field_operator.lower()
                 if not self._is_valid_field(qgis_layer, field_name):
                     raise Exception(
                         f"{field_name} doesn't belong from layer {qgis_layer.name()}!")
@@ -318,45 +318,45 @@ class FieldFilterBackend(BaseFilterBackend):
                     pre_post_operator = '%' if field_operator in (
                         'like', 'ilike') else ''
 
-                    if "formatter" in request.query_params:
-                        formatter = request.query_params.get("formatter")
-                        if (
-                            formatter.isnumeric()
-                            and int(formatter) == 1
-                            and view.layer.has_value_relation_widget(field_name)
-                        ):
-                            config = qgis_layer.editorWidgetSetup(
-                                qgis_layer.fields().indexFromName(field_name)
-                            ).config()
-                            relation_qgs_layer = get_qgis_layer(
-                                view.layer.project.layer_set.get(qgs_layer_id=config["Layer"])
-                            )
+                    if (formatter
+                        and formatter.isnumeric()
+                        and int(formatter) == 1
+                        and view.layer.has_value_relation_widget(field_name)
+                    ):
+                        config = qgis_layer.editorWidgetSetup(
+                            qgis_layer.fields().indexFromName(field_name)
+                        ).config()
+                        relation_qgs_layer = get_qgis_layer(
+                            view.layer.project.layer_set.get(qgs_layer_id=config["Layer"])
+                        )
 
-                            qfr = QgsFeatureRequest()
-                            pre_post_operator = "%" if field_operator in ("like", "ilike") else ""
-                            vr_single_search_expression = (
-                                "{field_name} {field_operator} {field_value}".format(
-                                    field_name=self._quote_identifier(config["Value"]),
-                                    field_operator=self.COMPARATORS_MAP[field_operator],
-                                    field_value=self._quote_value(
-                                        f"{pre_post_operator}{unquote(field_value)}{pre_post_operator}"
-                                    ),
-                                )
+                        qfr = QgsFeatureRequest()
+                        pre_post_operator = "%" if field_operator in ("like", "ilike") else ""
+                        vr_single_search_expression = (
+                            "{field_name} {field_operator} {field_value}".format(
+                                field_name=self._quote_identifier(config["Value"]),
+                                field_operator=self.COMPARATORS_MAP[field_operator],
+                                field_value=self._quote_value(
+                                    f"{pre_post_operator}{unquote(field_value)}{pre_post_operator}"
+                                ),
                             )
-                            qfr.combineFilterExpression(vr_single_search_expression)
-                            features = get_qgis_features(relation_qgs_layer, qfr)
+                        )
 
-                            if len(features) > 0:
-                                field_operator = "in"
-                                in_content = ",".join(["'" + str(f[config["Key"]]) + "'" for f in features])
-                                field_value = f"({in_content})"
+
+                        qfr.combineFilterExpression(vr_single_search_expression)
+                        features = get_qgis_features(relation_qgs_layer, qfr)
+
+                        if len(features) > 0:
+                            field_operator = "in"
+                            in_content = ",".join(["'" + str(f[config["Key"]]) + "'" for f in features])
+                            field_value = f"({in_content})"
 
                     pre_post_operator = "%" if field_operator in ("like", "ilike") else ""
                     if field_operator != 'in':
                         quoted_field_value = self._quote_value(
                             f'{pre_post_operator}{unquote(field_value)}{pre_post_operator}')
                     else:
-                        quoted_field_value = field_value
+                        quoted_field_value = unquote(field_value)
 
                     single_search_expression = '{field_name} {field_operator} {field_value}'.format(
                         field_name=self._quote_identifier(field_name),

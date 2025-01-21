@@ -41,7 +41,6 @@ QGS322_FORMATTING_DATE = 'Testing_Date_and_Datetime_formatting_322.qgs'
 QGS328_VALUE_RELATION = 'value_relation_qgis328.qgs'
 QGS328_RELATION_REFERENCE = 'g3wsuite_project_test_qgis328.qgs'
 
-
 @override_settings(
     CACHES={
         'default': {
@@ -67,32 +66,33 @@ class QdjangoTestBase(TestCase):
     @classmethod
     def setUpClass(cls):
 
-        super(QdjangoTestBase, cls).setUpClass()
+        # To load the fixtures
+        super().setUpClass()
         setup_testing_user(cls)
 
-    @classmethod
-    def setUpTestData(cls):
+
+    def setUp(self):
 
         # main project group
-        cls.project_group = CoreGroup(name='Group1', title='Group1', header_logo_img='',
+        self.project_group = CoreGroup(name='Group1', title='Group1', header_logo_img='',
                                       srid=G3WSpatialRefSys.objects.get(auth_srid=4326))
 
-        cls.project_group.save()
+        self.project_group.save()
 
         qgis_project_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_FILE), 'r'))
-        cls.project = QgisProject(qgis_project_file)
-        cls.project.title = 'A project'
-        cls.project.group = cls.project_group
-        cls.project.save()
+        self.project = QgisProject(qgis_project_file)
+        self.project.title = 'A project'
+        self.project.group = self.project_group
+        self.project.save()
 
-        # make a fake vector postgis layer
+        # Make a fake vector postgis layer
         # ===================================
         fake_layer1, created = Layer.objects.get_or_create(
             name='fakelayer',
             title='fakelayer',
             origname='fakelayer',
             qgs_layer_id='fakelayer_23456',
-            project=cls.project.instance,
+            project=self.project.instance,
             layer_type='postgres',
             datasource="dbname='geo_demo' host=localhost port=5432 user='postgres' password='postgres' sslmode=disable "
                        "key='id' srid=3003 type=Polygon checkPrimaryKeyUnicity='1' "
@@ -105,7 +105,7 @@ class QdjangoTestBase(TestCase):
             title='fakelayer2',
             origname='fakelayer2',
             qgs_layer_id='fakelayer2_23456',
-            project=cls.project.instance,
+            project=self.project.instance,
             layer_type='postgres',
             datasource="dbname='geo_demo' host=localhost port=5432 user='postgres2' password='HHHHH' sslmode=disable "
                        "key='id' srid=3003 type=Polygon checkPrimaryKeyUnicity='1' "
@@ -120,7 +120,7 @@ class QdjangoTestBase(TestCase):
             title='fakelayer3',
             origname='fakelayer3',
             qgs_layer_id='fakelayer3_23456',
-            project=cls.project.instance,
+            project=self.project.instance,
             layer_type='postgres',
             datasource="dbname='geo_demo' host=localhost port=5432 user='postgres1' password='XXXX' sslmode=disable "
                        "key='id' srid=3003 type=Polygon checkPrimaryKeyUnicity='1' "
@@ -128,21 +128,21 @@ class QdjangoTestBase(TestCase):
 
         )
 
-        layers = cls.project.instance.layer_set.all()
+        layers = self.project.instance.layer_set.all()
         for l in layers:
             if l.qgs_layer_id == 'fakelayer_23456':
-                cls.fake_layer1 = l
+                self.fake_layer1 = l
             if l.qgs_layer_id == 'fakelayer2_23456':
-                cls.fake_layer2 = l
+                self.fake_layer2 = l
             if l.qgs_layer_id == 'fakelayer3_23456':
-                cls.fake_layer3 = l
+                self.fake_layer3 = l
 
 
         qgis_project_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS310_FILE), 'r'))
-        cls.project310 = QgisProject(qgis_project_file)
-        cls.project310.title = 'A project QGIS 3.10'
-        cls.project310.group = cls.project_group
-        cls.project310.save()
+        self.project310 = QgisProject(qgis_project_file)
+        self.project310.title = 'A project QGIS 3.10'
+        self.project310.group = self.project_group
+        self.project310.save()
 
 
 

@@ -35,22 +35,21 @@ class QTimeSeriesBaseTest(QdjangoTestBase):
 
         cls.client = APIClient()
 
-    @classmethod
-    def setUpTestData(cls):
-        # main project group
-        cls.project_group = CoreGroup(name='Group1', title='Group1', header_logo_img='',
+    def setUp(self):
+        # Main project group
+        self.project_group = CoreGroup(name='Group1', title='Group1', header_logo_img='',
                                       srid=G3WSpatialRefSys.objects.get(auth_srid=4326))
 
-        cls.project_group.save()
+        self.project_group.save()
 
         qgis_project_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_FILE_RASTER), 'r',
                                       encoding='utf-8'))
 
         # Replace name property with only file name without path to simulate UploadedFileWithId instance.
         qgis_project_file.name = qgis_project_file.name.split('/')[-1]
-        cls.project_raster = QgisProject(qgis_project_file)
-        cls.project_raster.group = cls.project_group
-        cls.project_raster.save()
+        self.project_raster = QgisProject(qgis_project_file)
+        self.project_raster.group = self.project_group
+        self.project_raster.save()
         qgis_project_file.close()
 
         qgis_project_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_FILE_RASTER_2), 'r',
@@ -58,15 +57,14 @@ class QTimeSeriesBaseTest(QdjangoTestBase):
 
         # Replace name property with only file name without path to simulate UploadedFileWithId instance.
         qgis_project_file.name = qgis_project_file.name.split('/')[-1]
-        cls.project_raster_2 = QgisProject(qgis_project_file)
-        cls.project_raster_2.group = cls.project_group
-        cls.project_raster_2.save()
+        self.project_raster_2 = QgisProject(qgis_project_file)
+        self.project_raster_2.group = self.project_group
+        self.project_raster_2.save()
         qgis_project_file.close()
 
-    @classmethod
-    def tearDownClass(cls):
-        cls.project_raster.instance.delete()
-        super().tearDownClass()
+    def tearDown(self):
+        self.project_raster.instance.delete()
+        super().tearDown()
 
     def _testApiCall(self, view_name, args, kwargs={}, data=None, method='POST', username='admin01'):
         """Utility to make test calls for admin01 user"""

@@ -1,0 +1,35 @@
+{% load i18n %}
+<div class="row">
+  <div class="col-md-12">
+      <h3>{% trans 'General' %}</h3>
+      <ul class="list-unstyled pdl10">
+          <li><strong>OS</strong>: {{ sysinfo.OS.v }}</li>
+          <li><strong>QGIS Server</strong>: {{ sysinfo.QGIS.v }}</li>
+          <li><strong>Python</strong>: {{ sysinfo.Python.v }}</li>
+      </ul>
+      <h3>{% trans 'DataBase' %}</h3>
+      <ul class="list-unstyled pdl10">
+          {% for db in sysinfo.DB.items %}
+              <li><strong>{{ db.db_name }}</strong>: {{ db.v }}</li>
+          {% endfor %}
+      </ul>
+      <h3>{% trans 'Libraries' %}</h3>
+      <h4>{% trans 'General' %}</h4>
+      <ul class="list-unstyled  pdl10">
+          <li><strong>Qt</strong>: {{ sysinfo.Libraries.General.Qt.v }}</li>
+      </ul>
+      <h4>{% trans 'Geographic' %}</h4>
+      <ul class="list-unstyled  pdl10">
+          <li><strong>GDAL/OGR</strong>: {{ sysinfo.Libraries.Geo.GDAL_OGR.v }}</li>
+          <li><strong>PROJ</strong>: {{ sysinfo.Libraries.Geo.PROJ.v }}</li>
+          <li><strong>GEOS</strong>: {{ sysinfo.Libraries.Geo.PROJ.v }}</li>
+      </ul>
+      <h4>{% trans 'Python' %}</h4>
+      <ul class="list-unstyled pdl10">
+          <li><strong>Django</strong>: {{ sysinfo.Libraries.Python.Django.v }}</li>
+          <li><strong>GDAL/OGR</strong>: {{ sysinfo.Libraries.Python.GDAL_OGR.v }}</li>
+          <li><strong>PyProj</strong>: {{ sysinfo.Libraries.Python.PyProj.v }}</li>
+      </ul>
+
+  </div>
+</div>

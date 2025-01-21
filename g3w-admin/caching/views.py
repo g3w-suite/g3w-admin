@@ -4,7 +4,7 @@ from django.views.generic import FormView, View
 from django.http import HttpResponse, JsonResponse
 from django.db import transaction
 from django.urls import reverse
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext_lazy as _
 from django.utils.decorators import method_decorator
 import TileStache
 from rest_framework.views import APIView

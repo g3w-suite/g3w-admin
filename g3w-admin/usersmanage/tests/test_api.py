@@ -91,7 +91,6 @@ class UsermanageUsersAPITest(APITestCase):
 
         self.assertEqual(res.data['count'], 3)
 
-        print(res.data['results'])
         self.assertEqual(res.data['results'][0], {
             "id": 7,
             "first_name": "",

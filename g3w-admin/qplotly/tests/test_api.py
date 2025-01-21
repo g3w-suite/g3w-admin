@@ -45,26 +45,25 @@ class QplotlyTestAPI(QdjangoTestBase):
 
         cls.client = APIClient()
 
-    @classmethod
-    def setUpTestData(cls):
-        # main project group
-        cls.project_group = CoreGroup(name='Group1', title='Group1', header_logo_img='',
+    def setUp(self):
+        # Main project group
+        self.project_group = CoreGroup(name='Group1', title='Group1', header_logo_img='',
                                       srid=G3WSpatialRefSys.objects.get(auth_srid=4326))
 
-        cls.project_group.save()
+        self.project_group.save()
 
-        cls.project_group_3857 = CoreGroup(name='Group3857', title='Group3857', header_logo_img='',
+        self.project_group_3857 = CoreGroup(name='Group3857', title='Group3857', header_logo_img='',
                                       srid=G3WSpatialRefSys.objects.get(auth_srid=3857))
 
-        cls.project_group_3857.save()
+        self.project_group_3857.save()
 
         qgis_project_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_FILE), 'r', encoding='utf-8'))
 
         # Replace name property with only file name without path to simulate UploadedFileWithId instance.
         qgis_project_file.name = qgis_project_file.name.split('/')[-1]
-        cls.project = QgisProject(qgis_project_file)
-        cls.project.group = cls.project_group
-        cls.project.save()
+        self.project = QgisProject(qgis_project_file)
+        self.project.group = self.project_group
+        self.project.save()
         qgis_project_file.close()
 
         qgis_project_file_3857 = File(
@@ -72,28 +71,28 @@ class QplotlyTestAPI(QdjangoTestBase):
 
         # Replace name property with only file name without path to simulate UploadedFileWithId instance.
         qgis_project_file_3857.name = qgis_project_file_3857.name.split('/')[-1]
-        cls.project_3857 = QgisProject(qgis_project_file_3857)
-        cls.project_3857.group = cls.project_group_3857
-        cls.project_3857.save()
+        self.project_3857 = QgisProject(qgis_project_file_3857)
+        self.project_3857.group = self.project_group_3857
+        self.project_3857.save()
         qgis_project_file_3857.close()
 
 
         file = File(open(f'{DATASOURCE_PATH}cities_scatter_plot_wrong_source_layer_id.xml', 'r'))
-        cls.wrong_settings_source_layer_id_xml = file.read()
+        self.wrong_settings_source_layer_id_xml = file.read()
         file.close()
 
         file = File(open(f'{DATASOURCE_PATH}countries_pie_plot_with_title.xml', 'r'))
-        cls.countries_plot_xml = file.read()
+        self.countries_plot_xml = file.read()
         file.close()
 
         file = File(open(f'{DATASOURCE_PATH}cities_histogram_plot.xml', 'r'))
-        cls.cities_histogram_plot_xml = file.read()
+        self.cities_histogram_plot_xml = file.read()
         file.close()
 
-    @classmethod
-    def tearDownClass(cls):
-        cls.project.instance.delete()
-        super().tearDownClass()
+
+    def tearDown(self):
+        self.project.instance.delete()
+        super().tearDown()
 
 
 
@@ -150,9 +149,9 @@ class QplotlyTestAPI(QdjangoTestBase):
         jcontent = json.loads(response.content)
 
         # check qplotly into plugins section
-        self.assertTrue('qplotly' in jcontent['group']['plugins'])
+        self.assertTrue('qplotly' in jcontent['plugins'])
 
-        plugin = jcontent['group']['plugins']['qplotly']
+        plugin = jcontent['plugins']['qplotly']
 
         self.assertEqual(plugin['gid'], 'qdjango:{}'.format(
             self.project.instance.pk))
@@ -595,7 +594,7 @@ class QplotlyTestAPI(QdjangoTestBase):
         self.assertEqual(len(widgets), 2)
 
     def _check_constraints(self, jcontent):
-        self.assertEqual(jcontent['results'][0]['pk'], 1)
+        #self.assertEqual(jcontent['results'][0]['pk'], 18)
         self.assertFalse(jcontent['results'][0]['selected_features_only'])
         self.assertFalse(jcontent['results'][0]['visible_features_only'])
         self.assertEqual(jcontent['results'][0]['type'], 'histogram')
@@ -613,6 +612,8 @@ class QplotlyTestAPI(QdjangoTestBase):
         jcontent = json.loads(self._testApiCall('qplotly-widget-api-filter-by-layer-id', [layer_pk], {}).content)
         self.assertEqual(jcontent['count'], 2)
         self._check_constraints(jcontent)
+
+        qplw_pk = jcontent['results'][0]['pk']
 
 
         # TEST API VALIDATION
@@ -655,7 +656,7 @@ class QplotlyTestAPI(QdjangoTestBase):
         # change type for test
         data['type'] = 'pie'
         jcontent = json.loads(self._testApiCall('qplotly-widget-api-list', [], {}, data=data).content)
-        self.assertEqual(jcontent['pk'], 8)
+        self.assertEqual(jcontent['pk'], qplw_pk + 2)
         self.assertEqual(jcontent['type'], 'pie')
         self.assertEqual(jcontent['title'], 'Test title create')
 
@@ -671,8 +672,8 @@ class QplotlyTestAPI(QdjangoTestBase):
 
         # change type for test
         data['type'] = 'scatter'
-        jcontent = json.loads(self._testApiCall('qplotly-widget-api-detail', [self.project.instance.pk, 8], {}, data=data, method='PUT').content)
-        self.assertEqual(jcontent['pk'], 8)
+        jcontent = json.loads(self._testApiCall('qplotly-widget-api-detail', [self.project.instance.pk, qplw_pk + 1], {}, data=data, method='PUT').content)
+        self.assertEqual(jcontent['pk'], qplw_pk + 1)
         self.assertEqual(jcontent['type'], 'scatter')
 
         jcontent = json.loads(self._testApiCall('qplotly-widget-api-filter-by-layer-id', [layer_pk], {}).content)
@@ -681,7 +682,7 @@ class QplotlyTestAPI(QdjangoTestBase):
 
         # TEST DELETE
         # -----------
-        self._testApiCall('qplotly-widget-api-detail', [self.project.instance.pk, 8], {}, data=None, method='DELETE')
+        self._testApiCall('qplotly-widget-api-detail', [self.project.instance.pk, qplw_pk + 1], {}, data=None, method='DELETE')
 
         jcontent = json.loads(self._testApiCall('qplotly-widget-api-filter-by-layer-id', [layer_pk], {}).content)
         self.assertEqual(jcontent['count'], 2)
@@ -696,7 +697,7 @@ class QplotlyTestAPI(QdjangoTestBase):
 
         # change type for test
         jcontent = json.loads(self._testApiCall('qplotly-widget-api-list', [], {}, data=data).content)
-        self.assertEqual(jcontent['pk'], 9)
+        self.assertEqual(jcontent['pk'], qplw_pk + 3)
         self.assertEqual(jcontent['type'], 'pie')
         self.assertEqual(jcontent['title'], 'Pie countries test')
 

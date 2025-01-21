@@ -1,14 +1,14 @@
 from django.conf import settings
 from django.apps import apps
 from django.urls import reverse
-from django.utils.translation import ugettext, gettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from qdjango.utils.qgis import explode_expression
 from collections import OrderedDict
 
 import copy
 
 from qgis.core import QgsFieldConstraints, Qgis, QgsExpression, QgsExpressionNode
-from qgis.PyQt.QtCore import QVariant, QDate, QDateTime
+from qgis.PyQt.QtCore import QVariant, QDate, QDateTime, NULL
 
 # relations data type
 RELATIONS_ONE_TO_ONE = 'ONE'
@@ -128,7 +128,7 @@ def editingFormField(fieldName, type=FIELD_TYPE_STRING, editable=True, required=
     if required:
         ret['validate']['required'] = True
 
-    if 'default' in kwargs and kwargs['default']:
+    if 'default' in kwargs and kwargs['default'] is not None:
         ret['input']['options']['default'] = kwargs['default']
 
     if inputType in (FORM_FIELD_TYPE_LAYERPICKER, ) and 'pickerdata' in kwargs:
@@ -265,10 +265,11 @@ def mapLayerAttributesFromQgisLayer(qgis_layer, **kwargs):
                     field.constraints().constraintStrength(
                         QgsFieldConstraints.ConstraintExpression) == QgsFieldConstraints.ConstraintStrengthHard
                 default_clause = data_provider.defaultValueClause(field_index)
+                default_clause = default_clause if default_clause != 'nextval(NULL)' else ''
 
                 # default value for editing from qgis_layer
                 if 'default' not in kwargs:
-                    default_value = qgis_layer.defaultValue(field_index) if qgis_layer.defaultValue(field_index) \
+                    default_value = qgis_layer.defaultValue(field_index) if qgis_layer.defaultValue(field_index) not in (None, NULL) \
                         else None
                 else:
                     default_value = kwargs['default']
@@ -392,6 +393,7 @@ class APIVectorLayerStructure(object):
     _featureLocks = None
     _geometryType = None
     _fields = None
+    _editing = None
 
     def __init__(self, **kwargs):
 
@@ -401,6 +403,7 @@ class APIVectorLayerStructure(object):
         self.featureLocks = kwargs.get('featureLocks', self._featureLocks)
         self.geometryType = kwargs.get('geometryType', self._geometryType)
         self.fields = kwargs.get('fields', self._fields)
+        self.editing = kwargs.get('editing', self._fields)
 
     def setPkField(self, pkField):
         self._pkField = pkField
@@ -414,6 +417,9 @@ class APIVectorLayerStructure(object):
     def setFields(self, fields):
         self.fields = fields
 
+    def setEditing(self, editing):
+        self.editing = editing
+
     def as_dict(self):
 
         res = {
@@ -426,6 +432,11 @@ class APIVectorLayerStructure(object):
             },
             'featurelocks': self.featureLocks,
         }
+
+        if self.editing:
+            res['vector'].update({
+                'editing': self.editing
+            })
 
         return res
 

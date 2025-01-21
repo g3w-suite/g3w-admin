@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-05-02 05:55+0000\n"
+"POT-Creation-Date: 2024-05-30 07:41+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,19 +23,20 @@ msgid "The GetFeatureResponse response is malformed: {}"
 msgstr ""
 
 #: bforest/forms/admin.py:61
-#: bforest/templates/bforest/admin/uploadscsv_add.html:9
+#: bforest/templates/bforest/admin/uploadscsv_add.html:9 gsk/forms.py:53
+#: gsk/templates/gsk/admin/uploadscsv_add.html:9
 msgid "Upload CSV data file"
 msgstr ""
 
-#: bforest/forms/admin.py:97
+#: bforest/forms/admin.py:97 gsk/forms.py:85
 msgid "This file must have a '.csv' extension!"
 msgstr ""
 
-#: bforest/forms/admin.py:109
+#: bforest/forms/admin.py:109 gsk/forms.py:97
 msgid "Input data has not HEADERS column."
 msgstr ""
 
-#: bforest/forms/admin.py:121
+#: bforest/forms/admin.py:121 gsk/forms.py:109
 msgid "The follows fields are required: {\", \".join(field_intersect)}"
 msgstr ""
 
@@ -55,11 +56,11 @@ msgstr ""
 
 #: bforest/forms/admin.py:250
 #: bforest/templates/bforest/admin/project_list.html:17
-#: bforest/templates/bforest/admin/project_list.html:24 eleprofile/forms.py:44
+#: bforest/templates/bforest/admin/project_list.html:24 datasinc/forms.py:45
+#: datasinc/templates/datasinc/projects_list.html:18
+#: datasinc/templates/datasinc/projects_list.html:26 eleprofile/forms.py:44
 #: eleprofile/templates/eleprofile/project_form.html:14
 #: eleprofile/templates/eleprofile/projects_list.html:18
-#: eleprofile/templates/eleprofile/projects_list.html:26
-#: openrouteservice/forms.py:41
 #: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:19
 #: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:27
 msgid "Project"
@@ -77,23 +78,29 @@ msgstr ""
 msgid "TREES"
 msgstr ""
 
-#: bforest/models/admin.py:37
+#: bforest/models/admin.py:37 gsk/models.py:153
 msgid "CSV file to upload"
 msgstr ""
 
 #: bforest/models/admin.py:38
 #: bforest/templates/bforest/admin/project_list.html:25
 #: bforest/templates/bforest/admin/uploadscsv_list.html:28
+#: billboards/models/admin.py:26
+#: billboards/templates/billboards/bbprojectconfig_list.html:41
+#: datasinc/templates/datasinc/projects_list.html:27
 #: eleprofile/templates/eleprofile/dtms_list.html:35
 #: eleprofile/templates/eleprofile/projects_list.html:27
+#: fsimulator/templates/fsimulator/projects_list.html:27 gsk/models.py:154
+#: gsk/templates/gsk/admin/uploadscsv_list.html:41
+#: innovapuglia/templates/innovapuglia/projects_list.html:27
 msgid "Note"
 msgstr ""
 
-#: bforest/models/admin.py:43
+#: bforest/models/admin.py:43 gsk/models.py:157
 msgid "CSV rows"
 msgstr ""
 
-#: bforest/models/admin.py:44
+#: bforest/models/admin.py:44 gsk/models.py:158
 msgid "DB rows imported"
 msgstr ""
 
@@ -104,6 +111,7 @@ msgstr ""
 #: bforest/templates/bforest/admin/__raster_recalculation_analysis.html:6
 #: bforest/templates/bforest/admin/raster_storic_analysis.html:6
 #: bforest/templates/bforest/admin/uploadscsv_list.html:31
+#: gsk/templates/gsk/admin/uploadscsv_list.html:45
 msgid "Date"
 msgstr ""
 
@@ -128,27 +136,37 @@ msgid "BForest Project"
 msgstr ""
 
 #: bforest/templates/bforest/admin/project_form.html:14
+#: datasinc/templates/datasinc/project_form.html:14
 #: eleprofile/templates/eleprofile/dtm_form.html:14
 #: eleprofile/templates/eleprofile/project_form.html:14
-#: portal/templates/portal/picture_form.html:14
+#: fsimulator/templates/fsimulator/project_form.html:14
+#: innovapuglia/templates/innovapuglia/project_form.html:14
 msgid "New"
 msgstr ""
 
 #: bforest/templates/bforest/admin/project_form.html:27
 #: bforest/templates/bforest/admin/uploadscsv_add.html:19
+#: datasinc/templates/datasinc/project_form.html:27
 #: eleprofile/templates/eleprofile/dtm_form.html:27
 #: eleprofile/templates/eleprofile/project_form.html:27
+#: fsimulator/templates/fsimulator/project_form.html:27
+#: gsk/templates/gsk/admin/uploadscsv_add.html:35
+#: innovapuglia/templates/innovapuglia/project_form.html:27
+#: molevalley/templates/molevalley/project_form.html:24
 #: openrouteservice/templates/openrouteservice/openrouteserviceproject_form.html:25
-#: portal/templates/portal/picture_form.html:27
 msgid "Alert"
 msgstr ""
 
 #: bforest/templates/bforest/admin/project_form.html:28
 #: bforest/templates/bforest/admin/uploadscsv_add.html:20
+#: datasinc/templates/datasinc/project_form.html:28
 #: eleprofile/templates/eleprofile/dtm_form.html:28
 #: eleprofile/templates/eleprofile/project_form.html:28
+#: fsimulator/templates/fsimulator/project_form.html:28
+#: gsk/templates/gsk/admin/uploadscsv_add.html:36
+#: innovapuglia/templates/innovapuglia/project_form.html:28
+#: molevalley/templates/molevalley/project_form.html:25
 #: openrouteservice/templates/openrouteservice/openrouteserviceproject_form.html:26
-#: portal/templates/portal/picture_form.html:28
 msgid "Some errors on form. Check it and send again."
 msgstr ""
 
@@ -158,8 +176,11 @@ msgstr ""
 
 #: bforest/templates/bforest/admin/project_list.html:23
 #: bforest/templates/bforest/admin/uploadscsv_list.html:25
+#: datasinc/templates/datasinc/projects_list.html:25
 #: eleprofile/templates/eleprofile/dtms_list.html:32
 #: eleprofile/templates/eleprofile/projects_list.html:25
+#: fsimulator/templates/fsimulator/projects_list.html:25
+#: innovapuglia/templates/innovapuglia/projects_list.html:25
 #: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:26
 #, fuzzy
 #| msgid "Adminstration"
@@ -167,19 +188,26 @@ msgid "Actions"
 msgstr "Amministrazione"
 
 #: bforest/templates/bforest/admin/project_list.html:32
+#: billboards/templates/billboards/bbprojectconfig_list.html:52
+#: billboards/templates/billboards/bbprojectconfig_list.html:64
+#: datasinc/templates/datasinc/projects_list.html:35
 #: eleprofile/templates/eleprofile/dtms_list.html:43
 #: eleprofile/templates/eleprofile/projects_list.html:34
+#: fsimulator/templates/fsimulator/projects_list.html:35
+#: innovapuglia/templates/innovapuglia/projects_list.html:35
 #: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:36
-#: portal/templates/portal/picture_list.html:50
 msgid "Edit"
 msgstr ""
 
 #: bforest/templates/bforest/admin/project_list.html:35
 #: bforest/templates/bforest/admin/uploadscsv_list.html:38
+#: billboards/templates/billboards/bbprojectconfig_list.html:57
+#: datasinc/templates/datasinc/projects_list.html:38
 #: eleprofile/templates/eleprofile/dtms_list.html:46
 #: eleprofile/templates/eleprofile/projects_list.html:37
+#: fsimulator/templates/fsimulator/projects_list.html:38
+#: innovapuglia/templates/innovapuglia/projects_list.html:38
 #: openrouteservice/templates/openrouteservice/openrouteserviceproject_list.html:39
-#: portal/templates/portal/picture_list.html:53
 msgid "Delete"
 msgstr ""
 
@@ -209,16 +237,19 @@ msgid "Click to recalculate rasters"
 msgstr ""
 
 #: bforest/templates/bforest/admin/uploadscsv_info.html:5
+#: gsk/templates/gsk/admin/uploadscsv_info.html:5
 #, fuzzy
 #| msgid "Edit general data"
 msgid "General aspects"
 msgstr "Modifica i dati generali"
 
 #: bforest/templates/bforest/admin/uploadscsv_info.html:6
+#: gsk/templates/gsk/admin/uploadscsv_info.html:6
 msgid "File extention support: .csv"
 msgstr ""
 
 #: bforest/templates/bforest/admin/uploadscsv_info.html:10
+#: gsk/templates/gsk/admin/uploadscsv_info.html:10
 msgid "Important"
 msgstr ""
 
@@ -227,14 +258,17 @@ msgid "CSV file must have \"comma (,)\"  as field separator"
 msgstr ""
 
 #: bforest/templates/bforest/admin/uploadscsv_info.html:11
+#: gsk/templates/gsk/admin/uploadscsv_info.html:11
 msgid "The order and position of columns is not mandatory"
 msgstr ""
 
 #: bforest/templates/bforest/admin/uploadscsv_list.html:10
+#: gsk/templates/gsk/admin/uploadscsv_list.html:10
 msgid "Uploaded CSV data files"
 msgstr ""
 
 #: bforest/templates/bforest/admin/uploadscsv_list.html:19
+#: gsk/templates/gsk/admin/uploadscsv_list.html:31
 msgid "CSV file"
 msgstr ""
 
@@ -243,26 +277,32 @@ msgid "Type"
 msgstr ""
 
 #: bforest/templates/bforest/admin/uploadscsv_list.html:27
+#: gsk/templates/gsk/admin/uploadscsv_list.html:40
 msgid "CSV File"
 msgstr ""
 
 #: bforest/templates/bforest/admin/uploadscsv_list.html:29
+#: gsk/templates/gsk/admin/uploadscsv_list.html:42
 msgid "CSV records"
 msgstr ""
 
 #: bforest/templates/bforest/admin/uploadscsv_list.html:30
+#: gsk/templates/gsk/admin/uploadscsv_list.html:43
 msgid "DB records imported"
 msgstr ""
 
 #: bforest/templates/bforest/include/admin/form_buttons.html:6
+#: gsk/templates/gsk/include/admin/form_buttons.html:6
 msgid "Upload and load into DB"
 msgstr ""
 
 #: bforest/templates/bforest/include/admin/form_buttons.html:10
+#: gsk/templates/gsk/include/admin/form_buttons.html:11
 msgid "Redo/Back"
 msgstr ""
 
 #: bforest/templates/bforest/include/admin/form_buttons.html:12
+#: gsk/templates/gsk/include/admin/form_buttons.html:13
 msgid "Data structure for uploading"
 msgstr ""
 
@@ -278,8 +318,59 @@ msgstr ""
 msgid "CSV imported"
 msgstr ""
 
+#: billboards/forms/admin.py:66
+msgid "Data config"
+msgstr ""
+
+#: billboards/models/admin.py:43
+msgid "This project is just set for Billboards"
+msgstr ""
+
+#: billboards/templates/billboards/bbprojectconfig.html:47
+msgid "BILLBOARDS"
+msgstr ""
+
+#: billboards/templates/billboards/bbprojectconfig.html:49
+msgid "Update configuration project type"
+msgstr ""
+
+#: billboards/templates/billboards/bbprojectconfig.html:51
+msgid "New configuration project type"
+msgstr ""
+
+#: billboards/templates/billboards/bbprojectconfig_list.html:10
+msgid "BILLBOARDS Projects"
+msgstr ""
+
+#: billboards/templates/billboards/bbprojectconfig_list.html:21
+msgid "Add, update or delete BILLBOARDS configurations"
+msgstr ""
+
+#: billboards/templates/billboards/bbprojectconfig_list.html:31
+#, fuzzy
+#| msgid "Configurations"
+msgid "Configs"
+msgstr "Configurazioni"
+
+#: billboards/templates/billboards/bbprojectconfig_list.html:40
+msgid "Qdjango project"
+msgstr ""
+
 #: br_service/apps.py:21
 msgid "BR service"
+msgstr ""
+
+#: datasinc/models.py:43
+msgid "This project is just set for Datasinc"
+msgstr ""
+
+#: datasinc/templates/datasinc/project_form.html:11
+#: datasinc/templates/datasinc/project_form.html:14
+msgid "Datasinc Project"
+msgstr ""
+
+#: datasinc/templates/datasinc/projects_list.html:8
+msgid "Datasinc Projects"
 msgstr ""
 
 #: eleprofile/forms.py:92
@@ -350,15 +441,106 @@ msgstr ""
 msgid "Elevation Profile Projects"
 msgstr ""
 
+#: fsimulator/models.py:42
+msgid "This project is just set for FSimulator"
+msgstr ""
+
+#: fsimulator/templates/fsimulator/project_form.html:11
+#: fsimulator/templates/fsimulator/project_form.html:14
+msgid "FSimulator Project"
+msgstr ""
+
+#: fsimulator/templates/fsimulator/projects_list.html:8
+msgid "FSimulator Projects"
+msgstr ""
+
+#: gsk/models.py:159
+msgid "Failed rows"
+msgstr ""
+
+#: gsk/models.py:160
+msgid "Failed rows filename"
+msgstr ""
+
+#: gsk/templates/gsk/admin/uploadscsv_add.html:47
+msgid "Uploading"
+msgstr ""
+
+#: gsk/templates/gsk/admin/uploadscsv_add.html:48
+msgid "The system was uploading the csv, please wait!"
+msgstr ""
+
+#: gsk/templates/gsk/admin/uploadscsv_info.html:10
+msgid "CSV file must have \"semicolon (;)\"  as field separator"
+msgstr ""
+
+#: gsk/templates/gsk/admin/uploadscsv_list.html:32
+msgid "Download `Farmacie dati` CSV File"
+msgstr ""
+
+#: gsk/templates/gsk/admin/uploadscsv_list.html:39
+msgid "ID"
+msgstr ""
+
+#: gsk/templates/gsk/admin/uploadscsv_list.html:44
+msgid "Failed records"
+msgstr ""
+
 #: iam_bari/templates/_login.html:30
 #, fuzzy
 #| msgid "Sign out"
 msgid "Sign Out"
 msgstr "Esci"
 
-#: iam_bari/templates/_login.html:35 templates/login.html:41
+#: iam_bari/templates/_login.html:35 templates/base_login.html:45
+#: templates/login.html:38
 msgid "Sign In"
 msgstr "Accedi"
+
+#: innovapuglia/models.py:51
+msgid "Point"
+msgstr ""
+
+#: innovapuglia/models.py:52
+msgid "LineString"
+msgstr ""
+
+#: innovapuglia/models.py:53
+msgid "Polygon"
+msgstr ""
+
+#: innovapuglia/models.py:54
+msgid "Circle"
+msgstr ""
+
+#: innovapuglia/models.py:59
+msgid "Geometry type"
+msgstr ""
+
+#: innovapuglia/models.py:66
+msgid "Select the geometry type thst could be possible draw on map."
+msgstr ""
+
+#: innovapuglia/models.py:87
+msgid "This project is just set for a InnovaPuglia project"
+msgstr ""
+
+#: innovapuglia/templates/innovapuglia/project_form.html:11
+#: innovapuglia/templates/innovapuglia/project_form.html:14
+msgid "InnovaPuglia Project"
+msgstr ""
+
+#: innovapuglia/templates/innovapuglia/projects_list.html:8
+msgid "InnovaPuglia Projects"
+msgstr ""
+
+#: innovapuglia/templates/innovapuglia/projects_list.html:28
+msgid "Demo"
+msgstr ""
+
+#: molevalley/templates/molevalley/project_form.html:11
+msgid "Moleyvalley project"
+msgstr ""
 
 #: openrouteservice/api/views.py:138
 msgid "Input layer is not a point or multipoint layer."
@@ -427,11 +609,11 @@ msgstr ""
 msgid "Max allowed ranges: %s"
 msgstr ""
 
-#: openrouteservice/api/views.py:267
+#: openrouteservice/api/views.py:271
 msgid "Malformed range array."
 msgstr ""
 
-#: openrouteservice/api/views.py:394
+#: openrouteservice/api/views.py:398
 #, fuzzy
 #| msgid "Oops! Page not found."
 msgid "Task not found!"
@@ -525,59 +707,6 @@ msgstr ""
 msgid "Unknown error adding results to the destination layer."
 msgstr ""
 
-#: portal/forms.py:45
-msgid "Picture data"
-msgstr ""
-
-#: portal/forms.py:67
-msgid "Author and style data"
-msgstr ""
-
-#: portal/models.py:20 portal/templates/portal/picture_form.html:11
-#: portal/templates/portal/picture_form.html:14
-msgid "Picture"
-msgstr ""
-
-#: portal/models.py:21
-msgid "Main color"
-msgstr ""
-
-#: portal/models.py:22
-msgid "Main title color"
-msgstr ""
-
-#: portal/models.py:23
-msgid "Subtitle color"
-msgstr ""
-
-#: portal/models.py:24 portal/templates/portal/picture_list.html:41
-msgid "Author"
-msgstr ""
-
-#: portal/models.py:25
-msgid "Author URL"
-msgstr ""
-
-#: portal/templates/portal/picture_list.html:10
-msgid "Portal pictures"
-msgstr ""
-
-#: portal/templates/portal/picture_list.html:21
-msgid "Add, update or delete portal picture"
-msgstr ""
-
-#: portal/templates/portal/picture_list.html:31
-msgid "Pictures"
-msgstr ""
-
-#: portal/templates/portal/picture_list.html:40
-msgid "Image"
-msgstr ""
-
-#: portal/templates/portal/picture_list.html:42
-msgid "Author url"
-msgstr ""
-
 #: templates/403.html:7
 msgid "error page"
 msgstr "Pagina di errore"
@@ -598,59 +727,127 @@ msgstr "Opps! Pagina non trovata"
 msgid "We could not find the page you were looking for."
 msgstr "Non abbiamo trovato la pagina che stavi cercando"
 
-#: templates/base.html:193 templates/index.html:6
+#: templates/admin/base.html:7
+msgid "G3W-ADMIN"
+msgstr ""
+
+#: templates/admin/base.html:12
+#, fuzzy
+#| msgid "Current situation"
+msgid "Documentation"
+msgstr "Situazione attuale"
+
+#: templates/admin/base.html:16
+#, fuzzy
+#| msgid "Change my password"
+msgid "Change password"
+msgstr "Cambia la mia password"
+
+#: templates/admin/base.html:18
+#, fuzzy
+#| msgid "Sign out"
+msgid "Log out"
+msgstr "Esci"
+
+#: templates/base.html:189 templates/index.html:6
 msgid "Dashboard"
 msgstr "Scrivania"
 
-#: templates/base.html:232
+#: templates/base.html:228
 #, fuzzy
 #| msgid " Version"
 msgid "Version"
 msgstr "Versione"
 
-#: templates/include/navbar_right_menu.html:10
+#: templates/base_login.html:25 templates/login.html:17
+msgid "Sign in to start your session"
+msgstr "Accedi per iniziare la tua sessione di lavoro"
+
+#: templates/base_login.html:29 templates/login.html:21
+#: templates/registration/password_reset_form.html:10
+#: templates/registration/username_recovery_form.html:10
+msgid "LOGIN ERROR"
+msgstr ""
+
+#: templates/base_login.html:30 templates/login.html:22
+msgid "Username and/or password uncorrect"
+msgstr "Username e/o password non corretti"
+
+#: templates/base_login.html:51 templates/login.html:44
+#: templates/registration/password_reset_form.html:22
+msgid "Forgot your password?"
+msgstr "Hai dimenticato la password?"
+
+#: templates/base_login.html:58 templates/login.html:56
+#, fuzzy
+#| msgid "Sign out"
+msgid "Sign up"
+msgstr "Esci"
+
+#: templates/include/login_page_version.html:2
+msgid " Version"
+msgstr "Versione"
+
+#: templates/include/navbar_right_menu.html:11
 msgid "Search"
 msgstr ""
 
-#: templates/include/navbar_right_menu.html:24
+#: templates/include/navbar_right_menu.html:25
 msgid "Frontend"
 msgstr ""
 
-#: templates/include/navbar_right_menu.html:45
+#: templates/include/navbar_right_menu.html:46
 msgid "Registered on"
 msgstr "Registrato il"
 
-#: templates/include/navbar_right_menu.html:46
+#: templates/include/navbar_right_menu.html:47
 msgid "Last login"
 msgstr "Ultimo accesso"
 
-#: templates/include/navbar_right_menu.html:53
+#: templates/include/navbar_right_menu.html:54
 msgid "Profile"
 msgstr "Profilo"
 
-#: templates/include/navbar_right_menu.html:56
+#: templates/include/navbar_right_menu.html:57
 msgid "Logout"
 msgstr "Esci"
 
-#: templates/include/sidebar_right.html:9
+#: templates/include/sidebar_right.html:10
+#| msgid "Configurations"
+msgid "Information"
+msgstr "Informazioni"
+
+#: templates/include/sidebar_right.html:13
+msgid "System information"
+msgstr "Informazioni di sistema"
+
+#: templates/include/sidebar_right.html:16
+msgid "System features"
+msgstr ""
+
+#: templates/include/sidebar_right.html:17
+msgid "System information about QGIS-Server etc."
+msgstr "Informazioni di sistema su QGIS-Server ecc."
+
+#: templates/include/sidebar_right.html:23
 msgid "Configurations"
 msgstr "Configurazioni"
 
-#: templates/include/sidebar_right.html:15
+#: templates/include/sidebar_right.html:30
 msgid "Edit general data"
 msgstr "Modifica i dati generali"
 
-#: templates/include/sidebar_right.html:16
+#: templates/include/sidebar_right.html:31
 msgid "Frontend data and other"
 msgstr "Dati del frontend e altro"
 
-#: templates/include/sidebar_right.html:25
+#: templates/include/sidebar_right.html:39
 #, fuzzy
 #| msgid "Adminstration"
 msgid "Django administration"
 msgstr "Amministrazione"
 
-#: templates/include/sidebar_right.html:26
+#: templates/include/sidebar_right.html:40
 #, fuzzy
 #| msgid "Login to go backend administration system"
 msgid "Go to staff administration section"
@@ -674,59 +871,42 @@ msgstr "Mostra"
 msgid "Module widgets"
 msgstr ""
 
-#: templates/login.html:21
-msgid "Sign in to start your session"
-msgstr "Accedi per iniziare la tua sessione di lavoro"
-
-#: templates/login.html:25 templates/registration/password_reset_form.html:24
-msgid "LOGIN ERROR"
-msgstr ""
-
-#: templates/login.html:26
-msgid "Username and/or password uncorrect"
-msgstr "Username e/o password non corretti"
-
-#: templates/login.html:47 templates/registration/password_reset_form.html:31
-msgid "Forgot your password?"
+#: templates/login.html:49
+#: templates/registration/username_recovery_form.html:22
+#, fuzzy
+#| msgid "Forgot your password?"
+msgid "Forgot your username?"
 msgstr "Hai dimenticato la password?"
 
-#: templates/login.html:53
-#: templates/registration/password_reset_complete.html:26
-#: templates/registration/password_reset_confirm.html:47
-#: templates/registration/password_reset_done.html:26
-#: templates/registration/password_reset_form.html:45
-msgid " Version"
-msgstr "Versione"
-
-#: templates/registration/password_reset_complete.html:22
+#: templates/registration/password_reset_complete.html:8
 msgid "Password reset complete"
 msgstr "Reimposta password completato"
 
-#: templates/registration/password_reset_complete.html:23
+#: templates/registration/password_reset_complete.html:9
 msgid "Your new password has been set. You can log in now on the"
 msgstr "La tua nuoca password è stata salvata. Puoi eseguire il log in su"
 
-#: templates/registration/password_reset_complete.html:23
+#: templates/registration/password_reset_complete.html:9
 msgid "log in page"
 msgstr "accedi"
 
-#: templates/registration/password_reset_confirm.html:22
+#: templates/registration/password_reset_confirm.html:9
 msgid "Enter new password"
 msgstr "Inserisci una nuova password"
 
-#: templates/registration/password_reset_confirm.html:29
+#: templates/registration/password_reset_confirm.html:16
 msgid "New password"
 msgstr "Nuova password"
 
-#: templates/registration/password_reset_confirm.html:34
+#: templates/registration/password_reset_confirm.html:21
 msgid "Repeat password"
 msgstr "Ripeti la password"
 
-#: templates/registration/password_reset_confirm.html:39
+#: templates/registration/password_reset_confirm.html:26
 msgid "Change my password"
 msgstr "Cambia la mia password"
 
-#: templates/registration/password_reset_confirm.html:44
+#: templates/registration/password_reset_confirm.html:31
 msgid ""
 "The password reset link <strong>was invalid</strong>, possibly because it "
 "has already been used.  Please request a new password reset."
@@ -735,11 +915,12 @@ msgstr ""
 "possibile che esso sisa stato gia usato.Per favore esegui una nuova "
 "richiesta di reimposta password."
 
-#: templates/registration/password_reset_done.html:22
+#: templates/registration/password_reset_done.html:8
+#: templates/registration/username_recovery_done.html:8
 msgid "Check your inbox."
 msgstr "Controlla la tua casella di posta"
 
-#: templates/registration/password_reset_done.html:23
+#: templates/registration/password_reset_done.html:9
 msgid ""
 "We've emailed you instructions for setting your password. You should receive "
 "the email shortly!"
@@ -747,11 +928,32 @@ msgstr ""
 "Ti abbiamo inviato le istruzioni per reimpostare la tua password. Dovresti "
 "ricevere una email a breve!"
 
-#: templates/registration/password_reset_form.html:25
+#: templates/registration/password_reset_email.html:2
+#, python-format
+msgid ""
+"You're receiving this email because you requested a password reset for your "
+"user account at %(site_name)s."
+msgstr ""
+
+#: templates/registration/password_reset_email.html:4
+msgid "Please go to the following page and choose a new password:"
+msgstr ""
+
+#: templates/registration/password_reset_email.html:8
+msgid "Your username, in case you’ve forgotten:"
+msgstr ""
+
+#: templates/registration/password_reset_form.html:12
+#: templates/registration/username_recovery_form.html:12
 msgid "Email no present into database"
 msgstr "Email non presente nel sistema"
 
-#: templates/registration/password_reset_form.html:32
+#: templates/registration/password_reset_form.html:15
+#: templates/registration/username_recovery_form.html:15
+msgid "Checking the CAPTCHA is required"
+msgstr ""
+
+#: templates/registration/password_reset_form.html:23
 msgid ""
 "Enter your email address below, and we'll email instructions for setting a "
 "new one."
@@ -759,9 +961,57 @@ msgstr ""
 "Inserisci il tuo indirizzo email, e noi ti invieremo le istruzioni per "
 "impostare una password nuova."
 
-#: templates/registration/password_reset_form.html:40
+#: templates/registration/password_reset_form.html:32
 msgid "Send me instruction"
 msgstr "Inviami le istruzioni"
+
+#: templates/registration/password_reset_subject.txt:2
+#, fuzzy, python-format
+#| msgid "Password reset complete"
+msgid "Password reset on %(site_name)s"
+msgstr "Reimposta password completato"
+
+#: templates/registration/username_recovery_done.html:9
+#, fuzzy
+#| msgid ""
+#| "We've emailed you instructions for setting your password. You should "
+#| "receive the email shortly!"
+msgid "We've emailed you your username. You should receive the email shortly!"
+msgstr ""
+"Ti abbiamo inviato le istruzioni per reimpostare la tua password. Dovresti "
+"ricevere una email a breve!"
+
+#: templates/registration/username_recovery_email.html:2
+#, python-format
+msgid ""
+"You're receiving this email because you requested a username recovery for "
+"your user account at %(site_name)s."
+msgstr ""
+
+#: templates/registration/username_recovery_email.html:4
+msgid "Your username is:"
+msgstr ""
+
+#: templates/registration/username_recovery_form.html:23
+#, fuzzy
+#| msgid ""
+#| "Enter your email address below, and we'll email instructions for setting "
+#| "a new one."
+msgid "Enter your email address below, and we'll email your username."
+msgstr ""
+"Inserisci il tuo indirizzo email, e noi ti invieremo le istruzioni per "
+"impostare una password nuova."
+
+#: templates/registration/username_recovery_form.html:32
+#, fuzzy
+#| msgid "Send me instruction"
+msgid "Send me username"
+msgstr "Inviami le istruzioni"
+
+#: templates/registration/username_recovery_subject.txt:2
+#, python-format
+msgid "Username recovery on %(site_name)s"
+msgstr ""
 
 #: templates/search.html:6
 msgid "Search results for"
@@ -823,11 +1073,6 @@ msgstr ""
 #~| msgid "Edit general data"
 #~ msgid "metadata"
 #~ msgstr "Modifica i dati generali"
-
-#, fuzzy
-#~| msgid "Configurations"
-#~ msgid "Configs"
-#~ msgstr "Configurazioni"
 
 #, fuzzy
 #~| msgid "Users"
@@ -925,16 +1170,6 @@ msgstr ""
 #, fuzzy
 #~| msgid "Sign out"
 #~ msgid "Signup"
-#~ msgstr "Esci"
-
-#, fuzzy
-#~| msgid "Sign out"
-#~ msgid "Sign up"
-#~ msgstr "Esci"
-
-#, fuzzy
-#~| msgid "Sign out"
-#~ msgid "Log out"
 #~ msgstr "Esci"
 
 #, fuzzy

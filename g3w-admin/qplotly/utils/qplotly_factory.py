@@ -44,6 +44,12 @@ from qdjango.api.constraints.filters import (
     GeoConstraintsFilter,
 )
 
+from qgis.PyQt.QtCore import (
+    QDate,
+    QDateTime,
+    QTime
+)
+
 
 class QplotlyFactoring(PlotFactory):
 
@@ -91,6 +97,22 @@ class QplotlyFactoring(PlotFactory):
         """Build only trace"""
 
         self.layout = self._build_layout()
+
+    def _pyqt2py(self, value):
+        """
+        Check if the value is a PyQT object and translate it in native python object
+        """
+
+        tp = type(value)
+        if tp in (QDate, QDateTime, QTime):
+            if tp == QDate:
+                value = value.toPyDate()
+            if tp == QDateTime:
+                value = value.toPyDateTime()
+            if tp == QTime:
+                value = value.toPyTime()
+
+        return value
 
     def fetch_values_from_layer(self):
         """
@@ -238,7 +260,7 @@ class QplotlyFactoring(PlotFactory):
                 if x == NULL or x is None:
                     continue
             elif self.settings.properties['x_name']:
-                x = f[self.settings.properties['x_name']]
+                x = self._pyqt2py(f[self.settings.properties['x_name']])
                 if x == NULL or x is None:
                     continue
 
@@ -248,7 +270,7 @@ class QplotlyFactoring(PlotFactory):
                 if y == NULL or y is None:
                     continue
             elif self.settings.properties['y_name']:
-                y = f[self.settings.properties['y_name']]
+                y = self._pyqt2py(f[self.settings.properties['y_name']])
                 if y == NULL or y is None:
                     continue
 
@@ -258,7 +280,7 @@ class QplotlyFactoring(PlotFactory):
                 if z == NULL or z is None:
                     continue
             elif self.settings.properties['z_name']:
-                z = f[self.settings.properties['z_name']]
+                z = self._pyqt2py(f[self.settings.properties['z_name']])
                 if z == NULL or z is None:
                     continue
 

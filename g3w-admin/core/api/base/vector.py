@@ -2,6 +2,7 @@
 import deprecation
 
 from qgis.core import QgsWkbTypes
+from core.utils.qgisapi import get_layer_fids_from_server_fids
 
 class MetadataVectorLayer(object):
     """
@@ -33,5 +34,5 @@ class MetadataVectorLayer(object):
         """
         Returns a (possibly invalid) single feature from QGIS layer
         """
-
-        return self.qgis_layer.getFeature(int(pk))
+        pk = get_layer_fids_from_server_fids([str(pk)], self.qgis_layer)[0]
+        return self.qgis_layer.getFeature(pk)

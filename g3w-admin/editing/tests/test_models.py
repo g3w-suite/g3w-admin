@@ -42,13 +42,19 @@ QGS_DB_BACKUP = 'constraints_test_backup.db'
 QGS_FILE = 'constraints_test_project.qgs'
 QGS_EDITING_DB = 'editing_test.db'
 QGS_EDITING_DB_BACKUP = 'editing_test_backup.db'
-QGS_EDITING_FILE = 'editing_test_qgis310.qgs'
+QGS_EDITING_FILE = 'editing_test_qgis334.qgs'
 QGS_LOGGING_FILE = 'logging_test_project.qgs'
 QGS_LOGGING_DB = 'logging_test.db'
 QGS_LOGGING_DB_BACKUP = 'logging_test_backup.db'
 QGS_EDITING_PROVIDER_DEFAULT_VALUE_DB = 'provider_default_value.sqlite'
 QGS_EDITING_PROVIDER_DEFAULT_VALUE_DB_BACKUP = 'provider_default_value_backup.sqlite'
 QGS_EDITING_PROVIDER_DEFAULT_VALUE_FILE = 'editing_test_provider_default_value.qgs'
+QGS_EDITING_PROVIDER_DEFAULT_VALUE_LOGGING_FILE = 'logging_test_provider_default_value.qgs'
+QGS_EDITING_PROVIDER_DEFAULT_VALUE_LOGGING_DB = 'logging_test_provider_default_value.db'
+QGS_EDITING_PROVIDER_DEFAULT_VALUE_LOGGING_DB_BACKUP = 'logging_test_provider_default_value_backup.db'
+QGS_EDITING_CASCADE_RELATIONS_FILE = 'cascade-relations-test-334.qgs'
+QGS_EDITING_CASCADE_RELATIONS_DB = 'building_management_demo.sqlite'
+QGS_EDITING_CASCADE_RELATIONS_DB_BACKUP = 'building_management_demo_backup.sqlite'
 
 
 @override_settings(CACHES={
@@ -71,11 +77,6 @@ class ConstraintsTestsBase(TestCase):
 
     databases = '__all__'
 
-    def setUp(self):
-        """Restore test database"""
-
-        self.reset_db_data()
-
     @classmethod
     def reset_db_data(cls):
         """
@@ -94,8 +95,17 @@ class ConstraintsTestsBase(TestCase):
         shutil.copy('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_LOGGING_DB_BACKUP),
                     '{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_LOGGING_DB))
 
-    @classmethod
-    def setUpTestData(cls):
+        shutil.copy('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_EDITING_CASCADE_RELATIONS_DB_BACKUP),
+                    '{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGS_EDITING_CASCADE_RELATIONS_DB))
+
+
+    def setUp(self):
+        '''
+        From django 4.2: Support for assigning objects which don’t support creating deep copies with copy.deepcopy() 
+        to class attributes in TestCase.setUpTestData() is removed.
+        
+        So setUpTestData is changed in setUp calss method
+        '''
 
         call_command('loaddata', 'BaseLayer.json',
                      '--database=default', verbosity=0)
@@ -107,95 +117,118 @@ class ConstraintsTestsBase(TestCase):
                      '--database=default', verbosity=0)
 
         # Make a copy of the test project's databases
-        cls.reset_db_data()
+        self.reset_db_data()
 
         # Admin level 1
-        cls.test_user_admin1 = User.objects.create_user(
+        self.test_user_admin1 = User.objects.create_user(
             username='admin01', password='admin01')
-        cls.test_user_admin1.is_superuser = True
-        cls.test_user_admin1.save()
+        self.test_user_admin1.is_superuser = True
+        self.test_user_admin1.save()
 
         # Editor level 1
-        cls.test_user1 = User.objects.create_user(
+        self.test_user1 = User.objects.create_user(
             username='user01', password='user01')
-        cls.group = UserGroup.objects.get(name='Editor Level 1')
-        cls.test_user1.groups.add(cls.group)
-        cls.test_user1.save()
+        self.group = UserGroup.objects.get(name='Editor Level 1')
+        self.test_user1.groups.add(self.group)
+        self.test_user1.save()
 
         # Editor level 2
-        cls.test_user2 = User.objects.create_user(
+        self.test_user2 = User.objects.create_user(
             username='user02', password='user02')
-        cls.group = UserGroup.objects.get(name='Editor Level 2')
-        cls.test_user2.groups.add(cls.group)
-        cls.test_user2.save()
+        self.group = UserGroup.objects.get(name='Editor Level 2')
+        self.test_user2.groups.add(self.group)
+        self.test_user2.save()
 
-        cls.test_user3 = User.objects.create_user(
+        self.test_user3 = User.objects.create_user(
             username='user03', password='user03')
-        cls.group = UserGroup.objects.get(name='Viewer Level 1')
-        cls.test_user3.groups.add(cls.group)
-        cls.test_user3.save()
+        self.group = UserGroup.objects.get(name='Viewer Level 1')
+        self.test_user3.groups.add(self.group)
+        self.test_user3.save()
 
-        cls.test_user4 = User.objects.create_user(
+        self.test_user4 = User.objects.create_user(
             username='user04', password='user04')
-        cls.test_user4.groups.add(cls.group)
-        cls.test_user3.save()
+        self.test_user4.groups.add(self.group)
+
+        self.test_user5 = User.objects.create_user(
+            username='user05', password='user05')
+        self.test_user5.groups.add(self.group)
+
 
         # Create a user_group
-        cls.test_user_group1 = UserGroup.objects.create(name='Viewer user group1')
-        GroupRole(group=cls.test_user_group1, role='viewer').save()
-        cls.test_user4.groups.add(cls.test_user_group1)
+        self.test_user_group1 = UserGroup.objects.create(name='Viewer user group1')
+        GroupRole(group=self.test_user_group1, role='viewer').save()
+        self.test_user4.groups.add(self.test_user_group1)
 
-        cls.project_group = CoreGroup(
+        self.test_user_group2 = UserGroup.objects.create(name='Viewer user group2')
+        GroupRole(group=self.test_user_group2, role='viewer').save()
+        self.test_user4.groups.add(self.test_user_group2)
+
+        self.test_user_group3 = UserGroup.objects.create(name='Viewer user group3')
+        GroupRole(group=self.test_user_group3, role='viewer').save()
+        self.test_user4.groups.add(self.test_user_group3)
+
+        self.project_group = CoreGroup(
             name='Group1', title='Group1', header_logo_img='', srid=G3WSpatialRefSys.objects.get(auth_srid=4326))
-        cls.project_group.save()
-        cls.project_group.addPermissionsToEditor(cls.test_user2)
+        self.project_group.save()
+        self.project_group.addPermissionsToEditor(self.test_user2)
 
         qgis_project_file = File(open('{}{}{}'.format(
             CURRENT_PATH, TEST_BASE_PATH, QGS_FILE), 'r', encoding='UTF8'))
-        cls.project = QgisProject(qgis_project_file)
-        cls.project.title = 'A project'
-        cls.project.group = cls.project_group
-        cls.project.save()
+        self.project = QgisProject(qgis_project_file)
+        self.project.title = 'A project'
+        self.project.group = self.project_group
+        self.project.save()
 
         # give permission on project and layer
-        cls.project.instance.addPermissionsToEditor(cls.test_user2)
-        cls.project.instance.addPermissionsToViewers([cls.test_user3.pk])
-        cls.editing_layer = cls.project.instance.layer_set.get(
+        self.project.instance.addPermissionsToEditor(self.test_user2)
+        self.project.instance.addPermissionsToViewers([self.test_user3.pk])
+        self.editing_layer = self.project.instance.layer_set.get(
             name='editing_layer')
 
         setPermissionUserObject(
-            cls.test_user3, cls.editing_layer, ['change_layer'])
-        setPermissionUserObject(cls.group, cls.editing_layer, ['change_layer'])
+            self.test_user3, self.editing_layer, ['change_layer'])
+        setPermissionUserObject(self.group, self.editing_layer, ['change_layer'])
 
         qgis_project_file.close()
 
         # load QGIS editing project
         qgis_project_file = File(open('{}{}{}'.format(
             CURRENT_PATH, TEST_BASE_PATH, QGS_EDITING_FILE), 'r', encoding='UTF8'))
-        cls.editing_project = QgisProject(qgis_project_file)
-        cls.editing_project.group = cls.project_group
-        cls.editing_project.save()
+        self.editing_project = QgisProject(qgis_project_file)
+        self.editing_project.group = self.project_group
+        self.editing_project.save()
         qgis_project_file.close()
 
         # load QGIS LOGGING project
-        cls.project_logging_group = CoreGroup(
+        self.project_logging_group = CoreGroup(
             name='GroupLogging', title='GroupLogging', header_logo_img='',
             srid=G3WSpatialRefSys.objects.get(auth_srid=3857))
-        cls.project_logging_group.save()
+        self.project_logging_group.save()
 
         qgis_project_file = File(open('{}{}{}'.format(
             CURRENT_PATH, TEST_BASE_PATH, QGS_LOGGING_FILE), 'r', encoding='UTF8'))
-        cls.logging_project = QgisProject(qgis_project_file)
-        cls.logging_project.group = cls.project_logging_group
-        cls.logging_project.save()
+        self.logging_project = QgisProject(qgis_project_file)
+        self.logging_project.group = self.project_logging_group
+        self.logging_project.save()
         qgis_project_file.close()
 
         # load QGIS editing provider default data project
         qgis_project_file = File(open('{}{}{}'.format(
             CURRENT_PATH, TEST_BASE_PATH, QGS_EDITING_PROVIDER_DEFAULT_VALUE_FILE), 'r', encoding='UTF8'))
-        cls.editing_provider_default_value_project = QgisProject(qgis_project_file)
-        cls.editing_provider_default_value_project.group = cls.project_group
-        cls.editing_provider_default_value_project.save()
+        self.editing_provider_default_value_project = QgisProject(qgis_project_file)
+        self.editing_provider_default_value_project.group = self.project_group
+        self.editing_provider_default_value_project.save()
+        qgis_project_file.close()
+
+        self.project_group_3857= CoreGroup(
+            name='Group3857', title='Group3857', header_logo_img='', srid=G3WSpatialRefSys.objects.get(auth_srid=3857))
+        self.project_group_3857.save()
+
+        qgis_project_file = File(open('{}{}{}'.format(
+            CURRENT_PATH, TEST_BASE_PATH, QGS_EDITING_CASCADE_RELATIONS_FILE), 'r', encoding='UTF8'))
+        self.editing_cascade_relations_project = QgisProject(qgis_project_file)
+        self.editing_cascade_relations_project.group = self.project_group_3857
+        self.editing_cascade_relations_project.save()
         qgis_project_file.close()
 
     def tearDown(self):
@@ -221,6 +254,7 @@ class ConstraintsModelTestsBase(ConstraintsTestsBase):
     """Constraints model tests"""
 
     def setUp(self):
+        super().setUp()
         self.constraint_layer_name = 'constraint_layer'
         
     def test_create_constraint(self):
@@ -574,4 +608,6 @@ class ConstraintsModelTestsMulti(ConstraintsModelTestsBase):
     """Constraints model tests"""
 
     def setUp(self):
+
+        super().setUp()
         self.constraint_layer_name = 'constraint_layer_multi'

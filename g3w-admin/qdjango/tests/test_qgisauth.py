@@ -52,6 +52,7 @@ class AuthDbTest(QdjangoTestBase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+
         # Prepare DB
         for path in (AUTH_DB_PATH, MASTER_PASSWORD_PATH):
             assert os.path.isfile(path)
@@ -64,20 +65,22 @@ class AuthDbTest(QdjangoTestBase):
         config = QgsAuthMethodConfig()
         config.setName("alice")
         config.setMethod('Basic')
-        config.setConfig("username", "my user" )
-        config.setConfig("password", "my password" )
+        config.setConfig("username", "my user")
+        config.setConfig("password", "my password")
         assert config.isValid()
-
         res, cfg = cls.am.storeAuthenticationConfig(config)
         assert res
         assert config.id() != ''
         assert cfg.id() != ''
         assert cfg.id() == config.id()
 
-        # Store fakelayer datasource
-        cls.fakelayer = Layer.objects.get(name='fakelayer')
-        cls.fakelayer_datasource = cls.fakelayer.datasource
 
+    def setUp(self):
+        super().setUp()
+
+        # Store fakelayer datasource
+        self.fakelayer = Layer.objects.get(name='fakelayer')
+        self.fakelayer_datasource = self.fakelayer.datasource
 
     def tearDown(self):
         """Clear DB"""
@@ -87,6 +90,7 @@ class AuthDbTest(QdjangoTestBase):
     @classmethod
     def tearDownClass(cls):
         super().tearDownClass()
+
         # Make sure there are no auth files left
         for path in (AUTH_DB_PATH, MASTER_PASSWORD_PATH):
             if os.path.isfile(path):
@@ -116,6 +120,7 @@ class AuthDbTest(QdjangoTestBase):
 
     def test_model(self):
         """Test QGIS Auth model"""
+
 
         self.assertEqual(QgisAuth.objects.count(), 0)
 

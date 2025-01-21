@@ -23,6 +23,7 @@ from .api.views import(
     layer_raster_view,
     InterfaceOws,
     CRSInfoAPIView,
+    HTML2PDFAPIView
 )
 
 
@@ -126,6 +127,15 @@ urlpatterns = [
         'crs/<int:epsg>/',
         CRSInfoAPIView.as_view(),
         name='core-crs-api'
+    ),
+
+    #############################################################
+    # html2pdf API info
+    #############################################################
+    path(
+        'html2pdf/',
+        HTML2PDFAPIView.as_view(),
+        name='core-html2pdf-api'
     )
 
 ]

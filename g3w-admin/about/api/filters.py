@@ -34,7 +34,7 @@ class UserGroupFilter(BaseFilterBackend):
 
 
 class UserProjectFilter(BaseFilterBackend):
-    """A filter backend for portal module for qdjango project"""
+    """A filter backend for about module for qdjango project"""
 
     def filter_queryset(self, request, queryset, view):
         """
@@ -47,20 +47,24 @@ class UserProjectFilter(BaseFilterBackend):
 
 
 class GroupProjectFilter(BaseFilterBackend):
-    """A filter backend for portal module for qdjango project , filter by group"""
+    """A filter backend for about module for qdjango project , filter by group"""
 
     def filter_queryset(self, request, queryset, view):
         """
         Return a filtered queryset by group_id
         """
+
         if 'group_id' in view.kwargs:
             queryset = queryset.filter(group_id=view.kwargs['group_id']).order_by('order')
+
+        if resolve(request.path_info).url_name == 'about-group-without-macrogroup-api-list':
+            queryset = queryset.filter(macrogroups__pk=None)
 
         return queryset
 
 
 class MacroGroupGroupFilter(BaseFilterBackend):
-    """A filter backend for portal module for group, filter by macrogroup"""
+    """A filter backend for about module for group, filter by macrogroup"""
 
     def filter_queryset(self, request, queryset, view):
         """
@@ -70,14 +74,14 @@ class MacroGroupGroupFilter(BaseFilterBackend):
             queryset = queryset.filter(macrogroups__pk=view.kwargs['macrogroup_id'])
 
         # check for group without macrogroup
-        if resolve(request.path_info).url_name == 'portal-group-without-macrogroup-api-list':
+        if resolve(request.path_info).url_name == 'about-group-without-macrogroup-api-list':
             queryset = queryset.filter(macrogroups__pk=None)
 
         return queryset
 
 
 class PanoramicProjectFilter(BaseFilterBackend):
-    """A filter backend for portal module for qdjango project , filter by not panoramic"""
+    """A filter backend for about module for qdjango project , filter by not panoramic"""
 
     def filter_queryset(self, request, queryset, view):
 

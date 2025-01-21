@@ -1,8 +1,10 @@
 from django import get_version as dj_get_version
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
+from django.http.response import HttpResponse
 from rest_framework.response import Response
 from owslib.wms import WebMapService
+from weasyprint import HTML as WeasyHTML
 from base.version import get_version
 from .base.views import G3WAPIView
 from core.api.authentication import CsrfExemptSessionAuthentication
@@ -204,7 +206,8 @@ class QgsExpressionLayerContextEvalView(G3WAPIView):
         except ExpressionLayerError as ex:
             raise APIExpressionLayerError(str(ex))
 
-        return Response(result)
+        self.results.results.update({'value': result})
+        return Response(self.results.results)
 
 
 class InterfaceOws(G3WAPIView):
@@ -363,12 +366,19 @@ class CRSInfoAPIView(G3WAPIView):
 
         crs = QgsCoordinateReferenceSystem(f"EPSG:{kwargs['epsg']}")
 
+        req_epsg = int(kwargs['epsg'])
+
         # Patch for Proj4 > 4.9.3 version
-        if int(kwargs['epsg']) == 3003:
-            proj4 = "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=1500000 +y_0=0 +ellps=intl " \
-                    "+towgs84=-104.1,-49.1,-9.9,0.971,-2.917,0.714,-11.68 +units=m +no_defs"
+        if req_epsg in settings.G3W_PROJ4_EPSG.keys():
+            proj4 = settings.G3W_PROJ4_EPSG[req_epsg]['proj4']
+            extent = settings.G3W_PROJ4_EPSG[req_epsg]['extent']
+
         else:
             proj4 = crs.toProj4()
+            if crs.postgisSrid() in (4326, 3857):
+                extent = get_crs_bbox(crs)
+            else:
+                extent = [0, 0, 8388608, 8388608]
 
         self.results.results.update({
             'data': {
@@ -376,8 +386,33 @@ class CRSInfoAPIView(G3WAPIView):
                 'proj4': proj4,
                 'geographic': crs.isGeographic(),
                 'axisinverted': crs.hasAxisInverted(),
-                'extent': get_crs_bbox(crs)
+                'extent': extent
             }
         })
 
         return Response(self.results.results)
+
+
+class HTML2PDFAPIView(G3WAPIView):
+    """
+    API REST service for HTML to PDF conversion
+    """
+
+    authentication_classes = (
+        CsrfExemptSessionAuthentication,
+    )
+
+    def post(self, request, **kwargs):
+
+        if 'html' not in request.data:
+            raise APIException('`html` parameter must be provided.')
+
+        pdf = WeasyHTML(string=request.data['html'])
+        pdf_document = pdf.render()
+
+        filename = request.data.get('filename', 'download.pdf')
+        response = HttpResponse(pdf_document.write_pdf(), content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename={filename}'
+
+        return response
+

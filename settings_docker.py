@@ -13,7 +13,7 @@ G3WADMIN_LOCAL_MORE_APPS = [
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': 'g3w-suite',
+        'NAME': 'g3w_suite',
         'USER': 'docker',
         'PASSWORD': 'docker',
         'HOST': 'postgis',
@@ -58,7 +58,7 @@ TILESTACHE_CACHE_TOKEN = '1234567'
 # ===============================
 FILEMANAGER_ROOT_PATH = DATASOURCE_PATH
 
-ALLOWED_HOSTS = "*"
+ALLOWED_HOSTS = ["*"]
 
 LOGGING = {
     'version': 1,

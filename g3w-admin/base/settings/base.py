@@ -48,7 +48,7 @@ DJANGO_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.gis',
-    #'django.contrib.sites',
+    'django.contrib.sites',
 ]
 
 THIRD_PARTY_APPS = [
@@ -57,6 +57,7 @@ THIRD_PARTY_APPS = [
     'model_utils',
     'formtools',
     'crispy_forms',
+    'crispy_bootstrap3',
     'guardian',
     'sitetree',
     'django_extensions',
@@ -75,7 +76,13 @@ THIRD_PARTY_APPS = [
     'about',
     'django_bleach',
     'django_registration',
-    'captcha'
+    'captcha',
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    "allauth.socialaccount.providers.microsoft",
+    "allauth.socialaccount.providers.google",
+    "allauth.usersessions"
 ]
 
 G3WADMIN_APPS = [
@@ -104,6 +111,10 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.contrib.sites.middleware.CurrentSiteMiddleware',
     'qdjango.process_events_middleware.process_events_middleware',
+
+    # Allauth middleware
+    'allauth.account.middleware.AccountMiddleware',
+    'allauth.usersessions.middleware.UserSessionsMiddleware'
 ]
 
 
@@ -127,10 +138,6 @@ TEMPLATES = [
             'loaders': [
                     'django.template.loaders.filesystem.Loader',
                     'django.template.loaders.app_directories.Loader'
-                    #('django.template.loaders.cached.Loader', [
-                    #    'django.template.loaders.filesystem.Loader',
-                    #    'django.template.loaders.app_directories.Loader'
-                    #]),
             ],
         },
     },
@@ -142,7 +149,6 @@ WSGI_APPLICATION = 'base.wsgi.application'
 ATOMIC_REQUESTS = True
 
 # Password validation
-# https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -162,10 +168,12 @@ AUTH_PASSWORD_VALIDATORS = [
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
     'guardian.backends.ObjectPermissionBackend',
+    'allauth.account.auth_backends.AuthenticationBackend'
 )
 
 GUARDIAN_RAISE_403 = True
 
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap3"
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 SITETREE_MODEL_TREE = 'core.G3W2Tree'
@@ -182,13 +190,12 @@ LOGIN_REDIRECT_URL = '/'
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
 
-LANGUAGE_CODE = 'it-it'
+LANGUAGE_CODE = 'en'
 
 TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
-USE_L10N = True
 
 USE_TZ = False
 
@@ -199,8 +206,8 @@ LOCALE_PATHS = (
 
 gettext = lambda s: s
 LANGUAGES = (
-    ('it', 'Italian'),
     ('en', 'English'),
+    ('it', 'Italian'),
     ('fr', 'French'),
     ('fi', 'Finnish'),
     ('se', 'Swedish'), # FIXME: correct language code should be "sv"
@@ -208,7 +215,7 @@ LANGUAGES = (
     ('de', 'Deutsch'),
 )
 
-MODELTRANSLATION_DEFAULT_LANGUAGE = 'it'
+MODELTRANSLATION_DEFAULT_LANGUAGE = 'en'
 
 # if prefix for default language put in to url
 PREFIX_DEFAULT_LANGUAGE = True
@@ -241,8 +248,6 @@ MUST_LOGIN = True
 
 
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/1.9/howto/static-files/
-
 STATIC_URL = '/static/'
 
 SITE_TITLE = 'g3w-admin'
@@ -252,7 +257,7 @@ QDJANGO_SERVER_URL = 'http://localhost'
 QDJANGO_PRJ_CACHE = True
 QDJANGO_PRJ_CACHE_KEY = 'qdjango_prj_'
 
-# data for proxy server
+# Data for proxy server
 PROXY_SERVER = False
 
 # LOGGING_CONFIG = None
@@ -291,13 +296,17 @@ CLIENTS_AVAILABLE = []
 CLIENT_DEFAULT = 'client'
 CLIENT_G3WSUITE_LOGO = 'g3wsuite_logo_h40.png'
 CLIENT_OWS_METHOD = 'GET'
-G3W_CLIENT_SEARCH_ENDPOINT = 'ows' #or 'api' for to use api layer vector with FieldFilterBackend
+
+# deprecated since 3.8
+G3W_CLIENT_SEARCH_ENDPOINT = 'api'
 
 # If True not show empty layer into toc and main map
 G3W_CLIENT_NOT_SHOW_EMPTY_VECTORLAYER = False
 
-SITE_ID = 1
+# Set to show or not error ion loading layer in G3W-CLIENT
+G3W_CLIENT_SHOW_LOAD_LAYER_ERRORS = False
 
+SITE_ID = 1
 
 INTERNAL_IPS = [
     '127.0.0.1',
@@ -312,7 +321,7 @@ INTERNAL_IPS = [
 # Extentions file can be uploaded by django-file-form ajax uploader
 G3WFILE_FORM_UPLOAD_FORMATS = ['qgs', 'qgz', 'png', 'jpg', 'jpeg', 'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ods']
 
-G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS = ['shp', 'xls', 'csv', 'gpkg']
+G3WADMIN_VECTOR_LAYER_DOWNLOAD_FORMATS = ['shp', 'xls', 'csv', 'gpkg', 'pdf']
 G3WADMIN_RASTER_LAYER_DOWNLOAD_FORMATS = ['geotiff', 'xls', 'csv', 'gpkg']
 
 # Setting to activate/deactivate user password reset by email.
@@ -339,7 +348,6 @@ PASSWORD_CHANGE_FIRST_LOGIN = False
 
 # QPLOTLY DEFAULT SETTINGS
 # ------------------------
-
 LOAD_QPLOTLY_FROM_PROJECT = False
 
 # VENDOR KEYS SETTINGS
@@ -359,7 +367,7 @@ G3W_CLIENT_COOKIE_SESSION_TOKEN = 'g3wclientsessiontoken'
 BLEACH_ALLOWED_TAGS = ['p', 'b', 'i', 'u', 'em', 'strong', 'a', 'br', 'table', 'tr', 'td', 'th', 'b', 'ul', 'li', 'ol',
                        'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'pre', 'blockquote', 'tbody', 'theader', 'tfooter', 'span']
 BLEACH_STRIP_TAGS = True
-BLEACH_ALLOWED_ATTRIBUTES = ['href', 'title', 'style', 'src']
+BLEACH_ALLOWED_ATTRIBUTES = ['href', 'title', 'style', 'src', 'target']
 BLEACH_ALLOWED_STYLES = [
     'background-color', 'color', 'font-size'
 ]
@@ -383,3 +391,18 @@ RECAPTCHA_REQUIRED_SCORE = 0.85
 RECAPTCHA_VERSION2_TYPE = 'checkbox' # or 'invisible'
 
 SILENCED_SYSTEM_CHECKS = ['captcha.recaptcha_test_key_error']
+
+# SOCIAL ACCOUNT LOGIN SETTINGS
+# -----------------------------
+SOCIALACCOUNT_LOGIN_ON_GET = True
+SOCIALACCOUNT_ADAPTER = 'usersmanage.vendors.allauth.adapter.G3WSocialAccountAdapter'
+
+# Activate/deactivate user login session tracking
+USERSESSIONS_TRACK_ACTIVITY = False
+
+SOCIALACCOUNT_ONLY = True
+SOCIALACCOUNT_USER_ROLE = 'Viewer Level 1'
+ACCOUNT_EMAIL_VERIFICATION = 'none'
+
+# For iframe
+X_FRAME_OPTIONS = 'SAMEORIGIN'

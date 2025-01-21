@@ -4,7 +4,7 @@
 # mounted as /code in the container
 
 # Get options paramenter
-QGSV="322"
+QGSV="ltr"
 MOD="build"
 
 usage() {                                 # Function: Print a help message.
@@ -22,8 +22,8 @@ while getopts ":q:m:" options; do
     q)
       QGSV=${OPTARG}
 
-      if [[ $QGSV != "322" && $QGSV != "latest" ]] ; then
-        echo "Error: QGIS VERSION can be one of '322', 'latest'." >/dev/stderr
+      if [[ $QGSV != "ltr" && $QGSV != "latest" ]] ; then
+        echo "Error: QGIS VERSION can be one of 'ltr', 'latest'." >/dev/stderr
         exit_abnormal
         exit 1
       fi
@@ -75,7 +75,7 @@ $DOCKER_COMMAND cp . g3w-suite:/code/
 
 echo "Execute pip3 install requirements"
 echo "---------------------------------"
-$DOCKER_COMMAND exec g3w-suite sh -c "cd /code/ && python3 -m pip install pip==20.0.2 && pip3 install -r requirements_docker.txt && pip3 install -r requirements_huey.txt"
+$DOCKER_COMMAND exec g3w-suite sh -c "cd /code/ && pip3 install -r requirements_docker.txt && pip3 install -r requirements_huey.txt"
 
 $DOCKER_COMMAND exec g3w-suite sh -c "cd /code/ && pip3 install -r g3w-admin/caching/requirements.txt"
 
@@ -116,6 +116,8 @@ if [ $MOD == "test" ]; then
     $DOCKER_COMMAND exec g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test openrouteservice"
 
     $DOCKER_COMMAND exec g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test qtimeseries"
+
+    $DOCKER_COMMAND exec g3w-suite sh -c "cd /code/g3w-admin && python3 manage.py test about"
 
 else
     $DOCKER_COMMAND exec g3w-suite bash

@@ -2,12 +2,17 @@ from django.conf import settings
 from django.contrib.auth.models import Permission, User, Group as AuthGroup
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
-from guardian.shortcuts import get_users_with_perms, assign_perm, remove_perm, get_groups_with_perms, \
-    get_perms, get_objects_for_user
+from guardian.shortcuts import (
+    get_users_with_perms,
+    assign_perm,
+    remove_perm,
+    get_groups_with_perms,
+    get_objects_for_user
+)
 from guardian.models import UserObjectPermission
 from guardian.compat import get_user_model
 from crispy_forms.layout import Div, HTML, Field
-from django.utils.translation import ugettext, gettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.contrib.sessions.models import Session
 from django.utils import timezone
 from .configs import *

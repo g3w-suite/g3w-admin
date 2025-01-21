@@ -1,20 +1,11 @@
-import os
-
-from qgis.core import QgsProject
-import re
-import zipfile
-
 from core.mixins.forms import *
-from core.models import Group as G3WGroup
 from core.utils.forms import crispyBoxBaseLayer
 from crispy_forms.helper import FormHelper, Layout
 from crispy_forms.layout import HTML, Div, Field
 from django import forms
 from django.core.files.base import ContentFile
-from django.db.models import Q
 from django.urls import reverse
 from django.forms import ValidationError, widgets
-from django.utils.translation import ugettext
 from django.utils.translation import gettext_lazy as _
 from django.utils.html import mark_safe
 from django_file_form.forms import FileFormMixin, UploadedFileField
@@ -24,7 +15,6 @@ from django_bleach.forms import BleachField
 from usersmanage.forms import G3WACLForm, label_users
 from usersmanage.utils import (
     crispyBoxACL,
-    get_fields_by_user,
     get_groups_for_object,
     get_user_groups_for_object,
     get_viewers_for_object,
@@ -32,11 +22,13 @@ from usersmanage.utils import (
 )
 from qdjango.models import *
 from qdjango.utils.data import QgisProject
-from qdjango.utils.validators import ProjectExists
 from qdjango.utils.models import get_geocoding_providers
 
 import shutil
 import json
+import re
+import zipfile
+import os
 
 
 class QdjangoProjectFormMixin(object):

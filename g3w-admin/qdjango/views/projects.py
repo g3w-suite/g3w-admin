@@ -596,6 +596,10 @@ class QdjangoLayerDataView(G3WGroupViewMixin, QdjangoProjectViewMixin, View):
             layer.exclude_from_legend = int(
                 request.POST['exclude_from_legend'])
 
+        if 'exclude_from_toc' in request.POST:
+            layer.exclude_from_toc = int(
+                request.POST['exclude_from_toc'])
+
         if 'not_show_attributes_table' in request.POST:
             layer.not_show_attributes_table = int(
                 request.POST['not_show_attributes_table'])
@@ -799,6 +803,10 @@ class QdjangoLinkWidget2LayerView(G3WRequestViewMixin, G3WGroupViewMixin, Qdjang
             self.widget.layers.add(self.layer)
         else:
             self.widget.layers.remove(self.layer)
+
+        # Invalidate project cache
+        self.layer.project.invalidate_cache()
+
 
 
 class QdjangoLayerDetailView(G3WRequestViewMixin, DetailView):

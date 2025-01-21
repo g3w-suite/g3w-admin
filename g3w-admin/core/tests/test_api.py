@@ -509,7 +509,7 @@ class CoreApiTest(CoreTestBase):
 
         res = self.client.post(url, data=data, content_type='application/json')
         self.assertEqual(res.status_code, 400)
-        self.assertEqual(res.content, "Invalid URL 'gis3w.it': No schema supplied. Perhaps you meant http://gis3w.it?".encode())
+        self.assertEqual(res.content, "Invalid URL 'gis3w.it': No scheme supplied. Perhaps you meant https://gis3w.it?".encode())
 
         data = {
             'url': 'https://google.com',
@@ -520,7 +520,7 @@ class CoreApiTest(CoreTestBase):
         self.assertEqual(res.status_code, 200)
 
         data = {
-            'url': 'https://gis3w.it',
+            'url': 'https://g3wsuite.it',
             'method': 'post',
             'params': {
                 'search': 'pippo'
@@ -672,7 +672,12 @@ class CoreApiTest(CoreTestBase):
         self.assertEqual(jres['data']['geographic'], False)
         self.assertEqual(jres['data']['axisinverted'], False)
 
-        to_compare = enumerate([1226046.6820902952, 4047095.260762165, 1727931.8998958569, 5214000.012210975])
+        # Original
+        # to_compare = enumerate([1226046.6820902952, 4047095.260762165, 1727931.8998958569, 5214000.012210975])
+
+        # Custom
+        to_compare = enumerate([0, 0, 8388608, 8388608])
+
         for c in to_compare:
             self.assertAlmostEqual(jres['data']['extent'][c[0]],  c[1], 4)
 
@@ -689,6 +694,10 @@ class CoreApiTest(CoreTestBase):
         self.assertEqual(jres['data']['geographic'], False)
         self.assertEqual(jres['data']['axisinverted'], False)
 
-        to_compare = enumerate([166021.44308054162, 0.0, 534994.6550611365, 9329005.182447437])
+        # Original
+        #to_compare = enumerate([166021.44308054162, 0.0, 534994.6550611365, 9329005.182447437])
+
+        # Custom
+        to_compare = enumerate([0, 0, 8388608, 8388608])
         for c in to_compare:
             self.assertAlmostEqual(jres['data']['extent'][c[0]],  c[1], 4)

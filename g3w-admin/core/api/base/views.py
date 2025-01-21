@@ -4,7 +4,6 @@ from copy import copy
 from django.core.exceptions import PermissionDenied
 from django.http import Http404, HttpRequest
 from django.urls import resolve, reverse
-from django.utils.translation import ugettext
 from django.utils.translation import gettext_lazy as _
 from qgis.core import (
     QgsJsonExporter,
@@ -428,6 +427,18 @@ class BaseVectorApiView(G3WAPIView):
             'fields': fields,
         }
 
+        # Filter fields by user
+        if self.request.user:
+            visiblefields = self.layer.visible_fields_for_user(self.request.user)
+            if len(visiblefields) != len(vector_params['fields']):
+                newfields = []
+                for f in vector_params['fields']:
+                    if f['name'] in visiblefields:
+                        newfields.append(f)
+
+                if newfields:
+                    vector_params['fields'] = newfields
+
         # post_create_maplayerattributes signal
         post_create_maplayerattributes.send(
             self, layer=self.layer, vector_params=vector_params)
@@ -472,6 +483,7 @@ class BaseVectorApiView(G3WAPIView):
                     attrs.append(attr_idx)
             qgis_feature_request.setSubsetOfAttributes(attrs)
 
+        # Get feature: apply pagination if 'page' parameters is set
         self.features = get_qgis_features(
             self.metadata_layer.qgis_layer, qgis_feature_request, **kwargs)
 
@@ -547,6 +559,10 @@ class BaseVectorApiView(G3WAPIView):
                         if 'ffield' in self.request_data:
                             req.GET['field'] = self.request_data.get('ffield')
 
+                        # Add 'ordering'
+                        if 'ordering' in self.request_data:
+                            req.GET['ordering'] = self.request_data.get('ordering')
+
                         view = LayerVectorView.as_view()
                         res = view(req, *[], **kwargs).render()
                         uniques = json.loads(res.content)['data']
@@ -580,13 +596,34 @@ class BaseVectorApiView(G3WAPIView):
                                 QVariant(),
                                 u
                             )
-                            values.append([json.loads(QgsJsonUtils.encodeValue(u)), fvalue])
+
+                            to_append = True
+
+                            # 'suggest' (get/post) parameter used inside the QGIS SuggestFilterBackend
+                            # must be applied to the formatted value (fvalue) because the result of formatted value
+                            # can also derive from QgsExression(s).
+                            if 'suggest' in self.request_data and 'fformatter' in self.request_data:
+
+                                # Replace suggest file with r_pvalue if pvalue == suggest field
+                                s_field, s_value = self.request_data.get('suggest').split('|')
+                                to_append = False
+                                if s_field == pvalue and str(s_value).lower() in str(fvalue).lower():
+                                    to_append = True
+
+                            if to_append:
+                                values.append([json.loads(QgsJsonUtils.encodeValue(u)), fvalue])
                 except Exception as e:
                     logger.error(f'Response vector widget unique: {e}')
                     continue
 
-            # sort values
-            values.sort()
+            # Sort values
+            if ('fformatter' in self.request_data
+                and 'ordering' in self.request_data
+                and self.request_data['fformatter'] in self.request_data['ordering']):
+                rev = True if self.request_data['ordering'].startswith('-') else False
+                values.sort(reverse=rev, key=lambda e: (e[1] is None, e[1]))
+            else:
+                values.sort()
             self.results.update({
                 'data': values,
                 'count': len(values)
@@ -672,11 +709,31 @@ class BaseVectorApiView(G3WAPIView):
                 f = feature_collection['features'][i]
                 f['id'] = fids_map[f['id']]
 
-            self.results.update(APIVectorLayerStructure(**{
+            api_vector_data = {
                 'data': feature_collection,
                 'count': count_qgis_features(self.metadata_layer.qgis_layer, qgis_feature_request, **kwargs),
-                'geometryType': self.metadata_layer.geometry_type,
-            }).as_dict())
+                'geometryType': self.metadata_layer.geometry_type
+            }
+
+            # Cafe with 'autofilter' parameter: get every id from qgis_feature_request
+            # ------------------------------------------------------------------------
+            if 'autofilter' in self.request_data and str(self.request_data['autofilter']) == '1':
+
+                    # Remove pagination
+                    for k in ('page', 'page_size'):
+                        if k in kwargs:
+                            del(kwargs[k])
+
+                    # Reset limit
+                    if qgis_feature_request.limit() != -1:
+                        qgis_feature_request = QgsFeatureRequest(qgis_feature_request)
+                        qgis_feature_request.setLimit(-1)
+
+                    self.total_feature_ids = [str(f.id()) for f in get_qgis_features(
+                        self.metadata_layer.qgis_layer, qgis_feature_request, **kwargs)]
+
+
+            self.results.update(APIVectorLayerStructure(**api_vector_data).as_dict())
 
             # FIXME: add extra fields data by signals and receivers
             # FIXME: featurecollection = post_serialize_maplayer.send(layer_serializer, layer=self.layer_name)
@@ -731,7 +788,7 @@ class BaseVectorApiView(G3WAPIView):
             # before to send response
             extra_data = before_return_vector_data_layer.send(self)
             for ed in extra_data:
-                if ed[1] and ed[0].__name__ in ('add_constraints', 'add_atomic_capabilities'):
+                if ed[1] and ed[0].__name__ in ('add_constraints', 'add_atomic_capabilities', 'add_filter_token'):
                     self.results.results.update(ed[1])
 
             # response a APIVectorLayer

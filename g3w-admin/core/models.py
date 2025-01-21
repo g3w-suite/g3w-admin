@@ -1,16 +1,13 @@
 
 from django.conf import settings
-from django.conf.global_settings import LANGUAGES
-from django.utils.translation import ugettext, gettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
 from django.db import models
 from django.apps import apps
-from django_extensions.db.fields import AutoSlugField
 from guardian.shortcuts import get_objects_for_user
 from guardian.compat import get_user_model
 from ordered_model.models import OrderedModel
 from model_utils.models import TimeStampedModel
-from model_utils import Choices
 from django_extensions.db.fields import AutoSlugField
 from sitetree.models import TreeItemBase, TreeBase
 from django.contrib.auth.models import User, Group as AuthGroup
@@ -124,6 +121,9 @@ class MacroGroup(TimeStampedModel, OrderedModel):
         """
         self._permissions_to_editors(users_id, 'remove')
 
+    class Meta():
+        ordering = ("order",)
+
 
 class Group(TimeStampedModel, OrderedModel):
     """A group of projects."""
@@ -169,10 +169,12 @@ class Group(TimeStampedModel, OrderedModel):
                                                       'as client logo, if MacroGroup option is active this options takes '
                                                       'precendence'))
 
-    class Meta:
+    class Meta():
         permissions = (
             ('add_project_to_group', 'Can add project to the group'),
         )
+        ordering = ("order",)
+
 
     def __str__(self):
         return self.name

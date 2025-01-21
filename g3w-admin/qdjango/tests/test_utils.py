@@ -33,6 +33,9 @@ DATASOURCE_PATH = '{}{}'.format(CURRENT_PATH, TEST_BASE_PATH)
 QGS_FILE = 'g3wsuite_project_test_qgis310.qgs'
 QGIS_FILE_MDAL = 'mdal_layer_qgis_322.qgs'
 QGIS_FILE_EXPRESSION_DEFAULT = 'test_default_field_expression_322.qgs'
+QGS_FILE_ORGANIZE_COLUMNS = 'g3wsuite_project_test_qgis334.qgs'
+
+from qgis.core import Qgis
 
 
 class QgisProjectTest(TestCase):
@@ -49,7 +52,11 @@ class QgisProjectTest(TestCase):
         qgis_project_file.close()
 
         qgis_project_file = File(open('{}{}{}'.format(
-            CURRENT_PATH, TEST_BASE_PATH, QGIS_FILE_MDAL), 'r', encoding='utf-8'))
+            CURRENT_PATH, TEST_BASE_PATH, QGS_FILE_ORGANIZE_COLUMNS), 'r', encoding='utf-8'))
+
+        qgis_project_file.name = qgis_project_file.name.split('/')[-1]
+        self.project_organize_column = QgisProject(qgis_project_file)
+        qgis_project_file.close()
 
 
     def test_qgis_project(self):
@@ -169,7 +176,8 @@ class QgisProjectTest(TestCase):
                 self.assertTrue(layer.isVisible)
                 self.assertEqual(layer.srid, 4030)
                 self.assertEqual(layer.editOptions, 1)
-                self.assertEqual(layer.extent, 'POLYGON((-31.26574700000000462 32.3974759999999975, 69.07032000000000949 32.3974759999999975, 69.07032000000000949 81.85736800000000812, -31.26574700000000462 81.85736800000000812, -31.26574700000000462 32.3974759999999975))')
+                if Qgis.QGIS_VERSION_INT < 33800:
+                    self.assertEqual(layer.extent, 'POLYGON((-31.26574700000000462 32.3974759999999975, 69.07032000000000949 32.3974759999999975, 69.07032000000000949 81.85736800000000812, -31.26574700000000462 81.85736800000000812, -31.26574700000000462 32.3974759999999975))')
 
                 # important check datasource, main for shp and raster data
                 # --------------------------------------------------------
@@ -260,7 +268,8 @@ class QgisProjectTest(TestCase):
             if layer.layerId == 'cities10000eu20171228095720113':
 
                 # check extent
-                self.assertEqual(layer.extent, 'POLYGON((-9.71666669999999932 35.00999999999999801, 57.35194440000000071 35.00999999999999801, 57.35194440000000071 69.96666670000000465, -9.71666669999999932 69.96666670000000465, -9.71666669999999932 35.00999999999999801))')
+                if Qgis.QGIS_VERSION_INT < 33800:
+                    self.assertEqual(layer.extent, 'POLYGON((-9.71666669999999932 35.00999999999999801, 57.35194440000000071 35.00999999999999801, 57.35194440000000071 69.96666670000000465, -9.71666669999999932 69.96666670000000465, -9.71666669999999932 35.00999999999999801))')
 
                 # check editorlayout
                 # --------------------------------------------------------
@@ -316,6 +325,14 @@ class QgisProjectTest(TestCase):
                 edit_types_to_check = '{"GEONAMEID": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": false, "UseHtml": false}, "NAME": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": false, "UseHtml": false}, "ASCIINAME": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": false, "UseHtml": false}, "ISO2_CODE": {"widgetv2type": "UniqueValues", "fieldEditable": "1", "values": [], "Editable": false}, "POPULATION": {"widgetv2type": "Range", "fieldEditable": "1", "values": [], "AllowNull": true, "Max": 2147483647, "Min": -2147483648, "Precision": 0, "Step": 1, "Style": "SpinBox"}, "GTOPO30": {"widgetv2type": "TextEdit", "fieldEditable": "1", "values": [], "IsMultiline": "0", "UseHtml": "0"}}'
                 self.assertEqual(
                     layer.editTypes, json.loads(edit_types_to_check))
+
+
+        # Check orzanize columns new order
+        # Get cities layer
+        for layer in self.project_organize_column.layers:
+            if layer.layerId == 'cities10000eu20171228095720113':
+                expected_colums = [{'name': 'GEONAMEID', 'type': 'QLONGLONG', 'label': 'Geo named'}, {'name': 'GTOPO30', 'type': 'QLONGLONG', 'label': 'GTOPO30'}, {'name': 'POPULATION', 'type': 'QLONGLONG', 'label': 'POPULATION'}, {'name': 'NAME', 'type': 'QSTRING', 'label': 'Name'}, {'name': 'ASCIINAME', 'type': 'QSTRING', 'label': 'Ascii name'}, {'name': 'ISO2_CODE', 'type': 'QSTRING', 'label': 'ISO Code'}]
+                self.assertEqual(layer.columns, expected_colums)
 
     def test_get_schema_table(self):
 
@@ -440,15 +457,14 @@ class QgisWMSProjectSettingsTest(TestCase):
 class QdjangoUtilsTest(QdjangoTestBase):
     """ Test for utils methods and functions"""
 
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
+    def setUp(self):
+        super().setUp()
 
         qgis_project_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGIS_FILE_MDAL), 'r'))
-        cls.project_mdal = QgisProject(qgis_project_file)
-        cls.project_mdal.title = 'A project with mdal layer'
-        cls.project_mdal.group = cls.project_group
-        cls.project_mdal.save()
+        self.project_mdal = QgisProject(qgis_project_file)
+        self.project_mdal.title = 'A project with mdal layer'
+        self.project_mdal.group = self.project_group
+        self.project_mdal.save()
 
     @classmethod
     def tearDownClass(cls):
@@ -590,14 +606,13 @@ class TestTemplateTags(QdjangoTestBase):
 class QdjangoTestUtilsQgis(QdjangoTestBase):
     """ Test for qdjango.utils.qgis module and functions """
 
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
+    def setUp(self):
+        super().setUp()
 
         qgis_project_file = File(open('{}{}{}'.format(CURRENT_PATH, TEST_BASE_PATH, QGIS_FILE_EXPRESSION_DEFAULT), 'r'))
-        cls.project_dexp = QgisProject(qgis_project_file)
-        cls.project_dexp.group = cls.project_group
-        cls.project_dexp.save()
+        self.project_dexp = QgisProject(qgis_project_file)
+        self.project_dexp.group = self.project_group
+        self.project_dexp.save()
 
     def test_explode_expression(self):
         """
@@ -676,6 +691,60 @@ class QdjangoTestUtilsQgis(QdjangoTestBase):
 
         # Test current_value with spaces before 'field_name'
         expr = "sqrt(  $area )  *2 + \"gid\" + current_value( \"doublespace\"  )"
+
+        expected = {
+            'expression': expr,
+            'referenced_columns': ['gid', 'doublespace'],
+            'referenced_functions': ['sqrt', '$area', 'current_value'],
+            'referencing_fields': ['doublespace']
+        }
+
+        ee = explode_expression(expr)
+
+        self.assertEqual(ee['expression'], expected['expression'])
+        self.assertEqual(ee['referenced_columns'].sort(), expected['referenced_columns'].sort())
+        self.assertEqual(ee['referenced_functions'].sort(), expected['referenced_functions'].sort())
+        self.assertTrue('referencing_fields' in ee)
+        self.assertEqual(ee['referencing_fields'].sort(), expected['referencing_fields'].sort())
+
+        # Test current_value with spaces before '(' after 'current_value'
+        expr = "sqrt(  $area )  *2 + \"gid\" + current_value ( \'doublespace\'  )"
+
+        expected = {
+            'expression': expr,
+            'referenced_columns': ['gid', 'doublespace'],
+            'referenced_functions': ['sqrt', '$area', 'current_value'],
+            'referencing_fields': ['doublespace']
+        }
+
+        ee = explode_expression(expr)
+
+        self.assertEqual(ee['expression'], expected['expression'])
+        self.assertEqual(ee['referenced_columns'].sort(), expected['referenced_columns'].sort())
+        self.assertEqual(ee['referenced_functions'].sort(), expected['referenced_functions'].sort())
+        self.assertTrue('referencing_fields' in ee)
+        self.assertEqual(ee['referencing_fields'].sort(), expected['referencing_fields'].sort())
+
+        # Test current_value with spaces before '(' after 'current_value'
+        expr = "sqrt(  $area )  *2 + \"gid\" + current_value  ( \'doublespace\'  )"
+
+        expected = {
+            'expression': expr,
+            'referenced_columns': ['gid', 'doublespace'],
+            'referenced_functions': ['sqrt', '$area', 'current_value'],
+            'referencing_fields': ['doublespace']
+        }
+
+        ee = explode_expression(expr)
+
+        self.assertEqual(ee['expression'], expected['expression'])
+        self.assertEqual(ee['referenced_columns'].sort(), expected['referenced_columns'].sort())
+        self.assertEqual(ee['referenced_functions'].sort(), expected['referenced_functions'].sort())
+        self.assertTrue('referencing_fields' in ee)
+        self.assertEqual(ee['referencing_fields'].sort(), expected['referencing_fields'].sort())
+
+        # Test current_value
+        expr = "sqrt(  $area )  *2 + \"gid\" + current_value  ( 'doublespace' )"
 
         expected = {
             'expression': expr,

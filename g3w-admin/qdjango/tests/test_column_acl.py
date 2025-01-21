@@ -16,24 +16,15 @@ import os
 import zipfile
 from io import BytesIO
 
-from django.conf import settings
-from django.contrib.auth.models import User
+from django.db import transaction
 from django.test import Client
 from django.urls import reverse
-from guardian.shortcuts import assign_perm, get_anonymous_user
-from qgis.core import QgsVectorLayer, QgsFeatureRequest, QgsExpression, Qgis
+from qgis.core import QgsVectorLayer
 from django.db import IntegrityError
 from django.core.exceptions import ValidationError
 
 from qdjango.apps import QGS_SERVER, get_qgs_project
 from qdjango.models import (
-    ConstraintSubsetStringRule,
-    ConstraintExpressionRule,
-    SingleLayerConstraint,
-    SessionTokenFilter,
-    SessionTokenFilterLayer,
-    GeoConstraint,
-    GeoConstraintRule,
     Layer,
     Project,
     ColumnAcl
@@ -43,6 +34,7 @@ from django.contrib.auth.models import Group as AuthGroup
 from unittest import skipIf
 from .base import QdjangoTestBase
 
+from qgis.PyQt.QtCore import QTemporaryDir
 import os
 
 logger = logging.getLogger(__name__)
@@ -51,63 +43,66 @@ logger = logging.getLogger(__name__)
 class TestColumnAcl(QdjangoTestBase):
     """Test column ACL"""
 
-    @classmethod
-    def setUpTestData(cls):
+    def setUp(self):
 
-        super().setUpTestData()
-        cls.qdjango_project = Project.objects.all()[0]
-        cls.world = cls.qdjango_project.layer_set.filter(
+        super().setUp()
+
+        self.qdjango_project = Project.objects.all()[0]
+        self.world = self.qdjango_project.layer_set.filter(
             qgs_layer_id='world20181008111156525')[0]
-        cls.spatialite_points = cls.qdjango_project.layer_set.filter(
+        self.spatialite_points = self.qdjango_project.layer_set.filter(
             qgs_layer_id='spatialite_points20190604101052075')[0]
         # Make a cloned layer
-        cls.cloned_project = Project(
-            group=cls.qdjango_project.group, title='My Clone')
+        self.cloned_project = Project(
+            group=self.qdjango_project.group, title='My Clone')
 
-        cls.cloned_project.qgis_file = cls.qdjango_project.qgis_file
-        cls.cloned_project.save()
-        cls.cloned_layer = cls.qdjango_project.layer_set.filter(
+        self.cloned_project.qgis_file = self.qdjango_project.qgis_file
+        self.cloned_project.save()
+        self.cloned_layer = self.qdjango_project.layer_set.filter(
             qgs_layer_id='world20181008111156525')[0]
-        cls.cloned_layer.pk = None
-        cls.cloned_layer.project = cls.cloned_project
-        cls.cloned_layer.save()
+        self.cloned_layer.pk = None
+        self.cloned_layer.project = self.cloned_project
+        self.cloned_layer.save()
         assert Layer.objects.filter(
             qgs_layer_id='world20181008111156525').count() == 2
 
-        assert not cls.world.has_column_acl
+        assert not self.world.has_column_acl
 
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-
-        # Add admin01 to a group
-        cls.viewer1_group = cls.main_roles['Viewer Level 1']
-        cls.viewer1_group.user_set.add(cls.test_user1)
-
-        ColumnAcl.objects.all().delete()
-
-        for l in Layer.objects.all():
-            l.has_column_acl = False
-            l.save()
-
-        assert not cls.cloned_layer.has_column_acl
-        assert not cls.world.has_column_acl
-
-    @classmethod
-    def tearDownClass(cls):
-        super().tearDownClass()
-        cls.viewer1_group.user_set.remove(cls.test_user1)
-        cls.cloned_project.delete()
-        ColumnAcl.objects.all().delete()
-
-    def setUp(self):
-        super().setUp()
         ColumnAcl.objects.all().delete()
         self.cloned_layer = Layer.objects.get(pk=self.cloned_layer.pk)
         self.world = Layer.objects.get(pk=self.world.pk)
         assert ColumnAcl.objects.count() == 0
         assert not self.cloned_layer.has_column_acl
         assert not self.world.has_column_acl
+
+        for l in Layer.objects.all():
+            l.has_column_acl = False
+            l.save()
+
+        assert not self.cloned_layer.has_column_acl
+        assert not self.world.has_column_acl
+
+    @classmethod
+    def setUpClass(cls):
+        QdjangoTestBase.setUpClass()
+
+        # Add admin01 to a group
+        cls.viewer1_group = cls.main_roles['Viewer Level 1']
+        cls.viewer1_group.user_set.add(cls.test_user1)
+
+
+
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        cls.viewer1_group.user_set.remove(cls.test_user1)
+
+    def tearDown(self):
+        super().tearDown()
+        #self.cloned_project.delete()
+        #ColumnAcl.objects.all().delete()
+
+
 
     def _testApiCallAdmin01(self, view_name, args, kwargs={}):
         """Utility to make test calls for admin01 user, returns the response"""
@@ -287,6 +282,22 @@ class TestColumnAcl(QdjangoTestBase):
         self.assertIsNotNone(record['AREA'])
         self.assertIsNotNone(record['SOURCETHM'])
 
+        # Test for /api/vector/config
+        response = self._testApiCallAdmin01(
+            'core-vector-api', [
+                'config',
+                'qdjango',
+                self.world.project.pk,
+                self.world.qgis_layer.id()])
+
+        resp = json.loads(response.content)
+
+        fields = [f['name'] for f in resp['vector']['fields']]
+
+        self.assertTrue('AREA' in fields)
+        self.assertTrue('SOURCETHM' in fields)
+
+
         acl = ColumnAcl(layer=self.world, user=self.test_user1,
                         restricted_fields=['AREA', 'SOURCETHM'])
         acl.save()
@@ -304,6 +315,69 @@ class TestColumnAcl(QdjangoTestBase):
         record = resp['vector']['data']['features'][0]['properties']
         self.assertIsNone(record['AREA'])
         self.assertIsNone(record['SOURCETHM'])
+
+        # Test for /api/vector/config
+        response = self._testApiCallAdmin01(
+            'core-vector-api', [
+                'config',
+                'qdjango',
+                self.world.project.pk,
+                self.world.qgis_layer.id()])
+
+        resp = json.loads(response.content)
+
+        fields = [f['name'] for f in resp['vector']['fields']]
+
+        self.assertFalse('AREA' in fields)
+        self.assertFalse('SOURCETHM' in fields)
+
+        # Test for download API
+        # -------------------------------------------------
+
+        self.world.download_csv = True
+        self.world.download = True
+        self.world.save()
+
+        response = self._testApiCallAdmin01(
+            'core-vector-api', [
+                'csv',
+                'qdjango',
+                self.world.project.pk,
+                self.world.qgis_layer.id()])
+
+        self.assertEqual(response.status_code, 200)
+
+        temp = QTemporaryDir()
+        fname = temp.path() + '/temp.csv'
+        with open(fname, 'wb+') as f:
+            f.write(response.content)
+
+        vl = QgsVectorLayer(fname)
+        self.assertTrue(vl.isValid())
+
+        self.assertEqual(['APPROX', 'CAPITAL', 'NAME'].sort(),
+                         [vl.attributeDisplayName(idx) for idx in vl.attributeList()].sort())
+
+        # SHP
+        response = self._testApiCallAdmin01(
+            'core-vector-api', [
+                'shp',
+                'qdjango',
+                self.world.project.pk,
+                self.world.qgis_layer.id()])
+
+        self.assertEqual(response.status_code, 200)
+
+        self.assertEqual(response.status_code, 200)
+        z = zipfile.ZipFile(BytesIO(response.content))
+        temp = QTemporaryDir()
+        z.extractall(temp.path())
+        vl = QgsVectorLayer(temp.path())
+        self.assertTrue(vl.isValid())
+
+        self.assertEqual(['APPROX', 'CAPITAL', 'NAME'].sort(),
+                         [vl.attributeDisplayName(idx) for idx in vl.attributeList()].sort())
+
 
     def test_init_config(self):
 
