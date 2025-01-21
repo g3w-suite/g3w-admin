@@ -104,3 +104,5 @@ def send_email_to_user(sender, **kwargs):
     )
 
     user.email_user(subject, message, settings.DEFAULT_FROM_EMAIL, fail_silently=True)
+
+
